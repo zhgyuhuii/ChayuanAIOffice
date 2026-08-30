@@ -177,6 +177,26 @@ describe('createIpcTransport', () => {
     expect(cb.onError).toHaveBeenCalledWith('HTTP 429: engine overloaded')
   })
 
+  it('maps an overloaded error code to the localized busy message', () => {
+    const { cb, emit } = setup(undefined, undefined, undefined, () => 'service busy')
+    emit({
+      type: 'error',
+      error: 'HTTP 429: {"error":{"type":"engine_overloaded_error"}}',
+      errorCode: 'overloaded',
+    })
+    expect(cb.onError).toHaveBeenCalledWith('service busy')
+  })
+
+  it('an overloaded error code without overloadedErrorText falls back to the carried text', () => {
+    const { cb, emit } = setup()
+    emit({
+      type: 'error',
+      error: 'HTTP 429: engine overloaded',
+      errorCode: 'overloaded',
+    })
+    expect(cb.onError).toHaveBeenCalledWith('HTTP 429: engine overloaded')
+  })
+
   it('fails the run after prolonged silence; pings re-arm the watchdog', () => {
     vi.useFakeTimers()
     try {
