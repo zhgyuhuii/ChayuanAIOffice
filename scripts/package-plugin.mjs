@@ -1,17 +1,18 @@
 /**
- * Form ④ packaging: the dsh plugin archive.
+ * Form ④ packaging: the genoffice dsh plugin.
  *
- *   dist/genoffice-shell-<version>.tgz
- *     manifest.json
- *     src/client.js            thin shell (app registration)
- *     src/host-side.cjs        managed BFF sidecar lifecycle
- *     embedded/                full offline sidecar (from package:embedded)
+ *   dsh-plugin/
+ *     package.json / cordis.patch.yml   dsh 插件清单（client+host 两半）
+ *     dist/host.js                      spawn/守护 BFF sidecar + /api/genoffice/*
+ *     dist/client.js                    registerDesktopApp（Dock 图标 + 窗口）
+ *     vendor/genoffice-sidecar          全离线 BFF（Node + SQLite/本地存储 + Web 包）
  *
- * Install into a harness:  dsh plugin --profile web add genoffice-shell
+ * Archive: dist/genoffice-<version>.tgz (不含 node_modules；sidecar 已含自身依赖)
+ * Install: dsh plugin --profile web add -w <repo>/dsh-plugin
  */
 
 import { execSync } from 'node:child_process'
-import { cpSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -20,28 +21,27 @@ const pluginDir = join(root, 'dsh-plugin')
 const dist = join(root, 'dist')
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
 
-console.log('step 1: embedded sidecar')
-execSync('node scripts/package-embedded.mjs', {
-  cwd: root,
-  stdio: 'inherit',
-  shell: process.platform === 'win32',
+function run(cmd, cwd = root, env = {}) {
+  console.log(`> ${cmd}${cwd !== root ? `  (cwd: ${cwd})` : ''}`)
+  execSync(cmd, { stdio: 'inherit', cwd, shell: process.platform === 'win32', env: { ...process.env, ...env } })
+}
+
+console.log('step 1: web bundle (host + editors)')
+run('npm run build:web')
+
+console.log('step 2: embedded sidecar -> dsh-plugin/vendor/genoffice-sidecar')
+run('node scripts/package-embedded.mjs', root, {
+  EMBEDDED_OUT: join(pluginDir, 'vendor', 'genoffice-sidecar'),
 })
 
-console.log('step 2: staging plugin tree')
-const stage = join(dist, 'genoffice-shell')
-rmSync(stage, { recursive: true, force: true })
-mkdirSync(stage, { recursive: true })
-cpSync(join(pluginDir, 'manifest.json'), join(stage, 'manifest.json'))
-cpSync(join(pluginDir, 'src'), join(stage, 'src'), { recursive: true })
-cpSync(join(pluginDir, 'embedded'), join(stage, 'embedded'), { recursive: true })
+console.log('step 3: plugin dist (esbuild host + client)')
+run('npm install --no-audit --no-fund', pluginDir)
+run('npm run build', pluginDir)
 
-console.log('step 3: archive')
-// bsdtar (Windows 10+ / macOS / Linux) handles tgz everywhere
-execSync(`tar -czf genoffice-shell-${version}.tgz genoffice-shell`, {
-  cwd: dist,
-  stdio: 'inherit',
-  shell: process.platform === 'win32',
-})
+console.log('step 4: archive')
+// relative archive path: Windows bsdtar chokes on absolute drive paths here
+run(`tar -czf ../dist/genoffice-${version}.tgz --exclude node_modules .`, pluginDir)
 
-console.log(`\nplugin package ready: ${dist}/genoffice-shell-${version}.tgz`)
-console.log('install: dsh plugin --profile web add <path-to>/genoffice-shell')
+console.log(`\nplugin ready: ${pluginDir}`)
+console.log(`archive:      ${join(dist, `genoffice-${version}.tgz`)}`)
+console.log(`install:      dsh plugin --profile web add -w ${pluginDir}`)

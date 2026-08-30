@@ -1,31 +1,52 @@
-# genoffice-shell (dsh plugin)
+# genoffice（dsh 插件）
 
-GenOffice 套件的 DeepSeek Harness 插件形态（总体计划 v2.1，形态 ④）。
-**双半结构**：
+GenOffice 办公套件的 DeepSeek Harness 插件形态（总体计划 v2.1，形态 ④）。
+**harness 形态（`dsh web`）与 Electron 形态（察元桌面）点击 Dock 图标即可运行**——
+两种形态加载同一 dsh web origin，注册的应用自动在两边出现。
 
-- **client 薄壳**（`src/client.js`）：向宿主桌面注册 GenOffice 应用（Dock 图标 + 开窗），
-  窗口内容加载本地 BFF 的 origin。不碰 `root` 槽 —— root 属于桌面外壳插件
-  （如 chatop-shell）；没有桌面外壳时回落为 harness 官方界面里的普通面板。
-- **宿主半**（`src/host-side.cjs`）：拉起/守护 GenOffice 内嵌 BFF sidecar
-  （与形态 ③ chatop 桌面内置共用同一套制品：Node BFF + Rust xlsx sidecar +
-  SQLite + 本地对象目录），监听 `127.0.0.1` 随机端口，随 `dsh web` 生命周期回收。
-  首启做健康检查（`/healthz`）+ 版本自愈（sidecar 损坏则从插件包重解压）。
-
-## 应用注册协议
-
-本插件按 [APPLICATION-SLOT.md](./APPLICATION-SLOT.md) 定义的 `dsh.app-registry`
-槽位注册应用，该协议待 chayuan-harness 侧合入（跨仓库 PR）。
-
-## 目录
+## 结构（对齐 chatop-kb/chatop-models 双半插件模式）
 
 ```
-manifest.json        dsh 插件清单（client + host 两半入口）
-src/client.js        桌面应用注册 + 窗口打开（__ModuleLoader__ 格式，见构建脚本）
-src/host-side.cjs    受管 sidecar：spawn → 健康检查 → 端口回传 → 退出回收
-embedded/            内嵌 BFF 制品（第 2 期由 apps/server 打包产物填充）
+package.json / cordis.patch.yml  dsh 插件清单（dsh.client + dsh.bundle.patch）
+src/host.js        宿主半：拉起/守护 BFF sidecar（127.0.0.1 动态端口，/healthz
+                   就绪探测，孤儿回收，卸载 SIGTERM→SIGKILL），管理面
+                   /api/genoffice/status（loopback 围栏）
+src/client-entry.jsx  client 半：window.__chatop_shell__.registerDesktopApp
+                   注册 Dock 应用；窗口 = 指向 sidecar origin 的 iframe
+                   （Web 宿主 + Docs/Sheets/Slides/PDF/Markdown 五编辑器）
+vendor/genoffice-sidecar  全离线 BFF（Node + tsx + SQLite/本地对象目录 + dist/web，
+                   由 genoffice 仓库 scripts/package-embedded.mjs 组装）
+dist/host.js, dist/client.js  esbuild 产物（npm run build）
 ```
 
-## 状态
+## 构建与安装
 
-骨架阶段：宿主半的 spawn/健康检查/回收逻辑已可用（针对任意 `node` 可执行 BFF），
-client 薄壳等待 chayuan-harness 应用槽位协议合入后接线。
+```sh
+# genoffice 仓库根目录（一步完成：web 包 → sidecar → 插件 dist → tgz）
+npm run package:plugin
+
+# 本地链接安装（harness 形态）
+dsh plugin --profile web add -w /path/to/genoffice/dsh-plugin
+```
+
+察元桌面（Electron 形态）使用受管 profile（`%APPDATA%/chatop/dsh-home/profiles/web`），
+等效安装：
+
+```sh
+DSH_HOME="$APPDATA/chatop/dsh-home" \
+  node "$APPDATA/chatop/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js" \
+  plugin --profile web add -w D:\code\genoffice\dsh-plugin
+```
+
+（profile 的 `pnpm-workspace.yaml` 若含 `allowBuilds: protobufjs: set this to true or false`
+占位符，改为 `protobufjs: true` 后重跑；并把 `genoffice` 加入 profile `package.json`
+的 `dsh.profile.bundles`。）重启察元桌面或 `dsh web` 即见 Dock 图标。
+
+## 验证过的链路
+
+- `GET /api/genoffice/status` → `{status:"ready", origin:"http://127.0.0.1:<动态端口>"}`
+- sidecar origin `/`（宿主）、`/editors/{docs,sheets,slides,pdf,markdown}/` 全部 200
+- 桌面 Dock 出现 GenOffice 图标，点击开窗，窗口内为五编辑器标签宿主
+- Electron 形态无需任何桌面侧改动：主窗口加载同一 dsh web origin
+
+历史设计文档（槽位协议提案，已被 registerDesktopApp 机制取代）：[APPLICATION-SLOT.md](./APPLICATION-SLOT.md)

@@ -2,29 +2,36 @@
  * Embedded BFF sidecar assembly (shared by form ③ chatop-desktop and form ④
  * dsh plugin, plan v2.1 decisions #13/#14/#15b).
  *
- * Assembles dsh-plugin/embedded/ as a self-contained monorepo subset and
- * installs production dependencies, so a host process can run:
+ * Assembles a self-contained sidecar — server sources, engine packages,
+ * production node_modules, and the build:web static bundle — so a host
+ * process can run:
  *
- *   node --import tsx embedded/apps/server/src/main.ts
+ *   node --import tsx <out>/apps/server/src/main.ts
  *
- * with HOST/PORT/GENOFFICE_DATA_DIR in its environment.
+ * with HOST/PORT/GENOFFICE_DATA_DIR/GENOFFICE_STATIC_DIR in its environment.
+ *
+ *   EMBEDDED_OUT=<dir>   override the output root (default dsh-plugin/embedded)
+ *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
  */
 
-import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs'
+import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
-import { join, dirname } from 'node:path'
+import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readFileSync } from 'node:fs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const out = join(root, 'dsh-plugin', 'embedded')
+const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedded'))
 
 const PACKAGES = ['storage-adapter', 'service-core', 'project-store']
-const EDITOR_APPS = [] // editors are renderer-side; the sidecar is server-only
 
 function copyIfExists(from, to) {
   if (!existsSync(from)) throw new Error(`missing: ${from}`)
   cpSync(from, to, { recursive: true })
+}
+
+const webDist = join(root, 'dist', 'web')
+if (!process.env.SKIP_WEB && !existsSync(join(webDist, 'index.html'))) {
+  throw new Error(`web bundle missing (${webDist}) — run "npm run build:web" first (or SKIP_WEB=1)`)
 }
 
 console.log(`assembling embedded sidecar → ${out}`)
@@ -50,7 +57,6 @@ writeFileSync(
   )
 )
 copyIfExists(join(root, 'tsconfig.base.json'), join(out, 'tsconfig.base.json'))
-writeFileSync(join(out, '.npmrc'), 'install-scripts=false\n')
 
 // Server app + engine packages (sources only; deps install below)
 mkdirSync(join(out, 'apps'), { recursive: true })
@@ -59,7 +65,6 @@ mkdirSync(join(out, 'packages'), { recursive: true })
 for (const pkg of PACKAGES) {
   copyIfExists(join(root, 'packages', pkg), join(out, 'packages', pkg))
 }
-void EDITOR_APPS
 
 // Production dependency install inside the bundle
 console.log('installing production dependencies (this may take a minute)...')
@@ -69,7 +74,11 @@ execSync('npm install --no-audit --no-fund --omit=dev', {
   shell: process.platform === 'win32',
 })
 
-// Smoke: the server entry must typecheck-import in place
+// Static web bundle (host + editors) served by the sidecar on the same port
+if (!process.env.SKIP_WEB) {
+  cpSync(webDist, join(out, 'dist', 'web'), { recursive: true })
+}
+
 console.log('embedded sidecar ready:')
 console.log(`  ${out}`)
-console.log('run:  node --import tsx apps/server/src/main.ts   (cwd = embedded)')
+console.log('run:  node --import tsx apps/server/src/main.ts   (cwd = sidecar root)')

@@ -45,3 +45,8 @@ _scratch-*
 # Build artifacts
 /dsh-plugin/embedded/
 /dist/
+
+# Plugin build artifacts
+/dsh-plugin/vendor/
+/dsh-plugin/dist/
+/dsh-plugin/node_modules/

@@ -40,9 +40,10 @@
 |---|---|---|
 | 构建插件包 | `npm run package:plugin` | 产出 `dist/genoffice-shell-<版本>.tgz`（manifest + client 薄壳 + 宿主半 + embedded sidecar） |
 | 仅构建内嵌件 | `npm run package:embedded` | 产出/刷新 `dsh-plugin/embedded/` |
-| 安装 | `dsh plugin --profile web add <path>/genoffice-shell-<版本>.tgz` 后运行 `dsh web` | 宿主半拉起 sidecar（随机环回端口），随 dsh web 退出回收 |
-| 冒烟（不进 harness） | `node dsh-plugin/src/host-side.cjs` | 自检 probe 逻辑 |
-| 调试 | `window.__genofficeShellPlugin`（client 调试钩子）；sidecar 日志经宿主 log 回流；`GENOFFICE_DATA_DIR` 指到插件 runtimeDir | 应用注册需 chayuan-harness 合入 `dsh.app-registry` 槽位（见 `dsh-plugin/APPLICATION-SLOT.md`） |
+| 安装（harness 形态） | `dsh plugin --profile web add -w <repo>/dsh-plugin` 后重启 `dsh web` | 经 `window.__chatop_shell__.registerDesktopApp` 注册 Dock 应用 |
+| 安装（察元 Electron 桌面） | `DSH_HOME=%APPDATA%/chatop/dsh-home node %APPDATA%/chatop/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js plugin --profile web add -w <repo>/dsh-plugin`，并把 `genoffice` 加入 profile `package.json` 的 `dsh.profile.bundles`，重启察元 | 同一 profile/同一 origin，两种形态 Dock 图标一致 |
+| 验证 | `curl <dsh-web>/api/genoffice/status`（sidecar origin 与端口）；浏览器开 dsh web 点 Dock 的 GenOffice | 窗口 = 五编辑器标签宿主 iframe |
+| 调试 | sidecar 日志经宿主 `[genoffice]` 前缀回流 dsh 日志；数据在 `$DSH_HOME/storages/genoffice` | 卸载/退出时 sidecar 随插件 dispose 回收 |
 
 ## 通用
 
