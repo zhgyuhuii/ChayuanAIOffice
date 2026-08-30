@@ -109,6 +109,7 @@ export function apply(ctx) {
   }
 
   let child = null
+  let restarts = 0
 
   async function start() {
     if (!bundled) {
@@ -147,10 +148,19 @@ export function apply(ctx) {
       if (line) console.warn(`[genoffice:sidecar] ${line}`)
     })
     child.on('exit', (code) => {
-      if (state.status === 'ready') console.warn(`[genoffice] sidecar exited (${code})`)
-      if (state.status !== 'failed') state.status = 'failed'
-      state.error = state.error ?? `sidecar exited with ${code}`
+      console.warn(`[genoffice] sidecar exited (${code})`)
       child = null
+      // 意外退出（曾就绪）→ 有限次自动重启，桌面窗口下次取 status 即恢复
+      if (state.status === 'ready' && restarts < 3) {
+        restarts += 1
+        state.status = 'starting'
+        state.error = null
+        console.log(`[genoffice] restarting sidecar (attempt ${restarts}/3)`)
+        start()
+      } else {
+        state.status = 'failed'
+        state.error = state.error ?? `sidecar exited with ${code}`
+      }
     })
 
     const deadline = Date.now() + START_TIMEOUT_MS

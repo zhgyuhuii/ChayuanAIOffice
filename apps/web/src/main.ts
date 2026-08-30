@@ -1,15 +1,17 @@
 /**
- * Web host main (plan v2.1, form ②): a tab strip plus one iframe per editor,
- * mirroring the Electron shell's WebContentsView tab model. Editor origins
+ * Web host main (plan v2.1, form ②): home screen + tab strip + one iframe per
+ * open editor, mirroring the Electron shell's home-tab model. Editor origins
  * come from a runtime config so dev (5173–5177) and production (packaged
  * editor builds) share this code.
  */
 
-import { resolveEditors, type EditorSpec } from './editors'
+import { resolveEditors, type EditorKey, type EditorSpec } from './editors'
+import { createHome, editorForFile } from './home'
 
 interface Tab {
   id: number
   editor: EditorSpec
+  title: string
   frame: HTMLIFrameElement
   button: HTMLButtonElement
 }
@@ -23,6 +25,13 @@ const editors = resolveEditors(
 
 let nextId = 1
 let active: Tab | null = null
+let home: HTMLElement | null = null
+
+function editorByKey(key: EditorKey): EditorSpec {
+  const spec = editors.find((e) => e.key === key)
+  if (!spec) throw new Error(`unknown editor: ${key}`)
+  return spec
+}
 
 function newTabButton(): HTMLButtonElement {
   let btn = tabsEl.querySelector('#new-tab') as HTMLButtonElement | null
@@ -30,13 +39,32 @@ function newTabButton(): HTMLButtonElement {
     btn = document.createElement('button')
     btn.id = 'new-tab'
     btn.textContent = '+'
-    btn.title = 'Open editor'
+    btn.title = '回到主页'
     tabsEl.appendChild(btn)
   }
   return btn
 }
 
-function createTab(editor: EditorSpec): Tab {
+function showHome(): void {
+  if (!home) {
+    home = createHome({
+      onCreate: (key) => createTab(editorByKey(key), key.toUpperCase()),
+      onOpenFile: (file) => {
+        const key = editorForFile(file.name)
+        if (key) createTab(editorByKey(key), file.name)
+      },
+    })
+    viewsEl.appendChild(home)
+  }
+  home.style.display = 'block'
+}
+
+function hideHome(): void {
+  if (home) home.style.display = 'none'
+}
+
+function createTab(editor: EditorSpec, title: string): Tab {
+  hideHome()
   const id = nextId++
   const frame = document.createElement('iframe')
   frame.src = editor.url
@@ -45,7 +73,7 @@ function createTab(editor: EditorSpec): Tab {
   const button = document.createElement('button')
   button.className = 'tab'
   button.dataset.tabId = String(id)
-  button.textContent = editor.label
+  button.textContent = title
   button.addEventListener('click', () => activate(tab))
 
   const close = document.createElement('span')
@@ -57,8 +85,9 @@ function createTab(editor: EditorSpec): Tab {
   button.appendChild(close)
   tabsEl.insertBefore(button, newTabButton())
 
-  const tab: Tab = { id, editor, frame, button }
-  newTabButton().addEventListener('click', () => activate(tab))
+  const tab: Tab = { id, editor, title, frame, button }
+  tabsEl.insertBefore(button, newTabButton())
+  activate(tab)
   return tab
 }
 
@@ -74,6 +103,7 @@ function closeTab(tab: Tab): void {
   tab.frame.remove()
   tab.button.remove()
   if (active === tab) {
+    active = null
     const frames = [...viewsEl.querySelectorAll('iframe')] as HTMLIFrameElement[]
     const buttons = [...tabsEl.querySelectorAll('.tab')] as HTMLButtonElement[]
     const lastFrame = frames.at(-1)
@@ -81,14 +111,27 @@ function closeTab(tab: Tab): void {
     if (lastFrame && lastBtn) {
       lastFrame.classList.add('active')
       lastBtn.classList.add('active')
-      active = null
+    } else {
+      showHome() // last tab closed → back to the home screen
     }
   }
 }
 
-// Boot: one tab per editor, docs first (mirrors the shell home default).
-for (const editor of editors) {
-  const tab = createTab(editor)
-  if (!active) activate(tab)
-}
+// Boot: home screen first (mirrors the shell home tab). '+' with open tabs
+// focuses the latest one; with none it stays on / returns to home.
+newTabButton().addEventListener('click', () => {
+  const frames = [...viewsEl.querySelectorAll('iframe')] as HTMLIFrameElement[]
+  const buttons = [...tabsEl.querySelectorAll('.tab')] as HTMLButtonElement[]
+  const lastFrame = frames.at(-1)
+  const lastBtn = buttons.at(-1)
+  if (lastFrame && lastBtn) {
+    hideHome()
+    lastFrame.classList.add('active')
+    lastBtn.classList.add('active')
+    active = null
+  } else {
+    showHome()
+  }
+})
+showHome()
 void active
