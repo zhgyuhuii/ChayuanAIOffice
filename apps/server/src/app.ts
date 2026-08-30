@@ -16,6 +16,7 @@ import type { ServiceCore, ServiceDefinition } from '@genoffice/service-core'
 import { createCore } from '@genoffice/service-core'
 import { chatHistoryService } from '@genoffice/service-core'
 import { settingsService } from '@genoffice/service-core'
+import { xlsxSidecarService } from '@genoffice/service-core'
 import { openLocalArea, type StorageArea } from '@genoffice/storage-adapter'
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
@@ -44,6 +45,7 @@ export function defaultServices() {
   return {
     chatHistory: chatHistoryService(),
     settings: settingsService(),
+    xlsx: xlsxSidecarService(),
   }
 }
 

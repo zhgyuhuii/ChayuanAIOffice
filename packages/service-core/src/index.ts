@@ -10,6 +10,7 @@ export {
 } from './runtime.js'
 export { chatHistoryService, createChatHistoryApi, type ChatHistoryDeps } from './services/chat-history.js'
 export { settingsService, createSettingsApi, type SettingsApi } from './services/settings.js'
+export { xlsxSidecarService, type XlsxSidecarApi } from './services/xlsx-sidecar.js'
 export {
   collabDocsService,
   createCollabDocsApi,

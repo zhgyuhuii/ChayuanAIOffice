@@ -14,7 +14,7 @@
  *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
  */
 
-import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync, renameSync } from 'node:fs'
+import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync, renameSync, statSync, readdirSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -26,8 +26,19 @@ const PACKAGES = ['storage-adapter', 'service-core', 'project-store']
 
 function copyIfExists(from, to) {
   if (!existsSync(from)) throw new Error(`missing: ${from}`)
-  cpSync(from, to, { recursive: true })
+  // cpSync nests when dest exists; mirror file-by-file instead
+  const stat = statSync(from)
+  if (stat.isDirectory()) {
+    mkdirSync(to, { recursive: true })
+    for (const entry of readdirSync(from)) {
+      copyIfExists(join(from, entry), join(to, entry))
+    }
+  } else {
+    mkdirSync(dirname(to), { recursive: true })
+    cpSync(from, to, { force: true })
+  }
 }
+
 
 const webDist = join(root, 'dist', 'web')
 if (!process.env.SKIP_WEB && !existsSync(join(webDist, 'index.html'))) {
@@ -35,9 +46,17 @@ if (!process.env.SKIP_WEB && !existsSync(join(webDist, 'index.html'))) {
 }
 
 console.log(`assembling embedded sidecar → ${out}`)
+
+// OVERWRITE=1: refresh an existing bundle in place (Windows cwd-locks can
+// make a clean delete impossible while a stale shell sits in the dir).
+if (process.env.OVERWRITE === '1' && existsSync(out)) {
+  console.log('overwrite mode: refreshing in place')
+  process.env.__GO_SKIP_CLEAR__ = '1'
+}
 // Windows: AV/indexers briefly lock freshly-written trees; retry, then move aside.
-let cleared = false
-for (let i = 0; i < 6 && !cleared; i++) {
+const skipClear = process.env.__GO_SKIP_CLEAR__ === '1'
+let cleared = skipClear
+for (let i = 0; i < 6 && !cleared && !skipClear; i++) {
   try {
     rmSync(out, { recursive: true, force: true })
     cleared = true
@@ -93,7 +112,18 @@ execSync('npm install --no-audit --no-fund --omit=dev', {
 
 // Static web bundle (host + editors) served by the sidecar on the same port
 if (!process.env.SKIP_WEB) {
-  cpSync(webDist, join(out, 'dist', 'web'), { recursive: true })
+  copyIfExists(webDist, join(out, 'dist', 'web'))
+}
+
+// Rust xlsx sidecar (prebuilt release binaries; platforms land as they are built)
+const exe = process.platform === 'win32' ? 'xlsx-sidecar.exe' : 'xlsx-sidecar'
+const nativeSrc = join(root, 'apps', 'sheets', 'native', 'xlsx-engine', 'target', 'release', exe)
+if (existsSync(nativeSrc)) {
+  mkdirSync(join(out, 'native', 'xlsx-sidecar'), { recursive: true })
+  copyIfExists(nativeSrc, join(out, 'native', 'xlsx-sidecar', exe))
+  console.log(`native: ${exe} bundled`)
+} else {
+  console.warn(`native: ${exe} not found at ${nativeSrc} — xlsx open will degrade`)
 }
 
 console.log('embedded sidecar ready:')
