@@ -16,6 +16,7 @@ const host = process.env.HOST ?? '127.0.0.1'
 
 const { app } = buildServer({
   dataDir: process.env.GENOFFICE_DATA_DIR,
+  staticDir: process.env.GENOFFICE_STATIC_DIR,
 })
 
 app

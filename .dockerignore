@@ -1,0 +1,10 @@
+.git
+node_modules
+**/node_modules
+**/out
+dist
+dsh-plugin/embedded
+dsh-plugin/dist
+release
+*.log
+.env

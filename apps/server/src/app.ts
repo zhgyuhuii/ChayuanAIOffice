@@ -20,6 +20,7 @@ import { openLocalArea, type StorageArea } from '@genoffice/storage-adapter'
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
+import { attachStatic } from './static.js'
 
 export interface ServerOptions {
   /** Data root for the local/embedded track (default: ./data) */
@@ -30,6 +31,8 @@ export interface ServerOptions {
   ai?: AiProxyOptions
   /** Extra services to host alongside the defaults */
   services?: Record<string, ServiceDefinition<unknown>>
+  /** Static web root (build:web output); serves the SPA on the same port */
+  staticDir?: string
 }
 
 export interface BuiltServer {
@@ -78,6 +81,7 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
   attachAuthHooks(app, options.auth)
   attachWsGateway(app, core)
   attachAiProxy(app, options.ai ?? {})
+  if (options.staticDir) attachStatic(app, options.staticDir)
 
   return { app, core }
 }

@@ -28,9 +28,12 @@ function run(cmd, opts = {}) {
 rmSync(dist, { recursive: true, force: true })
 mkdirSync(dist, { recursive: true })
 
-// 1. Editor renderer builds (electron-vite build → apps/<app>/out/renderer)
+// 1. Editor renderer builds (browser needs no main/preload/Rust sidecar, so
+// build the renderer directly with the same config the dev servers use).
 for (const key of EDITORS) {
-  run(`${npm} run build -w @genoffice/${key}`)
+  run(
+    `${npm} exec -w @genoffice/${key} -- vite build --config vite.renderer.config.ts --outDir ../../out/renderer --emptyOutDir`,
+  )
   const from = join(root, 'apps', key, 'out', 'renderer')
   if (!existsSync(from)) throw new Error(`missing renderer build: ${from}`)
   cpSync(from, join(dist, 'editors', key), { recursive: true })
