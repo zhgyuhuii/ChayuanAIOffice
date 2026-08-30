@@ -10,12 +10,32 @@
 
 import { ProjectStore } from '@genoffice/project-store'
 import type { ProjectApi } from '@genoffice/project-store'
+import type { StorageArea } from '@genoffice/storage-adapter'
+import { openLocalArea } from '@genoffice/storage-adapter'
+import { join } from 'node:path'
 import type { ServiceContext } from '../runtime.js'
-import { defineService } from '../runtime.js'
+import { defineService, ServiceEmitter } from '../runtime.js'
 
 export interface ChatHistoryDeps {
   /** Resolves a sheets sessionId to its file path; injected by the host. */
   resolveSessionPath?(sessionId: string): string | null
+}
+
+/**
+ * Host convenience: a standalone chatHistory API bound to a userData path
+ * (local track) or an explicit StorageArea. Electron main uses this today;
+ * the BFF uses createCore so it can host several services over one registry.
+ */
+export function createChatHistoryApi(
+  deps: ChatHistoryDeps & { userDataPath?: string; area?: StorageArea } = {},
+): ProjectApi {
+  const area =
+    deps.area ?? openLocalArea({ rootDir: join(deps.userDataPath ?? '.', 'projects') })
+  const context: ServiceContext = {
+    events: new ServiceEmitter(),
+    storage: { defaultArea: () => area },
+  }
+  return chatHistoryService(deps).create(context)
 }
 
 export function chatHistoryService(deps: ChatHistoryDeps = {}) {
@@ -31,7 +51,7 @@ export function chatHistoryService(deps: ChatHistoryDeps = {}) {
           }
           if (filePath === null) {
             store.ensureDefaultProject()
-            return { projectId: 'default', chatId: args.tempChatId ?? 'unsaved' }
+            return { projectId: 'default', chatId: args.tempChatId ?? `unsaved-${Date.now()}` }
           }
           return store.resolveChatForFile(filePath)
         },
@@ -47,18 +67,18 @@ export function chatHistoryService(deps: ChatHistoryDeps = {}) {
           return store.loadChat(args.projectId, args.chatId, args.limit)
         },
         async rebindChat(args) {
-          if (args.newChatId !== undefined) {
-            store.rebindChat(args.projectId, args.tempChatId, args.newChatId)
-            return { projectId: args.projectId, chatId: args.newChatId }
-          }
           let filePath = args.newFilePath ?? null
           if (filePath === null && args.sessionId) {
             filePath = deps.resolveSessionPath?.(args.sessionId) ?? null
           }
-          if (filePath === null) {
-            throw new Error('rebindChat needs one of newChatId / newFilePath / sessionId')
+          if (filePath !== null) {
+            return store.rebindChatToFile(args.projectId, args.tempChatId, filePath)
           }
-          return store.rebindChatToFile(args.projectId, args.tempChatId, filePath)
+          if (args.newChatId !== undefined) {
+            store.rebindChat(args.projectId, args.tempChatId, args.newChatId)
+            return { projectId: args.projectId, chatId: args.newChatId }
+          }
+          throw new Error('rebindChat needs one of newChatId / newFilePath / sessionId')
         },
         async listProjects() {
           return store.listProjectsSummary()

@@ -40,6 +40,8 @@ import {
 import { configureMetricsCache, familyVerticalMetrics } from '@genoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@genoffice/i18n'
 import { ProjectStore } from '@genoffice/project-store'
+import type { ProjectApi } from '@genoffice/project-store'
+import { createChatHistoryApi } from '@genoffice/service-core'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -2854,6 +2856,22 @@ export function projectFileRenamed(oldPath: string, newPath: string): void {
   }
 }
 
+/** Lazily-created service-core chatHistory API; project:* handlers are thin forwarders onto it. */
+let projectApi: ProjectApi | null = null
+
+function getProjectApi(): ProjectApi {
+  if (!projectApi) {
+    const api = createChatHistoryApi({
+      userDataPath: app.getPath('userData'),
+      resolveSessionPath: (sessionId: string): string | null =>
+        sessionPathResolver ? sessionPathResolver(-1, sessionId) : null,
+    })
+    projectApi = api
+    return api
+  }
+  return projectApi
+}
+
 /**
  * Register the project:* IPC handlers (all three apps share the same channel names).
  * Idempotency guard: registered only once in shell mode.
@@ -2866,19 +2884,11 @@ export function registerProjectIpc(): void {
   ipcMain.handle(
     'project:resolveChat',
     (event, args: { filePath: string | null; tempChatId?: string; sessionId?: string }) => {
-      const store = getProjectStore()
-      store.ensureDefaultProject()
-      let resolvedPath = args.filePath
-      if (!resolvedPath && args.sessionId && sessionPathResolver) {
-        resolvedPath = sessionPathResolver(event.sender.id, args.sessionId)
+      let filePath = args.filePath
+      if (!filePath && args.sessionId && sessionPathResolver) {
+        filePath = sessionPathResolver(event.sender.id, args.sessionId)
       }
-      if (!resolvedPath) {
-        return {
-          projectId: 'default',
-          chatId: args.tempChatId ?? `unsaved-${Date.now()}`,
-        }
-      }
-      return store.resolveChatForFile(resolvedPath)
+      return getProjectApi().resolveChat({ filePath, tempChatId: args.tempChatId })
     },
   )
 
@@ -2902,14 +2912,14 @@ export function registerProjectIpc(): void {
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
       },
     ) => {
-      const store = getProjectStore()
-      const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
+      void getProjectApi().appendChat({
+        projectId: args.projectId,
+        chatId: args.chatId,
         role: args.role,
         text: args.text,
-      }
-      if (args.tools) msg.tools = args.tools
-      if (args.attachments) msg.attachments = args.attachments
-      store.appendChatMessage(args.projectId, args.chatId, msg)
+        ...(args.tools ? { tools: args.tools } : {}),
+        ...(args.attachments ? { attachments: args.attachments } : {}),
+      })
     },
   )
 
@@ -2924,8 +2934,7 @@ export function registerProjectIpc(): void {
         limit?: number
       },
     ) => {
-      const store = getProjectStore()
-      return store.loadChat(args.projectId, args.chatId, args.limit ?? 200)
+      return getProjectApi().loadChat({ ...args, limit: args.limit ?? 200 })
     },
   )
 
@@ -2942,16 +2951,17 @@ export function registerProjectIpc(): void {
         sessionId?: string
       },
     ) => {
-      const store = getProjectStore()
-      let path = args.newFilePath ?? null
-      if (!path && args.sessionId && sessionPathResolver) {
-        path = sessionPathResolver(event.sender.id, args.sessionId)
-      }
-      if (path) {
-        return store.rebindChatToFile(args.projectId, args.tempChatId, path)
-      }
-      if (args.newChatId) store.rebindChat(args.projectId, args.tempChatId, args.newChatId)
-      return { projectId: args.projectId, chatId: args.newChatId ?? args.tempChatId }
+      const path = args.newFilePath ?? null
+      const resolved = path
+        ? path
+        : args.sessionId && sessionPathResolver
+          ? sessionPathResolver(event.sender.id, args.sessionId)
+          : null
+      return getProjectApi().rebindChat({
+        projectId: args.projectId,
+        tempChatId: args.tempChatId,
+        ...(resolved ? { newFilePath: resolved } : args.newChatId ? { newChatId: args.newChatId } : {}),
+      })
     },
   )
 
@@ -2959,7 +2969,7 @@ export function registerProjectIpc(): void {
 
   /** List all projects (with file count + last-active time) */
   ipcMain.handle('project:list', () => {
-    return getProjectStore().listProjectsSummary()
+    return getProjectApi().listProjects()
   })
 
   /** List existing files belonging to one project */
@@ -2969,30 +2979,27 @@ export function registerProjectIpc(): void {
 
   /** Create a project */
   ipcMain.handle('project:create', (_event, args: { name: string }) => {
-    const store = getProjectStore()
-    const data = store.createProject(args.name)
-    // returns ProjectSummary shape
-    return store.listProjectsSummary().find((s) => s.id === data.id) ?? data
+    return getProjectApi().createProject(args)
   })
 
   /** Rename a project */
   ipcMain.handle('project:rename', (_event, args: { id: string; name: string }) => {
-    getProjectStore().renameProject(args.id, args.name)
+    return getProjectApi().renameProject(args)
   })
 
   /** Soft-delete a project */
   ipcMain.handle('project:delete', (_event, args: { id: string }) => {
-    getProjectStore().deleteProject(args.id)
+    return getProjectApi().deleteProject(args)
   })
 
   /** Move a file into the given project */
   ipcMain.handle('project:moveFile', (_event, args: { filePath: string; projectId: string }) => {
-    getProjectStore().moveFileToProject(args.filePath, args.projectId)
+    return getProjectApi().moveFile(args)
   })
 
   /** Get the project timeline */
   ipcMain.handle('project:timeline', (_event, args: { projectId: string; limit?: number }) => {
-    return getProjectStore().getProjectTimeline(args.projectId, args.limit ?? 20)
+    return getProjectApi().getTimeline({ ...args, limit: args.limit ?? 20 })
   })
 }
 

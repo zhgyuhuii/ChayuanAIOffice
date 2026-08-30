@@ -1,0 +1,11 @@
+{
+  "name": "genoffice-shell",
+  "version": "0.1.0",
+  "description": "GenOffice office suite as a dsh desktop application (plan v2.1 form 4)",
+  "client": "src/client.js",
+  "host": "src/host-side.cjs",
+  "permissions": {
+    "spawn": ["node"],
+    "network": { "loopback": true }
+  }
+}

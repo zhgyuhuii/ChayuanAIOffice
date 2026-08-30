@@ -59,6 +59,7 @@ describe('resolveDefaultSaveDir', () => {
   })
 
   it('degrades to the fallback when the configured folder is not writable', () => {
+    if (process.platform === 'win32') return // Windows doesn't enforce 0o500 on directories
     const readOnly = join(root, 'read-only')
     mkdirSync(readOnly)
     chmodSync(readOnly, 0o500)

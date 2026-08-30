@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@genoffice/project-store": "*",
-    "@genoffice/storage-adapter": "*"
+    "@genoffice/storage-adapter": "*",
+    "yjs": "^13.6.20"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
