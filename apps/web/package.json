@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "description": "Browser host for the GenOffice editors (replaces the Electron shell's window/tab role)",
+  "description": "Browser host: the unmodified shell renderer + in-page editor iframe manager",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,8 +13,18 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@genoffice/i18n": "*",
+    "@genoffice/ui": "*",
+    "@genoffice/web-bridge": "*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

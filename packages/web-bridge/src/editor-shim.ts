@@ -1,0 +1,121 @@
+/**
+ * Editor-side shim entry (plan v2.2): injected as <script src="/bridge-shim.js">
+ * into each editor's index.html by build:web. If a REAL preload bridge exists
+ * (Electron form) it does nothing; otherwise it installs the web shims over
+ * the postMessage BridgeClient. Editor renderer code stays untouched.
+ */
+
+import { BridgeClient } from './client.js'
+
+const client = new BridgeClient()
+
+function b64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64)
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+
+function bytesToB64(bytes: Uint8Array): string {
+  let bin = ''
+  for (const b of bytes) bin += String.fromCharCode(b)
+  return btoa(bin)
+}
+
+/** #gofile=<id>&name=<n> injected by the host when opening a file. */
+function pendingFromHash(): { fileId: string; name: string } | null {
+  const m = /[?#&]gofile=([^&]+)(?:&name=([^&]*))?/.exec(location.hash + location.search)
+  if (!m) return null
+  return { fileId: decodeURIComponent(m[1]), name: decodeURIComponent(m[2] ?? '文件') }
+}
+
+function degrade(channel: string): (...args: never[]) => Promise<never> {
+  return () => client.call('local', channel) as Promise<never>
+}
+
+// ── markdownApi (batch-1 closed loop: open → edit → save in place) ──────────
+
+function installMarkdownShim(): void {
+  let currentFile: { id: string; name: string } | null = null
+  let pendingConsumed = false
+
+  const textEncoder = new TextEncoder()
+
+  ;(window as unknown as Record<string, unknown>).markdownApi = {
+    consumePending: async () => {
+      if (pendingConsumed) return null
+      pendingConsumed = true
+      const p = pendingFromHash()
+      if (!p) return null
+      currentFile = { id: p.fileId, name: p.name }
+      return `webfs:${p.fileId}:${p.name}`
+    },
+    readFile: async (path: string) => {
+      const m = /^webfs:([^:]+):(.*)$/.exec(path)
+      if (!m) throw new Error(`web shim 只能读取通过宿主打开的文件：${path}`)
+      currentFile = { id: m[1], name: m[2] }
+      const doc = (await client.call('file', 'fs.read', m[1])) as { text?: string }
+      if (doc.text === undefined) throw new Error('文件内容不可读')
+      return doc.text
+    },
+    save: async (request: { text: string; mode: 'save' | 'saveAs'; suggestedName?: string }) => {
+      const bytes = textEncoder.encode(request.text)
+      if (request.mode === 'save' && currentFile) {
+        await client.call('file', 'fs.write', currentFile.id, bytesToB64(bytes))
+        return { ok: true as const, path: `webfs:${currentFile.id}:${currentFile.name}` }
+      }
+      // save-as / untitled first save
+      const created = (await client.call('file', 'fs.saveAs', bytesToB64(bytes), request.suggestedName ?? '未命名.md')) as
+        | { id: string; name: string }
+        | null
+      if (!created) return { ok: true as const, canceled: true }
+      currentFile = created
+      await client.call('local', 'recent.record', created.id, created.name, 'markdown')
+      await client.call('local', 'tab.setTitle', created.id, created.name)
+      return { ok: true as const, path: `webfs:${created.id}:${created.name}` }
+    },
+    setDirty: () => undefined,
+    onSaveRequest: () => () => undefined,
+    sendSaveRequestAck: () => undefined,
+    onCloseSaveRequest: () => () => undefined,
+    sendCloseSaveResult: () => undefined,
+    onFileRenamed: () => () => undefined,
+    pickImage: degrade('markdown.pickImage') as unknown as () => Promise<null>,
+    saveImage: degrade('markdown.saveImage') as unknown as () => Promise<null>,
+    readImage: async () => null,
+    onExportRequest: () => () => undefined,
+    onPrintRequest: () => () => undefined,
+    exportDocx: degrade('markdown.exportDocx') as unknown as () => Promise<never>,
+    exportPdf: degrade('markdown.exportPdf') as unknown as () => Promise<never>,
+    getLanguage: async () => 'zh',
+    onLanguageChanged: () => () => undefined,
+    getTheme: async () => 'system' as const,
+    onThemeChanged: () => () => undefined,
+    onChromePressed: () => () => undefined,
+    getAiSettings: async () => null,
+    aiStream: degrade('markdown.aiStream') as unknown as () => Promise<void>,
+    aiStreamCancel: async () => undefined,
+    onAiStream: () => () => undefined,
+    webSearch: degrade('markdown.webSearch') as unknown as () => Promise<never>,
+    imageSearch: degrade('markdown.imageSearch') as unknown as () => Promise<never>,
+    fetchImage: async () => null,
+    aiGenerateImage: degrade('markdown.aiGenerateImage') as unknown as () => Promise<never>,
+  }
+}
+
+// ── dispatch by editor path ──────────────────────────────────────────────────
+
+function alreadyElectron(): boolean {
+  return typeof (window as unknown as Record<string, unknown>).markdownApi !== 'undefined'
+}
+
+export function installEditorShims(): void {
+  if (alreadyElectron()) return
+  const path = location.pathname
+  if (/\/editors\/markdown\//.test(path) || /\/markdown\//.test(path)) installMarkdownShim()
+  // docs/sheets/slides/pdf shims arrive with batches 2–4; their renderers
+  // boot with `window.*` undefined and their preload-typed calls no-op the
+  // same way they do in standalone dev — only the file channel differs.
+}
+
+if (typeof window !== 'undefined') installEditorShims()

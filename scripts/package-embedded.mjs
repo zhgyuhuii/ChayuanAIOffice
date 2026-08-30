@@ -14,7 +14,7 @@
  *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
  */
 
-import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
+import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync, renameSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -35,7 +35,24 @@ if (!process.env.SKIP_WEB && !existsSync(join(webDist, 'index.html'))) {
 }
 
 console.log(`assembling embedded sidecar → ${out}`)
-rmSync(out, { recursive: true, force: true })
+// Windows: AV/indexers briefly lock freshly-written trees; retry, then move aside.
+let cleared = false
+for (let i = 0; i < 6 && !cleared; i++) {
+  try {
+    rmSync(out, { recursive: true, force: true })
+    cleared = true
+  } catch {
+    await new Promise((r) => setTimeout(r, 1000))
+  }
+}
+if (!cleared) {
+  rmSync(`${out}-stale`, { recursive: true, force: true })
+  try {
+    renameSync(out, `${out}-stale`)
+  } catch {
+    throw new Error(`cannot clear ${out} — a process is holding it (close editors/watchers and retry)`)
+  }
+}
 mkdirSync(out, { recursive: true })
 
 // Root manifests (workspaces subset; overrides preserved)

@@ -9,6 +9,7 @@
  *   GENOFFICE_AUTH      'jwt' to enforce Logto tokens, 'off' otherwise
  */
 
+import { resolve } from 'node:path'
 import { buildServer } from './app.ts'
 
 const port = Number(process.env.PORT ?? 8787)
@@ -16,7 +17,9 @@ const host = process.env.HOST ?? '127.0.0.1'
 
 const { app } = buildServer({
   dataDir: process.env.GENOFFICE_DATA_DIR,
-  staticDir: process.env.GENOFFICE_STATIC_DIR,
+  staticDir: process.env.GENOFFICE_STATIC_DIR
+    ? resolve(process.env.GENOFFICE_STATIC_DIR)
+    : undefined,
 })
 
 app

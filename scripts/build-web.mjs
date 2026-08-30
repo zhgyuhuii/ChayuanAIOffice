@@ -1,18 +1,21 @@
 /**
- * Form ② production build: assemble dist/web/
+ * Form ② production build: assemble dist/web
  *
- *   dist/web/index.html            web host (tab shell)
+ *   dist/web/index.html            the UNMODIFIED shell renderer (harvested:
+ *                                   TabBar + Home + onboarding, original code)
+ *   dist/web/assets/               shell renderer bundle
  *   dist/web/editors/<key>/        the five editor renderer builds
- *   dist/web/config.js             editor origin map (same-origin paths)
+ *   dist/web/bridge-shim.js        preload-shaped shims injected into editors
+ *   dist/web/config.js             same-origin editor map (fallback)
  *
- * Served by `npm run preview:web` (node scripts/serve-web.mjs) or any static
- * server; pair with the BFF (`npm run start:server` / Docker image).
+ * Served by the sidecar (GENOFFICE_STATIC_DIR) or `npm run preview:web`.
  */
 
 import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { build } from 'esbuild'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist', 'web')
@@ -32,26 +35,45 @@ mkdirSync(dist, { recursive: true })
 // build the renderer directly with the same config the dev servers use).
 for (const key of EDITORS) {
   run(
-    `${npm} exec -w @genoffice/${key} -- vite build --config vite.renderer.config.ts --outDir ../../out/renderer --emptyOutDir`,
+    `${npm} exec -w @genoffice/${key} -- vite build --config vite.renderer.config.ts --base ./ --outDir ../../out/renderer --emptyOutDir`,
   )
   const from = join(root, 'apps', key, 'out', 'renderer')
   if (!existsSync(from)) throw new Error(`missing renderer build: ${from}`)
   cpSync(from, join(dist, 'editors', key), { recursive: true })
 }
 
-// 2. Web host build
+// 2. Web host build = the harvested shell renderer (zero source changes)
 run(`${npm} run build -w @genoffice/web`)
 cpSync(join(root, 'apps', 'web', 'dist'), dist, { recursive: true })
 
-// 3. Same-origin editor map, loaded before the host bundle
+// 3. Editor bridge shim: preload-shaped shims served same-origin and injected
+//    into every editor page BEFORE its module script.
+await build({
+  entryPoints: [join(root, 'packages', 'web-bridge', 'src', 'editor-shim.ts')],
+  bundle: true,
+  format: 'iife',
+  platform: 'browser',
+  target: 'es2022',
+  minify: true,
+  outfile: join(dist, 'bridge-shim.js'),
+})
+
+for (const key of EDITORS) {
+  const htmlPath = join(dist, 'editors', key, 'index.html')
+  if (!existsSync(htmlPath)) continue
+  let html = readFileSync(htmlPath, 'utf8')
+  if (!html.includes('bridge-shim.js')) {
+    html = html.replace('<head>', '<head>\n    <script src="/bridge-shim.js"></script>')
+    writeFileSync(htmlPath, html)
+  }
+}
+
+// 4. Same-origin editor map fallback (the host index.html already carries
+//    defaults; config.js remains for tooling/debugging).
 writeFileSync(
   join(dist, 'config.js'),
   `window.GENOFFICE_EDITORS = {\n${EDITORS.map((k) => `  ${k}: 'editors/${k}/',`).join('\n')}\n}\n`,
 )
-const htmlPath = join(dist, 'index.html')
-let html = readFileSync(htmlPath, 'utf8')
-html = html.replace('<head>', '<head>\n    <script src="/config.js"></script>')
-writeFileSync(htmlPath, html)
 
 console.log(`\nweb bundle ready: ${dist}`)
 console.log('serve with: npm run preview:web   (plus: npm run start:server)')

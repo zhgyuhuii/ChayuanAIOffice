@@ -1,9 +1,8 @@
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // The editor dev servers live on 5173–5177 (see scripts/dev-shell.mjs);
-  // the host itself takes 5180 to stay out of their way.
-  server: {
-    port: 5180,
-  },
+  plugins: [react()],
+  // The host runs on 5180 in dev (editors keep 5173–5177, BFF 8787).
+  server: { port: 5180 },
 })
