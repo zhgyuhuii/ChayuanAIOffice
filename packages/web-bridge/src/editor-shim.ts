@@ -6,6 +6,9 @@
  */
 
 import { BridgeClient } from './client.js'
+import { installDocsShim } from './editors/docs-shim.js'
+import { installPdfShim } from './editors/pdf-shim.js'
+import { installSheetsShim, installSlidesShim } from './editors/generic-shim.js'
 
 const client = new BridgeClient()
 
@@ -106,16 +109,18 @@ function installMarkdownShim(): void {
 // ── dispatch by editor path ──────────────────────────────────────────────────
 
 function alreadyElectron(): boolean {
-  return typeof (window as unknown as Record<string, unknown>).markdownApi !== 'undefined'
+  const w = window as unknown as Record<string, unknown>
+  return w.markdownApi !== undefined || w.desktop !== undefined || w.pdfApi !== undefined || w.desktopApi !== undefined || w.slidesApi !== undefined
 }
 
 export function installEditorShims(): void {
   if (alreadyElectron()) return
   const path = location.pathname
-  if (/\/editors\/markdown\//.test(path) || /\/markdown\//.test(path)) installMarkdownShim()
-  // docs/sheets/slides/pdf shims arrive with batches 2–4; their renderers
-  // boot with `window.*` undefined and their preload-typed calls no-op the
-  // same way they do in standalone dev — only the file channel differs.
+  if (/\/editors\/markdown\//.test(path)) installMarkdownShim()
+  else if (/\/editors\/docs\//.test(path)) installDocsShim(client)
+  else if (/\/editors\/pdf\//.test(path)) installPdfShim(client)
+  else if (/\/editors\/sheets\//.test(path)) installSheetsShim(client)
+  else if (/\/editors\/slides\//.test(path)) installSlidesShim(client)
 }
 
 if (typeof window !== 'undefined') installEditorShims()
