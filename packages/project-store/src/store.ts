@@ -1,7 +1,7 @@
 /**
  * project-store core implementation
  *
- * Storage layout (baseDir = userData/projects/):
+ * Storage layout (area root = userData/projects/ on the local track):
  *   index.json
  *   <project-id>/
  *     project.json
@@ -16,18 +16,9 @@
  */
 
 import { createHash } from 'node:crypto'
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  renameSync,
-  statSync,
-  unlinkSync,
-  writeFileSync,
-  readdirSync,
-} from 'node:fs'
+import { existsSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
+import { openLocalArea, type StorageArea } from '@genoffice/storage-adapter'
 import type {
   ChatMeta,
   ChatMessage,
@@ -57,46 +48,39 @@ function nowIso(): string {
   return new Date().toISOString()
 }
 
-function ensureDir(dir: string): void {
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-}
-
-function readJson<T>(filePath: string): T | null {
-  try {
-    if (!existsSync(filePath)) return null
-    return JSON.parse(readFileSync(filePath, 'utf8')) as T
-  } catch {
-    return null
-  }
-}
-
-/** Atomic write: write to .tmp then rename, so a process interruption can't leave half-written JSON */
-function writeJson(filePath: string, data: unknown): void {
-  ensureDir(dirname(filePath))
-  const tmpPath = `${filePath}.tmp`
-  writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8')
-  renameSync(tmpPath, filePath)
-}
-
 // ────────────────────────────────────────────────────────────
 // ProjectStore class
 // ────────────────────────────────────────────────────────────
 
 export class ProjectStore {
-  private baseDir: string
+  private area: StorageArea
 
-  constructor(userDataPath: string) {
-    this.baseDir = join(userDataPath, 'projects')
+  /**
+   * Track injection (plan v2.1, decision #17): the store lives inside a
+   * StorageArea. Passing a plain userData path keeps the legacy local layout
+   * (<userData>/projects/); passing a StorageArea lets the host decide the
+   * track (local today; cloud/embedded arrive with the BFF phases).
+   */
+  constructor(userDataPathOrArea: string | StorageArea) {
+    this.area =
+      typeof userDataPathOrArea === 'string'
+        ? openLocalArea({ rootDir: join(userDataPathOrArea, 'projects') })
+        : userDataPathOrArea
   }
 
-  // ── Path helpers ──────────────────────────────────────────
+  /** The area this store is bound to (diagnostics / host bookkeeping). */
+  get storageArea(): StorageArea {
+    return this.area
+  }
+
+  // ── Path helpers (relative to the area root) ─────────────
 
   private indexPath(): string {
-    return join(this.baseDir, 'index.json')
+    return 'index.json'
   }
 
   private projectDir(projectId: string): string {
-    return join(this.baseDir, projectId)
+    return projectId
   }
 
   private projectJsonPath(projectId: string): string {
@@ -109,6 +93,29 @@ export class ProjectStore {
 
   private chatPath(projectId: string, chatId: string): string {
     return join(this.chatsDir(projectId), `${chatId}.jsonl`)
+  }
+
+  // ── Area fs helpers ──────────────────────────────────────
+
+  private ensureDir(dir: string): void {
+    if (!this.area.fs.existsSync(dir)) this.area.fs.mkdirSync(dir)
+  }
+
+  private readJson<T>(path: string): T | null {
+    try {
+      if (!this.area.fs.existsSync(path)) return null
+      return JSON.parse(this.area.fs.readFileSync(path)) as T
+    } catch {
+      return null
+    }
+  }
+
+  /** Atomic write: write to .tmp then rename, so a process interruption can't leave half-written JSON */
+  private writeJson(path: string, data: unknown): void {
+    this.ensureDir(dirname(path))
+    const tmpPath = `${path}.tmp`
+    this.area.fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2))
+    this.area.fs.renameSync(tmpPath, path)
   }
 
   // ── seq counters (in-memory cache, initialized from JSONL line count on first read) ──
@@ -139,22 +146,22 @@ export class ProjectStore {
   // ── Index read/write ──────────────────────────────────────
 
   private readIndex(): ProjectIndex {
-    return readJson<ProjectIndex>(this.indexPath()) ?? { projects: [], fileMap: {} }
+    return this.readJson<ProjectIndex>(this.indexPath()) ?? { projects: [], fileMap: {} }
   }
 
   private writeIndex(index: ProjectIndex): void {
-    ensureDir(this.baseDir)
-    writeJson(this.indexPath(), index)
+    this.ensureDir("")
+    this.writeJson(this.indexPath(), index)
   }
 
   // ── Project read/write ────────────────────────────────────
 
   private readProject(projectId: string): ProjectData | null {
-    return readJson<ProjectData>(this.projectJsonPath(projectId))
+    return this.readJson<ProjectData>(this.projectJsonPath(projectId))
   }
 
   private writeProject(data: ProjectData): void {
-    writeJson(this.projectJsonPath(data.id), data)
+    this.writeJson(this.projectJsonPath(data.id), data)
   }
 
   // ────────────────────────────────────────────────────────────
@@ -177,7 +184,7 @@ export class ProjectStore {
       updatedAt: now,
       files: [],
     }
-    ensureDir(this.projectDir('default'))
+    this.ensureDir(this.projectDir('default'))
     this.writeProject(data)
 
     const index = this.readIndex()
@@ -286,9 +293,9 @@ export class ProjectStore {
     this.pendingFirstWrite.delete(key)
     if (!buf || buf.length === 0) return
     try {
-      ensureDir(this.chatsDir(projectId))
+      this.ensureDir(this.chatsDir(projectId))
       const lines = buf.map((r) => JSON.stringify(r) + '\n').join('')
-      appendFileSync(this.chatPath(projectId, chatId), lines, 'utf8')
+      this.area.fs.appendFileSync(this.chatPath(projectId, chatId), lines)
     } catch (err) {
       console.warn('[project-store] flushPending failed:', err)
     }
@@ -325,17 +332,17 @@ export class ProjectStore {
       if (msg.attachments !== undefined) record.attachments = msg.attachments
 
       const key = this.seqKey(projectId, chatId)
-      if (msg.role !== 'assistant' && !existsSync(this.chatPath(projectId, chatId))) {
+      if (msg.role !== 'assistant' && !this.area.fs.existsSync(this.chatPath(projectId, chatId))) {
         const buf = this.pendingFirstWrite.get(key) ?? []
         buf.push(record)
         this.pendingFirstWrite.set(key, buf)
         return
       }
-      ensureDir(this.chatsDir(projectId))
+      this.ensureDir(this.chatsDir(projectId))
       const buf = this.pendingFirstWrite.get(key) ?? []
       this.pendingFirstWrite.delete(key)
       const lines = [...buf, record].map((r) => JSON.stringify(r) + '\n').join('')
-      appendFileSync(this.chatPath(projectId, chatId), lines, 'utf8')
+      this.area.fs.appendFileSync(this.chatPath(projectId, chatId), lines)
     } catch (err) {
       console.warn('[project-store] appendChatMessage failed:', err)
     }
@@ -350,8 +357,8 @@ export class ProjectStore {
     const filePath = this.chatPath(projectId, chatId)
     const messages: ChatMessage[] = [...pending]
     try {
-      if (existsSync(filePath)) {
-        const raw = readFileSync(filePath, 'utf8')
+      if (this.area.fs.existsSync(filePath)) {
+        const raw = this.area.fs.readFileSync(filePath)
         const lines = raw.split('\n').filter((l) => l.trim())
         for (const line of lines) {
           try {
@@ -381,17 +388,17 @@ export class ProjectStore {
    */
   listChats(projectId: string): ChatMeta[] {
     const dir = this.chatsDir(projectId)
-    if (!existsSync(dir)) return []
+    if (!this.area.fs.existsSync(dir)) return []
     try {
-      const files = readdirSync(dir).filter((f) => f.endsWith('.jsonl'))
+      const files = this.area.fs.readdirSync(dir).filter((f) => f.endsWith('.jsonl'))
       return files.map((f) => {
         const chatId = f.replace(/\.jsonl$/, '')
         const fullPath = join(dir, f)
         let updatedAt = nowIso()
         let approxCount = 0
         try {
-          const st = statSync(fullPath)
-          updatedAt = st.mtime.toISOString()
+          const st = this.area.fs.statSync(fullPath)
+          updatedAt = new Date(st.mtimeMs).toISOString()
           // Estimate: assume an average of 120 bytes per line
           approxCount = Math.round(st.size / 120)
         } catch {
@@ -422,17 +429,17 @@ export class ProjectStore {
     const newPath = this.chatPath(toProjectId, toId)
     let mergedMaxSeq: number | undefined
     try {
-      if (existsSync(oldPath)) {
-        ensureDir(dirname(newPath))
-        if (!existsSync(newPath)) {
-          renameSync(oldPath, newPath)
+      if (this.area.fs.existsSync(oldPath)) {
+        this.ensureDir(dirname(newPath))
+        if (!this.area.fs.existsSync(newPath)) {
+          this.area.fs.renameSync(oldPath, newPath)
         } else {
           const existing = this.loadChat(toProjectId, toId, 10_000)
           let seq = existing.reduce((m, msg) => Math.max(m, msg.seq), -1) + 1
           const moved = this.loadChat(fromProjectId, fromId, 10_000)
           const lines = moved.map((m) => JSON.stringify({ ...m, seq: seq++ }) + '\n').join('')
-          if (lines) appendFileSync(newPath, lines, 'utf8')
-          unlinkSync(oldPath)
+          if (lines) this.area.fs.appendFileSync(newPath, lines)
+          this.area.fs.unlinkSync(oldPath)
           mergedMaxSeq = seq - 1
         }
       }
@@ -545,7 +552,7 @@ export class ProjectStore {
       updatedAt: now,
       files: [],
     }
-    ensureDir(this.projectDir(id))
+    this.ensureDir(this.projectDir(id))
     this.writeProject(data)
     const index = this.readIndex()
     // Append at the end (default always stays first)
@@ -591,11 +598,11 @@ export class ProjectStore {
     // 1. Soft-delete the directory
     const src = this.projectDir(id)
     const ts = Date.now()
-    const trashDir = join(this.baseDir, '.trash')
-    ensureDir(trashDir)
+    const trashDir = '.trash'
+    this.ensureDir(trashDir)
     const dst = join(trashDir, `${id}-${ts}`)
     try {
-      if (existsSync(src)) renameSync(src, dst)
+      if (this.area.fs.existsSync(src)) this.area.fs.renameSync(src, dst)
     } catch (err) {
       console.warn('[project-store] deleteProject rename to trash failed:', err)
     }
@@ -667,9 +674,9 @@ export class ProjectStore {
     const srcChatPath = this.chatPath(fromProjectId, chatId)
     const dstChatPath = this.chatPath(targetProjectId, chatId)
     try {
-      if (existsSync(srcChatPath)) {
-        ensureDir(this.chatsDir(targetProjectId))
-        renameSync(srcChatPath, dstChatPath)
+      if (this.area.fs.existsSync(srcChatPath)) {
+        this.ensureDir(this.chatsDir(targetProjectId))
+        this.area.fs.renameSync(srcChatPath, dstChatPath)
       }
     } catch (err) {
       console.warn('[project-store] moveFileToProject chat rename failed:', err)
