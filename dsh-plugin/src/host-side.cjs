@@ -23,7 +23,7 @@ const net = require('node:net')
 const path = require('node:path')
 const fs = require('node:fs')
 
-const SIDECAAR_DIRNAME = 'embedded' // filled by the phase-2 packaging step
+const EMBEDDED_DIRNAME = 'embedded' // filled by the phase-2 packaging step
 const ENTRY = 'apps/server/src/main.ts'
 const START_TIMEOUT_MS = 30_000
 const PROBE_INTERVAL_MS = 400
@@ -72,7 +72,7 @@ async function start(ctx) {
   const runtimeDir = ctx.runtimeDir
   fs.mkdirSync(runtimeDir, { recursive: true })
 
-  const sidecarRoot = path.join(pluginDir, SIDECAAR_DIRNAME)
+  const sidecarRoot = path.join(pluginDir, EMBEDDED_DIRNAME)
   if (!fs.existsSync(path.join(sidecarRoot, ENTRY))) {
     throw new Error(
       `[genoffice-shell] embedded sidecar missing at ${sidecarRoot} — run the phase-2 packaging step`,
@@ -80,7 +80,7 @@ async function start(ctx) {
   }
 
   const port = await freePort()
-  const child = spawn(process.execPath, ['--experimental-strip-types', ENTRY], {
+  const child = spawn(process.execPath, ['--import', 'tsx', ENTRY], {
     cwd: sidecarRoot,
     env: {
       ...process.env,

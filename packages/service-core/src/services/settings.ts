@@ -35,7 +35,9 @@ function readAll(context: ServiceContext): Record<string, unknown> {
 }
 
 function writeAll(context: ServiceContext, values: Record<string, unknown>): void {
-  context.storage.defaultArea().fs.writeFileSync(SETTINGS_PATH, JSON.stringify(values, null, 2))
+  const fs = context.storage.defaultArea().fs
+  if (!fs.existsSync('')) fs.mkdirSync('')
+  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(values, null, 2))
 }
 
 export function settingsService() {

@@ -9,8 +9,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "node --watch --experimental-strip-types src/main.ts",
-    "start": "node --experimental-strip-types src/main.ts",
+    "dev": "node --watch --import tsx src/main.ts",
+    "start": "node --import tsx src/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -23,6 +23,7 @@
   "devDependencies": {
     "typescript": "^5.9.3",
     "vitest": "^4.1.0",
-    "@types/ws": "^8.5.10"
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.19.2"
   }
 }

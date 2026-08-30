@@ -10,6 +10,7 @@
  * only configuration differs (auth on/off, storage roots).
  */
 
+import { resolve } from 'node:path'
 import Fastify, { type FastifyInstance } from 'fastify'
 import type { ServiceCore, ServiceDefinition } from '@genoffice/service-core'
 import { createCore } from '@genoffice/service-core'
@@ -44,9 +45,8 @@ export function defaultServices() {
 }
 
 export function buildServer(options: ServerOptions = {}): BuiltServer {
-  const area =
-    options.area ??
-    openLocalArea({ rootDir: (options.dataDir ?? './data').replace(/\/$/, '') + '/area' })
+  const dataDir = (options.dataDir ?? './data').replace(/\/$/, '')
+  const area = options.area ?? openLocalArea({ rootDir: resolve(dataDir, 'area') })
 
   const services = { ...defaultServices(), ...options.services }
   const core = createCore(services, { storage: { defaultArea: () => area } })

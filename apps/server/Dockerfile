@@ -27,4 +27,4 @@ ENV NODE_ENV=production \
 VOLUME ["/data"]
 
 EXPOSE 8787
-CMD ["node", "--experimental-strip-types", "apps/server/src/main.ts"]
+CMD ["node", "--import", "tsx", "apps/server/src/main.ts"]

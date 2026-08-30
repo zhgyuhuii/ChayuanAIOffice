@@ -1,0 +1,25 @@
+{
+  "name": "@genoffice/service-core",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Single-source business logic layer hosted by Electron main (in-process) and the web BFF (Fastify) alike",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@genoffice/project-store": "*",
+    "@genoffice/storage-adapter": "*",
+    "yjs": "^13.6.20"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

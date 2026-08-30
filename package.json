@@ -37,7 +37,17 @@
     "licenses": "node tools/check-licenses.mjs",
     "dist:mac": "npm run notices && npm run build:all && npm run native:build:universal -w @genoffice/sheets && npm run dist:mac -w @genoffice/shell",
     "dist:win": "npm run notices && npm run build:all && npm run dist:win -w @genoffice/shell",
-    "dist:linux": "npm run notices && npm run build:all && npm run dist:linux -w @genoffice/shell"
+    "dist:linux": "npm run notices && npm run build:all && npm run dist:linux -w @genoffice/shell",
+    "dev:desktop": "npm run dev",
+    "dev:server": "npm run dev -w @genoffice/server",
+    "dev:web": "node scripts/dev-web.mjs",
+    "start:server": "node --import tsx apps/server/src/main.ts",
+    "build:web": "node scripts/build-web.mjs",
+    "preview:web": "node scripts/serve-web.mjs",
+    "dist:server": "npm run notices && docker build -f apps/server/Dockerfile -t genoffice-server:latest .",
+    "package:embedded": "node scripts/package-embedded.mjs",
+    "package:plugin": "node scripts/package-plugin.mjs",
+    "dist:chatop": "node scripts/dist-chatop.mjs"
   },
   "dependencies": {
     "ws": "^8.21.1"
