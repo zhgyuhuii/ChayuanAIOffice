@@ -22,6 +22,10 @@ function baseState() {
 
 export function installSheetsShim(client: BridgeClient): void {
   let consumed = false
+  /** sidecar sessionId → host file id (for in-place saves) */
+  const fileIds = new Map<string, string>()
+  const fileIdFor = (sid: string) => fileIds.get(sid) ?? null
+  const setFileId = (sid: string, fid: string) => fileIds.set(sid, fid)
 
   const impl = {
     ...baseState(),
@@ -37,7 +41,8 @@ export function installSheetsShim(client: BridgeClient): void {
         base64: doc.base64,
         name: p.name,
         locale: localStorage.getItem('genoffice.lang') ?? 'zh',
-      })) as { opened: Record<string, unknown> }
+      })) as { opened: Record<string, unknown> & { sessionId?: string } }
+      if (typeof res.opened.sessionId === 'string') setFileId(res.opened.sessionId, p.fileId)
       return {
         ...res.opened,
         path: `webfs:${p.fileId}:${p.name}`,
@@ -68,6 +73,52 @@ export function installSheetsShim(client: BridgeClient): void {
     async closeWorkbook(sessionId: string) {
       return client.call('rpc', 'xlsx.command', { command: 'close', sessionId })
     },
+
+    /** Save closed loop: the shared pipeline composes bytes; write in place / pick a target. */
+    async saveWorkbook(request: Record<string, unknown> & { sessionId: string; mode?: string }) {
+      let fileId = fileIdFor(request.sessionId)
+      const res = (await client.call('rpc', 'xlsx.saveWorkbookBytes', {
+        sessionId: request.sessionId,
+        request,
+      })) as { base64: string; touchedEntries?: unknown }
+      if (request.mode === 'save-as' || !fileId) {
+        const created = (await client.call('file', 'fs.saveAs', res.base64, '工作簿.xlsx')) as
+          | { id: string; name: string }
+          | null
+        if (!created) return { canceled: true as const }
+        setFileId(request.sessionId, created.id)
+        await client.call('local', 'recent.record', created.id, created.name, 'sheets')
+        await client.call('local', 'tab.setTitle', created.id, created.name)
+        fileId = created.id
+      } else {
+        await client.call('file', 'fs.write', fileId, res.base64)
+      }
+      // 保存后以新字节重开（与主进程“换新 session”语义等价），返回严格 schema 的 file
+      const reopened = (await client.call('rpc', 'xlsx.openWorkbookBytes', {
+        base64: res.base64,
+        name: 'saved.xlsx',
+        locale: localStorage.getItem('genoffice.lang') ?? 'zh',
+      })) as { opened: Record<string, unknown> & { sessionId?: string } }
+      const newSid = typeof reopened.opened.sessionId === 'string' ? reopened.opened.sessionId : request.sessionId
+      if (newSid !== request.sessionId) {
+        const prev = fileIdFor(request.sessionId)
+        if (prev) setFileId(newSid, prev)
+        await client.call('rpc', 'xlsx.command', { command: 'close', sessionId: request.sessionId }).catch(() => undefined)
+      }
+      return {
+        canceled: false as const,
+        file: {
+          ...reopened.opened,
+          path: fileId ? `webfs:${fileId}:saved.xlsx` : '',
+          sha256: '',
+          readOnly: false,
+          needsSaveAs: false,
+          restoredFromRecovery: false,
+          automaticRecoveryDisabled: false,
+        },
+        touchedEntries: (res.touchedEntries as string[]) ?? [],
+      }
+    },
   }
 
   ;(window as unknown as Record<string, unknown>).desktopApi = makeShim(client, {
@@ -78,8 +129,68 @@ export function installSheetsShim(client: BridgeClient): void {
 }
 
 export function installSlidesShim(client: BridgeClient): void {
+  let consumed = false
+  let session: { sessionId: string; name: string; fileId: string | null } | null = null
+
+  const impl = {
+    ...baseState(),
+
+    /** Batch-4 view closed loop: open + render through the server pipeline. */
+    async consumePendingOpen(fitWidthPx: number) {
+      if (consumed) return null
+      consumed = true
+      const p = pendingFromHash()
+      if (!p) return null
+      const doc = (await client.call('file', 'fs.read', p.fileId)) as { base64: string }
+      const res = (await client.call('rpc', 'pptx.openBytes', {
+        base64: doc.base64,
+        name: p.name,
+        fitWidthPx,
+      })) as { sessionId: string; slides: unknown[]; size: unknown; defaultFont?: string }
+      session = { sessionId: res.sessionId, name: p.name, fileId: p.fileId }
+      return { path: `webfs:${p.fileId}:${p.name}`, slides: res.slides, size: res.size, defaultFont: res.defaultFont }
+    },
+    async openPptxPath(path: string, fitWidthPx: number) {
+      const m = /^webfs:([^:]+):(.*)$/.exec(path)
+      if (!m) throw new Error(`web shim 只能打开通过宿主选择的文件：${path}`)
+      const doc = (await client.call('file', 'fs.read', m[1])) as { base64: string }
+      const res = (await client.call('rpc', 'pptx.openBytes', {
+        base64: doc.base64,
+        name: m[2],
+        fitWidthPx,
+      })) as { sessionId: string; slides: unknown[]; size: unknown; defaultFont?: string }
+      session = { sessionId: res.sessionId, name: m[2], fileId: m[1] }
+      return { path, slides: res.slides, size: res.size, defaultFont: res.defaultFont }
+    },
+    /** Serialize the server-side model and write it back in place / via picker. */
+    async save() {
+      if (!session) return { ok: false, error: 'no file open' }
+      const res = (await client.call('rpc', 'pptx.saveBytes', session.sessionId)) as { base64: string }
+      if (session.fileId) {
+        await client.call('file', 'fs.write', session.fileId, res.base64)
+        return { ok: true, path: `webfs:${session.fileId}:${session.name}` }
+      }
+      const created = (await client.call('file', 'fs.saveAs', res.base64, session.name)) as { id: string; name: string } | null
+      if (!created) return { ok: false, error: 'canceled' }
+      session = { ...session, fileId: created.id, name: created.name }
+      await client.call('local', 'recent.record', created.id, created.name, 'slides')
+      await client.call('local', 'tab.setTitle', created.id, created.name)
+      return { ok: true, path: `webfs:${created.id}:${created.name}` }
+    },
+    async saveAs(defaultName: string) {
+      if (!session) return { ok: false, error: 'no file open' }
+      const res = (await client.call('rpc', 'pptx.saveBytes', session.sessionId)) as { base64: string }
+      const created = (await client.call('file', 'fs.saveAs', res.base64, `${defaultName}.pptx`)) as { id: string; name: string } | null
+      if (!created) return { ok: false }
+      session = { ...session, fileId: created.id, name: created.name }
+      await client.call('local', 'recent.record', created.id, created.name, 'slides')
+      await client.call('local', 'tab.setTitle', created.id, created.name)
+      return { ok: true, path: `webfs:${created.id}:${created.name}` }
+    },
+  }
+
   ;(window as unknown as Record<string, unknown>).slidesApi = makeShim(client, {
-    impl: baseState() as unknown as Record<string, (...args: never[]) => unknown>,
+    impl: impl as unknown as Record<string, (...args: never[]) => unknown>,
     prefix: 'slides',
   })
   ;(window as unknown as Record<string, unknown>).desktop = makeShim(client, { impl: {}, prefix: 'slides.desktop' })

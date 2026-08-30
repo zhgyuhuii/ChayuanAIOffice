@@ -82,6 +82,8 @@ import {
 import { parseFileToText } from '@genoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '../gateway/xlsx-gateway'
 import { readArchiveEntryText, saveWorkbookViaSidecar } from '../gateway/xlsx-package-io'
+import { saveWorkbookPlan } from './save-pipeline'
+export { saveWorkbookPlan }
 import { parsePivotDefinition } from '../gateway/xlsx-pivot'
 import type { SheetEditPlan } from '../gateway/xlsx-sheets'
 import type {
@@ -1047,35 +1049,8 @@ const tMain = createI18n({
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
   tMain(getUiLang(), key, params)
 
-interface SessionInfo {
-  readonly path: string
-  /// Byte-for-byte copy of the file as it was opened (in the OS temp dir).
-  /// Saves patch this snapshot rather than the live path, so an external
-  /// overwrite of the file can never corrupt the save base — and Save As
-  /// stays usable after one. Removed when the session closes.
-  readonly snapshotPath: string
-  /// Digest of the snapshot (== the file at open time).
-  readonly sha256: string
-  readonly sheetNames: ReadonlyMap<string, string>
-  readonly automaticRecoveryDisabled: boolean
-  /// Set when the session opened a converted copy (.xls/.csv import): the
-  /// first save routes through Save As, defaulting to this .xlsx path.
-  readonly suggestSaveAs?: string
-  /// The converted copy came from a CSV: the Save As dialog explains that
-  /// formatting requires .xlsx (CSV keeps values only).
-  readonly csvImport?: boolean
-  /// App-owned directory containing the converted CSV/XLS copy. Removed only
-  /// after the sidecar session and its independent snapshot are closed.
-  readonly importTempDir?: string
-  /// Set when the session opened a restored crash-recovery copy: the restore
-  /// prompt was the user's confirmation, so a plain Save silently writes back
-  /// to this original path (no Save As detour).
-  readonly restoreTarget?: string
-  /// Digest of the original file at restore time — guards the silent
-  /// write-back against external modification, mirroring the sha256 check on
-  /// the session's own path.
-  readonly restoreTargetSha?: string
-}
+import type { SessionInfo } from './session-info'
+export type { SessionInfo }
 
 // ---- runtime configuration (paths differ when bundled into the shell) ----
 
@@ -2205,7 +2180,7 @@ export function registerSheetsIpc(): void {
       }
     }
 
-    const mutation = await writeWorkbookTo(client, session, request, targetPath)
+    const mutation = await saveWorkbookPlan(client, session, request, targetPath)
 
     // The sidecar session still streams the pre-save bytes; swap it for a
     // fresh session over the saved file so future reads match the disk state.
@@ -2268,7 +2243,7 @@ export function registerSheetsIpc(): void {
     if (session.automaticRecoveryDisabled) return { ok: false }
     try {
       await mkdir(recoveryDir(), { recursive: true })
-      await writeWorkbookTo(entry.client, session, request, recoveryPathFor(session.path))
+      await saveWorkbookPlan(entry.client, session, request, recoveryPathFor(session.path))
       return { ok: true }
     } catch (error) {
       console.warn('[sheets] recovery copy failed:', error)
@@ -2736,265 +2711,6 @@ export function resolveSheetsSessionPath(senderId: number, sessionId: string): s
  * the sidecar. Split out of the save handler so a crash-recovery copy can reuse the
  * exact same pipeline with a different targetPath.
  */
-async function writeWorkbookTo(
-  client: XlsxSidecarClient,
-  session: SessionInfo,
-  request: WorkbookSaveRequest,
-  targetPath: string,
-): Promise<Awaited<ReturnType<typeof saveWorkbookViaSidecar>>> {
-  // Sheet ops resolve first: added sheets have Univer ids the session map
-  // doesn't know, so cell edits into them resolve through the op's name.
-  const addedSheetNames = new Map<string, string>()
-  // Added sheet id → file name of the sheet whose part seeds the new part.
-  const duplicateSources = new Map<string, string>()
-  const renames: { sheetName: string; newName: string }[] = []
-  const removals: string[] = []
-  const hiddenChanges: { sheetName: string; hidden: boolean }[] = []
-  let orderChanged = false
-  for (const op of request.sheetOps) {
-    if (op.kind === 'add-sheet') {
-      addedSheetNames.set(op.sheetId, op.name)
-      continue
-    }
-    if (op.kind === 'duplicate-sheet') {
-      // The renderer resolves duplicate chains to a sheet the file knows,
-      // so the source must be in the session map.
-      const sourceName = session.sheetNames.get(op.sourceSheetId)
-      if (!sourceName) throw new Error(`Unknown duplicate source ${op.sourceSheetId}.`)
-      addedSheetNames.set(op.sheetId, op.name)
-      duplicateSources.set(op.sheetId, sourceName)
-      continue
-    }
-    if (op.kind === 'reorder-sheets') {
-      orderChanged = true
-      continue
-    }
-    const sheetName = addedSheetNames.get(op.sheetId) ?? session.sheetNames.get(op.sheetId)
-    if (!sheetName) throw new Error(`Unknown worksheet ${op.sheetId}.`)
-    if (op.kind === 'rename-sheet') renames.push({ sheetName, newName: op.newName })
-    else if (op.kind === 'set-sheet-hidden') {
-      hiddenChanges.push({ sheetName, hidden: op.hidden })
-    } else removals.push(sheetName)
-  }
-  const renameByOriginal = new Map(renames.map((rename) => [rename.sheetName, rename.newName]))
-  const resolveSheetName = (sheetId: string): string => {
-    const sheetName = addedSheetNames.get(sheetId) ?? session.sheetNames.get(sheetId)
-    if (!sheetName) throw new Error(`Unknown worksheet ${sheetId}.`)
-    return sheetName
-  }
-  let sheetPlan: SheetEditPlan | undefined
-  if (request.sheetOps.length > 0) {
-    sheetPlan = {
-      renames,
-      additions: [...addedSheetNames].map(([sheetId, name]) => ({
-        name,
-        sourceSheetName: duplicateSources.get(sheetId),
-      })),
-      removals,
-      hiddenChanges,
-      orderChanged,
-      order: request.sheetOrder.map((sheetId) => {
-        const original = resolveSheetName(sheetId)
-        return addedSheetNames.has(sheetId)
-          ? original
-          : (renameByOriginal.get(original) ?? original)
-      }),
-    }
-  }
-
-  const edits: CellEdit[] = request.edits.map((edit) => ({
-    sheetName: resolveSheetName(edit.sheetId),
-    row: edit.row,
-    column: edit.column,
-    writeValue: edit.writeValue,
-    cell: { value: edit.value, formula: edit.formula },
-    style: edit.style,
-    rich: edit.rich,
-    styleReset: edit.styleReset,
-  }))
-  const bulkConstantFills = (request.bulkConstantFills ?? []).map(({ sheetId, ...fill }) => ({
-    sheetName: resolveSheetName(sheetId),
-    ...fill,
-  }))
-  const opsBySheet = new Map<string, SheetStructuralOps['ops'][number][]>()
-  for (const op of request.structuralOps) {
-    const sheetName = resolveSheetName(op.sheetId)
-    const sheetOps = opsBySheet.get(sheetName) ?? []
-    if ('range' in op) {
-      sheetOps.push({ kind: op.kind, range: op.range })
-    } else if ('size' in op) {
-      sheetOps.push({ kind: op.kind, start: op.start, end: op.end, size: op.size })
-    } else if ('level' in op) {
-      sheetOps.push({
-        kind: op.kind,
-        start: op.start,
-        end: op.end,
-        level: op.level,
-        ...(op.collapsed === undefined ? {} : { collapsed: op.collapsed }),
-      })
-    } else if ('hidden' in op) {
-      sheetOps.push({ kind: op.kind, start: op.start, end: op.end, hidden: op.hidden })
-    } else if ('style' in op) {
-      sheetOps.push({ kind: op.kind, start: op.start, end: op.end, style: op.style })
-    } else if ('before' in op) {
-      sheetOps.push({ kind: op.kind, index: op.index, count: op.count, before: op.before })
-    } else {
-      sheetOps.push({ kind: op.kind, index: op.index, count: op.count })
-    }
-    opsBySheet.set(sheetName, sheetOps)
-  }
-  const structuralOps: SheetStructuralOps[] = [...opsBySheet].map(([sheetName, ops]) => ({
-    sheetName,
-    ops,
-  }))
-  const filterStates = request.filterStates.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    filter: state.filter,
-    hiddenRows: state.hiddenRows,
-    visibilityRange: state.visibilityRange,
-  }))
-  const linksBySheet = new Map<string, { row: number; column: number; target: string | null }[]>()
-  for (const link of request.hyperlinkEdits) {
-    const sheetName = resolveSheetName(link.sheetId)
-    const sheetLinks = linksBySheet.get(sheetName) ?? []
-    sheetLinks.push({ row: link.row, column: link.column, target: link.target })
-    linksBySheet.set(sheetName, sheetLinks)
-  }
-  const hyperlinkEdits = [...linksBySheet].map(([sheetName, links]) => ({
-    sheetName,
-    edits: links,
-  }))
-  const cfStates = request.cfStates.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    rules: state.rules,
-  }))
-  const dvStates = request.dvStates.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    rules: state.rules,
-  }))
-  const sheetProtections = request.sheetProtections.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    protected: state.protected,
-  }))
-  const protectedRangeStates = request.protectedRangeStates.map((state) => ({
-    sheetName: resolveSheetName(state.sheetId),
-    ranges: state.ranges,
-  }))
-  const pageSetupStates = request.pageSetupStates.map(({ sheetId, ...state }) => ({
-    sheetName: resolveSheetName(sheetId),
-    ...state,
-  }))
-  const noteStates = request.noteStates.map(({ sheetId, notes }) => ({
-    sheetName: resolveSheetName(sheetId),
-    notes,
-  }))
-  const visualAdditions = request.visualAdditions.map((addition) => ({
-    sheetName: resolveSheetName(addition.sheetId),
-    anchor: addition.anchor,
-    chart: addition.chart,
-    shape: addition.shape,
-    image: addition.image,
-  }))
-  const tableAdditions = request.tableAdditions.map((table) => ({
-    sheetName: resolveSheetName(table.sheetId),
-    area: table.area,
-    name: table.name,
-    columnNames: table.columnNames,
-    style: table.style,
-    bandedRows: table.bandedRows,
-  }))
-  const pivotAdditions = request.pivotAdditions.map((pivot) => ({
-    sheetName: resolveSheetName(pivot.sheetId),
-    sourceSheetName: resolveSheetName(pivot.sourceSheetId),
-    sourceArea: pivot.sourceArea,
-    location: pivot.location,
-    name: pivot.name,
-    fieldNames: pivot.fieldNames,
-    rowFieldIndices: pivot.rowFieldIndices,
-    columnFieldIndex: pivot.columnFieldIndex,
-    pageFieldIndices: pivot.pageFieldIndices,
-    rowItems: pivot.rowItems,
-    rowLevelItems: pivot.rowLevelItems,
-    rowLines: pivot.rowLines,
-    columnItems: pivot.columnItems,
-    columnFieldIndices: pivot.columnFieldIndices,
-    colLevelItems: pivot.colLevelItems,
-    colLines: pivot.colLines,
-    groupings: pivot.groupings,
-    filters: pivot.filters,
-    rowHiddenItems: pivot.rowHiddenItems,
-    colHiddenItems: pivot.colHiddenItems,
-    values: pivot.values,
-  }))
-  const sparklineAdditions = request.sparklineAdditions.map(({ sheetId, ...group }) => ({
-    sheetName: resolveSheetName(sheetId),
-    ...group,
-  }))
-  // Recalculated formula values: sheetId → file sheet name, the same
-  // resolution the cell edits use.
-  const formulaValuesBySheet = new Map<
-    string,
-    { row: number; column: number; value: string | number | boolean | null }[]
-  >()
-  for (const cell of request.formulaValues) {
-    const sheetName = resolveSheetName(cell.sheetId)
-    const list = formulaValuesBySheet.get(sheetName) ?? []
-    list.push({ row: cell.row, column: cell.column, value: cell.value })
-    formulaValuesBySheet.set(sheetName, list)
-  }
-  const formulaValues = [...formulaValuesBySheet].map(([sheetName, cells]) => ({
-    sheetName,
-    cells,
-  }))
-  const mutation = await saveWorkbookViaSidecar({
-    client,
-    // The snapshot, not the live path: the save base must be the bytes this
-    // session's pending edits were made against, regardless of what other
-    // programs did to the file since.
-    sourcePath: session.snapshotPath,
-    targetPath,
-    edits,
-    bulkConstantFills,
-    structuralOps,
-    chartEdits: request.chartEdits,
-    // Located by package-absolute drawingPath, so no sheet-name mapping.
-    visualEdits: request.visualEdits,
-    sheetPlan,
-    filterStates,
-    hyperlinkEdits,
-    cfStates,
-    dvStates,
-    sheetProtections,
-    definedNamesState: request.definedNamesState,
-    themeState: request.themeState,
-    workbookProtectionState: request.workbookProtectionState,
-    protectedRangeStates,
-    visualAdditions,
-    pageSetupStates,
-    noteStates,
-    tableAdditions,
-    pivotAdditions,
-    sparklineAdditions,
-    formulaValues,
-    pivotCacheRefreshPaths: request.pivotCacheRefreshPaths,
-    // Output-area expansion from layout growth: sheetId → sheet name; the part
-    // path is resolved by the gateway.
-    pivotRefreshUpdates: request.pivotRefreshUpdates.map((update) => ({
-      cachePath: update.cachePath,
-      sheetName: resolveSheetName(update.sheetId),
-      newOutputRef: update.newOutputRef,
-      ...(update.relayout === undefined
-        ? {}
-        : {
-            relayout: (({ sheetId: _sheetId, sourceSheetId, ...rest }) => ({
-              ...rest,
-              sourceSheetName: resolveSheetName(sourceSheetId),
-            }))(update.relayout),
-          }),
-    })),
-  })
-  return mutation
-}
 
 /** Copies the workbook into the temp snapshot dir; the copy is the session's
  * save base (see SessionInfo.snapshotPath). */

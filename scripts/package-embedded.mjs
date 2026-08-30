@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedded'))
 
-const PACKAGES = ['storage-adapter', 'service-core', 'project-store']
+const PACKAGES = ['storage-adapter', 'service-core', 'project-store', 'pptx-engine', 'pptx-render']
 
 function copyIfExists(from, to) {
   if (!existsSync(from)) throw new Error(`missing: ${from}`)
@@ -86,7 +86,7 @@ writeFileSync(
       type: 'module',
       workspaces: ['apps/*', 'packages/*'],
       overrides: rootPkg.overrides,
-      dependencies: { tsx: '^4.19.2' },
+      dependencies: { tsx: '^4.19.2', harfbuzzjs: '^1.5.0' },
     },
     null,
     2,
@@ -94,9 +94,13 @@ writeFileSync(
 )
 copyIfExists(join(root, 'tsconfig.base.json'), join(out, 'tsconfig.base.json'))
 
-// Server app + engine packages (sources only; deps install below)
+// Server app + engine packages (sources only; deps install below).
+// slides/sheets main sources ship too: the server's pptx + save pipelines
+// import them (render-build / save-pipeline / gateway modules are pure node).
 mkdirSync(join(out, 'apps'), { recursive: true })
 copyIfExists(join(root, 'apps', 'server'), join(out, 'apps', 'server'))
+copyIfExists(join(root, 'apps', 'slides', 'src'), join(out, 'apps', 'slides', 'src'))
+copyIfExists(join(root, 'apps', 'sheets', 'src'), join(out, 'apps', 'sheets', 'src'))
 mkdirSync(join(out, 'packages'), { recursive: true })
 for (const pkg of PACKAGES) {
   copyIfExists(join(root, 'packages', pkg), join(out, 'packages', pkg))

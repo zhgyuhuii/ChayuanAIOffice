@@ -20,9 +20,7 @@ function extToKind(name: string): TabKind | null {
   return null
 }
 
-const LATER_BATCH: Partial<Record<TabKind, string>> = {
-  slides: '打开已有演示将在第 4 批可用',
-}
+const LATER_BATCH: Partial<Record<TabKind, string>> = {}
 
 export async function openEditorFor(kind: TabKind, fileId: string, name: string): Promise<void> {
   const later = LATER_BATCH[kind]

@@ -192,6 +192,7 @@ import type {
 } from '../shared/ipc'
 import { buildPrintDocumentHtml } from '../shared/print-html'
 
+import { deckDefaultFont } from './render-build'
 import { tm } from './i18n-main'
 import { tiffToPng } from './tiff-decode'
 import {
@@ -816,17 +817,7 @@ async function saveDraftAfterGenerate(
 }
 
 /** Theme body (minor) Latin font: fallback shown in the ribbon font box when the selection has no text element. */
-function deckDefaultFont(opened: OpenedPptx): string | undefined {
-  try {
-    const slidePath = opened.archive.readPresentation().slidePaths[0]
-    if (!slidePath) return undefined
-    const themePath = opened.archive.resolveSlideChain(slidePath).themePath
-    const xml = themePath ? opened.archive.readText(themePath) : undefined
-    return xml ? parseTheme(xml).minorFont : undefined
-  } catch {
-    return undefined
-  }
-}
+
 
 function findEl(slide: Slide, sourceId: string): TextElement | undefined {
   const el = slide.elements.find((e) => matchesElementRef(e, sourceId))

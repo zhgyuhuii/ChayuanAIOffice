@@ -22,6 +22,8 @@ import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
 import { attachStatic } from './static.js'
+import { createPptxService } from './services/pptx.js'
+import { createSheetsSaveService } from './services/sheets-save.js'
 
 export interface ServerOptions {
   /** Data root for the local/embedded track (default: ./data) */
@@ -79,6 +81,47 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
       }
     },
   )
+
+  // pptx service: object API over the shared render pipeline
+  const pptx = createPptxService()
+  app.post('/rpc/pptx/openBytes', async (request, reply) => {
+    const args = (request.body as { args?: unknown[] } | null)?.args ?? []
+    try {
+      return { ok: true, result: await pptx.openBytes(args[0] as never) }
+    } catch (err) {
+      return reply.code(400).send({ ok: false, error: String(err) })
+    }
+  })
+  app.post('/rpc/pptx/saveBytes', async (request, reply) => {
+    const args = (request.body as { args?: unknown[] } | null)?.args ?? []
+    try {
+      return { ok: true, result: await pptx.saveBytes(args[0] as string) }
+    } catch (err) {
+      return reply.code(400).send({ ok: false, error: String(err) })
+    }
+  })
+  app.post('/rpc/pptx/close', async (request) => {
+    const args = (request.body as { args?: unknown[] } | null)?.args ?? []
+    await pptx.close(args[0] as string)
+    return { ok: true }
+  })
+  app.get('/rpc/pptx/status', async () => pptx.status())
+
+  // sheets save over the shared pipeline (needs the core xlsx service handle)
+  const sheetsSave = createSheetsSaveService({
+    xlsx: {
+      command: (req) => core.api.xlsx.command(req) as Promise<unknown>,
+      sessionInfo: (id) => core.api.xlsx.sessionInfo(id),
+    },
+  })
+  app.post('/rpc/xlsx/saveWorkbookBytes', async (request, reply) => {
+    const args = (request.body as { args?: unknown[] } | null)?.args ?? []
+    try {
+      return { ok: true, result: await sheetsSave.saveWorkbookBytes(args[0] as never) }
+    } catch (err) {
+      return reply.code(400).send({ ok: false, error: String(err) })
+    }
+  })
 
   attachAuthHooks(app, options.auth)
   attachWsGateway(app, core)

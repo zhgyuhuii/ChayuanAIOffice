@@ -33,6 +33,8 @@ export interface XlsxSidecarApi {
   }>
   /** Raw command passthrough (read_range, read_formula_cells, recalc_cells, read_media, close, …). */
   command(request: Record<string, unknown>): Promise<unknown>
+  /** Session bookkeeping for the shared save pipeline (snapshot path + sheet names). */
+  sessionInfo(sessionId: string): { snapshotPath: string; sheetNames: Record<string, string> }
   status(): { running: boolean; pid: number | null; openSessions: number }
 }
 
@@ -59,7 +61,7 @@ export function xlsxSidecarService(deps: { binaryPath?: string } = {}) {
       let lines: ReturnType<typeof createInterface> | null = null
       let stderr = ''
       const pending = new Map<string, Pending>()
-      const sessions = new Map<string, { snapshotPath: string }>()
+      const sessions = new Map<string, { snapshotPath: string; sheetNames: Record<string, string> }>()
 
       function ensureStarted(): ChildProcessWithoutNullStreams {
         if (child && !child.killed) return child
@@ -140,8 +142,11 @@ export function xlsxSidecarService(deps: { binaryPath?: string } = {}) {
             command: 'open',
             path: snapshotPath,
             locale: input.locale ?? 'zh',
-          })) as { sessionId: string }
-          sessions.set(opened.sessionId, { snapshotPath })
+          })) as { sessionId: string; sheets?: Array<{ id: string; name: string }> }
+          const sheets = (opened.sheets ?? []) as Array<{ id: string; name: string }>
+          const sheetNames: Record<string, string> = {}
+          for (const sh of sheets) sheetNames[sh.id] = sh.name
+          sessions.set(opened.sessionId, { snapshotPath, sheetNames })
           return { sessionId: opened.sessionId, snapshotDigest: digest, opened }
         },
         command(req) {
@@ -157,6 +162,11 @@ export function xlsxSidecarService(deps: { binaryPath?: string } = {}) {
               ? ARCHIVE_TIMEOUT_MS
               : REQUEST_TIMEOUT_MS
           return request(req, timeout)
+        },
+        sessionInfo(sessionId) {
+          const s = sessions.get(sessionId)
+          if (!s) throw new Error(`unknown xlsx session: ${sessionId}`)
+          return { snapshotPath: s.snapshotPath, sheetNames: s.sheetNames }
         },
         status() {
           return { running: !!child && !child.killed, pid: child?.pid ?? null, openSessions: sessions.size }
