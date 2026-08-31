@@ -13,6 +13,7 @@
 
 import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
@@ -62,8 +63,9 @@ for (const key of EDITORS) {
   const htmlPath = join(dist, 'editors', key, 'index.html')
   if (!existsSync(htmlPath)) continue
   let html = readFileSync(htmlPath, 'utf8')
+  const shimHash = createHash('sha256').update(readFileSync(join(dist, 'bridge-shim.js'))).digest('hex').slice(0, 12)
   if (!html.includes('bridge-shim.js')) {
-    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script src="../../bridge-shim.js"></script>')
+    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script src="../../bridge-shim.js?v=' + shimHash + '"></script>')
     writeFileSync(htmlPath, html)
   }
 }

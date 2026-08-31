@@ -54,6 +54,10 @@ export function attachStatic(app: FastifyInstance, root: string): void {
       file = existsSync(dirIndex) ? dirIndex : join(root, 'index.html')
     }
     reply.header('content-type', MIME[extname(file)] ?? 'application/octet-stream')
+    // html 与桥脚本必须总是最新（无 hash 的入口文件），其余可缓存
+    if (/\.html?$/.test(file) || file.endsWith('bridge-shim.js')) {
+      reply.header('cache-control', 'no-cache')
+    }
     reply.send(createReadStream(file))
   })
 }

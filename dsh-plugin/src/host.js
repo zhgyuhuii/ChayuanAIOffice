@@ -228,6 +228,10 @@ export function apply(ctx) {
         })
         const h = {}
         upstream.headers.forEach((v, k) => { h[k] = v })
+        // entry files (html / bridge shim) must never come from a stale cache
+        if (target.pathname === '/' || /\.html?$/.test(target.pathname) || target.pathname.endsWith('bridge-shim.js')) {
+          h['cache-control'] = 'no-cache'
+        }
         res.writeHead(upstream.status, h)
         if (upstream.body) {
           const reader = upstream.body.getReader()
