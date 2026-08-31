@@ -86,18 +86,52 @@ function domMenu(x: number, y: number, items: Array<{ label: string; onClick(): 
     el.style.cssText = 'padding:7px 12px;border-radius:5px;cursor:pointer;white-space:nowrap'
     el.addEventListener('mouseenter', () => (el.style.background = 'rgba(255,255,255,.08)'))
     el.addEventListener('mouseleave', () => (el.style.background = 'transparent'))
-    el.addEventListener('click', () => {
+    // pointerup 触发（比 click 早且不受 down/up 间元素移除影响）：真实点击 down→up
+    // 都落在项上（down 已被外部关闭逻辑排除），up 立即执行动作并收起。
+    el.addEventListener('pointerup', () => {
       closeDomMenu()
       item.onClick()
     })
     menu.appendChild(el)
   }
   document.body.appendChild(menu)
-  setTimeout(() => document.addEventListener('pointerdown', closeDomMenu, { once: true }), 0)
+
+  // 关闭：非捕获 pointerdown 且目标在菜单外（菜单内的 down 不关，让 up 完成选择）；
+  // Escape / 滚轮 / 窗口失焦同样收起。监听挂在 menu 的存活期，菜单移除即失效。
+  const onDown = (e: PointerEvent) => {
+    if (e.target instanceof Node && menu.contains(e.target)) return
+    closeDomMenu()
+  }
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeDomMenu()
+  }
+  const dismiss = () => closeDomMenu()
+  document.addEventListener('pointerdown', onDown, true)
+  document.addEventListener('keydown', onKey, true)
+  window.addEventListener('wheel', dismiss, { passive: true, capture: true })
+  window.addEventListener('blur', dismiss)
+  const cleanup = () => {
+    document.removeEventListener('pointerdown', onDown, true)
+    document.removeEventListener('keydown', onKey, true)
+    window.removeEventListener('wheel', dismiss, { capture: true } as EventListenerOptions)
+    window.removeEventListener('blur', dismiss)
+  }
+  ;(menu as unknown as { __goCleanup?: () => void }).__goCleanup = cleanup
+  // closeDomMenu 移除菜单时清理监听：借助 MutationObserver 兜底
+  const mo = new MutationObserver(() => {
+    if (!document.contains(menu)) {
+      cleanup()
+      mo.disconnect()
+    }
+  })
+  mo.observe(document.body, { childList: true, subtree: true })
 }
 
 function closeDomMenu(): void {
-  for (const m of [...document.querySelectorAll('[data-go-menu]')]) m.remove()
+  for (const m of [...document.querySelectorAll('[data-go-menu]')]) {
+    ;(m as unknown as { __goCleanup?: () => void }).__goCleanup?.()
+    m.remove()
+  }
 }
 
 const NEW_MENU: Array<{ label: string; kind: TabKind }> = [
