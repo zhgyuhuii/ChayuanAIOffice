@@ -30,7 +30,7 @@ export function makeShim(client: BridgeClient, spec: ShimSpec): Record<string, A
       // State getters (get*/list*/has*/count*) degrade to SAFE EMPTY values —
       // rejecting them stalls editor initialization awaits (docs booted to a
       // 0x0 edit surface this way). Action methods keep the structured reject.
-      if (/^(get|list|has|count|is)[A-Z]/.test(prop)) {
+      if (/^(get|list|has|count|is|notify|report)[A-Z]/.test(prop)) {
         return async () => null
       }
       return async () => {
