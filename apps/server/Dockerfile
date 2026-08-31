@@ -35,6 +35,9 @@ WORKDIR /app
 COPY --from=builder /repo/package.json package.json
 COPY --from=builder /repo/node_modules node_modules
 COPY --from=builder /repo/apps/server apps/server
+# slides/sheets main sources: the server's pptx + save pipelines import them
+COPY --from=builder /repo/apps/slides/src apps/slides/src
+COPY --from=builder /repo/apps/sheets/src apps/sheets/src
 COPY --from=builder /repo/packages packages
 COPY tsconfig.base.json ./
 COPY --from=builder /repo/dist/web dist/web

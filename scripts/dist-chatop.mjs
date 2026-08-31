@@ -34,7 +34,7 @@ execSync('node scripts/package-embedded.mjs', {
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 cpSync(join(root, 'dsh-plugin', 'embedded'), join(out, 'embedded'), { recursive: true })
-cpSync(join(root, 'dsh-plugin', 'src', 'host-side.cjs'), join(out, 'host-side.cjs'))
+// host-side 逻辑已并入 dist/host.js（宿主半内），不再单独分发
 
 writeFileSync(
   join(out, 'README.md'),
