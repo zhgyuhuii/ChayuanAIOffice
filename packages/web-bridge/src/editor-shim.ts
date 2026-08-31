@@ -108,7 +108,7 @@ function installMarkdownShim(): void {
     getTheme: async () => 'system' as const,
     onThemeChanged: () => () => undefined,
     onChromePressed: () => () => undefined,
-    getAiSettings: async () => null,
+    getAiSettings: async () => ({ provider: 'custom' as const, providers: {} }),
     aiStream: degrade('markdown.aiStream') as unknown as () => Promise<void>,
     aiStreamCancel: async () => undefined,
     onAiStream: () => () => undefined,

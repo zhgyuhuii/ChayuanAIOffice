@@ -73,6 +73,9 @@ export function installDocsShim(client: BridgeClient): void {
     async saveDocxNew(defaultName: string, data: ArrayBuffer): Promise<string | null> {
       return impl.saveDocxAs(defaultName, data)
     },
+    async getAiSettings() {
+      return { provider: 'custom' as const, providers: {} }
+    },
     async getLanguage(): Promise<string> {
       return (localStorage.getItem('genoffice.lang') as string) ?? 'zh'
     },
