@@ -13,6 +13,17 @@ registerBatch1Degradations()
 installShellShims()
 startBridgeHost()
 
+// WPS 式一行窗口让位（共识 v2.3）：chatop 形态下窗口按钮叠加在 TabBar 两端——
+// mac 交通灯占左 ~84px，win 三钮占右 ~138px，给标签条留出对应内边距。
+// 判定：宿主页在 chatop 窗口 iframe 内时（parent !== self）才让位，纯浏览器不偏移。
+if (window.parent !== window) {
+  const style = document.createElement('style')
+  const mac = /mac/i.test(navigator.platform || '')
+  const pad = mac ? 'padding-left: 84px;' : 'padding-right: 138px;'
+  style.textContent = `.tab-bar{${pad}}`
+  document.head.appendChild(style)
+}
+
 // Editor iframe layer: absolutely positioned over the shell's content area.
 const layer = document.createElement('div')
 layer.style.cssText = 'position:fixed;z-index:1;background:#fff;display:none'

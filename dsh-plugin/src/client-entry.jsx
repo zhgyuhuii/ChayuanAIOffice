@@ -1,14 +1,12 @@
 /**
  * genoffice — client 半：向察元桌面（chatop-shell）注册「GenOffice」应用。
  *
- * 机制：window.__chatop_shell__.registerDesktopApp({id,label,icon,order,comp})
- * （dsh-plugin/src/desktop/app-registry.js）。外壳缺席时静默 no-op + 低频
- * 重试（装载顺序不保证，对齐 chatop-kb）。窗口内容 = 指向本机 BFF origin
- * 的全尺寸 iframe（Web 宿主 + 五编辑器 + RPC/WS），origin 从 host 半的
- * /api/genoffice/status 取（sidecar 动态端口）。
- *
- * 两种形态同一链路：`dsh web` 与 chatop Electron 桌面（主窗口加载同一
- * dsh web origin）——Dock 图标与窗口自动在两边出现，无需 Electron 侧改动。
+ * chrome:'self'（WPS 式一行窗口，共识 v2.3）：应用自绘窗口控制——TabBar 在
+ * 应用 iframe 顶部一行，窗口按钮叠加在该行两端的空白处，与标签同行：
+ *   mac：左上交通灯（红黄绿）；win：右上 — □ ✕（✕ hover 红）。
+ * 平台按 navigator.platform（iframe 内即宿主 OS）。window-drag-handle class
+ * 是 chatop AppWindow 的拖拽约定（react-rnd dragHandleClassName）。
+ * 老外壳/无能力时 shell 缺 windows API → 回落默认标题栏，按钮不渲染。
  */
 import React, { useEffect, useState } from 'react'
 
@@ -27,7 +25,66 @@ const STATUS_TEXT = {
   failed: 'GenOffice 引擎启动失败（详见 dsh 日志）',
 }
 
-function GenOfficeApp() {
+const isMac = () => /mac/i.test(navigator.platform || '')
+
+/** win 三钮（— □ ✕） */
+function WinButtons({ shell, windowId, maximized }) {
+  const [hover, setHover] = React.useState(null)
+  const btn = (key, glyph, label, onClick, danger) => (
+    <button
+      key={key}
+      title={label}
+      onMouseEnter={() => setHover(key)}
+      onMouseLeave={() => setHover(null)}
+      onClick={onClick}
+      style={{
+        width: 46, height: '100%', border: 'none', cursor: 'pointer', font: '12px/1 system-ui',
+        color: hover === key ? (danger ? '#fff' : '#222') : '#ddd',
+        background: danger && hover === key ? '#e81123' : 'transparent',
+        display: 'grid', placeItems: 'center',
+      }}
+    >
+      {glyph}
+    </button>
+  )
+  return (
+    <div style={{ height: '100%', display: 'flex' }}>
+      {btn('min', '—', '最小化', () => shell.windows.minimize(windowId))}
+      {btn('max', maximized ? '❐' : '□', maximized ? '还原' : '最大化', () => shell.windows.toggleMaximize(windowId))}
+      {btn('close', '✕', '关闭', () => shell.windows.close(windowId), true)}
+    </div>
+  )
+}
+
+/** mac 交通灯（红黄绿） */
+function MacTrafficLights({ shell, windowId }) {
+  const [hover, setHover] = React.useState(null)
+  const dot = (key, color, glyph, label, onClick) => (
+    <button
+      key={key}
+      title={label}
+      onMouseEnter={() => setHover(key)}
+      onMouseLeave={() => setHover(null)}
+      onClick={onClick}
+      style={{
+        width: 12, height: 12, borderRadius: '50%', border: 'none', cursor: 'pointer',
+        background: hover ? color : 'rgba(255,255,255,0.22)',
+        color: 'rgba(0,0,0,0.55)', font: '9px/12px system-ui', display: 'grid', placeItems: 'center',
+      }}
+    >
+      {hover ? glyph : ''}
+    </button>
+  )
+  return (
+    <div style={{ height: '100%', display: 'flex', alignItems: 'center', gap: 8 }}>
+      {dot('close', '#ff5f57', '✕', '关闭', () => shell.windows.close(windowId))}
+      {dot('min', '#febc2e', '—', '最小化', () => shell.windows.minimize(windowId))}
+      {dot('max', '#28c840', '⤢', '全屏', () => shell.windows.toggleMaximize(windowId))}
+    </div>
+  )
+}
+
+function GenOfficeApp({ windowId, maximized }) {
   const [origin, setOrigin] = useState(null)
   const [status, setStatus] = useState('starting')
 
@@ -63,14 +120,8 @@ function GenOfficeApp() {
     return (
       <div
         style={{
-          height: '100%',
-          display: 'grid',
-          placeItems: 'center',
-          background: '#1e1f22',
-          color: '#b8b8b8',
-          font: '13px/1.6 system-ui, sans-serif',
-          textAlign: 'center',
-          padding: 24,
+          height: '100%', display: 'grid', placeItems: 'center', background: '#1e1f22',
+          color: '#b8b8b8', font: '13px/1.6 system-ui, sans-serif', textAlign: 'center', padding: 24,
         }}
       >
         <div>
@@ -81,19 +132,40 @@ function GenOfficeApp() {
     )
   }
 
+  const shell = typeof window !== 'undefined' ? window.__chatop_shell__ : null
+  const canChrome = !!(shell && shell.windows && windowId)
+
   return (
-    <iframe
-      src={origin}
-      title="GenOffice"
-      style={{
-        width: '100%',
-        height: '100%',
-        border: 'none',
-        display: 'block',
-        background: '#fff',
-      }}
-      allow="clipboard-read; clipboard-write"
-    />
+    <div style={{ position: 'relative', height: '100%', background: '#fff' }}>
+      <iframe
+        src={origin}
+        title="GenOffice"
+        style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: '#fff' }}
+        allow="clipboard-read; clipboard-write"
+      />
+      {canChrome && isMac() && (
+        <div
+          className="window-drag-handle"
+          style={{
+            position: 'absolute', top: 0, left: 0, height: 38, width: 84, display: 'flex',
+            alignItems: 'center', paddingLeft: 12, cursor: 'grab', userSelect: 'none',
+          }}
+        >
+          <MacTrafficLights shell={shell} windowId={windowId} />
+        </div>
+      )}
+      {canChrome && !isMac() && (
+        <div
+          className="window-drag-handle"
+          style={{ position: 'absolute', top: 0, left: 96, right: 142, height: 10, cursor: 'grab' }}
+        />
+      )}
+      {canChrome && !isMac() && (
+        <div style={{ position: 'absolute', top: 0, right: 0, height: 38 }}>
+          <WinButtons shell={shell} windowId={windowId} maximized={maximized} />
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -105,6 +177,7 @@ function tryRegister() {
       label: 'GenOffice',
       icon: ICON_URI,
       order: 52,
+      chrome: 'self', // WPS 式一行窗口：应用自绘控制按钮（老外壳自动回落默认标题栏）
       comp: React.createElement(GenOfficeApp),
     })
   }
@@ -118,7 +191,6 @@ export function apply() {
 }
 
 tryRegister()
-// 插件 client 与外壳 client 的装载顺序不保证：外壳缺席时低频重试注册
 let registerRetries = 0
 const registerTimer = setInterval(() => {
   registerRetries++
