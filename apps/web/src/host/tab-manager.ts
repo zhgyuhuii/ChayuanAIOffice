@@ -62,8 +62,17 @@ export class TabManager {
     const sync = () => {
       if (!this.layer) return
       const r = this.anchor!.getBoundingClientRect()
+      // The shell's TabBar overlays the content area from the top (its rect
+      // starts at 0); clamp the editor layer below it or the editor's own
+      // menu strip gets buried under the tab bar.
+      const bar = document.querySelector('.tab-bar')
+      const barBottom = bar ? bar.getBoundingClientRect().bottom : 0
+      const top = Math.max(r.top, barBottom)
       Object.assign(this.layer.style, {
-        top: `${r.top}px`, left: `${r.left}px`, width: `${r.width}px`, height: `${r.height}px`,
+        top: `${top}px`,
+        left: `${r.left}px`,
+        width: `${r.width}px`,
+        height: `${Math.max(0, r.bottom - top)}px`,
       })
     }
     sync()
