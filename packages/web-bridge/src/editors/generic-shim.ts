@@ -162,6 +162,15 @@ export function installSlidesShim(client: BridgeClient): void {
       session = { sessionId: res.sessionId, name: m[2], fileId: m[1] }
       return { path, slides: res.slides, size: res.size, defaultFont: res.defaultFont }
     },
+    // ── per-slide data: safe empty states (server animation/section engines land later) ──
+    async getAnimations(): Promise<unknown[]> { return [] },
+    async getComments(): Promise<unknown[]> { return [] },
+    async getNotes(): Promise<string> { return '' },
+    async getTransition(): Promise<null> { return null },
+    async getSections(): Promise<unknown[]> { return [] },
+    async getRecentFiles(): Promise<unknown[]> { return [] },
+    async isDirty(): Promise<boolean> { return false },
+
     /** New blank deck through the server pipeline (Electron slides:new-blank). */
     async newBlank(fitWidthPx: number) {
       const res = (await client.call('rpc', 'pptx.newBlank', { fitWidthPx })) as {
