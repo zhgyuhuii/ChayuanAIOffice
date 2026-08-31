@@ -47,14 +47,28 @@ export class TabManager {
   private layer: HTMLDivElement | null = null
   private anchor: HTMLElement | null = null
 
-  /** Create the iframe layer INSIDE the shell's content area; the shell's
-   * own visibility rule (content hidden unless Home is active) governs it. */
+  /**
+   * The iframe layer lives on <body> and geometrically tracks the shell's
+   * content area. Staying OUT of .app-frame-content matters: the shell hides
+   * that element for non-home tabs, and overriding its visibility (as an
+   * earlier revision did) leaked the Home surface — its sticky filter strip
+   * floated above open editors.
+   */
   attach(layer: HTMLDivElement, anchor: HTMLElement): void {
     this.layer = layer
     this.anchor = anchor
-    if (getComputedStyle(anchor).position === 'static') anchor.style.position = 'relative'
-    layer.style.cssText = 'position:absolute;inset:0;display:none'
-    anchor.appendChild(layer)
+    layer.style.cssText = 'position:fixed;z-index:5;background:#fff;display:none'
+    document.body.appendChild(layer)
+    const sync = () => {
+      if (!this.layer) return
+      const r = this.anchor!.getBoundingClientRect()
+      Object.assign(this.layer.style, {
+        top: `${r.top}px`, left: `${r.left}px`, width: `${r.width}px`, height: `${r.height}px`,
+      })
+    }
+    sync()
+    new ResizeObserver(sync).observe(this.anchor)
+    window.addEventListener('resize', sync)
   }
 
   list(): TabSummary[] {
@@ -78,11 +92,45 @@ export class TabManager {
    * show — it is opaque, so the Home DOM behind it stays covered. */
   private syncVisibility(): void {
     const homeActive = this.tabs[0]?.summary.active === true
-    if (this.anchor) this.anchor.style.visibility = homeActive ? '' : 'visible'
+    // anchor visibility stays under the shell's own control (hidden for
+    // non-home tabs — exactly what we want now that the layer is on body)
+    if (this.anchor) this.anchor.style.visibility = ''
     if (this.layer) this.layer.style.display = homeActive ? 'none' : 'block'
     for (const t of this.tabs) {
       if (t.frame) t.frame.style.display = t.summary.active ? 'block' : 'none'
     }
+  }
+
+  /** Loading veil over a freshly opened editor until its iframe finishes. */
+  private addLoadingVeil(frame: HTMLIFrameElement): void {
+    const veil = document.createElement('div')
+    veil.className = 'go-editor-veil'
+    veil.style.cssText = [
+      'position:absolute', 'inset:0', 'z-index:2', 'display:grid', 'place-items:center',
+      'background:#fafafa', 'font:13px/1.6 system-ui,sans-serif', 'color:#666',
+      'transition:opacity .25s',
+    ].join(';')
+    const box = document.createElement('div')
+    box.style.cssText = 'text-align:center'
+    const spinner = document.createElement('div')
+    spinner.style.cssText = [
+      'width:34px', 'height:34px', 'margin:0 auto 12px', 'border-radius:50%',
+      'border:3px solid #e0e0e0', 'border-top-color:#e35205', 'animation:go-spin 1s linear infinite',
+    ].join(';')
+    const text = document.createElement('div')
+    text.textContent = '正在打开编辑器…'
+    box.append(spinner, text)
+    veil.appendChild(box)
+    const style = document.createElement('style')
+    style.textContent = '@keyframes go-spin{to{transform:rotate(360deg)}}'
+    veil.appendChild(style)
+    frame.insertAdjacentElement('afterend', veil)
+    const drop = () => {
+      veil.style.opacity = '0'
+      setTimeout(() => veil.remove(), 300)
+    }
+    frame.addEventListener('load', drop, { once: true })
+    setTimeout(drop, 30_000) // safety net
   }
 
   activate(id: string): void {
@@ -132,6 +180,7 @@ export class TabManager {
     frame.src = editorUrl(kind) + hash
     frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;display:none'
     this.layer?.appendChild(frame)
+    this.addLoadingVeil(frame)
     for (const t of this.tabs) t.summary.active = false
     this.tabs.push({ summary: { id, kind, title, closable: true, active: true }, frame, fileId: opts.fileId ?? null })
     this.notify()
