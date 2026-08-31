@@ -12,6 +12,19 @@ import { installSheetsShim, installSlidesShim } from './editors/generic-shim.js'
 
 const client = new BridgeClient()
 
+// boot-error capture: the shim runs before the editor bundle, so host-side
+// debugging can read window.__goErrs from the iframe after a failure
+if (typeof window !== 'undefined') {
+  ;(window as unknown as Record<string, unknown>).__goErrs = []
+  window.addEventListener('error', function (e) {
+    ;(window as unknown as { __goErrs: string[] }).__goErrs.push('E: ' + String(e.message) + ' @' + String(e.filename).slice(-40) + ':' + e.lineno)
+  })
+  window.addEventListener('unhandledrejection', function (e) {
+    const r = (e as PromiseRejectionEvent).reason
+    ;(window as unknown as { __goErrs: string[] }).__goErrs.push('R: ' + String((r && r.message) || r).slice(0, 200))
+  })
+}
+
 function b64ToBytes(b64: string): Uint8Array {
   const bin = atob(b64)
   const out = new Uint8Array(bin.length)
