@@ -195,12 +195,55 @@ export function apply(ctx) {
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
       const path = url.pathname.slice(API_PREFIX.length)
       if (req.method === 'GET' && path === '/status') {
-        return send(res, 200, { ok: true, ...state })
+        return send(res, 200, { ok: true, ...state, appOrigin: '/genoffice-app/' })
       }
       return send(res, 404, { ok: false, error: `unknown ${req.method} ${path}` })
     },
   }
   const disposeRoute = ctx.webServer.register(route)
+
+  // Reverse proxy: the GenOffice window lives on the STABLE dsh web origin
+  // (/genoffice-app/*), so a sidecar restart (new dynamic port) never kills
+  // an open window — the app re-fetches /api/genoffice/status and the proxy
+  // follows the new origin.
+  const APP_PREFIX = '/genoffice-app'
+  const proxyRoute = {
+    kind: 'prefix',
+    path: APP_PREFIX,
+    handler: async (req, res) => {
+      if (!isLoopback(req)) return send(res, 403, { ok: false, error: 'loopback-only' })
+      if (!state.origin) return send(res, 503, { ok: false, error: 'sidecar not ready' })
+      const url = new URL(req.url ?? '/', 'http://127.0.0.1')
+      const sub = url.pathname.slice(APP_PREFIX.length) || '/'
+      const target = new URL(sub, state.origin)
+      target.search = url.search
+      try {
+        const headers = { ...req.headers }
+        delete headers.host
+        delete headers.connection
+        const upstream = await fetch(target, {
+          method: req.method,
+          headers,
+          ...(req.method === 'GET' || req.method === 'HEAD' ? {} : { body: req }),
+        })
+        const h = {}
+        upstream.headers.forEach((v, k) => { h[k] = v })
+        res.writeHead(upstream.status, h)
+        if (upstream.body) {
+          const reader = upstream.body.getReader()
+          for (;;) {
+            const r = await reader.read()
+            if (r.done) break
+            res.write(r.value)
+          }
+        }
+        res.end()
+      } catch (err) {
+        send(res, 502, { ok: false, error: 'proxy: ' + String(err) })
+      }
+    },
+  }
+  const disposeProxy = ctx.webServer.register(proxyRoute)
 
   ctx.effect(() => () => {
     if (child) {
@@ -216,6 +259,7 @@ export function apply(ctx) {
       }, 3000).unref?.()
     }
     disposeRoute()
+    disposeProxy()
   }, 'genoffice: dispose sidecar & route')
 
   return starting

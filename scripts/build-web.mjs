@@ -63,7 +63,7 @@ for (const key of EDITORS) {
   if (!existsSync(htmlPath)) continue
   let html = readFileSync(htmlPath, 'utf8')
   if (!html.includes('bridge-shim.js')) {
-    html = html.replace('<head>', '<head>\n    <script src="/bridge-shim.js"></script>')
+    html = html.replace('<head>', '<head>' + String.fromCharCode(10) + '    <script src="../../bridge-shim.js"></script>')
     writeFileSync(htmlPath, html)
   }
 }

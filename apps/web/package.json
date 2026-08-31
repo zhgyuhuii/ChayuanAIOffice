@@ -7,7 +7,7 @@
   "description": "Browser host: the unmodified shell renderer + in-page editor iframe manager",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base ./",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

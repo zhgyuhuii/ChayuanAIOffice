@@ -38,8 +38,8 @@ function GenOfficeApp() {
         const res = await fetch('/api/genoffice/status')
         const doc = await res.json()
         if (cancelled) return
-        if (doc.origin) {
-          setOrigin(doc.origin)
+        if (doc.appOrigin) {
+          setOrigin(doc.appOrigin)
           setStatus('ready')
           return true
         }

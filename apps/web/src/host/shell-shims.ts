@@ -180,7 +180,10 @@ export function installShellShims(): void {
       return () => themeListeners.delete(handler)
     },
     onboardingSeen: async () => localStorage.getItem(LS.onboard) === '1',
-    setOnboardingSeen: async () => localStorage.setItem(LS.onboard, '1'),
+    setOnboardingSeen: async () => {
+      localStorage.setItem(LS.onboard, '1')
+      return true // finishOnboarding only closes the dialog on a truthy return
+    },
     getAppVersion: async () => (window as unknown as { GENOFFICE_VERSION?: string }).GENOFFICE_VERSION ?? '0.1.0',
 
     // ── file management: batch 2 ──
@@ -209,7 +212,7 @@ export function installShellShims(): void {
     setAnalyticsEnabled: async () => undefined,
     githubStars: async () => null,
     openGitHubRepo: () => undefined,
-    starPromptShouldShow: async () => false,
+    starPromptShouldShow: async () => ({ show: false as const, docOpens: 0 }),
     starPromptAction: async () => undefined,
   }
 
