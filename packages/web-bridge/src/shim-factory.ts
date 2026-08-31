@@ -30,8 +30,12 @@ export function makeShim(client: BridgeClient, spec: ShimSpec): Record<string, A
       // State getters (get*/list*/has*/count*) degrade to SAFE EMPTY values —
       // rejecting them stalls editor initialization awaits (docs booted to a
       // 0x0 edit surface this way). Action methods keep the structured reject.
-      if (/^(get|list|has|count|is|notify|report)[A-Z]/.test(prop)) {
-        return async () => null
+      if (/^(get|list|has|count|is|notify|report|set)[A-Z]/.test(prop)) {
+        // Arrays are the common expectation (sections/files/lists) — reading
+        // .length off null crashed the slides renderer; return [] where the
+        // name implies a collection, undefined otherwise.
+        const collection = /^(list|get[A-Za-z]*(Files|Sections|Entries|Slides|Comments|Notes|Recent|Providers|Fonts|Keys|Sources))/.test(prop)
+        return async () => (collection ? [] : undefined)
       }
       return async () => {
         const err = new Error(`该能力尚未在网页版开放（${spec.prefix}.${prop}）`) as Error & {

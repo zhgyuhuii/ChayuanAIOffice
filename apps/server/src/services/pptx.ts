@@ -7,13 +7,20 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { openPptx, savePptx, type OpenedPptx } from '@genoffice/pptx-engine'
+import { openPptx, savePptx, createBlankPptx, type OpenedPptx } from '@genoffice/pptx-engine'
 import { buildAllRenderSlides, deckDefaultFont } from '../../../slides/src/main/render-build'
 
 export interface PptxApi {
   openBytes(input: { base64: string; name: string; fitWidthPx?: number }): Promise<{
     sessionId: string
     path: string
+    slides: unknown[]
+    size: { cx: number; cy: number }
+    defaultFont?: string
+  }>
+  /** New blank deck (same pipeline as the Electron 'slides:new-blank'). */
+  newBlank(input: { fitWidthPx?: number }): Promise<{
+    sessionId: string
     slides: unknown[]
     size: { cx: number; cy: number }
     defaultFont?: string
@@ -43,6 +50,18 @@ export function createPptxService(): PptxApi {
       return {
         sessionId,
         path: `webfs-session:${sessionId}:${input.name}`,
+        slides: buildAllRenderSlides(opened, fitWidthPx),
+        size: { cx: opened.deck.size.cx, cy: opened.deck.size.cy },
+        defaultFont: deckDefaultFont(opened),
+      }
+    },
+    async newBlank(input) {
+      const fitWidthPx = input?.fitWidthPx ?? 960
+      const opened = await openPptx(await createBlankPptx())
+      const sessionId = randomUUID()
+      sessions.set(sessionId, { name: '', opened, fitWidthPx })
+      return {
+        sessionId,
         slides: buildAllRenderSlides(opened, fitWidthPx),
         size: { cx: opened.deck.size.cx, cy: opened.deck.size.cy },
         defaultFont: deckDefaultFont(opened),

@@ -162,6 +162,17 @@ export function installSlidesShim(client: BridgeClient): void {
       session = { sessionId: res.sessionId, name: m[2], fileId: m[1] }
       return { path, slides: res.slides, size: res.size, defaultFont: res.defaultFont }
     },
+    /** New blank deck through the server pipeline (Electron slides:new-blank). */
+    async newBlank(fitWidthPx: number) {
+      const res = (await client.call('rpc', 'pptx.newBlank', { fitWidthPx })) as {
+        sessionId: string
+        slides: unknown[]
+        size: unknown
+        defaultFont?: string
+      }
+      session = { sessionId: res.sessionId, name: '未命名.pptx', fileId: null }
+      return { path: '', slides: res.slides, size: res.size, defaultFont: res.defaultFont }
+    },
     /** Serialize the server-side model and write it back in place / via picker. */
     async save() {
       if (!session) return { ok: false, error: 'no file open' }

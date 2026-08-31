@@ -224,7 +224,9 @@ export function apply(ctx) {
         const upstream = await fetch(target, {
           method: req.method,
           headers,
-          ...(req.method === 'GET' || req.method === 'HEAD' ? {} : { body: req }),
+          ...(req.method === 'GET' || req.method === 'HEAD'
+            ? {}
+            : { body: req, duplex: 'half' }),
         })
         const h = {}
         upstream.headers.forEach((v, k) => { h[k] = v })
