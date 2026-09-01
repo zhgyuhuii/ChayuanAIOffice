@@ -37,6 +37,7 @@ import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
 import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@genoffice/i18n'
 import {
   DEFAULT_SAVE_DIR_KEY,
+  DROP_OPEN_CHANNEL,
   GITHUB_REPO_URL,
   appMenuLabels,
   contextMenuLabels,
@@ -53,8 +54,9 @@ import {
   ANALYTICS_ENABLED_KEY,
   analyticsEnabledFrom,
   createAnalytics,
-  ensureAnalyticsClientId,
+  ensureAnalyticsClientState,
   extractPackagedAnalyticsKeys,
+  markAnalyticsFirstLaunchSent,
 } from './analytics'
 import type { Analytics, AnalyticsKeys } from './analytics'
 import {
@@ -75,6 +77,7 @@ import {
   readCloudProjectsStore,
   syncCloudProjects,
 } from './cloud-projects'
+import { handleDroppedFiles } from './dropped-files'
 import { ProjectStore } from '@genoffice/project-store'
 import {
   ensureGenofficeLogin,
@@ -252,6 +255,9 @@ configureSheetsRuntime({
   rendererFile: join(SHEETS_OUT, 'renderer', 'index.html'),
   sidecarPath: SIDECAR_BIN,
   openGeneratedPath: (path) => openGeneratedDocument(path),
+  // The sheets AI's create_document (docx/pdf/md) funnels into the docs-owned
+  // creation flow, like the pdf app below.
+  createDocument: createAiDocument,
 })
 configureSlidesRuntime({
   preloadPath: join(SLIDES_OUT, 'preload', 'index.js'),
@@ -362,10 +368,14 @@ function persistAnalyticsPreference(enabled: boolean): boolean {
 
 function initAnalytics(): void {
   try {
+    let clientState: ReturnType<typeof ensureAnalyticsClientState> | null = null
+    const getClientState = () => (clientState ??= ensureAnalyticsClientState(APP_SETTINGS_PATH()))
     analytics = createAnalytics({
       keys: resolveAnalyticsKeys(),
-      getClientId: () => ensureAnalyticsClientId(APP_SETTINGS_PATH()),
+      getClientId: () => getClientState().clientId,
       isEnabled: analyticsEnabled,
+      shouldTrackFirstLaunch: () => getClientState().firstLaunchPending,
+      onFirstLaunchSent: () => markAnalyticsFirstLaunchSent(APP_SETTINGS_PATH()),
       // Country-only approximation from OS regional settings. This avoids an
       // IP lookup while populating GA4's built-in Country dimension.
       getCountryCode: () => app.getLocaleCountryCode(),
@@ -2574,7 +2584,12 @@ function unsupportedFileIn(argv: string[]): string | null {
 
 function notifyUnsupportedFile(filePath: string): void {
   const ext = extname(filePath).slice(1).toLowerCase() || basename(filePath)
-  const options = { type: 'warning' as const, message: tm('errUnsupportedExt', { ext }) }
+  showAppWarning(tm('errUnsupportedExt', { ext }))
+}
+
+/** shell-hosted warning box; focused when a shell window exists, standalone otherwise */
+function showAppWarning(message: string): void {
+  const options = { type: 'warning' as const, message }
   if (shellWindow) {
     shellWindow.show()
     shellWindow.focus()
@@ -2582,6 +2597,22 @@ function notifyUnsupportedFile(filePath: string): void {
   } else {
     void dialog.showMessageBox(options)
   }
+}
+
+/**
+ * Files dropped from the OS into any renderer arrive via installDropOpenBridge
+ * and route through the normal File > Open pipeline; detached editor windows
+ * can host the drop target, so the shell must reveal itself after opening.
+ */
+function registerDroppedFilesIpc(): void {
+  ipcMain.on(DROP_OPEN_CHANNEL, (_event, raw: unknown) =>
+    handleDroppedFiles(raw, {
+      openDocumentPath,
+      revealShellWindow,
+      showWarning: showAppWarning,
+      unsupportedMessage: (exts) => tm('errUnsupportedExt', { ext: exts.join(', ') }),
+    }),
+  )
 }
 
 /** the single router: extension decides which module owns the file; false = nothing opened */
@@ -4122,6 +4153,7 @@ registerProjectIpc()
 registerDocsIpc()
 registerHomeIpc()
 registerTabsIpc()
+registerDroppedFilesIpc()
 
 // sheets' project:resolveChat goes through the handler registered by docs-main; the sessionId reverse lookup hooks in here
 setSessionPathResolver(resolveSheetsSessionPath)

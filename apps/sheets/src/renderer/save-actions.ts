@@ -21,6 +21,7 @@ import {
   toSaveVisualAdds,
   toSaveVisualEdits,
 } from './edit-journal'
+import { activeCsvSheet, handleExportCsv, serializeActiveSheetCsv } from './csv-export'
 import { t } from './i18n/locale'
 import { abortStagedEditsTransfer, stageEditsForSave, type StagedEdits } from './save-edits-staging'
 import { showToast } from './toast-bus'
@@ -57,6 +58,10 @@ export interface SaveContext {
   ) => void
 }
 
+/// CSV files whose "keep this format?" question was already answered with
+/// "Continue as CSV" — asked once per file, like modern Excel's banner.
+const confirmedCsvSaves = new Set<string>()
+
 /**
  * mode 'recovery': assemble the very same payload but hand it to the
  * crash-recovery writer instead of the save pipeline — no dialogs, no status
@@ -74,7 +79,16 @@ export async function handleSave(
     const workbook = ctx.univerRef.current?.univerAPI.getActiveWorkbook()
     const sheet = workbook?.getActiveSheet()
     if (!workbook || !sheet) return null
-    const range = workbook.getActiveRange()
+    // A whole-column selection survives a row deletion with its old endRow,
+    // and building its FRange then throws "Range is out of bounds" — the
+    // view stash is cosmetic and must never block the save.
+    const range = (() => {
+      try {
+        return workbook.getActiveRange()
+      } catch {
+        return null
+      }
+    })()
     // Capture the scroll anchor, not getVisibleRange: scrollToCell feeds the
     // same sheetViewStartRow/Column channel, so the restore round-trips
     // exactly — including RTL sheets (see getScrollAnchor). Fall back to the
@@ -102,6 +116,7 @@ export async function handleSave(
   const visualAdditions = toSaveVisualAdds(state.editJournal)
   const tableAdditions = toSaveTableAdds(state.editJournal)
   const pivotAdditions = toSavePivotAdds(state.editJournal)
+  const sparklineAdditions = toSaveSparklineAdds(state.editJournal)
   const sheetOps = toSaveSheetOps(state.editJournal)
   const hyperlinkEdits = toSaveHyperlinkEdits(state.editJournal)
   let filterStates: WorkbookFilterState[]
@@ -219,7 +234,8 @@ export async function handleSave(
     visualAdditions.length +
     visualEdits.length +
     tableAdditions.length +
-    pivotAdditions.length
+    pivotAdditions.length +
+    sparklineAdditions.length
   // A restored crash-recovery session carries its changes in the workbook
   // bytes themselves, not the journal: a plain Save with nothing pending must
   // still write back to the original file (and clear the recovery copy).
@@ -227,6 +243,45 @@ export async function handleSave(
   if (total === 0 && mode !== 'save-as' && !restoreWriteBack) {
     if (mode !== 'recovery') ctx.setMessage(t('appNoEditsToSave'))
     return
+  }
+  // CSV session: Save keeps the CSV identity — Excel's "keep this format?"
+  // question once per file, then the active sheet rides the save request as
+  // serialized CSV text for the main process to write back.
+  let csvContent: string | undefined
+  if (mode === 'save' && state.file.csvPath !== undefined) {
+    const csvPath = state.file.csvPath
+    // The format question comes BEFORE the full-load guard: a large streamed
+    // session never reaches preloadComplete, so guarding first dead-ended ⌘S
+    // forever ("wait for loading to finish") with the Save-As-.xlsx escape
+    // hatch unreachable. Streamed sessions that insist on CSV still get the
+    // message (and are asked again next time instead of being remembered).
+    if (!confirmedCsvSaves.has(csvPath)) {
+      const choice = await window.desktopApi.confirmCsvSave()
+      if (choice === 'cancel') {
+        ctx.setMessage(t('appSaveCanceled'))
+        return
+      }
+      if (choice === 'xlsx') {
+        await handleSave(ctx, 'save-as', quiet)
+        return
+      }
+      if (state.flags.preloadComplete) confirmedCsvSaves.add(csvPath)
+    }
+    if (!state.flags.preloadComplete) {
+      ctx.setMessage(t('appCsvExportNeedsFullLoad'))
+      return
+    }
+    const active = activeCsvSheet(ctx.univerRef.current)
+    const serialized = active === null ? null : serializeActiveSheetCsv(active.sheet, state)
+    if (serialized === 'too-large') {
+      ctx.setMessage(t('appCsvExportTooLarge'))
+      return
+    }
+    if (serialized === null) {
+      ctx.setMessage(t('appSaveFailed'))
+      return
+    }
+    csvContent = serialized
   }
   // Sheet ops rebuild workbook.xml's tab list, so the save needs the final
   // on-screen order.
@@ -280,7 +335,7 @@ export async function handleSave(
     pivotCacheRefreshPaths,
     pivotRefreshUpdates,
     sheetProtections,
-    sparklineAdditions: toSaveSparklineAdds(state.editJournal),
+    sparklineAdditions,
     formulaValues,
     definedNamesState,
     themeState,
@@ -306,6 +361,7 @@ export async function handleSave(
       sessionId: state.file.sessionId,
       mode,
       ...(restoreWriteBack ? { restoreWriteBack: true } : {}),
+      ...(csvContent === undefined ? {} : { csvContent }),
       edits: staged.edits,
       bulkConstantFills,
       ...(staged.editsTransferId === undefined ? {} : { editsTransferId: staged.editsTransferId }),
@@ -326,7 +382,7 @@ export async function handleSave(
       pivotCacheRefreshPaths,
       pivotRefreshUpdates,
       sheetProtections,
-      sparklineAdditions: toSaveSparklineAdds(state.editJournal),
+      sparklineAdditions,
       formulaValues,
       definedNamesState: splitSave ? null : definedNamesState,
       themeState,
@@ -335,6 +391,21 @@ export async function handleSave(
     })
     if (ctx.lazyWorkbookRef.current !== state) return
     if (result.canceled) {
+      if (result.csvSaveAsPath !== undefined) {
+        // The user picked CSV in the Save As dialog: no xlsx was written —
+        // serialize the active sheet to the chosen path instead. The journal
+        // stays pending; the session keeps its identity (a copy semantics).
+        await handleExportCsv(
+          {
+            univerRef: ctx.univerRef,
+            lazyWorkbookRef: ctx.lazyWorkbookRef,
+            setMessage: ctx.setMessage,
+            requestSaveAs: () => void handleSave(ctx, 'save-as', quiet),
+          },
+          result.csvSaveAsPath,
+        )
+        return
+      }
       ctx.setMessage(t('appSaveCanceled'))
       return
     }

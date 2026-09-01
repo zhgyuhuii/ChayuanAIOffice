@@ -16,6 +16,7 @@ import type { SlashController, SlashMenuState } from './editor/slashCommand'
 import { setImageBaseDir } from './editor/localImage'
 import { Ribbon } from './components/Ribbon'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
+import { ToastHost } from './components/toast'
 import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
@@ -393,7 +394,22 @@ export default function App() {
       (mode) => void doSave(mode).then((ok) => window.markdownApi.sendSaveRequestAck(ok)),
     )
     const offClose = window.markdownApi.onCloseSaveRequest(() => {
-      void doSave('save').then((ok) => window.markdownApi.sendCloseSaveResult(ok))
+      void (async () => {
+        // A close-save arriving during an in-flight autosave must wait for it
+        // instead of failing (the old immediate `false` from `savingRef` made
+        // "Save and close" silently give up during a blur autosave — the same
+        // bug the docs app fixed with its save serializer).
+        while (savingRef.current) {
+          await new Promise((resolve) => setTimeout(resolve, 50))
+        }
+        // The in-flight save may have already persisted everything.
+        if (!dirtyRef.current) {
+          window.markdownApi.sendCloseSaveResult(true)
+          return
+        }
+        const ok = await doSave('save')
+        window.markdownApi.sendCloseSaveResult(ok)
+      })()
     })
     const offRenamed = window.markdownApi.onFileRenamed((newPath) => setFilePath(newPath))
     const onKeyDown = (event: KeyboardEvent) => {
@@ -666,6 +682,7 @@ export default function App() {
         </div>
       </div>
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />
+      <ToastHost />
       <TableMenu editor={editor} scrollRef={scrollRef} zoom={zoom} />
       {editor && status === 'ready' && (
         <AiAskPopover

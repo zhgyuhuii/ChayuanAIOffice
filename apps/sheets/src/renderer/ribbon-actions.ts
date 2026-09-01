@@ -38,6 +38,7 @@ import {
   type DataToolsContext,
 } from './data-tools-actions'
 import { dedupeRows } from './dedupe'
+import { runStreamedErrorCheck } from './error-checking'
 import {
   isSheetRemoved,
   journalSize,
@@ -452,14 +453,17 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     case 'error-checking': {
       const workbook = runtime.univerAPI.getActiveWorkbook()
       if (!workbook || !worksheet) return
-      // A streamed workbook's cell matrix holds only loaded regions. Formula
-      // -mode files finish preloading, so wait for that (same gate as
-      // Replace); above-cap files never will — scan what is loaded and say so
-      // in the result instead of under-reporting silently.
       const lazyState = ctx.lazyWorkbookRef.current
-      const partialScan = Boolean(lazyState && !lazyState.flags.preloadComplete)
-      if (partialScan && lazyState?.formulaMode) {
-        ctx.setMessage(t('appErrorCheckNeedsFullLoad'))
+      if (lazyState && !lazyState.flags.preloadComplete) {
+        // Streamed: the cell matrix only holds loaded regions, so page the
+        // whole underlying file instead (same approach as Ctrl+F). The jump
+        // loads the hit's range before scrolling to it.
+        void runStreamedErrorCheck({
+          runtime,
+          lazyWorkbookRef: ctx.lazyWorkbookRef,
+          setMessage: ctx.setMessage,
+          refreshSelectionEcho: () => ctx.refreshSelectionFormatRef.current(),
+        })
         return
       }
       const errors: { row: number; column: number; value: string }[] = []
@@ -474,7 +478,7 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
           return undefined
         })
       if (errors.length === 0) {
-        ctx.setMessage(t(partialScan ? 'appNoErrorsFoundPartial' : 'appNoErrorsFound'))
+        ctx.setMessage(t('appNoErrorsFound'))
         return
       }
       // Step to the first error after the active cell, wrapping around, so
@@ -496,7 +500,7 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         },
       })
       ctx.setMessage(
-        t(partialScan ? 'appErrorsFoundPartial' : 'appErrorsFound', {
+        t('appErrorsFound', {
           count: errors.length,
           cell: formatAddress(next.row, next.column),
           value: next.value,

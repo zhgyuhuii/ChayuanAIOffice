@@ -185,12 +185,19 @@ async function anthropicTurn(
     if (!line.startsWith('data:')) continue
     const payload = line.slice(5).trim()
     if (!payload) continue
-    const event = JSON.parse(payload) as {
-      type?: string
-      index?: number
-      content_block?: { type?: string; id?: string; name?: string }
-      delta?: { type?: string; text?: string; partial_json?: string; stop_reason?: string }
-      error?: { message?: string } | string
+    // A truncated frame or a non-JSON keep-alive from a proxy should skip
+    // that event, not kill the entire AI turn with a parser error.
+    let event
+    try {
+      event = JSON.parse(payload) as {
+        type?: string
+        index?: number
+        content_block?: { type?: string; id?: string; name?: string }
+        delta?: { type?: string; text?: string; partial_json?: string; stop_reason?: string }
+        error?: { message?: string } | string
+      }
+    } catch {
+      continue
     }
     if (event.type === 'content_block_start' && event.content_block?.type === 'tool_use') {
       pendingTools.set(event.index ?? 0, {

@@ -204,17 +204,25 @@ function AiModelPane({ t }: { t: TFunc }) {
     touch()
   }
   const save = () => {
-    void window.aiOffice.setAiSettings?.(settings).then(() => {
-      setDirty(false)
-      setSaved(true)
-    })
+    window.aiOffice
+      .setAiSettings?.(settings)
+      .then(() => {
+        setDirty(false)
+        setSaved(true)
+      })
+      .catch((error) => {
+        window.alert(error instanceof Error ? error.message : String(error))
+      })
   }
   const test = () => {
     setTesting(true)
     setTestResult(null)
-    void window.aiOffice
+    window.aiOffice
       .testAiSettings?.(settings)
       .then((r) => setTestResult(r ?? { ok: false }))
+      .catch((error) =>
+        setTestResult({ ok: false, error: error instanceof Error ? error.message : String(error) }),
+      )
       .finally(() => setTesting(false))
   }
 

@@ -259,6 +259,7 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       '该公式要对大区间做逐元素统计，计算量过大会导致界面卡死——已取消。请缩小引用区间后重试。',
     appPivotSheetNoStructural: '该工作表含数据透视表——暂不支持结构变更。',
+    appDeleteSpanFormulas: '有公式仅引用被删除的行/列——请先更新或删除这些公式。',
     appIconSetUnsupported: '该图标组合无法保存为 xlsx 文件，请换用其他图标集。',
     appNeedFullLoadSort:
       '排序、筛选、移动区域和分列需要完整加载模式——这个工作簿太大，只做了流式加载。',
@@ -268,6 +269,7 @@ export const appStrings = defineStrings({
     appDvNeedsIndexed: '编辑数据验证需要该工作表先完成索引——稍后再试。',
     appDuplicateNeedsFullLoad: '复制工作表需要完整加载模式——这个工作簿太大，只做了流式加载。',
     appPivotSheetNoDuplicate: '该工作表含数据透视表——暂不支持复制该表。',
+    appDuplicateScopedNames: '该工作表含表级定义名称——暂不支持复制该表。',
     appMoveRowsColsUnsaved: '整列移动暂时无法保存到导入的工作簿——整行移动已支持。',
     // Preview / apply / undo
     appNoWorkbookOpen: '当前没有打开的工作簿。',
@@ -461,6 +463,12 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF 导出已取消。',
     appPdfExported: '已导出 {path}。',
     appPdfExportFailed: '无法导出 PDF。',
+    appCsvExportNeedsFullLoad: 'CSV 导出需要工作簿完整加载——请等待加载完成。',
+    appCsvExportTooLarge: '工作表太大,无法导出 CSV。',
+    appCsvExportCanceled: 'CSV 导出已取消。',
+    appCsvExported: '已导出 {path}。',
+    appCsvExportedActiveOnly: 'CSV 只包含一张工作表——已导出当前工作表“{name}”到 {path}。',
+    appCsvExportFailed: '无法导出 CSV。',
     appDemoNoSave: '演示模式的编辑只保存在内存——打开 XLSX 文件才能保存到磁盘。',
     appFilterSnapshotFailed: '无法快照筛选状态。',
     appColorFiltersUnsaveable: '颜色筛选暂时无法保存为 XLSX——请先清除再保存。',
@@ -1046,11 +1054,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: '工作簿中没有透视表。',
     appRefreshAllTitle: '刷新全部透视表',
     appErrorCheckingDetail: '扫描当前表中的错误值',
-    appErrorCheckNeedsFullLoad: '工作簿仍在加载,加载完成后再检查错误。',
     appErrorsFound: '发现 {count} 个错误,已定位 {cell}:{value}',
+    appCheckingErrors: '正在扫描整个工作表的错误…',
     appNoErrorsFound: '未发现错误值。',
-    appNoErrorsFoundPartial: '已加载区域未发现错误值(文件较大,未全量扫描)。',
-    appErrorsFoundPartial: '已加载区域发现 {count} 个错误,已定位 {cell}:{value}',
     appGroupSortFilter: '排序和筛选',
     appSortSelectionTitle: '对所选内容排序',
     appSortAToZ: '升序',
@@ -1534,6 +1540,8 @@ export const appStrings = defineStrings({
       'This formula evaluates a large range once per element — the computation would freeze the app, so it was cancelled. Narrow the referenced range and try again.',
     appPivotSheetNoStructural:
       'This sheet contains a PivotTable — structural changes are not supported yet.',
+    appDeleteSpanFormulas:
+      'A formula references only the deleted rows/columns — update or remove it first.',
     appIconSetUnsupported:
       'This icon combination cannot be saved to xlsx — please choose a different icon set.',
     appNeedFullLoadSort:
@@ -1548,6 +1556,8 @@ export const appStrings = defineStrings({
       'Duplicating a sheet needs the fully-loaded mode — this workbook is too large and streams partially.',
     appPivotSheetNoDuplicate:
       'This sheet contains a PivotTable — duplicating it is not supported yet.',
+    appDuplicateScopedNames:
+      'This sheet has sheet-scoped defined names — duplicating it is not supported yet.',
     appMoveRowsColsUnsaved:
       'Moving whole columns cannot be saved to imported workbooks yet — moving whole rows is supported.',
     appNoWorkbookOpen: 'No workbook is open.',
@@ -1746,6 +1756,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF export canceled.',
     appPdfExported: 'Exported {path}.',
     appPdfExportFailed: 'Unable to export the PDF.',
+    appCsvExportNeedsFullLoad:
+      'CSV export needs the fully loaded workbook — wait for loading to finish.',
+    appCsvExportTooLarge: 'The sheet is too large to export as CSV.',
+    appCsvExportCanceled: 'CSV export canceled.',
+    appCsvExported: 'Exported {path}.',
+    appCsvExportedActiveOnly:
+      'CSV holds a single sheet — exported the active sheet "{name}" to {path}.',
+    appCsvExportFailed: 'Unable to export the CSV.',
     appDemoNoSave: 'Demo edits stay in memory — open an XLSX file to save to disk.',
     appFilterSnapshotFailed: 'Unable to snapshot the filters.',
     appColorFiltersUnsaveable:
@@ -2332,12 +2350,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'No pivot tables in this workbook.',
     appRefreshAllTitle: 'Refresh every pivot table',
     appErrorCheckingDetail: 'Scan the sheet for error values',
-    appErrorCheckNeedsFullLoad:
-      'Workbook still loading — run Error Checking once loading finishes.',
     appErrorsFound: '{count} errors — at {cell}: {value}',
+    appCheckingErrors: 'Scanning the whole sheet for errors…',
     appNoErrorsFound: 'No error values found.',
-    appNoErrorsFoundPartial: 'No error values in the loaded region (large file — not a full scan).',
-    appErrorsFoundPartial: '{count} errors in the loaded region — at {cell}: {value}',
     appGroupSortFilter: 'Sort & Filter',
     appSortSelectionTitle: 'Sort the selection',
     appSortAToZ: 'Sort A → Z',
@@ -2839,6 +2854,8 @@ export const appStrings = defineStrings({
       'この数式は大きな範囲を要素ごとに評価するため、計算でアプリがフリーズします — キャンセルしました。参照範囲を狭めて再試行してください。',
     appPivotSheetNoStructural:
       'このシートにはピボットテーブルが含まれています — 構造の変更には未対応です。',
+    appDeleteSpanFormulas:
+      '削除対象の行/列のみを参照する数式があります — 先にその数式を更新または削除してください。',
     appIconSetUnsupported:
       'このアイコンの組み合わせは xlsx に保存できません。別のアイコンセットを選択してください。',
     appNeedFullLoadSort:
@@ -2855,6 +2872,8 @@ export const appStrings = defineStrings({
       'シートのコピーには完全読み込みモードが必要です。このブックは大きすぎるため、ストリーミング読み込みのみ行われました。',
     appPivotSheetNoDuplicate:
       'このシートにはピボットテーブルが含まれています — このシートのコピーには未対応です。',
+    appDuplicateScopedNames:
+      'このシートにはシート スコープの定義済み名前があるため、複製はまだサポートされていません。',
     appMoveRowsColsUnsaved:
       '列全体の移動は、インポートしたブックには現時点では保存できません——行全体の移動には対応しています。',
     // Preview / apply / undo
@@ -3079,6 +3098,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF エクスポートをキャンセルしました。',
     appPdfExported: '{path} をエクスポートしました。',
     appPdfExportFailed: 'PDF をエクスポートできません。',
+    appCsvExportNeedsFullLoad:
+      'CSV エクスポートにはブックの完全読み込みが必要です — 読み込みの完了をお待ちください。',
+    appCsvExportTooLarge: 'シートが大きすぎるため、CSV をエクスポートできません。',
+    appCsvExportCanceled: 'CSV エクスポートをキャンセルしました。',
+    appCsvExported: '{path} をエクスポートしました。',
+    appCsvExportedActiveOnly:
+      'CSV ファイルには 1 枚のシートしか含められません — アクティブなシート「{name}」を {path} にエクスポートしました。',
+    appCsvExportFailed: 'CSV をエクスポートできません。',
     appDemoNoSave:
       'デモモードの編集はメモリ内にのみ保存されます — ディスクに保存するには XLSX ファイルを開いてください。',
     appFilterSnapshotFailed: 'フィルターの状態をスナップショットできません。',
@@ -3684,13 +3711,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'ブックにピボットテーブルがありません。',
     appRefreshAllTitle: 'すべてのピボットテーブルを更新',
     appErrorCheckingDetail: 'シート内のエラー値をスキャン',
-    appErrorCheckNeedsFullLoad:
-      'ブックの読み込み中です。完了後にエラーチェックを実行してください。',
     appErrorsFound: '{count} 件のエラー — {cell}:{value}',
+    appCheckingErrors: 'シート全体のエラーをスキャンしています…',
     appNoErrorsFound: 'エラー値は見つかりませんでした。',
-    appNoErrorsFoundPartial:
-      '読み込み済み範囲にエラー値はありません(大きなファイルのため全体は未スキャン)。',
-    appErrorsFoundPartial: '読み込み済み範囲に {count} 件のエラー — {cell}:{value}',
     appGroupSortFilter: '並べ替えとフィルター',
     appSortSelectionTitle: '選択範囲を並べ替え',
     appSortAToZ: '昇順',
@@ -4184,6 +4207,8 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       '이 수식은 큰 범위를 요소마다 평가하므로 계산으로 앱이 멈춥니다 — 취소되었습니다. 참조 범위를 줄인 뒤 다시 시도하세요.',
     appPivotSheetNoStructural: '이 시트에는 피벗 테이블이 있어 아직 구조 변경을 지원하지 않습니다.',
+    appDeleteSpanFormulas:
+      '삭제할 행/열만 참조하는 수식이 있습니다 — 먼저 해당 수식을 수정하거나 삭제하세요.',
     appIconSetUnsupported:
       '이 아이콘 조합은 xlsx로 저장할 수 없습니다. 다른 아이콘 집합을 선택하세요.',
     appNeedFullLoadSort:
@@ -4197,6 +4222,8 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       '시트 복제에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
     appPivotSheetNoDuplicate: '이 시트에는 피벗 테이블이 있어 아직 시트 복제를 지원하지 않습니다.',
+    appDuplicateScopedNames:
+      '이 시트에는 시트 범위로 정의된 이름이 있어 아직 시트 복제를 지원하지 않습니다.',
     appMoveRowsColsUnsaved:
       '전체 열 이동은 가져온 통합 문서에 아직 저장할 수 없습니다 — 전체 행 이동은 지원됩니다.',
     // Preview / apply / undo
@@ -4406,6 +4433,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF 내보내기를 취소했습니다.',
     appPdfExported: '{path}을(를) 내보냈습니다.',
     appPdfExportFailed: 'PDF를 내보낼 수 없습니다.',
+    appCsvExportNeedsFullLoad:
+      'CSV 내보내기에는 통합 문서 전체 로드가 필요합니다 — 로드가 완료될 때까지 기다리십시오.',
+    appCsvExportTooLarge: '시트가 너무 커서 CSV로 내보낼 수 없습니다.',
+    appCsvExportCanceled: 'CSV 내보내기를 취소했습니다.',
+    appCsvExported: '{path}을(를) 내보냈습니다.',
+    appCsvExportedActiveOnly:
+      'CSV는 시트 하나만 포함합니다 — 활성 시트 "{name}"을(를) {path}(으)로 내보냈습니다.',
+    appCsvExportFailed: 'CSV를 내보낼 수 없습니다.',
     appDemoNoSave:
       '데모 모드의 편집은 메모리에만 저장됩니다 — 디스크에 저장하려면 XLSX 파일을 여십시오.',
     appFilterSnapshotFailed: '필터 상태의 스냅숏을 만들 수 없습니다.',
@@ -5009,11 +5044,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: '통합 문서에 피벗 테이블이 없습니다.',
     appRefreshAllTitle: '모든 피벗 테이블 새로 고침',
     appErrorCheckingDetail: '시트의 오류 값 검사',
-    appErrorCheckNeedsFullLoad: '통합 문서를 불러오는 중입니다. 완료 후 오류 검사를 실행하세요.',
     appErrorsFound: '오류 {count}개 — {cell}: {value}',
+    appCheckingErrors: '시트 전체의 오류를 검사하는 중…',
     appNoErrorsFound: '오류 값이 없습니다.',
-    appNoErrorsFoundPartial: '불러온 영역에 오류 값이 없습니다(파일이 커서 전체 검사는 아님).',
-    appErrorsFoundPartial: '불러온 영역에서 오류 {count}개 — {cell}: {value}',
     appGroupSortFilter: '정렬 및 필터',
     appSortSelectionTitle: '선택 영역 정렬',
     appSortAToZ: '오름차순 정렬',
@@ -5529,6 +5562,8 @@ export const appStrings = defineStrings({
       "Cette formule évalue une grande plage élément par élément — le calcul figerait l'application, elle a donc été annulée. Réduisez la plage référencée et réessayez.",
     appPivotSheetNoStructural:
       'Cette feuille contient un tableau croisé dynamique — les modifications structurelles ne sont pas encore prises en charge.',
+    appDeleteSpanFormulas:
+      'Une formule ne référence que les lignes/colonnes supprimées — mettez-la à jour ou supprimez-la d’abord.',
     appIconSetUnsupported:
       "Cette combinaison d'icônes ne peut pas être enregistrée en xlsx — choisissez un autre jeu d'icônes.",
     appNeedFullLoadSort:
@@ -5545,6 +5580,8 @@ export const appStrings = defineStrings({
       "La duplication d'une feuille nécessite le mode de chargement complet — ce classeur est trop volumineux et est chargé partiellement en flux.",
     appPivotSheetNoDuplicate:
       "Cette feuille contient un tableau croisé dynamique — sa duplication n'est pas encore prise en charge.",
+    appDuplicateScopedNames:
+      'Cette feuille contient des noms définis limités à la feuille — sa duplication n’est pas encore prise en charge.',
     appMoveRowsColsUnsaved:
       'Le déplacement de colonnes entières ne peut pas encore être enregistré dans les classeurs importés — le déplacement de lignes entières est pris en charge.',
     appNoWorkbookOpen: "Aucun classeur n'est ouvert.",
@@ -5773,6 +5810,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Export PDF annulé.',
     appPdfExported: '{path} exporté.',
     appPdfExportFailed: "Impossible d'exporter le PDF.",
+    appCsvExportNeedsFullLoad:
+      "L'export CSV nécessite un classeur entièrement chargé — attendez la fin du chargement.",
+    appCsvExportTooLarge: 'La feuille est trop grande pour être exportée en CSV.',
+    appCsvExportCanceled: 'Export CSV annulé.',
+    appCsvExported: '{path} exporté.',
+    appCsvExportedActiveOnly:
+      "Les fichiers CSV ne contiennent qu'une seule feuille — la feuille active « {name} » a été exportée vers {path}.",
+    appCsvExportFailed: "Impossible d'exporter le CSV.",
     appDemoNoSave:
       'Les modifications en mode démo restent en mémoire — ouvrez un fichier XLSX pour enregistrer sur le disque.',
     appFilterSnapshotFailed: 'Impossible de prendre un instantané des filtres.',
@@ -6373,13 +6418,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Aucun tableau croisé dans ce classeur.',
     appRefreshAllTitle: 'Actualiser tous les tableaux croisés',
     appErrorCheckingDetail: 'Rechercher les valeurs d’erreur de la feuille',
-    appErrorCheckNeedsFullLoad:
-      'Classeur en cours de chargement — relancez la vérification ensuite.',
     appErrorsFound: '{count} erreurs — à {cell} : {value}',
+    appCheckingErrors: 'Recherche d’erreurs dans toute la feuille…',
     appNoErrorsFound: 'Aucune valeur d’erreur trouvée.',
-    appNoErrorsFoundPartial:
-      'Aucune erreur dans la zone chargée (fichier volumineux, analyse partielle).',
-    appErrorsFoundPartial: '{count} erreurs dans la zone chargée — à {cell} : {value}',
     appGroupSortFilter: 'Trier et filtrer',
     appSortSelectionTitle: 'Trier la sélection',
     appSortAToZ: 'Trier de A à Z',
@@ -6886,6 +6927,8 @@ export const appStrings = defineStrings({
       'Diese Formel wertet einen großen Bereich pro Element aus — die Berechnung würde die App einfrieren, daher wurde sie abgebrochen. Verkleinern Sie den referenzierten Bereich und versuchen Sie es erneut.',
     appPivotSheetNoStructural:
       'Dieses Blatt enthält eine PivotTable — Strukturänderungen werden noch nicht unterstützt.',
+    appDeleteSpanFormulas:
+      'Eine Formel verweist nur auf die gelöschten Zeilen/Spalten — aktualisieren oder entfernen Sie sie zuerst.',
     appIconSetUnsupported:
       'Diese Symbolkombination kann nicht als xlsx gespeichert werden — bitte wählen Sie einen anderen Symbolsatz.',
     appNeedFullLoadSort:
@@ -6902,6 +6945,8 @@ export const appStrings = defineStrings({
       'Das Duplizieren eines Blatts erfordert den Volllademodus — diese Arbeitsmappe ist zu groß und wird teilweise per Streaming geladen.',
     appPivotSheetNoDuplicate:
       'Dieses Blatt enthält eine PivotTable — sein Duplizieren wird noch nicht unterstützt.',
+    appDuplicateScopedNames:
+      'Dieses Blatt enthält blattbezogene definierte Namen — das Duplizieren wird noch nicht unterstützt.',
     appMoveRowsColsUnsaved:
       'Das Verschieben ganzer Spalten kann bei importierten Arbeitsmappen noch nicht gespeichert werden — das Verschieben ganzer Zeilen wird unterstützt.',
     appNoWorkbookOpen: 'Keine Arbeitsmappe geöffnet.',
@@ -7125,6 +7170,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF-Export abgebrochen.',
     appPdfExported: '{path} exportiert.',
     appPdfExportFailed: 'PDF kann nicht exportiert werden.',
+    appCsvExportNeedsFullLoad:
+      'Der CSV-Export erfordert die vollständig geladene Arbeitsmappe — warten Sie, bis das Laden abgeschlossen ist.',
+    appCsvExportTooLarge: 'Das Blatt ist zu groß für den CSV-Export.',
+    appCsvExportCanceled: 'CSV-Export abgebrochen.',
+    appCsvExported: '{path} exportiert.',
+    appCsvExportedActiveOnly:
+      'CSV-Dateien enthalten nur ein Blatt — das aktive Blatt „{name}“ wurde nach {path} exportiert.',
+    appCsvExportFailed: 'CSV kann nicht exportiert werden.',
     appDemoNoSave:
       'Demo-Bearbeitungen bleiben im Speicher — öffnen Sie eine XLSX-Datei, um auf die Festplatte zu speichern.',
     appFilterSnapshotFailed: 'Momentaufnahme der Filter nicht möglich.',
@@ -7723,12 +7776,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Keine Pivot-Tabellen in dieser Arbeitsmappe.',
     appRefreshAllTitle: 'Alle Pivot-Tabellen aktualisieren',
     appErrorCheckingDetail: 'Blatt auf Fehlerwerte prüfen',
-    appErrorCheckNeedsFullLoad: 'Arbeitsmappe lädt noch — Fehlerprüfung danach erneut ausführen.',
     appErrorsFound: '{count} Fehler — bei {cell}: {value}',
+    appCheckingErrors: 'Das ganze Blatt wird auf Fehler gescannt…',
     appNoErrorsFound: 'Keine Fehlerwerte gefunden.',
-    appNoErrorsFoundPartial:
-      'Keine Fehlerwerte im geladenen Bereich (große Datei, kein vollständiger Scan).',
-    appErrorsFoundPartial: '{count} Fehler im geladenen Bereich — bei {cell}: {value}',
     appGroupSortFilter: 'Sortieren und Filtern',
     appSortSelectionTitle: 'Die Auswahl sortieren',
     appSortAToZ: 'Von A bis Z sortieren',
@@ -8235,6 +8285,8 @@ export const appStrings = defineStrings({
       'Esta fórmula evalúa un rango grande elemento por elemento — el cálculo congelaría la aplicación, así que se canceló. Reduzca el rango referenciado y vuelva a intentarlo.',
     appPivotSheetNoStructural:
       'Esta hoja contiene una tabla dinámica — los cambios estructurales aún no se admiten.',
+    appDeleteSpanFormulas:
+      'Una fórmula solo hace referencia a las filas/columnas eliminadas: actualícela o elimínela primero.',
     appIconSetUnsupported:
       'Esta combinación de iconos no se puede guardar en xlsx — elige otro conjunto de iconos.',
     appNeedFullLoadSort:
@@ -8250,6 +8302,8 @@ export const appStrings = defineStrings({
       'Duplicar una hoja requiere el modo de carga completa — este libro es demasiado grande y se carga parcialmente por streaming.',
     appPivotSheetNoDuplicate:
       'Esta hoja contiene una tabla dinámica — su duplicación aún no se admite.',
+    appDuplicateScopedNames:
+      'Esta hoja tiene nombres definidos con ámbito de hoja: duplicarla aún no es compatible.',
     appMoveRowsColsUnsaved:
       'Mover columnas enteras aún no se puede guardar en libros importados — mover filas enteras ya es compatible.',
     appNoWorkbookOpen: 'No hay ningún libro abierto.',
@@ -8470,6 +8524,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Exportación a PDF cancelada.',
     appPdfExported: 'Se exportó {path}.',
     appPdfExportFailed: 'No se puede exportar el PDF.',
+    appCsvExportNeedsFullLoad:
+      'La exportación a CSV requiere el libro completamente cargado — espere a que termine la carga.',
+    appCsvExportTooLarge: 'La hoja es demasiado grande para exportarla como CSV.',
+    appCsvExportCanceled: 'Exportación a CSV cancelada.',
+    appCsvExported: 'Se exportó {path}.',
+    appCsvExportedActiveOnly:
+      'Los archivos CSV solo contienen una hoja — se exportó la hoja activa «{name}» a {path}.',
+    appCsvExportFailed: 'No se puede exportar el CSV.',
     appDemoNoSave:
       'Las ediciones de demostración permanecen en memoria — abra un archivo XLSX para guardar en disco.',
     appFilterSnapshotFailed: 'No se puede tomar una instantánea de los filtros.',
@@ -9063,11 +9125,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'No hay tablas dinámicas en este libro.',
     appRefreshAllTitle: 'Actualizar todas las tablas dinámicas',
     appErrorCheckingDetail: 'Buscar valores de error en la hoja',
-    appErrorCheckNeedsFullLoad: 'El libro aún se está cargando; ejecute la comprobación después.',
     appErrorsFound: '{count} errores — en {cell}: {value}',
+    appCheckingErrors: 'Buscando errores en toda la hoja…',
     appNoErrorsFound: 'No se encontraron valores de error.',
-    appNoErrorsFoundPartial: 'Sin errores en la zona cargada (archivo grande, análisis parcial).',
-    appErrorsFoundPartial: '{count} errores en la zona cargada — en {cell}: {value}',
     appGroupSortFilter: 'Ordenar y filtrar',
     appSortSelectionTitle: 'Ordenar la selección',
     appSortAToZ: 'Ordenar de A a Z',
@@ -9549,6 +9609,8 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       'สูตรนี้ประเมินช่วงข้อมูลขนาดใหญ่ทีละองค์ประกอบ — การคำนวณจะทำให้แอปค้าง จึงถูกยกเลิก โปรดย่อช่วงที่อ้างอิงแล้วลองอีกครั้ง',
     appPivotSheetNoStructural: 'แผ่นงานนี้มี PivotTable — ยังไม่รองรับการเปลี่ยนโครงสร้าง',
+    appDeleteSpanFormulas:
+      'มีสูตรที่อ้างอิงเฉพาะแถว/คอลัมน์ที่จะถูกลบ — โปรดแก้ไขหรือลบสูตรนั้นก่อน',
     appIconSetUnsupported: 'ชุดไอคอนนี้ไม่สามารถบันทึกเป็น xlsx ได้ โปรดเลือกชุดไอคอนอื่น',
     appNeedFullLoadSort:
       'การเรียงลำดับ กรอง ย้ายช่วง และแยกข้อความเป็นคอลัมน์ต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
@@ -9560,6 +9622,8 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       'การทำสำเนาแผ่นงานต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
     appPivotSheetNoDuplicate: 'แผ่นงานนี้มี PivotTable — ยังไม่รองรับการทำสำเนาแผ่นงานนี้',
+    appDuplicateScopedNames:
+      'แผ่นงานนี้มีชื่อที่กำหนดระดับแผ่นงาน — ยังไม่รองรับการทำสำเนาแผ่นงานนี้',
     appMoveRowsColsUnsaved:
       'การย้ายทั้งคอลัมน์ยังบันทึกลงเวิร์กบุ๊กที่นำเข้าไม่ได้ — ส่วนการย้ายทั้งแถวรองรับแล้ว',
     appNoWorkbookOpen: 'ไม่มีเวิร์กบุ๊กที่เปิดอยู่',
@@ -9755,6 +9819,13 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'ยกเลิกการส่งออก PDF แล้ว',
     appPdfExported: 'ส่งออก {path} แล้ว',
     appPdfExportFailed: 'ส่งออก PDF ไม่ได้',
+    appCsvExportNeedsFullLoad: 'การส่งออก CSV ต้องรอให้เวิร์กบุ๊กโหลดเต็มก่อน — รอให้โหลดเสร็จ',
+    appCsvExportTooLarge: 'ชีตใหญ่เกินไป ส่งออกเป็น CSV ไม่ได้',
+    appCsvExportCanceled: 'ยกเลิกการส่งออก CSV แล้ว',
+    appCsvExported: 'ส่งออก {path} แล้ว',
+    appCsvExportedActiveOnly:
+      'ไฟล์ CSV มีได้เพียงชีตเดียว — ส่งออกชีตที่ใช้งานอยู่ “{name}” ไปยัง {path} แล้ว',
+    appCsvExportFailed: 'ส่งออก CSV ไม่ได้',
     appDemoNoSave:
       'การแก้ไขในโหมดสาธิตอยู่ในหน่วยความจำเท่านั้น — เปิดไฟล์ XLSX เพื่อบันทึกลงดิสก์',
     appFilterSnapshotFailed: 'บันทึกภาพรวมสถานะตัวกรองไม่ได้',
@@ -10336,11 +10407,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'ไม่มี PivotTable ในเวิร์กบุ๊กนี้',
     appRefreshAllTitle: 'รีเฟรช PivotTable ทั้งหมด',
     appErrorCheckingDetail: 'สแกนหาค่าผิดพลาดในชีต',
-    appErrorCheckNeedsFullLoad: 'เวิร์กบุ๊กกำลังโหลด เสร็จแล้วค่อยตรวจสอบข้อผิดพลาด',
     appErrorsFound: 'พบข้อผิดพลาด {count} รายการ — ที่ {cell}: {value}',
+    appCheckingErrors: 'กำลังสแกนหาข้อผิดพลาดทั่วทั้งชีต…',
     appNoErrorsFound: 'ไม่พบค่าผิดพลาด',
-    appNoErrorsFoundPartial: 'ไม่พบค่าผิดพลาดในส่วนที่โหลดแล้ว (ไฟล์ใหญ่ สแกนบางส่วน)',
-    appErrorsFoundPartial: 'พบข้อผิดพลาด {count} รายการในส่วนที่โหลดแล้ว — ที่ {cell}: {value}',
     appGroupSortFilter: 'เรียงลำดับและกรอง',
     appSortSelectionTitle: 'เรียงลำดับส่วนที่เลือก',
     appSortAToZ: 'เรียง A → Z',
@@ -10827,6 +10896,8 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       'Rumus ini mengevaluasi rentang besar per elemen — perhitungannya akan membekukan aplikasi, jadi dibatalkan. Persempit rentang yang dirujuk lalu coba lagi.',
     appPivotSheetNoStructural: 'Lembar ini berisi PivotTable — perubahan struktur belum didukung.',
+    appDeleteSpanFormulas:
+      'Ada rumus yang hanya merujuk baris/kolom yang dihapus — perbarui atau hapus rumus itu dahulu.',
     appIconSetUnsupported: 'Kombinasi ikon ini tidak dapat disimpan ke xlsx — pilih set ikon lain.',
     appNeedFullLoadSort:
       'Mengurutkan, memfilter, memindahkan rentang, dan memisahkan teks ke kolom memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
@@ -10839,6 +10910,8 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       'Menduplikasi lembar memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
     appPivotSheetNoDuplicate: 'Lembar ini berisi PivotTable — menduplikasinya belum didukung.',
+    appDuplicateScopedNames:
+      'Lembar ini memiliki nama terdefinisi berlingkup lembar — menduplikasinya belum didukung.',
     appMoveRowsColsUnsaved:
       'Memindahkan seluruh kolom belum dapat disimpan pada buku kerja yang diimpor — memindahkan seluruh baris sudah didukung.',
     appNoWorkbookOpen: 'Tidak ada buku kerja yang terbuka.',
@@ -11045,6 +11118,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Ekspor PDF dibatalkan.',
     appPdfExported: '{path} diekspor.',
     appPdfExportFailed: 'Tidak dapat mengekspor PDF.',
+    appCsvExportNeedsFullLoad:
+      'Ekspor CSV memerlukan buku kerja termuat penuh — tunggu pemuatan selesai.',
+    appCsvExportTooLarge: 'Lembar terlalu besar untuk diekspor sebagai CSV.',
+    appCsvExportCanceled: 'Ekspor CSV dibatalkan.',
+    appCsvExported: '{path} diekspor.',
+    appCsvExportedActiveOnly:
+      'File CSV hanya memuat satu lembar — lembar aktif “{name}” diekspor ke {path}.',
+    appCsvExportFailed: 'Tidak dapat mengekspor CSV.',
     appDemoNoSave: 'Pengeditan demo tetap di memori — buka file XLSX untuk menyimpan ke disk.',
     appFilterSnapshotFailed: 'Tidak dapat mengambil cuplikan status filter.',
     appColorFiltersUnsaveable:
@@ -11635,12 +11716,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Tidak ada PivotTable di buku kerja ini.',
     appRefreshAllTitle: 'Segarkan semua PivotTable',
     appErrorCheckingDetail: 'Pindai nilai kesalahan di lembar',
-    appErrorCheckNeedsFullLoad: 'Buku kerja masih dimuat — jalankan pemeriksaan setelah selesai.',
     appErrorsFound: '{count} kesalahan — di {cell}: {value}',
+    appCheckingErrors: 'Memindai kesalahan di seluruh lembar…',
     appNoErrorsFound: 'Tidak ada nilai kesalahan.',
-    appNoErrorsFoundPartial:
-      'Tidak ada nilai kesalahan di wilayah termuat (file besar, pemindaian sebagian).',
-    appErrorsFoundPartial: '{count} kesalahan di wilayah termuat — di {cell}: {value}',
     appGroupSortFilter: 'Urutkan & Filter',
     appSortSelectionTitle: 'Urutkan pilihan',
     appSortAToZ: 'Urutkan A → Z',
@@ -12137,6 +12215,8 @@ export const appStrings = defineStrings({
       'Эта формула вычисляет большой диапазон поэлементно — расчёт заморозил бы приложение, поэтому он отменён. Сузьте диапазон и попробуйте снова.',
     appPivotSheetNoStructural:
       'Этот лист содержит сводную таблицу — структурные изменения пока не поддерживаются.',
+    appDeleteSpanFormulas:
+      'Формула ссылается только на удаляемые строки/столбцы — сначала обновите или удалите её.',
     appIconSetUnsupported:
       'Эту комбинацию значков нельзя сохранить в xlsx — выберите другой набор значков.',
     appNeedFullLoadSort:
@@ -12153,6 +12233,8 @@ export const appStrings = defineStrings({
       'Дублирование листа требует режима полной загрузки — эта книга слишком велика и загружается потоково частично.',
     appPivotSheetNoDuplicate:
       'Этот лист содержит сводную таблицу — его дублирование пока не поддерживается.',
+    appDuplicateScopedNames:
+      'Этот лист содержит определённые имена уровня листа — его дублирование пока не поддерживается.',
     appMoveRowsColsUnsaved:
       'Перемещение целых столбцов пока нельзя сохранить в импортированных книгах — перемещение целых строк уже поддерживается.',
     appNoWorkbookOpen: 'Нет открытой книги.',
@@ -12362,6 +12444,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Экспорт в PDF отменён.',
     appPdfExported: 'Экспортировано: {path}.',
     appPdfExportFailed: 'Не удаётся экспортировать PDF.',
+    appCsvExportNeedsFullLoad:
+      'Экспорт в CSV требует полностью загруженной книги — дождитесь завершения загрузки.',
+    appCsvExportTooLarge: 'Лист слишком большой для экспорта в CSV.',
+    appCsvExportCanceled: 'Экспорт в CSV отменён.',
+    appCsvExported: 'Экспортировано: {path}.',
+    appCsvExportedActiveOnly:
+      'Файлы CSV содержат только один лист — активный лист «{name}» экспортирован в {path}.',
+    appCsvExportFailed: 'Не удаётся экспортировать CSV.',
     appDemoNoSave:
       'Изменения в демо-режиме остаются в памяти — откройте файл XLSX, чтобы сохранить на диск.',
     appFilterSnapshotFailed: 'Не удаётся сделать снимок состояния фильтров.',
@@ -12956,12 +13046,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'В книге нет сводных таблиц.',
     appRefreshAllTitle: 'Обновить все сводные таблицы',
     appErrorCheckingDetail: 'Найти значения ошибок на листе',
-    appErrorCheckNeedsFullLoad: 'Книга ещё загружается — запустите проверку после загрузки.',
     appErrorsFound: 'Ошибок: {count} — в {cell}: {value}',
+    appCheckingErrors: 'Идёт поиск ошибок по всему листу…',
     appNoErrorsFound: 'Значений ошибок не найдено.',
-    appNoErrorsFoundPartial:
-      'В загруженной области ошибок нет (большой файл — просканирована часть).',
-    appErrorsFoundPartial: 'Ошибок в загруженной области: {count} — в {cell}: {value}',
     appGroupSortFilter: 'Сортировка и фильтр',
     appSortSelectionTitle: 'Сортировать выделение',
     appSortAToZ: 'По возрастанию',
@@ -13444,6 +13531,8 @@ export const appStrings = defineStrings({
       'هذه الصيغة تقيّم نطاقًا كبيرًا لكل عنصر — الحساب سيجمّد التطبيق، لذا تم إلغاؤها. ضيّق النطاق المُشار إليه وحاول مرة أخرى.',
     appPivotSheetNoStructural:
       'تحتوي هذه الورقة على جدول محوري — التغييرات الهيكلية غير مدعومة بعد.',
+    appDeleteSpanFormulas:
+      'هناك صيغة تشير فقط إلى الصفوف/الأعمدة المحذوفة — قم بتحديثها أو حذفها أولاً.',
     appIconSetUnsupported:
       'لا يمكن حفظ مجموعة الأيقونات هذه في xlsx — يرجى اختيار مجموعة أيقونات أخرى.',
     appNeedFullLoadSort:
@@ -13456,6 +13545,8 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       'يتطلب تكرار الورقة وضع التحميل الكامل — هذا المصنف كبير جدًا ومحمّل جزئيًا بالبث.',
     appPivotSheetNoDuplicate: 'تحتوي هذه الورقة على جدول محوري — تكرارها غير مدعوم بعد.',
+    appDuplicateScopedNames:
+      'تحتوي هذه الورقة على أسماء معرفة على مستوى الورقة — تكرارها غير مدعوم بعد.',
     appMoveRowsColsUnsaved:
       'لا يمكن بعد حفظ نقل أعمدة كاملة في المصنفات المستوردة — أما نقل صفوف كاملة فمدعوم.',
     appNoWorkbookOpen: 'لا يوجد مصنف مفتوح.',
@@ -13649,6 +13740,13 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'أُلغي تصدير PDF.',
     appPdfExported: 'تم التصدير: {path}.',
     appPdfExportFailed: 'يتعذر تصدير PDF.',
+    appCsvExportNeedsFullLoad: 'يتطلب تصدير CSV مصنفًا محمّلاً بالكامل — انتظر حتى ينتهي التحميل.',
+    appCsvExportTooLarge: 'الورقة كبيرة جدًا ولا يمكن تصديرها بتنسيق CSV.',
+    appCsvExportCanceled: 'أُلغي تصدير CSV.',
+    appCsvExported: 'تم التصدير: {path}.',
+    appCsvExportedActiveOnly:
+      'ملفات CSV تحتوي على ورقة واحدة فقط — تم تصدير الورقة النشطة «{name}» إلى {path}.',
+    appCsvExportFailed: 'يتعذر تصدير CSV.',
     appDemoNoSave: 'تبقى تعديلات الوضع التجريبي في الذاكرة — افتح ملف XLSX للحفظ على القرص.',
     appFilterSnapshotFailed: 'يتعذر أخذ لقطة لحالة عوامل التصفية.',
     appColorFiltersUnsaveable:
@@ -14230,11 +14328,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'لا توجد جداول محورية في هذا المصنف.',
     appRefreshAllTitle: 'تحديث كل الجداول المحورية',
     appErrorCheckingDetail: 'فحص الورقة بحثًا عن قيم الخطأ',
-    appErrorCheckNeedsFullLoad: 'ما زال المصنف قيد التحميل — أعد فحص الأخطاء بعد اكتماله.',
     appErrorsFound: '{count} من الأخطاء — في {cell}: {value}',
+    appCheckingErrors: 'جارٍ فحص الورقة بالكامل بحثًا عن أخطاء…',
     appNoErrorsFound: 'لم يتم العثور على قيم خطأ.',
-    appNoErrorsFoundPartial: 'لا توجد قيم خطأ في المنطقة المحملة (ملف كبير — فحص جزئي).',
-    appErrorsFoundPartial: '{count} من الأخطاء في المنطقة المحملة — في {cell}: {value}',
     appGroupSortFilter: 'فرز وتصفية',
     appSortSelectionTitle: 'فرز التحديد',
     appSortAToZ: 'تصاعدي',
@@ -14739,6 +14835,8 @@ export const appStrings = defineStrings({
       'Esta fórmula avalia um intervalo grande elemento por elemento — o cálculo congelaria o aplicativo, então foi cancelada. Reduza o intervalo referenciado e tente novamente.',
     appPivotSheetNoStructural:
       'Esta planilha contém uma Tabela Dinâmica — alterações estruturais ainda não são suportadas.',
+    appDeleteSpanFormulas:
+      'Uma fórmula referencia apenas as linhas/colunas excluídas — atualize-a ou remova-a primeiro.',
     appIconSetUnsupported:
       'Esta combinação de ícones não pode ser salva em xlsx — escolha outro conjunto de ícones.',
     appNeedFullLoadSort:
@@ -14755,6 +14853,8 @@ export const appStrings = defineStrings({
       'Duplicar uma planilha requer o modo de carregamento completo — esta pasta de trabalho é muito grande e é carregada parcialmente por streaming.',
     appPivotSheetNoDuplicate:
       'Esta planilha contém uma Tabela Dinâmica — duplicá-la ainda não é suportado.',
+    appDuplicateScopedNames:
+      'Esta planilha tem nomes definidos no escopo da planilha — duplicá-la ainda não é suportado.',
     appMoveRowsColsUnsaved:
       'Mover colunas inteiras ainda não pode ser salvo em pastas de trabalho importadas — mover linhas inteiras já é suportado.',
     appNoWorkbookOpen: 'Nenhuma pasta de trabalho aberta.',
@@ -14971,6 +15071,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Exportação de PDF cancelada.',
     appPdfExported: '{path} exportado.',
     appPdfExportFailed: 'Não foi possível exportar o PDF.',
+    appCsvExportNeedsFullLoad:
+      'A exportação de CSV requer a pasta de trabalho totalmente carregada — aguarde o carregamento terminar.',
+    appCsvExportTooLarge: 'A planilha é grande demais para exportar como CSV.',
+    appCsvExportCanceled: 'Exportação de CSV cancelada.',
+    appCsvExported: '{path} exportado.',
+    appCsvExportedActiveOnly:
+      'Arquivos CSV contêm apenas uma planilha — a planilha ativa “{name}” foi exportada para {path}.',
+    appCsvExportFailed: 'Não foi possível exportar o CSV.',
     appDemoNoSave:
       'Edições de demonstração ficam na memória — abra um arquivo XLSX para salvar no disco.',
     appFilterSnapshotFailed: 'Não foi possível capturar o estado dos filtros.',
@@ -15562,11 +15670,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Nenhuma tabela dinâmica nesta pasta de trabalho.',
     appRefreshAllTitle: 'Atualizar todas as tabelas dinâmicas',
     appErrorCheckingDetail: 'Verificar valores de erro na planilha',
-    appErrorCheckNeedsFullLoad: 'A pasta ainda está carregando — execute a verificação depois.',
     appErrorsFound: '{count} erros — em {cell}: {value}',
+    appCheckingErrors: 'Procurando erros na planilha inteira…',
     appNoErrorsFound: 'Nenhum valor de erro encontrado.',
-    appNoErrorsFoundPartial: 'Sem erros na região carregada (arquivo grande, verificação parcial).',
-    appErrorsFoundPartial: '{count} erros na região carregada — em {cell}: {value}',
     appGroupSortFilter: 'Classificar e Filtrar',
     appSortSelectionTitle: 'Classificar a seleção',
     appSortAToZ: 'Classificar de A a Z',
@@ -16075,6 +16181,8 @@ export const appStrings = defineStrings({
       "Questa formula valuta un intervallo grande elemento per elemento — il calcolo bloccherebbe l'app, quindi è stata annullata. Riduci l'intervallo referenziato e riprova.",
     appPivotSheetNoStructural:
       'Questo foglio contiene una tabella pivot — le modifiche strutturali non sono ancora supportate.',
+    appDeleteSpanFormulas:
+      'Una formula fa riferimento solo alle righe/colonne eliminate — aggiornala o rimuovila prima.',
     appIconSetUnsupported:
       'Questa combinazione di icone non può essere salvata in xlsx — scegli un altro set di icone.',
     appNeedFullLoadSort:
@@ -16091,6 +16199,8 @@ export const appStrings = defineStrings({
       'La duplicazione di un foglio richiede la modalità a caricamento completo — questa cartella di lavoro è troppo grande e viene caricata parzialmente in streaming.',
     appPivotSheetNoDuplicate:
       'Questo foglio contiene una tabella pivot — la sua duplicazione non è ancora supportata.',
+    appDuplicateScopedNames:
+      'Questo foglio contiene nomi definiti a livello di foglio — la duplicazione non è ancora supportata.',
     appMoveRowsColsUnsaved:
       'Lo spostamento di intere colonne non può ancora essere salvato nelle cartelle di lavoro importate — lo spostamento di intere righe è supportato.',
     appNoWorkbookOpen: 'Nessuna cartella di lavoro aperta.',
@@ -16304,6 +16414,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Esportazione PDF annullata.',
     appPdfExported: '{path} esportato.',
     appPdfExportFailed: 'Impossibile esportare il PDF.',
+    appCsvExportNeedsFullLoad:
+      "L'esportazione in CSV richiede la cartella di lavoro completamente caricata — attendi la fine del caricamento.",
+    appCsvExportTooLarge: 'Il foglio è troppo grande per essere esportato come CSV.',
+    appCsvExportCanceled: 'Esportazione CSV annullata.',
+    appCsvExported: '{path} esportato.',
+    appCsvExportedActiveOnly:
+      'I file CSV contengono un solo foglio — il foglio attivo “{name}” è stato esportato in {path}.',
+    appCsvExportFailed: 'Impossibile esportare il CSV.',
     appDemoNoSave: 'Le modifiche demo restano in memoria — apri un file XLSX per salvare su disco.',
     appFilterSnapshotFailed: 'Impossibile acquisire lo stato dei filtri.',
     appColorFiltersUnsaveable:
@@ -16898,11 +17016,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Nessuna tabella pivot in questa cartella.',
     appRefreshAllTitle: 'Aggiorna tutte le tabelle pivot',
     appErrorCheckingDetail: 'Cerca valori di errore nel foglio',
-    appErrorCheckNeedsFullLoad: 'La cartella è ancora in caricamento — riesegui il controllo dopo.',
     appErrorsFound: '{count} errori — in {cell}: {value}',
+    appCheckingErrors: 'Ricerca errori in corso su tutto il foglio…',
     appNoErrorsFound: 'Nessun valore di errore trovato.',
-    appNoErrorsFoundPartial: 'Nessun errore nella zona caricata (file grande, scansione parziale).',
-    appErrorsFoundPartial: '{count} errori nella zona caricata — in {cell}: {value}',
     appGroupSortFilter: 'Ordina e filtra',
     appSortSelectionTitle: 'Ordina la selezione',
     appSortAToZ: 'Ordina dalla A alla Z',
@@ -17407,6 +17523,8 @@ export const appStrings = defineStrings({
       'Ta formuła ocenia duży zakres element po elemencie — obliczenia zawiesiłyby aplikację, więc ją anulowano. Zawęź zakres odwołań i spróbuj ponownie.',
     appPivotSheetNoStructural:
       'Ten arkusz zawiera tabelę przestawną — zmiany strukturalne nie są jeszcze obsługiwane.',
+    appDeleteSpanFormulas:
+      'Formuła odwołuje się wyłącznie do usuwanych wierszy/kolumn — najpierw ją zaktualizuj lub usuń.',
     appIconSetUnsupported:
       'Tej kombinacji ikon nie można zapisać w pliku xlsx — wybierz inny zestaw ikon.',
     appNeedFullLoadSort:
@@ -17423,6 +17541,8 @@ export const appStrings = defineStrings({
       'Duplikowanie arkusza wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
     appPivotSheetNoDuplicate:
       'Ten arkusz zawiera tabelę przestawną — jego duplikowanie nie jest jeszcze obsługiwane.',
+    appDuplicateScopedNames:
+      'Ten arkusz zawiera nazwy zdefiniowane o zasięgu arkusza — jego duplikowanie nie jest jeszcze obsługiwane.',
     appMoveRowsColsUnsaved:
       'Przenoszenia całych kolumn nie można jeszcze zapisać w zaimportowanych skoroszytach — przenoszenie całych wierszy jest już obsługiwane.',
     appNoWorkbookOpen: 'Żaden skoroszyt nie jest otwarty.',
@@ -17633,6 +17753,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Anulowano eksport do PDF.',
     appPdfExported: 'Wyeksportowano {path}.',
     appPdfExportFailed: 'Nie można wyeksportować pliku PDF.',
+    appCsvExportNeedsFullLoad:
+      'Eksport do CSV wymaga w pełni załadowanego skoroszytu — poczekaj na zakończenie ładowania.',
+    appCsvExportTooLarge: 'Arkusz jest za duży, aby wyeksportować go do CSV.',
+    appCsvExportCanceled: 'Anulowano eksport do CSV.',
+    appCsvExported: 'Wyeksportowano {path}.',
+    appCsvExportedActiveOnly:
+      'Pliki CSV zawierają tylko jeden arkusz — aktywny arkusz „{name}” wyeksportowano do {path}.',
+    appCsvExportFailed: 'Nie można wyeksportować pliku CSV.',
     appDemoNoSave:
       'Zmiany w trybie demo pozostają w pamięci — otwórz plik XLSX, aby zapisać na dysku.',
     appFilterSnapshotFailed: 'Nie można wykonać migawki stanu filtrów.',
@@ -18228,12 +18356,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Brak tabel przestawnych w tym skoroszycie.',
     appRefreshAllTitle: 'Odśwież wszystkie tabele przestawne',
     appErrorCheckingDetail: 'Skanuj arkusz w poszukiwaniu błędów',
-    appErrorCheckNeedsFullLoad:
-      'Skoroszyt wciąż się wczytuje — uruchom sprawdzanie po zakończeniu.',
     appErrorsFound: 'Błędy: {count} — w {cell}: {value}',
+    appCheckingErrors: 'Skanowanie całego arkusza w poszukiwaniu błędów…',
     appNoErrorsFound: 'Nie znaleziono wartości błędów.',
-    appNoErrorsFoundPartial: 'Brak błędów w załadowanym obszarze (duży plik — skan częściowy).',
-    appErrorsFoundPartial: 'Błędy w załadowanym obszarze: {count} — w {cell}: {value}',
     appGroupSortFilter: 'Sortowanie i filtrowanie',
     appSortSelectionTitle: 'Sortuj zaznaczenie',
     appSortAToZ: 'Sortuj od A do Z',
@@ -18737,6 +18862,8 @@ export const appStrings = defineStrings({
       'Deze formule evalueert een groot bereik per element — de berekening zou de app laten vastlopen, dus is deze geannuleerd. Verklein het bereik en probeer het opnieuw.',
     appPivotSheetNoStructural:
       'Dit werkblad bevat een draaitabel — structuurwijzigingen worden nog niet ondersteund.',
+    appDeleteSpanFormulas:
+      'Een formule verwijst alleen naar de verwijderde rijen/kolommen — werk deze eerst bij of verwijder deze.',
     appIconSetUnsupported:
       'Deze pictogramcombinatie kan niet worden opgeslagen als xlsx — kies een andere pictogramset.',
     appNeedFullLoadSort:
@@ -18753,6 +18880,8 @@ export const appStrings = defineStrings({
       'Het dupliceren van een werkblad vereist de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
     appPivotSheetNoDuplicate:
       'Dit werkblad bevat een draaitabel — dupliceren wordt nog niet ondersteund.',
+    appDuplicateScopedNames:
+      'Dit blad bevat gedefinieerde namen op bladniveau — dupliceren wordt nog niet ondersteund.',
     appMoveRowsColsUnsaved:
       'Het verplaatsen van hele kolommen kan nog niet worden opgeslagen in geïmporteerde werkmappen — het verplaatsen van hele rijen wordt wel ondersteund.',
     appNoWorkbookOpen: 'Er is geen werkmap geopend.',
@@ -18971,6 +19100,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF-export geannuleerd.',
     appPdfExported: '{path} geëxporteerd.',
     appPdfExportFailed: 'Kan de PDF niet exporteren.',
+    appCsvExportNeedsFullLoad:
+      'CSV-export vereist een volledig geladen werkmap — wacht tot het laden is voltooid.',
+    appCsvExportTooLarge: 'Het blad is te groot om als CSV te exporteren.',
+    appCsvExportCanceled: 'CSV-export geannuleerd.',
+    appCsvExported: '{path} geëxporteerd.',
+    appCsvExportedActiveOnly:
+      'CSV-bestanden bevatten slechts één blad — het actieve blad “{name}” is geëxporteerd naar {path}.',
+    appCsvExportFailed: 'Kan de CSV niet exporteren.',
     appDemoNoSave:
       'Demobewerkingen blijven in het geheugen — open een XLSX-bestand om op schijf op te slaan.',
     appFilterSnapshotFailed: 'Kan geen momentopname van de filters maken.',
@@ -19568,12 +19705,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Geen draaitabellen in deze werkmap.',
     appRefreshAllTitle: 'Alle draaitabellen vernieuwen',
     appErrorCheckingDetail: 'Blad scannen op foutwaarden',
-    appErrorCheckNeedsFullLoad: 'Werkmap laadt nog — voer de foutcontrole daarna opnieuw uit.',
     appErrorsFound: '{count} fouten — bij {cell}: {value}',
+    appCheckingErrors: 'Het hele werkblad wordt op fouten gecontroleerd…',
     appNoErrorsFound: 'Geen foutwaarden gevonden.',
-    appNoErrorsFoundPartial:
-      'Geen foutwaarden in het geladen gebied (groot bestand, gedeeltelijke scan).',
-    appErrorsFoundPartial: '{count} fouten in het geladen gebied — bij {cell}: {value}',
     appGroupSortFilter: 'Sorteren en filteren',
     appSortSelectionTitle: 'De selectie sorteren',
     appSortAToZ: 'Sorteren van A naar Z',
@@ -20063,6 +20197,8 @@ export const appStrings = defineStrings({
       'Formula ini menilai julat besar bagi setiap elemen — pengiraan akan membekukan aplikasi, jadi ia dibatalkan. Kecilkan julat yang dirujuk dan cuba lagi.',
     appPivotSheetNoStructural:
       'Helaian ini mengandungi Jadual Pangsi — perubahan struktur belum disokong.',
+    appDeleteSpanFormulas:
+      'Ada formula yang hanya merujuk baris/lajur yang dipadam — kemas kini atau padam formula itu dahulu.',
     appIconSetUnsupported: 'Gabungan ikon ini tidak boleh disimpan ke xlsx — pilih set ikon lain.',
     appNeedFullLoadSort:
       'Mengisih, menapis, mengalihkan julat dan memisahkan teks memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
@@ -20076,6 +20212,8 @@ export const appStrings = defineStrings({
       'Menduplikasi helaian memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
     appPivotSheetNoDuplicate:
       'Helaian ini mengandungi Jadual Pangsi — pendupikasiannya belum disokong.',
+    appDuplicateScopedNames:
+      'Helaian ini mempunyai nama tertakrif berskop helaian — penduaan belum disokong.',
     appMoveRowsColsUnsaved:
       'Pengalihan keseluruhan lajur belum boleh disimpan ke buku kerja yang diimport — pengalihan keseluruhan baris sudah disokong.',
     appNoWorkbookOpen: 'Tiada buku kerja dibuka.',
@@ -20279,6 +20417,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'Eksport PDF dibatalkan.',
     appPdfExported: '{path} dieksport.',
     appPdfExportFailed: 'Tidak dapat mengeksport PDF.',
+    appCsvExportNeedsFullLoad:
+      'Eksport CSV memerlukan buku kerja dimuatkan sepenuhnya — tunggu pemuatan selesai.',
+    appCsvExportTooLarge: 'Helaian terlalu besar untuk dieksport sebagai CSV.',
+    appCsvExportCanceled: 'Eksport CSV dibatalkan.',
+    appCsvExported: '{path} dieksport.',
+    appCsvExportedActiveOnly:
+      'Fail CSV hanya mengandungi satu helaian — helaian aktif “{name}” dieksport ke {path}.',
+    appCsvExportFailed: 'Tidak dapat mengeksport CSV.',
     appDemoNoSave: 'Suntingan demo kekal dalam memori — buka fail XLSX untuk menyimpan ke cakera.',
     appFilterSnapshotFailed: 'Tidak dapat mengambil syot kilat penapis.',
     appColorFiltersUnsaveable:
@@ -20870,12 +21016,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'Tiada Jadual Pangsi dalam buku kerja ini.',
     appRefreshAllTitle: 'Segar semula semua Jadual Pangsi',
     appErrorCheckingDetail: 'Imbas nilai ralat dalam helaian',
-    appErrorCheckNeedsFullLoad: 'Buku kerja masih dimuatkan — jalankan semakan selepas selesai.',
     appErrorsFound: '{count} ralat — di {cell}: {value}',
+    appCheckingErrors: 'Mengimbas ralat di seluruh helaian…',
     appNoErrorsFound: 'Tiada nilai ralat ditemui.',
-    appNoErrorsFoundPartial:
-      'Tiada nilai ralat dalam kawasan dimuatkan (fail besar, imbasan separa).',
-    appErrorsFoundPartial: '{count} ralat dalam kawasan dimuatkan — di {cell}: {value}',
     appGroupSortFilter: 'Isih & Tapis',
     appSortSelectionTitle: 'Isih pilihan',
     appSortAToZ: 'Isih A → Z',
@@ -21344,6 +21487,7 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       'נוסחה זו מחשבת טווח גדול עבור כל רכיב — החישוב היה מקפיא את היישום, ולכן בוטלה. צמצמו את הטווח ונסו שוב.',
     appPivotSheetNoStructural: 'גיליון זה מכיל טבלת ציר — שינויי מבנה אינם נתמכים עדיין.',
+    appDeleteSpanFormulas: 'נוסחה מפנה רק לשורות/עמודות שנמחקות — עדכן או הסר אותה תחילה.',
     appIconSetUnsupported: 'לא ניתן לשמור שילוב אייקונים זה בקובץ xlsx — בחרו ערכת אייקונים אחרת.',
     appNeedFullLoadSort:
       'מיון, סינון, הזזת טווחים ופיצול טקסט דורשים מצב טעינה מלאה — חוברת עבודה זו גדולה מדי ונטענת בהזרמה חלקית.',
@@ -21355,6 +21499,7 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       'שכפול גיליון דורש מצב טעינה מלאה — חוברת עבודה זו גדולה מדי ונטענת בהזרמה חלקית.',
     appPivotSheetNoDuplicate: 'גיליון זה מכיל טבלת ציר — שכפולו אינו נתמך עדיין.',
+    appDuplicateScopedNames: 'גיליון זה מכיל שמות מוגדרים ברמת הגיליון — שכפולו אינו נתמך עדיין.',
     appMoveRowsColsUnsaved:
       'הזזת עמודות שלמות אינה ניתנת לשמירה עדיין בחוברות עבודה מיובאות — הזזת שורות שלמות כבר נתמכת.',
     appNoWorkbookOpen: 'אין חוברת עבודה פתוחה.',
@@ -21546,6 +21691,13 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'ייצוא ה-PDF בוטל.',
     appPdfExported: '{path} יוצא.',
     appPdfExportFailed: 'לא ניתן לייצא את ה-PDF.',
+    appCsvExportNeedsFullLoad: 'ייצוא CSV דורש חוברת עבודה טעונה במלואה — המתן לסיום הטעינה.',
+    appCsvExportTooLarge: 'הגיליון גדול מדי לייצוא כ-CSV.',
+    appCsvExportCanceled: 'ייצוא ה-CSV בוטל.',
+    appCsvExported: '{path} יוצא.',
+    appCsvExportedActiveOnly:
+      'קובצי CSV מכילים גיליון אחד בלבד — הגיליון הפעיל "{name}" יוצא אל {path}.',
+    appCsvExportFailed: 'לא ניתן לייצא את ה-CSV.',
     appDemoNoSave: 'עריכות הדגמה נשארות בזיכרון — פתח קובץ XLSX כדי לשמור לדיסק.',
     appFilterSnapshotFailed: 'לא ניתן לצלם את מצב המסננים.',
     appColorFiltersUnsaveable: 'מסנני צבע אינם ניתנים לשמירה כ-XLSX עדיין — נקה אותם לפני השמירה.',
@@ -22125,11 +22277,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'אין טבלאות ציר בחוברת זו.',
     appRefreshAllTitle: 'רענון כל טבלאות הציר',
     appErrorCheckingDetail: 'סריקת הגיליון לערכי שגיאה',
-    appErrorCheckNeedsFullLoad: 'החוברת עדיין נטענת — הריצו את בדיקת השגיאות לאחר הסיום.',
     appErrorsFound: '{count} שגיאות — ב-{cell}: {value}',
+    appCheckingErrors: 'סורקים את הגיליון כולו לאיתור שגיאות…',
     appNoErrorsFound: 'לא נמצאו ערכי שגיאה.',
-    appNoErrorsFoundPartial: 'אין ערכי שגיאה באזור שנטען (קובץ גדול — סריקה חלקית).',
-    appErrorsFoundPartial: '{count} שגיאות באזור שנטען — ב-{cell}: {value}',
     appGroupSortFilter: 'מיון וסינון',
     appSortSelectionTitle: 'מיין את הבחירה',
     appSortAToZ: 'מיין א → ת',
@@ -22618,6 +22768,8 @@ export const appStrings = defineStrings({
       'यह सूत्र बड़ी रेंज का प्रति-तत्व मूल्यांकन करता है — गणना से ऐप फ़्रीज़ हो जाता, इसलिए इसे रद्द किया गया। संदर्भित रेंज छोटी करके पुनः प्रयास करें।',
     appPivotSheetNoStructural:
       'इस शीट में पिवट टेबल है — संरचनात्मक परिवर्तन अभी समर्थित नहीं हैं।',
+    appDeleteSpanFormulas:
+      'कोई सूत्र केवल हटाई जा रही पंक्तियों/स्तंभों को संदर्भित करता है — पहले उसे अपडेट करें या हटाएँ।',
     appIconSetUnsupported:
       'यह आइकन संयोजन xlsx में सहेजा नहीं जा सकता — कृपया कोई अन्य आइकन सेट चुनें।',
     appNeedFullLoadSort:
@@ -22633,6 +22785,8 @@ export const appStrings = defineStrings({
     appDuplicateNeedsFullLoad:
       'शीट की प्रतिलिपि बनाने के लिए पूर्ण-लोड मोड चाहिए — यह कार्यपुस्तिका बहुत बड़ी है और आंशिक रूप से स्ट्रीम होती है।',
     appPivotSheetNoDuplicate: 'इस शीट में पिवट टेबल है — इसकी प्रतिलिपि बनाना अभी समर्थित नहीं है।',
+    appDuplicateScopedNames:
+      'इस शीट में शीट-स्तरीय परिभाषित नाम हैं — इसकी प्रतिलिपि बनाना अभी समर्थित नहीं है।',
     appMoveRowsColsUnsaved:
       'पूरे स्तंभ स्थानांतरित करना अभी आयातित कार्यपुस्तिकाओं में सहेजा नहीं जा सकता — पूरी पंक्तियाँ स्थानांतरित करना समर्थित है।',
     appNoWorkbookOpen: 'कोई कार्यपुस्तिका खुली नहीं है।',
@@ -22834,6 +22988,14 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF निर्यात रद्द किया गया।',
     appPdfExported: '{path} निर्यात किया गया।',
     appPdfExportFailed: 'PDF निर्यात नहीं किया जा सका।',
+    appCsvExportNeedsFullLoad:
+      'CSV निर्यात के लिए पूरी तरह लोड की गई कार्यपुस्तिका चाहिए — लोडिंग पूरी होने तक प्रतीक्षा करें।',
+    appCsvExportTooLarge: 'शीट बहुत बड़ी है, CSV के रूप में निर्यात नहीं की जा सकती।',
+    appCsvExportCanceled: 'CSV निर्यात रद्द किया गया।',
+    appCsvExported: '{path} निर्यात किया गया।',
+    appCsvExportedActiveOnly:
+      'CSV फ़ाइलों में केवल एक शीट होती है — सक्रिय शीट “{name}” को {path} पर निर्यात किया गया।',
+    appCsvExportFailed: 'CSV निर्यात नहीं किया जा सका।',
     appDemoNoSave: 'डेमो संपादन स्मृति में रहते हैं — डिस्क पर सहेजने के लिए XLSX फ़ाइल खोलें।',
     appFilterSnapshotFailed: 'फ़िल्टर की स्थिति का स्नैपशॉट नहीं लिया जा सका।',
     appColorFiltersUnsaveable:
@@ -23424,11 +23586,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: 'इस वर्कबुक में कोई पिवट टेबल नहीं।',
     appRefreshAllTitle: 'सभी पिवट टेबल रीफ़्रेश करें',
     appErrorCheckingDetail: 'शीट में त्रुटि मान खोजें',
-    appErrorCheckNeedsFullLoad: 'वर्कबुक अभी लोड हो रही है — लोड होने के बाद त्रुटि जाँच चलाएँ।',
     appErrorsFound: '{count} त्रुटियाँ — {cell} पर: {value}',
+    appCheckingErrors: 'पूरी शीट में त्रुटियों के लिए स्कैन हो रहा है…',
     appNoErrorsFound: 'कोई त्रुटि मान नहीं मिला।',
-    appNoErrorsFoundPartial: 'लोड क्षेत्र में कोई त्रुटि मान नहीं (बड़ी फ़ाइल — आंशिक स्कैन)।',
-    appErrorsFoundPartial: 'लोड क्षेत्र में {count} त्रुटियाँ — {cell} पर: {value}',
     appGroupSortFilter: 'क्रमबद्ध और फ़िल्टर करें',
     appSortSelectionTitle: 'चयन को क्रमबद्ध करें',
     appSortAToZ: 'A → Z क्रमबद्ध करें',
@@ -23882,6 +24042,7 @@ export const appStrings = defineStrings({
     appFormulaTooExpensive:
       '該公式要對大範圍做逐元素統計，計算量過大會導致介面卡死——已取消。請縮小引用範圍後重試。',
     appPivotSheetNoStructural: '該工作表含樞紐分析表——暫不支援結構變更。',
+    appDeleteSpanFormulas: '有公式僅引用被刪除的列/欄——請先更新或刪除這些公式。',
     appIconSetUnsupported: '該圖示組合無法儲存為 xlsx 檔案，請改用其他圖示集。',
     appNeedFullLoadSort:
       '排序、篩選、移動範圍和資料剖析需要完整載入模式——這個活頁簿太大，只做了串流載入。',
@@ -23891,6 +24052,7 @@ export const appStrings = defineStrings({
     appDvNeedsIndexed: '編輯資料驗證需要該工作表先完成索引——請稍後再試。',
     appDuplicateNeedsFullLoad: '複製工作表需要完整載入模式——這個活頁簿太大，只做了串流載入。',
     appPivotSheetNoDuplicate: '該工作表含樞紐分析表——暫不支援複製該表。',
+    appDuplicateScopedNames: '該工作表含表級定義名稱——暫不支援複製該表。',
     appMoveRowsColsUnsaved: '整欄移動暫時無法儲存到匯入的活頁簿——整列移動已支援。',
     appNoWorkbookOpen: '目前沒有開啟的活頁簿。',
     appDvListOptions: '清單：{items}',
@@ -24076,6 +24238,12 @@ export const appStrings = defineStrings({
     appPdfCanceled: 'PDF 匯出已取消。',
     appPdfExported: '已匯出 {path}。',
     appPdfExportFailed: '無法匯出 PDF。',
+    appCsvExportNeedsFullLoad: 'CSV 匯出需要活頁簿完整載入——請等待載入完成。',
+    appCsvExportTooLarge: '工作表太大,無法匯出 CSV。',
+    appCsvExportCanceled: 'CSV 匯出已取消。',
+    appCsvExported: '已匯出 {path}。',
+    appCsvExportedActiveOnly: 'CSV 只包含一張工作表——已匯出目前工作表「{name}」到 {path}。',
+    appCsvExportFailed: '無法匯出 CSV。',
     appDemoNoSave: '示範模式的編輯只保存在記憶體——開啟 XLSX 檔案才能儲存到磁碟。',
     appFilterSnapshotFailed: '無法擷取篩選狀態快照。',
     appColorFiltersUnsaveable: '色彩篩選暫時無法儲存為 XLSX——請先清除再儲存。',
@@ -24645,11 +24813,9 @@ export const appStrings = defineStrings({
     appWorkbookNoPivot: '活頁簿中沒有樞紐分析表。',
     appRefreshAllTitle: '重新整理全部樞紐分析表',
     appErrorCheckingDetail: '掃描目前工作表中的錯誤值',
-    appErrorCheckNeedsFullLoad: '活頁簿仍在載入,載入完成後再檢查錯誤。',
     appErrorsFound: '發現 {count} 個錯誤,已定位 {cell}:{value}',
+    appCheckingErrors: '正在掃描整個工作表的錯誤…',
     appNoErrorsFound: '未發現錯誤值。',
-    appNoErrorsFoundPartial: '已載入區域未發現錯誤值(檔案較大,未全量掃描)。',
-    appErrorsFoundPartial: '已載入區域發現 {count} 個錯誤,已定位 {cell}:{value}',
     appGroupSortFilter: '排序與篩選',
     appSortSelectionTitle: '對所選內容排序',
     appSortAToZ: '遞增排序',

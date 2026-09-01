@@ -1,6 +1,14 @@
 import { z } from 'zod'
 
-import { MAX_SAVE_EDITS, MAX_SAVE_EDITS_TOTAL, SAVE_EDITS_CHUNK_MAX } from './ipc-channels'
+import {
+  MAX_CREATE_DOCUMENT_CONTENT_CHARS,
+  MAX_CREATE_DOCUMENT_TITLE_CHARS,
+  MAX_CSV_EXPORT_CHARS,
+  MAX_SAVE_EDITS,
+  MAX_SAVE_EDITS_TOTAL,
+  SAVE_EDITS_CHUNK_JSON_MAX,
+  SAVE_EDITS_CHUNK_MAX,
+} from './ipc-channels'
 import { ADDABLE_SHAPE_TYPES } from './shape-types'
 import type {
   AiChatRequest,
@@ -11,7 +19,7 @@ import type {
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
 
-const MAX_RANGE_CELLS = 20_000
+const MAX_RANGE_CELLS = 100_000
 const cellScalarSchema = z.union([z.string(), z.number().finite(), z.boolean(), z.null()])
 const cellAreaSchema = z
   .object({
@@ -52,6 +60,10 @@ const worksheetMetadataSchema = z
     /// compatibility with an older sidecar binary.
     defaultRowHeightFixed: z.boolean().optional(),
     defaultColumnWidth: z.number().nonnegative().nullable(),
+    /// sheetFormatPr/@baseColWidth — the built-in default column width is
+    /// derived from this (default 8) when defaultColWidth is absent.
+    /// Optional for compatibility with an older sidecar binary.
+    baseColumnWidth: z.number().nonnegative().nullable().optional(),
     freeze: z
       .object({
         frozenColumns: z.number().int().nonnegative(),
@@ -140,6 +152,8 @@ const worksheetMetadataSchema = z
             /// Body band fill for solid families (Dark); stripe overlays it.
             wholeTableFill: z.string().optional(),
             stripeFill: z.string().optional(),
+            /// A named pivotTableStyleInfo: band rows bold even with no fills.
+            styled: z.boolean().optional(),
             firstDataRow: z.number().int().nonnegative().optional(),
             rowGrandTotals: z.boolean().optional(),
           })
@@ -172,6 +186,30 @@ const worksheetMetadataSchema = z
           .strict(),
       )
       .max(100)
+      .default([]),
+    /// Saved `_xlnm.Print_Area` / `_xlnm.Print_Titles` formulas for this
+    /// sheet, verbatim from workbook.xml.
+    printArea: z.string().min(1).max(2_000).optional(),
+    printTitles: z.string().min(1).max(2_000).optional(),
+    /// Any localSheetId-scoped definedName targets this sheet (hidden and
+    /// _xlnm.* built-ins included); duplication is gated on it up front
+    /// because the save refuses to clone such sheets. Optional for an older
+    /// sidecar binary.
+    hasScopedDefinedNames: z.boolean().optional(),
+    /// In-cell rich-value pictures (Excel "place picture in cell"): the id is
+    /// a media lookup key for readWorkbookMedia, like a visual id.
+    /// Defaulted for stale sidecar binaries, like sparklines.
+    cellImages: z
+      .array(
+        z
+          .object({
+            id: z.string().min(1),
+            row: z.number().int().nonnegative(),
+            column: z.number().int().nonnegative(),
+          })
+          .strict(),
+      )
+      .max(500)
       .default([]),
   })
   .strict()
@@ -274,6 +312,11 @@ const drawingAnchorSchema = z
     toColumn: z.number().int().nonnegative(),
     toRowOffset: z.number().int(),
     toColumnOffset: z.number().int(),
+    /// True when the file carried a real `<xdr:to>` marker: its offset
+    /// clamps at the cell edge (Excel behavior for broken writers) instead
+    /// of walking past it like synthesized oneCellAnchor/absoluteAnchor
+    /// encodings.
+    explicitTo: z.boolean().optional(),
   })
   .strict()
 const chartAxisInfoSchema = z
@@ -286,6 +329,8 @@ const chartAxisInfoSchema = z
     majorGridlines: z.boolean(),
     /// c:delete — the axis scales series but is not drawn.
     hidden: z.boolean().default(false),
+    /// c:scaling/c:orientation val="maxMin".
+    reversed: z.boolean().default(false),
   })
   .strict()
 
@@ -342,9 +387,24 @@ const visualObjectSchema = z
                 .optional(),
               /// spPr/a:ln color; "none" for an explicit noFill line.
               lineColor: z.string().optional(),
+              /// spPr/a:ln/@w in CSS px (EMU / 12700 pt · 96/72).
+              lineWidth: z.number().finite().optional(),
               smooth: z.boolean().optional(),
               /// c:marker symbol — "none" hides scatter/line markers.
               marker: z.string().optional(),
+              /// First outer multiLvlStrCache level; start/end index the
+              /// compacted `categories` (end exclusive).
+              categoryGroups: z
+                .array(
+                  z
+                    .object({
+                      label: z.string(),
+                      start: z.number().int().nonnegative(),
+                      end: z.number().int().nonnegative(),
+                    })
+                    .strict(),
+                )
+                .optional(),
             })
             .strict(),
         ),
@@ -390,6 +450,8 @@ const visualObjectSchema = z
         secondaryYAxis: chartAxisInfoSchema.optional(),
         /// c:scatterStyle — whether scatter points connect with lines.
         scatterStyle: z.string().optional(),
+        /// Plot-level c:lineChart/c:marker flag; per-series symbols refine it.
+        lineMarkers: z.boolean().optional(),
         /// c:title/c:txPr//a:defRPr shorthand.
         titleStyle: z
           .object({
@@ -405,6 +467,12 @@ const visualObjectSchema = z
     chartPath: z.string().optional(),
     mediaPath: z.string().optional(),
     mediaType: z.string().optional(),
+    /// a:blip/a:alphaModFix amt as 0..1 picture opacity.
+    opacity: z.number().min(0).max(1).optional(),
+    /// spPr/a:blipFill on a shape — the image painted clipped to the
+    /// preset geometry.
+    fillMediaPath: z.string().optional(),
+    fillMediaType: z.string().optional(),
     /// Renderer-only: preview bytes for images added this session (not yet in
     /// the package); the sidecar never emits this.
     mediaDataUrl: z.string().optional(),
@@ -499,6 +567,17 @@ const visualObjectSchema = z
   })
   .strict()
 
+/// The gateway's per-entry patch cap: only entries it patches must fit in
+/// memory. Large, densely styled worksheets routinely exceed 256 MiB as XML
+/// even when the .xlsx itself is modest (the 88k-row suppliers fixture is
+/// about 307 MiB). 500 MiB keeps those editable while retaining a finite
+/// decompression-bomb / main-process-memory bound — deliberately below V8's
+/// maximum string length (536,870,888 bytes), so an oversized entry fails
+/// with a clear message instead of blowing up mid-stringify. Shared so the
+/// renderer pre-rejects edits on a worksheet whose XML can never be
+/// rewritten, instead of letting Apply succeed and every save fail.
+export const MAX_PATCH_ENTRY_BYTES = 500 * 1024 * 1024
+
 export const workbookFileSchema = z
   .object({
     sessionId: z.string().uuid(),
@@ -507,6 +586,8 @@ export const workbookFileSchema = z
     /// that never touched disk.
     path: z.string().min(1).optional(),
     sha256: z.string().length(64),
+    /// Byte size of the opened snapshot; gates the IronCalc recalc fallback.
+    fileBytes: z.number().int().nonnegative().optional(),
     entryCount: z.number().int().nonnegative(),
     sheets: z.array(worksheetMetadataSchema).min(1),
     /// workbookView/@activeTab — sheet index Excel had active on save.
@@ -526,9 +607,14 @@ export const workbookFileSchema = z
         .strict(),
     ),
     readOnly: z.boolean(),
-    /// Converted import (.xls/.csv): the first save opens a Save As dialog,
+    /// Converted .xls import: the first save opens a Save As dialog,
     /// so background flows (AutoSave) must not trigger mode 'save'.
     needsSaveAs: z.boolean().optional(),
+    /// CSV session: the original .csv on disk. Save keeps the CSV identity —
+    /// the renderer sends csvContent with the save and the main process
+    /// writes it back here. Background flows (AutoSave, crash recovery)
+    /// stand down: silently flattening the file would lose data.
+    csvPath: z.string().min(1).optional(),
     /// Session opened from a restored crash-recovery copy: Save silently
     /// writes back to the original file, and the 30s recovery writer stands
     /// down (it would overwrite the copy the sidecar is streaming from).
@@ -673,6 +759,38 @@ export const workbookRangeResultSchema = z
     /// sheet-wide, complete-only.
     rowBreaks: z.array(z.number().int().nonnegative()).max(1_024),
     colBreaks: z.array(z.number().int().nonnegative()).max(1_024),
+    /// Saved print settings (pageSetup / pageMargins / printOptions /
+    /// headerFooter); sheet-wide, complete-only. Absent/null when the sheet
+    /// declares none (also for stale sidecar binaries).
+    pageSetup: z
+      .object({
+        orientation: z.enum(['portrait', 'landscape']).optional(),
+        paperSize: z.number().int().min(1).max(256).optional(),
+        scale: z.number().int().min(10).max(400).optional(),
+        fitToWidth: z.number().int().min(0).max(32_767).optional(),
+        fitToHeight: z.number().int().min(0).max(32_767).optional(),
+        fitToPage: z.boolean().optional(),
+        /// Inches.
+        margins: z
+          .object({
+            left: z.number().min(0).max(10),
+            right: z.number().min(0).max(10),
+            top: z.number().min(0).max(10),
+            bottom: z.number().min(0).max(10),
+            header: z.number().min(0).max(10),
+            footer: z.number().min(0).max(10),
+          })
+          .strict()
+          .optional(),
+        printGridlines: z.boolean().optional(),
+        printHeadings: z.boolean().optional(),
+        /// Excel-encoded odd header/footer (&L/&C/&R sections, field codes).
+        oddHeader: z.string().min(1).max(500).optional(),
+        oddFooter: z.string().min(1).max(500).optional(),
+      })
+      .strict()
+      .nullish()
+      .default(null),
     /// Allow-edit ranges (<protectedRanges>); sheet-wide, complete-only.
     protectedRanges: z
       .array(
@@ -1630,9 +1748,19 @@ export const workbookSaveEditsChunkSchema = z
     transferId: z.string().uuid(),
     /// 0-based slice index; chunks must arrive in order.
     seq: z.number().int().nonnegative(),
-    edits: z.array(workbookCellEditSchema).min(1).max(SAVE_EDITS_CHUNK_MAX),
+    /// JSON-serialized WorkbookCellEdit[] — a flat string crosses the context
+    /// bridge and the IPC hop in milliseconds where a live array of the same
+    /// edits costs seconds; the main process parses and validates it against
+    /// saveEditsChunkArraySchema before storing.
+    editsJson: z.string().min(2).max(SAVE_EDITS_CHUNK_JSON_MAX),
   })
   .strict()
+
+/// Validates a chunk's parsed editsJson in the main process.
+export const saveEditsChunkArraySchema = z
+  .array(workbookCellEditSchema)
+  .min(1)
+  .max(SAVE_EDITS_CHUNK_MAX)
 
 /// Renderer-initiated cleanup when an upload or its save fails: frees the
 /// accumulated edits immediately instead of waiting for the idle expiry.
@@ -1651,6 +1779,9 @@ export const workbookSaveRequestSchema = z
     /// change is the workbook bytes themselves, so the request is valid with
     /// an otherwise empty payload (like an explicit Save As).
     restoreWriteBack: z.boolean().optional(),
+    /// CSV session in-place save: the active sheet serialized as CSV text.
+    /// Written back to the session's original .csv after the xlsx save.
+    csvContent: z.string().max(MAX_CSV_EXPORT_CHARS).optional(),
     edits: z.array(workbookCellEditSchema).max(MAX_SAVE_EDITS),
     /// Edit sets above MAX_SAVE_EDITS arrive through the chunked transfer
     /// (saveEditsBegin/saveEditsChunk) instead of inline: the request then
@@ -1854,7 +1985,15 @@ export const workbookSaveRequestSchema = z
   })
 
 export const workbookSaveResultSchema = z.union([
-  z.object({ canceled: z.literal(true) }).strict(),
+  z
+    .object({
+      canceled: z.literal(true),
+      /// The user picked the CSV format in the Save As dialog: no xlsx was
+      /// written; the renderer serializes the active sheet to this path via
+      /// the CSV export channel instead.
+      csvSaveAsPath: z.string().min(1).optional(),
+    })
+    .strict(),
   z
     .object({
       canceled: z.literal(false),
@@ -2089,6 +2228,8 @@ export type WorkbookRangeRequest = z.infer<typeof workbookRangeRequestSchema>
 export type WorkbookFormulaCellsRequest = z.infer<typeof workbookFormulaCellsRequestSchema>
 export type WorkbookFormulaCellsResult = z.infer<typeof workbookFormulaCellsResultSchema>
 export type WorkbookRangeResult = z.infer<typeof workbookRangeResultSchema>
+/// The sheet's saved print settings as parsed from the file.
+export type WorkbookPagePrintSettings = NonNullable<WorkbookRangeResult['pageSetup']>
 export type WorkbookRecalcRequest = z.infer<typeof workbookRecalcRequestSchema>
 export type WorkbookRecalcResult = z.infer<typeof workbookRecalcResultSchema>
 export type WorkbookMediaRequest = z.infer<typeof workbookMediaRequestSchema>
@@ -2168,6 +2309,8 @@ const agentMessageSchema = z.union([
       role: z.literal('assistant'),
       text: z.string(),
       toolCalls: z.array(agentToolCallSchema).optional(),
+      // captured model thinking, echoed back for interleaved-thinking models
+      reasoning: z.string().optional(),
     })
     .strict(),
   z.object({ role: z.literal('tool'), results: z.array(agentToolResultSchema) }).strict(),
@@ -2234,6 +2377,10 @@ export const workbookExportPdfRequestSchema = z
       })
       .strict(),
     scale: z.number().min(0.1).max(2),
+    /// Chromium print header/footer templates (rendered in the margin
+    /// boxes; `pageNumber`/`totalPages` spans resolve per page).
+    headerTemplate: z.string().min(1).max(50_000).optional(),
+    footerTemplate: z.string().min(1).max(50_000).optional(),
   })
   .strict()
 
@@ -2244,6 +2391,82 @@ export const workbookExportPdfResultSchema = z.union([
 
 export type WorkbookExportPdfRequest = z.infer<typeof workbookExportPdfRequestSchema>
 export type WorkbookExportPdfResult = z.infer<typeof workbookExportPdfResultSchema>
+
+/// CSV export of the active sheet: the renderer serializes display values,
+/// the main process runs the loss warning + save dialog and writes the bytes.
+export const workbookExportCsvRequestSchema = z
+  .object({
+    fileName: z.string().min(1).max(255),
+    content: z.string().max(MAX_CSV_EXPORT_CHARS),
+    /// The exported sheet carries formulas — CSV keeps their values only, so
+    /// the main process offers Save As .xlsx first (Excel's warning flow).
+    hasFormulas: z.boolean(),
+    /// Set when the workbook has more sheets than the exported one.
+    activeSheetName: z.string().max(255).optional(),
+    /// Write straight to this path (from the Save As dialog's CSV pick)
+    /// instead of opening another save dialog.
+    targetPath: z.string().min(1).optional(),
+  })
+  .strict()
+
+export const workbookExportCsvResultSchema = z.union([
+  z
+    .object({
+      canceled: z.literal(true),
+      /// The user chose "Save as .xlsx" in the formula-loss warning; the
+      /// renderer routes into the regular Save As flow instead.
+      saveAsXlsxInstead: z.boolean().optional(),
+    })
+    .strict(),
+  z.object({ canceled: z.literal(false), path: z.string().min(1) }).strict(),
+])
+
+export type WorkbookExportCsvRequest = z.infer<typeof workbookExportCsvRequestSchema>
+export type WorkbookExportCsvResult = z.infer<typeof workbookExportCsvResultSchema>
+
+/// AI create_document: a new standalone file written into the default save
+/// folder (no dialog) under a unique sanitized name and opened in a new tab.
+/// xlsx/csv carry one worksheet's serialized CSV in content (the renderer
+/// reads the grid, mirroring the manual CSV export); docx/pdf/md carry
+/// AI-authored HTML/Markdown, routed by the shell into the docs-owned
+/// creation flow (#960).
+export const workbookCreateDocumentRequestSchema = z
+  .object({
+    type: z.enum(['xlsx', 'csv', 'docx', 'pdf', 'md']),
+    title: z.string().min(1).max(MAX_CREATE_DOCUMENT_TITLE_CHARS),
+    content: z.string().min(1).max(MAX_CSV_EXPORT_CHARS),
+    /// xlsx only: the worksheet name inside the created workbook (the source
+    /// sheet's name, so it already satisfies Excel's naming rules).
+    sheetName: z.string().min(1).max(31).optional(),
+  })
+  .strict()
+  .superRefine((request, ctx) => {
+    if (
+      request.type !== 'xlsx' &&
+      request.type !== 'csv' &&
+      request.content.length > MAX_CREATE_DOCUMENT_CONTENT_CHARS
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['content'],
+        message: `content must not exceed ${MAX_CREATE_DOCUMENT_CONTENT_CHARS} characters for docx/pdf/md`,
+      })
+    }
+  })
+
+/// Loose result shape (ok: boolean, not a literal union) so the shell can
+/// wire the docs-owned creator in directly — its CreateDocumentResult is
+/// structurally identical.
+export const workbookCreateDocumentResultSchema = z
+  .object({
+    ok: z.boolean(),
+    path: z.string().min(1).optional(),
+    error: z.string().optional(),
+  })
+  .strict()
+
+export type WorkbookCreateDocumentRequest = z.infer<typeof workbookCreateDocumentRequestSchema>
+export type WorkbookCreateDocumentResult = z.infer<typeof workbookCreateDocumentResultSchema>
 
 // ---- Chat attachments (local files fed to the agent via tools; same structure
 // as apps/docs and apps/slides) ----
@@ -2349,6 +2572,12 @@ export interface DesktopApi {
     baseName: string,
   ): Promise<{ renamed: boolean; name?: string }>
   exportPdf(request: WorkbookExportPdfRequest): Promise<WorkbookExportPdfResult>
+  exportCsv(request: WorkbookExportCsvRequest): Promise<WorkbookExportCsvResult>
+  /// First Save of a CSV session: native "keep this format?" dialog.
+  confirmCsvSave(): Promise<'csv' | 'xlsx' | 'cancel'>
+  /// AI create_document: write a new standalone file into the default save
+  /// folder (no dialog) and open it in a new tab.
+  createDocument(request: WorkbookCreateDocumentRequest): Promise<WorkbookCreateDocumentResult>
   closeWorkbook(sessionId: string): Promise<void>
   openExternal(url: string): Promise<void>
   /// Application-menu File commands (Open/Save/Save As); returns unsubscribe.
@@ -2408,7 +2637,7 @@ export interface DesktopApi {
   getPathForFile(file: File): string
 }
 
-export type MenuAction = 'open' | 'save' | 'save-as' | 'export-pdf' | 'undo' | 'redo'
+export type MenuAction = 'open' | 'save' | 'save-as' | 'export-pdf' | 'export-csv' | 'undo' | 'redo'
 
 export interface WebSearchResult {
   results: Array<{ title: string; url: string; snippet: string }>

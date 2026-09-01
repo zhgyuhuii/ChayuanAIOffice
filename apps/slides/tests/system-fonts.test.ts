@@ -7,6 +7,7 @@ vi.mock('../src/main/shaped-metrics', () => ({
   initShapedMetrics: () => {},
   shapedMeasure: () => null,
   shapedFamily: () => null,
+  complexScriptOf: () => null,
 }))
 
 import { createSystemFontMetrics } from '../src/main/fonts'
@@ -81,6 +82,11 @@ describe.runIf(mac)(
       const ui = m.measure('アイウエオかきくけこ', style('Meiryo UI'))
       const plain = m.measure('アイウエオかきくけこ', style('Meiryo'))
       expect(ui).toBeLessThan(plain * 0.85)
+    })
+
+    it.runIf(office)('Yu Gothic UI picks the UI face out of YuGothM/YuGothB.ttc', () => {
+      expect(m.displayFamily!(style('Yu Gothic UI'))).toBe('Yu Gothic UI')
+      expect(m.displayFamily!(style('Yu Gothic UI', { bold: true }))).toMatch(/Yu Gothic UI/)
     })
 
     it.runIf(office)('legacy Korean fonts (Gulim/Batang) parse via layout-table strip', () => {

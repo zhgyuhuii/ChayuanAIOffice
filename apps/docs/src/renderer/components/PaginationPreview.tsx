@@ -17,6 +17,7 @@ import {
   liveSections,
   measureBlocks,
   pageNumbers,
+  pinnedFloatPage,
   sectionBidi,
   sectionColGeom,
   sectionFirstPages,
@@ -109,6 +110,27 @@ export function prunedCloneHtml(kids: CloneChild[], from: number, to: number): s
     lastKept = c
   }
   return parts.join('')
+}
+
+/**
+ * Page-pinned boxes (cover art) ride the full-document clone onto every page at
+ * the same page coordinates; only the copy on the owning page (data-pin-page,
+ * stamped on the canvas wrapper before cloning) may stay visible. Expressed as
+ * CSS rules because React re-assigns each clone's innerHTML on every re-render
+ * (the {__html} wrapper is a fresh object), wiping any imperative DOM fixup.
+ * visibility (not display): a stray-run wrapper carries flow height the slices
+ * were measured with, and hidden ink must not emit glyphs into the PDF layer.
+ */
+export function pinnedCloneCss(pageCount: number): string {
+  const rules: string[] = []
+  for (let i = 0; i < pageCount; i++) {
+    rules.push(
+      `.pv-page[data-pv-page="${i}"] .doc-protected-pagepinned[data-pin-page]:not([data-pin-page="${i}"]){visibility:hidden;}`,
+      // page-relative V boxes: same ride-along duplicates, stamped per box
+      `.pv-page[data-pv-page="${i}"] [data-page-rel-v='1'][data-pin-page]:not([data-pin-page="${i}"]){visibility:hidden;}`,
+    )
+  }
+  return rules.join('\n')
 }
 
 export interface HfSet {
@@ -312,6 +334,37 @@ export function PaginationPreview({
           blockMetaOf,
         )
       }
+      // stamp each page-pinned box's owning page on its canvas wrapper before
+      // cloning so the per-page CSS rules can hide the copies on other pages
+      for (const f of floats) {
+        if (f.pinned) {
+          const wrap = f.el.closest<HTMLElement>('.doc-protected-pagepinned')
+          if (wrap) wrap.dataset.pinPage = String(pinnedFloatPage(computed, f.anchorTop))
+        } else if (f.pageRelV) {
+          // page-relative V boxes ride every clone too (absolute boxes ignore
+          // the pv-clip overflow): nearby pages showed visible duplicates —
+          // a cover band re-painted over the TOC two pages later (real_run2/69).
+          // Stamped per box: sibling boxes of one anchor can own different pages.
+          f.el.dataset.pinPage = String(pinnedFloatPage(computed, f.anchorTop))
+        }
+      }
+      // wrappers whose every box is page-relative V get un-positioned in the
+      // preview (like pinned covers): the boxes escape the pv-clip — sized to
+      // the page's flow content, it cut a page-bottom cover band clean off —
+      // and resolve against the page box at their page-relative offsets
+      for (const f of floats) {
+        if (!f.pageRelV) continue
+        const wrap = f.el.closest<HTMLElement>('.doc-protected-floating, .doc-img-float')
+        if (!wrap) continue
+        const boxes = Array.from(
+          wrap.querySelectorAll<HTMLElement>(':scope > .doc-textbox, :scope > .doc-img-wrap'),
+        )
+        if (boxes.length > 0 && boxes.every((b) => b.dataset.pageRelV === '1')) {
+          wrap.dataset.pvPagerel = '1'
+        } else {
+          delete wrap.dataset.pvPagerel
+        }
+      }
       setSlices(computed)
       setPageNotes(pageFootnotesOf ? pageFootnotesOf(blocks, computed) : [])
       // Per-page full clones explode on large documents (pages × doc DOM →
@@ -467,6 +520,7 @@ export function PaginationPreview({
           {t('appClose')}
         </button>
       </div>
+      <style>{pinnedCloneCss(slices.length)}</style>
       <div className="pv-scroll">
         {slices.map((slice, i) => {
           const parts = hfFor(i)
@@ -498,6 +552,7 @@ export function PaginationPreview({
             <div
               key={i}
               className="pv-page"
+              data-pv-page={i}
               style={
                 {
                   width: pageW,
@@ -510,6 +565,7 @@ export function PaginationPreview({
                   '--footer-dist': `${pageBox.footerDist}px`,
                   '--pv-mr': `${twipsToPx(s.marginRight)}px`,
                   '--pv-ml': `${twipsToPx(s.marginLeft)}px`,
+                  '--pv-mt': `${mTop}px`,
                   padding: `${mTop}px ${twipsToPx(s.marginRight)}px ${mBottom}px ${twipsToPx(s.marginLeft)}px`,
                 } as React.CSSProperties
               }

@@ -182,18 +182,25 @@ async function geminiTurn(
     if (!line.startsWith('data:')) continue
     const payload = line.slice(5).trim()
     if (!payload) continue
-    const event = JSON.parse(payload) as {
-      candidates?: Array<{
-        content?: {
-          parts?: Array<{
-            text?: string
-            functionCall?: { name?: string; args?: Record<string, unknown> }
-          }>
-        }
-        finishReason?: string
-      }>
-      promptFeedback?: { blockReason?: string }
-      error?: { message?: string } | string
+    // A truncated frame or a non-JSON keep-alive from a proxy should skip
+    // that event, not kill the entire AI turn with a parser error.
+    let event
+    try {
+      event = JSON.parse(payload) as {
+        candidates?: Array<{
+          content?: {
+            parts?: Array<{
+              text?: string
+              functionCall?: { name?: string; args?: Record<string, unknown> }
+            }>
+          }
+          finishReason?: string
+        }>
+        promptFeedback?: { blockReason?: string }
+        error?: { message?: string } | string
+      }
+    } catch {
+      continue
     }
     if (event.error) throw new Error(sseErrorText(event.error, 'Gemini stream error'))
     if (event.promptFeedback?.blockReason) {

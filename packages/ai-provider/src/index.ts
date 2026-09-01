@@ -18,7 +18,7 @@ export {
   defaultAiSettings,
   resolveAiSettings,
 } from './providers'
-export { AI_PROVIDER_ADAPTERS, getProviderAdapter } from './registry'
+export { AI_PROVIDER_ADAPTERS, getProviderAdapter, modelLacksVision } from './registry'
 export type {
   AiProtocol,
   ProviderAdapter,
@@ -28,6 +28,7 @@ export type {
 export { chatForProvider } from './chat'
 export { setRescueFetch } from './fetch'
 export { isAiNetworkError } from './network-error'
+export { isAiOverloadedError } from './overload-error'
 export { AiCreditsError, sseLines, streamForProvider } from './stream'
 export type { StreamCallbacks } from './stream'
 export {

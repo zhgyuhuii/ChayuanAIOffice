@@ -4,6 +4,9 @@ import {
   applyRowProperties,
   measureWrapAutoFitRows,
   numericWrapOverride,
+  resetStaleWrapAutoHeights,
+  takeContaminatedRows,
+  trackPreIndexMeasuredRows,
   wrapAutoFitRows,
   wrapMeasureGate,
 } from '../src/renderer/univer-sync'
@@ -155,29 +158,34 @@ describe('wrapAutoFitRows', () => {
       [],
       [],
       false,
+      null,
       range,
     )
     expect(rows).toEqual([0, 1])
   })
 
-  it('keeps rows with a stored ht verbatim — Excel renders them as-is (#884)', () => {
+  it('re-fits cached-ht auto rows but keeps user-fixed and spacer rows (prod_054)', () => {
     const rows = wrapAutoFitRows(
       [
         { row: 0, column: 0, value: 'wrapping text', styleIndex: 0 },
         { row: 1, column: 0, value: 'wrapping text', styleIndex: 0 },
+        { row: 2, column: 0, value: 'wrapping text', styleIndex: 0 },
       ] as never,
       styles,
-      // Both an auto-fit cache (no customHeight) and a user-fixed height
-      // count: Excel never re-measures a stored ht on open.
+      // A cached ht without customHeight stays in auto mode — Excel re-fits
+      // it on open (live probe: ht="30" rows reopen at 16pt). customHeight
+      // and sub-default spacer heights stay verbatim.
       [
-        { row: 0, height: 38.25, hidden: false },
+        { row: 0, height: 30, hidden: false },
         { row: 1, height: 56, customHeight: true, hidden: false },
+        { row: 2, height: 6, hidden: false },
       ] as never,
       [],
       false,
+      15,
       range,
     )
-    expect(rows).toEqual([])
+    expect(rows).toEqual([0])
   })
 
   it('selects nothing when sheetFormatPr customHeight fixes the default (prod_012)', () => {
@@ -187,6 +195,7 @@ describe('wrapAutoFitRows', () => {
       [],
       [],
       true,
+      null,
       range,
     )
     expect(rows).toEqual([])
@@ -203,6 +212,7 @@ describe('wrapAutoFitRows', () => {
       [],
       [],
       false,
+      null,
       range,
     )
     expect(rows).toEqual([])
@@ -218,6 +228,7 @@ describe('wrapAutoFitRows', () => {
       [],
       [],
       false,
+      null,
       range,
     )
     expect(rows).toEqual([])
@@ -238,6 +249,7 @@ describe('wrapAutoFitRows', () => {
       ] as never,
       [{ startColumn: 2, endColumn: 5, hidden: false, styleIndex: 0 }] as never,
       false,
+      null,
       range,
     )
     expect(rows).toEqual([0, 1])
@@ -253,6 +265,7 @@ describe('wrapAutoFitRows', () => {
         { startColumn: 3, endColumn: 4, hidden: false, styleIndex: 1 },
       ] as never,
       false,
+      null,
       range,
     )
     expect(rows).toEqual([])
@@ -306,5 +319,84 @@ describe('measureWrapAutoFitRows', () => {
       },
     }
     measureWrapAutoFitRows(worksheet as never, [])
+  })
+})
+
+describe('merged wrap cells and stale auto heights (prod_100 shape)', () => {
+  const styles = [{ wrapText: true }] as never as Parameters<typeof wrapAutoFitRows>[1]
+  const range = { startRow: 0, endRow: 9, startColumn: 0, endColumn: 19 }
+
+  it('merge-covered wrap cells do not qualify their row', () => {
+    const cells = [
+      { row: 0, column: 8, value: 'أسم المنشأة:', styleIndex: 0 },
+      { row: 1, column: 8, value: 'رقم إشتراك المنشأة:', styleIndex: 0 },
+      { row: 3, column: 0, value: 'unmerged wrapping text', styleIndex: 0 },
+    ] as never
+    const merges = [
+      { startRow: 0, endRow: 0, startColumn: 8, endColumn: 13 },
+      { startRow: 1, endRow: 1, startColumn: 8, endColumn: 13 },
+    ]
+    expect(wrapAutoFitRows(cells, styles, [], [], false, null, range, merges)).toEqual([3])
+    expect(wrapAutoFitRows(cells, styles, [], [], false, null, range)).toEqual([0, 1, 3])
+  })
+
+  it('resetStaleWrapAutoHeights clears tracked contaminated rows only', () => {
+    const executed: unknown[] = []
+    const runtime = {
+      univerAPI: {
+        syncExecuteCommand: (id: string, params: unknown) => executed.push([id, params]),
+      },
+    } as never
+    const worksheet = {
+      getSheetId: () => 'sheet-1',
+      getSheet: () => ({
+        getSnapshot: () => ({
+          rowData: { 0: { ah: 194 }, 1: { ah: 306 }, 5: { ah: 22 }, 6: { ah: 250 }, 7: { ah: 8 } },
+        }),
+      }),
+    } as never
+    // Queued pre-Rendered measure must lose the reset rows or the lifecycle
+    // flush re-poisons them (bugbot).
+    wrapMeasureGate.pending.push({ worksheet, rows: [0, 1, 3] })
+    resetStaleWrapAutoHeights(
+      runtime,
+      'file-x',
+      worksheet,
+      [0, 1, 5, 6, 7],
+      [
+        { row: 5, height: 22, customHeight: true },
+        // Cached ht without customHeight stays auto mode: a poisoned merged
+        // measure on such a row must reset too (bugbot).
+        { row: 6, height: 30, customHeight: false },
+        // Sub-default spacer rows keep their stored height verbatim.
+        { row: 7, height: 8, customHeight: false },
+      ] as never,
+      15,
+    )
+    expect(executed).toEqual([
+      [
+        'sheet.mutation.set-worksheet-row-auto-height',
+        {
+          unitId: 'file-x',
+          subUnitId: 'sheet-1',
+          rowsAutoHeightInfo: [
+            { row: 0, autoHeight: undefined },
+            { row: 1, autoHeight: undefined },
+            { row: 6, autoHeight: undefined },
+          ],
+        },
+      ],
+    ])
+    expect(wrapMeasureGate.pending.pop()?.rows).toEqual([3])
+  })
+
+  it('takeContaminatedRows returns tracked rows that lost qualification to merges', () => {
+    trackPreIndexMeasuredRows('k:s', [0, 1, 4])
+    // Row 0 still qualifies (kept, untracked); row 1 qualified only without
+    // merges (contaminated); row 4's cells are outside this window (stays
+    // tracked); row 9 was never measured pre-index (ignored).
+    expect(takeContaminatedRows('k:s', [0, 1, 9], [0, 9])).toEqual([1])
+    expect(takeContaminatedRows('k:s', [0, 1, 9], [0, 9])).toEqual([])
+    expect(takeContaminatedRows('k:s', [4], [])).toEqual([4])
   })
 })

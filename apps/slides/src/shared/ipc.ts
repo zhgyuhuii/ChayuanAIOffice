@@ -159,6 +159,8 @@ export interface EditParagraph {
   lineSpacingPct?: number
   spaceBeforePt?: number
   spaceAfterPt?: number
+  /** Paragraph base direction toggled during this edit session (false = explicit LTR) */
+  rtl?: boolean
 }
 
 /** One geometry primitive collected by the edit-script sandbox (px, viewport space). */
@@ -294,6 +296,8 @@ export interface SetElementParagraphFormatOp {
   spaceBeforePt?: number
   spaceAfterPt?: number
   align?: 'left' | 'center' | 'right' | 'justify'
+  /** Paragraph base direction (false = explicit LTR) */
+  rtl?: boolean
   /** Indent level increment/decrement (multi-level lists; applies to all paragraphs) */
   indentDelta?: 1 | -1
   /** In-group editing: all sourceIds are direct children of that group */
@@ -1008,6 +1012,8 @@ export interface EditTableStyleOp {
   firstRow?: boolean
   /** Banded rows toggle */
   bandRow?: boolean
+  /** Right-to-left table toggle (tblPr rtl: mirrored grid) */
+  rtl?: boolean
   /** Shading color #RRGGBB or 'none' (null = unchanged) */
   shadingColor?: string | null
   /** Border color #RRGGBB (null = unchanged) */
@@ -1183,6 +1189,23 @@ export interface SlidesApi {
   >
   /** Single-face sfnt bytes for one private face (null = gone/unreadable) */
   privateFontData: (id: string) => Promise<ArrayBuffer | null>
+  /** Curated downloadable (OFL) font catalog with per-family install state */
+  fontCatalog: () => Promise<
+    Array<{
+      family: string
+      script: 'latin' | 'ja' | 'ko' | 'sc' | 'tc'
+      installed: boolean
+      downloading: boolean
+    }>
+  >
+  /** Download a catalog family into the user font store; layouts refresh via deck-changed */
+  fontDownload: (family: string) => Promise<{ ok: boolean; error?: string }>
+  /** File picker → install local font files into the user font store */
+  fontInstallLocal: () => Promise<{ families: string[] }>
+  /** Families this deck references that are missing locally but downloadable */
+  fontMissing: () => Promise<string[]>
+  /** The user font store changed (download/local install): re-sync private FontFaces */
+  onFontsChanged: (handler: () => void) => () => void
   consumePendingOpen: (fitWidthPx: number) => Promise<OpenResult | null>
   /** New blank presentation (single blank 16:9 page, untitled) */
   newBlank: (fitWidthPx: number) => Promise<OpenResult>
@@ -1322,6 +1345,8 @@ export interface SlidesApi {
   ) => Promise<{ slides: RenderSlide[]; index: number; sourceId?: string } | null>
   /** Is there a slide on the clipboard? (drives the Paste Slide menu item) */
   hasSlideClipboard: () => Promise<boolean>
+  /** Is there anything a paste would act on (internal elements/slide, or external image/text)? Drives the Paste menu item */
+  clipboardProbe: () => Promise<boolean>
   /** Delete a slide (refused when only one page remains); returns the full RenderSlide array */
   deleteSlide: (slideIndex: number) => Promise<RenderSlide[] | null>
   /** Bring element to front/back or move one layer forward/backward */

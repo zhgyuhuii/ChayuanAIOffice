@@ -5299,8 +5299,11 @@ export default function App() {
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey && !e.metaKey) return
       e.preventDefault()
-      if (e.deltaY < 0) zoomIn()
-      else zoomOut()
+      if (e.deltaY === 0) return
+      fitModeRef.current = null
+      // Match Docs: accumulate against the latest queued scale and avoid the
+      // per-event scroll anchoring that makes a continuous pinch oscillate.
+      setScale((current) => clampScale(current - e.deltaY * 0.006))
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
@@ -6386,8 +6389,10 @@ export default function App() {
                       }}
                       onDragLeave={() => setDragOver((o) => (o === v ? null : o))}
                       onDrop={(e) => {
+                        // no reorder in flight: an OS file drop — leave it to the drop-open bridge
+                        if (dragFrom === null) return
                         e.preventDefault()
-                        if (dragFrom !== null) movePage(dragFrom, v)
+                        movePage(dragFrom, v)
                         setDragFrom(null)
                         setDragOver(null)
                       }}

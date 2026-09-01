@@ -194,7 +194,12 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     setCreating(false)
     setNewName('')
     if (!name) return
-    await window.aiOfficeProject?.createProject(name)
+    try {
+      await window.aiOfficeProject?.createProject(name)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
     onRefresh()
   }
 
@@ -204,7 +209,12 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     const id = renaming.id
     setRenaming(null)
     if (!name) return
-    await window.aiOfficeProject?.renameProject(id, name)
+    try {
+      await window.aiOfficeProject?.renameProject(id, name)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
     onRefresh()
   }
 
@@ -220,7 +230,12 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     const id = confirmDeleteId
     setConfirmDeleteId(null)
     if (!id) return
-    await window.aiOfficeProject?.deleteProject(id)
+    try {
+      await window.aiOfficeProject?.deleteProject(id)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
     if (selectedId === id) onSelect(null)
     onRefresh()
   }
@@ -1033,6 +1048,79 @@ function CloudProjectsView() {
   )
 }
 
+// ── Drop-to-open overlay ────────────────────────────────
+
+/**
+ * Full-window affordance while OS files hover over Home. Purely visual — the
+ * actual open is owned by the preload drop bridge (installDropOpenBridge), so
+ * this overlay stays pointer-events:none and never handles events itself.
+ * Visibility tracks a dragenter/dragleave depth counter: `dragover` stops
+ * being delivered while the cursor is stationary (macOS), so a debounce would
+ * hide the overlay mid-drag. Enter fires before the matching leave when
+ * moving between elements, so the depth never dips to zero inside the window.
+ */
+function DropToOpenOverlay(): ReactElement | null {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    let depth = 0
+    const hasFiles = (ev: DragEvent): boolean => ev.dataTransfer?.types.includes('Files') ?? false
+    // NB: the preload drop bridge also listens here and cancels file drags, so
+    // defaultPrevented can't discriminate anything at this layer — only zones
+    // that stopPropagation (none on Home) would keep us out entirely.
+    const onDragEnter = (ev: DragEvent) => {
+      if (!hasFiles(ev)) return
+      depth += 1
+      setVisible(true)
+    }
+    const onDragLeave = (ev: DragEvent) => {
+      if (!hasFiles(ev)) return
+      depth = Math.max(0, depth - 1)
+      if (depth === 0) setVisible(false)
+    }
+    // drop/blur reset the depth outright: leaving the window mid-drag can eat
+    // a dragleave, and a stuck overlay would be worse than a re-shown one
+    const onHide = () => {
+      depth = 0
+      setVisible(false)
+    }
+    window.addEventListener('dragenter', onDragEnter)
+    window.addEventListener('dragleave', onDragLeave)
+    window.addEventListener('drop', onHide)
+    window.addEventListener('blur', onHide)
+    return () => {
+      window.removeEventListener('dragenter', onDragEnter)
+      window.removeEventListener('dragleave', onDragLeave)
+      window.removeEventListener('drop', onHide)
+      window.removeEventListener('blur', onHide)
+    }
+  }, [])
+  const { t } = useI18n()
+  if (!visible) return null
+  return (
+    <div className="home-drop-overlay" aria-hidden="true">
+      <div className="home-drop-card">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M12 3.5v11M7.5 10.5l4.5 4.5 4.5-4.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M4 16.5v2A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-2"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+        <h2>{t('dropToOpenTitle')}</h2>
+        <p>{OPEN_LOCAL_EXTENSIONS}</p>
+      </div>
+    </div>
+  )
+}
+
 // ── Main component ──────────────────────────────────────
 
 export function Home() {
@@ -1425,7 +1513,12 @@ export function Home() {
   const moveFileTo = async (filePath: string, targetProjectId: string) => {
     setMoveFileMenu(null)
     setRowMenu(null)
-    await window.aiOfficeProject?.moveFile(filePath, targetProjectId)
+    try {
+      await window.aiOfficeProject?.moveFile(filePath, targetProjectId)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
     refresh()
     if (selectedProjectId) {
       setProjectFileEntries((prev) => prev.filter((e) => e.path !== filePath))
@@ -1439,10 +1532,17 @@ export function Home() {
     // re-selected or re-moved while the sequential IPC loop is in flight
     const moved = new Set(paths)
     setProjectFileEntries((prev) => prev.filter((e) => !moved.has(e.path)))
-    for (const path of paths) {
-      await window.aiOfficeProject?.moveFile(path, targetProjectId)
+    try {
+      for (const path of paths) {
+        await window.aiOfficeProject?.moveFile(path, targetProjectId)
+      }
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+    } finally {
+      // A bulk move can fail after earlier paths succeeded; reload to restore
+      // unmoved rows while keeping successfully moved rows out of this project.
+      refresh()
     }
-    refresh()
   }
 
   // ── New file (passes projectId when a project is selected) ──
@@ -2150,6 +2250,8 @@ export function Home() {
           </div>
         </div>
       )}
+
+      <DropToOpenOverlay />
     </div>
   )
 }

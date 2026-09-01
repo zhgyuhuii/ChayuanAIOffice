@@ -93,11 +93,16 @@ describe('native editable tables', () => {
           shading: null,
           vertAlign: null,
           em: null,
+          boldOff: null,
+          italicOff: null,
           caps: null,
+          vanish: null,
           cs: null,
+          rtl: null,
           styleId: null,
           rawRPr:
             '<w:rPr><w:rFonts w:ascii="Calibri" w:eastAsia="Calibri"/><w:b/><w:color w:val="1F4E78"/></w:rPr>',
+          themeRFonts: null,
         },
       },
     ])

@@ -81,14 +81,15 @@ export interface AiStreamRequest {
 
 export interface AiStreamChunk {
   requestId: string
-  /** 'ping' = wire-level keepalive so the renderer can tell a live stream from a dead one */
-  type: 'delta' | 'tool-call' | 'done' | 'error' | 'ping'
+  /** 'ping' = wire-level keepalive so the renderer can tell a live stream from a dead one;
+   * 'reasoning' = model thinking delta (text carries it), stored for interleaved-thinking echo */
+  type: 'delta' | 'reasoning' | 'tool-call' | 'done' | 'error' | 'ping'
   text?: string
   /** complete parsed tool call (emitted once its arguments finish streaming) */
   toolCall?: AgentToolCall
   error?: string
-  /** machine-readable error cause ('timeout', exhausted 'credits', 'network' connectivity failure); lets the renderer localize the message */
-  errorCode?: 'timeout' | 'credits' | 'network'
+  /** machine-readable error cause ('timeout', exhausted 'credits', 'network' connectivity failure, 'overloaded' capacity/rate limit); lets the renderer localize the message */
+  errorCode?: 'timeout' | 'credits' | 'network' | 'overloaded'
   /** normalized stop reason carried on 'done' ('max_tokens' = output cut off by the token limit) */
   stopReason?: string
 }

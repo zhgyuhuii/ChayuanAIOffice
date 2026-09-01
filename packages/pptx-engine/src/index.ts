@@ -48,7 +48,7 @@ import {
 import { BLANK_SLIDE_XML } from './blank'
 import { escapeXmlAttr } from './xml-utils'
 import { elementSpid } from './animation'
-import { ensureCreationId } from './identity'
+import { ensureCreationId, matchesElementRef } from './identity'
 import { listMasterParts, parseMasterPart } from './master-edit'
 import type {
   Paragraph,
@@ -71,7 +71,9 @@ import { buildChartSpaceXml, type NewChartKind, type NewChartOptions } from './c
 import { parseLayoutPlaceholders, placeholderSpXml, prepareInsertSlideWithLayout } from './layout'
 import {
   chooseLayout,
+  collectPart,
   collectSlideBundle,
+  importClipboardParts,
   importSourceLayout,
   materializeSlideBundle,
   type SlideBundle,
@@ -92,12 +94,22 @@ export {
   patchSlideTimingXml,
   readSlideTimingXml,
   setSlideAnimations,
+  pruneTimingForSpids,
+  cNvPrIdsInXml,
+  ANIM_EFFECTS,
+  ANIM_TRIGGERS,
   type AnimClass,
   type AnimEffectKind,
   type AnimTrigger,
   type SlideAnimation,
 } from './animation'
 export { PackageArchive } from './zip'
+export {
+  listEmbeddedFonts,
+  eotToSfnt,
+  type EmbeddedFontFace,
+  type EmbeddedFontStyle,
+} from './embedded-fonts'
 export { scanSlide, type SlideScan, type SpElement } from './scan'
 export {
   parseSlide,
@@ -130,6 +142,7 @@ export {
   generateParagraphXml,
   generateXfrmXml,
   isConnectorXml,
+  TRANSITION_KINDS,
   type GradientFillPatch,
   type BackgroundImagePatch,
   type SlideTransitionKind,
@@ -338,6 +351,7 @@ function parseSlideFromArchive(archive: PackageArchive, slidePath: string): Slid
   const chartMediaRels = new Map<string, Map<string, string>>()
   const chartUserShapes = new Map<string, string>()
   const chartStyleRels = new Set<string>()
+  const chartThemeOverrides = new Map<string, string>()
   const avRels = new Map<string, { target: string; external?: boolean }>()
   const diagramDrawings = new Map<string, string>()
   const diagramDatas = new Map<string, string>()
@@ -370,6 +384,11 @@ function parseSlideFromArchive(archive: PackageArchive, slidePath: string): Slid
             if (usXml) chartUserShapes.set(rel.id, usXml)
           }
           if (sub.type.endsWith('/chartStyle')) chartStyleRels.add(rel.id)
+          // Chart-local theme (accents remapped per chart): schemeClr must resolve against it
+          if (sub.type.endsWith('/themeOverride')) {
+            const ovXml = archive.readText(resolveTarget(target, sub.target))
+            if (ovXml) chartThemeOverrides.set(rel.id, ovXml)
+          }
         }
       }
     } else if (/\/(?:video|audio|media)$/.test(rel.type)) {
@@ -428,6 +447,7 @@ function parseSlideFromArchive(archive: PackageArchive, slidePath: string): Slid
   if (chartMediaRels.size) ctx.chartMediaRels = chartMediaRels
   if (chartUserShapes.size) ctx.chartUserShapes = chartUserShapes
   if (chartStyleRels.size) ctx.chartStyleRels = chartStyleRels
+  ctx.chartThemeOverrides = chartThemeOverrides
   if (hlinkRels.size) ctx.hlinkRels = hlinkRels
   if (avRels.size) ctx.avRels = avRels
   if (diagramDrawings.size) ctx.diagramDrawings = diagramDrawings
@@ -2391,6 +2411,30 @@ export function addTable(
 
 // ── Table cell text editing ─────────────────────────────────────────────
 
+/**
+ * All <a:gridCol> spans in document order. gridCol comes in both forms —
+ * self-closing, and paired when it carries children (Google Slides exports
+ * attach an <a:extLst> a16:colId to every column) — so a self-closing-only
+ * regex undercounts columns or, worse, indexes the wrong one on mixed tables.
+ */
+function gridColSpans(xml: string): Array<{ start: number; end: number; open: string }> {
+  const spans: Array<{ start: number; end: number; open: string }> = []
+  const re = /<a:gridCol\b[^>]*?(\/)?>/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(xml)) !== null) {
+    if (m[1]) {
+      spans.push({ start: m.index, end: m.index + m[0].length, open: m[0] })
+    } else {
+      const close = xml.indexOf('</a:gridCol>', re.lastIndex)
+      if (close < 0) break
+      const end = close + '</a:gridCol>'.length
+      spans.push({ start: m.index, end, open: m[0] })
+      re.lastIndex = end
+    }
+  }
+  return spans
+}
+
 /** Locate the nth <tag>…</tag> span in the xml (a:tr/a:tc never self-nest, so a sequential scan suffices). */
 function nthTagSpan(xml: string, tag: string, n: number): { start: number; end: number } | null {
   const openRe = new RegExp(`<${tag}(?:\\s[^>]*)?>`, 'g')
@@ -2784,18 +2828,36 @@ function applyFontPatch(paragraphs: Paragraph[], patch: ElementFontPatch): void 
       }
       if (patch.strike !== undefined) {
         r.strike = patch.strike
-        if (!patch.strike) delete r.strikeStyle
+        // Explicit off must survive a rebuild as strike="noStrike" (see buildRPrAttrs)
+        if (!patch.strike) {
+          delete r.strikeStyle
+          r.strikeExplicitNone = true
+        } else {
+          delete r.strikeExplicitNone
+        }
       }
-      if (patch.bold !== undefined) r.bold = patch.bold
-      if (patch.italic !== undefined) r.italic = patch.italic
+      if (patch.bold !== undefined) {
+        r.bold = patch.bold
+        delete r.boldImplicit
+      }
+      if (patch.italic !== undefined) {
+        r.italic = patch.italic
+        delete r.italicImplicit
+      }
       if (patch.underline !== undefined) {
         r.underline = patch.underline
-        if (!patch.underline) delete r.underlineStyle
+        if (!patch.underline) {
+          delete r.underlineStyle
+          r.underlineExplicitNone = true
+        } else {
+          delete r.underlineExplicitNone
+        }
       }
       if (patch.color !== undefined) {
         r.color = patch.color
         delete r.colorFollowsTheme
         delete r.colorInherited
+        delete r.colorNodeXml
       }
     }
   }
@@ -2944,6 +3006,8 @@ export interface ParagraphFormatPatch {
   spaceBeforePt?: number
   spaceAfterPt?: number
   align?: Paragraph['align']
+  /** Paragraph base direction (a:pPr rtl); false writes an explicit rtl="0" */
+  rtl?: boolean
   /** Indent level delta (multi-level list Tab/⇧Tab; clamp 0..8) */
   indentDelta?: 1 | -1
 }
@@ -3034,6 +3098,10 @@ function applyParagraphFormat(paragraphs: Paragraph[], patch: ParagraphFormatPat
       p.align = patch.align
       mark('align')
       dirty.align = true
+    }
+    if (patch.rtl != null) {
+      p.rtl = patch.rtl
+      dirty.rtl = true
     }
     if (patch.indentDelta) {
       const lvl = Math.max(0, Math.min(8, (p.level ?? 0) + patch.indentDelta))
@@ -3205,8 +3273,7 @@ export function editTableStructure(
     trSpans.push(span)
   }
   const nRows = trSpans.length
-  const gridColRe = /<a:gridCol\s[^>]*\/>/g
-  const gridCols = [...xml.matchAll(gridColRe)]
+  const gridCols = gridColSpans(xml)
   const nCols = gridCols.length
   if (!nRows || !nCols) return null
 
@@ -3230,7 +3297,7 @@ export function editTableStructure(
     const at = op.index
     const refCol = gridCols[at]
     if (!refCol) return null
-    const colW = Number(/\bw="(\d+)"/.exec(refCol[0])?.[1] ?? 0)
+    const colW = Number(/\bw="(\d+)"/.exec(refCol.open)?.[1] ?? 0)
     if (op.kind === 'delete-col' && nCols <= 1) return null
 
     // Process tc row by row (replace back-to-front so offsets stay valid)
@@ -3251,13 +3318,15 @@ export function editTableStructure(
       xml = xml.slice(0, tr.start) + newTr + xml.slice(tr.end)
     }
     // gridCol and frame width
-    const gc = [...xml.matchAll(gridColRe)][at]!
+    const gc = gridColSpans(xml)[at]!
     if (op.kind === 'insert-col') {
-      const insertAt = op.before ? gc.index : gc.index + gc[0].length
-      xml = xml.slice(0, insertAt) + gc[0] + xml.slice(insertAt)
+      // Fresh self-closing clone: copying the full span would duplicate the
+      // reference column's a16:colId, which must stay unique per column
+      const insertAt = op.before ? gc.start : gc.end
+      xml = xml.slice(0, insertAt) + `<a:gridCol w="${colW}"/>` + xml.slice(insertAt)
       xml = bumpFrameExt(xml, 'cx', colW)
     } else {
-      xml = xml.slice(0, gc.index) + xml.slice(gc.index + gc[0].length)
+      xml = xml.slice(0, gc.start) + xml.slice(gc.end)
       xml = bumpFrameExt(xml, 'cx', -colW)
     }
   }
@@ -3421,13 +3490,13 @@ export function setTableColWidth(
   if (col < 0 || col >= table.colWidths.length) return false
 
   let xml = patchedElementXml(el)
-  const gc = [...xml.matchAll(/<a:gridCol\s[^>]*\/>/g)][col]
+  const gc = gridColSpans(xml)[col]
   if (!gc) return false
   el.dirty = el.dirtyTransform = el.dirtyFill = el.dirtyStroke = false
   el.dirtyPPr = undefined
   const w = Math.max(1, Math.round(wEmu))
-  const patched = gc[0].replace(/\bw="-?\d+"/, `w="${w}"`)
-  xml = xml.slice(0, gc.index) + patched + xml.slice(gc.index + gc[0].length)
+  const patched = gc.open.replace(/\bw="-?\d+"/, `w="${w}"`)
+  xml = xml.slice(0, gc.start) + patched + xml.slice(gc.start + gc.open.length)
 
   const dxRtl = table.rtl ? w - table.colWidths[col]! : 0
   table.colWidths[col] = w
@@ -3519,7 +3588,8 @@ export function resizeTable(slide: Slide, elementId: string, cx: number, cy: num
 
   const widths = scaleToSum(table.colWidths, targetCx)
   let ci = 0
-  xml = xml.replace(/<a:gridCol\s[^>]*\/>/g, (m) =>
+  // Opening tags only — paired-form gridCols (extLst children) must scale too
+  xml = xml.replace(/<a:gridCol\b[^>]*>/g, (m) =>
     ci < widths.length ? m.replace(/\bw="-?\d+"/, `w="${widths[ci++]}"`) : m,
   )
 
@@ -3601,6 +3671,10 @@ export interface ElementClipboardItem {
   xml: string
   /** rId referenced by the xml → absolute part path (External relationships keep the target verbatim) */
   rels: Array<{ rid: string; type: string; target: string; external?: boolean }>
+  /** Dependency part bytes (base64, keyed by absolute path), so the paste target can be a different deck */
+  parts?: Readonly<Record<string, string>>
+  /** ContentType per dependency: keyed by lower-case extension or by part path */
+  contentTypes?: Readonly<Record<string, string>>
 }
 
 const RID_ATTR_RE = /\br:(?:embed|link|id)="(rId\d+)"/g
@@ -3614,6 +3688,8 @@ export function copyElementData(
   const xml = patchedElementXml(el)
   const slideRels = opened.archive.readRels(slide.path)
   const rels: ElementClipboardItem['rels'] = []
+  const parts: Record<string, string> = {}
+  const contentTypes: Record<string, string> = {}
   const seen = new Set<string>()
   for (const m of xml.matchAll(RID_ATTR_RE)) {
     const rid = m[1]!
@@ -3622,14 +3698,20 @@ export function copyElementData(
     const rel = slideRels.get(rid)
     if (!rel) continue
     const external = rel.targetMode === 'External'
+    const target = external ? rel.target : resolveTarget(slide.path, rel.target)
+    // Slide-jump hyperlinks reference a whole slide; bundling it would drag in its
+    // layout/master/theme graph, so keep those as path-only references
+    if (!external && !rel.type.endsWith('/slide')) {
+      collectPart(opened.archive, target, parts, contentTypes)
+    }
     rels.push({
       rid,
       type: rel.type,
-      target: external ? rel.target : resolveTarget(slide.path, rel.target),
+      target,
       ...(external ? { external: true } : {}),
     })
   }
-  return { xml, rels }
+  return { xml, rels, ...(Object.keys(parts).length ? { parts, contentTypes } : {}) }
 }
 
 /** 'ppt/media/image1.png' → the relative Target '../media/image1.png' in the slide rels */
@@ -3638,10 +3720,11 @@ function relTargetFromSlide(absTarget: string): string {
 }
 
 /**
- * Paste: rels surgery (reuse the rId when the target slide already has a
- * relationship with the same type+target, otherwise create one pointing at the
- * same part — media bytes are not copied), renumber cNvPr ids, offset the whole
- * thing, append, and reparse.
+ * Paste: land bundled dependency parts (byte-identical ones already in the
+ * target are shared, so a same-deck paste copies no media), rels surgery
+ * (reuse the rId when the target slide already has a relationship with the
+ * same type+target), renumber cNvPr ids, offset the whole thing, append, and
+ * reparse.
  */
 export function pasteElements(
   opened: OpenedPptx,
@@ -3667,15 +3750,27 @@ export function pasteElements(
     byKey.set(`${rel.type} ${abs}`, rel.id)
   }
 
+  // Land dependency parts the target deck is missing (all items at once, so shared media imports once)
+  const bundledParts: Record<string, string> = {}
+  const bundledCT: Record<string, string> = {}
+  for (const item of items) {
+    Object.assign(bundledParts, item.parts ?? {})
+    Object.assign(bundledCT, item.contentTypes ?? {})
+  }
+  const pathMap = Object.keys(bundledParts).length
+    ? importClipboardParts(archive, bundledParts, bundledCT)
+    : null
+
   let nextId = nextCNvPrId(slide)
   const xmls = items.map((item) => {
     let xml = item.xml
     for (const rel of item.rels) {
-      const key = `${rel.type} ${rel.target}`
+      const landed = rel.external ? rel.target : (pathMap?.get(rel.target) ?? rel.target)
+      const key = `${rel.type} ${landed}`
       let rid = byKey.get(key)
       if (!rid) {
         rid = `rId${++maxRid}`
-        const target = rel.external ? rel.target : relTargetFromSlide(rel.target)
+        const target = rel.external ? rel.target : relTargetFromSlide(landed)
         const mode = rel.external ? ' TargetMode="External"' : ''
         relsXml = relsXml.replace(
           '</Relationships>',
@@ -3784,11 +3879,17 @@ export function groupElements(
   const slide = opened.deck.slides[slideIndex]
   if (!slide || sourceIds.length < 2) return null
 
-  // Validate: only text/shape/picture allowed
+  // Validate: only text/shape/picture allowed. Refs resolve like every other
+  // op (parse-time id, durable e_<guid8>, e_<cNvPr id>), deduplicated in case
+  // two forms name the same element.
   const GROUPABLE = new Set(['text', 'shape', 'picture'])
-  const targets = sourceIds
-    .map((id) => slide.elements.find((e) => e.id === id))
-    .filter(Boolean) as SlideElement[]
+  const targets = [
+    ...new Set(
+      sourceIds
+        .map((id) => slide.elements.find((e) => matchesElementRef(e, id)))
+        .filter(Boolean) as SlideElement[],
+    ),
+  ]
   if (targets.length < 2) return null
   if (targets.some((e) => !GROUPABLE.has(e.type))) return null
 
@@ -3802,8 +3903,8 @@ export function groupElements(
   const grpXml = buildGrpSpXml(slide, bbox, childrenXml)
 
   // Remove the selected elements from the current slide
-  const idSet = new Set(sourceIds)
-  slide.elements = slide.elements.filter((e) => !idSet.has(e.id))
+  const grouped = new Set(targets)
+  slide.elements = slide.elements.filter((e) => !grouped.has(e))
 
   // Append the grpSp and reparse
   const result = appendRawElements(opened, slideIndex, [grpXml])

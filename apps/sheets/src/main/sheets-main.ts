@@ -37,11 +37,13 @@ import type {
 import { z } from 'zod'
 import {
   appMenuLabels,
+  buildPrintableHtml,
   configuredDefaultSaveDir,
   contextMenuLabels,
   fetchRemoteImage,
   installContextMenu,
   installNavigationGuard,
+  printHtmlToPdf,
   safeExternalUrl,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
@@ -55,6 +57,7 @@ import {
   AiCreditsError,
   AiTimeoutError,
   isAiNetworkError,
+  isAiOverloadedError,
   chatForProvider,
   defaultAiSettings,
   activeProvider,
@@ -68,7 +71,7 @@ import {
   type GenSparkAccountStatus,
   type LegacyAiSettings,
 } from '@genoffice/ai-provider'
-import { csvToXlsxBuffer, decodeCsvBuffer } from '../gateway/csv-import'
+import { csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
 import {
   ensureGenofficeLogin,
   gskApiKey,
@@ -110,16 +113,21 @@ import {
   screenCaptureResultSchema,
   screenSourcesResultSchema,
   workbookPivotDefinitionSchema,
+  workbookCreateDocumentRequestSchema,
+  workbookExportCsvRequestSchema,
   workbookExportPdfRequestSchema,
   workbookRangeRequestSchema,
   workbookRangeResultSchema,
   workbookSaveEditsAbortSchema,
   workbookSaveEditsBeginSchema,
+  saveEditsChunkArraySchema,
   workbookSaveEditsChunkSchema,
   workbookSaveRequestSchema,
+  type WorkbookCreateDocumentResult,
   type WorkbookSaveRequest,
 } from '../shared/desktop-api'
 import { IPC_CHANNELS } from '../shared/ipc-channels'
+import { atomicWriteFile } from './atomic-write'
 import { closeGuardDecision } from './close-guard'
 import { SaveEditsTransferStore } from './save-edits-transfer'
 import { exportPdf } from './pdf-export'
@@ -159,6 +167,7 @@ const tMain = createI18n({
     errNotImage: '不是支持的图片类型',
     errGskNotLoggedIn: '未登录 Genspark:请点击下方「登录 Genspark」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
+    errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
     errImgAbsPath: '图片路径必须是绝对路径。',
     errImgNotFound: '找不到图片文件: {path}',
@@ -185,6 +194,16 @@ const tMain = createI18n({
     btnDontSave: '不保存',
     btnCancel: '取消',
     csvSaveAsNotice: 'CSV 格式不保留样式等格式修改——另存为 .xlsx 可保留全部内容。',
+    menuExportCsv: '导出 CSV…',
+    filterCsv: 'CSV (逗号分隔)',
+    csvFormulaLossMsg: '当前工作表包含公式,CSV 格式无法保留。',
+    csvFormulaLossDetail: 'CSV 只保留纯文本值——公式会被替换为当前计算结果,格式也会丢失。',
+    csvKeepXlsxBtn: '另存为 .xlsx',
+    csvContinueBtn: '继续保存为 CSV',
+    csvActiveSheetOnlyNotice: 'CSV 文件只包含一张工作表——只会导出当前工作表“{name}”。',
+    csvKeepFormatMsg: '继续以 CSV 格式保存吗?',
+    csvKeepFormatDetail:
+      'CSV 只保留单张工作表的纯文本值——公式、格式和其他工作表不会存入 .csv 文件。',
   },
   en: {
     filterSpreadsheets: 'Spreadsheets',
@@ -205,6 +224,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Not signed in to Genspark: click “Sign in to Genspark” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
+    errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
     errImgAbsPath: 'Image path must be absolute.',
     errImgNotFound: 'Image file not found: {path}',
@@ -231,6 +251,18 @@ const tMain = createI18n({
     btnDontSave: "Don't Save",
     btnCancel: 'Cancel',
     csvSaveAsNotice: "CSV files can't keep formatting — saving as .xlsx keeps all your changes.",
+    menuExportCsv: 'Export CSV…',
+    filterCsv: 'CSV (Comma delimited)',
+    csvFormulaLossMsg: 'This sheet contains formulas that CSV cannot keep.',
+    csvFormulaLossDetail:
+      'CSV keeps plain values only — formulas are flattened to their current results, and formatting is lost.',
+    csvKeepXlsxBtn: 'Save as .xlsx',
+    csvContinueBtn: 'Continue as CSV',
+    csvActiveSheetOnlyNotice:
+      'CSV files hold a single sheet — only the active sheet "{name}" will be exported.',
+    csvKeepFormatMsg: 'Keep saving in CSV format?',
+    csvKeepFormatDetail:
+      'CSV keeps plain values of a single sheet only — formulas, formatting, and any additional sheets are not saved to the .csv file.',
   },
   ja: {
     filterSpreadsheets: 'スプレッドシート',
@@ -252,6 +284,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Genspark にサインインしていません。下の「Genspark にサインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
+    errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
     errImgAbsPath: '画像パスは絶対パスで指定してください。',
     errImgNotFound: '画像ファイルが見つかりません: {path}',
@@ -280,6 +313,18 @@ const tMain = createI18n({
     btnCancel: 'キャンセル',
     csvSaveAsNotice:
       'CSV 形式は書式を保持できません。.xlsx として保存すると変更をすべて保持できます。',
+    menuExportCsv: 'CSV をエクスポート…',
+    filterCsv: 'CSV (コンマ区切り)',
+    csvFormulaLossMsg: 'このシートには CSV 形式では保持できない数式が含まれています。',
+    csvFormulaLossDetail:
+      'CSV は値のみを保持します。数式は現在の計算結果に置き換えられ、書式も失われます。',
+    csvKeepXlsxBtn: '.xlsx として保存',
+    csvContinueBtn: 'CSV のまま保存',
+    csvActiveSheetOnlyNotice:
+      'CSV ファイルには 1 枚のシートしか含められません — アクティブなシート「{name}」のみがエクスポートされます。',
+    csvKeepFormatMsg: 'CSV 形式のまま保存しますか?',
+    csvKeepFormatDetail:
+      'CSV は 1 枚のシートの値のみを保持します。数式、書式、追加のシートは .csv ファイルには保存されません。',
   },
   ko: {
     filterSpreadsheets: '스프레드시트',
@@ -301,6 +346,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Genspark에 로그인되어 있지 않습니다. 아래 "Genspark 로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
+    errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errImgAbsPath: '이미지 경로는 절대 경로여야 합니다.',
     errImgNotFound: '이미지 파일을 찾을 수 없습니다: {path}',
@@ -329,6 +375,18 @@ const tMain = createI18n({
     btnCancel: '취소',
     csvSaveAsNotice:
       'CSV 형식은 서식을 저장할 수 없습니다. .xlsx로 저장하면 모든 변경 내용이 유지됩니다.',
+    menuExportCsv: 'CSV 내보내기…',
+    filterCsv: 'CSV (쉼표로 분리)',
+    csvFormulaLossMsg: '현재 시트에 CSV 형식이 유지할 수 없는 수식이 포함되어 있습니다.',
+    csvFormulaLossDetail:
+      'CSV는 값만 유지합니다 — 수식은 현재 계산 결과로 바뀌고 서식은 손실됩니다.',
+    csvKeepXlsxBtn: '.xlsx로 저장',
+    csvContinueBtn: 'CSV로 계속 저장',
+    csvActiveSheetOnlyNotice:
+      'CSV 파일에는 시트 하나만 포함됩니다 — 활성 시트 "{name}"만 내보냅니다.',
+    csvKeepFormatMsg: 'CSV 형식으로 계속 저장하시겠습니까?',
+    csvKeepFormatDetail:
+      'CSV는 시트 하나의 값만 유지합니다 — 수식, 서식, 추가 시트는 .csv 파일에 저장되지 않습니다.',
   },
   fr: {
     filterSpreadsheets: 'Feuilles de calcul',
@@ -350,6 +408,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Non connecté à Genspark : cliquez sur « Se connecter à Genspark » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
+    errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
     errImgAbsPath: "Le chemin de l'image doit être absolu.",
     errImgNotFound: 'Fichier image introuvable : {path}',
@@ -378,6 +437,19 @@ const tMain = createI18n({
     btnCancel: 'Annuler',
     csvSaveAsNotice:
       'Le format CSV ne conserve pas la mise en forme — enregistrez en .xlsx pour conserver toutes vos modifications.',
+    menuExportCsv: 'Exporter en CSV…',
+    filterCsv: 'CSV (délimité par des virgules)',
+    csvFormulaLossMsg:
+      'Cette feuille contient des formules que le format CSV ne peut pas conserver.',
+    csvFormulaLossDetail:
+      'Le CSV ne conserve que les valeurs — les formules sont remplacées par leur résultat actuel et la mise en forme est perdue.',
+    csvKeepXlsxBtn: 'Enregistrer en .xlsx',
+    csvContinueBtn: 'Continuer en CSV',
+    csvActiveSheetOnlyNotice:
+      "Les fichiers CSV ne contiennent qu'une seule feuille — seule la feuille active « {name} » sera exportée.",
+    csvKeepFormatMsg: 'Continuer à enregistrer au format CSV ?',
+    csvKeepFormatDetail:
+      "Le CSV ne conserve que les valeurs d'une seule feuille — les formules, la mise en forme et les feuilles supplémentaires ne sont pas enregistrées dans le fichier .csv.",
   },
   de: {
     filterSpreadsheets: 'Tabellenkalkulationen',
@@ -399,6 +471,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Nicht bei Genspark angemeldet: Klicken Sie unten auf „Bei Genspark anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
+    errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
     errImgAbsPath: 'Der Bildpfad muss absolut sein.',
     errImgNotFound: 'Bilddatei nicht gefunden: {path}',
@@ -427,6 +500,18 @@ const tMain = createI18n({
     btnCancel: 'Abbrechen',
     csvSaveAsNotice:
       'CSV-Dateien können keine Formatierung speichern – als .xlsx speichern, um alle Änderungen zu behalten.',
+    menuExportCsv: 'CSV exportieren…',
+    filterCsv: 'CSV (Trennzeichen-getrennt)',
+    csvFormulaLossMsg: 'Dieses Blatt enthält Formeln, die das CSV-Format nicht speichern kann.',
+    csvFormulaLossDetail:
+      'CSV speichert nur reine Werte – Formeln werden durch ihre aktuellen Ergebnisse ersetzt, und die Formatierung geht verloren.',
+    csvKeepXlsxBtn: 'Als .xlsx speichern',
+    csvContinueBtn: 'Als CSV fortfahren',
+    csvActiveSheetOnlyNotice:
+      'CSV-Dateien enthalten nur ein Blatt – nur das aktive Blatt „{name}“ wird exportiert.',
+    csvKeepFormatMsg: 'Weiter im CSV-Format speichern?',
+    csvKeepFormatDetail:
+      'CSV speichert nur die Werte eines einzelnen Blatts – Formeln, Formatierungen und weitere Blätter werden nicht in der .csv-Datei gespeichert.',
   },
   es: {
     filterSpreadsheets: 'Hojas de cálculo',
@@ -448,6 +533,8 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'No has iniciado sesión en Genspark: pulsa «Iniciar sesión en Genspark» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
+    errAiBusy:
+      'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No hay nombre de modelo configurado',
     errImgAbsPath: 'La ruta de la imagen debe ser absoluta.',
     errImgNotFound: 'No se encontró el archivo de imagen: {path}',
@@ -475,6 +562,18 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     csvSaveAsNotice:
       'El formato CSV no conserva el formato: guarda como .xlsx para conservar todos tus cambios.',
+    menuExportCsv: 'Exportar a CSV…',
+    filterCsv: 'CSV (delimitado por comas)',
+    csvFormulaLossMsg: 'Esta hoja contiene fórmulas que el formato CSV no puede conservar.',
+    csvFormulaLossDetail:
+      'El CSV solo conserva valores: las fórmulas se sustituyen por sus resultados actuales y el formato se pierde.',
+    csvKeepXlsxBtn: 'Guardar como .xlsx',
+    csvContinueBtn: 'Continuar como CSV',
+    csvActiveSheetOnlyNotice:
+      'Los archivos CSV solo contienen una hoja: solo se exportará la hoja activa «{name}».',
+    csvKeepFormatMsg: '¿Seguir guardando en formato CSV?',
+    csvKeepFormatDetail:
+      'CSV solo conserva los valores de una única hoja: las fórmulas, el formato y las hojas adicionales no se guardan en el archivo .csv.',
   },
   th: {
     filterSpreadsheets: 'สเปรดชีต',
@@ -496,6 +595,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้ Genspark” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
+    errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้กำหนดชื่อโมเดล',
     errImgAbsPath: 'เส้นทางรูปภาพต้องเป็นเส้นทางแบบสัมบูรณ์',
     errImgNotFound: 'ไม่พบไฟล์รูปภาพ: {path}',
@@ -523,6 +623,18 @@ const tMain = createI18n({
     btnCancel: 'ยกเลิก',
     csvSaveAsNotice:
       'ไฟล์ CSV ไม่สามารถเก็บการจัดรูปแบบได้ — บันทึกเป็น .xlsx เพื่อเก็บการเปลี่ยนแปลงทั้งหมดของคุณ',
+    menuExportCsv: 'ส่งออก CSV…',
+    filterCsv: 'CSV (คั่นด้วยเครื่องหมายจุลภาค)',
+    csvFormulaLossMsg: 'ชีตนี้มีสูตรที่รูปแบบ CSV เก็บไว้ไม่ได้',
+    csvFormulaLossDetail:
+      'CSV เก็บเฉพาะค่าเท่านั้น — สูตรจะถูกแทนที่ด้วยผลลัพธ์ปัจจุบัน และการจัดรูปแบบจะหายไป',
+    csvKeepXlsxBtn: 'บันทึกเป็น .xlsx',
+    csvContinueBtn: 'บันทึกเป็น CSV ต่อไป',
+    csvActiveSheetOnlyNotice:
+      'ไฟล์ CSV มีได้เพียงชีตเดียว — จะส่งออกเฉพาะชีตที่ใช้งานอยู่ “{name}” เท่านั้น',
+    csvKeepFormatMsg: 'บันทึกเป็นรูปแบบ CSV ต่อไปหรือไม่',
+    csvKeepFormatDetail:
+      'CSV เก็บเฉพาะค่าของชีตเดียวเท่านั้น — สูตร การจัดรูปแบบ และชีตอื่น ๆ จะไม่ถูกบันทึกลงในไฟล์ .csv',
   },
   id: {
     filterSpreadsheets: 'Lembar bentang',
@@ -542,6 +654,7 @@ const tMain = createI18n({
     errNotImage: 'bukan jenis gambar yang didukung',
     errGskNotLoggedIn: 'Belum masuk ke Genspark: klik “Masuk ke Genspark” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
+    errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errImgAbsPath: 'Jalur gambar harus berupa jalur absolut.',
     errImgNotFound: 'File gambar tidak ditemukan: {path}',
@@ -569,6 +682,18 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     csvSaveAsNotice:
       'File CSV tidak dapat menyimpan pemformatan — simpan sebagai .xlsx untuk mempertahankan semua perubahan Anda.',
+    menuExportCsv: 'Ekspor CSV…',
+    filterCsv: 'CSV (dipisahkan koma)',
+    csvFormulaLossMsg: 'Lembar ini berisi rumus yang tidak dapat disimpan dalam format CSV.',
+    csvFormulaLossDetail:
+      'CSV hanya menyimpan nilai — rumus diganti dengan hasil saat ini, dan pemformatan akan hilang.',
+    csvKeepXlsxBtn: 'Simpan sebagai .xlsx',
+    csvContinueBtn: 'Lanjutkan sebagai CSV',
+    csvActiveSheetOnlyNotice:
+      'File CSV hanya memuat satu lembar — hanya lembar aktif “{name}” yang akan diekspor.',
+    csvKeepFormatMsg: 'Terus menyimpan dalam format CSV?',
+    csvKeepFormatDetail:
+      'CSV hanya menyimpan nilai dari satu lembar — rumus, pemformatan, dan lembar tambahan tidak disimpan ke file .csv.',
   },
   ru: {
     filterSpreadsheets: 'Электронные таблицы',
@@ -590,6 +715,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Вы не вошли в Genspark: нажмите «Войти в Genspark» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
+    errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Имя модели не настроено',
     errImgAbsPath: 'Путь к изображению должен быть абсолютным.',
     errImgNotFound: 'Файл изображения не найден: {path}',
@@ -617,6 +743,18 @@ const tMain = createI18n({
     btnCancel: 'Отмена',
     csvSaveAsNotice:
       'Формат CSV не сохраняет форматирование — сохраните в .xlsx, чтобы не потерять изменения.',
+    menuExportCsv: 'Экспорт в CSV…',
+    filterCsv: 'CSV (разделители — запятые)',
+    csvFormulaLossMsg: 'Этот лист содержит формулы, которые формат CSV не сохраняет.',
+    csvFormulaLossDetail:
+      'CSV сохраняет только значения — формулы заменяются текущими результатами, а форматирование теряется.',
+    csvKeepXlsxBtn: 'Сохранить как .xlsx',
+    csvContinueBtn: 'Продолжить в CSV',
+    csvActiveSheetOnlyNotice:
+      'Файлы CSV содержат только один лист — будет экспортирован только активный лист «{name}».',
+    csvKeepFormatMsg: 'Продолжить сохранение в формате CSV?',
+    csvKeepFormatDetail:
+      'CSV сохраняет только значения одного листа — формулы, форматирование и дополнительные листы не сохраняются в файле .csv.',
   },
   ar: {
     filterSpreadsheets: 'جداول البيانات',
@@ -637,6 +775,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول إلى Genspark» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
+    errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errImgAbsPath: 'يجب أن يكون مسار الصورة مسارًا مطلقًا.',
     errImgNotFound: 'لم يتم العثور على ملف الصورة: {path}',
@@ -663,6 +802,17 @@ const tMain = createI18n({
     btnDontSave: 'عدم الحفظ',
     btnCancel: 'إلغاء',
     csvSaveAsNotice: 'ملفات CSV لا تحتفظ بالتنسيق — احفظ بصيغة ‎.xlsx للاحتفاظ بجميع تغييراتك.',
+    menuExportCsv: 'تصدير CSV…',
+    filterCsv: 'CSV (محدد بفواصل)',
+    csvFormulaLossMsg: 'تحتوي هذه الورقة على صيغ لا يمكن لتنسيق CSV الاحتفاظ بها.',
+    csvFormulaLossDetail: 'يحتفظ CSV بالقيم فقط — تُستبدل الصيغ بنتائجها الحالية ويُفقد التنسيق.',
+    csvKeepXlsxBtn: 'حفظ بصيغة .xlsx',
+    csvContinueBtn: 'المتابعة بتنسيق CSV',
+    csvActiveSheetOnlyNotice:
+      'ملفات CSV تحتوي على ورقة واحدة فقط — سيتم تصدير الورقة النشطة «{name}» فقط.',
+    csvKeepFormatMsg: 'هل تريد متابعة الحفظ بتنسيق CSV؟',
+    csvKeepFormatDetail:
+      'يحتفظ CSV بقيم ورقة واحدة فقط — لا تُحفظ الصيغ والتنسيق والأوراق الإضافية في ملف .csv.',
   },
   pt: {
     filterSpreadsheets: 'Planilhas',
@@ -684,6 +834,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Não conectado ao Genspark: clique em “Entrar no Genspark” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
+    errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
     errImgAbsPath: 'O caminho da imagem deve ser absoluto.',
     errImgNotFound: 'Arquivo de imagem não encontrado: {path}',
@@ -711,6 +862,18 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     csvSaveAsNotice:
       'Arquivos CSV não mantêm a formatação — salve como .xlsx para manter todas as suas alterações.',
+    menuExportCsv: 'Exportar CSV…',
+    filterCsv: 'CSV (separado por vírgulas)',
+    csvFormulaLossMsg: 'Esta planilha contém fórmulas que o formato CSV não pode manter.',
+    csvFormulaLossDetail:
+      'O CSV mantém apenas valores — as fórmulas são substituídas pelos resultados atuais e a formatação é perdida.',
+    csvKeepXlsxBtn: 'Salvar como .xlsx',
+    csvContinueBtn: 'Continuar como CSV',
+    csvActiveSheetOnlyNotice:
+      'Arquivos CSV contêm apenas uma planilha — apenas a planilha ativa “{name}” será exportada.',
+    csvKeepFormatMsg: 'Continuar salvando no formato CSV?',
+    csvKeepFormatDetail:
+      'O CSV mantém apenas os valores de uma única planilha — fórmulas, formatação e planilhas adicionais não são salvas no arquivo .csv.',
   },
   it: {
     filterSpreadsheets: 'Fogli di calcolo',
@@ -732,6 +895,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Accesso a Genspark non effettuato: fai clic su “Accedi a Genspark” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
+    errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
     errImgAbsPath: "Il percorso dell'immagine deve essere assoluto.",
     errImgNotFound: 'File immagine non trovato: {path}',
@@ -760,6 +924,18 @@ const tMain = createI18n({
     btnCancel: 'Annulla',
     csvSaveAsNotice:
       'I file CSV non conservano la formattazione: salva come .xlsx per mantenere tutte le modifiche.',
+    menuExportCsv: 'Esporta CSV…',
+    filterCsv: 'CSV (delimitato da virgole)',
+    csvFormulaLossMsg: 'Questo foglio contiene formule che il formato CSV non può conservare.',
+    csvFormulaLossDetail:
+      'Il CSV conserva solo i valori: le formule vengono sostituite dai risultati attuali e la formattazione viene persa.',
+    csvKeepXlsxBtn: 'Salva come .xlsx',
+    csvContinueBtn: 'Continua come CSV',
+    csvActiveSheetOnlyNotice:
+      'I file CSV contengono un solo foglio: verrà esportato solo il foglio attivo “{name}”.',
+    csvKeepFormatMsg: 'Continuare a salvare in formato CSV?',
+    csvKeepFormatDetail:
+      'Il CSV conserva solo i valori di un singolo foglio: formule, formattazione e fogli aggiuntivi non vengono salvati nel file .csv.',
   },
   pl: {
     filterSpreadsheets: 'Arkusze kalkulacyjne',
@@ -781,6 +957,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Nie zalogowano do Genspark: kliknij „Zaloguj się do Genspark” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
+    errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errImgAbsPath: 'Ścieżka obrazu musi być bezwzględna.',
     errImgNotFound: 'Nie znaleziono pliku obrazu: {path}',
@@ -808,6 +985,18 @@ const tMain = createI18n({
     btnCancel: 'Anuluj',
     csvSaveAsNotice:
       'Pliki CSV nie zachowują formatowania — zapisz jako .xlsx, aby zachować wszystkie zmiany.',
+    menuExportCsv: 'Eksportuj CSV…',
+    filterCsv: 'CSV (rozdzielany przecinkami)',
+    csvFormulaLossMsg: 'Ten arkusz zawiera formuły, których format CSV nie zachowuje.',
+    csvFormulaLossDetail:
+      'CSV zachowuje tylko wartości — formuły są zastępowane bieżącymi wynikami, a formatowanie jest tracone.',
+    csvKeepXlsxBtn: 'Zapisz jako .xlsx',
+    csvContinueBtn: 'Kontynuuj jako CSV',
+    csvActiveSheetOnlyNotice:
+      'Pliki CSV zawierają tylko jeden arkusz — wyeksportowany zostanie tylko aktywny arkusz „{name}”.',
+    csvKeepFormatMsg: 'Kontynuować zapisywanie w formacie CSV?',
+    csvKeepFormatDetail:
+      'CSV zachowuje tylko wartości jednego arkusza — formuły, formatowanie i dodatkowe arkusze nie są zapisywane w pliku .csv.',
   },
   nl: {
     filterSpreadsheets: 'Spreadsheets',
@@ -829,6 +1018,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Niet aangemeld bij Genspark: klik hieronder op “Aanmelden bij Genspark”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
+    errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
     errImgAbsPath: 'Het afbeeldingspad moet absoluut zijn.',
     errImgNotFound: 'Afbeeldingsbestand niet gevonden: {path}',
@@ -857,6 +1047,18 @@ const tMain = createI18n({
     btnCancel: 'Annuleren',
     csvSaveAsNotice:
       'CSV-bestanden bewaren geen opmaak — sla op als .xlsx om al uw wijzigingen te behouden.',
+    menuExportCsv: 'CSV exporteren…',
+    filterCsv: 'CSV (kommagescheiden)',
+    csvFormulaLossMsg: 'Dit blad bevat formules die het CSV-formaat niet kan bewaren.',
+    csvFormulaLossDetail:
+      'CSV bewaart alleen waarden — formules worden vervangen door hun huidige resultaten en opmaak gaat verloren.',
+    csvKeepXlsxBtn: 'Opslaan als .xlsx',
+    csvContinueBtn: 'Doorgaan als CSV',
+    csvActiveSheetOnlyNotice:
+      'CSV-bestanden bevatten slechts één blad — alleen het actieve blad “{name}” wordt geëxporteerd.',
+    csvKeepFormatMsg: 'Doorgaan met opslaan in CSV-indeling?',
+    csvKeepFormatDetail:
+      'CSV bewaart alleen de waarden van één blad — formules, opmaak en extra bladen worden niet in het .csv-bestand opgeslagen.',
   },
   ms: {
     filterSpreadsheets: 'Hamparan',
@@ -877,6 +1079,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Belum log masuk ke Genspark: klik “Log masuk ke Genspark” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
+    errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
     errImgAbsPath: 'Laluan imej mestilah laluan mutlak.',
     errImgNotFound: 'Fail imej tidak ditemui: {path}',
@@ -904,6 +1107,19 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     csvSaveAsNotice:
       'Fail CSV tidak dapat menyimpan pemformatan — simpan sebagai .xlsx untuk mengekalkan semua perubahan anda.',
+    menuExportCsv: 'Eksport CSV…',
+    filterCsv: 'CSV (dipisahkan koma)',
+    csvFormulaLossMsg:
+      'Helaian ini mengandungi formula yang tidak dapat disimpan dalam format CSV.',
+    csvFormulaLossDetail:
+      'CSV hanya menyimpan nilai — formula digantikan dengan hasil semasa, dan pemformatan akan hilang.',
+    csvKeepXlsxBtn: 'Simpan sebagai .xlsx',
+    csvContinueBtn: 'Teruskan sebagai CSV',
+    csvActiveSheetOnlyNotice:
+      'Fail CSV hanya mengandungi satu helaian — hanya helaian aktif “{name}” akan dieksport.',
+    csvKeepFormatMsg: 'Terus simpan dalam format CSV?',
+    csvKeepFormatDetail:
+      'CSV hanya menyimpan nilai satu helaian — formula, pemformatan dan helaian tambahan tidak disimpan ke fail .csv.',
   },
   he: {
     filterSpreadsheets: 'גיליונות אלקטרוניים',
@@ -923,6 +1139,7 @@ const tMain = createI18n({
     errNotImage: 'סוג תמונה שאינו נתמך',
     errGskNotLoggedIn: 'לא מחובר ל-Genspark: לחץ על "התחבר ל-Genspark" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
+    errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
     errImgAbsPath: 'נתיב התמונה חייב להיות מוחלט.',
     errImgNotFound: 'קובץ התמונה לא נמצא: {path}',
@@ -949,6 +1166,17 @@ const tMain = createI18n({
     btnDontSave: 'אל תשמור',
     btnCancel: 'ביטול',
     csvSaveAsNotice: 'קובצי CSV אינם שומרים עיצוב — שמרו כ‑.xlsx כדי לשמור על כל השינויים.',
+    menuExportCsv: 'ייצוא CSV…',
+    filterCsv: 'CSV (מופרד באמצעות פסיקים)',
+    csvFormulaLossMsg: 'גיליון זה מכיל נוסחאות שתבנית CSV אינה יכולה לשמור.',
+    csvFormulaLossDetail:
+      'CSV שומר ערכים בלבד — נוסחאות מוחלפות בתוצאות הנוכחיות שלהן, והעיצוב אובד.',
+    csvKeepXlsxBtn: 'שמירה כ-.xlsx',
+    csvContinueBtn: 'המשך שמירה כ-CSV',
+    csvActiveSheetOnlyNotice: 'קובצי CSV מכילים גיליון אחד בלבד — רק הגיליון הפעיל "{name}" ייוצא.',
+    csvKeepFormatMsg: 'להמשיך לשמור בתבנית CSV?',
+    csvKeepFormatDetail:
+      'CSV שומר רק את הערכים של גיליון אחד — נוסחאות, עיצוב וגיליונות נוספים אינם נשמרים בקובץ ה-.csv.',
   },
   hi: {
     filterSpreadsheets: 'स्प्रेडशीट',
@@ -969,6 +1197,7 @@ const tMain = createI18n({
     errGskNotLoggedIn:
       'Genspark में साइन इन नहीं है: नीचे “Genspark में साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
+    errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errImgAbsPath: 'छवि पथ निरपेक्ष होना चाहिए।',
     errImgNotFound: 'छवि फ़ाइल नहीं मिली: {path}',
@@ -997,6 +1226,18 @@ const tMain = createI18n({
     btnCancel: 'रद्द करें',
     csvSaveAsNotice:
       'CSV फ़ाइलें फ़ॉर्मेटिंग सहेज नहीं सकतीं — सभी बदलाव बनाए रखने के लिए .xlsx के रूप में सहेजें।',
+    menuExportCsv: 'CSV निर्यात करें…',
+    filterCsv: 'CSV (अल्पविराम द्वारा सीमांकित)',
+    csvFormulaLossMsg: 'इस शीट में ऐसे सूत्र हैं जिन्हें CSV प्रारूप सहेज नहीं सकता।',
+    csvFormulaLossDetail:
+      'CSV केवल मान रखता है — सूत्र उनके वर्तमान परिणामों से बदल दिए जाते हैं और फ़ॉर्मेटिंग खो जाती है।',
+    csvKeepXlsxBtn: '.xlsx के रूप में सहेजें',
+    csvContinueBtn: 'CSV के रूप में जारी रखें',
+    csvActiveSheetOnlyNotice:
+      'CSV फ़ाइलों में केवल एक शीट होती है — केवल सक्रिय शीट “{name}” निर्यात की जाएगी।',
+    csvKeepFormatMsg: 'CSV प्रारूप में सहेजना जारी रखें?',
+    csvKeepFormatDetail:
+      'CSV केवल एक शीट के मान रखता है — सूत्र, स्वरूपण और अतिरिक्त शीट .csv फ़ाइल में सहेजे नहीं जाते।',
   },
   'zh-TW': {
     filterSpreadsheets: '電子試算表',
@@ -1016,6 +1257,7 @@ const tMain = createI18n({
     errNotImage: '不是支援的圖片類型',
     errGskNotLoggedIn: '未登入 Genspark:請點擊下方「登入 Genspark」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
+    errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
     errImgAbsPath: '圖片路徑必須是絕對路徑。',
     errImgNotFound: '找不到圖片檔案: {path}',
@@ -1042,6 +1284,15 @@ const tMain = createI18n({
     btnDontSave: '不儲存',
     btnCancel: '取消',
     csvSaveAsNotice: 'CSV 格式不保留樣式等格式修改——另存為 .xlsx 可保留全部內容。',
+    menuExportCsv: '匯出 CSV…',
+    filterCsv: 'CSV (逗號分隔)',
+    csvFormulaLossMsg: '目前工作表包含公式,CSV 格式無法保留。',
+    csvFormulaLossDetail: 'CSV 只保留純文字值——公式會被取代為目前計算結果,格式也會遺失。',
+    csvKeepXlsxBtn: '另存為 .xlsx',
+    csvContinueBtn: '繼續儲存為 CSV',
+    csvActiveSheetOnlyNotice: 'CSV 檔案只包含一張工作表——只會匯出目前工作表「{name}」。',
+    csvKeepFormatMsg: '要繼續以 CSV 格式儲存嗎?',
+    csvKeepFormatDetail: 'CSV 只保留單張工作表的純值——公式、格式和其他工作表不會存入 .csv 檔案。',
   },
 })
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
@@ -1058,12 +1309,19 @@ interface SessionInfo {
   readonly sha256: string
   readonly sheetNames: ReadonlyMap<string, string>
   readonly automaticRecoveryDisabled: boolean
-  /// Set when the session opened a converted copy (.xls/.csv import): the
+  /// Set when the session opened a converted copy (.xls import): the
   /// first save routes through Save As, defaulting to this .xlsx path.
   readonly suggestSaveAs?: string
   /// The converted copy came from a CSV: the Save As dialog explains that
   /// formatting requires .xlsx (CSV keeps values only).
   readonly csvImport?: boolean
+  /// CSV session: the original .csv on disk. Save keeps the CSV identity —
+  /// the xlsx save lands on the temp copy and the serialized csvContent is
+  /// written back here.
+  readonly csvSourcePath?: string
+  /// Digest of the original .csv at open/save time — guards the write-back
+  /// against external modification, like restoreTargetSha.
+  readonly csvSourceSha?: string
   /// App-owned directory containing the converted CSV/XLS copy. Removed only
   /// after the sidecar session and its independent snapshot are closed.
   readonly importTempDir?: string
@@ -1079,6 +1337,14 @@ interface SessionInfo {
 
 // ---- runtime configuration (paths differ when bundled into the shell) ----
 
+/** AI create_document content the sheets app cannot build itself — the shell
+ * routes it into the docs-owned creation flow (docx opens a fresh docs tab). */
+export interface SheetsAiHostDocumentRequest {
+  type: 'docx' | 'pdf' | 'md'
+  title: string
+  content: string
+}
+
 interface SheetsRuntimeConfig {
   /** absolute path to the sheets preload bundle */
   preloadPath: string
@@ -1088,30 +1354,85 @@ interface SheetsRuntimeConfig {
   rendererFile: string
   /** absolute path to the Rust xlsx-sidecar binary */
   sidecarPath?: string | undefined
-  /** Shell router used to open exported PDFs in a new GenOffice tab. */
+  /** Shell router used to open exported/AI-generated files in a new GenOffice tab. */
   openGeneratedPath?: (path: string) => boolean
+  /** Host-owned cross-app document creator (the shell routes docx/pdf/md into Docs). */
+  createDocument?: (request: SheetsAiHostDocumentRequest) => Promise<WorkbookCreateDocumentResult>
 }
 
 let runtime: SheetsRuntimeConfig = {
   preloadPath: join(__dirname, '../preload/index.js'),
   rendererUrl: process.env.ELECTRON_RENDERER_URL,
   rendererFile: join(__dirname, '../renderer/index.html'),
+  createDocument: createStandaloneSheetsDocument,
 }
 
 export function configureSheetsRuntime(config: SheetsRuntimeConfig): void {
   runtime = config
 }
 
-/** After a successful Sheets → PDF export: open the file in a PDF tab (shell)
- * or reveal it in the folder (standalone). Tab-opening failure must not
- * report the export itself as failed — the file is already persisted. */
-function openExportedPdf(path: string): void {
+/** After writing an exported/AI-generated file: open it in the right tab
+ * (shell) or reveal it in the folder (standalone). Tab-opening failure must
+ * not report the write itself as failed — the file is already persisted. */
+function openGeneratedFile(path: string): void {
   try {
     if (runtime.openGeneratedPath?.(path)) return
   } catch (err) {
-    console.warn('[sheets] Failed to open exported PDF:', err)
+    console.warn('[sheets] Failed to open generated file:', err)
   }
   shell.showItemInFolder(path)
+}
+
+/** Pick a safe file-name stem for an AI-created file (mirrors docs' sanitizeAiDocFileBase). */
+export function sanitizeGeneratedFileBase(title: string): string {
+  const cleaned = String(title ?? '')
+    // eslint-disable-next-line no-control-regex -- generated file names must reject controls
+    .replace(/[/\\:*?"<>|\u0000-\u001f]/g, '_')
+    .trim()
+    .slice(0, 80)
+    .trim()
+  return cleaned && cleaned !== '.' && cleaned !== '..' ? cleaned : 'Untitled'
+}
+
+/** first free path for fileName inside dir: name.ext, name-2.ext, name-3.ext… */
+export function uniquePathIn(dir: string, fileName: string): string {
+  const dot = fileName.lastIndexOf('.')
+  const base = dot > 0 ? fileName.slice(0, dot) : fileName
+  const ext = dot > 0 ? fileName.slice(dot) : ''
+  let candidate = join(dir, fileName)
+  for (let i = 2; existsSync(candidate); i++) candidate = join(dir, `${base}-${i}${ext}`)
+  return candidate
+}
+
+/** Standalone-window fallback for AI docx/pdf/md creation (mirrors pdf-main's
+ * createStandaloneDocument): pdf renders in a hidden sandboxed window, md
+ * writes the Markdown source; docx needs the Docs app and is refused. */
+async function createStandaloneSheetsDocument(
+  request: SheetsAiHostDocumentRequest,
+): Promise<WorkbookCreateDocumentResult> {
+  if (request.type === 'docx') {
+    return { ok: false, error: 'Creating DOCX files requires the GenOffice shell or Docs app.' }
+  }
+  const title = sanitizeGeneratedFileBase(request.title)
+  try {
+    if (request.type === 'pdf') {
+      const bytes = await printHtmlToPdf(
+        buildPrintableHtml(title, request.content),
+        () =>
+          new BrowserWindow({ show: false, webPreferences: { sandbox: true, javascript: false } }),
+      )
+      const path = uniquePathIn(configuredDefaultSaveDir(app), `${title}.pdf`)
+      await writeFile(path, bytes)
+      openGeneratedFile(path)
+      return { ok: true, path }
+    }
+    const path = uniquePathIn(configuredDefaultSaveDir(app), `${title}.md`)
+    await writeFile(path, request.content, 'utf8')
+    openGeneratedFile(path)
+    return { ok: true, path }
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) }
+  }
 }
 
 let mainWindow: BrowserWindow | null = null
@@ -1273,7 +1594,7 @@ export function setSheetsWorkbookOpenedHook(
 
 /** forward an application-menu File command into the sheets renderer */
 export function sendSheetsMenuAction(
-  action: 'open' | 'save' | 'save-as' | 'export-pdf' | 'undo' | 'redo',
+  action: 'open' | 'save' | 'save-as' | 'export-pdf' | 'export-csv' | 'undo' | 'redo',
 ): void {
   activeSheetsWebContents?.send(IPC_CHANNELS.menuAction, action)
 }
@@ -1447,6 +1768,7 @@ function startCaptureServer(): void {
         action === 'save' ||
         action === 'save-as' ||
         action === 'export-pdf' ||
+        action === 'export-csv' ||
         action === 'undo' ||
         action === 'redo'
       ) {
@@ -1908,6 +2230,7 @@ export function registerSheetsIpc(): void {
     const result = await openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
       suggestSaveAs: prepared.suggestSaveAs,
       csvImport: prepared.csvImport,
+      csvSourcePath: prepared.csvSourcePath,
       importTempDir: prepared.importTempDir,
       restoreTarget: prepared.restoreTarget,
     })
@@ -2150,8 +2473,132 @@ export function registerSheetsIpc(): void {
     sessionFor(event)
     const request = workbookExportPdfRequestSchema.parse(input)
     const result = await exportPdf(event, request)
-    if (!result.canceled && result.path) openExportedPdf(result.path)
+    if (!result.canceled && result.path) openGeneratedFile(result.path)
     return result
+  })
+
+  ipcMain.handle(IPC_CHANNELS.exportCsv, async (event, input: unknown) => {
+    const entry = sessionFor(event)
+    const request = workbookExportCsvRequestSchema.parse(input)
+    const parent = dialogParent(event)
+    if (request.hasFormulas) {
+      // Excel's CSV warning flow: offer keeping the formulas via .xlsx first.
+      const options = {
+        type: 'warning' as const,
+        message: tm('csvFormulaLossMsg'),
+        detail: tm('csvFormulaLossDetail'),
+        buttons: [tm('csvKeepXlsxBtn'), tm('csvContinueBtn'), tm('btnCancel')],
+        defaultId: 0,
+        cancelId: 2,
+        noLink: true,
+      }
+      const { response } = parent
+        ? await dialog.showMessageBox(parent, options)
+        : await dialog.showMessageBox(options)
+      if (response === 0) return { canceled: true, saveAsXlsxInstead: true }
+      if (response === 2) return { canceled: true }
+    }
+    let pickedPath = request.targetPath
+    if (pickedPath === undefined) {
+      const selection = await saveFileDialog(event, {
+        defaultPath: request.fileName,
+        filters: [{ name: tm('filterCsv'), extensions: ['csv'] }],
+        ...(request.activeSheetName
+          ? {
+              title: tm('csvActiveSheetOnlyNotice', { name: request.activeSheetName }),
+              message: tm('csvActiveSheetOnlyNotice', { name: request.activeSheetName }),
+            }
+          : {}),
+      })
+      if (selection.canceled || !selection.filePath) return { canceled: true }
+      pickedPath = selection.filePath
+    }
+    const targetPath = pickedPath.toLowerCase().endsWith('.csv') ? pickedPath : `${pickedPath}.csv`
+    // UTF-8 BOM so Excel decodes the reopened file correctly. Written beside
+    // the destination and renamed into place: a plain writeFile creates the
+    // (empty) file before the data lands, and anything watching for the
+    // export — the e2e retry loop included — can read zero bytes in that
+    // window.
+    const csvBytes = Buffer.concat([
+      Buffer.from([0xef, 0xbb, 0xbf]),
+      Buffer.from(request.content, 'utf8'),
+    ])
+    await atomicWriteFile(targetPath, csvBytes)
+    // An export can land on a CSV session's own source file — refresh that
+    // session's guard digest so its next Save doesn't mistake this write for
+    // an external change.
+    const writtenSha = await sha256File(targetPath).catch(() => undefined)
+    if (writtenSha !== undefined) {
+      for (const [sessionId, session] of entry.sessions) {
+        if (session.csvSourcePath === targetPath) {
+          entry.sessions.set(sessionId, { ...session, csvSourceSha: writtenSha })
+        }
+      }
+    }
+    return { canceled: false, path: targetPath }
+  })
+
+  // AI create_document: dialog-free — the file lands in the default save
+  // folder under a unique sanitized name and opens in a new tab. xlsx/csv
+  // write the renderer-serialized worksheet data here (xlsx through the same
+  // CSV→xlsx conversion as CSV imports, values only); docx/pdf/md go through
+  // the host-owned creator (the shell routes them into the docs flow, #960).
+  ipcMain.handle(
+    IPC_CHANNELS.createDocument,
+    async (event, input: unknown): Promise<WorkbookCreateDocumentResult> => {
+      sessionFor(event)
+      const request = workbookCreateDocumentRequestSchema.parse(input)
+      try {
+        if (request.type === 'csv') {
+          const filePath = uniquePathIn(
+            configuredDefaultSaveDir(app),
+            `${sanitizeGeneratedFileBase(request.title)}.csv`,
+          )
+          // UTF-8 BOM so Excel decodes the reopened file correctly (same as exportCsv)
+          await atomicWriteFile(
+            filePath,
+            Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from(request.content, 'utf8')]),
+          )
+          openGeneratedFile(filePath)
+          return { ok: true, path: filePath }
+        }
+        if (request.type === 'xlsx') {
+          const buffer = await sheetCsvToXlsxBuffer(request.content, request.sheetName ?? 'Sheet1')
+          const filePath = uniquePathIn(
+            configuredDefaultSaveDir(app),
+            `${sanitizeGeneratedFileBase(request.title)}.xlsx`,
+          )
+          await atomicWriteFile(filePath, buffer)
+          openGeneratedFile(filePath)
+          return { ok: true, path: filePath }
+        }
+        const create = runtime.createDocument
+        if (!create) return { ok: false, error: 'Document creation is unavailable in this host.' }
+        return await create({ type: request.type, title: request.title, content: request.content })
+      } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+      }
+    },
+  )
+
+  // First Save of a CSV session: Excel's "keep this format?" question. The
+  // renderer remembers the answer for the file, so it is asked once.
+  ipcMain.handle(IPC_CHANNELS.csvSaveConfirm, async (event) => {
+    sessionFor(event)
+    const options = {
+      type: 'warning' as const,
+      message: tm('csvKeepFormatMsg'),
+      detail: tm('csvKeepFormatDetail'),
+      buttons: [tm('csvContinueBtn'), tm('csvKeepXlsxBtn'), tm('btnCancel')],
+      defaultId: 0,
+      cancelId: 2,
+      noLink: true,
+    }
+    const parent = dialogParent(event)
+    const { response } = parent
+      ? await dialog.showMessageBox(parent, options)
+      : await dialog.showMessageBox(options)
+    return response === 0 ? 'csv' : response === 1 ? 'xlsx' : 'cancel'
   })
 
   ipcMain.handle(IPC_CHANNELS.saveWorkbook, async (event, input: unknown) => {
@@ -2161,9 +2608,13 @@ export function registerSheetsIpc(): void {
     const session = entry.sessions.get(request.sessionId)
     if (!session) throw new Error('Unknown workbook session.')
 
+    // A CSV session's plain Save keeps the CSV identity: the xlsx save lands
+    // on the temp copy and the serialized csvContent is written back to the
+    // original .csv afterwards.
+    const csvInPlace = request.mode === 'save' && session.csvSourcePath !== undefined
     let targetPath = session.path
-    // Converted imports (.xls/.csv) never save silently over the temp copy —
-    // the first save always asks where the .xlsx should live.
+    // Converted .xls imports never save silently over the temp copy — the
+    // first save always asks where the .xlsx should live.
     if (request.mode === 'save-as' || session.suggestSaveAs !== undefined) {
       // .xlsm keeps its extension: untouched archive entries (vbaProject.bin,
       // the macro-enabled content type) round-trip verbatim through the save.
@@ -2172,14 +2623,28 @@ export function registerSheetsIpc(): void {
       )
       const ext = macroEnabled ? 'xlsm' : 'xlsx'
       const selection = await saveFileDialog(event, {
-        defaultPath: session.suggestSaveAs ?? session.restoreTarget ?? session.path,
-        filters: [{ name: tm(macroEnabled ? 'filterXlsm' : 'filterXlsx'), extensions: [ext] }],
+        defaultPath:
+          session.suggestSaveAs ??
+          session.csvSourcePath?.replace(/\.[^.]+$/, '.xlsx') ??
+          session.restoreTarget ??
+          session.path,
+        filters: macroEnabled
+          ? [{ name: tm('filterXlsm'), extensions: ['xlsm'] }]
+          : [
+              { name: tm('filterXlsx'), extensions: ['xlsx'] },
+              { name: tm('filterCsv'), extensions: ['csv'] },
+            ],
         // CSV import: explain why the save goes through .xlsx (CSV keeps values only)
         ...(session.csvImport
           ? { title: tm('csvSaveAsNotice'), message: tm('csvSaveAsNotice') }
           : {}),
       })
       if (selection.canceled || !selection.filePath) return { canceled: true }
+      // A CSV pick can't ride the xlsx pipeline: hand the path back so the
+      // renderer serializes the active sheet through the CSV export channel.
+      if (!macroEnabled && selection.filePath.toLowerCase().endsWith('.csv')) {
+        return { canceled: true, csvSaveAsPath: selection.filePath }
+      }
       targetPath = selection.filePath.toLowerCase().endsWith(`.${ext}`)
         ? selection.filePath
         : `${selection.filePath}.${ext}`
@@ -2204,8 +2669,32 @@ export function registerSheetsIpc(): void {
         throw new Error(tm('errDiskChanged'))
       }
     }
+    // The CSV write-back gets the same external-change guard as restoreTarget;
+    // a deleted .csv is fine — the write recreates it.
+    if (csvInPlace && session.csvSourcePath !== undefined) {
+      const csvSha = await sha256File(session.csvSourcePath).catch(() => undefined)
+      if (csvSha !== undefined && csvSha !== session.csvSourceSha) {
+        throw new Error(tm('errDiskChanged'))
+      }
+    }
 
     const mutation = await writeWorkbookTo(client, session, request, targetPath)
+
+    if (csvInPlace && session.csvSourcePath !== undefined && request.csvContent !== undefined) {
+      // The temp copy already holds the saved bytes: refresh the session's
+      // guard digest first, so a failed CSV write-back below leaves a
+      // retryable session instead of stranding the next Save on
+      // errDiskChanged against its own write.
+      const savedSha = await sha256File(session.path).catch(() => undefined)
+      if (savedSha !== undefined && entry.sessions.has(request.sessionId)) {
+        entry.sessions.set(request.sessionId, { ...session, sha256: savedSha })
+      }
+      // UTF-8 BOM so Excel decodes the reopened file correctly.
+      await writeFile(
+        session.csvSourcePath,
+        Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from(request.csvContent, 'utf8')]),
+      )
+    }
 
     // The sidecar session still streams the pre-save bytes; swap it for a
     // fresh session over the saved file so future reads match the disk state.
@@ -2213,14 +2702,31 @@ export function registerSheetsIpc(): void {
     await cleanupSessionResources({
       tempRoot: app.getPath('temp'),
       snapshotPath: session.snapshotPath,
-      importTempDir: session.importTempDir,
+      // A CSV in-place save keeps saving into the temp copy — its directory
+      // must survive the session swap.
+      importTempDir: csvInPlace ? undefined : session.importTempDir,
       closeSidecar: () => client.close(request.sessionId),
     })
-    const file = await openWorkbookSession(client, targetPath, entry.sessions)
+    const file = await openWorkbookSession(
+      client,
+      targetPath,
+      entry.sessions,
+      csvInPlace
+        ? {
+            csvImport: true,
+            csvSourcePath: session.csvSourcePath,
+            importTempDir: session.importTempDir,
+          }
+        : undefined,
+    )
     // Notify shell (if running) so it can update the tab title and record the
     // saved path in recent files (mirrors the open hook; covers Save As + first
-    // save after converting an .xls/.csv import).
-    workbookOpenedHook?.(event.sender, targetPath)
+    // save after converting an .xls/.csv import). A CSV session's user-visible
+    // file is the original .csv, not the temp copy the xlsx save landed on.
+    workbookOpenedHook?.(
+      event.sender,
+      (csvInPlace ? session.csvSourcePath : undefined) ?? targetPath,
+    )
     // The file on disk now carries these edits
     clearWorkbookRecovery(targetPath)
     if (session.suggestSaveAs !== undefined) clearWorkbookRecovery(session.suggestSaveAs)
@@ -2243,7 +2749,14 @@ export function registerSheetsIpc(): void {
   ipcMain.handle(IPC_CHANNELS.saveEditsChunk, (event, input: unknown) => {
     const entry = sessionFor(event)
     const request = workbookSaveEditsChunkSchema.parse(input)
-    entry.saveTransfers.addChunk(request)
+    // The chunk crosses the bridge and the IPC hop as a flat JSON string;
+    // the edits stay untrusted input until they pass the cell-edit schema.
+    entry.saveTransfers.addChunk({
+      sessionId: request.sessionId,
+      transferId: request.transferId,
+      seq: request.seq,
+      edits: saveEditsChunkArraySchema.parse(JSON.parse(request.editsJson)),
+    })
   })
 
   // Best-effort cleanup from renderer failure paths; a no-op if the transfer
@@ -2260,10 +2773,16 @@ export function registerSheetsIpc(): void {
     const entry = sessionFor(event)
     const request = resolveTransferredEdits(entry, workbookSaveRequestSchema.parse(input))
     const session = entry.sessions.get(request.sessionId)
-    // A converted import has no original file to recover into; a restored
-    // recovery session is backed by the recovery copy itself — writing over
-    // the file the sidecar streams from would corrupt the open session.
-    if (!session || session.suggestSaveAs !== undefined || session.restoreTarget !== undefined)
+    // A converted import has no original file to recover into (and a CSV
+    // session's original can't hold the workbook bytes); a restored recovery
+    // session is backed by the recovery copy itself — writing over the file
+    // the sidecar streams from would corrupt the open session.
+    if (
+      !session ||
+      session.suggestSaveAs !== undefined ||
+      session.csvSourcePath !== undefined ||
+      session.restoreTarget !== undefined
+    )
       return { ok: false }
     if (session.automaticRecoveryDisabled) return { ok: false }
     try {
@@ -2475,9 +2994,15 @@ export function registerSheetsAiIpc(): void {
     }
     if (!config.model) return { ok: false, error: tm('errNoModel') }
     try {
-      return await chatForProvider(provider, config, request.system, request.user)
+      const result = await chatForProvider(provider, config, request.system, request.user)
+      // the one-shot path reports HTTP failures as ok:false with the raw body —
+      // replace capacity/rate-limit dumps with the localized "busy" message
+      if (!result.ok && isAiOverloadedError(result.error)) {
+        return { ok: false, error: tm('errAiBusy') }
+      }
+      return result
     } catch (err) {
-      return { ok: false, error: String(err) }
+      return { ok: false, error: isAiOverloadedError(err) ? tm('errAiBusy') : String(err) }
     }
   })
 
@@ -2523,6 +3048,7 @@ export function registerSheetsAiIpc(): void {
       await streamForProvider(provider, config, system, messages, tools, maxTokens, {
         signal: controller.signal,
         onDelta: (text) => send({ requestId, type: 'delta', text }),
+        onReasoningDelta: (text) => send({ requestId, type: 'reasoning', text }),
         onToolCall: (toolCall) => send({ requestId, type: 'tool-call', toolCall }),
         onActivity: ping,
       })
@@ -2541,7 +3067,9 @@ export function registerSheetsAiIpc(): void {
               ? { errorCode: 'credits' as const }
               : isAiNetworkError(err)
                 ? { errorCode: 'network' as const }
-                : {}),
+                : isAiOverloadedError(err)
+                  ? { errorCode: 'overloaded' as const }
+                  : {}),
         })
       }
     } finally {
@@ -3025,26 +3553,31 @@ async function openWorkbookSession(
   options?: {
     suggestSaveAs?: string | undefined
     csvImport?: boolean | undefined
+    csvSourcePath?: string | undefined
     importTempDir?: string | undefined
     restoreTarget?: string | undefined
   },
 ): Promise<WorkbookFile> {
-  const { suggestSaveAs, csvImport, importTempDir, restoreTarget } = options ?? {}
+  const { suggestSaveAs, csvImport, csvSourcePath, importTempDir, restoreTarget } = options ?? {}
   // Snapshot first, then the sidecar opens the snapshot (not the live path):
   // everything the session serves — cell reads, media, recalc, saves — comes
   // from the same bytes, even if the file on disk changes right after the
   // copy. The digest also describes exactly those bytes.
   const snapshotPath = await snapshotWorkbook(path)
   try {
-    const [opened, digest, restoreTargetSha] = await Promise.all([
+    const [opened, digest, snapshotStat, restoreTargetSha, csvSourceSha] = await Promise.all([
       client
         .open(snapshotPath, getUiLang(), systemShortDate())
         .then((result) => sidecarOpenResultSchema.parse(result)),
       sha256File(snapshotPath),
+      stat(snapshotPath),
       // Missing original (deleted since the crash) is fine: the write-back recreates it.
       restoreTarget === undefined
         ? Promise.resolve(undefined)
         : sha256File(restoreTarget).catch(() => undefined),
+      csvSourcePath === undefined
+        ? Promise.resolve(undefined)
+        : sha256File(csvSourcePath).catch(() => undefined),
     ])
     sessions.set(opened.sessionId, {
       path,
@@ -3054,6 +3587,8 @@ async function openWorkbookSession(
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
       ...(suggestSaveAs === undefined ? {} : { suggestSaveAs }),
       ...(csvImport ? { csvImport } : {}),
+      ...(csvSourcePath === undefined ? {} : { csvSourcePath }),
+      ...(csvSourceSha === undefined ? {} : { csvSourceSha }),
       ...(importTempDir === undefined ? {} : { importTempDir }),
       ...(restoreTarget === undefined ? {} : { restoreTarget }),
       ...(restoreTargetSha === undefined ? {} : { restoreTargetSha }),
@@ -3064,8 +3599,10 @@ async function openWorkbookSession(
       // recovery copy that is the original file, not the copy under userData.
       path: restoreTarget ?? path,
       sha256: digest,
+      fileBytes: snapshotStat.size,
       readOnly: false,
       needsSaveAs: suggestSaveAs !== undefined,
+      ...(csvSourcePath === undefined ? {} : { csvPath: csvSourcePath }),
       restoredFromRecovery: restoreTarget !== undefined,
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
     })
@@ -3100,6 +3637,7 @@ async function prepareWorkbookForOpen(
   openPath: string
   suggestSaveAs?: string
   csvImport?: boolean
+  csvSourcePath?: string
   importTempDir?: string
   restoreTarget?: string
 }> {
@@ -3137,12 +3675,12 @@ async function prepareWorkbookForOpen(
     await cleanupImportTempDirectory(app.getPath('temp'), directory)
     throw error
   }
-  return {
-    openPath,
-    importTempDir: directory,
-    suggestSaveAs: path.replace(/\.[^.]+$/, '.xlsx'),
-    ...(extension === 'csv' ? { csvImport: true } : {}),
-  }
+  // CSV keeps its file identity: Save writes the values back to the original
+  // .csv (Excel's behavior), so no Save As detour is suggested. Legacy .xls
+  // still routes the first save through Save As to a fresh .xlsx.
+  return extension === 'csv'
+    ? { openPath, importTempDir: directory, csvImport: true, csvSourcePath: path }
+    : { openPath, importTempDir: directory, suggestSaveAs: path.replace(/\.[^.]+$/, '.xlsx') }
 }
 
 /** shell-injected items appended to the File menu (e.g. Back to Home) */
@@ -3191,6 +3729,10 @@ function installApplicationMenu(): void {
           {
             label: tm('menuExportPdf'),
             click: () => sendMenuAction('export-pdf'),
+          },
+          {
+            label: tm('menuExportCsv'),
+            click: () => sendMenuAction('export-csv'),
           },
           { type: 'separator' },
           closeActiveTabHook

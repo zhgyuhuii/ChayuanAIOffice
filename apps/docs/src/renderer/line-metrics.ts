@@ -187,6 +187,11 @@ export function lineHeightFactor(fontFamily: string): number {
   if ((f.includes('楷体') || f.includes('kaiti')) && !/gb2312|_gbk|gbk/.test(f)) return 1.3029
   if (f.includes('microsoft yahei') || f.includes('microsoftyahei') || f.includes('雅黑'))
     return 1.7143
+  // DengXian ships with Office for Mac and renders real (text probe
+  // 2026-08-13 and empty-line probe 2026-08-25 both 16.32pt @12pt = 1.36;
+  // under a 15.6pt grid 10.5pt fits one cell and 12pt takes two, matching
+  // Word — the old 1.775 PingFang-class value doubled the 10.5pt rows)
+  if (f.includes('dengxian') || f.includes('等线')) return 1.36
   // missing GB faces and other zh names substitute into the PingFang class
   if (
     f.includes('楷体') ||
@@ -195,8 +200,6 @@ export function lineHeightFactor(fontFamily: string): number {
     f.includes('microsoft yahei') ||
     f.includes('microsoftyahei') ||
     f.includes('雅黑') ||
-    f.includes('dengxian') ||
-    f.includes('等线') ||
     f.includes('simkai')
   ) {
     return 1.775
@@ -1765,19 +1768,106 @@ export function estimateHfHeight(
  * The 40px narrowing is wider than the renderer's sup-number prefix, so wrap
  * mismatches err toward over-reserving (never clipping).
  */
+export interface NoteStyleOpts {
+  sizeHalfPoints?: number
+  fontFamily?: string
+  lineRule?: 'auto' | 'atLeast' | 'exact'
+  lineRawTwips?: number
+  spaceBeforeTwips?: number
+  spaceAfterTwips?: number
+}
+
+interface NoteStyleSource {
+  styles?: Map<
+    string,
+    {
+      name?: string
+      display?: {
+        sizeHalfPoints?: number
+        font?: string
+        lineRule?: 'auto' | 'atLeast' | 'exact'
+        lineRawTwips?: number
+        spaceBeforeTwips?: number
+        spaceAfterTwips?: number
+      }
+    }
+  >
+  docDefaults?: {
+    sizeHalfPoints?: number
+    lineRule?: 'auto' | 'atLeast' | 'exact'
+    lineRawTwips?: number
+    spaceBeforeTwips?: number
+    spaceAfterTwips?: number
+  }
+}
+
+/**
+ * Effective paragraph metrics for a footnote/endnote entry: the note's own
+ * w:pStyle chain when it references one, else Normal/docDefaults. Word only
+ * applies a footnote style to note paragraphs that reference it — prod docs
+ * exist where the FootnoteText style (10pt) is defined but 216/217 note
+ * paragraphs carry no pStyle and render with Normal metrics (12pt, line 276).
+ */
+export function resolveNoteStyle(
+  parsed: NoteStyleSource,
+  styleId?: string,
+  direct?: {
+    beforeTwips?: number
+    afterTwips?: number
+    lineRule?: 'auto' | 'atLeast' | 'exact'
+    lineRawTwips?: number
+  },
+): NoteStyleOpts {
+  const style = (styleId ? parsed.styles?.get(styleId) : undefined) ?? parsed.styles?.get('Normal')
+  const d = style?.display
+  const dd = parsed.docDefaults
+  // the line rule travels as a pair: a direct w:spacing w:line wins whole
+  const lineRule = direct?.lineRawTwips ? direct.lineRule : (d?.lineRule ?? dd?.lineRule)
+  const lineRawTwips = direct?.lineRawTwips ?? d?.lineRawTwips ?? dd?.lineRawTwips
+  return {
+    sizeHalfPoints: d?.sizeHalfPoints ?? dd?.sizeHalfPoints ?? 22,
+    ...(d?.font ? { fontFamily: d.font } : {}),
+    ...(lineRule ? { lineRule } : {}),
+    ...(lineRawTwips ? { lineRawTwips } : {}),
+    spaceBeforeTwips: direct?.beforeTwips ?? d?.spaceBeforeTwips ?? dd?.spaceBeforeTwips ?? 0,
+    spaceAfterTwips: direct?.afterTwips ?? d?.spaceAfterTwips ?? dd?.spaceAfterTwips ?? 0,
+  }
+}
+
 export function estimateFootnoteHeight(
   footnoteText: string,
   contentWidthPx: number,
   docGrid: DocGrid | undefined,
   metrics?: FontMetricsProvider,
+  style?: NoteStyleOpts,
+  richParas?: Array<
+    Array<{ text: string; sizeHalfPoints?: number; bold?: boolean; italic?: boolean }>
+  >,
 ): number {
-  return computeLineMetrics({
-    runs: [{ text: footnoteText }],
-    availWidthPx: contentWidthPx - 40,
-    docGrid,
-    defaultFontSizePt: 10,
-    ...(metrics ? { metrics } : {}),
-  }).totalHeight
+  const paras: Array<
+    Array<{ text: string; sizeHalfPoints?: number; bold?: boolean; italic?: boolean }>
+  > =
+    richParas && richParas.length > 0
+      ? richParas
+      : footnoteText.split('\n').map((t) => [{ text: t }])
+  let total = 0
+  for (const runs of paras) {
+    const nonEmpty = runs.filter((r) => r.text)
+    total += computeLineMetrics({
+      runs: nonEmpty,
+      availWidthPx: contentWidthPx - 40,
+      docGrid,
+      defaultFontSizePt: style?.sizeHalfPoints ? style.sizeHalfPoints / 2 : 10,
+      ...(style?.fontFamily ? { defaultFontFamily: style.fontFamily } : {}),
+      ...(style?.lineRule ? { lineRule: style.lineRule } : {}),
+      ...(style?.lineRawTwips ? { lineRawTwips: style.lineRawTwips } : {}),
+      ...(style?.spaceBeforeTwips ? { spaceBefore: style.spaceBeforeTwips } : {}),
+      ...(style?.spaceAfterTwips ? { spaceAfter: style.spaceAfterTwips } : {}),
+      ...(metrics ? { metrics } : {}),
+      isEmpty: nonEmpty.every((r) => !r.text.trim()),
+    }).totalHeight
+  }
+  return total
 }
 
 /**

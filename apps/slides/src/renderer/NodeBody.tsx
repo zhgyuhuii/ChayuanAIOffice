@@ -6,7 +6,7 @@
  * - SlideCanvas: shape content inside the interactive Group + group children + decoration layer
  * - SlideThumb: whole page statically scaled down
  */
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type Konva from 'konva'
 import { Group, Rect, Ellipse, Text, Line, Arrow, Image as KImage, Path } from 'react-konva'
 import type {
@@ -22,6 +22,7 @@ import type {
 } from '@genoffice/pptx-render'
 import {
   featheredImage,
+  featheredShapeCanvas,
   fillToKonva,
   processedImage,
   processedImageKey,
@@ -39,6 +40,8 @@ import {
   normalizeColor,
   boxPivotProps,
   centerFillProps,
+  subscribeFontsEpoch,
+  getFontsEpoch,
 } from './konva-adapter'
 import { ChartBody } from './ChartBody'
 import { needsTextFrameHitArea } from './text-hit-area'
@@ -67,6 +70,10 @@ export const NodeBody = React.memo(function NodeBody({
   flipHInherited,
   flipVInherited,
 }: NodeBodyProps) {
+  // Late-loading FontFaces (private/embedded) change glyph baseline anchors; the epoch
+  // subscription re-renders past React.memo so glyph y props recompute (a batchDraw alone
+  // repaints stale positions).
+  useSyncExternalStore(subscribeFontsEpoch, getFontsEpoch)
   const { box } = node
 
   // Reflection: a flipped fading copy of the node drawn below it, then the node itself
@@ -575,16 +582,44 @@ export const NodeBody = React.memo(function NodeBody({
   } else {
     const rounded =
       presetToShapeKind(shape.presetGeometry) === 'roundRect' || shape.cornerRadiusPx != null
-    geom = (
-      <Rect
-        width={box.w}
-        height={box.h}
-        cornerRadius={rounded ? (shape.cornerRadiusPx ?? Math.min(box.w, box.h) * 0.167) : 0}
-        {...fillProps}
-        {...strokeProps}
-        {...shadowProps}
-      />
-    )
+    const cornerRadius = rounded ? (shape.cornerRadiusPx ?? Math.min(box.w, box.h) * 0.167) : 0
+    if (
+      shape.softEdgePx &&
+      shape.fill.kind === 'solid' &&
+      !shape.fillOverlay &&
+      box.w >= 1 &&
+      box.h >= 1
+    ) {
+      const feathered = featheredShapeCanvas(
+        shape.fill.color,
+        box.w,
+        box.h,
+        shape.softEdgePx,
+        cornerRadius,
+        shape.stroke ? { color: shape.stroke.color, widthPx: shape.stroke.widthPx } : undefined,
+      )
+      geom = (
+        <KImage
+          image={feathered.canvas}
+          x={-feathered.pad}
+          y={-feathered.pad}
+          width={box.w + 2 * feathered.pad}
+          height={box.h + 2 * feathered.pad}
+          {...shadowProps}
+        />
+      )
+    } else {
+      geom = (
+        <Rect
+          width={box.w}
+          height={box.h}
+          cornerRadius={cornerRadius}
+          {...fillProps}
+          {...strokeProps}
+          {...shadowProps}
+        />
+      )
+    }
   }
 
   // fillOverlay: PowerPoint blends the overlay against the shape's own fill in isolation.
