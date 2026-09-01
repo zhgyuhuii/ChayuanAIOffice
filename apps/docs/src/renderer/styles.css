@@ -2112,6 +2112,13 @@ th.cell-rev-del {
   padding: 26px 24px 140px;
 }
 
+/* ruler shown: the sticky ruler bar takes over the strip under the ribbon, so
+   the scroll top padding goes away — the bar sits flush against the menu with
+   no gap (WPS) and scrolling content can never appear above it */
+.editor-scroll:has(> .doc-zoom.show-ruler) {
+  padding-top: 0;
+}
+
 .doc-zoom {
   width: fit-content;
   margin: 0 auto;
@@ -2928,7 +2935,7 @@ th.cell-rev-del {
 /* horizontal ruler */
 .ruler {
   position: relative;
-  height: 20px;
+  height: 14px;
   margin: 0 auto 6px;
   background:
     repeating-linear-gradient(
@@ -2936,29 +2943,158 @@ th.cell-rev-del {
         var(--docs-ruler-tick) 0,
         var(--docs-ruler-tick) 1px,
         transparent 1px,
-        transparent 12px
+        transparent 8px
       )
-      bottom / 100% 5px no-repeat,
+      bottom / 100% 4px no-repeat,
     var(--docs-ruler-bg);
   border: 1px solid var(--docs-ruler-border);
   border-radius: 2px;
-  font-size: 9px;
+  font-size: 8px;
   color: var(--docs-ruler-ink);
   user-select: none;
   overflow: hidden;
   cursor: pointer;
 }
 
+/* ruler layout (WPS): slim bar stuck flush under the ribbon; the horizontal
+   box-shadow pair paints an opaque band across the full editor width (clipped
+   by the scrollport) so scrolled content never shows through the sides */
+.doc-zoom.show-ruler > .ruler-row {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  /* padding (not margin) keeps the band behind the ruler while stuck */
+  padding-bottom: 4px;
+  background: var(--canvas);
+  box-shadow: 100vw 0 0 0 var(--canvas), -100vw 0 0 0 var(--canvas);
+}
+
+.ruler-row > .ruler {
+  margin: 0;
+}
+
+.ruler-corner {
+  width: 18px;
+  height: 14px;
+  flex: none;
+  background: var(--docs-ruler-bg);
+  border: 1px solid var(--docs-ruler-border);
+  border-radius: 2px;
+}
+
+.doc-zoom.show-ruler > .ruler-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.ruler-body > .vruler-anchor {
+  /* scrolls WITH the document (Word: the vertical ruler is glued to the paper,
+     each page carries its own scale segment) and only sticks horizontally */
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  flex: none;
+  /* stretch to the full document height so later pages keep their segments
+   * beside them (flex parent is align-items: flex-start) */
+  align-self: stretch;
+}
+
+/* per-page scale segments for pages after the first (built by syncVRulerPages
+   from the measured page boundaries, so ticks stay glued to each page) */
+.vruler-ext {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* per-page scale segments for pages after the first (built by syncVRulerPages
+   from the measured page boundaries, so ticks stay glued to each page);
+   2-class selector beats the later `.vruler { position: relative }` */
+.vruler-ext .vruler-page {
+  position: absolute;
+  left: 0;
+}
+
+/* WPS: the vertical ruler only appears once the page itself is clicked into
+   (editor focus); space stays reserved so the page does not shift */
+.ruler-body > .vruler-anchor.vruler-idle {
+  visibility: hidden;
+}
+
+/* vertical ruler (left of the page): same tokens as the top ruler */
+.vruler {
+  position: relative;
+  width: 14px;
+  margin-right: 0;
+  background:
+    repeating-linear-gradient(
+        to bottom,
+        var(--docs-ruler-tick) 0,
+        var(--docs-ruler-tick) 1px,
+        transparent 1px,
+        transparent 8px
+      )
+      right / 4px 100% no-repeat,
+    var(--docs-ruler-bg);
+  border: 1px solid var(--docs-ruler-border);
+  border-radius: 2px;
+  font-size: 8px;
+  color: var(--docs-ruler-ink);
+  user-select: none;
+  overflow: hidden;
+}
+
+.vruler-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--docs-ruler-btn-bg);
+  opacity: 0.7;
+}
+
+.vruler-num {
+  position: absolute;
+  right: 3px;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  line-height: 1;
+}
+
+/* draggable margin boundary handles (Word's gray/white edge) */
+.ruler-margin-handle {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  transform: translateX(-50%);
+  cursor: ew-resize;
+  z-index: 4;
+}
+
+.vruler-margin-handle {
+  position: absolute;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  transform: translateY(-50%);
+  cursor: ns-resize;
+  z-index: 4;
+}
+
 .ruler-tab-type {
   position: absolute;
   left: 0;
   top: 0;
-  width: 20px;
+  width: 14px;
   height: 100%;
   background: var(--docs-ruler-btn-bg);
   border: none;
   border-right: 1px solid var(--docs-ruler-btn-border);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: bold;
   cursor: pointer;
   z-index: 2;
@@ -3154,7 +3290,97 @@ th.cell-rev-del {
   left: 0;
   right: 0;
   background: var(--canvas);
-  box-shadow: var(--docs-gap-inset);
+  /* page-edge shadows mirror --docs-page-shadow so the boundary reads as two
+     separate sheets with a real gap between them (Word), not one glued strip;
+     band top = previous page's paper bottom, band bottom = next page's top */
+  box-shadow:
+    0 -2px 4px rgb(0 0 0 / 22%),
+    0 -6px 14px rgb(0 0 0 / 12%),
+    0 2px 4px rgb(0 0 0 / 26%),
+    0 6px 18px rgb(0 0 0 / 10%),
+    var(--docs-gap-inset);
+  cursor: pointer;
+}
+
+/* collapsed page gap (double-click toggle): thin centered line instead of the gray band;
+   headers/footers/footnotes inside the gap are hidden like Word's compact view */
+.page-gap.gap-collapsed::before {
+  top: calc(50% - 1px);
+  bottom: calc(50% - 1px);
+  background: var(--docs-gap-line, #c4c4c4);
+  box-shadow: none;
+}
+
+.page-gap.gap-collapsed .page-gap-hf,
+.page-gap.gap-collapsed .page-gap-notes {
+  display: none;
+}
+
+/* on-page header/footer copies are double-click editable (Word-style in-place
+   edit); pointer-events is set inline, this adds the affordance */
+.page-hf-editable {
+  cursor: text;
+}
+
+.page-hf-editable:hover {
+  background: var(--docs-accent-ghost, rgb(24 90 189 / 6%));
+}
+
+/* empty header/footer copies: keep a hit area so double-click can create
+   content (Word's empty header area is still there to click into) */
+.page-hf-empty {
+  min-height: 16px;
+}
+
+/* per-page paper widths (mixed-width sections): canvas-colored side bands hide
+   the shared paper beyond a narrower page's own width */
+.page-width-overlays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.page-width-band {
+  position: absolute;
+  background: var(--canvas);
+}
+
+/* full-width inter-page separator at table page breaks (the in-table gap row
+   itself is confined to the table's width); mirrors .page-gap::before —
+   the band strip itself is clickable (double-click toggle), the layer is not */
+.table-gap-overlays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.table-gap-band {
+  position: absolute;
+  left: -30px;
+  right: -30px;
+  pointer-events: auto;
+  cursor: pointer;
+  background: var(--canvas);
+  box-shadow:
+    0 -2px 4px rgb(0 0 0 / 22%),
+    0 -6px 14px rgb(0 0 0 / 12%),
+    0 2px 4px rgb(0 0 0 / 26%),
+    0 6px 18px rgb(0 0 0 / 10%),
+    var(--docs-gap-inset);
+}
+
+.table-gap-line {
+  background: var(--docs-gap-line, #c4c4c4);
+  box-shadow: none;
+}
+
+/* in-table gap rows keep the spanning cell, but the gradient (built from the
+ * margin vars, which read 0 when collapsed) must collapse to the same thin line */
+.page-gap-table.gap-collapsed .page-gap-table-fill {
+  background: var(--docs-gap-line, #c4c4c4);
+  top: calc(50% - 0.5px);
+  height: 1px;
 }
 
 /* inline gap for mid-paragraph page breaks: inserted at the broken line inside the paragraph, takes its own line, excluded from text selection/cursor.
@@ -3202,9 +3428,13 @@ th.cell-rev-del {
   background: linear-gradient(
     to bottom,
     var(--page-bg, var(--docs-paper)) 0 var(--gap-mb, 96px),
-    var(--canvas) var(--gap-mb, 96px) calc(var(--gap-mb, 96px) + 28px),
-    var(--page-bg, var(--docs-paper)) calc(var(--gap-mb, 96px) + 28px) 100%
+    var(--canvas) var(--gap-mb, 96px) calc(var(--gap-mb, 96px) + var(--gap-band, 28px)),
+    var(--page-bg, var(--docs-paper)) calc(var(--gap-mb, 96px) + var(--gap-band, 28px)) 100%
   );
+  box-shadow:
+    0 -2px 6px rgb(0 0 0 / 10%),
+    0 2px 8px rgb(0 0 0 / 12%);
+  cursor: pointer;
 }
 
 /* footnote area at the top of a page gap (previous page's bottom, Word behavior): the gap was already enlarged by the reserved height;

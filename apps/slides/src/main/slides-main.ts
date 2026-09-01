@@ -25,6 +25,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, mkdirSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
+import { cleanupExpiredGeneratedPages } from './generated-page-temp'
 import { gskApiKey, gskSlideGenerate, setGskProxyUrl } from '@genoffice/ai-search'
 import {
   appMenuLabels,
@@ -192,7 +193,6 @@ import type {
 } from '../shared/ipc'
 import { buildPrintDocumentHtml } from '../shared/print-html'
 
-import { deckDefaultFont } from './render-build'
 import { tm } from './i18n-main'
 import { tiffToPng } from './tiff-decode'
 import {
@@ -817,7 +817,17 @@ async function saveDraftAfterGenerate(
 }
 
 /** Theme body (minor) Latin font: fallback shown in the ribbon font box when the selection has no text element. */
-
+function deckDefaultFont(opened: OpenedPptx): string | undefined {
+  try {
+    const slidePath = opened.archive.readPresentation().slidePaths[0]
+    if (!slidePath) return undefined
+    const themePath = opened.archive.resolveSlideChain(slidePath).themePath
+    const xml = themePath ? opened.archive.readText(themePath) : undefined
+    return xml ? parseTheme(xml).minorFont : undefined
+  } catch {
+    return undefined
+  }
+}
 
 function findEl(slide: Slide, sourceId: string): TextElement | undefined {
   const el = slide.elements.find((e) => matchesElementRef(e, sourceId))
@@ -987,6 +997,11 @@ let ipcRegistered = false
 export function registerSlidesIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+
+  // AI-generated slide pages land in app-owned temp directories; sweep
+  // expired ones at startup (never at land time — markers can be redeemed
+  // more than once), mirroring the sheets pasted-file cleanup.
+  void cleanupExpiredGeneratedPages(app.getPath('temp'))
 
   // shared with the other editor modules — last (identical) registration wins
   ipcMain.removeHandler('app:get-language')

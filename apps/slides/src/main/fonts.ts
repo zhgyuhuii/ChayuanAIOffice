@@ -26,55 +26,19 @@ import {
   type RunStyle,
 } from '@genoffice/pptx-render'
 import { classifyCjkScript } from '../shared/cjk-script'
-// Lazy indirection: under plain Node (web BFF) the harfbuzz wasm asset import
-// cannot load eagerly; metrics then degrade to heuristics exactly like the
-// not-yet-initialized path. Electron loads it normally.
-import type { shapedMeasure as ShapedMeasureFn, shapedFamily as ShapedFamilyFn } from './shaped-metrics'
-type ShapedMeasure = typeof ShapedMeasureFn
-type ShapedFamily = typeof ShapedFamilyFn
-let shapedMeasureFn: ShapedMeasure | null = null
-let shapedFamilyFn: ShapedFamily | null = null
-let shapedLoaded = false
-async function ensureShaped(): Promise<void> {
-  if (shapedLoaded) return
-  shapedLoaded = true
-  try {
-    await loadBundledFonts()
-    const mod = await import('./shaped-metrics')
-    shapedMeasureFn = mod.shapedMeasure
-    shapedFamilyFn = mod.shapedFamily
-    mod.initShapedMetrics()
-  } catch {
-    /* heuristics fallback */
-  }
-}
-// ?asset imports resolve at bundle time (electron-vite); under plain Node
-// (web BFF) they cannot load, so the map fills lazily and metric substitution
-// degrades gracefully.
-const bundledFonts = new Map<string, string>()
-async function loadBundledFonts(): Promise<void> {
-  if (bundledFonts.size > 0) return
-  try {
-    const [r, b, i, bi] = await Promise.all([
-      import('../renderer/fonts/Carlito-Regular.ttf?asset'),
-      import('../renderer/fonts/Carlito-Bold.ttf?asset'),
-      import('../renderer/fonts/Carlito-Italic.ttf?asset'),
-      import('../renderer/fonts/Carlito-BoldItalic.ttf?asset'),
-    ])
-    bundledFonts.set('Carlito-Regular', r.default)
-    bundledFonts.set('Carlito-Bold', b.default)
-    bundledFonts.set('Carlito-Italic', i.default)
-    bundledFonts.set('Carlito-BoldItalic', bi.default)
-  } catch {
-    /* not bundled (plain node): metrics fall back to heuristics */
-  }
-}
+import { initShapedMetrics, shapedMeasure, shapedFamily } from './shaped-metrics'
+import carlitoRegular from '../renderer/fonts/Carlito-Regular.ttf?asset'
+import carlitoBold from '../renderer/fonts/Carlito-Bold.ttf?asset'
+import carlitoItalic from '../renderer/fonts/Carlito-Italic.ttf?asset'
+import carlitoBoldItalic from '../renderer/fonts/Carlito-BoldItalic.ttf?asset'
 
 /** Fonts shipped with the app (metric substitutes for fonts most decks assume, e.g. Calibri→Carlito). */
-function BUNDLED_FONTS(): Record<string, string> {
-  return Object.fromEntries(bundledFonts)
+const BUNDLED_FONTS: Record<string, string> = {
+  'Carlito-Regular': carlitoRegular,
+  'Carlito-Bold': carlitoBold,
+  'Carlito-Italic': carlitoItalic,
+  'Carlito-BoldItalic': carlitoBoldItalic,
 }
-void loadBundledFonts
 
 function fontDirs(): string[] {
   switch (process.platform) {
@@ -514,7 +478,7 @@ class FontRegistry {
   private buildIndex(): void {
     if (this.indexed) return
     this.indexed = true
-    for (const [name, path] of Object.entries(BUNDLED_FONTS())) {
+    for (const [name, path] of Object.entries(BUNDLED_FONTS)) {
       this.index.set(norm(name), path)
     }
     // System dirs first so same-named Office copies (arial.ttf…) resolve non-private
@@ -880,7 +844,7 @@ export function getPrivateFontData(id: string): ArrayBuffer | null {
 
 /** Create a metrics provider injected with system fonts (falls back to heuristics per run when no font is found). */
 export function createSystemFontMetrics(): FontMetricsProvider {
-  void ensureShaped()
+  initShapedMetrics()
   const registry = new FontRegistry()
   const cache = new Map<
     string,
@@ -975,10 +939,10 @@ export function createSystemFontMetrics(): FontMetricsProvider {
     // per-glyph accumulation measures isolated forms, drifting from actual drawing; falls back
     // to the original path when not ready or no font
     measure: (text, style) =>
-      (shapedMeasureFn?.(text, style.fontSizePx, style.bold, style.italic) ?? inner.measure(text, style)),
+      shapedMeasure(text, style.fontSizePx, style.bold, style.italic) ?? inner.measure(text, style),
     // Substituted fonts return the substitute family; the renderer draws with it (same font file for measuring/drawing)
     displayFamily: (style, text) =>
-      (text != null ? shapedFamilyFn?.(text) : null) ?? resolveEntry(style)?.family ?? style.fontFamily,
+      (text != null ? shapedFamily(text) : null) ?? resolveEntry(style)?.family ?? style.fontFamily,
     substituted: (style) => resolveEntry(style)?.substituted === true,
   }
 }

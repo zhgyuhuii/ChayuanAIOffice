@@ -12,7 +12,7 @@
  * activates its sheet, starts loading its range, scrolls to it, and selects
  * it, so the grid shows real data instead of an empty jump.
  */
-import type { IRange } from '@univerjs/core'
+import type { IRange, Workbook } from '@univerjs/core'
 import {
   FindBy,
   FindModel,
@@ -23,6 +23,7 @@ import {
   type IFindReplaceProvider,
   type IReplaceAllResult,
 } from '@univerjs/find-replace'
+import { IUniverInstanceService } from '@univerjs/core'
 import { Subject, type Subscription } from 'rxjs'
 import { FILE_READ_BATCH_CELLS, MAX_SCAN_CELLS } from './ai/workbook-search'
 import { t } from './i18n/locale'
@@ -470,15 +471,37 @@ export class LazyExtendedFindModel extends FindModel {
 
   /** Extras that are still outside the (evolving) loaded window. */
   private currentExtras(): LazyCellMatch[] {
-    return this.extras.filter(
-      (match) =>
-        !coveredByWindow(
+    return this.extras.filter((match) => {
+      if (
+        coveredByWindow(
           this.state,
           match.range.subUnitId,
           match.range.range.startRow,
           match.range.range.startColumn,
-        ),
-    )
+        )
+      ) {
+        return false
+      }
+      // The in-memory scan skips rows hidden by an active filter; hold
+      // out-of-window hits to the same visibility rules. Fails open when the
+      // filter state is not reachable (sheet gone mid-session).
+      return !this.isRowHidden(match.range.subUnitId, match.range.range.startRow)
+    })
+  }
+
+  /// Mirrors the built-in scan's worksheet.getRowFiltered check for cells
+  /// that never streamed into Univer's matrix: the filter model lives on the
+  /// workbook instance, not the grid, so it answers regardless of loading.
+  private isRowHidden(subUnitId: string, row: number): boolean {
+    try {
+      const workbook = this.deps.runtime.univer
+        .__getInjector()
+        .get(IUniverInstanceService)
+        .getUnit<Workbook>(this.unitId)
+      return workbook?.getSheetBySheetId(subUnitId)?.getRowFiltered(row) === true
+    } catch {
+      return false
+    }
   }
 
   /**

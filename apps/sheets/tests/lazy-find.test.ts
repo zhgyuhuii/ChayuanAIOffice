@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IRange } from '@univerjs/core'
-import { FindModel, type IFindMatch } from '@univerjs/find-replace'
+import { FindModel, IFindReplaceService, type IFindMatch } from '@univerjs/find-replace'
 import { Subject } from 'rxjs'
 
 import {
@@ -355,7 +355,10 @@ class CursorInnerModel extends FakeInnerModel {
   }
 }
 
-function facade(lazyState: LazyWorkbookState | null) {
+function facade(
+  lazyState: LazyWorkbookState | null,
+  { noFilterModel = false }: { noFilterModel?: boolean } = {},
+) {
   const setValues = vi.fn()
   // Selection follows activation, like the live grid does.
   const active = { row: 0, column: 0 }
@@ -395,12 +398,25 @@ function facade(lazyState: LazyWorkbookState | null) {
       return registration
     },
   }
-  const runtime = {
+  // The internal workbook model answers filter questions even for rows that
+  // never streamed into Univer's grid.
+  const rowFiltered = vi.fn<(row: number) => boolean>(() => false)
+  const workbookModel = {
+    getSheetBySheetId: (sheetId: string) =>
+      sheetId === 's1' ? { getRowFiltered: rowFiltered } : null,
+  }
+  const instanceService = { getUnit: () => (noFilterModel ? null : workbookModel) }
+  const runtime2 = {
     univerAPI: { getActiveWorkbook: () => workbook },
-    univer: { __getInjector: () => ({ get: () => service }) },
+    univer: {
+      __getInjector: () => ({
+        get: (identifier: unknown) =>
+          identifier === IFindReplaceService ? service : instanceService,
+      }),
+    },
   }
   return {
-    runtime: runtime as unknown as Parameters<typeof installLazyFindBridge>[0]['runtime'],
+    runtime: runtime2 as unknown as Parameters<typeof installLazyFindBridge>[0]['runtime'],
     lazyWorkbookRef: { current: lazyState },
     setMessage: vi.fn(),
     worksheet,
@@ -409,6 +425,7 @@ function facade(lazyState: LazyWorkbookState | null) {
     providers,
     service,
     registrations,
+    rowFiltered,
     active,
   }
 }
@@ -770,6 +787,54 @@ describe('service-level dispatch (Univer semantics)', () => {
     expect(builtin.findCalls).toBe(before + 1)
     expect(models).toHaveLength(1)
     expect(models[0]!.getMatches()).toHaveLength(1)
+    bridge.dispose()
+  })
+
+  it('holds out-of-window hits on filtered rows out of the results', async () => {
+    const harness = facade(state({}))
+    harness.rowFiltered.mockImplementation((row: number) => row === 500)
+    const inner = new FakeInnerModel([])
+    const builtin = { find: vi.fn().mockResolvedValue([inner]), terminate: vi.fn() }
+    harness.providers.add(builtin)
+    const bridge = installLazyFindBridge(harness)
+
+    mockRead.mockImplementation(async () =>
+      mapped([
+        { row: 500, column: 3, value: 'filtered needle' },
+        { row: 700, column: 3, value: 'visible needle' },
+      ]),
+    )
+
+    const models = await harnessLookup(harness)(query())
+    const model = models[0]!
+    await settle(model)
+
+    expect(model.getMatches()).toHaveLength(1)
+    // Enter lands on the first visible hit, not the filtered one.
+    const focused = model.moveToNextMatch() as LazyCellMatch | null
+    expect(focused?.range.range.startRow).toBe(700)
+
+    // Replace All skips the hidden row's match.
+    const result = await model.replaceAll('replacement')
+    expect(result.success).toBe(1)
+    expect(harness.setValues).toHaveBeenCalledTimes(1)
+    bridge.dispose()
+  })
+
+  it('keeps hits visible when the filter state is unreachable', async () => {
+    const harness = facade(state({}), { noFilterModel: true })
+    // With no reachable model the check must fail open, not hide everything.
+    const inner = new FakeInnerModel([])
+    const builtin = { find: vi.fn().mockResolvedValue([inner]), terminate: vi.fn() }
+    harness.providers.add(builtin)
+    const bridge = installLazyFindBridge(harness)
+
+    mockRead.mockResolvedValue(mapped([{ row: 500, column: 3, value: 'deep needle' }]))
+
+    const models = await harnessLookup(harness)(query())
+    const model = models[0]!
+    await settle(model)
+    expect(model.getMatches()).toHaveLength(1)
     bridge.dispose()
   })
 })

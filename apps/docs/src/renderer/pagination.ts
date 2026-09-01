@@ -1411,6 +1411,10 @@ export function sectionWidthSpecs(
   )
     return []
   const specs: ColumnBlockPlacement[] = []
+  // canvas paper covers the widest section; center each section's content on it
+  // (dx from the canvas content origin: first section's left margin)
+  const paperW = Math.max(...sections.map((s) => twipsToPx(s.settings.pageWidth)))
+  const canvasLeft = sections[0] ? twipsToPx(sections[0].settings.marginLeft) : 0
   for (const b of blocks) {
     if (!b.el || b.floated) continue
     const si = Math.max(0, Math.min(b.section ?? 0, geoms.length - 1))
@@ -1419,7 +1423,9 @@ export function sectionWidthSpecs(
     const set = sections[si]?.settings
     const spec: ColumnBlockPlacement = {
       el: b.el,
-      dx: 0,
+      dx: set
+        ? twipsToPx(set.marginLeft) + (paperW - twipsToPx(set.pageWidth)) / 2 - canvasLeft
+        : 0,
       dy: 0,
       contentWPx: w,
       marginLeftPx: set ? twipsToPx(set.marginLeft) : 0,

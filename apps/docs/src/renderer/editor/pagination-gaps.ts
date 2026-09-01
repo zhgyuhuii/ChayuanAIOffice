@@ -45,8 +45,45 @@ export interface GapMetrics {
   marginRight: number
 }
 
-/** height of the gray inter-page band inside a page gap */
+/** band height of the gray inter-page band inside a page gap */
 export const GAP_BAND = 28
+
+/** total gap height while collapsed to a thin line (Word/WPS "hide whitespace":
+ *  margins fold away too, pages nearly touch; double-click toggles back) */
+const GAP_HEIGHT_COLLAPSED = 14
+
+const COLLAPSED_STORAGE_KEY = 'aidocs.gapCollapsed'
+
+/** document-wide "hide whitespace" mode: one double-click collapses/expands ALL
+ *  page gaps at once (Word/WPS behavior), not just the clicked junction */
+let allGapsCollapsed = localStorage.getItem(COLLAPSED_STORAGE_KEY) === '1'
+
+function persistCollapsed(): void {
+  try {
+    localStorage.setItem(COLLAPSED_STORAGE_KEY, allGapsCollapsed ? '1' : '0')
+  } catch {
+    /* storage unavailable: toggle stays session-only */
+  }
+}
+
+/** apply bar/line mode to a gap element (original margins come from data
+ *  attributes, so any gap element can be re-toggled without its GapMetrics).
+ *  Collapsed folds the page margins into the line too (--gap-mb/--gap-mt
+ *  zeroed) so paper-edge consumers like syncPageBorders see the pages nearly
+ *  touching, like Word's compact view */
+function applyGapMode(el: HTMLElement, collapsed: boolean): void {
+  el.classList.toggle('gap-collapsed', collapsed)
+  if (collapsed) {
+    el.style.height = `${GAP_HEIGHT_COLLAPSED}px`
+    el.style.setProperty('--gap-mb', '0px')
+    el.style.setProperty('--gap-mt', '0px')
+  } else {
+    el.style.height = 'calc(var(--gap-mb) + var(--gap-band) + var(--gap-mt))'
+    el.style.setProperty('--gap-mb', `${el.dataset.mb ?? '0'}px`)
+    el.style.setProperty('--gap-mt', `${el.dataset.mt ?? '0'}px`)
+  }
+  el.title = collapsed ? 'Double-click to expand page gaps' : 'Double-click to collapse page gaps'
+}
 
 export type GapKind = 'block' | 'inline' | 'table' | 'cut' | 'cell'
 
@@ -58,9 +95,12 @@ export function makeGapEl(m: GapMetrics, kind: GapKind): HTMLElement {
     gap.className = 'page-gap-cut'
     return gap
   }
-  gap.style.height = `${m.marginBottom + GAP_BAND + m.marginTop}px`
+  gap.style.height = 'calc(var(--gap-mb) + var(--gap-band) + var(--gap-mt))'
+  gap.dataset.mb = String(m.marginBottom)
+  gap.dataset.mt = String(m.marginTop)
   gap.style.setProperty('--gap-mb', `${m.marginBottom}px`)
   gap.style.setProperty('--gap-mt', `${m.marginTop}px`)
+  gap.style.setProperty('--gap-band', `${GAP_BAND}px`)
   if (kind === 'table') {
     // A real spanning cell is required here. Chromium's collapsed-border table
     // painting can leak the neighboring row's border/fill through a cell-less
@@ -174,6 +214,15 @@ export function setPageGaps(
         pos,
         () => {
           const el = makeGapEl(metrics, kind)
+          if (kind !== 'cut') {
+            applyGapMode(el, allGapsCollapsed)
+            el.addEventListener('dblclick', (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              // uniform toggle: every gap in this editor collapses/expands at once
+              toggleGapCollapse(view.dom)
+            })
+          }
           if (gap.boundaryY != null) el.dataset.boundaryY = gap.boundaryY.toFixed(1)
           // margins don't apply to table-rows and cuts are zero-height markers;
           // tables inside mixed-column regions are out of scope anyway (v1)
@@ -337,6 +386,275 @@ export function syncPageBorders(
     el.style.border = `${widthPx}px solid ${color}`
     layer.appendChild(el)
   }
+}
+
+/**
+ * Per-page paper widths: sections may disagree with the canvas paper (e.g. a
+ * portrait section in a landscape-widened document). Pages narrower than the
+ * canvas paper get opaque canvas-colored side bands (overlays on the page wrap,
+ * same pattern as page borders), so each page shows its own paper width like
+ * Word. Page extents come from the gap widgets; a page's cover includes the
+ * adjacent halves of the shared inter-page gaps so their full-width margin
+ * bands are covered too.
+ */
+export function syncPageWidthBands(
+  wrap: HTMLElement,
+  /** per-page paper width (unzoomed CSS px, aligned with the slice order) */
+  pageWidths: number[],
+  /** canvas paper width (the widest section) */
+  paperW: number,
+  zoomFactor: number,
+): void {
+  let layer = wrap.querySelector(':scope > .page-width-overlays') as HTMLElement | null
+  if (!pageWidths.some((w) => w < paperW - 0.5)) {
+    layer?.remove()
+    return
+  }
+  if (!layer) {
+    layer = document.createElement('div')
+    layer.className = 'page-width-overlays'
+    wrap.appendChild(layer)
+  }
+  layer.textContent = ''
+  const wr = wrap.getBoundingClientRect()
+  // slice boundaries from the gap widgets (same channel as syncPageBorders);
+  // zero-height cut markers are boundaries too
+  const gaps = Array.from(wrap.querySelectorAll('.page-gap, .page-gap-cut'))
+    .map((g) => {
+      const r = g.getBoundingClientRect()
+      return { top: (r.top - wr.top) / zoomFactor, bottom: (r.bottom - wr.top) / zoomFactor }
+    })
+    .sort((a, b) => a.top - b.top)
+  // page k spans [end of gap k-1 (or wrap top), end of gap k (or wrap bottom)]
+  const starts = [0, ...gaps.map((g) => g.bottom)]
+  const ends = [...gaps.map((g) => g.bottom), wr.height / zoomFactor]
+  for (let k = 0; k < pageWidths.length; k++) {
+    const w = pageWidths[k]
+    const inset = (paperW - w) / 2
+    if (inset <= 0.5) continue
+    const top = starts[Math.min(k, starts.length - 1)]
+    const bottom = ends[Math.min(k, ends.length - 1)]
+    if (bottom - top <= 10) continue
+    for (const side of ['left', 'right'] as const) {
+      const band = document.createElement('div')
+      band.className = `page-width-band page-width-band-${side}`
+      band.style.top = `${top}px`
+      band.style.height = `${bottom - top}px`
+      // outer edge bleeds past the paper edge to cover the max-paper shadow
+      if (side === 'left') {
+        band.style.left = '-30px'
+        band.style.width = `${inset + 30}px`
+      } else {
+        band.style.left = `${paperW - inset}px`
+        band.style.width = `${inset + 30}px`
+      }
+      layer.appendChild(band)
+    }
+  }
+}
+
+/** live vruler sync targets (latest anchor/wrap/zoom of the last pass) */
+const vrulerState = new WeakMap<HTMLElement, { anchor: HTMLElement; wrap: HTMLElement; zoom: number }>()
+const vrulerObservers = new WeakMap<HTMLElement, ResizeObserver>()
+
+/**
+ * Vertical ruler segments for pages after the first: the ruler is glued to the
+ * paper and scrolls with the document (Word/WPS — it is not a fixed screen
+ * ruler), each page carrying its own scale with numbering from its paper top.
+ * Page extents come from the gap widgets; a ResizeObserver on the page wrap
+ * re-glues the segments whenever late layout shifts (fonts, images) move pages
+ * after the measurement passes have gone quiet. Page 1 is React-rendered (it
+ * owns the margin drag handles).
+ */
+export function syncVRulerPages(
+  anchor: HTMLElement,
+  wrap: HTMLElement,
+  /** per-page paper geometry (unzoomed CSS px, aligned with the slice order) */
+  pages: Array<{ height: number; marginTop: number; marginBottom: number }>,
+  zoomFactor: number,
+): void {
+  vrulerState.set(wrap, { anchor, wrap, zoom: zoomFactor })
+  if (!vrulerObservers.has(wrap)) {
+    const obs = new ResizeObserver(() => {
+      // segments/bands are absolutely positioned: no layout feedback, no loop
+      const st = vrulerState.get(wrap)
+      if (st) {
+        repositionVRuler(st.anchor, st.wrap)
+        syncTableGapBands(st.wrap, st.zoom)
+      }
+    })
+    obs.observe(wrap)
+    vrulerObservers.set(wrap, obs)
+  }
+  let layer = anchor.querySelector(':scope > .vruler-ext') as HTMLElement | null
+  if (pages.length <= 1) {
+    layer?.remove()
+    return
+  }
+  if (!layer) {
+    layer = document.createElement('div')
+    layer.className = 'vruler-ext'
+    anchor.appendChild(layer)
+  }
+  // signature covers geometry only: page tops are kept fresh by the observer
+  const sig = pages
+    .map((p) => `${Math.round(p.height)}:${Math.round(p.marginTop)}:${Math.round(p.marginBottom)}`)
+    .join('|')
+  if (layer.dataset.sig !== sig) {
+    layer.dataset.sig = sig
+    layer.textContent = ''
+    for (let k = 1; k < pages.length; k++) {
+      const p = pages[k]
+      const seg = document.createElement('div')
+      seg.className = 'vruler vruler-page'
+      seg.style.height = `${p.height}px`
+      const zt = document.createElement('div')
+      zt.className = 'vruler-zone vruler-zone-top'
+      zt.style.height = `${p.marginTop}px`
+      seg.appendChild(zt)
+      const zb = document.createElement('div')
+      zb.className = 'vruler-zone vruler-zone-bottom'
+      zb.style.top = `${p.height - p.marginBottom}px`
+      zb.style.height = `${p.marginBottom}px`
+      seg.appendChild(zb)
+      const inches = Math.floor(p.height / 96)
+      for (let i = 1; i <= inches; i++) {
+        const n = document.createElement('span')
+        n.className = 'vruler-num'
+        n.style.top = `${i * 96}px`
+        n.textContent = String(i)
+        seg.appendChild(n)
+      }
+      layer.appendChild(seg)
+    }
+  }
+  layer.dataset.zoom = String(zoomFactor)
+  repositionVRuler(anchor, wrap)
+  // settle loop: late layout (font swaps, image loads, min-height clamping)
+  // can move page boundaries WITHOUT resizing the wrap — invisible to the
+  // ResizeObserver — so keep re-gluing on every frame for a short window and
+  // stop early once positions stop changing; a later pass supersedes the loop
+  const run = String(++vrulerRunCounter)
+  layer.dataset.run = run
+  const settle = (deadline: number) => {
+    if (layer!.dataset.run !== run || !layer!.isConnected) return
+    const bottoms = repositionVRuler(anchor, wrap)
+    syncTableGapBands(wrap, zoomFactor)
+    if (performance.now() < deadline && bottoms !== null)
+      requestAnimationFrame(() => settle(deadline))
+  }
+  settle(performance.now() + 1500)
+}
+
+let vrulerRunCounter = 0
+
+/**
+ * Full-width page separator for in-table gaps: a table page break renders as a
+ * table-row gap confined to the table's own width, so the page margins left and
+ * right of the table show no separator at all (Word paints the inter-page band
+ * across the whole paper). This draws the band — same colors and page-edge
+ * shadows as .page-gap::before — as an overlay spanning the page wrap; the
+ * in-table fill keeps its margins/hf strips but drops its own shadow (the
+ * overlay provides it). Collapsed gaps get the centered thin line instead.
+ */
+export function syncTableGapBands(wrap: HTMLElement, zoomFactor: number): void {
+  const trGaps = Array.from(wrap.querySelectorAll<HTMLElement>('.page-gap-table'))
+  let layer = wrap.querySelector(':scope > .table-gap-overlays') as HTMLElement | null
+  if (trGaps.length === 0) {
+    layer?.remove()
+    return
+  }
+  if (!layer) {
+    layer = document.createElement('div')
+    layer.className = 'table-gap-overlays'
+    wrap.appendChild(layer)
+  }
+  layer.dataset.zoom = String(zoomFactor)
+  const wr = wrap.getBoundingClientRect()
+  const geom = trGaps.map((g) => {
+    const r = g.getBoundingClientRect()
+    const mb = parseFloat(g.style.getPropertyValue('--gap-mb')) || 0
+    const mt = parseFloat(g.style.getPropertyValue('--gap-mt')) || 0
+    const collapsed = g.classList.contains('gap-collapsed')
+    const top = (r.top - wr.top) / zoomFactor
+    const h = r.height / zoomFactor
+    return { top, h, mb, mt, collapsed }
+  })
+  const sig = geom.map((p) => `${Math.round(p.top)}:${Math.round(p.h)}:${p.collapsed ? 1 : 0}`).join(',')
+  if (layer.dataset.sig === sig) return
+  layer.dataset.sig = sig
+  layer.textContent = ''
+  for (const p of geom) {
+    const band = document.createElement('div')
+    if (p.collapsed) {
+      band.className = 'table-gap-band table-gap-line'
+      band.style.top = `${p.top + (p.h - 1) / 2}px`
+      band.style.height = '1px'
+    } else {
+      band.className = 'table-gap-band'
+      band.style.top = `${p.top + p.mb}px`
+      band.style.height = `${Math.max(0, p.h - p.mb - p.mt)}px`
+    }
+    // the overlay spans the full paper width, so it — not the confined tr —
+    // receives the double-click outside the table's own columns
+    band.title = allGapsCollapsed
+      ? 'Double-click to expand page gaps'
+      : 'Double-click to collapse page gaps'
+    band.addEventListener('dblclick', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      toggleGapCollapse(wrap)
+    })
+    layer.appendChild(band)
+  }
+  // the fills' own shadows would double under the overlay band
+  for (const g of trGaps) {
+    const fill = g.querySelector<HTMLElement>('.page-gap-table-fill')
+    if (fill) fill.style.boxShadow = 'none'
+  }
+}
+
+/** document-wide toggle: collapse/expand EVERY page gap at once (double-click
+ *  on any gap band or full-width table-gap overlay band) */
+function toggleGapCollapse(root: ParentNode): void {
+  allGapsCollapsed = !allGapsCollapsed
+  persistCollapsed()
+  for (const g of Array.from(root.querySelectorAll('.page-gap:not(.page-gap-cut)')))
+    applyGapMode(g as HTMLElement, allGapsCollapsed)
+  // refresh the full-width table-gap overlay bands to line/band mode right
+  // away (height changes may be absorbed by the min-height clamp, so the
+  // ResizeObserver alone can lag)
+  const wrap =
+    root instanceof Element ? (root.closest('.page-wrap') as HTMLElement | null) : null
+  const host = wrap ?? (root as HTMLElement)
+  const layer = host.querySelector(':scope > .table-gap-overlays') as HTMLElement | null
+  if (layer) syncTableGapBands(host, Number(layer.dataset.zoom) || 1)
+}
+
+/** glue segment tops to the current page boundaries (cheap, layout-safe);
+ *  returns the joined rounded tops, or null when there is nothing to place */
+function repositionVRuler(anchor: HTMLElement, wrap: HTMLElement): string | null {
+  const layer = anchor.querySelector(':scope > .vruler-ext') as HTMLElement | null
+  if (!layer) return null
+  const segs = Array.from(layer.children) as HTMLElement[]
+  if (segs.length === 0) return null
+  const zoom = Number(layer.dataset.zoom) || 1
+  const wr = wrap.getBoundingClientRect()
+  // only real page gaps: zero-height cut markers are in-table break hints, not
+  // paper boundaries (page-gap-table rows carry .page-gap and do count)
+  const bottoms = Array.from(wrap.querySelectorAll('.page-gap'))
+    .map((g) => g.getBoundingClientRect().bottom)
+    .sort((a, b) => a - b)
+    .slice(0, segs.length)
+  let sig = ''
+  segs.forEach((seg, i) => {
+    const b = bottoms[i]
+    if (b === undefined) return
+    const top = (b - wr.top) / zoom
+    seg.style.top = `${top}px`
+    sig += `${Math.round(top)},`
+  })
+  return sig
 }
 
 /**
@@ -603,17 +921,29 @@ export function clampCellBoxTops(pm: HTMLElement, paperTop: number, factor: numb
  * Differing-width documents: gap header/footer strips live inside gap boxes whose
  * origin shifts with the next section's margins (and, for in-table gaps, with the
  * spanning cell's grid position), so no static left fits every gap kind. Align
- * each strip to the body blocks' left edge by measurement (idempotent; runs after
- * setPageGaps while the widgets' rects are final).
+ * each strip to its own section's content start (mixed-width docs center each
+ * section's paper on the canvas; data-sec on the strip names the section) by
+ * measurement (idempotent; runs after setPageGaps while the widgets' rects are
+ * final).
  */
-export function alignGapHfStrips(pm: HTMLElement, bodyLeftPx: number, factor: number): void {
-  const target = pm.getBoundingClientRect().left + bodyLeftPx * factor
+export function alignGapHfStrips(
+  pm: HTMLElement,
+  /** content-start px per section index (unzoomed), or one shared start */
+  secLeftPx: number[] | number,
+  factor: number,
+): void {
+  const shared = Array.isArray(secLeftPx)
+    ? (secLeftPx[0] ?? 0)
+    : (secLeftPx as number)
   for (const el of Array.from(pm.querySelectorAll<HTMLElement>('.page-gap-hf'))) {
     // widget DOM reused from an equal-width era still carries the stylesheet
     // centering (left:50% + translateX(-50%)): pin it before measuring, or the
     // increment is applied against the wrong base
     if (el.style.transform !== 'none') el.style.transform = 'none'
     if (!el.style.left) el.style.left = '0px'
+    const secIdx = Number(el.dataset.sec)
+    const bodyLeft = Array.isArray(secLeftPx) && Number.isInteger(secIdx) ? (secLeftPx[secIdx] ?? shared) : shared
+    const target = pm.getBoundingClientRect().left + bodyLeft * factor
     const delta = (target - el.getBoundingClientRect().left) / factor
     if (Math.abs(delta) < 0.5) continue
     el.style.left = `${((parseFloat(el.style.left) || 0) + delta).toFixed(1)}px`

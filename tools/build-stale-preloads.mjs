@@ -40,11 +40,7 @@ const stale = APPS.filter((app) => {
 if (stale.length) {
   console.log(`Rebuilding stale preloads: ${stale.join(', ')}`)
   for (const app of stale) {
-    // shell: true — on Windows `npm` is npm.cmd, which spawnSync cannot launch directly
-    const r = spawnSync('npm', ['run', 'build', '-w', `@genoffice/${app}`], {
-      stdio: 'inherit',
-      shell: true,
-    })
+    const r = spawnSync('npm', ['run', 'build', '-w', `@genoffice/${app}`], { stdio: 'inherit' })
     if (r.status !== 0) process.exit(r.status ?? 1)
   }
 }

@@ -1,20 +1,24 @@
 import { useRef, useState } from 'react'
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
 import type { Editor } from '@tiptap/core'
 import type { SectionSettings, TabStop } from '@genoffice/docx-engine'
 import { t, type StringKey } from '../i18n/locale'
 
 const twipsToPx = (twips: number) => (twips / 1440) * 96
 
-/** Horizontal ruler above the page: inch numbers, gray margin zones, tab stops. */
+/** Horizontal ruler above the page: inch numbers, gray margin zones, tab stops.
+ *  The left/right margin boundaries are draggable (Word: drag the gray/white
+ *  edge to change page margins); drop commits through onMargins. */
 export function Ruler({
   section,
   editor,
   onTabStopsChange,
+  onMargins,
 }: {
   section: SectionSettings
   editor: Editor | null
   onTabStopsChange: (stops: TabStop[] | null) => void
+  onMargins?: (margins: { marginLeft?: number; marginRight?: number }) => void
 }) {
   const width = twipsToPx(section.pageWidth)
   const marginLeft = twipsToPx(section.marginLeft)
@@ -139,6 +143,79 @@ export function Ruler({
     }
   }
 
+  // Margin boundary dragging (Word): 0.05in snap, margins keep >= 0.1in and
+  // the content area keeps >= 0.5in; live feedback moves the gray zones directly
+  // margin boundary dragging (Word): pointer capture on the handle, 0.05in
+  // snap, margins keep >= 0.1in and the content area keeps >= 0.5in; live
+  // feedback moves the gray zones directly
+  const marginRef = useRef<{ edge: 'left' | 'right'; zone: HTMLElement | null } | null>(null)
+  const handleMarginMouseDown = (e: ReactPointerEvent<HTMLDivElement>, edge: 'left' | 'right') => {
+    if (!onMargins) return
+    e.stopPropagation()
+    e.preventDefault()
+    const handleEl = e.currentTarget
+    const rulerEl = handleEl.closest('.ruler') as HTMLElement
+    const zone = rulerEl.querySelector(
+      edge === 'left' ? '.ruler-zone-left' : '.ruler-zone-right',
+    ) as HTMLElement | null
+    marginRef.current = { edge, zone }
+    let snapped = edge === 'left' ? section.marginLeft : section.marginRight
+    // capture the pointer on the handle: pointermove/up keep flowing to it even
+    // when the drag crosses iframes/overlays or the ruler re-renders mid-drag
+    try {
+      handleEl.setPointerCapture(e.pointerId)
+    } catch {
+      /* capture is best-effort */
+    }
+
+    const onPointerMove = (ev: PointerEvent) => {
+      const rect = rulerEl.getBoundingClientRect()
+      // rect is on-screen (zoomed) px while `width` is unzoomed CSS px; their
+      // ratio is the effective zoom, dividing maps the pointer back to ruler px
+      const scale = rect.width / width || 1
+      const x = (ev.clientX - rect.left) / scale
+      // ruler px -> twips via the page's own px/twips ratio
+      const rawTwips = edge === 'left' ? (x / width) * section.pageWidth : ((width - x) / width) * section.pageWidth
+      snapped = Math.round(rawTwips / 72) * 72
+      snapped = Math.max(
+        144,
+        Math.min(
+          snapped,
+          section.pageWidth - 720 - (edge === 'left' ? section.marginRight : section.marginLeft),
+        ),
+      )
+      if (zone) {
+        if (edge === 'left') {
+          zone.style.width = `${twipsToPx(snapped)}px`
+        } else {
+          zone.style.left = `${width - twipsToPx(snapped)}px`
+          zone.style.width = `${twipsToPx(snapped)}px`
+        }
+      }
+    }
+
+    const onPointerUp = () => {
+      handleEl.removeEventListener('pointermove', onPointerMove)
+      handleEl.removeEventListener('pointerup', onPointerUp)
+      handleEl.removeEventListener('pointercancel', onPointerUp)
+      try {
+        handleEl.releasePointerCapture(e.pointerId)
+      } catch {
+        /* already released */
+      }
+      if (
+        marginRef.current &&
+        snapped !== (edge === 'left' ? section.marginLeft : section.marginRight)
+      )
+        onMargins(edge === 'left' ? { marginLeft: snapped } : { marginRight: snapped })
+      marginRef.current = null
+    }
+
+    handleEl.addEventListener('pointermove', onPointerMove)
+    handleEl.addEventListener('pointerup', onPointerUp)
+    handleEl.addEventListener('pointercancel', onPointerUp)
+  }
+
   return (
     <div className="ruler" style={{ width }} onClick={handleRulerClick}>
       {/* Tab type selector button at far left */}
@@ -154,8 +231,27 @@ export function Ruler({
         {TAB_TYPE_LABELS[nextTabType]}
       </button>
 
-      <div className="ruler-zone" style={{ left: 0, width: marginLeft }} />
-      <div className="ruler-zone" style={{ left: width - marginRight, width: marginRight }} />
+      <div className="ruler-zone ruler-zone-left" style={{ left: 0, width: marginLeft }} />
+      <div
+        className="ruler-zone ruler-zone-right"
+        style={{ left: width - marginRight, width: marginRight }}
+      />
+
+      {/* draggable margin boundaries (Word's gray/white edge) */}
+      {onMargins && (
+        <>
+          <div
+            className="ruler-margin-handle"
+            style={{ left: marginLeft }}
+            onPointerDown={(e) => handleMarginMouseDown(e, 'left')}
+          />
+          <div
+            className="ruler-margin-handle"
+            style={{ left: width - marginRight }}
+            onPointerDown={(e) => handleMarginMouseDown(e, 'right')}
+          />
+        </>
+      )}
 
       {ticks.map((i) => (
         <span key={i} className="ruler-num" style={{ left: twipsToPx(i * 1440) }}>

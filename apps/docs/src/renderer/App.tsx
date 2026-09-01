@@ -100,6 +100,9 @@ import {
   syncCutOverlays,
   syncFloatShifts,
   syncPageBorders,
+  syncPageWidthBands,
+  syncTableGapBands,
+  syncVRulerPages,
   clampCellBoxTops,
   type PageBorderStyle,
   type PageGapSpec,
@@ -182,6 +185,7 @@ import { InkOverlay } from './components/InkOverlay'
 import { collectRevisions, gotoRevision, type TrackChangesStorage } from './editor/revisions'
 import { NavPane } from './components/NavPane'
 import { Ruler } from './components/Ruler'
+import { VRuler } from './components/VRuler'
 import { docBodyFont, docLineFactor, docThemeCss } from './doc-style-css'
 import { isDocDirty } from './doc-dirty'
 import {
@@ -569,7 +573,7 @@ export function App() {
     [sections, sectionHfEdits, header, footer, headerDirty, footerDirty],
   )
   const [showMarks, setShowMarks] = useState(false)
-  const [showRuler, setShowRuler] = useState(false)
+  const [showRuler, setShowRuler] = useState(true)
   const [showNav, setShowNav] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('print')
   const [readMode, setReadMode] = useState(false)
@@ -1333,6 +1337,29 @@ export function App() {
       // whose w:type decides how the new section starts: always write the chosen type back
       // (including a nextPage reset, so a leftover continuous from the original section doesn't linger)
       if (sections.length === 0 || activeSection === sections.length - 1) {
+        // optimistic live split: the break lands inside the last section, so a
+        // new section starts below it (identical settings until edited) — page
+        // geometry and section-targeted edits (orientation/margins) apply
+        // immediately instead of waiting for the debounced save+reparse
+        // (saved docs only: undo before the save would otherwise desync the
+        // optimistic state; reparse replaces it with the authoritative list)
+        const $before = editor.state.doc.resolve(Math.max(0, pos - 1))
+        const beforeTop = $before.before(1)
+        const domBefore = editor.view.nodeDOM(beforeTop) as HTMLElement | null
+        const beforeIdx = Number(domBefore?.getAttribute('data-idx') ?? '')
+        if (
+          doc.filePath &&
+          cur &&
+          Number.isFinite(beforeIdx) &&
+          domBefore?.hasAttribute('data-idx') &&
+          beforeIdx < cur.lastBlockIndex
+        ) {
+          setSections((prev) => [
+            ...prev.slice(0, -1),
+            { ...cur, lastBlockIndex: beforeIdx },
+            { ...cur, firstBlockIndex: beforeIdx, startType: type },
+          ])
+        }
         setTrailingStartType(type)
       } else {
         setSections((prev) =>
@@ -2194,7 +2221,15 @@ export function App() {
           const pageHfOf = (
             pageIdx: number,
             kind: 'header' | 'footer',
-          ): { value: HeaderFooter | null; images?: HfImage[]; floats: HfImage[] } => {
+          ): {
+            value: HeaderFooter | null
+            images?: HfImage[]
+            floats: HfImage[]
+            /** which variant this page shows (routes double-click edits) */
+            variant: 'first' | 'even' | 'default'
+            /** section the page belongs to */
+            secIdx: number
+          } => {
             const pageNo = nums[pageIdx]
             const split = (imgs?: HfImage[] | null) => ({
               images: imgs?.filter((img) => !img.floating),
@@ -2203,20 +2238,21 @@ export function App() {
             if (!secList || secList.length <= 1) {
               if (titlePg && pageIdx === 0) {
                 return kind === 'header'
-                  ? { value: hfVariants.headerFirst, ...split(parsed.headerFirst?.images) }
-                  : { value: hfVariants.footerFirst, ...split(parsed.footerFirst?.images) }
+                  ? { value: hfVariants.headerFirst, ...split(parsed.headerFirst?.images), variant: 'first' as const, secIdx: 0 }
+                  : { value: hfVariants.footerFirst, ...split(parsed.footerFirst?.images), variant: 'first' as const, secIdx: 0 }
               }
               if (evenOddHf && pageNo % 2 === 0) {
                 return kind === 'header'
-                  ? { value: hfVariants.headerEven, ...split(parsed.headerEven?.images) }
-                  : { value: hfVariants.footerEven, ...split(parsed.footerEven?.images) }
+                  ? { value: hfVariants.headerEven, ...split(parsed.headerEven?.images), variant: 'even' as const, secIdx: 0 }
+                  : { value: hfVariants.footerEven, ...split(parsed.footerEven?.images), variant: 'even' as const, secIdx: 0 }
               }
               return kind === 'header'
-                ? { value: header, ...split(parsed.headerImages) }
-                : { value: footer, ...split(parsed.footerImages) }
+                ? { value: header, ...split(parsed.headerImages), variant: 'default' as const, secIdx: 0 }
+                : { value: footer, ...split(parsed.footerImages), variant: 'default' as const, secIdx: 0 }
             }
             const pageSlice = slices[pageIdx]
-            const sec = secList[Math.min(pageSlice.section, secList.length - 1)]
+            const secIdx = Math.min(pageSlice.section, secList.length - 1)
+            const sec = secList[secIdx]
             const refs = effRefs![Math.min(pageSlice.section, effRefs!.length - 1)]
             const variant =
               sec.titlePg && firsts[pageIdx]
@@ -2229,7 +2265,73 @@ export function App() {
             return {
               value: ov ?? hfFromPart(rId ? parsed.hfParts?.[rId] : null),
               ...split(rId ? parsed.hfParts?.[rId]?.images : undefined),
+              variant,
+              secIdx,
             }
+          }
+          // double-click on a page's header/footer copy edits it in place (Word):
+          // plain-text surface with {PAGE}/{NUMPAGES} tokens, blur commits to the
+          // page's variant/section, Escape cancels; unchanged blur restores the
+          // rendered markup (the widget itself is only rebuilt on real changes)
+          const attachGapHfEdit = (
+            el: HTMLElement,
+            kind: 'header' | 'footer',
+            hf: ReturnType<typeof pageHfOf>,
+          ) => {
+            el.style.pointerEvents = 'auto'
+            el.classList.add('page-hf-editable')
+            el.addEventListener('dblclick', (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              if (el.isContentEditable) return
+              const orig = el.innerHTML
+              const value = hf.value ?? { text: '' }
+              el.contentEditable = 'true'
+              el.innerText = hfEditText(value)
+              const initial = el.innerText
+              el.focus()
+              const sel = window.getSelection()
+              if (sel) {
+                sel.selectAllChildren(el)
+                sel.collapseToEnd()
+              }
+              let done = false
+              const finish = (commit: boolean) => {
+                if (done) return
+                done = true
+                const text = el.innerText
+                el.contentEditable = 'false'
+                el.innerHTML = orig
+                if (!commit || text === initial) return
+                const next = applyHfText(value, text)
+                if (hf.variant === 'default' && multiHf && hf.secIdx < sections.length - 1) {
+                  const sec = sections[hf.secIdx]
+                  setSectionHfEdits((m) => ({ ...m, [`${sec.lastBlockIndex}:${kind}`]: next }))
+                } else if (hf.variant === 'default') {
+                  if (kind === 'header') {
+                    setHeader(next)
+                    setHeaderDirty(true)
+                  } else {
+                    setFooter(next)
+                    setFooterDirty(true)
+                  }
+                } else {
+                  commitHf(kind, next, hf.variant)
+                }
+              }
+              el.addEventListener('blur', () => finish(true), { once: true })
+              el.addEventListener(
+                'keydown',
+                (ev) => {
+                  if (ev.key === 'Escape') {
+                    ev.preventDefault()
+                    ev.stopPropagation()
+                    finish(false)
+                  }
+                },
+                { once: true },
+              )
+            })
           }
           /** page geometry a page's floating header images position against */
           const floatBoxOf = (pageIdx: number): HfFloatBox => {
@@ -2339,7 +2441,9 @@ export function App() {
             const gapFooter = pageHfOf(k, 'footer')
             const gapHeader = pageHfOf(k + 1, 'header')
             const hfEls: HTMLElement[] = []
-            if (hfHasVisibleContent(gapFooter.value, gapFooter.images)) {
+            // strips render even when empty (Word: an empty header area is still
+            // there to double-click); empty ones carry a hover hint placeholder
+            {
               const box = sectionPageBox(prevSec)
               const el = makeGapHfEl({
                 kind: 'footer',
@@ -2351,9 +2455,15 @@ export function App() {
               el.style.top = 'auto'
               el.style.bottom = `${GAP_BAND + metrics.marginTop + box.footerDist}px`
               sizeGapHf(el, box)
+              el.dataset.sec = String(gapFooter.secIdx)
+              if (!hfHasVisibleContent(gapFooter.value, gapFooter.images)) {
+                el.classList.add('page-hf-empty')
+                el.title = t('appDblclickEditFooter')
+              }
+              attachGapHfEdit(el, 'footer', gapFooter)
               hfEls.push(el)
             }
-            if (hfHasVisibleContent(gapHeader.value, gapHeader.images)) {
+            {
               const box = sectionPageBox(nextSec)
               const el = makeGapHfEl({
                 kind: 'header',
@@ -2365,6 +2475,12 @@ export function App() {
               el.style.bottom = 'auto'
               el.style.top = `calc(100% - ${Math.max(0, metrics.marginTop - box.headerDist)}px)`
               sizeGapHf(el, box)
+              el.dataset.sec = String(gapHeader.secIdx)
+              if (!hfHasVisibleContent(gapHeader.value, gapHeader.images)) {
+                el.classList.add('page-hf-empty')
+                el.title = t('appDblclickEditHeader')
+              }
+              attachGapHfEdit(el, 'header', gapHeader)
               hfEls.push(el)
             }
             // next page's floating header images (picture watermarks): behind-text,
@@ -2378,8 +2494,11 @@ export function App() {
                 ? {
                     hfEls,
                     // key must cover everything baked into the widgets (both pages'
-                    // formatted numbers + total count), or stale PAGE/NUMPAGES survive reuse
-                    hfKey: `${pageNoTextOf(k)}·${pageNoTextOf(k + 1)}·${visiblePages}·${hfSig(gapFooter.value)}·${hfSig(gapHeader.value)}·f${floatSig(gapHeader.floats)}`,
+                    // formatted numbers + total count), or stale PAGE/NUMPAGES survive
+                    // reuse; the strips' section boxes too — orientation/margin edits
+                    // change their width/offsets without touching the text, and a
+                    // reused widget would keep the old geometry misaligned with the page
+                    hfKey: `${pageNoTextOf(k)}·${pageNoTextOf(k + 1)}·${visiblePages}·${hfSig(gapFooter.value)}·${hfSig(gapHeader.value)}·f${floatSig(gapHeader.floats)}·w${Math.round(sectionPageBox(prevSec).contentWidth)}·${Math.round(sectionPageBox(nextSec).contentWidth)}·d${Math.round(sectionPageBox(prevSec).footerDist)}·${Math.round(sectionPageBox(nextSec).headerDist)}`,
                   }
                 : {}
             // previous page's footnotes: rendered into the top of the gap (page-bottom area), with the gap enlarged by the reserved height.
@@ -2711,8 +2830,19 @@ export function App() {
         }
         setColumnLayout(editor.view, layoutSpecs)
         if (secWSpecs.length > 0 && section) {
-          const cSet = secList?.[0]?.settings ?? section
-          alignGapHfStrips(pm, twipsToPx(cSet.marginLeft), factor)
+          // mixed-width docs: each section's paper is centered on the canvas,
+          // so its strips align to its own content start, not the first's
+          const paperWNow = pm.getBoundingClientRect().width / factor
+          const secLefts = (secList ?? []).map(
+            (s) =>
+              (paperWNow - twipsToPx(s.settings.pageWidth)) / 2 +
+              twipsToPx(s.settings.marginLeft),
+          )
+          alignGapHfStrips(
+            pm,
+            secLefts.length > 0 ? secLefts : twipsToPx((secList?.[0]?.settings ?? section).marginLeft),
+            factor,
+          )
         }
         // after setPageGaps: widget insertion is synchronous, so anchor rects are final
         syncFloatShifts(pm, floats, pm.getBoundingClientRect().top + mTopPx * factor, factor)
@@ -2746,6 +2876,36 @@ export function App() {
           }
           syncPageBorders((pm.closest('.page-wrap') as HTMLElement) ?? pm, borderStyle, factor)
         }
+        // mixed-width sections: pages narrower than the canvas paper get side
+        // bands so each page shows its own paper width (Word's per-section pages)
+        const wrapEl = (pm.closest('.page-wrap') as HTMLElement) ?? pm
+        syncPageWidthBands(
+          wrapEl,
+          slices.map(
+            (s) => twipsToPx((secList?.[s.section]?.settings ?? section).pageWidth),
+          ),
+          Math.max(twipsToPx(section.pageWidth), ...sections.map((s) => twipsToPx(s.settings.pageWidth))),
+          factor,
+        )
+        // table page breaks: the in-table gap row can't span the paper, so the
+        // separator band is drawn as a full-width overlay on the page wrap
+        syncTableGapBands(wrapEl, factor)
+        // vertical ruler: segments glued to each page (page 1 is React-rendered)
+        const vrAnchor = wrapEl.previousElementSibling as HTMLElement | null
+        if (vrAnchor?.classList.contains('vruler-anchor'))
+          syncVRulerPages(
+            vrAnchor,
+            wrapEl,
+            slices.map((s) => {
+              const set = secList?.[s.section]?.settings ?? section
+              return {
+                height: twipsToPx(set.pageHeight),
+                marginTop: twipsToPx(set.marginTop),
+                marginBottom: twipsToPx(set.marginBottom),
+              }
+            }),
+            factor,
+          )
         syncMarginAnnotations(
           (pm.closest('.page-wrap') as HTMLElement) ?? pm,
           pm,
@@ -3679,6 +3839,28 @@ export function App() {
     [],
   )
 
+  // apply section geometry (ruler margin drags) to the cursor's section
+  const applySectionGeometry = (next: SectionSettings) => {
+    setSections((prev) => prev.map((s, i) => (i === activeSection ? { ...s, settings: next } : s)))
+    if (sections.length <= 1 || activeSection === sections.length - 1) {
+      setSection(next)
+      setSectionDirty(true)
+    } else {
+      setSectionsDirty((d) => (d.includes(activeSection) ? d : [...d, activeSection]))
+      setStatus(t('appSectionSettingsApplied', { n: activeSection + 1 }))
+    }
+  }
+
+  const applyRulerMargins = (
+    margins: { marginLeft?: number; marginRight?: number; marginTop?: number; marginBottom?: number },
+  ) => {
+    // merge into the CURSOR section's settings (section state is the last
+    // section's, which differs in multi-section documents)
+    const base = sections[activeSection]?.settings ?? section
+    if (!base) return
+    applySectionGeometry({ ...base, ...margins })
+  }
+
   const ribbonActions = useStableCallbacks({
     allocateNumId: (kind: 'bullet' | 'ordered') => allocateListNumId(kind),
     createListDef: (levels: CustomNumberingLevel[]) => createCustomListDef(levels),
@@ -3796,6 +3978,28 @@ export function App() {
       editor.off('transaction', refresh)
     }
   }, [editor])
+  // WPS vertical-ruler logic: the left ruler appears only when the page itself
+  // is clicked into (the document-open auto-focus must NOT reveal it) and
+  // hides again when focus leaves the editor (ribbon, panels, outside)
+  const [pageActive, setPageActive] = useState(false)
+  useEffect(() => {
+    const onPointerDown = (e: Event) => {
+      // isTrusted: programmatic/synthetic dispatches during document open must
+      // not reveal the ruler — only a real user click into the page does
+      if (!e.isTrusted) return
+      if ((e.target as HTMLElement | null)?.closest?.('.doc-page')) setPageActive(true)
+    }
+    document.addEventListener('pointerdown', onPointerDown, { capture: true })
+    return () => document.removeEventListener('pointerdown', onPointerDown, { capture: true })
+  }, [])
+  useEffect(() => {
+    if (!editor) return
+    const off = () => setPageActive(false)
+    editor.on('blur', off)
+    return () => {
+      editor.off('blur', off)
+    }
+  }, [editor])
   const quickActions = useMemo(
     () => (
       <>
@@ -3864,14 +4068,15 @@ export function App() {
   const lastBox = lastSection ? sectionPageBox(lastSection) : null
   // pin whenever the shared paper is wider than the footer's own section (a wider
   // middle section widens the paper too) or the strip width differs from the
-  // first-section default
+  // first-section default; mixed-width papers center each section, so the pin
+  // carries that section's centering inset
   const edgeFooterStyle =
     lastBox &&
     canvasBox &&
     (paperW - lastBox.width > 0.5 || Math.abs(lastBox.contentWidth - canvasBox.contentWidth) > 0.5)
       ? {
           width: `${lastBox.contentWidth}px`,
-          left: `${twipsToPx(lastSection!.marginLeft)}px`,
+          left: `${(paperW - lastBox.width) / 2 + twipsToPx(lastSection!.marginLeft)}px`,
           transform: 'none',
           bottom: `${lastBox.footerDist}px`,
         }
@@ -3882,7 +4087,7 @@ export function App() {
     canvasBox && canvasSection && paperW - canvasBox.width > 0.5
       ? {
           width: `${canvasBox.contentWidth}px`,
-          left: `${twipsToPx(canvasSection.marginLeft)}px`,
+          left: `${(paperW - canvasBox.width) / 2 + twipsToPx(canvasSection.marginLeft)}px`,
           transform: 'none',
         }
       : undefined
@@ -3905,6 +4110,7 @@ export function App() {
     showMarks ? 'show-marks' : '',
     `view-${viewMode}`,
     showGrid ? 'show-grid' : '',
+    showRuler && section ? 'show-ruler' : '',
   ].join(' ')
 
   return (
@@ -4051,26 +4257,39 @@ export function App() {
                     style={docZoomStyle}
                   >
                     {showRuler && section && (
-                      <Ruler
-                        section={section}
-                        editor={editor}
-                        onTabStopsChange={(stops) => {
-                          if (!editor) return
-                          editor
-                            .chain()
-                            .focus()
-                            .updateAttributes('docParagraph', {
-                              tabStops: stops ? JSON.stringify(stops) : null,
-                            })
-                            .updateAttributes('docHeading', {
-                              tabStops: stops ? JSON.stringify(stops) : null,
-                            })
-                            .updateAttributes('docListItem', {
-                              tabStops: stops ? JSON.stringify(stops) : null,
-                            })
-                            .run()
-                        }}
-                      />
+                      <div className="ruler-row">
+                        <div className="ruler-corner" />
+                        <Ruler
+                          section={sections[activeSection]?.settings ?? section}
+                          editor={editor}
+                          onMargins={applyRulerMargins}
+                          onTabStopsChange={(stops) => {
+                            if (!editor) return
+                            editor
+                              .chain()
+                              .focus()
+                              .updateAttributes('docParagraph', {
+                                tabStops: stops ? JSON.stringify(stops) : null,
+                              })
+                              .updateAttributes('docHeading', {
+                                tabStops: stops ? JSON.stringify(stops) : null,
+                              })
+                              .updateAttributes('docListItem', {
+                                tabStops: stops ? JSON.stringify(stops) : null,
+                              })
+                              .run()
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className={showRuler && section ? 'ruler-body' : undefined}>
+                    {showRuler && section && (
+                      <div className={`vruler-anchor${pageActive ? '' : ' vruler-idle'}`}>
+                        <VRuler
+                          section={sections[activeSection]?.settings ?? section}
+                          onMargins={applyRulerMargins}
+                        />
+                      </div>
                     )}
                     <div className="page-wrap">
                       {watermark && (
@@ -4181,6 +4400,7 @@ export function App() {
                           onRemove={removeInks}
                         />
                       )}
+                    </div>
                     </div>
                   </div>
                 ) : (

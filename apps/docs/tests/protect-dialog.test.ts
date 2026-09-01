@@ -46,7 +46,7 @@ async function mount(partial: Partial<Props>) {
   const submit = async (done: () => boolean) => {
     await click(host.querySelector('.btn-primary')!)
     const start = Date.now()
-    while (!done() && Date.now() - start < 30_000) {
+    while (!done() && Date.now() - start < 10_000) {
       await act(async () => {
         await new Promise((r) => setTimeout(r, 10))
       })
@@ -113,7 +113,7 @@ describe('ProtectDialog', () => {
     expect(result.writeProtection?.hash).toBeTruthy()
     expect(await verifyProtectionPassword('to-modify', result.writeProtection!)).toBe(true)
     await d.cleanup()
-  }, 60_000)
+  })
 
   it('enabling a comments restriction without password enforces mode only', async () => {
     const d = await mount({})
