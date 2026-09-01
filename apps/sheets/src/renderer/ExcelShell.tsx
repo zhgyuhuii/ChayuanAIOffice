@@ -605,7 +605,6 @@ export function ExcelShell({
         legacyWidthKey="sheets-ai-panel-width"
         open={isCopilotOpen}
         onOpenChange={setIsCopilotOpen}
-        railIcon={<GensparkMark size={22} />}
         labels={{
           panelTitle: 'Genspark',
           layoutMenu: t('aiDockLayoutTitle'),
@@ -616,7 +615,6 @@ export function ExcelShell({
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),
           collapse: t('aiCollapsePanel'),
-          expand: t('aiOpenAssistant'),
         }}
         renderPanel={(dockChrome) => (
           <AiChatPanel

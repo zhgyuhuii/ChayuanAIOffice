@@ -3148,7 +3148,6 @@ export function App() {
         onOpenChange={setAiOpen}
         panelAvailable={!!slide && viewMode !== 'reading' && viewMode !== 'sorter'}
         onStateChange={setAiDock}
-        railIcon={<GensparkMark size={22} />}
         labels={{
           panelTitle: t('aiPanelTitle'),
           layoutMenu: t('aiDockLayoutTitle'),
@@ -3159,7 +3158,6 @@ export function App() {
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),
           collapse: t('aiCollapsePanel'),
-          expand: t('appAiRailExpand'),
         }}
         renderPanel={(dockChrome) =>
           /* always mounted once settings load: collapse must not drop state or in-flight runs */

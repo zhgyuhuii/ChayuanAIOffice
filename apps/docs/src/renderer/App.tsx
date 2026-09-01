@@ -138,7 +138,7 @@ import { useShallowStable, useStableCallbacks } from './use-stable'
 import { FindPanel } from './components/FindPanel'
 import { Ribbon } from './components/Ribbon'
 import { computeFormatState } from './components/ribbon-format-state'
-import { GensparkMark, IconRedo, IconSave, IconUndo } from './components/icons'
+import { IconRedo, IconSave, IconUndo } from './components/icons'
 import { ToastHost } from './components/toast'
 import {
   AI_REWRITE_ACK_KEY,
@@ -4368,7 +4368,6 @@ export function App() {
         open={showAi}
         onOpenChange={setShowAi}
         panelAvailable={!!doc}
-        railIcon={<GensparkMark size={22} />}
         labels={{
           panelTitle: t('aiPanelTitle'),
           layoutMenu: t('aiDockLayoutTitle'),
@@ -4379,7 +4378,6 @@ export function App() {
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),
           collapse: t('aiCollapseTitle'),
-          expand: t('appExpandAiPanel'),
         }}
         renderPanel={(dockChrome) =>
           doc ? (

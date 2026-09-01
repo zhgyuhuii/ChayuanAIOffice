@@ -16,7 +16,6 @@ const LABELS = {
   maximize: 'Maximize',
   restore: 'Restore',
   collapse: 'Collapse',
-  expand: 'Expand',
 }
 
 function StubPanel({ chrome }: { chrome: DockChrome }) {
@@ -56,7 +55,6 @@ function mount(overrides: Record<string, unknown> = {}) {
         storageKey: 'test-dock-shell',
         open: true,
         onOpenChange,
-        railIcon: createElement('span'),
         labels: LABELS,
         renderPanel: (chrome: DockChrome) => createElement(StubPanel, { chrome }),
         children: createElement('div', { className: 'editor-stub' }),
@@ -162,17 +160,12 @@ describe('DockShell', () => {
     cleanup()
   })
 
-  it('hides everything when collapsed in float mode (toolbar reopens it)', () => {
+  it('hides everything when collapsed (the top-row bubble icon reopens it)', () => {
     const { container, cleanup } = mount({ open: false })
-    // default position is left: the rail shows
-    expect(container.querySelector('.dockshell-rail')).not.toBeNull()
+    expect(container.querySelector('.dockshell-rail')).toBeNull()
+    expect(container.querySelector('.dockshell')!.classList.contains('is-closed')).toBe(true)
+    expect(container.querySelector('.dockshell-panel')).not.toBeNull() // still mounted
     cleanup()
-
-    localStorage.setItem('test-dock-shell', JSON.stringify({ position: 'float' }))
-    const second = mount({ open: false })
-    expect(second.container.querySelector('.dockshell-rail')).toBeNull()
-    expect(second.container.querySelector('.dockshell-panel')).not.toBeNull() // still mounted
-    second.cleanup()
   })
 
   it('tears off to a floating window when dropped mid-shell', () => {

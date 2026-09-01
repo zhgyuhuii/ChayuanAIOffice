@@ -10,8 +10,8 @@
  *    snap preview, dropping center leaves it floating
  *  - divider drag between panel and content (double-click collapses), float
  *    resize from every edge/corner; panel keeps ≥ its min, content keeps 320px
- *  - collapse to a rail on the docked side (float hides entirely — the app's
- *    own toolbar toggle reopens), maximize covering the content (Esc restores)
+ *  - collapse hides the panel entirely (the top-row bubble icon reopens)
+ *    and maximize covers the content (Esc restores)
  *  - full persistence (position / sizes / float rect / maximized) per app key
  *
  * The panel stays a single stable DOM subtree for every layout — switching
@@ -48,7 +48,7 @@ export interface DockLayoutState {
 }
 
 export interface DockLabels {
-  /** panel name — bottom rail text and resizer aria-label */
+  /** panel name — resizer aria-label */
   panelTitle: string
   layoutMenu: string
   dockLeft: string
@@ -58,7 +58,6 @@ export interface DockLabels {
   maximize: string
   restore: string
   collapse: string
-  expand: string
 }
 
 export interface DockChrome {
@@ -84,8 +83,6 @@ export interface DockShellProps {
   onOpenChange: (open: boolean) => void
   /** the panel body; receives the chrome to place in its header */
   renderPanel: (chrome: DockChrome) => React.ReactNode
-  /** icon for the collapsed rail (the app's own mark, keeps branding) */
-  railIcon: React.ReactNode
   labels: DockLabels
   /** false hides every trace of the panel (no document open) */
   panelAvailable?: boolean
@@ -337,7 +334,6 @@ export function DockShell({
   open,
   onOpenChange,
   renderPanel,
-  railIcon,
   labels,
   panelAvailable = true,
   onStateChange,
@@ -685,24 +681,9 @@ export function DockShell({
   }
 
   const showPanel = panelAvailable
-  const showRail = panelAvailable && !open && position !== 'float'
 
   return (
     <div ref={rootRef} className={rootClass} style={rootStyle}>
-      {showRail && (
-        <button
-          type="button"
-          className="dockshell-rail"
-          data-tip={labels.expand}
-          aria-label={labels.expand}
-          onClick={() => onOpenChange(true)}
-        >
-          {railIcon}
-          {position === 'bottom' && (
-            <span className="dockshell-rail-title">{labels.panelTitle}</span>
-          )}
-        </button>
-      )}
       {showPanel && (
         <div ref={panelRef} className="dockshell-panel">
           {renderPanel(chrome)}

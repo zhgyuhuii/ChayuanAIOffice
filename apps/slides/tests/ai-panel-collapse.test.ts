@@ -1,6 +1,7 @@
 // Slides: the AI panel stays mounted while collapsed (DockShell hides the slot
-// and shows its own rail), so the conversation, draft, and in-flight runs
-// survive collapse/expand — and also layout switches (left/right/bottom/float).
+// entirely — the top-row bubble icon reopens), so the conversation, draft, and
+// in-flight runs survive collapse/expand — and also layout switches
+// (left/right/bottom/float).
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -46,7 +47,6 @@ const LABELS = {
   maximize: 'Maximize',
   restore: 'Restore',
   collapse: 'Collapse',
-  expand: 'Expand',
 }
 
 function mount(element: React.ReactElement): {
@@ -74,7 +74,6 @@ function shellProps(overrides: Record<string, unknown> = {}) {
     storageKey: 'test-dock-slides',
     open,
     onOpenChange: () => {},
-    railIcon: createElement('span'),
     labels: LABELS,
     renderPanel: (chrome: DockChrome) =>
       createElement(AiPanel, {
@@ -124,10 +123,10 @@ describe('AiPanel collapse (slides)', () => {
     typeInto(textarea!, 'unsent draft')
     expect(textarea!.value).toBe('unsent draft')
 
-    // collapse: the panel slot is hidden (CSS) but stays mounted; rail appears
+    // collapse: the panel slot is hidden (CSS) but stays mounted
     act(() => root.render(createElement(DockShell, shellProps({ open: false }))))
     expect(container.querySelector('.dockshell')?.classList.contains('is-closed')).toBe(true)
-    expect(container.querySelector('.dockshell-rail')).not.toBeNull()
+    expect(container.querySelector('.dockshell-rail')).toBeNull()
     expect(container.querySelector('.ai-input-box textarea')).not.toBeNull()
 
     // expand: the draft is still there
@@ -135,20 +134,6 @@ describe('AiPanel collapse (slides)', () => {
     const restored = container.querySelector<HTMLTextAreaElement>('.ai-input-box textarea')
     expect(restored).not.toBeNull()
     expect(restored!.value).toBe('unsent draft')
-
-    cleanup()
-  })
-
-  it('expands back through the rail button', () => {
-    const onOpenChange = vi.fn()
-    const { container, cleanup } = mount(
-      createElement(DockShell, shellProps({ open: false, onOpenChange })),
-    )
-
-    const rail = container.querySelector<HTMLButtonElement>('.dockshell-rail')
-    expect(rail).not.toBeNull()
-    act(() => rail!.click())
-    expect(onOpenChange).toHaveBeenCalledWith(true)
 
     cleanup()
   })

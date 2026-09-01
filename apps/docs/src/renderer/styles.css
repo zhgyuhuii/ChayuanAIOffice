@@ -5680,8 +5680,6 @@ body.docs-crop-active
   color: var(--color-text-primary);
 }
 
-/* collapsed rail is owned by the DockShell (.dockshell-rail) */
-
 .ai-chat {
   flex: 1;
   overflow-y: auto;
@@ -8360,7 +8358,6 @@ body.docs-crop-active
   .ribbon,
   .status-bar,
   .dockshell-panel,
-  .dockshell-rail,
   .nav-pane,
   .ruler,
   .find-panel {
@@ -8566,7 +8563,6 @@ body.docs-crop-active
 
 .read-mode .ribbon,
 .read-mode .dockshell-panel,
-.read-mode .dockshell-rail,
 .read-mode .nav-pane,
 .read-mode .find-panel,
 .read-mode .comments-pane,

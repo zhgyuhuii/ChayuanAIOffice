@@ -25,6 +25,13 @@ export {
   type DockRect,
   type DockShellProps,
 } from './DockShell'
+export {
+  PanelTabs,
+  usePanelTab,
+  type PanelTabItem,
+  type PanelTabsProps,
+} from './PanelTabs'
+export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
 export { isSymbolFontFamily } from './symbol-fonts'

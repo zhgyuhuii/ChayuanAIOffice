@@ -20,7 +20,7 @@ import { ToastHost } from './components/toast'
 import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
-import { AiPanel, GensparkMark, type AiPreset, type MarkdownAiDeps } from './ai/AiPanel'
+import { AiPanel, type AiPreset, type MarkdownAiDeps } from './ai/AiPanel'
 import { DockShell } from '@genoffice/ui'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type EditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/aiQueueAnchors'
@@ -614,7 +614,6 @@ export default function App() {
         open={aiOpen}
         onOpenChange={setAiOpen}
         panelAvailable={status === 'ready'}
-        railIcon={<GensparkMark size={22} />}
         labels={{
           panelTitle: 'Genspark',
           layoutMenu: t('aiDockLayoutTitle'),
@@ -625,7 +624,6 @@ export default function App() {
           maximize: t('aiDockMaximize'),
           restore: t('aiDockRestore'),
           collapse: t('aiCollapsePanel'),
-          expand: t('aiOpenAssistant'),
         }}
         renderPanel={(dockChrome) => (
           <AiPanel
