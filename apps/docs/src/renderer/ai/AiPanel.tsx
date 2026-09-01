@@ -24,6 +24,7 @@ import { createElectronTransport } from './transport'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
 import { Markdown } from '@genoffice/ui'
 import { AiComposer, AiTypingIndicator } from '@genoffice/ui'
+import type { DockChrome } from '@genoffice/ui'
 import { GensparkMark } from '../components/icons'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
@@ -38,7 +39,7 @@ import fileVideoIcon from '../assets/file-video.png'
 import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
-import { IconNewChat, IconSidebarCollapse } from '../components/icons'
+import { IconNewChat } from '../components/icons'
 
 interface ToolActivity {
   name: string
@@ -95,30 +96,6 @@ const EDIT_STARTER_PROMPTS: StringKey[] = [
   'aiStarterContinue',
   'aiStarterFillTemplate',
 ]
-
-/** resizable panel width: persisted, clamped so neither pane collapses */
-const PANEL_WIDTH_KEY = 'docs-ai-panel-width'
-const PANEL_WIDTH_DEFAULT = 360
-const PANEL_WIDTH_MIN = 280
-
-function maxPanelWidth(): number {
-  // The viewport can be transiently tiny (a WebContentsView is 0×0 until the
-  // shell lays it out), so never let the ceiling drop below the minimum
-  return Math.max(PANEL_WIDTH_MIN, Math.min(720, Math.round(window.innerWidth * 0.6)))
-}
-
-function clampPanelWidth(w: number): number {
-  return Math.min(Math.max(w, PANEL_WIDTH_MIN), maxPanelWidth())
-}
-
-function loadPanelWidth(): number {
-  const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-  // static bounds only — clamping against the window here would bake a
-  // transiently small viewport into the restored preference
-  return Number.isFinite(saved) && saved > 0
-    ? Math.min(Math.max(saved, PANEL_WIDTH_MIN), 720)
-    : PANEL_WIDTH_DEFAULT
-}
 
 /** persisted UI preference: highlight AI edits in yellow and ask for confirmation */
 const TRACK_CHANGES_KEY = 'ai-docs-track-changes'
@@ -262,12 +239,10 @@ interface AiPanelProps {
   numIdFallback?: NumIds | null
   /** preset instruction pushed from the ribbon or start screen; autoRun sends it immediately */
   preset?: { text: string; nonce: number; autoRun?: boolean } | null
-  /** false shows only the collapsed rail; the component stays mounted so panel state survives */
+  /** kept in sync with DockShell's open state; effects use it to catch up after re-expand */
   open?: boolean
-  /** expand from the collapsed rail */
-  onExpand?: () => void
-  /** collapse the panel to the sidebar rail */
-  onCollapse?: () => void
+  /** chrome injected by the DockShell: header buttons + header drag behavior */
+  dockChrome?: DockChrome
   /** Absolute path of the currently open file (used for chat-history persistence) */
   filePath?: string | null
   /** queued selection-scoped edits (owned by App, which also owns the anchors) */
@@ -293,8 +268,7 @@ export function AiPanel({
   numIdFallback,
   preset,
   open = true,
-  onExpand,
-  onCollapse,
+  dockChrome,
   filePath,
   editQueue = [],
   onQueueEditInstruction,
@@ -370,29 +344,6 @@ export function AiPanel({
     attachScrollFadeRef.current = window.setTimeout(() => el.classList.remove('is-scrolling'), 800)
   }
   const [dragOver, setDragOver] = useState(false)
-  // preferred = the user's chosen width (the only value persisted); panelWidth =
-  // what fits the current window. Deriving the display width from the preference
-  // means a transiently small window never permanently shrinks the panel.
-  const preferredWidthRef = useRef(loadPanelWidth())
-  const [panelWidth, setPanelWidth] = useState(() => clampPanelWidth(preferredWidthRef.current))
-  const [resizing, setResizing] = useState(false)
-  const asideRef = useRef<HTMLElement>(null)
-
-  // The .ai-dock wrapper owns the animated width (Excel-parity 180ms slide);
-  // it tracks the resizable panel width through this variable
-  // `open` dep: the aside ref only exists while expanded
-  useEffect(() => {
-    const dock = asideRef.current?.closest('.ai-dock') as HTMLElement | null
-    dock?.style.setProperty('--ai-panel-width', `${panelWidth}px`)
-  }, [panelWidth, open])
-
-  // Re-derive the display width on window resize (max is 60% of the window);
-  // growing the window back restores the preferred width
-  useEffect(() => {
-    const onResize = () => setPanelWidth(clampPanelWidth(preferredWidthRef.current))
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
   // bumped on selection/doc changes so the scope hint & quick actions stay fresh
   const [, setScopeTick] = useState(0)
   /** the scope chip's expandable preview of the selected text */
@@ -940,63 +891,12 @@ export function AiPanel({
     )
   }
 
-  const resizeCleanupRef = useRef<(() => void) | null>(null)
-  useEffect(() => () => resizeCleanupRef.current?.(), [])
-
-  /** drag the panel's right edge to resize; panel is flush with the window's left edge */
-  const startResize = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    const resizer = e.currentTarget
-    setResizing(true)
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-    const onMove = (ev: PointerEvent) => {
-      const w = clampPanelWidth(ev.clientX)
-      preferredWidthRef.current = w
-      setPanelWidth(w)
-    }
-    let done = false
-    const cleanup = () => {
-      if (done) return
-      done = true
-      resizeCleanupRef.current = null
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', cleanup)
-      window.removeEventListener('pointercancel', cleanup)
-      resizer.removeEventListener('lostpointercapture', cleanup)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setResizing(false)
-      localStorage.setItem(PANEL_WIDTH_KEY, String(Math.round(preferredWidthRef.current)))
-    }
-    resizeCleanupRef.current = cleanup
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', cleanup)
-    window.addEventListener('pointercancel', cleanup)
-    // lostpointercapture also fires if the resizer is unmounted mid-drag (panel collapse)
-    resizer.addEventListener('lostpointercapture', cleanup)
-    resizer.setPointerCapture(e.pointerId)
-  }
-
-  // collapsed: rail only — after all hooks, so the instance and its state survive
-  if (!open) {
-    return (
-      <button
-        className="ai-rail"
-        data-tip={t('appExpandAiPanel')}
-        aria-label={t('appExpandAiPanel')}
-        onClick={onExpand}
-      >
-        <GensparkMark size={22} />
-      </button>
-    )
-  }
+  // collapsed: the DockShell hides this subtree and shows its own rail — the
+  // component stays mounted so chat state and in-flight runs survive
 
   return (
     <aside
-      ref={asideRef}
-      style={{ width: '100%' }}
-      className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}${resizing ? ' ai-panel-resizing' : ''}`}
+      className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}`}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('Files')) {
           e.preventDefault()
@@ -1009,14 +909,7 @@ export function AiPanel({
       }}
       onDrop={onDrop}
     >
-      <div
-        className="ai-panel-resizer"
-        onPointerDown={startResize}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label={t('aiPanelTitle')}
-      />
-      <div className="ai-panel-header">
+      <div className="ai-panel-header" {...dockChrome?.dragProps}>
         <span className="ai-panel-title">
           <GensparkMark size={22} />
           {t('aiPanelTitle')}
@@ -1032,16 +925,7 @@ export function AiPanel({
               <IconNewChat size={16} />
             </button>
           )}
-          {onCollapse && (
-            <button
-              className="ai-header-btn"
-              onClick={onCollapse}
-              data-tip={t('aiCollapseTitle')}
-              aria-label={t('aiCollapseTitle')}
-            >
-              <IconSidebarCollapse size={15} />
-            </button>
-          )}
+          {dockChrome?.buttons}
         </div>
       </div>
 

@@ -2994,7 +2994,9 @@ th.cell-rev-del {
   /* padding (not margin) keeps the band behind the ruler while stuck */
   padding-bottom: 4px;
   background: var(--canvas);
-  box-shadow: 100vw 0 0 0 var(--canvas), -100vw 0 0 0 var(--canvas);
+  box-shadow:
+    100vw 0 0 0 var(--canvas),
+    -100vw 0 0 0 var(--canvas);
 }
 
 .ruler-row > .ruler {
@@ -5620,34 +5622,16 @@ body.docs-crop-active
 
 .ai-panel {
   position: relative;
-  width: 360px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-page);
-  /* Same visible divider as the GenOffice Sheets panel: the editor canvas is gray, so the default border would drown */
-  border-right: 1px solid var(--color-border-strong);
   font-family: var(--gs-font-sans);
   color: var(--color-text-primary);
 }
 
-/* drag handle on the panel's right edge — resize the panel horizontally */
-.ai-panel-resizer {
-  position: absolute;
-  right: -3px;
-  top: 0;
-  bottom: 0;
-  width: 7px;
-  cursor: col-resize;
-  z-index: 20;
-  background: transparent;
-}
-
-/* while dragging: keep the col-resize cursor everywhere, no text selection */
-.ai-panel-resizing {
-  cursor: col-resize;
-  user-select: none;
-}
+/* drag handle / divider between panel and editor is owned by the DockShell
+   (.dockshell-resizer in @genoffice/ui dock.css) */
 
 .ai-panel-header {
   display: flex;
@@ -5696,32 +5680,7 @@ body.docs-crop-active
   color: var(--color-text-primary);
 }
 
-/* collapsed AI sidebar: thin rail on the left edge */
-.ai-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 34px;
-  padding: 12px 2px;
-  border: none;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.ai-rail:hover {
-  background: var(--hover);
-}
-
-.ai-rail-text {
-  writing-mode: vertical-rl;
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: var(--text-dim);
-}
+/* collapsed rail is owned by the DockShell (.dockshell-rail) */
 
 .ai-chat {
   flex: 1;
@@ -8400,7 +8359,8 @@ body.docs-crop-active
 
   .ribbon,
   .status-bar,
-  .ai-dock,
+  .dockshell-panel,
+  .dockshell-rail,
   .nav-pane,
   .ruler,
   .find-panel {
@@ -8605,7 +8565,8 @@ body.docs-crop-active
 /* ---- Read mode: chrome hidden, document only, Esc to exit ---- */
 
 .read-mode .ribbon,
-.read-mode .ai-dock,
+.read-mode .dockshell-panel,
+.read-mode .dockshell-rail,
 .read-mode .nav-pane,
 .read-mode .find-panel,
 .read-mode .comments-pane,
@@ -10007,38 +9968,8 @@ tr > .page-gap-cut {
   box-sizing: border-box;
 }
 
-/* Sliding AI dock: one persistent wrapper animates between the panel width and
- * the 34px collapsed rail (Excel-parity 180ms ease); --ai-panel-width tracks
- * the panel's drag-resizer */
-.ai-dock {
-  display: flex;
-  flex-shrink: 0;
-  min-height: 0;
-  width: var(--ai-panel-width, 360px);
-  overflow: hidden;
-  transition: width 180ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-dock.collapsed {
-  width: 34px;
-}
-
-/* while dragging the resizer, follow the pointer without easing */
-.ai-dock:has(.ai-panel-resizing) {
-  transition: none;
-}
-
-/* the rail stretches to fill the dock while the width animates */
-.ai-dock .ai-rail {
-  flex: 1;
-  width: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-dock {
-    transition: none;
-  }
-}
+/* The AI dock is the shared DockShell (@genoffice/ui dock.css): it owns the
+   panel slot's geometry/animation, the collapsed rail and the divider. */
 
 .ai-login-btn {
   margin-top: 8px;

@@ -1,9 +1,11 @@
-// The AI panel stays mounted while collapsed (rail only),
-// so the conversation, draft, and in-flight runs survive collapse/expand.
+// The AI panel stays mounted while collapsed (DockShell hides the slot and
+// shows its own rail), so the conversation, draft, and in-flight runs survive
+// collapse/expand — and also layout switches (left/right/bottom/float).
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { Editor } from '@tiptap/core'
+import { DockShell, type DockChrome } from '@genoffice/ui'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
 import { AI_PROVIDERS, type AiSettings } from '../src/shared/ipc'
@@ -13,6 +15,19 @@ const settings: AiSettings = {
   providers: Object.fromEntries(
     AI_PROVIDERS.map((p) => [p.id, { apiKey: '', model: p.defaultModel }]),
   ) as AiSettings['providers'],
+}
+
+const LABELS = {
+  panelTitle: 'Genspark',
+  layoutMenu: 'Panel layout',
+  dockLeft: 'Dock left',
+  dockRight: 'Dock right',
+  dockBottom: 'Dock bottom',
+  float: 'Floating',
+  maximize: 'Maximize',
+  restore: 'Restore',
+  collapse: 'Collapse',
+  expand: 'Expand',
 }
 
 function createEditor(): Editor {
@@ -51,14 +66,23 @@ function mount(element: React.ReactElement): {
   }
 }
 
-function panelProps(editor: Editor, overrides: Record<string, unknown> = {}) {
+function shellProps(editor: Editor, overrides: Record<string, unknown> = {}) {
+  const open = (overrides.open as boolean | undefined) ?? true
   return {
-    editor,
-    blocks: [],
-    settings,
-    open: true,
-    onExpand: () => {},
-    onCollapse: () => {},
+    storageKey: 'test-dock',
+    open,
+    onOpenChange: () => {},
+    railIcon: createElement('span'),
+    labels: LABELS,
+    renderPanel: (chrome: DockChrome) =>
+      createElement(AiPanel, {
+        editor,
+        blocks: [],
+        settings,
+        open,
+        dockChrome: chrome,
+      }),
+    children: createElement('div', { className: 'editor-stub' }),
     ...overrides,
   }
 }
@@ -73,27 +97,35 @@ function typeInto(textarea: HTMLTextAreaElement, text: string) {
 }
 
 beforeAll(() => {
-  // jsdom has no scrollTo; the panel auto-scrolls its chat log
+  // jsdom has no scrollTo / ResizeObserver; the panel auto-scrolls its chat
+  // log and the shell measures itself
   Element.prototype.scrollTo ??= () => {}
+  globalThis.ResizeObserver ??= class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver
+  localStorage.clear()
 })
 
 describe('AiPanel collapse', () => {
   it('keeps the draft input across a collapse/expand cycle', () => {
     const editor = createEditor()
-    const { container, root, cleanup } = mount(createElement(AiPanel, panelProps(editor)))
+    const { container, root, cleanup } = mount(createElement(DockShell, shellProps(editor)))
 
     const textarea = container.querySelector<HTMLTextAreaElement>('.ai-input-box textarea')
     expect(textarea).not.toBeNull()
     typeInto(textarea!, 'unsent draft')
     expect(textarea!.value).toBe('unsent draft')
 
-    // collapse: only the rail is rendered, but the component stays mounted
-    act(() => root.render(createElement(AiPanel, panelProps(editor, { open: false }))))
-    expect(container.querySelector('.ai-input-box textarea')).toBeNull()
-    expect(container.querySelector('.ai-rail')).not.toBeNull()
+    // collapse: the panel slot is hidden (CSS) but stays mounted; rail appears
+    act(() => root.render(createElement(DockShell, shellProps(editor, { open: false }))))
+    expect(container.querySelector('.dockshell')?.classList.contains('is-closed')).toBe(true)
+    expect(container.querySelector('.dockshell-rail')).not.toBeNull()
+    expect(container.querySelector('.ai-input-box textarea')).not.toBeNull()
 
     // expand: the draft is still there
-    act(() => root.render(createElement(AiPanel, panelProps(editor, { open: true }))))
+    act(() => root.render(createElement(DockShell, shellProps(editor))))
     const restored = container.querySelector<HTMLTextAreaElement>('.ai-input-box textarea')
     expect(restored).not.toBeNull()
     expect(restored!.value).toBe('unsent draft')
@@ -104,15 +136,15 @@ describe('AiPanel collapse', () => {
 
   it('expands back through the rail button', () => {
     const editor = createEditor()
-    const onExpand = vi.fn()
+    const onOpenChange = vi.fn()
     const { container, cleanup } = mount(
-      createElement(AiPanel, panelProps(editor, { open: false, onExpand })),
+      createElement(DockShell, shellProps(editor, { open: false, onOpenChange })),
     )
 
-    const rail = container.querySelector<HTMLButtonElement>('.ai-rail')
+    const rail = container.querySelector<HTMLButtonElement>('.dockshell-rail')
     expect(rail).not.toBeNull()
     act(() => rail!.click())
-    expect(onExpand).toHaveBeenCalledTimes(1)
+    expect(onOpenChange).toHaveBeenCalledWith(true)
 
     cleanup()
     editor.destroy()

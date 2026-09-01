@@ -847,94 +847,16 @@ html.genoffice-popover-open .ribbon-tabs {
 }
 /* ── AI sidebar (aligned with docs/sheets panel language) ── */
 
-/* dock wrapper: its width animates between the panel and the 34px collapsed rail
- * (docs-parity 180ms ease); the panel inside keeps its natural width and is clipped */
-.ai-dock {
-  display: flex;
-  flex-shrink: 0;
-  min-height: 0;
-  width: var(--ai-panel-width, 360px);
-  overflow: hidden;
-  transition: width 180ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-dock.collapsed {
-  width: 34px;
-}
-
-/* while dragging the resizer, follow the pointer without easing */
-.ai-dock:has(.ai-panel-resizing) {
-  transition: none;
-}
-
-/* the panel stays mounted (chat history survives) but hidden while collapsed */
-.ai-dock.collapsed .copilot {
-  display: none;
-}
-
-/* the rail stretches to fill the dock while the width animates */
-.ai-dock .ai-rail {
-  flex: 1;
-  width: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-dock {
-    transition: none;
-  }
-}
-
-/* collapsed AI sidebar: thin rail on the left edge (same as docs) */
-.ai-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 34px;
-  padding: 12px 2px;
-  border: none;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.ai-rail:hover {
-  background: var(--hover);
-}
-
 .copilot {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 360px;
-  flex-shrink: 0;
+  flex: 1;
   min-height: 0;
   overflow: hidden;
-  /* same visible divider as the docs panel: strong border so it doesn't drown */
-  border-right: 1px solid var(--color-border-strong);
   background: var(--color-bg-page);
   font-family: var(--gs-font-sans);
   color: var(--color-text-primary);
-}
-
-/* drag handle on the panel's right edge — resize the panel horizontally */
-.ai-panel-resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: col-resize;
-  z-index: 20;
-  background: transparent;
-}
-
-/* while dragging: keep the col-resize cursor everywhere, no text selection */
-.ai-panel-resizing {
-  cursor: col-resize;
-  user-select: none;
 }
 
 .ai-panel-header {

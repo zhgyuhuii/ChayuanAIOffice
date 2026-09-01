@@ -85,6 +85,7 @@ import { AnimPreviewOverlay } from './components/AnimatedSlide'
 import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/InsertDialogs'
 import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@genoffice/ui'
+import { DockShell, type DockLayoutState } from '@genoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { GensparkMark, IconAiBeautify, IconAiFactCheck, IconAiImage } from './components/icons'
 import { ToastHost } from './components/toast'
@@ -593,23 +594,39 @@ export function App() {
     if (ok) setDirty(true)
   }, [])
 
+  /** Live dock layout (drives the pre-measure fallback in rawFit below) */
+  const [aiDock, setAiDock] = useState<DockLayoutState | null>(null)
+
   // Uncapped proportional fit ratio from the stage container's measured size
   // (fall back to a window estimate before mount)
   const rawFit = useCallback(
     (s?: RenderSlide) => {
       if (!s) return 1
       const el = stageWrapRef.current
+      // docked left/right reserves sideWidth (34px rail when collapsed);
+      // bottom reserves bottomHeight; float/max overlay the stage
+      const sideReserve =
+        aiDock && (aiDock.position === 'left' || aiDock.position === 'right')
+          ? showAi
+            ? aiDock.sideWidth
+            : 34
+          : showAi && !aiDock
+            ? 360
+            : 0
+      const bottomReserve =
+        aiDock && aiDock.position === 'bottom' && showAi ? aiDock.bottomHeight : 0
       const viewportW =
         el?.clientWidth ||
         stageViewportSize.w ||
-        window.innerWidth - (showThumbs ? thumbsW : 0) - (showAi ? 360 : 34)
-      const viewportH = el?.clientHeight || stageViewportSize.h || window.innerHeight - 150
+        window.innerWidth - (showThumbs ? thumbsW : 0) - sideReserve
+      const viewportH =
+        el?.clientHeight || stageViewportSize.h || window.innerHeight - 150 - bottomReserve
       const availW = viewportW - 56
       // -72: vertical padding is 48 (AI-bar headroom) + 32, minus the same 8px slack as width
       const availH = viewportH - 72
       return Math.min(availW / s.widthPx, availH / s.heightPx)
     },
-    [showThumbs, showAi, stageViewportSize.h, stageViewportSize.w, thumbsW],
+    [aiDock, showThumbs, showAi, stageViewportSize.h, stageViewportSize.w, thumbsW],
   )
   /** Fit zoom for display: rawFit clamped to the 0.1–1.5 auto-fit range */
   const fitZoom = useCallback(
@@ -1140,6 +1157,12 @@ export function App() {
       localStorage.setItem('ai-slides-show-ai', v ? '0' : '1')
       return !v
     })
+  }, [])
+
+  /** DockShell open/close sink (rail expand, collapse button) — persists like toggleAi */
+  const setAiOpen = useCallback((open: boolean) => {
+    localStorage.setItem('ai-slides-show-ai', open ? '1' : '0')
+    setShowAi(open)
   }, [])
 
   const pushAiPreset = useCallback(
@@ -3118,68 +3141,76 @@ export function App() {
         canDistribute={selectedIds.length >= 3}
       />
 
-      <div className="app-main">
-        {slide && viewMode !== 'reading' && viewMode !== 'sorter' && (
-          <div className={`ai-dock${showAi && aiSettings ? '' : ' collapsed'}`}>
-            {/* always mounted once settings load: collapse must not drop state or in-flight runs */}
-            {aiSettings ? (
-              <AiPanel
-                key={aiPanelKey}
-                slides={slides}
-                current={current}
-                selectedIds={selectedIds}
-                deckEmpty={deckEmpty}
-                images={images}
-                applySlide={applySlide}
-                applyDeck={applyDeck}
-                fitWidthPx={FIT_WIDTH}
-                settings={aiSettings}
-                preset={aiPreset}
-                open={showAi}
-                onExpand={toggleAi}
-                onCollapse={toggleAi}
-                onUndo={() => void undo()}
-                onPathChange={(p) => {
-                  setPath(p)
-                  setDirty(false)
-                }}
-                onSetSpeakerNotes={(i, text) =>
-                  flushNotes()
-                    .then(() => window.slidesApi.setNotes({ slideIndex: i, text }))
-                    .then((ok) => {
-                      if (ok) {
-                        setDirty(true)
-                        setAnnotationsNonce((n) => n + 1)
-                      }
-                      return ok
-                    })
-                }
-                currentFilePath={path}
-                editQueue={editQueue}
-                onQueueEditInstruction={(key, instruction) =>
-                  setEditQueue((prev) =>
-                    prev.map((it) => (it.key === key ? { ...it, instruction } : it)),
-                  )
-                }
-                onQueueRemove={(key) => setEditQueue((prev) => prev.filter((it) => it.key !== key))}
-                onQueueClear={() => setEditQueue([])}
-                onQueueFocus={focusQueueItem}
-                onQueueConsume={(keys) =>
-                  setEditQueue((prev) => prev.filter((it) => !keys.includes(it.key)))
-                }
-              />
-            ) : (
-              <button
-                className="ai-rail"
-                onClick={toggleAi}
-                data-tip={t('appAiRailExpand')}
-                aria-label={t('appAiRailExpand')}
-              >
-                <GensparkMark size={22} />
-              </button>
-            )}
-          </div>
-        )}
+      <DockShell
+        className="app-main"
+        storageKey="aislides.dock"
+        open={showAi && !!aiSettings}
+        onOpenChange={setAiOpen}
+        panelAvailable={!!slide && viewMode !== 'reading' && viewMode !== 'sorter'}
+        onStateChange={setAiDock}
+        railIcon={<GensparkMark size={22} />}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapsePanel'),
+          expand: t('appAiRailExpand'),
+        }}
+        renderPanel={(dockChrome) =>
+          /* always mounted once settings load: collapse must not drop state or in-flight runs */
+          aiSettings ? (
+            <AiPanel
+              key={aiPanelKey}
+              slides={slides}
+              current={current}
+              selectedIds={selectedIds}
+              deckEmpty={deckEmpty}
+              images={images}
+              applySlide={applySlide}
+              applyDeck={applyDeck}
+              fitWidthPx={FIT_WIDTH}
+              settings={aiSettings}
+              preset={aiPreset}
+              open={showAi}
+              dockChrome={dockChrome}
+              onUndo={() => void undo()}
+              onPathChange={(p) => {
+                setPath(p)
+                setDirty(false)
+              }}
+              onSetSpeakerNotes={(i, text) =>
+                flushNotes()
+                  .then(() => window.slidesApi.setNotes({ slideIndex: i, text }))
+                  .then((ok) => {
+                    if (ok) {
+                      setDirty(true)
+                      setAnnotationsNonce((n) => n + 1)
+                    }
+                    return ok
+                  })
+              }
+              currentFilePath={path}
+              editQueue={editQueue}
+              onQueueEditInstruction={(key, instruction) =>
+                setEditQueue((prev) =>
+                  prev.map((it) => (it.key === key ? { ...it, instruction } : it)),
+                )
+              }
+              onQueueRemove={(key) => setEditQueue((prev) => prev.filter((it) => it.key !== key))}
+              onQueueClear={() => setEditQueue([])}
+              onQueueFocus={focusQueueItem}
+              onQueueConsume={(keys) =>
+                setEditQueue((prev) => prev.filter((it) => !keys.includes(it.key)))
+              }
+            />
+          ) : null
+        }
+      >
         <div className="app-content">
           {missingFonts.length > 0 && (
             <div className="font-missing-banner">
@@ -3983,7 +4014,7 @@ export function App() {
             </div>
           </footer>
         </div>
-      </div>
+      </DockShell>
 
       {masterItems && (
         <MasterView

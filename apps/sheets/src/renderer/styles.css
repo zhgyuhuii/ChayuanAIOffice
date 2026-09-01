@@ -1535,17 +1535,15 @@ button.check-item:hover {
   opacity: 0.45;
 }
 
-/* AI panel on the left, spanning from the ribbon to the status bar (unified with docs);
- * its column is drag-resizable: driven by --copilot-width (updated by the AiChatPanel resizer) */
+/* DockShell root: the AI panel docks around the sheet in any of 4 layouts */
 .sheet-body {
-  display: grid;
-  grid-template-columns: var(--copilot-width, 360px) minmax(0, 1fr);
+  flex: 1;
   min-height: 0;
-  transition: grid-template-columns 180ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* formula-bar row + spreadsheet */
 .sheet-main {
+  flex: 1;
   display: grid;
   /* name box / workbook / status bar */
   grid-template-rows: auto minmax(0, 1fr) auto;
@@ -1620,10 +1618,6 @@ button.check-item:hover {
 .zoom-value {
   min-width: 38px;
   text-align: right;
-}
-
-.app-shell.copilot-collapsed .sheet-body {
-  grid-template-columns: 34px minmax(0, 1fr);
 }
 
 .spreadsheet {
@@ -1761,62 +1755,9 @@ button.check-item:hover {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border-right: 1px solid var(--color-border-default);
   background: var(--color-bg-page);
-  box-shadow: var(--sheets-shadow-copilot);
   font-family: var(--gs-font-sans);
   color: var(--color-text-primary);
-}
-
-/* Collapsed rail: identical to the slides .ai-rail — plain white strip,
- * hairline right border, no float shadow */
-.copilot.collapsed {
-  align-items: stretch;
-  background: var(--color-bg-page);
-  box-shadow: none;
-}
-
-/* drag handle on the panel's right edge — resize the panel horizontally
- * (.copilot is overflow: hidden, so the handle must sit fully inside the panel) */
-.ai-panel-resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: col-resize;
-  z-index: 20;
-  background: transparent;
-}
-
-/* while dragging: keep the col-resize cursor everywhere, no text selection */
-.ai-panel-resizing {
-  cursor: col-resize;
-  user-select: none;
-}
-
-.expand-copilot {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 2px;
-  border: none;
-  background: none;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.expand-copilot:hover {
-  background: var(--hover);
-}
-
-.expand-copilot span {
-  writing-mode: vertical-rl;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
 }
 
 .ai-panel-header {

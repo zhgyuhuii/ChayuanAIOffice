@@ -52,7 +52,8 @@ import fileVideoIcon from '../assets/file-video.png'
 import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
-import { IconNewChat, IconSidebarCollapseLeft } from '../components/icons'
+import { IconNewChat } from '../components/icons'
+import type { DockChrome } from '@genoffice/ui'
 
 interface ToolActivity {
   name: string
@@ -285,11 +286,10 @@ interface AiPanelProps {
     attachments?: AttachmentMeta[]
     slideShot?: boolean
   } | null
-  /** false shows only the collapsed rail; the component stays mounted so panel state survives */
+  /** false while collapsed; the component stays mounted so panel state survives */
   open?: boolean
-  /** expand from the collapsed rail */
-  onExpand?: () => void
-  onCollapse?: () => void
+  /** shared DockShell header chrome (drag-to-dock + layout buttons) */
+  dockChrome?: DockChrome
   /** Visible rollback action; uses the same main-process history as Cmd/Ctrl+Z. */
   onUndo?: () => void
   /** Callback to update the path after AI generation lands on disk (title bar sync) */
@@ -354,22 +354,6 @@ function AiTypingIndicator({ label }: { readonly label: string }) {
   )
 }
 
-/** Resizable panel width: always opens at the default (drag-resize lasts for
- * the session only); min/max match the Excel panel */
-const PANEL_WIDTH_DEFAULT = 360
-const PANEL_WIDTH_MIN = 280
-
-// A persisted width used to be restored here; drop the stale key so old
-// (possibly bug-shrunken) values never come back
-localStorage.removeItem('slides-ai-panel-width')
-
-function clampPanelWidth(w: number): number {
-  // The viewport can be transiently tiny (a WebContentsView is 0×0 until the
-  // shell lays it out), so never let the ceiling drop below the minimum
-  const max = Math.max(PANEL_WIDTH_MIN, Math.min(720, Math.round(window.innerWidth * 0.6)))
-  return Math.min(Math.max(w, PANEL_WIDTH_MIN), max)
-}
-
 export function AiPanel({
   slides,
   current,
@@ -382,8 +366,7 @@ export function AiPanel({
   settings,
   preset,
   open = true,
-  onExpand,
-  onCollapse,
+  dockChrome,
   onPathChange,
   onSetSpeakerNotes,
   onDeckProgress,
@@ -455,29 +438,6 @@ export function AiPanel({
     attachScrollFadeRef.current = window.setTimeout(() => el.classList.remove('is-scrolling'), 800)
   }
   const [dragOver, setDragOver] = useState(false)
-  // preferred = the user's chosen width (session only); panelWidth = what fits
-  // the current window. Deriving the display width from the preference means a
-  // transiently small window never permanently shrinks the panel.
-  const preferredWidthRef = useRef(PANEL_WIDTH_DEFAULT)
-  const [panelWidth, setPanelWidth] = useState(() => clampPanelWidth(preferredWidthRef.current))
-  const asideRef = useRef<HTMLElement>(null)
-
-  // The .ai-dock wrapper owns the animated width (Excel-parity 180ms slide);
-  // it tracks the resizable panel width through this variable
-  // `open` dep: the aside ref only exists while expanded
-  useEffect(() => {
-    const dock = asideRef.current?.closest('.ai-dock') as HTMLElement | null
-    dock?.style.setProperty('--ai-panel-width', `${panelWidth}px`)
-  }, [panelWidth, open])
-  const [resizing, setResizing] = useState(false)
-
-  // Re-derive the display width on window resize (max is 60% of the window);
-  // growing the window back restores the preferred width
-  useEffect(() => {
-    const onResize = () => setPanelWidth(clampPanelWidth(preferredWidthRef.current))
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
   /* Answered clarify receipts (answered-state card): view-only record, not chat data */
   const [clarifyAnswers, setClarifyAnswers] = useState<
     Array<{ afterIdx: number; qa: Array<{ q: string; a: string }> }>
@@ -1905,62 +1865,9 @@ export function AiPanel({
   const removeAttachment = (path: string) =>
     setAttachments((prev) => prev.filter((a) => a.path !== path))
 
-  const resizeCleanupRef = useRef<(() => void) | null>(null)
-  useEffect(() => () => resizeCleanupRef.current?.(), [])
-
-  /** Drag the right edge to resize: the panel is flush with the window's left edge, so width = clientX */
-  const startResize = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    const resizer = e.currentTarget
-    setResizing(true)
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-    const onMove = (ev: PointerEvent) => {
-      const w = clampPanelWidth(ev.clientX)
-      preferredWidthRef.current = w
-      setPanelWidth(w)
-    }
-    let done = false
-    const cleanup = () => {
-      if (done) return
-      done = true
-      resizeCleanupRef.current = null
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', cleanup)
-      window.removeEventListener('pointercancel', cleanup)
-      resizer.removeEventListener('lostpointercapture', cleanup)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setResizing(false)
-    }
-    resizeCleanupRef.current = cleanup
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', cleanup)
-    window.addEventListener('pointercancel', cleanup)
-    // lostpointercapture also fires if the resizer is unmounted mid-drag (panel collapse)
-    resizer.addEventListener('lostpointercapture', cleanup)
-    resizer.setPointerCapture(e.pointerId)
-  }
-
-  // collapsed: rail only — after all hooks, so the instance and its state survive
-  if (!open) {
-    return (
-      <button
-        className="ai-rail"
-        data-tip={t('appAiRailExpand')}
-        aria-label={t('appAiRailExpand')}
-        onClick={onExpand}
-      >
-        <GensparkMark size={22} />
-      </button>
-    )
-  }
-
   return (
     <aside
-      ref={asideRef}
-      style={{ width: '100%' }}
-      className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}${resizing ? ' ai-panel-resizing' : ''}`}
+      className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}`}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('Files')) {
           e.preventDefault()
@@ -1973,14 +1880,7 @@ export function AiPanel({
       }}
       onDrop={onDrop}
     >
-      <div
-        className="ai-panel-resizer"
-        onPointerDown={startResize}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Genspark AI"
-      />
-      <div className="ai-panel-header">
+      <div className="ai-panel-header" {...dockChrome?.dragProps}>
         <span className="ai-panel-title">
           <GensparkMark size={22} />
           {t('aiPanelTitle')}
@@ -1996,16 +1896,7 @@ export function AiPanel({
               <IconNewChat size={15} />
             </button>
           )}
-          {onCollapse && (
-            <button
-              className="ai-header-btn"
-              onClick={onCollapse}
-              data-tip={t('aiCollapsePanel')}
-              aria-label={t('aiCollapsePanel')}
-            >
-              <IconSidebarCollapseLeft size={15} />
-            </button>
-          )}
+          {dockChrome?.buttons}
         </div>
       </div>
 

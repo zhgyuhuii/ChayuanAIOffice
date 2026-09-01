@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { AiComposer, AiTypingIndicator } from '@genoffice/ui'
+import type { DockChrome } from '@genoffice/ui'
 import { GensparkMark } from '../ribbon-icons'
 import type { ChangePlan } from '../../domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
@@ -157,26 +158,6 @@ function SentAttachments({
   )
 }
 
-/** Resizable panel width: persisted, clamped to min/max, drives the .sheet-body grid column via --copilot-width */
-const PANEL_WIDTH_KEY = 'sheets-ai-panel-width'
-const PANEL_WIDTH_MIN = 280
-
-function clampPanelWidth(w: number): number {
-  // The viewport can be transiently tiny (a WebContentsView is 0×0 until the
-  // shell lays it out), so never let the ceiling drop below the minimum
-  const max = Math.max(PANEL_WIDTH_MIN, Math.min(720, Math.round(window.innerWidth * 0.6)))
-  return Math.min(Math.max(w, PANEL_WIDTH_MIN), max)
-}
-
-function loadPanelWidth(): number | null {
-  const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-  // static bounds only — clamping against the window here would bake a
-  // transiently small viewport into the restored preference
-  return Number.isFinite(saved) && saved > 0
-    ? Math.min(Math.max(saved, PANEL_WIDTH_MIN), 720)
-    : null
-}
-
 export interface AiToolChip {
   readonly summary: string
   readonly isError: boolean
@@ -207,7 +188,7 @@ export interface AiChatMessage {
 }
 
 export function AiChatPanel({
-  isOpen,
+  dockChrome,
   hasContent,
   chat,
   historicChat = [],
@@ -230,10 +211,9 @@ export function AiChatPanel({
   scopeLocked,
   onScopeDismiss,
   onCitation,
-  onExpand,
-  onCollapse,
 }: {
-  readonly isOpen: boolean
+  /** shared DockShell header chrome (drag-to-dock + layout buttons) */
+  readonly dockChrome?: DockChrome
   /** the workbook has cells with content — empty workbooks get "build me a sheet" copy instead */
   readonly hasContent: boolean
   readonly chat: readonly AiChatMessage[]
@@ -276,16 +256,12 @@ export function AiChatPanel({
   readonly onScopeDismiss: () => void
   /** citation link in an answer ([B12](sheetnav://B12)) */
   readonly onCitation: (href: string) => void
-  readonly onExpand: () => void
-  readonly onCollapse: () => void
 }): React.JSX.Element {
   const { t } = useI18n()
   const chatRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const stickToBottomRef = useRef(true)
   const [dragOver, setDragOver] = useState(false)
-  const asideRef = useRef<HTMLElement | null>(null)
-  const [resizing, setResizing] = useState(false)
   /** data-URL previews for image attachments, keyed by path (Genspark composer thumbnails) */
   const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
   /** image paths with a read already issued — one readAttachmentImage per attach, even while pending */
@@ -338,35 +314,6 @@ export function AiChatPanel({
     if (aiBusy) busyStartRef.current = Date.now()
   }, [aiBusy])
 
-  // preferred = the user's chosen width (the only value persisted); the CSS var
-  // gets the clamped display width. Deriving the display width from the
-  // preference means a transiently small window never permanently shrinks the panel.
-  const preferredWidthRef = useRef<number | null>(null)
-
-  // Restore the persisted panel width (the grid column tracks --copilot-width on .sheet-body)
-  useEffect(() => {
-    if (!isOpen) return
-    const saved = loadPanelWidth()
-    if (saved === null) return
-    preferredWidthRef.current = saved
-    const area = asideRef.current?.closest('.sheet-body') as HTMLElement | null
-    area?.style.setProperty('--copilot-width', `${clampPanelWidth(saved)}px`)
-  }, [isOpen])
-
-  // Re-derive the display width on window resize (max is 60% of the window);
-  // growing the window back restores the preferred width
-  useEffect(() => {
-    if (!isOpen) return
-    const onResize = (): void => {
-      const area = asideRef.current?.closest('.sheet-body') as HTMLElement | null
-      const preferred = preferredWidthRef.current
-      if (!area || preferred === null) return
-      area.style.setProperty('--copilot-width', `${clampPanelWidth(preferred)}px`)
-    }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [isOpen])
-
   // follow the stream, but stop yanking once the user scrolls up to read
   useEffect(() => {
     if (stickToBottomRef.current) {
@@ -374,68 +321,10 @@ export function AiChatPanel({
     }
   }, [chat, preview])
 
-  const resizeCleanupRef = useRef<(() => void) | null>(null)
-  useEffect(() => () => resizeCleanupRef.current?.(), [])
-
-  /** Drag the right edge to resize: the panel is flush with the window's left edge, so width = clientX; the grid transition is disabled while dragging */
-  const startResize = (e: React.PointerEvent<HTMLDivElement>): void => {
-    e.preventDefault()
-    const area = asideRef.current?.closest('.sheet-body') as HTMLElement | null
-    if (!area) return
-    const resizer = e.currentTarget
-    setResizing(true)
-    area.style.transition = 'none'
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-    let width = 0
-    const onMove = (ev: PointerEvent): void => {
-      width = clampPanelWidth(ev.clientX)
-      preferredWidthRef.current = width
-      area.style.setProperty('--copilot-width', `${width}px`)
-    }
-    let done = false
-    const cleanup = (): void => {
-      if (done) return
-      done = true
-      resizeCleanupRef.current = null
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', cleanup)
-      window.removeEventListener('pointercancel', cleanup)
-      resizer.removeEventListener('lostpointercapture', cleanup)
-      area.style.transition = ''
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setResizing(false)
-      if (width > 0) localStorage.setItem(PANEL_WIDTH_KEY, String(Math.round(width)))
-    }
-    resizeCleanupRef.current = cleanup
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', cleanup)
-    window.addEventListener('pointercancel', cleanup)
-    // lostpointercapture also fires if the resizer is unmounted mid-drag (panel collapse)
-    resizer.addEventListener('lostpointercapture', cleanup)
-    resizer.setPointerCapture(e.pointerId)
-  }
-
   const onChatScroll = (): void => {
     const el = chatRef.current
     if (!el) return
     stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48
-  }
-
-  if (!isOpen) {
-    return (
-      <aside className="copilot collapsed">
-        <button
-          className="expand-copilot"
-          onClick={onExpand}
-          data-tip={t('aiOpenAssistant')}
-          aria-label={t('aiOpenAssistant')}
-        >
-          <GensparkMark size={22} />
-        </button>
-      </aside>
-    )
   }
 
   const canSend = prompt.trim().length > 0 && !aiBusy
@@ -477,8 +366,7 @@ export function AiChatPanel({
 
   return (
     <aside
-      ref={asideRef}
-      className={`copilot${dragOver ? ' ai-panel-dragover' : ''}${resizing ? ' ai-panel-resizing' : ''}`}
+      className={`copilot${dragOver ? ' ai-panel-dragover' : ''}`}
       onDragOver={(e) => {
         if (e.dataTransfer.types.includes('Files')) {
           e.preventDefault()
@@ -491,14 +379,7 @@ export function AiChatPanel({
       }}
       onDrop={onDrop}
     >
-      <div
-        className="ai-panel-resizer"
-        onPointerDown={startResize}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Genspark"
-      />
-      <header className="ai-panel-header">
+      <header className="ai-panel-header" {...dockChrome?.dragProps}>
         <span className="ai-panel-title">
           <GensparkMark size={22} />
           Genspark
@@ -514,14 +395,7 @@ export function AiChatPanel({
               <IconNewChat size={15} />
             </button>
           )}
-          <button
-            className="ai-header-btn"
-            onClick={onCollapse}
-            data-tip={t('aiCollapsePanel')}
-            aria-label={t('aiCollapsePanel')}
-          >
-            <IconCollapse size={15} />
-          </button>
+          {dockChrome?.buttons}
         </div>
       </header>
 
@@ -847,17 +721,6 @@ function IconNewChat({ size }: { size: number }): React.JSX.Element {
         strokeLinejoin="round"
       />
       <path d="M12.2 9.4v4M10.2 11.4h4" />
-    </Svg>
-  )
-}
-
-function IconCollapse({ size }: { size: number }): React.JSX.Element {
-  // Mirrored glyph: the AI panel docks on the LEFT, so the divider and arrow point left
-  return (
-    <Svg size={size}>
-      <rect x="1.5" y="2.5" width="13" height="11" rx="1" />
-      <path d="M5.5 2.5v11" />
-      <path d="M12.5 8H8.1M9.8 5.9 7.7 8l2.1 2.1" strokeWidth="1.3" strokeLinejoin="round" />
     </Svg>
   )
 }

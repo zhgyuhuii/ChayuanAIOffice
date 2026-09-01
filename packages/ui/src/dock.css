@@ -1,0 +1,429 @@
+/**
+ * DockShell styles — layout engine for the shared dockable AI panel.
+ *
+ * The panel slot (.dockshell-panel) is a single stable DOM child; every layout
+ * (left/right/bottom/float/maximized/collapsed) is expressed with classes on
+ * the shell root so switching never remounts the panel. Sizes flow through CSS
+ * variables: --dock-size (docked dimension) and --dock-x/y/w/h (float/tear).
+ *
+ * Colors use the shared theme tokens with fallbacks so the shell works in apps
+ * that only define a subset.
+ */
+
+.dockshell {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dockshell-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.dockshell-panel {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page, var(--surface, #fff));
+  transition:
+    width 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    height 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* live drags follow the pointer without easing */
+.dockshell.is-resizing .dockshell-panel,
+.dockshell.is-tearing .dockshell-panel {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dockshell-panel {
+    transition: none;
+  }
+}
+
+/* the app panel component fills the slot in every layout */
+.dockshell-panel > :first-child {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- docked left / right (flex row) ---- */
+
+.dockshell.pos-left .dockshell-panel {
+  order: 0;
+  width: var(--dock-size);
+  border-right: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+.dockshell.pos-left .dockshell-body {
+  order: 1;
+}
+
+.dockshell.pos-right .dockshell-body {
+  order: 0;
+}
+
+.dockshell.pos-right .dockshell-panel {
+  order: 1;
+  width: var(--dock-size);
+  border-left: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+/* ---- docked bottom (flex column, panel spans the full shell width) ---- */
+
+.dockshell.pos-bottom {
+  flex-direction: column;
+}
+
+.dockshell.pos-bottom .dockshell-body {
+  order: 0;
+}
+
+.dockshell.pos-bottom .dockshell-panel {
+  order: 1;
+  width: 100%;
+  height: var(--dock-size);
+  border-top: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+/* ---- floating ---- */
+
+.dockshell.pos-float .dockshell-panel {
+  position: absolute;
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 40;
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+}
+
+/* tearing: the ghost follows the pointer at the panel's current size */
+.dockshell.is-tearing .dockshell-panel {
+  position: absolute;
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 70;
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 24%);
+  opacity: 0.94;
+  pointer-events: none;
+}
+
+/* ---- maximized: panel covers the whole shell, content stays mounted beneath ---- */
+
+.dockshell.is-max .dockshell-panel {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: 40;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ---- collapsed: rail only (float hides entirely — the app toolbar reopens) ---- */
+
+.dockshell.is-closed .dockshell-panel {
+  display: none;
+}
+
+.dockshell-rail {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 34px;
+  flex-shrink: 0;
+  padding: 12px 2px;
+  border: none;
+  background: var(--color-bg-page, var(--surface, #fff));
+  color: var(--color-text-primary, var(--text, #242424));
+  cursor: pointer;
+}
+
+.dockshell.is-closed.pos-left .dockshell-rail,
+.dockshell.is-closed.pos-right .dockshell-rail,
+.dockshell.is-closed.pos-bottom .dockshell-rail {
+  display: flex;
+}
+
+.dockshell-rail:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.dockshell.pos-left .dockshell-rail {
+  order: 0;
+  border-right: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.dockshell.pos-right .dockshell-rail {
+  order: 1;
+  border-left: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.dockshell.pos-bottom .dockshell-rail {
+  order: 1;
+  width: 100%;
+  height: 34px;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 2px 12px;
+  gap: 10px;
+  border-top: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.dockshell-rail-title {
+  font-size: 12px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+
+/* ---- divider between panel and content (docked only) ---- */
+
+.dockshell-resizer {
+  position: absolute;
+  z-index: 45;
+  background: transparent;
+}
+
+.dockshell.pos-left .dockshell-resizer {
+  right: -3px;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+}
+
+.dockshell.pos-right .dockshell-resizer {
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+}
+
+.dockshell.pos-bottom .dockshell-resizer {
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  cursor: row-resize;
+}
+
+.dockshell.pos-float .dockshell-resizer,
+.dockshell.is-max .dockshell-resizer,
+.dockshell.is-closed .dockshell-resizer,
+.dockshell.is-tearing .dockshell-resizer {
+  display: none;
+}
+
+.dockshell.is-resizing,
+.dockshell.is-resizing * {
+  cursor: inherit;
+  user-select: none;
+}
+
+/* ---- float resize handles (edges + corners) ----
+ * shell-root children positioned from the rect vars: the float slot itself is
+ * overflow:hidden (corner radius), so handles can't live inside it */
+
+.dockshell-fh {
+  position: absolute;
+  z-index: 46;
+  display: none;
+}
+
+.dockshell.pos-float:not(.is-max):not(.is-closed) .dockshell-fh {
+  display: block;
+}
+
+.dockshell-fh-n {
+  left: calc(var(--dock-x) + 10px);
+  top: calc(var(--dock-y) - 3px);
+  width: calc(var(--dock-w) - 20px);
+  height: 8px;
+  cursor: n-resize;
+}
+
+.dockshell-fh-s {
+  left: calc(var(--dock-x) + 10px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: calc(var(--dock-w) - 20px);
+  height: 8px;
+  cursor: s-resize;
+}
+
+.dockshell-fh-e {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) + 10px);
+  width: 8px;
+  height: calc(var(--dock-h) - 20px);
+  cursor: e-resize;
+}
+
+.dockshell-fh-w {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) + 10px);
+  width: 8px;
+  height: calc(var(--dock-h) - 20px);
+  cursor: w-resize;
+}
+
+.dockshell-fh-ne {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) - 3px);
+  width: 12px;
+  height: 12px;
+  cursor: ne-resize;
+}
+
+.dockshell-fh-nw {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) - 3px);
+  width: 12px;
+  height: 12px;
+  cursor: nw-resize;
+}
+
+.dockshell-fh-se {
+  left: calc(var(--dock-x) + var(--dock-w) - 5px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+}
+
+.dockshell-fh-sw {
+  left: calc(var(--dock-x) - 3px);
+  top: calc(var(--dock-y) + var(--dock-h) - 5px);
+  width: 12px;
+  height: 12px;
+  cursor: sw-resize;
+}
+
+/* ---- snap preview (edge hot zone armed during a tear drag) ---- */
+
+.dockshell-snap {
+  position: absolute;
+  z-index: 35;
+  margin: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--accent, #2f6fdc);
+  background: color-mix(in srgb, var(--accent, #2f6fdc) 16%, transparent);
+  pointer-events: none;
+}
+
+.dockshell-snap-left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--dock-size);
+}
+
+.dockshell-snap-right {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--dock-size);
+}
+
+.dockshell-snap-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--dock-size);
+}
+
+/* ---- header chrome buttons (rendered inside the app's panel header) ---- */
+
+.dockshell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  cursor: pointer;
+  padding: 0;
+  transition: background 120ms ease;
+}
+
+.dockshell-btn:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* the collapse chevron points toward the edge the panel docks to */
+.dockshell.pos-right .dockshell-collapse-icon {
+  transform: rotate(180deg);
+}
+
+.dockshell.pos-bottom .dockshell-collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.dockshell.pos-float .dockshell-collapse-icon {
+  display: none;
+}
+
+/* ---- layout menu (fixed: escapes the panel's overflow clipping) ---- */
+
+.dockshell-menu {
+  position: fixed;
+  z-index: 100;
+  min-width: 168px;
+  padding: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: var(--shadow-menu, 0 8px 24px rgb(0 0 0 / 18%));
+}
+
+.dockshell-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  font-size: 13px;
+  color: var(--color-text-primary, var(--text, #242424));
+  cursor: pointer;
+  text-align: left;
+}
+
+.dockshell-menu-item:hover {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+}
+
+.dockshell-menu-item.selected {
+  color: var(--accent, #2f6fdc);
+}

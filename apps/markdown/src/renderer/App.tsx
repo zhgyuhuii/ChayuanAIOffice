@@ -21,6 +21,7 @@ import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
 import { AiPanel, GensparkMark, type AiPreset, type MarkdownAiDeps } from './ai/AiPanel'
+import { DockShell } from '@genoffice/ui'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type EditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/aiQueueAnchors'
 import { DOCX_MAX_IMAGE_PX, exportDocxBytes } from './export/docxExport'
@@ -605,34 +606,42 @@ export default function App() {
         }}
       />
       {status === 'loading' && <div className="center-note">{t('loading')}</div>}
-      <div className="app-main" style={status === 'ready' ? undefined : { display: 'none' }}>
-        <div className={`ai-dock${aiOpen ? '' : ' collapsed'}`}>
-          {!aiOpen && (
-            <button
-              className="ai-rail"
-              data-tip={t('aiOpenAssistant')}
-              aria-label={t('aiOpenAssistant')}
-              onClick={() => setAiOpen(true)}
-            >
-              <GensparkMark size={22} />
-            </button>
-          )}
-          {/* mounted only after the file is loaded so chat history resolves against the real path */}
-          {status === 'ready' && (
-            <AiPanel
-              deps={aiDeps}
-              filePath={filePath}
-              preset={aiPreset}
-              onCollapse={() => setAiOpen(false)}
-              editQueue={editQueue}
-              onQueueEditInstruction={queueUpdate}
-              onQueueRemove={queueRemove}
-              onQueueClear={queueClear}
-              onQueueFocus={queueFocus}
-              onQueueConsume={queueConsume}
-            />
-          )}
-        </div>
+      <DockShell
+        className="app-main"
+        style={status === 'ready' ? undefined : { display: 'none' }}
+        storageKey="aimarkdown.dock"
+        legacyWidthKey="markdown-ai-panel-width"
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        panelAvailable={status === 'ready'}
+        railIcon={<GensparkMark size={22} />}
+        labels={{
+          panelTitle: 'Genspark',
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapsePanel'),
+          expand: t('aiOpenAssistant'),
+        }}
+        renderPanel={(dockChrome) => (
+          <AiPanel
+            deps={aiDeps}
+            filePath={filePath}
+            preset={aiPreset}
+            dockChrome={dockChrome}
+            editQueue={editQueue}
+            onQueueEditInstruction={queueUpdate}
+            onQueueRemove={queueRemove}
+            onQueueClear={queueClear}
+            onQueueFocus={queueFocus}
+            onQueueConsume={queueConsume}
+          />
+        )}
+      >
         <div className="app-content">
           <div className="editor-scroll" ref={scrollRef}>
             <div className="doc-page" style={{ zoom: zoom / 100 }}>
@@ -680,7 +689,7 @@ export default function App() {
             </div>
           </footer>
         </div>
-      </div>
+      </DockShell>
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />
       <ToastHost />
       <TableMenu editor={editor} scrollRef={scrollRef} zoom={zoom} />

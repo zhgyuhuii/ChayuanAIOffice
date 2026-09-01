@@ -12,7 +12,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { Dropdown } from '@genoffice/ui'
+import { DockShell, Dropdown } from '@genoffice/ui'
+import '@genoffice/ui/dock.css'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
   BLANK_BULLET_NUM_ID,
@@ -137,7 +138,7 @@ import { useShallowStable, useStableCallbacks } from './use-stable'
 import { FindPanel } from './components/FindPanel'
 import { Ribbon } from './components/Ribbon'
 import { computeFormatState } from './components/ribbon-format-state'
-import { IconRedo, IconSave, IconUndo } from './components/icons'
+import { GensparkMark, IconRedo, IconSave, IconUndo } from './components/icons'
 import { ToastHost } from './components/toast'
 import {
   AI_REWRITE_ACK_KEY,
@@ -2329,17 +2330,47 @@ export function App() {
             if (!secList || secList.length <= 1) {
               if (titlePg && pageIdx === 0) {
                 return kind === 'header'
-                  ? { value: hfVariants.headerFirst, ...split(parsed.headerFirst?.images), variant: 'first' as const, secIdx: 0 }
-                  : { value: hfVariants.footerFirst, ...split(parsed.footerFirst?.images), variant: 'first' as const, secIdx: 0 }
+                  ? {
+                      value: hfVariants.headerFirst,
+                      ...split(parsed.headerFirst?.images),
+                      variant: 'first' as const,
+                      secIdx: 0,
+                    }
+                  : {
+                      value: hfVariants.footerFirst,
+                      ...split(parsed.footerFirst?.images),
+                      variant: 'first' as const,
+                      secIdx: 0,
+                    }
               }
               if (evenOddHf && pageNo % 2 === 0) {
                 return kind === 'header'
-                  ? { value: hfVariants.headerEven, ...split(parsed.headerEven?.images), variant: 'even' as const, secIdx: 0 }
-                  : { value: hfVariants.footerEven, ...split(parsed.footerEven?.images), variant: 'even' as const, secIdx: 0 }
+                  ? {
+                      value: hfVariants.headerEven,
+                      ...split(parsed.headerEven?.images),
+                      variant: 'even' as const,
+                      secIdx: 0,
+                    }
+                  : {
+                      value: hfVariants.footerEven,
+                      ...split(parsed.footerEven?.images),
+                      variant: 'even' as const,
+                      secIdx: 0,
+                    }
               }
               return kind === 'header'
-                ? { value: header, ...split(parsed.headerImages), variant: 'default' as const, secIdx: 0 }
-                : { value: footer, ...split(parsed.footerImages), variant: 'default' as const, secIdx: 0 }
+                ? {
+                    value: header,
+                    ...split(parsed.headerImages),
+                    variant: 'default' as const,
+                    secIdx: 0,
+                  }
+                : {
+                    value: footer,
+                    ...split(parsed.footerImages),
+                    variant: 'default' as const,
+                    secIdx: 0,
+                  }
             }
             const pageSlice = slices[pageIdx]
             const secIdx = Math.min(pageSlice.section, secList.length - 1)
@@ -2968,12 +2999,13 @@ export function App() {
           const paperWNow = pm.getBoundingClientRect().width / factor
           const secLefts = (secList ?? []).map(
             (s) =>
-              (paperWNow - twipsToPx(s.settings.pageWidth)) / 2 +
-              twipsToPx(s.settings.marginLeft),
+              (paperWNow - twipsToPx(s.settings.pageWidth)) / 2 + twipsToPx(s.settings.marginLeft),
           )
           alignGapHfStrips(
             pm,
-            secLefts.length > 0 ? secLefts : twipsToPx((secList?.[0]?.settings ?? section).marginLeft),
+            secLefts.length > 0
+              ? secLefts
+              : twipsToPx((secList?.[0]?.settings ?? section).marginLeft),
             factor,
           )
         }
@@ -3014,10 +3046,11 @@ export function App() {
         const wrapEl = (pm.closest('.page-wrap') as HTMLElement) ?? pm
         syncPageWidthBands(
           wrapEl,
-          slices.map(
-            (s) => twipsToPx((secList?.[s.section]?.settings ?? section).pageWidth),
+          slices.map((s) => twipsToPx((secList?.[s.section]?.settings ?? section).pageWidth)),
+          Math.max(
+            twipsToPx(section.pageWidth),
+            ...sections.map((s) => twipsToPx(s.settings.pageWidth)),
           ),
-          Math.max(twipsToPx(section.pageWidth), ...sections.map((s) => twipsToPx(s.settings.pageWidth))),
           factor,
         )
         // table page breaks: the in-table gap row can't span the paper, so the
@@ -3984,9 +4017,12 @@ export function App() {
     }
   }
 
-  const applyRulerMargins = (
-    margins: { marginLeft?: number; marginRight?: number; marginTop?: number; marginBottom?: number },
-  ) => {
+  const applyRulerMargins = (margins: {
+    marginLeft?: number
+    marginRight?: number
+    marginTop?: number
+    marginBottom?: number
+  }) => {
     // merge into the CURSOR section's settings (section state is the last
     // section's, which differs in multi-section documents)
     const base = sections[activeSection]?.settings ?? section
@@ -4325,10 +4361,28 @@ export function App() {
         {...ribbonActions}
       />
 
-      <div className="app-main">
-        {doc && (
-          <div className={`ai-dock${showAi ? '' : ' collapsed'}`}>
-            {/* always mounted: collapse must not drop state or in-flight runs */}
+      <DockShell
+        className="app-main"
+        storageKey="aidocs.dock"
+        legacyWidthKey="docs-ai-panel-width"
+        open={showAi}
+        onOpenChange={setShowAi}
+        panelAvailable={!!doc}
+        railIcon={<GensparkMark size={22} />}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapseTitle'),
+          expand: t('appExpandAiPanel'),
+        }}
+        renderPanel={(dockChrome) =>
+          doc ? (
             <AiPanel
               key={aiPanelKey}
               editor={editor}
@@ -4340,8 +4394,6 @@ export function App() {
               }
               preset={aiPreset}
               open={showAi}
-              onExpand={() => setShowAi(true)}
-              onCollapse={() => setShowAi(false)}
               filePath={doc?.filePath ?? null}
               editQueue={editQueue}
               onQueueEditInstruction={queueUpdate}
@@ -4351,9 +4403,11 @@ export function App() {
               onQueueConsume={queueConsume}
               commentsAccess={aiCommentsAccess}
               hfAccess={aiHfAccess}
+              dockChrome={dockChrome}
             />
-          </div>
-        )}
+          ) : null
+        }
+      >
         <div className="app-content">
           <div className={`workspace ${darkCanvas ? 'workspace-dark' : ''}`}>
             {doc && showFind && (
@@ -4416,124 +4470,124 @@ export function App() {
                       </div>
                     )}
                     <div className={showRuler && section ? 'ruler-body' : undefined}>
-                    {showRuler && section && (
-                      <div className={`vruler-anchor${pageActive ? '' : ' vruler-idle'}`}>
-                        <VRuler
-                          section={sections[activeSection]?.settings ?? section}
-                          onMargins={applyRulerMargins}
-                        />
-                      </div>
-                    )}
-                    <div className="page-wrap">
-                      {watermark && (
-                        <div className="page-watermark" aria-hidden="true">
-                          {watermark}
+                      {showRuler && section && (
+                        <div className={`vruler-anchor${pageActive ? '' : ' vruler-idle'}`}>
+                          <VRuler
+                            section={sections[activeSection]?.settings ?? section}
+                            onMargins={applyRulerMargins}
+                          />
                         </div>
                       )}
-                      {!readMode && (
-                        <div
-                          className={`hf-variant-chips${titlePg || evenOddHf ? '' : ' hf-chips-idle'}`}
-                        >
-                          {/* Always-available entry point: the ribbon checkbox alone was
+                      <div className="page-wrap">
+                        {watermark && (
+                          <div className="page-watermark" aria-hidden="true">
+                            {watermark}
+                          </div>
+                        )}
+                        {!readMode && (
+                          <div
+                            className={`hf-variant-chips${titlePg || evenOddHf ? '' : ' hf-chips-idle'}`}
+                          >
+                            {/* Always-available entry point: the ribbon checkbox alone was
                           undiscoverable while editing the header, so the toggle also lives here
                           (revealed on header hover until enabled) */}
-                          <button
-                            className={`hf-first-toggle${titlePg ? ' on' : ''}`}
-                            data-tip={t('ribbonDiffFirstPageTip')}
-                            onClick={() => toggleTitlePg(!titlePg)}
-                          >
-                            {titlePg ? '✓ ' : ''}
-                            {t('ribbonDiffFirstPage')}
-                          </button>
-                          {titlePg && (
                             <button
-                              className={headerAreaView === 'first' ? 'on' : ''}
-                              onClick={() => setHfView('first')}
+                              className={`hf-first-toggle${titlePg ? ' on' : ''}`}
+                              data-tip={t('ribbonDiffFirstPageTip')}
+                              onClick={() => toggleTitlePg(!titlePg)}
                             >
-                              {t('appFirstPage')}
+                              {titlePg ? '✓ ' : ''}
+                              {t('ribbonDiffFirstPage')}
                             </button>
-                          )}
-                          {(titlePg || evenOddHf) && (
-                            <button
-                              className={headerAreaView === 'default' ? 'on' : ''}
-                              onClick={() => setHfView('default')}
-                            >
-                              {evenOddHf ? t('appOddPage') : t('appDefaultPage')}
-                            </button>
-                          )}
-                          {evenOddHf && (
-                            <button
-                              className={headerAreaView === 'even' ? 'on' : ''}
-                              onClick={() => setHfView('even')}
-                            >
-                              {t('appEvenPage')}
-                            </button>
-                          )}
-                        </div>
-                      )}
-                      {/* Boolean(): a trailing 0 (empty non-floating image list) must not render as a literal "0" text node */}
-                      {Boolean(
-                        multiHf ||
-                        (hfViewTouched && effHfView !== 'default') ||
-                        shownHeader?.text ||
-                        shownHeader?.paras?.length ||
-                        hfImagesOf('header')?.length,
-                      ) && (
-                        <HeaderFooterArea
-                          kind="header"
-                          value={shownHeader ?? { text: '' }}
-                          images={hfImagesOf('header')}
-                          readOnly={isProtected || readMode}
-                          onCommit={(next) => commitHf('header', next)}
-                          pageTotal={pageInfo.total}
-                          style={edgeHeaderStyle}
+                            {titlePg && (
+                              <button
+                                className={headerAreaView === 'first' ? 'on' : ''}
+                                onClick={() => setHfView('first')}
+                              >
+                                {t('appFirstPage')}
+                              </button>
+                            )}
+                            {(titlePg || evenOddHf) && (
+                              <button
+                                className={headerAreaView === 'default' ? 'on' : ''}
+                                onClick={() => setHfView('default')}
+                              >
+                                {evenOddHf ? t('appOddPage') : t('appDefaultPage')}
+                              </button>
+                            )}
+                            {evenOddHf && (
+                              <button
+                                className={headerAreaView === 'even' ? 'on' : ''}
+                                onClick={() => setHfView('even')}
+                              >
+                                {t('appEvenPage')}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {/* Boolean(): a trailing 0 (empty non-floating image list) must not render as a literal "0" text node */}
+                        {Boolean(
+                          multiHf ||
+                          (hfViewTouched && effHfView !== 'default') ||
+                          shownHeader?.text ||
+                          shownHeader?.paras?.length ||
+                          hfImagesOf('header')?.length,
+                        ) && (
+                          <HeaderFooterArea
+                            kind="header"
+                            value={shownHeader ?? { text: '' }}
+                            images={hfImagesOf('header')}
+                            readOnly={isProtected || readMode}
+                            onCommit={(next) => commitHf('header', next)}
+                            pageTotal={pageInfo.total}
+                            style={edgeHeaderStyle}
+                          />
+                        )}
+                        <EditorContent editor={editor} />
+                        {/* footnotes already shown per page in page gaps aren't repeated at the end (last page's footnotes still live here) */}
+                        <PageFootnotes
+                          notes={footnotes}
+                          skipIds={gapNoteIds}
+                          onEdit={(id) => editNote('footnote', id)}
+                          onDelete={(id) => deleteNote('footnote', id)}
                         />
-                      )}
-                      <EditorContent editor={editor} />
-                      {/* footnotes already shown per page in page gaps aren't repeated at the end (last page's footnotes still live here) */}
-                      <PageFootnotes
-                        notes={footnotes}
-                        skipIds={gapNoteIds}
-                        onEdit={(id) => editNote('footnote', id)}
-                        onDelete={(id) => deleteNote('footnote', id)}
-                      />
-                      <PageEndnotes
-                        notes={endnotes}
-                        top={endnotesAreaTop}
-                        onEdit={(id) => editNote('endnote', id)}
-                        onDelete={(id) => deleteNote('endnote', id)}
-                      />
-                      {Boolean(
-                        multiHf ||
-                        (hfViewTouched && effHfView !== 'default') ||
-                        shownFooter?.text ||
-                        shownFooter?.pageNumber ||
-                        shownFooter?.paras?.length ||
-                        hfImagesOf('footer')?.length,
-                      ) && (
-                        <HeaderFooterArea
-                          kind="footer"
-                          value={shownFooter ?? { text: '' }}
-                          images={hfImagesOf('footer')}
-                          readOnly={isProtected || readMode}
-                          onCommit={(next) => commitHf('footer', next)}
-                          pageNo={lastPageNo?.text ?? pageInfo.total}
-                          pageTotal={pageInfo.total}
-                          style={edgeFooterStyle}
+                        <PageEndnotes
+                          notes={endnotes}
+                          top={endnotesAreaTop}
+                          onEdit={(id) => editNote('endnote', id)}
+                          onDelete={(id) => deleteNote('endnote', id)}
                         />
-                      )}
-                      {(inkAnnotations.length > 0 || inkTool !== 'select') && !readMode && (
-                        <InkOverlay
-                          tool={isProtected ? 'select' : inkTool}
-                          color={inkTool === 'highlighter' ? inkHighlighter.color : inkPen.color}
-                          width={inkTool === 'highlighter' ? inkHighlighter.width : inkPen.width}
-                          zoom={zoom}
-                          annotations={inkAnnotations}
-                          onAdd={addInk}
-                          onRemove={removeInks}
-                        />
-                      )}
-                    </div>
+                        {Boolean(
+                          multiHf ||
+                          (hfViewTouched && effHfView !== 'default') ||
+                          shownFooter?.text ||
+                          shownFooter?.pageNumber ||
+                          shownFooter?.paras?.length ||
+                          hfImagesOf('footer')?.length,
+                        ) && (
+                          <HeaderFooterArea
+                            kind="footer"
+                            value={shownFooter ?? { text: '' }}
+                            images={hfImagesOf('footer')}
+                            readOnly={isProtected || readMode}
+                            onCommit={(next) => commitHf('footer', next)}
+                            pageNo={lastPageNo?.text ?? pageInfo.total}
+                            pageTotal={pageInfo.total}
+                            style={edgeFooterStyle}
+                          />
+                        )}
+                        {(inkAnnotations.length > 0 || inkTool !== 'select') && !readMode && (
+                          <InkOverlay
+                            tool={isProtected ? 'select' : inkTool}
+                            color={inkTool === 'highlighter' ? inkHighlighter.color : inkPen.color}
+                            width={inkTool === 'highlighter' ? inkHighlighter.width : inkPen.width}
+                            zoom={zoom}
+                            annotations={inkAnnotations}
+                            onAdd={addInk}
+                            onRemove={removeInks}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -4638,7 +4692,7 @@ export function App() {
             </div>
           </footer>
         </div>
-      </div>
+      </DockShell>
 
       {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
       {showLinkModal && <LinkInsertModal editor={editor} onClose={() => setShowLinkModal(false)} />}
