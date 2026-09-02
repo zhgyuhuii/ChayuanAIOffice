@@ -46,11 +46,13 @@ export {
 } from './watchdog'
 export type { StreamWatchdog } from './watchdog'
 // ---- settings v2 ----
-export type { ResolvedModelCall, StoredAiSettings } from './settings-v2'
+export type { AiDefaultKind, ResolvedModelCall, StoredAiSettings } from './settings-v2'
 export {
+  DEFAULT_KIND_TYPES,
   defaultSettingsV2,
   enabledChatModels,
   findProfile,
+  resolveDefaultModel,
   gensparkEndpointFor,
   gensparkProfile,
   isChatModel,

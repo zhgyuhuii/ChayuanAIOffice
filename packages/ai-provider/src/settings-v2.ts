@@ -1,4 +1,4 @@
-import { inferModelType, matchesModelType } from './model-type'
+import { inferModelType, matchesModelType, type AiModelType } from './model-type'
 import { GENSPARK_LLM_BASE_URLS } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
@@ -339,7 +339,66 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
       next.imageModel = settings.imageModel
     }
   }
+  if (settings.modelDefaults) {
+    const defaults: Record<string, AiModelSelection> = {}
+    for (const [kind, sel] of Object.entries(settings.modelDefaults)) {
+      if (sel && selectionAlive(next, sel, DEFAULT_KIND_TYPES[kind as AiDefaultKind] ?? [])) {
+        defaults[kind] = sel
+      }
+    }
+    if (Object.keys(defaults).length > 0) {
+      next.modelDefaults = defaults
+    }
+  }
   return next
+}
+
+/** default-model kinds surfaced in the settings window's 默认模型 pane */
+export type AiDefaultKind = 'chat' | 'image' | 'videoGeneration' | 'tts' | 'asr'
+
+/** the model types each default kind accepts */
+export const DEFAULT_KIND_TYPES: Record<AiDefaultKind, AiModelType[]> = {
+  chat: ['chat', 'vision'],
+  image: ['image-generation'],
+  videoGeneration: ['video-generation'],
+  tts: ['tts'],
+  asr: ['asr'],
+}
+
+function selectionAlive(settings: AiSettingsV2, sel: AiModelSelection | undefined, kinds: AiModelType[]): boolean {
+  if (!sel) return false
+  const profile = findProfile(settings, sel.profileId)
+  const entry = profile?.models.find((m) => m.id === sel.modelId)
+  if (!profile?.enabled || !entry) return false
+  const type = entry.type ?? inferModelType(entry.id)
+  return kinds.includes(type)
+}
+
+/**
+ * Resolve the effective default for a kind: the explicit pick when it still
+ * points at an enabled model of that kind, else auto-detect the first enabled
+ * model of the kind across profiles (the "识别到的" fallback).
+ */
+export function resolveDefaultModel(
+  settings: AiSettingsV2,
+  kind: AiDefaultKind,
+): AiModelSelection | undefined {
+  const kinds = DEFAULT_KIND_TYPES[kind]
+  const explicit =
+    kind === 'chat'
+      ? settings.currentModel
+      : kind === 'image'
+        ? settings.imageModel
+        : settings.modelDefaults?.[kind]
+  if (selectionAlive(settings, explicit, kinds)) return explicit
+  for (const profile of settings.profiles) {
+    if (!profile.enabled) continue
+    for (const m of profile.models) {
+      const type = m.type ?? inferModelType(m.id)
+      if (kinds.includes(type)) return { profileId: profile.id, modelId: m.id }
+    }
+  }
+  return undefined
 }
 
 /** can a model accept image input (vision) on this call? */

@@ -58,4 +58,5 @@ export {
   type ModelSettingsPageProps,
 } from './ModelSettingsPage'
 export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
+export { ModelDefaultsPage, type ModelDefaultsPageProps } from './ModelDefaultsPage'
 export { VendorLogo, type VendorLogoProps } from './VendorLogo'

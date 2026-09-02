@@ -66,10 +66,12 @@ export interface AiProviderProfile {
 export interface AiSettingsV2 {
   version: 2
   profiles: AiProviderProfile[]
-  /** office-side current model, shared by all four apps; absent = none selected yet */
+  /** office-side current model (the chat default), shared by all four apps; absent = none selected yet */
   currentModel?: AiModelSelection
   /** dedicated image-generation model; absent = first enabled image-gen model */
   imageModel?: AiModelSelection
+  /** per-purpose default picks for the non-chat kinds (tts/asr/video/embedding); absent entry = auto */
+  modelDefaults?: Record<string, AiModelSelection>
   /** gsk cloud tools toggle (search backends); default on */
   gskToolsEnabled?: boolean
 }

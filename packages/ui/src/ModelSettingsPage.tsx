@@ -73,6 +73,8 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
   const [gskAvailable, setGskAvailable] = useState(true)
   const [selected, setSelected] = useState<string>('genspark')
   const [search, setSearch] = useState('')
+  /** collapsed directory groups (已开启 / 国内平台 / …) in the left pane */
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   const [gsk, setGsk] = useState<{ loggedIn: boolean; email?: string } | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
@@ -342,33 +344,6 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     await persist(sanitize(next))
   }
 
-  const imageModelOptions = useMemo(() => {
-    const out: Array<{ value: string; label: string }> = []
-    for (const p of enabledProfiles) {
-      for (const m of p.models) {
-        if (isImageGenModel(m)) out.push({ value: `${p.id}::${m.id}`, label: `${p.displayName} · ${m.id}` })
-      }
-    }
-    return out
-  }, [enabledProfiles])
-
-  const saveImageModel = async (value: string) => {
-    if (!settings) return
-    let next: AiSettingsV2
-    if (value === '') {
-      const { imageModel: _drop, ...rest } = settings
-      next = rest
-    } else {
-      const [profileId, modelId] = value.split('::')
-      next = { ...settings, imageModel: { profileId: profileId!, modelId: modelId! } }
-    }
-    await persist(sanitize(next))
-  }
-
-  const imageModelValue = settings?.imageModel
-    ? `${settings.imageModel.profileId}::${settings.imageModel.modelId}`
-    : ''
-
   // ── chatop-shaped pieces ──────────────────────────────────────────────
   const enabledList = gskAvailable
     ? enabledProfiles.filter((p) => p.id !== 'genspark' || p.models.length > 0)
@@ -388,16 +363,35 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
   )
 
   const VendorGroupEl = ({
+    id,
     label,
     rows,
   }: {
+    id: string
     label: string
     rows: React.ReactNode
   }) =>
     rows ? (
-      <div className="msp-group" data-vendor-group={label}>
-        <div className="msp-group-title">{label}</div>
-        {rows}
+      <div className="msp-group" data-vendor-group={id}>
+        <button
+          type="button"
+          className="msp-group-head"
+          aria-expanded={!collapsedGroups.has(id)}
+          onClick={() =>
+            setCollapsedGroups((prev) => {
+              const next = new Set(prev)
+              if (next.has(id)) next.delete(id)
+              else next.add(id)
+              return next
+            })
+          }
+        >
+          <span className={`msp-chev${collapsedGroups.has(id) ? ' is-collapsed' : ''}`} aria-hidden>
+            ▾
+          </span>
+          {label}
+        </button>
+        {!collapsedGroups.has(id) && rows}
       </div>
     ) : null
 
@@ -485,36 +479,15 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     )
   }
 
-  const header = (
-    <header className="msp-header">
-      {variant === 'overlay' ? (
+  const header =
+    variant === 'overlay' ? (
+      <header className="msp-header">
         <h2 className="msp-title">{t.title}</h2>
-      ) : (
-        // inline: the host pane already names the section; keep the row for the image-model picker
-        <span className="msp-title" />
-      )}
-      <label className="msp-image-model">
-        <span>{t.imageModel}</span>
-        <select
-          className="msp-input msp-select-compact"
-          value={imageModelValue}
-          onChange={(e) => void saveImageModel(e.target.value)}
-        >
-          <option value="">{imageModelOptions.length ? t.imageModelAuto : t.imageModelNone}</option>
-          {imageModelOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      {variant === 'overlay' && (
         <button type="button" className="msp-close" onClick={onClose} aria-label={t.close} title={t.close}>
           ✕
         </button>
-      )}
-    </header>
-  )
+      </header>
+    ) : null
 
   const body = (
 <div className="msp-body">
@@ -531,10 +504,11 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
           />
         </div>
         <div className="msp-scroll">
-          <VendorGroupEl label={`${t.enabledGroup} · ${enabledList.length}`} rows={enabledRows} />
+          <VendorGroupEl id="enabled" label={`${t.enabledGroup} · ${enabledList.length}`} rows={enabledRows} />
           {catalogRows.map((group) => (
             <VendorGroupEl
               key={group.id}
+              id={group.id}
               label={group.label}
               rows={
                 <>

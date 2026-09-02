@@ -51,7 +51,7 @@ describe('ModelSettingsPage', () => {
 
   it('shows the genspark card + vendor catalog groups by default (desktop)', async () => {
     await render()
-    const groups = [...document.body.querySelectorAll('.msp-group-title')].map(
+    const groups = [...document.body.querySelectorAll('.msp-group-head')].map(
       (el) => el.textContent,
     )
     // enabled group first, then the four catalog groups
@@ -208,5 +208,63 @@ describe('ModelSettingsPage model checklist + save validation', () => {
       )
     })
     expect(saveSettings).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('ModelDefaultsPage', () => {
+  it('lists every default kind with the auto option and writes picks to modelDefaults', async () => {
+    const saveSettings = vi.fn(async () => {})
+    const b: ModelSettingsBridge = {
+      getSettings: async () => ({
+        version: 2,
+        profiles: [
+          {
+            id: 'zhipu',
+            vendorId: 'zhipu',
+            displayName: 'Zhipu GLM',
+            protocol: 'openai-completions',
+            baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+            apiKey: '__keep__',
+            auth: 'api-key',
+            enabled: true,
+            models: [
+              { id: 'glm-5.3', type: 'chat' },
+              { id: 'qwen-image', type: 'image-generation' },
+              { id: 'cogtts', type: 'tts' },
+            ],
+          },
+        ],
+      }),
+      saveSettings,
+      setCurrentModel: vi.fn(async () => {}),
+      discoverModels: vi.fn(async () => ({ models: [] })),
+    }
+    const { ModelDefaultsPage } = await import('../src/ModelDefaultsPage')
+    await act(async () => {
+      root!.render(createElement(ModelDefaultsPage, { bridge: b }))
+    })
+    const selects = [...host.querySelectorAll('[data-default-kind]') as NodeListOf<HTMLSelectElement>]
+    expect(selects.map((s) => s.dataset.defaultKind)).toEqual([
+      'chat',
+      'image',
+      'videoGeneration',
+      'tts',
+      'asr',
+    ])
+    // chat + image + tts offer the zhipu models; video/asr stay empty (auto only)
+    expect(selects[0]!.options.length).toBe(2) // auto + glm-5.3
+    expect(selects[1]!.options.length).toBe(2) // auto + qwen-image
+    expect(selects[3]!.options.length).toBe(2) // auto + cogtts
+    expect(selects[2]!.options.length).toBe(1) // auto only
+
+    // pick the tts default → saved into modelDefaults
+    const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')!.set!
+    await act(async () => {
+      setter.call(selects[3]!, 'zhipu::cogtts')
+      selects[3]!.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+    expect(saveSettings).toHaveBeenCalledTimes(1)
+    const saved = saveSettings.mock.calls[0]![0] as { modelDefaults?: Record<string, unknown> }
+    expect(saved.modelDefaults?.tts).toEqual({ profileId: 'zhipu', modelId: 'cogtts' })
   })
 })

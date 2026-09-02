@@ -20,6 +20,8 @@ export interface DropdownOption<K extends string = string> {
   readonly render?: React.ReactNode
   /** Shown but not pickable (placeholder rows like "Auto", unavailable modes). */
   readonly disabled?: boolean
+  /** click behavior for disabled rows (e.g. collapsible group headers); picking stays blocked */
+  readonly onDisabledClick?: (() => void) | undefined
 }
 
 export function Dropdown<K extends string>({
@@ -68,7 +70,10 @@ export function Dropdown<K extends string>({
     setOpen(true)
   }
   const pick = (o: DropdownOption<K>) => {
-    if (o.disabled) return
+    if (o.disabled) {
+      o.onDisabledClick?.()
+      return
+    }
     setOpen(false)
     onPick(o.value)
   }

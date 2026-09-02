@@ -591,3 +591,17 @@
   letter-spacing: 0.04em;
   padding-top: 4px;
 }
+.ai-picker-group-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ai-picker-group .msp-chev {
+  font-size: 9px;
+  transition: transform 120ms ease;
+}
+.ai-picker-group .msp-chev.is-collapsed {
+  transform: rotate(-90deg);
+}

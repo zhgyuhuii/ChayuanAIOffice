@@ -4,7 +4,7 @@
  * model-settings entry pinned at the top. Switching persists the global
  * current model through the injected callback.
  */
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   VENDOR_BY_ID,
   enabledChatModels,
@@ -36,6 +36,8 @@ export function ModelPickerButton({
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const chat = enabledChatModels(settings)
+  /** vendor groups collapsed in the dropdown (click a group header to toggle) */
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   const options: DropdownOption[] = useMemo(() => {
     const out: DropdownOption[] = [
@@ -47,19 +49,32 @@ export function ModelPickerButton({
         lastProfile = m.profileId
         const profile = findProfile(settings, m.profileId)
         const vendorId = profile?.vendorId ?? (VENDOR_BY_ID.has(m.profileId) ? m.profileId : undefined)
-        // vendor group header: logo + provider name (not pickable)
+        const name = profile?.displayName ?? m.profileId
+        const isCollapsed = collapsed.has(m.profileId)
+        // vendor group header: logo + name + chevron; clicking collapses/expands
         out.push({
           value: `__hdr__${m.profileId}`,
-          label: profile?.displayName ?? m.profileId,
+          label: name,
           disabled: true,
+          onDisabledClick: () =>
+            setCollapsed((prev) => {
+              const next = new Set(prev)
+              if (next.has(m.profileId)) next.delete(m.profileId)
+              else next.add(m.profileId)
+              return next
+            }),
           render: (
             <span className="ai-picker-group">
-              <VendorLogo vendorId={vendorId} size={14} fallback={profile?.displayName ?? m.profileId} />
-              {profile?.displayName ?? m.profileId}
+              <VendorLogo vendorId={vendorId} size={14} fallback={name} />
+              <span className="ai-picker-group-name">{name}</span>
+              <span className={`msp-chev${isCollapsed ? ' is-collapsed' : ''}`} aria-hidden>
+                ▾
+              </span>
             </span>
           ),
         })
       }
+      if (collapsed.has(m.profileId)) continue
       const vendorId = findProfile(settings, m.profileId)?.vendorId ?? m.profileId
       // render (trigger + row) shows the vendor icon + model id; `label` stays fully accessible
       out.push({
@@ -74,7 +89,7 @@ export function ModelPickerButton({
       })
     }
     return out
-  }, [chat, settings, t])
+  }, [chat, settings, t, collapsed])
 
   const current = settings.currentModel
   const currentKey = current ? `${current.profileId}::${current.modelId}` : SETTINGS_VALUE

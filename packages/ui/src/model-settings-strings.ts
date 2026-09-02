@@ -92,6 +92,17 @@ const zh = {
   addVendor: '自定义供应商',
   saveChanges: '保存更改',
   saveValidateFailed: '协议验证失败，未保存：{message}',
+  defaultsNote: '为每类用途指定默认模型；不设置时自动使用识别到的第一个可用模型。',
+  defaultsAuto: '自动（使用识别到的第一个可用模型）',
+  defaultsAutoUsing: '当前自动使用：',
+  defaultsNoneAvailable: '暂无可用模型（先在模型设置中启用）',
+  defaultsKind: {
+    chat: '对话默认模型',
+    image: '生图默认模型',
+    videoGeneration: '视频生成默认模型',
+    tts: '语音合成默认模型',
+    asr: '语音识别默认模型',
+  } as Record<string, string>,
   pickerHint: '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
 }
 
@@ -177,6 +188,17 @@ const en = {
   addVendor: 'Custom provider',
   saveChanges: 'Save changes',
   saveValidateFailed: 'Protocol check failed, nothing saved: {message}',
+  defaultsNote: 'Pick a default model per purpose; unset kinds automatically use the first available model detected.',
+  defaultsAuto: 'Auto (first available model detected)',
+  defaultsAutoUsing: 'Currently auto-using:',
+  defaultsNoneAvailable: 'No models available yet (enable them in Model Settings first)',
+  defaultsKind: {
+    chat: 'Default chat model',
+    image: 'Default image model',
+    videoGeneration: 'Default video model',
+    tts: 'Default TTS model',
+    asr: 'Default ASR model',
+  } as Record<string, string>,
   pickerHint: "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
 }
 

@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Dropdown, ModelSettingsPage, type ModelSettingsBridge } from '@genoffice/ui'
+import {
+  Dropdown,
+  ModelDefaultsPage,
+  ModelSettingsPage,
+  type ModelSettingsBridge,
+} from '@genoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey, TFunc } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
@@ -55,17 +60,30 @@ function formatStars(n: number): string {
   return `${k >= 100 ? Math.round(k) : (Math.round(k * 10) / 10).toString().replace(/\.0$/, '')}k`
 }
 
-type SectionId = 'account' | 'aiModel' | 'general' | 'about'
+type SectionId = 'account' | 'modelSettings' | 'defaultModels' | 'general' | 'about'
 
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'account', labelKey: 'setSecAccount' },
-  { id: 'aiModel', labelKey: 'setSecAiModel' },
+  { id: 'modelSettings', labelKey: 'setSecModelSettings' },
+  { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
   { id: 'general', labelKey: 'setSecGeneral' },
   { id: 'about', labelKey: 'setSecAbout' },
 ]
 
 function SectionIcon({ id }: { id: SectionId }) {
-  if (id === 'aiModel') {
+  if (id === 'defaultModels') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M3 4.2h7M3 8h10M3 11.8h5.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+  if (id === 'modelSettings') {
     return (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path
@@ -145,16 +163,24 @@ function Field({
 }
 
 /** AI model pane: provider / model / key / base URL, saved to userData/ai-settings.json */
-function AiModelPane({ t, lang }: { t: TFunc; lang: string }) {
-  // the model settings live inline in this pane (no second window); the pane
-  // is a scroll container, so the page's own panes take over scrolling
+function AiModelPane({ lang }: { lang: string }) {
+  // the model settings live inline in this pane (no second window, no extra
+  // heading — the section nav names it); the page's own panes handle scrolling
+  const bridge: ModelSettingsBridge = windowAiOfficeBridge()
+  return (
+    <div className="set-model-settings">
+      <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
+    </div>
+  )
+}
+
+function DefaultModelsPane({ lang }: { lang: string }) {
+  const { t } = useI18n()
   const bridge: ModelSettingsBridge = windowAiOfficeBridge()
   return (
     <>
-      <h3 className="set-pane-title">{t('setSecAiModel')}</h3>
-      <div className="set-model-settings">
-        <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
-      </div>
+      <h3 className="set-pane-title">{t('setSecDefaultModels')}</h3>
+      <ModelDefaultsPage bridge={bridge} lang={lang} />
     </>
   )
 }
@@ -395,7 +421,8 @@ export function SettingsModal({
                 </div>
               </>
             )}
-            {section === 'aiModel' && <AiModelPane t={t} lang={lang} />}
+            {section === 'modelSettings' && <AiModelPane lang={lang} />}
+            {section === 'defaultModels' && <DefaultModelsPane lang={lang} />}
             {section === 'general' && (
               <>
                 <h3 className="set-pane-title">{t('setSecGeneral')}</h3>

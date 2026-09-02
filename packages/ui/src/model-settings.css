@@ -126,6 +126,27 @@
   color: var(--color-text-tertiary, var(--text-tertiary, #909499));
 }
 
+/* collapsible directory group header */
+.msp-group-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 12px 4px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-align: left;
+}
+.msp-group-head .msp-chev {
+  font-size: 9px;
+}
+
 .msp-vendor {
   display: flex;
   align-items: center;
@@ -495,4 +516,15 @@
 }
 .msp-chev.is-collapsed {
   transform: rotate(-90deg);
+}
+
+/* 默认模型 pane */
+.msp-defaults {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+}
+.msp-defaults-field select {
+  width: 100%;
 }

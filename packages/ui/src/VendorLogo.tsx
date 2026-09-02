@@ -8,7 +8,7 @@ import { VENDOR_LOGOS } from './vendor-logos'
 
 export interface VendorLogoProps {
   /** vendor catalog id; unknown/absent falls back to the initial avatar */
-  vendorId?: string
+  vendorId?: string | undefined
   size?: number
   /** avatar fallback letter (defaults to the vendor's initial) */
   fallback?: string
