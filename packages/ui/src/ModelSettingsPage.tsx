@@ -75,6 +75,8 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
   const [search, setSearch] = useState('')
   /** collapsed directory groups (已开启 / 国内平台 / …) in the left pane */
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  /** enabled-profile rows expanded to show their model sub-lists in the left pane */
+  const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
   const [gsk, setGsk] = useState<{ loggedIn: boolean; email?: string } | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
@@ -349,18 +351,59 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     ? enabledProfiles.filter((p) => p.id !== 'genspark' || p.models.length > 0)
     : enabledProfiles.filter((p) => p.id !== 'genspark')
 
-  const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => (
-    <button
-      type="button"
-      className={`msp-vendor${selected === id ? ' is-selected' : ''}`}
-      data-vendor-row={id}
-      onClick={() => setSelected(id)}
-    >
-      <VendorLogo vendorId={VENDOR_BY_ID.has(id) ? id : undefined} size={18} fallback={name} />
-      <span className="msp-vendor-name">{name}</span>
-      {(active || selected === id) && <span className="msp-dot" aria-hidden />}
-    </button>
-  )
+  const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
+    const profile = active ? profiles.find((p) => p.id === id) : undefined
+    const expanded = expandedVendors.has(id)
+    return (
+      <div className={`msp-vendor-wrap${selected === id ? ' is-selected' : ''}${active && expanded ? ' is-open' : ''}`} data-vendor-row-wrap={id}>
+        <button
+          type="button"
+          className={`msp-vendor${selected === id ? ' is-selected' : ''}`}
+          data-vendor-row={id}
+          onClick={() => setSelected(id)}
+        >
+          <VendorLogo vendorId={VENDOR_BY_ID.has(id) ? id : undefined} size={18} fallback={name} />
+          <span className="msp-vendor-name">{name}</span>
+          {active && profile && (
+            <span
+              className={`msp-chev${expanded ? '' : ' is-collapsed'}`}
+              role="button"
+              tabIndex={0}
+              aria-expanded={expanded}
+              aria-label={t.toggleVendorModels}
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpandedVendors((prev) => {
+                  const next = new Set(prev)
+                  if (next.has(id)) next.delete(id)
+                  else next.add(id)
+                  return next
+                })
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  e.currentTarget.click()
+                }
+              }}
+            >
+              ▾
+            </span>
+          )}
+          {(active || selected === id) && <span className="msp-dot" aria-hidden />}
+        </button>
+        {active && profile && expanded && (
+          <div className="msp-vendor-models" data-vendor-models={id}>
+            {profile.models.map((m) => (
+              <span key={m.id} className="msp-vendor-model" title={m.id}>
+                {m.name && m.name !== m.id ? m.name : m.id}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const VendorGroupEl = ({
     id,

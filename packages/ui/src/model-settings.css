@@ -528,3 +528,36 @@
 .msp-defaults-field select {
   width: 100%;
 }
+
+/* enabled vendor rows expand to a model sub-list */
+.msp-vendor-wrap {
+  position: relative;
+}
+.msp-vendor-wrap .msp-vendor {
+  width: 100%;
+}
+.msp-vendor .msp-chev {
+  font-size: 9px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  padding: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.msp-vendor.is-selected .msp-chev {
+  color: #fff;
+}
+.msp-vendor-models {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 12px 6px 38px;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  border-left: 2px solid var(--color-border-default, var(--border, #e3e6ea));
+  margin: 0 12px 4px 14px;
+}
+.msp-vendor-model {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 0;
+}

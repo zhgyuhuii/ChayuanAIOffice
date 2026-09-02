@@ -212,12 +212,20 @@ if (!app.isPackaged)
     process.env.GENOFFICE_USER_DATA ?? join(app.getPath('appData'), 'GenOffice Dev'),
   )
 
-// The product rename from "AI Office" to GenOffice changed the userData path; migrate old user data once
+// Product renames changed the userData path ("AI Office" → "GenOffice" →
+// "ChatOffice"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
-  const oldDir = join(app.getPath('appData'), 'AI Office')
   const newDir = app.getPath('userData')
   const newEmpty = !existsSync(newDir) || readdirSync(newDir).length === 0
-  if (newEmpty && existsSync(oldDir)) cpSync(oldDir, newDir, { recursive: true })
+  if (newEmpty) {
+    for (const oldName of ['GenOffice', 'AI Office']) {
+      const oldDir = join(app.getPath('appData'), oldName)
+      if (existsSync(oldDir)) {
+        cpSync(oldDir, newDir, { recursive: true })
+        break
+      }
+    }
+  }
 }
 
 // module build outputs: packaged builds carry them as extraResources
