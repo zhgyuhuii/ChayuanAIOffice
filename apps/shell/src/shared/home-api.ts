@@ -5,6 +5,15 @@ import type {
   DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@chatoffice/ai-provider'
+import type {
+  AiStreamChunk,
+  AiStreamWireRequest,
+  AttachmentAddResult,
+  AttachmentMeta,
+  AttachmentReadResult,
+  CreateDocumentRequest,
+  CreateDocumentResult,
+} from '../../../docs/src/shared/ipc'
 import type { UpdateChannel } from './update-api'
 
 /** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
@@ -168,8 +177,65 @@ export interface HomeApi {
   gskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>
   /** open the browser to log in to Genspark */
   gskLogin(): Promise<void>
+  /** start a streaming AI turn for the home chat; chunks arrive via onAiStream (same ai:* channels the editors use) */
+  aiStream(request: AiStreamWireRequest): Promise<void>
+  /** abort an in-flight home chat turn */
+  aiStreamCancel(requestId: string): Promise<void>
+  /** subscribe to AI stream chunks; returns an unsubscribe */
+  onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
+  /** AI create_document: build a standalone file and open it in a new tab (docs:create-document) */
+  createDocument(request: CreateDocumentRequest): Promise<CreateDocumentResult>
+  /** file picker for home chat attachments (multi-select) */
+  pickAttachments(): Promise<AttachmentAddResult | null>
+  /** validate dropped file paths into attachment metadata */
+  validateAttachments(paths: string[]): Promise<AttachmentAddResult>
+  /** read a slice of an attachment's extracted text */
+  readAttachment(path: string, offset?: number, maxChars?: number): Promise<AttachmentReadResult>
+  /** load persisted home chat sessions (userData/home-chat-sessions.json) */
+  chatSessionsLoad(): Promise<HomeChatSession[]>
+  /** persist home chat sessions */
+  chatSessionsSave(sessions: HomeChatSession[]): Promise<void>
 }
 
+
+// ── Home chat (AI agent on the home screen) ─────────────────
+
+/** a file attached to a home chat message (metadata only; bytes stay on disk) */
+export type HomeChatAttachment = AttachmentMeta
+
+/** side card rendered under an assistant message */
+export type HomeChatCard =
+  /** the streamed body became a document that opened in a new tab */
+  | { kind: 'doc-created'; title: string; docType: 'docx' | 'md'; filePath?: string | undefined }
+  /** an existing document was opened (with the conversation handed off to its panel) */
+  | { kind: 'doc-opened'; title: string; filePath: string }
+  /** no usable model is configured; offers a jump to AI settings */
+  | { kind: 'setup-required' }
+
+export interface HomeChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  text: string
+  /** assistant text is a document body: restricted HTML for docx, Markdown for md */
+  bodyFormat?: 'html' | 'markdown' | undefined
+  attachments?: HomeChatAttachment[] | undefined
+  card?: HomeChatCard | undefined
+  /** model/IPC failure — the text holds the error description */
+  error?: boolean | undefined
+  ts: number
+}
+
+export interface HomeChatSession {
+  id: string
+  /** sidebar label: first user message, truncated */
+  title: string
+  createdAt: number
+  updatedAt: number
+  messages: HomeChatMessage[]
+  /** set when the conversation moved into a document tab's AI panel: the home
+   * copy becomes read-only and offers "open that tab" instead of continuing */
+  handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
+}
 
 /** 'starred' = went to GitHub or said "already starred" (never prompt again);
  * 'later' = dismissed this time (already counted as shown by the query) */
@@ -314,6 +380,8 @@ export const HOME_CHANNELS = {
   cloudProjects: 'home:cloud-projects',
   cloudProjectsCached: 'home:cloud-projects-cached',
   openCloudProject: 'home:open-cloud-project',
+  chatSessionsLoad: 'home:chat-sessions-load',
+  chatSessionsSave: 'home:chat-sessions-save',
 } as const
 
 export const PROJECT_CHANNELS = {

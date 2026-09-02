@@ -3178,6 +3178,27 @@ function registerHomeIpc(): void {
     const url = cloudProjectExternalUrl(projectUrl)
     if (url) void shell.openExternal(url)
   })
+
+  // home chat sessions: renderer owns the shape; main persists it atomically
+  const chatSessionsPath = () => join(app.getPath('userData'), 'home-chat-sessions.json')
+
+  ipcMain.handle(HOME_CHANNELS.chatSessionsLoad, (): unknown => {
+    try {
+      const raw = readFileSync(chatSessionsPath(), 'utf8')
+      const parsed: unknown = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  })
+
+  ipcMain.handle(HOME_CHANNELS.chatSessionsSave, (_event, sessions: unknown) => {
+    if (!Array.isArray(sessions)) return
+    const target = chatSessionsPath()
+    const tmp = `${target}.tmp`
+    writeFileSync(tmp, JSON.stringify(sessions))
+    renameSync(tmp, target)
+  })
 }
 
 function stringPaths(value: unknown): string[] {

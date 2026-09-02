@@ -12,6 +12,7 @@ import type {
   AccountStatus,
   CloudProjectsSnapshot,
   HomeApi,
+  HomeChatSession,
   RecentEntry,
   RecentPage,
   RenameResult,
@@ -266,6 +267,47 @@ const homeApi: HomeApi = {
   },
   async gskLogin() {
     await ipcRenderer.invoke('ai:gsk-login')
+  },
+  // ai:stream / files:* / docs:create-document channels are registered process-wide
+  // by the aggregated editor mains the shell loads (ai-host / docs-main)
+  async aiStream(request) {
+    await ipcRenderer.invoke('ai:stream', request)
+  },
+  async aiStreamCancel(requestId) {
+    await ipcRenderer.invoke('ai:stream-cancel', requestId)
+  },
+  onAiStream(handler) {
+    const listener = (_event: IpcRendererEvent, chunk: Parameters<typeof handler>[0]) =>
+      handler(chunk)
+    ipcRenderer.on('ai:stream-chunk', listener)
+    return () => ipcRenderer.removeListener('ai:stream-chunk', listener)
+  },
+  async createDocument(request) {
+    return (await ipcRenderer.invoke('docs:create-document', request)) as Awaited<
+      ReturnType<HomeApi['createDocument']>
+    >
+  },
+  async pickAttachments() {
+    return (await ipcRenderer.invoke('files:pick')) as Awaited<
+      ReturnType<HomeApi['pickAttachments']>
+    >
+  },
+  async validateAttachments(paths) {
+    return (await ipcRenderer.invoke('files:add', paths)) as Awaited<
+      ReturnType<HomeApi['validateAttachments']>
+    >
+  },
+  async readAttachment(path, offset, maxChars) {
+    return (await ipcRenderer.invoke('files:read', path, offset, maxChars)) as Awaited<
+      ReturnType<HomeApi['readAttachment']>
+    >
+  },
+  async chatSessionsLoad() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsLoad)
+    return Array.isArray(result) ? (result as HomeChatSession[]) : []
+  },
+  async chatSessionsSave(sessions) {
+    await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsSave, sessions)
   },
 }
 
