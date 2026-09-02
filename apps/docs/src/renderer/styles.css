@@ -559,18 +559,6 @@ html.genoffice-popover-open .ribbon-tabs {
   box-shadow: var(--docs-shadow-badge);
 }
 
-/* Genspark brand logo (Ribbon AI button and AI panel title) */
-.genspark-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
-
-.ai-panel-title .genspark-badge {
-  width: 18px;
-  height: 18px;
-}
 /* ---- ribbon body ---- */
 
 .ribbon-body {
@@ -747,31 +735,6 @@ html.genoffice-popover-open .ribbon-tabs {
 /* Active state paints only the gray icon plate — ink stays the standard #232425 */
 .rb-big.active .rb-big-icon {
   background: var(--active-bg);
-}
-
-/* The Genspark AI entry keeps a black label even while the panel is open. */
-.rb-big.ai-entry.active {
-  color: var(--text);
-}
-
-/* The AI entry buttons read as one piece: hover/press tint the whole button
-   (icon + label together), unlike the other tall buttons where only the icon
-   row is painted. */
-.rb-big.ai-entry {
-  border-radius: 4px;
-}
-
-.rb-big.ai-entry:hover:not(:disabled) {
-  background: var(--hover);
-}
-
-.rb-big.ai-entry.active {
-  background: var(--active-bg);
-}
-
-.rb-big.ai-entry:hover:not(:disabled) .rb-big-icon,
-.rb-big.ai-entry.active .rb-big-icon {
-  background: transparent;
 }
 
 .rb-col {
@@ -1196,9 +1159,7 @@ html.genoffice-popover-open .ribbon-tabs {
 }
 
 /* line spacing dropdown */
-/* Home-tab Genspark AI entry: black circular "+" badge with a dropdown caret,
-   brand label below (mirrors the sheets Home ribbon). */
-/* AI feature buttons next to the entry: purple glyphs, label below */
+/* AI feature buttons: purple glyphs, label below */
 .ai-feature-icon {
   display: grid;
   place-items: center;
@@ -5633,31 +5594,7 @@ body.docs-crop-active
 /* drag handle / divider between panel and editor is owned by the DockShell
    (.dockshell-resizer in @genoffice/ui dock.css) */
 
-.ai-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px 10px 14px;
-  border-bottom: 1px solid var(--color-border-default);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-text-primary);
-}
-
-.ai-panel-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-}
-
-.ai-panel-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  min-width: 0;
-}
+/* header strip = tab bar (PanelTabs, .ai-tab-* in @genoffice/ui dock.css) */
 
 .ai-header-btn {
   display: flex;
@@ -5678,6 +5615,72 @@ body.docs-crop-active
 .ai-header-btn:hover {
   background: var(--color-bg-subtle);
   color: var(--color-text-primary);
+}
+
+/* ---- 助手 tab: one-click action list (icon + name + description) ---- */
+
+.ai-assistant {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-assist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-8);
+  background: var(--color-bg-page);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--gs-font-sans);
+}
+
+.ai-assist-item:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.ai-assist-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ai-assist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-8);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.ai-assist-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-assist-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ai-assist-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .ai-chat {

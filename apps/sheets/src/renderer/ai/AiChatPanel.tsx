@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { AiComposer, AiTypingIndicator } from '@genoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  Markdown,
+  PanelTabs,
+  usePanelTab,
+} from '@genoffice/ui'
 import type { DockChrome } from '@genoffice/ui'
-import { GensparkMark } from '../ribbon-icons'
+import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
 import type { ChangePlan } from '../../domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
-import { Markdown } from '@genoffice/ui'
 import { SHEET_NAV_SCHEME } from './sheet-nav'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
@@ -258,6 +263,11 @@ export function AiChatPanel({
   readonly onCitation: (href: string) => void
 }): React.JSX.Element {
   const { t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aisheets.aiTab', aiTabs)
   const chatRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const stickToBottomRef = useRef(true)
@@ -364,6 +374,34 @@ export function AiChatPanel({
     if (paths.length > 0) onAddAttachmentPaths(paths)
   }
 
+  /** 助手 tab: the one-click actions from the old ribbon group, list style */
+  const assistItems = [
+    {
+      id: 'check',
+      label: t('aiCheckBtn'),
+      desc: t('aiCheckDesc'),
+      icon: <IconAiCheck />,
+      disabled: !hasContent,
+      run: () => {
+        stickToBottomRef.current = true
+        onSend(t('aiCheckPrompt'))
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'analyze',
+      label: t('aiAnalyzeBtn'),
+      desc: t('aiAnalyzeDesc'),
+      icon: <IconAiAnalyze />,
+      disabled: !hasContent,
+      run: () => {
+        stickToBottomRef.current = true
+        onSend(t('aiAnalyzePrompt'))
+        selectTab('chat')
+      },
+    },
+  ]
+
   return (
     <aside
       className={`copilot${dragOver ? ' ai-panel-dragover' : ''}`}
@@ -379,13 +417,12 @@ export function AiChatPanel({
       }}
       onDrop={onDrop}
     >
-      <header className="ai-panel-header" {...dockChrome?.dragProps}>
-        <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          Genspark
-        </span>
-        <div className="ai-panel-header-actions">
-          {(chat.length > 0 || historicChat.length > 0) && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
             <button
               className="ai-header-btn"
               onClick={onNewChat}
@@ -394,12 +431,18 @@ export function AiChatPanel({
             >
               <IconNewChat size={15} />
             </button>
-          )}
-          {dockChrome?.buttons}
-        </div>
-      </header>
+          ) : undefined
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
 
-      <div className="ai-chat" ref={chatRef} onScroll={onChatScroll}>
+      <div
+        className="ai-chat"
+        ref={chatRef}
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+        onScroll={onChatScroll}
+      >
         {/* Past conversation (read-only transcript), shown continuously with the current turn */}
         {historicChat.length > 0 && (
           <>
@@ -545,7 +588,9 @@ export function AiChatPanel({
         )}
       </div>
 
-      <div className="ai-composer">
+      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+
+      <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
         <AiComposer
           header={

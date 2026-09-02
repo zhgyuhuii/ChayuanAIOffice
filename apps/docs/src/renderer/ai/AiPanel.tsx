@@ -23,9 +23,9 @@ import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
 import { Markdown } from '@genoffice/ui'
-import { AiComposer, AiTypingIndicator } from '@genoffice/ui'
+import { AiComposer, AiTypingIndicator, PanelTabs, usePanelTab } from '@genoffice/ui'
 import type { DockChrome } from '@genoffice/ui'
-import { GensparkMark } from '../components/icons'
+import { AssistantTab, IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
 import sendStop from '../assets/send-stop.png'
@@ -280,6 +280,11 @@ export function AiPanel({
   hfAccess,
 }: AiPanelProps) {
   const { t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aidocs.aiTab', aiTabs)
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   /** Wall-clock start of the current run, drives the elapsed badge */
@@ -891,8 +896,47 @@ export function AiPanel({
     )
   }
 
-  // collapsed: the DockShell hides this subtree and shows its own rail — the
-  // component stays mounted so chat state and in-flight runs survive
+  // collapsed: the DockShell hides this subtree — the component stays mounted
+  // so chat state and in-flight runs survive
+
+  /** 助手 tab: the one-click actions from the old ribbon group, list style */
+  const assistItems = [
+    {
+      id: 'summarize',
+      label: t('aiSummarizeBtn'),
+      desc: t('aiSummarizeDesc'),
+      icon: <IconAiSummarize />,
+      disabled: docEmpty,
+      run: () => {
+        runWith(t('aiSummarizePrompt'))
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'polish',
+      label: t('aiPolishBtn'),
+      desc: t('aiPolishDesc'),
+      icon: <IconAiPolish />,
+      disabled: docEmpty,
+      run: () => {
+        runWith(
+          t(editor.state.selection.empty ? 'aiPolishPrompt' : 'aiPolishSelectionPrompt'),
+        )
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'tidy',
+      label: t('aiTidyBtn'),
+      desc: t('aiTidyDesc'),
+      icon: <IconAiTidy />,
+      disabled: docEmpty,
+      run: () => {
+        runWith(t('aiTidyPrompt'))
+        selectTab('chat')
+      },
+    },
+  ]
 
   return (
     <aside
@@ -909,13 +953,12 @@ export function AiPanel({
       }}
       onDrop={onDrop}
     >
-      <div className="ai-panel-header" {...dockChrome?.dragProps}>
-        <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          {t('aiPanelTitle')}
-        </span>
-        <div className="ai-panel-header-actions">
-          {chat.length > 0 && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={newChat}
@@ -924,12 +967,18 @@ export function AiPanel({
             >
               <IconNewChat size={16} />
             </button>
-          )}
-          {dockChrome?.buttons}
-        </div>
-      </div>
+          ) : undefined
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
 
-      <div ref={logRef} className="ai-chat" onScroll={onLogScroll}>
+      <div
+        ref={logRef}
+        className="ai-chat"
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+        onScroll={onLogScroll}
+      >
         {/* past conversation (read-only transcript, not fed to the model), shown continuously with the current turn */}
         {historicChat.length > 0 && (
           <>
@@ -1101,7 +1150,15 @@ export function AiPanel({
         })}
       </div>
 
-      <div className="ai-composer">
+      <AssistantTab
+        items={assistItems}
+        hidden={tab !== 'assistant'}
+      />
+
+      <div
+        className="ai-composer"
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+      >
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
         <EditQueueCard
           items={editQueue}

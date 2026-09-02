@@ -37,8 +37,7 @@ import {
   settingsSupportVision,
 } from './slide-qc'
 import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
-import { Markdown } from '@genoffice/ui'
-import { GensparkMark } from '../components/icons'
+import { Markdown, PanelTabs, usePanelTab } from '@genoffice/ui'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
 import sendStop from '../assets/send-stop.png'
@@ -53,6 +52,7 @@ import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
 import { IconNewChat } from '../components/icons'
+import { AssistantTab, IconAiAskSelection, IconAiBeautify, IconAiFactCheck, IconAiImage } from './AssistantTab'
 import type { DockChrome } from '@genoffice/ui'
 
 interface ToolActivity {
@@ -309,6 +309,8 @@ interface AiPanelProps {
   onQueueFocus?: (key: string) => void
   /** Drop the items a submission finished with (successful and unrunnable alike) */
   onQueueConsume?: (keys: string[]) => void
+  /** Open the stage-side popover that queues an AI edit for the selected elements */
+  onAskSelection?: () => void
 }
 
 /** Some locales already end the label with an ellipsis — normalize to exactly one. */
@@ -377,8 +379,14 @@ export function AiPanel({
   onQueueClear,
   onQueueFocus,
   onQueueConsume,
+  onAskSelection,
 }: AiPanelProps) {
   const { t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aislides.aiTab', aiTabs)
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [chat, setChat] = useState<ChatEntry[]>([])
@@ -1865,6 +1873,54 @@ export function AiPanel({
   const removeAttachment = (path: string) =>
     setAttachments((prev) => prev.filter((a) => a.path !== path))
 
+  const hasDoc = !!slides[current]
+  const assistItems = [
+    {
+      id: 'ask',
+      label: t('aiAskBtn'),
+      desc: t('aiAskDesc'),
+      icon: <IconAiAskSelection />,
+      disabled: !hasDoc || selectedIds.length === 0,
+      run: () => {
+        selectTab('chat')
+        onAskSelection?.()
+      },
+    },
+    {
+      id: 'beautify',
+      label: t('aiBeautifyBtn'),
+      desc: t('aiBeautifyDesc'),
+      icon: <IconAiBeautify />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        runWith(t('aiBeautifyPrompt'), undefined, { slideShot: true })
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'factcheck',
+      label: t('aiFactCheckBtn'),
+      desc: t('aiFactCheckDesc'),
+      icon: <IconAiFactCheck />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        runWith(t('aiFactCheckPrompt'))
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'image',
+      label: t('aiImageBtn'),
+      desc: t('aiImageDesc'),
+      icon: <IconAiImage />,
+      disabled: !hasDoc || deckEmpty,
+      run: () => {
+        runWith(t('aiImagePrompt'))
+        selectTab('chat')
+      },
+    },
+  ]
+
   return (
     <aside
       className={`ai-panel${dragOver ? ' ai-panel-dragover' : ''}`}
@@ -1880,13 +1936,12 @@ export function AiPanel({
       }}
       onDrop={onDrop}
     >
-      <div className="ai-panel-header" {...dockChrome?.dragProps}>
-        <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          {t('aiPanelTitle')}
-        </span>
-        <div className="ai-panel-header-actions">
-          {chat.length > 0 && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={newChat}
@@ -1895,12 +1950,18 @@ export function AiPanel({
             >
               <IconNewChat size={15} />
             </button>
-          )}
-          {dockChrome?.buttons}
-        </div>
-      </div>
+          ) : undefined
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
 
-      <div ref={logRef} className="ai-chat" onScroll={onLogScroll}>
+      <div
+        ref={logRef}
+        className="ai-chat"
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+        onScroll={onLogScroll}
+      >
         {/* Past conversation (read-only transcript, not fed to the model), displayed continuously with the current turn */}
         {historicChat.length > 0 && (
           <>
@@ -2088,7 +2149,9 @@ export function AiPanel({
         )}
       </div>
 
-      {activeClarify ? (
+      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+
+      {tab === 'chat' && activeClarify ? (
         /* Docked in the composer slot with the composer's own outer spacing */
         <div className="ai-composer">
           <ClarifyCard
@@ -2107,7 +2170,10 @@ export function AiPanel({
           />
         </div>
       ) : (
-        <div className="ai-composer">
+        <div
+          className="ai-composer"
+          style={tab === 'chat' ? undefined : { display: 'none' }}
+        >
           {editQueue && editQueue.length > 0 && (
             <EditQueueCard
               items={editQueue}

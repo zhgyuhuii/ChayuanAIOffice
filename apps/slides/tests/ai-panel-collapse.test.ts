@@ -38,7 +38,7 @@ const settings: AiSettings = {
 }
 
 const LABELS = {
-  panelTitle: 'Genspark',
+  panelTitle: 'AI 助手',
   layoutMenu: 'Panel layout',
   dockLeft: 'Dock left',
   dockRight: 'Dock right',

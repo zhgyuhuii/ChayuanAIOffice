@@ -7,7 +7,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { DockShell, type DockChrome } from '@genoffice/ui'
 
 const LABELS = {
-  panelTitle: 'Genspark',
+  panelTitle: 'AI 助手',
   layoutMenu: 'Panel layout',
   dockLeft: 'Dock left',
   dockRight: 'Dock right',

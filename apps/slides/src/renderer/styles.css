@@ -72,7 +72,6 @@
   --slides-text-disabled: #b0b0b0;
   --slides-hover-wash: color-mix(in srgb, var(--accent) 10%, transparent);
   --slides-hover-wash-soft: color-mix(in srgb, var(--accent) 8%, transparent);
-  --slides-stagebar-ink: #374151;
   --slides-comment-bg: #fffdfa;
   --slides-chip-bg: #f6f8fc;
   --slides-att-bg: #fafafa;
@@ -204,7 +203,6 @@
   --slides-text-disabled: #666;
   --slides-hover-wash: color-mix(in srgb, var(--accent) 15%, transparent);
   --slides-hover-wash-soft: color-mix(in srgb, var(--accent) 12%, transparent);
-  --slides-stagebar-ink: #d0d0d0;
   --slides-comment-bg: #2b2a26;
   --slides-chip-bg: #2a2f36;
   --slides-att-bg: #2a2a2a;
@@ -252,7 +250,6 @@
     --slides-text-disabled: #666;
     --slides-hover-wash: color-mix(in srgb, var(--accent) 15%, transparent);
     --slides-hover-wash-soft: color-mix(in srgb, var(--accent) 12%, transparent);
-    --slides-stagebar-ink: #d0d0d0;
     --slides-comment-bg: #2b2a26;
     --slides-chip-bg: #2a2f36;
     --slides-att-bg: #2a2a2a;
@@ -611,27 +608,6 @@ button {
   box-shadow: none;
 }
 
-/* AI entry points all use the app icon (Ribbon AI button / AI panel title / collapsed entry) */
-.app-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  box-shadow: var(--slides-shadow-badge-soft);
-}
-
-/* Genspark brand logo (Ribbon AI button / AI panel title / collapsed entry) */
-.genspark-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
-
-.ai-panel-title .genspark-badge {
-  width: 18px;
-  height: 18px;
-}
 /* ---- ribbon body ---- */
 
 .ribbon-body {
@@ -744,9 +720,7 @@ button {
   color: var(--text-primary);
 }
 
-/* Home-tab Genspark AI entry: black circular "+" badge with a dropdown caret,
-   brand label below (mirrors the sheets Home ribbon). */
-/* AI feature buttons next to the entry: purple glyphs, label below */
+/* AI feature icons in ribbon buttons: purple glyphs, centered in a 28px box */
 .ai-feature-icon {
   display: grid;
   place-items: center;
@@ -788,32 +762,6 @@ button {
 
 .rb-big.active .rb-big-icon {
   background: var(--active-bg);
-}
-
-/* The Genspark AI entry keeps a black label even while the panel is open. */
-.rb-big.ai-entry.active {
-  color: var(--text);
-}
-
-/* The AI entry buttons read as one piece: hover/press tint the whole button
-   (icon + label together), unlike the other tall buttons where only the icon
-   row is painted. */
-.rb-big.ai-entry {
-  border-radius: 4px;
-}
-
-.rb-big.ai-entry:hover:not(:disabled) {
-  background: var(--hover);
-}
-
-.rb-big.ai-entry.active {
-  /* neutral gray, shared with the docs/sheets Genspark entries */
-  background: var(--active-bg);
-}
-
-.rb-big.ai-entry:hover:not(:disabled) .rb-big-icon,
-.rb-big.ai-entry.active .rb-big-icon {
-  background: transparent;
 }
 
 /* hover/open paint only the icon row — the label below
@@ -1230,8 +1178,6 @@ body.vib .slide-list {
 .stage-wrap {
   flex: 1;
   overflow: auto;
-  /* 48px top: headroom for the .stage-ai-bar overhanging the slide card, so it
-     is never clipped by the pane edge at any window/zoom size */
   padding: 48px 32px 32px;
   display: flex;
   /* flex-start + auto margins on the zoom-box: centered (both axes) while it
@@ -1519,29 +1465,74 @@ body.vib .slide-list {
   color: var(--color-text-primary);
 }
 
-.ai-panel-header {
+/* 助手 tab: one-click AI actions as a list (icon tile + name + description) */
+.ai-assistant {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px 10px 14px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.ai-panel-title {
+.ai-assist-item {
   display: flex;
   align-items: center;
-  gap: 7px;
-  white-space: nowrap;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-8);
+  background: var(--color-bg-page);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--gs-font-sans);
 }
 
-.ai-panel-header-actions {
+.ai-assist-item:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.ai-assist-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ai-assist-icon {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-8);
+  background: color-mix(in srgb, var(--color-brand-secondary) 12%, transparent);
+  color: var(--color-brand-secondary);
+}
+
+.ai-assist-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.ai-assist-text {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+
+.ai-assist-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ai-assist-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .ai-header-btn {
@@ -5440,86 +5431,6 @@ body.vib .slide-list {
 
 .stage-col .stage-wrap {
   flex: 1;
-}
-
-/* AI quick actions anchored right above the slide card (mirrors the Home-tab
-   Genspark AI group); absolute so it doesn't distort the zoom-box extent.
-   z-index lifts it over the Konva stage's transparent 160px bleed, which
-   otherwise swallows the clicks */
-/* Genspark SAS floating toolbar, matched to the reference stage-toolbar:
-   white bar (padding 3px 5px, ~35px tall); 24px borderless tool buttons
-   with 12px #374151 labels; thin span dividers separate the groups; the
-   assistant toggle shows a gray selected state while the panel is open */
-.stage-ai-bar {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  /* Deck-wide presets and the selection-scoped entry sit in separate pills, so
-   * the gap itself tells them apart — they act on different things */
-  gap: 8px;
-  margin-bottom: 6px;
-  white-space: nowrap;
-}
-
-.stage-ai-group {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 5px;
-  background: var(--surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  box-shadow: var(--slides-shadow-toolbar);
-}
-
-.stage-ai-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 24px;
-  padding: 0 8px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--slides-stagebar-ink);
-  font-size: 12px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.stage-ai-btn:hover {
-  background: var(--hover);
-}
-
-.stage-ai-btn:active {
-  background: var(--pressed);
-  transform: translateY(0.5px) scale(0.98);
-}
-
-.stage-ai-btn.active {
-  background: var(--hover);
-}
-
-.stage-ai-divider {
-  flex-shrink: 0;
-  width: 1px;
-  height: 16px;
-  margin: 0 6px;
-  background: var(--border);
-}
-
-.stage-ai-btn svg {
-  flex-shrink: 0;
-  /* AI feature glyphs match the ribbon's blue */
-  color: var(--color-brand-secondary);
-}
-
-/* the brand mark uses currentColor and keeps the button's ink, not the blue */
-.stage-ai-btn svg.genspark-mark {
-  color: var(--slides-stagebar-ink);
 }
 
 /* Notes pane (bottom, PowerPoint style) */

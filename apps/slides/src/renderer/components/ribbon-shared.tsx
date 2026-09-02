@@ -341,8 +341,11 @@ export interface Props {
   onZoom: (z: number | ((current: number) => number)) => void
   showThumbs: boolean
   onToggleThumbs: () => void
-  aiOpen: boolean
-  onToggleAi: () => void
+  /** AI panel availability (edit view only; hidden in reading/sorter) — the bubble icon follows it */
+  aiPanelAvailable: boolean
+  /** AI panel visibility — the top-row bubble icon highlight */
+  aiPanelOpen: boolean
+  onToggleAiPanel: () => void
   /** Push a preset instruction to the AI panel and expand it (autoRun executes immediately) */
   /** slideShot: attach the current slide's rendering so the model sees the page (AI Beautify) */
   onAiPreset: (text: string, opts?: { slideShot?: boolean }) => void
@@ -605,7 +608,6 @@ export interface Props {
 /** Ribbon locals + props handed to the extracted tab components; rebuilt every render. */
 export interface RibbonTabCtx extends Pick<
   Props,
-  | 'aiOpen'
   | 'brushMode'
   | 'canDistribute'
   | 'canPaste'
@@ -667,7 +669,6 @@ export interface RibbonTabCtx extends Pick<
   | 'onStrike'
   | 'onTextColor'
   | 'onTextToggle'
-  | 'onToggleAi'
   | 'onToggleFormat'
   | 'onToggleScreenRecord'
   | 'recording'

@@ -451,7 +451,8 @@ html.genoffice-popover-open .ribbon-tabs {
   padding-right: 150px;
 }
 
-.ribbon-tabs > button:not(.qa-btn) {
+/* the AI bubble icon keeps its own .ai-panel-toggle box (dock.css) */
+.ribbon-tabs > button:not(.qa-btn):not(.ai-panel-toggle) {
   -webkit-app-region: no-drag;
   position: relative;
   border: 0;
@@ -1760,52 +1761,68 @@ button.check-item:hover {
   color: var(--color-text-primary);
 }
 
-.ai-panel-header {
+.ai-assistant {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-assist-item {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px 10px 14px;
-  border-bottom: 1px solid var(--color-border-default);
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-8);
+  background: var(--color-bg-page);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--gs-font-sans);
+}
+
+.ai-assist-item:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.ai-assist-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ai-assist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-8);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.ai-assist-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-assist-name {
+  font-size: 13px;
   font-weight: 600;
-  font-size: 14px;
   color: var(--color-text-primary);
 }
 
-.ai-panel-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-}
-
-/* AI entry points all use the app icon (shared by the collapse button and the AI panel title) */
-.app-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  box-shadow: var(--sheets-shadow-badge);
-}
-
-/* Genspark brand logo (shared by the collapse button and the AI panel title) */
-.genspark-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
-
-.ai-panel-title .genspark-badge {
-  width: 18px;
-  height: 18px;
-}
-
-.ai-panel-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  min-width: 0;
+.ai-assist-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .ai-header-btn {

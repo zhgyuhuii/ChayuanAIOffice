@@ -28,7 +28,7 @@ export interface PanelTabsProps {
   /** spread of the chrome's dragProps — the strip is the panel's drag handle */
   dragProps?: {
     onPointerDown: (e: React.PointerEvent<HTMLElement>) => void
-  }
+  } | undefined
 }
 
 export function PanelTabs({

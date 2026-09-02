@@ -12,7 +12,7 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { DockShell, Dropdown } from '@genoffice/ui'
+import { AiPanelToggle, DockShell, Dropdown } from '@genoffice/ui'
 import '@genoffice/ui/dock.css'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
@@ -4313,6 +4313,9 @@ export function App() {
       <Ribbon
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
+        trailingActions={
+          <AiPanelToggle open={showAi} onToggle={() => setShowAi((v) => !v)} label={t('aiOpenAssistant')} />
+        }
         editor={editor}
         formatState={formatState}
         hasDoc={!!doc}

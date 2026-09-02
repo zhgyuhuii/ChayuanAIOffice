@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills } from '@genoffice/agent-core'
 import type { AiSettings } from '@genoffice/ai-provider'
-import { AiComposer, AiTypingIndicator, Markdown } from '@genoffice/ui'
+import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab } from '@genoffice/ui'
 import type { DockChrome } from '@genoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
@@ -22,6 +22,7 @@ import {
   type EditQueueItem,
 } from './edit-queue'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
+import { AiFeatureIcon, AssistantTab } from './AssistantTab'
 
 // Word-parity count (docs word-count.ts): Asian chars one by one + non-Asian words
 const ASIAN_RE =
@@ -115,6 +116,11 @@ export function AiPanel({
   onQueueConsume?: (qids: string[]) => void
 }): ReactElement {
   const { lang, t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aimarkdown.aiTab', aiTabs)
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
@@ -454,15 +460,59 @@ export function AiPanel({
     send(instruction, display)
   }
 
-  // ribbon presets auto-send; while a run is active they land in the composer instead
+  // one-click sends (assistant tab items, selection-popover "send now"); while
+  // a run is active they land in the composer instead
   const presetNonceRef = useRef(0)
   useEffect(() => {
     if (!preset || preset.nonce === presetNonceRef.current) return
     presetNonceRef.current = preset.nonce
+    selectTab('chat')
     if (loopRef.current?.busy) setPrompt(preset.text)
     else send(preset.text)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preset])
+
+  // 助手 tab: the ribbon's one-click AI actions; polish/tidy act on the
+  // selection when one exists (read at click time — the editor selection
+  // survives clicks in the panel), summarize stays whole-doc
+  const docEmpty = !editor || editor.isEmpty
+  const runAssist = (text: string): void => {
+    selectTab('chat')
+    if (loopRef.current?.busy) setPrompt(text)
+    else send(text)
+  }
+  const assistItems = [
+    {
+      id: 'summarize',
+      label: t('aiSummarizeBtn'),
+      desc: t('aiSummarizeDesc'),
+      icon: <AiFeatureIcon kind="summarize" />,
+      disabled: docEmpty,
+      run: () => runAssist(t('aiSummarizePrompt')),
+    },
+    {
+      id: 'polish',
+      label: t('aiPolishBtn'),
+      desc: t('aiPolishDesc'),
+      icon: <AiFeatureIcon kind="polish" />,
+      disabled: docEmpty,
+      run: () => {
+        const sel = depsRef.current.getEditor()?.state.selection
+        runAssist(t(!(sel?.empty ?? true) ? 'aiPolishSelectionPrompt' : 'aiPolishPrompt'))
+      },
+    },
+    {
+      id: 'tidy',
+      label: t('aiTidyBtn'),
+      desc: t('aiTidyDesc'),
+      icon: <AiFeatureIcon kind="tidy" />,
+      disabled: docEmpty,
+      run: () => {
+        const sel = depsRef.current.getEditor()?.state.selection
+        runAssist(t(!(sel?.empty ?? true) ? 'aiTidySelectionPrompt' : 'aiTidyPrompt'))
+      },
+    },
+  ]
 
   const copyMessage = (text: string, idx: number): void => {
     void navigator.clipboard.writeText(text)
@@ -478,13 +528,12 @@ export function AiPanel({
 
   return (
     <aside className="copilot">
-      <header className="ai-panel-header" {...dockChrome?.dragProps}>
-        <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          Genspark
-        </span>
-        <div className="ai-panel-header-actions">
-          {chat.length > 0 && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={() => {
@@ -498,12 +547,18 @@ export function AiPanel({
             >
               <IconNewChat />
             </button>
-          )}
-          {dockChrome?.buttons}
-        </div>
-      </header>
+          ) : undefined
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
 
-      <div className="ai-chat" ref={chatRef} onScroll={onChatScroll}>
+      <div
+        className="ai-chat"
+        ref={chatRef}
+        onScroll={onChatScroll}
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+      >
         {chat.length === 0 && (
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-title">{t('aiEmptyTitle')}</div>
@@ -629,7 +684,7 @@ export function AiPanel({
         })}
       </div>
 
-      {snapshots.length > 0 && (
+      {tab === 'chat' && snapshots.length > 0 && (
         <div className="ai-versions">
           <div className="ai-versions-title">
             <IconClock />
@@ -649,7 +704,9 @@ export function AiPanel({
         </div>
       )}
 
-      <div className="ai-composer">
+      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+
+      <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         {editor && editQueue.length > 0 && (
           <EditQueueCard
             items={editQueue}
@@ -901,21 +958,3 @@ function IconClock(): ReactElement {
   )
 }
 
-/** Genspark brand mark, inline for crisp device-resolution rendering */
-export function GensparkMark({ size = 18 }: { size?: number }): React.JSX.Element {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 130 130.025"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M105.115 0H24.6428C11.0443 0 0 11.0686 0 24.6915V105.334C0 118.981 11.0199 130.025 24.6428 130.025H105.115C118.714 130.025 129.758 118.957 129.758 105.334V24.6915C129.758 11.0443 118.714 0 105.115 0ZM71.5201 35.2735C85.5078 33.1571 86.7729 31.9164 88.865 17.88C88.938 17.4421 89.3028 17.1259 89.7407 17.1259C90.1786 17.1259 90.5435 17.4421 90.6164 17.88C92.7328 31.8921 93.9735 33.1571 107.961 35.2735C108.399 35.3465 108.715 35.7114 108.715 36.1493C108.715 36.5871 108.399 36.952 107.961 37.025C93.9249 39.1414 92.7085 40.4064 90.5677 54.6131C90.5191 54.9537 90.2516 55.197 89.911 55.197C89.5704 55.197 89.3028 54.9537 89.2542 54.6131C87.1134 40.4064 85.5565 39.1658 71.4958 37.025C71.0579 36.952 70.7417 36.5871 70.7417 36.1493C70.7417 35.7114 71.0579 35.3465 71.4958 35.2735H71.5201ZM101.758 78.5261C101.758 78.8181 101.563 79.037 101.271 79.0856C92.3193 80.4236 91.5652 81.2264 90.2029 90.2759C90.1786 90.4948 89.9839 90.6408 89.7893 90.6408C89.5703 90.6408 89.4001 90.4948 89.3758 90.2759C88.0135 81.2507 87.0161 80.4479 78.0883 79.0856C77.7964 79.037 77.6017 78.7937 77.6017 78.5261C77.6017 78.2342 77.7964 78.0153 78.0883 77.9666C86.9918 76.6287 87.7703 75.8259 89.1326 66.898C89.1812 66.6061 89.4244 66.4115 89.692 66.4115C89.9839 66.4115 90.2028 66.6061 90.2515 66.898C91.5894 75.8259 92.3923 76.6043 101.296 77.9666C101.588 78.0153 101.782 78.2585 101.782 78.5261H101.758ZM16.5178 54.8077C16.5178 54.1023 17.0286 53.4941 17.7341 53.3968C40.1388 50.0154 42.1093 47.9963 45.4907 25.5672C45.588 24.8861 46.1961 24.3509 46.9016 24.3509C47.6071 24.3509 48.191 24.8617 48.3126 25.5672C51.694 47.9963 53.6887 50.0154 76.0691 53.3968C76.7503 53.4941 77.2855 54.1023 77.2855 54.8077C77.2855 55.5132 76.7746 56.1214 76.0691 56.2187C53.5914 59.6244 51.6696 61.6192 48.2639 84.3645C48.1909 84.8754 47.7287 85.2889 47.2179 85.2889C46.707 85.2889 46.2448 84.8997 46.1718 84.3645C42.7418 61.6435 40.2604 59.6244 17.7584 56.2187C17.0772 56.1214 16.542 55.5132 16.542 54.8077H16.5178ZM112.097 109.591C112.097 111.416 110.613 112.9 108.813 112.9H21.2614C19.4369 112.9 17.9774 111.416 17.9774 109.591V102.658C17.9774 100.834 19.4612 99.3497 21.2614 99.3497H108.813C110.637 99.3497 112.097 100.834 112.097 102.658V109.591Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}

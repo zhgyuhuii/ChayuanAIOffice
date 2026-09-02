@@ -101,6 +101,7 @@ import texCork from '../assets/textures/cork.png'
 import texParchment from '../assets/textures/parchment.png'
 import iconCrop from '../assets/icon-crop.png'
 import { ChartTypeDialog } from './ChartTypeDialog'
+import { AiPanelToggle } from '@genoffice/ui'
 import {
   BIG,
   Group,
@@ -1092,8 +1093,9 @@ export function Ribbon({
   onZoom,
   showThumbs,
   onToggleThumbs,
-  aiOpen,
-  onToggleAi,
+  aiPanelAvailable,
+  aiPanelOpen,
+  onToggleAiPanel,
   onAiPreset,
   onAskSelection,
   onInsert,
@@ -1568,7 +1570,6 @@ export function Ribbon({
   )
 
   const tabCtx: RibbonTabCtx = {
-    aiOpen,
     brushMode,
     canDistribute,
     canPaste,
@@ -1631,7 +1632,6 @@ export function Ribbon({
     onStrike,
     onTextColor,
     onTextToggle,
-    onToggleAi,
     onToggleFormat,
     onToggleScreenRecord,
     recording,
@@ -1840,6 +1840,9 @@ export function Ribbon({
           </button>
         )}
         <span className="ribbon-tabs-spacer" />
+        {aiPanelAvailable && (
+          <AiPanelToggle open={aiPanelOpen} onToggle={onToggleAiPanel} label={t('aiOpenAssistant')} />
+        )}
       </div>
 
       <div className="ribbon-body" ref={bodyRef}>

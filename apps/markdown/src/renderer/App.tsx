@@ -598,12 +598,9 @@ export default function App() {
         onInsertImage={insertImage}
         frontmatterOpen={fmOpen}
         onToggleFrontmatter={() => setFmOpen((v) => !v)}
-        aiOpen={aiOpen}
-        onToggleAi={() => setAiOpen((v) => !v)}
-        onAiPreset={(text) => {
-          setAiOpen(true)
-          setAiPreset((prev) => ({ text, nonce: (prev?.nonce ?? 0) + 1 }))
-        }}
+        aiPanelAvailable={status === 'ready'}
+        aiPanelOpen={aiOpen}
+        onToggleAiPanel={() => setAiOpen((v) => !v)}
       />
       {status === 'loading' && <div className="center-note">{t('loading')}</div>}
       <DockShell
@@ -615,7 +612,7 @@ export default function App() {
         onOpenChange={setAiOpen}
         panelAvailable={status === 'ready'}
         labels={{
-          panelTitle: 'Genspark',
+          panelTitle: t('aiPanelTitle'),
           layoutMenu: t('aiDockLayoutTitle'),
           dockLeft: t('aiDockLeft'),
           dockRight: t('aiDockRight'),
