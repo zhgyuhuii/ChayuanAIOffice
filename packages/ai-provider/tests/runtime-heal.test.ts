@@ -1,0 +1,127 @@
+import { describe, expect, it, vi } from 'vitest'
+import { createAiRuntime } from '../src/runtime'
+import type { AiSettingsSource } from '../src/settings-source'
+import type { AiSettingsV2, AiStreamChunk } from '../src/types'
+
+/**
+ * The login-gates-nothing heal: a current model parked on the genspark
+ * profile while signed out falls through to the first usable BYOK chat
+ * model (persisted), so chat keeps working. With no alternative the gsk
+ * error stays as the sign-in guidance.
+ */
+
+const gskProfile = {
+  id: 'genspark',
+  vendorId: 'genspark',
+  displayName: 'Genspark',
+  protocol: 'openai-completions' as const,
+  baseUrl: '',
+  auth: 'gsk-login' as const,
+  enabled: true,
+  models: [{ id: 'claude-opus-4-7' }],
+}
+
+function byokProfile(apiKey = 'sk-1') {
+  return {
+    id: 'zhipu',
+    vendorId: 'zhipu',
+    displayName: '智谱开放平台',
+    protocol: 'openai-completions' as const,
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    apiKey,
+    auth: 'api-key' as const,
+    enabled: true,
+    models: [{ id: 'glm-5.3' }],
+  }
+}
+
+function makeSource(stored: AiSettingsV2): AiSettingsSource & { writes: AiSettingsV2[] } {
+  const writes: AiSettingsV2[] = []
+  return {
+    async read() {
+      return writes.length ? writes[writes.length - 1]! : stored
+    },
+    async write(next) {
+      writes.push(next)
+    },
+    subscribe: undefined,
+    writes,
+  }
+}
+
+const noGsk = {
+  apiKey: () => '',
+  hasAuth: () => false,
+  status: async () => ({ loggedIn: false }),
+  generateImage: async () => ({ url: '' }),
+}
+
+const translate = (key: string) => key
+
+describe('runtime gsk fallback heal', () => {
+  it('switches the current model off the gsk profile when signed out and a BYOK chat model exists', async () => {
+    const source = makeSource({
+      version: 2,
+      profiles: [gskProfile, byokProfile()],
+      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+    })
+    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+
+    const view = await runtime.getSettingsView()
+    expect(view.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
+    // persisted: subsequent reads are stable (single write)
+    const again = await runtime.getSettingsView()
+    expect(again.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
+    expect(source.writes.length).toBe(1)
+  })
+
+  it('keeps the gsk selection (sign-in guidance) when no alternative exists', async () => {
+    const source = makeSource({
+      version: 2,
+      profiles: [gskProfile],
+      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+    })
+    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+
+    const view = await runtime.getSettingsView()
+    expect(view.currentModel).toEqual({ profileId: 'genspark', modelId: 'claude-opus-4-7' })
+    expect(source.writes.length).toBe(0)
+  })
+
+  it('leaves the gsk selection alone while signed in', async () => {
+    const source = makeSource({
+      version: 2,
+      profiles: [gskProfile, byokProfile()],
+      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+    })
+    const runtime = createAiRuntime({
+      source,
+      gsk: { ...noGsk, hasAuth: () => true, apiKey: () => 'gsk-key' },
+      translate,
+    })
+    const view = await runtime.getSettingsView()
+    expect(view.currentModel).toEqual({ profileId: 'genspark', modelId: 'claude-opus-4-7' })
+    expect(source.writes.length).toBe(0)
+  })
+
+  it('a run with a parked gsk selection resolves the BYOK fallback instead of erroring', async () => {
+    const source = makeSource({
+      version: 2,
+      profiles: [gskProfile, byokProfile()],
+      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+    })
+    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+    const chunks: AiStreamChunk[] = []
+    // the healed read swaps the selection before resolution; resolveForRun on
+    // the stale selection would throw — verify via the healed view + resolve
+    const view = await runtime.getSettingsView()
+    await expect(
+      runtime.resolveForRun(view.currentModel!),
+    ).resolves.toMatchObject({
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+      apiKey: 'sk-1',
+      model: 'glm-5.3',
+    })
+    void chunks
+  })
+})

@@ -4,6 +4,7 @@ import { generateImageWithModel, type ImageGenRequest } from './imagegen'
 import { isAiNetworkError } from './network-error'
 import { isAiOverloadedError } from './overload-error'
 import {
+  enabledChatModels,
   findProfile,
   migrateSettingsV2,
   pickImageModel,
@@ -74,13 +75,31 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   const { source, gsk, translate } = deps
 
   const readRaw = async (): Promise<AiSettingsV2> => {
-    const settings = await source.read()
+    let settings = await source.read()
     // v1 healing carried over: the login-backed default with cloud tools opted
     // out is a pre-lock combination; keep tools on for the genspark profile
     if (settings.gskToolsEnabled === false && settings.currentModel?.profileId === 'genspark') {
-      const healed = { ...settings, gskToolsEnabled: true }
-      await source.write(healed)
-      return healed
+      settings = { ...settings, gskToolsEnabled: true }
+      await source.write(settings)
+    }
+    // login gates nothing (consensus): a current model parked on the gsk
+    // profile while signed out falls through to the first usable BYOK chat
+    // model, so chat keeps working instead of erroring. The gsk error with its
+    // inline sign-in button stays the guidance only when nothing else exists.
+    const current = resolveCurrentModel(settings)
+    if (current?.profileId === 'genspark' && !gsk.hasAuth()) {
+      const fallback = enabledChatModels(settings).find((m) => {
+        if (m.profileId === 'genspark') return false
+        const profile = findProfile(settings, m.profileId)
+        return !!profile && (!!profile.apiKey || !!profile.ollamaLike)
+      })
+      if (fallback) {
+        settings = {
+          ...settings,
+          currentModel: { profileId: fallback.profileId, modelId: fallback.modelId },
+        }
+        await source.write(settings)
+      }
     }
     return settings
   }
