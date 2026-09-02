@@ -27,6 +27,12 @@
   min-height: 0;
 }
 
+/* column body: children must shrink past their content height, else a tall
+ * editor kills its own scroller and overflows over a bottom-docked panel */
+.dockshell-body > * {
+  min-height: 0;
+}
+
 /* reserves the docked strip while the panel is carried during a tear drag —
  * the editor holds its layout until the drop commits */
 .dockshell-slot {
@@ -297,7 +303,9 @@
   height: var(--dock-h);
   z-index: 40;
   border-radius: 10px;
-  box-shadow: 0 14px 36px rgb(0 0 0 / 30%), 0 2px 8px rgb(0 0 0 / 14%);
+  box-shadow:
+    0 14px 36px rgb(0 0 0 / 30%),
+    0 2px 8px rgb(0 0 0 / 14%);
   opacity: 0.97;
 }
 

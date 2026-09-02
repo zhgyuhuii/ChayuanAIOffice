@@ -484,9 +484,9 @@ export function DockShell({
     const shell = rootRef.current?.getBoundingClientRect()
     if (!shell) return
     const pos = stateRef.current.position
-    document.body.style.cursor = pos === 'bottom' ? 'row-resize' : 'col-resize'
-    document.body.style.userSelect = 'none'
     setResizing(true)
+    // body styles go on AFTER trackPointer: it snapshots the current values
+    // for restore, and must not capture the drag's own cursor/userSelect
     trackPointer(
       e,
       (ev) => {
@@ -504,6 +504,8 @@ export function DockShell({
       },
       () => setResizing(false),
     )
+    document.body.style.cursor = pos === 'bottom' ? 'row-resize' : 'col-resize'
+    document.body.style.userSelect = 'none'
   }
 
   /** float window resize from an edge/corner handle */
