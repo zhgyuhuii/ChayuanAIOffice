@@ -20,14 +20,14 @@ vi.mock('electron', () => ({
     on: electronMocks.on,
     removeListener: electronMocks.removeListener,
   },
-  // the preload imports @genoffice/electron-utils (drop-open bridge), which
+  // the preload imports @chatoffice/electron-utils (drop-open bridge), which
   // binds webUtils at module scope even though node env never installs it
   webUtils: { getPathForFile: () => '' },
 }))
 
 import '../src/preload/index'
 
-const homeApi = electronMocks.exposed.get('aiOffice') as HomeApi
+const homeApi = electronMocks.exposed.get('chatOffice') as HomeApi
 
 beforeEach(() => {
   electronMocks.invoke.mockReset()

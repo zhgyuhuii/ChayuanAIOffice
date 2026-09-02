@@ -131,8 +131,8 @@ import {
   COMPLETED_VIA_TOOLS_TEXT,
   composeSkills,
   type AgentImage,
-} from '@genoffice/agent-core'
-import { enabledChatModels, type AiSettingsV2 } from '@genoffice/ai-provider'
+} from '@chatoffice/agent-core'
+import { enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
@@ -1590,7 +1590,7 @@ export function App(): React.JSX.Element {
     const multiRowAutofitDisposable = installMultiRowAutofit(runtime)
     // Wide expression CF rules register folded/windowed formula ranges so
     // the engine stops rebuilding millions of per-cell dependency trees on
-    // every stream-in recalculation (genoffice#158).
+    // every stream-in recalculation (chatoffice#158).
     const cfFormulaFoldDisposable = installCfFormulaFold(runtime)
     // Empty-value formula results (IFERROR/IF/CHOOSE over blank refs)
     // display as 0 like Excel.

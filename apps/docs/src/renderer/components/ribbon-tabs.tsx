@@ -5,7 +5,7 @@ import {
   useDismissablePopover,
   wordArtSolidColor,
   type WordArtPreset,
-} from '@genoffice/ui'
+} from '@chatoffice/ui'
 import {
   buildLineParagraphXml,
   buildShapeParagraphXml,
@@ -14,7 +14,7 @@ import {
   LINE_KINDS,
   type HeaderFooter,
   type TextboxDisplay,
-} from '@genoffice/docx-engine'
+} from '@chatoffice/docx-engine'
 import type { DocsTabInfo } from '../../shared/ipc'
 import { tableModelToPmNode } from '../editor/convert'
 import { insertPageBreak } from '../editor/page-break'
@@ -1353,7 +1353,7 @@ export function ViewTab({
                     }}
                   >
                     {w.focused ? '✓ ' : ''}
-                    {w.title || 'GenOffice Docs'}
+                    {w.title || 'ChatOffice Docs'}
                   </button>
                 ))}
               </div>

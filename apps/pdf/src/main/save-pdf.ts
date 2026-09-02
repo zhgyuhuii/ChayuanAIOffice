@@ -31,7 +31,7 @@ import type {
 import { writePdfAtomically } from './atomic-write'
 
 const num = (v: number) => Math.round(v * 100) / 100
-const STATIC_FORM_FILLS_KEY = PDFName.of('GenOfficeStaticFormFills')
+const STATIC_FORM_FILLS_KEY = PDFName.of('ChatOfficeStaticFormFills')
 
 function validStaticFormFill(value: unknown): value is StaticFormFillRecord {
   if (!value || typeof value !== 'object') return false
@@ -78,7 +78,7 @@ function resultingStaticFormFills(
 
 function setVisualSignatureMetadata(annot: PDFDict, fieldName: string | undefined): void {
   if (!fieldName) return
-  annot.set(PDFName.of('GenOfficeFormField'), PDFHexString.fromText(fieldName))
+  annot.set(PDFName.of('ChatOfficeFormField'), PDFHexString.fromText(fieldName))
   annot.set(
     PDFName.of('Contents'),
     PDFHexString.fromText(`${VISUAL_SIGNATURE_CONTENT_PREFIX}${fieldName}`),
@@ -161,7 +161,7 @@ function addMarkup(pdfDoc: PDFDocument, page: PDFPage, m: MarkupInput): void {
     QuadPoints: m.quads.flat(),
     C: m.color,
     F: 4, // print
-    T: 'GenOffice',
+    T: 'ChatOffice',
     P: page.ref,
     AP: { N: apRef },
   })
@@ -233,7 +233,7 @@ async function addImageStamp(
     P: page.ref,
     AP: { N: pdfDoc.context.register(ap) },
   })
-  annot.set(PDFName.of('T'), PDFHexString.fromText('GenOffice'))
+  annot.set(PDFName.of('T'), PDFHexString.fromText('ChatOffice'))
   setVisualSignatureMetadata(annot, d.formFieldName)
   appendAnnot(pdfDoc, page, pdfDoc.context.register(annot))
 }
@@ -317,7 +317,7 @@ function addDrawing(
       P: page.ref,
     })
     annot.set(PDFName.of('Contents'), PDFHexString.fromText(d.contents))
-    annot.set(PDFName.of('T'), PDFHexString.fromText(d.author || 'GenOffice'))
+    annot.set(PDFName.of('T'), PDFHexString.fromText(d.author || 'ChatOffice'))
     const when = pdfDateString(d.createdMs ?? Date.now())
     annot.set(PDFName.of('CreationDate'), PDFString.of(when))
     annot.set(PDFName.of('M'), PDFString.of(when))
@@ -404,7 +404,7 @@ function addDrawing(
   if (d.kind === 'line' || d.kind === 'arrow') {
     annot.set(PDFName.of('L'), pdfDoc.context.obj([...d.from, ...d.to]))
   }
-  annot.set(PDFName.of('T'), PDFHexString.fromText('GenOffice'))
+  annot.set(PDFName.of('T'), PDFHexString.fromText('ChatOffice'))
   if (d.kind === 'ink') setVisualSignatureMetadata(annot, d.formFieldName)
   appendAnnot(pdfDoc, page, pdfDoc.context.register(annot))
 }

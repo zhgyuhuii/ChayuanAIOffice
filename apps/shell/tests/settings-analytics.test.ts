@@ -41,7 +41,7 @@ describe('Settings analytics consent', () => {
       .fn<(enabled: boolean) => Promise<boolean>>()
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true)
-    window.aiOffice = {
+    window.chatOffice = {
       getTheme: async () => 'system',
       getDefaultSaveDir: async () => '',
       getAnalyticsEnabled: async () => true,

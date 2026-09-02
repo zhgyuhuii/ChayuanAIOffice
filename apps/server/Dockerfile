@@ -1,9 +1,9 @@
-# GenOffice BFF + Web — single artifact for the SaaS and private deployments
+# ChatOffice BFF + Web — single artifact for the SaaS and private deployments
 # alike (plan v2.1, decision #9). One image serves the API, the web host and
 # the five editor bundles on one port.
 #
-#   docker build -f apps/server/Dockerfile -t genoffice-server .
-#   docker run -p 8787:8787 -v genoffice-data:/data genoffice-server
+#   docker build -f apps/server/Dockerfile -t chatoffice-server .
+#   docker run -p 8787:8787 -v chatoffice-data:/data chatoffice-server
 
 # ── builder: full toolchain, produces dist/web ────────────────────────────
 FROM node:22-bookworm-slim AS builder
@@ -45,8 +45,8 @@ COPY --from=builder /repo/dist/web dist/web
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=8787 \
-    GENOFFICE_DATA_DIR=/data \
-    GENOFFICE_STATIC_DIR=/app/dist/web
+    CHATOFFICE_DATA_DIR=/data \
+    CHATOFFICE_STATIC_DIR=/app/dist/web
 VOLUME ["/data"]
 
 EXPOSE 8787

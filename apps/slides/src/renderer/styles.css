@@ -54,7 +54,7 @@
 
 /* Per-app accent (powerpoint-orange family) + slides-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @genoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --accent: #c43e1c;
   --accent-dark: #a33517;
@@ -634,7 +634,7 @@ button {
   overflow-x: scroll;
   overflow-y: hidden;
   /* Slim visible scrollbar so mouse users can reach overflowed groups
-     (genspark-ai/genoffice#55). Its 5px lane is carved out of the bottom
+     (genspark-ai/chatoffice#55). Its 5px lane is carved out of the bottom
      padding, keeping the 80px band and the content area unchanged; Chromium
      paints a thumb only while the row actually overflows. */
   padding-bottom: 1px;
@@ -3773,7 +3773,7 @@ body.vib .slide-list {
   box-shadow: var(--slides-thumb-shadow);
 }
 
-/* Shared dropdown (@genoffice/ui gs-dd) app sizing: format-pane rows, the
+/* Shared dropdown (@chatoffice/ui gs-dd) app sizing: format-pane rows, the
  * ribbon animation-timing group, and modal dialogs */
 .fp-prow .gs-dd {
   width: 120px;
@@ -4534,7 +4534,7 @@ body.vib .slide-list {
   border-radius: 1px;
 }
 
-/* Anchor positioning for the shared Word-style color panel (@genoffice/ui
+/* Anchor positioning for the shared Word-style color panel (@chatoffice/ui
    .gcp-palette draws the chrome; this wrapper only places it under the trigger). */
 .rb-color-pop {
   position: fixed;

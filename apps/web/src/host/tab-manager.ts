@@ -27,7 +27,7 @@ type ChangedHandler = (tabs: TabSummary[]) => void
 const EDITOR_KEYS: TabKind[] = ['docs', 'sheets', 'slides', 'pdf', 'markdown']
 
 export function editorUrl(key: TabKind): string {
-  const map = (window as unknown as { GENOFFICE_EDITORS?: Record<string, string> }).GENOFFICE_EDITORS
+  const map = (window as unknown as { CHATOFFICE_EDITORS?: Record<string, string> }).CHATOFFICE_EDITORS
   return map?.[key] ?? `/editors/${key}/`
 }
 

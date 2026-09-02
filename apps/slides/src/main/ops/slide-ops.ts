@@ -53,7 +53,7 @@ import {
   type SlideAnimation,
   type SlideTransitionKind,
   type TextElement,
-} from '@genoffice/pptx-engine'
+} from '@chatoffice/pptx-engine'
 import {
   coerceBytes,
   dataUrlExt,

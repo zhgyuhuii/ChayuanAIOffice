@@ -34,7 +34,7 @@ describe('BridgeClient', () => {
   it('rejects with structured error info for degraded channels', async () => {
     const fw = fakeWindow()
     const client = new BridgeClient('*', fw.win as unknown as Window)
-    const p = client.call('local', 'aiOffice.revealPath', '/x')
+    const p = client.call('local', 'chatOffice.revealPath', '/x')
     const req = fw.sent[0] as { id: number }
     setTimeout(
       () =>

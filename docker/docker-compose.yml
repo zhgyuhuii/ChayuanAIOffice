@@ -1,4 +1,4 @@
-# GenOffice full stack (single-artifact private deployment, plan v2.1 decision #9).
+# ChatOffice full stack (single-artifact private deployment, plan v2.1 decision #9).
 # The SaaS staging environment runs this same file with cloud-scaled parameters.
 #
 #   docker compose -f docker/docker-compose.yml up
@@ -9,9 +9,9 @@ services:
       context: ..
       dockerfile: apps/server/Dockerfile
     environment:
-      GENOFFICE_DATA_DIR: /data
-      GENOFFICE_AUTH: ${GENOFFICE_AUTH:-off} # 'jwt' once Logto is wired
-      # POSTGRES_URL: postgresql://genoffice:${POSTGRES_PASSWORD}@postgres:5432/genoffice
+      CHATOFFICE_DATA_DIR: /data
+      CHATOFFICE_AUTH: ${CHATOFFICE_AUTH:-off} # 'jwt' once Logto is wired
+      # POSTGRES_URL: postgresql://chatoffice:${POSTGRES_PASSWORD}@postgres:5432/chatoffice
       # S3_ENDPOINT: http://minio:9000
     ports:
       - '8787:8787'
@@ -24,13 +24,13 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: genoffice
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-genoffice}
-      POSTGRES_DB: genoffice
+      POSTGRES_USER: chatoffice
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chatoffice}
+      POSTGRES_DB: chatoffice
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U genoffice']
+      test: ['CMD-SHELL', 'pg_isready -U chatoffice']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -39,8 +39,8 @@ services:
     image: minio/minio:latest
     command: server /data --console-address ':9001'
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-genoffice}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-genoffice-secret}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-chatoffice}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-chatoffice-secret}
     ports:
       - '9001:9001'
     volumes:
@@ -52,7 +52,7 @@ services:
   #   depends_on: [postgres]
   #   environment:
   #     TRUST_PROXY_ENDPOINT: http://localhost:3001
-  #     DB_URL: postgresql://genoffice:${POSTGRES_PASSWORD:-genoffice}@postgres:5432/logto
+  #     DB_URL: postgresql://chatoffice:${POSTGRES_PASSWORD:-chatoffice}@postgres:5432/logto
   #     ENDPOINT: http://localhost:3001
   #   ports:
   #     - '3001:3001'

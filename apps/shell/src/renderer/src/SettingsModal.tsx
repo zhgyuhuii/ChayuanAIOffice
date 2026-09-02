@@ -5,7 +5,7 @@ import {
   ModelDefaultsPage,
   ModelSettingsPage,
   type ModelSettingsBridge,
-} from '@genoffice/ui'
+} from '@chatoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey, TFunc } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
@@ -166,7 +166,7 @@ function Field({
 function AiModelPane({ lang }: { lang: string }) {
   // the model settings live inline in this pane (no second window, no extra
   // heading — the section nav names it); the page's own panes handle scrolling
-  const bridge: ModelSettingsBridge = windowAiOfficeBridge()
+  const bridge: ModelSettingsBridge = windowChatOfficeBridge()
   return (
     <div className="set-model-settings">
       <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
@@ -176,7 +176,7 @@ function AiModelPane({ lang }: { lang: string }) {
 
 function DefaultModelsPane({ lang }: { lang: string }) {
   const { t } = useI18n()
-  const bridge: ModelSettingsBridge = windowAiOfficeBridge()
+  const bridge: ModelSettingsBridge = windowChatOfficeBridge()
   return (
     <>
       <h3 className="set-pane-title">{t('setSecDefaultModels')}</h3>
@@ -186,14 +186,14 @@ function DefaultModelsPane({ lang }: { lang: string }) {
 }
 
 /** the v2 settings page over the shell-wide ai:* channels */
-function windowAiOfficeBridge(): ModelSettingsBridge {
+function windowChatOfficeBridge(): ModelSettingsBridge {
   return {
-    getSettings: () => window.aiOffice.getAiSettings(),
-    saveSettings: (view) => window.aiOffice.setAiSettings(view),
-    setCurrentModel: (selection) => window.aiOffice.setAiCurrentModel(selection),
-    discoverModels: (target) => window.aiOffice.aiDiscoverModels(target),
-    gskStatus: (withEmail) => window.aiOffice.gskStatus(withEmail),
-    gskLogin: () => void window.aiOffice.gskLogin(),
+    getSettings: () => window.chatOffice.getAiSettings(),
+    saveSettings: (view) => window.chatOffice.setAiSettings(view),
+    setCurrentModel: (selection) => window.chatOffice.setAiCurrentModel(selection),
+    discoverModels: (target) => window.chatOffice.aiDiscoverModels(target),
+    gskStatus: (withEmail) => window.chatOffice.gskStatus(withEmail),
+    gskLogin: () => void window.chatOffice.gskLogin(),
   }
 }
 
@@ -290,22 +290,22 @@ export function SettingsModal({
 
   useEffect(() => {
     let alive = true
-    void window.aiOffice.getTheme?.().then((th) => {
+    void window.chatOffice.getTheme?.().then((th) => {
       if (alive) setTheme(th)
     })
-    void window.aiOffice.getDefaultSaveDir?.().then((dir) => {
+    void window.chatOffice.getDefaultSaveDir?.().then((dir) => {
       if (alive && dir) setSaveDir(dir)
     })
-    void window.aiOffice.getAnalyticsEnabled?.().then((on) => {
+    void window.chatOffice.getAnalyticsEnabled?.().then((on) => {
       if (alive) setAnalyticsOn(on !== false)
     })
-    void window.aiOffice.getUpdateChannel?.().then((ch) => {
+    void window.chatOffice.getUpdateChannel?.().then((ch) => {
       if (alive) setChannel(ch)
     })
-    void window.aiOffice.getAppVersion?.().then((v) => {
+    void window.chatOffice.getAppVersion?.().then((v) => {
       if (alive && v) setAppVersion(v)
     })
-    void window.aiOffice.githubStars?.().then((n) => {
+    void window.chatOffice.githubStars?.().then((n) => {
       if (alive && n !== null) setGithubStars(n)
     })
     return () => {
@@ -323,13 +323,13 @@ export function SettingsModal({
 
   const applyTheme = (next: UiTheme) => {
     setTheme(next)
-    void window.aiOffice.setTheme(next)
+    void window.chatOffice.setTheme(next)
     if (next === 'system') document.documentElement.removeAttribute('data-theme')
     else document.documentElement.setAttribute('data-theme', next)
   }
 
   const changeSaveDir = () => {
-    void window.aiOffice.pickDefaultSaveDir?.().then((dir) => {
+    void window.chatOffice.pickDefaultSaveDir?.().then((dir) => {
       if (dir) setSaveDir(dir)
     })
   }
@@ -389,7 +389,7 @@ export function SettingsModal({
                       <button
                         className="set-btn"
                         data-tip={t('creditsTip')}
-                        onClick={() => void window.aiOffice.openCreditUsage?.()}
+                        onClick={() => void window.chatOffice.openCreditUsage?.()}
                       >
                         {t('setViewUsage')}
                       </button>
@@ -479,7 +479,7 @@ export function SettingsModal({
                     onClick={() => {
                       const next = !analyticsOn
                       setAnalyticsSaving(true)
-                      void window.aiOffice
+                      void window.chatOffice
                         .setAnalyticsEnabled(next)
                         .then((persisted) => {
                           if (persisted) setAnalyticsOn(next)
@@ -510,7 +510,7 @@ export function SettingsModal({
                     onPick={(v) => {
                       const next = v === 'beta' ? 'beta' : 'stable'
                       setChannel(next)
-                      void window.aiOffice.setUpdateChannel(next)
+                      void window.chatOffice.setUpdateChannel(next)
                     }}
                   />
                 </div>
@@ -518,13 +518,13 @@ export function SettingsModal({
                   label={t('setGithub')}
                   value={
                     githubStars === null
-                      ? 'github.com/genspark-ai/genoffice'
-                      : `github.com/genspark-ai/genoffice · ★ ${formatStars(githubStars)}`
+                      ? 'github.com/genspark-ai/chatoffice'
+                      : `github.com/genspark-ai/chatoffice · ★ ${formatStars(githubStars)}`
                   }
                   action={
                     <button
                       className="set-btn"
-                      onClick={() => void window.aiOffice.openGitHubRepo?.()}
+                      onClick={() => void window.chatOffice.openGitHubRepo?.()}
                     >
                       {t('starOnGitHub')}
                     </button>

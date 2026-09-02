@@ -1,5 +1,5 @@
-import { createIpcTransport, type AgentTransport } from '@genoffice/agent-core'
-import type { AiModelSelection } from '@genoffice/ai-provider'
+import { createIpcTransport, type AgentTransport } from '@chatoffice/agent-core'
+import type { AiModelSelection } from '@chatoffice/ai-provider'
 import { t } from '../i18n/locale'
 
 /** The shared IPC transport; the stream request carries only the model selection. */

@@ -9,7 +9,7 @@ import {
   type DiscoveryTarget,
   type FileSourceFs,
   type GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 
 /**
  * Shared registration of the generic ai:* IPC channels — identical channel

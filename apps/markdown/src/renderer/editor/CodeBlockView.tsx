@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/react'
 import type { NodeViewProps } from '@tiptap/react'
-import { Dropdown } from '@genoffice/ui'
+import { Dropdown } from '@chatoffice/ui'
 import { t } from '../i18n/locale'
 
 const LANGUAGES = [

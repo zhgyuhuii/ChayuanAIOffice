@@ -1,7 +1,7 @@
 import type { UpdateUiState, UpdateWindowApi } from '../../shared/update-api'
 
 // exposed by src/preload/update.ts
-const api = (window as unknown as { aiOfficeUpdate: UpdateWindowApi }).aiOfficeUpdate
+const api = (window as unknown as { chatOfficeUpdate: UpdateWindowApi }).chatOfficeUpdate
 
 const el = (id: string): HTMLElement => document.getElementById(id) as HTMLElement
 const headline = el('headline')

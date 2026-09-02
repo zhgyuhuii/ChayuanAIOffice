@@ -9,19 +9,19 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
   for (;;) {
     for (const candidate of app.windows()) {
       const has = await candidate
-        .evaluate(() => Boolean((window as unknown as { aiOffice?: unknown }).aiOffice))
+        .evaluate(() => Boolean((window as unknown as { chatOffice?: unknown }).chatOffice))
         .catch(() => false)
       if (has) return candidate
     }
     const remaining = deadline - Date.now()
-    if (remaining <= 0) throw new Error('No window exposing window.aiOffice')
+    if (remaining <= 0) throw new Error('No window exposing window.chatOffice')
     await app.waitForEvent('window', { timeout: Math.min(remaining, 1_000) }).catch(() => {})
   }
 }
 
 function setTheme(page: Page, theme: 'light' | 'dark' | 'system'): Promise<void> {
   return page.evaluate((t) => {
-    const api = (window as unknown as { aiOffice: { setTheme(v: string): Promise<void> } }).aiOffice
+    const api = (window as unknown as { chatOffice: { setTheme(v: string): Promise<void> } }).chatOffice
     return api.setTheme(t)
   }, theme)
 }
@@ -59,7 +59,7 @@ function minimalPdf(): Buffer {
 
 test.describe('theme visual adoption', () => {
   test('markdown editor surface follows dark theme', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-theme-md-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-md-'))
     const mdPath = join(dir, 'doc.md')
     await writeFile(mdPath, '# Doc\n\nBody.\n')
 
@@ -163,7 +163,7 @@ test.describe('theme visual adoption', () => {
   })
 
   test('pdf chrome follows dark theme while the page stays paper-white', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-theme-pdf-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-theme-pdf-'))
     const pdfPath = join(dir, 'doc.pdf')
     await writeFile(pdfPath, minimalPdf())
 

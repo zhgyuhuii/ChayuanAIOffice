@@ -1,6 +1,6 @@
 {
-  "name": "@genoffice/markdown",
-  "productName": "GenOffice Markdown",
+  "name": "@chatoffice/markdown",
+  "productName": "ChatOffice Markdown",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,14 +14,14 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@genoffice/agent-core": "*",
-    "@genoffice/ai-provider": "*",
-    "@genoffice/ai-search": "*",
-    "@genoffice/docx-engine": "*",
-    "@genoffice/electron-utils": "*",
-    "@genoffice/i18n": "*",
-    "@genoffice/project-store": "*",
-    "@genoffice/ui": "*",
+    "@chatoffice/agent-core": "*",
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/docx-engine": "*",
+    "@chatoffice/electron-utils": "*",
+    "@chatoffice/i18n": "*",
+    "@chatoffice/project-store": "*",
+    "@chatoffice/ui": "*",
     "@tiptap/core": "3.29.2",
     "@tiptap/extension-code-block": "3.29.2",
     "@tiptap/extension-image": "3.29.2",
@@ -45,7 +45,7 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.10"
   },
-  "author": "GenOffice",
+  "author": "ChatOffice",
   "dependencies": {
     "@tiptap/extension-mathematics": "3.29.2",
     "katex": "^0.16.47"

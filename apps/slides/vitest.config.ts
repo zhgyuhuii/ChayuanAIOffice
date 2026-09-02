@@ -9,29 +9,29 @@ export default defineConfig({
   resolve: {
     alias: {
       // Subpath before the bare name: string aliases are prefix replacements
-      '@genoffice/pptx-engine/table-grid': resolve(
+      '@chatoffice/pptx-engine/table-grid': resolve(
         here,
         '../../packages/pptx-engine/src/table-grid.ts',
       ),
-      '@genoffice/pptx-engine/identity': resolve(
+      '@chatoffice/pptx-engine/identity': resolve(
         here,
         '../../packages/pptx-engine/src/identity.ts',
       ),
-      '@genoffice/pptx-engine/background-promote': resolve(
+      '@chatoffice/pptx-engine/background-promote': resolve(
         here,
         '../../packages/pptx-engine/src/background-promote.ts',
       ),
-      '@genoffice/pptx-engine/custgeom': resolve(
+      '@chatoffice/pptx-engine/custgeom': resolve(
         here,
         '../../packages/pptx-engine/src/custgeom.ts',
       ),
-      '@genoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
-      '@genoffice/pptx-render/preset-geometry': resolve(
+      '@chatoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
+      '@chatoffice/pptx-render/preset-geometry': resolve(
         here,
         '../../packages/pptx-render/src/preset-geometry.ts',
       ),
-      '@genoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
-      '@genoffice/docx-engine/metafile': resolve(
+      '@chatoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
+      '@chatoffice/docx-engine/metafile': resolve(
         here,
         '../../packages/docx-engine/src/metafile.ts',
       ),

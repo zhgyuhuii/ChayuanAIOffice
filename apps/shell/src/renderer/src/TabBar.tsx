@@ -5,7 +5,7 @@ import { useI18n } from './locale'
 
 declare global {
   interface Window {
-    aiOfficeTabs: TabsApi
+    chatOfficeTabs: TabsApi
   }
 }
 
@@ -161,19 +161,19 @@ export function TabBar() {
         next.splice(Math.min(Math.max(drag.target, 1), next.length), 0, moved)
         return next
       })
-      void window.aiOfficeTabs.reorder(drag.id, drag.target)
+      void window.chatOfficeTabs.reorder(drag.id, drag.target)
     }
   }
 
   useEffect(() => {
-    void window.aiOfficeTabs.list().then(setTabs)
-    return window.aiOfficeTabs.onChanged(setTabs)
+    void window.chatOfficeTabs.list().then(setTabs)
+    return window.chatOfficeTabs.onChanged(setTabs)
   }, [])
 
   // document tabs are sibling WebContentsViews: they see neither this press
   // nor a focus change, so relay it for them to dismiss open popovers
   useEffect(() => {
-    const notify = (): void => window.aiOfficeTabs.notifyChromePressed?.()
+    const notify = (): void => window.chatOfficeTabs.notifyChromePressed?.()
     document.addEventListener('pointerdown', notify, true)
     return () => document.removeEventListener('pointerdown', notify, true)
   }, [])
@@ -243,7 +243,7 @@ export function TabBar() {
                 if ((event.target as HTMLElement).closest('.tab-close')) return
                 // Chrome-style: pressing a tab activates it immediately, so
                 // activation never depends on the click that a drag would eat
-                if (!tab.active) void window.aiOfficeTabs.activate(tab.id)
+                if (!tab.active) void window.chatOfficeTabs.activate(tab.id)
                 if (tab.id === 'home') return
                 const strip = stripRef.current
                 if (!strip) return
@@ -333,7 +333,7 @@ export function TabBar() {
                   aria-label={t('closeTab')}
                   onClick={(event) => {
                     event.stopPropagation()
-                    void window.aiOfficeTabs.close(tab.id)
+                    void window.chatOfficeTabs.close(tab.id)
                   }}
                 >
                   ×
@@ -348,7 +348,7 @@ export function TabBar() {
           aria-label={t('newTab')}
           onClick={(event) => {
             const rect = event.currentTarget.getBoundingClientRect()
-            void window.aiOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
+            void window.chatOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
@@ -369,7 +369,7 @@ export function TabBar() {
         aria-label={t('tabList')}
         onClick={(event) => {
           const rect = event.currentTarget.getBoundingClientRect()
-          void window.aiOfficeTabs.showMenu(Math.round(rect.left), Math.round(rect.bottom))
+          void window.chatOfficeTabs.showMenu(Math.round(rect.left), Math.round(rect.bottom))
         }}
       >
         {/* window-with-tab-bar glyph: slanted tab cells above a full-width

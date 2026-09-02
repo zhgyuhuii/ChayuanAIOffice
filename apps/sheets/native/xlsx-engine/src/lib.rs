@@ -2981,7 +2981,7 @@ fn table_style_border(style_name: Option<&str>, colors: &ColorContext) -> Option
 }
 
 /// Built-in table style bands, pixel-calibrated against Excel for Mac
-/// (calibration workbook: genoffice-sample/sheets/calib). Accent cycle is
+/// (calibration workbook: chatoffice-sample/sheets/calib). Accent cycle is
 /// (n-1) % 7 with 0 = dk1, variants come in blocks of 7; dk1-based members
 /// tint their bands 0.05 lighter than the accent members do.
 fn builtin_table_palette(style_name: Option<&str>, colors: &ColorContext) -> CustomTablePalette {
@@ -4897,7 +4897,7 @@ mod tests {
     }
 
     /// Built-in family rules, per the Excel calibration workbook
-    /// (genoffice-sample/sheets/calib): totals bands, dk1-gray Medium 15-21
+    /// (chatoffice-sample/sheets/calib): totals bands, dk1-gray Medium 15-21
     /// stripes, tinted Medium 22-28, solid Dark bodies, paired Dark 8-11.
     #[test]
     fn builtin_palette_matches_calibration() {

@@ -5,7 +5,7 @@ import {
   type HfImage,
   type HfParagraph,
   type Run,
-} from '@genoffice/docx-engine'
+} from '@chatoffice/docx-engine'
 import { cssRunFontFamily, runLetterSpacingCss } from '../line-metrics'
 
 /**

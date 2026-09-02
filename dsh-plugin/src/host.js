@@ -1,11 +1,11 @@
 /**
- * genoffice — host 半（cordis 插件），运行在 dsh web 服务进程内。
+ * chatoffice — host 半（cordis 插件），运行在 dsh web 服务进程内。
  *
- * 职责：拉起/守护 GenOffice BFF sidecar（vendor/genoffice-sidecar，与
+ * 职责：拉起/守护 ChatOffice BFF sidecar（vendor/chatoffice-sidecar，与
  * chatop 桌面内置形态共用同一套制品：Node BFF + SQLite/本地对象目录 +
  * Web 宿主 + 五编辑器静态资源），监听 127.0.0.1 动态端口（避开 dsh 的
  * 3080），/healthz 就绪探测，卸载时回收子进程。HTTP 管理面
- * /api/genoffice/*（loopback 围栏）向 client 半提供 sidecar origin。
+ * /api/chatoffice/*（loopback 围栏）向 client 半提供 sidecar origin。
  *
  * spawn 节点对齐 chatop toolchain 模式：dsh web 在 Electron 形态下以
  * ELECTRON_RUN_AS_NODE 运行于 electron 可执行文件，子进程继承同样的
@@ -17,10 +17,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const name = 'genoffice'
+export const name = 'chatoffice'
 export const inject = ['webServer']
 
-const API_PREFIX = '/api/genoffice'
+const API_PREFIX = '/api/chatoffice'
 const START_TIMEOUT_MS = 60_000
 const PROBE_INTERVAL_MS = 400
 
@@ -38,7 +38,7 @@ function dshHomeDir() {
 }
 
 function dataDir() {
-  return join(dshHomeDir(), 'storages', 'genoffice')
+  return join(dshHomeDir(), 'storages', 'chatoffice')
 }
 
 function pidFile() {
@@ -95,7 +95,7 @@ function reapOrphan() {
 
 export function apply(ctx) {
   const root = packageRoot()
-  const sidecarDir = join(root, 'vendor', 'genoffice-sidecar')
+  const sidecarDir = join(root, 'vendor', 'chatoffice-sidecar')
   const entry = join(sidecarDir, 'apps', 'server', 'src', 'main.ts')
   const bundled = existsSync(entry)
 
@@ -115,7 +115,7 @@ export function apply(ctx) {
     rpcOriginWritten = true
     try {
       writeFileSync(rpcOriginFile, `http://${host}`)
-      console.log(`[genoffice] harness rpc origin: http://${host}`)
+      console.log(`[chatoffice] harness rpc origin: http://${host}`)
     } catch {
       /* 融合退化为本地文件模式（读侧不受影响） */
     }
@@ -136,7 +136,7 @@ export function apply(ctx) {
 
   async function start() {
     if (!bundled) {
-      state.error = `sidecar bundle missing: ${sidecarDir}（在 genoffice 仓库运行 npm run package:plugin 打包）`
+      state.error = `sidecar bundle missing: ${sidecarDir}（在 chatoffice 仓库运行 npm run package:plugin 打包）`
       return
     }
     reapOrphan()
@@ -146,12 +146,12 @@ export function apply(ctx) {
       ...process.env,
       HOST: '127.0.0.1',
       PORT: String(port),
-      GENOFFICE_DATA_DIR: dataDir(),
-      GENOFFICE_AUTH: 'off', // 内嵌形态无账号（总体计划 v2.1 决策 #3）
-      GENOFFICE_STATIC_DIR: join(sidecarDir, 'dist', 'web'),
+      CHATOFFICE_DATA_DIR: dataDir(),
+      CHATOFFICE_AUTH: 'off', // 内嵌形态无账号（总体计划 v2.1 决策 #3）
+      CHATOFFICE_STATIC_DIR: join(sidecarDir, 'dist', 'web'),
       // 模型设置真融合：供应商档案/密钥读写 harness 的 llm-pi-ai（与 chatop 同源）
-      GENOFFICE_DSH_HOME: dshHome(),
-      GENOFFICE_DSH_RPC_ORIGIN_FILE: rpcOriginFile,
+      CHATOFFICE_DSH_HOME: dshHome(),
+      CHATOFFICE_DSH_RPC_ORIGIN_FILE: rpcOriginFile,
     }
     // dsh web 以 ELECTRON_RUN_AS_NODE 跑在 electron 可执行文件下时，子进程需要同样的标记
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = '1'
@@ -181,21 +181,21 @@ export function apply(ctx) {
       /* 诊断信息，可缺 */
     }
     child.stdout.on('data', (d) => {
-      if (String(d).includes('listening')) console.log(`[genoffice] ${String(d).trim()}`)
+      if (String(d).includes('listening')) console.log(`[chatoffice] ${String(d).trim()}`)
     })
     child.stderr.on('data', (d) => {
       const line = String(d).trim()
-      if (line) console.warn(`[genoffice:sidecar] ${line}`)
+      if (line) console.warn(`[chatoffice:sidecar] ${line}`)
     })
     child.on('exit', (code) => {
-      console.warn(`[genoffice] sidecar exited (${code})`)
+      console.warn(`[chatoffice] sidecar exited (${code})`)
       child = null
       // 意外退出（曾就绪）→ 有限次自动重启，桌面窗口下次取 status 即恢复
       if (state.status === 'ready' && restarts < 3) {
         restarts += 1
         state.status = 'starting'
         state.error = null
-        console.log(`[genoffice] restarting sidecar (attempt ${restarts}/3)`)
+        console.log(`[chatoffice] restarting sidecar (attempt ${restarts}/3)`)
         start()
       } else {
         state.status = 'failed'
@@ -210,7 +210,7 @@ export function apply(ctx) {
         state.status = 'ready'
         state.origin = `http://127.0.0.1:${port}`
         state.startedAt = new Date().toISOString()
-        console.log(`[genoffice] sidecar ready at ${state.origin}`)
+        console.log(`[chatoffice] sidecar ready at ${state.origin}`)
         return
       }
       if (!child) {
@@ -236,18 +236,18 @@ export function apply(ctx) {
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
       const path = url.pathname.slice(API_PREFIX.length)
       if (req.method === 'GET' && path === '/status') {
-        return send(res, 200, { ok: true, ...state, appOrigin: '/genoffice-app/' })
+        return send(res, 200, { ok: true, ...state, appOrigin: '/chatoffice-app/' })
       }
       return send(res, 404, { ok: false, error: `unknown ${req.method} ${path}` })
     },
   }
   const disposeRoute = ctx.webServer.register(route)
 
-  // Reverse proxy: the GenOffice window lives on the STABLE dsh web origin
-  // (/genoffice-app/*), so a sidecar restart (new dynamic port) never kills
-  // an open window — the app re-fetches /api/genoffice/status and the proxy
+  // Reverse proxy: the ChatOffice window lives on the STABLE dsh web origin
+  // (/chatoffice-app/*), so a sidecar restart (new dynamic port) never kills
+  // an open window — the app re-fetches /api/chatoffice/status and the proxy
   // follows the new origin.
-  const APP_PREFIX = '/genoffice-app'
+  const APP_PREFIX = '/chatoffice-app'
   const proxyRoute = {
     kind: 'prefix',
     path: APP_PREFIX,
@@ -314,7 +314,7 @@ export function apply(ctx) {
       disposeRoute()
       disposeProxy()
     },
-    'genoffice: dispose sidecar & route',
+    'chatoffice: dispose sidecar & route',
   )
 
   return starting

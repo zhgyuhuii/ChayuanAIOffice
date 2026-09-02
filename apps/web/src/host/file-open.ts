@@ -4,7 +4,7 @@
  * message instead of silently failing).
  */
 
-import { FileHandleStore, fsAccessSupported } from '@genoffice/web-bridge'
+import { FileHandleStore, fsAccessSupported } from '@chatoffice/web-bridge'
 import { tabManager, type TabKind } from './tab-manager.js'
 import { recordRecent } from './recents.js'
 

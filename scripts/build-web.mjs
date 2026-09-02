@@ -8,7 +8,7 @@
  *   dist/web/bridge-shim.js        preload-shaped shims injected into editors
  *   dist/web/config.js             same-origin editor map (fallback)
  *
- * Served by the sidecar (GENOFFICE_STATIC_DIR) or `npm run preview:web`.
+ * Served by the sidecar (CHATOFFICE_STATIC_DIR) or `npm run preview:web`.
  */
 
 import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
@@ -36,7 +36,7 @@ mkdirSync(dist, { recursive: true })
 // build the renderer directly with the same config the dev servers use).
 for (const key of EDITORS) {
   run(
-    `${npm} exec -w @genoffice/${key} -- vite build --config vite.renderer.config.ts --base ./ --outDir ../../out/renderer --emptyOutDir`,
+    `${npm} exec -w @chatoffice/${key} -- vite build --config vite.renderer.config.ts --base ./ --outDir ../../out/renderer --emptyOutDir`,
   )
   const from = join(root, 'apps', key, 'out', 'renderer')
   if (!existsSync(from)) throw new Error(`missing renderer build: ${from}`)
@@ -44,7 +44,7 @@ for (const key of EDITORS) {
 }
 
 // 2. Web host build = the harvested shell renderer (zero source changes)
-run(`${npm} run build -w @genoffice/web`)
+run(`${npm} run build -w @chatoffice/web`)
 cpSync(join(root, 'apps', 'web', 'dist'), dist, { recursive: true })
 
 // 3. Editor bridge shim: preload-shaped shims served same-origin and injected
@@ -74,7 +74,7 @@ for (const key of EDITORS) {
 //    defaults; config.js remains for tooling/debugging).
 writeFileSync(
   join(dist, 'config.js'),
-  `window.GENOFFICE_EDITORS = {\n${EDITORS.map((k) => `  ${k}: 'editors/${k}/',`).join('\n')}\n}\n`,
+  `window.CHATOFFICE_EDITORS = {\n${EDITORS.map((k) => `  ${k}: 'editors/${k}/',`).join('\n')}\n}\n`,
 )
 
 console.log(`\nweb bundle ready: ${dist}`)

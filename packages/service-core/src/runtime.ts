@@ -14,7 +14,7 @@
  * (webContents.send / WebSocket).
  */
 
-import type { StorageArea, StorageTrack } from '@genoffice/storage-adapter'
+import type { StorageArea, StorageTrack } from '@chatoffice/storage-adapter'
 
 // ── Event bus ───────────────────────────────────────────────
 

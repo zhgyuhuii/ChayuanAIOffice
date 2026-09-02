@@ -32,7 +32,7 @@ export function StarPromptCard({ docOpens, onClose }: StarPromptCardProps) {
   const { t } = useI18n()
 
   const react = (action: 'starred' | 'later') => {
-    void window.aiOffice.starPromptAction(action).catch(() => {})
+    void window.chatOffice.starPromptAction(action).catch(() => {})
     onClose()
   }
 
@@ -68,7 +68,7 @@ export function StarPromptCard({ docOpens, onClose }: StarPromptCardProps) {
         <button
           className="star-prompt-go"
           onClick={() => {
-            void window.aiOffice.openGitHubRepo().catch(() => {})
+            void window.chatOffice.openGitHubRepo().catch(() => {})
             react('starred')
           }}
         >

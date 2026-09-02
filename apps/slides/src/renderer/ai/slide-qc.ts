@@ -9,8 +9,8 @@ import {
   type AgentImage,
   type AgentSkill,
   type AgentTransport,
-} from '@genoffice/agent-core'
-import { inferModelType, modelAcceptsImages, type AiSettingsV2 } from '@genoffice/ai-provider'
+} from '@chatoffice/agent-core'
+import { inferModelType, modelAcceptsImages, type AiSettingsV2 } from '@chatoffice/ai-provider'
 import { auditSlideLayout } from './layout-audit'
 import { createSlidesSkill, formatSlideDump, type DeckAccess } from './slides-skill'
 

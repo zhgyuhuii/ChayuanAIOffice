@@ -6,12 +6,12 @@ async function findShellPage(app: ElectronApplication, timeoutMs = 15_000): Prom
   for (;;) {
     for (const candidate of app.windows()) {
       const has = await candidate
-        .evaluate(() => Boolean((window as unknown as { aiOffice?: unknown }).aiOffice))
+        .evaluate(() => Boolean((window as unknown as { chatOffice?: unknown }).chatOffice))
         .catch(() => false)
       if (has) return candidate
     }
     const remaining = deadline - Date.now()
-    if (remaining <= 0) throw new Error('No window exposing window.aiOffice')
+    if (remaining <= 0) throw new Error('No window exposing window.chatOffice')
     await app.waitForEvent('window', { timeout: Math.min(remaining, 1_000) }).catch(() => {})
   }
 }
@@ -31,7 +31,7 @@ test('slides chrome darkens while the slide canvas stays paper-white', async () 
     await editorPage.waitForSelector('.stage-wrap canvas', { timeout: 20_000 })
 
     await shellPage.evaluate(() =>
-      (window as unknown as { aiOffice: { setTheme(v: string): Promise<void> } }).aiOffice.setTheme(
+      (window as unknown as { chatOffice: { setTheme(v: string): Promise<void> } }).chatOffice.setTheme(
         'dark',
       ),
     )

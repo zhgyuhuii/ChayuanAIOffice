@@ -5,8 +5,8 @@ import {
   IPC_STREAM_SILENCE_TIMEOUT_MS,
   type AgentImage,
   type ToolDisplay,
-} from '@genoffice/agent-core'
-import type { RenderSlide } from '@genoffice/pptx-render'
+} from '@chatoffice/agent-core'
+import type { RenderSlide } from '@chatoffice/pptx-render'
 import type { AiModelSelection, AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import {
@@ -43,8 +43,8 @@ import {
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
-} from '@genoffice/ui'
-import { defaultSettingsV2, enabledChatModels } from '@genoffice/ai-provider'
+} from '@chatoffice/ui'
+import { defaultSettingsV2, enabledChatModels } from '@chatoffice/ai-provider'
 import { slidesModelBridge } from './model-bridge'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
@@ -61,7 +61,7 @@ import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
 import { IconNewChat } from '../components/icons'
 import { AssistantTab, IconAiAskSelection, IconAiBeautify, IconAiFactCheck, IconAiImage } from './AssistantTab'
-import type { DockChrome } from '@genoffice/ui'
+import type { DockChrome } from '@chatoffice/ui'
 
 interface ToolActivity {
   name: string

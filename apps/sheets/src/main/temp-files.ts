@@ -36,7 +36,7 @@ export async function cleanupSessionResources(
   } catch {
     // Continue with owned temp cleanup even when the sidecar is already gone.
   }
-  const snapshotRoot = join(options.tempRoot, 'genoffice-sheets-sessions')
+  const snapshotRoot = join(options.tempRoot, 'chatoffice-sheets-sessions')
   if (isDirectOwnedChild(options.snapshotPath, snapshotRoot, SESSION_SNAPSHOT_NAME)) {
     await rm(options.snapshotPath, { force: true }).catch(() => undefined)
   }
@@ -49,7 +49,7 @@ export async function cleanupImportTempDirectory(
   tempRoot: string,
   importTempDir: string,
 ): Promise<void> {
-  const importRoot = join(tempRoot, 'genoffice-imports')
+  const importRoot = join(tempRoot, 'chatoffice-imports')
   if (!isDirectOwnedChild(importTempDir, importRoot, IMPORT_DIRECTORY_NAME)) return
   await rm(importTempDir, { recursive: true, force: true }).catch(() => undefined)
 }
@@ -62,7 +62,7 @@ export async function cleanupExpiredPastedFiles(
   tempRoot: string,
   now = Date.now(),
 ): Promise<string[]> {
-  const dir = join(tempRoot, 'genoffice-pasted')
+  const dir = join(tempRoot, 'chatoffice-pasted')
   const cutoff = now - PASTED_FILE_TTL_MS
   const removed: string[] = []
   let entries

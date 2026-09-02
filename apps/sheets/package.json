@@ -1,6 +1,6 @@
 {
-  "name": "@genoffice/sheets",
-  "productName": "GenOffice Sheets",
+  "name": "@chatoffice/sheets",
+  "productName": "ChatOffice Sheets",
   "version": "0.1.0",
   "private": true,
   "description": "Cross-platform AI-native spreadsheet compatibility prototype",
@@ -24,14 +24,14 @@
   },
   "dependencies": {
     "@fluentui/react-icons": "^2.0.333",
-    "@genoffice/agent-core": "*",
-    "@genoffice/ai-provider": "*",
-    "@genoffice/ai-search": "*",
-    "@genoffice/docx-engine": "*",
-    "@genoffice/electron-utils": "*",
-    "@genoffice/file-parse": "*",
-    "@genoffice/i18n": "*",
-    "@genoffice/ui": "*",
+    "@chatoffice/agent-core": "*",
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/docx-engine": "*",
+    "@chatoffice/electron-utils": "*",
+    "@chatoffice/file-parse": "*",
+    "@chatoffice/i18n": "*",
+    "@chatoffice/ui": "*",
     "@univerjs/core": "^0.25.1",
     "@univerjs/data-validation": "^0.25.1",
     "@univerjs/engine-render": "^0.25.1",
@@ -55,7 +55,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@genoffice/project-store": "*",
+    "@chatoffice/project-store": "*",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -67,5 +67,5 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.0"
   },
-  "author": "GenOffice"
+  "author": "ChatOffice"
 }

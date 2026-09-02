@@ -5,8 +5,8 @@
  *
  *   PORT                listen port (default 8787)
  *   HOST                bind host (default 127.0.0.1; containers override)
- *   GENOFFICE_DATA_DIR  storage root (default ./data)
- *   GENOFFICE_AUTH      'jwt' to enforce Logto tokens, 'off' otherwise
+ *   CHATOFFICE_DATA_DIR  storage root (default ./data)
+ *   CHATOFFICE_AUTH      'jwt' to enforce Logto tokens, 'off' otherwise
  */
 
 import { resolve } from 'node:path'
@@ -16,16 +16,16 @@ const port = Number(process.env.PORT ?? 8787)
 const host = process.env.HOST ?? '127.0.0.1'
 
 const { app } = buildServer({
-  dataDir: process.env.GENOFFICE_DATA_DIR,
-  staticDir: process.env.GENOFFICE_STATIC_DIR
-    ? resolve(process.env.GENOFFICE_STATIC_DIR)
+  dataDir: process.env.CHATOFFICE_DATA_DIR,
+  staticDir: process.env.CHATOFFICE_STATIC_DIR
+    ? resolve(process.env.CHATOFFICE_STATIC_DIR)
     : undefined,
 })
 
 app
   .listen({ port, host })
-  .then((address) => console.log(`[genoffice-server] listening on ${address}`))
+  .then((address) => console.log(`[chatoffice-server] listening on ${address}`))
   .catch((err) => {
-    console.error('[genoffice-server] failed to start:', err)
+    console.error('[chatoffice-server] failed to start:', err)
     process.exit(1)
   })

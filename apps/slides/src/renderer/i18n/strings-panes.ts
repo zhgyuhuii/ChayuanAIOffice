@@ -1,4 +1,4 @@
-import { defineStrings } from '@genoffice/i18n'
+import { defineStrings } from '@chatoffice/i18n'
 
 /** Copy for the panes/show views (animation, presenter, slide show, comments, format, ...) */
 export const paneStrings = defineStrings({

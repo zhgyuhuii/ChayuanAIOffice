@@ -3,13 +3,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import * as Y from 'yjs'
-import { openLocalArea } from '@genoffice/storage-adapter'
+import { openLocalArea } from '@chatoffice/storage-adapter'
 import { createCollabDocsApi } from '../src/index.js'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'genoffice-collab-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-collab-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }

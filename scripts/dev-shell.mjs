@@ -19,7 +19,7 @@ const env = {
 }
 
 // shell: true — on Windows `npm` is npm.cmd, which spawn cannot launch directly
-const child = spawn('npm', ['run', 'dev', '-w', '@genoffice/shell'], {
+const child = spawn('npm', ['run', 'dev', '-w', '@chatoffice/shell'], {
   stdio: 'inherit',
   env,
   shell: true,

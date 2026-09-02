@@ -1,7 +1,7 @@
 /**
  * Auth skeleton (plan v2.1, decision #3): product account = self-hosted Logto
  * issuing JWTs. Verification is a structural check now; JWKS validation lands
- * with the Logto deployment in phase 1 proper. GENOFFICE_AUTH=off disables
+ * with the Logto deployment in phase 1 proper. CHATOFFICE_AUTH=off disables
  * enforcement (embedded sidecar ③④ runs without an account).
  */
 
@@ -17,7 +17,7 @@ export interface AuthOptions {
 const BEARER = /^Bearer\s+(.+)$/
 
 export function attachAuthHooks(app: FastifyInstance, options: AuthOptions = {}): void {
-  const mode = options.mode ?? process.env.GENOFFICE_AUTH === 'jwt' ? 'jwt' : 'off'
+  const mode = options.mode ?? process.env.CHATOFFICE_AUTH === 'jwt' ? 'jwt' : 'off'
 
   app.decorateRequest('userId', '')
 

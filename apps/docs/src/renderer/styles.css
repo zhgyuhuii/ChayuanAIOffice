@@ -1,6 +1,6 @@
 /* Per-app accent (word-blue family) + docs-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @genoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --word-blue: #185abd;
   --word-blue-dark: #124a9e;
@@ -400,7 +400,7 @@ button {
 
 /* While a popover is open the row must deliver presses (drag regions swallow
    them), so outside-press dismissal can see presses on the blank band */
-html.genoffice-popover-open .ribbon-tabs {
+html.chatoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
@@ -586,7 +586,7 @@ html.genoffice-popover-open .ribbon-tabs {
 }
 
 /* Slim visible scrollbar so mouse users can reach overflowed groups
-   (genspark-ai/genoffice#55 precedent from the sheets ribbon). */
+   (genspark-ai/chatoffice#55 precedent from the sheets ribbon). */
 .ribbon-body::-webkit-scrollbar {
   height: 5px;
 }
@@ -1124,7 +1124,7 @@ html.genoffice-popover-open .ribbon-tabs {
   background: var(--hover);
 }
 
-/* Anchor positioning for the shared Word-style color panel (@genoffice/ui
+/* Anchor positioning for the shared Word-style color panel (@chatoffice/ui
    .gcp-palette draws the chrome; this only places it under its trigger). */
 .docs-color-pop {
   position: fixed;
@@ -5592,9 +5592,9 @@ body.docs-crop-active
 }
 
 /* drag handle / divider between panel and editor is owned by the DockShell
-   (.dockshell-resizer in @genoffice/ui dock.css) */
+   (.dockshell-resizer in @chatoffice/ui dock.css) */
 
-/* header strip = tab bar (PanelTabs, .ai-tab-* in @genoffice/ui dock.css) */
+/* header strip = tab bar (PanelTabs, .ai-tab-* in @chatoffice/ui dock.css) */
 
 .ai-header-btn {
   display: flex;
@@ -7719,7 +7719,7 @@ body.docs-crop-active
   border-color: var(--word-blue);
 }
 
-/* Shared dropdown (@genoffice/ui gs-dd) app sizing: modal dialogs keep the old
+/* Shared dropdown (@chatoffice/ui gs-dd) app sizing: modal dialogs keep the old
    `.modal select` footprint; ribbon/table/page-number rows scope their own
    width/height below */
 .modal .gs-dd {
@@ -9967,7 +9967,7 @@ tr > .page-gap-cut {
   box-sizing: border-box;
 }
 
-/* The AI dock is the shared DockShell (@genoffice/ui dock.css): it owns the
+/* The AI dock is the shared DockShell (@chatoffice/ui dock.css): it owns the
    panel slot's geometry/animation, the collapsed rail and the divider. */
 
 .ai-login-btn {

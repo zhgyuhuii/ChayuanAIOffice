@@ -24,9 +24,9 @@ import {
   type AiRuntime,
   type AiSettingsV2,
   type DiscoveryTarget,
-} from '@genoffice/ai-provider'
-import { fetchRemoteImage } from '@genoffice/electron-utils/remote-image'
-import { imageSearch, webSearch } from '@genoffice/ai-search'
+} from '@chatoffice/ai-provider'
+import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
+import { imageSearch, webSearch } from '@chatoffice/ai-search'
 
 export interface AiCallRecord {
   ts: string

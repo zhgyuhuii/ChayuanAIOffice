@@ -8,7 +8,7 @@
  */
 
 import type { FastifyInstance } from 'fastify'
-import type { ServiceCore, ServiceDefinition } from '@genoffice/service-core'
+import type { ServiceCore, ServiceDefinition } from '@chatoffice/service-core'
 import { WebSocketServer, type WebSocket } from 'ws'
 
 interface WsSession {

@@ -12,12 +12,12 @@
 
 import { resolve } from 'node:path'
 import Fastify, { type FastifyInstance } from 'fastify'
-import type { ServiceCore, ServiceDefinition } from '@genoffice/service-core'
-import { createCore } from '@genoffice/service-core'
-import { chatHistoryService } from '@genoffice/service-core'
-import { settingsService } from '@genoffice/service-core'
-import { xlsxSidecarService } from '@genoffice/service-core'
-import { openLocalArea, type StorageArea } from '@genoffice/storage-adapter'
+import type { ServiceCore, ServiceDefinition } from '@chatoffice/service-core'
+import { createCore } from '@chatoffice/service-core'
+import { chatHistoryService } from '@chatoffice/service-core'
+import { settingsService } from '@chatoffice/service-core'
+import { xlsxSidecarService } from '@chatoffice/service-core'
+import { openLocalArea, type StorageArea } from '@chatoffice/storage-adapter'
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
@@ -133,9 +133,9 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
 
   attachAuthHooks(app, options.auth)
   attachWsGateway(app, core)
-  const dshHome = process.env.GENOFFICE_DSH_HOME
-  const dshRpc = process.env.GENOFFICE_DSH_RPC_ORIGIN
-  const dshRpcFile = process.env.GENOFFICE_DSH_RPC_ORIGIN_FILE
+  const dshHome = process.env.CHATOFFICE_DSH_HOME
+  const dshRpc = process.env.CHATOFFICE_DSH_RPC_ORIGIN
+  const dshRpcFile = process.env.CHATOFFICE_DSH_RPC_ORIGIN_FILE
   attachAiProxy(app, {
     ...options.ai,
     dataDir: options.ai?.dataDir ?? dataDir,

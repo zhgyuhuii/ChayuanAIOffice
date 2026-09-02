@@ -50,7 +50,7 @@ export function xlsxSidecarService(deps: { binaryPath?: string } = {}) {
     create(_context: ServiceContext): XlsxSidecarApi {
       const binaryPath =
         deps.binaryPath ??
-        process.env.GENOFFICE_XLSX_SIDECAR ??
+        process.env.CHATOFFICE_XLSX_SIDECAR ??
         defaultBinaryPath()
 
       // Windows cannot exec a .cjs directly; allow "<node>|<script>" pairs
@@ -134,7 +134,7 @@ export function xlsxSidecarService(deps: { binaryPath?: string } = {}) {
         async openWorkbookBytes(input) {
           const bytes = Buffer.from(input.base64, 'base64')
           if (bytes.byteLength === 0) throw new Error('empty workbook bytes')
-          const dir = mkdtempSync(join(tmpdir(), 'genoffice-xlsx-'))
+          const dir = mkdtempSync(join(tmpdir(), 'chatoffice-xlsx-'))
           const snapshotPath = join(dir, input.name.replace(/[\\/:*?"<>|]/g, '_') || 'workbook.xlsx')
           writeFileSync(snapshotPath, bytes)
           const digest = createHash('sha256').update(bytes).digest('hex')

@@ -4,7 +4,7 @@
  * area, then hands control to the original main.tsx.
  */
 
-import { registerBatch1Degradations } from '@genoffice/web-bridge'
+import { registerBatch1Degradations } from '@chatoffice/web-bridge'
 import { installShellShims } from './host/shell-shims.js'
 import { startBridgeHost } from './host/bridge-host.js'
 import { tabManager } from './host/tab-manager.js'

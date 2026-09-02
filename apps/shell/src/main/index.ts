@@ -34,7 +34,7 @@ import menuMdIcon1x from './assets/menu-md.png?asset'
 import menuMdIcon2x from './assets/menu-md@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
-import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@genoffice/i18n'
+import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@chatoffice/i18n'
 import {
   DEFAULT_SAVE_DIR_KEY,
   DROP_OPEN_CHANNEL,
@@ -48,7 +48,7 @@ import {
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
   windowMenuTemplate,
-} from '@genoffice/electron-utils'
+} from '@chatoffice/electron-utils'
 import { readAppSettings, writeAppSetting, writeAppSettings } from './app-settings'
 import {
   ANALYTICS_ENABLED_KEY,
@@ -78,18 +78,18 @@ import {
   syncCloudProjects,
 } from './cloud-projects'
 import { handleDroppedFiles } from './dropped-files'
-import { ProjectStore } from '@genoffice/project-store'
+import { ProjectStore } from '@chatoffice/project-store'
 import {
-  ensureGenofficeLogin,
-  genofficeLogout,
+  ensureChatofficeLogin,
+  chatofficeLogout,
   gskConvertPdfToDocx,
   gskLoginInfo,
   hasGskAuth,
-  loadGenofficeAuth,
+  loadChatofficeAuth,
   resolveGskEntry,
   setGskProxyUrl,
-  startGenofficeLogin,
-} from '@genoffice/ai-search'
+  startChatofficeLogin,
+} from '@chatoffice/ai-search'
 
 import {
   buildDocsMenu,
@@ -193,7 +193,7 @@ import { applyUpdateChannel, initAutoUpdater } from './updater'
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
 
 /**
- * GenOffice unified shell: ONE Electron app, ONE BrowserWindow, hosting the
+ * ChatOffice unified shell: ONE Electron app, ONE BrowserWindow, hosting the
  * docs and sheets modules as WebContentsView tabs behind a WPS-style tab
  * strip. The shell owns the lifecycle — single-instance lock, file-
  * association routing by extension, and per-active-tab menu switching.
@@ -203,13 +203,13 @@ import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
 
 // ANY unpacked run (`npm run shell`, `npm run dev`, `npx electron .`) must not
 // share the installed app's userData or single-instance lock — otherwise a dev
-// run silently quits and forwards its argv to the running installed GenOffice.
-// GENOFFICE_USER_DATA: test drivers point this at a scratch dir so an
+// run silently quits and forwards its argv to the running installed ChatOffice.
+// CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so an
 // automated instance can run alongside the dev instance (separate lock).
 if (!app.isPackaged)
   app.setPath(
     'userData',
-    process.env.GENOFFICE_USER_DATA ?? join(app.getPath('appData'), 'GenOffice Dev'),
+    process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChatOffice Dev'),
   )
 
 // Product renames changed the userData path ("AI Office" → "GenOffice" →
@@ -289,7 +289,7 @@ configureMarkdownRuntime({
 
 // ---- UI language ----
 // Persisted in userData/app-settings.json so the editor modules can read the
-// same file when they pick up i18n later. GENOFFICE_LANG overrides for tests.
+// same file when they pick up i18n later. CHATOFFICE_LANG overrides for tests.
 
 const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json')
 
@@ -297,8 +297,8 @@ let uiLang: Lang | null = null
 
 function currentLang(): Lang {
   if (uiLang) return uiLang
-  if (process.env.GENOFFICE_LANG) {
-    uiLang = normalizeLang(process.env.GENOFFICE_LANG)
+  if (process.env.CHATOFFICE_LANG) {
+    uiLang = normalizeLang(process.env.CHATOFFICE_LANG)
     setUiLang(uiLang)
     return uiLang
   }
@@ -402,9 +402,9 @@ function initAnalytics(): void {
 
 // ---- first-run onboarding ----
 // The GenTeam community page opened from the onboarding's second slide.
-// Stable short link served by the genoffice.ai site; it 302s to the tokened
+// Stable short link served by the chatoffice.ai site; it 302s to the tokened
 // invite link, which stays out of this repo and rotates server-side.
-const GENTEAM_URL = 'https://genoffice.ai/join'
+const GENTEAM_URL = 'https://chatoffice.ai/join'
 
 // Genspark credit-usage page opened from the account menu's credits row.
 // Kept main-side so the renderer never supplies the URL.
@@ -445,7 +445,7 @@ let cachedGithubStars: number | null = null
 async function fetchGithubStars(): Promise<number | null> {
   if (cachedGithubStars !== null) return cachedGithubStars
   try {
-    const response = await fetch('https://api.github.com/repos/genspark-ai/genoffice', {
+    const response = await fetch('https://api.github.com/repos/genspark-ai/chatoffice', {
       headers: { Accept: 'application/vnd.github+json' },
       signal: AbortSignal.timeout(5000),
     })
@@ -2373,7 +2373,7 @@ function createShellWindow(): void {
     height: 900,
     minWidth: 980,
     minHeight: 600,
-    title: 'chatoffice',
+    title: 'ChatOffice',
     // vibrancy: editor modules punch translucent regions (e.g. the slides
     // thumbnail pane) through to the desktop
     ...(process.platform === 'darwin'
@@ -2828,10 +2828,10 @@ function statEntries(paths: string[]): RecentEntry[] {
 }
 
 function registerHomeIpc(): void {
-  // signed-in means GenOffice's own device-code login; the shared gsk CLI key
+  // signed-in means ChatOffice's own device-code login; the shared gsk CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
   ipcMain.handle(HOME_CHANNELS.accountStatus, async () => {
-    if (!loadGenofficeAuth()) return { loggedIn: false }
+    if (!loadChatofficeAuth()) return { loggedIn: false }
     await proxyBootstrap
     const info = await gskLoginInfo()
     return info
@@ -2852,7 +2852,7 @@ function registerHomeIpc(): void {
     }
     // open the browser on the first url event only; later events refresh the rescue URL
     let opened = false
-    const launched = startGenofficeLogin((progress) => {
+    const launched = startChatofficeLogin((progress) => {
       if (progress.url) {
         pendingLoginUrl = progress.url
         if (!opened) {
@@ -2872,7 +2872,7 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.accountLogout, async () => {
-    await genofficeLogout()
+    await chatofficeLogout()
     // the cloud projects cache belongs to the account that just signed out
     clearCloudProjectsStore(cloudProjectsStorePath())
   })
@@ -3140,8 +3140,8 @@ function registerHomeIpc(): void {
     const state = readStarPrompt()
     const docOpens = state.docOpens ?? 0
     // dev preview of the card without waiting out the value thresholds
-    // (same pattern as GENOFFICE_FAKE_UPDATE); nothing is recorded
-    if (!app.isPackaged && process.env.GENOFFICE_FORCE_STAR_PROMPT) return { show: true, docOpens }
+    // (same pattern as CHATOFFICE_FAKE_UPDATE); nothing is recorded
+    if (!app.isPackaged && process.env.CHATOFFICE_FORCE_STAR_PROMPT) return { show: true, docOpens }
     const grant = (): StarPromptShow => {
       writeStarPrompt(withShown(state, now))
       starPromptSessionGrant = { show: true, docOpens }
@@ -3617,7 +3617,7 @@ async function exportPdfAsDocx(): Promise<void> {
         cancelId: 1,
         noLink: true,
       })
-      if (response === 0) ensureGenofficeLogin((url) => void shell.openExternal(url))
+      if (response === 0) ensureChatofficeLogin((url) => void shell.openExternal(url))
       return
     }
     const balance = (await gskLoginInfo())?.creditBalance

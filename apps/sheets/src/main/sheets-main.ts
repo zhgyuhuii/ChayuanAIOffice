@@ -50,9 +50,9 @@ import {
   showSaveDialogWithMemory,
   viewMenuTemplate,
   windowMenuTemplate,
-} from '@genoffice/electron-utils'
-import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@genoffice/i18n'
-import { ProjectStore } from '@genoffice/project-store'
+} from '@chatoffice/electron-utils'
+import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chatoffice/i18n'
+import { ProjectStore } from '@chatoffice/project-store'
 
 import {
   cloudToolsEnabled,
@@ -61,11 +61,11 @@ import {
   setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
-} from '@genoffice/ai-provider'
-import { registerSharedAiIpc } from '@genoffice/ai-host'
+} from '@chatoffice/ai-provider'
+import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
 import {
-  ensureGenofficeLogin,
+  ensureChatofficeLogin,
   gskApiKey,
   gskLoginInfo,
   hasGskAuth,
@@ -73,8 +73,8 @@ import {
   webSearch,
   imageSearch,
   gskGenerateImage,
-} from '@genoffice/ai-search'
-import { parseFileToText } from '@genoffice/file-parse'
+} from '@chatoffice/ai-search'
+import { parseFileToText } from '@chatoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '../gateway/xlsx-gateway'
 import { readArchiveEntryText, saveWorkbookViaSidecar } from '../gateway/xlsx-package-io'
 import { parsePivotDefinition } from '../gateway/xlsx-pivot'
@@ -1369,7 +1369,7 @@ interface SheetsRuntimeConfig {
   rendererFile: string
   /** absolute path to the Rust xlsx-sidecar binary */
   sidecarPath?: string | undefined
-  /** Shell router used to open exported/AI-generated files in a new GenOffice tab. */
+  /** Shell router used to open exported/AI-generated files in a new ChatOffice tab. */
   openGeneratedPath?: (path: string) => boolean
   /** Host-owned cross-app document creator (the shell routes docx/pdf/md into Docs). */
   createDocument?: (request: SheetsAiHostDocumentRequest) => Promise<WorkbookCreateDocumentResult>
@@ -1426,7 +1426,7 @@ async function createStandaloneSheetsDocument(
   request: SheetsAiHostDocumentRequest,
 ): Promise<WorkbookCreateDocumentResult> {
   if (request.type === 'docx') {
-    return { ok: false, error: 'Creating DOCX files requires the GenOffice shell or Docs app.' }
+    return { ok: false, error: 'Creating DOCX files requires the ChatOffice shell or Docs app.' }
   }
   const title = sanitizeGeneratedFileBase(request.title)
   try {
@@ -1847,7 +1847,7 @@ export async function createSheetsWindow(
     minWidth: 1024,
     minHeight: 680,
     show: false,
-    title: 'GenOffice Sheets',
+    title: 'ChatOffice Sheets',
     // Traffic lights sit inside the toolbar row.
     ...(process.platform === 'darwin' ? { titleBarStyle: 'hiddenInset' as const } : {}),
     webPreferences: {
@@ -1963,7 +1963,7 @@ const ATTACHMENT_TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats extract text via @genoffice/file-parse; images skip text
+/** office/pdf formats extract text via @chatoffice/file-parse; images skip text
  * extraction and go multimodal (sheets:files-read-image) */
 const ATTACHMENT_EXTS = new Set([
   ...ATTACHMENT_TEXT_EXTS,
@@ -2036,7 +2036,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
         ? Buffer.from(data.buffer, data.byteOffset, data.byteLength)
         : null
   if (!bytes || bytes.byteLength === 0) return null
-  const dir = join(app.getPath('temp'), 'genoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
   mkdirSync(dir, { recursive: true })
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
   const filePath = join(dir, `pasted-${stamp}-${++pastedImageSeq}.${cleanExt}`)
@@ -2044,7 +2044,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
   return filePath
 }
 
-/** Attachment text extraction via @genoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
+/** Attachment text extraction via @chatoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
 async function extractAttachmentText(filePath: string): Promise<string> {
   const stat = statSync(filePath)
   const stamp = `${stat.mtimeMs}:${stat.size}`
@@ -2998,7 +2998,7 @@ export function registerSheetsAiIpc(): void {
         return { url: r.url }
       },
     },
-    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    gskLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
@@ -3460,7 +3460,7 @@ async function writeWorkbookTo(
 /** Copies the workbook into the temp snapshot dir; the copy is the session's
  * save base (see SessionInfo.snapshotPath). */
 async function snapshotWorkbook(path: string): Promise<string> {
-  const dir = join(app.getPath('temp'), 'genoffice-sheets-sessions')
+  const dir = join(app.getPath('temp'), 'chatoffice-sheets-sessions')
   await mkdir(dir, { recursive: true })
   const snapshotPath = join(dir, `${randomUUID()}.xlsx`)
   await copyFile(path, snapshotPath)
@@ -3592,7 +3592,7 @@ async function prepareWorkbookForOpen(
     return { openPath: path }
   }
   const stem = basename(path).replace(/\.[^.]+$/, '')
-  const directory = join(app.getPath('temp'), 'genoffice-imports', randomUUID())
+  const directory = join(app.getPath('temp'), 'chatoffice-imports', randomUUID())
   await mkdir(directory, { recursive: true })
   const openPath = join(directory, `${stem}.xlsx`)
   try {
@@ -3771,16 +3771,16 @@ async function applyMainProcessProxy(): Promise<void> {
 export function startSheetsStandalone(): void {
   installNavigationGuard(app)
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
-  // GENOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
+  // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
   // instances get their own userData AND single-instance lock (the lock is scoped
   // to userData), allowing parallel instances alongside a normal dev run.
   // Same dev-only hook as apps/slides/src/main/slides-main.ts.
-  if (!app.isPackaged && process.env.GENOFFICE_USER_DATA) {
-    app.setPath('userData', process.env.GENOFFICE_USER_DATA)
+  if (!app.isPackaged && process.env.CHATOFFICE_USER_DATA) {
+    app.setPath('userData', process.env.CHATOFFICE_USER_DATA)
   }
   void applyMainProcessProxy()
   app.whenReady().then(() => {
-    setUiLang(normalizeLang(process.env.GENOFFICE_LANG ?? app.getLocale()))
+    setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
     app.setAccessibilitySupportEnabled(true)
     installApplicationMenu()
     startCaptureServer()

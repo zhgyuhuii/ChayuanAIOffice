@@ -2,13 +2,13 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@genoffice/storage-adapter'
+import { openLocalArea } from '@chatoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'genoffice-pptx-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-pptx-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }

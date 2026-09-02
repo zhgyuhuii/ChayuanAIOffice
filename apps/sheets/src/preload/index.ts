@@ -6,8 +6,8 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
-import type { ProjectApi } from '@genoffice/project-store'
+} from '@chatoffice/ai-provider'
+import type { ProjectApi } from '@chatoffice/project-store'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -49,7 +49,7 @@ import {
   MAX_SAVE_EDITS_TOTAL,
   SAVE_EDITS_CHUNK_JSON_MAX,
 } from '../shared/ipc-channels'
-import { installDropOpenBridge } from '@genoffice/electron-utils/drop-open'
+import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 
 const desktopApi: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),

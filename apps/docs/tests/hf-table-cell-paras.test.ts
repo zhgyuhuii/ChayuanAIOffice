@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { HeaderFooter, HfImage, SectionSettings } from '@genoffice/docx-engine'
+import type { HeaderFooter, HfImage, SectionSettings } from '@chatoffice/docx-engine'
 import {
   hfFloatPagePos,
   hfHasVisibleContent,

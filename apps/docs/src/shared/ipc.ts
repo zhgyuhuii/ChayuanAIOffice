@@ -33,7 +33,7 @@ export interface PickImageResult {
   name: string
 }
 
-// ---- AI provider settings/config/streaming: canonical types live in @genoffice/ai-provider ----
+// ---- AI provider settings/config/streaming: canonical types live in @chatoffice/ai-provider ----
 
 import type {
   AiChatResponse,
@@ -44,8 +44,8 @@ import type {
   AiStreamRequestV2,
   DiscoveryTarget,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
-import type { FaceVerticalMetrics } from '@genoffice/font-metrics'
+} from '@chatoffice/ai-provider'
+import type { FaceVerticalMetrics } from '@chatoffice/font-metrics'
 
 export type { FaceVerticalMetrics }
 
@@ -65,25 +65,25 @@ export type {
   AiWireProtocol,
   DiscoveryTarget,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
-export { AI_PROVIDERS, KEEP_KEY } from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
+export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider'
 
-// ---- agent protocol: canonical types live in @genoffice/agent-core ----
+// ---- agent protocol: canonical types live in @chatoffice/agent-core ----
 
 export type {
   AgentMessage,
   AgentToolCall,
   AgentToolDef,
   AgentToolResult,
-} from '@genoffice/agent-core'
+} from '@chatoffice/agent-core'
 
 /** wire shape of an ai:stream request: the settings slot carries the selection */
 export interface AiStreamWireRequest {
   requestId: string
   settings: AiModelSelection
   system: string
-  messages: import('@genoffice/agent-core').AgentMessage[]
-  tools?: import('@genoffice/agent-core').AgentToolDef[]
+  messages: import('@chatoffice/agent-core').AgentMessage[]
+  tools?: import('@chatoffice/agent-core').AgentToolDef[]
   maxTokens?: number
 }
 

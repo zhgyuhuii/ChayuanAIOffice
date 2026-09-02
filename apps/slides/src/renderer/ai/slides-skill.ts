@@ -1,11 +1,11 @@
-import type { AgentSkill, ToolDisplay } from '@genoffice/agent-core'
+import type { AgentSkill, ToolDisplay } from '@chatoffice/agent-core'
 import type {
   GroupRenderNode,
   PictureRenderNode,
   RenderNode,
   RenderSlide,
   ShapeRenderNode,
-} from '@genoffice/pptx-render'
+} from '@chatoffice/pptx-render'
 import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '../../shared/ipc'
 import { opVocabulary } from '../../shared/op-docs'
 import { auditSlideLayout, formatAudit } from './layout-audit'
@@ -235,7 +235,7 @@ export interface ClarifyQuestion {
   multi?: boolean
 }
 
-const AGENT_SYSTEM_PROMPT = `You are the AI assistant inside GenOffice Slides (a slide editor), helping users improve and generate presentations.
+const AGENT_SYSTEM_PROMPT = `You are the AI assistant inside ChatOffice Slides (a slide editor), helping users improve and generate presentations.
 
 ## Most important tool-selection principles (judge the scenario before acting)
 - **Creating a whole new deck (from scratch)** → first gather material (web_search) and images (image_search), then call **generate_deck**. With many pages, prefer **passing topic + approx_pages + context (the real material you found)** and let the system plan internally + generate page by page + display page by page (**you don't hand-write dozens of pages, and no pages get missed / arguments truncated**). For few pages where you already know each page, you may pass core_hook+style+pages directly.

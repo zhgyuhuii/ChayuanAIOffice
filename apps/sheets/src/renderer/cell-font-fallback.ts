@@ -372,7 +372,7 @@ function faceSrc(items: readonly string[]): string {
 
 function genuineLocalExists(names: readonly string[]): Promise<boolean> {
   const probes = names.map((n) =>
-    new FontFace('__genoffice-font-probe', `local('${n}')`).load().then(
+    new FontFace('__chatoffice-font-probe', `local('${n}')`).load().then(
       () => true,
       () => false,
     ),

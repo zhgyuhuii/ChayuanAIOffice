@@ -84,7 +84,7 @@ export class TabManager {
     // then once more on the next tick. On Linux/X11, `resize` fires before the
     // window manager applies the new size, so getContentBounds() is still the
     // pre-maximize size inside the handler and a follow-up layout is required.
-    // See https://github.com/genspark-ai/genoffice/issues/15
+    // See https://github.com/genspark-ai/chatoffice/issues/15
     shellWindow.on('resize', () => {
       this.layout()
       setImmediate(() => this.layout())

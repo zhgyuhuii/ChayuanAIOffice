@@ -5,7 +5,7 @@
  * a recent can reopen without a picker after permission is re-granted.
  */
 
-const KEY = 'genoffice.recents.v1'
+const KEY = 'chatoffice.recents.v1'
 const MAX = 200
 
 export interface RecentEntry {

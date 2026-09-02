@@ -7,8 +7,8 @@
  * renderer sends edit intents (text/geometry changes) back to the main process, which applies
  * them to the model and rebuilds the RenderSlide.
  */
-import type { RenderSlide } from '@genoffice/pptx-render'
-import type { SlideComment, SectionInfo } from '@genoffice/pptx-engine'
+import type { RenderSlide } from '@chatoffice/pptx-render'
+import type { SlideComment, SectionInfo } from '@chatoffice/pptx-engine'
 import type {
   AiModelEntry,
   AiModelSelection,
@@ -16,11 +16,11 @@ import type {
   AiStreamChunk,
   DiscoveryTarget,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 
-export type { SlideComment, SectionInfo } from '@genoffice/pptx-engine'
+export type { SlideComment, SectionInfo } from '@chatoffice/pptx-engine'
 
-// Canonical definitions of AI-related types live in @genoffice/ai-provider / @genoffice/agent-core (shared with docs)
+// Canonical definitions of AI-related types live in @chatoffice/ai-provider / @chatoffice/agent-core (shared with docs)
 export type {
   AiModelEntry,
   AiModelSelection,
@@ -35,19 +35,19 @@ export type {
   AiWireProtocol,
   DiscoveryTarget,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
-export { AI_PROVIDERS } from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
+export { AI_PROVIDERS } from '@chatoffice/ai-provider'
 
 /** wire shape of an ai:stream request: the settings slot carries the selection */
 export interface AiStreamWireRequest {
   requestId: string
   settings: AiModelSelection
   system: string
-  messages: import('@genoffice/agent-core').AgentMessage[]
-  tools?: import('@genoffice/agent-core').AgentToolDef[]
+  messages: import('@chatoffice/agent-core').AgentMessage[]
+  tools?: import('@chatoffice/agent-core').AgentToolDef[]
   maxTokens?: number
 }
-export type { AgentToolCall, AgentToolDef } from '@genoffice/agent-core'
+export type { AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 
 export type UiTheme = 'light' | 'dark' | 'system'
 
@@ -1249,7 +1249,7 @@ export interface SlidesApi {
       })
     | { error: string }
   >
-  /** Whether cloud single-page generation (gsk slide_generate) is available (GENOFFICE_CLOUD_SLIDE=1 + gsk login) */
+  /** Whether cloud single-page generation (gsk slide_generate) is available (CHATOFFICE_CLOUD_SLIDE=1 + gsk login) */
   cloudGenStatus: () => Promise<{ enabled: boolean }>
   /** Cloud single-page generation: brief → one-slide pptx temp file; the marker goes into a landGeneratedPages pageMarkers slot */
   cloudGeneratePage: (op: {

@@ -6,10 +6,10 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { Editor } from '@tiptap/core'
-import { DockShell, type DockChrome } from '@genoffice/ui'
+import { DockShell, type DockChrome } from '@chatoffice/ui'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
-import { defaultSettingsV2, type AiSettingsV2 } from '@genoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 

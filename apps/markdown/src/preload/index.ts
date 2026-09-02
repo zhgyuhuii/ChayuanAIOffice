@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { Lang } from '@genoffice/i18n'
-import type { AiStreamChunk } from '@genoffice/ai-provider'
-import type { ProjectApi } from '@genoffice/project-store'
-import { installDropOpenBridge } from '@genoffice/electron-utils/drop-open'
+import type { Lang } from '@chatoffice/i18n'
+import type { AiStreamChunk } from '@chatoffice/ai-provider'
+import type { ProjectApi } from '@chatoffice/project-store'
+import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { AI_CHANNELS, MARKDOWN_CHANNELS } from '../shared/ipc'
 import type { ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc'
 

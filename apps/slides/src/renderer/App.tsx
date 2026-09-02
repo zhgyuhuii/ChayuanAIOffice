@@ -8,7 +8,7 @@ import type {
   ChartRenderNode,
   PictureRenderNode,
   TableRenderNode,
-} from '@genoffice/pptx-render'
+} from '@chatoffice/pptx-render'
 import type {
   AiSettingsV2,
   AnimEffectKind,
@@ -84,8 +84,8 @@ import { AnimationPane } from './components/AnimationPane'
 import { AnimPreviewOverlay } from './components/AnimatedSlide'
 import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/InsertDialogs'
 import { CutoutDialog } from './components/CutoutDialog'
-import type { WordArtPreset } from '@genoffice/ui'
-import { DockShell, type DockLayoutState } from '@genoffice/ui'
+import type { WordArtPreset } from '@chatoffice/ui'
+import { DockShell, type DockLayoutState } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentToolCall } from '@genoffice/agent-core'
+import type { AgentToolCall } from '@chatoffice/agent-core'
 import { AiCreditsError, sseLines, streamForProvider } from '../src/stream'
 import { jsonResponse, okResponse, sseStream } from './test-utils'
 
@@ -72,7 +72,7 @@ describe('streamForProvider: temperature policy', () => {
     expect(bodies[1].temperature).toBe(0.3)
   })
 
-  // issue genspark-ai/genoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
+  // issue genspark-ai/chatoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
   // and api.openai.com 400s `max_tokens` for that family
   it('caps OpenAI via max_completion_tokens and other vendors via max_tokens', async () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(okTurn()))
@@ -370,7 +370,7 @@ describe('streamForProvider: anthropic', () => {
 
   it('never sends an empty assistant content array when history has edits-only replies', async () => {
     // Prior empty terminal turns would map to content:[] and break follow-ups
-    // on Anthropic (genoffice#12 / #22 class of multi-turn failures).
+    // on Anthropic (chatoffice#12 / #22 class of multi-turn failures).
     const fetchMock = vi
       .fn()
       .mockResolvedValue(
@@ -874,7 +874,7 @@ describe('streamForProvider: genspark', () => {
       expect(fetchMock).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          headers: expect.objectContaining({ 'X-Agent-Type': 'genoffice' }),
+          headers: expect.objectContaining({ 'X-Agent-Type': 'chatoffice' }),
         }),
       )
     }

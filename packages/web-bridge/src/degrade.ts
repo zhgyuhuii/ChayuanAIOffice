@@ -18,8 +18,8 @@ const DEGRADED = new Map<string, DegradeInfo>()
 
 /** Permanently impossible in a browser (physical replacements, decision v2.2) */
 export const UNSUPPORTED_IN_BROWSER: ReadonlySet<string> = new Set([
-  'aiOffice.revealPath',
-  'aiOffice.openTrash',
+  'chatOffice.revealPath',
+  'chatOffice.openTrash',
 ])
 
 export function degrade(channel: string, info: DegradeInfo): void {
@@ -49,12 +49,12 @@ export function degradedChannels(): string[] {
 export function registerBatch1Degradations(): void {
   degradeMany({
     // sheets / slides / pdf: open-existing lands in batches 3 / 4
-    'aiOffice.openPath:xlsx': { reason: '打开已有表格将在第 3 批可用', batch: '第 3 批' },
-    'aiOffice.openPath:pptx': { reason: '打开已有演示将在第 4 批可用', batch: '第 4 批' },
-    'aiOffice.openPath:pdf': { reason: '打开已有 PDF 将在第 4 批可用', batch: '第 4 批' },
+    'chatOffice.openPath:xlsx': { reason: '打开已有表格将在第 3 批可用', batch: '第 3 批' },
+    'chatOffice.openPath:pptx': { reason: '打开已有演示将在第 4 批可用', batch: '第 4 批' },
+    'chatOffice.openPath:pdf': { reason: '打开已有 PDF 将在第 4 批可用', batch: '第 4 批' },
     // account / cloud: awaiting the BFF channels
-    'aiOffice.accountStatus': { reason: '账号能力将在云端通道接入后可用', batch: '后续' },
-    'aiOffice.accountLogin': { reason: '账号能力将在云端通道接入后可用', batch: '后续' },
-    'aiOffice.cloudProjectsSync': { reason: '云项目将在云端通道接入后可用', batch: '后续' },
+    'chatOffice.accountStatus': { reason: '账号能力将在云端通道接入后可用', batch: '后续' },
+    'chatOffice.accountLogin': { reason: '账号能力将在云端通道接入后可用', batch: '后续' },
+    'chatOffice.cloudProjectsSync': { reason: '云项目将在云端通道接入后可用', batch: '后续' },
   })
 }

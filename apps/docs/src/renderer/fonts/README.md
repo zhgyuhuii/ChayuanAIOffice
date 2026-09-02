@@ -40,7 +40,7 @@ forms + basic Latin
 Rare characters outside the subset still fall through to system fonts (shown as
 missing glyphs in minimal environments); bold is synthesized by the browser.
 
-The serif subset also backs the `GenOffice Fullwidth TC` face (`fonts.css`), a
+The serif subset also backs the `ChatOffice Fullwidth TC` face (`fonts.css`), a
 unicode-range shim (U+FF0D/FF0F/FF3C/FF3F/FF5E) slotted before Songti TC in the
 Traditional Chinese serif chain: Songti TC draws those fullwidth glyphs at
 ~0.2-0.5em of ink inside the 1em advance, so a PMingLiU document's U+FF0F
@@ -51,9 +51,9 @@ chain order; advances are 1.0em everywhere, so line breaking is unchanged.
 
 | Font                                 | Role                                                        |
 | ------------------------------------ | ----------------------------------------------------------- |
-| GenOffice Serif KR (subset woff2)    | Batang-metric stand-in for Korean serif families            |
-| GenOffice Sans KR (subset woff2)     | fallback for Korean sans families (Malgun etc.)             |
-| GenOffice Che Latin KR (ASCII woff2) | half-width Latin for BatangChe/GulimChe/DotumChe/GungsuhChe |
+| ChatOffice Serif KR (subset woff2)    | Batang-metric stand-in for Korean serif families            |
+| ChatOffice Sans KR (subset woff2)     | fallback for Korean sans families (Malgun etc.)             |
+| ChatOffice Che Latin KR (ASCII woff2) | half-width Latin for BatangChe/GulimChe/DotumChe/GungsuhChe |
 
 Source: Noto Serif/Sans CJK KR Regular from [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk)
 (SIL OFL 1.1), subset with fonttools to the 2,350 KS X 1001 syllables + jamo
@@ -71,7 +71,7 @@ ink widths and side bearings of Batang/Malgun
 (`tools/normalize-kr-latin-metrics.py`,
 `tools/scale-kr-sans-latin-ink.py`).
 
-`GenOfficeCheLatinKR.woff2` is an ASCII-only derivative of GenOffice Sans KR.
+`ChatOfficeCheLatinKR.woff2` is an ASCII-only derivative of ChatOffice Sans KR.
 `tools/build-kr-che-latin-font.py` gives its Noto-derived outlines fixed 0.5em
 advances and transforms them to measured DotumChe ink boxes. Microsoft Office
 fonts are build-time measurement references only; no Microsoft outlines are
@@ -82,11 +82,11 @@ counterpart line factors live in `lineHeightFactor()` of `line-metrics.ts`.
 The Sans/Che source copyright (Adobe 2014–2021 and Google LLC), Serif source
 copyright (Adobe 2017–2024), and full OFL 1.1 text are in `LICENSE-OFL.txt`.
 
-### GenOffice Gothic KR
+### ChatOffice Gothic KR
 
 | Font                               | Role                                            |
 | ---------------------------------- | ----------------------------------------------- |
-| GenOffice Gothic KR (subset woff2) | real-metric face for NanumGothic-declaring docs |
+| ChatOffice Gothic KR (subset woff2) | real-metric face for NanumGothic-declaring docs |
 
 Source: NanumGothic Regular from [google/fonts](https://github.com/google/fonts/tree/main/ofl/nanumgothic)
 (SIL OFL 1.1). Word for Mac renders NanumGothic documents with the OS
@@ -96,7 +96,7 @@ Batang-normalized subset above ships 1.0/0.333/0.596 — +6.4% per hangul line.
 Subset to the same ranges as the KR fallbacks (KS X 1001 syllables + jamo +
 Basic Latin/punctuation/fullwidth forms), advances **unmodified**
 (`tools/build-gothic-kr-font.py`) and checked in as
-`GenOfficeGothicKR-Regular-subset.woff2`. Renamed per OFL (the upstream
+`ChatOfficeGothicKR-Regular-subset.woff2`. Renamed per OFL (the upstream
 Reserved Font Names include "Nanum" and "NanumGothic"; subsetting is a
 modification). The exact NHN copyright/Reserved Font Name notice and the full
 OFL 1.1 text are in `LICENSE-OFL.txt`.
@@ -105,7 +105,7 @@ OFL 1.1 text are in `LICENSE-OFL.txt`.
 
 | Font                    | Role                                     |
 | ----------------------- | ---------------------------------------- |
-| GenOffice Tamil (woff2) | Latha-metric stand-in for Tamil families |
+| ChatOffice Tamil (woff2) | Latha-metric stand-in for Tamil families |
 
 Source: Noto Sans Tamil Regular from [notofonts](https://github.com/notofonts/notofonts.github.io)
 (SIL OFL 1.1). Word substitutes missing Tamil families with Latha; Chromium's
@@ -139,7 +139,7 @@ serif, so unknown Arabic families default to the Naskh chain.
 
 | Font                              | Role                                             |
 | --------------------------------- | ------------------------------------------------ |
-| GenOffice PUA Blank (woff2, 312B) | blank 1em glyph for all of U+E000-F8FF (BMP PUA) |
+| ChatOffice PUA Blank (woff2, 312B) | blank 1em glyph for all of U+E000-F8FF (BMP PUA) |
 
 Generated from scratch by `tools/build-pua-blank-font.py` (no upstream font;
 two glyphs, both empty). Chromium never system-falls-back for Private Use

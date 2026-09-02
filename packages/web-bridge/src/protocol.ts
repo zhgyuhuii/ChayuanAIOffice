@@ -10,7 +10,7 @@
  * Renderers never see this module — the preload-shaped shims do.
  */
 
-export const BRIDGE_PROTOCOL = 'genoffice-bridge/1'
+export const BRIDGE_PROTOCOL = 'chatoffice-bridge/1'
 
 /** iframe → host */
 export interface BridgeRequest {

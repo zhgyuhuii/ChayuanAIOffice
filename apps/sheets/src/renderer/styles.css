@@ -1,6 +1,6 @@
 /* Per-app accent (excel-green family) + sheets-only tokens.
  * Chrome tokens (surface/text/border/…, AI panel --color-*) come from
- * @genoffice/ui/tokens.css; nothing here may shadow those names. */
+ * @chatoffice/ui/tokens.css; nothing here may shadow those names. */
 :root {
   --excel-green: #217346;
   --excel-green-dark: #185c37;
@@ -437,7 +437,7 @@ textarea:disabled {
 
 /* While a popover is open the row must deliver presses (drag regions swallow
    them), so outside-press dismissal can see presses on the blank band */
-html.genoffice-popover-open .ribbon-tabs {
+html.chatoffice-popover-open .ribbon-tabs {
   -webkit-app-region: no-drag;
 }
 
@@ -630,7 +630,7 @@ html.genoffice-popover-open .ribbon-tabs {
   overflow-x: scroll;
   overflow-y: hidden;
   /* Slim visible scrollbar so mouse users can reach overflowed groups
-     (genspark-ai/genoffice#55). Its 5px lane is carved out of the bottom
+     (genspark-ai/chatoffice#55). Its 5px lane is carved out of the bottom
      padding, keeping the 80px band and the content area unchanged; Chromium
      paints a thumb only while the row actually overflows. */
   padding: 6px 12px 1px;
@@ -1248,7 +1248,7 @@ html.genoffice-popover-open .ribbon-tabs {
   anchor-scope: --menu-select;
 }
 
-/* Anchor positioning for the shared Word-style color panel (@genoffice/ui
+/* Anchor positioning for the shared Word-style color panel (@chatoffice/ui
    .gcp-palette draws the chrome; this only places it under its trigger). */
 .sheets-color-pop {
   position: fixed;
@@ -5302,7 +5302,7 @@ textarea:focus {
   display: none;
 }
 
-/* ── Shared dropdown (@genoffice/ui gs-dd) app sizing ──────────────────────
+/* ── Shared dropdown (@chatoffice/ui gs-dd) app sizing ──────────────────────
    Ports the old native-select metrics per container so replacing <select>
    with the themed Dropdown doesn't shift layout (reference: the matching
    block in apps/slides styles.css). */

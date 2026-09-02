@@ -5,9 +5,9 @@ import {
   Markdown,
   PanelTabs,
   usePanelTab,
-} from '@genoffice/ui'
-import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@genoffice/ui'
-import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@genoffice/ai-provider'
+} from '@chatoffice/ui'
+import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
+import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
 import type { ChangePlan } from '../../domain/workbook.types'

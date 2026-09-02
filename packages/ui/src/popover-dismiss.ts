@@ -11,8 +11,8 @@
  * additionally suspend that region while a popover is open (drag regions
  * swallow mouse events, so no listener can see presses on the blank band).
  * While any popover installed here is open, `<html>` carries the
- * `genoffice-popover-open` class — suspend the drag region with
- * `html.genoffice-popover-open .your-drag-row { -webkit-app-region: no-drag; }`.
+ * `chatoffice-popover-open` class — suspend the drag region with
+ * `html.chatoffice-popover-open .your-drag-row { -webkit-app-region: no-drag; }`.
  */
 import { useEffect, useRef } from 'react'
 
@@ -28,7 +28,7 @@ function subscribeChromePressed(handler: () => void): (() => void) | undefined {
     'desktop',
     'pdfApi',
     'markdownApi',
-    'aiOfficeTabs',
+    'chatOfficeTabs',
   ]) {
     const sub = w[name]?.onChromePressed
     if (typeof sub === 'function') return sub.call(w[name], handler)
@@ -40,7 +40,7 @@ function subscribeChromePressed(handler: () => void): (() => void) | undefined {
 let openPopovers = 0
 function bumpOpenPopovers(delta: 1 | -1): void {
   openPopovers = Math.max(0, openPopovers + delta)
-  document.documentElement.classList.toggle('genoffice-popover-open', openPopovers > 0)
+  document.documentElement.classList.toggle('chatoffice-popover-open', openPopovers > 0)
 }
 
 export interface PopoverDismissOptions {

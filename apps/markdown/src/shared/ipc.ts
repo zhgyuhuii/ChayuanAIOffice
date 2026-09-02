@@ -1,9 +1,9 @@
-import type { Lang } from '@genoffice/i18n'
+import type { Lang } from '@chatoffice/i18n'
 import type {
   AiModelSelection,
   AiSettingsV2,
   AiStreamChunk,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 
 export const MARKDOWN_CHANNELS = {
   consumePending: 'markdown:consume-pending',
@@ -167,9 +167,9 @@ export interface MarkdownApi {
   onChromePressed(handler: () => void): () => void
   getAiSettings(): Promise<AiSettingsV2>
   setAiSettings(view: AiSettingsV2): Promise<void>
-  setAiCurrentModel(selection: import('@genoffice/ai-provider').AiModelSelection): Promise<void>
-  aiDiscoverModels(target: import('@genoffice/ai-provider').DiscoveryTarget): Promise<{ models: import('@genoffice/ai-provider').AiModelEntry[]; error?: string }>
-  aiGskStatus(withEmail?: boolean): Promise<import('@genoffice/ai-provider').GenSparkAccountStatus>
+  setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
+  aiDiscoverModels(target: import('@chatoffice/ai-provider').DiscoveryTarget): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+  aiGskStatus(withEmail?: boolean): Promise<import('@chatoffice/ai-provider').GenSparkAccountStatus>
   aiGskLogin(): Promise<void>
   aiStream(request: { requestId: string; settings: AiModelSelection; system: string; messages: unknown[]; tools?: unknown[]; maxTokens?: number }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>

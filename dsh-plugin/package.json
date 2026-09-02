@@ -1,7 +1,7 @@
 {
-  "name": "genoffice",
+  "name": "chatoffice",
   "version": "0.1.0",
-  "description": "GenOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
+  "description": "ChatOffice 办公套件 — 全离线 BFF sidecar（文档/表格/幻灯/PDF/Markdown 五编辑器）以桌面应用形式运行在察元桌面：harness 形态与 Electron 形态点击 Dock 图标即用。",
   "type": "module",
   "main": "./dist/host.js",
   "exports": {
@@ -11,7 +11,7 @@
   },
   "files": [
     "dist",
-    "vendor/genoffice-sidecar",
+    "vendor/chatoffice-sidecar",
     "cordis.patch.yml",
     "README.md"
   ],

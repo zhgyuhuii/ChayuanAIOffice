@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
-import type { ChartDisplay, CommentInfo, NewChart } from '@genoffice/docx-engine'
+import type { ChartDisplay, CommentInfo, NewChart } from '@chatoffice/docx-engine'
 import type { AgentToolCall, AgentToolDef, CreateDocumentType } from '../../shared/ipc'
 import { t } from '../i18n/locale'
 import { executeCommands, type Command, type CommandEnvelope } from './commands'

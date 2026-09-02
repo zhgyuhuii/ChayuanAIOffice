@@ -1,4 +1,4 @@
-import type { ModelSettingsBridge } from '@genoffice/ui'
+import type { ModelSettingsBridge } from '@chatoffice/ui'
 
 /** the markdown preload bridge over the app-wide ai:* channels */
 export const markdownModelBridge: ModelSettingsBridge = {

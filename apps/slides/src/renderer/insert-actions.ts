@@ -8,7 +8,7 @@ import type { InsertKind, LinkTargetOp } from '../shared/ipc'
 import type { ActionCtx } from './action-context'
 import { applySelectionLink, saveEditSelection, selectionLink } from './TextEditOverlay'
 import { FIT_WIDTH } from './app-constants'
-import type { WordArtPreset } from '@genoffice/ui'
+import type { WordArtPreset } from '@chatoffice/ui'
 import {
   chartSampleData,
   iconSvg,

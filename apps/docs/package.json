@@ -1,6 +1,6 @@
 {
-  "name": "@genoffice/docs",
-  "productName": "GenOffice Docs",
+  "name": "@chatoffice/docs",
+  "productName": "ChatOffice Docs",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -18,14 +18,14 @@
     "dist:dir": "electron-vite build && electron-builder --dir"
   },
   "devDependencies": {
-    "@genoffice/agent-core": "*",
-    "@genoffice/i18n": "*",
-    "@genoffice/ai-provider": "*",
-    "@genoffice/ai-search": "*",
-    "@genoffice/docx-engine": "*",
-    "@genoffice/file-parse": "*",
-    "@genoffice/project-store": "*",
-    "@genoffice/ui": "*",
+    "@chatoffice/agent-core": "*",
+    "@chatoffice/i18n": "*",
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/docx-engine": "*",
+    "@chatoffice/file-parse": "*",
+    "@chatoffice/project-store": "*",
+    "@chatoffice/ui": "*",
     "@tiptap/core": "^3.28.0",
     "@tiptap/extensions": "^3.28.0",
     "@tiptap/pm": "^3.28.0",
@@ -47,10 +47,10 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.0"
   },
-  "author": "GenOffice",
+  "author": "ChatOffice",
   "build": {
-    "appId": "com.genoffice.docs",
-    "productName": "GenOffice Docs",
+    "appId": "com.chatoffice.docs",
+    "productName": "ChatOffice Docs",
     "electronVersion": "43.3.0",
     "artifactName": "AIDocx-${version}-${arch}.${ext}",
     "directories": {
@@ -91,10 +91,10 @@
     }
   },
   "dependencies": {
-    "@genoffice/ai-host": "*",
-    "@genoffice/electron-utils": "*",
-    "@genoffice/font-metrics": "*",
-    "@genoffice/pptx-render": "*",
+    "@chatoffice/ai-host": "*",
+    "@chatoffice/electron-utils": "*",
+    "@chatoffice/font-metrics": "*",
+    "@chatoffice/pptx-render": "*",
     "electron-updater": "^6.8.9",
     "pdf-lib": "^1.17.1"
   }

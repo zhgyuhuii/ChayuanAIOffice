@@ -15,7 +15,7 @@ copyFileSync(join(fixtures, '01_standard_business.pptx'), deckB)
 
 const app = await electron.launch({
   args: ['apps/shell', deckA],
-  env: { ...process.env, GENOFFICE_USER_DATA: join(work, 'userData') },
+  env: { ...process.env, CHATOFFICE_USER_DATA: join(work, 'userData') },
 })
 await app.firstWindow()
 
@@ -64,7 +64,7 @@ await new Promise((r) => setTimeout(r, 6000))
 const shellId = await waitFor(shellView, 'shell renderer')
 console.log(
   'open deck B in a second tab:',
-  await run(shellId, `window.aiOffice.openPath(${JSON.stringify(deckB)})`),
+  await run(shellId, `window.chatOffice.openPath(${JSON.stringify(deckB)})`),
 )
 const views = await waitFor(async () => {
   const ids = await slideViews()

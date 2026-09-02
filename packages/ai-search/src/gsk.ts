@@ -25,7 +25,7 @@ import {
   type ImageSearchResult,
   type WebSearchResult,
 } from './shared'
-import { genofficeApiKey } from './genoffice-auth'
+import { chatofficeApiKey } from './chatoffice-auth'
 
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
@@ -67,7 +67,7 @@ function electronCompatArgs(): string[] {
   if (!process.versions.electron) return []
   if (compatPath === undefined) {
     try {
-      const dir = join(homedir(), '.genoffice', 'bin')
+      const dir = join(homedir(), '.chatoffice', 'bin')
       mkdirSync(dir, { recursive: true })
       compatPath = join(dir, 'electron-compat.js')
       writeFileSync(compatPath, 'delete process.versions.electron;\n')
@@ -80,12 +80,12 @@ function electronCompatArgs(): string[] {
 
 /**
  * API key for Genspark LLM proxy / tool_cli auth; '' when not logged in.
- * Priority: GSK_API_KEY env → GenOffice's own key (bills to us via its
+ * Priority: GSK_API_KEY env → ChatOffice's own key (bills to us via its
  * key_name) → shared gsk CLI login (bills to the Claw bucket).
  */
 export function gskApiKey(): string {
   if (process.env.GSK_API_KEY) return process.env.GSK_API_KEY
-  const own = genofficeApiKey()
+  const own = chatofficeApiKey()
   if (own) return own
   try {
     const configPath = join(homedir(), '.genspark-tool-cli', 'config.json')
@@ -394,11 +394,11 @@ async function toolCliPost(
   try {
     const resp = await fetch(`${GSK_TOOL_CLI_BASE}${path}`, {
       method: 'POST',
-      // X-Agent-Type splits GenOffice usage out of the proxy's "Claw" billing bucket
+      // X-Agent-Type splits ChatOffice usage out of the proxy's "Claw" billing bucket
       headers: {
         'X-Api-Key': key,
         'Content-Type': 'application/json',
-        'X-Agent-Type': 'genoffice',
+        'X-Agent-Type': 'chatoffice',
       },
       body: JSON.stringify(body),
       signal: controller.signal,

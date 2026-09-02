@@ -26,28 +26,28 @@ import {
   setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
-} from '@genoffice/ai-provider'
-import { registerSharedAiIpc } from '@genoffice/ai-host'
-import { fetchRemoteImage } from '@genoffice/electron-utils'
+} from '@chatoffice/ai-provider'
+import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import {
   webSearch,
   imageSearch,
-  ensureGenofficeLogin,
+  ensureChatofficeLogin,
   gskApiKey,
   gskGenerateImage,
   gskAnalyzeMedia,
   gskLoginInfo,
   hasGskAuth,
-} from '@genoffice/ai-search'
-import { addPicture, editPictureSrcRect, replacePictureBytes } from '@genoffice/pptx-engine'
-import { matchesElementRef } from '@genoffice/pptx-engine/identity'
+} from '@chatoffice/ai-search'
+import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chatoffice/pptx-engine'
+import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
 import { coverCropFractions } from '../shared/cover-crop'
 import type { AiRunFailure } from '../shared/ipc'
-import { EMU_PER_PX_96 } from '@genoffice/pptx-render'
+import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
 import { tm } from './i18n-main'
 import { pushHistory, rebuildSlide, scheduleHistoryNotify, sessions } from './session-state'
 
-// ---- AI settings + streaming proxy (the main process does the networking to avoid renderer CORS; implementation shared via @genoffice/ai-provider) ----
+// ---- AI settings + streaming proxy (the main process does the networking to avoid renderer CORS; implementation shared via @chatoffice/ai-provider) ----
 
 const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
@@ -152,7 +152,7 @@ export function registerAiIpc(): void {
         return { url: r.url }
       },
     },
-    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    gskLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })

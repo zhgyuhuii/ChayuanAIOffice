@@ -1,4 +1,4 @@
-import type { AgentMessage, AgentToolDef } from '@genoffice/agent-core'
+import type { AgentMessage, AgentToolDef } from '@chatoffice/agent-core'
 import { streamAnthropic } from './protocols/anthropic'
 import { streamGemini } from './protocols/gemini'
 import { streamOpenAiCompatible } from './protocols/openai-compatible'

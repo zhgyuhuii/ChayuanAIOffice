@@ -18,8 +18,8 @@ import {
   type TableMergeOp,
   type TableStructureOp,
   type TableStyleEdit,
-} from '@genoffice/pptx-engine'
-import { editTableStyle } from '@genoffice/pptx-engine'
+} from '@chatoffice/pptx-engine'
+import { editTableStyle } from '@chatoffice/pptx-engine'
 import { GuidedError, register, resolveElement, type OpRecord } from './registry'
 
 register({

@@ -9,12 +9,12 @@ const local = (rel: string) => fileURLToPath(new URL(rel, import.meta.url))
 export default defineConfig({
   resolve: {
     alias: {
-      '@genoffice/docx-engine': local('../../packages/docx-engine/src/index.ts'),
-      '@genoffice/font-metrics': local('../../packages/font-metrics/src/index.ts'),
-      '@genoffice/electron-utils': local('../../packages/electron-utils/src/index.ts'),
-      '@genoffice/ai-provider': local('../../packages/ai-provider/src/index.ts'),
-      '@genoffice/i18n': local('../../packages/i18n/src/index.ts'),
-      '@genoffice/ui': local('../../packages/ui/src/index.ts'),
+      '@chatoffice/docx-engine': local('../../packages/docx-engine/src/index.ts'),
+      '@chatoffice/font-metrics': local('../../packages/font-metrics/src/index.ts'),
+      '@chatoffice/electron-utils': local('../../packages/electron-utils/src/index.ts'),
+      '@chatoffice/ai-provider': local('../../packages/ai-provider/src/index.ts'),
+      '@chatoffice/i18n': local('../../packages/i18n/src/index.ts'),
+      '@chatoffice/ui': local('../../packages/ui/src/index.ts'),
     },
   },
   test: {

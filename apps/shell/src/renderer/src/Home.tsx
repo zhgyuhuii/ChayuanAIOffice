@@ -15,7 +15,7 @@ import type {
   ProjectSummaryEntry,
   RecentEntry,
 } from '../../shared/home-api'
-import { useDismissablePopover } from '@genoffice/ui'
+import { useDismissablePopover } from '@chatoffice/ui'
 import { fileCountKey, visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
@@ -23,8 +23,8 @@ import { SettingsModal } from './SettingsModal'
 
 declare global {
   interface Window {
-    aiOffice: HomeApi
-    aiOfficeProject?: ProjectHomeApi
+    chatOffice: HomeApi
+    chatOfficeProject?: ProjectHomeApi
   }
 }
 
@@ -113,9 +113,9 @@ function baseName(entry: RecentEntry): string {
 
 // ── Project hooks ─────────────────────────────────────────
 
-/** whether we are inside the shell (aiOfficeProject API available) */
+/** whether we are inside the shell (chatOfficeProject API available) */
 function hasProjectApi(): boolean {
-  return typeof window.aiOfficeProject !== 'undefined'
+  return typeof window.chatOfficeProject !== 'undefined'
 }
 
 const FILTERS: { key: string; label: StringKey }[] = [
@@ -195,7 +195,7 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     setNewName('')
     if (!name) return
     try {
-      await window.aiOfficeProject?.createProject(name)
+      await window.chatOfficeProject?.createProject(name)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -210,7 +210,7 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     setRenaming(null)
     if (!name) return
     try {
-      await window.aiOfficeProject?.renameProject(id, name)
+      await window.chatOfficeProject?.renameProject(id, name)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -231,7 +231,7 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
     setConfirmDeleteId(null)
     if (!id) return
     try {
-      await window.aiOfficeProject?.deleteProject(id)
+      await window.chatOfficeProject?.deleteProject(id)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -483,7 +483,7 @@ function AccountEntry({
   // query login state once on mount
   useEffect(() => {
     let alive = true
-    void window.aiOffice.accountStatus?.().then((s) => {
+    void window.chatOffice.accountStatus?.().then((s) => {
       if (alive) setStatus(s)
     })
     return () => {
@@ -493,12 +493,12 @@ function AccountEntry({
 
   // login progress pushed from main (gsk login CLI output)
   useEffect(() => {
-    const off = window.aiOffice.onAccountLogin?.((ev) => {
+    const off = window.chatOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'url') {
         if (ev.url) setAuthUrl(ev.url)
         if (ev.expiresInSec) loginDeadline.current = Date.now() + ev.expiresInSec * 1000
       } else if (ev.phase === 'success') {
-        void window.aiOffice.accountStatus().then((s) => {
+        void window.chatOffice.accountStatus().then((s) => {
           if (s.loggedIn) {
             setStatus(s)
             setWaiting(false)
@@ -520,7 +520,7 @@ function AccountEntry({
   useEffect(() => {
     if (!waiting) return
     const timer = setInterval(() => {
-      void window.aiOffice.accountStatus().then((s) => {
+      void window.chatOffice.accountStatus().then((s) => {
         if (s.loggedIn) {
           setStatus(s)
           setWaiting(false)
@@ -550,7 +550,7 @@ function AccountEntry({
   const doLogout = () => {
     setLoggingOut(true)
     statusSeq.current++
-    void window.aiOffice.accountLogout().then(() => {
+    void window.chatOffice.accountLogout().then(() => {
       setLoggingOut(false)
       setStatus({ loggedIn: false })
     })
@@ -564,7 +564,7 @@ function AccountEntry({
     setUrlCopied(false)
     loginDeadline.current = Date.now() + LOGIN_MAX_WAIT_MS
     setLoginNonce((n) => n + 1)
-    void window.aiOffice.accountLogin().then((launched) => {
+    void window.chatOffice.accountLogin().then((launched) => {
       if (!launched) {
         setWaiting(false)
         setLoginError('launch')
@@ -572,7 +572,7 @@ function AccountEntry({
     })
   }
 
-  const openLoginUrl = () => void window.aiOffice.openLoginUrl?.()
+  const openLoginUrl = () => void window.chatOffice.openLoginUrl?.()
 
   const copyLoginUrl = () => {
     if (!authUrl) return
@@ -586,7 +586,7 @@ function AccountEntry({
     // refresh the login state / credit balance; drop the response
     // when a logout happened while it was in flight
     const seq = statusSeq.current
-    void window.aiOffice.accountStatus?.().then((s) => {
+    void window.chatOffice.accountStatus?.().then((s) => {
       if (seq === statusSeq.current) setStatus(s)
     })
     setSettingsOpen(true)
@@ -759,7 +759,7 @@ function CloudProjectsView() {
   // !snapshot && !loading branch below renders the retry state
   const startSync = () => {
     setSyncing(true)
-    void window.aiOffice.cloudProjectsSync?.().then((synced) => {
+    void window.chatOffice.cloudProjectsSync?.().then((synced) => {
       setSyncing(false)
       setLoading(false)
       if (synced) setSnapshot(synced)
@@ -770,7 +770,7 @@ function CloudProjectsView() {
 
   useEffect(() => {
     let cancelled = false
-    void window.aiOffice.cloudProjectsCached?.().then((stored) => {
+    void window.chatOffice.cloudProjectsCached?.().then((stored) => {
       if (cancelled || !stored) return
       setSnapshot((prev) => prev ?? stored)
       setLoading(false)
@@ -783,7 +783,7 @@ function CloudProjectsView() {
 
   // the sign-in button reuses the account login flow; sync once it lands
   useEffect(() => {
-    const off = window.aiOffice.onAccountLogin?.((ev) => {
+    const off = window.chatOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'success') {
         setLoginWaiting(false)
         startSyncRef.current()
@@ -801,7 +801,7 @@ function CloudProjectsView() {
 
   const startLogin = () => {
     setLoginWaiting(true)
-    void window.aiOffice.accountLogin?.().then((ok) => {
+    void window.chatOffice.accountLogin?.().then((ok) => {
       if (!ok) setLoginWaiting(false)
     })
   }
@@ -813,7 +813,7 @@ function CloudProjectsView() {
   }
 
   const openProject = (projectUrl: string) => {
-    void window.aiOffice.openCloudProject?.(projectUrl)
+    void window.chatOffice.openCloudProject?.(projectUrl)
   }
 
   // filter / search / sort are all local over the snapshot — no requests
@@ -1171,8 +1171,8 @@ export function Home() {
     const seq = ++requestSeq.current
     const ext = filter === 'all' ? undefined : filter
     const limit = keepCount ? Math.max(entriesLen.current, PAGE_SIZE) : PAGE_SIZE
-    const primary = view === 'recent' ? window.aiOffice.recents : window.aiOffice.starred
-    const secondary = view === 'recent' ? window.aiOffice.starred : window.aiOffice.recents
+    const primary = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
+    const secondary = view === 'recent' ? window.chatOffice.starred : window.chatOffice.recents
     void primary({ offset: 0, limit, ext }).then((page) => {
       if (seq !== requestSeq.current) return
       setEntries(page.entries)
@@ -1193,7 +1193,7 @@ export function Home() {
       )
     })
     if (projectMode) {
-      void window.aiOfficeProject!.listProjects().then(setProjects)
+      void window.chatOfficeProject!.listProjects().then(setProjects)
     }
   }
   const reloadRef = useRef(reload)
@@ -1232,7 +1232,7 @@ export function Home() {
     setLoadingMore(true)
     const seq = requestSeq.current
     const ext = filter === 'all' ? undefined : filter
-    const api = view === 'recent' ? window.aiOffice.recents : window.aiOffice.starred
+    const api = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
     void api({ offset: entriesLen.current, limit: PAGE_SIZE, ext }).then((page) => {
       setLoadingMore(false)
       if (seq !== requestSeq.current) return
@@ -1329,9 +1329,9 @@ export function Home() {
       return
     }
     let active = true
-    const api = window.aiOfficeProject!
+    const api = window.chatOfficeProject!
     void api.listFiles(selectedProjectId).then(async (paths) => {
-      const stats = await window.aiOffice.statPaths(paths)
+      const stats = await window.chatOffice.statPaths(paths)
       if (!active) return
       setProjectFileEntries(stats.sort((a, b) => b.mtimeMs - a.mtimeMs))
     })
@@ -1458,13 +1458,13 @@ export function Home() {
   }
 
   const toggleStar = (path: string) => {
-    void window.aiOffice.toggleStar(path).then(refresh)
+    void window.chatOffice.toggleStar(path).then(refresh)
   }
 
   const removeRecent = (paths: string[]) => {
     setRowMenu(null)
     setSelected(new Set())
-    void window.aiOffice.removeRecent(paths).then(refresh)
+    void window.chatOffice.removeRecent(paths).then(refresh)
   }
 
   const deleteFiles = (paths: string[]) => {
@@ -1476,12 +1476,12 @@ export function Home() {
     const paths = confirmDelete ?? []
     setConfirmDelete(null)
     setSelected(new Set())
-    void window.aiOffice.deleteFiles(paths).then(refresh)
+    void window.chatOffice.deleteFiles(paths).then(refresh)
   }
 
   const duplicateFile = (path: string) => {
     setRowMenu(null)
-    void window.aiOffice.duplicateFile(path).then(refresh)
+    void window.chatOffice.duplicateFile(path).then(refresh)
   }
 
   const startRename = (entry: RecentEntry) => {
@@ -1494,7 +1494,7 @@ export function Home() {
     setRenaming(null)
     if (!value || value === baseName(entry)) return
     const newName = entry.ext ? `${value}.${entry.ext}` : value
-    void window.aiOffice.renameFile(entry.path, newName).then((result) => {
+    void window.chatOffice.renameFile(entry.path, newName).then((result) => {
       if (!result.ok) window.alert(result.error ?? t('renameFailed'))
       refresh()
     })
@@ -1504,7 +1504,7 @@ export function Home() {
     setMoveFileMenu(null)
     setRowMenu(null)
     try {
-      await window.aiOfficeProject?.moveFile(filePath, targetProjectId)
+      await window.chatOfficeProject?.moveFile(filePath, targetProjectId)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -1524,7 +1524,7 @@ export function Home() {
     setProjectFileEntries((prev) => prev.filter((e) => !moved.has(e.path)))
     try {
       for (const path of paths) {
-        await window.aiOfficeProject?.moveFile(path, targetProjectId)
+        await window.chatOfficeProject?.moveFile(path, targetProjectId)
       }
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
@@ -1537,25 +1537,25 @@ export function Home() {
 
   // ── New file (passes projectId when a project is selected) ──
   const handleNewDoc = () => {
-    void window.aiOffice.newDoc(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newDoc(selectedProjectId ? { projectId: selectedProjectId } : undefined)
   }
 
   const handleNewSheet = () => {
-    void window.aiOffice.newSheet(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newSheet(selectedProjectId ? { projectId: selectedProjectId } : undefined)
   }
 
   const handleNewSlide = () => {
-    void window.aiOffice.newSlide(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newSlide(selectedProjectId ? { projectId: selectedProjectId } : undefined)
   }
 
   const handleNewMarkdown = () => {
-    void window.aiOffice.newMarkdown(
+    void window.chatOffice.newMarkdown(
       selectedProjectId ? { projectId: selectedProjectId } : undefined,
     )
   }
 
   const handleNewPdf = () => {
-    void window.aiOffice.newPdf(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newPdf(selectedProjectId ? { projectId: selectedProjectId } : undefined)
   }
 
   const NEW_ITEMS = [
@@ -1583,7 +1583,7 @@ export function Home() {
         ))}
         <button
           className="quick-card"
-          onClick={() => void window.aiOffice.browse()}
+          onClick={() => void window.chatOffice.browse()}
           data-tip={OPEN_LOCAL_EXTENSIONS}
         >
           <span className="quick-folder">
@@ -1621,11 +1621,11 @@ export function Home() {
           role="button"
           tabIndex={0}
           onClick={() => {
-            if (!isRenaming) void window.aiOffice.openPath(entry.path)
+            if (!isRenaming) void window.chatOffice.openPath(entry.path)
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget) {
-              void window.aiOffice.openPath(entry.path)
+              void window.chatOffice.openPath(entry.path)
             }
           }}
         >
@@ -1704,7 +1704,7 @@ export function Home() {
                   role="menuitem"
                   onClick={() => {
                     setRowMenu(null)
-                    void window.aiOffice.openPath(entry.path)
+                    void window.chatOffice.openPath(entry.path)
                   }}
                 >
                   {t('open')}
@@ -1713,7 +1713,7 @@ export function Home() {
                   role="menuitem"
                   onClick={() => {
                     setRowMenu(null)
-                    void window.aiOffice.revealPath(entry.path)
+                    void window.chatOffice.revealPath(entry.path)
                   }}
                 >
                   {t('revealInFolder')}
@@ -2088,7 +2088,7 @@ export function Home() {
     <div className="home">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <img className="logo-lockup" src={logoLockup} alt="chatoffice" />
+          <img className="logo-lockup" src={logoLockup} alt="ChatOffice" />
         </div>
 
         <nav className="sidebar-nav">

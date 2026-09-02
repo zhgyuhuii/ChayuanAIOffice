@@ -1,10 +1,10 @@
 {
-  "name": "@genoffice/server",
+  "name": "@chatoffice/server",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "description": "GenOffice BFF: hosts service-core over HTTP/WS for the web app (SaaS and embedded sidecar share this code)",
+  "description": "ChatOffice BFF: hosts service-core over HTTP/WS for the web app (SaaS and embedded sidecar share this code)",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -16,13 +16,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@genoffice/ai-provider": "*",
-    "@genoffice/ai-search": "*",
-    "@genoffice/electron-utils": "*",
-    "@genoffice/pptx-engine": "*",
-    "@genoffice/pptx-render": "*",
-    "@genoffice/service-core": "*",
-    "@genoffice/storage-adapter": "*",
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/electron-utils": "*",
+    "@chatoffice/pptx-engine": "*",
+    "@chatoffice/pptx-render": "*",
+    "@chatoffice/service-core": "*",
+    "@chatoffice/storage-adapter": "*",
     "fastify": "^5.2.1",
     "tsx": "^4.19.2"
   },

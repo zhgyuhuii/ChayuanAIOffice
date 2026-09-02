@@ -28,7 +28,7 @@ import {
   type AiSettingsV2,
   type AiWireProtocol,
   type DiscoveryTarget,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
 import { VendorLogo } from './VendorLogo'
 // self-contained styles: every consumer gets them with the component

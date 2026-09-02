@@ -5,7 +5,7 @@ import type {
   HfPartInfo,
   SectionInfo,
   SectionSettings,
-} from '@genoffice/docx-engine'
+} from '@chatoffice/docx-engine'
 import {
   appendEndnotesBlock,
   appendFloatSpillBlock,

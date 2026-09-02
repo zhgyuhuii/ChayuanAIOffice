@@ -20,7 +20,7 @@ import {
   patchSlideXml,
   type OpenedPptx,
   type Slide,
-} from '@genoffice/pptx-engine'
+} from '@chatoffice/pptx-engine'
 import { opUsage } from '../../shared/op-docs'
 import {
   GuidedError,

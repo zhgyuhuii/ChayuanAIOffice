@@ -667,7 +667,7 @@ export function buildCacheDefinitionXml(
   return (
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
     `<pivotCacheDefinition xmlns="${MAIN_NS}" xmlns:r="${REL_NS}" r:id="${recordsRelId}" ` +
-    `refreshedBy="genoffice" createdVersion="8" refreshedVersion="8" ` +
+    `refreshedBy="chatoffice" createdVersion="8" refreshedVersion="8" ` +
     `minRefreshableVersion="3" recordCount="${recordCount}">` +
     '<cacheSource type="worksheet">' +
     `<worksheetSource ref="${areaToRef(addition.sourceArea)}" ` +
@@ -908,7 +908,7 @@ function buildGroupingExtLst(addition: PivotAddition): string {
   const groupings = addition.groupings ?? []
   if (groupings.length === 0) return ''
   return (
-    '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:aioffice:pivot">' +
+    '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:chatoffice:pivot">' +
     `<aio:aioPivotGroupings v="${escapeAttribute(JSON.stringify(groupings))}"/>` +
     '</ext></extLst>'
   )

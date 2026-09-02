@@ -1,7 +1,7 @@
 /**
  * Form ③ packaging: the bundle the chatop desktop (chayuan-harness) embeds.
  *
- * Produces dist/chatop-genoffice-<version>/ containing the same embedded
+ * Produces dist/chatop-chatoffice-<version>/ containing the same embedded
  * sidecar as the dsh plugin plus an integration README describing the two
  * hookup points in chayuan-harness:
  *
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
 const dist = join(root, 'dist')
-const out = join(dist, `chatop-genoffice-${version}`)
+const out = join(dist, `chatop-chatoffice-${version}`)
 
 console.log('step 1: embedded sidecar')
 execSync('node scripts/package-embedded.mjs', {
@@ -38,15 +38,15 @@ cpSync(join(root, 'dsh-plugin', 'embedded'), join(out, 'embedded'), { recursive:
 
 writeFileSync(
   join(out, 'README.md'),
-  `# chatop × GenOffice bundle (v${version})
+  `# chatop × ChatOffice bundle (v${version})
 
 This bundle gives the chatop desktop (chayuan-harness) a fully offline
-GenOffice suite (plan v2.1, form 3).
+ChatOffice suite (plan v2.1, form 3).
 
 \`\`\`
 embedded/     self-contained BFF sidecar (run: node --import tsx
-              embedded/apps/server/src/main.ts, env HOST/PORT/GENOFFICE_DATA_DIR,
-              GENOFFICE_AUTH=off)
+              embedded/apps/server/src/main.ts, env HOST/PORT/CHATOFFICE_DATA_DIR,
+              CHATOFFICE_AUTH=off)
 host-side.cjs lifecycle adapter: start(ctx) -> { origin, port, stop() }
 \`\`\`
 
@@ -55,7 +55,7 @@ Integration (chayuan-harness side):
 1. Ship this directory as an app resource; stage it into userData/plugins with
    the same integrity self-heal the bundled chatop-shell plugin uses.
 2. In desktop main, call host-side.cjs \`start({ pluginDir, runtimeDir, log })\`
-   at startup and load the returned \`origin\` in the GenOffice app windows.
+   at startup and load the returned \`origin\` in the ChatOffice app windows.
 3. The editor SPA: either point windows at the form-2 web bundle shipped
    alongside (\`npm run build:web\` output) or at the SaaS origin when online.
 

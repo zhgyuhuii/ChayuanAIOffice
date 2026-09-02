@@ -3,13 +3,13 @@ import { readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { openLocalArea } from '@genoffice/storage-adapter'
+import { openLocalArea } from '@chatoffice/storage-adapter'
 import { buildServer } from '../src/app.ts'
 
 const dirs: string[] = []
 
 function tempArea() {
-  const dir = mkdtempSync(join(tmpdir(), 'genoffice-bff-'))
+  const dir = mkdtempSync(join(tmpdir(), 'chatoffice-bff-'))
   dirs.push(dir)
   return openLocalArea({ rootDir: dir })
 }
@@ -103,7 +103,7 @@ describe('auth (jwt mode)', () => {
   }
 
   it('rejects missing/invalid tokens on rpc routes and accepts a valid sub', async () => {
-    const { app } = buildServer({ area: tempArea(), auth: { mode: 'jwt', audience: 'genoffice' } })
+    const { app } = buildServer({ area: tempArea(), auth: { mode: 'jwt', audience: 'chatoffice' } })
     const noToken = await app.inject({ method: 'POST', url: '/rpc/settings/get', payload: { args: ['x'] } })
     expect(noToken.statusCode).toBe(401)
 
@@ -119,7 +119,7 @@ describe('auth (jwt mode)', () => {
       method: 'POST',
       url: '/rpc/settings/get',
       payload: { args: ['x'] },
-      headers: { authorization: `Bearer ${tokenFor('u1', 'genoffice')}` },
+      headers: { authorization: `Bearer ${tokenFor('u1', 'chatoffice')}` },
     })
     expect(ok.statusCode).toBe(200)
 
@@ -130,7 +130,7 @@ describe('auth (jwt mode)', () => {
 
 describe('AI endpoints', () => {
   it('serves v2 settings defaults and round-trips a saved view with KEEP_KEY', async () => {
-    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'genoffice-ai-')))
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chatoffice-ai-')))
     const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
     const first = await app.inject({ method: 'GET', url: '/ai/settings' })
     expect(first.json().version).toBe(2)
@@ -168,7 +168,7 @@ describe('AI endpoints', () => {
     const seen: Array<Record<string, unknown>> = []
     const { app } = buildServer({
       area: tempArea(),
-      ai: { dataDir: mkdtempSync(join(tmpdir(), 'genoffice-ai-')), onCall: (r) => seen.push(r as unknown as Record<string, unknown>) },
+      ai: { dataDir: mkdtempSync(join(tmpdir(), 'chatoffice-ai-')), onCall: (r) => seen.push(r as unknown as Record<string, unknown>) },
     })
     const res = await app.inject({
       method: 'POST',
@@ -180,7 +180,7 @@ describe('AI endpoints', () => {
   })
 
   it('streams an error chunk (SSE) when the selection has no key', async () => {
-    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'genoffice-ai-')))
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'chatoffice-ai-')))
     const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
     const view = (await app.inject({ method: 'GET', url: '/ai/settings' })).json()
     view.profiles.push({
@@ -218,8 +218,8 @@ describe('AI endpoints', () => {
 
 describe('AI harness fusion (dsh plugin form)', () => {
   it('reads chatop-* profiles from the dsh settings file, keys resolved from credentials', async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), 'genoffice-ai-'))
-    const dshHome = mkdtempSync(join(tmpdir(), 'genoffice-dsh-'))
+    const dataDir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chatoffice-dsh-'))
     writeFileSync(
       join(dshHome, 'settings.yaml'),
       [

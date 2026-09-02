@@ -8,10 +8,10 @@
  * this service.
  */
 
-import { ProjectStore } from '@genoffice/project-store'
-import type { ProjectApi } from '@genoffice/project-store'
-import type { StorageArea } from '@genoffice/storage-adapter'
-import { openLocalArea } from '@genoffice/storage-adapter'
+import { ProjectStore } from '@chatoffice/project-store'
+import type { ProjectApi } from '@chatoffice/project-store'
+import type { StorageArea } from '@chatoffice/storage-adapter'
+import { openLocalArea } from '@chatoffice/storage-adapter'
 import type { ServiceContext } from '../runtime.js'
 import { defineService, ServiceEmitter } from '../runtime.js'
 

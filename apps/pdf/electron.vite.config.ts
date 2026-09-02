@@ -12,22 +12,22 @@ const pdfjsRoot = dirname(dirname(require.resolve('pdfjs-dist/package.json')))
 const pdfjsDir = (sub: string) => normalizePath(join(pdfjsRoot, 'pdfjs-dist', sub))
 
 export default defineConfig({
-  // @genoffice/i18n ships as TS source; pdf-lib's package only includes out/** — both must be bundled
+  // @chatoffice/i18n ships as TS source; pdf-lib's package only includes out/** — both must be bundled
   main: {
     plugins: [
       externalizeDepsPlugin({
         exclude: [
-          '@genoffice/i18n',
+          '@chatoffice/i18n',
           'pdf-lib',
-          '@genoffice/electron-utils',
-          '@genoffice/font-metrics',
+          '@chatoffice/electron-utils',
+          '@chatoffice/font-metrics',
         ],
       }),
     ],
   },
   preload: {
     // i18n and electron-utils ship as TS source — must be bundled, not left external
-    plugins: [externalizeDepsPlugin({ exclude: ['@genoffice/i18n', '@genoffice/electron-utils'] })],
+    plugins: [externalizeDepsPlugin({ exclude: ['@chatoffice/i18n', '@chatoffice/electron-utils'] })],
   },
   renderer: {
     plugins: [

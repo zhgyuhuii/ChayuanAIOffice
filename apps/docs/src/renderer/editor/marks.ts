@@ -5,7 +5,7 @@ import {} from '@tiptap/pm/tables'
 import { cssCsFontFamily, cssRunFontFamily } from '../line-metrics'
 import { isEastAsianFontName } from '../font-list'
 import { t } from '../i18n/locale'
-import {} from '@genoffice/docx-engine'
+import {} from '@chatoffice/docx-engine'
 
 /**
  * Custom schema mirroring the docx-engine Block model 1:1.
@@ -365,10 +365,10 @@ export function fontAttrsFromFamilyChain(chain: string | undefined): Record<stri
         // var(--doc-latin-chain, ...) fragments from eastAsia-only chains
         !/^var\(|\)$/.test(x) &&
         !/^(serif|sans-serif|monospace|cursive|fantasy|system-ui)$/i.test(x) &&
-        // internal fonts.css aliases are not user picks: 'GenOffice *', the
+        // internal fonts.css aliases are not user picks: 'ChatOffice *', the
         // '* GO' renamed/range-limited faces (Carlito GO, KR Theme Latin GO,
         // Noto Sans/Serif CJK GO...) and the size-adjusted Noto Arabic aliases
-        !/^genoffice /i.test(x) &&
+        !/^chatoffice /i.test(x) &&
         !/ go$/i.test(x) &&
         !/^noto (naskh|sans) arabic (w|ta|tnr)$/i.test(x),
     )

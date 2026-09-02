@@ -7,7 +7,7 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { openPptx, savePptx, createBlankPptx, type OpenedPptx } from '@genoffice/pptx-engine'
+import { openPptx, savePptx, createBlankPptx, type OpenedPptx } from '@chatoffice/pptx-engine'
 import { buildAllRenderSlides, deckDefaultFont } from '../../../slides/src/main/render-build'
 
 export interface PptxApi {

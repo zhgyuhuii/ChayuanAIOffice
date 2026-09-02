@@ -11,7 +11,7 @@ import {
   ModelSettingsPage,
   type ModelSettingsBridge,
 } from '../src/ModelSettingsPage'
-import { defaultSettingsV2 } from '@genoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
   getSettings: async () => defaultSettingsV2(),

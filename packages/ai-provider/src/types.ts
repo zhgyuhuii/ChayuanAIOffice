@@ -1,4 +1,4 @@
-import type { AgentMessage, AgentToolCall, AgentToolDef } from '@genoffice/agent-core'
+import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 import type { AiModelType } from './model-type'
 
 export type AiProviderId =

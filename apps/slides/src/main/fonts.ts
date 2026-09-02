@@ -19,14 +19,14 @@ import { join } from 'node:path'
 import { homedir, tmpdir } from 'node:os'
 import { createHash } from 'node:crypto'
 import * as opentype from 'opentype.js'
-import type { EmbeddedFontFace } from '@genoffice/pptx-engine'
+import type { EmbeddedFontFace } from '@chatoffice/pptx-engine'
 import {
   OpentypeMetrics,
   HeuristicMetrics,
   type FontMetricsProvider,
   type OpentypeFontLike,
   type RunStyle,
-} from '@genoffice/pptx-render'
+} from '@chatoffice/pptx-render'
 import { classifyCjkScript } from '../shared/cjk-script'
 import {
   initShapedMetrics,
@@ -70,7 +70,7 @@ export function getUserFontDir(): string | null {
  * the same private FontFace channel as Office DFonts. Registrations are process-wide and
  * live until the app exits — like PowerPoint keeping embedded fonts while the deck is open.
  */
-const EMBEDDED_FONT_DIR = join(tmpdir(), 'genoffice-embedded-fonts')
+const EMBEDDED_FONT_DIR = join(tmpdir(), 'chatoffice-embedded-fonts')
 /** norm(typeface) -> styleKey ('<bold><italic>') -> extracted sfnt path */
 const embeddedFaces = new Map<string, Map<string, string>>()
 

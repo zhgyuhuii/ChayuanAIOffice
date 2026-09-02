@@ -1,4 +1,4 @@
-/* Shared chrome/AI-panel tokens come from @genoffice/ui/tokens.css (imported
+/* Shared chrome/AI-panel tokens come from @chatoffice/ui/tokens.css (imported
  * before this file in main.tsx); only shell-specific tokens live here. */
 :root {
   /* Genspark DS v4.1: guide/onboarding accent is the brand blue */
@@ -15,7 +15,7 @@
   /* lift for the active segment in gray-track tab pills */
   --shadow-pill: 0 1px 2px rgb(0 0 0 / 8%);
 
-  /* genoffice-logo.svg is pure black-and-white; dark themes flip it to 1 */
+  /* chatoffice-logo.svg is pure black-and-white; dark themes flip it to 1 */
   --logo-invert: 0;
 }
 

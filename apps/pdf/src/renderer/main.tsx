@@ -1,14 +1,14 @@
 import { createRoot } from 'react-dom/client'
-import { htmlLang, type Lang } from '@genoffice/i18n'
+import { htmlLang, type Lang } from '@chatoffice/i18n'
 import App from './App'
 import { LocaleProvider } from './i18n/locale'
 import type { UiTheme } from '../shared/ipc'
-import '@genoffice/ui/tokens.css'
-import '@genoffice/ui/screentip.css'
-import '@genoffice/ui/color-picker.css'
-import '@genoffice/ui/dropdown.css'
+import '@chatoffice/ui/tokens.css'
+import '@chatoffice/ui/screentip.css'
+import '@chatoffice/ui/color-picker.css'
+import '@chatoffice/ui/dropdown.css'
 import './styles.css'
-import { installScreenTips } from '@genoffice/ui'
+import { installScreenTips } from '@chatoffice/ui'
 
 installScreenTips()
 

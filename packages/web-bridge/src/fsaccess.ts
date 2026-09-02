@@ -25,7 +25,7 @@ export function fsAccessSupported(): boolean {
     typeof (window as FsWindow).showOpenFilePicker === 'function'
 }
 
-const DB_NAME = 'genoffice-fs'
+const DB_NAME = 'chatoffice-fs'
 const STORE = 'handles'
 
 function idb(): Promise<IDBDatabase> {

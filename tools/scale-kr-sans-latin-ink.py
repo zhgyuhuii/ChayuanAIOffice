@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scale GenOffice Sans KR Latin outlines to Malgun Gothic's ink boxes.
+"""Scale ChatOffice Sans KR Latin outlines to Malgun Gothic's ink boxes.
 
 normalize-kr-sans-hmtx.py rewrote the Basic Latin advances to Malgun's values
 but left Noto's narrower outlines untouched, so wide-advance letters (M, W, &)
@@ -24,7 +24,7 @@ from fontTools.pens.t2CharStringPen import T2CharStringPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
-DEFAULT = "apps/docs/src/renderer/fonts/GenOfficeSansKR-Regular-subset.woff2"
+DEFAULT = "apps/docs/src/renderer/fonts/ChatOfficeSansKR-Regular-subset.woff2"
 MALGUN = "/Applications/Microsoft Word.app/Contents/Resources/DFonts/malgun.ttf"
 
 

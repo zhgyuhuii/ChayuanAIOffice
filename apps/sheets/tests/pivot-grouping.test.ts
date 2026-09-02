@@ -66,7 +66,7 @@ const GROUPED_PIVOT_XML =
   '<rowItems count="3"><i><x/></i><i><x v="1"/></i><i t="grand"><x/></i></rowItems>' +
   '<colItems count="1"><i/></colItems>' +
   '<dataFields count="1"><dataField name="Sum of Amount" fld="1"/></dataFields>' +
-  '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:aioffice:pivot">' +
+  '<extLst><ext uri="{AIO-PIVOT-GROUPINGS}" xmlns:aio="urn:chatoffice:pivot">' +
   '<aio:aioPivotGroupings v="[{&quot;fieldIndex&quot;:0,&quot;kind&quot;:&quot;date&quot;,&quot;dateUnit&quot;:&quot;month&quot;}]"/>' +
   '</ext></extLst>' +
   '</pivotTableDefinition>'

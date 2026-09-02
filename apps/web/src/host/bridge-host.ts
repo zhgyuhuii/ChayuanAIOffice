@@ -11,18 +11,18 @@ import {
   isBridgeRequest,
   isBridgeSubscribe,
   type BridgeResponse,
-} from '@genoffice/web-bridge'
+} from '@chatoffice/web-bridge'
 import { fileStore } from './file-open.js'
 import { tabManager } from './tab-manager.js'
 
 function bffBase(): string {
   // Dev: the host runs on 5180 while the BFF is on 8787. In production the
   // sidecar serves both under one origin; behind the dsh-plugin proxy the
-  // app lives under /genoffice-app/ and a path-relative rpc URL keeps the
+  // app lives under /chatoffice-app/ and a path-relative rpc URL keeps the
   // proxy in front of the sidecar.
   if (location.port === '5180') return 'http://localhost:8787'
   const dir = location.pathname.replace(/\/$/, '')
-  return dir.endsWith('/genoffice-app') ? dir : ''
+  return dir.endsWith('/chatoffice-app') ? dir : ''
 }
 
 async function handleRpc(channel: string, args: unknown[]): Promise<unknown> {

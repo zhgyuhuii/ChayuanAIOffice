@@ -37,10 +37,10 @@ import {
   showSaveDialogWithMemory,
   toggleDevToolsItem,
   windowMenuTemplate,
-} from '@genoffice/electron-utils'
-import { configureMetricsCache, familyVerticalMetrics } from '@genoffice/font-metrics'
-import { createI18n, getUiLang, normalizeLang, setUiLang } from '@genoffice/i18n'
-import { ProjectStore } from '@genoffice/project-store'
+} from '@chatoffice/electron-utils'
+import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
+import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
+import { ProjectStore } from '@chatoffice/project-store'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -48,7 +48,7 @@ import type {
   SaveDialogOptions,
   WebContents,
 } from 'electron'
-import { parseFileToText } from '@genoffice/file-parse'
+import { parseFileToText } from '@chatoffice/file-parse'
 import {
   cloudToolsEnabled,
   isAiOverloadedError,
@@ -57,17 +57,17 @@ import {
   type AiModelSelection,
   type AiRuntime,
   type StoredAiSettings,
-} from '@genoffice/ai-provider'
-import { registerSharedAiIpc } from '@genoffice/ai-host'
+} from '@chatoffice/ai-provider'
+import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import {
-  ensureGenofficeLogin,
+  ensureChatofficeLogin,
   gskApiKey,
   gskGenerateImage,
   gskLoginInfo,
   hasGskAuth,
   webSearch,
   imageSearch,
-} from '@genoffice/ai-search'
+} from '@chatoffice/ai-search'
 import type {
   AiDocContent,
   AiStreamWireRequest,
@@ -209,7 +209,7 @@ const tMain = createI18n({
     menuWindow: '窗口',
     menuHelp: '帮助',
     menuShortcuts: '键盘快捷键',
-    menuDocsHelp: 'GenOffice Docs 帮助',
+    menuDocsHelp: 'ChatOffice Docs 帮助',
   },
   en: {
     dlgOpenDoc: 'Open Document',
@@ -305,7 +305,7 @@ const tMain = createI18n({
     menuWindow: 'Window',
     menuHelp: 'Help',
     menuShortcuts: 'Keyboard Shortcuts',
-    menuDocsHelp: 'GenOffice Docs Help',
+    menuDocsHelp: 'ChatOffice Docs Help',
   },
   ja: {
     dlgOpenDoc: '文書を開く',
@@ -401,7 +401,7 @@ const tMain = createI18n({
     menuWindow: 'ウィンドウ',
     menuHelp: 'ヘルプ',
     menuShortcuts: 'キーボードショートカット',
-    menuDocsHelp: 'GenOffice Docs ヘルプ',
+    menuDocsHelp: 'ChatOffice Docs ヘルプ',
   },
   ko: {
     dlgOpenDoc: '문서 열기',
@@ -498,7 +498,7 @@ const tMain = createI18n({
     menuWindow: '창',
     menuHelp: '도움말',
     menuShortcuts: '키보드 바로 가기',
-    menuDocsHelp: 'GenOffice Docs 도움말',
+    menuDocsHelp: 'ChatOffice Docs 도움말',
   },
   fr: {
     dlgOpenDoc: 'Ouvrir un document',
@@ -596,7 +596,7 @@ const tMain = createI18n({
     menuWindow: 'Fenêtre',
     menuHelp: 'Aide',
     menuShortcuts: 'Raccourcis clavier',
-    menuDocsHelp: 'Aide GenOffice Docs',
+    menuDocsHelp: 'Aide ChatOffice Docs',
   },
   de: {
     dlgOpenDoc: 'Dokument öffnen',
@@ -694,7 +694,7 @@ const tMain = createI18n({
     menuWindow: 'Fenster',
     menuHelp: 'Hilfe',
     menuShortcuts: 'Tastenkombinationen',
-    menuDocsHelp: 'GenOffice Docs-Hilfe',
+    menuDocsHelp: 'ChatOffice Docs-Hilfe',
   },
   es: {
     dlgOpenDoc: 'Abrir documento',
@@ -792,7 +792,7 @@ const tMain = createI18n({
     menuWindow: 'Ventana',
     menuHelp: 'Ayuda',
     menuShortcuts: 'Atajos de teclado',
-    menuDocsHelp: 'Ayuda de GenOffice Docs',
+    menuDocsHelp: 'Ayuda de ChatOffice Docs',
   },
   th: {
     dlgOpenDoc: 'เปิดเอกสาร',
@@ -888,7 +888,7 @@ const tMain = createI18n({
     menuWindow: 'หน้าต่าง',
     menuHelp: 'วิธีใช้',
     menuShortcuts: 'แป้นพิมพ์ลัด',
-    menuDocsHelp: 'วิธีใช้ GenOffice Docs',
+    menuDocsHelp: 'วิธีใช้ ChatOffice Docs',
   },
   id: {
     dlgOpenDoc: 'Buka Dokumen',
@@ -985,7 +985,7 @@ const tMain = createI18n({
     menuWindow: 'Jendela',
     menuHelp: 'Bantuan',
     menuShortcuts: 'Pintasan Papan Ketik',
-    menuDocsHelp: 'Bantuan GenOffice Docs',
+    menuDocsHelp: 'Bantuan ChatOffice Docs',
   },
   ru: {
     dlgOpenDoc: 'Открыть документ',
@@ -1082,7 +1082,7 @@ const tMain = createI18n({
     menuWindow: 'Окно',
     menuHelp: 'Справка',
     menuShortcuts: 'Сочетания клавиш',
-    menuDocsHelp: 'Справка GenOffice Docs',
+    menuDocsHelp: 'Справка ChatOffice Docs',
   },
   ar: {
     dlgOpenDoc: 'فتح مستند',
@@ -1179,7 +1179,7 @@ const tMain = createI18n({
     menuWindow: 'نافذة',
     menuHelp: 'تعليمات',
     menuShortcuts: 'اختصارات لوحة المفاتيح',
-    menuDocsHelp: 'تعليمات GenOffice Docs',
+    menuDocsHelp: 'تعليمات ChatOffice Docs',
   },
   pt: {
     dlgOpenDoc: 'Abrir Documento',
@@ -1276,7 +1276,7 @@ const tMain = createI18n({
     menuWindow: 'Janela',
     menuHelp: 'Ajuda',
     menuShortcuts: 'Atalhos de Teclado',
-    menuDocsHelp: 'Ajuda do GenOffice Docs',
+    menuDocsHelp: 'Ajuda do ChatOffice Docs',
   },
   it: {
     dlgOpenDoc: 'Apri documento',
@@ -1373,7 +1373,7 @@ const tMain = createI18n({
     menuWindow: 'Finestra',
     menuHelp: 'Aiuto',
     menuShortcuts: 'Scelte rapide da tastiera',
-    menuDocsHelp: 'Guida di GenOffice Docs',
+    menuDocsHelp: 'Guida di ChatOffice Docs',
   },
   pl: {
     dlgOpenDoc: 'Otwórz dokument',
@@ -1470,7 +1470,7 @@ const tMain = createI18n({
     menuWindow: 'Okno',
     menuHelp: 'Pomoc',
     menuShortcuts: 'Skróty klawiaturowe',
-    menuDocsHelp: 'Pomoc GenOffice Docs',
+    menuDocsHelp: 'Pomoc ChatOffice Docs',
   },
   nl: {
     dlgOpenDoc: 'Document openen',
@@ -1567,7 +1567,7 @@ const tMain = createI18n({
     menuWindow: 'Venster',
     menuHelp: 'Help',
     menuShortcuts: 'Sneltoetsen',
-    menuDocsHelp: 'GenOffice Docs Help',
+    menuDocsHelp: 'ChatOffice Docs Help',
   },
   ms: {
     dlgOpenDoc: 'Buka Dokumen',
@@ -1664,7 +1664,7 @@ const tMain = createI18n({
     menuWindow: 'Tetingkap',
     menuHelp: 'Bantuan',
     menuShortcuts: 'Pintasan Papan Kekunci',
-    menuDocsHelp: 'Bantuan GenOffice Docs',
+    menuDocsHelp: 'Bantuan ChatOffice Docs',
   },
   he: {
     dlgOpenDoc: 'פתיחת מסמך',
@@ -1760,7 +1760,7 @@ const tMain = createI18n({
     menuWindow: 'חלון',
     menuHelp: 'עזרה',
     menuShortcuts: 'קיצורי מקלדת',
-    menuDocsHelp: 'עזרה של GenOffice Docs',
+    menuDocsHelp: 'עזרה של ChatOffice Docs',
   },
   hi: {
     dlgOpenDoc: 'दस्तावेज़ खोलें',
@@ -1857,7 +1857,7 @@ const tMain = createI18n({
     menuWindow: 'विंडो',
     menuHelp: 'सहायता',
     menuShortcuts: 'कीबोर्ड शॉर्टकट',
-    menuDocsHelp: 'GenOffice Docs सहायता',
+    menuDocsHelp: 'ChatOffice Docs सहायता',
   },
   'zh-TW': {
     dlgOpenDoc: '開啟文件',
@@ -1952,7 +1952,7 @@ const tMain = createI18n({
     menuWindow: '視窗',
     menuHelp: '說明',
     menuShortcuts: '鍵盤快速鍵',
-    menuDocsHelp: 'GenOffice Docs 說明',
+    menuDocsHelp: 'ChatOffice Docs 說明',
   },
 })
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
@@ -2037,7 +2037,7 @@ async function saveDialog(event: IpcMainInvokeEvent, options: SaveDialogOptions)
   return showSaveDialogWithMemory(dialog, dialogParent(event), options, defaultSaveDir())
 }
 
-/** default folder where new files land on their first (silent) save; shared with the other editors via shell. User-configurable (app-settings.json), falls back to <Documents>/GenOffice. */
+/** default folder where new files land on their first (silent) save; shared with the other editors via shell. User-configurable (app-settings.json), falls back to <Documents>/ChatOffice. */
 export function defaultSaveDir(): string {
   return configuredDefaultSaveDir(app)
 }
@@ -2248,7 +2248,7 @@ function allowPdfWrite(wcId: number, filePath: string): void {
 // Fidelity-harness escape hatch: headless runs have no save dialog to authorize
 // paths, so an explicitly configured directory (set only by our test scripts)
 // is treated as pre-authorized for PDF export.
-const testExportDir = process.env.GENOFFICE_TEST_EXPORT_DIR || null
+const testExportDir = process.env.CHATOFFICE_TEST_EXPORT_DIR || null
 
 function canPdfWrite(wcId: number, filePath: string): boolean {
   if (testExportDir && filePath.startsWith(testExportDir + '/')) return true
@@ -2480,7 +2480,7 @@ const TEXT_EXTS = new Set([
   'sql',
   'css',
 ])
-/** office/pdf formats get text extracted via @genoffice/file-parse; images skip extraction and go multimodal (files:read-image) */
+/** office/pdf formats get text extracted via @chatoffice/file-parse; images skip extraction and go multimodal (files:read-image) */
 const ATTACHMENT_EXTS = new Set([
   ...TEXT_EXTS,
   'doc',
@@ -2571,7 +2571,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
         ? Buffer.from(data.buffer, data.byteOffset, data.byteLength)
         : null
   if (!bytes || bytes.byteLength === 0) return null
-  const dir = join(app.getPath('temp'), 'genoffice-pasted')
+  const dir = join(app.getPath('temp'), 'chatoffice-pasted')
   mkdirSync(dir, { recursive: true })
   prunePastedImages(dir)
   const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')
@@ -2580,7 +2580,7 @@ function savePastedImage(data: unknown, ext: unknown): string | null {
   return filePath
 }
 
-/** parse an attachment to text via @genoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
+/** parse an attachment to text via @chatoffice/file-parse (docx/pdf/pptx/xlsx/plain text) */
 async function extractAttachmentText(filePath: string): Promise<string> {
   const stat = statSync(filePath)
   const stamp = `${stat.mtimeMs}:${stat.size}`
@@ -2606,7 +2606,7 @@ const TWIPS_PER_INCH = 1440
 
 // ---- AI settings + chat proxy (main process avoids renderer CORS) ----
 // provider metadata, settings defaults/migration, and per-provider streaming/chat
-// implementations live in @genoffice/ai-provider, shared with apps/sheets.
+// implementations live in @chatoffice/ai-provider, shared with apps/sheets.
 
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
@@ -2623,7 +2623,7 @@ function gskCloudToolsOn(): boolean {
 }
 
 /**
- * v2 AI runtime: the generic ai:* channels come from @genoffice/ai-host's
+ * v2 AI runtime: the generic ai:* channels come from @chatoffice/ai-host's
  * shared registrar; docs adds its per-app channels below and reuses the
  * runtime for one-shot chat and BYOK-first image generation.
  */
@@ -2674,7 +2674,7 @@ export function registerAiIpc(): void {
         return { url: r.url }
       },
     },
-    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    gskLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
@@ -3542,7 +3542,7 @@ interface DocsShellHooks {
   focusTab(id: string): void
   /** closes the calling tab instead of the whole shell window (Cmd+W / role:'close') */
   closeActiveTab(): void
-  /** Shell router used to open exported PDFs in a new GenOffice tab. */
+  /** Shell router used to open exported PDFs in a new ChatOffice tab. */
   openGeneratedPath?(path: string): boolean
 }
 let shellHooks: DocsShellHooks | null = null
@@ -3898,7 +3898,7 @@ export function createDocsWindow(openPath?: string): BrowserWindow {
     height: 900,
     minWidth: 980,
     minHeight: 600,
-    title: 'GenOffice Docs',
+    title: 'ChatOffice Docs',
     // Word-like custom title bar (document name centered, quick-access buttons)
     ...(process.platform === 'darwin'
       ? { titleBarStyle: 'hiddenInset' as const }
@@ -4189,11 +4189,11 @@ export function startDocsStandalone(): void {
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
   // dev runs must not share the packaged app's userData (recent files, AI settings)
   // or its single-instance lock — otherwise `npm run dev` silently quits whenever
-  // the installed GenOffice Docs is open and forwards its argv there instead.
+  // the installed ChatOffice Docs is open and forwards its argv there instead.
   // AI_OFFICE_USER_DATA: E2E/screenshot runs isolate userData (and the
   // single-instance lock) so parallel automation sessions don't evict each other
   if (process.env.AI_OFFICE_USER_DATA) app.setPath('userData', process.env.AI_OFFICE_USER_DATA)
-  else if (isDev) app.setPath('userData', join(app.getPath('appData'), 'GenOffice Docs Dev'))
+  else if (isDev) app.setPath('userData', join(app.getPath('appData'), 'ChatOffice Docs Dev'))
 
   const hasSingleInstanceLock = app.requestSingleInstanceLock()
   if (!hasSingleInstanceLock) {
@@ -4217,7 +4217,7 @@ export function startDocsStandalone(): void {
   registerDocsIpc()
 
   app.whenReady().then(() => {
-    setUiLang(normalizeLang(process.env.GENOFFICE_LANG ?? app.getLocale()))
+    setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
     // packaged builds get the Dock icon from icon.icns; dev shows Electron's default
     if (isDev && process.platform === 'darwin') {
       app.dock?.setIcon(join(app.getAppPath(), 'build/icon.png'))

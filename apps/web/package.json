@@ -1,5 +1,5 @@
 {
-  "name": "@genoffice/web",
+  "name": "@chatoffice/web",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -21,9 +21,9 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@genoffice/i18n": "*",
-    "@genoffice/ui": "*",
-    "@genoffice/web-bridge": "*",
+    "@chatoffice/i18n": "*",
+    "@chatoffice/ui": "*",
+    "@chatoffice/web-bridge": "*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   }

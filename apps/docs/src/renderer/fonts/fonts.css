@@ -162,8 +162,8 @@
  * generated font (tools/build-pua-blank-font.py) maps all of U+E000-F8FF to a
  * blank 1em glyph so PUA stays invisible in the chains that carry it. */
 @font-face {
-  font-family: 'GenOffice PUA Blank';
-  src: url('./GenOfficePUABlank.woff2') format('woff2');
+  font-family: 'ChatOffice PUA Blank';
+  src: url('./ChatOfficePUABlank.woff2') format('woff2');
   unicode-range: U+E000-F8FF;
   font-weight: normal;
   font-style: normal;
@@ -174,7 +174,7 @@
  * at a 1em advance and would swallow Latin punctuation ahead of the generic
  * face, shifting every wrap. CJK-named unknown fonts keep the full subsets
  * (fullwidth quotes are correct inside CJK body text). Same ranges as the
- * 'GenOffice Hiragino/Batang…' local() aliases below. */
+ * 'ChatOffice Hiragino/Batang…' local() aliases below. */
 @font-face {
   font-family: 'Noto Sans CJK GO';
   src: url('./NotoSansCJKsc-Regular-subset.woff2') format('woff2');
@@ -201,14 +201,14 @@
  * sans Basic Latin matches Malgun (tools/normalize-kr-sans-hmtx.py).
  */
 @font-face {
-  font-family: 'GenOffice Sans KR';
-  src: url('./GenOfficeSansKR-Regular-subset.woff2') format('woff2');
+  font-family: 'ChatOffice Sans KR';
+  src: url('./ChatOfficeSansKR-Regular-subset.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Serif KR';
-  src: url('./GenOfficeSerifKR-Regular-subset.woff2') format('woff2');
+  font-family: 'ChatOffice Serif KR';
+  src: url('./ChatOfficeSerifKR-Regular-subset.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -234,8 +234,8 @@
  * (tools/build-gothic-kr-font.py), advances unmodified; renamed per OFL
  * ("Nanum" is a Reserved Font Name and subsetting is a modification). */
 @font-face {
-  font-family: 'GenOffice Gothic KR';
-  src: url('./GenOfficeGothicKR-Regular-subset.woff2') format('woff2');
+  font-family: 'ChatOffice Gothic KR';
+  src: url('./ChatOfficeGothicKR-Regular-subset.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -246,8 +246,8 @@
  * Sans KR outlines reshaped to DotumChe ink boxes); hangul falls through to
  * the KR chains. */
 @font-face {
-  font-family: 'GenOffice Che Latin KR';
-  src: url('./GenOfficeCheLatinKR.woff2') format('woff2');
+  font-family: 'ChatOffice Che Latin KR';
+  src: url('./ChatOfficeCheLatinKR.woff2') format('woff2');
   unicode-range: U+0020-007E;
   font-weight: normal;
   font-style: normal;
@@ -450,7 +450,7 @@
  * half-width slash. Serve them from the bundled Noto subset (ink matches
  * PMingLiU); real PMingLiU still precedes this face in the TC serif chain. */
 @font-face {
-  font-family: 'GenOffice Fullwidth TC';
+  font-family: 'ChatOffice Fullwidth TC';
   src: url('./NotoSerifCJKsc-Regular-subset.woff2') format('woff2');
   unicode-range: U+FF0D, U+FF0F, U+FF3C, U+FF3F, U+FF5E;
   font-weight: normal;
@@ -462,7 +462,7 @@
  * at weight normal only, forces Blink to synthesize bold at >=600. On Windows the
  * local() sources don't resolve and the chain falls through to SimSun. */
 @font-face {
-  font-family: 'GenOffice Songti SC';
+  font-family: 'ChatOffice Songti SC';
   src: local('STSongti-SC-Regular'), local('Songti SC Regular');
   font-weight: normal;
   font-style: normal;
@@ -474,9 +474,9 @@
  * Russian/Mongolian text that falls through a CJK chain. These local() aliases
  * expose only the CJK ranges; other scripts continue down the chain to
  * proportional faces. Registered weight-normal (bold synthesized, like
- * 'GenOffice Songti SC') except Hiragino, which has real W6 faces. */
+ * 'ChatOffice Songti SC') except Hiragino, which has real W6 faces. */
 @font-face {
-  font-family: 'GenOffice Hiragino Sans';
+  font-family: 'ChatOffice Hiragino Sans';
   src: local('Hiragino Sans'), local('HiraginoSans-W3'), local('MS Gothic');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -485,7 +485,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Hiragino Sans';
+  font-family: 'ChatOffice Hiragino Sans';
   src: local('HiraginoSans-W6'), local('Hiragino Sans W6');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -494,7 +494,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Hiragino Mincho';
+  font-family: 'ChatOffice Hiragino Mincho';
   src: local('Hiragino Mincho ProN'), local('HiraMinProN-W3');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -503,7 +503,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Hiragino Mincho';
+  font-family: 'ChatOffice Hiragino Mincho';
   src: local('HiraMinProN-W6'), local('Hiragino Mincho ProN W6');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -512,7 +512,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice MS Mincho';
+  font-family: 'ChatOffice MS Mincho';
   src: local('MS Mincho'), local('MS PMincho');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -521,7 +521,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Batang';
+  font-family: 'ChatOffice Batang';
   src: local('Batang'), local('BatangChe');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -530,7 +530,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Myungjo';
+  font-family: 'ChatOffice Myungjo';
   src: local('AppleMyungjo');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -539,7 +539,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Heiti TC';
+  font-family: 'ChatOffice Heiti TC';
   src: local('Heiti TC'), local('Heiti TC Light'), local('STHeitiTC-Light');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -548,7 +548,7 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice MingLiU';
+  font-family: 'ChatOffice MingLiU';
   src: local('PMingLiU'), local('MingLiU');
   unicode-range:
     U+2E80-303F, U+3041-33FF, U+3400-4DBF, U+4E00-9FFF, U+AC00-D7A3, U+F900-FAFF, U+FE30-FE4F,
@@ -562,7 +562,7 @@
  * face is declared, so no unicode-range needed; on Windows the declared name
  * itself resolves ahead of this alias. */
 @font-face {
-  font-family: 'GenOffice Ethiopic';
+  font-family: 'ChatOffice Ethiopic';
   /* Chromium local() matches PostScript/full names, not family names */
   src: local('Kefa-Regular'), local('Kefa Regular'), local('Kefa');
   /* verified on regression sample 39: line breaks match Word at 72%; the
@@ -578,8 +578,8 @@
  * Sans Tamil with advances rewritten to Latha's (tools/build-tamil-font.py;
  * shaped sentence R 0.994, all probe sentences within ±2.3%). */
 @font-face {
-  font-family: 'GenOffice Tamil';
-  src: url('./GenOfficeTamil-Regular.woff2') format('woff2');
+  font-family: 'ChatOffice Tamil';
+  src: url('./ChatOfficeTamil-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -588,7 +588,7 @@
  * subset at 1em fullwidth and an 80-char rule overflows the column (Word draws
  * it ~0.65em on a single line). Menlo/Consolas keep them ~0.6em. */
 @font-face {
-  font-family: 'GenOffice Box Drawing';
+  font-family: 'ChatOffice Box Drawing';
   /* Chromium local() matches PostScript/full names, not family names */
   src: local('Menlo-Regular'), local('Menlo Regular'), local('Menlo'), local('Consolas');
   unicode-range: U+2500-257F;
@@ -600,14 +600,14 @@
  * through to AppleMyungjo, whose U+2082 is a full-width (1.0em) glyph —
  * "Cu₂O" rendered as "Cu₂ O". Serve them from bundled latin faces instead. */
 @font-face {
-  font-family: 'GenOffice Sans KR';
+  font-family: 'ChatOffice Sans KR';
   src: url('./Carlito-Regular.ttf') format('truetype');
   unicode-range: U+2070-209F, U+00B2-00B3, U+00B9;
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
-  font-family: 'GenOffice Serif KR';
+  font-family: 'ChatOffice Serif KR';
   /* Carlito, not Caladea/LiberationSerif: only Carlito covers the whole block */
   src: url('./Carlito-Regular.ttf') format('truetype');
   unicode-range: U+2070-209F, U+00B2-00B3, U+00B9;

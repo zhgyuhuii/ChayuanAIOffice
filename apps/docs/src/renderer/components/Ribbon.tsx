@@ -32,8 +32,8 @@ import type {
   TextboxParaDisplay,
   ThemeColors,
   ThemeFonts,
-} from '@genoffice/docx-engine'
-import { ColorPicker, Dropdown, isSymbolFontFamily, useDismissablePopover } from '@genoffice/ui'
+} from '@chatoffice/docx-engine'
+import { ColorPicker, Dropdown, isSymbolFontFamily, useDismissablePopover } from '@chatoffice/ui'
 import { HIGHLIGHT_CSS } from '../editor/extensions'
 import { applyCase, type CaseMode } from '../editor/case-transform'
 import { setParagraphDirection, setSelectionAlign } from '../editor/direction'

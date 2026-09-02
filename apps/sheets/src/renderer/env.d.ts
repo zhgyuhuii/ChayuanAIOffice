@@ -4,7 +4,7 @@ declare module '*.md?raw' {
 }
 
 import type { DesktopApi } from '../shared/desktop-api'
-import type { ProjectApi } from '@genoffice/project-store'
+import type { ProjectApi } from '@chatoffice/project-store'
 
 declare global {
   interface Window {

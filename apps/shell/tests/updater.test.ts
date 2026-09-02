@@ -129,7 +129,7 @@ beforeEach(() => {
   vi.resetModules()
   vi.useFakeTimers()
   appState.isPackaged = true
-  delete process.env.GENOFFICE_FAKE_UPDATE
+  delete process.env.CHATOFFICE_FAKE_UPDATE
   updaterState.listeners.clear()
   updaterState.autoDownload = true
   updaterState.autoInstallOnAppQuit = false
@@ -155,7 +155,7 @@ afterEach(() => {
   vi.useRealTimers()
   platformSpy?.restore()
   platformSpy = null
-  delete process.env.GENOFFICE_FAKE_UPDATE
+  delete process.env.CHATOFFICE_FAKE_UPDATE
 })
 
 describe('initAutoUpdater', () => {
@@ -409,7 +409,7 @@ describe('manual download fallback', () => {
     const actions = await failTwiceIntoManual(macFiles)
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledWith(
-      'https://github.com/genspark-ai/genoffice/releases/latest',
+      'https://github.com/genspark-ai/chatoffice/releases/latest',
     )
   })
 
@@ -420,7 +420,7 @@ describe('manual download fallback', () => {
     ])
     actions.onOpenDownload()
     expect(openExternal).toHaveBeenCalledWith(
-      'https://github.com/genspark-ai/genoffice/releases/latest',
+      'https://github.com/genspark-ai/chatoffice/releases/latest',
     )
   })
 })
@@ -428,7 +428,7 @@ describe('manual download fallback', () => {
 describe('initAutoUpdater (fake update preview)', () => {
   it('runs a simulated download to completion in unpacked runs', async () => {
     appState.isPackaged = false
-    process.env.GENOFFICE_FAKE_UPDATE = '9.9.9'
+    process.env.CHATOFFICE_FAKE_UPDATE = '9.9.9'
     const { initAutoUpdater } = await loadUpdater()
     initAutoUpdater(() => null)
 
@@ -449,7 +449,7 @@ describe('initAutoUpdater (fake update preview)', () => {
 
   it('closes the window on later and install without touching electron-updater', async () => {
     appState.isPackaged = false
-    process.env.GENOFFICE_FAKE_UPDATE = '9.9.9'
+    process.env.CHATOFFICE_FAKE_UPDATE = '9.9.9'
     const { initAutoUpdater } = await loadUpdater()
     initAutoUpdater(() => null)
     vi.advanceTimersByTime(1500)

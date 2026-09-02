@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Dropdown } from '@genoffice/ui'
+import { Dropdown } from '@chatoffice/ui'
 
 import { useI18n, type StringKey } from './i18n/locale'
 

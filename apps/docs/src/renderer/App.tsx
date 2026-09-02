@@ -12,8 +12,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { AiPanelToggle, DockShell, Dropdown } from '@genoffice/ui'
-import '@genoffice/ui/dock.css'
+import { AiPanelToggle, DockShell, Dropdown } from '@chatoffice/ui'
+import '@chatoffice/ui/dock.css'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
   BLANK_BULLET_NUM_ID,
@@ -35,9 +35,9 @@ import {
   type StyleUpsert,
   type ThemeColors,
   type ThemeFonts,
-} from '@genoffice/docx-engine'
+} from '@chatoffice/docx-engine'
 import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
-import { defaultSettingsV2 } from '@genoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
 import { applyHfText, hfEditText } from './editor/hf-text'
@@ -967,7 +967,7 @@ export function App() {
 
   // window title follows the document, so the OS window list and Switch Window show file names
   useEffect(() => {
-    document.title = doc ? doc.fileName : 'GenOffice Docs'
+    document.title = doc ? doc.fileName : 'ChatOffice Docs'
   }, [doc])
 
   useEffect(() => window.desktop.onTeardown?.(() => setTornDown(true)), [])
@@ -1207,7 +1207,7 @@ export function App() {
         bootHandledRef.current = true
         // A failed open (corrupt file etc.) falls back to a blank document —
         // otherwise the tab shows "Opening…" forever with only a status-bar
-        // line explaining why (github.com/genspark-ai/genoffice issue #102).
+        // line explaining why (github.com/genspark-ai/chatoffice issue #102).
         // 'password': the prompt is up; its cancel path lands on blank instead.
         const outcome = pending ? await loadFile(pending) : 'canceled'
         if (outcome === 'failed' || outcome === 'canceled') await newFile()

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { Block } from '@genoffice/docx-engine'
-import { AgentLoop, composeSkills, type AgentImage } from '@genoffice/agent-core'
+import type { Block } from '@chatoffice/docx-engine'
+import { AgentLoop, composeSkills, type AgentImage } from '@chatoffice/agent-core'
 import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { PmNode } from '../editor/convert'
@@ -23,7 +23,7 @@ import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
 import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
-import { Markdown } from '@genoffice/ui'
+import { Markdown } from '@chatoffice/ui'
 import {
   AiComposer,
   AiTypingIndicator,
@@ -31,9 +31,9 @@ import {
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
-} from '@genoffice/ui'
-import { enabledChatModels } from '@genoffice/ai-provider'
-import type { DockChrome } from '@genoffice/ui'
+} from '@chatoffice/ui'
+import { enabledChatModels } from '@chatoffice/ai-provider'
+import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'

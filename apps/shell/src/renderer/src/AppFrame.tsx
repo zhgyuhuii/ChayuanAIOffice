@@ -15,12 +15,12 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
   const [starPromptDocOpens, setStarPromptDocOpens] = useState<number | null>(null)
 
   useEffect(() => {
-    const applyTabs = (tabs: Awaited<ReturnType<typeof window.aiOfficeTabs.list>>) => {
+    const applyTabs = (tabs: Awaited<ReturnType<typeof window.chatOfficeTabs.list>>) => {
       const active = tabs.find((tab) => tab.active)
       setHomeActive(!active || active.kind === 'home')
     }
-    void window.aiOfficeTabs.list().then(applyTabs)
-    return window.aiOfficeTabs.onChanged(applyTabs)
+    void window.chatOfficeTabs.list().then(applyTabs)
+    return window.chatOfficeTabs.onChanged(applyTabs)
   }, [])
 
   // The "star us" invitation is decided (and counted as shown) by the main
@@ -29,7 +29,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
   useEffect(() => {
     if (showOnboarding) return
     let alive = true
-    void window.aiOffice.starPromptShouldShow?.().then((result) => {
+    void window.chatOffice.starPromptShouldShow?.().then((result) => {
       if (alive && result.show) setStarPromptDocOpens(result.docOpens)
     })
     return () => {
@@ -39,7 +39,7 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
 
   const finishOnboarding = async (): Promise<boolean> => {
     try {
-      const persisted = await window.aiOffice.setOnboardingSeen()
+      const persisted = await window.chatOffice.setOnboardingSeen()
       if (!persisted) return false
       setShowOnboarding(false)
       return true

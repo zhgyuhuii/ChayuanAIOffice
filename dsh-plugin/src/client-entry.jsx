@@ -1,5 +1,5 @@
 /**
- * genoffice — client 半：向察元桌面（chatop-shell）注册「GenOffice」应用。
+ * chatoffice — client 半：向察元桌面（chatop-shell）注册「ChatOffice」应用。
  *
  * chrome:'self'（WPS 式一行窗口，共识 v2.3）：应用自绘窗口控制——TabBar 在
  * 应用 iframe 顶部一行，窗口按钮叠加在该行两端的空白处，与标签同行：
@@ -20,9 +20,9 @@ const ICON_SVG =
 const ICON_URI = `data:image/svg+xml;utf8,${encodeURIComponent(ICON_SVG)}`
 
 const STATUS_TEXT = {
-  starting: 'GenOffice 引擎启动中…',
-  missing: 'GenOffice sidecar 未打包（在 genoffice 仓库运行 npm run package:plugin）',
-  failed: 'GenOffice 引擎启动失败（详见 dsh 日志）',
+  starting: 'ChatOffice 引擎启动中…',
+  missing: 'ChatOffice sidecar 未打包（在 chatoffice 仓库运行 npm run package:plugin）',
+  failed: 'ChatOffice 引擎启动失败（详见 dsh 日志）',
 }
 
 const isMac = () => /mac/i.test(navigator.platform || '')
@@ -84,7 +84,7 @@ function MacTrafficLights({ shell, windowId }) {
   )
 }
 
-function GenOfficeApp({ windowId, maximized }) {
+function ChatOfficeApp({ windowId, maximized }) {
   const [origin, setOrigin] = useState(null)
   const [status, setStatus] = useState('starting')
 
@@ -92,7 +92,7 @@ function GenOfficeApp({ windowId, maximized }) {
     let cancelled = false
     const poll = async () => {
       try {
-        const res = await fetch('/api/genoffice/status')
+        const res = await fetch('/api/chatoffice/status')
         const doc = await res.json()
         if (cancelled) return
         if (doc.appOrigin) {
@@ -139,7 +139,7 @@ function GenOfficeApp({ windowId, maximized }) {
     <div style={{ position: 'relative', height: '100%', background: '#fff' }}>
       <iframe
         src={origin}
-        title="GenOffice"
+        title="ChatOffice"
         style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: '#fff' }}
         allow="clipboard-read; clipboard-write"
       />
@@ -173,12 +173,12 @@ function tryRegister() {
   const shell = typeof window !== 'undefined' ? window.__chatop_shell__ : null
   if (shell && typeof shell.registerDesktopApp === 'function') {
     shell.registerDesktopApp({
-      id: 'genoffice',
-      label: 'GenOffice',
+      id: 'chatoffice',
+      label: 'ChatOffice',
       icon: ICON_URI,
       order: 52,
       chrome: 'self', // WPS 式一行窗口：应用自绘控制按钮（老外壳自动回落默认标题栏）
-      comp: React.createElement(GenOfficeApp),
+      comp: React.createElement(ChatOfficeApp),
     })
   }
 }

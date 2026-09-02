@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/core'
 import { afterAll, describe, expect, it, vi } from 'vitest'
-import { parseDocx, saveDocx, type NumberingDef, type StyleInfo } from '@genoffice/docx-engine'
+import { parseDocx, saveDocx, type NumberingDef, type StyleInfo } from '@chatoffice/docx-engine'
 import { buildDocx } from '../../../packages/docx-engine/tests/helpers/build-docx'
 import { blocksToPmDoc } from '../src/renderer/editor/convert'
 import { editorExtensions } from '../src/renderer/editor/extensions'

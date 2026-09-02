@@ -12,14 +12,14 @@ import React, {
   type ReactNode,
 } from 'react'
 import type { AnimEffectKind, GradientFillSpec, TransitionKind } from '../../shared/ipc'
-import type { ChartStyleInfo } from '@genoffice/pptx-render'
+import type { ChartStyleInfo } from '@chatoffice/pptx-render'
 import {
   useDismissablePopover,
   Dropdown,
   THEME_COLORS,
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
-} from '@genoffice/ui'
+} from '@chatoffice/ui'
 import { getRecentColors, pushRecentColor } from '../recent-colors'
 import { ICON_COLORS } from '../insert-presets'
 import { THEME_PRESETS, type SlideThemePreset } from '../themes'
@@ -101,7 +101,7 @@ import texCork from '../assets/textures/cork.png'
 import texParchment from '../assets/textures/parchment.png'
 import iconCrop from '../assets/icon-crop.png'
 import { ChartTypeDialog } from './ChartTypeDialog'
-import { AiPanelToggle } from '@genoffice/ui'
+import { AiPanelToggle } from '@chatoffice/ui'
 import {
   BIG,
   Group,

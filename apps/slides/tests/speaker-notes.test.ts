@@ -1,7 +1,7 @@
 /** set_speaker_notes tool: writes/clears a page's speaker notes through DeckAccess. */
 import { describe, it, expect, vi } from 'vitest'
 import { createSlidesSkill, type DeckAccess } from '../src/renderer/ai/slides-skill'
-import type { RenderSlide } from '@genoffice/pptx-render'
+import type { RenderSlide } from '@chatoffice/pptx-render'
 import type { AgentToolCall } from '../src/shared/ipc'
 
 const slide = {

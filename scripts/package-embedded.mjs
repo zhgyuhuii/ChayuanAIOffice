@@ -10,7 +10,7 @@
  *   (preload <out>/apps/server/src/tsx-assets.cjs first: `?asset` imports
  *   from the slides sources need it outside a bundler)
  *
- * with HOST/PORT/GENOFFICE_DATA_DIR/GENOFFICE_STATIC_DIR in its environment.
+ * with HOST/PORT/CHATOFFICE_DATA_DIR/CHATOFFICE_STATIC_DIR in its environment.
  *
  *   EMBEDDED_OUT=<dir>   override the output root (default dsh-plugin/embedded)
  *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
@@ -93,7 +93,7 @@ writeFileSync(
   join(out, 'package.json'),
   JSON.stringify(
     {
-      name: 'genoffice-embedded',
+      name: 'chatoffice-embedded',
       version: rootPkg.version,
       private: true,
       type: 'module',
@@ -123,7 +123,7 @@ for (const app of ['slides', 'sheets']) {
   writeFileSync(
     join(out, 'apps', app, 'package.json'),
     JSON.stringify(
-      { name: `@genoffice/${app}-src`, version: rootPkg.version, private: true, type: 'commonjs' },
+      { name: `@chatoffice/${app}-src`, version: rootPkg.version, private: true, type: 'commonjs' },
       null,
       2,
     ),

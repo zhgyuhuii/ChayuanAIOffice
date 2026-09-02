@@ -13,7 +13,7 @@ function baseState() {
   return {
     ...createAiHttpBridge(),
     async getLanguage(): Promise<string> {
-      return (localStorage.getItem('genoffice.lang') as string) ?? 'zh'
+      return (localStorage.getItem('chatoffice.lang') as string) ?? 'zh'
     },
     async getTheme(): Promise<'light' | 'dark' | 'system'> {
       return 'system'
@@ -42,7 +42,7 @@ export function installSheetsShim(client: BridgeClient): void {
       const res = (await client.call('rpc', 'xlsx.openWorkbookBytes', {
         base64: doc.base64,
         name: p.name,
-        locale: localStorage.getItem('genoffice.lang') ?? 'zh',
+        locale: localStorage.getItem('chatoffice.lang') ?? 'zh',
       })) as { opened: Record<string, unknown> & { sessionId?: string } }
       if (typeof res.opened.sessionId === 'string') setFileId(res.opened.sessionId, p.fileId)
       return {
@@ -99,7 +99,7 @@ export function installSheetsShim(client: BridgeClient): void {
       const reopened = (await client.call('rpc', 'xlsx.openWorkbookBytes', {
         base64: res.base64,
         name: 'saved.xlsx',
-        locale: localStorage.getItem('genoffice.lang') ?? 'zh',
+        locale: localStorage.getItem('chatoffice.lang') ?? 'zh',
       })) as { opened: Record<string, unknown> & { sessionId?: string } }
       const newSid = typeof reopened.opened.sessionId === 'string' ? reopened.opened.sessionId : request.sessionId
       if (newSid !== request.sessionId) {

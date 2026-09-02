@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { platformShortcuts } from '@genoffice/i18n'
+import { platformShortcuts } from '@chatoffice/i18n'
 import {
   AiPanelToggle,
   Dropdown,
@@ -7,7 +7,7 @@ import {
   SHAPE_GALLERY_GROUPS,
   ShapePreview,
   useDismissablePopover,
-} from '@genoffice/ui'
+} from '@chatoffice/ui'
 
 import {
   CaretIcon,
@@ -34,7 +34,7 @@ import type { ChartSeriesVisualState } from '../domain/chart-visual'
 import type { ChangePlan } from '../domain/workbook.types'
 import type { AttachmentMeta } from '../shared/desktop-api'
 import { AiChatPanel, type AiChatMessage } from './ai/AiChatPanel'
-import type { AiSettingsV2 } from '@genoffice/ai-provider'
+import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import { AiSelectionAsk } from './ai/AiSelectionAsk'
 import type { SelectionAskAnchor } from './ai/selection-ask'
 import {

@@ -1,4 +1,4 @@
-# GenOffice 双端 + dsh 插件化改造总体计划 v2.1
+# ChatOffice 双端 + dsh 插件化改造总体计划 v2.1
 
 > 状态：已达成共识，待批准开工（批准前不写实现代码）。
 > 共识过程：17 轮决策问答，全部由项目所有者逐条确认。
@@ -7,7 +7,7 @@
 
 | 形态 | 是什么 | BFF 从哪来 | 存储后端 | 离线能力 |
 |---|---|---|---|---|
-| ① GenOffice 自有 Electron 壳 | 轻量纯办公安装包（现有 `apps/shell` 路线），独立办公套件定位，持续发版 | 无 BFF——service-core in-process（IPC 直调） | 本地 fs（现状） | 完全离线 |
+| ① ChatOffice 自有 Electron 壳 | 轻量纯办公安装包（现有 `apps/shell` 路线），独立办公套件定位，持续发版 | 无 BFF——service-core in-process（IPC 直调） | 本地 fs（现状） | 完全离线 |
 | ② 浏览器 SaaS | `apps/web` 宿主 + 云端 BFF | 云端 Docker 制品 | Postgres + MinIO/S3 | 无（在线产品） |
 | ③ chatop 桌面内置插件 | chayuan-harness Electron 全家桶里的"AI 工作站办公套件"，随包内置、启动自愈重装 | 内嵌受管 BFF sidecar（Node + Rust sidecar + SQLite + 本地对象目录） | SQLite + 本地目录 | 完全离线；登录后云文档走云端旁路，**第一期不做本地↔云同步** |
 | ④ dsh web 插件 | 装进任何 dsh harness 的插件，**全本地运行，无需云端** | 插件宿主半拉起受管 BFF sidecar，**复用 ③ 的同一套内嵌 BFF 制品**，localhost 随机端口，随 dsh web 生命周期回收 | 同 ③ | 完全离线 |
@@ -27,10 +27,10 @@
 | 8/9 | 部署纪律 | 单制品双部署：SaaS 即私有化 Docker 制品的生产实例；CI 双流水线（云 staging + Compose 冒烟）都绿才发布 |
 | 10 | 范围 | 纵队式分期，每期可上线、可回滚；Electron ① 每期照常发版 |
 | 11 | dsh 插件形态 | 不碰 root 槽；经 chayuan-harness **新增公开应用注册槽位**注册为桌面应用（跨仓库改动）；无 chatop-shell 时回落 dsh 官方界面普通面板 |
-| 12 | 插件内容 | 薄插件壳（应用注册 + 图标 + 开窗，KB 级）+ 窗口内加载 GenOffice Web origin；③ 静态资源随 Electron 包本地加载；接受三条后果：离线降级态 UI、postMessage/同源凭据传递约定、wasm 跨域 CSP |
+| 12 | 插件内容 | 薄插件壳（应用注册 + 图标 + 开窗，KB 级）+ 窗口内加载 ChatOffice Web origin；③ 静态资源随 Electron 包本地加载；接受三条后果：离线降级态 UI、postMessage/同源凭据传递约定、wasm 跨域 CSP |
 | 13/14 | 内嵌 BFF | ③④ 内嵌受管 sidecar 提供完整离线能力；**业务逻辑单份，分叉仅限 storage 适配层**：embedded = SQLite + 本地对象目录；元数据层强制 ORM（Drizzle）禁裸 SQL；CI 第三条内嵌模式冒烟流水线；Rust xlsx sidecar / 系统 OCR helper 打包进内嵌件（② 用云端 OCR：Tesseract/Paddle，UI 标注质量差异） |
 | 15/15b | 形态取舍 | 四形态全保留；④ = 插件宿主半受管 BFF sidecar，与 ③ 共用内嵌制品；首启健康检查 + 端口协商 + 版本自愈（照抄 chatop 自愈模式） |
-| 16 | AI 面板与 harness 会话 | GenOffice AI 面板四形态全保留；③④ 新增 **harness 通道 provider**（零配置 AI）：凭据走 harness 官方通道不落地、用量计量在 harness 侧（GenOffice 只记调用次数）、能力缺口探测降级并提示 |
+| 16 | AI 面板与 harness 会话 | ChatOffice AI 面板四形态全保留；③④ 新增 **harness 通道 provider**（零配置 AI）：凭据走 harness 官方通道不落地、用量计量在 harness 侧（ChatOffice 只记调用次数）、能力缺口探测降级并提示 |
 | 17 | 会话历史 | 跟文档走：本地文档存本地（project-store），云文档存云端 BFF（Postgres）；另存为云文档时历史随迁；不做全局聊天库 |
 
 横切约束：AI 计量第一天就记（防 BYOK 外 token 费用失控）；支付/计费为可选插件（私有化默认关）。
@@ -44,7 +44,7 @@
 | `apps/server` | Fastify BFF：请求/响应路由 + WebSocket 流式/推送；双产物 = Docker 制品（②）与内嵌 sidecar 制品（③④）；Rust xlsx sidecar、OCR、AI 代理 |
 | `apps/web` | 浏览器 SPA 宿主（替换 shell 的窗口/标签逻辑，路由/iframe 挂载五编辑器）；File System Access API |
 | `packages/ipc-client` | 渲染层统一 typed client + 传输适配器（ipcRenderer / fetch+WS） |
-| GenOffice dsh 插件（新仓库或 monorepo 内） | client 薄壳 + 宿主半 sidecar 管理器；复用 apps/web 静态资源与内嵌 BFF 制品 |
+| ChatOffice dsh 插件（新仓库或 monorepo 内） | client 薄壳 + 宿主半 sidecar 管理器；复用 apps/web 静态资源与内嵌 BFF 制品 |
 | chayuan-harness（跨仓库 PR） | 公开桌面应用注册槽位协议 |
 
 ## 四、分期计划
@@ -58,7 +58,7 @@
   验收：② 上线——五编辑器浏览器可用，云文档打开/编辑/分享/版本历史（锁模式，无协同）。
 
 - **第 2 期：dsh 插件双件**
-  chayuan-harness 应用注册槽位（跨仓库 PR）+ GenOffice 插件（client 薄壳 + 宿主半 sidecar）+ chatop 桌面内置集成 + harness 通道 provider + 内嵌模式 CI 冒烟。
+  chayuan-harness 应用注册槽位（跨仓库 PR）+ ChatOffice 插件（client 薄壳 + 宿主半 sidecar）+ chatop 桌面内置集成 + harness 通道 provider + 内嵌模式 CI 冒烟。
   验收：③④ 全离线可用，harness 通道 AI 可用。
 
 - **第 3 期：Markdown 实时协同**（Yjs + y-websocket；update 入 Postgres/SQLite，compaction 快照入 S3/本地目录）。

@@ -3,7 +3,7 @@
  * fallback (genspark and any catalog row without an icon file).
  */
 import React from 'react'
-import { VENDOR_BY_ID } from '@genoffice/ai-provider'
+import { VENDOR_BY_ID } from '@chatoffice/ai-provider'
 import { VENDOR_LOGOS } from './vendor-logos'
 
 export interface VendorLogoProps {

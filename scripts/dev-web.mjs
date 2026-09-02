@@ -9,13 +9,13 @@ import { spawn } from 'node:child_process'
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
 const jobs = [
-  { name: 'server', color: 'red', cmd: ['run', 'dev', '-w', '@genoffice/server'] },
-  { name: 'web', color: 'magenta', cmd: ['run', 'dev', '-w', '@genoffice/web'] },
-  { name: 'docs', color: 'blue', cmd: ['run', 'dev:renderer', '-w', '@genoffice/docs'] },
-  { name: 'sheets', color: 'green', cmd: ['run', 'dev:renderer', '-w', '@genoffice/sheets'] },
-  { name: 'slides', color: 'yellow', cmd: ['run', 'dev:renderer', '-w', '@genoffice/slides'] },
-  { name: 'pdf', color: 'cyan', cmd: ['run', 'dev:renderer', '-w', '@genoffice/pdf'] },
-  { name: 'markdown', color: 'white', cmd: ['run', 'dev:renderer', '-w', '@genoffice/markdown'] },
+  { name: 'server', color: 'red', cmd: ['run', 'dev', '-w', '@chatoffice/server'] },
+  { name: 'web', color: 'magenta', cmd: ['run', 'dev', '-w', '@chatoffice/web'] },
+  { name: 'docs', color: 'blue', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/docs'] },
+  { name: 'sheets', color: 'green', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/sheets'] },
+  { name: 'slides', color: 'yellow', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/slides'] },
+  { name: 'pdf', color: 'cyan', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/pdf'] },
+  { name: 'markdown', color: 'white', cmd: ['run', 'dev:renderer', '-w', '@chatoffice/markdown'] },
 ]
 
 const colors = {
@@ -52,7 +52,7 @@ for (const job of jobs) {
 }
 
 console.log(`
-GenOffice web dev (form 2):
+ChatOffice web dev (form 2):
   host    http://localhost:5180
   bff     http://localhost:8787/healthz
   editors http://localhost:5173..5177

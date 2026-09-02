@@ -1,5 +1,5 @@
 /**
- * aiOffice / aiOfficeProject / aiOfficeTabs — WEB implementation of the shell
+ * chatOffice / chatOfficeProject / chatOfficeTabs — WEB implementation of the shell
  * preload bridges (plan v2.2 decision #2/#4). The shell renderer source is
  * untouched; these globals are installed before it boots and route to the
  * in-page tab manager, the localStorage recents store, and the FS Access
@@ -7,7 +7,7 @@
  * the UI can grey them with an explanation instead of breaking.
  */
 
-import { degradeInfo } from '@genoffice/web-bridge'
+import { degradeInfo } from '@chatoffice/web-bridge'
 import { tabManager, type TabKind } from './tab-manager.js'
 import {
   entryFor,
@@ -59,7 +59,7 @@ function page(query: { starred?: boolean; offset?: number; limit?: number; ext?:
 
 // ── language / theme / onboarding (localStorage) ────────────────────────────
 
-const LS = { lang: 'genoffice.lang', theme: 'genoffice.theme', onboard: 'genoffice.onboarding-seen' }
+const LS = { lang: 'chatoffice.lang', theme: 'chatoffice.theme', onboard: 'chatoffice.onboarding-seen' }
 const themeListeners = new Set<(t: string) => void>()
 const langListeners = new Set<(l: string) => void>()
 
@@ -147,7 +147,7 @@ const NEW_MENU: Array<{ label: string; kind: TabKind }> = [
 export function installShellShims(): void {
   const w = window as unknown as Record<string, unknown>
 
-  w.aiOfficeTabs = {
+  w.chatOfficeTabs = {
     list: async () => tabManager.list(),
     activate: async (id: string) => tabManager.activate(id),
     close: async (id: string) => tabManager.close(id),
@@ -171,7 +171,7 @@ export function installShellShims(): void {
     onChanged: (handler: (tabs: unknown) => void) => tabManager.onChanged(handler as (t: ReturnType<typeof tabManager.list>) => void),
   }
 
-  w.aiOffice = {
+  w.chatOffice = {
     // ── file lists (localStorage recents over FS-Access file ids) ──
     recents: async (query?: { offset?: number; limit?: number; ext?: string }) => page(query, false),
     starred: async (query?: { offset?: number; limit?: number; ext?: string }) => page(query, true),
@@ -218,24 +218,24 @@ export function installShellShims(): void {
       localStorage.setItem(LS.onboard, '1')
       return true // finishOnboarding only closes the dialog on a truthy return
     },
-    getAppVersion: async () => (window as unknown as { GENOFFICE_VERSION?: string }).GENOFFICE_VERSION ?? '0.1.0',
+    getAppVersion: async () => (window as unknown as { CHATOFFICE_VERSION?: string }).CHATOFFICE_VERSION ?? '0.1.0',
 
     // ── file management: batch 2 ──
-    renameFile: async () => degraded('aiOffice.renameFile'),
-    duplicateFile: async () => degraded('aiOffice.duplicateFile'),
-    deleteFiles: async () => degraded('aiOffice.deleteFiles'),
-    revealPath: async () => degraded('aiOffice.revealPath'),
-    openTrash: async () => degraded('aiOffice.openTrash'),
+    renameFile: async () => degraded('chatOffice.renameFile'),
+    duplicateFile: async () => degraded('chatOffice.duplicateFile'),
+    deleteFiles: async () => degraded('chatOffice.deleteFiles'),
+    revealPath: async () => degraded('chatOffice.revealPath'),
+    openTrash: async () => degraded('chatOffice.openTrash'),
 
     // ── account / cloud / AI: awaiting the BFF channels ──
     accountStatus: async () => null,
-    accountLogin: async () => degraded('aiOffice.accountLogin'),
+    accountLogin: async () => degraded('chatOffice.accountLogin'),
     accountLogout: async () => undefined,
     openLoginUrl: () => undefined,
     onAccountLogin: () => () => undefined,
-    cloudProjectsSync: async () => degraded('aiOffice.cloudProjectsSync'),
+    cloudProjectsSync: async () => degraded('chatOffice.cloudProjectsSync'),
     cloudProjectsCached: async () => null,
-    openCloudProject: async () => degraded('aiOffice.openCloudProject'),
+    openCloudProject: async () => degraded('chatOffice.openCloudProject'),
     // AI settings run over the BFF's /ai/* endpoints (keys stay server-side)
     getAiSettings: async () =>
       (await fetch('/ai/settings')).json() as unknown,
@@ -262,7 +262,7 @@ export function installShellShims(): void {
     gskStatus: async () => ({ loggedIn: false }),
     gskLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
-    pickDefaultSaveDir: async () => degraded('aiOffice.pickDefaultSaveDir'),
+    pickDefaultSaveDir: async () => degraded('chatOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,
     setAnalyticsEnabled: async () => undefined,
     githubStars: async () => null,
@@ -271,12 +271,12 @@ export function installShellShims(): void {
     starPromptAction: async () => undefined,
   }
 
-  w.aiOfficeProject = {
+  w.chatOfficeProject = {
     listProjects: async () => [],
-    createProject: async () => degraded('aiOfficeProject.createProject'),
-    renameProject: async () => degraded('aiOfficeProject.renameProject'),
-    deleteProject: async () => degraded('aiOfficeProject.deleteProject'),
-    moveFile: async () => degraded('aiOfficeProject.moveFile'),
+    createProject: async () => degraded('chatOfficeProject.createProject'),
+    renameProject: async () => degraded('chatOfficeProject.renameProject'),
+    deleteProject: async () => degraded('chatOfficeProject.deleteProject'),
+    moveFile: async () => degraded('chatOfficeProject.moveFile'),
     listProjectFiles: async () => [],
     getTimeline: async () => [],
   }

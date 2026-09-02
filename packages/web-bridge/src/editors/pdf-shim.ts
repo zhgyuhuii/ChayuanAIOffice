@@ -29,7 +29,7 @@ export function installPdfShim(client: BridgeClient): void {
       return false
     },
     async getLanguage(): Promise<string> {
-      return (localStorage.getItem('genoffice.lang') as string) ?? 'zh'
+      return (localStorage.getItem('chatoffice.lang') as string) ?? 'zh'
     },
     async getTheme(): Promise<'light' | 'dark' | 'system'> {
       return 'system'

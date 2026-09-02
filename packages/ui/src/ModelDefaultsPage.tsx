@@ -18,7 +18,7 @@ import {
   type AiDefaultKind,
   type AiModelSelection,
   type AiSettingsV2,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 import type { ModelSettingsBridge } from './ModelSettingsPage'
 import { modelSettingsStrings } from './model-settings-strings'
 

@@ -5,8 +5,8 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
-import { installDropOpenBridge } from '@genoffice/electron-utils/drop-open'
+} from '@chatoffice/ai-provider'
+import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import type {
   AccountLoginEvent,
   AccountStatus,
@@ -133,7 +133,7 @@ const homeApi: HomeApi = {
   async setUpdateChannel(channel) {
     // validated inline: a runtime import from ../shared/update-api would be
     // shared with the update.ts preload entry and get split into a chunk,
-    // which sandboxed preload scripts cannot load (window.aiOffice would
+    // which sandboxed preload scripts cannot load (window.chatOffice would
     // silently disappear). Preload entries must stay single-file bundles.
     if (channel !== 'stable' && channel !== 'beta') throw new Error('Invalid update channel.')
     await ipcRenderer.invoke(HOME_CHANNELS.setUpdateChannel, channel)
@@ -280,7 +280,7 @@ function asCloudProjectsSnapshot(result: unknown): CloudProjectsSnapshot | null 
   return null
 }
 
-contextBridge.exposeInMainWorld('aiOffice', homeApi)
+contextBridge.exposeInMainWorld('chatOffice', homeApi)
 
 const projectApi: ProjectHomeApi = {
   async listProjects() {
@@ -315,7 +315,7 @@ const projectApi: ProjectHomeApi = {
   },
 }
 
-contextBridge.exposeInMainWorld('aiOfficeProject', projectApi)
+contextBridge.exposeInMainWorld('chatOfficeProject', projectApi)
 
 const tabsApi: TabsApi = {
   async list() {
@@ -352,7 +352,7 @@ const tabsApi: TabsApi = {
   },
 }
 
-contextBridge.exposeInMainWorld('aiOfficeTabs', tabsApi)
+contextBridge.exposeInMainWorld('chatOfficeTabs', tabsApi)
 
 // open documents dragged from the OS anywhere over Home or the tab strip
 installDropOpenBridge()

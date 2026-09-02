@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
-import type { SectionSettings } from '@genoffice/docx-engine'
+import type { SectionSettings } from '@chatoffice/docx-engine'
 
 const twipsToPx = (twips: number) => (twips / 1440) * 96
 

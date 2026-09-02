@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { SectionSettings, TabStop } from '@genoffice/docx-engine'
+import type { SectionSettings, TabStop } from '@chatoffice/docx-engine'
 import { t, type StringKey } from '../i18n/locale'
 
 const twipsToPx = (twips: number) => (twips / 1440) * 96

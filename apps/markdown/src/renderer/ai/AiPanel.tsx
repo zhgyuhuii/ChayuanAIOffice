@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactElement, ReactNode } from 'react'
-import { AgentLoop, composeSkills } from '@genoffice/agent-core'
-import type { AiSettingsV2 } from '@genoffice/ai-provider'
+import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
+import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import {
   AiComposer,
   AiTypingIndicator,
@@ -10,10 +10,10 @@ import {
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
-} from '@genoffice/ui'
-import { defaultSettingsV2, enabledChatModels } from '@genoffice/ai-provider'
+} from '@chatoffice/ui'
+import { defaultSettingsV2, enabledChatModels } from '@chatoffice/ai-provider'
 import { markdownModelBridge } from './model-bridge'
-import type { DockChrome } from '@genoffice/ui'
+import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import sendEnterOn from '../assets/send-enter-on.png'

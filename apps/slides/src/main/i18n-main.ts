@@ -1,5 +1,5 @@
-/** Main-process i18n strings for GenOffice Slides (dialogs, native menus, export, autosave prompts). */
-import { createI18n, getUiLang } from '@genoffice/i18n'
+/** Main-process i18n strings for ChatOffice Slides (dialogs, native menus, export, autosave prompts). */
+import { createI18n, getUiLang } from '@chatoffice/i18n'
 
 export const tMain = createI18n({
   zh: {

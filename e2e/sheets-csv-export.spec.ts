@@ -17,7 +17,7 @@ async function waitForWorkbook(page: Page): Promise<void> {
 
 test.describe('sheets: export the active sheet as CSV', () => {
   test('File > Export CSV writes a BOM-prefixed CSV of the grid', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-csv-e2e-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-csv-e2e-'))
     const workbook = join(scratch, 'export-source.xlsx')
     const target = join(scratch, 'exported.csv')
     await copyFile(FIXTURE, workbook)

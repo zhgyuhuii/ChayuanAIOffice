@@ -4,10 +4,10 @@ import type {
   AiSettingsV2,
   DiscoveryTarget,
   GenSparkAccountStatus,
-} from '@genoffice/ai-provider'
+} from '@chatoffice/ai-provider'
 import type { UpdateChannel } from './update-api'
 
-/** UI language; kept self-contained here (mirrors Lang in @genoffice/i18n) */
+/** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
 export type UiLanguage =
   | 'zh'
   | 'en'
@@ -131,7 +131,7 @@ export interface HomeApi {
   getAnalyticsEnabled(): Promise<boolean>
   /** persist an explicit analytics opt-in or opt-out */
   setAnalyticsEnabled(enabled: boolean): Promise<boolean>
-  /** effective default save folder for new/untitled files (configured in userData/app-settings.json, falls back to <Documents>/GenOffice) */
+  /** effective default save folder for new/untitled files (configured in userData/app-settings.json, falls back to <Documents>/ChatOffice) */
   getDefaultSaveDir(): Promise<string>
   /** directory picker to change the default save folder; resolves to the new folder, or null when canceled or the pick was unusable */
   pickDefaultSaveDir(): Promise<string | null>
