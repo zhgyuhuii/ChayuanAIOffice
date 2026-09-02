@@ -22,4 +22,5 @@ export {
 } from './degrade.js'
 export { FileHandleStore, fsAccessSupported, type OpenedFile } from './fsaccess.js'
 export { installEditorShims } from './editor-shim.js'
+export { createAiHttpBridge, type AiHttpBridge } from './ai-bridge.js'
 export { makeShim, sha256Hex, b64ToBytes, bytesToB64 } from './shim-factory.js'

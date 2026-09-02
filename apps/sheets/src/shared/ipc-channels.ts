@@ -69,6 +69,8 @@ export const IPC_CHANNELS = {
   menuAction: 'menu:action',
   aiGetSettings: 'ai:get-settings',
   aiSetSettings: 'ai:set-settings',
+  aiSetCurrentModel: 'ai:set-current-model',
+  aiDiscoverModels: 'ai:discover-models',
   aiChat: 'ai:chat',
   aiStream: 'ai:stream',
   aiStreamCancel: 'ai:stream-cancel',

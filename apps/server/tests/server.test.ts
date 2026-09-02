@@ -1,4 +1,5 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -127,27 +128,132 @@ describe('auth (jwt mode)', () => {
   })
 })
 
-describe('AI relay metering', () => {
-  it('records every call and reports usage', async () => {
+describe('AI endpoints', () => {
+  it('serves v2 settings defaults and round-trips a saved view with KEEP_KEY', async () => {
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'genoffice-ai-')))
+    const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
+    const first = await app.inject({ method: 'GET', url: '/ai/settings' })
+    expect(first.json().version).toBe(2)
+    // web form filters the gsk-login profile: the default view is an empty, configure-first list
+    expect(first.json().profiles).toEqual([])
+
+    const view = first.json()
+    view.profiles.push({
+      id: 'openai',
+      vendorId: 'openai',
+      displayName: 'OpenAI',
+      protocol: 'openai-responses',
+      baseUrl: 'https://api.openai.com/v1',
+      apiKey: 'sk-test',
+      auth: 'api-key',
+      enabled: true,
+      models: [{ id: 'gpt-5.6-sol' }],
+    })
+    const saved = await app.inject({ method: 'PUT', url: '/ai/settings', payload: view })
+    expect(saved.json().ok).toBe(true)
+
+    const readBack = await app.inject({ method: 'GET', url: '/ai/settings' })
+    const profile = readBack.json().profiles.find((p: { id: string }) => p.id === 'openai')
+    // renderer-facing view redacts the key to the sentinel
+    expect(profile.apiKey).toBe('__keep__')
+
+    // saving the redacted view back keeps the stored key (KEEP_KEY merge)
+    const again = await app.inject({ method: 'PUT', url: '/ai/settings', payload: readBack.json() })
+    expect(again.json().ok).toBe(true)
+    const stored = JSON.parse(await readFile(join(dataDir, 'ai-settings.json'), 'utf8'))
+    expect(stored.profiles.find((p: { id: string }) => p.id === 'openai').apiKey).toBe('sk-test')
+  })
+
+  it('rejects malformed stream requests without metering', async () => {
     const seen: Array<Record<string, unknown>> = []
     const { app } = buildServer({
       area: tempArea(),
-      ai: { onCall: (r) => seen.push(r as unknown as Record<string, unknown>) },
+      ai: { dataDir: mkdtempSync(join(tmpdir(), 'genoffice-ai-')), onCall: (r) => seen.push(r as unknown as Record<string, unknown>) },
     })
-    await app.inject({
+    const res = await app.inject({
       method: 'POST',
-      url: '/ai/relay',
-      payload: { channel: 'byok:openai', model: 'gpt-x', requestId: 'r1' },
+      url: '/ai/stream',
+      payload: { requestId: 'r1', settings: { profileId: '', modelId: '' }, messages: [] },
     })
-    expect(seen).toHaveLength(1)
-    expect(seen[0].model).toBe('gpt-x')
-    const usage = await app.inject({ method: 'GET', url: '/ai/usage' })
-    expect(usage.json().calls).toBe(1)
+    expect(res.statusCode).toBe(400)
+    expect(seen).toHaveLength(0)
   })
 
-  it('rejects incomplete relay requests', async () => {
-    const { app } = buildServer({ area: tempArea() })
-    const res = await app.inject({ method: 'POST', url: '/ai/relay', payload: { channel: 'x' } })
-    expect(res.statusCode).toBe(400)
+  it('streams an error chunk (SSE) when the selection has no key', async () => {
+    const dataDir = await Promise.resolve(mkdtempSync(join(tmpdir(), 'genoffice-ai-')))
+    const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
+    const view = (await app.inject({ method: 'GET', url: '/ai/settings' })).json()
+    view.profiles.push({
+      id: 'zhipu',
+      vendorId: 'zhipu',
+      displayName: 'Zhipu GLM',
+      protocol: 'openai-completions',
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+      apiKey: '',
+      auth: 'api-key',
+      enabled: true,
+      models: [{ id: 'glm-5.3' }],
+    })
+    view.currentModel = { profileId: 'zhipu', modelId: 'glm-5.3' }
+    await app.inject({ method: 'PUT', url: '/ai/settings', payload: view })
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/ai/stream',
+      payload: {
+        requestId: 'r2',
+        settings: { profileId: 'zhipu', modelId: 'glm-5.3' },
+        system: 's',
+        messages: [{ role: 'user', text: 'hi' }],
+      },
+    })
+    expect(res.statusCode).toBe(200)
+    expect(res.headers['content-type']).toContain('text/event-stream')
+    const chunk = JSON.parse(res.body.split('\n\n')[0].replace(/^data: /, ''))
+    expect(chunk.type).toBe('error')
+    expect(chunk.requestId).toBe('r2')
+    expect(chunk.error).toContain('API Key')
+  })
+})
+
+describe('AI harness fusion (dsh plugin form)', () => {
+  it('reads chatop-* profiles from the dsh settings file, keys resolved from credentials', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'genoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'genoffice-dsh-'))
+    writeFileSync(
+      join(dshHome, 'settings.yaml'),
+      [
+        'llm-pi-ai:',
+        '  providers:',
+        '    chatop-zhipu:',
+        '      displayName: 智谱开放平台',
+        '      apiKeyEnv: CHATOP_ZHIPU_API_KEY',
+        '      api: openai-completions',
+        '      baseURL: https://open.bigmodel.cn/api/paas/v4',
+        '      models:',
+        '        - id: glm-5.3',
+        'llm-deepseek:',
+        '  baseURL: https://api.deepseek.com',
+      ].join('\n'),
+    )
+    writeFileSync(join(dshHome, '.credentials.yaml'), ['credentials:', '  CHATOP_ZHIPU_API_KEY: sk-dsh'].join('\n'))
+    // the office-side state file records the current model
+    writeFileSync(
+      join(dataDir, 'ai-settings.json'),
+      JSON.stringify({ version: 2, profiles: [], currentModel: { profileId: 'zhipu', modelId: 'glm-5.3' } }),
+    )
+    const { app } = buildServer({
+      area: tempArea(),
+      ai: { dataDir, harness: { dshHome, rpcOrigin: '' } },
+    })
+    const view = await app.inject({ method: 'GET', url: '/ai/settings' })
+    const profile = view.json().profiles.find((p: { id: string }) => p.id === 'zhipu')
+    expect(profile).toMatchObject({
+      vendorId: 'zhipu',
+      protocol: 'openai-completions',
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+      models: [{ id: 'glm-5.3' }],
+    })
+    expect(view.json().currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
   })
 })

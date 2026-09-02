@@ -9,19 +9,22 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "node --watch --import tsx src/main.ts",
-    "start": "node --import tsx src/main.ts",
+    "dev": "node --watch --import tsx --import ./src/tsx-assets.cjs src/main.ts",
+    "start": "node --import tsx --import ./src/tsx-assets.cjs src/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@genoffice/ai-provider": "*",
+    "@genoffice/ai-search": "*",
+    "@genoffice/electron-utils": "*",
+    "@genoffice/pptx-engine": "*",
+    "@genoffice/pptx-render": "*",
     "@genoffice/service-core": "*",
     "@genoffice/storage-adapter": "*",
     "fastify": "^5.2.1",
-    "tsx": "^4.19.2",
-    "@genoffice/pptx-engine": "*",
-    "@genoffice/pptx-render": "*"
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",

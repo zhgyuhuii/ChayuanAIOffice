@@ -10,7 +10,7 @@ import {
   type AgentSkill,
   type AgentTransport,
 } from '@genoffice/agent-core'
-import { getProviderAdapter, modelLacksVision, type AiSettings } from '@genoffice/ai-provider'
+import { inferModelType, modelAcceptsImages, type AiSettingsV2 } from '@genoffice/ai-provider'
 import { auditSlideLayout } from './layout-audit'
 import { createSlidesSkill, formatSlideDump, type DeckAccess } from './slides-skill'
 
@@ -22,13 +22,17 @@ export function isQcEnabled(): boolean {
 /** Cost ceiling per generation run — beyond this the tail pages are skipped (reported to the user) */
 export const QC_MAX_PAGES = 20
 
-/** Unknown providers are treated as text-only: omitting an image is safer than a user-visible 400. */
-export function settingsSupportVision(
-  settings: Pick<AiSettings, 'provider' | 'providers'>,
-): boolean {
+/** Unknown models are treated as text-only: omitting an image is safer than a user-visible 400. */
+export function settingsSupportVision(settings: AiSettingsV2): boolean {
   try {
-    if (!getProviderAdapter(settings.provider).capabilities.vision) return false
-    return !modelLacksVision(settings.providers?.[settings.provider]?.model ?? '')
+    const sel = settings.currentModel
+    if (!sel) return false
+    const entry = settings.profiles
+      .find((p) => p.id === sel.profileId)
+      ?.models.find((m) => m.id === sel.modelId)
+    const type = entry?.type ?? inferModelType(sel.modelId)
+    if (type !== 'chat' && type !== 'vision') return false
+    return modelAcceptsImages(sel.modelId)
   } catch {
     return false
   }

@@ -50,4 +50,6 @@ ENV NODE_ENV=production \
 VOLUME ["/data"]
 
 EXPOSE 8787
-CMD ["node", "--import", "tsx", "apps/server/src/main.ts"]
+# tsx-assets.cjs: register require.extensions for `?asset` imports (slides
+# main sources pulled in by the pptx pipeline import harfbuzz.wasm / .ttf)
+CMD ["node", "--import", "tsx", "--import", "./apps/server/src/tsx-assets.cjs", "apps/server/src/main.ts"]

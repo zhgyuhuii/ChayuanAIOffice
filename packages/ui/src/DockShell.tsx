@@ -303,11 +303,10 @@ function IconMaximize({ maximized }: { maximized: boolean }): React.JSX.Element 
   )
 }
 
-/** collapse chevron points toward the docked edge (rotated per position in dock.css) */
-function IconCollapse(): React.JSX.Element {
+/** the unified close ✕ — same "collapse" semantics in every dock position */
+function IconClose(): React.JSX.Element {
   return (
     <svg
-      className="dockshell-collapse-icon"
       width="15"
       height="15"
       viewBox="0 0 24 24"
@@ -318,7 +317,7 @@ function IconCollapse(): React.JSX.Element {
       strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M14 6l-6 6 6 6" />
+      <path d="M6 6l12 12M18 6L6 18" />
     </svg>
   )
 }
@@ -651,7 +650,7 @@ export function DockShell({
           aria-label={labels.collapse}
           onClick={() => onOpenChange(false)}
         >
-          <IconCollapse />
+          <IconClose />
         </button>
         {menuOpen && (
           <div

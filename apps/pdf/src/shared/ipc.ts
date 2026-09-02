@@ -1,5 +1,9 @@
 import type { Lang } from '@genoffice/i18n'
-import type { AiSettings, AiStreamChunk, AiStreamRequest } from '@genoffice/ai-provider'
+import type {
+  AiModelSelection,
+  AiSettingsV2,
+  AiStreamChunk,
+} from '@genoffice/ai-provider'
 
 export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
@@ -645,7 +649,11 @@ export type ExportImagesResult =
 /** AI channels are app-wide shared ipcMain handlers (shell registers via docs-main registerAiIpc); pass-through only */
 export const AI_CHANNELS = {
   getSettings: 'ai:get-settings',
+  setSettings: 'ai:set-settings',
+  setCurrentModel: 'ai:set-current-model',
+  discoverModels: 'ai:discover-models',
   gskStatus: 'ai:gsk-status',
+  gskLogin: 'ai:gsk-login',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -759,10 +767,14 @@ export interface PdfApi {
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void
-  getAiSettings(): Promise<AiSettings>
+  getAiSettings(): Promise<AiSettingsV2>
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  setAiCurrentModel(selection: import('@genoffice/ai-provider').AiModelSelection): Promise<void>
+  aiDiscoverModels(target: import('@genoffice/ai-provider').DiscoveryTarget): Promise<{ models: import('@genoffice/ai-provider').AiModelEntry[]; error?: string }>
+  aiGskLogin(): Promise<void>
   /** Genspark login state (gsk); gates the cloud-only generate_image tool */
-  gskStatus(): Promise<{ loggedIn: boolean }>
-  aiStream(request: AiStreamRequest): Promise<void>
+  gskStatus(withEmail?: boolean): Promise<import('@genoffice/ai-provider').GenSparkAccountStatus>
+  aiStream(request: { requestId: string; settings: AiModelSelection; system: string; messages: unknown[]; tools?: unknown[]; maxTokens?: number }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
 }

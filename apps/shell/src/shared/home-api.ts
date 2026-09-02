@@ -1,4 +1,10 @@
-import type { AiChatResponse, AiProviderMeta, AiSettings } from '@genoffice/ai-provider'
+import type {
+  AiModelEntry,
+  AiModelSelection,
+  AiSettingsV2,
+  DiscoveryTarget,
+  GenSparkAccountStatus,
+} from '@genoffice/ai-provider'
 import type { UpdateChannel } from './update-api'
 
 /** UI language; kept self-contained here (mirrors Lang in @genoffice/i18n) */
@@ -151,19 +157,19 @@ export interface HomeApi {
   /** open a cloud project (relative '/agents?id=...' URL) in the default browser */
   openCloudProject(projectUrl: string): Promise<void>
   /** AI settings (userData/ai-settings.json, shared by every editor); the genspark key never appears here */
-  getAiSettings(): Promise<AiSettings>
+  getAiSettings(): Promise<AiSettingsV2>
   /** persist AI settings; open editors pick the change up on their next settings read */
-  setAiSettings(settings: AiSettings): Promise<void>
-  /** provider catalog with each fixed endpoint's default base URL (empty for genspark/custom) */
-  getAiProviders(): AiCatalogEntry[]
-  /** one-shot round trip against the given (possibly unsaved) settings — the settings-UI connection test */
-  testAiSettings(settings: AiSettings): Promise<AiChatResponse>
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  /** quick-switch: persist the global current model */
+  setAiCurrentModel(selection: AiModelSelection): Promise<void>
+  /** model list discovery; doubles as the settings page connection test */
+  aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
+  /** gsk login state */
+  gskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>
+  /** open the browser to log in to Genspark */
+  gskLogin(): Promise<void>
 }
 
-export interface AiCatalogEntry extends AiProviderMeta {
-  /** default endpoint for fixed-endpoint providers ('' = model-dependent or user-supplied) */
-  defaultBaseUrl: string
-}
 
 /** 'starred' = went to GitHub or said "already starred" (never prompt again);
  * 'later' = dismissed this time (already counted as shown by the query) */

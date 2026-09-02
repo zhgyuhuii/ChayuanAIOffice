@@ -6,6 +6,7 @@ import {
   readFileSync,
   statSync,
   unlinkSync,
+  watch,
   writeFileSync,
 } from 'node:fs'
 import { copyFile, mkdir, readFile, readdir, stat, unlink, writeFile } from 'node:fs/promises'
@@ -49,24 +50,15 @@ import type {
 } from 'electron'
 import { parseFileToText } from '@genoffice/file-parse'
 import {
-  AiCreditsError,
-  AiTimeoutError,
-  isAiNetworkError,
-  isAiOverloadedError,
-  chatForProvider,
-  defaultAiSettings,
-  activeProvider,
   cloudToolsEnabled,
-  resolveAiSettings,
+  isAiOverloadedError,
+  migrateSettingsV2,
   setRescueFetch,
-  streamForProvider,
-  type AiChatRequest,
-  type AiSettings,
-  type AiStreamChunk,
-  type AiStreamRequest,
-  type GenSparkAccountStatus,
-  type LegacyAiSettings,
+  type AiModelSelection,
+  type AiRuntime,
+  type StoredAiSettings,
 } from '@genoffice/ai-provider'
+import { registerSharedAiIpc } from '@genoffice/ai-host'
 import {
   ensureGenofficeLogin,
   gskApiKey,
@@ -78,6 +70,7 @@ import {
 } from '@genoffice/ai-search'
 import type {
   AiDocContent,
+  AiStreamWireRequest,
   AttachmentAddResult,
   AttachmentImageResult,
   AttachmentMeta,
@@ -160,6 +153,8 @@ const tMain = createI18n({
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errGskToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     menuFile: '文件',
     menuNewDoc: '新建文档',
     menuNewWindow: '新建窗口',
@@ -254,6 +249,8 @@ const tMain = createI18n({
     errNoApiKey: 'No API key configured for {provider}',
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
+    errNoImageModel: 'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
+    errGskToolsOff: 'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
     menuFile: 'File',
     menuNewDoc: 'New Document',
     menuNewWindow: 'New Window',
@@ -348,6 +345,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
+    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
+    errGskToolsOff: 'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     menuFile: 'ファイル',
     menuNewDoc: '新規文書',
     menuNewWindow: '新規ウィンドウ',
@@ -443,6 +442,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
+    errNoImageModel: '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
+    errGskToolsOff: 'Genspark 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     menuFile: '파일',
     menuNewDoc: '새 문서',
     menuNewWindow: '새 창',
@@ -539,6 +540,8 @@ const tMain = createI18n({
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
+    errNoImageModel: 'Aucun modèle d\'image configuré : activez un modèle de génération d\'images dans les paramètres des modèles, ou connectez-vous à Genspark',
+    errGskToolsOff: 'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     menuFile: 'Fichier',
     menuNewDoc: 'Nouveau document',
     menuNewWindow: 'Nouvelle fenêtre',
@@ -635,6 +638,8 @@ const tMain = createI18n({
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
+    errNoImageModel: 'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
+    errGskToolsOff: 'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     menuFile: 'Datei',
     menuNewDoc: 'Neues Dokument',
     menuNewWindow: 'Neues Fenster',
@@ -731,6 +736,8 @@ const tMain = createI18n({
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No se ha configurado el nombre del modelo',
+    errNoImageModel: 'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
+    errGskToolsOff: 'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     menuFile: 'Archivo',
     menuNewDoc: 'Nuevo documento',
     menuNewWindow: 'Nueva ventana',
@@ -825,6 +832,8 @@ const tMain = createI18n({
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
+    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
+    errGskToolsOff: 'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     menuFile: 'ไฟล์',
     menuNewDoc: 'เอกสารใหม่',
     menuNewWindow: 'หน้าต่างใหม่',
@@ -920,6 +929,8 @@ const tMain = createI18n({
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
+    errNoImageModel: 'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
+    errGskToolsOff: 'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'File',
     menuNewDoc: 'Dokumen Baru',
     menuNewWindow: 'Jendela Baru',
@@ -1015,6 +1026,8 @@ const tMain = createI18n({
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Не указано имя модели',
+    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
+    errGskToolsOff: 'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     menuFile: 'Файл',
     menuNewDoc: 'Создать документ',
     menuNewWindow: 'Новое окно',
@@ -1110,6 +1123,8 @@ const tMain = createI18n({
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
+    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
+    errGskToolsOff: 'أدوات Genspark السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     menuFile: 'ملف',
     menuNewDoc: 'مستند جديد',
     menuNewWindow: 'نافذة جديدة',
@@ -1205,6 +1220,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
+    errNoImageModel: 'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
+    errGskToolsOff: 'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     menuFile: 'Arquivo',
     menuNewDoc: 'Novo Documento',
     menuNewWindow: 'Nova Janela',
@@ -1300,6 +1317,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
+    errNoImageModel: 'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
+    errGskToolsOff: 'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     menuFile: 'File',
     menuNewDoc: 'Nuovo documento',
     menuNewWindow: 'Nuova finestra',
@@ -1395,6 +1414,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
+    errNoImageModel: 'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
+    errGskToolsOff: 'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     menuFile: 'Plik',
     menuNewDoc: 'Nowy dokument',
     menuNewWindow: 'Nowe okno',
@@ -1490,6 +1511,8 @@ const tMain = createI18n({
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
+    errNoImageModel: 'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
+    errGskToolsOff: 'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     menuFile: 'Bestand',
     menuNewDoc: 'Nieuw document',
     menuNewWindow: 'Nieuw venster',
@@ -1585,6 +1608,8 @@ const tMain = createI18n({
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
+    errNoImageModel: 'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
+    errGskToolsOff: 'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'Fail',
     menuNewDoc: 'Dokumen Baharu',
     menuNewWindow: 'Tetingkap Baharu',
@@ -1679,6 +1704,8 @@ const tMain = createI18n({
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
+    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
+    errGskToolsOff: 'כלי הענן של Genspark כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     menuFile: 'קובץ',
     menuNewDoc: 'מסמך חדש',
     menuNewWindow: 'חלון חדש',
@@ -1774,6 +1801,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
+    errNoImageModel: 'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
+    errGskToolsOff: 'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     menuFile: 'फ़ाइल',
     menuNewDoc: 'नया दस्तावेज़',
     menuNewWindow: 'नई विंडो',
@@ -1867,6 +1896,8 @@ const tMain = createI18n({
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
+    errGskToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     menuFile: '檔案',
     menuNewDoc: '新增文件',
     menuNewWindow: '新增視窗',
@@ -2579,12 +2610,28 @@ const TWIPS_PER_INCH = 1440
 
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
-/** live read: the shell settings pane writes the file; every tool call re-checks */
+/** live read: the settings page writes the file; every tool call re-checks */
 function gskCloudToolsOn(): boolean {
-  return cloudToolsEnabled(readJson<Partial<AiSettings>>(SETTINGS_PATH(), {}))
+  try {
+    return cloudToolsEnabled({
+      gskToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
+        .gskToolsEnabled,
+    })
+  } catch {
+    return true
+  }
 }
 
-const activeAiStreams = new Map<string, AbortController>()
+/**
+ * v2 AI runtime: the generic ai:* channels come from @genoffice/ai-host's
+ * shared registrar; docs adds its per-app channels below and reuses the
+ * runtime for one-shot chat and BYOK-first image generation.
+ */
+let aiRuntime: AiRuntime | null = null
+function getAiRuntime(): AiRuntime {
+  if (!aiRuntime) throw new Error('AI runtime used before registerAiIpc()')
+  return aiRuntime
+}
 
 /**
  * AI settings + chat/stream proxy handlers. Split out so the shell can
@@ -2592,116 +2639,44 @@ const activeAiStreams = new Map<string, AbortController>()
  * sheets' standalone AI handlers use the same channel names.
  */
 export function registerAiIpc(): void {
-  ipcMain.handle('ai:get-settings', (): AiSettings => {
-    const stored = readJson<Partial<AiSettings> & LegacyAiSettings>(SETTINGS_PATH(), {})
-    // pre-lock legacy file: genspark selected with cloud tools opted out. The
-    // settings UI locks the tools switch on with genspark and apps read this
-    // file live, so heal the stored flag once. Judged on the *stored* provider
-    // — never the activeProvider fallback below, which must not leak into the
-    // file and clobber a saved (half-configured) BYOK selection.
-    if ((stored.provider ?? 'genspark') === 'genspark' && stored.gskToolsEnabled === false) {
-      stored.gskToolsEnabled = true
-      writeJson(SETTINGS_PATH(), stored)
-    }
-    const settings = resolveAiSettings(stored, defaultAiSettings())
-    // a stored BYOK provider is honored when usable; half-filled configs fall back to genspark
-    settings.provider = activeProvider(settings)
-    return settings
-  })
-
-  // Genspark account (gsk login state): auth source for AI features; the frontend uses it to prompt login when logged out
-  ipcMain.handle(
-    'ai:gsk-status',
-    async (_event, withEmail?: boolean): Promise<GenSparkAccountStatus> => {
-      if (!hasGskAuth()) return { loggedIn: false }
-      if (!withEmail) return { loggedIn: true }
-      const info = await gskLoginInfo()
-      return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+  aiRuntime = registerSharedAiIpc({
+    ipcMain,
+    settingsPath: SETTINGS_PATH(),
+    fs: {
+      readFile: (p) => readFile(p, 'utf8'),
+      writeFile: async (p, contents) => {
+        await atomicWriteFile(p, Buffer.from(contents, 'utf8'))
+      },
+      watch: (p, cb) => {
+        try {
+          const w = watch(p, () => cb())
+          return () => w.close()
+        } catch {
+          return () => {}
+        }
+      },
     },
-  )
-
-  ipcMain.handle('ai:gsk-login', () => {
-    ensureGenofficeLogin((url) => void shell.openExternal(url))
-  })
-
-  ipcMain.handle('ai:set-settings', (_event, settings: AiSettings) => {
-    writeJson(SETTINGS_PATH(), settings)
-  })
-
-  ipcMain.handle('ai:stream', async (event, request: AiStreamRequest) => {
-    const { requestId, settings, system, messages } = request
-    const tools = request.tools ?? []
-    const maxTokens = request.maxTokens ?? 8192
-    const provider = settings.provider
-    let config = settings.providers?.[provider]
-    // the genspark key never enters the settings file; requests take it from the gsk login state
-    if (provider === 'genspark' && config && !config.apiKey) {
-      config = { ...config, apiKey: gskApiKey() }
-    }
-    const send = (chunk: AiStreamChunk) => {
-      if (!event.sender.isDestroyed()) event.sender.send('ai:stream-chunk', chunk)
-    }
-    if (!config?.apiKey) {
-      send({
-        requestId,
-        type: 'error',
-        error: provider === 'genspark' ? tm('errGskNotLoggedIn') : tm('errNoApiKey', { provider }),
-      })
-      return
-    }
-    if (!config.model) {
-      send({ requestId, type: 'error', error: tm('errNoModel') })
-      return
-    }
-    const controller = new AbortController()
-    activeAiStreams.set(requestId, controller)
-    // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
-    let lastPing = 0
-    const ping = () => {
-      const now = Date.now()
-      if (now - lastPing < 5_000) return
-      lastPing = now
-      send({ requestId, type: 'ping' })
-    }
-    try {
-      let stopReason: string | undefined
-      await streamForProvider(provider, config, system, messages, tools, maxTokens, {
-        signal: controller.signal,
-        onDelta: (text) => send({ requestId, type: 'delta', text }),
-        onReasoningDelta: (text) => send({ requestId, type: 'reasoning', text }),
-        onToolCall: (toolCall) => send({ requestId, type: 'tool-call', toolCall }),
-        onActivity: ping,
-        onStopReason: (reason) => {
-          stopReason = reason
-        },
-      })
-      send({ requestId, type: 'done', stopReason })
-    } catch (err) {
-      if (controller.signal.aborted) {
-        send({ requestId, type: 'done' })
-      } else {
-        send({
-          requestId,
-          type: 'error',
-          error: err instanceof Error ? err.message : String(err),
-          ...(err instanceof AiTimeoutError
-            ? { errorCode: 'timeout' as const }
-            : err instanceof AiCreditsError
-              ? { errorCode: 'credits' as const }
-              : isAiNetworkError(err)
-                ? { errorCode: 'network' as const }
-                : isAiOverloadedError(err)
-                  ? { errorCode: 'overloaded' as const }
-                  : {}),
+    gsk: {
+      apiKey: () => gskApiKey(),
+      hasAuth: () => hasGskAuth(),
+      status: async (withEmail) => {
+        if (!hasGskAuth()) return { loggedIn: false }
+        if (!withEmail) return { loggedIn: true }
+        const info = await gskLoginInfo()
+        return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+      },
+      generateImage: async (req) => {
+        if (!gskCloudToolsOn()) throw new Error(tm('errGskToolsOff'))
+        const r = await gskGenerateImage({
+          prompt: req.prompt,
+          ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
         })
-      }
-    } finally {
-      activeAiStreams.delete(requestId)
-    }
-  })
-
-  ipcMain.handle('ai:stream-cancel', (_event, requestId: string) => {
-    activeAiStreams.get(requestId)?.abort()
+        return { url: r.url }
+      },
+    },
+    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    translate: (key, params) =>
+      tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
 
   // shared search tools (content + images): Serper with DuckDuckGo fallback (same source as slides/sheets)
@@ -2754,59 +2729,32 @@ export function registerAiIpc(): void {
   )
 
   // docs-owned (like pdf:generate-image): slides' ai:generate-image is only
-  // registered once a slides view exists, so docs needs its own channel
+  // registered once a slides view exists, so docs needs its own channel.
+  // BYOK image model first (needs no login); gsk is the fallback backend.
   ipcMain.handle(
     'docs:ai-generate-image',
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
-      if (!hasGskAuth())
-        return {
-          error: 'Genspark account is not logged in on this machine; ask the user to log in first',
-        }
-      if (!gskCloudToolsOn())
-        return {
-          error:
-            'Genspark cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-        }
       const prompt = String(op?.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      try {
-        const r = await gskGenerateImage({
-          prompt,
-          aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
-        })
-        return { url: r.url }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
-      }
+      return getAiRuntime().generateImage({
+        prompt,
+        ...(op?.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
+      })
     },
   )
 
-  ipcMain.handle('ai:chat', async (_event, request: AiChatRequest) => {
-    const { settings, system, user } = request
-    const provider = settings.provider
-    let config = settings.providers?.[provider]
-    if (provider === 'genspark' && config && !config.apiKey) {
-      config = { ...config, apiKey: gskApiKey() }
-    }
-    if (!config?.apiKey) {
-      return {
-        ok: false,
-        error: provider === 'genspark' ? tm('errGskNotLoggedIn') : tm('errNoApiKey', { provider }),
-      }
-    }
-    if (!config.model) return { ok: false, error: tm('errNoModel') }
-    try {
-      const result = await chatForProvider(provider, config, system, user)
+  ipcMain.handle(
+    'ai:chat',
+    async (_event, request: { selection: AiModelSelection; system: string; user: string }) => {
+      const result = await getAiRuntime().runChat(request.selection, request.system, request.user)
       // the one-shot path reports HTTP failures as ok:false with the raw body —
       // replace capacity/rate-limit dumps with the localized "busy" message
       if (!result.ok && isAiOverloadedError(result.error)) {
         return { ok: false, error: tm('errAiBusy') }
       }
       return result
-    } catch (err) {
-      return { ok: false, error: isAiOverloadedError(err) ? tm('errAiBusy') : String(err) }
-    }
-  })
+    },
+  )
 }
 
 // ── project-store IPC (shared across docs / slides / sheets) ──────────────

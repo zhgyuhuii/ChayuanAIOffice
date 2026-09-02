@@ -1,10 +1,11 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import type {
-  AiChatRequest,
-  AiSettings,
+  AiModelSelection,
+  AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
+  AiStreamWireRequest,
+  DiscoveryTarget,
   DesktopApi,
   MenuCommand,
   UiTheme,
@@ -91,9 +92,13 @@ const api: DesktopApi = {
   saveMergedPdf: (defaultName: string, base64Parts: string[], outPath?: string) =>
     ipcRenderer.invoke('docs:save-merged-pdf', defaultName, base64Parts, outPath),
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
-  setAiSettings: (settings: AiSettings) => ipcRenderer.invoke('ai:set-settings', settings),
-  aiChat: (request: AiChatRequest) => ipcRenderer.invoke('ai:chat', request),
-  aiStream: (request: AiStreamRequest) => ipcRenderer.invoke('ai:stream', request),
+  setAiSettings: (view: AiSettingsV2) => ipcRenderer.invoke('ai:set-settings', view),
+  setAiCurrentModel: (selection: AiModelSelection) =>
+    ipcRenderer.invoke('ai:set-current-model', selection),
+  aiDiscoverModels: (target: DiscoveryTarget) => ipcRenderer.invoke('ai:discover-models', target),
+  aiChat: (request: { selection: AiModelSelection; system: string; user: string }) =>
+    ipcRenderer.invoke('ai:chat', request),
+  aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiGskStatus: (withEmail?: boolean) => ipcRenderer.invoke('ai:gsk-status', withEmail),
   aiGskLogin: () => ipcRenderer.invoke('ai:gsk-login'),

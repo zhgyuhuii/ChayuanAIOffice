@@ -36,8 +36,8 @@ import {
   type ThemeColors,
   type ThemeFonts,
 } from '@genoffice/docx-engine'
-import type { AiDocContent, AiSettings, OpenDocxResult } from '../shared/ipc'
-import { AI_PROVIDERS } from '../shared/ipc'
+import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
+import { defaultSettingsV2 } from '@genoffice/ai-provider'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
 import { applyHfText, hfEditText } from './editor/hf-text'
@@ -399,15 +399,7 @@ function makeGapNotesEl(
   return wrap
 }
 
-const DEFAULT_SETTINGS: AiSettings = {
-  provider: 'anthropic',
-  providers: Object.fromEntries(
-    AI_PROVIDERS.map((p) => [
-      p.id,
-      { apiKey: '', model: p.defaultModel, baseUrl: p.needsBaseUrl ? '' : undefined },
-    ]),
-  ) as AiSettings['providers'],
-}
+const DEFAULT_SETTINGS: AiSettingsV2 = defaultSettingsV2()
 
 export function App() {
   // subscribe to language switches for re-render; strings all go through module-level t, so memoized callbacks never capture stale closures
@@ -435,7 +427,7 @@ export function App() {
     errorKey: '' | 'appDocPwdWrong'
   } | null>(null)
   const [_recent, setRecent] = useState<string[]>([])
-  const [settings, setSettings] = useState<AiSettings>(DEFAULT_SETTINGS)
+  const [settings, setSettings] = useState<AiSettingsV2>(DEFAULT_SETTINGS)
   const [showAi, setShowAi] = useState(() => localStorage.getItem('aidocs.showAi') !== '0')
   /** Increments on every open/new document: AiPanel remounts by key to reset the conversation and history (save path changes don't bump it, so the session continues) */
   const [aiPanelKey, setAiPanelKey] = useState(0)

@@ -1,0 +1,12 @@
+<svg width="742" height="240" viewBox="0 0 742 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- chatoffice lockup: chat-bubble document mark + wordmark (black on transparent; the app inverts it for dark mode) -->
+  <g>
+    <rect width="240" height="240" rx="54" fill="black"/>
+    <rect x="51" y="46" width="90" height="108" rx="16" fill="white"/>
+    <rect x="99" y="86" width="90" height="108" rx="16" fill="white"/>
+    <path d="M99 102C99 93.1634 106.163 86 115 86H141V138C141 146.837 133.837 154 125 154H99V102Z" fill="black"/>
+  </g>
+  <text x="286" y="168" fill="black"
+    font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+    font-size="128" font-weight="650" letter-spacing="1">chatoffice</text>
+</svg>

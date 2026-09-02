@@ -9,11 +9,13 @@ import { spawn } from 'node:child_process'
 
 const env = {
   ...process.env,
-  DOCS_RENDERER_URL: 'http://localhost:5173',
-  SHEETS_RENDERER_URL: 'http://localhost:5174',
-  SLIDES_RENDERER_URL: 'http://localhost:5175',
-  PDF_RENDERER_URL: 'http://localhost:5176',
-  MARKDOWN_RENDERER_URL: 'http://localhost:5177',
+  // Ports follow the renderers' *_DEV_PORT overrides (vite.renderer.config.ts),
+  // so e.g. DOCS_DEV_PORT=5183 npm run dev dodges another project's 5173.
+  DOCS_RENDERER_URL: `http://localhost:${process.env.DOCS_DEV_PORT ?? 5173}`,
+  SHEETS_RENDERER_URL: `http://localhost:${process.env.SHEETS_DEV_PORT ?? 5174}`,
+  SLIDES_RENDERER_URL: `http://localhost:${process.env.SLIDES_DEV_PORT ?? 5175}`,
+  PDF_RENDERER_URL: `http://localhost:${process.env.PDF_DEV_PORT ?? 5176}`,
+  MARKDOWN_RENDERER_URL: `http://localhost:${process.env.MARKDOWN_DEV_PORT ?? 5177}`,
 }
 
 // shell: true — on Windows `npm` is npm.cmd, which spawn cannot launch directly

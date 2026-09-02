@@ -7,11 +7,12 @@
   "description": "Shared renderer UI components for the office apps (AI panel composer, icons); styling stays per-app via the shared class names",
   "exports": {
     ".": "./src/index.ts",
-    "./tokens.css": "./src/tokens.css",
-    "./dock.css": "./src/dock.css",
-    "./screentip.css": "./src/screentip.css",
     "./color-picker.css": "./src/color-picker.css",
-    "./dropdown.css": "./src/dropdown.css"
+    "./dock.css": "./src/dock.css",
+    "./dropdown.css": "./src/dropdown.css",
+    "./model-settings.css": "./src/model-settings.css",
+    "./screentip.css": "./src/screentip.css",
+    "./tokens.css": "./src/tokens.css"
   },
   "scripts": {
     "test": "vitest run",

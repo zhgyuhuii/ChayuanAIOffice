@@ -1,14 +1,14 @@
 import { createIpcTransport, type AgentTransport } from '@genoffice/agent-core'
-import type { AiSettings } from '@genoffice/ai-provider'
+import type { AiModelSelection } from '@genoffice/ai-provider'
 import { t } from '../i18n/locale'
 
-/** The shared IPC transport wired to the markdown preload bridge (window.markdownApi). */
-export function createElectronTransport(getSettings: () => AiSettings): AgentTransport {
-  return createIpcTransport<AiSettings>({
+/** The shared IPC transport; the stream request carries only the model selection. */
+export function createElectronTransport(getSelection: () => AiModelSelection): AgentTransport {
+  return createIpcTransport<AiModelSelection>({
     onStream: (listener) => window.markdownApi.onAiStream(listener),
     start: (request) => window.markdownApi.aiStream(request),
     cancel: (requestId) => void window.markdownApi.aiStreamCancel(requestId),
-    getSettings,
+    getSettings: getSelection,
     unknownErrorText: () => t('aiUnknownError'),
     timeoutErrorText: () => t('aiTimeoutError'),
     creditsErrorText: () => t('aiCreditsExhausted'),

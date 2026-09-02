@@ -2,15 +2,49 @@ import type { AgentMessage, AgentToolDef } from '@genoffice/agent-core'
 import { streamAnthropic } from './protocols/anthropic'
 import { streamGemini } from './protocols/gemini'
 import { streamOpenAiCompatible } from './protocols/openai-compatible'
+import { streamOpenAiResponses } from './protocols/openai-responses'
 import type { StreamCallbacks } from './protocols/shared'
+import type { ResolvedModelCall } from './settings-v2'
 import { getProviderAdapter } from './registry'
 import type { AiProviderConfig, AiProviderId } from './types'
 
 export { streamAnthropic } from './protocols/anthropic'
 export { streamGemini } from './protocols/gemini'
 export { streamOpenAiCompatible } from './protocols/openai-compatible'
+export { streamOpenAiResponses } from './protocols/openai-responses'
 export { AiCreditsError, sseLines } from './protocols/shared'
 export type { StreamCallbacks } from './protocols/shared'
+
+/**
+ * Route one v2 model call: the profile resolver already picked the protocol,
+ * base URL, and vendor quirks; this dispatches to the protocol streamer.
+ */
+export async function streamResolved(
+  call: ResolvedModelCall,
+  system: string,
+  messages: AgentMessage[],
+  tools: AgentToolDef[],
+  maxTokens: number,
+  cb: StreamCallbacks,
+): Promise<void> {
+  const config: AiProviderConfig = { apiKey: call.apiKey, model: call.model, baseUrl: call.baseUrl }
+  switch (call.protocol) {
+    case 'anthropic':
+      return streamAnthropic(config, system, messages, tools, maxTokens, cb, call.baseUrl)
+    case 'gemini':
+      return streamGemini(config, system, messages, tools, maxTokens, cb, call.baseUrl)
+    case 'openai-responses':
+      return streamOpenAiResponses(call.baseUrl, config, system, messages, tools, maxTokens, cb, {
+        omitTemperature: call.omitTemperature,
+      })
+    case 'openai-compatible':
+      return streamOpenAiCompatible(call.baseUrl, config, system, messages, tools, maxTokens, cb, {
+        omitTemperature: call.omitTemperature,
+        useMaxCompletionTokens: call.useMaxCompletionTokens,
+        bodyExtras: call.bodyExtras,
+      })
+  }
+}
 
 /** route a streaming, tool-calling-capable turn by provider id */
 export async function streamForProvider(

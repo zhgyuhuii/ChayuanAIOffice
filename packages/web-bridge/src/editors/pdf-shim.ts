@@ -3,6 +3,7 @@
  * (server-side pdfium composition) degrade until the pdfium service lands.
  */
 
+import { createAiHttpBridge } from '../ai-bridge.js'
 import { BridgeClient } from '../client.js'
 import { b64ToBytes, makeShim, pendingFromHash } from '../shim-factory.js'
 
@@ -10,6 +11,7 @@ export function installPdfShim(client: BridgeClient): void {
   let consumed = false
 
   const impl = {
+    ...createAiHttpBridge(),
     async consumePending(): Promise<string | null> {
       if (consumed) return null
       consumed = true

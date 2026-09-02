@@ -8,3 +8,17 @@ declare module 'bidi-js' {
   }
   export default function bidiFactory(): BidiApi
 }
+
+/** vendored image assets (vendor logos) — bundlers emit URLs */
+declare module '*.png' {
+  const src: string
+  export default src
+}
+declare module '*.webp' {
+  const src: string
+  export default src
+}
+declare module '*.svg' {
+  const src: string
+  export default src
+}

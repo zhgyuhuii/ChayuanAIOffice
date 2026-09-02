@@ -72,6 +72,8 @@ export const tMain = createI18n({
     errNoApiKey: '未配置 {provider} 的 API Key',
     errNoModel: '未配置模型名称',
     errGskCli: 'gsk 未登录:请先运行 gsk login 登录 Genspark 账号',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errGskToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errNoDeckAppend:
       '当前没有可追加的文稿（会话不存在）。请先用 mode:"replace" 生成首页，或改用原生工具新增页面。',
     errAppendFailed: '追加失败：{reason}',
@@ -180,6 +182,8 @@ export const tMain = createI18n({
     errNoApiKey: 'No API key configured for {provider}',
     errNoModel: 'No model name configured',
     errGskCli: 'gsk not signed in: run gsk login to sign in to your Genspark account first',
+    errNoImageModel: 'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
+    errGskToolsOff: 'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
     errNoDeckAppend:
       'No deck to append to (session missing). Generate the first page with mode:"replace" or add pages with the native tools.',
     errAppendFailed: 'Append failed: {reason}',
@@ -289,6 +293,8 @@ export const tMain = createI18n({
     errNoModel: 'モデル名が設定されていません',
     errGskCli:
       'gsk が未サインインです。先に gsk login を実行して Genspark アカウントにサインインしてください',
+    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
+    errGskToolsOff: 'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errNoDeckAppend:
       '追加先のプレゼンテーションがありません（セッションが存在しません）。まず mode:"replace" で最初のページを生成するか、ネイティブ ツールでページを追加してください。',
     errAppendFailed: '追加に失敗しました: {reason}',
@@ -402,6 +408,8 @@ export const tMain = createI18n({
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errGskCli:
       'gsk가 로그인되어 있지 않습니다. 먼저 gsk login을 실행해 Genspark 계정에 로그인하세요',
+    errNoImageModel: '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
+    errGskToolsOff: 'Genspark 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errNoDeckAppend:
       '추가할 수 있는 문서가 없습니다(세션 없음). 먼저 mode:"replace"로 첫 페이지를 생성하거나 네이티브 도구로 페이지를 추가하세요.',
     errAppendFailed: '추가 실패: {reason}',
@@ -514,6 +522,8 @@ export const tMain = createI18n({
       "gsk non connecté : exécutez d'abord gsk login pour vous connecter à votre compte Genspark",
     errNoDeckAppend:
       'Aucune présentation à compléter (session inexistante). Générez d\'abord la première page avec mode:"replace" ou ajoutez des pages avec les outils natifs.',
+    errNoImageModel: 'Aucun modèle d\'image configuré : activez un modèle de génération d\'images dans les paramètres des modèles, ou connectez-vous à Genspark',
+    errGskToolsOff: 'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errAppendFailed: "Échec de l'ajout : {reason}",
     errPartialAppend: "Échec de l'ajout de certaines pages : {reason}",
     errMergeFailed:
@@ -627,6 +637,8 @@ export const tMain = createI18n({
     errNoModel: 'Kein Modellname konfiguriert',
     errGskCli:
       'gsk nicht angemeldet: Führen Sie zuerst gsk login aus, um sich bei Ihrem Genspark-Konto anzumelden',
+    errNoImageModel: 'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
+    errGskToolsOff: 'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errNoDeckAppend:
       'Keine Präsentation zum Anfügen vorhanden (Sitzung fehlt). Generieren Sie zuerst die erste Seite mit mode:"replace" oder fügen Sie Seiten mit den nativen Tools hinzu.',
     errAppendFailed: 'Anfügen fehlgeschlagen: {reason}',
@@ -741,6 +753,8 @@ export const tMain = createI18n({
     errNoModel: 'No hay nombre de modelo configurado',
     errGskCli:
       'gsk sin sesión iniciada: ejecuta primero gsk login para iniciar sesión en tu cuenta de Genspark',
+    errNoImageModel: 'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
+    errGskToolsOff: 'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errNoDeckAppend:
       'No hay ninguna presentación a la que anexar (no existe la sesión). Genera primero la primera página con mode:"replace" o añade páginas con las herramientas nativas.',
     errAppendFailed: 'Error al anexar: {reason}',
@@ -853,6 +867,8 @@ export const tMain = createI18n({
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
     errGskCli: 'gsk ยังไม่ได้เข้าสู่ระบบ: โปรดรัน gsk login เพื่อเข้าสู่ระบบบัญชี Genspark ก่อน',
+    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
+    errGskToolsOff: 'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errNoDeckAppend:
       'ไม่มีเอกสารให้เพิ่มต่อท้าย (ไม่มีเซสชัน) โปรดสร้างหน้าแรกด้วย mode:"replace" ก่อน หรือใช้เครื่องมือเนทีฟเพิ่มหน้าแทน',
     errAppendFailed: 'เพิ่มต่อท้ายไม่สำเร็จ: {reason}',
@@ -962,6 +978,8 @@ export const tMain = createI18n({
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errGskCli: 'gsk belum masuk: jalankan gsk login dulu untuk masuk ke akun Genspark',
+    errNoImageModel: 'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
+    errGskToolsOff: 'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
       'Tidak ada dokumen yang bisa ditambahi (sesi tidak ada). Buat halaman pertama dengan mode:"replace" dulu, atau tambahkan halaman dengan alat bawaan.',
     errAppendFailed: 'Gagal menambahkan: {reason}',
@@ -1076,6 +1094,8 @@ export const tMain = createI18n({
     errNoModel: 'Не указано имя модели',
     errGskCli:
       'gsk не авторизован: сначала выполните gsk login, чтобы войти в учётную запись Genspark',
+    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
+    errGskToolsOff: 'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errNoDeckAppend:
       'Нет презентации для добавления страниц (сессия отсутствует). Сначала создайте первую страницу с mode:"replace" или добавьте страницы нативными инструментами.',
     errAppendFailed: 'Сбой добавления: {reason}',
@@ -1188,6 +1208,8 @@ export const tMain = createI18n({
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errGskCli: 'gsk غير مسجَّل الدخول: شغّل gsk login أولًا لتسجيل الدخول إلى حساب Genspark',
+    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
+    errGskToolsOff: 'أدوات Genspark السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errNoDeckAppend:
       'لا يوجد مستند يمكن الإلحاق به (الجلسة غير موجودة). أنشئ الصفحة الأولى باستخدام mode:"replace" أولًا، أو أضف صفحات بالأدوات الأصلية.',
     errAppendFailed: 'فشل الإلحاق: {reason}',
@@ -1297,6 +1319,8 @@ export const tMain = createI18n({
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errNoModel: 'Nenhum nome de modelo configurado',
     errGskCli: 'gsk não conectado: execute gsk login primeiro para entrar na sua conta Genspark',
+    errNoImageModel: 'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
+    errGskToolsOff: 'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errNoDeckAppend:
       'Não há apresentação para anexar (sessão inexistente). Gere a primeira página com mode:"replace" ou adicione páginas com as ferramentas nativas.',
     errAppendFailed: 'Falha ao anexar: {reason}',
@@ -1413,6 +1437,8 @@ export const tMain = createI18n({
       "gsk non ha effettuato l'accesso: esegui prima gsk login per accedere al tuo account Genspark",
     errNoDeckAppend:
       'Nessuna presentazione a cui aggiungere pagine (sessione mancante). Genera la prima pagina con mode:"replace" o aggiungi pagine con gli strumenti nativi.',
+    errNoImageModel: 'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
+    errGskToolsOff: 'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errAppendFailed: 'Aggiunta non riuscita: {reason}',
     errPartialAppend: 'Aggiunta di alcune pagine non riuscita: {reason}',
     errMergeFailed:
@@ -1526,6 +1552,8 @@ export const tMain = createI18n({
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errGskCli:
       'gsk nie jest zalogowany: najpierw uruchom gsk login, aby zalogować się na konto Genspark',
+    errNoImageModel: 'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
+    errGskToolsOff: 'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby używać tego narzędzia',
     errNoDeckAppend:
       'Brak prezentacji do rozszerzenia (brak sesji). Najpierw wygeneruj pierwszą stronę z mode:"replace" albo dodaj strony narzędziami natywnymi.',
     errAppendFailed: 'Dołączanie nie powiodło się: {reason}',
@@ -1639,6 +1667,8 @@ export const tMain = createI18n({
     errNoModel: 'Geen modelnaam geconfigureerd',
     errGskCli:
       'gsk is niet aangemeld: voer eerst gsk login uit om u aan te melden bij uw Genspark-account',
+    errNoImageModel: 'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
+    errGskToolsOff: 'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errNoDeckAppend:
       'Geen presentatie om aan toe te voegen (sessie ontbreekt). Genereer eerst de eerste pagina met mode:"replace" of voeg pagina\'s toe met de native tools.',
     errAppendFailed: 'Toevoegen mislukt: {reason}',
@@ -1751,6 +1781,8 @@ export const tMain = createI18n({
     errNoModel: 'Nama model belum dikonfigurasikan',
     errGskCli:
       'gsk belum log masuk: jalankan gsk login dahulu untuk log masuk ke akaun Genspark anda',
+    errNoImageModel: 'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
+    errGskToolsOff: 'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
       'Tiada persembahan untuk ditambah (sesi tidak wujud). Jana halaman pertama dengan mode:"replace" dahulu, atau tambah halaman dengan alat asli.',
     errAppendFailed: 'Gagal menambah: {reason}',
@@ -1861,6 +1893,8 @@ export const tMain = createI18n({
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errNoModel: 'לא הוגדר שם מודל',
     errGskCli: 'gsk אינו מחובר: הרץ תחילה gsk login כדי להיכנס לחשבון Genspark שלך',
+    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
+    errGskToolsOff: 'כלי הענן של Genspark כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errNoDeckAppend:
       'אין מצגת להוסיף אליה (הפעלה חסרה). צור תחילה את העמוד הראשון עם mode:"replace" או הוסף עמודים בכלים המקוריים.',
     errAppendFailed: 'ההוספה נכשלה: {reason}',
@@ -1969,6 +2003,8 @@ export const tMain = createI18n({
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errGskCli: 'gsk साइन इन नहीं है: पहले gsk login चलाकर अपने Genspark खाते में साइन इन करें',
+    errNoImageModel: 'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
+    errGskToolsOff: 'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errNoDeckAppend:
       'जोड़ने के लिए कोई प्रस्तुति नहीं है (सत्र मौजूद नहीं)। पहले mode:"replace" से पहला पृष्ठ बनाएँ, या नेटिव टूल से पृष्ठ जोड़ें।',
     errAppendFailed: 'जोड़ना विफल: {reason}',
@@ -2079,6 +2115,8 @@ export const tMain = createI18n({
     errNoApiKey: '未設定 {provider} 的 API Key',
     errNoModel: '未設定模型名稱',
     errGskCli: 'gsk 未登入:請先執行 gsk login 登入 Genspark 帳號',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
+    errGskToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errNoDeckAppend:
       '目前沒有可附加的簡報（工作階段不存在）。請先用 mode:"replace" 產生首頁，或改用原生工具新增頁面。',
     errAppendFailed: '附加失敗：{reason}',

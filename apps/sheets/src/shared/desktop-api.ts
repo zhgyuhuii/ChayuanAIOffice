@@ -11,11 +11,12 @@ import {
 } from './ipc-channels'
 import { ADDABLE_SHAPE_TYPES } from './shape-types'
 import type {
-  AiChatRequest,
   AiChatResponse,
-  AiSettings,
+  AiModelEntry,
+  AiModelSelection,
+  AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
+  DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
 
@@ -2327,9 +2328,16 @@ const agentToolDefSchema = z
 const MAX_AI_MESSAGES = 500
 const MAX_AI_TOOLS = 50
 
+const aiModelSelectionSchema = z
+  .object({
+    profileId: z.string().min(1),
+    modelId: z.string().min(1),
+  })
+  .strict()
+
 export const aiChatRequestSchema = z
   .object({
-    settings: aiSettingsInputSchema,
+    selection: aiModelSelectionSchema,
     system: z.string(),
     user: z.string(),
   })
@@ -2338,7 +2346,8 @@ export const aiChatRequestSchema = z
 export const aiStreamRequestSchema = z
   .object({
     requestId: z.string().min(1),
-    settings: aiSettingsInputSchema,
+    /** carries the model selection (agent-core's generic transport slot) */
+    settings: aiModelSelectionSchema,
     system: z.string(),
     messages: z.array(agentMessageSchema).max(MAX_AI_MESSAGES),
     tools: z.array(agentToolDefSchema).max(MAX_AI_TOOLS).optional(),
@@ -2601,11 +2610,17 @@ export interface DesktopApi {
   /// Is a shell-queued workbook path still waiting to be opened? (The shell's
   /// 'open' nudge loop can time out on slow cold starts; the renderer pulls.)
   hasQueuedWorkbook(): Promise<boolean>
-  getAiSettings(): Promise<AiSettings>
-  setAiSettings(settings: AiSettings): Promise<void>
-  aiChat(request: AiChatRequest): Promise<AiChatResponse>
-  /// start a streaming AI call; deltas arrive via onAiStream with the same requestId
-  aiStream(request: AiStreamRequest): Promise<void>
+  /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
+  getAiSettings(): Promise<AiSettingsV2>
+  /** persist the view; KEEP_KEY entries keep their stored key */
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  /** quick-switch: persist the global current model */
+  setAiCurrentModel(selection: AiModelSelection): Promise<void>
+  /** model list discovery; doubles as the settings page connection test */
+  aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
+  aiChat(request: { selection: AiModelSelection; system: string; user: string }): Promise<AiChatResponse>
+  /// start a streaming AI call; the settings slot carries the model selection
+  aiStream(request: AiStreamRequestInput): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   /// Genspark account status (gsk login state); withEmail also returns the email
   /// (needs a network request, slower)

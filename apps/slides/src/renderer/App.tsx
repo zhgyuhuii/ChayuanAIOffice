@@ -10,7 +10,7 @@ import type {
   TableRenderNode,
 } from '@genoffice/pptx-render'
 import type {
-  AiSettings,
+  AiSettingsV2,
   AnimEffectKind,
   AnimTrigger,
   AnimationItem,
@@ -414,7 +414,7 @@ export function App() {
   const [showAi, setShowAi] = useState(() => localStorage.getItem('ai-slides-show-ai') !== '0')
   const [showFormat, setShowFormat] = useState(false)
   const [showBgFormat, setShowBgFormat] = useState(false)
-  const [aiSettings, setAiSettings] = useState<AiSettings | null>(null)
+  const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
   const [aiPreset, setAiPreset] = useState<{
     text: string
     nonce: number

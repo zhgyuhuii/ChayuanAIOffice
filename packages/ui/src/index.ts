@@ -51,3 +51,11 @@ export {
   type ShapeGalleryGroup,
   type ShapeGalleryShape,
 } from './shape-gallery'
+
+export {
+  ModelSettingsPage,
+  type ModelSettingsBridge,
+  type ModelSettingsPageProps,
+} from './ModelSettingsPage'
+export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
+export { VendorLogo, type VendorLogoProps } from './VendorLogo'

@@ -10,9 +10,11 @@
 import type { RenderSlide } from '@genoffice/pptx-render'
 import type { SlideComment, SectionInfo } from '@genoffice/pptx-engine'
 import type {
-  AiSettings,
+  AiModelEntry,
+  AiModelSelection,
+  AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
+  DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
 
@@ -20,15 +22,31 @@ export type { SlideComment, SectionInfo } from '@genoffice/pptx-engine'
 
 // Canonical definitions of AI-related types live in @genoffice/ai-provider / @genoffice/agent-core (shared with docs)
 export type {
+  AiModelEntry,
+  AiModelSelection,
   AiProviderConfig,
   AiProviderId,
   AiProviderMeta,
+  AiProviderProfile,
   AiSettings,
+  AiSettingsV2,
   AiStreamChunk,
   AiStreamRequest,
+  AiWireProtocol,
+  DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
 export { AI_PROVIDERS } from '@genoffice/ai-provider'
+
+/** wire shape of an ai:stream request: the settings slot carries the selection */
+export interface AiStreamWireRequest {
+  requestId: string
+  settings: AiModelSelection
+  system: string
+  messages: import('@genoffice/agent-core').AgentMessage[]
+  tools?: import('@genoffice/agent-core').AgentToolDef[]
+  maxTokens?: number
+}
 export type { AgentToolCall, AgentToolDef } from '@genoffice/agent-core'
 
 export type UiTheme = 'light' | 'dark' | 'system'
@@ -1556,9 +1574,15 @@ export interface SlidesApi {
   onOpened: (handler: (result: OpenResult) => void) => () => void
   /** The file was renamed externally (shell Home list rename) — pushes the new path, the renderer updates the title bar */
   onRenamed: (handler: (newPath: string) => void) => () => void
-  getAiSettings: () => Promise<AiSettings>
-  setAiSettings: (settings: AiSettings) => Promise<void>
-  aiStream: (request: AiStreamRequest) => Promise<void>
+  /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
+  getAiSettings: () => Promise<AiSettingsV2>
+  /** persist the view; KEEP_KEY entries keep their stored key */
+  setAiSettings: (view: AiSettingsV2) => Promise<void>
+  /** quick-switch: persist the global current model */
+  setAiCurrentModel: (selection: AiModelSelection) => Promise<void>
+  /** model list discovery; doubles as the settings page connection test */
+  aiDiscoverModels: (target: DiscoveryTarget) => Promise<{ models: AiModelEntry[]; error?: string }>
+  aiStream: (request: AiStreamWireRequest) => Promise<void>
   aiStreamCancel: (requestId: string) => Promise<void>
   /** Genspark account status (gsk login state); with withEmail also fetches the email (needs a network request, slower) */
   aiGskStatus: (withEmail?: boolean) => Promise<GenSparkAccountStatus>

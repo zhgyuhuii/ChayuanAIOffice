@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Dropdown } from '@genoffice/ui'
-import type { AiSettings } from '@genoffice/ai-provider'
+import { Dropdown, ModelSettingsPage, type ModelSettingsBridge } from '@genoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey, TFunc } from './locale'
-import type { AccountStatus, AiCatalogEntry, UiTheme } from '../../shared/home-api'
+import type { AccountStatus, UiTheme } from '../../shared/home-api'
 import { ProviderLogo } from './provider-logos'
 import './settings.css'
 
@@ -146,225 +145,30 @@ function Field({
 }
 
 /** AI model pane: provider / model / key / base URL, saved to userData/ai-settings.json */
-function AiModelPane({ t }: { t: TFunc }) {
-  const [catalog] = useState<AiCatalogEntry[]>(() => window.aiOffice.getAiProviders?.() ?? [])
-  const [settings, setSettings] = useState<AiSettings | null>(null)
-  const [dirty, setDirty] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [testing, setTesting] = useState(false)
-  const [testResult, setTestResult] = useState<{ ok: boolean; error?: string } | null>(null)
-
-  useEffect(() => {
-    let alive = true
-    void window.aiOffice.getAiSettings?.().then((s) => {
-      if (!alive || !s) return
-      // The switch is disabled with genspark, so never present it stranded
-      // off. Display-only: s.provider may be the activeProvider fallback for
-      // a half-configured BYOK selection, so writing anything back here would
-      // clobber the stored choice — the main process heals a genuine legacy
-      // genspark+off file itself, judged on the raw stored provider.
-      if (s.provider === 'genspark' && s.gskToolsEnabled === false) {
-        s = { ...s, gskToolsEnabled: true }
-      }
-      setSettings(s)
-    })
-    return () => {
-      alive = false
-    }
-  }, [])
-
-  if (!settings) return null
-  const provider = settings.provider
-  const meta = catalog.find((c) => c.id === provider)
-  const config = settings.providers[provider] ?? {
-    apiKey: '',
-    model: meta?.defaultModel ?? '',
-  }
-  const isGenspark = provider === 'genspark'
-
-  const touch = () => {
-    setDirty(true)
-    setSaved(false)
-    setTestResult(null)
-  }
-  const updateConfig = (patch: Partial<typeof config>) => {
-    setSettings({
-      ...settings,
-      providers: { ...settings.providers, [provider]: { ...config, ...patch } },
-    })
-    touch()
-  }
-  const selectProvider = (id: AiSettings['provider']) => {
-    // cloud tools cannot be off with genspark (chat runs through gsk anyway)
-    setSettings({
-      ...settings,
-      provider: id,
-      ...(id === 'genspark' ? { gskToolsEnabled: true } : {}),
-    })
-    touch()
-  }
-  const save = () => {
-    window.aiOffice
-      .setAiSettings?.(settings)
-      .then(() => {
-        setDirty(false)
-        setSaved(true)
-      })
-      .catch((error) => {
-        window.alert(error instanceof Error ? error.message : String(error))
-      })
-  }
-  const test = () => {
-    setTesting(true)
-    setTestResult(null)
-    window.aiOffice
-      .testAiSettings?.(settings)
-      .then((r) => setTestResult(r ?? { ok: false }))
-      .catch((error) =>
-        setTestResult({ ok: false, error: error instanceof Error ? error.message : String(error) }),
-      )
-      .finally(() => setTesting(false))
-  }
-
+function AiModelPane({ t, lang }: { t: TFunc; lang: string }) {
+  // the model settings live inline in this pane (no second window); the pane
+  // is a scroll container, so the page's own panes take over scrolling
+  const bridge: ModelSettingsBridge = windowAiOfficeBridge()
   return (
     <>
       <h3 className="set-pane-title">{t('setSecAiModel')}</h3>
-      <div className="set-field">
-        <div className="set-field-text">
-          <label className="set-field-label">{t('setAiProvider')}</label>
-        </div>
-        <Dropdown
-          className="set-dd"
-          value={provider}
-          ariaLabel={t('setAiProvider')}
-          options={catalog.map((c) => ({
-            value: c.id,
-            label: c.label,
-            render: (
-              <>
-                <ProviderLogo id={c.id} />
-                {c.label}
-              </>
-            ),
-          }))}
-          onPick={(v) => selectProvider(v as AiSettings['provider'])}
-        />
-      </div>
-      <div className="set-field-desc set-ai-note">
-        {isGenspark ? t('setAiGensparkHint') : t('setAiByokNote')}
-      </div>
-      <div className="set-field">
-        <div className="set-field-text">
-          <label className="set-field-label">{t('setAiModelId')}</label>
-        </div>
-        {meta && meta.models.length > 0 ? (
-          <Dropdown
-            className="set-dd"
-            value={config.model || meta.defaultModel}
-            ariaLabel={t('setAiModelId')}
-            options={meta.models.map((m) => ({ value: m, label: m }))}
-            onPick={(m) => updateConfig({ model: m })}
-          />
-        ) : (
-          <input
-            id="set-ai-model"
-            className="set-input"
-            type="text"
-            value={config.model}
-            placeholder="model-id"
-            spellCheck={false}
-            onChange={(e) => updateConfig({ model: e.target.value })}
-          />
-        )}
-      </div>
-      {!isGenspark && (
-        <>
-          <div className="set-field">
-            <div className="set-field-text">
-              <div className="set-field-stack">
-                <label className="set-field-label" htmlFor="set-ai-key">
-                  {t('setAiApiKey')}
-                </label>
-                <div className="set-field-desc">{t('setAiKeyHint')}</div>
-              </div>
-            </div>
-            <input
-              id="set-ai-key"
-              className="set-input"
-              type="password"
-              value={config.apiKey}
-              placeholder={meta?.keyPlaceholder ?? 'API Key'}
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(e) => updateConfig({ apiKey: e.target.value.trim() })}
-            />
-          </div>
-          <div className="set-field">
-            <div className="set-field-text">
-              <div className="set-field-stack">
-                <label className="set-field-label" htmlFor="set-ai-base-url">
-                  {t('setAiBaseUrl')}
-                </label>
-                {!meta?.needsBaseUrl && (
-                  <div className="set-field-desc">{t('setAiBaseUrlHint')}</div>
-                )}
-              </div>
-            </div>
-            <input
-              id="set-ai-base-url"
-              className="set-input"
-              type="text"
-              value={config.baseUrl ?? ''}
-              placeholder={meta?.needsBaseUrl ? 'https://…/v1' : meta?.defaultBaseUrl}
-              spellCheck={false}
-              onChange={(e) => updateConfig({ baseUrl: e.target.value.trim() })}
-            />
-          </div>
-        </>
-      )}
-      <div className="set-field">
-        <div className="set-field-text">
-          <div className="set-field-stack">
-            <div className="set-field-label">{t('setAiGskTools')}</div>
-            <div className="set-field-desc">{t('setAiGskToolsDesc')}</div>
-          </div>
-        </div>
-        {/* locked on with the genspark provider — chat runs through gsk anyway */}
-        <button
-          className="set-switch"
-          role="switch"
-          aria-checked={settings.gskToolsEnabled !== false}
-          aria-label={t('setAiGskTools')}
-          disabled={isGenspark}
-          onClick={() => {
-            setSettings({ ...settings, gskToolsEnabled: settings.gskToolsEnabled === false })
-            touch()
-          }}
-        />
-      </div>
-      <div className="set-pane-footer">
-        <AiStatusPill
-          status={
-            testing
-              ? { kind: 'testing', text: t('setAiTesting') }
-              : testResult
-                ? testResult.ok
-                  ? { kind: 'ok', text: t('setAiTestOk') }
-                  : { kind: 'err', text: testResult.error || t('setAiTestFail') }
-                : saved
-                  ? { kind: 'ok', text: t('setAiSaved') }
-                  : null
-          }
-        />
-        <button className="set-btn" disabled={testing} onClick={test}>
-          {t('setAiTest')}
-        </button>
-        <button className="set-btn primary" disabled={!dirty} onClick={save}>
-          {t('setAiSave')}
-        </button>
+      <div className="set-model-settings">
+        <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
       </div>
     </>
   )
+}
+
+/** the v2 settings page over the shell-wide ai:* channels */
+function windowAiOfficeBridge(): ModelSettingsBridge {
+  return {
+    getSettings: () => window.aiOffice.getAiSettings(),
+    saveSettings: (view) => window.aiOffice.setAiSettings(view),
+    setCurrentModel: (selection) => window.aiOffice.setAiCurrentModel(selection),
+    discoverModels: (target) => window.aiOffice.aiDiscoverModels(target),
+    gskStatus: (withEmail) => window.aiOffice.gskStatus(withEmail),
+    gskLogin: () => void window.aiOffice.gskLogin(),
+  }
 }
 
 interface AiStatus {
@@ -591,7 +395,7 @@ export function SettingsModal({
                 </div>
               </>
             )}
-            {section === 'aiModel' && <AiModelPane t={t} />}
+            {section === 'aiModel' && <AiModelPane t={t} lang={lang} />}
             {section === 'general' && (
               <>
                 <h3 className="set-pane-title">{t('setSecGeneral')}</h3>

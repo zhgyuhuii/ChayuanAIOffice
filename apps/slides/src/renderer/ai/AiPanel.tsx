@@ -7,7 +7,7 @@ import {
   type ToolDisplay,
 } from '@genoffice/agent-core'
 import type { RenderSlide } from '@genoffice/pptx-render'
-import type { AiSettings, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
+import type { AiModelSelection, AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import {
   createSlidesSkill,
@@ -37,7 +37,15 @@ import {
   settingsSupportVision,
 } from './slide-qc'
 import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
-import { Markdown, PanelTabs, usePanelTab } from '@genoffice/ui'
+import {
+  Markdown,
+  ModelPickerButton,
+  ModelSettingsPage,
+  PanelTabs,
+  usePanelTab,
+} from '@genoffice/ui'
+import { defaultSettingsV2, enabledChatModels } from '@genoffice/ai-provider'
+import { slidesModelBridge } from './model-bridge'
 import sendEnterOn from '../assets/send-enter-on.png'
 import sendEnterOff from '../assets/send-enter-off.png'
 import sendStop from '../assets/send-stop.png'
@@ -245,6 +253,8 @@ interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
   error?: string
+  /** model id that produced this assistant turn (display only) */
+  model?: string
   streaming?: boolean
   /** the run failed because Genspark is signed out — render an inline sign-in button */
   loginRequired?: boolean
@@ -274,7 +284,7 @@ interface AiPanelProps {
   applySlide: (slideIndex: number, updated: RenderSlide) => void
   applyDeck: (slides: RenderSlide[], goTo?: number) => void
   fitWidthPx: number
-  settings: AiSettings
+  settings: AiSettingsV2
   /** Preset instruction pushed from the ribbon/start screen; sent immediately when autoRun. When displayText exists the chat bubble shows only it while the full text still goes to the model.
       attachments are local files added in the start-screen input, taking effect with the first message.
       slideShot attaches a rendering of the current slide so the model sees what it's editing (AI Beautify) */
@@ -381,7 +391,7 @@ export function AiPanel({
   onQueueConsume,
   onAskSelection,
 }: AiPanelProps) {
-  const { t } = useI18n()
+  const { lang, t } = useI18n()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -474,8 +484,23 @@ export function AiPanel({
   onPathChangeRef.current = onPathChange
   const onDeckProgressRef = useRef(onDeckProgress)
   onDeckProgressRef.current = onDeckProgress
-  const settingsRef = useRef(settings)
-  settingsRef.current = settings
+  // panel-local copy: the picker and the settings page refresh it without App state
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => settings ?? defaultSettingsV2())
+  useEffect(() => {
+    if (settings) setPanelSettings(settings)
+  }, [settings])
+  const settingsRef = useRef(panelSettings)
+  settingsRef.current = panelSettings
+  /** model id driving the in-flight run — shown on this turn's assistant bubbles */
+  const runModelRef = useRef<string | undefined>(undefined)
+  const refreshSettings = async () => {
+    try {
+      setPanelSettings(await slidesModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
 
   /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
   const gskLoggedInRef = useRef(false)
@@ -737,18 +762,19 @@ export function AiPanel({
 
   const loopRef = useRef<AgentLoop | null>(null)
   if (!loopRef.current) {
-    // The three slides generation steps (style/planning/per-page HTML) force the high-quality model (only with the anthropic provider;
-    // other providers keep the user setting, avoiding passing nonexistent model names). Chat/fine-tuning still uses the user's configured model.
+    // The three slides generation steps (style/planning/per-page HTML) force the high-quality model (only on
+    // anthropic-messages profiles; other protocols keep the user selection, avoiding nonexistent model ids).
+    // Chat/fine-tuning still uses the user's configured model.
     const SLIDES_GEN_MODEL = 'claude-opus-4-7'
-    // Return on demand a settings copy with the generation model overridden (deep copy, doesn't pollute settingsRef).
-    const settingsForGen = (): AiSettings => {
+    // On-demand selection with the generation model overridden (the profile must have it enabled).
+    const selectionForGen = (): AiModelSelection => {
       const cur = settingsRef.current
-      if (cur.provider !== 'anthropic') return cur
-      const ap = cur.providers.anthropic
-      return {
-        ...cur,
-        providers: { ...cur.providers, anthropic: { ...ap, model: SLIDES_GEN_MODEL } },
-      }
+      const sel = cur.currentModel
+      if (!sel) return sel!
+      const profile = cur.profiles.find((p) => p.id === sel.profileId)
+      if (profile?.protocol !== 'anthropic-messages') return sel
+      if (!profile.models.some((m) => m.id === SLIDES_GEN_MODEL)) return sel
+      return { profileId: profile.id, modelId: SLIDES_GEN_MODEL }
     }
     // Send one LLM request, aggregating streaming deltas into complete text. Shared by in-tool per-page/planning.
     // - On timeout/user stop (signal abort) call aiStreamCancel to cancel the main-process stream, leaving no orphan requests.
@@ -762,7 +788,7 @@ export function AiPanel({
       errKind?: 'timeout' | 'empty' | 'stopped'
     }
     const runLlmAttempt = (
-      settings: AiSettings,
+      selection: AiModelSelection,
       system: string,
       user: string,
       timeoutMs: number,
@@ -834,7 +860,7 @@ export function AiPanel({
         window.slidesApi
           .aiStream({
             requestId,
-            settings,
+            settings: selection,
             system,
             messages: [{ role: 'user', text: user }],
             ...(maxTokens ? { maxTokens } : {}),
@@ -857,7 +883,7 @@ export function AiPanel({
       maxTokens?: number,
     ): Promise<LlmResult> => {
       const first = await runLlmAttempt(
-        useGenModel ? settingsForGen() : settingsRef.current,
+        useGenModel ? selectionForGen() : settingsRef.current.currentModel!,
         system,
         user,
         timeoutMs,
@@ -868,9 +894,12 @@ export function AiPanel({
       // Only "request errors" fall back to the user's model for a retry; timeouts/empty output don't switch models (mostly network/output problems, switching won't help)
       if (first.errKind) return first
       const cur = settingsRef.current
-      if (cur.provider !== 'anthropic') return first // The gen-model override only applies with anthropic
-      if (cur.providers.anthropic?.model === SLIDES_GEN_MODEL) return first
-      return runLlmAttempt(cur, system, user, timeoutMs, signal, maxTokens)
+      const sel = cur.currentModel
+      // The gen-model override only applies on anthropic-messages profiles
+      const profile = sel ? cur.profiles.find((p) => p.id === sel.profileId) : undefined
+      if (profile?.protocol !== 'anthropic-messages') return first
+      if (sel?.modelId === SLIDES_GEN_MODEL) return first
+      return runLlmAttempt(sel!, system, user, timeoutMs, signal, maxTokens)
     }
 
     const access: DeckAccess = {
@@ -1282,7 +1311,7 @@ export function AiPanel({
     }
     accessRef.current = access
     loopRef.current = new AgentLoop({
-      transport: createElectronTransport(() => settingsRef.current),
+      transport: createElectronTransport(() => settingsRef.current.currentModel!),
       systemSuffix: aiLangDirective,
       skill: composeSkills('slides+files', '', [
         createSlidesSkill(access),
@@ -1333,7 +1362,10 @@ export function AiPanel({
         onTurnEnd: () => {
           lastTurnToolsRef.current = []
           patchLastAssistant({ streaming: false })
-          setChat((prev) => [...prev, { role: 'assistant', text: '', streaming: true }])
+          setChat((prev) => [
+            ...prev,
+            { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
+          ])
         },
         onDone: ({ text, cancelled, turnLimit }) => {
           const finalText = turnLimit
@@ -1547,11 +1579,12 @@ export function AiPanel({
     stickToBottomRef.current = true
     // Internal orchestration prompts (like generate_deck step notes) skip the chat bubble and go only to the model
     const shown = displayText ?? instruction
+    runModelRef.current = settingsRef.current.currentModel?.modelId
     setChat((prev) => [
       // Fallback: clear leftover streaming flags on history entries, avoiding orphan "thinking" placeholders
       ...prev.map((e) => (e.role === 'assistant' && e.streaming ? { ...e, streaming: false } : e)),
       { role: 'user', text: shown, ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}) },
-      { role: 'assistant', text: '', streaming: true },
+      { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
     ])
     runStartedAtRef.current = Date.now()
     setBusy(true)
@@ -1601,7 +1634,7 @@ export function AiPanel({
         ...prev.map((e) =>
           e.role === 'assistant' && e.streaming ? { ...e, streaming: false } : e,
         ),
-        { role: 'assistant', text: '', streaming: true },
+        { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
       ])
       runStartedAtRef.current = Date.now()
       setBusy(true)
@@ -1695,7 +1728,7 @@ export function AiPanel({
     const controller = new AbortController()
     qcAbortRef.current = controller
     const capped = pages.slice(0, QC_MAX_PAGES)
-    const transport = createElectronTransport(() => settingsRef.current)
+    const transport = createElectronTransport(() => settingsRef.current.currentModel!)
     const header = tGlobal('aiQcStart', { count: capped.length })
     const lines: string[] = []
     const renderEntry = () => [header, ...lines].join('\n')
@@ -1980,6 +2013,15 @@ export function AiPanel({
         {chat.length === 0 && historicChat.length === 0 && (
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-title">
+              {enabledChatModels(panelSettings).length === 0 && (
+                <div className="ai-model-empty">
+                  <div className="ai-model-empty-title">{t('aiNoModelErrorTitle')}</div>
+                  <div className="ai-model-empty-body">{t('aiNoModelErrorBody')}</div>
+                  <button className="ai-login-btn" onClick={() => setModelSettingsOpen(true)}>
+                    {t('aiOpenModelSettings')}
+                  </button>
+                </div>
+              )}
               {t(deckEmpty ? 'aiEmptyGenTitle' : 'aiEmptyTitle')}
             </div>
             <div className="ai-chat-empty-body">
@@ -2046,6 +2088,11 @@ export function AiPanel({
               {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
               {entry.error && (
                 <div className="ai-msg-error">{t('aiMsgError', { error: entry.error })}</div>
+              )}
+              {entry.role === 'assistant' && entry.model && !entry.streaming && (
+                <div className="ai-msg-model" title={entry.model}>
+                  {entry.model}
+                </div>
               )}
               {entry.loginRequired && (
                 <button className="ai-login-btn" onClick={() => void window.slidesApi.aiGskLogin()}>
@@ -2275,6 +2322,13 @@ export function AiPanel({
               rows={1}
             />
             <div className="ai-input-footer">
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void slidesModelBridge.setCurrentModel(selection).then(refreshSettings)
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
               <button
                 className="ai-attach-btn"
                 onClick={pickAttachments}
@@ -2306,6 +2360,16 @@ export function AiPanel({
             </div>
           </div>
         </div>
+      )}
+          {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={slidesModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void refreshSettings()
+          }}
+        />
       )}
     </aside>
   )

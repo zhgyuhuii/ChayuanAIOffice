@@ -34,6 +34,7 @@ import type { ChartSeriesVisualState } from '../domain/chart-visual'
 import type { ChangePlan } from '../domain/workbook.types'
 import type { AttachmentMeta } from '../shared/desktop-api'
 import { AiChatPanel, type AiChatMessage } from './ai/AiChatPanel'
+import type { AiSettingsV2 } from '@genoffice/ai-provider'
 import { AiSelectionAsk } from './ai/AiSelectionAsk'
 import type { SelectionAskAnchor } from './ai/selection-ask'
 import {
@@ -151,6 +152,8 @@ function ToolSymbol({ symbol }: { readonly symbol: string }): React.JSX.Element 
 }
 
 interface ExcelShellProps {
+  aiSettings?: AiSettingsV2 | null | undefined
+  onAiSettingsRefresh?: (() => void | Promise<void>) | undefined
   readonly prompt: string
   readonly preview: ChangePlan | null
   readonly selectionFormat: SelectionFormat | null
@@ -300,6 +303,8 @@ export interface PageLayoutEcho {
 }
 
 export function ExcelShell({
+  aiSettings,
+  onAiSettingsRefresh,
   prompt,
   preview,
   selectionFormat,
@@ -622,6 +627,8 @@ export function ExcelShell({
         renderPanel={(dockChrome) => (
           <AiChatPanel
             dockChrome={dockChrome}
+            settings={aiSettings}
+            onRefreshSettings={onAiSettingsRefresh}
             hasContent={sheetHasContent}
             chat={chat}
             {...(historicChat !== undefined ? { historicChat } : {})}

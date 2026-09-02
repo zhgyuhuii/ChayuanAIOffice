@@ -7,6 +7,8 @@
  * process can run:
  *
  *   node --import tsx <out>/apps/server/src/main.ts
+ *   (preload <out>/apps/server/src/tsx-assets.cjs first: `?asset` imports
+ *   from the slides sources need it outside a bundler)
  *
  * with HOST/PORT/GENOFFICE_DATA_DIR/GENOFFICE_STATIC_DIR in its environment.
  *
@@ -14,7 +16,17 @@
  *   SKIP_WEB=1           skip requiring/copying dist/web (server-only sidecar)
  */
 
-import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync, renameSync, statSync, readdirSync } from 'node:fs'
+import {
+  cpSync,
+  mkdirSync,
+  rmSync,
+  writeFileSync,
+  existsSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  readdirSync,
+} from 'node:fs'
 import { execSync } from 'node:child_process'
 import { join, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -38,7 +50,6 @@ function copyIfExists(from, to) {
     cpSync(from, to, { force: true })
   }
 }
-
 
 const webDist = join(root, 'dist', 'web')
 if (!process.env.SKIP_WEB && !existsSync(join(webDist, 'index.html'))) {
@@ -69,7 +80,9 @@ if (!cleared) {
   try {
     renameSync(out, `${out}-stale`)
   } catch {
-    throw new Error(`cannot clear ${out} — a process is holding it (close editors/watchers and retry)`)
+    throw new Error(
+      `cannot clear ${out} — a process is holding it (close editors/watchers and retry)`,
+    )
   }
 }
 mkdirSync(out, { recursive: true })
@@ -90,7 +103,7 @@ writeFileSync(
     },
     null,
     2,
-  )
+  ),
 )
 copyIfExists(join(root, 'tsconfig.base.json'), join(out, 'tsconfig.base.json'))
 
@@ -101,6 +114,21 @@ mkdirSync(join(out, 'apps'), { recursive: true })
 copyIfExists(join(root, 'apps', 'server'), join(out, 'apps', 'server'))
 copyIfExists(join(root, 'apps', 'slides', 'src'), join(out, 'apps', 'slides', 'src'))
 copyIfExists(join(root, 'apps', 'sheets', 'src'), join(out, 'apps', 'sheets', 'src'))
+// The sidecar root manifest is type:module, but slides/sheets main sources are
+// CJS in the repo (their app manifests carry no type field). Without this
+// marker tsx compiles them as ESM, and the `?asset` wasm/font imports would go
+// through the ESM loader (which parses the wasm as a module and fails) instead
+// of CJS require, where tsx-assets.cjs handles them.
+for (const app of ['slides', 'sheets']) {
+  writeFileSync(
+    join(out, 'apps', app, 'package.json'),
+    JSON.stringify(
+      { name: `@genoffice/${app}-src`, version: rootPkg.version, private: true, type: 'commonjs' },
+      null,
+      2,
+    ),
+  )
+}
 mkdirSync(join(out, 'packages'), { recursive: true })
 for (const pkg of PACKAGES) {
   copyIfExists(join(root, 'packages', pkg), join(out, 'packages', pkg))
@@ -132,4 +160,6 @@ if (existsSync(nativeSrc)) {
 
 console.log('embedded sidecar ready:')
 console.log(`  ${out}`)
-console.log('run:  node --import tsx apps/server/src/main.ts   (cwd = sidecar root)')
+console.log(
+  'run:  node --import tsx --import ./apps/server/src/tsx-assets.cjs apps/server/src/main.ts   (cwd = sidecar root)',
+)

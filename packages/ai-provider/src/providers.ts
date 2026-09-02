@@ -195,7 +195,9 @@ export function defaultAiSettings(
 }
 
 /** false only on an explicit opt-out; absent (pre-toggle settings files) means on */
-export function cloudToolsEnabled(settings: Pick<AiSettings, 'gskToolsEnabled'>): boolean {
+export function cloudToolsEnabled(settings: {
+  gskToolsEnabled?: boolean | undefined
+}): boolean {
   return settings.gskToolsEnabled !== false
 }
 

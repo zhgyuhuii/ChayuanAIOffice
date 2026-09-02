@@ -132,7 +132,7 @@ import {
   composeSkills,
   type AgentImage,
 } from '@genoffice/agent-core'
-import type { AiSettings } from '@genoffice/ai-provider'
+import { enabledChatModels, type AiSettingsV2 } from '@genoffice/ai-provider'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
@@ -778,8 +778,8 @@ export function App(): React.JSX.Element {
 
   // ---- AI: real LLM agent (falls back to the deterministic planner above
   // when no provider is configured — see isAgentConfigured/handleSend) ----
-  const [aiSettings, setAiSettingsState] = useState<AiSettings | null>(null)
-  const aiSettingsRef = useRef<AiSettings | null>(null)
+  const [aiSettings, setAiSettingsState] = useState<AiSettingsV2 | null>(null)
+  const aiSettingsRef = useRef<AiSettingsV2 | null>(null)
   aiSettingsRef.current = aiSettings
 
   /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
@@ -1052,7 +1052,8 @@ export function App(): React.JSX.Element {
   const agentLoopRef = useRef<AgentLoop | null>(null)
   if (!agentLoopRef.current) {
     agentLoopRef.current = new AgentLoop({
-      transport: createElectronTransport(() => aiSettingsRef.current!),
+      // the request carries only the selection; the main process resolves profile + secret
+      transport: createElectronTransport(() => aiSettingsRef.current!.currentModel!),
       systemSuffix: aiLangDirective,
       skill: composeSkills('sheets+files', '', [
         createWorkbookSkill(sheetsSkillDeps()),
@@ -1219,12 +1220,9 @@ export function App(): React.JSX.Element {
   function isAgentConfigured(): boolean {
     const settings = aiSettingsRef.current
     if (!settings) return false
-    const config = settings.providers[settings.provider]
-    if (!config?.model) return false
-    // Genspark's key never lands in the settings file; the main process injects
-    // it from the gsk login state. When logged out, requests return an error
-    // guiding sign-in — not intercepted here.
-    return settings.provider === 'genspark' || !!config.apiKey
+    // any enabled chat model counts as configured; the gsk-login profile's
+    // secret is injected main-side (logged-out runs surface a sign-in error)
+    return enabledChatModels(settings).length > 0
   }
 
   /** Image attachments read as base64 and sent multimodal with this user message
@@ -5128,6 +5126,10 @@ export function App(): React.JSX.Element {
         />
       )}
       <ExcelShell
+        aiSettings={aiSettings}
+        onAiSettingsRefresh={async () => {
+          setAiSettingsState(await window.desktopApi.getAiSettings())
+        }}
         prompt={prompt}
         preview={preview}
         sheetHasContent={sheetHasContent}

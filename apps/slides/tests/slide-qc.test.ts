@@ -14,7 +14,7 @@ import {
   qcSlidePage,
   settingsSupportVision,
 } from '../src/renderer/ai/slide-qc'
-import { defaultAiSettings, type AiProviderId } from '@genoffice/ai-provider'
+import type { AiSettingsV2 } from '@genoffice/ai-provider'
 import type { DeckAccess } from '../src/renderer/ai/slides-skill'
 
 const access: DeckAccess = {
@@ -104,22 +104,34 @@ describe('isQcEnabled', () => {
 })
 
 describe('vision capability fallback', () => {
-  it('uses the selected model when a provider mixes text and vision models', () => {
-    const withProvider = (provider: AiProviderId) => ({ ...defaultAiSettings(), provider })
-    const deepseek = withProvider('deepseek')
-    expect(settingsSupportVision(deepseek)).toBe(false)
-    deepseek.providers.deepseek.model = 'deepseek-v4-flash-vision-exp'
-    expect(settingsSupportVision(deepseek)).toBe(true)
-    expect(settingsSupportVision(withProvider('glm'))).toBe(false)
-    expect(settingsSupportVision(withProvider('gemini'))).toBe(true)
+  /** v2 settings with one api-key profile whose current model is `modelId` */
+  const withModel = (modelId: string): AiSettingsV2 => ({
+    version: 2,
+    profiles: [
+      {
+        id: 'p',
+        displayName: 'P',
+        protocol: 'openai-completions',
+        baseUrl: 'https://example.invalid/v1',
+        apiKey: 'k',
+        auth: 'api-key',
+        enabled: true,
+        models: [{ id: modelId }],
+      },
+    ],
+    currentModel: { profileId: 'p', modelId },
   })
 
-  it('does not send screenshots to text-only models under a vision-capable provider', () => {
-    const settings = defaultAiSettings()
-    settings.providers.genspark.model = 'deep-seek-v4-flash'
-    expect(settingsSupportVision(settings)).toBe(false)
-    settings.providers.genspark.model = 'claude-opus-4-7'
-    expect(settingsSupportVision(settings)).toBe(true)
+  it('uses the selected model when a profile mixes text and vision models', () => {
+    expect(settingsSupportVision(withModel('deepseek-v4-pro'))).toBe(false)
+    expect(settingsSupportVision(withModel('deepseek-v4-flash-vision-exp'))).toBe(true)
+    expect(settingsSupportVision(withModel('glm-5.3'))).toBe(true)
+    expect(settingsSupportVision(withModel('text-embedding-v3'))).toBe(false)
+  })
+
+  it('does not send screenshots to text-only models under a vision-capable profile', () => {
+    expect(settingsSupportVision(withModel('deep-seek-v4-flash'))).toBe(false)
+    expect(settingsSupportVision(withModel('claude-opus-4-7'))).toBe(true)
   })
 
   it('recognizes image-capability errors from optimistic custom endpoints', () => {

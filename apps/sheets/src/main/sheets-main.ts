@@ -7,6 +7,7 @@ import {
   renameSync,
   statSync,
   unlinkSync,
+  watch,
   writeFileSync,
 } from 'node:fs'
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
@@ -54,23 +55,14 @@ import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@gen
 import { ProjectStore } from '@genoffice/project-store'
 
 import {
-  AiCreditsError,
-  AiTimeoutError,
-  isAiNetworkError,
-  isAiOverloadedError,
-  chatForProvider,
-  defaultAiSettings,
-  activeProvider,
   cloudToolsEnabled,
-  resolveAiSettings,
+  isAiOverloadedError,
+  migrateSettingsV2,
   setRescueFetch,
-  streamForProvider,
-  type AiProviderId,
-  type AiSettings,
-  type AiStreamChunk,
-  type GenSparkAccountStatus,
-  type LegacyAiSettings,
+  type AiRuntime,
+  type StoredAiSettings,
 } from '@genoffice/ai-provider'
+import { registerSharedAiIpc } from '@genoffice/ai-host'
 import { csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
 import {
   ensureGenofficeLogin,
@@ -169,6 +161,8 @@ const tMain = createI18n({
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errGskToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errImgAbsPath: '图片路径必须是绝对路径。',
     errImgNotFound: '找不到图片文件: {path}',
     errImgTooLarge20: '图片超过 20MB,不支持插入。',
@@ -225,6 +219,8 @@ const tMain = createI18n({
     errNoApiKey: 'No API key configured for {provider}',
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
+    errNoImageModel: 'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
+    errGskToolsOff: 'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
     errImgAbsPath: 'Image path must be absolute.',
     errImgNotFound: 'Image file not found: {path}',
     errImgTooLarge20: 'Image exceeds 20MB and cannot be inserted.',
@@ -284,6 +280,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
+    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
+    errGskToolsOff: 'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errImgAbsPath: '画像パスは絶対パスで指定してください。',
     errImgNotFound: '画像ファイルが見つかりません: {path}',
     errImgTooLarge20: '画像が 20MB を超えているため挿入できません。',
@@ -345,6 +343,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
+    errNoImageModel: '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
+    errGskToolsOff: 'Genspark 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errImgAbsPath: '이미지 경로는 절대 경로여야 합니다.',
     errImgNotFound: '이미지 파일을 찾을 수 없습니다: {path}',
     errImgTooLarge20: '이미지가 20MB를 초과하여 삽입할 수 없습니다.',
@@ -406,6 +406,8 @@ const tMain = createI18n({
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
+    errNoImageModel: 'Aucun modèle d\'image configuré : activez un modèle de génération d\'images dans les paramètres des modèles, ou connectez-vous à Genspark',
+    errGskToolsOff: 'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errImgAbsPath: "Le chemin de l'image doit être absolu.",
     errImgNotFound: 'Fichier image introuvable : {path}',
     errImgTooLarge20: "L'image dépasse 20 Mo et ne peut pas être insérée.",
@@ -468,6 +470,8 @@ const tMain = createI18n({
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
+    errNoImageModel: 'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
+    errGskToolsOff: 'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errImgAbsPath: 'Der Bildpfad muss absolut sein.',
     errImgNotFound: 'Bilddatei nicht gefunden: {path}',
     errImgTooLarge20: 'Das Bild überschreitet 20 MB und kann nicht eingefügt werden.',
@@ -530,6 +534,8 @@ const tMain = createI18n({
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No hay nombre de modelo configurado',
+    errNoImageModel: 'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
+    errGskToolsOff: 'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errImgAbsPath: 'La ruta de la imagen debe ser absoluta.',
     errImgNotFound: 'No se encontró el archivo de imagen: {path}',
     errImgTooLarge20: 'La imagen supera los 20 MB y no se puede insertar.',
@@ -590,6 +596,8 @@ const tMain = createI18n({
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้กำหนดชื่อโมเดล',
+    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
+    errGskToolsOff: 'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errImgAbsPath: 'เส้นทางรูปภาพต้องเป็นเส้นทางแบบสัมบูรณ์',
     errImgNotFound: 'ไม่พบไฟล์รูปภาพ: {path}',
     errImgTooLarge20: 'รูปภาพเกิน 20MB ไม่สามารถแทรกได้',
@@ -649,6 +657,8 @@ const tMain = createI18n({
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
+    errNoImageModel: 'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
+    errGskToolsOff: 'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Jalur gambar harus berupa jalur absolut.',
     errImgNotFound: 'File gambar tidak ditemukan: {path}',
     errImgTooLarge20: 'Gambar melebihi 20MB dan tidak dapat disisipkan.',
@@ -709,6 +719,8 @@ const tMain = createI18n({
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Имя модели не настроено',
+    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
+    errGskToolsOff: 'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errImgAbsPath: 'Путь к изображению должен быть абсолютным.',
     errImgNotFound: 'Файл изображения не найден: {path}',
     errImgTooLarge20: 'Изображение превышает 20 МБ и не может быть вставлено.',
@@ -768,6 +780,8 @@ const tMain = createI18n({
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
+    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
+    errGskToolsOff: 'أدوات Genspark السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errImgAbsPath: 'يجب أن يكون مسار الصورة مسارًا مطلقًا.',
     errImgNotFound: 'لم يتم العثور على ملف الصورة: {path}',
     errImgTooLarge20: 'الصورة تتجاوز 20 ميغابايت ولا يمكن إدراجها.',
@@ -826,6 +840,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
+    errNoImageModel: 'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
+    errGskToolsOff: 'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errImgAbsPath: 'O caminho da imagem deve ser absoluto.',
     errImgNotFound: 'Arquivo de imagem não encontrado: {path}',
     errImgTooLarge20: 'A imagem excede 20MB e não pode ser inserida.',
@@ -886,6 +902,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
+    errNoImageModel: 'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
+    errGskToolsOff: 'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errImgAbsPath: "Il percorso dell'immagine deve essere assoluto.",
     errImgNotFound: 'File immagine non trovato: {path}',
     errImgTooLarge20: "L'immagine supera i 20 MB e non può essere inserita.",
@@ -947,6 +965,8 @@ const tMain = createI18n({
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
+    errNoImageModel: 'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
+    errGskToolsOff: 'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     errImgAbsPath: 'Ścieżka obrazu musi być bezwzględna.',
     errImgNotFound: 'Nie znaleziono pliku obrazu: {path}',
     errImgTooLarge20: 'Obraz przekracza 20 MB i nie może zostać wstawiony.',
@@ -1007,6 +1027,8 @@ const tMain = createI18n({
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
+    errNoImageModel: 'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
+    errGskToolsOff: 'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errImgAbsPath: 'Het afbeeldingspad moet absoluut zijn.',
     errImgNotFound: 'Afbeeldingsbestand niet gevonden: {path}',
     errImgTooLarge20: 'De afbeelding is groter dan 20 MB en kan niet worden ingevoegd.',
@@ -1067,6 +1089,8 @@ const tMain = createI18n({
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
+    errNoImageModel: 'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
+    errGskToolsOff: 'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Laluan imej mestilah laluan mutlak.',
     errImgNotFound: 'Fail imej tidak ditemui: {path}',
     errImgTooLarge20: 'Imej melebihi 20MB dan tidak boleh disisipkan.',
@@ -1127,6 +1151,8 @@ const tMain = createI18n({
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
+    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
+    errGskToolsOff: 'כלי הענן של Genspark כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errImgAbsPath: 'נתיב התמונה חייב להיות מוחלט.',
     errImgNotFound: 'קובץ התמונה לא נמצא: {path}',
     errImgTooLarge20: 'התמונה חורגת מ-20MB ולא ניתן להוסיף אותה.',
@@ -1184,6 +1210,8 @@ const tMain = createI18n({
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
+    errNoImageModel: 'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
+    errGskToolsOff: 'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errImgAbsPath: 'छवि पथ निरपेक्ष होना चाहिए।',
     errImgNotFound: 'छवि फ़ाइल नहीं मिली: {path}',
     errImgTooLarge20: 'छवि 20MB से अधिक है और सम्मिलित नहीं की जा सकती।',
@@ -1244,6 +1272,8 @@ const tMain = createI18n({
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
+    errGskToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errImgAbsPath: '圖片路徑必須是絕對路徑。',
     errImgNotFound: '找不到圖片檔案: {path}',
     errImgTooLarge20: '圖片超過 20MB,不支援插入。',
@@ -1697,7 +1727,21 @@ const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
 /** live read: the shell settings pane writes the file; every tool call re-checks */
 function gskCloudToolsOn(): boolean {
-  return cloudToolsEnabled(readJson<Partial<AiSettings>>(SETTINGS_PATH(), {}))
+  try {
+    return cloudToolsEnabled({
+      gskToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
+        .gskToolsEnabled,
+    })
+  } catch {
+    return true
+  }
+}
+
+/** v2 AI runtime, created by registerSheetsAiIpc and reused by per-app channels */
+let aiRuntime: AiRuntime | null = null
+function getAiRuntime(): AiRuntime {
+  if (!aiRuntime) throw new Error('AI runtime used before registerSheetsAiIpc()')
+  return aiRuntime
 }
 
 // Dev-only automation hooks: a fixed CDP port for driving the app from test
@@ -2107,30 +2151,17 @@ export function registerSheetsIpc(): void {
 
   // Registered here (not in registerSheetsAiIpc, skipped in shell mode):
   // slides' ai:generate-image only exists once a slides view opens, so sheets
-  // owns its channel the way pdf does.
+  // owns its channel the way pdf does. BYOK image model first (no login
+  // needed); gsk is the fallback backend.
   ipcMain.handle(
     IPC_CHANNELS.aiGenerateImage,
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
-      if (!hasGskAuth())
-        return {
-          error: 'Genspark account is not logged in on this machine; ask the user to log in first',
-        }
-      if (!gskCloudToolsOn())
-        return {
-          error:
-            'Genspark cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-        }
       const prompt = String(op?.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      try {
-        const r = await gskGenerateImage({
-          prompt,
-          ...(op?.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
-        })
-        return { url: r.url }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
-      }
+      return getAiRuntime().generateImage({
+        prompt,
+        ...(op?.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
+      })
     },
   )
 
@@ -2932,139 +2963,56 @@ export function registerSheetsAiIpc(): void {
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
 
-  ipcMain.handle(IPC_CHANNELS.aiGetSettings, (event): AiSettings => {
-    sessionFor(event)
-    const stored = readJson<Partial<AiSettings> & LegacyAiSettings>(SETTINGS_PATH(), {})
-    const settings = resolveAiSettings(stored, defaultAiSettings())
-    // a stored BYOK provider is honored when usable; half-filled configs fall back to genspark
-    settings.provider = activeProvider(settings)
-    return settings
-  })
-
-  // Genspark account (gsk login state): the auth source for AI features; the
-  // frontend uses it to guide sign-in when logged out
-  ipcMain.handle(
-    IPC_CHANNELS.aiGskStatus,
-    async (_event, withEmail?: unknown): Promise<GenSparkAccountStatus> => {
-      if (!hasGskAuth()) return { loggedIn: false }
-      if (!withEmail) return { loggedIn: true }
-      const info = await gskLoginInfo()
-      return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+  aiRuntime = registerSharedAiIpc({
+    ipcMain,
+    settingsPath: SETTINGS_PATH(),
+    fs: {
+      readFile: (p) => readFile(p, 'utf8'),
+      writeFile: async (p, contents) => {
+        await atomicWriteFile(p, Buffer.from(contents, 'utf8'))
+      },
+      watch: (p, cb) => {
+        try {
+          const w = watch(p, () => cb())
+          return () => w.close()
+        } catch {
+          return () => {}
+        }
+      },
     },
-  )
-
-  ipcMain.handle(IPC_CHANNELS.aiGskLogin, () => {
-    ensureGenofficeLogin((url) => void shell.openExternal(url))
-  })
-
-  ipcMain.handle(IPC_CHANNELS.aiSetSettings, (event, input: unknown) => {
-    sessionFor(event)
-    const settings = aiSettingsInputSchema.parse(input)
-    writeJson(SETTINGS_PATH(), settings)
+    gsk: {
+      apiKey: () => gskApiKey(),
+      hasAuth: () => hasGskAuth(),
+      status: async (withEmail) => {
+        if (!hasGskAuth()) return { loggedIn: false }
+        if (!withEmail) return { loggedIn: true }
+        const info = await gskLoginInfo()
+        return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+      },
+      generateImage: async (req) => {
+        if (!gskCloudToolsOn()) throw new Error(tm('errGskToolsOff'))
+        const r = await gskGenerateImage({
+          prompt: req.prompt,
+          ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
+        })
+        return { url: r.url }
+      },
+    },
+    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    translate: (key, params) =>
+      tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
 
   ipcMain.handle(IPC_CHANNELS.aiChat, async (event, input: unknown) => {
     sessionFor(event)
     const request = aiChatRequestSchema.parse(input)
-    const provider = request.settings.provider as AiProviderId
-    let config = request.settings.providers[provider]
-    if (provider === 'genspark' && config && !config.apiKey) {
-      config = { ...config, apiKey: gskApiKey() }
+    const result = await getAiRuntime().runChat(request.selection, request.system, request.user)
+    // the one-shot path reports HTTP failures as ok:false with the raw body —
+    // replace capacity/rate-limit dumps with the localized "busy" message
+    if (!result.ok && isAiOverloadedError(result.error)) {
+      return { ok: false, error: tm('errAiBusy') }
     }
-    if (!config?.apiKey) {
-      return {
-        ok: false,
-        error: provider === 'genspark' ? tm('errGskNotLoggedIn') : tm('errNoApiKey', { provider }),
-      }
-    }
-    if (!config.model) return { ok: false, error: tm('errNoModel') }
-    try {
-      const result = await chatForProvider(provider, config, request.system, request.user)
-      // the one-shot path reports HTTP failures as ok:false with the raw body —
-      // replace capacity/rate-limit dumps with the localized "busy" message
-      if (!result.ok && isAiOverloadedError(result.error)) {
-        return { ok: false, error: tm('errAiBusy') }
-      }
-      return result
-    } catch (err) {
-      return { ok: false, error: isAiOverloadedError(err) ? tm('errAiBusy') : String(err) }
-    }
-  })
-
-  ipcMain.handle(IPC_CHANNELS.aiStream, async (event, input: unknown) => {
-    const entry = sessionFor(event)
-    const request = aiStreamRequestSchema.parse(input)
-    const { requestId, system, messages } = request
-    const tools = request.tools ?? []
-    const maxTokens = request.maxTokens ?? 8192
-    const provider = request.settings.provider as AiProviderId
-    let config = request.settings.providers[provider]
-    // Genspark's key never enters the settings file; it is read from the gsk
-    // login state per request
-    if (provider === 'genspark' && config && !config.apiKey) {
-      config = { ...config, apiKey: gskApiKey() }
-    }
-    const send = (chunk: AiStreamChunk) => {
-      if (!event.sender.isDestroyed()) event.sender.send(IPC_CHANNELS.aiStreamChunk, chunk)
-    }
-    if (!config?.apiKey) {
-      send({
-        requestId,
-        type: 'error',
-        error: provider === 'genspark' ? tm('errGskNotLoggedIn') : tm('errNoApiKey', { provider }),
-      })
-      return
-    }
-    if (!config.model) {
-      send({ requestId, type: 'error', error: tm('errNoModel') })
-      return
-    }
-    const controller = new AbortController()
-    entry.aiStreams.set(requestId, controller)
-    // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
-    let lastPing = 0
-    const ping = () => {
-      const now = Date.now()
-      if (now - lastPing < 5_000) return
-      lastPing = now
-      send({ requestId, type: 'ping' })
-    }
-    try {
-      await streamForProvider(provider, config, system, messages, tools, maxTokens, {
-        signal: controller.signal,
-        onDelta: (text) => send({ requestId, type: 'delta', text }),
-        onReasoningDelta: (text) => send({ requestId, type: 'reasoning', text }),
-        onToolCall: (toolCall) => send({ requestId, type: 'tool-call', toolCall }),
-        onActivity: ping,
-      })
-      send({ requestId, type: 'done' })
-    } catch (err) {
-      if (controller.signal.aborted) {
-        send({ requestId, type: 'done' })
-      } else {
-        send({
-          requestId,
-          type: 'error',
-          error: err instanceof Error ? err.message : String(err),
-          ...(err instanceof AiTimeoutError
-            ? { errorCode: 'timeout' as const }
-            : err instanceof AiCreditsError
-              ? { errorCode: 'credits' as const }
-              : isAiNetworkError(err)
-                ? { errorCode: 'network' as const }
-                : isAiOverloadedError(err)
-                  ? { errorCode: 'overloaded' as const }
-                  : {}),
-        })
-      }
-    } finally {
-      entry.aiStreams.delete(requestId)
-    }
-  })
-
-  ipcMain.handle(IPC_CHANNELS.aiStreamCancel, (event, requestId: unknown) => {
-    const entry = sessionFor(event)
-    entry.aiStreams.get(z.string().min(1).parse(requestId))?.abort()
+    return result
   })
 
   // Shared search tools (content + images): Serper with DuckDuckGo fallback

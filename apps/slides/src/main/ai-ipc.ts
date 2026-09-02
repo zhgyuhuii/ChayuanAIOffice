@@ -13,26 +13,21 @@ import {
   readFileSync,
   renameSync,
   statSync,
+  watch,
   writeFileSync,
 } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
-  AiCreditsError,
-  AiTimeoutError,
-  isAiNetworkError,
-  isAiOverloadedError,
-  defaultAiSettings,
-  activeProvider,
   cloudToolsEnabled,
-  resolveAiSettings,
+  inferModelType,
+  migrateSettingsV2,
+  modelAcceptsImages,
   setRescueFetch,
-  streamForProvider,
-  type AiSettings,
-  type AiStreamChunk,
-  type AiStreamRequest,
-  type GenSparkAccountStatus,
-  type LegacyAiSettings,
+  type AiRuntime,
+  type StoredAiSettings,
 } from '@genoffice/ai-provider'
+import { registerSharedAiIpc } from '@genoffice/ai-host'
 import { fetchRemoteImage } from '@genoffice/electron-utils'
 import {
   webSearch,
@@ -58,7 +53,21 @@ const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
 /** live read: the shell settings pane writes the file; every tool call re-checks */
 function gskCloudToolsOn(): boolean {
-  return cloudToolsEnabled(readJson<Partial<AiSettings>>(AI_SETTINGS_PATH(), {}))
+  try {
+    return cloudToolsEnabled({
+      gskToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(AI_SETTINGS_PATH(), {}))
+        .gskToolsEnabled,
+    })
+  } catch {
+    return true
+  }
+}
+
+/** v2 AI runtime, created by registerAiIpc and reused by the slides-only channels */
+let aiRuntime: AiRuntime | null = null
+export function getAiRuntime(): AiRuntime {
+  if (!aiRuntime) throw new Error('AI runtime used before registerAiIpc()')
+  return aiRuntime
 }
 
 function readJson<T>(path: string, fallback: T): T {
@@ -74,8 +83,6 @@ function writeJson(path: string, value: unknown): void {
   mkdirSync(join(path, '..'), { recursive: true })
   writeFileSync(path, JSON.stringify(value, null, 2))
 }
-
-const activeAiStreams = new Map<string, AbortController>()
 
 // ---- Post-mortem log for runs that produced no usable reply ----
 
@@ -108,109 +115,50 @@ export function registerAiIpc(): void {
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
 
-  ipcMain.handle('ai:get-settings', (): AiSettings => {
-    const stored = readJson<Partial<AiSettings> & LegacyAiSettings>(AI_SETTINGS_PATH(), {})
-    const settings = resolveAiSettings(stored, defaultAiSettings())
-    // a stored BYOK provider is honored when usable; half-filled configs fall back to genspark
-    settings.provider = activeProvider(settings)
-    return settings
-  })
-
-  // Genspark account (gsk login state): the auth source for AI features; when logged out the frontend uses this to guide login
-  ipcMain.handle(
-    'ai:gsk-status',
-    async (_event, withEmail?: boolean): Promise<GenSparkAccountStatus> => {
-      if (!hasGskAuth()) return { loggedIn: false }
-      if (!withEmail) return { loggedIn: true }
-      const info = await gskLoginInfo()
-      return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+  aiRuntime = registerSharedAiIpc({
+    ipcMain,
+    settingsPath: AI_SETTINGS_PATH(),
+    fs: {
+      readFile: (p) => readFile(p, 'utf8'),
+      writeFile: async (p, contents) => {
+        mkdirSync(join(p, '..'), { recursive: true })
+        writeFileSync(p, contents)
+      },
+      watch: (p, cb) => {
+        try {
+          const w = watch(p, () => cb())
+          return () => w.close()
+        } catch {
+          return () => {}
+        }
+      },
     },
-  )
-
-  ipcMain.handle('ai:gsk-login', () => {
-    ensureGenofficeLogin((url) => void shell.openExternal(url))
-  })
-
-  ipcMain.handle('ai:set-settings', (_event, settings: AiSettings) => {
-    writeJson(AI_SETTINGS_PATH(), settings)
+    gsk: {
+      apiKey: () => gskApiKey(),
+      hasAuth: () => hasGskAuth(),
+      status: async (withEmail) => {
+        if (!hasGskAuth()) return { loggedIn: false }
+        if (!withEmail) return { loggedIn: true }
+        const info = await gskLoginInfo()
+        return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
+      },
+      generateImage: async (req) => {
+        if (!hasGskAuth()) throw new Error(tm('errGskCli'))
+        if (!gskCloudToolsOn()) throw new Error(tm('errGskToolsOff'))
+        const r = await gskGenerateImage({
+          prompt: req.prompt,
+          ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
+        })
+        return { url: r.url }
+      },
+    },
+    gskLogin: () => ensureGenofficeLogin((url) => void shell.openExternal(url)),
+    translate: (key, params) =>
+      tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
 
   ipcMain.handle('ai:log-run-failure', (_event, entry: AiRunFailure) => {
     appendRunFailure(entry)
-  })
-
-  ipcMain.handle('ai:stream', async (event, request: AiStreamRequest) => {
-    const { requestId, settings, system, messages } = request
-    const tools = request.tools ?? []
-    const maxTokens = request.maxTokens ?? 8192
-    const provider = settings.provider
-    let config = settings.providers?.[provider]
-    // The genspark key never enters the settings file; it is fetched from the gsk login state per request
-    if (provider === 'genspark' && config && !config.apiKey) {
-      config = { ...config, apiKey: gskApiKey() }
-    }
-    const send = (chunk: AiStreamChunk) => {
-      if (!event.sender.isDestroyed()) event.sender.send('ai:stream-chunk', chunk)
-    }
-    if (!config?.apiKey) {
-      send({
-        requestId,
-        type: 'error',
-        error: provider === 'genspark' ? tm('errGskNotLoggedIn') : tm('errNoApiKey', { provider }),
-      })
-      return
-    }
-    if (!config.model) {
-      send({ requestId, type: 'error', error: tm('errNoModel') })
-      return
-    }
-    const controller = new AbortController()
-    activeAiStreams.set(requestId, controller)
-    // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
-    let lastPing = 0
-    const ping = () => {
-      const now = Date.now()
-      if (now - lastPing < 5_000) return
-      lastPing = now
-      send({ requestId, type: 'ping' })
-    }
-    try {
-      await streamForProvider(provider, config, system, messages, tools, maxTokens, {
-        signal: controller.signal,
-        onDelta: (text) => send({ requestId, type: 'delta', text }),
-        onReasoningDelta: (text) => send({ requestId, type: 'reasoning', text }),
-        onToolCall: (toolCall) => send({ requestId, type: 'tool-call', toolCall }),
-        onActivity: ping,
-      })
-      send({ requestId, type: 'done' })
-    } catch (err) {
-      if (controller.signal.aborted) {
-        send({ requestId, type: 'done' })
-      } else {
-        const msg = err instanceof Error ? err.message : String(err)
-        console.error(`[ai-stream] ${requestId} (${provider}/${config.model}) failed:`, msg)
-        send({
-          requestId,
-          type: 'error',
-          error: msg,
-          ...(err instanceof AiTimeoutError
-            ? { errorCode: 'timeout' as const }
-            : err instanceof AiCreditsError
-              ? { errorCode: 'credits' as const }
-              : isAiNetworkError(err)
-                ? { errorCode: 'network' as const }
-                : isAiOverloadedError(err)
-                  ? { errorCode: 'overloaded' as const }
-                  : {}),
-        })
-      }
-    } finally {
-      activeAiStreams.delete(requestId)
-    }
-  })
-
-  ipcMain.handle('ai:stream-cancel', (_event, requestId: string) => {
-    activeAiStreams.get(requestId)?.abort()
   })
 
   // Search tools (content + images), Serper with DuckDuckGo fallback
@@ -258,15 +206,21 @@ export function registerSlidesOnlyAiIpc(): void {
         imageSize?: string
       },
     ) => {
+      const prompt = String(op.prompt ?? '').trim()
+      if (!prompt) return { error: 'prompt must not be empty' }
+      // gsk-specific extras (model pick, reference images, size) mean explicit
+      // gsk intent; a plain prompt goes BYOK image model first, gsk fallback
+      if (!op.model && !op.imageSize && !op.referenceImageUrls?.length) {
+        return getAiRuntime().generateImage({
+          prompt,
+          ...(op.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
+        })
+      }
       if (!hasGskAuth()) return { error: tm('errGskCli') }
-      if (!gskCloudToolsOn())
-        return {
-          error:
-            'Genspark cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-        }
+      if (!gskCloudToolsOn()) return { error: tm('errGskToolsOff') }
       try {
         const r = await gskGenerateImage({
-          prompt: String(op.prompt),
+          prompt,
           model: op.model ? String(op.model) : undefined,
           referenceImageUrls: Array.isArray(op.referenceImageUrls)
             ? op.referenceImageUrls.map(String)
@@ -284,17 +238,57 @@ export function registerSlidesOnlyAiIpc(): void {
   ipcMain.handle(
     'ai:analyze-media',
     async (_event, op: { mediaUrls: string[]; requirements: string }) => {
-      if (!hasGskAuth()) return { error: tm('errGskCli') }
-      if (!gskCloudToolsOn())
-        return {
-          error:
-            'Genspark cloud tools are turned off in Settings (AI Model); enable them to use this tool',
+      const mediaUrls = (op.mediaUrls ?? []).map(String)
+      const requirements = String(op.requirements ?? '')
+      // BYOK first: a vision-capable current model analyzes without any login
+      const view = await getAiRuntime().getSettingsView()
+      const selection = view.currentModel
+      const entry = selection
+        ? view.profiles
+            .find((p) => p.id === selection.profileId)
+            ?.models.find((m) => m.id === selection.modelId)
+        : undefined
+      const modelType = entry?.type ?? (selection ? inferModelType(selection.modelId) : undefined)
+      const visionOk = !!selection && (modelType === 'chat' || modelType === 'vision') && modelAcceptsImages(selection.modelId)
+      if (selection && visionOk) {
+        try {
+          const images: Array<{ base64: string; mime: string }> = []
+          for (const url of mediaUrls.slice(0, 6)) {
+            const resp = await fetchRemoteImage(url)
+            if (!resp || !resp.ok) continue
+            const buf = Buffer.from(await resp.arrayBuffer())
+            const ct = resp.headers.get('content-type') ?? ''
+            const mime = ct.includes('png') ? 'image/png' : ct.includes('gif') ? 'image/gif' : 'image/jpeg'
+            images.push({ base64: buf.toString('base64'), mime })
+          }
+          let text = ''
+          await getAiRuntime().runStream(
+            {
+              requestId: `analyze-${Date.now()}`,
+              selection,
+              system: 'You analyze images for slide editing. Answer concisely.',
+              messages: [
+                {
+                  role: 'user',
+                  text: requirements || 'Analyze this media.',
+                  ...(images.length > 0 ? { images } : {}),
+                },
+              ],
+              tools: [],
+            },
+            (chunk) => {
+              if (chunk.type === 'delta') text += chunk.text ?? ''
+            },
+          )
+          if (text.trim()) return { text }
+        } catch {
+          // fall through to the gsk backend below
         }
+      }
+      if (!hasGskAuth()) return { error: tm('errGskCli') }
+      if (!gskCloudToolsOn()) return { error: tm('errGskToolsOff') }
       try {
-        const text = await gskAnalyzeMedia({
-          mediaUrls: (op.mediaUrls ?? []).map(String),
-          requirements: String(op.requirements ?? ''),
-        })
+        const text = await gskAnalyzeMedia({ mediaUrls, requirements })
         return { text }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }

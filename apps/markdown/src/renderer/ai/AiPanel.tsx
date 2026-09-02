@@ -1,8 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills } from '@genoffice/agent-core'
-import type { AiSettings } from '@genoffice/ai-provider'
-import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab } from '@genoffice/ui'
+import type { AiSettingsV2 } from '@genoffice/ai-provider'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  Markdown,
+  ModelPickerButton,
+  ModelSettingsPage,
+  PanelTabs,
+  usePanelTab,
+} from '@genoffice/ui'
+import { defaultSettingsV2, enabledChatModels } from '@genoffice/ai-provider'
+import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@genoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
@@ -48,6 +58,8 @@ interface ToolActivity {
 interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
+  /** model id that produced this assistant turn (display only) */
+  model?: string
   streaming?: boolean
   isError?: boolean
   /** the run failed and this user message was rolled back out of the model context */
@@ -135,7 +147,20 @@ export function AiPanel({
   const stickToBottomRef = useRef(true)
   const mountedRef = useRef(true)
 
-  const settingsRef = useRef<AiSettings | null>(null)
+  const settingsRef = useRef<AiSettingsV2 | null>(null)
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const refreshPanelSettings = async () => {
+    try {
+      setPanelSettings(await markdownModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+  useEffect(() => {
+    void refreshPanelSettings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const langRef = useRef(lang)
   langRef.current = lang
   const depsRef = useRef(deps)
@@ -188,7 +213,8 @@ export function AiPanel({
   const loopRef = useRef<AgentLoop<DocSnapshot> | null>(null)
   if (!loopRef.current) {
     loopRef.current = new AgentLoop<DocSnapshot>({
-      transport: createElectronTransport(() => settingsRef.current!),
+      // the request carries only the selection; the owning main process resolves profile + secret
+      transport: createElectronTransport(() => settingsRef.current!.currentModel!),
       skill: composeSkills('markdown+search', '', [
         createMarkdownSkill(() => depsRef.current.getEditor(), {
           read: () => depsRef.current.getFrontmatter(),
@@ -374,7 +400,7 @@ export function AiPanel({
     setChat((prev) => [
       ...prev,
       { role: 'user', text: displayText ?? instruction },
-      { role: 'assistant', text: '', streaming: true },
+      { role: 'assistant', text: '', streaming: true, model: panelSettings.currentModel?.modelId },
     ])
     setPrompt('')
     setBusy(true)
@@ -533,7 +559,15 @@ export function AiPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          tab === 'chat' && chat.length > 0 ? (
+          <>
+            <ModelPickerButton
+              settings={panelSettings}
+              onPick={(selection) => {
+                void markdownModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+              }}
+              onOpenSettings={() => setModelSettingsOpen(true)}
+            />
+            {tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={() => {
@@ -547,7 +581,8 @@ export function AiPanel({
             >
               <IconNewChat />
             </button>
-          ) : undefined
+            ) : null}
+          </>
         }
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
@@ -768,12 +803,31 @@ export function AiPanel({
           sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
           sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
           stopIcon={<img src={sendStop} alt="" aria-hidden />}
+          footerStart={
+            <ModelPickerButton
+              settings={panelSettings}
+              onPick={(selection) => {
+                void markdownModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+              }}
+              onOpenSettings={() => setModelSettingsOpen(true)}
+            />
+          }
           textareaRef={inputRef}
           onChange={setPrompt}
           onSend={() => send(prompt)}
           onStop={stop}
         />
       </div>
+          {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={markdownModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void refreshPanelSettings()
+          }}
+        />
+      )}
     </aside>
   )
 }
@@ -836,7 +890,7 @@ function StepIcon({ status }: { status: 'running' | 'done' | 'error' }) {
 /** Tool activity group (docs parity): auto-opens while tools run, auto-collapses into
  *  "Worked · N steps" when they finish; a manual toggle always wins */
 function ToolChipList({ tools }: { tools: ToolActivity[] }) {
-  const { t: tr } = useI18n()
+  const { lang, t: tr } = useI18n()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [userOpen, setUserOpen] = useState<boolean | null>(null)
 

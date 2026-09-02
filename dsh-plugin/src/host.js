@@ -30,9 +30,10 @@ function packageRoot() {
 }
 
 function dshHomeDir() {
-  const home = process.env.DSH_HOME && process.env.DSH_HOME.trim() !== ''
-    ? process.env.DSH_HOME.trim()
-    : join(process.env.HOME ?? '/', '.dsh')
+  const home =
+    process.env.DSH_HOME && process.env.DSH_HOME.trim() !== ''
+      ? process.env.DSH_HOME.trim()
+      : join(process.env.HOME ?? '/', '.dsh')
   return home
 }
 
@@ -98,6 +99,28 @@ export function apply(ctx) {
   const entry = join(sidecarDir, 'apps', 'server', 'src', 'main.ts')
   const bundled = existsSync(entry)
 
+  /**
+   * 模型设置真融合（共识 #8）：sidecar 的 AI 设置源指向 harness 的
+   * llm-pi-ai（与 chatop 同一份）。写操作走 harness loopback RPC
+   * （settings.mutate / credentials.set），其 origin 在首个请求到达时才能
+   * 从 Host 头确认 —— 记到 dataDir/dsh-rpc-origin，sidecar 每次 RPC 调用
+   * 前读取（带缓存），避免与启动顺序耦合。
+   */
+  const rpcOriginFile = join(dataDir(), 'dsh-rpc-origin')
+  let rpcOriginWritten = false
+  function rememberRpcOrigin(req) {
+    if (rpcOriginWritten) return
+    const host = req.headers?.host
+    if (!host) return
+    rpcOriginWritten = true
+    try {
+      writeFileSync(rpcOriginFile, `http://${host}`)
+      console.log(`[genoffice] harness rpc origin: http://${host}`)
+    } catch {
+      /* 融合退化为本地文件模式（读侧不受影响） */
+    }
+  }
+
   /** sidecar 状态：starting → ready | failed | missing */
   const state = {
     status: bundled ? 'starting' : 'missing',
@@ -126,15 +149,30 @@ export function apply(ctx) {
       GENOFFICE_DATA_DIR: dataDir(),
       GENOFFICE_AUTH: 'off', // 内嵌形态无账号（总体计划 v2.1 决策 #3）
       GENOFFICE_STATIC_DIR: join(sidecarDir, 'dist', 'web'),
+      // 模型设置真融合：供应商档案/密钥读写 harness 的 llm-pi-ai（与 chatop 同源）
+      GENOFFICE_DSH_HOME: dshHome(),
+      GENOFFICE_DSH_RPC_ORIGIN_FILE: rpcOriginFile,
     }
     // dsh web 以 ELECTRON_RUN_AS_NODE 跑在 electron 可执行文件下时，子进程需要同样的标记
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = '1'
 
-    child = spawn(process.execPath, ['--import', 'tsx', 'apps/server/src/main.ts'], {
-      cwd: sidecarDir,
-      env,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
+    // tsx-assets.cjs 先于 tsx 注册 `?asset` 资源扩展（slides 主进程源码的
+    // harfbuzz.wasm / Carlito .ttf 导入在无打包器的 Node 下需要它）
+    child = spawn(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        '--import',
+        './apps/server/src/tsx-assets.cjs',
+        'apps/server/src/main.ts',
+      ],
+      {
+        cwd: sidecarDir,
+        env,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    )
     state.port = port
     state.pid = child.pid
     try {
@@ -142,7 +180,9 @@ export function apply(ctx) {
     } catch {
       /* 诊断信息，可缺 */
     }
-    child.stdout.on('data', (d) => { if (String(d).includes('listening')) console.log(`[genoffice] ${String(d).trim()}`) })
+    child.stdout.on('data', (d) => {
+      if (String(d).includes('listening')) console.log(`[genoffice] ${String(d).trim()}`)
+    })
     child.stderr.on('data', (d) => {
       const line = String(d).trim()
       if (line) console.warn(`[genoffice:sidecar] ${line}`)
@@ -191,6 +231,7 @@ export function apply(ctx) {
     kind: 'prefix',
     path: API_PREFIX,
     handler: async (req, res) => {
+      rememberRpcOrigin(req)
       if (!isLoopback(req)) return send(res, 403, { ok: false, error: 'loopback-only' })
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
       const path = url.pathname.slice(API_PREFIX.length)
@@ -211,6 +252,7 @@ export function apply(ctx) {
     kind: 'prefix',
     path: APP_PREFIX,
     handler: async (req, res) => {
+      rememberRpcOrigin(req)
       if (!isLoopback(req)) return send(res, 403, { ok: false, error: 'loopback-only' })
       if (!state.origin) return send(res, 503, { ok: false, error: 'sidecar not ready' })
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
@@ -224,14 +266,18 @@ export function apply(ctx) {
         const upstream = await fetch(target, {
           method: req.method,
           headers,
-          ...(req.method === 'GET' || req.method === 'HEAD'
-            ? {}
-            : { body: req, duplex: 'half' }),
+          ...(req.method === 'GET' || req.method === 'HEAD' ? {} : { body: req, duplex: 'half' }),
         })
         const h = {}
-        upstream.headers.forEach((v, k) => { h[k] = v })
+        upstream.headers.forEach((v, k) => {
+          h[k] = v
+        })
         // entry files (html / bridge shim) must never come from a stale cache
-        if (target.pathname === '/' || /\.html?$/.test(target.pathname) || target.pathname.endsWith('bridge-shim.js')) {
+        if (
+          target.pathname === '/' ||
+          /\.html?$/.test(target.pathname) ||
+          target.pathname.endsWith('bridge-shim.js')
+        ) {
           h['cache-control'] = 'no-cache'
         }
         res.writeHead(upstream.status, h)
@@ -251,22 +297,25 @@ export function apply(ctx) {
   }
   const disposeProxy = ctx.webServer.register(proxyRoute)
 
-  ctx.effect(() => () => {
-    if (child) {
-      child.kill()
-      const pid = child.pid
-      // 宽限后强杀（对齐 chatop-models 的回收纪律）
-      setTimeout(() => {
-        try {
-          if (pid) process.kill(pid, 'SIGKILL')
-        } catch {
-          /* 已退出 */
-        }
-      }, 3000).unref?.()
-    }
-    disposeRoute()
-    disposeProxy()
-  }, 'genoffice: dispose sidecar & route')
+  ctx.effect(
+    () => () => {
+      if (child) {
+        child.kill()
+        const pid = child.pid
+        // 宽限后强杀（对齐 chatop-models 的回收纪律）
+        setTimeout(() => {
+          try {
+            if (pid) process.kill(pid, 'SIGKILL')
+          } catch {
+            /* 已退出 */
+          }
+        }, 3000).unref?.()
+      }
+      disposeRoute()
+      disposeProxy()
+    },
+    'genoffice: dispose sidecar & route',
+  )
 
   return starting
 }

@@ -61,6 +61,11 @@ const api: MarkdownApi = {
     return () => ipcRenderer.removeListener('app:chrome-pressed', listener)
   },
   getAiSettings: () => ipcRenderer.invoke(AI_CHANNELS.getSettings),
+  setAiSettings: (view) => ipcRenderer.invoke(AI_CHANNELS.setSettings, view),
+  setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
+  aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
+  aiGskStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.gskStatus, withEmail),
+  aiGskLogin: () => ipcRenderer.invoke(AI_CHANNELS.gskLogin),
   aiStream: (request) => ipcRenderer.invoke(AI_CHANNELS.stream, request),
   aiStreamCancel: (requestId) => ipcRenderer.invoke(AI_CHANNELS.streamCancel, requestId),
   onAiStream: (handler) => {

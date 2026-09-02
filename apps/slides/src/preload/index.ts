@@ -23,7 +23,10 @@ import type {
   AddTableOp,
   HeaderFooterOp,
   SetLinkOp,
-  AiSettings,
+  AiModelSelection,
+  AiSettingsV2,
+  AiStreamWireRequest,
+  DiscoveryTarget,
   CopyElementsOp,
   PasteElementsOp,
   DuplicateElementsOp,
@@ -347,8 +350,12 @@ const api: SlidesApi = {
     return () => ipcRenderer.removeListener('slides:renamed', listener)
   },
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
-  setAiSettings: (settings: AiSettings) => ipcRenderer.invoke('ai:set-settings', settings),
-  aiStream: (request: AiStreamRequest) => ipcRenderer.invoke('ai:stream', request),
+  setAiSettings: (view: AiSettingsV2) => ipcRenderer.invoke('ai:set-settings', view),
+  setAiCurrentModel: (selection: AiModelSelection) =>
+    ipcRenderer.invoke('ai:set-current-model', selection),
+  aiDiscoverModels: (target: DiscoveryTarget) =>
+    ipcRenderer.invoke('ai:discover-models', target),
+  aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiGskStatus: (withEmail?: boolean) => ipcRenderer.invoke('ai:gsk-status', withEmail),
   aiGskLogin: () => ipcRenderer.invoke('ai:gsk-login'),

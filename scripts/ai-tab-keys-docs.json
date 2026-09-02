@@ -1,0 +1,135 @@
+{
+  "zh": {
+    "aiTabChat": "对话",
+    "aiTabAssistant": "助手",
+    "aiSummarizeDesc": "总结全文要点，快速把握内容",
+    "aiPolishDesc": "润色文字，使表达更清晰流畅",
+    "aiTidyDesc": "整理结构，统一格式"
+  },
+  "en": {
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistant",
+    "aiSummarizeDesc": "Summarize the document and capture its key points",
+    "aiPolishDesc": "Polish the writing for clearer, smoother prose",
+    "aiTidyDesc": "Tidy up structure and formatting"
+  },
+  "ja": {
+    "aiTabChat": "チャット",
+    "aiTabAssistant": "アシスタント",
+    "aiSummarizeDesc": "文書の要点をまとめて内容を素早く把握",
+    "aiPolishDesc": "文章を推敲して表現を明快に",
+    "aiTidyDesc": "構成を整えて書式を統一"
+  },
+  "ko": {
+    "aiTabChat": "채팅",
+    "aiTabAssistant": "어시스턴트",
+    "aiSummarizeDesc": "문서의 요점을 정리해 핵심을 빠르게 파악",
+    "aiPolishDesc": "문장을 다듬어 표현을 명확하게",
+    "aiTidyDesc": "구조를 정리하고 서식을 통일"
+  },
+  "fr": {
+    "aiTabChat": "Discussion",
+    "aiTabAssistant": "Assistant",
+    "aiSummarizeDesc": "Résumer le document et en saisir les points clés",
+    "aiPolishDesc": "Peaufiner le texte pour un style plus clair et fluide",
+    "aiTidyDesc": "Ranger la structure et uniformiser la mise en forme"
+  },
+  "de": {
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiSummarizeDesc": "Das Dokument zusammenfassen und die Kernpunkte erfassen",
+    "aiPolishDesc": "Den Text für klares, flüssiges Deutsch überarbeiten",
+    "aiTidyDesc": "Struktur aufräumen und Formatierung vereinheitlichen"
+  },
+  "es": {
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Asistente",
+    "aiSummarizeDesc": "Resumir el documento y captar sus puntos clave",
+    "aiPolishDesc": "Pulir la redacción para un texto más claro y fluido",
+    "aiTidyDesc": "Ordenar la estructura y unificar el formato"
+  },
+  "th": {
+    "aiTabChat": "แชท",
+    "aiTabAssistant": "ผู้ช่วย",
+    "aiSummarizeDesc": "สรุปเนื้อหาเอกสารและเข้าใจประเด็นสำคัญได้เร็ว",
+    "aiPolishDesc": "ขัดเกลาถ้อยคำให้ชัดเจนและลื่นไหล",
+    "aiTidyDesc": "จัดระเบียบโครงสร้างและรูปแบบให้เป็นเอกภาพ"
+  },
+  "id": {
+    "aiTabChat": "Obrolan",
+    "aiTabAssistant": "Asisten",
+    "aiSummarizeDesc": "Ringkas dokumen dan tangkap poin-poin pentingnya",
+    "aiPolishDesc": "Perhalus tulisan agar lebih jelas dan mengalir",
+    "aiTidyDesc": "Rapikan struktur dan seragamkan format"
+  },
+  "ru": {
+    "aiTabChat": "Чат",
+    "aiTabAssistant": "Помощник",
+    "aiSummarizeDesc": "Составить краткое резюме документа и выделить главное",
+    "aiPolishDesc": "Отполировать текст для ясности и гладкости изложения",
+    "aiTidyDesc": "Навести порядок в структуре и унифицировать оформление"
+  },
+  "ar": {
+    "aiTabChat": "الدردشة",
+    "aiTabAssistant": "المساعد",
+    "aiSummarizeDesc": "تلخيص المستند واستيعاب نقاطه الرئيسية",
+    "aiPolishDesc": "تحسين الصياغة لجعل النص أوضح وأكثر انسيابية",
+    "aiTidyDesc": "ترتيب البنية وتوحيد التنسيق"
+  },
+  "pt": {
+    "aiTabChat": "Bate-papo",
+    "aiTabAssistant": "Assistente",
+    "aiSummarizeDesc": "Resumir o documento e captar os pontos principais",
+    "aiPolishDesc": "Aperfeiçoar o texto para mais clareza e fluidez",
+    "aiTidyDesc": "Organizar a estrutura e padronizar a formatação"
+  },
+  "it": {
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistente",
+    "aiSummarizeDesc": "Riassumere il documento e coglierne i punti chiave",
+    "aiPolishDesc": "Migliorare la scrittura per una prosa più chiara e scorrevole",
+    "aiTidyDesc": "Sistemare la struttura e uniformare la formattazione"
+  },
+  "pl": {
+    "aiTabChat": "Czat",
+    "aiTabAssistant": "Asystent",
+    "aiSummarizeDesc": "Podsumuj dokument i uchwyć jego kluczowe punkty",
+    "aiPolishDesc": "Wygładź tekst, aby był jaśniejszy i płynniejszy",
+    "aiTidyDesc": "Uporządkuj strukturę i ujednolić formatowanie"
+  },
+  "nl": {
+    "aiTabChat": "Chat",
+    "aiTabAssistant": "Assistent",
+    "aiSummarizeDesc": "Vat het document samen met de kernpunten",
+    "aiPolishDesc": "De tekst verbeteren voor meer duidelijkheid en leesbaarheid",
+    "aiTidyDesc": "De structuur opruimen en de opmaak uniformeren"
+  },
+  "ms": {
+    "aiTabChat": "Sembang",
+    "aiTabAssistant": "Pembantu",
+    "aiSummarizeDesc": "Ringkaskan dokumen dan fahami poin pentingnya",
+    "aiPolishDesc": "Perhalus tulisan supaya lebih jelas dan lancar",
+    "aiTidyDesc": "Kemas struktur dan seragamkan format"
+  },
+  "he": {
+    "aiTabChat": "צ׳אט",
+    "aiTabAssistant": "עוזר",
+    "aiSummarizeDesc": "סיכום המסמך ותפיסת הנקודות המרכזיות",
+    "aiPolishDesc": "ליטוש הניסוח לכתיבה ברורה וזורמת",
+    "aiTidyDesc": "סידור המבנה ואיחוד העיצוב"
+  },
+  "hi": {
+    "aiTabChat": "चैट",
+    "aiTabAssistant": "सहायक",
+    "aiSummarizeDesc": "दस्तावेज़ का सारांश बनाकर मुख्य बिंदु समझें",
+    "aiPolishDesc": "लेखन को और स्पष्ट व सहज बनाएँ",
+    "aiTidyDesc": "संरचना सुव्यवस्थित करें और प्रारूप एकरूप करें"
+  },
+  "zh-TW": {
+    "aiTabChat": "對話",
+    "aiTabAssistant": "助理",
+    "aiSummarizeDesc": "總結全文要點，快速掌握內容",
+    "aiPolishDesc": "潤飾文字，使表達更清晰流暢",
+    "aiTidyDesc": "整理結構，統一格式"
+  }
+}

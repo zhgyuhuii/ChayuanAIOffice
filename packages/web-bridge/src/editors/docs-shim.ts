@@ -5,6 +5,7 @@
  */
 
 import { BridgeClient } from '../client.js'
+import { createAiHttpBridge } from '../ai-bridge.js'
 import { b64ToBytes, bytesToB64, makeShim, pendingFromHash, sha256Hex } from '../shim-factory.js'
 
 interface OpenFileResult {
@@ -73,9 +74,7 @@ export function installDocsShim(client: BridgeClient): void {
     async saveDocxNew(defaultName: string, data: ArrayBuffer): Promise<string | null> {
       return impl.saveDocxAs(defaultName, data)
     },
-    async getAiSettings() {
-      return { provider: 'custom' as const, providers: {} }
-    },
+
     async getLanguage(): Promise<string> {
       return (localStorage.getItem('genoffice.lang') as string) ?? 'zh'
     },
@@ -108,7 +107,11 @@ export function installDocsShim(client: BridgeClient): void {
   void enc
 
   ;(window as unknown as Record<string, unknown>).desktop = makeShim(client, {
-    impl: impl as unknown as Record<string, (...args: never[]) => unknown>,
+    impl: {
+      ...impl,
+      // AI runs over the BFF: SSE chunks forwarded into onAiStream, keys stay server-side
+      ...createAiHttpBridge(),
+    } as unknown as Record<string, (...args: never[]) => unknown>,
     prefix: 'docs',
   })
 }

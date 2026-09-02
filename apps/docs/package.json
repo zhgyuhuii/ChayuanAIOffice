@@ -91,10 +91,11 @@
     }
   },
   "dependencies": {
+    "@genoffice/ai-host": "*",
     "@genoffice/electron-utils": "*",
     "@genoffice/font-metrics": "*",
+    "@genoffice/pptx-render": "*",
     "electron-updater": "^6.8.9",
-    "pdf-lib": "^1.17.1",
-    "@genoffice/pptx-render": "*"
+    "pdf-lib": "^1.17.1"
   }
 }

@@ -2,7 +2,8 @@ import { contextBridge, ipcRenderer, webUtils } from 'electron'
 
 import type {
   AiChatResponse,
-  AiSettings,
+  AiModelEntry,
+  AiSettingsV2,
   AiStreamChunk,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
@@ -418,10 +419,20 @@ const desktopApi: DesktopApi = {
   async getAiSettings() {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiGetSettings)
     if (!isRecord(result)) throw new Error('Invalid AI settings response.')
-    return result as unknown as AiSettings
+    return result as unknown as AiSettingsV2
   },
   async setAiSettings(settings) {
     await ipcRenderer.invoke(IPC_CHANNELS.aiSetSettings, settings)
+  },
+  async setAiCurrentModel(selection) {
+    await ipcRenderer.invoke(IPC_CHANNELS.aiSetCurrentModel, selection)
+  },
+  async aiDiscoverModels(target) {
+    const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiDiscoverModels, target)
+    if (!isRecord(result) || !Array.isArray((result as { models?: unknown }).models)) {
+      throw new Error('Invalid model discovery response.')
+    }
+    return result as unknown as { models: AiModelEntry[]; error?: string }
   },
   async aiChat(request) {
     const result: unknown = await ipcRenderer.invoke(IPC_CHANNELS.aiChat, request)

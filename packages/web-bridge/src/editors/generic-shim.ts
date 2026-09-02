@@ -6,19 +6,12 @@
  */
 
 import { BridgeClient } from '../client.js'
+import { createAiHttpBridge } from '../ai-bridge.js'
 import { b64ToBytes, makeShim, pendingFromHash } from '../shim-factory.js'
-
-/** Minimal valid AiSettings: unblocks the AI dock (slides collapses the
- *  panel forever without it) and lets the panel render its unconfigured
- *  state until real settings sync from the BFF. */
-const MIN_AI_SETTINGS = {
-  provider: 'custom' as const,
-  providers: {} as Record<string, { apiKey: string; model: string; baseUrl?: string }>,
-}
 
 function baseState() {
   return {
-    async getAiSettings(): Promise<typeof MIN_AI_SETTINGS> { return MIN_AI_SETTINGS },
+    ...createAiHttpBridge(),
     async getLanguage(): Promise<string> {
       return (localStorage.getItem('genoffice.lang') as string) ?? 'zh'
     },

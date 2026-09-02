@@ -133,7 +133,24 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
 
   attachAuthHooks(app, options.auth)
   attachWsGateway(app, core)
-  attachAiProxy(app, options.ai ?? {})
+  const dshHome = process.env.GENOFFICE_DSH_HOME
+  const dshRpc = process.env.GENOFFICE_DSH_RPC_ORIGIN
+  const dshRpcFile = process.env.GENOFFICE_DSH_RPC_ORIGIN_FILE
+  attachAiProxy(app, {
+    ...options.ai,
+    dataDir: options.ai?.dataDir ?? dataDir,
+    // dsh plugin form: provider profiles + keys live in the harness settings.
+    // The loopback origin may arrive lazily via the file the plugin host writes.
+    ...(dshHome && (dshRpc || dshRpcFile)
+      ? {
+          harness: {
+            dshHome,
+            rpcOrigin: dshRpc ?? '',
+            ...(dshRpcFile ? { rpcOriginFile: dshRpcFile } : {}),
+          },
+        }
+      : {}),
+  })
   if (options.staticDir) attachStatic(app, options.staticDir)
 
   return { app, core }

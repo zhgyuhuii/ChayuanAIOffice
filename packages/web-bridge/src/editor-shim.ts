@@ -6,6 +6,7 @@
  */
 
 import { BridgeClient } from './client.js'
+import { createAiHttpBridge } from './ai-bridge.js'
 import { installDocsShim } from './editors/docs-shim.js'
 import { installPdfShim } from './editors/pdf-shim.js'
 import { installSheetsShim, installSlidesShim } from './editors/generic-shim.js'
@@ -58,6 +59,8 @@ function installMarkdownShim(): void {
   const textEncoder = new TextEncoder()
 
   ;(window as unknown as Record<string, unknown>).markdownApi = {
+    // AI runs over the BFF: SSE chunks forwarded into onAiStream, keys stay server-side
+    ...createAiHttpBridge(),
     consumePending: async () => {
       if (pendingConsumed) return null
       pendingConsumed = true
@@ -108,14 +111,6 @@ function installMarkdownShim(): void {
     getTheme: async () => 'system' as const,
     onThemeChanged: () => () => undefined,
     onChromePressed: () => () => undefined,
-    getAiSettings: async () => ({ provider: 'custom' as const, providers: {} }),
-    aiStream: degrade('markdown.aiStream') as unknown as () => Promise<void>,
-    aiStreamCancel: async () => undefined,
-    onAiStream: () => () => undefined,
-    webSearch: degrade('markdown.webSearch') as unknown as () => Promise<never>,
-    imageSearch: degrade('markdown.imageSearch') as unknown as () => Promise<never>,
-    fetchImage: async () => null,
-    aiGenerateImage: degrade('markdown.aiGenerateImage') as unknown as () => Promise<never>,
   }
 }
 

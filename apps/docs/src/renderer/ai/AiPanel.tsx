@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core'
 import type { Block } from '@genoffice/docx-engine'
 import { AgentLoop, composeSkills, type AgentImage } from '@genoffice/agent-core'
-import type { AiSettings, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
+import type { AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { PmNode } from '../editor/convert'
 import { countWords, findNumId, type NumIds } from './protocol'
@@ -21,9 +21,18 @@ import { applyRevisionsBy } from '../editor/revisions'
 import { DOCS_CONTINUE_INSTRUCTION } from './continuation'
 import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
+import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
 import { Markdown } from '@genoffice/ui'
-import { AiComposer, AiTypingIndicator, PanelTabs, usePanelTab } from '@genoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  ModelPickerButton,
+  ModelSettingsPage,
+  PanelTabs,
+  usePanelTab,
+} from '@genoffice/ui'
+import { enabledChatModels } from '@genoffice/ai-provider'
 import type { DockChrome } from '@genoffice/ui'
 import { AssistantTab, IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
 import sendEnterOn from '../assets/send-enter-on.png'
@@ -81,6 +90,8 @@ interface ChatEntry {
   snapshot?: PmNode
   /** attachments consumed from the composer by this user message (read-only echo chips) */
   attachments?: AttachmentMeta[]
+  /** model id that produced this assistant turn (display only) */
+  model?: string
 }
 
 /** clickable starter prompts for the empty state (fill the input, do not send) —
@@ -232,7 +243,7 @@ export const AI_REVISION_AUTHOR = 'AI Assistant'
 interface AiPanelProps {
   editor: Editor
   blocks: Block[]
-  settings: AiSettings
+  settings: AiSettingsV2
   /** the document has no text yet — the empty-state copy offers drafting instead of editing */
   docEmpty?: boolean
   /** fallback numbering ids for documents created from the blank template */
@@ -279,7 +290,7 @@ export function AiPanel({
   commentsAccess,
   hfAccess,
 }: AiPanelProps) {
-  const { t } = useI18n()
+  const { lang, t } = useI18n()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -363,8 +374,20 @@ export function AiPanel({
   // latest props for the loop's closures (the loop instance outlives renders)
   const editorRef = useRef(editor)
   editorRef.current = editor
-  const settingsRef = useRef(settings)
-  settingsRef.current = settings
+  // panel-local copy: the picker and the settings page refresh it without touching App state
+  const [panelSettings, setPanelSettings] = useState(settings)
+  useEffect(() => {
+    setPanelSettings(settings)
+  }, [settings])
+  const settingsRef = useRef(panelSettings)
+  settingsRef.current = panelSettings
+  const refreshSettings = async () => {
+    try {
+      setPanelSettings(await docsModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
   const blocksRef = useRef(blocks)
   blocksRef.current = blocks
   const numIdFallbackRef = useRef(numIdFallback)
@@ -407,6 +430,8 @@ export function AiPanel({
   }
   /** instruction of the in-flight run */
   const instructionRef = useRef('')
+  /** model id driving the in-flight run — shown on this turn's assistant bubbles */
+  const runModelRef = useRef<string | undefined>(undefined)
   /** document state before the run's first edit — attached to the turn's final
       segment at run end (mid-turn segments never show the action toolbar) */
   const runSnapshotRef = useRef<PmNode | null>(null)
@@ -533,7 +558,8 @@ export function AiPanel({
       ordered: findNumId(blocksRef.current, 'ordered') ?? numIdFallbackRef.current?.ordered ?? null,
     })
     loopRef.current = new AgentLoop<PmNode>({
-      transport: createElectronTransport(() => settingsRef.current),
+      // the request carries only the selection; the main process resolves profile + secret
+      transport: createElectronTransport(() => settingsRef.current.currentModel!),
       systemSuffix: aiLangDirective,
       skill: composeSkills('docs+files', '', [
         createDocsSkill(
@@ -595,7 +621,10 @@ export function AiPanel({
         },
         onTurnEnd: () => {
           patchLastAssistant({ streaming: false })
-          setChat((prev) => [...prev, { role: 'assistant', text: '', streaming: true }])
+          setChat((prev) => [
+            ...prev,
+            { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
+          ])
         },
         onDone: ({ text, cancelled, turnLimit, truncated }) => {
           // module-level t: the loop instance is created only once; the component's t goes stale with the first-render closure
@@ -720,6 +749,8 @@ export function AiPanel({
   }
 
   const run = () => runWith(input.trim())
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const hasChatModel = enabledChatModels(panelSettings).length > 0
 
   /** Image attachments are read as base64 and go multimodal with this user message (≤5MB per image, max 20) */
   const MAX_IMAGES_PER_MESSAGE = 20
@@ -770,6 +801,7 @@ export function AiPanel({
     runToolsRef.current = []
     runSnapshotRef.current = null
     stickToBottomRef.current = true
+    runModelRef.current = settingsRef.current.currentModel?.modelId
     setChat((prev) => [
       ...prev,
       {
@@ -777,7 +809,7 @@ export function AiPanel({
         text: displayInstruction,
         ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
       },
-      { role: 'assistant', text: '', streaming: true },
+      { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
     ])
     runStartedAtRef.current = Date.now()
     setBusy(true)
@@ -988,6 +1020,11 @@ export function AiPanel({
                   <SentAttachments atts={entry.attachments} previews={attachmentPreviews} />
                 )}
                 {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
+              {entry.role === 'assistant' && entry.model && !entry.streaming && (
+                <div className="ai-msg-model" title={entry.model}>
+                  {entry.model}
+                </div>
+              )}
                 {entry.text && <Markdown text={entry.text} nav={docNav} />}
               </div>
             ))}
@@ -1004,6 +1041,15 @@ export function AiPanel({
               <br />
               {t(docEmpty ? 'aiEmptyDraftBody2' : 'aiEmptyBody2')}
             </div>
+            {!hasChatModel ? (
+            <div className="ai-model-empty">
+              <div className="ai-model-empty-title">{t('aiNoModelErrorTitle')}</div>
+              <div className="ai-model-empty-body">{t('aiNoModelErrorBody')}</div>
+              <button className="ai-login-btn" onClick={() => setModelSettingsOpen(true)}>
+                {t('aiOpenModelSettings')}
+              </button>
+            </div>
+            ) : (
             <div className="ai-starter-list">
               {(docEmpty ? DRAFT_STARTER_PROMPTS : EDIT_STARTER_PROMPTS).map((p) => (
                 <button
@@ -1018,6 +1064,7 @@ export function AiPanel({
                 </button>
               ))}
             </div>
+            )}
           </div>
         )}
         {chat.map((entry, i) => {
@@ -1061,6 +1108,11 @@ export function AiPanel({
                 entry.text
               )}
               {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
+              {entry.role === 'assistant' && entry.model && !entry.streaming && (
+                <div className="ai-msg-model" title={entry.model}>
+                  {entry.model}
+                </div>
+              )}
               {entry.error && (
                 <div className="ai-msg-error">{t('aiErrorPrefix', { error: entry.error })}</div>
               )}
@@ -1293,6 +1345,13 @@ export function AiPanel({
           onPasteFiles={(files) => void onPasteFiles(files)}
           footerStart={
             <>
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void docsModelBridge.setCurrentModel(selection).then(refreshSettings)
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
               <button
                 className="ai-attach-btn"
                 onClick={pickAttachments}
@@ -1313,6 +1372,16 @@ export function AiPanel({
           }
         />
       </div>
+      {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={docsModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void refreshSettings()
+          }}
+        />
+      )}
     </aside>
   )
 }

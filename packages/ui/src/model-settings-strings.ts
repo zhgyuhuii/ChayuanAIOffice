@@ -1,0 +1,200 @@
+/**
+ * Model settings page strings — zh is the source of truth, en the fallback;
+ * other locales fall back to en (per the v2 rollout plan). Kept in-module so
+ * the shared page needs no per-app i18n wiring.
+ */
+export type ModelSettingsLang = 'zh' | 'en'
+
+const zh = {
+  title: '模型设置',
+  subtitle: '多家供应商同时启用，勾选模型后在面板顶部快速切换',
+  close: '关闭',
+  searchPlaceholder: '搜索供应商…',
+  enabledGroup: '已启用',
+  imageModel: '生图模型',
+  imageModelAuto: '自动（第一个已启用的生图模型）',
+  imageModelNone: '未启用生图模型',
+  currentModel: '当前模型',
+  // form
+  apiUrl: 'API 地址',
+  apiUrlPlaceholder: 'https://api.example.com/v1',
+  protocol: '协议',
+  protocolHint: {
+    'anthropic-messages': 'Anthropic Messages（直连，不转换格式）—— 供应商原生为 Anthropic Messages API 时选择',
+    'openai-completions': 'Chat（OpenAI Chat Completions）—— 供应商使用 Chat Completions 协议时选择',
+    'openai-responses': 'Responses（OpenAI Responses API）—— 供应商使用 Responses API 时选择',
+    'gemini-native': 'Gemini Native（generateContent）—— 供应商使用 Gemini generateContent 协议时选择',
+  } as Record<string, string>,
+  protocolFooter: '四种协议均为原生直连，无需格式转换。',
+  apiKey: 'API 密钥',
+  apiKeyPlaceholder: '粘贴密钥',
+  apiKeyConfigured: '已配置（留空保持不变）',
+  getKey: '获取密钥',
+  showKey: '显示密钥',
+  hideKey: '隐藏密钥',
+  ollamaHint: '本地服务可不填密钥',
+  models: '模型清单',
+  fetchModels: '获取模型列表',
+  refetchModels: '重新获取',
+  fetching: '获取中…',
+  testConnection: '测试连接',
+  testing: '测试中…',
+  connectionOk: '连接成功',
+  saveEnable: '保存并启用',
+  saving: '保存中…',
+  disable: '停用',
+  disabled: '已停用',
+  enabledOk: '已启用',
+  // validation
+  errApiUrl: '请填写 API 地址',
+  errApiKey: '请填写 API 密钥',
+  errPickModel: '至少勾选一个模型',
+  errNoModelsParsed: '未解析到任何模型',
+  modelsFound: '获取到 {n} 个模型',
+  fetchFailed: '获取失败：{message}',
+  testFailed: '测试失败：{message}',
+  enableFailed: '启用失败：{message}',
+  saveFailed: '保存失败：{message}',
+  // model types
+  type: {
+    chat: '对话',
+    vision: '视觉',
+    embedding: '向量',
+    'image-generation': '生图',
+    'video-generation': '视频生成',
+    tts: '语音合成',
+    asr: '语音识别',
+    'audio-understanding': '音频理解',
+    'video-understanding': '视频理解',
+  } as Record<string, string>,
+  // genspark special card
+  gskLoginTitle: 'Genspark 登录',
+  gskLoginDesc: '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
+  gskLoggedIn: '已登录：{email}',
+  gskLoggedInNoEmail: '已登录',
+  gskLoggedOut: '未登录',
+  gskLoginBtn: '登录',
+  gskPresetModels: '可用模型',
+  // misc
+  freeNokey: '免密钥',
+  freeFreekey: '免费密钥',
+  freeTier: '免费额度',
+  enabledBadge: '已启用',
+  useAsCurrent: '设为当前',
+  presetModelsHint: '该供应商暂不支持自动获取模型列表，以下为预设清单',
+  pickerSettings: '模型设置',
+  pickerEmptyTitle: '还没有可用的模型',
+  pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 Genspark 使用默认模型。',
+  statusEnabled: '已启用，模型出现在选择器中',
+  statusNotEnabled: '未启用',
+  selectAll: '全选',
+  selectNone: '全不选',
+  addVendor: '自定义供应商',
+  saveChanges: '保存更改',
+  saveValidateFailed: '协议验证失败，未保存：{message}',
+  pickerHint: '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
+}
+
+const en = {
+  title: 'Model Settings',
+  subtitle: 'Enable multiple providers at once; pick models and switch instantly from the panel header',
+  close: 'Close',
+  searchPlaceholder: 'Search providers…',
+  enabledGroup: 'Enabled',
+  imageModel: 'Image model',
+  imageModelAuto: 'Auto (first enabled image model)',
+  imageModelNone: 'No image model enabled',
+  currentModel: 'Current model',
+  apiUrl: 'API URL',
+  apiUrlPlaceholder: 'https://api.example.com/v1',
+  protocol: 'Protocol',
+  protocolHint: {
+    'anthropic-messages': 'Anthropic Messages (direct, no format conversion) — pick when the provider is natively an Anthropic Messages API',
+    'openai-completions': 'Chat (OpenAI Chat Completions) — pick when the provider speaks the Chat Completions protocol',
+    'openai-responses': 'Responses (OpenAI Responses API) — pick when the provider speaks the Responses API',
+    'gemini-native': 'Gemini Native (generateContent) — pick when the provider speaks the Gemini generateContent protocol',
+  } as Record<string, string>,
+  protocolFooter: 'All four protocols connect natively — no conversion needed.',
+  apiKey: 'API key',
+  apiKeyPlaceholder: 'Paste key',
+  apiKeyConfigured: 'Configured (leave empty to keep)',
+  getKey: 'Get key',
+  showKey: 'Show key',
+  hideKey: 'Hide key',
+  ollamaHint: 'Local services can skip the key',
+  models: 'Models',
+  fetchModels: 'Fetch model list',
+  refetchModels: 'Refetch',
+  fetching: 'Fetching…',
+  testConnection: 'Test connection',
+  testing: 'Testing…',
+  connectionOk: 'Connection OK',
+  saveEnable: 'Save & enable',
+  saving: 'Saving…',
+  disable: 'Disable',
+  disabled: 'Disabled',
+  enabledOk: 'Enabled',
+  errApiUrl: 'Enter an API URL',
+  errApiKey: 'Enter an API key',
+  errPickModel: 'Pick at least one model',
+  errNoModelsParsed: 'No models parsed',
+  modelsFound: '{n} models found',
+  fetchFailed: 'Fetch failed: {message}',
+  testFailed: 'Test failed: {message}',
+  enableFailed: 'Enable failed: {message}',
+  saveFailed: 'Save failed: {message}',
+  type: {
+    chat: 'Chat',
+    vision: 'Vision',
+    embedding: 'Embedding',
+    'image-generation': 'Image gen',
+    'video-generation': 'Video gen',
+    tts: 'TTS',
+    asr: 'ASR',
+    'audio-understanding': 'Audio',
+    'video-understanding': 'Video',
+  } as Record<string, string>,
+  gskLoginTitle: 'Genspark sign-in',
+  gskLoginDesc: 'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
+  gskLoggedIn: 'Signed in: {email}',
+  gskLoggedInNoEmail: 'Signed in',
+  gskLoggedOut: 'Not signed in',
+  gskLoginBtn: 'Sign in',
+  gskPresetModels: 'Available models',
+  freeNokey: 'Keyless',
+  freeFreekey: 'Free key',
+  freeTier: 'Free tier',
+  enabledBadge: 'Enabled',
+  useAsCurrent: 'Set current',
+  presetModelsHint: 'This provider has no model-list API; presets below',
+  pickerSettings: 'Model settings',
+  pickerEmptyTitle: 'No model available yet',
+  pickerEmptyBody: 'Configure your own provider (your key, ready to use), or sign in to Genspark for the default models.',
+  statusEnabled: 'Enabled — models appear in the picker',
+  statusNotEnabled: 'Not enabled',
+  selectAll: 'Select all',
+  selectNone: 'Select none',
+  addVendor: 'Custom provider',
+  saveChanges: 'Save changes',
+  saveValidateFailed: 'Protocol check failed, nothing saved: {message}',
+  pickerHint: "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
+}
+
+export type ModelSettingsStrings = typeof zh & typeof en
+
+const dicts: Record<ModelSettingsLang, ModelSettingsStrings> = { zh, en }
+
+/** normalize any BCP-47 tag (zh-CN, en-US, zh-TW…) onto the dict pair; any zh* → zh */
+export function normalizeSettingsLang(lang: string | undefined): ModelSettingsLang {
+  const base = (lang ?? '').trim().toLowerCase().split('-')[0]
+  return base === 'zh' ? 'zh' : 'en'
+}
+
+export function modelSettingsStrings(lang: string | undefined): ModelSettingsStrings {
+  return dicts[normalizeSettingsLang(lang)]
+}
+
+/** simple {placeholder} interpolation */
+export function fmt(text: string, params: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (_, k) => String(params[k] ?? `{${k}}`))
+}

@@ -82,7 +82,11 @@ const api: PdfApi = {
     return () => ipcRenderer.removeListener('app:chrome-pressed', listener)
   },
   getAiSettings: () => ipcRenderer.invoke(AI_CHANNELS.getSettings),
-  gskStatus: () => ipcRenderer.invoke(AI_CHANNELS.gskStatus),
+  setAiSettings: (view) => ipcRenderer.invoke(AI_CHANNELS.setSettings, view),
+  setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
+  aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
+  aiGskLogin: () => ipcRenderer.invoke(AI_CHANNELS.gskLogin),
+  gskStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.gskStatus, withEmail),
   aiStream: (request) => ipcRenderer.invoke(AI_CHANNELS.stream, request),
   aiStreamCancel: (requestId) => ipcRenderer.invoke(AI_CHANNELS.streamCancel, requestId),
   onAiStream: (handler) => {

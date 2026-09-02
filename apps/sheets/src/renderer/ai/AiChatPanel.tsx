@@ -6,7 +6,9 @@ import {
   PanelTabs,
   usePanelTab,
 } from '@genoffice/ui'
-import type { DockChrome } from '@genoffice/ui'
+import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@genoffice/ui'
+import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@genoffice/ai-provider'
+import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
 import type { ChangePlan } from '../../domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
@@ -188,12 +190,16 @@ export interface AiChatMessage {
   readonly loginRequired?: boolean | undefined
   /** Set when this message reflects an auto-applied plan; renders an inline [Undo] button. */
   readonly autoApplied?: { readonly opCount: number; readonly undoSteps: number } | undefined
+  /** model id that produced this assistant turn (display only) */
+  readonly model?: string | undefined
   /** attachments consumed from the composer by this user message (read-only echo chips) */
   readonly attachments?: readonly AttachmentMeta[] | undefined
 }
 
 export function AiChatPanel({
   dockChrome,
+  settings,
+  onRefreshSettings,
   hasContent,
   chat,
   historicChat = [],
@@ -219,6 +225,9 @@ export function AiChatPanel({
 }: {
   /** shared DockShell header chrome (drag-to-dock + layout buttons) */
   readonly dockChrome?: DockChrome
+  /** v2 settings view for the model picker; refreshed through onRefreshSettings */
+  readonly settings?: AiSettingsV2 | null | undefined
+  readonly onRefreshSettings?: (() => void | Promise<void>) | undefined
   /** the workbook has cells with content — empty workbooks get "build me a sheet" copy instead */
   readonly hasContent: boolean
   readonly chat: readonly AiChatMessage[]
@@ -262,12 +271,24 @@ export function AiChatPanel({
   /** citation link in an answer ([B12](sheetnav://B12)) */
   readonly onCitation: (href: string) => void
 }): React.JSX.Element {
-  const { t } = useI18n()
+  const { lang, t } = useI18n()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
   const [tab, selectTab] = usePanelTab('aisheets.aiTab', aiTabs)
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => settings ?? defaultSettingsV2())
+  useEffect(() => {
+    if (settings) setPanelSettings(settings)
+  }, [settings])
+  const refreshPanelSettings = async () => {
+    try {
+      setPanelSettings(await sheetsModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
   const chatRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
   const stickToBottomRef = useRef(true)
@@ -422,7 +443,20 @@ export function AiChatPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
+          <>
+            <ModelPickerButton
+              settings={panelSettings}
+              onPick={(selection) => {
+                void sheetsModelBridge
+                  .setCurrentModel(selection)
+                  .then(async () => {
+                    await onRefreshSettings?.()
+                    await refreshPanelSettings()
+                  })
+              }}
+              onOpenSettings={() => setModelSettingsOpen(true)}
+            />
+            {tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
             <button
               className="ai-header-btn"
               onClick={onNewChat}
@@ -431,7 +465,8 @@ export function AiChatPanel({
             >
               <IconNewChat size={15} />
             </button>
-          ) : undefined
+            ) : null}
+          </>
         }
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
@@ -461,6 +496,15 @@ export function AiChatPanel({
         {chat.length === 0 && historicChat.length === 0 && (
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-title">
+              {enabledChatModels(panelSettings).length === 0 && (
+                <div className="ai-model-empty">
+                  <div className="ai-model-empty-title">{t('aiNoModelErrorTitle')}</div>
+                  <div className="ai-model-empty-body">{t('aiNoModelErrorBody')}</div>
+                  <button className="ai-login-btn" onClick={() => setModelSettingsOpen(true)}>
+                    {t('aiOpenModelSettings')}
+                  </button>
+                </div>
+              )}
               {t(hasContent ? 'aiEmptyTitle' : 'aiEmptyBuildTitle')}
             </div>
             <div className="ai-chat-empty-body">
@@ -526,7 +570,12 @@ export function AiChatPanel({
                     )}
                   </div>
                 )}
-                {entry.loginRequired && (
+                {entry.role === 'assistant' && entry.model && !entry.streaming && (
+                <div className="ai-msg-model" title={entry.model}>
+                  {entry.model}
+                </div>
+              )}
+              {entry.loginRequired && (
                   <button
                     className="ai-login-btn"
                     onClick={() => void window.desktopApi.aiGskLogin()}
@@ -710,7 +759,20 @@ export function AiChatPanel({
           sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
           stopIcon={<img src={sendStop} alt="" aria-hidden />}
           footerStart={
-            <button
+            <>
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void sheetsModelBridge
+                    .setCurrentModel(selection)
+                    .then(async () => {
+                      await onRefreshSettings?.()
+                      await refreshPanelSettings()
+                    })
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
+              <button
               className="ai-attach-btn"
               onClick={onPickAttachments}
               data-tip={t('aiAttachTitle')}
@@ -718,6 +780,7 @@ export function AiChatPanel({
             >
               <img src={attachIcon} alt="" aria-hidden />
             </button>
+            </>
           }
           textareaRef={inputRef}
           onChange={onPromptChange}
@@ -726,6 +789,19 @@ export function AiChatPanel({
           onPasteFiles={onPasteFiles}
         />
       </div>
+          {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={sheetsModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void (async () => {
+              await onRefreshSettings?.()
+              await refreshPanelSettings()
+            })()
+          }}
+        />
+      )}
     </aside>
   )
 }

@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentToolCall, AgentToolDef } from '@genoffice/agent-core'
+import type { AiModelType } from './model-type'
 
 export type AiProviderId =
   | 'genspark'
@@ -15,6 +16,75 @@ export type AiProviderId =
   | 'mistral'
   | 'openrouter'
   | 'custom'
+
+// ---- settings v2: multi-profile, multi-model, user-chosen wire protocol ----
+
+/**
+ * Wire protocol ids as the user picks them in the settings UI, aligned with
+ * chatop/dsh llm-pi-ai `api` naming so profiles round-trip losslessly.
+ */
+export type AiWireProtocol =
+  | 'anthropic-messages'
+  | 'openai-completions'
+  | 'openai-responses'
+  | 'gemini-native'
+
+export interface AiModelEntry {
+  id: string
+  /** display alias when it differs from the id */
+  name?: string
+  /** inferred model type (chat/vision/image-generation/...); absent = infer from id */
+  type?: AiModelType
+}
+
+/** Which model a run uses: profile id + model id, never a secret. */
+export interface AiModelSelection {
+  profileId: string
+  modelId: string
+}
+
+export interface AiProviderProfile {
+  /** unique within the settings file; 'genspark' is the fixed login-backed profile */
+  id: string
+  /** link into the vendor catalog (defaults, logo, key console page); absent for ad-hoc custom profiles */
+  vendorId?: string
+  displayName: string
+  protocol: AiWireProtocol
+  baseUrl: string
+  /** inline secret (desktop local file / docker server file); empty for gsk-login or ref-backed profiles */
+  apiKey?: string
+  /** backend-resolved credential ref (harness settings source writes refs, not secrets) */
+  apiKeyRef?: string
+  auth: 'api-key' | 'gsk-login'
+  /** endpoint accepts an empty key (ollama-like local runtimes) */
+  ollamaLike?: boolean
+  enabled: boolean
+  models: AiModelEntry[]
+  updatedAt?: string
+}
+
+export interface AiSettingsV2 {
+  version: 2
+  profiles: AiProviderProfile[]
+  /** office-side current model, shared by all four apps; absent = none selected yet */
+  currentModel?: AiModelSelection
+  /** dedicated image-generation model; absent = first enabled image-gen model */
+  imageModel?: AiModelSelection
+  /** gsk cloud tools toggle (search backends); default on */
+  gskToolsEnabled?: boolean
+}
+
+/** a v2 stream request carries only the selection — the backend owning the settings resolves the secret */
+export interface AiStreamRequestV2 {
+  requestId: string
+  selection: AiModelSelection
+  system: string
+  messages: AgentMessage[]
+  tools?: AgentToolDef[]
+  maxTokens?: number
+  /** host-attached abort (IPC cancel / HTTP disconnect) */
+  signal?: AbortSignal
+}
 
 /** Genspark account status (gsk login state; the sole auth source for AI features) */
 export interface GenSparkAccountStatus {

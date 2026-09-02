@@ -1,6 +1,8 @@
 import { chatAnthropic } from './protocols/anthropic'
 import { chatGemini } from './protocols/gemini'
 import { chatOpenAiCompatible } from './protocols/openai-compatible'
+import { chatOpenAiResponses } from './protocols/openai-responses'
+import type { ResolvedModelCall } from './settings-v2'
 import { getProviderAdapter, type ResolvedEndpoint } from './registry'
 import type { AiChatResponse, AiProviderConfig, AiProviderId } from './types'
 import { AI_CHAT_RESPONSE_TIMEOUT_MS, createStreamWatchdog } from './watchdog'
@@ -36,6 +38,35 @@ export async function chatForProvider(
         return chatOpenAiCompatible(wd, endpoint.baseUrl, config, system, user, {
           omitTemperature: endpoint.omitTemperature,
           bodyExtras: endpoint.bodyExtras,
+        })
+      case 'openai-responses':
+        return chatOpenAiResponses(wd, endpoint.baseUrl, config, system, user)
+    }
+  })
+}
+
+/** one-shot chat on a v2 resolved call (profile protocol + endpoint already picked) */
+export async function chatResolved(
+  call: ResolvedModelCall,
+  system: string,
+  user: string,
+  signal?: AbortSignal,
+): Promise<AiChatResponse> {
+  const wd = createStreamWatchdog(signal, AI_CHAT_RESPONSE_TIMEOUT_MS)
+  return wd.guard(() => {
+    const config = { apiKey: call.apiKey, model: call.model }
+    switch (call.protocol) {
+      case 'anthropic':
+        return chatAnthropic(wd, config, system, user, call.baseUrl)
+      case 'gemini':
+        return chatGemini(wd, config, system, user, call.baseUrl)
+      case 'openai-responses':
+        return chatOpenAiResponses(wd, call.baseUrl, config, system, user)
+      case 'openai-compatible':
+        return chatOpenAiCompatible(wd, call.baseUrl, config, system, user, {
+          omitTemperature: call.omitTemperature,
+          useMaxCompletionTokens: call.useMaxCompletionTokens,
+          bodyExtras: call.bodyExtras,
         })
     }
   })

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, ReactElement } from 'react'
 import { AgentLoop } from '@genoffice/agent-core'
-import type { AiSettings } from '@genoffice/ai-provider'
-import { AiComposer, AiTypingIndicator } from '@genoffice/ui'
+import type { AiSettingsV2 } from '@genoffice/ai-provider'
+import { AiComposer, AiTypingIndicator, ModelPickerButton, ModelSettingsPage } from '@genoffice/ui'
+import { defaultSettingsV2 } from '@genoffice/ai-provider'
+import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { Markdown } from '@genoffice/ui'
 import sendEnterOn from '../assets/send-enter-on.png'
@@ -52,6 +54,8 @@ interface ToolActivity {
 interface ChatEntry {
   role: 'user' | 'assistant'
   text: string
+  /** model id that produced this assistant turn (display only) */
+  model?: string
   streaming?: boolean
   isError?: boolean
   /** the run failed and this user message was rolled back out of the model context */
@@ -232,7 +236,20 @@ export function AiPanel({
     const dock = asideRef.current?.closest('.ai-dock') as HTMLElement | null
     dock?.style.setProperty('--ai-panel-width', `${panelWidth}px`)
   }, [panelWidth])
-  const settingsRef = useRef<AiSettings | null>(null)
+  const settingsRef = useRef<AiSettingsV2 | null>(null)
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const refreshPanelSettings = async () => {
+    try {
+      setPanelSettings(await pdfModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
+  useEffect(() => {
+    void refreshPanelSettings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
   const gskLoggedInRef = useRef(false)
@@ -316,7 +333,8 @@ export function AiPanel({
       fetchImage: (url) => apiRef.current.fetchImage(url),
     }
     loopRef.current = new AgentLoop({
-      transport: createElectronTransport(() => settingsRef.current!),
+      // the request carries only the selection; the owning main process resolves profile + secret
+      transport: createElectronTransport(() => settingsRef.current!.currentModel!),
       skill: createPdfSkill(deps),
       systemSuffix: () => aiLangDirective(langRef.current),
       events: {
@@ -351,7 +369,10 @@ export function AiPanel({
           runTextsRef.current.push(segTextRef.current)
           segTextRef.current = ''
           patchLast({ streaming: false })
-          setChat((prev) => [...prev, { role: 'assistant', text: '', streaming: true }])
+          setChat((prev) => [
+            ...prev,
+            { role: 'assistant', text: '', streaming: true, model: panelSettings.currentModel?.modelId },
+          ])
         },
         onDone: ({ text, cancelled, turnLimit }) => {
           const final = turnLimit
@@ -422,7 +443,7 @@ export function AiPanel({
     setChat((prev) => [
       ...prev,
       { role: 'user', text: instruction },
-      { role: 'assistant', text: '', streaming: true },
+      { role: 'assistant', text: '', streaming: true, model: panelSettings.currentModel?.modelId },
     ])
     setPrompt('')
     setBusy(true)
@@ -540,6 +561,13 @@ export function AiPanel({
           Genspark
         </span>
         <div className="ai-panel-header-actions">
+          <ModelPickerButton
+            settings={panelSettings}
+            onPick={(selection) => {
+              void pdfModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+            }}
+            onOpenSettings={() => setModelSettingsOpen(true)}
+          />
           {chat.length > 0 && (
             <button
               className="ai-header-btn"
@@ -688,11 +716,30 @@ export function AiPanel({
           sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
           sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
           stopIcon={<img src={sendStop} alt="" aria-hidden />}
+          footerStart={
+            <ModelPickerButton
+              settings={panelSettings}
+              onPick={(selection) => {
+                void pdfModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+              }}
+              onOpenSettings={() => setModelSettingsOpen(true)}
+            />
+          }
           onChange={setPrompt}
           onSend={() => send(prompt)}
           onStop={stop}
         />
       </div>
+          {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={pdfModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void refreshPanelSettings()
+          }}
+        />
+      )}
     </aside>
   )
 }
@@ -757,7 +804,7 @@ function StepIcon({ status }: { status: 'running' | 'done' | 'error' }) {
  *  that auto-opens while tools run, auto-collapses into "Worked · N steps" when they finish,
  *  and a manual toggle that always wins. Rows inside are step rows with 1px connectors. */
 function ToolChipList({ tools }: { tools: ToolActivity[] }) {
-  const { t: tr } = useI18n()
+  const { lang, t: tr } = useI18n()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [userOpen, setUserOpen] = useState<boolean | null>(null)
 

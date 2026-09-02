@@ -236,10 +236,31 @@ export function installShellShims(): void {
     cloudProjectsSync: async () => degraded('aiOffice.cloudProjectsSync'),
     cloudProjectsCached: async () => null,
     openCloudProject: async () => degraded('aiOffice.openCloudProject'),
-    getAiSettings: async () => degraded('aiOffice.getAiSettings'),
-    setAiSettings: async () => degraded('aiOffice.setAiSettings'),
-    getAiProviders: async () => [],
-    testAiSettings: async () => degraded('aiOffice.testAiSettings'),
+    // AI settings run over the BFF's /ai/* endpoints (keys stay server-side)
+    getAiSettings: async () =>
+      (await fetch('/ai/settings')).json() as unknown,
+    setAiSettings: async (view: unknown) => {
+      await fetch('/ai/settings', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(view),
+      })
+    },
+    setAiCurrentModel: async (selection: unknown) => {
+      await fetch('/ai/set-current-model', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(selection),
+      })
+    },
+    aiDiscoverModels: async (target: unknown) =>
+      (await fetch('/ai/discover-models', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(target),
+      })).json() as unknown,
+    gskStatus: async () => ({ loggedIn: false }),
+    gskLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
     pickDefaultSaveDir: async () => degraded('aiOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,

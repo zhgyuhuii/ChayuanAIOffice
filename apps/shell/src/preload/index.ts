@@ -1,7 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import { AI_PROVIDERS, getProviderAdapter } from '@genoffice/ai-provider'
-import type { AiSettings } from '@genoffice/ai-provider'
+import type {
+  AiModelEntry,
+  AiModelSelection,
+  AiSettingsV2,
+  GenSparkAccountStatus,
+} from '@genoffice/ai-provider'
 import { installDropOpenBridge } from '@genoffice/electron-utils/drop-open'
 import type {
   AccountLoginEvent,
@@ -243,34 +247,25 @@ const homeApi: HomeApi = {
   },
   // AI settings channels are registered once by the shell's aggregated docs handlers
   async getAiSettings() {
-    return (await ipcRenderer.invoke('ai:get-settings')) as AiSettings
+    return (await ipcRenderer.invoke('ai:get-settings')) as AiSettingsV2
   },
-  async setAiSettings(settings) {
-    await ipcRenderer.invoke('ai:set-settings', settings)
+  async setAiSettings(view) {
+    await ipcRenderer.invoke('ai:set-settings', view)
   },
-  getAiProviders() {
-    return AI_PROVIDERS.map((meta) => {
-      let defaultBaseUrl = ''
-      // genspark routes by model and custom has no default — both stay ''
-      if (meta.id !== 'genspark' && !meta.needsBaseUrl) {
-        defaultBaseUrl = getProviderAdapter(meta.id).resolveEndpoint({
-          apiKey: '',
-          model: meta.defaultModel,
-        }).baseUrl
-      }
-      return { ...meta, defaultBaseUrl }
-    })
+  async setAiCurrentModel(selection) {
+    await ipcRenderer.invoke('ai:set-current-model', selection)
   },
-  async testAiSettings(settings) {
-    const result: unknown = await ipcRenderer.invoke('ai:chat', {
-      settings,
-      system: 'You are a connectivity test. Reply with the single word OK.',
-      user: 'ping',
-    })
-    const raw = (result ?? {}) as { ok?: unknown; error?: unknown }
-    return raw.ok === true
-      ? { ok: true }
-      : { ok: false, error: typeof raw.error === 'string' ? raw.error : 'Connection failed' }
+  async aiDiscoverModels(target) {
+    return (await ipcRenderer.invoke('ai:discover-models', target)) as {
+      models: AiModelEntry[]
+      error?: string
+    }
+  },
+  async gskStatus(withEmail) {
+    return (await ipcRenderer.invoke('ai:gsk-status', withEmail)) as GenSparkAccountStatus
+  },
+  async gskLogin() {
+    await ipcRenderer.invoke('ai:gsk-login')
   },
 }
 

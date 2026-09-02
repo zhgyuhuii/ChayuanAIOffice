@@ -1,0 +1,498 @@
+/* ModelSettingsPage — faithful port of chatop's ModelSettings layout:
+ * 240px vendor directory (search / groups / add) + config form with vendor
+ * header, enable switch, field stack, action buttons, grouped model list. */
+
+.msp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay, rgb(0 0 0 / 45%));
+}
+
+.msp-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(1000px, 94vw);
+  height: min(680px, 90vh);
+  border-radius: 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-page, var(--surface, #fff));
+  box-shadow: 0 24px 60px rgb(0 0 0 / 28%);
+  overflow: hidden;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+/* ── header ─────────────────────────────────────────────────── */
+.msp-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 44px;
+  padding: 0 12px 0 20px;
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  flex-shrink: 0;
+}
+.msp-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+.msp-image-model {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  flex-shrink: 0;
+}
+.msp-select-compact {
+  width: 220px;
+  height: 26px;
+  font-size: 11px;
+}
+.msp-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.msp-close:hover {
+  background: var(--color-bg-hover, var(--hover, #f5f5f5));
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.msp-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+
+/* inline variant: no dialog chrome — fills the host pane (shell settings) */
+.msp-inline-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.msp-inline-dialog .msp-header {
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  padding-left: 0;
+}
+
+/* ── left: vendor directory (chatop w-60) ───────────────────── */
+.msp-left {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  background: var(--color-bg-subtle, var(--surface-subtle, #f6f7f9));
+}
+.msp-search-wrap {
+  padding: 8px;
+}
+.msp-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+.msp-left-footer {
+  padding: 8px;
+  border-top: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.msp-group {
+  margin-bottom: 4px;
+}
+.msp-group-title {
+  padding: 8px 12px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+
+.msp-vendor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.msp-vendor:hover {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-vendor.is-selected {
+  background: var(--accent, #2f6fdc);
+  color: #fff;
+}
+.msp-vendor-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success, #107c41);
+  flex-shrink: 0;
+}
+.msp-vendor.is-selected .msp-dot {
+  background: #fff;
+}
+.msp-dot.is-big {
+  width: 8px;
+  height: 8px;
+}
+.msp-dot.is-on {
+  background: var(--success, #107c41);
+}
+
+.msp-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent, #2f6fdc);
+}
+.msp-vendor.is-selected .msp-avatar {
+  background: rgb(255 255 255 / 25%);
+}
+.msp-avatar.is-big {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+}
+
+/* ── right: config form ─────────────────────────────────────── */
+.msp-right {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+.msp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 672px;
+  padding: 20px;
+}
+
+.msp-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.msp-pane-titles {
+  flex: 1;
+  min-width: 0;
+}
+.msp-pane-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.msp-pane-status {
+  font-size: 11px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  margin-top: 2px;
+}
+
+/* chatop's Switch: 36×20 pill */
+.msp-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default, var(--border-strong, #d9d9d9));
+  background: var(--color-bg-hover, var(--hover, #e8e8e8));
+  cursor: pointer;
+  padding: 0;
+  transition: background 140ms;
+}
+.msp-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+  transition: left 140ms;
+}
+.msp-switch.is-on {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+}
+.msp-switch.is-on::after {
+  left: 18px;
+}
+.msp-switch:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.msp-msg {
+  margin: 0;
+  font-size: 12px;
+}
+.msp-msg.ok {
+  color: var(--success, #107c41);
+}
+.msp-msg.err {
+  color: var(--danger, #d13438);
+}
+
+.msp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msp-label {
+  font-size: 12px;
+  opacity: 0.75;
+}
+.msp-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  margin: 0;
+}
+
+.msp-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border-default, var(--border-strong, #d9d9d9));
+  border-radius: 8px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  color: inherit;
+  font-size: 12px;
+}
+.msp-input:focus {
+  outline: none;
+  border-color: var(--accent, #2f6fdc);
+}
+.msp-select {
+  appearance: auto;
+}
+.msp-key-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.msp-key-row .msp-input {
+  flex: 1;
+}
+
+.msp-gsk-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.msp-gsk-state {
+  flex: 1;
+  min-width: 0;
+}
+
+.msp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.msp-select-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.msp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+.msp-btn:hover:not(:disabled) {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.msp-btn-primary {
+  background: var(--accent, #2f6fdc);
+  border-color: var(--accent, #2f6fdc);
+  color: #fff;
+}
+.msp-btn-primary:hover:not(:disabled) {
+  background: var(--accent-dark, #245a96);
+}
+.msp-btn-danger {
+  color: var(--danger, #d13438);
+  border-color: color-mix(in srgb, var(--danger, #d13438) 40%, transparent);
+}
+.msp-btn-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger, #d13438) 8%, transparent);
+}
+.msp-btn-link {
+  color: var(--accent, #2f6fdc);
+  border-color: var(--color-border-default, var(--border, #e3e6ea));
+}
+.msp-btn-mini {
+  height: 22px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+.msp-btn-block {
+  width: 100%;
+}
+
+/* model checklist card (chatop ModelList) */
+.msp-list {
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 12px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  overflow: hidden;
+}
+.msp-list.is-empty {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-style: dashed;
+}
+.msp-list .msp-note {
+  padding: 8px 12px 0;
+}
+.msp-type-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+.msp-type-name {
+  flex: 1;
+}
+.msp-type-toggle {
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.msp-type-toggle:hover {
+  background: var(--color-bg-hover, var(--hover, rgb(0 0 0 / 5%)));
+}
+.msp-model-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.msp-model-row:hover {
+  background: var(--color-bg-hover-subtle, var(--bg-hover-subtle, #f0f2f5));
+}
+.msp-model-row input {
+  accent-color: var(--accent, #2f6fdc);
+  flex-shrink: 0;
+}
+.msp-model-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-model-id {
+  font-size: 10px;
+  color: var(--color-text-tertiary, var(--text-tertiary, #909499));
+  max-width: 45%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* harvested vendor icon */
+.msp-logo {
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+/* collapsible type-group header */
+.msp-type-collapse {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-align: left;
+}
+.msp-chev {
+  display: inline-block;
+  transition: transform 120ms ease;
+  font-size: 9px;
+}
+.msp-chev.is-collapsed {
+  transform: rotate(-90deg);
+}

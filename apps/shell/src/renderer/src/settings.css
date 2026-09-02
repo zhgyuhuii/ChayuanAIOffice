@@ -447,3 +447,11 @@
     transform: rotate(360deg);
   }
 }
+
+/* AI model pane: the embedded model-settings page owns its layout/scroll */
+.set-model-settings {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

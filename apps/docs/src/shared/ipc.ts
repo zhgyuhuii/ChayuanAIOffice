@@ -36,11 +36,13 @@ export interface PickImageResult {
 // ---- AI provider settings/config/streaming: canonical types live in @genoffice/ai-provider ----
 
 import type {
-  AiChatRequest,
   AiChatResponse,
-  AiSettings,
+  AiModelEntry,
+  AiModelSelection,
+  AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
+  AiStreamRequestV2,
+  DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
 import type { FaceVerticalMetrics } from '@genoffice/font-metrics'
@@ -48,17 +50,23 @@ import type { FaceVerticalMetrics } from '@genoffice/font-metrics'
 export type { FaceVerticalMetrics }
 
 export type {
-  AiChatRequest,
   AiChatResponse,
+  AiModelEntry,
+  AiModelSelection,
   AiProviderConfig,
   AiProviderId,
   AiProviderMeta,
+  AiProviderProfile,
   AiSettings,
+  AiSettingsV2,
   AiStreamChunk,
   AiStreamRequest,
+  AiStreamRequestV2,
+  AiWireProtocol,
+  DiscoveryTarget,
   GenSparkAccountStatus,
 } from '@genoffice/ai-provider'
-export { AI_PROVIDERS } from '@genoffice/ai-provider'
+export { AI_PROVIDERS, KEEP_KEY } from '@genoffice/ai-provider'
 
 // ---- agent protocol: canonical types live in @genoffice/agent-core ----
 
@@ -68,6 +76,16 @@ export type {
   AgentToolDef,
   AgentToolResult,
 } from '@genoffice/agent-core'
+
+/** wire shape of an ai:stream request: the settings slot carries the selection */
+export interface AiStreamWireRequest {
+  requestId: string
+  settings: AiModelSelection
+  system: string
+  messages: import('@genoffice/agent-core').AgentMessage[]
+  tools?: import('@genoffice/agent-core').AgentToolDef[]
+  maxTokens?: number
+}
 
 // ---- chat attachments (local files fed to the agent via tools) ----
 
@@ -254,8 +272,14 @@ export interface DesktopApi {
   pickImage(): Promise<PickImageResult | null>
   /** vertical metrics of an installed family (exact name match), null when missing */
   fontMetrics(family: string): Promise<FaceVerticalMetrics | null>
-  getAiSettings(): Promise<AiSettings>
-  setAiSettings(settings: AiSettings): Promise<void>
+  /** v2 settings view: BYOK keys redacted to the KEEP_KEY sentinel */
+  getAiSettings(): Promise<AiSettingsV2>
+  /** persist the view; KEEP_KEY entries keep their stored key */
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  /** quick-switch: persist the global current model */
+  setAiCurrentModel(selection: AiModelSelection): Promise<void>
+  /** model list discovery; doubles as the settings page connection test */
+  aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
   /** system print dialog for the current window; ok=false without error = canceled */
   print(): Promise<{ ok: boolean; error?: string }>
   /** render the document to PDF and ask where to save; size in twips.
@@ -278,9 +302,10 @@ export interface DesktopApi {
     base64Parts: string[],
     outPath?: string,
   ): Promise<{ ok: boolean; path?: string; error?: string }>
-  aiChat(request: AiChatRequest): Promise<AiChatResponse>
-  /** start a streaming AI call; deltas arrive via onAiStream with the same requestId */
-  aiStream(request: AiStreamRequest): Promise<void>
+  aiChat(request: { selection: AiModelSelection; system: string; user: string }): Promise<AiChatResponse>
+  /** start a streaming AI call; deltas arrive via onAiStream with the same requestId.
+   *  The `settings` slot carries the model selection (agent-core's generic transport shape). */
+  aiStream(request: AiStreamWireRequest): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   /** Genspark account status (gsk login state); withEmail also returns the email (needs a network request, slower) */
   aiGskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>

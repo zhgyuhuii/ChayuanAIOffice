@@ -3,8 +3,8 @@ import { GEMINI_BASE_URL } from './protocols/gemini'
 import { AI_PROVIDERS, GENSPARK_LLM_BASE_URLS } from './providers'
 import type { AiProviderConfig, AiProviderId, AiProviderMeta } from './types'
 
-/** The three wire protocols every provider maps onto. */
-export type AiProtocol = 'anthropic' | 'gemini' | 'openai-compatible'
+/** The wire protocols every provider maps onto. */
+export type AiProtocol = 'anthropic' | 'gemini' | 'openai-compatible' | 'openai-responses'
 
 export interface ProviderCapabilities {
   /** 'gsk-login': the Genspark session key is injected by the main process; 'api-key': the user supplies their own key */

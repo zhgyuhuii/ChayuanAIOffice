@@ -93,7 +93,12 @@ describe('AiPanel teardown', () => {
     Object.defineProperty(window, 'markdownApi', {
       configurable: true,
       value: {
-        getAiSettings: vi.fn(async () => ({})),
+        getAiSettings: vi.fn(async () => ({ version: 2, profiles: [] })),
+        setAiSettings: vi.fn(async () => {}),
+        setAiCurrentModel: vi.fn(async () => {}),
+        aiDiscoverModels: vi.fn(async () => ({ models: [] })),
+        aiGskStatus: vi.fn(async () => ({ loggedIn: false })),
+        aiGskLogin: vi.fn(async () => {}),
         aiStream,
         aiStreamCancel,
         onAiStream,
