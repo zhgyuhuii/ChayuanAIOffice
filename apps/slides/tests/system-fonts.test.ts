@@ -38,9 +38,9 @@ describe.runIf(mac)(
       expect(m.displayFamily!(style('ＭＳ Ｐゴシック'))).toMatch(
         office ? /MS P?Gothic|Hiragino Sans/ : /^Hiragino Sans$/,
       )
-      expect(m.displayFamily!(style('游明朝'))).toMatch(
-        office ? /Yu Mincho|Hiragino Mincho/ : /^Hiragino Mincho ProN$/,
-      )
+      // Yu Mincho ships with recent macOS as the "YuMincho" family, so the real
+      // font can win even without Office installed
+      expect(m.displayFamily!(style('游明朝'))).toMatch(/Yu ?Mincho|Hiragino Mincho/)
       expect(m.displayFamily!(style('MS Mincho'))).toMatch(
         office ? /MS Mincho|Hiragino Mincho/ : /^Hiragino Mincho ProN$/,
       )

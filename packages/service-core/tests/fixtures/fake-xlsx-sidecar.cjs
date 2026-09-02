@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /** Test double for the Rust xlsx sidecar: same stdio JSON-lines protocol.
  *  open → one session with a tiny snapshot; read_range → canned cells;
  *  close → ack; unknown → error. */

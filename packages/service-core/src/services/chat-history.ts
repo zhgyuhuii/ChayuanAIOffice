@@ -12,7 +12,6 @@ import { ProjectStore } from '@genoffice/project-store'
 import type { ProjectApi } from '@genoffice/project-store'
 import type { StorageArea } from '@genoffice/storage-adapter'
 import { openLocalArea } from '@genoffice/storage-adapter'
-import { join } from 'node:path'
 import type { ServiceContext } from '../runtime.js'
 import { defineService, ServiceEmitter } from '../runtime.js'
 
@@ -30,7 +29,7 @@ export function createChatHistoryApi(
   deps: ChatHistoryDeps & { userDataPath?: string; area?: StorageArea } = {},
 ): ProjectApi {
   const area =
-    deps.area ?? openLocalArea({ rootDir: join(deps.userDataPath ?? '.', 'projects') })
+    deps.area ?? openLocalArea({ rootDir: deps.userDataPath ?? '.' })
   const context: ServiceContext = {
     events: new ServiceEmitter(),
     storage: { defaultArea: () => area },
@@ -42,7 +41,8 @@ export function chatHistoryService(deps: ChatHistoryDeps = {}) {
   return defineService<ProjectApi>({
     name: 'chatHistory',
     create(context: ServiceContext): ProjectApi {
-      const store = new ProjectStore(context.storage.defaultArea())
+      // ProjectStore is path-based (appends 'projects' itself), so pass the area root
+      const store = new ProjectStore(context.storage.defaultArea().rootDir)
       return {
         async resolveChat(args) {
           let filePath = args.filePath ?? null

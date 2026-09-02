@@ -26,8 +26,11 @@ describe('in-row table cut decorations', () => {
     expect(el.classList.contains('page-gap')).toBe(true)
     expect(el.classList.contains('page-gap-inline')).toBe(true)
     expect(el.classList.contains('page-gap-cut')).toBe(false)
-    expect(el.style.height).toBe(`${96 + GAP_BAND + 96}px`)
+    // height is var-driven so collapse mode can zero the margins
+    expect(el.style.height).toBe('calc(var(--gap-mb) + var(--gap-band) + var(--gap-mt))')
     expect(el.style.getPropertyValue('--gap-mb')).toBe('96px')
+    expect(el.style.getPropertyValue('--gap-mt')).toBe('96px')
+    expect(el.style.getPropertyValue('--gap-band')).toBe(`${GAP_BAND}px`)
     expect(el.style.width).toBe('calc(100% + 180px)')
   })
 
