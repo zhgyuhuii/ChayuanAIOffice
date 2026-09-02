@@ -354,6 +354,22 @@ export function DockShell({
   const [resizing, setResizing] = useState(false)
   /** live tear-off drag: the panel slot renders as a floating ghost at rect */
   const [tear, setTear] = useState<{ rect: DockRect; snap: DockPosition | null } | null>(null)
+  // a drag whose pointerup was swallowed by native chrome (window resize
+  // border, OS gestures) would otherwise freeze the ghost forever — clear it
+  // as soon as the window loses focus or the tab hides
+  useEffect(() => {
+    if (!tear) return
+    const clear = () => {
+      tearRef.current = null
+      setTear(null)
+    }
+    window.addEventListener('blur', clear)
+    document.addEventListener('visibilitychange', clear)
+    return () => {
+      window.removeEventListener('blur', clear)
+      document.removeEventListener('visibilitychange', clear)
+    }
+  }, [tear])
   /** mirror of `tear` for the drag cleanup — committing inside a state updater
       would fire twice under StrictMode, so the drop reads the ref instead */
   const tearRef = useRef<typeof tear>(null)
@@ -432,10 +448,27 @@ export function DockShell({
     e.preventDefault()
     const cursor = document.body.style.cursor
     const select = document.body.style.userSelect
+    // implicit capture on the pressed element: without it, moving over an
+    // iframe (sheets/slides editors) or past a native edge stops delivering
+    // pointermove to this window — the gesture would freeze mid-drag
+    const captureEl = e.currentTarget as EventTarget & {
+      setPointerCapture?: (id: number) => void
+      releasePointerCapture?: (id: number) => void
+    }
+    try {
+      captureEl.setPointerCapture?.(e.pointerId)
+    } catch {
+      /* capture is best-effort */
+    }
     const cleanup = () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', cleanup)
       window.removeEventListener('pointercancel', cleanup)
+      try {
+        captureEl.releasePointerCapture?.(e.pointerId)
+      } catch {
+        /* already released */
+      }
       document.body.style.cursor = cursor
       document.body.style.userSelect = select
       onDone?.()
