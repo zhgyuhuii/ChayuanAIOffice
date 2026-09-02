@@ -34,6 +34,20 @@ describe('visual object schema', () => {
     expect(parsed.drawingIndex).toBe(2)
   })
 
+  // adapted: 9f971ed — local visuals keep the OOXML srcRect shape (l/t/r/b
+  // 1/100000 fractions, xlsx-engine visuals.rs) instead of upstream's 0..1 crop
+  it('accepts the sidecar srcRect crop payload', () => {
+    const parsed = visualSchema.parse({
+      id: 'visual-5',
+      sheetId: 'sheet-1',
+      kind: 'image',
+      anchor,
+      mediaPath: 'xl/media/image1.png',
+      srcRect: { l: 22481, t: 11008, r: 20930, b: 38139 },
+    })
+    expect(parsed.srcRect).toEqual({ l: 22481, t: 11008, r: 20930, b: 38139 })
+  })
+
   it('accepts the sidecar custGeom path payload', () => {
     const parsed = visualSchema.parse({
       id: 'visual-3',

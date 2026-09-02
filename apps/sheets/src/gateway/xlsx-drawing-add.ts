@@ -3,6 +3,7 @@
 /// worksheet/drawing relationships, and the [Content_Types].xml overrides.
 
 import { applyPictureFormat, type PictureLum, type PictureSrcRect } from './xlsx-picture-xml'
+import { ensureRelationshipNamespace } from './xlsx-namespace'
 
 export class VisualAddError extends Error {}
 
@@ -261,12 +262,7 @@ async function insertWorksheetDrawingElement(
   if (/<drawing[\s/>]/.test(xml)) {
     throw new VisualAddError(`${worksheetPath} already has a drawing element but no drawing rel.`)
   }
-  if (!/<worksheet[^>]*xmlns:r=/.test(xml)) {
-    xml = xml.replace(
-      /<worksheet\b/,
-      '<worksheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
-    )
-  }
+  xml = ensureRelationshipNamespace(xml)
   const element = `<drawing r:id="${escapeXmlAttribute(relId)}"/>`
   let insertAt = xml.lastIndexOf('</worksheet>')
   if (insertAt < 0) throw new VisualAddError(`${worksheetPath} has no closing worksheet tag.`)

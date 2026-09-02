@@ -73,6 +73,9 @@ export const strings = {
     projSearchPlaceholder: '搜索会话、问题和文件…',
     selectedFilesChats: '已选 {n} 个文件 · {m} 个会话',
     deleteWithChats: '将同时删除这些文件下的 {n} 个对话',
+    missingFileTitle: '文件不可用',
+    missingFileBody:
+      '找不到“{name}”。它可能位于未连接的磁盘上，或已被移动或删除。要从列表中移除吗？',
     deleteFiles: '删除文件',
     cancel: '取消',
     star: '收藏',
@@ -347,6 +350,9 @@ export const strings = {
     projSearchPlaceholder: 'Search chats, questions and files…',
     selectedFilesChats: '{n} files · {m} chats selected',
     deleteWithChats: '{n} chats under these files will also be deleted',
+    missingFileTitle: 'File unavailable',
+    missingFileBody:
+      '“{name}” can’t be found. It may be on a disconnected drive, or it was moved or deleted. Remove it from the list?',
     deleteFiles: 'Delete files',
     cancel: 'Cancel',
     star: 'Star',
@@ -630,6 +636,9 @@ export const strings = {
     projSearchPlaceholder: 'チャット・質問・ファイルを検索…',
     selectedFilesChats: '{n} 件のファイル · {m} 件の会話を選択',
     deleteWithChats: '{n} 件の会話も同時に削除されます',
+    missingFileTitle: 'ファイルを利用できません',
+    missingFileBody:
+      '「{name}」が見つかりません。接続されていないドライブにあるか、移動または削除された可能性があります。リストから削除しますか？',
     deleteFiles: 'ファイルを削除',
     cancel: 'キャンセル',
     star: 'お気に入りに追加',
@@ -923,6 +932,9 @@ export const strings = {
     projSearchPlaceholder: '대화, 질문, 파일 검색…',
     selectedFilesChats: '파일 {n}개 · 대화 {m}개 선택',
     deleteWithChats: '이 파일들 아래의 대화 {n}개도 함께 삭제됩니다',
+    missingFileTitle: '파일을 사용할 수 없음',
+    missingFileBody:
+      '“{name}”을(를) 찾을 수 없습니다. 연결되지 않은 드라이브에 있거나 이동 또는 삭제되었을 수 있습니다. 목록에서 제거할까요?',
     deleteFiles: '파일 삭제',
     cancel: '취소',
     star: '즐겨찾기에 추가',
@@ -1213,6 +1225,9 @@ export const strings = {
     projSearchPlaceholder: 'Rechercher conversations, questions et fichiers…',
     selectedFilesChats: '{n} fichiers · {m} conversations sélectionnés',
     deleteWithChats: '{n} conversations sous ces fichiers seront aussi supprimées',
+    missingFileTitle: 'Fichier indisponible',
+    missingFileBody:
+      '« {name} » est introuvable. Il se trouve peut-être sur un disque déconnecté, ou il a été déplacé ou supprimé. Le retirer de la liste ?',
     deleteFiles: 'Supprimer les fichiers',
     cancel: 'Annuler',
     star: 'Ajouter aux favoris',
@@ -1512,6 +1527,9 @@ export const strings = {
     projSearchPlaceholder: 'Chats, Fragen und Dateien suchen…',
     selectedFilesChats: '{n} Dateien · {m} Chats ausgewählt',
     deleteWithChats: '{n} Chats unter diesen Dateien werden mitgelöscht',
+    missingFileTitle: 'Datei nicht verfügbar',
+    missingFileBody:
+      '„{name}“ wurde nicht gefunden. Sie befindet sich möglicherweise auf einem getrennten Laufwerk oder wurde verschoben oder gelöscht. Aus der Liste entfernen?',
     deleteFiles: 'Dateien löschen',
     cancel: 'Abbrechen',
     star: 'Zu Favoriten hinzufügen',
@@ -1811,6 +1829,9 @@ export const strings = {
     projSearchPlaceholder: 'Buscar chats, preguntas y archivos…',
     selectedFilesChats: '{n} archivos · {m} chats seleccionados',
     deleteWithChats: 'También se eliminarán {n} chats bajo estos archivos',
+    missingFileTitle: 'Archivo no disponible',
+    missingFileBody:
+      'No se encuentra “{name}”. Puede estar en una unidad desconectada, o se ha movido o eliminado. ¿Quitarlo de la lista?',
     deleteFiles: 'Eliminar archivos',
     cancel: 'Cancelar',
     star: 'Destacar',
@@ -2107,6 +2128,9 @@ export const strings = {
     projSearchPlaceholder: 'ค้นหาแชท คำถาม และไฟล์…',
     selectedFilesChats: 'เลือก {n} ไฟล์ · {m} แชท',
     deleteWithChats: 'จะลบแชท {n} รายการภายใต้ไฟล์เหล่านี้ด้วย',
+    missingFileTitle: 'ไฟล์ไม่พร้อมใช้งาน',
+    missingFileBody:
+      'ไม่พบ “{name}” อาจอยู่ในไดรฟ์ที่ไม่ได้เชื่อมต่อ หรือถูกย้ายหรือลบไปแล้ว ต้องการนำออกจากรายการหรือไม่',
     deleteFiles: 'ลบไฟล์',
     cancel: 'ยกเลิก',
     star: 'เพิ่มในรายการโปรด',
@@ -2396,6 +2420,9 @@ export const strings = {
     projSearchPlaceholder: 'Cari obrolan, pertanyaan, dan berkas…',
     selectedFilesChats: '{n} berkas · {m} obrolan dipilih',
     deleteWithChats: '{n} obrolan di bawah berkas ini juga akan dihapus',
+    missingFileTitle: 'Berkas tidak tersedia',
+    missingFileBody:
+      '“{name}” tidak ditemukan. Mungkin berada di drive yang terputus, atau telah dipindahkan atau dihapus. Hapus dari daftar?',
     deleteFiles: 'Hapus file',
     cancel: 'Batal',
     star: 'Beri bintang',
@@ -2688,6 +2715,9 @@ export const strings = {
     projSearchPlaceholder: 'Поиск чатов, вопросов и файлов…',
     selectedFilesChats: 'Выбрано файлов: {n} · чатов: {m}',
     deleteWithChats: 'Также будут удалены {n} чатов под этими файлами',
+    missingFileTitle: 'Файл недоступен',
+    missingFileBody:
+      'Не удалось найти «{name}». Возможно, он находится на отключённом диске, либо был перемещён или удалён. Убрать его из списка?',
     deleteFiles: 'Удалить файлы',
     cancel: 'Отмена',
     star: 'В избранное',
@@ -2981,6 +3011,9 @@ export const strings = {
     projSearchPlaceholder: 'ابحث في المحادثات والأسئلة والملفات…',
     selectedFilesChats: 'تم تحديد {n} ملفًا · {m} محادثة',
     deleteWithChats: 'سيتم أيضًا حذف {n} محادثة تحت هذه الملفات',
+    missingFileTitle: 'الملف غير متاح',
+    missingFileBody:
+      'تعذّر العثور على “{name}”. قد يكون على قرص غير متصل، أو تم نقله أو حذفه. هل تريد إزالته من القائمة؟',
     deleteFiles: 'حذف الملفات',
     cancel: 'إلغاء',
     star: 'إضافة إلى المفضلة',
@@ -3265,6 +3298,9 @@ export const strings = {
     projSearchPlaceholder: 'Pesquisar conversas, perguntas e arquivos…',
     selectedFilesChats: '{n} ficheiros · {m} conversas selecionados',
     deleteWithChats: 'Também serão excluídas {n} conversas sob estes ficheiros',
+    missingFileTitle: 'Arquivo indisponível',
+    missingFileBody:
+      'Não foi possível encontrar “{name}”. Ele pode estar em uma unidade desconectada, ou foi movido ou excluído. Removê-lo da lista?',
     deleteFiles: 'Excluir arquivos',
     cancel: 'Cancelar',
     star: 'Adicionar aos favoritos',
@@ -3551,6 +3587,9 @@ export const strings = {
     projSearchPlaceholder: 'Cerca chat, domande e file…',
     selectedFilesChats: '{n} file · {m} chat selezionat{m?i:o}',
     deleteWithChats: 'Verranno eliminati anche {n} chat sotto questi file',
+    missingFileTitle: 'File non disponibile',
+    missingFileBody:
+      "Impossibile trovare “{name}”. Potrebbe trovarsi su un'unità disconnessa, oppure è stato spostato o eliminato. Rimuoverlo dall'elenco?",
     deleteFiles: 'Elimina file',
     cancel: 'Annulla',
     star: 'Aggiungi ai preferiti',
@@ -3835,6 +3874,9 @@ export const strings = {
     projSearchPlaceholder: 'Szukaj czatów, pytań i plików…',
     selectedFilesChats: 'Wybrano pliki: {n} · czaty: {m}',
     deleteWithChats: 'Zostaną też usunięte czaty: {n} pod tymi plikami',
+    missingFileTitle: 'Plik niedostępny',
+    missingFileBody:
+      'Nie można znaleźć pliku „{name}”. Może znajdować się na odłączonym dysku albo został przeniesiony lub usunięty. Usunąć go z listy?',
     deleteFiles: 'Usuń pliki',
     cancel: 'Anuluj',
     star: 'Dodaj do ulubionych',
@@ -4120,6 +4162,9 @@ export const strings = {
     projSearchPlaceholder: 'Chats, vragen en bestanden zoeken…',
     selectedFilesChats: '{n} bestanden · {m} chats geselecteerd',
     deleteWithChats: 'Ook {n} chats onder deze bestanden worden verwijderd',
+    missingFileTitle: 'Bestand niet beschikbaar',
+    missingFileBody:
+      '“{name}” is niet gevonden. Het staat mogelijk op een losgekoppelde schijf, of het is verplaatst of verwijderd. Uit de lijst verwijderen?',
     deleteFiles: 'Bestanden verwijderen',
     cancel: 'Annuleren',
     star: 'Aan favorieten toevoegen',
@@ -4405,6 +4450,9 @@ export const strings = {
     projSearchPlaceholder: 'Cari sembang, soalan dan fail…',
     selectedFilesChats: '{n} fail · {m} sembang dipilih',
     deleteWithChats: '{n} sembang di bawah fail ini turut dihapus',
+    missingFileTitle: 'Fail tidak tersedia',
+    missingFileBody:
+      '“{name}” tidak ditemui. Ia mungkin berada pada pemacu yang terputus, atau telah dipindahkan atau dipadamkan. Alih keluar daripada senarai?',
     deleteFiles: 'Padam fail',
     cancel: 'Batal',
     star: 'Tambah bintang',
@@ -4687,6 +4735,9 @@ export const strings = {
     projSearchPlaceholder: 'חיפוש צ׳אטים, שאלות וקבצים…',
     selectedFilesChats: 'נבחרו {n} קבצים · {m} צ׳אטים',
     deleteWithChats: '{n} צ׳אטים תחת קבצים אלה יימחקו גם כן',
+    missingFileTitle: 'הקובץ אינו זמין',
+    missingFileBody:
+      'לא ניתן למצוא את “{name}”. ייתכן שהוא נמצא בכונן מנותק, או שהועבר או נמחק. להסיר אותו מהרשימה?',
     deleteFiles: 'מחיקת קבצים',
     cancel: 'ביטול',
     star: 'הוספה למועדפים',
@@ -4961,6 +5012,9 @@ export const strings = {
     projSearchPlaceholder: 'चैट, प्रश्न और फ़ाइलें खोजें…',
     selectedFilesChats: '{n} फ़ाइलें · {m} चैट चयनित',
     deleteWithChats: '{n} चैट भी हटाई जाएँगी इन फ़ाइलों के अंतर्गत',
+    missingFileTitle: 'फ़ाइल उपलब्ध नहीं है',
+    missingFileBody:
+      '“{name}” नहीं मिली। यह किसी डिस्कनेक्ट की गई ड्राइव पर हो सकती है, या इसे स्थानांतरित या हटा दिया गया है। इसे सूची से हटाएँ?',
     deleteFiles: 'फ़ाइलें हटाएँ',
     cancel: 'रद्द करें',
     star: 'तारांकित करें',
@@ -5244,6 +5298,9 @@ export const strings = {
     projSearchPlaceholder: '搜尋會話、問題和檔案…',
     selectedFilesChats: '已選 {n} 個檔案 · {m} 個會話',
     deleteWithChats: '將同時刪除這些檔案下的 {n} 個會話',
+    missingFileTitle: '檔案無法使用',
+    missingFileBody:
+      '找不到「{name}」。它可能位於未連接的磁碟上，或已被移動或刪除。要從清單中移除嗎？',
     deleteFiles: '刪除檔案',
     cancel: '取消',
     star: '收藏',

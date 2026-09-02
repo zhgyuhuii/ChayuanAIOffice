@@ -96,6 +96,28 @@ describe('resolveAiSettings', () => {
     expect(resolved.providers.deepseek).toEqual({ apiKey: 'sk-user', model: 'deepseek-v4-flash' })
   })
 
+  it('rewrites chatoffice model ids the proxy no longer serves', () => {
+    const resolved = resolveAiSettings(
+      {
+        providers: {
+          chatoffice: { apiKey: '', model: 'gemini-3.7-flash' },
+        } as never,
+      },
+      defaultAiSettings(),
+    )
+    expect(resolved.providers.chatoffice.model).toBe('claude-opus-4-7')
+
+    const gpt = resolveAiSettings(
+      {
+        providers: {
+          chatoffice: { apiKey: '', model: 'gpt-5.6' },
+        } as never,
+      },
+      defaultAiSettings(),
+    )
+    expect(gpt.providers.chatoffice.model).toBe('gpt-5.6-terra')
+  })
+
   it('leaves a still-supported model id alone', () => {
     const resolved = resolveAiSettings(
       {

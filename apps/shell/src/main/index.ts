@@ -104,6 +104,7 @@ import {
   readStarredFiles,
   recordRecentFile,
   removeRecentFiles,
+  removeStarredFiles,
   replaceRecentFile,
   registerAiIpc,
   registerProjectIpc,
@@ -197,7 +198,7 @@ import { HOME_CHANNELS } from '../shared/home-api'
 import type { TabKind } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import { showErrorDialog } from './error-dialog'
-import { normalizeRecentQuery, pageRecentPaths, statExistingPaths } from './recent-files'
+import { normalizeRecentQuery, pageRecentPaths, statPathEntries } from './recent-files'
 import { TabManager } from './tab-manager'
 import { applyUpdateChannel, initAutoUpdater } from './updater'
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
@@ -222,13 +223,13 @@ if (!app.isPackaged)
     process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChatOffice Dev'),
   )
 
-// Product renames changed the userData path ("AI Office" → "GenOffice" →
+// Product renames changed the userData path ("AI Office" → "ChatOffice" →
 // "ChatOffice"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
   const newDir = app.getPath('userData')
   const newEmpty = !existsSync(newDir) || readdirSync(newDir).length === 0
   if (newEmpty) {
-    for (const oldName of ['GenOffice', 'AI Office']) {
+    for (const oldName of ['ChatOffice', 'AI Office']) {
       const oldDir = join(app.getPath('appData'), oldName)
       if (existsSync(oldDir)) {
         cpSync(oldDir, newDir, { recursive: true })
@@ -456,7 +457,7 @@ let cachedGithubStars: number | null = null
 async function fetchGithubStars(): Promise<number | null> {
   if (cachedGithubStars !== null) return cachedGithubStars
   try {
-    const response = await fetch('https://api.github.com/repos/genspark-ai/chatoffice', {
+    const response = await fetch('https://api.github.com/repos/chatoffice-ai/chatoffice', {
       headers: { Accept: 'application/vnd.github+json' },
       signal: AbortSignal.timeout(5000),
     })
@@ -2939,7 +2940,7 @@ function startQueuedWorkbookNudge(): void {
 // ---- home IPC ----
 
 function statEntries(paths: string[]): RecentEntry[] {
-  return statExistingPaths(paths, new Set(readStarredFiles()))
+  return statPathEntries(paths, new Set(readStarredFiles()))
 }
 
 // Remote storage (MinIO / OSS): the host lives in the embedded docs module so
@@ -3184,7 +3185,11 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.removeRecent, (_event, paths: unknown) => {
-    removeRecentFiles(stringPaths(paths))
+    const list = stringPaths(paths)
+    removeRecentFiles(list)
+    // an unavailable entry's star must go with it, or the Starred view keeps
+    // a dead dimmed row the recents list no longer shows
+    removeStarredFiles(list.filter((p) => !existsSync(p)))
   })
 
   ipcMain.handle(HOME_CHANNELS.revealPath, (_event, path: unknown) => {
@@ -3272,7 +3277,10 @@ function registerHomeIpc(): void {
         // file already gone or trash unavailable; still drop it from the list
       }
     }
-    removeRecentFiles(list.filter((p) => !failed.has(p)))
+    const removed = list.filter((p) => !failed.has(p))
+    removeRecentFiles(removed)
+    // the files were deliberately destroyed — stars must not survive as ghosts
+    removeStarredFiles(removed)
   })
 
   ipcMain.handle(HOME_CHANNELS.openTrash, () => {

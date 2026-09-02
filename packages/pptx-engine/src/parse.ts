@@ -15,6 +15,7 @@ import {
   resolvePlaceholderPresetGeom,
   resolvePlaceholderTransform,
   resolvePlaceholderAnchor,
+  resolvePlaceholderAnchorCtr,
   resolvePlaceholderInsets,
   resolvePlaceholderFillSpPr,
   parseLstStyleLevels,
@@ -405,6 +406,15 @@ function parseSpShape(
       phIdx,
     )
     if (inherited) text.anchor = inherited
+  }
+  if (ph && text && text.anchorCtr == null) {
+    const inherited = resolvePlaceholderAnchorCtr(
+      ctx.layoutPlaceholders,
+      ctx.masterPlaceholders,
+      phType,
+      phIdx,
+    )
+    if (inherited != null) text.anchorCtr = inherited
   }
 
   let stroke = parseStroke(spPr, ctx)
@@ -3120,9 +3130,29 @@ function parseTextBody(
     }
   }
 
+  // WordArt preset text warp (<a:prstTxWarp prst avLst>): read-only display, the original
+  // bodyPr bytes carry it through save
+  let txWarp: TextBody['txWarp']
+  const warpNode = bodyPr['a:prstTxWarp']
+  if (warpNode && typeof warpNode === 'object' && warpNode['@_prst']) {
+    const prst = String(warpNode['@_prst'])
+    if (prst !== 'textNoShape' && prst !== 'textPlain') {
+      const adj: Record<string, number> = {}
+      const gds = warpNode['a:avLst']?.['a:gd']
+      for (const gd of Array.isArray(gds) ? gds : gds ? [gds] : []) {
+        const m = /^val (-?\d+)$/.exec(String(gd['@_fmla'] ?? ''))
+        if (gd['@_name'] && m) adj[String(gd['@_name'])] = parseInt(m[1]!, 10)
+      }
+      txWarp = { prst, ...(Object.keys(adj).length ? { adj } : {}) }
+    }
+  }
+
   return {
     paragraphs,
     anchor: bodyPr['@_anchor'] ? anchorMap[bodyPr['@_anchor']] : undefined,
+    ...(bodyPr['@_anchorCtr'] != null
+      ? { anchorCtr: String(bodyPr['@_anchorCtr']) === '1' || bodyPr['@_anchorCtr'] === 'true' }
+      : {}),
     insets: {
       l: intOr(bodyPr['@_lIns'], inheritedInsets?.l ?? DEFAULT_BODY_INSETS.l),
       t: intOr(bodyPr['@_tIns'], inheritedInsets?.t ?? DEFAULT_BODY_INSETS.t),
@@ -3138,6 +3168,7 @@ function parseTextBody(
       ? { numCol: intOr(bodyPr['@_numCol'], 1), spcCol: intOr(bodyPr['@_spcCol'], 0) }
       : {}),
     ...(extrusion3d ? { extrusion3d } : {}),
+    ...(txWarp ? { txWarp } : {}),
   }
 }
 
@@ -3230,14 +3261,26 @@ function parseParagraph(
   }
 
   const marLRaw = pPr['@_marL'] != null ? parseInt(pPr['@_marL'], 10) : undefined
+  const marRRaw = pPr['@_marR'] != null ? parseInt(pPr['@_marR'], 10) : undefined
   const indentRaw = pPr['@_indent'] != null ? parseInt(pPr['@_indent'], 10) : undefined
+  const defTabSzRaw = pPr['@_defTabSz'] != null ? parseInt(pPr['@_defTabSz'], 10) : undefined
+  const tabNodes = pPr['a:tabLst']?.['a:tab']
+  const tabStops = (Array.isArray(tabNodes) ? tabNodes : tabNodes ? [tabNodes] : [])
+    .map((t: any) => ({
+      pos: parseInt(t['@_pos'], 10),
+      ...(t['@_algn'] ? { algn: String(t['@_algn']) } : {}),
+    }))
+    .filter((t: { pos: number }) => Number.isFinite(t.pos))
+    .sort((a: { pos: number }, b: { pos: number }) => a.pos - b.pos)
   // Inheritance fallback: explicit pPr wins, level defaults from the placeholder/lstStyle chain fill gaps
   // (the master bodyStyle's buChar/marL/indent is where classic-template body bullets come from).
   // No field-wise merge: a paragraph redefining its bullet resets unspecified buClr/buSzPct/buFont
   // to follow the text (buClrTx/buSzTx/buFontTx semantics), not the chain's values.
   const effBullet = bullet ?? dflt?.bullet
   const hasMarL = marLRaw != null && !Number.isNaN(marLRaw)
+  const hasMarR = marRRaw != null && !Number.isNaN(marRRaw)
   const hasIndent = indentRaw != null && !Number.isNaN(indentRaw)
+  const hasDefTabSz = defTabSzRaw != null && !Number.isNaN(defTabSzRaw)
   const marL = hasMarL ? marLRaw : dflt?.marL
   const indent = hasIndent ? indentRaw : dflt?.indent
 
@@ -3259,7 +3302,10 @@ function parseParagraph(
     ...(aftNode ? { spcAft: true } : {}),
     ...(bullet ? { bullet: true } : {}),
     ...(hasMarL ? { marL: true } : {}),
+    ...(hasMarR ? { marR: true } : {}),
     ...(hasIndent ? { indent: true } : {}),
+    ...(tabStops.length ? { tabLst: true } : {}),
+    ...(hasDefTabSz ? { defTabSz: true } : {}),
   }
 
   return {
@@ -3276,7 +3322,10 @@ function parseParagraph(
     ...(spaceAfterPct != null ? { spaceAfterPct } : {}),
     ...(effBullet ? { bullet: effBullet } : {}),
     ...(marL != null ? { marL } : {}),
+    ...(hasMarR ? { marR: marRRaw } : {}),
     ...(indent != null ? { indent } : {}),
+    ...(tabStops.length ? { tabStops } : {}),
+    ...(hasDefTabSz ? { defTabSz: defTabSzRaw } : {}),
   }
 }
 
