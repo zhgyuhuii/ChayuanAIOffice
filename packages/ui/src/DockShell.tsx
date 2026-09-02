@@ -103,8 +103,10 @@ const FLOAT_MIN_W = 320
 const FLOAT_MIN_H = 240
 /** the content area never shrinks below this in the docked dimension */
 const CONTENT_MIN = 320
-/** pointer distance from a shell edge that arms the snap preview */
-const SNAP_ZONE = 48
+/** pointer distance from a shell edge that arms the snap preview (negative
+ * distances — the pointer pushed past the edge — count as armed: pressing
+ * harder toward an edge must not disarm it) */
+const SNAP_ZONE = 56
 /** header press must travel this far before the panel tears off */
 const DRAG_THRESHOLD = 4
 
@@ -511,12 +513,19 @@ export function DockShell({
     const grabDY = e.clientY - panel.top
     const startX = e.clientX
     const startY = e.clientY
-    const startRect: DockRect = {
-      x: panel.left - shell.left,
-      y: panel.top - shell.top,
-      width: panel.width,
-      height: panel.height,
-    }
+    // ghost model: tearing adopts FLOAT geometry (last float size or the
+    // default), with the hand position mapped proportionally onto it — never
+    // the docked strip. The docked layout keeps a placeholder slot until drop,
+    // so the editor never reflows mid-drag.
+    const baseFloat = clampFloatRect(
+      stateRef.current.floatRect ?? defaultFloatRect(shell.width, shell.height),
+      shell.width,
+      shell.height,
+    )
+    const relX = Math.min(Math.max(grabDX / Math.max(panel.width, 1), 0.1), 0.9)
+    const relY = Math.min(Math.max(grabDY / Math.max(panel.height, 1), 0.06), 0.5)
+    const anchorX = relX * baseFloat.width
+    const anchorY = relY * baseFloat.height
     let active = false
     // Esc mid-drag aborts the gesture entirely — without this the next
     // pointermove would just tear the panel off again
@@ -541,15 +550,16 @@ export function DockShell({
         }
         const rect = clampFloatRect(
           {
-            x: ev.clientX - shell.left - grabDX,
-            y: ev.clientY - shell.top - grabDY,
-            width: startRect.width,
-            height: startRect.height,
+            x: ev.clientX - shell.left - anchorX,
+            y: ev.clientY - shell.top - anchorY,
+            width: baseFloat.width,
+            height: baseFloat.height,
           },
           shell.width,
           shell.height,
         )
-        // nearest armed edge wins (corner overlaps resolve by distance)
+        // nearest armed edge wins (corner overlaps resolve by distance);
+        // a negative distance = pointer pushed past the edge = armed
         const px = ev.clientX - shell.left
         const py = ev.clientY - shell.top
         const candidates: Array<[DockPosition, number]> = [
@@ -558,7 +568,7 @@ export function DockShell({
           ['bottom', shell.height - py],
         ]
         const armed = candidates
-          .filter((c): c is [DockPosition, number] => c[1] >= 0 && c[1] < SNAP_ZONE)
+          .filter((c): c is [DockPosition, number] => c[1] < SNAP_ZONE)
           .sort((a, b) => a[1] - b[1])
         const next = { rect, snap: armed[0]?.[0] ?? null }
         tearRef.current = next
@@ -593,7 +603,9 @@ export function DockShell({
 
   const rootClass = [
     'dockshell',
-    `pos-${tear ? (tear.snap ?? 'float') : position}`,
+    // during a tear drag the class stays at the resting position — the editor
+    // layout must not reflow mid-gesture; only the drop commits the new one
+    `pos-${position}`,
     open ? '' : 'is-closed',
     maximized && open ? 'is-max' : '',
     resizing ? 'is-resizing' : '',
@@ -605,6 +617,8 @@ export function DockShell({
 
   const rootStyle = {
     '--dock-size': `${dockedSize}px`,
+    // the snap preview shows the size the panel WILL take in the armed slot
+    '--snap-size': `${tear?.snap === 'bottom' ? clampBottom(state.bottomHeight, shellSize.h) : clampSide(state.sideWidth, shellSize.w)}px`,
     '--dock-x': `${liveRect.x}px`,
     '--dock-y': `${liveRect.y}px`,
     '--dock-w': `${liveRect.width}px`,
@@ -683,6 +697,19 @@ export function DockShell({
 
   return (
     <div ref={rootRef} className={rootClass} style={rootStyle}>
+      {showPanel && tear && position !== 'float' && (
+        // reserves the docked strip while the panel is carried as a ghost, so
+        // the editor below holds its layout until the drop commits
+        <div
+          className="dockshell-slot"
+          style={
+            position === 'bottom'
+              ? { height: `${dockedSize}px` }
+              : { width: `${dockedSize}px` }
+          }
+          aria-hidden
+        />
+      )}
       {showPanel && (
         <div ref={panelRef} className="dockshell-panel">
           {renderPanel(chrome)}

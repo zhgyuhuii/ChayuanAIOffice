@@ -27,6 +27,19 @@
   min-height: 0;
 }
 
+/* reserves the docked strip while the panel is carried during a tear drag —
+ * the editor holds its layout until the drop commits */
+.dockshell-slot {
+  flex-shrink: 0;
+  align-self: stretch;
+  background: var(--surface-subtle, #f6f7f9);
+  border: 1px dashed var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 6px;
+  margin: 4px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .dockshell-panel {
   position: relative;
   flex-shrink: 0;
@@ -273,37 +286,67 @@
   cursor: sw-resize;
 }
 
-/* ---- snap preview (edge hot zone armed during a tear drag) ---- */
+/* ---- carried panel during a tear drag (ghost) ----
+ * the panel floats at the pointer regardless of the resting dock position;
+ * the layout class only changes on drop. Same geometry as .pos-float. */
+.dockshell.is-tearing .dockshell-panel {
+  position: absolute;
+  top: var(--dock-y);
+  left: var(--dock-x);
+  width: var(--dock-w);
+  height: var(--dock-h);
+  z-index: 40;
+  border-radius: 10px;
+  box-shadow: 0 14px 36px rgb(0 0 0 / 30%), 0 2px 8px rgb(0 0 0 / 14%);
+  opacity: 0.97;
+}
 
+/* ---- snap preview (edge hot zone armed during a tear drag) ----
+ * sits ABOVE the carried panel: the target must stay visible while the
+ * ghost passes over it. Strong shadow + accent glow so it reads as the
+ * drop target. */
 .dockshell-snap {
   position: absolute;
-  z-index: 35;
+  z-index: 50;
   margin: 4px;
   border-radius: 8px;
-  border: 1px solid var(--accent, #2f6fdc);
-  background: color-mix(in srgb, var(--accent, #2f6fdc) 16%, transparent);
+  border: 1.5px solid var(--accent, #2f6fdc);
+  background: color-mix(in srgb, var(--accent, #2f6fdc) 18%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent, #2f6fdc) 22%, transparent),
+    0 10px 30px color-mix(in srgb, var(--accent, #2f6fdc) 30%, transparent);
   pointer-events: none;
+  animation: dockshell-snap-in 120ms ease;
+}
+
+@keyframes dockshell-snap-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dockshell-snap-left {
   left: 0;
   top: 0;
   bottom: 0;
-  width: var(--dock-size);
+  width: var(--snap-size);
 }
 
 .dockshell-snap-right {
   right: 0;
   top: 0;
   bottom: 0;
-  width: var(--dock-size);
+  width: var(--snap-size);
 }
 
 .dockshell-snap-bottom {
   left: 0;
   right: 0;
   bottom: 0;
-  height: var(--dock-size);
+  height: var(--snap-size);
 }
 
 /* ---- header chrome buttons (rendered inside the app's panel header) ---- */

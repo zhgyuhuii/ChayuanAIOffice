@@ -1,0 +1,163 @@
+// @vitest-environment jsdom
+/**
+ * DockShell ghost-drag tests: tearing adopts float geometry, the layout class
+ * freezes during the drag (editor never reflows mid-gesture), the snap
+ * preview stays above the carried panel, negative edge distances still arm
+ * (pressing past an edge must not disarm it), and the drop commits.
+ */
+import { beforeEach, describe, expect, it } from 'vitest'
+import { act, createElement } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
+import { DockShell, type DockChrome } from '../src/DockShell'
+
+const store = new Map<string, string>()
+beforeEach(() => {
+  store.clear()
+  ;(globalThis as Record<string, unknown>).localStorage = {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, v),
+    removeItem: (k: string) => store.delete(k),
+  }
+  // jsdom lacks ResizeObserver (DockShell re-clamps on shell resize)
+  ;(globalThis as Record<string, unknown>).ResizeObserver =
+    class {
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
+    }
+})
+
+const SHELL = { left: 0, top: 0, width: 1280, height: 800 }
+
+let host: HTMLDivElement
+let root: Root | null = null
+let chromeRef: DockChrome | null = null
+
+function renderDock(): void {
+  chromeRef = null
+  act(() => {
+    root!.render(
+      createElement(
+        DockShell,
+        {
+          storageKey: 'test-dock-drag',
+          open: true,
+          onOpenChange: () => {},
+          labels: {
+            panelTitle: 'AI',
+            dockLeft: 'left',
+            dockRight: 'right',
+            dockBottom: 'bottom',
+            float: 'float',
+            maximize: 'max',
+            restore: 'restore',
+            collapse: 'close',
+            layoutMenu: 'layout',
+          },
+          renderPanel: (chrome: DockChrome) => {
+            chromeRef = chrome
+            return createElement('div', { ...chrome.dragProps, 'data-header': '' }, 'panel')
+          },
+          children: createElement('div', { className: 'editor-stub' }),
+        },
+      ),
+    )
+  })
+}
+
+function realRects(): void {
+  const rootEl = host.querySelector('.dockshell') as HTMLElement
+  const panelEl = host.querySelector('.dockshell-panel') as HTMLElement
+  rootEl.getBoundingClientRect = () =>
+    ({ left: SHELL.left, top: SHELL.top, width: SHELL.width, height: SHELL.height, right: 1280, bottom: 800, x: 0, y: 0 }) as DOMRect
+  panelEl.getBoundingClientRect = () =>
+    ({ left: 0, top: 0, width: 360, height: 800, right: 360, bottom: 800, x: 0, y: 0 }) as DOMRect
+}
+
+function press(x: number, y: number): void {
+  act(() => {
+    ;(host.querySelector('[data-header]') as HTMLElement).dispatchEvent(
+      new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: x, clientY: y }),
+    )
+  })
+}
+
+function move(x: number, y: number): void {
+  act(() => {
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: x, clientY: y }))
+  })
+}
+
+function release(): void {
+  act(() => {
+    window.dispatchEvent(new MouseEvent('pointerup'))
+  })
+}
+
+beforeEach(() => {
+  document.body.innerHTML = ''
+  host = document.createElement('div')
+  document.body.appendChild(host)
+  root = createRoot(host)
+})
+
+describe('DockShell ghost drag', () => {
+  it('tears off into float geometry while the layout class freezes', () => {
+    renderDock()
+    realRects()
+    // grab the header mid-strip and carry the panel to the shell center
+    press(120, 24)
+    move(640, 400)
+    const rootEl = host.querySelector('.dockshell') as HTMLElement
+    expect(rootEl.classList.contains('is-tearing')).toBe(true)
+    // frozen at the resting position — no live relayout to pos-float/pos-snap
+    expect(rootEl.classList.contains('pos-left')).toBe(true)
+    expect(rootEl.classList.contains('pos-float')).toBe(false)
+    // the docked strip is reserved by a placeholder so the editor holds layout
+    expect(host.querySelector('.dockshell-slot')).toBeTruthy()
+    // the carried rect uses FLOAT geometry (default 480×560), not the 360×800 strip
+    expect(rootEl.style.getPropertyValue('--dock-w')).toBe('480px')
+    expect(rootEl.style.getPropertyValue('--dock-h')).toBe('560px')
+    move(640, 400)
+    release()
+  })
+
+  it('arms the bottom zone near the edge and docks on release', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 400)
+    move(640, 776) // 24px from the bottom edge
+    const rootEl = host.querySelector('.dockshell') as HTMLElement
+    expect(rootEl.classList.contains('is-tearing')).toBe(true)
+    expect(rootEl.classList.contains('pos-left')).toBe(true) // still frozen
+    expect(host.querySelector('.dockshell-snap-bottom')).toBeTruthy()
+    release()
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('pos-bottom')).toBe(true)
+    expect(after.classList.contains('is-tearing')).toBe(false)
+    expect(JSON.parse(store.get('test-dock-drag')!).position).toBe('bottom')
+  })
+
+  it('keeps the edge armed when the pointer pushes past it (negative distance)', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 830) // 30px BELOW the shell bottom (web form: pointer below the iframe)
+    expect(host.querySelector('.dockshell-snap-bottom')).toBeTruthy()
+    release()
+    expect((host.querySelector('.dockshell') as HTMLElement).classList.contains('pos-bottom')).toBe(true)
+  })
+
+  it('drops to float at the center with the carried rect persisted', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 400)
+    expect(host.querySelector('.dockshell-snap')).toBeNull()
+    release()
+    const saved = JSON.parse(store.get('test-dock-drag')!)
+    expect(saved.position).toBe('float')
+    expect(saved.floatRect).toMatchObject({ width: 480, height: 560 })
+  })
+})

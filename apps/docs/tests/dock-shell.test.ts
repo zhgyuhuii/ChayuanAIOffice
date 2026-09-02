@@ -174,7 +174,7 @@ describe('DockShell', () => {
     expect(container.querySelector('.dockshell')!.classList.contains('pos-float')).toBe(true)
     const saved = JSON.parse(localStorage.getItem('test-dock-shell')!)
     expect(saved.position).toBe('float')
-    expect(saved.floatRect.width).toBe(360) // keeps the torn panel's size
+    expect(saved.floatRect.width).toBe(480) // tear adopts float geometry (consensus A)
     cleanup()
   })
 
