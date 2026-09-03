@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent, ReactElement, ReactNode } from 'react'
-import { Home } from './Home'
+import type { PointerEvent as ReactPointerEvent, ReactElement } from 'react'
+import { Home, CloudProjectsView } from './Home'
 import { Onboarding } from './Onboarding'
 import { StarPromptCard } from './StarPromptCard'
 import { TabBar } from './TabBar'
 import { EditorPane } from './EditorPane'
 import type { PaneMode } from './EditorPane'
+import { TopStrip } from './TopStrip'
+import { ChatPanel } from './home-chat/ChatPanel'
+import { HomeChatProvider } from './home-chat/context'
 import { useI18n } from './locale'
+import { refreshHomeModelCache } from './home-chat/bridge'
 
 interface AppFrameProps {
   /** resolved before first paint (main.tsx) so home never flashes under the overlay */
@@ -23,13 +27,36 @@ const CHAT_RATIO_MAX = 0.75
 const clampRatio = (ratio: number): number =>
   Math.min(CHAT_RATIO_MAX, Math.max(CHAT_RATIO_MIN, ratio))
 
-/** three-pane frame: home (sidebar + chat) | draggable divider | editor pane */
-function PaneFrame({ children }: { children: ReactNode }): ReactElement {
+/** lifted state shared by both frames (the sidebar and the pane body) */
+interface FrameProps {
+  initialOnboardingSeen: boolean
+  selectedProjectId: string | null
+  onSelectProject: (id: string | null) => void
+  settingsOpen: boolean
+  onSettingsOpenChange: (open: boolean) => void
+  cloudMode: boolean
+  onCloudModeChange: (on: boolean) => void
+}
+
+/**
+ * Three-pane frame (ZCode-style): narrow sidebar | wide area with a top strip
+ * (conversation title/actions) above a body that splits into the chat (left)
+ * and the tabbed file panel (right).
+ */
+function PaneFrame({
+  selectedProjectId,
+  onSelectProject,
+  settingsOpen,
+  onSettingsOpenChange,
+  cloudMode,
+  onCloudModeChange,
+}: Omit<FrameProps, 'initialOnboardingSeen'>): ReactElement {
   const { t } = useI18n()
   const [mode, setMode] = useState<PaneMode>('split')
   const [chatRatio, setChatRatio] = useState(0.36)
   const [dragging, setDragging] = useState(false)
   const workRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
   const ratioRef = useRef(chatRatio)
   ratioRef.current = chatRatio
 
@@ -44,6 +71,14 @@ function PaneFrame({ children }: { children: ReactNode }): ReactElement {
   // 回主页 menu items collapse the pane from the main side
   useEffect(() => window.chatOfficeTabs.onHomeActivated(() => setMode('collapsed')), [])
 
+  // an editor tab activated while the file panel is collapsed (AI opened a
+  // document) → expand it again
+  useEffect(() => {
+    const expand = () => setMode((m) => (m === 'collapsed' ? 'split' : m))
+    window.addEventListener('chatoffice:expand-pane', expand)
+    return () => window.removeEventListener('chatoffice:expand-pane', expand)
+  }, [])
+
   const applyMode = useCallback((next: PaneMode) => {
     setMode(next)
     window.chatOfficeTabs.setPaneLayout({ mode: next, chatRatio: ratioRef.current })
@@ -55,21 +90,21 @@ function PaneFrame({ children }: { children: ReactNode }): ReactElement {
 
   const onDividerDown = (event: ReactPointerEvent<HTMLDivElement>): void => {
     event.preventDefault()
-    const work = workRef.current
+    const work = bodyRef.current
     if (!work) return
     setDragging(true)
     work.setPointerCapture(event.pointerId)
   }
 
   const onDividerMove = (event: ReactPointerEvent<HTMLDivElement>): void => {
-    if (!dragging || !workRef.current) return
-    const rect = workRef.current.getBoundingClientRect()
+    if (!dragging || !bodyRef.current) return
+    const rect = bodyRef.current.getBoundingClientRect()
     setChatRatio(clampRatio((event.clientX - rect.left) / rect.width))
   }
 
   const onDividerUp = (event: ReactPointerEvent<HTMLDivElement>): void => {
     if (!dragging) return
-    workRef.current?.releasePointerCapture(event.pointerId)
+    bodyRef.current?.releasePointerCapture(event.pointerId)
     setDragging(false)
     persistRatio(ratioRef.current)
   }
@@ -78,48 +113,50 @@ function PaneFrame({ children }: { children: ReactNode }): ReactElement {
     <div className={`app-frame pane-frame${dragging ? ' divider-drag' : ''}`}>
       <div className="pane-workarea" ref={workRef}>
         {mode !== 'maximized' && (
-          <div
-            className="pane-home"
-            style={mode === 'split' ? { flex: `0 0 ${chatRatio * 100}%` } : undefined}
-          >
-            {children}
+          <div className="pane-home">
+            <Home
+              selectedProjectId={selectedProjectId}
+              onSelectProject={(id) => {
+                onSelectProject(id)
+                onCloudModeChange(false)
+              }}
+              settingsOpen={settingsOpen}
+              onSettingsOpenChange={onSettingsOpenChange}
+              cloudMode={cloudMode}
+              onCloudModeChange={onCloudModeChange}
+            />
           </div>
         )}
-        {mode === 'split' && (
-          <div
-            className="pane-divider"
-            role="separator"
-            aria-orientation="vertical"
-            aria-label={t('paneResizeAria')}
-            onPointerDown={onDividerDown}
-            onPointerMove={onDividerMove}
-            onPointerUp={onDividerUp}
-            onPointerCancel={onDividerUp}
-            onDoubleClick={() => {
-              setChatRatio(0.36)
-              persistRatio(0.36)
-            }}
-          />
-        )}
-        {mode !== 'collapsed' && <EditorPane mode={mode} onModeChange={applyMode} />}
-        {mode === 'collapsed' && (
-          <button
-            className="pane-reveal"
-            title={t('paneExpand')}
-            aria-label={t('paneExpand')}
-            onClick={() => applyMode('split')}
-          >
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path
-                d="M4.5 2.5L8 6l-3.5 3.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
+        <div className="pane-main">
+          <TopStrip mode={mode} onModeChange={applyMode} />
+          <div className="pane-body" ref={bodyRef}>
+            {mode !== 'maximized' && (
+              <>
+                <div
+                  className="pane-chat-host"
+                  style={mode === 'split' ? { flex: `0 0 ${chatRatio * 100}%` } : undefined}
+                >
+                  {cloudMode ? <CloudProjectsView /> : <ChatPanel />}
+                </div>
+                <div
+                  className="pane-divider"
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label={t('paneResizeAria')}
+                  onPointerDown={onDividerDown}
+                  onPointerMove={onDividerMove}
+                  onPointerUp={onDividerUp}
+                  onPointerCancel={onDividerUp}
+                  onDoubleClick={() => {
+                    setChatRatio(0.36)
+                    persistRatio(0.36)
+                  }}
+                />
+              </>
+            )}
+            {mode !== 'collapsed' && <EditorPane mode={mode} />}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -127,12 +164,14 @@ function PaneFrame({ children }: { children: ReactNode }): ReactElement {
 
 /** legacy strip frame — the web shim keeps it until the web sync phase */
 function TabStripFrame({
-  children,
-  initialOnboardingSeen,
-}: AppFrameProps & { children: ReactNode }): ReactElement {
+  selectedProjectId,
+  onSelectProject,
+  settingsOpen,
+  onSettingsOpenChange,
+  cloudMode,
+  onCloudModeChange,
+}: Omit<FrameProps, 'initialOnboardingSeen'>): ReactElement {
   const [homeActive, setHomeActive] = useState(true)
-  const [showOnboarding, setShowOnboarding] = useState(!initialOnboardingSeen)
-  const [starPromptDocOpens, setStarPromptDocOpens] = useState<number | null>(null)
 
   useEffect(() => {
     const applyTabs = (tabs: Awaited<ReturnType<typeof window.chatOfficeTabs.list>>) => {
@@ -143,9 +182,56 @@ function TabStripFrame({
     return window.chatOfficeTabs.onChanged(applyTabs)
   }, [])
 
+  return (
+    <div className="app-frame">
+      <TabBar />
+      {/* docs/sheets tabs render as WebContentsView children of this window, positioned
+       * by the main process to cover this area — only Home paints its own content here. */}
+      <div className="app-frame-content" style={{ visibility: homeActive ? 'visible' : 'hidden' }}>
+        <div className="legacy-home-row">
+          <Home
+            selectedProjectId={selectedProjectId}
+            onSelectProject={onSelectProject}
+            settingsOpen={settingsOpen}
+            onSettingsOpenChange={onSettingsOpenChange}
+            cloudMode={cloudMode}
+            onCloudModeChange={onCloudModeChange}
+          />
+          {cloudMode ? <CloudProjectsView /> : <ChatPanel />}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
+  const [embedded] = useState(paneCapable)
+
+  // lifted shared state: the sidebar (Home) and the pane body both need it
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [cloudMode, setCloudMode] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(!initialOnboardingSeen)
+  const [starPromptDocOpens, setStarPromptDocOpens] = useState<number | null>(null)
+
+  const handleSettingsOpenChange = useCallback((open: boolean) => {
+    setSettingsOpen(open)
+    if (!open) void refreshHomeModelCache()
+  }, [])
+
+  const finishOnboarding = useCallback(async (): Promise<boolean> => {
+    try {
+      const persisted = await window.chatOffice.setOnboardingSeen()
+      if (!persisted) return false
+      setShowOnboarding(false)
+      return true
+    } catch {
+      return false
+    }
+  }, [])
+
   // The "star us" invitation is decided (and counted as shown) by the main
-  // process; ask once per session, and never while onboarding is up — a
-  // first-run user can't have met the value threshold anyway.
+  // process; ask once per session, and never while onboarding is up.
   useEffect(() => {
     if (showOnboarding) return
     let alive = true
@@ -157,80 +243,37 @@ function TabStripFrame({
     }
   }, [showOnboarding])
 
-  const finishOnboarding = async (): Promise<boolean> => {
-    try {
-      const persisted = await window.chatOffice.setOnboardingSeen()
-      if (!persisted) return false
-      setShowOnboarding(false)
-      return true
-    } catch {
-      return false
-    }
+  const frameProps: FrameProps = {
+    initialOnboardingSeen,
+    selectedProjectId,
+    onSelectProject: setSelectedProjectId,
+    settingsOpen,
+    onSettingsOpenChange: handleSettingsOpenChange,
+    cloudMode,
+    onCloudModeChange: setCloudMode,
   }
 
   return (
-    <div className="app-frame">
-      <TabBar />
-      {/* docs/sheets tabs render as WebContentsView children of this window, positioned
-       * by the main process to cover this area — only Home paints its own content here. */}
-      <div className="app-frame-content" style={{ visibility: homeActive ? 'visible' : 'hidden' }}>
-        {children}
-      </div>
-      {/* editor WebContentsViews paint above ALL shell DOM, so the overlay only
-       * renders while the home tab is active — it comes back when home does */}
-      {showOnboarding && homeActive && <Onboarding onDone={finishOnboarding} />}
-      {starPromptDocOpens !== null && !showOnboarding && homeActive && (
-        <StarPromptCard docOpens={starPromptDocOpens} onClose={() => setStarPromptDocOpens(null)} />
+    <HomeChatProvider
+      projectId={selectedProjectId}
+      onOpenSettings={() => handleSettingsOpenChange(true)}
+    >
+      {embedded ? (
+        <PaneFrame
+          selectedProjectId={selectedProjectId}
+          onSelectProject={setSelectedProjectId}
+          settingsOpen={settingsOpen}
+          onSettingsOpenChange={handleSettingsOpenChange}
+          cloudMode={cloudMode}
+          onCloudModeChange={setCloudMode}
+        />
+      ) : (
+        <TabStripFrame {...frameProps} />
       )}
-    </div>
-  )
-}
-
-export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
-  const [embedded] = useState(paneCapable)
-
-  // shared onboarding/star-prompt state for the pane frame
-  const [showOnboarding, setShowOnboarding] = useState(!initialOnboardingSeen)
-  const [starPromptDocOpens, setStarPromptDocOpens] = useState<number | null>(null)
-
-  useEffect(() => {
-    if (!embedded) return
-    if (showOnboarding) return
-    let alive = true
-    void window.chatOffice.starPromptShouldShow?.().then((result) => {
-      if (alive && result.show) setStarPromptDocOpens(result.docOpens)
-    })
-    return () => {
-      alive = false
-    }
-  }, [showOnboarding, embedded])
-
-  const finishOnboarding = async (): Promise<boolean> => {
-    try {
-      const persisted = await window.chatOffice.setOnboardingSeen()
-      if (!persisted) return false
-      setShowOnboarding(false)
-      return true
-    } catch {
-      return false
-    }
-  }
-
-  if (!embedded) {
-    return (
-      <TabStripFrame initialOnboardingSeen={initialOnboardingSeen}>
-        <Home />
-      </TabStripFrame>
-    )
-  }
-
-  return (
-    <PaneFrame>
-      <Home />
       {showOnboarding && <Onboarding onDone={finishOnboarding} />}
       {starPromptDocOpens !== null && !showOnboarding && (
         <StarPromptCard docOpens={starPromptDocOpens} onClose={() => setStarPromptDocOpens(null)} />
       )}
-    </PaneFrame>
+    </HomeChatProvider>
   )
 }

@@ -20,8 +20,7 @@ import { visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
-import { ChatPanel } from './home-chat/ChatPanel'
-import { refreshHomeModelCache } from './home-chat/bridge'
+import { useHomeChat } from './home-chat/context'
 
 declare global {
   interface Window {
@@ -901,7 +900,7 @@ const CLOUD_KIND_EXT: Record<string, string> = { docs: 'docx', sheets: 'xlsx', s
 /** rows revealed per "load more" step; purely client-side over the local snapshot */
 const CLOUD_REVEAL_STEP = 100
 
-function CloudProjectsView() {
+export function CloudProjectsView() {
   const i18n = useI18n()
   const { t } = i18n
   const [snapshot, setSnapshot] = useState<CloudProjectsSnapshot | null>(null)
@@ -1274,9 +1273,32 @@ function DropToOpenOverlay(): ReactElement | null {
 
 // ── Main component ──────────────────────────────────────
 
-export function Home() {
+export function Home({
+  selectedProjectId,
+  onSelectProject,
+  settingsOpen,
+  onSettingsOpenChange,
+  cloudMode,
+  onCloudModeChange,
+}: {
+  selectedProjectId: string | null
+  onSelectProject: (id: string | null) => void
+  settingsOpen: boolean
+  onSettingsOpenChange: (open: boolean) => void
+  cloudMode: boolean
+  onCloudModeChange: (on: boolean) => void
+}): ReactElement {
   const i18n = useI18n()
   const { t } = i18n
+  const { store: chatStore, newSession } = useHomeChat()
+  // sidebar conversation list, freshest first (capped; full history lives in the store)
+  const tasks = [...(chatStore.sessions ?? [])]
+    .filter((s) => s.messages.length > 0)
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(0, 30)
+  // compat shims: the lifted state keeps the previous setter names working
+  const setCloudMode = onCloudModeChange
+  const setSelectedProjectId = onSelectProject
   // ── Paged list state (rows loaded for the current view + filter) ──
   const [entries, setEntries] = useState<RecentEntry[]>([])
   /** total count under the current view + filter (not just the loaded rows) */
@@ -1285,39 +1307,26 @@ export function Home() {
   const [navCounts, setNavCounts] = useState({ recent: 0, starred: 0 })
   const [loadingMore, setLoadingMore] = useState(false)
   const [view, setView] = useState<'recent' | 'starred'>('recent')
-  // Genspark web projects take over the content area (the chat hides meanwhile)
-  const [cloudMode, setCloudMode] = useState(false)
   const [filter, setFilter] = useState('all')
   const [rowMenu, setRowMenu] = useState<string | null>(null)
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
   const rowMenuWrapRef = useRef<HTMLSpanElement>(null)
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null)
-  // name in the greeting; omitted when logged out
-  const [accountName, setAccountName] = useState('')
   // Genspark Projects is web-account data, so its nav entry only shows when logged in
   const [loggedIn, setLoggedIn] = useState(false)
   // single source of account state: AccountEntry reports every change (initial
-  // load, login, logout), keeping the greeting name and the nav entry in sync
-  const handleAccountStatus = useCallback((s: AccountStatus | null) => {
-    const on = s?.loggedIn ?? false
-    setLoggedIn(on)
-    if (!on) setCloudMode(false)
-    const name = on ? (s?.email ?? '').split('@')[0] : ''
-    setAccountName(name ? name[0].toUpperCase() + name.slice(1) : '')
-  }, [])
-  // the settings modal lives in the sidebar's account entry, but the home
-  // chat's setup-required card opens it too; closing it may have changed the
-  // AI model, so refresh the chat bridge's cached selection
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const handleSettingsOpenChange = useCallback((open: boolean) => {
-    setSettingsOpen(open)
-    if (!open) void refreshHomeModelCache()
-  }, [])
-
+  // load, login, logout) — logging out leaves the web-projects view
+  const handleAccountStatus = useCallback(
+    (s: AccountStatus | null) => {
+      const on = s?.loggedIn ?? false
+      setLoggedIn(on)
+      if (!on) setCloudMode(false)
+    },
+    [setCloudMode],
+  )
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
   const projectMode = hasProjectApi()
 
@@ -1326,11 +1335,6 @@ export function Home() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [searchHits, setSearchHits] = useState<RecentEntry[] | null>(null)
-  // bumped to command the chat panel into a fresh session bound to the project
-  const [taskSignal, setTaskSignal] = useState<{ n: number; projectId: string | null }>({
-    n: 0,
-    projectId: null,
-  })
 
   const toggleFilesPane = (id: string) => {
     setCloudMode(false)
@@ -2165,30 +2169,67 @@ export function Home() {
               }}
               onNewTask={(projectId) => {
                 setCloudMode(false)
-                setTaskSignal({ n: taskSignal.n + 1, projectId })
+                newSession(projectId)
               }}
               renderFilesFor={renderProjectAccordion}
             />
           </>
         )}
 
+        {/* conversation (task) list: switching happens here, the middle pane
+            shows the active one — ZCode's left-column tasks */}
+        {!cloudMode && (
+          <div className="side-tasks">
+            <div className="side-files-head">
+              <span className="side-files-title">{t('tasksLabel')}</span>
+              <button
+                className="proj-act-btn"
+                aria-label={t('chatNew')}
+                title={t('chatNew')}
+                onClick={() => {
+                  setCloudMode(false)
+                  newSession(null)
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path
+                    d="M7 1v12M1 7h12"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            {tasks.length === 0 ? (
+              <p className="side-files-empty">{t('chatNoSessions')}</p>
+            ) : (
+              <ul className="side-task-list">
+                {tasks.map((s) => (
+                  <li key={s.id}>
+                    <button
+                      className={`side-task-row${chatStore.activeId === s.id ? ' active' : ''}`}
+                      onClick={() => {
+                        setCloudMode(false)
+                        chatStore.setActiveId(s.id)
+                      }}
+                    >
+                      <span className="side-task-title">{s.title || t('chatUntitled')}</span>
+                      <span className="side-task-time">{formatModified(s.updatedAt, i18n)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         <AccountEntry
           onStatusChange={handleAccountStatus}
           settingsOpen={settingsOpen}
-          onSettingsOpenChange={handleSettingsOpenChange}
+          onSettingsOpenChange={onSettingsOpenChange}
         />
       </aside>
-
-      {cloudMode ? (
-        <CloudProjectsView />
-      ) : (
-        <ChatPanel
-          projectId={selectedProjectId}
-          accountName={accountName}
-          onOpenSettings={() => handleSettingsOpenChange(true)}
-          newSessionSignal={taskSignal}
-        />
-      )}
 
       {confirmDelete && (
         <div className="modal-overlay" onClick={() => setConfirmDelete(null)}>

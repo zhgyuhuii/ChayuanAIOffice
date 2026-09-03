@@ -270,6 +270,12 @@ export const strings = {
     phoneCopy: '复制地址',
     phoneCopied: '已复制',
     chatUnassigned: '未归类',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: '任务',
+    topExportMd: '导出为 Markdown',
+    topCopyTranscript: '复制对话全文',
+    topCopySessionId: '复制会话 ID',
+    topHelp: '帮助',
   },
   en: {
     navRecent: 'Recent',
@@ -541,6 +547,12 @@ export const strings = {
     phoneCopy: 'Copy address',
     phoneCopied: 'Copied',
     chatUnassigned: 'Unassigned',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tasks',
+    topExportMd: 'Export as Markdown',
+    topCopyTranscript: 'Copy transcript',
+    topCopySessionId: 'Copy session ID',
+    topHelp: 'Help',
   },
   ja: {
     // Sidebar navigation
@@ -830,6 +842,12 @@ export const strings = {
     phoneCopy: 'アドレスをコピー',
     phoneCopied: 'コピーしました',
     chatUnassigned: '未分類',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'タスク',
+    topExportMd: 'Markdown としてエクスポート',
+    topCopyTranscript: '会話全文をコピー',
+    topCopySessionId: 'セッション ID をコピー',
+    topHelp: 'ヘルプ',
   },
   ko: {
     // Sidebar navigation
@@ -1113,6 +1131,12 @@ export const strings = {
     phoneCopy: '주소 복사',
     phoneCopied: '복사됨',
     chatUnassigned: '미분류',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: '작업',
+    topExportMd: 'Markdown으로 내보내기',
+    topCopyTranscript: '대화 전체 복사',
+    topCopySessionId: '세션 ID 복사',
+    topHelp: '도움말',
   },
   fr: {
     // Sidebar navigation
@@ -1406,6 +1430,12 @@ export const strings = {
     phoneCopy: 'Copier l’adresse',
     phoneCopied: 'Copié',
     chatUnassigned: 'Non classées',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tâches',
+    topExportMd: 'Exporter en Markdown',
+    topCopyTranscript: 'Copier la conversation',
+    topCopySessionId: 'Copier l’ID de session',
+    topHelp: 'Aide',
   },
   de: {
     // Sidebar navigation
@@ -1700,6 +1730,12 @@ export const strings = {
     phoneCopy: 'Adresse kopieren',
     phoneCopied: 'Kopiert',
     chatUnassigned: 'Nicht zugeordnet',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Aufgaben',
+    topExportMd: 'Als Markdown exportieren',
+    topCopyTranscript: 'Unterhaltung kopieren',
+    topCopySessionId: 'Sitzungs-ID kopieren',
+    topHelp: 'Hilfe',
   },
   es: {
     // Sidebar navigation
@@ -1993,6 +2029,12 @@ export const strings = {
     phoneCopy: 'Copiar dirección',
     phoneCopied: 'Copiado',
     chatUnassigned: 'Sin asignar',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tareas',
+    topExportMd: 'Exportar como Markdown',
+    topCopyTranscript: 'Copiar la conversación',
+    topCopySessionId: 'Copiar ID de sesión',
+    topHelp: 'Ayuda',
   },
   th: {
     // Sidebar navigation
@@ -2274,6 +2316,12 @@ export const strings = {
     phoneCopy: 'คัดลอกที่อยู่',
     phoneCopied: 'คัดลอกแล้ว',
     chatUnassigned: 'ยังไม่จัดหมวด',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'งาน',
+    topExportMd: 'ส่งออกเป็น Markdown',
+    topCopyTranscript: 'คัดลอกบทสนทนาทั้งหมด',
+    topCopySessionId: 'คัดลอก ID เซสชัน',
+    topHelp: 'ช่วยเหลือ',
   },
   id: {
     // Sidebar navigation
@@ -2561,6 +2609,12 @@ export const strings = {
     phoneCopy: 'Salin alamat',
     phoneCopied: 'Tersalin',
     chatUnassigned: 'Belum dikelompokkan',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tugas',
+    topExportMd: 'Ekspor sebagai Markdown',
+    topCopyTranscript: 'Salin seluruh percakapan',
+    topCopySessionId: 'Salin ID sesi',
+    topHelp: 'Bantuan',
   },
   ru: {
     // Sidebar navigation
@@ -2849,6 +2903,12 @@ export const strings = {
     phoneCopy: 'Копировать адрес',
     phoneCopied: 'Скопировано',
     chatUnassigned: 'Без проекта',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Задачи',
+    topExportMd: 'Экспорт в Markdown',
+    topCopyTranscript: 'Копировать переписку',
+    topCopySessionId: 'Копировать ID сессии',
+    topHelp: 'Справка',
   },
   ar: {
     // Sidebar navigation
@@ -3131,6 +3191,12 @@ export const strings = {
     phoneCopy: 'نسخ العنوان',
     phoneCopied: 'تم النسخ',
     chatUnassigned: 'غير مصنفة',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'المهام',
+    topExportMd: 'تصدير كـ Markdown',
+    topCopyTranscript: 'نسخ المحادثة كاملة',
+    topCopySessionId: 'نسخ معرّف الجلسة',
+    topHelp: 'مساعدة',
   },
   pt: {
     navRecent: 'Recentes',
@@ -3411,6 +3477,12 @@ export const strings = {
     phoneCopy: 'Copiar endereço',
     phoneCopied: 'Copiado',
     chatUnassigned: 'Sem projeto',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tarefas',
+    topExportMd: 'Exportar como Markdown',
+    topCopyTranscript: 'Copiar conversa completa',
+    topCopySessionId: 'Copiar ID da sessão',
+    topHelp: 'Ajuda',
   },
   it: {
     navRecent: 'Recenti',
@@ -3690,6 +3762,12 @@ export const strings = {
     phoneCopy: 'Copia indirizzo',
     phoneCopied: 'Copiato',
     chatUnassigned: 'Non assegnate',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Attività',
+    topExportMd: 'Esporta come Markdown',
+    topCopyTranscript: 'Copia conversazione',
+    topCopySessionId: 'Copia ID sessione',
+    topHelp: 'Aiuto',
   },
   pl: {
     navRecent: 'Ostatnie',
@@ -3968,6 +4046,12 @@ export const strings = {
     phoneCopy: 'Kopiuj adres',
     phoneCopied: 'Skopiowano',
     chatUnassigned: 'Bez projektu',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Zadania',
+    topExportMd: 'Eksportuj jako Markdown',
+    topCopyTranscript: 'Kopiuj rozmowę',
+    topCopySessionId: 'Kopiuj ID sesji',
+    topHelp: 'Pomoc',
   },
   nl: {
     navRecent: 'Recent',
@@ -4248,6 +4332,12 @@ export const strings = {
     phoneCopy: 'Adres kopiëren',
     phoneCopied: 'Gekopieerd',
     chatUnassigned: 'Niet toegewezen',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Taken',
+    topExportMd: 'Exporteren als Markdown',
+    topCopyTranscript: 'Gesprek kopiëren',
+    topCopySessionId: 'Sessie-ID kopiëren',
+    topHelp: 'Help',
   },
   ms: {
     navRecent: 'Terkini',
@@ -4524,6 +4614,12 @@ export const strings = {
     phoneCopy: 'Salin alamat',
     phoneCopied: 'Disalin',
     chatUnassigned: 'Tidak bertugas',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'Tugasan',
+    topExportMd: 'Eksport sebagai Markdown',
+    topCopyTranscript: 'Salin keseluruhan perbualan',
+    topCopySessionId: 'Salin ID sesi',
+    topHelp: 'Bantuan',
   },
   he: {
     navRecent: 'אחרונים',
@@ -4792,6 +4888,12 @@ export const strings = {
     phoneCopy: 'העתקת כתובת',
     phoneCopied: 'הועתק',
     chatUnassigned: 'לא משויך',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'משימות',
+    topExportMd: 'ייצוא כ-Markdown',
+    topCopyTranscript: 'העתקת השיחה',
+    topCopySessionId: 'העתקת מזהה שיחה',
+    topHelp: 'עזרה',
   },
   hi: {
     navRecent: 'हाल के',
@@ -5068,6 +5170,12 @@ export const strings = {
     phoneCopy: 'पता कॉपी करें',
     phoneCopied: 'कॉपी हो गया',
     chatUnassigned: 'अवर्गीकृत',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: 'कार्य',
+    topExportMd: 'Markdown के रूप में निर्यात',
+    topCopyTranscript: 'पूरी बातचीत कॉपी करें',
+    topCopySessionId: 'सेशन ID कॉपी करें',
+    topHelp: 'सहायता',
   },
   'zh-TW': {
     navRecent: '最近',
@@ -5330,5 +5438,11 @@ export const strings = {
     phoneCopy: '複製地址',
     phoneCopied: '已複製',
     chatUnassigned: '未歸類',
+    // Layout v2 (top strip / tasks)
+    tasksLabel: '任務',
+    topExportMd: '匯出為 Markdown',
+    topCopyTranscript: '複製對話全文',
+    topCopySessionId: '複製會話 ID',
+    topHelp: '說明',
   },
 } as const

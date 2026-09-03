@@ -11,20 +11,12 @@ export type PaneMode = 'split' | 'collapsed' | 'maximized'
  * WebContentsView into. The strip stays interactive DOM — the editor view
  * only ever covers the host area below it.
  */
-export function EditorPane({
-  mode,
-  onModeChange,
-}: {
-  mode: PaneMode
-  onModeChange: (mode: PaneMode) => void
-}): ReactElement {
+export function EditorPane({ mode }: { mode: PaneMode }): ReactElement {
   const { t } = useI18n()
   const [tabs, setTabs] = useState<TabSummary[]>([])
   const hostRef = useRef<HTMLDivElement>(null)
   const modeRef = useRef(mode)
   modeRef.current = mode
-  const onModeChangeRef = useRef(onModeChange)
-  onModeChangeRef.current = onModeChange
 
   // tab list (Home's pseudo-tab is not a pane tab)
   useEffect(() => {
@@ -45,7 +37,9 @@ export function EditorPane({
   useEffect(() => {
     return window.chatOfficeTabs.onChanged((all) => {
       if (modeRef.current !== 'collapsed') return
-      if (all.some((tab) => tab.kind !== 'home' && tab.active)) onModeChangeRef.current('split')
+      if (all.some((tab) => tab.kind !== 'home' && tab.active)) {
+        window.dispatchEvent(new Event('chatoffice:expand-pane'))
+      }
     })
   }, [])
 
@@ -112,65 +106,6 @@ export function EditorPane({
               </button>
             </div>
           ))}
-        </div>
-        <div className="pane-strip-actions">
-          {mode === 'maximized' ? (
-            <button
-              className="pane-icon-btn"
-              title={t('paneRestore')}
-              aria-label={t('paneRestore')}
-              onClick={() => onModeChange('split')}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M5.5 10.5v-6A1.5 1.5 0 0 1 7 3h4.5A1.5 1.5 0 0 1 13 4.5V9a1.5 1.5 0 0 1-1.5 1.5h-6z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                />
-                <path
-                  d="M3 5.5v5A1.5 1.5 0 0 0 4.5 12h5"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          ) : (
-            <button
-              className="pane-icon-btn"
-              title={t('paneMaximize')}
-              aria-label={t('paneMaximize')}
-              onClick={() => onModeChange('maximized')}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect
-                  x="2.5"
-                  y="2.5"
-                  width="11"
-                  height="11"
-                  rx="1.5"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                />
-              </svg>
-            </button>
-          )}
-          <button
-            className="pane-icon-btn"
-            title={t('paneCollapse')}
-            aria-label={t('paneCollapse')}
-            onClick={() => onModeChange('collapsed')}
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M6.5 3.5L10 7l-3.5 3.5M3 13h10"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
         </div>
       </div>
       <div className="pane-view-host" ref={hostRef}>
