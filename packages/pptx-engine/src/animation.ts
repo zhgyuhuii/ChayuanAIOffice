@@ -31,6 +31,19 @@ export type AnimEffectKind =
   | 'bounce'
   | 'flipIn'
   | 'zoom'
+  // Entrance — classic animEffect filter families (WPS gallery parity, first batch)
+  | 'blinds'
+  | 'box'
+  | 'checkerboard'
+  | 'circleIn'
+  | 'crawlIn'
+  | 'diamond'
+  | 'dissolveIn'
+  | 'randomBars'
+  | 'stretch'
+  | 'strips'
+  | 'wedge'
+  | 'wheel'
   // Emphasis
   | 'pulse'
   | 'spin'
@@ -43,6 +56,11 @@ export type AnimEffectKind =
   | 'wipeOut'
   | 'shrink'
   | 'zoomOut'
+  // Exit — filter-family mirrors
+  | 'boxOut'
+  | 'checkerboardOut'
+  | 'dissolveOut'
+  | 'randomBarsOut'
   // Motion path (move along a path)
   | 'motionPath'
 
@@ -50,6 +68,20 @@ export type AnimTrigger = 'onClick' | 'withPrev' | 'afterPrev'
 
 export const ANIM_TRIGGERS: readonly AnimTrigger[] = ['onClick', 'withPrev', 'afterPrev']
 export type AnimClass = 'entrance' | 'emphasis' | 'exit' | 'path'
+
+/** Each filter kind's OOXML filter string (entrance direction). */
+const ENTRANCE_FILTERS: Record<string, string> = {
+  blinds: 'blinds(horizontal)',
+  box: 'box(in)',
+  checkerboard: 'checkerboard(across)',
+  circleIn: 'circle(in)',
+  diamond: 'diamond(in)',
+  dissolveIn: 'dissolve',
+  randomBars: 'randombar(horizontal)',
+  strips: 'strips(downRight)',
+  wedge: 'wedge',
+  wheel: 'wheel(1)',
+}
 
 export interface SlideAnimation {
   /** Target shape's cNvPr id (<p:spTgt spid>) */
@@ -80,6 +112,18 @@ export function animClassOf(effect: AnimEffectKind): AnimClass {
     case 'bounce':
     case 'flipIn':
     case 'zoom':
+    case 'blinds':
+    case 'box':
+    case 'checkerboard':
+    case 'circleIn':
+    case 'crawlIn':
+    case 'diamond':
+    case 'dissolveIn':
+    case 'randomBars':
+    case 'stretch':
+    case 'strips':
+    case 'wedge':
+    case 'wheel':
       return 'entrance'
     case 'pulse':
     case 'spin':
@@ -115,6 +159,19 @@ const PRESET: Record<
   bounce: { id: 26, cls: 'entr', sub: 0 },
   flipIn: { id: 30, cls: 'entr', sub: 0 }, // flip in from far to near (Grow & Turn)
   zoom: { id: 23, cls: 'entr', sub: 16 },
+  // classic filter families (official presetIDs; PowerPoint reads the filter strings)
+  blinds: { id: 3, cls: 'entr', sub: 0 },
+  box: { id: 4, cls: 'entr', sub: 0 },
+  checkerboard: { id: 5, cls: 'entr', sub: 0 },
+  circleIn: { id: 6, cls: 'entr', sub: 0 },
+  crawlIn: { id: 7, cls: 'entr', sub: 0 },
+  diamond: { id: 8, cls: 'entr', sub: 0 },
+  dissolveIn: { id: 9, cls: 'entr', sub: 0 },
+  randomBars: { id: 14, cls: 'entr', sub: 0 },
+  stretch: { id: 17, cls: 'entr', sub: 4 }, // stretch up from the bottom edge
+  strips: { id: 18, cls: 'entr', sub: 0 },
+  wedge: { id: 20, cls: 'entr', sub: 0 },
+  wheel: { id: 21, cls: 'entr', sub: 1 }, // 1 spoke (clock wipe)
   pulse: { id: 26, cls: 'emph', sub: 0 },
   spin: { id: 8, cls: 'emph', sub: 0 },
   grow: { id: 6, cls: 'emph', sub: 0 },
@@ -125,6 +182,10 @@ const PRESET: Record<
   wipeOut: { id: 22, cls: 'exit', sub: 1 },
   shrink: { id: 30, cls: 'exit', sub: 0 }, // shrink and rotate (Shrink & Turn)
   zoomOut: { id: 23, cls: 'exit', sub: 16 },
+  boxOut: { id: 4, cls: 'exit', sub: 0 },
+  checkerboardOut: { id: 5, cls: 'exit', sub: 0 },
+  dissolveOut: { id: 9, cls: 'exit', sub: 0 },
+  randomBarsOut: { id: 14, cls: 'exit', sub: 0 },
   motionPath: { id: 0, cls: 'path', sub: 0 }, // custom path
 }
 
@@ -147,6 +208,18 @@ function effectFromPreset(cls: string, id: number, sub: number): AnimEffectKind 
     'entr:26': 'bounce',
     'entr:30': 'flipIn',
     'entr:23': 'zoom',
+    'entr:3': 'blinds',
+    'entr:4': 'box',
+    'entr:5': 'checkerboard',
+    'entr:6': 'circleIn',
+    'entr:7': 'crawlIn',
+    'entr:8': 'diamond',
+    'entr:9': 'dissolveIn',
+    'entr:14': 'randomBars',
+    'entr:17': 'stretch',
+    'entr:18': 'strips',
+    'entr:20': 'wedge',
+    'entr:21': 'wheel',
     'emph:26': 'pulse',
     'emph:8': 'spin',
     'emph:6': 'grow',
@@ -157,6 +230,10 @@ function effectFromPreset(cls: string, id: number, sub: number): AnimEffectKind 
     'exit:22': 'wipeOut',
     'exit:30': 'shrink',
     'exit:23': 'zoomOut',
+    'exit:4': 'boxOut',
+    'exit:5': 'checkerboardOut',
+    'exit:9': 'dissolveOut',
+    'exit:14': 'randomBarsOut',
   }
   const hit = bySub[`${cls}:${id}:${sub}`] ?? exact[`${cls}:${id}`]
   if (hit) return hit
@@ -368,6 +445,55 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
       return (
         `<p:animScale><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}" fill="hold"/>${target}</p:cBhvr>` +
         '<p:from x="100000" y="100000"/><p:to x="1000" y="1000"/></p:animScale>' +
+        hideAtEnd
+      )
+    // ── classic animEffect filter families (PowerPoint plays the filter attribute) ──
+    case 'blinds':
+    case 'box':
+    case 'checkerboard':
+    case 'circleIn':
+    case 'diamond':
+    case 'dissolveIn':
+    case 'randomBars':
+    case 'strips':
+    case 'wedge':
+    case 'wheel':
+      return (
+        show +
+        `<p:animEffect transition="in" filter="${ENTRANCE_FILTERS[a.effect] ?? 'fade'}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>`
+      )
+    case 'crawlIn':
+      // Crawl in from the left edge (slow slide, no filter)
+      return (
+        show +
+        moveAnimXml(gen, target, dur, 'ppt_x', '0-#ppt_w/2', '#ppt_x') +
+        moveAnimXml(gen, target, dur, 'ppt_y', '#ppt_y', '#ppt_y')
+      )
+    case 'stretch':
+      // Stretch up from the bottom edge (vertical scale 0→100%)
+      return (
+        show +
+        `<p:animScale><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}" fill="hold"/>${target}</p:cBhvr>` +
+        '<p:from x="100000" y="0"/><p:to x="100000" y="100000"/></p:animScale>'
+      )
+    case 'boxOut':
+      return (
+        `<p:animEffect transition="out" filter="box(out)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        hideAtEnd
+      )
+    case 'checkerboardOut':
+      return (
+        `<p:animEffect transition="out" filter="checkerboard(across)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        hideAtEnd
+      )
+    case 'dissolveOut':
+      return (
+        `<p:animEffect transition="out" filter="dissolve"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        hideAtEnd
+      )
+    case 'randomBarsOut':
+      return (
+        `<p:animEffect transition="out" filter="randombar(horizontal)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
         hideAtEnd
       )
     case 'motionPath':

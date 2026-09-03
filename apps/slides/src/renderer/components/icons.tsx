@@ -1796,6 +1796,100 @@ const ANIM_EFFECT_BODIES: Record<AnimEffectKind, ReactNode> = {
       <path d="M16 16 L19.5 19.5 M19.5 16 V19.5 H16" />
     </>
   ),
+  // entrance — classic filter families
+  blinds: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1" />
+      <path d="M4.5 9 h15 M4.5 12 h15 M4.5 15 h15" opacity="0.75" />
+      <path d="M6.4 6.6 h5.2 M6.4 17.4 h5.2" strokeDasharray="2.4 1.8" />
+    </>
+  ),
+  box: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1" strokeDasharray="2.6 2" />
+      <rect x="8" y="7.6" width="8" height="8.8" fill="currentColor" stroke="none" />
+    </>
+  ),
+  checkerboard: (
+    <>
+      <path d="M4.5 4.5 h5 v5 h-5 Z M9.5 9.5 h5 v5 h-5 Z M14.5 14.5 h5 v5 h-5 Z" />
+      <path
+        d="M9.5 4.5 h5 v5 h-5 Z M14.5 4.5 h5 v5 h-5 Z M4.5 9.5 h5 v5 h-5 Z M9.5 14.5 h5 v5 h-5 Z M4.5 14.5 h5 v5 h-5 Z M14.5 9.5 h5 v5 h-5 Z"
+        opacity="0.35"
+      />
+    </>
+  ),
+  circleIn: (
+    <>
+      <circle cx="12" cy="12" r="8.2" strokeDasharray="2.6 2" />
+      <circle cx="12" cy="12" r="4.6" fill="currentColor" stroke="none" />
+    </>
+  ),
+  crawlIn: (
+    <>
+      <rect x="7.5" y="8" width="13" height="8" rx="1" />
+      <path d="M7.5 12 H3.2 M5.2 9.9 L3 12 l2.2 2.1" />
+      <path d="M6.5 8.8 5 12 l1.5 3.2" strokeDasharray="1.8 1.6" />
+    </>
+  ),
+  diamond: (
+    <>
+      <path d="M12 3.6 L20.4 12 12 20.4 3.6 12 Z" strokeDasharray="2.6 2" />
+      <path d="M12 7.8 L16.2 12 12 16.2 7.8 12 Z" fill="currentColor" stroke="none" />
+    </>
+  ),
+  dissolveIn: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1" strokeDasharray="2.6 2" />
+      <path
+        d="M6.2 7 h1.6 M10.8 7 h1.6 M15.4 7 h2 M6.2 11 h2 M11.4 11 h1.6 M16.6 11 h1.2 M5.6 14.6 h1.6 M10.2 14.6 h2 M15.8 14.6 h1.6 M8 17.6 h1.6 M13.4 17.6 h2.4"
+        strokeDasharray="0.1 3.4"
+      />
+    </>
+  ),
+  randomBars: (
+    <>
+      <path d="M4 6.2 h16" />
+      <path d="M4 9.4 h10.5" />
+      <path d="M4 12.6 h16" />
+      <path d="M4 15.8 h7.5" />
+      <path d="M14.5 9.4 h5.5 M13 15.8 h7" opacity="0.4" />
+    </>
+  ),
+  stretch: (
+    <>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="1" strokeDasharray="2.6 2" />
+      <rect x="4.5" y="12" width="15" height="7.5" fill="currentColor" stroke="none" />
+      <path d="M12 10.2 V13.8 M10 11.8 L12 13.8 l2 -2" />
+    </>
+  ),
+  strips: (
+    <>
+      <path d="M4.5 19.5 L19.5 4.5" />
+      <path d="M8.4 19.5 L19.5 8.4" opacity="0.7" />
+      <path d="M12.3 19.5 L19.5 12.3" opacity="0.45" />
+      <path d="M16.2 19.5 L19.5 16.2" opacity="0.25" />
+    </>
+  ),
+  wedge: (
+    <>
+      <path d="M12 12 V3.8 A 8.2 8.2 0 0 1 19.8 9.4 Z" fill="currentColor" stroke="none" />
+      <path
+        d="M12 12 V20.2 A 8.2 8.2 0 0 1 4.2 14.6 Z"
+        fill="currentColor"
+        stroke="none"
+        opacity="0.45"
+      />
+      <circle cx="12" cy="12" r="8.2" strokeDasharray="2.6 2" />
+    </>
+  ),
+  wheel: (
+    <>
+      <path d="M12 12 V3.8 A 8.2 8.2 0 0 1 20.2 12 Z" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="8.2" strokeDasharray="2.6 2" />
+      <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" />
+    </>
+  ),
   // emphasis
   pulse: (
     <>
@@ -1881,6 +1975,37 @@ const ANIM_EFFECT_BODIES: Record<AnimEffectKind, ReactNode> = {
       <rect x="3.5" y="3.5" width="17" height="17" rx="1" strokeDasharray="2.6 2" />
       <path d="M5.6 5.6 L9.4 9.4 M9.4 6.2 V9.4 H6.2" />
       <path d="M18.4 18.4 L14.6 14.6 M14.6 17.8 V14.6 H17.8" />
+    </>
+  ),
+  // exit — filter-family mirrors
+  boxOut: (
+    <>
+      <rect x="8" y="7.6" width="8" height="8.8" rx="1" strokeDasharray="2.4 1.9" />
+      <path d="M5.2 5.6 L8 8.4 M8 5.9 V8.4 H5.5 M18.8 18.4 L16 15.6 M16 18.1 V15.6 h2.5" />
+    </>
+  ),
+  checkerboardOut: (
+    <>
+      <path d="M4.5 4.5 h5 v5 h-5 Z M9.5 9.5 h5 v5 h-5 Z M14.5 14.5 h5 v5 h-5 Z" opacity="0.35" />
+      <path d="M9.5 4.5 h5 v5 h-5 Z M14.5 4.5 h5 v5 h-5 Z M4.5 9.5 h5 v5 h-5 Z M9.5 14.5 h5 v5 h-5 Z M4.5 14.5 h5 v5 h-5 Z M14.5 9.5 h5 v5 h-5 Z" />
+    </>
+  ),
+  dissolveOut: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1" strokeDasharray="2.6 2" />
+      <path
+        d="M6.2 7 h2 M11.4 7 h1.6 M16.6 7 h1.2 M5.6 10.6 h1.6 M10.2 10.6 h2 M15.8 10.6 h1.6 M8 14.2 h1.6 M13.4 14.2 h2.4 M6.4 17.6 h1.6 M12 17.6 h1.6 M16.8 17.6 h1.2"
+        strokeDasharray="0.1 3.4"
+      />
+    </>
+  ),
+  randomBarsOut: (
+    <>
+      <path d="M4 6.2 h10.5" />
+      <path d="M4 9.4 h16" />
+      <path d="M4 12.6 h7.5" />
+      <path d="M4 15.8 h16" />
+      <path d="M16.5 6.2 h3.5 M13.5 12.6 h6.5 M13 15.8 h7" opacity="0.4" />
     </>
   ),
   motionPath: (

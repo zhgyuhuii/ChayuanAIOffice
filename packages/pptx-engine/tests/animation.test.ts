@@ -106,14 +106,19 @@ describe('shape animations (<p:timing>)', () => {
   })
 
   it('reads foreign presets with best-effort fallback', () => {
-    // Unmodeled presetIDs (e.g. entr box 4) degrade to a similar effect of the same class
+    // entr:4 is now modeled (box); a genuinely unmodeled id (e.g. 15 spiral) still
+    // degrades to a similar effect of the same class
     const xml = buildTimingXml([
       { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
-    ]).replace('presetID="10"', 'presetID="4"')
+    ]).replace('presetID="10"', 'presetID="15"')
     const anims = readSlideTimingXml(`</p:cSld>${xml}</p:sld>`)
     expect(anims).toEqual([
       { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
     ])
+    const box = buildTimingXml([
+      { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ]).replace('presetID="10"', 'presetID="4"')
+    expect(readSlideTimingXml(`</p:cSld>${box}</p:sld>`)[0]!.effect).toBe('box')
   })
 })
 
@@ -353,5 +358,73 @@ describe('pruneTimingForSpids (element removal must not leave dangling spTgt ref
       expect(ids.has(Number(m[1]))).toBe(true)
     }
     expect(fresh.bodySuffix).not.toContain(`<p:spTgt spid="${spid}"`)
+  })
+})
+
+describe('classic filter-family effects (WPS gallery batch 1)', () => {
+  it('writes the official presetIDs and filter strings', () => {
+    const xml = buildTimingXml([
+      { spid: 4, effect: 'blinds', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ])
+    expect(xml).toContain('presetID="3" presetClass="entr"')
+    expect(xml).toContain('filter="blinds(horizontal)"')
+    const crawl = buildTimingXml([
+      { spid: 4, effect: 'crawlIn', trigger: 'onClick', durationMs: 2000, delayMs: 0 },
+    ])
+    expect(crawl).toContain('presetID="7" presetClass="entr"')
+    expect(crawl).toContain('0-#ppt_w/2')
+    const stretch = buildTimingXml([
+      { spid: 4, effect: 'stretch', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ])
+    expect(stretch).toContain('presetID="17" presetClass="entr"')
+    expect(stretch).toContain('<p:from x="100000" y="0"/>')
+    const wheel = buildTimingXml([
+      { spid: 4, effect: 'wheel', trigger: 'onClick', durationMs: 2000, delayMs: 0 },
+    ])
+    expect(wheel).toContain('presetID="21" presetClass="entr"')
+    expect(wheel).toContain('filter="wheel(1)"')
+  })
+
+  it('exit mirrors write transition=out and hide at end', () => {
+    const xml = buildTimingXml([
+      { spid: 4, effect: 'dissolveOut', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ])
+    expect(xml).toContain('presetID="9" presetClass="exit"')
+    expect(xml).toContain('transition="out" filter="dissolve"')
+    expect(xml).toContain('val="hidden"')
+  })
+
+  it('round-trips every new kind through the preset read-back', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    const kinds = [
+      'blinds',
+      'box',
+      'checkerboard',
+      'circleIn',
+      'crawlIn',
+      'diamond',
+      'dissolveIn',
+      'randomBars',
+      'stretch',
+      'strips',
+      'wedge',
+      'wheel',
+      'boxOut',
+      'checkerboardOut',
+      'dissolveOut',
+      'randomBarsOut',
+    ] as const
+    const anims = kinds.map((effect, i) => ({
+      spid,
+      effect,
+      trigger: 'onClick' as const,
+      durationMs: 500,
+      delayMs: i,
+    }))
+    setSlideAnimations(slide, anims)
+    const back = getSlideAnimations(slide).map((a) => a.effect)
+    expect(back).toEqual([...kinds])
   })
 })

@@ -261,7 +261,152 @@ function wipedRect(
   const visH = rect.h * clip.t
   if (clip.mode === 'top') return { y: rect.y, h: visH }
   if (clip.mode === 'mid') return { y: rect.y + (rect.h - visH) / 2, h: visH }
-  return { y: rect.y + (rect.h - visH), h: visH }
+  return { y: rect.y + rect.h - visH, h: visH }
+}
+
+/** Linear wipe modes (band anchored to one edge/center). */
+function isLinearClipMode(mode: NonNullable<NodeAnimState['clip']>['mode']): boolean {
+  return mode === 'btm' || mode === 'top' || mode === 'mid'
+}
+
+/** Deterministic RNG (stable bar/cell reveal order across renders and windows). */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0
+  return () => {
+    a |= 0
+    a = (a + 0x6d2b79f5) | 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+/** Shuffled indexes 0..n-1 (seeded, memoized — order arrays are reused per size). */
+const shuffleCache = new Map<string, number[]>()
+function shuffledOrder(key: string, n: number): number[] {
+  const hit = shuffleCache.get(`${key}:${n}`)
+  if (hit) return hit
+  const idx = Array.from({ length: n }, (_, i) => i)
+  const rnd = mulberry32(0x5eed ^ n ^ key.length)
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1))
+    ;[idx[i], idx[j]] = [idx[j]!, idx[i]!]
+  }
+  shuffleCache.set(`${key}:${n}`, idx)
+  return idx
+}
+
+/**
+ * Classic filter-family clip patterns (百叶窗/棋盘/随机线条/溶解/圆形/菱形/盒状/
+ * 楔入/轮子/阶梯状): appends the revealed region(s) of the bounding box to the
+ * Konva clip context at reveal ratio t. Mirrors the OOXML animEffect filters the
+ * engine writes, so canvas playback matches the saved pptx's PowerPoint playback.
+ */
+function patternClipPath(
+  ctx: Context,
+  box: { x: number; y: number; w: number; h: number },
+  clip: NonNullable<NodeAnimState['clip']>,
+): void {
+  const { x, y, w, h } = box
+  const t = Math.min(1, Math.max(0, clip.t))
+  const cx = x + w / 2
+  const cy = y + h / 2
+  switch (clip.mode) {
+    case 'blinds': {
+      const N = 6
+      const sh = h / N
+      for (let i = 0; i < N; i++) ctx.rect(x, y + i * sh, w, sh * t)
+      break
+    }
+    case 'checker': {
+      const N = 6
+      const cw = w / N
+      const ch = h / N
+      // diagonal waves: cell (r,c) appears once (r+c)/(2N-2) passes t
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++)
+          if ((r + c) / (2 * N - 2) < t) ctx.rect(x + c * cw, y + r * ch, cw + 0.5, ch + 0.5)
+      break
+    }
+    case 'bars': {
+      const N = 12
+      const bh = h / N
+      const order = shuffledOrder('bars', N)
+      const visible = Math.ceil(t * N)
+      for (let i = 0; i < N; i++)
+        if (order.indexOf(i) < visible) ctx.rect(x, y + i * bh, w, bh + 0.5)
+      break
+    }
+    case 'dissolve': {
+      const N = 24
+      const cw = w / N
+      const ch = h / N
+      const order = shuffledOrder('dissolve', N * N)
+      const visible = Math.ceil(t * N * N)
+      for (let i = 0; i < N * N; i++) {
+        const cell = order.indexOf(i)
+        if (cell < visible)
+          ctx.rect(x + (i % N) * cw, y + Math.floor(i / N) * ch, cw + 0.5, ch + 0.5)
+      }
+      break
+    }
+    case 'circle': {
+      ctx.arc(cx, cy, (Math.hypot(w, h) / 2) * t, 0, Math.PI * 2, false)
+      break
+    }
+    case 'diamond': {
+      const rx = (w / 2) * t
+      const ry = (h / 2) * t
+      ctx.moveTo(cx, cy - ry)
+      ctx.lineTo(cx + rx, cy)
+      ctx.lineTo(cx, cy + ry)
+      ctx.lineTo(cx - rx, cy)
+      ctx.closePath()
+      break
+    }
+    case 'box': {
+      const bw = w * t
+      const bh = h * t
+      ctx.rect(cx - bw / 2, cy - bh / 2, bw, bh)
+      break
+    }
+    case 'wedge': {
+      // two opposite 90° wedges sweeping 180° apart (PowerPoint 楔入)
+      const sweep = t * Math.PI
+      ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, Math.hypot(w, h), -Math.PI / 2, -Math.PI / 2 + sweep, false)
+      ctx.closePath()
+      ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, Math.hypot(w, h), Math.PI / 2, Math.PI / 2 + sweep, false)
+      ctx.closePath()
+      break
+    }
+    case 'wheel': {
+      // 1-spoke clock wipe from 12 o'clock
+      ctx.moveTo(cx, cy)
+      ctx.arc(cx, cy, Math.hypot(w, h), -Math.PI / 2, -Math.PI / 2 + t * Math.PI * 2, false)
+      ctx.closePath()
+      break
+    }
+    case 'strips': {
+      // diagonal bands sweeping down-right (阶梯状): 4 bands in a -45° frame
+      const NB = 4
+      const diag = Math.hypot(w, h)
+      const bw = diag / NB
+      ctx.save()
+      ctx.translate(cx, cy)
+      ctx.rotate(-Math.PI / 4)
+      for (let i = 0; i < NB; i++) {
+        const b0 = -diag / 2 + i * bw
+        const vis = Math.min(bw, t * diag - i * bw)
+        if (vis > 0) ctx.rect(b0, -diag / 2, vis, diag)
+      }
+      ctx.restore()
+      break
+    }
+    default:
+      ctx.rect(x, y, w, h)
+  }
 }
 
 /**
@@ -313,6 +458,10 @@ function AnimNode({
     const clipFunc =
       clip != null
         ? (ctx: Context) => {
+            if (!isLinearClipMode(clip.mode)) {
+              patternClipPath(ctx, { x: b.x, y: b.y, w: b.w, h: b.h }, clip)
+              return
+            }
             // Wipe/split: clip the visible area to the node's bounding box
             const r = wipedRect(clip, { y: b.y, h: b.h })
             // The fixed top/bottom edge is widened outward by m so edge strokes aren't clipped

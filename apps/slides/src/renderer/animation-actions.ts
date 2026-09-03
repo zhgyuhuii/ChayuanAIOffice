@@ -45,7 +45,12 @@ export async function applyTransition(
 export function animDefaultDur(effect: AnimEffectKind): number {
   return effect === 'appear' || effect === 'disappear'
     ? 0
-    : effect === 'spin' || effect === 'grow' || effect === 'bounce' || effect === 'motionPath'
+    : effect === 'spin' ||
+        effect === 'grow' ||
+        effect === 'bounce' ||
+        effect === 'motionPath' ||
+        effect === 'crawlIn' ||
+        effect === 'wheel'
       ? 2000
       : effect === 'pulse' || effect === 'teeter'
         ? 1000

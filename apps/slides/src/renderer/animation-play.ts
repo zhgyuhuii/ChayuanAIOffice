@@ -39,6 +39,18 @@ export function animClassOf(effect: AnimEffectKind): 'entrance' | 'emphasis' | '
     case 'bounce':
     case 'flipIn':
     case 'zoom':
+    case 'blinds':
+    case 'box':
+    case 'checkerboard':
+    case 'circleIn':
+    case 'crawlIn':
+    case 'diamond':
+    case 'dissolveIn':
+    case 'randomBars':
+    case 'stretch':
+    case 'strips':
+    case 'wedge':
+    case 'wheel':
       return 'entrance'
     case 'pulse':
     case 'spin':
@@ -104,9 +116,29 @@ export interface NodeAnimState {
   /** Extra offset (px, canvas coordinates) */
   dx: number
   dy: number
-  /** Clip reveal: t=visible ratio 0..1; mode=visible area anchored to bottom (btm)/top (top)/center (mid); null = no clipping */
-  clip: { t: number; mode: 'btm' | 'top' | 'mid' } | null
+  /**
+   * Clip reveal: t=visible ratio 0..1. Linear modes anchor the visible band to the
+   * bottom (btm)/top (top)/center (mid); pattern modes are the classic filter-family
+   * reveals (blinds/checkerboard/random bars/dissolve/circle/diamond/box/wedge/
+   * wheel/strips) drawn cell-by-cell by the render layer's clipFunc. null = no clip.
+   */
+  clip: { t: number; mode: AnimClipMode } | null
 }
+
+export type AnimClipMode =
+  | 'btm'
+  | 'top'
+  | 'mid'
+  | 'blinds'
+  | 'checker'
+  | 'bars'
+  | 'dissolve'
+  | 'circle'
+  | 'diamond'
+  | 'box'
+  | 'wedge'
+  | 'wheel'
+  | 'strips'
 
 const NORMAL: NodeAnimState = {
   hidden: false,
@@ -193,7 +225,10 @@ export function samplePathPoints(path: string): Array<{ x: number; y: number }> 
 }
 
 /** Point on the path at progress q (0..1), by arc length. */
-export function pointAtPath(pts: Array<{ x: number; y: number }>, q: number): { x: number; y: number } {
+export function pointAtPath(
+  pts: Array<{ x: number; y: number }>,
+  q: number,
+): { x: number; y: number } {
   if (pts.length === 1) return pts[0]!
   const lens: number[] = [0]
   for (let i = 1; i < pts.length; i++) {
@@ -225,7 +260,13 @@ function cachedPathPoints(path: string): Array<{ x: number; y: number }> {
 }
 
 /** Write the state of a single animation at progress p (0..1) into st; p=1 means finished. */
-function applyEffect(st: NodeAnimState, item: AnimationItem, p: number, canvasW: number, canvasH: number): void {
+function applyEffect(
+  st: NodeAnimState,
+  item: AnimationItem,
+  p: number,
+  canvasW: number,
+  canvasH: number,
+): void {
   const q = easeOut(Math.min(1, Math.max(0, p)))
   switch (item.effect) {
     case 'appear':
@@ -311,6 +352,73 @@ function applyEffect(st: NodeAnimState, item: AnimationItem, p: number, canvasW:
       st.opacity = 1 - q
       if (p >= 1) st.hidden = true
       break
+    // ── classic filter families: pattern clip reveals (render layer draws the pattern) ──
+    case 'blinds':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'blinds' }
+      break
+    case 'box':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'box' }
+      break
+    case 'checkerboard':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'checker' }
+      break
+    case 'circleIn':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'circle' }
+      break
+    case 'crawlIn':
+      // Slow slide in from the left edge (long default duration gives the crawl feel)
+      st.hidden = false
+      st.dx = -(1 - q) * canvasW
+      break
+    case 'diamond':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'diamond' }
+      break
+    case 'dissolveIn':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'dissolve' }
+      break
+    case 'randomBars':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'bars' }
+      break
+    case 'stretch':
+      // Stretch up from the bottom edge
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'btm' }
+      break
+    case 'strips':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'strips' }
+      break
+    case 'wedge':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'wedge' }
+      break
+    case 'wheel':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'wheel' }
+      break
+    case 'boxOut':
+      st.clip = p >= 1 ? null : { t: 1 - q, mode: 'box' }
+      if (p >= 1) st.hidden = true
+      break
+    case 'checkerboardOut':
+      st.clip = p >= 1 ? null : { t: 1 - q, mode: 'checker' }
+      if (p >= 1) st.hidden = true
+      break
+    case 'dissolveOut':
+      st.clip = p >= 1 ? null : { t: 1 - q, mode: 'dissolve' }
+      if (p >= 1) st.hidden = true
+      break
+    case 'randomBarsOut':
+      st.clip = p >= 1 ? null : { t: 1 - q, mode: 'bars' }
+      if (p >= 1) st.hidden = true
+      break
     case 'motionPath': {
       // Move along path: offset = sample point - path start (relative to slide size); stops at the end when done
       st.hidden = false
@@ -356,7 +464,8 @@ export function computeNodeStates(
       let p: number | null
       if (si < played) p = 1
       else if (si === played && activeMs != null) {
-        p = activeMs <= t.startMs ? null : Math.min(1, (activeMs - t.startMs) / (t.endMs - t.startMs))
+        p =
+          activeMs <= t.startMs ? null : Math.min(1, (activeMs - t.startMs) / (t.endMs - t.startMs))
       } else p = null
       if (p == null) continue
       // Playing/finished: reset to normal first, then apply this effect (later animations on the same node override earlier ones)

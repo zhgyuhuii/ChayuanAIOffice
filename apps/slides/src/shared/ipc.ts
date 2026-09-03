@@ -606,6 +606,18 @@ export type AnimEffectKind =
   | 'bounce'
   | 'flipIn'
   | 'zoom' // entrance
+  | 'blinds'
+  | 'box'
+  | 'checkerboard'
+  | 'circleIn'
+  | 'crawlIn'
+  | 'diamond'
+  | 'dissolveIn'
+  | 'randomBars'
+  | 'stretch'
+  | 'strips'
+  | 'wedge'
+  | 'wheel' // entrance — classic filter families
   | 'pulse'
   | 'spin'
   | 'grow'
@@ -616,6 +628,10 @@ export type AnimEffectKind =
   | 'wipeOut'
   | 'shrink'
   | 'zoomOut' // exit
+  | 'boxOut'
+  | 'checkerboardOut'
+  | 'dissolveOut'
+  | 'randomBarsOut' // exit — filter-family mirrors
   | 'motionPath' // motion path (move along a path)
 
 export type AnimTrigger = 'onClick' | 'withPrev' | 'afterPrev'
