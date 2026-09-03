@@ -62,6 +62,7 @@ function state(hasDoc: boolean): DocsCommandState {
     docEmpty: !hasDoc,
     canEdit: hasDoc,
     selectionKind: 'text',
+    hist: { canUndo: false, canRedo: false },
     view: {
       viewMode: 'print',
       readMode: false,
@@ -147,6 +148,6 @@ describe('file commands', () => {
       'docs.file.save',
       'docs.file.saveAs',
     ])
-    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 41)
+    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 43)
   })
 })

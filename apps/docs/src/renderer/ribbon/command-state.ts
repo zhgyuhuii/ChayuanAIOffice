@@ -103,6 +103,8 @@ export interface DocsCommandState {
   /** hasDoc && format.editable — the global edit fence (read-only/protected) */
   readonly canEdit: boolean
   readonly selectionKind: DocsSelectionKind
+  /** undo/redo availability from the editor history plugin */
+  readonly hist: { readonly canUndo: boolean; readonly canRedo: boolean }
   readonly view: DocsViewState
   readonly review: DocsReviewState
   readonly doc: DocsDocState

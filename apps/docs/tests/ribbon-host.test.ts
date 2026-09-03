@@ -21,6 +21,7 @@ function makeState(overrides: Partial<DocsCommandState> = {}): DocsCommandState 
     docEmpty: false,
     canEdit: true,
     selectionKind: 'text',
+    hist: { canUndo: false, canRedo: false },
     view: {
       viewMode: 'print',
       readMode: false,

@@ -58,6 +58,26 @@ const canEditOutsideSub = (ctx: Ctx) => ctx.state.canEdit && !ctx.state.format.s
 const hasDoc = (ctx: Ctx) => ctx.state.hasDoc
 
 const clipboardCommands: Def[] = [
+  // undo/redo availability comes from the history plugin via state.hist (the
+  // desktop quick-access toolbar drives the same state)
+  {
+    id: commandId('docs.edit.undo'),
+    isEnabled: (ctx) => ctx.state.hasDoc && ctx.state.hist.canUndo,
+    run: (ctx) => {
+      const ed = activeEditor(ctx)
+      if (!ed) return
+      ed.chain().focus().undo().run()
+    },
+  },
+  {
+    id: commandId('docs.edit.redo'),
+    isEnabled: (ctx) => ctx.state.hasDoc && ctx.state.hist.canRedo,
+    run: (ctx) => {
+      const ed = activeEditor(ctx)
+      if (!ed) return
+      ed.chain().focus().redo().run()
+    },
+  },
   {
     id: commandId('docs.edit.paste'),
     isEnabled: canEdit,

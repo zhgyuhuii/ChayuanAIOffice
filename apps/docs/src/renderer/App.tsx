@@ -12,7 +12,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { AiPanelToggle, DockShell, Dropdown } from '@chatoffice/ui'
+import { AiPanelToggle, DockShell, Dropdown, useUIMode } from '@chatoffice/ui'
+import { createCommandRegistry } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
@@ -138,12 +139,14 @@ import { useShallowStable, useStableCallbacks } from './use-stable'
 import {
   deriveSelectionKind,
   ribbonPropsFromHost,
+  DOCS_COMMANDS,
   FontStepper,
   PainterService,
   PenPreferences,
   type DocsCommandServices,
   type DocsCommandState,
 } from './ribbon'
+import { MobileQuickBar } from './components/MobileQuickBar'
 import { FindPanel } from './components/FindPanel'
 import { Ribbon } from './components/Ribbon'
 import { computeFormatState } from './components/ribbon-format-state'
@@ -4242,28 +4245,8 @@ export function App() {
     inkHighlighter,
     inkCount: inkAnnotations.length,
   })
-  const docsAiState = useShallowStable({ showAi })
-  const docsState = useShallowStable<DocsCommandState>({
-    format: formatState,
-    hasDoc: !!doc,
-    docEmpty: !doc || formatState.docEmpty,
-    canEdit: !!doc && formatState.editable,
-    selectionKind: deriveSelectionKind(formatState),
-    view: docsViewState,
-    review: docsReviewState,
-    doc: docsDocState,
-    draw: docsDrawState,
-    ai: docsAiState,
-    sources,
-  })
-
-  const closeCommentsPanel = useCallback(() => {
-    setShowComments(false)
-    cancelNewComment()
-  }, [cancelNewComment])
-
-  const hasDoc = !!doc
-  // Undo/redo availability: refreshed on every transaction so the QAT buttons grey out when empty
+  // Undo/redo availability: refreshed on every transaction so the QAT buttons
+  // grey out when empty (docsState.hist drives the registry's undo/redo gates)
   const [histState, setHistState] = useState({ canUndo: false, canRedo: false })
   useEffect(() => {
     if (!editor) return
@@ -4275,6 +4258,48 @@ export function App() {
       editor.off('transaction', refresh)
     }
   }, [editor])
+  const docsHistState = useShallowStable(histState)
+  const docsAiState = useShallowStable({ showAi })
+  const docsState = useShallowStable<DocsCommandState>({
+    format: formatState,
+    hasDoc: !!doc,
+    docEmpty: !doc || formatState.docEmpty,
+    canEdit: !!doc && formatState.editable,
+    selectionKind: deriveSelectionKind(formatState),
+    hist: docsHistState,
+    view: docsViewState,
+    review: docsReviewState,
+    doc: docsDocState,
+    draw: docsDrawState,
+    ai: docsAiState,
+    sources,
+  })
+  // command registry: the one dispatch point shared by the legacy ribbon
+  // facade, the schema renderers and the mobile quick bar
+  const docsRegistry = useMemo(() => createCommandRegistry(DOCS_COMMANDS), [])
+  const docsCommandCtx = useMemo(
+    () => ({ state: docsState, services: docsServices }),
+    [docsState, docsServices],
+  )
+  // 手机/平板自适应:coarse 指针 + 窄视口自动判定(auto/mobile/desktop 三态可在
+  // localStorage 覆盖,平板默认桌面 UI 但可钉成移动)
+  const uiMode = useUIMode('chatoffice.uiMode')
+  const isMobileUI = uiMode.isMobile
+  // 移动端打开文档默认适配页宽(触控缩放仍可再调),ref 避免 effect 随 zoomFit
+  // 的回调身份重触发
+  const mobileZoomFitRef = useRef(zoomFit)
+  mobileZoomFitRef.current = zoomFit
+  const openedDocPath = doc?.filePath ?? null
+  useEffect(() => {
+    if (isMobileUI && openedDocPath) mobileZoomFitRef.current('width')
+  }, [isMobileUI, openedDocPath])
+
+  const closeCommentsPanel = useCallback(() => {
+    setShowComments(false)
+    cancelNewComment()
+  }, [cancelNewComment])
+
+  const hasDoc = !!doc
   // WPS vertical-ruler logic: the left ruler appears only when the page itself
   // is clicked into (the document-open auto-focus must NOT reveal it) and
   // hides again when focus leaves the editor (ribbon, panels, outside)
@@ -4412,7 +4437,7 @@ export function App() {
 
   return (
     <div
-      className={`app ${readMode ? 'read-mode' : ''}${revisionDisplay !== 'all' ? ` rev-display-${revisionDisplay}` : ''}${revisionDisplay === 'all' && viewMode === 'print' ? ' rev-balloon' : ''}`}
+      className={`app ${readMode ? 'read-mode' : ''}${revisionDisplay !== 'all' ? ` rev-display-${revisionDisplay}` : ''}${revisionDisplay === 'all' && viewMode === 'print' ? ' rev-balloon' : ''}${isMobileUI ? ' mobile-ui' : ''}`}
     >
       <ToastHost />
       {docCss && <style>{docCss}</style>}
@@ -4783,6 +4808,8 @@ export function App() {
           </footer>
         </div>
       </DockShell>
+
+      {isMobileUI && doc && <MobileQuickBar ctx={docsCommandCtx} registry={docsRegistry} />}
 
       {showShortcuts && <ShortcutsDialog onClose={() => setShowShortcuts(false)} />}
       {showLinkModal && <LinkInsertModal editor={editor} onClose={() => setShowLinkModal(false)} />}

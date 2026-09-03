@@ -10110,3 +10110,93 @@ tr > .page-gap-cut {
 .doc-page span[data-doc-style]:has(.doc-ws-run) span {
   line-height: 0;
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   手机/平板自适应(P1)
+   检测在 JS 侧(useUIMode:coarse 指针 + ≤768px AND 判定,localStorage 三态覆
+   盖);`.mobile-ui` 挂在 .app 根上承载结构差异。桌面 UI 不受影响。
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* coarse 指针(平板触屏走桌面 UI 时也生效):触控命中目标补偿 */
+@media (pointer: coarse) {
+  .ribbon-tabs .ribbon-tab {
+    min-height: 40px;
+  }
+
+  .qa-btn {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* 移动模式:标尺对触屏没有意义(拖拽精度不足),隐藏整行 */
+.mobile-ui .ruler-row {
+  display: none;
+}
+
+/* 移动模式:底部快捷条是 fixed 定位,给滚动区留出内容不被遮挡的底部空间 */
+.mobile-ui .editor-scroll {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* 底部快捷格式条:拇指可达(44px 命中),横滑,悬浮在虚拟键盘之上
+   (marginBottom 由 useKeyboardInset 注入,桌面端恒为 0) */
+.mqb {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px calc(4px + env(safe-area-inset-bottom));
+  overflow-x: auto;
+  background: var(--bg, var(--panel, #fff));
+  border-top: 1px solid var(--border);
+  z-index: 60;
+}
+
+.mqb-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font-size: 15px;
+}
+
+.mqb-btn:disabled {
+  opacity: 0.35;
+}
+
+.mqb-btn.active {
+  background: var(--hover);
+  color: var(--accent);
+}
+
+.mqb-glyph {
+  line-height: 1;
+}
+
+.mqb-glyph-b {
+  font-weight: 700;
+}
+
+.mqb-glyph-i {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.mqb-glyph-u {
+  text-decoration: underline;
+}
+
+.mqb-glyph-s {
+  text-decoration: line-through;
+}

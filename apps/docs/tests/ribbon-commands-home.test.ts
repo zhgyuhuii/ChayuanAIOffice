@@ -91,6 +91,7 @@ function makeState(
     docEmpty: false,
     canEdit: true,
     selectionKind: 'text',
+    hist: { canUndo: false, canRedo: false },
     view: {
       viewMode: 'print',
       readMode: false,
@@ -217,7 +218,9 @@ describe('home command registration', () => {
         'docs.edit.copy',
         'docs.edit.cut',
         'docs.edit.paste',
+        'docs.edit.redo',
         'docs.edit.togglePainter',
+        'docs.edit.undo',
         'docs.format.changeCase',
         'docs.format.clearFormatting',
         'docs.format.fontColor.applyPen',
@@ -288,6 +291,36 @@ describe('enablement gates', () => {
     const services = makeServices(ed)
     expect(enabled('docs.edit.copy', makeState({}, { canEdit: false }), services)).toBe(true)
     expect(enabled('docs.edit.copy', makeState({}, { hasDoc: false }), services)).toBe(false)
+  })
+
+  it('undo/redo gate on hasDoc AND history availability', () => {
+    const { ed } = makeEditor()
+    const services = makeServices(ed)
+    const idle = makeState()
+    expect(enabled('docs.edit.undo', idle, services)).toBe(false)
+    expect(enabled('docs.edit.redo', idle, services)).toBe(false)
+    const ready = makeState({}, { hist: { canUndo: true, canRedo: true } })
+    expect(enabled('docs.edit.undo', ready, services)).toBe(true)
+    expect(enabled('docs.edit.redo', ready, services)).toBe(true)
+    const noDoc = makeState({}, { hasDoc: false, hist: { canUndo: true, canRedo: true } })
+    expect(enabled('docs.edit.undo', noDoc, services)).toBe(false)
+  })
+
+  it('undo/redo run the history chain on the active editor', () => {
+    const { ed, calls } = makeEditor()
+    const services = makeServices(ed)
+    run('docs.edit.undo', makeState({}, { hist: { canUndo: true, canRedo: false } }), services)
+    run('docs.edit.redo', makeState({}, { hist: { canUndo: true, canRedo: true } }), services)
+    expect(calls).toEqual([
+      ['chain'],
+      ['focus'],
+      ['undo'],
+      ['run'],
+      ['chain'],
+      ['focus'],
+      ['redo'],
+      ['run'],
+    ])
   })
 
   it('run() no-ops without canEdit even if dispatched directly', () => {
