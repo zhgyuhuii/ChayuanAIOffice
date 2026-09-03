@@ -178,12 +178,12 @@ describe('style gallery overflow', () => {
 
   it('keeps the expander visible even while every card fits (WPS parity)', () => {
     expect(container.querySelector('.style-gallery')).not.toBeNull()
-    expect(container.querySelectorAll('.style-gallery .style-card').length).toBe(6)
+    expect(container.querySelectorAll('.style-gallery .style-card').length).toBe(9)
     const more = container.querySelector<HTMLButtonElement>('.style-gallery-more')!
     expect(more).not.toBeNull()
     // and it still opens the full grid without any overflow
     act(() => more.click())
-    expect(container.querySelectorAll('.style-gallery-menu .style-card').length).toBe(6)
+    expect(container.querySelectorAll('.style-gallery-menu .style-card').length).toBe(9)
   })
 
   it('caps the gallery when cards wrap out of view and clears the cap when they fit again', () => {
@@ -195,7 +195,7 @@ describe('style gallery overflow', () => {
     // the gallery is capped right after the last visible card (2 × 78 - 4 gap)
     expect((gallery as HTMLElement).style.maxWidth).toBe('152px')
 
-    setRowLayout(gallery, 6)
+    setRowLayout(gallery, 9)
     act(() => FakeResizeObserver.fire(wrap))
     expect(container.querySelector('.style-gallery-more')).not.toBeNull()
     expect((gallery as HTMLElement).style.maxWidth).toBe('')
@@ -212,8 +212,8 @@ describe('style gallery overflow', () => {
 
     const menu = container.querySelector('.style-gallery-menu')!
     const cards = menu.querySelectorAll<HTMLButtonElement>('.style-card')
-    // 4 paragraph styles + 2 preset character styles: nothing is dropped
-    expect(cards.length).toBe(6)
+    // 7 paragraph styles (正文 + 标题1-6) + 2 preset character styles: nothing is dropped
+    expect(cards.length).toBe(9)
 
     editor.commands.setTextSelection(3)
     act(() => cards[1].click()) // Heading 1

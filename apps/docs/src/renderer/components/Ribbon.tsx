@@ -296,11 +296,15 @@ export const clampPictureCm = (cm: number) => Math.min(PICTURE_CM_MAX, Math.max(
 // the deferred re-layout still feels attached to the click.
 const FONT_STEP_COALESCE_MS = 300
 
+// Word 标准样式集: 正文 + 标题1-6(schema 支持的完整级别) + 文档字符样式(运行时追加)
 const STYLE_GALLERY = [
   { key: 'p', labelKey: 'ribbonStyleNormal', className: 'style-normal' },
   { key: 'h1', labelKey: 'ribbonStyleHeading1', className: 'style-h1' },
   { key: 'h2', labelKey: 'ribbonStyleHeading2', className: 'style-h2' },
   { key: 'h3', labelKey: 'ribbonStyleHeading3', className: 'style-h3' },
+  { key: 'h4', labelKey: 'ribbonStyleHeading4', className: 'style-h4' },
+  { key: 'h5', labelKey: 'ribbonStyleHeading5', className: 'style-h5' },
+  { key: 'h6', labelKey: 'ribbonStyleHeading6', className: 'style-h6' },
 ] as const satisfies ReadonlyArray<{ key: string; labelKey: StringKey; className: string }>
 
 /** Fallback character styles shown when the document has no character styles.

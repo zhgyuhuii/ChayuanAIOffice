@@ -2075,6 +2075,23 @@ th.cell-rev-del {
   font-size: 13px;
 }
 
+.style-card-preview.style-h4 {
+  color: var(--docs-heading-3);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.style-card-preview.style-h5 {
+  color: var(--text-secondary, var(--word-heading));
+  font-size: 12px;
+}
+
+.style-card-preview.style-h6 {
+  color: var(--text-secondary, var(--word-heading));
+  font-size: 12px;
+  font-style: italic;
+}
+
 /* ================= workspace / document canvas ================= */
 
 .workspace {

@@ -3469,11 +3469,14 @@ export function App() {
         else setParaAttrs(editor, attrs)
       }
       // Paragraph styles ⌥⌘0 Normal / ⌥⌘1..3 headings (Ctrl+Shift+N is taken by New Window)
-      const STYLE_KEYS: Record<string, 'p' | 'h1' | 'h2' | 'h3'> = {
+      const STYLE_KEYS: Record<string, 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'> = {
         Digit0: 'p',
         Digit1: 'h1',
         Digit2: 'h2',
         Digit3: 'h3',
+        Digit4: 'h4',
+        Digit5: 'h5',
+        Digit6: 'h6',
       }
       if (
         (e.metaKey || e.ctrlKey) &&

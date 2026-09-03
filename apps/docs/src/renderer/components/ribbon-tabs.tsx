@@ -152,7 +152,10 @@ export function clearParagraphFormatting(editor: Editor): void {
 }
 
 /** apply a gallery paragraph style; not for textbox sub-editors (no docHeading in their schema) */
-export function applyParagraphStyle(editor: Editor, key: 'p' | 'h1' | 'h2' | 'h3'): void {
+export function applyParagraphStyle(
+  editor: Editor,
+  key: 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6',
+): void {
   let c = editor.chain().focus()
   if (key === 'p') c = c.setNode('docParagraph')
   else c = c.setNode('docHeading', { level: Number(key.slice(1)) })
