@@ -1389,6 +1389,116 @@ html.chatoffice-popover-open .ribbon-tabs {
   box-shadow: var(--sheets-shadow-drop);
 }
 
+/* menu separator inside a .menu-select-drop (conditional-formatting menu) */
+.rb-menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--border);
+}
+
+/* WPS 对齐的样式富下拉（第六节 A4）：表格格式缩略图画廊 + 单元格样式分组色板 */
+.style-gallery-drop {
+  min-width: 0;
+  padding: 8px;
+}
+
+.style-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 104px);
+  gap: 8px;
+}
+
+.style-thumb-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 2px 4px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  font-size: 11px;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.style-thumb-cell:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* mini 1 header row + 2 body rows table, colors inline from the preview spec */
+.tbl-thumb {
+  display: flex;
+  flex-direction: column;
+  width: 92px;
+  height: 42px;
+  border: 1px solid #b4b4b4;
+  border-radius: 2px;
+  overflow: hidden;
+  font-size: 0;
+}
+
+.tbl-thumb-head,
+.tbl-thumb-row {
+  display: flex;
+  flex: 1;
+}
+
+.tbl-thumb-head i,
+.tbl-thumb-row span {
+  flex: 1;
+}
+
+.tbl-thumb-head i {
+  height: 6px;
+  margin: 4px 3px 0;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+.cell-style-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.cell-style-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  font-size: 12px;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cell-style-row:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* fill swatch with a tiny ink sample ("ab") showing the style's text color */
+.cell-style-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 16px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.cell-style-swatch i {
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1;
+}
+
 .menu-select-drop button {
   display: block;
   width: 100%;

@@ -2822,30 +2822,23 @@ function Ribbon({
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')}>
         <div className="styles-stack">
-          <button
-            className="styles-row as-button"
-            data-tip={t('appConditionalFormatting')}
-            onClick={() => onCommand('cf-open')}
-          >
+          <div className="styles-row as-button" data-tip={t('appConditionalFormatting')}>
             <ToolSymbol symbol="▤" />
             {t('appConditionalFormatting')}
             <CaretIcon />
-          </button>
+            <CondFormatSelect
+              label={t('appConditionalFormatting')}
+              data-tip={t('appConditionalFormatting')}
+              onCommand={onCommand}
+            />
+          </div>
           <div className="styles-row as-button" data-tip={t('appFormatAsTableTitle')}>
             <ToolSymbol symbol="▦" />
             {t('appFormatAsTable')}
             <CaretIcon />
-            <MenuSelect
-              cover
-              label="Format as Table"
-              options={[
-                { value: 'TableStyleLight1', label: t('appTableStyleLight1') },
-                { value: 'TableStyleLight9', label: t('appTableStyleLight9') },
-                { value: 'TableStyleMedium2', label: t('appTableStyleMedium2') },
-                { value: 'TableStyleMedium4', label: t('appTableStyleMedium4') },
-                { value: 'TableStyleMedium7', label: t('appTableStyleMedium7') },
-                { value: 'TableStyleDark2', label: t('appTableStyleDark2') },
-              ]}
+            <TableStyleGallerySelect
+              label={t('appFormatAsTable')}
+              data-tip={t('appFormatAsTableTitle')}
               onPick={(value) => onCommand(`format-as-table:${value}`)}
             />
           </div>
@@ -2853,25 +2846,9 @@ function Ribbon({
             <ToolSymbol symbol="🎨" />
             {t('appCellStyles')}
             <CaretIcon />
-            <MenuSelect
-              cover
-              label="Cell Styles"
-              options={[
-                { value: 'good', label: t('appStyleGood') },
-                { value: 'bad', label: t('appStyleBad') },
-                { value: 'neutral', label: t('appStyleNeutral') },
-                { value: 'input', label: t('appStyleInput') },
-                { value: 'output', label: t('appStyleOutput') },
-                { value: 'calculation', label: t('appStyleCalculation') },
-                { value: 'warning-text', label: t('appStyleWarningText') },
-                { value: 'title', label: t('appTitle') },
-                { value: 'heading-1', label: t('appStyleHeading1') },
-                { value: 'heading-2', label: t('appStyleHeading2') },
-                { value: 'total', label: t('appStyleTotal') },
-                { value: 'accent1-20', label: t('appStyleAccent120') },
-                { value: 'accent1-40', label: t('appStyleAccent140') },
-                { value: 'accent1', label: t('appStyleAccent1') },
-              ]}
+            <CellStyleSelect
+              label={t('appCellStyles')}
+              data-tip={t('appCellStylesTitle')}
               onPick={(value) => onCommand(`cell-style:${value}`)}
             />
           </div>
@@ -3143,6 +3120,352 @@ function ShapeGallerySelect({
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/// 代表性色板：xlsx 只存内置样式名（TableStyleMedium2 等），真实强调色由
+/// Excel/WPS 打开时按主题渲染；画廊缩略图只需家族忠实的区分度（对齐 Excel
+/// 自家画廊的做法）。Medium2 蓝 / Medium4 橙 / Medium7 绿 / Dark2 深蓝。
+const TABLE_STYLE_PREVIEWS = [
+  {
+    value: 'TableStyleLight1',
+    labelKey: 'appTableStyleLight1',
+    header: '#FFFFFF',
+    ink: '#1F1F1F',
+    band: null,
+    grid: '#B4B4B4',
+  },
+  {
+    value: 'TableStyleLight9',
+    labelKey: 'appTableStyleLight9',
+    header: '#9DC3E6',
+    ink: '#1F1F1F',
+    band: null,
+    grid: '#B4B4B4',
+  },
+  {
+    value: 'TableStyleMedium2',
+    labelKey: 'appTableStyleMedium2',
+    header: '#4472C4',
+    ink: '#FFFFFF',
+    band: '#D9E1F2',
+    grid: null,
+  },
+  {
+    value: 'TableStyleMedium4',
+    labelKey: 'appTableStyleMedium4',
+    header: '#ED7D31',
+    ink: '#FFFFFF',
+    band: '#FBE5D6',
+    grid: null,
+  },
+  {
+    value: 'TableStyleMedium7',
+    labelKey: 'appTableStyleMedium7',
+    header: '#70AD47',
+    ink: '#FFFFFF',
+    band: '#E2EFDA',
+    grid: null,
+  },
+  {
+    value: 'TableStyleDark2',
+    labelKey: 'appTableStyleDark2',
+    header: '#2F5597',
+    ink: '#FFFFFF',
+    band: '#D9E1F2',
+    grid: null,
+  },
+] as const satisfies ReadonlyArray<{
+  value: string
+  labelKey: StringKey
+  header: string
+  ink: string
+  band: string | null
+  grid: string | null
+}>
+
+/// 4×3 mini table in the style's header/band colors (Excel gallery look).
+function TableStyleThumb({
+  header,
+  ink,
+  band,
+  grid,
+}: {
+  readonly header: string
+  readonly ink: string
+  readonly band: string | null
+  readonly grid: string | null
+}): React.JSX.Element {
+  const cell = (fill: string, row: number, col: number): React.JSX.Element => (
+    <span
+      key={`${row}-${col}`}
+      style={{
+        background: fill,
+        borderTop: grid ? `1px solid ${grid}` : undefined,
+      }}
+    />
+  )
+  return (
+    <span className="tbl-thumb" aria-hidden="true">
+      <span className="tbl-thumb-head" style={{ background: header, color: ink }}>
+        <i />
+        <i />
+        <i />
+      </span>
+      {[0, 1].map((row) => (
+        <span key={row} className="tbl-thumb-row">
+          {cell(band ?? '#FFFFFF', row, 0)}
+          {cell(row === 1 && band ? '#FFFFFF' : (band ?? '#FFFFFF'), row, 1)}
+          {cell(band ?? '#FFFFFF', row, 2)}
+        </span>
+      ))}
+    </span>
+  )
+}
+
+/// 套用表格格式: thumbnail gallery (Excel/WPS gallery look) over the usual
+/// invisible cover trigger.
+function TableStyleGallerySelect({
+  label,
+  'data-tip': tip,
+  onPick,
+}: {
+  readonly label: string
+  readonly 'data-tip'?: string
+  readonly onPick: (style: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  return (
+    <div ref={wrapRef} className="menu-select menu-select-cover">
+      <button
+        type="button"
+        className="cover-select"
+        aria-label={label}
+        data-tip={tip}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+      {open && (
+        <div className="menu-select-drop style-gallery-drop" role="listbox" aria-label={label}>
+          <div className="rb-drop-title">{label}</div>
+          <div className="style-thumb-grid">
+            {TABLE_STYLE_PREVIEWS.map((p) => (
+              <button
+                type="button"
+                key={p.value}
+                role="option"
+                aria-selected={false}
+                className="style-thumb-cell"
+                onClick={() => {
+                  setOpen(false)
+                  onPick(p.value)
+                }}
+              >
+                <TableStyleThumb header={p.header} ink={p.ink} band={p.band} grid={p.grid} />
+                <span>{t(p.labelKey)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/// 单元格样式: fill-swatch groups (好差中性 / 标题 / 数据与模型 / 强调),
+/// mirroring Excel's grouped cell-style gallery.
+const CELL_STYLE_GROUPS: ReadonlyArray<{
+  titleKey: StringKey
+  items: ReadonlyArray<{ value: string; labelKey: StringKey; fill: string; ink?: string }>
+}> = [
+  {
+    titleKey: 'appCellStyleGroupVerdict',
+    items: [
+      { value: 'good', labelKey: 'appStyleGood', fill: '#C6EFCE', ink: '#006100' },
+      { value: 'bad', labelKey: 'appStyleBad', fill: '#FFC7CE', ink: '#9C0006' },
+      { value: 'neutral', labelKey: 'appStyleNeutral', fill: '#FFEB9C', ink: '#9C6500' },
+    ],
+  },
+  {
+    titleKey: 'appCellStyleGroupTitle',
+    items: [
+      { value: 'title', labelKey: 'appTitle', fill: '#FFFFFF', ink: '#1F1F1F' },
+      { value: 'heading-1', labelKey: 'appStyleHeading1', fill: '#4472C4', ink: '#FFFFFF' },
+      { value: 'heading-2', labelKey: 'appStyleHeading2', fill: '#D9E1F2', ink: '#1F1F1F' },
+    ],
+  },
+  {
+    titleKey: 'appCellStyleGroupData',
+    items: [
+      { value: 'input', labelKey: 'appStyleInput', fill: '#E7F1FB', ink: '#1F1F1F' },
+      { value: 'output', labelKey: 'appStyleOutput', fill: '#FFFFFF', ink: '#2F5597' },
+      { value: 'calculation', labelKey: 'appStyleCalculation', fill: '#E2EFDA', ink: '#375623' },
+      { value: 'warning-text', labelKey: 'appStyleWarningText', fill: '#FFF2CC', ink: '#7F6000' },
+    ],
+  },
+  {
+    titleKey: 'appCellStyleGroupAccent',
+    items: [
+      { value: 'accent1-20', labelKey: 'appStyleAccent120', fill: '#D9E1F2', ink: '#1F1F1F' },
+      { value: 'accent1-40', labelKey: 'appStyleAccent140', fill: '#B4C6E7', ink: '#1F1F1F' },
+      { value: 'accent1', labelKey: 'appStyleAccent1', fill: '#4472C4', ink: '#FFFFFF' },
+      { value: 'total', labelKey: 'appStyleTotal', fill: '#F2F2F2', ink: '#1F1F1F' },
+    ],
+  },
+]
+
+function CellStyleSelect({
+  label,
+  'data-tip': tip,
+  onPick,
+}: {
+  readonly label: string
+  readonly 'data-tip'?: string
+  readonly onPick: (style: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  return (
+    <div ref={wrapRef} className="menu-select menu-select-cover">
+      <button
+        type="button"
+        className="cover-select"
+        aria-label={label}
+        data-tip={tip}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+      {open && (
+        <div className="menu-select-drop style-gallery-drop" role="listbox" aria-label={label}>
+          {CELL_STYLE_GROUPS.map((group) => (
+            <div key={group.titleKey}>
+              <div className="rb-drop-title">{t(group.titleKey)}</div>
+              <div className="cell-style-col">
+                {group.items.map((item) => (
+                  <button
+                    type="button"
+                    key={item.value}
+                    role="option"
+                    aria-selected={false}
+                    className="cell-style-row"
+                    onClick={() => {
+                      setOpen(false)
+                      onPick(item.value)
+                    }}
+                  >
+                    <span className="cell-style-swatch" style={{ background: item.fill }}>
+                      {item.ink ? <i style={{ color: item.ink }}>ab</i> : null}
+                    </span>
+                    {t(item.labelKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/// 条件格式: WPS-style typed menu — each entry opens the Univer CF panel
+/// preseeded with that rule type; 管理规则 keeps the old manage-list behavior.
+function CondFormatSelect({
+  label,
+  'data-tip': tip,
+  onCommand,
+}: {
+  readonly label: string
+  readonly 'data-tip'?: string
+  readonly onCommand: (command: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  const pick = (command: string): void => {
+    setOpen(false)
+    onCommand(command)
+  }
+  return (
+    <div ref={wrapRef} className="menu-select menu-select-cover">
+      <button
+        type="button"
+        className="cover-select"
+        aria-label={label}
+        data-tip={tip}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+      {open && (
+        <div className="menu-select-drop" role="listbox" aria-label={label}>
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:3')}
+          >
+            {t('appCfHlRule')}
+          </button>
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:4')}
+          >
+            {t('appCfRankRule')}
+          </button>
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:5')}
+          >
+            {t('appCfFormulaRule')}
+          </button>
+          <div className="rb-menu-sep" role="separator" />
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:6')}
+          >
+            {t('appCfColorScale')}
+          </button>
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:7')}
+          >
+            {t('appCfDataBar')}
+          </button>
+          <button
+            type="button"
+            role="option"
+            aria-selected={false}
+            onClick={() => pick('cf-new:8')}
+          >
+            {t('appCfIconSet')}
+          </button>
+          <div className="rb-menu-sep" role="separator" />
+          <button type="button" role="option" aria-selected={false} onClick={() => pick('cf-open')}>
+            {t('appCfManage')}
+          </button>
         </div>
       )}
     </div>

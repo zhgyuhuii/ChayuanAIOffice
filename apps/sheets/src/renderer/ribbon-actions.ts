@@ -291,6 +291,18 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     if (ctx.selectedVisual) ctx.shapeEditRef.current(ctx.selectedVisual.id, { remove: true })
     return
   }
+  if (command.startsWith('cf-new:')) {
+    // Conditional-formatting rich menu (WPS parity): each entry opens the Univer
+    // CF panel preseeded with that rule type (panel op semantics: 3 highlight,
+    // 4 rank, 5 formula, 6 color scale, 7 data bar, 8 icon set).
+    const op = Number(command.slice('cf-new:'.length))
+    if (Number.isInteger(op) && op >= 3 && op <= 8) {
+      void runtime.univerAPI.executeCommand('sheet.operation.open.conditional.formatting.panel', {
+        value: op,
+      })
+    }
+    return
+  }
   // Read-only-safe commands work on imported workbooks too.
   const worksheet = runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()
   switch (command) {
