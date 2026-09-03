@@ -10,7 +10,7 @@
  * the renderer's RibbonDropdownApi onto the flat (dropdown, setDropdown)
  * pair they expect, updater form included.
  */
-import type { CustomRenderContext, RibbonTab } from '@chatoffice/ribbon'
+import type { CustomRenderContext, RibbonDropdownApi, RibbonTab } from '@chatoffice/ribbon'
 import { commandId } from '@chatoffice/ribbon'
 import type { DocsCommandState } from '../command-state'
 import type { DocsCommandServices } from '../host-services'
