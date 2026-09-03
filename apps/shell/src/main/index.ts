@@ -3262,6 +3262,17 @@ function registerHomeIpc(): void {
     writeFileSync(tmp, JSON.stringify(sessions))
     renameSync(tmp, target)
   })
+
+  // home chat: bind the next AI-created docx/md to a project (consumed by
+  // applyPendingProject on the new tab's first save); null clears a stale one
+  ipcMain.on(HOME_CHANNELS.setPendingProject, (_event, kind: unknown, projectId: unknown) => {
+    if (typeof kind !== 'string' || !['doc', 'markdown'].includes(kind)) return
+    if (typeof projectId !== 'string' || projectId === '' || projectId === 'default') {
+      pendingNewFileProject.delete(kind)
+      return
+    }
+    pendingNewFileProject.set(kind, projectId)
+  })
 }
 
 function stringPaths(value: unknown): string[] {

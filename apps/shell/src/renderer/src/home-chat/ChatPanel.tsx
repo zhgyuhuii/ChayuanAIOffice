@@ -211,24 +211,38 @@ export function ChatPanel({
   projectId: string | null
   accountName: string
   onOpenSettings: () => void
-  /** bumped by the sidebar's 新建任务 to start a fresh session here */
-  newSessionSignal?: number
+  /** bumped by the sidebar's 新建任务 to start a fresh session bound to projectId */
+  newSessionSignal?: { n: number; projectId: string | null }
 }): ReactElement {
   const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
 
-  // 外部命令开新会话(新建任务): reuse an empty active session, else create one
+  // 外部命令开新会话(项目行「新建任务」): reuse an empty active session,
+  // else create one bound to the project
   const prevSignal = useRef(newSessionSignal)
   useEffect(() => {
-    if (newSessionSignal === undefined || newSessionSignal === prevSignal.current) return
-    prevSignal.current = newSessionSignal
+    const signal = newSessionSignal
+    if (!signal || signal.n === prevSignal.current?.n) return
+    prevSignal.current = signal
     const active = storeRef.current?.active
     if (active && active.messages.length === 0) {
+      if (signal.projectId) {
+        storeRef.current?.updateSession(active.id, (s) => ({
+          ...s,
+          projectId: signal.projectId ?? undefined,
+        }))
+      }
       inputRef.current?.focus()
       return
     }
     setBusy(false)
-    storeRef.current?.createSession()
+    const session = storeRef.current?.createSession()
+    if (session && signal.projectId) {
+      storeRef.current?.updateSession(session.id, (s) => ({
+        ...s,
+        projectId: signal.projectId ?? undefined,
+      }))
+    }
     inputRef.current?.focus()
   }, [newSessionSignal])
 
@@ -252,6 +266,8 @@ export function ChatPanel({
   const [busy, setBusy] = useState(false)
   const projectIdRef = useRef(projectId)
   projectIdRef.current = projectId
+  /** the project the in-flight turn's created docx should land in (cleared on settle) */
+  const pendingProjectRef = useRef<string | null>(null)
 
   // texts read at send time, so a language switch applies without recreating agents
   const textsRef = useRef<HomeChatControllerTexts | null>(null)
@@ -290,6 +306,14 @@ export function ChatPanel({
         undefined,
         (id, isBusy) => {
           if (id === activeIdRef.current) setBusy(isBusy)
+          // the turn settled: drop a leftover project binding so a later plain
+          // 新建文档 doesn't get mis-bound to this project
+          if (!isBusy && pendingProjectRef.current) {
+            for (const kind of ['doc', 'markdown'] as const) {
+              void window.chatOffice.setPendingNewFileProject?.(kind, null)
+            }
+            pendingProjectRef.current = null
+          }
         },
       ),
     [],
@@ -349,7 +373,15 @@ export function ChatPanel({
     const text = input.trim()
     if (!text && attachments.length === 0) return
     let session = store.active
-    if (!session || session.messages.length > 0) session = store.createSession()
+    if (!session) session = store.createSession()
+    // 一键成文落项目: bind AI-created docx/md to the session's project
+    // (docx via the first-save hook; md via moveFile after the card lands)
+    if (session.projectId) {
+      pendingProjectRef.current = session.projectId
+      for (const kind of ['doc', 'markdown'] as const) {
+        void window.chatOffice.setPendingNewFileProject?.(kind, session.projectId)
+      }
+    }
     const atts = attachments
     setInput('')
     setAttachments([])
@@ -414,6 +446,49 @@ export function ChatPanel({
   }, [active?.messages, busy])
 
   const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
+
+  // project names for the history grouping + the header chip
+  const [projectNames, setProjectNames] = useState<Map<string, string>>(new Map())
+  useEffect(() => {
+    void window.chatOfficeProject?.listProjects().then((ps) => {
+      setProjectNames(new Map(ps.map((p) => [p.id, p.name])))
+    })
+  }, [])
+
+  // md/pdf created by 一键成文 are written to disk immediately — move them into
+  // the session's project once the created card reports a path (docx binds via
+  // the first-save pending hook instead)
+  const movedRef = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    const pid = active?.projectId
+    if (!pid) return
+    for (const m of active?.messages ?? []) {
+      if (m.card?.kind === 'doc-created' && m.card.filePath && !movedRef.current.has(m.id)) {
+        movedRef.current.add(m.id)
+        void window.chatOfficeProject?.moveFile(m.card.filePath, pid).catch(() => {})
+      }
+    }
+  }, [active?.messages, active?.projectId])
+
+  // history grouped by project (unassigned last), freshest first inside a group
+  const unassignedLabel = t('chatUnassigned')
+  const sessionGroups = useMemo(() => {
+    const groups: Array<{ label: string; items: HomeChatSession[] }> = []
+    const byLabel = new Map<string, HomeChatSession[]>()
+    for (const s of [...sessions].sort((a, b) => b.updatedAt - a.updatedAt)) {
+      const label = s.projectId
+        ? (projectNames.get(s.projectId) ?? unassignedLabel)
+        : unassignedLabel
+      let items = byLabel.get(label)
+      if (!items) {
+        items = []
+        byLabel.set(label, items)
+        groups.push({ label, items })
+      }
+      items.push(s)
+    }
+    return groups
+  }, [sessions, projectNames, unassignedLabel])
 
   const renderComposer = () => (
     <div className="chat-composer">
@@ -514,7 +589,14 @@ export function ChatPanel({
   return (
     <main className="chat-stage">
       <header className="chat-head">
-        <div className="chat-head-title">{hasMessages ? active!.title : ''}</div>
+        <div className="chat-head-title">
+          {hasMessages ? active!.title : ''}
+          {hasMessages && active!.projectId && (
+            <span className="chat-proj-chip">
+              {projectNames.get(active!.projectId) ?? unassignedLabel}
+            </span>
+          )}
+        </div>
         <div className="chat-head-actions">
           <div className="chat-sessions-wrap" ref={menuWrapRef}>
             <button
@@ -536,46 +618,50 @@ export function ChatPanel({
             </button>
             {menuOpen && (
               <div className="chat-sessions" role="menu">
-                {sessions.length === 0 ? (
+                {sessions.length === 0 && (
                   <p className="chat-sessions-empty">{t('chatNoSessions')}</p>
-                ) : (
-                  sessions.map((s) => (
-                    <div key={s.id} className="chat-session-row" role="none">
-                      <button
-                        className="chat-session-open"
-                        role="menuitem"
-                        onClick={() => openSession(s.id)}
-                      >
-                        <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
-                        <span className="chat-session-time">
-                          {chatTime(s.updatedAt, dateLocale)}
-                        </span>
-                      </button>
-                      <button
-                        className="chat-session-del"
-                        role="menuitem"
-                        aria-label={t('chatDeleteSession')}
-                        onClick={() => store.removeSession(s.id)}
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M2.5 4h11M6.5 4V2.5h3V4M4 4l.7 9a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L12 4"
-                            stroke="currentColor"
-                            strokeWidth="1.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))
                 )}
+                {sessionGroups.map((group) => (
+                  <div key={group.label} className="chat-session-group">
+                    <div className="chat-session-group-label">{group.label}</div>
+                    {group.items.map((s) => (
+                      <div key={s.id} className="chat-session-row" role="none">
+                        <button
+                          className="chat-session-open"
+                          role="menuitem"
+                          onClick={() => openSession(s.id)}
+                        >
+                          <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
+                          <span className="chat-session-time">
+                            {chatTime(s.updatedAt, dateLocale)}
+                          </span>
+                        </button>
+                        <button
+                          className="chat-session-del"
+                          role="menuitem"
+                          aria-label={t('chatDeleteSession')}
+                          onClick={() => store.removeSession(s.id)}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M2.5 4h11M6.5 4V2.5h3V4M4 4l.7 9a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L12 4"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
           </div>

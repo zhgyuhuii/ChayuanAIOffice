@@ -269,6 +269,7 @@ export const strings = {
     phonePlaceholder: '网页版地址，如 http://192.168.1.5:5180',
     phoneCopy: '复制地址',
     phoneCopied: '已复制',
+    chatUnassigned: '未归类',
   },
   en: {
     navRecent: 'Recent',
@@ -539,6 +540,7 @@ export const strings = {
     phonePlaceholder: 'Web address, e.g. http://192.168.1.5:5180',
     phoneCopy: 'Copy address',
     phoneCopied: 'Copied',
+    chatUnassigned: 'Unassigned',
   },
   ja: {
     // Sidebar navigation
@@ -827,6 +829,7 @@ export const strings = {
     phonePlaceholder: 'ウェブ版のアドレス（例 http://192.168.1.5:5180）',
     phoneCopy: 'アドレスをコピー',
     phoneCopied: 'コピーしました',
+    chatUnassigned: '未分類',
   },
   ko: {
     // Sidebar navigation
@@ -1109,6 +1112,7 @@ export const strings = {
     phonePlaceholder: '웹 주소(예: http://192.168.1.5:5180)',
     phoneCopy: '주소 복사',
     phoneCopied: '복사됨',
+    chatUnassigned: '미분류',
   },
   fr: {
     // Sidebar navigation
@@ -1401,6 +1405,7 @@ export const strings = {
     phonePlaceholder: 'Adresse web, ex. http://192.168.1.5:5180',
     phoneCopy: 'Copier l’adresse',
     phoneCopied: 'Copié',
+    chatUnassigned: 'Non classées',
   },
   de: {
     // Sidebar navigation
@@ -1694,6 +1699,7 @@ export const strings = {
     phonePlaceholder: 'Webadresse, z. B. http://192.168.1.5:5180',
     phoneCopy: 'Adresse kopieren',
     phoneCopied: 'Kopiert',
+    chatUnassigned: 'Nicht zugeordnet',
   },
   es: {
     // Sidebar navigation
@@ -1986,6 +1992,7 @@ export const strings = {
     phonePlaceholder: 'Dirección web, p. ej. http://192.168.1.5:5180',
     phoneCopy: 'Copiar dirección',
     phoneCopied: 'Copiado',
+    chatUnassigned: 'Sin asignar',
   },
   th: {
     // Sidebar navigation
@@ -2266,6 +2273,7 @@ export const strings = {
     phonePlaceholder: 'ที่อยู่เว็บ เช่น http://192.168.1.5:5180',
     phoneCopy: 'คัดลอกที่อยู่',
     phoneCopied: 'คัดลอกแล้ว',
+    chatUnassigned: 'ยังไม่จัดหมวด',
   },
   id: {
     // Sidebar navigation
@@ -2552,6 +2560,7 @@ export const strings = {
     phonePlaceholder: 'Alamat web, mis. http://192.168.1.5:5180',
     phoneCopy: 'Salin alamat',
     phoneCopied: 'Tersalin',
+    chatUnassigned: 'Belum dikelompokkan',
   },
   ru: {
     // Sidebar navigation
@@ -2839,6 +2848,7 @@ export const strings = {
     phonePlaceholder: 'Веб-адрес, напр. http://192.168.1.5:5180',
     phoneCopy: 'Копировать адрес',
     phoneCopied: 'Скопировано',
+    chatUnassigned: 'Без проекта',
   },
   ar: {
     // Sidebar navigation
@@ -3120,6 +3130,7 @@ export const strings = {
     phonePlaceholder: 'عنوان الويب، مثل http://192.168.1.5:5180',
     phoneCopy: 'نسخ العنوان',
     phoneCopied: 'تم النسخ',
+    chatUnassigned: 'غير مصنفة',
   },
   pt: {
     navRecent: 'Recentes',
@@ -3399,6 +3410,7 @@ export const strings = {
     phonePlaceholder: 'Endereço web, ex.: http://192.168.1.5:5180',
     phoneCopy: 'Copiar endereço',
     phoneCopied: 'Copiado',
+    chatUnassigned: 'Sem projeto',
   },
   it: {
     navRecent: 'Recenti',
@@ -3677,6 +3689,7 @@ export const strings = {
     phonePlaceholder: 'Indirizzo web, es. http://192.168.1.5:5180',
     phoneCopy: 'Copia indirizzo',
     phoneCopied: 'Copiato',
+    chatUnassigned: 'Non assegnate',
   },
   pl: {
     navRecent: 'Ostatnie',
@@ -3954,6 +3967,7 @@ export const strings = {
     phonePlaceholder: 'Adres internetowy, np. http://192.168.1.5:5180',
     phoneCopy: 'Kopiuj adres',
     phoneCopied: 'Skopiowano',
+    chatUnassigned: 'Bez projektu',
   },
   nl: {
     navRecent: 'Recent',
@@ -4233,6 +4247,7 @@ export const strings = {
     phonePlaceholder: 'Webadres, bijv. http://192.168.1.5:5180',
     phoneCopy: 'Adres kopiëren',
     phoneCopied: 'Gekopieerd',
+    chatUnassigned: 'Niet toegewezen',
   },
   ms: {
     navRecent: 'Terkini',
@@ -4508,6 +4523,7 @@ export const strings = {
     phonePlaceholder: 'Alamat web, cth. http://192.168.1.5:5180',
     phoneCopy: 'Salin alamat',
     phoneCopied: 'Disalin',
+    chatUnassigned: 'Tidak bertugas',
   },
   he: {
     navRecent: 'אחרונים',
@@ -4775,6 +4791,7 @@ export const strings = {
     phonePlaceholder: 'כתובת אינטרנט, למשל http://192.168.1.5:5180',
     phoneCopy: 'העתקת כתובת',
     phoneCopied: 'הועתק',
+    chatUnassigned: 'לא משויך',
   },
   hi: {
     navRecent: 'हाल के',
@@ -5050,6 +5067,7 @@ export const strings = {
     phonePlaceholder: 'वेब पता, जैसे http://192.168.1.5:5180',
     phoneCopy: 'पता कॉपी करें',
     phoneCopied: 'कॉपी हो गया',
+    chatUnassigned: 'अवर्गीकृत',
   },
   'zh-TW': {
     navRecent: '最近',
@@ -5311,5 +5329,6 @@ export const strings = {
     phonePlaceholder: '網頁版地址，如 http://192.168.1.5:5180',
     phoneCopy: '複製地址',
     phoneCopied: '已複製',
+    chatUnassigned: '未歸類',
   },
 } as const

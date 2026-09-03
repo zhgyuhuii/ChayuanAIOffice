@@ -2864,3 +2864,29 @@ body.vib .home {
 .phone-url-input:focus {
   border-color: var(--accent);
 }
+
+/* ---- P3: session-project chip + grouped history ---- */
+
+.chat-proj-chip {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+.chat-session-group + .chat-session-group {
+  margin-top: 6px;
+}
+
+.chat-session-group-label {
+  padding: 4px 10px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+}

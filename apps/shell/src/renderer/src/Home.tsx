@@ -1326,9 +1326,11 @@ export function Home() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [searchHits, setSearchHits] = useState<RecentEntry[] | null>(null)
-  // bumped to command the chat panel into a fresh session (项目行「新建任务」;
-  // the session's project binding lands with the session-project phase)
-  const [taskSignal, setTaskSignal] = useState(0)
+  // bumped to command the chat panel into a fresh session bound to the project
+  const [taskSignal, setTaskSignal] = useState<{ n: number; projectId: string | null }>({
+    n: 0,
+    projectId: null,
+  })
 
   const toggleFilesPane = (id: string) => {
     setCloudMode(false)
@@ -2161,9 +2163,9 @@ export function Home() {
                 if (ext === 'xlsx') void window.chatOffice.newSheet(opts)
                 else void window.chatOffice.newDoc(opts)
               }}
-              onNewTask={() => {
+              onNewTask={(projectId) => {
                 setCloudMode(false)
-                setTaskSignal((n) => n + 1)
+                setTaskSignal({ n: taskSignal.n + 1, projectId })
               }}
               renderFilesFor={renderProjectAccordion}
             />

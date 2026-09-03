@@ -310,6 +310,9 @@ const homeApi: HomeApi = {
   async chatSessionsSave(sessions) {
     await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsSave, sessions)
   },
+  setPendingNewFileProject(kind, projectId) {
+    ipcRenderer.send(HOME_CHANNELS.setPendingProject, kind, projectId)
+  },
 }
 
 function asCloudProjectsSnapshot(result: unknown): CloudProjectsSnapshot | null {
