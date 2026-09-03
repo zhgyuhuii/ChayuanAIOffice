@@ -1,23 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import { useDismissablePopover } from '@chatoffice/ui'
 import { useI18n } from './locale'
 import { useHomeChat } from './home-chat/context'
-import type { PaneMode } from './EditorPane'
 
 /**
- * The narrow strip across the whole wide area (ZCode-style): the active
+ * The narrow strip above the home chat (ZCode-style): the active
  * conversation's title + project on the left; the ⋯ session menu and the
- * utility icons (export-as-md / help / maximize / collapse file panel) on the
- * right. Sits above both the chat and the tabbed file panel.
+ * utility icons (export-as-md / help) on the right.
  */
-export function TopStrip({
-  mode,
-  onModeChange,
-}: {
-  mode: PaneMode
-  onModeChange: (mode: PaneMode) => void
-}): ReactElement {
+export function TopStrip(): ReactElement {
   const { t } = useI18n()
   const { store, busy, newSession } = useHomeChat()
   const active = store.active
@@ -95,21 +87,6 @@ export function TopStrip({
     >
       {svg}
     </button>
-  )
-
-  const chevron = useMemo(
-    () => (
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path
-          d={mode === 'collapsed' ? 'M6 3.5L9.5 8 6 12.5' : 'M10 3.5L6.5 8 10 12.5'}
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-    [mode],
   )
 
   return (
@@ -192,49 +169,7 @@ export function TopStrip({
             />
           </svg>,
         )}
-        {mode === 'maximized'
-          ? iconBtn(t('paneRestore'), () => onModeChange('split'), <RestoreSvg />)
-          : iconBtn(t('paneMaximize'), () => onModeChange('maximized'), <MaxSvg />)}
-        {iconBtn(
-          mode === 'collapsed' ? t('paneExpand') : t('paneCollapse'),
-          () => onModeChange(mode === 'collapsed' ? 'split' : 'collapsed'),
-          chevron,
-        )}
       </div>
     </header>
-  )
-}
-
-function MaxSvg(): ReactElement {
-  return (
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <rect
-        x="2.5"
-        y="2.5"
-        width="11"
-        height="11"
-        rx="1.5"
-        stroke="currentColor"
-        strokeWidth="1.2"
-      />
-    </svg>
-  )
-}
-
-function RestoreSvg(): ReactElement {
-  return (
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M5.5 10.5v-6A1.5 1.5 0 0 1 7 3h4.5A1.5 1.5 0 0 1 13 4.5V9a1.5 1.5 0 0 1-1.5 1.5h-6z"
-        stroke="currentColor"
-        strokeWidth="1.2"
-      />
-      <path
-        d="M3 5.5v5A1.5 1.5 0 0 0 4.5 12h5"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-    </svg>
   )
 }

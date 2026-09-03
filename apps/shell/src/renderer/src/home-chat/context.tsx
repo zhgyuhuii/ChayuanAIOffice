@@ -38,12 +38,9 @@ export function useHomeChat(): HomeChatContextValue {
  * consume the same active session.
  */
 export function HomeChatProvider({
-  projectId,
   onOpenSettings,
   children,
 }: {
-  /** currently selected project in the sidebar (feeds the agent's file search) */
-  projectId: string | null
   onOpenSettings: () => void
   children: ReactNode
 }): React.JSX.Element {
@@ -65,8 +62,10 @@ export function HomeChatProvider({
   const activeIdRef = useRef<string | null>(null)
   activeIdRef.current = store.activeId
   const [busy, setBusy] = useState(false)
-  const projectIdRef = useRef(projectId)
-  projectIdRef.current = projectId
+  /** the ACTIVE CONVERSATION's project feeds the agent's file search — it
+   * follows session switches, not sidebar selection */
+  const projectIdRef = useRef<string | null>(null)
+  projectIdRef.current = store.active?.projectId ?? null
   /** the project the in-flight turn's created docx should land in (cleared on settle) */
   const pendingProjectRef = useRef<string | null>(null)
 

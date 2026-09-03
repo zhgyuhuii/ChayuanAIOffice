@@ -277,10 +277,6 @@ html.chatoffice-popover-open .tab-bar {
   background: rgba(0, 0, 0, 0.08);
 }
 
-.app-frame-content {
-  padding-top: 40px;
-}
-
 /* ── Dark mode tab bar overrides ─────────────────────────── */
 
 [data-theme='dark'] .tab-bar {

@@ -1324,14 +1324,11 @@ function DropToOpenOverlay(): ReactElement | null {
 // ── Main component ──────────────────────────────────────
 
 export function Home({
-  selectedProjectId,
   settingsOpen,
   onSettingsOpenChange,
   cloudMode,
   onCloudModeChange,
 }: {
-  selectedProjectId: string | null
-  onSelectProject: (id: string | null) => void
   settingsOpen: boolean
   onSettingsOpenChange: (open: boolean) => void
   cloudMode: boolean
@@ -1345,6 +1342,9 @@ export function Home({
     .filter((s) => s.messages.length > 0)
     .sort((a, b) => b.updatedAt - a.updatedAt)
     .slice(0, 30)
+  // the active conversation's project drives the agent's file search;
+  // the open 查看文件 accordion (filesPane) drives new-file project binding
+  const activeProjectId = chatStore.active?.projectId ?? null
   // compat shims: the lifted state keeps the previous setter names working
   const setCloudMode = onCloudModeChange
   const [rowMenu, setRowMenu] = useState<string | null>(null)
@@ -1370,7 +1370,7 @@ export function Home({
   const projectMode = hasProjectApi()
 
   // ── Sidebar file area (accordion): 'recent' | 'starred' | <projectId> | null ──
-  const [filesPane, setFilesPane] = useState<string | null>('recent')
+  const [filesPane, setFilesPane] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [searchHits, setSearchHits] = useState<RecentEntry[] | null>(null)
@@ -1391,8 +1391,8 @@ export function Home({
         ])
         const byPath = new Map<string, RecentEntry>()
         for (const e of [...recent.entries, ...starred.entries]) byPath.set(e.path, e)
-        if (projectMode && selectedProjectId) {
-          const paths = await window.chatOfficeProject!.listFiles(selectedProjectId)
+        if (projectMode && activeProjectId) {
+          const paths = await window.chatOfficeProject!.listFiles(activeProjectId)
           const stats = await window.chatOffice.statPaths(paths)
           for (const e of stats) byPath.set(e.path, e)
         }
@@ -1405,7 +1405,7 @@ export function Home({
       })()
     }, 180)
     return () => clearTimeout(timer)
-  }, [query, searchOpen, projectMode, selectedProjectId])
+  }, [query, searchOpen, projectMode, activeProjectId])
 
   /** refresh the project list (file stats come via projectTick) */
   const reload = (_keepCount: boolean) => {
@@ -1487,13 +1487,13 @@ export function Home({
     }
   }
   useEffect(() => {
-    if (!projectMode || !selectedProjectId) {
+    if (!projectMode || !filesPane) {
       setProjectFileEntries([])
       return
     }
     let active = true
     const api = window.chatOfficeProject!
-    void api.listFiles(selectedProjectId).then(async (paths) => {
+    void api.listFiles(filesPane).then(async (paths) => {
       const stats = await window.chatOffice.statPaths(paths)
       if (!active) return
       setProjectFileEntries(stats.sort((a, b) => b.mtimeMs - a.mtimeMs))
@@ -1501,7 +1501,7 @@ export function Home({
     return () => {
       active = false
     }
-  }, [projectMode, selectedProjectId, projectTick])
+  }, [projectMode, filesPane, projectTick])
 
   // the submenu lives inside the row menu: when that closes, drop the stale
   // submenu state and any pending hover timers so it doesn't reopen expanded
@@ -1571,36 +1571,28 @@ export function Home({
       return
     }
     refresh()
-    if (selectedProjectId) {
-      setProjectFileEntries((prev) => prev.filter((e) => e.path !== filePath))
-    }
+    setProjectFileEntries((prev) => prev.filter((e) => e.path !== filePath))
   }
 
   // ── New file (passes projectId when a project is selected) ──
   const handleNewDoc = () => {
-    void window.chatOffice.newDoc(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newDoc(filesPane ? { projectId: filesPane } : undefined)
   }
 
   const handleNewSheet = () => {
-    void window.chatOffice.newSheet(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newSheet(filesPane ? { projectId: filesPane } : undefined)
   }
 
   const handleNewSlide = () => {
-    void window.chatOffice.newSlide(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newSlide(filesPane ? { projectId: filesPane } : undefined)
   }
 
   const handleNewMarkdown = () => {
-    void window.chatOffice.newMarkdown(
-      selectedProjectId ? { projectId: selectedProjectId } : undefined,
-    )
+    void window.chatOffice.newMarkdown(filesPane ? { projectId: filesPane } : undefined)
   }
 
   const handleNewPdf = () => {
-    void window.chatOffice.newPdf(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+    void window.chatOffice.newPdf(filesPane ? { projectId: filesPane } : undefined)
   }
 
   const NEW_ITEMS = [
@@ -1709,7 +1701,7 @@ export function Home({
   function renderSideFileRow(entry: RecentEntry, context: 'global' | 'project') {
     const isRenaming = renaming?.path === entry.path
     const otherProjects = projects.filter(
-      (p) => p.id !== (context === 'project' ? selectedProjectId : undefined),
+      (p) => p.id !== (context === 'project' ? filesPane : undefined),
     )
     return (
       <li className="side-file" key={entry.path}>
@@ -1929,8 +1921,10 @@ export function Home({
     )
   }
 
+  // the persistent left column of the shell frame; the chat and editors live
+  // in the frame's content area (see AppFrame)
   return (
-    <div className="home">
+    <>
       <aside className="sidebar">
         <div className="sidebar-logo">
           <img className="logo-lockup" src={logoLockup} alt="ChatOffice" />
@@ -2084,6 +2078,6 @@ export function Home({
       )}
 
       <DropToOpenOverlay />
-    </div>
+    </>
   )
 }
