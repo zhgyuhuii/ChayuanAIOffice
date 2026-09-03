@@ -137,6 +137,16 @@ const PREVIEWABLE_TRANSITIONS: TransitionKind[] = [
   'pull',
   'dissolve',
   'zoom',
+  'blinds',
+  'checker',
+  'comb',
+  'diamond',
+  'newsflash',
+  'plus',
+  'randomBar',
+  'strips',
+  'wedge',
+  'wheel',
 ]
 
 /** Resizable thumbnail sidebar: drag the right edge; width persisted, clamped to a sane range */

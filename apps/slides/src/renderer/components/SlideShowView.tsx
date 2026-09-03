@@ -41,6 +41,17 @@ const ANIMATED = [
   'pull',
   'dissolve',
   'zoom',
+
+  'blinds',
+  'checker',
+  'comb',
+  'diamond',
+  'newsflash',
+  'plus',
+  'randomBar',
+  'strips',
+  'wedge',
+  'wheel',
 ] as const
 
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')

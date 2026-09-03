@@ -2127,6 +2127,142 @@ export function IconTransZoom(props: IconProps) {
   )
 }
 
+export function IconTransBlinds(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.75" y="4.5" width="14.5" height="15" rx="1.2" />
+      <path d="M4.75 9.5 h14.5 M4.75 14.5 h14.5" />
+      <rect
+        x="4.75"
+        y="4.5"
+        width="14.5"
+        height="5"
+        fill="currentColor"
+        stroke="none"
+        opacity="0.55"
+      />
+    </Svg>
+  )
+}
+
+export function IconTransChecker(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="1.2" />
+      <path d="M9.5 4.5 v15 M14.5 4.5 v15 M4.5 9.5 h15 M4.5 14.5 h15" opacity="0.6" />
+      <rect x="4.5" y="4.5" width="5" height="5" fill="currentColor" stroke="none" opacity="0.6" />
+      <rect x="14.5" y="9.5" width="5" height="5" fill="currentColor" stroke="none" opacity="0.6" />
+      <rect x="9.5" y="14.5" width="5" height="5" fill="currentColor" stroke="none" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransComb(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4.5 4.5 v15 M19.5 4.5 v15" />
+      <path d="M4.5 9.5 h4 M4.5 14.5 h4 M15.5 7 h4 M15.5 12 h4 M15.5 17 h4" />
+      <path d="M11.5 4.5 v15" strokeDasharray="2.4 2" opacity="0.5" />
+    </Svg>
+  )
+}
+
+export function IconTransCut(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4.5 v15" strokeWidth="2.2" />
+      <rect x="4.5" y="4.5" width="6" height="15" rx="1" opacity="0.4" />
+      <rect x="13.5" y="4.5" width="6" height="15" rx="1" />
+    </Svg>
+  )
+}
+
+export function IconTransDiamond(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4 L20 12 12 20 4 12 Z" />
+      <path d="M12 8.4 L15.6 12 12 15.6 8.4 12 Z" fill="currentColor" stroke="none" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransNewsflash(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="6" y="6" width="12" height="12" rx="1.2" transform="rotate(20 12 12)" />
+      <path d="M4.6 5 L2.8 2.8 M19.4 19 L21.2 21.2" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransPlus(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4 v16 M4 12 h16" />
+      <path d="M10.6 10.6 h2.8 v2.8 h-2.8 Z" fill="currentColor" stroke="none" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransRandomBar(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="1.2" />
+      <path d="M8 4.5 v15 M12.5 4.5 v15 M17 4.5 v15" opacity="0.6" />
+      <rect
+        x="4.5"
+        y="4.5"
+        width="3.5"
+        height="15"
+        fill="currentColor"
+        stroke="none"
+        opacity="0.55"
+      />
+    </Svg>
+  )
+}
+
+export function IconTransStrips(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="1.2" />
+      <path d="M4.5 19.5 L19.5 4.5" />
+      <path d="M9.5 19.5 L19.5 9.5" opacity="0.6" />
+      <path d="M14.5 19.5 L19.5 14.5" opacity="0.3" />
+    </Svg>
+  )
+}
+
+export function IconTransWedge(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="8.4" strokeDasharray="2.4 2" />
+      <path
+        d="M12 12 V3.6 A 8.4 8.4 0 0 1 19.5 8 Z"
+        fill="currentColor"
+        stroke="none"
+        opacity="0.55"
+      />
+      <path
+        d="M12 12 V20.4 A 8.4 8.4 0 0 1 4.5 16 Z"
+        fill="currentColor"
+        stroke="none"
+        opacity="0.3"
+      />
+    </Svg>
+  )
+}
+
+export function IconTransWheel(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="8.4" />
+      <path d="M12 12 V3.6 M12 12 H20.4 M12 12 V20.4 M12 12 H3.6" opacity="0.65" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+    </Svg>
+  )
+}
+
 export function IconTransRandom(props: IconProps) {
   return (
     <Svg {...props}>

@@ -222,3 +222,42 @@ describe('custom transition sound (其他声音…)', () => {
     expect(served!.bytes.length).toBe(synthTransitionSound('chime').length)
   })
 })
+
+describe('second-batch transition kernels', () => {
+  const base = '<p:sld><p:cSld><p:spTree/></p:cSld></p:sld>'
+  const KINDS = [
+    ['blinds', '<p:blinds dir="u"/>'],
+    ['checker', '<p:checker dir="u"/>'],
+    ['comb', '<p:comb dir="horz"/>'],
+    ['cut', '<p:cut/>'],
+    ['diamond', '<p:diamond/>'],
+    ['newsflash', '<p:newsflash/>'],
+    ['plus', '<p:plus/>'],
+    ['randomBar', '<p:randomBar dir="u"/>'],
+    ['strips', '<p:strips dir="ld"/>'],
+    ['wedge', '<p:wedge/>'],
+    ['wheel', '<p:wheel spokes="4"/>'],
+  ] as const
+
+  it('writes each kernel element and round-trips through the spec read', () => {
+    for (const [kind, xml] of KINDS) {
+      const out = patchSlideTransitionXml(base, kind)
+      expect(out).toContain(xml)
+      const spec = readSlideTransitionSpecXml(out)
+      expect(spec.kind).toBe(kind)
+      expect(spec.durationMs).toBeNull()
+    }
+  })
+
+  it('supports 4-way dirs on blinds/checker/randomBar and 8-way on strips', () => {
+    expect(patchSlideTransitionXml(base, 'blinds', { dir: 'r' })).toContain('<p:blinds dir="r"/>')
+    expect(patchSlideTransitionXml(base, 'checker', { dir: 'd' })).toContain('<p:checker dir="d"/>')
+    expect(patchSlideTransitionXml(base, 'randomBar', { dir: 'l' })).toContain(
+      '<p:randomBar dir="l"/>',
+    )
+    expect(patchSlideTransitionXml(base, 'strips', { dir: 'ru' })).toContain('<p:strips dir="ru"/>')
+    expect(
+      readSlideTransitionSpecXml(patchSlideTransitionXml(base, 'strips', { dir: 'ru' })).dir,
+    ).toBe('ru')
+  })
+})

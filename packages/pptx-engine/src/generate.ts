@@ -1295,6 +1295,17 @@ export type SlideTransitionKind =
   | 'dissolve'
   | 'zoom'
   | 'random'
+  | 'blinds'
+  | 'checker'
+  | 'comb'
+  | 'cut'
+  | 'diamond'
+  | 'newsflash'
+  | 'plus'
+  | 'randomBar'
+  | 'strips'
+  | 'wedge'
+  | 'wheel'
 
 export const TRANSITION_KINDS = [
   'none',
@@ -1309,6 +1320,18 @@ export const TRANSITION_KINDS = [
   'dissolve',
   'zoom',
   'random',
+  // second batch: classic ECMA-376 kernels (WPS 画廊高频项)
+  'blinds',
+  'checker',
+  'comb',
+  'cut',
+  'diamond',
+  'newsflash',
+  'plus',
+  'randomBar',
+  'strips',
+  'wedge',
+  'wheel',
 ] as const satisfies readonly SlideTransitionKind[]
 
 /**
@@ -1357,8 +1380,12 @@ const DIR4 = new Set(['l', 'r', 'u', 'd'])
 export const TRANSITION_DIR_KERNELS: Partial<Record<SlideTransitionKind, ReadonlySet<string>>> = {
   push: DIR4,
   wipe: DIR4,
+  blinds: DIR4,
+  checker: DIR4,
+  randomBar: DIR4,
   cover: new Set(TRANSITION_DIRS),
   pull: new Set(TRANSITION_DIRS),
+  strips: new Set(TRANSITION_DIRS),
 }
 
 const TRANSITION_INNER: Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, string> = {
@@ -1372,6 +1399,17 @@ const TRANSITION_INNER: Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, s
   dissolve: '<p:dissolve/>',
   zoom: '<p:zoom/>',
   random: '<p:random/>',
+  blinds: '<p:blinds dir="u"/>',
+  checker: '<p:checker dir="u"/>',
+  comb: '<p:comb dir="horz"/>',
+  cut: '<p:cut/>',
+  diamond: '<p:diamond/>',
+  newsflash: '<p:newsflash/>',
+  plus: '<p:plus/>',
+  randomBar: '<p:randomBar dir="u"/>',
+  strips: '<p:strips dir="ld"/>',
+  wedge: '<p:wedge/>',
+  wheel: '<p:wheel spokes="4"/>',
 }
 
 function transitionInnerXml(kind: SlideTransitionKind, opts: SlideTransitionOpts): string {
@@ -1514,13 +1552,16 @@ export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionS
     const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
     return { kind: 'morph', durationMs: durMs ? Number(durMs) : null }
   }
-  const kind = /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random)\b/.exec(
-    m[0],
-  )?.[1] as SlideTransitionKind | undefined
+  const kind =
+    /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random|blinds|checker|comb|cut|diamond|newsflash|plus|randomBar|strips|wedge|wheel)\b/.exec(
+      m[0],
+    )?.[1] as SlideTransitionKind | undefined
   if (!kind) return { kind: 'none', durationMs: null }
   const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
-  const dir = /<p:(?:push|wipe|cover|pull)\b[^>]*\bdir="([lrud]+)"/.exec(m[0])?.[1] as
-    SlideTransitionDir | undefined
+  const dir =
+    /<p:(?:push|wipe|cover|pull|blinds|checker|randomBar|strips)\b[^>]*\bdir="([lrud]+)"/.exec(
+      m[0],
+    )?.[1] as SlideTransitionDir | undefined
   const splitM = /<p:split\b[^>]*\borient="(horz|vert)"[^>]*\bdir="(in|out)"/.exec(m[0])
   const zoom = /<p:zoom\b[^>]*\bdir="(in|out)"/.exec(m[0])?.[1] as SlideTransitionZoom | undefined
   const fadeBlack = /<p:fade\b[^>]*\bthruBlk="1"/.test(m[0]) || undefined

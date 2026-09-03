@@ -8828,3 +8828,206 @@ body.show-curtain::after {
   min-width: 0;
   min-height: 0;
 }
+
+/* ── Second-batch transition kernels (WPS parity): shared keyframes for the
+   full-screen show (.ss-anim-*) and the canvas preview (.tp-*) ── */
+@property --tr-mask-bands {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+@property --tr-conic-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes tr-blinds {
+  from {
+    -webkit-mask-image: repeating-linear-gradient(
+      to bottom,
+      #000 0 var(--tr-mask-bands),
+      transparent var(--tr-mask-bands) 25%
+    );
+    -webkit-mask-size: 100% 100%;
+  }
+  to {
+    -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 100%, transparent 0);
+  }
+}
+@keyframes tr-checker {
+  from {
+    -webkit-mask-image: repeating-conic-gradient(#000 0 25%, transparent 0 50%);
+    -webkit-mask-size: 200% 200%;
+    -webkit-mask-position: 100% 100%;
+  }
+  to {
+    -webkit-mask-image: repeating-conic-gradient(#000 0 25%, transparent 0 50%);
+    -webkit-mask-size: 200% 200%;
+    -webkit-mask-position: 0 0;
+  }
+}
+@keyframes tr-randombar {
+  from {
+    -webkit-mask-image: repeating-linear-gradient(
+      to right,
+      #000 0 var(--tr-mask-bands),
+      transparent var(--tr-mask-bands) 25%
+    );
+  }
+  to {
+    -webkit-mask-image: repeating-linear-gradient(to right, #000 0 100%, transparent 0);
+  }
+}
+@keyframes tr-comb-l {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tr-comb-r {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tr-diamond {
+  from {
+    clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+  }
+  to {
+    clip-path: polygon(100% 50%, 50% 100%, 0 50%, 50% 0);
+  }
+}
+@keyframes tr-plus {
+  from {
+    clip-path: polygon(
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%,
+      50% 50%
+    );
+  }
+  to {
+    clip-path: polygon(
+      62.5% 37.5%,
+      62.5% 37.5%,
+      62.5% 37.5%,
+      62.5% 37.5%,
+      62.5% 37.5%,
+      62.5% 37.5%,
+      100% 50%,
+      62.5% 62.5%,
+      62.5% 62.5%,
+      62.5% 62.5%,
+      62.5% 62.5%,
+      62.5% 62.5%
+    );
+  }
+}
+@keyframes tr-newsflash {
+  from {
+    transform: rotate(-200deg) scale(0.1);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes tr-wedge {
+  from {
+    -webkit-mask-image: conic-gradient(
+      from -90deg,
+      #000 0 var(--tr-conic-a),
+      transparent var(--tr-conic-a) 90deg,
+      #000 90deg calc(90deg + var(--tr-conic-a)),
+      transparent calc(90deg + var(--tr-conic-a)) 180deg,
+      #000 180deg calc(180deg + var(--tr-conic-a)),
+      transparent calc(180deg + var(--tr-conic-a)) 270deg,
+      #000 270deg calc(270deg + var(--tr-conic-a)),
+      transparent calc(270deg + var(--tr-conic-a))
+    );
+  }
+  to {
+    -webkit-mask-image: none;
+  }
+}
+@keyframes tr-wheel {
+  from {
+    -webkit-mask-image: conic-gradient(
+      from -90deg,
+      #000 0 var(--tr-conic-a),
+      transparent var(--tr-conic-a)
+    );
+  }
+  to {
+    -webkit-mask-image: conic-gradient(from -90deg, #000 0 360deg, transparent 360deg);
+  }
+}
+@keyframes tr-strips {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* cut = 硬切: no animation (the frame swap itself is the effect) */
+.slideshow .ss-anim-cut,
+.stage-rel.tp-cut {
+  animation: none !important;
+}
+.slideshow .ss-anim-blinds,
+.stage-rel.tp-blinds {
+  animation: tr-blinds var(--ss-dur, 0.7s) steps(6) both;
+}
+.slideshow .ss-anim-checker,
+.stage-rel.tp-checker {
+  animation: tr-checker var(--ss-dur, 0.7s) steps(8) both;
+}
+.slideshow .ss-anim-randomBar,
+.stage-rel.tp-randomBar {
+  animation: tr-randombar var(--ss-dur, 0.7s) steps(12) both;
+}
+.slideshow .ss-anim-comb,
+.stage-rel.tp-comb {
+  animation: tr-comb-l var(--ss-dur, 0.6s) ease-out both;
+}
+.slideshow .ss-anim-diamond,
+.stage-rel.tp-diamond {
+  animation: tr-diamond var(--ss-dur, 0.7s) ease-out both;
+}
+.slideshow .ss-anim-plus,
+.stage-rel.tp-plus {
+  animation: tr-plus var(--ss-dur, 0.7s) ease-out both;
+}
+.slideshow .ss-anim-newsflash,
+.stage-rel.tp-newsflash {
+  animation: tr-newsflash var(--ss-dur, 0.8s) ease-out both;
+}
+.slideshow .ss-anim-wedge,
+.stage-rel.tp-wedge {
+  animation: tr-wedge var(--ss-dur, 0.7s) ease-out both;
+}
+.slideshow .ss-anim-wheel,
+.stage-rel.tp-wheel {
+  animation: tr-wheel var(--ss-dur, 0.8s) ease-out both;
+}
+.slideshow .ss-anim-strips,
+.stage-rel.tp-strips {
+  animation: tr-strips var(--ss-dur, 0.6s) ease-out both;
+}

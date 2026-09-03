@@ -593,6 +593,17 @@ export type TransitionKind =
   | 'dissolve'
   | 'zoom'
   | 'random'
+  | 'blinds'
+  | 'checker'
+  | 'comb'
+  | 'cut'
+  | 'diamond'
+  | 'newsflash'
+  | 'plus'
+  | 'randomBar'
+  | 'strips'
+  | 'wedge'
+  | 'wheel'
 
 // ── Shape animations (the "Animations" tab) ──────────────────────────
 
