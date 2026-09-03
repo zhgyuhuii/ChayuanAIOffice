@@ -31,7 +31,10 @@ type RecentEntryShell = {
 
 function degraded(channel: string): never {
   const info = degradeInfo(channel)
-  const err = new Error(info?.reason ?? '该能力尚未在网页版开放') as Error & { code: string; batch?: string }
+  const err = new Error(info?.reason ?? '该能力尚未在网页版开放') as Error & {
+    code: string
+    batch?: string
+  }
   err.code = info ? 'degraded' : 'unsupported'
   if (info?.batch) err.batch = info.batch
   throw err
@@ -39,11 +42,29 @@ function degraded(channel: string): never {
 
 function toShellEntry(e: RecentEntry): RecentEntryShell {
   const ext =
-    e.kind === 'docs' ? 'docx' : e.kind === 'sheets' ? 'xlsx' : e.kind === 'slides' ? 'pptx' : e.kind === 'pdf' ? 'pdf' : 'md'
-  return { path: e.fileId, name: e.name, ext, mtimeMs: e.lastOpened, sizeBytes: 0, starred: e.starred }
+    e.kind === 'docs'
+      ? 'docx'
+      : e.kind === 'sheets'
+        ? 'xlsx'
+        : e.kind === 'slides'
+          ? 'pptx'
+          : e.kind === 'pdf'
+            ? 'pdf'
+            : 'md'
+  return {
+    path: e.fileId,
+    name: e.name,
+    ext,
+    mtimeMs: e.lastOpened,
+    sizeBytes: 0,
+    starred: e.starred,
+  }
 }
 
-function page(query: { starred?: boolean; offset?: number; limit?: number; ext?: string } | undefined, starredOnly: boolean) {
+function page(
+  query: { starred?: boolean; offset?: number; limit?: number; ext?: string } | undefined,
+  starredOnly: boolean,
+) {
   const all = pageRecents({ starred: starredOnly })
   let entries = all.entries
   if (query?.ext) entries = entries.filter((e) => toShellEntry(e).ext === query.ext)
@@ -59,7 +80,11 @@ function page(query: { starred?: boolean; offset?: number; limit?: number; ext?:
 
 // ── language / theme / onboarding (localStorage) ────────────────────────────
 
-const LS = { lang: 'chatoffice.lang', theme: 'chatoffice.theme', onboard: 'chatoffice.onboarding-seen' }
+const LS = {
+  lang: 'chatoffice.lang',
+  theme: 'chatoffice.theme',
+  onboard: 'chatoffice.onboarding-seen',
+}
 const themeListeners = new Set<(t: string) => void>()
 const langListeners = new Set<(l: string) => void>()
 
@@ -75,9 +100,17 @@ function domMenu(x: number, y: number, items: Array<{ label: string; onClick(): 
   const menu = document.createElement('div')
   menu.dataset.goMenu = '1'
   menu.style.cssText = [
-    'position:fixed', `left:${Math.round(x)}px`, `top:${Math.round(y)}px`, 'z-index:2147483647',
-    'background:#2b2d30', 'color:#e6e6e6', 'border:1px solid #4a4c4f', 'border-radius:8px',
-    'padding:4px', 'min-width:180px', 'font:13px/1.2 system-ui,sans-serif',
+    'position:fixed',
+    `left:${Math.round(x)}px`,
+    `top:${Math.round(y)}px`,
+    'z-index:2147483647',
+    'background:#2b2d30',
+    'color:#e6e6e6',
+    'border:1px solid #4a4c4f',
+    'border-radius:8px',
+    'padding:4px',
+    'min-width:180px',
+    'font:13px/1.2 system-ui,sans-serif',
     'box-shadow:0 8px 24px rgba(0,0,0,.4)',
   ].join(';')
   for (const item of items) {
@@ -164,18 +197,27 @@ export function installShellShims(): void {
     },
     showNewMenu: async (x: number, y: number) => {
       domMenu(x, y, [
-        ...NEW_MENU.map(({ label, kind }) => ({ label, onClick: () => tabManager.openEditor(kind, { newBlank: true }) })),
+        ...NEW_MENU.map(({ label, kind }) => ({
+          label,
+          onClick: () => tabManager.openEditor(kind, { newBlank: true }),
+        })),
         { label: '打开文件…', onClick: () => void openPickedFile() },
       ])
     },
-    onChanged: (handler: (tabs: unknown) => void) => tabManager.onChanged(handler as (t: ReturnType<typeof tabManager.list>) => void),
+    onChanged: (handler: (tabs: unknown) => void) =>
+      tabManager.onChanged(handler as (t: ReturnType<typeof tabManager.list>) => void),
   }
 
   w.chatOffice = {
     // ── file lists (localStorage recents over FS-Access file ids) ──
-    recents: async (query?: { offset?: number; limit?: number; ext?: string }) => page(query, false),
+    recents: async (query?: { offset?: number; limit?: number; ext?: string }) =>
+      page(query, false),
     starred: async (query?: { offset?: number; limit?: number; ext?: string }) => page(query, true),
-    statPaths: async (paths: string[]) => paths.map((p) => entryFor(p)).filter((e) => e !== null).map((e) => toShellEntry(e as RecentEntry)),
+    statPaths: async (paths: string[]) =>
+      paths
+        .map((p) => entryFor(p))
+        .filter((e) => e !== null)
+        .map((e) => toShellEntry(e as RecentEntry)),
     toggleStar: async (path: string) => toggleStar(path),
     removeRecent: async (paths: string[]) => removeRecents(paths),
     openPath: async (path: string) => {
@@ -218,7 +260,8 @@ export function installShellShims(): void {
       localStorage.setItem(LS.onboard, '1')
       return true // finishOnboarding only closes the dialog on a truthy return
     },
-    getAppVersion: async () => (window as unknown as { CHATOFFICE_VERSION?: string }).CHATOFFICE_VERSION ?? '0.1.0',
+    getAppVersion: async () =>
+      (window as unknown as { CHATOFFICE_VERSION?: string }).CHATOFFICE_VERSION ?? '0.1.0',
 
     // ── file management: batch 2 ──
     renameFile: async () => degraded('chatOffice.renameFile'),
@@ -237,8 +280,7 @@ export function installShellShims(): void {
     cloudProjectsCached: async () => null,
     openCloudProject: async () => degraded('chatOffice.openCloudProject'),
     // AI settings run over the BFF's /ai/* endpoints (keys stay server-side)
-    getAiSettings: async () =>
-      (await fetch('/ai/settings')).json() as unknown,
+    getAiSettings: async () => (await fetch('/ai/settings')).json() as unknown,
     setAiSettings: async (view: unknown) => {
       await fetch('/ai/settings', {
         method: 'PUT',
@@ -254,11 +296,13 @@ export function installShellShims(): void {
       })
     },
     aiDiscoverModels: async (target: unknown) =>
-      (await fetch('/ai/discover-models', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(target),
-      })).json() as unknown,
+      (
+        await fetch('/ai/discover-models', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(target),
+        })
+      ).json() as unknown,
     gskStatus: async () => ({ loggedIn: false }),
     gskLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
@@ -279,6 +323,48 @@ export function installShellShims(): void {
     moveFile: async () => degraded('chatOfficeProject.moveFile'),
     listProjectFiles: async () => [],
     getTimeline: async () => [],
+  }
+
+  // Remote storage (MinIO / OSS): settings and object transfer go through the
+  // BFF's /rpc/remoteStorage/*; the pending save queue is desktop-only, so its
+  // calls degrade to inert no-ops here.
+  const storageRpc = async (method: string, args: unknown[]): Promise<unknown> => {
+    const res = await fetch(`/rpc/remoteStorage/${method}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ args }),
+    })
+    const body = (await res.json()) as {
+      ok: boolean
+      result?: unknown
+      error?: string
+      code?: string
+    }
+    if (!body.ok) {
+      const err = new Error(body.error ?? `rpc ${method} failed`) as Error & { code?: string }
+      err.code = body.code
+      throw err
+    }
+    return body.result
+  }
+  ;(w as unknown as Record<string, unknown>).chatOfficeRemoteFiles = {
+    getSettings: () => storageRpc('getSettings', []),
+    saveSettings: (settings: unknown) => storageRpc('saveSettings', [settings]),
+    testConnection: (config: unknown) => storageRpc('testConnection', [config]),
+    refreshIndex: (configId: string) => storageRpc('refreshIndex', [configId]),
+    listFiles: (configId: string) => storageRpc('listFiles', [configId]),
+    readObject: (configId: string, key: string) => storageRpc('readObject', [configId, key]),
+    writeObject: (configId: string, key: string, base64: string, expectedEtag?: string) =>
+      storageRpc('writeObject', [configId, key, base64, expectedEtag]),
+    uploadObject: (configId: string, key: string, base64: string) =>
+      storageRpc('uploadObject', [configId, key, base64]),
+    deleteObject: (configId: string, key: string) => storageRpc('deleteObject', [configId, key]),
+    renameObject: (configId: string, fromKey: string, toKey: string) =>
+      storageRpc('renameObject', [configId, fromKey, toKey]),
+    queueStatus: async () => [],
+    queueEnqueue: async () => undefined,
+    queueDiscard: async () => undefined,
+    queueFlush: async () => [],
   }
 }
 

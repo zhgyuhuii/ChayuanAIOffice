@@ -455,3 +455,22 @@
   display: flex;
   flex-direction: column;
 }
+
+/* ── remote storage pane ── */
+
+.set-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.set-radio input[type='radio'] {
+  accent-color: var(--accent, currentColor);
+}
+
+.set-btn-row {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+}
