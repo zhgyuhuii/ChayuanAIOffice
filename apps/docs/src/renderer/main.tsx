@@ -10,6 +10,7 @@ import '@chatoffice/ui/dropdown.css'
 import './styles.css'
 import './fonts/fonts.css'
 import { installScreenTips } from '@chatoffice/ui'
+import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 installScreenTips()
 
@@ -35,6 +36,7 @@ async function bootstrap(): Promise<void> {
   document.documentElement.lang = htmlLang(lang)
   applyTheme(theme)
   window.desktop?.onThemeChanged(applyTheme)
+  installAnchorPanelFallback()
   createRoot(document.getElementById('root')!).render(
     <LocaleProvider initial={lang}>
       <App />

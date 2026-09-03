@@ -12,6 +12,7 @@ import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
 import './styles.css'
 import { installScreenTips } from '@chatoffice/ui'
+import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 installScreenTips()
 
@@ -72,6 +73,7 @@ async function bootstrap(): Promise<void> {
     applyTheme(theme)
     window.slidesApi?.onThemeChanged(applyTheme)
   }
+  installAnchorPanelFallback()
   createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <LocaleProvider initial={lang}>

@@ -9,6 +9,7 @@ export {
   type ColorSwatch,
 } from './color-picker'
 export { installScreenTips } from './screentip'
+export { installAnchorPanelFallback } from './anchor-fallback'
 export {
   installPopoverDismiss,
   useDismissablePopover,

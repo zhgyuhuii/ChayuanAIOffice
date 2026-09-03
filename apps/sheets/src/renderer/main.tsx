@@ -15,6 +15,7 @@ import { installCanvasFontFallback, registerCellFontAliases } from './cell-font-
 import { LocaleProvider, setModuleLang } from './i18n/locale'
 import type { UiTheme } from '../shared/desktop-api'
 import './styles.css'
+import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 if (import.meta.hot) {
   import.meta.hot.on('vite:beforeUpdate', ({ updates }) => {
@@ -94,3 +95,5 @@ async function bootstrap(): Promise<void> {
 }
 
 void bootstrap()
+
+installAnchorPanelFallback()
