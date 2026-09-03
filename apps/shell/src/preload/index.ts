@@ -18,7 +18,7 @@ import type {
   UiLanguage,
 } from '../shared/home-api'
 import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
-import type { TabsApi, TabSummary } from '../shared/tabs-api'
+import type { TabsApi, TabSummary, PaneLayout } from '../shared/tabs-api'
 import { TABS_CHANNELS } from '../shared/tabs-api'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
@@ -392,6 +392,21 @@ const tabsApi: TabsApi = {
     const listener = () => handler()
     ipcRenderer.on('app:chrome-pressed', listener)
     return () => ipcRenderer.removeListener('app:chrome-pressed', listener)
+  },
+  setPaneBounds(rect) {
+    ipcRenderer.send(TABS_CHANNELS.paneBounds, rect)
+  },
+  onHomeActivated(handler) {
+    const listener = () => handler()
+    ipcRenderer.on(TABS_CHANNELS.homeActivated, listener)
+    return () => ipcRenderer.removeListener(TABS_CHANNELS.homeActivated, listener)
+  },
+  async getPaneLayout() {
+    const result: unknown = await ipcRenderer.invoke(TABS_CHANNELS.getPaneLayout)
+    return result as PaneLayout
+  },
+  setPaneLayout(layout) {
+    ipcRenderer.send(TABS_CHANNELS.setPaneLayout, layout)
   },
 }
 

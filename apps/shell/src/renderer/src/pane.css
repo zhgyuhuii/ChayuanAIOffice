@@ -1,0 +1,240 @@
+/* Three-pane home frame (desktop shell): sidebar+chat on the left of a
+ * draggable divider, the embedded editor pane on the right. The main process
+ * fits the active editor WebContentsView into .pane-view-host's rect. */
+
+.pane-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.pane-workarea {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.pane-home {
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.pane-home .home {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+/* the macOS traffic lights float over the sidebar's top-left corner
+ * (hiddenInset title bar; the old 40px tab strip used to hold them) */
+body.vib .pane-frame .sidebar {
+  padding-top: 44px;
+}
+
+/* divider */
+
+.pane-divider {
+  flex: none;
+  width: 5px;
+  margin: 0 -2px;
+  z-index: 5;
+  cursor: col-resize;
+  background: transparent;
+  border-left: 1px solid var(--border);
+}
+
+.pane-divider:hover,
+.pane-frame.divider-drag .pane-divider {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+
+.pane-frame.divider-drag {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* editor pane */
+
+.editor-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-content);
+}
+
+.pane-strip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 8px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-subtle);
+  /* the blank strip area drags the window (hiddenInset title bar) */
+  -webkit-app-region: drag;
+}
+
+.pane-tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-app-region: no-drag;
+  scrollbar-width: none;
+}
+
+.pane-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.pane-tabs-empty {
+  padding: 0 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.pane-tab {
+  display: inline-flex;
+  align-items: center;
+  max-width: 180px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+}
+
+.pane-tab:hover {
+  background: var(--bg-hover-subtle);
+}
+
+.pane-tab.active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.pane-tab-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 2px 5px 10px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.pane-tab-close:hover {
+  opacity: 1;
+  background: var(--bg-hover-strong);
+}
+
+.pane-strip-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+.pane-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.pane-icon-btn:hover {
+  background: var(--bg-hover-subtle);
+  color: var(--text);
+}
+
+.pane-view-host {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: var(--bg-content);
+}
+
+/* shown only while no editor view covers the host */
+
+.pane-host-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--icon-muted);
+}
+
+.pane-host-empty p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* collapsed pane: a slim handle on the window's right edge to bring it back */
+
+.pane-reveal {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 60;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  box-shadow: -2px 0 8px rgb(0 0 0 / 6%);
+}
+
+.pane-reveal:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}

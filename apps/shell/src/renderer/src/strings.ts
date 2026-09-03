@@ -249,6 +249,14 @@ export const strings = {
     chatToolFileNotFound: '没有找到匹配的文件。',
     chatUnknownError: '出错了，请稍后重试。',
     chatDocOpenedInTab: '文档已在新标签页打开：{title}',
+    // Editor pane (three-pane home)
+    paneMaximize: '最大化编辑区',
+    paneRestore: '还原分栏',
+    paneCollapse: '收起编辑区',
+    paneExpand: '展开编辑区',
+    paneEmptyStrip: '尚无打开的文件',
+    paneEmptyHost: '打开或新建文件，即可在这里实时编辑',
+    paneResizeAria: '调整对话与编辑区的宽度',
   },
   en: {
     navRecent: 'Recent',
@@ -499,6 +507,14 @@ export const strings = {
     chatToolFileNotFound: 'No matching files were found.',
     chatUnknownError: 'Something went wrong. Please try again.',
     chatDocOpenedInTab: 'The document opened in a new tab: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maximize editor',
+    paneRestore: 'Restore split',
+    paneCollapse: 'Collapse editor',
+    paneExpand: 'Expand editor',
+    paneEmptyStrip: 'No open files',
+    paneEmptyHost: 'Open or create a file to edit it here in real time',
+    paneResizeAria: 'Resize the chat and editor panes',
   },
   ja: {
     // Sidebar navigation
@@ -766,6 +782,14 @@ export const strings = {
     chatToolFileNotFound: '一致するファイルが見つかりません。',
     chatUnknownError: 'エラーが発生しました。しばらくしてからもう一度お試しください。',
     chatDocOpenedInTab: '文書を新しいタブで開きました：{title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'エディターを最大化',
+    paneRestore: '分割に戻す',
+    paneCollapse: 'エディターを折りたたむ',
+    paneExpand: 'エディターを展開',
+    paneEmptyStrip: '開いているファイルはありません',
+    paneEmptyHost: 'ファイルを開くか新規作成すると、ここでリアルタイムに編集できます',
+    paneResizeAria: 'チャットとエディターの幅を調整',
   },
   ko: {
     // Sidebar navigation
@@ -1027,6 +1051,14 @@ export const strings = {
     chatToolFileNotFound: '일치하는 파일을 찾지 못했습니다.',
     chatUnknownError: '문제가 발생했습니다. 다시 시도해 주세요.',
     chatDocOpenedInTab: '문서를 새 탭에서 열었습니다: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: '편집기 최대화',
+    paneRestore: '분할로 복원',
+    paneCollapse: '편집기 접기',
+    paneExpand: '편집기 펼치기',
+    paneEmptyStrip: '열린 파일이 없습니다',
+    paneEmptyHost: '파일을 열거나 만들면 여기에서 실시간으로 편집할 수 있습니다',
+    paneResizeAria: '채팅 및 편집기 너비 조정',
   },
   fr: {
     // Sidebar navigation
@@ -1298,6 +1330,14 @@ export const strings = {
     chatToolFileNotFound: 'Aucun fichier correspondant n’a été trouvé.',
     chatUnknownError: 'Une erreur est survenue. Veuillez réessayer.',
     chatDocOpenedInTab: 'Le document s’est ouvert dans un nouvel onglet : {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Agrandir l’éditeur',
+    paneRestore: 'Restaurer le fractionnement',
+    paneCollapse: 'Replier l’éditeur',
+    paneExpand: 'Déplier l’éditeur',
+    paneEmptyStrip: 'Aucun fichier ouvert',
+    paneEmptyHost: 'Ouvrez ou créez un fichier pour l’éditer ici en temps réel',
+    paneResizeAria: 'Redimensionner les volets discussion et éditeur',
   },
   de: {
     // Sidebar navigation
@@ -1570,6 +1610,14 @@ export const strings = {
     chatToolFileNotFound: 'Keine passenden Dateien gefunden.',
     chatUnknownError: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.',
     chatDocOpenedInTab: 'Das Dokument wurde in einem neuen Tab geöffnet: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Editor maximieren',
+    paneRestore: 'Splitting wiederherstellen',
+    paneCollapse: 'Editor einklappen',
+    paneExpand: 'Editor ausklappen',
+    paneEmptyStrip: 'Keine geöffneten Dateien',
+    paneEmptyHost: 'Datei öffnen oder erstellen, um sie hier in Echtzeit zu bearbeiten',
+    paneResizeAria: 'Breite von Chat und Editor anpassen',
   },
   es: {
     // Sidebar navigation
@@ -1841,6 +1889,14 @@ export const strings = {
     chatToolFileNotFound: 'No se encontraron archivos coincidentes.',
     chatUnknownError: 'Algo salió mal. Inténtalo de nuevo.',
     chatDocOpenedInTab: 'El documento se abrió en una pestaña nueva: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maximizar el editor',
+    paneRestore: 'Restaurar la división',
+    paneCollapse: 'Plegar el editor',
+    paneExpand: 'Desplegar el editor',
+    paneEmptyStrip: 'No hay archivos abiertos',
+    paneEmptyHost: 'Abre o crea un archivo para editarlo aquí en tiempo real',
+    paneResizeAria: 'Ajustar el ancho del chat y del editor',
   },
   th: {
     // Sidebar navigation
@@ -2101,6 +2157,14 @@ export const strings = {
     chatToolFileNotFound: 'ไม่พบไฟล์ที่ตรงกัน',
     chatUnknownError: 'เกิดข้อผิดพลาด โปรดลองอีกครั้ง',
     chatDocOpenedInTab: 'เปิดเอกสารในแท็บใหม่แล้ว: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'ขยายตัวแก้ไขใหญ่สุด',
+    paneRestore: 'กลับเป็นแบบแบ่งหน้าจอ',
+    paneCollapse: 'ย่อตัวแก้ไข',
+    paneExpand: 'ขยายตัวแก้ไข',
+    paneEmptyStrip: 'ไม่มีไฟล์ที่เปิดอยู่',
+    paneEmptyHost: 'เปิดหรือสร้างไฟล์เพื่อแก้ไขแบบเรียลไทม์ที่นี่',
+    paneResizeAria: 'ปรับความกว้างของแชทและตัวแก้ไข',
   },
   id: {
     // Sidebar navigation
@@ -2366,6 +2430,14 @@ export const strings = {
     chatToolFileNotFound: 'Tidak ada berkas yang cocok.',
     chatUnknownError: 'Terjadi kesalahan. Silakan coba lagi.',
     chatDocOpenedInTab: 'Dokumen dibuka di tab baru: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maksimalkan editor',
+    paneRestore: 'Kembalikan mode terbagi',
+    paneCollapse: 'Lipat editor',
+    paneExpand: 'Bentangkan editor',
+    paneEmptyStrip: 'Belum ada berkas yang dibuka',
+    paneEmptyHost: 'Buka atau buat berkas untuk mengeditnya di sini secara langsung',
+    paneResizeAria: 'Atur lebar obrolan dan editor',
   },
   ru: {
     // Sidebar navigation
@@ -2632,6 +2704,14 @@ export const strings = {
     chatToolFileNotFound: 'Подходящие файлы не найдены.',
     chatUnknownError: 'Что-то пошло не так. Попробуйте ещё раз.',
     chatDocOpenedInTab: 'Документ открыт в новой вкладке: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Развернуть редактор',
+    paneRestore: 'Вернуть разделение',
+    paneCollapse: 'Свернуть редактор',
+    paneExpand: 'Развернуть редактор',
+    paneEmptyStrip: 'Нет открытых файлов',
+    paneEmptyHost: 'Откройте или создайте файл, чтобы редактировать его здесь в реальном времени',
+    paneResizeAria: 'Изменить ширину чата и редактора',
   },
   ar: {
     // Sidebar navigation
@@ -2893,6 +2973,14 @@ export const strings = {
     chatToolFileNotFound: 'لم يتم العثور على ملفات مطابقة.',
     chatUnknownError: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.',
     chatDocOpenedInTab: 'تم فتح المستند في علامة تبويب جديدة: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'تكبير المحرر',
+    paneRestore: 'استعادة العرض المقسوم',
+    paneCollapse: 'طي المحرر',
+    paneExpand: 'توسيع المحرر',
+    paneEmptyStrip: 'لا توجد ملفات مفتوحة',
+    paneEmptyHost: 'افتح ملفًا أو أنشئ ملفًا لتحريره هنا في الوقت الفعلي',
+    paneResizeAria: 'ضبط عرض الدردشة والمحرر',
   },
   pt: {
     navRecent: 'Recentes',
@@ -3151,6 +3239,14 @@ export const strings = {
     chatToolFileNotFound: 'Nenhum arquivo correspondente foi encontrado.',
     chatUnknownError: 'Algo deu errado. Tente novamente.',
     chatDocOpenedInTab: 'O documento foi aberto em uma nova aba: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maximizar editor',
+    paneRestore: 'Restaurar divisão',
+    paneCollapse: 'Recolher editor',
+    paneExpand: 'Expandir editor',
+    paneEmptyStrip: 'Nenhum arquivo aberto',
+    paneEmptyHost: 'Abra ou crie um arquivo para editá-lo aqui em tempo real',
+    paneResizeAria: 'Ajustar a largura do bate-papo e do editor',
   },
   it: {
     navRecent: 'Recenti',
@@ -3408,6 +3504,14 @@ export const strings = {
     chatToolFileNotFound: 'Nessun file corrispondente trovato.',
     chatUnknownError: 'Si è verificato un errore. Riprova.',
     chatDocOpenedInTab: 'Il documento è stato aperto in una nuova scheda: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Ingrandisci editor',
+    paneRestore: 'Ripristina divisione',
+    paneCollapse: 'Comprimi editor',
+    paneExpand: 'Espandi editor',
+    paneEmptyStrip: 'Nessun file aperto',
+    paneEmptyHost: 'Apri o crea un file per modificarlo qui in tempo reale',
+    paneResizeAria: 'Regola la larghezza di chat ed editor',
   },
   pl: {
     navRecent: 'Ostatnie',
@@ -3664,6 +3768,14 @@ export const strings = {
     chatToolFileNotFound: 'Nie znaleziono pasujących plików.',
     chatUnknownError: 'Coś poszło nie tak. Spróbuj ponownie.',
     chatDocOpenedInTab: 'Dokument otwarto w nowej karcie: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maksymalizuj edytor',
+    paneRestore: 'Przywróć podział',
+    paneCollapse: 'Zwiń edytor',
+    paneExpand: 'Rozwiń edytor',
+    paneEmptyStrip: 'Brak otwartych plików',
+    paneEmptyHost: 'Otwórz lub utwórz plik, aby edytować go tutaj w czasie rzeczywistym',
+    paneResizeAria: 'Dostosuj szerokość czatu i edytora',
   },
   nl: {
     navRecent: 'Recent',
@@ -3922,6 +4034,14 @@ export const strings = {
     chatToolFileNotFound: 'Geen overeenkomende bestanden gevonden.',
     chatUnknownError: 'Er ging iets mis. Probeer het opnieuw.',
     chatDocOpenedInTab: 'Het document is geopend in een nieuw tabblad: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Editor maximaliseren',
+    paneRestore: 'Splitsing herstellen',
+    paneCollapse: 'Editor inklappen',
+    paneExpand: 'Editor uitklappen',
+    paneEmptyStrip: 'Geen geopende bestanden',
+    paneEmptyHost: 'Open of maak een bestand om het hier in realtime te bewerken',
+    paneResizeAria: 'Breedte van chat en editor aanpassen',
   },
   ms: {
     navRecent: 'Terkini',
@@ -4177,6 +4297,14 @@ export const strings = {
     chatToolFileNotFound: 'Tiada fail yang sepadan dijumpai.',
     chatUnknownError: 'Berlaku ralat. Sila cuba lagi.',
     chatDocOpenedInTab: 'Dokumen dibuka dalam tab baharu: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'Maksimumkan editor',
+    paneRestore: 'Pulihkan paparan terbahagi',
+    paneCollapse: 'Lipat editor',
+    paneExpand: 'Kembangkan editor',
+    paneEmptyStrip: 'Tiada fail dibuka',
+    paneEmptyHost: 'Buka atau cipta fail untuk mengedarnya di sini secara masa nyata',
+    paneResizeAria: 'Laraskan lebar sembang dan editor',
   },
   he: {
     navRecent: 'אחרונים',
@@ -4424,6 +4552,14 @@ export const strings = {
     chatToolFileNotFound: 'לא נמצאו קבצים תואמים.',
     chatUnknownError: 'משהו השתבש. נסו שוב.',
     chatDocOpenedInTab: 'המסמך נפתח בכרטיסייה חדשה: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'הגדלת העורך',
+    paneRestore: 'שחזור הפיצול',
+    paneCollapse: 'קיפול העורך',
+    paneExpand: 'פריסת העורך',
+    paneEmptyStrip: 'אין קבצים פתוחים',
+    paneEmptyHost: 'פתחו או צרו קובץ כדי לערוך אותו כאן בזמן אמת',
+    paneResizeAria: 'התאמת רוחב הצ׳אט והעורך',
   },
   hi: {
     navRecent: 'हाल के',
@@ -4679,6 +4815,14 @@ export const strings = {
     chatToolFileNotFound: 'कोई मेल खाती फ़ाइल नहीं मिली।',
     chatUnknownError: 'कुछ गलत हो गया। कृपया फिर से प्रयास करें।',
     chatDocOpenedInTab: 'दस्तावेज़ नए टैब में खुला: {title}',
+    // Editor pane (three-pane home)
+    paneMaximize: 'एडिटर बड़ा करें',
+    paneRestore: 'विभाजन पुनर्स्थापित करें',
+    paneCollapse: 'एडिटर छोटा करें',
+    paneExpand: 'एडिटर खोलें',
+    paneEmptyStrip: 'कोई खुली फ़ाइल नहीं',
+    paneEmptyHost: 'यहाँ रीयल टाइम में संपादित करने के लिए फ़ाइल खोलें या बनाएँ',
+    paneResizeAria: 'चैट और एडिटर की चौड़ाई समायोजित करें',
   },
   'zh-TW': {
     navRecent: '最近',
@@ -4920,5 +5064,13 @@ export const strings = {
     chatToolFileNotFound: '找不到符合的檔案。',
     chatUnknownError: '發生錯誤，請稍後再試。',
     chatDocOpenedInTab: '文件已在新分頁開啟：{title}',
+    // Editor pane (three-pane home)
+    paneMaximize: '最大化編輯區',
+    paneRestore: '還原分割',
+    paneCollapse: '收合編輯區',
+    paneExpand: '展開編輯區',
+    paneEmptyStrip: '尚無開啟的檔案',
+    paneEmptyHost: '開啟或新增檔案，即可在這裡即時編輯',
+    paneResizeAria: '調整對話與編輯區的寬度',
   },
 } as const

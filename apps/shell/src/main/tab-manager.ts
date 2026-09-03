@@ -48,15 +48,15 @@ interface TabRecord {
   filePath?: string
 }
 
-/** must match the tab strip's rendered height (apps/shell/src/renderer/src/TabBar.tsx) */
-const TAB_STRIP_HEIGHT = 40
 const HOME_ID = 'home'
 
 /**
- * Owns every open tab (Home + docs + sheets) inside the shell's single
- * BrowserWindow. Docs/sheets tabs are WebContentsView children of that
- * window; only the active one is visible at a time. Home has no view of its
- * own — hiding every other tab reveals the shell window's own content.
+ * Owns every open editor tab (docs/sheets/slides/pdf/markdown) inside the
+ * shell's single BrowserWindow. Editor tabs are WebContentsView children of
+ * that window; the active one is fitted to the editor pane's view-host rect
+ * the renderer reports (three-pane home: sidebar | chat | editor pane), and
+ * all others are hidden. Home has no view of its own — hiding every editor
+ * view reveals the shell window's own content.
  */
 export class TabManager {
   private readonly tabs: TabRecord[] = [
@@ -64,14 +64,16 @@ export class TabManager {
   ]
   private activeId: string = HOME_ID
   private nextId = 1
-  /** tab whose page entered HTML fullscreen (e.g. slides slideshow) — its view covers the tab strip */
+  /** tab whose page entered HTML fullscreen (e.g. slides slideshow) — its view covers the whole window */
   private htmlFullScreenId: string | null = null
-  /** webContents ids whose view must cover the tab strip without HTML fullscreen
+  /** webContents ids whose view must cover the whole window without HTML fullscreen
    *  (slides show: the window snaps via simpleFullScreen and asks for the bleed
    *  over IPC, since requestFullscreen would animate the native transition) */
   private readonly bleedWcIds = new Set<number>()
   /** tabs mid unsaved-changes prompt, so a second close click doesn't stack dialogs */
   private readonly closingIds = new Set<string>()
+  /** view-host rect (content coords) reported by the renderer; null hides every view */
+  private paneBounds: Rectangle | null = null
 
   constructor(
     private readonly shellWindow: BrowserWindow,
@@ -79,6 +81,8 @@ export class TabManager {
     private readonly applyMenuFor: (kind: TabKind) => void,
     /** localized placeholder title for a tab that has no file yet */
     private readonly untitledTitleFor?: (kind: TabKind) => string,
+    /** 回主页 menu items: the pane collapses and the home menu applies */
+    private readonly onHomeActivated?: () => void,
   ) {
     // Layout once synchronously for macOS/Windows (bounds are already correct),
     // then once more on the next tick. On Linux/X11, `resize` fires before the
@@ -95,29 +99,23 @@ export class TabManager {
     return this.untitledTitleFor?.(kind) ?? fallback
   }
 
-  private contentBounds(): Rectangle {
-    const { width, height } = this.shellWindow.getContentBounds()
-    if (this.htmlFullScreenId !== null && this.htmlFullScreenId === this.activeId) {
-      return { x: 0, y: 0, width, height }
-    }
-    const active = this.tabs.find((t) => t.id === this.activeId)
-    if (active?.view && this.bleedWcIds.has(active.view.webContents.id)) {
-      return { x: 0, y: 0, width, height }
-    }
-    return { x: 0, y: TAB_STRIP_HEIGHT, width, height: Math.max(0, height - TAB_STRIP_HEIGHT) }
-  }
-
-  /** Grow/restore a tab view over the tab strip on request (slides show fullscreen) */
+  /** Grow/restore a tab view over the whole window on request (slides show fullscreen) */
   setContentBleed(wc: WebContents, on: boolean): void {
     if (on) this.bleedWcIds.add(wc.id)
     else this.bleedWcIds.delete(wc.id)
     this.layout()
   }
 
+  /** the renderer's view-host rect changed (resize / divider drag / mode switch) */
+  setPaneBounds(rect: Rectangle | null): void {
+    this.paneBounds = rect
+    this.layout()
+  }
+
   /**
    * When a tab's page enters HTML fullscreen (the slides slideshow calls requestFullscreen),
-   * grow its view over the tab strip so nothing of the shell chrome shows;
-   * restore the normal bounds on leave.
+   * grow its view over the whole window so nothing of the shell chrome shows;
+   * restore the normal pane bounds on leave.
    */
   private trackHtmlFullScreen(id: string, view: WebContentsView): void {
     view.webContents.on('enter-html-full-screen', () => {
@@ -130,12 +128,27 @@ export class TabManager {
     })
   }
 
-  /** re-fit the active tab's view after a window resize */
+  /** re-fit the active tab's view (pane rect, whole window for fullscreen bleed, or hide) */
   layout(): void {
     // Deferred resize layouts can land after the shell window was closed.
     if (this.shellWindow.isDestroyed()) return
     const active = this.tabs.find((t) => t.id === this.activeId)
-    if (active?.view) active.view.setBounds(this.contentBounds())
+    if (!active?.view) return
+    const view = active.view
+    const fullscreen =
+      this.htmlFullScreenId === this.activeId || this.bleedWcIds.has(view.webContents.id)
+    if (fullscreen) {
+      const { width, height } = this.shellWindow.getContentBounds()
+      view.setBounds({ x: 0, y: 0, width, height })
+      view.setVisible(true)
+      return
+    }
+    if (this.activeId === HOME_ID || !this.paneBounds) {
+      view.setVisible(false)
+      return
+    }
+    view.setBounds(this.paneBounds)
+    view.setVisible(true)
   }
 
   list(): TabSummary[] {
@@ -148,8 +161,10 @@ export class TabManager {
     }))
   }
 
+  /** 回主页 (menu/dock/fallbacks): deactivate the editor pane and let the renderer collapse it */
   openHomeTab(): void {
     this.activateTab(HOME_ID)
+    this.onHomeActivated?.()
   }
 
   openDocsTab(
@@ -253,10 +268,10 @@ export class TabManager {
   activateTab(id: string): void {
     const target = this.tabs.find((t) => t.id === id)
     if (!target) return
-    for (const t of this.tabs) t.view?.setVisible(t.id === id)
-    if (target.view) target.view.setBounds(this.contentBounds())
+    for (const t of this.tabs) t.view?.setVisible(false)
     this.activeId = id
     this.refreshActiveTargets()
+    this.layout()
     this.onChanged()
   }
 
