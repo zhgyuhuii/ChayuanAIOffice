@@ -2634,3 +2634,233 @@ body.vib .home {
 .chat-send-btn.stop {
   background: var(--danger);
 }
+
+/* ---- P2: quick row (open / search) + sidebar search ---- */
+
+.side-quick-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 0 0 14px;
+  flex-shrink: 0;
+}
+
+.side-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.side-quick-btn:hover,
+.side-quick-btn.active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.side-quick-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.side-search {
+  margin: -6px 0 12px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.side-search-input {
+  width: 100%;
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.side-search-input:focus {
+  border-color: var(--accent);
+}
+
+.side-search .side-search-list {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 6px;
+}
+
+/* ---- P2: special accordion rows (最近文件 / 收藏) ---- */
+
+.side-files-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.side-special .nav-item {
+  width: 100%;
+}
+
+.nav-chevron {
+  margin-left: auto;
+  flex: none;
+  color: var(--icon-muted);
+  transform: rotate(0deg);
+  transition: transform 0.12s ease;
+}
+
+.side-special.open .nav-chevron {
+  transform: rotate(90deg);
+}
+
+.side-special.open .nav-item {
+  background: var(--surface-subtle);
+}
+
+.side-acc-body {
+  padding: 2px 0 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 6px;
+}
+
+.side-acc-body .side-filters {
+  margin-bottom: 6px;
+}
+
+/* ---- P2: project row hover actions + accordion ---- */
+
+.proj-item {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.proj-actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  transition: opacity 0.1s;
+  background: linear-gradient(to left, var(--surface-subtle) 70%, transparent);
+}
+
+.proj-item:hover .proj-actions,
+.proj-actions:has([aria-expanded='true']) {
+  opacity: 1;
+}
+
+.proj-item:hover .proj-item-meta,
+.proj-item:has([aria-expanded='true']) .proj-item-meta {
+  opacity: 0;
+}
+
+.proj-act-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.proj-act-btn:hover {
+  background: var(--bg-hover-strong);
+  color: var(--text);
+}
+
+.proj-files {
+  flex-basis: 100%;
+  min-width: 0;
+  padding: 2px 0 6px 22px;
+}
+
+.proj-files .side-files-scroll {
+  max-height: 220px;
+}
+
+/* ---- P2: bottom-left account row (login / phone / settings) ---- */
+
+.account-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+.account-row .account-btn.login {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.account-row .side-mini-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.account-row .side-mini-btn:hover {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.account-avatar.logged-in {
+  background: var(--accent);
+  color: #fff;
+}
+
+.account-avatar.logged-in span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.phone-url-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.phone-url-input:focus {
+  border-color: var(--accent);
+}

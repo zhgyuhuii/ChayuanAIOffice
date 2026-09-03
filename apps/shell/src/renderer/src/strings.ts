@@ -257,6 +257,18 @@ export const strings = {
     paneEmptyStrip: '尚无打开的文件',
     paneEmptyHost: '打开或新建文件，即可在这里实时编辑',
     paneResizeAria: '调整对话与编辑区的宽度',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: '搜索',
+    searchFilesPlaceholder: '按文件名搜索…',
+    searchNoResults: '没有匹配的文件',
+    newTask: '新建任务',
+    viewFiles: '查看文件',
+    projNewMenu: '新建',
+    phoneTitle: '手机访问',
+    phoneHint: '在手机浏览器打开 ChatOffice 网页版地址，即可在手机上继续工作：',
+    phonePlaceholder: '网页版地址，如 http://192.168.1.5:5180',
+    phoneCopy: '复制地址',
+    phoneCopied: '已复制',
   },
   en: {
     navRecent: 'Recent',
@@ -515,6 +527,18 @@ export const strings = {
     paneEmptyStrip: 'No open files',
     paneEmptyHost: 'Open or create a file to edit it here in real time',
     paneResizeAria: 'Resize the chat and editor panes',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Search',
+    searchFilesPlaceholder: 'Search by file name…',
+    searchNoResults: 'No matching files',
+    newTask: 'New task',
+    viewFiles: 'View files',
+    projNewMenu: 'New',
+    phoneTitle: 'Phone access',
+    phoneHint: "Open the ChatOffice web address in your phone's browser to keep working on the go:",
+    phonePlaceholder: 'Web address, e.g. http://192.168.1.5:5180',
+    phoneCopy: 'Copy address',
+    phoneCopied: 'Copied',
   },
   ja: {
     // Sidebar navigation
@@ -790,6 +814,19 @@ export const strings = {
     paneEmptyStrip: '開いているファイルはありません',
     paneEmptyHost: 'ファイルを開くか新規作成すると、ここでリアルタイムに編集できます',
     paneResizeAria: 'チャットとエディターの幅を調整',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: '検索',
+    searchFilesPlaceholder: 'ファイル名で検索…',
+    searchNoResults: '一致するファイルがありません',
+    newTask: '新規タスク',
+    viewFiles: 'ファイルを表示',
+    projNewMenu: '新規作成',
+    phoneTitle: 'スマホアクセス',
+    phoneHint:
+      'スマホのブラウザで ChatOffice ウェブ版のアドレスを開けば、外出先でも作業を続けられます：',
+    phonePlaceholder: 'ウェブ版のアドレス（例 http://192.168.1.5:5180）',
+    phoneCopy: 'アドレスをコピー',
+    phoneCopied: 'コピーしました',
   },
   ko: {
     // Sidebar navigation
@@ -1059,6 +1096,19 @@ export const strings = {
     paneEmptyStrip: '열린 파일이 없습니다',
     paneEmptyHost: '파일을 열거나 만들면 여기에서 실시간으로 편집할 수 있습니다',
     paneResizeAria: '채팅 및 편집기 너비 조정',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: '검색',
+    searchFilesPlaceholder: '파일 이름으로 검색…',
+    searchNoResults: '일치하는 파일이 없습니다',
+    newTask: '새 작업',
+    viewFiles: '파일 보기',
+    projNewMenu: '새로 만들기',
+    phoneTitle: '휴대폰 접속',
+    phoneHint:
+      '휴대폰 브라우저에서 ChatOffice 웹 주소를 열면 이동 중에도 작업을 계속할 수 있습니다:',
+    phonePlaceholder: '웹 주소(예: http://192.168.1.5:5180)',
+    phoneCopy: '주소 복사',
+    phoneCopied: '복사됨',
   },
   fr: {
     // Sidebar navigation
@@ -1338,6 +1388,19 @@ export const strings = {
     paneEmptyStrip: 'Aucun fichier ouvert',
     paneEmptyHost: 'Ouvrez ou créez un fichier pour l’éditer ici en temps réel',
     paneResizeAria: 'Redimensionner les volets discussion et éditeur',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Rechercher',
+    searchFilesPlaceholder: 'Rechercher par nom de fichier…',
+    searchNoResults: 'Aucun fichier correspondant',
+    newTask: 'Nouvelle tâche',
+    viewFiles: 'Voir les fichiers',
+    projNewMenu: 'Nouveau',
+    phoneTitle: 'Accès mobile',
+    phoneHint:
+      'Ouvrez l’adresse web de ChatOffice dans le navigateur de votre téléphone pour continuer à travailler en déplacement :',
+    phonePlaceholder: 'Adresse web, ex. http://192.168.1.5:5180',
+    phoneCopy: 'Copier l’adresse',
+    phoneCopied: 'Copié',
   },
   de: {
     // Sidebar navigation
@@ -1618,6 +1681,19 @@ export const strings = {
     paneEmptyStrip: 'Keine geöffneten Dateien',
     paneEmptyHost: 'Datei öffnen oder erstellen, um sie hier in Echtzeit zu bearbeiten',
     paneResizeAria: 'Breite von Chat und Editor anpassen',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Suchen',
+    searchFilesPlaceholder: 'Nach Dateiname suchen…',
+    searchNoResults: 'Keine passenden Dateien',
+    newTask: 'Neue Aufgabe',
+    viewFiles: 'Dateien anzeigen',
+    projNewMenu: 'Neu',
+    phoneTitle: 'Handy-Zugriff',
+    phoneHint:
+      'Öffnen Sie die ChatOffice-Webadresse im Browser Ihres Telefons, um unterwegs weiterzuarbeiten:',
+    phonePlaceholder: 'Webadresse, z. B. http://192.168.1.5:5180',
+    phoneCopy: 'Adresse kopieren',
+    phoneCopied: 'Kopiert',
   },
   es: {
     // Sidebar navigation
@@ -1897,6 +1973,19 @@ export const strings = {
     paneEmptyStrip: 'No hay archivos abiertos',
     paneEmptyHost: 'Abre o crea un archivo para editarlo aquí en tiempo real',
     paneResizeAria: 'Ajustar el ancho del chat y del editor',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Buscar',
+    searchFilesPlaceholder: 'Buscar por nombre de archivo…',
+    searchNoResults: 'No hay archivos coincidentes',
+    newTask: 'Nueva tarea',
+    viewFiles: 'Ver archivos',
+    projNewMenu: 'Nuevo',
+    phoneTitle: 'Acceso desde el móvil',
+    phoneHint:
+      'Abre la dirección web de ChatOffice en el navegador del móvil para seguir trabajando donde sea:',
+    phonePlaceholder: 'Dirección web, p. ej. http://192.168.1.5:5180',
+    phoneCopy: 'Copiar dirección',
+    phoneCopied: 'Copiado',
   },
   th: {
     // Sidebar navigation
@@ -2165,6 +2254,18 @@ export const strings = {
     paneEmptyStrip: 'ไม่มีไฟล์ที่เปิดอยู่',
     paneEmptyHost: 'เปิดหรือสร้างไฟล์เพื่อแก้ไขแบบเรียลไทม์ที่นี่',
     paneResizeAria: 'ปรับความกว้างของแชทและตัวแก้ไข',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'ค้นหา',
+    searchFilesPlaceholder: 'ค้นหาตามชื่อไฟล์…',
+    searchNoResults: 'ไม่พบไฟล์ที่ตรงกัน',
+    newTask: 'งานใหม่',
+    viewFiles: 'ดูไฟล์',
+    projNewMenu: 'สร้างใหม่',
+    phoneTitle: 'เข้าถึงจากมือถือ',
+    phoneHint: 'เปิดที่อยู่เว็บของ ChatOffice ในเบราว์เซอร์มือถือเพื่อทำงานต่อได้ทุกที่:',
+    phonePlaceholder: 'ที่อยู่เว็บ เช่น http://192.168.1.5:5180',
+    phoneCopy: 'คัดลอกที่อยู่',
+    phoneCopied: 'คัดลอกแล้ว',
   },
   id: {
     // Sidebar navigation
@@ -2438,6 +2539,19 @@ export const strings = {
     paneEmptyStrip: 'Belum ada berkas yang dibuka',
     paneEmptyHost: 'Buka atau buat berkas untuk mengeditnya di sini secara langsung',
     paneResizeAria: 'Atur lebar obrolan dan editor',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Cari',
+    searchFilesPlaceholder: 'Cari berdasarkan nama berkas…',
+    searchNoResults: 'Tidak ada berkas yang cocok',
+    newTask: 'Tugas baru',
+    viewFiles: 'Lihat berkas',
+    projNewMenu: 'Baru',
+    phoneTitle: 'Akses ponsel',
+    phoneHint:
+      'Buka alamat web ChatOffice di peramban ponsel Anda untuk terus bekerja di mana saja:',
+    phonePlaceholder: 'Alamat web, mis. http://192.168.1.5:5180',
+    phoneCopy: 'Salin alamat',
+    phoneCopied: 'Tersalin',
   },
   ru: {
     // Sidebar navigation
@@ -2712,6 +2826,19 @@ export const strings = {
     paneEmptyStrip: 'Нет открытых файлов',
     paneEmptyHost: 'Откройте или создайте файл, чтобы редактировать его здесь в реальном времени',
     paneResizeAria: 'Изменить ширину чата и редактора',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Поиск',
+    searchFilesPlaceholder: 'Поиск по имени файла…',
+    searchNoResults: 'Нет подходящих файлов',
+    newTask: 'Новая задача',
+    viewFiles: 'Показать файлы',
+    projNewMenu: 'Создать',
+    phoneTitle: 'Доступ с телефона',
+    phoneHint:
+      'Откройте веб-адрес ChatOffice в браузере телефона, чтобы продолжить работу в дороге:',
+    phonePlaceholder: 'Веб-адрес, напр. http://192.168.1.5:5180',
+    phoneCopy: 'Копировать адрес',
+    phoneCopied: 'Скопировано',
   },
   ar: {
     // Sidebar navigation
@@ -2981,6 +3108,18 @@ export const strings = {
     paneEmptyStrip: 'لا توجد ملفات مفتوحة',
     paneEmptyHost: 'افتح ملفًا أو أنشئ ملفًا لتحريره هنا في الوقت الفعلي',
     paneResizeAria: 'ضبط عرض الدردشة والمحرر',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'بحث',
+    searchFilesPlaceholder: 'ابحث باسم الملف…',
+    searchNoResults: 'لا توجد ملفات مطابقة',
+    newTask: 'مهمة جديدة',
+    viewFiles: 'عرض الملفات',
+    projNewMenu: 'جديد',
+    phoneTitle: 'الوصول من الهاتف',
+    phoneHint: 'افتح عنوان ويب ChatOffice في متصفح هاتفك لمواصلة العمل من أي مكان:',
+    phonePlaceholder: 'عنوان الويب، مثل http://192.168.1.5:5180',
+    phoneCopy: 'نسخ العنوان',
+    phoneCopied: 'تم النسخ',
   },
   pt: {
     navRecent: 'Recentes',
@@ -3247,6 +3386,19 @@ export const strings = {
     paneEmptyStrip: 'Nenhum arquivo aberto',
     paneEmptyHost: 'Abra ou crie um arquivo para editá-lo aqui em tempo real',
     paneResizeAria: 'Ajustar a largura do bate-papo e do editor',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Pesquisar',
+    searchFilesPlaceholder: 'Pesquisar por nome de arquivo…',
+    searchNoResults: 'Nenhum arquivo correspondente',
+    newTask: 'Nova tarefa',
+    viewFiles: 'Ver arquivos',
+    projNewMenu: 'Novo',
+    phoneTitle: 'Acesso pelo celular',
+    phoneHint:
+      'Abra o endereço web do ChatOffice no navegador do celular para continuar trabalhando em qualquer lugar:',
+    phonePlaceholder: 'Endereço web, ex.: http://192.168.1.5:5180',
+    phoneCopy: 'Copiar endereço',
+    phoneCopied: 'Copiado',
   },
   it: {
     navRecent: 'Recenti',
@@ -3512,6 +3664,19 @@ export const strings = {
     paneEmptyStrip: 'Nessun file aperto',
     paneEmptyHost: 'Apri o crea un file per modificarlo qui in tempo reale',
     paneResizeAria: 'Regola la larghezza di chat ed editor',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Cerca',
+    searchFilesPlaceholder: 'Cerca per nome file…',
+    searchNoResults: 'Nessun file corrispondente',
+    newTask: 'Nuova attività',
+    viewFiles: 'Vedi file',
+    projNewMenu: 'Nuovo',
+    phoneTitle: 'Accesso da telefono',
+    phoneHint:
+      'Apri l’indirizzo web di ChatOffice nel browser del telefono per continuare a lavorare ovunque:',
+    phonePlaceholder: 'Indirizzo web, es. http://192.168.1.5:5180',
+    phoneCopy: 'Copia indirizzo',
+    phoneCopied: 'Copiato',
   },
   pl: {
     navRecent: 'Ostatnie',
@@ -3776,6 +3941,19 @@ export const strings = {
     paneEmptyStrip: 'Brak otwartych plików',
     paneEmptyHost: 'Otwórz lub utwórz plik, aby edytować go tutaj w czasie rzeczywistym',
     paneResizeAria: 'Dostosuj szerokość czatu i edytora',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Szukaj',
+    searchFilesPlaceholder: 'Szukaj według nazwy pliku…',
+    searchNoResults: 'Brak pasujących plików',
+    newTask: 'Nowe zadanie',
+    viewFiles: 'Pokaż pliki',
+    projNewMenu: 'Nowy',
+    phoneTitle: 'Dostęp z telefonu',
+    phoneHint:
+      'Otwórz adres internetowy ChatOffice w przeglądarce telefonu, aby kontynuować pracę w drodze:',
+    phonePlaceholder: 'Adres internetowy, np. http://192.168.1.5:5180',
+    phoneCopy: 'Kopiuj adres',
+    phoneCopied: 'Skopiowano',
   },
   nl: {
     navRecent: 'Recent',
@@ -4042,6 +4220,19 @@ export const strings = {
     paneEmptyStrip: 'Geen geopende bestanden',
     paneEmptyHost: 'Open of maak een bestand om het hier in realtime te bewerken',
     paneResizeAria: 'Breedte van chat en editor aanpassen',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Zoeken',
+    searchFilesPlaceholder: 'Zoeken op bestandsnaam…',
+    searchNoResults: 'Geen overeenkomende bestanden',
+    newTask: 'Nieuwe taak',
+    viewFiles: 'Bestanden bekijken',
+    projNewMenu: 'Nieuw',
+    phoneTitle: 'Telefoontoegang',
+    phoneHint:
+      'Open het webadres van ChatOffice in de browser van je telefoon om overal door te werken:',
+    phonePlaceholder: 'Webadres, bijv. http://192.168.1.5:5180',
+    phoneCopy: 'Adres kopiëren',
+    phoneCopied: 'Gekopieerd',
   },
   ms: {
     navRecent: 'Terkini',
@@ -4305,6 +4496,18 @@ export const strings = {
     paneEmptyStrip: 'Tiada fail dibuka',
     paneEmptyHost: 'Buka atau cipta fail untuk mengedarnya di sini secara masa nyata',
     paneResizeAria: 'Laraskan lebar sembang dan editor',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'Cari',
+    searchFilesPlaceholder: 'Cari mengikut nama fail…',
+    searchNoResults: 'Tiada fail yang sepadan',
+    newTask: 'Tugasan baharu',
+    viewFiles: 'Lihat fail',
+    projNewMenu: 'Baharu',
+    phoneTitle: 'Akses telefon',
+    phoneHint: 'Buka alamat web ChatOffice dalam pelayar telefon anda untuk terus bekerja:',
+    phonePlaceholder: 'Alamat web, cth. http://192.168.1.5:5180',
+    phoneCopy: 'Salin alamat',
+    phoneCopied: 'Disalin',
   },
   he: {
     navRecent: 'אחרונים',
@@ -4560,6 +4763,18 @@ export const strings = {
     paneEmptyStrip: 'אין קבצים פתוחים',
     paneEmptyHost: 'פתחו או צרו קובץ כדי לערוך אותו כאן בזמן אמת',
     paneResizeAria: 'התאמת רוחב הצ׳אט והעורך',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'חיפוש',
+    searchFilesPlaceholder: 'חיפוש לפי שם קובץ…',
+    searchNoResults: 'אין קבצים תואמים',
+    newTask: 'משימה חדשה',
+    viewFiles: 'הצגת קבצים',
+    projNewMenu: 'חדש',
+    phoneTitle: 'גישה מהטלפון',
+    phoneHint: 'פתחו את כתובת האינטרנט של ChatOffice בדפדפן הטלפון כדי להמשיך לעבוד בדרכים:',
+    phonePlaceholder: 'כתובת אינטרנט, למשל http://192.168.1.5:5180',
+    phoneCopy: 'העתקת כתובת',
+    phoneCopied: 'הועתק',
   },
   hi: {
     navRecent: 'हाल के',
@@ -4823,6 +5038,18 @@ export const strings = {
     paneEmptyStrip: 'कोई खुली फ़ाइल नहीं',
     paneEmptyHost: 'यहाँ रीयल टाइम में संपादित करने के लिए फ़ाइल खोलें या बनाएँ',
     paneResizeAria: 'चैट और एडिटर की चौड़ाई समायोजित करें',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: 'खोजें',
+    searchFilesPlaceholder: 'फ़ाइल नाम से खोजें…',
+    searchNoResults: 'कोई मेल खाती फ़ाइल नहीं',
+    newTask: 'नया कार्य',
+    viewFiles: 'फ़ाइलें देखें',
+    projNewMenu: 'नया',
+    phoneTitle: 'फ़ोन से उपयोग',
+    phoneHint: 'फ़ोन के ब्राउज़र में ChatOffice का वेब पता खोलें और कहीं भी काम जारी रखें:',
+    phonePlaceholder: 'वेब पता, जैसे http://192.168.1.5:5180',
+    phoneCopy: 'पता कॉपी करें',
+    phoneCopied: 'कॉपी हो गया',
   },
   'zh-TW': {
     navRecent: '最近',
@@ -5072,5 +5299,17 @@ export const strings = {
     paneEmptyStrip: '尚無開啟的檔案',
     paneEmptyHost: '開啟或新增檔案，即可在這裡即時編輯',
     paneResizeAria: '調整對話與編輯區的寬度',
+    // P2 sidebar (quick row / project actions / phone)
+    searchFiles: '搜尋',
+    searchFilesPlaceholder: '按檔案名稱搜尋…',
+    searchNoResults: '沒有符合的檔案',
+    newTask: '新增任務',
+    viewFiles: '檢視檔案',
+    projNewMenu: '新增',
+    phoneTitle: '手機存取',
+    phoneHint: '在手機瀏覽器開啟 ChatOffice 網頁版地址，即可隨時繼續工作：',
+    phonePlaceholder: '網頁版地址，如 http://192.168.1.5:5180',
+    phoneCopy: '複製地址',
+    phoneCopied: '已複製',
   },
 } as const

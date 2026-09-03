@@ -206,13 +206,31 @@ export function ChatPanel({
   projectId,
   accountName,
   onOpenSettings,
+  newSessionSignal,
 }: {
   projectId: string | null
   accountName: string
   onOpenSettings: () => void
+  /** bumped by the sidebar's 新建任务 to start a fresh session here */
+  newSessionSignal?: number
 }): ReactElement {
   const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
+
+  // 外部命令开新会话(新建任务): reuse an empty active session, else create one
+  const prevSignal = useRef(newSessionSignal)
+  useEffect(() => {
+    if (newSessionSignal === undefined || newSessionSignal === prevSignal.current) return
+    prevSignal.current = newSessionSignal
+    const active = storeRef.current?.active
+    if (active && active.messages.length === 0) {
+      inputRef.current?.focus()
+      return
+    }
+    setBusy(false)
+    storeRef.current?.createSession()
+    inputRef.current?.focus()
+  }, [newSessionSignal])
 
   // ── store + controller (both created once) ──
   const storeRef = useRef<ReturnType<typeof useHomeChatStore> | null>(null)

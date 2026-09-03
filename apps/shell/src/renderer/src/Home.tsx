@@ -16,7 +16,7 @@ import type {
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover } from '@chatoffice/ui'
-import { fileCountKey, visiblePageCount } from './counts'
+import { visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
@@ -139,19 +139,36 @@ interface ProjectPanelProps {
   selectedId: string | null
   onSelect: (id: string | null) => void
   onRefresh: () => void
+  /** 新建▾ dropdown on the row: create a docx/xlsx bound to this project */
+  onNewFile: (projectId: string, ext: 'docx' | 'xlsx') => void
+  /** 新建任务: start a new AI chat session for this project */
+  onNewTask: (projectId: string) => void
+  /** the row's accordion file list (rendered under the expanded row) */
+  renderFilesFor: (projectId: string) => ReactElement | null
 }
 
-function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPanelProps) {
+function ProjectPanel({
+  projects,
+  selectedId,
+  onSelect,
+  onRefresh,
+  onNewFile,
+  onNewTask,
+  renderFilesFor,
+}: ProjectPanelProps) {
   const { t } = useI18n()
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
   // open menu id + fixed-position anchor (viewport coords), so the popup can
   // escape the scrollable project list without the list losing overflow-y
   const [projMenu, setProjMenu] = useState<{ id: string; top: number; right: number } | null>(null)
+  // 新建▾ dropdown (which file type) of the row being served
+  const [newMenu, setNewMenu] = useState<{ id: string; top: number; right: number } | null>(null)
   const [renaming, setRenaming] = useState<{ id: string; value: string } | null>(null)
   const newInputRef = useRef<HTMLInputElement>(null)
   // wrap (… button + popup) of the row whose menu is open — the dismissal guard root
   const projMenuWrapRef = useRef<HTMLDivElement>(null)
+  const newMenuWrapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (creating && newInputRef.current) newInputRef.current.focus()
@@ -161,15 +178,21 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
   useDismissablePopover(projMenu !== null, () => setProjMenu(null), {
     inside: () => [projMenuWrapRef.current],
   })
+  useDismissablePopover(newMenu !== null, () => setNewMenu(null), {
+    inside: () => [newMenuWrapRef.current],
+  })
 
   // also close on any scroll (the fixed-position popup would otherwise detach
   // from its row while the list scrolls)
   useEffect(() => {
-    if (!projMenu) return
-    const close = () => setProjMenu(null)
+    if (!projMenu && !newMenu) return
+    const close = () => {
+      setProjMenu(null)
+      setNewMenu(null)
+    }
     window.addEventListener('scroll', close, true)
     return () => window.removeEventListener('scroll', close, true)
-  }, [projMenu])
+  }, [projMenu, newMenu])
 
   const commitCreate = async () => {
     const name = newName.trim()
@@ -285,6 +308,7 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
                 className="proj-item-main"
                 role="button"
                 tabIndex={0}
+                aria-label={t('viewFiles')}
                 onClick={() => onSelect(isActive ? null : proj.id)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') onSelect(isActive ? null : proj.id)
@@ -326,66 +350,150 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
                 </span>
               </div>
 
-              {!proj.isDefault && (
+              <div className="proj-actions">
                 <div
-                  className="proj-menu-wrap"
-                  ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
+                  className="proj-new-wrap"
+                  ref={newMenu?.id === proj.id ? newMenuWrapRef : undefined}
                 >
                   <button
-                    className="proj-more-btn"
-                    aria-label={t('projMoreActions', { name: proj.name })}
-                    aria-expanded={projMenu?.id === proj.id}
+                    className="proj-act-btn"
+                    aria-label={t('projNewMenu')}
+                    aria-expanded={newMenu?.id === proj.id}
+                    title={t('projNewMenu')}
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (projMenu?.id === proj.id) {
-                        setProjMenu(null)
+                      if (newMenu?.id === proj.id) {
+                        setNewMenu(null)
                         return
                       }
                       const rect = e.currentTarget.getBoundingClientRect()
-                      setProjMenu({
+                      setNewMenu({
                         id: proj.id,
                         top: rect.bottom + 4,
                         right: window.innerWidth - rect.right,
                       })
                     }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-                      <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-                      <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path
+                        d="M7 1v12M1 7h12"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </button>
-                  {projMenu?.id === proj.id && (
+                  {newMenu?.id === proj.id && (
                     <div
                       className="proj-menu"
                       role="menu"
-                      style={{ top: projMenu.top, right: projMenu.right }}
+                      style={{ top: newMenu.top, right: newMenu.right }}
                     >
                       <button
                         role="menuitem"
                         onClick={(e) => {
                           e.stopPropagation()
-                          setProjMenu(null)
-                          setRenaming({ id: proj.id, value: proj.name })
+                          setNewMenu(null)
+                          onNewFile(proj.id, 'docx')
                         }}
                       >
-                        {t('rename')}
+                        {t('newDoc')}
                       </button>
-                      <div className="row-menu-divider" />
                       <button
                         role="menuitem"
-                        className="danger"
                         onClick={(e) => {
                           e.stopPropagation()
-                          doDelete(proj.id)
+                          setNewMenu(null)
+                          onNewFile(proj.id, 'xlsx')
                         }}
                       >
-                        {t('deleteProject')}
+                        {t('newSheet')}
                       </button>
                     </div>
                   )}
                 </div>
-              )}
+                <button
+                  className="proj-act-btn"
+                  aria-label={t('newTask')}
+                  title={t('newTask')}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onNewTask(proj.id)
+                  }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M14 2.5l-7.5 7.5M14 2.5L9.5 13.5 6.5 10 2.5 7 14 2.5z"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                {!proj.isDefault && (
+                  <div
+                    className="proj-menu-wrap"
+                    ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
+                  >
+                    <button
+                      className="proj-act-btn"
+                      aria-label={t('projMoreActions', { name: proj.name })}
+                      aria-expanded={projMenu?.id === proj.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (projMenu?.id === proj.id) {
+                          setProjMenu(null)
+                          return
+                        }
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        setProjMenu({
+                          id: proj.id,
+                          top: rect.bottom + 4,
+                          right: window.innerWidth - rect.right,
+                        })
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
+                        <circle cx="8" cy="8" r="1.35" fill="currentColor" />
+                        <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
+                      </svg>
+                    </button>
+                    {projMenu?.id === proj.id && (
+                      <div
+                        className="proj-menu"
+                        role="menu"
+                        style={{ top: projMenu.top, right: projMenu.right }}
+                      >
+                        <button
+                          role="menuitem"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setProjMenu(null)
+                            setRenaming({ id: proj.id, value: proj.name })
+                          }}
+                        >
+                          {t('rename')}
+                        </button>
+                        <div className="row-menu-divider" />
+                        <button
+                          role="menuitem"
+                          className="danger"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            doDelete(proj.id)
+                          }}
+                        >
+                          {t('deleteProject')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {isActive && <div className="proj-files">{renderFilesFor(proj.id)}</div>}
             </li>
           )
         })}
@@ -427,9 +535,66 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
 }
 
 // ── Account entry (bottom-left) ──────────────────────────
-// Currently the Genspark (gsk) login entry; to be upgraded to a signup/account system later.
-// Clicking it opens the settings modal directly (SettingsModal.tsx), which hosts
-// login/logout plus preferences (language, theme, save location, update channel).
+// Three entries: the login/avatar button (opens the settings modal's account
+// page), a phone button (web-version hand-off dialog), and settings.
+
+/** 手机访问 dialog: hand the web-version URL over to the phone (copy for now;
+ * the QR rendering lands with the web sync phase, which also ships the dep) */
+function PhoneDialog({ onClose }: { onClose: () => void }): ReactElement {
+  const { t } = useI18n()
+  const [url, setUrl] = useState(() => localStorage.getItem('chatoffice.web-url') ?? '')
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('phoneTitle')}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h3>{t('phoneTitle')}</h3>
+        <p>{t('phoneHint')}</p>
+        <input
+          className="phone-url-input"
+          value={url}
+          placeholder={t('phonePlaceholder')}
+          onChange={(e) => {
+            setUrl(e.target.value)
+            localStorage.setItem('chatoffice.web-url', e.target.value)
+            setCopied(false)
+          }}
+        />
+        <div className="modal-buttons">
+          <button className="btn btn-secondary" autoFocus onClick={onClose}>
+            {t('cancel')}
+          </button>
+          <button
+            className="btn btn-secondary"
+            disabled={url.trim().length === 0}
+            onClick={() => {
+              void navigator.clipboard.writeText(url.trim()).then(() => {
+                setCopied(true)
+                window.setTimeout(() => setCopied(false), 2000)
+              })
+            }}
+          >
+            {copied ? t('phoneCopied') : t('phoneCopy')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const LOGIN_POLL_MS = 2500
 /** fallback deadline when the CLI does not report expires_in (device codes live ~300s) */
@@ -459,6 +624,7 @@ function AccountEntry({
   const [urlCopied, setUrlCopied] = useState(false)
   const loginDeadline = useRef(0)
   const [loggingOut, setLoggingOut] = useState(false)
+  const [phoneOpen, setPhoneOpen] = useState(false)
   // bumped on logout so an in-flight status refresh (which can still
   // report logged-in) is discarded instead of resurrecting the UI
   const statusSeq = useRef(0)
@@ -623,69 +789,98 @@ function AccountEntry({
           </button>
         </div>
       )}
-      <button
-        className="account-btn"
-        onClick={handleClick}
-        aria-haspopup="dialog"
-        aria-expanded={settingsOpen}
-        data-tip={loggedIn && email ? email : t('settings')}
-        aria-label={t('settings')}
-      >
-        <span className={`account-avatar${waiting ? ' waiting' : ''}`}>
-          {waiting ? (
-            <svg
-              className="account-spinner"
-              width="14"
-              height="14"
-              viewBox="0 0 16 16"
-              aria-hidden="true"
-            >
-              <circle
-                cx="8"
-                cy="8"
-                r="6"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                fill="none"
-                strokeDasharray="26"
-                strokeDashoffset="18"
-                strokeLinecap="round"
-              />
-            </svg>
-          ) : (
-            /* gear: this entry opens the settings window */
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="2.2" stroke="currentColor" strokeWidth="1.4" />
-              <path
-                d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.5 3.5l1.3 1.3M11.2 11.2l1.3 1.3M12.5 3.5l-1.3 1.3M4.8 11.2l-1.3 1.3"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-              />
-            </svg>
-          )}
-        </span>
-        <span className="account-text">
-          <span className="account-name">{t('settings')}</span>
-          {loggedIn && email && <span className="account-sub">{email}</span>}
-        </span>
-        <svg
-          className="account-chevron"
-          width="14"
-          height="14"
-          viewBox="0 0 16 16"
-          fill="none"
-          aria-hidden="true"
+      <div className="account-row">
+        <button
+          className="account-btn login"
+          onClick={handleClick}
+          aria-haspopup="dialog"
+          aria-expanded={settingsOpen}
+          data-tip={loggedIn && email ? email : t('login')}
+          aria-label={loggedIn ? t('loggedIn') : t('login')}
         >
-          <path
-            d="M5 6.2 8 3.4l3 2.8M5 9.8l3 2.8 3-2.8"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+          <span
+            className={`account-avatar${waiting ? ' waiting' : ''}${loggedIn ? ' logged-in' : ''}`}
+          >
+            {waiting ? (
+              <svg
+                className="account-spinner"
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="8"
+                  cy="8"
+                  r="6"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  fill="none"
+                  strokeDasharray="26"
+                  strokeDashoffset="18"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : loggedIn && email ? (
+              <span aria-hidden="true">{email[0]!.toUpperCase()}</span>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="5.2" r="2.8" stroke="currentColor" strokeWidth="1.3" />
+                <path
+                  d="M2.5 14c.8-2.6 3-4 5.5-4s4.7 1.4 5.5 4"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
+          </span>
+          <span className="account-text">
+            <span className="account-name">
+              {loggedIn ? email.split('@')[0] || t('loggedIn') : t('login')}
+            </span>
+          </span>
+        </button>
+        <button
+          className="side-mini-btn"
+          title={t('phoneTitle')}
+          aria-label={t('phoneTitle')}
+          aria-haspopup="dialog"
+          onClick={() => setPhoneOpen(true)}
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect
+              x="4.5"
+              y="1.5"
+              width="7"
+              height="13"
+              rx="1.5"
+              stroke="currentColor"
+              strokeWidth="1.3"
+            />
+            <path d="M7 12.8h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+          </svg>
+        </button>
+        <button
+          className="side-mini-btn"
+          title={t('settings')}
+          aria-label={t('settings')}
+          aria-haspopup="dialog"
+          aria-expanded={settingsOpen}
+          onClick={handleClick}
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="8" r="2.2" stroke="currentColor" strokeWidth="1.4" />
+            <path
+              d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.5 3.5l1.3 1.3M11.2 11.2l1.3 1.3M12.5 3.5l-1.3 1.3M4.8 11.2l-1.3 1.3"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      {phoneOpen && <PhoneDialog onClose={() => setPhoneOpen(false)} />}
     </div>
   )
 }
@@ -1126,6 +1321,64 @@ export function Home() {
 
   const projectMode = hasProjectApi()
 
+  // ── Sidebar file area (accordion): 'recent' | 'starred' | <projectId> | null ──
+  const [filesPane, setFilesPane] = useState<string | null>('recent')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [searchHits, setSearchHits] = useState<RecentEntry[] | null>(null)
+  // bumped to command the chat panel into a fresh session (项目行「新建任务」;
+  // the session's project binding lands with the session-project phase)
+  const [taskSignal, setTaskSignal] = useState(0)
+
+  const toggleFilesPane = (id: string) => {
+    setCloudMode(false)
+    setRowMenu(null)
+    if (filesPane === id) {
+      setFilesPane(null)
+      if (id !== 'recent' && id !== 'starred') setSelectedProjectId(null)
+      return
+    }
+    setFilesPane(id)
+    if (id === 'recent' || id === 'starred') {
+      setSelectedProjectId(null)
+      setView(id)
+    } else {
+      setSelectedProjectId(id)
+    }
+  }
+
+  // filename search over recents + starred (+ the selected project's files);
+  // pure front-end over existing IPC, debounced per keystroke
+  useEffect(() => {
+    if (!searchOpen || query.trim().length === 0) {
+      setSearchHits(null)
+      return
+    }
+    const q = query.trim().toLowerCase()
+    const timer = setTimeout(() => {
+      void (async () => {
+        const [recent, starred] = await Promise.all([
+          window.chatOffice.recents({ offset: 0, limit: 100 }),
+          window.chatOffice.starred({ offset: 0, limit: 100 }),
+        ])
+        const byPath = new Map<string, RecentEntry>()
+        for (const e of [...recent.entries, ...starred.entries]) byPath.set(e.path, e)
+        if (projectMode && selectedProjectId) {
+          const paths = await window.chatOfficeProject!.listFiles(selectedProjectId)
+          const stats = await window.chatOffice.statPaths(paths)
+          for (const e of stats) byPath.set(e.path, e)
+        }
+        setSearchHits(
+          [...byPath.values()]
+            .filter((e) => e.name.toLowerCase().includes(q))
+            .sort((a, b) => b.mtimeMs - a.mtimeMs)
+            .slice(0, 20),
+        )
+      })()
+    }, 180)
+    return () => clearTimeout(timer)
+  }, [query, searchOpen, projectMode, selectedProjectId])
+
   // ── Paged loading ──
   // stale responses are dropped via a request sequence number (when views/filters switch quickly)
   const requestSeq = useRef(0)
@@ -1307,11 +1560,6 @@ export function Home() {
   })
 
   // ── Sidebar file-list row interactions (the table view is gone) ──
-  const changeView = (next: 'recent' | 'starred') => {
-    setView(next)
-    setRowMenu(null)
-  }
-
   const changeFilter = (key: string) => {
     setFilter(key)
     setRowMenu(null)
@@ -1408,40 +1656,96 @@ export function Home() {
     { ext: 'pdf', title: t('newPdf'), sub: '.pdf', action: handleNewPdf },
   ]
 
-  // ── Sidebar quick actions (top-left launcher: new/open) ──
+  // ── Sidebar quick actions (top-left launcher: new/open/search) ──
 
   function renderSideActions() {
     return (
-      <div className="side-actions">
-        {NEW_ITEMS.map((item) => (
+      <>
+        <div className="side-actions">
+          {NEW_ITEMS.map((item) => (
+            <button
+              key={item.ext}
+              className="side-action"
+              onClick={() => void item.action()}
+              data-tip={item.sub}
+            >
+              <FileBadge ext={item.ext} size={22} />
+              <span className="side-action-label">{item.title}</span>
+            </button>
+          ))}
+        </div>
+        <div className="side-quick-row">
           <button
-            key={item.ext}
-            className="side-action"
-            onClick={() => void item.action()}
-            data-tip={item.sub}
+            className="side-quick-btn"
+            onClick={() => void window.chatOffice.browse()}
+            data-tip={OPEN_LOCAL_EXTENSIONS}
           >
-            <FileBadge ext={item.ext} size={22} />
-            <span className="side-action-label">{item.title}</span>
+            <span className="side-action-folder" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            <span className="side-quick-label">{t('openLocal')}</span>
           </button>
-        ))}
-        <button
-          className="side-action"
-          onClick={() => void window.chatOffice.browse()}
-          data-tip={OPEN_LOCAL_EXTENSIONS}
-        >
-          <span className="side-action-folder" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-          <span className="side-action-label">{t('openLocal')}</span>
-        </button>
-      </div>
+          <button
+            className={`side-quick-btn${searchOpen ? ' active' : ''}`}
+            aria-expanded={searchOpen}
+            onClick={() =>
+              setSearchOpen((open) => {
+                if (open) {
+                  setQuery('')
+                  setSearchHits(null)
+                }
+                return !open
+              })
+            }
+          >
+            <span className="side-action-folder" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="4.6" stroke="currentColor" strokeWidth="1.4" />
+                <path
+                  d="M10.5 10.5L14 14"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <span className="side-quick-label">{t('searchFiles')}</span>
+          </button>
+        </div>
+        {searchOpen && (
+          <div className="side-search">
+            <input
+              autoFocus
+              className="side-search-input"
+              placeholder={t('searchFilesPlaceholder')}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape' && !e.nativeEvent.isComposing) {
+                  setSearchOpen(false)
+                  setQuery('')
+                  setSearchHits(null)
+                }
+              }}
+            />
+            {searchHits !== null &&
+              (searchHits.length === 0 ? (
+                <p className="side-files-empty">{t('searchNoResults')}</p>
+              ) : (
+                <ul className="side-file-list side-search-list">
+                  {searchHits.map((entry) => renderSideFileRow(entry, 'global'))}
+                </ul>
+              ))}
+          </div>
+        )}
+      </>
     )
   }
 
@@ -1656,58 +1960,56 @@ export function Home() {
     )
   }
 
-  function renderSideFiles() {
-    // a selected project wins over the recent/starred nav, mirroring the old
-    // content-area precedence
-    const inProject = projectMode && !!selectedProjectId
-    const list = inProject ? projectFileEntries : entries
-    const title = inProject
-      ? (projects.find((p) => p.id === selectedProjectId)?.name ?? '')
-      : view === 'starred'
-        ? t('secStarred')
-        : t('secRecent')
-    const total = inProject ? projectFileEntries.length : listTotal
+  /** the 最近文件/收藏 accordion body: filters + paged global list */
+  function renderGlobalAccordion() {
+    const list = entries
     return (
-      <div className="side-files">
-        <div className="side-files-head">
-          <span className="side-files-title">{title}</span>
-          <span className="side-files-count">{t(fileCountKey(total), { n: total })}</span>
+      <>
+        <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              className={`side-filter${filter === f.key ? ' active' : ''}`}
+              onClick={() => changeFilter(f.key)}
+            >
+              {t(f.label)}
+            </button>
+          ))}
         </div>
-        {!inProject && (
-          <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                className={`side-filter${filter === f.key ? ' active' : ''}`}
-                onClick={() => changeFilter(f.key)}
-              >
-                {t(f.label)}
-              </button>
-            ))}
-          </div>
-        )}
         {list.length === 0 ? (
           <p className="side-files-empty">
-            {inProject
-              ? t('projEmptyHint')
-              : view === 'starred'
-                ? t('emptyStarred')
-                : navCounts.recent === 0
-                  ? t('emptyRecent')
-                  : t('emptyFiltered')}
+            {view === 'starred'
+              ? t('emptyStarred')
+              : navCounts.recent === 0
+                ? t('emptyRecent')
+                : t('emptyFiltered')}
           </p>
         ) : (
           <div className="side-files-scroll">
             <ul className="side-file-list">
-              {list.map((entry) => renderSideFileRow(entry, inProject ? 'project' : 'global'))}
+              {list.map((entry) => renderSideFileRow(entry, 'global'))}
             </ul>
-            {!inProject && hasMore && (
+            {hasMore && (
               <div ref={sentinelRef} className="load-more" aria-hidden="true">
                 <span className="load-more-spinner" />
               </div>
             )}
           </div>
         )}
+      </>
+    )
+  }
+
+  /** the per-project accordion body fed into the project row (查看文件) */
+  function renderProjectAccordion() {
+    if (projectFileEntries.length === 0) {
+      return <p className="side-files-empty">{t('projEmptyHint')}</p>
+    }
+    return (
+      <div className="side-files-scroll">
+        <ul className="side-file-list">
+          {projectFileEntries.map((entry) => renderSideFileRow(entry, 'project'))}
+        </ul>
       </div>
     )
   }
@@ -1721,52 +2023,88 @@ export function Home() {
 
         {renderSideActions()}
 
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item${view === 'recent' && !selectedProjectId && !cloudMode ? ' active' : ''}`}
-            onClick={() => {
-              changeView('recent')
-              setSelectedProjectId(null)
-              setCloudMode(false)
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
-              <path
-                d="M8 4.8V8l2.2 1.6"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="nav-label">{t('navRecent')}</span>
-            <span className="nav-count">{navCounts.recent}</span>
-          </button>
-          <button
-            className={`nav-item${view === 'starred' && !selectedProjectId && !cloudMode ? ' active' : ''}`}
-            onClick={() => {
-              changeView('starred')
-              setSelectedProjectId(null)
-              setCloudMode(false)
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="nav-label">{t('navStarred')}</span>
-            <span className="nav-count">{navCounts.starred}</span>
-          </button>
+        <nav className="side-files-nav">
+          {/* 最近文件 / 收藏: special accordion rows above the projects group */}
+          <div className={`side-special${filesPane === 'recent' ? ' open' : ''}`}>
+            <button
+              className="nav-item"
+              aria-expanded={filesPane === 'recent'}
+              onClick={() => toggleFilesPane('recent')}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
+                <path
+                  d="M8 4.8V8l2.2 1.6"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className="nav-label">{t('secRecent')}</span>
+              <span className="nav-count">{navCounts.recent}</span>
+              <svg
+                className="nav-chevron"
+                width="11"
+                height="11"
+                viewBox="0 0 12 12"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4.5 2.5l4 3.5-4 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {filesPane === 'recent' && (
+              <div className="side-acc-body">{renderGlobalAccordion()}</div>
+            )}
+          </div>
+          <div className={`side-special${filesPane === 'starred' ? ' open' : ''}`}>
+            <button
+              className="nav-item"
+              aria-expanded={filesPane === 'starred'}
+              onClick={() => toggleFilesPane('starred')}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="nav-label">{t('secStarred')}</span>
+              <span className="nav-count">{navCounts.starred}</span>
+              <svg
+                className="nav-chevron"
+                width="11"
+                height="11"
+                viewBox="0 0 12 12"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4.5 2.5l4 3.5-4 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {filesPane === 'starred' && (
+              <div className="side-acc-body">{renderGlobalAccordion()}</div>
+            )}
+          </div>
           {loggedIn && (
             <button
-              className={`nav-item${cloudMode && !selectedProjectId ? ' active' : ''}`}
+              className={`nav-item${cloudMode ? ' active' : ''}`}
               onClick={() => {
                 setCloudMode(true)
-                setSelectedProjectId(null)
                 setRowMenu(null)
               }}
             >
@@ -1799,7 +2137,7 @@ export function Home() {
           )}
         </nav>
 
-        {/* project sidebar: the file history below follows the selected project */}
+        {/* project group: row click = 查看文件 accordion; hover = 新建▾ / 新建任务 / ⋯ */}
         {projectMode && (
           <>
             <div className="sidebar-divider" />
@@ -1807,15 +2145,30 @@ export function Home() {
               projects={projects}
               selectedId={selectedProjectId}
               onSelect={(id) => {
-                setSelectedProjectId(id)
+                setCloudMode(false)
                 setRowMenu(null)
+                if (selectedProjectId === id) {
+                  setSelectedProjectId(null)
+                  setFilesPane(null)
+                  return
+                }
+                setSelectedProjectId(id)
+                setFilesPane(id)
               }}
               onRefresh={refresh}
+              onNewFile={(projectId, ext) => {
+                const opts = { projectId }
+                if (ext === 'xlsx') void window.chatOffice.newSheet(opts)
+                else void window.chatOffice.newDoc(opts)
+              }}
+              onNewTask={() => {
+                setCloudMode(false)
+                setTaskSignal((n) => n + 1)
+              }}
+              renderFilesFor={renderProjectAccordion}
             />
           </>
         )}
-
-        {!cloudMode && renderSideFiles()}
 
         <AccountEntry
           onStatusChange={handleAccountStatus}
@@ -1831,6 +2184,7 @@ export function Home() {
           projectId={selectedProjectId}
           accountName={accountName}
           onOpenSettings={() => handleSettingsOpenChange(true)}
+          newSessionSignal={taskSignal}
         />
       )}
 
