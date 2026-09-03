@@ -199,8 +199,7 @@ describe('hosted tabs (desktop renderer)', () => {
     for (const label of [
       'ribbonTabInsert',
       'ribbonTabDraw',
-      'ribbonTabDesign',
-      'ribbonTabLayout',
+      'ribbonTabPage',
       'ribbonTabReferences',
       'ribbonTabReview',
     ]) {

@@ -202,11 +202,21 @@ export const FILE_TAB: RibbonTab<S, Sv> = {
   ],
 }
 
+/** WPS「页面」:布局(页面设置|段落|排列)+设计(页面背景|文档格式)两个托管体合一。 */
+function pageTabBody(ctx: Ctx) {
+  return (
+    <>
+      {layoutTabBody(ctx)}
+      <div className="ribbon-sep" />
+      {designTabBody(ctx)}
+    </>
+  )
+}
+
 export const HOSTED_TABS: readonly RibbonTab<S, Sv>[] = [
   hostedTab('insert', 'ribbonTabInsert', insertTabBody),
+  hostedTab('page', 'ribbonTabPage', pageTabBody),
   hostedTab('draw', 'ribbonTabDraw', drawTabBody),
-  hostedTab('design', 'ribbonTabDesign', designTabBody),
-  hostedTab('layout', 'ribbonTabLayout', layoutTabBody),
   hostedTab('references', 'ribbonTabReferences', referencesTabBody),
   hostedTab('review', 'ribbonTabReview', reviewTabBody),
 ]

@@ -47,12 +47,7 @@ import {
   updateSelectedTableAttrs,
 } from '../editor/table-properties'
 import { useI18n, type StringKey } from '../i18n/locale'
-import {
-  FONT_SIZES,
-  MULTILEVEL_LIBRARY,
-  NOOP_CHAIN,
-  previewLevelText,
-} from './ribbon-tab-shared'
+import { FONT_SIZES, MULTILEVEL_LIBRARY, NOOP_CHAIN, previewLevelText } from './ribbon-tab-shared'
 import { HomeTab } from './home-tab'
 import { PictureFormatTab, ShapeFormatTab, TableDesignTab, TableLayoutTab } from './contextual-tabs'
 import { fontFamiliesFor, isEastAsianFontName } from '../font-list'
@@ -72,9 +67,7 @@ import {
   applyParagraphStyle,
 } from './ribbon-tabs'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
-import {
-  IconTableProperties,
-} from './icons'
+import { IconTableProperties } from './icons'
 export interface RibbonProps {
   /** App keyboard shortcuts reuse ribbon closures through here (font-size stepping keeps its coalescing) */
   actionsRef?: React.MutableRefObject<{
@@ -249,10 +242,11 @@ const IS_MAC = navigator.platform.toLowerCase().includes('mac')
 /** shell tab mode: the tab strip above owns traffic lights / caption buttons */
 const IN_TAB = new URLSearchParams(window.location.search).get('mode') === 'tab'
 
+// WPS word 对齐:设计+布局合并为「页面」tab(开始 插入 页面 绘制 引用 审阅 视图)
 const TABS = (
   IS_MAC
-    ? ['home', 'insert', 'draw', 'design', 'layout', 'references', 'review', 'view']
-    : ['file', 'home', 'insert', 'draw', 'design', 'layout', 'references', 'review', 'view']
+    ? ['home', 'insert', 'page', 'draw', 'references', 'review', 'view']
+    : ['file', 'home', 'insert', 'page', 'draw', 'references', 'review', 'view']
 ) as readonly string[]
 const TABLE_TABS = ['tableDesign', 'tableLayout'] as const
 const IMAGE_TABS = ['pictureFormat'] as const
@@ -275,8 +269,7 @@ const TAB_LABEL_KEYS: Record<string, StringKey> = {
   home: 'ribbonTabHome',
   insert: 'ribbonTabInsert',
   draw: 'ribbonTabDraw',
-  design: 'ribbonTabDesign',
-  layout: 'ribbonTabLayout',
+  page: 'ribbonTabPage',
   references: 'ribbonTabReferences',
   review: 'ribbonTabReview',
   view: 'ribbonTabView',
@@ -1857,33 +1850,36 @@ function RibbonInner({
             commentCount={commentCount}
             onShowComments={onShowComments}
           />
-        ) : tab === 'design' ? (
-          <DesignTab
-            editor={editor}
-            hasDoc={canEdit}
-            dropdown={dropdown}
-            setDropdown={setDropdown}
-            pageColor={pageColor}
-            onPageColor={onPageColor}
-            section={section}
-            onSection={onSection}
-            watermark={watermark}
-            onWatermark={onWatermark}
-            themeFonts={themeFonts}
-            onThemeFonts={onThemeFonts}
-            onThemeColors={onThemeColors}
-          />
-        ) : tab === 'layout' ? (
-          <LayoutTab
-            editor={editor}
-            hasDoc={canEdit}
-            dropdown={dropdown}
-            setDropdown={setDropdown}
-            section={section}
-            onSection={onSection}
-            activeSection={activeSection}
-            onInsertSectionBreak={onInsertSectionBreak}
-          />
+        ) : tab === 'page' ? (
+          // WPS「页面」= 布局(页面设置|段落|排列) + 设计(页面背景|文档格式) 两组件合一
+          <>
+            <LayoutTab
+              editor={editor}
+              hasDoc={canEdit}
+              dropdown={dropdown}
+              setDropdown={setDropdown}
+              section={section}
+              onSection={onSection}
+              activeSection={activeSection}
+              onInsertSectionBreak={onInsertSectionBreak}
+            />
+            <div className="ribbon-sep" />
+            <DesignTab
+              editor={editor}
+              hasDoc={canEdit}
+              dropdown={dropdown}
+              setDropdown={setDropdown}
+              pageColor={pageColor}
+              onPageColor={onPageColor}
+              section={section}
+              onSection={onSection}
+              watermark={watermark}
+              onWatermark={onWatermark}
+              themeFonts={themeFonts}
+              onThemeFonts={onThemeFonts}
+              onThemeColors={onThemeColors}
+            />
+          </>
         ) : tab === 'references' ? (
           <ReferencesTab
             editor={editor}

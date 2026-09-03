@@ -3741,7 +3741,7 @@ export function App() {
           align('justify')
           break
         case 'page-setup':
-          setRibbonTabRequest({ tab: 'layout', nonce: Date.now() })
+          setRibbonTabRequest({ tab: 'page', nonce: Date.now() })
           break
         case 'find':
           if (doc) setShowFind(true)
