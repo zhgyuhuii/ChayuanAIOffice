@@ -61,15 +61,24 @@ function collectEntries(nodes: RenderNode[]): AuditEntry[] {
         // so the content-area comparison below is exact). Catches wrap=false lines and
         // unbreakable tokens wider than the box -- the height-only check misses both, and
         // the text then overlaps whatever sits next to it.
-        const widest = sn.text.lines.reduce(
-          (acc, ln) =>
-            Math.max(
-              acc,
-              ln.runs.reduce((m, r) => Math.max(m, r.x + r.widthPx), -Infinity),
-            ),
-          -Infinity,
-        )
-        overflowXPx = Math.round(Number.isFinite(widest) ? widest - innerW : 0)
+        // Vertical text (vert/vert270/eaVert/wordArtVert) keeps horizontal layout
+        // convention in the renderer's lines, so run.x/widthPx mix axes — the width
+        // check would false-positive on every vertical box; skip it (the height
+        // check above still applies via contentHeight, which the renderer computes
+        // correctly for both orientations).
+        if (sn.text.vert) {
+          overflowXPx = 0
+        } else {
+          const widest = sn.text.lines.reduce(
+            (acc, ln) =>
+              Math.max(
+                acc,
+                ln.runs.reduce((m, r) => Math.max(m, r.x + r.widthPx), -Infinity),
+              ),
+            -Infinity,
+          )
+          overflowXPx = Math.round(Number.isFinite(widest) ? widest - innerW : 0)
+        }
       }
     } else if (n.type === 'group') {
       // If any child in the group has text, treat it as text content for overlap detection
