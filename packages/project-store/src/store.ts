@@ -94,6 +94,44 @@ function writeJson(filePath: string, data: unknown): void {
 }
 
 // ────────────────────────────────────────────────────────────
+// Folder-project helpers
+// ────────────────────────────────────────────────────────────
+
+/** Document extensions a folder project surfaces (mirrors the open-dialog filter) */
+const FOLDER_DOC_EXTS = new Set(['.docx', '.xlsx', '.xlsm', '.xls', '.csv', '.pptx', '.pdf', '.md'])
+
+/**
+ * Top-level document files inside a folder project's root (no recursion —
+ * subfolders stay out of the tree until the model grows a nested listing).
+ * Unreadable entries are skipped rather than thrown: the folder is user data
+ * that may contain anything.
+ */
+interface FolderEntry {
+  name: string
+  isFile(): boolean
+}
+
+function scanDocumentFiles(rootPath: string): string[] {
+  let entries: FolderEntry[]
+  try {
+    // Dirent generic differs across @types/node versions — normalize via unknown
+    entries = readdirSync(rootPath, { withFileTypes: true }) as unknown as FolderEntry[]
+  } catch {
+    return []
+  }
+  const out: string[] = []
+  for (const entry of entries) {
+    if (!entry.isFile()) continue
+    const dot = entry.name.lastIndexOf('.')
+    if (dot <= 0) continue
+    if (!FOLDER_DOC_EXTS.has(entry.name.slice(dot).toLowerCase())) continue
+    out.push(join(rootPath, entry.name))
+  }
+  out.sort()
+  return out
+}
+
+// ────────────────────────────────────────────────────────────
 // ProjectStore class
 // ────────────────────────────────────────────────────────────
 
@@ -531,21 +569,40 @@ export class ProjectStore {
   /**
    * Lists files that currently exist for a project. Stored paths are historical
    * records and may outlive files deleted or moved outside ChatOffice.
+   * Folder projects (rootPath) also surface the document files living directly
+   * in that directory, unioned with the stored list.
    */
   listProjectFiles(projectId: string): string[] {
     const proj = this.readProject(projectId)
     if (!proj) return []
-    return [...new Set(proj.files)].filter((filePath) => existsSync(filePath))
+    const stored = [...new Set(proj.files)].filter((filePath) => existsSync(filePath))
+    const scanned = proj.rootPath ? scanDocumentFiles(proj.rootPath) : []
+    return [...new Set([...scanned, ...stored])]
+  }
+
+  /** P4: the folder a project is bound to (folder projects only) */
+  projectRootPath(projectId: string): string | null {
+    const proj = this.readProject(projectId)
+    return proj?.rootPath ?? null
   }
 
   /**
    * Creates a project (name must be non-empty; id is the first 12 hex chars of
    * sha256(name) plus a timestamp suffix to avoid collisions).
+   * rootPath (P4) optionally binds the project to a local folder; passing a
+   * path that is not an existing directory throws.
    * Returns the newly created ProjectData.
    */
-  createProject(name: string): ProjectData {
+  createProject(name: string, rootPath?: string): ProjectData {
     const trimmed = name.trim()
     if (!trimmed) throw new Error('Project name cannot be empty')
+    let boundRoot: string | undefined
+    if (rootPath !== undefined && rootPath.trim() !== '') {
+      if (!existsSync(rootPath) || !statSync(rootPath).isDirectory()) {
+        throw new Error(`Project folder does not exist: ${rootPath}`)
+      }
+      boundRoot = rootPath
+    }
     const now = nowIso()
     // Generate a stable yet unique id
     const hash = createHash('sha256')
@@ -559,12 +616,19 @@ export class ProjectStore {
       createdAt: now,
       updatedAt: now,
       files: [],
+      ...(boundRoot ? { rootPath: boundRoot } : {}),
     }
     ensureDir(this.projectDir(id))
     this.writeProject(data)
     const index = this.readIndex()
     // Append at the end (default always stays first)
-    index.projects.push({ id, name: trimmed, createdAt: now, updatedAt: now })
+    index.projects.push({
+      id,
+      name: trimmed,
+      createdAt: now,
+      updatedAt: now,
+      ...(boundRoot ? { rootPath: boundRoot } : {}),
+    })
     this.writeIndex(index)
     return data
   }

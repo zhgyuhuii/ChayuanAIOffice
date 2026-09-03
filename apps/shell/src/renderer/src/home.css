@@ -2834,3 +2834,14 @@ body.vib .home {
 .chat-send-btn.stop {
   background: var(--danger);
 }
+
+/* P4 folder-project: the bound directory shown under the new-project input */
+.proj-new-root {
+  margin: 2px 0 0;
+  padding: 0 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

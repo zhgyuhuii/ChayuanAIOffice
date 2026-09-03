@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { ProjectStore } from '../src/store.js'
@@ -884,3 +884,77 @@ function mkdirSyncHelper(p: string): void {
     /* ignore */
   }
 }
+
+// ────────────────────────────────────────────────────────────
+// P4 folder projects (rootPath binding)
+// ────────────────────────────────────────────────────────────
+
+describe('folder projects (P4)', () => {
+  let userData: string
+  beforeEach(() => {
+    userData = makeTempDir()
+  })
+  afterEach(() => {
+    rmSync(userData, { recursive: true, force: true })
+  })
+
+  it('createProject binds rootPath and rejects non-directory paths', () => {
+    const store = new ProjectStore(userData)
+    const folder = mkdtempSync(join(tmpdir(), 'proj-folder-'))
+    try {
+      const data = store.createProject('Folder Project', folder)
+      expect(data.rootPath).toBe(folder)
+      const summary = store.listProjectsSummary().find((s) => s.id === data.id)
+      expect(summary?.rootPath).toBe(folder)
+
+      const notADir = join(folder, 'nope')
+      expect(() => store.createProject('Bad', notADir)).toThrow()
+    } finally {
+      rmSync(folder, { recursive: true, force: true })
+    }
+  })
+
+  it('createProject without rootPath keeps legacy shape (no field)', () => {
+    const store = new ProjectStore(userData)
+    const data = store.createProject('Logical')
+    expect('rootPath' in data).toBe(false)
+    expect(data.rootPath).toBeUndefined()
+  })
+
+  it('listProjectFiles unions folder scan with stored records', () => {
+    const store = new ProjectStore(userData)
+    const folder = mkdtempSync(join(tmpdir(), 'proj-folder-'))
+    try {
+      writeFileSync(join(folder, 'report.docx'), 'x')
+      writeFileSync(join(folder, 'budget.xlsx'), 'x')
+      writeFileSync(join(folder, 'notes.txt'), 'ignored')
+      mkdirSync(join(folder, 'sub'))
+      writeFileSync(join(folder, 'sub', 'nested.docx'), 'x')
+      const data = store.createProject('Folder Project', folder)
+      const files = store.listProjectFiles(data.id)
+      expect(files).toContain(join(folder, 'report.docx'))
+      expect(files).toContain(join(folder, 'budget.xlsx'))
+      expect(files.some((f) => f.endsWith('notes.txt'))).toBe(false)
+      expect(files.some((f) => f.includes('sub'))).toBe(false) // top level only
+      // a moved-in record outside the folder still shows
+      const outside = join(userData, 'outside.md')
+      writeFileSync(outside, 'x')
+      store.moveFileToProject(outside, data.id)
+      expect(store.listProjectFiles(data.id)).toContain(outside)
+    } finally {
+      rmSync(folder, { recursive: true, force: true })
+    }
+  })
+
+  it('projectRootPath returns the binding or null', () => {
+    const store = new ProjectStore(userData)
+    expect(store.projectRootPath('default')).toBeNull()
+    const folder = mkdtempSync(join(tmpdir(), 'proj-folder-'))
+    try {
+      const data = store.createProject('Folder Project', folder)
+      expect(store.projectRootPath(data.id)).toBe(folder)
+    } finally {
+      rmSync(folder, { recursive: true, force: true })
+    }
+  })
+})

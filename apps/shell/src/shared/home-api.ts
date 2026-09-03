@@ -318,6 +318,8 @@ export interface ProjectSummaryEntry {
   fileCount: number
   lastActiveAt: string
   isDefault: boolean
+  /** P4 folder project: absolute directory this project is bound to */
+  rootPath?: string
 }
 
 export interface TimelineEntryItem {
@@ -336,12 +338,14 @@ export interface ProjectHomeApi {
   /** list existing files currently belonging to a project */
   listFiles(projectId: string): Promise<string[]>
   /** create a project */
-  createProject(name: string): Promise<ProjectSummaryEntry>
+  createProject(name: string, rootPath?: string): Promise<ProjectSummaryEntry>
   /** rename a project */
   renameProject(id: string, name: string): Promise<void>
   /** soft-delete a project */
   deleteProject(id: string): Promise<void>
   /** move a file into the given project */
+  /** P4: OS directory picker for binding a new project; null = cancelled */
+  pickFolder(): Promise<string | null>
   moveFile(filePath: string, projectId: string): Promise<void>
   /** fetch the project timeline */
   getTimeline(projectId: string, limit?: number): Promise<TimelineEntryItem[]>
@@ -400,6 +404,7 @@ export const PROJECT_CHANNELS = {
   list: 'project:list',
   files: 'project:files',
   create: 'project:create',
+  pickFolder: 'project:pickFolder',
   rename: 'project:rename',
   delete: 'project:delete',
   moveFile: 'project:moveFile',

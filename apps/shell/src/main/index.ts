@@ -2350,6 +2350,26 @@ function applyPendingProject(filePath: string): void {
   }
 }
 
+/**
+ * P4: when the pending "create from project" target is a FOLDER project, its
+ * root wins over the global default save dir for kinds that materialize on
+ * disk immediately (sheets/pdf). Document kinds still save through their own
+ * editor flow and join the project logically via applyPendingProject.
+ */
+function pendingProjectSaveDir(kind: 'doc' | 'sheet' | 'slide' | 'markdown' | 'pdf'): string {
+  const projectId = pendingNewFileProject.get(kind)
+  if (projectId) {
+    try {
+      const store = new ProjectStore(app.getPath('userData'))
+      const root = store.projectRootPath(projectId)
+      if (root && existsSync(root)) return root
+    } catch {
+      // unreadable store: fall back to the global default
+    }
+  }
+  return defaultSaveDir()
+}
+
 function applyMenuFor(kind: TabKind): void {
   switch (kind) {
     case 'docs':
@@ -2715,7 +2735,7 @@ function routeDocumentPath(filePath: string): boolean {
  */
 async function newSheetTab(): Promise<void> {
   try {
-    const filePath = uniquePathIn(defaultSaveDir(), `${tm('untitledSheet')}.xlsx`)
+    const filePath = uniquePathIn(pendingProjectSaveDir('sheet'), `${tm('untitledSheet')}.xlsx`)
     writeFileSync(filePath, await blankXlsxBuffer())
     // eligible for content-derived auto-rename after the first AI generation
     markSheetsUntitledPath(filePath)
@@ -2782,7 +2802,7 @@ function newMarkdownTab(): void {
  */
 async function newPdfTab(): Promise<void> {
   try {
-    const filePath = uniquePathIn(defaultSaveDir(), `${tm('untitledPdf')}.pdf`)
+    const filePath = uniquePathIn(pendingProjectSaveDir('pdf'), `${tm('untitledPdf')}.pdf`)
     writeFileSync(filePath, await blankPdfBuffer())
     // Opt the file into content-derived auto-naming on its first save
     markPdfUntitledPath(filePath)

@@ -3404,12 +3404,22 @@ export function registerProjectIpc(): void {
     return getProjectStore().listProjectFiles(args.projectId)
   })
 
-  /** Create a project */
-  ipcMain.handle('project:create', (_event, args: { name: string }) => {
+  /** Create a project (rootPath binds it to a local folder — P4) */
+  ipcMain.handle('project:create', (_event, args: { name: string; rootPath?: string }) => {
     const store = getProjectStore()
-    const data = store.createProject(args.name)
+    const data = store.createProject(args.name, args.rootPath)
     // returns ProjectSummary shape
     return store.listProjectsSummary().find((s) => s.id === data.id) ?? data
+  })
+
+  /** P4 folder picker for "new project": an OS directory dialog; null = cancelled */
+  ipcMain.handle('project:pickFolder', async () => {
+    const win =
+      BrowserWindow.getAllWindows().find((w) => w.isVisible()) ?? BrowserWindow.getAllWindows()[0]
+    if (!win) return null
+    const result = await dialog.showOpenDialog(win, { properties: ['openDirectory'] })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]!
   })
 
   /** Rename a project */

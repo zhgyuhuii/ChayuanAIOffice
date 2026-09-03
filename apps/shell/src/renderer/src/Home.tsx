@@ -159,6 +159,8 @@ function ProjectPanel({
   const { t } = useI18n()
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
+  /** P4 folder binding awaiting the name input (null = name-only project) */
+  const [pendingRootPath, setPendingRootPath] = useState<string | null>(null)
   // open menu id + fixed-position anchor (viewport coords), so the popup can
   // escape the scrollable project list without the list losing overflow-y
   const [projMenu, setProjMenu] = useState<{ id: string; top: number; right: number } | null>(null)
@@ -185,13 +187,36 @@ function ProjectPanel({
     return () => window.removeEventListener('scroll', close, true)
   }, [projMenu])
 
+  const startCreating = async () => {
+    // P4: binding to a real folder comes first. The OS directory picker is
+    // desktop-only; when unavailable (web shim) the flow degrades to the old
+    // name-only project.
+    let rootPath: string | undefined
+    let suggested = ''
+    if (typeof window.chatOfficeProject?.pickFolder === 'function') {
+      try {
+        const picked = await window.chatOfficeProject.pickFolder()
+        if (picked === null) return // cancelled — do not enter creating mode
+        rootPath = picked
+        suggested = picked.split(/[\\/]/).filter(Boolean).pop() ?? ''
+      } catch {
+        // picker failure falls through to the name-only flow
+      }
+    }
+    setNewName(suggested)
+    setPendingRootPath(rootPath ?? null)
+    setCreating(true)
+  }
+
   const commitCreate = async () => {
     const name = newName.trim()
+    const rootPath = pendingRootPath
     setCreating(false)
     setNewName('')
+    setPendingRootPath(null)
     if (!name) return
     try {
-      await window.chatOfficeProject?.createProject(name)
+      await window.chatOfficeProject?.createProject(name, rootPath ?? undefined)
     } catch (error) {
       window.alert(error instanceof Error ? error.message : String(error))
       return
@@ -252,7 +277,7 @@ function ProjectPanel({
         <button
           className="proj-add-btn"
           data-tip={t('newProject')}
-          onClick={() => setCreating(true)}
+          onClick={() => void startCreating()}
           aria-label={t('newProject')}
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -283,9 +308,15 @@ function ProjectPanel({
               if (e.key === 'Escape') {
                 setCreating(false)
                 setNewName('')
+                setPendingRootPath(null)
               }
             }}
           />
+          {pendingRootPath && (
+            <p className="proj-new-root" title={pendingRootPath}>
+              {pendingRootPath}
+            </p>
+          )}
         </div>
       )}
 

@@ -336,9 +336,13 @@ const projectApi: ProjectHomeApi = {
       ? result.filter((path): path is string => typeof path === 'string')
       : []
   },
-  async createProject(name) {
-    const result: unknown = await ipcRenderer.invoke(PROJECT_CHANNELS.create, { name })
+  async createProject(name, rootPath) {
+    const result: unknown = await ipcRenderer.invoke(PROJECT_CHANNELS.create, { name, rootPath })
     return result as ProjectSummaryEntry
+  },
+  async pickFolder() {
+    const result: unknown = await ipcRenderer.invoke(PROJECT_CHANNELS.pickFolder)
+    return typeof result === 'string' ? result : null
   },
   async renameProject(id, name) {
     await ipcRenderer.invoke(PROJECT_CHANNELS.rename, { id, name })

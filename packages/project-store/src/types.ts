@@ -59,6 +59,14 @@ export interface ProjectInfo {
   name: string
   createdAt: string
   updatedAt: string
+  /**
+   * P4 folder-project: an absolute local directory this project is bound to.
+   * Absent on legacy/logical projects — their files are just the explicit
+   * `files` list (moved-in records). Folder projects additionally surface the
+   * document files that live directly inside rootPath, and new files created
+   * under them are saved into that folder.
+   */
+  rootPath?: string
 }
 
 export interface ProjectData extends ProjectInfo {
