@@ -4,7 +4,7 @@ import { htmlLang, type Lang } from '@chatoffice/i18n'
 import { App } from './App'
 import { AudienceView } from './components/AudienceView'
 import { LocaleProvider, setModuleLang } from './i18n/locale'
-import type { UiTheme } from '../shared/ipc'
+import type { SlidesApi, UiTheme } from '../shared/ipc'
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
 import '@chatoffice/ui/color-picker.css'
@@ -33,6 +33,23 @@ if (mode !== 'audience' && navigator.platform.toLowerCase().includes('mac'))
 function applyTheme(theme: UiTheme): void {
   if (theme === 'system') document.documentElement.removeAttribute('data-theme')
   else document.documentElement.setAttribute('data-theme', theme)
+}
+
+// Bare renderer run (npm run dev:renderer without Electron or the web-bridge
+// host): the preload bridge never arrives and every mount effect would trip
+// over the missing window.slidesApi (white screen). Install a stand-in before
+// first render: on* subscriptions return a no-op unsubscriber, commands reject
+// so the existing .catch paths surface toasts instead of crashing. Real hosts
+// inject the bridge before this module executes and are left untouched.
+if (!window.slidesApi) {
+  const stub = new Proxy({} as SlidesApi, {
+    get(_t, prop) {
+      if (typeof prop !== 'string') return undefined
+      if (/^on[A-Z]/.test(prop)) return () => {}
+      return () => Promise.reject(new Error(`slidesApi.${prop}: 无主进程桥接（裸 web 渲染器）`))
+    },
+  })
+  window.slidesApi = stub
 }
 
 async function bootstrap(): Promise<void> {

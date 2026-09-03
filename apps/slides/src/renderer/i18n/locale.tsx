@@ -74,7 +74,7 @@ export function LocaleProvider({ initial, children }: { initial: Lang; children:
   const [lang, setLang] = useState<Lang>(initial)
   useEffect(
     () =>
-      window.slidesApi.onLanguageChanged((next) => {
+      window.slidesApi?.onLanguageChanged((next) => {
         setModuleLang(next)
         document.documentElement.lang = htmlLang(next)
         setLang(next)

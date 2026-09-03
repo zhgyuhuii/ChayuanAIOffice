@@ -74,7 +74,7 @@ export function useFontCatalog(): {
     }
   }, [load])
 
-  useEffect(() => window.slidesApi.onFontsChanged?.(load), [load])
+  useEffect(() => window.slidesApi?.onFontsChanged?.(load), [load])
 
   return { catalog, busy, failed, load, download, installLocal }
 }
