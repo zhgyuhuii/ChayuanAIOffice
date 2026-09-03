@@ -1,5 +1,5 @@
 import { inferModelType, matchesModelType, type AiModelType } from './model-type'
-import { CHATOFFICE_LLM_BASE_URLS } from './providers'
+import { CHATOFFICE_LLM_BASE_URLS, clampMaxOutputTokens } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
   AiImageSource,
@@ -266,6 +266,8 @@ export interface StoredAiSettings {
   provider?: string
   providers?: Record<string, { apiKey?: string; model?: string; baseUrl?: string }>
   chatofficeToolsEnabled?: boolean
+  /** per-turn output-token cap (upstream f105f36; clamped on read) */
+  maxOutputTokens?: number
   /** legacy pre-provider shape */
   apiKey?: string
   baseUrl?: string
@@ -334,6 +336,9 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     ...(stored?.chatofficeToolsEnabled !== undefined
       ? { chatofficeToolsEnabled: stored.chatofficeToolsEnabled }
       : {}),
+    ...(stored?.maxOutputTokens !== undefined
+      ? { maxOutputTokens: clampMaxOutputTokens(stored.maxOutputTokens) }
+      : {}),
   }
 }
 
@@ -385,6 +390,9 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     version: 2,
     profiles: profiles.length ? profiles : [{ ...chatofficeProfile(), enabled: false }],
     ...(toolsEnabled !== undefined ? { chatofficeToolsEnabled: toolsEnabled } : {}),
+    ...(settings.maxOutputTokens !== undefined
+      ? { maxOutputTokens: clampMaxOutputTokens(settings.maxOutputTokens) }
+      : {}),
     // sidecar keys ride outside the profile model; normalizeV2 must carry them
     // through or every save silently wipes them (they never touch the view merge)
     ...(settings.stockApiKeys ? { stockApiKeys: settings.stockApiKeys } : {}),

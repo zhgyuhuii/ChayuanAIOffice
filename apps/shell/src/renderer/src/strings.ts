@@ -177,6 +177,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice 云工具',
     setAiChatOfficeToolsDesc:
       '网页搜索、AI 生图、媒体分析经 ChatOffice 云端并消耗积分；关闭后生图与媒体分析不可用，搜索改用免费来源。',
+    setAiMaxTokens: '单次输出上限（tokens）',
+    setAiMaxTokensDesc:
+      '一次回合的输出预算。推理模型会先消耗预算用于思考，预算用完时回复可能变成空白，遇到这种情况请调大此项。',
     setGithub: '开源项目',
     starOnGitHub: '去 GitHub 点 Star',
     starPromptTitle: '喜欢 ChatOffice 吗？',
@@ -453,6 +456,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice cloud tools',
     setAiChatOfficeToolsDesc:
       'Web search, AI image generation and media analysis run through ChatOffice and use credits; when off, image tools are unavailable and search uses free sources.',
+    setAiMaxTokens: 'Max output tokens',
+    setAiMaxTokensDesc:
+      'Output budget for one turn. Reasoning models spend part of it thinking, so an answer can come back empty once the budget runs out; raise this value if that happens.',
     setGithub: 'Open Source',
     starOnGitHub: 'Star on GitHub',
     starPromptTitle: 'Enjoying ChatOffice?',
@@ -747,6 +753,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice クラウドツール',
     setAiChatOfficeToolsDesc:
       'ウェブ検索・AI 画像生成・メディア分析は ChatOffice クラウド経由でクレジットを消費します。オフにすると画像ツールは使えず、検索は無料ソースを使用します。',
+    setAiMaxTokens: '1 回あたりの出力トークン上限',
+    setAiMaxTokensDesc:
+      '1 ターンの出力予算です。推論モデルは思考に消費するため、耗尽すると返信が空になります。その場合は値を大きくしてください。',
     setGithub: 'オープンソース',
     starOnGitHub: 'GitHub でスターを付ける',
     starPromptTitle: 'ChatOffice はいかがですか？',
@@ -1039,6 +1048,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice 클라우드 도구',
     setAiChatOfficeToolsDesc:
       '웹 검색·AI 이미지 생성·미디어 분석은 ChatOffice 클라우드를 거치며 크레딧을 사용합니다. 끄면 이미지 도구를 사용할 수 없고 검색은 무료 소스를 사용합니다.',
+    setAiMaxTokens: '턴당 출력 토큰 상한',
+    setAiMaxTokensDesc:
+      '한 턴의 출력 예산입니다. 추론 모델은 생각하는 데 소모하므로 예산이 떨어지면 응답이 비어 올 수 있습니다. 그럴 때 값을 키우세요.',
     setGithub: '오픈 소스',
     starOnGitHub: 'GitHub에서 스타 누르기',
     starPromptTitle: 'ChatOffice가 마음에 드시나요?',
@@ -1335,6 +1347,9 @@ export const strings = {
     setAiChatOfficeTools: 'Outils cloud ChatOffice',
     setAiChatOfficeToolsDesc:
       "Recherche web, génération d'images et analyse de médias passent par ChatOffice et consomment des crédits ; désactivé, les outils d'image sont indisponibles et la recherche utilise des sources gratuites.",
+    setAiMaxTokens: 'Jetons de sortie max.',
+    setAiMaxTokensDesc:
+      'Budget de sortie pour un tour. Les modèles à raisonnement le dépensent en réflexion ; quand il est épuisé, la réponse arrive vide : augmentez cette valeur.',
     setGithub: 'Open source',
     starOnGitHub: 'Mettre une étoile sur GitHub',
     starPromptTitle: 'ChatOffice vous plaît ?',
@@ -1639,6 +1654,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice-Cloud-Tools',
     setAiChatOfficeToolsDesc:
       'Websuche, KI-Bilderzeugung und Medienanalyse laufen über ChatOffice und verbrauchen Guthaben; ausgeschaltet sind Bildtools nicht verfügbar und die Suche nutzt freie Quellen.',
+    setAiMaxTokens: 'Max. Ausgabe-Tokens',
+    setAiMaxTokensDesc:
+      'Ausgabe-Budget pro Durchlauf. Denk-Modelle verbrauchen es beim Reasoning; ist es erschöpft, kommt eine leere Antwort zurück — dann diesen Wert erhöhen.',
     setGithub: 'Open Source',
     starOnGitHub: 'Auf GitHub Stern geben',
     starPromptTitle: 'Gefällt Ihnen ChatOffice?',
@@ -1940,6 +1958,9 @@ export const strings = {
     setAiChatOfficeTools: 'Herramientas en la nube de ChatOffice',
     setAiChatOfficeToolsDesc:
       'La búsqueda web, la generación de imágenes y el análisis de medios pasan por ChatOffice y consumen créditos; desactivado, las herramientas de imagen no están disponibles y la búsqueda usa fuentes gratuitas.',
+    setAiMaxTokens: 'Tokens de salida máx.',
+    setAiMaxTokensDesc:
+      'Presupuesto de salida por turno. Los modelos de razonamiento lo gastan en pensar; si se agota, la respuesta llega vacía: suba este valor.',
     setGithub: 'Código abierto',
     starOnGitHub: 'Dar una estrella en GitHub',
     starPromptTitle: '¿Te gusta ChatOffice?',
@@ -2236,6 +2257,9 @@ export const strings = {
     setAiChatOfficeTools: 'เครื่องมือคลาวด์ ChatOffice',
     setAiChatOfficeToolsDesc:
       'ค้นเว็บ สร้างภาพ AI และวิเคราะห์สื่อผ่านคลาวด์ ChatOffice และใช้เครดิต ปิดแล้วเครื่องมือภาพจะใช้ไม่ได้ และการค้นหาใช้แหล่งฟรี',
+    setAiMaxTokens: 'จำนวนโทเคนขาออกสูงสุด',
+    setAiMaxTokensDesc:
+      'งบผลลัพท์ต่อหนึ่งรอบ โมเดลท่ีไตร่ตรองจะใช้ส่วนหนึ่่งไปกบการคิด หากงบหมด คำตอบจะกลบมาเปลา ให้เพิ่มคา่นี',
     setGithub: 'โอเพนซอร์ส',
     starOnGitHub: 'กดดาวบน GitHub',
     starPromptTitle: 'ชอบ ChatOffice ไหม?',
@@ -2528,6 +2552,9 @@ export const strings = {
     setAiChatOfficeTools: 'Alat cloud ChatOffice',
     setAiChatOfficeToolsDesc:
       'Pencarian web, pembuatan gambar AI, dan analisis media berjalan lewat ChatOffice dan memakai kredit; jika dimatikan, alat gambar tidak tersedia dan pencarian memakai sumber gratis.',
+    setAiMaxTokens: 'Token keluaran maks.',
+    setAiMaxTokensDesc:
+      'Anggaran keluaran untuk satu giliran. Model penalaran memakainya untuk berpikir; jika habis, balasan datang kosong — naikkan nilai ini.',
     setGithub: 'Sumber Terbuka',
     starOnGitHub: 'Beri Bintang di GitHub',
     starPromptTitle: 'Suka ChatOffice?',
@@ -2824,6 +2851,9 @@ export const strings = {
     setAiChatOfficeTools: 'Облачные инструменты ChatOffice',
     setAiChatOfficeToolsDesc:
       'Веб-поиск, генерация изображений и анализ медиа идут через ChatOffice и расходуют кредиты; при отключении инструменты изображений недоступны, а поиск использует бесплатные источники.',
+    setAiMaxTokens: 'Макс. токенов на ответ',
+    setAiMaxTokensDesc:
+      'Бюджет вывода за один ход. Модели рассуждений тратят его на размышления: если бюджет иссякнет, ответ придёт пустым — увеличьте значение.',
     setGithub: 'Открытый код',
     starOnGitHub: 'Поставить звезду на GitHub',
     starPromptTitle: 'Нравится ChatOffice?',
@@ -3118,6 +3148,9 @@ export const strings = {
     setAiChatOfficeTools: 'أدوات ChatOffice السحابية',
     setAiChatOfficeToolsDesc:
       'يمر بحث الويب وتوليد الصور وتحليل الوسائط عبر سحابة ChatOffice ويستهلك الرصيد؛ عند الإيقاف تصبح أدوات الصور غير متاحة ويستخدم البحث مصادر مجانية.',
+    setAiMaxTokens: 'الحد الأقصى لرموز المخرجات',
+    setAiMaxTokensDesc:
+      'ميزانية الإخراج في الدورة الواحدة. نماذج الاستدلال تصرفها على التفكير، فإذا نفدت جاء الرد فارغًا؛ ارفع هذه القيمة عندئذ.',
     setGithub: 'مفتوح المصدر',
     starOnGitHub: 'ضع نجمة على GitHub',
     starPromptTitle: 'هل أعجبك ChatOffice؟',
@@ -3404,6 +3437,9 @@ export const strings = {
     setAiChatOfficeTools: 'Ferramentas na nuvem ChatOffice',
     setAiChatOfficeToolsDesc:
       'Busca na web, geração de imagens e análise de mídia passam pela ChatOffice e consomem créditos; desligado, as ferramentas de imagem ficam indisponíveis e a busca usa fontes gratuitas.',
+    setAiMaxTokens: 'Máx. de tokens de saída',
+    setAiMaxTokensDesc:
+      'Orçamento de saída por turno. Modelos de raciocínio gastam-no pensando; se esgotar, a resposta vem vazia — aumente este valor.',
     setGithub: 'Código aberto',
     starOnGitHub: 'Dar uma estrela no GitHub',
     starPromptTitle: 'Gostando do ChatOffice?',
@@ -3693,6 +3729,9 @@ export const strings = {
     setAiChatOfficeTools: 'Strumenti cloud ChatOffice',
     setAiChatOfficeToolsDesc:
       'Ricerca web, generazione di immagini e analisi dei media passano da ChatOffice e consumano crediti; se disattivato, gli strumenti immagine non sono disponibili e la ricerca usa fonti gratuite.',
+    setAiMaxTokens: 'Token di output massimi',
+    setAiMaxTokensDesc:
+      'Budget di uscita per singolo turno. I modelli di ragionamento lo consumano pensando: se si esaurisce, la risposta arriva vuota; aumentalo.',
     setGithub: 'Open source',
     starOnGitHub: 'Metti una stella su GitHub',
     starPromptTitle: 'Ti piace ChatOffice?',
@@ -3980,6 +4019,9 @@ export const strings = {
     setAiChatOfficeTools: 'Narzędzia chmurowe ChatOffice',
     setAiChatOfficeToolsDesc:
       'Wyszukiwanie w sieci, generowanie obrazów AI i analiza mediów przechodzą przez ChatOffice i zużywają kredyty; po wyłączeniu narzędzia obrazów są niedostępne, a wyszukiwanie korzysta z darmowych źródeł.',
+    setAiMaxTokens: 'Maks. tokeny wyjścia',
+    setAiMaxTokensDesc:
+      'Budżet wyjścia na jedną turę. Modele rozumowania zużywają go na myślenie; gdy się wyczerpie, odpowiedź przychodzi pusta — zwiększ tę wartość.',
     setGithub: 'Open source',
     starOnGitHub: 'Gwiazdka na GitHubie',
     starPromptTitle: 'Podoba Ci się ChatOffice?',
@@ -4267,6 +4309,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice-cloudtools',
     setAiChatOfficeToolsDesc:
       'Webzoeken, AI-beeldgeneratie en media-analyse lopen via ChatOffice en verbruiken tegoed; uitgeschakeld zijn beeldtools niet beschikbaar en gebruikt zoeken gratis bronnen.',
+    setAiMaxTokens: 'Max. outputtokens',
+    setAiMaxTokensDesc:
+      'Uitvoerbudget voor één beurt. Redeneermodellen geven dit uit aan denken; is het op, dan komt een leeg antwoord terug — verhoog deze waarde.',
     setGithub: 'Open source',
     starOnGitHub: 'Geef een ster op GitHub',
     starPromptTitle: 'Bevalt ChatOffice?',
@@ -4555,6 +4600,9 @@ export const strings = {
     setAiChatOfficeTools: 'Alat awan ChatOffice',
     setAiChatOfficeToolsDesc:
       'Carian web, penjanaan imej AI dan analisis media melalui awan ChatOffice dan menggunakan kredit; jika dimatikan, alat imej tidak tersedia dan carian menggunakan sumber percuma.',
+    setAiMaxTokens: 'Token output maks.',
+    setAiMaxTokensDesc:
+      'Belanjawan output untuk satu pusingan. Model penaakulan menghabiskannya untuk berfikir; jika habis, balasan datang kosong — tingkatkan nilai ini.',
     setGithub: 'Sumber Terbuka',
     starOnGitHub: 'Beri Bintang di GitHub',
     starPromptTitle: 'Suka ChatOffice?',
@@ -4838,6 +4886,9 @@ export const strings = {
     setAiChatOfficeTools: 'כלי הענן של ChatOffice',
     setAiChatOfficeToolsDesc:
       'חיפוש ברשת, יצירת תמונות וניתוח מדיה עוברים דרך ChatOffice וצורכים קרדיטים; בכיבוי, כלי התמונות אינם זמינים והחיפוש משתמש במקורות חינמיים.',
+    setAiMaxTokens: 'מקסימום טוקנים לתשובה',
+    setAiMaxTokensDesc:
+      'תקן פלט לסיבוב אחד. מודלי נימוק מבזבזים אותו על מחשבה, ואם הוא נגמר התשובה חוזרת ריקה — העלו את הערך.',
     setGithub: 'קוד פתוח',
     starOnGitHub: 'תנו כוכב ב-GitHub',
     starPromptTitle: 'נהנים מ-ChatOffice?',
@@ -5119,6 +5170,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice क्लाउड टूल',
     setAiChatOfficeToolsDesc:
       'वेब खोज, AI छवि निर्माण और मीडिया विश्लेषण ChatOffice क्लाउड से होते हैं और क्रेडिट खर्च करते हैं; बंद करने पर छवि टूल अनुपलब्ध होंगे और खोज मुफ्त स्रोतों का उपयोग करेगी।',
+    setAiMaxTokens: 'अधिकतम आउटपुट टोकन',
+    setAiMaxTokensDesc:
+      'एक मोड़ का आउटपुट बजट। तरक मॉडल इसमें से क्छ हिस्सा सोचने पर खरच करते हैं; बजट खत्म होने पर उत्तर खाली आ सकता है — ज़रूरत पर इसे बढ़ाएँ।',
     setGithub: 'ओपन सोर्स',
     starOnGitHub: 'GitHub पर स्टार दें',
     starPromptTitle: 'ChatOffice पसंद आ रहा है?',
@@ -5399,6 +5453,9 @@ export const strings = {
     setAiChatOfficeTools: 'ChatOffice 雲端工具',
     setAiChatOfficeToolsDesc:
       '網頁搜尋、AI 生圖、媒體分析經 ChatOffice 雲端並消耗點數；關閉後生圖與媒體分析不可用，搜尋改用免費來源。',
+    setAiMaxTokens: '單次輸出上限（tokens）',
+    setAiMaxTokensDesc:
+      '一次回合的輸出預算。推理模型會先消耗預算用於思考，預算用畢時回覆可能變成空白，遇到此情況請調高本項。',
     setGithub: '開源專案',
     starOnGitHub: '到 GitHub 給我們一顆星',
     starPromptTitle: '喜歡 ChatOffice 嗎？',

@@ -19,6 +19,7 @@ import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
 import { IMAGE_GEN_VENDOR_IDS, VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
+import { clampMaxOutputTokens } from './providers'
 import { imageParamSpec, videoParamSpec, type MediaParamSpec } from './media-params'
 import type {
   AiChatResponse,
@@ -197,7 +198,12 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       return
     }
     if (request.maxTokens === undefined) {
-      maxTokens = maxOutputTokensFor(call.vendorId, call.model)
+      // user's global per-turn cap (f105f36) wins over the per-vendor default
+      const stored = await readRaw()
+      maxTokens =
+        stored?.maxOutputTokens !== undefined
+          ? clampMaxOutputTokens(stored.maxOutputTokens)
+          : maxOutputTokensFor(call.vendorId, call.model)
     }
     // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
     let lastPing = 0
