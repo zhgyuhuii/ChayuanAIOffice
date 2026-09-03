@@ -67,6 +67,8 @@ export interface RemoteFileService {
   deleteObject(configId: string, key: string): Promise<void>
   renameObject(configId: string, fromKey: string, toKey: string): Promise<{ etag: string }>
   uploadObject(configId: string, key: string, base64: string): Promise<{ etag: string }>
+  /** Builds a client for the config; throws on unknown/disabled ids (queue reuses this). */
+  resolveClient(configId: string): RemoteStorageClient
 }
 
 export function createRemoteFileService(params: RemoteFileServiceParams): RemoteFileService {
@@ -111,6 +113,8 @@ export function createRemoteFileService(params: RemoteFileServiceParams): Remote
   }
 
   return {
+    resolveClient: clientFor,
+
     getSettings() {
       return settings
     },

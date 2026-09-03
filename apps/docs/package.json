@@ -25,6 +25,7 @@
     "@chatoffice/docx-engine": "*",
     "@chatoffice/file-parse": "*",
     "@chatoffice/project-store": "*",
+    "@chatoffice/storage-adapter": "*",
     "@chatoffice/ui": "*",
     "@tiptap/core": "^3.28.0",
     "@tiptap/extensions": "^3.28.0",

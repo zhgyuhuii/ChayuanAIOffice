@@ -1,5 +1,24 @@
 /** Public surface of the remote object-storage extension. */
 
+export { createRemoteFilesHost } from './host.js'
+export {
+  bindRemoteFilesIpc,
+  createRemoteFilesClient,
+  REMOTE_FILES_CHANNELS,
+  reviveError,
+  serializeError,
+  type FlushOptions,
+  type RemoteFilesClient,
+  type RemoteFilesHost,
+  type TransportError,
+} from './ipc.js'
+export {
+  createPendingSyncQueue,
+  type FlushOutcome,
+  type PendingSyncQueue,
+  type PendingSyncQueueParams,
+  type QueueSlotMeta,
+} from './queue.js'
 export {
   createRemoteStorageClient,
   type RemoteClientDeps,

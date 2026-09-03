@@ -30,6 +30,7 @@
     "@chatoffice/pptx-render": "*",
     "@chatoffice/sheets": "*",
     "@chatoffice/slides": "*",
+    "@chatoffice/storage-adapter": "*",
     "@chatoffice/ui": "*",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

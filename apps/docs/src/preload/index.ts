@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
+import { createRemoteFilesClient } from '@chatoffice/storage-adapter'
 import type { IpcRendererEvent } from 'electron'
 import type {
   AiModelSelection,
@@ -173,6 +174,12 @@ const projectApi: ProjectApi = {
 
 contextBridge.exposeInMainWorld('desktop', api)
 contextBridge.exposeInMainWorld('projectApi', projectApi)
+
+// remote storage (MinIO / OSS): settings, listing, object transfer, pending queue
+contextBridge.exposeInMainWorld(
+  'chatOfficeRemoteFiles',
+  createRemoteFilesClient((channel, payload) => ipcRenderer.invoke(channel, payload)),
+)
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()

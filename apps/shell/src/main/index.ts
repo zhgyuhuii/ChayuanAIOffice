@@ -79,6 +79,7 @@ import {
 } from './cloud-projects'
 import { handleDroppedFiles } from './dropped-files'
 import { ProjectStore } from '@chatoffice/project-store'
+import { bindRemoteFilesIpc, createRemoteFilesHost } from '@chatoffice/storage-adapter'
 import {
   ensureChatofficeLogin,
   chatofficeLogout,
@@ -2827,6 +2828,22 @@ function statEntries(paths: string[]): RecentEntry[] {
   return statExistingPaths(paths, new Set(readStarredFiles()))
 }
 
+// Remote storage (MinIO / OSS): settings + index + pending save queue share the
+// shell's userData so Home and the editor mains see the same state.
+function registerRemoteFilesIpc(): void {
+  const host = createRemoteFilesHost(app.getPath('userData'))
+  bindRemoteFilesIpc(
+    (channel, handler) => {
+      ipcMain.handle(channel, (_event, payload: unknown) => handler(payload))
+    },
+    () => host,
+  )
+  // startup recovery: retry whatever auto-saves were stranded offline last run
+  void host.queue.flush().catch((err: unknown) => {
+    console.warn('[shell] remote save queue flush failed:', err)
+  })
+}
+
 function registerHomeIpc(): void {
   // signed-in means ChatOffice's own device-code login; the shared gsk CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
@@ -4183,6 +4200,7 @@ registerDocsIpc()
 registerHomeIpc()
 registerTabsIpc()
 registerDroppedFilesIpc()
+registerRemoteFilesIpc()
 
 // sheets' project:resolveChat goes through the handler registered by docs-main; the sessionId reverse lookup hooks in here
 setSessionPathResolver(resolveSheetsSessionPath)
