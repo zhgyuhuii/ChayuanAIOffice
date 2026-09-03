@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import { createRemoteFilesClient } from '@chatoffice/storage-adapter'
+import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type { IpcRendererEvent } from 'electron'
 import type {
   AiModelSelection,

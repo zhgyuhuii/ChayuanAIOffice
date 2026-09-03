@@ -6,7 +6,8 @@
   "type": "module",
   "description": "Storage track abstraction: one business-logic layer, swappable backends (local fs / cloud / embedded)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./remote-ipc": "./src/remote/ipc.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

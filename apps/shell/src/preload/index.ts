@@ -1,12 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type {
-  AiModelEntry,
-  AiSettingsV2,
-  GenSparkAccountStatus,
-} from '@chatoffice/ai-provider'
+import type { AiModelEntry, AiSettingsV2, GenSparkAccountStatus } from '@chatoffice/ai-provider'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
-import { createRemoteFilesClient } from '@chatoffice/storage-adapter'
+import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type {
   AccountLoginEvent,
   AccountStatus,
