@@ -270,6 +270,9 @@ export function SlideShowView({
   }, [])
   const playTransitionSound = useCallback(
     (slideIndex: number) => {
+      // loop comes from the page's own sound spec (<p:stSnd loop="1">); without it
+      // the preset plays once — looping everything broke one-shot sounds (A1-1)
+      const loop = transRef.current[slideIndex]?.sound?.loop === true
       void window.slidesApi.getTransitionSound(slideIndex).then((res) => {
         if (!res?.bytes) return
         try {
@@ -286,7 +289,8 @@ export function SlideShowView({
             stopTransitionSound()
             const src = ctx.createBufferSource()
             src.buffer = b
-            src.loop = true // 循环播放直到下一个声音开始: stopped on the next turn/exit
+            // 循环播放直到下一个声音开始: stopped on the next turn/exit
+            src.loop = loop
             src.connect(ctx.destination)
             src.start()
             soundSrcRef.current = src

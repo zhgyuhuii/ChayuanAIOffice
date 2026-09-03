@@ -14,7 +14,30 @@
  * are out of scope (they carry their own fallbacks or degrade closed).
  */
 
-const PANEL_SEL = '.gs-dd-pop, .rb-drop, .menu-select-drop, .rb-collapse-panel, .file-menu'
+// docs names its anchored panels per-family (layout-menu/color-palette/…), while
+// slides/sheets share .rb-drop/.menu-select-drop; .sheets-color-pop's body-portal
+// variant has no wrapper parentElement to anchor to and stays out of scope.
+const PANEL_SEL = [
+  // slides / sheets / shared
+  '.gs-dd-pop',
+  '.rb-drop',
+  '.menu-select-drop',
+  '.rb-collapse-panel',
+  '.file-menu',
+  '.sheets-color-pop',
+  // docs (anchored panel families, styles.css `position-anchor` users)
+  '.color-palette',
+  '.layout-menu',
+  '.spacing-menu',
+  '.cover-gallery',
+  '.table-picker',
+  '.symbol-palette',
+  '.shape-palette',
+  '.wordart-palette',
+  '.dropcap-menu',
+  '.equation-gallery',
+  '.docs-color-pop',
+].join(', ')
 
 function anchorPositioningSupported(): boolean {
   try {
