@@ -276,6 +276,10 @@ export const strings = {
     topCopyTranscript: '复制对话全文',
     topCopySessionId: '复制会话 ID',
     topHelp: '帮助',
+    showMore: '显示更多',
+    justNow: '刚刚',
+    minutesAgo: '分钟前',
+    hoursAgo: '小时前',
   },
   en: {
     navRecent: 'Recent',
@@ -553,6 +557,10 @@ export const strings = {
     topCopyTranscript: 'Copy transcript',
     topCopySessionId: 'Copy session ID',
     topHelp: 'Help',
+    showMore: 'Show more',
+    justNow: 'just now',
+    minutesAgo: 'm ago',
+    hoursAgo: 'h ago',
   },
   ja: {
     // Sidebar navigation
@@ -848,6 +856,10 @@ export const strings = {
     topCopyTranscript: '会話全文をコピー',
     topCopySessionId: 'セッション ID をコピー',
     topHelp: 'ヘルプ',
+    showMore: 'さらに表示',
+    justNow: 'たった今',
+    minutesAgo: '分前',
+    hoursAgo: '時間前',
   },
   ko: {
     // Sidebar navigation
@@ -1137,6 +1149,10 @@ export const strings = {
     topCopyTranscript: '대화 전체 복사',
     topCopySessionId: '세션 ID 복사',
     topHelp: '도움말',
+    showMore: '더 보기',
+    justNow: '방금',
+    minutesAgo: '분 전',
+    hoursAgo: '시간 전',
   },
   fr: {
     // Sidebar navigation
@@ -1436,6 +1452,10 @@ export const strings = {
     topCopyTranscript: 'Copier la conversation',
     topCopySessionId: 'Copier l’ID de session',
     topHelp: 'Aide',
+    showMore: 'Afficher plus',
+    justNow: 'à l’instant',
+    minutesAgo: 'min',
+    hoursAgo: 'h',
   },
   de: {
     // Sidebar navigation
@@ -1736,6 +1756,10 @@ export const strings = {
     topCopyTranscript: 'Unterhaltung kopieren',
     topCopySessionId: 'Sitzungs-ID kopieren',
     topHelp: 'Hilfe',
+    showMore: 'Mehr anzeigen',
+    justNow: 'gerade eben',
+    minutesAgo: 'Min.',
+    hoursAgo: 'Std.',
   },
   es: {
     // Sidebar navigation
@@ -2035,6 +2059,10 @@ export const strings = {
     topCopyTranscript: 'Copiar la conversación',
     topCopySessionId: 'Copiar ID de sesión',
     topHelp: 'Ayuda',
+    showMore: 'Mostrar más',
+    justNow: 'ahora mismo',
+    minutesAgo: 'min',
+    hoursAgo: 'h',
   },
   th: {
     // Sidebar navigation
@@ -2322,6 +2350,10 @@ export const strings = {
     topCopyTranscript: 'คัดลอกบทสนทนาทั้งหมด',
     topCopySessionId: 'คัดลอก ID เซสชัน',
     topHelp: 'ช่วยเหลือ',
+    showMore: 'แสดงเพิ่มเติม',
+    justNow: 'เมื่อสักครู่',
+    minutesAgo: ' นาทีที่แล้ว',
+    hoursAgo: ' ชั่วโมงที่แล้ว',
   },
   id: {
     // Sidebar navigation
@@ -2615,6 +2647,10 @@ export const strings = {
     topCopyTranscript: 'Salin seluruh percakapan',
     topCopySessionId: 'Salin ID sesi',
     topHelp: 'Bantuan',
+    showMore: 'Tampilkan lainnya',
+    justNow: 'baru saja',
+    minutesAgo: ' mnt lalu',
+    hoursAgo: ' jam lalu',
   },
   ru: {
     // Sidebar navigation
@@ -2909,6 +2945,10 @@ export const strings = {
     topCopyTranscript: 'Копировать переписку',
     topCopySessionId: 'Копировать ID сессии',
     topHelp: 'Справка',
+    showMore: 'Показать ещё',
+    justNow: 'только что',
+    minutesAgo: ' мин',
+    hoursAgo: ' ч',
   },
   ar: {
     // Sidebar navigation
@@ -3197,6 +3237,10 @@ export const strings = {
     topCopyTranscript: 'نسخ المحادثة كاملة',
     topCopySessionId: 'نسخ معرّف الجلسة',
     topHelp: 'مساعدة',
+    showMore: 'عرض المزيد',
+    justNow: 'الآن',
+    minutesAgo: ' د',
+    hoursAgo: ' س',
   },
   pt: {
     navRecent: 'Recentes',
@@ -3483,6 +3527,10 @@ export const strings = {
     topCopyTranscript: 'Copiar conversa completa',
     topCopySessionId: 'Copiar ID da sessão',
     topHelp: 'Ajuda',
+    showMore: 'Mostrar mais',
+    justNow: 'agora mesmo',
+    minutesAgo: 'min',
+    hoursAgo: 'h',
   },
   it: {
     navRecent: 'Recenti',
@@ -3768,6 +3816,10 @@ export const strings = {
     topCopyTranscript: 'Copia conversazione',
     topCopySessionId: 'Copia ID sessione',
     topHelp: 'Aiuto',
+    showMore: 'Mostra altro',
+    justNow: 'proprio ora',
+    minutesAgo: 'min',
+    hoursAgo: 'h',
   },
   pl: {
     navRecent: 'Ostatnie',
@@ -4052,6 +4104,10 @@ export const strings = {
     topCopyTranscript: 'Kopiuj rozmowę',
     topCopySessionId: 'Kopiuj ID sesji',
     topHelp: 'Pomoc',
+    showMore: 'Pokaż więcej',
+    justNow: 'właśnie teraz',
+    minutesAgo: ' min',
+    hoursAgo: ' godz.',
   },
   nl: {
     navRecent: 'Recent',
@@ -4338,6 +4394,10 @@ export const strings = {
     topCopyTranscript: 'Gesprek kopiëren',
     topCopySessionId: 'Sessie-ID kopiëren',
     topHelp: 'Help',
+    showMore: 'Meer weergeven',
+    justNow: 'zojuist',
+    minutesAgo: ' min geleden',
+    hoursAgo: ' uur geleden',
   },
   ms: {
     navRecent: 'Terkini',
@@ -4620,6 +4680,10 @@ export const strings = {
     topCopyTranscript: 'Salin keseluruhan perbualan',
     topCopySessionId: 'Salin ID sesi',
     topHelp: 'Bantuan',
+    showMore: 'Tunjukkan lagi',
+    justNow: 'baru sebentar',
+    minutesAgo: ' min lalu',
+    hoursAgo: ' jam lalu',
   },
   he: {
     navRecent: 'אחרונים',
@@ -4894,6 +4958,10 @@ export const strings = {
     topCopyTranscript: 'העתקת השיחה',
     topCopySessionId: 'העתקת מזהה שיחה',
     topHelp: 'עזרה',
+    showMore: 'הצג עוד',
+    justNow: 'כרגע',
+    minutesAgo: ' דק’',
+    hoursAgo: ' שע’',
   },
   hi: {
     navRecent: 'हाल के',
@@ -5176,6 +5244,10 @@ export const strings = {
     topCopyTranscript: 'पूरी बातचीत कॉपी करें',
     topCopySessionId: 'सेशन ID कॉपी करें',
     topHelp: 'सहायता',
+    showMore: 'और दिखाएँ',
+    justNow: 'अभी',
+    minutesAgo: ' मिनट पहले',
+    hoursAgo: ' घंटे पहले',
   },
   'zh-TW': {
     navRecent: '最近',
@@ -5444,5 +5516,9 @@ export const strings = {
     topCopyTranscript: '複製對話全文',
     topCopySessionId: '複製會話 ID',
     topHelp: '說明',
+    showMore: '顯示更多',
+    justNow: '剛剛',
+    minutesAgo: '分鐘前',
+    hoursAgo: '小時前',
   },
 } as const

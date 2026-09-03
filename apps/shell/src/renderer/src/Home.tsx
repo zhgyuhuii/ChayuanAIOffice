@@ -11,12 +11,12 @@ import type {
   CloudProjectKind,
   CloudProjectsSnapshot,
   HomeApi,
+  HomeChatSession,
   ProjectHomeApi,
   ProjectSummaryEntry,
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover } from '@chatoffice/ui'
-import { visiblePageCount } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
@@ -28,9 +28,6 @@ declare global {
     chatOfficeProject?: ProjectHomeApi
   }
 }
-
-/** page size of the home list; scrolling to the bottom auto-loads the next page */
-const PAGE_SIZE = 50
 
 const FILE_ICONS: Record<string, string> = {
   docx: iconDocx,
@@ -99,15 +96,6 @@ function hasProjectApi(): boolean {
   return typeof window.chatOfficeProject !== 'undefined'
 }
 
-const FILTERS: { key: string; label: StringKey }[] = [
-  { key: 'all', label: 'filterAll' },
-  { key: 'docx', label: 'filterDocs' },
-  { key: 'xlsx', label: 'filterSheets' },
-  { key: 'pptx', label: 'filterSlides' },
-  { key: 'pdf', label: 'filterPdf' },
-  { key: 'md', label: 'filterMd' },
-]
-
 /** Check glyph marking the selected sort option; invisible on the others so labels stay aligned */
 function SortCheck({ visible }: { visible: boolean }): ReactElement {
   return (
@@ -135,24 +123,29 @@ function SortCheck({ visible }: { visible: boolean }): ReactElement {
 
 interface ProjectPanelProps {
   projects: ProjectSummaryEntry[]
-  selectedId: string | null
-  onSelect: (id: string | null) => void
-  onRefresh: () => void
-  /** 新建▾ dropdown on the row: create a docx/xlsx bound to this project */
+  /** conversations with content, grouped under their project (ZCode-style) */
+  conversations: HomeChatSession[]
+  activeConversationId: string | null
+  /** which project's file list is expanded (查看文件) */
+  filesProjectId: string | null
+  onSelectConversation: (id: string) => void
   onNewFile: (projectId: string, ext: 'docx' | 'xlsx') => void
-  /** 新建任务: start a new AI chat session for this project */
   onNewTask: (projectId: string) => void
-  /** the row's accordion file list (rendered under the expanded row) */
+  onToggleFiles: (projectId: string | null) => void
+  onRefresh: () => void
   renderFilesFor: (projectId: string) => ReactElement | null
 }
 
 function ProjectPanel({
   projects,
-  selectedId,
-  onSelect,
-  onRefresh,
+  conversations,
+  activeConversationId,
+  filesProjectId,
+  onSelectConversation,
   onNewFile,
   onNewTask,
+  onToggleFiles,
+  onRefresh,
   renderFilesFor,
 }: ProjectPanelProps) {
   const { t } = useI18n()
@@ -164,6 +157,8 @@ function ProjectPanel({
   // 新建▾ dropdown (which file type) of the row being served
   const [newMenu, setNewMenu] = useState<{ id: string; top: number; right: number } | null>(null)
   const [renaming, setRenaming] = useState<{ id: string; value: string } | null>(null)
+  // groups whose conversation list is fully expanded (显示更多)
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const newInputRef = useRef<HTMLInputElement>(null)
   // wrap (… button + popup) of the row whose menu is open — the dismissal guard root
   const projMenuWrapRef = useRef<HTMLDivElement>(null)
@@ -240,7 +235,6 @@ function ProjectPanel({
       window.alert(error instanceof Error ? error.message : String(error))
       return
     }
-    if (selectedId === id) onSelect(null)
     onRefresh()
   }
 
@@ -252,6 +246,241 @@ function ProjectPanel({
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [confirmDeleteId])
+
+  /** one project group: header (hover actions) + its conversations + optional files */
+  const renderGroup = (
+    key: string,
+    label: string,
+    items: HomeChatSession[],
+    isDefault: boolean,
+  ) => {
+    const expanded = expandedGroups.has(key)
+    const visible = expanded ? items : items.slice(0, 5)
+    const filesOpen = filesProjectId === key
+    return (
+      <li key={key} className={`proj-group${filesOpen ? ' files-open' : ''}`}>
+        <div className="proj-group-head">
+          <span className="proj-item-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <span className="proj-item-name">{label}</span>
+          <span className="proj-group-count">{items.length}</span>
+
+          <div className="proj-actions">
+            <div className="proj-new-wrap" ref={newMenu?.id === key ? newMenuWrapRef : undefined}>
+              <button
+                className="proj-act-btn"
+                aria-label={t('projNewMenu')}
+                aria-expanded={newMenu?.id === key}
+                title={t('projNewMenu')}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (newMenu?.id === key) {
+                    setNewMenu(null)
+                    return
+                  }
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  setNewMenu({
+                    id: key,
+                    top: rect.bottom + 4,
+                    right: window.innerWidth - rect.right,
+                  })
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path
+                    d="M7 1v12M1 7h12"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+              {newMenu?.id === key && (
+                <div
+                  className="proj-menu"
+                  role="menu"
+                  style={{ top: newMenu.top, right: newMenu.right }}
+                >
+                  <button
+                    role="menuitem"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setNewMenu(null)
+                      onNewFile(key, 'docx')
+                    }}
+                  >
+                    {t('newDoc')}
+                  </button>
+                  <button
+                    role="menuitem"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setNewMenu(null)
+                      onNewFile(key, 'xlsx')
+                    }}
+                  >
+                    {t('newSheet')}
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              className="proj-act-btn"
+              aria-label={t('newTask')}
+              title={t('newTask')}
+              onClick={(e) => {
+                e.stopPropagation()
+                onNewTask(key)
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M14 2.5l-7.5 7.5M14 2.5L9.5 13.5 6.5 10 2.5 7 14 2.5z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <button
+              className="proj-act-btn"
+              aria-label={t('viewFiles')}
+              title={t('viewFiles')}
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleFiles(filesOpen ? null : key)
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M6.3 3.75h7.88c.32 0 .63.13.85.37l3.54 3.84c.19.21.3.49.3.77v9.37c0 .63-.51 1.15-1.15 1.15H6.3a1.15 1.15 0 0 1-1.15-1.15V4.9c0-.64.52-1.15 1.15-1.15z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  transform="scale(0.75) translate(0,1)"
+                />
+              </svg>
+            </button>
+            {!isDefault && (
+              <div
+                className="proj-menu-wrap"
+                ref={projMenu?.id === key ? projMenuWrapRef : undefined}
+              >
+                <button
+                  className="proj-act-btn"
+                  aria-label={t('projMoreActions', { name: label })}
+                  aria-expanded={projMenu?.id === key}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (projMenu?.id === key) {
+                      setProjMenu(null)
+                      return
+                    }
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    setProjMenu({
+                      id: key,
+                      top: rect.bottom + 4,
+                      right: window.innerWidth - rect.right,
+                    })
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                    <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
+                    <circle cx="8" cy="8" r="1.35" fill="currentColor" />
+                    <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
+                  </svg>
+                </button>
+                {projMenu?.id === key && (
+                  <div
+                    className="proj-menu"
+                    role="menu"
+                    style={{ top: projMenu.top, right: projMenu.right }}
+                  >
+                    <button
+                      role="menuitem"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setProjMenu(null)
+                        setRenaming({ id: key, value: label })
+                      }}
+                    >
+                      {t('rename')}
+                    </button>
+                    <div className="row-menu-divider" />
+                    <button
+                      role="menuitem"
+                      className="danger"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        doDelete(key)
+                      }}
+                    >
+                      {t('deleteProject')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {renaming?.id === key ? (
+          <input
+            className="proj-rename-input inline"
+            value={renaming.value}
+            autoFocus
+            onFocus={(e) => e.target.select()}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => setRenaming({ id: key, value: e.target.value })}
+            onBlur={() => void commitRename()}
+            onKeyDown={(e) => {
+              e.stopPropagation()
+              if (e.nativeEvent.isComposing) return
+              if (e.key === 'Enter') void commitRename()
+              if (e.key === 'Escape') setRenaming(null)
+            }}
+          />
+        ) : null}
+
+        <ul className="proj-conv-list">
+          {visible.map((s) => (
+            <li key={s.id}>
+              <button
+                className={`side-task-row${activeConversationId === s.id ? ' active' : ''}`}
+                onClick={() => onSelectConversation(s.id)}
+              >
+                <span className="side-task-dot" aria-hidden="true" />
+                <span className="side-task-title">{s.title || t('chatUntitled')}</span>
+                <span className="side-task-time">{relativeTime(s.updatedAt, t)}</span>
+              </button>
+            </li>
+          ))}
+          {items.length > 5 && !expanded && (
+            <li>
+              <button
+                className="proj-show-more"
+                onClick={() => setExpandedGroups((prev) => new Set(prev).add(key))}
+              >
+                {t('showMore')}
+              </button>
+            </li>
+          )}
+        </ul>
+
+        {filesOpen && <div className="proj-files">{renderFilesFor(key)}</div>}
+      </li>
+    )
+  }
+
+  const unassigned = conversations.filter((s) => !s.projectId)
 
   return (
     <div className="proj-panel">
@@ -298,204 +527,15 @@ function ProjectPanel({
       )}
 
       <ul className="proj-list">
-        {projects.map((proj) => {
-          const isActive = selectedId === proj.id
-          const isRenaming = renaming?.id === proj.id
-          return (
-            <li key={proj.id} className={`proj-item${isActive ? ' active' : ''}`}>
-              <div
-                className="proj-item-main"
-                role="button"
-                tabIndex={0}
-                aria-label={t('viewFiles')}
-                onClick={() => onSelect(isActive ? null : proj.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') onSelect(isActive ? null : proj.id)
-                }}
-              >
-                <span className="proj-item-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-                {isRenaming ? (
-                  <input
-                    className="proj-rename-input inline"
-                    value={renaming.value}
-                    autoFocus
-                    onFocus={(e) => e.target.select()}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => setRenaming({ id: proj.id, value: e.target.value })}
-                    onBlur={() => void commitRename()}
-                    onKeyDown={(e) => {
-                      e.stopPropagation()
-                      if (e.nativeEvent.isComposing) return
-                      if (e.key === 'Enter') void commitRename()
-                      if (e.key === 'Escape') setRenaming(null)
-                    }}
-                  />
-                ) : (
-                  <span className="proj-item-name">
-                    {proj.isDefault ? t('defaultProject') : proj.name}
-                  </span>
-                )}
-                <span className="proj-item-meta">
-                  <span className="proj-item-count">{proj.fileCount}</span>
-                </span>
-              </div>
-
-              <div className="proj-actions">
-                <div
-                  className="proj-new-wrap"
-                  ref={newMenu?.id === proj.id ? newMenuWrapRef : undefined}
-                >
-                  <button
-                    className="proj-act-btn"
-                    aria-label={t('projNewMenu')}
-                    aria-expanded={newMenu?.id === proj.id}
-                    title={t('projNewMenu')}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      if (newMenu?.id === proj.id) {
-                        setNewMenu(null)
-                        return
-                      }
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      setNewMenu({
-                        id: proj.id,
-                        top: rect.bottom + 4,
-                        right: window.innerWidth - rect.right,
-                      })
-                    }}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                      <path
-                        d="M7 1v12M1 7h12"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-                  {newMenu?.id === proj.id && (
-                    <div
-                      className="proj-menu"
-                      role="menu"
-                      style={{ top: newMenu.top, right: newMenu.right }}
-                    >
-                      <button
-                        role="menuitem"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setNewMenu(null)
-                          onNewFile(proj.id, 'docx')
-                        }}
-                      >
-                        {t('newDoc')}
-                      </button>
-                      <button
-                        role="menuitem"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setNewMenu(null)
-                          onNewFile(proj.id, 'xlsx')
-                        }}
-                      >
-                        {t('newSheet')}
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <button
-                  className="proj-act-btn"
-                  aria-label={t('newTask')}
-                  title={t('newTask')}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onNewTask(proj.id)
-                  }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path
-                      d="M14 2.5l-7.5 7.5M14 2.5L9.5 13.5 6.5 10 2.5 7 14 2.5z"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                {!proj.isDefault && (
-                  <div
-                    className="proj-menu-wrap"
-                    ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
-                  >
-                    <button
-                      className="proj-act-btn"
-                      aria-label={t('projMoreActions', { name: proj.name })}
-                      aria-expanded={projMenu?.id === proj.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (projMenu?.id === proj.id) {
-                          setProjMenu(null)
-                          return
-                        }
-                        const rect = e.currentTarget.getBoundingClientRect()
-                        setProjMenu({
-                          id: proj.id,
-                          top: rect.bottom + 4,
-                          right: window.innerWidth - rect.right,
-                        })
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                        <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-                        <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-                        <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
-                      </svg>
-                    </button>
-                    {projMenu?.id === proj.id && (
-                      <div
-                        className="proj-menu"
-                        role="menu"
-                        style={{ top: projMenu.top, right: projMenu.right }}
-                      >
-                        <button
-                          role="menuitem"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setProjMenu(null)
-                            setRenaming({ id: proj.id, value: proj.name })
-                          }}
-                        >
-                          {t('rename')}
-                        </button>
-                        <div className="row-menu-divider" />
-                        <button
-                          role="menuitem"
-                          className="danger"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            doDelete(proj.id)
-                          }}
-                        >
-                          {t('deleteProject')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {isActive && <div className="proj-files">{renderFilesFor(proj.id)}</div>}
-            </li>
-          )
-        })}
+        {projects.map((proj) =>
+          renderGroup(
+            proj.id,
+            proj.isDefault ? t('defaultProject') : proj.name,
+            conversations.filter((s) => s.projectId === proj.id),
+            proj.isDefault,
+          ),
+        )}
+        {unassigned.length > 0 && renderGroup('__none__', t('chatUnassigned'), unassigned, true)}
       </ul>
 
       {confirmDeleteId &&
@@ -531,6 +571,16 @@ function ProjectPanel({
         })()}
     </div>
   )
+}
+
+/** ZCode-style relative time: 刚刚 / N分钟 / N小时 / 昨天 / 日期 */
+function relativeTime(ts: number, t: (key: StringKey) => string): string {
+  const diff = Date.now() - ts
+  if (diff < 60_000) return t('justNow')
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}${t('minutesAgo')}`
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}${t('hoursAgo')}`
+  if (diff < 172_800_000) return t('yesterday')
+  return new Date(ts).toLocaleDateString()
 }
 
 // ── Account entry (bottom-left) ──────────────────────────
@@ -1275,7 +1325,6 @@ function DropToOpenOverlay(): ReactElement | null {
 
 export function Home({
   selectedProjectId,
-  onSelectProject,
   settingsOpen,
   onSettingsOpenChange,
   cloudMode,
@@ -1298,16 +1347,6 @@ export function Home({
     .slice(0, 30)
   // compat shims: the lifted state keeps the previous setter names working
   const setCloudMode = onCloudModeChange
-  const setSelectedProjectId = onSelectProject
-  // ── Paged list state (rows loaded for the current view + filter) ──
-  const [entries, setEntries] = useState<RecentEntry[]>([])
-  /** total count under the current view + filter (not just the loaded rows) */
-  const [listTotal, setListTotal] = useState(0)
-  /** sidebar Recent / Starred counts under the active type filter */
-  const [navCounts, setNavCounts] = useState({ recent: 0, starred: 0 })
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [view, setView] = useState<'recent' | 'starred'>('recent')
-  const [filter, setFilter] = useState('all')
   const [rowMenu, setRowMenu] = useState<string | null>(null)
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
   const rowMenuWrapRef = useRef<HTMLSpanElement>(null)
@@ -1335,23 +1374,6 @@ export function Home({
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [searchHits, setSearchHits] = useState<RecentEntry[] | null>(null)
-
-  const toggleFilesPane = (id: string) => {
-    setCloudMode(false)
-    setRowMenu(null)
-    if (filesPane === id) {
-      setFilesPane(null)
-      if (id !== 'recent' && id !== 'starred') setSelectedProjectId(null)
-      return
-    }
-    setFilesPane(id)
-    if (id === 'recent' || id === 'starred') {
-      setSelectedProjectId(null)
-      setView(id)
-    } else {
-      setSelectedProjectId(id)
-    }
-  }
 
   // filename search over recents + starred (+ the selected project's files);
   // pure front-end over existing IPC, debounced per keystroke
@@ -1385,38 +1407,8 @@ export function Home({
     return () => clearTimeout(timer)
   }, [query, searchOpen, projectMode, selectedProjectId])
 
-  // ── Paged loading ──
-  // stale responses are dropped via a request sequence number (when views/filters switch quickly)
-  const requestSeq = useRef(0)
-  const entriesLen = useRef(0)
-  entriesLen.current = entries.length
-
-  /** reload the list; keepCount keeps the loaded row count (refresh), otherwise back to page one */
-  const reload = (keepCount: boolean) => {
-    const seq = ++requestSeq.current
-    const ext = filter === 'all' ? undefined : filter
-    const limit = keepCount ? Math.max(entriesLen.current, PAGE_SIZE) : PAGE_SIZE
-    const primary = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
-    const secondary = view === 'recent' ? window.chatOffice.starred : window.chatOffice.recents
-    void primary({ offset: 0, limit, ext }).then((page) => {
-      if (seq !== requestSeq.current) return
-      setEntries(page.entries)
-      setListTotal(page.total)
-      setNavCounts((prev) =>
-        view === 'recent'
-          ? { ...prev, recent: visiblePageCount(page) }
-          : { ...prev, starred: visiblePageCount(page) },
-      )
-    })
-    // The other view fetches only its count under the same active filter.
-    void secondary({ offset: 0, limit: 0, ext }).then((page) => {
-      if (seq !== requestSeq.current) return
-      setNavCounts((prev) =>
-        view === 'recent'
-          ? { ...prev, starred: visiblePageCount(page) }
-          : { ...prev, recent: visiblePageCount(page) },
-      )
-    })
+  /** refresh the project list (file stats come via projectTick) */
+  const reload = (_keepCount: boolean) => {
     if (projectMode) {
       void window.chatOfficeProject!.listProjects().then(setProjects)
     }
@@ -1433,10 +1425,6 @@ export function Home({
   }
 
   useEffect(() => {
-    reloadRef.current(false)
-  }, [view, filter])
-
-  useEffect(() => {
     const onFocus = () => {
       reloadRef.current(true)
       setProjectTick((n) => n + 1)
@@ -1444,41 +1432,6 @@ export function Home({
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
   }, [])
-
-  const hasMore = entries.length < listTotal
-
-  const loadMore = () => {
-    if (loadingMore || !hasMore) return
-    setLoadingMore(true)
-    const seq = requestSeq.current
-    const ext = filter === 'all' ? undefined : filter
-    const api = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
-    void api({ offset: entriesLen.current, limit: PAGE_SIZE, ext }).then((page) => {
-      setLoadingMore(false)
-      if (seq !== requestSeq.current) return
-      setEntries((prev) => [...prev, ...page.entries])
-      setListTotal(page.total)
-    })
-  }
-  const loadMoreRef = useRef(loadMore)
-  loadMoreRef.current = loadMore
-
-  // Load the next page once the bottom sentinel enters the viewport (240px early);
-  // depending on entries.length rebuilds the observer after each page — observe fires an immediate
-  // callback, so while the sentinel stays in view we keep loading until full or exhausted
-  const sentinelRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      (records) => {
-        if (records.some((r) => r.isIntersecting)) loadMoreRef.current()
-      },
-      { rootMargin: '240px' },
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [hasMore, entries.length])
 
   // unified dismissal: outside press, window blur, chrome press (tab strip / window drag)
   useDismissablePopover(rowMenu !== null, () => setRowMenu(null), {
@@ -1566,10 +1519,6 @@ export function Home({
   })
 
   // ── Sidebar file-list row interactions (the table view is gone) ──
-  const changeFilter = (key: string) => {
-    setFilter(key)
-    setRowMenu(null)
-  }
 
   const toggleStar = (path: string) => {
     void window.chatOffice.toggleStar(path).then(refresh)
@@ -1966,46 +1915,6 @@ export function Home({
     )
   }
 
-  /** the 最近文件/收藏 accordion body: filters + paged global list */
-  function renderGlobalAccordion() {
-    const list = entries
-    return (
-      <>
-        <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`side-filter${filter === f.key ? ' active' : ''}`}
-              onClick={() => changeFilter(f.key)}
-            >
-              {t(f.label)}
-            </button>
-          ))}
-        </div>
-        {list.length === 0 ? (
-          <p className="side-files-empty">
-            {view === 'starred'
-              ? t('emptyStarred')
-              : navCounts.recent === 0
-                ? t('emptyRecent')
-                : t('emptyFiltered')}
-          </p>
-        ) : (
-          <div className="side-files-scroll">
-            <ul className="side-file-list">
-              {list.map((entry) => renderSideFileRow(entry, 'global'))}
-            </ul>
-            {hasMore && (
-              <div ref={sentinelRef} className="load-more" aria-hidden="true">
-                <span className="load-more-spinner" />
-              </div>
-            )}
-          </div>
-        )}
-      </>
-    )
-  }
-
   /** the per-project accordion body fed into the project row (查看文件) */
   function renderProjectAccordion() {
     if (projectFileEntries.length === 0) {
@@ -2029,25 +1938,19 @@ export function Home({
 
         {renderSideActions()}
 
-        {/* project group: row click = 查看文件 accordion; hover = 新建▾ / 新建任务 / ⋯ */}
+        {/* ZCode-style: projects as conversation groups (files via 查看文件) */}
         {projectMode && (
           <>
             <div className="sidebar-divider" />
             <ProjectPanel
               projects={projects}
-              selectedId={selectedProjectId}
-              onSelect={(id) => {
+              conversations={tasks}
+              activeConversationId={chatStore.activeId}
+              filesProjectId={filesPane}
+              onSelectConversation={(id) => {
                 setCloudMode(false)
-                setRowMenu(null)
-                if (selectedProjectId === id) {
-                  setSelectedProjectId(null)
-                  setFilesPane(null)
-                  return
-                }
-                setSelectedProjectId(id)
-                setFilesPane(id)
+                chatStore.setActiveId(id)
               }}
-              onRefresh={refresh}
               onNewFile={(projectId, ext) => {
                 const opts = { projectId }
                 if (ext === 'xlsx') void window.chatOffice.newSheet(opts)
@@ -2057,146 +1960,56 @@ export function Home({
                 setCloudMode(false)
                 newSession(projectId)
               }}
+              onToggleFiles={(id) => {
+                setRowMenu(null)
+                setFilesPane(id)
+              }}
+              onRefresh={refresh}
               renderFilesFor={renderProjectAccordion}
             />
           </>
         )}
-        <nav className="side-files-nav">
-          <div className={`side-special${filesPane === 'starred' ? ' open' : ''}`}>
-            <button
-              className="nav-item"
-              aria-expanded={filesPane === 'starred'}
-              onClick={() => toggleFilesPane('starred')}
+
+        {loggedIn && !cloudMode && (
+          <button
+            className={`nav-item${cloudMode ? ' active' : ''}`}
+            onClick={() => {
+              setCloudMode(true)
+              setRowMenu(null)
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M8 1.8l1.55 4.65L14.2 8l-4.65 1.55L8 14.2 6.45 9.55 1.8 8l4.65-1.55z"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="nav-label">{t('navCloud')}</span>
+            <svg
+              className="nav-external"
+              width="13"
+              height="13"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="nav-label">{t('secStarred')}</span>
-              <span className="nav-count">{navCounts.starred}</span>
-              <svg
-                className="nav-chevron"
-                width="11"
-                height="11"
-                viewBox="0 0 12 12"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4.5 2.5l4 3.5-4 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            {filesPane === 'starred' && (
-              <div className="side-acc-body">{renderGlobalAccordion()}</div>
-            )}
-          </div>
-          <div className={`side-special${filesPane === 'recent' ? ' open' : ''}`}>
-            <button
-              className="nav-item"
-              aria-expanded={filesPane === 'recent'}
-              onClick={() => toggleFilesPane('recent')}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
-                <path
-                  d="M8 4.8V8l2.2 1.6"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="nav-label">{t('secRecent')}</span>
-              <span className="nav-count">{navCounts.recent}</span>
-              <svg
-                className="nav-chevron"
-                width="11"
-                height="11"
-                viewBox="0 0 12 12"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4.5 2.5l4 3.5-4 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            {filesPane === 'recent' && (
-              <div className="side-acc-body">{renderGlobalAccordion()}</div>
-            )}
-          </div>
-          {loggedIn && (
-            <button
-              className={`nav-item${cloudMode ? ' active' : ''}`}
-              onClick={() => {
-                setCloudMode(true)
-                setRowMenu(null)
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M8 1.8l1.55 4.65L14.2 8l-4.65 1.55L8 14.2 6.45 9.55 1.8 8l4.65-1.55z"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="nav-label">{t('navCloud')}</span>
-              <svg
-                className="nav-external"
-                width="13"
-                height="13"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M6.5 3.5H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13.5h7A1.5 1.5 0 0 0 12.5 12V9.5M9.5 2.5h4v4M13 3l-5.5 5.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
-        </nav>
-        {/* conversation (task) list: switching happens here, the middle pane
-            shows the active one — ZCode's left-column tasks */}
-        {!cloudMode && (
+              <path
+                d="M6.5 3.5H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13.5h7A1.5 1.5 0 0 0 12.5 12V9.5M9.5 2.5h4v4M13 3l-5.5 5.5"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
+
+        {!projectMode && (
           <div className="side-tasks">
             <div className="side-files-head">
               <span className="side-files-title">{t('tasksLabel')}</span>
-              <button
-                className="proj-act-btn"
-                aria-label={t('chatNew')}
-                title={t('chatNew')}
-                onClick={() => {
-                  setCloudMode(false)
-                  newSession(null)
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path
-                    d="M7 1v12M1 7h12"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
             </div>
             {tasks.length === 0 ? (
               <p className="side-files-empty">{t('chatNoSessions')}</p>
@@ -2211,8 +2024,9 @@ export function Home({
                         chatStore.setActiveId(s.id)
                       }}
                     >
+                      <span className="side-task-dot" aria-hidden="true" />
                       <span className="side-task-title">{s.title || t('chatUntitled')}</span>
-                      <span className="side-task-time">{formatModified(s.updatedAt, i18n)}</span>
+                      <span className="side-task-time">{relativeTime(s.updatedAt, t)}</span>
                     </button>
                   </li>
                 ))}

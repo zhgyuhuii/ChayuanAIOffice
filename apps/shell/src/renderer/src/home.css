@@ -3088,3 +3088,101 @@ body.vib .home {
   background: var(--bg-hover-subtle);
   color: var(--text);
 }
+
+/* ---- ZCode-style left column: projects as conversation groups ---- */
+
+.proj-list {
+  max-height: none;
+  overflow: visible;
+}
+
+.proj-group {
+  margin-bottom: 4px;
+}
+
+.proj-group-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 8px;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.proj-group-head:hover {
+  background: var(--surface-subtle);
+}
+
+.proj-group-count {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.proj-group .proj-actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  transition: opacity 0.1s;
+  background: linear-gradient(to left, var(--surface-subtle) 70%, transparent);
+}
+
+.proj-group-head:hover .proj-actions,
+.proj-actions:has([aria-expanded='true']) {
+  opacity: 1;
+}
+
+.proj-group-head:hover .proj-group-count {
+  opacity: 0;
+}
+
+/* conversation rows inside a project group */
+
+.proj-conv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.proj-conv-list .side-task-row {
+  padding: 5px 8px 5px 14px;
+  gap: 7px;
+}
+
+.side-task-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.side-task-row.active .side-task-dot {
+  background: var(--accent);
+}
+
+.proj-show-more {
+  padding: 4px 8px 4px 28px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.proj-show-more:hover {
+  color: var(--text);
+  background: var(--surface-subtle);
+}
+
+/* project files accordion inside the group (查看文件) */
+.proj-group .proj-files {
+  padding: 0 0 4px 14px;
+}
