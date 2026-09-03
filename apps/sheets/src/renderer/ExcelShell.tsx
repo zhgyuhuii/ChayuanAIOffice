@@ -1431,10 +1431,22 @@ function Ribbon({
     ]
     const layoutLabels = t(selectedChart?.isPie ? 'appLayoutLabelsNamePct' : 'appLayoutLabelsValue')
     const layoutOptions = [
-      { value: 'chart-layout:1', label: t('appLayout1', { labels: layoutLabels }) },
-      { value: 'chart-layout:2', label: t('appLayout2', { labels: layoutLabels }) },
+      {
+        value: 'chart-layout:1',
+        label: t('appLayout1', { labels: layoutLabels }),
+        icon: <LayoutThumb n={1} />,
+      },
+      {
+        value: 'chart-layout:2',
+        label: t('appLayout2', { labels: layoutLabels }),
+        icon: <LayoutThumb n={2} />,
+      },
       { value: 'chart-layout:3', label: t('appLayout3'), icon: <LayoutThumb n={3} /> },
-      { value: 'chart-layout:4', label: t('appLayout4', { labels: layoutLabels }) },
+      {
+        value: 'chart-layout:4',
+        label: t('appLayout4', { labels: layoutLabels }),
+        icon: <LayoutThumb n={4} />,
+      },
     ]
     const colorOptions = [
       {
@@ -1890,6 +1902,7 @@ function Ribbon({
         ...[1, 2, 3, 4, 5].map((pages) => ({
           value: String(pages),
           label: t(pages === 1 ? 'appFitPage1' : 'appFitPagesN', { count: pages }),
+          icon: <OptSample>{pages}页</OptSample>,
         })),
       ]
       return (
@@ -1919,6 +1932,7 @@ function Ribbon({
             THEME_PRESETS.map((preset) => ({
               value: `page-layout:theme:${preset.id}`,
               label: preset.name,
+              icon: <ThemeDots colors={preset.colors.values} font={preset.fonts.minor} />,
             })),
           )}
           <div className="row-stack">
@@ -1932,6 +1946,7 @@ function Ribbon({
                 options={COLOR_SCHEMES.map((scheme) => ({
                   value: `page-layout:theme-colors:${scheme.id}`,
                   label: scheme.name,
+                  icon: <ThemeDots colors={scheme.values} />,
                 }))}
                 onPick={onCommand}
               />
@@ -1946,6 +1961,7 @@ function Ribbon({
                 options={FONT_SCHEMES.map((scheme) => ({
                   value: `page-layout:theme-fonts:${scheme.id}`,
                   label: scheme.name,
+                  icon: <OptSample>Aa</OptSample>,
                 }))}
                 onPick={onCommand}
               />
@@ -1999,13 +2015,17 @@ function Ribbon({
             ],
           )}
           {largeMenu(t('appSizeLabel'), '▭', t('appPaperSizeTitle'), [
-            { value: 'page-layout:paper:1', label: 'Letter' },
-            { value: 'page-layout:paper:5', label: 'Legal' },
-            { value: 'page-layout:paper:3', label: 'Tabloid' },
-            { value: 'page-layout:paper:7', label: 'Executive' },
-            { value: 'page-layout:paper:8', label: 'A3' },
-            { value: 'page-layout:paper:9', label: 'A4' },
-            { value: 'page-layout:paper:11', label: 'A5' },
+            { value: 'page-layout:paper:1', label: 'Letter', icon: <PaperGlyph w={8.5} h={11} /> },
+            { value: 'page-layout:paper:5', label: 'Legal', icon: <PaperGlyph w={8.5} h={14} /> },
+            { value: 'page-layout:paper:3', label: 'Tabloid', icon: <PaperGlyph w={11} h={17} /> },
+            {
+              value: 'page-layout:paper:7',
+              label: 'Executive',
+              icon: <PaperGlyph w={7.25} h={10.5} />,
+            },
+            { value: 'page-layout:paper:8', label: 'A3', icon: <PaperGlyph w={11.7} h={16.5} /> },
+            { value: 'page-layout:paper:9', label: 'A4', icon: <PaperGlyph w={8.3} h={11.7} /> },
+            { value: 'page-layout:paper:11', label: 'A5', icon: <PaperGlyph w={5.8} h={8.3} /> },
           ])}
           {largeMenu(
             t('appPrintArea'),
@@ -2298,8 +2318,16 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appGroupCalculation')}>
           {largeMenu(t('appCalculationOptions'), '🧮', t('appCalculationOptionsTitle'), [
-            { value: 'calc-mode:auto', label: t('appCalcAuto') + (calcManual ? '' : ' ✓') },
-            { value: 'calc-mode:manual', label: t('appCalcManual') + (calcManual ? ' ✓' : '') },
+            {
+              value: 'calc-mode:auto',
+              label: t('appCalcAuto') + (calcManual ? '' : ' ✓'),
+              icon: <OptSample>↻</OptSample>,
+            },
+            {
+              value: 'calc-mode:manual',
+              label: t('appCalcManual') + (calcManual ? ' ✓' : ''),
+              icon: <OptSample>✎</OptSample>,
+            },
           ])}
           <div className="row-stack">
             <button
@@ -2588,12 +2616,12 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appZoomLabel')}>
           {largeMenu(t('appZoomLabel'), '🔍', t('appZoomSheetTitle'), [
-            { value: 'zoom:50', label: '50%' },
-            { value: 'zoom:75', label: '75%' },
-            { value: 'zoom:100', label: '100%' },
-            { value: 'zoom:125', label: '125%' },
-            { value: 'zoom:150', label: '150%' },
-            { value: 'zoom:200', label: '200%' },
+            { value: 'zoom:50', label: '50%', icon: <ZoomGlyph pct={50} /> },
+            { value: 'zoom:75', label: '75%', icon: <ZoomGlyph pct={75} /> },
+            { value: 'zoom:100', label: '100%', icon: <ZoomGlyph pct={100} /> },
+            { value: 'zoom:125', label: '125%', icon: <ZoomGlyph pct={125} /> },
+            { value: 'zoom:150', label: '150%', icon: <ZoomGlyph pct={150} /> },
+            { value: 'zoom:200', label: '200%', icon: <ZoomGlyph pct={200} /> },
           ])}
           <RibbonButton
             large
@@ -2661,6 +2689,7 @@ function Ribbon({
               options={TRANSLATE_LANGUAGES.map((language) => ({
                 value: language,
                 label: language,
+                icon: <LangSample code={language.slice(0, 2)} />,
               }))}
               onPick={(language) => onAiRun(t('appTranslatePrompt', { language }))}
             />
@@ -3578,6 +3607,73 @@ function OptDots({ colors }: { colors: readonly string[] }) {
   )
 }
 
+/** 主题方案行：色点串 + 字体名（WPS 主题缩略：色带 + 标题/正文字体） */
+function ThemeDots({ colors, font }: { colors: readonly string[]; font?: string }) {
+  return (
+    <span className="menu-opt-theme" aria-hidden="true">
+      <span className="menu-opt-dots">
+        {colors.slice(4, 10).map((c, i) => (
+          <i key={i} style={{ background: c.startsWith('#') ? c : `#${c}` }} />
+        ))}
+      </span>
+      {font && <span className="menu-opt-font">{font}</span>}
+    </span>
+  )
+}
+
+/** 纸张大小行：比例正确的纸张缩略 + 名称 */
+function PaperGlyph({ w, h }: { w: number; h: number }) {
+  const ratio = h / w
+  const bw = 10
+  const bh = Math.min(16, bw * ratio)
+  return (
+    <span className="menu-opt-paper" aria-hidden="true">
+      <svg
+        width={20}
+        height={20}
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        aria-hidden="true"
+      >
+        <rect x={10 - bw / 2} y={10 - bh / 2} width={bw} height={bh} rx="0.8" />
+        <path d={`M${10 - bw / 2 + 2.5} ${10 - bh / 2 + 3.5} h${bw - 5}`} opacity="0.5" />
+        <path d={`M${10 - bw / 2 + 2.5} ${10 - bh / 2 + 6.5} h${bw - 5}`} opacity="0.35" />
+      </svg>
+    </span>
+  )
+}
+
+/** 缩放档位：放大镜 + 百分比 */
+function ZoomGlyph({ pct }: { pct: number }) {
+  return (
+    <span className="menu-opt-sample" aria-hidden="true">
+      {pct}%
+    </span>
+  )
+}
+
+/** 语言行：目标语言自名字样（WPS 用旗帜, 文字更中性） */
+function LangSample({ code }: { code: string }) {
+  return <OptSample>{code}</OptSample>
+}
+
+/** 数字格式类别的实例预览（WPS：¥1,230 / 2024/1/1 / 15%…） */
+const NUMFMT_SAMPLES: Record<string, string> = {
+  General: '1234.5',
+  Number: '1,234.50',
+  Currency: '¥1,234.50',
+  Accounting: '¥ 1,234.50',
+  'Short Date': '2024/6/1',
+  'Long Date': 'Saturday, June 1, 2024',
+  Time: '1:23:45 PM',
+  Percentage: '15.00%',
+  Fraction: '1 2/5',
+  Scientific: '1.23E+03',
+  Text: '1234.5',
+}
+
 /// Escape-to-close for the ribbon dropdowns; outside-press / blur / shell
 /// chrome-press dismissal lives in the shared useDismissablePopover.
 function useEscapeClose(open: boolean, close: () => void): void {
@@ -4219,6 +4315,7 @@ function NumberFormatSelect({
       options={numberFormatCategories().map((category) => ({
         value: category.label,
         label: localized(category.label),
+        icon: <OptSample>{NUMFMT_SAMPLES[category.label] ?? category.label}</OptSample>,
       }))}
       onPick={(value) => {
         const category = numberFormatCategories().find((candidate) => candidate.label === value)
