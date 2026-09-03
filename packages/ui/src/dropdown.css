@@ -112,3 +112,24 @@
 .gs-dd-item.selected {
   background: var(--accent-soft);
 }
+
+/* icon+text option rows (WPS-style menus) */
+.gs-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gs-dd-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.gs-dd-item-text {
+  flex: 1;
+  text-align: left;
+}

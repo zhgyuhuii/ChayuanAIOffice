@@ -18,6 +18,8 @@ export interface DropdownOption<K extends string = string> {
   /** Accessible name (aria-label/title); also the visible text when `render` is omitted. */
   readonly label: string
   readonly render?: React.ReactNode
+  /** Optional leading icon/thumbnail (WPS-style icon+text option rows) */
+  readonly icon?: React.ReactNode
   /** Shown but not pickable (placeholder rows like "Auto", unavailable modes). */
   readonly disabled?: boolean
   /** click behavior for disabled rows (e.g. collapsible group headers); picking stays blocked */
@@ -156,7 +158,12 @@ export function Dropdown<K extends string>({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(o)}
             >
-              {o.render ?? o.label}
+              {o.icon != null && (
+                <span className="gs-dd-item-icon" aria-hidden="true">
+                  {o.icon}
+                </span>
+              )}
+              <span className="gs-dd-item-text">{o.render ?? o.label}</span>
             </button>
           ))}
         </div>

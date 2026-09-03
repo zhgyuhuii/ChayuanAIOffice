@@ -5538,3 +5538,54 @@ textarea:focus {
   flex-shrink: 0;
   min-width: 120px;
 }
+
+/* WPS-style option rows in MenuSelect/largeMenu panels: icon column + label */
+.menu-select-drop button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-opt-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.menu-opt-icon svg {
+  display: block;
+}
+
+.menu-opt-text {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* text-sample option icons (number formats, Sigma, Aa...) */
+.menu-opt-sample {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* color-scheme option rows (chart colors / themes) */
+.menu-opt-dots {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.menu-opt-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+}

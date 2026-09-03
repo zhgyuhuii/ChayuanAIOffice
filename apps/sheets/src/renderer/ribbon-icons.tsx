@@ -527,6 +527,31 @@ export const RIBBON_GLYPH_ICONS: Record<string, ReactElement> = {
       <circle cx="12" cy="15" r="1" fill="currentColor" stroke="none" />
     </Icon>
   ),
+  '🔓': (
+    <Icon>
+      <rect x="5.75" y="10.5" width="12.5" height="9" rx="2" />
+      <path d="M8.75 10.5V8a3.25 3.25 0 0 1 6.24-1.28" />
+      <circle cx="12" cy="15" r="1" fill="currentColor" stroke="none" />
+    </Icon>
+  ),
+  文: (
+    <Icon>
+      <path d="M6.75 5.75h10.5M12 5.75v12.5" />
+      <path d="M8.5 18.25c.7-1.4 1.1-3 1.25-4.75M14.75 18.25c-.7-1.4-1.1-3-1.25-4.75" />
+    </Icon>
+  ),
+  '⇳': (
+    <Icon>
+      <path d="M12 4.25v15.5M8.75 7.5 12 4.25l3.25 3.25M8.75 16.5 12 19.75l3.25-3.25" />
+    </Icon>
+  ),
+  '⋯': (
+    <Icon>
+      <circle cx="6" cy="12" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="18" cy="12" r="1.1" fill="currentColor" stroke="none" />
+    </Icon>
+  ),
   '▶': (
     <Icon>
       <path d="M 7.8 4.5 v 15 L 20.1 12 7.8 4.5 Z" />
@@ -710,4 +735,3 @@ export const RIBBON_GLYPH_ICONS: Record<string, ReactElement> = {
     </Icon>
   ),
 }
-

@@ -1059,8 +1059,8 @@ function SortDialog({
               <Dropdown
                 value={level.order}
                 options={[
-                  { value: 'a', label: t('appSortAsc') },
-                  { value: 'd', label: t('appSortDesc') },
+                  { value: 'a', label: t('appSortAsc'), icon: <SortGlyph asc /> },
+                  { value: 'd', label: t('appSortDesc'), icon: <SortGlyph asc={false} /> },
                 ]}
                 onPick={(v) => setLevel(index, { order: v })}
               />
@@ -1349,7 +1349,7 @@ function Ribbon({
     label: string,
     symbol: string,
     title: string,
-    options: readonly { value: string; label: string }[],
+    options: readonly { value: string; label: string; icon?: React.ReactNode }[],
   ): React.JSX.Element => (
     <div className="ribbon-tool large" data-tip={title}>
       <span className="tool-icon-row">
@@ -1372,7 +1372,7 @@ function Ribbon({
     const activeLegend = selectedChart?.legend ?? 'none'
     const check = (on: boolean): string => (on ? ' ✓' : '')
     const elementOptions = [
-      { value: 'chart-element-title', label: t('appChartElTitle') },
+      { value: 'chart-element-title', label: t('appChartElTitle'), icon: <OptSample>T</OptSample> },
       ...(selectedChart?.hasAxes
         ? [
             {
@@ -1433,15 +1433,35 @@ function Ribbon({
     const layoutOptions = [
       { value: 'chart-layout:1', label: t('appLayout1', { labels: layoutLabels }) },
       { value: 'chart-layout:2', label: t('appLayout2', { labels: layoutLabels }) },
-      { value: 'chart-layout:3', label: t('appLayout3') },
+      { value: 'chart-layout:3', label: t('appLayout3'), icon: <LayoutThumb n={3} /> },
       { value: 'chart-layout:4', label: t('appLayout4', { labels: layoutLabels }) },
     ]
     const colorOptions = [
-      { value: 'chart-colors:office', label: t('appColorsOffice') },
-      { value: 'chart-colors:blue', label: t('appColorsBlue') },
-      { value: 'chart-colors:green', label: t('appColorsGreen') },
-      { value: 'chart-colors:warm', label: t('appColorsWarm') },
-      { value: 'chart-colors:gray', label: t('appColorsGray') },
+      {
+        value: 'chart-colors:office',
+        label: t('appColorsOffice'),
+        icon: <OptDots colors={['4472C4', 'ED7D31', 'A5A5A5', 'FFC000']} />,
+      },
+      {
+        value: 'chart-colors:blue',
+        label: t('appColorsBlue'),
+        icon: <OptDots colors={['5B9BD5', '2E75B5', '9DC3E6', 'DEEBF7']} />,
+      },
+      {
+        value: 'chart-colors:green',
+        label: t('appColorsGreen'),
+        icon: <OptDots colors={['70AD47', '548235', 'A9D18E', 'E2EFDA']} />,
+      },
+      {
+        value: 'chart-colors:warm',
+        label: t('appColorsWarm'),
+        icon: <OptDots colors={['C55A11', 'ED7D31', 'F4B183', 'FBE5D6']} />,
+      },
+      {
+        value: 'chart-colors:gray',
+        label: t('appColorsGray'),
+        icon: <OptDots colors={['7F7F7F', 'A5A5A5', 'BFBFBF', 'D9D9D9']} />,
+      },
     ]
     const canRecolor =
       canEditChart &&
@@ -1734,20 +1754,52 @@ function Ribbon({
             '🗠',
             onIsSelectionInPivot() ? t('appPivotChartHintIn') : t('appPivotChartHintOut'),
             [
-              { value: 'insert-pivot-chart:column', label: t('appChartColumn') },
-              { value: 'insert-pivot-chart:bar', label: t('appChartBar') },
-              { value: 'insert-pivot-chart:line', label: t('appChartLine') },
-              { value: 'insert-pivot-chart:pie', label: t('appChartPie') },
-              { value: 'insert-pivot-chart:doughnut', label: t('appChartDoughnut') },
-              { value: 'insert-pivot-chart:radar', label: t('appChartRadar') },
+              {
+                value: 'insert-pivot-chart:column',
+                label: t('appChartColumn'),
+                icon: <OptSample>▮</OptSample>,
+              },
+              {
+                value: 'insert-pivot-chart:bar',
+                label: t('appChartBar'),
+                icon: <OptSample>▬</OptSample>,
+              },
+              {
+                value: 'insert-pivot-chart:line',
+                label: t('appChartLine'),
+                icon: <OptSample>∿</OptSample>,
+              },
+              {
+                value: 'insert-pivot-chart:pie',
+                label: t('appChartPie'),
+                icon: <OptSample>◔</OptSample>,
+              },
+              {
+                value: 'insert-pivot-chart:doughnut',
+                label: t('appChartDoughnut'),
+                icon: <OptSample>◎</OptSample>,
+              },
+              {
+                value: 'insert-pivot-chart:radar',
+                label: t('appChartRadar'),
+                icon: <OptSample>✳</OptSample>,
+              },
             ],
           )}
         </RibbonGroup>
         <RibbonGroup label={t('appGroupSparklines')}>
           {largeMenu(t('appGroupSparklines'), '〜', t('appSparklinesTitle'), [
-            { value: 'sparkline:line', label: t('appSparkLine') },
-            { value: 'sparkline:column', label: t('appSparkColumn') },
-            { value: 'sparkline:stacked', label: t('appSparkWinLoss') },
+            { value: 'sparkline:line', label: t('appSparkLine'), icon: <SparkGlyph mode="line" /> },
+            {
+              value: 'sparkline:column',
+              label: t('appSparkColumn'),
+              icon: <SparkGlyph mode="column" />,
+            },
+            {
+              value: 'sparkline:stacked',
+              label: t('appSparkWinLoss'),
+              icon: <SparkGlyph mode="loss" />,
+            },
           ])}
         </RibbonGroup>
         <RibbonGroup label={t('appGroupFilters')}>
@@ -1834,7 +1886,7 @@ function Ribbon({
         (axis === 'width' ? pageLayout.fitToWidth : pageLayout.fitToHeight) ?? 0,
       )
       const options = [
-        { value: '0', label: t('appFitAutomaticOption') },
+        { value: '0', label: t('appFitAutomaticOption'), icon: <FitGlyph /> },
         ...[1, 2, 3, 4, 5].map((pages) => ({
           value: String(pages),
           label: t(pages === 1 ? 'appFitPage1' : 'appFitPagesN', { count: pages }),
@@ -1908,9 +1960,21 @@ function Ribbon({
               value: pageLayout.margins ? marginLabels[pageLayout.margins] : t('appAsSavedInFile'),
             }),
             [
-              { value: 'page-layout:margins:normal', label: t('appMarginNormal') },
-              { value: 'page-layout:margins:wide', label: t('appMarginWide') },
-              { value: 'page-layout:margins:narrow', label: t('appMarginNarrow') },
+              {
+                value: 'page-layout:margins:normal',
+                label: t('appMarginNormal'),
+                icon: <MarginGlyph preset="normal" />,
+              },
+              {
+                value: 'page-layout:margins:wide',
+                label: t('appMarginWide'),
+                icon: <MarginGlyph preset="wide" />,
+              },
+              {
+                value: 'page-layout:margins:narrow',
+                label: t('appMarginNarrow'),
+                icon: <MarginGlyph preset="narrow" />,
+              },
             ],
           )}
           {largeMenu(
@@ -1922,8 +1986,16 @@ function Ribbon({
                 : t('appAsSavedInFile'),
             }),
             [
-              { value: 'page-layout:orientation:portrait', label: t('appPortrait') },
-              { value: 'page-layout:orientation:landscape', label: t('appLandscape') },
+              {
+                value: 'page-layout:orientation:portrait',
+                label: t('appPortrait'),
+                icon: <OrientationGlyph landscape={false} />,
+              },
+              {
+                value: 'page-layout:orientation:landscape',
+                label: t('appLandscape'),
+                icon: <OrientationGlyph landscape />,
+              },
             ],
           )}
           {largeMenu(t('appSizeLabel'), '▭', t('appPaperSizeTitle'), [
@@ -1942,14 +2014,34 @@ function Ribbon({
               ? t('appPrintAreaTitle', { area: pageLayout.printArea })
               : t('appPrintAreaFromSelection'),
             [
-              { value: 'page-layout:print-area:set', label: t('appSetPrintArea') },
-              { value: 'page-layout:print-area:clear', label: t('appClearPrintArea') },
+              {
+                value: 'page-layout:print-area:set',
+                label: t('appSetPrintArea'),
+                icon: <PrintAreaGlyph />,
+              },
+              {
+                value: 'page-layout:print-area:clear',
+                label: t('appClearPrintArea'),
+                icon: <OptSample>✕</OptSample>,
+              },
             ],
           )}
           {largeMenu(t('appBreaks'), '┆', t('appBreaksTitle'), [
-            { value: 'page-layout:breaks:insert', label: t('appInsertPageBreak') },
-            { value: 'page-layout:breaks:remove', label: t('appRemovePageBreak') },
-            { value: 'page-layout:breaks:reset', label: t('appResetAllPageBreaks') },
+            {
+              value: 'page-layout:breaks:insert',
+              label: t('appInsertPageBreak'),
+              icon: <PageBreakGlyph />,
+            },
+            {
+              value: 'page-layout:breaks:remove',
+              label: t('appRemovePageBreak'),
+              icon: <PageBreakGlyph />,
+            },
+            {
+              value: 'page-layout:breaks:reset',
+              label: t('appResetAllPageBreaks'),
+              icon: <PageBreakGlyph />,
+            },
           ])}
           {largeMenu(
             t('appPrintTitlesLabel'),
@@ -1958,9 +2050,21 @@ function Ribbon({
               ? t('appPrintTitlesTitle', { rows: pageLayout.printTitles })
               : t('appPrintTitlesHint'),
             [
-              { value: 'page-layout:print-titles:first-row', label: t('appRepeatRow1') },
-              { value: 'page-layout:print-titles:selection', label: t('appRepeatSelectedRows') },
-              { value: 'page-layout:print-titles:clear', label: t('appClearPrintTitles') },
+              {
+                value: 'page-layout:print-titles:first-row',
+                label: t('appRepeatRow1'),
+                icon: <TitleRowGlyph />,
+              },
+              {
+                value: 'page-layout:print-titles:selection',
+                label: t('appRepeatSelectedRows'),
+                icon: <TitleRowGlyph />,
+              },
+              {
+                value: 'page-layout:print-titles:clear',
+                label: t('appClearPrintTitles'),
+                icon: <OptSample>✕</OptSample>,
+              },
             ],
           )}
         </RibbonGroup>
@@ -2062,11 +2166,11 @@ function Ribbon({
               cover
               label="AutoSum"
               options={[
-                { value: 'SUM', label: t('appFnSum') },
-                { value: 'AVERAGE', label: t('appFnAverage') },
-                { value: 'COUNT', label: t('appFnCountNumbers') },
-                { value: 'MAX', label: t('appFnMax') },
-                { value: 'MIN', label: t('appFnMin') },
+                { value: 'SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
+                { value: 'AVERAGE', label: t('appFnAverage'), icon: <OptSample>x̄</OptSample> },
+                { value: 'COUNT', label: t('appFnCountNumbers'), icon: <OptSample>#</OptSample> },
+                { value: 'MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
+                { value: 'MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
               ]}
               onPick={(value) => onCommand(`autofn:${value}`)}
             />
@@ -2108,7 +2212,13 @@ function Ribbon({
                 options={
                   definedNames.length > 0
                     ? definedNames.map((name) => ({ value: `use-in-formula:${name}`, label: name }))
-                    : [{ value: 'name-manager-open', label: t('appNoNamesYet') }]
+                    : [
+                        {
+                          value: 'name-manager-open',
+                          label: t('appNoNamesYet'),
+                          icon: <OptSample>≡</OptSample>,
+                        },
+                      ]
                 }
                 onPick={onCommand}
               />
@@ -2121,8 +2231,16 @@ function Ribbon({
                 cover
                 label={t('appCreateFromSelection')}
                 options={[
-                  { value: 'create-names:top', label: t('appCreateNamesTopRow') },
-                  { value: 'create-names:left', label: t('appCreateNamesLeftCol') },
+                  {
+                    value: 'create-names:top',
+                    label: t('appCreateNamesTopRow'),
+                    icon: <TitleRowGlyph />,
+                  },
+                  {
+                    value: 'create-names:left',
+                    label: t('appCreateNamesLeftCol'),
+                    icon: <RowColGlyph row={false} />,
+                  },
                 ]}
                 onPick={onCommand}
               />
@@ -2250,9 +2368,13 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appGroupSortFilter')}>
           {largeMenu(t('appSort'), '⇅', t('appSortSelectionTitle'), [
-            { value: 'sort:asc', label: t('appSortAToZ') },
-            { value: 'sort:desc', label: t('appSortZToA') },
-            { value: 'sort-custom-open', label: t('appCustomSort') },
+            { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
+            { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
+            {
+              value: 'sort-custom-open',
+              label: t('appCustomSort'),
+              icon: <OptSample>⚙</OptSample>,
+            },
           ])}
           <RibbonButton
             large
@@ -2290,10 +2412,26 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appGroupDataTools')}>
           {largeMenu(t('appTextToColumns'), '⇶', t('appTextToColumnsTitle'), [
-            { value: 'text-to-columns:2', label: t('appSplitByComma') },
-            { value: 'text-to-columns:4', label: t('appSplitBySemicolon') },
-            { value: 'text-to-columns:8', label: t('appSplitBySpace') },
-            { value: 'text-to-columns:1', label: t('appSplitByTab') },
+            {
+              value: 'text-to-columns:2',
+              label: t('appSplitByComma'),
+              icon: <OptSample>,</OptSample>,
+            },
+            {
+              value: 'text-to-columns:4',
+              label: t('appSplitBySemicolon'),
+              icon: <OptSample>;</OptSample>,
+            },
+            {
+              value: 'text-to-columns:8',
+              label: t('appSplitBySpace'),
+              icon: <OptSample>␣</OptSample>,
+            },
+            {
+              value: 'text-to-columns:1',
+              label: t('appSplitByTab'),
+              icon: <OptSample>⇥</OptSample>,
+            },
           ])}
           <RibbonButton
             large
@@ -2327,21 +2465,53 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appGroupForecast')}>
           {largeMenu(t('appWhatIfAnalysis'), '❔', t('appWhatIfTitle'), [
-            { value: 'goal-seek-open', label: t('appGoalSeek') },
+            { value: 'goal-seek-open', label: t('appGoalSeek'), icon: <OptSample>?</OptSample> },
           ])}
         </RibbonGroup>
         <RibbonGroup label={t('appGroupOutline')}>
           {largeMenu(t('appOutlineGroup'), '⊟', t('appOutlineGroupTitle'), [
-            { value: 'outline-group:rows', label: t('appGroupRows') },
-            { value: 'outline-group:cols', label: t('appGroupCols') },
-            { value: 'outline-hide-detail:rows', label: t('appHideDetailRows') },
-            { value: 'outline-hide-detail:cols', label: t('appHideDetailCols') },
+            {
+              value: 'outline-group:rows',
+              label: t('appGroupRows'),
+              icon: <GroupGlyph open={false} />,
+            },
+            {
+              value: 'outline-group:cols',
+              label: t('appGroupCols'),
+              icon: <GroupGlyph open={false} />,
+            },
+            {
+              value: 'outline-hide-detail:rows',
+              label: t('appHideDetailRows'),
+              icon: <OptSample>−</OptSample>,
+            },
+            {
+              value: 'outline-hide-detail:cols',
+              label: t('appHideDetailCols'),
+              icon: <OptSample>−</OptSample>,
+            },
           ])}
           {largeMenu(t('appOutlineUngroup'), '⊞', t('appOutlineUngroupTitle'), [
-            { value: 'outline-ungroup:rows', label: t('appUngroupRows') },
-            { value: 'outline-ungroup:cols', label: t('appUngroupCols') },
-            { value: 'outline-show-detail:rows', label: t('appShowDetailRows') },
-            { value: 'outline-show-detail:cols', label: t('appShowDetailCols') },
+            {
+              value: 'outline-ungroup:rows',
+              label: t('appUngroupRows'),
+              icon: <GroupGlyph open />,
+            },
+            {
+              value: 'outline-ungroup:cols',
+              label: t('appUngroupCols'),
+              icon: <GroupGlyph open />,
+            },
+            {
+              value: 'outline-show-detail:rows',
+              label: t('appShowDetailRows'),
+              icon: <OptSample>+</OptSample>,
+            },
+            {
+              value: 'outline-show-detail:cols',
+              label: t('appShowDetailCols'),
+              icon: <OptSample>+</OptSample>,
+            },
           ])}
           <RibbonButton
             large
@@ -2442,10 +2612,22 @@ function Ribbon({
         </RibbonGroup>
         <RibbonGroup label={t('appGroupWindow')}>
           {largeMenu(t('appFreezePanes'), '❄', t('appFreezeTitle'), [
-            { value: 'freeze-here', label: t('appFreezeAtSelection') },
-            { value: 'freeze-top-row', label: t('appFreezeTopRow') },
-            { value: 'freeze-first-col', label: t('appFreezeFirstCol') },
-            { value: 'unfreeze', label: t('appUnfreeze') },
+            {
+              value: 'freeze-here',
+              label: t('appFreezeAtSelection'),
+              icon: <FreezeGlyph mode="cross" />,
+            },
+            {
+              value: 'freeze-top-row',
+              label: t('appFreezeTopRow'),
+              icon: <FreezeGlyph mode="row" />,
+            },
+            {
+              value: 'freeze-first-col',
+              label: t('appFreezeFirstCol'),
+              icon: <FreezeGlyph mode="col" />,
+            },
+            { value: 'unfreeze', label: t('appUnfreeze'), icon: <FreezeGlyph mode="none" /> },
           ])}
         </RibbonGroup>
       </div>
@@ -2594,11 +2776,31 @@ function Ribbon({
           </span>
         </button>
         {largeMenu(t('appPasteSpecial'), '📑', t('appPasteSpecialTitle'), [
-          { value: 'paste-special:value', label: t('appPasteValuesOnly') },
-          { value: 'paste-special:formula', label: t('appPasteFormulasOnly') },
-          { value: 'paste-special:format', label: t('appPasteFormattingOnly') },
-          { value: 'paste-special:col-width', label: t('appPasteColWidths') },
-          { value: 'paste-special:besides-border', label: t('appPasteExceptBorders') },
+          {
+            value: 'paste-special:value',
+            label: t('appPasteValuesOnly'),
+            icon: <OptSample>123</OptSample>,
+          },
+          {
+            value: 'paste-special:formula',
+            label: t('appPasteFormulasOnly'),
+            icon: <OptSample>ƒx</OptSample>,
+          },
+          {
+            value: 'paste-special:format',
+            label: t('appPasteFormattingOnly'),
+            icon: <OptSample>Aa</OptSample>,
+          },
+          {
+            value: 'paste-special:col-width',
+            label: t('appPasteColWidths'),
+            icon: <OptSample>↔</OptSample>,
+          },
+          {
+            value: 'paste-special:besides-border',
+            label: t('appPasteExceptBorders'),
+            icon: <BorderGlyph on="none" />,
+          },
         ])}
         <div className="tool-stack">
           <button
@@ -2742,14 +2944,18 @@ function Ribbon({
                 </>
               }
               options={[
-                { value: 'all', label: t('appBorderAll') },
-                { value: 'outer', label: t('appBorderOuter') },
-                { value: 'thick-outer', label: t('appBorderThickOuter') },
-                { value: 'top', label: t('appBorderTop') },
-                { value: 'bottom', label: t('appBorderBottom') },
-                { value: 'left', label: t('appBorderLeft') },
-                { value: 'right', label: t('appBorderRight') },
-                { value: 'none', label: t('appBorderNone') },
+                { value: 'all', label: t('appBorderAll'), icon: <BorderGlyph on="all" /> },
+                { value: 'outer', label: t('appBorderOuter'), icon: <BorderGlyph on="outer" /> },
+                {
+                  value: 'thick-outer',
+                  label: t('appBorderThickOuter'),
+                  icon: <BorderGlyph on="thick" />,
+                },
+                { value: 'top', label: t('appBorderTop'), icon: <BorderGlyph on="top" /> },
+                { value: 'bottom', label: t('appBorderBottom'), icon: <BorderGlyph on="bottom" /> },
+                { value: 'left', label: t('appBorderLeft'), icon: <BorderGlyph on="left" /> },
+                { value: 'right', label: t('appBorderRight'), icon: <BorderGlyph on="right" /> },
+                { value: 'none', label: t('appBorderNone'), icon: <BorderGlyph on="none" /> },
               ]}
               onPick={(value) => onCommand(`border:${value}:${borderColor}`)}
             />
@@ -2808,12 +3014,16 @@ function Ribbon({
               data-tip={t('dlgFcOrientation')}
               display={<ToolSymbol symbol="⤴" />}
               options={[
-                { value: '45', label: t('appAngleCcw') },
-                { value: '-45', label: t('appAngleCw') },
-                { value: 'vertical', label: t('appVerticalText') },
-                { value: '90', label: t('appRotateUp') },
-                { value: '-90', label: t('appRotateDown') },
-                { value: '0', label: t('appClearRotation') },
+                { value: '45', label: t('appAngleCcw'), icon: <TextDirGlyph deg={-45} ch="ab" /> },
+                { value: '-45', label: t('appAngleCw'), icon: <TextDirGlyph deg={45} ch="ab" /> },
+                {
+                  value: 'vertical',
+                  label: t('appVerticalText'),
+                  icon: <TextDirGlyph deg={90} ch="ab" />,
+                },
+                { value: '90', label: t('appRotateUp'), icon: <TextDirGlyph deg={180} ch="ab" /> },
+                { value: '-90', label: t('appRotateDown'), icon: <TextDirGlyph deg={0} ch="ab" /> },
+                { value: '0', label: t('appClearRotation'), icon: <TextDirGlyph deg={0} ch="↺" /> },
               ]}
               onPick={(value) => onCommand(`rotate:${value}`)}
             />
@@ -2850,10 +3060,10 @@ function Ribbon({
                 </>
               }
               options={[
-                { value: 'center', label: t('appMergeCenter') },
-                { value: 'across', label: t('appMergeAcross') },
-                { value: 'cells', label: t('appMergeCells') },
-                { value: 'unmerge', label: t('appUnmergeCells') },
+                { value: 'center', label: t('appMergeCenter'), icon: <MergeGlyph mode="center" /> },
+                { value: 'across', label: t('appMergeAcross'), icon: <MergeGlyph mode="across" /> },
+                { value: 'cells', label: t('appMergeCells'), icon: <MergeGlyph mode="cells" /> },
+                { value: 'unmerge', label: t('appUnmergeCells'), icon: <MergeGlyph mode="none" /> },
               ]}
               onPick={(value) => onCommand(`merge:${value}`)}
             />
@@ -3008,8 +3218,8 @@ function Ribbon({
                 </>
               }
               options={[
-                { value: 'down', label: t('appFillDown') },
-                { value: 'right', label: t('appFillRight') },
+                { value: 'down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
+                { value: 'right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
               ]}
               onPick={(value) => onCommand(`fill-${value}`)}
             />
@@ -3023,9 +3233,13 @@ function Ribbon({
                 </>
               }
               options={[
-                { value: 'all', label: t('appClearAll') },
-                { value: 'formats', label: t('appClearFormats') },
-                { value: 'contents', label: t('appClearContents') },
+                { value: 'all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
+                { value: 'formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
+                {
+                  value: 'contents',
+                  label: t('appClearContents'),
+                  icon: <OptSample>123</OptSample>,
+                },
               ]}
               onPick={(value) => onCommand(`clear-${value}`)}
             />
@@ -3056,6 +3270,311 @@ function Ribbon({
         </div>
       </RibbonGroup>
     </div>
+  )
+}
+
+/// ── WPS-style option-row icons (linear SVG thumbnails drawn to the same
+/// standard as ribbon-icons.tsx; options without a natural glyph reuse
+/// ToolSymbol keys so button and menu rows stay visually one family) ──
+
+const OPT_SVG = 20
+function OptSvg({ children }: { children: React.ReactNode }) {
+  return (
+    <svg
+      width={OPT_SVG}
+      height={OPT_SVG}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  )
+}
+
+/** 边框 menu: 3×3 grid with the chosen edges painted 2.2px. */
+function BorderGlyph({
+  on,
+}: {
+  on: 'all' | 'outer' | 'thick' | 'top' | 'bottom' | 'left' | 'right' | 'none'
+}) {
+  const w = on === 'thick' ? 2.8 : 2.2
+  const thickFrame = on === 'all' || on === 'outer' || on === 'thick'
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity={thickFrame ? 0 : 0.5} />
+      <path
+        d="M2.5 7.5 h15 M2.5 12.5 h15 M7.5 2.5 v15 M12.5 2.5 v15"
+        opacity="0.45"
+        strokeWidth="1"
+      />
+      {thickFrame && <rect x="2.5" y="2.5" width="15" height="15" strokeWidth={w} />}
+      {on === 'all' && (
+        <path
+          d="M2.5 7.5 h15 M2.5 12.5 h15 M7.5 2.5 v15 M12.5 2.5 v15"
+          strokeWidth={w}
+          opacity="0.9"
+        />
+      )}
+      {on === 'top' && <path d="M2.5 3 h15" strokeWidth={w} />}
+      {on === 'bottom' && <path d="M2.5 17 h15" strokeWidth={w} />}
+      {on === 'left' && <path d="M3 2.5 v15" strokeWidth={w} />}
+      {on === 'right' && <path d="M17 2.5 v15" strokeWidth={w} />}
+    </OptSvg>
+  )
+}
+
+/** 纸张方向 menu: portrait / landscape frames. */
+function OrientationGlyph({ landscape }: { landscape: boolean }) {
+  return landscape ? (
+    <OptSvg>
+      <rect x="2.5" y="5.5" width="15" height="9" />
+    </OptSvg>
+  ) : (
+    <OptSvg>
+      <rect x="5.5" y="2.5" width="9" height="15" />
+    </OptSvg>
+  )
+}
+
+/** 文字方向 menu: rotated glyph on a cell frame. */
+function TextDirGlyph({ deg, ch }: { deg: number; ch: string }) {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.45" />
+      <text
+        x="10"
+        y="13.5"
+        textAnchor="middle"
+        fontSize="8.5"
+        fontWeight="600"
+        stroke="none"
+        fill="currentColor"
+        transform={deg ? `rotate(${deg} 10 10)` : undefined}
+      >
+        {ch}
+      </text>
+    </OptSvg>
+  )
+}
+
+/** 合并 menu: 2×2 with the merge shape emphasized. */
+function MergeGlyph({ mode }: { mode: 'center' | 'across' | 'cells' | 'none' }) {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
+      {mode === 'center' && <rect x="3.6" y="3.6" width="12.8" height="12.8" strokeWidth="2" />}
+      {mode === 'across' && <path d="M3.6 3.6 h12.8 M3.6 16.4 h12.8" strokeWidth="2" />}
+      {mode === 'cells' && (
+        <>
+          <rect x="3.6" y="3.6" width="12.8" height="5.6" strokeWidth="2" />
+          <rect x="3.6" y="10.8" width="12.8" height="5.6" strokeWidth="2" />
+        </>
+      )}
+      {mode === 'none' && (
+        <path
+          d="M2.5 7 h15 M2.5 13 h15 M2.5 2.5 v15 M10 2.5 v15"
+          strokeWidth="1"
+          opacity="0.5"
+          strokeDasharray="2 1.6"
+        />
+      )}
+      {mode !== 'none' && (
+        <path d="M2.5 7 h15 M2.5 13 h15 M2.5 2.5 v15 M10 2.5 v15" strokeWidth="1" opacity="0.5" />
+      )}
+    </OptSvg>
+  )
+}
+
+/** 冻结窗格 menu: bold cross / top band / left band / plain. */
+function FreezeGlyph({ mode }: { mode: 'cross' | 'row' | 'col' | 'none' }) {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
+      <path d="M2.5 7 h15 M2.5 12.5 h15 M7 2.5 v15 M12.5 2.5 v15" strokeWidth="1" opacity="0.45" />
+      {mode === 'cross' && <path d="M2.5 7 h15 M7 2.5 v15" strokeWidth="2.2" />}
+      {mode === 'row' && <path d="M2.5 4.7 h15" strokeWidth="2.4" />}
+      {mode === 'col' && <path d="M4.7 2.5 v15" strokeWidth="2.4" />}
+    </OptSvg>
+  )
+}
+
+/** 页边距 menu: page frame + inset margins by preset. */
+function MarginGlyph({ preset }: { preset: 'normal' | 'narrow' | 'wide' }) {
+  const m = preset === 'narrow' ? 1.5 : preset === 'wide' ? 6 : 3.5
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
+      <rect
+        x={2.5 + m}
+        y={2.5 + m}
+        width={15 - m * 2}
+        height={15 - m * 2}
+        strokeDasharray="2 1.5"
+      />
+    </OptSvg>
+  )
+}
+
+/** 排序 menu: arrow + level bars. */
+function SortGlyph({ asc }: { asc: boolean }) {
+  return (
+    <OptSvg>
+      <path
+        d={asc ? 'M10 16.5 V4 M6.4 7.6 L10 4 l3.6 3.6' : 'M10 3.5 V16 M6.4 12.4 L10 16 l3.6 -3.6'}
+      />
+      <path d="M3.5 6 h4 M3.5 10 h6 M3.5 14 h4" opacity="0.55" />
+    </OptSvg>
+  )
+}
+
+/** 迷你图 menu: line / column / win-loss minis. */
+function SparkGlyph({ mode }: { mode: 'line' | 'column' | 'loss' }) {
+  return (
+    <OptSvg>
+      {mode === 'line' && <path d="M2.5 13 L6.5 8 L10 11 L13.5 5 L17.5 7.5" />}
+      {mode === 'column' && <path d="M4 16 V9 M9 16 V4 M14 16 V7" strokeWidth="2" />}
+      {mode === 'loss' && <path d="M4 9.5 v4 M9 13.5 v-7 M14 8 v4" strokeWidth="2" />}
+    </OptSvg>
+  )
+}
+
+/** 行高/列宽 menu: cell frame with the measured edge emphasized. */
+function RowColGlyph({ row }: { row: boolean }) {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
+      <path d="M2.5 7 h15 M2.5 13 h15 M7 2.5 v15 M12.5 2.5 v15" strokeWidth="1" opacity="0.45" />
+      {row ? (
+        <>
+          <path d="M2.5 5 h15" strokeWidth="2" />
+          <path d="M8 5 v-2.2 M12 5 v2.2" strokeWidth="1" />
+        </>
+      ) : (
+        <>
+          <path d="M5 2.5 v15" strokeWidth="2" />
+          <path d="M5 8 h-2.2 M5 12 h2.2" strokeWidth="1" />
+        </>
+      )}
+    </OptSvg>
+  )
+}
+
+/** 打印标题 menu: header row highlighted. */
+function TitleRowGlyph() {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="3" width="15" height="14" opacity="0.5" />
+      <path
+        d="M2.5 7 h15 M2.5 11 h15 M2.5 15 h15 M8 3 v14 M13.5 3 v14"
+        strokeWidth="1"
+        opacity="0.45"
+      />
+      <path d="M2.5 5 h15" strokeWidth="2.2" />
+    </OptSvg>
+  )
+}
+
+/** 分隔符 menu: page split at a dashed line. */
+function PageBreakGlyph() {
+  return (
+    <OptSvg>
+      <path d="M2.5 10 h15" strokeDasharray="2.6 2" strokeWidth="1.8" />
+      <path d="M5 5.5 h6 M9 14.5 h6" opacity="0.55" />
+    </OptSvg>
+  )
+}
+
+/** 打印区域 menu: dashed selection frame. */
+function PrintAreaGlyph() {
+  return (
+    <OptSvg>
+      <rect x="3" y="3" width="14" height="14" strokeDasharray="3 2" />
+      <path d="M6.5 7 h7 M6.5 10 h4.5" opacity="0.6" />
+    </OptSvg>
+  )
+}
+
+/** 快速布局 menu: mini chart layouts 1-4 (plot + title/legend boxes). */
+function LayoutThumb({ n }: { n: 1 | 2 | 3 | 4 }) {
+  return (
+    <OptSvg>
+      <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
+      {n === 1 && (
+        <>
+          <path d="M2.5 6 h15" strokeWidth="1.8" />
+          <path d="M5.5 15.5 L9 10.5 L12.5 13 L15.5 7.5" />
+        </>
+      )}
+      {n === 2 && (
+        <>
+          <rect x="4" y="4" width="5.5" height="3" strokeWidth="1.6" />
+          <path d="M4.5 16 L8 11.5 L11 13.5 L15 8.5" />
+        </>
+      )}
+      {n === 3 && (
+        <>
+          <path d="M5.5 16 V8 M10 16 V5.5 M14.5 16 V10" strokeWidth="2" />
+          <path d="M2.5 5.5 h15" strokeWidth="1.6" />
+        </>
+      )}
+      {n === 4 && (
+        <>
+          <rect x="12.5" y="4" width="4" height="3" strokeWidth="1.4" />
+          <path d="M5.5 16 V9 M9.5 16 V6.5" strokeWidth="2" />
+        </>
+      )}
+    </OptSvg>
+  )
+}
+
+/** 组合/取消组合 menu: bracket rows. */
+function GroupGlyph({ open }: { open: boolean }) {
+  const brackets = open
+    ? 'M6.5 4 h-3 v12 h3 M13.5 4 h3 v12 h-3'
+    : 'M3.5 4 h3 v12 h-3 M13.5 4 h3 v12 h-3'
+  return (
+    <OptSvg>
+      <path d={brackets} />
+      <path d="M8.5 7.5 h3 M8.5 10.5 h3 M8.5 13.5 h3" opacity="0.6" />
+    </OptSvg>
+  )
+}
+
+/** 缩放适配 menu: horizontal/vertical double arrow. */
+function FitGlyph({ vertical }: { vertical?: boolean }) {
+  return vertical ? (
+    <OptSvg>
+      <path d="M10 3 v14 M7 6 L10 3 l3 3 M7 14 L10 17 l3 -3" />
+    </OptSvg>
+  ) : (
+    <OptSvg>
+      <path d="M3 10 h14 M6 7 L3 10 l3 3 M14 7 L17 10 l-3 3" />
+    </OptSvg>
+  )
+}
+
+/** 纯文字样例图标（数字格式/字体方案/自动求和等：直接展示样例文本） */
+function OptSample({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="menu-opt-sample" aria-hidden="true">
+      {children}
+    </span>
+  )
+}
+
+/** 配色方案行：一排色点（图表颜色/主题等菜单） */
+function OptDots({ colors }: { colors: readonly string[] }) {
+  return (
+    <span className="menu-opt-dots" aria-hidden="true">
+      {colors.map((c) => (
+        <i key={c} style={{ background: `#${c}` }} />
+      ))}
+    </span>
   )
 }
 
@@ -3098,7 +3617,8 @@ function MenuSelect({
   readonly display?: React.ReactNode
   /// currently applied value, highlighted in the open panel ('' = none)
   readonly value?: string
-  readonly options: readonly { value: string; label: string }[]
+  /// options rows: linear icon / thumbnail (WPS-style) + label
+  readonly options: readonly { value: string; label: string; icon?: React.ReactNode }[]
   readonly onPick: (value: string) => void
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -3138,7 +3658,12 @@ function MenuSelect({
                 onPick(option.value)
               }}
             >
-              {option.label}
+              {option.icon != null && (
+                <span className="menu-opt-icon" aria-hidden="true">
+                  {option.icon}
+                </span>
+              )}
+              <span className="menu-opt-text">{option.label}</span>
             </button>
           ))}
         </div>
