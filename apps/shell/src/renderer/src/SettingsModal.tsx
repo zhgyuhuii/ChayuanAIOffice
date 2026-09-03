@@ -7,9 +7,9 @@ import {
   type ModelSettingsBridge,
 } from '@chatoffice/ui'
 import { useI18n } from './locale'
-import type { StringKey, TFunc } from './locale'
+import type { StringKey } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
-import { ProviderLogo } from './provider-logos'
+import { StoragePane } from './StoragePane'
 import './settings.css'
 
 // ── Settings modal (opened from the account menu) ─────────
@@ -60,17 +60,36 @@ function formatStars(n: number): string {
   return `${k >= 100 ? Math.round(k) : (Math.round(k * 10) / 10).toString().replace(/\.0$/, '')}k`
 }
 
-type SectionId = 'account' | 'modelSettings' | 'defaultModels' | 'general' | 'about'
+type SectionId =
+  'account' | 'modelSettings' | 'defaultModels' | 'remoteStorage' | 'general' | 'about'
 
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'account', labelKey: 'setSecAccount' },
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
+  { id: 'remoteStorage', labelKey: 'setSecRemoteStorage' },
   { id: 'general', labelKey: 'setSecGeneral' },
   { id: 'about', labelKey: 'setSecAbout' },
 ]
 
 function SectionIcon({ id }: { id: SectionId }) {
+  if (id === 'remoteStorage') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <ellipse cx="8" cy="4.2" rx="5.3" ry="2.2" stroke="currentColor" strokeWidth="1.3" />
+        <path
+          d="M2.7 4.2v7.6c0 1.2 2.37 2.2 5.3 2.2s5.3-1 5.3-2.2V4.2"
+          stroke="currentColor"
+          strokeWidth="1.3"
+        />
+        <path
+          d="M2.7 8c0 1.2 2.37 2.2 5.3 2.2s5.3-1 5.3-2.2"
+          stroke="currentColor"
+          strokeWidth="1.3"
+        />
+      </svg>
+    )
+  }
   if (id === 'defaultModels') {
     return (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -197,58 +216,6 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
   }
 }
 
-interface AiStatus {
-  kind: 'testing' | 'ok' | 'err'
-  text: string
-}
-
-/** colored feedback pill in the AI pane footer: spinner while testing, then success/error */
-function AiStatusPill({ status }: { status: AiStatus | null }) {
-  if (!status) return null
-  return (
-    <span
-      className={`set-ai-status ${status.kind}`}
-      role="status"
-      // error text (HTTP body, network message) can be long — full text via native tooltip
-      title={status.kind === 'err' ? status.text : undefined}
-    >
-      {status.kind === 'testing' ? (
-        <span className="set-ai-spin" aria-hidden="true" />
-      ) : status.kind === 'ok' ? (
-        <svg
-          className="set-ai-status-icon"
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
-          <path
-            d="M4.2 7.3l1.9 1.9 3.7-4.3"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="set-ai-status-icon"
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
-          <path d="M7 3.8v3.9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <circle cx="7" cy="10.1" r="1" fill="currentColor" />
-        </svg>
-      )}
-      <span className="set-ai-status-text">{status.text}</span>
-    </span>
-  )
-}
 
 export interface SettingsModalProps {
   status: AccountStatus | null
@@ -423,6 +390,7 @@ export function SettingsModal({
             )}
             {section === 'modelSettings' && <AiModelPane lang={lang} />}
             {section === 'defaultModels' && <DefaultModelsPane lang={lang} />}
+            {section === 'remoteStorage' && <StoragePane />}
             {section === 'general' && (
               <>
                 <h3 className="set-pane-title">{t('setSecGeneral')}</h3>
