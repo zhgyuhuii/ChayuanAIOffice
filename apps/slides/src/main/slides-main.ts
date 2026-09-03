@@ -80,6 +80,7 @@ import {
   getSlideTransition,
   getSlideTransitionSpec,
   getSlideTransitionSound,
+  getTransitionSoundBytes,
   synthTransitionSound,
   TRANSITION_SOUND_KEYS,
   getSlideAdvanceTime,
@@ -3770,10 +3771,23 @@ export function registerSlidesIpc(): void {
   })
 
   // Transitions tab 声音 playback: synthesized wav bytes of the current page's preset
+  // Transitions tab 声音 playback: bytes of the embedded media part (presets
+  // AND custom imports); synthesized fallback covers legacy pre-embed presets
   ipcMain.handle('slides:get-transition-sound', (e, slideIndex: number) => {
     const session = sessions.get(e.sender.id)
     const slide = session?.opened.deck.slides[slideIndex]
-    const snd = slide ? getSlideTransitionSound(slide) : null
+    if (!slide || !session) return null
+    const embedded = getTransitionSoundBytes(session.opened, slide)
+    if (embedded) {
+      return {
+        name: embedded.name,
+        bytes: embedded.bytes.buffer.slice(
+          embedded.bytes.byteOffset,
+          embedded.bytes.byteOffset + embedded.bytes.byteLength,
+        ) as ArrayBuffer,
+      }
+    }
+    const snd = getSlideTransitionSound(slide)
     if (!snd || !TRANSITION_SOUND_KEYS.includes(snd.name as 'chime')) return null
     const buf = synthTransitionSound(snd.name as 'chime')
     return {

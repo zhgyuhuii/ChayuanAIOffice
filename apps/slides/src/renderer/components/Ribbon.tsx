@@ -1064,24 +1064,33 @@ const TRANS_SOUND_PRESETS: ReadonlyArray<{ key: TransitionSoundKey; labelKey: St
   { key: 'voltage', labelKey: 'ribbonTransSoundVoltage' },
 ]
 
-/** WPS 声音: 无声音 + preset rows (✓ echo) + 循环播放 toggle at the bottom. */
+/** WPS 声音: 无声音 + preset rows (✓ echo) + 其他声音… import + 循环播放 toggle. */
 function TransSoundSelect({
   value,
   disabled,
   onPick,
+  onPickCustom,
   onToggleLoop,
 }: {
   value: { name: string; loop: boolean } | null
   disabled: boolean
   onPick: (name: TransitionSoundKey | null) => void
+  /** 其他声音…: import a user-picked audio file as the transition sound */
+  onPickCustom: (file: { name: string; bytes: Uint8Array; ext: string }) => void
   onToggleLoop: () => void
 }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
   const currentPreset = TRANS_SOUND_PRESETS.find((p) => p.key === value?.name)
-  const currentLabel = currentPreset ? t(currentPreset.labelKey) : t('ribbonTransSoundNone')
+  const currentLabel =
+    value && !currentPreset
+      ? value.name
+      : currentPreset
+        ? t(currentPreset.labelKey)
+        : t('ribbonTransSoundNone')
   return (
     <div className="rb-drop-wrap rb-sound-select" ref={wrapRef}>
       <button
@@ -1127,6 +1136,15 @@ function TransSoundSelect({
               {t(p.labelKey)}
             </button>
           ))}
+          <button
+            onClick={() => {
+              setOpen(false)
+              fileRef.current?.click()
+            }}
+          >
+            <span className="rb-menu-check" aria-hidden="true" />
+            {t('ribbonTransSoundOther')}
+          </button>
           <div className="rb-menu-sep" />
           <button
             className={`rb-check ${value?.loop ? 'on' : ''}`}
@@ -1151,6 +1169,21 @@ function TransSoundSelect({
           </button>
         </div>
       )}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="audio/*"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          e.target.value = ''
+          if (!file) return
+          void file.arrayBuffer().then((buf) => {
+            const ext = (file.name.split('.').pop() ?? 'mp3').toLowerCase()
+            onPickCustom({ name: file.name, bytes: new Uint8Array(buf), ext })
+          })
+        }}
+      />
     </div>
   )
 }
@@ -2612,6 +2645,17 @@ export function Ribbon({
                   value={transSpec?.sound ?? null}
                   disabled={!hasDoc}
                   onPick={(name) => onTransitionSound({ name })}
+                  onPickCustom={(file) =>
+                    onTransitionSound({
+                      name: 'custom',
+                      fileName: file.name,
+                      bytes: file.bytes.buffer.slice(
+                        file.bytes.byteOffset,
+                        file.bytes.byteOffset + file.bytes.byteLength,
+                      ) as ArrayBuffer,
+                      ext: file.ext,
+                    })
+                  }
                   onToggleLoop={() =>
                     onTransitionSound({
                       name: (transSpec?.sound?.name as TransitionSoundKey) ?? null,

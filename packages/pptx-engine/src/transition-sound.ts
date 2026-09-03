@@ -10,7 +10,7 @@
 import type { Slide } from './types'
 import type { OpenedPptx } from './index'
 import { buildTransitionSoundXml, patchSlideTransitionSoundXml } from './generate'
-import { appendRels, ensureDefaultContentType, newMediaPart } from './media-insert'
+import { appendRels, ensureDefaultContentType, newMediaPart, MEDIA_MIME } from './media-insert'
 
 /** Preset keys — also the p:snd name and the i18n key suffix (transSound*). */
 export const TRANSITION_SOUND_KEYS = [
@@ -243,6 +243,30 @@ const SYNTHS: Record<TransitionSoundKey, () => Float32Array> = {
 
 const cache = new Map<TransitionSoundKey, Buffer>()
 
+/** Bytes of the slide's embedded transition sound (serves presets AND custom
+ * imports); null when unset or the part is missing. */
+export function getTransitionSoundBytes(
+  opened: OpenedPptx,
+  slide: Slide,
+): {
+  name: string
+  bytes: Uint8Array
+} | null {
+  const attr = /<p:snd\b([^>]*)>/.exec(slide.bodySuffix)?.[1]
+  if (!attr) return null
+  const rid = /r:embed="([^"]+)"/.exec(attr)?.[1]
+  const name = /name="([^"]*)"/.exec(attr)?.[1]
+  if (!rid || !name) return null
+  const relsXml = opened.archive.readText(slide.path.replace(/([^/]+)$/, '_rels/$1') + '.rels')
+  if (!relsXml) return null
+  const target = new RegExp(`Id="${rid}"[^>]*Target="([^"]+)"`).exec(relsXml)?.[1]
+  if (!target) return null
+  const partPath = `ppt/media/${target.replace(/^\.\.\/media\//, '')}`
+  const bytes = opened.archive.entries.get(partPath)
+  if (!bytes) return null
+  return { name: name.replace(/\.wav$/, ''), bytes }
+}
+
 /** Synthesize a preset's wav bytes (memoized). */
 export function synthTransitionSound(key: TransitionSoundKey): Buffer {
   const hit = cache.get(key)
@@ -250,6 +274,34 @@ export function synthTransitionSound(key: TransitionSoundKey): Buffer {
   const bytes = wavBytes(SYNTHS[key]())
   cache.set(key, bytes)
   return bytes
+}
+
+/** Import a user-picked audio file as the transition sound (其他声音…). */
+export function setSlideTransitionCustomSound(
+  opened: OpenedPptx,
+  slide: Slide,
+  file: { name: string; bytes: Uint8Array; ext: string },
+  loop: boolean,
+): boolean {
+  const ext = file.ext.toLowerCase()
+  if (!MEDIA_MIME[ext]) return false
+  const bytes = file.bytes
+  const mediaPath = newMediaPart(opened, 'media', ext, bytes)
+  ensureDefaultContentType(opened, ext, MEDIA_MIME[ext]!)
+  const [rId] = appendRels(opened, slide, [
+    { type: AUDIO_REL_TYPE, target: `../media/${mediaPath.split('/').pop()}` },
+  ])
+  slide.bodySuffix = patchSlideTransitionSoundXml(
+    slide.bodySuffix,
+    buildTransitionSoundXml(
+      // name attribute carries the original filename (animation-pane label)
+      file.name.replace(/[<>&"']/g, ''),
+      rId!,
+      loop,
+    ),
+  )
+  slide.structureDirty = true
+  return true
 }
 
 /**
@@ -278,7 +330,7 @@ export function setSlideTransitionSound(
   ])
   slide.bodySuffix = patchSlideTransitionSoundXml(
     slide.bodySuffix,
-    buildTransitionSoundXml(name, rId!, loop),
+    buildTransitionSoundXml(`${name}.wav`, rId!, loop),
   )
   slide.structureDirty = true
   return true

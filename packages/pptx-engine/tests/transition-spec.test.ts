@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import {
   getSlideTransitionSound,
+  getTransitionSoundBytes,
+  setSlideTransitionCustomSound,
   getSlideTransitionSpec,
   openPptx,
   patchSlideTransitionXml,
@@ -108,7 +110,7 @@ describe('transition 效果选项 (dir/split/zoom/thruBlk)', () => {
 
   it('switching effects keeps advTm and the configured sound', () => {
     let body = patchSlideTransitionXml(base, 'fade')
-    body = patchSlideTransitionSoundXml(body, buildTransitionSoundXml('chime', 'rId9', true))
+    body = patchSlideTransitionSoundXml(body, buildTransitionSoundXml('chime.wav', 'rId9', true))
     body = body.replace('<p:transition>', '<p:transition advTm="5000">')
     const next = patchSlideTransitionXml(body, 'push', { durationMs: 600 })
     expect(next).toContain('advTm="5000"')
@@ -179,5 +181,44 @@ describe('transition 声音 (preset synth + embed)', () => {
     const slide = opened.deck.slides[0]!
     setSlideTransitionSound(opened, slide, 'voltage', false)
     expect(slide.bodySuffix).toContain('<p:transition><p:sndAc>')
+  })
+})
+
+describe('custom transition sound (其他声音…)', () => {
+  it('embeds user bytes and serves them back via getTransitionSoundBytes', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    setSlideTransition(slide, 'fade', {})
+    const mp3 = new Uint8Array([0x49, 0x44, 0x33, 4, 0, 0, 0, 0]) // fake ID3 header
+    expect(
+      setSlideTransitionCustomSound(
+        opened,
+        slide,
+        { name: 'clap.mp3', bytes: mp3, ext: 'mp3' },
+        true,
+      ),
+    ).toBe(true)
+    expect(slide.bodySuffix).toContain('name="clap.mp3"')
+    expect(slide.bodySuffix).toContain('loop="1"')
+    const served = getTransitionSoundBytes(opened, slide)
+    expect(served?.name).toBe('clap.mp3')
+    expect(Array.from(served!.bytes)).toEqual(Array.from(mp3))
+    expect(
+      setSlideTransitionCustomSound(
+        opened,
+        slide,
+        { name: 'x.exe', bytes: mp3, ext: 'exe' },
+        false,
+      ),
+    ).toBe(false)
+  })
+
+  it('preset embeds are also served from the media part', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    setSlideTransitionSound(opened, slide, 'chime', false)
+    const served = getTransitionSoundBytes(opened, slide)
+    expect(served?.name).toBe('chime')
+    expect(served!.bytes.length).toBe(synthTransitionSound('chime').length)
   })
 })

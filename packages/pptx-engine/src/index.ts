@@ -168,6 +168,8 @@ export {
 export {
   synthTransitionSound,
   setSlideTransitionSound,
+  setSlideTransitionCustomSound,
+  getTransitionSoundBytes,
   TRANSITION_SOUND_KEYS,
   type TransitionSoundKey,
 } from './transition-sound'

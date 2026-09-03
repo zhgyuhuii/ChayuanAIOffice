@@ -44,6 +44,7 @@ import {
   setSlideSize,
   setSlideTransition,
   setSlideTransitionSound,
+  setSlideTransitionCustomSound,
   getSlideTransitionSound,
   elementSpid,
   matchesElementRef,
@@ -468,11 +469,20 @@ register({
       if (typeof op.sound !== 'object' || !('name' in op.sound)) {
         throw new GuidedError('op "setTransition" needs "sound": { name, loop? } or null.')
       }
-      const name = (op.sound as { name: unknown }).name
-      if (name !== null && !TRANSITION_SOUND_KEYS.includes(name as 'chime')) {
-        throw new GuidedError(
-          `op "setTransition" needs "sound.name": one of [${TRANSITION_SOUND_KEYS.join(', ')}] or null.`,
-        )
+      const snd = op.sound as { name: unknown; bytes?: unknown; ext?: unknown }
+      if (snd.name !== null && snd.name !== 'custom') {
+        if (!TRANSITION_SOUND_KEYS.includes(snd.name as 'chime')) {
+          throw new GuidedError(
+            `op "setTransition" needs "sound.name": one of [${TRANSITION_SOUND_KEYS.join(', ')}], 'custom' or null.`,
+          )
+        }
+      }
+      if (snd.name === 'custom') {
+        if (!(snd.bytes instanceof Uint8Array) || typeof snd.ext !== 'string') {
+          throw new GuidedError(
+            'op "setTransition" custom sound needs "bytes" (Uint8Array) and "ext".',
+          )
+        }
       }
     }
   },
@@ -487,21 +497,46 @@ register({
     }
     setSlideTransition(slide, op.kind as SlideTransitionKind, opts)
     if (op.sound !== undefined && op.sound !== null) {
-      const snd = op.sound as { name: string | null; loop?: boolean }
-      // Idempotent fast path: same preset+loop keeps the embedded part (undo/redo replays)
-      const cur = getSlideTransitionSound(slide)
-      if (cur?.name !== snd.name || cur?.loop !== (snd.loop === true)) {
+      const snd = op.sound as {
+        name: string | null
+        loop?: boolean
+        fileName?: string
+        bytes?: Uint8Array
+        ext?: string
+      }
+      if (snd.name === 'custom') {
         if (
-          !setSlideTransitionSound(
+          !setSlideTransitionCustomSound(
             ctx.opened,
             slide,
-            snd.name as (typeof TRANSITION_SOUND_KEYS)[number] | null,
+            {
+              name: String(snd.fileName ?? 'sound'),
+              bytes: snd.bytes!,
+              ext: String(snd.ext ?? 'mp3'),
+            },
             snd.loop === true,
           )
         ) {
           throw new GuidedError(
-            `op "setTransition": unknown sound preset "${String(snd.name)}" (no changes made).`,
+            `op "setTransition": unsupported custom sound type ".${String(snd.ext)}".`,
           )
+        }
+      } else {
+        // Idempotent fast path: same preset+loop keeps the embedded part (undo/redo replays)
+        const cur = getSlideTransitionSound(slide)
+        if (cur?.name !== snd.name || cur?.loop !== (snd.loop === true)) {
+          if (
+            !setSlideTransitionSound(
+              ctx.opened,
+              slide,
+              snd.name as (typeof TRANSITION_SOUND_KEYS)[number] | null,
+              snd.loop === true,
+            )
+          ) {
+            throw new GuidedError(
+              `op "setTransition": unknown sound preset "${String(snd.name)}" (no changes made).`,
+            )
+          }
         }
       }
     }

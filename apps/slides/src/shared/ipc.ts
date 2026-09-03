@@ -680,8 +680,17 @@ export interface SetTransitionOp {
   zoom?: 'in' | 'out'
   /** fade 变黑 (thruBlk) */
   fadeBlack?: boolean
-  /** 声音 (present = set/clear the transition sound; name=null clears) */
-  sound?: { name: TransitionSoundKey | null; loop?: boolean } | null
+  /** 声音 (present = set/clear the transition sound; name=null clears).
+   * name='custom' + bytes/ext = 其他声音… user-picked audio import. */
+  sound?: {
+    name: TransitionSoundKey | 'custom' | null
+    loop?: boolean
+    /** custom import: original filename (p:snd name label) */
+    fileName?: string
+    bytes?: ArrayBuffer
+    /** custom import: lowercase extension (mp3/wav/m4a…) */
+    ext?: string
+  } | null
 }
 
 /** Transition sound preset keys (synthesized wavs, WPS 声音 dropdown). */

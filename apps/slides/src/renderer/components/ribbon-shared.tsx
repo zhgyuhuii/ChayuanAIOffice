@@ -456,8 +456,15 @@ export interface Props {
     zoom?: SetTransitionOp['zoom']
     fadeBlack?: boolean
   }) => void
-  /** Transitions tab 声音: set/clear a preset (name=null clears) or toggle 循环播放 */
-  onTransitionSound: (sound: { name: TransitionSoundKey | null; loop?: boolean }) => void
+  /** Transitions tab 声音: set/clear a preset (name=null clears), 'custom' imports
+   * a user-picked audio file (fileName/bytes/ext), loop toggles 循环播放 */
+  onTransitionSound: (sound: {
+    name: TransitionSoundKey | 'custom' | null
+    loop?: boolean
+    fileName?: string
+    bytes?: ArrayBuffer
+    ext?: string
+  }) => void
   /** Current page's auto-advance time (ms; null = advance on click only) */
   advanceMs: number | null
   /** Set/clear the current page's auto-advance time (Transitions tab 换片方式) */

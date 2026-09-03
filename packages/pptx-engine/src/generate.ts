@@ -1547,11 +1547,13 @@ export interface SlideTransitionSound {
   loop: boolean
 }
 
-/** Build the sndAc block with the real relationship id (media layer owns the rId). */
+/** Build the sndAc block with the real relationship id (media layer owns the rId).
+ * `name` is the p:snd name verbatim — presets pass "<key>.wav", custom imports
+ * keep the user's original filename. */
 export function buildTransitionSoundXml(name: string, rId: string, loop: boolean): string {
   return (
     `<p:sndAc><p:stSnd${loop ? ' loop="1"' : ''}>` +
-    `<p:snd r:embed="${rId}" name="${name}.wav"/></p:stSnd></p:sndAc>`
+    `<p:snd r:embed="${rId}" name="${name}"/></p:stSnd></p:sndAc>`
   )
 }
 

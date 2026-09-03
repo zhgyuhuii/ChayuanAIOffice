@@ -27,7 +27,7 @@ const P14_NS = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
 /** Fixed uri of the <p:ext> that hosts p14:media (ECMA/Microsoft convention) */
 const MEDIA_EXT_URI = '{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}'
 
-const MEDIA_MIME: Record<string, string> = {
+export const MEDIA_MIME: Record<string, string> = {
   mp4: 'video/mp4',
   m4v: 'video/mp4',
   mov: 'video/quicktime',
