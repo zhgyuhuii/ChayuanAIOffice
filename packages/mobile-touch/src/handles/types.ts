@@ -1,7 +1,7 @@
 /**
- * Selection handles (P0: type-level stub, implemented in P1). One visual
- * language (≥44px touch targets) for docs text selections, sheets cell-range
- * selections, and slides object frames.
+ * Selection handles (P0 stub until P2). One visual language (≥44px touch
+ * targets) for docs text selections, sheets cell-range selections, and slides
+ * object frames.
  */
 import type { TouchPoint } from '../gestures/types'
 
@@ -15,5 +15,5 @@ export interface SelectionHandlesProps {
 }
 
 export function SelectionHandles(_props: SelectionHandlesProps): null {
-  throw new Error('@chatoffice/mobile-touch: SelectionHandles is not implemented in P0')
+  throw new Error('@chatoffice/mobile-touch: SelectionHandles is not implemented (planned P2)')
 }

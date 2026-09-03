@@ -17,7 +17,7 @@ export interface FloatingToolbarProps {
 }
 
 export function FloatingToolbar(_props: FloatingToolbarProps): null {
-  throw new Error('@chatoffice/mobile-touch: FloatingToolbar is not implemented in P0')
+  throw new Error('@chatoffice/mobile-touch: FloatingToolbar is not implemented (planned P2)')
 }
 
 export interface EditorOverlayProps {
@@ -35,5 +35,5 @@ export interface EditorOverlayProps {
 }
 
 export function EditorOverlay(_props: EditorOverlayProps): null {
-  throw new Error('@chatoffice/mobile-touch: EditorOverlay is not implemented in P0')
+  throw new Error('@chatoffice/mobile-touch: EditorOverlay is not implemented (planned P2)')
 }

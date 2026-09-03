@@ -12,7 +12,7 @@
  * The decision logic lives in the exported pure functions (decideIsMobile,
  * readUIMode) so node-env tests cover everything except React wiring.
  */
-import { useCallback, useState, useSyncExternalStore } from 'react'
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react'
 
 export interface MediaQuerySnapshot {
   readonly matches: boolean
@@ -52,9 +52,11 @@ export function decideIsMobile(
 }
 
 function useMediaQuery(query: string, source: MediaQuerySource): boolean {
+  // One MediaQueryList per (source, query): React reads getSnapshot on every
+  // store check, and constructing the MQL there would allocate on each read.
+  const mql = useMemo(() => source(query), [source, query])
   const subscribe = useCallback(
     (onChange: () => void) => {
-      const mql = source(query)
       if (mql.addEventListener) {
         mql.addEventListener('change', onChange)
         return () => mql.removeEventListener?.('change', onChange)
@@ -62,11 +64,11 @@ function useMediaQuery(query: string, source: MediaQuerySource): boolean {
       mql.addListener?.(onChange)
       return () => mql.removeListener?.(onChange)
     },
-    [source, query],
+    [mql],
   )
   return useSyncExternalStore(
     subscribe,
-    () => source(query).matches,
+    () => mql.matches,
     () => false,
   )
 }

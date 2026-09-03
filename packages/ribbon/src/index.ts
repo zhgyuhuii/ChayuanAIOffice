@@ -62,6 +62,7 @@ export {
   type SchemaToJSONResult,
 } from './schema/serialize'
 export { DesktopRibbon, type DesktopRibbonProps } from './desktop/DesktopRibbon'
+export { MobileRibbon, type MobileRibbonProps } from './mobile/MobileRibbon'
 export {
   useRibbonTabs,
   contextualGroups,
