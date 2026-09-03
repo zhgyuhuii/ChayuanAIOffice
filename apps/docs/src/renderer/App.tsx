@@ -4047,6 +4047,8 @@ export function App() {
     save: () => void save(false),
     saveAs: () => void save(true),
     compare: () => void compareWithFile(),
+    exportPdf: () => void exportPdf(),
+    printDoc: () => printDoc(),
   })
   const insertServices = useStableCallbacks({
     sectionBreak: (type: 'nextPage' | 'continuous' | 'evenPage' | 'oddPage') =>

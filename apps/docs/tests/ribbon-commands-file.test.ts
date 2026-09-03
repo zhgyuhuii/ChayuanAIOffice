@@ -15,7 +15,7 @@ function services(): DocsCommandServices {
     pen: new PenPreferences(),
     painter: new PainterService(),
     fontStep: new FontStepper(),
-    file: { open: fn(), save: fn(), saveAs: fn(), compare: fn() },
+    file: { open: fn(), save: fn(), saveAs: fn(), compare: fn(), exportPdf: fn(), printDoc: fn() },
     insert: {
       sectionBreak: fn(),
       note: fn(),

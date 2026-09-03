@@ -96,6 +96,10 @@ export interface RibbonProps {
   onOpen: () => void
   onSave: () => void
   onSaveAs: () => void
+  /** 文件菜单「导出为 PDF」（对齐 slides 文件菜单） */
+  onExportPdf?: () => void
+  /** 文件菜单「打印」（Word 式打印对话框） */
+  onPrint?: () => void
   showAi: boolean
   onToggleAi: () => void
   section: SectionSettings | null
@@ -356,6 +360,8 @@ function RibbonInner({
   onOpen,
   onSave,
   onSaveAs,
+  onExportPdf,
+  onPrint,
   showAi,
   onToggleAi,
   section,

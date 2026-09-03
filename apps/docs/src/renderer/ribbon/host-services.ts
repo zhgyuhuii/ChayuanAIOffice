@@ -43,6 +43,10 @@ export interface DocsCommandServices {
     readonly save: () => void
     readonly saveAs: () => void
     readonly compare: () => void
+    /** 文件菜单「导出为 PDF」(exportPdfImpl via App) */
+    readonly exportPdf: () => void
+    /** 文件菜单「打印」(printDocImpl via App, Word 式打印对话框) */
+    readonly printDoc: () => void
   }
   readonly insert: {
     readonly sectionBreak: (type: 'nextPage' | 'continuous' | 'evenPage' | 'oddPage') => void
@@ -174,6 +178,8 @@ export function ribbonPropsFromHost(
     onOpen: services.file.open,
     onSave: services.file.save,
     onSaveAs: services.file.saveAs,
+    onExportPdf: services.file.exportPdf,
+    onPrint: services.file.printDoc,
     onCompare: services.file.compare,
     onToggleAi: services.ai.toggle,
     onAiPreset: services.ai.preset,
