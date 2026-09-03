@@ -77,6 +77,7 @@ import {
   getSlideComments,
   getSlideNotes,
   getSlideTransition,
+  getSlideAdvanceTime,
   elementSpid,
   getSlideAnimations,
   listEmbeddedFonts,
@@ -3760,6 +3761,13 @@ export function registerSlidesIpc(): void {
       })),
     })
     return r !== null
+  })
+
+  // Transitions tab echo: the current page's auto-advance time (null = click-advance only)
+  ipcMain.handle('slides:get-advance-time', (e, slideIndex: number) => {
+    const session = sessions.get(e.sender.id)
+    const slide = session?.opened.deck.slides[slideIndex]
+    return slide ? getSlideAdvanceTime(slide) : null
   })
 
   // ── Shape animations (<p:timing>; the spid <-> temporary element id mapping happens here) ──

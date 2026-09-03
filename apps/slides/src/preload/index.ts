@@ -276,6 +276,7 @@ const api: SlidesApi = {
   setTransition: (op: SetTransitionOp) => ipcRenderer.invoke('slides:set-transition', op),
   getTransition: (slideIndex: number) => ipcRenderer.invoke('slides:get-transition', slideIndex),
   setAdvanceTimes: (op: SetAdvanceTimesOp) => ipcRenderer.invoke('slides:set-advance-times', op),
+  getAdvanceTime: (slideIndex: number) => ipcRenderer.invoke('slides:get-advance-time', slideIndex),
   getAnimations: (slideIndex: number) => ipcRenderer.invoke('slides:get-animations', slideIndex),
   getShapeKeys: (slideIndex: number) => ipcRenderer.invoke('slides:get-shape-keys', slideIndex),
   setAnimations: (op: SetAnimationsOp) => ipcRenderer.invoke('slides:set-animations', op),
@@ -353,8 +354,7 @@ const api: SlidesApi = {
   setAiSettings: (view: AiSettingsV2) => ipcRenderer.invoke('ai:set-settings', view),
   setAiCurrentModel: (selection: AiModelSelection) =>
     ipcRenderer.invoke('ai:set-current-model', selection),
-  aiDiscoverModels: (target: DiscoveryTarget) =>
-    ipcRenderer.invoke('ai:discover-models', target),
+  aiDiscoverModels: (target: DiscoveryTarget) => ipcRenderer.invoke('ai:discover-models', target),
   aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
   aiGskStatus: (withEmail?: boolean) => ipcRenderer.invoke('ai:gsk-status', withEmail),

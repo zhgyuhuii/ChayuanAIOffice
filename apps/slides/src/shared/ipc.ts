@@ -1464,6 +1464,8 @@ export interface SlidesApi {
   getTransition: (slideIndex: number) => Promise<TransitionKind>
   /** Batch-write each page's auto-advance time (rehearsal timing save; the saved pptx auto-advances in PowerPoint shows); returns success */
   setAdvanceTimes: (op: SetAdvanceTimesOp) => Promise<boolean>
+  /** The current page's auto-advance time (<p:transition advTm> ms; null = advance on click only) */
+  getAdvanceTime: (slideIndex: number) => Promise<number | null>
   /** The current page's animation list (read by the Animations tab / during shows) */
   getAnimations: (slideIndex: number) => Promise<AnimationItem[]>
   /** Morph pairing keys of the current page's elements (matched against same-name/same-id elements on the previous page during morph tweening) */
