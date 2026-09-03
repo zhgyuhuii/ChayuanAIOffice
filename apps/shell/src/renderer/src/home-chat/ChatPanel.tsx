@@ -1,11 +1,20 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
+import { useDismissablePopover } from '@chatoffice/ui'
 import { useI18n } from '../locale'
 import type { StringKey } from '../locale'
-import { useHomeChat } from './context'
+import { HomeChatController } from './controller'
+import type { HomeChatControllerTexts } from './controller'
+import { useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
-import type { HomeChatAttachment, HomeChatCard, HomeChatMessage } from '../../../shared/home-api'
+import { createHomeChatBridge, refreshHomeModelCache } from './bridge'
+import type {
+  HomeChatAttachment,
+  HomeChatCard,
+  HomeChatMessage,
+  HomeChatSession,
+} from '../../../shared/home-api'
 
 /** greeting sublines on the landing screen: one is picked at random on mount */
 const GREET_ASK_KEYS = [
@@ -23,6 +32,15 @@ function chatSupported(): boolean {
     typeof window.chatOffice.aiStream === 'function' &&
     typeof window.chatOffice.chatSessionsSave === 'function'
   )
+}
+
+function chatTime(ts: number, dateLocale: string): string {
+  const date = new Date(ts)
+  const now = new Date()
+  const sameDay = date.toDateString() === now.toDateString()
+  return sameDay
+    ? date.toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit' })
+    : date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' })
 }
 
 function AttachmentChip({
@@ -178,34 +196,142 @@ function ChatMessageView({
         ) : null}
         {m.error && <div className="chat-err">{m.text}</div>}
         {m.card && <ChatCard card={m.card} onOpenSettings={onOpenSettings} />}
-        <div className="chat-msg-time">
-          {new Date(m.ts).toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit' })}
-        </div>
+        <div className="chat-msg-time">{chatTime(m.ts, dateLocale)}</div>
       </div>
     </div>
   )
 }
 
-/** the conversation surface (no header — the top strip owns session meta) */
-export function ChatPanel(): ReactElement {
-  const { t, lang } = useI18n()
-  const { store, controller, busy, openSettings, bindPendingProject } = useHomeChat()
+export function ChatPanel({
+  projectId,
+  accountName,
+  onOpenSettings,
+}: {
+  projectId: string | null
+  accountName: string
+  onOpenSettings: () => void
+}): ReactElement {
+  const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
-  const active = store.active
-  const hasMessages = (active?.messages.length ?? 0) > 0
+
+  // ── store + controller (both created once) ──
+  const storeRef = useRef<ReturnType<typeof useHomeChatStore> | null>(null)
+  const store = useHomeChatStore(
+    useMemo(
+      () => ({
+        chatSessionsLoad: async () => (await window.chatOffice.chatSessionsLoad?.()) ?? [],
+        chatSessionsSave: async (sessions: HomeChatSession[]) => {
+          await window.chatOffice.chatSessionsSave?.(sessions)
+        },
+      }),
+      [],
+    ),
+  )
+  storeRef.current = store
+
+  const activeIdRef = useRef<string | null>(null)
+  activeIdRef.current = store.activeId
+  const [busy, setBusy] = useState(false)
+  const projectIdRef = useRef(projectId)
+  projectIdRef.current = projectId
+
+  // texts read at send time, so a language switch applies without recreating agents
+  const textsRef = useRef<HomeChatControllerTexts | null>(null)
+  textsRef.current = {
+    docBodyMissing: t('chatToolDocBodyMissing'),
+    createFailed: (error) => t('chatToolCreateFailed', { e: error }),
+    openFailed: (error) => t('chatToolOpenFailed', { e: error }),
+    unsupportedHandoff: t('chatToolUnsupportedHandoff'),
+    fileNotFound: t('chatToolFileNotFound'),
+    unknownError: t('chatUnknownError'),
+    docOpenedInTab: (title) => t('chatDocOpenedInTab', { title }),
+  }
+  const controller = useMemo(
+    () =>
+      new HomeChatController(
+        createHomeChatBridge(() => projectIdRef.current),
+        // stable facade: field reads delegate to the latest texts
+        {
+          get docBodyMissing() {
+            return textsRef.current!.docBodyMissing
+          },
+          createFailed: (error) => textsRef.current!.createFailed(error),
+          openFailed: (error) => textsRef.current!.openFailed(error),
+          get unsupportedHandoff() {
+            return textsRef.current!.unsupportedHandoff
+          },
+          get fileNotFound() {
+            return textsRef.current!.fileNotFound
+          },
+          get unknownError() {
+            return textsRef.current!.unknownError
+          },
+          docOpenedInTab: (title) => textsRef.current!.docOpenedInTab(title),
+        },
+        (id, mutate) => storeRef.current!.updateSession(id, mutate),
+        undefined,
+        (id, isBusy) => {
+          if (id === activeIdRef.current) setBusy(isBusy)
+        },
+      ),
+    [],
+  )
+
+  // refresh the current-model cache: mount, window focus (the settings modal
+  // close path lives in Home)
+  useEffect(() => {
+    void refreshHomeModelCache()
+    const onFocus = () => void refreshHomeModelCache()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [])
 
   // ── composer state ──
   const [input, setInput] = useState('')
   const [attachments, setAttachments] = useState<HomeChatAttachment[]>([])
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+  // ── sessions dropdown ──
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuWrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(menuOpen, () => setMenuOpen(false), {
+    inside: () => [menuWrapRef.current],
+  })
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen])
+
+  const active = store.active
+  const hasMessages = (active?.messages.length ?? 0) > 0
+
+  const openSession = (id: string) => {
+    setMenuOpen(false)
+    setBusy(controller.isBusy(id))
+    store.setActiveId(id)
+  }
+
+  const newChat = () => {
+    setMenuOpen(false)
+    // an empty active session is reused instead of piling up blanks
+    if (active && active.messages.length === 0) {
+      inputRef.current?.focus()
+      return
+    }
+    setBusy(false)
+    store.createSession()
+    inputRef.current?.focus()
+  }
+
   const send = () => {
     const text = input.trim()
     if (!text && attachments.length === 0) return
     let session = store.active
-    if (!session) session = store.createSession()
-    // 一键成文落项目: bind AI-created docx/md to the session's project
-    if (session.projectId) bindPendingProject(session.projectId)
+    if (!session || session.messages.length > 0) session = store.createSession()
     const atts = attachments
     setInput('')
     setAttachments([])
@@ -254,7 +380,7 @@ export function ChatPanel(): ReactElement {
           ? 'greetAfternoon'
           : 'greetEvening'
   const cjk = lang === 'zh' || lang === 'zh-TW' || lang === 'ja'
-  const greeting = `${t(greetKey)}${cjk ? '。' : '. '}`
+  const greeting = `${t(greetKey)}${accountName ? (cjk ? '，' : ', ') + accountName : ''}${cjk ? '。' : '. '}`
 
   // ── stick-to-bottom auto scroll ──
   const listRef = useRef<HTMLDivElement>(null)
@@ -269,19 +395,7 @@ export function ChatPanel(): ReactElement {
     if (el && stickRef.current) el.scrollTop = el.scrollHeight
   }, [active?.messages, busy])
 
-  // md/pdf created by 一键成文 are written to disk immediately — move them into
-  // the session's project once the created card reports a path
-  const movedRef = useRef<Set<string>>(new Set())
-  useEffect(() => {
-    const pid = active?.projectId
-    if (!pid) return
-    for (const m of active?.messages ?? []) {
-      if (m.card?.kind === 'doc-created' && m.card.filePath && !movedRef.current.has(m.id)) {
-        movedRef.current.add(m.id)
-        void window.chatOfficeProject?.moveFile(m.card.filePath, pid).catch(() => {})
-      }
-    }
-  }, [active?.messages, active?.projectId])
+  const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
 
   const renderComposer = () => (
     <div className="chat-composer">
@@ -381,6 +495,86 @@ export function ChatPanel(): ReactElement {
 
   return (
     <main className="chat-stage">
+      <header className="chat-head">
+        <div className="chat-head-title">{hasMessages ? active!.title : ''}</div>
+        <div className="chat-head-actions">
+          <div className="chat-sessions-wrap" ref={menuWrapRef}>
+            <button
+              className="chat-head-btn"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
+                <path
+                  d="M8 4.8V8l2.2 1.6"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+              </svg>
+              {t('chatHistory')}
+            </button>
+            {menuOpen && (
+              <div className="chat-sessions" role="menu">
+                {sessions.length === 0 ? (
+                  <p className="chat-sessions-empty">{t('chatNoSessions')}</p>
+                ) : (
+                  sessions.map((s) => (
+                    <div key={s.id} className="chat-session-row" role="none">
+                      <button
+                        className="chat-session-open"
+                        role="menuitem"
+                        onClick={() => openSession(s.id)}
+                      >
+                        <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
+                        <span className="chat-session-time">
+                          {chatTime(s.updatedAt, dateLocale)}
+                        </span>
+                      </button>
+                      <button
+                        className="chat-session-del"
+                        role="menuitem"
+                        aria-label={t('chatDeleteSession')}
+                        onClick={() => store.removeSession(s.id)}
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M2.5 4h11M6.5 4V2.5h3V4M4 4l.7 9a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L12 4"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+          <button className="chat-head-btn primary" onClick={newChat}>
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M7 1v12M1 7h12"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
+            </svg>
+            {t('chatNew')}
+          </button>
+        </div>
+      </header>
+
       {hasMessages ? (
         <div className="chat-msgs" ref={listRef} onScroll={onListScroll}>
           {active!.messages.map((m, i) => (
@@ -388,7 +582,7 @@ export function ChatPanel(): ReactElement {
               key={m.id}
               m={m}
               typing={busy && i === active!.messages.length - 1 && m.role === 'assistant'}
-              onOpenSettings={openSettings}
+              onOpenSettings={onOpenSettings}
             />
           ))}
         </div>

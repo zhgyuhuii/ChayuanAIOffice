@@ -102,8 +102,7 @@ vi.mock('../../slides/src/main/slides-main', () => ({
 
 import { TabManager } from '../src/main/tab-manager'
 
-/** the editor pane's view-host rect the renderer reports (three-pane home) */
-const PANE_RECT = { x: 480, y: 0, width: 320, height: 600 }
+const TAB_STRIP_HEIGHT = 40
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 600
 
@@ -151,7 +150,6 @@ beforeEach(() => {
     () => onChanged(),
     (kind) => applyMenuFor(kind),
   )
-  manager.setPaneBounds(PANE_RECT)
 })
 
 describe('initial state', () => {
@@ -217,7 +215,7 @@ describe('opening tabs', () => {
 })
 
 describe('activation', () => {
-  it('shows only the activated tab view, fitted to the editor pane rect', () => {
+  it('shows only the activated tab view and lays it out below the tab strip', () => {
     const docsId = manager.openDocsTab()
     const docsView = lastCreatedView(createDocsView)
     manager.openSheetsTab()
@@ -226,25 +224,13 @@ describe('activation', () => {
     manager.activateTab(docsId)
     expect(docsView.setVisible).toHaveBeenLastCalledWith(true)
     expect(sheetsView.setVisible).toHaveBeenLastCalledWith(false)
-    expect(docsView.setBounds).toHaveBeenLastCalledWith(PANE_RECT)
+    expect(docsView.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
     expect(manager.list().find((t) => t.id === docsId)?.active).toBe(true)
-  })
-
-  it('hides every editor view while the pane is collapsed (no pane bounds)', () => {
-    manager.setPaneBounds(null)
-    const docsId = manager.openDocsTab()
-    const view = lastCreatedView(createDocsView)
-    manager.activateTab(docsId)
-    expect(view.setVisible).toHaveBeenLastCalledWith(false)
-    expect(view.setBounds).not.toHaveBeenCalled()
-  })
-
-  it('adopts a newly reported pane rect on the next layout', () => {
-    manager.openSheetsTab()
-    const view = lastCreatedView(createSheetsView)
-    manager.setPaneBounds({ x: 100, y: 10, width: 500, height: 500 })
-    expect(view.setVisible).toHaveBeenLastCalledWith(true)
-    expect(view.setBounds).toHaveBeenLastCalledWith({ x: 100, y: 10, width: 500, height: 500 })
   })
 
   it('ignores activation of unknown tab ids', () => {
@@ -264,7 +250,7 @@ describe('activation', () => {
     expect(setActiveSlidesWebContents).toHaveBeenLastCalledWith(slidesView.webContents)
   })
 
-  it('lets the active view cover the whole window during HTML fullscreen', () => {
+  it('lets the active view cover the tab strip during HTML fullscreen', () => {
     manager.openSlidesTab()
     const view = lastCreatedView(createSlidesView)
     view.webContents.listeners.get('enter-html-full-screen')!()
@@ -275,7 +261,12 @@ describe('activation', () => {
       height: WINDOW_HEIGHT,
     })
     view.webContents.listeners.get('leave-html-full-screen')!()
-    expect(view.setBounds).toHaveBeenLastCalledWith(PANE_RECT)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
   })
 })
 
@@ -287,9 +278,9 @@ describe('window resize layout', () => {
   }
 
   it('re-lays out after resize bounds settle (Linux/X11 stale getContentBounds)', async () => {
-    // The pane rect is renderer-owned and does not depend on the window size,
-    // but a resize must still re-fit the view (twice: sync + deferred; see
-    // issue #15) until the renderer reports the updated rect.
+    // On X11, `resize` fires before the WM applies maximize bounds, so the first
+    // layout still sees the pre-maximize size. The deferred layout must pick up
+    // the real size on the next turn (see issue #15).
     manager.openSheetsTab()
     const view = lastCreatedView(createSheetsView)
     view.setBounds.mockClear()
@@ -299,14 +290,24 @@ describe('window resize layout', () => {
     shellWindow.getContentBounds = () => ({ x: 0, y: 0, width, height })
 
     resizeHandler()()
-    expect(view.setBounds).toHaveBeenLastCalledWith(PANE_RECT)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
 
     // Bounds update after the synchronous layout, as on X11 maximize.
     width = 1920
     height = 1080
     await new Promise<void>((resolve) => setImmediate(resolve))
 
-    expect(view.setBounds).toHaveBeenLastCalledWith(PANE_RECT)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: TAB_STRIP_HEIGHT,
+      width: 1920,
+      height: 1080 - TAB_STRIP_HEIGHT,
+    })
     expect(view.setBounds).toHaveBeenCalledTimes(2)
   })
 
@@ -333,26 +334,6 @@ describe('closing tabs', () => {
     manager.closeActiveTab()
     await Promise.resolve()
     expect(manager.list()).toHaveLength(1)
-  })
-
-  it('notifies the pane and deactivates editors on openHomeTab', () => {
-    const homeActivated = vi.fn()
-    const mgr = new TabManager(
-      shellWindow as never,
-      () => onChanged(),
-      (kind) => applyMenuFor(kind),
-      undefined,
-      homeActivated,
-    )
-    mgr.setPaneBounds(PANE_RECT)
-    const id = mgr.openSheetsTab()
-    const view = lastCreatedView(createSheetsView)
-    homeActivated.mockClear()
-
-    mgr.openHomeTab()
-    expect(homeActivated).toHaveBeenCalledTimes(1)
-    expect(mgr.list().find((t) => t.id === id)?.active).toBe(false)
-    expect(view.setVisible).toHaveBeenLastCalledWith(false)
   })
 
   it('removes a clean tab and falls back to the previous tab', async () => {

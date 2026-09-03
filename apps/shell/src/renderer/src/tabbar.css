@@ -235,7 +235,7 @@ html.chatoffice-popover-open .tab-bar {
 
 /* "+" new tab button: lives inside the strip so it hugs the last tab, Chrome-style */
 .tab-new-btn {
-  margin-left: auto;
+  margin-left: 4px;
 }
 
 .tab-overflow-btn {
@@ -275,6 +275,10 @@ html.chatoffice-popover-open .tab-bar {
 .tab-new-btn:hover,
 .tab-overflow-btn:hover {
   background: rgba(0, 0, 0, 0.08);
+}
+
+.app-frame-content {
+  padding-top: 40px;
 }
 
 /* ── Dark mode tab bar overrides ─────────────────────────── */

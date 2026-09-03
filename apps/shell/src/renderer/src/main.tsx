@@ -8,7 +8,6 @@ import '@chatoffice/ui/screentip.css'
 import '@chatoffice/ui/dropdown.css'
 import './home.css'
 import './tabbar.css'
-import './pane.css'
 import { installScreenTips } from '@chatoffice/ui'
 
 installScreenTips()

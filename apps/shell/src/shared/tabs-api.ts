@@ -9,21 +9,6 @@ export interface TabSummary {
   active: boolean
 }
 
-/** persisted editor-pane layout (three-pane home: chat | editor pane) */
-export interface PaneLayout {
-  /** split = chat + editor side by side; collapsed = editor hidden; maximized = editor fills the window */
-  mode: 'split' | 'collapsed' | 'maximized'
-  /** chat column width as a fraction of the work area (split mode) */
-  chatRatio: number
-}
-
-export interface PaneRect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
 export interface TabsApi {
   list(): Promise<TabSummary[]>
   activate(id: string): Promise<void>
@@ -54,18 +39,6 @@ export interface TabsApi {
    * triggers; the shell's own popovers subscribe so a title-bar drag — which
    * produces no DOM event — still dismisses them */
   onChromePressed(handler: () => void): () => void
-  /**
-   * report the editor pane's view-host rect in window content coordinates
-   * (CSS px, viewport origin); the active editor view is fitted to it. null
-   * hides every editor view (pane collapsed / pane absent).
-   */
-  setPaneBounds(rect: PaneRect | null): void
-  /** 主页 was activated from the main side (回主页 menu items) — the pane should collapse */
-  onHomeActivated(handler: () => void): () => void
-  /** persisted pane layout (mode + chat width); defaults when unset */
-  getPaneLayout(): Promise<PaneLayout>
-  /** persist the pane layout (fire-and-forget) */
-  setPaneLayout(layout: PaneLayout): void
 }
 
 export const TABS_CHANNELS = {
@@ -77,8 +50,4 @@ export const TABS_CHANNELS = {
   reorder: 'tabs:reorder',
   changed: 'tabs:changed',
   chromePressed: 'tabs:chrome-pressed',
-  paneBounds: 'tabs:pane-bounds',
-  homeActivated: 'tabs:home-activated',
-  getPaneLayout: 'tabs:get-pane-layout',
-  setPaneLayout: 'tabs:set-pane-layout',
 } as const

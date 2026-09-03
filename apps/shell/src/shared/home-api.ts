@@ -198,11 +198,6 @@ export interface HomeApi {
   chatSessionsLoad(): Promise<HomeChatSession[]>
   /** persist home chat sessions */
   chatSessionsSave(sessions: HomeChatSession[]): Promise<void>
-  /**
-   * bind the home chat's next AI-created docx/md to a project (first-save
-   * hook); null clears a stale binding. kind mirrors the main-process map key.
-   */
-  setPendingNewFileProject(kind: 'doc' | 'markdown', projectId: string | null): void
 }
 
 // ── Home chat (AI agent on the home screen) ─────────────────
@@ -239,8 +234,6 @@ export interface HomeChatSession {
   createdAt: number
   updatedAt: number
   messages: HomeChatMessage[]
-  /** project the session belongs to (新建任务 / 项目上下文); absent = unassigned */
-  projectId?: string | undefined
   /** set when the conversation moved into a document tab's AI panel: the home
    * copy becomes read-only and offers "open that tab" instead of continuing */
   handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
@@ -391,7 +384,6 @@ export const HOME_CHANNELS = {
   openCloudProject: 'home:open-cloud-project',
   chatSessionsLoad: 'home:chat-sessions-load',
   chatSessionsSave: 'home:chat-sessions-save',
-  setPendingProject: 'home:set-pending-project',
 } as const
 
 export const PROJECT_CHANNELS = {

@@ -2413,7 +2413,6 @@ function createShellWindow(): void {
           : kind === 'markdown'
             ? tm('untitledMarkdown')
             : tm('untitledSheet'),
-    () => win.webContents.send(TABS_CHANNELS.homeActivated),
   )
   tabManager = manager
 
@@ -3262,17 +3261,6 @@ function registerHomeIpc(): void {
     writeFileSync(tmp, JSON.stringify(sessions))
     renameSync(tmp, target)
   })
-
-  // home chat: bind the next AI-created docx/md to a project (consumed by
-  // applyPendingProject on the new tab's first save); null clears a stale one
-  ipcMain.on(HOME_CHANNELS.setPendingProject, (_event, kind: unknown, projectId: unknown) => {
-    if (typeof kind !== 'string' || !['doc', 'markdown'].includes(kind)) return
-    if (typeof projectId !== 'string' || projectId === '' || projectId === 'default') {
-      pendingNewFileProject.delete(kind)
-      return
-    }
-    pendingNewFileProject.set(kind, projectId)
-  })
 }
 
 function stringPaths(value: unknown): string[] {
@@ -3338,51 +3326,6 @@ function registerTabsIpc(): void {
   ipcMain.handle(TABS_CHANNELS.close, (_event, id: string) => tabManager?.closeTab(id))
   ipcMain.handle(TABS_CHANNELS.reorder, (_event, id: string, toIndex: number) => {
     if (typeof id === 'string' && Number.isInteger(toIndex)) tabManager?.reorderTab(id, toIndex)
-  })
-  // the editor pane's view-host rect (content coords); null hides every editor view
-  ipcMain.on(TABS_CHANNELS.paneBounds, (_event, rect: unknown) => {
-    if (!tabManager) return
-    const r = rect as Record<string, unknown> | null
-    if (
-      r &&
-      typeof r === 'object' &&
-      [r.x, r.y, r.width, r.height].every((v) => typeof v === 'number' && v >= 0)
-    ) {
-      tabManager.setPaneBounds({
-        x: r.x as number,
-        y: r.y as number,
-        width: r.width as number,
-        height: r.height as number,
-      })
-    } else {
-      tabManager.setPaneBounds(null)
-    }
-  })
-  ipcMain.handle(TABS_CHANNELS.getPaneLayout, (): unknown => {
-    const saved = readAppSettings(APP_SETTINGS_PATH()).homePaneLayout as unknown
-    if (
-      saved &&
-      typeof saved === 'object' &&
-      typeof (saved as Record<string, unknown>).mode === 'string' &&
-      typeof (saved as Record<string, unknown>).chatRatio === 'number'
-    ) {
-      return saved
-    }
-    return { mode: 'split', chatRatio: 0.36 }
-  })
-  ipcMain.on(TABS_CHANNELS.setPaneLayout, (_event, layout: unknown) => {
-    if (!layout || typeof layout !== 'object') return
-    const { mode, chatRatio } = layout as Record<string, unknown>
-    if (
-      typeof mode !== 'string' ||
-      !['split', 'collapsed', 'maximized'].includes(mode) ||
-      typeof chatRatio !== 'number'
-    )
-      return
-    writeAppSetting(APP_SETTINGS_PATH(), 'homePaneLayout', {
-      mode,
-      chatRatio: Math.min(0.75, Math.max(0.15, chatRatio)),
-    })
   })
   // "all tabs" overflow menu — native popup because the editors' WebContentsView
   // would cover any DOM dropdown the shell renderer draws below the tab strip
