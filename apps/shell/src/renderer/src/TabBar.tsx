@@ -158,10 +158,10 @@ export function TabBar() {
         if (fromIdx < 0) return prev
         const next = [...prev]
         const [moved] = next.splice(fromIdx, 1)
-        next.splice(Math.min(Math.max(drag.target, 1), next.length), 0, moved)
+        next.splice(Math.min(Math.max(drag.target + 1, 1), next.length), 0, moved)
         return next
       })
-      void window.chatOfficeTabs.reorder(drag.id, drag.target)
+      void window.chatOfficeTabs.reorder(drag.id, drag.target + 1)
     }
   }
 
@@ -220,128 +220,131 @@ export function TabBar() {
     <div className="tab-bar">
       <div className="tab-bar-drag-spacer" />
       <div className={dragVisual ? 'tab-strip dragging' : 'tab-strip'} ref={stripRef}>
-        {tabs.map((tab, index) => {
-          // live transforms: the grabbed tab tracks the pointer; tabs between
-          // the origin and the current target slide aside by the grabbed width
-          let dragStyle: CSSProperties | undefined
-          if (dragVisual) {
-            if (dragVisual.id === tab.id) {
-              dragStyle = { transform: `translateX(${dragVisual.dx}px)` }
-            } else if (dragVisual.target <= index && index < dragVisual.from) {
-              dragStyle = { transform: `translateX(${dragVisual.width}px)` }
-            } else if (dragVisual.from < index && index <= dragVisual.target) {
-              dragStyle = { transform: `translateX(-${dragVisual.width}px)` }
+        {tabs
+          .filter((tab) => tab.kind !== 'home')
+          .map((tab, index) => {
+            // live transforms: the grabbed tab tracks the pointer; tabs between
+            // the origin and the current target slide aside by the grabbed width
+            let dragStyle: CSSProperties | undefined
+            if (dragVisual) {
+              if (dragVisual.id === tab.id) {
+                dragStyle = { transform: `translateX(${dragVisual.dx}px)` }
+              } else if (dragVisual.target <= index && index < dragVisual.from) {
+                dragStyle = { transform: `translateX(${dragVisual.width}px)` }
+              } else if (dragVisual.from < index && index <= dragVisual.target) {
+                dragStyle = { transform: `translateX(-${dragVisual.width}px)` }
+              }
             }
-          }
-          return (
-            <div
-              key={tab.id}
-              className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}`}
-              style={dragStyle}
-              onPointerDown={(event) => {
-                if (event.button !== 0) return
-                if ((event.target as HTMLElement).closest('.tab-close')) return
-                // Chrome-style: pressing a tab activates it immediately, so
-                // activation never depends on the click that a drag would eat
-                if (!tab.active) void window.chatOfficeTabs.activate(tab.id)
-                if (tab.id === 'home') return
-                const strip = stripRef.current
-                if (!strip) return
-                const rects = Array.from(strip.querySelectorAll<HTMLElement>('.tab-item'), (el) =>
-                  el.getBoundingClientRect(),
-                )
-                dragRef.current = {
-                  pointerId: event.pointerId,
-                  id: tab.id,
-                  from: index,
-                  startX: event.clientX,
-                  lefts: rects.map((r) => r.left),
-                  widths: rects.map((r) => r.width),
-                  target: index,
-                  started: false,
-                }
-                event.currentTarget.setPointerCapture(event.pointerId)
-              }}
-              onPointerMove={(event) => {
-                const drag = dragRef.current
-                if (!drag || event.pointerId !== drag.pointerId) return
-                let dx = event.clientX - drag.startX
-                // 4px dead zone so plain clicks never wiggle the tab
-                if (!drag.started) {
-                  if (Math.abs(dx) < 4) return
-                  // re-sample geometry the moment the drag really starts — the
-                  // pointer-down activation re-renders and could have moved tabs
+            return (
+              <div
+                key={tab.id}
+                className={`tab-item ${tab.kind === 'home' ? 'tab-home' : ''} ${tab.active ? 'active' : ''} ${dragVisual?.id === tab.id ? 'drag-source' : ''}`}
+                style={dragStyle}
+                onPointerDown={(event) => {
+                  if (event.button !== 0) return
+                  if ((event.target as HTMLElement).closest('.tab-close')) return
+                  // Chrome-style: pressing a tab activates it immediately, so
+                  // activation never depends on the click that a drag would eat
+                  if (!tab.active) void window.chatOfficeTabs.activate(tab.id)
+                  if (tab.id === 'home') return
                   const strip = stripRef.current
-                  if (strip) {
-                    const rects = Array.from(
-                      strip.querySelectorAll<HTMLElement>('.tab-item'),
-                      (el) => el.getBoundingClientRect(),
-                    )
-                    drag.lefts = rects.map((r) => r.left)
-                    drag.widths = rects.map((r) => r.width)
+                  if (!strip) return
+                  const rects = Array.from(strip.querySelectorAll<HTMLElement>('.tab-item'), (el) =>
+                    el.getBoundingClientRect(),
+                  )
+                  dragRef.current = {
+                    pointerId: event.pointerId,
+                    id: tab.id,
+                    from: index,
+                    startX: event.clientX,
+                    lefts: rects.map((r) => r.left),
+                    widths: rects.map((r) => r.width),
+                    target: index,
+                    started: false,
                   }
-                  drag.started = true
-                }
-                // keep the tab inside the strip; slot 0 (Home) is off limits
-                const last = drag.lefts.length - 1
-                const minDx = drag.lefts[1] - drag.lefts[drag.from]
-                const maxDx =
-                  drag.lefts[last] +
-                  drag.widths[last] -
-                  drag.widths[drag.from] -
-                  drag.lefts[drag.from]
-                dx = Math.min(Math.max(dx, minDx), Math.max(minDx, maxDx))
-                // Chrome's rule: swap once the grabbed tab's leading edge crosses
-                // a neighbour's midpoint (the clamped center can only ever *touch*
-                // the first slot's midpoint, so edge-based tests have no dead spot)
-                const draggedLeft = drag.lefts[drag.from] + dx
-                const draggedRight = draggedLeft + drag.widths[drag.from]
-                let target = drag.from
-                for (let i = 1; i < drag.from; i++) {
-                  if (draggedLeft < drag.lefts[i] + drag.widths[i] / 2) {
-                    target = i
-                    break
+                  event.currentTarget.setPointerCapture(event.pointerId)
+                }}
+                onPointerMove={(event) => {
+                  const drag = dragRef.current
+                  if (!drag || event.pointerId !== drag.pointerId) return
+                  let dx = event.clientX - drag.startX
+                  // 4px dead zone so plain clicks never wiggle the tab
+                  if (!drag.started) {
+                    if (Math.abs(dx) < 4) return
+                    // re-sample geometry the moment the drag really starts — the
+                    // pointer-down activation re-renders and could have moved tabs
+                    const strip = stripRef.current
+                    if (strip) {
+                      const rects = Array.from(
+                        strip.querySelectorAll<HTMLElement>('.tab-item'),
+                        (el) => el.getBoundingClientRect(),
+                      )
+                      drag.lefts = rects.map((r) => r.left)
+                      drag.widths = rects.map((r) => r.width)
+                    }
+                    drag.started = true
                   }
-                }
-                for (let i = last; i > drag.from; i--) {
-                  if (draggedRight > drag.lefts[i] + drag.widths[i] / 2) {
-                    target = i
-                    break
+                  // keep the tab inside the strip (Home is no longer rendered,
+                  // so the first visible slot is reachable)
+                  const last = drag.lefts.length - 1
+                  const minDx = drag.lefts[0] - drag.lefts[drag.from]
+                  const maxDx =
+                    drag.lefts[last] +
+                    drag.widths[last] -
+                    drag.widths[drag.from] -
+                    drag.lefts[drag.from]
+                  dx = Math.min(Math.max(dx, minDx), Math.max(minDx, maxDx))
+                  // Chrome's rule: swap once the grabbed tab's leading edge crosses
+                  // a neighbour's midpoint (the clamped center can only ever *touch*
+                  // the first slot's midpoint, so edge-based tests have no dead spot)
+                  const draggedLeft = drag.lefts[drag.from] + dx
+                  const draggedRight = draggedLeft + drag.widths[drag.from]
+                  let target = drag.from
+                  for (let i = 0; i < drag.from; i++) {
+                    if (draggedLeft < drag.lefts[i] + drag.widths[i] / 2) {
+                      target = i
+                      break
+                    }
                   }
-                }
-                drag.target = target
-                setDragVisual({
-                  id: drag.id,
-                  dx,
-                  from: drag.from,
-                  target,
-                  width: drag.widths[drag.from],
-                })
-              }}
-              onPointerUp={(event) => finishDrag(event.pointerId, true)}
-              onPointerCancel={(event) => finishDrag(event.pointerId, false)}
-              onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
-            >
-              {/* highlight plate behind the content — hover capsule / active white body */}
-              <span className="tab-plate" aria-hidden="true" />
-              <span className="tab-icon">{KIND_ICON[tab.kind]}</span>
-              <span className="tab-title">{tab.title}</span>
-              {tab.closable && (
-                <button
-                  className="tab-close"
-                  title={t('closeTab')}
-                  aria-label={t('closeTab')}
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    void window.chatOfficeTabs.close(tab.id)
-                  }}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          )
-        })}
+                  for (let i = last; i > drag.from; i--) {
+                    if (draggedRight > drag.lefts[i] + drag.widths[i] / 2) {
+                      target = i
+                      break
+                    }
+                  }
+                  drag.target = target
+                  setDragVisual({
+                    id: drag.id,
+                    dx,
+                    from: drag.from,
+                    target,
+                    width: drag.widths[drag.from],
+                  })
+                }}
+                onPointerUp={(event) => finishDrag(event.pointerId, true)}
+                onPointerCancel={(event) => finishDrag(event.pointerId, false)}
+                onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
+              >
+                {/* highlight plate behind the content — hover capsule / active white body */}
+                <span className="tab-plate" aria-hidden="true" />
+                <span className="tab-icon">{KIND_ICON[tab.kind]}</span>
+                <span className="tab-title">{tab.title}</span>
+                {tab.closable && (
+                  <button
+                    className="tab-close"
+                    title={t('closeTab')}
+                    aria-label={t('closeTab')}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      void window.chatOfficeTabs.close(tab.id)
+                    }}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            )
+          })}
         <button
           className="tab-new-btn"
           title={t('newTab')}

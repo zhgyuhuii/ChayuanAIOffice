@@ -107,6 +107,24 @@ export function EditorPane({ mode }: { mode: PaneMode }): ReactElement {
             </div>
           ))}
         </div>
+        <button
+          className="pane-add-btn"
+          aria-label={t('projNewMenu')}
+          title={t('projNewMenu')}
+          onClick={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect()
+            void window.chatOfficeTabs.showNewMenu(Math.round(rect.left), Math.round(rect.bottom))
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path
+              d="M7 1v12M1 7h12"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
       </div>
       <div className="pane-view-host" ref={hostRef}>
         {tabs.length === 0 && (

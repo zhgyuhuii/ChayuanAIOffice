@@ -3065,3 +3065,26 @@ body.vib .home {
   min-width: 0;
   height: 100%;
 }
+
+/* + at the far right of the editor pane's tab row (native new-file menu) */
+
+.pane-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.pane-add-btn:hover {
+  background: var(--bg-hover-subtle);
+  color: var(--text);
+}

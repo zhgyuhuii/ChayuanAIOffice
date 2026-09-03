@@ -2029,8 +2029,76 @@ export function Home({
 
         {renderSideActions()}
 
+        {/* project group: row click = 查看文件 accordion; hover = 新建▾ / 新建任务 / ⋯ */}
+        {projectMode && (
+          <>
+            <div className="sidebar-divider" />
+            <ProjectPanel
+              projects={projects}
+              selectedId={selectedProjectId}
+              onSelect={(id) => {
+                setCloudMode(false)
+                setRowMenu(null)
+                if (selectedProjectId === id) {
+                  setSelectedProjectId(null)
+                  setFilesPane(null)
+                  return
+                }
+                setSelectedProjectId(id)
+                setFilesPane(id)
+              }}
+              onRefresh={refresh}
+              onNewFile={(projectId, ext) => {
+                const opts = { projectId }
+                if (ext === 'xlsx') void window.chatOffice.newSheet(opts)
+                else void window.chatOffice.newDoc(opts)
+              }}
+              onNewTask={(projectId) => {
+                setCloudMode(false)
+                newSession(projectId)
+              }}
+              renderFilesFor={renderProjectAccordion}
+            />
+          </>
+        )}
         <nav className="side-files-nav">
-          {/* 最近文件 / 收藏: special accordion rows above the projects group */}
+          <div className={`side-special${filesPane === 'starred' ? ' open' : ''}`}>
+            <button
+              className="nav-item"
+              aria-expanded={filesPane === 'starred'}
+              onClick={() => toggleFilesPane('starred')}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="nav-label">{t('secStarred')}</span>
+              <span className="nav-count">{navCounts.starred}</span>
+              <svg
+                className="nav-chevron"
+                width="11"
+                height="11"
+                viewBox="0 0 12 12"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4.5 2.5l4 3.5-4 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {filesPane === 'starred' && (
+              <div className="side-acc-body">{renderGlobalAccordion()}</div>
+            )}
+          </div>
           <div className={`side-special${filesPane === 'recent' ? ' open' : ''}`}>
             <button
               className="nav-item"
@@ -2066,43 +2134,6 @@ export function Home({
               </svg>
             </button>
             {filesPane === 'recent' && (
-              <div className="side-acc-body">{renderGlobalAccordion()}</div>
-            )}
-          </div>
-          <div className={`side-special${filesPane === 'starred' ? ' open' : ''}`}>
-            <button
-              className="nav-item"
-              aria-expanded={filesPane === 'starred'}
-              onClick={() => toggleFilesPane('starred')}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="nav-label">{t('secStarred')}</span>
-              <span className="nav-count">{navCounts.starred}</span>
-              <svg
-                className="nav-chevron"
-                width="11"
-                height="11"
-                viewBox="0 0 12 12"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4.5 2.5l4 3.5-4 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            {filesPane === 'starred' && (
               <div className="side-acc-body">{renderGlobalAccordion()}</div>
             )}
           </div>
@@ -2142,40 +2173,6 @@ export function Home({
             </button>
           )}
         </nav>
-
-        {/* project group: row click = 查看文件 accordion; hover = 新建▾ / 新建任务 / ⋯ */}
-        {projectMode && (
-          <>
-            <div className="sidebar-divider" />
-            <ProjectPanel
-              projects={projects}
-              selectedId={selectedProjectId}
-              onSelect={(id) => {
-                setCloudMode(false)
-                setRowMenu(null)
-                if (selectedProjectId === id) {
-                  setSelectedProjectId(null)
-                  setFilesPane(null)
-                  return
-                }
-                setSelectedProjectId(id)
-                setFilesPane(id)
-              }}
-              onRefresh={refresh}
-              onNewFile={(projectId, ext) => {
-                const opts = { projectId }
-                if (ext === 'xlsx') void window.chatOffice.newSheet(opts)
-                else void window.chatOffice.newDoc(opts)
-              }}
-              onNewTask={(projectId) => {
-                setCloudMode(false)
-                newSession(projectId)
-              }}
-              renderFilesFor={renderProjectAccordion}
-            />
-          </>
-        )}
-
         {/* conversation (task) list: switching happens here, the middle pane
             shows the active one — ZCode's left-column tasks */}
         {!cloudMode && (
