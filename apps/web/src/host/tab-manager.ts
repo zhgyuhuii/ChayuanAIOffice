@@ -41,7 +41,7 @@ export class TabManager {
   private seq = 1
   /** Home stays pinned at index 0, exactly like the Electron strip. */
   private readonly tabs: TabEntry[] = [
-    { summary: { id: 'home', kind: 'home', title: '主页', closable: false, active: true }, frame: null, fileId: null },
+    { summary: { id: 'home', kind: 'home', title: 'ChatOffice', closable: false, active: true }, frame: null, fileId: null },
   ]
   private readonly handlers = new Set<ChangedHandler>()
   private layer: HTMLDivElement | null = null
