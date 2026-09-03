@@ -469,8 +469,10 @@ export interface Props {
   timingAnim: AnimationItem | null
   /** Apply an animation to the selected shape (replacing its existing ones); 'none' removes all its animations */
   onApplyAnimation: (effect: AnimEffectKind | 'none') => void
+  /** 动画 tab 效果选项: rewrite the timing-bound animation's variant */
+  onAnimVariant: (variant: string) => void
   /** Hover preview: play the effect on the selection without applying it; null path = plain effect */
-  onAnimHoverPreview: (effect: AnimEffectKind, motionPath?: string) => void
+  onAnimHoverPreview: (effect: AnimEffectKind, motionPath?: string, variant?: string) => void
   onAnimHoverEnd: () => void
   /** Append one animation to the selected shape (stacking on existing ones, PowerPoint "Add Animation") */
   onAddAnimation: (effect: AnimEffectKind) => void

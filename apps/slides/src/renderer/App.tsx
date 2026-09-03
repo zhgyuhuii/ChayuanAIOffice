@@ -1678,8 +1678,8 @@ export function App() {
 
   // Animation actions live in animation-actions.ts
   const hoverPreviewAnimation = useCallback(
-    (effect: AnimEffectKind, motionPath?: string) =>
-      animationActions.hoverPreviewAnimation(ctxRef.current, effect, motionPath),
+    (effect: AnimEffectKind, motionPath?: string, variant?: string) =>
+      animationActions.hoverPreviewAnimation(ctxRef.current, effect, motionPath, variant),
     [],
   )
 
@@ -1688,6 +1688,11 @@ export function App() {
 
   const applyAnimation = useCallback(
     (effect: AnimEffectKind | 'none') => animationActions.applyAnimation(ctxRef.current, effect),
+    [],
+  )
+  /** 动画 tab 效果选项: rewrite the timing-bound animation's variant */
+  const applyAnimVariant = useCallback(
+    (variant: string) => animationActions.patchAnimVariant(ctxRef.current, variant),
     [],
   )
   const addAnimation = useCallback(
@@ -3122,6 +3127,7 @@ export function App() {
             selectedAnimEffect={selectedAnimEffect}
             timingAnim={timingIdx >= 0 ? animations[timingIdx]! : null}
             onApplyAnimation={applyAnimation}
+            onAnimVariant={applyAnimVariant}
             onAnimHoverPreview={hoverPreviewAnimation}
             onAnimHoverEnd={() => setHoverAnim(null)}
             onAddAnimation={addAnimation}

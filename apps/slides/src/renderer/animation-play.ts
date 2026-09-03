@@ -122,7 +122,7 @@ export interface NodeAnimState {
    * reveals (blinds/checkerboard/random bars/dissolve/circle/diamond/box/wedge/
    * wheel/strips) drawn cell-by-cell by the render layer's clipFunc. null = no clip.
    */
-  clip: { t: number; mode: AnimClipMode } | null
+  clip: { t: number; mode: AnimClipMode; spokes?: number; flip?: boolean } | null
 }
 
 export type AnimClipMode =
@@ -130,8 +130,10 @@ export type AnimClipMode =
   | 'top'
   | 'mid'
   | 'blinds'
+  | 'blindsV'
   | 'checker'
   | 'bars'
+  | 'barsV'
   | 'dissolve'
   | 'circle'
   | 'diamond'
@@ -139,6 +141,7 @@ export type AnimClipMode =
   | 'wedge'
   | 'wheel'
   | 'strips'
+  | 'stripsUp'
 
 const NORMAL: NodeAnimState = {
   hidden: false,
@@ -355,11 +358,12 @@ function applyEffect(
     // ── classic filter families: pattern clip reveals (render layer draws the pattern) ──
     case 'blinds':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'blinds' }
+      st.clip = p >= 1 ? null : { t: q, mode: item.variant === 'vertical' ? 'blindsV' : 'blinds' }
       break
     case 'box':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'box' }
+      // 效果选项: in = 从全幅向中心收缩显现, out(默认) = 从中心展开
+      st.clip = p >= 1 ? null : { t: item.variant === 'in' ? 1 - q : q, mode: 'box' }
       break
     case 'checkerboard':
       st.hidden = false
@@ -367,12 +371,25 @@ function applyEffect(
       break
     case 'circleIn':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'circle' }
+      // 效果选项: out(默认)从中心扩展, in 向中心收缩显现
+      st.clip = p >= 1 ? null : { t: item.variant === 'in' ? 1 - q : q, mode: 'circle' }
       break
     case 'crawlIn':
-      // Slow slide in from the left edge (long default duration gives the crawl feel)
+      // Slow slide in from an edge (long default duration gives the crawl feel)
       st.hidden = false
-      st.dx = -(1 - q) * canvasW
+      switch (item.variant) {
+        case 'right':
+          st.dx = (1 - q) * canvasW
+          break
+        case 'top':
+          st.dy = -(1 - q) * canvasH
+          break
+        case 'bottom':
+          st.dy = (1 - q) * canvasH
+          break
+        default:
+          st.dx = -(1 - q) * canvasW
+      }
       break
     case 'diamond':
       st.hidden = false
@@ -384,7 +401,7 @@ function applyEffect(
       break
     case 'randomBars':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'bars' }
+      st.clip = p >= 1 ? null : { t: q, mode: item.variant === 'vertical' ? 'barsV' : 'bars' }
       break
     case 'stretch':
       // Stretch up from the bottom edge
@@ -393,7 +410,15 @@ function applyEffect(
       break
     case 'strips':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'strips' }
+      st.clip =
+        p >= 1
+          ? null
+          : {
+              t: q,
+              mode: item.variant === 'upLeft' || item.variant === 'upRight' ? 'stripsUp' : 'strips',
+              // 左起对角带 vs 右起对角带
+              flip: item.variant === 'downLeft' || item.variant === 'upLeft',
+            }
       break
     case 'wedge':
       st.hidden = false
@@ -401,7 +426,7 @@ function applyEffect(
       break
     case 'wheel':
       st.hidden = false
-      st.clip = p >= 1 ? null : { t: q, mode: 'wheel' }
+      st.clip = p >= 1 ? null : { t: q, mode: 'wheel', spokes: Number(item.variant) || 1 }
       break
     case 'boxOut':
       st.clip = p >= 1 ? null : { t: 1 - q, mode: 'box' }
@@ -416,7 +441,7 @@ function applyEffect(
       if (p >= 1) st.hidden = true
       break
     case 'randomBarsOut':
-      st.clip = p >= 1 ? null : { t: 1 - q, mode: 'bars' }
+      st.clip = p >= 1 ? null : { t: 1 - q, mode: item.variant === 'vertical' ? 'barsV' : 'bars' }
       if (p >= 1) st.hidden = true
       break
     case 'motionPath': {

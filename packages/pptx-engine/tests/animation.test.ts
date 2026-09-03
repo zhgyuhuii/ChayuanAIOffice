@@ -428,3 +428,81 @@ describe('classic filter-family effects (WPS gallery batch 1)', () => {
     expect(back).toEqual([...kinds])
   })
 })
+
+describe('animation 效果选项 variants', () => {
+  it('writes the variant into the filter string and presetSubtype', () => {
+    const xml = buildTimingXml([
+      { spid: 4, effect: 'wheel', variant: '4', trigger: 'onClick', durationMs: 2000, delayMs: 0 },
+    ])
+    expect(xml).toContain('filter="wheel(4)"')
+    expect(xml).toContain('presetSubtype="4"')
+    const blinds = buildTimingXml([
+      {
+        spid: 4,
+        effect: 'blinds',
+        variant: 'vertical',
+        trigger: 'onClick',
+        durationMs: 500,
+        delayMs: 0,
+      },
+    ])
+    expect(blinds).toContain('filter="blinds(vertical)"')
+    const strips = buildTimingXml([
+      {
+        spid: 4,
+        effect: 'strips',
+        variant: 'upLeft',
+        trigger: 'onClick',
+        durationMs: 500,
+        delayMs: 0,
+      },
+    ])
+    expect(strips).toContain('filter="strips(upLeft)"')
+    const crawl = buildTimingXml([
+      {
+        spid: 4,
+        effect: 'crawlIn',
+        variant: 'bottom',
+        trigger: 'onClick',
+        durationMs: 2000,
+        delayMs: 0,
+      },
+    ])
+    expect(crawl).toContain('val="1+#ppt_h/2"')
+  })
+
+  it('round-trips variants through the timing read-back', async () => {
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    const anims = [
+      {
+        spid,
+        effect: 'wheel' as const,
+        variant: '8',
+        trigger: 'onClick' as const,
+        durationMs: 2000,
+        delayMs: 0,
+      },
+      {
+        spid,
+        effect: 'blinds' as const,
+        variant: 'vertical',
+        trigger: 'onClick' as const,
+        durationMs: 500,
+        delayMs: 1,
+      },
+      {
+        spid,
+        effect: 'crawlIn' as const,
+        variant: 'top',
+        trigger: 'onClick' as const,
+        durationMs: 2000,
+        delayMs: 2,
+      },
+    ]
+    setSlideAnimations(slide, anims)
+    const back = getSlideAnimations(slide)
+    expect(back.map((a) => a.variant)).toEqual(['8', 'vertical', 'top'])
+  })
+})

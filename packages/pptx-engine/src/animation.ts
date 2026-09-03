@@ -69,18 +69,91 @@ export type AnimTrigger = 'onClick' | 'withPrev' | 'afterPrev'
 export const ANIM_TRIGGERS: readonly AnimTrigger[] = ['onClick', 'withPrev', 'afterPrev']
 export type AnimClass = 'entrance' | 'emphasis' | 'exit' | 'path'
 
-/** Each filter kind's OOXML filter string (entrance direction). */
+/** Each filter kind's OOXML filter string (entrance direction), variant-aware. */
 const ENTRANCE_FILTERS: Record<string, string> = {
   blinds: 'blinds(horizontal)',
   box: 'box(in)',
   checkerboard: 'checkerboard(across)',
-  circleIn: 'circle(in)',
+  circleIn: 'circle(out)',
   diamond: 'diamond(in)',
   dissolveIn: 'dissolve',
   randomBars: 'randombar(horizontal)',
   strips: 'strips(downRight)',
   wedge: 'wedge',
   wheel: 'wheel(1)',
+}
+
+/** Per-effect variant → filter argument + presetSubtype (效果选项表). */
+export const ANIM_VARIANTS: Partial<
+  Record<AnimEffectKind, ReadonlyArray<{ value: string; sub: number }>>
+> = {
+  blinds: [
+    { value: 'horizontal', sub: 1 },
+    { value: 'vertical', sub: 2 },
+  ],
+  randomBars: [
+    { value: 'horizontal', sub: 1 },
+    { value: 'vertical', sub: 2 },
+  ],
+  randomBarsOut: [
+    { value: 'horizontal', sub: 1 },
+    { value: 'vertical', sub: 2 },
+  ],
+  strips: [
+    { value: 'downRight', sub: 21 },
+    { value: 'downLeft', sub: 22 },
+    { value: 'upRight', sub: 23 },
+    { value: 'upLeft', sub: 24 },
+  ],
+  wheel: [
+    { value: '1', sub: 1 },
+    { value: '2', sub: 2 },
+    { value: '3', sub: 3 },
+    { value: '4', sub: 4 },
+    { value: '8', sub: 8 },
+  ],
+  box: [
+    { value: 'in', sub: 16 },
+    { value: 'out', sub: 524 },
+  ],
+  boxOut: [
+    { value: 'in', sub: 16 },
+    { value: 'out', sub: 524 },
+  ],
+  circleIn: [
+    { value: 'out', sub: 524 },
+    { value: 'in', sub: 16 },
+  ],
+  crawlIn: [
+    { value: 'left', sub: 8 },
+    { value: 'right', sub: 2 },
+    { value: 'top', sub: 4 },
+    { value: 'bottom', sub: 1 },
+  ],
+}
+
+/** filter string of an effect+variant (PowerPoint plays this verbatim). */
+function animEffectFilter(effect: AnimEffectKind, variant: string | undefined): string {
+  const base = ENTRANCE_FILTERS[effect]
+  if (!base) return 'fade'
+  const v = variant && ANIM_VARIANTS[effect]?.some((x) => x.value === variant) ? variant : undefined
+  if (!v) return base
+  const open = base.indexOf('(')
+  if (open < 0) return base
+  return base.slice(0, open + 1) + v + ')'
+}
+
+/** presetSubtype of an effect+variant (animation-pane label metadata). */
+export function animVariantSubtype(effect: AnimEffectKind, variant: string | undefined): number {
+  if (!variant) return 0
+  return ANIM_VARIANTS[effect]?.find((x) => x.value === variant)?.sub ?? 0
+}
+
+/** Read the variant back out of a filter string (效果选项 echo). */
+export function animVariantFromFilter(effect: AnimEffectKind, filter: string): string | undefined {
+  const arg = /\(([^)]*)\)/.exec(filter)?.[1]
+  if (!arg) return undefined
+  return ANIM_VARIANTS[effect]?.find((x) => x.value === arg)?.value
 }
 
 export interface SlideAnimation {
@@ -98,6 +171,14 @@ export interface SlideAnimation {
   motionPath?: string
   /** Per-paragraph animation: 0-based paragraph number (written as pgRg st/end); unset = whole shape */
   paragraph?: number
+  /**
+   * 效果选项/变体 (PowerPoint 效果选项): blinds/randomBars 'horizontal'|'vertical',
+   * strips 'downRight'|'downLeft'|'upRight'|'upLeft', wheel '1'|'2'|'3'|'4'|'8'
+   * (spokes), box 'in'|'out', circleIn 'in'|'out', crawlIn edge. PowerPoint plays
+   * the animEffect filter string, so the variant is encoded there; presetSubtype
+   * mirrors it for the animation pane label.
+   */
+  variant?: string
 }
 
 /** Effect → class (entrance/emphasis/exit/motion path). */
@@ -460,15 +541,19 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
     case 'wheel':
       return (
         show +
-        `<p:animEffect transition="in" filter="${ENTRANCE_FILTERS[a.effect] ?? 'fade'}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>`
+        `<p:animEffect transition="in" filter="${animEffectFilter(a.effect, a.variant)}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>`
       )
-    case 'crawlIn':
-      // Crawl in from the left edge (slow slide, no filter)
+    case 'crawlIn': // Crawl in from an edge (slow slide, no filter); 效果选项 picks the edge
+    {
+      const side = a.variant ?? 'left'
+      const offX = side === 'left' ? '0-#ppt_w/2' : side === 'right' ? '1+#ppt_w/2' : '#ppt_x'
+      const offY = side === 'top' ? '0-#ppt_h/2' : side === 'bottom' ? '1+#ppt_h/2' : '#ppt_y'
       return (
         show +
-        moveAnimXml(gen, target, dur, 'ppt_x', '0-#ppt_w/2', '#ppt_x') +
-        moveAnimXml(gen, target, dur, 'ppt_y', '#ppt_y', '#ppt_y')
+        moveAnimXml(gen, target, dur, 'ppt_x', offX, '#ppt_x') +
+        moveAnimXml(gen, target, dur, 'ppt_y', offY, '#ppt_y')
       )
+    }
     case 'stretch':
       // Stretch up from the bottom edge (vertical scale 0→100%)
       return (
@@ -478,7 +563,7 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
       )
     case 'boxOut':
       return (
-        `<p:animEffect transition="out" filter="box(out)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        `<p:animEffect transition="out" filter="${animEffectFilter('box', a.variant === 'in' ? 'in' : 'out')}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
         hideAtEnd
       )
     case 'checkerboardOut':
@@ -493,7 +578,7 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
       )
     case 'randomBarsOut':
       return (
-        `<p:animEffect transition="out" filter="randombar(horizontal)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        `<p:animEffect transition="out" filter="${animEffectFilter('randomBars', a.variant)}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
         hideAtEnd
       )
     case 'motionPath':
@@ -547,9 +632,11 @@ function placeAnims(
 /** One effect's <p:par> (cTn with presetID/presetClass + start + behaviors). */
 function effectParXml(gen: IdGen, p: Placed): string {
   const preset = PRESET[p.a.effect]
+  // 效果选项变体覆盖默认 presetSubtype (animation-pane label metadata)
+  const sub = animVariantSubtype(p.a.effect, p.a.variant) || preset.sub
   return (
     '<p:par>' +
-    `<p:cTn id="${gen.next()}" presetID="${preset.id}" presetClass="${preset.cls}" presetSubtype="${preset.sub}" fill="hold" grpId="${p.grpId}" nodeType="${NODE_TYPE[p.a.trigger]}">` +
+    `<p:cTn id="${gen.next()}" presetID="${preset.id}" presetClass="${preset.cls}" presetSubtype="${sub}" fill="hold" grpId="${p.grpId}" nodeType="${NODE_TYPE[p.a.trigger]}">` +
     `<p:stCondLst><p:cond delay="${p.startMs}"/></p:stCondLst>` +
     `<p:childTnLst>${effectBehaviorsXml(gen, p.a)}</p:childTnLst>` +
     '</p:cTn></p:par>'
@@ -762,6 +849,15 @@ function findCTnEnd(xml: string, openEnd: number): number {
   return xml.length
 }
 
+/** crawlIn edge read-back: which ppt_x/ppt_y keyframe deviates from #ppt_x/#ppt_y. */
+function crawlVariantOf(body: string): string | undefined {
+  if (/ppt_x[\s\S]*?val="0-#ppt_w\/2"/.test(body)) return 'left'
+  if (/ppt_x[\s\S]*?val="1+#ppt_w\/2"/.test(body)) return 'right'
+  if (/ppt_y[\s\S]*?val="0-#ppt_h\/2"/.test(body)) return 'top'
+  if (/ppt_y[\s\S]*?val="1+#ppt_h\/2"/.test(body)) return 'bottom'
+  return 'left'
+}
+
 /**
  * Read the bodySuffix's animation list (for UI echo + slideshow).
  * Parses every effect cTn carrying presetClass; delay is derived back to the user
@@ -819,6 +915,13 @@ export function readSlideTimingXml(bodySuffix: string): SlideAnimation[] {
     const anim: SlideAnimation = { spid, effect, trigger, durationMs, delayMs }
     const pgM = /<p:pgRg\s[^>]*\bst="(\d+)"/.exec(body)
     if (pgM) anim.paragraph = Number(pgM[1])
+    // 效果选项 echo: the filter argument carries the variant (crawlIn has no
+    // filter — its edge is read back from the ppt_x/ppt_y keyframe origin)
+    if (ANIM_VARIANTS[effect]) {
+      const filter = /<p:animEffect\b[^>]*\bfilter="([^"]*)"/.exec(body)?.[1]
+      const variant = filter ? animVariantFromFilter(effect, filter) : crawlVariantOf(body)
+      if (variant) anim.variant = variant
+    }
     if (effect === 'motionPath') {
       // Path read-back: drop the " E" end marker added on write, restoring the user path
       const path = /<p:animMotion\b[^>]*\bpath="([^"]*)"/.exec(body)?.[1]
@@ -839,7 +942,8 @@ function animEq(x: SlideAnimation, y: SlideAnimation): boolean {
     x.durationMs === y.durationMs &&
     x.delayMs === y.delayMs &&
     (x.motionPath ?? null) === (y.motionPath ?? null) &&
-    (x.paragraph ?? null) === (y.paragraph ?? null)
+    (x.paragraph ?? null) === (y.paragraph ?? null) &&
+    (x.variant ?? null) === (y.variant ?? null)
   )
 }
 

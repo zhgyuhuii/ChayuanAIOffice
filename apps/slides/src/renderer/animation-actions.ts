@@ -62,6 +62,7 @@ export function hoverPreviewAnimation(
   ctx: ActionCtx,
   effect: AnimEffectKind,
   motionPath?: string,
+  variant?: string,
 ): void {
   if (ctx.selectedIds.length === 0) return
   const items: AnimationItem[] = ctx.selectedIds.map((id) => ({
@@ -72,6 +73,7 @@ export function hoverPreviewAnimation(
     durationMs: animDefaultDur(effect),
     delayMs: 0,
     ...(motionPath ? { motionPath } : {}),
+    ...(variant ? { variant } : {}),
   }))
   ctx.setHoverAnim({ nonce: Date.now(), items })
 }
@@ -99,7 +101,11 @@ export function paraCountOf(ctx: ActionCtx, id: string): number {
 }
 
 /** Gallery click: replace all animations of the selected shape; 'none' only removes. */
-export function applyAnimation(ctx: ActionCtx, effect: AnimEffectKind | 'none'): void {
+export function applyAnimation(
+  ctx: ActionCtx,
+  effect: AnimEffectKind | 'none',
+  variant?: string,
+): void {
   if (ctx.selectedIds.length === 0) return
   const sel = new Set(ctx.selectedIds)
   const kept = ctx.animations.filter((a) => !sel.has(a.sourceId))
@@ -114,6 +120,7 @@ export function applyAnimation(ctx: ActionCtx, effect: AnimEffectKind | 'none'):
             trigger: 'onClick' as AnimTrigger,
             durationMs: animDefaultDur(effect),
             delayMs: 0,
+            ...(variant ? { variant } : {}),
           }
           const n = ctx.animByParagraph ? paraCountOf(ctx, id) : 0
           return n > 1 ? Array.from({ length: n }, (_, i) => ({ ...base, paragraph: i })) : [base]
@@ -156,6 +163,13 @@ export function applyMotionPath(ctx: ActionCtx, path: string): void {
   }))
   void commitAnimations(ctx, [...ctx.animations, ...added])
   ctx.setStatus(t('appStatusMotionPathAdded'))
+}
+
+/** 效果选项: rewrite the timing-bound animation's variant (keeps effect/order). */
+export function patchAnimVariant(ctx: ActionCtx, variant: string): void {
+  if (ctx.timingIdx < 0) return
+  const next = ctx.animations.map((a, i) => (i === ctx.timingIdx ? { ...a, variant } : a))
+  void commitAnimations(ctx, next)
 }
 
 export function patchAnimTiming(

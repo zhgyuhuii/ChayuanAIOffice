@@ -103,6 +103,7 @@ export {
   cNvPrIdsInXml,
   ANIM_EFFECTS,
   ANIM_TRIGGERS,
+  ANIM_VARIANTS,
   type AnimClass,
   type AnimEffectKind,
   type AnimTrigger,

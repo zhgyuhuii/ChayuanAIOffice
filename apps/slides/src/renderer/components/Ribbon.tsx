@@ -755,6 +755,70 @@ function RbCheck({
   )
 }
 
+// ── Animations tab: 效果选项 (variant picker; mirrors the engine's ANIM_VARIANTS) ──
+
+/** Which variants an effect offers + the entry shown when none is set (kernel default). */
+const ANIM_EFFECT_VARIANTS: Partial<
+  Record<AnimEffectKind, ReadonlyArray<{ value: string; labelKey: StringKey }>>
+> = {
+  blinds: [
+    { value: 'horizontal', labelKey: 'ribbonAnimVarHorizontal' },
+    { value: 'vertical', labelKey: 'ribbonAnimVarVertical' },
+  ],
+  randomBars: [
+    { value: 'horizontal', labelKey: 'ribbonAnimVarHorizontal' },
+    { value: 'vertical', labelKey: 'ribbonAnimVarVertical' },
+  ],
+  randomBarsOut: [
+    { value: 'horizontal', labelKey: 'ribbonAnimVarHorizontal' },
+    { value: 'vertical', labelKey: 'ribbonAnimVarVertical' },
+  ],
+  strips: [
+    { value: 'downRight', labelKey: 'ribbonTransDirFromBottomRight' },
+    { value: 'downLeft', labelKey: 'ribbonTransDirFromBottomLeft' },
+    { value: 'upRight', labelKey: 'ribbonTransDirFromTopRight' },
+    { value: 'upLeft', labelKey: 'ribbonTransDirFromTopLeft' },
+  ],
+  wheel: [
+    { value: '1', labelKey: 'ribbonAnimVarSpokes' },
+    { value: '2', labelKey: 'ribbonAnimVarSpokes' },
+    { value: '3', labelKey: 'ribbonAnimVarSpokes' },
+    { value: '4', labelKey: 'ribbonAnimVarSpokes' },
+    { value: '8', labelKey: 'ribbonAnimVarSpokes' },
+  ],
+  box: [
+    { value: 'in', labelKey: 'ribbonAnimVarInward' },
+    { value: 'out', labelKey: 'ribbonAnimVarOutward' },
+  ],
+  boxOut: [
+    { value: 'in', labelKey: 'ribbonAnimVarInward' },
+    { value: 'out', labelKey: 'ribbonAnimVarOutward' },
+  ],
+  circleIn: [
+    { value: 'out', labelKey: 'ribbonAnimVarOutward' },
+    { value: 'in', labelKey: 'ribbonAnimVarInward' },
+  ],
+  crawlIn: [
+    { value: 'left', labelKey: 'ribbonTransDirFromLeft' },
+    { value: 'right', labelKey: 'ribbonTransDirFromRight' },
+    { value: 'top', labelKey: 'ribbonTransDirFromTop' },
+    { value: 'bottom', labelKey: 'ribbonTransDirFromBottom' },
+  ],
+}
+
+/** Kernel default variant (first engine table entry / the base filter's arg). */
+const ANIM_VARIANT_DEFAULT: Partial<Record<AnimEffectKind, string>> = {
+  blinds: 'horizontal',
+  randomBars: 'horizontal',
+  randomBarsOut: 'horizontal',
+  strips: 'downRight',
+  wheel: '1',
+  box: 'in',
+  boxOut: 'out',
+  circleIn: 'out',
+  crawlIn: 'left',
+}
+
 // ── Transitions tab: 效果选项 / 声音 (WPS 切换 tab 同款下拉) ─────────────
 
 type TransOptionPick = Parameters<NonNullable<Props['onTransitionOption']>>[0]
@@ -844,6 +908,80 @@ function parseTransOption(value: string): TransOptionPick {
   if (field === 'split') return { split: v as TransOptionPick['split'] }
   if (field === 'zoom') return { zoom: v as 'in' | 'out' }
   return { fadeBlack: v === 'black' }
+}
+
+/** 动画 tab 效果选项: variant menu for the selected effect (WPS 效果选项). */
+function AnimVariantPicker({
+  effect,
+  currentVariant,
+  disabled,
+  onPick,
+  onHover,
+  onHoverEnd,
+}: {
+  effect: AnimEffectKind | null
+  currentVariant: string | undefined
+  disabled: boolean
+  onPick: (variant: string) => void
+  onHover: (variant: string) => void
+  onHoverEnd: () => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  const entries = effect ? ANIM_EFFECT_VARIANTS[effect] : undefined
+  if (!entries) {
+    return (
+      <button className="rb-big" disabled data-tip={t('ribbonTransEffectOptionsNoneTip')}>
+        <span className="rb-big-icon">
+          <IconEffectOptions size={BIG} />
+        </span>
+        <span>{t('ribbonTransEffectOptions')}</span>
+      </button>
+    )
+  }
+  const current = currentVariant ?? (effect != null ? ANIM_VARIANT_DEFAULT[effect] : undefined)
+  return (
+    <div className="rb-drop-wrap" ref={wrapRef}>
+      <button
+        className={`rb-big ${open ? 'active' : ''}`}
+        disabled={disabled}
+        data-tip={t('ribbonAnimEffectOptionsTip')}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="rb-big-icon">
+          <IconEffectOptions size={BIG} />
+          <RbCaret />
+        </span>
+        <span>{t('ribbonTransEffectOptions')}</span>
+      </button>
+      {open && (
+        <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+          {entries.map((o) => (
+            <button
+              key={o.value}
+              className={o.value === current ? 'on' : ''}
+              onMouseEnter={() => onHover(o.value)}
+              onMouseLeave={onHoverEnd}
+              onClick={() => {
+                setOpen(false)
+                onPick(o.value)
+              }}
+            >
+              <span className="rb-menu-check" aria-hidden="true">
+                {o.value === current ? '✓' : ''}
+              </span>
+              {o.labelKey === 'ribbonAnimVarSpokes'
+                ? t('ribbonAnimVarSpokes', { n: o.value })
+                : t(o.labelKey)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 /** WPS 效果选项: per-effect direction/variant menu; a plain disabled button when the effect has none. */
@@ -1441,6 +1579,7 @@ export function Ribbon({
   selectedAnimEffect,
   timingAnim,
   onApplyAnimation,
+  onAnimVariant,
   onAnimHoverPreview,
   onAnimHoverEnd,
   onAddAnimation,
@@ -2626,6 +2765,17 @@ export function Ribbon({
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupAdvancedAnim')}>
+              <AnimVariantPicker
+                effect={selectedAnimEffect}
+                currentVariant={timingAnim?.variant}
+                disabled={!hasDoc || !hasSelection}
+                onPick={onAnimVariant}
+                onHover={(v) => {
+                  if (hasDoc && hasSelection && selectedAnimEffect)
+                    onAnimHoverPreview(selectedAnimEffect, undefined, v)
+                }}
+                onHoverEnd={onAnimHoverEnd}
+              />
               {dropBig(
                 'addanim',
                 <IconSparkle size={BIG} />,

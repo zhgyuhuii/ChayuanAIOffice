@@ -318,6 +318,12 @@ function patternClipPath(
       for (let i = 0; i < N; i++) ctx.rect(x, y + i * sh, w, sh * t)
       break
     }
+    case 'blindsV': {
+      const N = 6
+      const cw = w / N
+      for (let i = 0; i < N; i++) ctx.rect(x + i * cw, y, cw * t, h)
+      break
+    }
     case 'checker': {
       const N = 6
       const cw = w / N
@@ -335,6 +341,15 @@ function patternClipPath(
       const visible = Math.ceil(t * N)
       for (let i = 0; i < N; i++)
         if (order.indexOf(i) < visible) ctx.rect(x, y + i * bh, w, bh + 0.5)
+      break
+    }
+    case 'barsV': {
+      const N = 12
+      const cw = w / N
+      const order = shuffledOrder('barsV', N)
+      const visible = Math.ceil(t * N)
+      for (let i = 0; i < N; i++)
+        if (order.indexOf(i) < visible) ctx.rect(x + i * cw, y, cw + 0.5, h)
       break
     }
     case 'dissolve': {
@@ -382,24 +397,39 @@ function patternClipPath(
       break
     }
     case 'wheel': {
-      // 1-spoke clock wipe from 12 o'clock
-      ctx.moveTo(cx, cy)
-      ctx.arc(cx, cy, Math.hypot(w, h), -Math.PI / 2, -Math.PI / 2 + t * Math.PI * 2, false)
-      ctx.closePath()
+      // clock wipe with N spokes (效果选项 1/2/3/4/8): every sector grows
+      // proportionally to the global progress
+      const spokes = Math.max(1, Math.min(8, clip.spokes ?? 1))
+      const R = Math.hypot(w, h)
+      for (let i = 0; i < spokes; i++) {
+        const sweep = (t * 2 * Math.PI) / spokes
+        if (sweep <= 0) break
+        const a0 = -Math.PI / 2 + (i * 2 * Math.PI) / spokes
+        ctx.moveTo(cx, cy)
+        ctx.arc(cx, cy, R, a0, a0 + sweep, false)
+        ctx.closePath()
+      }
       break
     }
-    case 'strips': {
-      // diagonal bands sweeping down-right (阶梯状): 4 bands in a -45° frame
+    case 'strips':
+    case 'stripsUp': {
+      // diagonal bands (阶梯状): 4 bands in a rotated frame; strips sweeps
+      // down-right, stripsUp up-right; flip mirrors the origin edge (left/right)
       const NB = 4
       const diag = Math.hypot(w, h)
       const bw = diag / NB
+      const up = clip.mode === 'stripsUp'
+      const px = clip.flip ? 1 : -1
       ctx.save()
       ctx.translate(cx, cy)
-      ctx.rotate(-Math.PI / 4)
+      ctx.rotate(((up ? 1 : -1) * Math.PI) / 4)
+      // band i's fixed anchor sits at ±(diag/2 - i*bw); the reveal grows
+      // from the anchor toward the sweep direction (px)
       for (let i = 0; i < NB; i++) {
-        const b0 = -diag / 2 + i * bw
-        const vis = Math.min(bw, t * diag - i * bw)
-        if (vis > 0) ctx.rect(b0, -diag / 2, vis, diag)
+        const vis = Math.min(bw, Math.max(0, t * diag - i * bw))
+        if (vis <= 0) continue
+        const anchor = px * (diag / 2) - px * i * bw
+        ctx.rect(px > 0 ? anchor - vis : anchor + bw - vis, -diag / 2, vis, diag)
       }
       ctx.restore()
       break
