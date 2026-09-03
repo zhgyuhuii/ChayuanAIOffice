@@ -261,3 +261,22 @@ describe('second-batch transition kernels', () => {
     ).toBe('ru')
   })
 })
+
+describe('spd → durationMs echo (A1-7)', () => {
+  const base = '<p:sld><p:cSld><p:spTree/></p:cSld></p:sld>'
+  it('infers legacy spd buckets when no p14:dur is present', () => {
+    let body = patchSlideTransitionXml(base, 'fade').replace(
+      '<p:transition>',
+      '<p:transition spd="slow">',
+    )
+    expect(readSlideTransitionSpecXml(body).durationMs).toBe(1000)
+    body = patchSlideTransitionXml(base, 'fade').replace(
+      '<p:transition>',
+      '<p:transition spd="fast">',
+    )
+    expect(readSlideTransitionSpecXml(body).durationMs).toBe(500)
+    // explicit p14:dur still wins
+    const explicit = patchSlideTransitionXml(base, 'fade', { durationMs: 1300 })
+    expect(readSlideTransitionSpecXml(explicit).durationMs).toBe(1300)
+  })
+})

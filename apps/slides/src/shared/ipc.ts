@@ -1770,7 +1770,7 @@ export interface SlidesApi {
   masterDeleteElement: (op: MasterDeleteElementOp) => Promise<RenderSlide | null>
   // ── Presenter-view multi-screen show ────────────────────────────────
   /** Enter presenter view: detects multiple displays and opens a fullscreen audience show window on the external screen (sharing this session's document) */
-  presenterStart: () => Promise<{ audience: boolean }>
+  presenterStart: (displayId?: number | null) => Promise<{ audience: boolean }>
   /** Broadcast show state to the audience window (fire-and-forget) */
   presenterSync: (state: ShowSyncState) => void
   /** Broadcast ink/laser events to the audience window */

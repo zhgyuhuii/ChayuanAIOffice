@@ -4157,6 +4157,7 @@ export function App() {
           slides={slides}
           images={images}
           startAt={presenter.startAt}
+          displayId={showDisplayId}
           onExit={exitPresenterView}
           onUseSlideShow={switchPresenterToShow}
         />

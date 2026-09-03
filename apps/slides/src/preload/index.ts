@@ -406,7 +406,8 @@ const api: SlidesApi = {
   ) => ipcRenderer.invoke('ai:save-style-template', name, data),
   listStyleTemplates: () => ipcRenderer.invoke('ai:list-style-templates'),
   loadStyleTemplate: (name: string) => ipcRenderer.invoke('ai:load-style-template', name),
-  presenterStart: () => ipcRenderer.invoke('slides:presenter-start'),
+  presenterStart: (displayId?: number | null) =>
+    ipcRenderer.invoke('slides:presenter-start', displayId),
   presenterSync: (state: ShowSyncState) => ipcRenderer.send('slides:presenter-sync', state),
   presenterInk: (ev: ShowInkEvent) => ipcRenderer.send('slides:presenter-ink', ev),
   presenterSwap: () => ipcRenderer.invoke('slides:presenter-swap'),

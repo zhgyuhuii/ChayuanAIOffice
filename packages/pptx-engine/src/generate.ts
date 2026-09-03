@@ -1557,7 +1557,14 @@ export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionS
       m[0],
     )?.[1] as SlideTransitionKind | undefined
   if (!kind) return { kind: 'none', durationMs: null }
-  const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
+  const durAttr = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
+  // A1-7 echo: no explicit p14:dur but a legacy spd — infer the duration the
+  // way PowerPoint buckets them, so the 速度 input reads the real value
+  let durationMs: number | null = durAttr ? Number(durAttr) : null
+  if (durationMs == null) {
+    const spd = /\bspd="(slow|med|fast)"/.exec(m[0])?.[1]
+    if (spd) durationMs = spd === 'slow' ? 1000 : spd === 'med' ? 750 : 500
+  }
   const dir =
     /<p:(?:push|wipe|cover|pull|blinds|checker|randomBar|strips)\b[^>]*\bdir="([lrud]+)"/.exec(
       m[0],
@@ -1567,7 +1574,7 @@ export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionS
   const fadeBlack = /<p:fade\b[^>]*\bthruBlk="1"/.test(m[0]) || undefined
   return {
     kind,
-    durationMs: durMs ? Number(durMs) : null,
+    durationMs,
     ...(dir && TRANSITION_DIR_KERNELS[kind]?.has(dir) ? { dir } : {}),
     ...(splitM
       ? {

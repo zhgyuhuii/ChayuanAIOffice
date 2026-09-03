@@ -53,7 +53,7 @@ function closePresenterShow(presenterId: number): void {
 
 /** Register the slides:presenter-* / slides:audience-* channels (called from registerSlidesIpc). */
 export function registerPresenterIpc(): void {
-  ipcMain.handle('slides:presenter-start', (e) => {
+  ipcMain.handle('slides:presenter-start', (e, displayId?: number | null) => {
     const existing = presenterShows.get(e.sender.id)
     if (existing) return { audience: existing.audienceWin != null }
     const show: PresenterShow = { presenterWc: e.sender, audienceWin: null, lastSync: null }
@@ -65,7 +65,14 @@ export function registerPresenterIpc(): void {
     const hostDisplay = host
       ? screen.getDisplayMatching(host.getBounds())
       : screen.getPrimaryDisplay()
-    const external = screen.getAllDisplays().find((d) => d.id !== hostDisplay.id)
+    // 放映到[显示器] drives the audience window; unresolved/absent picks the
+    // first screen that isn't the host's (legacy behavior)
+    const all = screen.getAllDisplays()
+    const chosen =
+      displayId != null
+        ? (all.find((d) => d.id === displayId) ?? all.find((d) => d.id !== hostDisplay.id))
+        : all.find((d) => d.id !== hostDisplay.id)
+    const external = chosen
     if (!external || !session) return { audience: false }
 
     const win = new BrowserWindow({

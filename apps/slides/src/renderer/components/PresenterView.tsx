@@ -48,6 +48,7 @@ export function PresenterView({
   slides,
   images,
   startAt,
+  displayId,
   onExit,
   onUseSlideShow,
 }: {
@@ -55,6 +56,8 @@ export function PresenterView({
   images: Map<string, HTMLImageElement>
   /** Start page (original index) */
   startAt: number
+  /** 放映到[显示器]: target screen for the audience window (null = auto external) */
+  displayId?: number | null
   /** Exit presenter view; lastIndex is the original index of the page dwelt on (for locating back in the edit view) */
   onExit: (lastIndex: number) => void
   /** "Switch to normal show": exit this view and start a normal show from lastIndex */
@@ -130,7 +133,7 @@ export function PresenterView({
   // ── Multi-screen: open the audience window on entry, close on exit ─────────────
   useEffect(() => {
     let disposed = false
-    void window.slidesApi.presenterStart().then((r) => {
+    void window.slidesApi.presenterStart(displayId ?? undefined).then((r) => {
       if (!disposed) setHasAudience(r.audience)
     })
     return () => {
