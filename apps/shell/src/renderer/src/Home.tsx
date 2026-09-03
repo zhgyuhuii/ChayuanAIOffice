@@ -22,7 +22,7 @@ import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
-import { getHomeLayout, onHomeLayoutChange } from './home-layout'
+import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 
 declare global {
   interface Window {
@@ -101,13 +101,15 @@ function hasProjectApi(): boolean {
   return typeof window.chatOfficeProject !== 'undefined'
 }
 
-const FILTERS: { key: string; label: StringKey }[] = [
-  { key: 'all', label: 'filterAll' },
-  { key: 'docx', label: 'filterDocs' },
-  { key: 'xlsx', label: 'filterSheets' },
-  { key: 'pptx', label: 'filterSlides' },
-  { key: 'pdf', label: 'filterPdf' },
-  { key: 'md', label: 'filterMd' },
+/** 最近使用 filter chips: extension-style tech terms (all/docx/xlsx/pptx/pdf/.md),
+ *  literal in every locale — they read as file formats, not UI words */
+const RECENT_FILTERS: { key: string; label: string }[] = [
+  { key: 'all', label: 'all' },
+  { key: 'docx', label: 'docx' },
+  { key: 'xlsx', label: 'xlsx' },
+  { key: 'pptx', label: 'pptx' },
+  { key: 'pdf', label: 'pdf' },
+  { key: 'md', label: '.md' },
 ]
 
 /** Check glyph marking the selected sort option; invisible on the others so labels stay aligned */
@@ -1666,62 +1668,110 @@ export function Home() {
     )
   }
 
-  /** always-on 收藏 section */
-  function renderStarredSection() {
+  /** collapsible group header: arrow + title + count, click toggles */
+  function renderGroupHead(
+    title: string,
+    count: number,
+    collapsed: boolean,
+    onToggle: () => void,
+  ): ReactElement {
     return (
-      <div className="side-files side-sec-starred">
-        <div className="side-files-head">
-          <span className="side-files-title">{t('secStarred')}</span>
-          <span className="side-files-count">
-            {t(fileCountKey(starredEntries.length), { n: starredEntries.length })}
-          </span>
-        </div>
-        {starredEntries.length === 0 ? (
-          <p className="side-files-empty">{t('emptyStarred')}</p>
-        ) : (
-          <ul className="side-file-list">
-            {starredEntries.map((entry) => renderSideFileRow(entry, 'global'))}
-          </ul>
-        )}
+      <div
+        className="side-group-head"
+        role="button"
+        tabIndex={0}
+        aria-expanded={!collapsed}
+        onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && event.target === event.currentTarget) onToggle()
+        }}
+      >
+        <svg
+          className={`side-group-arrow${collapsed ? ' folded' : ''}`}
+          width="12"
+          height="12"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M6 3.5L10.5 8L6 12.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+        <span className="side-files-title">{title}</span>
+        <span className="side-files-count">{t(fileCountKey(count), { n: count })}</span>
       </div>
     )
   }
 
-  /** always-on 最近使用 section (keeps the type filter pills + paging) */
+  /** always-on 收藏 section (collapsible group) */
+  function renderStarredSection() {
+    return (
+      <div
+        className={`side-files side-sec-starred side-group${
+          layout.starredCollapsed ? ' collapsed' : ''
+        }`}
+      >
+        {renderGroupHead(t('secStarred'), starredEntries.length, layout.starredCollapsed, () =>
+          setHomeLayout({ starredCollapsed: !layout.starredCollapsed }),
+        )}
+        <div className="side-group-body">
+          {starredEntries.length === 0 ? (
+            <p className="side-files-empty">{t('emptyStarred')}</p>
+          ) : (
+            <ul className="side-file-list">
+              {starredEntries.map((entry) => renderSideFileRow(entry, 'global'))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  /** always-on 最近使用 section (collapsible group; extension-style filter chips) */
   function renderRecentSection() {
     return (
-      <div className="side-files side-sec-recent">
-        <div className="side-files-head">
-          <span className="side-files-title">{t('secRecent')}</span>
-          <span className="side-files-count">{t(fileCountKey(listTotal), { n: listTotal })}</span>
-        </div>
-        <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`side-filter${filter === f.key ? ' active' : ''}`}
-              onClick={() => changeFilter(f.key)}
-            >
-              {t(f.label)}
-            </button>
-          ))}
-        </div>
-        {entries.length === 0 ? (
-          <p className="side-files-empty">
-            {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
-          </p>
-        ) : (
-          <div className="side-files-scroll">
-            <ul className="side-file-list">
-              {entries.map((entry) => renderSideFileRow(entry, 'global'))}
-            </ul>
-            {hasMore && (
-              <div ref={sentinelRef} className="load-more" aria-hidden="true">
-                <span className="load-more-spinner" />
-              </div>
-            )}
-          </div>
+      <div
+        className={`side-files side-sec-recent side-group${
+          layout.recentCollapsed ? ' collapsed' : ''
+        }`}
+      >
+        {renderGroupHead(t('secRecent'), listTotal, layout.recentCollapsed, () =>
+          setHomeLayout({ recentCollapsed: !layout.recentCollapsed }),
         )}
+        <div className="side-group-body">
+          <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
+            {RECENT_FILTERS.map((f) => (
+              <button
+                key={f.key}
+                className={`side-filter${filter === f.key ? ' active' : ''}`}
+                onClick={() => changeFilter(f.key)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          {entries.length === 0 ? (
+            <p className="side-files-empty">
+              {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
+            </p>
+          ) : (
+            <div className="side-files-scroll">
+              <ul className="side-file-list">
+                {entries.map((entry) => renderSideFileRow(entry, 'global'))}
+              </ul>
+              {hasMore && (
+                <div ref={sentinelRef} className="load-more" aria-hidden="true">
+                  <span className="load-more-spinner" />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     )
   }

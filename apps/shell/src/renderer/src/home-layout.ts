@@ -3,16 +3,26 @@
  * by the TabBar toggle buttons and the Home surface. Collapsed flags persist
  * in localStorage so the arrangement survives restarts; the middle chat pane
  * is always on and never persisted.
+ *
+ * Section collapse (收藏 / 最近使用 group headers) lives here too — one
+ * storage slot for every home-tree arrangement the user fiddles with.
  */
 
 export interface HomeLayoutState {
   leftCollapsed: boolean
   rightCollapsed: boolean
+  starredCollapsed: boolean
+  recentCollapsed: boolean
 }
 
 const STORAGE_KEY = 'chatoffice.home-layout'
 
-const DEFAULT_STATE: HomeLayoutState = { leftCollapsed: false, rightCollapsed: false }
+const DEFAULT_STATE: HomeLayoutState = {
+  leftCollapsed: false,
+  rightCollapsed: false,
+  starredCollapsed: false,
+  recentCollapsed: false,
+}
 
 function load(): HomeLayoutState {
   try {
@@ -24,6 +34,8 @@ function load(): HomeLayoutState {
       return {
         leftCollapsed: obj.leftCollapsed === true,
         rightCollapsed: obj.rightCollapsed === true,
+        starredCollapsed: obj.starredCollapsed === true,
+        recentCollapsed: obj.recentCollapsed === true,
       }
     }
   } catch {
@@ -41,7 +53,12 @@ export function getHomeLayout(): HomeLayoutState {
 
 export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
   const next = { ...state, ...patch }
-  if (next.leftCollapsed === state.leftCollapsed && next.rightCollapsed === state.rightCollapsed) {
+  if (
+    next.leftCollapsed === state.leftCollapsed &&
+    next.rightCollapsed === state.rightCollapsed &&
+    next.starredCollapsed === state.starredCollapsed &&
+    next.recentCollapsed === state.recentCollapsed
+  ) {
     return
   }
   state = next
