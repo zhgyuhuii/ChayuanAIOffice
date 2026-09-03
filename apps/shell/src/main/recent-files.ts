@@ -1,11 +1,23 @@
 import { statSync } from 'node:fs'
 import { basename, extname } from 'node:path'
+import { isRemoteUri } from '@chatoffice/storage-adapter'
 import type { RecentEntry, RecentPage, RecentQuery } from '../shared/home-api'
 
 const RECENT_PAGE_DEFAULT = 50
 const RECENT_PAGE_MAX = 200
 
 function toRecentEntry(path: string, starredPaths: ReadonlySet<string>): RecentEntry | null {
+  // remote documents have no local stat; their identity carries name and ext
+  if (isRemoteUri(path)) {
+    return {
+      path,
+      name: basename(path),
+      ext: extname(path).slice(1).toLowerCase(),
+      mtimeMs: 0,
+      sizeBytes: 0,
+      starred: starredPaths.has(path),
+    }
+  }
   try {
     const stat = statSync(path)
     return {

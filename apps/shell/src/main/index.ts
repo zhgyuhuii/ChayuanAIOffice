@@ -79,7 +79,7 @@ import {
 } from './cloud-projects'
 import { handleDroppedFiles } from './dropped-files'
 import { ProjectStore } from '@chatoffice/project-store'
-import { bindRemoteFilesIpc, createRemoteFilesHost } from '@chatoffice/storage-adapter'
+import { bindRemoteFilesIpc, isRemoteUri, parseRemoteUri } from '@chatoffice/storage-adapter'
 import {
   ensureChatofficeLogin,
   chatofficeLogout,
@@ -118,6 +118,10 @@ import {
   setSessionPathResolver,
   defaultSaveDir,
   uniquePathIn,
+  remoteFiles,
+  openRemoteDocument,
+  deleteRemoteDocument,
+  renameRemoteDocument,
 } from '../../../docs/src/main/docs-main'
 import { blankXlsxBuffer } from '../../../sheets/src/gateway/csv-import'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
@@ -2828,10 +2832,10 @@ function statEntries(paths: string[]): RecentEntry[] {
   return statExistingPaths(paths, new Set(readStarredFiles()))
 }
 
-// Remote storage (MinIO / OSS): settings + index + pending save queue share the
-// shell's userData so Home and the editor mains see the same state.
+// Remote storage (MinIO / OSS): the host lives in the embedded docs module so
+// shell and docs share one instance, one settings file, one pending queue.
 function registerRemoteFilesIpc(): void {
-  const host = createRemoteFilesHost(app.getPath('userData'))
+  const host = remoteFiles()
   bindRemoteFilesIpc(
     (channel, handler) => {
       ipcMain.handle(channel, (_event, payload: unknown) => handler(payload))
@@ -2921,7 +2925,23 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.openPath, (_event, path: unknown) => {
-    if (typeof path === 'string') openDocumentPath(path)
+    if (typeof path !== 'string') return
+    if (isRemoteUri(path)) {
+      // materialize the object into the local cache, then open that copy; its
+      // file-backed identity routes saves back to the bucket (consensus Q4)
+      void openRemoteDocument(path)
+        .then((cachePath) => openDocumentPath(cachePath))
+        .catch((err: unknown) => {
+          console.warn('[shell] remote open failed:', err)
+          void dialog.showMessageBox({
+            type: 'warning' as const,
+            message: String(err instanceof Error ? err.message : err),
+            detail: path,
+          })
+        })
+      return
+    }
+    openDocumentPath(path)
   })
 
   ipcMain.handle(HOME_CHANNELS.browse, async (event) => {
@@ -2987,11 +3007,24 @@ function registerHomeIpc(): void {
 
   ipcMain.handle(
     HOME_CHANNELS.renameFile,
-    (_event, path: unknown, newName: unknown): RenameResult => {
+    async (_event, path: unknown, newName: unknown): Promise<RenameResult> => {
       if (typeof path !== 'string' || typeof newName !== 'string')
         return { ok: false, error: tm('errBadArgs') }
       const name = newName.trim()
       if (!name || /[\\/:]/.test(name)) return { ok: false, error: tm('errBadName') }
+      if (typeof path === 'string' && isRemoteUri(path)) {
+        // server-side rename within the same bucket prefix
+        const parsed = parseRemoteUri(path)
+        if (!parsed) return { ok: false, error: tm('errBadArgs') }
+        try {
+          const newUri = await renameRemoteDocument(path, name)
+          replaceRecentFile(path, newUri)
+          projectFileRenamed(path, newUri)
+          return { ok: true, path: newUri }
+        } catch (err) {
+          return { ok: false, error: err instanceof Error ? err.message : tm('errRenameFailed') }
+        }
+      }
       if (!existsSync(path)) return { ok: false, error: tm('errMissing') }
       const target = join(dirname(path), name)
       if (target === path) return { ok: true, path }
@@ -3034,14 +3067,26 @@ function registerHomeIpc(): void {
 
   ipcMain.handle(HOME_CHANNELS.deleteFiles, async (_event, paths: unknown) => {
     const list = stringPaths(paths)
+    const failed = new Set<string>()
     for (const p of list) {
+      if (isRemoteUri(p)) {
+        // object storage has no trash: the renderer's confirm modal is the
+        // guard, and a failed delete keeps the entry listed
+        try {
+          await deleteRemoteDocument(p)
+        } catch {
+          console.warn('[shell] remote delete failed:', p)
+          failed.add(p)
+        }
+        continue
+      }
       try {
         await shell.trashItem(p)
       } catch {
         // file already gone or trash unavailable; still drop it from the list
       }
     }
-    removeRecentFiles(list)
+    removeRecentFiles(list.filter((p) => !failed.has(p)))
   })
 
   ipcMain.handle(HOME_CHANNELS.openTrash, () => {

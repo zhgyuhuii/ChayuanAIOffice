@@ -8,9 +8,10 @@ import {
   unlinkSync,
   watch,
   writeFileSync,
+  rmSync,
 } from 'node:fs'
 import { copyFile, mkdir, readFile, readdir, stat, unlink, writeFile } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import {
   BrowserWindow,
   Menu,
@@ -41,7 +42,17 @@ import {
 import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
-import { bindRemoteFilesIpc, createRemoteFilesHost } from '@chatoffice/storage-adapter'
+import {
+  bindRemoteFilesIpc,
+  createRemoteFilesHost,
+  formatRemoteUri,
+  isRemoteUri,
+  parseRemoteUri,
+  resolveDefaultSaveTarget,
+  RemoteConflictError,
+  type RemoteFilesHost,
+  type RemoteStorageConfig,
+} from '@chatoffice/storage-adapter'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -131,6 +142,10 @@ const tMain = createI18n({
     autosaveDiscard: '放弃',
     btnDontSave: '不保存',
     btnCancel: '取消',
+    rsConflictMsg: '远端文件已被其他设备修改。',
+    rsConflictDetail: '你的版本与远程存储上的当前版本不一致，请选择处理方式：',
+    rsConflictOverwrite: '用我的版本覆盖',
+    rsConflictCopy: '把我的存为副本',
     extModifiedMsg: '文件已被其他程序修改。',
     extModifiedDetail: '仍要保存并覆盖磁盘上的更改吗?',
     btnOverwrite: '覆盖',
@@ -227,6 +242,11 @@ const tMain = createI18n({
     autosaveDiscard: 'Discard',
     btnDontSave: "Don't Save",
     btnCancel: 'Cancel',
+    rsConflictMsg: 'The remote file was changed on another device.',
+    rsConflictDetail:
+      'Your version differs from the one currently in remote storage. Choose how to proceed:',
+    rsConflictOverwrite: 'Overwrite with my version',
+    rsConflictCopy: 'Save my version as a copy',
     extModifiedMsg: 'The file has been modified by another program.',
     extModifiedDetail: 'Save anyway and overwrite the changes on disk?',
     btnOverwrite: 'Overwrite',
@@ -324,6 +344,10 @@ const tMain = createI18n({
     autosaveDiscard: '破棄',
     btnDontSave: '保存しない',
     btnCancel: 'キャンセル',
+    rsConflictMsg: 'リモートのファイルが別のデバイスで変更されています。',
+    rsConflictDetail: 'あなたの版はリモートの現行版と一致しません。処理を選択してください：',
+    rsConflictOverwrite: '自分の版で上書き',
+    rsConflictCopy: '自分の版をコピーとして保存',
     extModifiedMsg: 'このファイルは別のプログラムによって変更されています。',
     extModifiedDetail: 'このまま保存してディスク上の変更を上書きしますか?',
     btnOverwrite: '上書き',
@@ -424,6 +448,10 @@ const tMain = createI18n({
     autosaveDiscard: '취소',
     btnDontSave: '저장 안 함',
     btnCancel: '취소',
+    rsConflictMsg: '원격 파일이 다른 기기에서 변경되었습니다.',
+    rsConflictDetail: '내 버전은 원격 저장소의 현재 버전과 다릅니다. 처리 방법을 선택하세요:',
+    rsConflictOverwrite: '내 버전으로 덮어쓰기',
+    rsConflictCopy: '내 버전을 사본으로 저장',
     extModifiedMsg: '이 파일이 다른 프로그램에서 수정되었습니다.',
     extModifiedDetail: '그래도 저장하여 디스크의 변경 사항을 덮어쓸까요?',
     btnOverwrite: '덮어쓰기',
@@ -524,6 +552,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Ignorer',
     btnDontSave: 'Ne pas enregistrer',
     btnCancel: 'Annuler',
+    rsConflictMsg: 'Le fichier distant a été modifié depuis un autre appareil.',
+    rsConflictDetail: 'Votre version diffère de celle du stockage distant. Choisissez :',
+    rsConflictOverwrite: 'Écraser avec ma version',
+    rsConflictCopy: 'Enregistrer ma version comme copie',
     extModifiedMsg: 'Le fichier a été modifié par un autre programme.',
     extModifiedDetail: 'Enregistrer quand même et écraser les modifications sur le disque ?',
     btnOverwrite: 'Écraser',
@@ -625,6 +657,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Verwerfen',
     btnDontSave: 'Nicht speichern',
     btnCancel: 'Abbrechen',
+    rsConflictMsg: 'Die Remote-Datei wurde auf einem anderen Gerät geändert.',
+    rsConflictDetail: 'Ihre Version weicht von der im Remote-Speicher ab. Bitte wählen:',
+    rsConflictOverwrite: 'Mit meiner Version überschreiben',
+    rsConflictCopy: 'Meine Version als Kopie sichern',
     extModifiedMsg: 'Die Datei wurde von einem anderen Programm geändert.',
     extModifiedDetail: 'Trotzdem speichern und die Änderungen auf dem Datenträger überschreiben?',
     btnOverwrite: 'Überschreiben',
@@ -725,6 +761,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Descartar',
     btnDontSave: 'No guardar',
     btnCancel: 'Cancelar',
+    rsConflictMsg: 'El archivo remoto fue modificado desde otro dispositivo.',
+    rsConflictDetail: 'Su versión difiere de la actual en el almacenamiento remoto. Elija:',
+    rsConflictOverwrite: 'Sobrescribir con mi versión',
+    rsConflictCopy: 'Guardar mi versión como copia',
     extModifiedMsg: 'El archivo ha sido modificado por otro programa.',
     extModifiedDetail: '¿Guardar de todos modos y sobrescribir los cambios en el disco?',
     btnOverwrite: 'Sobrescribir',
@@ -825,6 +865,10 @@ const tMain = createI18n({
     autosaveDiscard: 'ละทิ้ง',
     btnDontSave: 'ไม่บันทึก',
     btnCancel: 'ยกเลิก',
+    rsConflictMsg: 'ไฟล์ระยะไกลถูกแก้ไขจากอุปกรณ์อื่น',
+    rsConflictDetail: 'เวอร์ชันของคุณต่างจากที่อยู่ในที่จัดเก็บระยะไกล เลือกวิธีจัดการ:',
+    rsConflictOverwrite: 'เขียนทับด้วยเวอร์ชันของฉัน',
+    rsConflictCopy: 'บันทึกเวอร์ชันของฉันเป็นสำเนา',
     extModifiedMsg: 'ไฟล์ถูกแก้ไขโดยโปรแกรมอื่น',
     extModifiedDetail: 'บันทึกต่อไปและเขียนทับการเปลี่ยนแปลงบนดิสก์หรือไม่?',
     btnOverwrite: 'เขียนทับ',
@@ -925,6 +969,11 @@ const tMain = createI18n({
     autosaveDiscard: 'Buang',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
+    rsConflictMsg: 'File jarak jauh diubah dari perangkat lain.',
+    rsConflictDetail:
+      'Versi Anda berbeda dengan yang ada di penyimpanan jarak jauh. Pilih tindakan:',
+    rsConflictOverwrite: 'Timpa dengan versi saya',
+    rsConflictCopy: 'Simpan versi saya sebagai salinan',
     extModifiedMsg: 'File telah diubah oleh program lain.',
     extModifiedDetail: 'Tetap simpan dan timpa perubahan di disk?',
     btnOverwrite: 'Timpa',
@@ -1024,6 +1073,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Отклонить',
     btnDontSave: 'Не сохранять',
     btnCancel: 'Отмена',
+    rsConflictMsg: 'Удалённый файл изменён на другом устройстве.',
+    rsConflictDetail: 'Ваша версия отличается от текущей в удалённом хранилище. Выберите действие:',
+    rsConflictOverwrite: 'Перезаписать моей версией',
+    rsConflictCopy: 'Сохранить мою версию как копию',
     extModifiedMsg: 'Файл был изменён другой программой.',
     extModifiedDetail: 'Всё равно сохранить и перезаписать изменения на диске?',
     btnOverwrite: 'Перезаписать',
@@ -1123,6 +1176,10 @@ const tMain = createI18n({
     autosaveDiscard: 'تجاهل',
     btnDontSave: 'عدم الحفظ',
     btnCancel: 'إلغاء',
+    rsConflictMsg: 'تم تعديل الملف البعيد من جهاز آخر.',
+    rsConflictDetail: 'نسختك تختلف عن النسخة الحالية في التخزين البعيد. اختر كيفية المتابعة:',
+    rsConflictOverwrite: 'الكتابة فوق بنسختي',
+    rsConflictCopy: 'حفظ نسختي كنسخة',
     extModifiedMsg: 'تم تعديل الملف بواسطة برنامج آخر.',
     extModifiedDetail: 'هل تريد الحفظ على أي حال والكتابة فوق التغييرات على القرص؟',
     btnOverwrite: 'استبدال',
@@ -1222,6 +1279,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Descartar',
     btnDontSave: 'Não Salvar',
     btnCancel: 'Cancelar',
+    rsConflictMsg: 'O arquivo remoto foi alterado em outro dispositivo.',
+    rsConflictDetail: 'Sua versão difere da atual no armazenamento remoto. Escolha:',
+    rsConflictOverwrite: 'Sobrescrever com minha versão',
+    rsConflictCopy: 'Salvar minha versão como cópia',
     extModifiedMsg: 'O arquivo foi modificado por outro programa.',
     extModifiedDetail: 'Salvar mesmo assim e sobrescrever as alterações no disco?',
     btnOverwrite: 'Sobrescrever',
@@ -1322,6 +1383,11 @@ const tMain = createI18n({
     autosaveDiscard: 'Ignora',
     btnDontSave: 'Non salvare',
     btnCancel: 'Annulla',
+    rsConflictMsg: 'Il file remoto è stato modificato da un altro dispositivo.',
+    rsConflictDetail:
+      "La tua versione è diversa da quella attuale nell'archiviazione remota. Scegli:",
+    rsConflictOverwrite: 'Sovrascrivi con la mia versione',
+    rsConflictCopy: 'Salva la mia versione come copia',
     extModifiedMsg: 'Il file è stato modificato da un altro programma.',
     extModifiedDetail: 'Salvare comunque e sovrascrivere le modifiche sul disco?',
     btnOverwrite: 'Sovrascrivi',
@@ -1422,6 +1488,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Odrzuć',
     btnDontSave: 'Nie zapisuj',
     btnCancel: 'Anuluj',
+    rsConflictMsg: 'Zdalny plik został zmieniony na innym urządzeniu.',
+    rsConflictDetail: 'Twoja wersja różni się od aktualnej w magazynie zdalnym. Wybierz:',
+    rsConflictOverwrite: 'Nadpisz moją wersją',
+    rsConflictCopy: 'Zapisz moją wersję jako kopię',
     extModifiedMsg: 'Plik został zmodyfikowany przez inny program.',
     extModifiedDetail: 'Zapisać mimo to i nadpisać zmiany na dysku?',
     btnOverwrite: 'Nadpisz',
@@ -1522,6 +1592,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Negeren',
     btnDontSave: 'Niet opslaan',
     btnCancel: 'Annuleren',
+    rsConflictMsg: 'Het externe bestand is op een ander apparaat gewijzigd.',
+    rsConflictDetail: 'Uw versie wijkt af van die in de externe opslag. Kies een actie:',
+    rsConflictOverwrite: 'Overschrijven met mijn versie',
+    rsConflictCopy: 'Mijn versie als kopie opslaan',
     extModifiedMsg: 'Het bestand is door een ander programma gewijzigd.',
     extModifiedDetail: 'Toch opslaan en de wijzigingen op schijf overschrijven?',
     btnOverwrite: 'Overschrijven',
@@ -1622,6 +1696,10 @@ const tMain = createI18n({
     autosaveDiscard: 'Buang',
     btnDontSave: 'Jangan Simpan',
     btnCancel: 'Batal',
+    rsConflictMsg: 'Fail jauh telah diubah pada peranti lain.',
+    rsConflictDetail: 'Versi anda berbeza daripada yang ada dalam storan jauh. Pilih tindakan:',
+    rsConflictOverwrite: 'Tulis ganti dengan versi saya',
+    rsConflictCopy: 'Simpan versi saya sebagai salinan',
     extModifiedMsg: 'Fail telah diubah oleh program lain.',
     extModifiedDetail: 'Simpan juga dan tulis ganti perubahan pada cakera?',
     btnOverwrite: 'Tulis Ganti',
@@ -1720,6 +1798,10 @@ const tMain = createI18n({
     autosaveDiscard: 'התעלם',
     btnDontSave: 'אל תשמור',
     btnCancel: 'ביטול',
+    rsConflictMsg: 'הקובץ המרוחק שונה ממכשיר אחר.',
+    rsConflictDetail: 'הגרסה שלך שונה מזו שבאחסון המרוחק. בחרו כיצד להמשיך:',
+    rsConflictOverwrite: 'דריסה עם הגרסה שלי',
+    rsConflictCopy: 'שמירת הגרסה שלי כעותק',
     extModifiedMsg: 'הקובץ שונה על ידי תוכנית אחרת.',
     extModifiedDetail: 'לשמור בכל זאת ולדרוס את השינויים בדיסק?',
     btnOverwrite: 'דרוס',
@@ -1818,6 +1900,10 @@ const tMain = createI18n({
     autosaveDiscard: 'छोड़ें',
     btnDontSave: 'न सहेजें',
     btnCancel: 'रद्द करें',
+    rsConflictMsg: 'रिमोट फ़ाइल किसी अन्य डिवाइस पर बदली गई थी।',
+    rsConflictDetail: 'आपका वर्शन रिमोट स्टोरेज में मौजूद वर्शन से अलग है। चुनें:',
+    rsConflictOverwrite: 'मेरे वर्शन से ओवरराइट करें',
+    rsConflictCopy: 'मेरा वर्शन प्रतिलिपि के रूप में सहेजें',
     extModifiedMsg: 'फ़ाइल को किसी अन्य प्रोग्राम ने बदल दिया है।',
     extModifiedDetail: 'फिर भी सहेजें और डिस्क पर मौजूद बदलावों को अधिलेखित करें?',
     btnOverwrite: 'अधिलेखित करें',
@@ -1917,6 +2003,10 @@ const tMain = createI18n({
     autosaveDiscard: '放棄',
     btnDontSave: '不儲存',
     btnCancel: '取消',
+    rsConflictMsg: '遠端檔案已被其他裝置修改。',
+    rsConflictDetail: '你的版本與遠端儲存上的目前版本不一致，請選擇處理方式：',
+    rsConflictOverwrite: '用我的版本覆蓋',
+    rsConflictCopy: '把我的存為副本',
     extModifiedMsg: '檔案已被其他程式修改。',
     extModifiedDetail: '仍要儲存並覆寫磁碟上的變更嗎?',
     btnOverwrite: '覆寫',
@@ -2150,7 +2240,7 @@ function pushRecent(filePath: string): void {
 
 /** unified recents for the shell home screen (paths only; type = extension) */
 export function readRecentFiles(): string[] {
-  return readJson<string[]>(RECENT_PATH(), []).filter((p) => existsSync(p))
+  return readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p))
 }
 
 export function recordRecentFile(filePath: string): void {
@@ -2302,6 +2392,7 @@ function dropDocWriter(wcId: number): void {
   docWritablePaths.delete(wcId)
   pdfWritablePaths.delete(wcId)
   docDiskStates.delete(wcId)
+  for (const binding of remoteDocBindings.values()) binding.wcIds.delete(wcId)
   // Destroyed renderers count as torn down too: window-close paths never run
   // teardownDocsRenderer, but an in-flight save handler resuming after the
   // destruction must still fail its re-check (wcIds are never reused, so the
@@ -2864,10 +2955,23 @@ export function projectFileRenamed(oldPath: string, newPath: string): void {
  * Register the project:* IPC handlers (all three apps share the same channel names).
  * Idempotency guard: registered only once in shell mode.
  */
-// Remote storage (MinIO / OSS): one host per editor main process, rooted at
-// userData so the pending save queue survives relaunches.
+// ── Remote storage (MinIO / OSS) ──
+// One host per process (shell embeds this module, so the shell's own remote
+// IPC registration shares it via remoteFiles()). Documents saved to remote
+// locations get an in-memory identity binding; documents opened FROM remote
+// locations are materialized into a per-URI cache dir with a file-backed
+// index so the identity survives relaunches. ETag baselines power the
+// conflict adjudication required by plan consensus Q6.
+let remoteHost: RemoteFilesHost | null = null
+
+/** Shared host accessor: the shell (which embeds this module) uses the same instance. */
+export function remoteFiles(): RemoteFilesHost {
+  if (!remoteHost) remoteHost = createRemoteFilesHost(app.getPath('userData'))
+  return remoteHost
+}
+
 function registerRemoteFilesIpc(): void {
-  const host = createRemoteFilesHost(app.getPath('userData'))
+  const host = remoteFiles()
   bindRemoteFilesIpc(
     (channel, handler) => {
       ipcMain.handle(channel, (_event, payload: unknown) => handler(payload))
@@ -2877,6 +2981,318 @@ function registerRemoteFilesIpc(): void {
   void host.queue.flush().catch((err: unknown) => {
     console.warn('[docs] remote save queue flush failed:', err)
   })
+}
+
+interface RemoteDocBinding {
+  configId: string
+  key: string
+  uri: string
+  etag: string | null
+  wcIds: Set<number>
+}
+
+const remoteDocBindings = new Map<string, RemoteDocBinding>()
+
+function allowRemoteDocWrite(
+  wcId: number,
+  uri: string,
+  configId: string,
+  key: string,
+  etag: string | null,
+): void {
+  const binding = remoteDocBindings.get(uri) ?? {
+    configId,
+    key,
+    uri,
+    etag,
+    wcIds: new Set<number>(),
+  }
+  binding.etag = etag
+  binding.wcIds.add(wcId)
+  remoteDocBindings.set(uri, binding)
+}
+
+function remoteDocFor(wcId: number, uri: string): RemoteDocBinding | null {
+  const binding = remoteDocBindings.get(uri)
+  if (!binding || !binding.wcIds.has(wcId)) return null
+  return binding
+}
+
+interface RemoteCacheEntry {
+  uri: string
+  configId: string
+  key: string
+  etag: string | null
+  openedAtMs: number
+}
+
+const remoteCacheIndexPath = () => join(app.getPath('userData'), 'remote-cache', 'index.json')
+
+function readRemoteCacheIndex(): Record<string, RemoteCacheEntry> {
+  return readJson<Record<string, RemoteCacheEntry>>(remoteCacheIndexPath(), {})
+}
+
+function writeRemoteCacheIndex(index: Record<string, RemoteCacheEntry>): void {
+  writeJson(remoteCacheIndexPath(), index)
+}
+
+function remoteCacheFilePath(configId: string, key: string): string {
+  const digest = createHash('sha256').update(`${configId}/${key}`).digest('hex')
+  const base = key.slice(key.lastIndexOf('/') + 1) || 'document'
+  return join(app.getPath('userData'), 'remote-cache', digest, base)
+}
+
+/** Materializes a remote object into the cache and returns the local path to open. */
+export async function openRemoteDocument(uri: string): Promise<string> {
+  const parsed = parseRemoteUri(uri)
+  if (!parsed) throw new Error(`not a remote document uri: ${uri}`)
+  const object = await remoteFiles().service.readObject(parsed.configId, parsed.key)
+  const cachePath = remoteCacheFilePath(parsed.configId, parsed.key)
+  await mkdir(dirname(cachePath), { recursive: true })
+  await atomicWriteFile(cachePath, Buffer.from(object.base64, 'base64'))
+  const index = readRemoteCacheIndex()
+  index[cachePath] = {
+    uri,
+    configId: parsed.configId,
+    key: parsed.key,
+    etag: object.etag,
+    openedAtMs: Date.now(),
+  }
+  writeRemoteCacheIndex(index)
+  return cachePath
+}
+
+/** Removes the cache copies (and index entries) of a remote document. */
+function pruneRemoteCache(uri: string): void {
+  const index = readRemoteCacheIndex()
+  let changed = false
+  for (const [cachePath, entry] of Object.entries(index)) {
+    if (entry.uri !== uri) continue
+    rmSync(dirname(cachePath), { recursive: true, force: true })
+    delete index[cachePath]
+    changed = true
+  }
+  if (changed) writeRemoteCacheIndex(index)
+}
+
+/** Hard-deletes a remote object (consensus Q10) and prunes any local cache copies. */
+export async function deleteRemoteDocument(uri: string): Promise<void> {
+  const parsed = parseRemoteUri(uri)
+  if (!parsed) throw new Error(`not a remote document uri: ${uri}`)
+  await remoteFiles().service.deleteObject(parsed.configId, parsed.key)
+  pruneRemoteCache(uri)
+}
+
+/** Server-side rename inside the same bucket; returns the new uri. */
+export async function renameRemoteDocument(uri: string, newName: string): Promise<string> {
+  const parsed = parseRemoteUri(uri)
+  if (!parsed) throw new Error(`not a remote document uri: ${uri}`)
+  const slash = parsed.key.lastIndexOf('/')
+  const prefix = slash >= 0 ? parsed.key.slice(0, slash + 1) : ''
+  const newKey = `${prefix}${newName}`
+  if (newKey === parsed.key) return uri
+  await remoteFiles().service.renameObject(parsed.configId, parsed.key, newKey)
+  const newUri = formatRemoteUri(parsed.configId, newKey)
+  // re-key bindings and cache entries so later saves follow the rename
+  const binding = remoteDocBindings.get(uri)
+  if (binding) {
+    remoteDocBindings.delete(uri)
+    binding.key = newKey
+    binding.uri = newUri
+    remoteDocBindings.set(newUri, binding)
+  }
+  // re-key cache entries in place (cache file names are invisible to users),
+  // so tabs that already hold the old cache path keep saving through the index
+  const index = readRemoteCacheIndex()
+  let changed = false
+  for (const entry of Object.values(index)) {
+    if (entry.uri !== uri) continue
+    entry.uri = newUri
+    entry.key = newKey
+    changed = true
+  }
+  if (changed) writeRemoteCacheIndex(index)
+  return newUri
+}
+
+/** Resolves the configured "default save location" if it points at an enabled remote config. */
+function defaultRemoteSaveTarget(): { config: RemoteStorageConfig; prefix: string } | null {
+  try {
+    return resolveDefaultSaveTarget(remoteFiles().service.getSettings())
+  } catch {
+    return null
+  }
+}
+
+interface RemoteSaveIdentity {
+  configId: string
+  key: string
+  uri: string
+  etag: string | null
+  /** Set when the caller holds a local cache path (document opened from home). */
+  cachePath: string | null
+}
+
+/** Finds the remote identity behind a save target: in-memory binding or cache index. */
+function remoteIdentityFor(wcId: number, filePath: string): RemoteSaveIdentity | null {
+  const mem = remoteDocFor(wcId, filePath)
+  if (mem)
+    return { configId: mem.configId, key: mem.key, uri: mem.uri, etag: mem.etag, cachePath: null }
+  // cache docs must carry the ordinary open-time write grant as well
+  if (!canDocWrite(wcId, filePath)) return null
+  const entry = readRemoteCacheIndex()[filePath]
+  if (!entry) return null
+  return {
+    configId: entry.configId,
+    key: entry.key,
+    uri: entry.uri,
+    etag: entry.etag,
+    cachePath: filePath,
+  }
+}
+
+/** Records a successful remote write's new ETag in whichever store owns the identity. */
+function commitRemoteWrite(identity: RemoteSaveIdentity, etag: string): void {
+  identity.etag = etag
+  if (identity.cachePath) {
+    const index = readRemoteCacheIndex()
+    const entry = index[identity.cachePath]
+    if (entry) {
+      entry.etag = etag
+      writeRemoteCacheIndex(index)
+    }
+    return
+  }
+  const binding = remoteDocBindings.get(identity.uri)
+  if (binding) binding.etag = etag
+}
+
+/** Points an existing identity at a freshly created copy key ("save as copy" adjudication). */
+function rebindRemoteIdentity(identity: RemoteSaveIdentity, newKey: string, etag: string): void {
+  const binding = identity.cachePath ? null : (remoteDocBindings.get(identity.uri) ?? null)
+  if (binding) remoteDocBindings.delete(identity.uri)
+  identity.key = newKey
+  identity.uri = formatRemoteUri(identity.configId, newKey)
+  identity.etag = etag
+  if (binding) {
+    binding.key = newKey
+    binding.uri = identity.uri
+    binding.etag = etag
+    remoteDocBindings.set(identity.uri, binding)
+  }
+  if (identity.cachePath) {
+    const index = readRemoteCacheIndex()
+    const entry = index[identity.cachePath]
+    if (entry) {
+      entry.key = newKey
+      entry.uri = identity.uri
+      entry.etag = etag
+      writeRemoteCacheIndex(index)
+    }
+  }
+}
+
+type SaveRemoteResult = {
+  ok: boolean
+  path?: string
+  error?: string
+  reason?: string
+  passwordIntentPending?: boolean
+  queued?: boolean
+}
+
+/** docs:save branch for remote-identity documents (uri identities and cache docs). */
+async function saveRemoteDocument(
+  event: Electron.IpcMainInvokeEvent,
+  filePath: string,
+  data: ArrayBuffer,
+  auto: boolean | undefined,
+): Promise<SaveRemoteResult> {
+  const senderId = event.sender.id
+  if (tornDownWcIds.has(senderId)) return { ok: false }
+  const identity = remoteIdentityFor(senderId, filePath)
+  if (!identity) return { ok: false, error: 'save target is not an opened document' }
+  const passwordState = snapshotDocPassword(senderId, identity.cachePath ?? filePath)
+  const bytes = passwordState.password
+    ? encryptDocx(Buffer.from(data), passwordState.password)
+    : Buffer.from(data)
+  const host = remoteFiles()
+  const finish = async (etag: string): Promise<SaveRemoteResult> => {
+    commitRemoteWrite(identity, etag)
+    if (identity.cachePath) {
+      // keep the cache byte-identical so ordinary disk-state tracking stays honest
+      await atomicWriteFile(identity.cachePath, bytes)
+      await rememberDiskState(senderId, identity.cachePath, bytes)
+    }
+    if (tornDownWcIds.has(senderId))
+      return { ok: false, error: 'save target is not an opened document' }
+    const passwordIntentPending = commitDocPasswordSave(
+      senderId,
+      passwordState,
+      identity.cachePath ?? filePath,
+    )
+    pushRecent(identity.uri)
+    notifyFileSaved(event.sender, identity.cachePath ?? filePath)
+    return { ok: true, passwordIntentPending }
+  }
+  const enqueueForRetry = (): SaveRemoteResult => {
+    // offline or racing device: the pending queue owns retry (consensus Q5/Q6);
+    // the bytes are durable on disk, so the renderer may treat this as saved
+    host.queue.enqueue(identity.configId, identity.key, bytes, identity.etag)
+    return { ok: true, queued: true }
+  }
+  try {
+    const put = await host.service.writeObject(
+      identity.configId,
+      identity.key,
+      Buffer.from(bytes).toString('base64'),
+      identity.etag ?? undefined,
+    )
+    if (tornDownWcIds.has(senderId))
+      return { ok: false, error: 'save target is not an opened document' }
+    return await finish(put.etag)
+  } catch (err) {
+    if (!(err instanceof RemoteConflictError)) {
+      return auto === true
+        ? enqueueForRetry()
+        : { ok: false, error: err instanceof Error ? err.message : String(err) }
+    }
+    if (auto === true) return enqueueForRetry()
+    const options = {
+      type: 'warning' as const,
+      message: tm('rsConflictMsg'),
+      detail: tm('rsConflictDetail'),
+      buttons: [tm('rsConflictOverwrite'), tm('rsConflictCopy'), tm('btnCancel')],
+      defaultId: 0,
+      cancelId: 2,
+      noLink: true,
+    }
+    const parent = dialogParent(event)
+    const { response } =
+      parent && !parent.isDestroyed()
+        ? await dialog.showMessageBox(parent, options)
+        : await dialog.showMessageBox(options)
+    if (response === 2 || tornDownWcIds.has(senderId))
+      return { ok: false, reason: 'remote-conflict' }
+    try {
+      const client = host.service.resolveClient(identity.configId)
+      if (response === 1) {
+        // keep both versions: push mine under a copy key and follow it from here on
+        const dot = identity.key.lastIndexOf('.')
+        const base = dot > 0 ? identity.key.slice(0, dot) : identity.key
+        const ext = dot > 0 ? identity.key.slice(dot) : ''
+        let copyKey = `${base}-copy${ext}`
+        for (let i = 2; await client.headObject(copyKey); i++) copyKey = `${base}-copy ${i}${ext}`
+        const put = await client.putObject(copyKey, bytes)
+        rebindRemoteIdentity(identity, copyKey, put.etag)
+        return await finish(put.etag)
+      }
+      const put = await client.putObject(identity.key, bytes)
+      return await finish(put.etag)
+    } catch (retryErr) {
+      return { ok: false, error: retryErr instanceof Error ? retryErr.message : String(retryErr) }
+    }
+  }
 }
 
 export function registerProjectIpc(): void {
@@ -3137,6 +3553,13 @@ export function registerDocsIpc(): void {
     'docs:save',
     async (event, filePath: string, data: ArrayBuffer, auto?: boolean) => {
       try {
+        // remote-identity documents (uri or materialized cache path) sync to the bucket
+        if (
+          typeof filePath === 'string' &&
+          (isRemoteUri(filePath) || readRemoteCacheIndex()[filePath])
+        ) {
+          return await saveRemoteDocument(event, filePath, data, auto)
+        }
         // only paths this renderer opened or chose via save-as may be overwritten
         if (typeof filePath !== 'string' || !canDocWrite(event.sender.id, filePath)) {
           return { ok: false, error: 'save target is not an opened document' }
@@ -3279,6 +3702,33 @@ export function registerDocsIpc(): void {
       // a discarded draft in an orphaned renderer must not silently persist
       // itself to the default folder after the user chose Don't Save
       if (tornDownWcIds.has(event.sender.id)) return { ok: false }
+      // form B (plan consensus): a configured remote default save location
+      // receives first-saves directly; the document's identity becomes its uri
+      const remoteTarget = defaultRemoteSaveTarget()
+      if (remoteTarget) {
+        const passwordState = snapshotDocPassword(event.sender.id, null)
+        const bytes = passwordState.password
+          ? encryptDocx(Buffer.from(data), passwordState.password)
+          : Buffer.from(data)
+        const client = remoteFiles().service.resolveClient(remoteTarget.config.id)
+        const dot = defaultName.lastIndexOf('.')
+        const base = dot > 0 ? defaultName.slice(0, dot) : defaultName
+        const ext = dot > 0 ? defaultName.slice(dot) : ''
+        let key = `${remoteTarget.prefix}${defaultName}`
+        for (let i = 2; await client.headObject(key); i++)
+          key = `${remoteTarget.prefix}${base}-${i}${ext}`
+        const put = await client.putObject(key, bytes)
+        if (tornDownWcIds.has(event.sender.id)) {
+          await client.deleteObject(key).catch(() => {})
+          return { ok: false }
+        }
+        const uri = formatRemoteUri(remoteTarget.config.id, key)
+        allowRemoteDocWrite(event.sender.id, uri, remoteTarget.config.id, key, put.etag)
+        const passwordIntentPending = commitDocPasswordSave(event.sender.id, passwordState, uri)
+        pushRecent(uri)
+        notifyFileSaved(event.sender, uri)
+        return { ok: true, path: uri, passwordIntentPending }
+      }
       const filePath = uniquePathIn(defaultSaveDir(), defaultName)
       const passwordState = snapshotDocPassword(event.sender.id, null)
       const bytes = passwordState.password
@@ -3313,7 +3763,7 @@ export function registerDocsIpc(): void {
   )
 
   ipcMain.handle('docs:recent', () =>
-    readJson<string[]>(RECENT_PATH(), []).filter((p) => existsSync(p)),
+    readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p)),
   )
 
   ipcMain.handle('docs:pick-image', async (event) => {
