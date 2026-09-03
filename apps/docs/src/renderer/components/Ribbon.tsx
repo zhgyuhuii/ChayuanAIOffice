@@ -128,7 +128,7 @@ import {
   IconRepeatHeader,
   IconTableProperties,
 } from './icons'
-interface RibbonProps {
+export interface RibbonProps {
   /** App keyboard shortcuts reuse ribbon closures through here (font-size stepping keeps its coalescing) */
   actionsRef?: React.MutableRefObject<{
     stepFontSize?: (dir: 1 | -1) => void

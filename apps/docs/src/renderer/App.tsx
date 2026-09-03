@@ -135,6 +135,15 @@ import {
 import { saveUntilPersisted } from './save-until-persisted'
 import { cachedByDoc } from './doc-cache'
 import { useShallowStable, useStableCallbacks } from './use-stable'
+import {
+  deriveSelectionKind,
+  ribbonPropsFromHost,
+  FontStepper,
+  PainterService,
+  PenPreferences,
+  type DocsCommandServices,
+  type DocsCommandState,
+} from './ribbon'
 import { FindPanel } from './components/FindPanel'
 import { Ribbon } from './components/Ribbon'
 import { computeFormatState } from './components/ribbon-format-state'
@@ -4022,15 +4031,25 @@ export function App() {
     applySectionGeometry({ ...base, ...margins })
   }
 
-  const ribbonActions = useStableCallbacks({
+  // ---- ribbon host: state + services ----
+  // The legacy Ribbon consumes these via ribbonPropsFromHost (strangler facade);
+  // commands (packages/ribbon) receive the same pair as their context.
+  const fileServices = useStableCallbacks({
+    open: () => void openFile(),
+    save: () => void save(false),
+    saveAs: () => void save(true),
+    compare: () => void compareWithFile(),
+  })
+  const insertServices = useStableCallbacks({
+    sectionBreak: (type: 'nextPage' | 'continuous' | 'evenPage' | 'oddPage') =>
+      insertSectionBreak(type),
+    note: insertNote,
+    field: insertField,
     allocateNumId: (kind: 'bullet' | 'ordered') => allocateListNumId(kind),
     createListDef: (levels: CustomNumberingLevel[]) => createCustomListDef(levels),
-    onParagraphDialog: () => setShowParaDialog(true),
-    onOpen: () => void openFile(),
-    onSave: () => void save(false),
-    onSaveAs: () => void save(true),
-    onToggleAi: () => setShowAi((v) => !v),
-    onSection: (next: SectionSettings) => {
+  })
+  const layoutServices = useStableCallbacks({
+    setSection: (next: SectionSettings) => {
       // layout applies to the cursor's section; the final section's sectPr goes through SaveOptions.section (also drives canvas geometry)
       setSections((prev) =>
         prev.map((s, i) => (i === activeSection ? { ...s, settings: next } : s)),
@@ -4043,82 +4062,199 @@ export function App() {
         setStatus(t('appSectionSettingsApplied', { n: activeSection + 1 }))
       }
     },
-    onInsertSectionBreak: (type: 'nextPage' | 'continuous' | 'evenPage' | 'oddPage') =>
-      insertSectionBreak(type),
-    onPageColor: (next: string | null) => {
+  })
+  const designServices = useStableCallbacks({
+    setPageColor: (next: string | null) => {
       setPageColor(next)
       setPageColorDirty(true)
     },
-    onWatermark: (next: string | null) => {
+    setWatermark: (next: string | null) => {
       setWatermark(next)
       setWatermarkDirty(true)
       setStatus(next ? t('appWatermarkSet', { text: next }) : t('appWatermarkRemoved'))
     },
-    onThemeFonts: (fonts: ThemeFonts) => {
+    setThemeFonts: (fonts: ThemeFonts) => {
       setThemeFonts(fonts)
       setThemeFontsDirty(true)
       setStatus(t('appThemeFontsChanged'))
     },
-    onThemeColors: (colors: ThemeColors) => {
+    setThemeColors: (colors: ThemeColors) => {
       setThemeColors(colors)
       setThemeColorsDirty(true)
       setStatus(t('appThemeColorsApplied', { name: colors.name ?? '' }))
     },
-    onInkTool: setInkTool,
-    onInkPen: setInkPen,
-    onInkHighlighter: setInkHighlighter,
-    onInkClearAll: clearInks,
-    onInsertNote: insertNote,
-    onAddSource: (source: SourceInfo) => {
+  })
+  const drawServices = useStableCallbacks({
+    setInkTool,
+    setInkPen,
+    setInkHighlighter,
+    clearAll: clearInks,
+  })
+  const referencesServices = useStableCallbacks({
+    addSource: (source: SourceInfo) => {
       setSources((prev) => [...prev, source])
       setSourcesDirty(true)
       setStatus(t('appSourceAdded', { title: source.title }))
     },
     headingPages,
-    onZoom: setZoom,
-    onZoomFit: zoomFit,
-    onDarkCanvas: setDarkCanvas,
-    onAiPreset: (text: string) => {
-      // Word's Editor / Translate start working as soon as they're clicked
-      setShowAi(true)
-      setAiPreset({ text, nonce: Date.now(), autoRun: true })
+  })
+  const reviewServices = useStableCallbacks({
+    showComments: () => setShowComments(true),
+    newComment: startNewComment,
+    setTrackChanges,
+    setRevisionDisplay,
+    acceptRevision: (all: boolean) => handleRevision('accept', all),
+    rejectRevision: (all: boolean) => handleRevision('reject', all),
+    gotoRevision: (dir: 1 | -1) => {
+      if (editor) gotoRevision(editor, dir)
     },
-    onHeader: (next: HeaderFooter) => {
+  })
+  const viewServices = useStableCallbacks({
+    setViewMode,
+    setReadMode,
+    setShowMarks,
+    setShowRuler,
+    setShowNav,
+    setShowGrid,
+    setSplitView,
+    setZoom,
+    zoomFit,
+    setDarkCanvas,
+    pagePreview: () => setShowPagePreview(true),
+  })
+  const hfServices = useStableCallbacks({
+    setHeader: (next: HeaderFooter) => {
       setHeader(next)
       setHeaderDirty(true)
     },
-    onPageNumFormat: openPgNumModal,
-    onInsertField: insertField,
-    onFooter: (next: HeaderFooter) => {
+    setFooter: (next: HeaderFooter) => {
       setFooter(next)
       setFooterDirty(true)
     },
-    onTitlePg: toggleTitlePg,
-    onEvenOddHf: (on: boolean) => {
+    setTitlePg: toggleTitlePg,
+    setEvenOddHf: (on: boolean) => {
       setEvenOddHf(on)
       setEvenOddHfDirty(true)
       setHfView(on ? 'even' : 'default')
       setStatus(on ? t('appEvenOddOn') : t('appEvenOddOff'))
     },
-    onShowMarks: setShowMarks,
-    onShowRuler: setShowRuler,
-    onShowNav: setShowNav,
-    onShowComments: () => setShowComments(true),
-    onNewComment: startNewComment,
-    onTrackChanges: setTrackChanges,
-    onRevisionDisplay: setRevisionDisplay,
-    onAcceptRevision: (all: boolean) => handleRevision('accept', all),
-    onRejectRevision: (all: boolean) => handleRevision('reject', all),
-    onGotoRevision: (dir: 1 | -1) => {
-      if (editor) gotoRevision(editor, dir)
+  })
+  const aiServices = useStableCallbacks({
+    toggle: () => setShowAi((v) => !v),
+    preset: (text: string) => {
+      // Word's Editor / Translate start working as soon as they're clicked
+      setShowAi(true)
+      setAiPreset({ text, nonce: Date.now(), autoRun: true })
     },
-    onProtectDoc: () => setShowProtectDialog(true),
-    onCompare: () => void compareWithFile(),
-    onViewMode: setViewMode,
-    onReadMode: setReadMode,
-    onShowGrid: setShowGrid,
-    onSplitView: setSplitView,
-    onPagePreview: () => setShowPagePreview(true),
+  })
+  const dialogsServices = useStableCallbacks({
+    paragraph: () => setShowParaDialog(true),
+    pageNumFormat: openPgNumModal,
+    protectDoc: () => setShowProtectDialog(true),
+  })
+  // home-tab command services (B2): the editor accessor plus the three stateful
+  // interaction services commands wrap (plan risks #1/#3)
+  const editorServices = useStableCallbacks({ main: () => editor })
+  const penPrefs = useMemo(() => new PenPreferences(), [])
+  const painterService = useMemo(() => new PainterService(), [])
+  const fontStepper = useMemo(() => new FontStepper(), [])
+  useEffect(() => () => fontStepper.dispose(), [fontStepper])
+  const docsServices = useMemo<DocsCommandServices>(
+    () => ({
+      editor: editorServices,
+      pen: penPrefs,
+      painter: painterService,
+      fontStep: fontStepper,
+      file: fileServices,
+      insert: insertServices,
+      layout: layoutServices,
+      design: designServices,
+      draw: drawServices,
+      references: referencesServices,
+      review: reviewServices,
+      view: viewServices,
+      hf: hfServices,
+      ai: aiServices,
+      dialogs: dialogsServices,
+    }),
+    [
+      editorServices,
+      penPrefs,
+      painterService,
+      fontStepper,
+      fileServices,
+      insertServices,
+      layoutServices,
+      designServices,
+      drawServices,
+      referencesServices,
+      reviewServices,
+      viewServices,
+      hfServices,
+      aiServices,
+      dialogsServices,
+    ],
+  )
+
+  const docsViewState = useShallowStable({
+    viewMode,
+    readMode,
+    showMarks,
+    showRuler,
+    showNav,
+    showGrid,
+    splitView,
+    darkCanvas,
+    zoom: Math.round(zoom),
+  })
+  const docsReviewState = useShallowStable({
+    trackChanges,
+    trackChangesForced,
+    revisionDisplay,
+    revisionCount,
+    commentCount: comments.length,
+    openCommentCount: comments.filter((c) => !c.parentId && c.done !== true).length,
+    canComment: editor ? !editor.state.selection.empty : false,
+    isProtected,
+    commentsAllowed,
+    protectActive:
+      isProtected || trackChangesForced || (doc?.encrypted ?? false) || !!writeProtection?.hash,
+  })
+  const docsDocState = useShallowStable({
+    filePath: doc?.filePath ?? null,
+    blocks: doc?.parsed.blocks ?? EMPTY_BLOCKS,
+    styles: ribbonStyles,
+    docDefaults: doc?.parsed.docDefaults,
+    section: sections[activeSection]?.settings ?? section,
+    activeSection: sections.length > 1 ? activeSection : null,
+    pageColor,
+    watermark,
+    themeFonts,
+    themeColors,
+    header,
+    footer,
+    titlePg,
+    evenOddHf,
+  })
+  const docsDrawState = useShallowStable({
+    inkTool,
+    inkPen,
+    inkHighlighter,
+    inkCount: inkAnnotations.length,
+  })
+  const docsAiState = useShallowStable({ showAi })
+  const docsState = useShallowStable<DocsCommandState>({
+    format: formatState,
+    hasDoc: !!doc,
+    docEmpty: !doc || formatState.docEmpty,
+    canEdit: !!doc && formatState.editable,
+    selectionKind: deriveSelectionKind(formatState),
+    view: docsViewState,
+    review: docsReviewState,
+    doc: docsDocState,
+    draw: docsDrawState,
+    ai: docsAiState,
+    sources,
   })
 
   const closeCommentsPanel = useCallback(() => {
@@ -4306,54 +4442,15 @@ export function App() {
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
         trailingActions={
-          <AiPanelToggle open={showAi} onToggle={() => setShowAi((v) => !v)} label={t('aiOpenAssistant')} />
+          <AiPanelToggle
+            open={showAi}
+            onToggle={() => setShowAi((v) => !v)}
+            label={t('aiOpenAssistant')}
+          />
         }
         editor={editor}
-        formatState={formatState}
-        hasDoc={!!doc}
-        blocks={doc?.parsed.blocks ?? EMPTY_BLOCKS}
-        styles={ribbonStyles}
-        docDefaults={doc?.parsed.docDefaults}
-        showAi={showAi}
-        section={sections[activeSection]?.settings ?? section}
-        activeSection={sections.length > 1 ? activeSection : null}
-        pageColor={pageColor}
-        watermark={watermark}
-        themeFonts={themeFonts}
-        themeColors={themeColors}
-        inkTool={inkTool}
-        inkPen={inkPen}
-        inkHighlighter={inkHighlighter}
-        inkCount={inkAnnotations.length}
-        sources={sources}
-        zoom={Math.round(zoom)}
-        darkCanvas={darkCanvas}
         tabRequest={ribbonTabRequest}
-        header={header}
-        footer={footer}
-        titlePg={titlePg}
-        evenOddHf={evenOddHf}
-        showMarks={showMarks}
-        showRuler={showRuler}
-        showNav={showNav}
-        commentCount={comments.length}
-        openCommentCount={comments.filter((c) => !c.parentId && c.done !== true).length}
-        canComment={!editor.state.selection.empty}
-        trackChanges={trackChanges}
-        revisionDisplay={revisionDisplay}
-        revisionCount={revisionCount}
-        isProtected={isProtected}
-        commentsAllowed={commentsAllowed}
-        trackChangesForced={trackChangesForced}
-        protectActive={
-          isProtected || trackChangesForced || (doc?.encrypted ?? false) || !!writeProtection?.hash
-        }
-        filePath={doc?.filePath ?? null}
-        viewMode={viewMode}
-        readMode={readMode}
-        showGrid={showGrid}
-        splitView={splitView}
-        {...ribbonActions}
+        {...ribbonPropsFromHost(docsState, docsServices)}
       />
 
       <DockShell

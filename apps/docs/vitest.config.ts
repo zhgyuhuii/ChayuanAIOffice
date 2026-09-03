@@ -8,14 +8,30 @@ const local = (rel: string) => fileURLToPath(new URL(rel, import.meta.url))
 
 export default defineConfig({
   resolve: {
-    alias: {
-      '@chatoffice/docx-engine': local('../../packages/docx-engine/src/index.ts'),
-      '@chatoffice/font-metrics': local('../../packages/font-metrics/src/index.ts'),
-      '@chatoffice/electron-utils': local('../../packages/electron-utils/src/index.ts'),
-      '@chatoffice/ai-provider': local('../../packages/ai-provider/src/index.ts'),
-      '@chatoffice/i18n': local('../../packages/i18n/src/index.ts'),
-      '@chatoffice/ui': local('../../packages/ui/src/index.ts'),
-    },
+    alias: [
+      {
+        find: '@chatoffice/ui/popover-dismiss',
+        replacement: local('../../packages/ui/src/popover-dismiss.ts'),
+      },
+      {
+        find: '@chatoffice/docx-engine',
+        replacement: local('../../packages/docx-engine/src/index.ts'),
+      },
+      {
+        find: '@chatoffice/font-metrics',
+        replacement: local('../../packages/font-metrics/src/index.ts'),
+      },
+      {
+        find: '@chatoffice/electron-utils',
+        replacement: local('../../packages/electron-utils/src/index.ts'),
+      },
+      {
+        find: '@chatoffice/ai-provider',
+        replacement: local('../../packages/ai-provider/src/index.ts'),
+      },
+      { find: '@chatoffice/i18n', replacement: local('../../packages/i18n/src/index.ts') },
+      { find: '@chatoffice/ui', replacement: local('../../packages/ui/src/index.ts') },
+    ],
   },
   test: {
     include: ['tests/**/*.test.ts'],
