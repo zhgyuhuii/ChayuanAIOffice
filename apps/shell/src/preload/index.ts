@@ -2,11 +2,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import type {
   AiModelEntry,
-  AiModelSelection,
   AiSettingsV2,
   GenSparkAccountStatus,
 } from '@chatoffice/ai-provider'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { createRemoteFilesClient } from '@chatoffice/storage-adapter'
 import type {
   AccountLoginEvent,
   AccountStatus,
@@ -395,6 +395,12 @@ const tabsApi: TabsApi = {
 }
 
 contextBridge.exposeInMainWorld('chatOfficeTabs', tabsApi)
+
+// remote storage (MinIO / OSS): settings, listing, object transfer, pending queue
+contextBridge.exposeInMainWorld(
+  'chatOfficeRemoteFiles',
+  createRemoteFilesClient((channel, payload) => ipcRenderer.invoke(channel, payload)),
+)
 
 // open documents dragged from the OS anywhere over Home or the tab strip
 installDropOpenBridge()

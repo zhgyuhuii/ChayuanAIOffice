@@ -41,6 +41,7 @@ import {
 import { configureMetricsCache, familyVerticalMetrics } from '@chatoffice/font-metrics'
 import { createI18n, getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
+import { bindRemoteFilesIpc, createRemoteFilesHost } from '@chatoffice/storage-adapter'
 import type {
   IpcMainInvokeEvent,
   MenuItemConstructorOptions,
@@ -70,7 +71,6 @@ import {
 } from '@chatoffice/ai-search'
 import type {
   AiDocContent,
-  AiStreamWireRequest,
   AttachmentAddResult,
   AttachmentImageResult,
   AttachmentMeta,
@@ -249,8 +249,10 @@ const tMain = createI18n({
     errNoApiKey: 'No API key configured for {provider}',
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
-    errNoImageModel: 'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
-    errGskToolsOff: 'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
+    errNoImageModel:
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
+    errGskToolsOff:
+      'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
     menuFile: 'File',
     menuNewDoc: 'New Document',
     menuNewWindow: 'New Window',
@@ -341,12 +343,15 @@ const tMain = createI18n({
     errImageNoText:
       '画像の添付ファイルはテキストを提供しません。画像としてユーザーメッセージと一緒に送信されるため、そのまま画像をご確認ください',
     errNotImage: 'サポートされていない画像形式です',
-    errGskNotLoggedIn: 'Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください',
+    errGskNotLoggedIn:
+      'Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
-    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
-    errGskToolsOff: 'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
+    errNoImageModel:
+      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
+    errGskToolsOff:
+      'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     menuFile: 'ファイル',
     menuNewDoc: '新規文書',
     menuNewWindow: '新規ウィンドウ',
@@ -438,11 +443,13 @@ const tMain = createI18n({
     errImageNoText:
       '이미지 첨부 파일은 텍스트를 제공하지 않으며, 이미지 형태로 사용자 메시지와 함께 전송되므로 이미지를 직접 확인하면 됩니다',
     errNotImage: '지원되지 않는 이미지 형식입니다',
-    errGskNotLoggedIn: 'Genspark에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
+    errGskNotLoggedIn:
+      'Genspark에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
-    errNoImageModel: '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
+    errNoImageModel:
+      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
     errGskToolsOff: 'Genspark 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     menuFile: '파일',
     menuNewDoc: '새 문서',
@@ -536,12 +543,15 @@ const tMain = createI18n({
     errImageNoText:
       "Les pièces jointes image ne fournissent pas de texte ; l'image est envoyée avec le message de l'utilisateur, consultez-la directement",
     errNotImage: "type d'image non pris en charge",
-    errGskNotLoggedIn: 'Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
+    errGskNotLoggedIn:
+      'Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
-    errNoImageModel: 'Aucun modèle d\'image configuré : activez un modèle de génération d\'images dans les paramètres des modèles, ou connectez-vous à Genspark',
-    errGskToolsOff: 'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
+    errNoImageModel:
+      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à Genspark",
+    errGskToolsOff:
+      'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     menuFile: 'Fichier',
     menuNewDoc: 'Nouveau document',
     menuNewWindow: 'Nouvelle fenêtre',
@@ -634,12 +644,15 @@ const tMain = createI18n({
     errImageNoText:
       'Bildanlagen liefern keinen Text; das Bild wird mit der Benutzernachricht gesendet und kann direkt betrachtet werden',
     errNotImage: 'kein unterstütztes Bildformat',
-    errGskNotLoggedIn: 'Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
+    errGskNotLoggedIn:
+      'Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
-    errNoImageModel: 'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
-    errGskToolsOff: 'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
+    errNoImageModel:
+      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
+    errGskToolsOff:
+      'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     menuFile: 'Datei',
     menuNewDoc: 'Neues Dokument',
     menuNewWindow: 'Neues Fenster',
@@ -731,13 +744,16 @@ const tMain = createI18n({
     errImageNoText:
       'Las imágenes adjuntas no proporcionan texto; la imagen se envía junto con el mensaje del usuario, puedes verla directamente',
     errNotImage: 'no es un tipo de imagen compatible',
-    errGskNotLoggedIn: 'No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
+    errGskNotLoggedIn:
+      'No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No se ha configurado el nombre del modelo',
-    errNoImageModel: 'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
-    errGskToolsOff: 'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
+    errNoImageModel:
+      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
+    errGskToolsOff:
+      'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     menuFile: 'Archivo',
     menuNewDoc: 'Nuevo documento',
     menuNewWindow: 'Nueva ventana',
@@ -828,12 +844,15 @@ const tMain = createI18n({
     errImageNoText:
       'สิ่งที่แนบเป็นรูปภาพไม่มีข้อความ รูปจะถูกส่งไปพร้อมข้อความของผู้ใช้ ดูรูปได้โดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
-    errGskNotLoggedIn: 'ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
+    errGskNotLoggedIn:
+      'ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
-    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
-    errGskToolsOff: 'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
+    errNoImageModel:
+      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
+    errGskToolsOff:
+      'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     menuFile: 'ไฟล์',
     menuNewDoc: 'เอกสารใหม่',
     menuNewWindow: 'หน้าต่างใหม่',
@@ -929,8 +948,10 @@ const tMain = createI18n({
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
-    errNoImageModel: 'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
-    errGskToolsOff: 'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
+    errNoImageModel:
+      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
+    errGskToolsOff:
+      'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'File',
     menuNewDoc: 'Dokumen Baru',
     menuNewWindow: 'Jendela Baru',
@@ -1026,8 +1047,10 @@ const tMain = createI18n({
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Не указано имя модели',
-    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
-    errGskToolsOff: 'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
+    errNoImageModel:
+      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
+    errGskToolsOff:
+      'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     menuFile: 'Файл',
     menuNewDoc: 'Создать документ',
     menuNewWindow: 'Новое окно',
@@ -1119,11 +1142,13 @@ const tMain = createI18n({
     errImageNoText:
       'مرفقات الصور لا توفر نصًا؛ تُرسل الصورة مع رسالة المستخدم ويمكن الاطلاع عليها مباشرة',
     errNotImage: 'ليس نوع صورة مدعومًا',
-    errGskNotLoggedIn: 'لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
+    errGskNotLoggedIn:
+      'لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
-    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
+    errNoImageModel:
+      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
     errGskToolsOff: 'أدوات Genspark السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     menuFile: 'ملف',
     menuNewDoc: 'مستند جديد',
@@ -1216,12 +1241,15 @@ const tMain = createI18n({
     errImageNoText:
       'Anexos de imagem não fornecem texto; a imagem é enviada junto com a mensagem do usuário, basta vê-la diretamente',
     errNotImage: 'não é um tipo de imagem suportado',
-    errGskNotLoggedIn: 'Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente',
+    errGskNotLoggedIn:
+      'Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
-    errNoImageModel: 'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
-    errGskToolsOff: 'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
+    errNoImageModel:
+      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
+    errGskToolsOff:
+      'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     menuFile: 'Arquivo',
     menuNewDoc: 'Novo Documento',
     menuNewWindow: 'Nova Janela',
@@ -1313,12 +1341,15 @@ const tMain = createI18n({
     errImageNoText:
       "Gli allegati immagine non forniscono testo; l'immagine viene inviata insieme al messaggio dell'utente, basta guardarla direttamente",
     errNotImage: 'tipo di immagine non supportato',
-    errGskNotLoggedIn: 'Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
+    errGskNotLoggedIn:
+      'Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
-    errNoImageModel: 'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
-    errGskToolsOff: 'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
+    errNoImageModel:
+      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
+    errGskToolsOff:
+      'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     menuFile: 'File',
     menuNewDoc: 'Nuovo documento',
     menuNewWindow: 'Nuova finestra',
@@ -1410,12 +1441,15 @@ const tMain = createI18n({
     errImageNoText:
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika, wystarczy na niego spojrzeć',
     errNotImage: 'nieobsługiwany typ obrazu',
-    errGskNotLoggedIn: 'Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
+    errGskNotLoggedIn:
+      'Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
-    errNoImageModel: 'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
-    errGskToolsOff: 'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
+    errNoImageModel:
+      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
+    errGskToolsOff:
+      'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     menuFile: 'Plik',
     menuNewDoc: 'Nowy dokument',
     menuNewWindow: 'Nowe okno',
@@ -1507,12 +1541,15 @@ const tMain = createI18n({
     errImageNoText:
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden en kan direct worden bekeken',
     errNotImage: 'geen ondersteund afbeeldingstype',
-    errGskNotLoggedIn: 'Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
+    errGskNotLoggedIn:
+      'Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
-    errNoImageModel: 'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
-    errGskToolsOff: 'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
+    errNoImageModel:
+      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
+    errGskToolsOff:
+      'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     menuFile: 'Bestand',
     menuNewDoc: 'Nieuw document',
     menuNewWindow: 'Nieuw venster',
@@ -1608,8 +1645,10 @@ const tMain = createI18n({
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
-    errNoImageModel: 'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
-    errGskToolsOff: 'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
+    errNoImageModel:
+      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
+    errGskToolsOff:
+      'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'Fail',
     menuNewDoc: 'Dokumen Baharu',
     menuNewWindow: 'Tetingkap Baharu',
@@ -1704,7 +1743,8 @@ const tMain = createI18n({
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
-    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
+    errNoImageModel:
+      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
     errGskToolsOff: 'כלי הענן של Genspark כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     menuFile: 'קובץ',
     menuNewDoc: 'מסמך חדש',
@@ -1797,12 +1837,15 @@ const tMain = createI18n({
     errImageNoText:
       'छवि अनुलग्नक टेक्स्ट प्रदान नहीं करते; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है, उसे सीधे देखें',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
-    errGskNotLoggedIn: 'Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
+    errGskNotLoggedIn:
+      'Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
-    errNoImageModel: 'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
-    errGskToolsOff: 'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
+    errNoImageModel:
+      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
+    errGskToolsOff:
+      'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     menuFile: 'फ़ाइल',
     menuNewDoc: 'नया दस्तावेज़',
     menuNewWindow: 'नई विंडो',
@@ -2821,6 +2864,21 @@ export function projectFileRenamed(oldPath: string, newPath: string): void {
  * Register the project:* IPC handlers (all three apps share the same channel names).
  * Idempotency guard: registered only once in shell mode.
  */
+// Remote storage (MinIO / OSS): one host per editor main process, rooted at
+// userData so the pending save queue survives relaunches.
+function registerRemoteFilesIpc(): void {
+  const host = createRemoteFilesHost(app.getPath('userData'))
+  bindRemoteFilesIpc(
+    (channel, handler) => {
+      ipcMain.handle(channel, (_event, payload: unknown) => handler(payload))
+    },
+    () => host,
+  )
+  void host.queue.flush().catch((err: unknown) => {
+    console.warn('[docs] remote save queue flush failed:', err)
+  })
+}
+
 export function registerProjectIpc(): void {
   if (projectIpcRegistered) return
   projectIpcRegistered = true
@@ -4215,6 +4273,7 @@ export function startDocsStandalone(): void {
   registerAiIpc()
   registerProjectIpc()
   registerDocsIpc()
+  registerRemoteFilesIpc()
 
   app.whenReady().then(() => {
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
