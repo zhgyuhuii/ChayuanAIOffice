@@ -89,3 +89,18 @@ export class RemoteNotFoundError extends RemoteStorageError {
     this.name = 'RemoteNotFoundError'
   }
 }
+
+/** Thrown when a guarded save hits an ETag mismatch (plan consensus Q6: the caller adjudicates). */
+export class RemoteConflictError extends RemoteStorageError {
+  readonly key: string
+  readonly expectedEtag: string
+  readonly currentEtag: string
+
+  constructor(key: string, expectedEtag: string, currentEtag: string) {
+    super(`remote object changed since it was loaded: ${key}`, 409, 'EtagMismatch')
+    this.name = 'RemoteConflictError'
+    this.key = key
+    this.expectedEtag = expectedEtag
+    this.currentEtag = currentEtag
+  }
+}

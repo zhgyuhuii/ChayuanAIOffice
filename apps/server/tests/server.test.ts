@@ -66,7 +66,9 @@ describe('POST /rpc/:service/:method', () => {
 
   it('404s unknown service or method', async () => {
     const { app } = buildServer({ area: tempArea() })
-    expect((await app.inject({ method: 'POST', url: '/rpc/nope/list', payload: {} })).statusCode).toBe(404)
+    expect(
+      (await app.inject({ method: 'POST', url: '/rpc/nope/list', payload: {} })).statusCode,
+    ).toBe(404)
     expect(
       (await app.inject({ method: 'POST', url: '/rpc/chatHistory/nope', payload: {} })).statusCode,
     ).toBe(404)
@@ -91,7 +93,11 @@ describe('POST /rpc/:service/:method', () => {
       url: '/rpc/settings/set',
       payload: { args: ['theme', 'dark'] },
     })
-    const got = await app.inject({ method: 'POST', url: '/rpc/settings/get', payload: { args: ['theme'] } })
+    const got = await app.inject({
+      method: 'POST',
+      url: '/rpc/settings/get',
+      payload: { args: ['theme'] },
+    })
     expect(got.json().result).toBe('dark')
   })
 })
@@ -104,7 +110,11 @@ describe('auth (jwt mode)', () => {
 
   it('rejects missing/invalid tokens on rpc routes and accepts a valid sub', async () => {
     const { app } = buildServer({ area: tempArea(), auth: { mode: 'jwt', audience: 'chatoffice' } })
-    const noToken = await app.inject({ method: 'POST', url: '/rpc/settings/get', payload: { args: ['x'] } })
+    const noToken = await app.inject({
+      method: 'POST',
+      url: '/rpc/settings/get',
+      payload: { args: ['x'] },
+    })
     expect(noToken.statusCode).toBe(401)
 
     const badAud = await app.inject({
@@ -168,7 +178,10 @@ describe('AI endpoints', () => {
     const seen: Array<Record<string, unknown>> = []
     const { app } = buildServer({
       area: tempArea(),
-      ai: { dataDir: mkdtempSync(join(tmpdir(), 'chatoffice-ai-')), onCall: (r) => seen.push(r as unknown as Record<string, unknown>) },
+      ai: {
+        dataDir: mkdtempSync(join(tmpdir(), 'chatoffice-ai-')),
+        onCall: (r) => seen.push(r as unknown as Record<string, unknown>),
+      },
     })
     const res = await app.inject({
       method: 'POST',
@@ -236,11 +249,18 @@ describe('AI harness fusion (dsh plugin form)', () => {
         '  baseURL: https://api.deepseek.com',
       ].join('\n'),
     )
-    writeFileSync(join(dshHome, '.credentials.yaml'), ['credentials:', '  CHATOP_ZHIPU_API_KEY: sk-dsh'].join('\n'))
+    writeFileSync(
+      join(dshHome, '.credentials.yaml'),
+      ['credentials:', '  CHATOP_ZHIPU_API_KEY: sk-dsh'].join('\n'),
+    )
     // the office-side state file records the current model
     writeFileSync(
       join(dataDir, 'ai-settings.json'),
-      JSON.stringify({ version: 2, profiles: [], currentModel: { profileId: 'zhipu', modelId: 'glm-5.3' } }),
+      JSON.stringify({
+        version: 2,
+        profiles: [],
+        currentModel: { profileId: 'zhipu', modelId: 'glm-5.3' },
+      }),
     )
     const { app } = buildServer({
       area: tempArea(),
@@ -255,5 +275,61 @@ describe('AI harness fusion (dsh plugin form)', () => {
       models: [{ id: 'glm-5.3' }],
     })
     expect(view.json().currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
+  })
+})
+
+describe('POST /rpc/remoteStorage/*', () => {
+  it('serves the empty settings document on a fresh data dir', async () => {
+    const { app } = buildServer({ area: tempArea() })
+    const res = await app.inject({
+      method: 'POST',
+      url: '/rpc/remoteStorage/getSettings',
+      payload: { args: [] },
+    })
+    expect(res.statusCode).toBe(200)
+    expect(res.json().result).toEqual({ version: 1, configs: [], defaultLocation: null })
+  })
+
+  it('persists saved configs and maps remote errors to status codes', async () => {
+    const { app } = buildServer({ area: tempArea() })
+    const config = {
+      id: 'cfg-1',
+      name: 'MinIO',
+      protocol: 's3',
+      endpoint: 'http://127.0.0.1:9000',
+      region: 'us-east-1',
+      bucket: 'docs',
+      accessKeyId: 'AK',
+      secretAccessKey: 'SK',
+      prefix: 'chatoffice/',
+      pathStyle: true,
+      enabled: true,
+    }
+    const saved = await app.inject({
+      method: 'POST',
+      url: '/rpc/remoteStorage/saveSettings',
+      payload: {
+        args: [{ version: 1, configs: [config], defaultLocation: { configId: 'cfg-1' } }],
+      },
+    })
+    expect(saved.statusCode).toBe(200)
+    expect(saved.json().result.configs).toHaveLength(1)
+
+    const listing = await app.inject({
+      method: 'POST',
+      url: '/rpc/remoteStorage/listFiles',
+      payload: { args: ['cfg-1'] },
+    })
+    // no server listening on :9000 — the failure must surface as ok:false
+    expect(listing.statusCode).toBe(400)
+    expect(listing.json().ok).toBe(false)
+
+    const unknown = await app.inject({
+      method: 'POST',
+      url: '/rpc/remoteStorage/listFiles',
+      payload: { args: ['nope'] },
+    })
+    expect(unknown.statusCode).toBe(404)
+    expect(unknown.json().code).toBe('UnknownStorageConfig')
   })
 })

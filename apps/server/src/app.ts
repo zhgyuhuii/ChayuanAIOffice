@@ -15,9 +15,10 @@ import Fastify, { type FastifyInstance } from 'fastify'
 import type { ServiceCore, ServiceDefinition } from '@chatoffice/service-core'
 import { createCore } from '@chatoffice/service-core'
 import { chatHistoryService } from '@chatoffice/service-core'
+import { remoteStorageService } from '@chatoffice/service-core'
 import { settingsService } from '@chatoffice/service-core'
 import { xlsxSidecarService } from '@chatoffice/service-core'
-import { openLocalArea, type StorageArea } from '@chatoffice/storage-adapter'
+import { openLocalArea, RemoteStorageError, type StorageArea } from '@chatoffice/storage-adapter'
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
@@ -48,6 +49,7 @@ export function defaultServices() {
     chatHistory: chatHistoryService(),
     settings: settingsService(),
     xlsx: xlsxSidecarService(),
+    remoteStorage: remoteStorageService(),
   }
 }
 
@@ -67,7 +69,8 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
     '/rpc/:service/:method',
     async (request, reply) => {
       const service = (core.api as Record<string, unknown>)[request.params.service]
-      if (!service) return reply.code(404).send({ error: `unknown service: ${request.params.service}` })
+      if (!service)
+        return reply.code(404).send({ error: `unknown service: ${request.params.service}` })
       const method = (service as Record<string, unknown>)[request.params.method]
       if (typeof method !== 'function') {
         return reply.code(404).send({ error: `unknown method: ${request.params.method}` })
@@ -77,6 +80,10 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
         const result = await (method as (...a: unknown[]) => unknown)(...args)
         return { ok: true, result }
       } catch (err) {
+        if (err instanceof RemoteStorageError) {
+          const status = Math.min(Math.max(err.status, 400), 599)
+          return reply.code(status).send({ ok: false, error: err.message, code: err.code })
+        }
         return reply.code(400).send({ ok: false, error: String(err) })
       }
     },

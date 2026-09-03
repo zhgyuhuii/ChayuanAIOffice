@@ -8,7 +8,12 @@ export {
   type ServiceCore,
   type StorageRegistry,
 } from './runtime.js'
-export { chatHistoryService, createChatHistoryApi, type ChatHistoryDeps } from './services/chat-history.js'
+export {
+  chatHistoryService,
+  createChatHistoryApi,
+  type ChatHistoryDeps,
+} from './services/chat-history.js'
+export { remoteStorageService } from './services/remote-storage.js'
 export { settingsService, createSettingsApi, type SettingsApi } from './services/settings.js'
 export { xlsxSidecarService, type XlsxSidecarApi } from './services/xlsx-sidecar.js'
 export {

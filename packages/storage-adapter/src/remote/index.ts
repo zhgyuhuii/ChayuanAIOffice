@@ -6,6 +6,19 @@ export {
   type RemoteStorageClient,
 } from './client.js'
 export {
+  readRemoteIndexFile,
+  remoteIndexPath,
+  scanRemoteIndex,
+  writeRemoteIndexFile,
+  type RemoteFileIndex,
+} from './file-index.js'
+export {
+  createRemoteFileService,
+  type RemoteFileList,
+  type RemoteFileService,
+  type RemoteFileServiceParams,
+} from './service.js'
+export {
   applyRemoteStorageEnvSeed,
   createRemoteStorageConfig,
   DEFAULT_REMOTE_PREFIX,
@@ -20,6 +33,7 @@ export {
   writeRemoteStorageSettingsFile,
 } from './settings.js'
 export {
+  RemoteConflictError,
   RemoteNotFoundError,
   RemoteStorageError,
   type RemoteFileInfo,
