@@ -16,11 +16,11 @@ import { fileStore } from './file-open.js'
 import { tabManager } from './tab-manager.js'
 
 function bffBase(): string {
-  // Dev: the host runs on 5180 while the BFF is on 8787. In production the
-  // sidecar serves both under one origin; behind the dsh-plugin proxy the
-  // app lives under /chatoffice-app/ and a path-relative rpc URL keeps the
-  // proxy in front of the sidecar.
-  if (location.port === '5180') return 'http://localhost:8787'
+  // Dev: the vite host on 5180 proxies /rpc (and /ai) to the BFF on 8787, so
+  // the page stays single-origin (no CORS). In production the sidecar serves
+  // both under one origin; behind the dsh-plugin proxy the app lives under
+  // /chatoffice-app/ and a path-relative rpc URL keeps the proxy in front of
+  // the sidecar.
   const dir = location.pathname.replace(/\/$/, '')
   return dir.endsWith('/chatoffice-app') ? dir : ''
 }
@@ -45,12 +45,6 @@ function b64ToBytes(b64: string): Uint8Array {
   return out
 }
 
-function bytesToB64(bytes: Uint8Array): string {
-  let bin = ''
-  for (const b of bytes) bin += String.fromCharCode(b)
-  return btoa(bin)
-}
-
 async function handleFile(channel: string, args: unknown[]): Promise<unknown> {
   switch (channel) {
     case 'fs.read':
@@ -73,7 +67,11 @@ async function handleLocal(channel: string, args: unknown[]): Promise<unknown> {
       return undefined
     case 'recent.record': {
       const { recordRecent } = await import('./recents.js')
-      recordRecent(String(args[0]), String(args[1]), args[2] as 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown')
+      recordRecent(
+        String(args[0]),
+        String(args[1]),
+        args[2] as 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown',
+      )
       return undefined
     }
     default:
@@ -112,15 +110,21 @@ export function startBridgeHost(): void {
           proto: BRIDGE_PROTOCOL,
           id: req.id,
           ok: false,
-          error: { code: 'degraded', message: info.reason, ...(info.batch ? { batch: info.batch } : {}) },
+          error: {
+            code: 'degraded',
+            message: info.reason,
+            ...(info.batch ? { batch: info.batch } : {}),
+          },
         })
         return
       }
       try {
         const result =
-          req.kind === 'rpc' ? await handleRpc(req.channel, req.args)
-          : req.kind === 'file' ? await handleFile(req.channel, req.args)
-          : await handleLocal(req.channel, req.args)
+          req.kind === 'rpc'
+            ? await handleRpc(req.channel, req.args)
+            : req.kind === 'file'
+              ? await handleFile(req.channel, req.args)
+              : await handleLocal(req.channel, req.args)
         reply({ proto: BRIDGE_PROTOCOL, id: req.id, ok: true, result })
       } catch (err) {
         reply({
