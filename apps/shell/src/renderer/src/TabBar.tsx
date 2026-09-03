@@ -1,12 +1,33 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { CSSProperties, ReactElement } from 'react'
 import type { TabsApi, TabSummary } from '../../shared/tabs-api'
 import { useI18n } from './locale'
+import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 
 declare global {
   interface Window {
     chatOfficeTabs: TabsApi
   }
+}
+
+/** Panel glyph: outlined window with one side column filled to signal the target pane */
+function PaneToggleIcon({ side }: { side: 'left' | 'right' }): ReactElement {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4.5" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d={side === 'left' ? 'M9.25 4.5v15' : 'M14.75 4.5v15'}
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d={side === 'left' ? 'M4.5 9.25h3.25M4.5 12h3.25' : 'M16.25 9.25h3.25M16.25 12h3.25'}
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
 }
 
 function DocIcon() {
@@ -110,6 +131,7 @@ const KIND_ICON: Record<TabSummary['kind'], ReactElement> = {
 
 export function TabBar() {
   const { t } = useI18n()
+  const layout = useSyncExternalStore(onHomeLayoutChange, getHomeLayout)
   const [tabs, setTabs] = useState<TabSummary[]>([])
   const stripRef = useRef<HTMLDivElement>(null)
 
@@ -219,6 +241,17 @@ export function TabBar() {
   return (
     <div className="tab-bar">
       <div className="tab-bar-drag-spacer" />
+      {/* Home three-pane toggles: always visible, they only affect the home
+          layout (the middle chat pane can never be collapsed) */}
+      <button
+        className={`tab-pane-toggle${layout.leftCollapsed ? ' collapsed' : ''}`}
+        title={t('toggleSidebar')}
+        aria-label={t('toggleSidebar')}
+        aria-pressed={!layout.leftCollapsed}
+        onClick={() => setHomeLayout({ leftCollapsed: !layout.leftCollapsed })}
+      >
+        <PaneToggleIcon side="left" />
+      </button>
       <div className={dragVisual ? 'tab-strip dragging' : 'tab-strip'} ref={stripRef}>
         {tabs.map((tab, index) => {
           // live transforms: the grabbed tab tracks the pointer; tabs between
@@ -389,6 +422,15 @@ export function TabBar() {
             strokeLinejoin="round"
           />
         </svg>
+      </button>
+      <button
+        className={`tab-pane-toggle pane-right${layout.rightCollapsed ? ' collapsed' : ''}`}
+        title={t('toggleContentPane')}
+        aria-label={t('toggleContentPane')}
+        aria-pressed={!layout.rightCollapsed}
+        onClick={() => setHomeLayout({ rightCollapsed: !layout.rightCollapsed })}
+      >
+        <PaneToggleIcon side="right" />
       </button>
     </div>
   )

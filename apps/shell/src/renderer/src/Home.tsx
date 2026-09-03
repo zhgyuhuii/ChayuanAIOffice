@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement } from 'react'
 import logoLockup from './assets/chatoffice-logo.svg'
 import iconDocx from './assets/file-docx.svg'
@@ -16,12 +16,13 @@ import type {
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover } from '@chatoffice/ui'
-import { fileCountKey, visiblePageCount } from './counts'
+import { fileCountKey } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
+import { getHomeLayout, onHomeLayoutChange } from './home-layout'
 
 declare global {
   interface Window {
@@ -1082,14 +1083,15 @@ function DropToOpenOverlay(): ReactElement | null {
 export function Home() {
   const i18n = useI18n()
   const { t } = i18n
+  // three-pane arrangement (TabBar toggles persist via home-layout)
+  const layout = useSyncExternalStore(onHomeLayoutChange, getHomeLayout)
   // ── Paged list state (rows loaded for the current view + filter) ──
   const [entries, setEntries] = useState<RecentEntry[]>([])
   /** total count under the current view + filter (not just the loaded rows) */
   const [listTotal, setListTotal] = useState(0)
-  /** sidebar Recent / Starred counts under the active type filter */
-  const [navCounts, setNavCounts] = useState({ recent: 0, starred: 0 })
+  /** starred files for the always-on 收藏 section (small list, no paging) */
+  const [starredEntries, setStarredEntries] = useState<RecentEntry[]>([])
   const [loadingMore, setLoadingMore] = useState(false)
-  const [view, setView] = useState<'recent' | 'starred'>('recent')
   // Genspark web projects take over the content area (the chat hides meanwhile)
   const [cloudMode, setCloudMode] = useState(false)
   const [filter, setFilter] = useState('all')
@@ -1137,26 +1139,15 @@ export function Home() {
     const seq = ++requestSeq.current
     const ext = filter === 'all' ? undefined : filter
     const limit = keepCount ? Math.max(entriesLen.current, PAGE_SIZE) : PAGE_SIZE
-    const primary = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
-    const secondary = view === 'recent' ? window.chatOffice.starred : window.chatOffice.recents
-    void primary({ offset: 0, limit, ext }).then((page) => {
+    void window.chatOffice.recents({ offset: 0, limit, ext }).then((page) => {
       if (seq !== requestSeq.current) return
       setEntries(page.entries)
       setListTotal(page.total)
-      setNavCounts((prev) =>
-        view === 'recent'
-          ? { ...prev, recent: visiblePageCount(page) }
-          : { ...prev, starred: visiblePageCount(page) },
-      )
     })
-    // The other view fetches only its count under the same active filter.
-    void secondary({ offset: 0, limit: 0, ext }).then((page) => {
+    // the always-on 收藏 section refetches alongside (small list, unfiltered)
+    void window.chatOffice.starred({ offset: 0, limit: 60 }).then((page) => {
       if (seq !== requestSeq.current) return
-      setNavCounts((prev) =>
-        view === 'recent'
-          ? { ...prev, starred: visiblePageCount(page) }
-          : { ...prev, recent: visiblePageCount(page) },
-      )
+      setStarredEntries(page.entries)
     })
     if (projectMode) {
       void window.chatOfficeProject!.listProjects().then(setProjects)
@@ -1175,7 +1166,7 @@ export function Home() {
 
   useEffect(() => {
     reloadRef.current(false)
-  }, [view, filter])
+  }, [filter])
 
   useEffect(() => {
     const onFocus = () => {
@@ -1193,13 +1184,14 @@ export function Home() {
     setLoadingMore(true)
     const seq = requestSeq.current
     const ext = filter === 'all' ? undefined : filter
-    const api = view === 'recent' ? window.chatOffice.recents : window.chatOffice.starred
-    void api({ offset: entriesLen.current, limit: PAGE_SIZE, ext }).then((page) => {
-      setLoadingMore(false)
-      if (seq !== requestSeq.current) return
-      setEntries((prev) => [...prev, ...page.entries])
-      setListTotal(page.total)
-    })
+    void window.chatOffice
+      .recents({ offset: entriesLen.current, limit: PAGE_SIZE, ext })
+      .then((page) => {
+        setLoadingMore(false)
+        if (seq !== requestSeq.current) return
+        setEntries((prev) => [...prev, ...page.entries])
+        setListTotal(page.total)
+      })
   }
   const loadMoreRef = useRef(loadMore)
   loadMoreRef.current = loadMore
@@ -1307,11 +1299,6 @@ export function Home() {
   })
 
   // ── Sidebar file-list row interactions (the table view is gone) ──
-  const changeView = (next: 'recent' | 'starred') => {
-    setView(next)
-    setRowMenu(null)
-  }
-
   const changeFilter = (key: string) => {
     setFilter(key)
     setRowMenu(null)
@@ -1425,7 +1412,7 @@ export function Home() {
           </button>
         ))}
         <button
-          className="side-action"
+          className="side-action side-action-wide"
           onClick={() => void window.chatOffice.browse()}
           data-tip={OPEN_LOCAL_EXTENSIONS}
         >
@@ -1656,52 +1643,79 @@ export function Home() {
     )
   }
 
-  function renderSideFiles() {
-    // a selected project wins over the recent/starred nav, mirroring the old
-    // content-area precedence
-    const inProject = projectMode && !!selectedProjectId
-    const list = inProject ? projectFileEntries : entries
-    const title = inProject
-      ? (projects.find((p) => p.id === selectedProjectId)?.name ?? '')
-      : view === 'starred'
-        ? t('secStarred')
-        : t('secRecent')
-    const total = inProject ? projectFileEntries.length : listTotal
+  /** files of the selected project, rendered under its row inside the 项目 section */
+  function renderProjectFiles() {
+    if (!projectMode || !selectedProjectId) return null
+    const title = projects.find((p) => p.id === selectedProjectId)?.name ?? ''
     return (
-      <div className="side-files">
+      <div className="side-files proj-files">
         <div className="side-files-head">
           <span className="side-files-title">{title}</span>
-          <span className="side-files-count">{t(fileCountKey(total), { n: total })}</span>
+          <span className="side-files-count">
+            {t(fileCountKey(projectFileEntries.length), { n: projectFileEntries.length })}
+          </span>
         </div>
-        {!inProject && (
-          <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                className={`side-filter${filter === f.key ? ' active' : ''}`}
-                onClick={() => changeFilter(f.key)}
-              >
-                {t(f.label)}
-              </button>
-            ))}
-          </div>
+        {projectFileEntries.length === 0 ? (
+          <p className="side-files-empty">{t('projEmptyHint')}</p>
+        ) : (
+          <ul className="side-file-list">
+            {projectFileEntries.map((entry) => renderSideFileRow(entry, 'project'))}
+          </ul>
         )}
-        {list.length === 0 ? (
+      </div>
+    )
+  }
+
+  /** always-on 收藏 section */
+  function renderStarredSection() {
+    return (
+      <div className="side-files side-sec-starred">
+        <div className="side-files-head">
+          <span className="side-files-title">{t('secStarred')}</span>
+          <span className="side-files-count">
+            {t(fileCountKey(starredEntries.length), { n: starredEntries.length })}
+          </span>
+        </div>
+        {starredEntries.length === 0 ? (
+          <p className="side-files-empty">{t('emptyStarred')}</p>
+        ) : (
+          <ul className="side-file-list">
+            {starredEntries.map((entry) => renderSideFileRow(entry, 'global'))}
+          </ul>
+        )}
+      </div>
+    )
+  }
+
+  /** always-on 最近使用 section (keeps the type filter pills + paging) */
+  function renderRecentSection() {
+    return (
+      <div className="side-files side-sec-recent">
+        <div className="side-files-head">
+          <span className="side-files-title">{t('secRecent')}</span>
+          <span className="side-files-count">{t(fileCountKey(listTotal), { n: listTotal })}</span>
+        </div>
+        <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              className={`side-filter${filter === f.key ? ' active' : ''}`}
+              onClick={() => changeFilter(f.key)}
+            >
+              {t(f.label)}
+            </button>
+          ))}
+        </div>
+        {entries.length === 0 ? (
           <p className="side-files-empty">
-            {inProject
-              ? t('projEmptyHint')
-              : view === 'starred'
-                ? t('emptyStarred')
-                : navCounts.recent === 0
-                  ? t('emptyRecent')
-                  : t('emptyFiltered')}
+            {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
           </p>
         ) : (
           <div className="side-files-scroll">
             <ul className="side-file-list">
-              {list.map((entry) => renderSideFileRow(entry, inProject ? 'project' : 'global'))}
+              {entries.map((entry) => renderSideFileRow(entry, 'global'))}
             </ul>
-            {!inProject && hasMore && (
+            {hasMore && (
               <div ref={sentinelRef} className="load-more" aria-hidden="true">
                 <span className="load-more-spinner" />
               </div>
@@ -1713,7 +1727,11 @@ export function Home() {
   }
 
   return (
-    <div className="home">
+    <div
+      className={`home${layout.leftCollapsed ? ' pane-left-collapsed' : ''}${
+        layout.rightCollapsed ? ' pane-right-collapsed' : ''
+      }`}
+    >
       <aside className="sidebar">
         <div className="sidebar-logo">
           <img className="logo-lockup" src={logoLockup} alt="ChatOffice" />
@@ -1721,52 +1739,12 @@ export function Home() {
 
         {renderSideActions()}
 
-        <nav className="sidebar-nav">
-          <button
-            className={`nav-item${view === 'recent' && !selectedProjectId && !cloudMode ? ' active' : ''}`}
-            onClick={() => {
-              changeView('recent')
-              setSelectedProjectId(null)
-              setCloudMode(false)
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.3" />
-              <path
-                d="M8 4.8V8l2.2 1.6"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="nav-label">{t('navRecent')}</span>
-            <span className="nav-count">{navCounts.recent}</span>
-          </button>
-          <button
-            className={`nav-item${view === 'starred' && !selectedProjectId && !cloudMode ? ' active' : ''}`}
-            onClick={() => {
-              changeView('starred')
-              setSelectedProjectId(null)
-              setCloudMode(false)
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M8 1.9l1.9 3.85 4.25.62-3.07 3 .72 4.23L8 11.6l-3.8 2 .72-4.23-3.07-3 4.25-.62z"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="nav-label">{t('navStarred')}</span>
-            <span className="nav-count">{navCounts.starred}</span>
-          </button>
-          {loggedIn && (
+        {loggedIn && (
+          <nav className="sidebar-nav">
             <button
-              className={`nav-item${cloudMode && !selectedProjectId ? ' active' : ''}`}
+              className={`nav-item${cloudMode ? ' active' : ''}`}
               onClick={() => {
-                setCloudMode(true)
-                setSelectedProjectId(null)
+                setCloudMode(!cloudMode)
                 setRowMenu(null)
               }}
             >
@@ -1796,26 +1774,29 @@ export function Home() {
                 />
               </svg>
             </button>
-          )}
-        </nav>
-
-        {/* project sidebar: the file history below follows the selected project */}
-        {projectMode && (
-          <>
-            <div className="sidebar-divider" />
-            <ProjectPanel
-              projects={projects}
-              selectedId={selectedProjectId}
-              onSelect={(id) => {
-                setSelectedProjectId(id)
-                setRowMenu(null)
-              }}
-              onRefresh={refresh}
-            />
-          </>
+          </nav>
         )}
 
-        {!cloudMode && renderSideFiles()}
+        {/* four stacked sections; the whole stack scrolls as one so the tree
+            can grow in later phases without nested scrollbars */}
+        <div className="sidebar-scroll">
+          {projectMode && (
+            <div className="side-sec">
+              <ProjectPanel
+                projects={projects}
+                selectedId={selectedProjectId}
+                onSelect={(id) => {
+                  setSelectedProjectId(id)
+                  setRowMenu(null)
+                }}
+                onRefresh={refresh}
+              />
+              {renderProjectFiles()}
+            </div>
+          )}
+          {renderStarredSection()}
+          {renderRecentSection()}
+        </div>
 
         <AccountEntry
           onStatusChange={handleAccountStatus}
@@ -1827,11 +1808,35 @@ export function Home() {
       {cloudMode ? (
         <CloudProjectsView />
       ) : (
-        <ChatPanel
-          projectId={selectedProjectId}
-          accountName={accountName}
-          onOpenSettings={() => handleSettingsOpenChange(true)}
-        />
+        <>
+          <ChatPanel
+            projectId={selectedProjectId}
+            accountName={accountName}
+            onOpenSettings={() => handleSettingsOpenChange(true)}
+          />
+          {/* right content pane: editors borrow this rect on the home tab in a
+              later phase; for now it carries the empty-state hint */}
+          <section className="content-pane">
+            <div className="content-pane-empty">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M6 3.5h8.2L19 8.3V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V5A1.5 1.5 0 0 1 6.5 3.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M13.8 3.8V8.5H18.6M8.5 12.5h7M8.5 15.5h5"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <p>{t('contentPaneEmpty')}</p>
+            </div>
+          </section>
+        </>
       )}
 
       {confirmDelete && (

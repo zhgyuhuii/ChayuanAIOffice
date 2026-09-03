@@ -98,6 +98,65 @@ body.vib .home {
   height: calc(100vh - 40px);
 }
 
+/* three-pane home: tree | chat | content. Collapsed panes are removed from
+   flow via display:none (the TabBar toggles flip these classes); the chat
+   pane in the middle is never collapsible. */
+.home.pane-left-collapsed > .sidebar {
+  display: none;
+}
+
+.home.pane-right-collapsed > .content-pane {
+  display: none;
+}
+
+.content-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--bg, #fff);
+}
+
+.content-pane-empty {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+}
+
+/* the four stacked sections (projects / starred / recent) scroll as one
+   column so the tree can grow in later phases without nested scrollbars */
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* room for the hover controls and the escaped row menu */
+  padding: 0 2px 6px;
+}
+
+.side-sec + .side-sec,
+.side-files + .side-files,
+.side-sec + .side-files {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* sections inside the unified scroll column no longer scroll individually */
+.side-sec .side-files,
+.side-sec-starred .side-files-scroll,
+.side-sec-recent .side-files-scroll,
+.proj-files {
+  overflow: visible;
+  flex: none;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -105,8 +164,7 @@ body.vib .home {
   width: 232px;
   padding: 18px 12px 16px;
   border-right: 1px solid var(--border);
-  /* the sidebar frame itself stays put; the file-history list below scrolls
-     internally (see .side-files-scroll) so the account entry never drifts */
+  /* the sidebar frame itself stays put; the account entry never drifts */
   overflow: hidden;
 }
 
@@ -119,9 +177,12 @@ body.vib .home {
 }
 
 .logo-lockup {
+  /* the 920×240 lockup scales by width here (232px sidebar minus padding),
+     NOT by height: height-only sizing lets the wide wordmark overflow the
+     sidebar and clip the trailing "e" — the wordmark must fit the column */
   display: block;
-  height: 28px;
-  width: auto;
+  width: 100%;
+  height: auto;
   filter: invert(var(--logo-invert));
 }
 
@@ -1878,6 +1939,12 @@ body.vib .home {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* the open-local entry is the row's last tile and its label is the longest
+   (「打开本地文件」 six glyphs) — span both grid columns so it never ellipsizes */
+.side-action.side-action-wide {
+  grid-column: 1 / -1;
 }
 
 .side-action-folder {

@@ -272,6 +272,52 @@ html.chatoffice-popover-open .tab-bar {
   cursor: pointer;
 }
 
+/* home three-pane toggles: flank the strip at both ends */
+.tab-pane-toggle {
+  -webkit-app-region: no-drag;
+  position: relative;
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tabstrip-text);
+  cursor: pointer;
+}
+
+.tab-pane-toggle:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* a collapsed pane keeps the button dimmed as a state cue */
+.tab-pane-toggle.collapsed {
+  color: var(--tabstrip-text);
+  opacity: 0.55;
+}
+
+/* divider between the left toggle and the strip (matches tab-overflow-btn) */
+.tab-pane-toggle::before {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  width: 1px;
+  height: 16px;
+  transform: translateY(-50%);
+  background: var(--tab-separator);
+}
+
+.tab-pane-toggle.pane-right::before {
+  right: auto;
+  left: -6px;
+}
+
 .tab-new-btn:hover,
 .tab-overflow-btn:hover {
   background: rgba(0, 0, 0, 0.08);
