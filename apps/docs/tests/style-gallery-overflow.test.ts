@@ -1,6 +1,8 @@
 // Regression (feedback row 53): the home-tab style gallery clipped overflowing
 // cards with no way to reach them. The gallery must show a "more styles"
 // expander whenever cards are cut off, and the expander grid must list every style.
+// WPS-parity follow-up: the expander is permanent — even when every card fits
+// the row there is always a dropdown entry to the full style list.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -174,13 +176,17 @@ describe('style gallery overflow', () => {
     vi.unstubAllGlobals()
   })
 
-  it('shows no expander while every card fits', () => {
+  it('keeps the expander visible even while every card fits (WPS parity)', () => {
     expect(container.querySelector('.style-gallery')).not.toBeNull()
     expect(container.querySelectorAll('.style-gallery .style-card').length).toBe(6)
-    expect(container.querySelector('.style-gallery-more')).toBeNull()
+    const more = container.querySelector<HTMLButtonElement>('.style-gallery-more')!
+    expect(more).not.toBeNull()
+    // and it still opens the full grid without any overflow
+    act(() => more.click())
+    expect(container.querySelectorAll('.style-gallery-menu .style-card').length).toBe(6)
   })
 
-  it('shows the expander when cards wrap out of view and hides it when they fit again', () => {
+  it('caps the gallery when cards wrap out of view and clears the cap when they fit again', () => {
     const gallery = container.querySelector('.style-gallery')!
     const wrap = gallery.parentElement!
     setRowLayout(gallery, 2)
@@ -191,7 +197,7 @@ describe('style gallery overflow', () => {
 
     setRowLayout(gallery, 6)
     act(() => FakeResizeObserver.fire(wrap))
-    expect(container.querySelector('.style-gallery-more')).toBeNull()
+    expect(container.querySelector('.style-gallery-more')).not.toBeNull()
     expect((gallery as HTMLElement).style.maxWidth).toBe('')
   })
 

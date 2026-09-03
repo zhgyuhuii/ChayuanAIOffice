@@ -3510,20 +3510,17 @@ function RibbonInner({
                 <div className="style-gallery" ref={styleGalleryRef}>
                   {renderStyleCards(false)}
                 </div>
-                {/* clipped cards stay reachable through the expander grid */}
-                {styleGalleryOverflow && (
-                  <button
-                    className="style-gallery-more"
-                    data-tip={t('ribbonMoreStyles')}
-                    aria-label={t('ribbonMoreStyles')}
-                    aria-expanded={dropdown === 'styleGallery'}
-                    onClick={() =>
-                      setDropdown((v) => (v === 'styleGallery' ? null : 'styleGallery'))
-                    }
-                  >
-                    <IconCaret />
-                  </button>
-                )}
+                {/* WPS/Word parity: the expander is permanent so the full style
+                    list stays reachable even when every card fits the row */}
+                <button
+                  className="style-gallery-more"
+                  data-tip={t('ribbonMoreStyles')}
+                  aria-label={t('ribbonMoreStyles')}
+                  aria-expanded={dropdown === 'styleGallery'}
+                  onClick={() => setDropdown((v) => (v === 'styleGallery' ? null : 'styleGallery'))}
+                >
+                  <IconCaret />
+                </button>
                 {dropdown === 'styleGallery' && (
                   <div data-rb-panel="" className="style-gallery-menu">
                     {renderStyleCards(true)}
