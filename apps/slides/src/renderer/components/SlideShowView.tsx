@@ -94,7 +94,8 @@ export function SlideShowView({
     kind: TransitionKind
     nonce: number
     durMs: number | null
-  }>({ kind: 'none', nonce: 0, durMs: null })
+    dir: string | null
+  }>({ kind: 'none', nonce: 0, durMs: null, dir: null })
   const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight })
   /** False until the window covers the screen: the black root paints alone first so
    *  the window snap / tab-strip bleed relayouts stay invisible (no windowed flash) */
@@ -331,12 +332,17 @@ export function SlideShowView({
       if (kind === 'morph' && current != null && current !== target) {
         // Morph: skips the CSS page transition; MorphStage tweens elements from the previous page to the target
         setMorph((m) => ({ fromIdx: current, toIdx: target, nonce: (m?.nonce ?? 0) + 1 }))
-        setAnim((a) => ({ kind: 'none', nonce: a.nonce + 1, durMs: null }))
+        setAnim((a) => ({ kind: 'none', nonce: a.nonce + 1, durMs: null, dir: null }))
       } else {
         // Morphs that can't tween (start page/same page) degrade to fade-in
         if (kind === 'morph') kind = 'fade'
         setMorph(null)
-        setAnim((a) => ({ kind, nonce: a.nonce + 1, durMs: spec?.durationMs ?? null }))
+        setAnim((a) => ({
+          kind,
+          nonce: a.nonce + 1,
+          durMs: spec?.durationMs ?? null,
+          dir: spec?.dir ?? null,
+        }))
       }
       setPos(nextPos)
     },
@@ -472,7 +478,9 @@ export function SlideShowView({
           ) : (
             <div
               key={anim.nonce}
-              className={`ss-frame${anim.kind !== 'none' ? ` ss-anim-${anim.kind}` : ''}`}
+              className={`ss-frame${anim.kind !== 'none' ? ` ss-anim-${anim.kind}` : ''}${
+                anim.dir ? ` ss-dir-${anim.dir}` : ''
+              }`}
               style={
                 anim.durMs != null
                   ? ({ '--ss-dur': `${anim.durMs}ms` } as React.CSSProperties)
