@@ -1306,6 +1306,21 @@ export type SlideTransitionKind =
   | 'strips'
   | 'wedge'
   | 'wheel'
+  | 'strips'
+  | 'wedge'
+  | 'wheel'
+  // third batch: PowerPoint 2010+ (p14) extension kernels, AC-wrapped with a
+  // fade fallback — attributes omitted so PowerPoint applies its own defaults
+  | 'ripple'
+  | 'glitter'
+  | 'vortex'
+  | 'doors'
+  | 'window'
+  | 'honeycomb'
+  | 'flash'
+  | 'ferris'
+  | 'gallery'
+  | 'conveyor'
 
 export const TRANSITION_KINDS = [
   'none',
@@ -1332,6 +1347,16 @@ export const TRANSITION_KINDS = [
   'strips',
   'wedge',
   'wheel',
+  'ripple',
+  'glitter',
+  'vortex',
+  'doors',
+  'window',
+  'honeycomb',
+  'flash',
+  'ferris',
+  'gallery',
+  'conveyor',
 ] as const satisfies readonly SlideTransitionKind[]
 
 /**
@@ -1388,7 +1413,9 @@ export const TRANSITION_DIR_KERNELS: Partial<Record<SlideTransitionKind, Readonl
   strips: new Set(TRANSITION_DIRS),
 }
 
-const TRANSITION_INNER: Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, string> = {
+// p14 kernels (third batch) are written via p14TransitionXml, not INNER; the
+// record is Partial for those.
+const TRANSITION_INNER: Partial<Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, string>> = {
   fade: '<p:fade/>',
   push: '<p:push dir="u"/>',
   wipe: '<p:wipe dir="l"/>',
@@ -1445,6 +1472,38 @@ function morphTransitionXml(durationMs: number | undefined, sndAc: string | null
     `<p:transition xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main"${choice}>` +
     `<p159:morph option="byObject"/>${snd}</p:transition></mc:Choice>` +
     `<mc:Fallback><p:transition${spd}><p:fade/>${snd}</p:transition></mc:Fallback>` +
+    '</mc:AlternateContent>'
+  )
+}
+
+/** p14 extension kernels (third batch): element written verbatim inside the
+ * AC Choice; optional attrs omitted — PowerPoint applies its own defaults. */
+const P14_TRANSITION_KERNELS = new Set<SlideTransitionKind>([
+  'ripple',
+  'glitter',
+  'vortex',
+  'doors',
+  'window',
+  'honeycomb',
+  'flash',
+  'ferris',
+  'gallery',
+  'conveyor',
+])
+
+/** AC-wrapped p14 kernel with a fade fallback (old PowerPoint degrades safely). */
+function p14TransitionXml(
+  kind: SlideTransitionKind,
+  durationMs: number | undefined,
+  sndAc: string | null,
+): string {
+  const attrs = durAttrs(durationMs, 800)
+  const snd = sndAc ?? ''
+  return (
+    '<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">' +
+    '<mc:Choice xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" Requires="p14">' +
+    `<p:transition${attrs.choice}><p14:${kind}/>${snd}</p:transition></mc:Choice>` +
+    `<mc:Fallback><p:transition${attrs.fallback}><p:fade/>${snd}</p:transition></mc:Fallback>` +
     '</mc:AlternateContent>'
   )
 }
@@ -1507,6 +1566,8 @@ export function patchSlideTransitionXml(
   let xml: string
   if (kind === 'morph') {
     xml = morphTransitionXml(opts.durationMs, sndAc)
+  } else if (P14_TRANSITION_KERNELS.has(kind)) {
+    xml = p14TransitionXml(kind, opts.durationMs, sndAc)
   } else if (opts.durationMs != null) {
     const a = durAttrs(opts.durationMs, 500)
     xml =
@@ -1552,11 +1613,12 @@ export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionS
     const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
     return { kind: 'morph', durationMs: durMs ? Number(durMs) : null }
   }
-  const kind =
-    /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random|blinds|checker|comb|cut|diamond|newsflash|plus|randomBar|strips|wedge|wheel)\b/.exec(
+  const kindMatch =
+    /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random|blinds|checker|comb|cut|diamond|newsflash|plus|randomBar|strips|wedge|wheel)\b|<p14:(ripple|glitter|vortex|doors|window|honeycomb|flash|ferris|gallery|conveyor)\b/.exec(
       m[0],
-    )?.[1] as SlideTransitionKind | undefined
-  if (!kind) return { kind: 'none', durationMs: null }
+    )
+  const kindVal = (kindMatch?.[1] ?? kindMatch?.[2]) as SlideTransitionKind | undefined
+  if (!kindVal) return { kind: 'none', durationMs: null }
   const durAttr = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
   // A1-7 echo: no explicit p14:dur but a legacy spd — infer the duration the
   // way PowerPoint buckets them, so the 速度 input reads the real value
@@ -1573,9 +1635,9 @@ export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionS
   const zoom = /<p:zoom\b[^>]*\bdir="(in|out)"/.exec(m[0])?.[1] as SlideTransitionZoom | undefined
   const fadeBlack = /<p:fade\b[^>]*\bthruBlk="1"/.test(m[0]) || undefined
   return {
-    kind,
+    kind: kindVal,
     durationMs,
-    ...(dir && TRANSITION_DIR_KERNELS[kind]?.has(dir) ? { dir } : {}),
+    ...(dir && TRANSITION_DIR_KERNELS[kindVal]?.has(dir) ? { dir } : {}),
     ...(splitM
       ? {
           split:

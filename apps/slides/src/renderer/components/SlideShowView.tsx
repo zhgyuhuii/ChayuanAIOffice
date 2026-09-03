@@ -53,6 +53,16 @@ const ANIMATED = [
   'strips',
   'wedge',
   'wheel',
+  'ripple',
+  'glitter',
+  'vortex',
+  'doors',
+  'window',
+  'honeycomb',
+  'flash',
+  'ferris',
+  'gallery',
+  'conveyor',
 ] as const
 
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')

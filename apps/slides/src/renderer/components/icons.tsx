@@ -2127,6 +2127,106 @@ export function IconTransZoom(props: IconProps) {
   )
 }
 
+export function IconTransRipple(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="16.5" cy="16.5" r="2" fill="currentColor" stroke="none" />
+      <circle cx="16.5" cy="16.5" r="5.4" opacity="0.6" />
+      <circle cx="16.5" cy="16.5" r="8.8" opacity="0.3" />
+    </Svg>
+  )
+}
+
+export function IconTransGlitter(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4.2 L13.6 9.4 L19 10.6 L13.6 12.2 L12 17.6 L10.4 12.2 L5 10.6 L10.4 9.4 Z" />
+      <path d="M18.4 15.2 l0.7 2 2 0.7 -2 0.7 -0.7 2 -0.7 -2 -2 -0.7 2 -0.7 Z" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransVortex(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 12 m0 -7.5 a7.5 7.5 0 1 1 -7.5 7.5 a6 6 0 1 1 6 6" />
+      <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+    </Svg>
+  )
+}
+
+export function IconTransDoors(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="6.5" height="15" rx="1" />
+      <rect x="13" y="4.5" width="6.5" height="15" rx="1" opacity="0.45" />
+      <circle cx="9.6" cy="12" r="0.9" fill="currentColor" stroke="none" />
+    </Svg>
+  )
+}
+
+export function IconTransWindowK(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="15" height="6.5" rx="1" />
+      <rect x="4.5" y="13" width="15" height="6.5" rx="1" opacity="0.45" />
+      <path d="M9.5 7.75 h5 M9.5 16.25 h5" opacity="0.5" />
+    </Svg>
+  )
+}
+
+export function IconTransHoneycomb(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4.4 15.6 6.5 v4.2 L12 12.8 8.4 10.7 V6.5 Z" />
+      <path
+        d="M8.4 10.7 12 12.8 v4.2 L8.4 19.2 4.8 17.1 v-4.2 Z M15.6 10.7 19.2 12.9 v4.2 L15.6 19.2 12 17 v-4.2"
+        opacity="0.55"
+      />
+    </Svg>
+  )
+}
+
+export function IconTransFlash(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4.5" y="4.5" width="15" height="15" rx="1.2" opacity="0.35" />
+      <path d="M12 5.5 L7.5 13 h3.2 L10 18.5 16 10.5 h-3.4 L14 5.5 Z" />
+    </Svg>
+  )
+}
+
+export function IconTransFerris(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="10" r="6" />
+      <path d="M12 4 v12 M6 10 h12 M7.9 5.9 l8.2 8.2 M16.1 5.9 l-8.2 8.2" opacity="0.6" />
+      <path d="M8 18.5 h8 M9.5 15.8 7 20.5 M14.5 15.8 17 20.5" opacity="0.6" />
+    </Svg>
+  )
+}
+
+export function IconTransGallery(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3.5" y="6" width="7" height="9" rx="1" opacity="0.45" />
+      <rect x="8" y="8.5" width="7" height="9" rx="1" opacity="0.7" />
+      <rect x="12.5" y="5" width="7" height="9" rx="1" />
+      <path d="M15.5 17.5 c1.5 1 3.5 1 5 -0.5" opacity="0.5" />
+    </Svg>
+  )
+}
+
+export function IconTransConveyor(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3.5" y="5.5" width="8" height="6.5" rx="1" />
+      <rect x="12" y="9" width="8" height="6.5" rx="1" opacity="0.55" />
+      <path d="M4 17 h16 M7 17 v1.6 M12 17 v1.6 M17 17 v1.6" opacity="0.55" />
+    </Svg>
+  )
+}
+
 export function IconTransBlinds(props: IconProps) {
   return (
     <Svg {...props}>

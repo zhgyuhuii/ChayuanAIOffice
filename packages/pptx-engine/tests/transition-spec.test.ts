@@ -280,3 +280,39 @@ describe('spd → durationMs echo (A1-7)', () => {
     expect(readSlideTransitionSpecXml(explicit).durationMs).toBe(1300)
   })
 })
+
+describe('p14 extension kernels (third batch)', () => {
+  const base = '<p:sld><p:cSld><p:spTree/></p:cSld></p:sld>'
+  const KINDS = [
+    'ripple',
+    'glitter',
+    'vortex',
+    'doors',
+    'window',
+    'honeycomb',
+    'flash',
+    'ferris',
+    'gallery',
+    'conveyor',
+  ] as const
+
+  it('writes AC-wrapped p14 kernels with a fade fallback and round-trips', () => {
+    for (const kind of KINDS) {
+      const out = patchSlideTransitionXml(base, kind, { durationMs: 900 })
+      expect(out).toContain('Requires="p14"')
+      expect(out).toContain(`<p14:${kind}/>`)
+      expect(out).toContain('<mc:Fallback>')
+      expect(out).toContain('p14:dur="900"')
+      const spec = readSlideTransitionSpecXml(out)
+      expect(spec.kind).toBe(kind)
+      expect(spec.durationMs).toBe(900)
+    }
+  })
+
+  it('keeps a configured sound in both AC branches', () => {
+    let body = patchSlideTransitionXml(base, 'vortex', {})
+    body = patchSlideTransitionSoundXml(body, buildTransitionSoundXml('chime.wav', 'rId3', false))
+    expect((body.match(/<p:sndAc>/g) ?? []).length).toBe(2)
+    expect(readSlideTransitionSoundXml(body)?.name).toBe('chime')
+  })
+})

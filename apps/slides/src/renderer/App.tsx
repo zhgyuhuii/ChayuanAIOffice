@@ -147,6 +147,16 @@ const PREVIEWABLE_TRANSITIONS: TransitionKind[] = [
   'strips',
   'wedge',
   'wheel',
+  'ripple',
+  'glitter',
+  'vortex',
+  'doors',
+  'window',
+  'honeycomb',
+  'flash',
+  'ferris',
+  'gallery',
+  'conveyor',
 ]
 
 /** Resizable thumbnail sidebar: drag the right edge; width persisted, clamped to a sane range */

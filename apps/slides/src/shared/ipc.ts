@@ -604,6 +604,16 @@ export type TransitionKind =
   | 'strips'
   | 'wedge'
   | 'wheel'
+  | 'ripple'
+  | 'glitter'
+  | 'vortex'
+  | 'doors'
+  | 'window'
+  | 'honeycomb'
+  | 'flash'
+  | 'ferris'
+  | 'gallery'
+  | 'conveyor'
 
 // ── Shape animations (the "Animations" tab) ──────────────────────────
 
