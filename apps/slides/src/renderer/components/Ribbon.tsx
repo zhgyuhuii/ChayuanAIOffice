@@ -1291,8 +1291,6 @@ export function Ribbon({
   const [collapseOpen, setCollapseOpen] = useState<string | null>(null)
   const [translateOpen, setTranslateOpen] = useState(false)
   const [arrangeOpen, setArrangeOpen] = useState(false)
-  const [slideShowOpen, setSlideShowOpen] = useState(false)
-  const [slideShowFromStart, setSlideShowFromStart] = useState(false)
   // Insert tab dropdown galleries (at most one open at a time)
   const [insertDrop, setInsertDrop] = useState<
     'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | null
@@ -1337,7 +1335,6 @@ export function Ribbon({
     if (!keep.includes('chart')) setChartDrop(null)
     if (!keep.includes('collapse')) setCollapseOpen(null)
     if (!keep.includes('pen')) setPenFlyout(null)
-    if (!keep.includes('slideShow')) setSlideShowOpen(false)
   }, [])
 
   // Any ribbon popup open? Drives outside-press dismissal AND suspends the
@@ -1353,7 +1350,6 @@ export function Ribbon({
     layoutOpen ||
     chartDrop != null ||
     arrangeOpen ||
-    slideShowOpen ||
     paraOpen ||
     pictureBorderOpen ||
     changeShapeOpen ||
@@ -1673,15 +1669,11 @@ export function Ribbon({
     setParaOpen,
     setSizeDraft,
     setSizeOpen,
-    setSlideShowFromStart,
-    setSlideShowOpen,
     setTableCustom,
     setTableHover,
     setTableOpen,
     sizeDraft,
     sizeOpen,
-    slideShowFromStart,
-    slideShowOpen,
     t,
     tableCustom,
     tableHover,
