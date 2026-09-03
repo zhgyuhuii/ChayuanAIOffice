@@ -75,7 +75,22 @@ function writeJson(filePath: string, data: unknown): void {
   ensureDir(dirname(filePath))
   const tmpPath = `${filePath}.tmp`
   writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8')
-  renameSync(tmpPath, filePath)
+  // Windows: an indexer/AV briefly holding the target makes renameSync fail with
+  // EPERM — retry a few times before giving up
+  const sleepBuffer = new Int32Array(new SharedArrayBuffer(4))
+  let lastError: unknown
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try {
+      renameSync(tmpPath, filePath)
+      return
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (code !== 'EPERM' && code !== 'EACCES' && code !== 'EBUSY') throw error
+      lastError = error
+      Atomics.wait(sleepBuffer, 0, 0, 10)
+    }
+  }
+  throw lastError
 }
 
 // ────────────────────────────────────────────────────────────

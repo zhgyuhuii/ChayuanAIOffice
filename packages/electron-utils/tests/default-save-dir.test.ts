@@ -58,17 +58,22 @@ describe('resolveDefaultSaveDir', () => {
     expect(existsSync(fallback)).toBe(true)
   })
 
-  it('degrades to the fallback when the configured folder is not writable', () => {
-    const readOnly = join(root, 'read-only')
-    mkdirSync(readOnly)
-    chmodSync(readOnly, 0o500)
-    const fallback = join(root, 'fallback')
-    try {
-      expect(resolveDefaultSaveDir(readOnly, fallback)).toBe(fallback)
-    } finally {
-      chmodSync(readOnly, 0o700)
-    }
-  })
+  // POSIX-only premise: Windows ignores the read-only attribute on directories,
+  // so accessSync(W_OK) still passes after chmod 0o500 and no degradation occurs
+  it.skipIf(process.platform === 'win32')(
+    'degrades to the fallback when the configured folder is not writable',
+    () => {
+      const readOnly = join(root, 'read-only')
+      mkdirSync(readOnly)
+      chmodSync(readOnly, 0o500)
+      const fallback = join(root, 'fallback')
+      try {
+        expect(resolveDefaultSaveDir(readOnly, fallback)).toBe(fallback)
+      } finally {
+        chmodSync(readOnly, 0o700)
+      }
+    },
+  )
 })
 
 describe('configuredDefaultSaveDir', () => {
