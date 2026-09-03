@@ -151,14 +151,19 @@ export function clearParagraphFormatting(editor: Editor): void {
   setParaAttrs(editor, { ...DIRECT_PARA_ATTRS })
 }
 
-/** apply a gallery paragraph style; not for textbox sub-editors (no docHeading in their schema) */
+/** apply a gallery paragraph style; not for textbox sub-editors (no docHeading in their schema).
+ * 'pstyle:{id}' applies a non-heading document paragraph style (Title/Quote…) as
+ * docParagraph.styleId — the engine writes it straight to <w:pStyle>. */
 export function applyParagraphStyle(
   editor: Editor,
-  key: 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6',
+  key: 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | `pstyle:${string}`,
 ): void {
   let c = editor.chain().focus()
-  if (key === 'p') c = c.setNode('docParagraph')
-  else c = c.setNode('docHeading', { level: Number(key.slice(1)) })
+  // styleId is explicit in every branch: TipTap's setNode keeps same-name attrs
+  // when none are passed, so a previous pstyle:Quote would leak into 正文/标题
+  if (key === 'p') c = c.setNode('docParagraph', { styleId: null })
+  else if (key.startsWith('pstyle:')) c = c.setNode('docParagraph', { styleId: key.slice(7) })
+  else c = c.setNode('docHeading', { level: Number(key.slice(1)), styleId: null })
   // Word-like: applying a paragraph style sheds the runs' direct font/size/color.
   // Those render as inline span styles and would otherwise mask the style's look
   // entirely (the click would seem to do nothing on documents whose body runs

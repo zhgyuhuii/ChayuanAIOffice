@@ -65,3 +65,28 @@ describe('line spacing via setParaAttrs (⌘1/⌘2/⌘5 path)', () => {
     editor.destroy()
   })
 })
+
+describe('applyParagraphStyle pstyle (非标题段落样式)', () => {
+  it('applies a document paragraph style as docParagraph.styleId and toggles off', () => {
+    const editor = makeEditor()
+    editor.view.dispatch(editor.state.tr.setSelection(TextSelection.create(editor.state.doc, 3)))
+    applyParagraphStyle(editor, 'pstyle:Title')
+    let block = editor.state.doc.child(0)
+    expect(block.type.name).toBe('docParagraph')
+    expect(block.attrs.styleId).toBe('Title')
+
+    // from a heading too: applying a pstyle converts the block back to a paragraph
+    applyParagraphStyle(editor, 'h1')
+    applyParagraphStyle(editor, 'pstyle:Quote')
+    block = editor.state.doc.child(0)
+    expect(block.type.name).toBe('docParagraph')
+    expect(block.attrs.styleId).toBe('Quote')
+
+    // 'p' clears the paragraph style (back to Normal)
+    applyParagraphStyle(editor, 'p')
+    block = editor.state.doc.child(0)
+    expect(block.type.name).toBe('docParagraph')
+    expect(block.attrs.styleId).toBeNull()
+    editor.destroy()
+  })
+})

@@ -62,6 +62,8 @@ export interface RibbonFormatState {
   highlight: string | null
   textColor: string | null
   charStyleId: string | null
+  /** docParagraph 的 w:pStyle 样式 id（Title/Quote 等非标题段落样式；null = 无样式/标题/列表） */
+  paraStyleId: string | null
   fontSizePt: number
   fontFamily: string
   headingLevel: number | null
@@ -118,6 +120,7 @@ export const EMPTY_FORMAT_STATE: RibbonFormatState = {
   highlight: null,
   textColor: null,
   charStyleId: null,
+  paraStyleId: null,
   fontSizePt: 11,
   fontFamily: '',
   headingLevel: null,
@@ -294,6 +297,10 @@ export function computeFormatState(
     fontFamily: displayFont(),
     headingLevel: editor.isActive('docHeading')
       ? Number(editor.getAttributes('docHeading').level ?? 1)
+      : null,
+    // docParagraph 的段落样式（Title/Quote 等非标题样式卡回显）
+    paraStyleId: editor.isActive('docParagraph')
+      ? str(editor.getAttributes('docParagraph').styleId)
       : null,
     listBullet: editor.isActive('docListItem', { kind: 'bullet' }),
     listOrdered: editor.isActive('docListItem', { kind: 'ordered' }),

@@ -955,6 +955,43 @@ function RibbonInner({
   const activeCharStyleId = fs.charStyleId
   const presetAccent = themeColors?.accent1?.trim().toUpperCase() || DEFAULT_PRESET_ACCENT
 
+  /** preview CSS from a style's resolved display (真实样式外观, not the static card CSS) */
+  const previewStyleOf = (styleId: string): CSSProperties | undefined => {
+    const d = styles?.get(styleId)?.display
+    if (!d) return undefined
+    const css: CSSProperties = {}
+    if (d.font || d.fontAscii) css.fontFamily = `"${d.fontAscii ?? d.font}", sans-serif`
+    if (d.sizeHalfPoints) css.fontSize = `${d.sizeHalfPoints / 2}px`
+    if (d.color) css.color = `#${d.color}`
+    if (d.bold) css.fontWeight = 'bold'
+    if (d.italic) css.fontStyle = 'italic'
+    if (d.underline) css.textDecoration = 'underline'
+    if (d.align) css.textAlign = d.align
+    return Object.keys(css).length ? css : undefined
+  }
+
+  /**
+   * 非标题段落样式卡（Title/Quote/明显引用 等文档自带样式）：Word gallery
+   * semantics — paragraph styles that aren't headings, aren't hidden/list-shells
+   * and aren't the default (Normal is already the 正文 card). Applied as
+   * docParagraph.styleId (engine writes <w:pStyle> verbatim).
+   */
+  const paraStyleItems: Array<{ key: string; label: string; previewStyle?: CSSProperties }> = []
+  if (styles) {
+    for (const [id, info] of styles) {
+      if (info.type !== 'paragraph') continue
+      if (info.headingLevel) continue // headings have their own cards
+      if (info.isDefault) continue // Normal == 正文 card
+      if (info.semiHidden || info.linkedCharShell) continue
+      if (/^(ListParagraph|BalloonText|HTMLPreformatted?)$/i.test(id)) continue
+      paraStyleItems.push({
+        key: `pstyle:${id}`,
+        label: info.name,
+        previewStyle: previewStyleOf(id),
+      })
+    }
+  }
+
   /**
    * Character styles shown in the gallery.
    * Use doc's own character styles (type=character) if any, otherwise show
@@ -999,13 +1036,15 @@ function RibbonInner({
   const activeStyleKey =
     fs.headingLevel !== null
       ? `h${fs.headingLevel}`
-      : activeCharStyleId
-        ? `char:${activeCharStyleId}`
-        : presetActive('bold')
-          ? 'char:__preset_strong'
-          : presetActive('italic')
-            ? 'char:__preset_emphasis'
-            : 'p'
+      : fs.paraStyleId
+        ? `pstyle:${fs.paraStyleId}`
+        : activeCharStyleId
+          ? `char:${activeCharStyleId}`
+          : presetActive('bold')
+            ? 'char:__preset_strong'
+            : presetActive('italic')
+              ? 'char:__preset_emphasis'
+              : 'p'
 
   // Style gallery overflow: cards that don't fit wrap onto a second row that
   // the fixed-height gallery clips (whole cards only, never a half-cut one),
@@ -1117,15 +1156,35 @@ function RibbonInner({
     }
     return (
       <>
-        {STYLE_GALLERY.map((s) => (
+        {STYLE_GALLERY.map((s) => {
+          const docId = s.key === 'p' ? undefined : s.key.replace('h', 'Heading')
+          const live = docId ? previewStyleOf(docId) : undefined
+          return (
+            <button
+              key={s.key}
+              className={`style-card ${activeStyleKey === s.key ? 'active' : ''}`}
+              disabled={!canEdit || !!sub}
+              onClick={() => apply(s.key)}
+            >
+              <span className={`style-card-preview ${s.className}`} style={live}>
+                {t('ribbonStylePreview')}
+              </span>
+              <span className="style-card-label">{t(s.labelKey)}</span>
+            </button>
+          )
+        })}
+        {paraStyleItems.map((s) => (
           <button
             key={s.key}
-            className={`style-card ${activeStyleKey === s.key ? 'active' : ''}`}
+            className={`style-card style-card-para ${activeStyleKey === s.key ? 'active' : ''}`}
             disabled={!canEdit || !!sub}
+            data-tip={s.label}
             onClick={() => apply(s.key)}
           >
-            <span className={`style-card-preview ${s.className}`}>{t('ribbonStylePreview')}</span>
-            <span className="style-card-label">{t(s.labelKey)}</span>
+            <span className="style-card-preview" style={s.previewStyle}>
+              {t('ribbonStylePreview')}
+            </span>
+            <span className="style-card-label">{s.label}</span>
           </button>
         ))}
         {charStyleItems.map((s) => (
@@ -1658,6 +1717,29 @@ function RibbonInner({
                     {t('ribbonSaveAs')}{' '}
                     <span className="file-menu-key">{IS_MAC ? '⇧⌘S' : 'Ctrl+Shift+S'}</span>
                   </button>
+                  {onExportPdf && (
+                    <button
+                      disabled={!hasDoc}
+                      onClick={() => {
+                        setDropdown(null)
+                        onExportPdf()
+                      }}
+                    >
+                      {t('appExportPdf')}
+                    </button>
+                  )}
+                  {onPrint && (
+                    <button
+                      disabled={!hasDoc}
+                      onClick={() => {
+                        setDropdown(null)
+                        onPrint()
+                      }}
+                    >
+                      {t('appPrintTitle')}{' '}
+                      <span className="file-menu-key">{IS_MAC ? '⌘P' : 'Ctrl+P'}</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
