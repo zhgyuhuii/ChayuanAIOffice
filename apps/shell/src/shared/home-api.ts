@@ -9,6 +9,7 @@ import type {
   AiStreamChunk,
   AiStreamWireRequest,
   AttachmentAddResult,
+  AttachmentImageResult,
   AttachmentMeta,
   AttachmentReadResult,
   CreateDocumentRequest,
@@ -191,12 +192,13 @@ export interface HomeApi {
   validateAttachments(paths: string[]): Promise<AttachmentAddResult>
   /** read a slice of an attachment's extracted text */
   readAttachment(path: string, offset?: number, maxChars?: number): Promise<AttachmentReadResult>
+  /** read an image attachment's raw bytes as base64 (multimodal input) */
+  readAttachmentImage(path: string): Promise<AttachmentImageResult>
   /** load persisted home chat sessions (userData/home-chat-sessions.json) */
   chatSessionsLoad(): Promise<HomeChatSession[]>
   /** persist home chat sessions */
   chatSessionsSave(sessions: HomeChatSession[]): Promise<void>
 }
-
 
 // ── Home chat (AI agent on the home screen) ─────────────────
 

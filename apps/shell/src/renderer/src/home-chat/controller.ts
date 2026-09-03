@@ -1,5 +1,10 @@
 import type { AgentMessage } from '@chatoffice/agent-core'
-import type { HomeChatAttachment, HomeChatCard, HomeChatMessage } from '../../../shared/home-api'
+import type {
+  HomeChatAttachment,
+  HomeChatCard,
+  HomeChatMessage,
+  HomeChatSession,
+} from '../../../shared/home-api'
 import { HomeAgent, type HomeAgentBridge, type HomeAgentTexts } from './agent'
 
 export interface HomeChatControllerTexts extends HomeAgentTexts {
@@ -26,17 +31,11 @@ export class HomeChatController {
     private readonly texts: HomeChatControllerTexts,
     private readonly updateSession: (
       id: string,
-      mutate: (s: {
-        messages: HomeChatMessage[]
-        title: string
-        handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
-      }) => {
-        messages: HomeChatMessage[]
-        title: string
-        handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
-      },
+      mutate: (session: HomeChatSession) => HomeChatSession,
     ) => void,
     private readonly systemSuffix?: () => string,
+    /** busy flips of a session's in-flight turn (drives the composer's stop state) */
+    private readonly onBusyChange?: (sessionId: string, busy: boolean) => void,
   ) {}
 
   private agentFor(sessionId: string, history: HomeChatMessage[]): HomeAgent {
@@ -55,7 +54,7 @@ export class HomeChatController {
             return { ...s, messages }
           })
         },
-        onBusy: () => {},
+        onBusy: (busy) => this.onBusyChange?.(sessionId, busy),
         onDone: ({ createdDoc, openedDoc }) => {
           this.updateSession(sessionId, (s) => {
             const messages = [...s.messages]

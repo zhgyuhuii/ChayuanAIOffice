@@ -298,6 +298,11 @@ const homeApi: HomeApi = {
       ReturnType<HomeApi['readAttachment']>
     >
   },
+  async readAttachmentImage(path) {
+    return (await ipcRenderer.invoke('files:read-image', path)) as Awaited<
+      ReturnType<HomeApi['readAttachmentImage']>
+    >
+  },
   async chatSessionsLoad() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsLoad)
     return Array.isArray(result) ? (result as HomeChatSession[]) : []
