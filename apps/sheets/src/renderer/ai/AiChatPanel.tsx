@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  AiComposer,
-  AiTypingIndicator,
-  Markdown,
-  PanelTabs,
-  usePanelTab,
-} from '@chatoffice/ui'
+import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab } from '@chatoffice/ui'
 import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
 import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider'
 import { sheetsModelBridge } from './model-bridge'
@@ -277,7 +271,9 @@ export function AiChatPanel({
     { id: 'assistant', label: t('aiTabAssistant') },
   ]
   const [tab, selectTab] = usePanelTab('aisheets.aiTab', aiTabs)
-  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => settings ?? defaultSettingsV2())
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(
+    () => settings ?? defaultSettingsV2(),
+  )
   useEffect(() => {
     if (settings) setPanelSettings(settings)
   }, [settings])
@@ -443,20 +439,10 @@ export function AiChatPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          <>
-            <ModelPickerButton
-              settings={panelSettings}
-              onPick={(selection) => {
-                void sheetsModelBridge
-                  .setCurrentModel(selection)
-                  .then(async () => {
-                    await onRefreshSettings?.()
-                    await refreshPanelSettings()
-                  })
-              }}
-              onOpenSettings={() => setModelSettingsOpen(true)}
-            />
-            {tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
+          // model selection lives in the composer footer only — the header
+          // copy was redundant, and the 助手 tab intentionally has no entry
+          // (the model is global state, switched from the chat tab)
+          tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
             <button
               className="ai-header-btn"
               onClick={onNewChat}
@@ -465,8 +451,7 @@ export function AiChatPanel({
             >
               <IconNewChat size={15} />
             </button>
-            ) : null}
-          </>
+          ) : null
         }
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
@@ -571,11 +556,11 @@ export function AiChatPanel({
                   </div>
                 )}
                 {entry.role === 'assistant' && entry.model && !entry.streaming && (
-                <div className="ai-msg-model" title={entry.model}>
-                  {entry.model}
-                </div>
-              )}
-              {entry.loginRequired && (
+                  <div className="ai-msg-model" title={entry.model}>
+                    {entry.model}
+                  </div>
+                )}
+                {entry.loginRequired && (
                   <button
                     className="ai-login-btn"
                     onClick={() => void window.desktopApi.aiGskLogin()}
@@ -763,23 +748,21 @@ export function AiChatPanel({
               <ModelPickerButton
                 settings={panelSettings}
                 onPick={(selection) => {
-                  void sheetsModelBridge
-                    .setCurrentModel(selection)
-                    .then(async () => {
-                      await onRefreshSettings?.()
-                      await refreshPanelSettings()
-                    })
+                  void sheetsModelBridge.setCurrentModel(selection).then(async () => {
+                    await onRefreshSettings?.()
+                    await refreshPanelSettings()
+                  })
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
               />
               <button
-              className="ai-attach-btn"
-              onClick={onPickAttachments}
-              data-tip={t('aiAttachTitle')}
-              aria-label={t('aiAttachTitle')}
-            >
-              <img src={attachIcon} alt="" aria-hidden />
-            </button>
+                className="ai-attach-btn"
+                onClick={onPickAttachments}
+                data-tip={t('aiAttachTitle')}
+                aria-label={t('aiAttachTitle')}
+              >
+                <img src={attachIcon} alt="" aria-hidden />
+              </button>
             </>
           }
           textareaRef={inputRef}
@@ -789,7 +772,7 @@ export function AiChatPanel({
           onPasteFiles={onPasteFiles}
         />
       </div>
-          {modelSettingsOpen && (
+      {modelSettingsOpen && (
         <ModelSettingsPage
           bridge={sheetsModelBridge}
           lang={lang}

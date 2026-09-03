@@ -11,7 +11,7 @@ import {
   PanelTabs,
   usePanelTab,
 } from '@chatoffice/ui'
-import { defaultSettingsV2, enabledChatModels } from '@chatoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
@@ -159,7 +159,6 @@ export function AiPanel({
   }
   useEffect(() => {
     void refreshPanelSettings()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const langRef = useRef(lang)
   langRef.current = lang
@@ -559,15 +558,10 @@ export function AiPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          <>
-            <ModelPickerButton
-              settings={panelSettings}
-              onPick={(selection) => {
-                void markdownModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
-              }}
-              onOpenSettings={() => setModelSettingsOpen(true)}
-            />
-            {tab === 'chat' && chat.length > 0 ? (
+          // model selection lives in the composer footer only — the header
+          // copy was redundant, and the 助手 tab intentionally has no entry
+          // (the model is global state, switched from the chat tab)
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={() => {
@@ -581,8 +575,7 @@ export function AiPanel({
             >
               <IconNewChat />
             </button>
-            ) : null}
-          </>
+          ) : null
         }
         chromeActions={dockChrome?.buttons}
         dragProps={dockChrome?.dragProps}
@@ -818,7 +811,7 @@ export function AiPanel({
           onStop={stop}
         />
       </div>
-          {modelSettingsOpen && (
+      {modelSettingsOpen && (
         <ModelSettingsPage
           bridge={markdownModelBridge}
           lang={lang}
@@ -890,7 +883,7 @@ function StepIcon({ status }: { status: 'running' | 'done' | 'error' }) {
 /** Tool activity group (docs parity): auto-opens while tools run, auto-collapses into
  *  "Worked · N steps" when they finish; a manual toggle always wins */
 function ToolChipList({ tools }: { tools: ToolActivity[] }) {
-  const { lang, t: tr } = useI18n()
+  const { t: tr } = useI18n()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [userOpen, setUserOpen] = useState<boolean | null>(null)
 
@@ -1011,4 +1004,3 @@ function IconClock(): ReactElement {
     </svg>
   )
 }
-
