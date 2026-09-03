@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import { htmlLang, type Lang } from '@chatoffice/i18n'
 import { installScreenTips } from '@chatoffice/ui'
+import type { DesktopApi } from '../shared/desktop-api'
 
 import '@chatoffice/ui/tokens.css'
 import '@chatoffice/ui/screentip.css'
@@ -48,6 +49,23 @@ async function loadCellFonts(): Promise<void> {
   // Local assets resolve in milliseconds; the timeout only guards a broken
   // bundle from blanking the app.
   await Promise.race([Promise.all(loads), new Promise((resolve) => setTimeout(resolve, 3000))])
+}
+
+// Bare renderer run (npm run dev:renderer without Electron or the web-bridge
+// host): the preload bridge never arrives and mount effects would trip over
+// the missing window.desktopApi (white screen). Install a stand-in before
+// first render: on* subscriptions return a no-op unsubscriber, commands reject
+// so the existing .catch paths surface toasts instead of crashing. Real hosts
+// inject the bridge before this module executes and are left untouched.
+if (!window.desktopApi) {
+  const stub = new Proxy({} as DesktopApi, {
+    get(_t, prop) {
+      if (typeof prop !== 'string') return undefined
+      if (/^on[A-Z]/.test(prop)) return () => {}
+      return () => Promise.reject(new Error(`desktopApi.${prop}: 无主进程桥接（裸 web 渲染器）`))
+    },
+  })
+  ;(window as { desktopApi?: DesktopApi }).desktopApi = stub
 }
 
 async function bootstrap(): Promise<void> {
