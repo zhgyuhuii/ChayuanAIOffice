@@ -163,6 +163,14 @@
   box-shadow: none;
 }
 
+/* The app header (ribbon) lives inside the dock body since left/right docks
+ * run level with it — maximizing must keep covering only the editor column,
+ * so lift the header (first child of the app's editor-col) above the panel */
+.dockshell.is-max .dockshell-body > .editor-col > :first-child {
+  position: relative;
+  z-index: 41;
+}
+
 /* ---- collapsed: panel hidden entirely (the top-row bubble icon reopens) ---- */
 
 .dockshell.is-closed .dockshell-panel {
