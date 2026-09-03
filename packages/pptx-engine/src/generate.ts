@@ -1311,6 +1311,56 @@ export const TRANSITION_KINDS = [
   'random',
 ] as const satisfies readonly SlideTransitionKind[]
 
+/**
+ * 效果选项/方向 (PowerPoint 效果选项): push/wipe 为四向（ST_SideDirectionType）,
+ * cover/pull 为八向（ST_EightDirectionTransition，含对角）。
+ */
+export type SlideTransitionDir = 'l' | 'r' | 'u' | 'd' | 'lu' | 'ld' | 'ru' | 'rd'
+export const TRANSITION_DIRS = [
+  'l',
+  'r',
+  'u',
+  'd',
+  'lu',
+  'ld',
+  'ru',
+  'rd',
+] as const satisfies readonly SlideTransitionDir[]
+
+/** split 内核的 orient×in/out 四种效果选项。 */
+export type SlideTransitionSplit = 'horzIn' | 'horzOut' | 'vertIn' | 'vertOut'
+/** zoom 内核的 放大/缩小 效果选项。 */
+export type SlideTransitionZoom = 'in' | 'out'
+
+/**
+ * Options written alongside the effect kind (all optional; absent = the kernel default).
+ * durationMs is the modern p14:dur (written in an mc:AlternateContent Choice with a
+ * legacy spd fallback for old PowerPoint); the other fields are the per-kernel
+ * "效果选项" attributes.
+ */
+export interface SlideTransitionOpts {
+  /** 持续毫秒 (p14:dur; 200..5000 sane range; absent = PowerPoint kernel default) */
+  durationMs?: number
+  /** 方向 (push/wipe 四向; cover/pull 八向; ignored elsewhere) */
+  dir?: SlideTransitionDir
+  /** split 效果选项 (orient×in/out; split kernel only) */
+  split?: SlideTransitionSplit
+  /** zoom 效果选项 (zoom kernel only) */
+  zoom?: SlideTransitionZoom
+  /** fade 变黑 (thruBlk; fade kernel only) */
+  fadeBlack?: boolean
+}
+
+const DIR4 = new Set(['l', 'r', 'u', 'd'])
+
+/** Kernels + the direction sets their schema allows (效果选项 applicability). */
+export const TRANSITION_DIR_KERNELS: Partial<Record<SlideTransitionKind, ReadonlySet<string>>> = {
+  push: DIR4,
+  wipe: DIR4,
+  cover: new Set(TRANSITION_DIRS),
+  pull: new Set(TRANSITION_DIRS),
+}
+
 const TRANSITION_INNER: Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, string> = {
   fade: '<p:fade/>',
   push: '<p:push dir="u"/>',
@@ -1324,17 +1374,61 @@ const TRANSITION_INNER: Record<Exclude<SlideTransitionKind, 'none' | 'morph'>, s
   random: '<p:random/>',
 }
 
+function transitionInnerXml(kind: SlideTransitionKind, opts: SlideTransitionOpts): string {
+  const base = TRANSITION_INNER[kind as Exclude<SlideTransitionKind, 'none' | 'morph'>]
+  if (!base) return ''
+  const dirs = TRANSITION_DIR_KERNELS[kind]
+  if (dirs && opts.dir && dirs.has(opts.dir))
+    return base.replace(/dir="[lrud]+"/, `dir="${opts.dir}"`)
+  if (kind === 'split' && opts.split) {
+    const orient = opts.split.startsWith('vert') ? 'vert' : 'horz'
+    return `<p:split orient="${orient}" dir="${opts.split.endsWith('In') ? 'in' : 'out'}"/>`
+  }
+  if (kind === 'zoom' && opts.zoom) return `<p:zoom dir="${opts.zoom}"/>`
+  if (kind === 'fade' && opts.fadeBlack) return '<p:fade thruBlk="1"/>'
+  return base
+}
+
 /**
  * Morph transition: PowerPoint 2019+'s <p159:morph> (2015/main namespace), wrapped
  * in mc:AlternateContent — older PowerPoint uses the Fallback fade without erroring.
+ * Fixed slow/800ms; a custom durationMs rewrites spd/p14:dur in both branches.
  */
-const MORPH_TRANSITION_XML =
-  '<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">' +
-  '<mc:Choice xmlns:p159="http://schemas.microsoft.com/office/powerpoint/2015/main" Requires="p159">' +
-  '<p:transition xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" spd="slow" p14:dur="800">' +
-  '<p159:morph option="byObject"/></p:transition></mc:Choice>' +
-  '<mc:Fallback><p:transition spd="slow"><p:fade/></p:transition></mc:Fallback>' +
-  '</mc:AlternateContent>'
+function morphTransitionXml(durationMs: number | undefined, sndAc: string | null): string {
+  // Default keeps the historical fixed form (spd="slow"/800ms, matching PowerPoint's
+  // own morph output); a custom duration re-buckets the legacy spd like other kernels.
+  const ms = Math.max(1, Math.round(durationMs ?? 800))
+  const spd = ` spd="${durationMs == null ? 'slow' : spdFor(ms)}"`
+  const choice = `${spd} p14:dur="${ms}"`
+  const snd = sndAc ?? ''
+  return (
+    '<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">' +
+    '<mc:Choice xmlns:p159="http://schemas.microsoft.com/office/powerpoint/2015/main" Requires="p159">' +
+    `<p:transition xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main"${choice}>` +
+    `<p159:morph option="byObject"/>${snd}</p:transition></mc:Choice>` +
+    `<mc:Fallback><p:transition${spd}><p:fade/>${snd}</p:transition></mc:Fallback>` +
+    '</mc:AlternateContent>'
+  )
+}
+
+/** Legacy spd for a duration (PowerPoint bucket boundaries around 0.5/0.75/1.0s). */
+function spdFor(ms: number): 'slow' | 'med' | 'fast' {
+  return ms < 625 ? 'fast' : ms < 875 ? 'med' : 'slow'
+}
+
+/**
+ * spd/p14:dur attribute strings for the AC Choice (spd + p14:dur) and Fallback
+ * (spd only) branches. `dflt` is the kernel's implicit duration used when the
+ * caller passed no explicit one.
+ */
+function durAttrs(
+  durationMs: number | undefined,
+  dflt: number,
+): { choice: string; fallback: string } {
+  const ms = Math.max(1, Math.round(durationMs ?? dflt))
+  const spd = ` spd="${spdFor(ms)}"`
+  return { choice: `${spd} p14:dur="${ms}"`, fallback: spd }
+}
 
 const TRANSITION_RE = /<p:transition\b[^>]*\/>|<p:transition\b[^>]*>[\s\S]*?<\/p:transition>/
 /** AlternateContent-wrapped transition (only counts when Choice is immediately followed by p:transition, avoiding other AC blocks). */
@@ -1352,18 +1446,40 @@ function transitionInsertPos(body: string): number {
 /**
  * In-place patch of the bodySuffix's <p:transition> (schema order: after clrMapOvr,
  * before timing). kind='none' only removes the effect; 'morph' writes an
- * AlternateContent-wrapped p159:morph. A configured auto-advance time (advTm) is
- * kept when switching effects. Returns
- * the new bodySuffix.
+ * AlternateContent-wrapped p159:morph. An explicit opts.durationMs is written as
+ * p14:dur (Choice) + legacy spd (Fallback) via mc:AlternateContent; without one the
+ * plain <p:transition> form is kept (kernel default). The per-kernel 效果选项
+ * (dir/split/zoom/fadeBlack) lands on the effect element; a configured sound
+ * (<p:sndAc>) and auto-advance time (advTm) are carried over. Returns the new
+ * bodySuffix.
  */
-export function patchSlideTransitionXml(bodySuffix: string, kind: SlideTransitionKind): string {
+export function patchSlideTransitionXml(
+  bodySuffix: string,
+  kind: SlideTransitionKind,
+  opts: SlideTransitionOpts = {},
+): string {
   const advTm = readSlideAdvanceTimeXml(bodySuffix)
+  const sndAc = currentSndAcXml(bodySuffix)
   const stripped = bodySuffix.replace(AC_TRANSITION_RE, '').replace(TRANSITION_RE, '')
-  if (kind === 'none') return advTm == null ? stripped : patchSlideAdvanceTimeXml(stripped, advTm)
-  const xml =
-    kind === 'morph'
-      ? MORPH_TRANSITION_XML
-      : `<p:transition>${TRANSITION_INNER[kind]}</p:transition>`
+  if (kind === 'none') {
+    // 无切换 removes the effect and its sound with it; advTm survives as a bare transition
+    return advTm == null ? stripped : patchSlideAdvanceTimeXml(stripped, advTm)
+  }
+  const inner = transitionInnerXml(kind, opts) + (sndAc ?? '')
+  let xml: string
+  if (kind === 'morph') {
+    xml = morphTransitionXml(opts.durationMs, sndAc)
+  } else if (opts.durationMs != null) {
+    const a = durAttrs(opts.durationMs, 500)
+    xml =
+      '<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">' +
+      `<mc:Choice xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" Requires="p14">` +
+      `<p:transition${a.choice}>${inner}</p:transition></mc:Choice>` +
+      `<mc:Fallback><p:transition${a.fallback}>${inner}</p:transition></mc:Fallback>` +
+      '</mc:AlternateContent>'
+  } else {
+    xml = `<p:transition>${inner}</p:transition>`
+  }
   const at = transitionInsertPos(stripped)
   if (at < 0) return stripped
   const out = stripped.slice(0, at) + xml + stripped.slice(at)
@@ -1372,12 +1488,111 @@ export function patchSlideTransitionXml(bodySuffix: string, kind: SlideTransitio
 
 /** Read the current transition from the bodySuffix (for UI echo; unmodeled effects map to 'none'). */
 export function readSlideTransitionXml(bodySuffix: string): SlideTransitionKind {
+  return readSlideTransitionSpecXml(bodySuffix).kind
+}
+
+/** Full transition spec (效果 + 持续 + 效果选项) for the Transitions-tab echo. */
+export interface SlideTransitionSpecRead {
+  kind: SlideTransitionKind
+  /** Explicit p14:dur in ms; null = kernel default (no duration written) */
+  durationMs: number | null
+  /** 方向 (push/wipe/cover/pull only; absent = the kernel's default) */
+  dir?: SlideTransitionDir
+  /** split 效果选项 */
+  split?: SlideTransitionSplit
+  /** zoom 效果选项 */
+  zoom?: SlideTransitionZoom
+  /** fade 变黑 */
+  fadeBlack?: boolean
+}
+
+export function readSlideTransitionSpecXml(bodySuffix: string): SlideTransitionSpecRead {
   // AlternateContent wrapper first (morph, or PowerPoint's newer form with p14:dur)
   const m = AC_TRANSITION_RE.exec(bodySuffix) ?? TRANSITION_RE.exec(bodySuffix)
-  if (!m) return 'none'
-  if (/<[\w.]+:morph[\s/>]/.test(m[0])) return 'morph'
-  const kind = /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random)\b/.exec(m[0])?.[1]
-  return (kind as SlideTransitionKind | undefined) ?? 'none'
+  if (!m) return { kind: 'none', durationMs: null }
+  if (/<[\w.]+:morph[\s/>]/.test(m[0])) {
+    const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
+    return { kind: 'morph', durationMs: durMs ? Number(durMs) : null }
+  }
+  const kind = /<p:(fade|push|wipe|split|circle|cover|pull|dissolve|zoom|random)\b/.exec(
+    m[0],
+  )?.[1] as SlideTransitionKind | undefined
+  if (!kind) return { kind: 'none', durationMs: null }
+  const durMs = /\bp14:dur="(\d+)"/.exec(m[0])?.[1]
+  const dir = /<p:(?:push|wipe|cover|pull)\b[^>]*\bdir="([lrud]+)"/.exec(m[0])?.[1] as
+    SlideTransitionDir | undefined
+  const splitM = /<p:split\b[^>]*\borient="(horz|vert)"[^>]*\bdir="(in|out)"/.exec(m[0])
+  const zoom = /<p:zoom\b[^>]*\bdir="(in|out)"/.exec(m[0])?.[1] as SlideTransitionZoom | undefined
+  const fadeBlack = /<p:fade\b[^>]*\bthruBlk="1"/.test(m[0]) || undefined
+  return {
+    kind,
+    durationMs: durMs ? Number(durMs) : null,
+    ...(dir && TRANSITION_DIR_KERNELS[kind]?.has(dir) ? { dir } : {}),
+    ...(splitM
+      ? {
+          split:
+            `${splitM[1] === 'vert' ? 'vert' : 'horz'}${splitM[2] === 'in' ? 'In' : 'Out'}` as SlideTransitionSplit,
+        }
+      : {}),
+    ...(zoom ? { zoom } : {}),
+    ...(fadeBlack ? { fadeBlack } : {}),
+  }
+}
+
+// ── Transition sound (<p:transition><p:sndAc>, the Transitions tab 声音 dropdown) ────
+
+export interface SlideTransitionSound {
+  /** p:snd name attribute (also the preset key used to re-synthesize on write) */
+  name: string
+  loop: boolean
+}
+
+/** Build the sndAc block with the real relationship id (media layer owns the rId). */
+export function buildTransitionSoundXml(name: string, rId: string, loop: boolean): string {
+  return (
+    `<p:sndAc><p:stSnd${loop ? ' loop="1"' : ''}>` +
+    `<p:snd r:embed="${rId}" name="${name}.wav"/></p:stSnd></p:sndAc>`
+  )
+}
+
+/** The transition's current sndAc block verbatim (byte-identical re-attach keeps its rId). */
+function currentSndAcXml(bodySuffix: string): string | null {
+  const m = AC_TRANSITION_RE.exec(bodySuffix) ?? TRANSITION_RE.exec(bodySuffix)
+  return m ? (/<p:sndAc>[\s\S]*?<\/p:sndAc>/.exec(m[0])?.[0] ?? null) : null
+}
+
+/**
+ * Replace/remove the sound block inside every <p:transition> of the bodySuffix
+ * (both AlternateContent branches included; self-closing transitions are reopened).
+ * With no transition present and a sound to set, a bare <p:transition> host is
+ * created. Returns the new bodySuffix.
+ */
+export function patchSlideTransitionSoundXml(bodySuffix: string, sndAcXml: string | null): string {
+  const stripped = bodySuffix.replace(/<p:sndAc>[\s\S]*?<\/p:sndAc>/g, '')
+  if (!sndAcXml) return stripped
+  if (TRANSITION_RE.test(stripped) || AC_TRANSITION_RE.test(stripped)) {
+    return stripped
+      .replace(
+        /<p:transition\b([^>]*?)\/>/g,
+        (_m, attrs: string) => `<p:transition${attrs}>${sndAcXml}</p:transition>`,
+      )
+      .replace(/<\/p:transition>/g, `${sndAcXml}</p:transition>`)
+  }
+  const at = transitionInsertPos(stripped)
+  if (at < 0) return stripped
+  return stripped.slice(0, at) + `<p:transition>${sndAcXml}</p:transition>` + stripped.slice(at)
+}
+
+/** Read the transition sound (声音 dropdown echo; null = 无声音). */
+export function readSlideTransitionSoundXml(bodySuffix: string): SlideTransitionSound | null {
+  const m = AC_TRANSITION_RE.exec(bodySuffix) ?? TRANSITION_RE.exec(bodySuffix)
+  if (!m) return null
+  const snd = /<p:snd\b[^>]*\bname="([^"]*)"/.exec(m[0])
+  if (!snd) return null
+  return {
+    name: snd[1]!.replace(/\.wav$/, ''),
+    loop: /<p:stSnd\b[^>]*\bloop="1"/.test(m[0]),
+  }
 }
 
 // ── Auto-advance time patch (<p:transition advTm="ms">, for saving rehearsed timings) ────

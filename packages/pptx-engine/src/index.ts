@@ -31,10 +31,15 @@ import {
   rebuildTxBody,
   readSlideAdvanceTimeXml,
   readSlideHiddenXml,
+  readSlideTransitionSoundXml,
+  readSlideTransitionSpecXml,
   readSlideTransitionXml,
   removeSlideBackgroundXml,
   type GradientFillPatch,
   type SlideTransitionKind,
+  type SlideTransitionOpts,
+  type SlideTransitionSound,
+  type SlideTransitionSpecRead,
   type StrokePatch,
 } from './generate'
 import {
@@ -135,19 +140,36 @@ export {
   patchSlideHiddenXml,
   patchSlideShowMasterSpXml,
   patchSlideTransitionXml,
+  patchSlideTransitionSoundXml,
   readSlideAdvanceTimeXml,
   readSlideHiddenXml,
+  readSlideTransitionSoundXml,
+  readSlideTransitionSpecXml,
   readSlideTransitionXml,
   removeSlideBackgroundXml,
   generateParagraphXml,
   generateXfrmXml,
   isConnectorXml,
+  buildTransitionSoundXml,
+  TRANSITION_DIRS,
   TRANSITION_KINDS,
   type GradientFillPatch,
   type BackgroundImagePatch,
+  type SlideTransitionDir,
   type SlideTransitionKind,
+  type SlideTransitionOpts,
+  type SlideTransitionSound,
+  type SlideTransitionSpecRead,
+  type SlideTransitionSplit,
+  type SlideTransitionZoom,
   type StrokePatch,
 } from './generate'
+export {
+  synthTransitionSound,
+  setSlideTransitionSound,
+  TRANSITION_SOUND_KEYS,
+  type TransitionSoundKey,
+} from './transition-sound'
 export {
   addElement,
   addPicture,
@@ -3810,14 +3832,28 @@ export function pasteElements(
 // ── Slide transitions ───────────────────────────────────────────────────
 
 /** Set/clear the transition (writes bodySuffix, persisted with the whole-slide rebuild on save). */
-export function setSlideTransition(slide: Slide, kind: SlideTransitionKind): void {
-  slide.bodySuffix = patchSlideTransitionXml(slide.bodySuffix, kind)
+export function setSlideTransition(
+  slide: Slide,
+  kind: SlideTransitionKind,
+  opts: SlideTransitionOpts = {},
+): void {
+  slide.bodySuffix = patchSlideTransitionXml(slide.bodySuffix, kind, opts)
   slide.structureDirty = true
 }
 
 /** Read the current transition. */
 export function getSlideTransition(slide: Slide): SlideTransitionKind {
   return readSlideTransitionXml(slide.bodySuffix)
+}
+
+/** Read the transition's full spec (effect + duration + 效果选项) for the Transitions-tab echo. */
+export function getSlideTransitionSpec(slide: Slide): SlideTransitionSpecRead {
+  return readSlideTransitionSpecXml(slide.bodySuffix)
+}
+
+/** Read the transition sound (声音 dropdown echo; null = 无声音). */
+export function getSlideTransitionSound(slide: Slide): SlideTransitionSound | null {
+  return readSlideTransitionSoundXml(slide.bodySuffix)
 }
 
 /** Set/clear the auto-advance time (advTm, ms; saved by rehearsal timing, auto-advances in PowerPoint slideshows). */

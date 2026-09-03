@@ -643,6 +643,30 @@ export function IconApplyAll(props: IconProps) {
   )
 }
 
+/* 效果选项 (transitions): a frame with four outbound arrows — direction/variant menu */
+export function IconEffectOptions(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="7.2" y="7.2" width="9.6" height="9.6" rx="0.9" />
+      <path d="M 12 4.4 V 1.9 M 10.7 3.1 L 12 1.9 L 13.3 3.1" />
+      <path d="M 12 19.6 V 22.1 M 10.7 20.9 L 12 22.1 L 13.3 20.9" />
+      <path d="M 4.4 12 H 1.9 M 3.1 10.7 L 1.9 12 L 3.1 13.3" />
+      <path d="M 19.6 12 H 22.1 M 20.9 10.7 L 22.1 12 L 20.9 13.3" />
+    </Svg>
+  )
+}
+
+/* 声音 (transitions): speaker with sound waves */
+export function IconSound(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M 4.2 9.7 H 7.5 L 12 5.9 V 18.1 L 7.5 14.3 H 4.2 Z" />
+      <path d="M 15 9.4 a 4 4 0 0 1 0 5.2" />
+      <path d="M 17.6 7.3 a 7.2 7.2 0 0 1 0 9.4" />
+    </Svg>
+  )
+}
+
 export function IconColumns(props: IconProps) {
   return (
     <Svg {...props}>
@@ -2134,4 +2158,3 @@ export function IconAiImage(props: IconProps) {
     </AiFeatureSvg>
   )
 }
-

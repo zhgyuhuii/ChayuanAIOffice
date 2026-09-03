@@ -3,18 +3,36 @@
  * Functions take the ActionCtx built fresh per call.
  */
 import type { ShapeRenderNode } from '@chatoffice/pptx-render'
-import type { AnimEffectKind, AnimTrigger, AnimationItem, TransitionKind } from '../shared/ipc'
+import type {
+  AnimEffectKind,
+  AnimTrigger,
+  AnimationItem,
+  SetTransitionOp,
+  TransitionKind,
+} from '../shared/ipc'
 import type { ActionCtx } from './action-context'
 import { t } from './i18n/locale'
+
+/** Per-field extras applied on top of the effect kind (速度/效果选项/声音 without re-picking the effect). */
+export type TransitionExtras = Partial<
+  Pick<SetTransitionOp, 'durationMs' | 'dir' | 'split' | 'zoom' | 'fadeBlack' | 'sound'>
+>
 
 export async function applyTransition(
   ctx: ActionCtx,
   kind: TransitionKind,
   allSlides: boolean,
+  extras?: TransitionExtras,
 ): Promise<void> {
   const ok = await window.slidesApi.setTransition({
     slideIndex: allSlides ? -1 : ctx.current,
     kind,
+    ...(extras?.durationMs !== undefined ? { durationMs: extras.durationMs } : {}),
+    ...(extras?.dir !== undefined ? { dir: extras.dir } : {}),
+    ...(extras?.split !== undefined ? { split: extras.split } : {}),
+    ...(extras?.zoom !== undefined ? { zoom: extras.zoom } : {}),
+    ...(extras?.fadeBlack !== undefined ? { fadeBlack: extras.fadeBlack } : {}),
+    ...(extras?.sound !== undefined ? { sound: extras.sound } : {}),
   })
   if (ok) {
     ctx.setTransition(kind)

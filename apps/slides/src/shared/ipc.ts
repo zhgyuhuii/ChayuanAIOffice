@@ -652,6 +652,43 @@ export interface SetAnimationsOp {
 export interface SetTransitionOp {
   slideIndex: number
   kind: TransitionKind
+  /** 持续毫秒 (p14:dur; absent = keep kernel default) */
+  durationMs?: number
+  /** 方向/效果选项 (push/wipe 四向; cover/pull 八向) */
+  dir?: 'l' | 'r' | 'u' | 'd' | 'lu' | 'ld' | 'ru' | 'rd'
+  /** split 效果选项 (orient×in/out) */
+  split?: 'horzIn' | 'horzOut' | 'vertIn' | 'vertOut'
+  /** zoom 效果选项 */
+  zoom?: 'in' | 'out'
+  /** fade 变黑 (thruBlk) */
+  fadeBlack?: boolean
+  /** 声音 (present = set/clear the transition sound; name=null clears) */
+  sound?: { name: TransitionSoundKey | null; loop?: boolean } | null
+}
+
+/** Transition sound preset keys (synthesized wavs, WPS 声音 dropdown). */
+export type TransitionSoundKey =
+  | 'explosion'
+  | 'typewriter'
+  | 'chime'
+  | 'applause'
+  | 'brake'
+  | 'whoosh'
+  | 'coffee'
+  | 'push'
+  | 'hammer'
+  | 'voltage'
+
+/** Full transition echo: effect + duration + 效果选项 + 声音 (Transitions-tab UI state). */
+export interface TransitionSpec {
+  kind: TransitionKind
+  /** Explicit duration (p14:dur) in ms; null = kernel default */
+  durationMs: number | null
+  dir?: 'l' | 'r' | 'u' | 'd' | 'lu' | 'ld' | 'ru' | 'rd'
+  split?: 'horzIn' | 'horzOut' | 'vertIn' | 'vertOut'
+  zoom?: 'in' | 'out'
+  fadeBlack?: boolean
+  sound?: { name: string; loop: boolean } | null
 }
 
 /** Batch-write each page's auto-advance time (<p:transition advTm>, ms; ms=null clears). Used by rehearsal timing save. */
@@ -1466,6 +1503,10 @@ export interface SlidesApi {
   setAdvanceTimes: (op: SetAdvanceTimesOp) => Promise<boolean>
   /** The current page's auto-advance time (<p:transition advTm> ms; null = advance on click only) */
   getAdvanceTime: (slideIndex: number) => Promise<number | null>
+  /** The current page's transition spec (effect + duration + 效果选项 + 声音) for the Transitions-tab echo */
+  getTransitionSpec: (slideIndex: number) => Promise<TransitionSpec>
+  /** The current page's transition sound bytes (synthesized wav, for show playback); null = 无声音 */
+  getTransitionSound: (slideIndex: number) => Promise<{ name: string; bytes: ArrayBuffer } | null>
   /** The current page's animation list (read by the Animations tab / during shows) */
   getAnimations: (slideIndex: number) => Promise<AnimationItem[]>
   /** Morph pairing keys of the current page's elements (matched against same-name/same-id elements on the previous page during morph tweening) */

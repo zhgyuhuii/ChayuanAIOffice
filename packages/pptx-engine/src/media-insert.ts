@@ -96,7 +96,7 @@ export function solidPng(w: number, h: number, rgb: [number, number, number]): B
 
 // ── Shared part / rels surgery ─────────────────────────────────────────
 
-function ensureDefaultContentType(opened: OpenedPptx, ext: string, mime: string): void {
+export function ensureDefaultContentType(opened: OpenedPptx, ext: string, mime: string): void {
   const ctPath = '[Content_Types].xml'
   const ct = opened.archive.readText(ctPath)
   if (ct && !new RegExp(`<Default Extension="${ext}"`).test(ct)) {
@@ -109,7 +109,12 @@ function ensureDefaultContentType(opened: OpenedPptx, ext: string, mime: string)
 }
 
 /** New media part: ppt/media/{prefix}N.ext, numbered max + 1 across the whole media dir. */
-function newMediaPart(opened: OpenedPptx, prefix: string, ext: string, bytes: Uint8Array): string {
+export function newMediaPart(
+  opened: OpenedPptx,
+  prefix: string,
+  ext: string,
+  bytes: Uint8Array,
+): string {
   let maxNum = 0
   for (const path of opened.archive.entries.keys()) {
     const m = /^ppt\/media\/[a-zA-Z]+(\d+)\./.exec(path)
@@ -121,7 +126,7 @@ function newMediaPart(opened: OpenedPptx, prefix: string, ext: string, bytes: Ui
 }
 
 /** Append relationships to the slide rels; returns the assigned rIds (in order). */
-function appendRels(
+export function appendRels(
   opened: OpenedPptx,
   slide: Slide,
   rels: Array<{ type: string; target: string; external?: boolean }>,

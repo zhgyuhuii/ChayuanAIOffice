@@ -11,7 +11,13 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { RenderNode, RenderSlide, ShapeRenderNode } from '@chatoffice/pptx-render'
-import type { AnimationItem, LinkTargetOp, ShapeKey, TransitionKind } from '../../shared/ipc'
+import type {
+  AnimationItem,
+  LinkTargetOp,
+  ShapeKey,
+  TransitionKind,
+  TransitionSpec,
+} from '../../shared/ipc'
 import { AnimatedSlideStage, useAnimPlayer } from './AnimatedSlide'
 import { useI18n } from '../i18n/locale'
 import { MorphStage } from './MorphStage'
@@ -69,17 +75,18 @@ export function SlideShowView({
   )
   const [pos, setPos] = useState(() => Math.max(0, order.indexOf(startAt)))
   const [ended, setEnded] = useState(false)
-  /** Current transition animation: kind + replay nonce (key change re-triggers the CSS animation) */
-  const [anim, setAnim] = useState<{ kind: TransitionKind; nonce: number }>({
-    kind: 'none',
-    nonce: 0,
-  })
+  /** Current transition animation: kind + duration + replay nonce (key change re-triggers the CSS animation) */
+  const [anim, setAnim] = useState<{
+    kind: TransitionKind
+    nonce: number
+    durMs: number | null
+  }>({ kind: 'none', nonce: 0, durMs: null })
   const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight })
   /** False until the window covers the screen: the black root paints alone first so
    *  the window snap / tab-strip bleed relayouts stay invisible (no windowed flash) */
   const [covered, setCovered] = useState(false)
-  /** Per-page transition effects (prefetched once when the show starts, zero IPC on page turns) */
-  const transRef = useRef<TransitionKind[]>([])
+  /** Per-page transition specs (prefetched once when the show starts, zero IPC on page turns) */
+  const transRef = useRef<TransitionSpec[]>([])
   /** Per-page animation lists (also prefetched once) */
   const [allAnims, setAllAnims] = useState<AnimationItem[][] | null>(null)
   /** Per-page element Morph pairing keys (also prefetched once) */
@@ -95,8 +102,8 @@ export function SlideShowView({
 
   useEffect(() => {
     let cancelled = false
-    void Promise.all(slides.map((_, i) => window.slidesApi.getTransition(i))).then((kinds) => {
-      if (!cancelled) transRef.current = kinds
+    void Promise.all(slides.map((_, i) => window.slidesApi.getTransitionSpec(i))).then((specs) => {
+      if (!cancelled) transRef.current = specs
     })
     void Promise.all(slides.map((_, i) => window.slidesApi.getAnimations(i))).then((lists) => {
       if (!cancelled) setAllAnims(lists)
@@ -158,6 +165,7 @@ export function SlideShowView({
       rehearseRef.current = null
       onRehearseDone(finishRehearse(t, Date.now()))
     }
+    stopTransitionSound()
     onExit(order[Math.min(pos, order.length - 1)] ?? startAt)
   }
 
@@ -241,30 +249,77 @@ export function SlideShowView({
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
+  // ── Transition sound (Transitions tab 声音): synthesized wav fetched over IPC,
+  //    decoded once per preset and played in sync with the page turn ──
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const soundBufs = useRef<Map<string, AudioBuffer>>(new Map())
+  const soundSrcRef = useRef<AudioBufferSourceNode | null>(null)
+  const stopTransitionSound = useCallback(() => {
+    try {
+      soundSrcRef.current?.stop()
+    } catch {
+      /* already stopped */
+    }
+    soundSrcRef.current = null
+  }, [])
+  const playTransitionSound = useCallback(
+    (slideIndex: number) => {
+      void window.slidesApi.getTransitionSound(slideIndex).then((res) => {
+        if (!res?.bytes) return
+        try {
+          audioCtxRef.current ??= new AudioContext()
+          const ctx = audioCtxRef.current
+          let buf = soundBufs.current.get(res.name)
+          const decode = buf
+            ? Promise.resolve(buf)
+            : ctx.decodeAudioData(res.bytes).then((b) => {
+                soundBufs.current.set(res.name, b)
+                return b
+              })
+          void decode.then((b) => {
+            stopTransitionSound()
+            const src = ctx.createBufferSource()
+            src.buffer = b
+            src.loop = true // 循环播放直到下一个声音开始: stopped on the next turn/exit
+            src.connect(ctx.destination)
+            src.start()
+            soundSrcRef.current = src
+          })
+        } catch {
+          /* malformed preset bytes — silence beats a broken show */
+        }
+      })
+    },
+    [stopTransitionSound],
+  )
+
   const goTo = useCallback(
     (nextPos: number, animate: boolean) => {
       const target = order[nextPos]
       if (target == null) return
       navModeRef.current = animate ? 'fresh' : 'all'
       const current = order[pos]
+      const spec = transRef.current[target]
       let kind: TransitionKind = 'none'
       if (animate) {
-        kind = transRef.current[target] ?? 'none'
+        kind = spec?.kind ?? 'none'
         if (kind === 'random') kind = ANIMATED[Math.floor(Math.random() * ANIMATED.length)]!
       }
+      stopTransitionSound()
+      if (animate && spec?.sound?.name) playTransitionSound(target)
       if (kind === 'morph' && current != null && current !== target) {
         // Morph: skips the CSS page transition; MorphStage tweens elements from the previous page to the target
         setMorph((m) => ({ fromIdx: current, toIdx: target, nonce: (m?.nonce ?? 0) + 1 }))
-        setAnim((a) => ({ kind: 'none', nonce: a.nonce + 1 }))
+        setAnim((a) => ({ kind: 'none', nonce: a.nonce + 1, durMs: null }))
       } else {
         // Morphs that can't tween (start page/same page) degrade to fade-in
         if (kind === 'morph') kind = 'fade'
         setMorph(null)
-        setAnim((a) => ({ kind, nonce: a.nonce + 1 }))
+        setAnim((a) => ({ kind, nonce: a.nonce + 1, durMs: spec?.durationMs ?? null }))
       }
       setPos(nextPos)
     },
-    [order, pos],
+    [order, pos, playTransitionSound, stopTransitionSound],
   )
 
   const next = useCallback(() => {
@@ -397,6 +452,11 @@ export function SlideShowView({
             <div
               key={anim.nonce}
               className={`ss-frame${anim.kind !== 'none' ? ` ss-anim-${anim.kind}` : ''}`}
+              style={
+                anim.durMs != null
+                  ? ({ '--ss-dur': `${anim.durMs}ms` } as React.CSSProperties)
+                  : undefined
+              }
             >
               <div
                 style={{ position: 'relative', width: fitW, margin: '0 auto' }}

@@ -13,7 +13,10 @@ import type {
   GetLayoutsResult,
   GradientFillSpec,
   InsertKind,
+  SetTransitionOp,
   TransitionKind,
+  TransitionSoundKey,
+  TransitionSpec,
 } from '../../shared/ipc'
 import type { InkPenSettings, InkTool } from '../ink'
 import type { WordArtPreset } from '@chatoffice/ui'
@@ -442,6 +445,19 @@ export interface Props {
   transition: TransitionKind
   /** Set the transition effect; allSlides=true applies to all pages */
   onTransition: (kind: TransitionKind, allSlides: boolean) => void
+  /** Current page's full transition spec (速度/效果选项/声音 echo) */
+  transSpec: TransitionSpec | null
+  /** Transitions tab 速度: rewrite the current effect's duration (ms) */
+  onTransitionDuration: (ms: number) => void
+  /** Transitions tab 效果选项: rewrite the current effect's option field */
+  onTransitionOption: (opt: {
+    dir?: SetTransitionOp['dir']
+    split?: SetTransitionOp['split']
+    zoom?: SetTransitionOp['zoom']
+    fadeBlack?: boolean
+  }) => void
+  /** Transitions tab 声音: set/clear a preset (name=null clears) or toggle 循环播放 */
+  onTransitionSound: (sound: { name: TransitionSoundKey | null; loop?: boolean }) => void
   /** Current page's auto-advance time (ms; null = advance on click only) */
   advanceMs: number | null
   /** Set/clear the current page's auto-advance time (Transitions tab 换片方式) */

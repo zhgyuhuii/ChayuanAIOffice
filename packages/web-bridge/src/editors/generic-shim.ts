@@ -188,6 +188,14 @@ export function installSlidesShim(client: BridgeClient): void {
     async getTransition(): Promise<null> {
       return null
     },
+    /** Transitions-tab full echo — web has no transition writer yet (setTransition degrades) */
+    async getTransitionSpec(): Promise<{ kind: string; durationMs: null }> {
+      return { kind: 'none', durationMs: null }
+    },
+    /** Transitions tab 声音 playback — web has no transition writer (degrades to none) */
+    async getTransitionSound(): Promise<null> {
+      return null
+    },
     /** Transitions tab 换片方式 echo — web has no advTm writer yet (setAdvanceTimes degrades) */
     async getAdvanceTime(): Promise<number | null> {
       return null

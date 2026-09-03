@@ -43,15 +43,20 @@ import {
   setSlideNotes,
   setSlideSize,
   setSlideTransition,
+  setSlideTransitionSound,
+  getSlideTransitionSound,
   elementSpid,
   matchesElementRef,
   ANIM_EFFECTS,
   ANIM_TRIGGERS,
   TRANSITION_KINDS,
+  TRANSITION_SOUND_KEYS,
   type SectionInfo,
   type ThemeSpec,
   type SlideAnimation,
+  type SlideTransitionDir,
   type SlideTransitionKind,
+  type SlideTransitionOpts,
   type TextElement,
 } from '@chatoffice/pptx-engine'
 import {
@@ -427,6 +432,9 @@ register({
   },
 })
 
+const TRANSITION_DIR_ALL = ['l', 'r', 'u', 'd', 'lu', 'ld', 'ru', 'rd'] as const
+const TRANSITION_SPLITS = ['horzIn', 'horzOut', 'vertIn', 'vertOut'] as const
+
 register({
   name: 'setTransition',
   validate(op, ctx) {
@@ -437,11 +445,67 @@ register({
         `op "setTransition" needs "kind": one of [${TRANSITION_KINDS.join(', ')}].`,
       )
     }
+    if (
+      op.durationMs !== undefined &&
+      (typeof op.durationMs !== 'number' || !Number.isFinite(op.durationMs) || op.durationMs < 1)
+    ) {
+      throw new GuidedError('op "setTransition" needs "durationMs": positive milliseconds.')
+    }
+    if (op.dir !== undefined && !TRANSITION_DIR_ALL.includes(op.dir as 'l')) {
+      throw new GuidedError(
+        `op "setTransition" needs "dir": one of [${TRANSITION_DIR_ALL.join(', ')}].`,
+      )
+    }
+    if (op.split !== undefined && !TRANSITION_SPLITS.includes(op.split as 'horzIn')) {
+      throw new GuidedError(
+        `op "setTransition" needs "split": one of [${TRANSITION_SPLITS.join(', ')}].`,
+      )
+    }
+    if (op.zoom !== undefined && !['in', 'out'].includes(op.zoom as 'in')) {
+      throw new GuidedError('op "setTransition" needs "zoom": one of [in, out].')
+    }
+    if (op.sound !== undefined && op.sound !== null) {
+      if (typeof op.sound !== 'object' || !('name' in op.sound)) {
+        throw new GuidedError('op "setTransition" needs "sound": { name, loop? } or null.')
+      }
+      const name = (op.sound as { name: unknown }).name
+      if (name !== null && !TRANSITION_SOUND_KEYS.includes(name as 'chime')) {
+        throw new GuidedError(
+          `op "setTransition" needs "sound.name": one of [${TRANSITION_SOUND_KEYS.join(', ')}] or null.`,
+        )
+      }
+    }
   },
   apply(op, ctx): OpRecord {
     const { slide } = resolveSlide(ctx, op)
-    setSlideTransition(slide, op.kind as SlideTransitionKind)
-    return { op, after: op.kind }
+    const opts: SlideTransitionOpts = {
+      ...(op.durationMs !== undefined ? { durationMs: Math.round(op.durationMs as number) } : {}),
+      ...(op.dir !== undefined ? { dir: op.dir as SlideTransitionDir } : {}),
+      ...(op.split !== undefined ? { split: op.split as SlideTransitionOpts['split'] } : {}),
+      ...(op.zoom !== undefined ? { zoom: op.zoom as 'in' | 'out' } : {}),
+      ...(op.fadeBlack !== undefined ? { fadeBlack: op.fadeBlack === true } : {}),
+    }
+    setSlideTransition(slide, op.kind as SlideTransitionKind, opts)
+    if (op.sound !== undefined && op.sound !== null) {
+      const snd = op.sound as { name: string | null; loop?: boolean }
+      // Idempotent fast path: same preset+loop keeps the embedded part (undo/redo replays)
+      const cur = getSlideTransitionSound(slide)
+      if (cur?.name !== snd.name || cur?.loop !== (snd.loop === true)) {
+        if (
+          !setSlideTransitionSound(
+            ctx.opened,
+            slide,
+            snd.name as (typeof TRANSITION_SOUND_KEYS)[number] | null,
+            snd.loop === true,
+          )
+        ) {
+          throw new GuidedError(
+            `op "setTransition": unknown sound preset "${String(snd.name)}" (no changes made).`,
+          )
+        }
+      }
+    }
+    return { op, after: { kind: op.kind, ...opts, ...(op.sound ? { sound: op.sound } : {}) } }
   },
 })
 

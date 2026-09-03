@@ -77,6 +77,10 @@ import {
   getSlideComments,
   getSlideNotes,
   getSlideTransition,
+  getSlideTransitionSpec,
+  getSlideTransitionSound,
+  synthTransitionSound,
+  TRANSITION_SOUND_KEYS,
   getSlideAdvanceTime,
   elementSpid,
   getSlideAnimations,
@@ -3735,7 +3739,17 @@ export function registerSlidesIpc(): void {
       op.slideIndex === -1 ? slides.map((_, i) => i) : slides[op.slideIndex] ? [op.slideIndex] : []
     if (idxs.length === 0) return false
     const r = sessionTxn(session, {
-      ops: idxs.map((i) => ({ op: 'setTransition', target: { slide: i }, kind: op.kind })),
+      ops: idxs.map((i) => ({
+        op: 'setTransition',
+        target: { slide: i },
+        kind: op.kind,
+        ...(op.durationMs !== undefined ? { durationMs: op.durationMs } : {}),
+        ...(op.dir !== undefined ? { dir: op.dir } : {}),
+        ...(op.split !== undefined ? { split: op.split } : {}),
+        ...(op.zoom !== undefined ? { zoom: op.zoom } : {}),
+        ...(op.fadeBlack !== undefined ? { fadeBlack: op.fadeBlack } : {}),
+        ...(op.sound !== undefined && op.sound !== null ? { sound: op.sound } : {}),
+      })),
     })
     return r !== null
   })
@@ -3744,6 +3758,27 @@ export function registerSlidesIpc(): void {
     const session = sessions.get(e.sender.id)
     const slide = session?.opened.deck.slides[slideIndex]
     return slide ? getSlideTransition(slide) : 'none'
+  })
+
+  // Transitions-tab echo: effect + duration + 效果选项 + 声音 state
+  ipcMain.handle('slides:get-transition-spec', (e, slideIndex: number) => {
+    const session = sessions.get(e.sender.id)
+    const slide = session?.opened.deck.slides[slideIndex]
+    if (!slide) return { kind: 'none', durationMs: null }
+    return { ...getSlideTransitionSpec(slide), sound: getSlideTransitionSound(slide) }
+  })
+
+  // Transitions tab 声音 playback: synthesized wav bytes of the current page's preset
+  ipcMain.handle('slides:get-transition-sound', (e, slideIndex: number) => {
+    const session = sessions.get(e.sender.id)
+    const slide = session?.opened.deck.slides[slideIndex]
+    const snd = slide ? getSlideTransitionSound(slide) : null
+    if (!snd || !TRANSITION_SOUND_KEYS.includes(snd.name as 'chime')) return null
+    const buf = synthTransitionSound(snd.name as 'chime')
+    return {
+      name: snd.name,
+      bytes: buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength),
+    }
   })
 
   // Rehearsal timing save: batch-write each page's auto-advance time (<p:transition advTm>, ms)

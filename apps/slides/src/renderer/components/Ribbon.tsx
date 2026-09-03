@@ -11,7 +11,13 @@ import React, {
   useState,
   type ReactNode,
 } from 'react'
-import type { AnimEffectKind, GradientFillSpec, TransitionKind } from '../../shared/ipc'
+import type {
+  AnimEffectKind,
+  GradientFillSpec,
+  TransitionKind,
+  TransitionSoundKey,
+  TransitionSpec,
+} from '../../shared/ipc'
 import type { ChartStyleInfo } from '@chatoffice/pptx-render'
 import {
   useDismissablePopover,
@@ -85,6 +91,8 @@ import {
   IconShapes,
   IconShapeStyle,
   IconFillColor,
+  IconEffectOptions,
+  IconSound,
 } from './icons'
 // brand-supplied Review AI icon art (44px = 22px @2x), color baked in
 import iconSpelling from '../assets/icon-spelling.png'
@@ -731,6 +739,268 @@ function RbCheck({
   )
 }
 
+// ── Transitions tab: 效果选项 / 声音 (WPS 切换 tab 同款下拉) ─────────────
+
+type TransOptionPick = Parameters<NonNullable<Props['onTransitionOption']>>[0]
+
+/** 效果选项 entries per kind (value encodes the option field to rewrite). */
+const TRANS_EFFECT_OPTIONS: Partial<
+  Record<TransitionKind, ReadonlyArray<{ value: string; labelKey: StringKey }>>
+> = {
+  push: [
+    { value: 'dir:u', labelKey: 'ribbonTransDirFromBottom' },
+    { value: 'dir:d', labelKey: 'ribbonTransDirFromTop' },
+    { value: 'dir:l', labelKey: 'ribbonTransDirFromLeft' },
+    { value: 'dir:r', labelKey: 'ribbonTransDirFromRight' },
+  ],
+  wipe: [
+    { value: 'dir:u', labelKey: 'ribbonTransDirFromBottom' },
+    { value: 'dir:d', labelKey: 'ribbonTransDirFromTop' },
+    { value: 'dir:l', labelKey: 'ribbonTransDirFromLeft' },
+    { value: 'dir:r', labelKey: 'ribbonTransDirFromRight' },
+  ],
+  cover: [
+    { value: 'dir:l', labelKey: 'ribbonTransDirFromLeft' },
+    { value: 'dir:r', labelKey: 'ribbonTransDirFromRight' },
+    { value: 'dir:u', labelKey: 'ribbonTransDirFromBottom' },
+    { value: 'dir:d', labelKey: 'ribbonTransDirFromTop' },
+    { value: 'dir:lu', labelKey: 'ribbonTransDirFromTopLeft' },
+    { value: 'dir:ld', labelKey: 'ribbonTransDirFromBottomLeft' },
+    { value: 'dir:ru', labelKey: 'ribbonTransDirFromTopRight' },
+    { value: 'dir:rd', labelKey: 'ribbonTransDirFromBottomRight' },
+  ],
+  pull: [
+    { value: 'dir:l', labelKey: 'ribbonTransDirFromLeft' },
+    { value: 'dir:r', labelKey: 'ribbonTransDirFromRight' },
+    { value: 'dir:u', labelKey: 'ribbonTransDirFromBottom' },
+    { value: 'dir:d', labelKey: 'ribbonTransDirFromTop' },
+    { value: 'dir:lu', labelKey: 'ribbonTransDirFromTopLeft' },
+    { value: 'dir:ld', labelKey: 'ribbonTransDirFromBottomLeft' },
+    { value: 'dir:ru', labelKey: 'ribbonTransDirFromTopRight' },
+    { value: 'dir:rd', labelKey: 'ribbonTransDirFromBottomRight' },
+  ],
+  split: [
+    { value: 'split:horzOut', labelKey: 'ribbonTransSplitHorzOut' },
+    { value: 'split:horzIn', labelKey: 'ribbonTransSplitHorzIn' },
+    { value: 'split:vertOut', labelKey: 'ribbonTransSplitVertOut' },
+    { value: 'split:vertIn', labelKey: 'ribbonTransSplitVertIn' },
+  ],
+  zoom: [
+    { value: 'zoom:in', labelKey: 'ribbonTransZoomIn' },
+    { value: 'zoom:out', labelKey: 'ribbonTransZoomOut' },
+  ],
+  fade: [
+    { value: 'fade:plain', labelKey: 'ribbonTransFadeSmooth' },
+    { value: 'fade:black', labelKey: 'ribbonTransFadeBlack' },
+  ],
+}
+
+/** Kernel defaults (must mirror TRANSITION_INNER in the engine) for the ✓ echo. */
+function transOptionValueOf(kind: TransitionKind, spec: TransitionSpec | null): string {
+  if (spec) {
+    if (spec.dir) return `dir:${spec.dir}`
+    if (spec.split) return `split:${spec.split}`
+    if (spec.zoom) return `zoom:${spec.zoom}`
+    if (kind === 'fade') return spec.fadeBlack ? 'fade:black' : 'fade:plain'
+  }
+  switch (kind) {
+    case 'push':
+      return 'dir:u'
+    case 'wipe':
+      return 'dir:l'
+    case 'cover':
+    case 'pull':
+      return 'dir:l'
+    case 'split':
+      return 'split:horzOut'
+    case 'zoom':
+      return 'zoom:in'
+    case 'fade':
+      return 'fade:plain'
+    default:
+      return ''
+  }
+}
+
+function parseTransOption(value: string): TransOptionPick {
+  const [field, v] = value.split(':')
+  if (field === 'dir') return { dir: v as TransOptionPick['dir'] }
+  if (field === 'split') return { split: v as TransOptionPick['split'] }
+  if (field === 'zoom') return { zoom: v as 'in' | 'out' }
+  return { fadeBlack: v === 'black' }
+}
+
+/** WPS 效果选项: per-effect direction/variant menu; a plain disabled button when the effect has none. */
+function TransEffectOptions({
+  kind,
+  spec,
+  disabled,
+  onPick,
+}: {
+  kind: TransitionKind
+  spec: TransitionSpec | null
+  disabled: boolean
+  onPick: (opt: TransOptionPick) => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  const entries = TRANS_EFFECT_OPTIONS[kind]
+  if (!entries) {
+    return (
+      <button className="rb-big" disabled data-tip={t('ribbonTransEffectOptionsNoneTip')}>
+        <span className="rb-big-icon">
+          <IconEffectOptions size={BIG} />
+        </span>
+        <span>{t('ribbonTransEffectOptions')}</span>
+      </button>
+    )
+  }
+  const current = transOptionValueOf(kind, spec)
+  return (
+    <div className="rb-drop-wrap" ref={wrapRef}>
+      <button
+        className={`rb-big ${open ? 'active' : ''}`}
+        disabled={disabled}
+        data-tip={t('ribbonTransEffectOptionsTip')}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="rb-big-icon">
+          <IconEffectOptions size={BIG} />
+          <RbCaret />
+        </span>
+        <span>{t('ribbonTransEffectOptions')}</span>
+      </button>
+      {open && (
+        <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+          {entries.map((o) => (
+            <button
+              key={o.value}
+              className={o.value === current ? 'on' : ''}
+              onClick={() => {
+                setOpen(false)
+                onPick(parseTransOption(o.value))
+              }}
+            >
+              <span className="rb-menu-check" aria-hidden="true">
+                {o.value === current ? '✓' : ''}
+              </span>
+              {t(o.labelKey)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** 声音 preset labels (must mirror the engine's TRANSITION_SOUND_KEYS order). */
+const TRANS_SOUND_PRESETS: ReadonlyArray<{ key: TransitionSoundKey; labelKey: StringKey }> = [
+  { key: 'explosion', labelKey: 'ribbonTransSoundExplosion' },
+  { key: 'typewriter', labelKey: 'ribbonTransSoundTypewriter' },
+  { key: 'chime', labelKey: 'ribbonTransSoundChime' },
+  { key: 'applause', labelKey: 'ribbonTransSoundApplause' },
+  { key: 'brake', labelKey: 'ribbonTransSoundBrake' },
+  { key: 'whoosh', labelKey: 'ribbonTransSoundWhoosh' },
+  { key: 'coffee', labelKey: 'ribbonTransSoundCoffee' },
+  { key: 'push', labelKey: 'ribbonTransSoundPush' },
+  { key: 'hammer', labelKey: 'ribbonTransSoundHammer' },
+  { key: 'voltage', labelKey: 'ribbonTransSoundVoltage' },
+]
+
+/** WPS 声音: 无声音 + preset rows (✓ echo) + 循环播放 toggle at the bottom. */
+function TransSoundSelect({
+  value,
+  disabled,
+  onPick,
+  onToggleLoop,
+}: {
+  value: { name: string; loop: boolean } | null
+  disabled: boolean
+  onPick: (name: TransitionSoundKey | null) => void
+  onToggleLoop: () => void
+}) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  const currentPreset = TRANS_SOUND_PRESETS.find((p) => p.key === value?.name)
+  const currentLabel = currentPreset ? t(currentPreset.labelKey) : t('ribbonTransSoundNone')
+  return (
+    <div className="rb-drop-wrap rb-sound-select" ref={wrapRef}>
+      <button
+        type="button"
+        className="rb-combo"
+        disabled={disabled}
+        data-tip={t('ribbonTransSoundTip')}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="rb-combo-icon" aria-hidden="true">
+          <IconSound size={14} />
+        </span>
+        <span className="rb-combo-value">{currentLabel}</span>
+        <RbCaret />
+      </button>
+      {open && (
+        <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+          <button
+            className={!value ? 'on' : ''}
+            onClick={() => {
+              setOpen(false)
+              onPick(null)
+            }}
+          >
+            <span className="rb-menu-check" aria-hidden="true">
+              {!value ? '✓' : ''}
+            </span>
+            {t('ribbonTransSoundNone')}
+          </button>
+          {TRANS_SOUND_PRESETS.map((p) => (
+            <button
+              key={p.key}
+              className={value?.name === p.key ? 'on' : ''}
+              onClick={() => {
+                setOpen(false)
+                onPick(p.key)
+              }}
+            >
+              <span className="rb-menu-check" aria-hidden="true">
+                {value?.name === p.key ? '✓' : ''}
+              </span>
+              {t(p.labelKey)}
+            </button>
+          ))}
+          <div className="rb-menu-sep" />
+          <button
+            className={`rb-check ${value?.loop ? 'on' : ''}`}
+            disabled={!value}
+            onClick={onToggleLoop}
+          >
+            <span className="rb-check-box" aria-hidden="true">
+              {value?.loop && (
+                <svg width="12" height="12" viewBox="0 0 24 24">
+                  <path
+                    d="M5 12.4 10 17.4l9-10.8"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </span>
+            {t('ribbonTransSoundLoop')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /** Bundled seamless texture-fill presets (tiled at natural size when applied). */
 const FILL_TEXTURES: Array<{ url: string; tipKey: StringKey }> = [
   { url: texPaper, tipKey: 'ribbonTexturePaper' },
@@ -1146,6 +1416,10 @@ export function Ribbon({
   onInsertTable,
   transition,
   onTransition,
+  transSpec,
+  onTransitionDuration,
+  onTransitionOption,
+  onTransitionSound,
   advanceMs,
   onAdvanceTime,
   selectedAnimEffect,
@@ -2124,11 +2398,71 @@ export function Ribbon({
                   </button>
                 ))}
               </div>
+              {/* WPS 效果选项：当前效果的方向/变体菜单（无选项的效果禁用） */}
+              <TransEffectOptions
+                kind={transition}
+                spec={transSpec}
+                disabled={!hasDoc || transition === 'none'}
+                onPick={onTransitionOption}
+              />
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupTiming')}>
               {/* 计时栅格与动画 tab 同款（标签｜控件｜单位 三列） */}
               <div className="rb-timing-grid">
+                <span className="rb-timing-label">{t('ribbonTransDuration')}</span>
+                <input
+                  key={`trdur-${transSpec?.durationMs ?? ''}`}
+                  type="number"
+                  min={0.05}
+                  max={20}
+                  step={0.05}
+                  disabled={!hasDoc}
+                  defaultValue={
+                    transSpec?.durationMs != null
+                      ? (transSpec.durationMs / 1000).toFixed(2)
+                      : '0.50'
+                  }
+                  aria-label={t('ribbonTransDuration')}
+                  title={t('ribbonTransDurationTip')}
+                  onBlur={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isFinite(v) && v >= 0.05 && v <= 20) {
+                      const ms = Math.round(v * 1000)
+                      if (ms !== transSpec?.durationMs) onTransitionDuration(ms)
+                    } else {
+                      e.target.value = ((transSpec?.durationMs ?? 500) / 1000).toFixed(2)
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                  }}
+                />
+                <span>
+                  <span className="rb-timing-unit">{t('ribbonSecondsUnit')}</span>
+                </span>
+                <span className="rb-timing-label">{t('ribbonTransSound')}</span>
+                <TransSoundSelect
+                  value={transSpec?.sound ?? null}
+                  disabled={!hasDoc}
+                  onPick={(name) => onTransitionSound({ name })}
+                  onToggleLoop={() =>
+                    onTransitionSound({
+                      name: (transSpec?.sound?.name as TransitionSoundKey) ?? null,
+                      loop: !(transSpec?.sound?.loop === true),
+                    })
+                  }
+                />
+                <span className="rb-timing-unit" aria-hidden="true" />
+                <RbCheck
+                  label={t('ribbonAdvanceOnClick')}
+                  on
+                  disabled
+                  title={t('ribbonAdvanceOnClickTip')}
+                  onClick={() => {}}
+                />
+                <span className="rb-timing-unit" aria-hidden="true" />
+                <span className="rb-timing-unit" aria-hidden="true" />
                 <RbCheck
                   label={t('ribbonAutoAdvance')}
                   on={advanceMs !== null}

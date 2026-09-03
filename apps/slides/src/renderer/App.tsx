@@ -27,8 +27,10 @@ import type {
   PasteSlideMode,
   SectionInfo,
   SetEffectsPatch,
+  SetTransitionOp,
   SlideComment,
   TransitionKind,
+  TransitionSpec,
 } from '../shared/ipc'
 import { SlideCanvas, selectionChromeColor } from './SlideCanvas'
 import { tableCellOverlayBox } from './table-hit'
@@ -1549,9 +1551,18 @@ export function App() {
       .getAdvanceTime(current)
       .then((ms) => setAdvanceMs(typeof ms === 'number' ? ms : null))
   }, [hasDoc, current, path])
+  /** Transitions-tab full spec echo (速度/效果选项/声音 state) */
+  const [transSpec, setTransSpec] = useState<TransitionSpec | null>(null)
   useEffect(() => {
-    if (!hasDoc) return
-    void window.slidesApi.getTransition(current).then(setTransition)
+    if (!hasDoc) {
+      setTransSpec(null)
+      return
+    }
+    // web shim's safe-empty is handled per field
+    void window.slidesApi.getTransitionSpec(current).then((spec) => {
+      setTransition(spec?.kind ?? 'none')
+      setTransSpec(spec ?? null)
+    })
   }, [hasDoc, current, path])
 
   /** Transitions tab 换片方式: set/clear this page's auto-advance (<p:transition advTm>) */
@@ -1569,6 +1580,36 @@ export function App() {
     (kind: TransitionKind, allSlides: boolean) =>
       animationActions.applyTransition(ctxRef.current, kind, allSlides),
     [],
+  )
+
+  /** Transitions tab 速度 (p14:dur 秒): rewrite the current effect with the chosen duration */
+  const applyTransitionDuration = useCallback(
+    (ms: number) => {
+      setTransSpec((s) => ({ ...(s ?? { kind: transition, durationMs: null }), durationMs: ms }))
+      void animationActions.applyTransition(ctxRef.current, transition, false, { durationMs: ms })
+    },
+    [transition],
+  )
+
+  /** Transitions tab 效果选项: rewrite the current effect's option field (dir/split/zoom/fadeBlack) */
+  const applyTransitionOption = useCallback(
+    (opt: Pick<SetTransitionOp, 'dir' | 'split' | 'zoom' | 'fadeBlack'>) => {
+      setTransSpec((s) => ({ ...(s ?? { kind: transition, durationMs: null }), ...opt }))
+      void animationActions.applyTransition(ctxRef.current, transition, false, opt)
+    },
+    [transition],
+  )
+
+  /** Transitions tab 声音: set/clear the preset (name=null clears) or toggle 循环播放 */
+  const applyTransitionSound = useCallback(
+    (sound: NonNullable<SetTransitionOp['sound']>) => {
+      setTransSpec((s) => ({
+        ...(s ?? { kind: transition, durationMs: null }),
+        sound: sound.name == null ? null : { name: sound.name, loop: sound.loop === true },
+      }))
+      void animationActions.applyTransition(ctxRef.current, transition, false, { sound })
+    },
+    [transition],
   )
 
   // ── Transitions tab: one-shot canvas preview when an effect is clicked (PPT-style) ──
@@ -3021,6 +3062,10 @@ export function App() {
               void applyTransition(kind, all)
               if (!all) previewTransitionOnCanvas(kind)
             }}
+            transSpec={transSpec}
+            onTransitionDuration={applyTransitionDuration}
+            onTransitionOption={applyTransitionOption}
+            onTransitionSound={applyTransitionSound}
             advanceMs={advanceMs}
             onAdvanceTime={applyAdvanceTime}
             selectedAnimEffect={selectedAnimEffect}

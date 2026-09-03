@@ -4231,6 +4231,58 @@ body.vib .slide-list {
   background: var(--border);
 }
 
+/* 效果选项/声音 menu rows: ✓ echo column + the selected row's tint */
+.rb-menu-check {
+  display: inline-block;
+  width: 16px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.rb-menu button.on {
+  background: var(--slides-menu-on, rgba(46, 89, 175, 0.1));
+  font-weight: 500;
+}
+
+/* 声音 combobox trigger (Transitions tab 计时区, WPS 声音下拉) */
+.rb-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-sizing: border-box;
+  height: 24px;
+  min-width: 96px;
+  padding: 0 6px 0 8px;
+  border: 1px solid var(--slides-ctl-border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.rb-combo:hover:not(:disabled) {
+  border-color: var(--slides-ctl-border-hover, var(--border-strong));
+}
+
+.rb-combo:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.rb-combo-icon {
+  display: inline-flex;
+  color: var(--text-2, var(--text));
+}
+
+.rb-combo-value {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
 .rb-drop {
   /* Fixed + anchored to the parent .rb-drop-wrap (same geometry as the old
      absolute top:100%/left:0), so the panel escapes the ribbon-body scroll
@@ -6234,23 +6286,23 @@ body.show-curtain::after {
 
 /* Page transition animations: CSS approximations of the Transitions-tab PowerPoint effects (applied to the entering page) */
 .slideshow .ss-anim-fade {
-  animation: ss-fade 0.5s ease both;
+  animation: ss-fade var(--ss-dur, 0.5s) ease both;
 }
 
 .slideshow .ss-anim-push {
-  animation: ss-push 0.5s ease-out both;
+  animation: ss-push var(--ss-dur, 0.5s) ease-out both;
 }
 
 .slideshow .ss-anim-wipe {
-  animation: ss-wipe 0.6s ease-out both;
+  animation: ss-wipe var(--ss-dur, 0.6s) ease-out both;
 }
 
 .slideshow .ss-anim-split {
-  animation: ss-split 0.55s ease-out both;
+  animation: ss-split var(--ss-dur, 0.55s) ease-out both;
 }
 
 .slideshow .ss-anim-circle {
-  animation: ss-circle 0.6s ease-out both;
+  animation: ss-circle var(--ss-dur, 0.6s) ease-out both;
 }
 
 @keyframes ss-fade {
@@ -8548,16 +8600,16 @@ body.show-curtain::after {
 
 /* CSS approximations of the newly added transition effects */
 .slideshow .ss-anim-cover {
-  animation: ss-cover 0.5s ease both;
+  animation: ss-cover var(--ss-dur, 0.5s) ease both;
 }
 .slideshow .ss-anim-pull {
-  animation: ss-pull 0.5s ease both;
+  animation: ss-pull var(--ss-dur, 0.5s) ease both;
 }
 .slideshow .ss-anim-dissolve {
-  animation: ss-fade 0.6s steps(12) both;
+  animation: ss-fade var(--ss-dur, 0.6s) steps(12) both;
 }
 .slideshow .ss-anim-zoom {
-  animation: ss-zoomin 0.5s ease both;
+  animation: ss-zoomin var(--ss-dur, 0.5s) ease both;
 }
 @keyframes ss-cover {
   from {
