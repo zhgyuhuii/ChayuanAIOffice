@@ -88,6 +88,15 @@ const LS = {
 const themeListeners = new Set<(t: string) => void>()
 const langListeners = new Set<(l: string) => void>()
 
+// home chat stream fan-out (see aiStream in installShellShims)
+const CHAT_SESSIONS_KEY = 'chatoffice.home-chat-sessions'
+const aiListeners = new Set<(chunk: unknown) => void>()
+const aiControllers = new Map<string, AbortController>()
+
+function dispatchAi(chunk: unknown): void {
+  for (const listener of [...aiListeners]) listener(chunk)
+}
+
 function emitTheme(): void {
   const t = localStorage.getItem(LS.theme) ?? 'system'
   for (const l of [...themeListeners]) l(t)
@@ -303,6 +312,77 @@ export function installShellShims(): void {
           body: JSON.stringify(target),
         })
       ).json() as unknown,
+    // home chat streams over the BFF's /ai/stream SSE endpoint (same wire
+    // shape the desktop main process consumes); chunks are fanned out to the
+    // onAiStream listeners so the shared agent transport needs no changes
+    aiStream: async (request: { requestId: string }) => {
+      const controller = new AbortController()
+      aiControllers.set(request.requestId, controller)
+      try {
+        const response = await fetch('/ai/stream', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(request),
+          signal: controller.signal,
+        })
+        if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`)
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        for (;;) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          const frames = buffer.split('\n\n')
+          buffer = frames.pop() ?? ''
+          for (const frame of frames) {
+            const line = frame.split('\n').find((l) => l.startsWith('data: '))
+            if (!line) continue
+            try {
+              dispatchAi(JSON.parse(line.slice(6)))
+            } catch {
+              /* skip malformed frames */
+            }
+          }
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          dispatchAi({
+            requestId: request.requestId,
+            type: 'error',
+            error: err instanceof Error ? err.message : String(err),
+          })
+        }
+      } finally {
+        aiControllers.delete(request.requestId)
+      }
+    },
+    aiStreamCancel: async (requestId: string) => {
+      aiControllers.get(requestId)?.abort()
+      await fetch('/ai/stream-cancel', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ requestId }),
+      }).catch(() => undefined)
+    },
+    onAiStream: (handler: (chunk: unknown) => void) => {
+      aiListeners.add(handler)
+      return () => aiListeners.delete(handler)
+    },
+    // home chat sessions persist in localStorage (the desktop stores them in
+    // userData/home-chat-sessions.json)
+    chatSessionsLoad: async () => {
+      try {
+        const raw = localStorage.getItem(CHAT_SESSIONS_KEY)
+        const parsed: unknown = raw ? JSON.parse(raw) : []
+        return Array.isArray(parsed) ? parsed : []
+      } catch {
+        return []
+      }
+    },
+    chatSessionsSave: async (sessions: unknown) => {
+      localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions))
+    },
     gskStatus: async () => ({ loggedIn: false }),
     gskLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
