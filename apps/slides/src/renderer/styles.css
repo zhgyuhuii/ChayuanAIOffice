@@ -9035,88 +9035,393 @@ body.show-curtain::after {
 /* ── Directional playback (A1-6): 效果选项 dir drives the show animation.
    Modifier .ss-dir-<dir> swaps the keyframes; defaults match each kernel's
    base form above. ── */
-@keyframes ss-push-d { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-@keyframes ss-push-l { from { transform: translateX(100%); } to { transform: translateX(0); } }
-@keyframes ss-push-r { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes ss-push-d {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes ss-push-l {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes ss-push-r {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
 
-@keyframes ss-wipe-u { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-wipe-d { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-wipe-l { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-wipe-r { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes ss-wipe-u {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-wipe-d {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-wipe-l {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-wipe-r {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
 
 /* cover: dir names the edge the NEW slide comes FROM (dir=l → enters from the right, moving left) */
-@keyframes ss-cover-l { from { transform: translateX(100%); } to { transform: translateX(0); } }
-@keyframes ss-cover-r { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-@keyframes ss-cover-u { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@keyframes ss-cover-d { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-@keyframes ss-cover-lu { from { transform: translate(100%, 100%); } to { transform: translate(0, 0); } }
-@keyframes ss-cover-ld { from { transform: translate(100%, -100%); } to { transform: translate(0, 0); } }
-@keyframes ss-cover-ru { from { transform: translate(-100%, 100%); } to { transform: translate(0, 0); } }
-@keyframes ss-cover-rd { from { transform: translate(-100%, -100%); } to { transform: translate(0, 0); } }
+@keyframes ss-cover-l {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes ss-cover-r {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes ss-cover-u {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes ss-cover-d {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes ss-cover-lu {
+  from {
+    transform: translate(100%, 100%);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@keyframes ss-cover-ld {
+  from {
+    transform: translate(100%, -100%);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@keyframes ss-cover-ru {
+  from {
+    transform: translate(-100%, 100%);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@keyframes ss-cover-rd {
+  from {
+    transform: translate(-100%, -100%);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
 
 /* pull: dir names the edge the OLD slide exits through; the reveal grows from the opposite side */
-@keyframes ss-pull-l { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-r { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-u { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-d { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-lu { from { clip-path: inset(100% 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-ld { from { clip-path: inset(0 100% 100% 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-ru { from { clip-path: inset(100% 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
-@keyframes ss-pull-rd { from { clip-path: inset(0 0 100% 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes ss-pull-l {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-r {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-u {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-d {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-lu {
+  from {
+    clip-path: inset(100% 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-ld {
+  from {
+    clip-path: inset(0 100% 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-ru {
+  from {
+    clip-path: inset(100% 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ss-pull-rd {
+  from {
+    clip-path: inset(0 0 100% 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
 
 /* blinds/checker/randomBar: l/r grow vertical bands, u/d horizontal (default u = horizontal) */
 @keyframes tr-blinds-v {
-  from { -webkit-mask-image: repeating-linear-gradient(to right, #000 0 var(--tr-mask-bands), transparent var(--tr-mask-bands) 25%); }
-  to { -webkit-mask-image: repeating-linear-gradient(to right, #000 0 100%, transparent 0); }
+  from {
+    -webkit-mask-image: repeating-linear-gradient(
+      to right,
+      #000 0 var(--tr-mask-bands),
+      transparent var(--tr-mask-bands) 25%
+    );
+  }
+  to {
+    -webkit-mask-image: repeating-linear-gradient(to right, #000 0 100%, transparent 0);
+  }
 }
 @keyframes tr-randombar-h {
-  from { -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 var(--tr-mask-bands), transparent var(--tr-mask-bands) 25%); }
-  to { -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 100%, transparent 0); }
+  from {
+    -webkit-mask-image: repeating-linear-gradient(
+      to bottom,
+      #000 0 var(--tr-mask-bands),
+      transparent var(--tr-mask-bands) 25%
+    );
+  }
+  to {
+    -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 100%, transparent 0);
+  }
 }
 
-.ss-anim-push.ss-dir-d { animation-name: ss-push-d; }
-.ss-anim-push.ss-dir-l { animation-name: ss-push-l; }
-.ss-anim-push.ss-dir-r { animation-name: ss-push-r; }
-.ss-anim-push.ss-dir-u { animation-name: ss-push; }
+.ss-anim-push.ss-dir-d {
+  animation-name: ss-push-d;
+}
+.ss-anim-push.ss-dir-l {
+  animation-name: ss-push-l;
+}
+.ss-anim-push.ss-dir-r {
+  animation-name: ss-push-r;
+}
+.ss-anim-push.ss-dir-u {
+  animation-name: ss-push;
+}
 
-.ss-anim-wipe.ss-dir-u { animation-name: ss-wipe-u; }
-.ss-anim-wipe.ss-dir-d { animation-name: ss-wipe-d; }
-.ss-anim-wipe.ss-dir-l { animation-name: ss-wipe-l; }
-.ss-anim-wipe.ss-dir-r { animation-name: ss-wipe-r; }
+.ss-anim-wipe.ss-dir-u {
+  animation-name: ss-wipe-u;
+}
+.ss-anim-wipe.ss-dir-d {
+  animation-name: ss-wipe-d;
+}
+.ss-anim-wipe.ss-dir-l {
+  animation-name: ss-wipe-l;
+}
+.ss-anim-wipe.ss-dir-r {
+  animation-name: ss-wipe-r;
+}
 
-.ss-anim-cover.ss-dir-l { animation-name: ss-cover-l; }
-.ss-anim-cover.ss-dir-r { animation-name: ss-cover-r; }
-.ss-anim-cover.ss-dir-u { animation-name: ss-cover-u; }
-.ss-anim-cover.ss-dir-d { animation-name: ss-cover-d; }
-.ss-anim-cover.ss-dir-lu { animation-name: ss-cover-lu; }
-.ss-anim-cover.ss-dir-ld { animation-name: ss-cover-ld; }
-.ss-anim-cover.ss-dir-ru { animation-name: ss-cover-ru; }
-.ss-anim-cover.ss-dir-rd { animation-name: ss-cover-rd; }
+.ss-anim-cover.ss-dir-l {
+  animation-name: ss-cover-l;
+}
+.ss-anim-cover.ss-dir-r {
+  animation-name: ss-cover-r;
+}
+.ss-anim-cover.ss-dir-u {
+  animation-name: ss-cover-u;
+}
+.ss-anim-cover.ss-dir-d {
+  animation-name: ss-cover-d;
+}
+.ss-anim-cover.ss-dir-lu {
+  animation-name: ss-cover-lu;
+}
+.ss-anim-cover.ss-dir-ld {
+  animation-name: ss-cover-ld;
+}
+.ss-anim-cover.ss-dir-ru {
+  animation-name: ss-cover-ru;
+}
+.ss-anim-cover.ss-dir-rd {
+  animation-name: ss-cover-rd;
+}
 
-.ss-anim-pull.ss-dir-l { animation-name: ss-pull-l; }
-.ss-anim-pull.ss-dir-r { animation-name: ss-pull-r; }
-.ss-anim-pull.ss-dir-u { animation-name: ss-pull-u; }
-.ss-anim-pull.ss-dir-d { animation-name: ss-pull-d; }
-.ss-anim-pull.ss-dir-lu { animation-name: ss-pull-lu; }
-.ss-anim-pull.ss-dir-ld { animation-name: ss-pull-ld; }
-.ss-anim-pull.ss-dir-ru { animation-name: ss-pull-ru; }
-.ss-anim-pull.ss-dir-rd { animation-name: ss-pull-rd; }
+.ss-anim-pull.ss-dir-l {
+  animation-name: ss-pull-l;
+}
+.ss-anim-pull.ss-dir-r {
+  animation-name: ss-pull-r;
+}
+.ss-anim-pull.ss-dir-u {
+  animation-name: ss-pull-u;
+}
+.ss-anim-pull.ss-dir-d {
+  animation-name: ss-pull-d;
+}
+.ss-anim-pull.ss-dir-lu {
+  animation-name: ss-pull-lu;
+}
+.ss-anim-pull.ss-dir-ld {
+  animation-name: ss-pull-ld;
+}
+.ss-anim-pull.ss-dir-ru {
+  animation-name: ss-pull-ru;
+}
+.ss-anim-pull.ss-dir-rd {
+  animation-name: ss-pull-rd;
+}
 
 .ss-anim-blinds.ss-dir-l,
-.ss-anim-blinds.ss-dir-r { animation-name: tr-blinds-v; }
+.ss-anim-blinds.ss-dir-r {
+  animation-name: tr-blinds-v;
+}
 .ss-anim-randomBar.ss-dir-l,
-.ss-anim-randomBar.ss-dir-r { animation-name: tr-randombar; }
+.ss-anim-randomBar.ss-dir-r {
+  animation-name: tr-randombar;
+}
 .ss-anim-randomBar.ss-dir-u,
-.ss-anim-randomBar.ss-dir-d { animation-name: tr-randombar-h; }
+.ss-anim-randomBar.ss-dir-d {
+  animation-name: tr-randombar-h;
+}
 
 /* strips: diagonal grow from the named corner (approximation of the band sweep) */
-@keyframes tr-strips-ld { from { transform: scale(0); transform-origin: 0 100%; } to { transform: scale(1); transform-origin: 0 100%; } }
-@keyframes tr-strips-rd { from { transform: scale(0); transform-origin: 100% 100%; } to { transform: scale(1); transform-origin: 100% 100%; } }
-@keyframes tr-strips-lu { from { transform: scale(0); transform-origin: 0 0; } to { transform: scale(1); transform-origin: 0 0; } }
-@keyframes tr-strips-ru { from { transform: scale(0); transform-origin: 100% 0; } to { transform: scale(1); transform-origin: 100% 0; } }
-.ss-anim-strips.ss-dir-ld { animation-name: tr-strips-ld; }
-.ss-anim-strips.ss-dir-rd { animation-name: tr-strips-rd; }
+@keyframes tr-strips-ld {
+  from {
+    transform: scale(0);
+    transform-origin: 0 100%;
+  }
+  to {
+    transform: scale(1);
+    transform-origin: 0 100%;
+  }
+}
+@keyframes tr-strips-rd {
+  from {
+    transform: scale(0);
+    transform-origin: 100% 100%;
+  }
+  to {
+    transform: scale(1);
+    transform-origin: 100% 100%;
+  }
+}
+@keyframes tr-strips-lu {
+  from {
+    transform: scale(0);
+    transform-origin: 0 0;
+  }
+  to {
+    transform: scale(1);
+    transform-origin: 0 0;
+  }
+}
+@keyframes tr-strips-ru {
+  from {
+    transform: scale(0);
+    transform-origin: 100% 0;
+  }
+  to {
+    transform: scale(1);
+    transform-origin: 100% 0;
+  }
+}
+.ss-anim-strips.ss-dir-ld {
+  animation-name: tr-strips-ld;
+}
+.ss-anim-strips.ss-dir-rd {
+  animation-name: tr-strips-rd;
+}
 .ss-anim-strips.ss-dir-lu,
-.ss-anim-strips.ss-dir-l { animation-name: tr-strips-lu; }
+.ss-anim-strips.ss-dir-l {
+  animation-name: tr-strips-lu;
+}
 .ss-anim-strips.ss-dir-ru,
-.ss-anim-strips.ss-dir-r { animation-name: tr-strips-ru; }
+.ss-anim-strips.ss-dir-r {
+  animation-name: tr-strips-ru;
+}
+
+/* 音量 row in the transition-sound menu (playback gain picker) */
+.rb-sound-volume {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.rb-sound-volume-label {
+  color: var(--text-2, var(--text));
+  margin-right: 4px;
+}
+
+.rb-sound-volume button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  border-radius: 4px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.rb-sound-volume button.on {
+  background: var(--slides-menu-on, rgba(46, 89, 175, 0.14));
+  font-weight: 600;
+}

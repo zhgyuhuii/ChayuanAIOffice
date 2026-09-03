@@ -24,6 +24,13 @@ export const TRANSITION_SOUND_KEYS = [
   'push',
   'hammer',
   'voltage',
+  // second batch (WPS 声音下拉 further entries)
+  'laser',
+  'click',
+  'drive',
+  'wind',
+  'arrow',
+  'camera',
 ] as const
 export type TransitionSoundKey = (typeof TRANSITION_SOUND_KEYS)[number]
 
@@ -228,6 +235,97 @@ function synthVoltage(): Float32Array {
   return lowpass(out, 0.9)
 }
 
+function synthLaser(): Float32Array {
+  const n = Math.floor(SR * 0.35)
+  const out = new Float32Array(n)
+  for (let i = 0; i < n; i++) {
+    const t = i / SR
+    const f = 1400 * Math.exp(-7 * t) + 90
+    const ph = 2 * Math.PI * ((1400 * (1 - Math.exp(-7 * t))) / 7 + 90 * t)
+    const saw = 2 * (ph / (2 * Math.PI) - Math.floor(ph / (2 * Math.PI) + 0.5))
+    out[i] = saw * Math.exp(-3.5 * t) * 0.55
+    if (f < 120) break
+  }
+  return out
+}
+
+function synthClick(): Float32Array {
+  const n = Math.floor(SR * 0.3)
+  const out = new Float32Array(n)
+  const rnd = mulberry32(1122)
+  for (let k = 0; k < 3; k++) {
+    const i0 = Math.floor((0.02 + k * 0.09) * SR)
+    for (let i = i0; i < Math.min(n, i0 + Math.floor(0.012 * SR)); i++) {
+      const t = (i - i0) / SR
+      out[i]! += (rnd() * 2 - 1) * Math.exp(-450 * t) * 0.9
+    }
+  }
+  return lowpass(out, 0.95)
+}
+
+function synthDrive(): Float32Array {
+  const n = Math.floor(SR * 0.9)
+  const out = new Float32Array(n)
+  const rnd = mulberry32(2333)
+  for (let i = 0; i < n; i++) {
+    const t = i / SR
+    const f = 55 + 165 * (t / 0.9)
+    out[i] =
+      Math.sin(2 * Math.PI * f * t) * 0.5 +
+      Math.sin(2 * Math.PI * f * 2 * t) * 0.2 +
+      (rnd() * 2 - 1) * 0.1 * Math.sin((Math.PI * t) / 0.9)
+    out[i]! *= Math.sin(Math.PI * Math.min(1, t / 0.15)) * 0.9
+  }
+  return lowpass(out, 0.7)
+}
+
+function synthWind(): Float32Array {
+  const n = Math.floor(SR * 1.2)
+  const rnd = mulberry32(3444)
+  const out = new Float32Array(n)
+  let y = 0
+  for (let i = 0; i < n; i++) {
+    const t = i / SR
+    // gust envelope: slow rise, wavering hold, fall
+    const gust = Math.sin((Math.PI * t) / 1.2) * (0.7 + 0.3 * Math.sin(2 * Math.PI * 1.7 * t))
+    const alpha = 0.03 + 0.05 * Math.sin(2 * Math.PI * 0.8 * t)
+    y += alpha * (rnd() * 2 - 1 - y)
+    out[i] = y * gust * 1.2
+  }
+  return out
+}
+
+function synthArrow(): Float32Array {
+  const n = Math.floor(SR * 0.28)
+  const out = new Float32Array(n)
+  const rnd = mulberry32(4555)
+  for (let i = 0; i < n; i++) {
+    const t = i / SR
+    // thwip: fast up-chirp + noise slap at the end
+    const f = 500 + (3800 * t) / 0.28
+    out[i] = Math.sin(2 * Math.PI * f * t) * Math.exp(-2 * t) * 0.4
+    if (t > 0.2) out[i]! += (rnd() * 2 - 1) * Math.exp(-90 * (t - 0.2)) * 0.7
+  }
+  return out
+}
+
+function synthCamera(): Float32Array {
+  const n = Math.floor(SR * 0.34)
+  const out = new Float32Array(n)
+  const rnd = mulberry32(5666)
+  const slap = (at: number, amp: number) => {
+    const i0 = Math.floor(at * SR)
+    for (let i = i0; i < Math.min(n, i0 + Math.floor(0.02 * SR)); i++) {
+      const t = (i - i0) / SR
+      out[i]! += (rnd() * 2 - 1) * Math.exp(-300 * t) * amp
+      out[i]! += Math.sin(2 * Math.PI * 700 * t) * Math.exp(-200 * t) * amp * 0.5
+    }
+  }
+  slap(0.02, 0.8) // first press
+  slap(0.16, 1.0) // shutter
+  return out
+}
+
 const SYNTHS: Record<TransitionSoundKey, () => Float32Array> = {
   explosion: synthExplosion,
   typewriter: synthTypewriter,
@@ -239,6 +337,12 @@ const SYNTHS: Record<TransitionSoundKey, () => Float32Array> = {
   push: synthPush,
   hammer: synthHammer,
   voltage: synthVoltage,
+  laser: synthLaser,
+  click: synthClick,
+  drive: synthDrive,
+  wind: synthWind,
+  arrow: synthArrow,
+  camera: synthCamera,
 }
 
 const cache = new Map<TransitionSoundKey, Buffer>()

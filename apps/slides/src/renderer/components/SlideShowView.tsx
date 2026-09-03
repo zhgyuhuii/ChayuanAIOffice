@@ -30,6 +30,7 @@ import {
   type RehearseTiming,
 } from '../slideshow-utils'
 import { liftShowCurtain } from '../show-actions'
+import { readSoundVolume } from './Ribbon'
 
 const ANIMATED = [
   'fade',
@@ -303,7 +304,10 @@ export function SlideShowView({
             src.buffer = b
             // 循环播放直到下一个声音开始: stopped on the next turn/exit
             src.loop = loop
-            src.connect(ctx.destination)
+            // WPS 音量: editor-local playback gain (not stored in the pptx)
+            const gain = ctx.createGain()
+            gain.gain.value = readSoundVolume()
+            src.connect(gain).connect(ctx.destination)
             src.start()
             soundSrcRef.current = src
           })

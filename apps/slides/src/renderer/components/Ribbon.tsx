@@ -1084,7 +1084,26 @@ const TRANS_SOUND_PRESETS: ReadonlyArray<{ key: TransitionSoundKey; labelKey: St
   { key: 'push', labelKey: 'ribbonTransSoundPush' },
   { key: 'hammer', labelKey: 'ribbonTransSoundHammer' },
   { key: 'voltage', labelKey: 'ribbonTransSoundVoltage' },
+  { key: 'laser', labelKey: 'ribbonTransSoundLaser' },
+  { key: 'click', labelKey: 'ribbonTransSoundClick' },
+  { key: 'drive', labelKey: 'ribbonTransSoundDrive' },
+  { key: 'wind', labelKey: 'ribbonTransSoundWind' },
+  { key: 'arrow', labelKey: 'ribbonTransSoundArrow' },
+  { key: 'camera', labelKey: 'ribbonTransSoundCamera' },
 ]
+
+/** Playback volume (WPS 音量): editor-local playback gain — OOXML has no
+ * transition-sound volume attribute, so this is NOT written to the pptx. */
+export const SOUND_VOLUME_KEY = 'slideshow-sound-volume'
+export function readSoundVolume(): number {
+  try {
+    const v = Number(localStorage.getItem(SOUND_VOLUME_KEY))
+    if (Number.isFinite(v) && v >= 0 && v <= 1) return v
+  } catch {
+    /* degraded */
+  }
+  return 1
+}
 
 /** WPS 声音: 无声音 + preset rows (✓ echo) + 其他声音… import + 循环播放 toggle. */
 function TransSoundSelect({
@@ -1103,6 +1122,7 @@ function TransSoundSelect({
 }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
+  const [, forceVolumeRender] = useState(0)
   const wrapRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
@@ -1189,6 +1209,33 @@ function TransSoundSelect({
             </span>
             {t('ribbonTransSoundLoop')}
           </button>
+          <div className="rb-menu-sep" />
+          <div className="rb-sound-volume" role="group" aria-label={t('ribbonTransVolLabel')}>
+            <span className="rb-sound-volume-label">{t('ribbonTransVolLabel')}</span>
+            {(
+              [
+                [0, 'ribbonTransVolMute'],
+                [0.4, 'ribbonTransVolLow'],
+                [0.7, 'ribbonTransVolMedium'],
+                [1, 'ribbonTransVolHigh'],
+              ] as const
+            ).map(([gain, key]) => (
+              <button
+                key={key}
+                className={Math.abs(readSoundVolume() - gain) < 0.01 ? 'on' : ''}
+                onClick={() => {
+                  try {
+                    localStorage.setItem(SOUND_VOLUME_KEY, String(gain))
+                  } catch {
+                    /* degraded */
+                  }
+                  forceVolumeRender((v) => v + 1)
+                }}
+              >
+                {t(key)}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       <input

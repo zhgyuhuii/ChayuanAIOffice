@@ -716,6 +716,12 @@ export type TransitionSoundKey =
   | 'push'
   | 'hammer'
   | 'voltage'
+  | 'laser'
+  | 'click'
+  | 'drive'
+  | 'wind'
+  | 'arrow'
+  | 'camera'
 
 /** Full transition echo: effect + duration + 效果选项 + 声音 (Transitions-tab UI state). */
 export interface TransitionSpec {
