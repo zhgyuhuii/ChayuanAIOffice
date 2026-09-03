@@ -148,6 +148,6 @@ describe('file commands', () => {
       'docs.file.save',
       'docs.file.saveAs',
     ])
-    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 43)
+    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 60)
   })
 })

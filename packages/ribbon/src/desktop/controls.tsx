@@ -106,7 +106,9 @@ function ButtonView<TState, TServices>({
   if (control.size === 'big') {
     return (
       <button
-        className={withClass('rb-big', control.className)}
+        // Word's big view-style buttons carry the pressed look from the
+        // command's isActive (Web Layout active while in web view, …)
+        className={`${withClass('rb-big', control.className)} ${gate.active ? 'active' : ''}`}
         disabled={gate.disabled}
         {...tipProps(tip, false)}
         onClick={run}
