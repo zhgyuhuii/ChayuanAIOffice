@@ -268,6 +268,7 @@ export const strings = {
     aiWorking: '继续处理中',
     aiStopped: '已停止',
     aiNoReply: '（无回复）',
+    aiTruncatedNote: '（回复因长度限制被截断,内容可能不完整。）',
     aiTurnLimit: '已达到单次任务的步数上限，回复"继续"让我接着做。',
     aiUnknownError: '未知错误',
     aiTimeoutError: 'AI 请求超时：网络长时间无响应，已停止。请检查网络后重试',
@@ -562,6 +563,7 @@ export const strings = {
     aiWorking: 'Working',
     aiStopped: 'Stopped',
     aiNoReply: '(no reply)',
+    aiTruncatedNote: '(The reply was cut off by the length limit and may be incomplete.)',
     aiTurnLimit: 'Reached the step limit for this task — say "continue" to keep going.',
     aiUnknownError: 'Unknown error',
     aiTimeoutError:
@@ -860,6 +862,7 @@ export const strings = {
     aiWorking: '処理中',
     aiStopped: '停止しました',
     aiNoReply: '（応答なし）',
+    aiTruncatedNote: '（返信は長さ制限により途中で打ち切られ、不完全な可能性があります。）',
     aiTurnLimit: 'ステップ上限に達しました。「続けて」と送ると継続します。',
     aiUnknownError: '不明なエラー',
     aiTimeoutError:
@@ -1159,6 +1162,7 @@ export const strings = {
     aiWorking: '처리 중',
     aiStopped: '중지됨',
     aiNoReply: '(응답 없음)',
+    aiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
     aiTurnLimit: '단계 한도에 도달했습니다. "계속"이라고 보내면 이어서 합니다.',
     aiUnknownError: '알 수 없는 오류',
     aiTimeoutError:
@@ -1460,6 +1464,8 @@ export const strings = {
     aiWorking: 'Traitement',
     aiStopped: 'Arrêté',
     aiNoReply: '(pas de réponse)',
+    aiTruncatedNote:
+      '(La réponse a été tronquée par la limite de longueur et peut être incomplète.)',
     aiTurnLimit: 'Limite d’étapes atteinte — dites « continue » pour poursuivre.',
     aiUnknownError: 'Erreur inconnue',
     aiTimeoutError:
@@ -1763,6 +1769,8 @@ export const strings = {
     aiWorking: 'Verarbeitung',
     aiStopped: 'Gestoppt',
     aiNoReply: '(keine Antwort)',
+    aiTruncatedNote:
+      '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
     aiTurnLimit: 'Schrittlimit erreicht — sagen Sie „weiter", um fortzufahren.',
     aiUnknownError: 'Unbekannter Fehler',
     aiTimeoutError:
@@ -2064,6 +2072,8 @@ export const strings = {
     aiWorking: 'Procesando',
     aiStopped: 'Detenido',
     aiNoReply: '(sin respuesta)',
+    aiTruncatedNote:
+      '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
     aiTurnLimit: 'Límite de pasos alcanzado; di «continúa» para seguir.',
     aiUnknownError: 'Error desconocido',
     aiTimeoutError:
@@ -2366,6 +2376,7 @@ export const strings = {
     aiWorking: 'กำลังดำเนินการ',
     aiStopped: 'หยุดแล้ว',
     aiNoReply: '(ไม่มีคำตอบ)',
+    aiTruncatedNote: '(คำตอบถูกตัดเนื่องจากถึงขีดจำกัดความยาว เนื้อหาอาจไม่สมบูรณ์)',
     aiTurnLimit: 'ถึงขีดจำกัดขั้นตอนแล้ว พิมพ์ "ทำต่อ" เพื่อดำเนินการต่อ',
     aiUnknownError: 'ข้อผิดพลาดที่ไม่รู้จัก',
     aiTimeoutError:
@@ -2664,6 +2675,7 @@ export const strings = {
     aiWorking: 'Memproses',
     aiStopped: 'Dihentikan',
     aiNoReply: '(tidak ada balasan)',
+    aiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
     aiTurnLimit: 'Batas langkah tercapai — ketik "lanjutkan" untuk meneruskan.',
     aiUnknownError: 'Kesalahan tidak dikenal',
     aiTimeoutError:
@@ -2965,6 +2977,7 @@ export const strings = {
     aiWorking: 'Обработка',
     aiStopped: 'Остановлено',
     aiNoReply: '(нет ответа)',
+    aiTruncatedNote: '(Ответ был обрезан из-за ограничения длины и может быть неполным.)',
     aiTurnLimit: 'Достигнут лимит шагов — напишите «продолжай», чтобы продолжить.',
     aiUnknownError: 'Неизвестная ошибка',
     aiTimeoutError:
@@ -3265,6 +3278,7 @@ export const strings = {
     aiWorking: 'جارٍ المعالجة',
     aiStopped: 'تم الإيقاف',
     aiNoReply: '(لا رد)',
+    aiTruncatedNote: '(تم اقتطاع الرد بسبب حد الطول وقد يكون غير مكتمل.)',
     aiTurnLimit: 'تم بلوغ حد الخطوات — اكتب «تابع» للمواصلة.',
     aiUnknownError: 'خطأ غير معروف',
     aiTimeoutError:
@@ -3564,6 +3578,7 @@ export const strings = {
     aiWorking: 'Processando',
     aiStopped: 'Parado',
     aiNoReply: '(sem resposta)',
+    aiTruncatedNote: '(A resposta foi cortada pelo limite de comprimento e pode estar incompleta.)',
     aiTurnLimit: 'Limite de etapas atingido — diga "continuar" para prosseguir.',
     aiUnknownError: 'Erro desconhecido',
     aiTimeoutError:
@@ -3867,6 +3882,8 @@ export const strings = {
     aiWorking: 'Elaborazione',
     aiStopped: 'Interrotto',
     aiNoReply: '(nessuna risposta)',
+    aiTruncatedNote:
+      '(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)',
     aiTurnLimit: 'Limite di passaggi raggiunto — scrivi "continua" per proseguire.',
     aiUnknownError: 'Errore sconosciuto',
     aiTimeoutError:
@@ -4170,6 +4187,7 @@ export const strings = {
     aiWorking: 'Przetwarzanie',
     aiStopped: 'Zatrzymano',
     aiNoReply: '(brak odpowiedzi)',
+    aiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
     aiTurnLimit: 'Osiągnięto limit kroków — napisz „kontynuuj", aby dokończyć.',
     aiUnknownError: 'Nieznany błąd',
     aiTimeoutError:
@@ -4473,6 +4491,7 @@ export const strings = {
     aiWorking: 'Bezig met verwerken',
     aiStopped: 'Gestopt',
     aiNoReply: '(geen antwoord)',
+    aiTruncatedNote: '(Het antwoord is afgekapt door de lengtelimiet en is mogelijk onvolledig.)',
     aiTurnLimit: 'Stappenlimiet bereikt — zeg "ga door" om verder te gaan.',
     aiUnknownError: 'Onbekende fout',
     aiTimeoutError:
@@ -4774,6 +4793,7 @@ export const strings = {
     aiWorking: 'Sedang memproses',
     aiStopped: 'Dihentikan',
     aiNoReply: '(tiada balasan)',
+    aiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
     aiTurnLimit: 'Had langkah dicapai — taip "teruskan" untuk menyambung.',
     aiUnknownError: 'Ralat tidak diketahui',
     aiTimeoutError:
@@ -5073,6 +5093,7 @@ export const strings = {
     aiWorking: 'מעבד',
     aiStopped: 'הופסק',
     aiNoReply: '(אין תשובה)',
+    aiTruncatedNote: '(התשובה נחתכה בגלל מגבלת האורך וייתכן שאינה שלמה.)',
     aiTurnLimit: 'הגעת למגבלת הצעדים של המשימה — כתבו "המשך" כדי שאמשיך.',
     aiUnknownError: 'שגיאה לא ידועה',
     aiTimeoutError: 'תם הזמן לבקשת ה-AI: אין תגובה מהרשת וההרצה הופסקה. בדוק את החיבור ונסה שוב',
@@ -5368,6 +5389,7 @@ export const strings = {
     aiWorking: 'प्रोसेस हो रहा है',
     aiStopped: 'रोका गया',
     aiNoReply: '(कोई उत्तर नहीं)',
+    aiTruncatedNote: '(उत्तर लंबाई सीमा के कारण कट गया और अधूरा हो सकता है।)',
     aiTurnLimit: 'इस कार्य की चरण सीमा पूरी हो गई — जारी रखने के लिए "जारी रखें" लिखें।',
     aiUnknownError: 'अज्ञात त्रुटि',
     aiTimeoutError:
@@ -5666,6 +5688,7 @@ export const strings = {
     aiWorking: '繼續處理中',
     aiStopped: '已停止',
     aiNoReply: '（無回覆）',
+    aiTruncatedNote: '（回覆因長度限制被截斷,內容可能不完整。）',
     aiTurnLimit: '已達到單次任務的步數上限，回覆「繼續」讓我接著做。',
     aiUnknownError: '未知錯誤',
     aiTimeoutError: 'AI 請求逾時：網路長時間無回應，已停止。請檢查網路後重試',

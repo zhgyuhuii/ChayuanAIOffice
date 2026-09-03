@@ -358,10 +358,16 @@ export function AiPanel({
             },
           ])
         },
-        onDone: ({ text, cancelled, turnLimit }) => {
-          const final = turnLimit
+        onDone: ({ text, cancelled, turnLimit, truncated }) => {
+          const base = turnLimit
             ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
             : text || (cancelled ? tGlobal('aiStopped') : '')
+          // finish_reason=length with no prose (a reasoning model that spent the whole
+          // output budget thinking) must say so instead of showing the bare "(no reply)",
+          // which reads like the assistant ignored the user — same handling as docs
+          const final = truncated
+            ? [base, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n')
+            : base
           if (cancelled) {
             segTextRef.current = ''
             runTextsRef.current = []
