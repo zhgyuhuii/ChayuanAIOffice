@@ -484,6 +484,67 @@ html.chatoffice-popover-open .ribbon-tabs {
   flex: 1;
 }
 
+/* ── 文件下拉 (WPS ☰ 文件, three-app parity with docs/slides) ── */
+.file-tab-wrap {
+  position: relative;
+  -webkit-app-region: no-drag;
+}
+
+.ribbon-tab-file {
+  border: 0;
+  color: var(--on-accent, #fff);
+  background: var(--accent);
+  border-radius: 4px;
+  padding: 6px 16px;
+  margin-right: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ribbon-tab-file:hover,
+.ribbon-tab-file.open {
+  background: var(--accent-strong, var(--accent));
+}
+
+.file-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 60;
+  min-width: 210px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  padding: 5px;
+}
+
+.file-menu button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.file-menu button:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.file-menu button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .qa-sep {
   width: 1px;
   height: 16px;

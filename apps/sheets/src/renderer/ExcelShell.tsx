@@ -213,6 +213,12 @@ interface ExcelShellProps {
   /// file-backed session (the in-memory demo workbook has nowhere to copy).
   readonly canSaveAs: boolean
   readonly onSaveAs: () => void
+  /** 文件菜单「打开工作簿」(selectWorkbook → openLazyWorkbook; web 下可缺省隐藏入口) */
+  readonly onOpen?: () => void
+  /** 文件菜单「导出为 PDF」 */
+  readonly onExportPdf?: () => void
+  /** 文件菜单「导出为 CSV」 */
+  readonly onExportCsv?: () => void
   /// QAT redo (workbook history, same path as the app menu's ⇧⌘Z); undo
   /// shares the AI panel's onUndo above.
   readonly onRedo: () => void
@@ -362,6 +368,9 @@ export function ExcelShell({
   zoomPercent,
   canSave,
   onSave,
+  onOpen,
+  onExportPdf,
+  onExportCsv,
   canSaveAs,
   onSaveAs,
   onRedo,
@@ -376,6 +385,12 @@ export function ExcelShell({
 }: ExcelShellProps): React.JSX.Element {
   const { t } = useI18n()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
+  // 文件下拉（WPS ☰ 文件）: open state + outside-press dismissal
+  const [fileOpen, setFileOpen] = useState(false)
+  const fileMenuRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(fileOpen, () => setFileOpen(false), {
+    inside: () => [fileMenuRef.current],
+  })
   // Persisted so a closed AI panel stays closed on next launch (docs/slides parity)
   const [isCopilotOpen, setIsCopilotOpen] = useState(
     () => localStorage.getItem('ai-sheets-show-ai') !== '0',
@@ -468,7 +483,7 @@ export function ExcelShell({
   const visibleTabs: readonly RibbonTab[] = selectedChart
     ? [...ribbonTabs, 'Chart Design']
     : ribbonTabs
-  const saveAsTitle = `${t('appSaveAs')} (${platformShortcuts('⇧⌘S')})`
+  const saveAsTitle = `${t('appFileSaveAs')} (${platformShortcuts('⇧⌘S')})`
 
   return (
     <main className="app-shell">
@@ -528,6 +543,69 @@ export function ExcelShell({
               className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
               aria-label="Workbook commands"
             >
+              <div className="file-tab-wrap" ref={fileMenuRef}>
+                <button
+                  type="button"
+                  className={`ribbon-tab ribbon-tab-file ${fileOpen ? 'open' : ''}`}
+                  onClick={() => setFileOpen((v) => !v)}
+                >
+                  {t('appTabFile')}
+                </button>
+                {fileOpen && (
+                  <div className="file-menu">
+                    {onOpen && (
+                      <button
+                        onClick={() => {
+                          setFileOpen(false)
+                          onOpen()
+                        }}
+                      >
+                        {t('appOpenWorkbookTitle')}
+                      </button>
+                    )}
+                    <button
+                      disabled={!canSave}
+                      onClick={() => {
+                        setFileOpen(false)
+                        onSave()
+                      }}
+                    >
+                      {t('appFileSave')}
+                    </button>
+                    <button
+                      disabled={!canSaveAs}
+                      onClick={() => {
+                        setFileOpen(false)
+                        onSaveAs()
+                      }}
+                    >
+                      {t('appFileSaveAs')}
+                    </button>
+                    {onExportPdf && (
+                      <button
+                        disabled={!canSave}
+                        onClick={() => {
+                          setFileOpen(false)
+                          onExportPdf()
+                        }}
+                      >
+                        {t('appFileExportPdf')}
+                      </button>
+                    )}
+                    {onExportCsv && (
+                      <button
+                        disabled={!canSave}
+                        onClick={() => {
+                          setFileOpen(false)
+                          onExportCsv()
+                        }}
+                      >
+                        {t('appFileExportCsv')}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 className="qa-btn"

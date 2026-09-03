@@ -5175,6 +5175,9 @@ export function App(): React.JSX.Element {
         onSave={() => void handleSave('save')}
         canSaveAs={workbookFile !== null}
         onSaveAs={() => void handleSave('save-as')}
+        onOpen={() => void handleInspectWorkbook()}
+        onExportPdf={() => void handleExportPdfImpl(pageLayoutContext())}
+        onExportCsv={() => void handleExportCsvImpl(csvExportContext())}
         onRedo={handleRedo}
         autoSave={autoSave}
         onAutoSaveChange={setAutoSave}

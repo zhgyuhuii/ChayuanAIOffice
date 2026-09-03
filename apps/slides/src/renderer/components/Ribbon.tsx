@@ -1983,7 +1983,8 @@ export function Ribbon({
           anyPanelOpen ? ' ribbon-tabs-nodrag' : ''
         }`}
       >
-        {!IS_MAC && (
+        {/* WPS macOS 同样有常驻「文件」按钮（☰ 文件），三端统一 */}
+        {
           <div className="file-tab-wrap">
             <button
               className={`ribbon-tab ribbon-tab-file ${fileOpen ? 'open' : ''}`}
@@ -2003,7 +2004,8 @@ export function Ribbon({
                     onOpen()
                   }}
                 >
-                  {t('ribbonFileOpen')} <span className="file-menu-key">Ctrl+O</span>
+                  {t('ribbonFileOpen')}{' '}
+                  <span className="file-menu-key">{IS_MAC ? '⌘O' : 'Ctrl+O'}</span>
                 </button>
                 <button
                   disabled={!hasDoc}
@@ -2012,7 +2014,8 @@ export function Ribbon({
                     onSave()
                   }}
                 >
-                  {t('ribbonFileSave')} <span className="file-menu-key">Ctrl+S</span>
+                  {t('ribbonFileSave')}{' '}
+                  <span className="file-menu-key">{IS_MAC ? '⌘S' : 'Ctrl+S'}</span>
                 </button>
                 <button
                   disabled={!hasDoc}
@@ -2021,7 +2024,8 @@ export function Ribbon({
                     onSaveAs()
                   }}
                 >
-                  {t('ribbonFileSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
+                  {t('ribbonFileSaveAs')}{' '}
+                  <span className="file-menu-key">{IS_MAC ? '⇧⌘S' : 'Ctrl+Shift+S'}</span>
                 </button>
                 <button
                   disabled={!hasDoc}
@@ -2039,7 +2043,8 @@ export function Ribbon({
                     onPrint()
                   }}
                 >
-                  {t('ribbonFilePrint')} <span className="file-menu-key">Ctrl+P</span>
+                  {t('ribbonFilePrint')}{' '}
+                  <span className="file-menu-key">{IS_MAC ? '⌘P' : 'Ctrl+P'}</span>
                 </button>
                 <button
                   disabled={!hasDoc}
@@ -2053,7 +2058,7 @@ export function Ribbon({
               </div>
             )}
           </div>
-        )}
+        }
         <button
           className="qa-btn"
           data-tip={t('ribbonSaveTip')}

@@ -1608,7 +1608,8 @@ function RibbonInner({
         <div
           className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
         >
-          {!IS_MAC && (
+          {/* WPS macOS 同样有常驻「文件」按钮（☰ 文件），三端统一 */}
+          {
             <div className="file-tab-wrap">
               <button
                 className={`ribbon-tab ribbon-tab-file ${dropdown === 'file' ? 'open' : ''}`}
@@ -1624,7 +1625,8 @@ function RibbonInner({
                       onOpen()
                     }}
                   >
-                    {t('ribbonOpen')} <span className="file-menu-key">Ctrl+O</span>
+                    {t('ribbonOpen')}{' '}
+                    <span className="file-menu-key">{IS_MAC ? '⌘O' : 'Ctrl+O'}</span>
                   </button>
                   <button
                     disabled={!hasDoc}
@@ -1633,7 +1635,8 @@ function RibbonInner({
                       onSave()
                     }}
                   >
-                    {t('ribbonSave')} <span className="file-menu-key">Ctrl+S</span>
+                    {t('ribbonSave')}{' '}
+                    <span className="file-menu-key">{IS_MAC ? '⌘S' : 'Ctrl+S'}</span>
                   </button>
                   <button
                     disabled={!hasDoc}
@@ -1642,12 +1645,13 @@ function RibbonInner({
                       onSaveAs()
                     }}
                   >
-                    {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
+                    {t('ribbonSaveAs')}{' '}
+                    <span className="file-menu-key">{IS_MAC ? '⇧⌘S' : 'Ctrl+Shift+S'}</span>
                   </button>
                 </div>
               )}
             </div>
-          )}
+          }
           {quickActions}
           {TABS.filter((tabName) => tabName !== 'file').map((tabName) => (
             <button
