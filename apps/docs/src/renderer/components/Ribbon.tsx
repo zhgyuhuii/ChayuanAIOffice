@@ -41,11 +41,9 @@ import type { InkTool } from '../editor/ink'
 import type { RibbonFormatState } from './ribbon-format-state'
 import { setSelectedColumnWidth } from '../editor/table-sizing'
 import {
-  applyTablePreset,
   repeatHeaderState,
   setTableAutoFit,
   setTableLookOption,
-  toggleRepeatHeaderRows,
   updateSelectedTableAttrs,
 } from '../editor/table-properties'
 import { useI18n, type StringKey } from '../i18n/locale'
@@ -53,7 +51,6 @@ import {
   FONT_SIZES,
   MULTILEVEL_LIBRARY,
   NOOP_CHAIN,
-  ShapeColorPalette,
   previewLevelText,
 } from './ribbon-tab-shared'
 import { HomeTab } from './home-tab'
@@ -74,41 +71,8 @@ import {
   insertImageFromDataUrl,
   applyParagraphStyle,
 } from './ribbon-tabs'
-import { WRAP_OPTIONS } from './ContextMenu'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
 import {
-  IconAlignCenter,
-  IconAlignJustify,
-  IconAlignLeft,
-  IconAlignRight,
-  IconAutoFit,
-  IconBorderAll,
-  IconBorderInner,
-  IconBorderNone,
-  IconBorderOuter,
-  IconCaret,
-  IconCellAlignBottom,
-  IconCellAlignMiddle,
-  IconCellAlignTop,
-  IconColDelete,
-  IconColInsertLeft,
-  IconColInsertRight,
-  IconCrop,
-  IconMergeCells,
-  IconFlipH,
-  IconFlipV,
-  IconRemoveBg,
-  IconReplacePicture,
-  IconRotateLeft,
-  IconRotateRight,
-  IconRowDelete,
-  IconRowInsertAbove,
-  IconRowInsertBelow,
-  IconShading,
-  IconFontColorA,
-  IconSplitCells,
-  IconTableDelete,
-  IconRepeatHeader,
   IconTableProperties,
 } from './icons'
 export interface RibbonProps {
@@ -179,6 +143,10 @@ export interface RibbonProps {
   onAiPreset: (instruction: string) => void
   /** external request (e.g. native menu Page Setup) to switch to a specific tab */
   tabRequest?: { tab: string; nonce: number } | null
+  /** mobile chrome: skip the tab strip entirely (an outer MobileRibbon owns navigation) */
+  bodyOnly?: boolean
+  /** announce every active-tab change (incl. contextual auto-activation) so the mobile bar stays in sync */
+  onActiveTabChange?: (tab: string) => void
   header: HeaderFooter | null
   onHeader: (next: HeaderFooter) => void
   onPageNumFormat: () => void
@@ -424,6 +392,8 @@ function RibbonInner({
   onDarkCanvas,
   onAiPreset,
   tabRequest,
+  bodyOnly,
+  onActiveTabChange,
   header,
   onHeader,
   onPageNumFormat,
@@ -504,6 +474,11 @@ function RibbonInner({
       setDropdown(null)
     }
   }, [tabRequest])
+
+  // keep an outer mobile navigation bar in sync, contextual auto-activation included
+  useEffect(() => {
+    onActiveTabChange?.(tab)
+  }, [tab, onActiveTabChange])
 
   // Unified dismissal: a press anywhere outside the open panel closes it (plus
   // window blur / shell chrome presses). The [data-rb-panel] element exists in
@@ -1636,106 +1611,108 @@ function RibbonInner({
 
   return (
     <div className="ribbon">
-      <div
-        className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
-      >
-        {!IS_MAC && (
-          <div className="file-tab-wrap">
+      {!bodyOnly && (
+        <div
+          className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
+        >
+          {!IS_MAC && (
+            <div className="file-tab-wrap">
+              <button
+                className={`ribbon-tab ribbon-tab-file ${dropdown === 'file' ? 'open' : ''}`}
+                onClick={() => setDropdown((v) => (v === 'file' ? null : 'file'))}
+              >
+                {t('ribbonTabFile')}
+              </button>
+              {dropdown === 'file' && (
+                <div data-rb-panel="" className="file-menu">
+                  <button
+                    onClick={() => {
+                      setDropdown(null)
+                      onOpen()
+                    }}
+                  >
+                    {t('ribbonOpen')} <span className="file-menu-key">Ctrl+O</span>
+                  </button>
+                  <button
+                    disabled={!hasDoc}
+                    onClick={() => {
+                      setDropdown(null)
+                      onSave()
+                    }}
+                  >
+                    {t('ribbonSave')} <span className="file-menu-key">Ctrl+S</span>
+                  </button>
+                  <button
+                    disabled={!hasDoc}
+                    onClick={() => {
+                      setDropdown(null)
+                      onSaveAs()
+                    }}
+                  >
+                    {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          {quickActions}
+          {TABS.filter((tabName) => tabName !== 'file').map((tabName) => (
             <button
-              className={`ribbon-tab ribbon-tab-file ${dropdown === 'file' ? 'open' : ''}`}
-              onClick={() => setDropdown((v) => (v === 'file' ? null : 'file'))}
-            >
-              {t('ribbonTabFile')}
-            </button>
-            {dropdown === 'file' && (
-              <div data-rb-panel="" className="file-menu">
-                <button
-                  onClick={() => {
-                    setDropdown(null)
-                    onOpen()
-                  }}
-                >
-                  {t('ribbonOpen')} <span className="file-menu-key">Ctrl+O</span>
-                </button>
-                <button
-                  disabled={!hasDoc}
-                  onClick={() => {
-                    setDropdown(null)
-                    onSave()
-                  }}
-                >
-                  {t('ribbonSave')} <span className="file-menu-key">Ctrl+S</span>
-                </button>
-                <button
-                  disabled={!hasDoc}
-                  onClick={() => {
-                    setDropdown(null)
-                    onSaveAs()
-                  }}
-                >
-                  {t('ribbonSaveAs')} <span className="file-menu-key">Ctrl+Shift+S</span>
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-        {quickActions}
-        {TABS.filter((tabName) => tabName !== 'file').map((tabName) => (
-          <button
-            key={tabName}
-            className={`ribbon-tab ${tab === tabName ? 'active' : ''}`}
-            onClick={() => {
-              lastRegularTab.current = tabName
-              setTab(tabName)
-              setDropdown(null)
-            }}
-          >
-            {t(TAB_LABEL_KEYS[tabName])}
-          </button>
-        ))}
-        {/* contextual tabs render as plain tabs appended to the row, like current Word */}
-        {inTable &&
-          TABLE_TABS.map((tableTab) => (
-            <button
-              key={tableTab}
-              className={`ribbon-tab ${tab === tableTab ? 'active' : ''}`}
+              key={tabName}
+              className={`ribbon-tab ${tab === tabName ? 'active' : ''}`}
               onClick={() => {
-                setTab(tableTab)
+                lastRegularTab.current = tabName
+                setTab(tabName)
                 setDropdown(null)
               }}
             >
-              {t(TAB_LABEL_KEYS[tableTab])}
+              {t(TAB_LABEL_KEYS[tabName])}
             </button>
           ))}
-        {inImage &&
-          IMAGE_TABS.map((imageTab) => (
-            <button
-              key={imageTab}
-              className={`ribbon-tab ${tab === imageTab ? 'active' : ''}`}
-              onClick={() => {
-                setTab(imageTab)
-                setDropdown(null)
-              }}
-            >
-              {t(TAB_LABEL_KEYS[imageTab])}
-            </button>
-          ))}
-        {inShape &&
-          SHAPE_TABS.map((shapeTab) => (
-            <button
-              key={shapeTab}
-              className={`ribbon-tab ${tab === shapeTab ? 'active' : ''}`}
-              onClick={() => {
-                setTab(shapeTab)
-                setDropdown(null)
-              }}
-            >
-              {t(TAB_LABEL_KEYS[shapeTab])}
-            </button>
-          ))}
-        <span className="ribbon-tabs-spacer" />
-        {trailingActions}
-      </div>
+          {/* contextual tabs render as plain tabs appended to the row, like current Word */}
+          {inTable &&
+            TABLE_TABS.map((tableTab) => (
+              <button
+                key={tableTab}
+                className={`ribbon-tab ${tab === tableTab ? 'active' : ''}`}
+                onClick={() => {
+                  setTab(tableTab)
+                  setDropdown(null)
+                }}
+              >
+                {t(TAB_LABEL_KEYS[tableTab])}
+              </button>
+            ))}
+          {inImage &&
+            IMAGE_TABS.map((imageTab) => (
+              <button
+                key={imageTab}
+                className={`ribbon-tab ${tab === imageTab ? 'active' : ''}`}
+                onClick={() => {
+                  setTab(imageTab)
+                  setDropdown(null)
+                }}
+              >
+                {t(TAB_LABEL_KEYS[imageTab])}
+              </button>
+            ))}
+          {inShape &&
+            SHAPE_TABS.map((shapeTab) => (
+              <button
+                key={shapeTab}
+                className={`ribbon-tab ${tab === shapeTab ? 'active' : ''}`}
+                onClick={() => {
+                  setTab(shapeTab)
+                  setDropdown(null)
+                }}
+              >
+                {t(TAB_LABEL_KEYS[shapeTab])}
+              </button>
+            ))}
+          <span className="ribbon-tabs-spacer" />
+          {trailingActions}
+        </div>
+      )}
 
       <div className="ribbon-body">
         {tab === 'shapeFormat' && inShape ? (
@@ -1771,6 +1748,7 @@ function RibbonInner({
             tableAttrs={tableAttrs}
             styles={styles}
             applyCellBorders={applyCellBorders}
+            setTableLookOption={setTableLookOption}
             applyColumnWidth={applyColumnWidth}
             applyRowHeight={applyRowHeight}
             setBorderColor={setBorderColor}

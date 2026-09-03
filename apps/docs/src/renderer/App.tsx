@@ -13,7 +13,7 @@ import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
 import { AiPanelToggle, DockShell, Dropdown, useUIMode } from '@chatoffice/ui'
-import { createCommandRegistry } from '@chatoffice/ribbon'
+import { createCommandRegistry, MobileRibbon } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
@@ -145,8 +145,10 @@ import {
   PenPreferences,
   type DocsCommandServices,
   type DocsCommandState,
+  DOCS_SCHEMA,
 } from './ribbon'
 import { MobileQuickBar } from './components/MobileQuickBar'
+import { RIBBON_ICONS } from './components/ribbon-icons'
 import { FindPanel } from './components/FindPanel'
 import { Ribbon } from './components/Ribbon'
 import { computeFormatState } from './components/ribbon-format-state'
@@ -4294,6 +4296,38 @@ export function App() {
     if (isMobileUI && openedDocPath) mobileZoomFitRef.current('width')
   }, [isMobileUI, openedDocPath])
 
+  // 移动换装桥:MobileRibbon 条负责导航;选中 tab 经既有 tabRequest 通道喂给
+  // 旧 Ribbon(bodyOnly),上下文自动激活(表格/图片/形状)则反向宣告回来
+  const [mobileTab, setMobileTab] = useState('home')
+  const mobileTabRef = useRef(mobileTab)
+  mobileTabRef.current = mobileTab
+  const onMobileTabChange = useCallback((tabId: string) => {
+    setMobileTab(tabId)
+    setRibbonTabRequest({ tab: tabId, nonce: Date.now() })
+  }, [])
+  const onLegacyTabChange = useCallback((tabId: string) => {
+    if (mobileTabRef.current !== tabId) setMobileTab(tabId)
+  }, [])
+  // 移动模式下键盘字号快捷键走注册表命令(旧 QAT 的 stepFontSize 闭包已卸载)
+  useEffect(() => {
+    if (!isMobileUI) return
+    ribbonActionsRef.current = {
+      stepFontSize: (dir) =>
+        docsRegistry.execute(
+          dir === 1 ? 'docs.format.fontSize.stepGrow' : 'docs.format.fontSize.stepShrink',
+          docsCommandCtx,
+        ),
+      nudgeFontSize: (dir) =>
+        docsRegistry.execute(
+          dir === 1 ? 'docs.format.fontSize.nudgeGrow' : 'docs.format.fontSize.nudgeShrink',
+          docsCommandCtx,
+        ),
+    }
+    return () => {
+      ribbonActionsRef.current = {}
+    }
+  }, [isMobileUI, docsRegistry, docsCommandCtx])
+
   const closeCommentsPanel = useCallback(() => {
     setShowComments(false)
     cancelNewComment()
@@ -4463,7 +4497,12 @@ export function App() {
         <style>{`.editor-scroll .doc-page { column-count: ${colFlow.cols}; column-gap: ${colFlow.gapPx}px; column-fill: balance; }
 .editor-scroll .doc-page.measuring-columns { column-count: auto; width: ${colFlow.colWidthPx + twipsToPx(canvasSection?.marginLeft ?? section?.marginLeft ?? 0) + twipsToPx(canvasSection?.marginRight ?? section?.marginRight ?? 0)}px; }`}</style>
       )}
+      {/* 移动换装:MobileRibbon 条(文件/视图导航/AI)+ 旧 Ribbon 只渲染 body;
+          桌面保持原样。body 的全部机制(含 home/上下文 tab)由旧壳提供,
+          schema 迁移完成后 body 逐步换成声明式渲染 */}
       <Ribbon
+        bodyOnly={isMobileUI}
+        onActiveTabChange={isMobileUI ? onLegacyTabChange : undefined}
         actionsRef={ribbonActionsRef}
         quickActions={quickActions}
         trailingActions={
@@ -4477,6 +4516,25 @@ export function App() {
         tabRequest={ribbonTabRequest}
         {...ribbonPropsFromHost(docsState, docsServices)}
       />
+      {isMobileUI && (
+        <MobileRibbon
+          schema={DOCS_SCHEMA}
+          registry={docsRegistry}
+          state={docsState}
+          services={docsServices}
+          t={t as (key: string) => string}
+          icons={RIBBON_ICONS}
+          activeTab={mobileTab}
+          onTabChange={onMobileTabChange}
+          trailingActions={
+            <AiPanelToggle
+              open={showAi}
+              onToggle={() => setShowAi((v) => !v)}
+              label={t('aiOpenAssistant')}
+            />
+          }
+        />
+      )}
 
       <DockShell
         className="app-main"

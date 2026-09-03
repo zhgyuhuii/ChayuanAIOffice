@@ -9,23 +9,19 @@
  * (any) — this adapter layer dies with the legacy shell at the end of the
  * migration.
  */
-import type { Editor } from '@tiptap/core'
 import type { TableLook } from '@chatoffice/docx-engine'
 import { Dropdown } from '@chatoffice/ui'
 import { useI18n, type StringKey } from '../i18n/locale'
-import type { RibbonFormatState } from './ribbon-format-state'
 import { ShapeColorPalette } from './ribbon-tab-shared'
 import { WRAP_OPTIONS } from './ContextMenu'
 
 /** CSS px per cm at 96dpi (picture size inputs display in centimeters) */
 const PX_PER_CM = 96 / 2.54
 import { TABLE_AUTO_FIT_OPTIONS } from './Ribbon'
-import { clampPictureCm, PICTURE_CM_MAX, PICTURE_CM_MIN } from './Ribbon'
+import { PICTURE_CM_MAX, PICTURE_CM_MIN } from './Ribbon'
 import {
   applyTablePreset,
   setTableAutoFit,
-  setTableLookOption,
-  repeatHeaderState,
   toggleRepeatHeaderRows,
 } from '../editor/table-properties'
 import {
@@ -271,7 +267,6 @@ export function PictureFormatTab({
   fs,
   editor,
   canEdit,
-  chain,
   setPictureDialog,
   flipPicture,
   rotatePicture,
@@ -507,21 +502,20 @@ export function TableDesignTab({
   tableAttrs,
   styles,
   applyCellBorders,
-  applyColumnWidth,
-  applyRowHeight,
+  setTableLookOption,
   setBorderColor,
   setBorderSz,
   setCellAttr,
   borderColor,
   borderSz,
   tableLook,
-  setTablePropertiesOpen,
 }: {
   readonly chain: any
   readonly runTableCommand: any
   readonly tableAttrs: any
   readonly styles: any
   readonly applyCellBorders: any
+  readonly setTableLookOption: any
   readonly applyColumnWidth: any
   readonly applyRowHeight: any
   readonly setBorderColor: any
@@ -693,7 +687,6 @@ export function TableDesignTab({
 }
 
 export function TableLayoutTab({
-  setTableLookOption,
   fs,
   editor,
   dropdown,
@@ -701,7 +694,6 @@ export function TableLayoutTab({
   chain,
   runTableCommand,
   activeCellInfo,
-  applyCellBorders,
   applyColumnWidth,
   applyRowHeight,
   setCellAttr,

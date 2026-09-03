@@ -8,7 +8,7 @@
 import { useKeyboardInset } from '@chatoffice/mobile-touch'
 import type { CommandContext, CommandRegistry } from '@chatoffice/ribbon'
 import type { ReactNode } from 'react'
-import { IconRedo, IconUndo } from './icons'
+import { IconRedo, IconSave, IconUndo } from './icons'
 import { useI18n } from '../i18n/locale'
 import type { DocsCommandState } from '../ribbon/command-state'
 import type { DocsCommandServices } from '../ribbon/host-services'
@@ -32,6 +32,12 @@ export function MobileQuickBar({
   const { insetBottom } = useKeyboardInset()
 
   const buttons: QuickButton[] = [
+    {
+      id: 'save',
+      command: 'docs.file.save',
+      label: t('ribbonSave'),
+      content: <IconSave size={18} />,
+    },
     {
       id: 'undo',
       command: 'docs.edit.undo',
