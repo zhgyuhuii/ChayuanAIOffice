@@ -91,9 +91,15 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
           const response = await fetch(`${origin}/api/${method}`, {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ type: 'client-request', rpcId: crypto.randomUUID(), method, payload }),
+            body: JSON.stringify({
+              type: 'client-request',
+              rpcId: crypto.randomUUID(),
+              method,
+              payload,
+            }),
           })
-          if (!response.ok) throw new Error(`transport failure for ${method}: HTTP ${response.status}`)
+          if (!response.ok)
+            throw new Error(`transport failure for ${method}: HTTP ${response.status}`)
           const envelope = (await response.json()) as {
             result?: { ok: boolean; value?: unknown; error?: { message?: string } }
           }
@@ -120,20 +126,26 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
       },
     },
     translate: (key, params) =>
-      (ERR as Record<string, string>)[key]?.replace(/\{(\w+)\}/g, (_, k) => String(params?.[k] ?? '')) ?? key,
+      (ERR as Record<string, string>)[key]?.replace(/\{(\w+)\}/g, (_, k) =>
+        String(params?.[k] ?? ''),
+      ) ?? key,
   })
 }
 
 /** harness loopback origin: direct value or lazily-read file (written by the dsh plugin host) */
 let cachedRpcOrigin = ''
 let cachedRpcOriginAt = 0
-async function resolveRpcOrigin(harness: { rpcOrigin: string; rpcOriginFile?: string }): Promise<string> {
+async function resolveRpcOrigin(harness: {
+  rpcOrigin: string
+  rpcOriginFile?: string
+}): Promise<string> {
   if (harness.rpcOrigin) return harness.rpcOrigin
   if (!harness.rpcOriginFile) throw new Error('harness rpc origin not configured')
   if (Date.now() - cachedRpcOriginAt < 5000 && cachedRpcOrigin) return cachedRpcOrigin
   cachedRpcOrigin = (await readFile(harness.rpcOriginFile, 'utf8')).trim()
   cachedRpcOriginAt = Date.now()
-  if (!cachedRpcOrigin) throw new Error('harness rpc origin not discovered yet (dsh has served no request)')
+  if (!cachedRpcOrigin)
+    throw new Error('harness rpc origin not discovered yet (dsh has served no request)')
   return cachedRpcOrigin
 }
 
@@ -243,28 +255,33 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
     }
   })
 
-  app.post<{ Body: { requestId: string } }>('/ai/stream-cancel', async (request, reply) => {
+  app.post<{ Body: { requestId: string } }>('/ai/stream-cancel', async (request, _reply) => {
     activeStreams.get(request.body?.requestId)?.abort()
     return { ok: true }
   })
 
   // ── capability endpoints (mirrors of the desktop ai:* channels) ────────
-  app.post<{ Body: { query: string; maxResults?: number } }>(
-    '/ai/web-search',
-    async (request) => {
-      try {
-        return await webSearch(String(request.body?.query ?? ''), request.body?.maxResults ?? 6, false)
-      } catch (err) {
-        return { results: [], method: 'error', error: String(err) }
-      }
-    },
-  )
+  app.post<{ Body: { query: string; maxResults?: number } }>('/ai/web-search', async (request) => {
+    try {
+      return await webSearch(
+        String(request.body?.query ?? ''),
+        request.body?.maxResults ?? 6,
+        false,
+      )
+    } catch (err) {
+      return { results: [], method: 'error', error: String(err) }
+    }
+  })
 
   app.post<{ Body: { query: string; maxResults?: number } }>(
     '/ai/image-search',
     async (request) => {
       try {
-        return await imageSearch(String(request.body?.query ?? ''), request.body?.maxResults ?? 8, false)
+        return await imageSearch(
+          String(request.body?.query ?? ''),
+          request.body?.maxResults ?? 8,
+          false,
+        )
       } catch (err) {
         return { images: [], method: 'error', error: String(err) }
       }
@@ -279,7 +296,11 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
       if (!resp || !resp.ok) return null
       const buf = Buffer.from(await resp.arrayBuffer())
       const ct = resp.headers.get('content-type') ?? ''
-      const mime = ct.includes('png') ? 'image/png' : ct.includes('gif') ? 'image/gif' : 'image/jpeg'
+      const mime = ct.includes('png')
+        ? 'image/png'
+        : ct.includes('gif')
+          ? 'image/gif'
+          : 'image/jpeg'
       return { base64: buf.toString('base64'), mime }
     } catch {
       return null
