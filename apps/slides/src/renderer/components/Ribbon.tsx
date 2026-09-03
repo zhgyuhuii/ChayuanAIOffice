@@ -1145,6 +1145,8 @@ export function Ribbon({
   onInsertTable,
   transition,
   onTransition,
+  advanceMs,
+  onAdvanceTime,
   selectedAnimEffect,
   timingAnim,
   onApplyAnimation,
@@ -1841,7 +1843,11 @@ export function Ribbon({
         )}
         <span className="ribbon-tabs-spacer" />
         {aiPanelAvailable && (
-          <AiPanelToggle open={aiPanelOpen} onToggle={onToggleAiPanel} label={t('aiOpenAssistant')} />
+          <AiPanelToggle
+            open={aiPanelOpen}
+            onToggle={onToggleAiPanel}
+            label={t('aiOpenAssistant')}
+          />
         )}
       </div>
 
@@ -2136,6 +2142,36 @@ export function Ribbon({
                 </span>
                 <span>{t('ribbonApplyToAll')}</span>
               </button>
+              {/* 换片方式 (WPS parity): click-advance is implicit; the auto-advance
+                  checkbox + seconds write <p:transition advTm> for this page */}
+              <div className="rb-trans-advance">
+                <RbCheck
+                  label={t('ribbonAutoAdvance')}
+                  on={advanceMs !== null}
+                  disabled={!hasDoc}
+                  title={t('ribbonAutoAdvanceTip')}
+                  onClick={() => onAdvanceTime(advanceMs === null ? 5000 : null)}
+                />
+                <input
+                  key={`adv-${advanceMs ?? ''}`}
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  disabled={!hasDoc || advanceMs === null}
+                  defaultValue={advanceMs !== null ? (advanceMs / 1000).toFixed(2) : ''}
+                  aria-label={t('ribbonAutoAdvance')}
+                  onBlur={(e) => {
+                    if (advanceMs === null) return
+                    const v = parseFloat(e.target.value)
+                    const ms = Number.isFinite(v) && v > 0 ? Math.round(v * 1000) : null
+                    if (ms !== advanceMs) onAdvanceTime(ms)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                  }}
+                />
+                <span>{t('ribbonSecondsUnit')}</span>
+              </div>
             </Group>
           </>
         ) : tab === 'animations' ? (

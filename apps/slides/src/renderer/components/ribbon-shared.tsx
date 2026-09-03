@@ -442,6 +442,10 @@ export interface Props {
   transition: TransitionKind
   /** Set the transition effect; allSlides=true applies to all pages */
   onTransition: (kind: TransitionKind, allSlides: boolean) => void
+  /** Current page's auto-advance time (ms; null = advance on click only) */
+  advanceMs: number | null
+  /** Set/clear the current page's auto-advance time (Transitions tab 换片方式) */
+  onAdvanceTime: (ms: number | null) => void
   // ── Animations tab ─────────────────────────────────────────────────────
   /** Selected shape's current animation effect (gallery highlight; null when no selection/no animation) */
   selectedAnimEffect: AnimEffectKind | null

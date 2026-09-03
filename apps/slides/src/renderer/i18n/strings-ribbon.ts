@@ -276,6 +276,8 @@ export const ribbonStrings = defineStrings({
     ribbonBgApplyAllTip: '把背景色 {color} 应用到全部页',
     // Transitions
     ribbonGroupTransitionToThis: '切换到此幻灯片',
+    ribbonAutoAdvance: '自动换片',
+    ribbonAutoAdvanceTip: '勾选后，当前页停留指定秒数后自动切换到下一页（保存到 pptx 的 advTm）',
     ribbonNone: '无',
     ribbonTransMorph: '平滑',
     ribbonTransFade: '淡入',
@@ -1000,6 +1002,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Apply To All',
     ribbonBgApplyAllTip: 'Apply background color {color} to all slides',
     ribbonGroupTransitionToThis: 'Transition to This Slide',
+    ribbonAutoAdvance: 'Auto-Advance',
+    ribbonAutoAdvanceTip:
+      'When checked, this slide auto-advances to the next after the given seconds (stored as advTm in the pptx)',
     ribbonNone: 'None',
     ribbonTransMorph: 'Morph',
     ribbonTransFade: 'Fade',
@@ -1736,6 +1741,9 @@ export const ribbonStrings = defineStrings({
     ribbonBgApplyAllTip: '背景色 {color} をすべてのスライドに適用',
     // Transitions
     ribbonGroupTransitionToThis: '画面切り替え',
+    ribbonAutoAdvance: '自動的に切り替え',
+    ribbonAutoAdvanceTip:
+      'オンにすると、指定した秒数経過後に次のスライドへ自動的に切り替わります（pptx の advTm に保存）',
     ribbonNone: 'なし',
     ribbonTransMorph: '変形',
     ribbonTransFade: 'フェード',
@@ -2477,6 +2485,9 @@ export const ribbonStrings = defineStrings({
     ribbonBgApplyAllTip: '배경색 {color}을(를) 모든 슬라이드에 적용',
     // Transitions
     ribbonGroupTransitionToThis: '화면 전환',
+    ribbonAutoAdvance: '자동 전환',
+    ribbonAutoAdvanceTip:
+      '체크 시 지정한 초가 지나면 다음 슬라이드로 자동 전환됩니다(pptx의 advTm에 저장)',
     ribbonNone: '없음',
     ribbonTransMorph: '모핑',
     ribbonTransFade: '밝기 변화',
@@ -3222,6 +3233,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Appliquer à toutes',
     ribbonBgApplyAllTip: "Appliquer la couleur d'arrière-plan {color} à toutes les diapositives",
     ribbonGroupTransitionToThis: 'Accès à cette diapositive',
+    ribbonAutoAdvance: 'Avance automatique',
+    ribbonAutoAdvanceTip:
+      'Si coché, cette diapositive passe automatiquement à la suivante après le nombre de secondes indiqué (stocké comme advTm dans le pptx)',
     ribbonNone: 'Aucune',
     ribbonTransMorph: 'Morphose',
     ribbonTransFade: 'Fondu',
@@ -3972,6 +3986,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Für alle übernehmen',
     ribbonBgApplyAllTip: 'Hintergrundfarbe {color} auf alle Folien anwenden',
     ribbonGroupTransitionToThis: 'Übergang zu dieser Folie',
+    ribbonAutoAdvance: 'Automatischer Wechsel',
+    ribbonAutoAdvanceTip:
+      'Aktiviert wechselt diese Folie nach den angegebenen Sekunden automatisch zur nächsten (als advTm in der pptx gespeichert)',
     ribbonNone: 'Ohne',
     ribbonTransMorph: 'Morphen',
     ribbonTransFade: 'Verblassen',
@@ -4716,6 +4733,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Aplicar a todo',
     ribbonBgApplyAllTip: 'Aplicar el color de fondo {color} a todas las diapositivas',
     ribbonGroupTransitionToThis: 'Transición a esta diapositiva',
+    ribbonAutoAdvance: 'Avance automático',
+    ribbonAutoAdvanceTip:
+      'Si se marca, esta diapositiva avanza automáticamente a la siguiente tras los segundos indicados (se guarda como advTm en el pptx)',
     ribbonNone: 'Ninguna',
     ribbonTransMorph: 'Transformación',
     ribbonTransFade: 'Desvanecer',
@@ -5451,6 +5471,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'ใช้กับทั้งหมด',
     ribbonBgApplyAllTip: 'ใช้สีพื้นหลัง {color} กับทุกสไลด์',
     ribbonGroupTransitionToThis: 'การเปลี่ยนไปยังสไลด์นี้',
+    ribbonAutoAdvance: 'เปลี่ยนสไลด์อัตโนมัติ',
+    ribbonAutoAdvanceTip:
+      'เมื่อเลือก สไลด์นี้จะเปลี่ยนไปสไลด์ถัดไปอัตโนมัติหลังตามวินาทีที่ระบุ (บันทึกเป็น advTm ใน pptx)',
     ribbonNone: 'ไม่มี',
     ribbonTransMorph: 'มอร์ฟ',
     ribbonTransFade: 'จาง',
@@ -6178,6 +6201,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Terapkan ke Semua',
     ribbonBgApplyAllTip: 'Terapkan warna latar belakang {color} ke semua slide',
     ribbonGroupTransitionToThis: 'Transisi ke Slide Ini',
+    ribbonAutoAdvance: 'Transisi Otomatis',
+    ribbonAutoAdvanceTip:
+      'Saat dicentang, slide ini beralih otomatis ke slide berikutnya setelah detik yang ditentukan (disimpan sebagai advTm di pptx)',
     ribbonNone: 'Tidak Ada',
     ribbonTransMorph: 'Morf',
     ribbonTransFade: 'Memudar',
@@ -6911,6 +6937,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Применить ко всем',
     ribbonBgApplyAllTip: 'Применить цвет фона {color} ко всем слайдам',
     ribbonGroupTransitionToThis: 'Переход к этому слайду',
+    ribbonAutoAdvance: 'Автоматически',
+    ribbonAutoAdvanceTip:
+      'Если включено, слайд автоматически сменится следующим через указанное количество секунд (сохраняется как advTm в pptx)',
     ribbonNone: 'Нет',
     ribbonTransMorph: 'Трансформация',
     ribbonTransFade: 'Выцветание',
@@ -7638,6 +7667,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'تطبيق على الكل',
     ribbonBgApplyAllTip: 'تطبيق لون الخلفية {color} على كل الشرائح',
     ribbonGroupTransitionToThis: 'الانتقال إلى هذه الشريحة',
+    ribbonAutoAdvance: 'تبديل تلقائي',
+    ribbonAutoAdvanceTip:
+      'عند التحديد، تنتقل هذه الشريحة تلقائياً إلى التالية بعد الثواني المحددة (تُحفظ كـ advTm في ملف pptx)',
     ribbonNone: 'بلا',
     ribbonTransMorph: 'تحوّل',
     ribbonTransFade: 'تلاشي',
@@ -8366,6 +8398,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Aplicar a Todos',
     ribbonBgApplyAllTip: 'Aplicar a cor de plano de fundo {color} a todos os slides',
     ribbonGroupTransitionToThis: 'Transição para Este Slide',
+    ribbonAutoAdvance: 'Transição automática',
+    ribbonAutoAdvanceTip:
+      'Se marcado, este slide avança automaticamente para o próximo após os segundos indicados (salvo como advTm no pptx)',
     ribbonNone: 'Nenhuma',
     ribbonTransMorph: 'Transformar',
     ribbonTransFade: 'Esmaecer',
@@ -9111,6 +9146,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Applica a Tutte',
     ribbonBgApplyAllTip: 'Applica il colore di sfondo {color} a tutte le diapositive',
     ribbonGroupTransitionToThis: 'Transizione alla Diapositiva',
+    ribbonAutoAdvance: 'Avanzamento automatico',
+    ribbonAutoAdvanceTip:
+      'Se selezionato, questa diapositiva avanza automaticamente alla successiva dopo i secondi indicati (salvato come advTm nel pptx)',
     ribbonNone: 'Nessuna',
     ribbonTransMorph: 'Morphing',
     ribbonTransFade: 'Dissolvenza',
@@ -9850,6 +9888,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Zastosuj do wszystkich',
     ribbonBgApplyAllTip: 'Zastosuj kolor tła {color} do wszystkich slajdów',
     ribbonGroupTransitionToThis: 'Przejście do tego slajdu',
+    ribbonAutoAdvance: 'Automatycznie',
+    ribbonAutoAdvanceTip:
+      'Po zaznaczeniu slajd automatycznie przejdzie do następnego po podanej liczbie sekund (zapisywane jako advTm w pptx)',
     ribbonNone: 'Brak',
     ribbonTransMorph: 'Przekształcenie',
     ribbonTransFade: 'Zanikanie',
@@ -10590,6 +10631,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Op alles toepassen',
     ribbonBgApplyAllTip: "Achtergrondkleur {color} op alle dia's toepassen",
     ribbonGroupTransitionToThis: 'Overgang naar deze dia',
+    ribbonAutoAdvance: 'Automatisch',
+    ribbonAutoAdvanceTip:
+      'Indien aangevinkt, gaat deze dia automatisch naar de volgende na de opgegeven seconden (opgeslagen als advTm in de pptx)',
     ribbonNone: 'Geen',
     ribbonTransMorph: 'Morphing',
     ribbonTransFade: 'Vervagen',
@@ -11331,6 +11375,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'Gunakan pada Semua',
     ribbonBgApplyAllTip: 'Gunakan warna latar belakang {color} pada semua slaid',
     ribbonGroupTransitionToThis: 'Peralihan ke Slaid Ini',
+    ribbonAutoAdvance: 'Peralihan Automatik',
+    ribbonAutoAdvanceTip:
+      'Jika ditandai, slaid ini bergerak secara automatik ke slaid seterusnya selepas bilangan saat yang diberi (disimpan sebagai advTm dalam pptx)',
     ribbonNone: 'Tiada',
     ribbonTransMorph: 'Morf',
     ribbonTransFade: 'Pudar',
@@ -12056,6 +12103,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'החל על הכל',
     ribbonBgApplyAllTip: 'החלת צבע הרקע {color} על כל השקופיות',
     ribbonGroupTransitionToThis: 'מעבר לשקופית זו',
+    ribbonAutoAdvance: 'מעבר אוטומטי',
+    ribbonAutoAdvanceTip:
+      'כאשר מסומן, השקופית הזו עוברת אוטומטית לבאה לאחר מספר השניות שצוין (נשמר כ-advTm בקובץ ה-pptx)',
     ribbonNone: 'ללא',
     ribbonTransMorph: 'מורף',
     ribbonTransFade: 'עמעום',
@@ -12778,6 +12828,9 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: 'सभी पर लागू करें',
     ribbonBgApplyAllTip: 'पृष्ठभूमि रंग {color} सभी स्लाइड पर लागू करें',
     ribbonGroupTransitionToThis: 'इस स्लाइड में ट्रांज़िशन',
+    ribbonAutoAdvance: 'स्वतः आगे बढ़ें',
+    ribbonAutoAdvanceTip:
+      'चुने जाने पर यह स्लाइड दिए गए सेकंड के बाद अगली स्लाइड पर स्वतः चली जाएगी (pptx में advTm के रूप में सहेजा जाता है)',
     ribbonNone: 'कोई नहीं',
     ribbonTransMorph: 'मॉर्फ़',
     ribbonTransFade: 'फ़ेड',
@@ -13494,6 +13547,8 @@ export const ribbonStrings = defineStrings({
     ribbonApplyToAll: '套用到全部',
     ribbonBgApplyAllTip: '把背景色 {color} 套用到全部頁',
     ribbonGroupTransitionToThis: '切換到此投影片',
+    ribbonAutoAdvance: '自動換片',
+    ribbonAutoAdvanceTip: '勾選後，目前頁面停留指定秒數後自動切換到下一頁（儲存到 pptx 的 advTm）',
     ribbonNone: '無',
     ribbonTransMorph: '轉化',
     ribbonTransFade: '淡化',

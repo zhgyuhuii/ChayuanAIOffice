@@ -317,7 +317,7 @@ export function App() {
   // Font store changed (download / local install): re-register FontFaces, refresh the banner
   useEffect(
     () =>
-      window.slidesApi.onFontsChanged?.(() => {
+      window.slidesApi?.onFontsChanged?.(() => {
         void syncPrivateFonts()
         refreshMissingFonts()
       }),
@@ -409,7 +409,7 @@ export function App() {
   )
   useEffect(() => {
     localStorage.setItem('ai-slides-auto-save', autoSave ? '1' : '0')
-    window.slidesApi.setAutoSavePref?.(autoSave)
+    window.slidesApi?.setAutoSavePref?.(autoSave)
   }, [autoSave])
   const [showAi, setShowAi] = useState(() => localStorage.getItem('ai-slides-show-ai') !== '0')
   const [showFormat, setShowFormat] = useState(false)
@@ -433,7 +433,7 @@ export function App() {
   const [hasClipboard, setHasClipboard] = useState(false)
   // The clipboard is app-wide (copies land from other windows) and external content counts too
   useEffect(() => {
-    const probe = () => void window.slidesApi.clipboardProbe().then(setHasClipboard)
+    const probe = () => void window.slidesApi?.clipboardProbe?.().then(setHasClipboard)
     probe()
     window.addEventListener('focus', probe)
     return () => window.removeEventListener('focus', probe)
@@ -1538,10 +1538,32 @@ export function App() {
   const toggleScreenRecord = useCallback(() => insertActions.toggleScreenRecord(ctxRef.current), [])
 
   // Reflect the current page's transition effect on page/document changes
+  const [advanceMs, setAdvanceMs] = useState<number | null>(null)
+  useEffect(() => {
+    if (!hasDoc) {
+      setAdvanceMs(null)
+      return
+    }
+    // web shim's generic safe-empty returns undefined; the model says null
+    void window.slidesApi
+      .getAdvanceTime(current)
+      .then((ms) => setAdvanceMs(typeof ms === 'number' ? ms : null))
+  }, [hasDoc, current, path])
   useEffect(() => {
     if (!hasDoc) return
     void window.slidesApi.getTransition(current).then(setTransition)
   }, [hasDoc, current, path])
+
+  /** Transitions tab 换片方式: set/clear this page's auto-advance (<p:transition advTm>) */
+  const applyAdvanceTime = useCallback(
+    (ms: number | null) => {
+      setAdvanceMs(ms) // optimistic; the write echoes through ops/save anyway
+      void window.slidesApi.setAdvanceTimes({ times: [{ slideIndex: current, ms }] }).then((ok) => {
+        if (ok) setDirty(true)
+      })
+    },
+    [current],
+  )
 
   const applyTransition = useCallback(
     (kind: TransitionKind, allSlides: boolean) =>
@@ -2925,6 +2947,8 @@ export function App() {
           void applyTransition(kind, all)
           if (!all) previewTransitionOnCanvas(kind)
         }}
+        advanceMs={advanceMs}
+        onAdvanceTime={applyAdvanceTime}
         selectedAnimEffect={selectedAnimEffect}
         timingAnim={timingIdx >= 0 ? animations[timingIdx]! : null}
         onApplyAnimation={applyAnimation}

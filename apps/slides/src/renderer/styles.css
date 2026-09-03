@@ -4844,6 +4844,27 @@ body.vib .slide-list {
   width: 58px;
 }
 
+/* Transitions tab 换片方式: auto-advance checkbox + seconds input (advTm) */
+.rb-trans-advance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.rb-trans-advance input {
+  width: 58px;
+  font-size: 12px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+}
+
 /* ── Animation pane (reuses the comments-pane skeleton) ───────────────── */
 
 .anim-pane .comments-list {
@@ -8249,12 +8270,19 @@ body.show-curtain::after {
 }
 
 /* collapsed-group flyout: the group's original controls in a floating row
- * (PowerPoint's responsive ribbon) */
+ * (PowerPoint's responsive ribbon). The animation group folds at ordinary
+ * window widths and its 20 buttons measure ~1500px on one row — wider than
+ * the window, so the row wraps inside a capped panel instead of running past
+ * the viewport edge (clipped, last buttons unreachable). */
 .rb-collapse-panel {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
   padding: 6px 8px;
+  max-width: min(640px, 50vw);
+  max-height: min(60vh, 300px);
+  overflow-y: auto;
 }
 
 /* ── Layout picker panel ──────────────────────────────────────────────── */
