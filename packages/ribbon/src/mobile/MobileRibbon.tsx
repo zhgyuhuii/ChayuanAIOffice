@@ -56,11 +56,12 @@ export function MobileRibbon<TState, TServices>(props: MobileRibbonProps<TState,
 
   const ctx = useMemo(() => ({ state, services }), [state, services])
   const [openId, setOpenId] = useState<string | null>(null)
-  const dropdown = useMemo(
+  const dropdown = useMemo<RibbonDropdownApi>(
     () => ({
       openId,
       isOpen: (id: string) => openId === id,
       toggle: (id: string) => setOpenId((current) => (current === id ? null : id)),
+      open: (id: string) => setOpenId(id),
       close: () => setOpenId(null),
     }),
     [openId],
@@ -179,9 +180,16 @@ function ToolsSheet<TState, TServices>({
         ))}
       </div>
       {displayedTab
-        ? displayedTab.groups
-            .filter((group) => evaluateWhen(group.when, env.ctx.state))
-            .map((group) => <GroupSection key={group.id} group={group} />)
+        ? displayedTab.renderBody
+          ? displayedTab.renderBody({
+              state: env.ctx.state,
+              services: env.ctx.services,
+              t: env.t,
+              dropdown: env.dropdown,
+            })
+          : displayedTab.groups
+              .filter((group) => evaluateWhen(group.when, env.ctx.state))
+              .map((group) => <GroupSection key={group.id} group={group} />)
         : null}
     </>
   )
@@ -229,6 +237,7 @@ function MenuRows<TState, TServices>({
           >
             {renderIcon(env, item.icon)}
             <span className="mrib-row-label">{env.t(item.labelKey)}</span>
+            {item.shortcut ? <span className="file-menu-key">{item.shortcut}</span> : null}
           </button>
         )
       })}

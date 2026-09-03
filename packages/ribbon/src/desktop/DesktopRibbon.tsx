@@ -69,6 +69,7 @@ export function DesktopRibbon<TState, TServices>(props: DesktopRibbonProps<TStat
       openId,
       isOpen: (id) => openId === id,
       toggle: (id) => setOpenId((current) => (current === id ? null : id)),
+      open: (id) => setOpenId(id),
       close: () => setOpenId(null),
     }),
     [openId],

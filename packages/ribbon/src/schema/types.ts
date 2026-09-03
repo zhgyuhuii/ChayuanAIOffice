@@ -21,6 +21,8 @@ export interface RibbonDropdownApi {
   readonly openId: string | null
   readonly isOpen: (id: string) => boolean
   readonly toggle: (id: string) => void
+  /** Open a specific panel (legacy adapters map absolute setDropdown calls). */
+  readonly open: (id: string) => void
   readonly close: () => void
 }
 

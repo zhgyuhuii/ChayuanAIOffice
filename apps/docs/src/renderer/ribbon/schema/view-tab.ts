@@ -13,6 +13,7 @@
 import { commandId, type RibbonSchema, type RibbonTab } from '@chatoffice/ribbon'
 import type { DocsCommandState } from '../command-state'
 import type { DocsCommandServices } from '../host-services'
+import { FILE_TAB, HOSTED_TABS } from './host-tabs'
 
 type S = DocsCommandState
 type Sv = DocsCommandServices
@@ -175,12 +176,15 @@ export const VIEW_TAB: RibbonTab<S, Sv> = {
 }
 
 /**
- * The docs schema: tabs migrated so far. The legacy Ribbon keeps rendering
- * everything else until each tab's slice lands (strangler order in the file
- * comment). Version bumps per migration slice.
+ * The docs schema: tabs migrated so far. The file menu is fully declarative
+ * (three command-backed items); the extracted tab components render through
+ * renderBody hosts (host-tabs.tsx); the View tab is fully declarative. The
+ * legacy Ribbon keeps rendering home + the contextual tabs until their
+ * slices land (strangler order in the file comment). Version bumps per
+ * migration slice.
  */
 export const DOCS_SCHEMA: RibbonSchema<S, Sv> = {
   id: 'docs',
-  version: 1,
-  tabs: [VIEW_TAB],
+  version: 2,
+  tabs: [FILE_TAB, ...HOSTED_TABS, VIEW_TAB],
 }
