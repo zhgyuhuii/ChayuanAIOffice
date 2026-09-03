@@ -332,10 +332,20 @@ textarea:disabled {
   /* minmax(0, 1fr) column: the ribbon's min-content width must clip at the
      viewport instead of stretching the whole shell past it. */
   grid-template-columns: minmax(0, 1fr);
-  /* header / body (AI panel + sheet column, status bar inside the sheet column) */
-  grid-template-rows: auto minmax(0, 1fr);
+  /* single row: the header lives INSIDE the DockShell body now, so a left/right
+     docked AI panel spans the full window height, level with the ribbon */
+  grid-template-rows: minmax(0, 1fr);
   height: 100vh;
   background: var(--surface);
+}
+
+/* ribbon + sheet column stacked; the AI panel docks beside this whole column */
+.editor-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
 }
 
 /* Excel's formula-bar row: Name Box (plus its Go To arrow) for now. */

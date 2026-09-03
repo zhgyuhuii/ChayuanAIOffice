@@ -8766,3 +8766,13 @@ body.show-curtain::after {
   flex: 1;
   min-width: 0;
 }
+
+/* ribbon + editor stacked inside the dock body — a left/right docked AI panel
+   spans the full window height, level with the ribbon's top edge */
+.editor-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}

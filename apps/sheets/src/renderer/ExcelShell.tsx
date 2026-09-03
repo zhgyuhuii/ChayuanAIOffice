@@ -472,141 +472,9 @@ export function ExcelShell({
 
   return (
     <main className="app-shell">
-      <header className="excel-header">
-        <nav
-          className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
-          aria-label="Workbook commands"
-        >
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appSaveTitle')}
-            aria-label={t('appSaveTitle')}
-            disabled={!canSave}
-            onClick={onSave}
-          >
-            <SaveIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={saveAsTitle}
-            aria-label={saveAsTitle}
-            disabled={!canSaveAs}
-            onClick={onSaveAs}
-          >
-            <SaveAsIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appUndo')}
-            aria-label={t('appUndo')}
-            disabled={!canUndo}
-            onClick={() => onUndo()}
-          >
-            <UndoIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appRedo')}
-            aria-label={t('appRedo')}
-            disabled={!canRedo}
-            onClick={onRedo}
-          >
-            <RedoIcon />
-          </button>
-          <label
-            className={`autosave-toggle ${autoSave ? 'on' : ''}`}
-            data-tip={t('appAutoSaveTip')}
-          >
-            <span className="autosave-knob" />
-            <span className="autosave-text">{t('appAutoSave')}</span>
-            <input
-              type="checkbox"
-              checked={autoSave}
-              onChange={(e) => onAutoSaveChange(e.target.checked)}
-            />
-          </label>
-          <span className="qa-sep" aria-hidden="true" />
-          {visibleTabs.map((tab) => (
-            <button
-              className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' ? 'contextual' : ''}`}
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-            >
-              {t(TAB_LABEL[tab])}
-            </button>
-          ))}
-          <span className="ribbon-tabs-spacer" />
-          <span className="workbook-status" role="status" aria-live="polite">
-            {statusMessage}
-          </span>
-          <AiPanelToggle
-            open={isCopilotOpen}
-            onToggle={() => setIsCopilotOpen((open) => !open)}
-            label={t('aiOpenAssistant')}
-          />
-        </nav>
-
-        <Ribbon
-          activeTab={activeTab}
-          selectionFormat={selectionFormat}
-          sheetHasContent={sheetHasContent}
-          sheetProtected={onGetSheetProtection()}
-          workbookProtected={onGetWorkbookProtection()}
-          formulaBarVisible={formulaBarVisible}
-          crossHighlightVisible={crossHighlightVisible}
-          pageLayout={pageLayout}
-          selectedChart={selectedChart}
-          onListNames={() => {
-            // Names scoped to another sheet resolve to #NAME? here; only
-            // workbook-scoped and active-sheet names are usable in a formula.
-            const data = onGetDefinedNames()
-            return data.names
-              .filter(
-                (entry) => entry.scopeSheetId === null || entry.scopeSheetId === data.activeSheetId,
-              )
-              .map((entry) => entry.name)
-          }}
-          calcManual={calcManual}
-          onRefreshPivot={onRefreshPivot}
-          onIsSelectionInPivot={onIsSelectionInPivot}
-          onCommand={(command) => {
-            if (command === 'format-cells') setShowFormatCells(true)
-            else if (command === 'row-height-open') setAxisSizeTarget('row')
-            else if (command === 'col-width-open') setAxisSizeTarget('col')
-            else if (command === 'link-open') setShowLinkDialog(true)
-            else if (command === 'sort-custom-open') setShowSortDialog(true)
-            else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
-            else if (command === 'name-manager-open') setShowNameManager(true)
-            else if (command === 'pivot-open') setShowPivotDialog(true)
-            else if (command === 'pivot-edit') setPivotEditSeed(onGetPivotEditSeed())
-            else if (command === 'insert-function-open') setInsertFunctionCat('All')
-            else if (command.startsWith('insert-function-open:'))
-              setInsertFunctionCat(command.slice('insert-function-open:'.length))
-            else if (command === 'goal-seek-open') setShowGoalSeek(true)
-            else if (command === 'subtotal-open') setShowSubtotalDialog(true)
-            else if (command === 'consolidate-open') setShowConsolidateDialog(true)
-            else if (command === 'goto-open') setShowGoTo(true)
-            else if (command === 'header-footer-open') setShowHeaderFooter(true)
-            else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
-            else if (command === 'ai-open-panel') setIsCopilotOpen(true)
-            else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
-            else if (command === 'chart-element-title') setChartTextTarget('title')
-            else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
-            else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
-            else onCommand(command)
-          }}
-          onAiRun={(nextPrompt) => {
-            setIsCopilotOpen(true)
-            onSend(nextPrompt)
-          }}
-        />
-      </header>
-
-      {/* AI panel docks around the sheet in any of 4 layouts (shared DockShell) */}
+      {/* AI panel docks around the whole editor column (ribbon included) in any
+          of 4 layouts (shared DockShell) — a left/right dock runs level with the
+          ribbon's top edge instead of below it */}
       <DockShell
         className="sheet-body"
         storageKey="aisheets.dock"
@@ -654,67 +522,204 @@ export function ExcelShell({
           />
         )}
       >
-        <div className="sheet-main">
-          {/* Excel's formula-bar row, Name Box only for now (fx bar TBD). */}
-          <div className="name-box-bar">
-            <NameBox activeCellA1={activeCellA1} onGoTo={onGoToReference} />
-            <button
-              className="name-box-goto"
-              data-tip={t('appGoToButtonTitle')}
-              aria-label="Go To"
-              onClick={() => setShowGoTo(true)}
+        <div className="editor-col">
+          <header className="excel-header">
+            <nav
+              className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
+              aria-label="Workbook commands"
             >
-              ▾
-            </button>
-          </div>
-          <section className="workbook-area">
-            <div id="univer-container" className="spreadsheet" />
-          </section>
-          {aiSelectionAskAnchor && aiScopeRange && !aiBusy && (
-            <AiSelectionAsk
-              anchor={aiSelectionAskAnchor}
-              range={aiScopeRange}
-              onDismiss={onAiSelectionAskDismiss}
-              onSend={(instruction) => {
+              <button
+                type="button"
+                className="qa-btn"
+                data-tip={t('appSaveTitle')}
+                aria-label={t('appSaveTitle')}
+                disabled={!canSave}
+                onClick={onSave}
+              >
+                <SaveIcon />
+              </button>
+              <button
+                type="button"
+                className="qa-btn"
+                data-tip={saveAsTitle}
+                aria-label={saveAsTitle}
+                disabled={!canSaveAs}
+                onClick={onSaveAs}
+              >
+                <SaveAsIcon />
+              </button>
+              <button
+                type="button"
+                className="qa-btn"
+                data-tip={t('appUndo')}
+                aria-label={t('appUndo')}
+                disabled={!canUndo}
+                onClick={() => onUndo()}
+              >
+                <UndoIcon />
+              </button>
+              <button
+                type="button"
+                className="qa-btn"
+                data-tip={t('appRedo')}
+                aria-label={t('appRedo')}
+                disabled={!canRedo}
+                onClick={onRedo}
+              >
+                <RedoIcon />
+              </button>
+              <label
+                className={`autosave-toggle ${autoSave ? 'on' : ''}`}
+                data-tip={t('appAutoSaveTip')}
+              >
+                <span className="autosave-knob" />
+                <span className="autosave-text">{t('appAutoSave')}</span>
+                <input
+                  type="checkbox"
+                  checked={autoSave}
+                  onChange={(e) => onAutoSaveChange(e.target.checked)}
+                />
+              </label>
+              <span className="qa-sep" aria-hidden="true" />
+              {visibleTabs.map((tab) => (
+                <button
+                  className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' ? 'contextual' : ''}`}
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {t(TAB_LABEL[tab])}
+                </button>
+              ))}
+              <span className="ribbon-tabs-spacer" />
+              <span className="workbook-status" role="status" aria-live="polite">
+                {statusMessage}
+              </span>
+              <AiPanelToggle
+                open={isCopilotOpen}
+                onToggle={() => setIsCopilotOpen((open) => !open)}
+                label={t('aiOpenAssistant')}
+              />
+            </nav>
+
+            <Ribbon
+              activeTab={activeTab}
+              selectionFormat={selectionFormat}
+              sheetHasContent={sheetHasContent}
+              sheetProtected={onGetSheetProtection()}
+              workbookProtected={onGetWorkbookProtection()}
+              formulaBarVisible={formulaBarVisible}
+              crossHighlightVisible={crossHighlightVisible}
+              pageLayout={pageLayout}
+              selectedChart={selectedChart}
+              onListNames={() => {
+                // Names scoped to another sheet resolve to #NAME? here; only
+                // workbook-scoped and active-sheet names are usable in a formula.
+                const data = onGetDefinedNames()
+                return data.names
+                  .filter(
+                    (entry) =>
+                      entry.scopeSheetId === null || entry.scopeSheetId === data.activeSheetId,
+                  )
+                  .map((entry) => entry.name)
+              }}
+              calcManual={calcManual}
+              onRefreshPivot={onRefreshPivot}
+              onIsSelectionInPivot={onIsSelectionInPivot}
+              onCommand={(command) => {
+                if (command === 'format-cells') setShowFormatCells(true)
+                else if (command === 'row-height-open') setAxisSizeTarget('row')
+                else if (command === 'col-width-open') setAxisSizeTarget('col')
+                else if (command === 'link-open') setShowLinkDialog(true)
+                else if (command === 'sort-custom-open') setShowSortDialog(true)
+                else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
+                else if (command === 'name-manager-open') setShowNameManager(true)
+                else if (command === 'pivot-open') setShowPivotDialog(true)
+                else if (command === 'pivot-edit') setPivotEditSeed(onGetPivotEditSeed())
+                else if (command === 'insert-function-open') setInsertFunctionCat('All')
+                else if (command.startsWith('insert-function-open:'))
+                  setInsertFunctionCat(command.slice('insert-function-open:'.length))
+                else if (command === 'goal-seek-open') setShowGoalSeek(true)
+                else if (command === 'subtotal-open') setShowSubtotalDialog(true)
+                else if (command === 'consolidate-open') setShowConsolidateDialog(true)
+                else if (command === 'goto-open') setShowGoTo(true)
+                else if (command === 'header-footer-open') setShowHeaderFooter(true)
+                else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
+                else if (command === 'ai-open-panel') setIsCopilotOpen(true)
+                else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
+                else if (command === 'chart-element-title') setChartTextTarget('title')
+                else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
+                else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
+                else onCommand(command)
+              }}
+              onAiRun={(nextPrompt) => {
                 setIsCopilotOpen(true)
-                onSend(instruction)
+                onSend(nextPrompt)
               }}
             />
-          )}
+          </header>
 
-          {/* Status bar spans the sheet column only — the AI dock keeps the full window height (unified with docs/slides). */}
-          <footer className="status-bar">
-            <div className="status-left">
-              <span className="status-msg">{statusMessage}</span>
-            </div>
-            <div className="status-right">
+          <div className="sheet-main">
+            {/* Excel's formula-bar row, Name Box only for now (fx bar TBD). */}
+            <div className="name-box-bar">
+              <NameBox activeCellA1={activeCellA1} onGoTo={onGoToReference} />
               <button
-                className="zoom-btn"
-                data-tip={t('appZoomOut')}
-                aria-label={t('appZoomOut')}
-                onClick={() => onCommand('zoom-out')}
+                className="name-box-goto"
+                data-tip={t('appGoToButtonTitle')}
+                aria-label="Go To"
+                onClick={() => setShowGoTo(true)}
               >
-                −
+                ▾
               </button>
-              <input
-                className="zoom-slider"
-                type="range"
-                min={50}
-                max={400}
-                value={Math.min(400, Math.max(50, zoomPercent))}
-                onChange={(event) => onCommand(`zoom:${event.target.value}`)}
+            </div>
+            <section className="workbook-area">
+              <div id="univer-container" className="spreadsheet" />
+            </section>
+            {aiSelectionAskAnchor && aiScopeRange && !aiBusy && (
+              <AiSelectionAsk
+                anchor={aiSelectionAskAnchor}
+                range={aiScopeRange}
+                onDismiss={onAiSelectionAskDismiss}
+                onSend={(instruction) => {
+                  setIsCopilotOpen(true)
+                  onSend(instruction)
+                }}
               />
-              <button
-                className="zoom-btn"
-                data-tip={t('appZoomIn')}
-                aria-label={t('appZoomIn')}
-                onClick={() => onCommand('zoom-in')}
-              >
-                +
-              </button>
-              <span className="zoom-value">{zoomPercent}%</span>
-            </div>
-          </footer>
+            )}
+
+            {/* Status bar spans the sheet column only — the AI dock keeps the full window height (unified with docs/slides). */}
+            <footer className="status-bar">
+              <div className="status-left">
+                <span className="status-msg">{statusMessage}</span>
+              </div>
+              <div className="status-right">
+                <button
+                  className="zoom-btn"
+                  data-tip={t('appZoomOut')}
+                  aria-label={t('appZoomOut')}
+                  onClick={() => onCommand('zoom-out')}
+                >
+                  −
+                </button>
+                <input
+                  className="zoom-slider"
+                  type="range"
+                  min={50}
+                  max={400}
+                  value={Math.min(400, Math.max(50, zoomPercent))}
+                  onChange={(event) => onCommand(`zoom:${event.target.value}`)}
+                />
+                <button
+                  className="zoom-btn"
+                  data-tip={t('appZoomIn')}
+                  aria-label={t('appZoomIn')}
+                  onClick={() => onCommand('zoom-in')}
+                >
+                  +
+                </button>
+                <span className="zoom-value">{zoomPercent}%</span>
+              </div>
+            </footer>
+          </div>
         </div>
       </DockShell>
       {showFormatCells && (
@@ -1222,7 +1227,6 @@ function LinkDialog({
 function Ribbon({
   activeTab,
   selectionFormat,
-  sheetHasContent,
   sheetProtected,
   workbookProtected,
   formulaBarVisible,

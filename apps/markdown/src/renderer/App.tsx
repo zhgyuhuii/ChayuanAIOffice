@@ -587,22 +587,6 @@ export default function App() {
 
   return (
     <div className="app">
-      <Ribbon
-        editor={editor}
-        disabled={status !== 'ready'}
-        dirty={dirty}
-        onSave={() => void doSave('save')}
-        autoSave={autoSave}
-        onToggleAutoSave={setAutoSave}
-        imageEnabled={Boolean(filePath)}
-        onInsertImage={insertImage}
-        frontmatterOpen={fmOpen}
-        onToggleFrontmatter={() => setFmOpen((v) => !v)}
-        aiPanelAvailable={status === 'ready'}
-        aiPanelOpen={aiOpen}
-        onToggleAiPanel={() => setAiOpen((v) => !v)}
-      />
-      {status === 'loading' && <div className="center-note">{t('loading')}</div>}
       <DockShell
         className="app-main"
         style={status === 'ready' ? undefined : { display: 'none' }}
@@ -637,52 +621,72 @@ export default function App() {
           />
         )}
       >
-        <div className="app-content">
-          <div className="editor-scroll" ref={scrollRef}>
-            <div className="doc-page" style={{ zoom: zoom / 100 }}>
-              {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
-              <EditorContent editor={editor} />
+        <div className="editor-col">
+          {/* ribbon inside the dock body: a left/right docked AI panel spans the
+              full window height, level with the ribbon's top edge */}
+          <Ribbon
+            editor={editor}
+            disabled={status !== 'ready'}
+            dirty={dirty}
+            onSave={() => void doSave('save')}
+            autoSave={autoSave}
+            onToggleAutoSave={setAutoSave}
+            imageEnabled={Boolean(filePath)}
+            onInsertImage={insertImage}
+            frontmatterOpen={fmOpen}
+            onToggleFrontmatter={() => setFmOpen((v) => !v)}
+            aiPanelAvailable={status === 'ready'}
+            aiPanelOpen={aiOpen}
+            onToggleAiPanel={() => setAiOpen((v) => !v)}
+          />
+          {status === 'loading' && <div className="center-note">{t('loading')}</div>}
+          <div className="app-content">
+            <div className="editor-scroll" ref={scrollRef}>
+              <div className="doc-page" style={{ zoom: zoom / 100 }}>
+                {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
+                <EditorContent editor={editor} />
+              </div>
             </div>
+            <footer className="status-bar">
+              <div className="status-left">
+                {fileName && <span className="status-item status-file">{fileName}</span>}
+              </div>
+              <div className="status-right">
+                {statusText && (
+                  <span className={`status-save status-${saveState}`}>{statusText}</span>
+                )}
+                <button
+                  type="button"
+                  className="zoom-btn"
+                  aria-label="Zoom out"
+                  onClick={zoomOut}
+                  disabled={zoom <= MIN_ZOOM}
+                >
+                  −
+                </button>
+                <input
+                  className="zoom-slider"
+                  type="range"
+                  min={MIN_ZOOM}
+                  max={MAX_ZOOM}
+                  step={ZOOM_STEP}
+                  value={Math.round(zoom)}
+                  aria-label="Zoom"
+                  onChange={(event) => setZoom(Number(event.target.value))}
+                />
+                <button
+                  type="button"
+                  className="zoom-btn"
+                  aria-label="Zoom in"
+                  onClick={zoomIn}
+                  disabled={zoom >= MAX_ZOOM}
+                >
+                  +
+                </button>
+                <span className="zoom-value">{Math.round(zoom)}%</span>
+              </div>
+            </footer>
           </div>
-          <footer className="status-bar">
-            <div className="status-left">
-              {fileName && <span className="status-item status-file">{fileName}</span>}
-            </div>
-            <div className="status-right">
-              {statusText && (
-                <span className={`status-save status-${saveState}`}>{statusText}</span>
-              )}
-              <button
-                type="button"
-                className="zoom-btn"
-                aria-label="Zoom out"
-                onClick={zoomOut}
-                disabled={zoom <= MIN_ZOOM}
-              >
-                −
-              </button>
-              <input
-                className="zoom-slider"
-                type="range"
-                min={MIN_ZOOM}
-                max={MAX_ZOOM}
-                step={ZOOM_STEP}
-                value={Math.round(zoom)}
-                aria-label="Zoom"
-                onChange={(event) => setZoom(Number(event.target.value))}
-              />
-              <button
-                type="button"
-                className="zoom-btn"
-                aria-label="Zoom in"
-                onClick={zoomIn}
-                disabled={zoom >= MAX_ZOOM}
-              >
-                +
-              </button>
-              <span className="zoom-value">{Math.round(zoom)}%</span>
-            </div>
-          </footer>
         </div>
       </DockShell>
       <SlashMenu ref={slashMenuRef} state={slashState} onDismiss={() => setSlashState(null)} />

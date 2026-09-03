@@ -4497,45 +4497,6 @@ export function App() {
         <style>{`.editor-scroll .doc-page { column-count: ${colFlow.cols}; column-gap: ${colFlow.gapPx}px; column-fill: balance; }
 .editor-scroll .doc-page.measuring-columns { column-count: auto; width: ${colFlow.colWidthPx + twipsToPx(canvasSection?.marginLeft ?? section?.marginLeft ?? 0) + twipsToPx(canvasSection?.marginRight ?? section?.marginRight ?? 0)}px; }`}</style>
       )}
-      {/* 移动换装:MobileRibbon 条(文件/视图导航/AI)+ 旧 Ribbon 只渲染 body;
-          桌面保持原样。body 的全部机制(含 home/上下文 tab)由旧壳提供,
-          schema 迁移完成后 body 逐步换成声明式渲染 */}
-      <Ribbon
-        bodyOnly={isMobileUI}
-        onActiveTabChange={isMobileUI ? onLegacyTabChange : undefined}
-        actionsRef={ribbonActionsRef}
-        quickActions={quickActions}
-        trailingActions={
-          <AiPanelToggle
-            open={showAi}
-            onToggle={() => setShowAi((v) => !v)}
-            label={t('aiOpenAssistant')}
-          />
-        }
-        editor={editor}
-        tabRequest={ribbonTabRequest}
-        {...ribbonPropsFromHost(docsState, docsServices)}
-      />
-      {isMobileUI && (
-        <MobileRibbon
-          schema={DOCS_SCHEMA}
-          registry={docsRegistry}
-          state={docsState}
-          services={docsServices}
-          t={t as (key: string) => string}
-          icons={RIBBON_ICONS}
-          activeTab={mobileTab}
-          onTabChange={onMobileTabChange}
-          trailingActions={
-            <AiPanelToggle
-              open={showAi}
-              onToggle={() => setShowAi((v) => !v)}
-              label={t('aiOpenAssistant')}
-            />
-          }
-        />
-      )}
-
       <DockShell
         className="app-main"
         storageKey="aidocs.dock"
@@ -4581,289 +4542,336 @@ export function App() {
           ) : null
         }
       >
-        <div className="app-content">
-          <div className={`workspace ${darkCanvas ? 'workspace-dark' : ''}`}>
-            {doc && showFind && (
-              <FindPanel
-                editor={editor}
-                onClose={() => {
-                  setShowFind(false)
-                  // else the next plain ⌘F remount would still see a truthy nonce
-                  // and land focus on the replace field (bugbot)
-                  setFindFocusReplace(0)
-                }}
-                focusReplaceNonce={findFocusReplace}
+        <div className="editor-col">
+          {/* 移动换装:MobileRibbon 条(文件/视图导航/AI)+ 旧 Ribbon 只渲染 body;
+          桌面保持原样。body 的全部机制(含 home/上下文 tab)由旧壳提供,
+          schema 迁移完成后 body 逐步换成声明式渲染 */}
+          <Ribbon
+            bodyOnly={isMobileUI}
+            onActiveTabChange={isMobileUI ? onLegacyTabChange : undefined}
+            actionsRef={ribbonActionsRef}
+            quickActions={quickActions}
+            trailingActions={
+              <AiPanelToggle
+                open={showAi}
+                onToggle={() => setShowAi((v) => !v)}
+                label={t('aiOpenAssistant')}
               />
-            )}
-            {doc && showNav && <NavPane editor={editor} doc={editor.state.doc} />}
-            {doc && (
-              <AiAskPopover
-                editor={editor}
-                queueFull={editQueue.length >= EDIT_QUEUE_MAX}
-                getItem={getQueueItem}
-                onSendNow={askSendNow}
-                onQueueAdd={queueAdd}
-                onQueueUpdate={queueUpdate}
-                onQueueRemove={queueRemove}
-              />
-            )}
-            <div className="editor-area">
-              <main className="editor-scroll">
-                {doc ? (
-                  <div
-                    className={docZoomClass}
-                    onClick={onDocClick}
-                    onContextMenu={onDocContextMenu}
-                    style={docZoomStyle}
-                  >
-                    {showRuler && section && (
-                      <div className="ruler-row">
-                        <div className="ruler-corner" />
-                        <Ruler
-                          section={sections[activeSection]?.settings ?? section}
-                          editor={editor}
-                          onMargins={applyRulerMargins}
-                          onTabStopsChange={(stops) => {
-                            if (!editor) return
-                            editor
-                              .chain()
-                              .focus()
-                              .updateAttributes('docParagraph', {
-                                tabStops: stops ? JSON.stringify(stops) : null,
-                              })
-                              .updateAttributes('docHeading', {
-                                tabStops: stops ? JSON.stringify(stops) : null,
-                              })
-                              .updateAttributes('docListItem', {
-                                tabStops: stops ? JSON.stringify(stops) : null,
-                              })
-                              .run()
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className={showRuler && section ? 'ruler-body' : undefined}>
+            }
+            editor={editor}
+            tabRequest={ribbonTabRequest}
+            {...ribbonPropsFromHost(docsState, docsServices)}
+          />
+          {isMobileUI && (
+            <MobileRibbon
+              schema={DOCS_SCHEMA}
+              registry={docsRegistry}
+              state={docsState}
+              services={docsServices}
+              t={t as (key: string) => string}
+              icons={RIBBON_ICONS}
+              activeTab={mobileTab}
+              onTabChange={onMobileTabChange}
+              trailingActions={
+                <AiPanelToggle
+                  open={showAi}
+                  onToggle={() => setShowAi((v) => !v)}
+                  label={t('aiOpenAssistant')}
+                />
+              }
+            />
+          )}
+
+          {/* dock body layout: ribbon inside, so a left/right docked AI panel
+              spans the full window height, level with the ribbon's top edge */}
+          <div className="app-content">
+            <div className={`workspace ${darkCanvas ? 'workspace-dark' : ''}`}>
+              {doc && showFind && (
+                <FindPanel
+                  editor={editor}
+                  onClose={() => {
+                    setShowFind(false)
+                    // else the next plain ⌘F remount would still see a truthy nonce
+                    // and land focus on the replace field (bugbot)
+                    setFindFocusReplace(0)
+                  }}
+                  focusReplaceNonce={findFocusReplace}
+                />
+              )}
+              {doc && showNav && <NavPane editor={editor} doc={editor.state.doc} />}
+              {doc && (
+                <AiAskPopover
+                  editor={editor}
+                  queueFull={editQueue.length >= EDIT_QUEUE_MAX}
+                  getItem={getQueueItem}
+                  onSendNow={askSendNow}
+                  onQueueAdd={queueAdd}
+                  onQueueUpdate={queueUpdate}
+                  onQueueRemove={queueRemove}
+                />
+              )}
+              <div className="editor-area">
+                <main className="editor-scroll">
+                  {doc ? (
+                    <div
+                      className={docZoomClass}
+                      onClick={onDocClick}
+                      onContextMenu={onDocContextMenu}
+                      style={docZoomStyle}
+                    >
                       {showRuler && section && (
-                        <div className={`vruler-anchor${pageActive ? '' : ' vruler-idle'}`}>
-                          <VRuler
+                        <div className="ruler-row">
+                          <div className="ruler-corner" />
+                          <Ruler
                             section={sections[activeSection]?.settings ?? section}
+                            editor={editor}
                             onMargins={applyRulerMargins}
+                            onTabStopsChange={(stops) => {
+                              if (!editor) return
+                              editor
+                                .chain()
+                                .focus()
+                                .updateAttributes('docParagraph', {
+                                  tabStops: stops ? JSON.stringify(stops) : null,
+                                })
+                                .updateAttributes('docHeading', {
+                                  tabStops: stops ? JSON.stringify(stops) : null,
+                                })
+                                .updateAttributes('docListItem', {
+                                  tabStops: stops ? JSON.stringify(stops) : null,
+                                })
+                                .run()
+                            }}
                           />
                         </div>
                       )}
-                      <div className="page-wrap">
-                        {watermark && (
-                          <div className="page-watermark" aria-hidden="true">
-                            {watermark}
+                      <div className={showRuler && section ? 'ruler-body' : undefined}>
+                        {showRuler && section && (
+                          <div className={`vruler-anchor${pageActive ? '' : ' vruler-idle'}`}>
+                            <VRuler
+                              section={sections[activeSection]?.settings ?? section}
+                              onMargins={applyRulerMargins}
+                            />
                           </div>
                         )}
-                        {!readMode && (
-                          <div
-                            className={`hf-variant-chips${titlePg || evenOddHf ? '' : ' hf-chips-idle'}`}
-                          >
-                            {/* Always-available entry point: the ribbon checkbox alone was
+                        <div className="page-wrap">
+                          {watermark && (
+                            <div className="page-watermark" aria-hidden="true">
+                              {watermark}
+                            </div>
+                          )}
+                          {!readMode && (
+                            <div
+                              className={`hf-variant-chips${titlePg || evenOddHf ? '' : ' hf-chips-idle'}`}
+                            >
+                              {/* Always-available entry point: the ribbon checkbox alone was
                           undiscoverable while editing the header, so the toggle also lives here
                           (revealed on header hover until enabled) */}
-                            <button
-                              className={`hf-first-toggle${titlePg ? ' on' : ''}`}
-                              data-tip={t('ribbonDiffFirstPageTip')}
-                              onClick={() => toggleTitlePg(!titlePg)}
-                            >
-                              {titlePg ? '✓ ' : ''}
-                              {t('ribbonDiffFirstPage')}
-                            </button>
-                            {titlePg && (
                               <button
-                                className={headerAreaView === 'first' ? 'on' : ''}
-                                onClick={() => setHfView('first')}
+                                className={`hf-first-toggle${titlePg ? ' on' : ''}`}
+                                data-tip={t('ribbonDiffFirstPageTip')}
+                                onClick={() => toggleTitlePg(!titlePg)}
                               >
-                                {t('appFirstPage')}
+                                {titlePg ? '✓ ' : ''}
+                                {t('ribbonDiffFirstPage')}
                               </button>
-                            )}
-                            {(titlePg || evenOddHf) && (
-                              <button
-                                className={headerAreaView === 'default' ? 'on' : ''}
-                                onClick={() => setHfView('default')}
-                              >
-                                {evenOddHf ? t('appOddPage') : t('appDefaultPage')}
-                              </button>
-                            )}
-                            {evenOddHf && (
-                              <button
-                                className={headerAreaView === 'even' ? 'on' : ''}
-                                onClick={() => setHfView('even')}
-                              >
-                                {t('appEvenPage')}
-                              </button>
-                            )}
-                          </div>
-                        )}
-                        {/* Boolean(): a trailing 0 (empty non-floating image list) must not render as a literal "0" text node */}
-                        {Boolean(
-                          multiHf ||
-                          (hfViewTouched && effHfView !== 'default') ||
-                          shownHeader?.text ||
-                          shownHeader?.paras?.length ||
-                          hfImagesOf('header')?.length,
-                        ) && (
-                          <HeaderFooterArea
-                            kind="header"
-                            value={shownHeader ?? { text: '' }}
-                            images={hfImagesOf('header')}
-                            readOnly={isProtected || readMode}
-                            onCommit={(next) => commitHf('header', next)}
-                            pageTotal={pageInfo.total}
-                            style={edgeHeaderStyle}
+                              {titlePg && (
+                                <button
+                                  className={headerAreaView === 'first' ? 'on' : ''}
+                                  onClick={() => setHfView('first')}
+                                >
+                                  {t('appFirstPage')}
+                                </button>
+                              )}
+                              {(titlePg || evenOddHf) && (
+                                <button
+                                  className={headerAreaView === 'default' ? 'on' : ''}
+                                  onClick={() => setHfView('default')}
+                                >
+                                  {evenOddHf ? t('appOddPage') : t('appDefaultPage')}
+                                </button>
+                              )}
+                              {evenOddHf && (
+                                <button
+                                  className={headerAreaView === 'even' ? 'on' : ''}
+                                  onClick={() => setHfView('even')}
+                                >
+                                  {t('appEvenPage')}
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {/* Boolean(): a trailing 0 (empty non-floating image list) must not render as a literal "0" text node */}
+                          {Boolean(
+                            multiHf ||
+                            (hfViewTouched && effHfView !== 'default') ||
+                            shownHeader?.text ||
+                            shownHeader?.paras?.length ||
+                            hfImagesOf('header')?.length,
+                          ) && (
+                            <HeaderFooterArea
+                              kind="header"
+                              value={shownHeader ?? { text: '' }}
+                              images={hfImagesOf('header')}
+                              readOnly={isProtected || readMode}
+                              onCommit={(next) => commitHf('header', next)}
+                              pageTotal={pageInfo.total}
+                              style={edgeHeaderStyle}
+                            />
+                          )}
+                          <EditorContent editor={editor} />
+                          {/* footnotes already shown per page in page gaps aren't repeated at the end (last page's footnotes still live here) */}
+                          <PageFootnotes
+                            notes={footnotes}
+                            skipIds={gapNoteIds}
+                            onEdit={(id) => editNote('footnote', id)}
+                            onDelete={(id) => deleteNote('footnote', id)}
                           />
-                        )}
-                        <EditorContent editor={editor} />
-                        {/* footnotes already shown per page in page gaps aren't repeated at the end (last page's footnotes still live here) */}
-                        <PageFootnotes
-                          notes={footnotes}
-                          skipIds={gapNoteIds}
-                          onEdit={(id) => editNote('footnote', id)}
-                          onDelete={(id) => deleteNote('footnote', id)}
-                        />
-                        <PageEndnotes
-                          notes={endnotes}
-                          top={endnotesAreaTop}
-                          onEdit={(id) => editNote('endnote', id)}
-                          onDelete={(id) => deleteNote('endnote', id)}
-                        />
-                        {Boolean(
-                          multiHf ||
-                          (hfViewTouched && effHfView !== 'default') ||
-                          shownFooter?.text ||
-                          shownFooter?.pageNumber ||
-                          shownFooter?.paras?.length ||
-                          hfImagesOf('footer')?.length,
-                        ) && (
-                          <HeaderFooterArea
-                            kind="footer"
-                            value={shownFooter ?? { text: '' }}
-                            images={hfImagesOf('footer')}
-                            readOnly={isProtected || readMode}
-                            onCommit={(next) => commitHf('footer', next)}
-                            pageNo={lastPageNo?.text ?? pageInfo.total}
-                            pageTotal={pageInfo.total}
-                            style={edgeFooterStyle}
+                          <PageEndnotes
+                            notes={endnotes}
+                            top={endnotesAreaTop}
+                            onEdit={(id) => editNote('endnote', id)}
+                            onDelete={(id) => deleteNote('endnote', id)}
                           />
-                        )}
-                        {(inkAnnotations.length > 0 || inkTool !== 'select') && !readMode && (
-                          <InkOverlay
-                            tool={isProtected ? 'select' : inkTool}
-                            color={inkTool === 'highlighter' ? inkHighlighter.color : inkPen.color}
-                            width={inkTool === 'highlighter' ? inkHighlighter.width : inkPen.width}
-                            zoom={zoom}
-                            annotations={inkAnnotations}
-                            onAdd={addInk}
-                            onRemove={removeInks}
+                          {Boolean(
+                            multiHf ||
+                            (hfViewTouched && effHfView !== 'default') ||
+                            shownFooter?.text ||
+                            shownFooter?.pageNumber ||
+                            shownFooter?.paras?.length ||
+                            hfImagesOf('footer')?.length,
+                          ) && (
+                            <HeaderFooterArea
+                              kind="footer"
+                              value={shownFooter ?? { text: '' }}
+                              images={hfImagesOf('footer')}
+                              readOnly={isProtected || readMode}
+                              onCommit={(next) => commitHf('footer', next)}
+                              pageNo={lastPageNo?.text ?? pageInfo.total}
+                              pageTotal={pageInfo.total}
+                              style={edgeFooterStyle}
+                            />
+                          )}
+                          {(inkAnnotations.length > 0 || inkTool !== 'select') && !readMode && (
+                            <InkOverlay
+                              tool={isProtected ? 'select' : inkTool}
+                              color={
+                                inkTool === 'highlighter' ? inkHighlighter.color : inkPen.color
+                              }
+                              width={
+                                inkTool === 'highlighter' ? inkHighlighter.width : inkPen.width
+                              }
+                              zoom={zoom}
+                              annotations={inkAnnotations}
+                              onAdd={addInk}
+                              onRemove={removeInks}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="start-screen start-booting">{t('appStartOpening')}</div>
+                  )}
+                </main>
+                {doc && splitView && (
+                  <div className="split-pane">
+                    <div className="split-pane-bar">
+                      <span>{t('appSplitPaneLabel')}</span>
+                      <button
+                        className="split-pane-close"
+                        data-tip={t('appRemoveSplit')}
+                        aria-label={t('appRemoveSplit')}
+                        onClick={() => setSplitView(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="split-pane-scroll">
+                      <div className={docZoomClass} style={docZoomStyle}>
+                        <div className="page-wrap">
+                          <div
+                            className="doc-page ProseMirror split-doc"
+                            dangerouslySetInnerHTML={{ __html: splitHtml }}
                           />
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="start-screen start-booting">{t('appStartOpening')}</div>
                 )}
-              </main>
-              {doc && splitView && (
-                <div className="split-pane">
-                  <div className="split-pane-bar">
-                    <span>{t('appSplitPaneLabel')}</span>
-                    <button
-                      className="split-pane-close"
-                      data-tip={t('appRemoveSplit')}
-                      aria-label={t('appRemoveSplit')}
-                      onClick={() => setSplitView(false)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="split-pane-scroll">
-                    <div className={docZoomClass} style={docZoomStyle}>
-                      <div className="page-wrap">
-                        <div
-                          className="doc-page ProseMirror split-doc"
-                          dangerouslySetInnerHTML={{ __html: splitHtml }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              </div>
+              {readMode && (
+                <button className="read-exit" onClick={() => setReadMode(false)}>
+                  {t('appExitReadMode')}
+                </button>
+              )}
+              {doc && showComments && (
+                <CommentsPanel
+                  comments={comments}
+                  docNode={editor.state.doc}
+                  composing={commentComposing}
+                  onSubmitNew={submitNewComment}
+                  onReply={replyToComment}
+                  onResolve={resolveComment}
+                  onCancelNew={cancelNewComment}
+                  onDelete={deleteComment}
+                  onClose={closeCommentsPanel}
+                />
+              )}
+              {doc && compareResult && (
+                <ComparePanel
+                  otherName={compareResult.otherName}
+                  entries={compareResult.entries}
+                  onClose={() => setCompareResult(null)}
+                />
               )}
             </div>
-            {readMode && (
-              <button className="read-exit" onClick={() => setReadMode(false)}>
-                {t('appExitReadMode')}
-              </button>
-            )}
-            {doc && showComments && (
-              <CommentsPanel
-                comments={comments}
-                docNode={editor.state.doc}
-                composing={commentComposing}
-                onSubmitNew={submitNewComment}
-                onReply={replyToComment}
-                onResolve={resolveComment}
-                onCancelNew={cancelNewComment}
-                onDelete={deleteComment}
-                onClose={closeCommentsPanel}
-              />
-            )}
-            {doc && compareResult && (
-              <ComparePanel
-                otherName={compareResult.otherName}
-                entries={compareResult.entries}
-                onClose={() => setCompareResult(null)}
-              />
-            )}
-          </div>
 
-          <footer className="status-bar">
-            <div className="status-left">
-              {doc && (
-                <>
-                  <span className="status-item">
-                    {t('appPageOf', { current: pageInfo.current, total: pageInfo.total })}
-                  </span>
-                  <button
-                    className="status-item status-wordcount"
-                    data-tip={t('appWordCountTitle')}
-                    onClick={openStats}
-                  >
-                    {t('appWordCountN', { n: wordCount })}
-                  </button>
-                </>
-              )}
-              {!doc && t('appReady')}
-              {status && <span className="status-msg"> — {status}</span>}
-            </div>
-            <div className="status-right">
-              <button
-                className="zoom-btn"
-                onClick={() => setZoom((z) => Math.max(50, Math.round(z) - 10))}
-              >
-                −
-              </button>
-              <input
-                className="zoom-slider"
-                type="range"
-                min={50}
-                max={200}
-                step={10}
-                value={Math.round(zoom)}
-                onChange={(e) => setZoom(Number(e.target.value))}
-              />
-              <button
-                className="zoom-btn"
-                onClick={() => setZoom((z) => Math.min(200, Math.round(z) + 10))}
-              >
-                +
-              </button>
-              <span className="zoom-value">{Math.round(zoom)}%</span>
-            </div>
-          </footer>
+            <footer className="status-bar">
+              <div className="status-left">
+                {doc && (
+                  <>
+                    <span className="status-item">
+                      {t('appPageOf', { current: pageInfo.current, total: pageInfo.total })}
+                    </span>
+                    <button
+                      className="status-item status-wordcount"
+                      data-tip={t('appWordCountTitle')}
+                      onClick={openStats}
+                    >
+                      {t('appWordCountN', { n: wordCount })}
+                    </button>
+                  </>
+                )}
+                {!doc && t('appReady')}
+                {status && <span className="status-msg"> — {status}</span>}
+              </div>
+              <div className="status-right">
+                <button
+                  className="zoom-btn"
+                  onClick={() => setZoom((z) => Math.max(50, Math.round(z) - 10))}
+                >
+                  −
+                </button>
+                <input
+                  className="zoom-slider"
+                  type="range"
+                  min={50}
+                  max={200}
+                  step={10}
+                  value={Math.round(zoom)}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                />
+                <button
+                  className="zoom-btn"
+                  onClick={() => setZoom((z) => Math.min(200, Math.round(z) + 10))}
+                >
+                  +
+                </button>
+                <span className="zoom-value">{Math.round(zoom)}%</span>
+              </div>
+            </footer>
+          </div>
         </div>
       </DockShell>
 
