@@ -1454,6 +1454,12 @@ export function Ribbon({
   onPresenterView,
   onCustomShow,
   onRehearse,
+  showDisplays,
+  showDisplayId,
+  onShowDisplay,
+  showWithPresenter,
+  onToggleShowWithPresenter,
+  onClearRehearse,
   currentHidden,
   onToggleHidden,
   inkTool,
@@ -1583,7 +1589,7 @@ export function Ribbon({
   const [arrangeOpen, setArrangeOpen] = useState(false)
   // Insert tab dropdown galleries (at most one open at a time)
   const [insertDrop, setInsertDrop] = useState<
-    'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | null
+    'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | 'rehearse' | null
   >(null)
   // Chart design: dropdown panels (add chart element / change colors, at most one open at a time)
   const [chartDrop, setChartDrop] = useState<'elements' | 'colors' | null>(null)
@@ -2800,18 +2806,58 @@ export function Ribbon({
                 </span>
                 <span>{t('ribbonHideSlide')}</span>
               </button>
-              <button
-                className="rb-big"
-                disabled={!hasDoc}
-                onClick={onRehearse}
-                data-tip={t('ribbonRehearseTip')}
-              >
-                <span className="rb-big-icon">
-                  <IconRehearse size={BIG} />
-                </span>
-                <span>{t('ribbonRehearse')}</span>
-              </button>
+              {/* WPS 排练计时⌄: 开始排练 / 清除排练计时 */}
+              {dropBig(
+                'rehearse',
+                <IconRehearse size={BIG} />,
+                t('ribbonRehearse'),
+                t('ribbonRehearseTip'),
+                <div className="rb-menu">
+                  <button
+                    onClick={() => {
+                      setInsertDrop(null)
+                      onRehearse()
+                    }}
+                  >
+                    {t('ribbonRehearseStart')}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setInsertDrop(null)
+                      onClearRehearse()
+                    }}
+                  >
+                    {t('ribbonClearRehearse')}
+                  </button>
+                </div>,
+              )}
               <DisabledBig icon={<IconRecord size={BIG} />} label={t('ribbonRecord')} />
+            </Group>
+            <div className="ribbon-sep" />
+            {/* WPS 放映组: 放映到[显示器]⌄ + ☑显示演讲者视图 */}
+            <Group label={t('ribbonGroupShowOn')}>
+              <Dropdown
+                className="rb-show-display-dd"
+                value={String(showDisplayId ?? '')}
+                disabled={!hasDoc || showDisplays.length === 0}
+                tip={t('ribbonShowOnDisplayTip')}
+                options={[
+                  { value: '', label: t('ribbonShowOnCurrent') },
+                  ...showDisplays.map((d) => ({
+                    value: String(d.id),
+                    label: d.primary
+                      ? t('ribbonShowOnPrimary')
+                      : t('ribbonShowOnDisplayN', { n: d.index + 1 }),
+                  })),
+                ]}
+                onPick={(v) => onShowDisplay(v === '' ? null : Number(v))}
+              />
+              <RbCheck
+                label={t('ribbonShowPresenterCheck')}
+                on={showWithPresenter}
+                title={t('ribbonShowPresenterCheckTip')}
+                onClick={onToggleShowWithPresenter}
+              />
             </Group>
           </>
         ) : tab === 'review' ? (

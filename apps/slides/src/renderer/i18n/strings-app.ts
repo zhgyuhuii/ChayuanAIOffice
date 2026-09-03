@@ -64,6 +64,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: '该自定义放映不包含任何有效页',
     appStatusRehearseSaved:
       '已保存 {count} 页的排练计时（保存的 pptx 在 PowerPoint 放映时自动换片）',
+    appStatusRehearseCleared: '已清除全部页面的排练计时',
     appStatusSlideHidden: '已隐藏第 {page} 页（放映时跳过）',
     appStatusSlideUnhidden: '已取消隐藏第 {page} 页',
     appStatusCropApplied: '已应用裁剪',
@@ -286,6 +287,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'This custom show contains no valid slides',
     appStatusRehearseSaved:
       'Rehearsal timings saved for {count} slides (the saved .pptx advances slides automatically in PowerPoint)',
+    appStatusRehearseCleared: 'Rehearse timings cleared on all slides',
     appStatusSlideHidden: 'Slide {page} hidden (skipped during slide shows)',
     appStatusSlideUnhidden: 'Slide {page} unhidden',
     appStatusCropApplied: 'Crop applied',
@@ -514,6 +516,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'この目的別スライドショーに有効なスライドがありません',
     appStatusRehearseSaved:
       '{count} ページのリハーサルのタイミングを保存しました（保存した pptx は PowerPoint のスライドショーで自動的に切り替え）',
+    appStatusRehearseCleared: '全ページのリハーサル タイミングをクリアしました',
     appStatusSlideHidden: 'スライド {page} を非表示にしました（スライドショーではスキップ）',
     appStatusSlideUnhidden: 'スライド {page} の非表示を解除しました',
     appStatusCropApplied: 'トリミングを適用しました',
@@ -738,6 +741,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: '이 쇼 재구성에 유효한 슬라이드가 없습니다',
     appStatusRehearseSaved:
       '{count}개 슬라이드의 예행 연습 시간을 저장했습니다(저장된 pptx는 PowerPoint 슬라이드 쇼에서 자동으로 넘어갑니다)',
+    appStatusRehearseCleared: '모든 슬라이드의 리허설 시간을 지웠습니다',
     appStatusSlideHidden: '슬라이드 {page}을(를) 숨겼습니다(슬라이드 쇼에서 건너뜀)',
     appStatusSlideUnhidden: '슬라이드 {page}의 숨기기를 취소했습니다',
     appStatusCropApplied: '자르기를 적용했습니다',
@@ -969,6 +973,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Ce diaporama personnalisé ne contient aucune diapositive valide',
     appStatusRehearseSaved:
       'Minutage enregistré pour {count} diapositives (le .pptx enregistré change de diapositive automatiquement dans PowerPoint)',
+    appStatusRehearseCleared: 'Minutages de répétition effacés sur toutes les diapositives',
     appStatusSlideHidden: 'Diapositive {page} masquée (ignorée pendant le diaporama)',
     appStatusSlideUnhidden: 'Diapositive {page} de nouveau affichée',
     appStatusCropApplied: 'Rognage appliqué',
@@ -1210,6 +1215,7 @@ export const appStrings = defineStrings({
       'Diese zielgruppenorientierte Präsentation enthält keine gültigen Folien',
     appStatusRehearseSaved:
       'Anzeigedauer für {count} Folien gespeichert (die gespeicherte .pptx-Datei wechselt die Folien in PowerPoint automatisch)',
+    appStatusRehearseCleared: 'Probetimings auf allen Folien gelöscht',
     appStatusSlideHidden:
       'Folie {page} ausgeblendet (wird in der Bildschirmpräsentation übersprungen)',
     appStatusSlideUnhidden: 'Folie {page} wieder eingeblendet',
@@ -1450,6 +1456,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Esta presentación personalizada no contiene diapositivas válidas',
     appStatusRehearseSaved:
       'Se guardaron los intervalos de ensayo de {count} diapositivas (el .pptx guardado avanza las diapositivas automáticamente en PowerPoint)',
+    appStatusRehearseCleared: 'Tiempos de ensayo borrados en todas las diápositivas',
     appStatusSlideHidden: 'Diapositiva {page} oculta (se omite durante la presentación)',
     appStatusSlideUnhidden: 'Se mostró de nuevo la diapositiva {page}',
     appStatusCropApplied: 'Recorte aplicado',
@@ -1679,6 +1686,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'การนำเสนอแบบกำหนดเองนี้ไม่มีสไลด์ที่ใช้งานได้',
     appStatusRehearseSaved:
       'บันทึกเวลาการซ้อมของ {count} สไลด์แล้ว (ไฟล์ pptx ที่บันทึกจะเปลี่ยนสไลด์อัตโนมัติเมื่อนำเสนอใน PowerPoint)',
+    appStatusRehearseCleared: 'ล้างเวลาซ้อมของทุกหน้าแล้ว',
     appStatusSlideHidden: 'ซ่อนสไลด์ {page} แล้ว (จะข้ามระหว่างการนำเสนอ)',
     appStatusSlideUnhidden: 'ยกเลิกการซ่อนสไลด์ {page} แล้ว',
     appStatusCropApplied: 'ครอบตัดแล้ว',
@@ -1905,6 +1913,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Peragaan kustom ini tidak berisi slide yang valid',
     appStatusRehearseSaved:
       'Pengaturan waktu latihan untuk {count} slide disimpan (file .pptx yang disimpan berpindah slide otomatis di PowerPoint)',
+    appStatusRehearseCleared: 'Waktu latihan dihapus dari semua slide',
     appStatusSlideHidden: 'Slide {page} disembunyikan (dilewati selama peragaan slide)',
     appStatusSlideUnhidden: 'Slide {page} tidak lagi disembunyikan',
     appStatusCropApplied: 'Pemotongan diterapkan',
@@ -2138,6 +2147,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Этот произвольный показ не содержит допустимых слайдов',
     appStatusRehearseSaved:
       'Время репетиции сохранено для {count} слайдов (сохраненный файл .pptx автоматически сменяет слайды в PowerPoint)',
+    appStatusRehearseCleared: 'Тайминги репетиции очищены на всех слайдах',
     appStatusSlideHidden: 'Слайд {page} скрыт (пропускается при показе)',
     appStatusSlideUnhidden: 'Слайд {page} снова отображается',
     appStatusCropApplied: 'Обрезка применена',
@@ -2366,6 +2376,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'لا يحتوي هذا العرض المخصص على أي شرائح صالحة',
     appStatusRehearseSaved:
       'تم حفظ توقيتات التمرين لعدد {count} من الشرائح (ينتقل ملف pptx المحفوظ بين الشرائح تلقائيًا في PowerPoint)',
+    appStatusRehearseCleared: 'تم مسح توقيتات التدريب لجميع الشرائح',
     appStatusSlideHidden: 'تم إخفاء الشريحة {page} (يتم تخطيها أثناء العرض)',
     appStatusSlideUnhidden: 'تم إلغاء إخفاء الشريحة {page}',
     appStatusCropApplied: 'تم تطبيق الاقتصاص',
@@ -2598,6 +2609,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Esta apresentação personalizada não contém slides válidos',
     appStatusRehearseSaved:
       'Intervalos ensaiados salvos para {count} slides (o .pptx salvo avança os slides automaticamente no PowerPoint)',
+    appStatusRehearseCleared: 'Tempos de ensaio limpos em todos os slides',
     appStatusSlideHidden: 'Slide {page} oculto (ignorado durante a apresentação)',
     appStatusSlideUnhidden: 'Slide {page} reexibido',
     appStatusCropApplied: 'Corte aplicado',
@@ -2837,6 +2849,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Questa presentazione personalizzata non contiene diapositive valide',
     appStatusRehearseSaved:
       'Intervalli provati salvati per {count} diapositive (il file .pptx salvato avanza automaticamente le diapositive in PowerPoint)',
+    appStatusRehearseCleared: 'Tempi del provino cancellati su tutte le diapositive',
     appStatusSlideHidden: 'Diapositiva {page} nascosta (ignorata durante la presentazione)',
     appStatusSlideUnhidden: 'Diapositiva {page} scoperta',
     appStatusCropApplied: 'Ritaglio applicato',
@@ -3075,6 +3088,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Ten pokaz niestandardowy nie zawiera prawidłowych slajdów',
     appStatusRehearseSaved:
       'Zapisano próbne czasy dla {count} slajdów (zapisany plik .pptx automatycznie zmienia slajdy w programie PowerPoint)',
+    appStatusRehearseCleared: 'Czasy próbki wyczyszczone na wszystkich slajdach',
     appStatusSlideHidden: 'Ukryto slajd {page} (pomijany podczas pokazu)',
     appStatusSlideUnhidden: 'Odkryto slajd {page}',
     appStatusCropApplied: 'Zastosowano przycięcie',
@@ -3314,6 +3328,7 @@ export const appStrings = defineStrings({
     appStatusRehearseSaved:
       "Try-outtijden opgeslagen voor {count} dia's (het opgeslagen .pptx-bestand schakelt automatisch tussen dia's in PowerPoint)",
     appStatusSlideHidden: 'Dia {page} verborgen (wordt overgeslagen tijdens de voorstelling)',
+    appStatusRehearseCleared: 'Repetitietijden gewist op alle dia’s',
     appStatusSlideUnhidden: 'Dia {page} weer zichtbaar gemaakt',
     appStatusCropApplied: 'Bijsnijden toegepast',
     appStatusCropRemoved: 'Bijsnijden verwijderd',
@@ -3551,6 +3566,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'Persembahan tersuai ini tidak mengandungi slaid yang sah',
     appStatusRehearseSaved:
       'Pemasaan raptai disimpan untuk {count} slaid (fail .pptx yang disimpan menukar slaid secara automatik dalam PowerPoint)',
+    appStatusRehearseCleared: 'Masa ujian dikosongkan pada semua slaid',
     appStatusSlideHidden: 'Slaid {page} disembunyikan (dilangkau semasa persembahan)',
     appStatusSlideUnhidden: 'Slaid {page} dipaparkan semula',
     appStatusCropApplied: 'Pangkasan digunakan',
@@ -3776,6 +3792,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'הצגה מותאמת אישית זו אינה מכילה שקופיות חוקיות',
     appStatusRehearseSaved:
       'תזמוני החזרה נשמרו עבור {count} שקופיות (קובץ ה-.pptx השמור מחליף שקופיות אוטומטית ב-PowerPoint)',
+    appStatusRehearseCleared: 'תזמוני החזרה נוקו בכל השקפים',
     appStatusSlideHidden: 'שקופית {page} הוסתרה (מדולגת במהלך ההצגה)',
     appStatusSlideUnhidden: 'ביטול ההסתרה של שקופית {page}',
     appStatusCropApplied: 'החיתוך הוחל',
@@ -4008,6 +4025,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: 'इस कस्टम शो में कोई मान्य स्लाइड नहीं है',
     appStatusRehearseSaved:
       '{count} स्लाइड के पूर्वाभ्यास समय सहेजे गए (सहेजी गई .pptx PowerPoint में स्लाइड स्वतः बदलती है)',
+    appStatusRehearseCleared: 'सभी स्लाइड के रिहर्सल समय मिटाए गए',
     appStatusSlideHidden: 'स्लाइड {page} छिपाई गई (स्लाइड शो के दौरान छोड़ दी जाती है)',
     appStatusSlideUnhidden: 'स्लाइड {page} फिर से दिखाई गई',
     appStatusCropApplied: 'क्रॉप लागू किया गया',
@@ -4229,6 +4247,7 @@ export const appStrings = defineStrings({
     appStatusCustomShowEmpty: '此自訂放映不包含任何有效頁面',
     appStatusRehearseSaved:
       '已儲存 {count} 頁的排練計時（儲存的 pptx 在 PowerPoint 放映時自動換頁）',
+    appStatusRehearseCleared: '已清除全部頁面的排練計時',
     appStatusSlideHidden: '已隱藏第 {page} 頁（放映時略過）',
     appStatusSlideUnhidden: '已取消隱藏第 {page} 頁',
     appStatusCropApplied: '已套用裁剪',

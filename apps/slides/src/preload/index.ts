@@ -55,7 +55,6 @@ import type {
   MoveSectionOp,
   MoveSlideOp,
   AiStreamChunk,
-  AiStreamRequest,
   AudienceNavAction,
   ShowInkEvent,
   ShowSyncState,
@@ -110,7 +109,8 @@ const api: SlidesApi = {
     ipcRenderer.on('app:chrome-pressed', listener)
     return () => ipcRenderer.removeListener('app:chrome-pressed', listener)
   },
-  setShowFullScreen: (on) => ipcRenderer.invoke('slides:show-fullscreen', on),
+  setShowFullScreen: (on, displayId) => ipcRenderer.invoke('slides:show-fullscreen', on, displayId),
+  listDisplays: () => ipcRenderer.invoke('slides:list-displays'),
   privateFontFaces: () => ipcRenderer.invoke('slides:private-font-faces'),
   privateFontData: (id) => ipcRenderer.invoke('slides:private-font-data', id),
   fontCatalog: () => ipcRenderer.invoke('slides:font-catalog'),

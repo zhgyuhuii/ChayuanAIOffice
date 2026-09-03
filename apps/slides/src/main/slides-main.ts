@@ -13,6 +13,7 @@ import {
   ipcMain,
   Menu,
   nativeImage,
+  screen,
   session as electronSession,
   shell,
   webContents,
@@ -4275,7 +4276,22 @@ html, body { margin: 0; padding: 0; }
   // presenter→show handoffs flip off→on within a tick, and honoring the off
   // immediately makes the window visibly bounce. ──
   let showFsRelease: ReturnType<typeof setTimeout> | null = null
-  ipcMain.handle('slides:show-fullscreen', (e, on: boolean) => {
+  /** window id → bounds captured before a cross-display show (restored on exit) */
+  const showBoundsBefore = new Map<number, Electron.Rectangle>()
+  // ── Show tab 放映到[显示器]: screens for the dropdown + pre-move window bounds
+  // (the plain show runs in the host window, so playing on another display means
+  // moving the window there for the show's duration and restoring it after) ──
+  ipcMain.handle('slides:list-displays', (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender) ?? windowRefs.shellWindow
+    const currentId = win && !win.isDestroyed() ? screen.getDisplayMatching(win.getBounds()).id : -1
+    return screen.getAllDisplays().map((d, index) => ({
+      id: d.id,
+      index,
+      primary: d.id === screen.getPrimaryDisplay().id,
+      current: d.id === currentId,
+    }))
+  })
+  ipcMain.handle('slides:show-fullscreen', (e, on: boolean, displayId?: number) => {
     const win = BrowserWindow.fromWebContents(e.sender) ?? windowRefs.shellWindow
     if (!win || win.isDestroyed()) return
     const wc = e.sender
@@ -4284,6 +4300,17 @@ html, body { margin: 0; padding: 0; }
       showFsRelease = null
     }
     if (on) {
+      if (displayId != null) {
+        try {
+          const target = screen.getAllDisplays().find((d) => d.id === displayId)
+          if (target && target.id !== screen.getDisplayMatching(win.getBounds()).id) {
+            showBoundsBefore.set(win.id, win.getBounds())
+            win.setBounds(target.bounds)
+          }
+        } catch {
+          /* stale display id (unplugged) — show on the current screen */
+        }
+      }
       showChrome.setBleed?.(wc, true)
       if (process.platform === 'darwin' && !win.isFullScreen()) {
         win.setFullScreenable(false)
@@ -4306,6 +4333,16 @@ html, body { margin: 0; padding: 0; }
         if (process.platform === 'darwin') {
           if (win.isSimpleFullScreen()) win.setSimpleFullScreen(false)
           win.setFullScreenable(true)
+        }
+        // 放映到显示器: put the window back where it was before the show
+        const before = showBoundsBefore.get(win.id)
+        if (before) {
+          showBoundsBefore.delete(win.id)
+          try {
+            win.setBounds(before)
+          } catch {
+            /* window closing — nothing to restore */
+          }
         }
       }, 150)
     }

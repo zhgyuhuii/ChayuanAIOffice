@@ -1250,7 +1250,11 @@ export interface SlidesApi {
   onChromePressed: (handler: () => void) => () => void
   /** snap the host window in/out of instant fullscreen for the slideshow
    *  (macOS simpleFullScreen — skips the animated Space transition) */
-  setShowFullScreen: (on: boolean) => Promise<void>
+  setShowFullScreen: (on: boolean, displayId?: number) => Promise<void>
+  /** Enumerate displays for the Show tab 放映到[显示器] dropdown (web: always []) */
+  listDisplays: () => Promise<
+    Array<{ id: number; index: number; primary: boolean; current: boolean }>
+  >
   openPptx: (fitWidthPx: number) => Promise<OpenResult | null>
   openPptxPath: (path: string, fitWidthPx: number) => Promise<OpenResult | null>
   /** Office-private faces referenced by layouts so far; the renderer registers them as FontFaces

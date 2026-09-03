@@ -1767,6 +1767,57 @@ export function App() {
     [],
   )
 
+  // ── Show tab 放映到[显示器] + ☑显示演讲者视图 (WPS 放映组) ──
+  const [showDisplays, setShowDisplays] = useState<
+    Array<{ id: number; index: number; primary: boolean; current: boolean }>
+  >([])
+  useEffect(() => {
+    let cancelled = false
+    void Promise.resolve(window.slidesApi.listDisplays?.())
+      .then((list) => {
+        if (!cancelled && Array.isArray(list)) setShowDisplays(list)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [hasDoc])
+  /** Target screen for the next show (null = the window's current screen) */
+  const [showDisplayId, setShowDisplayId] = useState<number | null>(null)
+  /** PowerPoint-style "使用演讲者视图放映": the start buttons open presenter view instead */
+  const [showWithPresenter, setShowWithPresenter] = useState(() => {
+    try {
+      return localStorage.getItem('slideshow-use-presenter') === '1'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('slideshow-use-presenter', showWithPresenter ? '1' : '0')
+    } catch {
+      /* degraded */
+    }
+  }, [showWithPresenter])
+  const startShowFromRibbon = useCallback(
+    (fromStart: boolean) => {
+      if (showWithPresenter) showActions.startPresenterView(ctxRef.current, fromStart)
+      else showActions.startSlideShow(ctxRef.current, fromStart)
+    },
+    [showWithPresenter],
+  )
+  /** 排练计时⌄ → 清除排练计时: wipe every slide's auto-advance (advTm) */
+  const clearRehearseTimings = useCallback(() => {
+    void window.slidesApi
+      .setAdvanceTimes({ times: slides.map((_, i) => ({ slideIndex: i, ms: null })) })
+      .then((ok) => {
+        if (ok) {
+          setDirty(true)
+          setStatus(t('appStatusRehearseCleared'))
+        }
+      })
+  }, [slides])
+
   // ── Custom shows: load the document's list on document switch (no path = unsaved new document, memory-only) ──
   useEffect(() => {
     setCustomShowDlgOpen(false)
@@ -3080,10 +3131,16 @@ export function App() {
             onToggleAnimPane={toggleAnimPane}
             animCount={animations.length}
             onAnimPreview={() => setAnimPreview((n) => n + 1)}
-            onSlideShow={startSlideShow}
+            onSlideShow={startShowFromRibbon}
             onPresenterView={startPresenterView}
             onCustomShow={() => setCustomShowDlgOpen(true)}
             onRehearse={startRehearseShow}
+            showDisplays={showDisplays}
+            showDisplayId={showDisplayId}
+            onShowDisplay={setShowDisplayId}
+            showWithPresenter={showWithPresenter}
+            onToggleShowWithPresenter={() => setShowWithPresenter((v) => !v)}
+            onClearRehearse={clearRehearseTimings}
             currentHidden={!!slide?.hidden}
             onToggleHidden={() => void toggleHidden(current)}
             inkTool={inkTool}
@@ -4073,6 +4130,7 @@ export function App() {
           startAt={slideShow.startAt}
           customOrder={slideShow.customOrder}
           rehearseMode={slideShow.rehearse}
+          displayId={showDisplayId}
           onRehearseDone={onRehearseDone}
           onExit={exitSlideShow}
         />

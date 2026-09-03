@@ -52,6 +52,7 @@ export function SlideShowView({
   onExit,
   customOrder,
   rehearseMode,
+  displayId,
   onRehearseDone,
 }: {
   slides: RenderSlide[]
@@ -62,6 +63,8 @@ export function SlideShowView({
   onExit: (lastIndex: number) => void
   /** Custom show: a specified playback sequence (original indexes), replacing the default full order when non-empty */
   customOrder?: number[]
+  /** 放映到[显示器]: target screen id (Show tab dropdown; null = current screen) */
+  displayId?: number | null
   /** Rehearsal timing mode: shows a timer bar at the top and records each page's dwell time */
   rehearseMode?: boolean
   /** Rehearsal-end callback (called before onExit on exit); perPageSec is by original page index, unvisited pages are 0 */
@@ -186,7 +189,8 @@ export function SlideShowView({
     // so it never lays out at the pre-snap size and re-jumps. On macOS HTML
     // fullscreen is skipped — it would only re-trigger the animated native
     // fullscreen. Stale preloads lack the API and keep the old animated behavior.
-    const snapped = window.slidesApi.setShowFullScreen?.(true) ?? Promise.resolve()
+    const snapped =
+      window.slidesApi.setShowFullScreen?.(true, displayId ?? undefined) ?? Promise.resolve()
     void snapped
       .catch(() => {})
       .then(() => {
@@ -235,6 +239,8 @@ export function SlideShowView({
       void window.slidesApi.setShowFullScreen?.(false)
       liftShowCurtain()
     }
+    // entry-only (mounts fresh per show; displayId is fixed for the whole show)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // The click-time curtain (dropped in show-actions before this component mounted)
@@ -269,7 +275,7 @@ export function SlideShowView({
         try {
           audioCtxRef.current ??= new AudioContext()
           const ctx = audioCtxRef.current
-          let buf = soundBufs.current.get(res.name)
+          const buf = soundBufs.current.get(res.name)
           const decode = buf
             ? Promise.resolve(buf)
             : ctx.decodeAudioData(res.bytes).then((b) => {

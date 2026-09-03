@@ -26,7 +26,7 @@ import type { ChartStyleInfo } from '@chatoffice/pptx-render'
 import { useI18n, type StringKey } from '../i18n/locale'
 
 export type InsertDropKey =
-  'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim'
+  'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | 'rehearse'
 
 export const BIG = 28
 
@@ -493,6 +493,16 @@ export interface Props {
   onCustomShow: () => void
   /** Start rehearsal timing (plays the show recording each page's dwell time; can be saved as auto-advance times afterwards) */
   onRehearse: () => void
+  /** Show tab 放映到[显示器]: available screens (empty on web) */
+  showDisplays: Array<{ id: number; index: number; primary: boolean; current: boolean }>
+  /** Target screen id for the next show (null = current screen) */
+  showDisplayId: number | null
+  onShowDisplay: (id: number | null) => void
+  /** PowerPoint-style 使用演讲者视图放映 (start buttons open presenter view) */
+  showWithPresenter: boolean
+  onToggleShowWithPresenter: () => void
+  /** 排练计时⌄ → 清除排练计时 (wipe every slide's advTm) */
+  onClearRehearse: () => void
   /** Whether the current page is hidden (hide-slide button display) */
   currentHidden: boolean
   /** Hide/unhide the current page */
