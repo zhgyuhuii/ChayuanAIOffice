@@ -25,12 +25,7 @@ export {
   type DockRect,
   type DockShellProps,
 } from './DockShell'
-export {
-  PanelTabs,
-  usePanelTab,
-  type PanelTabItem,
-  type PanelTabsProps,
-} from './PanelTabs'
+export { PanelTabs, usePanelTab, type PanelTabItem, type PanelTabsProps } from './PanelTabs'
 export { AiPanelToggle, type AiPanelToggleProps } from './AiPanelToggle'
 export { IconSend, IconStop, type IconProps } from './icons'
 export { Markdown, type MarkdownNav } from './Markdown'
@@ -60,3 +55,16 @@ export {
 export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
 export { ModelDefaultsPage, type ModelDefaultsPageProps } from './ModelDefaultsPage'
 export { VendorLogo, type VendorLogoProps } from './VendorLogo'
+export {
+  decideIsMobile,
+  mobileQueries,
+  readUIMode,
+  useIsMobile,
+  useUIMode,
+  type MediaQuerySnapshot,
+  type MediaQuerySource,
+  type UIMode,
+  type UIModeResult,
+  type UseIsMobileOptions,
+  type UseUIModeOptions,
+} from './use-is-mobile'

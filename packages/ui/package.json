@@ -7,6 +7,7 @@
   "description": "Shared renderer UI components for the office apps (AI panel composer, icons); styling stays per-app via the shared class names",
   "exports": {
     ".": "./src/index.ts",
+    "./popover-dismiss": "./src/popover-dismiss.ts",
     "./color-picker.css": "./src/color-picker.css",
     "./dock.css": "./src/dock.css",
     "./dropdown.css": "./src/dropdown.css",
