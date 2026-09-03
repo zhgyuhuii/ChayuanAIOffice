@@ -1,7 +1,8 @@
 /**
- * Selection handles (P0 stub until P2). One visual language (≥44px touch
+ * Selection handles types (consensus #7). One visual language (≥44px touch
  * targets) for docs text selections, sheets cell-range selections, and slides
- * object frames.
+ * object frames. Implementation: selection-handles.tsx (P2); this module
+ * stays type-only.
  */
 import type { TouchPoint } from '../gestures/types'
 
@@ -12,8 +13,4 @@ export interface SelectionHandlesProps {
   readonly visible: boolean
   readonly onDragHandle: (which: 'start' | 'end', position: TouchPoint) => void
   readonly onDragEnd?: () => void
-}
-
-export function SelectionHandles(_props: SelectionHandlesProps): null {
-  throw new Error('@chatoffice/mobile-touch: SelectionHandles is not implemented (planned P2)')
 }

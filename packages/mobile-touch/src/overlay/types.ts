@@ -1,10 +1,11 @@
 /**
- * Overlay primitives (P0: type-level stubs, implemented in P1/P2):
+ * Overlay primitive types (consensus #7):
  * - FloatingToolbar — the contextual toolbar that follows a selection
  *   (consensus #4), shared by every editor.
  * - EditorOverlay — the DOM textarea proxy that brings up the virtual
  *   keyboard with native IME composition for canvas editors (sheets cells,
  *   slides text objects), where canvas-internal input cannot work.
+ * Implementations: floating-toolbar.tsx / editor-overlay.tsx (P2).
  */
 import type { ReactNode } from 'react'
 import type { TouchPoint } from '../gestures/types'
@@ -14,10 +15,6 @@ export interface FloatingToolbarProps {
   readonly anchor: TouchPoint | null
   readonly placement?: 'above' | 'below'
   readonly children?: ReactNode
-}
-
-export function FloatingToolbar(_props: FloatingToolbarProps): null {
-  throw new Error('@chatoffice/mobile-touch: FloatingToolbar is not implemented (planned P2)')
 }
 
 export interface EditorOverlayProps {
@@ -32,8 +29,4 @@ export interface EditorOverlayProps {
   readonly multiline?: boolean
   readonly onCommit: (value: string) => void
   readonly onCancel: () => void
-}
-
-export function EditorOverlay(_props: EditorOverlayProps): null {
-  throw new Error('@chatoffice/mobile-touch: EditorOverlay is not implemented (planned P2)')
 }
