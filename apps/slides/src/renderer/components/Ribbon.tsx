@@ -74,7 +74,6 @@ import {
   IconTransDissolve,
   IconTransZoom,
   IconTransRandom,
-  IconAnimStar,
   IconAnimNone,
   IconPageBorders,
   IconNoneX,
@@ -685,9 +684,11 @@ function DisabledBig({ icon, label }: { icon: ReactNode; label: string }) {
 }
 
 /** per-tab priority for responsive collapse: when the ribbon
- * body overflows, these groups (in order) fold into a single dropdown button */
+ * body overflows, these groups (in order) fold into a single dropdown button.
+ * The effect galleries (.rb-gallery) are fixed ~2-row WPS-style grids that
+ * stay expanded at ordinary widths, so only genuinely narrow windows fold. */
 const COLLAPSE_ORDER: Record<string, string[]> = {
-  animations: ['motionPaths', 'animation'],
+  animations: ['motionPaths'],
 }
 
 /** Checkbox row for toggle commands (View tab's Show group) */
@@ -2112,39 +2113,30 @@ export function Ribbon({
         ) : tab === 'transitions' ? (
           <>
             <Group label={t('ribbonGroupTransitionToThis')}>
-              {TRANSITIONS.map((tr) => (
-                <button
-                  key={tr.kind}
-                  className={`rb-big ${transition === tr.kind ? 'active' : ''}`}
-                  disabled={!hasDoc}
-                  onClick={() => onTransition(tr.kind, false)}
-                  data-tip={
-                    tr.kind === 'none'
-                      ? t('ribbonTransNoneTip')
-                      : t('ribbonTransApplyTip', { name: t(tr.label) })
-                  }
-                >
-                  <span className="rb-big-icon rb-trans-glyph">{tr.icon}</span>
-                  <span>{t(tr.label)}</span>
-                </button>
-              ))}
+              {/* WPS 对齐：效果固定两行缩略画廊，常驻展开（12 项恰好 2×6） */}
+              <div className="rb-gallery">
+                {TRANSITIONS.map((tr) => (
+                  <button
+                    key={tr.kind}
+                    className={`rb-gal-cell ${transition === tr.kind ? 'active' : ''}`}
+                    disabled={!hasDoc}
+                    onClick={() => onTransition(tr.kind, false)}
+                    data-tip={
+                      tr.kind === 'none'
+                        ? t('ribbonTransNoneTip')
+                        : t('ribbonTransApplyTip', { name: t(tr.label) })
+                    }
+                  >
+                    <span className="rb-big-icon rb-trans-glyph">{tr.icon}</span>
+                    <span>{t(tr.label)}</span>
+                  </button>
+                ))}
+              </div>
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupTiming')}>
-              <button
-                className="rb-big"
-                disabled={!hasDoc}
-                onClick={() => onTransition(transition, true)}
-                data-tip={t('ribbonTransApplyAllTip')}
-              >
-                <span className="rb-big-icon">
-                  <IconApplyAll size={BIG} />
-                </span>
-                <span>{t('ribbonApplyToAll')}</span>
-              </button>
-              {/* 换片方式 (WPS parity): click-advance is implicit; the auto-advance
-                  checkbox + seconds write <p:transition advTm> for this page */}
-              <div className="rb-trans-advance">
+              {/* 计时栅格与动画 tab 同款（标签｜控件｜单位 三列） */}
+              <div className="rb-timing-grid">
                 <RbCheck
                   label={t('ribbonAutoAdvance')}
                   on={advanceMs !== null}
@@ -2170,8 +2162,21 @@ export function Ribbon({
                     if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
                   }}
                 />
-                <span>{t('ribbonSecondsUnit')}</span>
+                <span>
+                  <span className="rb-timing-unit">{t('ribbonSecondsUnit')}</span>
+                </span>
               </div>
+              <button
+                className="rb-big"
+                disabled={!hasDoc}
+                onClick={() => onTransition(transition, true)}
+                data-tip={t('ribbonTransApplyAllTip')}
+              >
+                <span className="rb-big-icon">
+                  <IconApplyAll size={BIG} />
+                </span>
+                <span>{t('ribbonApplyToAll')}</span>
+              </button>
             </Group>
           </>
         ) : tab === 'animations' ? (
@@ -2190,55 +2195,43 @@ export function Ribbon({
               </button>
             </Group>
             <div className="ribbon-sep" />
-            <Group
-              label={t('ribbonGroupAnimation')}
-              groupId="animation"
-              collapse={{
-                collapsed: collapsedGroups.includes('animation'),
-                open: collapseOpen === 'animation',
-                onToggle: () => {
-                  closePanels(['collapse'])
-                  setCollapseOpen((v) => (v === 'animation' ? null : 'animation'))
-                },
-                icon: (
-                  <span className="rb-anim-glyph rb-anim-entr">
-                    <IconAnimStar size={20} />
-                  </span>
-                ),
-              }}
-            >
-              <button
-                className="rb-big"
-                disabled={!hasDoc || !hasSelection}
-                onClick={() => onApplyAnimation('none')}
-                data-tip={t('ribbonAnimNoneTip')}
-              >
-                <span className="rb-big-icon rb-anim-glyph">
-                  <IconAnimNone size={BIG} />
-                </span>
-                <span>{t('ribbonNone')}</span>
-              </button>
-              {ANIM_EFFECTS.map((a) => (
+            {/* WPS 对齐：动画效果画廊常驻展开（无 + 19 效果，两行可见、画廊内滚动），
+                不再整组折叠成一个下拉按钮 */}
+            <Group label={t('ribbonGroupAnimation')}>
+              <div className="rb-gallery">
                 <button
-                  key={a.kind}
-                  className={`rb-big ${selectedAnimEffect === a.kind ? 'active' : ''}`}
+                  className="rb-gal-cell"
                   disabled={!hasDoc || !hasSelection}
-                  onClick={() => onApplyAnimation(a.kind)}
-                  onMouseEnter={() => {
-                    if (hasDoc && hasSelection) animHoverStart(a.kind)
-                  }}
-                  onMouseLeave={animHoverStop}
-                  data-tip={t('ribbonAnimApplyTip', {
-                    cls: t(ANIM_CLS_TITLE[a.cls]),
-                    name: t(a.label),
-                  })}
+                  onClick={() => onApplyAnimation('none')}
+                  data-tip={t('ribbonAnimNoneTip')}
                 >
-                  <span className={`rb-big-icon rb-anim-glyph rb-anim-${a.cls}`}>
-                    <AnimEffectIcon kind={a.kind} size={BIG} />
+                  <span className="rb-big-icon rb-anim-glyph">
+                    <IconAnimNone size={BIG} />
                   </span>
-                  <span>{t(a.label)}</span>
+                  <span>{t('ribbonNone')}</span>
                 </button>
-              ))}
+                {ANIM_EFFECTS.map((a) => (
+                  <button
+                    key={a.kind}
+                    className={`rb-gal-cell ${selectedAnimEffect === a.kind ? 'active' : ''}`}
+                    disabled={!hasDoc || !hasSelection}
+                    onClick={() => onApplyAnimation(a.kind)}
+                    onMouseEnter={() => {
+                      if (hasDoc && hasSelection) animHoverStart(a.kind)
+                    }}
+                    onMouseLeave={animHoverStop}
+                    data-tip={t('ribbonAnimApplyTip', {
+                      cls: t(ANIM_CLS_TITLE[a.cls]),
+                      name: t(a.label),
+                    })}
+                  >
+                    <span className={`rb-big-icon rb-anim-glyph rb-anim-${a.cls}`}>
+                      <AnimEffectIcon kind={a.kind} size={BIG} />
+                    </span>
+                    <span>{t(a.label)}</span>
+                  </button>
+                ))}
+              </div>
             </Group>
             <div className="ribbon-sep" />
             <Group
@@ -2258,22 +2251,25 @@ export function Ribbon({
                 ),
               }}
             >
-              {MOTION_PATHS.map((mp) => (
-                <button
-                  key={mp.label}
-                  className="rb-big"
-                  disabled={!hasDoc || !hasSelection}
-                  onClick={() => onApplyMotionPath(mp.path)}
-                  onMouseEnter={() => {
-                    if (hasDoc && hasSelection) animHoverStart('motionPath', mp.path)
-                  }}
-                  onMouseLeave={animHoverStop}
-                  data-tip={t('ribbonMotionPathTip', { name: t(mp.label) })}
-                >
-                  <span className="rb-big-icon rb-anim-glyph rb-anim-path">{mp.icon}</span>
-                  <span>{t(mp.label)}</span>
-                </button>
-              ))}
+              {/* 画廊形态与切换/动画效果一致（5 项单行） */}
+              <div className="rb-gallery">
+                {MOTION_PATHS.map((mp) => (
+                  <button
+                    key={mp.label}
+                    className="rb-gal-cell"
+                    disabled={!hasDoc || !hasSelection}
+                    onClick={() => onApplyMotionPath(mp.path)}
+                    onMouseEnter={() => {
+                      if (hasDoc && hasSelection) animHoverStart('motionPath', mp.path)
+                    }}
+                    onMouseLeave={animHoverStop}
+                    data-tip={t('ribbonMotionPathTip', { name: t(mp.label) })}
+                  >
+                    <span className="rb-big-icon rb-anim-glyph rb-anim-path">{mp.icon}</span>
+                    <span>{t(mp.label)}</span>
+                  </button>
+                ))}
+              </div>
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupAdvancedAnim')}>
@@ -2334,73 +2330,69 @@ export function Ribbon({
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupTiming')}>
-              <div className="rb-anim-timing">
-                <label>
-                  {t('ribbonAnimStart')}
-                  <Dropdown
-                    disabled={!timingAnim}
-                    value={timingAnim?.trigger ?? 'onClick'}
-                    tip={t('ribbonAnimTriggerTip')}
-                    options={(
-                      [
-                        ['onClick', t('ribbonAnimOnClick')],
-                        ['withPrev', t('ribbonAnimWithPrev')],
-                        ['afterPrev', t('ribbonAnimAfterPrev')],
-                      ] as const
-                    ).map(([k, label]) => ({ value: k, label }))}
-                    onPick={(trigger) => onAnimTiming({ trigger })}
-                  />
-                </label>
-                <label>
-                  {t('ribbonAnimDuration')}
-                  <input
-                    key={`dur-${timingAnim?.sourceId ?? ''}-${timingAnim?.durationMs ?? ''}`}
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    disabled={!timingAnim}
-                    defaultValue={timingAnim ? (timingAnim.durationMs / 1000).toFixed(2) : ''}
-                    onBlur={(e) => {
-                      const v = parseFloat(e.target.value)
-                      if (
-                        timingAnim &&
-                        Number.isFinite(v) &&
-                        Math.round(v * 1000) !== timingAnim.durationMs
-                      )
-                        onAnimTiming({ durationMs: Math.max(0, Math.round(v * 1000)) })
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
-                    }}
-                    title={t('ribbonAnimDurationTip')}
-                  />
-                  {t('ribbonSecondsUnit')}
-                </label>
-                <label>
-                  {t('ribbonAnimDelay')}
-                  <input
-                    key={`delay-${timingAnim?.sourceId ?? ''}-${timingAnim?.delayMs ?? ''}`}
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    disabled={!timingAnim}
-                    defaultValue={timingAnim ? (timingAnim.delayMs / 1000).toFixed(2) : ''}
-                    onBlur={(e) => {
-                      const v = parseFloat(e.target.value)
-                      if (
-                        timingAnim &&
-                        Number.isFinite(v) &&
-                        Math.round(v * 1000) !== timingAnim.delayMs
-                      )
-                        onAnimTiming({ delayMs: Math.max(0, Math.round(v * 1000)) })
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
-                    }}
-                    title={t('ribbonAnimDelayTip')}
-                  />
-                  {t('ribbonSecondsUnit')}
-                </label>
+              {/* 计时栅格与切换 tab 同款（标签｜控件｜单位 三列） */}
+              <div className="rb-timing-grid">
+                <span className="rb-timing-label">{t('ribbonAnimStart')}</span>
+                <Dropdown
+                  disabled={!timingAnim}
+                  value={timingAnim?.trigger ?? 'onClick'}
+                  tip={t('ribbonAnimTriggerTip')}
+                  options={(
+                    [
+                      ['onClick', t('ribbonAnimOnClick')],
+                      ['withPrev', t('ribbonAnimWithPrev')],
+                      ['afterPrev', t('ribbonAnimAfterPrev')],
+                    ] as const
+                  ).map(([k, label]) => ({ value: k, label }))}
+                  onPick={(trigger) => onAnimTiming({ trigger })}
+                />
+                <span className="rb-timing-unit" aria-hidden="true" />
+                <span className="rb-timing-label">{t('ribbonAnimDuration')}</span>
+                <input
+                  key={`dur-${timingAnim?.sourceId ?? ''}-${timingAnim?.durationMs ?? ''}`}
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  disabled={!timingAnim}
+                  defaultValue={timingAnim ? (timingAnim.durationMs / 1000).toFixed(2) : ''}
+                  onBlur={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (
+                      timingAnim &&
+                      Number.isFinite(v) &&
+                      Math.round(v * 1000) !== timingAnim.durationMs
+                    )
+                      onAnimTiming({ durationMs: Math.max(0, Math.round(v * 1000)) })
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                  }}
+                  title={t('ribbonAnimDurationTip')}
+                />
+                <span className="rb-timing-unit">{t('ribbonSecondsUnit')}</span>
+                <span className="rb-timing-label">{t('ribbonAnimDelay')}</span>
+                <input
+                  key={`delay-${timingAnim?.sourceId ?? ''}-${timingAnim?.delayMs ?? ''}`}
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  disabled={!timingAnim}
+                  defaultValue={timingAnim ? (timingAnim.delayMs / 1000).toFixed(2) : ''}
+                  onBlur={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (
+                      timingAnim &&
+                      Number.isFinite(v) &&
+                      Math.round(v * 1000) !== timingAnim.delayMs
+                    )
+                      onAnimTiming({ delayMs: Math.max(0, Math.round(v * 1000)) })
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                  }}
+                  title={t('ribbonAnimDelayTip')}
+                />
+                <span className="rb-timing-unit">{t('ribbonSecondsUnit')}</span>
               </div>
             </Group>
           </>

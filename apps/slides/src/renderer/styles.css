@@ -814,31 +814,6 @@ button {
   padding: 0 4px;
 }
 
-/* PowerPoint-style combined slides group: big new-slide button + stacked
-   small labeled rows (layout / add section). The column stretches to the big
-   button's height; 4px top tracks .rb-big's icon row, and the 1px bottom
-   (rather than the geometric 3px) offsets the row's centered line box so the
-   add-section text bottom-aligns with the new-slide label (measured) */
-.rb-slides-col {
-  align-items: stretch;
-  align-self: stretch;
-  justify-content: space-between;
-  gap: 0;
-  padding: 4px 0 1px;
-}
-/* these rows pair with a big button, so their glyphs use the 20px inline-row
-   size (not the 14px .rb-small default); 1.8 × 20/24 paints the standard
-   1.5px stroke at 20px */
-.rb-slides-col .rb-small svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.8;
-}
-.rb-slides-col .rb-small .rb-caret {
-  width: 10px;
-  height: 10px;
-}
-
 .rb-small {
   display: flex;
   align-items: center;
@@ -3937,11 +3912,11 @@ body.vib .slide-list {
   display: block;
 }
 
-.rb-anim-timing .gs-dd {
+.rb-timing-grid .gs-dd {
   width: 110px;
 }
 
-.rb-anim-timing .gs-dd-btn {
+.rb-timing-grid .gs-dd-btn {
   height: 22px;
 }
 
@@ -4813,56 +4788,103 @@ body.vib .slide-list {
   vertical-align: -3px;
 }
 
-.rb-anim-timing {
+/* 切换/动画 tab 共用的计时栅格（T8 一致性）：标签｜控件｜单位 三列，
+   每个网格项都是显式节点（display:contents 的裸文本在 Chromium 不可靠） */
+.rb-timing-grid {
+  display: grid;
+  grid-template-columns: auto minmax(84px, auto) auto;
+  gap: 5px 6px;
+  align-items: center;
+  justify-items: start;
+  font-size: 12px;
+  color: var(--text);
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+
+.rb-timing-label,
+.rb-timing-unit {
+  white-space: nowrap;
+}
+
+.rb-timing-grid select,
+.rb-timing-grid input {
+  font-size: 12px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.rb-timing-grid input {
+  width: 58px;
+}
+
+/* WPS 对齐的效果画廊（T5/T7 一致性）：固定 6 列、两行可见、画廊内纵向滚动，
+   常驻展开不再折叠进下拉按钮。切换 12 项恰好 2×6；动画 20 项滚动可见 */
+.rb-gallery {
+  display: grid;
+  grid-template-columns: repeat(6, 64px);
+  gap: 2px;
+  align-content: start;
+  max-height: 122px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.rb-gallery::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rb-gallery::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+/* 画廊缩略格：rb-big 的紧凑版（20px 图标 + 11px 标签） */
+.rb-gal-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  justify-content: center;
-  font-size: 12px;
-  color: var(--text);
-  padding: 2px 4px;
-}
-
-.rb-anim-timing label {
-  display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  width: 64px;
+  padding: 5px 2px 4px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  font-size: 11px;
+  color: inherit;
+  cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
 }
 
-.rb-anim-timing select,
-.rb-anim-timing input {
-  font-size: 12px;
-  padding: 1px 4px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--surface);
-  color: var(--text);
+.rb-gal-cell .rb-big-icon {
+  height: 20px;
 }
 
-.rb-anim-timing input {
-  width: 58px;
+.rb-gal-cell .rb-big-icon svg,
+.rb-gal-cell .rb-big-icon svg * {
+  width: 20px;
+  height: 20px;
 }
 
-/* Transitions tab 换片方式: auto-advance checkbox + seconds input (advTm) */
-.rb-trans-advance {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 4px;
-  font-size: 12px;
-  color: var(--text);
-  white-space: nowrap;
+.rb-gal-cell:hover:not(:disabled) {
+  background: var(--hover);
 }
 
-.rb-trans-advance input {
-  width: 58px;
-  font-size: 12px;
-  padding: 1px 4px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--surface);
-  color: var(--text);
+.rb-gal-cell.active {
+  background: var(--active-bg);
+}
+
+.rb-gal-cell:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* ── Animation pane (reuses the comments-pane skeleton) ───────────────── */

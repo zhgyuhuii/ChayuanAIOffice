@@ -109,7 +109,6 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
     onToggleFormat,
     arrangeOpen,
     closePanels,
-    collapseOpen,
     colorOpen,
     commitFontDraft,
     commitSizeDraft,
@@ -126,7 +125,6 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
     onCustomTextColor,
     paraOpen,
     setArrangeOpen,
-    setCollapseOpen,
     setColorOpen,
     setFontOpen,
     setLastColor,
@@ -308,21 +306,9 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
         </div>
       </Group>
       <div className="ribbon-sep" />
-      {/* The slides group always renders collapsed behind one dropdown; the
-          flyout holds the combined new-slide + layout / add-section layout */}
-      <Group
-        label={t('ribbonGroupSlides')}
-        groupId="slides"
-        collapse={{
-          collapsed: true,
-          open: collapseOpen === 'slides',
-          onToggle: () => {
-            closePanels(['collapse'])
-            setCollapseOpen((v) => (v === 'slides' ? null : 'slides'))
-          },
-          icon: <IconNewSlide size={BIG} />,
-        }}
-      >
+      {/* WPS 对齐：幻灯片组常驻展开为三个按钮（新建幻灯片⌄ / 版式⌄ / 节），
+          不再写死折叠进一个下拉按钮；窄窗口交由 ribbon 横向滚动兜底 */}
+      <Group label={t('ribbonGroupSlides')}>
         <div className="rb-drop-wrap">
           <button
             className="rb-big rb-split"
@@ -365,56 +351,58 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
             </div>
           )}
         </div>
-        <div className="rb-col rb-slides-col">
-          <div className="rb-drop-wrap">
-            <button
-              className={`rb-small ${layoutPickOpen ? 'active' : ''}`}
-              disabled={!hasDoc}
-              onMouseDown={(e) => {
-                e.stopPropagation()
-                closeSiblingPanels(e, closePanels, 'layoutPick')
-              }}
-              onClick={() => setLayoutPickOpen((v) => !v)}
-              data-tip={t('ribbonLayoutTip')}
-            >
-              <IconSlideLayout size={20} />
-              <span>{t('ribbonLayout')}</span>
-              <RbCaret />
-            </button>
-            {layoutPickOpen && (
-              <div className="rb-drop rb-layout-drop" onMouseDown={(e) => e.stopPropagation()}>
-                <div className="rb-drop-title">{t('ribbonChooseLayoutChange')}</div>
-                <LayoutList
-                  layouts={layouts}
-                  size={layoutSize}
-                  onPick={(path) => {
-                    setLayoutPickOpen(false)
-                    onSetLayout(path)
-                  }}
-                />
-                <div className="rb-menu-div" />
-                <button
-                  className="rb-layout-reset"
-                  onClick={() => {
-                    setLayoutPickOpen(false)
-                    onResetLayout()
-                  }}
-                >
-                  {t('ribbonResetLayout')}
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="rb-drop-wrap">
           <button
-            className="rb-small"
+            className={`rb-big ${layoutPickOpen ? 'active' : ''}`}
             disabled={!hasDoc}
-            onClick={onAddSection}
-            data-tip={t('ribbonAddSectionTip')}
+            onMouseDown={(e) => {
+              e.stopPropagation()
+              closeSiblingPanels(e, closePanels, 'layoutPick')
+            }}
+            onClick={() => setLayoutPickOpen((v) => !v)}
+            data-tip={t('ribbonLayoutTip')}
           >
-            <IconSection size={20} />
-            <span>{t('ribbonAddSection')}</span>
+            <span className="rb-big-icon">
+              <IconSlideLayout size={BIG} />
+              <RbCaret />
+            </span>
+            <span>{t('ribbonLayout')}</span>
           </button>
+          {layoutPickOpen && (
+            <div className="rb-drop rb-layout-drop" onMouseDown={(e) => e.stopPropagation()}>
+              <div className="rb-drop-title">{t('ribbonChooseLayoutChange')}</div>
+              <LayoutList
+                layouts={layouts}
+                size={layoutSize}
+                onPick={(path) => {
+                  setLayoutPickOpen(false)
+                  onSetLayout(path)
+                }}
+              />
+              <div className="rb-menu-div" />
+              <button
+                className="rb-layout-reset"
+                onClick={() => {
+                  setLayoutPickOpen(false)
+                  onResetLayout()
+                }}
+              >
+                {t('ribbonResetLayout')}
+              </button>
+            </div>
+          )}
         </div>
+        <button
+          className="rb-big"
+          disabled={!hasDoc}
+          onClick={onAddSection}
+          data-tip={t('ribbonAddSectionTip')}
+        >
+          <span className="rb-big-icon">
+            <IconSection size={BIG} />
+          </span>
+          <span>{t('ribbonAddSection')}</span>
+        </button>
       </Group>
       <div className="ribbon-sep" />
       <Group label={t('ribbonGroupFont')}>
