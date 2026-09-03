@@ -90,6 +90,8 @@ export const strings = {
     // Project sidebar
     projects: '项目',
     newProject: '新建项目',
+    newTask: '新建任务',
+    newFileChat: '在此文件新建对话',
     projectName: '项目名称',
     deleteProject: '删除项目…',
     deleteProjectConfirm: '删除该项目？\n项目下的文件将回归"默认项目"，不会丢失。',
@@ -338,6 +340,8 @@ export const strings = {
     delete: 'Delete',
     projects: 'Projects',
     newProject: 'New project',
+    newTask: 'New task',
+    newFileChat: 'New chat in this file',
     projectName: 'Project name',
     deleteProject: 'Delete project…',
     deleteProjectConfirm:
@@ -600,6 +604,8 @@ export const strings = {
     // Project sidebar
     projects: 'プロジェクト',
     newProject: '新規プロジェクト',
+    newTask: '新規タスク',
+    newFileChat: 'このファイルで新規会話',
     projectName: 'プロジェクト名',
     deleteProject: 'プロジェクトを削除…',
     deleteProjectConfirm:
@@ -868,6 +874,8 @@ export const strings = {
     // Project sidebar
     projects: '프로젝트',
     newProject: '새 프로젝트',
+    newTask: '새 작업',
+    newFileChat: '이 파일에서 새 대화',
     projectName: '프로젝트 이름',
     deleteProject: '프로젝트 삭제…',
     deleteProjectConfirm:
@@ -1134,6 +1142,8 @@ export const strings = {
     // Project sidebar
     projects: 'Projets',
     newProject: 'Nouveau projet',
+    newTask: 'Nouvelle tâche',
+    newFileChat: 'Nouvelle discussion dans ce fichier',
     projectName: 'Nom du projet',
     deleteProject: 'Supprimer le projet…',
     deleteProjectConfirm:
@@ -1410,6 +1420,8 @@ export const strings = {
     // Project sidebar
     projects: 'Projekte',
     newProject: 'Neues Projekt',
+    newTask: 'Neue Aufgabe',
+    newFileChat: 'Neuer Chat in dieser Datei',
     projectName: 'Projektname',
     deleteProject: 'Projekt löschen…',
     deleteProjectConfirm:
@@ -1684,6 +1696,8 @@ export const strings = {
     // Project sidebar
     projects: 'Proyectos',
     newProject: 'Nuevo proyecto',
+    newTask: 'Nueva tarea',
+    newFileChat: 'Nuevo chat en este archivo',
     projectName: 'Nombre del proyecto',
     deleteProject: 'Eliminar proyecto…',
     deleteProjectConfirm:
@@ -1955,6 +1969,8 @@ export const strings = {
     // Project sidebar
     projects: 'โปรเจ็กต์',
     newProject: 'โปรเจ็กต์ใหม่',
+    newTask: 'งานใหม่',
+    newFileChat: 'แชทใหม่ในไฟล์นี้',
     projectName: 'ชื่อโปรเจ็กต์',
     deleteProject: 'ลบโปรเจ็กต์…',
     deleteProjectConfirm:
@@ -2219,6 +2235,8 @@ export const strings = {
     // Project sidebar
     projects: 'Proyek',
     newProject: 'Proyek baru',
+    newTask: 'Tugas baru',
+    newFileChat: 'Obrolan baru di berkas ini',
     projectName: 'Nama proyek',
     deleteProject: 'Hapus proyek…',
     deleteProjectConfirm:
@@ -2487,6 +2505,8 @@ export const strings = {
     // Project sidebar
     projects: 'Проекты',
     newProject: 'Создать проект',
+    newTask: 'Новая задача',
+    newFileChat: 'Новый чат для этого файла',
     projectName: 'Название проекта',
     deleteProject: 'Удалить проект…',
     deleteProjectConfirm:
@@ -2755,6 +2775,8 @@ export const strings = {
     // Project sidebar
     projects: 'المشاريع',
     newProject: 'مشروع جديد',
+    newTask: 'مهمة جديدة',
+    newFileChat: 'محادثة جديدة في هذا الملف',
     projectName: 'اسم المشروع',
     deleteProject: 'حذف المشروع…',
     deleteProjectConfirm:
@@ -3013,6 +3035,8 @@ export const strings = {
     delete: 'Excluir',
     projects: 'Projetos',
     newProject: 'Novo projeto',
+    newTask: 'Nova tarefa',
+    newFileChat: 'Nova conversa neste arquivo',
     projectName: 'Nome do projeto',
     deleteProject: 'Excluir projeto…',
     deleteProjectConfirm:
@@ -3274,6 +3298,8 @@ export const strings = {
     delete: 'Elimina',
     projects: 'Progetti',
     newProject: 'Nuovo progetto',
+    newTask: 'Nuova attività',
+    newFileChat: 'Nuova chat in questo file',
     projectName: 'Nome del progetto',
     deleteProject: 'Elimina progetto…',
     deleteProjectConfirm:
@@ -3533,6 +3559,8 @@ export const strings = {
     delete: 'Usuń',
     projects: 'Projekty',
     newProject: 'Nowy projekt',
+    newTask: 'Nowe zadanie',
+    newFileChat: 'Nowy czat w tym pliku',
     projectName: 'Nazwa projektu',
     deleteProject: 'Usuń projekt…',
     deleteProjectConfirm:
@@ -3794,6 +3822,8 @@ export const strings = {
     delete: 'Verwijderen',
     projects: 'Projecten',
     newProject: 'Nieuw project',
+    newTask: 'Nieuwe taak',
+    newFileChat: 'Nieuwe chat in dit bestand',
     projectName: 'Projectnaam',
     deleteProject: 'Project verwijderen…',
     deleteProjectConfirm:
@@ -4054,6 +4084,8 @@ export const strings = {
     delete: 'Padam',
     projects: 'Projek',
     newProject: 'Projek baharu',
+    newTask: 'Tugas baharu',
+    newFileChat: 'Sembang baharu dalam fail ini',
     projectName: 'Nama projek',
     deleteProject: 'Padam projek…',
     deleteProjectConfirm:
@@ -4311,6 +4343,8 @@ export const strings = {
     delete: 'מחיקה',
     projects: 'פרויקטים',
     newProject: 'פרויקט חדש',
+    newTask: 'משימה חדשה',
+    newFileChat: 'צ׳אט חדש בקובץ זה',
     projectName: 'שם הפרויקט',
     deleteProject: 'מחיקת פרויקט…',
     deleteProjectConfirm:
@@ -4562,6 +4596,8 @@ export const strings = {
     delete: 'हटाएँ',
     projects: 'प्रोजेक्ट',
     newProject: 'नया प्रोजेक्ट',
+    newTask: 'नया कार्य',
+    newFileChat: 'इस फ़ाइल में नई बातचीत',
     projectName: 'प्रोजेक्ट का नाम',
     deleteProject: 'प्रोजेक्ट हटाएँ…',
     deleteProjectConfirm:
@@ -4818,6 +4854,8 @@ export const strings = {
     delete: '刪除',
     projects: '專案',
     newProject: '新增專案',
+    newTask: '新任務',
+    newFileChat: '在此檔案新增對話',
     projectName: '專案名稱',
     deleteProject: '刪除專案…',
     deleteProjectConfirm: '刪除此專案？\n專案內的檔案會回到「預設專案」，不會遺失。',

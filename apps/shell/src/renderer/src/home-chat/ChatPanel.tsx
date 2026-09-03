@@ -13,7 +13,7 @@ import type {
   HomeChatAttachment,
   HomeChatCard,
   HomeChatMessage,
-  HomeChatSession,
+  HomeChatSessionScope,
 } from '../../../shared/home-api'
 
 /** greeting sublines on the landing screen: one is picked at random on mount */
@@ -203,30 +203,28 @@ function ChatMessageView({
 }
 
 export function ChatPanel({
+  store,
   projectId,
   accountName,
   onOpenSettings,
+  activeScope,
+  openSignal,
 }: {
+  /** owned by Home so the left tree can read/drive the same sessions */
+  store: ReturnType<typeof useHomeChatStore>
   projectId: string | null
   accountName: string
   onOpenSettings: () => void
+  /** scope new chats attach to when nothing else applies (the selected tree node) */
+  activeScope?: HomeChatSessionScope
+  /** the tree asks to open a session: nonce-bumped {sessionId} taps this effect */
+  openSignal?: { sessionId: string; nonce: number } | null
 }): ReactElement {
   const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
 
-  // ── store + controller (both created once) ──
+  // ── store (created by Home) + controller (created once) ──
   const storeRef = useRef<ReturnType<typeof useHomeChatStore> | null>(null)
-  const store = useHomeChatStore(
-    useMemo(
-      () => ({
-        chatSessionsLoad: async () => (await window.chatOffice.chatSessionsLoad?.()) ?? [],
-        chatSessionsSave: async (sessions: HomeChatSession[]) => {
-          await window.chatOffice.chatSessionsSave?.(sessions)
-        },
-      }),
-      [],
-    ),
-  )
   storeRef.current = store
 
   const activeIdRef = useRef<string | null>(null)
@@ -309,6 +307,16 @@ export function ChatPanel({
   const active = store.active
   const hasMessages = (active?.messages.length ?? 0) > 0
 
+  // the tree opened a session (task or file chat): sync busy and focus
+  const openSignalNonce = openSignal?.nonce ?? 0
+  useEffect(() => {
+    if (!openSignal || openSignalNonce === 0) return
+    setBusy(controller.isBusy(openSignal.sessionId))
+    store.setActiveId(openSignal.sessionId)
+    inputRef.current?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openSignalNonce])
+
   const openSession = (id: string) => {
     setMenuOpen(false)
     setBusy(controller.isBusy(id))
@@ -331,7 +339,7 @@ export function ChatPanel({
     const text = input.trim()
     if (!text && attachments.length === 0) return
     let session = store.active
-    if (!session || session.messages.length > 0) session = store.createSession()
+    if (!session || session.messages.length > 0) session = store.createSession(activeScope)
     const atts = attachments
     setInput('')
     setAttachments([])

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement } from 'react'
 import logoLockup from './assets/chatoffice-logo.svg'
 import iconDocx from './assets/file-docx.svg'
@@ -11,6 +11,8 @@ import type {
   CloudProjectKind,
   CloudProjectsSnapshot,
   HomeApi,
+  HomeChatSession,
+  HomeChatSessionScope,
   ProjectHomeApi,
   ProjectSummaryEntry,
   RecentEntry,
@@ -22,6 +24,7 @@ import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
+import { useHomeChatStore } from './home-chat/store'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 
 declare global {
@@ -142,9 +145,17 @@ interface ProjectPanelProps {
   selectedId: string | null
   onSelect: (id: string | null) => void
   onRefresh: () => void
+  /** 新建任务: a project-owned chat session (P2 tree level 1→chat) */
+  onCreateTask?: (id: string) => void
 }
 
-function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPanelProps) {
+function ProjectPanel({
+  projects,
+  selectedId,
+  onSelect,
+  onRefresh,
+  onCreateTask,
+}: ProjectPanelProps) {
   const { t } = useI18n()
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
@@ -326,6 +337,38 @@ function ProjectPanel({ projects, selectedId, onSelect, onRefresh }: ProjectPane
                 )}
                 <span className="proj-item-meta">
                   <span className="proj-item-count">{proj.fileCount}</span>
+                  {onCreateTask && (
+                    <button
+                      className="proj-task-btn"
+                      data-tip={t('newTask')}
+                      aria-label={t('newTask')}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onCreateTask(proj.id)
+                      }}
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 4.2A1.2 1.2 0 0 1 4.2 3h7.6A1.2 1.2 0 0 1 13 4.2v4.9a1.2 1.2 0 0 1-1.2 1.2H7.9L5.6 12.4a.55.55 0 0 1-.9-.43v-1.67h-.5A1.2 1.2 0 0 1 3 9.1V4.2z"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M8 5.4v2.6M6.7 6.7h2.6"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </span>
               </div>
 
@@ -1130,6 +1173,55 @@ export function Home() {
 
   const projectMode = hasProjectApi()
 
+  // ── Home chat store (owned here so the left tree reads the same sessions;
+  //    ChatPanel becomes a controlled view over it) ──
+  const chatStore = useHomeChatStore(
+    useMemo(
+      () => ({
+        chatSessionsLoad: async () => (await window.chatOffice.chatSessionsLoad?.()) ?? [],
+        chatSessionsSave: async (sessions: HomeChatSession[]) => {
+          await window.chatOffice.chatSessionsSave?.(sessions)
+        },
+      }),
+      [],
+    ),
+  )
+  /** nonce-bumped open request from the tree to the middle chat pane */
+  const [chatOpenSignal, setChatOpenSignal] = useState<{ sessionId: string; nonce: number } | null>(
+    null,
+  )
+  const openChatSession = useCallback((sessionId: string) => {
+    setChatOpenSignal((prev) => ({ sessionId, nonce: (prev?.nonce ?? 0) + 1 }))
+  }, [])
+  /** 新建任务 = a project-owned conversation shown directly under the project */
+  const createTask = useCallback(
+    (projectId: string) => {
+      const session = chatStore.createSession({ kind: 'project', id: projectId })
+      openChatSession(session.id)
+    },
+    [chatStore, openChatSession],
+  )
+  /** a conversation attached to a file (tree level 3) */
+  const createFileChat = useCallback(
+    (filePath: string) => {
+      const session = chatStore.createSession({ kind: 'file', id: filePath })
+      openChatSession(session.id)
+    },
+    [chatStore, openChatSession],
+  )
+  /** tree sessions to list: visible once they carry content, or while active */
+  const visibleTreeSessions = useCallback(
+    (scope: HomeChatSessionScope): HomeChatSession[] =>
+      (chatStore.sessions ?? []).filter(
+        (s) =>
+          s.scope?.kind === scope.kind &&
+          s.scope?.id === scope.id &&
+          !s.handedOff &&
+          (s.messages.length > 0 || s.id === chatStore.activeId),
+      ),
+    [chatStore.sessions, chatStore.activeId],
+  )
+
   // ── Paged loading ──
   // stale responses are dropped via a request sequence number (when views/filters switch quickly)
   const requestSeq = useRef(0)
@@ -1436,13 +1528,13 @@ export function Home() {
 
   // ── Sidebar file history (recents / starred / project files) ──
 
-  function renderSideFileRow(entry: RecentEntry, context: 'global' | 'project') {
+  function renderSideFileRow(entry: RecentEntry, context: 'global' | 'project', bare = false) {
     const isRenaming = renaming?.path === entry.path
     const otherProjects = projects.filter(
       (p) => p.id !== (context === 'project' ? selectedProjectId : undefined),
     )
-    return (
-      <li className="side-file" key={entry.path}>
+    const body = (
+      <>
         <div
           className="side-file-main"
           role="button"
@@ -1623,6 +1715,14 @@ export function Home() {
               <button role="menuitem" onClick={() => duplicateFile(entry.path)}>
                 {t('duplicate')}
               </button>
+              {context === 'project' && (
+                <>
+                  <div className="row-menu-divider" />
+                  <button role="menuitem" onClick={() => createFileChat(entry.path)}>
+                    {t('newFileChat')}
+                  </button>
+                </>
+              )}
               {context === 'global' && (
                 <>
                   <div className="row-menu-divider" />
@@ -1641,14 +1741,49 @@ export function Home() {
             </div>
           )}
         </span>
+      </>
+    )
+    // bare mode: the caller wraps (e.g. adding nested chat nodes under the file)
+    return bare ? (
+      body
+    ) : (
+      <li className="side-file" key={entry.path}>
+        {body}
       </li>
     )
   }
 
-  /** files of the selected project, rendered under its row inside the 项目 section */
+  /** one chat-session node in the tree (a task under a project, or a chat under a file) */
+  function renderTreeChat(session: HomeChatSession, depth: 'task' | 'chat'): ReactElement {
+    const activeCls = session.id === chatStore.activeId ? ' active' : ''
+    return (
+      <li key={session.id} className={`tree-chat-row${depth === 'task' ? ' task' : ''}`}>
+        <button
+          className={`tree-chat${activeCls}`}
+          title={session.title || t('chatUntitled')}
+          onClick={() => openChatSession(session.id)}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M3 4.5A1.5 1.5 0 0 1 4.5 3h7A1.5 1.5 0 0 1 13 4.5v5A1.5 1.5 0 0 1 11.5 11H7.6L4.8 13.3a.6.6 0 0 1-1-.47V11h-.3A1.5 1.5 0 0 1 2 9.5v-5A1.5 1.5 0 0 1 3.5 3.5"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+              transform="translate(0.5 0)"
+            />
+          </svg>
+          <span className="tree-chat-title">{session.title || t('chatUntitled')}</span>
+        </button>
+      </li>
+    )
+  }
+
+  /** files of the selected project: tasks (project chats) first, then files
+   *  each with its attached chats — the tree's 项目→文件→对话 three levels */
   function renderProjectFiles() {
     if (!projectMode || !selectedProjectId) return null
     const title = projects.find((p) => p.id === selectedProjectId)?.name ?? ''
+    const tasks = visibleTreeSessions({ kind: 'project', id: selectedProjectId })
     return (
       <div className="side-files proj-files">
         <div className="side-files-head">
@@ -1657,11 +1792,26 @@ export function Home() {
             {t(fileCountKey(projectFileEntries.length), { n: projectFileEntries.length })}
           </span>
         </div>
+        {tasks.length > 0 && (
+          <ul className="tree-chat-list">{tasks.map((s) => renderTreeChat(s, 'task'))}</ul>
+        )}
         {projectFileEntries.length === 0 ? (
           <p className="side-files-empty">{t('projEmptyHint')}</p>
         ) : (
           <ul className="side-file-list">
-            {projectFileEntries.map((entry) => renderSideFileRow(entry, 'project'))}
+            {projectFileEntries.map((entry) => (
+              <li key={entry.path} className="side-file-group">
+                {renderSideFileRow(entry, 'project', true)}
+                {(() => {
+                  const chats = visibleTreeSessions({ kind: 'file', id: entry.path })
+                  return chats.length > 0 ? (
+                    <ul className="tree-chat-list nested">
+                      {chats.map((s) => renderTreeChat(s, 'chat'))}
+                    </ul>
+                  ) : null
+                })()}
+              </li>
+            ))}
           </ul>
         )}
       </div>
@@ -1840,6 +1990,7 @@ export function Home() {
                   setRowMenu(null)
                 }}
                 onRefresh={refresh}
+                onCreateTask={createTask}
               />
               {renderProjectFiles()}
             </div>
@@ -1860,9 +2011,12 @@ export function Home() {
       ) : (
         <>
           <ChatPanel
+            store={chatStore}
             projectId={selectedProjectId}
             accountName={accountName}
             onOpenSettings={() => handleSettingsOpenChange(true)}
+            activeScope={selectedProjectId ? { kind: 'project', id: selectedProjectId } : undefined}
+            openSignal={chatOpenSignal}
           />
           {/* right content pane: editors borrow this rect on the home tab in a
               later phase; for now it carries the empty-state hint */}

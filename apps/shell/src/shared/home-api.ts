@@ -227,6 +227,14 @@ export interface HomeChatMessage {
   ts: number
 }
 
+/** where a home-chat session lives in the left tree (P2): a project's own
+ * conversation (a "task") or one attached to a document file */
+export interface HomeChatSessionScope {
+  kind: 'project' | 'file'
+  /** project id, or the file's absolute path */
+  id: string
+}
+
 export interface HomeChatSession {
   id: string
   /** sidebar label: first user message, truncated */
@@ -234,6 +242,8 @@ export interface HomeChatSession {
   createdAt: number
   updatedAt: number
   messages: HomeChatMessage[]
+  /** tree ownership; absent on legacy sessions = unattached (未归属) */
+  scope?: HomeChatSessionScope | undefined
   /** set when the conversation moved into a document tab's AI panel: the home
    * copy becomes read-only and offers "open that tab" instead of continuing */
   handedOff?: { docTitle: string; filePath?: string | undefined } | undefined

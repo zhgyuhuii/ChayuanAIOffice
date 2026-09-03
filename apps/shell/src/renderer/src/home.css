@@ -2009,6 +2009,92 @@ body.vib .home {
   min-height: 0;
 }
 
+/* ── Tree chat nodes (P2): tasks under a project, chats under a file ── */
+
+.side-file-group {
+  list-style: none;
+}
+
+.tree-chat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-chat-list.nested {
+  padding-left: 16px;
+}
+
+.tree-chat-row {
+  display: block;
+}
+
+.tree-chat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 8px 4px 22px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tree-chat-row.task .tree-chat {
+  padding-left: 10px;
+}
+
+.tree-chat:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tree-chat.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tree-chat svg {
+  flex-shrink: 0;
+}
+
+.tree-chat-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* per-project 新建任务 button in the project row (hover reveal) */
+.proj-task-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.proj-item:hover .proj-task-btn,
+.proj-task-btn:focus-visible {
+  display: flex;
+}
+
+.proj-task-btn:hover {
+  background: var(--bg-hover-strong);
+  color: var(--accent);
+}
+
 .side-files-head {
   display: flex;
   align-items: baseline;

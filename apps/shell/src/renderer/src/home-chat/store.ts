@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { HomeChatMessage, HomeChatSession } from '../../../shared/home-api'
+import type {
+  HomeChatMessage,
+  HomeChatSession,
+  HomeChatSessionScope,
+} from '../../../shared/home-api'
 
 export interface HomeChatStore {
   /** null while the persisted sessions are loading */
@@ -8,8 +12,9 @@ export interface HomeChatStore {
   active: HomeChatSession | null
   /** open a session (null = back to landing / fresh chat) */
   setActiveId(id: string | null): void
-  /** create a fresh session and make it active */
-  createSession(): HomeChatSession
+  /** create a fresh session and make it active; scope attaches it to a
+   * project (a "task") or a file in the left tree */
+  createSession(scope?: HomeChatSessionScope): HomeChatSession
   updateSession(id: string, mutate: (session: HomeChatSession) => HomeChatSession): void
   removeSession(id: string): void
   renameSession(id: string, title: string): void
@@ -50,13 +55,14 @@ export function useHomeChatStore(
     return () => clearTimeout(saveTimer.current)
   }, [sessions])
 
-  const createSession = useCallback((): HomeChatSession => {
+  const createSession = useCallback((scope?: HomeChatSessionScope): HomeChatSession => {
     const session: HomeChatSession = {
       id: crypto.randomUUID(),
       title: '',
       createdAt: Date.now(),
       updatedAt: Date.now(),
       messages: [],
+      ...(scope ? { scope } : {}),
     }
     setSessions((prev) => [session, ...(prev ?? [])])
     setActiveId(session.id)
