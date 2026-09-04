@@ -98,6 +98,12 @@ export function ChartDesignerModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 组切换即换示例
   }, [groupId])
 
+  // 双击回显(initial 带代码):自动试跑让预览立即可见,不用手点运行
+  useEffect(() => {
+    if (initial?.code) void runCode(initial.code)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅挂载时执行
+  }, [])
+
   // 数据表格 → 预览 option(标准形状经 ChartSpec 组装,Q5 受限样式)
   const applyTable = (next: OptionTable) => {
     setTable(next)

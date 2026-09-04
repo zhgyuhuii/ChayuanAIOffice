@@ -4,6 +4,9 @@ import type { Editor } from '@tiptap/core'
 import { ShapePreview, WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
 import type { ChartDisplay, HeaderFooter, NewChart } from '@chatoffice/docx-engine'
 import { ChartDesignerModal, type ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+
+/** 旧 3 种基础图表入口开关:用户 2026-09-04 指示暂时隐藏(组件保留可随时恢复) */
+const CHART_LEGACY_VISIBLE = false
 import { hfHasPageField, hfWithoutPageMarks } from '../editor/hf-dom'
 import { EquationGallery, EquationModal } from './EquationModal'
 import { COVER_PRESETS, insertCoverPage, type CoverPreset } from '../editor/cover-pages'
@@ -893,21 +896,24 @@ export function InsertTab({
             </span>
             <span>{t('ribbonPicture')}</span>
           </button>
+          {/* 旧 3 种基础图表入口:暂时隐藏,组件保留(用户 2026-09-04 指示,新图表库接管入口) */}
+          {CHART_LEGACY_VISIBLE && (
+            <button
+              className="rb-big"
+              disabled={!hasDoc}
+              data-tip={t('ribbonChartTip')}
+              onClick={() => setChartOpen(true)}
+            >
+              <span className="rb-big-icon">
+                <IconChart size={BIG} />
+              </span>
+              <span>{t('ribbonChart')}</span>
+            </button>
+          )}
           <button
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonChartTip')}
-            onClick={() => setChartOpen(true)}
-          >
-            <span className="rb-big-icon">
-              <IconChart size={BIG} />
-            </span>
-            <span>{t('ribbonChart')}</span>
-          </button>
-          <button
-            className="rb-big"
-            disabled={!hasDoc}
-            data-tip={t('ribbonChartKitTip')}
             onClick={() => {
               setChartKitEdit(null)
               setChartKitOpen(true)
@@ -916,7 +922,7 @@ export function InsertTab({
             <span className="rb-big-icon">
               <IconChart size={BIG} />
             </span>
-            <span>{t('ribbonChartKit')}</span>
+            <span>{t('ribbonChart')}</span>
           </button>
           <div className="rb-split-wrap">
             <button

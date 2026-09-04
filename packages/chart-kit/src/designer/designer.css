@@ -135,16 +135,16 @@
 }
 
 .ck-designer-gallery {
-  width: 236px;
+  width: 248px;
   overflow-y: auto;
   border-right: 1px solid #e8eaee;
   padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+/* 竖向单列卡片:缩略图居左、标题居右,长列表持续下滑 */
 .ck-designer-card {
   border: 1px solid #e8eaee;
   border-radius: 8px;
@@ -152,8 +152,10 @@
   padding: 6px;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
 }
 
 .ck-designer-card:hover {
@@ -162,18 +164,21 @@
 }
 
 .ck-designer-card img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
+  flex: none;
+  width: 96px;
+  height: 66px;
   object-fit: contain;
   border-radius: 4px;
   background: #fafbfc;
 }
 
 .ck-designer-card-glyph {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 4 / 3;
+  width: 96px;
+  height: 66px;
   border-radius: 4px;
   background: linear-gradient(135deg, #eef3ff, #f7f9fc);
   color: #3370ff;
@@ -181,15 +186,18 @@
 }
 
 .ck-designer-card-title {
-  font-size: 11px;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.4;
   color: #41464f;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .ck-designer-empty {
-  grid-column: 1 / -1;
   color: #8f959e;
   text-align: center;
   padding: 24px 0;

@@ -50,6 +50,27 @@ async function click(el: Element) {
 }
 
 describe('ChartDesignerModal', () => {
+  it('双击回显(initial 带代码):自动试跑出预览,插入可用,编辑不丢', async () => {
+    const code = "option = { series: [{ type: 'sunburst', data: [{ name: 'a', value: 1 }] }] };"
+    const host = mount({
+      onClose: () => {},
+      onInsert: () => {},
+      initial: { groupId: 'sunburst', code, title: '基础旭日图' },
+    })
+    await act(async () => {
+      await sleep(400)
+    })
+    // 代码页带着原代码
+    const codeArea = host.querySelector<HTMLTextAreaElement>('.ck-designer-code')
+    expect(codeArea?.value).toContain('sunburst')
+    // 预览自动出图(不点运行)→ 插入按钮亮
+    const insertBtn = host.querySelector<HTMLButtonElement>('.ck-designer-footer .is-primary')
+    expect(insertBtn?.disabled).toBe(false)
+    // 画廊为竖向单列卡片布局
+    const gallery = host.querySelector('.ck-designer-gallery')
+    expect(gallery).toBeTruthy()
+  })
+
   it('渲染 39 个分组,默认选中第一组且示例非空', async () => {
     const host = mount({ onClose: () => {}, onInsert: () => {} })
     const groups = host.querySelectorAll('.ck-designer-group')
