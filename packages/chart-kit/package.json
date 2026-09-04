@@ -1,0 +1,31 @@
+{
+  "name": "@chatoffice/chart-kit",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared chart designer core: ChartSpec contract (UI/double-click/LLM), Worker sandbox for option code, ECharts example library harvester",
+  "exports": {
+    ".": "./src/index.ts",
+    "./spec": "./src/spec/chartspec.ts",
+    "./sandbox": "./src/sandbox/runner.ts",
+    "./examples": "./src/examples/library.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "harvest": "node --import tsx scripts/harvest.ts"
+  },
+  "dependencies": {
+    "echarts": "6.1.0",
+    "echarts-gl": "2.1.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

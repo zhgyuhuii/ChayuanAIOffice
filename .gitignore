@@ -50,3 +50,6 @@ _scratch-*
 /dsh-plugin/vendor/
 /dsh-plugin/dist/
 /dsh-plugin/node_modules/
+
+# Chart example harvest cache (echarts-examples tarball + extract)
+/.tmp/

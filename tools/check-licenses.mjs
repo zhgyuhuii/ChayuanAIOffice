@@ -33,6 +33,8 @@ const ALLOWED = new Set([
  * verified manually against the LICENSE file shipped in the package. */
 const EXCEPTIONS = {
   '@univerjs/telemetry': 'Apache-2.0',
+  // echarts-gl 的 WebGL 引擎;发布包无 license 字段,LICENSE 文件实为 BSD-2-Clause
+  claygl: 'BSD-2-Clause',
 }
 
 /** Minimal SPDX expression check: OR passes if any branch is allowed,
