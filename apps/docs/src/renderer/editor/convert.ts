@@ -1903,6 +1903,8 @@ function imageFromProtectedAttrs(node: PmNode): NewImage | null {
   if (crop) image.crop = crop
   const lum = node.attrs?.imageLum as NewImage['lum'] | null
   if (lum) image.lum = lum
+  const opacity = node.attrs?.imageOpacity as NewImage['opacity'] | null
+  if (opacity != null && opacity < 0.999) image.opacity = opacity
   return image
 }
 
@@ -1984,6 +1986,8 @@ interface ImageBlockPatch {
   crop?: { l: number; t: number; r: number; b: number } | null
   /** a:blip/a:lum in thousandths of a percent; null clears; undefined = keep */
   lum?: { bright: number; contrast: number } | null
+  /** whole-picture opacity 0..1; null/1 clears; undefined = keep */
+  opacity?: number | null
 }
 
 /** size/align/wrap changes on an original image block; null when untouched */
@@ -2034,6 +2038,9 @@ function imagePatchOf(node: PmNode, original: Block): ImageBlockPatch | null {
   const lumChanged =
     JSON.stringify(lum) !== JSON.stringify((original.imageLum as typeof lum) ?? null)
   if (lumChanged) patch.lum = lum
+  const opacity = node.attrs?.imageOpacity != null ? Number(node.attrs.imageOpacity) : null
+  const opacityChanged = opacity !== (original.imageOpacity ?? null)
+  if (opacityChanged) patch.opacity = opacity !== null && opacity < 0.999 ? opacity : null
   const posH = (node.attrs?.imagePosH as ImageBlockPatch['posH'] | null) ?? null
   const posV = (node.attrs?.imagePosV as ImageBlockPatch['posV'] | null) ?? null
   if (

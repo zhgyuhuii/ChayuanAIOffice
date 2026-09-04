@@ -5083,6 +5083,7 @@ export function App(): React.JSX.Element {
       lineColor: live.lineColor ?? null,
       lineWidth: live.lineWidth ?? null,
       opacity: live.opacity ?? 1,
+      editAs: live.editAs ?? 'twoCell',
     }
   })()
 
@@ -5174,6 +5175,14 @@ export function App(): React.JSX.Element {
     const sessionId = workbookFile?.sessionId
     if (!sessionId) return null
     return window.desktopApi.readWorkbookMedia({ sessionId, visualId: live.id })
+  }
+
+  const handlePictureAnchoring = (editAs: 'twoCell' | 'oneCell' | 'absolute'): void => {
+    const id = selectedVisual?.id
+    if (!id) return
+    // 'twoCell' is the OOXML default — the gateway strips the attribute
+    // rather than writing it; session objects just store the value.
+    applyShapeEditImpl(visualSyncContext(), id, { editAs })
   }
 
   const handlePictureResize = (widthPx: number, heightPx: number): void => {
@@ -5321,6 +5330,7 @@ export function App(): React.JSX.Element {
         onPictureMediaReplace={handlePictureMediaReplace}
         onPictureRotate={handlePictureRotate}
         onPictureReset={handlePictureReset}
+        onPictureAnchoring={handlePictureAnchoring}
         onPictureResize={handlePictureResize}
         onPictureGetSource={handlePictureGetSource}
         onPictureDelete={() => {

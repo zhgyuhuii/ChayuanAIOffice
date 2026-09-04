@@ -721,6 +721,8 @@ export interface VisualEditEntry {
   readonly picture?: WorkbookVisualEdit['picture']
   /// 更改图片 bytes for a file visual.
   readonly mediaReplace?: WorkbookVisualEdit['mediaReplace']
+  /// twoCellAnchor/@editAs rewrite (anchoring behavior).
+  readonly editAs?: WorkbookVisualEdit['editAs']
 }
 
 /// Field-wise merge of a picture patch into the pending edit: defined
@@ -753,6 +755,7 @@ export function recordVisualEdit(
     frameSize?: { width: number; height: number }
     picture?: WorkbookVisualEdit['picture']
     mediaReplace?: WorkbookVisualEdit['mediaReplace']
+    editAs?: WorkbookVisualEdit['editAs']
   },
 ): boolean {
   if (visual.drawingPath === undefined || visual.drawingIndex === undefined) return false
@@ -763,6 +766,7 @@ export function recordVisualEdit(
   const frameSize = changes.frameSize ?? previous?.frameSize
   const picture = mergePictureEdit(previous?.picture, changes.picture)
   const mediaReplace = changes.mediaReplace ?? previous?.mediaReplace
+  const editAs = changes.editAs ?? previous?.editAs
   journal.visualEdits.set(visual.id, {
     sheetId: visual.sheetId,
     drawingPath: visual.drawingPath,
@@ -772,6 +776,7 @@ export function recordVisualEdit(
     ...(frameSize ? { frameSize } : {}),
     ...(picture ? { picture } : {}),
     ...(mediaReplace ? { mediaReplace } : {}),
+    ...(editAs ? { editAs } : {}),
   })
   return true
 }
@@ -800,6 +805,7 @@ export function updateVisualAdd(
     picture?: WorkbookVisualEdit['picture']
     mediaDataUrl?: string
     mediaType?: string
+    editAs?: WorkbookVisualEdit['editAs']
   },
 ): boolean {
   const index = journal.visualAdds.findIndex((visual) => visual.id === visualId)
@@ -814,6 +820,7 @@ export function updateVisualAdd(
     ...(changes.frameHeight === undefined ? {} : { frameHeight: changes.frameHeight }),
     ...(changes.mediaDataUrl === undefined ? {} : { mediaDataUrl: changes.mediaDataUrl }),
     ...(changes.mediaType === undefined ? {} : { mediaType: changes.mediaType }),
+    ...(changes.editAs === undefined ? {} : { editAs: changes.editAs }),
   }
   const picture = changes.picture
   if (picture) {
@@ -856,6 +863,7 @@ export function toSaveVisualEdits(journal: EditJournal): WorkbookVisualEdit[] {
       ...(entry.frameSize ? { frameSize: entry.frameSize } : {}),
       ...(entry.picture ? { picture: entry.picture } : {}),
       ...(entry.mediaReplace ? { mediaReplace: entry.mediaReplace } : {}),
+      ...(entry.editAs ? { editAs: entry.editAs } : {}),
     })
   }
   return edits

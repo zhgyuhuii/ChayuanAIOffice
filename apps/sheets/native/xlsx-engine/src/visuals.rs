@@ -456,6 +456,10 @@ pub struct VisualObject {
     /// <oleObject shapeId=…>. Engine-internal, never serialized.
     #[serde(skip)]
     pub nv_id: Option<u32>,
+    /// twoCellAnchor/@editAs — how the drawing follows cell size changes
+    /// (absent = twoCell, the Excel default).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_as: Option<String>,
     /// ZIP entry path of the drawing part this visual lives in, plus its
     /// anchor index within that part — the save-side edit locator.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1298,6 +1302,7 @@ fn read_drawing(
                 frame_width: None,
                 frame_height: None,
                 nv_id: None,
+                edit_as: anchor_edit_as(anchor_node),
                 drawing_path: Some(drawing_path.to_owned()),
                 drawing_index: Some(index),
             });
@@ -1363,6 +1368,7 @@ fn read_drawing(
                 frame_width: pic_format.frame_width,
                 frame_height: pic_format.frame_height,
                 nv_id: None,
+                edit_as: anchor_edit_as(anchor_node),
                 drawing_path: Some(drawing_path.to_owned()),
                 drawing_index: Some(index),
             });
@@ -1571,6 +1577,7 @@ fn shape_visual(
                 frame_width,
                 frame_height,
                 nv_id,
+                edit_as: None,
                 drawing_path: Some(drawing_path.to_owned()),
                 drawing_index,
             }
@@ -1863,6 +1870,7 @@ fn expand_group(
                 frame_width: None,
                 frame_height: None,
                 nv_id: None,
+                edit_as: None,
                 drawing_path: Some(drawing_path.to_owned()),
                 drawing_index: None,
             });
@@ -1915,6 +1923,7 @@ fn expand_group(
             frame_width: pic_format.frame_width,
             frame_height: pic_format.frame_height,
             nv_id: None,
+            edit_as: None,
             drawing_path: Some(drawing_path.to_owned()),
             drawing_index: None,
         });
@@ -2485,6 +2494,14 @@ fn blip_opacity(blip_node: Node<'_, '_>) -> Option<f64> {
         .ok()?;
     let opacity = (amt / 100_000.0).clamp(0.0, 1.0);
     (opacity < 1.0).then_some(opacity)
+}
+
+/// twoCellAnchor/@editAs — the anchoring behavior marker (absent = twoCell).
+fn anchor_edit_as(anchor_node: Node<'_, '_>) -> Option<String> {
+    anchor_node
+        .attribute("editAs")
+        .filter(|value| *value != "twoCell")
+        .map(ToOwned::to_owned)
 }
 
 /// Picture-format aspects of one `<xdr:pic>`: crop, brightness, outline,

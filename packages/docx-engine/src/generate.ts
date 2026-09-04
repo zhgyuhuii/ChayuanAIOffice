@@ -47,6 +47,8 @@ export interface ImagePatch {
   crop?: { l: number; t: number; r: number; b: number } | null
   /** a:blip/a:lum in thousandths of a percent; null removes; undefined keeps */
   lum?: { bright: number; contrast: number } | null
+  /** whole-picture opacity 0..1; null/1 removes the marker; undefined keeps */
+  opacity?: number | null
 }
 
 /**
@@ -130,6 +132,29 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
       if (blipClose) {
         if (blipClose[0].endsWith('/>')) {
           // self-closing blip: expand with the lum child
+          const open = blipClose[0].slice(0, -2) + '>'
+          out =
+            out.slice(0, blipClose.index) +
+            open +
+            el +
+            '</a:blip>' +
+            out.slice(blipClose.index + blipClose[0].length)
+        } else {
+          const at = blipClose.index + blipClose[0].length
+          out = out.slice(0, at) + el + out.slice(at)
+        }
+      }
+    }
+  }
+  if (patch.opacity !== undefined) {
+    // a:alphaModFix on the blip — same insertion contract as a:lum
+    out = out.replace(/<a:alphaModFix\b[^>]*\/>/, '')
+    const v = patch.opacity
+    if (v !== null && v < 0.999) {
+      const el = `<a:alphaModFix amt="${Math.round(Math.max(0, Math.min(1, v)) * 100000)}"/>`
+      const blipClose = /<a:blip\b[^>]*\/>|<\/a:blip>/.exec(out)
+      if (blipClose) {
+        if (blipClose[0].endsWith('/>')) {
           const open = blipClose[0].slice(0, -2) + '>'
           out =
             out.slice(0, blipClose.index) +

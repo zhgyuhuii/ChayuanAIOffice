@@ -271,6 +271,7 @@ interface ExcelShellProps {
   readonly onPictureReset: () => void
   readonly onPictureResize: (widthPx: number, heightPx: number) => void
   readonly onPictureDelete: () => void
+  readonly onPictureAnchoring: (editAs: 'twoCell' | 'oneCell' | 'absolute') => void
   /// Full-resolution bytes of the selected picture (crop dialog preview).
   readonly onPictureGetSource: () => Promise<{ mediaType: string; base64: string } | null>
   /// Column choices of the active selection, read when the Sort dialog opens.
@@ -429,6 +430,7 @@ export function ExcelShell({
   onPictureReset,
   onPictureResize,
   onPictureDelete,
+  onPictureAnchoring,
   onPictureGetSource,
   pageLayout,
   calcManual,
@@ -789,6 +791,7 @@ export function ExcelShell({
                 onPictureReset={onPictureReset}
                 onPictureResize={onPictureResize}
                 onPictureDelete={onPictureDelete}
+                onPictureAnchoring={onPictureAnchoring}
                 onListNames={() => {
                   // Names scoped to another sheet resolve to #NAME? here; only
                   // workbook-scoped and active-sheet names are usable in a formula.
@@ -1537,6 +1540,7 @@ function Ribbon({
   onPictureReset,
   onPictureResize,
   onPictureDelete,
+  onPictureAnchoring,
   onCommand,
   onAiRun,
   onListNames,
@@ -1573,6 +1577,7 @@ function Ribbon({
   readonly onPictureReset: () => void
   readonly onPictureResize: (widthPx: number, heightPx: number) => void
   readonly onPictureDelete: () => void
+  readonly onPictureAnchoring: (editAs: 'twoCell' | 'oneCell' | 'absolute') => void
   readonly onCommand: (command: string) => void
   /** Defined names for the Use in Formula menu. */
   readonly onListNames: () => readonly string[]
@@ -2004,6 +2009,20 @@ function Ribbon({
             disabled={!selectedImage.editable}
             onClick={() => onPictureEdit({ flipV: !selectedImage.flipV })}
           />
+        </RibbonGroup>
+        <RibbonGroup label={t('appPicAnchor')}>
+          <div className="ribbon-tool" data-tip={t('appPicAnchor')}>
+            <MenuSelect
+              cover
+              label={t('appPicAnchor')}
+              options={[
+                { value: 'twoCell', label: t('appPicAnchorMoveSize') },
+                { value: 'oneCell', label: t('appPicAnchorMoveOnly') },
+                { value: 'absolute', label: t('appPicAnchorAbsolute') },
+              ]}
+              onPick={(value) => onPictureAnchoring(value as 'twoCell' | 'oneCell' | 'absolute')}
+            />
+          </div>
         </RibbonGroup>
         <RibbonGroup label={t('appPicGroupPicture')}>
           <ChangePictureButton

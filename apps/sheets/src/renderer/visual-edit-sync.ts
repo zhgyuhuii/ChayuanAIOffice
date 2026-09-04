@@ -395,12 +395,13 @@ export function applyShapeEdit(
             mediaType: changes.mediaReplace.mediaType,
           }
         : {}),
+      ...(changes.editAs ? { editAs: changes.editAs } : {}),
     })
   ) {
     const visual = state.file.visuals.find((candidate) => candidate.id === visualId)
     if (
       changes.text !== undefined ||
-      (changes.anchor === undefined && !changes.picture && !changes.mediaReplace)
+      (changes.anchor === undefined && !changes.picture && !changes.mediaReplace && !changes.editAs)
     ) {
       ctx.setMessage(t('appFileVisualMoveDeleteOnly'))
       return
@@ -412,6 +413,7 @@ export function applyShapeEdit(
         ...(changes.frameSize ? { frameSize: changes.frameSize } : {}),
         ...(changes.picture ? { picture: changes.picture } : {}),
         ...(changes.mediaReplace ? { mediaReplace: changes.mediaReplace } : {}),
+        ...(changes.editAs ? { editAs: changes.editAs } : {}),
       })
     ) {
       ctx.setMessage(t('appVisualNoMove'))

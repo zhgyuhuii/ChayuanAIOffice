@@ -74,6 +74,8 @@ export interface ShapeEditChanges {
   /// 更改图片 bytes (session images swap mediaDataUrl; file images get a
   /// media part + repointed r:embed on save).
   readonly mediaReplace?: WorkbookVisualEdit['mediaReplace']
+  /// twoCellAnchor/@editAs rewrite (anchoring behavior).
+  readonly editAs?: WorkbookVisualEdit['editAs']
 }
 
 export interface ShapeEditing {

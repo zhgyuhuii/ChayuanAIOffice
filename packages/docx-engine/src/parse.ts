@@ -6205,6 +6205,7 @@ type ImageMeta = Pick<
   | 'imageFlipV'
   | 'imageCrop'
   | 'imageLum'
+  | 'imageOpacity'
   | 'imageFillRect'
   | 'imageBorder'
 > & {
@@ -6324,6 +6325,11 @@ function imageMeta(xml: string): ImageMeta {
     const bright = parseInt(/\bbright="(-?\d+)"/.exec(lumAttrs)?.[1] ?? '0', 10)
     const contrast = parseInt(/\bcontrast="(-?\d+)"/.exec(lumAttrs)?.[1] ?? '0', 10)
     if (bright || contrast) meta.imageLum = { bright, contrast }
+  }
+  const alphaFix = blipFillInner && /<a:alphaModFix\b[^>]*amt="(\d+)"[^>]*\/>/.exec(blipFillInner)
+  if (alphaFix) {
+    const opacity = Number(alphaFix[1]) / 100000
+    if (opacity < 0.999) meta.imageOpacity = Math.max(0, Math.min(1, opacity))
   }
   const fillRect = /<a:stretch>\s*<a:fillRect\s[^>]*\/>/.exec(xml)?.[0]
   if (fillRect) {

@@ -2363,6 +2363,8 @@ export const DocProtected = Node.create({
       imageCrop: { default: null as { l: number; t: number; r: number; b: number } | null },
       /** a:blip/a:lum brightness/contrast (1/1000 percent), display-only */
       imageLum: { default: null as { bright: number; contrast: number } | null },
+      /** whole-picture opacity (a:alphaModFix 0..1), display-only */
+      imageOpacity: { default: null as number | null },
       /** fill placement (a:fillRect) fractions (negative = bleed), display-only */
       imageFillRect: { default: null as { l: number; t: number; r: number; b: number } | null },
       imageLeadingText: { default: null as string | null },
@@ -2854,6 +2856,7 @@ function protectedDomSpec(node: PmNode): DomSpec {
       imageFillRect,
       imageRotDeg,
       imageLum,
+      imageOpacity,
     } = node.attrs
     // clipboard round-trip payload (r136): parseHTML rebuilds the image from
     // the inner img src plus these display attrs; without it a copied picture
@@ -3025,7 +3028,13 @@ function protectedDomSpec(node: PmNode): DomSpec {
     if (lum?.bright) lumFilters.push(`brightness(${(1 + lum.bright / 100000).toFixed(4)})`)
     if (lum?.contrast) lumFilters.push(`contrast(${(1 + lum.contrast / 100000).toFixed(4)})`)
     if (lumFilters.length) {
-      imgAttrs['style'] = `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}filter:${lumFilters.join(' ')}`
+      imgAttrs['style'] =
+        `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}filter:${lumFilters.join(' ')}`
+    }
+    // a:alphaModFix — the picture (not its border) goes translucent
+    if (imageOpacity != null && Number(imageOpacity) < 1) {
+      imgAttrs['style'] =
+        `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}opacity:${Number(imageOpacity).toFixed(3)}`
     }
     // picture outline (document data, not chrome): border adds outside the
     // extent, approximating Word's centered stroke

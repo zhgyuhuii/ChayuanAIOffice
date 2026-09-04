@@ -383,6 +383,33 @@ export function PictureFormatTab({
               >
                 {t('ribbonPicReset')}
               </button>
+              <Dropdown
+                className="rb-wrap-dd"
+                disabled={!canEdit}
+                tip={t('ribbonTransparency')}
+                value={
+                  fs.imageOpacity != null ? String(Math.round((1 - fs.imageOpacity) * 100)) : '0'
+                }
+                options={[
+                  { value: '0', label: t('ribbonAutomatic') },
+                  { value: '15', label: '15%' },
+                  { value: '30', label: '30%' },
+                  { value: '50', label: '50%' },
+                  { value: '65', label: '65%' },
+                  { value: '80', label: '80%' },
+                ].map((o) => ({ value: o.value, label: o.label }))}
+                onPick={(v) => {
+                  if (!canEdit) return
+                  const pct = Number(v)
+                  editor
+                    .chain()
+                    .focus()
+                    .updateAttributes('docProtected', {
+                      imageOpacity: pct > 0 ? 1 - pct / 100 : null,
+                    })
+                    .run()
+                }}
+              />
             </div>
           </div>
           <div className="ribbon-group-label">{t('ribbonPicGroupAdjust')}</div>

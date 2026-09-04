@@ -145,6 +145,32 @@ describe('picture edits through applyVisualEdits', () => {
     expect(xml).toContain(marker('from', 5, 1))
   })
 
+  it('rewrites editAs on the anchor open tag (and strips it back for twoCell)', async () => {
+    const entries = new Map([
+      [PATH, DRAWING],
+      ['xl/drawings/_rels/drawing1.xml.rels', DRAWING_RELS],
+      ['[Content_Types].xml', CONTENT_TYPES],
+    ])
+    await applyVisualEdits(
+      fakePackage(entries, new Map()),
+      [{ drawingPath: PATH, drawingIndex: 0, editAs: 'oneCell' }],
+      new Set(),
+    )
+    expect(entries.get(PATH)).toContain('<xdr:twoCellAnchor editAs="oneCell">')
+    const again = new Map([
+      [PATH, entries.get(PATH)!],
+      ['xl/drawings/_rels/drawing1.xml.rels', DRAWING_RELS],
+      ['[Content_Types].xml', CONTENT_TYPES],
+    ])
+    await applyVisualEdits(
+      fakePackage(again, new Map()),
+      [{ drawingPath: PATH, drawingIndex: 0, editAs: 'twoCell' }],
+      new Set(),
+    )
+    expect(again.get(PATH)).toContain('<xdr:twoCellAnchor>')
+    expect(again.get(PATH)).not.toContain('editAs=')
+  })
+
   it('更改图片 adds a media part, repoints r:embed, and drops the orphaned rel', async () => {
     const entries = new Map([
       [PATH, DRAWING],

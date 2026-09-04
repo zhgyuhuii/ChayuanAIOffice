@@ -578,6 +578,9 @@ const visualObjectSchema = z
     /// anchor stores rotated bounds, centered on the shape center).
     frameWidth: z.number().finite().positive().optional(),
     frameHeight: z.number().finite().positive().optional(),
+    /// twoCellAnchor/@editAs — how the picture follows cell size changes
+    /// (twoCell=move+size [default], oneCell=move only, absolute=fixed).
+    editAs: z.enum(['twoCell', 'oneCell', 'absolute']).optional(),
     /// Save-side edit locator: the drawing part this visual lives in and its
     /// anchor index within that part (document order, skipped anchors counted).
     drawingPath: z
@@ -1399,6 +1402,8 @@ export const workbookVisualEditSchema = z
       })
       .strict()
       .optional(),
+    /// twoCellAnchor/@editAs rewrite (anchoring behavior).
+    editAs: z.enum(['twoCell', 'oneCell', 'absolute']).optional(),
   })
   .strict()
   .refine(
@@ -1406,7 +1411,8 @@ export const workbookVisualEditSchema = z
       edit.remove === true ||
       edit.anchor !== undefined ||
       edit.picture !== undefined ||
-      edit.mediaReplace !== undefined,
+      edit.mediaReplace !== undefined ||
+      edit.editAs !== undefined,
     { message: 'A visual edit needs a removal, a new anchor, or a picture patch.' },
   )
 

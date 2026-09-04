@@ -418,7 +418,7 @@ function applyOneEdit(
   }
   const anchor = edit.anchor
   if (!anchor) {
-    if (!edit.picture && !edit.mediaReplace) {
+    if (!edit.picture && !edit.mediaReplace && edit.editAs === undefined) {
       throw new VisualEditError('A visual edit needs a removal or a new anchor.')
     }
   }
@@ -469,6 +469,19 @@ function applyOneEdit(
       }
       patched = withExt
     }
+  }
+  // Anchoring behavior (twoCellAnchor/@editAs)
+  if (edit.editAs !== undefined) {
+    if (kind !== 'twoCellAnchor') {
+      throw new VisualEditError('Anchoring (editAs) applies only to twoCellAnchor visuals.')
+    }
+    const openTag = /<(?:[A-Za-z_][\w.-]*:)?twoCellAnchor\b[^>]*>/.exec(patched)
+    if (!openTag) throw new VisualEditError('The drawing anchor tag could not be rewritten.')
+    const stripped = openTag[0].replace(/\seditAs="[^"]*"/, '')
+    const rewritten =
+      edit.editAs === 'twoCell' ? stripped : stripped.replace(/>$/, ` editAs="${edit.editAs}">`)
+    patched =
+      patched.slice(0, openTag.index) + rewritten + patched.slice(openTag.index + openTag[0].length)
   }
   // Picture-format patch / media replacement: rewrite the <xdr:pic> body.
   if (edit.picture || replacedRelId !== undefined) {
