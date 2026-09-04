@@ -329,6 +329,65 @@ export function PictureFormatTab({
           <div className="ribbon-group-label">{t('ribbonGroupAdjust')}</div>
         </div>
         <div className="ribbon-sep" />
+        {/* ---- Corrections: WPS-style ± brightness/contrast steppers (non-destructive a:lum) ---- */}
+        <div className="ribbon-group">
+          <div className="ribbon-group-items">
+            <div className="rb-lum-col">
+              {(['bright', 'contrast'] as const).map((field) => {
+                const label = field === 'bright' ? t('ribbonPicBrightness') : t('ribbonPicContrast')
+                const value = fs.imageLum?.[field] ?? 0
+                const set = (next: number): void => {
+                  if (!canEdit) return
+                  const current = fs.imageLum ?? { bright: 0, contrast: 0 }
+                  editor
+                    .chain()
+                    .focus()
+                    .updateAttributes('docProtected', {
+                      imageLum: { ...current, [field]: Math.max(-100000, Math.min(100000, next)) },
+                    })
+                    .run()
+                }
+                return (
+                  <div className="rb-lum-row" key={field}>
+                    <span className="rb-lum-label">{label}</span>
+                    <button
+                      className="rb-lum-btn"
+                      disabled={!canEdit}
+                      data-tip={t('ribbonPicDecrease')}
+                      aria-label={t('ribbonPicDecrease')}
+                      onClick={() => set(value - 10000)}
+                    >
+                      −
+                    </button>
+                    <span className="rb-lum-value">{Math.round(value / 1000)}%</span>
+                    <button
+                      className="rb-lum-btn"
+                      disabled={!canEdit}
+                      data-tip={t('ribbonPicIncrease')}
+                      aria-label={t('ribbonPicIncrease')}
+                      onClick={() => set(value + 10000)}
+                    >
+                      +
+                    </button>
+                  </div>
+                )
+              })}
+              <button
+                className="rb-lum-reset"
+                disabled={!canEdit || (!fs.imageLum?.bright && !fs.imageLum?.contrast)}
+                data-tip={t('ribbonPicResetAdjustTip')}
+                onClick={() => {
+                  if (!canEdit) return
+                  editor.chain().focus().updateAttributes('docProtected', { imageLum: null }).run()
+                }}
+              >
+                {t('ribbonPicReset')}
+              </button>
+            </div>
+          </div>
+          <div className="ribbon-group-label">{t('ribbonPicGroupAdjust')}</div>
+        </div>
+        <div className="ribbon-sep" />
         {/* ---- Arrange: wrap text / align ---- */}
         <div className="table-tool-group">
           <div className="table-tool-row">

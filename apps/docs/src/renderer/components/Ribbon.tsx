@@ -693,6 +693,14 @@ function RibbonInner({
    * keep working. Images not yet saved (genImage) just update their pending payload.
    * Display size keeps the current width; height adapts to the new image's aspect ratio.
    */
+  /** Non-destructive crop: fractions ride imageCrop; the bytes stay original */
+  const applyPictureCrop = (crop: { l: number; t: number; r: number; b: number }) => {
+    if (!canEdit) return
+    const attrs = editor.getAttributes('docProtected')
+    if (attrs?.blockType !== 'image') return
+    editor.chain().focus().updateAttributes('docProtected', { imageCrop: crop }).run()
+  }
+
   const applyPictureBytes = async (dataUrl: string) => {
     if (!canEdit) return
     const m = /^data:(image\/(?:png|jpeg|gif));base64,(.*)$/s.exec(dataUrl)
@@ -2129,9 +2137,10 @@ function RibbonInner({
       {pictureDialog === 'crop' && imageDataUrl && (
         <CropDialog
           dataUrl={imageDataUrl}
-          onApply={(cropped) => {
+          initial={fs.imageCrop}
+          onApply={(crop) => {
             setPictureDialog(null)
-            void applyPictureBytes(cropped)
+            applyPictureCrop(crop)
           }}
           onCancel={() => setPictureDialog(null)}
         />

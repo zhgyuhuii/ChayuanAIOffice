@@ -255,16 +255,24 @@ const MIN_CROP_PX = 16
 
 interface CropProps {
   dataUrl: string
-  /** Apply: the cropped dataUrl (png/jpeg follows the original format) */
-  onApply: (croppedDataUrl: string) => void
+  /** The selection's current crop (a:srcRect trimmed fractions); seeds the frame */
+  initial?: { l: number; t: number; r: number; b: number } | null
+  /** Apply: the crop as trimmed fractions — bytes stay untouched (non-destructive a:srcRect) */
+  onApply: (crop: { l: number; t: number; r: number; b: number }) => void
   onCancel: () => void
 }
 
-export function CropDialog({ dataUrl, onApply, onCancel }: CropProps) {
+export function CropDialog({ dataUrl, initial, onApply, onCancel }: CropProps) {
   const { t } = useI18n()
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState<StringKey | null>(null)
-  const [crop, setCrop] = useState<CropRect>({ l: 0, t: 0, r: 1, b: 1 })
+  // Internal state keeps l/t offsets and r/b EDGES; a:srcRect stores the
+  // trimmed fractions, so seed and apply convert the right/bottom pair.
+  const [crop, setCrop] = useState<CropRect>(
+    initial
+      ? { l: initial.l, t: initial.t, r: 1 - initial.r, b: 1 - initial.b }
+      : { l: 0, t: 0, r: 1, b: 1 },
+  )
   /** Preview display size (CSS px) */
   const [view, setView] = useState<{ w: number; h: number } | null>(null)
   const imgRef = useRef<HTMLImageElement | null>(null)
@@ -317,26 +325,11 @@ export function CropDialog({ dataUrl, onApply, onCancel }: CropProps) {
   }, [dataUrl, updateView])
 
   const apply = useCallback(() => {
-    const img = imgRef.current
-    if (!img) return
-    const w = img.naturalWidth
-    const h = img.naturalHeight
-    const sx = Math.round(crop.l * w)
-    const sy = Math.round(crop.t * h)
-    const sw = Math.max(1, Math.round((crop.r - crop.l) * w))
-    const sh = Math.max(1, Math.round((crop.b - crop.t) * h))
-    try {
-      const c = document.createElement('canvas')
-      c.width = sw
-      c.height = sh
-      c.getContext('2d')!.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh)
-      // jpeg has no alpha channel; keep jpeg to avoid size bloat. Others (png/gif) all output png to preserve transparency
-      const isJpeg = /^data:image\/jpeg/.test(dataUrl)
-      onApply(isJpeg ? c.toDataURL('image/jpeg', 0.92) : c.toDataURL('image/png'))
-    } catch {
-      setError('ribbonImageProcessFail')
-    }
-  }, [crop, dataUrl, onApply])
+    // Non-destructive: hand back the trimmed fractions (the frame size stays
+    // imageWidthPx/HeightPx); the original bytes never change, so 重设图片
+    // can always restore the full picture.
+    onApply({ l: crop.l, t: crop.t, r: 1 - crop.r, b: 1 - crop.b })
+  }, [crop, onApply])
 
   // Esc cancels / Enter applies
   useEffect(() => {

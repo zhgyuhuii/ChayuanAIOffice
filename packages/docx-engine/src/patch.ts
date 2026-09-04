@@ -519,7 +519,7 @@ export async function saveDocx(
       '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
       '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
       `<pic:nvPicPr><pic:cNvPr id="${docPrId}" name="Picture ${docPrId}"/><pic:cNvPicPr/></pic:nvPicPr>` +
-      `<pic:blipFill><a:blip r:embed="${rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+      `<pic:blipFill><a:blip r:embed="${rId}"/>${image.lum ? `<a:lum bright="${Math.round(image.lum.bright)}" contrast="${Math.round(image.lum.contrast)}"/>` : ''}${image.crop ? `<a:srcRect l="${Math.round(image.crop.l * 100000)}" t="${Math.round(image.crop.t * 100000)}" r="${Math.round(image.crop.r * 100000)}" b="${Math.round(image.crop.b * 100000)}"/>` : ''}<a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
       `<pic:spPr><a:xfrm${rot ? ` rot="${rot * 60000}"` : ''}${image.flipH ? ' flipH="1"' : ''}${image.flipV ? ' flipV="1"' : ''}><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>` +
       '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
       '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'

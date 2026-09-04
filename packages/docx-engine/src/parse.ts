@@ -6204,6 +6204,7 @@ type ImageMeta = Pick<
   | 'imageFlipH'
   | 'imageFlipV'
   | 'imageCrop'
+  | 'imageLum'
   | 'imageFillRect'
   | 'imageBorder'
 > & {
@@ -6314,6 +6315,15 @@ function imageMeta(xml: string): ImageMeta {
       b: rectFrac(srcRect, 'b'),
     }
     if (crop.l || crop.t || crop.r || crop.b) meta.imageCrop = crop
+  }
+  // a:blip/a:lum brightness/contrast (thousandths of a percent) — rendered
+  // as a CSS filter and written back verbatim on save
+  const blipFillInner = /<pic:blipFill[^>]*>([\s\S]*?)<\/pic:blipFill>/.exec(xml)?.[1]
+  const lumAttrs = blipFillInner && /<a:lum\b([^>]*)\/>/.exec(blipFillInner)?.[1]
+  if (lumAttrs) {
+    const bright = parseInt(/\bbright="(-?\d+)"/.exec(lumAttrs)?.[1] ?? '0', 10)
+    const contrast = parseInt(/\bcontrast="(-?\d+)"/.exec(lumAttrs)?.[1] ?? '0', 10)
+    if (bright || contrast) meta.imageLum = { bright, contrast }
   }
   const fillRect = /<a:stretch>\s*<a:fillRect\s[^>]*\/>/.exec(xml)?.[0]
   if (fillRect) {

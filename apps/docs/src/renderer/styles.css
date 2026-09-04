@@ -10408,3 +10408,57 @@ tr > .page-gap-cut {
   right: 46px;
   bottom: 3px;
 }
+
+/* 图片工具：亮度/对比度 ± 步进（WPS 形态） */
+.rb-lum-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 2px 4px;
+}
+.rb-lum-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rb-lum-label {
+  min-width: 46px;
+  font-size: 12px;
+  color: var(--text-secondary, #555);
+}
+.rb-lum-value {
+  min-width: 38px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.rb-lum-btn {
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+}
+.rb-lum-btn:hover:not(:disabled) {
+  background: var(--surface-hover, #eef4ff);
+}
+.rb-lum-reset {
+  margin-top: 2px;
+  padding: 1px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+  align-self: flex-start;
+}
+.rb-lum-reset:hover:not(:disabled) {
+  background: var(--surface-hover, #eef4ff);
+}
+.rb-lum-btn:disabled,
+.rb-lum-reset:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

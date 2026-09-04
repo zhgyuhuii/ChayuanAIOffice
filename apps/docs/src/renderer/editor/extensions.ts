@@ -2361,6 +2361,8 @@ export const DocProtected = Node.create({
       imageHeightPx: { default: null as number | null },
       /** source crop (a:srcRect) fractions, display-only */
       imageCrop: { default: null as { l: number; t: number; r: number; b: number } | null },
+      /** a:blip/a:lum brightness/contrast (1/1000 percent), display-only */
+      imageLum: { default: null as { bright: number; contrast: number } | null },
       /** fill placement (a:fillRect) fractions (negative = bleed), display-only */
       imageFillRect: { default: null as { l: number; t: number; r: number; b: number } | null },
       imageLeadingText: { default: null as string | null },
@@ -2851,6 +2853,7 @@ function protectedDomSpec(node: PmNode): DomSpec {
       imageCrop,
       imageFillRect,
       imageRotDeg,
+      imageLum,
     } = node.attrs
     // clipboard round-trip payload (r136): parseHTML rebuilds the image from
     // the inner img src plus these display attrs; without it a copied picture
@@ -3015,6 +3018,14 @@ function protectedDomSpec(node: PmNode): DomSpec {
       imgAttrs['style'] =
         `width:${Number(imageWidthPx)}px;` +
         (imageHeightPx ? `height:${Number(imageHeightPx)}px` : 'height:auto')
+    }
+    // a:lum brightness/contrast as the symmetric CSS filter
+    const lum = imageLum as { bright: number; contrast: number } | null
+    const lumFilters: string[] = []
+    if (lum?.bright) lumFilters.push(`brightness(${(1 + lum.bright / 100000).toFixed(4)})`)
+    if (lum?.contrast) lumFilters.push(`contrast(${(1 + lum.contrast / 100000).toFixed(4)})`)
+    if (lumFilters.length) {
+      imgAttrs['style'] = `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}filter:${lumFilters.join(' ')}`
     }
     // picture outline (document data, not chrome): border adds outside the
     // extent, approximating Word's centered stroke

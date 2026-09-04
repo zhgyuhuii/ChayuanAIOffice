@@ -40,6 +40,13 @@ export interface ImagePatch {
   /** mirror flips; false removes the attribute; undefined keeps */
   flipH?: boolean
   flipV?: boolean
+  /**
+   * Non-destructive crop as fractions of the source picture; null removes
+   * the a:srcRect (重设). undefined keeps the existing crop.
+   */
+  crop?: { l: number; t: number; r: number; b: number } | null
+  /** a:blip/a:lum in thousandths of a percent; null removes; undefined keeps */
+  lum?: { bright: number; contrast: number } | null
 }
 
 /**
@@ -96,6 +103,45 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
       if (/<wp:effectExtent\b[^>]*\/>/.test(out))
         out = out.replace(/<wp:effectExtent\b[^>]*\/>/, ee)
       else out = out.replace(/(<wp:extent\b[^>]*\/?>)/, `$1${ee}`)
+    }
+  }
+  if (patch.crop !== undefined) {
+    // a:srcRect sits inside pic:blipFill between the blip and a:stretch;
+    // fractions (0..1) serialize as 1/100000 units
+    out = out.replace(/<a:srcRect\s[^>]*\/>/, '')
+    if (patch.crop) {
+      const el =
+        `<a:srcRect l="${Math.round(patch.crop.l * 100000)}" t="${Math.round(patch.crop.t * 100000)}"` +
+        ` r="${Math.round(patch.crop.r * 100000)}" b="${Math.round(patch.crop.b * 100000)}"/>`
+      const blipClose = /<a:blip\b[^>]*\/>|<\/a:blip>/.exec(out)
+      if (blipClose) {
+        const at = blipClose.index + blipClose[0].length
+        out = out.slice(0, at) + el + out.slice(at)
+      }
+    }
+  }
+  if (patch.lum !== undefined) {
+    // a:lum lives on the blip; strip our previous value first (untouched
+    // sibling transforms like a:alphaModFix survive)
+    out = out.replace(/<a:lum\b[^>]*\/>/, '')
+    if (patch.lum) {
+      const el = `<a:lum bright="${Math.round(patch.lum.bright)}" contrast="${Math.round(patch.lum.contrast)}"/>`
+      const blipClose = /<a:blip\b[^>]*\/>|<\/a:blip>/.exec(out)
+      if (blipClose) {
+        if (blipClose[0].endsWith('/>')) {
+          // self-closing blip: expand with the lum child
+          const open = blipClose[0].slice(0, -2) + '>'
+          out =
+            out.slice(0, blipClose.index) +
+            open +
+            el +
+            '</a:blip>' +
+            out.slice(blipClose.index + blipClose[0].length)
+        } else {
+          const at = blipClose.index + blipClose[0].length
+          out = out.slice(0, at) + el + out.slice(at)
+        }
+      }
     }
   }
   if (patch.align !== undefined) {

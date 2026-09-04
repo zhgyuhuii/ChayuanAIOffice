@@ -27,6 +27,8 @@ export interface RibbonFormatState {
   imageDataUrl: string | null
   imageWrap: string | null
   imageAlign: string | null
+  imageCrop: { l: number; t: number; r: number; b: number } | null
+  imageLum: { bright: number; contrast: number } | null
   imageWidthPx: number | null
   imageHeightPx: number | null
   imageFlipH: boolean
@@ -91,6 +93,8 @@ export const EMPTY_FORMAT_STATE: RibbonFormatState = {
   canSplitCell: false,
   imageSelected: false,
   imageDataUrl: null,
+  imageCrop: null,
+  imageLum: null,
   imageWrap: null,
   imageAlign: null,
   imageWidthPx: null,
@@ -261,6 +265,9 @@ export function computeFormatState(
     imageDataUrl: imageSelected ? str(protAttrs.imageDataUrl) : null,
     imageWrap: str(protAttrs.imageWrap),
     imageAlign: str(protAttrs.imageAlign),
+    imageCrop:
+      protAttrs.imageCrop as { l: number; t: number; r: number; b: number } | null,
+    imageLum: protAttrs.imageLum as { bright: number; contrast: number } | null,
     imageWidthPx: num(protAttrs.imageWidthPx),
     imageHeightPx: num(protAttrs.imageHeightPx),
     imageFlipH: !!protAttrs.imageFlipH,

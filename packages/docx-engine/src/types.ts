@@ -995,6 +995,10 @@ export interface NewImage {
   /** mirror flips (a:xfrm flipH/flipV) */
   flipH?: boolean
   flipV?: boolean
+  /** non-destructive crop as fractions of the source picture (a:srcRect) */
+  crop?: { l: number; t: number; r: number; b: number }
+  /** a:blip/a:lum brightness/contrast in thousandths of a percent */
+  lum?: { bright: number; contrast: number }
 }
 
 export type BlockType =
@@ -1057,6 +1061,8 @@ export interface Block {
   imageHeightPx?: number
   /** source crop (a:srcRect) as fractions of the source picture (display-only) */
   imageCrop?: { l: number; t: number; r: number; b: number }
+  /** a:blip/a:lum brightness/contrast in thousandths of a percent (display-only) */
+  imageLum?: { bright: number; contrast: number }
   /** fill placement (a:stretch/a:fillRect) as fractions of the shape box; negative = bleed (display-only) */
   imageFillRect?: { l: number; t: number; r: number; b: number }
   /** Preserved whitespace before an inline picture and its paragraph indents (display-only). */

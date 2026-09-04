@@ -1899,6 +1899,10 @@ function imageFromProtectedAttrs(node: PmNode): NewImage | null {
   if (node.attrs?.imageRotDeg) image.rotDeg = Number(node.attrs.imageRotDeg)
   if (node.attrs?.imageFlipH) image.flipH = true
   if (node.attrs?.imageFlipV) image.flipV = true
+  const crop = node.attrs?.imageCrop as NewImage['crop'] | null
+  if (crop) image.crop = crop
+  const lum = node.attrs?.imageLum as NewImage['lum'] | null
+  if (lum) image.lum = lum
   return image
 }
 
@@ -1976,6 +1980,10 @@ interface ImageBlockPatch {
   rotDeg?: number
   flipH?: boolean
   flipV?: boolean
+  /** non-destructive crop fractions; null clears (a:srcRect); undefined = keep */
+  crop?: { l: number; t: number; r: number; b: number } | null
+  /** a:blip/a:lum in thousandths of a percent; null clears; undefined = keep */
+  lum?: { bright: number; contrast: number } | null
 }
 
 /** size/align/wrap changes on an original image block; null when untouched */
@@ -2017,6 +2025,15 @@ function imagePatchOf(node: PmNode, original: Block): ImageBlockPatch | null {
   const flipV = !!node.attrs?.imageFlipV
   if (flipH !== (original.imageFlipH ?? false)) patch.flipH = flipH
   if (flipV !== (original.imageFlipV ?? false)) patch.flipV = flipV
+  // crop / lum: non-destructive aspects — diff against the parsed original
+  const crop = (node.attrs?.imageCrop as ImageBlockPatch['crop'] | null) ?? null
+  const cropChanged =
+    JSON.stringify(crop) !== JSON.stringify((original.imageCrop as typeof crop) ?? null)
+  if (cropChanged) patch.crop = crop
+  const lum = (node.attrs?.imageLum as ImageBlockPatch['lum'] | null) ?? null
+  const lumChanged =
+    JSON.stringify(lum) !== JSON.stringify((original.imageLum as typeof lum) ?? null)
+  if (lumChanged) patch.lum = lum
   const posH = (node.attrs?.imagePosH as ImageBlockPatch['posH'] | null) ?? null
   const posV = (node.attrs?.imagePosV as ImageBlockPatch['posV'] | null) ?? null
   if (

@@ -39,6 +39,46 @@ describe('image metadata parsing', () => {
   })
 })
 
+describe('non-destructive crop and lum', () => {
+  it('writes and clears a:srcRect fractions (crop)', () => {
+    const xml = patchImageParagraphXml(ANCHOR_IMAGE_XML.replace('</pic:blipFill>', '<a:stretch><a:fillRect/></a:stretch></pic:blipFill>'), {
+      crop: { l: 0.1, t: 0.2, r: 0.03, b: 0 },
+    })
+    expect(xml).toContain('<a:srcRect l="10000" t="20000" r="3000" b="0"/>')
+    expect(xml.indexOf('<a:srcRect')).toBeGreaterThan(xml.indexOf('<a:blip'))
+    const cleared = patchImageParagraphXml(xml, { crop: null })
+    expect(cleared).not.toContain('<a:srcRect')
+  })
+
+  it('writes a:lum onto the blip, replacing previous values', () => {
+    const once = patchImageParagraphXml(ANCHOR_IMAGE_XML, { lum: { bright: 20000, contrast: -10000 } })
+    expect(once).toContain('<a:lum bright="20000" contrast="-10000"/>')
+    const twice = patchImageParagraphXml(once, { lum: { bright: 0, contrast: 5000 } })
+    expect(twice.match(/<a:lum/g)).toHaveLength(1)
+    expect(twice).toContain('<a:lum bright="0" contrast="5000"/>')
+    const cleared = patchImageParagraphXml(twice, { lum: null })
+    expect(cleared).not.toContain('<a:lum')
+  })
+
+  it('parses imageLum back from the saved XML', async () => {
+    const withLum = ANCHOR_IMAGE_XML.replace(
+      '<a:blip r:embed="rId10"/>',
+      '<a:blip r:embed="rId10"/><a:lum bright="15000" contrast="-25000"/>',
+    )
+    const doc = await parseDocx(await buildDocx({ bodyXml: withLum, withImage: true }))
+    expect(doc.blocks[0].imageLum).toEqual({ bright: 15000, contrast: -25000 })
+  })
+
+  it('parses imageCrop back from a:srcRect', async () => {
+    const withCrop = ANCHOR_IMAGE_XML.replace(
+      '</pic:blipFill>',
+      '<a:srcRect l="10000" t="0" r="0" b="50000"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>',
+    )
+    const doc = await parseDocx(await buildDocx({ bodyXml: withCrop, withImage: true }))
+    expect(doc.blocks[0].imageCrop).toEqual({ l: 0.1, t: 0, r: 0, b: 0.5 })
+  })
+})
+
 describe('patchImageParagraphXml', () => {
   it('rewrites wp:extent and a:ext size', () => {
     const xml =
