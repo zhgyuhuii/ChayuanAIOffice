@@ -1,6 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { useDismissablePopover } from '@chatoffice/ui'
+import { ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
+import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
 import type { StringKey } from '../locale'
 import { HomeChatController } from './controller'
@@ -8,6 +9,7 @@ import type { HomeChatControllerTexts } from './controller'
 import { useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
+import { TurnNavigator, deriveTurnNavEntries } from './TurnNavigator'
 import { createHomeChatBridge, refreshHomeModelCache } from './bridge'
 import type {
   HomeChatAttachment,
@@ -150,7 +152,7 @@ function ChatMessageView({
   const { t, dateLocale } = useI18n()
   if (m.role === 'user') {
     return (
-      <div className="chat-msg user">
+      <div className="chat-msg user" data-mid={m.id}>
         {m.attachments && m.attachments.length > 0 && (
           <div className="chat-atts">
             {m.attachments.map((a) => (
@@ -166,7 +168,7 @@ function ChatMessageView({
   }
   const isHtml = m.text.trimStart().startsWith('<')
   return (
-    <div className="chat-msg assistant">
+    <div className="chat-msg assistant" data-mid={m.id}>
       <span className="chat-avatar" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
           <path
@@ -209,6 +211,7 @@ export function ChatPanel({
   onOpenSettings,
   activeScope,
   openSignal,
+  settingsRefreshNonce,
 }: {
   /** owned by Home so the left tree can read/drive the same sessions */
   store: ReturnType<typeof useHomeChatStore>
@@ -219,6 +222,8 @@ export function ChatPanel({
   activeScope?: HomeChatSessionScope
   /** the tree asks to open a session: nonce-bumped {sessionId} taps this effect */
   openSignal?: { sessionId: string; nonce: number } | null
+  /** bumped by Home when the settings modal closes: re-read AiSettingsV2 */
+  settingsRefreshNonce?: number
 }): ReactElement {
   const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
@@ -275,19 +280,70 @@ export function ChatPanel({
     [],
   )
 
-  // refresh the current-model cache: mount, window focus (the settings modal
-  // close path lives in Home)
+  // refresh the model caches: mount, window focus (the settings modal close
+  // path lives in Home and taps settingsRefreshNonce)
+  const refreshAiSettings = useCallback(() => {
+    window.chatOffice
+      .getAiSettings()
+      .then(setAiSettings)
+      .catch(() => setAiSettings(null))
+  }, [])
   useEffect(() => {
     void refreshHomeModelCache()
-    const onFocus = () => void refreshHomeModelCache()
+    refreshAiSettings()
+    const onFocus = () => {
+      void refreshHomeModelCache()
+      refreshAiSettings()
+    }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
-  }, [])
+  }, [refreshAiSettings])
+  useEffect(() => {
+    if (settingsRefreshNonce) refreshAiSettings()
+  }, [settingsRefreshNonce, refreshAiSettings])
 
   // ── composer state ──
   const [input, setInput] = useState('')
   const [attachments, setAttachments] = useState<HomeChatAttachment[]>([])
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // ── composer mode + session-scoped model (ZCode-style) ──
+  // drafts carry the choice before a session exists; an active session's
+  // stored values are adopted on switch and every change is written back
+  const [draftMode, setDraftMode] = useState<'default' | 'plan'>('default')
+  const [draftModel, setDraftModel] = useState<AiModelSelection | null>(null)
+  const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
+  const [modeOpen, setModeOpen] = useState(false)
+  const modeWrapRef = useRef<HTMLSpanElement>(null)
+  useDismissablePopover(modeOpen, () => setModeOpen(false), {
+    inside: () => [modeWrapRef.current],
+  })
+
+  const activeId = store.activeId
+  useEffect(() => {
+    const session = activeId ? storeRef.current?.sessions?.find((s) => s.id === activeId) : null
+    setDraftMode(session?.mode ?? 'default')
+    setDraftModel(session?.modelId ?? null)
+  }, [activeId])
+
+  const applyMode = (mode: 'default' | 'plan') => {
+    setModeOpen(false)
+    setDraftMode(mode)
+    if (store.active) {
+      store.updateSession(store.active.id, (s) => {
+        // default drops the key so persisted JSON stays clean
+        const { mode: _drop, ...rest } = s
+        return mode === 'plan' ? { ...rest, mode } : rest
+      })
+    }
+  }
+
+  const applyModel = (selection: AiModelSelection) => {
+    setDraftModel(selection)
+    if (store.active) {
+      store.updateSession(store.active.id, (s) => ({ ...s, modelId: selection }))
+    }
+  }
 
   // ── sessions dropdown ──
   const [menuOpen, setMenuOpen] = useState(false)
@@ -339,12 +395,27 @@ export function ChatPanel({
     const text = input.trim()
     if (!text && attachments.length === 0) return
     let session = store.active
-    if (!session || session.messages.length > 0) session = store.createSession(activeScope)
+    if (!session || session.messages.length > 0) {
+      session = store.createSession(activeScope)
+      // a fresh session inherits the composer's pending choices
+      if (draftModel || draftMode !== 'default') {
+        const modelId = draftModel
+        const mode = draftMode
+        store.updateSession(session.id, (s) => ({
+          ...s,
+          ...(modelId ? { modelId } : {}),
+          ...(mode === 'plan' ? { mode: 'plan' as const } : {}),
+        }))
+      }
+    }
     const atts = attachments
     setInput('')
     setAttachments([])
     if (inputRef.current) inputRef.current.style.height = 'auto'
-    controller.send(session.id, session.messages, text, atts)
+    controller.send(session.id, session.messages, text, atts, {
+      ...(draftModel ? { model: draftModel } : {}),
+      ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
+    })
   }
 
   const stop = () => {
@@ -392,6 +463,12 @@ export function ChatPanel({
 
   // ── stick-to-bottom auto scroll ──
   const listRef = useRef<HTMLDivElement>(null)
+  // TurnNavigator needs the element reactively (anchors + scroll driving)
+  const [listEl, setListEl] = useState<HTMLDivElement | null>(null)
+  const listRefCb = useCallback((el: HTMLDivElement | null) => {
+    listRef.current = el
+    setListEl(el)
+  }, [])
   const stickRef = useRef(true)
   const onListScroll = () => {
     const el = listRef.current
@@ -404,6 +481,12 @@ export function ChatPanel({
   }, [active?.messages, busy])
 
   const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
+
+  // tick rail data: one entry per user query, paired with its assistant reply
+  const navEntries = useMemo(
+    () => deriveTurnNavEntries(active?.messages ?? [], busy, t('chatNavUserFallback')),
+    [active?.messages, busy, t],
+  )
 
   const renderComposer = () => (
     <div className="chat-composer">
@@ -436,6 +519,51 @@ export function ChatPanel({
             />
           </svg>
         </button>
+        <span className="chat-mode-wrap" ref={modeWrapRef}>
+          <button
+            className={`chat-tool-btn chat-mode-btn${draftMode === 'plan' ? ' active' : ''}`}
+            aria-haspopup="menu"
+            aria-expanded={modeOpen}
+            aria-label={t('chatModeLabel')}
+            data-tip={draftMode === 'plan' ? t('chatModePlanHint') : t('chatModeLabel')}
+            onClick={() => setModeOpen((o) => !o)}
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 4h8M2.5 8h5M2.5 12h8M13 6.5l1.8 1.8L11 12"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="chat-mode-value">
+              {draftMode === 'plan' ? t('chatModePlan') : t('chatModeDefault')}
+            </span>
+          </button>
+          {modeOpen && (
+            <div className="chat-mode-pop" role="menu">
+              <button
+                className={`chat-mode-item${draftMode === 'default' ? ' is-active' : ''}`}
+                role="menuitem"
+                data-mode="default"
+                onClick={() => applyMode('default')}
+              >
+                <span className="chat-mode-item-title">{t('chatModeDefault')}</span>
+                <span className="chat-mode-item-hint">{t('chatModeDefaultHint')}</span>
+              </button>
+              <button
+                className={`chat-mode-item${draftMode === 'plan' ? ' is-active' : ''}`}
+                role="menuitem"
+                data-mode="plan"
+                onClick={() => applyMode('plan')}
+              >
+                <span className="chat-mode-item-title">{t('chatModePlan')}</span>
+                <span className="chat-mode-item-hint">{t('chatModePlanHint')}</span>
+              </button>
+            </div>
+          )}
+        </span>
         <textarea
           ref={inputRef}
           className="chat-input"
@@ -454,6 +582,16 @@ export function ChatPanel({
             }
           }}
         />
+        {aiSettings && (
+          <span className="chat-model-slot">
+            <ModelPickerButton
+              settings={draftModel ? { ...aiSettings, currentModel: draftModel } : aiSettings}
+              onPick={applyModel}
+              onOpenSettings={onOpenSettings}
+              lang={lang}
+            />
+          </span>
+        )}
         {busy ? (
           <button
             className="chat-send-btn stop"
@@ -584,15 +722,18 @@ export function ChatPanel({
       </header>
 
       {hasMessages ? (
-        <div className="chat-msgs" ref={listRef} onScroll={onListScroll}>
-          {active!.messages.map((m, i) => (
-            <ChatMessageView
-              key={m.id}
-              m={m}
-              typing={busy && i === active!.messages.length - 1 && m.role === 'assistant'}
-              onOpenSettings={onOpenSettings}
-            />
-          ))}
+        <div className="chat-msgs-wrap">
+          <div className="chat-msgs" ref={listRefCb} onScroll={onListScroll}>
+            {active!.messages.map((m, i) => (
+              <ChatMessageView
+                key={m.id}
+                m={m}
+                typing={busy && i === active!.messages.length - 1 && m.role === 'assistant'}
+                onOpenSettings={onOpenSettings}
+              />
+            ))}
+          </div>
+          <TurnNavigator entries={navEntries} listEl={listEl} />
         </div>
       ) : (
         <div className="chat-landing">

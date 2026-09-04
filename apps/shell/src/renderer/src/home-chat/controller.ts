@@ -1,15 +1,24 @@
 import type { AgentMessage } from '@chatoffice/agent-core'
+import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type {
   HomeChatAttachment,
   HomeChatCard,
   HomeChatMessage,
   HomeChatSession,
 } from '../../../shared/home-api'
-import { HomeAgent, type HomeAgentBridge, type HomeAgentTexts } from './agent'
+import { HomeAgent, PLAN_MODE_SUFFIX, type HomeAgentBridge, type HomeAgentTexts } from './agent'
 
 export interface HomeChatControllerTexts extends HomeAgentTexts {
   /** closing card line: document opened in a new tab */
   docOpenedInTab(title: string): string
+}
+
+/** per-send composer state the send path must honor */
+export interface HomeChatSendOptions {
+  /** session-scoped model picked in the composer (undefined = global current) */
+  model?: AiModelSelection | undefined
+  /** plan mode: advice-only turn (plan suffix appended to the system prompt) */
+  mode?: 'default' | 'plan' | undefined
 }
 
 interface RunWatch {
@@ -25,6 +34,10 @@ interface RunWatch {
  */
 export class HomeChatController {
   private readonly agents = new Map<string, HomeAgent>()
+  /** per-session model override, read by the agent's transport at run start */
+  private readonly sessionModels = new Map<string, () => AiModelSelection>()
+  /** per-session composer mode; the plan suffix is appended while 'plan' */
+  private readonly sessionModes = new Map<string, 'default' | 'plan'>()
 
   constructor(
     private readonly bridge: HomeAgentBridge,
@@ -43,7 +56,12 @@ export class HomeChatController {
     if (existing) return existing
     const watch: RunWatch = { pendingDocType: null, pendingDocTitle: null }
     const agent = new HomeAgent(
-      this.bridge,
+      {
+        ...this.bridge,
+        // the session's picked model wins over the global current selection
+        getCurrentModel: () =>
+          this.sessionModels.get(sessionId)?.() ?? this.bridge.getCurrentModel(),
+      },
       {
         onText: (text) => {
           this.updateSession(sessionId, (s) => {
@@ -89,7 +107,13 @@ export class HomeChatController {
         },
       },
       this.texts,
-      this.systemSuffix,
+      // evaluated per run by AgentLoop, so a mid-session mode switch applies
+      // to the very next turn without recreating the agent
+      () => {
+        const parts = [this.systemSuffix?.() ?? '']
+        if (this.sessionModes.get(sessionId) === 'plan') parts.push(PLAN_MODE_SUFFIX)
+        return parts.filter(Boolean).join('\n')
+      },
     )
     // model context continuity for sessions restored from disk
     agent.restore(
@@ -111,6 +135,7 @@ export class HomeChatController {
     history: HomeChatMessage[],
     text: string,
     attachments: HomeChatAttachment[],
+    options?: HomeChatSendOptions,
   ): void {
     const userMessage: HomeChatMessage = {
       id: crypto.randomUUID(),
@@ -130,9 +155,11 @@ export class HomeChatController {
       title: s.title || deriveTitle(text),
       messages: [...s.messages, userMessage, placeholder],
     }))
+    if (options?.model) this.sessionModels.set(sessionId, () => options.model!)
+    if (options?.mode) this.sessionModes.set(sessionId, options.mode)
     let model: ReturnType<HomeAgentBridge['getCurrentModel']>
     try {
-      model = this.bridge.getCurrentModel()
+      model = options?.model ?? this.bridge.getCurrentModel()
     } catch {
       model = null as never
     }

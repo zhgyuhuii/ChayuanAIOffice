@@ -129,6 +129,19 @@ Reply directly in concise Markdown.`
 /** turn texts below this length cannot be a document body — the model skipped step 1 */
 const MIN_DOC_BODY_CHARS = 50
 
+/**
+ * Appended to the system prompt while a session is in plan mode: the agent
+ * advises instead of acting. Read-only tools stay available (research is not
+ * mutation); only file-creating/opening actions are constrained.
+ */
+export const PLAN_MODE_SUFFIX = `
+
+## Plan mode (active for this conversation)
+The user switched this conversation to plan mode. Produce plans, advice and analysis only:
+- Do NOT call create_document. Do NOT create or modify any file.
+- search_files and read_document stay available for research; only open_document when the user explicitly asks to see the file.
+- End with a concrete, step-by-step proposal the user can approve, then wait — do not execute anything.`
+
 function homeSkill(
   bridge: HomeAgentBridge,
   state: {

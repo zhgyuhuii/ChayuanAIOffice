@@ -247,6 +247,11 @@ export interface HomeChatSession {
   /** set when the conversation moved into a document tab's AI panel: the home
    * copy becomes read-only and offers "open that tab" instead of continuing */
   handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
+  /** session-scoped model picked in the composer; falls back to the global
+   * current model when absent (the picker writes here, never to the global) */
+  modelId?: AiModelSelection | undefined
+  /** composer mode: 'plan' constrains the agent to advice-only replies */
+  mode?: 'default' | 'plan' | undefined
 }
 
 /** 'starred' = went to GitHub or said "already starred" (never prompt again);

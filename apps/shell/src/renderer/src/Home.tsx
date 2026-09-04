@@ -1193,9 +1193,14 @@ export function Home() {
   // chat's setup-required card opens it too; closing it may have changed the
   // AI model, so refresh the chat bridge's cached selection
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsNonce, setSettingsNonce] = useState(0)
   const handleSettingsOpenChange = useCallback((open: boolean) => {
     setSettingsOpen(open)
-    if (!open) void refreshHomeModelCache()
+    if (!open) {
+      void refreshHomeModelCache()
+      // ChatPanel re-reads AiSettingsV2 (composer model picker) on this bump
+      setSettingsNonce((n) => n + 1)
+    }
   }, [])
 
   // ── Project state ──
@@ -2048,6 +2053,7 @@ export function Home() {
             onOpenSettings={() => handleSettingsOpenChange(true)}
             activeScope={selectedProjectId ? { kind: 'project', id: selectedProjectId } : undefined}
             openSignal={chatOpenSignal}
+            settingsRefreshNonce={settingsNonce}
           />
           {/* right content pane: editors borrow this rect on the home tab in a
               later phase; for now it carries the empty-state hint */}
