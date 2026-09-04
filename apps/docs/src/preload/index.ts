@@ -108,6 +108,14 @@ const api: DesktopApi = {
   imageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:image-search', query, maxResults),
   fetchImage: (url: string) => ipcRenderer.invoke('ai:fetch-image', url),
+  stockImageSearch: (source: string, query: string, maxResults?: number) =>
+    ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults }),
+  stockKeysGet: () => ipcRenderer.invoke('ai:stock-keys-get'),
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) =>
+    ipcRenderer.invoke('ai:stock-keys-set', keys),
+  webImageSearch: (query: string, maxResults?: number) =>
+    ipcRenderer.invoke('ai:web-image-search', query, maxResults),
+  remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
   aiGenerateImage: (op: { prompt: string; aspectRatio?: string }) =>
     ipcRenderer.invoke('docs:ai-generate-image', op),
   pickAttachments: () => ipcRenderer.invoke('files:pick'),

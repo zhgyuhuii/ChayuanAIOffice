@@ -688,6 +688,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: '真实 Excel 表格',
     appGroupIllustrations: '插图',
     appPictures: '图片',
+
+    appPicAiReplace: 'AI 替换',
+
+    appPicAiReplaceTip: '用提示词重绘所选图片',
+
+    appPicAiReplacePrompt: '描述想要的画面…',
+
+    appPicAiReplaceRun: '生成',
+
+    appCharts: '图表',
+
+    appChartLibraryTip: '39 类图表库(含扩展与 3D)',
     appPictureTypes: 'PNG、JPEG、GIF',
     appShapes: '形状',
     appInsertShapeTitle: '在当前选区插入图形',
@@ -2058,6 +2070,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Real Excel table',
     appGroupIllustrations: 'Illustrations',
     appPictures: 'Pictures',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Charts',
+
+    appChartLibraryTip: 'Chart gallery (39 families, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Shapes',
     appInsertShapeTitle: 'Insert a shape at the selection',
@@ -3542,6 +3566,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: '実際の Excel テーブル',
     appGroupIllustrations: '図',
     appPictures: '画像',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'グラフ',
+
+    appChartLibraryTip: 'グラフ ライブラリ(39 分類、3D 含む)',
     appPictureTypes: 'PNG、JPEG、GIF',
     appShapes: '図形',
     appInsertShapeTitle: '現在の選択位置に図形を挿入',
@@ -4947,6 +4983,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: '실제 Excel 표',
     appGroupIllustrations: '일러스트레이션',
     appPictures: '그림',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: '차트',
+
+    appChartLibraryTip: '차트 라이브러리(39종, 3D 포함)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: '도형',
     appInsertShapeTitle: '현재 선택 영역에 도형 삽입',
@@ -6395,6 +6443,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Vrai tableau Excel',
     appGroupIllustrations: 'Illustrations',
     appPictures: 'Images',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Graphiques',
+
+    appChartLibraryTip: 'Galerie de graphiques (39 familles, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Formes',
     appInsertShapeTitle: 'Insérer une forme à la sélection',
@@ -7825,6 +7885,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Echte Excel-Tabelle',
     appGroupIllustrations: 'Illustrationen',
     appPictures: 'Bilder',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Diagramme',
+
+    appChartLibraryTip: 'Diagrammgalerie (39 Familien, inkl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Formen',
     appInsertShapeTitle: 'Eine Form an der Auswahl einfügen',
@@ -9246,6 +9318,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Tabla real de Excel',
     appGroupIllustrations: 'Ilustraciones',
     appPictures: 'Imágenes',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Gráficos',
+
+    appChartLibraryTip: 'Galería de gráficos (39 familias, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Formas',
     appInsertShapeTitle: 'Insertar una forma en la selección',
@@ -10602,6 +10686,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'ตาราง Excel จริง',
     appGroupIllustrations: 'ภาพประกอบ',
     appPictures: 'รูปภาพ',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'แผนภูมิ',
+
+    appChartLibraryTip: 'แกลเลอรีแผนภูมิ (39 ประเภท รวม 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'รูปร่าง',
     appInsertShapeTitle: 'แทรกรูปร่างที่ตำแหน่งที่เลือก',
@@ -11981,6 +12077,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Tabel Excel asli',
     appGroupIllustrations: 'Ilustrasi',
     appPictures: 'Gambar',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Bagan',
+
+    appChartLibraryTip: 'Galeri bagan (39 keluarga, termasuk 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Bentuk',
     appInsertShapeTitle: 'Sisipkan bentuk pada pilihan',
@@ -13383,6 +13491,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Настоящая таблица Excel',
     appGroupIllustrations: 'Иллюстрации',
     appPictures: 'Рисунки',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Charts',
+
+    appChartLibraryTip: 'Chart gallery (39 families, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Фигуры',
     appInsertShapeTitle: 'Вставить фигуру в текущее выделение',
@@ -14739,6 +14859,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'جدول Excel حقيقي',
     appGroupIllustrations: 'رسومات توضيحية',
     appPictures: 'صور',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Charts',
+
+    appChartLibraryTip: 'Chart gallery (39 families, incl. 3D)',
     appPictureTypes: 'PNG وJPEG وGIF',
     appShapes: 'أشكال',
     appInsertShapeTitle: 'إدراج شكل في التحديد الحالي',
@@ -16152,6 +16284,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Tabela real do Excel',
     appGroupIllustrations: 'Ilustrações',
     appPictures: 'Imagens',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Charts',
+
+    appChartLibraryTip: 'Chart gallery (39 families, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Formas',
     appInsertShapeTitle: 'Inserir uma forma na seleção',
@@ -17569,6 +17713,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Vera tabella di Excel',
     appGroupIllustrations: 'Illustrazioni',
     appPictures: 'Immagini',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Grafici',
+
+    appChartLibraryTip: 'Galleria grafici (39 famiglie, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Forme',
     appInsertShapeTitle: 'Inserisci una forma in corrispondenza della selezione',
@@ -18981,6 +19137,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Prawdziwa tabela programu Excel',
     appGroupIllustrations: 'Ilustracje',
     appPictures: 'Obrazy',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Charts',
+
+    appChartLibraryTip: 'Chart gallery (39 families, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Kształty',
     appInsertShapeTitle: 'Wstaw kształt w miejscu zaznaczenia',
@@ -20403,6 +20571,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Echte Excel-tabel',
     appGroupIllustrations: 'Illustraties',
     appPictures: 'Afbeeldingen',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Grafieken',
+
+    appChartLibraryTip: 'Grafiekgalerij (39 families, incl. 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Vormen',
     appInsertShapeTitle: 'Een vorm invoegen bij de selectie',
@@ -21786,6 +21966,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'Jadual Excel sebenar',
     appGroupIllustrations: 'Ilustrasi',
     appPictures: 'Gambar',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'Bagan',
+
+    appChartLibraryTip: 'Galeri bagan (39 keluarga, termasuk 3D)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'Bentuk',
     appInsertShapeTitle: 'Selitkan bentuk pada pilihan',
@@ -23121,6 +23313,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'טבלת Excel אמיתית',
     appGroupIllustrations: 'איורים',
     appPictures: 'תמונות',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'תרשימים',
+
+    appChartLibraryTip: 'גלריית תרשימים (39 משפחות, כולל 3D)',
     appPictureTypes: 'PNG,‏ JPEG,‏ GIF',
     appShapes: 'צורות',
     appInsertShapeTitle: 'הוסף צורה במיקום הבחירה',
@@ -24501,6 +24705,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: 'वास्तविक Excel तालिका',
     appGroupIllustrations: 'चित्रांकन',
     appPictures: 'चित्र',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: 'चार्ट',
+
+    appChartLibraryTip: 'चार्ट गैलरी (39 परिवार, 3D सहित)',
     appPictureTypes: 'PNG, JPEG, GIF',
     appShapes: 'आकृतियाँ',
     appInsertShapeTitle: 'चयन पर एक आकृति सम्मिलित करें',
@@ -25801,6 +26017,18 @@ export const appStrings = defineStrings({
     appRealExcelTable: '真實 Excel 表格',
     appGroupIllustrations: '插圖',
     appPictures: '圖片',
+
+    appPicAiReplace: 'AI Replace',
+
+    appPicAiReplaceTip: 'Redraw the selected picture with a prompt',
+
+    appPicAiReplacePrompt: 'Describe the image you want…',
+
+    appPicAiReplaceRun: 'Generate',
+
+    appCharts: '圖表',
+
+    appChartLibraryTip: '39 類圖表庫(含擴展與 3D)',
     appPictureTypes: 'PNG、JPEG、GIF',
     appShapes: '圖案',
     appInsertShapeTitle: '在目前的選取範圍插入圖案',

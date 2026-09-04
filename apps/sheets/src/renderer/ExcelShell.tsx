@@ -18,7 +18,12 @@ import {
   UndoIcon,
 } from './ribbon-icons'
 
-import { compressImageForDisplay } from '@chatoffice/ui'
+import {
+  compressImageForDisplay,
+  InsertImageDialog,
+  type InsertImageBridge,
+  type WebImageItem,
+} from '@chatoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { PictureCropDialog } from './PictureCropDialog'
@@ -277,6 +282,8 @@ interface ExcelShellProps {
   readonly onPictureAnchoring: (editAs: 'twoCell' | 'oneCell' | 'absolute') => void
   /// Full-resolution bytes of the selected picture (crop dialog preview).
   readonly onPictureGetSource: () => Promise<{ mediaType: string; base64: string } | null>
+  /// 统一插入对话框落点（走 journal 插图管线）
+  readonly onInsertPictureData: (dataUrl: string) => void
   /// Column choices of the active selection, read when the Sort dialog opens.
   readonly onGetSortColumns: () => { label: string; colIndex: number }[]
   /// Effective protection of the active sheet (null = unknown / demo).
@@ -435,6 +442,7 @@ export function ExcelShell({
   onPictureDelete,
   onPictureAnchoring,
   onPictureGetSource,
+  onInsertPictureData,
   pageLayout,
   calcManual,
   onGoalSeek,
@@ -489,6 +497,36 @@ export function ExcelShell({
   const [chartTextTarget, setChartTextTarget] = useState<ChartTextTarget | null>(null)
   /// Picture Tools → Crop (the dialog edits srcRect fractions in place).
   const [showPictureCrop, setShowPictureCrop] = useState(false)
+  /// 统一插入图片对话框（插入 tab 的图片按钮）
+  const [insertImageOpen, setInsertImageOpen] = useState(false)
+
+  const insertImageBridge: InsertImageBridge = {
+    searchWeb: async (query) => {
+      const r = await window.desktopApi.webImageSearch(query)
+      return { images: (r.images as WebImageItem[]) ?? [] }
+    },
+    searchStock: async (source, query) => {
+      const r = await window.desktopApi.stockImageSearch(source, query)
+      return {
+        images: (r.images as WebImageItem[]) ?? [],
+        ...(r.error ? { error: r.error } : {}),
+        ...(r.code ? { code: r.code } : {}),
+      }
+    },
+    fetchImage: async (url) => {
+      const r = await window.desktopApi.remoteImage(url)
+      return r ? { mediaType: r.mime, base64: r.base64 } : null
+    },
+    getStockKeys: () => window.desktopApi.stockKeysGet(),
+    setStockKeys: (keys) => window.desktopApi.stockKeysSet(keys),
+    generate: async ({ prompt }) => {
+      const r = await window.desktopApi.generateImage({ prompt })
+      if (!r.url) return { error: r.error ?? 'no image' }
+      const media = await window.desktopApi.remoteImage(r.url)
+      if (!media) return { error: 'image download failed' }
+      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    },
+  }
   const onCommandRef = useRef(onCommand)
   const onIsCellEditingRef = useRef(onIsCellEditing)
   onCommandRef.current = onCommand
@@ -796,6 +834,7 @@ export function ExcelShell({
                 onPictureDelete={onPictureDelete}
                 onPictureAnchoring={onPictureAnchoring}
                 onPictureGetSource={onPictureGetSource}
+                onOpenInsertImage={() => setInsertImageOpen(true)}
                 onListNames={() => {
                   // Names scoped to another sheet resolve to #NAME? here; only
                   // workbook-scoped and active-sheet names are usable in a formula.
@@ -926,6 +965,16 @@ export function ExcelShell({
             setShowPictureCrop(false)
           }}
           onClose={() => setShowPictureCrop(false)}
+        />
+      )}
+      {insertImageOpen && (
+        <InsertImageDialog
+          bridge={insertImageBridge}
+          onInsert={(dataUrl) => {
+            setInsertImageOpen(false)
+            onInsertPictureData(dataUrl)
+          }}
+          onClose={() => setInsertImageOpen(false)}
         />
       )}
       {axisSizeTarget && (
@@ -1546,6 +1595,7 @@ function Ribbon({
   onPictureDelete,
   onPictureAnchoring,
   onPictureGetSource,
+  onOpenInsertImage,
   onCommand,
   onAiRun,
   onListNames,
@@ -1586,6 +1636,7 @@ function Ribbon({
   readonly onPictureDelete: () => void
   readonly onPictureAnchoring: (editAs: 'twoCell' | 'oneCell' | 'absolute') => void
   readonly onPictureGetSource: () => Promise<{ mediaType: string; base64: string } | null>
+  readonly onOpenInsertImage: () => void
   readonly onCommand: (command: string) => void
   /** Defined names for the Use in Formula menu. */
   readonly onListNames: () => readonly string[]
@@ -1597,6 +1648,30 @@ function Ribbon({
   readonly onIsSelectionInPivot: () => boolean
 }): React.JSX.Element {
   const { t } = useI18n()
+  const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
+  const [aiReplacePrompt, setAiReplacePrompt] = useState('')
+  const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
+  const runAiReplace = async (): Promise<void> => {
+    const prompt = aiReplacePrompt.trim()
+    if (!prompt || aiReplaceBusy || !selectedImage?.id) return
+    setAiReplaceBusy(true)
+    try {
+      const r = await window.desktopApi.generateImage({ prompt })
+      if (r.url) {
+        const media = await window.desktopApi.remoteImage(r.url)
+        if (media) {
+          onPictureMediaReplace({
+            mediaType: media.mime as 'image/png' | 'image/jpeg' | 'image/gif',
+            base64: media.base64,
+          })
+          setAiReplaceOpen(false)
+          setAiReplacePrompt('')
+        }
+      }
+    } finally {
+      setAiReplaceBusy(false)
+    }
+  }
   const [fontColor, setFontColor] = useState('#C00000')
   const [fillColor, setFillColor] = useState('#FFF2CC')
   const [borderColor, setBorderColor] = useState('#000000')
@@ -2086,6 +2161,33 @@ function Ribbon({
           </div>
         </RibbonGroup>
         <RibbonGroup label={t('appPicGroupPicture')}>
+          <div className="ribbon-tool" data-tip={t('appPicAiReplace')}>
+            <button
+              className={`rb-big${aiReplaceOpen ? ' active' : ''}`}
+              disabled={!selectedImage.editable}
+              data-tip={t('appPicAiReplaceTip')}
+              onClick={() => setAiReplaceOpen((v) => !v)}
+            >
+              <span className="rb-big-icon">✨</span>
+              <span>{t('appPicAiReplace')}</span>
+            </button>
+            {aiReplaceOpen && (
+              <div className="rb-ai-replace">
+                <textarea
+                  rows={2}
+                  placeholder={t('appPicAiReplacePrompt')}
+                  value={aiReplacePrompt}
+                  onChange={(e) => setAiReplacePrompt(e.target.value)}
+                />
+                <button
+                  disabled={aiReplaceBusy || !aiReplacePrompt.trim()}
+                  onClick={() => void runAiReplace()}
+                >
+                  {aiReplaceBusy ? '…' : t('appPicAiReplaceRun')}
+                </button>
+              </div>
+            )}
+          </div>
           <div className="ribbon-tool" data-tip={t('appPicCompress')}>
             <MenuSelect
               cover
@@ -2189,7 +2291,14 @@ function Ribbon({
             label={t('appPictures')}
             detail={t('appPictureTypes')}
             symbol="🖼"
-            onClick={() => onCommand('insert-picture')}
+            onClick={onOpenInsertImage}
+          />
+          <RibbonButton
+            large
+            label={t('appCharts')}
+            detail={t('appChartLibraryTip')}
+            symbol="📊"
+            onClick={() => onCommand('chart-designer-open')}
           />
           <div className="row-stack">
             <span className="styles-row" data-tip={t('appInsertShapeTitle')}>

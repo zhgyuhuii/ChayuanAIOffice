@@ -486,6 +486,21 @@ const desktopApi: DesktopApi = {
     if (!isRecord(result)) throw new Error('Invalid image generation response.')
     return result as unknown as GenerateImageResult
   },
+  stockImageSearch(source, query, maxResults) {
+    return ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults })
+  },
+  stockKeysGet() {
+    return ipcRenderer.invoke('ai:stock-keys-get')
+  },
+  async stockKeysSet(keys) {
+    await ipcRenderer.invoke('ai:stock-keys-set', keys)
+  },
+  webImageSearch(query, maxResults) {
+    return ipcRenderer.invoke('ai:web-image-search', query, maxResults)
+  },
+  async remoteImage(url) {
+    return ipcRenderer.invoke('ai:remote-image', url)
+  },
   async fetchImage(url) {
     if (typeof url !== 'string' || !/^https?:\/\//i.test(url) || url.length > 2048) {
       throw new Error('Invalid image URL.')

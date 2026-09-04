@@ -5786,3 +5786,45 @@ textarea:focus {
   height: 280px;
   background: var(--surface-hover, #f2f2f2);
 }
+
+/* AI 重绘替换（图片工具 tab 内联面板） */
+.rb-ai-replace {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.rb-ai-replace textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #d8d8d8);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.rb-ai-replace button {
+  align-self: flex-end;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 5px;
+  background: var(--accent, #217346);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+.rb-ai-replace button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

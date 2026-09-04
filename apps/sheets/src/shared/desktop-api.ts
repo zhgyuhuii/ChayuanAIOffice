@@ -2780,6 +2780,18 @@ export interface DesktopApi {
   webSearch(query: string, maxResults?: number): Promise<WebSearchResult>
   /// Image search (same shared main-process channel as docs/slides)
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResponse>
+  stockImageSearch(
+    source: string,
+    query: string,
+    maxResults?: number,
+  ): Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
+  stockKeysGet(): Promise<{ pexels: string; pixabay: string }>
+  stockKeysSet(keys: { pexels?: string; pixabay?: string }): Promise<void>
+  webImageSearch(
+    query: string,
+    maxResults?: number,
+  ): Promise<{ images: unknown[]; method?: string; error?: string }>
+  remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
   /// AI image generation via the Genspark account (sheets-owned channel)
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<GenerateImageResult>
   /// Downloads an image URL in the main process (SSRF-guarded); null on failure

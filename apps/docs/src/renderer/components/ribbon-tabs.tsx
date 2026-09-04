@@ -605,6 +605,8 @@ export function insertBlankPageAt(editor: Editor): void {
 }
 
 export interface InsertTabProps extends TabProps {
+  /** 统一插入图片对话框（缺省回退系统文件选择器） */
+  readonly insertImageDialogOpen?: () => void
   header: HeaderFooter | null
   onHeader: (next: HeaderFooter) => void
   footer: HeaderFooter | null

@@ -1,3 +1,4 @@
+import { ChartDesignerModal } from '@chatoffice/chart-kit/designer'
 import {
   absRangeRef,
   activateFormulaClosure,
@@ -283,6 +284,7 @@ import {
   insertAiImageVisual as insertAiImageVisualImpl,
   insertAiShapeVisual as insertAiShapeVisualImpl,
   type VisualActionContext,
+  insertPictureFromData as insertPictureFromDataImpl,
 } from './visual-actions'
 import {
   activeCellLabel as activeCellLabelImpl,
@@ -616,6 +618,7 @@ export function App(): React.JSX.Element {
   const [iconsDialogOpen, setIconsDialogOpen] = useState(false)
   const [equationDialogOpen, setEquationDialogOpen] = useState(false)
   const [recommendedCharts, setRecommendedCharts] = useState<ChartRecommendations | null>(null)
+  const [chartDesignerOpen, setChartDesignerOpen] = useState(false)
   /// The focused floating visual (chart/shape/image); charts surface a
   /// contextual Chart Design ribbon tab while selected.
   const [selectedVisual, setSelectedVisual] = useState<WorkbookVisualObject | null>(null)
@@ -4414,6 +4417,7 @@ export function App(): React.JSX.Element {
       setScreenshotDialogOpen,
       setIconsDialogOpen,
       setEquationDialogOpen,
+      setChartDesignerOpen,
       openRecommendedCharts: () => {
         void handleRecommendedChartsImpl(visualContext()).then((result) => {
           if (result) setRecommendedCharts(result)
@@ -5330,6 +5334,7 @@ export function App(): React.JSX.Element {
         onPictureMediaReplace={handlePictureMediaReplace}
         onPictureRotate={handlePictureRotate}
         onPictureReset={handlePictureReset}
+        onInsertPictureData={(dataUrl) => insertPictureFromDataImpl(visualContext(), dataUrl)}
         onPictureAnchoring={handlePictureAnchoring}
         onPictureResize={handlePictureResize}
         onPictureGetSource={handlePictureGetSource}
@@ -5400,6 +5405,30 @@ export function App(): React.JSX.Element {
             handleInsertEquationImpl(visualContext(), dataUrl, width, height)
           }
           onClose={() => setEquationDialogOpen(false)}
+        />
+      )}
+      {chartDesignerOpen && (
+        <ChartDesignerModal
+          lang="zh-CN"
+          onClose={() => setChartDesignerOpen(false)}
+          onInsert={(payload) => {
+            void (async () => {
+              const ctx = visualContext()
+              if (payload.engine === 'ooxml' && payload.spec) {
+                const KIND: Record<string, string> = {
+                  bar: 'column',
+                  line: 'line',
+                  pie: 'pie',
+                }
+                const kind = KIND[payload.spec.type]
+                if (kind) await handleInsertChartImpl(ctx, kind)
+              } else if (payload.snapshotPng) {
+                // 扩展组:快照图片 visual(xl/media 落盘);sidecar 持久化列二期
+                insertPictureFromDataImpl(ctx, payload.snapshotPng, payload.title || '图表')
+              }
+              setChartDesignerOpen(false)
+            })()
+          }}
         />
       )}
       {recommendedCharts !== null && (

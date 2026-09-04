@@ -10,6 +10,13 @@ import {
   type FileSourceFs,
   type GenSparkAccountStatus,
 } from '@chatoffice/ai-provider'
+import {
+  imageSearch,
+  searchStockImages,
+  StockSearchError,
+  type StockSource,
+} from '@chatoffice/ai-search'
+import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
 
 /**
  * Shared registration of the generic ai:* IPC channels — identical channel
@@ -73,8 +80,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
 
   ipcMain.handle(
     'ai:gsk-status',
-    async (_event, withEmail?: boolean): Promise<GenSparkAccountStatus> =>
-      gsk.status(!!withEmail),
+    async (_event, withEmail?: boolean): Promise<GenSparkAccountStatus> => gsk.status(!!withEmail),
   )
 
   ipcMain.handle('ai:gsk-login', () => {
@@ -82,9 +88,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   })
 
   // the settings view carries KEEP_KEY sentinels; the runtime merges stored keys back
-  ipcMain.handle('ai:set-settings', (_event, view: AiSettingsV2) =>
-    runtime.saveSettings(view),
-  )
+  ipcMain.handle('ai:set-settings', (_event, view: AiSettingsV2) => runtime.saveSettings(view))
 
   ipcMain.handle('ai:set-current-model', (_event, selection: AiModelSelection) =>
     runtime.setCurrentModel(selection),
@@ -130,6 +134,100 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   ipcMain.handle('ai:stream-cancel', (_event, requestId: string) => {
     activeStreams.get(requestId)?.abort()
   })
+
+  // ── picture-source channels (insert-image dialog) ────────────────────
+  // Web image search (gsk → Serper → DuckDuckGo, copyright hosts filtered)
+  ipcMain.handle('ai:web-image-search', async (_event, query: string, maxResults?: number) => {
+    try {
+      return await imageSearch(
+        String(query),
+        typeof maxResults === 'number' ? maxResults : 12,
+        true,
+      )
+    } catch (err) {
+      return { images: [], method: 'error', error: String(err) }
+    }
+  })
+  // Stock libraries (Pexels/Pixabay): keys resolve main-side from ai-settings
+  ipcMain.handle(
+    'ai:stock-image-search',
+    async (
+      _event,
+      req: { source: string; query: string; maxResults?: number },
+    ): Promise<{ images: unknown[]; source: string; error?: string; code?: string }> => {
+      try {
+        const settings = await runtime.readRawSettings()
+        const source = String(req.source) as StockSource
+        const key =
+          source === 'pexels'
+            ? (settings.stockApiKeys?.pexels ?? '')
+            : (settings.stockApiKeys?.pixabay ?? '')
+        const images = await searchStockImages(
+          source,
+          key,
+          String(req.query),
+          typeof req.maxResults === 'number' ? req.maxResults : 12,
+        )
+        return { images, source }
+      } catch (err) {
+        const code = err instanceof StockSearchError ? err.code : 'network'
+        return { images: [], source: String(req.source), error: String(err), code }
+      }
+    },
+  )
+  // Stock key management: renderer sees KEEP_KEY sentinels only
+  ipcMain.handle('ai:stock-keys-get', async () => {
+    const settings = await runtime.readRawSettings()
+    return {
+      pexels: settings.stockApiKeys?.pexels ? '__keep__' : '',
+      pixabay: settings.stockApiKeys?.pixabay ? '__keep__' : '',
+    }
+  })
+  ipcMain.handle(
+    'ai:stock-keys-set',
+    async (_event, keys: { pexels?: string; pixabay?: string }) => {
+      const settings = await runtime.readRawSettings()
+      const stored = settings.stockApiKeys ?? {}
+      const next = {
+        pexels:
+          keys.pexels === '__keep__'
+            ? (stored.pexels ?? '')
+            : keys.pexels !== undefined
+              ? keys.pexels
+              : (stored.pexels ?? ''),
+        pixabay:
+          keys.pixabay === '__keep__'
+            ? (stored.pixabay ?? '')
+            : keys.pixabay !== undefined
+              ? keys.pixabay
+              : (stored.pixabay ?? ''),
+      }
+      await runtime.writeSettings({ ...settings, stockApiKeys: next })
+      return true
+    },
+  )
+  // Download an image URL → base64 (CORS-free, SSRF-guarded, retried)
+  ipcMain.handle(
+    'ai:remote-image',
+    async (_event, url: string): Promise<{ base64: string; mime: string } | null> => {
+      try {
+        const resp = await fetchRemoteImage(String(url))
+        if (!resp || !resp.ok) return null
+        const buf = Buffer.from(await resp.arrayBuffer())
+        const ct = resp.headers.get('content-type') ?? ''
+        const mime = ct.includes('png')
+          ? 'image/png'
+          : ct.includes('gif')
+            ? 'image/gif'
+            : ct.includes('webp')
+              ? 'image/webp'
+              : 'image/jpeg'
+        return { base64: buf.toString('base64'), mime }
+      } catch {
+        return null
+      }
+    },
+  )
 
   return runtime
 }

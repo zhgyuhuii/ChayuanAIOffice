@@ -656,6 +656,26 @@ export function insertAiShapeVisual(
   queueCtxVisualInstall(ctx, runtime)
 }
 
+/** 统一插入图片对话框落点：dataUrl → 尺寸测量 → 与本会话插图同一管线 */
+export function insertPictureFromData(
+  ctx: VisualActionContext,
+  dataUrl: string,
+  fileName = 'Picture',
+): void {
+  const mediaType = (['image/png', 'image/jpeg', 'image/gif'] as const).find((type) =>
+    dataUrl.startsWith(`data:${type}`),
+  )
+  if (!mediaType) {
+    ctx.setMessage(t('appPictureBadType'))
+    return
+  }
+  const img = new Image()
+  img.onload = () =>
+    insertPictureVisual(ctx, dataUrl, mediaType, fileName, img.naturalWidth, img.naturalHeight)
+  img.onerror = () => insertPictureVisual(ctx, dataUrl, mediaType, fileName, 480, 320)
+  img.src = dataUrl
+}
+
 export function handleInsertPicture(ctx: VisualActionContext): void {
   if (!ctx.univerRef.current) return
   if (!ctx.lazyWorkbookRef.current) {

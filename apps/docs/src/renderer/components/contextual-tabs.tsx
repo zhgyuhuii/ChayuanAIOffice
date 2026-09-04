@@ -13,6 +13,7 @@ import type { TableLook } from '@chatoffice/docx-engine'
 import { Dropdown } from '@chatoffice/ui'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { ShapeColorPalette } from './ribbon-tab-shared'
+import { IconSparkle } from './icons'
 import { WRAP_OPTIONS } from './ContextMenu'
 
 /** CSS px per cm at 96dpi (picture size inputs display in centimeters) */
@@ -274,6 +275,7 @@ export function PictureFormatTab({
   resetPictureSize,
   setPictureSizeCm,
   compressPicture,
+  aiReplace,
 }: {
   readonly fs: any
   readonly editor: any
@@ -286,6 +288,14 @@ export function PictureFormatTab({
   readonly resetPictureSize: any
   readonly setPictureSizeCm: any
   readonly compressPicture: any
+  readonly aiReplace: {
+    readonly open: boolean
+    readonly busy: boolean
+    readonly prompt: string
+    readonly onPrompt: (value: string) => void
+    readonly onToggle: () => void
+    readonly onRun: () => void
+  }
 }) {
   const { t } = useI18n()
   return (
@@ -454,7 +464,16 @@ export function PictureFormatTab({
                 ]}
                 onPick={(v) => {
                   if (!canEdit) return
-                  const presets: Record<string, { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null> = {
+                  const presets: Record<
+                    string,
+                    {
+                      blurPt: number
+                      distPt: number
+                      dirDeg: number
+                      color: string
+                      alpha: number
+                    } | null
+                  > = {
                     none: null,
                     br: { blurPt: 8, distPt: 5, dirDeg: 45, color: '000000', alpha: 0.6 },
                     tr: { blurPt: 8, distPt: 5, dirDeg: 315, color: '000000', alpha: 0.6 },
@@ -467,6 +486,35 @@ export function PictureFormatTab({
                     .run()
                 }}
               />
+              <div className="rb-geom-dd" data-tip={t('ribbonAiReplace')}>
+                <button
+                  className={`rb-big${aiReplace.open ? ' active' : ''}`}
+                  disabled={!canEdit}
+                  data-tip={t('ribbonAiReplaceTip')}
+                  onClick={aiReplace.onToggle}
+                >
+                  <span className="rb-big-icon">
+                    <IconSparkle size={28} />
+                  </span>
+                  <span>{t('ribbonAiReplace')}</span>
+                </button>
+                {aiReplace.open && (
+                  <div className="rb-ai-replace">
+                    <textarea
+                      rows={2}
+                      placeholder={t('ribbonAiReplacePrompt')}
+                      value={aiReplace.prompt}
+                      onChange={(e) => aiReplace.onPrompt(e.target.value)}
+                    />
+                    <button
+                      disabled={aiReplace.busy || !aiReplace.prompt.trim()}
+                      onClick={aiReplace.onRun}
+                    >
+                      {aiReplace.busy ? '…' : t('ribbonAiReplaceRun')}
+                    </button>
+                  </div>
+                )}
+              </div>
               <Dropdown
                 className="rb-wrap-dd"
                 disabled={!canEdit}

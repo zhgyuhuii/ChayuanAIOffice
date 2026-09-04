@@ -655,6 +655,7 @@ export function InsertTab({
   onEvenOddHf,
   commentCount,
   onShowComments,
+  insertImageDialogOpen,
 }: InsertTabProps) {
   const { t, lang } = useI18n()
   const [grid, setGrid] = useState<{ r: number; c: number }>({ r: 0, c: 0 })
@@ -891,7 +892,7 @@ export function InsertTab({
             className="rb-big"
             disabled={!hasDoc}
             data-tip={t('ribbonPictureTip')}
-            onClick={() => void insertImageViaDialog(editor)}
+            onClick={insertImageDialogOpen ?? ((): void => void insertImageViaDialog(editor))}
           >
             <span className="rb-big-icon">
               <IconPicture size={BIG} />

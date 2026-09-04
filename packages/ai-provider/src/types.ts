@@ -24,10 +24,7 @@ export type AiProviderId =
  * chatop/dsh llm-pi-ai `api` naming so profiles round-trip losslessly.
  */
 export type AiWireProtocol =
-  | 'anthropic-messages'
-  | 'openai-completions'
-  | 'openai-responses'
-  | 'gemini-native'
+  'anthropic-messages' | 'openai-completions' | 'openai-responses' | 'gemini-native'
 
 export interface AiModelEntry {
   id: string
@@ -74,6 +71,8 @@ export interface AiSettingsV2 {
   modelDefaults?: Record<string, AiModelSelection>
   /** gsk cloud tools toggle (search backends); default on */
   gskToolsEnabled?: boolean
+  /** stock-photo library API keys (Pexels/Pixabay) for the insert-image dialog */
+  stockApiKeys?: { pexels?: string; pixabay?: string }
 }
 
 /** a v2 stream request carries only the selection — the backend owning the settings resolves the secret */

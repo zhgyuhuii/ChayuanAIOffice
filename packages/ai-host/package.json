@@ -14,7 +14,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chatoffice/ai-provider": "*"
+    "@chatoffice/ai-provider": "*",
+    "@chatoffice/ai-search": "*",
+    "@chatoffice/electron-utils": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

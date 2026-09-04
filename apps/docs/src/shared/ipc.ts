@@ -302,7 +302,11 @@ export interface DesktopApi {
     base64Parts: string[],
     outPath?: string,
   ): Promise<{ ok: boolean; path?: string; error?: string }>
-  aiChat(request: { selection: AiModelSelection; system: string; user: string }): Promise<AiChatResponse>
+  aiChat(request: {
+    selection: AiModelSelection
+    system: string
+    user: string
+  }): Promise<AiChatResponse>
   /** start a streaming AI call; deltas arrive via onAiStream with the same requestId.
    *  The `settings` slot carries the model selection (agent-core's generic transport shape). */
   aiStream(request: AiStreamWireRequest): Promise<void>
@@ -338,6 +342,18 @@ export interface DesktopApi {
     error?: string
   }>
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
+  stockImageSearch(
+    source: string,
+    query: string,
+    maxResults?: number,
+  ): Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
+  stockKeysGet(): Promise<{ pexels: string; pixabay: string }>
+  stockKeysSet(keys: { pexels?: string; pixabay?: string }): Promise<void>
+  webImageSearch(
+    query: string,
+    maxResults?: number,
+  ): Promise<{ images: unknown[]; method?: string; error?: string }>
+  remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
   /** AI image generation via the Genspark cloud channel (requires login + cloud tools) */
   aiGenerateImage(op: {
     prompt: string

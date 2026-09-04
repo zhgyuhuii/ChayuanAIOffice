@@ -55,6 +55,14 @@ function redact(settings: AiSettingsV2): AiSettingsV2 {
     profiles: settings.profiles.map((p) =>
       p.apiKey ? { ...p, apiKey: KEEP_KEY } : { ...p, apiKey: '' },
     ),
+    ...(settings.stockApiKeys
+      ? {
+          stockApiKeys: {
+            pexels: settings.stockApiKeys.pexels ? KEEP_KEY : '',
+            pixabay: settings.stockApiKeys.pixabay ? KEEP_KEY : '',
+          },
+        }
+      : {}),
   }
 }
 
@@ -68,6 +76,20 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
       const prev = storedById.get(p.id)
       return { ...p, apiKey: prev?.apiKey ?? '' }
     }),
+    ...(view.stockApiKeys
+      ? {
+          stockApiKeys: {
+            pexels:
+              view.stockApiKeys.pexels === KEEP_KEY
+                ? (stored.stockApiKeys?.pexels ?? '')
+                : (view.stockApiKeys.pexels ?? ''),
+            pixabay:
+              view.stockApiKeys.pixabay === KEEP_KEY
+                ? (stored.stockApiKeys?.pixabay ?? '')
+                : (view.stockApiKeys.pixabay ?? ''),
+          },
+        }
+      : {}),
   }
 }
 
@@ -227,9 +249,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   /** BYOK image model first; gsk backend as fallback; error when neither exists.
    * If the user configured an image model, its failure is the answer — silent
    * fallbacks would hide broken keys. */
-  const generateImage = async (
-    req: ImageGenRequest,
-  ): Promise<{ url?: string; error?: string }> => {
+  const generateImage = async (req: ImageGenRequest): Promise<{ url?: string; error?: string }> => {
     const settings = await readRaw()
     const imageSelection = pickImageModel(settings)
     if (imageSelection) {
@@ -261,6 +281,11 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     runChat,
     discover,
     generateImage,
+    /** unredacted settings for main-process features (stock-image keys) */
+    readRawSettings: readRaw,
+    writeSettings: async (settings: AiSettingsV2): Promise<void> => {
+      await source.write(migrateSettingsV2(settings))
+    },
   }
 }
 

@@ -33,7 +33,14 @@ import type {
   ThemeColors,
   ThemeFonts,
 } from '@chatoffice/docx-engine'
-import { Dropdown, compressImageForDisplay, useDismissablePopover } from '@chatoffice/ui'
+import {
+  Dropdown,
+  compressImageForDisplay,
+  InsertImageDialog,
+  useDismissablePopover,
+  type InsertImageBridge,
+  type WebImageItem,
+} from '@chatoffice/ui'
 import { applyCase, type CaseMode } from '../editor/case-transform'
 import { setSelectionAlign } from '../editor/direction'
 import { stepParagraphIndent } from '../editor/indent'
@@ -489,6 +496,64 @@ function RibbonInner({
   const wasInImage = useRef(false)
   /** Picture Format → remove background / crop dialogs */
   const [pictureDialog, setPictureDialog] = useState<'cutout' | 'crop' | null>(null)
+  const [insertImageOpen, setInsertImageOpen] = useState(false)
+  const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
+  const [aiReplacePrompt, setAiReplacePrompt] = useState('')
+  const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
+
+  /** 统一插入图片对话框的传输桥：共享 ai:* 通道 + docs 生图 */
+  const insertImageBridge: InsertImageBridge = {
+    searchWeb: async (query) => {
+      const r = (await window.desktop?.webImageSearch(query)) as {
+        images?: unknown[]
+        error?: string
+      } | null
+      return { images: (r?.images as WebImageItem[]) ?? [] }
+    },
+    searchStock: async (source, query) => {
+      const r = await window.desktop?.stockImageSearch(source, query)
+      return {
+        images: (r?.images as WebImageItem[]) ?? [],
+        error: r?.error,
+        code: r?.code,
+      }
+    },
+    fetchImage: async (url) => {
+      const r = await window.desktop?.remoteImage(url)
+      return r ? { mediaType: r.mime, base64: r.base64 } : null
+    },
+    getStockKeys: async () => (await window.desktop?.stockKeysGet()) ?? { pexels: '', pixabay: '' },
+    setStockKeys: (keys) => window.desktop?.stockKeysSet(keys) ?? Promise.resolve(),
+    generate: async ({ prompt }) => {
+      const r = await window.desktop?.aiGenerateImage({ prompt })
+      if (!r?.url) return { error: r?.error ?? 'no image' }
+      const media = await window.desktop?.remoteImage(r.url)
+      if (!media) return { error: 'image download failed' }
+      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    },
+  }
+
+  /** AI 重绘替换选中图片：提示词→生成→字节替换（保留显示尺寸与裁剪参数） */
+  const runAiReplace = async (): Promise<void> => {
+    const prompt = aiReplacePrompt.trim()
+    if (!prompt || aiReplaceBusy || !canEdit) return
+    const attrs = editor.getAttributes('docProtected')
+    if (attrs?.blockType !== 'image') return
+    setAiReplaceBusy(true)
+    try {
+      const r = await window.desktop?.aiGenerateImage({ prompt })
+      if (r?.url) {
+        const media = await window.desktop?.remoteImage(r.url)
+        if (media) {
+          await applyPictureBytes(`data:${media.mime};base64,${media.base64}`)
+          setAiReplaceOpen(false)
+          setAiReplacePrompt('')
+        }
+      }
+    } finally {
+      setAiReplaceBusy(false)
+    }
+  }
   const [listDialog, setListDialog] = useState(false)
   const [tablePropertiesOpen, setTablePropertiesOpen] = useState(false)
 
@@ -707,12 +772,16 @@ function RibbonInner({
       const m = /^data:(image\/(?:png|jpeg|gif));base64,(.*)$/s.exec(compressed)
       if (!m) return
       const isOriginal = attrs.docxIndex !== null && attrs.docxIndex !== undefined
-      editor.chain().focus().updateAttributes('docProtected', {
-        imageDataUrl: compressed,
-        ...(isOriginal
-          ? { imageReplace: { base64: m[2], mime: m[1] } }
-          : { genImage: { base64: m[2], mime: m[1], widthPx: w, heightPx: h } }),
-      }).run()
+      editor
+        .chain()
+        .focus()
+        .updateAttributes('docProtected', {
+          imageDataUrl: compressed,
+          ...(isOriginal
+            ? { imageReplace: { base64: m[2], mime: m[1] } }
+            : { genImage: { base64: m[2], mime: m[1], widthPx: w, heightPx: h } }),
+        })
+        .run()
     } catch {
       /* decode failure: keep the original */
     }
@@ -1936,6 +2005,14 @@ function RibbonInner({
             resetPictureSize={resetPictureSize}
             setPictureSizeCm={setPictureSizeCm}
             compressPicture={applyCompressedPicture}
+            aiReplace={{
+              open: aiReplaceOpen,
+              busy: aiReplaceBusy,
+              prompt: aiReplacePrompt,
+              onPrompt: setAiReplacePrompt,
+              onToggle: () => setAiReplaceOpen((v) => !v),
+              onRun: () => void runAiReplace(),
+            }}
           />
         ) : tab === 'tableDesign' ? (
           <TableDesignTab
@@ -2052,6 +2129,7 @@ function RibbonInner({
             onEvenOddHf={onEvenOddHf}
             commentCount={commentCount}
             onShowComments={onShowComments}
+            insertImageDialogOpen={() => setInsertImageOpen(true)}
           />
         ) : tab === 'page' ? (
           // WPS「页面」= 布局(页面设置|段落|排列) + 设计(页面背景|文档格式) 两组件合一
@@ -2158,6 +2236,16 @@ function RibbonInner({
             void applyPictureBytes(png)
           }}
           onCancel={() => setPictureDialog(null)}
+        />
+      )}
+      {insertImageOpen && (
+        <InsertImageDialog
+          bridge={insertImageBridge}
+          onInsert={(dataUrl) => {
+            setInsertImageOpen(false)
+            void insertImageFromDataUrl(editor, dataUrl)
+          }}
+          onClose={() => setInsertImageOpen(false)}
         />
       )}
       {pictureDialog === 'crop' && imageDataUrl && (

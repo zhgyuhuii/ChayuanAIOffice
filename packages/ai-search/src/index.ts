@@ -15,6 +15,12 @@ import {
 import { gskImageSearch, gskWebSearch, hasGskAuth } from './gsk'
 
 export type { ImageSearchResult, WebSearchResult } from './shared'
+export {
+  searchStockImages,
+  StockSearchError,
+  type StockSource,
+  type StockImageResult,
+} from './stock'
 export * from './gsk'
 export * from './chatoffice-auth'
 
