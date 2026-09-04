@@ -25,8 +25,16 @@ html.chatoffice-popover-open .tab-bar {
   -webkit-app-region: no-drag;
 }
 
-/* room for the macOS traffic lights (titleBarStyle: hiddenInset) */
+/* room for the macOS traffic lights (titleBarStyle: hiddenInset) — but only
+   there: the Windows shell keeps its native title bar and the web build has
+   no overlay, so the strip hugs the window's left edge. main.tsx adds the
+   body class only when running inside the mac Electron shell. */
 .tab-bar-drag-spacer {
+  display: none;
+}
+
+body.mac-inset .tab-bar-drag-spacer {
+  display: block;
   width: 78px;
   flex-shrink: 0;
 }

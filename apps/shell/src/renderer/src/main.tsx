@@ -16,6 +16,14 @@ installScreenTips()
 // editor views' translucent regions (e.g. slides thumbnail pane) show it
 if (navigator.platform.toLowerCase().includes('mac')) document.body.classList.add('vib')
 
+// the same window is titleBarStyle: hiddenInset, so the tab strip must inset
+// past the traffic lights. Only there: Windows keeps its native title bar and
+// the web build has no overlay — chatOfficeTabs exists only via the Electron
+// preload, so the strip hugs the left edge everywhere else.
+if (navigator.platform.toLowerCase().includes('mac') && 'chatOfficeTabs' in window) {
+  document.body.classList.add('mac-inset')
+}
+
 // resolve the persisted language, first-run flag, and theme before first paint
 // so the UI never flashes (home showing briefly before the onboarding overlay)
 void Promise.all([
