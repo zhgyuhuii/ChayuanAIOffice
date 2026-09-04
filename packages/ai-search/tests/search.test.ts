@@ -10,6 +10,7 @@ const realFetch = globalThis.fetch
 afterEach(() => {
   globalThis.fetch = realFetch
   delete process.env.SERPER_API_KEY
+  delete process.env.TAVILY_API_KEY
 })
 
 function mockFetch(
@@ -62,6 +63,56 @@ describe('webSearch (Serper)', () => {
     expect(r.method).toBe('duckduckgo')
     expect(r.results[0]?.url).toBe('https://x.com')
     expect(r.results[0]?.title).toBe('X Title')
+  })
+})
+
+describe('webSearch (Tavily)', () => {
+  it('parses results + answer when Serper is unconfigured', async () => {
+    process.env.TAVILY_API_KEY = 'test-key'
+    mockFetch((url, init) => {
+      expect(url).toBe('https://api.tavily.com/search')
+      expect(JSON.parse(String((init as any)?.body ?? '{}')).api_key).toBe('test-key')
+      return {
+        ok: true,
+        json: {
+          answer: '42',
+          results: [
+            { title: 'A', url: 'https://a.com', content: 'sa' },
+            { title: 'B', url: 'https://b.com', content: 'sb' },
+          ],
+        },
+      }
+    })
+    const r = await webSearch('meaning of life', 5)
+    expect(r.method).toBe('tavily')
+    expect(r.answer).toBe('42')
+    expect(r.results).toHaveLength(2)
+    expect(r.results[0]).toEqual({ title: 'A', url: 'https://a.com', snippet: 'sa' })
+  })
+
+  it('prefers Serper over Tavily when both keys are set', async () => {
+    process.env.SERPER_API_KEY = 'serper-key'
+    process.env.TAVILY_API_KEY = 'tavily-key'
+    mockFetch((url) => {
+      expect(url).toBe('https://google.serper.dev/search')
+      return { ok: true, json: { organic: [{ title: 'A', link: 'https://a.com' }] } }
+    })
+    const r = await webSearch('q', 3)
+    expect(r.method).toBe('serper')
+  })
+
+  it('falls back to DuckDuckGo when Tavily returns nothing usable', async () => {
+    process.env.TAVILY_API_KEY = 'test-key'
+    mockFetch((url) => {
+      if (url === 'https://api.tavily.com/search') return { ok: true, json: { results: [] } }
+      expect(url).toContain('duckduckgo.com')
+      return {
+        ok: true,
+        text: '<a class="result__a" href="/l/?uddg=https%3A%2F%2Fx.com">X Title</a>',
+      }
+    })
+    const r = await webSearch('q', 3)
+    expect(r.method).toBe('duckduckgo')
   })
 })
 
