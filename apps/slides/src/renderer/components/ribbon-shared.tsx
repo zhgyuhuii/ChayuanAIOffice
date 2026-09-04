@@ -330,6 +330,8 @@ export interface Props {
   autoSave: boolean
   onAutoSaveChange: (on: boolean) => void
   onOpen: () => void
+  /** 文件菜单「最近文件」(null/absent = 隐藏该区; renderer 从 slides:recent 拉取) */
+  onOpenRecent?: (path: string) => void
   onSave: () => void
   onUndo: () => void
   onRedo: () => void

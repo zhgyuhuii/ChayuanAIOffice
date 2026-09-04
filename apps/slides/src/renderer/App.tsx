@@ -3035,6 +3035,9 @@ export function App() {
             autoSave={autoSave}
             onAutoSaveChange={setAutoSave}
             onOpen={() => void openDialog()}
+            onOpenRecent={(path) => {
+              void window.slidesApi.openPptxPath(path, FIT_WIDTH).then(applyOpen)
+            }}
             onSave={() => void save()}
             onUndo={() => void undo()}
             onRedo={() => void redo()}

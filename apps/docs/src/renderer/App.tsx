@@ -440,7 +440,7 @@ export function App() {
     value: string
     errorKey: '' | 'appDocPwdWrong'
   } | null>(null)
-  const [_recent, setRecent] = useState<string[]>([])
+  const [recent, setRecent] = useState<string[]>([])
   const [settings, setSettings] = useState<AiSettingsV2>(DEFAULT_SETTINGS)
   const [showAi, setShowAi] = useState(() => localStorage.getItem('aidocs.showAi') !== '0')
   /** Increments on every open/new document: AiPanel remounts by key to reset the conversation and history (save path changes don't bump it, so the session continues) */
@@ -4566,6 +4566,9 @@ export function App() {
             editor={editor}
             tabRequest={ribbonTabRequest}
             {...ribbonPropsFromHost(docsState, docsServices)}
+            onNewFile={newFile}
+            recentFiles={recent}
+            onOpenRecent={(p) => void openRecent(p)}
           />
           {isMobileUI && (
             <MobileRibbon

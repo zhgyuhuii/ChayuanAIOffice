@@ -1628,6 +1628,7 @@ export function Ribbon({
   autoSave,
   onAutoSaveChange,
   onOpen,
+  onOpenRecent,
   onSave,
   onUndo,
   onRedo,
@@ -1795,6 +1796,14 @@ export function Ribbon({
 
   const [tab, setTab] = useState<MainTab | ContextTab>('home')
   const [fileOpen, setFileOpen] = useState(false)
+  // 最近文件: 拉取于菜单打开时(避免每次渲染请求)
+  const [recents, setRecents] = useState<string[]>([])
+  useEffect(() => {
+    if (!fileOpen) return
+    void window.slidesApi.getRecentFiles().then((list) => {
+      if (Array.isArray(list)) setRecents(list.slice(0, 6))
+    })
+  }, [fileOpen])
   const [colorOpen, setColorOpen] = useState(false)
   const [fontOpen, setFontOpen] = useState(false)
   const [sizeOpen, setSizeOpen] = useState(false)
@@ -2268,6 +2277,23 @@ export function Ribbon({
                   {t('ribbonFileOpen')}{' '}
                   <span className="file-menu-key">{IS_MAC ? '⌘O' : 'Ctrl+O'}</span>
                 </button>
+                {onOpenRecent && recents.length > 0 && (
+                  <>
+                    <div className="file-menu-sec">{t('ribbonFileRecent')}</div>
+                    {recents.map((p) => (
+                      <button
+                        key={p}
+                        title={p}
+                        onClick={() => {
+                          setFileOpen(false)
+                          onOpenRecent(p)
+                        }}
+                      >
+                        <span className="file-menu-recent">{p.split(/[\\/]/).pop()}</span>
+                      </button>
+                    ))}
+                  </>
+                )}
                 <button
                   disabled={!hasDoc}
                   onClick={() => {

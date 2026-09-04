@@ -94,6 +94,11 @@ export interface RibbonProps {
   /** Open the paragraph dialog (line-spacing rule / exact value entry lives there) */
   onParagraphDialog?: () => void
   onOpen: () => void
+  /** 文件菜单「新建」(blank template; App 的 newFileImpl) */
+  onNewFile?: () => void
+  /** 文件菜单「最近文件」路径列表 (desktop.getRecentFiles; absent = 隐藏) */
+  recentFiles?: string[]
+  onOpenRecent?: (path: string) => void
   onSave: () => void
   onSaveAs: () => void
   /** 文件菜单「导出为 PDF」（对齐 slides 文件菜单） */
@@ -358,6 +363,9 @@ function RibbonInner({
   styles,
   docDefaults,
   onOpen,
+  onNewFile,
+  recentFiles,
+  onOpenRecent,
   onSave,
   onSaveAs,
   onExportPdf,
@@ -1697,6 +1705,33 @@ function RibbonInner({
                     {t('ribbonOpen')}{' '}
                     <span className="file-menu-key">{IS_MAC ? '⌘O' : 'Ctrl+O'}</span>
                   </button>
+                  {onNewFile && (
+                    <button
+                      onClick={() => {
+                        setDropdown(null)
+                        onNewFile()
+                      }}
+                    >
+                      {t('ribbonFileNew')}
+                    </button>
+                  )}
+                  {onOpenRecent && (recentFiles?.length ?? 0) > 0 && (
+                    <>
+                      <div className="file-menu-sec">{t('ribbonFileRecent')}</div>
+                      {recentFiles!.slice(0, 6).map((p) => (
+                        <button
+                          key={p}
+                          title={p}
+                          onClick={() => {
+                            setDropdown(null)
+                            onOpenRecent(p)
+                          }}
+                        >
+                          <span className="file-menu-recent">{p.split(/[\\/]/).pop()}</span>
+                        </button>
+                      ))}
+                    </>
+                  )}
                   <button
                     disabled={!hasDoc}
                     onClick={() => {

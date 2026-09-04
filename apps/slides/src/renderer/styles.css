@@ -9569,3 +9569,22 @@ body.show-curtain::after {
 .stage-rel.tp-conveyor {
   animation: tr-conveyor var(--ss-dur, 0.7s) ease-out both;
 }
+
+/* 文件菜单: 最近文件区标题与路径行 (slides 同款) */
+.file-menu-sec {
+  padding: 6px 12px 3px;
+  font-size: 11px;
+  color: var(--text-2, var(--text));
+  opacity: 0.75;
+  user-select: none;
+}
+
+.file-menu-recent {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+  display: inline-block;
+  direction: rtl;
+  text-align: left;
+}
