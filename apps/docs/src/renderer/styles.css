@@ -461,17 +461,19 @@ html.chatoffice-popover-open .ribbon-tabs {
   background: var(--word-blue);
 }
 
+/* 文件按钮与其他标签统一（WPS 形态: 透明底/同 hover, 去品牌色胶囊） */
 .ribbon-tab-file {
-  color: var(--docs-on-accent);
-  background: var(--word-blue);
-  border-radius: 4px;
-  padding: 6px 16px;
-  margin-right: 6px;
+  color: inherit;
+  background: transparent;
+  border-radius: 4px 4px 0 0;
+  padding: 7px 9px 6px;
+  margin-right: 2px;
+  border-bottom: 2.5px solid transparent;
 }
 
 .ribbon-tab-file:hover,
 .ribbon-tab-file.open {
-  background: var(--word-blue-dark);
+  background: var(--hover);
 }
 
 .file-tab-wrap {
@@ -10374,4 +10376,37 @@ tr > .page-gap-cut {
   display: inline-block;
   direction: rtl;
   text-align: left;
+}
+
+/* ── 功能区折叠（WPS 双击标签/右下角图标） ── */
+.ribbon {
+  position: relative;
+}
+
+.ribbon-collapse-btn {
+  position: absolute;
+  right: 6px;
+  bottom: 2px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 16px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-2, var(--text));
+  cursor: pointer;
+}
+
+.ribbon-collapse-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+/* 折叠态: 功能区只剩标签行, chevron 左移避开右端 AI 开关 */
+.ribbon-collapsed .ribbon-collapse-btn {
+  right: 46px;
+  bottom: 3px;
 }

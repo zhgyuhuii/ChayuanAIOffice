@@ -385,6 +385,21 @@ export function ExcelShell({
 }: ExcelShellProps): React.JSX.Element {
   const { t } = useI18n()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
+  // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('sheets-ribbon-collapsed') === '1'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('sheets-ribbon-collapsed', collapsed ? '1' : '0')
+    } catch {
+      /* degraded */
+    }
+  }, [collapsed])
   // 文件下拉（WPS ☰ 文件）: open state + outside-press dismissal
   const [fileOpen, setFileOpen] = useState(false)
   const fileMenuRef = useRef<HTMLDivElement>(null)
@@ -538,7 +553,7 @@ export function ExcelShell({
         )}
       >
         <div className="editor-col">
-          <header className="excel-header">
+          <header className={`excel-header${collapsed ? ' collapsed' : ''}`}>
             <nav
               className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
               aria-label="Workbook commands"
@@ -664,6 +679,7 @@ export function ExcelShell({
                   className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' ? 'contextual' : ''}`}
                   key={tab}
                   onClick={() => setActiveTab(tab)}
+                  onDoubleClick={() => setCollapsed((v) => !v)}
                 >
                   {t(TAB_LABEL[tab])}
                 </button>
@@ -679,61 +695,83 @@ export function ExcelShell({
               />
             </nav>
 
-            <Ribbon
-              activeTab={activeTab}
-              selectionFormat={selectionFormat}
-              sheetHasContent={sheetHasContent}
-              sheetProtected={onGetSheetProtection()}
-              workbookProtected={onGetWorkbookProtection()}
-              formulaBarVisible={formulaBarVisible}
-              crossHighlightVisible={crossHighlightVisible}
-              pageLayout={pageLayout}
-              selectedChart={selectedChart}
-              onListNames={() => {
-                // Names scoped to another sheet resolve to #NAME? here; only
-                // workbook-scoped and active-sheet names are usable in a formula.
-                const data = onGetDefinedNames()
-                return data.names
-                  .filter(
-                    (entry) =>
-                      entry.scopeSheetId === null || entry.scopeSheetId === data.activeSheetId,
-                  )
-                  .map((entry) => entry.name)
-              }}
-              calcManual={calcManual}
-              onRefreshPivot={onRefreshPivot}
-              onIsSelectionInPivot={onIsSelectionInPivot}
-              onCommand={(command) => {
-                if (command === 'format-cells') setShowFormatCells(true)
-                else if (command === 'row-height-open') setAxisSizeTarget('row')
-                else if (command === 'col-width-open') setAxisSizeTarget('col')
-                else if (command === 'link-open') setShowLinkDialog(true)
-                else if (command === 'sort-custom-open') setShowSortDialog(true)
-                else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
-                else if (command === 'name-manager-open') setShowNameManager(true)
-                else if (command === 'pivot-open') setShowPivotDialog(true)
-                else if (command === 'pivot-edit') setPivotEditSeed(onGetPivotEditSeed())
-                else if (command === 'insert-function-open') setInsertFunctionCat('All')
-                else if (command.startsWith('insert-function-open:'))
-                  setInsertFunctionCat(command.slice('insert-function-open:'.length))
-                else if (command === 'goal-seek-open') setShowGoalSeek(true)
-                else if (command === 'subtotal-open') setShowSubtotalDialog(true)
-                else if (command === 'consolidate-open') setShowConsolidateDialog(true)
-                else if (command === 'goto-open') setShowGoTo(true)
-                else if (command === 'header-footer-open') setShowHeaderFooter(true)
-                else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
-                else if (command === 'ai-open-panel') setIsCopilotOpen(true)
-                else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
-                else if (command === 'chart-element-title') setChartTextTarget('title')
-                else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
-                else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
-                else onCommand(command)
-              }}
-              onAiRun={(nextPrompt) => {
-                setIsCopilotOpen(true)
-                onSend(nextPrompt)
-              }}
-            />
+            {/* WPS 功能区右下角展开/折叠图标 */}
+            <button
+              type="button"
+              className="ribbon-collapse-btn"
+              aria-label={collapsed ? t('appRibbonExpandTip') : t('appRibbonCollapseTip')}
+              data-tip={collapsed ? t('appRibbonExpandTip') : t('appRibbonCollapseTip')}
+              onClick={() => setCollapsed((v) => !v)}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d={collapsed ? 'M5.5 14.75 12 8.25l6.5 6.5' : 'M5.5 9.25 12 15.75l6.5-6.5'}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            <div style={collapsed ? { display: 'none' } : undefined}>
+              <Ribbon
+                activeTab={activeTab}
+                selectionFormat={selectionFormat}
+                sheetHasContent={sheetHasContent}
+                sheetProtected={onGetSheetProtection()}
+                workbookProtected={onGetWorkbookProtection()}
+                formulaBarVisible={formulaBarVisible}
+                crossHighlightVisible={crossHighlightVisible}
+                pageLayout={pageLayout}
+                selectedChart={selectedChart}
+                onListNames={() => {
+                  // Names scoped to another sheet resolve to #NAME? here; only
+                  // workbook-scoped and active-sheet names are usable in a formula.
+                  const data = onGetDefinedNames()
+                  return data.names
+                    .filter(
+                      (entry) =>
+                        entry.scopeSheetId === null || entry.scopeSheetId === data.activeSheetId,
+                    )
+                    .map((entry) => entry.name)
+                }}
+                calcManual={calcManual}
+                onRefreshPivot={onRefreshPivot}
+                onIsSelectionInPivot={onIsSelectionInPivot}
+                onCommand={(command) => {
+                  if (command === 'format-cells') setShowFormatCells(true)
+                  else if (command === 'row-height-open') setAxisSizeTarget('row')
+                  else if (command === 'col-width-open') setAxisSizeTarget('col')
+                  else if (command === 'link-open') setShowLinkDialog(true)
+                  else if (command === 'sort-custom-open') setShowSortDialog(true)
+                  else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
+                  else if (command === 'name-manager-open') setShowNameManager(true)
+                  else if (command === 'pivot-open') setShowPivotDialog(true)
+                  else if (command === 'pivot-edit') setPivotEditSeed(onGetPivotEditSeed())
+                  else if (command === 'insert-function-open') setInsertFunctionCat('All')
+                  else if (command.startsWith('insert-function-open:'))
+                    setInsertFunctionCat(command.slice('insert-function-open:'.length))
+                  else if (command === 'goal-seek-open') setShowGoalSeek(true)
+                  else if (command === 'subtotal-open') setShowSubtotalDialog(true)
+                  else if (command === 'consolidate-open') setShowConsolidateDialog(true)
+                  else if (command === 'goto-open') setShowGoTo(true)
+                  else if (command === 'header-footer-open') setShowHeaderFooter(true)
+                  else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
+                  else if (command === 'ai-open-panel') setIsCopilotOpen(true)
+                  else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
+                  else if (command === 'chart-element-title') setChartTextTarget('title')
+                  else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
+                  else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
+                  else onCommand(command)
+                }}
+                onAiRun={(nextPrompt) => {
+                  setIsCopilotOpen(true)
+                  onSend(nextPrompt)
+                }}
+              />
+            </div>
           </header>
 
           <div className="sheet-main">

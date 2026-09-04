@@ -1798,6 +1798,21 @@ export function Ribbon({
 
   const [tab, setTab] = useState<MainTab | ContextTab>('home')
   const [fileOpen, setFileOpen] = useState(false)
+  // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('slides-ribbon-collapsed') === '1'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('slides-ribbon-collapsed', collapsed ? '1' : '0')
+    } catch {
+      /* degraded */
+    }
+  }, [collapsed])
   // 最近文件: 拉取于菜单打开时(避免每次渲染请求)
   const [recents, setRecents] = useState<string[]>([])
   useEffect(() => {
@@ -2249,7 +2264,7 @@ export function Ribbon({
   }
 
   return (
-    <div className="ribbon">
+    <div className={`ribbon${collapsed ? ' ribbon-collapsed' : ''}`}>
       <div
         className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}${
           anyPanelOpen ? ' ribbon-tabs-nodrag' : ''
@@ -2410,6 +2425,7 @@ export function Ribbon({
               setTab(tb)
               setFileOpen(false)
             }}
+            onDoubleClick={() => setCollapsed((v) => !v)}
           >
             {t(TAB_LABEL[tb])}
           </button>
@@ -2434,7 +2450,31 @@ export function Ribbon({
         )}
       </div>
 
-      <div className="ribbon-body" ref={bodyRef}>
+      {/* WPS 功能区右下角展开/折叠图标 */}
+      <button
+        type="button"
+        className="ribbon-collapse-btn"
+        aria-label={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+        data-tip={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+        onClick={() => setCollapsed((v) => !v)}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d={collapsed ? 'M5.5 14.75 12 8.25l6.5 6.5' : 'M5.5 9.25 12 15.75l6.5-6.5'}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      <div
+        className="ribbon-body"
+        ref={bodyRef}
+        style={collapsed ? { display: 'none' } : undefined}
+      >
         {tab === 'home' ? (
           <RibbonHomeTab rb={tabCtx} />
         ) : tab === 'insert' ? (

@@ -8,6 +8,8 @@ export const ribbonStrings = defineStrings({
       '此操作将调用 AI：会消耗额度，并可能改写整篇内容。是否继续？（确认后不再提示）',
     // tabs
     ribbonTabFile: '文件',
+    ribbonCollapseTip: '折叠功能区',
+    ribbonExpandTip: '展开功能区',
     ribbonFileRecent: '最近文件',
     ribbonFileNew: '新建',
     ribbonTabHome: '开始',
@@ -840,6 +842,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'This action calls the AI assistant: it consumes credits and may rewrite the entire content. Continue? (You will not be asked again.)',
     ribbonTabFile: 'File',
+    ribbonCollapseTip: 'Collapse the ribbon',
+    ribbonExpandTip: 'Expand the ribbon',
     ribbonFileRecent: 'Recent Files',
     ribbonFileNew: 'New',
     ribbonTabHome: 'Home',
@@ -1672,6 +1676,8 @@ export const ribbonStrings = defineStrings({
       'この操作は AI を呼び出します。クレジットを消費し、内容全体が書き換えられる可能性があります。続行しますか？（確認後は再表示されません）',
     // tabs
     ribbonTabFile: 'ファイル',
+    ribbonCollapseTip: 'リボンを折りたたむ',
+    ribbonExpandTip: 'リボンを展開',
     ribbonFileRecent: '最近使ったファイル',
     ribbonFileNew: '新規作成',
     ribbonTabHome: 'ホーム',
@@ -2528,6 +2534,8 @@ export const ribbonStrings = defineStrings({
       '이 작업은 AI를 호출합니다. 크레딧이 소모되며 전체 내용이 다시 작성될 수 있습니다. 계속하시겠습니까? (확인 후 다시 묻지 않습니다)',
     // tabs
     ribbonTabFile: '파일',
+    ribbonCollapseTip: '리본 접기',
+    ribbonExpandTip: '리본 펼치기',
     ribbonFileRecent: '최근 파일',
     ribbonFileNew: '새로 만들기',
     ribbonTabHome: '홈',
@@ -3375,6 +3383,8 @@ export const ribbonStrings = defineStrings({
       "Cette action fait appel à l'IA : elle consomme des crédits et peut réécrire tout le contenu. Continuer ? (Vous ne serez plus averti.)",
     // tabs
     ribbonTabFile: 'Fichier',
+    ribbonCollapseTip: 'Réduire le ruban',
+    ribbonExpandTip: 'Développer le ruban',
     ribbonFileRecent: 'Fichiers récents',
     ribbonFileNew: 'Nouveau',
     ribbonTabHome: 'Accueil',
@@ -4236,6 +4246,8 @@ export const ribbonStrings = defineStrings({
       'Diese Aktion ruft die KI auf: Sie verbraucht Guthaben und kann den gesamten Inhalt umschreiben. Fortfahren? (Sie werden nicht erneut gefragt.)',
     // tabs
     ribbonTabFile: 'Datei',
+    ribbonCollapseTip: 'Menüband einklappen',
+    ribbonExpandTip: 'Menüband ausklappen',
     ribbonFileRecent: 'Zuletzt verwendet',
     ribbonFileNew: 'Neu',
     ribbonTabHome: 'Start',
@@ -5088,6 +5100,8 @@ export const ribbonStrings = defineStrings({
       'Esta acción llama a la IA: consume créditos y puede reescribir todo el contenido. ¿Continuar? (No se volverá a preguntar.)',
     // tabs
     ribbonTabFile: 'Archivo',
+    ribbonCollapseTip: 'Contraer la cinta',
+    ribbonExpandTip: 'Expandir la cinta',
     ribbonFileRecent: 'Archivos recientes',
     ribbonFileNew: 'Nuevo',
     ribbonTabHome: 'Inicio',
@@ -5947,6 +5961,8 @@ export const ribbonStrings = defineStrings({
       'การดำเนินการนี้จะเรียกใช้ AI: ใช้เครดิตและอาจเขียนเนื้อหาทั้งหมดใหม่ ดำเนินการต่อหรือไม่ (จะไม่ถามอีก)',
     // tabs
     ribbonTabFile: 'ไฟล์',
+    ribbonCollapseTip: 'ยุบริบบิ้น',
+    ribbonExpandTip: 'ขยายริบบิ้น',
     ribbonFileRecent: 'ไฟล์ล่าสุด',
     ribbonFileNew: 'สร้างใหม่',
     ribbonTabHome: 'หน้าแรก',
@@ -6774,6 +6790,8 @@ export const ribbonStrings = defineStrings({
       'Tindakan ini memanggil AI: menghabiskan kredit dan dapat menulis ulang seluruh konten. Lanjutkan? (Tidak akan ditanya lagi.)',
     // tabs
     ribbonTabFile: 'File',
+    ribbonCollapseTip: 'Ciutkan pita',
+    ribbonExpandTip: 'Perluas pita',
     ribbonFileRecent: 'Berkas Terbaru',
     ribbonFileNew: 'Baru',
     ribbonTabHome: 'Beranda',
@@ -7618,6 +7636,8 @@ export const ribbonStrings = defineStrings({
       'Это действие вызывает ИИ: расходуются кредиты, и всё содержимое может быть переписано. Продолжить? (Вопрос больше не появится.)',
     // tabs
     ribbonTabFile: 'Файл',
+    ribbonCollapseTip: 'Свернуть ленту',
+    ribbonExpandTip: 'Развернуть ленту',
     ribbonFileRecent: 'Недавние файлы',
     ribbonFileNew: 'Создать',
     ribbonTabHome: 'Главная',
@@ -8461,6 +8481,8 @@ export const ribbonStrings = defineStrings({
       'هذا الإجراء يستدعي الذكاء الاصطناعي: يستهلك الرصيد وقد يعيد كتابة المحتوى بالكامل. هل تريد المتابعة؟ (لن يتم السؤال مرة أخرى.)',
     // tabs
     ribbonTabFile: 'ملف',
+    ribbonCollapseTip: 'طي الشريط',
+    ribbonExpandTip: 'توسيع الشريط',
     ribbonFileRecent: 'الملفات الأخيرة',
     ribbonFileNew: 'جديد',
     ribbonTabHome: 'الصفحة الرئيسية',
@@ -9289,6 +9311,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'Esta ação chama a IA: consome créditos e pode reescrever todo o conteúdo. Continuar? (Não será perguntado novamente.)',
     ribbonTabFile: 'Arquivo',
+    ribbonCollapseTip: 'Recolher a faixa',
+    ribbonExpandTip: 'Expandir a faixa',
     ribbonFileRecent: 'Arquivos Recentes',
     ribbonFileNew: 'Novo',
     ribbonTabHome: 'Página Inicial',
@@ -10136,6 +10160,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       "Questa azione richiama l'IA: consuma crediti e può riscrivere l'intero contenuto. Continuare? (Non verrà più chiesto.)",
     ribbonTabFile: 'File',
+    ribbonCollapseTip: 'Comprimi la barra',
+    ribbonExpandTip: 'Espandi la barra',
     ribbonFileRecent: 'File recenti',
     ribbonFileNew: 'Nuovo',
     ribbonTabHome: 'Home',
@@ -10991,6 +11017,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'Ta akcja wywołuje AI: zużywa kredyty i może przepisać całą treść. Kontynuować? (Nie zapytamy ponownie.)',
     ribbonTabFile: 'Plik',
+    ribbonCollapseTip: 'Zwiń wstążkę',
+    ribbonExpandTip: 'Rozwiń wstążkę',
     ribbonFileRecent: 'Ostatnie pliki',
     ribbonFileNew: 'Nowy',
     ribbonTabHome: 'Narzędzia główne',
@@ -11836,6 +11864,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'Deze actie roept AI aan: het verbruikt tegoed en kan de volledige inhoud herschrijven. Doorgaan? (U wordt niet opnieuw gevraagd.)',
     ribbonTabFile: 'Bestand',
+    ribbonCollapseTip: 'Lint samenvouwen',
+    ribbonExpandTip: 'Lint uitvouwen',
     ribbonFileRecent: 'Recente bestanden',
     ribbonFileNew: 'Nieuw',
     ribbonTabHome: 'Start',
@@ -12689,6 +12719,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'Tindakan ini memanggil AI: menggunakan kredit dan mungkin menulis semula keseluruhan kandungan. Teruskan? (Tidak akan ditanya lagi.)',
     ribbonTabFile: 'Fail',
+    ribbonCollapseTip: 'Kuncupkan reben',
+    ribbonExpandTip: 'Kembangkan reben',
     ribbonFileRecent: 'Fail Terkini',
     ribbonFileNew: 'Baharu',
     ribbonTabHome: 'Laman Utama',
@@ -13537,6 +13569,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'פעולה זו מפעילה AI: היא צורכת קרדיטים ועשויה לשכתב את כל התוכן. להמשיך? (לא תישאל שוב.)',
     ribbonTabFile: 'קובץ',
+    ribbonCollapseTip: 'כווץ את הרצועה',
+    ribbonExpandTip: 'הרחב את הרצועה',
     ribbonFileRecent: 'קבצים אחרונים',
     ribbonFileNew: 'חדש',
     ribbonTabHome: 'בית',
@@ -14356,6 +14390,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       'यह क्रिया AI को कॉल करती है: इसमें क्रेडिट खर्च होते हैं और पूरी सामग्री फिर से लिखी जा सकती है। जारी रखें? (दोबारा नहीं पूछा जाएगा।)',
     ribbonTabFile: 'फ़ाइल',
+    ribbonCollapseTip: 'रिबन सिकोड़ें',
+    ribbonExpandTip: 'रिबन विस्तारित करें',
     ribbonFileRecent: 'हाल की फ़ाइलें',
     ribbonFileNew: 'नई',
     ribbonTabHome: 'होम',
@@ -15196,6 +15232,8 @@ export const ribbonStrings = defineStrings({
     ribbonAiRewriteConfirm:
       '此操作將呼叫 AI：會消耗額度，並可能改寫整篇內容。是否繼續？（確認後不再提示）',
     ribbonTabFile: '檔案',
+    ribbonCollapseTip: '摺疊功能區',
+    ribbonExpandTip: '展開功能區',
     ribbonFileRecent: '最近檔案',
     ribbonFileNew: '新建',
     ribbonTabHome: '常用',

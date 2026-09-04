@@ -453,6 +453,21 @@ function RibbonInner({
 }: RibbonProps) {
   const { t, lang } = useI18n()
   const [tab, setTab] = useState<RibbonTab>('home')
+  // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('docs-ribbon-collapsed') === '1'
+    } catch {
+      return false
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem('docs-ribbon-collapsed', collapsed ? '1' : '0')
+    } catch {
+      /* degraded */
+    }
+  }, [collapsed])
   const [dropdown, setDropdown] = useState<string | null>(null)
   const [penColor, setPenColor] = useState('C00000')
   const [penHighlight, setPenHighlight] = useState('yellow')
@@ -1680,7 +1695,7 @@ function RibbonInner({
   )
 
   return (
-    <div className="ribbon">
+    <div className={`ribbon${collapsed && !bodyOnly ? ' ribbon-collapsed' : ''}`}>
       {!bodyOnly && (
         <div
           className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
@@ -1789,6 +1804,7 @@ function RibbonInner({
                 setTab(tabName)
                 setDropdown(null)
               }}
+              onDoubleClick={() => setCollapsed((v) => !v)}
             >
               {t(TAB_LABEL_KEYS[tabName])}
             </button>
@@ -1838,7 +1854,29 @@ function RibbonInner({
         </div>
       )}
 
-      <div className="ribbon-body">
+      {/* WPS 功能区右下角展开/折叠图标 */}
+      {!bodyOnly && (
+        <button
+          type="button"
+          className="ribbon-collapse-btn"
+          aria-label={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+          data-tip={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+          onClick={() => setCollapsed((v) => !v)}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d={collapsed ? 'M5.5 14.75 12 8.25l6.5 6.5' : 'M5.5 9.25 12 15.75l6.5-6.5'}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+
+      <div className="ribbon-body" style={collapsed && !bodyOnly ? { display: 'none' } : undefined}>
         {tab === 'shapeFormat' && inShape ? (
           <ShapeFormatTab
             fs={fs}
