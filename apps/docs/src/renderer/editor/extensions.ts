@@ -3135,6 +3135,7 @@ function protectedDomSpec(node: PmNode): DomSpec {
         dy = rect.t * H
       }
       imgAttrs['style'] =
+        `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}` +
         `position:absolute;left:${dx.toFixed(1)}px;top:${dy.toFixed(1)}px;` +
         `width:${sw.toFixed(1)}px;height:${sh.toFixed(1)}px;max-width:none`
       // rot/flip turn the whole crop window, not the source inside it
