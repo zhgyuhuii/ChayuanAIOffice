@@ -49,6 +49,10 @@ export interface ImagePatch {
   lum?: { bright: number; contrast: number } | null
   /** whole-picture opacity 0..1; null/1 removes the marker; undefined keeps */
   opacity?: number | null
+  /** crop-to-shape preset; null/'rect' restores the rectangle; undefined keeps */
+  geom?: string | null
+  /** outer shadow; null removes the effect; undefined keeps */
+  shadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
 }
 
 /**
@@ -166,6 +170,46 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
           const at = blipClose.index + blipClose[0].length
           out = out.slice(0, at) + el + out.slice(at)
         }
+      }
+    }
+  }
+  if (patch.geom !== undefined) {
+    // crop-to-shape: rewrite the pic spPr's prstGeom preset in place
+    const target = patch.geom && patch.geom !== 'rect' ? patch.geom : 'rect'
+    const existing = /(<pic:spPr[^>]*>[\s\S]*?)<a:prstGeom\b[^>]*\bprst="([^"]+)"/.exec(out)
+    if (existing) {
+      out =
+        out.slice(0, existing.index) +
+        existing[1] +
+        existing[0].slice(existing[1].length).replace(/prst="([^"]+)"/, `prst="${target}"`) +
+        out.slice(existing.index + existing[0].length)
+    } else {
+      // no geometry yet: insert the default-shape prstGeom after the xfrm
+      const xfrmClose = /<pic:spPr[^>]*>[\s\S]*?<\/a:xfrm>/.exec(out)
+      if (xfrmClose) {
+        const at = xfrmClose.index + xfrmClose[0].length
+        out =
+          out.slice(0, at) + `<a:prstGeom prst="${target}"><a:avLst/></a:prstGeom>` + out.slice(at)
+      }
+    }
+  }
+  if (patch.shadow !== undefined) {
+    // a:effectLst/a:outerShdw on the pic spPr — replace our previous effect
+    const strip = /<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*\/>\s*<\/a:effectLst>|<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>\s*<\/a:effectLst>/
+    out = out.replace(strip, '')
+    out = out.replace(/<a:outerShdw\b[^>]*\/>|<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>/, '')
+    if (patch.shadow) {
+      const sh = patch.shadow
+      const el =
+        `<a:effectLst><a:outerShdw blurRad="${Math.round(sh.blurPt * 12700)}" distRad="${Math.round(sh.distPt * 12700)}" dir="${Math.round(sh.dirDeg * 60000)}" sx="0" sy="0">` +
+        `<a:srgbClr val="${sh.color.replace('#', '').toUpperCase()}"><a:alpha val="${Math.round(sh.alpha * 100000)}"/></a:srgbClr></a:outerShdw></a:effectLst>`
+      // spPr child order: geometry, ln, effectLst — insert after ln or geometry
+      const anchor = /<a:prstGeom\b[^>]*>(?:<a:avLst\s*\/>|<a:avLst\s*\/>[\s\S]*?<\/a:avLst>)<\/a:prstGeom>|<a:prstGeom\b[^>]*\/>|<\/a:custGeom>|<a:ln\b[^>]*>(?:[\s\S]*?)<\/a:ln>|<a:ln\b[^>]*\/>/.exec(
+        out.slice(out.indexOf('<pic:spPr')),
+      )
+      if (anchor) {
+        const at = out.indexOf('<pic:spPr') + anchor.index + anchor[0].length
+        out = out.slice(0, at) + el + out.slice(at)
       }
     }
   }

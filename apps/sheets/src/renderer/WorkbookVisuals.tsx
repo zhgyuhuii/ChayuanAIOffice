@@ -1667,6 +1667,41 @@ export function lumCssFilter(lum: WorkbookVisualObject['lum']): string {
   return parts.join(' ')
 }
 
+/// Crop-to-shape (a:prstGeom) → CSS clip on the picture frame.
+export function geomClipCss(prst: string | null | undefined): {
+  borderRadius?: string
+  clipPath?: string
+} {
+  if (!prst || prst === 'rect') return {}
+  if (prst === 'ellipse') return { borderRadius: '50%' }
+  if (prst === 'roundRect') return { borderRadius: '12%' }
+  const polygons: Record<string, string> = {
+    triangle: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+    diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+    pentagon: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+    hexagon: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+    star5:
+      'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+  }
+  const polygon = polygons[prst]
+  return polygon ? { clipPath: polygon } : {}
+}
+
+/// Outer shadow (a:outerShdw) → CSS box-shadow on the picture frame.
+export function shadowCss(shadow: WorkbookVisualObject['shadow']): React.CSSProperties {
+  if (!shadow) return {}
+  const rad = (shadow.dirDeg * Math.PI) / 180
+  const dx = (Math.cos(rad) * shadow.distPt * 96) / 72
+  const dy = (Math.sin(rad) * shadow.distPt * 96) / 72
+  const blur = (shadow.blurPt * 96) / 72
+  const alphaHex = Math.round(shadow.alpha * 255)
+    .toString(16)
+    .padStart(2, '0')
+  return {
+    boxShadow: `${dx.toFixed(1)}px ${dy.toFixed(1)}px ${blur.toFixed(1)}px #${shadow.color}${alphaHex}`,
+  }
+}
+
 /// One blipFill/a:srcRect side (1/100000) as a fraction of the original.
 const cropFraction = (value: number): number => Math.min(0.99, Math.max(0, value / 100_000))
 
@@ -1715,6 +1750,8 @@ function ImageVisual({
   const frameStyle: React.CSSProperties = {
     ...(visual.opacity !== undefined && visual.opacity < 1 ? { opacity: visual.opacity } : {}),
     ...(border ? { border, boxSizing: 'border-box' } : {}),
+    ...geomClipCss(visual.shapeType),
+    ...shadowCss(visual.shadow),
   }
   // Crop: an oversized image inside an overflow-hidden viewport — the
   // visible fractions map the srcRect trims onto the frame box.

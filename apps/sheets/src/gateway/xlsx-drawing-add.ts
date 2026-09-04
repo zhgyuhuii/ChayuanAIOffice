@@ -85,6 +85,8 @@ export interface ImageAdd {
   /// True (unrotated) frame in EMU — written into a:xfrm ext for rotated pics.
   readonly frameWidth?: number | undefined
   readonly frameHeight?: number | undefined
+  /// Crop-to-shape preset (a:prstGeom prst).
+  readonly geom?: string | undefined
 }
 
 export interface VisualAddition {
@@ -324,6 +326,7 @@ function pictureXml(shapeId: number, imageRelId: string, image: ImageAdd | undef
     '</xdr:pic>'
   if (!image) return base
   return applyPictureFormat(base, {
+    geom: image.geom ?? undefined,
     srcRect: image.srcRect ?? undefined,
     lum: image.lum ?? undefined,
     rotation: image.rotation ?? undefined,

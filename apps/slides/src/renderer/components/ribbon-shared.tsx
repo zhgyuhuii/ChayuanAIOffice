@@ -241,6 +241,7 @@ export type RibbonPanelKey =
   | 'layoutPick'
   | 'slideSize'
   | 'transparency'
+  | 'compress'
   | 'pictureBorder'
   | 'changeShape'
   | 'shapeStyle'
@@ -607,6 +608,8 @@ export interface Props {
   onPictureLum?: (lum: { bright: number; contrast: number } | null) => void
   /** 更改图片: pick a local file and swap the selected picture's bytes */
   onPictureChange?: () => void
+  /** 压缩图片: re-encode the selected picture's bytes at the preset ppi */
+  onPictureCompress?: (ppi: number) => void
   /** Picture: enter cutout (background removal) mode */
   onPictureCutout?: () => void
   /** Selected picture's current border (null = none) */

@@ -833,6 +833,15 @@ export function updateVisualAdd(
     }
     set('srcRect', picture.srcRect)
     set('lum', picture.lum)
+    // crop-to-shape rides the shared shapeType field for session images
+    if (picture.geom !== undefined) {
+      if (picture.geom === null || picture.geom === 'rect') delete next.shapeType
+      else next = { ...next, shapeType: picture.geom }
+    }
+    if (picture.shadow !== undefined) {
+      if (picture.shadow === null) delete next.shadow
+      else next = { ...next, shadow: picture.shadow }
+    }
     set('rotation', picture.rotation)
     set('flipH', picture.flipH)
     set('flipV', picture.flipV)
@@ -910,6 +919,8 @@ export function toSaveVisualAdds(journal: EditJournal): WorkbookVisualAdd[] {
                 frameHeight: Math.round(visual.frameHeight),
               }
             : {}),
+          ...(visual.shapeType && visual.shapeType !== 'rect' ? { geom: visual.shapeType } : {}),
+          ...(visual.shadow === undefined ? {} : { shadow: visual.shadow }),
         },
       })
       continue

@@ -6206,6 +6206,8 @@ type ImageMeta = Pick<
   | 'imageCrop'
   | 'imageLum'
   | 'imageOpacity'
+  | 'imageGeom'
+  | 'imageShadow'
   | 'imageFillRect'
   | 'imageBorder'
 > & {
@@ -6330,6 +6332,30 @@ function imageMeta(xml: string): ImageMeta {
   if (alphaFix) {
     const opacity = Number(alphaFix[1]) / 100000
     if (opacity < 0.999) meta.imageOpacity = Math.max(0, Math.min(1, opacity))
+  }
+  // crop-to-shape: the pic's own prstGeom preset (rect is the default shape)
+  const picGeom = /<pic:spPr[^>]*>[\s\S]*?<a:prstGeom\b[^>]*\bprst="([^"]+)"/.exec(xml)?.[1]
+  if (picGeom && picGeom !== 'rect') meta.imageGeom = picGeom
+  // outer shadow on the pic's own effectLst
+  const picSpPrInner = /<pic:spPr[^>]*>([\s\S]*?)<\/pic:spPr>/.exec(xml)?.[1]
+  const picShdw = picSpPrInner
+    ? /<a:outerShdw\b[^>]*\/>|<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>/.exec(picSpPrInner)?.[0]
+    : undefined
+  if (picShdw) {
+    const shdwAttrs = /<a:outerShdw\b([^>]*?)\/>/.exec(picShdw)?.[1] ?? ''
+    const shdwNum = (name: string): number =>
+      parseFloat(new RegExp(`\\b${name}="(-?[\\d.]+)"`).exec(shdwAttrs)?.[1] ?? '')
+    const shdwColor = /<a:srgbClr\b[^>]*\bval="([0-9A-Fa-f]{6})"/.exec(picShdw)?.[1]
+    const shdwAlpha = /<a:alpha\b[^>]*\bval="(\d+)"/.exec(picShdw)?.[1]
+    if (Number.isFinite(shdwNum('blurRad'))) {
+      meta.imageShadow = {
+        blurPt: (shdwNum('blurRad') || 0) / 12700,
+        distPt: (shdwNum('distRad') ?? shdwNum('dist')) / 12700,
+        dirDeg: (shdwNum('dir') || 0) / 60000,
+        color: shdwColor ?? '000000',
+        alpha: shdwAlpha ? Number(shdwAlpha) / 100000 : 1,
+      }
+    }
   }
   const fillRect = /<a:stretch>\s*<a:fillRect\s[^>]*\/>/.exec(xml)?.[0]
   if (fillRect) {

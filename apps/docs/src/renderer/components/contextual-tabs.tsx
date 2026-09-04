@@ -273,6 +273,7 @@ export function PictureFormatTab({
   replacePicture,
   resetPictureSize,
   setPictureSizeCm,
+  compressPicture,
 }: {
   readonly fs: any
   readonly editor: any
@@ -284,6 +285,7 @@ export function PictureFormatTab({
   readonly replacePicture: any
   readonly resetPictureSize: any
   readonly setPictureSizeCm: any
+  readonly compressPicture: any
 }) {
   const { t } = useI18n()
   return (
@@ -383,6 +385,88 @@ export function PictureFormatTab({
               >
                 {t('ribbonPicReset')}
               </button>
+              <Dropdown
+                className="rb-wrap-dd"
+                disabled={!canEdit}
+                tip={t('ribbonCompressPicture')}
+                value=""
+                options={[
+                  { value: '220', label: t('ribbonCompressPrint') },
+                  { value: '150', label: t('ribbonCompressWeb') },
+                  { value: '96', label: t('ribbonCompressEmail') },
+                ]}
+                onPick={(v) => void compressPicture?.(Number(v))}
+              />
+              <div className="rb-geom-dd" data-tip={t('ribbonCropToShape')}>
+                <Dropdown
+                  className="rb-wrap-dd"
+                  disabled={!canEdit}
+                  tip={t('ribbonCropToShape')}
+                  value={fs.imageGeom ?? 'rect'}
+                  options={[
+                    'rect',
+                    'roundRect',
+                    'ellipse',
+                    'triangle',
+                    'diamond',
+                    'pentagon',
+                    'hexagon',
+                    'star5',
+                  ].map((prst) => ({
+                    value: prst,
+                    label:
+                      prst === 'rect'
+                        ? t('ribbonAutomatic')
+                        : prst === 'ellipse'
+                          ? '●'
+                          : prst === 'roundRect'
+                            ? '▢'
+                            : prst === 'triangle'
+                              ? '▲'
+                              : prst === 'diamond'
+                                ? '◆'
+                                : prst === 'pentagon'
+                                  ? '⬟'
+                                  : prst === 'hexagon'
+                                    ? '⬢'
+                                    : '★',
+                  }))}
+                  onPick={(v) => {
+                    if (!canEdit) return
+                    editor
+                      .chain()
+                      .focus()
+                      .updateAttributes('docProtected', { imageGeom: v === 'rect' ? null : v })
+                      .run()
+                  }}
+                />
+              </div>
+              <Dropdown
+                className="rb-wrap-dd"
+                disabled={!canEdit}
+                tip={t('ribbonShadow')}
+                value={fs.imageShadow ? 'custom' : 'none'}
+                options={[
+                  { value: 'none', label: t('ribbonAutomatic') },
+                  { value: 'br', label: t('ribbonShadowOffsetBr') },
+                  { value: 'tr', label: t('ribbonShadowOffsetTr') },
+                  { value: 'soft', label: t('ribbonShadowSoft') },
+                ]}
+                onPick={(v) => {
+                  if (!canEdit) return
+                  const presets: Record<string, { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null> = {
+                    none: null,
+                    br: { blurPt: 8, distPt: 5, dirDeg: 45, color: '000000', alpha: 0.6 },
+                    tr: { blurPt: 8, distPt: 5, dirDeg: 315, color: '000000', alpha: 0.6 },
+                    soft: { blurPt: 12, distPt: 0, dirDeg: 0, color: '000000', alpha: 0.55 },
+                  }
+                  editor
+                    .chain()
+                    .focus()
+                    .updateAttributes('docProtected', { imageShadow: presets[v] ?? null })
+                    .run()
+                }}
+              />
               <Dropdown
                 className="rb-wrap-dd"
                 disabled={!canEdit}

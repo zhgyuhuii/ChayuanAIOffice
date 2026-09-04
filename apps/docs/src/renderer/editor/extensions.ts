@@ -2270,6 +2270,23 @@ export const NativeTableSupport = Extension.create({
 const PERSISTABLE_IMAGE_URL = /^data:image\/(?:png|jpeg|gif);base64,/
 
 /** display attrs a copied picture needs to round-trip through clipboard HTML */
+/** Crop-to-shape (a:prstGeom) as inline CSS on the picture frame span */
+const geomCssInline = (prst: unknown): string => {
+  if (typeof prst !== 'string' || prst === '' || prst === 'rect') return ''
+  if (prst === 'ellipse') return ';border-radius:50%'
+  if (prst === 'roundRect') return ';border-radius:12%'
+  const polygons: Record<string, string> = {
+    triangle: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+    diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+    pentagon: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+    hexagon: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+    star5:
+      'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+  }
+  const polygon = polygons[prst]
+  return polygon ? `;clip-path:${polygon}` : ''
+}
+
 const imageMetaJson = (attrs: Record<string, unknown>): string =>
   JSON.stringify({
     imageWidthPx: attrs.imageWidthPx ?? null,
@@ -2365,6 +2382,12 @@ export const DocProtected = Node.create({
       imageLum: { default: null as { bright: number; contrast: number } | null },
       /** whole-picture opacity (a:alphaModFix 0..1), display-only */
       imageOpacity: { default: null as number | null },
+      /** crop-to-shape preset (a:prstGeom prst), display-only; rect = none */
+      imageGeom: { default: null as string | null },
+      /** outer shadow (a:effectLst/a:outerShdw), display-only */
+      imageShadow: {
+        default: null as { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null,
+      },
       /** fill placement (a:fillRect) fractions (negative = bleed), display-only */
       imageFillRect: { default: null as { l: number; t: number; r: number; b: number } | null },
       imageLeadingText: { default: null as string | null },
@@ -2857,6 +2880,8 @@ function protectedDomSpec(node: PmNode): DomSpec {
       imageRotDeg,
       imageLum,
       imageOpacity,
+      imageGeom,
+      imageShadow,
     } = node.attrs
     // clipboard round-trip payload (r136): parseHTML rebuilds the image from
     // the inner img src plus these display attrs; without it a copied picture
@@ -3031,6 +3056,25 @@ function protectedDomSpec(node: PmNode): DomSpec {
       imgAttrs['style'] =
         `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}filter:${lumFilters.join(' ')}`
     }
+    // crop-to-shape on a plain (uncropped) picture clips the img directly
+    if (geomCssInline(imageGeom)) {
+      imgAttrs['style'] =
+        `${imgAttrs['style'] ? `${imgAttrs['style']};` : ''}${geomCssInline(imageGeom).slice(1)}`
+    }
+    // outer shadow: CSS box-shadow approximation of a:outerShdw (rides the
+    // frame span like Word's box-anchored shadow)
+    const imgShadow = imageShadow as { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
+    let shadowOnWrap: string | null = null
+    if (imgShadow) {
+      const rad = (imgShadow.dirDeg * Math.PI) / 180
+      const dx = (Math.cos(rad) * imgShadow.distPt * 96) / 72
+      const dy = (Math.sin(rad) * imgShadow.distPt * 96) / 72
+      const blur = (imgShadow.blurPt * 96) / 72
+      const alphaHex = Math.round(imgShadow.alpha * 255)
+        .toString(16)
+        .padStart(2, '0')
+      shadowOnWrap = `${dx.toFixed(1)}px ${dy.toFixed(1)}px ${blur.toFixed(1)}px #${imgShadow.color.replace('#', '')}${alphaHex}`
+    }
     // a:alphaModFix — the picture (not its border) goes translucent
     if (imageOpacity != null && Number(imageOpacity) < 1) {
       imgAttrs['style'] =
@@ -3094,7 +3138,7 @@ function protectedDomSpec(node: PmNode): DomSpec {
           'span',
           {
             class: 'doc-img-wrap doc-img-crop',
-            style: `position:${imgFloatPos ? `absolute;${imgFloatPos}` : 'relative'};display:inline-block;width:${W}px;height:${H}px${wrapXf.length ? `;transform:${wrapXf.join(' ')}` : ''}${imgWrapTransform && !imgWrapTransform.startsWith('transform:') ? `;${imgWrapTransform}` : ''}${borderCss ? `;${borderCss}` : ''}`,
+            style: `position:${imgFloatPos ? `absolute;${imgFloatPos}` : 'relative'};display:inline-block;width:${W}px;height:${H}px;overflow:hidden${wrapXf.length ? `;transform:${wrapXf.join(' ')}` : ''}${imgWrapTransform && !imgWrapTransform.startsWith('transform:') ? `;${imgWrapTransform}` : ''}${borderCss ? `;${borderCss}` : ''}${geomCssInline(imageGeom)}${shadowOnWrap ? `;box-shadow:${shadowOnWrap}` : ''}`,
           },
           [
             'span',
@@ -3125,9 +3169,9 @@ function protectedDomSpec(node: PmNode): DomSpec {
         'span',
         {
           class: 'doc-img-wrap',
-          ...(imgFloatPos || imgWrapTransform
+          ...(imgFloatPos || imgWrapTransform || shadowOnWrap
             ? {
-                style: `${imgFloatPos ? `position:absolute;${imgFloatPos};` : ''}display:inline-block${imgWrapTransform ? `;${imgWrapTransform}` : ''}`,
+                style: `${imgFloatPos ? `position:absolute;${imgFloatPos};` : ''}display:inline-block${imgWrapTransform ? `;${imgWrapTransform}` : ''}${shadowOnWrap ? `;box-shadow:${shadowOnWrap}` : ''}`,
               }
             : {}),
         },

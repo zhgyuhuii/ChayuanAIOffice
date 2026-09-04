@@ -18,6 +18,7 @@ import {
   UndoIcon,
 } from './ribbon-icons'
 
+import { compressImageForDisplay } from '@chatoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { PictureCropDialog } from './PictureCropDialog'
@@ -262,6 +263,8 @@ interface ExcelShellProps {
     lineColor?: string | null
     lineWidth?: number | null
     opacity?: number | null
+    geom?: string | null
+    shadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
   }) => void
   readonly onPictureMediaReplace: (media: {
     mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
@@ -792,6 +795,7 @@ export function ExcelShell({
                 onPictureResize={onPictureResize}
                 onPictureDelete={onPictureDelete}
                 onPictureAnchoring={onPictureAnchoring}
+                onPictureGetSource={onPictureGetSource}
                 onListNames={() => {
                   // Names scoped to another sheet resolve to #NAME? here; only
                   // workbook-scoped and active-sheet names are usable in a formula.
@@ -1541,6 +1545,7 @@ function Ribbon({
   onPictureResize,
   onPictureDelete,
   onPictureAnchoring,
+  onPictureGetSource,
   onCommand,
   onAiRun,
   onListNames,
@@ -1568,6 +1573,8 @@ function Ribbon({
     lineColor?: string | null
     lineWidth?: number | null
     opacity?: number | null
+    geom?: string | null
+    shadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
   }) => void
   readonly onPictureMediaReplace: (media: {
     mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
@@ -1578,6 +1585,7 @@ function Ribbon({
   readonly onPictureResize: (widthPx: number, heightPx: number) => void
   readonly onPictureDelete: () => void
   readonly onPictureAnchoring: (editAs: 'twoCell' | 'oneCell' | 'absolute') => void
+  readonly onPictureGetSource: () => Promise<{ mediaType: string; base64: string } | null>
   readonly onCommand: (command: string) => void
   /** Defined names for the Use in Formula menu. */
   readonly onListNames: () => readonly string[]
@@ -1921,6 +1929,26 @@ function Ribbon({
             disabled={!selectedImage.editable}
             onClick={() => onCommand('picture-crop-open')}
           />
+          <div className="ribbon-tool" data-tip={t('appPicCropToShape')}>
+            <MenuSelect
+              cover
+              label={t('appPicCropToShape')}
+              options={[
+                { value: 'rect', label: t('appPicGeomRect') },
+                { value: 'roundRect', label: t('appPicGeomRound') },
+                { value: 'ellipse', label: t('appPicGeomEllipse') },
+                { value: 'triangle', label: t('appPicGeomTriangle') },
+                { value: 'diamond', label: t('appPicGeomDiamond') },
+                { value: 'pentagon', label: t('appPicGeomPentagon') },
+                { value: 'hexagon', label: t('appPicGeomHexagon') },
+                { value: 'star5', label: t('appPicGeomStar') },
+              ]}
+              onPick={(value) => {
+                if (!selectedImage.editable) return
+                onPictureEdit({ geom: value === 'rect' ? null : value })
+              }}
+            />
+          </div>
           <div className="check-column">
             {lumRow(t('appPicBrightness'), 'bright', selectedImage.lum?.bright ?? 0)}
             {lumRow(t('appPicContrast'), 'contrast', selectedImage.lum?.contrast ?? 0)}
@@ -2010,6 +2038,39 @@ function Ribbon({
             onClick={() => onPictureEdit({ flipV: !selectedImage.flipV })}
           />
         </RibbonGroup>
+        <RibbonGroup label={t('appPicShadow')}>
+          <div className="ribbon-tool" data-tip={t('appPicShadow')}>
+            <MenuSelect
+              cover
+              label={t('appPicShadow')}
+              options={[
+                { value: 'none', label: t('appPicOpacityNone') },
+                { value: 'br', label: t('appPicShadowOffsetBr') },
+                { value: 'tr', label: t('appPicShadowOffsetTr') },
+                { value: 'soft', label: t('appPicShadowSoft') },
+              ]}
+              onPick={(value) => {
+                if (!selectedImage.editable) return
+                const presets: Record<
+                  string,
+                  {
+                    blurPt: number
+                    distPt: number
+                    dirDeg: number
+                    color: string
+                    alpha: number
+                  } | null
+                > = {
+                  none: null,
+                  br: { blurPt: 8, distPt: 5, dirDeg: 45, color: '000000', alpha: 0.6 },
+                  tr: { blurPt: 8, distPt: 5, dirDeg: 315, color: '000000', alpha: 0.6 },
+                  soft: { blurPt: 12, distPt: 0, dirDeg: 0, color: '000000', alpha: 0.55 },
+                }
+                onPictureEdit({ shadow: presets[value] ?? null })
+              }}
+            />
+          </div>
+        </RibbonGroup>
         <RibbonGroup label={t('appPicAnchor')}>
           <div className="ribbon-tool" data-tip={t('appPicAnchor')}>
             <MenuSelect
@@ -2025,6 +2086,36 @@ function Ribbon({
           </div>
         </RibbonGroup>
         <RibbonGroup label={t('appPicGroupPicture')}>
+          <div className="ribbon-tool" data-tip={t('appPicCompress')}>
+            <MenuSelect
+              cover
+              label={t('appPicCompress')}
+              options={[
+                { value: '220', label: t('appPicCompressPrint') },
+                { value: '150', label: t('appPicCompressWeb') },
+                { value: '96', label: t('appPicCompressEmail') },
+              ]}
+              onPick={(value) => {
+                if (!selectedImage.editable) return
+                void (async () => {
+                  const src = await onPictureGetSource()
+                  if (!src) return
+                  const compressed = await compressImageForDisplay(
+                    `data:${src.mediaType};base64,${src.base64}`,
+                    selectedImage.widthPx,
+                    selectedImage.heightPx,
+                    Number(value),
+                  )
+                  const head = compressed.split(',')[0] ?? ''
+                  const base64 = compressed.split(',')[1]
+                  const mime = /data:([^;]+)/.exec(head)?.[1]
+                  if (!mime || !base64) return
+                  if (mime !== 'image/png' && mime !== 'image/jpeg' && mime !== 'image/gif') return
+                  onPictureMediaReplace({ mediaType: mime, base64 })
+                })()
+              }}
+            />
+          </div>
           <ChangePictureButton
             disabled={!selectedImage.editable}
             onPick={(mediaType, base64) => onPictureMediaReplace({ mediaType, base64 })}

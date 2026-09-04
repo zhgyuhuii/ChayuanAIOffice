@@ -1001,6 +1001,10 @@ export interface NewImage {
   lum?: { bright: number; contrast: number }
   /** whole-picture opacity (a:alphaModFix amt 0..1); absent = opaque */
   opacity?: number
+  /** crop-to-shape preset (a:prstGeom prst on the pic spPr); absent = rect */
+  geom?: string
+  /** outer shadow; null removes */
+  shadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
 }
 
 export type BlockType =
@@ -1067,6 +1071,10 @@ export interface Block {
   imageLum?: { bright: number; contrast: number }
   /** whole-picture opacity (a:alphaModFix 0..1, display-only) */
   imageOpacity?: number
+  /** picture crop-to-shape: the pic spPr a:prstGeom preset (display-only; rect = none) */
+  imageGeom?: string
+  /** picture outer shadow (a:effectLst/a:outerShdw), display-only */
+  imageShadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number }
   /** fill placement (a:stretch/a:fillRect) as fractions of the shape box; negative = bleed (display-only) */
   imageFillRect?: { l: number; t: number; r: number; b: number }
   /** Preserved whitespace before an inline picture and its paragraph indents (display-only). */

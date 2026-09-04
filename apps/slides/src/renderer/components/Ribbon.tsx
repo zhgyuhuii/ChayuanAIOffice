@@ -1785,6 +1785,7 @@ export function Ribbon({
   onPictureOpacity,
   onPictureLum,
   onPictureChange,
+  onPictureCompress,
   onPictureCutout,
   onEditTableStyle,
   tableStyleFlags,
@@ -1833,6 +1834,7 @@ export function Ribbon({
   const [layoutPickOpen, setLayoutPickOpen] = useState(false)
   const [slideSizeOpen, setSlideSizeOpen] = useState(false)
   const [transparencyOpen, setTransparencyOpen] = useState(false)
+  const [compressOpen, setCompressOpen] = useState(false)
   const [pictureBorderOpen, setPictureBorderOpen] = useState(false)
   const [changeShapeOpen, setChangeShapeOpen] = useState(false)
   const [shapeStyleOpen, setShapeStyleOpen] = useState(false)
@@ -3911,6 +3913,44 @@ export function Ribbon({
                   </span>
                   <span>{t('ribbonPicChange')}</span>
                 </button>
+              )}
+              {contextElementType === 'picture' && onPictureCompress && (
+                <div className="rb-drop-wrap">
+                  <button
+                    className={`rb-big ${compressOpen ? 'active' : ''}`}
+                    onMouseDown={(e) => {
+                      e.stopPropagation()
+                      closeSiblingPanels(e, closePanels, 'compress')
+                    }}
+                    onClick={() => setCompressOpen((v) => !v)}
+                    data-tip={t('ribbonCompressPicture')}
+                  >
+                    <span className="rb-big-icon">
+                      <IconPicture size={BIG} />
+                    </span>
+                    <span>{t('ribbonCompressPicture')}</span>
+                    <RbCaret />
+                  </button>
+                  {compressOpen && (
+                    <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+                      {[
+                        ['220', t('ribbonCompressPrint')],
+                        ['150', t('ribbonCompressWeb')],
+                        ['96', t('ribbonCompressEmail')],
+                      ].map(([value, label]) => (
+                        <button
+                          key={value}
+                          onClick={() => {
+                            setCompressOpen(false)
+                            onPictureCompress(Number(value))
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
             </Group>
             <div className="ribbon-sep" />

@@ -33,7 +33,7 @@ import type {
   ThemeColors,
   ThemeFonts,
 } from '@chatoffice/docx-engine'
-import { Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import { Dropdown, compressImageForDisplay, useDismissablePopover } from '@chatoffice/ui'
 import { applyCase, type CaseMode } from '../editor/case-transform'
 import { setSelectionAlign } from '../editor/direction'
 import { stepParagraphIndent } from '../editor/indent'
@@ -693,6 +693,31 @@ function RibbonInner({
    * keep working. Images not yet saved (genImage) just update their pending payload.
    * Display size keeps the current width; height adapts to the new image's aspect ratio.
    */
+  /** 压缩图片: re-encodes the source bytes; all parametric aspects survive */
+  const applyCompressedPicture = async (ppi: number) => {
+    if (!canEdit || !imageDataUrl) return
+    const attrs = editor.getAttributes('docProtected')
+    if (attrs?.blockType !== 'image') return
+    const w = Number(attrs.imageWidthPx) || 0
+    const h = Number(attrs.imageHeightPx) || 0
+    if (!w || !h) return
+    try {
+      const compressed = await compressImageForDisplay(imageDataUrl, w, h, ppi)
+      if (compressed === imageDataUrl) return
+      const m = /^data:(image\/(?:png|jpeg|gif));base64,(.*)$/s.exec(compressed)
+      if (!m) return
+      const isOriginal = attrs.docxIndex !== null && attrs.docxIndex !== undefined
+      editor.chain().focus().updateAttributes('docProtected', {
+        imageDataUrl: compressed,
+        ...(isOriginal
+          ? { imageReplace: { base64: m[2], mime: m[1] } }
+          : { genImage: { base64: m[2], mime: m[1], widthPx: w, heightPx: h } }),
+      }).run()
+    } catch {
+      /* decode failure: keep the original */
+    }
+  }
+
   /** Non-destructive crop: fractions ride imageCrop; the bytes stay original */
   const applyPictureCrop = (crop: { l: number; t: number; r: number; b: number }) => {
     if (!canEdit) return
@@ -1910,6 +1935,7 @@ function RibbonInner({
             replacePicture={replacePicture}
             resetPictureSize={resetPictureSize}
             setPictureSizeCm={setPictureSizeCm}
+            compressPicture={applyCompressedPicture}
           />
         ) : tab === 'tableDesign' ? (
           <TableDesignTab

@@ -1905,6 +1905,10 @@ function imageFromProtectedAttrs(node: PmNode): NewImage | null {
   if (lum) image.lum = lum
   const opacity = node.attrs?.imageOpacity as NewImage['opacity'] | null
   if (opacity != null && opacity < 0.999) image.opacity = opacity
+  const geom = node.attrs?.imageGeom as NewImage['geom'] | null
+  if (geom && geom !== 'rect') image.geom = geom
+  const imgShadow = (node.attrs?.imageShadow ?? null) as NewImage['shadow']
+  if (imgShadow) image.shadow = imgShadow
   return image
 }
 
@@ -1988,6 +1992,10 @@ interface ImageBlockPatch {
   lum?: { bright: number; contrast: number } | null
   /** whole-picture opacity 0..1; null/1 clears; undefined = keep */
   opacity?: number | null
+  /** crop-to-shape preset; null/'rect' restores the rectangle; undefined = keep */
+  geom?: string | null
+  /** outer shadow; null removes; undefined = keep */
+  shadow?: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
 }
 
 /** size/align/wrap changes on an original image block; null when untouched */
@@ -2041,6 +2049,13 @@ function imagePatchOf(node: PmNode, original: Block): ImageBlockPatch | null {
   const opacity = node.attrs?.imageOpacity != null ? Number(node.attrs.imageOpacity) : null
   const opacityChanged = opacity !== (original.imageOpacity ?? null)
   if (opacityChanged) patch.opacity = opacity !== null && opacity < 0.999 ? opacity : null
+  const geom = (node.attrs?.imageGeom as string | null) ?? null
+  const geomNorm = geom && geom !== 'rect' ? geom : null
+  if (geomNorm !== (original.imageGeom ?? null)) patch.geom = geomNorm
+  const shadow = (node.attrs?.imageShadow ?? null) as ImageBlockPatch['shadow']
+  if (JSON.stringify(shadow) !== JSON.stringify(original.imageShadow ?? null)) {
+    patch.shadow = shadow
+  }
   const posH = (node.attrs?.imagePosH as ImageBlockPatch['posH'] | null) ?? null
   const posV = (node.attrs?.imagePosV as ImageBlockPatch['posV'] | null) ?? null
   if (

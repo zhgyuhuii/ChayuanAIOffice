@@ -96,6 +96,7 @@ import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@chatoffice/ui'
 import { DockShell, type DockLayoutState } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
+import { compressImageForDisplay } from '@chatoffice/ui'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
 import { t, useI18n } from './i18n/locale'
@@ -3243,6 +3244,31 @@ export function App() {
                   lum,
                 })
                 .then((r) => r && applySlide(current, r))
+            }}
+            onPictureCompress={(ppi) => {
+              if (!selectedNode || selectedNode.type !== 'picture') return
+              const pic = selectedNode as PictureRenderNode
+              const source = pic.dataUrl
+              if (!source) return
+              void (async () => {
+                const box = pic.box
+                const compressed = await compressImageForDisplay(
+                  source,
+                  box?.w ?? 0,
+                  box?.h ?? 0,
+                  ppi,
+                )
+                if (compressed === pic.dataUrl) return
+                const m = /^data:image\/(png|jpeg|gif);base64,(.*)$/s.exec(compressed)
+                if (!m) return
+                const r = await window.slidesApi.replacePictureBytes({
+                  slideIndex: current,
+                  sourceId: pic.sourceId,
+                  base64: m[2],
+                  ext: m[1],
+                })
+                if (r && !('error' in r)) applySlide(current, r)
+              })()
             }}
             onPictureChange={() => {
               if (!selectedNode || selectedNode.type !== 'picture') return

@@ -33,6 +33,13 @@ export interface PictureFormatPatch {
   readonly lineWidth?: number | null | undefined
   /// a:blip/a:alphaModFix amt as 0..1.
   readonly opacity?: number | null | undefined
+  /// Crop-to-shape preset (a:prstGeom prst); null/'rect' restores the rectangle.
+  readonly geom?: string | null | undefined
+  /// Outer shadow (a:effectLst/a:outerShdw); null removes.
+  readonly shadow?:
+    | { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number }
+    | null
+    | undefined
 }
 
 /// Rewrites the attributes of an `<a:xfrm>` open tag, keeping everything
@@ -141,6 +148,50 @@ export function applyPictureFormat(picXml: string, format: PictureFormatPatch): 
       if (after) {
         const at = after.index + after[0].length
         xml = xml.slice(0, at) + element + xml.slice(at)
+      }
+    }
+  }
+
+  // a:prstGeom — crop-to-shape; rewrite the preset in place (insert a
+  // default geometry after the xfrm when the pic carries none).
+  if (format.geom !== undefined) {
+    const target = format.geom && format.geom !== 'rect' ? format.geom : 'rect'
+    const existing = /(<xdr:spPr\b[^>]*>[\s\S]*?)<a:prstGeom\b[^>]*\bprst="([^"]+)"/.exec(xml)
+    if (existing) {
+      const head = existing[1] ?? ''
+      xml =
+        xml.slice(0, existing.index) +
+        head +
+        existing[0].slice(head.length).replace(/prst="([^"]+)"/, `prst="${target}"`) +
+        xml.slice(existing.index + existing[0].length)
+    } else {
+      const xfrmClose = /<xdr:spPr\b[^>]*>[\s\S]*?<\/a:xfrm>/.exec(xml)
+      if (xfrmClose) {
+        const at = xfrmClose.index + xfrmClose[0].length
+        xml =
+          xml.slice(0, at) + `<a:prstGeom prst="${target}"><a:avLst/></a:prstGeom>` + xml.slice(at)
+      }
+    }
+  }
+
+  // a:effectLst/a:outerShdw — the outer shadow; replaces our previous effect.
+  if (format.shadow !== undefined) {
+    xml = xml.replace(
+      /<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*\/>\s*<\/a:effectLst>|<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>\s*<\/a:effectLst>/,
+      '',
+    )
+    xml = xml.replace(/<a:outerShdw\b[^>]*\/>|<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>/, '')
+    if (format.shadow) {
+      const sh = format.shadow
+      const el =
+        `<a:effectLst><a:outerShdw blurRad="${Math.round(sh.blurPt * 12700)}" distRad="${Math.round(sh.distPt * 12700)}" dir="${Math.round(sh.dirDeg * 60000)}" sx="0" sy="0">` +
+        `<a:srgbClr val="${sh.color.toUpperCase()}"><a:alpha val="${Math.round(sh.alpha * 100000)}"/></a:srgbClr></a:outerShdw></a:effectLst>`
+      const lnClose = /<a:ln\b[^>]*\/>|<a:ln\b[^>]*>[\s\S]*?<\/a:ln>/.exec(xml)
+      const geomClose = /<a:prstGeom\b[^>]*\/>|<a:prstGeom\b[^>]*>[\s\S]*?<\/a:prstGeom>/.exec(xml)
+      const after = lnClose ?? geomClose
+      if (after) {
+        const at = after.index + after[0].length
+        xml = xml.slice(0, at) + el + xml.slice(at)
       }
     }
   }

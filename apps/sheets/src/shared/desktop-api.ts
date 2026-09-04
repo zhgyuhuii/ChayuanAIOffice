@@ -581,6 +581,17 @@ const visualObjectSchema = z
     /// twoCellAnchor/@editAs — how the picture follows cell size changes
     /// (twoCell=move+size [default], oneCell=move only, absolute=fixed).
     editAs: z.enum(['twoCell', 'oneCell', 'absolute']).optional(),
+    /// Picture outer shadow (a:effectLst/a:outerShdw).
+    shadow: z
+      .object({
+        blurPt: z.number().min(0).max(60),
+        distPt: z.number().min(0).max(60),
+        dirDeg: z.number().min(-360).max(360),
+        color: z.string().regex(/^[0-9a-fA-F]{6}$/),
+        alpha: z.number().min(0).max(1),
+      })
+      .strict()
+      .optional(),
     /// Save-side edit locator: the drawing part this visual lives in and its
     /// anchor index within that part (document order, skipped anchors counted).
     drawingPath: z
@@ -1390,6 +1401,24 @@ export const workbookVisualEditSchema = z
         lineWidth: z.number().positive().max(30).nullable().optional(),
         /// a:blip/a:alphaModFix amt as 0..1; null removes the transform.
         opacity: z.number().min(0).max(1).nullable().optional(),
+        /// Crop-to-shape preset (a:prstGeom prst); null/'rect' restores.
+        geom: z
+          .string()
+          .regex(/^[A-Za-z0-9]{1,64}$/)
+          .nullable()
+          .optional(),
+        /// Outer shadow (a:effectLst/a:outerShdw); null removes.
+        shadow: z
+          .object({
+            blurPt: z.number().min(0).max(60),
+            distPt: z.number().min(0).max(60),
+            dirDeg: z.number().min(-360).max(360),
+            color: z.string().regex(/^[0-9a-fA-F]{6}$/),
+            alpha: z.number().min(0).max(1),
+          })
+          .strict()
+          .nullable()
+          .optional(),
       })
       .strict()
       .optional(),
@@ -1640,6 +1669,11 @@ export const workbookVisualAddSchema = z
         /// the reload cannot re-derive the display geometry.
         frameWidth: z.number().int().positive().optional(),
         frameHeight: z.number().int().positive().optional(),
+        /// Crop-to-shape preset written into the synthesized pic.
+        geom: z
+          .string()
+          .regex(/^[A-Za-z0-9]{1,64}$/)
+          .optional(),
       })
       .strict()
       .optional(),

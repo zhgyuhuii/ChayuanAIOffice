@@ -9,6 +9,11 @@ export {
   type ColorSwatch,
 } from './color-picker'
 export { installScreenTips } from './screentip'
+export {
+  COMPRESS_PRESETS,
+  compressImageForDisplay,
+  type CompressPresetId,
+} from './image-compress'
 export { installAnchorPanelFallback } from './anchor-fallback'
 export {
   installPopoverDismiss,

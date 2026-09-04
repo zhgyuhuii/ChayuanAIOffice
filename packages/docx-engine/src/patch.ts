@@ -521,7 +521,7 @@ export async function saveDocx(
       `<pic:nvPicPr><pic:cNvPr id="${docPrId}" name="Picture ${docPrId}"/><pic:cNvPicPr/></pic:nvPicPr>` +
       `<pic:blipFill><a:blip r:embed="${rId}"/>${image.opacity !== undefined && image.opacity < 0.999 ? `<a:alphaModFix amt="${Math.round(Math.max(0, Math.min(1, image.opacity)) * 100000)}"/>` : ''}${image.lum ? `<a:lum bright="${Math.round(image.lum.bright)}" contrast="${Math.round(image.lum.contrast)}"/>` : ''}${image.crop ? `<a:srcRect l="${Math.round(image.crop.l * 100000)}" t="${Math.round(image.crop.t * 100000)}" r="${Math.round(image.crop.r * 100000)}" b="${Math.round(image.crop.b * 100000)}"/>` : ''}<a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
       `<pic:spPr><a:xfrm${rot ? ` rot="${rot * 60000}"` : ''}${image.flipH ? ' flipH="1"' : ''}${image.flipV ? ' flipV="1"' : ''}><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>` +
-      '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
+      `<a:prstGeom prst="${image.geom ?? 'rect'}"><a:avLst/></a:prstGeom>${image.shadow ? `<a:effectLst><a:outerShdw blurRad="${Math.round(image.shadow.blurPt * 12700)}" distRad="${Math.round(image.shadow.distPt * 12700)}" dir="${Math.round(image.shadow.dirDeg * 60000)}" sx="0" sy="0"><a:srgbClr val="${image.shadow.color.replace('#', '').toUpperCase()}"><a:alpha val="${Math.round(image.shadow.alpha * 100000)}"/></a:srgbClr></a:outerShdw></a:effectLst>` : ''}</pic:spPr>` +
       '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'
     return image.wrap
       ? applyImageWrap(xml, image.wrap, image.posOffsetEmu, undefined, image.zOrder)

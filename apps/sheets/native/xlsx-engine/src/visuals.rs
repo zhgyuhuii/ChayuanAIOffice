@@ -350,6 +350,18 @@ pub struct ChartMetadata {
     pub series: Vec<ChartSeries>,
 }
 
+/// a:effectLst/a:outerShdw — outer shadow parameters.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PictureShadow {
+    pub blur_pt: f64,
+    pub dist_pt: f64,
+    pub dir_deg: f64,
+    /// RGB hex WITHOUT the '#'.
+    pub color: String,
+    pub alpha: f64,
+}
+
 /// a:blipFill/a:srcRect — 1/100000 fractions trimmed off each side.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub struct PictureSrcRect {
@@ -460,6 +472,9 @@ pub struct VisualObject {
     /// (absent = twoCell, the Excel default).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub edit_as: Option<String>,
+    /// Picture outer shadow (a:effectLst/a:outerShdw).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shadow: Option<PictureShadow>,
     /// ZIP entry path of the drawing part this visual lives in, plus its
     /// anchor index within that part — the save-side edit locator.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1281,6 +1296,7 @@ fn read_drawing(
                 opacity: None,
                 src_rect: None,
                 lum: None,
+                shadow: None,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: drawing_name(anchor_node),
@@ -1335,6 +1351,14 @@ fn read_drawing(
             // Crop/brightness/outline/rotation — shared with the grpSp child
             // branch so edited pictures reload true.
             let pic_format = picture_format(pic_node, blip_node, colors);
+            // Crop-to-shape preset (rect is the default geometry)
+            let pic_geom = pic_node
+                .children()
+                .find(|node| node.has_tag_name("spPr"))
+                .and_then(|sppr| sppr.children().find(|node| node.has_tag_name("prstGeom")))
+                .and_then(|node| node.attribute("prst"))
+                .filter(|prst| *prst != "rect")
+                .map(ToOwned::to_owned);
             visuals.push(VisualObject {
                 id: visual_id,
                 sheet_id: sheet_id.to_owned(),
@@ -1347,10 +1371,11 @@ fn read_drawing(
                 opacity: blip_opacity(blip_node),
                 src_rect: pic_format.src_rect,
                 lum: pic_format.lum,
+                shadow: pic_format.shadow,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: drawing_name(anchor_node),
-                shape_type: None,
+                shape_type: pic_geom,
                 custom_path: None,
                 fill_color: None,
                 fill_gradient: None,
@@ -1556,6 +1581,7 @@ fn shape_visual(
                 opacity: None,
                 src_rect: None,
                 lum: None,
+                shadow: None,
                 fill_media_path,
                 fill_media_type,
                 name,
@@ -1849,6 +1875,7 @@ fn expand_group(
                 opacity: None,
                 src_rect: None,
                 lum: None,
+                shadow: None,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: child_name,
@@ -1890,6 +1917,13 @@ fn expand_group(
         }
         let media_path = resolve_part_target(drawing_path, &relationship.target)?;
         let pic_format = picture_format(child, blip_node, colors);
+        let child_geom = child
+            .children()
+            .find(|node| node.has_tag_name("spPr"))
+            .and_then(|sppr| sppr.children().find(|node| node.has_tag_name("prstGeom")))
+            .and_then(|node| node.attribute("prst"))
+            .filter(|prst| *prst != "rect")
+            .map(ToOwned::to_owned);
         visuals.push(VisualObject {
             id: child_id,
             sheet_id: sheet_id.to_owned(),
@@ -1902,10 +1936,11 @@ fn expand_group(
             opacity: blip_opacity(blip_node),
             src_rect: pic_format.src_rect,
             lum: pic_format.lum,
+            shadow: pic_format.shadow,
             fill_media_path: None,
             fill_media_type: None,
             name: child_name,
-            shape_type: None,
+            shape_type: child_geom,
             custom_path: None,
             fill_color: None,
             fill_gradient: None,
@@ -2517,6 +2552,7 @@ struct PictureFormat {
     rotation: Option<f64>,
     frame_width: Option<f64>,
     frame_height: Option<f64>,
+    shadow: Option<PictureShadow>,
 }
 
 fn picture_format(
@@ -2590,6 +2626,37 @@ fn picture_format(
                 contrast: attr("contrast"),
             }
         });
+    // Outer shadow on the pic's own effectLst
+    let shadow = sppr
+        .and_then(|sppr| sppr.children().find(|node| node.has_tag_name("effectLst")))
+        .and_then(|effects| effects.children().find(|node| node.has_tag_name("outerShdw")))
+        .and_then(|node| {
+            let num = |name: &str| -> Option<f64> {
+                node.attribute(name)
+                    .and_then(|value| value.parse::<f64>().ok())
+            };
+            let blur = num("blurRad")?;
+            let color = node
+                .children()
+                .find(|n| n.has_tag_name("srgbClr"))
+                .and_then(|n| n.attribute("val"))
+                .map(ToOwned::to_owned);
+            let alpha = node
+                .children()
+                .find(|n| n.has_tag_name("srgbClr"))
+                .and_then(|clr| clr.children().find(|n| n.has_tag_name("alpha")))
+                .and_then(|a| a.attribute("val"))
+                .and_then(|value| value.parse::<f64>().ok())
+                .map(|value| value / 100_000.0)
+                .unwrap_or(1.0);
+            Some(PictureShadow {
+                blur_pt: blur / 12_700.0,
+                dist_pt: (num("distRad").unwrap_or(0.0)) / 12_700.0,
+                dir_deg: (num("dir").unwrap_or(0.0)) / 60_000.0,
+                color: color.unwrap_or_else(|| "000000".into()),
+                alpha,
+            })
+        });
     PictureFormat {
         src_rect,
         lum,
@@ -2600,6 +2667,7 @@ fn picture_format(
         rotation,
         frame_width: frame_extent("cx"),
         frame_height: frame_extent("cy"),
+        shadow,
     }
 }
 
