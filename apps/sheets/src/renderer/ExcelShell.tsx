@@ -20,6 +20,7 @@ import {
 
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
+import { PictureCropDialog } from './PictureCropDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { GoToDialog } from './GoToDialog'
 import { COLOR_SCHEMES, FONT_SCHEMES, THEME_PRESETS } from './themes'
@@ -56,9 +57,9 @@ import type { HeaderFooterParts } from './edit-journal'
 // application menu (File → Open/Save/Save As) and the toolbar icons.
 const ribbonTabs = ['Home', 'Insert', 'Page Layout', 'Formulas', 'Data', 'Review', 'View'] as const
 
-/// 'Chart Design' is contextual: it exists only while a chart is selected,
-/// and appears without stealing the active tab.
-type RibbonTab = (typeof ribbonTabs)[number] | 'Chart Design'
+/// 'Chart Design' and 'Picture Tools' are contextual: they exist only while
+/// a chart/picture is selected, and appear without stealing the active tab.
+type RibbonTab = (typeof ribbonTabs)[number] | 'Chart Design' | 'Picture Tools'
 
 // Internal values keep English ids (=== matching, state values unchanged);
 // translated only for display
@@ -71,6 +72,7 @@ const TAB_LABEL: Record<RibbonTab, StringKey> = {
   Review: 'appTabReview',
   View: 'appTabView',
   'Chart Design': 'appTabChartDesign',
+  'Picture Tools': 'ribbonTabPictureTools',
 }
 
 export interface SelectedChartRibbon {
@@ -98,6 +100,25 @@ export interface SelectedChartRibbon {
     | undefined
   readonly dataLabels?: string | undefined
   readonly grouping?: string | undefined
+}
+
+/// Live echo of the selected floating picture for the contextual tab.
+export interface SelectedPictureRibbon {
+  readonly id: string
+  /// Session images and sidecar-located file images are editable; a visual
+  /// the sidecar could not pin down only moves/deletes.
+  readonly editable: boolean
+  /// Current anchor box in sheet-space px.
+  readonly widthPx: number
+  readonly heightPx: number
+  readonly srcRect: { l: number; t: number; r: number; b: number } | null
+  readonly lum: { bright: number; contrast: number } | null
+  readonly rotation: number
+  readonly flipH: boolean
+  readonly flipV: boolean
+  readonly lineColor: string | null
+  readonly lineWidth: number | null
+  readonly opacity: number
 }
 
 type ChartTextTarget = 'title' | 'axis-category' | 'axis-value'
@@ -230,6 +251,28 @@ interface ExcelShellProps {
   readonly onAutoSaveChange: (on: boolean) => void
   /// Non-null while a floating chart is selected in the grid.
   readonly selectedChart: SelectedChartRibbon | null
+  /// Non-null while a floating picture is selected in the grid.
+  readonly selectedImage: SelectedPictureRibbon | null
+  readonly onPictureEdit: (picture: {
+    srcRect?: { l: number; t: number; r: number; b: number } | null
+    lum?: { bright: number; contrast: number } | null
+    rotation?: number | null
+    flipH?: boolean | null
+    flipV?: boolean | null
+    lineColor?: string | null
+    lineWidth?: number | null
+    opacity?: number | null
+  }) => void
+  readonly onPictureMediaReplace: (media: {
+    mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
+    base64: string
+  }) => void
+  readonly onPictureRotate: (quarter: 1 | -1) => void
+  readonly onPictureReset: () => void
+  readonly onPictureResize: (widthPx: number, heightPx: number) => void
+  readonly onPictureDelete: () => void
+  /// Full-resolution bytes of the selected picture (crop dialog preview).
+  readonly onPictureGetSource: () => Promise<{ mediaType: string; base64: string } | null>
   /// Column choices of the active selection, read when the Sort dialog opens.
   readonly onGetSortColumns: () => { label: string; colIndex: number }[]
   /// Effective protection of the active sheet (null = unknown / demo).
@@ -379,6 +422,14 @@ export function ExcelShell({
   autoSave,
   onAutoSaveChange,
   selectedChart,
+  selectedImage,
+  onPictureEdit,
+  onPictureMediaReplace,
+  onPictureRotate,
+  onPictureReset,
+  onPictureResize,
+  onPictureDelete,
+  onPictureGetSource,
   pageLayout,
   calcManual,
   onGoalSeek,
@@ -431,6 +482,8 @@ export function ExcelShell({
   const [showAllowEditRanges, setShowAllowEditRanges] = useState(false)
   /// Non-null while the Chart Design → Add Chart Element text prompt is open.
   const [chartTextTarget, setChartTextTarget] = useState<ChartTextTarget | null>(null)
+  /// Picture Tools → Crop (the dialog edits srcRect fractions in place).
+  const [showPictureCrop, setShowPictureCrop] = useState(false)
   const onCommandRef = useRef(onCommand)
   const onIsCellEditingRef = useRef(onIsCellEditing)
   onCommandRef.current = onCommand
@@ -491,13 +544,16 @@ export function ExcelShell({
     window.addEventListener('keydown', onKeyDownCapture, true)
     return () => window.removeEventListener('keydown', onKeyDownCapture, true)
   }, [])
-  // Deselecting while on the contextual tab lands back on Home.
+  // Deselecting while on a contextual tab lands back on Home.
   useEffect(() => {
     if (!selectedChart && activeTab === 'Chart Design') setActiveTab('Home')
-  }, [selectedChart, activeTab])
-  const visibleTabs: readonly RibbonTab[] = selectedChart
-    ? [...ribbonTabs, 'Chart Design']
-    : ribbonTabs
+    if (!selectedImage && activeTab === 'Picture Tools') setActiveTab('Home')
+  }, [selectedChart, selectedImage, activeTab])
+  const visibleTabs: readonly RibbonTab[] = selectedImage
+    ? [...ribbonTabs, 'Picture Tools']
+    : selectedChart
+      ? [...ribbonTabs, 'Chart Design']
+      : ribbonTabs
   const saveAsTitle = `${t('appFileSaveAs')} (${platformShortcuts('⇧⌘S')})`
 
   return (
@@ -676,7 +732,7 @@ export function ExcelShell({
               <span className="qa-sep" aria-hidden="true" />
               {visibleTabs.map((tab) => (
                 <button
-                  className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' ? 'contextual' : ''}`}
+                  className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' || tab === 'Picture Tools' ? 'contextual' : ''}`}
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   onDoubleClick={() => setCollapsed((v) => !v)}
@@ -726,6 +782,13 @@ export function ExcelShell({
                 crossHighlightVisible={crossHighlightVisible}
                 pageLayout={pageLayout}
                 selectedChart={selectedChart}
+                selectedImage={selectedImage}
+                onPictureEdit={onPictureEdit}
+                onPictureMediaReplace={onPictureMediaReplace}
+                onPictureRotate={onPictureRotate}
+                onPictureReset={onPictureReset}
+                onPictureResize={onPictureResize}
+                onPictureDelete={onPictureDelete}
                 onListNames={() => {
                   // Names scoped to another sheet resolve to #NAME? here; only
                   // workbook-scoped and active-sheet names are usable in a formula.
@@ -761,6 +824,7 @@ export function ExcelShell({
                   else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
                   else if (command === 'ai-open-panel') setIsCopilotOpen(true)
                   else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
+                  else if (command === 'picture-crop-open') setShowPictureCrop(true)
                   else if (command === 'chart-element-title') setChartTextTarget('title')
                   else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
                   else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
@@ -844,6 +908,17 @@ export function ExcelShell({
           anchorValue={onGetAnchorValue()}
           onCommand={onCommand}
           onClose={() => setShowFormatCells(false)}
+        />
+      )}
+      {showPictureCrop && selectedImage && (
+        <PictureCropDialog
+          getSource={onPictureGetSource}
+          srcRect={selectedImage.srcRect}
+          onApply={(srcRect) => {
+            onPictureEdit({ srcRect })
+            setShowPictureCrop(false)
+          }}
+          onClose={() => setShowPictureCrop(false)}
         />
       )}
       {axisSizeTarget && (
@@ -1340,6 +1415,112 @@ function LinkDialog({
   )
 }
 
+/// Width/height inputs in cm (sheet px ↔ cm at 96dpi); remounted per
+/// selection via key so external changes (handles, reset) reseed the fields.
+function PictureSizeGroup({
+  widthPx,
+  heightPx,
+  onResize,
+}: {
+  readonly widthPx: number
+  readonly heightPx: number
+  readonly onResize: (widthPx: number, heightPx: number) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [width, setWidth] = useState(String((widthPx / PX_PER_CM_UI).toFixed(2)))
+  const [height, setHeight] = useState(String((heightPx / PX_PER_CM_UI).toFixed(2)))
+  const apply = (): void => {
+    const w = Number(width)
+    const h = Number(height)
+    if (!(w > 0) || !(h > 0)) return
+    onResize(Math.round(w * PX_PER_CM_UI), Math.round(h * PX_PER_CM_UI))
+  }
+  return (
+    <RibbonGroup label={t('appPicGroupSize')}>
+      <label className="size-field" data-tip={t('appPicWidthCm')}>
+        <span>{t('appPicWidthCm')}</span>
+        <input
+          type="number"
+          min="0.2"
+          step="0.1"
+          value={width}
+          onChange={(event) => setWidth(event.target.value)}
+          onBlur={apply}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') apply()
+          }}
+        />
+        <span>{t('appPicCm')}</span>
+      </label>
+      <label className="size-field" data-tip={t('appPicHeightCm')}>
+        <span>{t('appPicHeightCm')}</span>
+        <input
+          type="number"
+          min="0.2"
+          step="0.1"
+          value={height}
+          onChange={(event) => setHeight(event.target.value)}
+          onBlur={apply}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') apply()
+          }}
+        />
+        <span>{t('appPicCm')}</span>
+      </label>
+    </RibbonGroup>
+  )
+}
+
+const PX_PER_CM_UI = 96 / 2.54
+
+/// 更改图片: a hidden file input behind a ribbon button; bytes flow straight
+/// into the picture edit (session images swap the data URL, file images get
+/// a new media part on save).
+function ChangePictureButton({
+  disabled,
+  onPick,
+}: {
+  readonly disabled: boolean
+  readonly onPick: (mediaType: 'image/png' | 'image/jpeg' | 'image/gif', base64: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  return (
+    <>
+      <RibbonButton
+        large
+        label={t('appPicChange')}
+        detail={t('appPicChange')}
+        symbol="🖼"
+        disabled={disabled}
+        onClick={() => inputRef.current?.click()}
+      />
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/gif"
+        style={{ display: 'none' }}
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          event.target.value = ''
+          if (!file) return
+          const picked = (['image/png', 'image/jpeg', 'image/gif'] as const).find(
+            (type) => type === file.type,
+          )
+          if (!picked) return
+          const reader = new FileReader()
+          reader.onload = () => {
+            const dataUrl = String(reader.result ?? '')
+            const base64 = dataUrl.split(',')[1]
+            if (base64) onPick(picked, base64)
+          }
+          reader.readAsDataURL(file)
+        }}
+      />
+    </>
+  )
+}
+
 function Ribbon({
   activeTab,
   selectionFormat,
@@ -1349,6 +1530,13 @@ function Ribbon({
   crossHighlightVisible,
   pageLayout,
   selectedChart,
+  selectedImage,
+  onPictureEdit,
+  onPictureMediaReplace,
+  onPictureRotate,
+  onPictureReset,
+  onPictureResize,
+  onPictureDelete,
   onCommand,
   onAiRun,
   onListNames,
@@ -1366,6 +1554,25 @@ function Ribbon({
   readonly crossHighlightVisible: boolean
   readonly pageLayout: PageLayoutEcho
   readonly selectedChart: SelectedChartRibbon | null
+  readonly selectedImage: SelectedPictureRibbon | null
+  readonly onPictureEdit: (picture: {
+    srcRect?: { l: number; t: number; r: number; b: number } | null
+    lum?: { bright: number; contrast: number } | null
+    rotation?: number | null
+    flipH?: boolean | null
+    flipV?: boolean | null
+    lineColor?: string | null
+    lineWidth?: number | null
+    opacity?: number | null
+  }) => void
+  readonly onPictureMediaReplace: (media: {
+    mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
+    base64: string
+  }) => void
+  readonly onPictureRotate: (quarter: 1 | -1) => void
+  readonly onPictureReset: () => void
+  readonly onPictureResize: (widthPx: number, heightPx: number) => void
+  readonly onPictureDelete: () => void
   readonly onCommand: (command: string) => void
   /** Defined names for the Use in Formula menu. */
   readonly onListNames: () => readonly string[]
@@ -1656,6 +1863,184 @@ function Ribbon({
             detail={selectedChart?.title ?? t('appRemoveFromSheet')}
             symbol="🗑"
             onClick={() => onCommand('chart-delete')}
+          />
+        </RibbonGroup>
+      </div>
+    )
+  }
+
+  if (activeTab === 'Picture Tools') {
+    if (!selectedImage) return <div className="ribbon" />
+    const lumRow = (
+      label: string,
+      field: 'bright' | 'contrast',
+      value: number,
+    ): React.JSX.Element => (
+      <div className="picture-lum-row" key={field}>
+        <span className="picture-lum-label">{label}</span>
+        <button
+          type="button"
+          data-tip={t('appPicDecrease')}
+          aria-label={t('appPicDecrease')}
+          onClick={() => {
+            const current = selectedImage.lum ?? { bright: 0, contrast: 0 }
+            const next = Math.max(-100_000, Math.min(100_000, value - 10_000))
+            onPictureEdit({ lum: { ...current, [field]: next } })
+          }}
+        >
+          −
+        </button>
+        <span className="picture-lum-value">{Math.round(value / 1000)}%</span>
+        <button
+          type="button"
+          data-tip={t('appPicIncrease')}
+          aria-label={t('appPicIncrease')}
+          onClick={() => {
+            const current = selectedImage.lum ?? { bright: 0, contrast: 0 }
+            const next = Math.max(-100_000, Math.min(100_000, value + 10_000))
+            onPictureEdit({ lum: { ...current, [field]: next } })
+          }}
+        >
+          +
+        </button>
+      </div>
+    )
+    return (
+      <div className="ribbon">
+        <RibbonGroup label={t('appPicGroupAdjust')}>
+          <RibbonButton
+            large
+            label={t('appPicCrop')}
+            detail={t('appPicCropTitle')}
+            symbol="⌗"
+            disabled={!selectedImage.editable}
+            onClick={() => onCommand('picture-crop-open')}
+          />
+          <div className="check-column">
+            {lumRow(t('appPicBrightness'), 'bright', selectedImage.lum?.bright ?? 0)}
+            {lumRow(t('appPicContrast'), 'contrast', selectedImage.lum?.contrast ?? 0)}
+            <button
+              type="button"
+              className="check-item"
+              disabled={!selectedImage.editable}
+              onClick={() => onPictureEdit({ lum: null })}
+            >
+              {t('appPicReset')}
+            </button>
+          </div>
+        </RibbonGroup>
+        <RibbonGroup label={t('appPicGroupBorderStyle')}>
+          <ColorDropdown
+            label={t('appPicBorder')}
+            value={selectedImage.lineColor ?? '#000000'}
+            portal
+            onPick={(hex) => {
+              if (!selectedImage.editable) return
+              onPictureEdit({
+                lineColor: hex,
+                lineWidth: selectedImage.lineWidth ?? 1,
+              })
+            }}
+          />
+          <div className="ribbon-tool" data-tip={t('appPicBorderWidth')}>
+            <MenuSelect
+              cover
+              label={t('appPicBorderWidth')}
+              options={[
+                { value: '0.5', label: '0.5 pt' },
+                { value: '1', label: '1 pt' },
+                { value: '1.5', label: '1.5 pt' },
+                { value: '2', label: '2 pt' },
+                { value: '3', label: '3 pt' },
+              ]}
+              onPick={(value) => {
+                if (!selectedImage.editable) return
+                onPictureEdit({
+                  lineColor: selectedImage.lineColor ?? '#000000',
+                  lineWidth: Number(value),
+                })
+              }}
+            />
+          </div>
+        </RibbonGroup>
+        <PictureSizeGroup
+          key={`${selectedImage.id}-${selectedImage.widthPx}x${selectedImage.heightPx}`}
+          widthPx={selectedImage.widthPx}
+          heightPx={selectedImage.heightPx}
+          onResize={onPictureResize}
+        />
+        <RibbonGroup label={t('appPicGroupArrange')}>
+          <RibbonButton
+            large
+            label={t('appPicRotateLeft')}
+            detail="↺"
+            symbol="↺"
+            disabled={!selectedImage.editable}
+            onClick={() => onPictureRotate(-1)}
+          />
+          <RibbonButton
+            large
+            label={t('appPicRotateRight')}
+            detail="↻"
+            symbol="↻"
+            disabled={!selectedImage.editable}
+            onClick={() => onPictureRotate(1)}
+          />
+          <RibbonButton
+            large
+            label={t('appPicFlipH')}
+            detail="⇋"
+            symbol="⇋"
+            active={selectedImage.flipH}
+            disabled={!selectedImage.editable}
+            onClick={() => onPictureEdit({ flipH: !selectedImage.flipH })}
+          />
+          <RibbonButton
+            large
+            label={t('appPicFlipV')}
+            detail="⇅"
+            symbol="⇅"
+            active={selectedImage.flipV}
+            disabled={!selectedImage.editable}
+            onClick={() => onPictureEdit({ flipV: !selectedImage.flipV })}
+          />
+        </RibbonGroup>
+        <RibbonGroup label={t('appPicGroupPicture')}>
+          <ChangePictureButton
+            disabled={!selectedImage.editable}
+            onPick={(mediaType, base64) => onPictureMediaReplace({ mediaType, base64 })}
+          />
+          <div className="ribbon-tool" data-tip={t('appPicOpacity')}>
+            <MenuSelect
+              cover
+              label={t('appPicOpacity')}
+              options={[
+                { value: '1', label: t('appPicOpacityNone') },
+                { value: '0.75', label: '75%' },
+                { value: '0.5', label: '50%' },
+                { value: '0.25', label: '25%' },
+              ]}
+              onPick={(value) => {
+                if (!selectedImage.editable) return
+                const opacity = Number(value)
+                onPictureEdit({ opacity: opacity >= 1 ? null : opacity })
+              }}
+            />
+          </div>
+          <RibbonButton
+            large
+            label={t('appPicResetPicture')}
+            detail={t('appPicReset')}
+            symbol="⟲"
+            disabled={!selectedImage.editable}
+            onClick={onPictureReset}
+          />
+          <RibbonButton
+            large
+            label={t('appPicDelete')}
+            detail="✕"
+            symbol="🗑"
+            onClick={onPictureDelete}
           />
         </RibbonGroup>
       </div>

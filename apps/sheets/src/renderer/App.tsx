@@ -403,6 +403,8 @@ import { WatchWindowPanel, watchKey, type WatchCell, type WatchRowValue } from '
 import { TimelineFieldPicker, TimelinePanels, type TimelineUiState } from './TimelinePanel'
 import type { DefinedNameAction, DefinedNameRow } from './NameManagerDialog'
 import {
+  anchorResized,
+  anchorRotatedTo,
   clearVisualSelection,
   convertibleType,
   getChartElementSelection,
@@ -411,11 +413,13 @@ import {
   setChartDialogListener,
   setVisualSelectionListener,
   subscribeChartElementSelection,
+  visualFrameSizePx,
   type ChartDialogKind,
   type ChartEditData,
   type ChartVectorRead,
   type ShapeEditChanges,
 } from './WorkbookVisuals'
+import { isEditableFileVisual, isEditableImage } from './visual-editable'
 import { ChartFormatPane, SelectDataDialog } from './ChartPanels'
 
 // Source sheet id of an in-flight copy-sheet command; the next insert-sheet
@@ -5052,6 +5056,136 @@ export function App(): React.JSX.Element {
     }
   })()
 
+  // Ribbon echo of the selected picture (live lookup, same recipe as the
+  // chart echo): deletion, file switches, and pending edits reflect without
+  // extra bookkeeping.
+  const selectedImage = (() => {
+    if (!selectedVisual || selectedVisual.kind !== 'image') return null
+    const state = lazyWorkbookRef.current
+    const live: WorkbookVisualObject | undefined = state
+      ? [...state.file.visuals, ...state.editJournal.visualAdds].find(
+          (candidate) => candidate.id === selectedVisual.id,
+        )
+      : (adapterRef.current.findVisual(selectedVisual.id) ?? undefined)
+    if (!live || (state && state.editJournal.visualEdits.get(live.id)?.remove)) return null
+    const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+    const size = worksheet ? visualFrameSizePx(worksheet, live.anchor) : { width: 0, height: 0 }
+    return {
+      id: live.id,
+      editable: !state || isEditableImage(live) || isEditableFileVisual(live),
+      widthPx: size.width,
+      heightPx: size.height,
+      srcRect: live.srcRect ?? null,
+      lum: live.lum ?? null,
+      rotation: live.rotation ?? 0,
+      flipH: live.flipH === true,
+      flipV: live.flipV === true,
+      lineColor: live.lineColor ?? null,
+      lineWidth: live.lineWidth ?? null,
+      opacity: live.opacity ?? 1,
+    }
+  })()
+
+  /// Locates the live visual object for a picture op (echo + journal lookups).
+  const liveSelectedVisual = (): WorkbookVisualObject | null => {
+    if (!selectedVisual) return null
+    const state = lazyWorkbookRef.current
+    return (
+      (state
+        ? [...state.file.visuals, ...state.editJournal.visualAdds].find(
+            (candidate) => candidate.id === selectedVisual.id,
+          )
+        : (adapterRef.current.findVisual(selectedVisual.id) ?? undefined)) ?? null
+    )
+  }
+
+  const handlePictureEdit = (picture: NonNullable<ShapeEditChanges['picture']>): void => {
+    const id = selectedVisual?.id
+    if (!id) return
+    applyShapeEditImpl(visualSyncContext(), id, { picture })
+  }
+
+  const handlePictureMediaReplace = (mediaReplace: {
+    mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
+    base64: string
+  }): void => {
+    const id = selectedVisual?.id
+    if (!id) return
+    applyShapeEditImpl(visualSyncContext(), id, { mediaReplace })
+  }
+
+  const handlePictureRotate = (quarter: 1 | -1): void => {
+    const id = selectedVisual?.id
+    const live = liveSelectedVisual()
+    const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+    if (!id || !live || !worksheet) return
+    const current = (((live.rotation ?? 0) % 360) + 360) % 360
+    const target = (Math.round(current / 90) * 90 + quarter * 90 + 360) % 360
+    const rotated = anchorRotatedTo(worksheet, live.anchor, current, target)
+    applyShapeEditImpl(visualSyncContext(), id, {
+      anchor: rotated.anchor,
+      frameSize: { width: rotated.frameWidth, height: rotated.frameHeight },
+      picture: { rotation: target === 0 ? null : target },
+    })
+  }
+
+  const handlePictureReset = (): void => {
+    const id = selectedVisual?.id
+    const live = liveSelectedVisual()
+    const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+    if (!id || !live || !worksheet) return
+    const current = (((live.rotation ?? 0) % 360) + 360) % 360
+    const rotated = current === 0 ? null : anchorRotatedTo(worksheet, live.anchor, current, 0)
+    applyShapeEditImpl(visualSyncContext(), id, {
+      ...(rotated
+        ? {
+            anchor: rotated.anchor,
+            frameSize: { width: rotated.frameWidth, height: rotated.frameHeight },
+          }
+        : {}),
+      picture: {
+        srcRect: null,
+        lum: null,
+        rotation: null,
+        flipH: null,
+        flipV: null,
+        lineColor: null,
+        lineWidth: null,
+        opacity: null,
+      },
+    })
+  }
+
+  /// Full-resolution bytes of the selected picture (crop dialog preview /
+  /// media reuse). Session images carry inline data URLs; file visuals fetch
+  /// through the sidecar media reader.
+  const handlePictureGetSource = async (): Promise<{
+    mediaType: string
+    base64: string
+  } | null> => {
+    const live = liveSelectedVisual()
+    if (!live || live.kind !== 'image') return null
+    if (live.mediaDataUrl) {
+      const [head = '', base64] = live.mediaDataUrl.split(',')
+      const mime = /data:([^;]+)/.exec(head)?.[1]
+      if (!mime || !base64) return null
+      return { mediaType: mime, base64 }
+    }
+    const sessionId = workbookFile?.sessionId
+    if (!sessionId) return null
+    return window.desktopApi.readWorkbookMedia({ sessionId, visualId: live.id })
+  }
+
+  const handlePictureResize = (widthPx: number, heightPx: number): void => {
+    const id = selectedVisual?.id
+    const live = liveSelectedVisual()
+    const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+    if (!id || !live || !worksheet) return
+    applyShapeEditImpl(visualSyncContext(), id, {
+      anchor: anchorResized(worksheet, live.anchor, widthPx, heightPx),
+    })
+  }
+
   const activePageLayout = (() => {
     const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
     const journalState = worksheet
@@ -5182,6 +5316,18 @@ export function App(): React.JSX.Element {
         autoSave={autoSave}
         onAutoSaveChange={setAutoSave}
         selectedChart={selectedChart}
+        selectedImage={selectedImage}
+        onPictureEdit={handlePictureEdit}
+        onPictureMediaReplace={handlePictureMediaReplace}
+        onPictureRotate={handlePictureRotate}
+        onPictureReset={handlePictureReset}
+        onPictureResize={handlePictureResize}
+        onPictureGetSource={handlePictureGetSource}
+        onPictureDelete={() => {
+          const id = selectedVisual?.id
+          if (!id) return
+          applyShapeEditImpl(visualSyncContext(), id, { remove: true })
+        }}
         onGetSortColumns={sortColumnOptions}
         onGetSheetProtection={sheetProtectionEcho}
         onGetWorkbookProtection={workbookProtectionEcho}

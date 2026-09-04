@@ -18,7 +18,13 @@ import {
 import { parseAddress } from '../domain/cell-address'
 import { ColorDropdown } from './ColorDropdown'
 import { t } from './i18n/locale'
-import type { WorkbookChartEdit, WorkbookFile, WorkbookVisualObject } from '../shared/desktop-api'
+import { isEditableShape, isEditableVisual } from './visual-editable'
+import type {
+  WorkbookChartEdit,
+  WorkbookFile,
+  WorkbookVisualEdit,
+  WorkbookVisualObject,
+} from '../shared/desktop-api'
 
 type UniverRuntime = ReturnType<typeof createUniver>
 type ActiveWorkbook = NonNullable<ReturnType<UniverRuntime['univerAPI']['getActiveWorkbook']>>
@@ -61,6 +67,13 @@ export interface ShapeEditChanges {
   readonly frameSize?: { readonly width: number; readonly height: number }
   readonly text?: string
   readonly remove?: true
+  /// Picture-format patch (crop/brightness/border/rotate/flip/opacity);
+  /// explicit nulls clear the aspect. Session images set the same fields on
+  /// their journal object; file images ride the surgical visual edit.
+  readonly picture?: WorkbookVisualEdit['picture']
+  /// 更改图片 bytes (session images swap mediaDataUrl; file images get a
+  /// media part + repointed r:embed on save).
+  readonly mediaReplace?: WorkbookVisualEdit['mediaReplace']
 }
 
 export interface ShapeEditing {
@@ -76,8 +89,6 @@ export {
   isEditableChart,
   isEditableVisual,
 } from './visual-editable'
-
-import { isEditableChart, isEditableImage, isEditableShape, isEditableVisual } from './visual-editable'
 
 const chartColors = [
   '#4472c4',
@@ -704,6 +715,155 @@ function markerSpan(
   return span + (from.index <= to.index ? cells : -cells)
 }
 
+/// ---- App-facing anchor geometry (picture tools) ----
+
+/// Column/row sizers shared by the geometry helpers: lazy grids are
+/// data-sized, but anchors may reach past the edge (install grows the grid
+/// to the anchor; drags use sheet defaults past it).
+function worksheetSizers(worksheet: UniverWorksheet): {
+  columnWidth: (index: number) => number
+  rowHeight: (index: number) => number
+  maxColumn: number
+  maxRow: number
+} {
+  const config = worksheet.getSheet().getConfig()
+  const gridColumns = worksheet.getMaxColumns()
+  const gridRows = worksheet.getMaxRows()
+  return {
+    columnWidth: (index: number): number =>
+      index < gridColumns
+        ? Math.max(worksheet.getColumnWidth(index), 1)
+        : Math.max(config.defaultColumnWidth, 1),
+    rowHeight: (index: number): number =>
+      index < gridRows
+        ? Math.max(worksheet.getRowHeight(index), 1)
+        : Math.max(config.defaultRowHeight, 1),
+    maxColumn: XLSX_MAX_COLUMN,
+    maxRow: XLSX_MAX_ROW,
+  }
+}
+
+/// A pixel position → its anchor marker (inverse of markerSpan from 0).
+function markerFromPixel(
+  px: number,
+  sizeOf: (index: number) => number,
+  maxIndex: number,
+): AnchorMarker {
+  let index = 0
+  let acc = 0
+  while (index < maxIndex && acc + sizeOf(index) <= px) {
+    acc += sizeOf(index)
+    index += 1
+  }
+  return { index, offset: px - acc }
+}
+
+/// The visual's current anchor box in sheet-space pixels.
+export function visualFrameSizePx(
+  worksheet: UniverWorksheet,
+  anchor: WorkbookVisualObject['anchor'],
+): { width: number; height: number } {
+  const { columnWidth, rowHeight } = worksheetSizers(worksheet)
+  return {
+    width: Math.max(
+      1,
+      markerSpan(
+        markerFrom(anchor.fromColumn, anchor.fromColumnOffset),
+        markerFrom(anchor.toColumn, anchor.toColumnOffset),
+        columnWidth,
+      ),
+    ),
+    height: Math.max(
+      1,
+      markerSpan(
+        markerFrom(anchor.fromRow, anchor.fromRowOffset),
+        markerFrom(anchor.toRow, anchor.toRowOffset),
+        rowHeight,
+      ),
+    ),
+  }
+}
+
+/// Resizes the anchor to `width × height` sheet-space px, keeping the
+/// from marker. Explicit-to state is dropped (the rebuilt anchor is
+/// normalized, like commitDrag).
+export function anchorResized(
+  worksheet: UniverWorksheet,
+  anchor: WorkbookVisualObject['anchor'],
+  width: number,
+  height: number,
+): WorkbookVisualObject['anchor'] {
+  const { columnWidth, rowHeight, maxColumn, maxRow } = worksheetSizers(worksheet)
+  const fromX = markerFrom(anchor.fromColumn, anchor.fromColumnOffset)
+  const fromY = markerFrom(anchor.fromRow, anchor.fromRowOffset)
+  const toX = walkMarker(fromX, Math.max(MIN_FRAME_PIXELS, width), columnWidth, maxColumn)
+  const toY = walkMarker(fromY, Math.max(MIN_FRAME_PIXELS, height), rowHeight, maxRow)
+  return {
+    fromRow: fromY.index,
+    fromColumn: fromX.index,
+    fromRowOffset: Math.round(fromY.offset * EMU_PER_PIXEL),
+    fromColumnOffset: Math.round(fromX.offset * EMU_PER_PIXEL),
+    toRow: toY.index,
+    toColumn: toX.index,
+    toRowOffset: Math.round(toY.offset * EMU_PER_PIXEL),
+    toColumnOffset: Math.round(toX.offset * EMU_PER_PIXEL),
+  }
+}
+
+/// Rotates a picture's anchor to `targetRotation` (multiple of 90) keeping
+/// the box center: the AABB swaps w/h at 90/270 and returns to the true
+/// frame at 0/180. Returns the rebuilt anchor plus the true (unrotated)
+/// frame in EMU for a:xfrm ext / renderer.
+export function anchorRotatedTo(
+  worksheet: UniverWorksheet,
+  anchor: WorkbookVisualObject['anchor'],
+  currentRotation: number,
+  targetRotation: number,
+): {
+  anchor: WorkbookVisualObject['anchor']
+  frameWidth: number
+  frameHeight: number
+} {
+  const { columnWidth, rowHeight, maxColumn, maxRow } = worksheetSizers(worksheet)
+  const fromX = markerFrom(anchor.fromColumn, anchor.fromColumnOffset)
+  const fromY = markerFrom(anchor.fromRow, anchor.fromRowOffset)
+  const width = Math.max(
+    1,
+    markerSpan(fromX, markerFrom(anchor.toColumn, anchor.toColumnOffset), columnWidth),
+  )
+  const height = Math.max(
+    1,
+    markerSpan(fromY, markerFrom(anchor.toRow, anchor.toRowOffset), rowHeight),
+  )
+  const quarter = ((Math.round(currentRotation / 90) % 2) + 2) % 2 === 1
+  // Unrotated dims: a 90/270 anchor stores the swapped AABB.
+  const trueWidth = quarter ? height : width
+  const trueHeight = quarter ? width : height
+  const targetQuarter = ((Math.round(targetRotation / 90) % 2) + 2) % 2 === 1
+  const boxWidth = targetQuarter ? trueHeight : trueWidth
+  const boxHeight = targetQuarter ? trueWidth : trueHeight
+  const fromPxX = markerSpan(markerFrom(0, 0), fromX, columnWidth)
+  const fromPxY = markerSpan(markerFrom(0, 0), fromY, rowHeight)
+  const newFromX = markerFromPixel(fromPxX + (width - boxWidth) / 2, columnWidth, maxColumn)
+  const newFromY = markerFromPixel(fromPxY + (height - boxHeight) / 2, rowHeight, maxRow)
+  const toX = walkMarker(newFromX, boxWidth, columnWidth, maxColumn)
+  const toY = walkMarker(newFromY, boxHeight, rowHeight, maxRow)
+  return {
+    anchor: {
+      fromRow: newFromY.index,
+      fromColumn: newFromX.index,
+      fromRowOffset: Math.round(newFromX.offset * EMU_PER_PIXEL),
+      fromColumnOffset: Math.round(newFromX.offset * EMU_PER_PIXEL),
+      toRow: toY.index,
+      toColumn: toX.index,
+      toRowOffset: Math.round(toY.offset * EMU_PER_PIXEL),
+      toColumnOffset: Math.round(toX.offset * EMU_PER_PIXEL),
+    },
+    frameWidth: Math.round(trueWidth * EMU_PER_PIXEL),
+    frameHeight: Math.round(trueHeight * EMU_PER_PIXEL),
+  }
+}
+
 function EditableShapeVisual({
   file,
   visual,
@@ -1071,7 +1231,7 @@ function EditableShapeVisual({
           openEditorSignal={chartEditRequest}
         />
       ) : visual.kind === 'image' ? (
-        <ImageVisual file={file} visual={visual} />
+        <ImageVisual file={file} visual={visual} frame={frame} />
       ) : (
         <ShapeVisual
           file={file}
@@ -1084,7 +1244,9 @@ function EditableShapeVisual({
           x={menu.x}
           y={menu.y}
           onClose={() => setMenu(null)}
-          items={[{ label: t('appDeleteVisualTitle'), action: () => onEdit(visual.id, { remove: true }) }]}
+          items={[
+            { label: t('appDeleteVisualTitle'), action: () => onEdit(visual.id, { remove: true }) },
+          ]}
         />
       )}
       {!textEditing && (
@@ -1492,12 +1654,28 @@ function useWorkbookMediaUrl(
   return { url, unavailable }
 }
 
+/// a:lum bright/contrast (thousandths of a percent) → the CSS filter
+/// equivalent; symmetric with the gateway's XML writer so a saved lum reads
+/// back identically. Empty string when untouched.
+export function lumCssFilter(lum: WorkbookVisualObject['lum']): string {
+  if (!lum) return ''
+  const parts: string[] = []
+  if (lum.bright) parts.push(`brightness(${(1 + lum.bright / 100_000).toFixed(4)})`)
+  if (lum.contrast) parts.push(`contrast(${(1 + lum.contrast / 100_000).toFixed(4)})`)
+  return parts.join(' ')
+}
+
+/// One blipFill/a:srcRect side (1/100000) as a fraction of the original.
+const cropFraction = (value: number): number => Math.min(0.99, Math.max(0, value / 100_000))
+
 function ImageVisual({
   file,
   visual,
+  frame,
 }: {
   readonly file: VisualHost
   readonly visual: WorkbookVisualObject
+  readonly frame?: ShapeFrame | undefined
 }): React.JSX.Element {
   // Session-added images carry their bytes inline; nothing to fetch.
   const { url, unavailable } = useWorkbookMediaUrl(
@@ -1508,15 +1686,98 @@ function ImageVisual({
 
   if (unavailable) return <div className="xlsx-visual-unavailable" />
   if (!source) return <div className="xlsx-visual-loading">{t('appImageLoading')}</div>
-  return (
+
+  const filter = lumCssFilter(visual.lum)
+  const flips = `${visual.flipH ? ' scaleX(-1)' : ''}${visual.flipV ? ' scaleY(-1)' : ''}`.trim()
+  // Rotated pictures follow the shape convention: the anchor box is the
+  // rotated AABB and frame* is the true (unrotated) frame in EMU — center
+  // the true frame in the box and rotate it as one unit. Sizes are the true
+  // frame as a percentage of the AABB box.
+  const trueFrame =
+    visual.rotation &&
+    visual.frameWidth &&
+    visual.frameHeight &&
+    frame &&
+    frame.width > 0 &&
+    frame.height > 0
+      ? {
+          width: (visual.frameWidth / EMU_PER_PIXEL / frame.width) * 100,
+          height: (visual.frameHeight / EMU_PER_PIXEL / frame.height) * 100,
+          rotation: visual.rotation,
+        }
+      : null
+  const border =
+    visual.lineColor && visual.lineColor !== 'none' && visual.lineWidth
+      ? `${(visual.lineWidth * 96) / 72}px solid ${visual.lineColor}`
+      : undefined
+  const frameStyle: React.CSSProperties = {
+    ...(visual.opacity !== undefined && visual.opacity < 1 ? { opacity: visual.opacity } : {}),
+    ...(border ? { border, boxSizing: 'border-box' } : {}),
+  }
+  // Crop: an oversized image inside an overflow-hidden viewport — the
+  // visible fractions map the srcRect trims onto the frame box.
+  let cropStyle: React.CSSProperties = {}
+  if (visual.srcRect) {
+    const l = cropFraction(visual.srcRect.l)
+    const t = cropFraction(visual.srcRect.t)
+    const r = cropFraction(visual.srcRect.r)
+    const b = cropFraction(visual.srcRect.b)
+    const fw = Math.max(0.01, 1 - l - r)
+    const fh = Math.max(0.01, 1 - t - b)
+    cropStyle = {
+      width: `${100 / fw}%`,
+      height: `${100 / fh}%`,
+      left: `${(-l / fw) * 100}%`,
+      top: `${(-t / fh) * 100}%`,
+    }
+  }
+
+  const img = (
     <img
-      className="xlsx-image"
+      className="xlsx-image xlsx-image-edited"
       src={source}
       alt={visual.name ?? t('appWorkbookImageAlt')}
-      style={
-        visual.opacity !== undefined && visual.opacity < 1 ? { opacity: visual.opacity } : undefined
-      }
+      style={{
+        ...cropStyle,
+        ...(filter ? { filter } : {}),
+      }}
     />
+  )
+
+  if (trueFrame) {
+    return (
+      <div
+        className="xlsx-image-frame"
+        style={{
+          ...frameStyle,
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: `${trueFrame.width}%`,
+          height: `${trueFrame.height}%`,
+          transform: `translate(-50%, -50%) rotate(${trueFrame.rotation}deg)${flips ? ` ${flips}` : ''}`,
+        }}
+      >
+        <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%' }}>
+          {img}
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div
+      className="xlsx-image-frame"
+      style={{
+        ...frameStyle,
+        position: 'absolute',
+        inset: 0,
+        ...(flips ? { transform: flips } : {}),
+      }}
+    >
+      <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%' }}>
+        {img}
+      </div>
+    </div>
   )
 }
 

@@ -470,6 +470,26 @@ const visualObjectSchema = z
     mediaType: z.string().optional(),
     /// a:blip/a:alphaModFix amt as 0..1 picture opacity.
     opacity: z.number().min(0).max(1).optional(),
+    /// a:blipFill/a:srcRect — non-destructive crop as the 1/100000 fraction
+    /// of the original image trimmed off each side.
+    srcRect: z
+      .object({
+        l: z.number().int().min(0).max(99_000),
+        t: z.number().int().min(0).max(99_000),
+        r: z.number().int().min(0).max(99_000),
+        b: z.number().int().min(0).max(99_000),
+      })
+      .strict()
+      .optional(),
+    /// a:blip/a:lum — non-destructive brightness/contrast in thousandths of
+    /// a percent (OOXML range ±100000; 0 = untouched).
+    lum: z
+      .object({
+        bright: z.number().int().min(-100_000).max(100_000),
+        contrast: z.number().int().min(-100_000).max(100_000),
+      })
+      .strict()
+      .optional(),
     /// spPr/a:blipFill on a shape — the image painted clipped to the
     /// preset geometry.
     fillMediaPath: z.string().optional(),
@@ -1315,7 +1335,9 @@ export const workbookChartEditSchema = z
 
 /// Edit to a visual that already lives in the file, located by the sidecar's
 /// (drawingPath, anchor index) pair. `remove` deletes the anchor (charts
-/// fail closed in the gateway); `anchor` rewrites its from/to markers.
+/// fail closed in the gateway); `anchor` rewrites its from/to markers;
+/// `picture` patches the pic's blipFill/blip/spPr in place. Explicit `null`
+/// picture fields clear that aspect (重设图片).
 export const workbookVisualEditSchema = z
   .object({
     drawingPath: z.string().regex(/^xl\/drawings\/[A-Za-z0-9._/-]+\.xml$/),
@@ -1331,11 +1353,62 @@ export const workbookVisualEditSchema = z
       })
       .strict()
       .optional(),
+    picture: z
+      .object({
+        srcRect: z
+          .object({
+            l: z.number().int().min(0).max(99_000),
+            t: z.number().int().min(0).max(99_000),
+            r: z.number().int().min(0).max(99_000),
+            b: z.number().int().min(0).max(99_000),
+          })
+          .strict()
+          .nullable()
+          .optional(),
+        lum: z
+          .object({
+            bright: z.number().int().min(-100_000).max(100_000),
+            contrast: z.number().int().min(-100_000).max(100_000),
+          })
+          .strict()
+          .nullable()
+          .optional(),
+        /// Degrees clockwise; null (or 0) drops a:xfrm/@rot.
+        rotation: z.number().min(-360).max(360).nullable().optional(),
+        flipH: z.boolean().nullable().optional(),
+        flipV: z.boolean().nullable().optional(),
+        /// spPr/a:ln — null removes the outline.
+        lineColor: z
+          .string()
+          .regex(/^#[0-9a-fA-F]{6}$/)
+          .nullable()
+          .optional(),
+        /// a:ln/@w in points.
+        lineWidth: z.number().positive().max(30).nullable().optional(),
+        /// a:blip/a:alphaModFix amt as 0..1; null removes the transform.
+        opacity: z.number().min(0).max(1).nullable().optional(),
+      })
+      .strict()
+      .optional(),
+    /// 更改图片 on a file visual: new media bytes — the save adds the media
+    /// part + relationship and repoints this pic's r:embed.
+    mediaReplace: z
+      .object({
+        mediaType: z.enum(['image/png', 'image/jpeg', 'image/gif']),
+        base64: z.string().min(1).max(28_000_000),
+      })
+      .strict()
+      .optional(),
   })
   .strict()
-  .refine((edit) => edit.remove === true || edit.anchor !== undefined, {
-    message: 'A visual edit needs a removal or a new anchor.',
-  })
+  .refine(
+    (edit) =>
+      edit.remove === true ||
+      edit.anchor !== undefined ||
+      edit.picture !== undefined ||
+      edit.mediaReplace !== undefined,
+    { message: 'A visual edit needs a removal, a new anchor, or a picture patch.' },
+  )
 
 /// OOXML customFilter comparison operators; absent means "equal". Wildcard
 /// matching (contains / begins with) is encoded in the value string itself.
@@ -1530,6 +1603,37 @@ export const workbookVisualAddSchema = z
         mediaType: z.enum(['image/png', 'image/jpeg', 'image/gif']),
         /// ~20MB decoded
         base64: z.string().min(1).max(28_000_000),
+        /// Picture format written into the synthesized <xdr:pic>.
+        srcRect: z
+          .object({
+            l: z.number().int().min(0).max(99_000),
+            t: z.number().int().min(0).max(99_000),
+            r: z.number().int().min(0).max(99_000),
+            b: z.number().int().min(0).max(99_000),
+          })
+          .strict()
+          .optional(),
+        lum: z
+          .object({
+            bright: z.number().int().min(-100_000).max(100_000),
+            contrast: z.number().int().min(-100_000).max(100_000),
+          })
+          .strict()
+          .optional(),
+        rotation: z.number().min(-360).max(360).optional(),
+        flipH: z.boolean().optional(),
+        flipV: z.boolean().optional(),
+        lineColor: z
+          .string()
+          .regex(/^#[0-9a-fA-F]{6}$/)
+          .optional(),
+        lineWidth: z.number().positive().max(30).optional(),
+        opacity: z.number().min(0).max(1).optional(),
+        /// True (unrotated) frame in EMU for a rotated picture — the anchor
+        /// stores the rotated AABB; the pic's a:xfrm ext must carry this or
+        /// the reload cannot re-derive the display geometry.
+        frameWidth: z.number().int().positive().optional(),
+        frameHeight: z.number().int().positive().optional(),
       })
       .strict()
       .optional(),
@@ -2618,7 +2722,11 @@ export interface DesktopApi {
   setAiCurrentModel(selection: AiModelSelection): Promise<void>
   /** model list discovery; doubles as the settings page connection test */
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  aiChat(request: { selection: AiModelSelection; system: string; user: string }): Promise<AiChatResponse>
+  aiChat(request: {
+    selection: AiModelSelection
+    system: string
+    user: string
+  }): Promise<AiChatResponse>
   /// start a streaming AI call; the settings slot carries the model selection
   aiStream(request: AiStreamRequestInput): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>

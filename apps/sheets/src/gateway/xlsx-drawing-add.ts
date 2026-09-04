@@ -2,6 +2,8 @@
 /// OOXML parts: a chart part, a drawing part (created or extended), the
 /// worksheet/drawing relationships, and the [Content_Types].xml overrides.
 
+import { applyPictureFormat, type PictureLum, type PictureSrcRect } from './xlsx-picture-xml'
+
 export class VisualAddError extends Error {}
 
 export interface DrawingAnchor {
@@ -72,6 +74,17 @@ export interface ShapeAdd {
 export interface ImageAdd {
   readonly mediaType: 'image/png' | 'image/jpeg' | 'image/gif'
   readonly base64: string
+  readonly srcRect?: PictureSrcRect | undefined
+  readonly lum?: PictureLum | undefined
+  readonly rotation?: number | undefined
+  readonly flipH?: boolean | undefined
+  readonly flipV?: boolean | undefined
+  readonly lineColor?: string | undefined
+  readonly lineWidth?: number | undefined
+  readonly opacity?: number | undefined
+  /// True (unrotated) frame in EMU — written into a:xfrm ext for rotated pics.
+  readonly frameWidth?: number | undefined
+  readonly frameHeight?: number | undefined
 }
 
 export interface VisualAddition {
@@ -97,8 +110,9 @@ export interface MutablePackage {
 const DRAWING_REL_TYPE =
   'http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing'
 const CHART_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart'
-const IMAGE_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
-const IMAGE_EXTENSIONS: Record<ImageAdd['mediaType'], string> = {
+export const IMAGE_REL_TYPE =
+  'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
+export const IMAGE_EXTENSIONS: Record<ImageAdd['mediaType'], string> = {
   'image/png': 'png',
   'image/jpeg': 'jpeg',
   'image/gif': 'gif',
@@ -146,7 +160,7 @@ export async function applyVisualAdditions(
       )
       touchedEntries.add(relsPathFor(drawing.path))
       await appendAnchor(pkg, drawing.path, addition.anchor, (shapeId) =>
-        pictureXml(shapeId, imageRelId),
+        pictureXml(shapeId, imageRelId, image),
       )
     } else {
       throw new VisualAddError('A visual addition carries exactly one of chart, shape, or image.')
@@ -287,8 +301,12 @@ function chartFrameXml(shapeId: number, chartRelId: string): string {
   )
 }
 
-function pictureXml(shapeId: number, imageRelId: string): string {
-  return (
+function pictureXml(shapeId: number, imageRelId: string, image: ImageAdd | undefined): string {
+  const frame =
+    image?.frameWidth !== undefined && image?.frameHeight !== undefined
+      ? `<a:ext cx="${image.frameWidth}" cy="${image.frameHeight}"/>`
+      : '<a:ext cx="0" cy="0"/>'
+  const base =
     '<xdr:pic>' +
     '<xdr:nvPicPr>' +
     `<xdr:cNvPr id="${shapeId}" name="Picture ${shapeId}"/>` +
@@ -300,11 +318,21 @@ function pictureXml(shapeId: number, imageRelId: string): string {
     '<a:stretch><a:fillRect/></a:stretch>' +
     '</xdr:blipFill>' +
     '<xdr:spPr>' +
-    '<a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></a:xfrm>' +
+    `<a:xfrm><a:off x="0" y="0"/>${frame}</a:xfrm>` +
     '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>' +
     '</xdr:spPr>' +
     '</xdr:pic>'
-  )
+  if (!image) return base
+  return applyPictureFormat(base, {
+    srcRect: image.srcRect ?? undefined,
+    lum: image.lum ?? undefined,
+    rotation: image.rotation ?? undefined,
+    flipH: image.flipH ?? undefined,
+    flipV: image.flipV ?? undefined,
+    lineColor: image.lineColor ?? undefined,
+    lineWidth: image.lineWidth ?? undefined,
+    opacity: image.opacity ?? undefined,
+  })
 }
 
 function shapeXml(shapeId: number, shape: ShapeAdd): string {
@@ -796,7 +824,7 @@ export async function appendRelationship(
 }
 
 /// Media extensions register as package-wide Defaults rather than per-part Overrides.
-async function registerContentTypeDefault(
+export async function registerContentTypeDefault(
   pkg: MutablePackage,
   extension: string,
   contentType: string,

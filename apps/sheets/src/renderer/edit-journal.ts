@@ -716,11 +716,34 @@ export interface VisualEditEntry {
   readonly anchor?: WorkbookVisualObject['anchor']
   /// New xfrm ext in EMU (a rotated shape resized through its AABB).
   readonly frameSize?: { readonly width: number; readonly height: number }
+  /// Picture-format patch (crop/brightness/border/rotate/flip/opacity);
+  /// explicit nulls clear the aspect.
+  readonly picture?: WorkbookVisualEdit['picture']
+  /// 更改图片 bytes for a file visual.
+  readonly mediaReplace?: WorkbookVisualEdit['mediaReplace']
 }
 
-/// Records a move/resize or removal of a visual that already lives in the
-/// file. False when the visual carries no drawing locator (its part shape
-/// is one the sidecar could not pin down) — the caller shows a message.
+/// Field-wise merge of a picture patch into the pending edit: defined
+/// fields (including explicit nulls — they clear) override the previous
+/// ones; absent fields keep theirs.
+function mergePictureEdit(
+  previous: WorkbookVisualEdit['picture'],
+  patch: WorkbookVisualEdit['picture'],
+): WorkbookVisualEdit['picture'] {
+  if (!patch) return previous
+  if (!previous) return patch
+  const merged: WorkbookVisualEdit['picture'] = { ...previous }
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === undefined) continue
+    ;(merged as Record<string, unknown>)[key] = value
+  }
+  return merged
+}
+
+/// Records a move/resize, removal, or picture-format edit of a visual that
+/// already lives in the file. False when the visual carries no drawing
+/// locator (its part shape is one the sidecar could not pin down) — the
+/// caller shows a message.
 export function recordVisualEdit(
   journal: EditJournal,
   visual: WorkbookVisualObject,
@@ -728,6 +751,8 @@ export function recordVisualEdit(
     remove?: true
     anchor?: WorkbookVisualObject['anchor']
     frameSize?: { width: number; height: number }
+    picture?: WorkbookVisualEdit['picture']
+    mediaReplace?: WorkbookVisualEdit['mediaReplace']
   },
 ): boolean {
   if (visual.drawingPath === undefined || visual.drawingIndex === undefined) return false
@@ -736,6 +761,8 @@ export function recordVisualEdit(
   const remove = changes.remove ?? previous?.remove
   const anchor = changes.anchor ?? previous?.anchor
   const frameSize = changes.frameSize ?? previous?.frameSize
+  const picture = mergePictureEdit(previous?.picture, changes.picture)
+  const mediaReplace = changes.mediaReplace ?? previous?.mediaReplace
   journal.visualEdits.set(visual.id, {
     sheetId: visual.sheetId,
     drawingPath: visual.drawingPath,
@@ -743,6 +770,8 @@ export function recordVisualEdit(
     ...(remove ? { remove: true as const } : {}),
     ...(anchor ? { anchor } : {}),
     ...(frameSize ? { frameSize } : {}),
+    ...(picture ? { picture } : {}),
+    ...(mediaReplace ? { mediaReplace } : {}),
   })
   return true
 }
@@ -755,23 +784,56 @@ export function removeVisualAdd(journal: EditJournal, visualId: string): boolean
   return true
 }
 
-/// In-place edit (move/resize/retext) of a visual added this session; the
-/// save writes the updated object, so no separate edit record is needed.
-/// False when the id is not a session visual (file visuals are view-only).
+/// In-place edit (move/resize/retext/repicture) of a visual added this
+/// session; the save writes the updated object, so no separate edit record
+/// is needed. False when the id is not a session visual. The `picture` bag
+/// mirrors WorkbookVisualEdit's: defined fields set, explicit nulls clear.
 export function updateVisualAdd(
   journal: EditJournal,
   visualId: string,
-  changes: { anchor?: WorkbookVisualObject['anchor']; text?: string; fillColor?: string },
+  changes: {
+    anchor?: WorkbookVisualObject['anchor']
+    text?: string
+    fillColor?: string
+    frameWidth?: number
+    frameHeight?: number
+    picture?: WorkbookVisualEdit['picture']
+    mediaDataUrl?: string
+    mediaType?: string
+  },
 ): boolean {
   const index = journal.visualAdds.findIndex((visual) => visual.id === visualId)
   const current = journal.visualAdds[index]
   if (!current) return false
-  journal.visualAdds[index] = {
+  let next: WorkbookVisualObject = {
     ...current,
     ...(changes.anchor === undefined ? {} : { anchor: changes.anchor }),
     ...(changes.text === undefined ? {} : { text: changes.text }),
     ...(changes.fillColor === undefined ? {} : { fillColor: changes.fillColor }),
+    ...(changes.frameWidth === undefined ? {} : { frameWidth: changes.frameWidth }),
+    ...(changes.frameHeight === undefined ? {} : { frameHeight: changes.frameHeight }),
+    ...(changes.mediaDataUrl === undefined ? {} : { mediaDataUrl: changes.mediaDataUrl }),
+    ...(changes.mediaType === undefined ? {} : { mediaType: changes.mediaType }),
   }
+  const picture = changes.picture
+  if (picture) {
+    const set = <K extends keyof WorkbookVisualObject>(
+      key: K,
+      value: WorkbookVisualObject[K] | null | undefined,
+    ): void => {
+      if (value === null) delete next[key]
+      else if (value !== undefined) next = { ...next, [key]: value }
+    }
+    set('srcRect', picture.srcRect)
+    set('lum', picture.lum)
+    set('rotation', picture.rotation)
+    set('flipH', picture.flipH)
+    set('flipV', picture.flipV)
+    set('lineColor', picture.lineColor)
+    set('lineWidth', picture.lineWidth)
+    set('opacity', picture.opacity)
+  }
+  journal.visualAdds[index] = next
   return true
 }
 
@@ -792,6 +854,8 @@ export function toSaveVisualEdits(journal: EditJournal): WorkbookVisualEdit[] {
       ...(entry.remove ? { remove: true as const } : {}),
       ...(entry.anchor ? { anchor: entry.anchor } : {}),
       ...(entry.frameSize ? { frameSize: entry.frameSize } : {}),
+      ...(entry.picture ? { picture: entry.picture } : {}),
+      ...(entry.mediaReplace ? { mediaReplace: entry.mediaReplace } : {}),
     })
   }
   return edits
@@ -812,7 +876,33 @@ export function toSaveVisualAdds(journal: EditJournal): WorkbookVisualAdd[] {
       additions.push({
         sheetId: visual.sheetId,
         anchor: visual.anchor,
-        image: { mediaType, base64 },
+        image: {
+          mediaType,
+          base64,
+          ...(visual.srcRect === undefined ? {} : { srcRect: visual.srcRect }),
+          ...(visual.lum === undefined ? {} : { lum: visual.lum }),
+          ...(visual.rotation === undefined || visual.rotation === 0
+            ? {}
+            : { rotation: visual.rotation }),
+          ...(visual.flipH === undefined ? {} : { flipH: visual.flipH }),
+          ...(visual.flipV === undefined ? {} : { flipV: visual.flipV }),
+          ...(visual.lineColor === undefined || visual.lineColor === 'none'
+            ? {}
+            : { lineColor: visual.lineColor }),
+          ...(visual.lineWidth === undefined ? {} : { lineWidth: visual.lineWidth }),
+          ...(visual.opacity === undefined || visual.opacity >= 1
+            ? {}
+            : { opacity: visual.opacity }),
+          ...(visual.rotation !== undefined &&
+          visual.rotation !== 0 &&
+          visual.frameWidth !== undefined &&
+          visual.frameHeight !== undefined
+            ? {
+                frameWidth: Math.round(visual.frameWidth),
+                frameHeight: Math.round(visual.frameHeight),
+              }
+            : {}),
+        },
       })
       continue
     }

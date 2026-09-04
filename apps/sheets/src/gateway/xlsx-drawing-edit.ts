@@ -4,7 +4,18 @@
 /// counts every anchor element in document order, matching visuals.rs.
 
 import type { WorkbookVisualEdit } from '../shared/desktop-api'
-import { relsPathFor, resolveRelTarget, type MutablePackage } from './xlsx-drawing-add'
+import {
+  IMAGE_EXTENSIONS,
+  IMAGE_REL_TYPE,
+  allocatePartPath,
+  appendRelationship,
+  registerContentTypeDefault,
+  relsPathFor,
+  relativeTarget,
+  resolveRelTarget,
+  type MutablePackage,
+} from './xlsx-drawing-add'
+import { applyPictureFormat } from './xlsx-picture-xml'
 import {
   parseRelationships,
   partPathForRels,
@@ -51,7 +62,42 @@ export async function applyVisualEdits(
     if (!(await pkg.has(drawingPath))) {
       throw new VisualEditError(`Workbook is missing ${drawingPath}.`)
     }
+    // 更改图片: allocate the new media part + relationship up front so the
+    // XML rewrite can repoint r:embed to it.
+    const replacedRelIds = new Map<number, string>()
+    const replacedOldRelIds = new Set<string>()
+    for (const edit of group) {
+      if (!edit.mediaReplace) continue
+      const extension = IMAGE_EXTENSIONS[edit.mediaReplace.mediaType]
+      const mediaPath = await allocatePartPath(pkg, 'xl/media/image', `.${extension}`)
+      pkg.addBinary(mediaPath, Uint8Array.from(Buffer.from(edit.mediaReplace.base64, 'base64')))
+      touchedEntries.add(mediaPath)
+      await registerContentTypeDefault(pkg, extension, edit.mediaReplace.mediaType, touchedEntries)
+      const newRelId = await appendRelationship(
+        pkg,
+        relsPathFor(drawingPath),
+        IMAGE_REL_TYPE,
+        relativeTarget(drawingPath, mediaPath),
+      )
+      touchedEntries.add(relsPathFor(drawingPath))
+      replacedRelIds.set(edit.drawingIndex, newRelId)
+    }
     let xml = await pkg.readText(drawingPath)
+    // Old media relationships are harvested before the rewrite so the
+    // post-edit reference check sees the final drawing.
+    if (replacedRelIds.size > 0) {
+      const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
+      for (const [indexString] of replacedRelIds) {
+        const anchorXml = anchors[indexString]?.[0]
+        if (!anchorXml) continue
+        for (const match of anchorXml.matchAll(/\s[\w.-]+:(?:embed|link)="([^"]+)"/g)) {
+          const id = match[1]
+          if (id !== undefined && id !== replacedRelIds.get(Number(indexString))) {
+            replacedOldRelIds.add(id)
+          }
+        }
+      }
+    }
     // Removals splice text out, so process high indexes first — lower
     // indexes keep their document positions.
     const ordered = [...group].sort((left, right) => right.drawingIndex - left.drawingIndex)
@@ -62,7 +108,21 @@ export async function applyVisualEdits(
         throw new VisualEditError('Duplicate edits target the same drawing anchor.')
       }
       seen.add(edit.drawingIndex)
-      xml = applyOneEdit(xml, edit, removedRelationships)
+      xml = applyOneEdit(xml, edit, removedRelationships, replacedRelIds.get(edit.drawingIndex))
+    }
+    // A replaced picture's old relationship rows drop when nothing in the
+    // final drawing references them (the media part itself stays — other
+    // drawings may share it through their own rels).
+    if (replacedOldRelIds.size > 0) {
+      const relsPath = relsPathFor(drawingPath)
+      let relsXml = await pkg.readText(relsPath)
+      for (const oldId of replacedOldRelIds) {
+        if (xmlHasAttributeValue(xml, oldId)) continue
+        const without = removeRelationshipById(relsXml, oldId)
+        if (without !== relsXml) relsXml = without
+      }
+      pkg.write(relsPath, relsXml)
+      touchedEntries.add(relsPath)
     }
     if (removedRelationships.length > 0) {
       await cleanupRemovedAnchorRelationships(
@@ -325,6 +385,7 @@ function applyOneEdit(
   xml: string,
   edit: WorkbookVisualEdit,
   removedRelationships: RemovedAnchorRelationship[],
+  replacedRelId?: string,
 ): string {
   const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
   const match = anchors[edit.drawingIndex]
@@ -356,51 +417,74 @@ function applyOneEdit(
     return xml.slice(0, match.index) + xml.slice(match.index + anchorXml.length)
   }
   const anchor = edit.anchor
-  if (!anchor) throw new VisualEditError('A visual edit needs a removal or a new anchor.')
-  if (kind === 'absoluteAnchor') {
-    throw new VisualEditError('This visual uses an absolute anchor — moving it is not supported.')
+  if (!anchor) {
+    if (!edit.picture && !edit.mediaReplace) {
+      throw new VisualEditError('A visual edit needs a removal or a new anchor.')
+    }
   }
   const pre = escapeRegExp(p)
-  const from =
-    `<${p}from><${p}col>${anchor.fromColumn}</${p}col>` +
-    `<${p}colOff>${anchor.fromColumnOffset}</${p}colOff>` +
-    `<${p}row>${anchor.fromRow}</${p}row>` +
-    `<${p}rowOff>${anchor.fromRowOffset}</${p}rowOff></${p}from>`
-  let patched = anchorXml.replace(new RegExp(`<${pre}from>[\\s\\S]*?</${pre}from>`), () => from)
-  if (patched === anchorXml && !anchorXml.includes(`<${p}from>`)) {
-    throw new VisualEditError('Drawing anchor has no from marker — moving it is not supported.')
-  }
-  if (kind === 'twoCellAnchor') {
-    const to =
-      `<${p}to><${p}col>${anchor.toColumn}</${p}col>` +
-      `<${p}colOff>${anchor.toColumnOffset}</${p}colOff>` +
-      `<${p}row>${anchor.toRow}</${p}row>` +
-      `<${p}rowOff>${anchor.toRowOffset}</${p}rowOff></${p}to>`
-    // An unchanged edge replaces to an identical string, so presence must be
-    // checked directly (an NW resize touches only the from marker).
-    const withTo = patched.replace(new RegExp(`<${pre}to>[\\s\\S]*?</${pre}to>`), () => to)
-    if (withTo === patched && !patched.includes(`<${p}to>`)) {
-      throw new VisualEditError('Drawing anchor has no to marker — moving it is not supported.')
+  let patched = anchorXml
+  if (anchor) {
+    if (kind === 'absoluteAnchor') {
+      throw new VisualEditError('This visual uses an absolute anchor — moving it is not supported.')
     }
-    patched = withTo
-  }
-  if (edit.frameSize) {
-    // A rotated shape resized through its AABB: the anchor holds the rotated
-    // bounds, so the true frame (first a:ext of the shape's xfrm) must be
-    // rewritten alongside or the reload re-derives the old size.
-    const ext = `<a:ext cx="${edit.frameSize.width}" cy="${edit.frameSize.height}"/>`
-    const withExt = patched.replace(
-      /(<a:xfrm\b[^>]*>[\s\S]*?)<a:ext\b[^>]*\/>/,
-      (_, head: string) => `${head}${ext}`,
-    )
-    // An unchanged ext replaces to an identical string, so presence must be
-    // checked directly (same caveat as the from/to markers above).
-    if (withExt === patched && !/<a:xfrm\b[^>]*>[\s\S]*?<a:ext\b/.test(patched)) {
-      throw new VisualEditError(
-        'Drawing anchor has no frame extent — resizing it is not supported.',
+    const from =
+      `<${p}from><${p}col>${anchor.fromColumn}</${p}col>` +
+      `<${p}colOff>${anchor.fromColumnOffset}</${p}colOff>` +
+      `<${p}row>${anchor.fromRow}</${p}row>` +
+      `<${p}rowOff>${anchor.fromRowOffset}</${p}rowOff></${p}from>`
+    patched = anchorXml.replace(new RegExp(`<${pre}from>[\\s\\S]*?</${pre}from>`), () => from)
+    if (patched === anchorXml && !anchorXml.includes(`<${p}from>`)) {
+      throw new VisualEditError('Drawing anchor has no from marker — moving it is not supported.')
+    }
+    if (kind === 'twoCellAnchor') {
+      const to =
+        `<${p}to><${p}col>${anchor.toColumn}</${p}col>` +
+        `<${p}colOff>${anchor.toColumnOffset}</${p}colOff>` +
+        `<${p}row>${anchor.toRow}</${p}row>` +
+        `<${p}rowOff>${anchor.toRowOffset}</${p}rowOff></${p}to>`
+      // An unchanged edge replaces to an identical string, so presence must be
+      // checked directly (an NW resize touches only the from marker).
+      const withTo = patched.replace(new RegExp(`<${pre}to>[\\s\\S]*?</${pre}to>`), () => to)
+      if (withTo === patched && !patched.includes(`<${p}to>`)) {
+        throw new VisualEditError('Drawing anchor has no to marker — moving it is not supported.')
+      }
+      patched = withTo
+    }
+    if (edit.frameSize) {
+      // A rotated shape resized through its AABB: the anchor holds the rotated
+      // bounds, so the true frame (first a:ext of the shape's xfrm) must be
+      // rewritten alongside or the reload re-derives the old size.
+      const ext = `<a:ext cx="${edit.frameSize.width}" cy="${edit.frameSize.height}"/>`
+      const withExt = patched.replace(
+        /(<a:xfrm\b[^>]*>[\s\S]*?)<a:ext\b[^>]*\/>/,
+        (_, head: string) => `${head}${ext}`,
       )
+      // An unchanged ext replaces to an identical string, so presence must be
+      // checked directly (same caveat as the from/to markers above).
+      if (withExt === patched && !/<a:xfrm\b[^>]*>[\s\S]*?<a:ext\b/.test(patched)) {
+        throw new VisualEditError(
+          'Drawing anchor has no frame extent — resizing it is not supported.',
+        )
+      }
+      patched = withExt
     }
-    patched = withExt
+  }
+  // Picture-format patch / media replacement: rewrite the <xdr:pic> body.
+  if (edit.picture || replacedRelId !== undefined) {
+    const picPattern = new RegExp(`<${pre}pic>[\\s\\S]*?</${pre}pic>`)
+    const picMatch = picPattern.exec(patched)
+    if (!picMatch) {
+      throw new VisualEditError('The picture edit targets an anchor without a picture.')
+    }
+    let picXml = picMatch[0]
+    if (replacedRelId !== undefined) {
+      picXml = picXml.replace(/\s[\w.-]+:embed="[^"]*"/, ` r:embed="${replacedRelId}"`)
+      picXml = picXml.replace(/\s[\w.-]+:link="[^"]*"/, '')
+    }
+    if (edit.picture) picXml = applyPictureFormat(picXml, edit.picture)
+    patched =
+      patched.slice(0, picMatch.index) + picXml + patched.slice(picMatch.index + picMatch[0].length)
   }
   return xml.slice(0, match.index) + patched + xml.slice(match.index + anchorXml.length)
 }

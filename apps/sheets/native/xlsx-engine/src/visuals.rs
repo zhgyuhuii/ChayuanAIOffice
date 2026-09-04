@@ -350,6 +350,22 @@ pub struct ChartMetadata {
     pub series: Vec<ChartSeries>,
 }
 
+/// a:blipFill/a:srcRect — 1/100000 fractions trimmed off each side.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
+pub struct PictureSrcRect {
+    pub l: i64,
+    pub t: i64,
+    pub r: i64,
+    pub b: i64,
+}
+
+/// a:blip/a:lum — thousandths of a percent, ±100000.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
+pub struct PictureLum {
+    pub bright: i64,
+    pub contrast: i64,
+}
+
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VisualObject {
@@ -369,6 +385,14 @@ pub struct VisualObject {
     /// a:blip/a:alphaModFix amt as 0..1; absent when fully opaque.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub opacity: Option<f64>,
+    /// a:blipFill/a:srcRect — non-destructive crop as the 1/100000 fraction
+    /// trimmed off each side.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub src_rect: Option<PictureSrcRect>,
+    /// a:blip/a:lum — non-destructive brightness/contrast in thousandths of
+    /// a percent.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lum: Option<PictureLum>,
     /// spPr/a:blipFill on a shape — the image painted clipped to the
     /// preset geometry (the flat fill_color stays the loading fallback).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1251,6 +1275,8 @@ fn read_drawing(
                 media_path: None,
                 media_type: None,
                 opacity: None,
+                src_rect: None,
+                lum: None,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: drawing_name(anchor_node),
@@ -1301,6 +1327,9 @@ fn read_drawing(
                 continue;
             }
             let media_path = resolve_part_target(drawing_path, &relationship.target)?;
+            // Crop/brightness/outline/rotation — shared with the grpSp child
+            // branch so edited pictures reload true.
+            let pic_format = picture_format(pic_node, blip_node, colors);
             visuals.push(VisualObject {
                 id: visual_id,
                 sheet_id: sheet_id.to_owned(),
@@ -1311,6 +1340,8 @@ fn read_drawing(
                 media_type: media_type_for_path(&media_path).map(ToOwned::to_owned),
                 media_path: Some(media_path),
                 opacity: blip_opacity(blip_node),
+                src_rect: pic_format.src_rect,
+                lum: pic_format.lum,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: drawing_name(anchor_node),
@@ -1318,19 +1349,19 @@ fn read_drawing(
                 custom_path: None,
                 fill_color: None,
                 fill_gradient: None,
-                line_color: None,
-                line_width: None,
+                line_color: pic_format.line_color,
+                line_width: pic_format.line_width,
                 line_dash: None,
                 line_cap: None,
-                flip_h: false,
-                flip_v: false,
+                flip_h: pic_format.flip_h,
+                flip_v: pic_format.flip_v,
                 text_color: None,
                 text_anchor: None,
                 paragraphs: None,
                 text: None,
-                rotation: None,
-                frame_width: None,
-                frame_height: None,
+                rotation: pic_format.rotation,
+                frame_width: pic_format.frame_width,
+                frame_height: pic_format.frame_height,
                 nv_id: None,
                 drawing_path: Some(drawing_path.to_owned()),
                 drawing_index: Some(index),
@@ -1517,6 +1548,8 @@ fn shape_visual(
                 media_path: None,
                 media_type: None,
                 opacity: None,
+                src_rect: None,
+                lum: None,
                 fill_media_path,
                 fill_media_type,
                 name,
@@ -1807,6 +1840,8 @@ fn expand_group(
                 media_path: None,
                 media_type: None,
                 opacity: None,
+                src_rect: None,
+                lum: None,
                 fill_media_path: None,
                 fill_media_type: None,
                 name: child_name,
@@ -1846,6 +1881,7 @@ fn expand_group(
             continue;
         }
         let media_path = resolve_part_target(drawing_path, &relationship.target)?;
+        let pic_format = picture_format(child, blip_node, colors);
         visuals.push(VisualObject {
             id: child_id,
             sheet_id: sheet_id.to_owned(),
@@ -1856,6 +1892,8 @@ fn expand_group(
             media_type: media_type_for_path(&media_path).map(ToOwned::to_owned),
             media_path: Some(media_path),
             opacity: blip_opacity(blip_node),
+            src_rect: pic_format.src_rect,
+            lum: pic_format.lum,
             fill_media_path: None,
             fill_media_type: None,
             name: child_name,
@@ -1863,19 +1901,19 @@ fn expand_group(
             custom_path: None,
             fill_color: None,
             fill_gradient: None,
-            line_color: None,
-            line_width: None,
+            line_color: pic_format.line_color,
+            line_width: pic_format.line_width,
             line_dash: None,
             line_cap: None,
-            flip_h: false,
-            flip_v: false,
+            flip_h: pic_format.flip_h,
+            flip_v: pic_format.flip_v,
             text_color: None,
             text_anchor: None,
             paragraphs: None,
             text: None,
-            rotation: None,
-            frame_width: None,
-            frame_height: None,
+            rotation: pic_format.rotation,
+            frame_width: pic_format.frame_width,
+            frame_height: pic_format.frame_height,
             nv_id: None,
             drawing_path: Some(drawing_path.to_owned()),
             drawing_index: None,
@@ -2447,6 +2485,105 @@ fn blip_opacity(blip_node: Node<'_, '_>) -> Option<f64> {
         .ok()?;
     let opacity = (amt / 100_000.0).clamp(0.0, 1.0);
     (opacity < 1.0).then_some(opacity)
+}
+
+/// Picture-format aspects of one `<xdr:pic>`: crop, brightness, outline,
+/// rotation/flip. Shared by the direct-anchor pic branch and the grpSp
+/// child branch, mirroring the shape branch's xfrm conventions.
+struct PictureFormat {
+    src_rect: Option<PictureSrcRect>,
+    lum: Option<PictureLum>,
+    line_color: Option<String>,
+    line_width: Option<f64>,
+    flip_h: bool,
+    flip_v: bool,
+    rotation: Option<f64>,
+    frame_width: Option<f64>,
+    frame_height: Option<f64>,
+}
+
+fn picture_format(
+    pic_node: Node<'_, '_>,
+    blip_node: Node<'_, '_>,
+    colors: &ColorContext,
+) -> PictureFormat {
+    let sppr = pic_node.children().find(|node| node.has_tag_name("spPr"));
+    let xfrm = sppr.and_then(|sppr| sppr.children().find(|node| node.has_tag_name("xfrm")));
+    let rotation = xfrm
+        .and_then(|node| node.attribute("rot"))
+        .and_then(|value| value.parse::<f64>().ok())
+        .map(|value| value / 60_000.0);
+    // Only rotated pictures need the true frame — unrotated anchors already
+    // are the frame.
+    let frame_extent = |attribute: &str| {
+        if rotation.is_none() {
+            return None;
+        }
+        xfrm.and_then(|xfrm| {
+            xfrm.children()
+                .find(|node| node.has_tag_name("ext"))
+                .and_then(|node| node.attribute(attribute))
+        })
+        .and_then(|value| value.parse::<f64>().ok())
+        .filter(|value| *value > 0.0)
+    };
+    let flipped = |attribute: &str| {
+        xfrm.and_then(|node| node.attribute(attribute))
+            .is_some_and(|value| value == "1" || value == "true")
+    };
+    let line_node = sppr.and_then(|sppr| sppr.children().find(|node| node.has_tag_name("ln")));
+    let line_color = line_node.and_then(|ln| {
+        if ln.children().any(|node| node.has_tag_name("noFill")) {
+            return Some("none".into());
+        }
+        drawing_fill_color(ln, colors)
+    });
+    let line_width = line_node
+        .and_then(|ln| ln.attribute("w"))
+        .and_then(|value| value.parse::<f64>().ok())
+        .map(|emu| emu / 12_700.0);
+    let src_rect = pic_node
+        .children()
+        .find(|node| node.has_tag_name("blipFill"))
+        .and_then(|fill| fill.children().find(|node| node.has_tag_name("srcRect")))
+        .map(|node| {
+            let attr = |name: &str| {
+                node.attribute(name)
+                    .and_then(|value| value.parse::<i64>().ok())
+                    .unwrap_or(0)
+            };
+            PictureSrcRect {
+                l: attr("l"),
+                t: attr("t"),
+                r: attr("r"),
+                b: attr("b"),
+            }
+        });
+    let lum = blip_node
+        .children()
+        .find(|node| node.has_tag_name("lum"))
+        .map(|node| {
+            let attr = |name: &str| {
+                node.attribute(name)
+                    .and_then(|value| value.parse::<i64>().ok())
+                    .unwrap_or(0)
+            };
+            PictureLum {
+                bright: attr("bright"),
+                contrast: attr("contrast"),
+            }
+        });
+    PictureFormat {
+        src_rect,
+        lum,
+        line_color,
+        line_width,
+        flip_h: flipped("flipH"),
+        flip_v: flipped("flipV"),
+        rotation,
+        frame_width: frame_extent("cx"),
+        frame_height: frame_extent("cy"),
+    }
 }
 
 fn parse_anchor(anchor: Node<'_, '_>) -> Option<DrawingAnchor> {
@@ -3555,6 +3692,78 @@ mod tests {
 
     fn metadata(body: &str) -> ChartMetadata {
         metadata_with(body, &ColorContext::default())
+    }
+
+    fn pic_format_with(pic_xml: &str) -> PictureFormat {
+        let document = Document::parse(pic_xml).unwrap();
+        let pic = document.root_element();
+        let blip = pic
+            .descendants()
+            .find(|node| node.has_tag_name("blip"))
+            .unwrap();
+        picture_format(pic, blip, &ColorContext::default())
+    }
+
+    fn edited_pic_xml() -> String {
+        r#"<xdr:pic xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+            <xdr:nvPicPr><xdr:cNvPr id="2" name="Picture 2"/><xdr:cNvPicPr/></xdr:nvPicPr>
+            <xdr:blipFill>
+                <a:blip r:embed="rId1" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+                    <a:lum bright="20000" contrast="-10000"/>
+                </a:blip>
+                <a:srcRect l="10000" t="20000" r="30000" b="0"/>
+                <a:stretch><a:fillRect/></a:stretch>
+            </xdr:blipFill>
+            <xdr:spPr>
+                <a:xfrm rot="5400000" flipH="1"><a:off x="0" y="0"/><a:ext cx="1905000" cy="952500"/></a:xfrm>
+                <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+                <a:ln w="19050"><a:solidFill><a:srgbClr val="FF0000"/></a:solidFill></a:ln>
+            </xdr:spPr>
+        </xdr:pic>"#.to_string()
+    }
+
+    #[test]
+    fn picture_format_parses_crop_lum_outline_rotation() {
+        let f = pic_format_with(&edited_pic_xml());
+        assert_eq!(
+            f.src_rect,
+            Some(PictureSrcRect {
+                l: 10_000,
+                t: 20_000,
+                r: 30_000,
+                b: 0
+            })
+        );
+        assert_eq!(
+            f.lum,
+            Some(PictureLum {
+                bright: 20_000,
+                contrast: -10_000
+            })
+        );
+        assert_eq!(f.rotation, Some(90.0));
+        assert!(f.flip_h);
+        assert!(!f.flip_v);
+        assert_eq!(f.line_color.as_deref(), Some("#FF0000"));
+        assert_eq!(f.line_width, Some(1.5));
+        // A rotated picture carries its true (unrotated) frame extent.
+        assert_eq!(f.frame_width, Some(1_905_000.0));
+        assert_eq!(f.frame_height, Some(952_500.0));
+    }
+
+    #[test]
+    fn picture_format_plain_picture_is_all_none() {
+        let f = pic_format_with(
+            r#"<xdr:pic xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+                <xdr:blipFill><a:blip r:embed="rId1" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><a:stretch/></xdr:blipFill>
+                <xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1" cy="1"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr>
+            </xdr:pic>"#,
+        );
+        assert!(f.src_rect.is_none());
+        assert!(f.lum.is_none());
+        assert!(f.rotation.is_none());
+        assert!(f.line_color.is_none());
+        assert!(!f.flip_h);
     }
 
     fn custom_geometry(paths: &str) -> Option<CustomPath> {

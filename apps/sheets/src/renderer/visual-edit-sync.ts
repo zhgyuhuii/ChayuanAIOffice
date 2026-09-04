@@ -382,17 +382,36 @@ export function applyShapeEdit(
       }
     }
     clearVisualSelection(visualId)
-  } else if (!updateVisualAdd(state.editJournal, visualId, changes)) {
+  } else if (
+    !updateVisualAdd(state.editJournal, visualId, {
+      ...(changes.anchor ? { anchor: changes.anchor } : {}),
+      ...(changes.frameSize
+        ? { frameWidth: changes.frameSize.width, frameHeight: changes.frameSize.height }
+        : {}),
+      ...(changes.picture ? { picture: changes.picture } : {}),
+      ...(changes.mediaReplace
+        ? {
+            mediaDataUrl: `data:${changes.mediaReplace.mediaType};base64,${changes.mediaReplace.base64}`,
+            mediaType: changes.mediaReplace.mediaType,
+          }
+        : {}),
+    })
+  ) {
     const visual = state.file.visuals.find((candidate) => candidate.id === visualId)
-    if (changes.text !== undefined || changes.anchor === undefined) {
+    if (
+      changes.text !== undefined ||
+      (changes.anchor === undefined && !changes.picture && !changes.mediaReplace)
+    ) {
       ctx.setMessage(t('appFileVisualMoveDeleteOnly'))
       return
     }
     if (
       !visual ||
       !recordVisualEdit(state.editJournal, visual, {
-        anchor: changes.anchor,
+        ...(changes.anchor ? { anchor: changes.anchor } : {}),
         ...(changes.frameSize ? { frameSize: changes.frameSize } : {}),
+        ...(changes.picture ? { picture: changes.picture } : {}),
+        ...(changes.mediaReplace ? { mediaReplace: changes.mediaReplace } : {}),
       })
     ) {
       ctx.setMessage(t('appVisualNoMove'))

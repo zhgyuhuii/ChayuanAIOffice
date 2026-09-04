@@ -5651,3 +5651,138 @@ textarea:focus {
   right: 46px;
   bottom: 3px;
 }
+
+/* ---- 图片工具（Picture Tools 上下文 tab）---- */
+.picture-lum-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px;
+}
+.picture-lum-label {
+  min-width: 44px;
+  font-size: 12px;
+  color: var(--text-secondary, #555);
+}
+.picture-lum-value {
+  min-width: 38px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.picture-lum-row button {
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 4px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+}
+.picture-lum-row button:hover:not(:disabled) {
+  background: var(--surface-hover, #f0f4ff);
+}
+.size-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+.size-field input {
+  width: 56px;
+  height: 24px;
+  padding: 0 4px;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* ---- 裁剪对话框 ---- */
+.picture-crop-dialog {
+  width: min(720px, 88vw);
+}
+.picture-crop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.picture-crop-stage {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  line-height: 0;
+  touch-action: none;
+  user-select: none;
+}
+.picture-crop-image {
+  max-width: 100%;
+  max-height: 52vh;
+  pointer-events: none;
+}
+.picture-crop-frame {
+  position: absolute;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.42);
+  border: 1.5px solid #fff;
+  outline: 1px solid rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.picture-crop-handle {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 2;
+}
+.picture-crop-handle.handle-nw,
+.picture-crop-handle.handle-se {
+  cursor: nwse-resize;
+}
+.picture-crop-handle.handle-ne,
+.picture-crop-handle.handle-sw {
+  cursor: nesw-resize;
+}
+.picture-crop-handle.handle-n,
+.picture-crop-handle.handle-s {
+  cursor: ns-resize;
+}
+.picture-crop-handle.handle-e,
+.picture-crop-handle.handle-w {
+  cursor: ew-resize;
+}
+.picture-crop-hint {
+  font-size: 12px;
+  color: var(--text-secondary, #666);
+}
+.picture-crop-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border, #e0e0e0);
+}
+.picture-crop-footer button {
+  padding: 5px 14px;
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 5px;
+  background: var(--surface, #fff);
+  cursor: pointer;
+}
+.picture-crop-footer button.primary {
+  background: var(--accent, #217346);
+  border-color: var(--accent, #217346);
+  color: #fff;
+}
+.picture-crop-actions {
+  display: flex;
+  gap: 8px;
+}
+.picture-crop-loading {
+  width: 420px;
+  height: 280px;
+  background: var(--surface-hover, #f2f2f2);
+}
