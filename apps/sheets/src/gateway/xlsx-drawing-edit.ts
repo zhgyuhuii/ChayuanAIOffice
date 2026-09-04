@@ -65,7 +65,9 @@ export async function applyVisualEdits(
     // 更改图片: allocate the new media part + relationship up front so the
     // XML rewrite can repoint r:embed to it.
     const replacedRelIds = new Map<number, string>()
+    const echartDescrByIndex = new Map<number, string>()
     const replacedOldRelIds = new Set<string>()
+    const originalXml = await pkg.readText(drawingPath)
     for (const edit of group) {
       if (!edit.mediaReplace) continue
       const extension = IMAGE_EXTENSIONS[edit.mediaReplace.mediaType]
@@ -81,6 +83,26 @@ export async function applyVisualEdits(
       )
       touchedEntries.add(relsPathFor(drawingPath))
       replacedRelIds.set(edit.drawingIndex, newRelId)
+      // echart 编辑:原位重写 sidecar(锚点 descr 指针决定路径;无指针则分配)
+      if (edit.mediaReplace.echart) {
+        const anchors = [...originalXml.matchAll(ANCHOR_PATTERN)]
+        const anchorXml = anchors[edit.drawingIndex]?.[0]
+        const existing = anchorXml && /\bdescr="chatoffice-echart:([^"]+)"/.exec(anchorXml)?.[1]
+        const sidecarPath = existing ?? (await allocatePartPath(pkg, 'xl/echarts/echart', '.json'))
+        const meta = edit.mediaReplace.echart
+        const payload = JSON.stringify({
+          v: 1,
+          option: meta.optionJson,
+          code: meta.code,
+          groupId: meta.groupId,
+          data: meta.data ?? null,
+        })
+        if (await pkg.has(sidecarPath)) pkg.write(sidecarPath, payload)
+        else pkg.add(sidecarPath, payload)
+        touchedEntries.add(sidecarPath)
+        await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
+        echartDescrByIndex.set(edit.drawingIndex, `chatoffice-echart:${sidecarPath}`)
+      }
     }
     let xml = await pkg.readText(drawingPath)
     // Old media relationships are harvested before the rewrite so the
@@ -108,7 +130,13 @@ export async function applyVisualEdits(
         throw new VisualEditError('Duplicate edits target the same drawing anchor.')
       }
       seen.add(edit.drawingIndex)
-      xml = applyOneEdit(xml, edit, removedRelationships, replacedRelIds.get(edit.drawingIndex))
+      xml = applyOneEdit(
+        xml,
+        edit,
+        removedRelationships,
+        replacedRelIds.get(edit.drawingIndex),
+        echartDescrByIndex.get(edit.drawingIndex),
+      )
     }
     // A replaced picture's old relationship rows drop when nothing in the
     // final drawing references them (the media part itself stays — other
@@ -386,6 +414,7 @@ function applyOneEdit(
   edit: WorkbookVisualEdit,
   removedRelationships: RemovedAnchorRelationship[],
   replacedRelId?: string,
+  echartDescr?: string,
 ): string {
   const anchors = [...xml.matchAll(ANCHOR_PATTERN)]
   const match = anchors[edit.drawingIndex]
@@ -494,6 +523,18 @@ function applyOneEdit(
     if (replacedRelId !== undefined) {
       picXml = picXml.replace(/\s[\w.-]+:embed="[^"]*"/, ` r:embed="${replacedRelId}"`)
       picXml = picXml.replace(/\s[\w.-]+:link="[^"]*"/, '')
+    }
+    if (echartDescr !== undefined) {
+      // descr 指针:已有则替换,没有则在 cNvPr 开标签补上(转义)
+      const escaped = echartDescr
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+      if (/\bdescr="[^"]*"/.test(picXml)) {
+        picXml = picXml.replace(/\bdescr="[^"]*"/, `descr="${escaped}"`)
+      } else {
+        picXml = picXml.replace(/(<[\w.-]*:cNvPr\b[^>]*?)(\/?>)/, `$1 descr="${escaped}"$2`)
+      }
     }
     if (edit.picture) picXml = applyPictureFormat(picXml, edit.picture)
     patched =

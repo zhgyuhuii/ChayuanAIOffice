@@ -1208,7 +1208,16 @@ function EditableShapeVisual({
                 if ((event.target as HTMLElement).closest('button, .chart-editor')) return
                 setChartEditRequest((count) => count + 1)
               }
-            : undefined
+            : visual.kind === 'image' && visual.echartMeta
+              ? () => {
+                  // ECharts 扩展图表:双击回显编辑(App 层监听该事件)
+                  window.dispatchEvent(
+                    new CustomEvent('chartkit-edit-echart-visual', {
+                      detail: { visualId: visual.id },
+                    }),
+                  )
+                }
+              : undefined
       }
       data-tip={
         textEditing

@@ -620,6 +620,34 @@ export function App(): React.JSX.Element {
   const [equationDialogOpen, setEquationDialogOpen] = useState(false)
   const [recommendedCharts, setRecommendedCharts] = useState<ChartRecommendations | null>(null)
   const [chartDesignerOpen, setChartDesignerOpen] = useState(false)
+  const [chartDesignerEdit, setChartDesignerEdit] = useState<{
+    visualId: string
+    code?: string
+    title?: string
+    groupId: string
+  } | null>(null)
+  // 双击 echart visual → 回显编辑
+  useEffect(() => {
+    const onEditVisual = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as { visualId: string } | null
+      if (!detail) return
+      const state = lazyWorkbookRef.current
+      if (!state) return
+      const target = [...state.file.visuals, ...state.editJournal.visualAdds].find(
+        (v) => v.id === detail.visualId,
+      )
+      if (!target || target.kind !== 'image' || !target.echartMeta) return
+      setChartDesignerEdit({
+        visualId: target.id,
+        ...(target.echartMeta.code ? { code: target.echartMeta.code } : {}),
+        ...(target.name ? { title: target.name.replace(/ \(ECharts\)$/, '') } : {}),
+        groupId: target.echartMeta.groupId,
+      })
+      setChartDesignerOpen(true)
+    }
+    window.addEventListener('chartkit-edit-echart-visual', onEditVisual)
+    return () => window.removeEventListener('chartkit-edit-echart-visual', onEditVisual)
+  }, [])
   /// The focused floating visual (chart/shape/image); charts surface a
   /// contextual Chart Design ribbon tab while selected.
   const [selectedVisual, setSelectedVisual] = useState<WorkbookVisualObject | null>(null)
@@ -5411,10 +5439,35 @@ export function App(): React.JSX.Element {
       {chartDesignerOpen && (
         <ChartDesignerModal
           lang="zh-CN"
-          onClose={() => setChartDesignerOpen(false)}
+          initial={chartDesignerEdit ?? null}
+          onClose={() => {
+            setChartDesignerEdit(null)
+            setChartDesignerOpen(false)
+          }}
           onInsert={(payload) => {
             void (async () => {
               const ctx = visualContext()
+              // 双击回显的编辑提交:mediaReplace 换海报 + echart 原位重写 sidecar
+              if (chartDesignerEdit && payload.snapshotPng) {
+                const m = /^data:[^;]+;base64,([\s\S]*)$/.exec(payload.snapshotPng)
+                if (m && m[1]) {
+                  applyShapeEditImpl(visualSyncContext(), chartDesignerEdit.visualId, {
+                    mediaReplace: {
+                      mediaType: 'image/png',
+                      base64: m[1],
+                      echart: {
+                        optionJson: payload.optionJson,
+                        code: payload.code ?? null,
+                        groupId: payload.groupId,
+                        data: payload.data ?? null,
+                      },
+                    },
+                  })
+                }
+                setChartDesignerEdit(null)
+                setChartDesignerOpen(false)
+                return
+              }
               if (payload.engine === 'ooxml' && payload.spec) {
                 const KIND: Record<string, string> = {
                   bar: 'column',
@@ -5435,6 +5488,7 @@ export function App(): React.JSX.Element {
                   ...(payload.data ? { data: payload.data } : {}),
                 })
               }
+              setChartDesignerEdit(null)
               setChartDesignerOpen(false)
             })()
           }}

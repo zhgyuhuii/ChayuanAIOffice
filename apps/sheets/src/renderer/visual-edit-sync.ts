@@ -393,6 +393,7 @@ export function applyShapeEdit(
         ? {
             mediaDataUrl: `data:${changes.mediaReplace.mediaType};base64,${changes.mediaReplace.base64}`,
             mediaType: changes.mediaReplace.mediaType,
+            ...(changes.mediaReplace.echart ? { echartMeta: changes.mediaReplace.echart } : {}),
           }
         : {}),
       ...(changes.editAs ? { editAs: changes.editAs } : {}),

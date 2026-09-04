@@ -921,6 +921,7 @@ export function toSaveVisualAdds(journal: EditJournal): WorkbookVisualAdd[] {
             : {}),
           ...(visual.shapeType && visual.shapeType !== 'rect' ? { geom: visual.shapeType } : {}),
           ...(visual.shadow === undefined ? {} : { shadow: visual.shadow }),
+          ...(visual.echartMeta ? { echart: visual.echartMeta } : {}),
         },
       })
       continue

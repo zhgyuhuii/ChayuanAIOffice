@@ -85,6 +85,21 @@ export interface ImageAdd {
   /// True (unrotated) frame in EMU — written into a:xfrm ext for rotated pics.
   readonly frameWidth?: number | undefined
   readonly frameHeight?: number | undefined
+  /// ECharts 扩展图表:option/code/数据表(写 xl/echarts sidecar + descr 指针)
+  readonly echart?:
+    | {
+        readonly optionJson: string
+        readonly code: string | null
+        readonly groupId: string
+        readonly data?:
+          | {
+              readonly columns: readonly string[]
+              readonly rows: ReadonlyArray<ReadonlyArray<string | number | null>>
+            }
+          | null
+          | undefined
+      }
+    | undefined
   /// Crop-to-shape preset (a:prstGeom prst).
   readonly geom?: string | undefined
 }
@@ -161,8 +176,26 @@ export async function applyVisualAdditions(
         relativeTarget(drawing.path, mediaPath),
       )
       touchedEntries.add(relsPathFor(drawing.path))
+      // ECharts sidecar:xl/echarts/echartN.json + descr 指针(docx/slides 同款)
+      let echartDescr: string | undefined
+      if (image.echart) {
+        const sidecarPath = await allocatePartPath(pkg, 'xl/echarts/echart', '.json')
+        pkg.add(
+          sidecarPath,
+          JSON.stringify({
+            v: 1,
+            option: image.echart.optionJson,
+            code: image.echart.code,
+            groupId: image.echart.groupId,
+            data: image.echart.data ?? null,
+          }),
+        )
+        touchedEntries.add(sidecarPath)
+        await registerContentTypeDefault(pkg, 'json', 'application/json', touchedEntries)
+        echartDescr = `chatoffice-echart:${sidecarPath}`
+      }
       await appendAnchor(pkg, drawing.path, addition.anchor, (shapeId) =>
-        pictureXml(shapeId, imageRelId, image),
+        pictureXml(shapeId, imageRelId, image, echartDescr),
       )
     } else {
       throw new VisualAddError('A visual addition carries exactly one of chart, shape, or image.')
@@ -303,7 +336,12 @@ function chartFrameXml(shapeId: number, chartRelId: string): string {
   )
 }
 
-function pictureXml(shapeId: number, imageRelId: string, image: ImageAdd | undefined): string {
+function pictureXml(
+  shapeId: number,
+  imageRelId: string,
+  image: ImageAdd | undefined,
+  echartDescr?: string,
+): string {
   const frame =
     image?.frameWidth !== undefined && image?.frameHeight !== undefined
       ? `<a:ext cx="${image.frameWidth}" cy="${image.frameHeight}"/>`
@@ -311,7 +349,7 @@ function pictureXml(shapeId: number, imageRelId: string, image: ImageAdd | undef
   const base =
     '<xdr:pic>' +
     '<xdr:nvPicPr>' +
-    `<xdr:cNvPr id="${shapeId}" name="Picture ${shapeId}"/>` +
+    `<xdr:cNvPr id="${shapeId}" name="Picture ${shapeId}"${echartDescr ? ` descr="${escapeXmlAttribute(echartDescr)}"` : ''}/>` +
     '<xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr>' +
     '</xdr:nvPicPr>' +
     '<xdr:blipFill>' +

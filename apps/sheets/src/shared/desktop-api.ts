@@ -335,6 +335,22 @@ const chartAxisInfoSchema = z
   })
   .strict()
 
+/// ECharts 扩展图表元数据(公共设计器):随 image visual 存活——journal/
+/// 保存载荷携带,保存时写 xl/echarts/echartN.json sidecar + drawing descr 指针。
+export const visualEchartMetaSchema = z
+  .object({
+    optionJson: z.string().min(1),
+    code: z.string().nullable(),
+    groupId: z.string().min(1),
+    data: z
+      .object({
+        columns: z.array(z.string()),
+        rows: z.array(z.array(z.union([z.string(), z.number(), z.null()]))),
+      })
+      .nullable(),
+  })
+  .strict()
+
 const visualObjectSchema = z
   .object({
     id: z.string().min(1),
@@ -468,6 +484,8 @@ const visualObjectSchema = z
     chartPath: z.string().optional(),
     mediaPath: z.string().optional(),
     mediaType: z.string().optional(),
+    /// ECharts 扩展图表的活编辑载荷(sidecar 往返;普通图片无此字段)
+    echartMeta: visualEchartMetaSchema.optional(),
     /// a:blip/a:alphaModFix amt as 0..1 picture opacity.
     opacity: z.number().min(0).max(1).optional(),
     /// a:blipFill/a:srcRect — non-destructive crop as the 1/100000 fraction
@@ -1428,6 +1446,8 @@ export const workbookVisualEditSchema = z
       .object({
         mediaType: z.enum(['image/png', 'image/jpeg', 'image/gif']),
         base64: z.string().min(1).max(28_000_000),
+        /// echart 双击编辑提交:新 option/代码/数据表(sidecar 原位重写)
+        echart: visualEchartMetaSchema.optional(),
       })
       .strict()
       .optional(),
@@ -1674,6 +1694,8 @@ export const workbookVisualAddSchema = z
           .string()
           .regex(/^[A-Za-z0-9]{1,64}$/)
           .optional(),
+        /// ECharts 扩展图表:保存时写 sidecar + descr 指针
+        echart: visualEchartMetaSchema.optional(),
       })
       .strict()
       .optional(),
