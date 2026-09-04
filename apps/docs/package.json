@@ -19,12 +19,12 @@
   },
   "devDependencies": {
     "@chatoffice/agent-core": "*",
-    "@chatoffice/chart-kit": "*",
-    "@chatoffice/i18n": "*",
     "@chatoffice/ai-provider": "*",
     "@chatoffice/ai-search": "*",
+    "@chatoffice/chart-kit": "*",
     "@chatoffice/docx-engine": "*",
     "@chatoffice/file-parse": "*",
+    "@chatoffice/i18n": "*",
     "@chatoffice/project-store": "*",
     "@chatoffice/ribbon": "*",
     "@chatoffice/storage-adapter": "*",
@@ -99,6 +99,7 @@
     "@chatoffice/font-metrics": "*",
     "@chatoffice/pptx-render": "*",
     "electron-updater": "^6.8.9",
+    "opencc-js": "^1.4.2",
     "pdf-lib": "^1.17.1"
   }
 }

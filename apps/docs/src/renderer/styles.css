@@ -1024,6 +1024,13 @@ html.chatoffice-popover-open .ribbon-tabs {
   background: #d9d9d9;
 }
 
+/* 简繁转换 button glyphs (审阅): 简体箭头指向目标字形 */
+.rb-zh-convert {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+}
+
 .rb-color-bar {
   width: 16px;
   height: 4px;

@@ -18,6 +18,7 @@ import {
 import type { DocsTabInfo } from '../../shared/ipc'
 import { tableModelToPmNode } from '../editor/convert'
 import { insertPageBreak } from '../editor/page-break'
+import { applyZhConvert } from '../editor/zh-convert'
 import { isStraightLineKind } from '../editor/shape-svg'
 import type { InkTool } from '../editor/ink'
 import { t, useI18n, type StringKey } from '../i18n/locale'
@@ -1021,6 +1022,39 @@ export function ReviewTab({
           </button>
         </div>
         <div className="ribbon-group-label">{t('ribbonCompare')}</div>
+      </div>
+
+      {/* 简繁转换 (WPS 审阅 #18-19): opencc 词汇级转换，选区范围优先 */}
+      <div className="ribbon-group">
+        <div className="ribbon-group-items">
+          <button
+            className="rb-big"
+            disabled={!hasDoc || editor.state.selection.empty}
+            data-tip={t('ribbonToTraditionalTip')}
+            onClick={() => applyZhConvert(editor, 's2t')}
+          >
+            <span className="rb-big-icon">
+              <span className="rb-zh-convert" aria-hidden="true">
+                簡
+              </span>
+            </span>
+            <span>{t('ribbonToTraditional')}</span>
+          </button>
+          <button
+            className="rb-big"
+            disabled={!hasDoc || editor.state.selection.empty}
+            data-tip={t('ribbonToSimplifiedTip')}
+            onClick={() => applyZhConvert(editor, 't2s')}
+          >
+            <span className="rb-big-icon">
+              <span className="rb-zh-convert" aria-hidden="true">
+                簡
+              </span>
+            </span>
+            <span>{t('ribbonToSimplified')}</span>
+          </button>
+        </div>
+        <div className="ribbon-group-label">{t('ribbonZhConvertGroup')}</div>
       </div>
 
       <div className="ribbon-sep" />
