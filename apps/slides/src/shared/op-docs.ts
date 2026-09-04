@@ -133,6 +133,21 @@ export const OP_DOCS: Record<string, OpDoc> = {
     aiCallable: false,
   },
   addModel3d: { sig: '{bytes,ext,offset} — bytes payload', group: 'insert', aiCallable: false },
+  addEchart: {
+    sig: '{pngBase64,optionJson,groupId,offset} — ECharts extended-family chart (poster PNG + sidecar)',
+    group: 'insert',
+    aiCallable: false,
+  },
+  getEchart: {
+    sig: '{target} — read the echart sidecar of a picture element',
+    group: 'insert',
+    aiCallable: false,
+  },
+  updateEchart: {
+    sig: '{target,pngBase64,optionJson} — rewrite sidecar + poster bytes in place',
+    group: 'insert',
+    aiCallable: false,
+  },
   pasteElements: {
     sig: '{items,dx,dy} — clipboard payload',
     group: 'insert',

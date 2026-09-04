@@ -257,6 +257,20 @@ const api: SlidesApi = {
   addChart: (op: AddChartOp) => ipcRenderer.invoke('slides:add-chart', op),
   addSmartArt: (op: AddSmartArtOp) => ipcRenderer.invoke('slides:add-smartart', op),
   addImageBytes: (op: AddImageBytesOp) => ipcRenderer.invoke('slides:add-image-bytes', op),
+  addEchart: (op: {
+    slideIndex: number
+    fitWidthPx: number
+    xPx: number
+    yPx: number
+    wPx: number
+    hPx: number
+    base64: string
+    optionJson: string
+    groupId: string
+    title?: string
+    code?: string
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  }) => ipcRenderer.invoke('slides:add-echart', op),
   replacePictureBytes: (op: ReplacePictureBytesOp) =>
     ipcRenderer.invoke('slides:replace-picture-bytes', op),
   insertMedia: (slideIndex: number, kind: 'video' | 'audio', fitWidthPx: number) =>
@@ -370,6 +384,14 @@ const api: SlidesApi = {
     ipcRenderer.invoke('ai:web-search', query, maxResults),
   imageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:image-search', query, maxResults),
+  stockImageSearch: (source: string, query: string, maxResults?: number) =>
+    ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults }),
+  stockKeysGet: () => ipcRenderer.invoke('ai:stock-keys-get'),
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) =>
+    ipcRenderer.invoke('ai:stock-keys-set', keys),
+  webImageSearch: (query: string, maxResults?: number) =>
+    ipcRenderer.invoke('ai:web-image-search', query, maxResults),
+  remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
   insertImageUrl: (op: {
     slideIndex: number
     url: string

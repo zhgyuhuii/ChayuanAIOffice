@@ -558,6 +558,7 @@ export interface Props {
   onInsertIcon: (def: IconDef, color: string) => void
   /** Insert a chart (sample data, writes a chart part) */
   onInsertChart: (kind: ChartPresetDef['kind']) => void
+  onOpenChartDesigner: () => void
   /** Insert SmartArt (simplified shape combination) */
   onInsertSmartArt: (def: SmartArtDef) => void
   /** Insert WordArt (preset-styled text box) */
@@ -688,6 +689,7 @@ export interface RibbonTabCtx extends Pick<
   | 'onFlip'
   | 'onCopy'
   | 'onCut'
+  | 'onOpenChartDesigner'
   | 'onElementTextColor'
   | 'onFindReplace'
   | 'onFontFamily'

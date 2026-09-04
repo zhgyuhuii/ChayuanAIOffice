@@ -283,6 +283,15 @@ export {
   type NewChartOptions,
 } from './chart-insert'
 export {
+  addSlideEchart,
+  readSlideEchart,
+  updateSlideEchart,
+  slideEchartPartOf,
+  ECHART_DESCR_PREFIX,
+  type NewSlideEchart,
+  type EchartSidecar,
+} from './echart-insert'
+export {
   addSmartArt,
   buildSmartArtXml,
   type SmartArtLayout,
@@ -1639,10 +1648,13 @@ export function setPictureLum(
       if (!blip) return false
       const tintAt = blip[2].indexOf('<a:tint')
       const inner =
-        tintAt >= 0
-          ? blip[2].slice(0, tintAt) + elXml + blip[2].slice(tintAt)
-          : blip[2] + elXml
-      xml = xml.slice(0, blip.index) + blip[1] + inner + blip[3] + xml.slice(blip.index + blip[0].length)
+        tintAt >= 0 ? blip[2].slice(0, tintAt) + elXml + blip[2].slice(tintAt) : blip[2] + elXml
+      xml =
+        xml.slice(0, blip.index) +
+        blip[1] +
+        inner +
+        blip[3] +
+        xml.slice(blip.index + blip[0].length)
     } else {
       return false
     }

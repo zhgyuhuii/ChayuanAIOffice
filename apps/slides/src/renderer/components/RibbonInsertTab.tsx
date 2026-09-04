@@ -57,6 +57,7 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     onInsert,
     onPickShape,
     onInsertChart,
+    onOpenChartDesigner,
     onInsertField,
     onInsertIcon,
     onInsertImage,
@@ -337,28 +338,20 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
             ))}
           </div>,
         )}
-        {dropBig(
-          'chart',
-          <IconChart size={BIG} />,
-          t('ribbonChart'),
-          t('ribbonChartTip'),
-          <div className="rb-menu rb-menu-wide">
-            {CHART_GALLERY.map((def) => (
-              <button
-                key={def.kind}
-                onClick={() => {
-                  setInsertDrop(null)
-                  onInsertChart(def.kind)
-                }}
-              >
-                <span className="rb-menu-glyph rb-menu-thumb">
-                  <ChartKindThumb kind={def.kind} width={40} />
-                </span>
-                {def.label}
-              </button>
-            ))}
-          </div>,
-        )}
+        {/* 图表库入口(公共设计器):旧 6 类 gallery 由设计器标准组接管 */}
+        <div className="rb-drop-wrap">
+          <button
+            className="rb-big"
+            disabled={!hasDoc}
+            data-tip={t('ribbonChartTip')}
+            onClick={() => onOpenChartDesigner()}
+          >
+            <span className="rb-big-icon">
+              <IconChart size={BIG} />
+            </span>
+            <span>{t('ribbonChart')}</span>
+          </button>
+        </div>
       </Group>
       <div className="ribbon-sep" />
       <Group label={t('ribbonGroupLinks')}>

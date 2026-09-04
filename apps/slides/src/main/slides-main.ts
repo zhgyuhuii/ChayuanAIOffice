@@ -3378,6 +3378,59 @@ export function registerSlidesIpc(): void {
     return rebuilt ? { slide: rebuilt, sourceId: r.records![0]!.created![0]! } : null
   })
 
+  ipcMain.handle(
+    'slides:add-echart',
+    (
+      e,
+      op: {
+        slideIndex: number
+        fitWidthPx: number
+        xPx: number
+        yPx: number
+        wPx: number
+        hPx: number
+        base64: string
+        optionJson: string
+        groupId: string
+        title?: string
+        code?: string
+        data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+      },
+    ) => {
+      const session = sessions.get(e.sender.id)
+      if (!session) return null
+      const slide = session.opened.deck.slides[op.slideIndex]
+      if (!slide) return null
+      const baseWidthPx = session.opened.deck.size.cx / EMU_PER_PX_96
+      const scale = op.fitWidthPx / baseWidthPx
+      const toEmu = (px: number) => Math.round((px / scale) * EMU_PER_PX_96)
+      const r = sessionTxn(session, {
+        ops: [
+          {
+            op: 'addEchart',
+            target: { slide: op.slideIndex },
+            pngBase64: op.base64,
+            optionJson: op.optionJson,
+            groupId: op.groupId,
+            ...(op.title ? { title: op.title } : {}),
+            ...(op.code ? { code: op.code } : {}),
+            ...(op.data ? { data: op.data } : {}),
+            offset: {
+              x: toEmu(op.xPx),
+              y: toEmu(op.yPx),
+              cx: Math.max(1, toEmu(op.wPx)),
+              cy: Math.max(1, toEmu(op.hPx)),
+            },
+          },
+        ],
+      })
+      if (!r) return { error: 'failed' as const }
+      session.fitWidthPx = op.fitWidthPx
+      const rebuilt = rebuildSlide(session, op.slideIndex)
+      return rebuilt ? { slide: rebuilt, sourceId: r.records![0]!.created![0]! } : null
+    },
+  )
+
   ipcMain.handle('slides:add-image-bytes', (e, op: AddImageBytesOp) => {
     const session = sessions.get(e.sender.id)
     if (!session) return null

@@ -96,7 +96,12 @@ import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@chatoffice/ui'
 import { DockShell, type DockLayoutState } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
-import { compressImageForDisplay } from '@chatoffice/ui'
+import {
+  compressImageForDisplay,
+  InsertImageDialog,
+  type InsertImageBridge,
+  type WebImageItem,
+} from '@chatoffice/ui'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
 import { t, useI18n } from './i18n/locale'
@@ -116,6 +121,7 @@ import type {
   SlideShowState,
 } from './action-context'
 import { FIT_WIDTH } from './app-constants'
+import { ChartDesignerModal, type ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
 import { StageRuler } from './components/StageRuler'
 import { formatRulerValue, type RulerUnit } from './ruler-ticks'
 import * as fileActions from './file-actions'
@@ -1412,6 +1418,34 @@ export function App() {
     if (kind) void insertActions.insertShapeAt(ctxRef.current, kind, rect)
   }, [])
   const insertImage = useCallback(() => insertActions.insertImage(ctxRef.current), [])
+  const [insertImageOpen, setInsertImageOpen] = useState(false)
+  const insertImageBridge: InsertImageBridge = {
+    searchWeb: async (query) => {
+      const r = await window.slidesApi.webImageSearch(query)
+      return { images: (r.images as WebImageItem[]) ?? [] }
+    },
+    searchStock: async (source, query) => {
+      const r = await window.slidesApi.stockImageSearch(source, query)
+      return {
+        images: (r.images as WebImageItem[]) ?? [],
+        ...(r.error ? { error: r.error } : {}),
+        ...(r.code ? { code: r.code } : {}),
+      }
+    },
+    fetchImage: async (url) => {
+      const r = await window.slidesApi.remoteImage(url)
+      return r ? { mediaType: r.mime, base64: r.base64 } : null
+    },
+    getStockKeys: () => window.slidesApi.stockKeysGet(),
+    setStockKeys: (keys) => window.slidesApi.stockKeysSet(keys),
+    generate: async ({ prompt }) => {
+      const r = await window.slidesApi.generateImage({ prompt })
+      if (!r.url) return { error: r.error ?? 'no image' }
+      const media = await window.slidesApi.remoteImage(r.url)
+      if (!media) return { error: 'image download failed' }
+      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    },
+  }
 
   const onBackground = useCallback((op: BgPaneOp, allSlides?: boolean) => {
     const cur = ctxRef.current.current
@@ -1533,6 +1567,107 @@ export function App() {
     (kind: ChartPresetDef['kind']) => insertActions.insertChart(ctxRef.current, kind),
     [],
   )
+
+  // 公共图表设计器(39 组;标准组走原生 chart 链,扩展组落 echart 图片+sidecar)
+  const [chartDesignerOpen, setChartDesignerOpen] = useState(false)
+  const openChartDesigner = useCallback(() => setChartDesignerOpen(true), [])
+  const insertFromChartDesigner = useCallback(async (payload: ChartDesignerInsert) => {
+    const ctx = ctxRef.current
+    if (!ctx) return
+    const slide = ctx.slide
+    if (!slide) return
+    // 标准组(可原生映射)优先走真 OOXML chart 链
+    const NATIVE: Record<string, ChartPresetDef['kind']> = {
+      bar: 'bar',
+      line: 'line',
+      pie: 'pie',
+      area: 'area',
+      scatter: 'scatter',
+      doughnut: 'doughnut',
+      radar: 'radar',
+      combo: 'comboBarLine',
+    }
+    const flatInput = payload.data ?? null
+    const nativeKind = payload.spec
+      ? NATIVE[payload.spec.type]
+      : flatInput && !flatInput.columns.includes('层级1')
+        ? NATIVE[payload.groupId]
+        : undefined
+    const table = payload.spec?.data ?? null
+    const flat =
+      table && table.categories
+        ? {
+            categories: table.categories.map(String),
+            series: (table.series ?? []).map((sr) => ({
+              name: sr.name ?? '',
+              values: sr.values.map((v) => (typeof v === 'number' ? v : null)),
+            })),
+          }
+        : flatInput && flatInput.columns.length >= 2 && flatInput.columns[0] === '类别'
+          ? {
+              categories: flatInput.rows.map((r) => String(r[0] ?? '')),
+              series: flatInput.columns.slice(1).map((name, i) => ({
+                name,
+                values: flatInput.rows.map((r) => {
+                  const v = r[i + 1]
+                  return typeof v === 'number' ? v : 0
+                }),
+              })),
+            }
+          : null
+    if (nativeKind && flat && flat.series.length > 0) {
+      const w = Math.round(slide.widthPx * 0.62)
+      const h = Math.round(slide.heightPx * 0.62)
+      const r = await window.slidesApi.addChart({
+        slideIndex: ctx.current,
+        kind: nativeKind,
+        categories: flat.categories,
+        series: flat.series.map((sr) => ({
+          name: sr.name,
+          values: sr.values.map((v) => (v === null ? 0 : v)),
+        })),
+        xPx: Math.round((slide.widthPx - w) / 2),
+        yPx: Math.round((slide.heightPx - h) / 2),
+        wPx: w,
+        hPx: h,
+        fitWidthPx: FIT_WIDTH,
+      })
+      if (r) {
+        ctx.applySlide(ctx.current, r.slide)
+        ctx.setSelectedIds([r.sourceId])
+        ctx.setStatus(t('appStatusChartInserted'))
+      }
+      setChartDesignerOpen(false)
+      return
+    }
+    if (payload.snapshotPng) {
+      const m = /^data:[^;]+;base64,(.*)$/s.exec(payload.snapshotPng)
+      if (m) {
+        const w = Math.round(slide.widthPx * 0.62)
+        const h = Math.round(slide.heightPx * 0.62)
+        const r = await window.slidesApi.addEchart({
+          slideIndex: ctx.current,
+          fitWidthPx: FIT_WIDTH,
+          xPx: Math.round((slide.widthPx - w) / 2),
+          yPx: Math.round((slide.heightPx - h) / 2),
+          wPx: w,
+          hPx: h,
+          base64: m[1],
+          optionJson: payload.optionJson,
+          groupId: payload.groupId,
+          ...(payload.title ? { title: payload.title } : {}),
+          ...(payload.code ? { code: payload.code } : {}),
+          ...(flatInput ? { data: flatInput } : {}),
+        })
+        if (r && 'slide' in r) {
+          ctx.applySlide(ctx.current, r.slide)
+          ctx.setSelectedIds([r.sourceId])
+          ctx.setStatus(t('appStatusChartInserted'))
+        }
+      }
+    }
+    setChartDesignerOpen(false)
+  }, [])
   const insertSmartArt = useCallback(
     (def: SmartArtDef) => insertActions.insertSmartArt(ctxRef.current, def),
     [],
@@ -2969,7 +3104,54 @@ export function App() {
 
   return (
     <div className="app">
+      {insertImageOpen && (
+        <InsertImageDialog
+          bridge={insertImageBridge}
+          onInsert={(dataUrl) => {
+            setInsertImageOpen(false)
+            void (async () => {
+              const slide = ctxRef.current.slide
+              if (!slide) return
+              const m = /^data:image\/(png|jpeg|gif|webp);base64,(.*)$/s.exec(dataUrl)
+              if (!m) return
+              const img = new Image()
+              await new Promise<void>((resolve) => {
+                img.onload = () => resolve()
+                img.onerror = () => resolve()
+                img.src = dataUrl
+              })
+              const natural = img.naturalWidth || 480
+              const naturalH = img.naturalHeight || 320
+              const scale = Math.min(1, slide.widthPx / 2 / natural, slide.heightPx / 2 / naturalH)
+              const w = Math.round(natural * scale)
+              const h = Math.round(naturalH * scale)
+              const r = await window.slidesApi.addImageBytes({
+                slideIndex: ctxRef.current.current,
+                base64: m[2],
+                ext: m[1] === 'jpeg' ? 'jpeg' : m[1],
+                xPx: Math.round((slide.widthPx - w) / 2),
+                yPx: Math.round((slide.heightPx - h) / 2),
+                wPx: w,
+                hPx: h,
+                fitWidthPx: FIT_WIDTH,
+              })
+              if (r && !('error' in r)) {
+                applySlide(ctxRef.current.current, r.slide)
+                setSelectedIds([r.sourceId])
+              }
+            })()
+          }}
+          onClose={() => setInsertImageOpen(false)}
+        />
+      )}
       <ToastHost />
+      {chartDesignerOpen && (
+        <ChartDesignerModal
+          lang="zh-CN"
+          onClose={() => setChartDesignerOpen(false)}
+          onInsert={(payload) => void insertFromChartDesigner(payload)}
+        />
+      )}
       <DockShell
         className="app-main"
         storageKey="aislides.dock"
@@ -3076,7 +3258,7 @@ export function App() {
             onAskSelection={openAskPopover}
             onInsert={(kind) => void insertElement(kind)}
             onPickShape={pickShape}
-            onInsertImage={() => void insertImage()}
+            onInsertImage={() => setInsertImageOpen(true)}
             onFormatBackground={openBgFormat}
             onApplyTheme={(preset) => void applyThemePreset(preset)}
             onAddSlide={() => void addSlide()}
@@ -3215,6 +3397,7 @@ export function App() {
             commentCount={comments.length}
             onInsertIcon={(def, color) => void insertIcon(def, color)}
             onInsertChart={(kind) => void insertChart(kind)}
+            onOpenChartDesigner={openChartDesigner}
             onInsertSmartArt={(def) => void insertSmartArt(def)}
             onInsertWordArt={(preset) => void insertWordArt(preset)}
             onInsertField={(type) => void insertField(type)}

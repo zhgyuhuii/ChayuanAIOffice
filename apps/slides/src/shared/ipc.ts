@@ -1515,6 +1515,21 @@ export interface SlidesApi {
   addChart: (op: AddChartOp) => Promise<{ slide: RenderSlide; sourceId: string } | null>
   /** Insert SmartArt (simplified shape-group version) */
   addSmartArt: (op: AddSmartArtOp) => Promise<{ slide: RenderSlide; sourceId: string } | null>
+  /** Insert an ECharts extended-family chart (poster PNG + sidecar part) */
+  addEchart: (op: {
+    slideIndex: number
+    fitWidthPx: number
+    xPx: number
+    yPx: number
+    wPx: number
+    hPx: number
+    base64: string
+    optionJson: string
+    groupId: string
+    title?: string
+    code?: string
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  }) => Promise<{ slide: RenderSlide; sourceId: string } | { error: 'failed' } | null>
   /** Insert a renderer-generated bitmap (rasterized icon library etc.) */
   addImageBytes: (
     op: AddImageBytesOp,
@@ -1727,6 +1742,18 @@ export interface SlidesApi {
     /** failure reason when method === 'error' */
     error?: string
   }>
+  stockImageSearch: (
+    source: string,
+    query: string,
+    maxResults?: number,
+  ) => Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
+  stockKeysGet: () => Promise<{ pexels: string; pixabay: string }>
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) => Promise<void>
+  webImageSearch: (
+    query: string,
+    maxResults?: number,
+  ) => Promise<{ images: unknown[]; method?: string; error?: string }>
+  remoteImage: (url: string) => Promise<{ base64: string; mime: string } | null>
   insertImageUrl: (op: {
     slideIndex: number
     url: string
