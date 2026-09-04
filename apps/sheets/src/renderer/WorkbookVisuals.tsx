@@ -67,32 +67,17 @@ export interface ShapeEditing {
   readonly onEdit: (visualId: string, changes: ShapeEditChanges) => void
 }
 
-/// Visuals created this session are fully editable in place: their whole
-/// object lives in the journal, so anchor/text changes save for free.
-export function isEditableShape(visual: WorkbookVisualObject): boolean {
-  return visual.kind === 'shape' && visual.id.startsWith('added-shape-')
-}
+/// Editability gates live in visual-editable.ts (pure, unit-tested);
+/// re-exported here for app-level checks.
+export {
+  isEditableShape,
+  isEditableImage,
+  isEditableFileVisual,
+  isEditableChart,
+  isEditableVisual,
+} from './visual-editable'
 
-/// Images and shapes already in the file move/delete through a surgical
-/// anchor edit, located by the sidecar's (drawingPath, drawingIndex) pair.
-/// Charts keep their own editor; deletion routes through the same edit.
-export function isEditableFileVisual(visual: WorkbookVisualObject): boolean {
-  return (
-    (visual.kind === 'image' || visual.kind === 'shape') &&
-    !visual.id.startsWith('added-') &&
-    visual.drawingPath !== undefined &&
-    visual.drawingIndex !== undefined
-  )
-}
-
-/// Charts move through the same anchor edit as images/shapes and delete
-/// through a cascading one (the save also drops the chart part, rel, and
-/// content-type override); session-added and demo charts live in memory.
-function isEditableChart(visual: WorkbookVisualObject): boolean {
-  if (visual.kind !== 'chart') return false
-  if (visual.id.startsWith('added-') || visual.id.startsWith('demo-')) return true
-  return visual.drawingPath !== undefined && visual.drawingIndex !== undefined
-}
+import { isEditableChart, isEditableImage, isEditableShape, isEditableVisual } from './visual-editable'
 
 const chartColors = [
   '#4472c4',
@@ -130,8 +115,7 @@ export function installWorkbookVisuals(
     const worksheet = workbook.getSheetBySheetId(visual.sheetId)
     if (!worksheet) continue
     const componentKey = `xlsx-${file.sessionId}-${visual.id}`
-    const editable =
-      isEditableShape(visual) || isEditableFileVisual(visual) || isEditableChart(visual)
+    const editable = isEditableVisual(visual)
     // Lazy grids are sized to the data, but session-added visuals anchor
     // beyond it (default: two columns right of the data) — grow the grid so
     // the float keeps its frame instead of being clamped into a sliver.
@@ -747,6 +731,7 @@ function EditableShapeVisual({
   } | null>(null)
   const [textEditing, setTextEditing] = useState(false)
   const [chartEditRequest, setChartEditRequest] = useState(0)
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null)
   const editorRef = useRef<HTMLDivElement | null>(null)
   // Move previews render as a clone on <body>: the Univer float container is
   // overflow-hidden and pinned to the old anchor, so translating the visual
@@ -980,6 +965,18 @@ function EditableShapeVisual({
         event.currentTarget.focus({ preventScroll: true })
       }}
       onFocus={() => selectVisual(visual)}
+      onContextMenu={(event) => {
+        // Images get a picture context menu (delete now; crop/rotate/… ride
+        // the picture-tools work). Right-click also selects — menu actions
+        // and the contextual tab both key off the selection. Chart/shape
+        // keep their own surfaces.
+        if (visual.kind !== 'image') return
+        if ((event.target as HTMLElement).closest('button')) return
+        event.preventDefault()
+        event.stopPropagation()
+        selectVisual(visual)
+        setMenu({ x: event.clientX, y: event.clientY })
+      }}
       onKeyDown={(event) => {
         if (event.target !== event.currentTarget) return
         if (event.key === 'Delete' || event.key === 'Backspace') {
@@ -1080,6 +1077,14 @@ function EditableShapeVisual({
           file={file}
           visual={textEditing ? { ...visual, text: '' } : visual}
           frame={frame}
+        />
+      )}
+      {menu && visual.kind === 'image' && (
+        <ChartContextMenu
+          x={menu.x}
+          y={menu.y}
+          onClose={() => setMenu(null)}
+          items={[{ label: t('appDeleteVisualTitle'), action: () => onEdit(visual.id, { remove: true }) }]}
         />
       )}
       {!textEditing && (
