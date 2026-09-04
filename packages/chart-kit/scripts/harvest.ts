@@ -146,6 +146,10 @@ async function main() {
     // bmap 组件依赖外部百度地图 SDK,离线环境永不可渲染:直接过滤
     if (/\bbmap\s*:/.test(code))
       return { ...base, code, error: 'bmap needs external Baidu Map SDK (filtered)' }
+    // yAxis 用 id 字符串引用的示例(甘特/矩阵变形等)依赖跨轴装配,
+    // 组装器不支持:过滤(渲染会报 yAxis not found)
+    if (/yAxis\s*:\s*['"]/.test(code))
+      return { ...base, code, error: 'yAxis id-reference not supported (filtered)' }
     const run = await runOptionCode(code, { timeoutMs: TIMEOUT_MS })
     return {
       ...base,

@@ -857,11 +857,24 @@ export function wireEchartEditing(
   const host = dom.querySelector<HTMLElement>('.doc-echart-host')
   if (!host) return null
 
-  const mount = mountEchart(host, {
-    optionJson: String(node.attrs.echartOption),
-    snapshotUrl: node.attrs.echartSnapshot ? String(node.attrs.echartSnapshot) : null,
-    gl: ECHART_GL_GROUPS.has(String(node.attrs.echartGroupId ?? '')),
-  })
+  let mount: ReturnType<typeof mountEchart>
+  try {
+    mount = mountEchart(host, {
+      optionJson: String(node.attrs.echartOption),
+      snapshotUrl: node.attrs.echartSnapshot ? String(node.attrs.echartSnapshot) : null,
+      gl: ECHART_GL_GROUPS.has(String(node.attrs.echartGroupId ?? '')),
+    })
+  } catch (e) {
+    // 挂载失败绝不拖垮文档:退化为快照图或占位
+    console.warn('[chart-kit] echart mount failed:', e)
+    if (node.attrs.echartSnapshot) {
+      const img = document.createElement('img')
+      img.src = String(node.attrs.echartSnapshot)
+      img.style.cssText = 'max-width:100%;display:block'
+      host.append(img)
+    }
+    return null
+  }
 
   // chartEx 读入的块可能没有快照(Word 未写 fallback 图):活渲染就绪后异步
   // 生成 PNG 回写属性,保证首次保存就有图片部件(否则保存会跳过该块)

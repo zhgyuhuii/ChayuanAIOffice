@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-04T10:18:47.917Z",
+  "generatedAt": "2026-09-04T17:07:42.948Z",
   "source": "apache/echarts-examples gh-pages",
   "total": 445,
-  "okTotal": 213,
-  "failedTotal": 232,
+  "okTotal": 211,
+  "failedTotal": 234,
   "baselineInjected": [
     "lines",
     "globe",
@@ -20,7 +20,7 @@
     {
       "id": "line",
       "total": 40,
-      "ok": 25
+      "ok": 24
     },
     {
       "id": "bar",
@@ -35,7 +35,7 @@
     {
       "id": "scatter",
       "total": 36,
-      "ok": 14
+      "ok": 13
     },
     {
       "id": "map",
@@ -255,6 +255,10 @@
       "error": "echarts is not defined"
     },
     {
+      "id": "line-marker",
+      "error": "yAxis id-reference not supported (filtered)"
+    },
+    {
       "id": "matrix-covariance",
       "error": "window is not defined"
     },
@@ -365,6 +369,10 @@
     {
       "id": "scatter-jitter",
       "error": "myChart is not defined"
+    },
+    {
+      "id": "scatter-weight",
+      "error": "yAxis id-reference not supported (filtered)"
     },
     {
       "id": "area-simple",
@@ -568,7 +576,7 @@
     },
     {
       "id": "scatter-nutrients",
-      "error": "myChart is not defined"
+      "error": "yAxis id-reference not supported (filtered)"
     },
     {
       "id": "scatter-nutrients-matrix",

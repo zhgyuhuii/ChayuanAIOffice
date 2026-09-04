@@ -284,6 +284,7 @@ import {
   insertAiImageVisual as insertAiImageVisualImpl,
   insertAiShapeVisual as insertAiShapeVisualImpl,
   type VisualActionContext,
+  insertEchartVisual as insertEchartVisualImpl,
   insertPictureFromData as insertPictureFromDataImpl,
 } from './visual-actions'
 import {
@@ -5423,8 +5424,16 @@ export function App(): React.JSX.Element {
                 const kind = KIND[payload.spec.type]
                 if (kind) await handleInsertChartImpl(ctx, kind)
               } else if (payload.snapshotPng) {
-                // 扩展组:快照图片 visual(xl/media 落盘);sidecar 持久化列二期
-                insertPictureFromDataImpl(ctx, payload.snapshotPng, payload.title || '图表')
+                // 扩展组:echart visual(快照图 + option/code/数据表随 journal;
+                // sidecar 落盘与双击编辑由 gateway 二期合成)
+                insertEchartVisualImpl(ctx, {
+                  dataUrl: payload.snapshotPng,
+                  optionJson: payload.optionJson,
+                  code: payload.code,
+                  groupId: payload.groupId,
+                  title: payload.title,
+                  ...(payload.data ? { data: payload.data } : {}),
+                })
               }
               setChartDesignerOpen(false)
             })()

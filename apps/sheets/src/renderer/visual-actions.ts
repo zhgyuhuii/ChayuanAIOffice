@@ -657,6 +657,72 @@ export function insertAiShapeVisual(
 }
 
 /** 统一插入图片对话框落点：dataUrl → 尺寸测量 → 与本会话插图同一管线 */
+/**
+ * ECharts 扩展图表(公共设计器插入):图片 visual 承载快照显示;
+ * option/code/数据表随 visual journal 存(xlsx 落盘为 xl/echarts/echartN.json
+ * sidecar + drawing descr 指针,由 gateway 在保存时合成——与 docx/slides 同款)。
+ */
+export function insertEchartVisual(
+  ctx: VisualActionContext,
+  args: {
+    dataUrl: string
+    optionJson: string
+    code: string | null
+    groupId: string
+    title?: string
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  },
+): void {
+  const mediaType = (['image/png', 'image/jpeg'] as const).find((t) =>
+    args.dataUrl.startsWith(`data:${t}`),
+  )
+  if (!mediaType) {
+    ctx.setMessage(t('appPictureBadType'))
+    return
+  }
+  const runtime = ctx.univerRef.current
+  const state = ctx.lazyWorkbookRef.current
+  if (!runtime || !state) return
+  const workbook = runtime.univerAPI.getActiveWorkbook()
+  const worksheet = workbook?.getActiveSheet()
+  const range = workbook?.getActiveRange()
+  if (!workbook || !worksheet || !range) {
+    ctx.setMessage(t('appSelectCellFirst'))
+    return
+  }
+  const sheetId = worksheet.getSheetId()
+  if (isSheetRemoved(state.editJournal, sheetId)) return
+  const row = range.getRow()
+  const column = range.getColumn()
+  const visual: WorkbookVisualObject = {
+    id: `added-echart-${Date.now().toString(36)}-${state.editJournal.visualAdds.length + 1}`,
+    sheetId,
+    kind: 'image',
+    anchor: {
+      fromRow: row,
+      fromColumn: column,
+      fromRowOffset: 0,
+      fromColumnOffset: 0,
+      toRow: row + 16,
+      toColumn: column + 8,
+      toRowOffset: 0,
+      toColumnOffset: 0,
+    },
+    mediaType,
+    mediaDataUrl: args.dataUrl,
+    // echart 元数据(扩展字段随 journal visualAdd 载荷透传;gateway 二期落 sidecar)
+    name: args.title ? `${args.title} (ECharts)` : 'ECharts 图表',
+    echartMeta: {
+      optionJson: args.optionJson,
+      code: args.code,
+      groupId: args.groupId,
+      data: args.data ?? null,
+    },
+  } as WorkbookVisualObject
+  pushVisualAddUndo(ctx, runtime, state, visual)
+  ctx.setMessage(t('appChartInserted'))
+}
+
 export function insertPictureFromData(
   ctx: VisualActionContext,
   dataUrl: string,
