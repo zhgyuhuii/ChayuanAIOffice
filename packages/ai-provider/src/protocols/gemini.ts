@@ -361,8 +361,22 @@ export async function chatGemini(
       error: `Gemini HTTP ${response.status}: ${httpBodyDetail(await response.text())}`,
     }
   }
-  const json = (await response.json()) as {
+  // A 200 with an HTML shell / empty / truncated body (gateway soft-failure)
+  // would make response.json() throw; return ok:false instead of leaking a
+  // raw SyntaxError to the caller.
+  const bodyText = await response.text()
+  let json: {
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+  }
+  try {
+    json = JSON.parse(bodyText) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+    }
+  } catch {
+    return {
+      ok: false,
+      error: `Gemini returned a non-JSON response: ${httpBodyDetail(bodyText)}`,
+    }
   }
   const content = json.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('')
   if (!content) return { ok: false, error: 'Gemini returned an empty response' }

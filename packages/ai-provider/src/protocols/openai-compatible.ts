@@ -370,7 +370,19 @@ export async function chatOpenAiCompatible(
   if (!response.ok) {
     return { ok: false, error: `HTTP ${response.status}: ${httpBodyDetail(await response.text())}` }
   }
-  const json = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> }
+  // A 200 with an HTML shell / empty / truncated body (gateway soft-failure)
+  // would make response.json() throw; return ok:false instead of leaking a
+  // raw SyntaxError to the caller.
+  const bodyText = await response.text()
+  let json: { choices?: Array<{ message?: { content?: string } }> }
+  try {
+    json = JSON.parse(bodyText) as { choices?: Array<{ message?: { content?: string } }> }
+  } catch {
+    return {
+      ok: false,
+      error: `AI returned a non-JSON response: ${httpBodyDetail(bodyText)}`,
+    }
+  }
   const content = json.choices?.[0]?.message?.content
   if (!content) return { ok: false, error: 'AI returned an empty response' }
   return { ok: true, content }
