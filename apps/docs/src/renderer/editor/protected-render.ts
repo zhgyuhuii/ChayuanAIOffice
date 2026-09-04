@@ -982,10 +982,32 @@ export function wireChartEditing(
   }
   for (const target of targets) target.addEventListener('keydown', preventProtectedLineBreak)
   window.addEventListener('ai-docs-commit-tables', commit)
+  // 双击标准图表 → 图表设计器接管(P3 回写闭环:chartDisplay → ChartSpec 回显)
+  const onDblClickChart = () => {
+    const current = getNode()
+    const model = current.attrs.chartDisplay as ChartDisplay | null
+    if (!model) return
+    window.dispatchEvent(
+      new CustomEvent('chartkit-edit-chart', {
+        detail: {
+          pos: (() => {
+            const p = getPos()
+            return typeof p === 'number' ? p : null
+          })(),
+          kind: model.kind,
+          title: model.title ?? '',
+          categories: model.categories,
+          series: model.series.map((s) => ({ name: s.name ?? '', values: s.values })),
+        },
+      }),
+    )
+  }
+  dom.addEventListener('dblclick', onDblClickChart)
   return {
     setEditable,
     commit,
     cleanup: () => {
+      dom.removeEventListener('dblclick', onDblClickChart)
       for (const target of targets) target.removeEventListener('keydown', preventProtectedLineBreak)
       window.removeEventListener('ai-docs-commit-tables', commit)
     },

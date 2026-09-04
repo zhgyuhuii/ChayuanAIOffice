@@ -689,12 +689,71 @@ export function InsertTab({
     return () => window.removeEventListener('chartkit-edit-echart', onEdit)
   }, [])
 
+  // double-click on a standard chart block: same designer, data preloaded
+  // from chartDisplay so edits write back into genChart (原位更新)
+  const [chartBlockEdit, setChartBlockEdit] = useState<{
+    pos: number
+    kind: string
+    title: string
+    categories: string[]
+    series: Array<{ name: string; values: (number | null)[] }>
+  } | null>(null)
+  useEffect(() => {
+    const onEditChart = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        pos: number | null
+        kind: string
+        title: string
+        categories: string[]
+        series: Array<{ name: string; values: (number | null)[] }>
+      }
+      if (typeof detail.pos !== 'number') return
+      setChartBlockEdit({ ...detail, pos: detail.pos })
+      setChartKitOpen(true)
+    }
+    window.addEventListener('chartkit-edit-chart', onEditChart)
+    return () => window.removeEventListener('chartkit-edit-chart', onEditChart)
+  }, [])
+
   const closeChartKit = () => {
     setChartKitOpen(false)
     setChartKitEdit(null)
+    setChartBlockEdit(null)
   }
 
   const insertFromDesigner = (payload: ChartDesignerInsert) => {
+    // 双击标准图表的编辑提交:原位更新 genChart+chartDisplay(几何/位置不动)
+    const blockEdit = chartBlockEdit
+    if (blockEdit && payload.engine === 'ooxml' && payload.spec?.data) {
+      const target = editor.state.doc.nodeAt(blockEdit.pos)
+      if (target && target.attrs.blockType === 'chart') {
+        const spec: NewChart = {
+          kind: payload.spec.type as NewChart['kind'],
+          title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
+          categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
+          series: payload.spec.data.series.map((s) => ({
+            name: s.name ?? '',
+            values: s.values.map((v) => (typeof v === 'number' ? v : null)),
+          })),
+        }
+        const display: ChartDisplay = {
+          partPath: '',
+          kind: spec.kind,
+          title: spec.title,
+          categories: spec.categories,
+          series: spec.series,
+        }
+        editor.view.dispatch(
+          editor.state.tr.setNodeMarkup(blockEdit.pos, undefined, {
+            ...target.attrs,
+            genChart: spec,
+            chartDisplay: display,
+          }),
+        )
+        setChartBlockEdit(null)
+        return
+      }
+    }
     if (payload.engine === 'ooxml' && payload.spec?.data) {
       const spec: NewChart = {
         kind: payload.spec.type as NewChart['kind'],
@@ -1384,7 +1443,21 @@ export function InsertTab({
       {chartKitOpen && (
         <ChartDesignerModal
           lang={lang === 'en' ? 'en' : 'zh-CN'}
-          initial={chartKitEdit ?? undefined}
+          initial={
+            chartKitEdit
+              ? chartKitEdit
+              : chartBlockEdit
+                ? {
+                    groupId: chartBlockEdit.kind,
+                    specData: {
+                      type: chartBlockEdit.kind,
+                      title: chartBlockEdit.title,
+                      categories: chartBlockEdit.categories,
+                      series: chartBlockEdit.series,
+                    },
+                  }
+                : undefined
+          }
           onClose={closeChartKit}
           onInsert={insertFromDesigner}
         />

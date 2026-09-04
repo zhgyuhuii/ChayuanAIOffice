@@ -23,6 +23,13 @@ export interface ChartDesignerInitial {
   /** 双击已有图表重开时带回的代码 */
   code?: string
   title?: string
+  /** 标准块回显:数据表直载(无代码,数据页预填) */
+  specData?: {
+    type: string
+    title?: string
+    categories: string[]
+    series: Array<{ name: string; values: (number | null)[] }>
+  }
 }
 
 export interface ChartDesignerInsert {
@@ -69,7 +76,14 @@ export function ChartDesignerModal({
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [tab, setTab] = useState<'data' | 'code'>(initial?.code ? 'code' : 'data')
-  const [table, setTable] = useState<OptionTable | null>(null)
+  const [table, setTable] = useState<OptionTable | null>(
+    initial?.specData
+      ? {
+          categories: initial.specData.categories,
+          series: initial.specData.series,
+        }
+      : null,
+  )
   const [query, setQuery] = useState('')
   const [inserting, setInserting] = useState(false)
   const codeRef = useRef(code)
@@ -93,7 +107,7 @@ export function ChartDesignerModal({
 
   // 组/示例切换:装入示例代码并自动试跑(应用户"选完即所见"预期)
   useEffect(() => {
-    if (initial?.code) return // 重开已有图表:代码已带,不覆盖
+    if (initial?.code || initial?.specData) return // 重开已有图表:数据/代码已带,不覆盖
     const first = group?.examples.find((e) => e.id === exampleId) ?? group?.examples[0]
     if (!first) return
     setExampleId(first.id)
