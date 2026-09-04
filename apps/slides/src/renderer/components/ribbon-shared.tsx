@@ -595,12 +595,18 @@ export interface Props {
   chartColorSchemes?: Array<{ key: string; label: string; colors: string[] }> | null
   /** Whether the selected picture supports background removal (audio/video poster frames etc. don't) */
   contextPictureCanCutout?: boolean
+  /** The selected picture's current <a:lum> (tab stepper echo) */
+  contextPictureLum?: { bright: number; contrast: number } | null
   /** Picture: enter crop mode */
   onPictureCrop?: () => void
   /** Crop mode is live — the Crop button shows its selected state */
   cropActive?: boolean
   /** Picture opacity (1 = opaque) */
   onPictureOpacity?: (opacity: number) => void
+  /** Non-destructive brightness/contrast on the selected picture (null = 重设) */
+  onPictureLum?: (lum: { bright: number; contrast: number } | null) => void
+  /** 更改图片: pick a local file and swap the selected picture's bytes */
+  onPictureChange?: () => void
   /** Picture: enter cutout (background removal) mode */
   onPictureCutout?: () => void
   /** Selected picture's current border (null = none) */

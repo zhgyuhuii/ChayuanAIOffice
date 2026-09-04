@@ -166,6 +166,7 @@ import type {
   MasterDeleteElementOp,
   MasterEnterResult,
   PrintSlidesOp,
+  EditPictureLumOp,
   EditPictureOpacityOp,
   ExportImagesOp,
   ExportImagesResult,
@@ -2654,6 +2655,21 @@ export function registerSlidesIpc(): void {
     })
     if (!r) return null
     return masterEditDone(session)
+  })
+
+  ipcMain.handle('slides:edit-picture-lum', (e, op: EditPictureLumOp) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return null
+    const r = sessionTxn(session, {
+      ops: [
+        {
+          op: 'setPictureLum',
+          target: { slide: op.slideIndex, el: op.sourceId },
+          lum: op.lum,
+        },
+      ],
+    })
+    return r ? rebuildSlide(session, op.slideIndex) : null
   })
 
   ipcMain.handle('slides:edit-picture-opacity', (e, op: EditPictureOpacityOp) => {

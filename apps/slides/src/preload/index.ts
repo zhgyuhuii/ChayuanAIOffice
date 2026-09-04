@@ -34,6 +34,7 @@ import type {
   EditTableStyleOp,
   EditChartOp,
   EditPictureSrcRectOp,
+  EditPictureLumOp,
   EditPictureOpacityOp,
   GroupElementsOp,
   UngroupElementOp,
@@ -168,6 +169,7 @@ const api: SlidesApi = {
     ipcRenderer.invoke('slides:edit-picture-src-rect', op),
   editPictureOpacity: (op: EditPictureOpacityOp) =>
     ipcRenderer.invoke('slides:edit-picture-opacity', op),
+  editPictureLum: (op: EditPictureLumOp) => ipcRenderer.invoke('slides:edit-picture-lum', op),
   editImageFill: (op: EditFillImageOp) => ipcRenderer.invoke('slides:edit-image-fill', op),
   changeShape: (op: { slideIndex: number; sourceId: string; prst: string; groupId?: string }) =>
     ipcRenderer.invoke('slides:change-shape', op),

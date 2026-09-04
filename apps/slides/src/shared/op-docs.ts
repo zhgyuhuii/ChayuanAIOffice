@@ -75,6 +75,10 @@ export const OP_DOCS: Record<string, OpDoc> = {
     group: 'element',
   },
   setPictureOpacity: { sig: '{opacity:0..1}', group: 'element' },
+  setPictureLum: {
+    sig: '{lum:{bright,contrast}|-1..1|null} — null clears (<a:lum>)',
+    group: 'element',
+  },
   reorderElement: { sig: '{dir:"front"|"back"|"forward"|"backward"}', group: 'element' },
   groupElements: { sig: '{els:[id,id,…]} — at least two ids; target.el unused', group: 'element' },
   ungroupElement: { sig: '{} — target.el is the group', group: 'element' },

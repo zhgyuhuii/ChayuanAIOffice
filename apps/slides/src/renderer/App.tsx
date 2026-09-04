@@ -2657,6 +2657,11 @@ export function App() {
     return !pic.media && !!pic.dataUrl
   }, [selectedNode])
 
+  const contextPictureLum = useMemo(() => {
+    if (selectedNode?.type !== 'picture') return null
+    return (selectedNode as PictureRenderNode).lum ?? null
+  }, [selectedNode])
+
   const contextPictureStroke = useMemo(() => {
     // Multi-select shows the first shape/picture's current outline as the panel state
     // (for a group, the first strokeable child stands in)
@@ -3228,6 +3233,53 @@ export function App() {
             contextChartStyle={contextChartStyle}
             chartColorSchemes={chartColorSchemes}
             contextPictureCanCutout={contextPictureCanCutout}
+            contextPictureLum={contextPictureLum}
+            onPictureLum={(lum) => {
+              if (!selectedNode || selectedNode.type !== 'picture') return
+              void window.slidesApi
+                .editPictureLum({
+                  slideIndex: current,
+                  sourceId: selectedNode.sourceId,
+                  lum,
+                })
+                .then((r) => r && applySlide(current, r))
+            }}
+            onPictureChange={() => {
+              if (!selectedNode || selectedNode.type !== 'picture') return
+              const input = document.createElement('input')
+              input.type = 'file'
+              input.accept = 'image/png,image/jpeg,image/gif,image/webp,image/bmp'
+              input.onchange = () => {
+                const file = input.files?.[0]
+                if (!file) return
+                const ext = ['png', 'jpeg', 'jpg', 'gif', 'webp', 'bmp'].find((e) =>
+                  file.name.toLowerCase().endsWith(`.${e}`),
+                )
+                if (!ext) return
+                const reader = new FileReader()
+                reader.onload = () => {
+                  const dataUrl = String(reader.result ?? '')
+                  const base64 = dataUrl.split(',')[1]
+                  if (!base64) return
+                  void window.slidesApi
+                    .replacePictureBytes({
+                      slideIndex: current,
+                      sourceId: selectedNode.sourceId,
+                      base64,
+                      ext: ext === 'jpg' ? 'jpeg' : ext,
+                    })
+                    .then((r) => {
+                      if (r && 'error' in r) {
+                        showToast(t('ribbonPictureReplaceUnsupported', { ext: r.ext }), 'error')
+                        return
+                      }
+                      if (r) applySlide(current, r)
+                    })
+                }
+                reader.readAsDataURL(file)
+              }
+              input.click()
+            }}
             contextPictureStroke={contextPictureStroke}
             onPictureStroke={(stroke) => {
               // applies to every selected shape/picture; a selected group pierces one level

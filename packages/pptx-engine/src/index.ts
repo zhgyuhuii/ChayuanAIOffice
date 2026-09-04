@@ -1612,6 +1612,53 @@ export function setPictureOpacity(slide: Slide, sourceId: string, opacity: numbe
 }
 
 /**
+ * Non-destructive brightness/contrast on a picture blip (<a:lum>, the
+ * sibling of setPictureOpacity): byte surgery baked into originalXml.
+ * `lum` values are -1..1 fractions (serialized as 1/100000 OOXML units);
+ * null removes the transform (重设).
+ */
+export function setPictureLum(
+  slide: Slide,
+  sourceId: string,
+  lum: { bright: number; contrast: number } | null,
+): boolean {
+  const el = slide.elements.find((e) => e.id === sourceId && e.type === 'picture')
+  if (!el) return false
+  const pic = el as import('./types').PictureElement
+  let xml = patchedElementXml(el)
+  xml = xml.replace(/<a:lum\b[^>]*\/>/, '')
+  const clamp = (v: number) => Math.max(-1, Math.min(1, v))
+  if (lum && (lum.bright || lum.contrast)) {
+    const elXml = `<a:lum bright="${Math.round(clamp(lum.bright) * 100000)}" contrast="${Math.round(clamp(lum.contrast) * 100000)}"/>`
+    if (/<a:blip\b[^>]*\/>/.test(xml)) {
+      xml = xml.replace(/<a:blip\b([^>]*)\/>/, `<a:blip$1>${elXml}</a:blip>`)
+    } else if (/<a:blip\b[^>]*>/.test(xml)) {
+      // keep existing children order: a:lum sorts after most effects but
+      // before a:tint — insert before an existing a:tint when present
+      const blip = /(<a:blip\b[^>]*>)([\s\S]*?)(<\/a:blip>)/.exec(xml)
+      if (!blip) return false
+      const tintAt = blip[2].indexOf('<a:tint')
+      const inner =
+        tintAt >= 0
+          ? blip[2].slice(0, tintAt) + elXml + blip[2].slice(tintAt)
+          : blip[2] + elXml
+      xml = xml.slice(0, blip.index) + blip[1] + inner + blip[3] + xml.slice(blip.index + blip[0].length)
+    } else {
+      return false
+    }
+    pic.lum = { bright: clamp(lum.bright), contrast: clamp(lum.contrast) }
+  } else {
+    delete pic.lum
+  }
+  el.dirty = el.dirtyTransform = el.dirtyFill = el.dirtyStroke = false
+  el.dirtySrcRect = false
+  el.dirtyPPr = undefined
+  el.anchor.originalXml = xml
+  slide.structureDirty = true
+  return true
+}
+
+/**
  * Swap a picture's backing image for new bytes, keeping frame, z-order, border
  * and effects. New media part + rel; the <a:blip> reference is re-pointed via
  * byte surgery baked into originalXml (same pattern as setPictureOpacity).

@@ -21,6 +21,7 @@ import {
   type TextBodyPropsPatch,
   setElementEffects,
   type EffectsPatch,
+  setPictureLum,
   setPictureOpacity,
   setShapePresetGeometry,
   setGroupChildShapePresetGeometry,
@@ -343,6 +344,33 @@ register({
       throw new GuidedError(`op "setPictureOpacity": element "${el.id}" is not a picture.`)
     }
     return { op, after: op.opacity }
+  },
+})
+
+// ── setPictureLum ───────────────────────────────────────────────────────
+register({
+  name: 'setPictureLum',
+  validate(op, ctx) {
+    resolveElement(ctx, op)
+    const lum = op.lum as { bright?: unknown; contrast?: unknown } | null | undefined
+    if (lum) {
+      for (const side of ['bright', 'contrast'] as const) {
+        const v = lum[side]
+        if (v !== undefined) requireFinite(v, 'setPictureLum', `lum.${side}`)
+      }
+    }
+  },
+  apply(op, ctx): OpRecord {
+    const { slide, el } = resolveElement(ctx, op)
+    const raw = op.lum as { bright?: number; contrast?: number } | null | undefined
+    const lum =
+      raw === null || raw === undefined
+        ? null
+        : { bright: raw.bright ?? 0, contrast: raw.contrast ?? 0 }
+    if (!setPictureLum(slide, el.id, lum)) {
+      throw new GuidedError(`op "setPictureLum": element "${el.id}" is not a picture.`)
+    }
+    return { op, after: lum }
   },
 })
 

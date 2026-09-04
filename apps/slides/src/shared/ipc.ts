@@ -329,6 +329,13 @@ export interface EditPictureOpacityOp {
   opacity: number
 }
 
+/** Whole-picture brightness/contrast (<a:lum>; -1..1 each, null = 重设). */
+export interface EditPictureLumOp {
+  slideIndex: number
+  sourceId: string
+  lum: { bright: number; contrast: number } | null
+}
+
 /** Slide size (EMU; 16:9=12192000×6858000, 4:3=9144000×6858000). */
 export interface SetSlideSizeOp {
   cx: number
@@ -1388,6 +1395,7 @@ export interface SlidesApi {
   editPictureSrcRect: (op: EditPictureSrcRectOp) => Promise<RenderSlide | null>
   /** Whole-picture opacity */
   editPictureOpacity: (op: EditPictureOpacityOp) => Promise<RenderSlide | null>
+  editPictureLum: (op: EditPictureLumOp) => Promise<RenderSlide | null>
   /** Shape picture fill (the main process shows the image picker dialog; cancel returns null) */
   editImageFill: (op: EditFillImageOp) => Promise<RenderSlide | null>
   /** Change a shape's preset geometry (keeps transform/fill/outline/text); returns the updated page.

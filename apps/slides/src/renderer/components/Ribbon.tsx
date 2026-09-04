@@ -53,6 +53,7 @@ import {
   IconPrintLayout,
   IconReadMode,
   IconRecord,
+  IconPicture,
   IconRemoveBg,
   IconRedo,
   IconRehearse,
@@ -1771,6 +1772,7 @@ export function Ribbon({
   contextChartStyle,
   chartColorSchemes,
   contextPictureCanCutout,
+  contextPictureLum,
   contextPictureStroke,
   onPictureStroke,
   onChangeShape,
@@ -1781,6 +1783,8 @@ export function Ribbon({
   onPictureCrop,
   cropActive,
   onPictureOpacity,
+  onPictureLum,
+  onPictureChange,
   onPictureCutout,
   onEditTableStyle,
   tableStyleFlags,
@@ -3847,6 +3851,67 @@ export function Ribbon({
                   </div>
                 )}
               </div>
+              {contextElementType === 'picture' && onPictureLum && (
+                <div className="rb-lum-col">
+                  {(['bright', 'contrast'] as const).map((field) => {
+                    const value = contextPictureLum?.[field] ?? 0
+                    const label =
+                      field === 'bright' ? t('ribbonPicBrightness') : t('ribbonPicContrast')
+                    return (
+                      <div className="rb-lum-row" key={field}>
+                        <span className="rb-lum-label">{label}</span>
+                        <button
+                          className="rb-lum-btn"
+                          data-tip={t('ribbonPicDecrease')}
+                          aria-label={t('ribbonPicDecrease')}
+                          onClick={() =>
+                            onPictureLum?.({
+                              ...(contextPictureLum ?? { bright: 0, contrast: 0 }),
+                              [field]: Math.max(-1, Math.min(1, value - 0.1)),
+                            })
+                          }
+                        >
+                          −
+                        </button>
+                        <span className="rb-lum-value">{Math.round(value * 100)}%</span>
+                        <button
+                          className="rb-lum-btn"
+                          data-tip={t('ribbonPicIncrease')}
+                          aria-label={t('ribbonPicIncrease')}
+                          onClick={() =>
+                            onPictureLum?.({
+                              ...(contextPictureLum ?? { bright: 0, contrast: 0 }),
+                              [field]: Math.max(-1, Math.min(1, value + 0.1)),
+                            })
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    )
+                  })}
+                  <button
+                    className="rb-lum-reset"
+                    disabled={!contextPictureLum?.bright && !contextPictureLum?.contrast}
+                    data-tip={t('ribbonPicResetAdjustTip')}
+                    onClick={() => onPictureLum?.(null)}
+                  >
+                    {t('ribbonPicReset')}
+                  </button>
+                </div>
+              )}
+              {contextElementType === 'picture' && onPictureChange && (
+                <button
+                  className="rb-big"
+                  data-tip={t('ribbonPicChange')}
+                  onClick={onPictureChange}
+                >
+                  <span className="rb-big-icon">
+                    <IconPicture size={BIG} />
+                  </span>
+                  <span>{t('ribbonPicChange')}</span>
+                </button>
+              )}
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('paneFormatOutline')}>
