@@ -5626,7 +5626,7 @@ textarea:focus {
   position: absolute;
   right: 6px;
   bottom: 2px;
-  z-index: 30;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5637,6 +5637,7 @@ textarea:focus {
   background: transparent;
   color: var(--text-secondary, inherit);
   cursor: pointer;
+  pointer-events: auto;
   -webkit-app-region: no-drag;
 }
 

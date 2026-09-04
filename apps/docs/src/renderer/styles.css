@@ -10381,7 +10381,7 @@ tr > .page-gap-cut {
   position: absolute;
   right: 6px;
   bottom: 2px;
-  z-index: 30;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10392,6 +10392,10 @@ tr > .page-gap-cut {
   background: transparent;
   color: var(--text-2, var(--text));
   cursor: pointer;
+  /* 折叠态 chevron 落进 .ribbon-tabs 拖拽带: 不豁免则 mousedown 被窗口
+     拖拽吞掉, 无法再点击展开 */
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
 }
 
 .ribbon-collapse-btn:hover {

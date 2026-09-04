@@ -9747,7 +9747,7 @@ body.show-curtain::after {
   position: absolute;
   right: 6px;
   bottom: 2px;
-  z-index: 30;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -9758,6 +9758,7 @@ body.show-curtain::after {
   background: transparent;
   color: var(--text-2, var(--text));
   cursor: pointer;
+  pointer-events: auto;
   -webkit-app-region: no-drag;
 }
 
