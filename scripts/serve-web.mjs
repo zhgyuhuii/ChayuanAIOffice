@@ -41,8 +41,14 @@ createServer((req, res) => {
     res.writeHead(403).end('forbidden')
     return
   }
-  if (!existsSync(file) || statSync(file).isDirectory()) {
+  if (!existsSync(file)) {
     file = join(root, 'index.html') // SPA fallback
+  } else if (statSync(file).isDirectory()) {
+    // directory request (/editors/docs/) resolves to its own index first —
+    // falling through to the root SPA shell here serves the SHELL page inside
+    // the editor iframe (blank editor, very misleading while debugging)
+    const dirIndex = join(file, 'index.html')
+    file = existsSync(dirIndex) ? dirIndex : join(root, 'index.html')
   }
   res.writeHead(200, { 'content-type': MIME[extname(file)] ?? 'application/octet-stream' })
   createReadStream(file).pipe(res)
