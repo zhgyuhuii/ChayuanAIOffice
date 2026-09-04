@@ -1187,6 +1187,18 @@ async function buildBlock(
           f.includes('<wp:anchor'),
         ).length
         if (!hasWsp && anchoredDrawings <= 1) {
+          // ECharts extended-family chart: the picture is the static snapshot,
+          // and wp:docPr@descr points (hex) at the live option JSON sidecar
+          const echart = await chartkitEchartOf(detect, image, ctx)
+          if (echart) {
+            return {
+              ...base,
+              type: 'echart',
+              label: 'ECharts chart',
+              imageDataUrl: image,
+              ...echart,
+            }
+          }
           return {
             ...base,
             type: 'image',
@@ -6567,8 +6579,56 @@ async function extractImage(xml: string, ctx: BuildContext): Promise<string | nu
   return `data:${mime};base64,${base64}`
 }
 
-/** resolve a document rel to its zip path ("word/…"), or null for external targets */
-function relPartPath(ctx: BuildContext, rId: string | undefined): string | null {
+/**
+ * ECharts extended-family chart detection: our save writes a hex pointer in
+ * wp:docPr@descr ({chartkit: "echarts/echartN.json", groupId}) — the WPS
+ * chartResId trick. Loads the sidecar and returns the live-edit payload.
+ */
+async function chartkitEchartOf(
+  xml: string,
+  _image: string,
+  ctx: BuildContext,
+): Promise<{
+  echartOption: string
+  echartCode: string | null
+  echartGroupId: string
+  echartTitle?: string
+} | null> {
+  const descr = /<wp:docPr [^>]*\bdescr="([0-9a-f]{8,})"/.exec(xml)?.[1]
+  if (!descr) return null
+  let pointer: { chartkit?: string; groupId?: string }
+  try {
+    const bytes = new Uint8Array((descr.match(/../g) ?? []).map((h) => parseInt(h, 16)))
+    pointer = JSON.parse(new TextDecoder().decode(bytes)) as { chartkit?: string; groupId?: string }
+  } catch {
+    return null
+  }
+  if (!pointer?.chartkit) return null
+  const file = ctx.zip.file(`word/${pointer.chartkit}`)
+  if (!file) return null
+  let wrapper: { option?: string; code?: string | null; title?: string | null }
+  try {
+    wrapper = JSON.parse(await file.async('string')) as {
+      option?: string
+      code?: string | null
+      title?: string | null
+    }
+  } catch {
+    return null
+  }
+  if (!wrapper?.option) return null
+  return {
+    echartOption: wrapper.option,
+    echartCode: wrapper.code ?? null,
+    echartGroupId: pointer.groupId ?? 'custom',
+    ...(wrapper.title ? { echartTitle: wrapper.title } : {}),
+  }
+}
+
+/** resolve a document rel to its zip path ("word/…"), or null for external targets */ function relPartPath(
+  ctx: BuildContext,
+  rId: string | undefined,
+): string | null {
   const rel = rId ? ctx.rels.get(rId) : undefined
   if (!rel || rel.targetMode === 'External') return null
   return (rel.target.startsWith('/') ? rel.target.slice(1) : `word/${rel.target}`).replace(

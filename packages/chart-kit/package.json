@@ -9,7 +9,12 @@
     ".": "./src/index.ts",
     "./spec": "./src/spec/chartspec.ts",
     "./sandbox": "./src/sandbox/runner.ts",
-    "./examples": "./src/examples/library.ts"
+    "./examples": "./src/examples/library.ts",
+    "./mount": "./src/render/mount.ts",
+    "./designer": "./src/designer/ChartDesignerModal.tsx"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -24,7 +29,11 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "@types/react": "^19.1.0",
     "esbuild": "^0.25.12",
+    "jsdom": "^28.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }

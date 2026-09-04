@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import type { Editor } from '@tiptap/core'
 import { ShapePreview, WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
 import type { ChartDisplay, HeaderFooter, NewChart } from '@chatoffice/docx-engine'
+import { ChartDesignerModal, type ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
 import { hfHasPageField, hfWithoutPageMarks } from '../editor/hf-dom'
 import { EquationGallery, EquationModal } from './EquationModal'
 import { COVER_PRESETS, insertCoverPage, type CoverPreset } from '../editor/cover-pages'
@@ -652,7 +653,7 @@ export function InsertTab({
   commentCount,
   onShowComments,
 }: InsertTabProps) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [grid, setGrid] = useState<{ r: number; c: number }>({ r: 0, c: 0 })
   const [tableDialogOpen, setTableDialogOpen] = useState(false)
   const [linkOpen, setLinkOpen] = useState(false)
@@ -660,6 +661,98 @@ export function InsertTab({
   const [bookmarkOpen, setBookmarkOpen] = useState(false)
   const [crossRefOpen, setCrossRefOpen] = useState(false)
   const [chartOpen, setChartOpen] = useState(false)
+  const [chartKitOpen, setChartKitOpen] = useState(false)
+  const [chartKitEdit, setChartKitEdit] = useState<{
+    pos: number | null
+    groupId?: string
+    code?: string
+    title?: string
+  } | null>(null)
+
+  // double-click on a canvas echart reopens the shared designer for in-place edit
+  useEffect(() => {
+    const onEdit = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        pos: number | null
+        groupId?: string
+        code?: string
+        title?: string
+      }
+      setChartKitEdit(detail)
+      setChartKitOpen(true)
+    }
+    window.addEventListener('chartkit-edit-echart', onEdit)
+    return () => window.removeEventListener('chartkit-edit-echart', onEdit)
+  }, [])
+
+  const closeChartKit = () => {
+    setChartKitOpen(false)
+    setChartKitEdit(null)
+  }
+
+  const insertFromDesigner = (payload: ChartDesignerInsert) => {
+    if (payload.engine === 'ooxml' && payload.spec?.data) {
+      const spec: NewChart = {
+        kind: payload.spec.type as NewChart['kind'],
+        title: payload.spec.title ?? payload.spec.style?.title ?? t('ribbonChartTitlePh'),
+        categories: (payload.spec.data.categories ?? []).map((c) => String(c)),
+        series: payload.spec.data.series.map((s) => ({
+          name: s.name ?? '',
+          values: s.values.map((v) => (typeof v === 'number' ? v : null)),
+        })),
+      }
+      const display: ChartDisplay = {
+        partPath: '',
+        kind: spec.kind,
+        title: spec.title,
+        categories: spec.categories,
+        series: spec.series,
+      }
+      insertTopLevelBlockAtSelection(editor, {
+        type: 'docProtected',
+        attrs: {
+          docxIndex: null,
+          blockType: 'chart',
+          label: t('ribbonChart'),
+          genChart: spec,
+          chartDisplay: display,
+        },
+      })
+    } else if (payload.snapshotPng) {
+      const editPos = chartKitEdit?.pos
+      if (typeof editPos === 'number') {
+        const target = editor.state.doc.nodeAt(editPos)
+        if (target && target.attrs.blockType === 'echart') {
+          editor.view.dispatch(
+            editor.state.tr.setNodeMarkup(editPos, undefined, {
+              ...target.attrs,
+              echartOption: payload.optionJson,
+              echartSnapshot: payload.snapshotPng,
+              echartGroupId: payload.groupId,
+              echartTitle: payload.title,
+              echartCode: payload.code ?? null,
+            }),
+          )
+          closeChartKit()
+          return
+        }
+      }
+      insertTopLevelBlockAtSelection(editor, {
+        type: 'docProtected',
+        attrs: {
+          docxIndex: null,
+          blockType: 'echart',
+          label: t('ribbonEchartLabel'),
+          echartOption: payload.optionJson,
+          echartSnapshot: payload.snapshotPng,
+          echartGroupId: payload.groupId,
+          echartTitle: payload.title,
+          echartCode: payload.code ?? null,
+        },
+      })
+    }
+    closeChartKit()
+  }
 
   const insertTable = (rows: number, cols: number) => {
     insertTableAt(editor, rows, cols)
@@ -810,6 +903,20 @@ export function InsertTab({
               <IconChart size={BIG} />
             </span>
             <span>{t('ribbonChart')}</span>
+          </button>
+          <button
+            className="rb-big"
+            disabled={!hasDoc}
+            data-tip={t('ribbonChartKitTip')}
+            onClick={() => {
+              setChartKitEdit(null)
+              setChartKitOpen(true)
+            }}
+          >
+            <span className="rb-big-icon">
+              <IconChart size={BIG} />
+            </span>
+            <span>{t('ribbonChartKit')}</span>
           </button>
           <div className="rb-split-wrap">
             <button
@@ -1265,6 +1372,14 @@ export function InsertTab({
       {bookmarkOpen && <BookmarkModal editor={editor} onClose={() => setBookmarkOpen(false)} />}
       {crossRefOpen && <CrossRefModal editor={editor} onClose={() => setCrossRefOpen(false)} />}
       {chartOpen && <ChartInsertModal editor={editor} onClose={() => setChartOpen(false)} />}
+      {chartKitOpen && (
+        <ChartDesignerModal
+          lang={lang === 'en' ? 'en' : 'zh-CN'}
+          initial={chartKitEdit ?? undefined}
+          onClose={closeChartKit}
+          onInsert={insertFromDesigner}
+        />
+      )}
     </>
   )
 }

@@ -216,6 +216,22 @@ async function main() {
   )
   fs.writeFileSync(path.join(ROOT, 'data/coverage.json'), JSON.stringify(coverage, null, 2))
 
+  // 收录示例的缩略图拷入库内(designer 画廊用;Vite ?url 装载,见 src/designer/thumbs.ts)
+  const thumbDir = path.join(ROOT, 'data/thumb')
+  fs.rmSync(thumbDir, { recursive: true, force: true })
+  fs.mkdirSync(thumbDir, { recursive: true })
+  let copied = 0
+  for (const r of results) {
+    if (!r.ok || !r.thumb) continue
+    const base = r.thumb.startsWith('data-gl/') ? 'public/data-gl' : 'public/data'
+    const src = path.join(dir, base, 'thumb', `${r.id}.webp`)
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(thumbDir, `${r.id}.webp`))
+      copied++
+    }
+  }
+  console.log(`缩略图拷入: ${copied} 张 → packages/chart-kit/data/thumb/`)
+
   console.log('\n=== 覆盖率 ===')
   for (const g of groups)
     console.log(

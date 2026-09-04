@@ -565,6 +565,11 @@ function blockToPmNode(
           imageFlipH: block.imageFlipH ?? false,
           imageFlipV: block.imageFlipV ?? false,
           imageBorder: block.imageBorder ?? null,
+          echartOption: block.echartOption ?? null,
+          echartCode: block.echartCode ?? null,
+          echartGroupId: block.echartGroupId ?? null,
+          echartTitle: block.echartTitle ?? null,
+          echartSnapshot: block.imageDataUrl ?? null,
           table: displayTable(block.table ?? null, rowCapTwips, budget),
           fieldDisplay: block.fieldDisplay ?? null,
           diagramDisplay: block.diagramDisplay ?? null,
@@ -1712,6 +1717,27 @@ export function pmDocToSavePlan(doc: PmNode, originalBlocks: Block[]): SavePlan 
             ? { extentPx: { w: display.widthPx, h: display.heightPx } }
             : {}),
         })
+      } else if (node.attrs?.echartOption) {
+        // ECharts extended-family chart: option JSON + PNG snapshot become a
+        // picture + sidecar part (docx-engine kind 'echart'); without a
+        // snapshot there is nothing Word/WPS could display, so the block is
+        // skipped rather than saved as a broken empty frame
+        const snap = String(node.attrs.echartSnapshot ?? '')
+        const m = /^data:[^;]+;base64,([\s\S]*)$/.exec(snap)
+        if (m) {
+          changedCount++
+          pushBlock({
+            kind: 'echart',
+            echart: {
+              optionJson: String(node.attrs.echartOption),
+              code: node.attrs.echartCode ? String(node.attrs.echartCode) : null,
+              groupId: String(node.attrs.echartGroupId ?? 'custom'),
+              title: node.attrs.echartTitle ? String(node.attrs.echartTitle) : undefined,
+              pngBase64: m[1],
+              extentPx: { w: 640, h: 400 },
+            },
+          })
+        }
       } else {
         // picture that traveled through clipboard HTML (r136 cross-document
         // paste): no anchor and no genImage — rebuild from the preview bytes

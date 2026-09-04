@@ -25,6 +25,7 @@ import {
   WORD_AUTO_SPACING_PT,
 } from '../line-metrics'
 import { custGeomBackgroundCss, shapeBackgroundCss, shapeTextInsetsPx } from './shape-svg'
+import { mountEchart } from '@chatoffice/chart-kit/mount'
 import { t } from '../i18n/locale'
 import {
   lumHex,
@@ -820,6 +821,70 @@ function drawPie(svg: SVGElement, chart: ChartDisplay, geom: ChartGeom): void {
 function formatAxisValue(v: number): string {
   const rounded = Math.round(v * 100) / 100
   return Math.abs(rounded) >= 1000 ? String(Math.round(rounded)) : String(rounded)
+}
+
+/** 39-group taxonomy 的 GL/3D 组:挂载前需动态装载 echarts-gl(Q9) */
+const ECHART_GL_GROUPS = new Set([
+  'globe',
+  'bar3D',
+  'scatter3D',
+  'surface',
+  'map3D',
+  'lines3D',
+  'line3D',
+  'scatterGL',
+  'linesGL',
+  'flowGL',
+  'graphGL',
+])
+
+/**
+ * ECharts extended-family chart (blockType === 'echart'): mounts the live
+ * chart into .doc-echart-host (viewport-gated, snapshot fallback — Q2), and
+ * double-click reopens the shared designer via a window event carrying the
+ * node position (ribbon-insert-tab listens and opens ChartDesignerModal).
+ */
+export function wireEchartEditing(
+  dom: HTMLElement,
+  getNode: () => PmNode,
+  getPos: () => number | undefined,
+  _view: EditorView,
+): (ProtectedContentEditor & { cleanup(): void }) | null {
+  const node = getNode()
+  if (node.attrs.blockType !== 'echart' || !node.attrs.echartOption) return null
+  const host = dom.querySelector<HTMLElement>('.doc-echart-host')
+  if (!host) return null
+
+  const mount = mountEchart(host, {
+    optionJson: String(node.attrs.echartOption),
+    snapshotUrl: node.attrs.echartSnapshot ? String(node.attrs.echartSnapshot) : null,
+    gl: ECHART_GL_GROUPS.has(String(node.attrs.echartGroupId ?? '')),
+  })
+
+  const onDblClick = () => {
+    const pos = getPos()
+    window.dispatchEvent(
+      new CustomEvent('chartkit-edit-echart', {
+        detail: {
+          pos: typeof pos === 'number' ? pos : null,
+          groupId: String(node.attrs.echartGroupId ?? ''),
+          code: node.attrs.echartCode ? String(node.attrs.echartCode) : undefined,
+          title: node.attrs.echartTitle ? String(node.attrs.echartTitle) : undefined,
+        },
+      }),
+    )
+  }
+  dom.addEventListener('dblclick', onDblClick)
+
+  return {
+    // whole-object interaction only; the chart itself is not inline-editable
+    setEditable: () => {},
+    commit: () => {},
+    cleanup: () => {
+      dom.removeEventListener('dblclick', onDblClick)
+      mount.dispose()
+    },
+  }
 }
 
 /** Edit chart title / series names / category labels / cached values in place. */

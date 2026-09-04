@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@chatoffice/agent-core": "*",
+    "@chatoffice/chart-kit": "*",
     "@chatoffice/i18n": "*",
     "@chatoffice/ai-provider": "*",
     "@chatoffice/ai-search": "*",

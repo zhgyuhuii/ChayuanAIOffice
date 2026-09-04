@@ -728,6 +728,26 @@ export interface NewChart {
   series: Array<{ name: string; values: (number | null)[] }>
 }
 
+/**
+ * A new ECharts (extended-family) chart to embed at save time:
+ * PNG becomes a normal inline picture (Word/WPS display it as a static image),
+ * while the option JSON travels in a sidecar part referenced from
+ * wp:docPr@descr — same trick WPS uses for its chartResId — so our editor
+ * re-opens the chart alive and editable.
+ */
+export interface NewEchart {
+  /** function-safe serialized ECharts option (__chartkit_fn__ markers) */
+  optionJson: string
+  /** sandbox-replayable example/user code; null for pure table-origin charts */
+  code?: string | null
+  /** chart taxonomy group id (39-group set) */
+  groupId: string
+  title?: string
+  /** raw base64 PNG (no data: prefix) */
+  pngBase64: string
+  extentPx?: { w: number; h: number }
+}
+
 /** Editable interchange model of one table cell (type === 'table' blocks). */
 export interface TableParagraph extends ParaFormat {
   runs: Run[]
@@ -977,7 +997,8 @@ export interface NewImage {
   flipV?: boolean
 }
 
-export type BlockType = 'paragraph' | 'heading' | 'listItem' | 'table' | 'image' | 'passthrough'
+export type BlockType =
+  'paragraph' | 'heading' | 'listItem' | 'table' | 'image' | 'passthrough' | 'echart'
 
 export interface Block {
   /** stable id for editor bookkeeping */
@@ -1021,6 +1042,14 @@ export interface Block {
   previewText?: string
   /** data URL for inline display (type === 'image', or the packaged OLE preview on passthrough) */
   imageDataUrl?: string
+  /** ECharts extended-family chart: function-safe option JSON (type === 'image' with echart marker) */
+  echartOption?: string
+  /** ECharts extended-family chart: sandbox-replayable code */
+  echartCode?: string | null
+  /** ECharts extended-family chart: taxonomy group id */
+  echartGroupId?: string
+  /** ECharts extended-family chart: display title */
+  echartTitle?: string
   /** OLE embed ProgID (o:OLEObject), e.g. "Excel.Sheet.12"; drives the friendly type caption */
   oleProgId?: string
   /** display size from wp:extent in CSS px (type === 'image') */

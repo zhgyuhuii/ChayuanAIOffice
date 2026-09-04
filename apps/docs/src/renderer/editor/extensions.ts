@@ -102,6 +102,7 @@ import {
   runSpanSpecs,
   textboxBoxStyle,
   wireChartEditing,
+  wireEchartEditing,
 } from './protected-render'
 import { isStraightLineKind } from './shape-svg'
 import {
@@ -2436,6 +2437,13 @@ export const DocProtected = Node.create({
       imageReplace: { default: null as { base64: string; mime: string } | null },
       /** new chart awaiting embedding at save time (data snapshot; edits live in chartDisplay) */
       genChart: { default: null as NewChart | null },
+      /** ECharts extended-family chart (blockType === 'echart'): function-safe option JSON */
+      echartOption: { default: null as string | null },
+      /** ECharts chart PNG snapshot (dataUrl); also the fallback display */
+      echartSnapshot: { default: null as string | null },
+      echartGroupId: { default: null as string | null },
+      echartTitle: { default: null as string | null },
+      echartCode: { default: null as string | null },
     }
   },
   parseHTML() {
@@ -2518,19 +2526,21 @@ export const DocProtected = Node.create({
       const field = wireFieldEditing(dom, getNode, pos, editor.view)
       const formula = wireFormulaEditing(dom, getNode, pos, editor.view)
       const chart = wireChartEditing(dom, getNode, pos, editor.view)
+      const echart = wireEchartEditing(dom, getNode, pos, editor.view)
       drawChartSvg(dom, currentNode.attrs.chartDisplay as ChartDisplay | null)
       const cleanups = [
         wireProtectedInteractionMode(
           dom,
           pos,
           editor.view,
-          textboxes ?? table ?? field ?? formula ?? chart,
+          textboxes ?? table ?? field ?? formula ?? chart ?? echart,
         ),
         wireFormulaLatexEdit(dom, getNode, pos),
         table?.cleanup,
         field?.cleanup,
         formula?.cleanup,
         chart?.cleanup,
+        echart?.cleanup,
         textboxes?.cleanup,
       ]
       return {
@@ -2826,6 +2836,11 @@ function protectedDomSpec(node: PmNode): DomSpec {
   ) {
     attrs.class += ' doc-protected-sectbreak'
     return ['div', attrs, ['span', { class: 'doc-sectbreak-label' }, String(label)]]
+  }
+  // ECharts extended-family chart: an empty host div — wireEchartEditing
+  // mounts the live chart (with snapshot fallback) into it after render
+  if (blockType === 'echart') {
+    return ['div', attrs, ['div', { class: 'doc-echart-host' }]]
   }
   if (blockType === 'image' && imageDataUrl) {
     const {

@@ -47,6 +47,7 @@ import type {
   GeneratedBlock,
   HeaderFooter,
   NewChart,
+  NewEchart,
   NewImage,
   NewInkImage,
   NoteInfo,
@@ -82,6 +83,8 @@ export type SaveBlock = (
   | { kind: 'image'; image: NewImage }
   /** a new embedded chart; data becomes word/charts/chartN.xml + relationship */
   | { kind: 'chart'; chart: NewChart; extentPx?: { w: number; h: number } }
+  /** a new ECharts extended-family chart; PNG picture + sidecar option part */
+  | { kind: 'echart'; echart: NewEchart }
 ) & {
   /** Top-level tracked insertion/deletion wrapper. */
   revision?: { kind: 'ins' | 'del'; author: string; date?: string; id?: string }
@@ -580,6 +583,68 @@ export async function saveDocx(
     )
   }
 
+  // ---- new ECharts extended-family charts: PNG picture + sidecar option part ----
+  // Word/WPS display the PNG; wp:docPr@descr carries a hex pointer to the
+  // sidecar (same trick WPS uses for chartResId) so our editor reopens it live.
+  const newEchartParts: Array<{ path: string; text: string }> = []
+  let echartSeq = 1
+  const hexOf = (s: string): string => {
+    const bytes = new TextEncoder().encode(s)
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
+  }
+  const embedEchart = (echart: NewEchart): string => {
+    const taken = new Set([
+      ...zip.file(/word\/echarts\/echart\d+\.json/).map((f) => f.name),
+      ...newEchartParts.map((p) => p.path),
+    ])
+    while (taken.has(`word/echarts/echart${echartSeq}.json`)) echartSeq++
+    const partName = `word/echarts/echart${echartSeq}.json`
+    // sidecar carries everything the designer needs to reopen the chart live
+    newEchartParts.push({
+      path: partName,
+      text: JSON.stringify({
+        v: 1,
+        option: echart.optionJson,
+        code: echart.code ?? null,
+        title: echart.title ?? null,
+      }),
+    })
+
+    const mediaPath = `word/media/chartkitechart${echartSeq}.png`
+    const rId = `rId${nextRelNum++}`
+    newRels.push({
+      rId,
+      type: IMAGE_REL_TYPE,
+      target: mediaPath.replace(/^word\//, ''),
+      external: false,
+    })
+    newMedia.push({ path: mediaPath, base64: echart.pngBase64 })
+    usedExtensions.add('png')
+    usedExtensions.add('json')
+
+    const docPrId = chartDocPrId + 1000 + echartSeq
+    const cx = echart.extentPx ? Math.max(1, Math.round(echart.extentPx.w * 9525)) : 6096000
+    const cy = echart.extentPx ? Math.max(1, Math.round(echart.extentPx.h * 9525)) : 3810000
+    const name = echart.title ? escapeXmlAttr(echart.title) : `EChart ${docPrId}`
+    const descrHex = hexOf(
+      JSON.stringify({ chartkit: partName.replace(/^word\//, ''), groupId: echart.groupId }),
+    )
+    echartSeq++
+    return (
+      '<w:p><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">' +
+      `<wp:extent cx="${cx}" cy="${cy}"/>` +
+      `<wp:docPr id="${docPrId}" name="${name}" descr="${descrHex}"/>` +
+      '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+      '<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+      '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+      `<pic:nvPicPr><pic:cNvPr id="${docPrId}" name="${name}"/><pic:cNvPicPr/></pic:nvPicPr>` +
+      `<pic:blipFill><a:blip r:embed="${rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+      `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm>` +
+      '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
+      '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'
+    )
+  }
+
   // ---- ink annotations: floating anchored pictures, re-emitted wholesale ----
   const inksByBlock = new Map<number, NewInkImage[]>()
   for (const ink of options.inks ?? []) {
@@ -957,6 +1022,8 @@ export async function saveDocx(
       if (fb.replaceImage) xml = retargetImageBlip(xml, embedImageMedia(fb.replaceImage))
     } else if (fb.kind === 'chart') {
       xml = await embedChart(fb.chart, fb.extentPx)
+    } else if (fb.kind === 'echart') {
+      xml = embedEchart(fb.echart)
     } else {
       xml = embedImage(fb.image)
     }
@@ -1114,6 +1181,7 @@ export async function saveDocx(
     hfOverrides.length > 0 ||
     newChartParts.length > 0 ||
     newChartWorkbooks.length > 0 ||
+    newEchartParts.length > 0 ||
     settingsIsNew ||
     commentsIsNew ||
     commentsExtIsNew ||
@@ -1135,7 +1203,14 @@ export async function saveDocx(
       }
       for (const ext of usedExtensions) {
         if (!new RegExp(`Extension="${ext}"`).test(contentTypesXml)) {
-          const mime = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : 'image/jpeg'
+          const mime =
+            ext === 'png'
+              ? 'image/png'
+              : ext === 'gif'
+                ? 'image/gif'
+                : ext === 'json'
+                  ? 'application/json'
+                  : 'image/jpeg'
           contentTypesXml = contentTypesXml.replace(
             '</Types>',
             `<Default Extension="${ext}" ContentType="${mime}"/></Types>`,
@@ -1259,6 +1334,9 @@ export async function saveDocx(
   }
   for (const part of newChartParts) {
     out.file(part.path, part.xml)
+  }
+  for (const part of newEchartParts) {
+    out.file(part.path, part.text)
   }
   for (const wb of newChartWorkbooks) {
     if (!zip.file(wb.relsPath)) {
