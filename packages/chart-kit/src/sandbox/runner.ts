@@ -125,6 +125,10 @@ export async function runOptionCode(
       }
       if (!msg || msg.__chartkit_sandbox__ !== true) return
       if (msg.ok && typeof msg.optionJson === 'string') {
+        // 沙箱执行成功:先解除执行超时(超时只约束沙箱内代码),再进入
+        // 复活阶段——首次 revive 会在 eval 帧加载 echarts(数 MB),耗时
+        // 可能超过执行超时,不应误判(真机实证:曾把成功执行报成超时)
+        clearTimeout(timer)
         void (async () => {
           try {
             const option = await parseOptionSmart(msg.optionJson as string)

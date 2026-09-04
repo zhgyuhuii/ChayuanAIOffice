@@ -7,6 +7,7 @@ import { toFlatTable, type FlatTable } from '../spec/data-table'
 import { renderOptionSnapshot } from './snapshot'
 import { thumbUrl } from './thumbs'
 import { EchartsPreview } from './EchartsPreview'
+import { ChartErrorBoundary } from './ChartErrorBoundary'
 import type { ChartSpec } from '../spec/chartspec'
 import './designer.css'
 
@@ -276,7 +277,9 @@ export function ChartDesignerModal({
           <section className="ck-designer-main">
             <div className="ck-designer-preview">
               {option ? (
-                <EchartsPreview option={option} heightPx={360} className="ck-designer-canvas" />
+                <ChartErrorBoundary label="图表">
+                  <EchartsPreview option={option} heightPx={360} className="ck-designer-canvas" />
+                </ChartErrorBoundary>
               ) : (
                 <div className="ck-designer-canvas ck-designer-canvas-empty">
                   {busy

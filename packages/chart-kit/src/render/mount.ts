@@ -17,6 +17,7 @@ import * as echarts from 'echarts'
 import { parseOptionSmart } from './revive'
 import { GlFrame } from './gl-frame-bridge'
 import { ensureMapsForOption } from './maps'
+import { ensureEchartsGlobal } from './echarts-global'
 
 export interface EchartMountOptions {
   /** option 的函数安全序列化串(__chartkit_fn__ 标记);载入时解析 */
@@ -111,12 +112,34 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
       // 非帧模式:先注册内置地图(china/world)再首绘
       if (option) await ensureMapsForOption(option)
       if (disposed) return
-      instance = echarts.init(live)
-      instance.resize({ width: container.clientWidth, height: heightPx })
-      if (option) instance.setOption(option as never)
+      ensureEchartsGlobal()
+      try {
+        instance = echarts.init(live)
+        instance.resize({ width: container.clientWidth, height: heightPx })
+        if (option) instance.setOption(option as never)
+      } catch (e) {
+        // 渲染失败(如 formatter 引用缺失全局):退回快照,绝不让单图故障
+        // 冒泡成 React 卸载整树(白屏)
+        console.warn('[chart-kit] canvas render failed, falling back to snapshot:', e)
+        try {
+          instance?.dispose()
+        } catch {
+          /* dispose 幂等 */
+        }
+        instance = null
+        return
+      }
       return
     }
-    if (currentJson) await applyOption(currentJson)
+    if (currentJson) {
+      try {
+        await applyOption(currentJson)
+      } catch (e) {
+        console.warn('[chart-kit] frame/canvas apply failed:', e)
+        active = false
+        showSnapshot()
+      }
+    }
   }
 
   const activate = () => {
@@ -170,7 +193,11 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
       disposed = true
       io.disconnect()
       ro.disconnect()
-      instance?.dispose()
+      try {
+        instance?.dispose()
+      } catch {
+        /* 崩溃状态的实例 dispose 可能内部报错,忽略 */
+      }
       instance = null
       frame?.dispose()
       frame = null

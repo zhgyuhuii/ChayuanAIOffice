@@ -10,6 +10,7 @@ import * as echarts from 'echarts'
 import { optionNeedsGl } from '../render/mount'
 import { GlFrame } from '../render/gl-frame-bridge'
 import { ensureMapsForOption } from '../render/maps'
+import { ensureEchartsGlobal } from '../render/echarts-global'
 
 export function EchartsPreview({
   option,
@@ -43,6 +44,7 @@ export function EchartsPreview({
       }
       await ensureMapsForOption(option)
       if (disposed) return
+      ensureEchartsGlobal()
       instance = echarts.init(host)
       instance.resize({ width: host.clientWidth, height: heightPx })
       instance.setOption(option as never, { notMerge: true })
@@ -58,7 +60,11 @@ export function EchartsPreview({
     return () => {
       disposed = true
       ro.disconnect()
-      instance?.dispose()
+      try {
+        instance?.dispose()
+      } catch {
+        /* dispose 幂等/内部态损坏时忽略 */
+      }
       frame?.dispose()
     }
     // option 引用变化即重建(设计器内每次沙箱运行产出新对象)

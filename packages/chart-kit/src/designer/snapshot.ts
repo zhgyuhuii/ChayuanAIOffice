@@ -8,6 +8,7 @@ import * as echarts from 'echarts'
 import { GlFrame } from '../render/gl-frame-bridge'
 import { optionNeedsGl } from '../render/mount'
 import { ensureMapsForOption } from '../render/maps'
+import { ensureEchartsGlobal } from '../render/echarts-global'
 
 export interface SnapshotOptions {
   width?: number
@@ -49,6 +50,7 @@ export async function renderOptionSnapshot(
   const host = document.createElement('div')
   host.style.cssText = `position:fixed;left:-99999px;top:0;width:${width}px;height:${height}px;`
   document.body.append(host)
+  ensureEchartsGlobal()
   const instance = echarts.init(host, null, { renderer: 'canvas', width, height })
   try {
     await ensureMapsForOption(option)

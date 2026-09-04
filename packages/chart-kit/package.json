@@ -15,7 +15,9 @@
     "./data-table": "./src/spec/data-table.ts",
     "./serialize": "./src/sandbox/serialize.ts",
     "./snapshot": "./src/designer/snapshot.ts",
-    "./revive": "./src/render/revive.ts"
+    "./revive": "./src/render/revive.ts",
+    "./error-boundary": "./src/designer/ChartErrorBoundary.tsx",
+    "./echarts-global": "./src/render/echarts-global.ts"
   },
   "peerDependencies": {
     "react": "^19.0.0"
