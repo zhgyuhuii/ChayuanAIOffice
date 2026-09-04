@@ -95,7 +95,13 @@ export function createPendingSyncQueue(params: PendingSyncQueueParams): PendingS
       const slot = readSlot(file)
       if (slot) out.push({ file, slot })
     }
-    out.sort((a, b) => a.slot.queuedAtMs - b.slot.queuedAtMs)
+    // Same-millisecond enqueues tie on queuedAtMs — break ties by key so the
+    // processing order (and flush outcome order) is deterministic.
+    out.sort(
+      (a, b) =>
+        a.slot.queuedAtMs - b.slot.queuedAtMs ||
+        (a.slot.key < b.slot.key ? -1 : a.slot.key > b.slot.key ? 1 : 0),
+    )
     return out
   }
 

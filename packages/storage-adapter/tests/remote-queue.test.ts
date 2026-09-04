@@ -111,7 +111,13 @@ describe('createPendingSyncQueue', () => {
     expect((await queue.flush())[0]).toMatchObject({ outcome: 'conflict', currentEtag: null })
 
     queue.enqueue('cfg-1', 'chatoffice/brand-new.docx', Buffer.from('x'), null)
-    expect((await queue.flush())[0]).toMatchObject({ outcome: 'synced' })
+    // The conflicted gone.docx slot stays queued and is retried on every
+    // flush, so the outcome array also carries it — key the assertion on the
+    // brand-new slot instead of array position (order is not contractual).
+    const second = await queue.flush()
+    expect(
+      second.find((outcome) => outcome.slot.key === 'chatoffice/brand-new.docx'),
+    ).toMatchObject({ outcome: 'synced' })
     expect(bucket.has('chatoffice/brand-new.docx')).toBe(true)
   })
 
