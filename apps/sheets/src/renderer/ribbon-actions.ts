@@ -386,6 +386,36 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         return
     }
   }
+  if (command.startsWith('convert:')) {
+    // WPS 数字组 转换⌄ (B6): batch text<->number over the selection
+    const wb2 = runtime.univerAPI.getActiveWorkbook()
+    const ws2 = wb2?.getActiveSheet()
+    const sel2 = wb2?.getActiveRange()
+    if (!wb2 || !ws2 || !sel2) {
+      ctx.setMessage(t('appSelectCellFirst'))
+      return
+    }
+    let changed = 0
+    for (let r = sel2.getRow(); r < sel2.getRow() + sel2.getHeight(); r += 1) {
+      for (let c = sel2.getColumn(); c < sel2.getColumn() + sel2.getWidth(); c += 1) {
+        const cell = ws2.getRange(r, c)
+        const v = cell.getValue()
+        if (command === 'convert:text2num') {
+          if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) {
+            cell.setValue(Number(v))
+            changed += 1
+          }
+        } else if (command === 'convert:num2text') {
+          if (typeof v === 'number') {
+            cell.setValue(String(v))
+            changed += 1
+          }
+        }
+      }
+    }
+    ctx.setMessage(t('appConvertDone', { n: changed }))
+    return
+  }
   if (command.startsWith('sheetop:')) {
     // 工作表⌄（WPS 对齐 B3）：重命名/标签颜色/隐藏/取消隐藏。
     const wb = runtime.univerAPI.getActiveWorkbook()
