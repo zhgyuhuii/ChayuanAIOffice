@@ -1,6 +1,8 @@
+import { optionFromChartEx, chartExGroupOf } from '@chatoffice/chart-kit/data-table'
+import { stringifyOption } from '@chatoffice/chart-kit/serialize'
 import JSZip from 'jszip'
 import { parseCustGeom } from '@chatoffice/pptx-engine/custgeom'
-import { parseChartPartXml } from './chart'
+import { parseChartPartXml, parseChartExDetail } from './chart'
 import { findInkRuns, stripInkRuns } from './ink'
 import { computeListMarkers, customEnumItems, type ListItemRef } from './list-markers'
 import { isMetafileMime, metafileToDataUrl } from './metafile'
@@ -1088,6 +1090,20 @@ async function buildBlock(
       // fallback-less parts.
       if (isChart && detect.includes('/drawing/2014/chartex"')) {
         const fbImage = await extractImage(xml, ctx)
+        // 数据兼容:除显示 Word 的 fallback 图外,解析 chartEx part 的层级数据,
+        // 组装成我们的 echart 活图表——打开即可编辑,数据不丢
+        const exDetail = await extractChartExDetail(xml, ctx)
+        if (exDetail) {
+          return {
+            ...base,
+            type: 'echart',
+            label: 'ECharts chart',
+            ...(fbImage ? { imageDataUrl: fbImage } : {}),
+            echartOption: exDetail.optionJson,
+            echartGroupId: exDetail.groupId,
+            ...(exDetail.title ? { echartTitle: exDetail.title } : {}),
+          }
+        }
         if (fbImage) {
           return {
             ...base,
@@ -6621,6 +6637,34 @@ async function extractImage(xml: string, ctx: BuildContext): Promise<string | nu
   return `data:${mime};base64,${base64}`
 }
 
+/** chartEx part → 我们的 echart option(数据兼容读端核心) */
+async function extractChartExDetail(
+  xml: string,
+  ctx: BuildContext,
+): Promise<{ optionJson: string; groupId: string; title?: string } | null> {
+  const rId = /<cx:chart [^>]*r:id="([^"]+)"/.exec(xml)?.[1]
+  const rel = rId ? ctx.rels.get(rId) : undefined
+  if (!rel || rel.targetMode === 'External') return null
+  const path = (rel.target.startsWith('/') ? rel.target.slice(1) : `word/${rel.target}`).replace(
+    /^word\/\.\.\//,
+    '',
+  )
+  const file = ctx.zip.file(path)
+  if (!file) return null
+  const detail = parseChartExDetail(await file.async('string'))
+  if (!detail) return null
+  const option = optionFromChartEx(detail.layoutId, {
+    categoryLevels: detail.levels,
+    values: detail.values,
+  })
+  if (!option) return null
+  return {
+    optionJson: stringifyOption(option),
+    groupId: chartExGroupOf(detail.layoutId),
+    ...(detail.title ? { title: detail.title } : {}),
+  }
+}
+
 /**
  * ECharts extended-family chart detection: our save writes a hex pointer in
  * wp:docPr@descr ({chartkit: "echarts/echartN.json", groupId}) — the WPS
@@ -6648,7 +6692,12 @@ async function chartkitEchartOf(
   if (!pointer?.chartkit) return null
   const file = ctx.zip.file(`word/${pointer.chartkit}`)
   if (!file) return null
-  let wrapper: { option?: string; code?: string | null; title?: string | null }
+  let wrapper: {
+    option?: string
+    code?: string | null
+    title?: string | null
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  }
   try {
     wrapper = JSON.parse(await file.async('string')) as {
       option?: string
@@ -6664,6 +6713,7 @@ async function chartkitEchartOf(
     echartCode: wrapper.code ?? null,
     echartGroupId: pointer.groupId ?? 'custom',
     ...(wrapper.title ? { echartTitle: wrapper.title } : {}),
+    ...(wrapper.data ? { echartData: wrapper.data } : {}),
   }
 }
 

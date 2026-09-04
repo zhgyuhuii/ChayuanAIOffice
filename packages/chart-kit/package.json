@@ -11,7 +11,11 @@
     "./sandbox": "./src/sandbox/runner.ts",
     "./examples": "./src/examples/library.ts",
     "./mount": "./src/render/mount.ts",
-    "./designer": "./src/designer/ChartDesignerModal.tsx"
+    "./designer": "./src/designer/ChartDesignerModal.tsx",
+    "./data-table": "./src/spec/data-table.ts",
+    "./serialize": "./src/sandbox/serialize.ts",
+    "./snapshot": "./src/designer/snapshot.ts",
+    "./revive": "./src/render/revive.ts"
   },
   "peerDependencies": {
     "react": "^19.0.0"

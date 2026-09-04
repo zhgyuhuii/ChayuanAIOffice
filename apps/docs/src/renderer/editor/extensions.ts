@@ -2386,7 +2386,13 @@ export const DocProtected = Node.create({
       imageGeom: { default: null as string | null },
       /** outer shadow (a:effectLst/a:outerShdw), display-only */
       imageShadow: {
-        default: null as { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null,
+        default: null as {
+          blurPt: number
+          distPt: number
+          dirDeg: number
+          color: string
+          alpha: number
+        } | null,
       },
       /** fill placement (a:fillRect) fractions (negative = bleed), display-only */
       imageFillRect: { default: null as { l: number; t: number; r: number; b: number } | null },
@@ -2471,6 +2477,10 @@ export const DocProtected = Node.create({
       echartGroupId: { default: null as string | null },
       echartTitle: { default: null as string | null },
       echartCode: { default: null as string | null },
+      /** 扁平数据表(sidecar 随存:层级列/类别列+数值) */
+      echartData: {
+        default: null as { columns: string[]; rows: Array<Array<string | number | null>> } | null,
+      },
     }
   },
   parseHTML() {
@@ -3063,7 +3073,13 @@ function protectedDomSpec(node: PmNode): DomSpec {
     }
     // outer shadow: CSS box-shadow approximation of a:outerShdw (rides the
     // frame span like Word's box-anchored shadow)
-    const imgShadow = imageShadow as { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
+    const imgShadow = imageShadow as {
+      blurPt: number
+      distPt: number
+      dirDeg: number
+      color: string
+      alpha: number
+    } | null
     let shadowOnWrap: string | null = null
     if (imgShadow) {
       const rad = (imgShadow.dirDeg * Math.PI) / 180

@@ -734,6 +734,7 @@ export function InsertTab({
               echartGroupId: payload.groupId,
               echartTitle: payload.title,
               echartCode: payload.code ?? null,
+              echartData: payload.data ?? null,
             }),
           )
           closeChartKit()
@@ -751,6 +752,7 @@ export function InsertTab({
           echartGroupId: payload.groupId,
           echartTitle: payload.title,
           echartCode: payload.code ?? null,
+          echartData: payload.data ?? null,
         },
       })
     }

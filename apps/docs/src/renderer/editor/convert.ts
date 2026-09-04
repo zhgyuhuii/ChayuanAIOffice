@@ -29,6 +29,7 @@ import {
   type GeneratedBlock,
   type ImageWrap,
   type NewChart,
+  type NewEchart,
   type NewImage,
   type ParaFormat,
   type Run,
@@ -570,6 +571,7 @@ function blockToPmNode(
           echartGroupId: block.echartGroupId ?? null,
           echartTitle: block.echartTitle ?? null,
           echartSnapshot: block.imageDataUrl ?? null,
+          echartData: block.echartData ?? null,
           table: displayTable(block.table ?? null, rowCapTwips, budget),
           fieldDisplay: block.fieldDisplay ?? null,
           diagramDisplay: block.diagramDisplay ?? null,
@@ -1735,6 +1737,9 @@ export function pmDocToSavePlan(doc: PmNode, originalBlocks: Block[]): SavePlan 
               title: node.attrs.echartTitle ? String(node.attrs.echartTitle) : undefined,
               pngBase64: m[1],
               extentPx: { w: 640, h: 400 },
+              ...(node.attrs.echartData
+                ? { data: node.attrs.echartData as NewEchart['data'] }
+                : {}),
             },
           })
         }

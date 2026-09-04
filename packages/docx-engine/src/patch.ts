@@ -607,6 +607,7 @@ export async function saveDocx(
         option: echart.optionJson,
         code: echart.code ?? null,
         title: echart.title ?? null,
+        ...(echart.data ? { data: echart.data } : {}),
       }),
     })
 

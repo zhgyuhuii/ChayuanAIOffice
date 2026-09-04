@@ -26,6 +26,8 @@ import {
 } from '../line-metrics'
 import { custGeomBackgroundCss, shapeBackgroundCss, shapeTextInsetsPx } from './shape-svg'
 import { mountEchart } from '@chatoffice/chart-kit/mount'
+import { parseOptionSmart } from '@chatoffice/chart-kit/revive'
+import { renderOptionSnapshot } from '@chatoffice/chart-kit/snapshot'
 import { t } from '../i18n/locale'
 import {
   lumHex,
@@ -848,7 +850,7 @@ export function wireEchartEditing(
   dom: HTMLElement,
   getNode: () => PmNode,
   getPos: () => number | undefined,
-  _view: EditorView,
+  view: EditorView,
 ): (ProtectedContentEditor & { cleanup(): void }) | null {
   const node = getNode()
   if (node.attrs.blockType !== 'echart' || !node.attrs.echartOption) return null
@@ -860,6 +862,30 @@ export function wireEchartEditing(
     snapshotUrl: node.attrs.echartSnapshot ? String(node.attrs.echartSnapshot) : null,
     gl: ECHART_GL_GROUPS.has(String(node.attrs.echartGroupId ?? '')),
   })
+
+  // chartEx 读入的块可能没有快照(Word 未写 fallback 图):活渲染就绪后异步
+  // 生成 PNG 回写属性,保证首次保存就有图片部件(否则保存会跳过该块)
+  let snapshotAlive = true
+  if (!node.attrs.echartSnapshot) {
+    void (async () => {
+      try {
+        const option = await parseOptionSmart(String(node.attrs.echartOption))
+        const png = await renderOptionSnapshot(option)
+        const current = getNode()
+        if (!snapshotAlive || current.attrs.echartSnapshot) return
+        const pos = getPos()
+        if (typeof pos !== 'number') return
+        view.dispatch(
+          view.state.tr.setNodeMarkup(pos, undefined, {
+            ...current.attrs,
+            echartSnapshot: png,
+          }),
+        )
+      } catch {
+        /* 快照生成失败:块保持活渲染,保存时按缺快照跳过 */
+      }
+    })()
+  }
 
   const onDblClick = () => {
     const pos = getPos()
@@ -881,6 +907,7 @@ export function wireEchartEditing(
     setEditable: () => {},
     commit: () => {},
     cleanup: () => {
+      snapshotAlive = false
       dom.removeEventListener('dblclick', onDblClick)
       mount.dispose()
     },

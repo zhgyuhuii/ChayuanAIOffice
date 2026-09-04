@@ -420,6 +420,72 @@ function parseChartexPartXml(parsed: XNode[], partPath: string): ChartDisplay | 
   }
 }
 
+/**
+ * chartEx 数据明细(数据兼容读端):保留全部层级(strDim 的每个 cx:lvl 一层),
+ * 供 parse 侧组装成我们的 echart 活图表(optionFromChartEx)——
+ * Word/WPS 新版写的瀑布/旭日/树图文件打开即得可编辑图表与数据。
+ */
+export interface ChartExDetail {
+  layoutId: string
+  levels: string[][]
+  values: number[]
+  title?: string
+}
+
+export function parseChartExDetail(partXml: string): ChartExDetail | null {
+  if (!partXml.includes('<cx:chartSpace')) return null
+  const parsed = xmlParser.parse(partXml) as XNode[]
+  const space = parsed.find((n) => nameOf(n) === 'cx:chartSpace')
+  if (!space) return null
+  const chartData =
+    findChild(space, 'cx:chartData') ??
+    childrenOf(space).find((c) => findChild(c, 'cx:data') !== undefined)
+  const data = chartData ? findChild(chartData, 'cx:data') : undefined
+  if (!data) return null
+
+  const levels: string[][] = []
+  let values: number[] = []
+  const ptsOf = (lvl: XNode): Array<{ idx: number; v: string }> => {
+    const out: Array<{ idx: number; v: string }> = []
+    for (const pt of findChildren(lvl, 'cx:pt')) {
+      const idx = parseInt(attrsOf(pt)['idx'] ?? '', 10)
+      if (Number.isFinite(idx) && idx >= 0) out.push({ idx, v: textOf(pt) })
+    }
+    return out
+  }
+  for (const dim of childrenOf(data)) {
+    const dimName = nameOf(dim)
+    if (dimName === 'cx:strDim') {
+      for (const lvl of findChildren(dim, 'cx:lvl')) {
+        const pts = ptsOf(lvl)
+        const arr: string[] = []
+        for (const { idx, v } of pts) arr[idx] = v
+        levels.push(arr)
+      }
+    } else if (dimName === 'cx:numDim') {
+      for (const lvl of findChildren(dim, 'cx:lvl')) {
+        const pts = ptsOf(lvl)
+        const arr: number[] = []
+        for (const { idx, v } of pts) {
+          const n = Number(v)
+          arr[idx] = Number.isFinite(n) ? n : 0
+        }
+        values = arr
+      }
+    }
+  }
+  const chart = findChild(space, 'cx:chart')
+  const plotRegion = chart
+    ? findChild(findChild(chart, 'cx:plotArea') ?? {}, 'cx:plotAreaRegion')
+    : undefined
+  const layoutId = plotRegion
+    ? (attrsOf(findChildren(plotRegion, 'cx:series')[0] ?? {})['layoutId'] ?? '')
+    : ''
+  const title = chart ? chartexTitle(chart) : undefined
+  if (levels.length === 0 || values.length === 0) return null
+  return { layoutId, levels, values, ...(title !== undefined ? { title } : {}) }
+}
+
 function chartexTitle(chart: XNode): string | undefined {
   const title = findChild(chart, 'cx:title')
   if (!title) return undefined

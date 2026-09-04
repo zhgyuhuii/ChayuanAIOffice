@@ -746,6 +746,8 @@ export interface NewEchart {
   /** raw base64 PNG (no data: prefix) */
   pngBase64: string
   extentPx?: { w: number; h: number }
+  /** 扁平数据表(数据不锁死:层级列/类别列+数值,跨端可加工) */
+  data?: { columns: string[]; rows: Array<Array<string | number | null>> }
 }
 
 /** Editable interchange model of one table cell (type === 'table' blocks). */
@@ -1060,6 +1062,8 @@ export interface Block {
   echartGroupId?: string
   /** ECharts extended-family chart: display title */
   echartTitle?: string
+  /** ECharts extended-family chart: flat data table (sidecar round-trip) */
+  echartData?: { columns: string[]; rows: Array<Array<string | number | null>> }
   /** OLE embed ProgID (o:OLEObject), e.g. "Excel.Sheet.12"; drives the friendly type caption */
   oleProgId?: string
   /** display size from wp:extent in CSS px (type === 'image') */

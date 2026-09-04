@@ -3,6 +3,7 @@ import { getLibraryGroups, type LibraryExample, type LibraryGroup } from '../exa
 import { runOptionCode } from '../sandbox/runner'
 import { stringifyOption } from '../sandbox/serialize'
 import { extractTableFromOption, optionFromChartSpec, type OptionTable } from './optionFromSpec'
+import { toFlatTable, type FlatTable } from '../spec/data-table'
 import { renderOptionSnapshot } from './snapshot'
 import { thumbUrl } from './thumbs'
 import { EchartsPreview } from './EchartsPreview'
@@ -36,6 +37,8 @@ export interface ChartDesignerInsert {
   snapshotPng?: string
   /** engine==='ooxml' 时的标准契约 */
   spec?: ChartSpec
+  /** 扁平数据表(数据兼容:sidecar 随存,跨端可加工不锁死) */
+  data?: FlatTable | null
 }
 
 export interface ChartDesignerModalProps {
@@ -179,6 +182,7 @@ export function ChartDesignerModal({
         code: codeRef.current || null,
         optionJson: stringifyOption(option),
         snapshotPng,
+        data: toFlatTable(option),
       })
     } finally {
       setInserting(false)
