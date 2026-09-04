@@ -19,7 +19,7 @@ const STORAGE_KEY = 'chatoffice.home-layout'
 
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
-  rightCollapsed: false,
+  rightCollapsed: true,
   starredCollapsed: false,
   recentCollapsed: false,
 }
