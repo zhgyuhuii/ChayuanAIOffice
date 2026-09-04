@@ -1378,6 +1378,148 @@ body.vib .slide-list {
   text-align: right;
 }
 
+/* % label doubles as the 显示比例 popover trigger (WPS) */
+.zoom-value-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 1px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.zoom-value-btn:hover {
+  background: var(--slides-statusbar-hover);
+}
+
+/* WPS 视图切换组:与缩放组之间以细分割线隔开 */
+.status-views {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: 2px;
+  padding-right: 8px;
+  border-right: 1px solid var(--slides-statusbar-border);
+}
+
+.status-view-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  width: 22px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.status-view-btn:hover {
+  background: var(--slides-statusbar-hover);
+}
+
+.status-view-btn.on {
+  background: var(--slides-statusbar-active);
+}
+
+/* 播放组:主按钮 + ▾ 下拉(从头/从当前),整组用分隔线与缩放组隔开 */
+.status-play-split {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+  padding-left: 8px;
+  border-left: 1px solid var(--slides-statusbar-border);
+}
+
+.status-play-caret {
+  border: none;
+  background: none;
+  color: inherit;
+  width: 16px;
+  height: 20px;
+  font-size: 9px;
+  line-height: 1;
+  padding: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.status-play-caret:hover {
+  background: var(--slides-statusbar-hover);
+}
+
+/* 显示比例 popover:预设行 + 自定义百分比行 */
+.zoom-pop {
+  position: fixed;
+  z-index: 90;
+  min-width: 148px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: var(--slides-shadow-menu);
+}
+
+.zoom-pop-item {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.zoom-pop-item:hover {
+  background: var(--slides-statusbar-hover);
+}
+
+.zoom-pop-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  padding: 6px 6px 2px;
+  border-top: 1px solid var(--border);
+}
+
+.zoom-pop-custom input {
+  width: 54px;
+  height: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-size: 12.5px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.zoom-pop-custom input:focus {
+  border-color: var(--slides-accent, var(--accent));
+}
+
+.zoom-pop-custom span {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.zoom-pop-ok {
+  border: none;
+  background: var(--slides-accent, var(--accent));
+  color: #fff;
+  font-size: 12px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 /* Status-bar quick toggle button for notes */
 .status-notes-btn {
   display: inline-flex;
@@ -8817,6 +8959,11 @@ body.show-curtain::after {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  /* the column's automatic minimum is the content height — a bottom-docked AI
+     panel halves the body yet the stage's zoom-box keeps its intrinsic height,
+     so without the clamp the workspace overflows and takes the status bar with
+     it below the viewport */
+  min-height: 0;
 }
 
 /* ribbon + editor stacked inside the dock body — a left/right docked AI panel

@@ -56,7 +56,14 @@ import type { SlideThemePreset } from './themes'
 import { Ribbon, type FormatCmd, type SlidesViewMode } from './components/Ribbon'
 import { contextElementTypeForNode, type ContextElementType } from './components/context-tabs'
 import { SlideShowView } from './components/SlideShowView'
-import { IconNotes, IconPlayBoxed } from './components/icons'
+import {
+  IconArrangeAll,
+  IconNotes,
+  IconOutlineView,
+  IconPlayBoxed,
+  IconPrintLayout,
+  IconReadMode,
+} from './components/icons'
 import { PresenterView } from './components/PresenterView'
 import { CustomShowDialog } from './components/CustomShowDialog'
 import { PrintDialog } from './components/PrintDialog'
@@ -477,6 +484,10 @@ export function App() {
     width: 10,
   })
   const [ctxMenu, setCtxMenu] = useState<CtxMenuState>(null)
+  /** status-bar play button ▾ menu anchor (从头/从当前), separate from the canvas ctxMenu */
+  const [playMenuAt, setPlayMenuAt] = useState<{ x: number; y: number } | null>(null)
+  /** anchor of the zoom popover (显示比例) opened from the status-bar % label */
+  const [zoomPopAt, setZoomPopAt] = useState<{ x: number; y: number } | null>(null)
   /** "Change Shape" gallery popover: anchor point + the shape it retargets */
   const [shapeGalleryAt, setShapeGalleryAt] = useState<{
     targetId: string
@@ -4127,17 +4138,90 @@ export function App() {
                     <span>{t('appNotesLabel')}</span>
                   </button>
                 )}
+                {/* WPS 演示底栏视图切换组:普通/大纲/浏览/阅读,与视图选项卡同源 */}
                 {hasDoc && (
-                  <button
-                    className="status-play-btn"
-                    data-tip={t('ribbonFromCurrentTip')}
-                    aria-label={t('ribbonFromCurrentTip')}
-                    onClick={() => startSlideShow(false)}
-                  >
-                    <IconPlayBoxed size={18} />
-                  </button>
+                  <div className="status-views">
+                    {(
+                      [
+                        ['normal', IconPrintLayout, 'ribbonViewNormal', 'ribbonViewNormalTip'],
+                        ['outline', IconOutlineView, 'ribbonViewOutline', 'ribbonViewOutlineTip'],
+                        ['sorter', IconArrangeAll, 'ribbonViewSorter', 'ribbonViewSorterTip'],
+                        ['reading', IconReadMode, 'ribbonViewReading', 'ribbonViewReadingTip'],
+                      ] as const
+                    ).map(([mode, Icon, labelKey, tipKey]) => (
+                      <button
+                        key={mode}
+                        className={`status-view-btn${viewMode === mode ? ' on' : ''}`}
+                        data-tip={t(tipKey)}
+                        aria-label={t(labelKey)}
+                        onClick={() => onViewMode(mode)}
+                      >
+                        <Icon size={15} />
+                      </button>
+                    ))}
+                  </div>
                 )}
-                <ZoomControls zoom={zoom} onPreview={previewZoom} />
+                <ZoomControls
+                  zoom={zoom}
+                  onPreview={previewZoom}
+                  onValueClick={(el) => {
+                    const r = el.getBoundingClientRect()
+                    setZoomPopAt({ x: r.right, y: r.top })
+                  }}
+                />
+                {zoomPopAt && (
+                  <ZoomPop
+                    at={zoomPopAt}
+                    zoom={zoom}
+                    okLabel={t('ribbonOk')}
+                    fitLabel={t('ribbonFitWindow')}
+                    onZoom={(v) => previewZoom(v)}
+                    onFit={zoomToFit}
+                    onClose={() => setZoomPopAt(null)}
+                  />
+                )}
+                {/* 播放组(WPS 最右):主按钮=从当前,▾=从头/从当前菜单 */}
+                {hasDoc && (
+                  <span className="status-play-split">
+                    <button
+                      className="status-play-btn"
+                      data-tip={t('ribbonFromCurrentTip')}
+                      aria-label={t('ribbonFromCurrent')}
+                      onClick={() => startSlideShow(false)}
+                    >
+                      <IconPlayBoxed size={18} />
+                    </button>
+                    <button
+                      className="status-play-caret"
+                      aria-label={t('ribbonGroupShow')}
+                      onClick={(e) => {
+                        const r = e.currentTarget.getBoundingClientRect()
+                        setPlayMenuAt({ x: r.left, y: r.top })
+                      }}
+                    >
+                      ▾
+                    </button>
+                  </span>
+                )}
+                {playMenuAt && (
+                  <ContextMenu
+                    x={playMenuAt.x}
+                    y={playMenuAt.y}
+                    items={[
+                      {
+                        label: t('ribbonFromBeginning'),
+                        hint: 'F5',
+                        onClick: () => void startSlideShow(true),
+                      },
+                      {
+                        label: t('ribbonFromCurrent'),
+                        hint: '⇧F5',
+                        onClick: () => void startSlideShow(false),
+                      },
+                    ]}
+                    onClose={() => setPlayMenuAt(null)}
+                  />
+                )}
               </div>
             </footer>
           </div>
@@ -4357,10 +4441,14 @@ function anchorClamp(v: number | undefined, min: number, max: number): number | 
 function ZoomControls({
   zoom,
   onPreview,
+  onValueClick,
 }: {
   readonly zoom: number
   readonly onPreview: (z: number | ((current: number) => number)) => void
+  /** the % label doubles as the zoom-popover trigger (WPS 显示比例) */
+  readonly onValueClick?: (el: HTMLButtonElement) => void
 }) {
+  const { t } = useI18n()
   const [live, setLive] = useState(() => Math.round(zoom * 100))
   // adopt outside commits (fit, pinch, menu) once they land
   useEffect(() => setLive(Math.round(zoom * 100)), [zoom])
@@ -4392,7 +4480,96 @@ function ZoomControls({
       <button className="zoom-btn" onClick={() => step(1)}>
         +
       </button>
-      <span className="zoom-value">{live}%</span>
+      <button
+        className="zoom-value zoom-value-btn"
+        data-tip={t('ribbonGroupZoom')}
+        onClick={(e) => onValueClick?.(e.currentTarget)}
+      >
+        {live}%
+      </button>
     </>
+  )
+}
+
+/** WPS 显示比例 popover anchored to the status-bar % label: 适应窗口 / 100%
+ *  presets plus a custom percent row (25–300). Zoom here is a fraction. */
+function ZoomPop({
+  at,
+  zoom,
+  okLabel,
+  fitLabel,
+  onZoom,
+  onFit,
+  onClose,
+}: {
+  readonly at: { x: number; y: number }
+  readonly zoom: number
+  readonly okLabel: string
+  readonly fitLabel: string
+  readonly onZoom: (v: number) => void
+  readonly onFit: () => void
+  readonly onClose: () => void
+}) {
+  const [custom, setCustom] = useState(String(Math.round(zoom * 100)))
+  const popRef = useRef<HTMLDivElement>(null)
+  // right-aligned with the % label, clamped into the viewport
+  const [pos, setPos] = useState(at)
+  useLayoutEffect(() => {
+    const el = popRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    setPos({
+      x: Math.min(at.x, window.innerWidth - r.width - 4),
+      y: Math.max(0, at.y - r.height - 6),
+    })
+  }, [at])
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    const onDown = (e: MouseEvent) => {
+      if (!popRef.current?.contains(e.target as Node)) onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('mousedown', onDown)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('mousedown', onDown)
+    }
+  }, [onClose])
+  const pick = (fn: () => void) => () => {
+    onClose()
+    fn()
+  }
+  const applyCustom = () => {
+    const v = Math.min(300, Math.max(25, Math.round(Number(custom))))
+    if (Number.isFinite(v) && custom.trim() !== '') onZoom(v / 100)
+    onClose()
+  }
+  return (
+    <div ref={popRef} className="zoom-pop" style={{ left: pos.x, top: pos.y }}>
+      <button className="zoom-pop-item" onClick={pick(onFit)}>
+        {fitLabel}
+      </button>
+      <button className="zoom-pop-item" onClick={pick(() => onZoom(1))}>
+        100%
+      </button>
+      <div className="zoom-pop-custom">
+        <input
+          type="number"
+          min={25}
+          max={300}
+          value={custom}
+          onChange={(e) => setCustom(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') applyCustom()
+          }}
+        />
+        <span>%</span>
+        <button className="zoom-pop-ok" onClick={applyCustom}>
+          {okLabel}
+        </button>
+      </div>
+    </div>
   )
 }

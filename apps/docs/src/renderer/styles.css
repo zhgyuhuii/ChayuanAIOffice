@@ -7404,6 +7404,131 @@ body.docs-crop-active
   text-align: right;
 }
 
+/* % label doubles as the 显示比例 popover trigger (WPS) */
+.zoom-value-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 1px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.zoom-value-btn:hover {
+  background: var(--docs-statusbar-hover);
+}
+
+/* WPS 视图切换组:与缩放组之间以细分割线隔开 */
+.status-views {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: 2px;
+  padding-right: 8px;
+  border-right: 1px solid var(--docs-statusbar-border);
+}
+
+.status-view-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  width: 22px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.status-view-btn:hover:not(:disabled) {
+  background: var(--docs-statusbar-hover);
+}
+
+.status-view-btn.on {
+  background: var(--docs-accent-ghost);
+}
+
+.status-view-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 显示比例 popover:预设行 + 自定义百分比行 */
+.zoom-pop {
+  position: fixed;
+  z-index: 90;
+  min-width: 148px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: var(--docs-shadow-ctx);
+}
+
+.zoom-pop-item {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.zoom-pop-item:hover {
+  background: var(--word-blue);
+  color: var(--docs-on-accent);
+}
+
+.zoom-pop-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 2px;
+}
+
+.zoom-pop-custom input {
+  width: 54px;
+  height: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-size: 12.5px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.zoom-pop-custom input:focus {
+  border-color: var(--word-blue);
+}
+
+.zoom-pop-custom span {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.zoom-pop-ok {
+  border: none;
+  background: var(--word-blue);
+  color: #fff;
+  font-size: 12px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 /* ================= modal ================= */
 
 .modal-backdrop {
@@ -10062,6 +10187,10 @@ tr > .page-gap-cut {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  /* the column's automatic minimum is the content height — without the clamp a
+     print-view page (A4 ≈ 1280px) grows .workspace past the viewport and pushes
+     the status bar off-screen, whatever the dock layout above it does */
+  min-height: 0;
 }
 
 /* Shape draw mode (Word parity): crosshair over the whole document while armed */

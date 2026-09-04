@@ -15,6 +15,7 @@ import { NodeSelection } from '@tiptap/pm/state'
 import { AiPanelToggle, DockShell, Dropdown, useUIMode } from '@chatoffice/ui'
 import { createCommandRegistry, MobileRibbon } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
+import { IconOutlineView, IconPrintLayout, IconReadMode, IconWebLayout } from './components/icons'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import {
   BLANK_BULLET_NUM_ID,
@@ -450,6 +451,8 @@ export function App() {
   )
   const [status, setStatus] = useState('')
   const [zoom, setZoom] = useState(100)
+  /** anchor of the WPS-style zoom popover (显示比例) opened from the status-bar % label */
+  const [zoomPopAt, setZoomPopAt] = useState<{ x: number; y: number } | null>(null)
   const [darkCanvas, setDarkCanvas] = useState(false)
   const [section, setSection] = useState<SectionSettings | null>(null)
   /** All sections (readSections): pagination/preview use per-section geometry; layout edits apply to the cursor's section */
@@ -4855,6 +4858,48 @@ export function App() {
                 {status && <span className="status-msg"> — {status}</span>}
               </div>
               <div className="status-right">
+                {/* WPS 文字底栏视图切换组:页面/Web/大纲/阅读,镜像视图选项卡的大按钮语义 */}
+                <div className="status-views">
+                  <button
+                    className={`status-view-btn${viewMode === 'print' && !readMode ? ' on' : ''}`}
+                    disabled={!doc}
+                    data-tip={t('ribbonPrintLayoutTip')}
+                    aria-label={t('ribbonPrintLayout')}
+                    onClick={() => {
+                      setViewMode('print')
+                      setReadMode(false)
+                    }}
+                  >
+                    <IconPrintLayout size={15} />
+                  </button>
+                  <button
+                    className={`status-view-btn${viewMode === 'web' ? ' on' : ''}`}
+                    disabled={!doc}
+                    data-tip={t('ribbonWebLayoutTip')}
+                    aria-label={t('ribbonWebLayout')}
+                    onClick={() => setViewMode(viewMode === 'web' ? 'print' : 'web')}
+                  >
+                    <IconWebLayout size={15} />
+                  </button>
+                  <button
+                    className={`status-view-btn${viewMode === 'outline' ? ' on' : ''}`}
+                    disabled={!doc}
+                    data-tip={t('ribbonOutlineViewTip')}
+                    aria-label={t('ribbonOutlineView')}
+                    onClick={() => setViewMode(viewMode === 'outline' ? 'print' : 'outline')}
+                  >
+                    <IconOutlineView size={15} />
+                  </button>
+                  <button
+                    className={`status-view-btn${readMode ? ' on' : ''}`}
+                    disabled={!doc}
+                    data-tip={t('ribbonReadModeTip')}
+                    aria-label={t('ribbonReadMode')}
+                    onClick={() => setReadMode(!readMode)}
+                  >
+                    <IconReadMode size={15} />
+                  </button>
+                </div>
                 <button
                   className="zoom-btn"
                   onClick={() => setZoom((z) => Math.max(50, Math.round(z) - 10))}
@@ -4876,7 +4921,30 @@ export function App() {
                 >
                   +
                 </button>
-                <span className="zoom-value">{Math.round(zoom)}%</span>
+                {/* % 标签即显示比例弹层的触发器(WPS 同款):预设 100%/页宽/整页 + 自定义 */}
+                <button
+                  className="zoom-value zoom-value-btn"
+                  data-tip={t('ribbonGroupZoom')}
+                  onClick={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect()
+                    setZoomPopAt({ x: r.right, y: r.top })
+                  }}
+                >
+                  {Math.round(zoom)}%
+                </button>
+                {zoomPopAt && (
+                  <ZoomPop
+                    at={zoomPopAt}
+                    zoom={zoom}
+                    okLabel={t('appOk')}
+                    fitWidthLabel={t('ribbonPageWidth')}
+                    fitPageLabel={t('ribbonWholePage')}
+                    onZoom={(v) => setZoom(Math.min(200, Math.max(50, Math.round(v))))}
+                    onFitWidth={() => zoomFit('width')}
+                    onFitPage={() => zoomFit('page')}
+                    onClose={() => setZoomPopAt(null)}
+                  />
+                )}
               </div>
             </footer>
           </div>
@@ -5100,6 +5168,97 @@ export function App() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/** WPS 显示比例 popover anchored to the status-bar % label: presets (100% /
+ *  page-width / whole-page) plus a custom percent row. Fixed-positioned like
+ *  the ctx menu so it can't be clipped by the status bar's overflow. */
+function ZoomPop({
+  at,
+  zoom,
+  okLabel,
+  fitWidthLabel,
+  fitPageLabel,
+  onZoom,
+  onFitWidth,
+  onFitPage,
+  onClose,
+}: {
+  readonly at: { x: number; y: number }
+  readonly zoom: number
+  readonly okLabel: string
+  readonly fitWidthLabel: string
+  readonly fitPageLabel: string
+  readonly onZoom: (v: number) => void
+  readonly onFitWidth: () => void
+  readonly onFitPage: () => void
+  readonly onClose: () => void
+}) {
+  const [custom, setCustom] = useState(String(Math.round(zoom)))
+  const popRef = useRef<HTMLDivElement>(null)
+  // right-aligned with the % label, clamped into the viewport
+  const [pos, setPos] = useState(at)
+  useLayoutEffect(() => {
+    const el = popRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    setPos({
+      x: Math.min(at.x, window.innerWidth - r.width - 4),
+      y: Math.max(0, at.y - r.height - 6),
+    })
+  }, [at])
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    const onDown = (e: MouseEvent) => {
+      if (!popRef.current?.contains(e.target as Node)) onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('mousedown', onDown)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('mousedown', onDown)
+    }
+  }, [onClose])
+  const pick = (fn: () => void) => () => {
+    onClose()
+    fn()
+  }
+  const applyCustom = () => {
+    const v = Math.min(200, Math.max(50, Math.round(Number(custom))))
+    if (Number.isFinite(v) && custom.trim() !== '') onZoom(v)
+    onClose()
+  }
+  return (
+    <div ref={popRef} className="zoom-pop" style={{ left: pos.x, top: pos.y }}>
+      <button className="zoom-pop-item" onClick={pick(() => onZoom(100))}>
+        100%
+      </button>
+      <button className="zoom-pop-item" onClick={pick(onFitWidth)}>
+        {fitWidthLabel}
+      </button>
+      <button className="zoom-pop-item" onClick={pick(onFitPage)}>
+        {fitPageLabel}
+      </button>
+      <div className="zoom-pop-custom">
+        <input
+          type="number"
+          min={50}
+          max={200}
+          value={custom}
+          onChange={(e) => setCustom(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') applyCustom()
+          }}
+        />
+        <span>%</span>
+        <button className="zoom-pop-ok" onClick={applyCustom}>
+          {okLabel}
+        </button>
+      </div>
     </div>
   )
 }

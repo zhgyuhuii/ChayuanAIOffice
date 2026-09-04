@@ -1877,6 +1877,8 @@ html.chatoffice-popover-open .ribbon-tabs {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  /* clamp: intrinsic content height must not push the status bar off-screen */
+  min-height: 0;
 }
 
 /* ---- main layout: AI dock (left) + editor ---- */
