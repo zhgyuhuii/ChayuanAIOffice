@@ -26,14 +26,15 @@ describe('clampSide', () => {
   it('applies static bounds when the shell is unmeasured', () => {
     expect(clampSide(100, 0)).toBe(280)
     expect(clampSide(400, 0)).toBe(400)
-    expect(clampSide(2000, 0)).toBe(720)
+    expect(clampSide(2000, 0)).toBe(1200)
   })
 
   it('keeps the panel within [min, shell - content min]', () => {
     expect(clampSide(100, 1280)).toBe(280)
     expect(clampSide(500, 1280)).toBe(500)
-    // 1280 - 320 = 960, but the absolute cap is 720
-    expect(clampSide(900, 1280)).toBe(720)
+    // 1280 - 320 = 960 is the live cap; in-range values pass through untouched
+    expect(clampSide(900, 1280)).toBe(900)
+    expect(clampSide(1100, 1280)).toBe(960)
   })
 
   it('protects the content area on narrow shells', () => {
@@ -117,10 +118,26 @@ describe('loadState', () => {
     expect(loadState('k')).toEqual({
       position: 'left',
       sideWidth: 360,
+      sideWidthAuto: true,
       bottomHeight: 320,
       floatRect: null,
       maximized: false,
     })
+  })
+
+  it('marks a stored old-default width (360) as auto — it was persisted on every load, not chosen', () => {
+    store.set('k', JSON.stringify({ sideWidth: 360 }))
+    expect(loadState('k').sideWidthAuto).toBe(true)
+  })
+
+  it('marks a hand-picked width as not auto', () => {
+    store.set('k', JSON.stringify({ sideWidth: 420 }))
+    expect(loadState('k').sideWidthAuto).toBe(false)
+  })
+
+  it('marks a legacy-key width of the old default as auto too', () => {
+    store.set('legacy', '360')
+    expect(loadState('k', 'legacy').sideWidthAuto).toBe(true)
   })
 
   it('restores a full persisted state', () => {
@@ -137,6 +154,7 @@ describe('loadState', () => {
     expect(loadState('k')).toEqual({
       position: 'bottom',
       sideWidth: 420,
+      sideWidthAuto: false,
       bottomHeight: 260,
       floatRect: { x: 10, y: 20, width: 500, height: 400 },
       maximized: true,
@@ -172,7 +190,7 @@ describe('loadState', () => {
   it('clamps persisted sizes to static bounds (no window dependence on load)', () => {
     store.set('k', JSON.stringify({ sideWidth: 5000, bottomHeight: 10 }))
     const s = loadState('k')
-    expect(s.sideWidth).toBe(720)
+    expect(s.sideWidth).toBe(1200)
     expect(s.bottomHeight).toBe(200)
   })
 })

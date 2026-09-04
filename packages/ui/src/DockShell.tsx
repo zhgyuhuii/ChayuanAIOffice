@@ -39,6 +39,12 @@ export interface DockLayoutState {
   position: DockPosition
   /** width when docked left/right */
   sideWidth: number
+  /**
+   * no width was ever user-chosen: the docked side defaults to half the
+   * shell (equal chat/editor columns) on first measurement instead of a
+   * fixed px value. Cleared once the default is applied or the user drags.
+   */
+  sideWidthAuto?: boolean
   /** height when docked bottom */
   bottomHeight: number
   /** floating geometry; null until first floated (then defaults right-center) */
@@ -93,7 +99,9 @@ export interface DockShellProps {
 
 const SIDE_DEFAULT = 360
 const SIDE_MIN = 280
-const SIDE_MAX = 720
+/** generous static ceiling (half-split defaults reach 960+ on maximized
+ * windows); the live clampSide still caps at shellW - CONTENT_MIN */
+const SIDE_MAX = 1200
 const BOTTOM_DEFAULT = 320
 const BOTTOM_MIN = 200
 const BOTTOM_MAX = 800
@@ -179,15 +187,23 @@ export function loadState(storageKey: string, legacyWidthKey?: string): DockLayo
           height: Math.max(FLOAT_MIN_H, raw.floatRect.height),
         }
       : null
+  const storedSide = Number.isFinite(raw.sideWidth) ? clampStaticSide(raw.sideWidth as number) : NaN
+  const legacySide =
+    Number.isFinite(legacyWidth) && (legacyWidth as number) > 0
+      ? clampStaticSide(legacyWidth as number)
+      : NaN
+  // A width equal to the old fixed default was almost certainly never
+  // user-chosen (the default was persisted on every load), so it migrates to
+  // the auto half-split instead of pinning existing installs to 360px.
+  const sideWidthAuto =
+    !(storedSide > 0 && storedSide !== SIDE_DEFAULT) &&
+    !(legacySide > 0 && legacySide !== SIDE_DEFAULT)
   return {
     position: POSITIONS.includes(raw.position as DockPosition)
       ? (raw.position as DockPosition)
       : 'left',
-    sideWidth: Number.isFinite(raw.sideWidth)
-      ? clampStaticSide(raw.sideWidth as number)
-      : Number.isFinite(legacyWidth) && legacyWidth > 0
-        ? clampStaticSide(legacyWidth)
-        : SIDE_DEFAULT,
+    sideWidth: storedSide > 0 ? storedSide : legacySide > 0 ? legacySide : SIDE_DEFAULT,
+    sideWidthAuto,
     bottomHeight: Number.isFinite(raw.bottomHeight)
       ? clampStaticBottom(raw.bottomHeight as number)
       : BOTTOM_DEFAULT,
@@ -393,6 +409,23 @@ export function DockShell({
     return () => ro.disconnect()
   }, [])
 
+  // No width was ever user-chosen (sideWidthAuto): split the shell in half on
+  // first real measurement so the chat pane and the editor render as equal
+  // columns. The value then persists like any hand-set width; side-dock only
+  // (bottom/float keep the flag until they dock sideways).
+  useEffect(() => {
+    if (shellSize.w <= 0) return
+    setState((prev) => {
+      if (!prev.sideWidthAuto) return prev
+      if (prev.position !== 'left' && prev.position !== 'right') return prev
+      return {
+        ...prev,
+        sideWidth: clampSide(Math.round(shellSize.w / 2), shellSize.w),
+        sideWidthAuto: false,
+      }
+    })
+  }, [shellSize.w])
+
   // persist + notify on every committed change
   useEffect(() => {
     try {
@@ -484,6 +517,8 @@ export function DockShell({
             ? { ...prev, bottomHeight: clampBottom(shell.bottom - ev.clientY, shell.height) }
             : {
                 ...prev,
+                // a drag is a width choice — it retires the auto half-split
+                sideWidthAuto: false,
                 sideWidth: clampSide(
                   pos === 'right' ? shell.right - ev.clientX : ev.clientX - shell.left,
                   shell.width,

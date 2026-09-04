@@ -200,6 +200,16 @@ export function TabBar() {
     return () => document.removeEventListener('pointerdown', notify, true)
   }, [])
 
+  // mirror the home tree's visibility into the main process: document views
+  // inset by the sidebar width so the tree strip stays visible beside them
+  // (the sidebar itself is the shell document, always rendered underneath)
+  useEffect(() => {
+    if (!('chatOfficeTabs' in window)) return
+    const send = (): void => window.chatOfficeTabs.setTreeInset(!getHomeLayout().leftCollapsed)
+    send()
+    return onHomeLayoutChange(send)
+  }, [])
+
   // if the dragged tab is closed mid-drag (e.g. Cmd+W) its element unmounts
   // and pointerup/pointercancel never fire — clear the drag state ourselves
   useEffect(() => {

@@ -392,6 +392,9 @@ const tabsApi: TabsApi = {
   notifyChromePressed() {
     ipcRenderer.send(TABS_CHANNELS.chromePressed)
   },
+  setTreeInset(visible) {
+    ipcRenderer.send(TABS_CHANNELS.treeInset, visible)
+  },
   onChromePressed(handler) {
     const listener = () => handler()
     ipcRenderer.on('app:chrome-pressed', listener)

@@ -39,6 +39,12 @@ export interface TabsApi {
    * triggers; the shell's own popovers subscribe so a title-bar drag — which
    * produces no DOM event — still dismisses them */
   onChromePressed(handler: () => void): () => void
+  /**
+   * fire-and-forget: show/hide the home tree beside document tabs. When on,
+   * the main process insets every document WebContentsView by the home
+   * sidebar's width so the shell's own tree strip stays visible to its left.
+   */
+  setTreeInset(visible: boolean): void
 }
 
 export const TABS_CHANNELS = {
@@ -50,4 +56,5 @@ export const TABS_CHANNELS = {
   reorder: 'tabs:reorder',
   changed: 'tabs:changed',
   chromePressed: 'tabs:chrome-pressed',
+  treeInset: 'tabs:tree-inset',
 } as const

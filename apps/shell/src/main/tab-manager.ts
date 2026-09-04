@@ -50,6 +50,10 @@ interface TabRecord {
 
 /** must match the tab strip's rendered height (apps/shell/src/renderer/src/TabBar.tsx) */
 const TAB_STRIP_HEIGHT = 40
+/** must match the home sidebar's rendered width (home.css .sidebar); when the
+ * tree inset is on, document views start right of it so the shell's own home
+ * tree strip stays visible beside every editor tab */
+const TREE_SIDEBAR_WIDTH = 232
 const HOME_ID = 'home'
 
 /**
@@ -70,6 +74,9 @@ export class TabManager {
    *  (slides show: the window snaps via simpleFullScreen and asks for the bleed
    *  over IPC, since requestFullscreen would animate the native transition) */
   private readonly bleedWcIds = new Set<number>()
+  /** home tree visible beside document tabs; the shell renderer mirrors its
+   *  persisted leftCollapsed flag over setTreeInset (default: visible) */
+  private treeInset = true
   /** tabs mid unsaved-changes prompt, so a second close click doesn't stack dialogs */
   private readonly closingIds = new Set<string>()
 
@@ -104,7 +111,21 @@ export class TabManager {
     if (active?.view && this.bleedWcIds.has(active.view.webContents.id)) {
       return { x: 0, y: 0, width, height }
     }
-    return { x: 0, y: TAB_STRIP_HEIGHT, width, height: Math.max(0, height - TAB_STRIP_HEIGHT) }
+    const x = this.treeInset ? TREE_SIDEBAR_WIDTH : 0
+    return {
+      x,
+      y: TAB_STRIP_HEIGHT,
+      width: Math.max(0, width - x),
+      height: Math.max(0, height - TAB_STRIP_HEIGHT),
+    }
+  }
+
+  /** show/hide the home tree strip beside document tabs (renderer-relayed
+   *  home-layout leftCollapsed); re-fits the active view immediately */
+  setTreeInset(visible: boolean): void {
+    if (this.treeInset === visible) return
+    this.treeInset = visible
+    this.layout()
   }
 
   /** Grow/restore a tab view over the tab strip on request (slides show fullscreen) */

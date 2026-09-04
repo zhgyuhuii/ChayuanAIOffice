@@ -103,6 +103,7 @@ vi.mock('../../slides/src/main/slides-main', () => ({
 import { TabManager } from '../src/main/tab-manager'
 
 const TAB_STRIP_HEIGHT = 40
+const TREE_SIDEBAR_WIDTH = 232
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 600
 
@@ -224,10 +225,11 @@ describe('activation', () => {
     manager.activateTab(docsId)
     expect(docsView.setVisible).toHaveBeenLastCalledWith(true)
     expect(sheetsView.setVisible).toHaveBeenLastCalledWith(false)
+    // the home tree stays visible beside the view: bounds start at its width
     expect(docsView.setBounds).toHaveBeenLastCalledWith({
-      x: 0,
+      x: TREE_SIDEBAR_WIDTH,
       y: TAB_STRIP_HEIGHT,
-      width: WINDOW_WIDTH,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
       height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
     })
     expect(manager.list().find((t) => t.id === docsId)?.active).toBe(true)
@@ -262,10 +264,63 @@ describe('activation', () => {
     })
     view.webContents.listeners.get('leave-html-full-screen')!()
     expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+})
+
+describe('home tree inset', () => {
+  it('insets document views by the sidebar width by default (tree visible)', () => {
+    manager.openDocsTab()
+    expect(lastCreatedView(createDocsView).setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+
+  it('setTreeInset(false) gives the view the full content width', () => {
+    manager.openDocsTab()
+    manager.setTreeInset(false)
+    expect(lastCreatedView(createDocsView).setBounds).toHaveBeenLastCalledWith({
       x: 0,
       y: TAB_STRIP_HEIGHT,
       width: WINDOW_WIDTH,
       height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+
+  it('setTreeInset re-insets and skips redundant same-value updates', () => {
+    manager.openDocsTab()
+    const view = lastCreatedView(createDocsView)
+    manager.setTreeInset(false)
+    view.setBounds.mockClear()
+
+    manager.setTreeInset(false)
+    expect(view.setBounds).not.toHaveBeenCalled()
+
+    manager.setTreeInset(true)
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+
+  it('fullscreen bleed still covers the whole window while the tree is visible', () => {
+    manager.openSlidesTab()
+    const view = lastCreatedView(createSlidesView)
+    view.webContents.listeners.get('enter-html-full-screen')!()
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: 0,
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT,
     })
   })
 })
@@ -291,9 +346,9 @@ describe('window resize layout', () => {
 
     resizeHandler()()
     expect(view.setBounds).toHaveBeenLastCalledWith({
-      x: 0,
+      x: TREE_SIDEBAR_WIDTH,
       y: TAB_STRIP_HEIGHT,
-      width: WINDOW_WIDTH,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
       height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
     })
 
@@ -303,9 +358,9 @@ describe('window resize layout', () => {
     await new Promise<void>((resolve) => setImmediate(resolve))
 
     expect(view.setBounds).toHaveBeenLastCalledWith({
-      x: 0,
+      x: TREE_SIDEBAR_WIDTH,
       y: TAB_STRIP_HEIGHT,
-      width: 1920,
+      width: 1920 - TREE_SIDEBAR_WIDTH,
       height: 1080 - TAB_STRIP_HEIGHT,
     })
     expect(view.setBounds).toHaveBeenCalledTimes(2)
