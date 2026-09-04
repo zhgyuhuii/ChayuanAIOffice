@@ -884,13 +884,12 @@ function executeSyncTool(
       const groupId = String(call.input.groupId ?? '')
       if (!groupId) return fail(t('aiSumInsertChart'), 'groupId is required')
       const optionCode = String(call.input.optionCode ?? '')
-      let optionJson = ''
+      let optionJson: string | undefined
+      const hasOption = false
       let code: string | null = null
       if (optionCode) {
         code = optionCode
-        // 交给设计器沙箱执行:此处直接存源码,插入由 renderer 的沙箱运行器出 option
-        // (与 UI 代码页同一执行模型;校验失败时由 UI 端报错并回喂)
-        optionJson = ''
+        // 源码由渲染层沙箱执行出 option(与 UI 代码页同一执行模型)
       } else if (call.input.option && typeof call.input.option === 'object') {
         optionJson = JSON.stringify(call.input.option, (_k, v) =>
           typeof v === 'function' ? { __chartkit_fn__: String(v) } : v,
@@ -908,9 +907,14 @@ function executeSyncTool(
           ? getCursorBlockIndex(editor, scope)
           : Math.min(Math.max(Number(call.input.afterBlockIndex), -1), count - 1)
       if (!Number.isInteger(after)) return fail(t('aiSumInsertChart'), 'invalid afterBlockIndex')
-      const { to } = blockRangePositions(editor, after, after)
       // 沙箱执行在 renderer 的 worker:此处借 window 事件走同一条 UI 插入管线
       // (设计器 onInsert 的 echart 分支 = 沙箱出 option + PNG 快照 + echart 块落库)
+      if (!hasOption) {
+        return fail(
+          t('aiSumInsertChart'),
+          'insert_echart needs either "option" (object) or "optionCode" (JS source)',
+        )
+      }
       window.dispatchEvent(
         new CustomEvent('chartkit-ai-insert-echart', {
           detail: {
