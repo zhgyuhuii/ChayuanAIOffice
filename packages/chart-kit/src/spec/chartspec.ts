@@ -90,8 +90,8 @@ const StandardData = z.object({
 /** 层级数据形状:旭日/树/矩形树/桑基(JSON 树编辑器的服务对象,Q10) */
 export interface ChartTreeNode {
   name: string
-  value?: number
-  children?: ChartTreeNode[]
+  value?: number | undefined
+  children?: ChartTreeNode[] | undefined
 }
 const TreeNode: z.ZodType<ChartTreeNode> = z.object({
   name: z.string(),

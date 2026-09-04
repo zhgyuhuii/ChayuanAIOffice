@@ -117,6 +117,7 @@ export interface RibbonCommandContext {
   setIconsDialogOpen: (open: boolean) => void
   setEquationDialogOpen: (open: boolean) => void
   openRecommendedCharts: () => void
+  setChartDesignerOpen: (open: boolean) => void
   setPendingEdits: (count: number) => void
   visualContext: () => VisualActionContext
   dataToolsContext: () => DataToolsContext
@@ -546,6 +547,9 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       return
     case 'recommended-charts-open':
       ctx.openRecommendedCharts()
+      return
+    case 'chart-designer-open':
+      ctx.setChartDesignerOpen(true)
       return
     case 'insert-icons':
       ctx.setIconsDialogOpen(true)

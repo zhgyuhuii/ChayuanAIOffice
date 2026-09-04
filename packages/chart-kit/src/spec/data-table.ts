@@ -138,12 +138,12 @@ export function optionFromChartEx(
 
   if (layoutId === 'sunburst' || layoutId === 'treemap') {
     // 多层类别 → 树;最内层类别即叶子名
-    const leafNames = categoryLevels[categoryLevels.length - 1]
+    const leafNames = categoryLevels[categoryLevels.length - 1] ?? []
     const root: ChartTreeNode = { name: 'root', children: [] }
     leafNames.forEach((leaf, i) => {
       let cur = root
       for (let lvl = 0; lvl < categoryLevels.length; lvl++) {
-        const name = lvl === categoryLevels.length - 1 ? leaf : (categoryLevels[lvl][i] ?? '')
+        const name = lvl === categoryLevels.length - 1 ? leaf : ((categoryLevels[lvl] ?? [])[i] ?? '')
         if (!name) continue
         cur.children ??= []
         let next = cur.children.find((c) => c.name === name)

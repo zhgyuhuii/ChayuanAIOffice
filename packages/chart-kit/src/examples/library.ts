@@ -61,7 +61,10 @@ export function findExample(
 
 /** 供设计器侧栏分组树使用:分组元数据 + 示例数 */
 export function getGroupSummaries(): Array<ChartGroupMeta & { count: number }> {
-  return getLibraryGroups().map((g, i) => ({ ...CHART_GROUPS[i], count: g.examples.length }))
+  return getLibraryGroups().map((g) => {
+    const meta = CHART_GROUPS.find((m) => m.id === g.id) ?? { id: g.id, zh: g.zh, en: g.en }
+    return { ...meta, count: g.examples.length }
+  })
 }
 
 export const libraryGeneratedAt = data.generatedAt

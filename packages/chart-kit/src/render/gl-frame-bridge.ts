@@ -17,8 +17,8 @@ import { mapNamesInOption, loadBundledMap } from './maps'
 
 interface FrameDone {
   ok: boolean
-  url?: string
-  error?: string
+  url?: string | undefined
+  error?: string | undefined
 }
 
 type Resolve = (r: FrameDone) => void

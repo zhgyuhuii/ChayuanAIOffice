@@ -161,7 +161,8 @@ export async function mapWithConcurrency<T, R>(
   const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
     while (cursor < items.length) {
       const i = cursor++
-      results[i] = await fn(items[i], i)
+      const item = items[i] as T
+      results[i] = await fn(item, i)
     }
   })
   await Promise.all(workers)
