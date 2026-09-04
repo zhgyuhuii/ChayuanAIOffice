@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-04T09:29:03.755Z",
+  "generatedAt": "2026-09-04T10:18:47.917Z",
   "source": "apache/echarts-examples gh-pages",
   "total": 445,
-  "okTotal": 216,
-  "failedTotal": 229,
+  "okTotal": 213,
+  "failedTotal": 232,
   "baselineInjected": [
     "lines",
     "globe",
@@ -35,12 +35,12 @@
     {
       "id": "scatter",
       "total": 36,
-      "ok": 15
+      "ok": 14
     },
     {
       "id": "map",
       "total": 25,
-      "ok": 5
+      "ok": 2
     },
     {
       "id": "candlestick",
@@ -615,6 +615,10 @@
       "error": "$ is not defined"
     },
     {
+      "id": "effectScatter-bmap",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
       "id": "geo-beef-cuts",
       "error": "$ is not defined"
     },
@@ -772,7 +776,7 @@
     },
     {
       "id": "heatmap-bmap",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "doc-example/bar-dataZoom-filterMode",
@@ -900,15 +904,23 @@
     },
     {
       "id": "lines-bmap",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "lines-bmap-bus",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "lines-bmap-effect",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "map-bin",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
+    },
+    {
+      "id": "map-polygon",
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "scatter-map-brush",
@@ -976,11 +988,11 @@
     },
     {
       "id": "global-wind-visualization",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "global-wind-visualization-2",
-      "error": "$ is not defined"
+      "error": "bmap needs external Baidu Map SDK (filtered)"
     },
     {
       "id": "globe-contour-paint",

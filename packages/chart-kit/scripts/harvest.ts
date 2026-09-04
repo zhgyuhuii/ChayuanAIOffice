@@ -143,6 +143,9 @@ async function main() {
     }
     if (!codeFile) return { ...base, error: 'code file not found' }
     const code = prepareSource(fs.readFileSync(codeFile, 'utf8'))
+    // bmap 组件依赖外部百度地图 SDK,离线环境永不可渲染:直接过滤
+    if (/\bbmap\s*:/.test(code))
+      return { ...base, code, error: 'bmap needs external Baidu Map SDK (filtered)' }
     const run = await runOptionCode(code, { timeoutMs: TIMEOUT_MS })
     return {
       ...base,

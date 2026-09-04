@@ -1,8 +1,7 @@
-import { parseOption } from './serialize'
+import { parseOptionSmart } from '../render/revive'
 // canonical Worker 源是同目录 bootstrap.worker.js:
 // - 浏览器:new Worker(new URL(...)) 真实资源,不继承文档 meta CSP(见该文件头注释)
-// - Node(采集/vitest):经 ?raw 读入源码,worker_threads eval 执行
-import bootstrapSource from './bootstrap.worker.js?raw'
+// - Node(采集/vitest):从磁盘读入源码,worker_threads eval 执行
 
 /**
  * 图表沙箱运行器(主线程侧,环境自适应):
@@ -32,6 +31,28 @@ type MinimalWorker = {
   addEventListener(type: string, fn: (ev: { data: unknown }) => void): void
 }
 
+/** Node 侧 Worker 源:vite/vitest 下经 ?raw 转换;纯 Node(tsx/采集)退回磁盘读取 */
+let bootstrapSourceCache: string | null = null
+async function loadBootstrapSource(): Promise<string> {
+  if (bootstrapSourceCache !== null) return bootstrapSourceCache
+  try {
+    const mod = (await import('./bootstrap.worker.js?raw')) as { default: string }
+    if (typeof mod.default === 'string') {
+      bootstrapSourceCache = mod.default
+      return bootstrapSourceCache
+    }
+  } catch {
+    /* 非 vite 上下文:走磁盘 */
+  }
+  const { readFile } = await import('node:fs/promises')
+  const { fileURLToPath } = await import('node:url')
+  bootstrapSourceCache = await readFile(
+    fileURLToPath(new URL('./bootstrap.worker.js', import.meta.url)),
+    'utf8',
+  )
+  return bootstrapSourceCache
+}
+
 async function spawnWorker(): Promise<MinimalWorker> {
   if (typeof Worker !== 'undefined') {
     // Vite 静态分析此模式,把 worker 作为独立资源发出(dev 由 dev server 服务、
@@ -44,7 +65,7 @@ async function spawnWorker(): Promise<MinimalWorker> {
     const mod = (await import(
       /* @vite-ignore */ nodeWorkerModuleId
     )) as typeof import('node:worker_threads')
-    const w = new mod.Worker(bootstrapSource, { eval: true })
+    const w = new mod.Worker(await loadBootstrapSource(), { eval: true })
     // worker_threads 是 EventEmitter(.on),适配成统一 addEventListener 形态
     return {
       postMessage: (msg: unknown) => w.postMessage(msg),
@@ -104,19 +125,18 @@ export async function runOptionCode(
       }
       if (!msg || msg.__chartkit_sandbox__ !== true) return
       if (msg.ok && typeof msg.optionJson === 'string') {
-        try {
-          finish({
-            ok: true,
-            option: parseOption(msg.optionJson),
-            durationMs: Date.now() - started,
-          })
-        } catch (e) {
-          finish({
-            ok: false,
-            error: `option revive failed: ${String((e as Error)?.message ?? e)}`,
-            durationMs: Date.now() - started,
-          })
-        }
+        void (async () => {
+          try {
+            const option = await parseOptionSmart(msg.optionJson as string)
+            finish({ ok: true, option, durationMs: Date.now() - started })
+          } catch (e) {
+            finish({
+              ok: false,
+              error: `option revive failed: ${String((e as Error)?.message ?? e)}`,
+              durationMs: Date.now() - started,
+            })
+          }
+        })()
       } else {
         finish({
           ok: false,

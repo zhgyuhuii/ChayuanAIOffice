@@ -6,3 +6,9 @@ declare module '*?raw' {
   const src: string
   export default src
 }
+
+// Vite 的 ?url 后缀导入(资源 URL)
+declare module '*?url' {
+  const url: string
+  export default url
+}

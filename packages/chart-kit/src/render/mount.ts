@@ -3,20 +3,27 @@
  * 文档/表格/演示画布上的扩展组图表 = 活渲染 + 视口外切快照(Q2)。
  * 快照同时是 WPS/Office 里的显示形态本身(Q3),由调用方持久化。
  *
+ * 两类特殊路由:
+ * - GL/3D:渲染进 CSP 豁免同源 iframe(宿主页 CSP 会拦 claygl 的
+ *   new Function),见 gl-frame-bridge;
+ * - geo/map:option 引用的地图名先经内置 GeoJSON 注册(china/world)。
+ *
  * 浏览器专用(依赖 DOM/ECharts);Node 侧请走 ./spec、./sandbox 入口。
  */
 
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../types/echarts-gl.d.ts" />
 import * as echarts from 'echarts'
-import { parseOption } from '../sandbox/serialize'
+import { parseOptionSmart } from './revive'
+import { GlFrame } from './gl-frame-bridge'
+import { ensureMapsForOption } from './maps'
 
 export interface EchartMountOptions {
   /** option 的函数安全序列化串(__chartkit_fn__ 标记);载入时解析 */
   optionJson?: string | null
   /** 静态快照 URL(dataUrl 或文件);视口外/降级时显示 */
   snapshotUrl?: string | null
-  /** GL/3D 组:激活前先动态装载 echarts-gl(Q9:GL 组不进主包) */
+  /** GL/3D 组:渲染进 CSP 豁免帧(宿主页 CSP 会拦 claygl 的 eval) */
   gl?: boolean
   /** 容器高度 px(echarts 需要显式高度);默认 320 */
   heightPx?: number
@@ -32,14 +39,6 @@ export interface EchartHandle {
   /** 手动降级为快照显示 */
   deactivate(): void
   dispose(): void
-}
-
-type EChartsInstance = ReturnType<typeof echarts.init>
-
-let glModuleLoading: Promise<unknown> | null = null
-function ensureGl(): Promise<unknown> {
-  glModuleLoading ??= import('echarts-gl')
-  return glModuleLoading
 }
 
 /** 粗判 option 是否用到 GL/3D 系列(挂载侧兜底;设计器侧按组别精确判断) */
@@ -71,10 +70,10 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
   if (opts.snapshotUrl) snapshot.src = opts.snapshotUrl
   container.append(live, snapshot)
 
-  let instance: EChartsInstance | null = null
+  let instance: ReturnType<typeof echarts.init> | null = null
+  let frame: GlFrame | null = null
   let currentJson = opts.optionJson ?? null
   let active = false
-  let glReady = opts.gl !== true
   let disposed = false
 
   const showLive = () => {
@@ -87,16 +86,37 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
     else showLive() // 无快照兜底:宁可活渲染也不能开天窗
   }
 
+  const applyOption = async (optionJson: string) => {
+    const option = await parseOptionSmart(optionJson)
+    if (frame) await frame.update(option, container.clientWidth || 640, heightPx)
+    else if (instance) instance.setOption(option as never)
+  }
+
   const ensureInstance = async () => {
-    if (instance || disposed) return
-    if (!glReady) await ensureGl().catch(() => undefined)
-    glReady = true
+    if (instance || frame || disposed) return
+    const option = currentJson ? await parseOptionSmart(currentJson) : null
     if (disposed) return
-    instance = echarts.init(live)
-    instance.resize({ width: container.clientWidth, height: heightPx })
-    if (currentJson) {
-      instance.setOption(parseOption(currentJson) as never)
+    // GL 判定:调用方分组标记优先,option 内容兜底(3D 系列/grid3D 等)
+    const useFrame = opts.gl === true || optionNeedsGl(option)
+    if (useFrame) {
+      frame = new GlFrame(live)
+      const ok = await frame.ready
+      if (disposed) return
+      if (!ok) {
+        frame.dispose()
+        frame = null
+        return // 帧不可用:停留在快照(Q9 降级)
+      }
+    } else {
+      // 非帧模式:先注册内置地图(china/world)再首绘
+      if (option) await ensureMapsForOption(option)
+      if (disposed) return
+      instance = echarts.init(live)
+      instance.resize({ width: container.clientWidth, height: heightPx })
+      if (option) instance.setOption(option as never)
+      return
     }
+    if (currentJson) await applyOption(currentJson)
   }
 
   const activate = () => {
@@ -122,7 +142,9 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
   io.observe(container)
 
   const ro = new ResizeObserver(() => {
-    instance?.resize({ width: container.clientWidth, height: heightPx })
+    const w = container.clientWidth
+    instance?.resize({ width: w, height: heightPx })
+    void frame?.resize(w, heightPx)
   })
   ro.observe(container)
 
@@ -132,7 +154,15 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
   return {
     setOptionJson(optionJson: string) {
       currentJson = optionJson
-      if (instance) instance.setOption(parseOption(optionJson) as never, { notMerge: true })
+      if (frame) void applyOption(optionJson)
+      else if (instance) {
+        void (async () => {
+          const option = await parseOptionSmart(optionJson)
+          if (disposed) return
+          await ensureMapsForOption(option)
+          instance?.setOption(option as never, { notMerge: true })
+        })()
+      }
     },
     activate,
     deactivate,
@@ -142,6 +172,8 @@ export function mountEchart(container: HTMLElement, opts: EchartMountOptions = {
       ro.disconnect()
       instance?.dispose()
       instance = null
+      frame?.dispose()
+      frame = null
     },
   }
 }

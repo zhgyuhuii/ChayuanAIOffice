@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>chart gl frame</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+      #host {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="host"></div>
+    <script>
+      // GL 渲染帧:本文档由应用原样发出(无 CSP 头/meta),claygl 内部的
+      // new Function 在这里不受宿主页 script-src 'self' 限制。父页经
+      // postMessage 传入 echarts/echarts-gl 的模块 URL(宿主页经
+      // import.meta.resolve 解析,dev/build 均为真实地址),本帧动态
+      // import 后承担 GL 图表的 init/setOption/快照。
+      ;(function () {
+        var echarts = null
+        var inst = null
+        var host = null
+        var msgId = 0
+        var waiting = {}
+
+        function reply(source, msg) {
+          msg.__ckgl = true
+          source.postMessage(msg, '*')
+        }
+
+        function revive(v) {
+          if (typeof v !== 'object' || v === null) return v
+          if (typeof v.__chartkit_fn__ === 'string') {
+            try {
+              return new Function('return (' + v.__chartkit_fn__ + ')')()
+            } catch (e) {
+              return v
+            }
+          }
+          if (Array.isArray(v)) return v.map(revive)
+          var out = {}
+          for (var k in v) out[k] = revive(v[k])
+          return out
+        }
+
+        window.addEventListener('message', function (ev) {
+          var m = ev.data || {}
+          if (m.__ckgl !== true) return
+          var source = ev.source
+          if (m.type === 'boot') {
+            // echarts-gl 的 dist 是 UMD:非模块上下文取 window.echarts,
+            // 所以必须先 import echarts 挂到 window 再 import gl,否则
+            // gl 内部 echarts 为 undefined(registerPostInit 报错)
+            import(m.echartsUrl)
+              .then(function (mod) {
+                var lib = mod.default && mod.default.use ? mod : mod.echarts || mod
+                window.echarts = lib.use ? lib : mod
+                return import(m.echartsGlUrl)
+              })
+              .then(function () {
+                echarts = window.echarts
+                reply(source, { type: 'booted', ok: true })
+              })
+              .catch(function (e) {
+                reply(source, { type: 'booted', ok: false, error: String((e && e.message) || e) })
+              })
+          } else if (m.type === 'setOption') {
+            var id = ++msgId
+            try {
+              if (!inst) {
+                host = document.getElementById('host')
+                inst = echarts.init(host)
+              }
+              inst.resize({
+                width: m.width || host.clientWidth,
+                height: m.height || host.clientHeight,
+              })
+              var opt = typeof m.option === 'string' ? JSON.parse(m.option) : m.option
+              inst.setOption(revive(opt), { notMerge: true })
+              reply(source, { type: 'done', id: id, ok: true })
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'registerMap') {
+            try {
+              echarts.registerMap(m.name, m.geojson)
+              reply(source, { type: 'done', id: m.id, ok: true })
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: m.id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'snapshot') {
+            try {
+              var url = inst.getDataURL({
+                type: 'png',
+                pixelRatio: m.pixelRatio || 2,
+                backgroundColor: m.backgroundColor || '#ffffff',
+              })
+              reply(source, { type: 'done', id: m.id, ok: true, url: url })
+            } catch (e) {
+              reply(source, {
+                type: 'done',
+                id: m.id,
+                ok: false,
+                error: String((e && e.message) || e),
+              })
+            }
+          } else if (m.type === 'resize') {
+            if (inst) inst.resize({ width: m.width, height: m.height })
+          } else if (m.type === 'dispose') {
+            try {
+              if (inst) inst.dispose()
+            } catch (e) {
+              /* ignore */
+            }
+            inst = null
+          }
+        })
+      })()
+    </script>
+  </body>
+</html>
