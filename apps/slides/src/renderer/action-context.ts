@@ -40,6 +40,8 @@ export interface SlideShowState {
   startAt: number
   customOrder?: number[]
   rehearse?: boolean
+  /** WPS 倒计时: corner countdown during the show (start timestamp + total duration) */
+  countdown?: { start: number; totalMs: number }
 }
 
 export type CtxMenuState =

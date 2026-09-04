@@ -495,6 +495,10 @@ export interface Props {
   onToggleAnimPane: () => void
   /** Current page's animation count (preview button availability) */
   animCount: number
+  /** Animation painter clipboard (WPS 动画刷): copied items awaiting a target, null = idle */
+  animBrush: AnimationItem[] | null
+  /** Copy the selection's animations (idle) / paste them onto the selection (armed) */
+  onToggleAnimBrush: () => void
   /** Preview the current page's animations on the edit canvas */
   onAnimPreview: () => void
   /** Start the show (fromStart=true from the beginning, false from the current page) */
@@ -505,6 +509,8 @@ export interface Props {
   onCustomShow: () => void
   /** Start rehearsal timing (plays the show recording each page's dwell time; can be saved as auto-advance times afterwards) */
   onRehearse: () => void
+  /** WPS 倒计时: prompt minutes and start the show with a corner countdown */
+  onCountdownShow: () => void
   /** Show tab 放映到[显示器]: available screens (empty on web) */
   showDisplays: Array<{ id: number; index: number; primary: boolean; current: boolean }>
   /** Target screen id for the next show (null = current screen) */

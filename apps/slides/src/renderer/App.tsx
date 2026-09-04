@@ -484,6 +484,8 @@ export function App() {
   const [animPreview, setAnimPreview] = useState(0)
   /** Ribbon hover preview: the hovered effect played on the selection without applying */
   const [hoverAnim, setHoverAnim] = useState<{ nonce: number; items: AnimationItem[] } | null>(null)
+  /** 动画刷 (WPS): copied animation items awaiting a target; null = idle */
+  const [animBrush, setAnimBrush] = useState<AnimationItem[] | null>(null)
   const [inkTool, setInkTool] = useState<InkTool>('select')
   const [inkPen, setInkPen] = useState<InkPenSettings>({ color: 'C00000', width: 2 })
   const [inkHighlighter, setInkHighlighter] = useState<InkPenSettings>({
@@ -1871,6 +1873,33 @@ export function App() {
     [],
   )
 
+  /** 动画刷 (WPS): idle click copies the selection's animations; armed click pastes them onto the selection. */
+  const toggleAnimBrush = useCallback(() => {
+    const ctx = ctxRef.current
+    if (ctx.selectedIds.length === 0) return
+    if (animBrush == null) {
+      const sel = new Set(ctx.selectedIds)
+      const copied = ctx.animations.filter((a) => sel.has(a.sourceId))
+      if (copied.length === 0) {
+        ctx.setStatus(t('appStatusAnimBrushEmpty'))
+        return
+      }
+      setAnimBrush(copied)
+      ctx.setStatus(t('appStatusAnimBrushCopied'))
+      return
+    }
+    // paste: retarget the copied items onto the current selection (replacing their animations)
+    const targets = new Set(ctx.selectedIds)
+    const kept = ctx.animations.filter((a) => !targets.has(a.sourceId))
+    const pasted = ctx.selectedIds.flatMap((id) =>
+      animBrush.map((a) => ({ ...a, sourceId: id, targetName: '' })),
+    )
+    setAnimBrush(null)
+    ctx.setSelAnim(-1)
+    void animationActions.commitAnimations(ctx, [...kept, ...pasted])
+    ctx.setStatus(t('appStatusAnimBrushApplied'))
+  }, [animBrush])
+
   /** Index of the animation bound to the timing controls: pane selection first, else the selected shape's last one. */
   const timingIdx = useMemo(() => {
     if (selAnim >= 0 && selAnim < animations.length) return selAnim
@@ -1934,6 +1963,18 @@ export function App() {
     (fromStart: boolean) => showActions.startSlideShow(ctxRef.current, fromStart),
     [],
   )
+  /** WPS 倒计时: prompt minutes and start the show with a corner countdown */
+  const startCountdownShow = useCallback(() => {
+    const raw = window.prompt(t('appCountdownPrompt'), '10')
+    const minutes = Number(raw)
+    if (!Number.isFinite(minutes) || minutes <= 0) return
+    showActions.startSlideShow(ctxRef.current, true)
+    setSlideShow((cur) =>
+      cur
+        ? { ...cur, countdown: { start: Date.now(), totalMs: Math.round(minutes * 60_000) } }
+        : cur,
+    )
+  }, [])
   const exitSlideShow = useCallback(
     (lastIndex: number) => showActions.exitSlideShow(ctxRef.current, lastIndex),
     [],
@@ -3358,11 +3399,14 @@ export function App() {
             animPaneOpen={showAnimPane}
             onToggleAnimPane={toggleAnimPane}
             animCount={animations.length}
+            animBrush={animBrush}
+            onToggleAnimBrush={toggleAnimBrush}
             onAnimPreview={() => setAnimPreview((n) => n + 1)}
             onSlideShow={startShowFromRibbon}
             onPresenterView={startPresenterView}
             onCustomShow={() => setCustomShowDlgOpen(true)}
             onRehearse={startRehearseShow}
+            onCountdownShow={startCountdownShow}
             showDisplays={showDisplays}
             showDisplayId={showDisplayId}
             onShowDisplay={setShowDisplayId}
@@ -4506,6 +4550,7 @@ export function App() {
           rehearseMode={slideShow.rehearse}
           displayId={showDisplayId}
           onRehearseDone={onRehearseDone}
+          countdown={slideShow.countdown}
           onExit={exitSlideShow}
         />
       )}

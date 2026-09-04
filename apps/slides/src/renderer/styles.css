@@ -6507,6 +6507,26 @@ body.show-curtain::after {
   pointer-events: none;
 }
 
+/* WPS 倒计时: corner countdown badge, turns bold red on zero */
+.slideshow .ss-countdown {
+  position: absolute;
+  left: 14px;
+  bottom: 10px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--slides-show-ink-40);
+  background: var(--slides-show-counter-bg);
+  border-radius: 4px;
+  padding: 3px 8px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.slideshow .ss-countdown.done {
+  color: #ff5f56;
+  font-weight: 700;
+}
+
 .slideshow .ss-end {
   color: var(--slides-show-ink-75);
   font-size: 15px;

@@ -59,6 +59,10 @@ export const appStrings = defineStrings({
     appStatusTransitionSet: '已设置切换效果（PowerPoint 放映生效）',
     appStatusAnimRemoved: '已移除选中形状的动画',
     appStatusAnimSet: '已设置动画（放映时逐步播放；PowerPoint 同样生效）',
+    appStatusAnimBrushCopied: '动画刷',
+    appStatusAnimBrushEmpty: '已复制动画，选中目标对象后再次点击动画刷',
+    appStatusAnimBrushApplied: '所选对象没有动画可复制',
+    appCountdownPrompt: '输入倒计时分钟数',
     appStatusAnimAdded: '已添加动画',
     appStatusMotionPathAdded: '已添加动作路径动画（放映时沿路径移动；PowerPoint 同样生效）',
     appStatusCustomShowEmpty: '该自定义放映不包含任何有效页',
@@ -281,6 +285,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animations removed from the selected shapes',
     appStatusAnimSet:
       'Animation set (plays step by step during slide shows; also works in PowerPoint)',
+    appStatusAnimBrushCopied: 'Animation Painter',
+    appStatusAnimBrushEmpty: 'Animations copied — select the target, then click the painter again',
+    appStatusAnimBrushApplied: 'The selected object has no animations to copy',
+    appCountdownPrompt: 'Enter countdown minutes',
     appStatusAnimAdded: 'Animation added',
     appStatusMotionPathAdded:
       'Motion path animation added (moves along the path during slide shows; also works in PowerPoint)',
@@ -510,6 +518,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: '選択した図形のアニメーションを削除しました',
     appStatusAnimSet:
       'アニメーションを設定しました（スライドショーで段階的に再生。PowerPoint でも有効）',
+    appStatusAnimBrushCopied: 'アニメーションのコピー',
+    appStatusAnimBrushEmpty: 'コピー済み — 対象を選び、もう一度クリックしてください',
+    appStatusAnimBrushApplied: 'コピーできるアニメーションがありません',
+    appCountdownPrompt: 'カウントダウンの分数を入力',
     appStatusAnimAdded: 'アニメーションを追加しました',
     appStatusMotionPathAdded:
       'アニメーションの軌跡を追加しました（スライドショーで軌跡に沿って移動。PowerPoint でも有効）',
@@ -735,6 +747,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: '선택한 도형의 애니메이션을 제거했습니다',
     appStatusAnimSet:
       '애니메이션을 설정했습니다(슬라이드 쇼에서 단계별로 재생, PowerPoint에서도 적용됨)',
+    appStatusAnimBrushCopied: '애니메이션 복사',
+    appStatusAnimBrushEmpty: '복사됨 — 대상을 선택하고 다시 클릭하세요',
+    appStatusAnimBrushApplied: '복사할 애니메이션이 없습니다',
+    appCountdownPrompt: '카운트다운 분을 입력하세요',
     appStatusAnimAdded: '애니메이션을 추가했습니다',
     appStatusMotionPathAdded:
       '이동 경로 애니메이션을 추가했습니다(슬라이드 쇼에서 경로를 따라 이동, PowerPoint에서도 적용됨)',
@@ -967,6 +983,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animations supprimées des formes sélectionnées',
     appStatusAnimSet:
       'Animation définie (lecture étape par étape pendant le diaporama ; fonctionne aussi dans PowerPoint)',
+    appStatusAnimBrushCopied: "Reproduire l'animation",
+    appStatusAnimBrushEmpty: 'Copié — sélectionnez la cible puis recliquez',
+    appStatusAnimBrushApplied: 'Aucune animation à copier',
+    appCountdownPrompt: 'Entrer les minutes du compte à rebours',
     appStatusAnimAdded: 'Animation ajoutée',
     appStatusMotionPathAdded:
       'Animation de trajectoire ajoutée (l’objet suit la trajectoire pendant le diaporama ; fonctionne aussi dans PowerPoint)',
@@ -1208,6 +1228,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animationen von den ausgewählten Formen entfernt',
     appStatusAnimSet:
       'Animation festgelegt (wird in der Bildschirmpräsentation schrittweise abgespielt; funktioniert auch in PowerPoint)',
+    appStatusAnimBrushCopied: 'Animation übertragen',
+    appStatusAnimBrushEmpty: 'Kopiert — Ziel wählen und erneut klicken',
+    appStatusAnimBrushApplied: 'Keine Animation zum Kopieren',
+    appCountdownPrompt: 'Countdown-Minuten eingeben',
     appStatusAnimAdded: 'Animation hinzugefügt',
     appStatusMotionPathAdded:
       'Animationspfad hinzugefügt (bewegt sich während der Bildschirmpräsentation entlang des Pfads; funktioniert auch in PowerPoint)',
@@ -1450,6 +1474,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animaciones quitadas de las formas seleccionadas',
     appStatusAnimSet:
       'Animación establecida (se reproduce paso a paso durante la presentación; también funciona en PowerPoint)',
+    appStatusAnimBrushCopied: 'Copiar animación',
+    appStatusAnimBrushEmpty: 'Copiado: seleccione el destino y vuelva a hacer clic',
+    appStatusAnimBrushApplied: 'No hay animaciones que copiar',
+    appCountdownPrompt: 'Introduzca los minutos de la cuenta atrás',
     appStatusAnimAdded: 'Animación agregada',
     appStatusMotionPathAdded:
       'Animación de trayectoria agregada (se mueve a lo largo de la trayectoria durante la presentación; también funciona en PowerPoint)',
@@ -1680,6 +1708,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'เอาภาพเคลื่อนไหวออกจากรูปร่างที่เลือกแล้ว',
     appStatusAnimSet:
       'ตั้งค่าภาพเคลื่อนไหวแล้ว (เล่นทีละขั้นระหว่างการนำเสนอ และมีผลใน PowerPoint ด้วย)',
+    appStatusAnimBrushCopied: 'คัดลอกอนิเมชัน',
+    appStatusAnimBrushEmpty: 'คัดลอกแล้ว — เลือกเป้าหมายแล้วคลิกอีกครั้ง',
+    appStatusAnimBrushApplied: 'ไม่มีอนิเมชันให้คัดลอก',
+    appCountdownPrompt: 'ป้อนนาทีของการจับเวลาถอยหลัง',
     appStatusAnimAdded: 'เพิ่มภาพเคลื่อนไหวแล้ว',
     appStatusMotionPathAdded:
       'เพิ่มภาพเคลื่อนไหวแบบเส้นทางการเคลื่อนที่แล้ว (เคลื่อนที่ตามเส้นทางระหว่างการนำเสนอ และมีผลใน PowerPoint ด้วย)',
@@ -1907,6 +1939,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animasi dihapus dari bentuk yang dipilih',
     appStatusAnimSet:
       'Animasi diatur (diputar bertahap selama peragaan slide; juga berfungsi di PowerPoint)',
+    appStatusAnimBrushCopied: 'Kuas Animasi',
+    appStatusAnimBrushEmpty: 'Tersalin — pilih target lalu klik lagi',
+    appStatusAnimBrushApplied: 'Tidak ada animasi untuk disalin',
+    appCountdownPrompt: 'Masukkan menit hitung mundur',
     appStatusAnimAdded: 'Animasi ditambahkan',
     appStatusMotionPathAdded:
       'Animasi jalur gerakan ditambahkan (bergerak di sepanjang jalur selama peragaan slide; juga berfungsi di PowerPoint)',
@@ -2141,6 +2177,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Анимация удалена с выбранных фигур',
     appStatusAnimSet:
       'Анимация задана (воспроизводится пошагово во время показа; работает и в PowerPoint)',
+    appStatusAnimBrushCopied: 'Формат по образцу',
+    appStatusAnimBrushEmpty: 'Скопировано — выделите цель и нажмите ещё раз',
+    appStatusAnimBrushApplied: 'Нет анимации для копирования',
+    appCountdownPrompt: 'Введите минуты обратного отсчёта',
     appStatusAnimAdded: 'Анимация добавлена',
     appStatusMotionPathAdded:
       'Добавлена анимация пути перемещения (объект движется по пути во время показа; работает и в PowerPoint)',
@@ -2370,6 +2410,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'تمت إزالة الحركات من الأشكال المحددة',
     appStatusAnimSet:
       'تم تعيين الحركة (يتم تشغيلها خطوة بخطوة أثناء العرض؛ تعمل أيضًا في PowerPoint)',
+    appStatusAnimBrushCopied: 'نسخ الحركة',
+    appStatusAnimBrushEmpty: 'تم النسخ — اختر الهدف ثم اضغط مرة أخرى',
+    appStatusAnimBrushApplied: 'لا توجد حركات لنسخها',
+    appCountdownPrompt: 'أدخل دقائق العد التنازلي',
     appStatusAnimAdded: 'تمت إضافة الحركة',
     appStatusMotionPathAdded:
       'تمت إضافة حركة مسار (يتحرك العنصر على طول المسار أثناء العرض؛ تعمل أيضًا في PowerPoint)',
@@ -2603,6 +2647,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animações removidas das formas selecionadas',
     appStatusAnimSet:
       'Animação definida (reproduzida passo a passo durante a apresentação; também funciona no PowerPoint)',
+    appStatusAnimBrushCopied: 'Pincel de Animação',
+    appStatusAnimBrushEmpty: 'Copiado — selecione o alvo e clique de novo',
+    appStatusAnimBrushApplied: 'Não há animações para copiar',
+    appCountdownPrompt: 'Digite os minutos da contagem regressiva',
     appStatusAnimAdded: 'Animação adicionada',
     appStatusMotionPathAdded:
       'Animação de trajetória adicionada (move-se ao longo do caminho durante a apresentação; também funciona no PowerPoint)',
@@ -2843,6 +2891,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animazioni rimosse dalle forme selezionate',
     appStatusAnimSet:
       'Animazione impostata (riprodotta passo dopo passo durante la presentazione; funziona anche in PowerPoint)',
+    appStatusAnimBrushCopied: 'Copia animazioni',
+    appStatusAnimBrushEmpty: 'Copiato: seleziona la destinazione e riclicca',
+    appStatusAnimBrushApplied: 'Nessuna animazione da copiare',
+    appCountdownPrompt: 'Inserisci i minuti del conto alla rovescia',
     appStatusAnimAdded: 'Animazione aggiunta',
     appStatusMotionPathAdded:
       'Animazione con percorso di movimento aggiunta (si sposta lungo il percorso durante la presentazione; funziona anche in PowerPoint)',
@@ -3082,6 +3134,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Usunięto animacje z zaznaczonych kształtów',
     appStatusAnimSet:
       'Ustawiono animację (odtwarzana krok po kroku podczas pokazu; działa również w programie PowerPoint)',
+    appStatusAnimBrushCopied: 'Malarz animacji',
+    appStatusAnimBrushEmpty: 'Skopiowano — wybierz cel i kliknij ponownie',
+    appStatusAnimBrushApplied: 'Brak animacji do skopiowania',
+    appCountdownPrompt: 'Wprowadź minuty odliczania',
     appStatusAnimAdded: 'Dodano animację',
     appStatusMotionPathAdded:
       'Dodano animację ścieżki ruchu (element porusza się po ścieżce podczas pokazu; działa również w programie PowerPoint)',
@@ -3321,6 +3377,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animaties verwijderd van de geselecteerde vormen',
     appStatusAnimSet:
       'Animatie ingesteld (wordt stap voor stap afgespeeld tijdens de voorstelling; werkt ook in PowerPoint)',
+    appStatusAnimBrushCopied: 'Animatie overnemen',
+    appStatusAnimBrushEmpty: 'Gekopieerd — kies het doel en klik opnieuw',
+    appStatusAnimBrushApplied: 'Geen animaties om te kopiëren',
+    appCountdownPrompt: 'Voer de minuten van de aftelling in',
     appStatusAnimAdded: 'Animatie toegevoegd',
     appStatusMotionPathAdded:
       'Animatie met bewegingspad toegevoegd (beweegt langs het pad tijdens de voorstelling; werkt ook in PowerPoint)',
@@ -3560,6 +3620,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'Animasi dialih keluar daripada bentuk yang dipilih',
     appStatusAnimSet:
       'Animasi ditetapkan (dimainkan langkah demi langkah semasa persembahan; turut berfungsi dalam PowerPoint)',
+    appStatusAnimBrushCopied: 'Berus Animasi',
+    appStatusAnimBrushEmpty: 'Disalin — pilih sasaran dan klik semula',
+    appStatusAnimBrushApplied: 'Tiada animasi untuk disalin',
+    appCountdownPrompt: 'Masukkan minit kira detik',
     appStatusAnimAdded: 'Animasi ditambah',
     appStatusMotionPathAdded:
       'Animasi laluan gerakan ditambah (bergerak di sepanjang laluan semasa persembahan; turut berfungsi dalam PowerPoint)',
@@ -3786,6 +3850,10 @@ export const appStrings = defineStrings({
     appStatusTransitionSet: 'המעבר הוגדר (פועל בהצגות שקופיות של PowerPoint)',
     appStatusAnimRemoved: 'ההנפשות הוסרו מהצורות שנבחרו',
     appStatusAnimSet: 'ההנפשה הוגדרה (מופעלת שלב אחר שלב במהלך ההצגה; פועלת גם ב-PowerPoint)',
+    appStatusAnimBrushCopied: 'העתקת הנפשה',
+    appStatusAnimBrushEmpty: 'הועתק — בחר יעד ולחץ שוב',
+    appStatusAnimBrushApplied: 'אין הנפשות להעתקה',
+    appCountdownPrompt: 'הזן דקות לספירה לאחור',
     appStatusAnimAdded: 'ההנפשה נוספה',
     appStatusMotionPathAdded:
       'הנפשת נתיב תנועה נוספה (נעה לאורך הנתיב במהלך ההצגה; פועלת גם ב-PowerPoint)',
@@ -4019,6 +4087,10 @@ export const appStrings = defineStrings({
     appStatusAnimRemoved: 'चयनित आकृतियों से एनिमेशन हटाए गए',
     appStatusAnimSet:
       'एनिमेशन सेट किया गया (स्लाइड शो के दौरान चरण दर चरण चलता है; PowerPoint में भी काम करता है)',
+    appStatusAnimBrushCopied: 'एनिमेशन कॉपी',
+    appStatusAnimBrushEmpty: 'कॉपी हो गया — लक्ष्य चुनें और फिर क्लिक करें',
+    appStatusAnimBrushApplied: 'कॉपी करने के लिए कोई एनिमेशन नहीं',
+    appCountdownPrompt: 'काउंटडाउन मिनट दर्ज करें',
     appStatusAnimAdded: 'एनिमेशन जोड़ा गया',
     appStatusMotionPathAdded:
       'गति पथ एनिमेशन जोड़ा गया (स्लाइड शो के दौरान पथ पर चलता है; PowerPoint में भी काम करता है)',
@@ -4242,6 +4314,10 @@ export const appStrings = defineStrings({
     appStatusTransitionSet: '已設定轉場效果（PowerPoint 放映時生效）',
     appStatusAnimRemoved: '已移除選取圖案的動畫',
     appStatusAnimSet: '已設定動畫（放映時逐步播放；PowerPoint 同樣生效）',
+    appStatusAnimBrushCopied: '動畫刷',
+    appStatusAnimBrushEmpty: '已複製動畫，選取目標物件後再次點擊動畫刷',
+    appStatusAnimBrushApplied: '所選物件沒有動畫可複製',
+    appCountdownPrompt: '輸入倒數計時分鐘數',
     appStatusAnimAdded: '已新增動畫',
     appStatusMotionPathAdded: '已新增移動路徑動畫（放映時沿路徑移動；PowerPoint 同樣生效）',
     appStatusCustomShowEmpty: '此自訂放映不包含任何有效頁面',

@@ -1380,6 +1380,32 @@ export function IconPlayFromStart(props: IconProps) {
 }
 
 /** Slide show: from current slide (screen + play triangle) */
+export function IconCountdown(props: IconProps) {
+  return (
+    <Svg {...props}>
+      {/* 倒计时: circle + hands + falling sand dot */}
+      <circle cx="9.2" cy="9.2" r="6.6" />
+      <path d="M 9.2 5.4 v 3.8 l 2.6 1.6" />
+      <path d="M 16.9 12.1 a 4.9 4.9 0 0 1 0.9 5.5 M 18.6 18.5 l -1 -0.4" />
+    </Svg>
+  )
+}
+
+export function IconAnimBrush(props: IconProps) {
+  return (
+    <Svg {...props}>
+      {/* 动画刷: brush body + sparkle */}
+      <path d="M 6.2 13.9 l 7.1 -7.1 a 1.9 1.9 0 0 1 2.7 2.7 l -7.1 7.1 z" />
+      <path d="M 5.1 18.9 l 1.7 -1.7 -1.1 -1.1 -1.7 1.7 a 0.78 0.78 0 0 0 1.1 1.1 z" />
+      <path
+        d="M 16.4 3.6 l 0.55 1.5 1.5 0.55 -1.5 0.55 -0.55 1.5 -0.55 -1.5 -1.5 -0.55 1.5 -0.55 z"
+        fill="currentColor"
+        stroke="none"
+      />
+    </Svg>
+  )
+}
+
 export function IconPlayCurrent(props: IconProps) {
   return (
     <Svg {...props}>

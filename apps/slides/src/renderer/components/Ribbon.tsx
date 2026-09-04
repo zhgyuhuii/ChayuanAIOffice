@@ -47,6 +47,7 @@ import {
   IconPageColor,
   IconApplyAll,
   IconPageSize,
+  IconAnimBrush,
   IconPlayCurrent,
   IconPlayFromStart,
   IconPresenterView,
@@ -57,6 +58,7 @@ import {
   IconRemoveBg,
   IconRedo,
   IconRehearse,
+  IconCountdown,
   IconSave,
   IconSetupShow,
   IconSparkle,
@@ -1714,11 +1716,14 @@ export function Ribbon({
   animPaneOpen,
   onToggleAnimPane,
   animCount,
+  animBrush,
+  onToggleAnimBrush,
   onAnimPreview,
   onSlideShow,
   onPresenterView,
   onCustomShow,
   onRehearse,
+  onCountdownShow,
   showDisplays,
   showDisplayId,
   onShowDisplay,
@@ -2882,6 +2887,23 @@ export function Ribbon({
           </>
         ) : tab === 'animations' ? (
           <>
+            {/* 动画刷 (WPS 动画 #1)：单击复制当前选中对象的动画，再选中目标后单击应用 */}
+            <Group label={t('ribbonAnimBrushGroup')}>
+              <button
+                className={`rb-big ${animBrush != null ? 'active' : ''}`}
+                disabled={!hasDoc || !hasSelection}
+                data-tip={
+                  animBrush != null ? t('ribbonAnimBrushApplyTip') : t('ribbonAnimBrushCopyTip')
+                }
+                onClick={onToggleAnimBrush}
+              >
+                <span className="rb-big-icon">
+                  <IconAnimBrush size={BIG} />
+                </span>
+                <span>{t('ribbonAnimBrush')}</span>
+              </button>
+            </Group>
+            <div className="ribbon-sep" />
             <Group label={t('ribbonPreview')}>
               <button
                 className="rb-big"
@@ -3196,6 +3218,17 @@ export function Ribbon({
                 </div>,
               )}
               <DisabledBig icon={<IconRecord size={BIG} />} label={t('ribbonRecord')} />
+              <button
+                className="rb-big"
+                disabled={!hasDoc}
+                data-tip={t('ribbonCountdownTip')}
+                onClick={onCountdownShow}
+              >
+                <span className="rb-big-icon">
+                  <IconCountdown size={BIG} />
+                </span>
+                <span>{t('ribbonCountdown')}</span>
+              </button>
             </Group>
             <div className="ribbon-sep" />
             {/* WPS 放映组: 放映到[显示器]⌄ + ☑显示演讲者视图 */}

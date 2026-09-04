@@ -76,6 +76,7 @@ export function SlideShowView({
   rehearseMode,
   displayId,
   onRehearseDone,
+  countdown,
 }: {
   slides: RenderSlide[]
   images: Map<string, HTMLImageElement>
@@ -91,8 +92,20 @@ export function SlideShowView({
   rehearseMode?: boolean
   /** Rehearsal-end callback (called before onExit on exit); perPageSec is by original page index, unvisited pages are 0 */
   onRehearseDone?: (perPageSec: number[]) => void
+  /** WPS 倒计时: corner countdown (start timestamp + total duration) */
+  countdown?: { start: number; totalMs: number }
 }) {
   const { t } = useI18n()
+  /** WPS 倒计时: remaining ms, ticking once a second; null when no countdown */
+  const [countdownLeft, setCountdownLeft] = useState<number | null>(null)
+  useEffect(() => {
+    if (!countdown) return
+    const tick = () =>
+      setCountdownLeft(Math.max(0, countdown.totalMs - (Date.now() - countdown.start)))
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
+  }, [countdown])
   // Playback sequence (original indexes): hidden pages skipped (except the start page); custom shows use the given order
   const order = useMemo(
     () => computePlayOrder(slides, startAt, customOrder),
@@ -534,6 +547,11 @@ export function SlideShowView({
           <div className="ss-counter">
             {pos + 1} / {order.length}
           </div>
+          {countdownLeft != null && (
+            <div className={`ss-countdown${countdownLeft === 0 ? ' done' : ''}`} aria-live="off">
+              ⏳ {formatClock(countdownLeft)}
+            </div>
+          )}
         </>
       )}
     </div>
