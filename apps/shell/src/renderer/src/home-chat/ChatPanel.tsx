@@ -9,12 +9,13 @@ import type { HomeChatControllerTexts } from './controller'
 import { useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
-import { TurnNavigator, deriveTurnNavEntries } from './TurnNavigator'
+import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
 import { createHomeChatBridge, refreshHomeModelCache } from './bridge'
 import type {
   HomeChatAttachment,
   HomeChatCard,
   HomeChatMessage,
+  HomeChatSession,
   HomeChatSessionScope,
 } from '../../../shared/home-api'
 
@@ -482,6 +483,14 @@ export function ChatPanel({
 
   const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
 
+  /** history-row preview: the first question, plain, ~2 lines */
+  const sessionPreview = (s: HomeChatSession): string => {
+    const first = s.messages.find((m) => m.role === 'user')
+    if (!first) return ''
+    const text = toPlainText(first.text)
+    return text.length > 110 ? `${text.slice(0, 110)}…` : text
+  }
+
   // tick rail data: one entry per user query, paired with its assistant reply
   const navEntries = useMemo(
     () => deriveTurnNavEntries(active?.messages ?? [], busy, t('chatNavUserFallback')),
@@ -519,6 +528,16 @@ export function ChatPanel({
             />
           </svg>
         </button>
+        {aiSettings && (
+          <span className="chat-model-slot">
+            <ModelPickerButton
+              settings={draftModel ? { ...aiSettings, currentModel: draftModel } : aiSettings}
+              onPick={applyModel}
+              onOpenSettings={onOpenSettings}
+              lang={lang}
+            />
+          </span>
+        )}
         <span className="chat-mode-wrap" ref={modeWrapRef}>
           <button
             className={`chat-tool-btn chat-mode-btn${draftMode === 'plan' ? ' active' : ''}`}
@@ -582,16 +601,6 @@ export function ChatPanel({
             }
           }}
         />
-        {aiSettings && (
-          <span className="chat-model-slot">
-            <ModelPickerButton
-              settings={draftModel ? { ...aiSettings, currentModel: draftModel } : aiSettings}
-              onPick={applyModel}
-              onOpenSettings={onOpenSettings}
-              lang={lang}
-            />
-          </span>
-        )}
         {busy ? (
           <button
             className="chat-send-btn stop"
@@ -642,7 +651,20 @@ export function ChatPanel({
   return (
     <main className="chat-stage">
       <header className="chat-head">
-        <div className="chat-head-title">{hasMessages ? active!.title : ''}</div>
+        <div className="chat-tabs" role="tablist" aria-label={t('chatTabList')}>
+          {(store.sessions ?? []).map((s) => (
+            <button
+              key={s.id}
+              role="tab"
+              aria-selected={s.id === active?.id}
+              className={`chat-tab${s.id === active?.id ? ' active' : ''}`}
+              title={s.title || t('chatNew')}
+              onClick={() => openSession(s.id)}
+            >
+              {s.title || t('chatNew')}
+            </button>
+          ))}
+        </div>
         <div className="chat-head-actions">
           <div className="chat-sessions-wrap" ref={menuWrapRef}>
             <button
@@ -674,7 +696,10 @@ export function ChatPanel({
                         role="menuitem"
                         onClick={() => openSession(s.id)}
                       >
-                        <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
+                        <span className="chat-session-main">
+                          <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
+                          <span className="chat-session-prev">{sessionPreview(s)}</span>
+                        </span>
                         <span className="chat-session-time">
                           {chatTime(s.updatedAt, dateLocale)}
                         </span>

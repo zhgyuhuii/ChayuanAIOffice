@@ -26,7 +26,7 @@ const PREVIEW_CHARS = 220
 const PREVIEW_PARAGRAPHS = 2
 
 /** markdown/HTML → plain text (display-only; DOMParser loads nothing) */
-function toPlainText(text: string): string {
+export function toPlainText(text: string): string {
   const s = text.trim()
   if (!s) return ''
   if (s.startsWith('<')) {
