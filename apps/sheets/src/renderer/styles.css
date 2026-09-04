@@ -5579,6 +5579,15 @@ textarea:focus {
   white-space: nowrap;
 }
 
+/* round color chip in menu rows (worksheet tab-color picker) */
+.menu-color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
 /* color-scheme option rows (chart colors / themes) */
 .menu-opt-dots {
   display: inline-flex;

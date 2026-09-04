@@ -304,6 +304,144 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     }
     return
   }
+  if (command.startsWith('rowcol:')) {
+    // 行和列⌄（WPS 对齐 B2）：插入/删除行列走既有 case；此处收其余 8 项。
+    // hide/unhide 走 Univer 命令（带 undo）；最适合行高/列宽按内容扫描估算。
+    const wb = runtime.univerAPI.getActiveWorkbook()
+    const ws = wb?.getActiveSheet()
+    const sel = wb?.getActiveRange()
+    const action = command.slice('rowcol:'.length)
+    if (!wb || !ws || !sel) {
+      ctx.setMessage(t('appSelectCellFirst'))
+      return
+    }
+    const unitId = wb.getId()
+    const subUnitId = ws.getSheetId()
+    const rows = { startRow: sel.getRow(), endRow: sel.getRow() + sel.getHeight() - 1 }
+    const cols = { startColumn: sel.getColumn(), endColumn: sel.getColumn() + sel.getWidth() - 1 }
+    const run = (id: string, params: Record<string, unknown>) => {
+      void runtime.univerAPI.executeCommand(id, { unitId, subUnitId, ...params }).catch(() => {
+        // canceled structural command surfaces its own message
+      })
+    }
+    switch (action) {
+      case 'hide-rows':
+        run('sheet.command.set-rows-hidden', { ranges: [{ ...rows, rangeType: 1 }] })
+        return
+      case 'unhide-rows':
+        run('sheet.command.set-specific-rows-visible', {
+          ranges: [{ ...rows, rangeType: 3 }],
+        })
+        return
+      case 'hide-cols':
+        for (let c = cols.startColumn; c <= cols.endColumn; c += 1) {
+          run('sheet.command.set-col-hidden', {
+            ranges: [{ startColumn: c, endColumn: c, rangeType: 2 }],
+          })
+        }
+        return
+      case 'unhide-cols':
+        run('sheet.command.set-col-visible-on-cols', {
+          ranges: [{ ...cols, rangeType: 2 }],
+        })
+        return
+      case 'fit-row-height': {
+        // scan row content: height = wrapped lines × 20px + 6, clamp 20..408
+        for (let r = rows.startRow; r <= rows.endRow; r += 1) {
+          let maxLines = 1
+          for (let c = Math.max(0, cols.startColumn - 12); c < cols.endColumn + 12; c += 1) {
+            const v = ws.getRange(r, c).getValue()
+            const text = v == null ? '' : String(v)
+            if (text) maxLines = Math.max(maxLines, Math.ceil(text.length / 12))
+          }
+          const h = Math.min(408, Math.max(20, maxLines * 20 + 6))
+          try {
+            ws.setRowHeightsForced(r, 1, h)
+          } catch {
+            /* protected sheet: its own message */
+          }
+        }
+        ctx.setMessage(t('appRowcolFitted'))
+        return
+      }
+      case 'fit-col-width': {
+        for (let c = cols.startColumn; c <= cols.endColumn; c += 1) {
+          let maxChars = 0
+          for (let r = Math.max(0, rows.startRow - 40); r < rows.endRow + 200; r += 1) {
+            const v = ws.getRange(r, c).getValue()
+            const text = v == null ? '' : String(v)
+            if (text) maxChars = Math.max(maxChars, text.length)
+          }
+          const w = Math.min(400, Math.max(60, maxChars * 8 + 10))
+          try {
+            ws.setColumnWidth(c, w)
+          } catch {
+            /* protected sheet */
+          }
+        }
+        ctx.setMessage(t('appRowcolFitted'))
+        return
+      }
+      default:
+        return
+    }
+  }
+  if (command.startsWith('sheetop:')) {
+    // 工作表⌄（WPS 对齐 B3）：重命名/标签颜色/隐藏/取消隐藏。
+    const wb = runtime.univerAPI.getActiveWorkbook()
+    const ws = wb?.getActiveSheet()
+    const action = command.slice('sheetop:'.length)
+    if (!wb || !ws) return
+    switch (action) {
+      case 'hide':
+        try {
+          if (wb.getSheets().filter((s) => !s.isSheetHidden()).length <= 1) {
+            ctx.setMessage(t('appSheetHideLast'))
+            return
+          }
+          ws.hideSheet()
+        } catch {
+          /* own message */
+        }
+        return
+      case 'unhide': {
+        const hidden = wb.getSheets().filter((s) => s.isSheetHidden())
+        if (hidden.length === 0) {
+          ctx.setMessage(t('appSheetNoHidden'))
+          return
+        }
+        // unhide the first hidden sheet (WPS opens a picker; single-shot keeps it simple)
+        try {
+          hidden[0]!.showSheet()
+          ctx.setMessage(t('appSheetUnhidden', { name: hidden[0]!.getSheetName() }))
+        } catch {
+          /* own message */
+        }
+        return
+      }
+      case 'rename': {
+        const name = window.prompt(t('appSheetRenamePrompt'), ws.getSheetName())
+        if (name && name.trim() && name.trim() !== ws.getSheetName()) {
+          try {
+            ws.setName(name.trim())
+          } catch {
+            ctx.setMessage(t('appSheetRenameFailed'))
+          }
+        }
+        return
+      }
+      default:
+        if (action.startsWith('tab-color:')) {
+          const color = action.slice('tab-color:'.length)
+          try {
+            ws.setTabColor(color === 'none' ? '' : `#${color}`)
+          } catch {
+            /* own message */
+          }
+        }
+        return
+    }
+  }
   // Read-only-safe commands work on imported workbooks too.
   const worksheet = runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()
   switch (command) {
@@ -1337,29 +1475,87 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       }
       case 'autofn': {
         if (!worksheet) return
-        if (range.getHeight() < 2) {
+        // WPS 自动求和落点（B1 对齐）：
+        // - 纵向选区（高≥2）→ 各列选区下方一格
+        // - 横向选区（宽≥2 且高=1）→ 各行选区右侧一格
+        // - 单格 → 智能识别：先向上、再向左扫描连续数值区，公式落在当前格
+        const startRow = range.getRow()
+        const startColumn = range.getColumn()
+        const height = range.getHeight()
+        const width = range.getWidth()
+        const isHorizontal = height === 1 && width >= 2
+        const isSingle = height === 1 && width === 1
+        if (!isHorizontal && !isSingle && height < 2) {
           ctx.setMessage(t('appAutofnSelectCells', { fn: argument }))
           return
         }
-        const startRow = range.getRow()
-        const startColumn = range.getColumn()
-        const lastRow = startRow + range.getHeight() - 1
         // Same protection as manual edits: never write into a row whose
         // original content has not streamed in yet (see BeforeSheetEditStart).
         const state = ctx.lazyWorkbookRef.current
-        if (state && !state.flags.preloadComplete) {
+        const guardRowLoaded = (targetRow: number): boolean => {
+          if (!state || state.flags.preloadComplete) return true
           const sheetId = worksheet.getSheetId()
           const sheet = state.file.sheets.find((candidate) => candidate.id === sheetId)
           const loaded = state.loadedRanges.get(sheetId)
-          const targetInData = sheet !== undefined && lastRow + 1 < sheet.rowCount
+          const targetInData = sheet !== undefined && targetRow < sheet.rowCount
           const targetLoaded =
-            loaded !== undefined && lastRow + 1 >= loaded.startRow && lastRow + 1 <= loaded.endRow
-          if (targetInData && !targetLoaded) {
+            loaded !== undefined && targetRow >= loaded.startRow && targetRow <= loaded.endRow
+          return !targetInData || targetLoaded
+        }
+        if (isSingle) {
+          // smart region: contiguous numeric run upward, else leftward
+          const numeric = (r: number, c: number): boolean => {
+            const v = worksheet.getRange(r, c).getValue()
+            return typeof v === 'number' && Number.isFinite(v)
+          }
+          let top = startRow - 1
+          while (top >= 0 && numeric(top, startColumn) && startRow - top <= 1024) top -= 1
+          top += 1
+          if (startRow - 1 >= top) {
+            const letter = columnLabel(startColumn)
+            worksheet
+              .getRange(startRow, startColumn)
+              .setFormula(`=${argument}(${letter}${top + 1}:${letter}${startRow})`)
+            ctx.setMessage(t('appAutofnInserted', { fn: argument }))
+            return
+          }
+          let left = startColumn - 1
+          while (left >= 0 && numeric(startRow, left) && startColumn - left <= 1024) left -= 1
+          left += 1
+          if (startColumn - 1 >= left) {
+            worksheet
+              .getRange(startRow, startColumn)
+              .setFormula(
+                `=${argument}(${columnLabel(left)}${startRow + 1}:${columnLabel(startColumn - 1)}${startRow + 1})`,
+              )
+            ctx.setMessage(t('appAutofnInserted', { fn: argument }))
+            return
+          }
+          ctx.setMessage(t('appAutofnSelectCells', { fn: argument }))
+          return
+        }
+        if (isHorizontal) {
+          if (!guardRowLoaded(startRow)) {
             ctx.setMessage(t('appRowBelowStreaming'))
             return
           }
+          for (let row = startRow; row < startRow + height; row += 1) {
+            const r = row + 1
+            worksheet
+              .getRange(row, startColumn + width)
+              .setFormula(
+                `=${argument}(${columnLabel(startColumn)}${r}:${columnLabel(startColumn + width - 1)}${r})`,
+              )
+          }
+          ctx.setMessage(t('appAutofnInserted', { fn: argument }))
+          return
         }
-        for (let column = startColumn; column < startColumn + range.getWidth(); column += 1) {
+        const lastRow = startRow + height - 1
+        if (!guardRowLoaded(lastRow + 1)) {
+          ctx.setMessage(t('appRowBelowStreaming'))
+          return
+        }
+        for (let column = startColumn; column < startColumn + width; column += 1) {
           const letter = columnLabel(column)
           worksheet
             .getRange(lastRow + 1, column)
