@@ -235,6 +235,39 @@ export const AGENT_TOOLS: AgentToolDef[] = [
     },
   },
   {
+    name: 'insert_echart',
+    description:
+      'Insert an extended ECharts-family chart (39 types: sankey/sunburst/treemap/funnel/gauge/graph/tree/heatmap/calendar/3D…). ' +
+      'Use for charts beyond bar/line/pie. The chart is saved as a picture plus its full source code — the in-app editor can reopen and edit it. ' +
+      'Provide either a full ECharts `option` object, or raw `optionCode` (JS that assigns `option = {...}`, helper functions allowed).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        groupId: {
+          type: 'string',
+          description:
+            'chart family id (sankey/sunburst/treemap/funnel/gauge/graph/tree/heatmap/…)',
+        },
+        title: { type: 'string', description: 'chart title' },
+        option: {
+          type: 'object',
+          description:
+            'ECharts option object (recommended): series/title/xAxis… in ECharts option format',
+        },
+        optionCode: {
+          type: 'string',
+          description:
+            'alternative to option: JS source assigning `option = {...}` (helper functions allowed; no network/timers)',
+        },
+        afterBlockIndex: {
+          type: 'integer',
+          description: 'insert after this block index; omitted = after the cursor block',
+        },
+      },
+      required: ['groupId'],
+    },
+  },
+  {
     name: 'edit_chart',
     description:
       'Edit the data of an existing chart in the document (title/category labels/series names/values). Chart blocks in the block list can be edited; ' +
@@ -842,6 +875,59 @@ function executeSyncTool(
         .run()
       return {
         output: `Inserted a ${kind} chart "${title}" (${categories.length} categories × ${series.length} series).`,
+        mutated: true,
+        summary: t('aiSumInsertedChart', { title }),
+      }
+    }
+
+    case 'insert_echart': {
+      const groupId = String(call.input.groupId ?? '')
+      if (!groupId) return fail(t('aiSumInsertChart'), 'groupId is required')
+      const optionCode = String(call.input.optionCode ?? '')
+      let optionJson = ''
+      let code: string | null = null
+      if (optionCode) {
+        code = optionCode
+        // 交给设计器沙箱执行:此处直接存源码,插入由 renderer 的沙箱运行器出 option
+        // (与 UI 代码页同一执行模型;校验失败时由 UI 端报错并回喂)
+        optionJson = ''
+      } else if (call.input.option && typeof call.input.option === 'object') {
+        optionJson = JSON.stringify(call.input.option, (_k, v) =>
+          typeof v === 'function' ? { __chartkit_fn__: String(v) } : v,
+        )
+      } else {
+        return fail(
+          t('aiSumInsertChart'),
+          'insert_echart needs either "option" (object) or "optionCode" (JS source)',
+        )
+      }
+      const title = String(call.input.title ?? '').trim() || groupId
+      const count = editor.state.doc.childCount
+      const after =
+        call.input.afterBlockIndex === undefined
+          ? getCursorBlockIndex(editor, scope)
+          : Math.min(Math.max(Number(call.input.afterBlockIndex), -1), count - 1)
+      if (!Number.isInteger(after)) return fail(t('aiSumInsertChart'), 'invalid afterBlockIndex')
+      const { to } = blockRangePositions(editor, after, after)
+      // 沙箱执行在 renderer 的 worker:此处借 window 事件走同一条 UI 插入管线
+      // (设计器 onInsert 的 echart 分支 = 沙箱出 option + PNG 快照 + echart 块落库)
+      window.dispatchEvent(
+        new CustomEvent('chartkit-ai-insert-echart', {
+          detail: {
+            groupId,
+            title,
+            optionJson,
+            code,
+            afterBlockIndex: after,
+            done: (ok: boolean, message: string) => {
+              void ok
+              void message
+            },
+          },
+        }),
+      )
+      return {
+        output: `Queued an extended chart (${groupId}) "${title}" for sandboxed rendering and insertion.`,
         mutated: true,
         summary: t('aiSumInsertedChart', { title }),
       }

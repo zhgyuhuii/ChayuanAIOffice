@@ -689,6 +689,76 @@ export function InsertTab({
     return () => window.removeEventListener('chartkit-edit-echart', onEdit)
   }, [])
 
+  // AI insert_echart:沙箱执行 optionCode/JSON → echart 块落库(与设计器同管线)
+  useEffect(() => {
+    const onAiInsert = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as {
+        groupId: string
+        title: string
+        optionJson: string
+        code: string | null
+        afterBlockIndex: number
+      }
+      void (async () => {
+        let optionJson = detail.optionJson
+        if (!optionJson && detail.code) {
+          try {
+            const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
+            const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
+            const r = await runOptionCode(detail.code)
+            if (!r.ok) {
+              window.dispatchEvent(
+                new CustomEvent('ai-toast', {
+                  detail: { message: `insert_echart: ${r.error ?? 'sandbox failed'}` },
+                }),
+              )
+              return
+            }
+            optionJson = stringifyOption(r.option)
+          } catch (e) {
+            window.dispatchEvent(
+              new CustomEvent('ai-toast', {
+                detail: {
+                  message: `insert_echart: ${String((e as Error).message).slice(0, 120)}`,
+                },
+              }),
+            )
+            return
+          }
+        }
+        // 快照:AI 插入也必须有图(sidecar 可重放,快照供打开显示)
+        const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+        let opt: unknown = null
+        try {
+          opt = JSON.parse(optionJson)
+        } catch {
+          opt = null
+        }
+        const png = await renderOptionSnapshot(opt)
+        const inserted = insertTopLevelBlockAtSelection(editor, {
+          type: 'docProtected',
+          attrs: {
+            docxIndex: null,
+            blockType: 'echart',
+            label: detail.title || 'ECharts',
+            echartOption: optionJson,
+            echartSnapshot: png,
+            echartGroupId: detail.groupId,
+            echartTitle: detail.title || null,
+            echartCode: detail.code ?? null,
+          },
+        })
+        if (!inserted) {
+          window.dispatchEvent(
+            new CustomEvent('ai-toast', { detail: { message: 'insert_echart: insert failed' } }),
+          )
+        }
+      })()
+    }
+    window.addEventListener('chartkit-ai-insert-echart', onAiInsert)
+    return () => window.removeEventListener('chartkit-ai-insert-echart', onAiInsert)
+  }, [editor])
+
   // double-click on a standard chart block: same designer, data preloaded
   // from chartDisplay so edits write back into genChart (原位更新)
   const [chartBlockEdit, setChartBlockEdit] = useState<{

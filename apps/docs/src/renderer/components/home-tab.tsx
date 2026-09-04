@@ -36,6 +36,7 @@ import {
 } from './ribbon-tab-shared'
 import {
   IconAlignCenter,
+  IconAlignDistribute,
   IconAlignJustify,
   IconAlignLeft,
   IconAlignRight,
@@ -491,6 +492,29 @@ export function HomeTab({
                 </div>
               )}
             </div>
+            {/* 字符边框 / 字符底纹 (WPS 字体组 #12-13): run-level w:bdr / w:shd toggles */}
+            <button
+              className={`rb-icon ${fs.charBorder ? 'active' : ''}`}
+              disabled={!canEdit}
+              data-tip={t('ribbonCharBorderTip')}
+              aria-label={t('ribbonCharBorderTip')}
+              onClick={() => setTextStyle({ border: fs.charBorder ? null : true })}
+            >
+              <span className="rb-char-box" aria-hidden="true">
+                A
+              </span>
+            </button>
+            <button
+              className={`rb-icon ${fs.charShading ? 'active' : ''}`}
+              disabled={!canEdit}
+              data-tip={t('ribbonCharShadingTip')}
+              aria-label={t('ribbonCharShadingTip')}
+              onClick={() => setTextStyle({ shading: fs.charShading ? null : 'D9D9D9' })}
+            >
+              <span className="rb-char-shade" aria-hidden="true">
+                A
+              </span>
+            </button>
             {/* font color: main button applies pen color, caret opens palette */}
             <div className="rb-split-wrap">
               <button
@@ -772,6 +796,15 @@ export function HomeTab({
               onClick={() => setSelectionAlign(ed, 'justify')}
             >
               <IconAlignJustify />
+            </button>
+            <button
+              className="rb-icon"
+              disabled={!canEdit}
+              data-tip={t('ribbonDistributeTip')}
+              aria-label={t('ribbonDistributeTip')}
+              onClick={() => setSelectionAlign(ed, 'distribute')}
+            >
+              <IconAlignDistribute />
             </button>
             <span className="rb-mini-sep" />
             <button

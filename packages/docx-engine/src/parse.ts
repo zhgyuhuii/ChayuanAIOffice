@@ -4212,6 +4212,9 @@ function buildRun(
     if (highlight && highlight !== 'none') run.highlight = highlight
     const shdFill = attrsOf(findChild(rPr, 'w:shd') ?? {})['w:fill']
     if (shdFill && shdFill !== 'auto') run.shading = stripHash(shdFill)
+    // character border box (字符边框): any w:bdr other than val="none"
+    const bdrVal = attrsOf(findChild(rPr, 'w:bdr') ?? {})['w:val']
+    if (bdrVal && bdrVal !== 'none' && bdrVal !== 'nil') run.charBorder = true
     const vertAlign = attrsOf(findChild(rPr, 'w:vertAlign') ?? {})['w:val']
     if (vertAlign === 'superscript' || vertAlign === 'subscript') run.vertAlign = vertAlign
     const em = attrsOf(findChild(rPr, 'w:em') ?? {})['w:val']

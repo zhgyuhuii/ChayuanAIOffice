@@ -1005,6 +1005,25 @@ html.chatoffice-popover-open .ribbon-tabs {
   font-weight: 500;
 }
 
+/* 字符边框 / 字符底纹 button glyphs (WPS font-group #12-13) */
+.rb-char-box {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 2px 3px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+}
+
+.rb-char-shade {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 2px 3px;
+  border-radius: 1px;
+  background: #d9d9d9;
+}
+
 .rb-color-bar {
   width: 16px;
   height: 4px;

@@ -91,6 +91,7 @@ describe('native editable tables', () => {
           charScaleEm: null,
           highlight: null,
           shading: null,
+          border: null,
           vertAlign: null,
           em: null,
           boldOff: null,

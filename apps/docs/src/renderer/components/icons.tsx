@@ -151,6 +151,16 @@ export function IconAlignJustify(props: IconProps) {
   )
 }
 
+/** 分散对齐: every line stretched edge-to-edge, including the short last one */
+export function IconAlignDistribute(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M 3.02 3.44 h 9.96 M 3.02 6.62 h 9.96 M 3.02 9.8 h 9.96" />
+      <path d="M 3.02 12.98 h 2.9 M 6.68 12.98 h 2.9 M 10.34 12.98 h 2.64" />
+    </Svg>
+  )
+}
+
 export function IconDirLtr(props: IconProps) {
   return (
     <Svg {...props}>
@@ -1654,4 +1664,3 @@ export function IconClose(props: IconProps) {
     </Svg>
   )
 }
-

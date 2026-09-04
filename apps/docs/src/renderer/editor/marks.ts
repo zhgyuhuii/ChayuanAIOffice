@@ -398,6 +398,7 @@ const CLIPBOARD_TEXT_STYLE_TYPES: Record<string, 'string' | 'number' | 'boolean'
   charScaleEm: 'number',
   highlight: 'string',
   shading: 'string',
+  border: 'boolean',
   vertAlign: 'string',
   em: 'string',
   boldOff: 'boolean',
@@ -488,6 +489,8 @@ export const TextStyleMark = Mark.create({
       highlight: { default: null as string | null },
       // run shading fill, hex without '#' (w:shd w:fill)
       shading: { default: null as string | null },
+      // character border box (w:bdr); rendered as a hairline box around the chars
+      border: { default: null as boolean | null },
       vertAlign: { default: null as 'superscript' | 'subscript' | null },
       // East Asian emphasis mark (w:em val); saving is kept faithful by rawRPr
       em: { default: null as string | null },
@@ -550,6 +553,7 @@ export const TextStyleMark = Mark.create({
     else if (scaleEm) styles.push(`letter-spacing:${scaleEm}em`)
     // shading first: when both are set the later highlight declaration wins (Word behavior)
     if (mark.attrs.shading) styles.push(`background-color:#${mark.attrs.shading}`)
+    if (mark.attrs.border) styles.push(`border:1px solid currentColor`, `border-radius:1px`)
     if (mark.attrs.highlight) {
       styles.push(
         `background-color:${HIGHLIGHT_CSS[mark.attrs.highlight as string] ?? mark.attrs.highlight}`,

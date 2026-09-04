@@ -1235,6 +1235,7 @@ function runMarks(run: Run): PmMark[] {
     run.charScalePct ||
     run.highlight ||
     run.shading ||
+    run.charBorder ||
     run.vertAlign ||
     run.em ||
     run.bold === false ||
@@ -1260,6 +1261,7 @@ function runMarks(run: Run): PmMark[] {
         charScaleEm: run.charScalePct ? charScaleEm(run.text, run.charScalePct) : null,
         highlight: run.highlight ?? null,
         shading: run.shading ?? null,
+        border: run.charBorder ?? null,
         vertAlign: run.vertAlign ?? null,
         em: run.em ?? null,
         boldOff: run.bold === false || null,
@@ -2555,6 +2557,7 @@ export function inlineToRuns(content: PmNode[]): Run[] {
         if (mark.attrs?.charSpacingTwips) run.charSpacingTwips = Number(mark.attrs.charSpacingTwips)
         if (mark.attrs?.highlight) run.highlight = String(mark.attrs.highlight)
         if (mark.attrs?.shading) run.shading = String(mark.attrs.shading)
+        if (mark.attrs?.border) run.charBorder = true
         if (mark.attrs?.vertAlign === 'superscript' || mark.attrs?.vertAlign === 'subscript') {
           run.vertAlign = mark.attrs.vertAlign
         }
@@ -2622,6 +2625,7 @@ function runStyleKey(run: Run): string {
     run.fontAscii ?? null,
     run.highlight ?? null,
     run.shading ?? null,
+    !!run.charBorder,
     run.vertAlign ?? null,
     run.link?.href ?? null,
     run.link?.rId ?? null,

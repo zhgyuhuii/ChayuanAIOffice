@@ -195,7 +195,8 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
   }
   if (patch.shadow !== undefined) {
     // a:effectLst/a:outerShdw on the pic spPr — replace our previous effect
-    const strip = /<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*\/>\s*<\/a:effectLst>|<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>\s*<\/a:effectLst>/
+    const strip =
+      /<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*\/>\s*<\/a:effectLst>|<a:effectLst\b[^>]*>\s*<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>\s*<\/a:effectLst>/
     out = out.replace(strip, '')
     out = out.replace(/<a:outerShdw\b[^>]*\/>|<a:outerShdw\b[^>]*>[\s\S]*?<\/a:outerShdw>/, '')
     if (patch.shadow) {
@@ -204,9 +205,10 @@ export function patchImageParagraphXml(xml: string, patch: ImagePatch): string {
         `<a:effectLst><a:outerShdw blurRad="${Math.round(sh.blurPt * 12700)}" distRad="${Math.round(sh.distPt * 12700)}" dir="${Math.round(sh.dirDeg * 60000)}" sx="0" sy="0">` +
         `<a:srgbClr val="${sh.color.replace('#', '').toUpperCase()}"><a:alpha val="${Math.round(sh.alpha * 100000)}"/></a:srgbClr></a:outerShdw></a:effectLst>`
       // spPr child order: geometry, ln, effectLst — insert after ln or geometry
-      const anchor = /<a:prstGeom\b[^>]*>(?:<a:avLst\s*\/>|<a:avLst\s*\/>[\s\S]*?<\/a:avLst>)<\/a:prstGeom>|<a:prstGeom\b[^>]*\/>|<\/a:custGeom>|<a:ln\b[^>]*>(?:[\s\S]*?)<\/a:ln>|<a:ln\b[^>]*\/>/.exec(
-        out.slice(out.indexOf('<pic:spPr')),
-      )
+      const anchor =
+        /<a:prstGeom\b[^>]*>(?:<a:avLst\s*\/>|<a:avLst\s*\/>[\s\S]*?<\/a:avLst>)<\/a:prstGeom>|<a:prstGeom\b[^>]*\/>|<\/a:custGeom>|<a:ln\b[^>]*>(?:[\s\S]*?)<\/a:ln>|<a:ln\b[^>]*\/>/.exec(
+          out.slice(out.indexOf('<pic:spPr')),
+        )
       if (anchor) {
         const at = out.indexOf('<pic:spPr') + anchor.index + anchor[0].length
         out = out.slice(0, at) + el + out.slice(at)
@@ -2528,6 +2530,7 @@ const RUN_MANAGED_GROUPS: Array<{ key: string; tags: string[] }> = [
   { key: 'highlight', tags: ['w:highlight'] },
   { key: 'underline', tags: ['w:u'] },
   { key: 'shading', tags: ['w:shd'] },
+  { key: 'charBorder', tags: ['w:bdr'] },
   { key: 'vertAlign', tags: ['w:vertAlign'] },
   { key: 'rtl', tags: ['w:rtl'] },
   { key: 'rPrChange', tags: ['w:rPrChange'] },
@@ -2651,6 +2654,12 @@ function modelRPrChildren(run: Run, insideLink: boolean): PPrChild[] {
       xml: `<w:shd w:val="clear" w:color="auto" w:fill="${escapeXmlAttr(run.shading)}"/>`,
     })
   }
+  // character border box (字符边框): 0.5pt single hairline, Word's default
+  if (run.charBorder)
+    out.push({
+      name: 'w:bdr',
+      xml: '<w:bdr w:val="single" w:sz="4" w:space="0" w:color="auto"/>',
+    })
   if (run.vertAlign)
     out.push({ name: 'w:vertAlign', xml: `<w:vertAlign w:val="${run.vertAlign}"/>` })
   if (run.rtl) out.push({ name: 'w:rtl', xml: '<w:rtl/>' })
@@ -2739,6 +2748,11 @@ export function mergeRPrModel(rawRPr: string, run: Run, insideLink: boolean): st
       case 'shading': {
         const raw = rawAttr(rawOf('w:shd'), 'w:fill')
         return (raw && raw !== 'auto' ? raw : undefined) === run.shading
+      }
+      case 'charBorder': {
+        // any non-none w:bdr in rawRPr matches the modeled flag (same rule as parse)
+        const val = rawAttr(rawOf('w:bdr'), 'w:val')
+        return (val !== undefined && val !== 'none' && val !== 'nil') === !!run.charBorder
       }
       case 'underline': {
         // w:u is not a boolean prop: no w:val (or val="none") means no

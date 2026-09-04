@@ -31,7 +31,13 @@ export interface RibbonFormatState {
   imageLum: { bright: number; contrast: number } | null
   imageOpacity: number | null
   imageGeom: string | null
-  imageShadow: { blurPt: number; distPt: number; dirDeg: number; color: string; alpha: number } | null
+  imageShadow: {
+    blurPt: number
+    distPt: number
+    dirDeg: number
+    color: string
+    alpha: number
+  } | null
   imageWidthPx: number | null
   imageHeightPx: number | null
   imageFlipH: boolean
@@ -65,6 +71,10 @@ export interface RibbonFormatState {
   strike: boolean
   vertAlign: string | null
   highlight: string | null
+  /** run-level char border box (w:bdr) */
+  charBorder: boolean
+  /** run-level char shading fill (w:shd) */
+  charShading: string | null
   textColor: string | null
   charStyleId: string | null
   /** docParagraph 的 w:pStyle 样式 id（Title/Quote 等非标题段落样式；null = 无样式/标题/列表） */
@@ -128,6 +138,8 @@ export const EMPTY_FORMAT_STATE: RibbonFormatState = {
   strike: false,
   vertAlign: null,
   highlight: null,
+  charBorder: false,
+  charShading: null,
   textColor: null,
   charStyleId: null,
   paraStyleId: null,
@@ -306,6 +318,8 @@ export function computeFormatState(
     strike: ed.isActive('strike'),
     vertAlign: str(textAttrs.vertAlign),
     highlight: str(textAttrs.highlight),
+    charBorder: !!textAttrs.border,
+    charShading: str(textAttrs.shading),
     textColor: str(textAttrs.color),
     charStyleId: str(textAttrs.styleId),
     fontSizePt: (effectiveSizeHalfPoints(ed, styles, docDefaults) ?? 22) / 2,

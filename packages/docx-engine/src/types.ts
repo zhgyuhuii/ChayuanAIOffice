@@ -58,6 +58,8 @@ export interface Run {
   highlight?: string
   /** character shading fill, hex without '#' (w:shd w:fill, non-auto); highlight wins when both are set */
   shading?: string
+  /** character border box (w:bdr present and not 'none') — 字符边框 */
+  charBorder?: boolean
   /** rtl run (explicit w:rtl, or inherited from its style chain): bold/italic/size
    * were read from the Cs twins (w:bCs/w:iCs/w:szCs) */
   cs?: boolean
