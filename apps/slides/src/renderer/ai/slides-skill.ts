@@ -971,6 +971,36 @@ const TOOLS: AgentToolDef[] = [
     },
   },
   {
+    name: 'add_echart',
+    description:
+      'Insert an extended ECharts-family chart on a page (39 types beyond bar/line/pie: sankey, sunburst, treemap, funnel, gauge, graph, tree, heatmap, calendar, 3D…). Rendered as a picture; the in-app chart designer can reopen it (source code travels inside the file). Provide an ECharts `option` object. dataSource is enforced like add_chart.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        slideIndex: { type: 'integer' },
+        groupId: {
+          type: 'string',
+          description:
+            'chart family id (sankey/sunburst/treemap/funnel/gauge/graph/tree/heatmap/…)',
+        },
+        title: { type: 'string' },
+        option: {
+          type: 'object',
+          description: 'ECharts option object (series/title/xAxis… in ECharts option format)',
+        },
+        dataSource: {
+          type: 'string',
+          enum: ['user', 'document', 'search', 'sample'],
+        },
+        x: { type: 'number' },
+        y: { type: 'number' },
+        w: { type: 'number' },
+        h: { type: 'number' },
+      },
+      required: ['slideIndex', 'groupId', 'option', 'dataSource'],
+    },
+  },
+  {
     name: 'add_smartart',
     description:
       'Insert a SmartArt-style diagram (shape composition) on a page: list=vertical list, process=process arrows, cycle=cycle, hierarchy=org structure, pyramid=stacked pyramid levels, matrix=2x2 quadrant grid, venn=overlapping circles. items are the node texts. Omit x/y/w/h to center it.',
@@ -3089,6 +3119,60 @@ async function executeTool(
       const sampleNote = call.input.dataSource === 'sample' ? SAMPLE_DATA_NOTE : ''
       return {
         output: `Inserted a ${String(call.input.kind)} chart on page ${idx + 1}, element id=${r.sourceId}.${sampleNote}`,
+        mutated: true,
+        summary: t('aiSumChart', { n: idx + 1 }),
+      }
+    }
+
+    case 'add_echart': {
+      const idx = Number(call.input.slideIndex)
+      const slide = slides[idx]
+      if (!slide) return fail(t('aiFailChart'), `slideIndex out of range (0-${slides.length - 1})`)
+      const gateErr = dataSourceGateError(call, state)
+      if (gateErr) return fail(t('aiFailChart'), gateErr)
+      const option = call.input.option
+      if (!option || typeof option !== 'object') {
+        return fail(t('aiFailChart'), 'add_echart needs an "option" object (ECharts option format)')
+      }
+      const { runOptionCode } = await import('@chatoffice/chart-kit/sandbox')
+      const { stringifyOption } = await import('@chatoffice/chart-kit/serialize')
+      const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+      // 对象 option 经同一段执行模型:源码化→沙箱→复活(函数标记统一)
+      const json = JSON.stringify(option, (_k, v) =>
+        typeof v === 'function' ? { __chartkit_fn__: String(v) } : v,
+      )
+      const revived = await runOptionCode(`option = JSON.parse(${JSON.stringify(json)});`)
+      if (!revived.ok) return fail(t('aiFailChart'), revived.error ?? 'sandbox failed')
+      const w = Number(call.input.w) || Math.round(slide.widthPx * 0.62)
+      const h = Number(call.input.h) || Math.round(slide.heightPx * 0.62)
+      const png = await renderOptionSnapshot(revived.option, { width: w, height: h })
+      const m = /^data:[^;]+;base64,(.*)$/s.exec(png)
+      if (!m) return fail(t('aiFailChart'), 'snapshot failed')
+      const defX = Math.round((slide.widthPx - w) / 2)
+      const defY = Math.round((slide.heightPx - h) / 2)
+      const r = await window.slidesApi.addEchart({
+        slideIndex: idx,
+        fitWidthPx: access.fitWidthPx,
+        xPx:
+          Number.isFinite(Number(call.input.x)) && call.input.x != null
+            ? Number(call.input.x)
+            : defX,
+        yPx:
+          Number.isFinite(Number(call.input.y)) && call.input.y != null
+            ? Number(call.input.y)
+            : defY,
+        wPx: w,
+        hPx: h,
+        base64: m[1],
+        optionJson: stringifyOption(revived.option),
+        groupId: String(call.input.groupId),
+        ...(call.input.title ? { title: String(call.input.title) } : {}),
+      })
+      if (!r || !('slide' in r) || !r.slide) return fail(t('aiFailChart'), 'Insertion failed')
+      access.applySlide(idx, r.slide)
+      const sampleNote = call.input.dataSource === 'sample' ? SAMPLE_DATA_NOTE : ''
+      return {
+        output: `Inserted an ECharts ${String(call.input.groupId)} chart on page ${idx + 1}, element id=${r.sourceId}.${sampleNote}`,
         mutated: true,
         summary: t('aiSumChart', { n: idx + 1 }),
       }

@@ -525,6 +525,62 @@ export async function buildAiChartEdit(
 
 /// AI add_image: same visual pipeline as the picker-based insert, sized
 /// from the measured natural dimensions.
+export interface AddEchartOperation {
+  op: 'add_echart'
+  sheetId: string
+  anchorCell: string
+  optionJson: string
+  groupId: string
+  title?: string | undefined
+  code?: string | null | undefined
+  data?:
+    | {
+        columns: string[]
+        rows: Array<Array<string | number | null>>
+      }
+    | null
+    | undefined
+}
+
+/** AI add_echart:快照图 + option/code/数据表随 journal(gateway 保存落 sidecar) */
+export function insertAiEchartVisual(
+  ctx: VisualActionContext,
+  runtime: UniverRuntime,
+  state: LazyWorkbookState,
+  op: AddEchartOperation,
+  posterDataUrl: string,
+): void {
+  const workbook = runtime.univerAPI.getActiveWorkbook()
+  if (!workbook?.getSheetBySheetId(op.sheetId)) throw new Error(`Unknown sheet: ${op.sheetId}`)
+  const base = parseAddress(op.anchorCell)
+  const visual: WorkbookVisualObject = {
+    id: `added-echart-${Date.now().toString(36)}-${state.editJournal.visualAdds.length + 1}`,
+    sheetId: op.sheetId,
+    kind: 'image',
+    anchor: {
+      fromRow: base.row,
+      fromColumn: base.column,
+      fromRowOffset: 0,
+      fromColumnOffset: 0,
+      toRow: base.row + 16,
+      toColumn: base.column + 8,
+      toRowOffset: 0,
+      toColumnOffset: 0,
+    },
+    mediaType: 'image/png',
+    mediaDataUrl: posterDataUrl,
+    name: op.title ? `${op.title} (ECharts)` : 'ECharts 图表',
+    echartMeta: {
+      optionJson: op.optionJson,
+      code: op.code ?? null,
+      groupId: op.groupId,
+      data: op.data ?? null,
+    },
+  } as WorkbookVisualObject
+  pushVisualAddUndo(ctx, runtime, state, visual)
+  queueCtxVisualInstall(ctx, runtime)
+}
+
 export function insertAiImageVisual(
   ctx: VisualActionContext,
   runtime: UniverRuntime,

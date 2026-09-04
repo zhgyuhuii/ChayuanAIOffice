@@ -249,6 +249,27 @@ const addImageSchema = z.object({
   anchorCell: cellAddressSchema,
 })
 
+// ECharts 扩展图表(AI 公共设计器):optionJson 由渲染层沙箱执行出图,
+// 海报图随 visual 显示;保存时写 xl/echarts sidecar + descr 指针
+export const addEchartSchema = z.object({
+  op: z.literal('add_echart'),
+  sheetId: z.string().min(1),
+  anchorCell: cellAddressSchema,
+  groupId: z.string().min(1).max(64),
+  title: z.string().max(255).optional(),
+  /** 函数安全序列化的 ECharts option(__chartkit_fn__ 标记) */
+  optionJson: z.string().min(1),
+  /** 沙箱可重放源码(AI 生成的原始 JS) */
+  code: z.string().max(200_000).nullable().optional(),
+  data: z
+    .object({
+      columns: z.array(z.string()),
+      rows: z.array(z.array(z.union([z.string(), z.number(), z.null()]))),
+    })
+    .nullable()
+    .optional(),
+})
+
 // Creates a real Excel table (ListObject) over a data range (imported
 // workbooks only). The range's first row must hold the column headers —
 // non-empty and unique; they become the table's column names in the file.
@@ -905,6 +926,7 @@ export type AddChartOperation = z.infer<typeof addChartSchema>
 export type AddShapeOperation = z.infer<typeof addShapeSchema>
 export type EditShapeOperation = z.infer<typeof editShapeSchema>
 export type AddImageOperation = z.infer<typeof addImageSchema>
+export type AddEchartOperation = z.infer<typeof addEchartSchema>
 export type AddTableOperation = z.infer<typeof addTableSchema>
 export type AddTableRowOperation = z.infer<typeof addTableRowSchema>
 export type AddTableColumnOperation = z.infer<typeof addTableColumnSchema>
@@ -928,6 +950,7 @@ export type LayoutOperation =
   | AddShapeOperation
   | EditShapeOperation
   | AddImageOperation
+  | AddEchartOperation
   | AddTableOperation
   | AddTableRowOperation
   | AddTableColumnOperation
@@ -1743,6 +1766,8 @@ export function formatOpLabel(op: FormatRangeOperation): string {
 
 export function layoutOpLabel(op: LayoutOperation): string {
   switch (op.op) {
+    case 'add_echart':
+      return `Insert ECharts ${op.groupId} chart at ${op.anchorCell}`
     case 'delete_visual':
       return `Delete visual ${op.visualId}`
     case 'delete_table':

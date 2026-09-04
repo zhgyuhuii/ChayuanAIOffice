@@ -253,7 +253,8 @@ export function proposeOperations(
         if (
           operation.op === 'add_chart' ||
           operation.op === 'add_shape' ||
-          operation.op === 'add_image'
+          operation.op === 'add_image' ||
+          operation.op === 'add_echart'
         ) {
           if (
             operation.op === 'add_image' &&

@@ -281,6 +281,7 @@ import {
   handleInsertScreenshot,
   handleRecommendedCharts as handleRecommendedChartsImpl,
   insertAiChartVisual as insertAiChartVisualImpl,
+  insertAiEchartVisual as insertAiEchartVisualImpl,
   insertAiImageVisual as insertAiImageVisualImpl,
   insertAiShapeVisual as insertAiShapeVisualImpl,
   type VisualActionContext,
@@ -4207,6 +4208,10 @@ export function App(): React.JSX.Element {
               note: op.text,
             })
           }
+        } else if (op.op === 'add_echart') {
+          // AI add_echart:海报快照由渲染层生成(沙箱出图),元数据随 journal
+          const poster = await renderEchartPoster(op.optionJson, op.title)
+          insertAiEchartVisualImpl(visualContext(), runtime, state, op, poster)
         } else {
           chartEditRef.current(
             op.chartPath,
@@ -5137,6 +5142,15 @@ export function App(): React.JSX.Element {
     const id = selectedVisual?.id
     if (!id) return
     applyShapeEditImpl(visualSyncContext(), id, { picture })
+  }
+
+  const renderEchartPoster = async (optionJson: string, title?: string): Promise<string> => {
+    const { parseOptionSmart } = await import('@chatoffice/chart-kit/revive')
+    const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
+    const option = await parseOptionSmart(optionJson)
+    const url = await renderOptionSnapshot(option, { width: 640, height: 400 })
+    void title
+    return url
   }
 
   const handlePictureMediaReplace = (mediaReplace: {
