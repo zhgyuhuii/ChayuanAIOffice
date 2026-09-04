@@ -395,7 +395,7 @@ export function ChatPanel({
     const text = input.trim()
     if (!text && attachments.length === 0) return
     let session = store.active
-    if (!session || session.messages.length > 0) {
+    if (!session) {
       session = store.createSession(activeScope)
       // a fresh session inherits the composer's pending choices
       if (draftModel || draftMode !== 'default') {

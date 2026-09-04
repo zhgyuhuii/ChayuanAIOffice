@@ -150,10 +150,11 @@ function makeBridge(): { bridge: HomeAgentBridge; wireRequests: unknown[] } {
   return { bridge, wireRequests }
 }
 
-async function until(fn: () => boolean): Promise<void> {
+async function until(fn: () => boolean, what = 'condition'): Promise<void> {
   for (let i = 0; i < 100 && !fn(); i++) {
     await new Promise((r) => setTimeout(r, 10))
   }
+  if (!fn()) throw new Error(`timed out waiting for: ${what}`)
 }
 
 describe('controller session-scoped model + mode', () => {
@@ -183,6 +184,30 @@ describe('controller session-scoped model + mode', () => {
     })
     controller.send('s1', [], 'hello', [])
     expect(session.messages.at(-1)!.card).toEqual({ kind: 'setup-required' })
+  })
+
+  it('the second turn on the same session carries the first exchange as context', async () => {
+    const { bridge, wireRequests } = makeBridge()
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.send('s1', [], '第一问', [], { model: { profileId: 'p', modelId: 'm' } })
+    await until(() => session.messages.at(-1)?.text === '好的')
+    // follow-up on the same session: the wire request replays the prior turns
+    controller.send(
+      's1',
+      session.messages.filter((m) => m.text),
+      '第二问',
+      [],
+      { model: { profileId: 'p', modelId: 'm' } },
+    )
+    await until(() => (wireRequests as unknown[]).length === 2, 'second wire request')
+    const second = wireRequests[1] as { messages: Array<{ role: string; text: string }> }
+    const wireTexts = second.messages.map((m) => m.text)
+    expect(wireTexts).toContain('第一问')
+    expect(wireTexts).toContain('好的')
+    expect(wireTexts[second.messages.length - 1]).toBe('第二问')
   })
 })
 
