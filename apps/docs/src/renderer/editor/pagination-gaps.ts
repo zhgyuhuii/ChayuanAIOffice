@@ -591,7 +591,10 @@ export function syncPageWidthBands(
 }
 
 /** live vruler sync targets (latest anchor/wrap/zoom of the last pass) */
-const vrulerState = new WeakMap<HTMLElement, { anchor: HTMLElement; wrap: HTMLElement; zoom: number }>()
+const vrulerState = new WeakMap<
+  HTMLElement,
+  { anchor: HTMLElement; wrap: HTMLElement; zoom: number }
+>()
 const vrulerObservers = new WeakMap<HTMLElement, ResizeObserver>()
 
 /**
@@ -645,6 +648,10 @@ export function syncVRulerPages(
       const seg = document.createElement('div')
       seg.className = 'vruler vruler-page'
       seg.style.height = `${p.height}px`
+      // full-height + bottom-margin reference for repositionVRuler's collapsed
+      // seam clipping (style.height itself shrinks while collapsed)
+      seg.dataset.h = String(p.height)
+      seg.dataset.mb = String(p.marginBottom)
       const zt = document.createElement('div')
       zt.className = 'vruler-zone vruler-zone-top'
       zt.style.height = `${p.marginTop}px`
@@ -717,7 +724,9 @@ export function syncTableGapBands(wrap: HTMLElement, zoomFactor: number): void {
     const h = r.height / zoomFactor
     return { top, h, mb, mt, collapsed }
   })
-  const sig = geom.map((p) => `${Math.round(p.top)}:${Math.round(p.h)}:${p.collapsed ? 1 : 0}`).join(',')
+  const sig = geom
+    .map((p) => `${Math.round(p.top)}:${Math.round(p.h)}:${p.collapsed ? 1 : 0}`)
+    .join(',')
   if (layer.dataset.sig === sig) return
   layer.dataset.sig = sig
   layer.textContent = ''
@@ -761,16 +770,26 @@ function toggleGapCollapse(root: ParentNode): void {
   // refresh the full-width table-gap overlay bands to line/band mode right
   // away (height changes may be absorbed by the min-height clamp, so the
   // ResizeObserver alone can lag)
-  const wrap =
-    root instanceof Element ? (root.closest('.page-wrap') as HTMLElement | null) : null
+  const wrap = root instanceof Element ? (root.closest('.page-wrap') as HTMLElement | null) : null
   const host = wrap ?? (root as HTMLElement)
   const layer = host.querySelector(':scope > .table-gap-overlays') as HTMLElement | null
   if (layer) syncTableGapBands(host, Number(layer.dataset.zoom) || 1)
+  // re-glue the vertical ruler segments to the moved page boundaries right
+  // away: the wrap's min-height clamp can absorb the height change entirely,
+  // so the wrap ResizeObserver may never fire and the segments would stay at
+  // their pre-toggle positions (visibly detached from the pages)
+  if (wrap) {
+    const vrAnchor = wrap.previousElementSibling as HTMLElement | null
+    if (vrAnchor?.classList.contains('vruler-anchor')) repositionVRuler(vrAnchor, wrap)
+  }
 }
 
 /** glue segment tops to the current page boundaries (cheap, layout-safe);
- *  returns the joined rounded tops, or null when there is nothing to place */
-function repositionVRuler(anchor: HTMLElement, wrap: HTMLElement): string | null {
+ *  returns the joined rounded tops, or null when there is nothing to place.
+ *  A segment is glued to its page's PAPER TOP — the gray band's bottom edge —
+ *  which is the gap's own bottom minus the next page's top-margin band (that
+ *  var reads 0 while collapsed, when the margins fold into the thin line). */
+export function repositionVRuler(anchor: HTMLElement, wrap: HTMLElement): string | null {
   const layer = anchor.querySelector(':scope > .vruler-ext') as HTMLElement | null
   if (!layer) return null
   const segs = Array.from(layer.children) as HTMLElement[]
@@ -779,17 +798,41 @@ function repositionVRuler(anchor: HTMLElement, wrap: HTMLElement): string | null
   const wr = wrap.getBoundingClientRect()
   // only real page gaps: zero-height cut markers are in-table break hints, not
   // paper boundaries (page-gap-table rows carry .page-gap and do count)
-  const bottoms = Array.from(wrap.querySelectorAll('.page-gap'))
-    .map((g) => g.getBoundingClientRect().bottom)
-    .sort((a, b) => a - b)
-    .slice(0, segs.length)
+  const seams = Array.from(wrap.querySelectorAll('.page-gap'))
+    .map((g) => {
+      const r = g.getBoundingClientRect()
+      // inline vars first (gap widgets always carry them); computed as fallback
+      const gEl = g as HTMLElement
+      const varOf = (name: string) =>
+        parseFloat(
+          gEl.style.getPropertyValue(name) || getComputedStyle(g).getPropertyValue(name),
+        ) || 0
+      const mt = varOf('--gap-mt')
+      const mb = varOf('--gap-mb')
+      // paper top of the page starting at this gap = gray band bottom edge =
+      // gap bottom − that page's top-margin band (0 while collapsed); the gap's
+      // own top sits mb px above the PREVIOUS page's paper bottom edge
+      return {
+        top: (r.top - wr.top) / zoom + mb,
+        paperTop: (r.bottom - wr.top) / zoom - mt,
+      }
+    })
+    .sort((a, b) => a.paperTop - b.paperTop)
   let sig = ''
   segs.forEach((seg, i) => {
-    const b = bottoms[i]
-    if (b === undefined) return
-    const top = (b - wr.top) / zoom
-    seg.style.top = `${top}px`
-    sig += `${Math.round(top)},`
+    const s = seams[i]
+    if (s === undefined) return
+    seg.style.top = `${s.paperTop}px`
+    // collapsed seams sit closer together than a full page: clip each segment
+    // at the next seam (re-pinning its bottom margin zone) so folded-away
+    // whitespace doesn't stack rulers; expanded pages never reach the limit
+    const full = Number(seg.dataset.h) || parseFloat(seg.style.height) || 0
+    const limit = seams[i + 1]?.top
+    const h = limit != null ? Math.min(full, Math.max(0, limit - s.paperTop)) : full
+    seg.style.height = `${h}px`
+    const zb = seg.querySelector<HTMLElement>(':scope > .vruler-zone-bottom')
+    if (zb) zb.style.top = `${h - (Number(seg.dataset.mb) || 0)}px`
+    sig += `${Math.round(s.paperTop)},${Math.round(h)},`
   })
   return sig
 }
@@ -1069,9 +1112,7 @@ export function alignGapHfStrips(
   secLeftPx: number[] | number,
   factor: number,
 ): void {
-  const shared = Array.isArray(secLeftPx)
-    ? (secLeftPx[0] ?? 0)
-    : (secLeftPx as number)
+  const shared = Array.isArray(secLeftPx) ? (secLeftPx[0] ?? 0) : (secLeftPx as number)
   for (const el of Array.from(pm.querySelectorAll<HTMLElement>('.page-gap-hf'))) {
     // widget DOM reused from an equal-width era still carries the stylesheet
     // centering (left:50% + translateX(-50%)): pin it before measuring, or the
@@ -1079,7 +1120,8 @@ export function alignGapHfStrips(
     if (el.style.transform !== 'none') el.style.transform = 'none'
     if (!el.style.left) el.style.left = '0px'
     const secIdx = Number(el.dataset.sec)
-    const bodyLeft = Array.isArray(secLeftPx) && Number.isInteger(secIdx) ? (secLeftPx[secIdx] ?? shared) : shared
+    const bodyLeft =
+      Array.isArray(secLeftPx) && Number.isInteger(secIdx) ? (secLeftPx[secIdx] ?? shared) : shared
     const target = pm.getBoundingClientRect().left + bodyLeft * factor
     const delta = (target - el.getBoundingClientRect().left) / factor
     if (Math.abs(delta) < 0.5) continue

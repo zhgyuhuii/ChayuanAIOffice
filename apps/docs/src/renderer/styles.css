@@ -62,7 +62,9 @@
   --docs-pv-canvas: #525659;
   --docs-overlay: rgb(0 0 0 / 50%);
   --docs-page-shadow: 0 1px 3px rgb(0 0 0 / 28%), 0 4px 16px rgb(0 0 0 / 10%);
-  --docs-gap-inset: inset 0 8px 8px -8px rgb(0 0 0 / 35%), inset 0 -3px 3px -3px rgb(0 0 0 / 18%);
+  /* WPS-like inter-page band: uniform canvas gray with only a thin shade right
+     under/above the paper edges — crisp edges, no gradient, no spill onto paper */
+  --docs-gap-inset: inset 0 2px 3px -1px rgb(0 0 0 / 16%), inset 0 -2px 3px -1px rgb(0 0 0 / 12%);
   --docs-shadow-menu: 0 8px 24px rgb(0 0 0 / 18%);
   --docs-shadow-ctx: 0 8px 28px rgb(0 0 0 / 22%);
   --docs-shadow-modal: 0 3px 30px rgb(0 0 0 / 8%);
@@ -202,7 +204,7 @@
   --docs-pv-canvas: #1f1f1f;
   --docs-overlay: rgb(0 0 0 / 55%);
   --docs-page-shadow: 0 1px 3px rgb(0 0 0 / 60%), 0 4px 16px rgb(0 0 0 / 40%);
-  --docs-gap-inset: inset 0 8px 8px -8px rgb(0 0 0 / 65%), inset 0 -3px 3px -3px rgb(0 0 0 / 40%);
+  --docs-gap-inset: inset 0 2px 3px -1px rgb(0 0 0 / 30%), inset 0 -2px 3px -1px rgb(0 0 0 / 22%);
   --docs-shadow-menu: 0 8px 24px rgb(0 0 0 / 55%);
   --docs-shadow-ctx: 0 8px 28px rgb(0 0 0 / 60%);
   --docs-shadow-modal: 0 20px 50px rgb(0 0 0 / 65%);
@@ -273,7 +275,7 @@
     --docs-pv-canvas: #1f1f1f;
     --docs-overlay: rgb(0 0 0 / 55%);
     --docs-page-shadow: 0 1px 3px rgb(0 0 0 / 60%), 0 4px 16px rgb(0 0 0 / 40%);
-    --docs-gap-inset: inset 0 8px 8px -8px rgb(0 0 0 / 65%), inset 0 -3px 3px -3px rgb(0 0 0 / 40%);
+    --docs-gap-inset: inset 0 2px 3px -1px rgb(0 0 0 / 30%), inset 0 -2px 3px -1px rgb(0 0 0 / 22%);
     --docs-shadow-menu: 0 8px 24px rgb(0 0 0 / 55%);
     --docs-shadow-ctx: 0 8px 28px rgb(0 0 0 / 60%);
     --docs-shadow-modal: 0 20px 50px rgb(0 0 0 / 65%);
@@ -3297,15 +3299,11 @@ th.cell-rev-del {
   left: 0;
   right: 0;
   background: var(--canvas);
-  /* page-edge shadows mirror --docs-page-shadow so the boundary reads as two
-     separate sheets with a real gap between them (Word), not one glued strip;
-     band top = previous page's paper bottom, band bottom = next page's top */
-  box-shadow:
-    0 -2px 4px rgb(0 0 0 / 22%),
-    0 -6px 14px rgb(0 0 0 / 12%),
-    0 2px 4px rgb(0 0 0 / 26%),
-    0 6px 18px rgb(0 0 0 / 10%),
-    var(--docs-gap-inset);
+  /* WPS inter-page band: flat canvas gray, crisp paper edges; only a thin
+     inset shade right under the upper page's edge and above the lower page's
+     edge reads as two separate sheets — no outer shadows (they blurred onto
+     the paper margins as a fuzzy halo) */
+  box-shadow: var(--docs-gap-inset);
   cursor: pointer;
 }
 
@@ -3369,12 +3367,8 @@ th.cell-rev-del {
   pointer-events: auto;
   cursor: pointer;
   background: var(--canvas);
-  box-shadow:
-    0 -2px 4px rgb(0 0 0 / 22%),
-    0 -6px 14px rgb(0 0 0 / 12%),
-    0 2px 4px rgb(0 0 0 / 26%),
-    0 6px 18px rgb(0 0 0 / 10%),
-    var(--docs-gap-inset);
+  /* same WPS treatment as .page-gap::before: flat band, thin inset edge shade */
+  box-shadow: var(--docs-gap-inset);
 }
 
 .table-gap-line {
@@ -3438,9 +3432,9 @@ th.cell-rev-del {
     var(--canvas) var(--gap-mb, 96px) calc(var(--gap-mb, 96px) + var(--gap-band, 28px)),
     var(--page-bg, var(--docs-paper)) calc(var(--gap-mb, 96px) + var(--gap-band, 28px)) 100%
   );
-  box-shadow:
-    0 -2px 6px rgb(0 0 0 / 10%),
-    0 2px 8px rgb(0 0 0 / 12%);
+  /* standalone look (the full-width overlay usually replaces it) matches
+     .page-gap::before: thin inset edge shade only */
+  box-shadow: var(--docs-gap-inset);
   cursor: pointer;
 }
 

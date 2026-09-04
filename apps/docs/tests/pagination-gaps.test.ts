@@ -3,6 +3,7 @@ import {
   GAP_BAND,
   alignGapHfStrips,
   makeGapEl,
+  repositionVRuler,
   syncCutOverlays,
   syncPhantomRowspans,
   clampCellBoxTops,
@@ -272,5 +273,87 @@ describe('alignGapHfStrips', () => {
     alignGapHfStrips(pm, 96, 1)
     expect(strip.style.left).toBe(left)
     expect(strip.getBoundingClientRect().left).toBeCloseTo(96, 1)
+  })
+})
+
+describe('repositionVRuler (segment ↔ page gluing)', () => {
+  const rectAt = (top: number, height: number) =>
+    ({ top, bottom: top + height, height, width: 800 }) as DOMRect
+  const segOf = (h: number, mb: number): HTMLElement => {
+    const seg = document.createElement('div')
+    seg.className = 'vruler vruler-page'
+    seg.style.height = `${h}px`
+    seg.dataset.h = String(h)
+    seg.dataset.mb = String(mb)
+    const zb = document.createElement('div')
+    zb.className = 'vruler-zone vruler-zone-bottom'
+    zb.style.top = `${h - mb}px`
+    seg.appendChild(zb)
+    return seg
+  }
+  /** wrap with gap widgets at the given rects (their inline --gap-* come from makeGapEl);
+   *  anchor with one segment per gap after the first, like syncVRulerPages builds */
+  const rig = (gaps: Array<{ top: number; h: number; mt: number; mb: number }>, zoom = 1) => {
+    const wrap = document.createElement('div')
+    for (const g of gaps) {
+      const el = makeGapEl({ ...m, marginTop: g.mt, marginBottom: g.mb }, 'block')
+      el.getBoundingClientRect = () => rectAt(g.top * zoom, g.h * zoom)
+      wrap.appendChild(el)
+    }
+    wrap.getBoundingClientRect = () => rectAt(0, 6000 * zoom)
+    const anchor = document.createElement('div')
+    anchor.className = 'vruler-anchor'
+    const layer = document.createElement('div')
+    layer.className = 'vruler-ext'
+    layer.dataset.zoom = String(zoom)
+    // gaps + 1 pages → one segment per page after the first (= gaps.length)
+    for (let i = 0; i < gaps.length; i++) layer.appendChild(segOf(1122.5, 96))
+    anchor.appendChild(layer)
+    return { wrap, anchor, layer }
+  }
+
+  it('expanded: tops land on the gray band bottom (paper top), not the gap bottom', () => {
+    // gap = prev bottom margin 98 + band 28 + next top margin 96 = 222
+    // (geometry mirrors a real A4 doc: page-2 paper spans [1151, 2274.1])
+    const { wrap, anchor, layer } = rig([
+      { top: 1025, h: 222, mt: 96, mb: 98 },
+      { top: 2176.1, h: 222, mt: 96, mb: 98 },
+    ])
+    expect(repositionVRuler(anchor, wrap)).not.toBeNull()
+    const segs = Array.from(layer.children) as HTMLElement[]
+    // band bottom = gap bottom − 96 (the gap bottom includes the next top margin)
+    expect(segs[0].style.top).toBe('1151px')
+    expect(segs[1].style.top).toBe('2302.1px')
+    // full height kept: an expanded page never reaches the next paper bottom
+    expect(segs[0].style.height).toBe('1122.5px')
+  })
+
+  it('collapsed: tops follow the folded seam and segments clip at the next seam', () => {
+    // collapsed gap = 14px line, margins folded (--gap-mt/--gap-mb read 0)
+    const { wrap, anchor, layer } = rig([
+      { top: 1025, h: 14, mt: 0, mb: 0 },
+      { top: 1968.1, h: 14, mt: 0, mb: 0 },
+    ])
+    repositionVRuler(anchor, wrap)
+    const segs = Array.from(layer.children) as HTMLElement[]
+    expect(segs[0].style.top).toBe('1039px')
+    expect(segs[1].style.top).toBe('1982.1px')
+    // seam-to-seam 929.1px < full page 1122.5px: clipped, bottom zone re-pinned
+    expect(parseFloat(segs[0].style.height)).toBeCloseTo(929.1, 5)
+    const zb = segs[0].querySelector('.vruler-zone-bottom') as HTMLElement
+    expect(parseFloat(zb.style.top)).toBeCloseTo(833.1, 5)
+  })
+
+  it('normalizes zoom: screen-space rects divide back to unzoomed page coordinates', () => {
+    const { wrap, anchor, layer } = rig(
+      [
+        { top: 1025, h: 222, mt: 96, mb: 98 },
+        { top: 2176.1, h: 222, mt: 96, mb: 98 },
+      ],
+      2,
+    )
+    repositionVRuler(anchor, wrap)
+    const segs = Array.from(layer.children) as HTMLElement[]
+    expect(segs[0].style.top).toBe('1151px')
   })
 })
