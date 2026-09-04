@@ -12,6 +12,7 @@ import { escapeXmlAttr, escapeXmlText, creationIdXml } from './xml-utils'
 import { relsPathFor } from './zip'
 import { appendRawElements, type OpenedPptx } from './index'
 import { nextCNvPrId } from './insert'
+import { buildChartWorkbookXlsxBase64 } from './chart-workbook'
 
 export type NewChartKind =
   | 'bar'
@@ -104,7 +105,7 @@ function axTitleXml(text: string, vertical: boolean): string {
 }
 
 /** Full c:chartSpace part XML. */
-export function buildChartSpaceXml(opts: NewChartOptions): string {
+export function buildChartSpaceXml(opts: NewChartOptions, externalDataRid?: string): string {
   const rows = opts.categories.length
   const dLbls = opts.dataLabels ? DLBLS_XML : ''
   const grid = opts.gridlines ? '<c:majorGridlines/>' : ''
@@ -285,6 +286,9 @@ export function buildChartSpaceXml(opts: NewChartOptions): string {
     `<c:chart>${title}${view3D}<c:plotArea><c:layout/>${plot}</c:plotArea>` +
     legend +
     '<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>' +
+    (externalDataRid
+      ? `<c:externalData r:id="${externalDataRid}"><c:autoUpdate val="0"/></c:externalData>`
+      : '') +
     '</c:chartSpace>'
   )
 }
@@ -309,7 +313,22 @@ export function addChart(
     if (m) maxNum = Math.max(maxNum, Number(m[1]))
   }
   const chartPath = `ppt/charts/chart${maxNum + 1}.xml`
-  archive.entries.set(chartPath, Buffer.from(buildChartSpaceXml(opts), 'utf8'))
+  // 内嵌工作簿:PowerPoint/WPS "编辑数据"的数据源(P3;rel 类型同 docx)
+  const wbBase64 = buildChartWorkbookXlsxBase64(opts.categories, opts.series)
+  const wbPath = `ppt/charts/embeddings/Microsoft_Excel_Worksheet${maxNum + 1}.xlsx`
+  archive.entries.set(wbPath, Buffer.from(wbBase64, 'base64'))
+  const chartRelsPath = `ppt/charts/_rels/chart${maxNum + 1}.xml.rels`
+  archive.entries.set(
+    chartRelsPath,
+    Buffer.from(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+        `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/package" Target="embeddings/Microsoft_Excel_Worksheet${maxNum + 1}.xlsx"/>` +
+        '</Relationships>',
+      'utf8',
+    ),
+  )
+  archive.entries.set(chartPath, Buffer.from(buildChartSpaceXml(opts, 'rId1'), 'utf8'))
 
   // 2) [Content_Types].xml Override
   const ctPath = '[Content_Types].xml'
