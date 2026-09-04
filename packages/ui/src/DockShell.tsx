@@ -354,22 +354,11 @@ export function DockShell({
   const [resizing, setResizing] = useState(false)
   /** live tear-off drag: the panel slot renders as a floating ghost at rect */
   const [tear, setTear] = useState<{ rect: DockRect; snap: DockPosition | null } | null>(null)
-  // a drag whose pointerup was swallowed by native chrome (window resize
-  // border, OS gestures) would otherwise freeze the ghost forever — clear it
-  // as soon as the window loses focus or the tab hides
-  useEffect(() => {
-    if (!tear) return
-    const clear = () => {
-      tearRef.current = null
-      setTear(null)
-    }
-    window.addEventListener('blur', clear)
-    document.addEventListener('visibilitychange', clear)
-    return () => {
-      window.removeEventListener('blur', clear)
-      document.removeEventListener('visibilitychange', clear)
-    }
-  }, [tear])
+  // A drag whose pointerup was swallowed by native chrome (window resize
+  // border, OS gestures) never reaches the drop handler. Recovery is handled
+  // inside the drag itself (bare-move detection + blur commit — see
+  // startHeaderDrag), not by clearing the tear here.
+
   /** mirror of `tear` for the drag cleanup — committing inside a state updater
       would fire twice under StrictMode, so the drop reads the ref instead */
   const tearRef = useRef<typeof tear>(null)
@@ -572,10 +561,44 @@ export function DockShell({
         setTear(null)
       }
     }
+    /** idempotent drop: commits the armed snap / carried rect exactly once.
+     * Beyond pointerup, two swallowed-release paths funnel here too: a bare
+     * pointermove (buttons=0 — the OS ate the release but still delivers the
+     * next move) and window blur (release landed on native chrome like the
+     * resize border or taskbar, or the window lost focus mid-drag). Committing
+     * the last shown intent beats discarding the drag: teleporting the panel
+     * back to its old dock reads to the user as "the panel vanished from where
+     * I dropped it". visibilitychange is deliberately NOT a trigger — an
+     * occluded WebContentsView flaps visibility while the button is still
+     * held (macOS occlusion), which would commit mid-gesture. */
+    let committed = false
+    const commit = () => {
+      if (committed) return
+      committed = true
+      window.removeEventListener('keydown', onKey, true)
+      window.removeEventListener('blur', commit)
+      const dropped = tearRef.current
+      tearRef.current = null
+      setTear(null)
+      if (dropped) {
+        setState((prev) =>
+          dropped.snap
+            ? { ...prev, position: dropped.snap as DockPosition, maximized: false }
+            : { ...prev, position: 'float', floatRect: dropped.rect, maximized: false },
+        )
+      }
+    }
+    window.addEventListener('blur', commit)
     trackPointer(
       e,
       (ev) => {
-        if (aborted) return
+        if (aborted || committed) return
+        if (active && ev.buttons === 0) {
+          // the button came up without a pointerup (native chrome swallowed
+          // it) — treat this move as the drop
+          commit()
+          return
+        }
         if (!active && Math.hypot(ev.clientX - startX, ev.clientY - startY) < DRAG_THRESHOLD) {
           return
         }
@@ -609,19 +632,7 @@ export function DockShell({
         tearRef.current = next
         setTear(next)
       },
-      () => {
-        window.removeEventListener('keydown', onKey, true)
-        const dropped = tearRef.current
-        tearRef.current = null
-        setTear(null)
-        if (dropped) {
-          setState((prev) =>
-            dropped.snap
-              ? { ...prev, position: dropped.snap as DockPosition, maximized: false }
-              : { ...prev, position: 'float', floatRect: dropped.rect, maximized: false },
-          )
-        }
-      },
+      () => commit(),
     )
   }
 
@@ -738,9 +749,7 @@ export function DockShell({
         <div
           className="dockshell-slot"
           style={
-            position === 'bottom'
-              ? { height: `${dockedSize}px` }
-              : { width: `${dockedSize}px` }
+            position === 'bottom' ? { height: `${dockedSize}px` } : { width: `${dockedSize}px` }
           }
           aria-hidden
         />

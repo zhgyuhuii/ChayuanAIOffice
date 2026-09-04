@@ -4,6 +4,9 @@
  * freezes during the drag (editor never reflows mid-gesture), the snap
  * preview stays above the carried panel, negative edge distances still arm
  * (pressing past an edge must not disarm it), and the drop commits.
+ * Swallowed-release recovery is covered too: a bare pointermove (buttons=0)
+ * or a window blur mid-drag commits the armed snap / carried rect instead of
+ * discarding the drag, and a late pointerup never double-commits.
  */
 import { beforeEach, describe, expect, it } from 'vitest'
 import { act, createElement } from 'react'
@@ -19,48 +22,40 @@ beforeEach(() => {
     removeItem: (k: string) => store.delete(k),
   }
   // jsdom lacks ResizeObserver (DockShell re-clamps on shell resize)
-  ;(globalThis as Record<string, unknown>).ResizeObserver =
-    class {
-      observe(): void {}
-      unobserve(): void {}
-      disconnect(): void {}
-    }
+  ;(globalThis as Record<string, unknown>).ResizeObserver = class {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
 })
 
 const SHELL = { left: 0, top: 0, width: 1280, height: 800 }
 
 let host: HTMLDivElement
 let root: Root | null = null
-let chromeRef: DockChrome | null = null
 
 function renderDock(): void {
-  chromeRef = null
   act(() => {
     root!.render(
-      createElement(
-        DockShell,
-        {
-          storageKey: 'test-dock-drag',
-          open: true,
-          onOpenChange: () => {},
-          labels: {
-            panelTitle: 'AI',
-            dockLeft: 'left',
-            dockRight: 'right',
-            dockBottom: 'bottom',
-            float: 'float',
-            maximize: 'max',
-            restore: 'restore',
-            collapse: 'close',
-            layoutMenu: 'layout',
-          },
-          renderPanel: (chrome: DockChrome) => {
-            chromeRef = chrome
-            return createElement('div', { ...chrome.dragProps, 'data-header': '' }, 'panel')
-          },
-          children: createElement('div', { className: 'editor-stub' }),
+      createElement(DockShell, {
+        storageKey: 'test-dock-drag',
+        open: true,
+        onOpenChange: () => {},
+        labels: {
+          panelTitle: 'AI',
+          dockLeft: 'left',
+          dockRight: 'right',
+          dockBottom: 'bottom',
+          float: 'float',
+          maximize: 'max',
+          restore: 'restore',
+          collapse: 'close',
+          layoutMenu: 'layout',
         },
-      ),
+        renderPanel: (chrome: DockChrome) =>
+          createElement('div', { ...chrome.dragProps, 'data-header': '' }, 'panel'),
+        children: createElement('div', { className: 'editor-stub' }),
+      }),
     )
   })
 }
@@ -69,7 +64,16 @@ function realRects(): void {
   const rootEl = host.querySelector('.dockshell') as HTMLElement
   const panelEl = host.querySelector('.dockshell-panel') as HTMLElement
   rootEl.getBoundingClientRect = () =>
-    ({ left: SHELL.left, top: SHELL.top, width: SHELL.width, height: SHELL.height, right: 1280, bottom: 800, x: 0, y: 0 }) as DOMRect
+    ({
+      left: SHELL.left,
+      top: SHELL.top,
+      width: SHELL.width,
+      height: SHELL.height,
+      right: 1280,
+      bottom: 800,
+      x: 0,
+      y: 0,
+    }) as DOMRect
   panelEl.getBoundingClientRect = () =>
     ({ left: 0, top: 0, width: 360, height: 800, right: 360, bottom: 800, x: 0, y: 0 }) as DOMRect
 }
@@ -82,9 +86,9 @@ function press(x: number, y: number): void {
   })
 }
 
-function move(x: number, y: number): void {
+function move(x: number, y: number, buttons = 1): void {
   act(() => {
-    window.dispatchEvent(new MouseEvent('pointermove', { clientX: x, clientY: y }))
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: x, clientY: y, buttons }))
   })
 }
 
@@ -146,7 +150,9 @@ describe('DockShell ghost drag', () => {
     move(640, 830) // 30px BELOW the shell bottom (web form: pointer below the iframe)
     expect(host.querySelector('.dockshell-snap-bottom')).toBeTruthy()
     release()
-    expect((host.querySelector('.dockshell') as HTMLElement).classList.contains('pos-bottom')).toBe(true)
+    expect((host.querySelector('.dockshell') as HTMLElement).classList.contains('pos-bottom')).toBe(
+      true,
+    )
   })
 
   it('drops to float at the center with the carried rect persisted', () => {
@@ -159,5 +165,71 @@ describe('DockShell ghost drag', () => {
     const saved = JSON.parse(store.get('test-dock-drag')!)
     expect(saved.position).toBe('float')
     expect(saved.floatRect).toMatchObject({ width: 480, height: 560 })
+  })
+
+  it('commits the armed edge when the release was swallowed (bare move, buttons=0)', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 400)
+    move(640, 776) // bottom zone armed
+    expect(host.querySelector('.dockshell-snap-bottom')).toBeTruthy()
+    // native chrome (resize border / taskbar) ate the pointerup; the next
+    // pointermove arrives with buttons=0 — that move IS the drop
+    move(640, 776, 0)
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('pos-bottom')).toBe(true)
+    expect(after.classList.contains('is-tearing')).toBe(false)
+    expect(JSON.parse(store.get('test-dock-drag')!).position).toBe('bottom')
+    // a late real pointerup must not double-commit
+    release()
+    expect((host.querySelector('.dockshell') as HTMLElement).classList.contains('pos-bottom')).toBe(
+      true,
+    )
+  })
+
+  it('commits the carried rect when the swallowed release drops mid-shell', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 400)
+    move(640, 420, 0) // bare move = swallowed release, no snap armed
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('pos-float')).toBe(true)
+    const saved = JSON.parse(store.get('test-dock-drag')!)
+    expect(saved.position).toBe('float')
+    expect(saved.floatRect).toMatchObject({ width: 480, height: 560 })
+  })
+
+  it('commits the armed edge on window blur instead of discarding the drag', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 776) // bottom armed
+    act(() => {
+      window.dispatchEvent(new window.Event('blur'))
+    })
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('is-tearing')).toBe(false)
+    expect(after.classList.contains('pos-bottom')).toBe(true)
+    expect(JSON.parse(store.get('test-dock-drag')!).position).toBe('bottom')
+    release() // late pointerup: no double-commit
+    expect((host.querySelector('.dockshell') as HTMLElement).classList.contains('pos-bottom')).toBe(
+      true,
+    )
+  })
+
+  it('still aborts cleanly on Escape mid-drag', () => {
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 776) // bottom armed
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    })
+    expect(host.querySelector('.dockshell')!.classList.contains('is-tearing')).toBe(false)
+    release()
+    const saved = JSON.parse(store.get('test-dock-drag')!)
+    expect(saved.position).toBe('left') // aborted: nothing committed
   })
 })

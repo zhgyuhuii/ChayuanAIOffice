@@ -91,7 +91,17 @@ function mount(overrides: Record<string, unknown> = {}) {
 
 function pointer(target: EventTarget, type: string, x: number, y: number) {
   act(() => {
-    target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX: x, clientY: y, button: 0 }))
+    target.dispatchEvent(
+      new MouseEvent(type, {
+        bubbles: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+        // real drags carry buttons=1; a bare move (buttons=0) commits a
+        // swallowed release — the helpers below always mean a held button
+        buttons: type === 'pointerup' ? 0 : 1,
+      }),
+    )
   })
 }
 
