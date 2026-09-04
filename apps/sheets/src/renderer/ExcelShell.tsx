@@ -1393,6 +1393,7 @@ function Ribbon({
                     value: 'chart-labels:category-percent',
                     label:
                       t('appChartElLabelsNamePct') + check(activeLabels === 'category-percent'),
+                    icon: <OptSample>123</OptSample>,
                   },
                 ]
               : []),
@@ -1405,28 +1406,34 @@ function Ribbon({
             {
               value: 'chart-labels:none',
               label: t('appChartElLabelsNone') + check(activeLabels === 'none'),
+              icon: <OptSample>123</OptSample>,
             },
           ]
         : []),
       {
         value: 'chart-legend:right',
         label: t('appChartElLegendRight') + check(activeLegend === 'right'),
+        icon: <TitleRowGlyph />,
       },
       {
         value: 'chart-legend:top',
         label: t('appChartElLegendTop') + check(activeLegend === 'top'),
+        icon: <TitleRowGlyph />,
       },
       {
         value: 'chart-legend:bottom',
         label: t('appChartElLegendBottom') + check(activeLegend === 'bottom'),
+        icon: <TitleRowGlyph />,
       },
       {
         value: 'chart-legend:left',
         label: t('appChartElLegendLeft') + check(activeLegend === 'left'),
+        icon: <TitleRowGlyph />,
       },
       {
         value: 'chart-legend:none',
         label: t('appChartElLegendNone') + check(activeLegend === 'none'),
+        icon: <TitleRowGlyph />,
       },
     ]
     const layoutLabels = t(selectedChart?.isPie ? 'appLayoutLabelsNamePct' : 'appLayoutLabelsValue')
@@ -1702,63 +1709,63 @@ function Ribbon({
               aria-label={t('appChartGridTitle', { type: t('appChartColumn') })}
               onClick={() => onCommand('insert-chart:column')}
             >
-              <ToolSymbol symbol="▮▬" />
+              <ChartThumb kind="column" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartBar') })}
               aria-label={t('appChartGridTitle', { type: t('appChartBar') })}
               onClick={() => onCommand('insert-chart:bar')}
             >
-              <ToolSymbol symbol="▤" />
+              <ChartThumb kind="bar" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartLine') })}
               aria-label={t('appChartGridTitle', { type: t('appChartLine') })}
               onClick={() => onCommand('insert-chart:line')}
             >
-              <ToolSymbol symbol="📈" />
+              <ChartThumb kind="line" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartTypeArea') })}
               aria-label={t('appChartGridTitle', { type: t('appChartTypeArea') })}
               onClick={() => onCommand('insert-chart:area')}
             >
-              <ToolSymbol symbol="◪" />
+              <ChartThumb kind="area" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartPie') })}
               aria-label={t('appChartGridTitle', { type: t('appChartPie') })}
               onClick={() => onCommand('insert-chart:pie')}
             >
-              <ToolSymbol symbol="◔" />
+              <ChartThumb kind="pie" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartScatter') })}
               aria-label={t('appChartGridTitle', { type: t('appChartScatter') })}
               onClick={() => onCommand('insert-chart:scatter')}
             >
-              <ToolSymbol symbol="∴" />
+              <ChartThumb kind="scatter" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartRadar') })}
               aria-label={t('appChartGridTitle', { type: t('appChartRadar') })}
               onClick={() => onCommand('insert-chart:radar')}
             >
-              <ToolSymbol symbol="✳" />
+              <ChartThumb kind="radar" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartDoughnut') })}
               aria-label={t('appChartGridTitle', { type: t('appChartDoughnut') })}
               onClick={() => onCommand('insert-chart:doughnut')}
             >
-              <ToolSymbol symbol="◍" />
+              <ChartThumb kind="doughnut" />
             </button>
             <button
               data-tip={t('appChartGridTitle', { type: t('appChartCombo') })}
               aria-label={t('appChartGridTitle', { type: t('appChartCombo') })}
               onClick={() => onCommand('insert-chart:combo')}
             >
-              <ToolSymbol symbol="𝄜" />
+              <ChartThumb kind="combo" />
             </button>
           </div>
           {largeMenu(
@@ -1769,32 +1776,32 @@ function Ribbon({
               {
                 value: 'insert-pivot-chart:column',
                 label: t('appChartColumn'),
-                icon: <OptSample>▮</OptSample>,
+                icon: <ChartThumb kind="column" size={18} />,
               },
               {
                 value: 'insert-pivot-chart:bar',
                 label: t('appChartBar'),
-                icon: <OptSample>▬</OptSample>,
+                icon: <ChartThumb kind="bar" size={18} />,
               },
               {
                 value: 'insert-pivot-chart:line',
                 label: t('appChartLine'),
-                icon: <OptSample>∿</OptSample>,
+                icon: <ChartThumb kind="line" size={18} />,
               },
               {
                 value: 'insert-pivot-chart:pie',
                 label: t('appChartPie'),
-                icon: <OptSample>◔</OptSample>,
+                icon: <ChartThumb kind="pie" size={18} />,
               },
               {
                 value: 'insert-pivot-chart:doughnut',
                 label: t('appChartDoughnut'),
-                icon: <OptSample>◎</OptSample>,
+                icon: <ChartThumb kind="doughnut" size={18} />,
               },
               {
                 value: 'insert-pivot-chart:radar',
                 label: t('appChartRadar'),
-                icon: <OptSample>✳</OptSample>,
+                icon: <ChartThumb kind="radar" size={18} />,
               },
             ],
           )}
@@ -3657,6 +3664,156 @@ function ZoomGlyph({ pct }: { pct: number }) {
 /** 语言行：目标语言自名字样（WPS 用旗帜, 文字更中性） */
 function LangSample({ code }: { code: string }) {
   return <OptSample>{code}</OptSample>
+}
+
+/** WPS-style colored chart thumbnails (插入·图表网格 + 透视图表菜单共用). */
+const CHART_COLORS = ['#4472C4', '#ED7D31', '#A5A5A5', '#FFC000']
+function ChartThumb({ kind, size = 22 }: { kind: string; size?: number }) {
+  const c = CHART_COLORS
+  const common = {
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    'aria-hidden': true as const,
+  }
+  switch (kind) {
+    case 'column':
+      return (
+        <svg {...common}>
+          <rect x="3" y="12" width="4.4" height="9" rx="0.6" fill={c[0]} />
+          <rect x="9.8" y="6" width="4.4" height="15" rx="0.6" fill={c[1]} />
+          <rect x="16.6" y="9" width="4.4" height="12" rx="0.6" fill={c[2]} />
+        </svg>
+      )
+    case 'bar':
+      return (
+        <svg {...common}>
+          <rect x="3" y="3.4" width="9" height="4.4" rx="0.6" fill={c[0]} />
+          <rect x="3" y="10.2" width="15" height="4.4" rx="0.6" fill={c[1]} />
+          <rect x="3" y="17" width="11" height="4.4" rx="0.6" fill={c[2]} />
+        </svg>
+      )
+    case 'line':
+      return (
+        <svg {...common}>
+          <path
+            d="M3 17.5 9 10.5 14 14 21 5.5"
+            stroke={c[0]}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <circle cx="9" cy="10.5" r="1.4" fill={c[1]} />
+          <circle cx="14" cy="14" r="1.4" fill={c[1]} />
+          <circle cx="21" cy="5.5" r="1.4" fill={c[1]} />
+        </svg>
+      )
+    case 'area':
+      return (
+        <svg {...common}>
+          <path d="M3 17.5 9 10.5 14 14 21 5.5 V21 H3 Z" fill={c[0]} opacity="0.45" />
+          <path
+            d="M3 17.5 9 10.5 14 14 21 5.5"
+            stroke={c[0]}
+            strokeWidth="1.8"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )
+    case 'pie':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" fill={c[0]} />
+          <path d="M12 12 L12 3 A9 9 0 0 1 20.8 15.5 Z" fill={c[1]} />
+          <path d="M12 12 L20.8 15.5 A9 9 0 0 1 8 20.6 Z" fill={c[2]} />
+        </svg>
+      )
+    case 'doughnut':
+      return (
+        <svg {...common}>
+          <circle
+            cx="12"
+            cy="12"
+            r="8.6"
+            stroke={c[0]}
+            strokeWidth="4.6"
+            fill="none"
+            strokeDasharray="54 54"
+            transform="rotate(-90 12 12)"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="8.6"
+            stroke={c[1]}
+            strokeWidth="4.6"
+            fill="none"
+            strokeDasharray="27 54"
+            strokeDashoffset="-54"
+            transform="rotate(-90 12 12)"
+          />
+          <circle
+            cx="12"
+            cy="12"
+            r="8.6"
+            stroke={c[2]}
+            strokeWidth="4.6"
+            fill="none"
+            strokeDasharray="27 54"
+            strokeDashoffset="-81"
+            transform="rotate(-90 12 12)"
+          />
+        </svg>
+      )
+    case 'scatter':
+      return (
+        <svg {...common}>
+          <circle cx="5.5" cy="17.5" r="1.7" fill={c[0]} />
+          <circle cx="9.5" cy="7.5" r="1.7" fill={c[1]} />
+          <circle cx="13" cy="13.5" r="1.7" fill={c[0]} />
+          <circle cx="17.5" cy="9" r="1.7" fill={c[2]} />
+          <circle cx="20.5" cy="16.5" r="1.7" fill={c[1]} />
+        </svg>
+      )
+    case 'radar':
+      return (
+        <svg {...common}>
+          <path
+            d="M12 3.5 19.5 9 17 19H7L4.5 9 Z"
+            stroke={c[0]}
+            strokeWidth="1.6"
+            fill={c[0]}
+            fillOpacity="0.18"
+          />
+          <path
+            d="M12 3.5 12 19 M12 3.5 4.5 9 M12 3.5 19.5 9 M7 19 4.5 9 M17 19 19.5 9 M7 19 17 19"
+            stroke={c[1]}
+            strokeWidth="0.9"
+          />
+        </svg>
+      )
+    case 'combo':
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="12" width="4" height="8.5" rx="0.6" fill={c[0]} />
+          <rect x="10" y="8" width="4" height="12.5" rx="0.6" fill={c[1]} />
+          <rect x="16.5" y="14" width="4" height="6.5" rx="0.6" fill={c[2]} />
+          <path
+            d="M4 9 10.5 5.5 17.5 11 21 7.5"
+            stroke={c[3]}
+            strokeWidth="1.8"
+            fill="none"
+            strokeLinecap="round"
+          />
+        </svg>
+      )
+    default:
+      return <OptSample>▮</OptSample>
+  }
 }
 
 /** 数字格式类别的实例预览（WPS：¥1,230 / 2024/1/1 / 15%…） */
