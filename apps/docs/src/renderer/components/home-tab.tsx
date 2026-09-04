@@ -20,6 +20,7 @@ import { useSystemFontFamilies } from '../system-fonts'
 import { setInactiveSelectionShown } from '../editor/inactive-selection'
 import type { RibbonFormatState } from './ribbon-format-state'
 import { setParagraphDirection, setSelectionAlign } from '../editor/direction'
+import { applyPhoneticGuide, clearPhoneticGuide } from '../editor/ruby'
 import {
   BULLET_LIBRARY,
   COLORS,
@@ -415,6 +416,39 @@ export function HomeTab({
             {markBtn('italic', fs.italic, t('ribbonItalicTip'), <i>I</i>)}
             {markBtn('underline', fs.underline, t('ribbonUnderlineTip'), <u>U</u>)}
             {markBtn('strike', fs.strike, t('ribbonStrikethrough'), <s>ab</s>)}
+            {/* 拼音指南⌄ (WPS 字体组 #11): per-char ruby phonetic guide over the selection */}
+            <div className="rb-split-wrap">
+              <button
+                className="rb-icon"
+                disabled={!canEdit}
+                data-tip={t('ribbonPhoneticTip')}
+                aria-label={t('ribbonPhoneticTip')}
+                onClick={() => setDropdown((v) => (v === 'phonetic' ? null : 'phonetic'))}
+              >
+                <span className="rb-phonetic" aria-hidden="true">
+                  pīn
+                </span>
+                <IconCaret />
+              </button>
+              {dropdown === 'phonetic' && (
+                <div data-rb-panel="" className="rb-menu">
+                  <button
+                    onClick={() => {
+                      if (applyPhoneticGuide(editor)) setDropdown(null)
+                    }}
+                  >
+                    {t('ribbonPhoneticApply')}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (clearPhoneticGuide(editor)) setDropdown(null)
+                    }}
+                  >
+                    {t('ribbonPhoneticClear')}
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               className={`rb-icon ${fs.vertAlign === 'subscript' ? 'active' : ''}`}
               disabled={!canEdit}
