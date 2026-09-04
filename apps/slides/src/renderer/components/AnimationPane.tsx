@@ -31,6 +31,8 @@ const EFFECT_KEY: Record<AnimEffectKind, StringKey> = {
   strips: 'ribbonAnimStrips',
   wedge: 'ribbonAnimWedge',
   wheel: 'ribbonAnimWheel',
+  swivel: 'ribbonAnimSwivel',
+  peekIn: 'ribbonAnimPeekIn',
   pulse: 'paneAnimEffPulse',
   spin: 'paneAnimEffSpin',
   grow: 'paneAnimEffGrow',

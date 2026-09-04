@@ -638,7 +638,9 @@ export type AnimEffectKind =
   | 'stretch'
   | 'strips'
   | 'wedge'
-  | 'wheel' // entrance — classic filter families
+  | 'wheel'
+  | 'swivel'
+  | 'peekIn' // entrance — classic filter families
   | 'pulse'
   | 'spin'
   | 'grow'

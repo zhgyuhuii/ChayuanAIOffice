@@ -338,6 +338,8 @@ const ANIM_EFFECTS: Array<{
   { kind: 'strips', label: 'ribbonAnimStrips', cls: 'entr' },
   { kind: 'wedge', label: 'ribbonAnimWedge', cls: 'entr' },
   { kind: 'wheel', label: 'ribbonAnimWheel', cls: 'entr' },
+  { kind: 'swivel', label: 'ribbonAnimSwivel', cls: 'entr' },
+  { kind: 'peekIn', label: 'ribbonAnimPeekIn', cls: 'entr' },
   { kind: 'pulse', label: 'ribbonAnimPulse', cls: 'emph' },
   { kind: 'spin', label: 'ribbonAnimSpin', cls: 'emph' },
   { kind: 'grow', label: 'ribbonAnimGrowShrink', cls: 'emph' },

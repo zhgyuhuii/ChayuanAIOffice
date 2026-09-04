@@ -506,3 +506,28 @@ describe('animation 效果选项 variants', () => {
     expect(back.map((a) => a.variant)).toEqual(['8', 'vertical', 'top'])
   })
 })
+
+describe('swivel + peekIn (A2-1 batch)', () => {
+  it('writes official presetIDs and their behaviors, and round-trips', async () => {
+    const swivel = buildTimingXml([
+      { spid: 4, effect: 'swivel', trigger: 'onClick', durationMs: 2000, delayMs: 0 },
+    ])
+    expect(swivel).toContain('presetID="19" presetClass="entr"')
+    expect(swivel).toContain('<p:animRot by="21600000">')
+    const peek = buildTimingXml([
+      { spid: 4, effect: 'peekIn', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ])
+    expect(peek).toContain('presetID="12" presetClass="entr"')
+    expect(peek).toContain('filter="wipe(up)"')
+    expect(peek).toContain('#ppt_y+0.06')
+
+    const opened = await openPptx(fx('01_standard_business.pptx'))
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    setSlideAnimations(slide, [
+      { spid, effect: 'swivel', trigger: 'onClick', durationMs: 2000, delayMs: 0 },
+      { spid, effect: 'peekIn', trigger: 'onClick', durationMs: 500, delayMs: 1 },
+    ])
+    expect(getSlideAnimations(slide).map((a) => a.effect)).toEqual(['swivel', 'peekIn'])
+  })
+})

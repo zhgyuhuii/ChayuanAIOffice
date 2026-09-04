@@ -2008,6 +2008,21 @@ const ANIM_EFFECT_BODIES: Record<AnimEffectKind, ReactNode> = {
       <path d="M16.5 6.2 h3.5 M13.5 12.6 h6.5 M13 15.8 h7" opacity="0.4" />
     </>
   ),
+  swivel: (
+    <>
+      <rect x="5" y="6" width="14" height="12" rx="1.2" transform="skewX(-8)" />
+      <path d="M4 5.5 C8 3.5, 12 3.5, 16 5.5" opacity="0.5" />
+      <path d="M4 18.5 C8 20.5, 12 20.5, 16 18.5" opacity="0.5" />
+      <path d="M12 9 v6" opacity="0.6" />
+    </>
+  ),
+  peekIn: (
+    <>
+      <rect x="5" y="3.5" width="14" height="10" rx="1" opacity="0.4" strokeDasharray="2.4 2" />
+      <rect x="5" y="8" width="14" height="10" rx="1" />
+      <path d="M12 3.5 V1.6 M10.8 2.7 L12 1.6 l1.2 1.1" opacity="0.7" />
+    </>
+  ),
   motionPath: (
     <>
       <path d="M4.5 6 C10 3, 14 9, 18.6 15.8" strokeDasharray="3 2.2" />

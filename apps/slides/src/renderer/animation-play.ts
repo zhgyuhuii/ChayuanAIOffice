@@ -51,6 +51,8 @@ export function animClassOf(effect: AnimEffectKind): 'entrance' | 'emphasis' | '
     case 'strips':
     case 'wedge':
     case 'wheel':
+    case 'swivel':
+    case 'peekIn':
       return 'entrance'
     case 'pulse':
     case 'spin':
@@ -427,6 +429,17 @@ function applyEffect(
     case 'wheel':
       st.hidden = false
       st.clip = p >= 1 ? null : { t: q, mode: 'wheel', spokes: Number(item.variant) || 1 }
+      break
+    case 'swivel':
+      // unroll around the vertical axis: x-flip settling upright
+      st.hidden = false
+      st.scaleX = -0.6 + 1.6 * q
+      st.opacity = Math.min(1, q * 2)
+      break
+    case 'peekIn':
+      st.hidden = false
+      st.clip = p >= 1 ? null : { t: q, mode: 'btm' }
+      st.dy = (1 - q) * canvasH * 0.06
       break
     case 'boxOut':
       st.clip = p >= 1 ? null : { t: 1 - q, mode: 'box' }

@@ -50,7 +50,8 @@ export function animDefaultDur(effect: AnimEffectKind): number {
         effect === 'bounce' ||
         effect === 'motionPath' ||
         effect === 'crawlIn' ||
-        effect === 'wheel'
+        effect === 'wheel' ||
+        effect === 'swivel'
       ? 2000
       : effect === 'pulse' || effect === 'teeter'
         ? 1000

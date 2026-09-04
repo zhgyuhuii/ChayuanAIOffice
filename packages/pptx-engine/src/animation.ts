@@ -44,6 +44,8 @@ export type AnimEffectKind =
   | 'strips'
   | 'wedge'
   | 'wheel'
+  | 'swivel'
+  | 'peekIn'
   // Emphasis
   | 'pulse'
   | 'spin'
@@ -205,6 +207,8 @@ export function animClassOf(effect: AnimEffectKind): AnimClass {
     case 'strips':
     case 'wedge':
     case 'wheel':
+    case 'swivel':
+    case 'peekIn':
       return 'entrance'
     case 'pulse':
     case 'spin':
@@ -253,6 +257,8 @@ const PRESET: Record<
   strips: { id: 18, cls: 'entr', sub: 0 },
   wedge: { id: 20, cls: 'entr', sub: 0 },
   wheel: { id: 21, cls: 'entr', sub: 1 }, // 1 spoke (clock wipe)
+  swivel: { id: 19, cls: 'entr', sub: 0 },
+  peekIn: { id: 12, cls: 'entr', sub: 1 }, // peek from bottom
   pulse: { id: 26, cls: 'emph', sub: 0 },
   spin: { id: 8, cls: 'emph', sub: 0 },
   grow: { id: 6, cls: 'emph', sub: 0 },
@@ -301,6 +307,8 @@ function effectFromPreset(cls: string, id: number, sub: number): AnimEffectKind 
     'entr:18': 'strips',
     'entr:20': 'wedge',
     'entr:21': 'wheel',
+    'entr:19': 'swivel',
+    'entr:12': 'peekIn',
     'emph:26': 'pulse',
     'emph:8': 'spin',
     'emph:6': 'grow',
@@ -543,8 +551,7 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
         show +
         `<p:animEffect transition="in" filter="${animEffectFilter(a.effect, a.variant)}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>`
       )
-    case 'crawlIn': // Crawl in from an edge (slow slide, no filter); 效果选项 picks the edge
-    {
+    case 'crawlIn': { // Crawl in from an edge (slow slide, no filter); 效果选项 picks the edge
       const side = a.variant ?? 'left'
       const offX = side === 'left' ? '0-#ppt_w/2' : side === 'right' ? '1+#ppt_w/2' : '#ppt_x'
       const offY = side === 'top' ? '0-#ppt_h/2' : side === 'bottom' ? '1+#ppt_h/2' : '#ppt_y'
@@ -580,6 +587,21 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
       return (
         `<p:animEffect transition="out" filter="${animEffectFilter('randomBars', a.variant)}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
         hideAtEnd
+      )
+    case 'swivel':
+      // Swivel: unroll around the vertical axis — full rotation (like spin) so
+      // PowerPoint's pane labels it Swivel; canvas approximates with an x-flip
+      return (
+        show +
+        `<p:animRot by="21600000"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}" fill="hold"/>${target}` +
+        '<p:attrNameLst><p:attrName>r</p:attrName></p:attrNameLst></p:cBhvr></p:animRot>'
+      )
+    case 'peekIn':
+      // Peek In: wipe reveal + a small slide-in offset toward the reveal edge
+      return (
+        show +
+        `<p:animEffect transition="in" filter="wipe(up)"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>` +
+        moveAnimXml(gen, target, dur, 'ppt_y', '#ppt_y+0.06', '#ppt_y')
       )
     case 'motionPath':
       return motionAnimXml(gen, target, dur, a.motionPath ?? DEFAULT_MOTION_PATH)
