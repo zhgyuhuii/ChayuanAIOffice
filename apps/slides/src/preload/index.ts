@@ -257,6 +257,17 @@ const api: SlidesApi = {
   addChart: (op: AddChartOp) => ipcRenderer.invoke('slides:add-chart', op),
   addSmartArt: (op: AddSmartArtOp) => ipcRenderer.invoke('slides:add-smartart', op),
   addImageBytes: (op: AddImageBytesOp) => ipcRenderer.invoke('slides:add-image-bytes', op),
+  getEchart: (op: { slideIndex: number; elementId: string }) =>
+    ipcRenderer.invoke('slides:get-echart', op),
+  updateEchart: (op: {
+    slideIndex: number
+    elementId: string
+    base64: string
+    optionJson: string
+    code?: string
+    title?: string
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  }) => ipcRenderer.invoke('slides:update-echart', op),
   addEchart: (op: {
     slideIndex: number
     fitWidthPx: number

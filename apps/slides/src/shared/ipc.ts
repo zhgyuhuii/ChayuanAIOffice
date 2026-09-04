@@ -1515,6 +1515,27 @@ export interface SlidesApi {
   addChart: (op: AddChartOp) => Promise<{ slide: RenderSlide; sourceId: string } | null>
   /** Insert SmartArt (simplified shape-group version) */
   addSmartArt: (op: AddSmartArtOp) => Promise<{ slide: RenderSlide; sourceId: string } | null>
+  /** Read an echart sidecar for double-click re-open editing */
+  getEchart: (op: { slideIndex: number; elementId: string }) => Promise<{
+    optionJson: string
+    code: string | null
+    title: string | null
+    groupId: string
+    data: { columns: string[]; rows: Array<Array<string | number | null>> } | null
+    mediaPath: string | null
+    elementId: string
+    slideIndex: number
+  } | null>
+  /** Rewrite echart sidecar + poster bytes in place (double-click edit commit) */
+  updateEchart: (op: {
+    slideIndex: number
+    elementId: string
+    base64: string
+    optionJson: string
+    code?: string
+    title?: string
+    data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+  }) => Promise<{ ok: true; slide?: RenderSlide } | null>
   /** Insert an ECharts extended-family chart (poster PNG + sidecar part) */
   addEchart: (op: {
     slideIndex: number

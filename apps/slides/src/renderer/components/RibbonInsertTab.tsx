@@ -1,15 +1,8 @@
 /** Insert tab of the slides ribbon. Extracted from Ribbon.tsx. */
 import type { InsertKind } from '../../shared/ipc'
+import { ICON_COLORS, ICON_GALLERY, SHAPE_GALLERY, SMARTART_GALLERY } from '../insert-presets'
 import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
-import {
-  CHART_GALLERY,
-  ICON_COLORS,
-  ICON_GALLERY,
-  SHAPE_GALLERY,
-  SMARTART_GALLERY,
-} from '../insert-presets'
 import type { StringKey } from '../i18n/locale'
-import { ChartKindThumb } from './ChartTypeDialog'
 import { ShapePreview, SmartArtPreview } from './gallery-previews'
 import {
   Icon3d,
@@ -56,7 +49,6 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     onAddSlideWithLayout,
     onInsert,
     onPickShape,
-    onInsertChart,
     onOpenChartDesigner,
     onInsertField,
     onInsertIcon,

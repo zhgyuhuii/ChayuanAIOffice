@@ -270,6 +270,8 @@ interface Props {
   onEditTableCell: (sourceId: string, row: number, col: number) => void
   /** Double-click an audio/video element: trigger the playback overlay */
   onPlayMedia?: (sourceId: string) => void
+  /** 双击 echart 图片(descr 指针命中时)→ 打开设计器回显编辑 */
+  onOpenEchart?: (sourceId: string) => void
   /** Right-click: hit element gives sourceId, blank area gives null; table hits include cell model coordinates */
   onContextMenu: (
     sourceId: string | null,
@@ -518,6 +520,7 @@ export function SlideCanvas({
   onTableColResize,
   onTableRowResize,
   onPlayMedia,
+  onOpenEchart,
   onContextMenu,
   images,
   editingText,
@@ -909,6 +912,7 @@ export function SlideCanvas({
             onTransform={onTransform}
             onEditTableCell={onEditTableCell}
             onPlayMedia={onPlayMedia}
+            onOpenEchart={onOpenEchart}
             onDragGuides={(g, sp) => {
               setGuides(g)
               setSpacing(sp ?? [])
@@ -1455,6 +1459,7 @@ interface NodeProps {
   onTransform: Props['onTransform']
   onEditTableCell: Props['onEditTableCell']
   onPlayMedia?: Props['onPlayMedia']
+  onOpenEchart?: Props['onOpenEchart']
   onDragGuides: (g: Guide[], spacing?: SpacingIndicator[]) => void
   snapTargets: (excludeIds: string[]) => SnapTarget[]
   /** Neighbor boxes for equal-spacing snapping (excluding the dragged selection) */
@@ -1496,6 +1501,7 @@ function NodeView({
   onTransform,
   onEditTableCell,
   onPlayMedia,
+  onOpenEchart,
   onDragGuides,
   snapTargets,
   spacingBoxes,
@@ -1794,6 +1800,7 @@ function NodeView({
               onTransform={onTransform}
               onEditTableCell={onEditTableCell}
               onPlayMedia={onPlayMedia}
+              onOpenEchart={onOpenEchart}
               onDragGuides={onDragGuides}
               snapTargets={snapTargets}
               images={images}
@@ -1844,6 +1851,13 @@ function NodeView({
     const cell = tableCellAtPoint(node, local)
     if (cell) onEditTableCell(node.sourceId, cell.row, cell.col)
   }
+  /** echart 海报图:picture 节点且 descr 带 aislides-echart 指针(与 pptx-engine 对应) */
+  const isEchartNode = (n: RenderNode, enabled: boolean): boolean => {
+    if (!enabled || n.type !== 'picture') return false
+    const d = (n as { descr?: string }).descr
+    return !!d && d.startsWith('aislides-echart:')
+  }
+
   // Audio/video (image is the poster frame): double-click opens the playback overlay
   const isMedia = node.type === 'picture' && !!(node as PictureRenderNode).media && !!onPlayMedia
   // Empty placeholder: canvas draws a gray click hint (edit canvas only, not in thumbnails/export)
@@ -1882,12 +1896,17 @@ function NodeView({
             ? { onDblClick: onGroupDblClick, onDblTap: onGroupDblClick }
             : node.type === 'table' && !insideGroupId
               ? { onDblClick: onTableDblClick, onDblTap: onTableDblClick }
-              : isMedia && !insideGroupId
+              : isEchartNode(node, !!onOpenEchart) && !insideGroupId
                 ? {
-                    onDblClick: () => onPlayMedia!(node.sourceId),
-                    onDblTap: () => onPlayMedia!(node.sourceId),
+                    onDblClick: () => onOpenEchart!(node.sourceId),
+                    onDblTap: () => onOpenEchart!(node.sourceId),
                   }
-                : {})}
+                : isMedia && !insideGroupId
+                  ? {
+                      onDblClick: () => onPlayMedia!(node.sourceId),
+                      onDblTap: () => onPlayMedia!(node.sourceId),
+                    }
+                  : {})}
       >
         {/* group children don't take hits (listening=false); add a transparent hit area so the whole group can be selected/dragged */}
         {node.type === 'group' && <Rect width={box.w} height={box.h} fill="transparent" />}

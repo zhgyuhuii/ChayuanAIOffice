@@ -109,6 +109,7 @@ import {
   type Slide,
   type TextElement,
 } from '@chatoffice/pptx-engine'
+import { readSlideEchart, slideEchartPartOf, updateSlideEchart } from '@chatoffice/pptx-engine'
 import {
   buildRenderSlide,
   layoutText,
@@ -3428,6 +3429,70 @@ export function registerSlidesIpc(): void {
       session.fitWidthPx = op.fitWidthPx
       const rebuilt = rebuildSlide(session, op.slideIndex)
       return rebuilt ? { slide: rebuilt, sourceId: r.records![0]!.created![0]! } : null
+    },
+  )
+
+  ipcMain.handle('slides:get-echart', (e, op: { slideIndex: number; elementId: string }) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return null
+    const slide = session.opened.deck.slides[op.slideIndex]
+    const el = slide?.elements.find((x) => x.id === op.elementId)
+    if (!el) return null
+    const sidecarPath = slideEchartPartOf(el)
+    if (!sidecarPath) return null
+    const sidecar = readSlideEchart(session.opened, sidecarPath)
+    if (!sidecar) return null
+    const mediaRef = (el as { mediaRef?: string }).mediaRef ?? null
+    return {
+      optionJson: sidecar.option,
+      code: sidecar.code,
+      title: sidecar.title,
+      groupId: sidecar.groupId,
+      data: sidecar.data ?? null,
+      mediaPath: mediaRef,
+      elementId: el.id,
+      slideIndex: op.slideIndex,
+    }
+  })
+
+  ipcMain.handle(
+    'slides:update-echart',
+    (
+      e,
+      op: {
+        slideIndex: number
+        elementId: string
+        base64: string
+        optionJson: string
+        code?: string
+        title?: string
+        data?: { columns: string[]; rows: Array<Array<string | number | null>> }
+      },
+    ) => {
+      const session = sessions.get(e.sender.id)
+      if (!session) return null
+      const slide = session.opened.deck.slides[op.slideIndex]
+      const el = slide?.elements.find((x) => x.id === op.elementId)
+      if (!el) return null
+      const sidecarPath = slideEchartPartOf(el)
+      const mediaRef = (el as { mediaRef?: string }).mediaRef
+      if (!sidecarPath || !mediaRef) return null
+      const ok = updateSlideEchart(
+        session.opened,
+        { sidecarPath, mediaPath: mediaRef },
+        {
+          pngBase64: op.base64,
+          optionJson: op.optionJson,
+          ...(op.code !== undefined ? { code: op.code } : {}),
+          ...(op.title !== undefined ? { title: op.title } : {}),
+          ...(op.data !== undefined ? { data: op.data } : {}),
+        },
+      )
+      if (!ok) return null
+      // sidecar+媒体字节已直写 entries;slide XML 无几何变化,无需重解析。
+      // 返回重建页给渲染层 applySlide(触发画布重绘,加载新海报图)
+      const rebuilt = rebuildSlide(session, op.slideIndex)
+      return rebuilt ? { ok: true as const, slide: rebuilt } : { ok: true as const }
     },
   )
 
