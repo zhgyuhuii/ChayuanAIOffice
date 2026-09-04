@@ -92,6 +92,9 @@ export {
   isEditableVisual,
 } from './visual-editable'
 
+/// 安装序号（见 installWorkbookVisuals 内注释）
+let installCounter = 0
+
 const chartColors = [
   '#4472c4',
   '#ed7d31',
@@ -124,10 +127,14 @@ export function installWorkbookVisuals(
   const workbook = runtime.univerAPI.getActiveWorkbook()
   if (!workbook) return []
   const disposables: Disposable[] = []
+  // 每次安装递增：componentKey/float id 携带安装序号。Univer 的
+  // registerComponent 按 part 收纳组件工厂，同 key 重装若不复位会渲染首次
+  // 注册的旧闭包（属性类编辑——旋转/亮度/裁剪——因此不刷新画布）。
+  const installSeq = ++installCounter
   for (const visual of file.visuals.filter((candidate) => candidate.sheetId === sheetId)) {
     const worksheet = workbook.getSheetBySheetId(visual.sheetId)
     if (!worksheet) continue
-    const componentKey = `xlsx-${file.sessionId}-${visual.id}`
+    const componentKey = `xlsx-${file.sessionId}-${visual.id}-r${installSeq}`
     const editable = isEditableVisual(visual)
     // Lazy grids are sized to the data, but session-added visuals anchor
     // beyond it (default: two columns right of the data) — grow the grid so
@@ -247,7 +254,7 @@ export function installWorkbookVisuals(
         eventPassThrough: false,
       },
       layout,
-      `${file.sessionId}-${visual.id}`,
+      `${file.sessionId}-${visual.id}-r${installSeq}`,
     )
     if (floating) disposables.push(floating)
   }
