@@ -337,15 +337,23 @@ export function AiPanel({
     for (const a of wanted) {
       if (!ATTACHMENT_IMAGE_EXTS.has(a.ext) || previewRequestedRef.current.has(a.path)) continue
       previewRequestedRef.current.add(a.path)
-      void window.desktop.readAttachmentImage(a.path).then((r) => {
-        if (!previewRequestedRef.current.has(a.path)) return // removed while the read was in flight
-        if (r.ok && r.base64 && r.mime) {
-          setAttachmentPreviews((prev) => ({
-            ...prev,
-            [a.path]: `data:${r.mime};base64,${r.base64}`,
-          }))
-        }
-      })
+      void window.desktop
+        .readAttachmentImage(a.path)
+        .then((r) => {
+          if (!previewRequestedRef.current.has(a.path)) return // removed while the read was in flight
+          if (r.ok && r.base64 && r.mime) {
+            setAttachmentPreviews((prev) => ({
+              ...prev,
+              [a.path]: `data:${r.mime};base64,${r.base64}`,
+            }))
+          }
+        })
+        .catch(() => {
+          // A rejected read (bridge error, teardown race) must not leave the
+          // path marked requested forever — that would permanently skip the
+          // thumbnail with no retry. Clear it so the next effect run retries.
+          previewRequestedRef.current.delete(a.path)
+        })
     }
   }, [attachments, chat, historicChat])
   /** paints the strip's scrollbar thumb while the user scrolls it (cleared 800ms after the last event) */
