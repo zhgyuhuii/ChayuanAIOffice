@@ -1,11 +1,14 @@
-import { SANDBOX_BOOTSTRAP_SRC } from './bootstrap'
 import { parseOption } from './serialize'
+// canonical Worker 源是同目录 bootstrap.worker.js:
+// - 浏览器:new Worker(new URL(...)) 真实资源,不继承文档 meta CSP(见该文件头注释)
+// - Node(采集/vitest):经 ?raw 读入源码,worker_threads eval 执行
+import bootstrapSource from './bootstrap.worker.js?raw'
 
 /**
  * 图表沙箱运行器(主线程侧,环境自适应):
- * - 浏览器:new Worker(blob) + Web Worker
+ * - 浏览器:Vite 发出的真实 URL Worker(文档 CSP 禁 unsafe-eval 会拦死 blob Worker)
  * - Node(vitest / 采集管线):worker_threads eval worker
- * 沙箱边界与 option 捕获逻辑见 bootstrap.ts;死循环由 timeoutMs terminate 硬杀(Q6)。
+ * 沙箱边界与 option 捕获逻辑见 bootstrap.worker.js;死循环由 timeoutMs terminate 硬杀(Q6)。
  */
 
 export interface SandboxRunResult {
@@ -23,8 +26,6 @@ export interface SandboxRunOptions {
 
 const DEFAULT_TIMEOUT_MS = 2000
 
-const nodeWorkerModuleId = 'node:worker_threads'
-
 type MinimalWorker = {
   postMessage(msg: unknown): void
   terminate(): void
@@ -33,16 +34,17 @@ type MinimalWorker = {
 
 async function spawnWorker(): Promise<MinimalWorker> {
   if (typeof Worker !== 'undefined') {
-    const blob = new Blob([SANDBOX_BOOTSTRAP_SRC], { type: 'text/javascript' })
-    const url = URL.createObjectURL(blob)
-    return new Worker(url) as unknown as MinimalWorker
+    // Vite 静态分析此模式,把 worker 作为独立资源发出(dev 由 dev server 服务、
+    // build 落 assets);网络 Worker 的 CSP 只来自自身响应,文档 meta 不再生效
+    return new Worker(new URL('./bootstrap.worker.js', import.meta.url)) as unknown as MinimalWorker
   }
   if (typeof process !== 'undefined' && process.versions?.node) {
     // 变量说明符避免浏览器打包器静态分析;仅 Node 环境走到这里
+    const nodeWorkerModuleId = 'node:worker_threads'
     const mod = (await import(
       /* @vite-ignore */ nodeWorkerModuleId
     )) as typeof import('node:worker_threads')
-    const w = new mod.Worker(SANDBOX_BOOTSTRAP_SRC, { eval: true })
+    const w = new mod.Worker(bootstrapSource, { eval: true })
     // worker_threads 是 EventEmitter(.on),适配成统一 addEventListener 形态
     return {
       postMessage: (msg: unknown) => w.postMessage(msg),

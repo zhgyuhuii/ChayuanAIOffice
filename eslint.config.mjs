@@ -67,4 +67,11 @@ export default tseslint.config(
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
+  {
+    // Chart sandbox worker source runs in a Worker global scope (self/postMessage).
+    files: ['packages/chart-kit/src/sandbox/bootstrap.worker.js'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.worker },
+    },
+  },
 )
