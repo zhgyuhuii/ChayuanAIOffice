@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement } from 'react'
-import logoLockup from './assets/chatoffice-logo.svg'
 import iconDocx from './assets/file-docx.svg'
 import iconXlsx from './assets/file-xlsx.svg'
 import iconPptx from './assets/file-pptx.svg'
@@ -1215,6 +1214,19 @@ export function Home() {
     }
   }, [])
 
+  // sidebar resizer cleanup, shared by the handle's pointerup/lostcapture and
+  // a window-level fallback: with pointer capture unavailable (or the pointer
+  // released outside the 7px strip) the drag must still end
+  const resizerRef = useRef<HTMLDivElement>(null)
+  const endSidebarDrag = useCallback(() => {
+    if (resizerRef.current) delete resizerRef.current.dataset.dragging
+    document.body.classList.remove('sidebar-resizing')
+  }, [])
+  useEffect(() => {
+    window.addEventListener('pointerup', endSidebarDrag)
+    return () => window.removeEventListener('pointerup', endSidebarDrag)
+  }, [endSidebarDrag])
+
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -1541,35 +1553,41 @@ export function Home() {
 
   function renderSideActions() {
     return (
-      <div className="side-actions">
+      <div className="side-links">
         {NEW_ITEMS.map((item) => (
-          <button
+          <a
             key={item.ext}
-            className="side-action"
-            onClick={() => void item.action()}
-            data-tip={item.sub}
+            className="side-link"
+            href="#"
+            title={item.sub}
+            onClick={(event) => {
+              event.preventDefault()
+              void item.action()
+            }}
           >
-            <FileBadge ext={item.ext} size={22} />
-            <span className="side-action-label">{item.title}</span>
-          </button>
+            <FileBadge ext={item.ext} size={15} />
+            <span className="side-link-label">{item.title}</span>
+          </a>
         ))}
-        <button
-          className="side-action side-action-wide"
-          onClick={() => void window.chatOffice.browse()}
-          data-tip={OPEN_LOCAL_EXTENSIONS}
+        <a
+          className="side-link"
+          href="#"
+          title={OPEN_LOCAL_EXTENSIONS}
+          onClick={(event) => {
+            event.preventDefault()
+            void window.chatOffice.browse()
+          }}
         >
-          <span className="side-action-folder" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-          <span className="side-action-label">{t('openLocal')}</span>
-        </button>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="side-link-label">{t('openLocal')}</span>
+        </a>
       </div>
     )
   }
@@ -1981,10 +1999,6 @@ export function Home() {
       }`}
     >
       <aside className="sidebar" style={{ width: layout.sidebarWidth }}>
-        <div className="sidebar-logo">
-          <img className="logo-lockup" src={logoLockup} alt="ChatOffice" />
-        </div>
-
         {renderSideActions()}
 
         {loggedIn && (
@@ -2055,25 +2069,34 @@ export function Home() {
       </aside>
 
       {/* drag handle between the tree strip and the chat pane; hidden with the
-          tree itself (pane-left-collapsed) via the sibling selector in CSS */}
+          tree itself (pane-left-collapsed) via the sibling selector in CSS.
+          Active state rides on the element class (not hasPointerCapture, which
+          synthetic PointerEvents never satisfy) and release also listens on the
+          window so a pointerup outside the 7px strip still ends the drag. */}
       <div
+        ref={resizerRef}
         className="sidebar-resizer"
         role="separator"
         aria-orientation="vertical"
         onPointerDown={(event) => {
           if (event.button !== 0) return
-          event.currentTarget.setPointerCapture(event.pointerId)
+          // capture needs an active pointer (synthetic events have none and it
+          // throws NotFoundError) — it's an optimization, not a requirement:
+          // the window-level pointerup below ends the drag regardless
+          try {
+            event.currentTarget.setPointerCapture(event.pointerId)
+          } catch {
+            /* no active pointer: drag still works, release cleanup is on window */
+          }
+          event.currentTarget.dataset.dragging = '1'
           document.body.classList.add('sidebar-resizing')
         }}
         onPointerMove={(event) => {
-          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
+          if (!event.currentTarget.dataset.dragging) return
           setHomeLayout({ sidebarWidth: clampSidebarWidth(event.clientX) })
         }}
-        onPointerUp={(event) => {
-          event.currentTarget.releasePointerCapture(event.pointerId)
-          document.body.classList.remove('sidebar-resizing')
-        }}
-        onLostPointerCapture={() => document.body.classList.remove('sidebar-resizing')}
+        onPointerUp={endSidebarDrag}
+        onLostPointerCapture={endSidebarDrag}
       />
 
       {cloudMode ? (
