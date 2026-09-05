@@ -49,6 +49,13 @@ describe('Settings analytics consent', () => {
       getUpdateChannel: async () => 'stable',
       getAppVersion: async () => '1.0.0',
       githubStars: async () => null,
+      // the modal now opens on the model-settings pane (account tab hidden)
+      getAiSettings: async () => ({ version: 2, profiles: [] }),
+      setAiSettings: async () => {},
+      setAiCurrentModel: async () => {},
+      discoverModels: async () => ({ models: [] }),
+      gskStatus: async () => ({ loggedIn: false }),
+      gskLogin: async () => {},
     } as unknown as HomeApi
 
     await act(async () => {

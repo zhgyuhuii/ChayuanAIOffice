@@ -60,11 +60,9 @@ function formatStars(n: number): string {
   return `${k >= 100 ? Math.round(k) : (Math.round(k * 10) / 10).toString().replace(/\.0$/, '')}k`
 }
 
-type SectionId =
-  'account' | 'modelSettings' | 'defaultModels' | 'remoteStorage' | 'general' | 'about'
+type SectionId = 'modelSettings' | 'defaultModels' | 'remoteStorage' | 'general' | 'about'
 
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
-  { id: 'account', labelKey: 'setSecAccount' },
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
   { id: 'remoteStorage', labelKey: 'setSecRemoteStorage' },
@@ -113,19 +111,6 @@ function SectionIcon({ id }: { id: SectionId }) {
         />
         <path
           d="M12.8 11.2v3M11.3 12.7h3"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinecap="round"
-        />
-      </svg>
-    )
-  }
-  if (id === 'account') {
-    return (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <circle cx="8" cy="5.2" r="2.9" stroke="currentColor" strokeWidth="1.3" />
-        <path
-          d="M2.7 13.6a5.5 5.5 0 0 1 10.6 0"
           stroke="currentColor"
           strokeWidth="1.3"
           strokeLinecap="round"
@@ -216,7 +201,6 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
   }
 }
 
-
 export interface SettingsModalProps {
   status: AccountStatus | null
   loggingOut: boolean
@@ -246,7 +230,7 @@ export function SettingsModal({
   onLogout,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
-  const [section, setSection] = useState<SectionId>('account')
+  const [section, setSection] = useState<SectionId>('modelSettings')
   const [theme, setTheme] = useState<UiTheme>('system')
   const [saveDir, setSaveDir] = useState('')
   const [analyticsOn, setAnalyticsOn] = useState(true)
@@ -340,54 +324,6 @@ export function SettingsModal({
             ))}
           </nav>
           <div className="set-pane">
-            {section === 'account' && (
-              <>
-                <h3 className="set-pane-title">{t('setSecAccount')}</h3>
-                <Field label={t('setEmail')} value={loggedIn ? email : t('setNotLoggedIn')} />
-                {loggedIn && (
-                  <Field
-                    label={t('credits')}
-                    value={
-                      status?.creditBalance === undefined
-                        ? '—'
-                        : Math.floor(status.creditBalance).toLocaleString('en-US')
-                    }
-                    action={
-                      <button
-                        className="set-btn"
-                        data-tip={t('creditsTip')}
-                        onClick={() => void window.chatOffice.openCreditUsage?.()}
-                      >
-                        {t('setViewUsage')}
-                      </button>
-                    }
-                  />
-                )}
-                <div className="set-pane-footer">
-                  {loggedIn ? (
-                    <button className="set-btn danger" disabled={loggingOut} onClick={onLogout}>
-                      {loggingOut ? t('loggingOut') : t('logout')}
-                    </button>
-                  ) : (
-                    <>
-                      {loginWaiting && loginUrl && (
-                        <>
-                          <button className="set-btn" onClick={onOpenLoginUrl}>
-                            {t('loginOpenManually')}
-                          </button>
-                          <button className="set-btn" onClick={onCopyLoginUrl}>
-                            {urlCopied ? t('loginCopied') : t('loginCopyUrl')}
-                          </button>
-                        </>
-                      )}
-                      <button className="set-btn primary" onClick={onLogin}>
-                        {loginWaiting ? t('waitingShort') : t('loginGenspark')}
-                      </button>
-                    </>
-                  )}
-                </div>
-              </>
-            )}
             {section === 'modelSettings' && <AiModelPane lang={lang} />}
             {section === 'defaultModels' && <DefaultModelsPane lang={lang} />}
             {section === 'remoteStorage' && <StoragePane />}
@@ -502,6 +438,34 @@ export function SettingsModal({
             )}
           </div>
         </div>
+        <footer className="set-footer">
+          {loggedIn ? (
+            <>
+              <span className="set-footer-user" title={email}>
+                {email}
+              </span>
+              <button className="set-btn" disabled={loggingOut} onClick={onLogout}>
+                {loggingOut ? t('loggingOut') : t('logout')}
+              </button>
+            </>
+          ) : (
+            <>
+              {loginWaiting && loginUrl && (
+                <>
+                  <button className="set-btn" onClick={onOpenLoginUrl}>
+                    {t('loginOpenManually')}
+                  </button>
+                  <button className="set-btn" onClick={onCopyLoginUrl}>
+                    {urlCopied ? t('loginCopied') : t('loginCopyUrl')}
+                  </button>
+                </>
+              )}
+              <button className="set-btn primary" onClick={onLogin}>
+                {loginWaiting ? t('waitingShort') : t('userLogin')}
+              </button>
+            </>
+          )}
+        </footer>
       </div>
     </div>
   )
