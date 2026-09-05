@@ -510,3 +510,7 @@ CT_Home.kuip（et）实测规格：
 - 15 键×19 locale；OptSample/CaretIcon 导出。1991 测试全绿。
 
 **数字组目标形态**（下一批）：行1 = 常规⌄格式框 + 转换⌄（本组件）；行2 = 会计⌄ % 千分位 增小数 减小数 快捷图标（CT 顺序 Percent→Comma→Inc→Dec，加货币/会计下拉）。
+
+## 14. 数字组收口（985f7c8）
+
+行1 = 常规⌄格式框（NumberFormatSelect）+ 转换⌄（ConvertMenuSelect，§13）；行2 = 货币/会计⌄（¥会计专用 菜单）+ % + 千分位 + 增小数 + 减小数 快捷图标。`.num-compact` 行距 2px、`.num-quick` 图标间隙 1px；appRmbAccounting ×19。1991 测试绿。IAB 验证会话本轮 guest attach 持续失败——服务端 HTTP 校验（shell/ExcelShell/ConvertMenuSelect/styles 四项内容全部命中）代替目视，UI 下次会话补目检。
