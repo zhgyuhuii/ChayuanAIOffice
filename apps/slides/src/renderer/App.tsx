@@ -4167,6 +4167,11 @@ export function App() {
                             >
                               <SlideCanvas
                                 onOpenEchart={openEchartEditor}
+                                onOpenChartEditor={(sourceId) => {
+                                  // 双击原生图表:先选中(styleActions 读 selectedNode)再开数据编辑
+                                  setSelectedIds([sourceId])
+                                  void openChartDataDialog()
+                                }}
                                 slide={slide}
                                 selectedIds={selectedIds}
                                 onSelect={handleCanvasSelect}

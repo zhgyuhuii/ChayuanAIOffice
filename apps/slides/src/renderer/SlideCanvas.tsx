@@ -272,6 +272,8 @@ interface Props {
   onPlayMedia?: (sourceId: string) => void
   /** 双击 echart 图片(descr 指针命中时)→ 打开设计器回显编辑 */
   onOpenEchart?: (sourceId: string) => void
+  /** 双击原生图表元素 → 打开图表数据编辑对话框(WPS 行为) */
+  onOpenChartEditor?: (sourceId: string) => void
   /** Right-click: hit element gives sourceId, blank area gives null; table hits include cell model coordinates */
   onContextMenu: (
     sourceId: string | null,
@@ -521,6 +523,7 @@ export function SlideCanvas({
   onTableRowResize,
   onPlayMedia,
   onOpenEchart,
+  onOpenChartEditor,
   onContextMenu,
   images,
   editingText,
@@ -913,6 +916,7 @@ export function SlideCanvas({
             onEditTableCell={onEditTableCell}
             onPlayMedia={onPlayMedia}
             onOpenEchart={onOpenEchart}
+            onOpenChartEditor={onOpenChartEditor}
             onDragGuides={(g, sp) => {
               setGuides(g)
               setSpacing(sp ?? [])
@@ -1460,6 +1464,7 @@ interface NodeProps {
   onEditTableCell: Props['onEditTableCell']
   onPlayMedia?: Props['onPlayMedia']
   onOpenEchart?: Props['onOpenEchart']
+  onOpenChartEditor?: Props['onOpenChartEditor']
   onDragGuides: (g: Guide[], spacing?: SpacingIndicator[]) => void
   snapTargets: (excludeIds: string[]) => SnapTarget[]
   /** Neighbor boxes for equal-spacing snapping (excluding the dragged selection) */
@@ -1502,6 +1507,7 @@ function NodeView({
   onEditTableCell,
   onPlayMedia,
   onOpenEchart,
+  onOpenChartEditor,
   onDragGuides,
   snapTargets,
   spacingBoxes,
@@ -1801,6 +1807,7 @@ function NodeView({
               onEditTableCell={onEditTableCell}
               onPlayMedia={onPlayMedia}
               onOpenEchart={onOpenEchart}
+              onOpenChartEditor={onOpenChartEditor}
               onDragGuides={onDragGuides}
               snapTargets={snapTargets}
               images={images}
@@ -1896,17 +1903,22 @@ function NodeView({
             ? { onDblClick: onGroupDblClick, onDblTap: onGroupDblClick }
             : node.type === 'table' && !insideGroupId
               ? { onDblClick: onTableDblClick, onDblTap: onTableDblClick }
-              : isEchartNode(node, !!onOpenEchart) && !insideGroupId
+              : node.type === 'chart' && onOpenChartEditor && !insideGroupId
                 ? {
-                    onDblClick: () => onOpenEchart!(node.sourceId),
-                    onDblTap: () => onOpenEchart!(node.sourceId),
+                    onDblClick: () => onOpenChartEditor!(node.sourceId),
+                    onDblTap: () => onOpenChartEditor!(node.sourceId),
                   }
-                : isMedia && !insideGroupId
+                : isEchartNode(node, !!onOpenEchart) && !insideGroupId
                   ? {
-                      onDblClick: () => onPlayMedia!(node.sourceId),
-                      onDblTap: () => onPlayMedia!(node.sourceId),
+                      onDblClick: () => onOpenEchart!(node.sourceId),
+                      onDblTap: () => onOpenEchart!(node.sourceId),
                     }
-                  : {})}
+                  : isMedia && !insideGroupId
+                    ? {
+                        onDblClick: () => onPlayMedia!(node.sourceId),
+                        onDblTap: () => onPlayMedia!(node.sourceId),
+                      }
+                    : {})}
       >
         {/* group children don't take hits (listening=false); add a transparent hit area so the whole group can be selected/dragged */}
         {node.type === 'group' && <Rect width={box.w} height={box.h} fill="transparent" />}
