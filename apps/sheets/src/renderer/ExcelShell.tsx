@@ -17,6 +17,7 @@ import {
   SaveIcon,
   UndoIcon,
 } from './ribbon-icons'
+import { ConvertMenuSelect } from './ConvertMenuSelect'
 
 import {
   compressImageForDisplay,
@@ -3788,29 +3789,7 @@ function Ribbon({
               .0−
             </button>
             {/* WPS 数字组 转换⌄ (B6) */}
-            <MenuSelect
-              className="select-like compact"
-              label="Convert"
-              data-tip={t('appConvertMenu')}
-              display={
-                <>
-                  <ToolSymbol symbol="⇄" /> {t('appConvertMenu')}
-                </>
-              }
-              options={[
-                {
-                  value: 'convert:text2num',
-                  label: t('appConvertText2Num'),
-                  icon: <OptSample>12</OptSample>,
-                },
-                {
-                  value: 'convert:num2text',
-                  label: t('appConvertNum2Text'),
-                  icon: <OptSample>ab</OptSample>,
-                },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
+            <ConvertMenuSelect data-tip={t('appConvertMenu')} onCommand={onCommand} />
           </div>
         </div>
       </RibbonGroup>
@@ -4490,7 +4469,7 @@ function FitGlyph({ vertical }: { vertical?: boolean }) {
 }
 
 /** 纯文字样例图标（数字格式/字体方案/自动求和等：直接展示样例文本） */
-function OptSample({ children }: { children: React.ReactNode }) {
+export function OptSample({ children }: { children: React.ReactNode }) {
   return (
     <span className="menu-opt-sample" aria-hidden="true">
       {children}

@@ -400,15 +400,80 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       for (let c = sel2.getColumn(); c < sel2.getColumn() + sel2.getWidth(); c += 1) {
         const cell = ws2.getRange(r, c)
         const v = cell.getValue()
-        if (command === 'convert:text2num') {
-          if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) {
-            cell.setValue(Number(v))
-            changed += 1
+        switch (command) {
+          case 'convert:text2num':
+          case 'convert:num2text':
+            if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) {
+              cell.setValue(Number(v))
+              changed += 1
+            } else if (typeof v === 'number' && command === 'convert:num2text') {
+              cell.setValue(String(v))
+              changed += 1
+            }
+            break
+          case 'convert:text2formula': {
+            // 文本转公式: a text starting with '=' becomes a live formula
+            if (typeof v === 'string' && v.trimStart().startsWith('=')) {
+              cell.setFormula(v)
+              changed += 1
+            }
+            break
           }
-        } else if (command === 'convert:num2text') {
-          if (typeof v === 'number') {
-            cell.setValue(String(v))
-            changed += 1
+          case 'convert:formula2text': {
+            // 公式转文本: the formula string itself becomes the cell text
+            const f = cell.getFormula()
+            if (f) {
+              cell.setValue(String(f))
+              changed += 1
+            }
+            break
+          }
+          case 'convert:values-only': {
+            // 仅保留数值: freeze formulas/results in place as plain values
+            const f2 = cell.getFormula()
+            if (f2) {
+              cell.setValue(v as never)
+              changed += 1
+            }
+            break
+          }
+          case 'convert:upper':
+          case 'convert:lower':
+          case 'convert:capitalize': {
+            if (typeof v === 'string' && v) {
+              const next =
+                command === 'convert:upper'
+                  ? v.toUpperCase()
+                  : command === 'convert:lower'
+                    ? v.toLowerCase()
+                    : v.replace(/(^|\s)(\p{L})/gu, (mm) => mm.toUpperCase())
+              if (next !== v) {
+                cell.setValue(next)
+                changed += 1
+              }
+            }
+            break
+          }
+          case 'convert:to-en-symbols':
+          case 'convert:to-cn-symbols': {
+            // 中英符号互转：全角标点⇄半角标点（U+FF01..FF5E ⇄ ASCII 33..126，
+            // 保留空格 U+3000 不动）。全→半 shift -65248，半→全 +65248。
+            if (typeof v === 'string' && v) {
+              const delta = command === 'convert:to-en-symbols' ? -65248 : 65248
+              const next = [...v]
+                .map((ch) => {
+                  const code = ch.codePointAt(0)!
+                  if (command === 'convert:to-en-symbols')
+                    return code >= 0xff01 && code <= 0xff5e ? String.fromCharCode(code + delta) : ch
+                  return code >= 0x21 && code <= 0x7e ? String.fromCharCode(code + delta) : ch
+                })
+                .join('')
+              if (next !== v) {
+                cell.setValue(next)
+                changed += 1
+              }
+            }
+            break
           }
         }
       }
