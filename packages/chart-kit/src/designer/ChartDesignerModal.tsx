@@ -30,6 +30,8 @@ export interface ChartDesignerInitial {
     categories: string[]
     series: Array<{ name: string; values: (number | null)[] }>
   }
+  /** 扩展块回显:函数安全串(有 code 走代码回显;无 code 时转 option 预览) */
+  optionJson?: string
 }
 
 export interface ChartDesignerInsert {
@@ -107,7 +109,7 @@ export function ChartDesignerModal({
 
   // 组/示例切换:装入示例代码并自动试跑(应用户"选完即所见"预期)
   useEffect(() => {
-    if (initial?.code || initial?.specData) return // 重开已有图表:数据/代码已带,不覆盖
+    if (initial?.code || initial?.specData || initial?.optionJson) return // 重开已有图表:数据/代码已带,不覆盖
     const first = group?.examples.find((e) => e.id === exampleId) ?? group?.examples[0]
     if (!first) return
     setExampleId(first.id)
@@ -118,7 +120,26 @@ export function ChartDesignerModal({
 
   // 双击回显(initial 带代码):自动试跑让预览立即可见,不用手点运行
   useEffect(() => {
-    if (initial?.code) void runCode(initial.code)
+    const code = initial?.code
+    if (code) {
+      void runCode(code)
+      return
+    }
+    // 无代码但有 optionJson(如 AI/表格来源的图):反序列化直接预览+提表
+    const optJson = initial?.optionJson
+    if (optJson) {
+      void (async () => {
+        try {
+          const { parseOption } = await import('../sandbox/serialize')
+          const opt = parseOption(optJson)
+          setOption(opt)
+          setTable(extractTableFromOption(opt))
+          setError(null)
+        } catch (e) {
+          setError(String((e as Error).message ?? e).slice(0, 120))
+        }
+      })()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅挂载时执行
   }, [])
 

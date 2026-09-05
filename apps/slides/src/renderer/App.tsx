@@ -121,7 +121,11 @@ import type {
   SlideShowState,
 } from './action-context'
 import { FIT_WIDTH } from './app-constants'
-import { ChartDesignerModal, type ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+import {
+  ChartDesignerModal,
+  type ChartDesignerInitial,
+  type ChartDesignerInsert,
+} from '@chatoffice/chart-kit/designer'
 import { StageRuler } from './components/StageRuler'
 import { formatRulerValue, type RulerUnit } from './ruler-ticks'
 import * as fileActions from './file-actions'
@@ -1577,6 +1581,7 @@ export function App() {
     title?: string
     groupId: string
   } | null>(null)
+  const chartDesignerInitialRef = useRef<ChartDesignerInitial | null>(null)
   // 双击 echart 海报图 → 读 sidecar → 设计器带源码回显(编辑不丢)
   const openEchartEditor = useCallback(
     (sourceId: string) => {
@@ -1590,6 +1595,12 @@ export function App() {
             ...(d.code ? { code: d.code } : {}),
             ...(d.title ? { title: d.title } : {}),
             groupId: d.groupId,
+          }
+          chartDesignerInitialRef.current = {
+            groupId: d.groupId,
+            optionJson: d.optionJson,
+            ...(d.code ? { code: d.code } : {}),
+            ...(d.title ? { title: d.title } : {}),
           }
           setChartDesignerOpen(true)
         })
@@ -3260,8 +3271,10 @@ export function App() {
       {chartDesignerOpen && (
         <ChartDesignerModal
           lang="zh-CN"
+          initial={chartDesignerInitialRef.current}
           onClose={() => {
             chartDesignerEditRef.current = null
+            chartDesignerInitialRef.current = null
             setChartDesignerOpen(false)
           }}
           onInsert={(payload) => void insertFromChartDesigner(payload)}
@@ -3518,7 +3531,7 @@ export function App() {
             onInsertIcon={(def, color) => void insertIcon(def, color)}
             onInsertChart={(kind) => void insertChart(kind)}
             onOpenChartDesigner={openChartDesigner}
-            onOpenEchart={openChartDesigner}
+            onOpenEchart={openEchartEditor}
             onInsertSmartArt={(def) => void insertSmartArt(def)}
             onInsertWordArt={(preset) => void insertWordArt(preset)}
             onInsertField={(type) => void insertField(type)}
