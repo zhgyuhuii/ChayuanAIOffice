@@ -69,6 +69,8 @@ interface Props {
   /** Play preview */
   onPreview: () => void
   onCollapse: () => void
+  /** 播完快退 toggle (WPS 动画属性): rewrite the item's rewind flag */
+  onToggleRewind: (idx: number) => void
 }
 
 export function AnimationPane({
@@ -80,6 +82,7 @@ export function AnimationPane({
   onDelete,
   onPreview,
   onCollapse,
+  onToggleRewind,
 }: Props) {
   const { t } = useI18n()
   // Step numbering: onClick increments; withPrev/afterPrev share the previous entry's number (0 = auto-play)
@@ -141,6 +144,14 @@ export function AnimationPane({
               </span>
             </span>
             <span className="anim-row-actions" onClick={(e) => e.stopPropagation()}>
+              <button
+                className={it.rewind ? 'on' : ''}
+                data-tip={t('paneAnimRewind')}
+                aria-label={t('paneAnimRewind')}
+                onClick={() => onToggleRewind(i)}
+              >
+                ↩
+              </button>
               <button
                 disabled={i === 0}
                 data-tip={t('paneMoveUp')}

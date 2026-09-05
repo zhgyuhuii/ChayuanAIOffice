@@ -181,6 +181,12 @@ export interface SlideAnimation {
    * mirrors it for the animation pane label.
    */
   variant?: string
+  /**
+   * 播完动画后快退 (WPS 动画属性): afterLast="1" on the effect cTn — the shape
+   * returns to its invisible state after the effect finishes (entrance/exit
+   * semantics vary in WPS; we mirror PowerPoint's rewind flag verbatim).
+   */
+  rewind?: boolean
 }
 
 /** Effect → class (entrance/emphasis/exit/motion path). */
@@ -551,7 +557,8 @@ function effectBehaviorsXml(gen: IdGen, a: SlideAnimation): string {
         show +
         `<p:animEffect transition="in" filter="${animEffectFilter(a.effect, a.variant)}"><p:cBhvr><p:cTn id="${gen.next()}" dur="${dur}"/>${target}</p:cBhvr></p:animEffect>`
       )
-    case 'crawlIn': { // Crawl in from an edge (slow slide, no filter); 效果选项 picks the edge
+    case 'crawlIn': {
+      // Crawl in from an edge (slow slide, no filter); 效果选项 picks the edge
       const side = a.variant ?? 'left'
       const offX = side === 'left' ? '0-#ppt_w/2' : side === 'right' ? '1+#ppt_w/2' : '#ppt_x'
       const offY = side === 'top' ? '0-#ppt_h/2' : side === 'bottom' ? '1+#ppt_h/2' : '#ppt_y'
@@ -656,11 +663,16 @@ function effectParXml(gen: IdGen, p: Placed): string {
   const preset = PRESET[p.a.effect]
   // 效果选项变体覆盖默认 presetSubtype (animation-pane label metadata)
   const sub = animVariantSubtype(p.a.effect, p.a.variant) || preset.sub
+  // 播完快退 (WPS 动画属性·播完动画后快退): after the effect, hide the shape
+  // again (cond delay = duration; PowerPoint encodes 播完后快退 the same way)
+  const rewindXml = p.a.rewind
+    ? setVisibilityXml(gen, tgtElXml(p.a), false, Math.max(1, Math.round(p.a.durationMs)))
+    : ''
   return (
     '<p:par>' +
     `<p:cTn id="${gen.next()}" presetID="${preset.id}" presetClass="${preset.cls}" presetSubtype="${sub}" fill="hold" grpId="${p.grpId}" nodeType="${NODE_TYPE[p.a.trigger]}">` +
     `<p:stCondLst><p:cond delay="${p.startMs}"/></p:stCondLst>` +
-    `<p:childTnLst>${effectBehaviorsXml(gen, p.a)}</p:childTnLst>` +
+    `<p:childTnLst>${effectBehaviorsXml(gen, p.a)}${rewindXml}</p:childTnLst>` +
     '</p:cTn></p:par>'
   )
 }
@@ -949,6 +961,15 @@ export function readSlideTimingXml(bodySuffix: string): SlideAnimation[] {
       const path = /<p:animMotion\b[^>]*\bpath="([^"]*)"/.exec(body)?.[1]
       anim.motionPath = (path ?? DEFAULT_MOTION_PATH).replace(/\s*E$/, '').trim()
     }
+    // 播完快退 echo: an extra hide set at delay≈duration. Only meaningful on
+    // entrance/emphasis effects — exit effects (fadeOut/flyOut/wipeOut/shrink/
+    // zoomOut/disappear) always carry that hide themselves (hideAtEnd).
+    if (animClassOf(effect) !== 'exit') {
+      const hideRe = new RegExp(
+        `<p:set><p:cBhvr><p:cTn[^>]*><p:stCondLst><p:cond delay="${Math.max(0, durationMs - 1)}"/></p:stCondLst>[\\s\\S]*?<p:strVal val="hidden"/>`,
+      )
+      if (hideRe.test(body)) anim.rewind = true
+    }
     out.push(anim)
   }
   return out
@@ -965,7 +986,8 @@ function animEq(x: SlideAnimation, y: SlideAnimation): boolean {
     x.delayMs === y.delayMs &&
     (x.motionPath ?? null) === (y.motionPath ?? null) &&
     (x.paragraph ?? null) === (y.paragraph ?? null) &&
-    (x.variant ?? null) === (y.variant ?? null)
+    (x.variant ?? null) === (y.variant ?? null) &&
+    !!x.rewind === !!y.rewind
   )
 }
 

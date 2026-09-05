@@ -175,7 +175,7 @@ export function patchAnimVariant(ctx: ActionCtx, variant: string): void {
 
 export function patchAnimTiming(
   ctx: ActionCtx,
-  patch: { trigger?: AnimTrigger; durationMs?: number; delayMs?: number },
+  patch: { trigger?: AnimTrigger; durationMs?: number; delayMs?: number; rewind?: boolean },
 ): void {
   if (ctx.timingIdx < 0) return
   const next = ctx.animations.map((a, i) => (i === ctx.timingIdx ? { ...a, ...patch } : a))

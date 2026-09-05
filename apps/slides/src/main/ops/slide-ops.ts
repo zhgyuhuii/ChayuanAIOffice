@@ -618,6 +618,7 @@ register({
           ? { motionPath: raw.motionPath as SlideAnimation['motionPath'] }
           : {}),
         ...(raw.paragraph != null ? { paragraph: raw.paragraph as number } : {}),
+        ...(raw.rewind === true ? { rewind: true } : {}),
       })
     }
     if (unresolved.length) {

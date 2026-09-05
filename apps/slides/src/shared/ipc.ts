@@ -681,6 +681,8 @@ export interface AnimationItem {
   paragraph?: number
   /** 效果选项/变体 (blinds/randomBars 横竖、strips 四向、wheel 辐条数、box/circle in-out、crawlIn 边) */
   variant?: string
+  /** 播完动画后快退 (WPS 动画属性)：效果结束后对象回到隐藏态 */
+  rewind?: boolean
 }
 
 /** Element pairing key for Morph transitions: cNvPr id / name are stable across pages; sourceId is per-page temporary. */

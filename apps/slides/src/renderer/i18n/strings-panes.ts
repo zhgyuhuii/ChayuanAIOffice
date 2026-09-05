@@ -15,6 +15,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       '选中形状后在「动画」选项卡挑一个效果，动画会写入 pptx，PowerPoint 放映同样生效。',
     paneAnimDelete: '删除该动画',
+    paneAnimRewind: '播完快退',
     paneAnimSeconds: '{sec} 秒',
     paneAnimDelaySeconds: '延迟 {sec} 秒',
     paneAnimParaN: '第 {n} 段',
@@ -290,6 +291,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Select a shape and pick an effect on the Animations tab. Animations are written into the pptx and play in PowerPoint too.',
     paneAnimDelete: 'Remove this animation',
+    paneAnimRewind: 'Rewind after effect',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'delay {sec} s',
     paneAnimParaN: 'paragraph {n}',
@@ -568,6 +570,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       '図形を選択して「アニメーション」タブから効果を選択。アニメーションは pptx に書き込まれ、PowerPoint のスライドショーでも有効です。',
     paneAnimDelete: 'このアニメーションを削除',
+    paneAnimRewind: '終了後に早戻し',
     paneAnimSeconds: '{sec} 秒',
     paneAnimDelaySeconds: '遅延 {sec} 秒',
     paneAnimParaN: '第 {n} 段落',
@@ -845,6 +848,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       '도형을 선택한 후 "애니메이션" 탭에서 효과를 선택하세요. 애니메이션은 pptx에 기록되며 PowerPoint 슬라이드 쇼에서도 적용됩니다.',
     paneAnimDelete: '이 애니메이션 제거',
+    paneAnimRewind: '효과 후 되감기',
     paneAnimSeconds: '{sec}초',
     paneAnimDelaySeconds: '지연 {sec}초',
     paneAnimParaN: '{n}번째 단락',
@@ -1122,6 +1126,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Sélectionnez une forme, puis choisissez un effet dans l’onglet « Animations ». Les animations sont écrites dans le pptx et fonctionnent aussi dans PowerPoint.',
     paneAnimDelete: 'Supprimer cette animation',
+    paneAnimRewind: 'Rembobiner après',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'délai {sec} s',
     paneAnimParaN: 'paragraphe {n}',
@@ -1403,6 +1408,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Wählen Sie eine Form aus und wählen Sie auf der Registerkarte „Animationen“ einen Effekt. Animationen werden in die pptx-Datei geschrieben und funktionieren auch in PowerPoint.',
     paneAnimDelete: 'Diese Animation entfernen',
+    paneAnimRewind: 'Nach Effekt zurücksetzen',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'Verzögerung {sec} s',
     paneAnimParaN: 'Absatz {n}',
@@ -1686,6 +1692,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Seleccione una forma y elija un efecto en la pestaña «Animaciones». Las animaciones se escriben en el pptx y también funcionan en PowerPoint.',
     paneAnimDelete: 'Quitar esta animación',
+    paneAnimRewind: 'Rebobinar tras el efecto',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'retraso {sec} s',
     paneAnimParaN: 'párrafo {n}',
@@ -1967,6 +1974,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'เลือกรูปร่างแล้วเลือกเอฟเฟ็กต์ในแท็บ "ภาพเคลื่อนไหว" ภาพเคลื่อนไหวจะถูกเขียนลงใน pptx และมีผลในการนำเสนอของ PowerPoint ด้วย',
     paneAnimDelete: 'ลบภาพเคลื่อนไหวนี้',
+    paneAnimRewind: 'กระชากกลับหลังเอฟเฟกต์',
     paneAnimSeconds: '{sec} วินาที',
     paneAnimDelaySeconds: 'หน่วงเวลา {sec} วินาที',
     paneAnimParaN: 'ย่อหน้าที่ {n}',
@@ -2244,6 +2252,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Pilih bentuk lalu pilih efek pada tab "Animasi". Animasi ditulis ke dalam pptx dan juga berfungsi di PowerPoint.',
     paneAnimDelete: 'Hapus animasi ini',
+    paneAnimRewind: 'Putar balik setelah efek',
     paneAnimSeconds: '{sec} dtk',
     paneAnimDelaySeconds: 'tunda {sec} dtk',
     paneAnimParaN: 'paragraf {n}',
@@ -2523,6 +2532,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Выберите фигуру и эффект на вкладке «Анимация». Анимация записывается в pptx и работает также в PowerPoint.',
     paneAnimDelete: 'Удалить эту анимацию',
+    paneAnimRewind: 'Откат после эффекта',
     paneAnimSeconds: '{sec} с',
     paneAnimDelaySeconds: 'задержка {sec} с',
     paneAnimParaN: 'абзац {n}',
@@ -2800,6 +2810,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'حدد شكلاً ثم اختر تأثيرًا من علامة التبويب «حركات». تتم كتابة الحركات في ملف pptx وتعمل أيضًا في PowerPoint.',
     paneAnimDelete: 'إزالة هذه الحركة',
+    paneAnimRewind: 'التراجع بعد التأثير',
     paneAnimSeconds: '{sec} ث',
     paneAnimDelaySeconds: 'تأخير {sec} ث',
     paneAnimParaN: 'الفقرة {n}',
@@ -3076,6 +3087,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Selecione uma forma e escolha um efeito na guia "Animações". As animações são gravadas no pptx e também funcionam no PowerPoint.',
     paneAnimDelete: 'Remover esta animação',
+    paneAnimRewind: 'Rebobinar após o efeito',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'atraso de {sec} s',
     paneAnimParaN: 'parágrafo {n}',
@@ -3358,6 +3370,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Seleziona una forma e scegli un effetto nella scheda "Animazioni". Le animazioni vengono scritte nel file pptx e funzionano anche in PowerPoint.',
     paneAnimDelete: 'Rimuovi questa animazione',
+    paneAnimRewind: 'Riavvolgi dopo effetto',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'ritardo {sec} s',
     paneAnimParaN: 'paragrafo {n}',
@@ -3639,6 +3652,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Zaznacz kształt i wybierz efekt na karcie „Animacje”. Animacje są zapisywane w pliku pptx i działają również w programie PowerPoint.',
     paneAnimDelete: 'Usuń tę animację',
+    paneAnimRewind: 'Przewiń po efekcie',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'opóźnienie {sec} s',
     paneAnimParaN: 'akapit {n}',
@@ -3918,6 +3932,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Selecteer een vorm en kies een effect op het tabblad "Animaties". Animaties worden in het pptx-bestand geschreven en werken ook in PowerPoint.',
     paneAnimDelete: 'Deze animatie verwijderen',
+    paneAnimRewind: 'Terugspoelen na effect',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'vertraging {sec} s',
     paneAnimParaN: 'alinea {n}',
@@ -4199,6 +4214,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'Pilih bentuk dan pilih kesan pada tab "Animasi". Animasi ditulis ke dalam pptx dan turut dimainkan dalam PowerPoint.',
     paneAnimDelete: 'Alih keluar animasi ini',
+    paneAnimRewind: 'Mundur selepas efek',
     paneAnimSeconds: '{sec} s',
     paneAnimDelaySeconds: 'lengah {sec} s',
     paneAnimParaN: 'perenggan {n}',
@@ -4480,6 +4496,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'בחר צורה ובחר אפקט בכרטיסייה "הנפשות". ההנפשות נכתבות לקובץ ה-pptx ופועלות גם ב-PowerPoint.',
     paneAnimDelete: 'הסר הנפשה זו',
+    paneAnimRewind: 'חזרה לאחר אפקט',
     paneAnimSeconds: '{sec} שנ׳',
     paneAnimDelaySeconds: 'השהיה {sec} שנ׳',
     paneAnimParaN: 'פסקה {n}',
@@ -4755,6 +4772,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       'कोई आकृति चुनें और "एनिमेशन" टैब में कोई प्रभाव चुनें। एनिमेशन pptx में लिखे जाते हैं और PowerPoint में भी चलते हैं।',
     paneAnimDelete: 'यह एनिमेशन हटाएँ',
+    paneAnimRewind: 'प्रभाव के बाद रिवाइंड',
     paneAnimSeconds: '{sec} से.',
     paneAnimDelaySeconds: 'विलंब {sec} से.',
     paneAnimParaN: 'अनुच्छेद {n}',
@@ -5033,6 +5051,7 @@ export const paneStrings = defineStrings({
     paneAnimEmptySub:
       '選取圖案後在「動畫」索引標籤挑一個效果，動畫會寫入 pptx，PowerPoint 放映同樣生效。',
     paneAnimDelete: '刪除該動畫',
+    paneAnimRewind: '播完快退',
     paneAnimSeconds: '{sec} 秒',
     paneAnimDelaySeconds: '延遲 {sec} 秒',
     paneAnimParaN: '第 {n} 段',

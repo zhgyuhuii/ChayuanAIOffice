@@ -4003,6 +4003,7 @@ export function registerSlidesIpc(): void {
         delayMs: a.delayMs,
         ...(a.motionPath != null ? { motionPath: a.motionPath } : {}),
         ...(a.paragraph != null ? { paragraph: a.paragraph } : {}),
+        ...(a.rewind ? { rewind: true } : {}),
       })
     }
     return out

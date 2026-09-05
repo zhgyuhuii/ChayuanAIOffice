@@ -1977,8 +1977,14 @@ export function App() {
   }, [selAnim, animations, selectedIds])
 
   const patchAnimTiming = useCallback(
-    (patch: { trigger?: AnimTrigger; durationMs?: number; delayMs?: number }) =>
-      animationActions.patchAnimTiming(ctxRef.current, patch),
+    (
+      patch: { trigger?: AnimTrigger; durationMs?: number; delayMs?: number; rewind?: boolean },
+      idx?: number,
+    ) =>
+      animationActions.patchAnimTiming(
+        { ...ctxRef.current, timingIdx: idx ?? ctxRef.current.timingIdx },
+        patch,
+      ),
     [],
   )
   const moveAnimation = useCallback(
@@ -4478,6 +4484,11 @@ export function App() {
                       onDelete={deleteAnimation}
                       onPreview={() => setAnimPreview((n) => n + 1)}
                       onCollapse={() => setShowAnimPane(false)}
+                      onToggleRewind={(idx) => {
+                        const it = animations[idx]
+                        if (!it) return
+                        patchAnimTiming({ rewind: !it.rewind }, idx)
+                      }}
                     />
                   ) : showComments ? (
                     <CommentsPane
