@@ -3,6 +3,7 @@ import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
 import { chatofficeAttributionHeaders } from '../providers'
 import { modelEchoesReasoning } from '../registry'
+import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
 import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
@@ -68,7 +69,8 @@ function emitOpenAiJsonMessage(bodyText: string, cb: StreamCallbacks): void {
   let msg: {
     choices?: Array<{
       message?: {
-        content?: string | null
+        /** string for text models; image models (qwen-image) may return a list of parts */
+        content?: string | Array<{ text?: string }> | null
         reasoning_content?: string
         tool_calls?: Array<{ id?: string; function?: { name?: string; arguments?: string } }>
       }
@@ -85,9 +87,17 @@ function emitOpenAiJsonMessage(bodyText: string, cb: StreamCallbacks): void {
   const choice = msg.choices?.[0]
   let emitted = false
   if (choice?.message?.reasoning_content) cb.onReasoningDelta?.(choice.message.reasoning_content)
-  if (choice?.message?.content) {
+  const rawContent = choice?.message?.content
+  // image models may answer with a part list ({text: '![…](url)'}) — flatten it
+  const content =
+    typeof rawContent === 'string'
+      ? rawContent
+      : Array.isArray(rawContent)
+        ? rawContent.map((part) => part?.text ?? '').join('')
+        : ''
+  if (content) {
     emitted = true
-    cb.onDelta(choice.message.content)
+    cb.onDelta(content)
   }
   const toolCalls: AgentToolCall[] = []
   for (const tc of choice?.message?.tool_calls ?? []) {
@@ -149,6 +159,17 @@ async function openAiCompatibleTurn(
     wd.touch()
     cb.onActivity?.()
   }
+  // Image-generation models exposed on an OpenAI-compatible host (e.g.
+  // qwen-image on DashScope compatible-mode) reject conversation shapes:
+  // DashScope validates them as input.messages with role 'user' only and
+  // content as a part list — a system/assistant history with string content
+  // fails with "Input should be 'user'"/"should be a valid list". Collapse
+  // the turn to a single user text message and read the non-streamed reply.
+  const imageModel = inferModelType(config.model) === 'image-generation'
+  const lastUser = [...messages]
+    .reverse()
+    .find((m): m is Extract<AgentMessage, { role: 'user' }> => m.role === 'user' && !!m.text)
+  const lastUserText = lastUser?.text ?? system
   const response = await aiFetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
     method: 'POST',
     signal: wd.signal,
@@ -157,24 +178,30 @@ async function openAiCompatibleTurn(
       Authorization: `Bearer ${config.apiKey}`,
       ...chatofficeAttributionHeaders(baseUrl),
     },
-    body: JSON.stringify({
-      model: config.model,
-      ...(options.useMaxCompletionTokens
-        ? { max_completion_tokens: maxTokens }
-        : { max_tokens: maxTokens }),
-      messages: openAiMessages(system, messages, modelEchoesReasoning(config.model)),
-      ...(tools.length > 0
-        ? {
-            tools: tools.map((t) => ({
-              type: 'function',
-              function: { name: t.name, description: t.description, parameters: t.inputSchema },
-            })),
-          }
-        : {}),
-      ...(options.omitTemperature ? {} : { temperature: 0.3 }),
-      ...options.bodyExtras,
-      stream: true,
-    }),
+    body: imageModel
+      ? JSON.stringify({
+          model: config.model,
+          messages: [{ role: 'user', content: [{ type: 'text', text: lastUserText }] }],
+          stream: false,
+        })
+      : JSON.stringify({
+          model: config.model,
+          ...(options.useMaxCompletionTokens
+            ? { max_completion_tokens: maxTokens }
+            : { max_tokens: maxTokens }),
+          messages: openAiMessages(system, messages, modelEchoesReasoning(config.model)),
+          ...(tools.length > 0
+            ? {
+                tools: tools.map((t) => ({
+                  type: 'function',
+                  function: { name: t.name, description: t.description, parameters: t.inputSchema },
+                })),
+              }
+            : {}),
+          ...(options.omitTemperature ? {} : { temperature: 0.3 }),
+          ...options.bodyExtras,
+          stream: true,
+        }),
   })
   // headers arrived: ping the renderer watchdog too, or a slow first chunk could trip it
   onBytes()

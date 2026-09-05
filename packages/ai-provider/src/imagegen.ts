@@ -75,27 +75,45 @@ async function generateViaOpenAiImages(
   throw new Error('the image API returned neither an image nor a URL')
 }
 
-/** DashScope's image models are task-based: submit with X-DashScope-Async, poll to a result URL */
+/** DashScope's image models are task-based: submit with X-DashScope-Async, poll to a result URL.
+ * Two request shapes live behind the same task/poll flow: wanx models take
+ * `input.prompt` on text2image/image-synthesis, while qwen-image is a
+ * multimodal-generation model — it validates `input.messages` (role 'user',
+ * content as a part list) and rejects the prompt form. */
 async function generateViaDashscope(
   call: ResolvedModelCall,
   req: ImageGenRequest,
 ): Promise<ImageGenResult> {
   const root = 'https://dashscope.aliyuncs.com'
   const size = aspectToSize(req.aspectRatio, '*') ?? '1024*1024'
-  const submit = await aiFetch(`${root}/api/v1/services/aigc/text2image/image-synthesis`, {
-    method: 'POST',
-    ...(req.signal ? { signal: req.signal } : {}),
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${call.apiKey}`,
-      'X-DashScope-Async': 'enable',
+  const isQwenImage = /qwen-image/i.test(call.model)
+  const submit = await aiFetch(
+    isQwenImage
+      ? `${root}/api/v1/services/aigc/multimodal-generation/generation`
+      : `${root}/api/v1/services/aigc/text2image/image-synthesis`,
+    {
+      method: 'POST',
+      ...(req.signal ? { signal: req.signal } : {}),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${call.apiKey}`,
+        'X-DashScope-Async': 'enable',
+      },
+      body: JSON.stringify(
+        isQwenImage
+          ? {
+              model: call.model,
+              input: { messages: [{ role: 'user', content: [{ text: req.prompt }] }] },
+              parameters: { n: 1, size },
+            }
+          : {
+              model: call.model,
+              input: { prompt: req.prompt },
+              parameters: { n: 1, size },
+            },
+      ),
     },
-    body: JSON.stringify({
-      model: call.model,
-      input: { prompt: req.prompt },
-      parameters: { n: 1, size },
-    }),
-  })
+  )
   if (!submit.ok) {
     throw new Error(`HTTP ${submit.status}: ${httpBodyDetail(await submit.text())}`)
   }
