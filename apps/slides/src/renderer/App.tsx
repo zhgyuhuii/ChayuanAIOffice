@@ -1779,6 +1779,9 @@ export function App() {
   }, [hasDoc, current, path])
   /** Transitions-tab full spec echo (速度/效果选项/声音 state) */
   const [transSpec, setTransSpec] = useState<TransitionSpec | null>(null)
+  /** Home tab 放映 quick menu (CT RB_SlideShow): open + last chosen start mode */
+  const [slideShowOpen, setSlideShowOpen] = useState(false)
+  const [slideShowFromStart, setSlideShowFromStart] = useState(true)
   useEffect(() => {
     if (!hasDoc) {
       setTransSpec(null)
@@ -3488,6 +3491,10 @@ export function App() {
             animCount={animations.length}
             animBrush={animBrush}
             onToggleAnimBrush={toggleAnimBrush}
+            slideShowOpen={slideShowOpen}
+            setSlideShowOpen={setSlideShowOpen}
+            slideShowFromStart={slideShowFromStart}
+            setSlideShowFromStart={setSlideShowFromStart}
             showLoop={showLoop}
             onSetShowLoop={setShowLoop}
             onAnimPreview={() => setAnimPreview((n) => n + 1)}

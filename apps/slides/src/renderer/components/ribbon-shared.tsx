@@ -499,7 +499,11 @@ export interface Props {
   animBrush: AnimationItem[] | null
   /** Copy the selection's animations (idle) / paste them onto the selection (armed) */
   onToggleAnimBrush: () => void
-  /** Preview the current page's animations on the edit canvas */
+  /** Home-tab split quick menu: last chosen start mode + dropdown open state */
+  slideShowFromStart: boolean
+  slideShowOpen: boolean
+  setSlideShowFromStart: Dispatch<SetStateAction<boolean>>
+  setSlideShowOpen: Dispatch<SetStateAction<boolean>>
   onAnimPreview: () => void
   /** 放映设置 echo (presProps): 循环放映 on/off */
   showLoop: boolean
@@ -670,6 +674,10 @@ export interface Props {
 /** Ribbon locals + props handed to the extracted tab components; rebuilt every render. */
 export interface RibbonTabCtx extends Pick<
   Props,
+  | 'slideShowFromStart'
+  | 'slideShowOpen'
+  | 'setSlideShowFromStart'
+  | 'setSlideShowOpen'
   | 'brushMode'
   | 'canDistribute'
   | 'canPaste'

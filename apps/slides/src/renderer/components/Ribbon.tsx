@@ -1720,6 +1720,10 @@ export function Ribbon({
   onToggleAnimBrush,
   showLoop,
   onSetShowLoop,
+  slideShowFromStart,
+  slideShowOpen,
+  setSlideShowFromStart,
+  setSlideShowOpen,
   onAnimPreview,
   onSlideShow,
   onPresenterView,
@@ -1935,6 +1939,7 @@ export function Ribbon({
     if (!keep.includes('chart')) setChartDrop(null)
     if (!keep.includes('collapse')) setCollapseOpen(null)
     if (!keep.includes('pen')) setPenFlyout(null)
+    if (!keep.includes('slideShow')) setSlideShowOpen(false)
   }, [])
 
   // Any ribbon popup open? Drives outside-press dismissal AND suspends the
@@ -1950,6 +1955,7 @@ export function Ribbon({
     layoutOpen ||
     chartDrop != null ||
     arrangeOpen ||
+    slideShowOpen ||
     paraOpen ||
     pictureBorderOpen ||
     changeShapeOpen ||
@@ -2169,6 +2175,10 @@ export function Ribbon({
   )
 
   const tabCtx: RibbonTabCtx = {
+    slideShowFromStart,
+    slideShowOpen,
+    setSlideShowFromStart,
+    setSlideShowOpen,
     brushMode,
     canDistribute,
     canPaste,

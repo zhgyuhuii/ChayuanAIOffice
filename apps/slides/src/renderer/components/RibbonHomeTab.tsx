@@ -100,6 +100,8 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
     onFormatBrushDoubleClick,
     onParagraphFormat,
     onPaste,
+    setSlideShowOpen,
+    slideShowOpen,
     onResetLayout,
     onSetLayout,
     onSlideShow,
@@ -237,31 +239,65 @@ export function RibbonHomeTab({ rb }: { rb: RibbonTabCtx }) {
         </div>
       </Group>
       <div className="ribbon-sep" />
-      {/* WPS 对齐：放映入口拆回两个独立按钮（从头开始 / 当页开始），
-          不再合并成 split 按钮 */}
+      {/* CT_Home.kuip(wpp) RB_SlideShow = KQuickMenuCommand：主钮“当页开始”
+          + caret 菜单（从头开始/当页开始），与 WPS 开始页一致 */}
       <Group label={t('ribbonTabSlideShow')}>
-        <button
-          className="rb-big"
-          disabled={!hasDoc}
-          onClick={() => onSlideShow(true)}
-          data-tip={t('ribbonFromBeginningTip')}
-        >
-          <span className="rb-big-icon">
-            <IconPlayFromStart size={BIG} />
-          </span>
-          <span>{t('ribbonFromBeginning')}</span>
-        </button>
-        <button
-          className="rb-big"
-          disabled={!hasDoc}
-          onClick={() => onSlideShow(false)}
-          data-tip={t('ribbonFromCurrentTip')}
-        >
-          <span className="rb-big-icon">
-            <IconPlayCurrent size={BIG} />
-          </span>
-          <span>{t('ribbonFromCurrent')}</span>
-        </button>
+        <div className="rb-drop-wrap">
+          <button
+            className="rb-big rb-split"
+            disabled={!hasDoc}
+            onClick={() => onSlideShow(false)}
+            data-tip={t('ribbonFromCurrentTip')}
+          >
+            <span className="rb-big-icon">
+              <span className="rb-split-main">
+                <IconPlayCurrent size={BIG} />
+              </span>
+              <span
+                className={`rb-caret-hit${slideShowOpen ? ' active' : ''}`}
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                  closeSiblingPanels(e, closePanels, 'slideShow')
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (hasDoc) setSlideShowOpen((v) => !v)
+                }}
+              >
+                <RbCaret />
+              </span>
+            </span>
+            <span>{t('ribbonFromCurrent')}</span>
+          </button>
+          {slideShowOpen && (
+            <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => {
+                  setSlideShowOpen(false)
+                  onSlideShow(true)
+                }}
+                data-tip={t('ribbonFromBeginningTip')}
+              >
+                <span className="rb-menu-glyph">
+                  <IconPlayFromStart size={20} />
+                </span>
+                {t('ribbonFromBeginning')}
+              </button>
+              <button
+                onClick={() => {
+                  setSlideShowOpen(false)
+                  onSlideShow(false)
+                }}
+                data-tip={t('ribbonFromCurrentTip')}
+              >
+                <span className="rb-menu-glyph">
+                  <IconPlayCurrent size={20} />
+                </span>
+                {t('ribbonFromCurrent')}
+              </button>
+            </div>
+          )}
+        </div>
       </Group>
       <div className="ribbon-sep" />
       {/* WPS 对齐：幻灯片组常驻展开为三个按钮（新建幻灯片⌄ / 版式⌄ / 节），
