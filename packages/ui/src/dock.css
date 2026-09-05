@@ -150,7 +150,8 @@
   pointer-events: none;
 }
 
-/* ---- maximized: panel covers the whole shell, content stays mounted beneath ---- */
+/* ---- maximized: panel covers the whole shell INCLUDING the app's ribbon —
+ * true fullscreen, the panel's own header (对话/助手 tabs) stays on top ---- */
 
 .dockshell.is-max .dockshell-panel {
   position: absolute;
@@ -161,14 +162,6 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
-}
-
-/* The app header (ribbon) lives inside the dock body since left/right docks
- * run level with it — maximizing must keep covering only the editor column,
- * so lift the header (first child of the app's editor-col) above the panel */
-.dockshell.is-max .dockshell-body > .editor-col > :first-child {
-  position: relative;
-  z-index: 41;
 }
 
 /* ---- collapsed: panel hidden entirely (the top-row bubble icon reopens) ---- */
