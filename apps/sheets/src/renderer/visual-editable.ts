@@ -15,7 +15,10 @@ export function isEditableShape(visual: WorkbookVisualObject): boolean {
 /// bytes inline in the journal too — the same in-place editability as shapes.
 /// Without this they render as the inert ImageVisual: clickable metal.
 export function isEditableImage(visual: WorkbookVisualObject): boolean {
-  return visual.kind === 'image' && visual.id.startsWith('added-image-')
+  return (
+    visual.kind === 'image' &&
+    (visual.id.startsWith('added-image-') || visual.id.startsWith('added-echart-'))
+  )
 }
 
 /// Images and shapes already in the file move/delete through a surgical

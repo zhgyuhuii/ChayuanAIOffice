@@ -40,6 +40,12 @@ describe('visual editability gates', () => {
     expect(isEditableVisual(sessionImage())).toBe(true)
   })
 
+  it('session-inserted echart posters are editable too (added-echart- prefix)', () => {
+    const echart = { ...sessionImage(), id: 'added-echart-1725400000000-9' }
+    expect(isEditableImage(echart)).toBe(true)
+    expect(isEditableVisual(echart)).toBe(true)
+  })
+
   it('file-loaded images stay editable through the surgical-edit path', () => {
     expect(isEditableFileVisual(fileImage())).toBe(true)
     expect(isEditableVisual(fileImage())).toBe(true)
@@ -57,9 +63,7 @@ describe('visual editability gates', () => {
   })
 
   it('charts pass either path; non-chart kinds never chart-edit', () => {
-    expect(
-      isEditableChart({ ...sessionImage(), id: 'added-chart-1', kind: 'chart' }),
-    ).toBe(true)
+    expect(isEditableChart({ ...sessionImage(), id: 'added-chart-1', kind: 'chart' })).toBe(true)
     expect(isEditableChart(sessionImage())).toBe(false)
   })
 })
