@@ -321,20 +321,51 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     expect(tagsOf('zhipu')).toContain('Free tier')
     expect(tagsOf('openai')).toContain('Key needed')
     expect(tagsOf('openai')).not.toContain('Free tier')
-    expect(tagsOf('genspark')).toContain('Login')
+    // 登录即用 badge was removed — genspark carries no tag
+    expect(tagsOf('genspark')).toEqual([])
     expect(tagsOf('ollama')).toContain('No key')
     expect(tagsOf('ollama')).toContain('Free')
   })
 
-  it('filters the catalog to free vendors', async () => {
+  it('filters the catalog through the compact dropdown (free / key / no-key / tier)', async () => {
     await renderWith(defaultSettingsV2())
+    // entering hint is visible until interaction
+    expect(document.body.querySelector('[data-model-filter-hint]')).toBeTruthy()
     expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeTruthy()
-    await act(async () => {
-      ;(document.body.querySelector('[data-model-filter-free]') as HTMLButtonElement).click()
-    })
+
+    const openMenu = () =>
+      act(async () => {
+        ;(document.body.querySelector('[data-model-filter]') as HTMLButtonElement).click()
+      })
+    const pick = (id: string) =>
+      act(async () => {
+        ;(
+          document.body.querySelector(`[data-model-filter-item="${id}"]`) as HTMLButtonElement
+        ).click()
+      })
+
+    await openMenu()
+    expect(document.body.querySelectorAll('[data-model-filter-item]').length).toBe(5)
+    await pick('free')
     expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeNull()
     expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeTruthy()
     // genspark carries no free flag — filtered out with the rest
     expect(document.body.querySelector('[data-vendor-row="genspark"]')).toBeNull()
+    // hint dismissed by interacting with the filter
+    expect(document.body.querySelector('[data-model-filter-hint]')).toBeNull()
+
+    await openMenu()
+    await pick('needskey')
+    expect(document.body.querySelector('[data-vendor-row="ollama"]')).toBeNull()
+    expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeTruthy()
+
+    await openMenu()
+    await pick('nokey')
+    expect(document.body.querySelector('[data-vendor-row="ollama"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeNull()
+
+    await openMenu()
+    await pick('all')
+    expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeTruthy()
   })
 })

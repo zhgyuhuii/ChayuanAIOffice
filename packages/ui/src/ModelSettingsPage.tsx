@@ -11,7 +11,7 @@
  * Transport is injected (ModelSettingsBridge) so the same page serves every
  * app's preload bridge and the web form's HTTP bridge.
  */
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   GENSPARK_PRESET_MODELS,
@@ -28,8 +28,10 @@ import {
   type AiSettingsV2,
   type AiWireProtocol,
   type DiscoveryTarget,
+  type VendorCatalogEntry,
 } from '@chatoffice/ai-provider'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
+import { useDismissablePopover } from './popover-dismiss'
 import { VendorLogo } from './VendorLogo'
 // self-contained styles: every consumer gets them with the component
 import './model-settings.css'
@@ -66,6 +68,35 @@ const PROTOCOLS: AiWireProtocol[] = [
   'gemini-native',
 ]
 
+/** vendor-directory filter (single-select dropdown before the search box) */
+type TagFilter = 'all' | 'free' | 'needskey' | 'nokey' | 'tier'
+
+const TAG_FILTERS: Array<{
+  id: TagFilter
+  labelKey: 'filterAll' | 'tagFree' | 'tagNeedsKey' | 'tagNoKey' | 'tagFreeTier'
+}> = [
+  { id: 'all', labelKey: 'filterAll' },
+  { id: 'free', labelKey: 'tagFree' },
+  { id: 'needskey', labelKey: 'tagNeedsKey' },
+  { id: 'nokey', labelKey: 'tagNoKey' },
+  { id: 'tier', labelKey: 'tagFreeTier' },
+]
+
+function matchesTagFilter(v: VendorCatalogEntry, f: TagFilter): boolean {
+  switch (f) {
+    case 'free':
+      return !!v.free
+    case 'needskey':
+      return !!v.keyUrl && !v.ollamaLike
+    case 'nokey':
+      return !!v.ollamaLike || v.free === 'nokey'
+    case 'tier':
+      return v.free === 'tier'
+    default:
+      return true
+  }
+}
+
 export function ModelSettingsPage({
   bridge,
   onClose,
@@ -78,8 +109,15 @@ export function ModelSettingsPage({
   const [gskAvailable, setGskAvailable] = useState(true)
   const [selected, setSelected] = useState<string>('genspark')
   const [search, setSearch] = useState('')
-  /** 免费过滤：只显示带免费额度/免费 Key/无需 Key 的厂商 */
-  const [freeOnly, setFreeOnly] = useState(false)
+  /** 目录过滤（单选下拉）：全部 / 免费 / 需要 Key / 无需 Key / 免费额度 */
+  const [tagFilter, setTagFilter] = useState<TagFilter>('all')
+  const [filterOpen, setFilterOpen] = useState(false)
+  const filterWrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(filterOpen, () => setFilterOpen(false), {
+    inside: () => [filterWrapRef.current],
+  })
+  /** entering the page surfaces a hint about the free-vendor filter, until any interaction */
+  const [showFilterHint, setShowFilterHint] = useState(true)
   /** collapsed directory groups (已开启 / 国内平台 / …) in the left pane */
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
@@ -103,6 +141,18 @@ export function ModelSettingsPage({
     setMsg({ kind, text })
     window.setTimeout(() => setMsg(null), 4000)
   }
+
+  // the entering hint fades on any interaction or after a while
+  useEffect(() => {
+    if (!showFilterHint) return
+    const hide = () => setShowFilterHint(false)
+    window.addEventListener('pointerdown', hide, { once: true })
+    const timer = window.setTimeout(hide, 8000)
+    return () => {
+      window.removeEventListener('pointerdown', hide)
+      window.clearTimeout(timer)
+    }
+  }, [showFilterHint])
 
   useEffect(() => {
     void bridge
@@ -145,11 +195,11 @@ export function ModelSettingsPage({
           v.group === group.id &&
           !(!gskAvailable && v.id === 'genspark') &&
           !enabledProfiles.some((p) => (p.vendorId ?? p.id) === v.id) &&
-          (!freeOnly || !!v.free) &&
+          matchesTagFilter(v, tagFilter) &&
           match(v.name, v.nameZh, v.id),
       ),
     })).filter((g) => g.vendors.length > 0)
-  }, [enabledProfiles, search, freeOnly, gskAvailable, locale])
+  }, [enabledProfiles, search, tagFilter, gskAvailable, locale])
 
   // ── form seeding on vendor switch ─────────────────────────────────────
   useEffect(() => {
@@ -389,11 +439,9 @@ export function ModelSettingsPage({
   const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
     const profile = active ? profiles.find((p) => p.id === id) : undefined
     const expanded = expandedVendors.has(id)
-    // badges: 需不需要 Key / 是否免费 / 登录即用 — from the vendor catalog
+    // badges: 需不需要 Key / 是否免费 — from the vendor catalog
     const vendorMeta = VENDOR_BY_ID.get(profile?.vendorId ?? id)
-    const loginBacked = profile?.auth === 'gsk-login' || (!profile && id === 'genspark')
     const tags: Array<{ kind: string; label: string }> = []
-    if (loginBacked) tags.push({ kind: 'login', label: t.tagLogin })
     if (vendorMeta?.ollamaLike) tags.push({ kind: 'nokey', label: t.tagNoKey })
     else if (vendorMeta?.keyUrl) tags.push({ kind: 'key', label: t.tagNeedsKey })
     if (vendorMeta?.free === 'nokey' || vendorMeta?.free === 'freekey')
@@ -609,6 +657,54 @@ export function ModelSettingsPage({
       {/* 左：厂商目录（chatop 版式） */}
       <aside className="msp-left">
         <div className="msp-search-wrap">
+          <div className="msp-filter" ref={filterWrapRef}>
+            <button
+              type="button"
+              className={`msp-filter-btn${tagFilter !== 'all' ? ' is-active' : ''}`}
+              data-model-filter
+              aria-haspopup="menu"
+              aria-expanded={filterOpen}
+              title={t.filterHint}
+              onClick={() => {
+                setFilterOpen((v) => !v)
+                setShowFilterHint(false)
+              }}
+            >
+              <span className="msp-filter-label">
+                {t[TAG_FILTERS.find((f) => f.id === tagFilter)!.labelKey]}
+              </span>
+              <span className={`msp-chev${filterOpen ? '' : ' is-collapsed'}`} aria-hidden>
+                ▾
+              </span>
+            </button>
+            {filterOpen && (
+              <div className="msp-filter-menu" role="menu" data-model-filter-menu>
+                {TAG_FILTERS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={tagFilter === f.id}
+                    data-model-filter-item={f.id}
+                    className={`msp-filter-item${tagFilter === f.id ? ' is-active' : ''}`}
+                    onClick={() => {
+                      setTagFilter(f.id)
+                      setFilterOpen(false)
+                      setShowFilterHint(false)
+                    }}
+                  >
+                    <span>{t[f.labelKey]}</span>
+                    {tagFilter === f.id && <span className="msp-filter-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+            {showFilterHint && !filterOpen && (
+              <div className="msp-filter-hint" data-model-filter-hint>
+                {t.filterHint}
+              </div>
+            )}
+          </div>
           <input
             className="msp-input"
             type="search"
@@ -617,15 +713,6 @@ export function ModelSettingsPage({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button
-            type="button"
-            className={`msp-filter-chip${freeOnly ? ' is-active' : ''}`}
-            data-model-filter-free
-            aria-pressed={freeOnly}
-            onClick={() => setFreeOnly((v) => !v)}
-          >
-            {t.filterFree}
-          </button>
         </div>
         <div className="msp-scroll">
           <VendorGroupEl

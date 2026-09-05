@@ -211,35 +211,109 @@
   background: rgb(15 108 189 / 7%);
 }
 
-.msp-tag.is-login {
-  color: #7a4d0b;
-  border-color: rgb(122 77 11 / 35%);
-  background: rgb(122 77 11 / 7%);
-}
-
 /* 免费过滤 chip in the search row */
 
-.msp-filter-chip {
-  margin-top: 6px;
-  width: 100%;
-  padding: 4px 8px;
+.msp-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.msp-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.msp-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
   border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
-  border-radius: 999px;
+  border-radius: 13px;
   background: var(--surface, #fff);
   font-size: 11px;
   color: var(--text-secondary, #606366);
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.msp-filter-chip:hover {
+.msp-filter-btn:hover {
   background: var(--surface-subtle, #f6f7f9);
 }
 
-.msp-filter-chip.is-active {
+.msp-filter-btn.is-active {
   color: #0a7d38;
   border-color: rgb(10 125 56 / 45%);
   background: rgb(10 125 56 / 8%);
   font-weight: 600;
+}
+
+.msp-filter-btn .msp-chev {
+  font-size: 8px;
+  color: var(--text-tertiary, #909499);
+  transition: transform 120ms ease;
+}
+
+.msp-filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 30;
+  min-width: 118px;
+  padding: 3px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 14%);
+}
+
+.msp-filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  font-size: 11px;
+  color: var(--text-secondary, #606366);
+  text-align: left;
+  cursor: pointer;
+}
+
+.msp-filter-item:hover {
+  background: var(--surface-subtle, #f6f7f9);
+}
+
+.msp-filter-item.is-active {
+  color: var(--accent, #2f6fdc);
+  font-weight: 600;
+}
+
+.msp-filter-check {
+  font-size: 10px;
+}
+
+/* entering hint: points at the filter, fades on any interaction */
+
+.msp-filter-hint {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  z-index: 29;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 6px;
+  background: var(--surface, #fff);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 12%);
+  font-size: 10px;
+  color: var(--text-tertiary, #909499);
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* nothing-enabled guidance banner */
