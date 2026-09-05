@@ -479,3 +479,20 @@
 | `93e8b5f` | **播完快退**（WPS 动画属性 #12 可建模部分）：SlideAnimation.rewind 写（效果尾部 hide set @duration，PowerPoint 同编码）/读（entrance/emphasis 专属判据，排除 exit 自带 hideAtEnd——修 3 个 round-trip 误判）；AnimationItem.rewind 全链透传；动画窗格每行 ↩ 开关；patchAnimTiming 扩 rewind+idx | engine 841 / slides 613 全绿 |
 
 **仍开放 ⬜**：样式集（架构决策）、大纲模式、母版视图、渲染侧行号绘制、动画声音（每效果）、批5 挂起项（SmartArt 写端/公式 OMML/邮件合并/云模板/打印管线/屏幕录制/手机遥控）。
+
+## 11. WPS ribbon 布局规格源（CT_Home.kuip 解包）+ 第六轮落地
+
+**资源位置**：`/Applications/wpsoffice.app/Contents/Resources/office6/res/commands/{et,wps,wpp}/ongmani/CT_*.kuip`（XML，每个 ribbon tab 一个文件）+ `res/*.kuip`（common/entries 命令注册）。**后续任何布局对齐都应先读对应 CT\_*.kuip，不要再靠截图猜**。
+
+CT_Home.kuip（et）实测规格：
+
+- 编辑组 RB_Editing 子序：`填充⌄(KxEtAiFillListCommand ctl=5 大钮) → 求和Σ⌄(sp_AutoSum_Home 大钮，下拉含 求和/均值/计数/最大/最小/条件统计/其他函数/AI生成公式) → 排序⌄ → 筛选⌄ → 冻结⌄(rFreezeOptions) → 查找⌄(m_Find_Select)`；求和/填充下拉内含 WPS 会员填充工具（录入序列/填充空白/插入文本/插入日期/AI 填充）—— ours 目前只做通用四向。
+- 样式组 RB_ConditionalFormatting：条件格式(ctl=15) / 套用表格格式(gallery col=1) / 数据透视表样式 / 单元格样式(galleryWidth=430)。
+- 单元格组 RB_mFormat：行和列(两行文字 "Rows and\nColumns") + 工作表⌄（重命名/移动复制/标签颜色/隐藏/取消隐藏——与我们 B3 一致）。
+- 布局参数：`canHideText=0`（禁文字隐藏）、`dynamicSpaceHint="loose;suitable"`、`lowResolutionInclude1280`（1280 断点变体）、`visibleOver/Under1280`。
+
+| 提交      | 内容                                                                                                                                                  | 验证                                                               |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `a8a2fcd` | sheets 开始 tab 编辑组（填充/求和大钮 + 双列小钮栈）与样式组（2×2 大钮网格）按 CT_Home.kuip 重排；`.edit-big-row/.edit-mini-grid/.style-big-grid` CSS | 真机几何：大钮 55-62×65px、小钮两列两行、样式组 178px；1990 测试绿 |
+
+**仍开放 ⬜**：填充/求和下拉的 WPS 会员工具项（录入序列/日期插入/AI 填充——通用四向已有，会员工具挂起）、编辑组"条件统计/AI 写公式"两项、Word/PPT 两端同源 CT 文件比对（wps/wpp 目录同法可挖）。
