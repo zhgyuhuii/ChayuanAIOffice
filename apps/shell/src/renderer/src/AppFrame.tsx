@@ -9,6 +9,10 @@ interface AppFrameProps {
   initialOnboardingSeen: boolean
 }
 
+/** must match home.css .sidebar and TREE_SIDEBAR_WIDTH in tab-manager.ts —
+ * the strip a document view leaves for the home tree */
+const TREE_SIDEBAR_WIDTH = 232
+
 export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
   const [homeActive, setHomeActive] = useState(true)
   const [showOnboarding, setShowOnboarding] = useState(!initialOnboardingSeen)
@@ -52,8 +56,17 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
     <div className="app-frame">
       <TabBar />
       {/* docs/sheets tabs render as WebContentsView children of this window, positioned
-       * by the main process to cover this area — only Home paints its own content here. */}
-      <div className="app-frame-content" style={{ visibility: homeActive ? 'visible' : 'hidden' }}>
+       * by the main process to cover this area — only Home paints its own content here.
+       * While a document tab is active the home tree stays painted in the strip the
+       * view leaves open (its left 232px): clip-path keeps that column visible and
+       * stops painting the rest, so home can't ghost through the editor views'
+       * translucent (vibrancy) regions, and the covered layout never reflows. */}
+      <div
+        className="app-frame-content"
+        style={
+          homeActive ? undefined : { clipPath: `inset(0 calc(100% - ${TREE_SIDEBAR_WIDTH}px) 0 0)` }
+        }
+      >
         <Home />
       </div>
       {/* editor WebContentsViews paint above ALL shell DOM, so the overlay only
