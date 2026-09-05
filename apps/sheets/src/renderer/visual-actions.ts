@@ -776,6 +776,8 @@ export function insertEchartVisual(
     },
   } as WorkbookVisualObject
   pushVisualAddUndo(ctx, runtime, state, visual)
+  ctx.setPendingEdits(journalSize(state.editJournal))
+  queueCtxVisualInstall(ctx, runtime)
   ctx.setMessage(t('appChartInserted'))
 }
 
