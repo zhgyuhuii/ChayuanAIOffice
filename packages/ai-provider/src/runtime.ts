@@ -22,12 +22,12 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   AiStreamRequestV2,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from './types'
 
 /**
  * Backend runtime shared by the Electron mains and the BFF: one place that
- * owns the settings source, secret resolution (inline key / gsk session),
+ * owns the settings source, secret resolution (inline key / chatoffice session),
  * the stream loop with keepalive + error mapping, discovery, and BYOK-first
  * image generation. Hosts wire their transport (IPC or HTTP) on top.
  */
@@ -35,17 +35,17 @@ import type {
 /** sentinel replacing a stored key in renderer-facing views; save merges it back */
 export const KEEP_KEY = '__keep__'
 
-export interface AiRuntimeGsk {
+export interface AiRuntimeChatOffice {
   apiKey(): string
   hasAuth(): boolean
-  status(withEmail: boolean): Promise<GenSparkAccountStatus>
+  status(withEmail: boolean): Promise<ChatOfficeAccountStatus>
   /** returns a downloadable/insertable image URL or throws; the fallback when no BYOK image model exists */
   generateImage(req: ImageGenRequest): Promise<{ url: string }>
 }
 
 export interface AiRuntimeDeps {
   source: AiSettingsSource
-  gsk: AiRuntimeGsk
+  chatoffice: AiRuntimeChatOffice
   translate: (key: string, params?: Record<string, unknown>) => string
 }
 
@@ -94,24 +94,27 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
 }
 
 export function createAiRuntime(deps: AiRuntimeDeps) {
-  const { source, gsk, translate } = deps
+  const { source, chatoffice, translate } = deps
 
   const readRaw = async (): Promise<AiSettingsV2> => {
     let settings = await source.read()
     // v1 healing carried over: the login-backed default with cloud tools opted
-    // out is a pre-lock combination; keep tools on for the genspark profile
-    if (settings.gskToolsEnabled === false && settings.currentModel?.profileId === 'genspark') {
-      settings = { ...settings, gskToolsEnabled: true }
+    // out is a pre-lock combination; keep tools on for the chatoffice profile
+    if (
+      settings.chatofficeToolsEnabled === false &&
+      settings.currentModel?.profileId === 'chatoffice'
+    ) {
+      settings = { ...settings, chatofficeToolsEnabled: true }
       await source.write(settings)
     }
-    // login gates nothing (consensus): a current model parked on the gsk
+    // login gates nothing (consensus): a current model parked on the chatoffice
     // profile while signed out falls through to the first usable BYOK chat
-    // model, so chat keeps working instead of erroring. The gsk error with its
+    // model, so chat keeps working instead of erroring. The chatoffice error with its
     // inline sign-in button stays the guidance only when nothing else exists.
     const current = resolveCurrentModel(settings)
-    if (current?.profileId === 'genspark' && !gsk.hasAuth()) {
+    if (current?.profileId === 'chatoffice' && !chatoffice.hasAuth()) {
       const fallback = enabledChatModels(settings).find((m) => {
-        if (m.profileId === 'genspark') return false
+        if (m.profileId === 'chatoffice') return false
         const profile = findProfile(settings, m.profileId)
         return !!profile && (!!profile.apiKey || !!profile.ollamaLike)
       })
@@ -144,14 +147,15 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     await source.write({ ...settings, currentModel: selection })
   }
 
-  /** resolve one run: profile + secret (gsk session for genspark) → wire call */
+  /** resolve one run: profile + secret (chatoffice session for chatoffice) → wire call */
   const resolveForRun = async (selection: AiModelSelection): Promise<ResolvedModelCall> => {
     const settings = await readRaw()
     const profile = findProfile(settings, selection.profileId)
     if (!profile) throw new Error(translate('errNoModel'))
-    if (profile.auth === 'gsk-login') {
-      if (!gsk.hasAuth() || !gsk.apiKey()) throw new Error(translate('errGskNotLoggedIn'))
-      return resolveModelCall(settings, selection, gsk.apiKey())
+    if (profile.auth === 'chatoffice-login') {
+      if (!chatoffice.hasAuth() || !chatoffice.apiKey())
+        throw new Error(translate('errChatOfficeNotLoggedIn'))
+      return resolveModelCall(settings, selection, chatoffice.apiKey())
     }
     const key = profile.apiKey || (profile.ollamaLike ? 'local' : '')
     if (!key) throw new Error(translate('errNoApiKey', { provider: profile.displayName }))
@@ -246,7 +250,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return { models }
   }
 
-  /** BYOK image model first; gsk backend as fallback; error when neither exists.
+  /** BYOK image model first; chatoffice backend as fallback; error when neither exists.
    * If the user configured an image model, its failure is the answer — silent
    * fallbacks would hide broken keys. */
   const generateImage = async (req: ImageGenRequest): Promise<{ url?: string; error?: string }> => {
@@ -261,9 +265,9 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
         return { error: err instanceof Error ? err.message : String(err) }
       }
     }
-    if (gsk.hasAuth()) {
+    if (chatoffice.hasAuth()) {
       try {
-        const r = await gsk.generateImage(req)
+        const r = await chatoffice.generateImage(req)
         return { url: r.url }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }

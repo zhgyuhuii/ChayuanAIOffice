@@ -46,6 +46,11 @@ export interface TabsApi {
    */
   setTreeInset(visible: boolean): void
   /**
+   * fire-and-forget: the user dragged the home tree splitter — the editor
+   * views' left inset follows this width live.
+   */
+  setTreeWidth(px: number): void
+  /**
    * fire-and-forget: a shell modal (settings) needs the whole window. Shell
    * DOM always paints beneath the editor WebContentsViews, so the main
    * process hides the active editor view for the modal's lifetime.
@@ -63,5 +68,6 @@ export const TABS_CHANNELS = {
   changed: 'tabs:changed',
   chromePressed: 'tabs:chrome-pressed',
   treeInset: 'tabs:tree-inset',
+  treeWidth: 'tabs:tree-width',
   shellModal: 'tabs:shell-modal',
 } as const

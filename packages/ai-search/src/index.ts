@@ -1,8 +1,8 @@
 /**
- * Search utilities (main process) — gsk (Genspark CLI) first, then Serper Google API,
+ * Search utilities (main process) — chatoffice (ChatOffice CLI) first, then Serper Google API,
  * with DuckDuckGo as the keyless last resort. Runs in the main process
  * (Node fetch / child process) to avoid renderer CORS; the Serper key reuses SERPER_API_KEY.
- * For gsk auth see ./gsk.ts (`gsk login` or GSK_API_KEY).
+ * For chatoffice auth see ./chatoffice.ts (`chatoffice login` or CHATOFFICE_API_KEY).
  */
 
 import {
@@ -12,7 +12,7 @@ import {
   type ImageSearchResult,
   type WebSearchResult,
 } from './shared'
-import { gskImageSearch, gskWebSearch, hasGskAuth } from './gsk'
+import { chatofficeImageSearch, chatofficeWebSearch, hasChatOfficeAuth } from './chatoffice'
 
 export type { ImageSearchResult, WebSearchResult } from './shared'
 export {
@@ -21,7 +21,7 @@ export {
   type StockSource,
   type StockImageResult,
 } from './stock'
-export * from './gsk'
+export * from './chatoffice'
 export * from './chatoffice-auth'
 
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
@@ -31,18 +31,18 @@ const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
 export async function webSearch(
   query: string,
   maxResults = 6,
-  useGsk = true,
+  useChatOffice = true,
 ): Promise<{
   results: WebSearchResult[]
   answer?: string
   method: string
   error?: string
 }> {
-  // useGsk=false: the user turned Genspark cloud tools off — skip straight to the free backends
-  if (useGsk && hasGskAuth()) {
+  // useChatOffice=false: the user turned ChatOffice cloud tools off — skip straight to the free backends
+  if (useChatOffice && hasChatOfficeAuth()) {
     try {
-      const r = await gskWebSearch(query, maxResults)
-      if (r.results.length) return { ...r, method: 'gsk' }
+      const r = await chatofficeWebSearch(query, maxResults)
+      if (r.results.length) return { ...r, method: 'chatoffice' }
     } catch {
       /* fall back to Serper/DuckDuckGo */
     }
@@ -93,16 +93,16 @@ export async function webSearch(
 export async function imageSearch(
   query: string,
   maxResults = 8,
-  useGsk = true,
+  useChatOffice = true,
 ): Promise<{
   images: ImageSearchResult[]
   method: string
   error?: string
 }> {
-  if (useGsk && hasGskAuth()) {
+  if (useChatOffice && hasChatOfficeAuth()) {
     try {
-      const images = await gskImageSearch(query, maxResults)
-      if (images.length) return { images, method: 'gsk' }
+      const images = await chatofficeImageSearch(query, maxResults)
+      if (images.length) return { images, method: 'chatoffice' }
     } catch {
       /* fall back to Serper/DuckDuckGo */
     }

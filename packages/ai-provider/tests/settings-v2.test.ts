@@ -13,7 +13,7 @@ describe('migrateSettingsV2', () => {
   it('returns defaults for a missing file: nothing enabled, no default model', () => {
     const s = migrateSettingsV2(null)
     expect(s.version).toBe(2)
-    expect(s.profiles[0]?.id).toBe('genspark')
+    expect(s.profiles[0]?.id).toBe('chatoffice')
     expect(s.profiles.every((p) => !p.enabled)).toBe(true)
     expect(s.currentModel).toBeUndefined()
     expect(resolveCurrentModel(s)).toBeUndefined()
@@ -40,8 +40,8 @@ describe('migrateSettingsV2', () => {
     // keyless glm did not migrate
     expect(s.profiles.find((p) => p.id === 'zhipu')).toBeUndefined()
     expect(s.currentModel).toEqual({ profileId: 'moonshot', modelId: 'kimi-k3' })
-    // genspark profile always present
-    expect(s.profiles.some((p) => p.id === 'genspark')).toBe(true)
+    // chatoffice profile always present
+    expect(s.profiles.some((p) => p.id === 'chatoffice')).toBe(true)
   })
 
   it('migrates a v1 anthropic selection onto the anthropic-messages protocol', () => {
@@ -85,19 +85,27 @@ describe('migrateSettingsV2', () => {
     v2.currentModel = { profileId: 'vanished', modelId: 'x' }
     const s = migrateSettingsV2(v2)
     expect(s.currentModel).toBeTruthy()
-    expect(s.profiles.map((p) => p.id)).toEqual(['genspark', 'openai'])
+    expect(s.profiles.map((p) => p.id)).toEqual(['chatoffice', 'openai'])
   })
 })
 
 describe('resolveModelCall', () => {
-  it('routes genspark by model prefix across its three proxy protocols', () => {
+  it('routes chatoffice by model prefix across its three proxy protocols', () => {
     const s = defaultSettingsV2()
-    const claude = resolveModelCall(s, { profileId: 'genspark', modelId: 'claude-opus-4-7' }, 'gsk')
+    const claude = resolveModelCall(
+      s,
+      { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
+      'chatoffice',
+    )
     expect(claude.protocol).toBe('anthropic')
     expect(claude.baseUrl).toContain('genspark.ai')
-    const gem = resolveModelCall(s, { profileId: 'genspark', modelId: 'gemini-3.7-flash' }, 'gsk')
+    const gem = resolveModelCall(
+      s,
+      { profileId: 'chatoffice', modelId: 'gemini-3.7-flash' },
+      'chatoffice',
+    )
     expect(gem.protocol).toBe('gemini')
-    const gpt = resolveModelCall(s, { profileId: 'genspark', modelId: 'gpt-5.6' }, 'gsk')
+    const gpt = resolveModelCall(s, { profileId: 'chatoffice', modelId: 'gpt-5.6' }, 'chatoffice')
     expect(gpt.protocol).toBe('openai-compatible')
   })
 
@@ -156,7 +164,7 @@ describe('resolveModelCall', () => {
     const s = defaultSettingsV2()
     expect(() => resolveModelCall(s, { profileId: 'nope', modelId: 'x' }, 'k')).toThrow()
     expect(() =>
-      resolveModelCall(s, { profileId: 'genspark', modelId: 'not-a-model' }, 'k'),
+      resolveModelCall(s, { profileId: 'chatoffice', modelId: 'not-a-model' }, 'k'),
     ).toThrow()
   })
 })
@@ -194,7 +202,7 @@ describe('selection helpers', () => {
       enabled: true,
       models: [{ id: 'gpt-5.6' }],
     })
-    s.currentModel = { profileId: 'genspark', modelId: 'gone' }
+    s.currentModel = { profileId: 'chatoffice', modelId: 'gone' }
     expect(resolveCurrentModel(s)).toEqual({
       profileId: 'openai',
       modelId: 'gpt-5.6',

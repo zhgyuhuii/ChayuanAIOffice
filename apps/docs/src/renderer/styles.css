@@ -590,7 +590,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 /* Slim visible scrollbar so mouse users can reach overflowed groups
-   (genspark-ai/chatoffice#55 precedent from the sheets ribbon). */
+   (chatoffice-ai/chatoffice#55 precedent from the sheets ribbon). */
 .ribbon-body::-webkit-scrollbar {
   height: 5px;
 }
@@ -7056,7 +7056,7 @@ body.docs-crop-active
 .ai-attachments {
   display: flex;
   gap: 8px;
-  /* single row inside the prompt box, above the textarea (Genspark composer style):
+  /* single row inside the prompt box, above the textarea (ChatOffice composer style):
      extra images run past the box edge and scroll horizontally.
      scroll (not auto) + zero bottom padding: the always-present 4px scrollbar lane
      doubles as the bottom padding, so overflowing never grows the strip and
@@ -7164,7 +7164,7 @@ body.docs-crop-active
   background: var(--bg-content);
 }
 
-/* the type icon sits in its own bordered white tile, like the Genspark card */
+/* the type icon sits in its own bordered white tile, like the ChatOffice card */
 .ai-attachment-card-icon {
   display: flex;
   flex-shrink: 0;
@@ -7613,7 +7613,7 @@ body.docs-crop-active
   background: var(--surface);
 }
 
-/* Genspark DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .modal-actions button {
   display: inline-flex;
   align-items: center;
@@ -7747,7 +7747,7 @@ body.docs-crop-active
   margin-top: 18px;
 }
 
-/* ---- Genspark DS form dialogs (password prompts + Protect Document) ---- */
+/* ---- ChatOffice DS form dialogs (password prompts + Protect Document) ---- */
 
 .modal.gs-form {
   padding: 24px;
@@ -7949,7 +7949,7 @@ body.docs-crop-active
 }
 
 /* checkbox / radio rows: the native input is visually replaced by the .ctl
-   box (18px, black checked state per the Genspark DS palette) */
+   box (18px, black checked state per the ChatOffice DS palette) */
 .protect-dialog label.protect-check {
   position: relative;
   display: flex;

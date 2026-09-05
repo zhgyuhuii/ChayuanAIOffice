@@ -50,10 +50,9 @@ interface TabRecord {
 
 /** must match the tab strip's rendered height (apps/shell/src/renderer/src/TabBar.tsx) */
 const TAB_STRIP_HEIGHT = 40
-/** must match the home sidebar's rendered width (home.css .sidebar); when the
- * tree inset is on, document views start right of it so the shell's own home
- * tree strip stays visible beside every editor tab */
-const TREE_SIDEBAR_WIDTH = 232
+/** default home sidebar width (home.css .sidebar); the renderer mirrors its
+ *  live width over setTreeWidth, so this is only the pre-first-message value */
+const TREE_SIDEBAR_DEFAULT = 232
 const HOME_ID = 'home'
 
 /**
@@ -77,6 +76,8 @@ export class TabManager {
   /** home tree visible beside document tabs; the shell renderer mirrors its
    *  persisted leftCollapsed flag over setTreeInset (default: visible) */
   private treeInset = true
+  /** live home tree strip width (renderer mirrors drags over setTreeWidth) */
+  private treeWidth = TREE_SIDEBAR_DEFAULT
   /** a shell modal (settings) has the window: the active editor view is hidden
    *  because shell DOM always paints beneath WebContentsViews */
   private shellModalOpen = false
@@ -114,7 +115,7 @@ export class TabManager {
     if (active?.view && this.bleedWcIds.has(active.view.webContents.id)) {
       return { x: 0, y: 0, width, height }
     }
-    const x = this.treeInset ? TREE_SIDEBAR_WIDTH : 0
+    const x = this.treeInset ? this.treeWidth : 0
     return {
       x,
       y: TAB_STRIP_HEIGHT,
@@ -128,6 +129,13 @@ export class TabManager {
   setTreeInset(visible: boolean): void {
     if (this.treeInset === visible) return
     this.treeInset = visible
+    this.layout()
+  }
+
+  /** renderer dragged the tree splitter: track the new strip width live */
+  setTreeWidth(px: number): void {
+    if (!Number.isFinite(px) || px === this.treeWidth) return
+    this.treeWidth = px
     this.layout()
   }
 

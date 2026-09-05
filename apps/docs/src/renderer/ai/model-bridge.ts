@@ -6,6 +6,6 @@ export const docsModelBridge: ModelSettingsBridge = {
   saveSettings: (view) => window.desktop.setAiSettings(view),
   setCurrentModel: (selection) => window.desktop.setAiCurrentModel(selection),
   discoverModels: (target) => window.desktop.aiDiscoverModels(target),
-  gskStatus: (withEmail) => window.desktop.aiGskStatus(withEmail),
-  gskLogin: () => window.desktop.aiGskLogin(),
+  chatofficeStatus: (withEmail) => window.desktop.aiChatOfficeStatus(withEmail),
+  chatofficeLogin: () => window.desktop.aiChatOfficeLogin(),
 }

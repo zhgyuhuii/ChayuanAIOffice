@@ -1,5 +1,5 @@
 /**
- * Wrapper around gsk (Genspark CLI, @genspark/cli) — search / image generation /
+ * Wrapper around chatoffice (ChatOffice CLI, @chatoffice/cli) — search / image generation /
  * media analysis / upload / transcription.
  *
  * Execution: the main process spawns the CLI's JS entry with
@@ -7,7 +7,7 @@
  * no-op in a plain Node environment), avoiding the Windows problem where
  * .cmd files cannot be passed to execFile.
  *
- * Auth: gskApiKey() below. When not logged in, hasGskAuth() returns false and
+ * Auth: chatofficeCliApiKey() below. When not logged in, hasChatOfficeAuth() returns false and
  * callers should fall back to other implementations (e.g. Serper search).
  */
 
@@ -20,12 +20,12 @@ import {
   COPYRIGHT_HOSTS,
   asRecord,
   firstItem,
-  gskProxyUrl,
+  chatofficeProxyUrl,
   safeHost,
   type ImageSearchResult,
   type WebSearchResult,
 } from './shared'
-import { chatofficeApiKey } from './chatoffice-auth'
+import { chatofficeApiKey as chatofficeAuthApiKey } from './chatoffice-auth'
 
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
@@ -35,19 +35,19 @@ const MAX_BUFFER = 32 * 1024 * 1024
 
 let cachedEntry: string | null | undefined
 
-/** JS entry of @genspark/cli (null if not found). Can be overridden via GSK_CLI_PATH. */
-export function resolveGskEntry(): string | null {
+/** JS entry of @chatoffice/cli (null if not found). Can be overridden via GSK_CLI_PATH. */
+export function resolveChatOfficeEntry(): string | null {
   if (process.env.GSK_CLI_PATH) return process.env.GSK_CLI_PATH
   if (cachedEntry !== undefined) return cachedEntry
   try {
     const require = createRequire(import.meta.url)
-    cachedEntry = require.resolve('@genspark/cli/dist/index.js')
+    cachedEntry = require.resolve('@chatoffice/cli/dist/index.js')
   } catch {
     // The packaged app has no node_modules; electron-builder extraResources
-    // copies the CLI into Resources/gsk/
+    // copies the CLI into Resources/chatoffice/
     const resourcesPath = (process as { resourcesPath?: string }).resourcesPath
     const packed = resourcesPath
-      ? join(resourcesPath, 'gsk', 'node_modules', '@genspark', 'cli', 'dist', 'index.js')
+      ? join(resourcesPath, 'chatoffice', 'node_modules', '@chatoffice', 'cli', 'dist', 'index.js')
       : null
     cachedEntry = packed && existsSync(packed) ? packed : null
   }
@@ -79,16 +79,16 @@ function electronCompatArgs(): string[] {
 }
 
 /**
- * API key for Genspark LLM proxy / tool_cli auth; '' when not logged in.
- * Priority: GSK_API_KEY env → ChatOffice's own key (bills to us via its
- * key_name) → shared gsk CLI login (bills to the Claw bucket).
+ * API key for ChatOffice LLM proxy / tool_cli auth; '' when not logged in.
+ * Priority: CHATOFFICE_API_KEY env → ChatOffice's own key (bills to us via its
+ * key_name) → shared chatoffice CLI login (bills to the Claw bucket).
  */
-export function gskApiKey(): string {
-  if (process.env.GSK_API_KEY) return process.env.GSK_API_KEY
-  const own = chatofficeApiKey()
+export function chatofficeCliApiKey(): string {
+  if (process.env.CHATOFFICE_API_KEY) return process.env.CHATOFFICE_API_KEY
+  const own = chatofficeAuthApiKey()
   if (own) return own
   try {
-    const configPath = join(homedir(), '.genspark-tool-cli', 'config.json')
+    const configPath = join(homedir(), '.chatoffice-tool-cli', 'config.json')
     if (!existsSync(configPath)) return ''
     const config = JSON.parse(readFileSync(configPath, 'utf-8')) as { api_key?: string }
     return config.api_key ?? ''
@@ -98,30 +98,30 @@ export function gskApiKey(): string {
 }
 
 /**
- * Whether gsk is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
+ * Whether chatoffice is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
  * Set AI_SEARCH_DISABLE_GSK=1 to force-disable (test isolation / force Serper).
  */
-export function hasGskAuth(): boolean {
+export function hasChatOfficeAuth(): boolean {
   if (process.env.AI_SEARCH_DISABLE_GSK === '1') return false
-  return !!gskApiKey() && resolveGskEntry() !== null
+  return !!chatofficeCliApiKey() && resolveChatOfficeEntry() !== null
 }
 
 // ── Child-process proxy plumbing ────────────────────────────────────
 
 // The main process's undici dispatcher (see the apps' proxy bootstraps) never
 // reaches child processes: without forwarding they dial genspark.ai directly.
-export { setGskProxyUrl, gskProxyUrl } from './shared'
+export { setChatOfficeProxyUrl, chatofficeProxyUrl } from './shared'
 
 /**
- * env for gsk CLI children: Electron-as-Node plus proxy forwarding. The CLI
+ * env for chatoffice CLI children: Electron-as-Node plus proxy forwarding. The CLI
  * uses Node's built-in fetch, which ignores proxy env vars unless
  * NODE_USE_ENV_PROXY=1 (Node >= 24 — Electron 41 ships Node 24). Only
  * http(s):// proxies are forwarded; undici's env proxy cannot speak SOCKS.
  */
-export function gskChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+export function chatofficeChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { ...base, ELECTRON_RUN_AS_NODE: '1' }
   const proxy = [
-    gskProxyUrl(),
+    chatofficeProxyUrl(),
     base.HTTPS_PROXY,
     base.https_proxy,
     base.HTTP_PROXY,
@@ -146,10 +146,10 @@ export function gskChildEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.Proce
 // ── Low-level execution ─────────────────────────────────────────────
 
 /**
- * gsk output may have [INFO] log lines mixed in before the JSON; scan from the
+ * chatoffice output may have [INFO] log lines mixed in before the JSON; scan from the
  * end for the first line starting with { or [ and parse from there.
  */
-export function parseGskOutput(stdout: string): unknown {
+export function parseChatOfficeOutput(stdout: string): unknown {
   const trimmed = stdout.trim()
   try {
     return JSON.parse(trimmed)
@@ -167,14 +167,14 @@ export function parseGskOutput(stdout: string): unknown {
       }
     }
   }
-  throw new Error(`No JSON found in gsk output: ${stdout.slice(0, 300)}`)
+  throw new Error(`No JSON found in chatoffice output: ${stdout.slice(0, 300)}`)
 }
 
-function runGsk(args: string[], timeoutMs: number, signal?: AbortSignal): Promise<unknown> {
-  const entry = resolveGskEntry()
-  if (!entry) return Promise.reject(new Error('@genspark/cli is not installed'))
+function runChatOffice(args: string[], timeoutMs: number, signal?: AbortSignal): Promise<unknown> {
+  const entry = resolveChatOfficeEntry()
+  if (!entry) return Promise.reject(new Error('@chatoffice/cli is not installed'))
   // inject the resolved key so the CLI bills the same identity as our direct HTTP calls
-  const key = gskApiKey()
+  const key = chatofficeCliApiKey()
   return new Promise((resolve, reject) => {
     execFile(
       process.execPath,
@@ -183,23 +183,23 @@ function runGsk(args: string[], timeoutMs: number, signal?: AbortSignal): Promis
         timeout: timeoutMs,
         maxBuffer: MAX_BUFFER,
         env: {
-          ...gskChildEnv(),
-          ...(key ? { GSK_API_KEY: key } : {}),
+          ...chatofficeChildEnv(),
+          ...(key ? { CHATOFFICE_API_KEY: key } : {}),
         },
         ...(signal ? { signal } : {}),
       },
       (err, stdout, stderr) => {
         if (err) {
-          // gsk's real failure reason (auth/network/quota) is in stderr; append it to ease debugging
+          // chatoffice's real failure reason (auth/network/quota) is in stderr; append it to ease debugging
           const errText = (stderr || '').toString().trim().slice(0, 500)
           reject(errText ? new Error(`${err.message} | stderr: ${errText}`) : err)
           return
         }
         try {
-          const result = parseGskOutput(String(stdout))
+          const result = parseChatOfficeOutput(String(stdout))
           const rec = asRecord(result)
           if (rec.status && rec.status !== 'ok') {
-            reject(new Error(`gsk returned an error: ${rec.message ?? rec.status}`))
+            reject(new Error(`chatoffice returned an error: ${rec.message ?? rec.status}`))
             return
           }
           resolve(result)
@@ -213,8 +213,8 @@ function runGsk(args: string[], timeoutMs: number, signal?: AbortSignal): Promis
 
 // ── Search ──────────────────────────────────────────────────────────
 
-/** Parses the `gsk search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
-export function parseGskWebSearch(
+/** Parses the `chatoffice search` response shape data.organic_results[{title,link,snippet}] (exported for tests) */
+export function parseChatOfficeWebSearch(
   raw: unknown,
   maxResults: number,
 ): { results: WebSearchResult[]; answer?: string } {
@@ -232,16 +232,16 @@ export function parseGskWebSearch(
   return answer !== undefined ? { results, answer } : { results }
 }
 
-export async function gskWebSearch(
+export async function chatofficeWebSearch(
   query: string,
   maxResults = 6,
 ): Promise<{ results: WebSearchResult[]; answer?: string }> {
-  const raw = await runGsk(['search', query], SEARCH_TIMEOUT_MS)
-  return parseGskWebSearch(raw, maxResults)
+  const raw = await runChatOffice(['search', query], SEARCH_TIMEOUT_MS)
+  return parseChatOfficeWebSearch(raw, maxResults)
 }
 
-/** Parses the `gsk img-search` response shape data[{image_url,title,source,link,width,height}] (exported for tests) */
-export function parseGskImageSearch(raw: unknown, maxResults: number): ImageSearchResult[] {
+/** Parses the `chatoffice img-search` response shape data[{image_url,title,source,link,width,height}] (exported for tests) */
+export function parseChatOfficeImageSearch(raw: unknown, maxResults: number): ImageSearchResult[] {
   const dataRaw = asRecord(raw).data
   const data: unknown[] = Array.isArray(dataRaw) ? dataRaw : []
   const images: ImageSearchResult[] = []
@@ -266,14 +266,17 @@ export function parseGskImageSearch(raw: unknown, maxResults: number): ImageSear
   return images
 }
 
-export async function gskImageSearch(query: string, maxResults = 8): Promise<ImageSearchResult[]> {
-  const raw = await runGsk(['img-search', query], SEARCH_TIMEOUT_MS)
-  return parseGskImageSearch(raw, maxResults)
+export async function chatofficeImageSearch(
+  query: string,
+  maxResults = 8,
+): Promise<ImageSearchResult[]> {
+  const raw = await runChatOffice(['img-search', query], SEARCH_TIMEOUT_MS)
+  return parseChatOfficeImageSearch(raw, maxResults)
 }
 
 // ── Image generation ────────────────────────────────────────────────
 
-export interface GskGenerateImageOptions {
+export interface ChatOfficeGenerateImageOptions {
   /** Image description (English works better; text that must appear in the image stays verbatim) */
   prompt: string
   /** Generation model; defaults to the CLI default (nano-banana-2). Special-purpose: fal-bria-rmbg background removal, fal-ai/recraft-clarity-upscale upscaling, flux-pro/outpaint outpainting, fal-ai/image-editing/text-removal watermark text removal */
@@ -286,49 +289,51 @@ export interface GskGenerateImageOptions {
   imageSize?: string
 }
 
-export interface GskGeneratedImage {
+export interface ChatOfficeGeneratedImage {
   /** Watermark-free image URL (preferred); can be downloaded and inserted directly */
   url: string
   taskId: string
 }
 
-/** Parses `gsk img` results: prefers data.generated_images[].image_urls_nowatermark (exported for tests) */
-export function parseGskGeneratedImage(raw: unknown): GskGeneratedImage {
+/** Parses `chatoffice img` results: prefers data.generated_images[].image_urls_nowatermark (exported for tests) */
+export function parseChatOfficeGeneratedImage(raw: unknown): ChatOfficeGeneratedImage {
   const data = asRecord(asRecord(raw).data ?? raw)
   const img = asRecord(firstItem(data.generated_images ?? data.images ?? []))
   const url = firstItem(img.image_urls_nowatermark) ?? firstItem(img.image_urls) ?? img.url ?? ''
   if (!url) {
-    throw new Error(`gsk image generation returned no result: ${JSON.stringify(raw).slice(0, 200)}`)
+    throw new Error(
+      `chatoffice image generation returned no result: ${JSON.stringify(raw).slice(0, 200)}`,
+    )
   }
   return { url: String(url), taskId: String(img.task_id ?? '') }
 }
 
-export async function gskGenerateImage(
-  options: GskGenerateImageOptions,
+export async function chatofficeGenerateImage(
+  options: ChatOfficeGenerateImageOptions,
   signal?: AbortSignal,
-): Promise<GskGeneratedImage> {
+): Promise<ChatOfficeGeneratedImage> {
   const args = ['img', options.prompt]
   if (options.model) args.push('-m', options.model)
   if (options.referenceImageUrls?.length) args.push('--image_urls', ...options.referenceImageUrls)
   if (options.aspectRatio) args.push('--aspect_ratio', options.aspectRatio)
   if (options.imageSize) args.push('--image_size', options.imageSize)
-  const raw = await runGsk(args, GENERATE_TIMEOUT_MS, signal)
-  const result = parseGskGeneratedImage(raw)
-  // Bare genspark file URLs (/api/files/) return 403; swap for a signed direct link with a token
+  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
+  const result = parseChatOfficeGeneratedImage(raw)
+  // Bare chatoffice file URLs (/api/files/) return 403; swap for a signed direct link with a token
   // so later plain fetch downloads (e.g. insert_web_image) need no auth
-  result.url = await gskResolveDownloadUrl(result.url)
+  result.url = await chatofficeResolveDownloadUrl(result.url)
   return result
 }
 
 /**
- * Swaps a genspark file wrapper URL for an anonymously downloadable signed direct link (`gsk download`).
- * Non-genspark file URLs are returned as-is; on swap failure the URL is also returned as-is
+ * Swaps a chatoffice file wrapper URL for an anonymously downloadable signed direct link (`chatoffice download`).
+ * Non-chatoffice file URLs are returned as-is; on swap failure the URL is also returned as-is
  * (callers handle download failures themselves).
  */
-export async function gskResolveDownloadUrl(url: string): Promise<string> {
+export async function chatofficeResolveDownloadUrl(url: string): Promise<string> {
   if (!url.includes('/api/files/')) return url
   try {
-    const raw = asRecord(await runGsk(['download', url], SEARCH_TIMEOUT_MS))
+    const raw = asRecord(await runChatOffice(['download', url], SEARCH_TIMEOUT_MS))
     const downloadUrl = asRecord(raw.data).download_url ?? raw.download_url
     return downloadUrl ? String(downloadUrl) : url
   } catch {
@@ -336,7 +341,7 @@ export async function gskResolveDownloadUrl(url: string): Promise<string> {
   }
 }
 
-// ── Cloud single-slide generation (Genspark slide_generate) ─────────
+// ── Cloud single-slide generation (ChatOffice slide_generate) ─────────
 
 /**
  * Calls the tool_cli HTTP endpoint directly so structured params
@@ -346,7 +351,7 @@ export async function gskResolveDownloadUrl(url: string): Promise<string> {
 const GSK_TOOL_CLI_BASE = 'https://www.genspark.ai/api/tool_cli'
 const SLIDE_GENERATE_TIMEOUT_MS = 240_000
 
-export interface GskSlideGenerateOptions {
+export interface ChatOfficeSlideGenerateOptions {
   /** Content and layout brief for this page */
   brief: string
   title?: string
@@ -385,8 +390,8 @@ async function toolCliPost(
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<unknown> {
-  const key = gskApiKey()
-  if (!key) throw new Error('Not logged in to Genspark (gsk login)')
+  const key = chatofficeCliApiKey()
+  if (!key) throw new Error('Not logged in to ChatOffice (chatoffice login)')
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   const onAbort = () => controller.abort()
@@ -420,8 +425,8 @@ async function toolCliPost(
  * Generates one editable slide in the cloud (brief → HTML → one-slide PPTX)
  * and returns the downloaded PPTX bytes plus the model that produced it.
  */
-export async function gskSlideGenerate(
-  options: GskSlideGenerateOptions,
+export async function chatofficeSlideGenerate(
+  options: ChatOfficeSlideGenerateOptions,
 ): Promise<{ bytes: Uint8Array; model: string }> {
   const { signal } = options
   const body: Record<string, unknown> = { brief: options.brief }
@@ -452,7 +457,7 @@ export async function gskSlideGenerate(
 // ── File conversion (PDF → DOCX) ────────────────────────────────────
 
 /** Extracts the download link from file_convert's markdown result text (exported for tests) */
-export function parseGskConvertResult(raw: unknown): string {
+export function parseChatOfficeConvertResult(raw: unknown): string {
   const data = asRecord(asRecord(raw).data ?? raw)
   const text = typeof data.result === 'string' ? data.result : ''
   const url = /\((https?:\/\/[^)\s]+)\)/.exec(text)?.[1] ?? /https?:\/\/\S+/.exec(text)?.[0]
@@ -463,17 +468,17 @@ export function parseGskConvertResult(raw: unknown): string {
 }
 
 /**
- * Uploads a local PDF and converts it to DOCX in the cloud (`gsk convert`,
+ * Uploads a local PDF and converts it to DOCX in the cloud (`chatoffice convert`,
  * costs 5 credits); returns the DOCX bytes.
  */
-export async function gskConvertPdfToDocx(
+export async function chatofficeConvertPdfToDocx(
   filePath: string,
   signal?: AbortSignal,
 ): Promise<Uint8Array> {
-  const wrapperUrl = await gskUpload(filePath)
-  const raw = await runGsk(['convert', wrapperUrl], GENERATE_TIMEOUT_MS, signal)
-  const link = parseGskConvertResult(raw)
-  const downloadUrl = await gskResolveDownloadUrl(link)
+  const wrapperUrl = await chatofficeUpload(filePath)
+  const raw = await runChatOffice(['convert', wrapperUrl], GENERATE_TIMEOUT_MS, signal)
+  const link = parseChatOfficeConvertResult(raw)
+  const downloadUrl = await chatofficeResolveDownloadUrl(link)
   const resp = await fetch(downloadUrl, signal ? { signal } : undefined)
   if (!resp.ok) throw new Error(`DOCX download failed: HTTP ${resp.status}`)
   return new Uint8Array(await resp.arrayBuffer())
@@ -481,8 +486,8 @@ export async function gskConvertPdfToDocx(
 
 // ── Media analysis / transcription ──────────────────────────────────
 
-/** Best-effort text extraction from gsk analysis-type command output (shape varies by task, so be lenient; exported for tests) */
-export function extractGskText(raw: unknown): string {
+/** Best-effort text extraction from chatoffice analysis-type command output (shape varies by task, so be lenient; exported for tests) */
+export function extractChatOfficeText(raw: unknown): string {
   const data = asRecord(raw).data ?? raw
   if (typeof data === 'string') return data
   if (data && typeof data === 'object') {
@@ -502,15 +507,15 @@ export function extractGskText(raw: unknown): string {
   return JSON.stringify(data ?? raw)
 }
 
-export interface GskAnalyzeMediaOptions {
+export interface ChatOfficeAnalyzeMediaOptions {
   /** Media URLs or local paths (image/audio/video; the CLI uploads local files automatically) */
   mediaUrls: string[]
   /** Analysis requirements (in English): what info to extract and what it's for */
   requirements: string
 }
 
-export async function gskAnalyzeMedia(
-  options: GskAnalyzeMediaOptions,
+export async function chatofficeAnalyzeMedia(
+  options: ChatOfficeAnalyzeMediaOptions,
   signal?: AbortSignal,
 ): Promise<string> {
   const args = [
@@ -520,11 +525,11 @@ export async function gskAnalyzeMedia(
     '--requirements',
     options.requirements,
   ]
-  const raw = await runGsk(args, GENERATE_TIMEOUT_MS, signal)
-  return extractGskText(raw)
+  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
+  return extractChatOfficeText(raw)
 }
 
-export interface GskTranscribeOptions {
+export interface ChatOfficeTranscribeOptions {
   /** Audio URLs or local paths */
   audioUrls: string[]
   /** Prompt (context / proper nouns; can improve recognition quality) */
@@ -533,31 +538,32 @@ export interface GskTranscribeOptions {
   model?: string
 }
 
-export async function gskTranscribe(
-  options: GskTranscribeOptions,
+export async function chatofficeTranscribe(
+  options: ChatOfficeTranscribeOptions,
   signal?: AbortSignal,
 ): Promise<string> {
   const args = ['transcribe', '--audio_urls', ...options.audioUrls]
   if (options.prompt) args.push('--prompt', options.prompt)
   if (options.model) args.push('-m', options.model)
-  const raw = await runGsk(args, GENERATE_TIMEOUT_MS, signal)
-  return extractGskText(raw)
+  const raw = await runChatOffice(args, GENERATE_TIMEOUT_MS, signal)
+  return extractChatOfficeText(raw)
 }
 
 // ── File upload / login ─────────────────────────────────────────────
 
-/** Uploads a local file and returns a file wrapper URL (usable as input to other gsk commands) */
-export async function gskUpload(filePath: string): Promise<string> {
-  const raw = asRecord(await runGsk(['upload', filePath], GENERATE_TIMEOUT_MS))
+/** Uploads a local file and returns a file wrapper URL (usable as input to other chatoffice commands) */
+export async function chatofficeUpload(filePath: string): Promise<string> {
+  const raw = asRecord(await runChatOffice(['upload', filePath], GENERATE_TIMEOUT_MS))
   const dataRec = asRecord(raw.data)
   const url = dataRec.file_wrapper_url ?? raw.url ?? dataRec.url
-  if (!url) throw new Error(`gsk upload did not return a URL: ${JSON.stringify(raw).slice(0, 200)}`)
+  if (!url)
+    throw new Error(`chatoffice upload did not return a URL: ${JSON.stringify(raw).slice(0, 200)}`)
   return String(url)
 }
 
-// ── Past projects (Genspark web) ────────────────────────────────────
+// ── Past projects (ChatOffice web) ────────────────────────────────────
 
-export interface GskPastProject {
+export interface ChatOfficePastProject {
   projectId: string
   /** raw project type, e.g. 'slides_agent_git' */
   type: string
@@ -568,18 +574,18 @@ export interface GskPastProject {
   projectUrl: string
 }
 
-export interface GskPastProjectsPage {
-  projects: GskPastProject[]
+export interface ChatOfficePastProjectsPage {
+  projects: ChatOfficePastProject[]
   total: number
   hasMore: boolean
 }
 
 /**
- * Parses `gsk projects`. data.projects lacks project_url — it only appears in
+ * Parses `chatoffice projects`. data.projects lacks project_url — it only appears in
  * session_state.past_projects — so take it from there, falling back to
  * deriving it from the project id. (exported for tests)
  */
-export function parseGskPastProjects(raw: unknown): GskPastProjectsPage {
+export function parseChatOfficePastProjects(raw: unknown): ChatOfficePastProjectsPage {
   const rec = asRecord(raw)
   const data = asRecord(rec.data ?? raw)
   const urlById = new Map<string, string>()
@@ -593,7 +599,7 @@ export function parseGskPastProjects(raw: unknown): GskPastProjectsPage {
     }
   }
   const listRaw: unknown[] = Array.isArray(data.projects) ? data.projects : []
-  const projects: GskPastProject[] = []
+  const projects: ChatOfficePastProject[] = []
   for (const item of listRaw) {
     const p = asRecord(item)
     const projectId = String(p.project_id ?? '')
@@ -614,7 +620,7 @@ export function parseGskPastProjects(raw: unknown): GskPastProjectsPage {
   }
 }
 
-export interface GskListPastProjectsOptions {
+export interface ChatOfficeListPastProjectsOptions {
   /** 'slides' | 'docs' | 'sheets' | ...; omit for all kinds */
   artifactTypes?: string[]
   /** page size, CLI default 20, max 100 */
@@ -623,31 +629,31 @@ export interface GskListPastProjectsOptions {
   signal?: AbortSignal
 }
 
-/** Lists the user's own past Genspark web projects, newest first (`gsk projects`). */
-export async function gskListPastProjects(
-  options: GskListPastProjectsOptions = {},
-): Promise<GskPastProjectsPage> {
+/** Lists the user's own past ChatOffice web projects, newest first (`chatoffice projects`). */
+export async function chatofficeListPastProjects(
+  options: ChatOfficeListPastProjectsOptions = {},
+): Promise<ChatOfficePastProjectsPage> {
   const args = ['projects']
   if (options.artifactTypes?.length) args.push('--artifact_types', ...options.artifactTypes)
   if (options.limit !== undefined) args.push('--limit', String(options.limit))
   if (options.offset) args.push('--offset', String(options.offset))
-  const raw = await runGsk(args, SEARCH_TIMEOUT_MS, options.signal)
-  return parseGskPastProjects(raw)
+  const raw = await runChatOffice(args, SEARCH_TIMEOUT_MS, options.signal)
+  return parseChatOfficePastProjects(raw)
 }
 
-export interface GskLoginInfo {
+export interface ChatOfficeLoginInfo {
   email: string
   plan: string
   creditBalance?: number
 }
 
 /** Current login info; null when not logged in */
-export async function gskLoginInfo(): Promise<GskLoginInfo | null> {
+export async function chatofficeLoginInfo(): Promise<ChatOfficeLoginInfo | null> {
   try {
-    const raw = await runGsk(['login-info'], SEARCH_TIMEOUT_MS)
+    const raw = await runChatOffice(['login-info'], SEARCH_TIMEOUT_MS)
     const d = asRecord(asRecord(raw).data ?? raw)
     if (!d.email) return null
-    const info: GskLoginInfo = {
+    const info: ChatOfficeLoginInfo = {
       email: String(d.email),
       plan: String(d.plan ?? d.personal_plan ?? ''),
     }

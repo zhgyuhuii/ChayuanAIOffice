@@ -54,8 +54,8 @@ describe('Settings analytics consent', () => {
       setAiSettings: async () => {},
       setAiCurrentModel: async () => {},
       discoverModels: async () => ({ models: [] }),
-      gskStatus: async () => ({ loggedIn: false }),
-      gskLogin: async () => {},
+      chatofficeStatus: async () => ({ loggedIn: false }),
+      chatofficeLogin: async () => {},
     } as unknown as HomeApi
 
     await act(async () => {

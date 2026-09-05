@@ -144,7 +144,7 @@ describe('AI endpoints', () => {
     const { app } = buildServer({ area: tempArea(), ai: { dataDir } })
     const first = await app.inject({ method: 'GET', url: '/ai/settings' })
     expect(first.json().version).toBe(2)
-    // web form filters the gsk-login profile: the default view is an empty, configure-first list
+    // web form filters the chatoffice-login profile: the default view is an empty, configure-first list
     expect(first.json().profiles).toEqual([])
 
     const view = first.json()

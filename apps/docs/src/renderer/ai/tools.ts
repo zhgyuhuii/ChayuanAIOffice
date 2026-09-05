@@ -181,7 +181,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'Generate an illustration with AI from a text prompt and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires Genspark login with cloud tools enabled.',
+      'Generate an illustration with AI from a text prompt and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires ChatOffice login with cloud tools enabled.',
     inputSchema: {
       type: 'object',
       properties: {

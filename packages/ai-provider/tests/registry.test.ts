@@ -5,7 +5,7 @@ import {
   modelEchoesReasoning,
   modelLacksVision,
 } from '../src/registry'
-import { AI_PROVIDERS, GENSPARK_LLM_BASE_URLS } from '../src/providers'
+import { AI_PROVIDERS, CHATOFFICE_LLM_BASE_URLS } from '../src/providers'
 import type { AiProviderConfig, AiProviderId } from '../src/types'
 
 function config(model: string, baseUrl?: string): AiProviderConfig {
@@ -20,20 +20,21 @@ describe('provider registry', () => {
     expect(Object.keys(AI_PROVIDER_ADAPTERS).sort()).toEqual(AI_PROVIDERS.map((m) => m.id).sort())
   })
 
-  it('routes genspark by model id prefix onto the three proxy endpoints', () => {
-    const resolve = (model: string) => AI_PROVIDER_ADAPTERS.genspark.resolveEndpoint(config(model))
+  it('routes chatoffice by model id prefix onto the three proxy endpoints', () => {
+    const resolve = (model: string) =>
+      AI_PROVIDER_ADAPTERS.chatoffice.resolveEndpoint(config(model))
     expect(resolve('claude-opus-4-7')).toEqual({
       protocol: 'anthropic',
-      baseUrl: GENSPARK_LLM_BASE_URLS.anthropic,
+      baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic,
     })
     expect(resolve('gemini-3.1-pro-preview')).toEqual({
       protocol: 'gemini',
-      baseUrl: GENSPARK_LLM_BASE_URLS.gemini,
+      baseUrl: CHATOFFICE_LLM_BASE_URLS.gemini,
     })
     // gpt-5.x fixes sampling, so the proxy's OpenAI route also drops temperature
     expect(resolve('gpt-5.2')).toEqual({
       protocol: 'openai-compatible',
-      baseUrl: GENSPARK_LLM_BASE_URLS.openai,
+      baseUrl: CHATOFFICE_LLM_BASE_URLS.openai,
       omitTemperature: true,
     })
   })
@@ -122,9 +123,9 @@ describe('provider registry', () => {
     )
   })
 
-  it('only genspark authenticates through the gsk login', () => {
+  it('only chatoffice authenticates through the chatoffice login', () => {
     for (const [id, adapter] of Object.entries(AI_PROVIDER_ADAPTERS)) {
-      expect(adapter.capabilities.auth).toBe(id === 'genspark' ? 'gsk-login' : 'api-key')
+      expect(adapter.capabilities.auth).toBe(id === 'chatoffice' ? 'chatoffice-login' : 'api-key')
     }
   })
 

@@ -11,7 +11,7 @@ import type { AiProviderId } from '../src/types'
 describe('defaultAiSettings', () => {
   it('gives every provider its default model and an empty key by default', () => {
     const settings = defaultAiSettings()
-    expect(settings.provider).toBe('genspark')
+    expect(settings.provider).toBe('chatoffice')
     for (const meta of AI_PROVIDERS) {
       expect(settings.providers[meta.id].apiKey).toBe('')
       expect(settings.providers[meta.id].model).toBe(meta.defaultModel)
@@ -29,12 +29,12 @@ describe('defaultAiSettings', () => {
 
 describe('provider model catalog', () => {
   it('offers DeepSeek Vision Exp only through the direct BYOK provider', () => {
-    const genspark = AI_PROVIDERS.find((provider) => provider.id === 'genspark')!
+    const chatoffice = AI_PROVIDERS.find((provider) => provider.id === 'chatoffice')!
     const deepseek = AI_PROVIDERS.find((provider) => provider.id === 'deepseek')!
 
     expect(deepseek.models).toContain('deepseek-v4-flash-vision-exp')
-    expect(genspark.models).not.toContain('deep-seek-v4-flash')
-    expect(genspark.models).not.toContain('deep-seek-v4-flash-vision-exp-openrouter')
+    expect(chatoffice.models).not.toContain('deep-seek-v4-flash')
+    expect(chatoffice.models).not.toContain('deep-seek-v4-flash-vision-exp-openrouter')
   })
 })
 
@@ -134,12 +134,12 @@ describe('resolveAiSettings', () => {
 })
 
 describe('activeProvider', () => {
-  it('honors a configured BYOK provider and falls back to genspark otherwise', () => {
+  it('honors a configured BYOK provider and falls back to chatoffice otherwise', () => {
     const settings = defaultAiSettings()
-    expect(activeProvider(settings)).toBe('genspark')
+    expect(activeProvider(settings)).toBe('chatoffice')
 
     settings.provider = 'kimi'
-    expect(activeProvider(settings)).toBe('genspark') // no key yet
+    expect(activeProvider(settings)).toBe('chatoffice') // no key yet
     settings.providers.kimi.apiKey = 'sk-user'
     expect(activeProvider(settings)).toBe('kimi')
   })
@@ -148,37 +148,37 @@ describe('activeProvider', () => {
     const settings = defaultAiSettings()
     settings.provider = 'custom'
     settings.providers.custom.apiKey = 'k'
-    expect(activeProvider(settings)).toBe('genspark')
+    expect(activeProvider(settings)).toBe('chatoffice')
     settings.providers.custom.baseUrl = 'http://localhost:1234/v1'
-    expect(activeProvider(settings)).toBe('genspark') // custom's default model is empty
+    expect(activeProvider(settings)).toBe('chatoffice') // custom's default model is empty
     settings.providers.custom.model = 'my-model'
     expect(activeProvider(settings)).toBe('custom')
   })
 
-  it('falls back to genspark for unknown ids from a hand-edited settings file', () => {
+  it('falls back to chatoffice for unknown ids from a hand-edited settings file', () => {
     const settings = defaultAiSettings()
     settings.provider = 'nonsense' as AiProviderId
-    expect(activeProvider(settings)).toBe('genspark')
+    expect(activeProvider(settings)).toBe('chatoffice')
   })
 
-  it('genspark never requires a key (injected from the gsk login at request time)', () => {
+  it('chatoffice never requires a key (injected from the chatoffice login at request time)', () => {
     const settings = defaultAiSettings()
-    settings.provider = 'genspark'
-    expect(activeProvider(settings)).toBe('genspark')
+    settings.provider = 'chatoffice'
+    expect(activeProvider(settings)).toBe('chatoffice')
   })
 })
 
-describe('gskToolsEnabled', () => {
+describe('chatofficeToolsEnabled', () => {
   it('defaults on, survives resolveAiSettings, and only an explicit false turns it off', () => {
     expect(cloudToolsEnabled(defaultAiSettings())).toBe(true)
     // pre-toggle settings file (field absent) stays on
     const legacy = resolveAiSettings({ providers: {} as never }, defaultAiSettings())
     expect(cloudToolsEnabled(legacy)).toBe(true)
     const off = resolveAiSettings(
-      { providers: {} as never, gskToolsEnabled: false },
+      { providers: {} as never, chatofficeToolsEnabled: false },
       defaultAiSettings(),
     )
-    expect(off.gskToolsEnabled).toBe(false)
+    expect(off.chatofficeToolsEnabled).toBe(false)
     expect(cloudToolsEnabled(off)).toBe(false)
   })
 })

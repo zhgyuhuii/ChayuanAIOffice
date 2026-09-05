@@ -251,15 +251,15 @@ export function AiPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const gskLoggedInRef = useRef(false)
+  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chatofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.pdfApi
-        ?.gskStatus()
+        ?.chatofficeStatus()
         .then((s) => {
-          if (alive) gskLoggedInRef.current = !!s?.loggedIn
+          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }
@@ -329,7 +329,8 @@ export function AiPanel({
       deleteImage: (ref) => apiRef.current.deleteImage(ref),
       searchImages: (query, max) => apiRef.current.searchImages(query, max),
       generateImage: (op) => apiRef.current.generateImage(op),
-      gskTools: () => gskLoggedInRef.current && settingsRef.current?.gskToolsEnabled !== false,
+      chatofficeTools: () =>
+        chatofficeLoggedInRef.current && settingsRef.current?.chatofficeToolsEnabled !== false,
       fetchImage: (url) => apiRef.current.fetchImage(url),
     }
     loopRef.current = new AgentLoop({
@@ -371,7 +372,12 @@ export function AiPanel({
           patchLast({ streaming: false })
           setChat((prev) => [
             ...prev,
-            { role: 'assistant', text: '', streaming: true, model: panelSettings.currentModel?.modelId },
+            {
+              role: 'assistant',
+              text: '',
+              streaming: true,
+              model: panelSettings.currentModel?.modelId,
+            },
           ])
         },
         onDone: ({ text, cancelled, turnLimit }) => {
@@ -553,12 +559,12 @@ export function AiPanel({
         onPointerDown={startResize}
         role="separator"
         aria-orientation="vertical"
-        aria-label="Genspark"
+        aria-label="ChatOffice"
       />
       <header className="ai-panel-header">
         <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          Genspark
+          <ChatOfficeMark size={22} />
+          ChatOffice
         </span>
         <div className="ai-panel-header-actions">
           <ModelPickerButton
@@ -730,7 +736,7 @@ export function AiPanel({
           onStop={stop}
         />
       </div>
-          {modelSettingsOpen && (
+      {modelSettingsOpen && (
         <ModelSettingsPage
           bridge={pdfModelBridge}
           lang={lang}
@@ -927,9 +933,9 @@ function IconCollapse(): ReactElement {
   )
 }
 
-/** Genspark brand mark (rounded-square sparkle badge), inline so it renders
+/** ChatOffice brand mark (rounded-square sparkle badge), inline so it renders
  * crisply at device resolution instead of going through <img> rasterization */
-export function GensparkMark({ size = 18 }: { size?: number }): React.JSX.Element {
+export function ChatOfficeMark({ size = 18 }: { size?: number }): React.JSX.Element {
   return (
     <svg
       width={size}

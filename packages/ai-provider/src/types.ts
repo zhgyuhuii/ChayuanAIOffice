@@ -2,7 +2,7 @@ import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agen
 import type { AiModelType } from './model-type'
 
 export type AiProviderId =
-  | 'genspark'
+  | 'chatoffice'
   | 'anthropic'
   | 'gemini'
   | 'deepseek'
@@ -41,18 +41,18 @@ export interface AiModelSelection {
 }
 
 export interface AiProviderProfile {
-  /** unique within the settings file; 'genspark' is the fixed login-backed profile */
+  /** unique within the settings file; 'chatoffice' is the fixed login-backed profile */
   id: string
   /** link into the vendor catalog (defaults, logo, key console page); absent for ad-hoc custom profiles */
   vendorId?: string
   displayName: string
   protocol: AiWireProtocol
   baseUrl: string
-  /** inline secret (desktop local file / docker server file); empty for gsk-login or ref-backed profiles */
+  /** inline secret (desktop local file / docker server file); empty for chatoffice-login or ref-backed profiles */
   apiKey?: string
   /** backend-resolved credential ref (harness settings source writes refs, not secrets) */
   apiKeyRef?: string
-  auth: 'api-key' | 'gsk-login'
+  auth: 'api-key' | 'chatoffice-login'
   /** endpoint accepts an empty key (ollama-like local runtimes) */
   ollamaLike?: boolean
   enabled: boolean
@@ -69,8 +69,8 @@ export interface AiSettingsV2 {
   imageModel?: AiModelSelection
   /** per-purpose default picks for the non-chat kinds (tts/asr/video/embedding); absent entry = auto */
   modelDefaults?: Record<string, AiModelSelection>
-  /** gsk cloud tools toggle (search backends); default on */
-  gskToolsEnabled?: boolean
+  /** chatoffice cloud tools toggle (search backends); default on */
+  chatofficeToolsEnabled?: boolean
   /** stock-photo library API keys (Pexels/Pixabay) for the insert-image dialog */
   stockApiKeys?: { pexels?: string; pixabay?: string }
 }
@@ -87,8 +87,8 @@ export interface AiStreamRequestV2 {
   signal?: AbortSignal
 }
 
-/** Genspark account status (gsk login state; the sole auth source for AI features) */
-export interface GenSparkAccountStatus {
+/** ChatOffice account status (chatoffice login state; the sole auth source for AI features) */
+export interface ChatOfficeAccountStatus {
   loggedIn: boolean
   email?: string
 }
@@ -113,13 +113,13 @@ export interface AiSettings {
   provider: AiProviderId
   providers: Record<AiProviderId, AiProviderConfig>
   /**
-   * Genspark cloud tools (web/image search via gsk, image generation, media
-   * analysis). Default true; false makes tools skip the gsk backend entirely
-   * (search falls back to free sources, gsk-only tools are unavailable).
-   * Only meaningful while signed in — signed out, the gsk backend is
+   * ChatOffice cloud tools (web/image search via chatoffice, image generation, media
+   * analysis). Default true; false makes tools skip the chatoffice backend entirely
+   * (search falls back to free sources, chatoffice-only tools are unavailable).
+   * Only meaningful while signed in — signed out, the chatoffice backend is
    * unavailable regardless.
    */
-  gskToolsEnabled?: boolean
+  chatofficeToolsEnabled?: boolean
 }
 
 /** pre-provider settings shape (single OpenAI-compatible endpoint); migrated into "custom" */

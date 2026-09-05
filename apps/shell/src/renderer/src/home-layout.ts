@@ -13,15 +13,28 @@ export interface HomeLayoutState {
   rightCollapsed: boolean
   starredCollapsed: boolean
   recentCollapsed: boolean
+  /** sidebar width in px (tree strip); the main process insets document views
+   *  by the same amount, mirrored over setTreeWidth IPC */
+  sidebarWidth: number
 }
 
 const STORAGE_KEY = 'chatoffice.home-layout'
+
+/** hard floor keeps the tree's labels readable; cap leaves the chat pane usable */
+export const SIDEBAR_MIN = 180
+export const SIDEBAR_MAX = 420
+const SIDEBAR_DEFAULT = 232
+
+export function clampSidebarWidth(w: number): number {
+  return Math.round(Math.min(Math.max(w, SIDEBAR_MIN), SIDEBAR_MAX))
+}
 
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
   starredCollapsed: false,
   recentCollapsed: false,
+  sidebarWidth: SIDEBAR_DEFAULT,
 }
 
 function load(): HomeLayoutState {
@@ -36,6 +49,10 @@ function load(): HomeLayoutState {
         rightCollapsed: obj.rightCollapsed === true,
         starredCollapsed: obj.starredCollapsed === true,
         recentCollapsed: obj.recentCollapsed === true,
+        sidebarWidth:
+          typeof obj.sidebarWidth === 'number' && Number.isFinite(obj.sidebarWidth)
+            ? clampSidebarWidth(obj.sidebarWidth)
+            : SIDEBAR_DEFAULT,
       }
     }
   } catch {
@@ -57,7 +74,8 @@ export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
     next.leftCollapsed === state.leftCollapsed &&
     next.rightCollapsed === state.rightCollapsed &&
     next.starredCollapsed === state.starredCollapsed &&
-    next.recentCollapsed === state.recentCollapsed
+    next.recentCollapsed === state.recentCollapsed &&
+    next.sidebarWidth === state.sidebarWidth
   ) {
     return
   }

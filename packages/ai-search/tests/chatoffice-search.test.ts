@@ -1,70 +1,70 @@
 import { describe, it, expect, afterEach } from 'vitest'
 import {
-  gskChildEnv,
-  setGskProxyUrl,
-  parseGskOutput,
-  parseGskWebSearch,
-  parseGskImageSearch,
-  parseGskGeneratedImage,
-  parseGskConvertResult,
-  parseGskPastProjects,
-  extractGskText,
+  chatofficeChildEnv,
+  setChatOfficeProxyUrl,
+  parseChatOfficeOutput,
+  parseChatOfficeWebSearch,
+  parseChatOfficeImageSearch,
+  parseChatOfficeGeneratedImage,
+  parseChatOfficeConvertResult,
+  parseChatOfficePastProjects,
+  extractChatOfficeText,
   parseToolCliNdjson,
-} from '../src/gsk'
+} from '../src/chatoffice'
 
-describe('parseGskOutput', () => {
+describe('parseChatOfficeOutput', () => {
   it('parses clean JSON', () => {
-    expect(parseGskOutput('{"status":"ok"}')).toEqual({ status: 'ok' })
+    expect(parseChatOfficeOutput('{"status":"ok"}')).toEqual({ status: 'ok' })
   })
 
   it('skips [INFO] noise lines before JSON', () => {
     const out = '[INFO] Calling /tools...\n[INFO] cache hit\n{"status":"ok","data":[1,2]}'
-    expect(parseGskOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
+    expect(parseChatOfficeOutput(out)).toEqual({ status: 'ok', data: [1, 2] })
   })
 
   it('parses multi-line JSON after noise', () => {
     const out = '[INFO] x\n{\n "a": 1\n}'
-    expect(parseGskOutput(out)).toEqual({ a: 1 })
+    expect(parseChatOfficeOutput(out)).toEqual({ a: 1 })
   })
 
   it('throws when no JSON present', () => {
-    expect(() => parseGskOutput('[INFO] nothing here')).toThrow()
+    expect(() => parseChatOfficeOutput('[INFO] nothing here')).toThrow()
   })
 })
 
-describe('gskChildEnv', () => {
-  afterEach(() => setGskProxyUrl(''))
+describe('chatofficeChildEnv', () => {
+  afterEach(() => setChatOfficeProxyUrl(''))
 
   it('sets ELECTRON_RUN_AS_NODE and no proxy vars when no proxy is known', () => {
-    const env = gskChildEnv({ PATH: '/bin' })
+    const env = chatofficeChildEnv({ PATH: '/bin' })
     expect(env.ELECTRON_RUN_AS_NODE).toBe('1')
     expect(env.NODE_USE_ENV_PROXY).toBeUndefined()
     expect(env.HTTPS_PROXY).toBeUndefined()
   })
 
   it('forwards the proxy registered by the main-process bootstrap', () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
-    const env = gskChildEnv({ PATH: '/bin' })
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    const env = chatofficeChildEnv({ PATH: '/bin' })
     expect(env.NODE_USE_ENV_PROXY).toBe('1')
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
     expect(env.HTTP_PROXY).toBe('http://127.0.0.1:7890')
   })
 
   it('falls back to inherited proxy env vars (terminal launch)', () => {
-    const env = gskChildEnv({ https_proxy: 'http://10.0.0.1:8080' })
+    const env = chatofficeChildEnv({ https_proxy: 'http://10.0.0.1:8080' })
     expect(env.NODE_USE_ENV_PROXY).toBe('1')
     expect(env.HTTPS_PROXY).toBe('http://10.0.0.1:8080')
   })
 
   it('prefers the registered proxy over env vars', () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
-    const env = gskChildEnv({ HTTPS_PROXY: 'http://10.0.0.1:8080' })
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    const env = chatofficeChildEnv({ HTTPS_PROXY: 'http://10.0.0.1:8080' })
     expect(env.HTTPS_PROXY).toBe('http://127.0.0.1:7890')
   })
 
   it('scrubs lowercase/ALL_PROXY variants so they cannot override the selection', () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
-    const env = gskChildEnv({
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
+    const env = chatofficeChildEnv({
       https_proxy: 'socks5://127.0.0.1:1080',
       http_proxy: 'http://10.0.0.1:8080',
       all_proxy: 'socks5://127.0.0.1:1080',
@@ -76,14 +76,14 @@ describe('gskChildEnv', () => {
   })
 
   it('ignores SOCKS proxies (undici env proxy is http(s)-only)', () => {
-    setGskProxyUrl('socks5://127.0.0.1:1080')
-    const env = gskChildEnv({ ALL_PROXY: 'socks5://127.0.0.1:1080' })
+    setChatOfficeProxyUrl('socks5://127.0.0.1:1080')
+    const env = chatofficeChildEnv({ ALL_PROXY: 'socks5://127.0.0.1:1080' })
     expect(env.NODE_USE_ENV_PROXY).toBeUndefined()
     expect(env.HTTPS_PROXY).toBeUndefined()
   })
 })
 
-describe('parseGskWebSearch', () => {
+describe('parseChatOfficeWebSearch', () => {
   it('maps organic_results and respects maxResults', () => {
     const raw = {
       status: 'ok',
@@ -95,7 +95,7 @@ describe('parseGskWebSearch', () => {
         ],
       },
     }
-    const r = parseGskWebSearch(raw, 2)
+    const r = parseChatOfficeWebSearch(raw, 2)
     expect(r.results).toEqual([
       { title: 'A', url: 'https://a.com', snippet: 'sa' },
       { title: 'B', url: 'https://b.com', snippet: 'sb' },
@@ -104,11 +104,11 @@ describe('parseGskWebSearch', () => {
   })
 
   it('tolerates missing data', () => {
-    expect(parseGskWebSearch({ status: 'ok' }, 5).results).toEqual([])
+    expect(parseChatOfficeWebSearch({ status: 'ok' }, 5).results).toEqual([])
   })
 })
 
-describe('parseGskImageSearch', () => {
+describe('parseChatOfficeImageSearch', () => {
   it('maps image entries with numeric size coercion', () => {
     const raw = {
       status: 'ok',
@@ -123,7 +123,7 @@ describe('parseGskImageSearch', () => {
         },
       ],
     }
-    const images = parseGskImageSearch(raw, 8)
+    const images = parseChatOfficeImageSearch(raw, 8)
     expect(images).toEqual([
       {
         title: 'T1',
@@ -144,13 +144,13 @@ describe('parseGskImageSearch', () => {
         { image_url: 'https://ok.com/a.jpg', title: 'ok' },
       ],
     }
-    const images = parseGskImageSearch(raw, 8)
+    const images = parseChatOfficeImageSearch(raw, 8)
     expect(images.map((i) => i.title)).toEqual(['ok'])
   })
 })
 
-describe('parseGskPastProjects', () => {
-  // real `gsk projects --artifact_types slides` shape (trimmed)
+describe('parseChatOfficePastProjects', () => {
+  // real `chatoffice projects --artifact_types slides` shape (trimmed)
   const raw = {
     version: 1,
     status: 'ok',
@@ -189,7 +189,7 @@ describe('parseGskPastProjects', () => {
   }
 
   it('maps projects, preferring session_state project_url and deriving the rest', () => {
-    const page = parseGskPastProjects(raw)
+    const page = parseChatOfficePastProjects(raw)
     expect(page.total).toBe(222)
     expect(page.hasMore).toBe(true)
     expect(page.projects).toEqual([
@@ -211,7 +211,7 @@ describe('parseGskPastProjects', () => {
   })
 
   it('skips entries without project_id and tolerates missing data', () => {
-    const page = parseGskPastProjects({
+    const page = parseChatOfficePastProjects({
       status: 'ok',
       data: { projects: [{ title: 'no id' }], has_more: false },
     })
@@ -221,7 +221,7 @@ describe('parseGskPastProjects', () => {
   })
 
   it('tolerates a completely empty response', () => {
-    expect(parseGskPastProjects({ status: 'ok' })).toEqual({
+    expect(parseChatOfficePastProjects({ status: 'ok' })).toEqual({
       projects: [],
       total: 0,
       hasMore: false,
@@ -229,7 +229,7 @@ describe('parseGskPastProjects', () => {
   })
 })
 
-describe('parseGskConvertResult', () => {
+describe('parseChatOfficeConvertResult', () => {
   it('extracts the markdown link from the result text', () => {
     const raw = {
       status: 'ok',
@@ -238,21 +238,23 @@ describe('parseGskConvertResult', () => {
           'Conversion complete. Download links:\n[report.docx](https://www.genspark.ai/api/files/s/JmS2WJHv)\n',
       },
     }
-    expect(parseGskConvertResult(raw)).toBe('https://www.genspark.ai/api/files/s/JmS2WJHv')
+    expect(parseChatOfficeConvertResult(raw)).toBe('https://www.genspark.ai/api/files/s/JmS2WJHv')
   })
 
   it('falls back to a bare URL without markdown', () => {
     const raw = { status: 'ok', data: { result: 'Done: https://example.com/f.docx' } }
-    expect(parseGskConvertResult(raw)).toBe('https://example.com/f.docx')
+    expect(parseChatOfficeConvertResult(raw)).toBe('https://example.com/f.docx')
   })
 
   it('throws when the result has no link', () => {
-    expect(() => parseGskConvertResult({ status: 'ok', data: { result: 'no link' } })).toThrow()
-    expect(() => parseGskConvertResult({ status: 'ok' })).toThrow()
+    expect(() =>
+      parseChatOfficeConvertResult({ status: 'ok', data: { result: 'no link' } }),
+    ).toThrow()
+    expect(() => parseChatOfficeConvertResult({ status: 'ok' })).toThrow()
   })
 })
 
-describe('parseGskGeneratedImage', () => {
+describe('parseChatOfficeGeneratedImage', () => {
   it('prefers no-watermark url', () => {
     const raw = {
       data: {
@@ -265,31 +267,34 @@ describe('parseGskGeneratedImage', () => {
         ],
       },
     }
-    expect(parseGskGeneratedImage(raw)).toEqual({ url: 'https://cdn/clean.png', taskId: 't1' })
+    expect(parseChatOfficeGeneratedImage(raw)).toEqual({
+      url: 'https://cdn/clean.png',
+      taskId: 't1',
+    })
   })
 
   it('falls back to image_urls, throws on empty', () => {
     expect(
-      parseGskGeneratedImage({
+      parseChatOfficeGeneratedImage({
         data: { generated_images: [{ image_urls: ['https://cdn/a.png'] }] },
       }).url,
     ).toBe('https://cdn/a.png')
-    expect(() => parseGskGeneratedImage({ data: { generated_images: [] } })).toThrow()
+    expect(() => parseChatOfficeGeneratedImage({ data: { generated_images: [] } })).toThrow()
   })
 })
 
-describe('extractGskText', () => {
+describe('extractChatOfficeText', () => {
   it('returns string data directly', () => {
-    expect(extractGskText({ data: 'hello' })).toBe('hello')
+    expect(extractChatOfficeText({ data: 'hello' })).toBe('hello')
   })
 
   it('picks known text fields', () => {
-    expect(extractGskText({ data: { analysis: 'deep' } })).toBe('deep')
-    expect(extractGskText({ data: { transcript: 'words' } })).toBe('words')
+    expect(extractChatOfficeText({ data: { analysis: 'deep' } })).toBe('deep')
+    expect(extractChatOfficeText({ data: { transcript: 'words' } })).toBe('words')
   })
 
   it('stringifies unknown shapes', () => {
-    expect(extractGskText({ data: { foo: 1 } })).toBe('{"foo":1}')
+    expect(extractChatOfficeText({ data: { foo: 1 } })).toBe('{"foo":1}')
   })
 })
 

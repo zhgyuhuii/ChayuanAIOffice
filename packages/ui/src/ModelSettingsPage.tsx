@@ -14,7 +14,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  GENSPARK_PRESET_MODELS,
+  CHATOFFICE_PRESET_MODELS,
   KEEP_KEY,
   NO_MODELS_API,
   VENDORS,
@@ -41,10 +41,10 @@ export interface ModelSettingsBridge {
   saveSettings(view: AiSettingsV2): Promise<void>
   setCurrentModel(selection: AiModelSelection): Promise<void>
   discoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  gskStatus?(withEmail?: boolean): Promise<{ loggedIn: boolean; email?: string }>
-  gskLogin?(): void | Promise<void>
-  /** web form: gsk login is desktop-only — the page hides the genspark card */
-  capabilities?(): Promise<{ gskAvailable: boolean }>
+  chatofficeStatus?(withEmail?: boolean): Promise<{ loggedIn: boolean; email?: string }>
+  chatofficeLogin?(): void | Promise<void>
+  /** web form: chatoffice login is desktop-only — the page hides the chatoffice card */
+  capabilities?(): Promise<{ chatofficeAvailable: boolean }>
 }
 
 export interface ModelSettingsPageProps {
@@ -106,8 +106,8 @@ export function ModelSettingsPage({
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
-  const [gskAvailable, setGskAvailable] = useState(true)
-  const [selected, setSelected] = useState<string>('genspark')
+  const [chatofficeAvailable, setChatOfficeAvailable] = useState(true)
+  const [selected, setSelected] = useState<string>('chatoffice')
   const [search, setSearch] = useState('')
   /** 目录过滤（单选下拉）：全部 / 免费 / 需要 Key / 无需 Key / 免费额度 */
   const [tagFilter, setTagFilter] = useState<TagFilter>('all')
@@ -122,7 +122,7 @@ export function ModelSettingsPage({
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
-  const [gsk, setGsk] = useState<{ loggedIn: boolean; email?: string } | null>(null)
+  const [chatoffice, setChatOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
@@ -159,17 +159,17 @@ export function ModelSettingsPage({
       .getSettings()
       .then(setSettings)
       .catch(() => setSettings(null))
-    if (bridge.gskStatus) {
+    if (bridge.chatofficeStatus) {
       void bridge
-        .gskStatus(true)
-        .then(setGsk)
-        .catch(() => setGsk(null))
+        .chatofficeStatus(true)
+        .then(setChatOffice)
+        .catch(() => setChatOffice(null))
     }
     if (bridge.capabilities) {
       void bridge
         .capabilities()
-        .then((c) => setGskAvailable(c.gskAvailable !== false))
-        .catch(() => setGskAvailable(true))
+        .then((c) => setChatOfficeAvailable(c.chatofficeAvailable !== false))
+        .catch(() => setChatOfficeAvailable(true))
     }
   }, [bridge])
 
@@ -177,7 +177,7 @@ export function ModelSettingsPage({
   const enabledProfiles = profiles.filter((p) => p.enabled)
   const selectedProfile = profiles.find((p) => p.id === selected)
   const selectedVendor = VENDOR_BY_ID.get(selected)
-  const isGenspark = selected === 'genspark'
+  const isChatOffice = selected === 'chatoffice'
 
   /** vendor rows not currently enabled (a disabled profile still prefills its stored values) */
   const catalogRows = useMemo(() => {
@@ -193,13 +193,13 @@ export function ModelSettingsPage({
       vendors: VENDORS.filter(
         (v) =>
           v.group === group.id &&
-          !(!gskAvailable && v.id === 'genspark') &&
+          !(!chatofficeAvailable && v.id === 'chatoffice') &&
           !enabledProfiles.some((p) => (p.vendorId ?? p.id) === v.id) &&
           matchesTagFilter(v, tagFilter) &&
           match(v.name, v.nameZh, v.id),
       ),
     })).filter((g) => g.vendors.length > 0)
-  }, [enabledProfiles, search, tagFilter, gskAvailable, locale])
+  }, [enabledProfiles, search, tagFilter, chatofficeAvailable, locale])
 
   // ── form seeding on vendor switch ─────────────────────────────────────
   useEffect(() => {
@@ -233,14 +233,14 @@ export function ModelSettingsPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected, settings])
 
-  // web form: no genspark card — land on the first enabled profile instead
+  // web form: no chatoffice card — land on the first enabled profile instead
   useEffect(() => {
-    if (!gskAvailable && selected === 'genspark') {
-      const first = enabledProfiles.find((p) => p.id !== 'genspark')
+    if (!chatofficeAvailable && selected === 'chatoffice') {
+      const first = enabledProfiles.find((p) => p.id !== 'chatoffice')
       setSelected(first?.id ?? 'openai')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gskAvailable, settings])
+  }, [chatofficeAvailable, settings])
 
   const vendorName = (id: string): string => {
     const v = VENDOR_BY_ID.get(id)
@@ -306,7 +306,7 @@ export function ModelSettingsPage({
   const sanitize = (next: AiSettingsV2): AiSettingsV2 => {
     if (next.currentModel === undefined) delete next.currentModel
     if (next.imageModel === undefined) delete next.imageModel
-    if (next.gskToolsEnabled === undefined) delete next.gskToolsEnabled
+    if (next.chatofficeToolsEnabled === undefined) delete next.chatofficeToolsEnabled
     return next
   }
 
@@ -407,34 +407,34 @@ export function ModelSettingsPage({
     }
   }
 
-  const toggleGensparkModel = async (modelId: string, on: boolean) => {
-    const profile = profiles.find((p) => p.id === 'genspark')
+  const toggleChatOfficeModel = async (modelId: string, on: boolean) => {
+    const profile = profiles.find((p) => p.id === 'chatoffice')
     if (!profile) return
     const currentIds = new Set(profile.models.map((m) => m.id))
     const nextModels = on
-      ? GENSPARK_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
+      ? CHATOFFICE_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
           id,
         }))
       : profile.models.filter((m) => m.id !== modelId)
     // picking a model is the explicit act that enables the login-backed profile
     const nextProfiles = profiles.map((p) =>
-      p.id === 'genspark' ? { ...p, enabled: true, models: nextModels } : p,
+      p.id === 'chatoffice' ? { ...p, enabled: true, models: nextModels } : p,
     )
     const next: AiSettingsV2 = { ...settings!, profiles: nextProfiles }
     if (
-      next.currentModel?.profileId === 'genspark' &&
+      next.currentModel?.profileId === 'chatoffice' &&
       !nextModels.some((m) => m.id === next.currentModel!.modelId)
     ) {
-      if (nextModels[0]) next.currentModel = { profileId: 'genspark', modelId: nextModels[0].id }
+      if (nextModels[0]) next.currentModel = { profileId: 'chatoffice', modelId: nextModels[0].id }
       else delete next.currentModel
     }
     await persist(sanitize(next))
   }
 
   // ── chatop-shaped pieces ──────────────────────────────────────────────
-  const enabledList = gskAvailable
-    ? enabledProfiles.filter((p) => p.id !== 'genspark' || p.models.length > 0)
-    : enabledProfiles.filter((p) => p.id !== 'genspark')
+  const enabledList = chatofficeAvailable
+    ? enabledProfiles.filter((p) => p.id !== 'chatoffice' || p.models.length > 0)
+    : enabledProfiles.filter((p) => p.id !== 'chatoffice')
 
   const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
     const profile = active ? profiles.find((p) => p.id === id) : undefined
@@ -762,15 +762,15 @@ export function ModelSettingsPage({
       {/* 右：配置表单 */}
       <section className="msp-right" data-model-pane={selected}>
         <div className="msp-form">
-          {isGenspark ? (
+          {isChatOffice ? (
             <>
               <div className="msp-pane-head">
                 <span className="msp-avatar is-big" aria-hidden>
                   G
                 </span>
                 <div className="msp-pane-titles">
-                  <div className="msp-pane-name">{t.gskLoginTitle}</div>
-                  <div className="msp-pane-status">{t.gskLoginDesc}</div>
+                  <div className="msp-pane-name">{t.chatofficeLoginTitle}</div>
+                  <div className="msp-pane-status">{t.chatofficeLoginDesc}</div>
                 </div>
               </div>
               {msg && (
@@ -778,31 +778,34 @@ export function ModelSettingsPage({
                   {msg.text}
                 </p>
               )}
-              <div className="msp-gsk-row">
-                <span className={`msp-dot is-big${gsk?.loggedIn ? ' is-on' : ''}`} aria-hidden />
-                <span className="msp-gsk-state">
-                  {gsk?.loggedIn
-                    ? gsk.email
-                      ? fmt(t.gskLoggedIn, { email: gsk.email })
-                      : t.gskLoggedInNoEmail
-                    : t.gskLoggedOut}
+              <div className="msp-chatoffice-row">
+                <span
+                  className={`msp-dot is-big${chatoffice?.loggedIn ? ' is-on' : ''}`}
+                  aria-hidden
+                />
+                <span className="msp-chatoffice-state">
+                  {chatoffice?.loggedIn
+                    ? chatoffice.email
+                      ? fmt(t.chatofficeLoggedIn, { email: chatoffice.email })
+                      : t.chatofficeLoggedInNoEmail
+                    : t.chatofficeLoggedOut}
                 </span>
-                {!gsk?.loggedIn && bridge.gskLogin && (
+                {!chatoffice?.loggedIn && bridge.chatofficeLogin && (
                   <button
                     type="button"
                     className="msp-btn msp-btn-primary"
-                    onClick={() => void bridge.gskLogin?.()}
+                    onClick={() => void bridge.chatofficeLogin?.()}
                   >
-                    {t.gskLoginBtn}
+                    {t.chatofficeLoginBtn}
                   </button>
                 )}
               </div>
               <ModelList
-                entries={GENSPARK_PRESET_MODELS.map((id) => ({
+                entries={CHATOFFICE_PRESET_MODELS.map((id) => ({
                   id,
                   enabled: selectedProfile?.models.some((m) => m.id === id) ?? false,
                 }))}
-                onToggle={(id, on) => void toggleGensparkModel(id, on)}
+                onToggle={(id, on) => void toggleChatOfficeModel(id, on)}
               />
             </>
           ) : (

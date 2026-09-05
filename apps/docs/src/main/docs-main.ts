@@ -73,10 +73,10 @@ import {
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import {
   ensureChatofficeLogin,
-  gskApiKey,
-  gskGenerateImage,
-  gskLoginInfo,
-  hasGskAuth,
+  chatofficeApiKey,
+  chatofficeGenerateImage,
+  chatofficeLoginInfo,
+  hasChatOfficeAuth,
   webSearch,
   imageSearch,
 } from '@chatoffice/ai-search'
@@ -164,12 +164,12 @@ const tMain = createI18n({
     errParseFailed: '文件解析失败',
     errImageNoText: '图片附件不提供文本,已作为图像随用户消息发送,直接看图即可',
     errNotImage: '不是支持的图片类型',
-    errGskNotLoggedIn: '未登录 Genspark:请点击下方「登录」完成登录后重试',
+    errChatOfficeNotLoggedIn: '未登录 ChatOffice:请点击下方「登录」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
     errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
-    errGskToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
+    errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     menuFile: '文件',
     menuNewDoc: '新建文档',
     menuNewWindow: '新建窗口',
@@ -265,14 +265,15 @@ const tMain = createI18n({
     errParseFailed: 'Failed to parse file',
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
-    errGskNotLoggedIn: 'Not signed in to Genspark: click “Sign in” below, sign in, then retry',
+    errChatOfficeNotLoggedIn:
+      'Not signed in to ChatOffice: click “Sign in” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to Genspark',
-    errGskToolsOff:
-      'Genspark cloud tools are turned off in Model Settings; enable them to use this tool',
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChatOffice',
+    errChatOfficeToolsOff:
+      'ChatOffice cloud tools are turned off in Model Settings; enable them to use this tool',
     menuFile: 'File',
     menuNewDoc: 'New Document',
     menuNewWindow: 'New Window',
@@ -367,15 +368,15 @@ const tMain = createI18n({
     errImageNoText:
       '画像の添付ファイルはテキストを提供しません。画像としてユーザーメッセージと一緒に送信されるため、そのまま画像をご確認ください',
     errNotImage: 'サポートされていない画像形式です',
-    errGskNotLoggedIn:
-      'Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください',
+    errChatOfficeNotLoggedIn:
+      'ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
     errNoImageModel:
-      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、Genspark にサインインしてください',
-    errGskToolsOff:
-      'Genspark クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
+      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、ChatOffice にサインインしてください',
+    errChatOfficeToolsOff:
+      'ChatOffice クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     menuFile: 'ファイル',
     menuNewDoc: '新規文書',
     menuNewWindow: '新規ウィンドウ',
@@ -471,14 +472,15 @@ const tMain = createI18n({
     errImageNoText:
       '이미지 첨부 파일은 텍스트를 제공하지 않으며, 이미지 형태로 사용자 메시지와 함께 전송되므로 이미지를 직접 확인하면 됩니다',
     errNotImage: '지원되지 않는 이미지 형식입니다',
-    errGskNotLoggedIn:
-      'Genspark에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
+    errChatOfficeNotLoggedIn:
+      'ChatOffice에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 Genspark에 로그인하세요',
-    errGskToolsOff: 'Genspark 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
+      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 ChatOffice에 로그인하세요',
+    errChatOfficeToolsOff:
+      'ChatOffice 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     menuFile: '파일',
     menuNewDoc: '새 문서',
     menuNewWindow: '새 창',
@@ -575,15 +577,15 @@ const tMain = createI18n({
     errImageNoText:
       "Les pièces jointes image ne fournissent pas de texte ; l'image est envoyée avec le message de l'utilisateur, consultez-la directement",
     errNotImage: "type d'image non pris en charge",
-    errGskNotLoggedIn:
-      'Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
+    errChatOfficeNotLoggedIn:
+      'Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
     errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à Genspark",
-    errGskToolsOff:
-      'Les outils cloud Genspark sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
+      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à ChatOffice",
+    errChatOfficeToolsOff:
+      'Les outils cloud ChatOffice sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     menuFile: 'Fichier',
     menuNewDoc: 'Nouveau document',
     menuNewWindow: 'Nouvelle fenêtre',
@@ -680,15 +682,15 @@ const tMain = createI18n({
     errImageNoText:
       'Bildanlagen liefern keinen Text; das Bild wird mit der Benutzernachricht gesendet und kann direkt betrachtet werden',
     errNotImage: 'kein unterstütztes Bildformat',
-    errGskNotLoggedIn:
-      'Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
+    errChatOfficeNotLoggedIn:
+      'Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
     errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei Genspark an',
-    errGskToolsOff:
-      'Genspark-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
+      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei ChatOffice an',
+    errChatOfficeToolsOff:
+      'ChatOffice-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     menuFile: 'Datei',
     menuNewDoc: 'Neues Dokument',
     menuNewWindow: 'Neues Fenster',
@@ -784,16 +786,16 @@ const tMain = createI18n({
     errImageNoText:
       'Las imágenes adjuntas no proporcionan texto; la imagen se envía junto con el mensaje del usuario, puedes verla directamente',
     errNotImage: 'no es un tipo de imagen compatible',
-    errGskNotLoggedIn:
-      'No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
+    errChatOfficeNotLoggedIn:
+      'No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No se ha configurado el nombre del modelo',
     errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en Genspark',
-    errGskToolsOff:
-      'Las herramientas en la nube de Genspark están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
+      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en ChatOffice',
+    errChatOfficeToolsOff:
+      'Las herramientas en la nube de ChatOffice están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     menuFile: 'Archivo',
     menuNewDoc: 'Nuevo documento',
     menuNewWindow: 'Nueva ventana',
@@ -888,15 +890,15 @@ const tMain = createI18n({
     errImageNoText:
       'สิ่งที่แนบเป็นรูปภาพไม่มีข้อความ รูปจะถูกส่งไปพร้อมข้อความของผู้ใช้ ดูรูปได้โดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
-    errGskNotLoggedIn:
-      'ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
+    errChatOfficeNotLoggedIn:
+      'ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
     errNoImageModel:
-      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ Genspark',
-    errGskToolsOff:
-      'เครื่องมือคลาวด์ของ Genspark ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
+      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ ChatOffice',
+    errChatOfficeToolsOff:
+      'เครื่องมือคลาวด์ของ ChatOffice ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     menuFile: 'ไฟล์',
     menuNewDoc: 'เอกสารใหม่',
     menuNewWindow: 'หน้าต่างใหม่',
@@ -993,14 +995,14 @@ const tMain = createI18n({
     errImageNoText:
       'Lampiran gambar tidak menyediakan teks; gambar dikirim bersama pesan pengguna dan dapat dilihat langsung',
     errNotImage: 'bukan jenis gambar yang didukung',
-    errGskNotLoggedIn: 'Belum masuk ke Genspark: klik “Masuk” di bawah, lalu coba lagi',
+    errChatOfficeNotLoggedIn: 'Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke Genspark',
-    errGskToolsOff:
-      'Alat cloud Genspark dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
+      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke ChatOffice',
+    errChatOfficeToolsOff:
+      'Alat cloud ChatOffice dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'File',
     menuNewDoc: 'Dokumen Baru',
     menuNewWindow: 'Jendela Baru',
@@ -1096,14 +1098,15 @@ const tMain = createI18n({
     errImageNoText:
       'Вложенные изображения не содержат текста; изображение отправляется вместе с сообщением пользователя, смотрите его напрямую',
     errNotImage: 'неподдерживаемый тип изображения',
-    errGskNotLoggedIn: 'Вы не вошли в Genspark: нажмите «Войти» ниже, войдите и повторите попытку',
+    errChatOfficeNotLoggedIn:
+      'Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Не указано имя модели',
     errNoImageModel:
-      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в Genspark',
-    errGskToolsOff:
-      'Облачные инструменты Genspark отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
+      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в ChatOffice',
+    errChatOfficeToolsOff:
+      'Облачные инструменты ChatOffice отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     menuFile: 'Файл',
     menuNewDoc: 'Создать документ',
     menuNewWindow: 'Новое окно',
@@ -1199,14 +1202,15 @@ const tMain = createI18n({
     errImageNoText:
       'مرفقات الصور لا توفر نصًا؛ تُرسل الصورة مع رسالة المستخدم ويمكن الاطلاع عليها مباشرة',
     errNotImage: 'ليس نوع صورة مدعومًا',
-    errGskNotLoggedIn:
-      'لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
+    errChatOfficeNotLoggedIn:
+      'لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errNoImageModel:
-      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى Genspark',
-    errGskToolsOff: 'أدوات Genspark السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
+      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى ChatOffice',
+    errChatOfficeToolsOff:
+      'أدوات ChatOffice السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     menuFile: 'ملف',
     menuNewDoc: 'مستند جديد',
     menuNewWindow: 'نافذة جديدة',
@@ -1302,15 +1306,15 @@ const tMain = createI18n({
     errImageNoText:
       'Anexos de imagem não fornecem texto; a imagem é enviada junto com a mensagem do usuário, basta vê-la diretamente',
     errNotImage: 'não é um tipo de imagem suportado',
-    errGskNotLoggedIn:
-      'Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente',
+    errChatOfficeNotLoggedIn:
+      'Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
     errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no Genspark',
-    errGskToolsOff:
-      'As ferramentas de nuvem do Genspark estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
+      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no ChatOffice',
+    errChatOfficeToolsOff:
+      'As ferramentas de nuvem do ChatOffice estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     menuFile: 'Arquivo',
     menuNewDoc: 'Novo Documento',
     menuNewWindow: 'Nova Janela',
@@ -1407,15 +1411,15 @@ const tMain = createI18n({
     errImageNoText:
       "Gli allegati immagine non forniscono testo; l'immagine viene inviata insieme al messaggio dell'utente, basta guardarla direttamente",
     errNotImage: 'tipo di immagine non supportato',
-    errGskNotLoggedIn:
-      'Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
+    errChatOfficeNotLoggedIn:
+      'Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
     errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a Genspark',
-    errGskToolsOff:
-      'Gli strumenti cloud Genspark sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
+      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a ChatOffice',
+    errChatOfficeToolsOff:
+      'Gli strumenti cloud ChatOffice sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     menuFile: 'File',
     menuNewDoc: 'Nuovo documento',
     menuNewWindow: 'Nuova finestra',
@@ -1511,15 +1515,15 @@ const tMain = createI18n({
     errImageNoText:
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika, wystarczy na niego spojrzeć',
     errNotImage: 'nieobsługiwany typ obrazu',
-    errGskNotLoggedIn:
-      'Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
+    errChatOfficeNotLoggedIn:
+      'Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do Genspark',
-    errGskToolsOff:
-      'Narzędzia chmurowe Genspark są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
+      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do ChatOffice',
+    errChatOfficeToolsOff:
+      'Narzędzia chmurowe ChatOffice są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     menuFile: 'Plik',
     menuNewDoc: 'Nowy dokument',
     menuNewWindow: 'Nowe okno',
@@ -1615,15 +1619,15 @@ const tMain = createI18n({
     errImageNoText:
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden en kan direct worden bekeken',
     errNotImage: 'geen ondersteund afbeeldingstype',
-    errGskNotLoggedIn:
-      'Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
+    errChatOfficeNotLoggedIn:
+      'Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
     errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij Genspark',
-    errGskToolsOff:
-      'Genspark-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
+      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij ChatOffice',
+    errChatOfficeToolsOff:
+      'ChatOffice-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     menuFile: 'Bestand',
     menuNewDoc: 'Nieuw document',
     menuNewWindow: 'Nieuw venster',
@@ -1719,14 +1723,15 @@ const tMain = createI18n({
     errImageNoText:
       'Lampiran imej tidak menyediakan teks; imej dihantar bersama mesej pengguna dan boleh dilihat terus',
     errNotImage: 'bukan jenis imej yang disokong',
-    errGskNotLoggedIn: 'Belum log masuk ke Genspark: klik “Log masuk” di bawah, kemudian cuba lagi',
+    errChatOfficeNotLoggedIn:
+      'Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
     errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke Genspark',
-    errGskToolsOff:
-      'Alat awan Genspark dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
+      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke ChatOffice',
+    errChatOfficeToolsOff:
+      'Alat awan ChatOffice dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'Fail',
     menuNewDoc: 'Dokumen Baharu',
     menuNewWindow: 'Tetingkap Baharu',
@@ -1821,13 +1826,14 @@ const tMain = createI18n({
     errImageNoText:
       'קבצים מצורפים מסוג תמונה אינם מספקים טקסט; התמונה נשלחת יחד עם הודעת המשתמש וניתן לצפות בה ישירות',
     errNotImage: 'סוג תמונה שאינו נתמך',
-    errGskNotLoggedIn: 'לא מחובר ל-Genspark: לחץ על "התחבר" למטה, התחבר ונסה שוב',
+    errChatOfficeNotLoggedIn: 'לא מחובר ל-ChatOffice: לחץ על "התחבר" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
     errNoImageModel:
-      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-Genspark',
-    errGskToolsOff: 'כלי הענן של Genspark כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
+      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-ChatOffice',
+    errChatOfficeToolsOff:
+      'כלי הענן של ChatOffice כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     menuFile: 'קובץ',
     menuNewDoc: 'מסמך חדש',
     menuNewWindow: 'חלון חדש',
@@ -1923,15 +1929,15 @@ const tMain = createI18n({
     errImageNoText:
       'छवि अनुलग्नक टेक्स्ट प्रदान नहीं करते; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है, उसे सीधे देखें',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
-    errGskNotLoggedIn:
-      'Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
+    errChatOfficeNotLoggedIn:
+      'ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या Genspark में साइन इन करें',
-    errGskToolsOff:
-      'Genspark क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
+      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या ChatOffice में साइन इन करें',
+    errChatOfficeToolsOff:
+      'ChatOffice क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     menuFile: 'फ़ाइल',
     menuNewDoc: 'नया दस्तावेज़',
     menuNewWindow: 'नई विंडो',
@@ -2025,12 +2031,12 @@ const tMain = createI18n({
     errParseFailed: '檔案解析失敗',
     errImageNoText: '圖片附件不提供文字,已作為影像隨使用者訊息傳送,直接看圖即可',
     errNotImage: '不是支援的圖片類型',
-    errGskNotLoggedIn: '未登入 Genspark:請點擊下方「登入」完成登入後重試',
+    errChatOfficeNotLoggedIn: '未登入 ChatOffice:請點擊下方「登入」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
     errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
-    errGskToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
+    errChatOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     menuFile: '檔案',
     menuNewDoc: '新增文件',
     menuNewWindow: '新增視窗',
@@ -2745,11 +2751,11 @@ const TWIPS_PER_INCH = 1440
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
 /** live read: the settings page writes the file; every tool call re-checks */
-function gskCloudToolsOn(): boolean {
+function chatofficeCloudToolsOn(): boolean {
   try {
     return cloudToolsEnabled({
-      gskToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
-        .gskToolsEnabled,
+      chatofficeToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
+        .chatofficeToolsEnabled,
     })
   } catch {
     return true
@@ -2790,25 +2796,25 @@ export function registerAiIpc(): void {
         }
       },
     },
-    gsk: {
-      apiKey: () => gskApiKey(),
-      hasAuth: () => hasGskAuth(),
+    chatoffice: {
+      apiKey: () => chatofficeApiKey(),
+      hasAuth: () => hasChatOfficeAuth(),
       status: async (withEmail) => {
-        if (!hasGskAuth()) return { loggedIn: false }
+        if (!hasChatOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
-        const info = await gskLoginInfo()
+        const info = await chatofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
       generateImage: async (req) => {
-        if (!gskCloudToolsOn()) throw new Error(tm('errGskToolsOff'))
-        const r = await gskGenerateImage({
+        if (!chatofficeCloudToolsOn()) throw new Error(tm('errChatOfficeToolsOff'))
+        const r = await chatofficeGenerateImage({
           prompt: req.prompt,
           ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
         })
         return { url: r.url }
       },
     },
-    gskLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
+    chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
@@ -2819,7 +2825,7 @@ export function registerAiIpc(): void {
       return await webSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 6,
-        gskCloudToolsOn(),
+        chatofficeCloudToolsOn(),
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
@@ -2830,7 +2836,7 @@ export function registerAiIpc(): void {
       return await imageSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 8,
-        gskCloudToolsOn(),
+        chatofficeCloudToolsOn(),
       )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
@@ -2864,7 +2870,7 @@ export function registerAiIpc(): void {
 
   // docs-owned (like pdf:generate-image): slides' ai:generate-image is only
   // registered once a slides view exists, so docs needs its own channel.
-  // BYOK image model first (needs no login); gsk is the fallback backend.
+  // BYOK image model first (needs no login); chatoffice is the fallback backend.
   ipcMain.handle(
     'docs:ai-generate-image',
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {

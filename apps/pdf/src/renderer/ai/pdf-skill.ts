@@ -32,19 +32,21 @@ const SYSTEM_PROMPT = `You are ChatOffice's PDF assistant, helping the user read
 /** Selection text cap in the per-message context (the context is resent every run) */
 const SELECTION_CONTEXT_CHARS = 12_000
 
-const GSK_TOOLS_OFF_NOTE =
-  '\n\nNote: generate_image is currently unavailable (Genspark cloud tools are off or the user is signed out). Do not call or promise it; use image_search for imagery.'
+const CHATOFFICE_TOOLS_OFF_NOTE =
+  '\n\nNote: generate_image is currently unavailable (ChatOffice cloud tools are off or the user is signed out). Do not call or promise it; use image_search for imagery.'
 
 export function createPdfSkill(deps: PdfAiDeps): AgentSkill {
   return {
     id: 'pdf',
     // live like tools: the off-note overrides the prose that still mentions generate_image
     get systemPrompt() {
-      return deps.gskTools?.() === false ? SYSTEM_PROMPT + GSK_TOOLS_OFF_NOTE : SYSTEM_PROMPT
+      return deps.chatofficeTools?.() === false
+        ? SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
+        : SYSTEM_PROMPT
     },
-    // live view: gskTools (login && cloud-tools toggle) is re-read before every model request
+    // live view: chatofficeTools (login && cloud-tools toggle) is re-read before every model request
     get tools() {
-      return deps.gskTools?.() === false
+      return deps.chatofficeTools?.() === false
         ? AGENT_TOOLS.filter((t) => t.name !== 'generate_image')
         : AGENT_TOOLS
     },

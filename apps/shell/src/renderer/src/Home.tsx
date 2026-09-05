@@ -25,7 +25,14 @@ import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
-import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
+import {
+  clampSidebarWidth,
+  getHomeLayout,
+  onHomeLayoutChange,
+  setHomeLayout,
+  SIDEBAR_MAX,
+  SIDEBAR_MIN,
+} from './home-layout'
 
 declare global {
   interface Window {
@@ -504,7 +511,7 @@ function ProjectPanel({
 }
 
 // ── Account entry (bottom-left) ──────────────────────────
-// Currently the Genspark (gsk) login entry; to be upgraded to a signup/account system later.
+// Currently the ChatOffice (chatoffice) login entry; to be upgraded to a signup/account system later.
 // Clicking it opens the settings modal directly (SettingsModal.tsx), which hosts
 // login/logout plus preferences (language, theme, save location, update channel).
 
@@ -551,7 +558,7 @@ function AccountEntry({
     }
   }, [])
 
-  // login progress pushed from main (gsk login CLI output)
+  // login progress pushed from main (chatoffice login CLI output)
   useEffect(() => {
     const off = window.chatOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'url') {
@@ -767,7 +774,7 @@ function AccountEntry({
   )
 }
 
-// ── Cloud (Genspark web) projects view ──────────────────
+// ── Cloud (ChatOffice web) projects view ──────────────────
 
 /** kind filter segments; labels shared with the recents type filter */
 const CLOUD_FILTERS = [
@@ -914,7 +921,7 @@ function CloudProjectsView() {
         <p className="empty proj-empty">
           <span className="empty-hint">{t('cloudLoginHint')}</span>
           <button className="btn btn-secondary" disabled={loginWaiting} onClick={startLogin}>
-            {loginWaiting ? t('waitingShort') : t('loginGenspark')}
+            {loginWaiting ? t('waitingShort') : t('loginChatOffice')}
           </button>
         </p>
       )
@@ -1168,7 +1175,7 @@ export function Home() {
   /** starred files for the always-on 收藏 section (small list, no paging) */
   const [starredEntries, setStarredEntries] = useState<RecentEntry[]>([])
   const [loadingMore, setLoadingMore] = useState(false)
-  // Genspark web projects take over the content area (the chat hides meanwhile)
+  // ChatOffice web projects take over the content area (the chat hides meanwhile)
   const [cloudMode, setCloudMode] = useState(false)
   const [filter, setFilter] = useState('all')
   const [rowMenu, setRowMenu] = useState<string | null>(null)
@@ -1178,7 +1185,7 @@ export function Home() {
   const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null)
   // name in the greeting; omitted when logged out
   const [accountName, setAccountName] = useState('')
-  // Genspark Projects is web-account data, so its nav entry only shows when logged in
+  // ChatOffice Projects is web-account data, so its nav entry only shows when logged in
   const [loggedIn, setLoggedIn] = useState(false)
   // single source of account state: AccountEntry reports every change (initial
   // load, login, logout), keeping the greeting name and the nav entry in sync
@@ -1973,7 +1980,7 @@ export function Home() {
         layout.rightCollapsed ? ' pane-right-collapsed' : ''
       }`}
     >
-      <aside className="sidebar">
+      <aside className="sidebar" style={{ width: layout.sidebarWidth }}>
         <div className="sidebar-logo">
           <img className="logo-lockup" src={logoLockup} alt="ChatOffice" />
         </div>
@@ -2046,6 +2053,28 @@ export function Home() {
           onSettingsOpenChange={handleSettingsOpenChange}
         />
       </aside>
+
+      {/* drag handle between the tree strip and the chat pane; hidden with the
+          tree itself (pane-left-collapsed) via the sibling selector in CSS */}
+      <div
+        className="sidebar-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        onPointerDown={(event) => {
+          if (event.button !== 0) return
+          event.currentTarget.setPointerCapture(event.pointerId)
+          document.body.classList.add('sidebar-resizing')
+        }}
+        onPointerMove={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
+          setHomeLayout({ sidebarWidth: clampSidebarWidth(event.clientX) })
+        }}
+        onPointerUp={(event) => {
+          event.currentTarget.releasePointerCapture(event.pointerId)
+          document.body.classList.remove('sidebar-resizing')
+        }}
+        onLostPointerCapture={() => document.body.classList.remove('sidebar-resizing')}
+      />
 
       {cloudMode ? (
         <CloudProjectsView />

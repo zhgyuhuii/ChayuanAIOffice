@@ -3,7 +3,7 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 import type {
   AiStreamChunk,
@@ -117,15 +117,15 @@ export interface HomeApi {
   getUpdateChannel(): Promise<UpdateChannel>
   /** switch + persist the update channel; triggers an immediate update check */
   setUpdateChannel(channel: UpdateChannel): Promise<void>
-  /** Genspark account status (gsk login state; to be upgraded to a signup/account system later) */
+  /** ChatOffice account status (chatoffice login state; to be upgraded to a signup/account system later) */
   accountStatus(): Promise<AccountStatus>
-  /** start Genspark login (opens the browser; accountStatus flips to logged-in on completion); returns whether the launch succeeded */
+  /** start ChatOffice login (opens the browser; accountStatus flips to logged-in on completion); returns whether the launch succeeded */
   accountLogin(): Promise<boolean>
   /** progress events for the login started via accountLogin; returns an unsubscribe */
   onAccountLogin(handler: (ev: AccountLoginEvent) => void): () => void
   /** re-open the pending login auth URL in the default browser (rescue when auto-open failed) */
   openLoginUrl(): Promise<void>
-  /** log out (clears the saved API key; the login state is shared globally with the gsk CLI) */
+  /** log out (clears the saved API key; the login state is shared globally with the chatoffice CLI) */
   accountLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
   getAppVersion(): Promise<string>
@@ -149,7 +149,7 @@ export interface HomeApi {
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
   /** open the GenTeam community page in the default browser */
   openGenTeam(): Promise<void>
-  /** open the Genspark credit-usage page in the default browser */
+  /** open the ChatOffice credit-usage page in the default browser */
   openCreditUsage(): Promise<void>
   /** open the public GitHub repository in the default browser */
   openGitHubRepo(): Promise<void>
@@ -162,11 +162,11 @@ export interface HomeApi {
   starPromptAction(action: StarPromptAction): Promise<void>
   /** locally stored full cloud project list (instant; null when no store or logged out) */
   cloudProjectsCached(): Promise<CloudProjectsSnapshot | null>
-  /** sync the full list from Genspark and return it (1 request when nothing changed); null when the sync failed */
+  /** sync the full list from ChatOffice and return it (1 request when nothing changed); null when the sync failed */
   cloudProjectsSync(): Promise<CloudProjectsSnapshot | null>
   /** open a cloud project (relative '/agents?id=...' URL) in the default browser */
   openCloudProject(projectUrl: string): Promise<void>
-  /** AI settings (userData/ai-settings.json, shared by every editor); the genspark key never appears here */
+  /** AI settings (userData/ai-settings.json, shared by every editor); the chatoffice key never appears here */
   getAiSettings(): Promise<AiSettingsV2>
   /** persist AI settings; open editors pick the change up on their next settings read */
   setAiSettings(view: AiSettingsV2): Promise<void>
@@ -174,10 +174,10 @@ export interface HomeApi {
   setAiCurrentModel(selection: AiModelSelection): Promise<void>
   /** model list discovery; doubles as the settings page connection test */
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  /** gsk login state */
-  gskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>
-  /** open the browser to log in to Genspark */
-  gskLogin(): Promise<void>
+  /** chatoffice login state */
+  chatofficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
+  /** open the browser to log in to ChatOffice */
+  chatofficeLogin(): Promise<void>
   /** start a streaming AI turn for the home chat; chunks arrive via onAiStream (same ai:* channels the editors use) */
   aiStream(request: AiStreamWireRequest): Promise<void>
   /** abort an in-flight home chat turn */
@@ -267,7 +267,7 @@ export interface StarPromptShow {
 
 export type CloudProjectKind = 'docs' | 'sheets' | 'slides'
 
-/** a Genspark web project shown in the home cloud section */
+/** a ChatOffice web project shown in the home cloud section */
 export interface CloudProjectEntry {
   projectId: string
   title: string
@@ -281,7 +281,7 @@ export interface CloudProjectEntry {
 
 /** full local copy of the cloud project list; filtering/paging are client-side */
 export interface CloudProjectsSnapshot {
-  /** false when gsk is unavailable (CLI missing or not logged in) */
+  /** false when chatoffice is unavailable (CLI missing or not logged in) */
   available: boolean
   /** all projects, newest first */
   projects: CloudProjectEntry[]
@@ -290,14 +290,14 @@ export interface CloudProjectsSnapshot {
 }
 
 export interface AccountStatus {
-  /** gsk is installed and logged in */
+  /** chatoffice is installed and logged in */
   loggedIn: boolean
   email?: string
-  /** remaining Genspark credits (absent when the balance query failed) */
+  /** remaining ChatOffice credits (absent when the balance query failed) */
   creditBalance?: number
 }
 
-/** login flow progress pushed from main (gsk login CLI output) */
+/** login flow progress pushed from main (chatoffice login CLI output) */
 export interface AccountLoginEvent {
   phase: 'launched' | 'url' | 'success' | 'error'
   url?: string

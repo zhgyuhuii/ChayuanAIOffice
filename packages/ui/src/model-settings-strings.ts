@@ -14,7 +14,7 @@ const zh = {
   enabledGroup: '已启用',
   enabledEmpty: '还没有启用的厂商，在下方目录选择一个开始配置',
   noModelsGuide:
-    '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 Genspark 直接使用内置模型。',
+    '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 ChatOffice 直接使用内置模型。',
   tagNeedsKey: '需 Key',
   tagNoKey: '无需 Key',
   tagFree: '免费',
@@ -78,15 +78,15 @@ const zh = {
     'audio-understanding': '音频理解',
     'video-understanding': '视频理解',
   } as Record<string, string>,
-  // genspark special card
-  gskLoginTitle: 'Genspark 登录',
-  gskLoginDesc:
+  // chatoffice special card
+  chatofficeLoginTitle: 'ChatOffice 登录',
+  chatofficeLoginDesc:
     '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
-  gskLoggedIn: '已登录：{email}',
-  gskLoggedInNoEmail: '已登录',
-  gskLoggedOut: '未登录',
-  gskLoginBtn: '登录',
-  gskPresetModels: '可用模型',
+  chatofficeLoggedIn: '已登录：{email}',
+  chatofficeLoggedInNoEmail: '已登录',
+  chatofficeLoggedOut: '未登录',
+  chatofficeLoginBtn: '登录',
+  chatofficePresetModels: '可用模型',
   // misc
   freeNokey: '免密钥',
   freeFreekey: '免费密钥',
@@ -96,7 +96,7 @@ const zh = {
   presetModelsHint: '该供应商暂不支持自动获取模型列表，以下为预设清单',
   pickerSettings: '模型设置',
   pickerEmptyTitle: '还没有可用的模型',
-  pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 Genspark 使用内置模型。',
+  pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用内置模型。',
   statusEnabled: '已启用，模型出现在选择器中',
   statusNotEnabled: '未启用',
   selectAll: '全选',
@@ -132,7 +132,7 @@ const en = {
   enabledGroup: 'Enabled',
   enabledEmpty: 'No vendor enabled yet — pick one from the catalog below to start',
   noModelsGuide:
-    'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to Genspark to use its built-in models.',
+    'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChatOffice to use its built-in models.',
   tagNeedsKey: 'Key needed',
   tagNoKey: 'No key',
   tagFree: 'Free',
@@ -194,14 +194,14 @@ const en = {
     'audio-understanding': 'Audio',
     'video-understanding': 'Video',
   } as Record<string, string>,
-  gskLoginTitle: 'Genspark sign-in',
-  gskLoginDesc:
+  chatofficeLoginTitle: 'ChatOffice sign-in',
+  chatofficeLoginDesc:
     'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
-  gskLoggedIn: 'Signed in: {email}',
-  gskLoggedInNoEmail: 'Signed in',
-  gskLoggedOut: 'Not signed in',
-  gskLoginBtn: 'Sign in',
-  gskPresetModels: 'Available models',
+  chatofficeLoggedIn: 'Signed in: {email}',
+  chatofficeLoggedInNoEmail: 'Signed in',
+  chatofficeLoggedOut: 'Not signed in',
+  chatofficeLoginBtn: 'Sign in',
+  chatofficePresetModels: 'Available models',
   freeNokey: 'Keyless',
   freeFreekey: 'Free key',
   freeTier: 'Free tier',
@@ -211,7 +211,7 @@ const en = {
   pickerSettings: 'Model settings',
   pickerEmptyTitle: 'No model available yet',
   pickerEmptyBody:
-    'Configure your own provider (your key, ready to use), or sign in to Genspark for its built-in models.',
+    'Configure your own provider (your key, ready to use), or sign in to ChatOffice for its built-in models.',
   statusEnabled: 'Enabled — models appear in the picker',
   statusNotEnabled: 'Not enabled',
   selectAll: 'Select all',

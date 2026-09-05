@@ -17,7 +17,7 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 
 const MAX_RANGE_CELLS = 100_000
@@ -2434,7 +2434,7 @@ export const aiSettingsInputSchema = z
   .object({
     provider: z.string().min(1),
     providers: z.record(z.string(), aiProviderConfigSchema),
-    gskToolsEnabled: z.boolean().optional(),
+    chatofficeToolsEnabled: z.boolean().optional(),
   })
   .strict()
 
@@ -2792,12 +2792,12 @@ export interface DesktopApi {
   /// start a streaming AI call; the settings slot carries the model selection
   aiStream(request: AiStreamRequestInput): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
-  /// Genspark account status (gsk login state); withEmail also returns the email
+  /// ChatOffice account status (chatoffice login state); withEmail also returns the email
   /// (needs a network request, slower)
-  aiGskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>
-  /// Opens the browser to sign in to Genspark (fire-and-forget; aiGskStatus
+  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
+  /// Opens the browser to sign in to ChatOffice (fire-and-forget; aiChatOfficeStatus
   /// becomes signed-in on completion)
-  aiGskLogin(): Promise<void>
+  aiChatOfficeLogin(): Promise<void>
   /// Web search (main-process Serper/DuckDuckGo, shared with docs/slides)
   webSearch(query: string, maxResults?: number): Promise<WebSearchResult>
   /// Image search (same shared main-process channel as docs/slides)
@@ -2814,7 +2814,7 @@ export interface DesktopApi {
     maxResults?: number,
   ): Promise<{ images: unknown[]; method?: string; error?: string }>
   remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /// AI image generation via the Genspark account (sheets-owned channel)
+  /// AI image generation via the ChatOffice account (sheets-owned channel)
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<GenerateImageResult>
   /// Downloads an image URL in the main process (SSRF-guarded); null on failure
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>

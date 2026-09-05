@@ -4,19 +4,19 @@ import type { AiSettingsSource } from '../src/settings-source'
 import type { AiSettingsV2, AiStreamChunk } from '../src/types'
 
 /**
- * The login-gates-nothing heal: a current model parked on the genspark
+ * The login-gates-nothing heal: a current model parked on the chatoffice
  * profile while signed out falls through to the first usable BYOK chat
- * model (persisted), so chat keeps working. With no alternative the gsk
+ * model (persisted), so chat keeps working. With no alternative the chatoffice
  * error stays as the sign-in guidance.
  */
 
-const gskProfile = {
-  id: 'genspark',
-  vendorId: 'genspark',
-  displayName: 'Genspark',
+const chatofficeProfile = {
+  id: 'chatoffice',
+  vendorId: 'chatoffice',
+  displayName: 'ChatOffice',
   protocol: 'openai-completions' as const,
   baseUrl: '',
-  auth: 'gsk-login' as const,
+  auth: 'chatoffice-login' as const,
   enabled: true,
   models: [{ id: 'claude-opus-4-7' }],
 }
@@ -49,7 +49,7 @@ function makeSource(stored: AiSettingsV2): AiSettingsSource & { writes: AiSettin
   }
 }
 
-const noGsk = {
+const noChatOffice = {
   apiKey: () => '',
   hasAuth: () => false,
   status: async () => ({ loggedIn: false }),
@@ -58,14 +58,14 @@ const noGsk = {
 
 const translate = (key: string) => key
 
-describe('runtime gsk fallback heal', () => {
-  it('switches the current model off the gsk profile when signed out and a BYOK chat model exists', async () => {
+describe('runtime chatoffice fallback heal', () => {
+  it('switches the current model off the chatoffice profile when signed out and a BYOK chat model exists', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [gskProfile, byokProfile()],
-      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+      profiles: [chatofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
 
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
@@ -75,49 +75,47 @@ describe('runtime gsk fallback heal', () => {
     expect(source.writes.length).toBe(1)
   })
 
-  it('keeps the gsk selection (sign-in guidance) when no alternative exists', async () => {
+  it('keeps the chatoffice selection (sign-in guidance) when no alternative exists', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [gskProfile],
-      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+      profiles: [chatofficeProfile],
+      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
 
     const view = await runtime.getSettingsView()
-    expect(view.currentModel).toEqual({ profileId: 'genspark', modelId: 'claude-opus-4-7' })
+    expect(view.currentModel).toEqual({ profileId: 'chatoffice', modelId: 'claude-opus-4-7' })
     expect(source.writes.length).toBe(0)
   })
 
-  it('leaves the gsk selection alone while signed in', async () => {
+  it('leaves the chatoffice selection alone while signed in', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [gskProfile, byokProfile()],
-      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+      profiles: [chatofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
     const runtime = createAiRuntime({
       source,
-      gsk: { ...noGsk, hasAuth: () => true, apiKey: () => 'gsk-key' },
+      chatoffice: { ...noChatOffice, hasAuth: () => true, apiKey: () => 'chatoffice-key' },
       translate,
     })
     const view = await runtime.getSettingsView()
-    expect(view.currentModel).toEqual({ profileId: 'genspark', modelId: 'claude-opus-4-7' })
+    expect(view.currentModel).toEqual({ profileId: 'chatoffice', modelId: 'claude-opus-4-7' })
     expect(source.writes.length).toBe(0)
   })
 
-  it('a run with a parked gsk selection resolves the BYOK fallback instead of erroring', async () => {
+  it('a run with a parked chatoffice selection resolves the BYOK fallback instead of erroring', async () => {
     const source = makeSource({
       version: 2,
-      profiles: [gskProfile, byokProfile()],
-      currentModel: { profileId: 'genspark', modelId: 'claude-opus-4-7' },
+      profiles: [chatofficeProfile, byokProfile()],
+      currentModel: { profileId: 'chatoffice', modelId: 'claude-opus-4-7' },
     })
-    const runtime = createAiRuntime({ source, gsk: noGsk, translate })
+    const runtime = createAiRuntime({ source, chatoffice: noChatOffice, translate })
     const chunks: AiStreamChunk[] = []
     // the healed read swaps the selection before resolution; resolveForRun on
     // the stale selection would throw — verify via the healed view + resolve
     const view = await runtime.getSettingsView()
-    await expect(
-      runtime.resolveForRun(view.currentModel!),
-    ).resolves.toMatchObject({
+    await expect(runtime.resolveForRun(view.currentModel!)).resolves.toMatchObject({
       baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
       apiKey: 'sk-1',
       model: 'glm-5.3',

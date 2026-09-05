@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
-import type { AiModelEntry, AiSettingsV2, GenSparkAccountStatus } from '@chatoffice/ai-provider'
+import type { AiModelEntry, AiSettingsV2, ChatOfficeAccountStatus } from '@chatoffice/ai-provider'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type {
@@ -258,11 +258,11 @@ const homeApi: HomeApi = {
       error?: string
     }
   },
-  async gskStatus(withEmail) {
-    return (await ipcRenderer.invoke('ai:gsk-status', withEmail)) as GenSparkAccountStatus
+  async chatofficeStatus(withEmail) {
+    return (await ipcRenderer.invoke('ai:chatoffice-status', withEmail)) as ChatOfficeAccountStatus
   },
-  async gskLogin() {
-    await ipcRenderer.invoke('ai:gsk-login')
+  async chatofficeLogin() {
+    await ipcRenderer.invoke('ai:chatoffice-login')
   },
   // ai:stream / files:* / docs:create-document channels are registered process-wide
   // by the aggregated editor mains the shell loads (ai-host / docs-main)
@@ -394,6 +394,9 @@ const tabsApi: TabsApi = {
   },
   setTreeInset(visible) {
     ipcRenderer.send(TABS_CHANNELS.treeInset, visible)
+  },
+  setTreeWidth(px) {
+    ipcRenderer.send(TABS_CHANNELS.treeWidth, px)
   },
   setShellModalOpen(open) {
     ipcRenderer.send(TABS_CHANNELS.shellModal, open)

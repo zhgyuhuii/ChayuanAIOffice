@@ -819,15 +819,15 @@ export function App(): React.JSX.Element {
   const aiSettingsRef = useRef<AiSettingsV2 | null>(null)
   aiSettingsRef.current = aiSettings
 
-  /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const gskLoggedInRef = useRef(false)
+  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chatofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.desktopApi
-        ?.aiGskStatus()
+        ?.aiChatOfficeStatus()
         .then((s) => {
-          if (alive) gskLoggedInRef.current = !!s?.loggedIn
+          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }
@@ -1097,7 +1097,9 @@ export function App(): React.JSX.Element {
         createFilesSkill(availableAttachments),
         createSearchSkill(),
         createImageSkill(
-          () => gskLoggedInRef.current && aiSettingsRef.current?.gskToolsEnabled !== false,
+          () =>
+            chatofficeLoggedInRef.current &&
+            aiSettingsRef.current?.chatofficeToolsEnabled !== false,
         ),
       ]),
       events: {
@@ -1232,9 +1234,9 @@ export function App(): React.JSX.Element {
             return next
           })
           // Signed-out failures get an inline sign-in button; detected via
-          // gsk status rather than matching the localized error text
+          // chatoffice status rather than matching the localized error text
           void window.desktopApi
-            .aiGskStatus()
+            .aiChatOfficeStatus()
             .then((status) => {
               if (status.loggedIn) return
               setChat((previous) => {
@@ -1257,7 +1259,7 @@ export function App(): React.JSX.Element {
   function isAgentConfigured(): boolean {
     const settings = aiSettingsRef.current
     if (!settings) return false
-    // any enabled chat model counts as configured; the gsk-login profile's
+    // any enabled chat model counts as configured; the chatoffice-login profile's
     // secret is injected main-side (logged-out runs surface a sign-in error)
     return enabledChatModels(settings).length > 0
   }

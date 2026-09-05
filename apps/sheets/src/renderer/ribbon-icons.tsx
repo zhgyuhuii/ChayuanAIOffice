@@ -439,6 +439,13 @@ export const RIBBON_GLYPH_ICONS: Record<string, ReactElement> = {
       <path d="M4.75 12h14.5" strokeDasharray="2.5 2.5" />
     </Icon>
   ),
+  '▩': (
+    <Icon>
+      {/* 数据透视表：四格，右下填充 */}
+      <path d="M4.75 4.75h14.5v14.5H4.75z M4.75 9.5h14.5 M9.5 4.75v14.5" />
+      <path d="M9.5 9.5h9.75v9.75H9.5z" fill="currentColor" stroke="none" opacity="0.28" />
+    </Icon>
+  ),
   '❄': (
     <Icon>
       <path d="M 12 4.64 v 14.72 M 5.62 8.32 l 12.75 7.36 M 18.38 8.32 5.62 15.68" />

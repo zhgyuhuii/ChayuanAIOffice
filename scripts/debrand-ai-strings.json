@@ -21,7 +21,7 @@
       "hi": "AI सहायक",
       "zh-TW": "AI 助手"
     },
-    "aiGskLoginBtn": {
+    "aiChatOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -66,39 +66,39 @@
   },
   "apps/docs/src/renderer/i18n/strings-app.ts": {
     "appExpandAiPanel": null,
-    "appGensparkAccount": null,
+    "appChatOfficeAccount": null,
     "appNotLoggedIn": null,
-    "appLoginGenspark": null
+    "appLoginChatOffice": null
   },
   "apps/docs/src/renderer/i18n/strings-ribbon.ts": {
     "ribbonAiAssistant": null,
     "ribbonAiAssistantTip": null
   },
   "apps/docs/src/main/docs-main.ts": {
-    "errGskNotLoggedIn": {
-      "zh": "未登录 Genspark:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to Genspark: click “Sign in” below, sign in, then retry",
-      "ja": "Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "Genspark에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke Genspark: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в Genspark: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke Genspark: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-Genspark: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 Genspark:請點擊下方「登入」完成登入後重試"
+    "errChatOfficeNotLoggedIn": {
+      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
     }
   },
   "apps/sheets/src/renderer/i18n/strings-ai.ts": {
-    "aiGskLoginBtn": {
+    "aiChatOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -143,35 +143,35 @@
     "aiPanelTitle": {
       "zh-TW": "AI 助手"
     },
-    "aiGensparkAccount": null,
+    "aiChatOfficeAccount": null,
     "aiNotLoggedIn": null,
-    "aiLoginGenspark": null
+    "aiLoginChatOffice": null
   },
   "apps/sheets/src/main/sheets-main.ts": {
-    "errGskNotLoggedIn": {
-      "zh": "未登录 Genspark:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to Genspark: click “Sign in” below, sign in, then retry",
-      "ja": "Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "Genspark에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke Genspark: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в Genspark: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke Genspark: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-Genspark: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 Genspark:請點擊下方「登入」完成登入後重試"
+    "errChatOfficeNotLoggedIn": {
+      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
     }
   },
   "apps/slides/src/renderer/i18n/strings-ai.ts": {
-    "aiGskLoginBtn": {
+    "aiChatOfficeLoginBtn": {
       "zh": "登录",
       "en": "Sign in",
       "ja": "サインイン",
@@ -226,26 +226,26 @@
     "ribbonAiAssistantTip": null
   },
   "apps/slides/src/main/i18n-main.ts": {
-    "errGskNotLoggedIn": {
-      "zh": "未登录 Genspark:请点击下方「登录」完成登录后重试",
-      "en": "Not signed in to Genspark: click “Sign in” below, sign in, then retry",
-      "ja": "Genspark にサインインしていません。下の「サインイン」からサインインして再試行してください",
-      "ko": "Genspark에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
-      "fr": "Non connecté à Genspark : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
-      "de": "Nicht bei Genspark angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
-      "es": "No has iniciado sesión en Genspark: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
-      "th": "ยังไม่ได้ลงชื่อเข้าใช้ Genspark: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
-      "id": "Belum masuk ke Genspark: klik “Masuk” di bawah, lalu coba lagi",
-      "ru": "Вы не вошли в Genspark: нажмите «Войти» ниже, войдите и повторите попытку",
-      "ar": "لم تسجّل الدخول إلى Genspark: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
-      "pt": "Não conectado ao Genspark: clique em “Entrar” abaixo, entre e tente novamente",
-      "it": "Accesso a Genspark non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
-      "pl": "Nie zalogowano do Genspark: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
-      "nl": "Niet aangemeld bij Genspark: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
-      "ms": "Belum log masuk ke Genspark: klik “Log masuk” di bawah, kemudian cuba lagi",
-      "he": "לא מחובר ל-Genspark: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
-      "hi": "Genspark में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
-      "zh-TW": "未登入 Genspark:請點擊下方「登入」完成登入後重試"
+    "errChatOfficeNotLoggedIn": {
+      "zh": "未登录 ChatOffice:请点击下方「登录」完成登录后重试",
+      "en": "Not signed in to ChatOffice: click “Sign in” below, sign in, then retry",
+      "ja": "ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください",
+      "ko": "ChatOffice에 로그인되어 있지 않습니다. 아래 \"로그인\"을 눌러 로그인한 뒤 다시 시도하세요",
+      "fr": "Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez",
+      "de": "Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut",
+      "es": "No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo",
+      "th": "ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง",
+      "id": "Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi",
+      "ru": "Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку",
+      "ar": "لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة",
+      "pt": "Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente",
+      "it": "Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova",
+      "pl": "Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie",
+      "nl": "Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw",
+      "ms": "Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi",
+      "he": "לא מחובר ל-ChatOffice: לחץ על \"התחבר\" למטה, התחבר ונסה שוב",
+      "hi": "ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें",
+      "zh-TW": "未登入 ChatOffice:請點擊下方「登入」完成登入後重試"
     }
   }
 }

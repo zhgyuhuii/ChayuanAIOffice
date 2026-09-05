@@ -6,6 +6,6 @@ export const sheetsModelBridge: ModelSettingsBridge = {
   saveSettings: (view) => window.desktopApi.setAiSettings(view),
   setCurrentModel: (selection) => window.desktopApi.setAiCurrentModel(selection),
   discoverModels: (target) => window.desktopApi.aiDiscoverModels(target),
-  gskStatus: (withEmail) => window.desktopApi.aiGskStatus(withEmail),
-  gskLogin: () => window.desktopApi.aiGskLogin(),
+  chatofficeStatus: (withEmail) => window.desktopApi.aiChatOfficeStatus(withEmail),
+  chatofficeLogin: () => window.desktopApi.aiChatOfficeLogin(),
 }

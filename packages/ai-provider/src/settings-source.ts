@@ -7,7 +7,7 @@ import { harnessKeyRefFor, harnessRouteFor, VENDOR_BY_ID } from './vendor-catalo
  * - file: desktop ai-settings.json and the Docker BFF's server-side config
  * - harness: dsh's llm-pi-ai namespace via loopback RPC (true fusion with
  *   chatop — both apps read/write the same providers), with office-side
- *   selection state (currentModel/imageModel/gsk toggle) kept in a local
+ *   selection state (currentModel/imageModel/chatoffice toggle) kept in a local
  *   sidecar file so we never touch chatop's own model picker.
  *
  * Node I/O is injected so this package stays importable from renderers.
@@ -142,11 +142,10 @@ export function parseHarnessCredentials(yaml: string): Record<string, string> {
   return out
 }
 
-function profileFromHarness(
-  route: string,
-  hp: HarnessProviderProfile,
-): AiProviderProfile | null {
-  const vendorId = route.startsWith('chatop-') ? route.slice('chatop-'.length) : undefined
+function profileFromHarness(route: string, hp: HarnessProviderProfile): AiProviderProfile | null {
+  const rawVendorId = route.startsWith('chatop-') ? route.slice('chatop-'.length) : undefined
+  // legacy yaml written before the rebrand carried the vendor's old id
+  const vendorId = rawVendorId === 'genspark' ? 'chatoffice' : rawVendorId
   const vendor = vendorId ? VENDOR_BY_ID.get(vendorId) : undefined
   const protocol = (hp.api ?? vendor?.api ?? 'openai-completions') as AiWireProtocol
   const baseUrl = hp.baseURL ?? ''
@@ -178,7 +177,10 @@ export function profileToHarnessMutation(profile: AiProviderProfile): {
     apiKeyEnv: keyRef,
     api: profile.protocol,
     baseURL: profile.baseUrl,
-    models: profile.models.map((m) => ({ id: m.id, ...(m.name && m.name !== m.id ? { name: m.name } : {}) })),
+    models: profile.models.map((m) => ({
+      id: m.id,
+      ...(m.name && m.name !== m.id ? { name: m.name } : {}),
+    })),
   }
   return {
     op: { op: 'set', path: ['providers', harnessRouteFor(vendorId)], value },
@@ -190,7 +192,7 @@ export interface HarnessSourceDeps {
   rpc: HarnessRpc
   /** read a file relative to the dsh home (settings.yaml, .credentials.yaml) */
   readDshFile: DshFileReader
-  /** local sidecar file holding office-side state (currentModel/imageModel/gsk/genspark) */
+  /** local sidecar file holding office-side state (currentModel/imageModel/chatoffice/chatoffice) */
   officeStateSource: AiSettingsSource
 }
 
@@ -224,10 +226,12 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     async write(next) {
       const office: AiSettingsV2 = {
         version: 2,
-        profiles: next.profiles.filter((p) => p.auth === 'gsk-login'),
+        profiles: next.profiles.filter((p) => p.auth === 'chatoffice-login'),
         ...(next.currentModel ? { currentModel: next.currentModel } : {}),
         ...(next.imageModel ? { imageModel: next.imageModel } : {}),
-        ...(next.gskToolsEnabled !== undefined ? { gskToolsEnabled: next.gskToolsEnabled } : {}),
+        ...(next.chatofficeToolsEnabled !== undefined
+          ? { chatofficeToolsEnabled: next.chatofficeToolsEnabled }
+          : {}),
       }
       const current = await readProfiles().catch(() => [] as AiProviderProfile[])
       const currentByVendor = new Map(current.map((p) => [p.vendorId ?? p.id, p]))
@@ -238,15 +242,17 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
       // removed profiles → unset their harness routes
       for (const [vendorKey, profile] of currentByVendor) {
         if (!wantedByVendor.has(vendorKey)) {
-          ops.push({ op: 'unset', path: ['providers', harnessRouteFor(profile.vendorId ?? profile.id)] })
+          ops.push({
+            op: 'unset',
+            path: ['providers', harnessRouteFor(profile.vendorId ?? profile.id)],
+          })
         }
       }
       // added/updated profiles → set + credentials.set when the key changed
       for (const [vendorKey, profile] of wantedByVendor) {
         const prev = currentByVendor.get(vendorKey)
         const { op, keyRef } = profileToHarnessMutation(profile)
-        const keyChanged =
-          !prev || (profile.apiKey ?? '') !== '' // fresh profile, or an inline key the user (re)entered
+        const keyChanged = !prev || (profile.apiKey ?? '') !== '' // fresh profile, or an inline key the user (re)entered
         ops.push(op)
         if (keyChanged && profile.apiKey) {
           await rpc('credentials.set', { ref: keyRef, value: profile.apiKey })

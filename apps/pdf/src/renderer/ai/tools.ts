@@ -103,8 +103,8 @@ export interface PdfAiDeps {
   /** Queue a pending delete of an existing image */
   deleteImage(ref: PageImageRef): void
   searchImages(query: string, maxResults: number): Promise<ImageSearchResponse>
-  /** live predicate: gsk login && the Genspark-cloud-tools toggle; false hides generate_image */
-  gskTools?(): boolean
+  /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image */
+  chatofficeTools?(): boolean
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string

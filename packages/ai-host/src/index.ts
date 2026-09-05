@@ -3,12 +3,12 @@ import {
   createFileSource,
   type AiModelSelection,
   type AiRuntime,
-  type AiRuntimeGsk,
+  type AiRuntimeChatOffice,
   type AiSettingsV2,
   type AiStreamChunk,
   type DiscoveryTarget,
   type FileSourceFs,
-  type GenSparkAccountStatus,
+  type ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 import {
   imageSearch,
@@ -43,9 +43,9 @@ export interface SharedAiIpcDeps {
   settingsPath: string
   /** injected Node fs (atomic write + watch live in the app) */
   fs: FileSourceFs
-  gsk: AiRuntimeGsk
-  /** opens the gsk device-code login flow (app closes over shell.openExternal) */
-  gskLogin: () => void
+  chatoffice: AiRuntimeChatOffice
+  /** opens the chatoffice device-code login flow (app closes over shell.openExternal) */
+  chatofficeLogin: () => void
   translate: (key: string, params?: Record<string, unknown>) => string
 }
 
@@ -61,16 +61,16 @@ export interface AiStreamWireRequest {
 
 /**
  * Register ai:get-settings / ai:set-settings / ai:set-current-model /
- * ai:discover-models / ai:stream(+-cancel,-chunk) / ai:gsk-status /
- * ai:gsk-login. (ai:chat and per-app channels stay in the apps.) Returns the
+ * ai:discover-models / ai:stream(+-cancel,-chunk) / ai:chatoffice-status /
+ * ai:chatoffice-login. (ai:chat and per-app channels stay in the apps.) Returns the
  * runtime so per-app handlers can reuse the same resolution.
  */
 export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
-  const { ipcMain, gsk, translate } = deps
+  const { ipcMain, chatoffice, translate } = deps
 
   const runtime = createAiRuntime({
     source: createFileSource(deps.settingsPath, deps.fs),
-    gsk,
+    chatoffice,
     translate,
   })
 
@@ -79,12 +79,13 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   ipcMain.handle('ai:get-settings', (): Promise<AiSettingsV2> => runtime.getSettingsView())
 
   ipcMain.handle(
-    'ai:gsk-status',
-    async (_event, withEmail?: boolean): Promise<GenSparkAccountStatus> => gsk.status(!!withEmail),
+    'ai:chatoffice-status',
+    async (_event, withEmail?: boolean): Promise<ChatOfficeAccountStatus> =>
+      chatoffice.status(!!withEmail),
   )
 
-  ipcMain.handle('ai:gsk-login', () => {
-    deps.gskLogin()
+  ipcMain.handle('ai:chatoffice-login', () => {
+    deps.chatofficeLogin()
   })
 
   // the settings view carries KEEP_KEY sentinels; the runtime merges stored keys back
@@ -136,7 +137,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   })
 
   // ── picture-source channels (insert-image dialog) ────────────────────
-  // Web image search (gsk → Serper → DuckDuckGo, copyright hosts filtered)
+  // Web image search (chatoffice → Serper → DuckDuckGo, copyright hosts filtered)
   ipcMain.handle('ai:web-image-search', async (_event, query: string, maxResults?: number) => {
     try {
       return await imageSearch(

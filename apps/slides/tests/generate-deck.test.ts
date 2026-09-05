@@ -237,7 +237,7 @@ describe('generate_deck self-driven page-by-page generation', () => {
   })
 })
 
-describe('generate_deck local page generation (cloud/gsk unavailable)', () => {
+describe('generate_deck local page generation (cloud/chatoffice unavailable)', () => {
   it('cloud disabled → the local spec builder generates every page through the same marker landing', async () => {
     const { access, genPageCalls, localPageCalls, landOrder, getPages } = makeAccess({
       cloudEnabled: false,

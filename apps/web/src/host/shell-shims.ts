@@ -383,8 +383,8 @@ export function installShellShims(): void {
     chatSessionsSave: async (sessions: unknown) => {
       localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(sessions))
     },
-    gskStatus: async () => ({ loggedIn: false }),
-    gskLogin: async () => undefined,
+    chatofficeStatus: async () => ({ loggedIn: false }),
+    chatofficeLogin: async () => undefined,
     getDefaultSaveDir: async () => null,
     pickDefaultSaveDir: async () => degraded('chatOffice.pickDefaultSaveDir'),
     getAnalyticsEnabled: async () => false,

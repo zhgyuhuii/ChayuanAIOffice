@@ -1,6 +1,6 @@
 /**
  * VendorLogo — the harvested chatop vendor icon with a letter-avatar
- * fallback (genspark and any catalog row without an icon file).
+ * fallback (chatoffice and any catalog row without an icon file).
  */
 import React from 'react'
 import { VENDOR_BY_ID } from '@chatoffice/ai-provider'
@@ -19,9 +19,15 @@ export function VendorLogo({ vendorId, size = 18, fallback }: VendorLogoProps): 
   if (src) {
     return <img className="msp-logo" src={src} alt="" aria-hidden width={size} height={size} />
   }
-  const letter = (fallback ?? VENDOR_BY_ID.get(vendorId ?? '')?.name ?? vendorId ?? '?').slice(0, 1).toUpperCase()
+  const letter = (fallback ?? VENDOR_BY_ID.get(vendorId ?? '')?.name ?? vendorId ?? '?')
+    .slice(0, 1)
+    .toUpperCase()
   return (
-    <span className="msp-avatar" style={{ width: size, height: size, fontSize: Math.round(size / 2) }} aria-hidden>
+    <span
+      className="msp-avatar"
+      style={{ width: size, height: size, fontSize: Math.round(size / 2) }}
+      aria-hidden
+    >
       {letter}
     </span>
   )

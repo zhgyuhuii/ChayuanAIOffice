@@ -12,19 +12,22 @@ type ChunkListener = (chunk: unknown) => void
 
 export interface AiHttpBridge {
   getAiSettings(): Promise<unknown>
-  capabilities(): Promise<{ gskAvailable: boolean }>
+  capabilities(): Promise<{ chatofficeAvailable: boolean }>
   setAiSettings(view: unknown): Promise<void>
   setAiCurrentModel(selection: unknown): Promise<void>
   aiDiscoverModels(target: unknown): Promise<unknown>
-  aiGskStatus(withEmail?: boolean): Promise<{ loggedIn: boolean }>
-  aiGskLogin(): Promise<void>
+  aiChatOfficeStatus(withEmail?: boolean): Promise<{ loggedIn: boolean }>
+  aiChatOfficeLogin(): Promise<void>
   aiStream(request: unknown): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: ChunkListener): () => void
   webSearch(query: string, maxResults?: number): Promise<unknown>
   imageSearch(query: string, maxResults?: number): Promise<unknown>
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{ url?: string; error?: string }>
+  aiGenerateImage(op: {
+    prompt: string
+    aspectRatio?: string
+  }): Promise<{ url?: string; error?: string }>
 }
 
 async function jsonPost<T>(url: string, body?: unknown, method = 'POST'): Promise<T> {
@@ -50,7 +53,11 @@ export function createAiHttpBridge(baseUrl = ''): AiHttpBridge {
       return jsonPost<unknown>(`${baseUrl}/ai/settings`, undefined, 'GET')
     },
     async capabilities() {
-      return jsonPost<{ gskAvailable: boolean }>(`${baseUrl}/ai/capabilities`, undefined, 'GET')
+      return jsonPost<{ chatofficeAvailable: boolean }>(
+        `${baseUrl}/ai/capabilities`,
+        undefined,
+        'GET',
+      )
     },
     async setAiSettings(view) {
       await jsonPost(`${baseUrl}/ai/settings`, view, 'PUT')
@@ -61,11 +68,11 @@ export function createAiHttpBridge(baseUrl = ''): AiHttpBridge {
     async aiDiscoverModels(target) {
       return jsonPost<unknown>(`${baseUrl}/ai/discover-models`, target)
     },
-    async aiGskStatus() {
+    async aiChatOfficeStatus() {
       return { loggedIn: false }
     },
-    async aiGskLogin() {
-      /* gsk login is desktop-only; the web form is pure BYOK */
+    async aiChatOfficeLogin() {
+      /* chatoffice login is desktop-only; the web form is pure BYOK */
     },
     async aiStream(request) {
       const { requestId } = request as { requestId: string }
@@ -100,7 +107,11 @@ export function createAiHttpBridge(baseUrl = ''): AiHttpBridge {
         }
       } catch (err) {
         if (!controller.signal.aborted) {
-          dispatch({ requestId, type: 'error', error: err instanceof Error ? err.message : String(err) })
+          dispatch({
+            requestId,
+            type: 'error',
+            error: err instanceof Error ? err.message : String(err),
+          })
         }
       } finally {
         controllers.delete(requestId)

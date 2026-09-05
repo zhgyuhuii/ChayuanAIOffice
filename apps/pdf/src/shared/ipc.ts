@@ -1,9 +1,5 @@
 import type { Lang } from '@chatoffice/i18n'
-import type {
-  AiModelSelection,
-  AiSettingsV2,
-  AiStreamChunk,
-} from '@chatoffice/ai-provider'
+import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
 
 export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
@@ -652,8 +648,8 @@ export const AI_CHANNELS = {
   setSettings: 'ai:set-settings',
   setCurrentModel: 'ai:set-current-model',
   discoverModels: 'ai:discover-models',
-  gskStatus: 'ai:gsk-status',
-  gskLogin: 'ai:gsk-login',
+  chatofficeStatus: 'ai:chatoffice-status',
+  chatofficeLogin: 'ai:chatoffice-login',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -735,7 +731,7 @@ export interface PdfApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResponse>
   /** Download an image URL in the main process (SSRF-guarded, avoids CORS); null on failure */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** AI image generation via Genspark (gsk); returns a downloadable URL or an error message */
+  /** AI image generation via ChatOffice (chatoffice); returns a downloadable URL or an error message */
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string
@@ -770,11 +766,22 @@ export interface PdfApi {
   getAiSettings(): Promise<AiSettingsV2>
   setAiSettings(view: AiSettingsV2): Promise<void>
   setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
-  aiDiscoverModels(target: import('@chatoffice/ai-provider').DiscoveryTarget): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
-  aiGskLogin(): Promise<void>
-  /** Genspark login state (gsk); gates the cloud-only generate_image tool */
-  gskStatus(withEmail?: boolean): Promise<import('@chatoffice/ai-provider').GenSparkAccountStatus>
-  aiStream(request: { requestId: string; settings: AiModelSelection; system: string; messages: unknown[]; tools?: unknown[]; maxTokens?: number }): Promise<void>
+  aiDiscoverModels(
+    target: import('@chatoffice/ai-provider').DiscoveryTarget,
+  ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+  aiChatOfficeLogin(): Promise<void>
+  /** ChatOffice login state (chatoffice); gates the cloud-only generate_image tool */
+  chatofficeStatus(
+    withEmail?: boolean,
+  ): Promise<import('@chatoffice/ai-provider').ChatOfficeAccountStatus>
+  aiStream(request: {
+    requestId: string
+    settings: AiModelSelection
+    system: string
+    messages: unknown[]
+    tools?: unknown[]
+    maxTokens?: number
+  }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
 }

@@ -1,9 +1,5 @@
 import type { Lang } from '@chatoffice/i18n'
-import type {
-  AiModelSelection,
-  AiSettingsV2,
-  AiStreamChunk,
-} from '@chatoffice/ai-provider'
+import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
 
 export const MARKDOWN_CHANNELS = {
   consumePending: 'markdown:consume-pending',
@@ -63,8 +59,8 @@ export const AI_CHANNELS = {
   setSettings: 'ai:set-settings',
   setCurrentModel: 'ai:set-current-model',
   discoverModels: 'ai:discover-models',
-  gskStatus: 'ai:gsk-status',
-  gskLogin: 'ai:gsk-login',
+  chatofficeStatus: 'ai:chatoffice-status',
+  chatofficeLogin: 'ai:chatoffice-login',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -168,10 +164,21 @@ export interface MarkdownApi {
   getAiSettings(): Promise<AiSettingsV2>
   setAiSettings(view: AiSettingsV2): Promise<void>
   setAiCurrentModel(selection: import('@chatoffice/ai-provider').AiModelSelection): Promise<void>
-  aiDiscoverModels(target: import('@chatoffice/ai-provider').DiscoveryTarget): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
-  aiGskStatus(withEmail?: boolean): Promise<import('@chatoffice/ai-provider').GenSparkAccountStatus>
-  aiGskLogin(): Promise<void>
-  aiStream(request: { requestId: string; settings: AiModelSelection; system: string; messages: unknown[]; tools?: unknown[]; maxTokens?: number }): Promise<void>
+  aiDiscoverModels(
+    target: import('@chatoffice/ai-provider').DiscoveryTarget,
+  ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
+  aiChatOfficeStatus(
+    withEmail?: boolean,
+  ): Promise<import('@chatoffice/ai-provider').ChatOfficeAccountStatus>
+  aiChatOfficeLogin(): Promise<void>
+  aiStream(request: {
+    requestId: string
+    settings: AiModelSelection
+    system: string
+    messages: unknown[]
+    tools?: unknown[]
+    maxTokens?: number
+  }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
   /** Main-process web search (Serper/DuckDuckGo via the shared ai:web-search handler) */
@@ -180,7 +187,7 @@ export interface MarkdownApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** Genspark cloud image generation (markdown-owned channel, gsk login required) */
+  /** ChatOffice cloud image generation (markdown-owned channel, chatoffice login required) */
   aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string

@@ -1,6 +1,6 @@
 import { aiFetch } from './fetch'
 import { httpBodyDetail } from './http-error'
-import { gensparkAttributionHeaders } from './providers'
+import { chatofficeAttributionHeaders } from './providers'
 import type { ResolvedModelCall } from './settings-v2'
 
 /**
@@ -52,7 +52,7 @@ async function generateViaOpenAiImages(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${call.apiKey}`,
-      ...gensparkAttributionHeaders(call.baseUrl),
+      ...chatofficeAttributionHeaders(call.baseUrl),
     },
     body: JSON.stringify({
       model: call.model,
@@ -142,7 +142,7 @@ async function generateViaGemini(
       headers: {
         'Content-Type': 'application/json',
         'x-goog-api-key': call.apiKey,
-        ...gensparkAttributionHeaders(call.baseUrl),
+        ...chatofficeAttributionHeaders(call.baseUrl),
       },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: req.prompt }] }],
@@ -166,8 +166,10 @@ async function generateViaGemini(
   }
   if (json.error) throw new Error(json.error.message || 'gemini image generation failed')
   for (const part of json.candidates?.[0]?.content?.parts ?? []) {
-    const inline = (part as Record<string, { mimeType?: string; mime_type?: string; data?: string }>)
-      .inlineData ?? (part as Record<string, { mimeType?: string; mime_type?: string; data?: string }>).inline_data
+    const inline =
+      (part as Record<string, { mimeType?: string; mime_type?: string; data?: string }>)
+        .inlineData ??
+      (part as Record<string, { mimeType?: string; mime_type?: string; data?: string }>).inline_data
     const mime = inline?.mimeType ?? inline?.mime_type ?? 'image/png'
     if (inline?.data) return { url: `data:${mime};base64,${inline.data}` }
   }
@@ -187,7 +189,9 @@ export async function generateImageWithModel(
 ): Promise<ImageGenResult> {
   if (!req.prompt.trim()) throw new Error('prompt must not be empty')
   if (call.protocol === 'anthropic') {
-    throw new Error('the Anthropic Messages protocol has no image-generation API; configure a Gemini/OpenAI/DashScope image model instead')
+    throw new Error(
+      'the Anthropic Messages protocol has no image-generation API; configure a Gemini/OpenAI/DashScope image model instead',
+    )
   }
   if (isDashscopeNative(call)) return generateViaDashscope(call, req)
   if (call.protocol === 'gemini') return generateViaGemini(call, req)

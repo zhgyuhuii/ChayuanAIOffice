@@ -7,7 +7,12 @@ import {
   type ToolDisplay,
 } from '@chatoffice/agent-core'
 import type { RenderSlide } from '@chatoffice/pptx-render'
-import type { AiModelSelection, AiSettingsV2, AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
+import type {
+  AiModelSelection,
+  AiSettingsV2,
+  AttachmentAddResult,
+  AttachmentMeta,
+} from '../../shared/ipc'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import {
   createSlidesSkill,
@@ -60,7 +65,13 @@ import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
 import { IconNewChat } from '../components/icons'
-import { AssistantTab, IconAiAskSelection, IconAiBeautify, IconAiFactCheck, IconAiImage } from './AssistantTab'
+import {
+  AssistantTab,
+  IconAiAskSelection,
+  IconAiBeautify,
+  IconAiFactCheck,
+  IconAiImage,
+} from './AssistantTab'
 import type { DockChrome } from '@chatoffice/ui'
 
 interface ToolActivity {
@@ -89,7 +100,7 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (Genspark attachment icon set); exts the
+/** File-type icons for attachment cards (ChatOffice attachment icon set); exts the
  *  attachment allowlist doesn't accept yet are mapped ahead so they light up when added */
 const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
@@ -256,7 +267,7 @@ interface ChatEntry {
   /** model id that produced this assistant turn (display only) */
   model?: string
   streaming?: boolean
-  /** the run failed because Genspark is signed out — render an inline sign-in button */
+  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
   loginRequired?: boolean
   tools?: ToolActivity[]
   /** Generation progress card (only one per turn, replaced in real time) */
@@ -405,7 +416,7 @@ export function AiPanel({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
-  /** data-URL previews for image attachments, keyed by path (Genspark composer thumbnails) */
+  /** data-URL previews for image attachments, keyed by path (ChatOffice composer thumbnails) */
   const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
   /** image paths with a read already issued — one readAttachmentImage per attach, even while pending */
   const previewRequestedRef = useRef(new Set<string>())
@@ -485,7 +496,9 @@ export function AiPanel({
   const onDeckProgressRef = useRef(onDeckProgress)
   onDeckProgressRef.current = onDeckProgress
   // panel-local copy: the picker and the settings page refresh it without App state
-  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => settings ?? defaultSettingsV2())
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(
+    () => settings ?? defaultSettingsV2(),
+  )
   useEffect(() => {
     if (settings) setPanelSettings(settings)
   }, [settings])
@@ -502,15 +515,15 @@ export function AiPanel({
   }
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
 
-  /** gsk login state for the cloud-tools gate (refreshed on mount and window focus) */
-  const gskLoggedInRef = useRef(false)
+  /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
+  const chatofficeLoggedInRef = useRef(false)
   useEffect(() => {
     let alive = true
     const refresh = () => {
       void window.slidesApi
-        ?.aiGskStatus()
+        ?.aiChatOfficeStatus()
         .then((s) => {
-          if (alive) gskLoggedInRef.current = !!s?.loggedIn
+          if (alive) chatofficeLoggedInRef.current = !!s?.loggedIn
         })
         .catch(() => {})
     }
@@ -1016,7 +1029,7 @@ export function AiPanel({
           return false
         }
       },
-      // Local single-page generation (no gsk needed, e.g. BYOK): one LLM request through the
+      // Local single-page generation (no chatoffice needed, e.g. BYOK): one LLM request through the
       // app's own AI transport writes a structured JSON slide spec, and the main process builds
       // it directly into a one-slide pptx with pptx-engine primitives — no HTML intermediate.
       generatePageLocal: async (args) => {
@@ -1091,7 +1104,7 @@ export function AiPanel({
         }
         return { ok: false, error: lastErr || tGlobal('aiErrUnknown') }
       },
-      // Cloud single-page generation (gsk slide_generate): the cloud service owns HTML writing +
+      // Cloud single-page generation (chatoffice slide_generate): the cloud service owns HTML writing +
       // pptx conversion; the deck-level style/outline stay local.
       generatePageCloud: async (args) => {
         try {
@@ -1301,7 +1314,8 @@ export function AiPanel({
           return { ok: false, error: String('') }
         }
       },
-      gskTools: () => gskLoggedInRef.current && settingsRef.current?.gskToolsEnabled !== false,
+      chatofficeTools: () =>
+        chatofficeLoggedInRef.current && settingsRef.current?.chatofficeToolsEnabled !== false,
       unreadTextAttachments: () =>
         availableAttachments()
           .filter(
@@ -1428,9 +1442,9 @@ export function AiPanel({
             return next
           })
           // Signed-out failures get an inline sign-in button; detected via
-          // gsk status rather than matching the localized error text
+          // chatoffice status rather than matching the localized error text
           void window.slidesApi
-            .aiGskStatus()
+            .aiChatOfficeStatus()
             .then((status) => {
               if (status.loggedIn) return
               setChat((prev) => {
@@ -2095,8 +2109,11 @@ export function AiPanel({
                 </div>
               )}
               {entry.loginRequired && (
-                <button className="ai-login-btn" onClick={() => void window.slidesApi.aiGskLogin()}>
-                  {t('aiGskLoginBtn')}
+                <button
+                  className="ai-login-btn"
+                  onClick={() => void window.slidesApi.aiChatOfficeLogin()}
+                >
+                  {t('aiChatOfficeLoginBtn')}
                 </button>
               )}
               {entry.deckProgress && <DeckProgressCard progress={entry.deckProgress} />}
@@ -2217,10 +2234,7 @@ export function AiPanel({
           />
         </div>
       ) : (
-        <div
-          className="ai-composer"
-          style={tab === 'chat' ? undefined : { display: 'none' }}
-        >
+        <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
           {editQueue && editQueue.length > 0 && (
             <EditQueueCard
               items={editQueue}
@@ -2361,7 +2375,7 @@ export function AiPanel({
           </div>
         </div>
       )}
-          {modelSettingsOpen && (
+      {modelSettingsOpen && (
         <ModelSettingsPage
           bridge={slidesModelBridge}
           lang={lang}

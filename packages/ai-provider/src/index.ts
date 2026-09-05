@@ -13,12 +13,12 @@ export type {
   AiStreamRequest,
   AiStreamRequestV2,
   AiWireProtocol,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
   LegacyAiSettings,
 } from './types'
 export {
   AI_PROVIDERS,
-  GENSPARK_LLM_BASE_URLS,
+  CHATOFFICE_LLM_BASE_URLS,
   activeProvider,
   cloudToolsEnabled,
   defaultAiSettings,
@@ -53,8 +53,8 @@ export {
   enabledChatModels,
   findProfile,
   resolveDefaultModel,
-  gensparkEndpointFor,
-  gensparkProfile,
+  chatofficeEndpointFor,
+  chatofficeProfile,
   isChatModel,
   isImageGenModel,
   migrateSettingsV2,
@@ -67,7 +67,7 @@ export type { AiModelType } from './model-type'
 export { TYPE_ORDER, groupByType, inferModelType, matchesModelType } from './model-type'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {
-  GENSPARK_PRESET_MODELS,
+  CHATOFFICE_PRESET_MODELS,
   NO_MODELS_API,
   VENDORS,
   VENDOR_BY_ID,
@@ -94,4 +94,4 @@ export {
   resolveHarnessSecret,
 } from './settings-source'
 export { KEEP_KEY, createAiRuntime } from './runtime'
-export type { AiRuntime, AiRuntimeDeps, AiRuntimeGsk } from './runtime'
+export type { AiRuntime, AiRuntimeDeps, AiRuntimeChatOffice } from './runtime'

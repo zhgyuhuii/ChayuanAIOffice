@@ -82,7 +82,7 @@ interface ChatEntry {
   error?: string
   streaming?: boolean
   turnLimit?: boolean
-  /** the run failed because Genspark is signed out — render an inline sign-in button */
+  /** the run failed because ChatOffice is signed out — render an inline sign-in button */
   loginRequired?: boolean
   /** tool executions performed during this assistant turn */
   tools?: ToolActivity[]
@@ -119,7 +119,7 @@ const PASTE_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 }
 
-/** File-type icons for attachment cards (Genspark attachment icon set); exts the
+/** File-type icons for attachment cards (ChatOffice attachment icon set); exts the
  *  attachment allowlist doesn't accept yet are mapped ahead so they light up when added */
 const ATTACHMENT_CARD_ICON_GROUPS: [icon: string, exts: string[]][] = [
   [fileWordIcon, ['doc', 'docx']],
@@ -309,7 +309,7 @@ export function AiPanel({
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [attachments, setAttachments] = useState<AttachmentMeta[]>([])
   const [attachNotice, setAttachNotice] = useState<string | null>(null)
-  /** data-URL previews for image attachments, keyed by path (Genspark composer thumbnails) */
+  /** data-URL previews for image attachments, keyed by path (ChatOffice composer thumbnails) */
   const [attachmentPreviews, setAttachmentPreviews] = useState<Record<string, string>>({})
   /** image paths with a read already issued — one readAttachmentImage per attach, even while pending */
   const previewRequestedRef = useRef(new Set<string>())
@@ -668,9 +668,9 @@ export function AiPanel({
             return next
           })
           // Signed-out failures get an inline sign-in button; detected via
-          // gsk status rather than matching the localized error text
+          // chatoffice status rather than matching the localized error text
           void window.desktop
-            .aiGskStatus()
+            .aiChatOfficeStatus()
             .then((status) => {
               if (status.loggedIn) return
               setChat((prev) => {
@@ -951,9 +951,7 @@ export function AiPanel({
       icon: <IconAiPolish />,
       disabled: docEmpty,
       run: () => {
-        runWith(
-          t(editor.state.selection.empty ? 'aiPolishPrompt' : 'aiPolishSelectionPrompt'),
-        )
+        runWith(t(editor.state.selection.empty ? 'aiPolishPrompt' : 'aiPolishSelectionPrompt'))
         selectTab('chat')
       },
     },
@@ -1020,11 +1018,11 @@ export function AiPanel({
                   <SentAttachments atts={entry.attachments} previews={attachmentPreviews} />
                 )}
                 {entry.tools && entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
-              {entry.role === 'assistant' && entry.model && !entry.streaming && (
-                <div className="ai-msg-model" title={entry.model}>
-                  {entry.model}
-                </div>
-              )}
+                {entry.role === 'assistant' && entry.model && !entry.streaming && (
+                  <div className="ai-msg-model" title={entry.model}>
+                    {entry.model}
+                  </div>
+                )}
                 {entry.text && <Markdown text={entry.text} nav={docNav} />}
               </div>
             ))}
@@ -1042,28 +1040,28 @@ export function AiPanel({
               {t(docEmpty ? 'aiEmptyDraftBody2' : 'aiEmptyBody2')}
             </div>
             {!hasChatModel ? (
-            <div className="ai-model-empty">
-              <div className="ai-model-empty-title">{t('aiNoModelErrorTitle')}</div>
-              <div className="ai-model-empty-body">{t('aiNoModelErrorBody')}</div>
-              <button className="ai-login-btn" onClick={() => setModelSettingsOpen(true)}>
-                {t('aiOpenModelSettings')}
-              </button>
-            </div>
-            ) : (
-            <div className="ai-starter-list">
-              {(docEmpty ? DRAFT_STARTER_PROMPTS : EDIT_STARTER_PROMPTS).map((p) => (
-                <button
-                  key={p}
-                  className="ai-starter"
-                  onClick={() => {
-                    setInput(t(p))
-                    inputRef.current?.focus()
-                  }}
-                >
-                  {t(p)}
+              <div className="ai-model-empty">
+                <div className="ai-model-empty-title">{t('aiNoModelErrorTitle')}</div>
+                <div className="ai-model-empty-body">{t('aiNoModelErrorBody')}</div>
+                <button className="ai-login-btn" onClick={() => setModelSettingsOpen(true)}>
+                  {t('aiOpenModelSettings')}
                 </button>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className="ai-starter-list">
+                {(docEmpty ? DRAFT_STARTER_PROMPTS : EDIT_STARTER_PROMPTS).map((p) => (
+                  <button
+                    key={p}
+                    className="ai-starter"
+                    onClick={() => {
+                      setInput(t(p))
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    {t(p)}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         )}
@@ -1117,8 +1115,11 @@ export function AiPanel({
                 <div className="ai-msg-error">{t('aiErrorPrefix', { error: entry.error })}</div>
               )}
               {entry.loginRequired && (
-                <button className="ai-login-btn" onClick={() => void window.desktop.aiGskLogin()}>
-                  {t('aiGskLoginBtn')}
+                <button
+                  className="ai-login-btn"
+                  onClick={() => void window.desktop.aiChatOfficeLogin()}
+                >
+                  {t('aiChatOfficeLoginBtn')}
                 </button>
               )}
               {showToolbar && (
@@ -1202,15 +1203,9 @@ export function AiPanel({
         })}
       </div>
 
-      <AssistantTab
-        items={assistItems}
-        hidden={tab !== 'assistant'}
-      />
+      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
 
-      <div
-        className="ai-composer"
-        style={tab === 'chat' ? undefined : { display: 'none' }}
-      >
+      <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}
         <EditQueueCard
           items={editQueue}

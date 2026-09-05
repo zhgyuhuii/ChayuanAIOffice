@@ -101,8 +101,9 @@ const api: DesktopApi = {
     ipcRenderer.invoke('ai:chat', request),
   aiStream: (request: AiStreamWireRequest) => ipcRenderer.invoke('ai:stream', request),
   aiStreamCancel: (requestId: string) => ipcRenderer.invoke('ai:stream-cancel', requestId),
-  aiGskStatus: (withEmail?: boolean) => ipcRenderer.invoke('ai:gsk-status', withEmail),
-  aiGskLogin: () => ipcRenderer.invoke('ai:gsk-login'),
+  aiChatOfficeStatus: (withEmail?: boolean) =>
+    ipcRenderer.invoke('ai:chatoffice-status', withEmail),
+  aiChatOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
   webSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:web-search', query, maxResults),
   imageSearch: (query: string, maxResults?: number) =>

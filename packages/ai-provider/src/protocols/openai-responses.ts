@@ -1,7 +1,7 @@
 import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { gensparkAttributionHeaders } from '../providers'
+import { chatofficeAttributionHeaders } from '../providers'
 import type { AiChatResponse, AiProviderConfig } from '../types'
 import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
@@ -34,10 +34,10 @@ function responsesInput(messages: AgentMessage[]): ResponsesInputItem[] {
         role: 'user',
         content: [
           ...(m.text ? [{ type: 'input_text', text: m.text }] : []),
-          ...((m.images ?? []).map((img) => ({
+          ...(m.images ?? []).map((img) => ({
             type: 'input_image',
             image_url: `data:${img.mime};base64,${img.base64}`,
-          }))),
+          })),
         ],
       })
     } else if (m.role === 'assistant') {
@@ -102,7 +102,12 @@ function emitResponsesJsonMessage(bodyText: string, cb: StreamCallbacks): void {
     } else if (item.type === 'function_call' && item.name) {
       emitted = true
       const { input, error } = parseToolInput(item.arguments ?? '')
-      toolCalls.push({ id: item.call_id ?? crypto.randomUUID(), name: item.name, input, inputError: error })
+      toolCalls.push({
+        id: item.call_id ?? crypto.randomUUID(),
+        name: item.name,
+        input,
+        inputError: error,
+      })
     }
   }
   const reason = msg.status_details?.reason ?? msg.incomplete_details?.reason
@@ -156,7 +161,7 @@ async function responsesTurn(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.apiKey}`,
-      ...gensparkAttributionHeaders(baseUrl),
+      ...chatofficeAttributionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,
@@ -261,7 +266,11 @@ async function responsesTurn(
       case 'response.output_item.done': {
         // gateways that deliver whole items instead of deltas
         const item = event.item
-        if (item?.type === 'function_call' && item.name && !pendingTools.has(event.output_index ?? 0)) {
+        if (
+          item?.type === 'function_call' &&
+          item.name &&
+          !pendingTools.has(event.output_index ?? 0)
+        ) {
           const { input, error } = parseToolInput(item.arguments ?? '')
           emitted = true
           cb.onToolCall({
@@ -284,9 +293,7 @@ async function responsesTurn(
         break
       }
       case 'response.failed':
-        throw new Error(
-          sseErrorText(event.response?.error ?? event.error, 'Model stream error'),
-        )
+        throw new Error(sseErrorText(event.response?.error ?? event.error, 'Model stream error'))
       case 'error':
         throw new Error(sseErrorText(event.error ?? event.message, 'Model stream error'))
       default:
@@ -314,7 +321,7 @@ export async function chatOpenAiResponses(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.apiKey}`,
-      ...gensparkAttributionHeaders(baseUrl),
+      ...chatofficeAttributionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,

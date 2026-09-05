@@ -1,7 +1,7 @@
 /**
- * ChatOffice's own Genspark identity: device-code login (office_addin_auth,
- * app_type=chatoffice) minting a gsk API key named "chatoffice" — the key_name
- * lands in billing as billing_tag, attributing all traffic (incl. gsk CLI
+ * ChatOffice's own ChatOffice identity: device-code login (office_addin_auth,
+ * app_type=chatoffice) minting a chatoffice API key named "chatoffice" — the key_name
+ * lands in billing as billing_tag, attributing all traffic (incl. chatoffice CLI
  * subprocesses) to ChatOffice. Stored in ~/.chatoffice/auth.json, deliberately
  * NOT the shared config.json that Claw Desktop overwrites on every launch.
  *
@@ -14,10 +14,10 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from '
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { asRecord, gskProxyUrl } from './shared'
+import { asRecord, chatofficeProxyUrl } from './shared'
 
 /** Progress event for the browser login flow. */
-export interface GskLoginProgress {
+export interface ChatOfficeLoginProgress {
   phase: 'url' | 'success' | 'error'
   url?: string
   expiresInSec?: number
@@ -77,7 +77,7 @@ const GATEWAY_ERROR_STATUSES = new Set([407, 502, 504])
  * is bot-challenged, see resolveFetch). null when no proxy is registered.
  */
 async function proxyFallbackFetch(): Promise<typeof fetch | null> {
-  const proxyUrl = gskProxyUrl()
+  const proxyUrl = chatofficeProxyUrl()
   if (!proxyUrl) return null
   if (proxyFetchCache?.url === proxyUrl) return proxyFetchCache.impl
   let impl: typeof fetch = (...args) => fetch(...args)
@@ -175,7 +175,7 @@ function clearAuth(): void {
 
 class LoginFlowError extends Error {
   constructor(
-    /** matches GskLoginProgress.error conventions */
+    /** matches ChatOfficeLoginProgress.error conventions */
     public reason: 'network' | 'expired' | string,
   ) {
     super(reason)
@@ -268,7 +268,7 @@ async function establishSession(accessToken: string, signal: AbortSignal): Promi
 
 async function runDeviceLogin(
   signal: AbortSignal,
-  emit: (progress: GskLoginProgress) => void,
+  emit: (progress: ChatOfficeLoginProgress) => void,
 ): Promise<void> {
   const { resp, json } = await httpJson(
     `${baseUrl()}/api/office_addin_auth/device_code?app_type=${APP_TYPE}`,
@@ -337,7 +337,9 @@ let activeLogin: { cancel: () => void } | null = null
  * (its device code would otherwise be approved into a dead flow). The caller
  * opens `url` in the system browser. Returns whether the flow was started.
  */
-export function startChatofficeLogin(onEvent?: (progress: GskLoginProgress) => void): boolean {
+export function startChatofficeLogin(
+  onEvent?: (progress: ChatOfficeLoginProgress) => void,
+): boolean {
   activeLogin?.cancel()
   const emit = onEvent ?? (() => {})
   const controller = new AbortController()
@@ -349,7 +351,7 @@ export function startChatofficeLogin(onEvent?: (progress: GskLoginProgress) => v
     },
   }
   activeLogin = self
-  const finish = (progress: GskLoginProgress) => {
+  const finish = (progress: ChatOfficeLoginProgress) => {
     if (done) return
     done = true
     if (activeLogin === self) activeLogin = null
@@ -388,8 +390,8 @@ export function ensureChatofficeLogin(openUrl: (url: string) => void): void {
 
 /**
  * Signs out of ChatOffice only: best-effort server-side revoke of the
- * chatoffice key, then local removal. The shared gsk CLI login
- * (~/.genspark-tool-cli) is untouched — terminal gsk and Claw keep working.
+ * chatoffice key, then local removal. The shared chatoffice CLI login
+ * (~/.chatoffice-tool-cli) is untouched — terminal chatoffice and Claw keep working.
  */
 export async function chatofficeLogout(): Promise<void> {
   const auth = loadChatofficeAuth()

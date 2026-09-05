@@ -112,12 +112,12 @@ export interface DeckAccess {
    * On search failure returns an empty array (fail-open; doesn't block the main generation path).
    */
   searchImages?(query: string, maxResults: number): Promise<string[]>
-  /** Whether cloud single-page generation is available (kill switch + gsk login state) */
+  /** Whether cloud single-page generation is available (kill switch + chatoffice login state) */
   isCloudPageGenEnabled?(): Promise<boolean>
-  /** live predicate: gsk login && the Genspark-cloud-tools toggle; false hides generate_image / analyze_media */
-  gskTools?(): boolean
+  /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image / analyze_media */
+  chatofficeTools?(): boolean
   /**
-   * Cloud single-page generation (gsk slide_generate), used by generate_deck's self-driven
+   * Cloud single-page generation (chatoffice slide_generate), used by generate_deck's self-driven
    * pipeline: given the unified style + this page's brief/layout/images, the cloud service
    * writes the HTML and converts it to a one-slide pptx. Returns a marker string that goes
    * into a landGeneratedPages pageMarkers slot.
@@ -138,7 +138,7 @@ export interface DeckAccess {
     signal?: AbortSignal
   }): Promise<{ ok: boolean; marker?: string; error?: string }>
   /**
-   * Local single-page generation (used when cloud is unavailable, e.g. BYOK without gsk):
+   * Local single-page generation (used when cloud is unavailable, e.g. BYOK without chatoffice):
    * same inputs and marker contract as generatePageCloud, but the page is produced entirely
    * locally — one LLM request writes a structured slide spec and the main process builds it
    * directly into a one-slide pptx (no HTML intermediate).
@@ -536,7 +536,7 @@ const TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'AI image generation/editing (Genspark). Text-to-image, or pass referenceImageUrls for image editing; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
+      'AI image generation/editing (ChatOffice). Text-to-image, or pass referenceImageUrls for image editing; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -566,7 +566,7 @@ const TOOLS: AgentToolDef[] = [
   {
     name: 'analyze_media',
     description:
-      'Analyze media content (Genspark): understand images/audio/video. Pass media URLs (or local file paths) and analysis requirements; returns analysis text. Video supports extracting key points, structure, and time ranges — good for turning user material into usable deck content.',
+      'Analyze media content (ChatOffice): understand images/audio/video. Pass media URLs (or local file paths) and analysis requirements; returns analysis text. Video supports extracting key points, structure, and time ranges — good for turning user material into usable deck content.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -1583,11 +1583,11 @@ export function formatSlideDump(slide: RenderSlide): string {
   return `Canvas ${slide.widthPx}×${slide.heightPx}px (1 px = ${pxToEmu} EMU)\n${parts.join('\n---\n') || '(no elements on this page)'}${colorNote}`
 }
 
-/** tools only usable through the Genspark cloud (gated by login + the cloud-tools toggle) */
+/** tools only usable through the ChatOffice cloud (gated by login + the cloud-tools toggle) */
 const GSK_ONLY_TOOLS = new Set(['generate_image', 'analyze_media'])
 
-const GSK_TOOLS_OFF_NOTE =
-  '\n\nNote: generate_image and analyze_media are currently unavailable (Genspark cloud tools are off or the user is signed out). Do not call or promise them; for imagery use image_search + insert_web_image instead.'
+const CHATOFFICE_TOOLS_OFF_NOTE =
+  '\n\nNote: generate_image and analyze_media are currently unavailable (ChatOffice cloud tools are off or the user is signed out). Do not call or promise them; for imagery use image_search + insert_web_image instead.'
 
 export function createSlidesSkill(access: DeckAccess): AgentSkill {
   // The HTML pipeline was already used in this conversation → later calls without an explicit mode default to append.
@@ -1597,13 +1597,13 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
     id: 'slides',
     // live like tools: the off-note overrides the prose that still mentions the hidden tools
     get systemPrompt() {
-      return access.gskTools?.() === false
-        ? AGENT_SYSTEM_PROMPT + GSK_TOOLS_OFF_NOTE
+      return access.chatofficeTools?.() === false
+        ? AGENT_SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
         : AGENT_SYSTEM_PROMPT
     },
-    // live view: gskTools is re-read before every model request
+    // live view: chatofficeTools is re-read before every model request
     get tools() {
-      return access.gskTools?.() === false
+      return access.chatofficeTools?.() === false
         ? TOOLS.filter((t) => !GSK_ONLY_TOOLS.has(t.name))
         : TOOLS
     },
@@ -2397,7 +2397,7 @@ async function executeTool(
       // ── Self-driven pipeline:
       //   1) Plan: use pages if passed; with topic, the tool plans the outline via LLM (batched recursion over threshold) — fixes missing pages at the input side.
       //   2) Generate: batched concurrent page generation (one retry per page), **each batch lands immediately → frontend shows pages one by one**.
-      //      Cloud (gsk slide_generate) when available; otherwise fully local — the LLM (app AI
+      //      Cloud (chatoffice slide_generate) when available; otherwise fully local — the LLM (app AI
       //      transport, works with BYOK) writes a slide spec that is built directly into a pptx.
       const useCloud =
         !!access.generatePageCloud && !!(await access.isCloudPageGenEnabled?.().catch(() => false))
@@ -2712,7 +2712,7 @@ async function executeTool(
       const deckName = String(pages[0]?.title ?? '').trim() || topic || coreHook
 
       // ── Step 2: generate page by page + land as we go (frontend shows pages one by one).
-      // Cloud (gsk slide_generate) and local (LLM spec → pptx-engine build) both produce a
+      // Cloud (chatoffice slide_generate) and local (LLM spec → pptx-engine build) both produce a
       // one-slide pptx temp file; genOne returns its marker and landing reads the bytes.
       // Land strictly in page order: nextToLand pointer; a page lands only when its marker is ready, keeping page order intact.
       const markerByIndex: (string | null)[] = new Array(total).fill(null)

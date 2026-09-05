@@ -299,7 +299,7 @@ button {
   overflow-x: scroll;
   overflow-y: hidden;
   /* Slim visible scrollbar so mouse users can reach overflowed groups
-     (genspark-ai/chatoffice#55). Its 5px lane is carved out of the bottom
+     (chatoffice-ai/chatoffice#55). Its 5px lane is carved out of the bottom
      padding, keeping the 80px band and the content area unchanged; Chromium
      paints a thumb only while the row actually overflows. */
   padding-bottom: 1px;
@@ -1145,8 +1145,8 @@ button {
 
 /* ── Encrypted document password ── */
 
-/* ---- encrypted-PDF password dialog (Genspark DS form dialog, matching the
-   docs PasswordDialog and mockups/protect-dialogs-genspark.html §1/2) ---- */
+/* ---- encrypted-PDF password dialog (ChatOffice DS form dialog, matching the
+   docs PasswordDialog and mockups/protect-dialogs-chatoffice.html §1/2) ---- */
 
 /* base .pdf-modal-mask (defined below) top-aligns dialogs; this one centers */
 .pdf-modal-mask.pdf-pwd-mask {
@@ -1416,7 +1416,7 @@ button {
   gap: 8px;
 }
 
-/* Genspark DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .pdf-modal-btn {
   display: inline-flex;
   align-items: center;
@@ -3291,15 +3291,15 @@ button {
   white-space: nowrap;
 }
 
-/* Genspark brand logo (shared by the collapsed entry and the AI panel title) */
-.genspark-badge {
+/* ChatOffice brand logo (shared by the collapsed entry and the AI panel title) */
+.chatoffice-badge {
   display: block;
   width: 22px;
   height: 22px;
   border-radius: 50%;
 }
 
-.ai-panel-title .genspark-badge {
+.ai-panel-title .chatoffice-badge {
   width: 18px;
   height: 18px;
 }

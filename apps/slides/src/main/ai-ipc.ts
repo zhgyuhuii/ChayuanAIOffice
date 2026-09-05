@@ -33,11 +33,11 @@ import {
   webSearch,
   imageSearch,
   ensureChatofficeLogin,
-  gskApiKey,
-  gskGenerateImage,
-  gskAnalyzeMedia,
-  gskLoginInfo,
-  hasGskAuth,
+  chatofficeApiKey,
+  chatofficeGenerateImage,
+  chatofficeAnalyzeMedia,
+  chatofficeLoginInfo,
+  hasChatOfficeAuth,
 } from '@chatoffice/ai-search'
 import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chatoffice/pptx-engine'
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
@@ -52,11 +52,11 @@ import { pushHistory, rebuildSlide, scheduleHistoryNotify, sessions } from './se
 const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
 /** live read: the shell settings pane writes the file; every tool call re-checks */
-function gskCloudToolsOn(): boolean {
+function chatofficeCloudToolsOn(): boolean {
   try {
     return cloudToolsEnabled({
-      gskToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(AI_SETTINGS_PATH(), {}))
-        .gskToolsEnabled,
+      chatofficeToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(AI_SETTINGS_PATH(), {}))
+        .chatofficeToolsEnabled,
     })
   } catch {
     return true
@@ -133,26 +133,26 @@ export function registerAiIpc(): void {
         }
       },
     },
-    gsk: {
-      apiKey: () => gskApiKey(),
-      hasAuth: () => hasGskAuth(),
+    chatoffice: {
+      apiKey: () => chatofficeApiKey(),
+      hasAuth: () => hasChatOfficeAuth(),
       status: async (withEmail) => {
-        if (!hasGskAuth()) return { loggedIn: false }
+        if (!hasChatOfficeAuth()) return { loggedIn: false }
         if (!withEmail) return { loggedIn: true }
-        const info = await gskLoginInfo()
+        const info = await chatofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
       generateImage: async (req) => {
-        if (!hasGskAuth()) throw new Error(tm('errGskCli'))
-        if (!gskCloudToolsOn()) throw new Error(tm('errGskToolsOff'))
-        const r = await gskGenerateImage({
+        if (!hasChatOfficeAuth()) throw new Error(tm('errChatOfficeCli'))
+        if (!chatofficeCloudToolsOn()) throw new Error(tm('errChatOfficeToolsOff'))
+        const r = await chatofficeGenerateImage({
           prompt: req.prompt,
           ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
         })
         return { url: r.url }
       },
     },
-    gskLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
+    chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
   })
@@ -167,7 +167,7 @@ export function registerAiIpc(): void {
       return await webSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 6,
-        gskCloudToolsOn(),
+        chatofficeCloudToolsOn(),
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
@@ -179,7 +179,7 @@ export function registerAiIpc(): void {
       return await imageSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 8,
-        gskCloudToolsOn(),
+        chatofficeCloudToolsOn(),
       )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
@@ -193,7 +193,7 @@ export function registerAiIpc(): void {
 // never called; docs does not have these channels, so putting them in the wrong place raises
 // "No handler registered".
 export function registerSlidesOnlyAiIpc(): void {
-  // gsk (Genspark CLI) capabilities: AI image generation / media analysis. Returns an error prompt when not logged in.
+  // chatoffice (ChatOffice CLI) capabilities: AI image generation / media analysis. Returns an error prompt when not logged in.
   ipcMain.handle(
     'ai:generate-image',
     async (
@@ -208,18 +208,18 @@ export function registerSlidesOnlyAiIpc(): void {
     ) => {
       const prompt = String(op.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      // gsk-specific extras (model pick, reference images, size) mean explicit
-      // gsk intent; a plain prompt goes BYOK image model first, gsk fallback
+      // chatoffice-specific extras (model pick, reference images, size) mean explicit
+      // chatoffice intent; a plain prompt goes BYOK image model first, chatoffice fallback
       if (!op.model && !op.imageSize && !op.referenceImageUrls?.length) {
         return getAiRuntime().generateImage({
           prompt,
           ...(op.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
         })
       }
-      if (!hasGskAuth()) return { error: tm('errGskCli') }
-      if (!gskCloudToolsOn()) return { error: tm('errGskToolsOff') }
+      if (!hasChatOfficeAuth()) return { error: tm('errChatOfficeCli') }
+      if (!chatofficeCloudToolsOn()) return { error: tm('errChatOfficeToolsOff') }
       try {
-        const r = await gskGenerateImage({
+        const r = await chatofficeGenerateImage({
           prompt,
           model: op.model ? String(op.model) : undefined,
           referenceImageUrls: Array.isArray(op.referenceImageUrls)
@@ -249,7 +249,10 @@ export function registerSlidesOnlyAiIpc(): void {
             ?.models.find((m) => m.id === selection.modelId)
         : undefined
       const modelType = entry?.type ?? (selection ? inferModelType(selection.modelId) : undefined)
-      const visionOk = !!selection && (modelType === 'chat' || modelType === 'vision') && modelAcceptsImages(selection.modelId)
+      const visionOk =
+        !!selection &&
+        (modelType === 'chat' || modelType === 'vision') &&
+        modelAcceptsImages(selection.modelId)
       if (selection && visionOk) {
         try {
           const images: Array<{ base64: string; mime: string }> = []
@@ -258,7 +261,11 @@ export function registerSlidesOnlyAiIpc(): void {
             if (!resp || !resp.ok) continue
             const buf = Buffer.from(await resp.arrayBuffer())
             const ct = resp.headers.get('content-type') ?? ''
-            const mime = ct.includes('png') ? 'image/png' : ct.includes('gif') ? 'image/gif' : 'image/jpeg'
+            const mime = ct.includes('png')
+              ? 'image/png'
+              : ct.includes('gif')
+                ? 'image/gif'
+                : 'image/jpeg'
             images.push({ base64: buf.toString('base64'), mime })
           }
           let text = ''
@@ -282,13 +289,13 @@ export function registerSlidesOnlyAiIpc(): void {
           )
           if (text.trim()) return { text }
         } catch {
-          // fall through to the gsk backend below
+          // fall through to the chatoffice backend below
         }
       }
-      if (!hasGskAuth()) return { error: tm('errGskCli') }
-      if (!gskCloudToolsOn()) return { error: tm('errGskToolsOff') }
+      if (!hasChatOfficeAuth()) return { error: tm('errChatOfficeCli') }
+      if (!chatofficeCloudToolsOn()) return { error: tm('errChatOfficeToolsOff') }
       try {
-        const text = await gskAnalyzeMedia({ mediaUrls, requirements })
+        const text = await chatofficeAnalyzeMedia({ mediaUrls, requirements })
         return { text }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }

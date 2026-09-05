@@ -11,9 +11,9 @@ import {
   loadChatofficeAuth,
   resetChatofficeAuthCache,
   startChatofficeLogin,
-  type GskLoginProgress,
+  type ChatOfficeLoginProgress,
 } from '../src/chatoffice-auth'
-import { gskApiKey, setGskProxyUrl } from '../src/gsk'
+import { chatofficeCliApiKey, setChatOfficeProxyUrl } from '../src/chatoffice'
 
 const CODE = 'a'.repeat(64)
 const AUTH_URL = `https://www.genspark.ai/api/office_addin_auth/verify?code=${CODE}`
@@ -23,7 +23,7 @@ let dir: string
 beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), 'chatoffice-auth-'))
   process.env.CHATOFFICE_AUTH_DIR = dir
-  delete process.env.GSK_API_KEY
+  delete process.env.CHATOFFICE_API_KEY
   resetChatofficeAuthCache()
 })
 
@@ -31,8 +31,8 @@ afterEach(() => {
   vi.unstubAllGlobals()
   rmSync(dir, { recursive: true, force: true })
   delete process.env.CHATOFFICE_AUTH_DIR
-  delete process.env.GSK_API_KEY
-  setGskProxyUrl('')
+  delete process.env.CHATOFFICE_API_KEY
+  setChatOfficeProxyUrl('')
   resetChatofficeAuthCache()
 })
 
@@ -75,7 +75,7 @@ function stubFlow(opts: { pendingPolls?: number; createResponse?: unknown } = {}
       return jsonResponse(
         opts.createResponse ?? {
           status: 0,
-          data: { key_id: 'kid-1', key_name: 'chatoffice', token: 'gsk-chatoffice-key' },
+          data: { key_id: 'kid-1', key_name: 'chatoffice', token: 'chatoffice-chatoffice-key' },
         },
       )
     }
@@ -86,8 +86,8 @@ function stubFlow(opts: { pendingPolls?: number; createResponse?: unknown } = {}
   return fetchMock
 }
 
-async function loginAndCollect(): Promise<GskLoginProgress[]> {
-  const events: GskLoginProgress[] = []
+async function loginAndCollect(): Promise<ChatOfficeLoginProgress[]> {
+  const events: ChatOfficeLoginProgress[] = []
   startChatofficeLogin((progress) => events.push(progress))
   await vi.waitFor(() => {
     expect(['success', 'error']).toContain(events.at(-1)?.phase)
@@ -105,7 +105,7 @@ describe('startChatofficeLogin', () => {
 
     const saved = JSON.parse(readFileSync(chatofficeAuthPath(), 'utf-8'))
     expect(saved).toEqual({
-      api_key: 'gsk-chatoffice-key',
+      api_key: 'chatoffice-chatoffice-key',
       key_id: 'kid-1',
       access_token: 'bearer-token',
     })
@@ -113,7 +113,7 @@ describe('startChatofficeLogin', () => {
     if (process.platform !== 'win32') {
       expect(statSync(chatofficeAuthPath()).mode & 0o777).toBe(0o600)
     }
-    expect(chatofficeApiKey()).toBe('gsk-chatoffice-key')
+    expect(chatofficeCliApiKey()).toBe('chatoffice-chatoffice-key')
     expect(chatofficeLoginInFlight()).toBe(false)
 
     // the key create call must ride on the session cookie
@@ -123,12 +123,12 @@ describe('startChatofficeLogin', () => {
     expect(JSON.parse(String(init.body))).toEqual({ key_name: 'chatoffice' })
   })
 
-  it('feeds gskApiKey(), losing only to an explicit GSK_API_KEY env override', async () => {
+  it('feeds chatofficeCliApiKey(), losing only to an explicit CHATOFFICE_API_KEY env override', async () => {
     stubFlow()
     await loginAndCollect()
-    expect(gskApiKey()).toBe('gsk-chatoffice-key')
-    process.env.GSK_API_KEY = 'gsk-env-override'
-    expect(gskApiKey()).toBe('gsk-env-override')
+    expect(chatofficeCliApiKey()).toBe('chatoffice-chatoffice-key')
+    process.env.CHATOFFICE_API_KEY = 'chatoffice-env-override'
+    expect(chatofficeCliApiKey()).toBe('chatoffice-env-override')
   })
 
   it('reports a network failure at device_code as error "network"', async () => {
@@ -142,7 +142,7 @@ describe('startChatofficeLogin', () => {
   })
 
   it('retries through the registered proxy channel when the direct fetch cannot connect', async () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
     const flow = stubFlow()
     let deviceCodeCalls = 0
     vi.stubGlobal(
@@ -157,12 +157,12 @@ describe('startChatofficeLogin', () => {
     const events = await loginAndCollect()
     expect(deviceCodeCalls).toBe(2)
     expect(events.at(-1)).toEqual({ phase: 'success' })
-    expect(chatofficeApiKey()).toBe('gsk-chatoffice-key')
+    expect(chatofficeCliApiKey()).toBe('chatoffice-chatoffice-key')
     expect(chatofficeProxyFallbackPreferred()).toBe(true)
   })
 
   it('treats a gateway status (502) as channel failure: fails over without adopting the channel', async () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
     const fetchMock = vi.fn(async () => jsonResponse({}, { status: 502 }))
     vi.stubGlobal('fetch', fetchMock)
     const events = await loginAndCollect()
@@ -173,7 +173,7 @@ describe('startChatofficeLogin', () => {
   })
 
   it('counts an endpoint 4xx (authorization_pending) as channel success', async () => {
-    setGskProxyUrl('http://127.0.0.1:7890')
+    setChatOfficeProxyUrl('http://127.0.0.1:7890')
     const flow = stubFlow({ pendingPolls: 0 })
     let deviceCodeCalls = 0
     let tokenCalls = 0
@@ -229,10 +229,16 @@ describe('startChatofficeLogin', () => {
     await loginAndCollect()
 
     const fetchMock = stubFlow({
-      createResponse: { status: 0, data: { key_id: 'kid-2', token: 'gsk-chatoffice-key-2' } },
+      createResponse: {
+        status: 0,
+        data: { key_id: 'kid-2', token: 'chatoffice-chatoffice-key-2' },
+      },
     })
     await loginAndCollect()
-    expect(loadChatofficeAuth()).toMatchObject({ apiKey: 'gsk-chatoffice-key-2', keyId: 'kid-2' })
+    expect(loadChatofficeAuth()).toMatchObject({
+      apiKey: 'chatoffice-chatoffice-key-2',
+      keyId: 'kid-2',
+    })
     await vi.waitFor(() => {
       const revoke = fetchMock.mock.calls.find(([u]) => String(u).includes('/api_tokens/revoke'))
       expect(revoke).toBeDefined()
@@ -257,7 +263,7 @@ describe('startChatofficeLogin', () => {
         return jsonResponse({ status: 'pending' })
       }),
     )
-    const first: GskLoginProgress[] = []
+    const first: ChatOfficeLoginProgress[] = []
     startChatofficeLogin((progress) => first.push(progress))
     await vi.waitFor(() => expect(first.length).toBeGreaterThan(0))
     expect(chatofficeLoginInFlight()).toBe(true)
@@ -276,7 +282,7 @@ describe('chatofficeLogout', () => {
 
     await chatofficeLogout()
     expect(existsSync(chatofficeAuthPath())).toBe(false)
-    expect(chatofficeApiKey()).toBe('')
+    expect(chatofficeCliApiKey()).toBe('')
     const revokeCall = fetchMock.mock.calls.find(([u]) => String(u).includes('/api_tokens/revoke'))!
     const init = revokeCall[1]!
     expect((init.headers as Record<string, string>).Cookie).toBe('session_id=sess-abc')

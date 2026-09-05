@@ -1,5 +1,5 @@
 import { inferModelType, matchesModelType, type AiModelType } from './model-type'
-import { GENSPARK_LLM_BASE_URLS } from './providers'
+import { CHATOFFICE_LLM_BASE_URLS } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
   AiModelEntry,
@@ -8,7 +8,7 @@ import type {
   AiSettingsV2,
   AiWireProtocol,
 } from './types'
-import { GENSPARK_PRESET_MODELS, VENDOR_BY_ID } from './vendor-catalog'
+import { CHATOFFICE_PRESET_MODELS, VENDOR_BY_ID } from './vendor-catalog'
 
 /**
  * Settings v2 core: migration from v1, and the profile+model → wire-call
@@ -49,35 +49,35 @@ export const WIRE_TO_INTERNAL: Record<AiWireProtocol, AiProtocol> = {
   'gemini-native': 'gemini',
 }
 
-/** genspark's proxy speaks all three protocols; route by model id prefix like the v1 adapter did */
-export function gensparkEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
+/** chatoffice's proxy speaks all three protocols; route by model id prefix like the v1 adapter did */
+export function chatofficeEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
   if (model.startsWith('claude'))
-    return { protocol: 'anthropic', baseUrl: GENSPARK_LLM_BASE_URLS.anthropic }
+    return { protocol: 'anthropic', baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic }
   if (model.startsWith('gemini'))
-    return { protocol: 'gemini', baseUrl: GENSPARK_LLM_BASE_URLS.gemini }
-  return { protocol: 'openai-compatible', baseUrl: GENSPARK_LLM_BASE_URLS.openai }
+    return { protocol: 'gemini', baseUrl: CHATOFFICE_LLM_BASE_URLS.gemini }
+  return { protocol: 'openai-compatible', baseUrl: CHATOFFICE_LLM_BASE_URLS.openai }
 }
 
-export function gensparkProfile(): AiProviderProfile {
+export function chatofficeProfile(): AiProviderProfile {
   return {
-    id: 'genspark',
-    vendorId: 'genspark',
-    displayName: 'Genspark',
+    id: 'chatoffice',
+    vendorId: 'chatoffice',
+    displayName: 'ChatOffice',
     protocol: 'openai-completions', // placeholder; the resolver routes per model
     baseUrl: '',
-    auth: 'gsk-login',
+    auth: 'chatoffice-login',
     enabled: true,
-    models: GENSPARK_PRESET_MODELS.map((id) => ({ id })),
+    models: CHATOFFICE_PRESET_MODELS.map((id) => ({ id })),
   }
 }
 
 /** Fresh settings: nothing enabled and no default model — the settings page
- * guides configuration (sign in to Genspark or add an API-key vendor). */
+ * guides configuration (sign in to ChatOffice or add an API-key vendor). */
 export function defaultSettingsV2(): AiSettingsV2 {
   return {
     version: 2,
-    profiles: [{ ...gensparkProfile(), enabled: false }],
-    gskToolsEnabled: true,
+    profiles: [{ ...chatofficeProfile(), enabled: false }],
+    chatofficeToolsEnabled: true,
   }
 }
 
@@ -162,7 +162,7 @@ function normalizeGeminiBase(baseUrl: string): string {
 
 /**
  * Resolve one model call: protocol endpoint + per-vendor quirks. The caller
- * supplies the secret (inline key, harness credential ref, or gsk session) —
+ * supplies the secret (inline key, harness credential ref, or chatoffice session) —
  * this function never reads storage.
  */
 export function resolveModelCall(
@@ -175,8 +175,8 @@ export function resolveModelCall(
   const entry = profile.models.find((m) => m.id === selection.modelId)
   if (!entry) throw new Error(`Model ${selection.modelId} is not enabled on ${profile.displayName}`)
 
-  if (profile.auth === 'gsk-login') {
-    const ep = gensparkEndpointFor(selection.modelId)
+  if (profile.auth === 'chatoffice-login') {
+    const ep = chatofficeEndpointFor(selection.modelId)
     return {
       protocol: ep.protocol,
       baseUrl: ep.baseUrl,
@@ -214,7 +214,7 @@ function migrateV1Provider(
   id: string,
   config: { apiKey?: string; model?: string; baseUrl?: string },
 ): AiProviderProfile | null {
-  if (id === 'genspark') return null // handled separately as the login profile
+  if (id === 'chatoffice') return null // handled separately as the login profile
   const modelId = (config.model ?? '').trim()
   const model = RETIRED_MODELS[modelId] ?? modelId
   const apiKey = (config.apiKey ?? '').trim()
@@ -254,7 +254,7 @@ export interface StoredAiSettings {
   version?: number
   provider?: string
   providers?: Record<string, { apiKey?: string; model?: string; baseUrl?: string }>
-  gskToolsEnabled?: boolean
+  chatofficeToolsEnabled?: boolean
   /** legacy pre-provider shape */
   apiKey?: string
   baseUrl?: string
@@ -279,9 +279,9 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     return normalizeV2(stored as AiSettingsV2)
   }
 
-  // genspark is born disabled: enabling it is an explicit user act (login +
+  // chatoffice is born disabled: enabling it is an explicit user act (login +
   // model pick in the settings page), never a default
-  const profiles: AiProviderProfile[] = [{ ...gensparkProfile(), enabled: false }]
+  const profiles: AiProviderProfile[] = [{ ...chatofficeProfile(), enabled: false }]
   let currentModel: AiModelSelection | undefined
 
   if (stored?.providers) {
@@ -291,7 +291,7 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     }
     // honor the v1 active provider when it migrated into a usable profile
     const active =
-      stored.provider && stored.provider !== 'genspark'
+      stored.provider && stored.provider !== 'chatoffice'
         ? migrateV1Provider(
             stored.provider,
             stored.providers[stored.provider] ?? { apiKey: '', model: '' },
@@ -320,12 +320,34 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     version: 2,
     profiles,
     ...(fallback ? { currentModel: fallback } : {}),
-    ...(stored?.gskToolsEnabled !== undefined ? { gskToolsEnabled: stored.gskToolsEnabled } : {}),
+    ...(stored?.chatofficeToolsEnabled !== undefined
+      ? { chatofficeToolsEnabled: stored.chatofficeToolsEnabled }
+      : {}),
   }
+}
+
+/** legacy identifiers written before the de-Genspark rebrand (settings JSON) */
+const LEGACY_PROFILE_ID = 'genspark'
+/** legacy auth kind; the type union no longer carries it, hence the string cast */
+const LEGACY_AUTH = 'gsk-login'
+const LEGACY_TOOLS_KEY = 'gskToolsEnabled'
+
+/** remap a legacy profile id (persisted selections point at the old id) */
+function migratedProfileId(id: string | undefined): string | undefined {
+  return id === LEGACY_PROFILE_ID ? 'chatoffice' : id
 }
 
 /** trim/dedupe an existing v2 blob and drop selections that no longer resolve */
 function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
+  // pre-rebrand blobs: old tools-toggle key on the blob itself
+  const legacyTools = (settings as unknown as Record<string, unknown>)[LEGACY_TOOLS_KEY]
+  const toolsEnabled =
+    settings.chatofficeToolsEnabled ?? (typeof legacyTools === 'boolean' ? legacyTools : undefined)
+  const remapSelection = (sel: AiModelSelection | undefined): AiModelSelection | undefined => {
+    if (!sel) return sel
+    const profileId = migratedProfileId(sel.profileId) ?? sel.profileId
+    return profileId === sel.profileId ? sel : { ...sel, profileId }
+  }
   const seen = new Set<string>()
   const profiles = settings.profiles
     .filter((p) => {
@@ -333,36 +355,48 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
       seen.add(p.id)
       return true
     })
-    .map((p) => ({
-      ...p,
-      displayName: p.displayName?.trim() || p.id,
-      baseUrl: p.baseUrl?.trim() ?? '',
-      apiKey: p.apiKey?.trim() ?? '',
-      models: p.models?.filter((m) => m?.id) ?? [],
-    }))
+    .map((p) => {
+      const id = migratedProfileId(p.id) ?? p.id
+      const vendorId = p.vendorId ? migratedProfileId(p.vendorId) : undefined
+      return {
+        ...p,
+        // legacy blob: login-backed profile stored under its old id/auth kind
+        id,
+        ...(vendorId ? { vendorId } : {}),
+        ...(p.auth === (LEGACY_AUTH as string) ? { auth: 'chatoffice-login' as const } : {}),
+        displayName: p.displayName?.trim() || p.id,
+        baseUrl: p.baseUrl?.trim() ?? '',
+        apiKey: p.apiKey?.trim() ?? '',
+        models: p.models?.filter((m) => m?.id) ?? [],
+      }
+    })
   const next: AiSettingsV2 = {
     version: 2,
-    profiles: profiles.length ? profiles : [{ ...gensparkProfile(), enabled: false }],
-    ...(settings.gskToolsEnabled !== undefined
-      ? { gskToolsEnabled: settings.gskToolsEnabled }
-      : {}),
+    profiles: profiles.length ? profiles : [{ ...chatofficeProfile(), enabled: false }],
+    ...(toolsEnabled !== undefined ? { chatofficeToolsEnabled: toolsEnabled } : {}),
   }
-  const current = resolveCurrentModel({
+  const current = remapSelection(settings.currentModel)
+  const resolvedCurrent = resolveCurrentModel({
     ...next,
-    ...(settings.currentModel !== undefined ? { currentModel: settings.currentModel } : {}),
+    ...(current !== undefined ? { currentModel: current } : {}),
   })
-  if (current) next.currentModel = current
-  if (settings.imageModel) {
-    const profile = next.profiles.find((p) => p.id === settings.imageModel!.profileId)
-    if (profile?.models.some((m) => m.id === settings.imageModel!.modelId)) {
-      next.imageModel = settings.imageModel
+  if (resolvedCurrent) next.currentModel = resolvedCurrent
+  const legacyImage = remapSelection(settings.imageModel)
+  if (legacyImage) {
+    const profile = next.profiles.find((p) => p.id === legacyImage.profileId)
+    if (profile?.models.some((m) => m.id === legacyImage.modelId)) {
+      next.imageModel = legacyImage
     }
   }
   if (settings.modelDefaults) {
     const defaults: Record<string, AiModelSelection> = {}
     for (const [kind, sel] of Object.entries(settings.modelDefaults)) {
-      if (sel && selectionAlive(next, sel, DEFAULT_KIND_TYPES[kind as AiDefaultKind] ?? [])) {
-        defaults[kind] = sel
+      const remapped = remapSelection(sel ?? undefined)
+      if (
+        remapped &&
+        selectionAlive(next, remapped, DEFAULT_KIND_TYPES[kind as AiDefaultKind] ?? [])
+      ) {
+        defaults[kind] = remapped
       }
     }
     if (Object.keys(defaults).length > 0) {

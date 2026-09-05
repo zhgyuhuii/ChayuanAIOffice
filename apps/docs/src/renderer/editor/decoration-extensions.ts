@@ -592,7 +592,7 @@ export const TabStopExtension = Extension.create({
     // stops, or the paragraph's custom w:tabs). Lists indent and tables move
     // to the next cell — those handlers live on DocListItem / NativeTableSupport
     // and run after this one returns false. An unhandled Tab would leave the
-    // editor and cycle the ribbon buttons (github.com/genspark-ai/chatoffice/issues/101).
+    // editor and cycle the ribbon buttons (github.com/chatoffice-ai/chatoffice/issues/101).
     const insertTab = () => {
       if (!this.editor.isEditable) return false
       if (this.editor.isActive('docListItem')) return false

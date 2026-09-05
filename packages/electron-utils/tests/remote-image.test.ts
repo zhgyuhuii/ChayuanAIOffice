@@ -4,7 +4,7 @@ import { fetchRemoteImage, remoteImageHeaders } from '../src/remote-image'
 const png = () => new Response('img', { status: 200 })
 
 describe('remoteImageHeaders', () => {
-  it('sends a Referer for genspark hosts', () => {
+  it('sends a Referer for chatoffice hosts', () => {
     expect(remoteImageHeaders('https://sspark.genspark.ai/a.png').Referer).toBe(
       'https://www.genspark.ai/',
     )

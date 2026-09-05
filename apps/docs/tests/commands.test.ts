@@ -86,7 +86,7 @@ function fixtureDoc(): JsonNode[] {
         docxIndex: 0,
       },
     ),
-    para([text('GenSpark intro,'), text('GenSpark is great', [{ type: 'bold' }])], {
+    para([text('ChatOffice intro,'), text('ChatOffice is great', [{ type: 'bold' }])], {
       docxIndex: 1,
     }),
     heading([text('Risk Notes')], 2, { docxIndex: 2 }),
@@ -391,12 +391,12 @@ describe('replaceAllText', () => {
   it('replaces every occurrence and keeps marks', () => {
     const editor = createEditor(fixtureDoc())
     const outcome = executeCommands(editor, {
-      commands: [{ replaceAllText: { containsText: 'GenSpark', replaceText: 'Genspark' } }],
+      commands: [{ replaceAllText: { containsText: 'ChatOffice', replaceText: 'ChatOffice' } }],
     })
     expect(outcome.ok).toBe(true)
     expect(outcome.results[0].detail).toBe('共替换 2 处')
     const block = editor.state.doc.child(1)
-    expect(block.textContent).toBe('Genspark intro,Genspark is great')
+    expect(block.textContent).toBe('ChatOffice intro,ChatOffice is great')
     const boldChild = block.child(block.childCount - 1)
     expect(boldChild.marks.some((m) => m.type.name === 'bold')).toBe(true)
   })
@@ -404,14 +404,14 @@ describe('replaceAllText', () => {
   it('matchCase: sensitive by default, insensitive when false', () => {
     const editor = createEditor(fixtureDoc())
     const strict = executeCommands(editor, {
-      commands: [{ replaceAllText: { containsText: 'genspark', replaceText: 'X' } }],
+      commands: [{ replaceAllText: { containsText: 'chatoffice', replaceText: 'X' } }],
     })
     expect(strict.results[0].changed).toBe(0)
-    expect(editor.state.doc.child(1).textContent).toContain('GenSpark')
+    expect(editor.state.doc.child(1).textContent).toContain('ChatOffice')
 
     const loose = executeCommands(editor, {
       commands: [
-        { replaceAllText: { containsText: 'genspark', replaceText: 'X', matchCase: false } },
+        { replaceAllText: { containsText: 'chatoffice', replaceText: 'X', matchCase: false } },
       ],
     })
     expect(loose.results[0].detail).toBe('共替换 2 处')
@@ -456,14 +456,14 @@ describe('updateMatchedTextStyle', () => {
   it('merges docTextStyle attrs per match without wiping existing ones', () => {
     const editor = createEditor([
       para([
-        text('keep GenSpark styled', [{ type: 'docTextStyle', attrs: { sizeHalfPoints: 32 } }]),
+        text('keep ChatOffice styled', [{ type: 'docTextStyle', attrs: { sizeHalfPoints: 32 } }]),
       ]),
     ])
     executeCommands(editor, {
       commands: [
         {
           updateMatchedTextStyle: {
-            containsText: 'GenSpark',
+            containsText: 'ChatOffice',
             style: { color: 'FF0000' },
             fields: ['color'],
           },
@@ -472,7 +472,7 @@ describe('updateMatchedTextStyle', () => {
     })
     let styled: Record<string, unknown> | null = null
     editor.state.doc.child(0).forEach((child) => {
-      if (child.isText && child.text === 'GenSpark') {
+      if (child.isText && child.text === 'ChatOffice') {
         styled = child.marks.find((m) => m.type.name === 'docTextStyle')?.attrs ?? null
       }
     })
@@ -485,7 +485,7 @@ describe('updateMatchedTextStyle', () => {
       commands: [
         {
           updateMatchedTextStyle: {
-            containsText: 'GenSpark',
+            containsText: 'ChatOffice',
             style: { baselineOffset: 'MIDDLE' },
             fields: ['baselineOffset'],
           },
@@ -498,7 +498,7 @@ describe('updateMatchedTextStyle', () => {
       commands: [
         {
           updateMatchedTextStyle: {
-            containsText: 'GenSpark',
+            containsText: 'ChatOffice',
             style: { link: 'https://example.com' },
             fields: ['link'],
           },
@@ -628,7 +628,7 @@ describe('envelope validation', () => {
     const before = JSON.stringify(editor.getJSON())
     const outcome = executeCommands(editor, {
       commands: [
-        { replaceAllText: { containsText: 'GenSpark', replaceText: 'X' } },
+        { replaceAllText: { containsText: 'ChatOffice', replaceText: 'X' } },
         { insertTable: { rows: 2 } },
       ],
     } as unknown as CommandEnvelope)
@@ -671,7 +671,7 @@ describe('transaction atomicity and aiChanged', () => {
             fields: ['color'],
           },
         },
-        { replaceAllText: { containsText: 'GenSpark', replaceText: 'Genspark' } },
+        { replaceAllText: { containsText: 'ChatOffice', replaceText: 'ChatOffice' } },
         { deleteBlocks: { target: { blockIndexes: [3] } } },
       ],
     })

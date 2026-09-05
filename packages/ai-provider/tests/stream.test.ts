@@ -72,7 +72,7 @@ describe('streamForProvider: temperature policy', () => {
     expect(bodies[1].temperature).toBe(0.3)
   })
 
-  // issue genspark-ai/chatoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
+  // issue chatoffice-ai/chatoffice#147: every model in the OpenAI BYOK dropdown is GPT-5.x,
   // and api.openai.com 400s `max_tokens` for that family
   it('caps OpenAI via max_completion_tokens and other vendors via max_tokens', async () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(okTurn()))
@@ -408,7 +408,7 @@ describe('streamForProvider: anthropic', () => {
 
   it('replaces an HTML error body (e.g. a gateway block page) with a readable note', async () => {
     const html =
-      '<!doctype html>\n<html>\n<head><title>Genspark</title></head><body>app shell</body></html>'
+      '<!doctype html>\n<html>\n<head><title>ChatOffice</title></head><body>app shell</body></html>'
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(html, { status: 403 })))
     const { cb } = collector()
     await expect(
@@ -805,14 +805,14 @@ describe('streamForProvider: openai-compatible', () => {
   })
 })
 
-describe('streamForProvider: genspark', () => {
+describe('streamForProvider: chatoffice', () => {
   it('routes claude models to the Anthropic-compatible proxy endpoint', async () => {
     const fetchMock = vi.fn().mockResolvedValue(okResponse(sseStream([])))
     vi.stubGlobal('fetch', fetchMock)
     const { cb } = collector()
     await streamForProvider(
-      'genspark',
-      { apiKey: 'gsk-k', model: 'claude-opus-4-7' },
+      'chatoffice',
+      { apiKey: 'chatoffice-k', model: 'claude-opus-4-7' },
       'sys',
       [],
       [],
@@ -821,7 +821,9 @@ describe('streamForProvider: genspark', () => {
     ).catch(() => {})
     expect(fetchMock).toHaveBeenCalledWith(
       'https://www.genspark.ai/api/anthropic/v1/messages',
-      expect.objectContaining({ headers: expect.objectContaining({ 'x-api-key': 'gsk-k' }) }),
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'x-api-key': 'chatoffice-k' }),
+      }),
     )
   })
 
@@ -830,8 +832,8 @@ describe('streamForProvider: genspark', () => {
     vi.stubGlobal('fetch', fetchMock)
     const { cb } = collector()
     await streamForProvider(
-      'genspark',
-      { apiKey: 'gsk-k', model: 'gemini-3-flash-preview' },
+      'chatoffice',
+      { apiKey: 'chatoffice-k', model: 'gemini-3-flash-preview' },
       'sys',
       [],
       [],
@@ -840,7 +842,9 @@ describe('streamForProvider: genspark', () => {
     ).catch(() => {})
     expect(fetchMock).toHaveBeenCalledWith(
       'https://www.genspark.ai/api/llm_proxy/gemini/v1beta/models/gemini-3-flash-preview:streamGenerateContent?alt=sse',
-      expect.objectContaining({ headers: expect.objectContaining({ 'x-goog-api-key': 'gsk-k' }) }),
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'x-goog-api-key': 'chatoffice-k' }),
+      }),
     )
   })
 
@@ -849,8 +853,8 @@ describe('streamForProvider: genspark', () => {
     vi.stubGlobal('fetch', fetchMock)
     const { cb } = collector()
     await streamForProvider(
-      'genspark',
-      { apiKey: 'gsk-k', model: 'gpt-5.2' },
+      'chatoffice',
+      { apiKey: 'chatoffice-k', model: 'gpt-5.2' },
       'sys',
       [],
       [],
@@ -868,9 +872,15 @@ describe('streamForProvider: genspark', () => {
       const fetchMock = vi.fn().mockResolvedValue(okResponse(sseStream([])))
       vi.stubGlobal('fetch', fetchMock)
       const { cb } = collector()
-      await streamForProvider('genspark', { apiKey: 'gsk-k', model }, 'sys', [], [], 100, cb).catch(
-        () => {},
-      )
+      await streamForProvider(
+        'chatoffice',
+        { apiKey: 'chatoffice-k', model },
+        'sys',
+        [],
+        [],
+        100,
+        cb,
+      ).catch(() => {})
       expect(fetchMock).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -900,7 +910,7 @@ describe('streamForProvider: genspark', () => {
 
 describe('streamForProvider: 200 + non-stream JSON instead of SSE', () => {
   const creditsNotice =
-    'Your Genspark credits have been exhausted. Please visit https://www.genspark.ai/pricing to purchase more credits.'
+    'Your ChatOffice credits have been exhausted. Please visit https://www.genspark.ai/pricing to purchase more credits.'
   const json = (value: unknown) =>
     new Response(JSON.stringify(value), {
       status: 200,
@@ -1049,7 +1059,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
     const reasoning: string[] = []
     const { deltas, cb } = collector()
     await streamForProvider(
-      'genspark',
+      'chatoffice',
       { apiKey: 'k', model: 'deep-seek-v4-flash' },
       'sys',
       toolLoopMessages,
@@ -1068,7 +1078,7 @@ describe('streamForProvider: interleaved-thinking reasoning', () => {
     const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(reasoningTurn()))
     vi.stubGlobal('fetch', fetchMock)
     await streamForProvider(
-      'genspark',
+      'chatoffice',
       { apiKey: 'k', model: 'gpt-5.6-luna' },
       'sys',
       toolLoopMessages,

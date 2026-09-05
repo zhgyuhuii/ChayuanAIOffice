@@ -1,11 +1,11 @@
 import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from './types'
 
 /**
- * Genspark server-side LLM proxy endpoints. All three protocols share the
- * api_key from the gsk login; model ids follow the proxy's own naming scheme,
+ * ChatOffice server-side LLM proxy endpoints. All three protocols share the
+ * api_key from the chatoffice login; model ids follow the proxy's own naming scheme,
  * which differs from the official vendor ids.
  */
-export const GENSPARK_LLM_BASE_URLS = {
+export const CHATOFFICE_LLM_BASE_URLS = {
   anthropic: 'https://www.genspark.ai/api/anthropic',
   gemini: 'https://www.genspark.ai/api/llm_proxy/gemini/v1beta',
   openai: 'https://www.genspark.ai/api/llm_proxy/v1',
@@ -13,21 +13,21 @@ export const GENSPARK_LLM_BASE_URLS = {
 
 /**
  * Splits ChatOffice usage out of the proxy's default "Claw" billing bucket
- * (the backend attributes gsk-key traffic by X-Agent-Type). Only sent to the
- * Genspark proxy — never to direct vendor APIs.
+ * (the backend attributes chatoffice-key traffic by X-Agent-Type). Only sent to the
+ * ChatOffice proxy — never to direct vendor APIs.
  */
-export const GENSPARK_AGENT_TYPE = 'chatoffice'
+export const CHATOFFICE_AGENT_TYPE = 'chatoffice'
 
-export function gensparkAttributionHeaders(baseUrl?: string): Record<string, string> {
+export function chatofficeAttributionHeaders(baseUrl?: string): Record<string, string> {
   return baseUrl?.startsWith('https://www.genspark.ai')
-    ? { 'X-Agent-Type': GENSPARK_AGENT_TYPE }
+    ? { 'X-Agent-Type': CHATOFFICE_AGENT_TYPE }
     : {}
 }
 
 export const AI_PROVIDERS: AiProviderMeta[] = [
   {
-    id: 'genspark',
-    label: 'Genspark',
+    id: 'chatoffice',
+    label: 'ChatOffice',
     models: [
       'claude-opus-4-7',
       'claude-opus-4-8',
@@ -40,7 +40,7 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
       'gemini-3.7-flash',
     ],
     defaultModel: 'claude-opus-4-7',
-    keyPlaceholder: 'Not required - sign in to Genspark',
+    keyPlaceholder: 'Not required - sign in to ChatOffice',
   },
   {
     id: 'anthropic',
@@ -191,14 +191,14 @@ export function defaultAiSettings(
       baseUrl: meta.needsBaseUrl ? '' : undefined,
     }
   }
-  return { provider: 'genspark', providers, gskToolsEnabled: true }
+  return { provider: 'chatoffice', providers, chatofficeToolsEnabled: true }
 }
 
 /** false only on an explicit opt-out; absent (pre-toggle settings files) means on */
 export function cloudToolsEnabled(settings: {
-  gskToolsEnabled?: boolean | undefined
+  chatofficeToolsEnabled?: boolean | undefined
 }): boolean {
-  return settings.gskToolsEnabled !== false
+  return settings.chatofficeToolsEnabled !== false
 }
 
 /**
@@ -206,16 +206,16 @@ export function cloudToolsEnabled(settings: {
  * (api-key providers need a key and a model id; providers flagged
  * needsBaseUrl also need a base URL). Anything else — including unknown
  * ids from a hand-edited
- * settings file — falls back to genspark, so a half-filled setup degrades
+ * settings file — falls back to chatoffice, so a half-filled setup degrades
  * to the signed-in default instead of silently disabling AI.
  */
 export function activeProvider(settings: AiSettings): AiProviderId {
   const provider = settings.provider
-  if (provider === 'genspark') return 'genspark'
+  if (provider === 'chatoffice') return 'chatoffice'
   const meta = AI_PROVIDERS.find((m) => m.id === provider)
   const config = settings.providers?.[provider]
-  if (!meta || !config?.apiKey || !config.model) return 'genspark'
-  if (meta.needsBaseUrl && !config.baseUrl) return 'genspark'
+  if (!meta || !config?.apiKey || !config.model) return 'chatoffice'
+  if (meta.needsBaseUrl && !config.baseUrl) return 'chatoffice'
   return provider
 }
 
@@ -279,6 +279,7 @@ export function resolveAiSettings(
   return {
     provider: stored.provider ?? defaults.provider,
     providers: trimConfigs(migrateRetiredModels({ ...defaults.providers, ...stored.providers })),
-    gskToolsEnabled: stored.gskToolsEnabled ?? defaults.gskToolsEnabled ?? true,
+    chatofficeToolsEnabled:
+      stored.chatofficeToolsEnabled ?? defaults.chatofficeToolsEnabled ?? true,
   }
 }

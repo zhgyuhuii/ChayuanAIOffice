@@ -200,12 +200,16 @@ export function TabBar() {
     return () => document.removeEventListener('pointerdown', notify, true)
   }, [])
 
-  // mirror the home tree's visibility into the main process: document views
-  // inset by the sidebar width so the tree strip stays visible beside them
+  // mirror the home tree's visibility and width into the main process: document
+  // views inset by the sidebar so the tree strip stays visible beside them
   // (the sidebar itself is the shell document, always rendered underneath)
   useEffect(() => {
     if (!('chatOfficeTabs' in window)) return
-    const send = (): void => window.chatOfficeTabs.setTreeInset(!getHomeLayout().leftCollapsed)
+    const send = (): void => {
+      const layout = getHomeLayout()
+      window.chatOfficeTabs.setTreeInset(!layout.leftCollapsed)
+      window.chatOfficeTabs.setTreeWidth(layout.sidebarWidth)
+    }
     send()
     return onHomeLayoutChange(send)
   }, [])

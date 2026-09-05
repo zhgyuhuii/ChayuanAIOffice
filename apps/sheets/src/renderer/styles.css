@@ -5579,6 +5579,35 @@ textarea:focus {
   white-space: nowrap;
 }
 
+/* WPS 对齐微调：开始 tab 新组的大钮图标 22px（CT_Home.kuip 图标体系
+   与插入 tab 的 28px 不同层级——编辑/样式组用中号图标+12px 文字，
+   按钮无外框、hover 仅图标区着色） */
+.edit-big-row .ribbon-tool.large,
+.style-big-grid .ribbon-tool.large {
+  gap: 3px;
+  padding: 3px 6px 4px;
+}
+
+.edit-big-row .ribbon-tool.large .tool-symbol,
+.style-big-grid .ribbon-tool.large .tool-symbol {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  font-size: 18px;
+}
+
+.edit-big-row .ribbon-tool.large .tool-symbol svg,
+.style-big-grid .ribbon-tool.large .tool-symbol svg {
+  width: 22px;
+  height: 22px;
+}
+
+.edit-big-row .ribbon-tool.large .tool-icon-row,
+.style-big-grid .ribbon-tool.large .tool-icon-row {
+  min-height: 22px;
+  padding: 1px 4px;
+}
+
 /* WPS 编辑组（CT_Home.kuip RB_Editing）：大钮横排 + 双列小钮栈 */
 .edit-big-row {
   display: flex;

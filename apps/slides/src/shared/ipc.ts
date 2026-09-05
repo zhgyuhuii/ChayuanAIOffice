@@ -15,7 +15,7 @@ import type {
   AiSettingsV2,
   AiStreamChunk,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 
 export type { SlideComment, SectionInfo } from '@chatoffice/pptx-engine'
@@ -34,7 +34,7 @@ export type {
   AiStreamRequest,
   AiWireProtocol,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 export { AI_PROVIDERS } from '@chatoffice/ai-provider'
 
@@ -1355,7 +1355,7 @@ export interface SlidesApi {
       })
     | { error: string }
   >
-  /** Whether cloud single-page generation (gsk slide_generate) is available (CHATOFFICE_CLOUD_SLIDE=1 + gsk login) */
+  /** Whether cloud single-page generation (chatoffice slide_generate) is available (CHATOFFICE_CLOUD_SLIDE=1 + chatoffice login) */
   cloudGenStatus: () => Promise<{ enabled: boolean }>
   /** Cloud single-page generation: brief → one-slide pptx temp file; the marker goes into a landGeneratedPages pageMarkers slot */
   cloudGeneratePage: (op: {
@@ -1737,10 +1737,10 @@ export interface SlidesApi {
   aiDiscoverModels: (target: DiscoveryTarget) => Promise<{ models: AiModelEntry[]; error?: string }>
   aiStream: (request: AiStreamWireRequest) => Promise<void>
   aiStreamCancel: (requestId: string) => Promise<void>
-  /** Genspark account status (gsk login state); with withEmail also fetches the email (needs a network request, slower) */
-  aiGskStatus: (withEmail?: boolean) => Promise<GenSparkAccountStatus>
-  /** Open the browser to log into Genspark (fire-and-forget; aiGskStatus turns logged-in once done) */
-  aiGskLogin: () => Promise<void>
+  /** ChatOffice account status (chatoffice login state); with withEmail also fetches the email (needs a network request, slower) */
+  aiChatOfficeStatus: (withEmail?: boolean) => Promise<ChatOfficeAccountStatus>
+  /** Open the browser to log into ChatOffice (fire-and-forget; aiChatOfficeStatus turns logged-in once done) */
+  aiChatOfficeLogin: () => Promise<void>
   /** Record a run that ended without a usable reply, for post-mortem (fire-and-forget, never throws) */
   aiLogRunFailure: (entry: AiRunFailure) => Promise<void>
   webSearch: (
@@ -1797,7 +1797,7 @@ export interface SlidesApi {
     url: string
     keepSrcRect?: boolean
   }) => Promise<RenderSlide | null>
-  /** gsk (Genspark) AI image generation/editing, returns the image URL (error prompts login when logged out) */
+  /** chatoffice (ChatOffice) AI image generation/editing, returns the image URL (error prompts login when logged out) */
   generateImage: (op: {
     prompt: string
     model?: string
@@ -1805,13 +1805,13 @@ export interface SlidesApi {
     aspectRatio?: string
     imageSize?: string
   }) => Promise<{ url?: string; error?: string }>
-  /** gsk (Genspark) media analysis: image/audio/video content understanding, returns analysis text */
+  /** chatoffice (ChatOffice) media analysis: image/audio/video content understanding, returns analysis text */
   analyzeMedia: (op: {
     mediaUrls: string[]
     requirements: string
   }) => Promise<{ text?: string; error?: string }>
-  /** gsk availability: installed and logged in (for UI/tools to prompt login) */
-  gskStatus: () => Promise<{ available: boolean; email?: string }>
+  /** chatoffice availability: installed and logged in (for UI/tools to prompt login) */
+  chatofficeStatus: () => Promise<{ available: boolean; email?: string }>
   onAiStream: (handler: (chunk: AiStreamChunk) => void) => () => void
   /** Style Skill sidecar: write styleSkill to a same-named .styleskill.json next to the draft */
   saveStyleSidecar: (data: {

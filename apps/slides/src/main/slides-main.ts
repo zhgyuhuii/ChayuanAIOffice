@@ -27,7 +27,11 @@ import { existsSync, mkdirSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
-import { gskApiKey, gskSlideGenerate, setGskProxyUrl } from '@chatoffice/ai-search'
+import {
+  chatofficeApiKey,
+  chatofficeSlideGenerate,
+  setChatOfficeProxyUrl,
+} from '@chatoffice/ai-search'
 import {
   appMenuLabels,
   configuredDefaultSaveDir,
@@ -1563,10 +1567,10 @@ export function registerSlidesIpc(): void {
     }
     return rendered ? { slide: rendered } : null
   })
-  // ── Cloud single-page generation (gsk slide_generate): brief → cloud HTML+conversion → one-slide
+  // ── Cloud single-page generation (chatoffice slide_generate): brief → cloud HTML+conversion → one-slide
   // pptx saved to a temp file. Returns a marker string that slides:land-generated-pages redeems for
-  // the bytes. Enabled when gsk is logged in; CHATOFFICE_CLOUD_SLIDE=0 is the kill switch.
-  const cloudSlideEnabled = () => process.env.CHATOFFICE_CLOUD_SLIDE !== '0' && !!gskApiKey()
+  // the bytes. Enabled when chatoffice is logged in; CHATOFFICE_CLOUD_SLIDE=0 is the kill switch.
+  const cloudSlideEnabled = () => process.env.CHATOFFICE_CLOUD_SLIDE !== '0' && !!chatofficeApiKey()
 
   ipcMain.handle('slides:cloud-gen-status', () => ({ enabled: cloudSlideEnabled() }))
 
@@ -1591,7 +1595,7 @@ export function registerSlidesIpc(): void {
         // comparisons and emergency rollback.
         const tier = process.env.CHATOFFICE_CLOUD_SLIDE_TIER === 'standard' ? 'standard' : 'ultra'
         const started = Date.now()
-        const { bytes, model } = await gskSlideGenerate({
+        const { bytes, model } = await chatofficeSlideGenerate({
           tier,
           brief: String(op.brief ?? ''),
           title: op.title ? String(op.title) : undefined,
@@ -1616,7 +1620,7 @@ export function registerSlidesIpc(): void {
     },
   )
 
-  // ── Local single-page generation (no gsk needed, e.g. BYOK): a JSON slide spec written by
+  // ── Local single-page generation (no chatoffice needed, e.g. BYOK): a JSON slide spec written by
   // the renderer's LLM call is built directly into a one-slide pptx with pptx-engine
   // primitives — no HTML intermediate. Returns the same marker kind as the cloud path, so
   // landing (slides:land-generated-pages) is shared.
@@ -4808,9 +4812,9 @@ export function installSlidesMenu(): void {
  */
 async function applyMainProcessProxy(): Promise<void> {
   const setDispatcher = async (proxyUrl: string) => {
-    // spawned gsk CLI children do their own fetch and never see the
+    // spawned chatoffice CLI children do their own fetch and never see the
     // dispatcher below — forward the proxy to them via env
-    setGskProxyUrl(proxyUrl)
+    setChatOfficeProxyUrl(proxyUrl)
     try {
       const { ProxyAgent, setGlobalDispatcher } = await import('undici')
       setGlobalDispatcher(new ProxyAgent(proxyUrl))
@@ -4835,7 +4839,7 @@ async function applyMainProcessProxy(): Promise<void> {
   try {
     await app.whenReady()
     // PAC/rule proxies answer per-host: probe the host the login flow, the
-    // Genspark LLM proxy and the gsk CLI actually target
+    // ChatOffice LLM proxy and the chatoffice CLI actually target
     const resolved = await electronSession.defaultSession.resolveProxy('https://www.genspark.ai/')
     // resolveProxy returns strings like "PROXY 127.0.0.1:1087" or "DIRECT"
     const m = /PROXY\s+([^;]+)/i.exec(resolved || '')

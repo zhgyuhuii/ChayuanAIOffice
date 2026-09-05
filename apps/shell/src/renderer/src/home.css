@@ -1,7 +1,7 @@
 /* Shared chrome/AI-panel tokens come from @chatoffice/ui/tokens.css (imported
  * before this file in main.tsx); only shell-specific tokens live here. */
 :root {
-  /* Genspark DS v4.1: guide/onboarding accent is the brand blue */
+  /* ChatOffice DS v4.1: guide/onboarding accent is the brand blue */
   --accent: #0f7fff;
   --accent-hover: #0e72e5;
   /* selected-option tint for the shared dropdown (gs-dd) */
@@ -143,9 +143,18 @@ body.vib .home {
 .side-sec + .side-sec,
 .side-files + .side-files,
 .side-sec + .side-files {
-  margin-top: 14px;
-  padding-top: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-subtle);
+}
+
+/* project tree: the project selector and its files are one tree — keep them
+ * visually contiguous (small gap, no divider) */
+.side-sec:has(.proj-panel) + .proj-files,
+.side-sec + .proj-files {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: none;
 }
 
 /* sections inside the unified scroll column no longer scroll individually */
@@ -161,11 +170,36 @@ body.vib .home {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 232px;
+  width: 232px; /* live value comes from Home's inline style (home-layout.sidebarWidth) */
   padding: 18px 12px 16px;
   border-right: 1px solid var(--border);
   /* the sidebar frame itself stays put; the account entry never drifts */
   overflow: hidden;
+}
+
+/* tree|chat drag handle: a hit-area strip straddling the sidebar border;
+   hidden along with the tree when the left pane is collapsed */
+.sidebar-resizer {
+  flex-shrink: 0;
+  width: 7px;
+  margin: 0 -3px;
+  cursor: col-resize;
+  z-index: 5;
+  touch-action: none;
+}
+
+.home.pane-left-collapsed > .sidebar-resizer {
+  display: none;
+}
+
+/* while dragging (or hovering the handle): highlight the border position */
+.sidebar-resizer:hover,
+body.sidebar-resizing {
+  cursor: col-resize;
+}
+
+body.sidebar-resizing {
+  user-select: none;
 }
 
 .sidebar-logo {
@@ -235,7 +269,7 @@ body.vib .home {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- bottom-left account entry (today = Genspark login, later = signup/account system) ---- */
+/* ---- bottom-left account entry (today = ChatOffice login, later = signup/account system) ---- */
 /* clicking it opens the settings modal (settings.css) directly, which hosts
    login/logout plus preferences (language / theme / save location / update channel) */
 
@@ -584,7 +618,7 @@ body.vib .home {
 
 /* segmented control: gray track, active segment = white card */
 /* segmented filter control: gray track, active segment = white card.
-   One shared 40px rail for the recents page and the Genspark Projects
+   One shared 40px rail for the recents page and the ChatOffice Projects
    toolbar (where it lines up with the 40px refresh button and search box). */
 .filter-pills,
 .cloud-seg {
@@ -1146,7 +1180,7 @@ body.vib .home {
   gap: 9px;
   flex: 1;
   min-width: 0;
-  padding: 8px 10px;
+  padding: 5px 10px;
   cursor: pointer;
   border-radius: 8px;
   user-select: none;
@@ -1523,7 +1557,7 @@ body.vib .home {
   padding-top: 1px;
 }
 
-/* ── Cloud (Genspark web) projects ── */
+/* ── Cloud (ChatOffice web) projects ── */
 
 /* fixed header: the content column never scrolls; only .cloud-scroll does */
 /* whole page scrolls (same as the recents page) so the wheel works anywhere;
@@ -1672,7 +1706,7 @@ body.vib .home {
   margin-top: 0;
 }
 
-/* Genspark Projects list styled like the recent-files table: bordered
+/* ChatOffice Projects list styled like the recent-files table: bordered
    rounded container, column header, grid rows with hairline dividers */
 .cloud-table {
   border: 1px solid var(--border);
@@ -2009,7 +2043,9 @@ body.vib .home {
   min-height: 0;
 }
 
-/* ── Tree chat nodes (P2): tasks under a project, chats under a file ── */
+/* ── Tree chat nodes (P2): tasks under a project, chats under a file ──
+   Compact tree rhythm: rows hug each other (no vertical gaps), indent steps
+   are uniform so 项目→文件→对话 reads as one nested list. */
 
 .side-file-group {
   list-style: none;
@@ -2022,7 +2058,7 @@ body.vib .home {
 }
 
 .tree-chat-list.nested {
-  padding-left: 16px;
+  padding-left: 14px;
 }
 
 .tree-chat-row {
@@ -2034,7 +2070,7 @@ body.vib .home {
   align-items: center;
   gap: 6px;
   width: 100%;
-  padding: 4px 8px 4px 22px;
+  padding: 2px 8px 2px 20px;
   border: none;
   border-radius: 6px;
   background: none;
@@ -2100,7 +2136,7 @@ body.vib .home {
   align-items: baseline;
   gap: 8px;
   padding: 0 8px;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
   flex-shrink: 0;
 }
 
@@ -2189,7 +2225,7 @@ body.vib .home {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 0;
+  padding: 3px 0;
   cursor: pointer;
 }
 

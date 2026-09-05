@@ -7,8 +7,8 @@
  * the same chunk shape the desktop mains push over IPC, so the web shims can
  * forward chunks into the editors unchanged.
  *
- * gsk login is desktop-only: the web form is pure BYOK (capabilities flags it)
- * and the genspark profile stays hidden in the settings UI.
+ * chatoffice login is desktop-only: the web form is pure BYOK (capabilities flags it)
+ * and the chatoffice profile stays hidden in the settings UI.
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -59,7 +59,7 @@ export interface AiProxyOptions {
 
 /** server-side error copy for the four runtime keys (zh, matching the default UI locale) */
 const ERR = {
-  errGskNotLoggedIn: 'Web 端不支持 Genspark 登录，请使用自己配置的模型',
+  errChatOfficeNotLoggedIn: 'Web 端不支持 ChatOffice 登录，请使用自己配置的模型',
   errNoApiKey: '未配置 {provider} 的 API Key',
   errNoModel: '未配置模型',
   errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
@@ -116,8 +116,8 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
     : officeState
   return createAiRuntime({
     source,
-    // gsk login is desktop-only; the web form is pure BYOK
-    gsk: {
+    // chatoffice login is desktop-only; the web form is pure BYOK
+    chatoffice: {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),
@@ -161,11 +161,11 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
   }
 
   // ── settings ───────────────────────────────────────────────────────────
-  // web form: the gsk-login profile can never authenticate here — filter it
+  // web form: the chatoffice-login profile can never authenticate here — filter it
   // from the view so the UI never offers it
   app.get('/ai/settings', async () => {
     const view = await runtime.getSettingsView()
-    const profiles = view.profiles.filter((p) => p.auth !== 'gsk-login')
+    const profiles = view.profiles.filter((p) => p.auth !== 'chatoffice-login')
     return {
       ...view,
       profiles,
@@ -201,8 +201,11 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
     }
   })
 
-  /** web form is pure BYOK: the UI hides the genspark profile + login card on this flag */
-  app.get('/ai/capabilities', async () => ({ gskAvailable: false, harness: !!options.harness }))
+  /** web form is pure BYOK: the UI hides the chatoffice profile + login card on this flag */
+  app.get('/ai/capabilities', async () => ({
+    chatofficeAvailable: false,
+    harness: !!options.harness,
+  }))
 
   // ── streaming (SSE with the desktop chunk shape) ───────────────────────
   app.post<{
@@ -319,8 +322,11 @@ export function attachAiProxy(app: FastifyInstance, options: AiProxyOptions): vo
     },
   )
 
-  app.get('/ai/gsk-status', async () => ({ loggedIn: false }))
-  app.post('/ai/gsk-login', async () => ({ ok: false, error: 'gsk login is desktop-only' }))
+  app.get('/ai/chatoffice-status', async () => ({ loggedIn: false }))
+  app.post('/ai/chatoffice-login', async () => ({
+    ok: false,
+    error: 'chatoffice login is desktop-only',
+  }))
 
   // Metering read-back (ops/debug until the usage dashboard exists)
   app.get('/ai/usage', async () => ({ calls: records.length, records }))

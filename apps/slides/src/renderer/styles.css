@@ -636,7 +636,7 @@ button {
   overflow-x: scroll;
   overflow-y: hidden;
   /* Slim visible scrollbar so mouse users can reach overflowed groups
-     (genspark-ai/chatoffice#55). Its 5px lane is carved out of the bottom
+     (chatoffice-ai/chatoffice#55). Its 5px lane is carved out of the bottom
      padding, keeping the 80px band and the content area unchanged; Chromium
      paints a thumb only while the row actually overflows. */
   padding-bottom: 1px;
@@ -2590,7 +2590,7 @@ body.vib .slide-list {
 .ai-attachments {
   display: flex;
   gap: 8px;
-  /* single row inside the prompt box, above the textarea (Genspark composer style):
+  /* single row inside the prompt box, above the textarea (ChatOffice composer style):
      extra images run past the box edge and scroll horizontally.
      scroll (not auto) + zero bottom padding: the always-present 4px scrollbar lane
      doubles as the bottom padding, so overflowing never grows the strip and
@@ -2698,7 +2698,7 @@ body.vib .slide-list {
   background: var(--slides-att-bg);
 }
 
-/* the type icon sits in its own bordered white tile, like the Genspark card */
+/* the type icon sits in its own bordered white tile, like the ChatOffice card */
 .ai-attachment-card-icon {
   display: flex;
   flex-shrink: 0;
@@ -3283,7 +3283,7 @@ body.vib .slide-list {
   margin-top: 18px;
 }
 
-/* Genspark DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
+/* ChatOffice DS modal footer buttons: secondary = bg-subtle, primary = black (#232425) */
 .modal-actions button {
   display: inline-flex;
   align-items: center;
@@ -3415,7 +3415,7 @@ body.vib .slide-list {
   margin-top: 5.6px;
 }
 
-/* 形状选项 / 文本选项 primary tabs under the pane header (Genspark style:
+/* 形状选项 / 文本选项 primary tabs under the pane header (ChatOffice style:
    left-aligned text tabs, active = bold + text-colored underline) */
 .fp-tabs {
   display: flex;
@@ -3449,7 +3449,7 @@ body.vib .slide-list {
   border-bottom-color: var(--accent);
 }
 
-/* Second-level tabs (填充与线条 / 效果 / 大小与属性 …): Genspark segmented pill track —
+/* Second-level tabs (填充与线条 / 效果 / 大小与属性 …): ChatOffice segmented pill track —
    pills sit in one rounded gray track; active = accent-filled pill */
 .fp-subtabs {
   display: flex;

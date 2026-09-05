@@ -43,7 +43,7 @@ import type {
   AiStreamChunk,
   AiStreamRequestV2,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 import type { FaceVerticalMetrics } from '@chatoffice/font-metrics'
 
@@ -64,7 +64,7 @@ export type {
   AiStreamRequestV2,
   AiWireProtocol,
   DiscoveryTarget,
-  GenSparkAccountStatus,
+  ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
 export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider'
 
@@ -311,10 +311,10 @@ export interface DesktopApi {
    *  The `settings` slot carries the model selection (agent-core's generic transport shape). */
   aiStream(request: AiStreamWireRequest): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
-  /** Genspark account status (gsk login state); withEmail also returns the email (needs a network request, slower) */
-  aiGskStatus(withEmail?: boolean): Promise<GenSparkAccountStatus>
-  /** Open the browser to log in to Genspark (fire-and-forget; aiGskStatus flips to logged-in when done) */
-  aiGskLogin(): Promise<void>
+  /** ChatOffice account status (chatoffice login state); withEmail also returns the email (needs a network request, slower) */
+  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
+  /** Open the browser to log in to ChatOffice (fire-and-forget; aiChatOfficeStatus flips to logged-in when done) */
+  aiChatOfficeLogin(): Promise<void>
   webSearch(
     query: string,
     maxResults?: number,
@@ -354,7 +354,7 @@ export interface DesktopApi {
     maxResults?: number,
   ): Promise<{ images: unknown[]; method?: string; error?: string }>
   remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
-  /** AI image generation via the Genspark cloud channel (requires login + cloud tools) */
+  /** AI image generation via the ChatOffice cloud channel (requires login + cloud tools) */
   aiGenerateImage(op: {
     prompt: string
     aspectRatio?: string

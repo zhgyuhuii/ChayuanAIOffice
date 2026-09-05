@@ -6,6 +6,6 @@ export const pdfModelBridge: ModelSettingsBridge = {
   saveSettings: (view) => window.pdfApi.setAiSettings(view),
   setCurrentModel: (selection) => window.pdfApi.setAiCurrentModel(selection),
   discoverModels: (target) => window.pdfApi.aiDiscoverModels(target),
-  gskStatus: (withEmail) => window.pdfApi.gskStatus(withEmail),
-  gskLogin: () => window.pdfApi.aiGskLogin(),
+  chatofficeStatus: (withEmail) => window.pdfApi.chatofficeStatus(withEmail),
+  chatofficeLogin: () => window.pdfApi.aiChatOfficeLogin(),
 }

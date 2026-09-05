@@ -15,8 +15,8 @@ const bridge: ModelSettingsBridge = {
   saveSettings: vi.fn(async () => {}),
   setCurrentModel: vi.fn(async () => {}),
   discoverModels: vi.fn(async () => ({ models: [] })),
-  gskStatus: vi.fn(async () => ({ loggedIn: false })),
-  gskLogin: vi.fn(async () => {}),
+  chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+  chatofficeLogin: vi.fn(async () => {}),
 }
 
 let host: HTMLDivElement
@@ -46,7 +46,7 @@ describe('ModelSettingsPage', () => {
     expect(overlay!.parentElement).toBe(document.body)
   })
 
-  it('shows the genspark card + vendor catalog groups by default (desktop)', async () => {
+  it('shows the chatoffice card + vendor catalog groups by default (desktop)', async () => {
     await render()
     const groups = [...document.body.querySelectorAll('.msp-group-head')].map(
       (el) => el.textContent,
@@ -94,10 +94,10 @@ describe('ModelSettingsPage', () => {
     expect(modelSettingsStrings('en-US').title).toBe('Model Settings')
   })
 
-  it('hides the genspark card when capabilities report gsk unavailable (web form)', async () => {
-    await render({ capabilities: async () => ({ gskAvailable: false }) })
-    expect(document.body.querySelector('[data-vendor-row="genspark"]')).toBeNull()
-    // falls back to a catalog vendor pane instead of the genspark card
+  it('hides the chatoffice card when capabilities report chatoffice unavailable (web form)', async () => {
+    await render({ capabilities: async () => ({ chatofficeAvailable: false }) })
+    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
+    // falls back to a catalog vendor pane instead of the chatoffice card
     expect(document.body.querySelector('.msp-switch')).toBeTruthy()
   })
 })
@@ -110,8 +110,8 @@ describe('ModelSettingsPage model checklist + save validation', () => {
       saveSettings,
       setCurrentModel: vi.fn(async () => {}),
       discoverModels: discover,
-      gskStatus: vi.fn(async () => ({ loggedIn: false })),
-      gskLogin: vi.fn(async () => {}),
+      chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+      chatofficeLogin: vi.fn(async () => {}),
     }
     await act(async () => {
       root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
@@ -279,8 +279,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
       saveSettings: vi.fn(async () => {}),
       setCurrentModel: vi.fn(async () => {}),
       discoverModels: vi.fn(async () => ({ models: [] })),
-      gskStatus: vi.fn(async () => ({ loggedIn: false })),
-      gskLogin: vi.fn(async () => {}),
+      chatofficeStatus: vi.fn(async () => ({ loggedIn: false })),
+      chatofficeLogin: vi.fn(async () => {}),
     }
     await act(async () => {
       root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
@@ -321,8 +321,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     expect(tagsOf('zhipu')).toContain('Free tier')
     expect(tagsOf('openai')).toContain('Key needed')
     expect(tagsOf('openai')).not.toContain('Free tier')
-    // 登录即用 badge was removed — genspark carries no tag
-    expect(tagsOf('genspark')).toEqual([])
+    // 登录即用 badge was removed — chatoffice carries no tag
+    expect(tagsOf('chatoffice')).toEqual([])
     expect(tagsOf('ollama')).toContain('No key')
     expect(tagsOf('ollama')).toContain('Free')
   })
@@ -349,8 +349,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     await pick('free')
     expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeNull()
     expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeTruthy()
-    // genspark carries no free flag — filtered out with the rest
-    expect(document.body.querySelector('[data-vendor-row="genspark"]')).toBeNull()
+    // chatoffice carries no free flag — filtered out with the rest
+    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
     // hint dismissed by interacting with the filter
     expect(document.body.querySelector('[data-model-filter-hint]')).toBeNull()
 

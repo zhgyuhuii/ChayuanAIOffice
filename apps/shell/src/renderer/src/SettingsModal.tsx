@@ -13,7 +13,7 @@ import { StoragePane } from './StoragePane'
 import './settings.css'
 
 // ── Settings modal (opened from the account menu) ─────────
-// Genspark-style two-pane dialog: section nav on the left, fields on the right.
+// ChatOffice-style two-pane dialog: section nav on the left, fields on the right.
 // All values go through the existing home IPC; nothing is stored locally.
 
 // sorted by ISO 639 language code — native-script labels have no natural
@@ -196,8 +196,8 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     saveSettings: (view) => window.chatOffice.setAiSettings(view),
     setCurrentModel: (selection) => window.chatOffice.setAiCurrentModel(selection),
     discoverModels: (target) => window.chatOffice.aiDiscoverModels(target),
-    gskStatus: (withEmail) => window.chatOffice.gskStatus(withEmail),
-    gskLogin: () => void window.chatOffice.gskLogin(),
+    chatofficeStatus: (withEmail) => window.chatOffice.chatofficeStatus(withEmail),
+    chatofficeLogin: () => void window.chatOffice.chatofficeLogin(),
   }
 }
 
@@ -212,7 +212,7 @@ export interface SettingsModalProps {
   onOpenLoginUrl: () => void
   onCopyLoginUrl: () => void
   onClose: () => void
-  /** closes the modal and launches the Genspark login flow (progress shows on the account entry) */
+  /** closes the modal and launches the ChatOffice login flow (progress shows on the account entry) */
   onLogin: () => void
   onLogout: () => void
 }
@@ -422,8 +422,8 @@ export function SettingsModal({
                   label={t('setGithub')}
                   value={
                     githubStars === null
-                      ? 'github.com/genspark-ai/chatoffice'
-                      : `github.com/genspark-ai/chatoffice · ★ ${formatStars(githubStars)}`
+                      ? 'github.com/chatoffice-ai/chatoffice'
+                      : `github.com/chatoffice-ai/chatoffice · ★ ${formatStars(githubStars)}`
                   }
                   action={
                     <button
