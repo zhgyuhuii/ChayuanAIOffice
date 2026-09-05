@@ -178,6 +178,11 @@ export function parseStyleCommand(command: string): {
 
 export function handleRibbonCommand(ctx: RibbonCommandContext, command: string): void {
   const runtime = ctx.univerRef.current
+  // 图表库不需要工作簿上下文(Univer 未就绪也应能打开浏览)
+  if (command === 'chart-designer-open') {
+    ctx.setChartDesignerOpen(true)
+    return
+  }
   if (!runtime) return
   if (command === 'undo' || command === 'redo') {
     void runtime.univerAPI[command]()
@@ -780,9 +785,6 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       return
     case 'recommended-charts-open':
       ctx.openRecommendedCharts()
-      return
-    case 'chart-designer-open':
-      ctx.setChartDesignerOpen(true)
       return
     case 'insert-icons':
       ctx.setIconsDialogOpen(true)
