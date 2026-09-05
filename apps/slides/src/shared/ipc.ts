@@ -1611,6 +1611,10 @@ export interface SlidesApi {
   getTransitionSpec: (slideIndex: number) => Promise<TransitionSpec>
   /** The current page's transition sound bytes (synthesized wav, for show playback); null = 无声音 */
   getTransitionSound: (slideIndex: number) => Promise<{ name: string; bytes: ArrayBuffer } | null>
+  /** 放映设置 echo (presProps p:showPr): loop = 放映结束后从头循环 */
+  getShowSettings: () => Promise<{ loop: boolean }>
+  /** Write 放映设置 to presProps (document-level; marks the session dirty) */
+  setShowSettings: (settings: { loop: boolean }) => Promise<boolean>
   /** The current page's animation list (read by the Animations tab / during shows) */
   getAnimations: (slideIndex: number) => Promise<AnimationItem[]>
   /** Morph pairing keys of the current page's elements (matched against same-name/same-id elements on the previous page during morph tweening) */

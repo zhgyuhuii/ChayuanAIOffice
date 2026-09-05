@@ -3929,6 +3929,77 @@ export function getSlideAdvanceTime(slide: Slide): number | null {
   return readSlideAdvanceTimeXml(slide.bodySuffix)
 }
 
+// ── Show settings (presProps p:showPr) ──────────────────────────────────
+
+const PRES_PROPS_PATH = 'ppt/presProps.xml'
+
+/** 循环放映 (p:showPr loop="1"); false when the part or flag is absent. */
+export function readShowLoop(archive: PackageArchive): boolean {
+  const xml = archive.readText(PRES_PROPS_PATH)
+  if (!xml) return false
+  const showPr = /<p:showPr\b[^>]*>/.exec(xml)?.[0]
+  if (!showPr) return false
+  const loop = /\bloop="([^"]*)"/.exec(showPr)?.[1]
+  return loop === '1' || (loop !== undefined && loop !== '0')
+}
+
+/** Turn 循环放映 on/off: patch or create ppt/presProps.xml (+ content-types & rels when new). */
+export function writeShowLoop(archive: PackageArchive, loop: boolean): void {
+  let xml = archive.readText(PRES_PROPS_PATH)
+  if (xml != null) {
+    if (/<p:showPr\b[^>]*\/?>/.test(xml)) {
+      xml = /<p:showPr\b[^>]*>/.test(xml)
+        ? xml.replace(/(<p:showPr\b[^>]*?)\s*loop="[^"]*"/, '$1').replace(
+            /<p:showPr\b/,
+            loop ? '<p:showPr loop="1"' : '<p:showPr',
+          )
+        : xml.replace(/<p:showPr\b/, loop ? '<p:showPr loop="1"' : '<p:showPr')
+    } else {
+      // CT_PresentationProperties: showPr is the first child
+      const showPr = loop
+        ? '<p:showPr loop="1"><p:present/><p:sldAll/></p:showPr>'
+        : '<p:showPr><p:present/><p:sldAll/></p:showPr>'
+      xml = xml.replace(/(<p:presentationPr\b[^>]*>)/, `$1${showPr}`)
+    }
+    archive.writeText(PRES_PROPS_PATH, xml)
+    return
+  }
+  // create the part: minimal presentationPr + content-type override + rels entry
+  const created =
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<p:presentationPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ' +
+    'xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">' +
+    (loop ? '<p:showPr loop="1"><p:present/><p:sldAll/></p:showPr>' : '<p:showPr><p:present/><p:sldAll/></p:showPr>') +
+    '</p:presentationPr>'
+  archive.writeText(PRES_PROPS_PATH, created)
+  const ctPath = '[Content_Types].xml'
+  const ct = archive.readText(ctPath)
+  if (ct && !ct.includes('presentationml.presProps+xml')) {
+    archive.writeText(
+      ctPath,
+      ct.replace(
+        /<\/Types>/,
+        '<Override PartName="/ppt/presProps.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presProps+xml"/></Types>',
+      ),
+    )
+  }
+  const relsPath = 'ppt/_rels/presentation.xml.rels'
+  const rels = archive.readText(relsPath)
+  if (rels && !rels.includes('presProps')) {
+    const existing = [...rels.matchAll(/Id="([^"]+)"/g)].map((m) => m[1])
+    let n = existing.filter((id) => /^rId\d+$/.test(id)).length + 1
+    while (existing.includes(`rId${n}`)) n++
+    archive.writeText(
+      relsPath,
+      rels.replace(
+        /<\/Relationships>/,
+        `<Relationship Id="rId${n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps" Target="presProps.xml"/></Relationships>`,
+      ),
+    )
+  }
+}
+
 // ── Hidden slides ───────────────────────────────────────────────────────
 
 /** Hide/unhide a slide (<p:sld show="0">, skipped in PowerPoint slideshows). */

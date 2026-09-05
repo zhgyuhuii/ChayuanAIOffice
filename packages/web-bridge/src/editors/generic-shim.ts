@@ -200,6 +200,10 @@ export function installSlidesShim(client: BridgeClient): void {
     async getAdvanceTime(): Promise<number | null> {
       return null
     },
+    /** 放映设置 echo — web has no presProps writer (setShowSettings degrades) */
+    async getShowSettings(): Promise<{ loop: boolean }> {
+      return { loop: false }
+    },
     async getSections(): Promise<unknown[]> {
       return []
     },

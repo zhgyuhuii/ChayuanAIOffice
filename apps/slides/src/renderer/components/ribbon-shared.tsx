@@ -501,6 +501,10 @@ export interface Props {
   onToggleAnimBrush: () => void
   /** Preview the current page's animations on the edit canvas */
   onAnimPreview: () => void
+  /** 放映设置 echo (presProps): 循环放映 on/off */
+  showLoop: boolean
+  /** Toggle 循环放映 (writes presProps via IPC) */
+  onSetShowLoop: (v: boolean) => void
   /** Start the show (fromStart=true from the beginning, false from the current page) */
   onSlideShow: (fromStart: boolean) => void
   /** Start presenter view (single-window version: current page + next-page preview + notes + timer) */

@@ -83,6 +83,8 @@ import {
   getTransitionSoundBytes,
   synthTransitionSound,
   TRANSITION_SOUND_KEYS,
+  readShowLoop,
+  writeShowLoop,
   getSlideAdvanceTime,
   elementSpid,
   getSlideAnimations,
@@ -3907,6 +3909,21 @@ export function registerSlidesIpc(): void {
   // Transitions tab 声音 playback: synthesized wav bytes of the current page's preset
   // Transitions tab 声音 playback: bytes of the embedded media part (presets
   // AND custom imports); synthesized fallback covers legacy pre-embed presets
+  // 放映设置 (presProps p:showPr): 循环放映
+  ipcMain.handle('slides:get-show-settings', (e) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return { loop: false }
+    return { loop: readShowLoop(session.opened.archive) }
+  })
+
+  ipcMain.handle('slides:set-show-settings', (e, settings: { loop: boolean }) => {
+    const session = sessions.get(e.sender.id)
+    if (!session) return false
+    writeShowLoop(session.opened.archive, settings.loop === true)
+    session.metaDirty = true
+    return true
+  })
+
   ipcMain.handle('slides:get-transition-sound', (e, slideIndex: number) => {
     const session = sessions.get(e.sender.id)
     const slide = session?.opened.deck.slides[slideIndex]

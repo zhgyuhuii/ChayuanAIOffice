@@ -306,6 +306,9 @@ const api: SlidesApi = {
     ipcRenderer.invoke('slides:get-transition-spec', slideIndex),
   getTransitionSound: (slideIndex: number) =>
     ipcRenderer.invoke('slides:get-transition-sound', slideIndex),
+  getShowSettings: () => ipcRenderer.invoke('slides:get-show-settings'),
+  setShowSettings: (settings: { loop: boolean }) =>
+    ipcRenderer.invoke('slides:set-show-settings', settings),
   setAdvanceTimes: (op: SetAdvanceTimesOp) => ipcRenderer.invoke('slides:set-advance-times', op),
   getAdvanceTime: (slideIndex: number) => ipcRenderer.invoke('slides:get-advance-time', slideIndex),
   getAnimations: (slideIndex: number) => ipcRenderer.invoke('slides:get-animations', slideIndex),

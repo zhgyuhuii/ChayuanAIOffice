@@ -1571,6 +1571,33 @@ export function App() {
   )
 
   // 公共图表设计器(39 组;标准组走原生 chart 链,扩展组落 echart 图片+sidecar)
+  const chartDesignerEditRef = useRef<{
+    slideIndex: number
+    elementId: string
+    code?: string
+    title?: string
+    groupId: string
+  } | null>(null)
+  // 双击 echart 海报图 → 读 sidecar → 设计器带源码回显(编辑不丢)
+  const openEchartEditor = useCallback(
+    (sourceId: string) => {
+      void window.slidesApi
+        .getEchart({ slideIndex: current, elementId: sourceId })
+        .then((d) => {
+          if (!d) return
+          chartDesignerEditRef.current = {
+            slideIndex: current,
+            elementId: d.elementId,
+            ...(d.code ? { code: d.code } : {}),
+            ...(d.title ? { title: d.title } : {}),
+            groupId: d.groupId,
+          }
+          setChartDesignerOpen(true)
+        })
+        .catch(() => undefined)
+    },
+    [current],
+  )
   const [chartDesignerOpen, setChartDesignerOpen] = useState(false)
   const openChartDesigner = useCallback(() => setChartDesignerOpen(true), [])
   const insertFromChartDesigner = useCallback(async (payload: ChartDesignerInsert) => {
@@ -1588,6 +1615,26 @@ export function App() {
       doughnut: 'doughnut',
       radar: 'radar',
       combo: 'comboBarLine',
+    }
+    // 双击回显的编辑提交:原位重写 sidecar+海报字节(几何不动)
+    const editTarget = chartDesignerEditRef.current
+    if (editTarget && payload.snapshotPng) {
+      const m = /^data:[^;]+;base64,([\s\S]*)$/.exec(payload.snapshotPng)
+      if (m) {
+        const r = await window.slidesApi.updateEchart({
+          slideIndex: editTarget.slideIndex,
+          elementId: editTarget.elementId,
+          base64: m[1],
+          optionJson: payload.optionJson,
+          code: payload.code ?? undefined,
+          title: payload.title ?? undefined,
+          ...(payload.data ? { data: payload.data } : {}),
+        })
+        if (r && r.slide) ctx.applySlide(editTarget.slideIndex, r.slide)
+        chartDesignerEditRef.current = null
+        setChartDesignerOpen(false)
+        return
+      }
     }
     const flatInput = payload.data ?? null
     const nativeKind = payload.spec
@@ -1744,6 +1791,25 @@ export function App() {
     },
     [current],
   )
+
+  /** 放映设置 (presProps p:showPr): 循环放映 echo + toggle */
+  const [showLoop, setShowLoopState] = useState(false)
+  useEffect(() => {
+    if (!hasDoc) {
+      setShowLoopState(false)
+      return
+    }
+    void window.slidesApi
+      .getShowSettings()
+      .then((s) => setShowLoopState(!!s?.loop))
+      .catch(() => {})
+  }, [hasDoc, path])
+  const setShowLoop = useCallback((v: boolean) => {
+    setShowLoopState(v) // optimistic
+    void window.slidesApi.setShowSettings({ loop: v }).then((ok) => {
+      if (ok) setDirty(true)
+    })
+  }, [])
 
   const applyTransition = useCallback(
     (kind: TransitionKind, allSlides: boolean) =>
@@ -3189,7 +3255,10 @@ export function App() {
       {chartDesignerOpen && (
         <ChartDesignerModal
           lang="zh-CN"
-          onClose={() => setChartDesignerOpen(false)}
+          onClose={() => {
+            chartDesignerEditRef.current = null
+            setChartDesignerOpen(false)
+          }}
           onInsert={(payload) => void insertFromChartDesigner(payload)}
         />
       )}
@@ -3401,6 +3470,8 @@ export function App() {
             animCount={animations.length}
             animBrush={animBrush}
             onToggleAnimBrush={toggleAnimBrush}
+            showLoop={showLoop}
+            onSetShowLoop={setShowLoop}
             onAnimPreview={() => setAnimPreview((n) => n + 1)}
             onSlideShow={startShowFromRibbon}
             onPresenterView={startPresenterView}
@@ -4076,6 +4147,7 @@ export function App() {
                               }}
                             >
                               <SlideCanvas
+                                onOpenEchart={openEchartEditor}
                                 slide={slide}
                                 selectedIds={selectedIds}
                                 onSelect={handleCanvasSelect}
@@ -4551,6 +4623,7 @@ export function App() {
           displayId={showDisplayId}
           onRehearseDone={onRehearseDone}
           countdown={slideShow.countdown}
+          loop={showLoop}
           onExit={exitSlideShow}
         />
       )}

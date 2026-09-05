@@ -1718,6 +1718,8 @@ export function Ribbon({
   animCount,
   animBrush,
   onToggleAnimBrush,
+  showLoop,
+  onSetShowLoop,
   onAnimPreview,
   onSlideShow,
   onPresenterView,
@@ -1890,6 +1892,8 @@ export function Ribbon({
   const [insertDrop, setInsertDrop] = useState<
     'shapes' | 'icons' | 'chart' | 'smartart' | 'wordart' | 'zoom' | 'addanim' | 'rehearse' | null
   >(null)
+  // 放映设置⌄ dropdown (show tab)
+  const [showSettingsOpen, setShowSettingsOpen] = useState(false)
   // Chart design: dropdown panels (add chart element / change colors, at most one open at a time)
   const [chartDrop, setChartDrop] = useState<'elements' | 'colors' | null>(null)
   // Draw tab pen gallery: per-preset customisations live for the session;
@@ -3180,7 +3184,39 @@ export function Ribbon({
             </Group>
             <div className="ribbon-sep" />
             <Group label={t('ribbonGroupSetUp')}>
-              <DisabledBig icon={<IconSetupShow size={BIG} />} label={t('ribbonSetUpShow')} />
+              {/* 放映设置⌄ (WPS 放映 #5): 循环放映真实写盘（presProps p:showPr） */}
+              <div className="rb-drop-wrap">
+                <button
+                  className={`rb-big ${showSettingsOpen ? 'active' : ''}`}
+                  disabled={!hasDoc}
+                  data-tip={t('ribbonShowSettingsTip')}
+                  onMouseDown={(e) => {
+                    e.stopPropagation()
+                    closeSiblingPanels(e, closePanels, 'slideShow')
+                  }}
+                  onClick={() => setShowSettingsOpen((v) => !v)}
+                >
+                  <span className="rb-big-icon">
+                    <IconSetupShow size={BIG} />
+                    <RbCaret />
+                  </span>
+                  <span>{t('ribbonShowSettings')}</span>
+                </button>
+                {showSettingsOpen && (
+                  <div className="rb-drop rb-menu" onMouseDown={(e) => e.stopPropagation()}>
+                    <button
+                      className={showLoop ? 'active' : ''}
+                      onClick={() => {
+                        onSetShowLoop(!showLoop)
+                        setShowSettingsOpen(false)
+                      }}
+                    >
+                      {showLoop ? '✓ ' : ''}
+                      {t('ribbonShowLoop')}
+                    </button>
+                  </div>
+                )}
+              </div>
               <button
                 className={`rb-big ${currentHidden ? 'active' : ''}`}
                 disabled={!hasDoc}

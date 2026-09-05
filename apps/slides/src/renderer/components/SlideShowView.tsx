@@ -77,6 +77,7 @@ export function SlideShowView({
   displayId,
   onRehearseDone,
   countdown,
+  loop,
 }: {
   slides: RenderSlide[]
   images: Map<string, HTMLImageElement>
@@ -94,6 +95,8 @@ export function SlideShowView({
   onRehearseDone?: (perPageSec: number[]) => void
   /** WPS 倒计时: corner countdown (start timestamp + total duration) */
   countdown?: { start: number; totalMs: number }
+  /** 放映设置·循环放映 (presProps p:showPr loop): the show restarts when it ends */
+  loop?: boolean
 }) {
   const { t } = useI18n()
   /** WPS 倒计时: remaining ms, ticking once a second; null when no countdown */
@@ -378,14 +381,25 @@ export function SlideShowView({
 
   const next = useCallback(() => {
     if (ended) {
+      if (loop) {
+        // 循环放映: restart from the first page instead of exiting
+        setEnded(false)
+        setPos(0)
+        return
+      }
       exitRef.current()
       return
     }
     // Advance in-page animations first; turn the page only when this page's animations are done
     if (player.advance()) return
-    if (pos >= order.length - 1) setEnded(true)
-    else goTo(pos + 1, true)
-  }, [ended, pos, order.length, goTo, player.advance]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (pos >= order.length - 1) {
+      if (loop) {
+        goTo(0, true)
+        return
+      }
+      setEnded(true)
+    } else goTo(pos + 1, true)
+  }, [ended, loop, pos, order.length, goTo, player.advance]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const prev = useCallback(() => {
     if (ended) {
