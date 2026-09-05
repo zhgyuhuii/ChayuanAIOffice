@@ -3922,37 +3922,62 @@ function Ribbon({
         />
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')}>
-        <div className="styles-stack">
-          <div className="styles-row as-button" data-tip={t('appConditionalFormatting')}>
-            <ToolSymbol symbol="▤" />
-            {t('appConditionalFormatting')}
-            <CaretIcon />
+        {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：2×2 大钮网格 */}
+        <div className="style-big-grid">
+          <div className="ribbon-tool large as-button" data-tip={t('appConditionalFormatting')}>
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="▤" />
+              <CaretIcon />
+            </span>
+            <span>
+              <strong>{t('appConditionalFormatting')}</strong>
+            </span>
             <CondFormatSelect
               label={t('appConditionalFormatting')}
               data-tip={t('appConditionalFormatting')}
               onCommand={onCommand}
             />
           </div>
-          <div className="styles-row as-button" data-tip={t('appFormatAsTableTitle')}>
-            <ToolSymbol symbol="▦" />
-            {t('appFormatAsTable')}
-            <CaretIcon />
+          <div className="ribbon-tool large as-button" data-tip={t('appFormatAsTableTitle')}>
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="▦" />
+              <CaretIcon />
+            </span>
+            <span>
+              <strong>{t('appFormatAsTable')}</strong>
+            </span>
             <TableStyleGallerySelect
               label={t('appFormatAsTable')}
               data-tip={t('appFormatAsTableTitle')}
               onPick={(value) => onCommand(`format-as-table:${value}`)}
             />
           </div>
-          <div className="styles-row as-button" data-tip={t('appCellStylesTitle')}>
-            <ToolSymbol symbol="🎨" />
-            {t('appCellStyles')}
-            <CaretIcon />
+          <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="🎨" />
+              <CaretIcon />
+            </span>
+            <span>
+              <strong>{t('appCellStyles')}</strong>
+            </span>
             <CellStyleSelect
               label={t('appCellStyles')}
               data-tip={t('appCellStylesTitle')}
               onPick={(value) => onCommand(`cell-style:${value}`)}
             />
           </div>
+          <button
+            className="ribbon-tool large as-button"
+            data-tip={t('appRefreshHintIn')}
+            onClick={() => onRefreshPivot()}
+          >
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="▩" />
+            </span>
+            <span>
+              <strong>{t('appPivotTable')}</strong>
+            </span>
+          </button>
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupCells')}>
@@ -4015,18 +4040,38 @@ function Ribbon({
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupEditing')}>
-        <div className="ribbon-rows">
-          <div className="inline-tools">
-            {/* WPS 开始·编辑组对齐：求和Σ⌄ · 填充⌄ · 排序⌄ · 筛选⌄ · 冻结⌄ · 查找⌄ · 清除⌄ */}
+        {/* WPS 编辑组布局（CT_Home.kuip RB_Editing）：填充大钮⌄ + 求和大钮⌄ +
+            排序/筛选、冻结/查找、清除 双列小钮栈 */}
+        <div className="edit-big-row">
+          <div className="ribbon-tool large as-button" data-tip={t('appFillMenu')}>
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="↓" />
+              <CaretIcon />
+            </span>
+            <span>
+              <strong>{t('appFillMenu')}</strong>
+            </span>
             <MenuSelect
-              className="select-like compact"
+              cover
+              label="Fill"
+              options={[
+                { value: 'down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
+                { value: 'right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
+              ]}
+              onPick={(value) => onCommand(`fill-${value}`)}
+            />
+          </div>
+          <div className="ribbon-tool large as-button" data-tip={t('appAutoSumTitle')}>
+            <span className="tool-icon-row">
+              <ToolSymbol symbol="Σ" />
+              <CaretIcon />
+            </span>
+            <span>
+              <strong>{t('appAutoSum')}</strong>
+            </span>
+            <MenuSelect
+              cover
               label="AutoSum"
-              data-tip={t('appAutoSumTitle')}
-              display={
-                <>
-                  <ToolSymbol symbol="Σ" /> {t('appAutoSum')}
-                </>
-              }
               options={[
                 { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
                 {
@@ -4049,123 +4094,110 @@ function Ribbon({
               ]}
               onPick={(value) => onCommand(value)}
             />
-            <MenuSelect
-              className="select-like compact"
-              label="Fill"
-              data-tip={t('appFillMenu')}
-              display={
-                <>
-                  <ToolSymbol symbol="↓" /> {t('appFillMenu')}
-                </>
-              }
-              options={[
-                { value: 'down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
-                { value: 'right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
-              ]}
-              onPick={(value) => onCommand(`fill-${value}`)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Sort"
-              data-tip={t('appSortSelectionTitle')}
-              display={
-                <>
-                  <ToolSymbol symbol="⇅" /> {t('appSort')}
-                </>
-              }
-              options={[
-                { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
-                { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
-                {
-                  value: 'sort-custom-open',
-                  label: t('appCustomSort'),
-                  icon: <OptSample>⚙</OptSample>,
-                },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Filter"
-              data-tip={t('appFilterToggleDetail')}
-              display={
-                <>
-                  <ToolSymbol symbol="▽" /> {t('appFilter')}
-                </>
-              }
-              options={[
-                { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
-                { value: 'filter-clear', label: t('appClear'), icon: <OptSample>⊘</OptSample> },
-                { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Freeze"
-              data-tip={t('appFreezeTitle')}
-              display={
-                <>
-                  <ToolSymbol symbol="❄" /> {t('appFreezePanes')}
-                </>
-              }
-              options={[
-                {
-                  value: 'freeze-here',
-                  label: t('appFreezeAtSelection'),
-                  icon: <FreezeGlyph mode="cross" />,
-                },
-                {
-                  value: 'freeze-top-row',
-                  label: t('appFreezeTopRow'),
-                  icon: <FreezeGlyph mode="row" />,
-                },
-                {
-                  value: 'freeze-first-col',
-                  label: t('appFreezeFirstCol'),
-                  icon: <FreezeGlyph mode="col" />,
-                },
-                { value: 'unfreeze', label: t('appUnfreeze'), icon: <FreezeGlyph mode="none" /> },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Find"
-              data-tip={t('appFindTitle')}
-              display={
-                <>
-                  <ToolSymbol symbol="🔍" /> {t('appFind')}
-                </>
-              }
-              options={[
-                { value: 'find', label: t('appFind'), icon: <OptSample>🔍</OptSample> },
-                { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
-                { value: 'goto-open', label: `${t('appGoTo')} ⌘G`, icon: <OptSample>⌖</OptSample> },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-            <MenuSelect
-              className="select-like compact"
-              label="Clear"
-              data-tip={t('appClear')}
-              display={
-                <>
-                  <ToolSymbol symbol="⌫" /> {t('appClear')}
-                </>
-              }
-              options={[
-                { value: 'all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
-                { value: 'formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
-                {
-                  value: 'contents',
-                  label: t('appClearContents'),
-                  icon: <OptSample>123</OptSample>,
-                },
-              ]}
-              onPick={(value) => onCommand(`clear-${value}`)}
-            />
           </div>
+        </div>
+        <div className="edit-mini-grid">
+          <MenuSelect
+            className="select-like compact"
+            label="Sort"
+            data-tip={t('appSortSelectionTitle')}
+            display={
+              <>
+                <ToolSymbol symbol="⇅" /> {t('appSort')}
+              </>
+            }
+            options={[
+              { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
+              { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
+              {
+                value: 'sort-custom-open',
+                label: t('appCustomSort'),
+                icon: <OptSample>⚙</OptSample>,
+              },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label="Filter"
+            data-tip={t('appFilterToggleDetail')}
+            display={
+              <>
+                <ToolSymbol symbol="▽" /> {t('appFilter')}
+              </>
+            }
+            options={[
+              { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
+              { value: 'filter-clear', label: t('appClear'), icon: <OptSample>⊘</OptSample> },
+              { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label="Freeze"
+            data-tip={t('appFreezeTitle')}
+            display={
+              <>
+                <ToolSymbol symbol="❄" /> {t('appFreezePanes')}
+              </>
+            }
+            options={[
+              {
+                value: 'freeze-here',
+                label: t('appFreezeAtSelection'),
+                icon: <FreezeGlyph mode="cross" />,
+              },
+              {
+                value: 'freeze-top-row',
+                label: t('appFreezeTopRow'),
+                icon: <FreezeGlyph mode="row" />,
+              },
+              {
+                value: 'freeze-first-col',
+                label: t('appFreezeFirstCol'),
+                icon: <FreezeGlyph mode="col" />,
+              },
+              { value: 'unfreeze', label: t('appUnfreeze'), icon: <FreezeGlyph mode="none" /> },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label="Find"
+            data-tip={t('appFindTitle')}
+            display={
+              <>
+                <ToolSymbol symbol="🔍" /> {t('appFind')}
+              </>
+            }
+            options={[
+              { value: 'find', label: t('appFind'), icon: <OptSample>🔍</OptSample> },
+              { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
+              { value: 'goto-open', label: `${t('appGoTo')} ⌘G`, icon: <OptSample>⌖</OptSample> },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact"
+            label="Clear"
+            data-tip={t('appClear')}
+            display={
+              <>
+                <ToolSymbol symbol="⌫" /> {t('appClear')}
+              </>
+            }
+            options={[
+              { value: 'all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
+              { value: 'formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
+              {
+                value: 'contents',
+                label: t('appClearContents'),
+                icon: <OptSample>123</OptSample>,
+              },
+            ]}
+            onPick={(value) => onCommand(`clear-${value}`)}
+          />
         </div>
       </RibbonGroup>
     </div>
