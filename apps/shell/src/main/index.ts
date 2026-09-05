@@ -2400,15 +2400,12 @@ function createShellWindow(): void {
     minWidth: 980,
     minHeight: 600,
     title: 'ChatOffice',
-    // 非 macOS：隐藏系统标题栏（自绘最小化/最大化/关闭，位于 tab 条右侧）
-    ...(process.platform === 'darwin'
-      ? {}
-      : { titleBarStyle: 'hidden' as const, autoHideMenuBar: true }),
+    // 全平台隐藏系统标题栏（自绘最小化/最大化/关闭：mac 左侧、win 右侧，位于 tab 条内）
+    titleBarStyle: 'hidden' as const,
+    autoHideMenuBar: true,
     // vibrancy: editor modules punch translucent regions (e.g. the slides
     // thumbnail pane) through to the desktop
-    ...(process.platform === 'darwin'
-      ? { titleBarStyle: 'hiddenInset' as const, vibrancy: 'sidebar' as const }
-      : {}),
+    ...(process.platform === 'darwin' ? { vibrancy: 'sidebar' as const } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -3480,17 +3477,35 @@ function registerWindowControlsIpc(): void {
   ipcMain.handle(WINDOW_CHANNELS.isMaximized, () =>
     Boolean(shellWindow && !shellWindow.isDestroyed() && shellWindow.isMaximized()),
   )
+  // maximize 状态变化 → tab 条按钮图标切换（还原/最大化 glyph）
   const broadcastMaximized = (maximized: boolean): void => {
-    for (const view of BrowserWindow.getAllWindows()) {
-      for (const wc of BrowserWindow.getAllWindows().map((w) => w.webContents)) {
-        if (!wc.isDestroyed()) wc.send(WINDOW_CHANNELS.maximizeChanged, maximized)
-      }
+    for (const win of BrowserWindow.getAllWindows()) {
+      if (!win.isDestroyed()) win.webContents.send(WINDOW_CHANNELS.maximizeChanged, maximized)
     }
   }
   app.on('browser-window-created', (_event, win) => {
     win.on('maximize', () => broadcastMaximized(true))
     win.on('unmaximize', () => broadcastMaximized(false))
   })
+  if (process.env.CHATOFFICE_MENU_DEBUG) {
+    console.log('[wc-debug] ipc registered')
+    // 无屏/自动化环境下的窗口真值端点（仅调试用，只读）
+    void import('node:http').then(({ default: http }) => {
+      http
+        .createServer((_req, res) => {
+          res.setHeader('content-type', 'application/json')
+          res.end(
+            JSON.stringify({
+              has: !!shellWindow && !shellWindow.isDestroyed(),
+              minimized: shellWindow?.isMinimized() ?? null,
+              maximized: shellWindow?.isMaximized() ?? null,
+              bounds: shellWindow?.getBounds() ?? null,
+            }),
+          )
+        })
+        .listen(5278)
+    })
+  }
 }
 
 function registerTabsIpc(): void {
@@ -4427,6 +4442,7 @@ registerProjectIpc()
 registerDocsIpc()
 registerHomeIpc()
 registerTabsIpc()
+registerWindowControlsIpc()
 registerDroppedFilesIpc()
 registerRemoteFilesIpc()
 

@@ -410,7 +410,8 @@ const tabsApi: TabsApi = {
 }
 
 const windowControlsApi: WindowControlsApi = {
-  controls: process.platform === 'win32' || process.platform === 'linux',
+  // 桌面全平台自绘窗口控制；web/dsh 无 preload 自然没有
+  controls: true,
   platform: process.platform,
   minimize: () => ipcRenderer.send(WINDOW_CHANNELS.minimize),
   toggleMaximize: () => ipcRenderer.send(WINDOW_CHANNELS.toggleMaximize),

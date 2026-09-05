@@ -29,19 +29,16 @@ html.chatoffice-popover-open .tab-bar {
    there: the Windows shell keeps its native title bar and the web build has
    no overlay, so the strip hugs the window's left edge. main.tsx adds the
    body class only when running inside the mac Electron shell. */
+/* 红绿灯已移除，spacer 让位给左侧自绘控制按钮；保持显式可拖（空档区拖窗） */
 .tab-bar-drag-spacer {
-  display: none;
-}
-
-body.mac-inset .tab-bar-drag-spacer {
-  display: block;
-  width: 78px;
+  -webkit-app-region: drag;
   flex-shrink: 0;
 }
 
 /* scrollable middle section; empty space stays part of the window drag region.
  * Horizontal padding keeps the edge tabs' feet inside the scroll clip. */
 .tab-strip {
+  -webkit-app-region: drag;
   display: flex;
   align-items: stretch;
   flex: 1 1 auto;
@@ -414,7 +411,6 @@ html.chatoffice-shell-modal .app-frame-content.doc-active {
   -webkit-app-region: no-drag;
   display: flex;
   align-items: stretch;
-  margin-left: auto;
   height: 100%;
 }
 .win-control-btn {
@@ -435,4 +431,23 @@ html.chatoffice-shell-modal .app-frame-content.doc-active {
 .win-control-close:hover {
   background: #e81123;
   color: #fff;
+}
+
+/* 自绘窗口控制：mac 在左（贴 12px 内边距）、win 在右（贴边） */
+.win-controls.side-left {
+  margin-left: 0;
+  padding-left: 12px;
+}
+.win-controls.side-right {
+  margin-left: auto;
+  padding-right: 2px;
+}
+.win-controls.side-left .win-control-btn,
+.win-controls.side-right .win-control-btn {
+  width: 30px;
+  border-radius: 6px;
+}
+.win-controls.side-left .win-control-close:hover,
+.win-controls.side-right .win-control-close:hover {
+  background: #e81123;
 }
