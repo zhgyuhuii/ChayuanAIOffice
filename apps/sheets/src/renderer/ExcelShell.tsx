@@ -3750,16 +3750,40 @@ function Ribbon({
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupNumber')}>
-        <div className="ribbon-rows">
-          <NumberFormatSelect pattern={selectionFormat?.numberFormat ?? ''} onCommand={onCommand} />
-          <div className="inline-tools">
-            <button
+        {/* WPS 数字组布局（CT_Home.kuip RB_Number）：行1=格式框+转换⌄，
+            行2=货币/会计⌄ % 千分位 增小数 减小数 快捷图标，紧凑无缝 */}
+        <div className="ribbon-rows num-compact">
+          <div className="num-row1">
+            <NumberFormatSelect
+              pattern={selectionFormat?.numberFormat ?? ''}
+              onCommand={onCommand}
+            />
+            <ConvertMenuSelect data-tip={t('appConvertMenu')} onCommand={onCommand} />
+          </div>
+          <div className="inline-tools num-quick">
+            <MenuSelect
+              className="select-like compact"
+              label="Accounting"
               data-tip={t('appCurrency')}
-              aria-label={t('appCurrency')}
-              onClick={() => onCommand('format:$#,##0.00')}
-            >
-              $
-            </button>
+              display={
+                <>
+                  <ToolSymbol symbol="💰" /> ⌄
+                </>
+              }
+              options={[
+                {
+                  value: 'format:$#,##0.00',
+                  label: t('appCurrency'),
+                  icon: <OptSample>$</OptSample>,
+                },
+                {
+                  value: 'format:"¥"#,##0.00',
+                  label: t('appRmbAccounting'),
+                  icon: <OptSample>¥</OptSample>,
+                },
+              ]}
+              onPick={(value) => onCommand(value)}
+            />
             <button
               data-tip={t('appPercentTitle')}
               aria-label={t('appPercentTitle')}
@@ -3788,8 +3812,6 @@ function Ribbon({
             >
               .0−
             </button>
-            {/* WPS 数字组 转换⌄ (B6) */}
-            <ConvertMenuSelect data-tip={t('appConvertMenu')} onCommand={onCommand} />
           </div>
         </div>
       </RibbonGroup>

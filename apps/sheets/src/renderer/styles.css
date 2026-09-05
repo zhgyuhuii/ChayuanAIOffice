@@ -5608,6 +5608,22 @@ textarea:focus {
   padding: 1px 4px;
 }
 
+/* WPS 数字组（RB_Number）：行1=格式框+转换⌄，行2=快捷图标列；组内零缝隙 */
+.num-compact {
+  gap: 2px;
+}
+
+.num-row1 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 快捷图标行：与 WPS 一致的贴身排布（无额外间距），图标即按钮 */
+.num-quick {
+  gap: 1px;
+}
+
 /* WPS 编辑组（CT_Home.kuip RB_Editing）：大钮横排 + 双列小钮栈 */
 .edit-big-row {
   display: flex;
