@@ -50,6 +50,8 @@
     "dist:chatop": "node scripts/dist-chatop.mjs"
   },
   "dependencies": {
+    "opencc-js": "^1.4.2",
+    "pinyin-pro": "^3.29.3",
     "ws": "^8.21.1"
   },
   "overrides": {
