@@ -97,7 +97,8 @@ import {
 } from './color-runs'
 import type { CharStyle } from './color-runs'
 import { platformShortcuts } from '@chatoffice/i18n'
-import { Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import { AiPanelToggle, DockShell, Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import '@chatoffice/ui/dock.css'
 import { useI18n } from './i18n/locale'
 import { useAutosave } from './useAutosave'
 import type {
@@ -6331,29 +6332,34 @@ export default function App() {
           if (f) void onImageFilePicked(f)
         }}
       />
-      <div className="app-main">
-        {/* dock wrapper animates the width between panel and rail (docs-style 180ms ease);
-            the panel stays mounted while collapsed so the chat history survives */}
-        <div className={`ai-dock${aiCollapsed ? ' collapsed' : ''}`}>
-          {aiCollapsed && (
-            <button
-              className="ai-rail"
-              data-tip={t('aiOpenAssistant')}
-              aria-label={t('aiOpenAssistant')}
-              onClick={() => setAiCollapsed(false)}
-            >
-              <ChatOfficeMark size={22} />
-            </button>
-          )}
+      <DockShell
+        className="app-main"
+        storageKey="aipdf.dock"
+        legacyWidthKey="pdf-ai-panel-width"
+        open={!aiCollapsed}
+        onOpenChange={(open) => setAiCollapsed(!open)}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapsePanel'),
+        }}
+        renderPanel={(dockChrome) => (
           <AiPanel
             api={aiApi}
             filePath={filePath}
             preset={aiPreset}
-            onCollapse={() => setAiCollapsed(true)}
+            dockChrome={dockChrome}
             onRunDone={() => void autoSaveAfterAiRun()}
             onClearSelection={() => setAiSelection(null)}
           />
-        </div>
+        )}
+      >
         <div className="app-content">
           <div className="pdf-body">
             {sidebar === 'outline' && outline && (
@@ -8418,7 +8424,7 @@ export default function App() {
             </div>
           </footer>
         </div>
+    </DockShell>
       </div>
-    </div>
   )
 }

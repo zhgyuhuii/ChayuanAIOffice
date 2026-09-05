@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent, ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { AgentLoop } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import { AiComposer, AiTypingIndicator, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
+import type { DockChrome } from '@chatoffice/ui'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
@@ -68,6 +69,7 @@ type Phase = 'thinking' | 'replying' | 'working'
 export function AiPanel({
   api,
   filePath,
+  dockChrome,
   onCollapse,
   preset,
   onRunDone,
@@ -76,7 +78,10 @@ export function AiPanel({
   api: PdfAiDeps
   /** Absolute path of the open PDF (chat history is keyed to it) */
   filePath?: string
-  onCollapse: () => void
+  /** DockShell chrome (layout buttons + header drag) when hosted in the dock */
+  dockChrome?: DockChrome
+  /** collapse handler for the non-dock fallback header button */
+  onCollapse?: () => void
   /** Ribbon AI buttons push a one-shot prompt; a new nonce triggers an auto-run */
   preset?: { text: string; nonce: number } | null
   /** Fired when a run that mutated the document finishes (drives the untitled-blank auto-save) */
@@ -222,20 +227,7 @@ export function AiPanel({
         /* silent */
       })
   }, [filePath])
-  // preferred = the user's chosen width (the only value persisted); panelWidth =
-  // what fits the current window. Deriving the display width from the preference
-  // means a transiently small window never permanently shrinks the panel.
-  const preferredWidthRef = useRef(loadPanelWidth())
-  const [panelWidth, setPanelWidth] = useState(() => clampPanelWidth(preferredWidthRef.current))
-  const [resizing, setResizing] = useState(false)
-  const asideRef = useRef<HTMLElement>(null)
 
-  // The .ai-dock wrapper owns the animated width (docs-style 180ms slide);
-  // it tracks the resizable panel width through this variable
-  useEffect(() => {
-    const dock = asideRef.current?.closest('.ai-dock') as HTMLElement | null
-    dock?.style.setProperty('--ai-panel-width', `${panelWidth}px`)
-  }, [panelWidth])
   const settingsRef = useRef<AiSettingsV2 | null>(null)
   const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
@@ -481,52 +473,6 @@ export function AiPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per nonce
   }, [preset?.nonce])
 
-  // Re-derive the display width on window resize (max is 60% of the window);
-  // growing the window back restores the preferred width
-  useEffect(() => {
-    const onResize = (): void => setPanelWidth(clampPanelWidth(preferredWidthRef.current))
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  const resizeCleanupRef = useRef<(() => void) | null>(null)
-  useEffect(() => () => resizeCleanupRef.current?.(), [])
-
-  /** Drag the right edge to resize: the panel is flush with the window's left edge, so width = clientX */
-  const startResize = (e: ReactPointerEvent<HTMLDivElement>): void => {
-    e.preventDefault()
-    const resizer = e.currentTarget
-    setResizing(true)
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-    const onMove = (ev: PointerEvent): void => {
-      const w = clampPanelWidth(ev.clientX)
-      preferredWidthRef.current = w
-      setPanelWidth(w)
-    }
-    let done = false
-    const cleanup = (): void => {
-      if (done) return
-      done = true
-      resizeCleanupRef.current = null
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', cleanup)
-      window.removeEventListener('pointercancel', cleanup)
-      resizer.removeEventListener('lostpointercapture', cleanup)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setResizing(false)
-      localStorage.setItem(PANEL_WIDTH_KEY, String(Math.round(preferredWidthRef.current)))
-    }
-    resizeCleanupRef.current = cleanup
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', cleanup)
-    window.addEventListener('pointercancel', cleanup)
-    // lostpointercapture also fires if the resizer is unmounted mid-drag (panel collapse)
-    resizer.addEventListener('lostpointercapture', cleanup)
-    resizer.setPointerCapture(e.pointerId)
-  }
-
   const typingLabel =
     phase === 'replying' ? t('aiReplying') : phase === 'working' ? t('aiWorking') : t('aiThinking')
 
@@ -549,23 +495,12 @@ export function AiPanel({
   }
 
   return (
-    <aside
-      ref={asideRef}
-      className={`copilot${resizing ? ' ai-panel-resizing' : ''}`}
-      style={{ width: '100%' }}
-    >
-      <div
-        className="ai-panel-resizer"
-        onPointerDown={startResize}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="ChatOffice"
-      />
-      <header className="ai-panel-header">
-        <span className="ai-panel-title">
-          <ChatOfficeMark size={22} />
-          ChatOffice
-        </span>
+    <aside className="copilot" style={{ width: '100%' }}>
+      <header
+        className="ai-panel-header"
+        {...(dockChrome ? { ...dockChrome.dragProps, style: { cursor: 'grab' } } : {})}
+      >
+        <span className="ai-panel-title">{t('aiPanelTitle')}</span>
         <div className="ai-panel-header-actions">
           <ModelPickerButton
             settings={panelSettings}
@@ -589,14 +524,17 @@ export function AiPanel({
               <IconNewChat />
             </button>
           )}
-          <button
-            className="ai-header-btn"
-            onClick={onCollapse}
-            data-tip={t('aiCollapsePanel')}
-            aria-label={t('aiCollapsePanel')}
-          >
-            <IconCollapse />
-          </button>
+          {dockChrome?.buttons}
+          {!dockChrome && (
+            <button
+              className="ai-header-btn"
+              onClick={() => onCollapse?.()}
+              data-tip={t('aiCollapsePanel')}
+              aria-label={t('aiCollapsePanel')}
+            >
+              <IconCollapse />
+            </button>
+          )}
         </div>
       </header>
 
