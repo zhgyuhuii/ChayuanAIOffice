@@ -117,12 +117,21 @@ export function sectionSettingsFromXml(xml: string): SectionSettings {
     ...(/<w:bidi\s*\/>/.test(xml) ? { bidi: true } : {}),
     ...(docGrid ? { docGrid } : {}),
     ...(textDirectionOf(xml) ? { textDirection: textDirectionOf(xml) } : {}),
+    ...(hasLineNumbers(xml) ? { lineNumbers: true } : {}),
   }
 }
 
 function textDirectionOf(xml: string): string | undefined {
   const val = /<w:textDirection[^>]*w:val="([^"]+)"/.exec(xml)?.[1]
   return val && val !== 'lrTb' ? val : undefined
+}
+
+/** 行号 (w:lnNumType): present and not explicitly off counts as on */
+function hasLineNumbers(xml: string): boolean {
+  const tag = /<w:lnNumType\b[^>]*\/>/.exec(xml)?.[0]
+  if (!tag) return false
+  const val = /w:val="([^"]*)"/.exec(tag)?.[1]
+  return val !== '0' && val !== 'false'
 }
 
 /** Read page setup from the trailing (hidden) w:sectPr. */
@@ -336,6 +345,20 @@ export function applySectionSettings(sectPrXml: string, settings: SectionSetting
       else xml = xml.replace(/<\/w:sectPr>/, '<w:bidi/></w:sectPr>')
     } else if (!settings.bidi && hasBidi) {
       xml = xml.replace(/<w:bidi\s*\/>/, '')
+    }
+  }
+
+  // 行号 (w:lnNumType, CT_SectPr order before w:bidi... placed before bidi/docGrid
+  // region reads): undefined = keep untouched; true = countBy 1 restart newPage,
+  // false = remove. PowerPoint-style single flag matches WPS's 行号 on/off.
+  if (settings.lineNumbers !== undefined) {
+    xml = xml.replace(/<w:lnNumType\b[^>]*\/>/, '')
+    if (settings.lineNumbers) {
+      const tag = '<w:lnNumType w:countBy="1" w:restart="newPage"/>'
+      if (/<w:pgBorders[\s\S]*?<\/w:pgBorders>/.test(xml))
+        xml = xml.replace(/(<w:pgBorders[\s\S]*?<\/w:pgBorders>)/, `$1${tag}`)
+      else if (/<w:pgMar[^>]*\/>/.test(xml)) xml = xml.replace(/(<w:pgMar[^>]*\/>)/, `$1${tag}`)
+      else xml = xml.replace(/(<w:sectPr[^>]*>)/, `$1${tag}`)
     }
   }
   return xml

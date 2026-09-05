@@ -418,6 +418,11 @@ export interface SectionSettings {
   docGrid?: DocGrid
   /** text flow direction (sectPr w:textDirection), e.g. tbRl = vertical CJK; absent = horizontal lrTb */
   textDirection?: string
+  /**
+   * line numbering (sectPr w:lnNumType countBy=1 restart=newPage): true = on,
+   * false = explicit off tag, undefined = leave untouched (round-trip safe)
+   */
+  lineNumbers?: boolean
 }
 
 /** One section: settings + start type + block ownership + header/footer refs (read-only enumeration; editing still goes through sectPr XML) */

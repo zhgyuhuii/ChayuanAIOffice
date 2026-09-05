@@ -6,6 +6,7 @@ import { useI18n, type StringKey } from '../i18n/locale'
 import {
   IconCaret,
   IconColumns,
+  IconLineNumber,
   IconMargins,
   IconOrientation,
   IconPageBreak,
@@ -467,6 +468,24 @@ export function LayoutTab({
                 </button>
               </div>
             )}
+          </div>
+          {/* 行号 (WPS 页面 #13): per-section w:lnNumType on/off */}
+          <div className="rb-split-wrap">
+            <button
+              className={`rb-big ${section?.lineNumbers ? 'active' : ''}`}
+              disabled={!enabled}
+              data-tip={t('ribbonLineNumberTip')}
+              onClick={() => {
+                if (!section) return
+                onSection({ ...section, lineNumbers: !section.lineNumbers })
+                setDropdown(() => null)
+              }}
+            >
+              <span className="rb-big-icon">
+                <IconLineNumber size={BIG} />
+              </span>
+              <span>{t('ribbonLineNumber')}</span>
+            </button>
           </div>
         </div>
         <div className="ribbon-group-label">

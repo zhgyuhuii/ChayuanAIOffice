@@ -886,6 +886,19 @@ export function IconPageSize(props: IconProps) {
   )
 }
 
+export function IconLineNumber(props: IconProps) {
+  return (
+    <Svg {...props}>
+      {/* 行号: numbers rail + text lines */}
+      <path
+        d="M 2.6 3.4 h 2.2 M 2.6 5.7 h 2.2 M 2.6 8 h 2.2 M 2.6 10.3 h 2.2 M 2.6 12.6 h 2.2"
+        strokeWidth="1"
+      />
+      <path d="M 6.4 3.45 h 6.9 M 6.4 5.73 h 6.9 M 6.4 8 h 6.9 M 6.4 10.27 h 6.9 M 6.4 12.55 h 6.9" />
+    </Svg>
+  )
+}
+
 export function IconColumns(props: IconProps) {
   return (
     <Svg {...props}>
