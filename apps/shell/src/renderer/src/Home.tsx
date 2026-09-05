@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement } from 'react'
-import iconDocx from './assets/file-docx.svg'
-import iconXlsx from './assets/file-xlsx.svg'
-import iconPptx from './assets/file-pptx.svg'
+import iconDocx from './assets/file-docx.png'
+import iconXlsx from './assets/file-xlsx.png'
+import iconPptx from './assets/file-pptx.png'
 import iconPdf from './assets/file-pdf.svg'
-import iconMd from './assets/file-md.svg'
+import iconMd from './assets/file-md.png'
 import type {
   AccountStatus,
   CloudProjectKind,
@@ -61,7 +61,9 @@ const OPEN_LOCAL_EXTENSIONS = '.docx / .xlsx / .xlsm / .xls / .csv / .pptx / .pd
 function FileBadge({ ext, size }: { ext: string; size: number }) {
   const icon = FILE_ICONS[ext]
   if (icon) {
-    return <img src={icon} width={size} height={size} alt="" aria-hidden="true" />
+    // the brand document icons are 162×211 (portrait sheet): scale by height
+    // and let the width follow the artwork's aspect ratio
+    return <img src={icon} style={{ height: size, width: 'auto' }} alt="" aria-hidden="true" />
   }
   const label = ext ? ext[0].toUpperCase() : '?'
   return (
@@ -153,6 +155,12 @@ interface ProjectPanelProps {
   onRefresh: () => void
   /** 新建任务: a project-owned chat session (P2 tree level 1→chat) */
   onCreateTask?: (id: string) => void
+  /**
+   * tree body of the selected project (its tasks + files, already indented by
+   * .proj-children) — rendered inside the project's row so the project name
+   * reads as the parent node of everything below it
+   */
+  renderChildren?: (id: string) => ReactElement | null
 }
 
 function ProjectPanel({
@@ -161,6 +169,7 @@ function ProjectPanel({
   onSelect,
   onRefresh,
   onCreateTask,
+  renderChildren,
 }: ProjectPanelProps) {
   const { t } = useI18n()
   const [creating, setCreating] = useState(false)
@@ -468,6 +477,9 @@ function ProjectPanel({
                     </div>
                   )}
                 </div>
+              )}
+              {isActive && renderChildren && (
+                <div className="proj-children">{renderChildren(proj.id)}</div>
               )}
             </li>
           )
@@ -1845,24 +1857,21 @@ export function Home() {
   }
 
   /** files of the selected project: tasks (project chats) first, then files
-   *  each with its attached chats — the tree's 项目→文件→对话 three levels */
+   *  each with its attached chats — the 项目→文件→对话 three levels. Rendered
+   *  INSIDE the selected project's row (ProjectPanel renderChildren) so the
+   *  children sit directly under the project name — no separate section head. */
   function renderProjectFiles() {
     if (!projectMode || !selectedProjectId) return null
-    const title = projects.find((p) => p.id === selectedProjectId)?.name ?? ''
     const tasks = visibleTreeSessions({ kind: 'project', id: selectedProjectId })
     return (
-      <div className="side-files proj-files">
-        <div className="side-files-head">
-          <span className="side-files-title">{title}</span>
-          <span className="side-files-count">
-            {t(fileCountKey(projectFileEntries.length), { n: projectFileEntries.length })}
-          </span>
-        </div>
+      <>
         {tasks.length > 0 && (
           <ul className="tree-chat-list">{tasks.map((s) => renderTreeChat(s, 'task'))}</ul>
         )}
         {projectFileEntries.length === 0 ? (
-          <p className="side-files-empty">{t('projEmptyHint')}</p>
+          tasks.length === 0 ? (
+            <p className="side-files-empty">{t('projEmptyHint')}</p>
+          ) : null
         ) : (
           <ul className="side-file-list">
             {projectFileEntries.map((entry) => (
@@ -1880,7 +1889,7 @@ export function Home() {
             ))}
           </ul>
         )}
-      </div>
+      </>
     )
   }
 
@@ -2053,8 +2062,8 @@ export function Home() {
                 }}
                 onRefresh={refresh}
                 onCreateTask={createTask}
+                renderChildren={(id) => (id === selectedProjectId ? renderProjectFiles() : null)}
               />
-              {renderProjectFiles()}
             </div>
           )}
           {renderStarredSection()}

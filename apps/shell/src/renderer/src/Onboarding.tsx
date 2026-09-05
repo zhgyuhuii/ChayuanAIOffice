@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import appIcon from './assets/app-icon.png'
+import appIcon from './assets/logo.png'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import './onboarding.css'

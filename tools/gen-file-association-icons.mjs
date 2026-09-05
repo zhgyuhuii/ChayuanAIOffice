@@ -23,17 +23,19 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const svgDir = join(root, 'apps/shell/src/renderer/src/assets')
+const assetDir = join(root, 'apps/shell/src/renderer/src/assets')
 const outDir = join(root, 'apps/shell/build')
 
 // One icon per visual type; associations for xlsm/xls/csv/markdown reuse
-// these via the fileAssociations `icon` field.
+// these via the fileAssociations `icon` field. Sources are the brand PNGs
+// moved here from docs/logos (162×211 portrait sheets); pdf still uses the
+// legacy SVG tile until a brand pdf.png lands in assets/.
 const TYPES = {
-  docx: 'file-docx.svg',
-  xlsx: 'file-xlsx.svg',
-  pptx: 'file-pptx.svg',
+  docx: 'file-docx.png',
+  xlsx: 'file-xlsx.png',
+  pptx: 'file-pptx.png',
   pdf: 'file-pdf.svg',
-  md: 'file-md.svg',
+  md: 'file-md.png',
 }
 
 // macOS icons carry the standard app-icon grid margin (824/1024 content, same
@@ -83,7 +85,7 @@ async function renderPng(page, svgDataUrl, canvasSize, contentSize) {
   await page.setViewportSize({ width: canvasSize, height: canvasSize })
   await page.setContent(
     `<body style="margin:0"><div style="width:${canvasSize}px;height:${canvasSize}px;display:flex;align-items:center;justify-content:center">` +
-      `<img src="${svgDataUrl}" style="width:${contentSize}px;height:${contentSize}px"></div></body>`,
+      `<img src="${svgDataUrl}" style="height:${contentSize}px;width:auto"></div></body>`,
   )
   return page.screenshot({ omitBackground: true })
 }
@@ -93,9 +95,10 @@ const page = await browser.newPage({ deviceScaleFactor: 1 })
 const tmp = mkdtempSync(join(tmpdir(), 'chatoffice-file-icons-'))
 
 try {
-  for (const [type, svgName] of Object.entries(TYPES)) {
-    const svg = readFileSync(join(svgDir, svgName))
-    const dataUrl = `data:image/svg+xml;base64,${svg.toString('base64')}`
+  for (const [type, fileName] of Object.entries(TYPES)) {
+    const iconBytes = readFileSync(join(assetDir, fileName))
+    const mime = fileName.endsWith('.svg') ? 'image/svg+xml' : 'image/png'
+    const dataUrl = `data:${mime};base64,${iconBytes.toString('base64')}`
 
     const macPngs = new Map()
     for (const size of MAC_CANVAS_SIZES) {

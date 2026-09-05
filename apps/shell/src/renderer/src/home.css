@@ -147,15 +147,6 @@ body.vib .home {
   border-top: 1px solid var(--border-subtle);
 }
 
-/* project tree: the project selector and its files are one tree — keep them
- * visually contiguous (small gap, no divider) */
-.side-sec:has(.proj-panel) + .proj-files,
-.side-sec + .proj-files {
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: none;
-}
-
 /* sections inside the unified scroll column no longer scroll individually */
 .side-sec .side-files,
 .side-sec-starred .side-files-scroll,
@@ -1154,13 +1145,22 @@ body.sidebar-resizing {
 .proj-item {
   position: relative;
   display: flex;
-  align-items: center;
+  /* column so the selected project's tree (.proj-children) sits under the row */
+  flex-direction: column;
+  align-items: stretch;
   border-radius: 8px;
   margin: 0 2px 1px;
 }
 
 .proj-item.active {
   background: var(--bg-hover);
+}
+
+/* the selected project's tasks + files, nested directly under its name */
+.proj-children {
+  min-width: 0;
+  padding-left: 14px;
+  padding-bottom: 2px;
 }
 
 .proj-item-main {
