@@ -45,6 +45,12 @@ export interface TabsApi {
    * sidebar's width so the shell's own tree strip stays visible to its left.
    */
   setTreeInset(visible: boolean): void
+  /**
+   * fire-and-forget: a shell modal (settings) needs the whole window. Shell
+   * DOM always paints beneath the editor WebContentsViews, so the main
+   * process hides the active editor view for the modal's lifetime.
+   */
+  setShellModalOpen(open: boolean): void
 }
 
 export const TABS_CHANNELS = {
@@ -57,4 +63,5 @@ export const TABS_CHANNELS = {
   changed: 'tabs:changed',
   chromePressed: 'tabs:chrome-pressed',
   treeInset: 'tabs:tree-inset',
+  shellModal: 'tabs:shell-modal',
 } as const

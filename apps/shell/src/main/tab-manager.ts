@@ -77,6 +77,9 @@ export class TabManager {
   /** home tree visible beside document tabs; the shell renderer mirrors its
    *  persisted leftCollapsed flag over setTreeInset (default: visible) */
   private treeInset = true
+  /** a shell modal (settings) has the window: the active editor view is hidden
+   *  because shell DOM always paints beneath WebContentsViews */
+  private shellModalOpen = false
   /** tabs mid unsaved-changes prompt, so a second close click doesn't stack dialogs */
   private readonly closingIds = new Set<string>()
 
@@ -126,6 +129,21 @@ export class TabManager {
     if (this.treeInset === visible) return
     this.treeInset = visible
     this.layout()
+  }
+
+  /** shell modal (settings) lifetime: hide the covering editor view while it
+   *  is up, restore + re-fit when it closes */
+  setShellModalOpen(open: boolean): void {
+    if (this.shellModalOpen === open) return
+    this.shellModalOpen = open
+    const active = this.tabs.find((t) => t.id === this.activeId)
+    if (!active?.view) return
+    if (open) {
+      active.view.setVisible(false)
+    } else {
+      active.view.setVisible(true)
+      this.layout()
+    }
   }
 
   /** Grow/restore a tab view over the tab strip on request (slides show fullscreen) */
@@ -274,7 +292,9 @@ export class TabManager {
   activateTab(id: string): void {
     const target = this.tabs.find((t) => t.id === id)
     if (!target) return
-    for (const t of this.tabs) t.view?.setVisible(t.id === id)
+    // while a shell modal owns the window, newly activated views stay hidden
+    // too — the dialog must remain the topmost interactive surface
+    for (const t of this.tabs) t.view?.setVisible(t.id === id && !this.shellModalOpen)
     if (target.view) target.view.setBounds(this.contentBounds())
     this.activeId = id
     this.refreshActiveTargets()

@@ -325,6 +325,39 @@ describe('home tree inset', () => {
   })
 })
 
+describe('shell modal overlay (settings)', () => {
+  it('hides the active editor view while open, restores and re-fits on close', () => {
+    manager.openDocsTab()
+    const view = lastCreatedView(createDocsView)
+    view.setVisible.mockClear()
+    view.setBounds.mockClear()
+
+    manager.setShellModalOpen(true)
+    expect(view.setVisible).toHaveBeenLastCalledWith(false)
+    expect(view.setBounds).not.toHaveBeenCalled()
+
+    manager.setShellModalOpen(false)
+    expect(view.setVisible).toHaveBeenLastCalledWith(true)
+    expect(view.setBounds).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps newly activated views hidden while the modal stays open', () => {
+    const docsId = manager.openDocsTab()
+    manager.openSheetsTab()
+    manager.setShellModalOpen(true)
+
+    manager.activateTab(docsId)
+    expect(lastCreatedView(createDocsView).setVisible).toHaveBeenLastCalledWith(false)
+  })
+
+  it('is a no-op when only the home tab (no view) is active', () => {
+    expect(() => {
+      manager.setShellModalOpen(true)
+      manager.setShellModalOpen(false)
+    }).not.toThrow()
+  })
+})
+
 describe('window resize layout', () => {
   function resizeHandler(): () => void {
     const call = shellWindow.on.mock.calls.find((c) => c[0] === 'resize')

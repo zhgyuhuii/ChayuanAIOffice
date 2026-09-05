@@ -335,6 +335,21 @@ body.mac-inset .tab-bar-drag-spacer {
   padding-top: 40px;
 }
 
+/* While a document tab is active the home tree stays painted in the strip a
+ * document view leaves open (232px = home.css .sidebar = TREE_SIDEBAR_WIDTH
+ * in tab-manager.ts): clip-path stops painting the covered rest so home can't
+ * ghost through the editors' translucent vibrancy regions. A shell modal
+ * (settings, html.chatoffice-shell-modal set by Home's settings funnel) frees
+ * the whole window — the main process hides the covering editor view — so the
+ * clip must drop or the dialog would still be cut at 232px. */
+.app-frame-content.doc-active {
+  clip-path: inset(0 calc(100% - 232px) 0 0);
+}
+
+html.chatoffice-shell-modal .app-frame-content.doc-active {
+  clip-path: none;
+}
+
 /* ── Dark mode tab bar overrides ─────────────────────────── */
 
 [data-theme='dark'] .tab-bar {

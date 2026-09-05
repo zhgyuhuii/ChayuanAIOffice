@@ -1196,6 +1196,11 @@ export function Home() {
   const [settingsNonce, setSettingsNonce] = useState(0)
   const handleSettingsOpenChange = useCallback((open: boolean) => {
     setSettingsOpen(open)
+    // a shell modal must escape the tree strip beside a document tab: unclip
+    // the frame and have the main process hide the covering editor view for
+    // the dialog's lifetime
+    document.documentElement.classList.toggle('chatoffice-shell-modal', open)
+    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(open)
     if (!open) {
       void refreshHomeModelCache()
       // ChatPanel re-reads AiSettingsV2 (composer model picker) on this bump

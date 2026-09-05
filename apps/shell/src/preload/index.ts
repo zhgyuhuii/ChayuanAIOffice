@@ -395,6 +395,9 @@ const tabsApi: TabsApi = {
   setTreeInset(visible) {
     ipcRenderer.send(TABS_CHANNELS.treeInset, visible)
   },
+  setShellModalOpen(open) {
+    ipcRenderer.send(TABS_CHANNELS.shellModal, open)
+  },
   onChromePressed(handler) {
     const listener = () => handler()
     ipcRenderer.on('app:chrome-pressed', listener)
