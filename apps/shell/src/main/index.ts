@@ -2399,6 +2399,8 @@ function createShellWindow(): void {
     minWidth: 980,
     minHeight: 600,
     title: 'ChatOffice',
+    // 非 macOS：菜单条直接不占位（顶层菜单已全部 visible:false）
+    ...(process.platform === 'darwin' ? {} : { autoHideMenuBar: true }),
     // vibrancy: editor modules punch translucent regions (e.g. the slides
     // thumbnail pane) through to the desktop
     ...(process.platform === 'darwin'
@@ -3338,6 +3340,118 @@ function broadcastChromePressed(exclude?: WebContents): void {
     if (wc !== exclude) wc.send('app:chrome-pressed')
   }
 }
+
+/**
+ * 原生菜单隐藏（快捷键全保留）：各 tab 的菜单 builder 照常构建并经统一的
+ * setApplicationMenu 收口——
+ *   macOS 菜单栏只留 应用名 + 编辑（剪贴板 role）；其余顶层 visible:false。
+ *   Electron 隐藏菜单项不注册加速器，因此隐藏前把子树里 accelerator→click
+ *   收进派发表，由 before-input-event 统一派发（含 role:close 的兜底）。
+ *   Windows/Linux 不做 visible:false（原生加速器正常），窗口 autoHideMenuBar。
+ * popup 类临时菜单（tab 列表/新建）走 menu.popup，不经 setApplicationMenu。
+ */
+type AcceleratorEntry = {
+  accelerator: string
+  click: (menuItem: Electron.MenuItem, window?: Electron.BaseWindow) => void
+}
+const menuAccelerators = new Map<string, AcceleratorEntry>()
+
+const ROLE_FALLBACK_ACCELERATOR: Record<string, string> = {
+  close: 'CmdOrCtrl+W',
+}
+
+function normalizedAccelerator(accelerator: string): string {
+  return accelerator
+    .split('+')
+    .map((part) => (part === 'CmdOrCtrl' ? 'CmdOrCtrl' : part.toUpperCase()))
+    .sort((a, b) => (a === 'CmdOrCtrl' ? -1 : b === 'CmdOrCtrl' ? 1 : a.localeCompare(b)))
+    .join('+')
+}
+
+function collectHiddenAccelerators(menu: Electron.Menu, item: Electron.MenuItem): void {
+  const submenu = item.submenu as Electron.Menu | undefined
+  if (!submenu) return
+  if (process.env.CHATOFFICE_MENU_DEBUG) {
+    console.log('[menu-debug] collect from', item.label, submenu.items.map((x) => `${x.label ?? x.role}:${x.accelerator ?? ''}`).slice(0, 10))
+  }
+  for (const sub of submenu.items) {
+    const fallback =
+      sub.role && ROLE_FALLBACK_ACCELERATOR[sub.role]
+        ? ROLE_FALLBACK_ACCELERATOR[sub.role]
+        : undefined
+    const accelerator = sub.accelerator ?? fallback
+    if (!accelerator) continue
+    if (typeof sub.click === 'function') {
+      menuAccelerators.set(normalizedAccelerator(accelerator), {
+        accelerator,
+        click: sub.click as unknown as AcceleratorEntry['click'],
+      })
+    } else if (sub.role === 'close') {
+      // role 项没有实例 click：close 兜底为关窗
+      menuAccelerators.set(normalizedAccelerator(accelerator), {
+        accelerator,
+        click: () => shellWindow?.close(),
+      })
+    }
+  }
+}
+
+const rawSetApplicationMenu = Menu.setApplicationMenu.bind(Menu)
+Menu.setApplicationMenu = ((menu: Electron.Menu | null) => {
+  const isMac = process.platform === 'darwin'
+  if (!menu || !isMac) {
+    menuAccelerators.clear()
+    rawSetApplicationMenu(menu)
+    return
+  }
+  menuAccelerators.clear()
+  menu.items.forEach((item, index) => {
+    if (index === 0) return // appMenu：系统菜单栏必需
+    const isEditMenu =
+      !!item.submenu &&
+      (item.submenu as Electron.Menu).items.some((sub) => sub.role === 'copy')
+    if (isEditMenu) return // 编辑：剪贴板 role 的可见入口（⌘C/⌘V 在 AppKit 层）
+    collectHiddenAccelerators(menu, item)
+    item.visible = false
+  })
+  rawSetApplicationMenu(menu)
+}) as typeof Menu.setApplicationMenu
+
+// 隐藏菜单的加速键派发：shell 与所有编辑器视图的 webContents 统一拦截
+app.on('web-contents-created', (_event, contents) => {
+  if (process.env.CHATOFFICE_MENU_DEBUG) {
+    console.log('[menu-debug] wc-created', contents.getType(), contents.getURL().slice(-30))
+  }
+  contents.on('before-input-event', (event, input) => {
+    if (process.env.CHATOFFICE_MENU_DEBUG && input.type === 'keyDown') {
+      console.log('[menu-debug] BIE', input.code, input.key, 'ctrl', input.control, 'meta', input.meta, 'size', menuAccelerators.size)
+    }
+    if (input.type !== 'keyDown' || menuAccelerators.size === 0) return
+    if (!input.control && !input.meta && !input.alt && !input.shift) return
+    const code = input.code ?? ''
+    const keyPart = code.startsWith('Key')
+      ? code.slice(3)
+      : code.startsWith('Digit')
+        ? code.slice(5)
+        : input.key.toUpperCase()
+    if (!keyPart || keyPart.length !== 1) return
+    const parts: string[] = []
+    if (input.control || input.meta) parts.push('CmdOrCtrl')
+    if (input.alt) parts.push('Alt')
+    if (input.shift) parts.push('Shift')
+    parts.push(keyPart.toUpperCase())
+    const hit = menuAccelerators.get(
+      parts
+        .slice()
+        .sort((a, b) => (a === 'CmdOrCtrl' ? -1 : b === 'CmdOrCtrl' ? 1 : a.localeCompare(b)))
+        .join('+'),
+    )
+    if (hit?.click) {
+      event.preventDefault()
+      hit.click({} as Electron.MenuItem, shellWindow ?? undefined)
+    }
+  })
+})
 
 function registerTabsIpc(): void {
   ipcMain.on(TABS_CHANNELS.chromePressed, (event) => broadcastChromePressed(event.sender))
