@@ -514,3 +514,10 @@ CT_Home.kuip（et）实测规格：
 ## 14. 数字组收口（985f7c8）
 
 行1 = 常规⌄格式框（NumberFormatSelect）+ 转换⌄（ConvertMenuSelect，§13）；行2 = 货币/会计⌄（¥会计专用 菜单）+ % + 千分位 + 增小数 + 减小数 快捷图标。`.num-compact` 行距 2px、`.num-quick` 图标间隙 1px；appRmbAccounting ×19。1991 测试绿。IAB 验证会话本轮 guest attach 持续失败——服务端 HTTP 校验（shell/ExcelShell/ConvertMenuSelect/styles 四项内容全部命中）代替目视，UI 下次会话补目检。
+
+## 15. CT 实证修正：放映入口回归快速菜单（3024319）
+
+解包 wpp/ongmani/CT_Home.kuip 实证 RB_SlideShow = **KQuickMenuCommand**（主钮"当页开始"+caret 菜单：从头开始/当页开始）——第五轮 e52bd0d 拆成两平铺钮与包内规范不符，本轮按 CT 恢复 split 快速菜单形态（slideShowOpen/slideShowFromStart 状态回归 App，经 tabCtx 下发；首页仅 1 钮，放映 tab 仍为两平铺大钮——与 WPS 两处形态一致）。613 全绿。
+
+**wpp/CT_Home 其他实测组**（后续对齐依据）：RB_Slide = 新建幻灯片(ctl=4 画廊)+版式+节 ✓；RB_Drawing = 形状⌄ 图片⌄ 涂鸦 文本框⌄ 排列⌄；RB_Editing = 查找⌄(ctl=5)+选择⌄。
+**wps/CT_Home（Word）编辑组**：查找/拼写检查/沉浸式翻译/选择窗格/翻译（一个 KListCommand 大组，非独立组）。
