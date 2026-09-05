@@ -361,7 +361,21 @@ export function DockShell({
   const menuRef = useRef<HTMLDivElement>(null)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
 
-  const [state, setState] = useState<DockLayoutState>(() => loadState(storageKey, legacyWidthKey))
+  const [state, setState] = useState<DockLayoutState>(() => {
+    const initial = loadState(storageKey, legacyWidthKey)
+    // apply the auto half-split synchronously, before first paint: the view is
+    // already at its final size when scripts run, so the chat panel mounts at
+    // its resting width instead of jumping wider right after the editor shows
+    // (a mid-load resize that re-fits the document and reads as jank)
+    if (initial.sideWidthAuto && typeof window !== 'undefined' && window.innerWidth > 0) {
+      return {
+        ...initial,
+        sideWidth: clampSide(Math.round(window.innerWidth / 2), window.innerWidth),
+        sideWidthAuto: false,
+      }
+    }
+    return initial
+  })
   const stateRef = useRef(state)
   stateRef.current = state
   const [shellSize, setShellSize] = useState({ w: 0, h: 0 })
