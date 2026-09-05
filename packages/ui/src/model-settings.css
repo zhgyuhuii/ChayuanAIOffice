@@ -175,6 +175,90 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* vendor badges: key / free-ness metadata from the catalog */
+
+.msp-tags {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.msp-tag {
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  color: var(--text-secondary, #606366);
+  white-space: nowrap;
+}
+
+.msp-tag.is-key {
+  color: var(--text-tertiary, #909499);
+}
+
+.msp-tag.is-nokey,
+.msp-tag.is-free {
+  color: #0a7d38;
+  border-color: rgb(10 125 56 / 35%);
+  background: rgb(10 125 56 / 7%);
+}
+
+.msp-tag.is-tier {
+  color: #0f6cbd;
+  border-color: rgb(15 108 189 / 35%);
+  background: rgb(15 108 189 / 7%);
+}
+
+.msp-tag.is-login {
+  color: #7a4d0b;
+  border-color: rgb(122 77 11 / 35%);
+  background: rgb(122 77 11 / 7%);
+}
+
+/* 免费过滤 chip in the search row */
+
+.msp-filter-chip {
+  margin-top: 6px;
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  font-size: 11px;
+  color: var(--text-secondary, #606366);
+  cursor: pointer;
+}
+
+.msp-filter-chip:hover {
+  background: var(--surface-subtle, #f6f7f9);
+}
+
+.msp-filter-chip.is-active {
+  color: #0a7d38;
+  border-color: rgb(10 125 56 / 45%);
+  background: rgb(10 125 56 / 8%);
+  font-weight: 600;
+}
+
+/* nothing-enabled guidance banner */
+
+.msp-guide {
+  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary, #606366);
+  background: var(--accent-soft, #eaf0fd);
+  border-bottom: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+}
+
+.msp-empty-hint {
+  margin: 2px 0 6px;
+  padding: 2px 12px 2px 26px;
+  font-size: 11px;
+  color: var(--text-tertiary, #909499);
+}
 .msp-dot {
   width: 6px;
   height: 6px;

@@ -10,7 +10,16 @@ const zh = {
   subtitle: '多家供应商同时启用，勾选模型后在面板顶部快速切换',
   close: '关闭',
   searchPlaceholder: '搜索供应商…',
+  filterFree: '免费',
   enabledGroup: '已启用',
+  enabledEmpty: '还没有启用的厂商，在下方目录选择一个开始配置',
+  noModelsGuide:
+    '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 Genspark 直接使用内置模型。',
+  tagLogin: '登录即用',
+  tagNeedsKey: '需 Key',
+  tagNoKey: '无需 Key',
+  tagFree: '免费',
+  tagFreeTier: '免费额度',
   imageModel: '生图模型',
   imageModelAuto: '自动（第一个已启用的生图模型）',
   imageModelNone: '未启用生图模型',
@@ -20,10 +29,13 @@ const zh = {
   apiUrlPlaceholder: 'https://api.example.com/v1',
   protocol: '协议',
   protocolHint: {
-    'anthropic-messages': 'Anthropic Messages（直连，不转换格式）—— 供应商原生为 Anthropic Messages API 时选择',
-    'openai-completions': 'Chat（OpenAI Chat Completions）—— 供应商使用 Chat Completions 协议时选择',
+    'anthropic-messages':
+      'Anthropic Messages（直连，不转换格式）—— 供应商原生为 Anthropic Messages API 时选择',
+    'openai-completions':
+      'Chat（OpenAI Chat Completions）—— 供应商使用 Chat Completions 协议时选择',
     'openai-responses': 'Responses（OpenAI Responses API）—— 供应商使用 Responses API 时选择',
-    'gemini-native': 'Gemini Native（generateContent）—— 供应商使用 Gemini generateContent 协议时选择',
+    'gemini-native':
+      'Gemini Native（generateContent）—— 供应商使用 Gemini generateContent 协议时选择',
   } as Record<string, string>,
   protocolFooter: '四种协议均为原生直连，无需格式转换。',
   apiKey: 'API 密钥',
@@ -69,7 +81,8 @@ const zh = {
   } as Record<string, string>,
   // genspark special card
   gskLoginTitle: 'Genspark 登录',
-  gskLoginDesc: '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
+  gskLoginDesc:
+    '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
   gskLoggedIn: '已登录：{email}',
   gskLoggedInNoEmail: '已登录',
   gskLoggedOut: '未登录',
@@ -106,15 +119,26 @@ const zh = {
     tts: '语音合成默认模型',
     asr: '语音识别默认模型',
   } as Record<string, string>,
-  pickerHint: '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
+  pickerHint:
+    '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
 }
 
 const en = {
   title: 'Model Settings',
-  subtitle: 'Enable multiple providers at once; pick models and switch instantly from the panel header',
+  subtitle:
+    'Enable multiple providers at once; pick models and switch instantly from the panel header',
   close: 'Close',
   searchPlaceholder: 'Search providers…',
+  filterFree: 'Free',
   enabledGroup: 'Enabled',
+  enabledEmpty: 'No vendor enabled yet — pick one from the catalog below to start',
+  noModelsGuide:
+    'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to Genspark to use its built-in models.',
+  tagLogin: 'Login',
+  tagNeedsKey: 'Key needed',
+  tagNoKey: 'No key',
+  tagFree: 'Free',
+  tagFreeTier: 'Free tier',
   imageModel: 'Image model',
   imageModelAuto: 'Auto (first enabled image model)',
   imageModelNone: 'No image model enabled',
@@ -123,10 +147,14 @@ const en = {
   apiUrlPlaceholder: 'https://api.example.com/v1',
   protocol: 'Protocol',
   protocolHint: {
-    'anthropic-messages': 'Anthropic Messages (direct, no format conversion) — pick when the provider is natively an Anthropic Messages API',
-    'openai-completions': 'Chat (OpenAI Chat Completions) — pick when the provider speaks the Chat Completions protocol',
-    'openai-responses': 'Responses (OpenAI Responses API) — pick when the provider speaks the Responses API',
-    'gemini-native': 'Gemini Native (generateContent) — pick when the provider speaks the Gemini generateContent protocol',
+    'anthropic-messages':
+      'Anthropic Messages (direct, no format conversion) — pick when the provider is natively an Anthropic Messages API',
+    'openai-completions':
+      'Chat (OpenAI Chat Completions) — pick when the provider speaks the Chat Completions protocol',
+    'openai-responses':
+      'Responses (OpenAI Responses API) — pick when the provider speaks the Responses API',
+    'gemini-native':
+      'Gemini Native (generateContent) — pick when the provider speaks the Gemini generateContent protocol',
   } as Record<string, string>,
   protocolFooter: 'All four protocols connect natively — no conversion needed.',
   apiKey: 'API key',
@@ -169,7 +197,8 @@ const en = {
     'video-understanding': 'Video',
   } as Record<string, string>,
   gskLoginTitle: 'Genspark sign-in',
-  gskLoginDesc: 'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
+  gskLoginDesc:
+    'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
   gskLoggedIn: 'Signed in: {email}',
   gskLoggedInNoEmail: 'Signed in',
   gskLoggedOut: 'Not signed in',
@@ -183,7 +212,8 @@ const en = {
   presetModelsHint: 'This provider has no model-list API; presets below',
   pickerSettings: 'Model settings',
   pickerEmptyTitle: 'No model available yet',
-  pickerEmptyBody: 'Configure your own provider (your key, ready to use), or sign in to Genspark for the default models.',
+  pickerEmptyBody:
+    'Configure your own provider (your key, ready to use), or sign in to Genspark for the default models.',
   statusEnabled: 'Enabled — models appear in the picker',
   statusNotEnabled: 'Not enabled',
   selectAll: 'Select all',
@@ -191,10 +221,11 @@ const en = {
   addVendor: 'Custom provider',
   saveChanges: 'Save changes',
   saveValidateFailed: 'Protocol check failed, nothing saved: {message}',
-  toggleVendorModels: 'Expand/collapse this vendor\'s models',
+  toggleVendorModels: "Expand/collapse this vendor's models",
   filterAll: 'All',
   filterEmptyHint: 'No enabled models of this kind yet — enable them in Model Settings',
-  defaultsNote: 'Pick a default model per purpose; unset kinds automatically use the first available model detected.',
+  defaultsNote:
+    'Pick a default model per purpose; unset kinds automatically use the first available model detected.',
   defaultsAuto: 'Auto (first available model detected)',
   defaultsAutoUsing: 'Currently auto-using:',
   defaultsNoneAvailable: 'No models available yet (enable them in Model Settings first)',
@@ -205,7 +236,8 @@ const en = {
     tts: 'Default TTS model',
     asr: 'Default ASR model',
   } as Record<string, string>,
-  pickerHint: "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
+  pickerHint:
+    "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
 }
 
 export type ModelSettingsStrings = typeof zh & typeof en

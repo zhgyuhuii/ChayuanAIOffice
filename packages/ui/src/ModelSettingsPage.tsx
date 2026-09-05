@@ -66,13 +66,20 @@ const PROTOCOLS: AiWireProtocol[] = [
   'gemini-native',
 ]
 
-export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }: ModelSettingsPageProps): React.JSX.Element {
+export function ModelSettingsPage({
+  bridge,
+  onClose,
+  lang,
+  variant = 'overlay',
+}: ModelSettingsPageProps): React.JSX.Element {
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
   const [gskAvailable, setGskAvailable] = useState(true)
   const [selected, setSelected] = useState<string>('genspark')
   const [search, setSearch] = useState('')
+  /** 免费过滤：只显示带免费额度/免费 Key/无需 Key 的厂商 */
+  const [freeOnly, setFreeOnly] = useState(false)
   /** collapsed directory groups (已开启 / 国内平台 / …) in the left pane */
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
@@ -98,7 +105,10 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
   }
 
   useEffect(() => {
-    void bridge.getSettings().then(setSettings).catch(() => setSettings(null))
+    void bridge
+      .getSettings()
+      .then(setSettings)
+      .catch(() => setSettings(null))
     if (bridge.gskStatus) {
       void bridge
         .gskStatus(true)
@@ -133,11 +143,13 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
       vendors: VENDORS.filter(
         (v) =>
           v.group === group.id &&
+          !(!gskAvailable && v.id === 'genspark') &&
           !enabledProfiles.some((p) => (p.vendorId ?? p.id) === v.id) &&
+          (!freeOnly || !!v.free) &&
           match(v.name, v.nameZh, v.id),
       ),
     })).filter((g) => g.vendors.length > 0)
-  }, [enabledProfiles, search, locale])
+  }, [enabledProfiles, search, freeOnly, gskAvailable, locale])
 
   // ── form seeding on vendor switch ─────────────────────────────────────
   useEffect(() => {
@@ -152,7 +164,7 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
       setApiUrl(stored?.baseUrl ?? vendor?.defaultUrl ?? '')
       setProtocol(stored?.protocol ?? vendor?.api ?? 'openai-completions')
       setModels(
-        (stored?.models ?? (vendor?.presets ?? []) as AiModelEntry[]).map((m) => ({
+        (stored?.models ?? ((vendor?.presets ?? []) as AiModelEntry[])).map((m) => ({
           ...m,
           enabled: true,
         })),
@@ -280,7 +292,10 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
         auth: 'api-key',
         ...(ollama ? { ollamaLike: true } : {}),
         enabled: true,
-        models: enabledModels.map((m) => ({ id: m.id, ...(m.name && m.name !== m.id ? { name: m.name } : {}) })),
+        models: enabledModels.map((m) => ({
+          id: m.id,
+          ...(m.name && m.name !== m.id ? { name: m.name } : {}),
+        })),
         updatedAt: new Date().toISOString(),
       }
       const nextProfiles = [
@@ -289,8 +304,13 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
       ]
       const next: AiSettingsV2 = { ...(settings ?? { version: 2 }), profiles: nextProfiles }
       // first usable chat model becomes the current selection when none is set
-      const chatPick = enabledModels.find((m) => !isImageGenModel(m) && (m.type ?? 'chat') !== 'embedding')
-      if ((!next.currentModel || !nextProfiles.some((p) => p.id === next.currentModel!.profileId)) && chatPick) {
+      const chatPick = enabledModels.find(
+        (m) => !isImageGenModel(m) && (m.type ?? 'chat') !== 'embedding',
+      )
+      if (
+        (!next.currentModel || !nextProfiles.some((p) => p.id === next.currentModel!.profileId)) &&
+        chatPick
+      ) {
         next.currentModel = { profileId: profile.id, modelId: chatPick.id }
       }
       await persist(sanitize(next))
@@ -314,10 +334,17 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
       )
       const next: AiSettingsV2 = { ...settings!, profiles: nextProfiles }
       // current model falling off → first enabled chat model
-      if (next.currentModel && !nextProfiles.some((p) => p.enabled && p.id === next.currentModel!.profileId)) {
+      if (
+        next.currentModel &&
+        !nextProfiles.some((p) => p.enabled && p.id === next.currentModel!.profileId)
+      ) {
         const fallback = nextProfiles
           .filter((p) => p.enabled)
-          .flatMap((p) => p.models.filter((m) => !isImageGenModel(m) && (m.type ?? 'chat') !== 'embedding').map((m) => ({ profileId: p.id, modelId: m.id })))
+          .flatMap((p) =>
+            p.models
+              .filter((m) => !isImageGenModel(m) && (m.type ?? 'chat') !== 'embedding')
+              .map((m) => ({ profileId: p.id, modelId: m.id })),
+          )
         if (fallback[0]) next.currentModel = fallback[0]
         else delete next.currentModel
       }
@@ -335,11 +362,19 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     if (!profile) return
     const currentIds = new Set(profile.models.map((m) => m.id))
     const nextModels = on
-      ? GENSPARK_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({ id }))
+      ? GENSPARK_PRESET_MODELS.filter((id) => currentIds.has(id) || id === modelId).map((id) => ({
+          id,
+        }))
       : profile.models.filter((m) => m.id !== modelId)
-    const nextProfiles = profiles.map((p) => (p.id === 'genspark' ? { ...p, models: nextModels } : p))
+    // picking a model is the explicit act that enables the login-backed profile
+    const nextProfiles = profiles.map((p) =>
+      p.id === 'genspark' ? { ...p, enabled: true, models: nextModels } : p,
+    )
     const next: AiSettingsV2 = { ...settings!, profiles: nextProfiles }
-    if (next.currentModel?.profileId === 'genspark' && !nextModels.some((m) => m.id === next.currentModel!.modelId)) {
+    if (
+      next.currentModel?.profileId === 'genspark' &&
+      !nextModels.some((m) => m.id === next.currentModel!.modelId)
+    ) {
       if (nextModels[0]) next.currentModel = { profileId: 'genspark', modelId: nextModels[0].id }
       else delete next.currentModel
     }
@@ -354,8 +389,21 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
   const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
     const profile = active ? profiles.find((p) => p.id === id) : undefined
     const expanded = expandedVendors.has(id)
+    // badges: 需不需要 Key / 是否免费 / 登录即用 — from the vendor catalog
+    const vendorMeta = VENDOR_BY_ID.get(profile?.vendorId ?? id)
+    const loginBacked = profile?.auth === 'gsk-login' || (!profile && id === 'genspark')
+    const tags: Array<{ kind: string; label: string }> = []
+    if (loginBacked) tags.push({ kind: 'login', label: t.tagLogin })
+    if (vendorMeta?.ollamaLike) tags.push({ kind: 'nokey', label: t.tagNoKey })
+    else if (vendorMeta?.keyUrl) tags.push({ kind: 'key', label: t.tagNeedsKey })
+    if (vendorMeta?.free === 'nokey' || vendorMeta?.free === 'freekey')
+      tags.push({ kind: 'free', label: t.tagFree })
+    else if (vendorMeta?.free === 'tier') tags.push({ kind: 'tier', label: t.tagFreeTier })
     return (
-      <div className={`msp-vendor-wrap${selected === id ? ' is-selected' : ''}${active && expanded ? ' is-open' : ''}`} data-vendor-row-wrap={id}>
+      <div
+        className={`msp-vendor-wrap${selected === id ? ' is-selected' : ''}${active && expanded ? ' is-open' : ''}`}
+        data-vendor-row-wrap={id}
+      >
         <button
           type="button"
           className={`msp-vendor${selected === id ? ' is-selected' : ''}`}
@@ -364,6 +412,15 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
         >
           <VendorLogo vendorId={VENDOR_BY_ID.has(id) ? id : undefined} size={18} fallback={name} />
           <span className="msp-vendor-name">{name}</span>
+          {tags.length > 0 && (
+            <span className="msp-tags" data-vendor-tags={id}>
+              {tags.map((tag) => (
+                <span key={tag.kind} className={`msp-tag is-${tag.kind}`}>
+                  {tag.label}
+                </span>
+              ))}
+            </span>
+          )}
           {active && profile && (
             <span
               className={`msp-chev${expanded ? '' : ' is-collapsed'}`}
@@ -438,11 +495,9 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
       </div>
     ) : null
 
-  const enabledRows = enabledList.length
-    ? enabledList.map((p) => (
-        <VendorRow key={p.id} id={p.id} name={p.displayName || p.id} active />
-      ))
-    : null
+  const enabledRows = enabledList.map((p) => (
+    <VendorRow key={p.id} id={p.id} name={p.displayName || p.id} active />
+  ))
 
   /** model checklist card — chatop's ModelList: per-type groups with group toggle */
   const ModelList = ({
@@ -457,7 +512,12 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     if (entries.length === 0) {
       return (
         <div className="msp-list is-empty" data-model-list-empty>
-          <button type="button" className="msp-btn" onClick={() => void fetchModels()} disabled={busy !== ''}>
+          <button
+            type="button"
+            className="msp-btn"
+            onClick={() => void fetchModels()}
+            disabled={busy !== ''}
+          >
             {busy === 'fetch' ? t.fetching : t.fetchModels}
           </button>
         </div>
@@ -498,23 +558,29 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                     type="button"
                     className="msp-type-toggle"
                     data-model-group-toggle={group.type}
-                    onClick={() => onToggleMany(group.models.map((m) => m.id), !allOn)}
+                    onClick={() =>
+                      onToggleMany(
+                        group.models.map((m) => m.id),
+                        !allOn,
+                      )
+                    }
                   >
                     {allOn ? t.selectNone : t.selectAll}
                   </button>
                 )}
               </div>
-              {!collapsed && group.models.map((m) => (
-                <label key={m.id} className="msp-model-row" data-model-toggle={m.id}>
-                  <input
-                    type="checkbox"
-                    checked={m.enabled}
-                    onChange={(e) => onToggle?.(m.id, e.target.checked)}
-                  />
-                  <span className="msp-model-name">{m.name || m.id}</span>
-                  {m.name && m.name !== m.id && <span className="msp-model-id">{m.id}</span>}
-                </label>
-              ))}
+              {!collapsed &&
+                group.models.map((m) => (
+                  <label key={m.id} className="msp-model-row" data-model-toggle={m.id}>
+                    <input
+                      type="checkbox"
+                      checked={m.enabled}
+                      onChange={(e) => onToggle?.(m.id, e.target.checked)}
+                    />
+                    <span className="msp-model-name">{m.name || m.id}</span>
+                    {m.name && m.name !== m.id && <span className="msp-model-id">{m.id}</span>}
+                  </label>
+                ))}
             </div>
           )
         })}
@@ -526,14 +592,20 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     variant === 'overlay' ? (
       <header className="msp-header">
         <h2 className="msp-title">{t.title}</h2>
-        <button type="button" className="msp-close" onClick={onClose} aria-label={t.close} title={t.close}>
+        <button
+          type="button"
+          className="msp-close"
+          onClick={onClose}
+          aria-label={t.close}
+          title={t.close}
+        >
           ✕
         </button>
       </header>
     ) : null
 
   const body = (
-<div className="msp-body">
+    <div className="msp-body">
       {/* 左：厂商目录（chatop 版式） */}
       <aside className="msp-left">
         <div className="msp-search-wrap">
@@ -545,9 +617,30 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <button
+            type="button"
+            className={`msp-filter-chip${freeOnly ? ' is-active' : ''}`}
+            data-model-filter-free
+            aria-pressed={freeOnly}
+            onClick={() => setFreeOnly((v) => !v)}
+          >
+            {t.filterFree}
+          </button>
         </div>
         <div className="msp-scroll">
-          <VendorGroupEl id="enabled" label={`${t.enabledGroup} · ${enabledList.length}`} rows={enabledRows} />
+          <VendorGroupEl
+            id="enabled"
+            label={`${t.enabledGroup} · ${enabledList.length}`}
+            rows={
+              enabledRows.length > 0 ? (
+                enabledRows
+              ) : (
+                <p className="msp-empty-hint" data-vendor-enabled-empty>
+                  {t.enabledEmpty}
+                </p>
+              )
+            }
+          />
           {catalogRows.map((group) => (
             <VendorGroupEl
               key={group.id}
@@ -556,7 +649,11 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
               rows={
                 <>
                   {group.vendors.map((v) => (
-                    <VendorRow key={v.id} id={v.id} name={locale === 'zh' && v.nameZh ? v.nameZh : v.name} />
+                    <VendorRow
+                      key={v.id}
+                      id={v.id}
+                      name={locale === 'zh' && v.nameZh ? v.nameZh : v.name}
+                    />
                   ))}
                 </>
               }
@@ -589,7 +686,11 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                   <div className="msp-pane-status">{t.gskLoginDesc}</div>
                 </div>
               </div>
-              {msg && <p className={`msp-msg ${msg.kind}`} data-model-msg>{msg.text}</p>}
+              {msg && (
+                <p className={`msp-msg ${msg.kind}`} data-model-msg>
+                  {msg.text}
+                </p>
+              )}
               <div className="msp-gsk-row">
                 <span className={`msp-dot is-big${gsk?.loggedIn ? ' is-on' : ''}`} aria-hidden />
                 <span className="msp-gsk-state">
@@ -600,7 +701,11 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                     : t.gskLoggedOut}
                 </span>
                 {!gsk?.loggedIn && bridge.gskLogin && (
-                  <button type="button" className="msp-btn msp-btn-primary" onClick={() => void bridge.gskLogin?.()}>
+                  <button
+                    type="button"
+                    className="msp-btn msp-btn-primary"
+                    onClick={() => void bridge.gskLogin?.()}
+                  >
                     {t.gskLoginBtn}
                   </button>
                 )}
@@ -618,13 +723,21 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
               <div className="msp-pane-head">
                 <span className="msp-avatar is-big" aria-hidden>
                   {vendorName(
-                    selectedVendor?.id ?? selectedProfile?.vendorId ?? selectedProfile?.id ?? selected,
-                  ).slice(0, 1).toUpperCase()}
+                    selectedVendor?.id ??
+                      selectedProfile?.vendorId ??
+                      selectedProfile?.id ??
+                      selected,
+                  )
+                    .slice(0, 1)
+                    .toUpperCase()}
                 </span>
                 <div className="msp-pane-titles">
                   <div className="msp-pane-name">
                     {vendorName(
-                      selectedVendor?.id ?? selectedProfile?.vendorId ?? selectedProfile?.id ?? selected,
+                      selectedVendor?.id ??
+                        selectedProfile?.vendorId ??
+                        selectedProfile?.id ??
+                        selected,
                     )}
                   </div>
                   <div className="msp-pane-status">
@@ -636,12 +749,18 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                   role="switch"
                   aria-checked={!!selectedProfile?.enabled}
                   className={`msp-switch${selectedProfile?.enabled ? ' is-on' : ''}`}
-                  onClick={() => (selectedProfile?.enabled ? void disableProfile() : void saveProfile())}
+                  onClick={() =>
+                    selectedProfile?.enabled ? void disableProfile() : void saveProfile()
+                  }
                   disabled={busy !== ''}
                 />
               </div>
 
-              {msg && <p className={`msp-msg ${msg.kind}`} data-model-msg>{msg.text}</p>}
+              {msg && (
+                <p className={`msp-msg ${msg.kind}`} data-model-msg>
+                  {msg.text}
+                </p>
+              )}
 
               <label className="msp-field">
                 <span className="msp-label">{t.apiUrl}</span>
@@ -675,7 +794,9 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                 <span className="msp-label">
                   {t.apiKey}
                   {keyConfigured ? ` · ${t.apiKeyConfigured}` : ''}
-                  {(selectedVendor?.ollamaLike || selectedProfile?.ollamaLike) ? ` · ${t.ollamaHint}` : ''}
+                  {selectedVendor?.ollamaLike || selectedProfile?.ollamaLike
+                    ? ` · ${t.ollamaHint}`
+                    : ''}
                 </span>
                 <div className="msp-key-row">
                   <input
@@ -688,7 +809,13 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
                     autoComplete="off"
                   />
                   {selectedVendor?.keyUrl && (
-                    <a className="msp-btn msp-btn-link" href={selectedVendor.keyUrl} target="_blank" rel="noreferrer" data-model-keyurl>
+                    <a
+                      className="msp-btn msp-btn-link"
+                      href={selectedVendor.keyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      data-model-keyurl
+                    >
                       {t.getKey}
                     </a>
                   )}
@@ -699,17 +826,41 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
               </div>
 
               <div className="msp-actions">
-                <button type="button" className="msp-btn" onClick={() => void fetchModels()} disabled={busy !== ''} data-model-fetch>
+                <button
+                  type="button"
+                  className="msp-btn"
+                  onClick={() => void fetchModels()}
+                  disabled={busy !== ''}
+                  data-model-fetch
+                >
                   {busy === 'fetch' ? t.fetching : t.fetchModels}
                 </button>
-                <button type="button" className="msp-btn" onClick={() => void testConnection()} disabled={busy !== ''} data-model-test>
+                <button
+                  type="button"
+                  className="msp-btn"
+                  onClick={() => void testConnection()}
+                  disabled={busy !== ''}
+                  data-model-test
+                >
                   {busy === 'test' ? t.testing : t.testConnection}
                 </button>
-                <button type="button" className="msp-btn msp-btn-primary" onClick={() => void saveProfile()} disabled={busy !== ''} data-model-enable>
+                <button
+                  type="button"
+                  className="msp-btn msp-btn-primary"
+                  onClick={() => void saveProfile()}
+                  disabled={busy !== ''}
+                  data-model-enable
+                >
                   {selectedProfile?.enabled ? t.saveChanges : t.saveEnable}
                 </button>
                 {selectedProfile?.enabled && (
-                  <button type="button" className="msp-btn msp-btn-danger" onClick={() => void disableProfile()} disabled={busy !== ''} data-model-disable>
+                  <button
+                    type="button"
+                    className="msp-btn msp-btn-danger"
+                    onClick={() => void disableProfile()}
+                    disabled={busy !== ''}
+                    data-model-disable
+                  >
                     {t.disable}
                   </button>
                 )}
@@ -754,9 +905,16 @@ export function ModelSettingsPage({ bridge, onClose, lang, variant = 'overlay' }
     </div>
   )
 
+  const nothingEnabled = enabledProfiles.length === 0
+
   const pane = (
     <div className={variant === 'overlay' ? 'msp-dialog' : 'msp-inline-dialog'} data-model-settings>
       {header}
+      {nothingEnabled && (
+        <div className="msp-guide" data-model-guide>
+          {t.noModelsGuide}
+        </div>
+      )}
       {body}
     </div>
   )

@@ -10,11 +10,13 @@ import {
 import { parseHarnessCredentials, parseHarnessProviders } from '../src/settings-source'
 
 describe('migrateSettingsV2', () => {
-  it('returns defaults for a missing file', () => {
+  it('returns defaults for a missing file: nothing enabled, no default model', () => {
     const s = migrateSettingsV2(null)
     expect(s.version).toBe(2)
     expect(s.profiles[0]?.id).toBe('genspark')
-    expect(s.currentModel).toEqual({ profileId: 'genspark', modelId: 'claude-opus-4-7' })
+    expect(s.profiles.every((p) => !p.enabled)).toBe(true)
+    expect(s.currentModel).toBeUndefined()
+    expect(resolveCurrentModel(s)).toBeUndefined()
   })
 
   it('migrates a v1 BYOK selection with key + custom base URL', () => {
@@ -171,11 +173,7 @@ describe('selection helpers', () => {
       apiKey: 'k',
       auth: 'api-key',
       enabled: true,
-      models: [
-        { id: 'qwen3.8-max' },
-        { id: 'text-embedding-v3' },
-        { id: 'qwen-image' },
-      ],
+      models: [{ id: 'qwen3.8-max' }, { id: 'text-embedding-v3' }, { id: 'qwen-image' }],
     })
     const chat = enabledChatModels(s)
     expect(chat.map((m) => m.modelId)).toContain('qwen3.8-max')
@@ -185,10 +183,21 @@ describe('selection helpers', () => {
 
   it('falls back to the first enabled chat model when the stored selection went stale', () => {
     const s = defaultSettingsV2()
+    s.profiles.push({
+      id: 'openai',
+      vendorId: 'openai',
+      displayName: 'OpenAI',
+      protocol: 'openai-completions',
+      baseUrl: 'https://api.openai.com/v1',
+      apiKey: 'k',
+      auth: 'api-key',
+      enabled: true,
+      models: [{ id: 'gpt-5.6' }],
+    })
     s.currentModel = { profileId: 'genspark', modelId: 'gone' }
     expect(resolveCurrentModel(s)).toEqual({
-      profileId: 'genspark',
-      modelId: 'claude-opus-4-7',
+      profileId: 'openai',
+      modelId: 'gpt-5.6',
     })
   })
 })
@@ -200,7 +209,7 @@ describe('harness yaml parsing', () => {
       '  providers:',
       '    chatop-zhipu:',
       '      displayName: 智谱开放平台',
-      "      apiKeyEnv: CHATOP_ZHIPU_API_KEY",
+      '      apiKeyEnv: CHATOP_ZHIPU_API_KEY',
       '      api: openai-completions',
       '      baseURL: https://open.bigmodel.cn/api/paas/v4',
       '      models:',

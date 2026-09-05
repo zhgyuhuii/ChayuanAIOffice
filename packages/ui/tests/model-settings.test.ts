@@ -7,11 +7,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { normalizeSettingsLang, modelSettingsStrings } from '../src/model-settings-strings'
-import {
-  ModelSettingsPage,
-  type ModelSettingsBridge,
-} from '../src/ModelSettingsPage'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider'
+import { ModelSettingsPage, type ModelSettingsBridge } from '../src/ModelSettingsPage'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
   getSettings: async () => defaultSettingsV2(),
@@ -71,15 +68,15 @@ describe('ModelSettingsPage', () => {
     expect(form!.querySelector('[data-model-api]')).toBeTruthy()
     expect(form!.querySelector('[data-model-key]')).toBeTruthy()
     // protocol select offers all four native protocols
-    const options = [...(form!.querySelectorAll('[data-model-api] option') as NodeListOf<HTMLOptionElement>)]
+    const options = [
+      ...(form!.querySelectorAll('[data-model-api] option') as NodeListOf<HTMLOptionElement>),
+    ]
     expect(options.length).toBe(4)
   })
 
   it('renders inline (no portal, no dialog chrome) for host panes', async () => {
     await act(async () => {
-      root!.render(
-        createElement(ModelSettingsPage, { bridge, variant: 'inline' as const }),
-      )
+      root!.render(createElement(ModelSettingsPage, { bridge, variant: 'inline' as const }))
     })
     // inline renders in place, not portaled to body
     expect(host.querySelector('.msp-inline-dialog')).toBeTruthy()
@@ -142,7 +139,9 @@ describe('ModelSettingsPage model checklist + save validation', () => {
     await act(async () => {
       fetchBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     })
-    const boxes = [...document.body.querySelectorAll('[data-model-toggle]') as NodeListOf<HTMLInputElement>]
+    const boxes = [
+      ...(document.body.querySelectorAll('[data-model-toggle]') as NodeListOf<HTMLInputElement>),
+    ]
     expect(boxes.length).toBe(2)
     expect(boxes.every((b) => !b.checked)).toBe(true)
   })
@@ -157,7 +156,9 @@ describe('ModelSettingsPage model checklist + save validation', () => {
       )
     })
     expect(document.body.querySelectorAll('[data-model-toggle]').length).toBe(2)
-    const collapse = document.body.querySelector('[data-model-type-collapse="chat"]') as HTMLButtonElement
+    const collapse = document.body.querySelector(
+      '[data-model-type-collapse="chat"]',
+    ) as HTMLButtonElement
     await act(async () => {
       collapse.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     })
@@ -243,7 +244,9 @@ describe('ModelDefaultsPage', () => {
     await act(async () => {
       root!.render(createElement(ModelDefaultsPage, { bridge: b }))
     })
-    const selects = [...host.querySelectorAll('[data-default-kind]') as NodeListOf<HTMLSelectElement>]
+    const selects = [
+      ...(host.querySelectorAll('[data-default-kind]') as NodeListOf<HTMLSelectElement>),
+    ]
     expect(selects.map((s) => s.dataset.defaultKind)).toEqual([
       'chat',
       'image',
@@ -266,5 +269,72 @@ describe('ModelDefaultsPage', () => {
     expect(saveSettings).toHaveBeenCalledTimes(1)
     const saved = saveSettings.mock.calls[0]![0] as { modelDefaults?: Record<string, unknown> }
     expect(saved.modelDefaults?.tts).toEqual({ profileId: 'zhipu', modelId: 'cogtts' })
+  })
+})
+
+describe('no-default model settings (guidance, badges, free filter)', () => {
+  async function renderWith(settings: AiSettingsV2): Promise<void> {
+    const b: ModelSettingsBridge = {
+      getSettings: async () => settings,
+      saveSettings: vi.fn(async () => {}),
+      setCurrentModel: vi.fn(async () => {}),
+      discoverModels: vi.fn(async () => ({ models: [] })),
+      gskStatus: vi.fn(async () => ({ loggedIn: false })),
+      gskLogin: vi.fn(async () => {}),
+    }
+    await act(async () => {
+      root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
+    })
+  }
+
+  it('shows the guidance banner when nothing is enabled', async () => {
+    await renderWith(defaultSettingsV2())
+    expect(document.body.querySelector('[data-model-guide]')).toBeTruthy()
+    expect(document.body.querySelector('[data-vendor-enabled-empty]')).toBeTruthy()
+  })
+
+  it('hides the guidance banner once a vendor is enabled', async () => {
+    const s = defaultSettingsV2()
+    s.profiles.push({
+      id: 'openai',
+      vendorId: 'openai',
+      displayName: 'OpenAI',
+      protocol: 'openai-completions',
+      baseUrl: 'https://api.openai.com/v1',
+      apiKey: 'sk',
+      auth: 'api-key',
+      enabled: true,
+      models: [{ id: 'gpt-5.6' }],
+    })
+    await renderWith(s)
+    expect(document.body.querySelector('[data-model-guide]')).toBeNull()
+  })
+
+  it('tags vendor rows with key/free badges from the catalog', async () => {
+    await renderWith(defaultSettingsV2())
+    const tagsOf = (id: string) =>
+      [...document.body.querySelectorAll(`[data-vendor-tags="${id}"] .msp-tag`)].map(
+        (el) => el.textContent,
+      )
+    // jsdom resolves the locale to en
+    expect(tagsOf('zhipu')).toContain('Key needed')
+    expect(tagsOf('zhipu')).toContain('Free tier')
+    expect(tagsOf('openai')).toContain('Key needed')
+    expect(tagsOf('openai')).not.toContain('Free tier')
+    expect(tagsOf('genspark')).toContain('Login')
+    expect(tagsOf('ollama')).toContain('No key')
+    expect(tagsOf('ollama')).toContain('Free')
+  })
+
+  it('filters the catalog to free vendors', async () => {
+    await renderWith(defaultSettingsV2())
+    expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeTruthy()
+    await act(async () => {
+      ;(document.body.querySelector('[data-model-filter-free]') as HTMLButtonElement).click()
+    })
+    expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeNull()
+    expect(document.body.querySelector('[data-vendor-row="zhipu"]')).toBeTruthy()
+    // genspark carries no free flag — filtered out with the rest
+    expect(document.body.querySelector('[data-vendor-row="genspark"]')).toBeNull()
   })
 })

@@ -50,11 +50,11 @@ export const WIRE_TO_INTERNAL: Record<AiWireProtocol, AiProtocol> = {
 }
 
 /** genspark's proxy speaks all three protocols; route by model id prefix like the v1 adapter did */
-export function gensparkEndpointFor(
-  model: string,
-): { protocol: AiProtocol; baseUrl: string } {
-  if (model.startsWith('claude')) return { protocol: 'anthropic', baseUrl: GENSPARK_LLM_BASE_URLS.anthropic }
-  if (model.startsWith('gemini')) return { protocol: 'gemini', baseUrl: GENSPARK_LLM_BASE_URLS.gemini }
+export function gensparkEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
+  if (model.startsWith('claude'))
+    return { protocol: 'anthropic', baseUrl: GENSPARK_LLM_BASE_URLS.anthropic }
+  if (model.startsWith('gemini'))
+    return { protocol: 'gemini', baseUrl: GENSPARK_LLM_BASE_URLS.gemini }
   return { protocol: 'openai-compatible', baseUrl: GENSPARK_LLM_BASE_URLS.openai }
 }
 
@@ -71,17 +71,20 @@ export function gensparkProfile(): AiProviderProfile {
   }
 }
 
-/** Fresh settings: the login-backed genspark profile with its default model selected. */
+/** Fresh settings: nothing enabled and no default model — the settings page
+ * guides configuration (sign in to Genspark or add an API-key vendor). */
 export function defaultSettingsV2(): AiSettingsV2 {
   return {
     version: 2,
-    profiles: [gensparkProfile()],
-    currentModel: { profileId: 'genspark', modelId: GENSPARK_PRESET_MODELS[0]! },
+    profiles: [{ ...gensparkProfile(), enabled: false }],
     gskToolsEnabled: true,
   }
 }
 
-export function findProfile(settings: AiSettingsV2, profileId: string): AiProviderProfile | undefined {
+export function findProfile(
+  settings: AiSettingsV2,
+  profileId: string,
+): AiProviderProfile | undefined {
   return settings.profiles.find((p) => p.id === profileId)
 }
 
@@ -105,7 +108,11 @@ export function enabledChatModels(
     if (!profile.enabled) continue
     for (const m of profile.models) {
       if (!isChatModel(m)) continue
-      out.push({ profileId: profile.id, modelId: m.id, label: m.name && m.name !== m.id ? `${m.name} (${m.id})` : m.id })
+      out.push({
+        profileId: profile.id,
+        modelId: m.id,
+        label: m.name && m.name !== m.id ? `${m.name} (${m.id})` : m.id,
+      })
     }
   }
   return out
@@ -264,11 +271,17 @@ export interface StoredAiSettings {
  * the pre-provider legacy shape becomes a custom profile. No file I/O here.
  */
 export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): AiSettingsV2 {
-  if (stored && (stored as AiSettingsV2).version === 2 && Array.isArray((stored as AiSettingsV2).profiles)) {
+  if (
+    stored &&
+    (stored as AiSettingsV2).version === 2 &&
+    Array.isArray((stored as AiSettingsV2).profiles)
+  ) {
     return normalizeV2(stored as AiSettingsV2)
   }
 
-  const profiles: AiProviderProfile[] = [gensparkProfile()]
+  // genspark is born disabled: enabling it is an explicit user act (login +
+  // model pick in the settings page), never a default
+  const profiles: AiProviderProfile[] = [{ ...gensparkProfile(), enabled: false }]
   let currentModel: AiModelSelection | undefined
 
   if (stored?.providers) {
@@ -277,9 +290,13 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
       if (profile && !profiles.some((p) => p.id === profile.id)) profiles.push(profile)
     }
     // honor the v1 active provider when it migrated into a usable profile
-    const active = stored.provider && stored.provider !== 'genspark'
-      ? migrateV1Provider(stored.provider, stored.providers[stored.provider] ?? { apiKey: '', model: '' })
-      : null
+    const active =
+      stored.provider && stored.provider !== 'genspark'
+        ? migrateV1Provider(
+            stored.provider,
+            stored.providers[stored.provider] ?? { apiKey: '', model: '' },
+          )
+        : null
     if (active?.models.length) {
       currentModel = { profileId: active.id, modelId: active.models[0]!.id }
     }
@@ -302,7 +319,7 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
   return {
     version: 2,
     profiles,
-    currentModel: fallback ?? { profileId: 'genspark', modelId: GENSPARK_PRESET_MODELS[0]! },
+    ...(fallback ? { currentModel: fallback } : {}),
     ...(stored?.gskToolsEnabled !== undefined ? { gskToolsEnabled: stored.gskToolsEnabled } : {}),
   }
 }
@@ -325,8 +342,10 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     }))
   const next: AiSettingsV2 = {
     version: 2,
-    profiles: profiles.length ? profiles : [gensparkProfile()],
-    ...(settings.gskToolsEnabled !== undefined ? { gskToolsEnabled: settings.gskToolsEnabled } : {}),
+    profiles: profiles.length ? profiles : [{ ...gensparkProfile(), enabled: false }],
+    ...(settings.gskToolsEnabled !== undefined
+      ? { gskToolsEnabled: settings.gskToolsEnabled }
+      : {}),
   }
   const current = resolveCurrentModel({
     ...next,
@@ -365,7 +384,11 @@ export const DEFAULT_KIND_TYPES: Record<AiDefaultKind, AiModelType[]> = {
   asr: ['asr'],
 }
 
-function selectionAlive(settings: AiSettingsV2, sel: AiModelSelection | undefined, kinds: AiModelType[]): boolean {
+function selectionAlive(
+  settings: AiSettingsV2,
+  sel: AiModelSelection | undefined,
+  kinds: AiModelType[],
+): boolean {
   if (!sel) return false
   const profile = findProfile(settings, sel.profileId)
   const entry = profile?.models.find((m) => m.id === sel.modelId)
