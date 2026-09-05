@@ -15,7 +15,6 @@
   /* lift for the active segment in gray-track tab pills */
   --shadow-pill: 0 1px 2px rgb(0 0 0 / 8%);
 
-  /* chatoffice-logo.svg is pure black-and-white; dark themes flip it to 1 */
   --logo-invert: 0;
 }
 
@@ -208,16 +207,6 @@ body.sidebar-resizing {
   gap: 9px;
   padding: 0 8px;
   margin-bottom: 20px;
-}
-
-.logo-lockup {
-  /* the 920×240 lockup scales by width here (232px sidebar minus padding),
-     NOT by height: height-only sizing lets the wide wordmark overflow the
-     sidebar and clip the trailing "e" — the wordmark must fit the column */
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: invert(var(--logo-invert));
 }
 
 .sidebar-nav {
@@ -3193,4 +3182,37 @@ body.sidebar-resizing {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 侧栏新建/打开入口：紧凑 a 标签行 */
+.side-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 6px 8px;
+}
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--text-secondary, #555);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.side-link:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.06));
+  color: var(--text-primary, #222);
+}
+.side-link svg {
+  flex: none;
+}
+.side-link-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

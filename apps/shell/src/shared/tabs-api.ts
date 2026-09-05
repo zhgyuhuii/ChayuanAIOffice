@@ -51,11 +51,6 @@ export interface TabsApi {
    */
   setTreeWidth(px: number): void
   /**
-   * fire-and-forget: the user dragged the home tree splitter — the editor
-   * views' left inset follows this width live.
-   */
-  setTreeWidth(px: number): void
-  /**
    * fire-and-forget: a shell modal (settings) needs the whole window. Shell
    * DOM always paints beneath the editor WebContentsViews, so the main
    * process hides the active editor view for the modal's lifetime.
@@ -74,6 +69,25 @@ export const TABS_CHANNELS = {
   chromePressed: 'tabs:chrome-pressed',
   treeInset: 'tabs:tree-inset',
   treeWidth: 'tabs:tree-width',
-  treeWidth: 'tabs:tree-width',
   shellModal: 'tabs:shell-modal',
 } as const
+
+/// 自绘窗口控制（Windows/Linux 用；macOS 用原生红绿灯，web/dsh 无窗口概念）
+export const WINDOW_CHANNELS = {
+  minimize: 'window:minimize',
+  toggleMaximize: 'window:toggle-maximize',
+  close: 'window:close',
+  isMaximized: 'window:is-maximized',
+  maximizeChanged: 'window:maximize-changed',
+} as const
+
+export interface WindowControlsApi {
+  /** 仅 Windows/Linux electron 为 true；macOS 走原生红绿灯，web/dsh 无此 API */
+  readonly controls: boolean
+  readonly platform: string
+  minimize(): void
+  toggleMaximize(): void
+  close(): void
+  isMaximized(): Promise<boolean>
+  onMaximizeChange(callback: (maximized: boolean) => void): () => void
+}

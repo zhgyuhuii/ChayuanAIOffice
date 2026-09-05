@@ -408,3 +408,31 @@ html.chatoffice-shell-modal .app-frame-content.doc-active {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 自绘窗口控制（Windows/Linux，tab 条右侧）：禁用拖拽区，hover 形态贴近系统 */
+.win-controls {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: stretch;
+  margin-left: auto;
+  height: 100%;
+}
+.win-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+  padding: 0;
+}
+.win-control-btn:hover {
+  background: var(--surface-hover, rgba(0, 0, 0, 0.08));
+  color: var(--text-primary, #222);
+}
+.win-control-close:hover {
+  background: #e81123;
+  color: #fff;
+}

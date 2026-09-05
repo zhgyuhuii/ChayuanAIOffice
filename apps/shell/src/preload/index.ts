@@ -19,7 +19,8 @@ import type {
 } from '../shared/home-api'
 import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
-import { TABS_CHANNELS } from '../shared/tabs-api'
+import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
+import type { WindowControlsApi } from '../shared/tabs-api'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
   'zh',
@@ -398,9 +399,6 @@ const tabsApi: TabsApi = {
   setTreeWidth(px) {
     ipcRenderer.send(TABS_CHANNELS.treeWidth, px)
   },
-  setTreeWidth(px) {
-    ipcRenderer.send(TABS_CHANNELS.treeWidth, px)
-  },
   setShellModalOpen(open) {
     ipcRenderer.send(TABS_CHANNELS.shellModal, open)
   },
@@ -411,6 +409,20 @@ const tabsApi: TabsApi = {
   },
 }
 
+const windowControlsApi: WindowControlsApi = {
+  controls: process.platform === 'win32' || process.platform === 'linux',
+  platform: process.platform,
+  minimize: () => ipcRenderer.send(WINDOW_CHANNELS.minimize),
+  toggleMaximize: () => ipcRenderer.send(WINDOW_CHANNELS.toggleMaximize),
+  close: () => ipcRenderer.send(WINDOW_CHANNELS.close),
+  isMaximized: () => ipcRenderer.invoke(WINDOW_CHANNELS.isMaximized) as Promise<boolean>,
+  onMaximizeChange(callback: (maximized: boolean) => void) {
+    const listener = (_event: unknown, maximized: boolean): void => callback(maximized)
+    ipcRenderer.on(WINDOW_CHANNELS.maximizeChanged, listener)
+    return () => ipcRenderer.removeListener(WINDOW_CHANNELS.maximizeChanged, listener)
+  },
+}
+contextBridge.exposeInMainWorld('chatOfficeWindow', windowControlsApi)
 contextBridge.exposeInMainWorld('chatOfficeTabs', tabsApi)
 
 // remote storage (MinIO / OSS): settings, listing, object transfer, pending queue

@@ -190,7 +190,7 @@ import type {
 } from '../shared/home-api'
 import { HOME_CHANNELS } from '../shared/home-api'
 import type { TabKind } from '../shared/tabs-api'
-import { TABS_CHANNELS } from '../shared/tabs-api'
+import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import { showErrorDialog } from './error-dialog'
 import { normalizeRecentQuery, pageRecentPaths, statExistingPaths } from './recent-files'
 import { TabManager } from './tab-manager'
@@ -2400,8 +2400,10 @@ function createShellWindow(): void {
     minWidth: 980,
     minHeight: 600,
     title: 'ChatOffice',
-    // 非 macOS：菜单条直接不占位（顶层菜单已全部 visible:false）
-    ...(process.platform === 'darwin' ? {} : { autoHideMenuBar: true }),
+    // 非 macOS：隐藏系统标题栏（自绘最小化/最大化/关闭，位于 tab 条右侧）
+    ...(process.platform === 'darwin'
+      ? {}
+      : { titleBarStyle: 'hidden' as const, autoHideMenuBar: true }),
     // vibrancy: editor modules punch translucent regions (e.g. the slides
     // thumbnail pane) through to the desktop
     ...(process.platform === 'darwin'
@@ -3467,13 +3469,34 @@ app.on('web-contents-created', (_event, contents) => {
   })
 })
 
+function registerWindowControlsIpc(): void {
+  ipcMain.on(WINDOW_CHANNELS.minimize, () => shellWindow?.minimize())
+  ipcMain.on(WINDOW_CHANNELS.toggleMaximize, () => {
+    if (!shellWindow || shellWindow.isDestroyed()) return
+    if (shellWindow.isMaximized()) shellWindow.unmaximize()
+    else shellWindow.maximize()
+  })
+  ipcMain.on(WINDOW_CHANNELS.close, () => shellWindow?.close())
+  ipcMain.handle(WINDOW_CHANNELS.isMaximized, () =>
+    Boolean(shellWindow && !shellWindow.isDestroyed() && shellWindow.isMaximized()),
+  )
+  const broadcastMaximized = (maximized: boolean): void => {
+    for (const view of BrowserWindow.getAllWindows()) {
+      for (const wc of BrowserWindow.getAllWindows().map((w) => w.webContents)) {
+        if (!wc.isDestroyed()) wc.send(WINDOW_CHANNELS.maximizeChanged, maximized)
+      }
+    }
+  }
+  app.on('browser-window-created', (_event, win) => {
+    win.on('maximize', () => broadcastMaximized(true))
+    win.on('unmaximize', () => broadcastMaximized(false))
+  })
+}
+
 function registerTabsIpc(): void {
   ipcMain.on(TABS_CHANNELS.chromePressed, (event) => broadcastChromePressed(event.sender))
   ipcMain.on(TABS_CHANNELS.treeInset, (_event, visible: unknown) => {
     tabManager?.setTreeInset(visible === true)
-  })
-  ipcMain.on(TABS_CHANNELS.treeWidth, (_event, px: unknown) => {
-    if (typeof px === 'number' && Number.isFinite(px)) tabManager?.setTreeWidth(px)
   })
   ipcMain.on(TABS_CHANNELS.treeWidth, (_event, px: unknown) => {
     if (typeof px === 'number' && Number.isFinite(px)) tabManager?.setTreeWidth(px)

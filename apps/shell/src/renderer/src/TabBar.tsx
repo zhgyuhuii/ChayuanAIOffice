@@ -1,13 +1,73 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { CSSProperties, ReactElement } from 'react'
-import type { TabsApi, TabSummary } from '../../shared/tabs-api'
+import type { TabsApi, TabSummary, WindowControlsApi } from '../../shared/tabs-api'
 import { useI18n } from './locale'
 import { getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 
 declare global {
   interface Window {
     chatOfficeTabs: TabsApi
+    chatOfficeWindow?: WindowControlsApi
   }
+}
+
+/** 自绘窗口控制：Windows/Linux 标题栏隐藏后的 最小化/最大化/关闭，与 tab 条同行。
+ *  macOS 用原生红绿灯、web/dsh 无窗口概念——preload 的 controls=false 时不出现在 DOM。 */
+function WindowControls(): ReactElement | null {
+  const [maximized, setMaximized] = useState(false)
+  useEffect(() => {
+    const controls = window.chatOfficeWindow
+    if (!controls?.controls) return
+    void controls.isMaximized().then(setMaximized)
+    return controls.onMaximizeChange(setMaximized)
+  }, [])
+  if (!window.chatOfficeWindow?.controls) return null
+  return (
+    <div className="win-controls">
+      <button
+        className="win-control-btn"
+        title="最小化"
+        aria-label="最小化"
+        onClick={() => window.chatOfficeWindow?.minimize()}
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
+          <path d="M1.5 5.5h8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+        </svg>
+      </button>
+      <button
+        className="win-control-btn"
+        title={maximized ? '还原' : '最大化'}
+        aria-label={maximized ? '还原' : '最大化'}
+        onClick={() => window.chatOfficeWindow?.toggleMaximize()}
+      >
+        {maximized ? (
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <path d="M3 3V1.5h6.5V8H8" stroke="currentColor" strokeWidth="1.1" />
+            <rect x="1.5" y="3" width="6.5" height="6.5" stroke="currentColor" strokeWidth="1.1" />
+          </svg>
+        ) : (
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="8" height="8" stroke="currentColor" strokeWidth="1.1" />
+          </svg>
+        )}
+      </button>
+      <button
+        className="win-control-btn win-control-close"
+        title="关闭"
+        aria-label="关闭"
+        onClick={() => window.chatOfficeWindow?.close()}
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden="true">
+          <path
+            d="M1.5 1.5l8 8m0-8l-8 8"
+            stroke="currentColor"
+            strokeWidth="1.1"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+  )
 }
 
 /** Panel glyph: outlined window with one side column filled to signal the target pane */
@@ -446,6 +506,7 @@ export function TabBar() {
       >
         <PaneToggleIcon side="right" />
       </button>
+      <WindowControls />
     </div>
   )
 }
