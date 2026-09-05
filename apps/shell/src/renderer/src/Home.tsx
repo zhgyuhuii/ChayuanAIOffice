@@ -2054,6 +2054,7 @@ export function Home() {
             activeScope={selectedProjectId ? { kind: 'project', id: selectedProjectId } : undefined}
             openSignal={chatOpenSignal}
             settingsRefreshNonce={settingsNonce}
+            projects={projects}
           />
           {/* right content pane: editors borrow this rect on the home tab in a
               later phase; for now it carries the empty-state hint */}

@@ -2,7 +2,8 @@
 // ZCode-parity composer + tick rail: turn-nav entry derivation (pairing,
 // previews, states), the navigator DOM (aria, tick count, hidden below 2),
 // the session-scoped model/mode send path (override reaches the wire request,
-// plan suffix appended), and the mode/model session write-back.
+// plan suffix appended), the mode/model session write-back, and the history
+// dropdown's tree grouping (project → file → unattached).
 import { createElement as h } from 'react'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
@@ -10,6 +11,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { HomeChatSession } from '../src/shared/home-api'
 import { useHomeChatStore } from '../src/renderer/src/home-chat/store'
 import { TurnNavigator, deriveTurnNavEntries } from '../src/renderer/src/home-chat/TurnNavigator'
+import { groupSessionsByTree, groupNameOf } from '../src/renderer/src/home-chat/tree-groups'
 import { HomeChatController } from '../src/renderer/src/home-chat/controller'
 import type { HomeAgentBridge, HomeAgentTexts } from '../src/renderer/src/home-chat/agent'
 
@@ -244,5 +246,49 @@ describe('session mode/model write-back', () => {
       })
     })
     expect('mode' in latest.active!).toBe(false)
+  })
+})
+
+describe('history dropdown tree grouping', () => {
+  const mk = (id: string, scope?: HomeChatSession['scope']): HomeChatSession => ({
+    id,
+    title: id,
+    createdAt: 0,
+    updatedAt: 0,
+    messages: [{ id: `${id}-m`, role: 'user', text: 'q', ts: 1 }],
+    ...(scope ? { scope } : {}),
+  })
+
+  it('groups project → file → unattached, merging same-scope sessions in order', () => {
+    const groups = groupSessionsByTree([
+      mk('u1'),
+      mk('f1', { kind: 'file', id: '/docs/report.docx' }),
+      mk('p1', { kind: 'project', id: 'proj1' }),
+      mk('p2', { kind: 'project', id: 'proj1' }),
+      mk('f2', { kind: 'file', id: '/docs/notes.md' }),
+      mk('u2'),
+    ])
+    expect(groups.map((g) => g.key)).toEqual([
+      'project:proj1',
+      'file:/docs/report.docx',
+      'file:/docs/notes.md',
+      'unattached',
+    ])
+    expect(groups[0]!.sessions.map((s) => s.id)).toEqual(['p1', 'p2'])
+    expect(groups[3]!.sessions.map((s) => s.id)).toEqual(['u1', 'u2'])
+  })
+
+  it('names groups by project name, file basename, and the standalone label', () => {
+    const groups = groupSessionsByTree([
+      mk('p1', { kind: 'project', id: 'proj1' }),
+      mk('f1', { kind: 'file', id: '/Users/x/一季度总结.docx' }),
+      mk('u1'),
+    ])
+    const projects = [{ id: 'proj1', name: '季度报告' }]
+    expect(groupNameOf(groups[0]!, projects, '独立会话')).toBe('季度报告')
+    expect(groupNameOf(groups[1]!, projects, '独立会话')).toBe('一季度总结.docx')
+    expect(groupNameOf(groups[2]!, projects, '独立会话')).toBe('独立会话')
+    // a deleted project falls back to its id rather than vanishing
+    expect(groupNameOf(groups[0]!, [], '独立会话')).toBe('proj1')
   })
 })

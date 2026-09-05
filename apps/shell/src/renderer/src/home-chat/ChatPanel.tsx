@@ -10,6 +10,7 @@ import { useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
 import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
+import { groupSessionsByTree, groupNameOf } from './tree-groups'
 import { createHomeChatBridge, refreshHomeModelCache } from './bridge'
 import type {
   HomeChatAttachment,
@@ -17,6 +18,7 @@ import type {
   HomeChatMessage,
   HomeChatSession,
   HomeChatSessionScope,
+  ProjectSummaryEntry,
 } from '../../../shared/home-api'
 
 /** greeting sublines on the landing screen: one is picked at random on mount */
@@ -213,6 +215,7 @@ export function ChatPanel({
   activeScope,
   openSignal,
   settingsRefreshNonce,
+  projects,
 }: {
   /** owned by Home so the left tree can read/drive the same sessions */
   store: ReturnType<typeof useHomeChatStore>
@@ -225,6 +228,8 @@ export function ChatPanel({
   openSignal?: { sessionId: string; nonce: number } | null
   /** bumped by Home when the settings modal closes: re-read AiSettingsV2 */
   settingsRefreshNonce?: number
+  /** known projects (for naming the history dropdown's tree groups) */
+  projects?: ProjectSummaryEntry[]
 }): ReactElement {
   const { t, lang, dateLocale } = useI18n()
   const supported = useMemo(chatSupported, [])
@@ -483,6 +488,18 @@ export function ChatPanel({
 
   const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
 
+  // history dropdown tree: project → file → unattached, groups collapsible
+  const sessionGroups = useMemo(() => groupSessionsByTree(sessions), [sessions])
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const toggleGroup = (key: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
   /** history-row preview: the first question, plain, ~2 lines */
   const sessionPreview = (s: HomeChatSession): string => {
     const first = s.messages.find((m) => m.role === 'user')
@@ -686,48 +703,127 @@ export function ChatPanel({
             </button>
             {menuOpen && (
               <div className="chat-sessions" role="menu">
-                {sessions.length === 0 ? (
+                {sessionGroups.length === 0 ? (
                   <p className="chat-sessions-empty">{t('chatNoSessions')}</p>
                 ) : (
-                  sessions.map((s) => (
-                    <div key={s.id} className="chat-session-row" role="none">
-                      <button
-                        className="chat-session-open"
-                        role="menuitem"
-                        onClick={() => openSession(s.id)}
-                      >
-                        <span className="chat-session-main">
-                          <span className="chat-session-title">{s.title || t('chatUntitled')}</span>
-                          <span className="chat-session-prev">{sessionPreview(s)}</span>
-                        </span>
-                        <span className="chat-session-time">
-                          {chatTime(s.updatedAt, dateLocale)}
-                        </span>
-                      </button>
-                      <button
-                        className="chat-session-del"
-                        role="menuitem"
-                        aria-label={t('chatDeleteSession')}
-                        onClick={() => store.removeSession(s.id)}
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          aria-hidden="true"
+                  sessionGroups.map((g) => {
+                    const open = !collapsedGroups.has(g.key)
+                    return (
+                      <div key={g.key} className="chat-session-group">
+                        <button
+                          className={`chat-group-head${open ? ' is-open' : ''}`}
+                          aria-expanded={open}
+                          onClick={() => toggleGroup(g.key)}
                         >
-                          <path
-                            d="M2.5 4h11M6.5 4V2.5h3V4M4 4l.7 9a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L12 4"
-                            stroke="currentColor"
-                            strokeWidth="1.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))
+                          <span className="chat-group-chev" aria-hidden>
+                            ▾
+                          </span>
+                          {g.scope === null ? (
+                            <svg
+                              className="chat-group-icon"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M14 2L7 9M14 2L9.5 14 7 9 2 6.5 14 2z"
+                                stroke="currentColor"
+                                strokeWidth="1.4"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          ) : g.scope.kind === 'project' ? (
+                            <svg
+                              className="chat-group-icon"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3l1.5 2H13A1.5 1.5 0 0 1 14.5 6v6A1.5 1.5 0 0 1 13 13.5H3A1.5 1.5 0 0 1 1.5 12V4z"
+                                stroke="currentColor"
+                                strokeWidth="1.2"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="chat-group-icon"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M9.5 1.5H4A1.5 1.5 0 0 0 2.5 3v10A1.5 1.5 0 0 0 4 14.5h8A1.5 1.5 0 0 0 13.5 13V5.5z"
+                                stroke="currentColor"
+                                strokeWidth="1.2"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M9.5 1.5V5.5h4"
+                                stroke="currentColor"
+                                strokeWidth="1.2"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                          <span className="chat-group-name">
+                            {groupNameOf(g, projects ?? [], t('chatUnattached'))}
+                          </span>
+                          <span className="chat-group-count">{g.sessions.length}</span>
+                        </button>
+                        {open &&
+                          g.sessions.map((s) => (
+                            <div key={s.id} className="chat-session-row" role="none">
+                              <button
+                                className="chat-session-open"
+                                role="menuitem"
+                                onClick={() => openSession(s.id)}
+                              >
+                                <span className="chat-session-main">
+                                  <span className="chat-session-title">
+                                    {s.title || t('chatUntitled')}
+                                  </span>
+                                  <span className="chat-session-prev">{sessionPreview(s)}</span>
+                                </span>
+                                <span className="chat-session-time">
+                                  {chatTime(s.updatedAt, dateLocale)}
+                                </span>
+                              </button>
+                              <button
+                                className="chat-session-del"
+                                role="menuitem"
+                                aria-label={t('chatDeleteSession')}
+                                onClick={() => store.removeSession(s.id)}
+                              >
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 16 16"
+                                  fill="none"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M2.5 4h11M6.5 4V2.5h3V4M4 4l.7 9a1.5 1.5 0 0 0 1.5 1.4h3.6a1.5 1.5 0 0 0 1.5-1.4L12 4"
+                                    stroke="currentColor"
+                                    strokeWidth="1.2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    )
+                  })
                 )}
               </div>
             )}
