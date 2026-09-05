@@ -256,6 +256,8 @@ function ProjectPanel({
 
   // in-app confirm dialog (same style as the delete-files modal), not window.confirm
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  // 项目节点折叠：与 收藏/最近 同级的可展开树节点（各自独立，互不影响）
+  const [collapsed, setCollapsed] = useState(false)
 
   const doDelete = (id: string) => {
     setProjMenu(null)
@@ -287,13 +289,44 @@ function ProjectPanel({
 
   return (
     <div className="proj-panel">
-      <div className="proj-panel-head">
+      <div
+        className="proj-panel-head"
+        role="button"
+        tabIndex={0}
+        aria-expanded={!collapsed}
+        onClick={() => setCollapsed((v) => !v)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && event.target === event.currentTarget) {
+            setCollapsed((v) => !v)
+          }
+        }}
+      >
+        <svg
+          className={`proj-panel-arrow${collapsed ? ' folded' : ''}`}
+          width="12"
+          height="12"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M6 3.5L10.5 8L6 12.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
         <span className="proj-panel-title">{t('projects')}</span>
         <button
           className="proj-add-btn"
           data-tip={t('newProject')}
-          onClick={() => void startCreating()}
           aria-label={t('newProject')}
+          onClick={(event) => {
+            event.stopPropagation()
+            setCollapsed(false)
+            void startCreating()
+          }}
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path
@@ -306,7 +339,7 @@ function ProjectPanel({
         </button>
       </div>
 
-      {creating && (
+      {!collapsed && creating && (
         <div className="proj-new-row">
           <input
             ref={newInputRef}
@@ -335,7 +368,7 @@ function ProjectPanel({
         </div>
       )}
 
-      <ul className="proj-list">
+      <ul className="proj-list" style={collapsed ? { display: 'none' } : undefined}>
         {projects.map((proj) => {
           const isActive = selectedId === proj.id
           const isRenaming = renaming?.id === proj.id

@@ -142,9 +142,7 @@ body.vib .home {
 .side-sec + .side-sec,
 .side-files + .side-files,
 .side-sec + .side-files {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
 }
 
 /* sections inside the unified scroll column no longer scroll individually */
@@ -161,7 +159,7 @@ body.vib .home {
   flex-direction: column;
   flex-shrink: 0;
   width: 232px; /* live value comes from Home's inline style (home-layout.sidebarWidth) */
-  padding: 18px 12px 16px;
+  padding: 8px 8px 12px;
   border-right: 1px solid var(--border);
   /* the sidebar frame itself stays put; the account entry never drifts */
   overflow: hidden;
@@ -1081,8 +1079,36 @@ body.sidebar-resizing {
 .proj-panel-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 10px 6px;
+  gap: 5px;
+  padding: 2px 8px;
+  margin-bottom: 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.proj-panel-head:hover {
+  background: var(--bg-hover);
+}
+
+.proj-panel-head .proj-panel-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.proj-panel-arrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transform: rotate(90deg); /* expanded: pointing down */
+  transition: transform 0.15s ease;
+}
+
+.proj-panel-arrow.folded {
+  transform: rotate(0deg); /* collapsed: pointing right */
 }
 
 .proj-panel-title {
@@ -1995,8 +2021,8 @@ body.sidebar-resizing {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 8px;
-  margin-bottom: 4px;
+  padding: 2px 8px;
+  margin-bottom: 1px;
   border-radius: 6px;
   cursor: pointer;
   user-select: none;
@@ -2183,11 +2209,10 @@ body.sidebar-resizing {
 }
 
 .side-files-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  /* room for the hover controls and the escaped row menu */
-  padding: 0 2px 6px;
+  /* 菜单式下推：分区内容不设内滚动，由外层 sidebar-scroll 统一滚动 */
+  overflow: visible;
+  flex: none;
+  padding: 0 2px 2px;
 }
 
 .side-file-list {
