@@ -1419,7 +1419,6 @@ export function App() {
     setDrawKind(null)
     if (kind) void insertActions.insertShapeAt(ctxRef.current, kind, rect)
   }, [])
-  const insertImage = useCallback(() => insertActions.insertImage(ctxRef.current), [])
   const [insertImageOpen, setInsertImageOpen] = useState(false)
   const insertImageBridge: InsertImageBridge = {
     searchWeb: async (query) => {
@@ -3513,6 +3512,7 @@ export function App() {
             onInsertIcon={(def, color) => void insertIcon(def, color)}
             onInsertChart={(kind) => void insertChart(kind)}
             onOpenChartDesigner={openChartDesigner}
+            onOpenEchart={openChartDesigner}
             onInsertSmartArt={(def) => void insertSmartArt(def)}
             onInsertWordArt={(preset) => void insertWordArt(preset)}
             onInsertField={(type) => void insertField(type)}
