@@ -48,6 +48,8 @@ import {
   buildGrpSpXml,
   calcBoundingBox,
   addImageMediaAndRel,
+  SVG_BLIP_URI,
+  SVG_BLIP_NS,
   type NewTableOptions,
 } from './insert'
 import { BLANK_SLIDE_XML } from './blank'
@@ -176,7 +178,9 @@ export {
 export {
   addElement,
   addPicture,
+  addSvgPicture,
   addImageMediaAndRel,
+  SVG_BLIP_URI,
   deleteElement,
   buildSpXml,
   buildTableXml,
@@ -186,6 +190,7 @@ export {
   type NewElementOptions,
   type NewElementBodyPr,
   type NewPictureOptions,
+  type NewSvgPictureOptions,
   type NewShapeKind,
   type NewTableOptions,
   type NewTableCellSpec,
@@ -1684,7 +1689,7 @@ export function replacePictureBytes(
   sourceId: string,
   bytes: Uint8Array,
   ext: string,
-  opts?: { keepSrcRect?: boolean },
+  opts?: { keepSrcRect?: boolean; svgBytes?: Uint8Array },
 ): boolean {
   const el = slide.elements.find((e) => e.id === sourceId && e.type === 'picture')
   if (!el) return false
@@ -1715,6 +1720,27 @@ export function replacePictureBytes(
   }
   pic.mediaRef = added.mediaPath
   delete pic.dataUrl // the media resolver re-derives it from the new mediaRef
+  // svgBytes provided → refresh the asvg:svgBlip vector source in place (Q3: SVG
+  // pictures are replaced wholesale, restyle = regenerate + this in-place swap);
+  // without it the strip above correctly dropped a stale extension
+  if (opts?.svgBytes) {
+    const vector = addImageMediaAndRel(opened, slide, opts.svgBytes, 'svg')
+    if (!vector) return false
+    const extLst =
+      `<a:extLst><a:ext uri="${SVG_BLIP_URI}">` +
+      `<asvg:svgBlip xmlns:asvg="${SVG_BLIP_NS}" r:embed="${vector.rid}"/></a:ext></a:extLst>`
+    const openEnd = blip.index + tag.length
+    if (tag.endsWith('/>')) {
+      xml = xml.slice(0, openEnd - 2) + '>' + extLst + '</a:blip>' + xml.slice(openEnd)
+    } else {
+      const close = xml.indexOf('</a:blip>', openEnd)
+      if (close < 0) return false
+      xml = xml.slice(0, close) + extLst + xml.slice(close)
+    }
+    pic.svgMediaRef = vector.mediaPath
+  } else {
+    delete pic.svgMediaRef
+  }
   el.dirty = el.dirtyTransform = el.dirtyFill = el.dirtyStroke = false
   el.dirtySrcRect = false
   el.dirtyPPr = undefined

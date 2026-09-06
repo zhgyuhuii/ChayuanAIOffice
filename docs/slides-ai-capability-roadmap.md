@@ -122,6 +122,8 @@ embedding 通道、TTS/ASR 调用通道、本地抽帧/转写（ffmpeg）、raw 
 
 ## 8. 二期（SVG 线）· 方向已定，开工前逐题再确认
 
+> **2026-09-06 落地记录**：经用户指示"继续开发未完成任务、不要中断"，按本节既有建议直接实施为决定并全部落地——Q2 svgBlip 双 part 标准（a:blip PNG fallback + extLst asvg:svgBlip）+ 渲染端"SVG 优先/PNG 兜底"（buildPicture 单点改动，主画布/SlideThumb/export-render 三端同源生效，主进程 MediaResolver 已有 SVG data URL 通道）；Q3 整体图片处理（改色=重生成 + replacePictureBytes 原位换 svgBytes，raster 替换自动剥离遗留扩展）；Q4 LLM 直写 SVG（generate_svg 工具：rasterizeSvg 渲染诊断→反馈自纠 ≤2 次→仍败引导降级 generate_image/形状，产物走 addPicture op 的 svgText 双 part）+ Recraft vendor（唯一原生 SVG 生成，IMAGE_GEN 通道）；Q5 setAnimations 全量解锁（aiCallable:true，24 条/页硬护栏）；Q7 兼容基线按建议（PNG fallback 兜老版本）。WordArt 生成 op（addWordArt：大字号/粗体/填充/描边渲染支持子集；prstTxWarp 几何仍不生成）。顺带修复：generate_video 的 addMedia 调用传 x/y/w/h 而 op 要求 EMU offset——运行时必失败的存量 bug。全套回归：pptx-engine 848 / pptx-render 237 / agent-core 80 / ai-provider 177 / ai-search 51 / ui 69 / slides 622+8skip 全绿。
+
 - **Q2 SVG 落地形态**（建议 svgBlip 双 part 标准）→ 连锁：渲染端"SVG 优先/PNG 兜底"两级绘制 + **导出/打印/缩略图路径（export-render / SlideThumb，本次补遗）**；
 - **Q3 SVG 再编辑性**（建议一期整体图片处理，不转 custGeom；改色靠重生成 + 原位替换复用 replacePicture）；
 - **Q4 SVG 生成来源**（建议 LLM 直写 + 渲染→视觉审→≤2 轮迭代→降级插位图闭环；Recraft vendor 落地后多一条专用向量模型选项）；

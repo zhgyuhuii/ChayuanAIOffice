@@ -118,6 +118,18 @@ export const VENDORS: VendorCatalogEntry[] = [
     docsUrl: 'https://fal.ai/models',
   },
   {
+    // Image-generation-only vendor: the only native SVG-output generator
+    // (model recraftv3, style vector_illustration) — strategic for the SVG line.
+    // OpenAI-shaped POST {base}/images/generations, driven by imagegen.ts.
+    id: 'recraft',
+    name: 'Recraft',
+    group: 'global',
+    defaultUrl: 'https://external.api.recraft.ai/v1',
+    api: 'openai-completions',
+    keyUrl: 'https://www.recraft.ai/profile/api-key',
+    docsUrl: 'https://docs.recraft.ai/',
+  },
+  {
     // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
     id: 'runway',
     name: 'Runway',

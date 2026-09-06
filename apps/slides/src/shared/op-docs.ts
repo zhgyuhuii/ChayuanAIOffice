@@ -112,9 +112,13 @@ export const OP_DOCS: Record<string, OpDoc> = {
     group: 'insert',
   },
   addPicture: {
-    sig: '{bytes:base64|dataURL,ext?,offset} — use insert_web_image instead',
+    sig: '{bytes:base64|dataURL,ext?,svgText?,offset} — svgText upgrades to a double-part vector (raster fallback + asvg:svgBlip); use insert_web_image/generate_svg instead',
     group: 'insert',
     aiCallable: false,
+  },
+  addWordArt: {
+    sig: '{text,offset:{x,y,cx,cy},fontSizePt?,fill?,outline?:{color,widthPt?},bold?,italic?} — display text (big/bold/fill/outline); EMU rect, height ≈ fontSizePt*2.2',
+    group: 'insert',
   },
   replacePicture: {
     sig: '{bytes:base64|dataURL,ext?} — use replace_image instead',
@@ -207,9 +211,8 @@ export const OP_DOCS: Record<string, OpDoc> = {
   setTransition: { sig: '{kind:"none"|"fade"|"push"|"wipe"|…}', group: 'slide' },
   setAdvanceTime: { sig: '{ms:number|null} — auto-advance; null clears', group: 'slide' },
   setAnimations: {
-    sig: '{items:[{spid,effect,trigger,durationMs,delayMs,…}]} — spid-addressed (cNvPr id), no id translation yet',
+    sig: '{items:[{sourceId,effect,trigger,durationMs?,delayMs?,motionPath?,paragraph?,rewind?}]} — full replace per slide; sourceId resolves like every op; ≤24 items/page',
     group: 'slide',
-    aiCallable: false,
   },
   setNotes: { sig: '{text} — speaker notes', group: 'slide' },
   addComment: { sig: '{text,author}', group: 'slide' },

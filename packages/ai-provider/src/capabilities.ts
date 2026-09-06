@@ -95,7 +95,7 @@ const OPENAI_VIDEO_INPUT_VENDORS = new Set(['aliyun-bailian', 'zhipu'])
 const OPENAI_VIDEO_INPUT_MODELS = /qwen-vl|glm-4v|glm-4(?!\w)/i
 
 /** vendors wired to imagegen / MediaJobClient video adapters */
-export const IMAGE_GEN_VENDOR_IDS = new Set(['gemini', 'openai', 'aliyun-bailian', 'chatoffice'])
+export const IMAGE_GEN_VENDOR_IDS = new Set(['gemini', 'openai', 'aliyun-bailian', 'recraft', 'chatoffice'])
 /** Must stay in sync with the adapters registered in media-jobs.ts — a
  * vendor listed here without a wired adapter would promise what runMediaJob
  * then refuses ("No media-generation adapter"). */

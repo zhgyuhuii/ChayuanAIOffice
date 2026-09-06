@@ -900,6 +900,11 @@ export function sliceGroupChildXmls(grpXml: string): string[] {
 function blipEmbedId(blip: any): string | undefined {
   const direct = blip?.['@_r:embed']
   if (direct) return direct
+  return svgBlipEmbedId(blip)
+}
+
+/** r:embed of the Office 2016 <asvg:svgBlip> extension inside a:extLst, if any */
+function svgBlipEmbedId(blip: any): string | undefined {
   const exts = blip?.['a:extLst']?.['a:ext']
   for (const ext of Array.isArray(exts) ? exts : exts ? [exts] : []) {
     for (const [key, value] of Object.entries(ext as Record<string, any>)) {
@@ -935,6 +940,11 @@ function parsePicture(
   const blip = blipFill?.['a:blip']
   const embedId = blipEmbedId(blip)
   const mediaRef = (embedId && ctx.mediaRels?.get(embedId)) || ''
+  // Double-part vector picture: a:blip → raster fallback, asvg:svgBlip → svg part.
+  // When the blip is bare (SVG-only), blipEmbedId already resolved mediaRef to the
+  // svg part and there is no separate fallback to record.
+  const svgEmbedId = svgBlipEmbedId(blip)
+  const svgMediaRef = (svgEmbedId && ctx.mediaRels?.get(svgEmbedId)) || ''
   const name = node['p:nvPicPr']?.['p:cNvPr']?.['@_name']
   const descr = node['p:nvPicPr']?.['p:cNvPr']?.['@_descr']
   const srcRect = parseSrcRect(blipFill?.['a:srcRect'])
@@ -995,6 +1005,7 @@ function parsePicture(
     name,
     ...(descr ? { descr } : {}),
     mediaRef,
+    ...(svgMediaRef && svgMediaRef !== mediaRef ? { svgMediaRef } : {}),
     ...(srcRect ? { srcRect } : {}),
     ...(picGeom && picGeom !== 'rect'
       ? { presetGeometry: picGeom, ...(picAdjust ? { adjust: picAdjust } : {}) }

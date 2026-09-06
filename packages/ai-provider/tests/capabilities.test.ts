@@ -70,3 +70,10 @@ describe('capabilityBlockers', () => {
     expect(capabilityBlockers(q('anthropic', 'anthropic', 'claude-sonnet-4-6'), 'attachment-audio')).toHaveLength(1)
   })
 })
+
+describe('recraft vendor (SVG-line image generation)', () => {
+  it('recraft model ids infer as image-generation and are wired to the image channel', () => {
+    expect(resolveModelCapabilities(q('recraft', 'openai-compatible', 'recraftv3')).imageGeneration).toBe(true)
+    expect(resolveModelCapabilities(q('recraft', 'openai-compatible', 'recraftv3')).videoGeneration).toBe(false)
+  })
+})

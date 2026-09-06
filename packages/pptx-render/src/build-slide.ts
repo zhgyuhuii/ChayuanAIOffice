@@ -529,7 +529,11 @@ function buildPicture(
   vp: Viewport,
   media: MediaResolver | undefined,
 ): PictureRenderNode {
-  const dataUrl = el.dataUrl ?? (el.mediaRef ? media?.(el.mediaRef) : undefined)
+  // Double-part vector picture: the svg part wins, the raster blip is the fallback
+  // (old renders without a MediaResolver keep el.dataUrl). An SVG-only blip (no
+  // separate fallback) already resolved mediaRef to the svg part upstream.
+  const svgDataUrl = el.svgMediaRef ? media?.(el.svgMediaRef) : undefined
+  const dataUrl = svgDataUrl ?? el.dataUrl ?? (el.mediaRef ? media?.(el.mediaRef) : undefined)
   // custGeom picture frame: clip the bitmap to the freeform path (normalized 0..1 → local px)
   const geomPath = el.customGeometry
     ? (el.customGeometry.path ?? el.customGeometry.fillPath)

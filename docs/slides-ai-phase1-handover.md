@@ -50,10 +50,10 @@ cd apps/slides && npx tsc --noEmit            # 干净（仅存量 tsconfig base
 - 降级模式限定 10 工具；样式/动画/图表精修类工具在兼容模式不可用（工具集见 slides-skill `DEGRADED_TOOL_NAMES`）。
 - slide-qc 在无视觉模型时只做几何审计（原行为）。
 
-### C. 路线图后续（尚未开工）
-- **二期（SVG 线）**：svgBlip 双 part 插入 / LLM 直写 SVG + 渲染审稿闭环 / 动画 op 解锁（setAnimations 引擎已实现，仅 aiCallable:false）/ **SVG 导出与缩略图路径**（export-render/SlideThumb，勿忘）/ WordArt 生成 op。开工前按共识 v3 §8 的 Q2~Q7 逐题与用户确认。
+### C. 路线图后续
+- **二期（SVG 线）✅ 2026-09-06 已落地**（经用户指示按 roadmap §8 建议直接实施）：svgBlip 双 part 插入（engine addSvgPicture + parse svgMediaRef + replacePictureBytes 原位换向量）/ 渲染端 SVG 优先 PNG 兜底（主画布/缩略图/导出三端同源）/ generate_svg 工具（rasterizeSvg 渲染诊断→≤2 轮自纠→降级引导）/ setAnimations 解锁（24 条/页护栏）/ addWordArt op / Recraft vendor。测试新增 svg-blip（引擎 7）+ svg-ops（8）+ svg-tool（6）。顺带修复 generate_video 落页的 EMU offset 存量 bug。详见 roadmap §8 落地记录。
 - **三期**：公式 OMML 三端、音频/旁白整链、素材版式转换、整册多版本、3D 开放（详见 roadmap §9）。
-- 二期可复用：Recraft（原生 SVG 生成）vendor 条目尚未加；VIDEO_GEN_VENDOR_IDS 与 media-jobs 适配器注册必须保持同步（capabilities.ts 有注释）。
+- 保持同步约束：VIDEO_GEN_VENDOR_IDS 与 media-jobs 适配器注册（capabilities.ts 有注释）；二期后 SVG part 依赖 IMAGE_MIME 的 svg 条目（insert.ts）。
 
 ## 4. 并行工作注意
 

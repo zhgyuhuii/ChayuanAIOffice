@@ -472,6 +472,9 @@ export interface PictureElement extends ElementBase {
   type: 'picture'
   /** Picture media path inside the zip (word/ppt/media/imageN.ext) */
   mediaRef: string
+  /** SVG part path (Office 2016 <asvg:svgBlip> extension) for double-part vector
+   *  pictures: the renderer prefers this and falls back to the raster mediaRef */
+  svgMediaRef?: string
   /** Decoded dataURL (for rendering, may be lazy-loaded) */
   dataUrl?: string
   /** Source crop <a:srcRect>: fraction cropped from each edge (0..1) */

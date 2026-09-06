@@ -6,10 +6,12 @@ import type {
   RenderSlide,
   ShapeRenderNode,
 } from '@chatoffice/pptx-render'
+import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
 import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '../../shared/ipc'
 import { opVocabulary } from '../../shared/op-docs'
 import { auditDeckConsistency, auditSlideLayout, formatAudit } from './layout-audit'
 import { runLayoutScript, type LayoutScriptElement, type SlideStylePatch } from './layout-script'
+import { rasterizeSvg } from './svg-raster'
 import { t } from '../i18n/locale'
 
 /**
@@ -575,6 +577,26 @@ const TOOLS: AgentToolDef[] = [
           },
         },
         required: ['prompt'],
+      },
+    },
+    {
+      name: 'generate_svg',
+      description:
+        '[Vector] Insert a vector graphic you write yourself as SVG — lands as a standard double part (crisp vector + raster fallback for old PowerPoint/WPS). ' +
+        'Best for icons, logos, diagrams, arrows, decorative geometry: sharp at any zoom, tiny file size, recolorable by regeneration. ' +
+        'Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; no <text> with webfonts (convert text to paths or keep font-family generic); solid fills only; keep shapes inside the viewBox. ' +
+        'The insert is render-checked; if the check fails twice, fall back to generate_image or shapes.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          svg: { type: 'string', description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>' },
+          x: { type: 'number', description: 'left position in canvas px (default centered)' },
+          y: { type: 'number', description: 'top position in canvas px (default centered)' },
+          w: { type: 'number', description: 'width in canvas px (default 320, kept within the slide)' },
+          h: { type: 'number', description: 'height in canvas px (default from the viewBox aspect ratio)' },
+          slideIndex: { type: 'number', description: 'target slide (default: current slide)' },
+        },
+        required: ['svg'],
       },
     },
     {
@@ -1703,6 +1725,8 @@ interface SkillState {
   htmlGenerated: boolean
   /** A web_search ran in this conversation — unlocks dataSource:'search' in the figure gate */
   webSearched?: boolean
+  /** Consecutive failed generate_svg render checks (0 after a success); caps the loop at 2 */
+  svgAttempts?: number
   /** Number of pages most recently planned by plan_deck, used by the progress checklist to remind the AI to finish */
   plannedPages?: number
   /** Per-page titles planned by plan_deck (order = page order), used to name unfinished pages in the checklist */
@@ -2198,8 +2222,19 @@ ${r.text}`,
       const H = 270
       const x = Math.max(0, Math.round(((cur?.widthPx ?? 1280) - W) / 2))
       const y = Math.max(0, Math.round(((cur?.heightPx ?? 720) - H) / 2))
+      // addMedia's offset is an EMU rect (reqRect); canvas px → EMU at 96dpi
+      const emu = (px: number) => Math.round(px * EMU_PER_PX_96)
       const r = await window.slidesApi.applyTxn?.({
-        ops: [{ op: 'addMedia', kind: 'video', bytes: res.bytes, ext: res.ext, slide: slideIndex, x, y, w: W, h: H }],
+        ops: [
+          {
+            op: 'addMedia',
+            kind: 'video',
+            bytes: res.bytes,
+            ext: res.ext,
+            slide: slideIndex,
+            offset: { x: emu(x), y: emu(y), cx: emu(W), cy: emu(H) },
+          },
+        ],
       })
       if (!r) return fail(t('aiFailGenerateVideo'), 'The addMedia transaction could not be executed')
       if (r.failures?.length) return fail(t('aiFailGenerateVideo'), r.failures.map((f) => f.error).join('; '))
@@ -2207,6 +2242,92 @@ ${r.text}`,
         output: `Video generated with ${res.vendorId}/${res.model} and inserted on slide ${slideIndex + 1}. Tell the user it plays in presentation mode and that generation was billed by the vendor.`,
         mutated: true,
         summary: t('aiSumGenerateVideo'),
+      }
+    }
+
+    case 'generate_svg': {
+      const svg = String(call.input.svg ?? '').trim()
+      if (!/<svg[\s>]/i.test(svg)) {
+        return fail(
+          t('aiFailGenerateSvg'),
+          'generate_svg needs "svg": complete SVG markup starting with <svg … viewBox="0 0 W H">.',
+        )
+      }
+      const slidesNow = access.getSlides()
+      const requested = Number(call.input.slideIndex)
+      const slideIndex =
+        Number.isFinite(requested) && requested >= 0 && requested < slidesNow.length
+          ? Math.round(requested)
+          : Math.max(0, Math.min(access.getCurrent(), slidesNow.length - 1))
+      const page = slidesNow[slideIndex]
+      const pageW = page?.widthPx ?? 1280
+      const pageH = page?.heightPx ?? 720
+      // size: explicit w/h, else 320 wide with the viewBox aspect ratio, clamped to the page
+      const vb = /viewBox\s*=\s*["'][\d.eE+-]+[\s,]+[\d.eE+-]+[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)/i.exec(svg)
+      const aspect = vb ? Number(vb[1]) / Math.max(1e-6, Number(vb[2])) : 1
+      let w = Number(call.input.w) || 320
+      let h = Number(call.input.h) || Math.round(w / Math.max(0.05, Math.min(20, aspect)))
+      if (w > pageW) {
+        w = Math.round(pageW)
+        if (!Number(call.input.h)) h = Math.round(w / Math.max(0.05, Math.min(20, aspect)))
+      }
+      if (h > pageH) {
+        h = Math.round(pageH)
+        if (!Number(call.input.w)) w = Math.round(h * Math.max(0.05, Math.min(20, aspect)))
+      }
+      const x =
+        Number.isFinite(Number(call.input.x)) && call.input.x !== undefined
+          ? Math.round(Number(call.input.x))
+          : Math.max(0, Math.round((pageW - w) / 2))
+      const y =
+        Number.isFinite(Number(call.input.y)) && call.input.y !== undefined
+          ? Math.round(Number(call.input.y))
+          : Math.max(0, Math.round((pageH - h) / 2))
+      // Q4 closed loop: render-check the markup, feed diagnostics back, ≤2 attempts
+      let raster: Awaited<ReturnType<typeof rasterizeSvg>> | null = null
+      let diag = ''
+      try {
+        raster = await rasterizeSvg(svg, { wPx: w, hPx: h })
+        if (raster.ok && (raster.paintRatio ?? 1) < 0.005) {
+          diag = 'the render is blank (nothing painted inside the viewBox)'
+        }
+      } catch (e) {
+        diag = e instanceof Error ? e.message : String(e)
+      }
+      if (diag || !raster?.ok) {
+        const attempt = (state?.svgAttempts ?? 0) + 1
+        if (state) state.svgAttempts = attempt
+        const detail = `SVG render check failed (attempt ${attempt}/2): ${diag || 'unknown rasterizer error'}.`
+        const guidance =
+          attempt >= 2
+            ? ' That was the second failure — do NOT call generate_svg again; use generate_image (raster) or compose shapes/addElement instead.'
+            : ' Fix the markup and call generate_svg again: valid XML, viewBox with width/height, all shapes inside the viewBox, no external refs.'
+        return fail(t('aiFailGenerateSvg'), detail + guidance)
+      }
+      if (state) state.svgAttempts = 0
+      const emu = (px: number) => Math.round(px * EMU_PER_PX_96)
+      const r = await window.slidesApi.applyTxn?.({
+        ops: [
+          {
+            op: 'addPicture',
+            bytes: raster.base64!,
+            ext: 'png',
+            svgText: svg,
+            slide: slideIndex,
+            offset: { x: emu(x), y: emu(y), cx: emu(w), cy: emu(h) },
+          },
+        ],
+      })
+      if (!r) return fail(t('aiFailGenerateSvg'), 'The addPicture transaction could not be executed')
+      if (r.failures?.length) return fail(t('aiFailGenerateSvg'), r.failures.map((f) => f.error).join('; '))
+      const createdId = r.records?.[0]?.created?.[0]
+      return {
+        output:
+          `Vector graphic inserted on slide ${slideIndex + 1}${createdId ? ` (element id=${createdId})` : ''} at ${w}×${h}px — standard double part: crisp SVG vector + PNG fallback for old viewers. ` +
+          `Render check passed (${((raster.paintRatio ?? 0) * 100).toFixed(1)}% painted). ` +
+          'Restyle by regenerating and replacing the element; move/resize with setTransform ops.',
+        mutated: true,
+        summary: t('aiSumGenerateSvg'),
       }
     }
 

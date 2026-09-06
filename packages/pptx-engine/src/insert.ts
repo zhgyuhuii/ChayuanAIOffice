@@ -379,9 +379,14 @@ const IMAGE_MIME: Record<string, string> = {
   webp: 'image/webp',
   tif: 'image/tiff',
   tiff: 'image/tiff',
+  svg: 'image/svg+xml',
 }
 
 const IMAGE_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
+
+/** extLst uri of the Office 2016 SVG blip extension (MS-ODRAWXML) */
+export const SVG_BLIP_URI = '{96DAC541-7B7A-43D3-8B79-37D633B846F1}'
+export const SVG_BLIP_NS = 'http://schemas.microsoft.com/office/drawing/2016/SVG/main'
 
 export interface NewPictureOptions {
   /** Image bytes */
@@ -477,6 +482,62 @@ export function addPicture(
     name,
     ...(opts.descr ? { descr: opts.descr } : {}),
     mediaRef: mediaPath,
+  }
+  slide.elements.push(el)
+  slide.structureDirty = true
+  return el
+}
+
+export interface NewSvgPictureOptions extends Omit<NewPictureOptions, 'bytes' | 'ext'> {
+  /** SVG markup (the vector source; lands as the asvg:svgBlip part) */
+  svgBytes: Uint8Array
+  /** Raster fallback bytes (PNG unless fallbackExt says otherwise) — required:
+   *  old PowerPoint/WPS builds only show the blip, never the svgBlip extension */
+  bytes: Uint8Array
+  fallbackExt?: string
+}
+
+/**
+ * Insert a vector picture as the OOXML standard double part: a:blip → raster
+ * fallback (must-have for PowerPoint 2019/WPS), a:extLst → asvg:svgBlip → svg
+ * part (vector source; MS-ODRAWXML). The renderer prefers the svg part and
+ * falls back to the raster (Q2 decision, roadmap v3 §8).
+ */
+export function addSvgPicture(
+  opened: OpenedPptx,
+  slide: Slide,
+  opts: NewSvgPictureOptions,
+): PictureElement | null {
+  const fallbackExt = (opts.fallbackExt ?? 'png').toLowerCase()
+  const raster = addImageMediaAndRel(opened, slide, opts.bytes, fallbackExt)
+  if (!raster) return null
+  const vector = addImageMediaAndRel(opened, slide, opts.svgBytes, 'svg')
+  if (!vector) return null
+
+  const id = nextCNvPrId(slide)
+  const name = opts.name ?? `Picture ${id}`
+  const descrAttr = opts.descr ? ` descr="${escapeXmlAttr(opts.descr)}"` : ''
+  const svgBlipExt =
+    `<a:ext uri="${SVG_BLIP_URI}">` +
+    `<asvg:svgBlip xmlns:asvg="${SVG_BLIP_NS}" r:embed="${vector.rid}"/>` +
+    '</a:ext>'
+  const xml =
+    `<p:pic><p:nvPicPr><p:cNvPr id="${id}" name="${escapeXmlAttr(name)}"${descrAttr}>${creationIdXml()}</p:cNvPr>` +
+    '<p:cNvPicPr/><p:nvPr/></p:nvPicPr>' +
+    `<p:blipFill><a:blip r:embed="${raster.rid}"><a:extLst>${svgBlipExt}</a:extLst></a:blip>` +
+    '<a:stretch><a:fillRect/></a:stretch></p:blipFill>' +
+    `<p:spPr>${generateXfrmXml({ offset: opts.offset, rot: 0, flipH: false, flipV: false })}` +
+    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>'
+
+  const el: PictureElement = {
+    id: `picnew_${(insertCounter++).toString(36)}_${Date.now().toString(36)}`,
+    type: 'picture',
+    anchor: { spIndex: slide.elements.length, originalXml: xml, range: [0, 0] },
+    transform: { offset: { ...opts.offset }, rot: 0, flipH: false, flipV: false },
+    name,
+    ...(opts.descr ? { descr: opts.descr } : {}),
+    mediaRef: raster.mediaPath,
+    svgMediaRef: vector.mediaPath,
   }
   slide.elements.push(el)
   slide.structureDirty = true

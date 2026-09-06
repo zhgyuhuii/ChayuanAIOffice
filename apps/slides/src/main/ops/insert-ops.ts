@@ -11,6 +11,7 @@ import {
   addModel3d,
   addPicture,
   addSmartArt,
+  addSvgPicture,
   addTable,
   pasteElements,
   replacePictureBytes,
@@ -86,7 +87,74 @@ register({
   },
 })
 
+// ── addWordArt (display text: big/bold + fill + optional outline) ───────
+// The render-supported WordArt subset (roadmap v3 §8 "WordArt 生成 op"):
+// parse/render understand run outline (a:rPr><a:ln, generate.ts emits it) and
+// extrusion3d from parsed files; prstTxWarp geometry is not generated, so the
+// op produces styled display text that renders identically to PowerPoint's.
+register({
+  name: 'addWordArt',
+  validate(op, ctx) {
+    resolveSlide(ctx, op)
+    reqRect(op)
+    if (typeof op.text !== 'string' || !op.text.trim()) {
+      throw new GuidedError('op "addWordArt" needs "text".')
+    }
+    if (op.fill != null && !/^#[0-9a-fA-F]{6}$/.test(String(op.fill))) {
+      throw new GuidedError('op "addWordArt": fill must be "#RRGGBB".')
+    }
+    const ol = op.outline as { color?: unknown } | undefined
+    if (ol && (typeof ol.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(ol.color))) {
+      throw new GuidedError('op "addWordArt": outline.color must be "#RRGGBB".')
+    }
+    if (op.fontSizePt != null) {
+      const n = Number(op.fontSizePt)
+      if (!Number.isFinite(n) || n < 12 || n > 200) {
+        throw new GuidedError('op "addWordArt": fontSizePt must be 12-200.')
+      }
+    }
+  },
+  apply(op, ctx): OpRecord {
+    const { slide } = resolveSlide(ctx, op)
+    const ol = op.outline as { color?: string; widthPt?: number } | undefined
+    const el = addElement(slide, {
+      kind: 'textbox',
+      offset: reqRect(op),
+      paragraphs: [
+        {
+          runs: [
+            {
+              text: String(op.text),
+              fontSize: Math.round(Number(op.fontSizePt) || 54),
+              bold: op.bold !== false,
+              italic: op.italic === true,
+              color: String(op.fill ?? '#1565C0'),
+              ...(ol?.color
+                ? {
+                    outline: {
+                      color: ol.color,
+                      widthEmu: Math.round((Number(ol.widthPt) || 1.5) * 12700),
+                    },
+                  }
+                : {}),
+            },
+          ],
+        },
+      ],
+    })
+    // NewElementOptions carries no name; display-text elements get a findable one
+    el.name = 'WordArt'
+    return { op, created: [el.id] }
+  },
+})
+
 // ── addPicture (also serves ink strokes: name/descr carry the ink payload) ──
+// Double-part vector insert: svgText (raw markup — the model's natural format)
+// or svgBytes (base64/dataURL) upgrades the picture to a:blip raster fallback +
+// asvg:svgBlip vector part (roadmap v3 §8 Q2).
+const looksLikeSvg = (s: string): boolean => /<svg[\s>]/i.test(s)
+const SVG_DATA_URL = /^data:image\/svg\+xml[;,]/i
+
 register({
   name: 'addPicture',
   validate(op, ctx) {
@@ -97,19 +165,46 @@ register({
     if (typeof op.ext !== 'string' || !op.ext) {
       throw new GuidedError('op "addPicture" needs "ext": the image extension (png/jpg/…).')
     }
+    if (typeof op.svgText === 'string' && op.svgText.trim()) {
+      if (!looksLikeSvg(op.svgText)) {
+        throw new GuidedError('op "addPicture": svgText must be SVG markup starting with <svg>.')
+      }
+    } else if (typeof op.svgBytes === 'string' && op.svgBytes) {
+      if (!SVG_DATA_URL.test(op.svgBytes)) {
+        throw new GuidedError(
+          'op "addPicture": svgBytes must be a data:image/svg+xml URL (use svgText for raw markup).',
+        )
+      }
+    }
   },
   apply(op, ctx): OpRecord {
     const { slide } = resolveSlide(ctx, op)
-    const el = addPicture(ctx.opened, slide, {
-      bytes: reqBytes(op),
-      ext: String(op.ext),
+    const common = {
       offset: reqRect(op),
       ...(typeof op.name === 'string' && op.name ? { name: op.name } : {}),
       ...(typeof op.descr === 'string' && op.descr ? { descr: op.descr } : {}),
-    })
+    }
+    const svgBytes =
+      typeof op.svgText === 'string' && op.svgText.trim()
+        ? Uint8Array.from(Buffer.from(op.svgText, 'utf8'))
+        : typeof op.svgBytes === 'string' && op.svgBytes
+          ? coerceBytes(op.svgBytes, 'addPicture', 'svgBytes')
+          : undefined
+    const el = svgBytes
+      ? addSvgPicture(ctx.opened, slide, {
+          svgBytes,
+          bytes: reqBytes(op),
+          fallbackExt: String(op.ext),
+          ...common,
+        })
+      : addPicture(ctx.opened, slide, {
+          bytes: reqBytes(op),
+          ext: String(op.ext),
+          ...common,
+        })
     if (!el) {
       throw new GuidedError(
-        `op "addPicture": unsupported image format ".${String(op.ext)}" (png/jpg/jpeg/gif/bmp/webp/tif supported).`,
+        `op "addPicture": unsupported image format ".${String(op.ext)}" (png/jpg/jpeg/gif/bmp/webp/tif/svg supported).`,
       )
     }
     return { op, created: [el.id] }
