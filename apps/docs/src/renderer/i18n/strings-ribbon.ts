@@ -646,8 +646,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: '为所选内容新建批注',
     ribbonNewCommentSelectTip: '先选中要批注的文字',
     ribbonShowComments: '显示批注',
-    ribbonAiComments: 'AI 处理批注',
-    ribbonAiRevisions: 'AI 总结修订',
+    ribbonAiComments: 'AI 批注',
+    ribbonAiRevisions: 'AI 修订',
     ribbonAiRevisionsTip: 'AI 通读 {count} 条待处理修订,按章节总结改动并提示风险',
     ribbonAiRevisionsPrompt:
       '总结文档中所有待处理的修订:先给出总体统计(插入/删除数量、作者、日期范围),再按章节逐条说明改了什么(标注 block 索引),最后列出需要注意的风险点(如删除了义务或限定语、改动了数字/日期/金额)。只做总结,不要修改文档,也不要接受或拒绝任何修订。',
@@ -1386,8 +1386,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Add a comment on the selection',
     ribbonNewCommentSelectTip: 'Select the text to comment on first',
     ribbonShowComments: 'Show Comments',
-    ribbonAiComments: 'AI Resolve Comments',
-    ribbonAiRevisions: 'AI Revision Summary',
+    ribbonAiComments: 'AI Comments',
+    ribbonAiRevisions: 'AI Revisions',
     ribbonAiRevisionsTip:
       'AI reads the {count} pending revisions, summarizes the changes by section and flags risks',
     ribbonAiRevisionsPrompt:
@@ -2148,8 +2148,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: '選択範囲にコメントを追加',
     ribbonNewCommentSelectTip: 'まずコメントを付ける文字列を選択してください',
     ribbonShowComments: 'コメントの表示',
-    ribbonAiComments: 'AI でコメント処理',
-    ribbonAiRevisions: 'AI で変更履歴を要約',
+    ribbonAiComments: 'AI コメント',
+    ribbonAiRevisions: 'AI 変更履歴',
     ribbonAiRevisionsTip:
       '保留中の変更 {count} 件を AI が読み、セクション別に要約してリスクを指摘します',
     ribbonAiRevisionsPrompt:
@@ -2907,8 +2907,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: '선택 영역에 메모 추가',
     ribbonNewCommentSelectTip: '먼저 메모를 달 텍스트를 선택하세요',
     ribbonShowComments: '메모 표시',
-    ribbonAiComments: 'AI 메모 처리',
-    ribbonAiRevisions: 'AI 변경 내용 요약',
+    ribbonAiComments: 'AI 메모',
+    ribbonAiRevisions: 'AI 변경 요약',
     ribbonAiRevisionsTip:
       '대기 중인 변경 내용 {count}건을 AI가 읽고 섹션별로 요약하며 위험 요소를 짚어 줍니다',
     ribbonAiRevisionsPrompt:
@@ -3656,8 +3656,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Ajouter un commentaire sur la sélection',
     ribbonNewCommentSelectTip: "Sélectionnez d'abord le texte à commenter",
     ribbonShowComments: 'Afficher les commentaires',
-    ribbonAiComments: 'Commentaires par IA',
-    ribbonAiRevisions: 'Résumé IA des révisions',
+    ribbonAiComments: 'Commentaires IA',
+    ribbonAiRevisions: 'Révisions IA',
     ribbonAiRevisionsTip:
       "L'IA lit les {count} révisions en attente, résume les changements par section et signale les risques",
     ribbonAiRevisionsPrompt:
@@ -5165,8 +5165,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Agregar un comentario a la selección',
     ribbonNewCommentSelectTip: 'Seleccione primero el texto que quiere comentar',
     ribbonShowComments: 'Mostrar comentarios',
-    ribbonAiComments: 'Comentarios con IA',
-    ribbonAiRevisions: 'Resumen IA de revisiones',
+    ribbonAiComments: 'Comentarios IA',
+    ribbonAiRevisions: 'Revisiones IA',
     ribbonAiRevisionsTip:
       'La IA lee las {count} revisiones pendientes, resume los cambios por sección y señala riesgos',
     ribbonAiRevisionsPrompt:
@@ -5910,8 +5910,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'เพิ่มข้อคิดเห็นให้ส่วนที่เลือก',
     ribbonNewCommentSelectTip: 'เลือกข้อความที่ต้องการแสดงความคิดเห็นก่อน',
     ribbonShowComments: 'แสดงข้อคิดเห็น',
-    ribbonAiComments: 'AI จัดการข้อคิดเห็น',
-    ribbonAiRevisions: 'AI สรุปการแก้ไข',
+    ribbonAiComments: 'AI ข้อคิดเห็น',
+    ribbonAiRevisions: 'AI การแก้ไข',
     ribbonAiRevisionsTip: 'AI อ่านการแก้ไขที่ค้างอยู่ {count} รายการ สรุปตามหัวข้อ และชี้จุดเสี่ยง',
     ribbonAiRevisionsPrompt:
       'สรุปการแก้ไขที่ค้างอยู่ทั้งหมดในเอกสาร: เริ่มจากสถิติรวม (จำนวนแทรก/ลบ ผู้แก้ไข ช่วงวันที่) จากนั้นอธิบายการเปลี่ยนแปลงทีละหัวข้อ (ระบุหมายเลข block) และปิดท้ายด้วยจุดที่ควรระวัง (เช่น ลบข้อผูกพันหรือเงื่อนไข เปลี่ยนตัวเลข/วันที่/จำนวนเงิน) สรุปเท่านั้น ห้ามแก้ไขเอกสารหรือยอมรับ/ปฏิเสธการแก้ไขใด ๆ',
@@ -6651,8 +6651,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Tambahkan komentar pada pilihan',
     ribbonNewCommentSelectTip: 'Pilih dahulu teks yang akan dikomentari',
     ribbonShowComments: 'Tampilkan Komentar',
-    ribbonAiComments: 'Komentar dengan AI',
-    ribbonAiRevisions: 'Ringkasan revisi AI',
+    ribbonAiComments: 'Komentar AI',
+    ribbonAiRevisions: 'Revisi AI',
     ribbonAiRevisionsTip:
       'AI membaca {count} revisi tertunda, meringkas perubahan per bagian, dan menandai risiko',
     ribbonAiRevisionsPrompt:
@@ -7400,7 +7400,7 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentSelectTip: 'Сначала выделите текст, к которому нужно добавить примечание',
     ribbonShowComments: 'Показать примечания',
     ribbonAiComments: 'ИИ: примечания',
-    ribbonAiRevisions: 'ИИ: сводка исправлений',
+    ribbonAiRevisions: 'ИИ: исправления',
     ribbonAiRevisionsTip:
       'ИИ читает нерассмотренные исправления ({count}), резюмирует их по разделам и отмечает риски',
     ribbonAiRevisionsPrompt:
@@ -8140,8 +8140,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'إضافة تعليق على التحديد',
     ribbonNewCommentSelectTip: 'حدد أولاً النص الذي تريد التعليق عليه',
     ribbonShowComments: 'إظهار التعليقات',
-    ribbonAiComments: 'معالجة التعليقات بالذكاء الاصطناعي',
-    ribbonAiRevisions: 'ملخص المراجعات بالذكاء الاصطناعي',
+    ribbonAiComments: 'تعليقات الذكاء الاصطناعي',
+    ribbonAiRevisions: 'مراجعات الذكاء الاصطناعي',
     ribbonAiRevisionsTip:
       'يقرأ الذكاء الاصطناعي {count} مراجعات معلقة ويلخص التغييرات حسب الأقسام ويشير إلى المخاطر',
     ribbonAiRevisionsPrompt:
@@ -8882,8 +8882,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Adicionar um comentário à seleção',
     ribbonNewCommentSelectTip: 'Selecione primeiro o texto a comentar',
     ribbonShowComments: 'Mostrar Comentários',
-    ribbonAiComments: 'Comentários com IA',
-    ribbonAiRevisions: 'Resumo de revisões com IA',
+    ribbonAiComments: 'Comentários IA',
+    ribbonAiRevisions: 'Revisões IA',
     ribbonAiRevisionsTip:
       'A IA lê as {count} revisões pendentes, resume as mudanças por seção e sinaliza riscos',
     ribbonAiRevisionsPrompt:
@@ -9632,8 +9632,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Aggiungi un commento alla selezione',
     ribbonNewCommentSelectTip: 'Seleziona prima il testo da commentare',
     ribbonShowComments: 'Mostra commenti',
-    ribbonAiComments: 'Commenti con IA',
-    ribbonAiRevisions: 'Riepilogo revisioni IA',
+    ribbonAiComments: 'Commenti IA',
+    ribbonAiRevisions: 'Revisioni IA',
     ribbonAiRevisionsTip:
       "L'IA legge le {count} revisioni in sospeso, riassume le modifiche per sezione e segnala i rischi",
     ribbonAiRevisionsPrompt:
@@ -10383,8 +10383,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Dodaj komentarz do zaznaczenia',
     ribbonNewCommentSelectTip: 'Najpierw zaznacz tekst do skomentowania',
     ribbonShowComments: 'Pokaż komentarze',
-    ribbonAiComments: 'Komentarze z AI',
-    ribbonAiRevisions: 'Podsumowanie zmian AI',
+    ribbonAiComments: 'Komentarze AI',
+    ribbonAiRevisions: 'Zmiany AI',
     ribbonAiRevisionsTip:
       'AI czyta oczekujące zmiany ({count}), podsumowuje je według sekcji i wskazuje ryzyka',
     ribbonAiRevisionsPrompt:
@@ -11884,8 +11884,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'Tambah komen pada pilihan',
     ribbonNewCommentSelectTip: 'Pilih teks yang hendak dikomen terlebih dahulu',
     ribbonShowComments: 'Tunjukkan Komen',
-    ribbonAiComments: 'Komen dengan AI',
-    ribbonAiRevisions: 'Ringkasan semakan AI',
+    ribbonAiComments: 'Komen AI',
+    ribbonAiRevisions: 'Semakan AI',
     ribbonAiRevisionsTip:
       'AI membaca {count} semakan tertunda, meringkaskan perubahan mengikut bahagian dan menandakan risiko',
     ribbonAiRevisionsPrompt:
@@ -12621,8 +12621,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'הוסף הערה לקטע הנבחר',
     ribbonNewCommentSelectTip: 'בחר תחילה את הטקסט להערה',
     ribbonShowComments: 'הצג הערות',
-    ribbonAiComments: 'טיפול בהערות עם AI',
-    ribbonAiRevisions: 'סיכום שינויים עם AI',
+    ribbonAiComments: 'הערות AI',
+    ribbonAiRevisions: 'שינויים AI',
     ribbonAiRevisionsTip: 'ה-AI קורא {count} שינויים ממתינים, מסכם לפי סעיפים ומסמן סיכונים',
     ribbonAiRevisionsPrompt:
       'סכם את כל השינויים הממתינים במסמך: התחל בסטטיסטיקה כללית (מספר הוספות/מחיקות, מחברים, טווח תאריכים), לאחר מכן תאר את השינויים סעיף אחר סעיף (ציין אינדקסי בלוקים), וסיים ברשימת נקודות לתשומת לב (מחיקת התחייבויות או הסתייגויות, שינוי מספרים/תאריכים/סכומים). סכם בלבד — אל תשנה את המסמך ואל תקבל או תדחה שינויים.',
@@ -13362,8 +13362,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: 'चयन पर टिप्पणी जोड़ें',
     ribbonNewCommentSelectTip: 'पहले वह पाठ चुनें जिस पर टिप्पणी करनी है',
     ribbonShowComments: 'टिप्पणियाँ दिखाएँ',
-    ribbonAiComments: 'AI से टिप्पणियाँ निपटाएँ',
-    ribbonAiRevisions: 'AI से परिवर्तन सारांश',
+    ribbonAiComments: 'AI टिप्पणियाँ',
+    ribbonAiRevisions: 'AI परिवर्तन',
     ribbonAiRevisionsTip:
       'AI {count} लंबित परिवर्तनों को पढ़ता है, अनुभाग के अनुसार सारांश देता है और जोखिम बताता है',
     ribbonAiRevisionsPrompt:
@@ -14096,8 +14096,8 @@ export const ribbonStrings = defineStrings({
     ribbonNewCommentTip: '為選取的內容新增註解',
     ribbonNewCommentSelectTip: '請先選取要加註解的文字',
     ribbonShowComments: '顯示註解',
-    ribbonAiComments: 'AI 處理註解',
-    ribbonAiRevisions: 'AI 總結修訂',
+    ribbonAiComments: 'AI 註解',
+    ribbonAiRevisions: 'AI 修訂',
     ribbonAiRevisionsTip: 'AI 通讀 {count} 條待處理修訂,按章節總結改動並提示風險',
     ribbonAiRevisionsPrompt:
       '總結文件中所有待處理的修訂:先給出總體統計(插入/刪除數量、作者、日期範圍),再按章節逐條說明改了什麼(標註 block 索引),最後列出需要注意的風險點(如刪除了義務或限定語、改動了數字/日期/金額)。只做總結,不要修改文件,也不要接受或拒絕任何修訂。',

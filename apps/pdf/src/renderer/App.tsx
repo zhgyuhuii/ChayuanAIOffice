@@ -5883,7 +5883,7 @@ export default function App() {
                 <div className="ribbon-group-items">
                   <button
                     className="rb-big ai-entry"
-                    data-tip={t('aiReviewSummaryBtn')}
+                    data-tip={t('aiReviewSummaryTip')}
                     onClick={() => runAiPreset(t('aiReviewSummaryPrompt'))}
                   >
                     <span className="rb-big-icon">
@@ -5896,7 +5896,7 @@ export default function App() {
                   <button
                     className="rb-big ai-entry"
                     disabled={readOnly}
-                    data-tip={t('aiProcessNotesBtn')}
+                    data-tip={t('aiProcessNotesTip')}
                     onClick={() => runAiPreset(t('aiProcessNotesPrompt'))}
                   >
                     <span className="rb-big-icon">

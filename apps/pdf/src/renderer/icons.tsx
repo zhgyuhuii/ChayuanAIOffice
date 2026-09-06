@@ -11,7 +11,8 @@ export function pinnedStroke(size: number): number {
 }
 
 export function Icon({
-  size = 28,
+  // 24px = WPS ongmani big-button glyph size (sheets parity, r2 governance)
+  size = 24,
   children,
 }: {
   size?: number
