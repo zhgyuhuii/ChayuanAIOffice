@@ -59,8 +59,12 @@ export function parseBingImagesHtml(html: string, maxResults: number): ImageSear
 export async function bingImageSearch(
   query: string,
   maxResults: number,
+  /** 1-based page; Bing exposes result offset via the `first` URL param */
+  page = 1,
 ): Promise<ImageSearchResult[]> {
-  const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2`
+  const url =
+    `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2` +
+    (page > 1 ? `&first=${(page - 1) * maxResults + 1}` : '')
   let resp: Response
   try {
     const controller = new AbortController()

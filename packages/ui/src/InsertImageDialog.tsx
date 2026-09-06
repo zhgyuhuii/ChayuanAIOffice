@@ -79,12 +79,15 @@ export interface InsertMeta {
 
 /** App-injected transport: each editor wires these to its own IPC channels. */
 export interface InsertImageBridge {
+  /** page: 1-based result page for the "next batch" append (omitted/1 = fresh search) */
   searchWeb(
     query: string,
+    page?: number,
   ): Promise<{ images: WebImageItem[]; error?: string; attempts?: SearchAttempt[] }>
   searchStock(
     source: 'pexels' | 'pixabay',
     query: string,
+    page?: number,
   ): Promise<{ images: WebImageItem[]; error?: string; code?: string }>
   fetchImage(url: string): Promise<{ mediaType: string; base64: string } | null>
   getStockKeys(): Promise<{ pexels: string; pixabay: string }>
@@ -180,6 +183,13 @@ export function InsertImageDialog({
   const [searching, setSearching] = useState(false)
   const [webError, setWebError] = useState('')
   const [attempts, setAttempts] = useState<SearchAttempt[] | null>(null)
+  // "下一批" accumulation: batches fetched so far, next-batch in flight, source drained
+  const [page, setPage] = useState(1)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [exhausted, setExhausted] = useState(false)
+  // the query that produced the displayed results — next batches must use it,
+  // not the (possibly re-edited) input value
+  const [searched, setSearched] = useState('')
   // one vendor per modal — Pexels and Pixabay never share a panel
   const [keyModal, setKeyModal] = useState<'pexels' | 'pixabay' | null>(null)
   const [KeyValue, setKeyValue] = useState('')
@@ -188,26 +198,70 @@ export function InsertImageDialog({
   const [keyTestResult, setKeyTestResult] = useState<'ok' | 'fail' | null>(null)
   const [selected, setSelected] = useState<WebImageItem | null>(null)
   const [inserting, setInserting] = useState(false)
+  // shared request token: any newer search/next-batch/source-switch invalidates in-flight ones
+  const seqRef = useRef(0)
 
   const runSearch = async (): Promise<void> => {
     const q = query.trim()
     if (!q || searching) return
+    const seq = ++seqRef.current
     setSearching(true)
     setWebError('')
     setAttempts(null)
     setSelected(null)
+    setPage(1)
+    setExhausted(false)
+    setLoadingMore(false)
+    setSearched(q)
     try {
       const r =
         source === 'web' ? await bridge.searchWeb(q) : await bridge.searchStock(source, q)
+      if (seq !== seqRef.current) return
       setResults(r.images ?? [])
       setAttempts('attempts' in r ? (r.attempts ?? null) : null)
       if (r.error) setWebError(r.error)
     } catch (err) {
+      if (seq !== seqRef.current) return
       setResults([])
       setWebError(String(err))
     } finally {
-      setSearching(false)
+      if (seq === seqRef.current) setSearching(false)
     }
+  }
+  /** append the next batch below the current gallery (button + scroll-to-bottom) */
+  const loadMore = async (): Promise<void> => {
+    const q = searched
+    if (!q || searching || loadingMore || exhausted || !results || results.length === 0) return
+    const seq = ++seqRef.current
+    const nextPage = page + 1
+    setLoadingMore(true)
+    setWebError('')
+    try {
+      const r =
+        source === 'web'
+          ? await bridge.searchWeb(q, nextPage)
+          : await bridge.searchStock(source, q, nextPage)
+      if (seq !== seqRef.current) return
+      const seen = new Set(results.map((it) => it.full || it.thumbnail))
+      const added = (r.images ?? []).filter((it) => !seen.has(it.full || it.thumbnail))
+      if (r.error) setWebError(r.error) // transient failure: gallery stays, retry allowed
+      else if (added.length === 0) setExhausted(true) // drained (dupes count as drained)
+      else {
+        setResults([...results, ...added])
+        setPage(nextPage)
+      }
+    } catch (err) {
+      if (seq !== seqRef.current) return
+      setWebError(String(err))
+    } finally {
+      if (seq === seqRef.current) setLoadingMore(false)
+    }
+  }
+  /** scroll-to-bottom auto-load: one batch per arrival, no auto-continue (护栏) */
+  const onGridScroll = (e: React.UIEvent<HTMLDivElement>): void => {
+    const el = e.currentTarget
+    if (el.scrollHeight - el.scrollTop - el.clientHeight > 240) return
+    void loadMore()
   }
   const openKeyModal = async (which: 'pexels' | 'pixabay'): Promise<void> => {
     setKeyModal(which)
@@ -530,9 +584,15 @@ export function InsertImageDialog({
                     className={`insimg-chip ${source === id ? 'active' : ''}`}
                     onClick={() => {
                       setSource(id)
+                      ++seqRef.current // invalidate in-flight search/next-batch, full reset
                       setResults(null)
                       setWebError('')
                       setAttempts(null)
+                      setPage(1)
+                      setExhausted(false)
+                      setLoadingMore(false)
+                      setSearching(false)
+                      setSearched('')
                       // keyless stock source: guide into its own key modal when unconfigured
                       if (id !== 'web') guideKeyModal(id)
                     }}
@@ -571,7 +631,7 @@ export function InsertImageDialog({
                 </button>
               </div>
             </div>
-            <div className="insimg-grid-wrap">
+            <div className="insimg-grid-wrap" onScroll={onGridScroll}>
               {results === null ? (
                 <p className="insimg-hint">{webError || t.emptyQuery}</p>
               ) : results.length === 0 ? (
@@ -584,17 +644,32 @@ export function InsertImageDialog({
                   )}
                 </div>
               ) : (
-                <div className="insimg-grid">
-                  {results.map((item, i) => (
-                    <button
-                      key={`${item.full}-${i}`}
-                      className={`insimg-cell ${selected?.full === item.full ? 'selected' : ''}`}
-                      onClick={() => setSelected(item)}
-                      title={item.attribution ?? ''}
-                    >
-                      <img src={item.thumbnail || item.full} alt="" loading="lazy" />
-                    </button>
-                  ))}
+                <div className="insimg-grid-body">
+                  <div className="insimg-grid">
+                    {results.map((item, i) => (
+                      <button
+                        key={`${item.full}-${i}`}
+                        className={`insimg-cell ${selected?.full === item.full ? 'selected' : ''}`}
+                        onClick={() => setSelected(item)}
+                        title={item.attribution ?? ''}
+                      >
+                        <img src={item.thumbnail || item.full} alt="" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="insimg-more">
+                    {exhausted ? (
+                      <span className="insimg-nomore">{t.noMoreImages}</span>
+                    ) : (
+                      <button
+                        className="insimg-morebtn"
+                        disabled={loadingMore}
+                        onClick={() => void loadMore()}
+                      >
+                        {loadingMore ? t.loadingMore : t.loadMore}
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

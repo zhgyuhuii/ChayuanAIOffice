@@ -169,19 +169,23 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   // ── picture-source channels (insert-image dialog) ────────────────────
   // Web image search: chatoffice → Serper → Bing → Openverse, per-tier attempts
   // attached for the dialog's diagnostics. Serper key: settings first, env fallback.
-  ipcMain.handle('ai:web-image-search', async (_event, query: string, maxResults?: number) => {
-    try {
-      const settings = await runtime.readRawSettings()
-      return await imageSearch(
-        String(query),
-        typeof maxResults === 'number' ? maxResults : 12,
-        true,
-        settings.searchApiKeys?.serper || process.env.SERPER_API_KEY || undefined,
-      )
-    } catch (err) {
-      return { images: [], method: 'error', error: String(err), attempts: [] }
-    }
-  })
+  ipcMain.handle(
+    'ai:web-image-search',
+    async (_event, query: string, maxResults?: number, page?: number) => {
+      try {
+        const settings = await runtime.readRawSettings()
+        return await imageSearch(
+          String(query),
+          typeof maxResults === 'number' ? maxResults : 12,
+          true,
+          settings.searchApiKeys?.serper || process.env.SERPER_API_KEY || undefined,
+          typeof page === 'number' && page > 1 ? Math.floor(page) : 1,
+        )
+      } catch (err) {
+        return { images: [], method: 'error', error: String(err), attempts: [] }
+      }
+    },
+  )
   // Enabled image/video-generation models + their param specs (model picker list)
   ipcMain.handle('ai:media-models', async () => {
     try {
@@ -225,7 +229,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     'ai:stock-image-search',
     async (
       _event,
-      req: { source: string; query: string; maxResults?: number },
+      req: { source: string; query: string; maxResults?: number; page?: number },
     ): Promise<{ images: unknown[]; source: string; error?: string; code?: string }> => {
       try {
         const settings = await runtime.readRawSettings()
@@ -239,6 +243,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
           key,
           String(req.query),
           typeof req.maxResults === 'number' ? req.maxResults : 12,
+          typeof req.page === 'number' && req.page > 1 ? Math.floor(req.page) : 1,
         )
         return { images, source }
       } catch (err) {

@@ -107,6 +107,8 @@ export async function imageSearch(
   maxResults = 8,
   useChatOffice = true,
   serperKeyOverride?: string,
+  /** 1-based result page; each tier maps it to its own offset (insert-dialog "next batch") */
+  page = 1,
 ): Promise<{
   images: ImageSearchResult[]
   method: string
@@ -116,7 +118,7 @@ export async function imageSearch(
   const attempts: SearchAttempt[] = []
   if (useChatOffice && hasChatOfficeAuth()) {
     try {
-      const images = await chatofficeImageSearch(query, maxResults)
+      const images = await chatofficeImageSearch(query, maxResults, page)
       if (images.length) {
         attempts.push({ backend: 'chatoffice', status: 'ok', count: images.length })
         return { images, method: 'chatoffice', attempts }
@@ -139,7 +141,13 @@ export async function imageSearch(
       const resp = await fetchWithTimeout('https://google.serper.dev/images', {
         method: 'POST',
         headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: query, num: Math.min(maxResults, 10), gl: 'us', hl: 'en' }),
+        body: JSON.stringify({
+          q: query,
+          num: Math.min(maxResults, 10),
+          gl: 'us',
+          hl: 'en',
+          ...(page > 1 ? { page } : {}),
+        }),
       })
       if (resp.ok) {
         const data = asRecord(await resp.json())
@@ -177,7 +185,7 @@ export async function imageSearch(
   }
 
   try {
-    const images = await bingImageSearch(query, maxResults)
+    const images = await bingImageSearch(query, maxResults, page)
     attempts.push({ backend: 'bing', status: 'ok', count: images.length })
     return { images, method: 'bing', attempts }
   } catch (err) {
@@ -185,7 +193,7 @@ export async function imageSearch(
   }
 
   try {
-    const images = await openverseImageSearch(query, maxResults)
+    const images = await openverseImageSearch(query, maxResults, page)
     attempts.push({ backend: 'openverse', status: 'ok', count: images.length })
     return { images, method: 'openverse', attempts }
   } catch (err) {

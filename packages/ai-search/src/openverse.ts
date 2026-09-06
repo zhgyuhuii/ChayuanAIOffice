@@ -9,10 +9,13 @@ import { asRecord, type ImageSearchResult } from './shared'
 export async function openverseImageSearch(
   query: string,
   maxResults: number,
+  /** 1-based page (native Openverse pagination param) */
+  page = 1,
 ): Promise<ImageSearchResult[]> {
   const url =
     `https://api.openverse.org/v1/images/?q=${encodeURIComponent(query)}` +
-    `&page_size=${Math.min(maxResults, 20)}&mature=false`
+    `&page_size=${Math.min(maxResults, 20)}&mature=false` +
+    (page > 1 ? `&page=${page}` : '')
   let resp: Response
   try {
     const controller = new AbortController()

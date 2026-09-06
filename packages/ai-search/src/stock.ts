@@ -30,10 +30,12 @@ export async function searchStockImages(
   apiKey: string,
   query: string,
   maxResults = 12,
+  /** 1-based page (native pagination param of both providers) */
+  page = 1,
 ): Promise<StockImageResult[]> {
   if (!apiKey) throw new StockSearchError(`${source} API key is not configured.`, 'no-key')
-  if (source === 'pexels') return searchPexels(apiKey, query, maxResults)
-  return searchPixabay(apiKey, query, maxResults)
+  if (source === 'pexels') return searchPexels(apiKey, query, maxResults, page)
+  return searchPixabay(apiKey, query, maxResults, page)
 }
 
 /** https://www.pexels.com/api/documentation/#photos-search */
@@ -41,10 +43,12 @@ async function searchPexels(
   apiKey: string,
   query: string,
   maxResults: number,
+  page = 1,
 ): Promise<StockImageResult[]> {
   const url =
     `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}` +
-    `&per_page=${Math.min(maxResults, 30)}`
+    `&per_page=${Math.min(maxResults, 30)}` +
+    (page > 1 ? `&page=${page}` : '')
   let resp: Response
   try {
     resp = await fetch(url, { headers: { Authorization: apiKey } })
@@ -81,10 +85,12 @@ async function searchPixabay(
   apiKey: string,
   query: string,
   maxResults: number,
+  page = 1,
 ): Promise<StockImageResult[]> {
   const url =
     `https://pixabay.com/api/?key=${encodeURIComponent(apiKey)}` +
-    `&q=${encodeURIComponent(query)}&per_page=${Math.min(maxResults, 30)}&safesearch=true`
+    `&q=${encodeURIComponent(query)}&per_page=${Math.min(maxResults, 30)}&safesearch=true` +
+    (page > 1 ? `&page=${page}` : '')
   let resp: Response
   try {
     resp = await fetch(url)

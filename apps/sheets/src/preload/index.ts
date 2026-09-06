@@ -478,8 +478,8 @@ const desktopApi: DesktopApi = {
     if (!isRecord(result)) throw new Error('Invalid image generation response.')
     return result as unknown as GenerateImageResult
   },
-  stockImageSearch(source, query, maxResults) {
-    return ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults })
+  stockImageSearch(source, query, maxResults, page) {
+    return ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults, page })
   },
   stockKeysGet() {
     return ipcRenderer.invoke('ai:stock-keys-get')
@@ -487,8 +487,8 @@ const desktopApi: DesktopApi = {
   async stockKeysSet(keys) {
     await ipcRenderer.invoke('ai:stock-keys-set', keys)
   },
-  webImageSearch(query, maxResults) {
-    return ipcRenderer.invoke('ai:web-image-search', query, maxResults)
+  webImageSearch(query, maxResults, page) {
+    return ipcRenderer.invoke('ai:web-image-search', query, maxResults, page)
   },
   async remoteImage(url) {
     return ipcRenderer.invoke('ai:remote-image', url)

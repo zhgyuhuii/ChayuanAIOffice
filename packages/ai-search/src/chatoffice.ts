@@ -269,8 +269,12 @@ export function parseChatOfficeImageSearch(raw: unknown, maxResults: number): Im
 export async function chatofficeImageSearch(
   query: string,
   maxResults = 8,
+  /** 1-based page; mapped to --offset for the CLI (unrecognized flags degrade to page 1) */
+  page = 1,
 ): Promise<ImageSearchResult[]> {
-  const raw = await runChatOffice(['img-search', query], SEARCH_TIMEOUT_MS)
+  const args = ['img-search', query]
+  if (page > 1) args.push('--offset', String((page - 1) * maxResults))
+  const raw = await runChatOffice(args, SEARCH_TIMEOUT_MS)
   return parseChatOfficeImageSearch(raw, maxResults)
 }
 

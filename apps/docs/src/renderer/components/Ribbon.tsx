@@ -507,16 +507,16 @@ function RibbonInner({
 
   /** 统一插入媒体对话框的传输桥：共享 ai:* 通道 + docs 生图 */
   const insertImageBridge: InsertImageBridge = {
-    searchWeb: async (query) => {
-      const r = await window.desktop?.webImageSearch(query)
+    searchWeb: async (query, page) => {
+      const r = await window.desktop?.webImageSearch(query, undefined, page)
       return {
         images: (r?.images as WebImageItem[]) ?? [],
         ...(r?.error ? { error: r.error } : {}),
         ...(r?.attempts ? { attempts: r.attempts } : {}),
       }
     },
-    searchStock: async (source, query) => {
-      const r = await window.desktop?.stockImageSearch(source, query)
+    searchStock: async (source, query, page) => {
+      const r = await window.desktop?.stockImageSearch(source, query, undefined, page)
       return {
         images: (r?.images as WebImageItem[]) ?? [],
         error: r?.error,

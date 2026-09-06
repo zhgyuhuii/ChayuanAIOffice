@@ -505,16 +505,16 @@ export function ExcelShell({
   const [insertImageOpen, setInsertImageOpen] = useState(false)
 
   const insertImageBridge: InsertImageBridge = {
-    searchWeb: async (query) => {
-      const r = await window.desktopApi.webImageSearch(query)
+    searchWeb: async (query, page) => {
+      const r = await window.desktopApi.webImageSearch(query, undefined, page)
       return {
         images: (r.images as WebImageItem[]) ?? [],
         ...(r.error ? { error: r.error } : {}),
         ...(r.attempts ? { attempts: r.attempts } : {}),
       }
     },
-    searchStock: async (source, query) => {
-      const r = await window.desktopApi.stockImageSearch(source, query)
+    searchStock: async (source, query, page) => {
+      const r = await window.desktopApi.stockImageSearch(source, query, undefined, page)
       return {
         images: (r.images as WebImageItem[]) ?? [],
         ...(r.error ? { error: r.error } : {}),

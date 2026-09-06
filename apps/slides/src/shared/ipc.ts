@@ -1815,12 +1815,14 @@ export interface SlidesApi {
     source: string,
     query: string,
     maxResults?: number,
+    page?: number,
   ) => Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
   stockKeysGet: () => Promise<{ pexels: string; pixabay: string }>
   stockKeysSet: (keys: { pexels?: string; pixabay?: string }) => Promise<void>
   webImageSearch: (
     query: string,
     maxResults?: number,
+    page?: number,
   ) => Promise<{
     images: unknown[]
     method?: string
