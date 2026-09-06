@@ -3329,6 +3329,72 @@ button {
   color: var(--text);
 }
 
+/* ---- 助手 tab: one-click action list (icon + name + description), docs parity ---- */
+
+.ai-assistant {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-assist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: var(--radius-8, 8px);
+  background: var(--color-bg-page, var(--surface, #fff));
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ai-assist-item:hover:not(:disabled) {
+  background: var(--color-bg-subtle, var(--hover, #f5f5f5));
+  border-color: var(--color-border-strong, var(--border-strong, #d9d9d9));
+}
+
+.ai-assist-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ai-assist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-8, 8px);
+  background: color-mix(in srgb, var(--accent, #2f6fdc) 12%, transparent);
+  color: var(--accent, #2f6fdc);
+}
+
+.ai-assist-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-assist-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text, #242424));
+}
+
+.ai-assist-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+
 .ai-chat {
   display: flex;
   flex: 1;
@@ -4112,6 +4178,16 @@ button {
 
 /* body row (AI dock + content column) — the status bar spans only the content
    column so the dock runs the full height of the window */
+/* ribbon + pdf body stacked inside the dock body — a left/right docked AI panel
+   spans the full window height, level with the ribbon's top edge (docs parity) */
+.pdf-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
 .app-main {
   display: flex;
   flex: 1;

@@ -533,7 +533,9 @@ setInterval(() => {
       } else {
         let draft = untitledRecovery.get(wcId)
         if (!draft) {
-          draft = join(getDraftsDir(), newDraftFilename())
+          // A never-saved deck's recovery copy is hidden plumbing, like the AI
+          // draft dir — the deck itself surfaces only at first save.
+          draft = join(hiddenDraftsDir(), newDraftFilename())
           untitledRecovery.set(wcId, draft)
         }
         target = draft
@@ -774,6 +776,13 @@ function getDraftsDir(): string {
   return configuredDefaultSaveDir(app)
 }
 
+/** Hidden working dir for AI-generated untitled decks and never-saved recovery
+ * drafts: nothing here is user-visible — the real file appears only at first
+ * save, which routes through Save As. */
+function hiddenDraftsDir(): string {
+  return join(app.getPath('temp'), 'chatoffice-slides-drafts')
+}
+
 /** Fallback draft filename: <untitled label>-YYYYMMDD-HHmmss.pptx */
 function newDraftFilename(): string {
   const d = new Date()
@@ -812,20 +821,22 @@ function pickDraftPath(draftsDir: string, deckName?: string): string {
 }
 
 /**
- * Auto-save the draft to <Documents>/ChatOffice/<name>.pptx after AI generation completes.
- * Append mode reuses the session's existing draft path (overwrite); replace mode generates a
- * new filename. On successful write, update session.path, pushRecent, slidesOpenedHook.
+ * Auto-save the AI-generated draft to a hidden working dir (never user-visible).
+ * Append mode reuses the session's existing draft path (overwrite); replace mode
+ * generates a new filename. On successful write, update session.path — no
+ * recents entry and no tab-title update: the deck surfaces only when the user
+ * first saves it (Save As dialog prefilled with the draft's name).
  * On write failure, degrade silently (console.warn) without blocking the in-memory session.
  */
 async function saveDraftAfterGenerate(
-  wc: WebContents,
+  _wc: WebContents,
   session: Session,
   bytes: Uint8Array,
   mode: 'replace' | 'append',
   deckName?: string,
 ): Promise<void> {
   try {
-    const draftsDir = getDraftsDir()
+    const draftsDir = hiddenDraftsDir()
     // Ensure the directory exists
     if (!existsSync(draftsDir)) mkdirSync(draftsDir, { recursive: true })
 
@@ -839,8 +850,6 @@ async function saveDraftAfterGenerate(
 
     await writeFile(draftPath, Buffer.from(bytes))
     session.path = draftPath
-    await pushRecent(draftPath)
-    slidesOpenedHook?.(wc, draftPath)
   } catch (err) {
     console.warn(
       '[slides] Failed to persist AI-generated draft to disk; the in-memory session still works:',
@@ -4234,19 +4243,42 @@ export function registerSlidesIpc(): void {
   ipcMain.handle('slides:save', async (e) => {
     const session = sessions.get(e.sender.id)
     if (!session) return { ok: false, error: 'no file open' }
-    // Untitled (new blank file): the first save lands silently in the drafts folder (Save As keeps its dialog)
-    if (!session.path) {
-      const draftsDir = getDraftsDir()
-      if (!existsSync(draftsDir)) mkdirSync(draftsDir, { recursive: true })
-      session.path = pickDraftPath(draftsDir, tm('untitledDeck'))
-      await pushRecent(session.path)
-      slidesOpenedHook?.(e.sender, session.path)
+    // An untitled deck (manual new blank) or an AI-generated draft session has
+    // no user-visible file yet: the first save asks where it should live. The
+    // draft copy is hidden plumbing — never silently overwritten or surfaced.
+    const draftPath =
+      session.path && session.path.startsWith(hiddenDraftsDir()) ? session.path : undefined
+    if (!session.path || draftPath) {
+      const parent = dialogParent()
+      const base = draftPath
+        ? basename(draftPath).replace(/\.pptx$/i, '')
+        : tm('untitledDeck')
+      const r = await showSaveDialogWithMemory(
+        dialog,
+        parent,
+        {
+          defaultPath: join(runtime.untitledSaveDir?.() ?? getDraftsDir(), `${base}.pptx`),
+          filters: [{ name: 'PowerPoint', extensions: ['pptx'] }],
+        },
+        getDraftsDir(),
+      )
+      if (r.canceled || !r.filePath) return { ok: false }
+      session.path = r.filePath
+      syncAttachedPaths(session, r.filePath)
     }
     try {
       await savePptxToFile(session.opened, session.path)
       autosaveBackoff.delete(session.path)
       void rm(autosavePathFor(session.path), { force: true }).catch(() => {})
       dropUntitledRecovery(e.sender.id)
+      // The draft just became a real file: retire the hidden copy and its
+      // recovery duplicate, then let the shell sync title/recents/project.
+      if (draftPath) {
+        void rm(draftPath, { force: true }).catch(() => {})
+        void rm(autosavePathFor(draftPath), { force: true }).catch(() => {})
+        slidesOpenedHook?.(e.sender, session.path)
+      }
+      await pushRecent(session.path)
       // Bake the saved patches back into the in-memory model (clears dirty, syncs
       // anchor.originalXml with disk) — a full reopen would re-read and unzip the
       // whole package, doubling save latency on large decks. Element ids survive,
@@ -4274,12 +4306,19 @@ export function registerSlidesIpc(): void {
     const r = await showSaveDialogWithMemory(dialog, parent, options, getDraftsDir())
     if (r.canceled || !r.filePath) return { ok: false }
     try {
+      // A draft-path session saving elsewhere: the hidden draft copy is superseded.
+      const wasDraft = session.path?.startsWith(hiddenDraftsDir()) ? session.path : undefined
       await savePptxToFile(session.opened, r.filePath)
       session.path = r.filePath
       autosaveBackoff.delete(r.filePath)
       dropUntitledRecovery(e.sender.id)
+      if (wasDraft) {
+        void rm(wasDraft, { force: true }).catch(() => {})
+        void rm(autosavePathFor(wasDraft), { force: true }).catch(() => {})
+      }
       await pushRecent(r.filePath)
       syncAttachedPaths(session, r.filePath)
+      slidesOpenedHook?.(e.sender, r.filePath)
       commitSaved(session.opened)
       session.metaDirty = false
       return {

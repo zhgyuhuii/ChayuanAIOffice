@@ -15,6 +15,7 @@ import type { AiDocContent } from '../../../docs/src/shared/ipc'
 import {
   createMarkdownView,
   markdownIsDirty,
+  queueMarkdownAiContent,
   requestMarkdownClose,
 } from '../../../markdown/src/main/markdown-main'
 import {
@@ -221,8 +222,17 @@ export class TabManager {
     return id
   }
 
-  openSheetsTab(openPath?: string, options?: { newBlank?: boolean }): string {
-    if (options?.newBlank) setSheetsNewBlank()
+  openSheetsTab(
+    openPath?: string,
+    options?: {
+      newBlank?: boolean
+      newBlankSaveDir?: string
+      newBlankName?: string
+      restoreFrom?: string
+    },
+  ): string {
+    if (options?.newBlank)
+      setSheetsNewBlank(options?.newBlankSaveDir, options?.restoreFrom, options?.newBlankName)
     const view = createSheetsView({ includeAiHandlers: false })
     // bind the path to this tab's webContents: a multi-select Open creates
     // several sheets tabs in one loop, so a single global path would be
@@ -260,13 +270,28 @@ export class TabManager {
     return id
   }
 
-  openPdfTab(openPath: string): string {
+  /** Untitled markdown tab seeded with AI-authored content (create_document):
+   * the tab stays in memory and the suggested name only prefills first save. */
+  openMarkdownTabWithContent(content: string, suggestedName: string): string {
+    const id = this.openMarkdownTab()
+    const tab = this.tabs.find((t) => t.id === id)
+    if (tab?.view) queueMarkdownAiContent(tab.view.webContents, content, suggestedName)
+    return id
+  }
+
+  openPdfTab(openPath: string, options?: { untitledTitle?: string }): string {
     const view = createPdfView(openPath)
     const id = `t${this.nextId++}`
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
-    this.tabs.push({ id, kind: 'pdf', view, title: basename(openPath), filePath: openPath })
+    this.tabs.push({
+      id,
+      kind: 'pdf',
+      view,
+      title: options?.untitledTitle ?? basename(openPath),
+      filePath: openPath,
+    })
     this.activateTab(id)
     return id
   }

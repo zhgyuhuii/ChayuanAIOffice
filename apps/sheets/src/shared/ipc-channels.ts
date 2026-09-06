@@ -55,7 +55,7 @@ export const IPC_CHANNELS = {
   /** Main found a newer recovery copy while opening; renderer shows the styled prompt */
   recoveryPrompt: 'workbook:recovery-prompt',
   recoveryPromptReply: 'workbook:recovery-prompt-reply',
-  autoRenameWorkbook: 'workbook:auto-rename',
+  setWorkbookSaveAsName: 'workbook:set-save-as-name',
   workbookRenamed: 'workbook:renamed',
   pendingEditsChanged: 'workbook:pending-edits',
   closeSaveRequest: 'workbook:close-save-request',

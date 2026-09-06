@@ -11,7 +11,7 @@ import type {
   CloudProjectsSnapshot,
   HomeApi,
   HomeChatSession,
-  HomeChatSessionScope,
+  PendingUntitledDocEntry,
   ProjectHomeApi,
   ProjectSummaryEntry,
   RecentEntry,
@@ -38,6 +38,20 @@ declare global {
     chatOffice: HomeApi
     chatOfficeProject?: ProjectHomeApi
   }
+}
+
+/** 弹窗期让编辑器视图让位：shell DOM 永远画在 WebContentsView 之下，全窗弹窗
+ *  （设置/删除确认）必须同步 chatoffice-shell-modal 类 + setShellModalOpen IPC
+ *  隐藏激活编辑器视图，否则弹窗会被视图盖住只剩树带里一条。 */
+function useShellModalSurface(open: boolean): void {
+  useEffect(() => {
+    document.documentElement.classList.toggle('chatoffice-shell-modal', open)
+    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(open)
+    return () => {
+      document.documentElement.classList.remove('chatoffice-shell-modal')
+      if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(false)
+    }
+  }, [open])
 }
 
 /** page size of the home list; scrolling to the bottom auto-loads the next page */
@@ -95,6 +109,12 @@ function formatModified(mtimeMs: number, i18n: I18n): string {
   }
   if (days === 1) return i18n.t('yesterday')
   return date.toLocaleDateString(i18n.dateLocale, { month: 'short', day: 'numeric' })
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
 function fileName(path: string): string {
@@ -161,6 +181,14 @@ interface ProjectPanelProps {
    * reads as the parent node of everything below it
    */
   renderChildren?: (id: string) => ReactElement | null
+  /** 展开中的项目（各自独立，互不影响；展开状态由用户手动维护） */
+  expandedIds: string[]
+  onToggleExpand: (id: string) => void
+  /** 多选：项目行级联勾选状态（半选由 indeterminate 表达） */
+  projectSelect?: (id: string) => { checked: boolean; indeterminate: boolean }
+  onToggleProjectSelect?: (id: string) => void
+  /** 项目区批量操作条（跨项目共一条，由父级聚合渲染在标题行下） */
+  toolbar?: React.ReactNode
 }
 
 function ProjectPanel({
@@ -170,6 +198,11 @@ function ProjectPanel({
   onRefresh,
   onCreateTask,
   renderChildren,
+  expandedIds,
+  onToggleExpand,
+  projectSelect,
+  onToggleProjectSelect,
+  toolbar,
 }: ProjectPanelProps) {
   const { t } = useI18n()
   const [creating, setCreating] = useState(false)
@@ -287,6 +320,9 @@ function ProjectPanel({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [confirmDeleteId])
 
+  // 删除项目确认弹窗同权：弹窗期隐藏激活编辑器视图（见 useShellModalSurface）
+  useShellModalSurface(confirmDeleteId !== null)
+
   return (
     <div className="proj-panel">
       <div
@@ -339,6 +375,8 @@ function ProjectPanel({
         </button>
       </div>
 
+      {toolbar}
+
       {!collapsed && creating && (
         <div className="proj-new-row">
           <input
@@ -371,6 +409,7 @@ function ProjectPanel({
       <ul className="proj-list" style={collapsed ? { display: 'none' } : undefined}>
         {projects.map((proj) => {
           const isActive = selectedId === proj.id
+          const isExpanded = expandedIds.includes(proj.id)
           const isRenaming = renaming?.id === proj.id
           return (
             <li key={proj.id} className={`proj-item${isActive ? ' active' : ''}`}>
@@ -378,11 +417,55 @@ function ProjectPanel({
                 className="proj-item-main"
                 role="button"
                 tabIndex={0}
-                onClick={() => onSelect(isActive ? null : proj.id)}
+                onClick={() => {
+                  onSelect(proj.id)
+                  onToggleExpand(proj.id)
+                }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') onSelect(isActive ? null : proj.id)
+                  if (e.key === 'Enter') {
+                    onSelect(proj.id)
+                    onToggleExpand(proj.id)
+                  }
                 }}
               >
+                {projectSelect && (() => {
+                  const info = projectSelect(proj.id)
+                  return (
+                    <input
+                      ref={(el) => {
+                        if (el) el.indeterminate = info.indeterminate
+                      }}
+                      type="checkbox"
+                      className="proj-check"
+                      checked={info.checked}
+                      onChange={() => onToggleProjectSelect?.(proj.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={t('selectFile', {
+                        name: proj.isDefault ? t('defaultProject') : proj.name,
+                      })}
+                    />
+                  )
+                })()}
+                <button
+                  className={`proj-expand-btn${isExpanded ? ' expanded' : ''}`}
+                  aria-label={isExpanded ? t('collapse') : t('expand')}
+                  aria-expanded={isExpanded}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleExpand(proj.id)
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                      d="M6 3.5L10.5 8L6 12.5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </svg>
+                </button>
                 <span className="proj-item-icon" aria-hidden="true">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
@@ -449,11 +532,34 @@ function ProjectPanel({
                     </button>
                   )}
                 </span>
-              </div>
-
-              {!proj.isDefault && (
-                <div
-                  className="proj-menu-wrap"
+                {/* 直接可见的删除入口（共识：默认项目不可删，无图标无菜单） */}
+                {!proj.isDefault && (
+                  <button
+                    className="proj-delete-btn"
+                    data-tip={t('deleteProject')}
+                    aria-label={t('deleteProject')}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      doDelete(proj.id)
+                    }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path
+                        d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+                {/* lives INSIDE the row (not the li) so its absolute strip only
+                    covers the row itself — over the expanded children it would
+                    swallow clicks meant for their trailing icons */}
+                {!proj.isDefault && (
+                  <div
+                    className="proj-menu-wrap"
                   ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
                 >
                   <button
@@ -510,8 +616,10 @@ function ProjectPanel({
                     </div>
                   )}
                 </div>
-              )}
-              {isActive && renderChildren && (
+                )}
+              </div>
+
+              {isExpanded && renderChildren && (
                 <div className="proj-children">{renderChildren(proj.id)}</div>
               )}
             </li>
@@ -1222,11 +1330,23 @@ export function Home() {
   // ChatOffice web projects take over the content area (the chat hides meanwhile)
   const [cloudMode, setCloudMode] = useState(false)
   const [filter, setFilter] = useState('all')
+  // ── Pending-unsaved restore banner (documents that crashed before their first
+  // save; created via 新建表格/PDF or AI generation, never written to disk) ──
+  const [pendingUntitled, setPendingUntitled] = useState<PendingUntitledDocEntry[]>([])
+  useEffect(() => {
+    void window.chatOffice
+      .listPendingUntitled()
+      .then(setPendingUntitled)
+      .catch(() => setPendingUntitled([]))
+  }, [])
   const [rowMenu, setRowMenu] = useState<string | null>(null)
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
   const rowMenuWrapRef = useRef<HTMLSpanElement>(null)
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null)
+  /** 待确认的磁盘删除：paths=文件，sessionIds=显式勾选的会话（执行时还会并入被删文件下的对话） */
+  const [confirmDelete, setConfirmDelete] = useState<{ paths: string[]; sessionIds: string[] } | null>(
+    null,
+  )
   // name in the greeting; omitted when logged out
   const [accountName, setAccountName] = useState('')
   // ChatOffice Projects is web-account data, so its nav entry only shows when logged in
@@ -1259,7 +1379,19 @@ export function Home() {
     }
   }, [])
 
-  // sidebar resizer cleanup, shared by the handle's pointerup/lostcapture and
+  // 删除确认弹窗与设置弹窗同机制：shell DOM 永远画在编辑器 WebContentsView
+  // 之下，弹窗打开期间必须隐藏编辑器视图，否则对话框被盖住不可见（只剩树带
+  // 一条遮罩）。关闭时恢复设置弹窗的占用状态，两者互斥不冲突。
+  const shellModalBusy = confirmDelete !== null
+  useEffect(() => {
+    if (!shellModalBusy) return
+    document.documentElement.classList.add('chatoffice-shell-modal')
+    if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(true)
+    return () => {
+      document.documentElement.classList.toggle('chatoffice-shell-modal', settingsOpen)
+      if ('chatOfficeTabs' in window) window.chatOfficeTabs.setShellModalOpen(settingsOpen)
+    }
+  }, [shellModalBusy, settingsOpen])
   // a window-level fallback: with pointer capture unavailable (or the pointer
   // released outside the 7px strip) the drag must still end
   const resizerRef = useRef<HTMLDivElement>(null)
@@ -1313,18 +1445,6 @@ export function Home() {
       openChatSession(session.id)
     },
     [chatStore, openChatSession],
-  )
-  /** tree sessions to list: visible once they carry content, or while active */
-  const visibleTreeSessions = useCallback(
-    (scope: HomeChatSessionScope): HomeChatSession[] =>
-      (chatStore.sessions ?? []).filter(
-        (s) =>
-          s.scope?.kind === scope.kind &&
-          s.scope?.id === scope.id &&
-          !s.handedOff &&
-          (s.messages.length > 0 || s.id === chatStore.activeId),
-      ),
-    [chatStore.sessions, chatStore.activeId],
   )
 
   // ── Paged loading ──
@@ -1430,9 +1550,12 @@ export function Home() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [rowMenu, confirmDelete])
 
+  // 删除确认弹窗与设置弹窗同权：弹窗期隐藏激活编辑器视图（见 useShellModalSurface）
+  useShellModalSurface(confirmDelete !== null)
+
   // ── Project files state ────────────────────────────────
 
-  const [projectFileEntries, setProjectFileEntries] = useState<RecentEntry[]>([])
+  const [projectFilesMap, setProjectFilesMap] = useState<Record<string, RecentEntry[]>>({})
   const [moveFileMenu, setMoveFileMenu] = useState<string | null>(null)
   // submenu opens rightward by default; flips left when the window edge is too close
   const [moveMenuFlip, setMoveMenuFlip] = useState(false)
@@ -1465,22 +1588,83 @@ export function Home() {
       timers[kind] = null
     }
   }
+  // 项目展开状态：各项目独立展开/折叠，互不影响；展开的项目各自加载文件
+  const [expandedProjects, setExpandedProjects] = useState<string[]>([])
+  const toggleProjectExpand = (id: string) => {
+    setExpandedProjects((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
+  }
+  // 项目区搜索框：匹配会话标题 / 用户问题 / 文件名（跨全部项目）
+  const [projQuery, setProjQuery] = useState('')
+
+  // ── 多选删除：分区级勾选 ──
+  // zone key：'proj:<项目id>' | 'recent' | 'starred'；条目 key：文件=路径、会话='chat:<sessionId>'
+  const [selection, setSelection] = useState<Record<string, Set<string>>>({})
+  const chatKey = (id: string) => `chat:${id}`
+  const toggleSelect = (zone: string, key: string) => {
+    setSelection((prev) => {
+      const set = new Set(prev[zone] ?? [])
+      if (set.has(key)) set.delete(key)
+      else set.add(key)
+      const next = { ...prev }
+      if (set.size === 0) delete next[zone]
+      else next[zone] = set
+      return next
+    })
+  }
+  const setZoneSelection = (zone: string, keys: string[] | null) => {
+    setSelection((prev) => {
+      const next = { ...prev }
+      if (!keys || keys.length === 0) delete next[zone]
+      else next[zone] = new Set(keys)
+      return next
+    })
+  }
+  const zoneSelected = (zone: string, key: string) => selection[zone]?.has(key) ?? false
+  /** 删除/移除后把这些条目从所有分区勾选里摘掉（paths + 'chat:<id>' 混合列表） */
+  const pruneSelection = (keys: string[]) => {
+    if (keys.length === 0) return
+    setSelection((prev) => {
+      const next: Record<string, Set<string>> = {}
+      for (const [zone, set] of Object.entries(prev)) {
+        const remaining = new Set([...set].filter((k) => !keys.includes(k)))
+        if (remaining.size > 0) next[zone] = remaining
+      }
+      return next
+    })
+  }
+
+  const sessionMatchesQuery = (s: HomeChatSession, q: string) => {
+    if (!q) return true
+    if (s.title?.toLowerCase().includes(q)) return true
+    return s.messages.some((m) => m.role === 'user' && m.text?.toLowerCase().includes(q))
+  }
+
+  // 搜索时跨全部项目检索 → 需要加载所有项目的文件列表；否则只加载展开的
+  const projectLoadIds = useMemo(
+    () => (projQuery.trim() ? projects.map((p) => p.id) : expandedProjects),
+    [projQuery, projects, expandedProjects],
+  )
+
   useEffect(() => {
-    if (!projectMode || !selectedProjectId) {
-      setProjectFileEntries([])
+    if (!projectMode || projectLoadIds.length === 0) {
+      if (projectMode && !projQuery.trim()) setProjectFilesMap({})
       return
     }
     let active = true
     const api = window.chatOfficeProject!
-    void api.listFiles(selectedProjectId).then(async (paths) => {
-      const stats = await window.chatOffice.statPaths(paths)
-      if (!active) return
-      setProjectFileEntries(stats.sort((a, b) => b.mtimeMs - a.mtimeMs))
-    })
+    for (const id of projectLoadIds) {
+      void api.listFiles(id).then(async (paths) => {
+        const stats = await window.chatOffice.statPaths(paths)
+        if (!active) return
+        setProjectFilesMap((prev) => ({ ...prev, [id]: stats.sort((a, b) => b.mtimeMs - a.mtimeMs) }))
+      })
+    }
     return () => {
       active = false
     }
-  }, [projectMode, selectedProjectId, projectTick])
+  }, [projectMode, projectLoadIds, projectTick, projQuery])
 
   // the submenu lives inside the row menu: when that closes, drop the stale
   // submenu state and any pending hover timers so it doesn't reopen expanded
@@ -1512,15 +1696,121 @@ export function Home() {
     void window.chatOffice.removeRecent(paths).then(refresh)
   }
 
+  /** 清理最近：removeRecent 只接受路径，先按当前筛选拉全量再整表移除 */
+  const clearAllRecent = () => {
+    if (listTotal === 0) return
+    const ext = filter === 'all' ? undefined : filter
+    void window.chatOffice
+      .recents({ offset: 0, limit: listTotal, ext })
+      .then((page) => removeRecent(page.entries.map((e) => e.path)))
+  }
+
+  // ── 批量操作（分区操作条）──
+
+  /** 项目区勾选统计（跨项目聚合，文件/会话分开计数） */
+  const projSelectionStats = () => {
+    let files = 0
+    let chats = 0
+    for (const [zone, set] of Object.entries(selection)) {
+      if (!zone.startsWith('proj:')) continue
+      for (const k of set) {
+        if (k.startsWith('chat:')) chats++
+        else files++
+      }
+    }
+    return { files, chats }
+  }
+  const hasProjSelection = Object.keys(selection).some((k) => k.startsWith('proj:'))
+
+  const batchDeleteProjectSelection = () => {
+    const paths: string[] = []
+    const sessionIds: string[] = []
+    for (const [zone, set] of Object.entries(selection)) {
+      if (!zone.startsWith('proj:')) continue
+      for (const k of set) {
+        if (k.startsWith('chat:')) sessionIds.push(k.slice(5))
+        else paths.push(k)
+      }
+    }
+    requestDeleteSelection(paths, sessionIds)
+  }
+
+  const batchRemoveRecent = () => {
+    const paths = [...(selection['recent'] ?? [])]
+    if (paths.length === 0) return
+    void window.chatOffice.removeRecent(paths).then(refresh)
+    pruneSelection(paths)
+  }
+
+  const batchDeleteRecent = () => {
+    const paths = [...(selection['recent'] ?? [])]
+    requestDeleteSelection(paths, [])
+  }
+
+  const batchUnstar = () => {
+    const paths = [...(selection['starred'] ?? [])]
+    if (paths.length === 0) return
+    void Promise.all(paths.map((p) => window.chatOffice.toggleStar(p))).then(refresh)
+    pruneSelection(paths)
+  }
+
+  // ── 项目行级联勾选：勾项目 = 勾中它下面全部文件 + 任务会话 + 文件下对话 ──
+  const projectCascadeKeys = (projectId: string): string[] => {
+    const sessions = chatStore.sessions ?? []
+    const files = (projectFilesMap[projectId] ?? []).map((e) => e.path)
+    const taskKeys = sessions
+      .filter((s) => s.scope?.kind === 'project' && s.scope?.id === projectId && !s.handedOff)
+      .map((s) => chatKey(s.id))
+    const chatKeys = sessions
+      .filter((s) => s.scope?.kind === 'file' && files.includes(s.scope.id) && !s.handedOff)
+      .map((s) => chatKey(s.id))
+    return [...files, ...taskKeys, ...chatKeys]
+  }
+  const projectSelectInfo = (projectId: string) => {
+    const set = selection[`proj:${projectId}`]
+    const keys = projectCascadeKeys(projectId)
+    const sel = keys.filter((k) => set?.has(k)).length
+    return {
+      checked: keys.length > 0 && sel === keys.length,
+      indeterminate: sel > 0 && sel < keys.length,
+    }
+  }
+  const toggleProjectSelect = (projectId: string) => {
+    const info = projectSelectInfo(projectId)
+    setZoneSelection(`proj:${projectId}`, info.checked ? null : projectCascadeKeys(projectId))
+  }
+  const clearProjSelection = () =>
+    setSelection((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([k]) => !k.startsWith('proj:'))),
+    )
+  const clearZone = (zone: string) => setZoneSelection(zone, null)
+
+  /** 挂在待删文件下的对话会话 id（连带清理，共识：文件没了对话无意义） */
+  const chatIdsUnderFiles = (paths: string[]) =>
+    (chatStore.sessions ?? [])
+      .filter(
+        (s) => s.scope?.kind === 'file' && paths.includes(s.scope.id) && !s.handedOff,
+      )
+      .map((s) => s.id)
+
+  const requestDeleteSelection = (paths: string[], sessionIds: string[]) => {
+    if (paths.length === 0 && sessionIds.length === 0) return
+    const orphan = chatIdsUnderFiles(paths).filter((id) => !sessionIds.includes(id))
+    setConfirmDelete({ paths, sessionIds: [...sessionIds, ...orphan] })
+  }
+
   const deleteFiles = (paths: string[]) => {
     setRowMenu(null)
-    setConfirmDelete(paths)
+    requestDeleteSelection(paths, [])
   }
 
   const confirmDeleteNow = () => {
-    const paths = confirmDelete ?? []
+    const pending = confirmDelete
+    if (!pending) return
     setConfirmDelete(null)
-    void window.chatOffice.deleteFiles(paths).then(refresh)
+    pending.sessionIds.forEach((id) => chatStore.removeSession(id))
+    void window.chatOffice.deleteFiles(pending.paths).then(refresh)
+    pruneSelection([...pending.paths, ...pending.sessionIds.map(chatKey)])
   }
 
   const duplicateFile = (path: string) => {
@@ -1555,7 +1845,11 @@ export function Home() {
     }
     refresh()
     if (selectedProjectId) {
-      setProjectFileEntries((prev) => prev.filter((e) => e.path !== filePath))
+      setProjectFilesMap((prev) => {
+        const list = prev[selectedProjectId]
+        if (!list) return prev
+        return { ...prev, [selectedProjectId]: list.filter((e) => e.path !== filePath) }
+      })
     }
   }
 
@@ -1639,17 +1933,40 @@ export function Home() {
 
   // ── Sidebar file history (recents / starred / project files) ──
 
-  function renderSideFileRow(entry: RecentEntry, context: 'global' | 'project', bare = false) {
+  function renderSideFileRow(
+    entry: RecentEntry,
+    context: 'global' | 'project',
+    bare = false,
+    /** which sidebar list the row belongs to — decides what the hover 删除 button does */
+    list: 'recent' | 'starred' = 'recent',
+    /** 多选勾选分区 key（项目树行传 'proj:<id>'；global 行由 list 推导） */
+    zone?: string,
+  ) {
     const isRenaming = renaming?.path === entry.path
     const otherProjects = projects.filter(
       (p) => p.id !== (context === 'project' ? selectedProjectId : undefined),
     )
+    const removeLabel = list === 'starred' ? t('unstar') : t('removeFromList')
+    const selectZone = zone ?? list
     const body = (
       <>
+        <label className="row-check" onClick={(event) => event.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={zoneSelected(selectZone, entry.path)}
+            onChange={() => toggleSelect(selectZone, entry.path)}
+            aria-label={t('selectFile', { name: entry.name })}
+          />
+        </label>
         <div
           className="side-file-main"
           role="button"
           tabIndex={0}
+          title={
+            bare
+              ? `${formatModified(entry.mtimeMs, i18n)} · ${formatSize(entry.sizeBytes)} · ${entry.path}`
+              : undefined
+          }
           onClick={() => {
             if (!isRenaming) void window.chatOffice.openPath(entry.path)
           }}
@@ -1659,7 +1976,7 @@ export function Home() {
             }
           }}
         >
-          <FileBadge ext={entry.ext} size={18} />
+          <FileBadge ext={entry.ext} size={bare ? 15 : 18} />
           {isRenaming ? (
             <input
               className="rename-input side"
@@ -1681,8 +1998,31 @@ export function Home() {
               {entry.name}
             </span>
           )}
-          <span className="side-file-time">{formatModified(entry.mtimeMs, i18n)}</span>
+          {/* tree rows: no inline time — the row tooltip carries time/size/path */}
+          {!bare && <span className="side-file-time">{formatModified(entry.mtimeMs, i18n)}</span>}
         </div>
+        {context === 'global' && (
+          <button
+            className="row-remove-btn side"
+            aria-label={removeLabel}
+            title={removeLabel}
+            onClick={(event) => {
+              event.stopPropagation()
+              if (list === 'starred') toggleStar(entry.path)
+              else removeRecent([entry.path])
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
         <button
           className={`star-btn side${entry.starred ? ' starred' : ''}`}
           aria-label={entry.starred ? t('unstar') : t('star')}
@@ -1701,6 +2041,48 @@ export function Home() {
             />
           </svg>
         </button>
+        {bare && (
+          <>
+            <button
+              className="row-remove-btn side"
+              aria-label={t('open')}
+              title={t('open')}
+              onClick={(event) => {
+                event.stopPropagation()
+                void window.chatOffice.openPath(entry.path)
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M6.5 3.5H4a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 4 13.5h7A1.5 1.5 0 0 0 12.5 12V9.5M9.5 2.5h4v4M13 3l-5.5 5.5"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <button
+              className="row-remove-btn side danger"
+              aria-label={t('deleteFiles')}
+              title={t('deleteFiles')}
+              onClick={(event) => {
+                event.stopPropagation()
+                deleteFiles([entry.path])
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </>
+        )}
         <span
           className="side-file-actions"
           ref={rowMenu === entry.path ? rowMenuWrapRef : undefined}
@@ -1854,9 +2236,13 @@ export function Home() {
         </span>
       </>
     )
-    // bare mode: the caller wraps (e.g. adding nested chat nodes under the file)
+    // bare mode: the caller adds nested chat nodes under the row — still wrap
+    // in a flex .side-file row so the trailing icons stay on one line and the
+    // hover-reveal selectors (`.side-file:hover …`) keep working
     return bare ? (
-      body
+      <div className="side-file bare" key={entry.path}>
+        {body}
+      </div>
     ) : (
       <li className="side-file" key={entry.path}>
         {body}
@@ -1865,10 +2251,24 @@ export function Home() {
   }
 
   /** one chat-session node in the tree (a task under a project, or a chat under a file) */
-  function renderTreeChat(session: HomeChatSession, depth: 'task' | 'chat'): ReactElement {
+  function renderTreeChat(
+    session: HomeChatSession,
+    depth: 'task' | 'chat',
+    zone?: string,
+  ): ReactElement {
     const activeCls = session.id === chatStore.activeId ? ' active' : ''
     return (
       <li key={session.id} className={`tree-chat-row${depth === 'task' ? ' task' : ''}`}>
+        {zone && (
+          <label className="row-check" onClick={(event) => event.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={zoneSelected(zone, chatKey(session.id))}
+              onChange={() => toggleSelect(zone, chatKey(session.id))}
+              aria-label={t('selectFile', { name: session.title || t('chatUntitled') })}
+            />
+          </label>
+        )}
         <button
           className={`tree-chat${activeCls}`}
           title={session.title || t('chatUntitled')}
@@ -1889,32 +2289,58 @@ export function Home() {
     )
   }
 
-  /** files of the selected project: tasks (project chats) first, then files
+  /** files of an expanded project: tasks (project chats) first, then files
    *  each with its attached chats — the 项目→文件→对话 three levels. Rendered
-   *  INSIDE the selected project's row (ProjectPanel renderChildren) so the
-   *  children sit directly under the project name — no separate section head. */
-  function renderProjectFiles() {
-    if (!projectMode || !selectedProjectId) return null
-    const tasks = visibleTreeSessions({ kind: 'project', id: selectedProjectId })
+   *  INSIDE the project's row (ProjectPanel renderChildren) so the
+   *  children sit directly under the project name — no separate section head.
+   *  `query` filters by session title / user question text / file name. */
+  function renderProjectFiles(projectId: string, query = '') {
+    if (!projectMode || !projectId) return null
+    const q = query.trim().toLowerCase()
+    const projectPool = (chatStore.sessions ?? []).filter(
+      (s) => s.scope?.kind === 'project' && s.scope?.id === projectId && !s.handedOff,
+    )
+    const tasks = q
+      ? projectPool.filter((s) => sessionMatchesQuery(s, q))
+      : projectPool.filter(
+          (s) => s.messages.length > 0 || s.id === chatStore.activeId,
+        )
+    const allFiles = projectFilesMap[projectId] ?? []
+    const fileEntries = q
+      ? allFiles.filter((e) => e.name.toLowerCase().includes(q))
+      : allFiles
+    /** chats attached to a file node; searching looks at titles + user questions */
+    const chatsFor = (path: string) => {
+      const pool = (chatStore.sessions ?? []).filter(
+        (s) => s.scope?.kind === 'file' && s.scope?.id === path && !s.handedOff,
+      )
+      if (q) return pool.filter((s) => sessionMatchesQuery(s, q))
+      return pool.filter((s) => s.messages.length > 0 || s.id === chatStore.activeId)
+    }
+    const zone = `proj:${projectId}`
     return (
       <>
         {tasks.length > 0 && (
-          <ul className="tree-chat-list">{tasks.map((s) => renderTreeChat(s, 'task'))}</ul>
+          <ul className="tree-chat-list">
+            {tasks.map((s) => renderTreeChat(s, 'task', zone))}
+          </ul>
         )}
-        {projectFileEntries.length === 0 ? (
+        {fileEntries.length === 0 ? (
           tasks.length === 0 ? (
-            <p className="side-files-empty">{t('projEmptyHint')}</p>
+            q ? null : (
+              <p className="side-files-empty">{t('projEmptyHint')}</p>
+            )
           ) : null
         ) : (
           <ul className="side-file-list">
-            {projectFileEntries.map((entry) => (
+            {fileEntries.map((entry) => (
               <li key={entry.path} className="side-file-group">
-                {renderSideFileRow(entry, 'project', true)}
+                {renderSideFileRow(entry, 'project', true, 'recent', zone)}
                 {(() => {
-                  const chats = visibleTreeSessions({ kind: 'file', id: entry.path })
+                  const chats = chatsFor(entry.path)
                   return chats.length > 0 ? (
                     <ul className="tree-chat-list nested">
-                      {chats.map((s) => renderTreeChat(s, 'chat'))}
+                      {chats.map((s) => renderTreeChat(s, 'chat', zone))}
                     </ul>
                   ) : null
                 })()}
@@ -1926,12 +2352,31 @@ export function Home() {
     )
   }
 
-  /** collapsible group header: arrow + title + count, click toggles */
+  /** does the project hold anything matching the search (files, tasks, file chats)? */
+  function projectHasMatch(projectId: string, q: string) {
+    if (!q) return false
+    const files = projectFilesMap[projectId] ?? []
+    if (files.some((e) => e.name.toLowerCase().includes(q))) return true
+    const sessions = chatStore.sessions ?? []
+    return sessions.some(
+      (s) =>
+        !s.handedOff &&
+        sessionMatchesQuery(s, q) &&
+        (s.scope?.kind === 'project'
+          ? s.scope.id === projectId
+          : s.scope?.kind === 'file' && files.some((e) => e.path === s.scope?.id)),
+    )
+  }
+
+  /** collapsible group header: arrow + title + count, click toggles;
+   *  optional trailing 清理 button (hover-revealed) for bulk removal */
   function renderGroupHead(
     title: string,
     count: number,
     collapsed: boolean,
     onToggle: () => void,
+    onClear?: () => void,
+    clearLabel?: string,
   ): ReactElement {
     return (
       <div
@@ -1962,27 +2407,60 @@ export function Home() {
         </svg>
         <span className="side-files-title">{title}</span>
         <span className="side-files-count">{t(fileCountKey(count), { n: count })}</span>
+        {onClear && (
+          <button
+            className="row-remove-btn side group-clear"
+            aria-label={clearLabel}
+            title={clearLabel}
+            onClick={(event) => {
+              event.stopPropagation()
+              onClear()
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
       </div>
     )
   }
 
   /** always-on 收藏 section (collapsible group) */
   function renderStarredSection() {
+    const selCount = selection['starred']?.size ?? 0
     return (
       <div
         className={`side-files side-sec-starred side-group${
           layout.starredCollapsed ? ' collapsed' : ''
-        }`}
+        }${selCount > 0 ? ' selecting' : ''}`}
       >
         {renderGroupHead(t('secStarred'), starredEntries.length, layout.starredCollapsed, () =>
           setHomeLayout({ starredCollapsed: !layout.starredCollapsed }),
         )}
         <div className="side-group-body">
+          {selCount > 0 && (
+            <div className="zone-toolbar">
+              <span className="zone-toolbar-label">{t('selectedCount', { n: selCount })}</span>
+              <button className="zone-toolbar-btn" onClick={batchUnstar}>
+                {t('unstar')}
+              </button>
+              <button className="zone-toolbar-btn" onClick={() => clearZone('starred')}>
+                {t('cancel')}
+              </button>
+            </div>
+          )}
           {starredEntries.length === 0 ? (
             <p className="side-files-empty">{t('emptyStarred')}</p>
           ) : (
             <ul className="side-file-list">
-              {starredEntries.map((entry) => renderSideFileRow(entry, 'global'))}
+              {starredEntries.map((entry) => renderSideFileRow(entry, 'global', false, 'starred'))}
             </ul>
           )}
         </div>
@@ -1992,16 +2470,36 @@ export function Home() {
 
   /** always-on 最近使用 section (collapsible group; extension-style filter chips) */
   function renderRecentSection() {
+    const selCount = selection['recent']?.size ?? 0
     return (
       <div
         className={`side-files side-sec-recent side-group${
           layout.recentCollapsed ? ' collapsed' : ''
-        }`}
+        }${selCount > 0 ? ' selecting' : ''}`}
       >
-        {renderGroupHead(t('secRecent'), listTotal, layout.recentCollapsed, () =>
-          setHomeLayout({ recentCollapsed: !layout.recentCollapsed }),
+        {renderGroupHead(
+          t('secRecent'),
+          listTotal,
+          layout.recentCollapsed,
+          () => setHomeLayout({ recentCollapsed: !layout.recentCollapsed }),
+          clearAllRecent,
+          t('clearRecent'),
         )}
         <div className="side-group-body">
+          {selCount > 0 && (
+            <div className="zone-toolbar">
+              <span className="zone-toolbar-label">{t('selectedCount', { n: selCount })}</span>
+              <button className="zone-toolbar-btn" onClick={batchRemoveRecent}>
+                {t('removeFromList')}
+              </button>
+              <button className="zone-toolbar-btn danger" onClick={batchDeleteRecent}>
+                {t('deleteFiles')}
+              </button>
+              <button className="zone-toolbar-btn" onClick={() => clearZone('recent')}>
+                {t('cancel')}
+              </button>
+            </div>
+          )}
           <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
             {RECENT_FILTERS.map((f) => (
               <button
@@ -2020,7 +2518,7 @@ export function Home() {
           ) : (
             <div className="side-files-scroll">
               <ul className="side-file-list">
-                {entries.map((entry) => renderSideFileRow(entry, 'global'))}
+                {entries.map((entry) => renderSideFileRow(entry, 'global', false, 'recent'))}
               </ul>
               {hasMore && (
                 <div ref={sentinelRef} className="load-more" aria-hidden="true">
@@ -2040,6 +2538,31 @@ export function Home() {
         layout.rightCollapsed ? ' pane-right-collapsed' : ''
       }`}
     >
+      {pendingUntitled.length > 0 && (
+        <div className="pending-untitled-banner" role="status">
+          <span>{t('unsavedDocsBanner', { count: pendingUntitled.length })}</span>
+          <span className="pending-untitled-actions">
+            <button
+              onClick={() => {
+                for (const doc of pendingUntitled)
+                  void window.chatOffice.restorePendingUntitled(doc.tempPath)
+                setPendingUntitled([])
+              }}
+            >
+              {t('restoreAll')}
+            </button>
+            <button
+              onClick={() => {
+                for (const doc of pendingUntitled)
+                  void window.chatOffice.discardPendingUntitled(doc.tempPath)
+                setPendingUntitled([])
+              }}
+            >
+              {t('discardAll')}
+            </button>
+          </span>
+        </div>
+      )}
       <aside className="sidebar" style={{ width: layout.sidebarWidth }}>
         {renderSideActions()}
 
@@ -2085,7 +2608,46 @@ export function Home() {
             can grow in later phases without nested scrollbars */}
         <div className="sidebar-scroll">
           {projectMode && (
-            <div className="side-sec">
+            <div className={`side-sec${hasProjSelection ? ' selecting' : ''}`}>
+              <div className="proj-search">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle
+                    cx="7"
+                    cy="7"
+                    r="4.4"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                  />
+                  <path
+                    d="M10.4 10.4L14 14"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <input
+                  className="proj-search-input"
+                  placeholder={t('projSearchPlaceholder')}
+                  value={projQuery}
+                  onChange={(e) => setProjQuery(e.target.value)}
+                />
+                {projQuery && (
+                  <button
+                    className="proj-search-clear"
+                    aria-label={t('cancel')}
+                    onClick={() => setProjQuery('')}
+                  >
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path
+                        d="M3 3l6 6M9 3l-6 6"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
               <ProjectPanel
                 projects={projects}
                 selectedId={selectedProjectId}
@@ -2095,7 +2657,34 @@ export function Home() {
                 }}
                 onRefresh={refresh}
                 onCreateTask={createTask}
-                renderChildren={(id) => (id === selectedProjectId ? renderProjectFiles() : null)}
+                expandedIds={expandedProjects}
+                onToggleExpand={toggleProjectExpand}
+                projectSelect={projectSelectInfo}
+                onToggleProjectSelect={toggleProjectSelect}
+                toolbar={
+                  hasProjSelection ? (
+                    <div className="zone-toolbar">
+                      <span className="zone-toolbar-label">
+                        {(() => {
+                          const s = projSelectionStats()
+                          return t('selectedFilesChats', { n: s.files, m: s.chats })
+                        })()}
+                      </span>
+                      <button className="zone-toolbar-btn danger" onClick={batchDeleteProjectSelection}>
+                        {t('deleteFiles')}
+                      </button>
+                      <button className="zone-toolbar-btn" onClick={clearProjSelection}>
+                        {t('cancel')}
+                      </button>
+                    </div>
+                  ) : undefined
+                }
+                renderChildren={(id) => {
+                  const q = projQuery.trim().toLowerCase()
+                  const show =
+                    expandedProjects.includes(id) || (q !== '' && projectHasMatch(id, q))
+                  return show ? renderProjectFiles(id, q) : null
+                }}
               />
             </div>
           )}
@@ -2191,17 +2780,24 @@ export function Home() {
           >
             <h3>{t('deleteModalTitle')}</h3>
             <p>
-              {confirmDelete.length === 1
-                ? t('deleteConfirmOne', { name: fileName(confirmDelete[0]) })
-                : t('deleteConfirmMany', { n: confirmDelete.length })}
+              {confirmDelete.paths.length === 0
+                ? t('deleteWithChats', { n: confirmDelete.sessionIds.length })
+                : confirmDelete.paths.length === 1
+                  ? t('deleteConfirmOne', { name: fileName(confirmDelete.paths[0]) })
+                  : t('deleteConfirmMany', { n: confirmDelete.paths.length })}
             </p>
-            {confirmDelete.length > 1 && (
+            {confirmDelete.sessionIds.length > 0 && confirmDelete.paths.length > 0 && (
+              <p className="modal-chat-note">
+                {t('deleteWithChats', { n: confirmDelete.sessionIds.length })}
+              </p>
+            )}
+            {confirmDelete.paths.length > 1 && (
               <ul className="modal-file-list">
-                {confirmDelete.slice(0, 6).map((p) => (
+                {confirmDelete.paths.slice(0, 6).map((p) => (
                   <li key={p}>{fileName(p)}</li>
                 ))}
-                {confirmDelete.length > 6 && (
-                  <li>{t('deleteMoreCount', { n: confirmDelete.length })}</li>
+                {confirmDelete.paths.length > 6 && (
+                  <li>{t('deleteMoreCount', { n: confirmDelete.paths.length })}</li>
                 )}
               </ul>
             )}

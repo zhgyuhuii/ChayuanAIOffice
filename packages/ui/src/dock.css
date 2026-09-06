@@ -54,6 +54,10 @@
   display: flex;
   flex-direction: column;
   background: var(--color-bg-page, var(--surface, #fff));
+  /* maximized covers the ribbon tab row — a window drag region that hit-tests
+   * by rectangle regardless of z-order and would swallow every click on the
+   * panel header (see .find-panel in the docs app for the same carve-out) */
+  -webkit-app-region: no-drag;
   transition:
     width 180ms cubic-bezier(0.4, 0, 0.2, 1),
     height 180ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -164,6 +168,14 @@
   box-shadow: none;
 }
 
+/* maximized covers the ribbon tab row entirely — the row is a window drag
+ * region that hit-tests by rectangle regardless of z-order, so while covered
+ * it must stand down or every click in the band (panel header buttons) drags
+ * the window instead */
+.dockshell.is-max .ribbon-tabs {
+  -webkit-app-region: no-drag;
+}
+
 /* ---- collapsed: panel hidden entirely (the top-row bubble icon reopens) ---- */
 
 .dockshell.is-closed .dockshell-panel {
@@ -223,6 +235,8 @@
   position: absolute;
   z-index: 46;
   display: none;
+  /* a float parked over the ribbon tab row keeps its resize grips clickable */
+  -webkit-app-region: no-drag;
 }
 
 .dockshell.pos-float:not(.is-max):not(.is-closed) .dockshell-fh {
@@ -303,6 +317,10 @@
   width: var(--dock-w);
   height: var(--dock-h);
   z-index: 40;
+  /* the border lives here, not only in the first ghost block above: tearing
+   * out of is-max must still win over is-max's border:none (this block is
+   * the last word on the ghost's box) */
+  border: 1px solid var(--color-border-strong, var(--border-strong, #d9d9d9));
   border-radius: 10px;
   box-shadow:
     0 14px 36px rgb(0 0 0 / 30%),
@@ -358,6 +376,34 @@
   height: var(--snap-size);
 }
 
+/* ---- window-drag carve-out ----
+ * Chromium collects -webkit-app-region rects in document order (drag = union,
+ * no-drag = subtract) and the hit test ignores z-order entirely. The ribbon
+ * tab row inside the dock body is a drag region that comes AFTER this panel
+ * in the DOM, so a no-drag declared on the panel itself is re-covered by the
+ * row's later drag rect — with the panel maximized or floating over the row,
+ * every header click in the band drags the window instead of reaching the
+ * buttons. This invisible overlay is the shell's LAST child, so its no-drag
+ * subtracts after the ribbon's drag; pointer-events:none keeps real hits
+ * flowing to the panel beneath. */
+.dockshell-carve {
+  position: absolute;
+  z-index: 40;
+  pointer-events: none;
+  -webkit-app-region: no-drag;
+}
+
+.dockshell.is-max .dockshell-carve {
+  inset: 0;
+}
+
+.dockshell.pos-float:not(.is-max) .dockshell-carve {
+  left: var(--dock-x);
+  top: var(--dock-y);
+  width: var(--dock-w);
+  height: var(--dock-h);
+}
+
 /* ---- header chrome buttons (rendered inside the app's panel header) ---- */
 
 .dockshell-btn {
@@ -387,6 +433,9 @@
   position: fixed;
   z-index: 100;
   min-width: 168px;
+  /* same drag-region carve-out as the panel: the menu may open over the
+   * app's ribbon tab row while maximized */
+  -webkit-app-region: no-drag;
   padding: 4px;
   border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
   border-radius: 8px;

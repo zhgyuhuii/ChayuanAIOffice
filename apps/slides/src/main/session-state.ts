@@ -31,6 +31,8 @@ export interface RuntimePaths {
   rendererFilePath?: string | undefined
   /** Shell router used to open exported PDFs in a new ChatOffice tab. */
   openGeneratedPath?: (path: string) => boolean
+  /** Default location for an untitled deck's first-save dialog (pending project folder). */
+  untitledSaveDir?: () => string
 }
 
 export const runtime: RuntimePaths = {
@@ -44,6 +46,7 @@ export function configureSlidesRuntime(paths: RuntimePaths): void {
   runtime.rendererDevUrl = paths.rendererDevUrl
   runtime.rendererFilePath = paths.rendererFilePath
   runtime.openGeneratedPath = paths.openGeneratedPath
+  runtime.untitledSaveDir = paths.untitledSaveDir
 }
 
 // One session per renderer process (standalone window or shell tab), keyed by webContents.id

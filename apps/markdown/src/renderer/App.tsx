@@ -195,6 +195,9 @@ export default function App() {
     setImageBaseDir(filePath ? dirOf(filePath) : null)
   }, [filePath])
 
+  /** AI-content title (create_document / content-derived) that prefills the first-save dialog */
+  const aiSuggestedNameRef = useRef<string | null>(null)
+
   useEffect(() => {
     if (!editor) return
     let cancelled = false
@@ -221,6 +224,29 @@ export default function App() {
           if (inner) setFmOpen(true)
         } else {
           envelopeRef.current = { ...EMPTY_ENVELOPE }
+          // AI-authored content (create_document): set it as this untitled
+          // document's initial text. The content is unsaved user work — mark
+          // dirty so the close guard protects it — and the queued title only
+          // prefills the first-save dialog; nothing is written until the user
+          // picks a destination.
+          const ai = await window.markdownApi.consumeAiContent()
+          if (cancelled) return
+          if (ai && ai.content.trim()) {
+            const aiEnvelope = parseDocText(ai.content)
+            envelopeRef.current = aiEnvelope
+            editor
+              .chain()
+              .setMeta('addToHistory', false)
+              .setContent(stripLegacyFencedDivs(aiEnvelope.body), { contentType: 'markdown' })
+              .run()
+            const inner = frontmatterInner(aiEnvelope.frontmatter)
+            setFmText(inner)
+            if (inner) setFmOpen(true)
+            aiSuggestedNameRef.current = ai.suggestedName
+            dirtyRef.current = true
+            setDirty(true)
+            window.markdownApi.setDirty(true)
+          }
         }
         statusRef.current = 'ready'
         setStatus('ready')
@@ -260,8 +286,14 @@ export default function App() {
       const body = current.getMarkdown()
       const text = serializeDocText(envelopeRef.current, body)
       const imageSources = imageSourcesFromEditor(current)
-      const result = await window.markdownApi.save({ text, imageSources, mode, suggestedName })
+      const result = await window.markdownApi.save({
+        text,
+        imageSources,
+        mode,
+        suggestedName: suggestedName ?? aiSuggestedNameRef.current ?? undefined,
+      })
       if (result.ok && 'path' in result) {
+        aiSuggestedNameRef.current = null
         const unchanged =
           editorRef.current?.state.doc === docAtSave && envelopeRef.current.frontmatter === fmAtSave
         if (result.imageRewrites?.length && editorRef.current) {
@@ -558,10 +590,11 @@ export default function App() {
       markDirty()
     },
     onRunDone: (mutated) => {
-      // AI wrote into a never-saved document → name it from the content and save silently
+      // AI wrote into a never-saved document: the content stays in memory — the
+      // derived name only prefills the first-save dialog (no silent write).
       if (!mutated || filePathRef.current || !editorRef.current) return
-      const name = deriveAutoFileName(editorRef.current)
-      if (name) void doSave('save', name)
+      aiSuggestedNameRef.current =
+        deriveAutoFileName(editorRef.current) ?? aiSuggestedNameRef.current
     },
   }
 

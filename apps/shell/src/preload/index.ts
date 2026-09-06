@@ -94,6 +94,15 @@ const homeApi: HomeApi = {
   async newPdf(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newPdf, opts)
   },
+  async listPendingUntitled() {
+    return await ipcRenderer.invoke(HOME_CHANNELS.listPendingUntitled)
+  },
+  async restorePendingUntitled(tempPath) {
+    return await ipcRenderer.invoke(HOME_CHANNELS.restorePendingUntitled, tempPath)
+  },
+  async discardPendingUntitled(tempPath) {
+    return await ipcRenderer.invoke(HOME_CHANNELS.discardPendingUntitled, tempPath)
+  },
   async removeRecent(paths) {
     await ipcRenderer.invoke(HOME_CHANNELS.removeRecent, paths)
   },

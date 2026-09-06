@@ -229,20 +229,12 @@ const desktopApi: DesktopApi = {
     )
     return { ok: (result as { ok?: unknown } | null)?.ok === true }
   },
-  async autoRenameWorkbook(sessionId, baseName) {
+  async setWorkbookSaveAsName(sessionId, baseName) {
     if (!isUuid(sessionId)) throw new Error('Invalid workbook session.')
     if (typeof baseName !== 'string' || baseName.length === 0 || baseName.length > 100) {
       throw new Error('Invalid workbook name.')
     }
-    const result: unknown = await ipcRenderer.invoke(
-      IPC_CHANNELS.autoRenameWorkbook,
-      sessionId,
-      baseName,
-    )
-    if (!isRecord(result) || typeof result.renamed !== 'boolean') {
-      throw new Error('Invalid auto-rename response.')
-    }
-    return result as { renamed: boolean; name?: string }
+    await ipcRenderer.invoke(IPC_CHANNELS.setWorkbookSaveAsName, sessionId, baseName)
   },
   async exportPdf(request) {
     if (

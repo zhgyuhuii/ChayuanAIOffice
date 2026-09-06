@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import {
   constants,
   copyFileSync,
@@ -8,7 +9,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { BrowserWindow, WebContentsView, app, dialog, ipcMain, shell } from 'electron'
@@ -30,7 +31,6 @@ import { PDF_CHANNELS } from '../shared/ipc'
 import type {
   ExportImagesRequest,
   ExportImagesResult,
-  PdfAutoRenameResult,
   ExtractPagesRequest,
   ExtractPagesResult,
   InsertBlankPageRequest,
@@ -549,16 +549,82 @@ export function clearPdfDirty(webContentsId: number): void {
   dirtyByWc.delete(webContentsId)
 }
 
-// ── Content-derived auto-naming (pdf's analog of sheets' autoRenameWorkbook) ──
+// ── Untitled (never-saved) PDF documents ──
 
-/** Paths of shell-created blank PDFs still carrying their untitled name; only these may auto-rename */
-const untitledPdfPaths = new Set<string>()
-/** Shell hook fired after an auto-rename so the tab title / recents / project mapping follow the file */
+/** A hidden temp-backed untitled document: the user-visible file only comes into
+ * existence at first save, which routes through Save As prefilled from defaultDir
+ * (the pending project folder) and suggestedName (untitled name / AI title). */
+interface UntitledPdfMeta {
+  readonly defaultDir: string
+  suggestedName?: string
+}
+
+/** Keyed by the document's hidden temp backing path */
+const untitledPdfMetas = new Map<string, UntitledPdfMeta>()
+
+/** Shell hook fired when an untitled document lands on its first real path, so
+ * the tab title / recents / project mapping follow the file */
 let pdfRenamedHook: ((wc: WebContents, oldPath: string, newPath: string) => void) | null = null
 
-/** Called by the shell right after "New PDF" writes the blank file to disk */
-export function markPdfUntitledPath(path: string): void {
-  untitledPdfPaths.add(path)
+/** Called by the shell right after it materializes an untitled document's temp file */
+export function markPdfUntitledPath(
+  path: string,
+  meta?: { defaultDir?: string; suggestedName?: string },
+): void {
+  untitledPdfMetas.set(path, {
+    defaultDir: meta?.defaultDir ?? configuredDefaultSaveDir(app),
+    ...(meta?.suggestedName === undefined ? {} : { suggestedName: meta.suggestedName }),
+  })
+}
+
+/** Save-As dialog default path for an untitled view; null for regular documents */
+export function pdfUntitledDialogDefault(wcId: number): string | null {
+  const path = openPathByWc.get(wcId)
+  const meta = path === undefined ? undefined : untitledPdfMetas.get(path)
+  if (path === undefined || !meta) return null
+  return join(meta.defaultDir, `${sanitizePdfBaseName(meta.suggestedName ?? 'Untitled')}.pdf`)
+}
+
+// ── Untitled crash-recovery copies ──
+// An untitled document has no user-visible file to autosave into (a plain Save
+// pops the first-save dialog), so a dirty renderer writes its pending edits as a
+// real PDF under userData keyed by the temp backing path. A successful first
+// save or a clean close removes it; the shell's restore banner reopens it.
+const pdfRecoveryDir = () => join(app.getPath('userData'), 'pdf-untitled-recovery')
+const pdfRecoveryPathFor = (tempPath: string) =>
+  join(pdfRecoveryDir(), `${createHash('sha1').update(tempPath).digest('hex').slice(0, 16)}.pdf`)
+
+function clearPdfUntitledRecovery(tempPath: string): void {
+  void rm(pdfRecoveryPathFor(tempPath), { force: true }).catch(() => {})
+}
+
+/** Recovery copy of an untitled document, if one exists (Home restore banner) */
+export function pdfUntitledRecoveryCopy(tempPath: string): string | null {
+  const recoveryPath = pdfRecoveryPathFor(tempPath)
+  return recoveryPath && existsSync(recoveryPath) ? recoveryPath : null
+}
+
+/**
+ * An untitled document just landed on its first real path: retarget the view's
+ * grants, retire the temp backing file, and let the shell sync tab title /
+ * recents / project mapping. Used by the save handler (first save) and by the
+ * shell's Save As flow for a clean untitled tab (byte-identical copy case).
+ */
+export function finalizePdfUntitled(wc: WebContents, oldPath: string, newPath: string): void {
+  if (!untitledPdfMetas.has(oldPath)) return
+  allowedByWc.set(wc.id, new Set([newPath]))
+  if (openPathByWc.get(wc.id) === oldPath) openPathByWc.set(wc.id, newPath)
+  saveAsTargetByWc.delete(wc.id)
+  untitledPdfMetas.delete(oldPath)
+  clearPdfUntitledRecovery(oldPath)
+  void rm(oldPath, { force: true }).catch(() => {})
+  try {
+    pdfRenamedHook?.(wc, oldPath, newPath)
+  } catch (err) {
+    // Filesystem and renderer bookkeeping are already committed. A shell
+    // title/recents hook must not make the renderer keep using oldPath.
+    console.warn('[pdf] saved-hook failed:', err)
+  }
 }
 
 export function setPdfRenamedHook(
@@ -568,7 +634,7 @@ export function setPdfRenamedHook(
 }
 
 /** Sanitize a proposed base name into a safe filename: strip illegal path chars, collapse whitespace, cap length; null if nothing survives. (Mirrors docs' deriveAutoFileName.) */
-function sanitizeAutoRenameBase(raw: string): string | null {
+function sanitizePdfBaseName(raw: string): string {
   const cleaned = raw
     // eslint-disable-next-line no-control-regex -- stripping control chars is the point here
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
@@ -576,7 +642,7 @@ function sanitizeAutoRenameBase(raw: string): string | null {
     .trim()
     .replace(/^\.+|\.+$/g, '')
     .trim()
-  if (!cleaned) return null
+  if (!cleaned) return 'Untitled'
   return cleaned.length > 40 ? cleaned.slice(0, 40).trim() : cleaned
 }
 
@@ -847,8 +913,34 @@ function registerPdfIpc(): void {
     if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
       return { ok: false, error: 'pdf: path not granted to this view' }
     }
+    const untitled = untitledPdfMetas.get(path)
     // Save As targets must have been granted by requestPdfSaveAs (main-process dialog pick)
-    const target = typeof request.targetPath === 'string' ? request.targetPath : path
+    let target = typeof request.targetPath === 'string' ? request.targetPath : path
+    if (untitled && !saveAsTargetByWc.has(e.sender.id)) {
+      // First save of an untitled document: nothing user-visible exists yet, so
+      // Save routes through Save As — prefilled with the pending project folder
+      // and the AI/content-derived name. A dismissed dialog leaves every edit
+      // pending and the temp backing file in place.
+      if (typeof request.suggestedName === 'string' && request.suggestedName.trim()) {
+        untitled.suggestedName = request.suggestedName
+      }
+      const parent = BrowserWindow.fromWebContents(e.sender)
+      const saveDialogOptions = {
+        defaultPath: join(
+          untitled.defaultDir,
+          `${sanitizePdfBaseName(untitled.suggestedName ?? 'Untitled')}.pdf`,
+        ),
+        filters: [{ name: tm('filterPdf'), extensions: ['pdf'] }],
+      }
+      const picked = parent
+        ? await dialog.showSaveDialog(parent, saveDialogOptions)
+        : await dialog.showSaveDialog(saveDialogOptions)
+      if (picked.canceled || !picked.filePath) return { ok: false, canceled: true }
+      target = picked.filePath.toLowerCase().endsWith('.pdf')
+        ? picked.filePath
+        : `${picked.filePath}.pdf`
+      saveAsTargetByWc.set(e.sender.id, target)
+    }
     if (target !== path && saveAsTargetByWc.get(e.sender.id) !== target) {
       return { ok: false, error: 'pdf: target path not granted to this view' }
     }
@@ -858,8 +950,11 @@ function registerPdfIpc(): void {
         target,
         request,
       )
+      const becameReal = untitled !== undefined && target !== path
+      if (becameReal) finalizePdfUntitled(e.sender, path, target)
       return {
         ok: true,
+        ...(becameReal ? { savedTo: target } : {}),
         ...(skippedTextEdits.length > 0 ? { skippedTextEdits } : {}),
         ...(skippedTextInserts.length > 0 ? { skippedTextInserts } : {}),
         ...(skippedImageEdits.length > 0 ? { skippedImageEdits } : {}),
@@ -869,59 +964,31 @@ function registerPdfIpc(): void {
     }
   })
 
-  ipcMain.handle(PDF_CHANNELS.isUntitled, (e, path: unknown): boolean => {
-    return (
-      typeof path === 'string' &&
-      !!allowedByWc.get(e.sender.id)?.has(path) &&
-      untitledPdfPaths.has(path)
-    )
-  })
-
   ipcMain.handle(
-    PDF_CHANNELS.autoRename,
-    (e, path: unknown, baseName: unknown): PdfAutoRenameResult => {
-      if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
-        return { renamed: false }
+    PDF_CHANNELS.writeRecovery,
+    async (e, request: SavePdfRequest): Promise<{ ok: boolean }> => {
+      const path = request?.path
+      if (
+        typeof path !== 'string' ||
+        !allowedByWc.get(e.sender.id)?.has(path) ||
+        !untitledPdfMetas.has(path)
+      ) {
+        return { ok: false }
       }
-      // Only shell-created blanks still carrying their untitled name; user-chosen names never move
-      if (!untitledPdfPaths.has(path)) return { renamed: false }
-      if (typeof baseName !== 'string') return { renamed: false }
-      const base = sanitizeAutoRenameBase(baseName)
-      if (!base) return { renamed: false }
-      const dir = dirname(path)
-      // The file being renamed does not occupy its own name: a proposed base equal
-      // to the current stem must be a no-op, not a hop to the next numbered suffix
-      let target: string | null = null
-      for (let suffix = 1; suffix <= 10_000; suffix++) {
-        const candidate = join(dir, suffix === 1 ? `${base}.pdf` : `${base}-${suffix}.pdf`)
-        if (candidate === path) return { renamed: false }
-        const result = movePdfFileNoClobber(path, candidate)
-        if (result === 'moved') {
-          target = candidate
-          break
-        }
-        if (result === 'failed') {
-          console.warn('[pdf] auto-rename failed')
-          return { renamed: false }
-        }
-      }
-      if (!target) return { renamed: false }
-
-      // Replace rather than mutate the grant set: the old path is revoked in
-      // the same operation that grants the new one, even if it is recreated.
-      allowedByWc.set(e.sender.id, new Set([target]))
-      if (openPathByWc.get(e.sender.id) === path) openPathByWc.set(e.sender.id, target)
-      untitledPdfPaths.delete(path)
       try {
-        pdfRenamedHook?.(e.sender, path, target)
+        await mkdir(pdfRecoveryDir(), { recursive: true })
+        await savePdfToPath(path, pdfRecoveryPathFor(path), request)
+        return { ok: true }
       } catch (err) {
-        // Filesystem and renderer bookkeeping are already committed. A shell
-        // title/recents hook must not make the renderer keep using oldPath.
-        console.warn('[pdf] auto-rename hook failed:', err)
+        console.warn('[pdf] untitled recovery copy failed:', err)
+        return { ok: false }
       }
-      return { renamed: true, path: target, name: basename(target) }
     },
   )
+
+  ipcMain.handle(PDF_CHANNELS.isUntitled, (e, path: unknown): boolean => {
+    return typeof path === 'string' && untitledPdfMetas.has(path)
+  })
 
   ipcMain.handle(PDF_CHANNELS.listPageImages, async (e, path: unknown) => {
     if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {
@@ -1429,6 +1496,13 @@ function grantAndTrack(wc: WebContents, openPath?: string | null): void {
     return { action: 'deny' }
   })
   wc.once('destroyed', () => {
+    // An untitled document closed unsaved: its hidden temp backing file and
+    // recovery copy are plumbing.
+    const granted = openPathByWc.get(wcId)
+    if (granted !== undefined && untitledPdfMetas.delete(granted)) {
+      clearPdfUntitledRecovery(granted)
+      void rm(granted, { force: true }).catch(() => {})
+    }
     openPathByWc.delete(wcId)
     allowedByWc.delete(wcId)
     dirtyByWc.delete(wcId)

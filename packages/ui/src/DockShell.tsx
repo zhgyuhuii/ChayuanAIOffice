@@ -11,7 +11,8 @@
  *  - divider drag between panel and content (double-click collapses), float
  *    resize from every edge/corner; panel keeps ≥ its min, content keeps 320px
  *  - collapse hides the panel entirely (the top-row bubble icon reopens)
- *    and maximize covers the content (Esc restores)
+ *    and maximize covers the content (Esc restores); a maximized panel
+ *    stays draggable — carrying it away un-maximizes into a float/snap
  *  - full persistence (position / sizes / float rect / maximized) per app key
  *
  * The panel stays a single stable DOM subtree for every layout — switching
@@ -571,9 +572,12 @@ export function DockShell({
     })
   }
 
-  /** header drag: threshold-gated tear-off, then edge snap zones / center float */
+  /** header drag: threshold-gated tear-off, then edge snap zones / center float.
+   * Every resting layout can tear off — docked, floated, or maximized (a
+   * maximized panel commits maximized:false on drop, so carrying it away is
+   * itself the un-maximize gesture). */
   const startHeaderDrag = (e: React.PointerEvent<HTMLElement>) => {
-    if (e.button !== 0 || !open || stateRef.current.maximized) return
+    if (e.button !== 0 || !open) return
     if ((e.target as HTMLElement).closest('button, a, input, textarea, select, [data-no-drag]')) {
       return
     }
@@ -792,9 +796,11 @@ export function DockShell({
 
   return (
     <div ref={rootRef} className={rootClass} style={rootStyle}>
-      {showPanel && tear && position !== 'float' && (
+      {showPanel && tear && position !== 'float' && !maximized && (
         // reserves the docked strip while the panel is carried as a ghost, so
-        // the editor below holds its layout until the drop commits
+        // the editor below holds its layout until the drop commits — a
+        // maximized panel was never in flow, so a slot there would only
+        // shrink the editor mid-drag
         <div
           className="dockshell-slot"
           style={
@@ -829,6 +835,15 @@ export function DockShell({
         : null}
       <div className="dockshell-body">{children}</div>
       {tear?.snap && <div className={`dockshell-snap dockshell-snap-${tear.snap}`} aria-hidden />}
+      {showPanel && open && !tear && (maximized || position === 'float') && (
+        // keep as the root's LAST child: Chromium composes -webkit-app-region
+        // rects in document order, so this invisible no-drag rect is what
+        // re-carves the body's ribbon drag row out of the window drag region
+        // wherever the panel covers it — else header clicks in that band drag
+        // the window and the maximize/restore, layout and close buttons go
+        // dead (see .dockshell-carve in dock.css)
+        <div className="dockshell-carve" aria-hidden />
+      )}
     </div>
   )
 }

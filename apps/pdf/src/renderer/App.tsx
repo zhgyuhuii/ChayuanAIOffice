@@ -1112,6 +1112,12 @@ export default function App() {
         setStatus('empty')
         return
       }
+      // Hidden temp-backed untitled document: autosave writes recovery copies
+      // instead of in-place saves, and the first Save pops the Save As dialog.
+      void window.pdfApi
+        .isUntitled(path)
+        .then((untitled) => (untitledRef.current = untitled))
+        .catch(() => {})
       await openPath(path)
     })()
   }, [openPath])
@@ -3155,12 +3161,40 @@ export default function App() {
     }
     inFlightNoteWritesRef.current = snapshot.noteEditWritten
     inFlightPageMapRef.current = snapshot.pageMap
+    // Content-derived naming (docs/sheets analog): a still-untitled document's
+    // first-save dialog takes its file name from the topmost text this save
+    // inserts; the main process ignores it for documents with a real path.
+    const suggestedName = [...textInserts]
+      .sort(
+        (a, b) => a.input.pageIndex - b.input.pageIndex || b.input.origin[1] - a.input.origin[1],
+      )[0]
+      ?.input.text.split('\n')[0]
+      ?.trim()
     const run = (async (): Promise<boolean> => {
       setSaveState('saving')
-      const result = await window.pdfApi.save({ path: filePath, ...editsPayload(edits, noteFlush) })
+      const result = await window.pdfApi.save({
+        path: filePath,
+        ...(suggestedName ? { suggestedName } : {}),
+        ...editsPayload(edits, noteFlush),
+      })
       if (!result.ok) {
+        if ('canceled' in result) {
+          // First-save dialog dismissed: nothing was written and the edits stay
+          // pending. This save must not opt the tab into autosave — a dismissed
+          // first save must never let autosave pop the dialog again.
+          savedOnceRef.current = false
+          setSaveState('idle')
+          return false
+        }
         opFailed(result.error)
         return false
+      }
+      // An untitled document just landed on its real path: adopt it — the temp
+      // backing file is gone and later saves write in place.
+      const realPath = result.savedTo ?? filePath
+      if (result.savedTo) {
+        setFilePath(result.savedTo)
+        untitledRef.current = false
       }
       if (result.skippedTextEdits && result.skippedTextEdits.length > 0) {
         noticeSkippedEdits(result.skippedTextEdits)
@@ -3181,30 +3215,12 @@ export default function App() {
         const renderedPageNos = canRetainPreview
           ? [...visibleRows].flatMap((rowIdx) => (rows[rowIdx] ?? []).map((origIdx) => origIdx + 1))
           : []
-        await loadDoc(filePath, doc, snapshot, renderedPageNos)
+        await loadDoc(realPath, doc, snapshot, renderedPageNos)
         requestAnimationFrame(() => {
           if (scrollRef.current) scrollRef.current.scrollTop = scrollTop
         })
       } catch {
         /* Save already succeeded; a reload failure doesn't block (takes effect on next open) */
-      }
-      // Content-derived naming (docs/sheets analog): a shell-created blank still
-      // carrying its untitled name takes its file name from the topmost text this
-      // save inserted; the main process no-ops for every other file, so
-      // user-chosen names are never touched.
-      const nameCandidate = [...textInserts]
-        .sort(
-          (a, b) => a.input.pageIndex - b.input.pageIndex || b.input.origin[1] - a.input.origin[1],
-        )[0]
-        ?.input.text.split('\n')[0]
-        ?.trim()
-      if (nameCandidate) {
-        try {
-          const renamed = await window.pdfApi.autoRename(filePath, nameCandidate)
-          if (renamed.renamed && renamed.path) setFilePath(renamed.path)
-        } catch {
-          /* naming is best-effort; the save itself already succeeded */
-        }
       }
       setSaveState('saved')
       setTimeout(() => setSaveState((s) => (s === 'saved' ? 'idle' : s)), 2000)
@@ -3294,8 +3310,15 @@ export default function App() {
     setSaveState('saving')
     const result = await window.pdfApi.save({ path: filePath, targetPath, ...edits })
     if (!result.ok) {
-      opFailed(result.error)
+      // The granted-target path never pops the first-save dialog, so 'canceled'
+      // cannot occur here — only a real write failure surfaces.
+      if (!('canceled' in result)) opFailed(result.error)
       return false
+    }
+    // An untitled document's Save As just landed on its real path: adopt it.
+    if (result.savedTo) {
+      setFilePath(result.savedTo)
+      untitledRef.current = false
     }
     if (result.skippedTextEdits && result.skippedTextEdits.length > 0) {
       noticeSkippedEdits(result.skippedTextEdits)
@@ -3317,20 +3340,33 @@ export default function App() {
   const saveAsFlowRef = useRef(false)
   useEffect(() => window.pdfApi.onSaveAsFlow((inFlight) => (saveAsFlowRef.current = inFlight)), [])
 
+  /** Hidden temp-backed untitled document (flips false once the first save lands) */
+  const untitledRef = useRef(false)
+
   // Autosave (same strategy as Docs): every 30s and on window blur, silently persist pending
   // edits via the regular save() path; skipped while a save is in flight or without a file path.
   // Gated on one explicit save first: a PDF opened only to read must never be
   // overwritten because a thumbnail got dragged or a markup tool tapped — Save (⌘S / the
   // toolbar button / File ▸ Save) is what opts this file into unattended writes.
+  // An untitled (temp-backed) document never opts in — a plain save would pop the
+  // first-save dialog — so its tick writes a crash-recovery copy instead.
   useAutosave(
     () =>
-      savedOnceRef.current &&
       dirty &&
       saveInFlightRef.current === null &&
       filePath !== '' &&
       !readOnly &&
-      !saveAsFlowRef.current,
-    () => void save(true),
+      !saveAsFlowRef.current &&
+      (untitledRef.current || savedOnceRef.current),
+    () => {
+      if (untitledRef.current) {
+        void window.pdfApi
+          .writeRecovery({ path: filePath, ...editsPayload([], undefined) })
+          .catch(() => {})
+      } else {
+        void save(true)
+      }
+    },
   )
 
   // ── Page operations ──
@@ -5090,23 +5126,11 @@ export default function App() {
   }
 
   /**
-   * After an AI run that mutated a shell-created blank still carrying its untitled
-   * name, silently save once: the save's auto-rename then derives the file name from
-   * the inserted text — mirrors docs/sheets, where AI generation names the draft.
-   * PDFs the user merely opened keep the pending-until-⌘S contract (isUntitled is
-   * false for them, and the main process would refuse the rename anyway).
+   * After an AI run that mutated a still-untitled document nothing is written:
+   * the content stays in memory until the user's first explicit save, whose
+   * dialog takes the AI/content-derived name (docs/sheets parity). A document
+   * with a real path keeps its pending-until-⌘S contract via savedOnceRef.
    */
-  const autoSaveAfterAiRun = async () => {
-    if (!filePath || readOnly) return
-    try {
-      if (!(await window.pdfApi.isUntitled(filePath))) return
-    } catch {
-      return
-    }
-    // A file we created ourselves is safe to keep autosaving from here on
-    savedOnceRef.current = true
-    void save(true)
-  }
 
   /** Internal destination of a Link annotation → jump to that page */
   const goToDest = async (dest: unknown) => {
@@ -5643,9 +5667,11 @@ export default function App() {
     </div>
   )
 
-  return (
-    <div className="app">
-      <div className="ribbon">
+  // ribbon as a JSX var so it can live inside the DockShell body (docs parity:
+  // a left/right docked AI panel spans the full window height, level with the
+  // ribbon's top edge, instead of squeezing the editor area below the ribbon)
+  const ribbon = (
+    <div className="ribbon">
         <div className="ribbon-tabs">
           <button
             className="qa-btn"
@@ -5712,23 +5738,18 @@ export default function App() {
               XFA
             </span>
           )}
+          <AiPanelToggle
+            open={!aiCollapsed}
+            onToggle={() => setAiCollapsed((v) => !v)}
+            label={t('aiOpenAssistant')}
+          />
         </div>
         <div className="ribbon-body">
           {ribbonTab === 'home' && (
             <>
-              {/* ---- ChatOffice AI (first slot: entry + one-click AI actions, docs parity) ---- */}
+              {/* ---- ChatOffice AI one-click actions (entry lives in the tab-row bubble) ---- */}
               <div className="ribbon-group">
                 <div className="ribbon-group-items">
-                  <button
-                    className={`rb-big ai-entry${aiCollapsed ? '' : ' active'}`}
-                    data-tip={t('aiOpenAssistant')}
-                    onClick={() => setAiCollapsed((v) => !v)}
-                  >
-                    <span className="rb-big-icon">
-                      <ChatOfficeMark size={26} />
-                    </span>
-                    <span>ChatOffice AI</span>
-                  </button>
                   <button
                     className="rb-big ai-entry"
                     data-tip={t('aiSummarizeBtn')}
@@ -6321,6 +6342,10 @@ export default function App() {
           )}
         </div>
       </div>
+  )
+
+  return (
+    <div className="app">
       <input
         ref={imageFileRef}
         type="file"
@@ -6355,13 +6380,14 @@ export default function App() {
             filePath={filePath}
             preset={aiPreset}
             dockChrome={dockChrome}
-            onRunDone={() => void autoSaveAfterAiRun()}
             onClearSelection={() => setAiSelection(null)}
           />
         )}
       >
-        <div className="app-content">
-          <div className="pdf-body">
+        <div className="pdf-col">
+          {ribbon}
+          <div className="app-content">
+            <div className="pdf-body">
             {sidebar === 'outline' && outline && (
               <div className="pdf-thumbs pdf-outline-pane" style={{ width: sidebarW }}>
                 <OutlinePanel outline={outline} onGoToDest={(dest) => void goToDest(dest)} />
@@ -8423,6 +8449,7 @@ export default function App() {
               <span className="zoom-value">{Math.round(scale * 100)}%</span>
             </div>
           </footer>
+        </div>
         </div>
     </DockShell>
       </div>

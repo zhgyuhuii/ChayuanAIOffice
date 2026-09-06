@@ -57,6 +57,14 @@ export interface RecentEntry {
 }
 
 /** paged query for the home file lists */
+/** an untitled temp-backed document the app can restore after a crash */
+export interface PendingUntitledDocEntry {
+  kind: 'sheet' | 'pdf'
+  tempPath: string
+  suggestedName?: string
+  savedAt: number
+}
+
 export interface RecentQuery {
   /** number of entries to skip (default 0) */
   offset?: number
@@ -97,6 +105,12 @@ export interface HomeApi {
   newMarkdown(opts?: { projectId?: string }): Promise<void>
   /** create a blank single-page PDF in the default save folder and open it */
   newPdf(opts?: { projectId?: string }): Promise<void>
+  /** Untitled temp-backed documents (crashed before first save) offered on the Home restore banner */
+  listPendingUntitled(): Promise<PendingUntitledDocEntry[]>
+  /** Reopen a crashed untitled document as an unsaved in-memory tab */
+  restorePendingUntitled(tempPath: string): Promise<boolean>
+  /** Forget a crashed untitled document without restoring it */
+  discardPendingUntitled(tempPath: string): Promise<boolean>
   /** drop entries from the recent list (does not touch the files) */
   removeRecent(paths: string[]): Promise<void>
   /** reveal the file in Finder / Explorer */
@@ -368,6 +382,9 @@ export const HOME_CHANNELS = {
   newSlide: 'home:new-slide',
   newMarkdown: 'home:new-markdown',
   newPdf: 'home:new-pdf',
+  listPendingUntitled: 'home:list-pending-untitled',
+  restorePendingUntitled: 'home:restore-pending-untitled',
+  discardPendingUntitled: 'home:discard-pending-untitled',
   removeRecent: 'home:remove-recent',
   revealPath: 'home:reveal-path',
   renameFile: 'home:rename-file',

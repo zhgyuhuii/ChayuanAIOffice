@@ -2,8 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import { AgentLoop } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import { AiComposer, AiTypingIndicator, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  ModelPickerButton,
+  ModelSettingsPage,
+  PanelTabs,
+  usePanelTab,
+} from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
+import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
@@ -70,7 +78,6 @@ export function AiPanel({
   api,
   filePath,
   dockChrome,
-  onCollapse,
   preset,
   onRunDone,
   onClearSelection,
@@ -80,8 +87,6 @@ export function AiPanel({
   filePath?: string
   /** DockShell chrome (layout buttons + header drag) when hosted in the dock */
   dockChrome?: DockChrome
-  /** collapse handler for the non-dock fallback header button */
-  onCollapse?: () => void
   /** Ribbon AI buttons push a one-shot prompt; a new nonce triggers an auto-run */
   preset?: { text: string; nonce: number } | null
   /** Fired when a run that mutated the document finishes (drives the untitled-blank auto-save) */
@@ -90,6 +95,11 @@ export function AiPanel({
   onClearSelection?: () => void
 }): ReactElement {
   const { lang, t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aipdf.aiTab', aiTabs)
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
@@ -494,22 +504,38 @@ export function AiPanel({
     },
   }
 
+  /** Assistant tab: the one-click actions from the old empty state, docs list style */
+  const assistantItems = [
+    {
+      id: 'summary',
+      label: t('aiQuickSummary'),
+      desc: t('aiQuickSummaryDesc'),
+      icon: <IconAiSummarize />,
+      run: () => {
+        send(t(hasScopeSelection ? 'aiQuickSummarySelPrompt' : 'aiQuickSummaryPrompt'))
+        selectTab('chat')
+      },
+    },
+    {
+      id: 'key-points',
+      label: t('aiQuickKeyPoints'),
+      desc: t('aiQuickKeyPointsDesc'),
+      icon: <IconAiKeyPoints />,
+      run: () => {
+        send(t(hasScopeSelection ? 'aiQuickKeyPointsSelPrompt' : 'aiQuickKeyPointsPrompt'))
+        selectTab('chat')
+      },
+    },
+  ]
+
   return (
     <aside className="copilot" style={{ width: '100%' }}>
-      <header
-        className="ai-panel-header"
-        {...(dockChrome ? { ...dockChrome.dragProps, style: { cursor: 'grab' } } : {})}
-      >
-        <span className="ai-panel-title">{t('aiPanelTitle')}</span>
-        <div className="ai-panel-header-actions">
-          <ModelPickerButton
-            settings={panelSettings}
-            onPick={(selection) => {
-              void pdfModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
-            }}
-            onOpenSettings={() => setModelSettingsOpen(true)}
-          />
-          {chat.length > 0 && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={() => {
@@ -523,46 +549,22 @@ export function AiPanel({
             >
               <IconNewChat />
             </button>
-          )}
-          {dockChrome?.buttons}
-          {!dockChrome && (
-            <button
-              className="ai-header-btn"
-              onClick={() => onCollapse?.()}
-              data-tip={t('aiCollapsePanel')}
-              aria-label={t('aiCollapsePanel')}
-            >
-              <IconCollapse />
-            </button>
-          )}
-        </div>
-      </header>
+          ) : undefined
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
 
-      <div className="ai-chat" ref={chatRef} onScroll={onChatScroll}>
+      <div
+        className="ai-chat"
+        ref={chatRef}
+        onScroll={onChatScroll}
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+      >
         {chat.length === 0 && (
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-title">{t('aiEmptyTitle')}</div>
             <div className="ai-chat-empty-body">{t('aiEmptyBody')}</div>
-            <div className="ai-quick-actions">
-              <button
-                className="ai-quick-btn"
-                onClick={() =>
-                  send(t(hasScopeSelection ? 'aiQuickSummarySelPrompt' : 'aiQuickSummaryPrompt'))
-                }
-              >
-                {t('aiQuickSummary')}
-              </button>
-              <button
-                className="ai-quick-btn"
-                onClick={() =>
-                  send(
-                    t(hasScopeSelection ? 'aiQuickKeyPointsSelPrompt' : 'aiQuickKeyPointsPrompt'),
-                  )
-                }
-              >
-                {t('aiQuickKeyPoints')}
-              </button>
-            </div>
           </div>
         )}
         {chat.map((entry, i) => {
@@ -599,7 +601,9 @@ export function AiPanel({
         {busy && <AiTypingIndicator label={typingLabel} />}
       </div>
 
-      <div className="ai-composer">
+      <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />
+
+      <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         <AiComposer
           value={prompt}
           busy={busy}
@@ -847,27 +851,6 @@ function IconNewChat(): ReactElement {
       />
       <path d="M12.2 9.4v4M10.2 11.4h4" />
     </Svg>
-  )
-}
-
-/* Same glyph as the sheets IconCollapse (16×16 viewBox, 1.2/1.3 stroke), rendered at 15px */
-function IconCollapse(): ReactElement {
-  return (
-    <svg
-      width={15}
-      height={15}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-      aria-hidden
-    >
-      {/* Mirrored: the AI panel docks on the LEFT, so the divider and arrow point left */}
-      <rect x="1.5" y="2.5" width="13" height="11" rx="1" />
-      <path d="M5.5 2.5v11" />
-      <path d="M12.5 8H8.1M9.8 5.9 7.7 8l2.1 2.1" strokeWidth="1.3" strokeLinejoin="round" />
-    </svg>
   )
 }
 

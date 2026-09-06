@@ -13,6 +13,11 @@ export interface SessionInfo {
   /// Set when the session opened a converted copy (.xls/.csv import): the
   /// first save routes through Save As, defaulting to this .xlsx path.
   readonly suggestSaveAs?: string
+  /// Shell-created untitled workbook backed by a hidden temp file: the user
+  /// never sees this path (first save routes through Save As via suggestSaveAs),
+  /// crash-recovery copies stay enabled (unlike converted imports), and the
+  /// temp backing file is deleted when the session retargets or closes.
+  readonly blankDraft?: boolean
   /// The converted copy came from a CSV: the Save As dialog explains that
   /// formatting requires .xlsx (CSV keeps values only).
   readonly csvImport?: boolean

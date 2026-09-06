@@ -22,6 +22,8 @@ export function AiComposer({
   ariaLabel,
   header,
   footerStart,
+  /** override the default text-only gate (e.g. attachments-only send); still gated on !busy */
+  canSend,
   iconOnly = false,
   sendIconEnabled,
   sendIconDisabled,
@@ -35,12 +37,14 @@ export function AiComposer({
   readonly value: string
   readonly busy: boolean
   readonly placeholder: string
-  readonly hintIdle: string
-  readonly hintBusy: string
+  /** unused by the iconOnly variant (no hint text) */
+  readonly hintIdle?: string | undefined
+  readonly hintBusy?: string | undefined
   readonly hintIdleTitle?: string | undefined
   readonly sendLabel: string
   readonly stopLabel: string
   readonly ariaLabel?: string | undefined
+  readonly canSend?: boolean | undefined
   /** content inside the box above the textarea (attachment chips, …) — ChatOffice composer style */
   readonly header?: React.ReactNode
   /** extra controls at the left of the footer (attach button, toggles, …) */
@@ -62,7 +66,7 @@ export function AiComposer({
 }): React.JSX.Element {
   const innerRef = useRef<HTMLTextAreaElement | null>(null)
   const ref = textareaRef ?? innerRef
-  const canSend = value.trim().length > 0 && !busy
+  const canSendComputed = canSend ?? (value.trim().length > 0 && !busy)
 
   // auto-grow up to ~6 lines; empty clears the inline height outright so the
   // CSS min-height governs (a hidden-at-measure pass can leave a stale value).
@@ -90,7 +94,7 @@ export function AiComposer({
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
             e.preventDefault()
-            if (canSend) onSend()
+            if (canSendComputed) onSend()
           } else if (e.key === 'Escape' && busy) {
             e.preventDefault()
             onStop()
@@ -125,14 +129,14 @@ export function AiComposer({
           <button
             className="ai-send-btn"
             onClick={onSend}
-            disabled={!canSend}
+            disabled={!canSendComputed}
             title={sendLabel}
             aria-label={sendLabel}
           >
             {iconOnly ? (
-              ((canSend ? sendIconEnabled : (sendIconDisabled ?? sendIconEnabled)) ?? (
+              (canSendComputed ? sendIconEnabled : (sendIconDisabled ?? sendIconEnabled)) ?? (
                 <IconEnter size={16} />
-              ))
+              )
             ) : (
               <IconSend size={16} />
             )}

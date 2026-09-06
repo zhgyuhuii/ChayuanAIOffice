@@ -8,6 +8,7 @@ import type { ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc
 
 const api: MarkdownApi = {
   consumePending: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumePending),
+  consumeAiContent: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.consumeAiContent),
   readFile: (path) => ipcRenderer.invoke(MARKDOWN_CHANNELS.readFile, path),
   save: (request) => ipcRenderer.invoke(MARKDOWN_CHANNELS.save, request),
   setDirty: (dirty) => ipcRenderer.send(MARKDOWN_CHANNELS.dirtyChanged, dirty),

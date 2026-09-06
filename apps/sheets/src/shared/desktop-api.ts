@@ -663,6 +663,10 @@ export const workbookFileSchema = z
     /// Converted .xls import: the first save opens a Save As dialog,
     /// so background flows (AutoSave) must not trigger mode 'save'.
     needsSaveAs: z.boolean().optional(),
+    /// Shell-created untitled blank backed by a hidden temp file: the first
+    /// save opens a Save As dialog (like needsSaveAs) but the 30s crash
+    /// recovery copy stays enabled — the temp backing file is throwaway.
+    blankDraft: z.boolean().optional(),
     /// CSV session: the original .csv on disk. Save keeps the CSV identity —
     /// the renderer sends csvContent with the save and the main process
     /// writes it back here. Background flows (AutoSave, crash recovery)
@@ -2740,12 +2744,10 @@ export interface DesktopApi {
   /// Crash-recovery copy of the pending edits, written under userData.
   /// Best-effort: never prompts, never touches the opened file.
   writeWorkbookRecovery(request: WorkbookSaveRequest): Promise<{ ok: boolean }>
-  /// Rename a still-untitled workbook after AI-generated content (no-op unless
-  /// the file still carries the shell's auto-created untitled name).
-  autoRenameWorkbook(
-    sessionId: string,
-    baseName: string,
-  ): Promise<{ renamed: boolean; name?: string }>
+  /// Propose the Save As file name for a still-untitled workbook after
+  /// AI-generated content (no-op unless the session is a shell-created
+  /// blank draft); the name prefills the first-save dialog.
+  setWorkbookSaveAsName(sessionId: string, baseName: string): Promise<void>
   exportPdf(request: WorkbookExportPdfRequest): Promise<WorkbookExportPdfResult>
   exportCsv(request: WorkbookExportCsvRequest): Promise<WorkbookExportCsvResult>
   /// First Save of a CSV session: native "keep this format?" dialog.

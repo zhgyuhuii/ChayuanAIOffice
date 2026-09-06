@@ -50,12 +50,16 @@ export async function save(ctx: ActionCtx, quiet = false): Promise<boolean> {
     const saved = t('appStatusSaved')
     ctx.setStatus(saved)
     if (!quiet) showToast(saved)
-  } else {
-    const failed = t('appStatusSaveFailed', { error: r.error ?? t('appErrorCanceled') })
+  } else if (r.error) {
+    const failed = t('appStatusSaveFailed', { error: r.error })
     ctx.setStatus(failed)
     // quiet suppresses the success toast only — a failed save (incl. the 30s
     // auto-save) must surface, or edits silently stop reaching disk
     showToast(failed, 'error')
+  } else {
+    // ok:false without error = the first-save dialog was dismissed: nothing was
+    // written and the edits stay pending — feedback, not a failure (save-as parity)
+    ctx.setStatus(t('appErrorCanceled'))
   }
   return r.ok
 }

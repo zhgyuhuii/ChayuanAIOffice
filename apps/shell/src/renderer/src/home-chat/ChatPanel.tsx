@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
+import { AiComposer, ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
+import sendEnterOn from '../assets/send-enter-on.png'
+import sendEnterOff from '../assets/send-enter-off.png'
+import sendStop from '../assets/send-stop.png'
+import attachIcon from '../assets/attach-icon.png'
 import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
 import type { StringKey } from '../locale'
@@ -417,7 +421,6 @@ export function ChatPanel({
     const atts = attachments
     setInput('')
     setAttachments([])
-    if (inputRef.current) inputRef.current.style.height = 'auto'
     controller.send(session.id, session.messages, text, atts, {
       ...(draftModel ? { model: draftModel } : {}),
       ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
@@ -442,13 +445,6 @@ export function ChatPanel({
     } catch {
       // picker unavailable (web shim) — leave the composer as-is
     }
-  }
-
-  const growInput = () => {
-    const el = inputRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 180)}px`
   }
 
   // ── greeting (landing screen) ──
@@ -516,139 +512,103 @@ export function ChatPanel({
 
   const renderComposer = () => (
     <div className="chat-composer">
-      {attachments.length > 0 && (
-        <div className="chat-atts composer">
-          {attachments.map((a) => (
-            <AttachmentChip
-              key={a.path}
-              att={a}
-              removeLabel={t('chatRemoveAttachment')}
-              onRemove={() => setAttachments((prev) => prev.filter((x) => x.path !== a.path))}
-            />
-          ))}
-        </div>
-      )}
-      <div className="chat-input-row">
-        <button
-          className="chat-tool-btn"
-          aria-label={t('chatAttach')}
-          data-tip={t('chatAttach')}
-          onClick={() => void pickAttachments()}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path
-              d="M13.5 7.5l-5.2 5.2a3.5 3.5 0 0 1-5-5l5.6-5.6a2.33 2.33 0 0 1 3.3 3.3L6.6 11a1.17 1.17 0 0 1-1.65-1.65l4.8-4.8"
-              stroke="currentColor"
-              strokeWidth="1.3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        {aiSettings && (
-          <span className="chat-model-slot">
-            <ModelPickerButton
-              settings={draftModel ? { ...aiSettings, currentModel: draftModel } : aiSettings}
-              onPick={applyModel}
-              onOpenSettings={onOpenSettings}
-              lang={lang}
-            />
-          </span>
-        )}
-        <span className="chat-mode-wrap" ref={modeWrapRef}>
-          <button
-            className={`chat-tool-btn chat-mode-btn${draftMode === 'plan' ? ' active' : ''}`}
-            aria-haspopup="menu"
-            aria-expanded={modeOpen}
-            aria-label={t('chatModeLabel')}
-            data-tip={draftMode === 'plan' ? t('chatModePlanHint') : t('chatModeLabel')}
-            onClick={() => setModeOpen((o) => !o)}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M2.5 4h8M2.5 8h5M2.5 12h8M13 6.5l1.8 1.8L11 12"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="chat-mode-value">
-              {draftMode === 'plan' ? t('chatModePlan') : t('chatModeDefault')}
-            </span>
-          </button>
-          {modeOpen && (
-            <div className="chat-mode-pop" role="menu">
-              <button
-                className={`chat-mode-item${draftMode === 'default' ? ' is-active' : ''}`}
-                role="menuitem"
-                data-mode="default"
-                onClick={() => applyMode('default')}
-              >
-                <span className="chat-mode-item-title">{t('chatModeDefault')}</span>
-                <span className="chat-mode-item-hint">{t('chatModeDefaultHint')}</span>
-              </button>
-              <button
-                className={`chat-mode-item${draftMode === 'plan' ? ' is-active' : ''}`}
-                role="menuitem"
-                data-mode="plan"
-                onClick={() => applyMode('plan')}
-              >
-                <span className="chat-mode-item-title">{t('chatModePlan')}</span>
-                <span className="chat-mode-item-hint">{t('chatModePlanHint')}</span>
-              </button>
+      <AiComposer
+        value={input}
+        busy={busy}
+        header={
+          attachments.length > 0 && (
+            <div className="chat-atts composer">
+              {attachments.map((a) => (
+                <AttachmentChip
+                  key={a.path}
+                  att={a}
+                  removeLabel={t('chatRemoveAttachment')}
+                  onRemove={() => setAttachments((prev) => prev.filter((x) => x.path !== a.path))}
+                />
+              ))}
             </div>
-          )}
-        </span>
-        <textarea
-          ref={inputRef}
-          className="chat-input"
-          rows={1}
-          placeholder={t('chatPlaceholder')}
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value)
-            growInput()
-          }}
-          onKeyDown={(e) => {
-            if (e.nativeEvent.isComposing) return
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              send()
-            }
-          }}
-        />
-        {busy ? (
-          <button
-            className="chat-send-btn stop"
-            aria-label={t('chatStop')}
-            data-tip={t('chatStop')}
-            onClick={stop}
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-              <rect x="2.5" y="2.5" width="9" height="9" rx="2" fill="currentColor" />
-            </svg>
-          </button>
-        ) : (
-          <button
-            className="chat-send-btn"
-            aria-label={t('chatSend')}
-            data-tip={t('chatSend')}
-            disabled={!input.trim() && attachments.length === 0}
-            onClick={send}
-          >
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M14 2L7 9M14 2L9.5 14 7 9 2 6.5 14 2z"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
-      </div>
+          )
+        }
+        placeholder={t('chatPlaceholder')}
+        sendLabel={t('chatSend')}
+        stopLabel={t('chatStop')}
+        canSend={(input.trim().length > 0 || attachments.length > 0) && !busy}
+        iconOnly
+        sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
+        sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
+        stopIcon={<img src={sendStop} alt="" aria-hidden />}
+        textareaRef={inputRef}
+        onChange={setInput}
+        onSend={send}
+        onStop={stop}
+        footerStart={
+          <>
+            <button
+              className="ai-attach-btn"
+              aria-label={t('chatAttach')}
+              data-tip={t('chatAttach')}
+              onClick={() => void pickAttachments()}
+            >
+              <img src={attachIcon} alt="" aria-hidden />
+            </button>
+            {aiSettings && (
+              <span className="chat-model-slot">
+                <ModelPickerButton
+                  settings={draftModel ? { ...aiSettings, currentModel: draftModel } : aiSettings}
+                  onPick={applyModel}
+                  onOpenSettings={onOpenSettings}
+                  lang={lang}
+                />
+              </span>
+            )}
+            <span className="chat-mode-wrap" ref={modeWrapRef}>
+              <button
+                className={`chat-tool-btn chat-mode-btn${draftMode === 'plan' ? ' active' : ''}`}
+                aria-haspopup="menu"
+                aria-expanded={modeOpen}
+                aria-label={t('chatModeLabel')}
+                data-tip={draftMode === 'plan' ? t('chatModePlanHint') : t('chatModeLabel')}
+                onClick={() => setModeOpen((o) => !o)}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M2.5 4h8M2.5 8h5M2.5 12h8M13 6.5l1.8 1.8L11 12"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="chat-mode-value">
+                  {draftMode === 'plan' ? t('chatModePlan') : t('chatModeDefault')}
+                </span>
+              </button>
+              {modeOpen && (
+                <div className="chat-mode-pop" role="menu">
+                  <button
+                    className={`chat-mode-item${draftMode === 'default' ? ' is-active' : ''}`}
+                    role="menuitem"
+                    data-mode="default"
+                    onClick={() => applyMode('default')}
+                  >
+                    <span className="chat-mode-item-title">{t('chatModeDefault')}</span>
+                    <span className="chat-mode-item-hint">{t('chatModeDefaultHint')}</span>
+                  </button>
+                  <button
+                    className={`chat-mode-item${draftMode === 'plan' ? ' is-active' : ''}`}
+                    role="menuitem"
+                    data-mode="plan"
+                    onClick={() => applyMode('plan')}
+                  >
+                    <span className="chat-mode-item-title">{t('chatModePlan')}</span>
+                    <span className="chat-mode-item-hint">{t('chatModePlanHint')}</span>
+                  </button>
+                </div>
+              )}
+            </span>
+          </>
+        }
+      />
     </div>
   )
 
@@ -670,7 +630,7 @@ export function ChatPanel({
       <header className="chat-head">
         <div className="chat-tabs" role="tablist" aria-label={t('chatTabList')}>
           {(store.sessions ?? []).map((s) => (
-            <button
+            <div
               key={s.id}
               role="tab"
               aria-selected={s.id === active?.id}
@@ -678,8 +638,26 @@ export function ChatPanel({
               title={s.title || t('chatNew')}
               onClick={() => openSession(s.id)}
             >
-              {s.title || t('chatNew')}
-            </button>
+              <span className="chat-tab-label">{s.title || t('chatNew')}</span>
+              <button
+                className="chat-tab-close"
+                aria-label={t('chatDeleteSession')}
+                title={t('chatDeleteSession')}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  store.removeSession(s.id)
+                }}
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                  <path
+                    d="M2 2l6 6M8 2l-6 6"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
           ))}
         </div>
         <div className="chat-head-actions">

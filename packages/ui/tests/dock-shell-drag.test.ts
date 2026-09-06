@@ -233,3 +233,114 @@ describe('DockShell ghost drag', () => {
     expect(saved.position).toBe('left') // aborted: nothing committed
   })
 })
+
+describe('DockShell drag out of maximized', () => {
+  it('a maximized panel tears off and the drop un-maximizes into a float', () => {
+    store.set('test-dock-drag', JSON.stringify({ position: 'left', maximized: true }))
+    renderDock()
+    realRects()
+    const rootEl = host.querySelector('.dockshell') as HTMLElement
+    expect(rootEl.classList.contains('is-max')).toBe(true)
+    press(120, 24)
+    move(640, 400)
+    expect(rootEl.classList.contains('is-tearing')).toBe(true)
+    // still maximized mid-gesture — the drop is what un-maximizes
+    expect(rootEl.classList.contains('is-max')).toBe(true)
+    // the maximized panel was never in flow: no docked-strip placeholder,
+    // else the editor would shrink mid-drag
+    expect(host.querySelector('.dockshell-slot')).toBeNull()
+    // the ghost adopts float geometry, not the fullscreen box
+    expect(rootEl.style.getPropertyValue('--dock-w')).toBe('480px')
+    release()
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('pos-float')).toBe(true)
+    expect(after.classList.contains('is-max')).toBe(false)
+    const saved = JSON.parse(store.get('test-dock-drag')!)
+    expect(saved.position).toBe('float')
+    expect(saved.maximized).toBe(false)
+  })
+
+  it('a maximized panel snaps into an edge slot on drop', () => {
+    store.set('test-dock-drag', JSON.stringify({ position: 'left', maximized: true }))
+    renderDock()
+    realRects()
+    press(120, 24)
+    move(640, 776) // bottom zone armed
+    expect(host.querySelector('.dockshell-snap-bottom')).toBeTruthy()
+    release()
+    const after = host.querySelector('.dockshell') as HTMLElement
+    expect(after.classList.contains('pos-bottom')).toBe(true)
+    expect(after.classList.contains('is-max')).toBe(false)
+    expect(JSON.parse(store.get('test-dock-drag')!).maximized).toBe(false)
+  })
+})
+
+describe('DockShell window-drag carve', () => {
+  /**
+   * Chromium composes -webkit-app-region rects in document order and the
+   * window hit test ignores z-order: the body's ribbon drag row comes AFTER
+   * the panel in the DOM, so wherever the panel covers that row (maximized,
+   * or floating over the row) an invisible no-drag overlay must re-carve the
+   * panel's rect as the root's LAST child — else every header click in the
+   * band drags the window and the maximize/restore, layout and close buttons
+   * go dead.
+   */
+  function renderCarve(state: Record<string, unknown>, open = true): void {
+    // a fresh root per render: DockShell reads localStorage only in its state
+    // initializer, so a reused instance would keep the previous layout
+    if (root) {
+      act(() => {
+        root!.unmount()
+      })
+    }
+    document.body.innerHTML = ''
+    host = document.createElement('div')
+    document.body.appendChild(host)
+    root = createRoot(host)
+    store.set('test-dock-carve', JSON.stringify(state))
+    act(() => {
+      root!.render(
+        createElement(DockShell, {
+          storageKey: 'test-dock-carve',
+          open,
+          onOpenChange: () => {},
+          labels: {
+            panelTitle: 'AI',
+            dockLeft: 'left',
+            dockRight: 'right',
+            dockBottom: 'bottom',
+            float: 'float',
+            maximize: 'max',
+            restore: 'restore',
+            collapse: 'close',
+            layoutMenu: 'layout',
+          },
+          renderPanel: (chrome: DockChrome) =>
+            createElement('div', { ...chrome.dragProps, 'data-header': '' }, 'panel'),
+          children: createElement('div', { className: 'editor-stub' }),
+        }),
+      )
+    })
+  }
+
+  it('maximized: the carve overlay is the root\'s last child', () => {
+    renderCarve({ position: 'left', maximized: true })
+    const rootEl = host.querySelector('.dockshell') as HTMLElement
+    const carve = host.querySelector('.dockshell-carve') as HTMLElement
+    expect(carve).toBeTruthy()
+    expect(rootEl.lastElementChild).toBe(carve)
+  })
+
+  it('float: carved too; docked and closed: not carved', () => {
+    renderCarve({
+      position: 'float',
+      floatRect: { x: 100, y: 80, width: 480, height: 560 },
+    })
+    expect(host.querySelector('.dockshell-carve')).toBeTruthy()
+    renderCarve({ position: 'left' })
+    expect(host.querySelector('.dockshell-carve')).toBeNull()
+    // closed hides the panel entirely — the ribbon drag row must come back
+    renderCarve({ position: 'left', maximized: true }, false)
+    expect(host.querySelector('.dockshell-carve')).toBeNull()
+  })
+})

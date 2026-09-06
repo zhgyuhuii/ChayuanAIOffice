@@ -135,8 +135,17 @@ body.vib .home {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* 长文件名不省略截断：整棵树一起横向滚动查看 */
+  overflow-x: auto;
   /* room for the hover controls and the escaped row menu */
   padding: 0 2px 6px;
+}
+
+/* sections size to their widest row: long names extend the shared horizontal
+   scroll width instead of being clipped by ellipsis */
+.sidebar-scroll > .side-sec,
+.sidebar-scroll > .side-files {
+  min-width: max-content;
 }
 
 .side-sec + .side-sec,
@@ -149,7 +158,8 @@ body.vib .home {
 .side-sec .side-files,
 .side-sec-starred .side-files-scroll,
 .side-sec-recent .side-files-scroll,
-.proj-files {
+.proj-files,
+.proj-list {
   overflow: visible;
   flex: none;
 }
@@ -166,11 +176,14 @@ body.vib .home {
 }
 
 /* tree|chat drag handle: a hit-area strip straddling the sidebar border;
-   hidden along with the tree when the left pane is collapsed */
+   hidden along with the tree when the left pane is collapsed.
+   Sits ENTIRELY inside the sidebar's width (margin-left -7px): on document
+   tabs the editor WebContentsView covers everything right of the tree strip,
+   so a handle straddling the border would be mostly covered and undraggable. */
 .sidebar-resizer {
   flex-shrink: 0;
   width: 7px;
-  margin: 0 -3px;
+  margin: 0 0 0 -7px;
   cursor: col-resize;
   z-index: 5;
   touch-action: none;
@@ -1072,8 +1085,60 @@ body.sidebar-resizing {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  /* size to content (capped by .proj-list) so the file history below keeps its share */
-  flex: 0 1 auto;
+  /* 菜单式下推：项目区按内容撑开，由外层 sidebar-scroll 统一滚动 */
+  flex: none;
+}
+
+/* 项目区搜索框：搜会话 / 问题 / 文件 */
+.proj-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px 4px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: var(--checkbox-bg, var(--bg-hover));
+  color: var(--text-muted);
+}
+
+.proj-search:focus-within {
+  outline: 1.5px solid var(--accent);
+  color: var(--text-secondary);
+}
+
+.proj-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text);
+  outline: none;
+}
+
+.proj-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.proj-search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.proj-search-clear:hover {
+  color: var(--text);
+  background: var(--bg-hover);
 }
 
 .proj-panel-head {
@@ -1164,8 +1229,6 @@ body.sidebar-resizing {
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  max-height: 172px;
 }
 
 .proj-item {
@@ -1185,20 +1248,86 @@ body.sidebar-resizing {
 /* the selected project's tasks + files, nested directly under its name */
 .proj-children {
   min-width: 0;
-  padding-left: 14px;
+  /* 整体右移，和项目行拉开明显的层级关系 */
+  padding-left: 26px;
   padding-bottom: 2px;
+}
+
+/* file rows inside the project tree hug their chat/task siblings: no extra
+   vertical padding, smaller badge — same rhythm as the tree-chat rows */
+.proj-children .side-file-main {
+  padding: 1px 0;
+  gap: 7px;
+}
+
+.proj-children .side-file-name {
+  font-size: 12.5px;
 }
 
 .proj-item-main {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   flex: 1;
   min-width: 0;
-  padding: 5px 10px;
+  padding: 3px 8px;
   cursor: pointer;
   border-radius: 8px;
   user-select: none;
+  /* anchor for the absolutely-positioned … button strip */
+  position: relative;
+}
+
+/* per-row expand/collapse chevron — each project toggles independently */
+.proj-expand-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.proj-expand-btn:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.proj-expand-btn svg {
+  transform: rotate(90deg); /* expanded: pointing down */
+  transition: transform 0.15s ease;
+}
+
+.proj-expand-btn:not(.expanded) svg {
+  transform: rotate(0deg); /* collapsed: pointing right */
+}
+
+.proj-item-icon {
+  flex-shrink: 0;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.proj-item-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.proj-item-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .proj-item-main:focus-visible {
@@ -1212,23 +1341,6 @@ body.sidebar-resizing {
 
 .proj-item.active .proj-item-main {
   background: none;
-}
-
-.proj-item-icon {
-  flex-shrink: 0;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-}
-
-.proj-item-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 14px;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .proj-item.active .proj-item-name {
@@ -1260,11 +1372,14 @@ body.sidebar-resizing {
   align-items: center;
   opacity: 0;
   transition: opacity 0.1s;
+  /* hidden strip must never intercept clicks meant for the rows below */
+  pointer-events: none;
 }
 
 .proj-item:hover .proj-menu-wrap,
 .proj-menu-wrap:has([aria-expanded='true']) {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .proj-item:hover:has(.proj-menu-wrap) .proj-item-meta,
@@ -2073,7 +2188,8 @@ body.sidebar-resizing {
 }
 
 .tree-chat-list.nested {
-  padding-left: 14px;
+  /* 文件下的对话节点：比文件行再深一档，读出 文件→对话 层级 */
+  padding-left: 20px;
 }
 
 .tree-chat-row {
@@ -2272,13 +2388,16 @@ body.sidebar-resizing {
 }
 
 .star-btn.side,
-.more-btn.side {
+.more-btn.side,
+.row-remove-btn.side {
   opacity: 0;
   transition: opacity 0.1s;
 }
 
 .side-file:hover .star-btn.side,
 .side-file:hover .more-btn.side,
+.side-file:hover .row-remove-btn.side,
+.side-group-head:hover .row-remove-btn.side,
 .star-btn.side.starred,
 .side-file:has([aria-expanded='true']) .more-btn.side {
   opacity: 1;
@@ -2293,6 +2412,169 @@ body.sidebar-resizing {
   width: 22px;
   height: 22px;
   border-radius: 6px;
+}
+
+/* hover-revealed 删除 (row) / 清理 (group head) button */
+.row-remove-btn.side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.row-remove-btn.side:hover {
+  color: var(--danger, #d64545);
+  background: var(--bg-hover);
+}
+
+.row-remove-btn.side.danger {
+  color: var(--danger, #d64545);
+}
+
+.row-remove-btn.side.group-clear {
+  flex-shrink: 0;
+}
+
+/* ── 多选删除：行首复选框 + 分区批量操作条 ── */
+.row-check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.1s;
+  cursor: pointer;
+}
+
+.row-check input {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.side-file:hover .row-check,
+.tree-chat-row:hover .row-check,
+.selecting .row-check {
+  opacity: 1;
+}
+
+/* 勾选进行中：整区隐藏行尾图标，避免视觉竞争与误点 */
+.selecting .star-btn.side,
+.selecting .more-btn.side,
+.selecting .row-remove-btn.side,
+.selecting .side-file-actions {
+  display: none;
+}
+
+/* 项目行级联勾选框（半选态由 JS 设 indeterminate）：默认隐藏，hover 或勾选进行中显示 */
+.proj-check {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  margin: 0 2px 0 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.proj-item:hover .proj-check,
+.selecting .proj-check {
+  opacity: 1;
+}
+
+/* 任务/对话行：行首复选框与行文本并排 */
+.tree-chat-row {
+  display: flex;
+  align-items: center;
+}
+
+.tree-chat-row .tree-chat {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 项目行直接删除图标（默认项目不渲染）；右侧让位给「…」悬浮条 */
+.proj-delete-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 22px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.proj-item:hover .proj-delete-btn {
+  opacity: 1;
+}
+
+.proj-delete-btn:hover {
+  color: var(--danger);
+  background: var(--bg-hover);
+}
+
+/* 分区批量操作条 */
+.zone-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 2px 4px;
+  padding: 3px 6px;
+  border-radius: 7px;
+  background: var(--accent-soft, rgba(47, 111, 220, 0.08));
+}
+
+.zone-toolbar-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zone-toolbar-btn {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.zone-toolbar-btn:hover {
+  background: var(--bg-hover);
+}
+
+.zone-toolbar-btn.danger {
+  color: var(--danger);
+}
+
+.modal-chat-note {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
 }
 
 .side-file-actions {
@@ -2344,8 +2626,8 @@ body.sidebar-resizing {
 
 .chat-tab {
   flex-shrink: 0;
-  max-width: 160px;
-  padding: 5px 12px;
+  max-width: 180px;
+  padding: 5px 6px 5px 12px;
   border: none;
   border-radius: 8px;
   background: none;
@@ -2353,9 +2635,42 @@ body.sidebar-resizing {
   font-size: 12px;
   color: var(--text-tertiary);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.chat-tab-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.chat-tab-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: inherit;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chat-tab:hover .chat-tab-close,
+.chat-tab.active .chat-tab-close {
+  opacity: 0.7;
+}
+
+.chat-tab-close:hover {
+  opacity: 1 !important;
+  background: var(--surface-subtle);
 }
 
 .chat-tab:hover {
@@ -2655,7 +2970,8 @@ body.sidebar-resizing {
 }
 
 .chat-atts.composer {
-  margin-bottom: 8px;
+  margin: 0;
+  padding: 10px 12px 0;
 }
 
 .chat-att-chip {
@@ -2912,23 +3228,9 @@ body.sidebar-resizing {
   padding-top: 0;
 }
 
+/* composer shell: the .ai-input-box card inside carries the border (editor AiPanel layout) */
 .chat-composer {
   width: min(720px, 100%);
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
-}
-
-.chat-composer:focus-within {
-  border-color: var(--accent);
-}
-
-.chat-input-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
 }
 
 .chat-tool-btn {
@@ -2936,7 +3238,7 @@ body.sidebar-resizing {
   align-items: center;
   justify-content: center;
   width: 32px;
-  height: 32px;
+  height: 28px;
   border: none;
   border-radius: 8px;
   background: none;
@@ -2950,51 +3252,107 @@ body.sidebar-resizing {
   color: var(--text);
 }
 
-.chat-input {
-  flex: 1;
-  min-width: 0;
-  max-height: 180px;
-  padding: 6px 0;
-  border: none;
-  outline: none;
+/* shared AiComposer card, themed for the home chat: textarea on top, tools + send below */
+.ai-input-box {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
+  transition: border-color 0.15s ease;
+}
+
+.ai-input-box:focus-within {
+  border-color: var(--accent);
+}
+
+.ai-input-box textarea {
+  display: block;
+  width: 100%;
   resize: none;
+  border: none;
+  background: none;
+  border-radius: 14px 14px 0 0;
+  padding: 0 12px;
+  margin: 11px 0 4px;
   font: inherit;
   font-size: 14px;
   line-height: 1.5;
+  outline: none;
   color: var(--text);
-  background: none;
+  min-height: 43px;
+  max-height: 168px;
+  overflow-y: auto;
 }
 
-.chat-input::placeholder {
+.ai-input-box textarea::placeholder {
   color: var(--text-muted);
 }
 
-.chat-send-btn {
+.ai-input-footer {
   display: flex;
   align-items: center;
+  gap: 6px;
+  padding: 2px 8px 8px 8px;
+}
+
+.ai-send-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 35%;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-send-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ai-send-btn:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+
+.ai-send-btn:active:not(:disabled) {
+  filter: brightness(0.88);
+  transform: scale(0.98);
+}
+
+.ai-send-btn:disabled {
+  cursor: default;
+}
+
+/* attach entry at the footer start, brand PNG, mirrors the editor AI panels */
+.ai-attach-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
+  background: none;
   cursor: pointer;
   flex-shrink: 0;
 }
 
-.chat-send-btn:hover {
-  background: var(--accent-hover);
+.ai-attach-btn img {
+  display: block;
+  width: 18px;
+  height: 18px;
 }
 
-.chat-send-btn:disabled {
-  background: var(--checkbox-bg);
-  color: var(--text-muted);
-  cursor: default;
-}
-
-.chat-send-btn.stop {
-  background: var(--danger);
+.ai-attach-btn:hover {
+  background: var(--surface-subtle);
 }
 
 /* ── turn navigator: the left tick rail (ZCode-style query map) ── */
@@ -3240,4 +3598,44 @@ body.sidebar-resizing {
 .side-link-label {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ── Pending-unsaved restore banner (crashed before first save) ── */
+.pending-untitled-banner {
+  --pending-untitled-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--pending-untitled-shadow);
+  font-size: 13px;
+}
+
+.pending-untitled-banner .pending-untitled-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pending-untitled-banner button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  background: var(--surface-subtle);
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pending-untitled-banner button:hover {
+  background: var(--bg-hover);
 }

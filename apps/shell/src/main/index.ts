@@ -1,11 +1,14 @@
 import { execSync, spawn } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
 import {
   copyFileSync,
   cpSync,
   existsSync,
+  mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
+  rmSync,
   writeFileSync,
 } from 'node:fs'
 import { basename, dirname, extname, join } from 'node:path'
@@ -123,7 +126,6 @@ import {
   deleteRemoteDocument,
   renameRemoteDocument,
 } from '../../../docs/src/main/docs-main'
-import { blankXlsxBuffer } from '../../../sheets/src/gateway/csv-import'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
 import {
   configureSheetsRuntime,
@@ -132,8 +134,9 @@ import {
   markSheetsShuttingDown,
   requestSheetsClose,
   resolveSheetsSessionPath,
-  markSheetsUntitledPath,
   sendSheetsMenuAction,
+  setSheetsBlankDraftHook,
+  sheetsBlankRecoveryCopy,
   sheetsFileRenamed,
   setSheetsCloseTabHook,
   setSheetsExtraFileMenuItems,
@@ -156,14 +159,17 @@ import {
 } from '../../../slides/src/main/slides-main'
 import {
   configurePdfRuntime,
+  finalizePdfUntitled,
   flushPdfSave,
   markPdfUntitledPath,
   pdfIsDirty,
+  pdfUntitledDialogDefault,
   requestPdfClose,
   requestPdfSaveAs,
   sendPdfPrintRequest,
   setPdfRenamedHook,
   setPdfSaveAsInFlight,
+  pdfUntitledRecoveryCopy,
 } from '../../../pdf/src/main/pdf-main'
 import { PDF_CHANNELS } from '../../../pdf/src/shared/ipc'
 import { convertPdfFileToDocxLocalWithPrompt, PdfLoadError } from './pdf2docx-local'
@@ -273,10 +279,11 @@ configureSheetsRuntime({
   createDocument: createAiDocument,
 })
 configureSlidesRuntime({
-  preloadPath: join(SLIDES_OUT, 'preload', 'index.js'),
+  preloadPath: SLIDES_OUT,
   rendererDevUrl: process.env.SLIDES_RENDERER_URL,
   rendererFilePath: join(SLIDES_OUT, 'renderer', 'index.html'),
   openGeneratedPath: (path) => openGeneratedDocument(path),
+  untitledSaveDir: () => pendingProjectSaveDir('slide'),
 })
 configurePdfRuntime({
   preloadPath: join(PDF_OUT, 'preload', 'index.js'),
@@ -2457,6 +2464,36 @@ function createShellWindow(): void {
     focusTab: (id) => manager.activateTab(id),
     closeActiveTab: () => manager.closeActiveTab(),
     openGeneratedPath: (path) => openGeneratedDocument(path),
+    openUntitledPdf: (bytes, suggestedName) => {
+      // AI-created PDF as a hidden temp-backed untitled document: the AI title
+      // only prefills the first save — nothing lands on disk until then.
+      try {
+        const tempPath = uniquePathIn(blankDraftsDir(), `ai-${randomUUID()}.pdf`)
+        writeFileSync(tempPath, bytes)
+        markPdfUntitledPath(tempPath, { defaultDir: defaultSaveDir(), suggestedName })
+        registerPendingUntitled({
+          kind: 'pdf',
+          tempPath,
+          suggestedName,
+          defaultDir: defaultSaveDir(),
+        })
+        manager.openPdfTab(tempPath, { untitledTitle: suggestedName })
+        return true
+      } catch (err) {
+        console.warn('[shell] untitled pdf tab open failed:', err)
+        return false
+      }
+    },
+    openUntitledMarkdown: (content, suggestedName) => {
+      // AI-created Markdown as an untitled tab carrying the content in memory.
+      try {
+        manager.openMarkdownTabWithContent(content, suggestedName)
+        return true
+      } catch (err) {
+        console.warn('[shell] untitled markdown tab open failed:', err)
+        return false
+      }
+    },
   })
   setSheetsCloseTabHook(() => manager.closeActiveTab())
   // ⌘W targets the focused window: in a detached slides editor window it closes
@@ -2468,10 +2505,17 @@ function createShellWindow(): void {
   })
   // When ⌘O opens a file inside a tab, sync the tab title/path (used for de-dup by path) and record it as recent.
   // The first save / save-as fires this too, so applyPendingProject also runs here.
-  setSheetsWorkbookOpenedHook((wc, path) => {
+  setSheetsWorkbookOpenedHook((wc, path, fromBlankDraft) => {
+    // A blank draft's first save just made it a real file: drop its registry entry.
+    if (fromBlankDraft) removePendingUntitled(fromBlankDraft)
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path)
+  })
+  // Hidden temp-backed blank workbook materialized: track it so a crash before
+  // the first save can offer the content back on the next launch.
+  setSheetsBlankDraftHook((_wc, tempPath, saveDir) => {
+    registerPendingUntitled({ kind: 'sheet', tempPath, defaultDir: saveDir })
   })
   setSlidesOpenedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
@@ -2500,6 +2544,8 @@ function createShellWindow(): void {
   })
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
   setPdfRenamedHook((wc, oldPath, newPath) => {
+    // An untitled document's first save landed: drop its registry entry.
+    removePendingUntitled(oldPath)
     manager.setTabFileFor(wc.id, newPath)
     replaceRecentFile(oldPath, newPath)
     projectFileRenamed(oldPath, newPath)
@@ -2729,29 +2775,68 @@ function routeDocumentPath(filePath: string): boolean {
   return false
 }
 
+// ── Pending-unsaved registry (Home startup restore banner) ──
+// Untitled temp-backed documents (new sheet/pdf, AI-generated pdf) are tracked
+// here so a crash before the first save can offer the content back. The
+// recovery copies themselves live in each module's hidden recovery area; an
+// entry is restorable only while both its temp backing file and the module's
+// recovery copy still exist (a closed-unsaved tab leaves the temp deleted, and
+// the entry is dropped lazily on the next list).
+interface PendingUntitledDoc {
+  kind: 'sheet' | 'pdf'
+  tempPath: string
+  suggestedName?: string
+  defaultDir: string
+  savedAt: number
+}
+
+const pendingUntitledPath = () => join(app.getPath('userData'), 'pending-untitled.json')
+
+function loadPendingUntitled(): Map<string, PendingUntitledDoc> {
+  try {
+    const raw = JSON.parse(readFileSync(pendingUntitledPath(), 'utf-8')) as PendingUntitledDoc[]
+    return new Map(raw.map((doc) => [doc.tempPath, doc]))
+  } catch {
+    return new Map()
+  }
+}
+
+let pendingUntitledDocs = loadPendingUntitled()
+
+function persistPendingUntitled(): void {
+  try {
+    writeFileSync(pendingUntitledPath(), JSON.stringify([...pendingUntitledDocs.values()]))
+  } catch (err) {
+    console.warn('[shell] pending-untitled persist failed:', err)
+  }
+}
+
+function registerPendingUntitled(doc: Omit<PendingUntitledDoc, 'savedAt'>): void {
+  pendingUntitledDocs.set(doc.tempPath, { ...doc, savedAt: Date.now() })
+  persistPendingUntitled()
+}
+
+function removePendingUntitled(tempPath: string): void {
+  if (pendingUntitledDocs.delete(tempPath)) persistPendingUntitled()
+}
+
 /**
- * "New spreadsheet" creates the backing .xlsx in the default folder up front and
- * opens it as a regular file tab — the blank in-memory demo mode has no save
- * pipeline, so the file must exist before edits. Falls back to the old blank
- * tab if the write fails.
+ * "New spreadsheet" opens a hidden temp-backed blank workbook session — nothing
+ * lands in the user's project folder at creation. The user-visible file is only
+ * written when they first save, which routes through Save As prefilled with the
+ * pending project folder and the untitled name (sheets-main's blank-draft flow).
  */
 async function newSheetTab(): Promise<void> {
   try {
-    const filePath = uniquePathIn(pendingProjectSaveDir('sheet'), `${tm('untitledSheet')}.xlsx`)
-    writeFileSync(filePath, await blankXlsxBuffer())
-    // eligible for content-derived auto-rename after the first AI generation
-    markSheetsUntitledPath(filePath)
-    // route directly (not via openDocumentPath) so creating a sheet emits
-    // only file_new — the file_open event is reserved for opening existing files
-    if (routeDocumentPath(filePath)) recordStarPromptDocOpen()
+    tabManager?.openSheetsTab(undefined, {
+      newBlank: true,
+      newBlankSaveDir: pendingProjectSaveDir('sheet'),
+      newBlankName: tm('untitledSheet'),
+    })
+    recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'xlsx' })
   } catch (err) {
-    console.warn('[shell] blank workbook create failed, opening in-memory blank tab:', err)
-    try {
-      tabManager?.openSheetsTab(undefined, { newBlank: true })
-    } catch (fallbackErr) {
-      surfaceNewTabError(fallbackErr)
-    }
+    surfaceNewTabError(err)
   }
 }
 
@@ -2798,25 +2883,29 @@ function newMarkdownTab(): void {
 }
 
 /**
- * "New PDF" creates a blank single-page .pdf in the default folder up front and
- * opens it as a regular file tab — the PDF module has no in-memory blank mode
- * (openPdfTab requires a path), same pattern as the blank workbook above.
+ * "New PDF" opens a hidden temp-backed untitled document — nothing lands in the
+ * user's project folder at creation. The user-visible PDF is only written when
+ * they first save, which routes through Save As (pdf-main's untitled flow).
  */
 async function newPdfTab(): Promise<void> {
   try {
-    const filePath = uniquePathIn(pendingProjectSaveDir('pdf'), `${tm('untitledPdf')}.pdf`)
-    writeFileSync(filePath, await blankPdfBuffer())
-    // Opt the file into content-derived auto-naming on its first save
-    markPdfUntitledPath(filePath)
-    // PDF has no opened/saved shell hook — assign the pending project right here
-    applyPendingProject(filePath)
-    // route directly (not via openDocumentPath) so creating a pdf emits only
-    // file_new and counts one doc-open — same as the blank workbook above
-    if (routeDocumentPath(filePath)) recordStarPromptDocOpen()
+    const tempPath = uniquePathIn(blankDraftsDir(), `blank-${randomUUID()}.pdf`)
+    writeFileSync(tempPath, await blankPdfBuffer())
+    markPdfUntitledPath(tempPath, { defaultDir: pendingProjectSaveDir('pdf') })
+    registerPendingUntitled({ kind: 'pdf', tempPath, defaultDir: pendingProjectSaveDir('pdf') })
+    // Direct tab open (not routeDocumentPath): a temp-backed untitled document
+    // must not hit the recents list or claim a project — that happens at first save.
+    tabManager?.openPdfTab(tempPath, { untitledTitle: tm('untitledPdf') })
+    recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'pdf' })
   } catch (err) {
     surfaceNewTabError(err)
   }
+}
+
+/** Hidden working dir for untitled blank documents (never user-visible) */
+function blankDraftsDir(): string {
+  return join(app.getPath('temp'), 'chatoffice-blank-documents')
 }
 
 /**
@@ -2996,6 +3085,82 @@ function registerHomeIpc(): void {
       pendingNewFileProject.set('sheet', opts.projectId)
     }
     void newSheetTab()
+  })
+
+  // ── Pending-unsaved restore (Home startup banner) ──
+  // Only entries whose module recovery copy still exists are offered: the temp
+  // backing file alone holds no edits, so there would be nothing to restore.
+  ipcMain.handle(HOME_CHANNELS.listPendingUntitled, () => {
+    const restorable: Array<{
+      kind: 'sheet' | 'pdf'
+      tempPath: string
+      suggestedName?: string
+      savedAt: number
+    }> = []
+    for (const doc of pendingUntitledDocs.values()) {
+      const hasRecovery =
+        doc.kind === 'sheet'
+          ? sheetsBlankRecoveryCopy(doc.tempPath) !== null
+          : pdfUntitledRecoveryCopy(doc.tempPath) !== null
+      // A closed-unsaved tab deletes its temp backing file: drop the dead entry.
+      if (!hasRecovery || !existsSync(doc.tempPath)) {
+        removePendingUntitled(doc.tempPath)
+        continue
+      }
+      restorable.push({
+        kind: doc.kind,
+        tempPath: doc.tempPath,
+        suggestedName: doc.suggestedName,
+        savedAt: doc.savedAt,
+      })
+    }
+    return restorable
+  })
+
+  ipcMain.handle(HOME_CHANNELS.restorePendingUntitled, (_event, tempPath: unknown) => {
+    const doc =
+      typeof tempPath === 'string' ? pendingUntitledDocs.get(tempPath) : undefined
+    if (!doc) return false
+    try {
+      if (doc.kind === 'sheet') {
+        const recovery = sheetsBlankRecoveryCopy(doc.tempPath)
+        if (!recovery) return false
+        tabManager?.openSheetsTab(undefined, {
+          newBlank: true,
+          newBlankSaveDir: doc.defaultDir,
+          newBlankName: tm('untitledSheet'),
+          restoreFrom: recovery,
+        })
+      } else {
+        const recovery = pdfUntitledRecoveryCopy(doc.tempPath)
+        if (!recovery) return false
+        // Fresh temp backing from the recovery copy: the old temp stays the
+        // recovery key of the crashed session and is retired below.
+        const newTemp = uniquePathIn(blankDraftsDir(), `blank-${randomUUID()}.pdf`)
+        copyFileSync(recovery, newTemp)
+        const meta = { defaultDir: doc.defaultDir, suggestedName: doc.suggestedName }
+        markPdfUntitledPath(newTemp, meta)
+        registerPendingUntitled({ kind: 'pdf', tempPath: newTemp, ...meta })
+        tabManager?.openPdfTab(newTemp, {
+          untitledTitle: doc.suggestedName ?? tm('untitledPdf'),
+        })
+        removePendingUntitled(doc.tempPath)
+        rmSync(doc.tempPath, { force: true })
+      }
+      removePendingUntitled(doc.tempPath)
+      return true
+    } catch (err) {
+      console.warn('[shell] pending-untitled restore failed:', err)
+      return false
+    }
+  })
+
+  ipcMain.handle(HOME_CHANNELS.discardPendingUntitled, (_event, tempPath: unknown) => {
+    if (typeof tempPath !== 'string') return false
+    removePendingUntitled(tempPath)
+    // Forget the plumbing too: the tab is gone, so nothing else cleans these up.
+    if (existsSync(tempPath)) rmSync(tempPath, { force: true })
+    return true
   })
 
   ipcMain.handle(HOME_CHANNELS.newSlide, (_event, opts?: { projectId?: string }) => {
@@ -3825,23 +3990,28 @@ let savingPdfAs = false
 async function savePdfAs(): Promise<void> {
   const tab = tabManager?.activePdfTab()
   if (!tab?.filePath || !shellWindow || savingPdfAs) return
+  // An untitled (temp-backed) tab's Save As prefills the pending project folder
+  // and untitled/AI name instead of the hidden temp path.
+  const untitledDefault = pdfUntitledDialogDefault(tab.webContents.id)
   savingPdfAs = true
   // Pause renderer autosave for the whole flow: the dialog blurs the window, and a
   // blur-triggered autosave would write the pending edits into the original file
   setPdfSaveAsInFlight(tab.webContents, true)
   try {
     const picked = await showSaveDialogWithMemory(dialog, shellWindow, {
-      defaultPath: tab.filePath,
+      defaultPath: untitledDefault ?? tab.filePath,
       filters: [{ name: tm('filterPdf'), extensions: ['pdf'] }],
     })
     if (picked.canceled || !picked.filePath || picked.filePath === tab.filePath) return
     if (pdfIsDirty(tab.webContents.id)) {
       // Renderer applies its pending edits onto the source bytes; the pdf main
-      // process writes the result to the picked path only
+      // process writes the result to the picked path only. An untitled tab is
+      // retargeted by the save handler itself (temp backing file retired).
       if (!(await requestPdfSaveAs(tab.webContents, picked.filePath))) return
     } else {
       // No pending edits → a byte-identical copy
       copyFileSync(tab.filePath, picked.filePath)
+      if (untitledDefault) finalizePdfUntitled(tab.webContents, tab.filePath, picked.filePath)
     }
     openDocumentPath(picked.filePath)
   } finally {

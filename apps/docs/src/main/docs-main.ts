@@ -4068,6 +4068,11 @@ interface DocsShellHooks {
   closeActiveTab(): void
   /** Shell router used to open exported PDFs in a new ChatOffice tab. */
   openGeneratedPath?(path: string): boolean
+  /** Shell-mode AI-created PDFs open as untitled temp-backed documents: nothing
+   * lands on disk until the user's first save (Save As prefilled with title). */
+  openUntitledPdf?(bytes: Uint8Array, suggestedName: string): boolean
+  /** Shell-mode AI-created Markdown opens as an untitled tab carrying the content. */
+  openUntitledMarkdown?(content: string, suggestedName: string): boolean
 }
 let shellHooks: DocsShellHooks | null = null
 export function setDocsShellHooks(hooks: DocsShellHooks | null): void {
@@ -4099,11 +4104,13 @@ export function sanitizeAiDocFileBase(title: string): string {
 }
 
 /**
- * AI create_document: build a new standalone file in the default folder and
- * open it in a new tab. docx routes through a fresh blank docs tab that
- * inserts the queued content on boot and saves itself (the full-fidelity
- * HTML → docx conversion lives in the docs renderer); pdf and md are written
- * directly here. Also called by other apps' mains via shell-wired hooks.
+ * AI create_document: build a new document and open it in a new tab. docx routes
+ * through a fresh blank docs tab that inserts the queued content on boot (the
+ * full-fidelity HTML → docx conversion lives in the docs renderer). Shell-mode
+ * pdf/md open as untitled temp-backed documents — nothing lands on disk until
+ * the user's first save (Save As prefilled with the AI title); standalone mode
+ * still writes into the default save folder directly, there being no tab host.
+ * Also called by other apps' mains via shell-wired hooks.
  */
 export async function createAiDocument(
   request: CreateDocumentRequest,
@@ -4129,12 +4136,14 @@ export async function createAiDocument(
         () =>
           new BrowserWindow({ show: false, webPreferences: { sandbox: true, javascript: false } }),
       )
+      if (shellHooks?.openUntitledPdf?.(bytes, title)) return { ok: true }
       const filePath = uniquePathIn(defaultSaveDir(), `${title}.pdf`)
       await writeFile(filePath, bytes)
       openGeneratedFile(filePath)
       return { ok: true, path: filePath }
     }
     if (type === 'md') {
+      if (shellHooks?.openUntitledMarkdown?.(content, title)) return { ok: true }
       const filePath = uniquePathIn(defaultSaveDir(), `${title}.md`)
       await writeFile(filePath, content, 'utf8')
       openGeneratedFile(filePath)

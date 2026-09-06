@@ -557,10 +557,12 @@ export function App(): React.JSX.Element {
       if (writing || !state || journalSize(state.editJournal) === 0) return
       // The in-cell editor's pending text is not in the journal yet, a
       // converted import has no original file to recover into, and a restored
-      // recovery session is backed by the recovery copy itself.
+      // recovery session is backed by the recovery copy itself. A shell-created
+      // blank draft (needsSaveAs) recovers like any opened file: its hidden
+      // temp backing path is throwaway, the copy is what survives a crash.
       if (
         editingCellRef.current ||
-        state.file.needsSaveAs ||
+        (state.file.needsSaveAs && !state.file.blankDraft) ||
         state.file.csvPath !== undefined ||
         state.file.restoredFromRecovery ||
         state.file.automaticRecoveryDisabled
@@ -2843,8 +2845,15 @@ export function App(): React.JSX.Element {
     // AutoSave off = the user decides when the file is written: the
     // run's edits stay pending in the journal, so the offered Undo / ⌘Z keeps
     // working (saving would reopen the session and reset the undo stack).
-    if (!autoSaveRef.current) {
+    // A never-saved untitled workbook (needsSaveAs) must not pop a Save As
+    // dialog out of an AI run either — its edits stay pending until the
+    // user's first explicit save, like autosave-off.
+    if (!autoSaveRef.current || state.file.needsSaveAs) {
       setMessage(t('appAiChangesNotSaved'))
+      if (state.file.needsSaveAs) {
+        proposeSaveAsName(state)
+        patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
+      }
       return
     }
     // AutoSave-driven write after an AI run: silent like the interval autosave.
@@ -2853,20 +2862,24 @@ export function App(): React.JSX.Element {
     if (after && journalSize(after.editJournal) === 0) {
       // Saving reopens the sidecar session and resets Univer's undo stack.
       patchLastAssistant(({ autoApplied: _autoApplied, ...entry }) => entry)
-      // Sheets' analog of slides' deckName: propose the first AI-named sheet as
-      // the file name. The main process no-ops unless the file still carries the
-      // shell's auto-created untitled name, so user-chosen names are never touched.
-      const candidate = after.file.sheets
-        .map((sheet) => sheet.name.trim())
-        .find((name) => name.length > 0 && !DEFAULT_SHEET_NAME_RE.test(name))
-      if (candidate) {
-        try {
-          await window.desktopApi.autoRenameWorkbook(after.file.sessionId, candidate)
-        } catch {
-          // naming is best-effort; the save itself already succeeded
-        }
-      }
+      proposeSaveAsName(after)
     }
+  }
+
+  /**
+   * Sheets' analog of docs' deriveAutoFileName: propose the first AI-named
+   * sheet as the Save As dialog's file name for a still-untitled blank draft.
+   * The main process no-ops for every other session, so user-chosen names are
+   * never touched. No file is renamed — the name lands at first save.
+   */
+  function proposeSaveAsName(state: LazyWorkbookState): void {
+    const candidate = state.file.sheets
+      .map((sheet) => sheet.name.trim())
+      .find((name) => name.length > 0 && !DEFAULT_SHEET_NAME_RE.test(name))
+    if (!candidate) return
+    void window.desktopApi.setWorkbookSaveAsName(state.file.sessionId, candidate).catch(() => {
+      /* naming is best-effort */
+    })
   }
 
   /**

@@ -3,6 +3,7 @@ import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/
 
 export const MARKDOWN_CHANNELS = {
   consumePending: 'markdown:consume-pending',
+  consumeAiContent: 'markdown:consume-ai-content',
   readFile: 'markdown:read-file',
   save: 'markdown:save',
   saveRequest: 'markdown:save-request',
@@ -36,11 +37,17 @@ export interface SaveMarkdownRequest {
   imageSources: string[]
   mode: SaveMode
   /**
-   * Silent first save for an untitled document (AI auto-naming): saves to a
-   * unique path under Documents derived from this name, without a dialog.
-   * Ignored when the document already has a path.
+   * Content-derived base name for an untitled document's first-save dialog
+   * (AI-derived or queued AI-content title). It only prefills the dialog —
+   * nothing is written without the user picking a destination.
    */
   suggestedName?: string
+}
+
+/** AI-authored content queued for an untitled markdown tab (create_document) */
+export interface MarkdownAiContent {
+  content: string
+  suggestedName: string
 }
 
 export type SaveMarkdownResult =
@@ -113,6 +120,8 @@ export interface ImageData {
 export interface MarkdownApi {
   /** Take the md path pending for this view (queued at tab creation); null = new untitled document */
   consumePending(): Promise<string | null>
+  /** Take AI-authored content queued for this untitled view (create_document); null = none */
+  consumeAiContent(): Promise<MarkdownAiContent | null>
   /** Read the file as UTF-8 text. Only paths granted to this view are allowed */
   readFile(path: string): Promise<string>
   /**

@@ -4,7 +4,6 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  renameSync,
   statSync,
   unlinkSync,
   watch,
@@ -63,7 +62,7 @@ import {
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
-import { csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
+import { blankXlsxBuffer, csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -1375,6 +1374,11 @@ interface SessionInfo {
   /// Set when the session opened a converted copy (.xls import): the
   /// first save routes through Save As, defaulting to this .xlsx path.
   readonly suggestSaveAs?: string
+  /// Shell-created untitled workbook backed by a hidden temp file: the user
+  /// never sees this path (first save routes through Save As via suggestSaveAs),
+  /// crash-recovery copies stay enabled, and the temp backing file is deleted
+  /// when the session retargets or closes.
+  readonly blankDraft?: boolean
   /// The converted copy came from a CSV: the Save As dialog explains that
   /// formatting requires .xlsx (CSV keeps values only).
   readonly csvImport?: boolean
@@ -1611,8 +1615,6 @@ export function setActiveSheetsWebContents(wc: WebContents | null): void {
  *  Home list) — sync the matching session's path in that tab (later saves write
  *  the new file) and push the renderer to update the title-bar file name. */
 export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: string): void {
-  // A user-chosen name always wins: the file no longer qualifies for auto-rename
-  untitledWorkbookPaths.delete(oldPath)
   const entry = sheetsTabs.get(wc.id)
   if (!entry) return
   let matched = false
@@ -1624,18 +1626,8 @@ export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: str
   if (matched) wc.send(IPC_CHANNELS.workbookRenamed, basename(newPath))
 }
 
-/**
- * Workbooks the shell pre-created on disk with the localized untitled name
- * ("New Spreadsheet"). Only these ever qualify for the content-derived
- * auto-rename after an AI run; any manual rename removes the mark.
- */
-const untitledWorkbookPaths = new Set<string>()
-export function markSheetsUntitledPath(path: string): void {
-  untitledWorkbookPaths.add(path)
-}
-
-/** Sanitize an AI-provided sheet name into a safe filename base: strip illegal path chars, collapse whitespace, cap length; null if invalid. (Mirrors slides' draft naming.) */
-function sanitizeAutoRenameBase(raw: string): string | null {
+/** Sanitize an AI-proposed Save As base name into a safe filename: strip illegal path chars, collapse whitespace, cap length; null if invalid. (Mirrors docs' deriveAutoFileName.) */
+function sanitizeSaveAsBase(raw: string): string | null {
   const cleaned = raw
     // eslint-disable-next-line no-control-regex -- stripping control chars is the point here
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
@@ -1648,9 +1640,10 @@ function sanitizeAutoRenameBase(raw: string): string | null {
 }
 
 /** shell hook: a tab opened a workbook (dialog or queued path) — used for tab titles/dedupe */
-let workbookOpenedHook: ((wc: WebContents, path: string) => void) | null = null
+let workbookOpenedHook: ((wc: WebContents, path: string, fromBlankDraft?: string) => void) | null =
+  null
 export function setSheetsWorkbookOpenedHook(
-  fn: ((wc: WebContents, path: string) => void) | null,
+  fn: ((wc: WebContents, path: string, fromBlankDraft?: string) => void) | null,
 ): void {
   workbookOpenedHook = fn
 }
@@ -1811,12 +1804,66 @@ export function hasActiveQueuedWorkbook(): boolean {
   return activeSheetsWebContents !== null && queuedWorkbookPaths.has(activeSheetsWebContents.id)
 }
 
-/** set by shell for home:new-sheet: renderer opens blank workbook instead of demo */
-let pendingNewBlank = false
+/** set by shell for home:new-sheet: the next renderer gets a hidden temp-backed
+ * blank workbook whose first save routes through Save As — nothing lands in the
+ * user's project folder until they actually save. restoreFrom: shell-registered
+ * recovery restore (crashed unsaved blank) — the fresh temp backs from the
+ * recovery copy instead of empty cells. */
+interface PendingBlankRequest {
+  saveDir: string
+  /** localized untitled name ("New Spreadsheet") for the first-save dialog prefill */
+  name?: string
+  restoreFrom?: string
+}
+let pendingNewBlank: PendingBlankRequest | null = null
+/** per-tab blank request captured when the blank flag is consumed */
+const blankDraftRequestByWc = new Map<number, PendingBlankRequest>()
 
-/** signal the next sheets renderer to open a new blank workbook (shell mode only) */
-export function setSheetsNewBlank(): void {
-  pendingNewBlank = true
+/** signal the next sheets renderer to open a new blank workbook (shell mode only);
+ * suggestSaveDir prefills the first-save dialog's location (pending project folder) */
+export function setSheetsNewBlank(
+  suggestSaveDir?: string,
+  restoreFrom?: string,
+  name?: string,
+): void {
+  pendingNewBlank = {
+    saveDir: suggestSaveDir ?? configuredDefaultSaveDir(app),
+    ...(name ? { name } : {}),
+    ...(restoreFrom ? { restoreFrom } : {}),
+  }
+}
+
+/** Shell hook fired when a blank-draft session materializes: the shell tracks it
+ * in the pending-unsaved registry (Home startup restore banner). saveDir is the
+ * session's first-save dialog directory (pending project folder). */
+let blankDraftHook: ((wc: WebContents, tempPath: string, saveDir: string) => void) | null = null
+export function setSheetsBlankDraftHook(
+  fn: ((wc: WebContents, tempPath: string, saveDir: string) => void) | null,
+): void {
+  blankDraftHook = fn
+}
+
+/** Recovery copy of a blank draft, if one exists (Home restore banner) */
+export function sheetsBlankRecoveryCopy(tempPath: string): string | null {
+  const recoveryPath = recoveryPathFor(tempPath)
+  return existsSync(recoveryPath) ? recoveryPath : null
+}
+
+/** Shell-queued sentinel meaning "new blank workbook": selectWorkbook materializes
+ * a hidden temp-backed session instead of showing a file dialog. Never a real path. */
+const BLANK_WORKBOOK_SENTINEL = '::blank-workbook::'
+
+/** Hidden dir for untitled blank workbooks; entries are deleted when their session
+ * retargets (first save) or closes — nothing here is user-visible. */
+function blankDraftsDir(): string {
+  return join(app.getPath('temp'), 'chatoffice-blank-workbooks')
+}
+
+async function materializeBlankWorkbook(): Promise<string> {
+  await mkdir(blankDraftsDir(), { recursive: true })
+  const filePath = join(blankDraftsDir(), `blank-${randomUUID()}.xlsx`)
+  await writeFile(filePath, await blankXlsxBuffer())
+  return filePath
 }
 
 // capturePage forces a renderer frame even when the window is occluded or on
@@ -2238,13 +2285,19 @@ export function registerSheetsIpc(): void {
   ipcMain.removeHandler('app:get-language')
   ipcMain.handle('app:get-language', () => getUiLang())
 
-  /** returns true once when shell opened this tab for a new blank workbook */
-  ipcMain.handle('sheets:consume-new-blank', () => {
-    if (pendingNewBlank) {
-      pendingNewBlank = false
-      return true
-    }
-    return false
+  /** Shell opened this tab for a new blank workbook: queue the blank sentinel so
+   * the renderer's queued-workbook poll opens a hidden temp-backed session (same
+   * channel as a shell-queued Open, minus the file dialog). */
+  ipcMain.handle('sheets:consume-new-blank', (event) => {
+    if (pendingNewBlank === null) return false
+    blankDraftRequestByWc.set(event.sender.id, pendingNewBlank)
+    pendingNewBlank = null
+    queuedWorkbookPaths.set(event.sender.id, BLANK_WORKBOOK_SENTINEL)
+    event.sender.once('destroyed', () => {
+      queuedWorkbookPaths.delete(event.sender.id)
+      blankDraftRequestByWc.delete(event.sender.id)
+    })
+    return true
   })
 
   /**
@@ -2262,6 +2315,26 @@ export function registerSheetsIpc(): void {
     // consume immediately (before the slow session open) so the shell's
     // retry loop stops re-sending 'open' for the same file
     queuedWorkbookPaths.delete(event.sender.id)
+    // A blank sentinel materializes a hidden temp-backed untitled workbook: the
+    // user-visible file only comes into existence at first save (Save As). A
+    // registered restore request backs the fresh temp from the crashed session's
+    // recovery copy instead of empty cells.
+    let blankDraft = false
+    let blankRequest: PendingBlankRequest | undefined
+    if (path === BLANK_WORKBOOK_SENTINEL) {
+      blankRequest = blankDraftRequestByWc.get(event.sender.id)
+      const restored = blankRequest?.restoreFrom
+      if (restored && existsSync(restored)) {
+        await mkdir(blankDraftsDir(), { recursive: true })
+        const tempPath = join(blankDraftsDir(), `blank-${randomUUID()}.xlsx`)
+        await copyFile(restored, tempPath)
+        path = tempPath
+      } else {
+        path = await materializeBlankWorkbook()
+      }
+      blankDraft = true
+      blankDraftRequestByWc.delete(event.sender.id)
+    }
     if (!path) {
       const selection = await openFileDialog(event, {
         properties: ['openFile'],
@@ -2281,17 +2354,24 @@ export function registerSheetsIpc(): void {
     // already run closeAllSessions and dropped the tab entry, so a session
     // opened now would never be closed and its snapshot would leak.
     if (event.sender.isDestroyed()) {
+      if (blankDraft) await rm(path, { force: true }).catch(() => {})
       if (prepared.importTempDir !== undefined) {
         await cleanupImportTempDirectory(app.getPath('temp'), prepared.importTempDir)
       }
       return null
     }
+    const saveDir = blankRequest?.saveDir
     const result = await openWorkbookSession(entry.client, prepared.openPath, entry.sessions, {
-      suggestSaveAs: prepared.suggestSaveAs,
+      suggestSaveAs:
+        prepared.suggestSaveAs ??
+        (blankDraft
+          ? join(saveDir ?? configuredDefaultSaveDir(app), `${blankRequest?.name ?? 'Untitled'}.xlsx`)
+          : undefined),
       csvImport: prepared.csvImport,
       csvSourcePath: prepared.csvSourcePath,
       importTempDir: prepared.importTempDir,
       restoreTarget: prepared.restoreTarget,
+      blankDraft,
     })
     // The sidecar open itself can also outlive the tab after the pre-open
     // check. Close the newly registered session instead of stranding it in
@@ -2306,10 +2386,15 @@ export function registerSheetsIpc(): void {
           importTempDir: session.importTempDir,
           closeSidecar: () => entry.client.close(result.sessionId),
         })
+        if (session.blankDraft) await rm(session.path, { force: true }).catch(() => {})
       }
       return null
     }
-    workbookOpenedHook?.(event.sender, path)
+    // A blank draft's backing file is plumbing, not an open: firing the open
+    // hook would leak the temp path into tab titles and the recents list. The
+    // dedicated blank-draft hook only feeds the shell's pending-unsaved registry.
+    if (blankDraft) blankDraftHook?.(event.sender, path, saveDir ?? configuredDefaultSaveDir(app))
+    else workbookOpenedHook?.(event.sender, path)
     return result
   })
 
@@ -2785,7 +2870,15 @@ export function registerSheetsIpc(): void {
     workbookOpenedHook?.(
       event.sender,
       (csvInPlace ? session.csvSourcePath : undefined) ?? targetPath,
+      // A blank draft just became a real file: let the shell drop its
+      // pending-unsaved registry entry for the temp backing path.
+      session.blankDraft ? session.path : undefined,
     )
+    // The blank draft's backing temp file is superseded by the saved file.
+    if (session.blankDraft) {
+      clearWorkbookRecovery(session.path)
+      await rm(session.path, { force: true }).catch(() => {})
+    }
     // The file on disk now carries these edits
     clearWorkbookRecovery(targetPath)
     if (session.suggestSaveAs !== undefined) clearWorkbookRecovery(session.suggestSaveAs)
@@ -2835,10 +2928,12 @@ export function registerSheetsIpc(): void {
     // A converted import has no original file to recover into (and a CSV
     // session's original can't hold the workbook bytes); a restored recovery
     // session is backed by the recovery copy itself — writing over the file
-    // the sidecar streams from would corrupt the open session.
+    // the sidecar streams from would corrupt the open session. A blank draft
+    // recovers like any opened file: its temp backing path is the recovery key
+    // and the copy is what survives a crash before the first save.
     if (
       !session ||
-      session.suggestSaveAs !== undefined ||
+      (session.suggestSaveAs !== undefined && !session.blankDraft) ||
       session.csvSourcePath !== undefined ||
       session.restoreTarget !== undefined
     )
@@ -2867,36 +2962,32 @@ export function registerSheetsIpc(): void {
       importTempDir: session.importTempDir,
       closeSidecar: () => entry.client.close(validatedSessionId),
     })
+    // A blank draft closed unsaved: its backing file and recovery copy are plumbing.
+    if (session.blankDraft) {
+      clearWorkbookRecovery(session.path)
+      await rm(session.path, { force: true }).catch(() => {})
+    }
   })
 
-  // Content-derived naming for AI-generated workbooks (sheets' analog of slides'
-  // deckName): the renderer proposes a base name after an AI run lands; the file
-  // is renamed only while it still carries the shell's auto-created untitled name.
+  // Content-derived naming for AI-generated workbooks (sheets' analog of docs'
+  // deriveAutoFileName): the renderer proposes a base name after an AI run; it
+  // prefills the untitled session's first-save Save As dialog. No file is ever
+  // renamed behind the user's back — the name lands when they first save.
   ipcMain.handle(
-    IPC_CHANNELS.autoRenameWorkbook,
+    IPC_CHANNELS.setWorkbookSaveAsName,
     (event, sessionId: unknown, baseName: unknown) => {
       const entry = sessionFor(event)
       const validatedSessionId = z.string().uuid().parse(sessionId)
       const session = entry.sessions.get(validatedSessionId)
-      if (!session || !untitledWorkbookPaths.has(session.path)) return { renamed: false }
-      const base = sanitizeAutoRenameBase(z.string().min(1).max(100).parse(baseName))
-      if (!base) return { renamed: false }
-      const dir = dirname(session.path)
-      let target = join(dir, `${base}.xlsx`)
-      for (let i = 2; existsSync(target) && i < 100; i++) target = join(dir, `${base}-${i}.xlsx`)
-      if (existsSync(target) || target === session.path) return { renamed: false }
-      try {
-        renameSync(session.path, target)
-      } catch (err) {
-        console.warn('[sheets] auto-rename failed:', err)
-        return { renamed: false }
-      }
-      untitledWorkbookPaths.delete(session.path)
-      entry.sessions.set(validatedSessionId, { ...session, path: target })
-      event.sender.send(IPC_CHANNELS.workbookRenamed, basename(target))
-      // Same contract as open/save: shell updates the tab title and recents
-      workbookOpenedHook?.(event.sender, target)
-      return { renamed: true, name: basename(target) }
+      // Only shell-created blank drafts take a proposed name: opened and
+      // converted sessions already carry their identity.
+      if (!session?.blankDraft || session.suggestSaveAs === undefined) return
+      const base = sanitizeSaveAsBase(z.string().min(1).max(100).parse(baseName))
+      if (!base) return
+      entry.sessions.set(validatedSessionId, {
+        ...session,
+        suggestSaveAs: join(dirname(session.suggestSaveAs), `${base}.xlsx`),
+      })
     },
   )
 
@@ -3532,9 +3623,11 @@ async function openWorkbookSession(
     csvSourcePath?: string | undefined
     importTempDir?: string | undefined
     restoreTarget?: string | undefined
+    blankDraft?: boolean | undefined
   },
 ): Promise<WorkbookFile> {
-  const { suggestSaveAs, csvImport, csvSourcePath, importTempDir, restoreTarget } = options ?? {}
+  const { suggestSaveAs, csvImport, csvSourcePath, importTempDir, restoreTarget, blankDraft } =
+    options ?? {}
   // Snapshot first, then the sidecar opens the snapshot (not the live path):
   // everything the session serves — cell reads, media, recalc, saves — comes
   // from the same bytes, even if the file on disk changes right after the
@@ -3562,6 +3655,7 @@ async function openWorkbookSession(
       sheetNames: new Map(opened.sheets.map((sheet) => [sheet.id, sheet.name])),
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),
       ...(suggestSaveAs === undefined ? {} : { suggestSaveAs }),
+      ...(blankDraft ? { blankDraft: true } : {}),
       ...(csvImport ? { csvImport } : {}),
       ...(csvSourcePath === undefined ? {} : { csvSourcePath }),
       ...(csvSourceSha === undefined ? {} : { csvSourceSha }),
@@ -3578,6 +3672,7 @@ async function openWorkbookSession(
       fileBytes: snapshotStat.size,
       readOnly: false,
       needsSaveAs: suggestSaveAs !== undefined,
+      ...(blankDraft ? { blankDraft: true } : {}),
       ...(csvSourcePath === undefined ? {} : { csvPath: csvSourcePath }),
       restoredFromRecovery: restoreTarget !== undefined,
       automaticRecoveryDisabled: !allowsAutomaticWorkbookRecovery(opened.sheets),

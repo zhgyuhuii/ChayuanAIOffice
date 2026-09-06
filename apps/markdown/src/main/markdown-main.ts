@@ -335,6 +335,25 @@ const closeSaveWaiters = new Map<number, (ok: boolean) => void>()
 /** Resolvers for menu-triggered saves, resolved when the renderer's save invoke completes */
 const saveWaiters = new Map<number, (ok: boolean) => void>()
 
+/** AI-authored content queued for an untitled markdown tab (create_document):
+ * consumed by the renderer on boot; nothing is written to disk until the
+ * user's first save, whose dialog prefills with the suggested name. */
+interface PendingMarkdownAiContent {
+  content: string
+  suggestedName: string
+}
+const pendingAiContentByWc = new Map<number, PendingMarkdownAiContent>()
+
+/** Queue AI-authored content for the next markdown view (shell tab mode). */
+export function queueMarkdownAiContent(
+  wc: WebContents,
+  content: string,
+  suggestedName: string,
+): void {
+  pendingAiContentByWc.set(wc.id, { content, suggestedName })
+  wc.once('destroyed', () => pendingAiContentByWc.delete(wc.id))
+}
+
 /** Fired after a save lands on a NEW path (untitled first save / Save As) — the shell syncs tab title, recents, projects */
 let fileSavedHook: ((wc: WebContents, path: string) => void) | null = null
 
@@ -466,24 +485,15 @@ async function resolveSaveTarget(
 ): Promise<string | null | 'canceled'> {
   const current = savePathByWc.get(e.sender.id)
   if (mode === 'save' && current) return current
-  // AI auto-naming: silent first save of an untitled document
-  if (mode === 'save' && !current && suggestedName) {
-    const base = suggestedName
-      .replace(/[/\\:*?"<>|]/g, '_')
-      .slice(0, 80)
-      .trim()
-    if (base) {
-      const dir = configuredDefaultSaveDir(app)
-      let target = join(dir, `${base}.md`)
-      for (let n = 1; existsSync(target); n++) target = join(dir, `${base}-${n}.md`)
-      return target
-    }
-  }
   const win =
     BrowserWindow.fromWebContents(e.sender) ?? BrowserWindow.getFocusedWindow() ?? undefined
+  // An untitled document's first save always asks where to put the file — even
+  // with an AI/content-derived name, which only prefills the dialog (no silent
+  // write into the default folder behind the user's back).
+  const base = (suggestedName ?? '').replace(/[/\\:*?"<>|]/g, '_').slice(0, 80).trim()
   const defaultPath = current
     ? join(dirname(current), basename(current))
-    : join(configuredDefaultSaveDir(app), `${tm('untitledFile')}.md`)
+    : join(configuredDefaultSaveDir(app), `${base || tm('untitledFile')}.md`)
   const picked = await showSaveDialogWithMemory(dialog, win, {
     title: tm('dlgSaveTitle'),
     defaultPath,
@@ -546,6 +556,12 @@ function registerMarkdownIpc(): void {
   registerImageProtocol()
 
   ipcMain.handle(MARKDOWN_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
+
+  ipcMain.handle(MARKDOWN_CHANNELS.consumeAiContent, (e) => {
+    const pending = pendingAiContentByWc.get(e.sender.id)
+    pendingAiContentByWc.delete(e.sender.id)
+    return pending ?? null
+  })
 
   ipcMain.handle(MARKDOWN_CHANNELS.readFile, async (e, path: unknown) => {
     if (typeof path !== 'string' || !allowedByWc.get(e.sender.id)?.has(path)) {

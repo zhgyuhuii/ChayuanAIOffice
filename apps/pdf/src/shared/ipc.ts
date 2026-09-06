@@ -5,7 +5,7 @@ export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
   readFile: 'pdf:read-file',
   save: 'pdf:save',
-  autoRename: 'pdf:auto-rename',
+  writeRecovery: 'pdf:write-recovery',
   isUntitled: 'pdf:is-untitled',
   validateTextEdits: 'pdf:validate-text-edits',
   listEditFonts: 'pdf:list-edit-fonts',
@@ -457,6 +457,9 @@ export interface SavePdfRequest {
    * Must match the target granted to the view by the main process (save dialog pick).
    */
   targetPath?: string
+  /** Content-derived base name for a still-untitled document's first-save dialog
+      (topmost inserted text); ignored for documents with a real path. */
+  suggestedName?: string
   markups: MarkupInput[]
   /** Saved markup annotations to remove (applied before every other stage) */
   annotDeletes?: AnnotDeleteInput[]
@@ -496,20 +499,18 @@ export interface TextInsertFailure {
   reason: string
 }
 
-/** Answer to autoRename; `path`/`name` present when renamed */
-export interface PdfAutoRenameResult {
-  renamed: boolean
-  path?: string
-  name?: string
-}
-
 export type SavePdfResult =
   | {
       ok: true
       skippedTextEdits?: TextEditFailure[]
       skippedTextInserts?: TextInsertFailure[]
       skippedImageEdits?: ImageEditFailure[]
+      /** Set when an untitled document landed on its first real path: the view
+          must adopt it (the temp backing path is gone). */
+      savedTo?: string
     }
+  /** First-save dialog dismissed: nothing was written, edits stay pending */
+  | { ok: false; canceled: true }
   | { ok: false; error: string }
 
 /** Dry-run matching for pending text edits against the file on disk (no mutation) */
@@ -677,14 +678,13 @@ export interface PdfApi {
   consumePending(): Promise<string | null>
   /** Read pdf bytes. Only paths granted to this view are allowed */
   readFile(path: string): Promise<ArrayBuffer>
-  /** Write markups/form values/page ops back to the original file (pdf-lib, content streams untouched); path grants same as readFile. With targetPath set (Save As), the original is only read and the result goes to targetPath */
+  /** Write markups/form values/page ops back to the original file (pdf-lib, content streams untouched); path grants same as readFile. With targetPath set (Save As), the original is only read and the result goes to targetPath. An untitled document's plain Save routes through the first-save Save As dialog (savedTo set on success) */
   save(request: SavePdfRequest): Promise<SavePdfResult>
-  /** Content-derived naming (docs/sheets analog): propose a file base name after a save.
-      The main process renames only while the file still carries the shell's auto-created
-      untitled name, so user-chosen names are never touched. */
-  autoRename(path: string, baseName: string): Promise<PdfAutoRenameResult>
-  /** Whether the file is a shell-created blank still carrying its untitled name
-      (gates the after-AI-run silent save; a PDF the user merely opened must never auto-write) */
+  /** Crash-recovery copy of an untitled document's pending edits, written under
+      userData (best-effort; never prompts, never touches the temp backing file). */
+  writeRecovery(request: SavePdfRequest): Promise<{ ok: boolean }>
+  /** Whether the path is this view's hidden temp-backed untitled document (gates
+      the autosave split: recovery copy for untitled, in-place save otherwise) */
   isUntitled(path: string): Promise<boolean>
   /** Dry-run match of pending text edits against the file: reason null = would apply */
   validateTextEdits(request: ValidateTextEditsRequest): Promise<TextEditValidation[]>
