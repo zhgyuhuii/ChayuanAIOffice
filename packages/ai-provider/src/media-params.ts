@@ -112,6 +112,23 @@ const SPEC_RULES: Array<{
   },
   // gemini generateContent image models (nano-banana style) take no extra params
   { vendorId: 'gemini', test: /image/i, fields: [] },
+  // ── Recraft (the only native SVG generator; style vector_illustration → svg) ──
+  {
+    vendorId: 'recraft',
+    test: /recraft/i,
+    fields: [
+      SIZE_FIELD(['1024x1024', '1536x1024', '1024x1536'], '1024x1024'),
+      {
+        id: 'style',
+        label: 'Style',
+        labelZh: '风格',
+        type: 'select',
+        options: ['realistic_image', 'digital_illustration', 'vector_illustration'],
+        default: 'digital_illustration',
+      },
+      N_FIELD,
+    ],
+  },
   // ── chatoffice proxy (OpenAI-shaped, normalized) ───────────────────
   { vendorId: 'chatoffice', test: /./, fields: [N_FIELD] },
 ]
