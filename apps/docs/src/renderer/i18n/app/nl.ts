@@ -216,6 +216,7 @@ export const nl = {
   appTabRight: 'Rechts',
   appTabDecimal: 'Decimaal',
   appTabBar: 'Balk',
+  appTabClear: 'Wissen',
   appAiSettings: 'AI-instellingen',
   appChatOfficeAccount: 'ChatOffice-account',
   appChecking: 'Controleren…',

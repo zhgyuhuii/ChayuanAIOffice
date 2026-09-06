@@ -216,6 +216,7 @@ export const en = {
   appTabRight: 'Right',
   appTabDecimal: 'Decimal',
   appTabBar: 'Bar',
+  appTabClear: 'Clear',
   appAiSettings: 'AI Settings',
   appChatOfficeAccount: 'ChatOffice account',
   appChecking: 'Checking…',

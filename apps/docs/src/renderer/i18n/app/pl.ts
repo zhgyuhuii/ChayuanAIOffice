@@ -216,6 +216,7 @@ export const pl = {
   appTabRight: 'Prawy',
   appTabDecimal: 'Dziesiętny',
   appTabBar: 'Paskowy',
+  appTabClear: 'Wyczyść',
   appAiSettings: 'Ustawienia AI',
   appChatOfficeAccount: 'Konto ChatOffice',
   appChecking: 'Sprawdzanie…',

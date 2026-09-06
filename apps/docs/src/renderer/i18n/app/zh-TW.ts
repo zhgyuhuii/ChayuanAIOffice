@@ -216,6 +216,7 @@ export const zhTW = {
   appTabRight: '靠右',
   appTabDecimal: '小數點',
   appTabBar: '分隔線',
+  appTabClear: '清除',
   appAiSettings: 'AI 設定',
   appChatOfficeAccount: 'ChatOffice 帳號',
   appChecking: '檢查中…',
