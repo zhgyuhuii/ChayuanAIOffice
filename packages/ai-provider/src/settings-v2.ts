@@ -99,6 +99,12 @@ export function isImageGenModel(entry: AiModelEntry): boolean {
   return matchesModelType(type, 'image-generation')
 }
 
+/** video-generation entry (absent type infers from the id: veo/sora/vidu/kling/…) */
+export function isVideoGenModel(entry: AiModelEntry): boolean {
+  const type = entry.type ?? inferModelType(entry.id)
+  return matchesModelType(type, 'video-generation')
+}
+
 /** flat chat-model list for the quick switcher: {profileId, modelId, label} */
 export function enabledChatModels(
   settings: AiSettingsV2,

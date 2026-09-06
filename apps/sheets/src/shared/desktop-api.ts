@@ -2703,6 +2703,27 @@ export interface RecoveryPromptPayload {
   savedAtMs: number
 }
 
+
+/// Renderer view of one main-process video task (ai-host video-tasks)
+export interface VideoTaskInfo {
+  id: string
+  profileId: string
+  modelId: string
+  label: string
+  prompt: string
+  status: 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled'
+  submittedAt: number
+  completedAt?: number
+  note?: string
+  error?: string
+  retriable?: boolean
+  result?: {
+    filePath?: string
+    url?: string
+    posterDataUrl?: string
+  }
+}
+
 export interface DesktopApi {
   /** current UI language (persisted by the shell in app-settings.json) */
   getLanguage(): Promise<'zh' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'th' | 'id' | 'ru' | 'ar'>
@@ -2824,7 +2845,7 @@ export interface DesktopApi {
   /// Enabled image/video-generation models + param specs (insert-media dialog picker)
   mediaModels(): Promise<{
     models: {
-      kind: 'image'
+      kind: 'image' | 'video'
       profileId: string
       modelId: string
       label: string
@@ -2853,6 +2874,19 @@ export interface DesktopApi {
     prompt: string
     params?: Record<string, unknown>
   }): Promise<{ images?: { dataUrl: string }[]; error?: string }>
+  /// Video task registry (ai-host): submit returns immediately, tasks run main-side
+  videoSubmit(req: {
+    profileId: string
+    modelId: string
+    label?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{ id?: string; error?: string; code?: string }>
+  videoTasks(): Promise<{ tasks: VideoTaskInfo[]; error?: string }>
+  videoCancel(id: string): Promise<void>
+  videoRetry(id: string): Promise<{ error?: string }>
+  videoPreview(id: string): Promise<{ dataUrl?: string; url?: string; error?: string }>
+  onVideoTasksChanged(handler: (payload: { id: string; status: string }) => void): () => void
   /// AI image generation via the ChatOffice account (sheets-owned channel)
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<GenerateImageResult>
   /// Downloads an image URL in the main process (SSRF-guarded); null on failure

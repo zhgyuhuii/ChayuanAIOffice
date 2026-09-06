@@ -529,6 +529,15 @@ export function ExcelShell({
       const r = await window.desktopApi.mediaGenerate(req)
       return r ?? { error: 'no image' }
     },
+    videoSubmit: async (req) =>
+      (await window.desktopApi.videoSubmit(req)) ?? { error: 'video tasks unavailable' },
+    videoTasks: async () => (await window.desktopApi.videoTasks()) ?? { tasks: [] },
+    videoCancel: async (id) => {
+      await window.desktopApi.videoCancel(id)
+    },
+    videoRetry: async (id) => (await window.desktopApi.videoRetry(id)) ?? {},
+    videoPreview: async (id) => (await window.desktopApi.videoPreview(id)) ?? {},
+    onVideoTasksChanged: (cb) => window.desktopApi.onVideoTasksChanged(cb) ?? (() => {}),
   }
   const onCommandRef = useRef(onCommand)
   const onIsCellEditingRef = useRef(onIsCellEditing)
@@ -973,8 +982,11 @@ export function ExcelShell({
       {insertImageOpen && (
         <InsertImageDialog
           bridge={insertImageBridge}
-          onInsert={(dataUrl) => {
+          hostKind="sheets"
+          onInsert={(dataUrl, meta) => {
             setInsertImageOpen(false)
+            // sheets cannot embed video — the dialog blocks it; ignore defensively
+            if (meta?.kind === 'video') return
             onInsertPictureData(dataUrl)
           }}
           onClose={() => setInsertImageOpen(false)}

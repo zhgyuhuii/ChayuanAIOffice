@@ -414,6 +414,23 @@ const api: SlidesApi = {
     prompt: string
     params?: Record<string, unknown>
   }) => ipcRenderer.invoke('ai:media-generate', req),
+  videoSubmit: (req: {
+    profileId: string
+    modelId: string
+    label?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) => ipcRenderer.invoke('ai:video-submit', req),
+  videoTasks: () => ipcRenderer.invoke('ai:video-tasks'),
+  videoCancel: (id: string) => ipcRenderer.invoke('ai:video-cancel', id),
+  videoRetry: (id: string) => ipcRenderer.invoke('ai:video-retry', id),
+  videoPreview: (id: string) => ipcRenderer.invoke('ai:video-preview', id),
+  onVideoTasksChanged: (handler: (payload: { id: string; status: string }) => void) => {
+    const listener = (_event: IpcRendererEvent, payload: { id: string; status: string }) =>
+      handler(payload)
+    ipcRenderer.on('ai:video-tasks-changed', listener)
+    return () => ipcRenderer.removeListener('ai:video-tasks-changed', listener)
+  },
   insertImageUrl: (op: {
     slideIndex: number
     url: string

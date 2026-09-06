@@ -66,6 +66,7 @@ export {
   chatofficeProfile,
   isChatModel,
   isImageGenModel,
+  isVideoGenModel,
   migrateSettingsV2,
   modelAcceptsImages,
   pickImageModel,

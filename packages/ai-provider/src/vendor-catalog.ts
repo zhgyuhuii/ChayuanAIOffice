@@ -27,6 +27,10 @@ export interface VendorCatalogEntry {
   /** console page where an API key can be created */
   keyUrl?: string
   docsUrl?: string
+  /** declarative credential form — default is one secret field; vendors whose
+   * auth needs several values render one input per field and the settings page
+   * folds them into the single stored key with `join` (kling: "ak:sk" JWT) */
+  keyFields?: Array<{ id: string; label: string; labelZh?: string; join?: string }>
   /** free = 'nokey' (usable keyless) | 'freekey' (free key on signup) | 'tier' (free quota) */
   free?: 'nokey' | 'freekey' | 'tier'
   freeNote?: string
@@ -87,6 +91,12 @@ export const VENDORS: VendorCatalogEntry[] = [
     api: 'openai-completions',
     keyUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
     docsUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
+    // Kling signs requests with a JWT made from an accessKey + secretKey pair;
+    // the stored key is the two values colon-joined (media-jobs klingJwt).
+    keyFields: [
+      { id: 'accessKey', label: 'Access Key', labelZh: 'Access Key（AK）' },
+      { id: 'secretKey', label: 'Secret Key', labelZh: 'Secret Key（SK）', join: ':' },
+    ],
   },
   {
     id: 'luma',
@@ -106,6 +116,38 @@ export const VENDORS: VendorCatalogEntry[] = [
     api: 'openai-completions',
     keyUrl: 'https://fal.ai/dashboard/keys',
     docsUrl: 'https://fal.ai/models',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'runway',
+    name: 'Runway',
+    group: 'global',
+    defaultUrl: 'https://api.dev.runwayml.com',
+    api: 'openai-completions',
+    keyUrl: 'https://dev.runwayml.com/',
+    docsUrl: 'https://docs.dev.runwayml.com/',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'vidu',
+    name: 'Vidu',
+    nameZh: '生数科技 Vidu',
+    group: 'cn',
+    defaultUrl: 'https://api.vidu.com',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.vidu.com/',
+    docsUrl: 'https://platform.vidu.com/docs',
+  },
+  {
+    // Media-generation-only vendor: driven by runMediaJob (media-jobs.ts).
+    id: 'pixverse',
+    name: 'PixVerse',
+    nameZh: '爱诗科技 PixVerse',
+    group: 'global',
+    defaultUrl: 'https://app-api.pixverse.ai',
+    api: 'openai-completions',
+    keyUrl: 'https://platform.pixverse.ai/',
+    docsUrl: 'https://docs.platform.pixverse.ai/',
   },
   {
     id: 'moonshot',

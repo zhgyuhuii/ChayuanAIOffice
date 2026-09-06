@@ -130,6 +130,9 @@ export function ModelSettingsPage({
   const [apiUrl, setApiUrl] = useState('')
   const [protocol, setProtocol] = useState<AiWireProtocol>('openai-completions')
   const [apiKeyInput, setApiKeyInput] = useState('')
+  /** multi-field credentials (vendor.keyFields, e.g. kling accessKey/secretKey):
+   * per-field drafts folded into the single stored key on save */
+  const [keyFieldValues, setKeyFieldValues] = useState<Record<string, string>>({})
   const [keyConfigured, setKeyConfigured] = useState(false)
   const [showKey, setShowKey] = useState(false)
   const [models, setModels] = useState<DraftModel[]>([])
@@ -143,6 +146,7 @@ export function ModelSettingsPage({
     setMsg({ kind, text })
     window.setTimeout(() => setMsg(null), 4000)
   }
+
 
   // the entering hint fades on any interaction or after a while
   useEffect(() => {
@@ -179,6 +183,17 @@ export function ModelSettingsPage({
   const enabledProfiles = profiles.filter((p) => p.enabled)
   const selectedProfile = profiles.find((p) => p.id === selected)
   const selectedVendor = VENDOR_BY_ID.get(selected)
+  /** single secret the save/test paths see: fields joined per the catalog
+   * declaration (kling folds accessKey + ':' + secretKey) */
+  const keyFieldsDef = selectedVendor?.keyFields
+  const keyJoiner = keyFieldsDef?.find((f) => f.join)?.join ?? ''
+  const apiKeyEffective =
+    keyFieldsDef && keyFieldsDef.length > 1
+      ? keyFieldsDef
+          .map((f) => (keyFieldValues[f.id] ?? '').trim())
+          .filter(Boolean)
+          .join(keyJoiner)
+      : apiKeyInput
   const isChatOffice = selected === 'chatoffice'
 
   /** vendor rows not currently enabled (a disabled profile still prefills its stored values) */
@@ -223,6 +238,7 @@ export function ModelSettingsPage({
       )
       setModelsFromPreset(!!vendor?.presets?.length && !stored?.models.length)
       setApiKeyInput('')
+      setKeyFieldValues({})
       setKeyConfigured(!!stored?.apiKey)
       return
     }
@@ -231,6 +247,7 @@ export function ModelSettingsPage({
     setModels(selectedProfile.models.map((m) => ({ ...m, enabled: true })))
     setModelsFromPreset(false)
     setApiKeyInput('')
+    setKeyFieldValues({})
     setKeyConfigured(!!selectedProfile.apiKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected, settings])
@@ -255,10 +272,10 @@ export function ModelSettingsPage({
     protocol,
     baseUrl: apiUrl.trim(),
     apiKey:
-      apiKeyInput.trim() ||
+      apiKeyEffective.trim() ||
       (keyConfigured || selectedVendor?.ollamaLike || selectedProfile?.ollamaLike ? '' : ''),
     ...(selectedVendor?.ollamaLike || selectedProfile?.ollamaLike ? { ollamaLike: true } : {}),
-    ...(selectedProfile && !apiKeyInput.trim() ? { profileId: selectedProfile.id } : {}),
+    ...(selectedProfile && !apiKeyEffective.trim() ? { profileId: selectedProfile.id } : {}),
   })
 
   const fetchModels = async () => {
@@ -333,7 +350,7 @@ export function ModelSettingsPage({
   const saveProfile = async () => {
     if (!apiUrl.trim()) return flash('err', t.errApiUrl)
     const ollama = selectedVendor?.ollamaLike
-    const effectiveKey = apiKeyInput.trim()
+    const effectiveKey = apiKeyEffective.trim()
     if (!effectiveKey && !keyConfigured && !ollama) return flash('err', t.errApiKey)
     const enabledModels = models.filter((m) => m.enabled)
     if (enabledModels.length === 0) return flash('err', t.errPickModel)
@@ -385,6 +402,7 @@ export function ModelSettingsPage({
       }
       await persist(sanitize(next))
       setApiKeyInput('')
+      setKeyFieldValues({})
       setKeyConfigured(true)
       setSelected(vendorId)
       flash('ok', t.enabledOk)
@@ -909,15 +927,38 @@ export function ModelSettingsPage({
                     : ''}
                 </span>
                 <div className="msp-key-row">
-                  <input
-                    className="msp-input"
-                    data-model-key=""
-                    type={showKey ? 'text' : 'password'}
-                    value={apiKeyInput}
-                    placeholder={keyConfigured ? t.apiKeyPlaceholder : 'sk-…'}
-                    onChange={(e) => setApiKeyInput(e.target.value)}
-                    autoComplete="off"
-                  />
+                  {keyFieldsDef && keyFieldsDef.length > 1 ? (
+                    // multi-field credentials (kling AK/SK): one input per field,
+                    // folded into the single stored key on save
+                    <div className="msp-key-fields">
+                      {keyFieldsDef.map((f) => (
+                        <label key={f.id} className="msp-key-field">
+                          <span>{locale === 'zh' && f.labelZh ? f.labelZh : f.label}</span>
+                          <input
+                            className="msp-input"
+                            data-model-key=""
+                            type={showKey ? 'text' : 'password'}
+                            value={keyFieldValues[f.id] ?? ''}
+                            placeholder={keyConfigured ? t.apiKeyPlaceholder : f.label}
+                            onChange={(e) =>
+                              setKeyFieldValues({ ...keyFieldValues, [f.id]: e.target.value })
+                            }
+                            autoComplete="off"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <input
+                      className="msp-input"
+                      data-model-key=""
+                      type={showKey ? 'text' : 'password'}
+                      value={apiKeyInput}
+                      placeholder={keyConfigured ? t.apiKeyPlaceholder : 'sk-…'}
+                      onChange={(e) => setApiKeyInput(e.target.value)}
+                      autoComplete="off"
+                    />
+                  )}
                   {selectedVendor?.keyUrl && (
                     <a
                       className="msp-btn msp-btn-link"

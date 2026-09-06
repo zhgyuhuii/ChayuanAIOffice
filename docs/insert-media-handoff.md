@@ -1,5 +1,24 @@
 # 插入媒体 P2/P3 交接文档
 
+> **【2026-09-06 更新】P2/P3 已全部实施完毕**（同日提交），本文转为实施记录。
+> 实施要点与本文施工图的差异：
+> 1. P2.1 档案 3 家照建；P2.2 的 6 家适配器端点全部按官方文档核实后实装
+>    （runway/vidu/pixverse/sora/veo/chatoffice），并给 `MediaJobResult` 增加
+>    `downloadHeaders`（sora content / veo files 的鉴权下载仅主进程可见）。
+> 2. P2.4 任务注册表落地为 `packages/ai-host/src/video-tasks.ts`，新增
+>    `ai:video-retry/-preview` 两个通道（共 5 个）；并发 3/后台存活/落盘/
+>    `ai:video-tasks-changed` 广播均按共识实现；结果文件写
+>    `userData/media/videos/<taskId>.mp4`。
+> 3. P2.5 预览采用「≤48MB 读盘转 dataURL」方案（未走 custom protocol），
+>    插入时 slides 复用该 dataUrl 直接走 `slides:add-media-bytes`
+>    （op 扩展可选 posterBase64/posterExt），未新增插入通道。
+> 4. P2.3 的 chatoffice 视频保持数据驱动；`runtime.runVideoJob` 为
+>    video-tasks 的解析入口。
+> 5. P2.6 以 vendor-catalog `keyFields` 声明 + ModelSettingsPage 折叠实现。
+> 6. 遗留：veo/vidu 图生视频（imageUrl 已在 MediaJobRequest 预留）；
+>    本地 tab 视频；>48MB 预览降级外链。手动 smoke 第 5 条待真机账号验证
+>    （智谱/可灵测试账号当时欠费/401，tmp-realkey 在线测试为环境态失败，非回归）。
+
 > 写给下一个会话：P1（对话框改造+搜索修复）已全部落地并推送，
 > 本文是遗留工作的施工图。开工前先读 `docs/insert-media-dialog-plan.md`
 > （共识计划+决策记录）与本文。**另注意：slides AI 一期线与本线并行**

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { insertImageStrings } from './insert-image-strings'
 import './insert-image.css'
@@ -35,12 +35,46 @@ export interface MediaParamField {
 }
 
 export interface MediaModelOption {
-  kind: 'image'
+  kind: 'image' | 'video'
   profileId: string
   modelId: string
   label: string
   vendorId: string
   spec: { fields: MediaParamField[] }
+}
+
+/** renderer view of one main-process video task (ai-host video-tasks) */
+export interface VideoTaskView {
+  id: string
+  profileId: string
+  modelId: string
+  label: string
+  prompt: string
+  status: 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled'
+  submittedAt: number
+  completedAt?: number
+  note?: string
+  error?: string
+  retriable?: boolean
+  result?: {
+    filePath?: string
+    url?: string
+    posterDataUrl?: string
+  }
+}
+
+/** where the produced video lives — hosts branch on it when inserting */
+export interface VideoInsertRef {
+  filePath?: string
+  url?: string
+  posterDataUrl?: string
+}
+
+export interface InsertMeta {
+  attribution?: string
+  /** image when absent; hosts use kind to route the video pipeline */
+  kind?: 'image' | 'video'
+  video?: VideoInsertRef
 }
 
 /** App-injected transport: each editor wires these to its own IPC channels. */
@@ -67,6 +101,20 @@ export interface InsertImageBridge {
     images?: { dataUrl: string }[]
     error?: string
   }>
+  /** video task channels (ai-host video-tasks); absent = video generation off */
+  videoSubmit?(req: {
+    profileId: string
+    modelId: string
+    label?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{ id?: string; error?: string; code?: string }>
+  videoTasks?(): Promise<{ tasks: VideoTaskView[]; error?: string }>
+  videoCancel?(id: string): Promise<void>
+  videoRetry?(id: string): Promise<{ error?: string }>
+  videoPreview?(id: string): Promise<{ dataUrl?: string; url?: string; error?: string }>
+  /** push notification for task state changes (main-process broadcast) */
+  onVideoTasksChanged?(cb: (payload: { id: string; status: string }) => void): () => void
   /** model settings deep-link (opens ModelSettingsPage / AI settings) */
   openModelSettings?: () => void
 }
@@ -84,17 +132,21 @@ let lastMediaSelection: { profileId: string; modelId: string } | null = null
  * 统一插入媒体对话框（三 tab：本地 / 网络图片 / AI 生成）。字节以 data: URL
  * 交给 onInsert，由各编辑器走自己的插入管线（docx Protected 块 / xlsx
  * journal 图片 / pptx addImageBytes）。图库密钥各家独立模态设置；AI 生成
- * 按模型清单选模型并按 spec 动态渲染参数。
+ * 按模型清单选模型并按 spec 动态渲染参数。视频模型提交为后台任务（主进程
+ * 存活），完成后在任务列表预览并按宿主能力插入。
  */
 export function InsertImageDialog({
   bridge,
   lang,
+  hostKind,
   onInsert,
   onClose,
 }: {
   readonly bridge: InsertImageBridge
   readonly lang?: string
-  readonly onInsert: (dataUrl: string, meta?: { attribution?: string }) => void
+  /** which editor hosts the dialog — drives the video insertion capability hints */
+  readonly hostKind?: 'docs' | 'sheets' | 'slides'
+  readonly onInsert: (dataUrl: string, meta?: InsertMeta) => void
   readonly onClose: () => void
 }): React.JSX.Element {
   const t = insertImageStrings(lang)
@@ -225,10 +277,16 @@ export function InsertImageDialog({
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState<{ dataUrl: string }[]>([])
   const [aiError, setAiError] = useState('')
+  // video tasks (video models only): submitted main-side, survive dialog close
+  const [videoTasks, setVideoTasks] = useState<VideoTaskView[]>([])
+  const [videoBusy, setVideoBusy] = useState(false)
+  const [videoPreviews, setVideoPreviews] = useState<Record<string, string>>({})
+  const [elapsedTick, setElapsedTick] = useState(0)
 
   const selectedModel = mediaModels?.find(
     (m) => modelSel && m.profileId === modelSel.profileId && m.modelId === modelSel.modelId,
   )
+  const selectedIsVideo = selectedModel?.kind === 'video'
   const pickModel = (value: string): void => {
     if (!mediaModels) return
     if (value === '__manage__') {
@@ -272,9 +330,73 @@ export function InsertImageDialog({
     setTab('ai')
     void ensureModels()
   }
+  const refreshVideoTasks = async (): Promise<void> => {
+    if (!bridge.videoTasks) return
+    try {
+      const r = await bridge.videoTasks()
+      setVideoTasks(r.tasks ?? [])
+    } catch {
+      /* the task list is auxiliary — never block the dialog on it */
+    }
+  }
+  // task list refreshes on main-process broadcasts and when the tab opens
+  useEffect(() => {
+    if (tab !== 'ai' || !bridge.videoTasks) return
+    void refreshVideoTasks()
+    const off = bridge.onVideoTasksChanged?.(() => void refreshVideoTasks())
+    return () => off?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+  // live "elapsed" for active tasks
+  const hasActiveTask = videoTasks.some((t) => t.status === 'queued' || t.status === 'running')
+  useEffect(() => {
+    if (!hasActiveTask) return
+    const timer = setInterval(() => setElapsedTick((n) => n + 1), 1000)
+    return () => clearInterval(timer)
+  }, [hasActiveTask])
+  // lazy-load the <video> preview once a task succeeds
+  useEffect(() => {
+    if (!bridge.videoPreview) return
+    for (const t of videoTasks) {
+      if (t.status === 'succeeded' && t.result && !videoPreviews[t.id]) {
+        void bridge
+          .videoPreview(t.id)
+          .then((r) => {
+            if (r.dataUrl) setVideoPreviews((prev) => ({ ...prev, [t.id]: r.dataUrl! }))
+          })
+          .catch(() => {})
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoTasks])
+  const submitVideo = async (): Promise<void> => {
+    const p = prompt.trim()
+    if (!p || videoBusy || !bridge.videoSubmit || !modelSel) return
+    setVideoBusy(true)
+    setAiError('')
+    try {
+      const r = await bridge.videoSubmit({
+        profileId: modelSel.profileId,
+        modelId: modelSel.modelId,
+        ...(selectedModel ? { label: selectedModel.label } : {}),
+        prompt: p,
+        ...(Object.keys(paramValues).length ? { params: paramValues } : {}),
+      })
+      if (r.error) setAiError(r.code === 'busy' ? t.videoBusyLimit : r.error)
+      else void refreshVideoTasks()
+    } catch (err) {
+      setAiError(String(err))
+    } finally {
+      setVideoBusy(false)
+    }
+  }
   const runGenerate = async (): Promise<void> => {
     const p = prompt.trim()
     if (!p || generating) return
+    if (selectedIsVideo) {
+      await submitVideo()
+      return
+    }
     setGenerating(true)
     setAiError('')
     try {
@@ -294,6 +416,45 @@ export function InsertImageDialog({
       setGenerating(false)
     }
   }
+  const cancelVideoTask = async (id: string): Promise<void> => {
+    await bridge.videoCancel?.(id).catch(() => {})
+    void refreshVideoTasks()
+  }
+  const retryVideoTask = async (id: string): Promise<void> => {
+    const r = await bridge.videoRetry?.(id).catch(() => ({ error: 'retry unavailable' }))
+    if (r?.error) setAiError(r.error)
+    void refreshVideoTasks()
+  }
+  const insertVideo = (task: VideoTaskView): void => {
+    if (hostKind === 'sheets') {
+      setAiError(t.videoSheetsInsertRefused)
+      return
+    }
+    if (!task.result) return
+    // first arg carries the video bytes (preview dataUrl) so slides can embed
+    // them directly; docs ignores it and takes the poster from meta.video
+    onInsert(videoPreviews[task.id] ?? task.result.posterDataUrl ?? '', {
+      kind: 'video',
+      video: task.result,
+    })
+  }
+  const formatElapsed = (from: number, to?: number): string => {
+    void elapsedTick
+    const secs = Math.max(0, Math.floor(((to ?? Date.now()) - from) / 1000))
+    const m = Math.floor(secs / 60)
+    const s = secs % 60
+    return `${m}:${String(s).padStart(2, '0')}`
+  }
+  const videoStatusText = (status: VideoTaskView['status']): string =>
+    status === 'queued'
+      ? t.videoStatusQueued
+      : status === 'running'
+        ? t.videoStatusRunning
+        : status === 'succeeded'
+          ? t.videoStatusSucceeded
+          : status === 'failed'
+            ? t.videoStatusFailed
+            : t.videoStatusCancelled
 
   const paramLabel = (f: MediaParamField): string =>
     isZh ? (f.labelZh ?? f.label) : f.label
@@ -461,13 +622,26 @@ export function InsertImageDialog({
                   onChange={(e) => pickModel(e.target.value)}
                 >
                   <option value="">{modelsError || t.aiNoModels}</option>
-                  {mediaModels && mediaModels.length > 0 && (
+                  {mediaModels && mediaModels.some((m) => m.kind !== 'video') && (
                     <optgroup label={t.aiModelGroup}>
-                      {mediaModels.map((m) => (
-                        <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
-                          {m.label}
-                        </option>
-                      ))}
+                      {mediaModels
+                        .filter((m) => m.kind !== 'video')
+                        .map((m) => (
+                          <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
+                            {m.label}
+                          </option>
+                        ))}
+                    </optgroup>
+                  )}
+                  {mediaModels && mediaModels.some((m) => m.kind === 'video') && (
+                    <optgroup label={t.aiModelGroupVideo}>
+                      {mediaModels
+                        .filter((m) => m.kind === 'video')
+                        .map((m) => (
+                          <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
+                            {m.label}
+                          </option>
+                        ))}
                     </optgroup>
                   )}
                   {bridge.openModelSettings && (
@@ -475,6 +649,17 @@ export function InsertImageDialog({
                   )}
                 </select>
               </label>
+            )}
+            {selectedIsVideo && (
+              <div className="insimg-videohint">
+                {hostKind === 'slides'
+                  ? t.videoHostHintSlides
+                  : hostKind === 'docs'
+                    ? t.videoHostHintDocs
+                    : hostKind === 'sheets'
+                      ? t.videoHostHintSheets
+                      : t.videoHostHintSlides}
+              </div>
             )}
             {selectedModel && selectedModel.spec.fields.length > 0 && (
               <div className="insimg-params">
@@ -527,10 +712,16 @@ export function InsertImageDialog({
               <div className="insimg-chips">
                 <button
                   className="insimg-primary"
-                  disabled={generating || !prompt.trim()}
+                  disabled={generating || videoBusy || !prompt.trim()}
                   onClick={() => void runGenerate()}
                 >
-                  {generating ? t.aiGenerating : t.aiGenerate}
+                  {generating
+                    ? t.aiGenerating
+                    : videoBusy
+                      ? t.videoSubmitting
+                      : selectedIsVideo
+                        ? t.videoSubmit
+                        : t.aiGenerate}
                 </button>
               </div>
             </div>
@@ -560,6 +751,64 @@ export function InsertImageDialog({
                 !aiError && <p className="insimg-hint">{t.aiPrompt}</p>
               )}
             </div>
+            {bridge.videoTasks && videoTasks.length > 0 && (
+              <div className="insimg-vtasks">
+                <p className="insimg-vtasks-title">{t.videoTasksTitle}</p>
+                {videoTasks.map((task) => {
+                  const preview = videoPreviews[task.id]
+                  const active = task.status === 'queued' || task.status === 'running'
+                  return (
+                    <div key={task.id} className={`insimg-vtask vtask-${task.status}`}>
+                      <div className="insimg-vtask-head">
+                        <span className="insimg-vtask-prompt" title={task.prompt}>
+                          {task.prompt}
+                        </span>
+                        <span className={`insimg-vtask-status st-${task.status}`}>
+                          {videoStatusText(task.status)}
+                          {task.status === 'running' && task.note ? ` ${task.note}` : ''}
+                          {active ? ` · ${formatElapsed(task.submittedAt)}` : ''}
+                        </span>
+                      </div>
+                      {task.status === 'failed' && task.error && (
+                        <p className="insimg-vtask-error" title={task.error}>
+                          {task.error}
+                        </p>
+                      )}
+                      {task.status === 'succeeded' && task.result && (
+                        <div className="insimg-vtask-result">
+                          {preview ? (
+                            <video controls preload="metadata" src={preview} />
+                          ) : task.result.posterDataUrl ? (
+                            <img src={task.result.posterDataUrl} alt="" />
+                          ) : (
+                            <p className="insimg-hint">{t.videoPreviewLoading}</p>
+                          )}
+                          <div className="insimg-vtask-actions">
+                            <button
+                              className="insimg-primary"
+                              onClick={() => insertVideo(task)}
+                            >
+                              {t.insert}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className="insimg-vtask-actions">
+                        {active && (
+                          <button onClick={() => void cancelVideoTask(task.id)}>{t.videoCancel}</button>
+                        )}
+                        {(task.status === 'failed' || task.status === 'cancelled') &&
+                          bridge.videoRetry && (
+                            <button onClick={() => void retryVideoTask(task.id)}>
+                              {t.videoRetry}
+                            </button>
+                          )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </section>
         )}
 

@@ -50,6 +50,23 @@ const zh = {
   aiOpenModelSettings: '打开模型设置',
   aiErrorTitle: '生成失败',
   loadFail: '图片下载失败，请重试',
+  aiModelGroupVideo: '视频生成',
+  videoSubmit: '提交生成任务',
+  videoSubmitting: '提交中…',
+  videoBusyLimit: '视频任务并发已达上限（3 个），请等待任务完成后再试',
+  videoTasksTitle: '视频任务（关闭窗口后仍在后台生成）',
+  videoStatusQueued: '排队中',
+  videoStatusRunning: '生成中',
+  videoStatusSucceeded: '已完成',
+  videoStatusFailed: '失败',
+  videoStatusCancelled: '已取消',
+  videoCancel: '取消任务',
+  videoRetry: '重试',
+  videoPreviewLoading: '正在加载预览…',
+  videoHostHintSlides: '视频完成后将嵌入当前幻灯片，可在放映时播放',
+  videoHostHintDocs: '文档暂不支持嵌入视频：将插入封面帧图片并附视频链接',
+  videoHostHintSheets: '表格不支持插入视频，仅幻灯片可嵌入、文档将插入封面帧链接',
+  videoSheetsInsertRefused: '表格不支持插入视频：请改在幻灯片中嵌入，或改用文档插入封面帧链接',
 }
 
 const en: typeof zh = {
@@ -98,6 +115,26 @@ const en: typeof zh = {
   aiOpenModelSettings: 'Open Model Settings',
   aiErrorTitle: 'Generation failed',
   loadFail: 'Image download failed, please retry',
+  aiModelGroupVideo: 'Video generation',
+  videoSubmit: 'Submit generation task',
+  videoSubmitting: 'Submitting…',
+  videoBusyLimit: 'Video task concurrency limit reached (3) — wait for a task to finish first',
+  videoTasksTitle: 'Video tasks (generation continues after this dialog closes)',
+  videoStatusQueued: 'Queued',
+  videoStatusRunning: 'Generating',
+  videoStatusSucceeded: 'Done',
+  videoStatusFailed: 'Failed',
+  videoStatusCancelled: 'Cancelled',
+  videoCancel: 'Cancel task',
+  videoRetry: 'Retry',
+  videoPreviewLoading: 'Loading preview…',
+  videoHostHintSlides: 'When done, the video is embedded in the slide and plays in presentations',
+  videoHostHintDocs:
+    'Documents cannot embed video yet: a cover-frame image plus a video link is inserted instead',
+  videoHostHintSheets:
+    'Spreadsheets cannot embed video: slides embed it, documents insert a cover frame + link',
+  videoSheetsInsertRefused:
+    'Spreadsheets do not support video insertion: embed in slides, or use documents for a cover frame + link',
 }
 
 export function insertImageStrings(lang?: string): typeof zh {

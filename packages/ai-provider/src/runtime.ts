@@ -3,10 +3,12 @@ import { discoverModels, type DiscoveryTarget } from './discovery'
 import { generateImageWithModel, type ImageGenRequest } from './imagegen'
 import { isAiNetworkError } from './network-error'
 import { isAiOverloadedError } from './overload-error'
+import { runMediaJob, type MediaJobResult } from './media-jobs'
 import {
   enabledChatModels,
   findProfile,
   isImageGenModel,
+  isVideoGenModel,
   migrateSettingsV2,
   pickImageModel,
   resolveCurrentModel,
@@ -16,8 +18,8 @@ import {
 import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
-import { IMAGE_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
-import { imageParamSpec, type MediaParamSpec } from './media-params'
+import { IMAGE_GEN_VENDOR_IDS, VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
+import { imageParamSpec, videoParamSpec, type MediaParamSpec } from './media-params'
 import type {
   AiChatResponse,
   AiModelSelection,
@@ -310,45 +312,124 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return { error: translate('errNoImageModel') }
   }
 
-  /** enabled image-generation models across profiles with their param specs —
+  /** enabled media-generation models across profiles with their param specs —
    *  the insert-media dialog's model picker list (specs are computed main-side
-   *  so the renderer stays vendor-agnostic) */
+   *  so the renderer stays vendor-agnostic). image entries always; video entries
+   *  only for vendors with a wired MediaJobClient adapter. chatoffice video is
+   *  data-driven: it appears only when the proxy's model list carries
+   *  video-generation entries. */
   const listMediaModels = async (): Promise<
-    Array<{
-      kind: 'image'
-      profileId: string
-      modelId: string
-      label: string
-      vendorId: string
-      spec: MediaParamSpec
-    }>
+    Array<
+      | {
+          kind: 'image'
+          profileId: string
+          modelId: string
+          label: string
+          vendorId: string
+          spec: MediaParamSpec
+        }
+      | {
+          kind: 'video'
+          profileId: string
+          modelId: string
+          label: string
+          vendorId: string
+          spec: MediaParamSpec
+        }
+    >
   > => {
     const settings = await readRaw()
-    const out: Array<{
-      kind: 'image'
-      profileId: string
-      modelId: string
-      label: string
-      vendorId: string
-      spec: MediaParamSpec
-    }> = []
+    const out: Array<
+      | {
+          kind: 'image'
+          profileId: string
+          modelId: string
+          label: string
+          vendorId: string
+          spec: MediaParamSpec
+        }
+      | {
+          kind: 'video'
+          profileId: string
+          modelId: string
+          label: string
+          vendorId: string
+          spec: MediaParamSpec
+        }
+    > = []
+    const push = (kind: 'image' | 'video', profile: AiProviderProfile, vendorId: string, modelId: string, name: string | undefined, spec: MediaParamSpec): void => {
+      out.push({
+        kind,
+        profileId: profile.id,
+        modelId,
+        label: name && name !== modelId ? `${name} (${modelId})` : modelId,
+        vendorId,
+        spec,
+      })
+    }
     for (const profile of settings.profiles) {
       if (!profile.enabled) continue
       const vendorId = profile.vendorId ?? profile.id
-      if (!IMAGE_GEN_VENDOR_IDS.has(vendorId)) continue
-      for (const m of profile.models) {
-        if (!isImageGenModel(m)) continue
-        out.push({
-          kind: 'image',
-          profileId: profile.id,
-          modelId: m.id,
-          label: m.name && m.name !== m.id ? `${m.name} (${m.id})` : m.id,
-          vendorId,
-          spec: imageParamSpec(vendorId, m.id),
-        })
+      if (IMAGE_GEN_VENDOR_IDS.has(vendorId)) {
+        for (const m of profile.models) {
+          if (!isImageGenModel(m)) continue
+          push('image', profile, vendorId, m.id, m.name, imageParamSpec(vendorId, m.id))
+        }
+      }
+      if (VIDEO_GEN_VENDOR_IDS.has(vendorId)) {
+        for (const m of profile.models) {
+          if (!isVideoGenModel(m)) continue
+          push('video', profile, vendorId, m.id, m.name, videoParamSpec(vendorId, m.id))
+        }
       }
     }
     return out
+  }
+
+  /** one video-generation job through MediaJobClient: resolve the model
+   * selection (profile key/secret + vendor) then submit → poll → result.
+   * The ai-host video-task registry drives this from the main process. */
+  const runVideoJob = async (req: {
+    profileId: string
+    modelId: string
+    prompt: string
+    params?: Record<string, unknown>
+    imageUrl?: string
+    signal?: AbortSignal
+    onProgress?(stage: 'submitted' | 'running', note?: string): void
+  }): Promise<MediaJobResult> => {
+    const settings = await readRaw()
+    const profile = findProfile(settings, req.profileId)
+    const entry = profile?.models.find((m) => m.id === req.modelId)
+    if (!profile?.enabled || !entry || !isVideoGenModel(entry)) {
+      throw new Error(`Model ${req.modelId} is not an enabled video-generation model`)
+    }
+    const call = await resolveForRun({ profileId: req.profileId, modelId: req.modelId })
+    const aspectRatio =
+      typeof req.params?.aspectRatio === 'string' && req.params.aspectRatio.trim()
+        ? req.params.aspectRatio.trim()
+        : undefined
+    const rawDuration = req.params?.durationSeconds
+    const durationSeconds =
+      typeof rawDuration === 'number'
+        ? rawDuration
+        : typeof rawDuration === 'string' && rawDuration.trim() && Number.isFinite(Number(rawDuration))
+          ? Number(rawDuration)
+          : undefined
+    return runMediaJob({
+      kind: 'video',
+      vendorId: call.vendorId ?? profile.vendorId ?? profile.id,
+      model: call.model,
+      apiKey: call.apiKey,
+      ...(call.baseUrl ? { baseUrl: call.baseUrl } : {}),
+      prompt: req.prompt,
+      ...(req.imageUrl ? { imageUrl: req.imageUrl } : {}),
+      ...(aspectRatio ? { aspectRatio } : {}),
+      ...(durationSeconds !== undefined ? { durationSeconds } : {}),
+      ...(req.params ? { params: req.params } : {}),
+      ...(req.signal ? { signal: req.signal } : {}),
+      ...(req.onProgress ? { onProgress: req.onProgress } : {}),
+    })
   }
 
   return {
@@ -360,6 +441,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     runChat,
     discover,
     generateImage,
+    runVideoJob,
     listMediaModels,
     /** unredacted settings for main-process features (stock-image keys) */
     readRawSettings: readRaw,

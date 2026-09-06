@@ -98,8 +98,7 @@ const OPENAI_VIDEO_INPUT_MODELS = /qwen-vl|glm-4v|glm-4(?!\w)/i
 export const IMAGE_GEN_VENDOR_IDS = new Set(['gemini', 'openai', 'aliyun-bailian', 'chatoffice'])
 /** Must stay in sync with the adapters registered in media-jobs.ts — a
  * vendor listed here without a wired adapter would promise what runMediaJob
- * then refuses ("No media-generation adapter"). runway/vidu/pixverse adapters
- * land in phase 2; the vendor catalog entries already accept keys. */
+ * then refuses ("No media-generation adapter"). */
 export const VIDEO_GEN_VENDOR_IDS = new Set([
   'aliyun-bailian',
   'zhipu',
@@ -110,6 +109,9 @@ export const VIDEO_GEN_VENDOR_IDS = new Set([
   'kling',
   'luma',
   'fal',
+  'runway',
+  'vidu',
+  'pixverse',
   'chatoffice',
 ])
 

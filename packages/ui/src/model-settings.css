@@ -726,3 +726,21 @@
   padding-top: 14px;
   border-top: 1px solid var(--msp-border, #e3e3e3);
 }
+
+/* multi-field credentials (kling AK/SK) */
+.msp-key-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.msp-key-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.msp-key-field > span {
+  font-size: 11px;
+  opacity: 0.65;
+}

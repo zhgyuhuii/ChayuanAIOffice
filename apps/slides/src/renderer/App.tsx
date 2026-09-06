@@ -1452,6 +1452,15 @@ export function App() {
       const r = await window.slidesApi.mediaGenerate(req)
       return r ?? { error: 'no image' }
     },
+    videoSubmit: async (req) =>
+      (await window.slidesApi.videoSubmit(req)) ?? { error: 'video tasks unavailable' },
+    videoTasks: async () => (await window.slidesApi.videoTasks()) ?? { tasks: [] },
+    videoCancel: async (id) => {
+      await window.slidesApi.videoCancel(id)
+    },
+    videoRetry: async (id) => (await window.slidesApi.videoRetry(id)) ?? {},
+    videoPreview: async (id) => (await window.slidesApi.videoPreview(id)) ?? {},
+    onVideoTasksChanged: (cb) => window.slidesApi.onVideoTasksChanged(cb) ?? (() => {}),
   }
 
   const onBackground = useCallback((op: BgPaneOp, allSlides?: boolean) => {
@@ -3235,8 +3244,38 @@ export function App() {
       {insertImageOpen && (
         <InsertImageDialog
           bridge={insertImageBridge}
-          onInsert={(dataUrl) => {
+          hostKind="slides"
+          onInsert={(dataUrl, meta) => {
             setInsertImageOpen(false)
+            if (meta?.kind === 'video') {
+              // AI video → real embed via the addMedia pipeline; the bytes ride
+              // the preview dataUrl the dialog already fetched (≤48MB)
+              void (async () => {
+                const vm = /^data:video\/(mp4|webm);base64,(.*)$/s.exec(dataUrl)
+                if (!vm) return
+                const r = await window.slidesApi.addMediaBytes({
+                  slideIndex: ctxRef.current.current,
+                  kind: 'video',
+                  base64: vm[2],
+                  ext: vm[1],
+                  fitWidthPx: FIT_WIDTH,
+                  name: 'AI video',
+                  ...(meta.video?.posterDataUrl
+                    ? (() => {
+                        const pm = /^data:image\/([a-z]+);base64,(.*)$/s.exec(
+                          meta.video!.posterDataUrl!,
+                        )
+                        return pm ? { posterBase64: pm[2], posterExt: pm[1] } : {}
+                      })()
+                    : {}),
+                })
+                if (r) {
+                  applySlide(ctxRef.current.current, r.slide)
+                  setSelectedIds([r.sourceId])
+                }
+              })()
+              return
+            }
             void (async () => {
               const slide = ctxRef.current.slide
               if (!slide) return

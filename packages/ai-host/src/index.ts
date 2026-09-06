@@ -17,6 +17,14 @@ import {
   type StockSource,
 } from '@chatoffice/ai-search'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
+import {
+  createVideoTaskRegistry,
+  type VideoFileSink,
+  type VideoTaskRegistry,
+  type VideoTaskRegistryDeps,
+} from './video-tasks'
+
+export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
 
 /**
  * Shared registration of the generic ai:* IPC channels — identical channel
@@ -67,6 +75,8 @@ export interface SharedAiIpcDeps {
   /** opens the chatoffice device-code login flow (app closes over shell.openExternal) */
   chatofficeLogin: () => void
   translate: (key: string, params?: Record<string, unknown>) => string
+  /** video task registry wiring (absent = ai:video-* channels stay unregistered) */
+  videoTasks?: VideoTaskRegistryDeps
 }
 
 export interface AiStreamWireRequest {
@@ -270,6 +280,26 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   )
   // Download an image URL → base64 (CORS-free, SSRF-guarded, retried)
   ipcMain.handle('ai:remote-image', (_event, url: string) => downloadAsDataUrl(String(url)))
+
+  // ── video task channels (insert-media dialog AI tab, video models) ─────
+  // submit returns immediately; the poll loop lives in this process and the
+  // renderer hears 'ai:video-tasks-changed' on every state transition.
+  let videoRegistry: VideoTaskRegistry | undefined
+  if (deps.videoTasks) {
+    videoRegistry = createVideoTaskRegistry({
+      ...deps.videoTasks,
+      downloadPoster: deps.videoTasks.downloadPoster ?? downloadAsDataUrl,
+    })
+    ipcMain.handle(
+      'ai:video-submit',
+      (_event, req: { profileId: string; modelId: string; label?: string; prompt: string; params?: Record<string, unknown>; imageUrl?: string }) =>
+        videoRegistry!.submit(req),
+    )
+    ipcMain.handle('ai:video-tasks', () => videoRegistry!.list())
+    ipcMain.handle('ai:video-cancel', (_event, id: string) => videoRegistry!.cancel(String(id)))
+    ipcMain.handle('ai:video-retry', (_event, id: string) => videoRegistry!.retry(String(id)))
+    ipcMain.handle('ai:video-preview', (_event, id: string) => videoRegistry!.preview(String(id)))
+  }
 
   return runtime
 }

@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import {
   createReadStream,
+  createWriteStream,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -3135,6 +3136,22 @@ export function registerSheetsAiIpc(): void {
     chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
+    videoTasks: {
+      runtime: () => {
+        if (!aiRuntime) throw new Error('AI runtime used before registerSheetsAiIpc()')
+        return aiRuntime
+      },
+      sink: {
+        mkdir: (p, opts) => mkdir(p, opts),
+        createWriteStream: (p) => createWriteStream(p),
+        readFile: (p) => readFile(p),
+        statSize: async (p) => (await stat(p)).size,
+      },
+      mediaDir: join(app.getPath('userData'), 'media', 'videos'),
+      notify: (channel, payload) => {
+        for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
+      },
+    },
   })
 
   ipcMain.handle(IPC_CHANNELS.aiChat, async (event, input: unknown) => {

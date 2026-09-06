@@ -71,6 +71,7 @@ import {
   type RevisionDisplayMode,
   type ViewMode,
   insertImageFromDataUrl,
+  insertVideoForDocs,
   applyParagraphStyle,
 } from './ribbon-tabs'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
@@ -530,6 +531,16 @@ function RibbonInner({
       const r = await window.desktop?.mediaGenerate(req)
       return r ?? { error: 'no image' }
     },
+    videoSubmit: async (req) =>
+      (await window.desktop?.videoSubmit(req)) ?? { error: 'video tasks unavailable' },
+    videoTasks: async () =>
+      (await window.desktop?.videoTasks()) ?? { tasks: [] },
+    videoCancel: async (id) => {
+      await window.desktop?.videoCancel(id)
+    },
+    videoRetry: async (id) => (await window.desktop?.videoRetry(id)) ?? {},
+    videoPreview: async (id) => (await window.desktop?.videoPreview(id)) ?? {},
+    onVideoTasksChanged: (cb) => window.desktop?.onVideoTasksChanged(cb) ?? (() => {}),
   }
 
   /** AI 重绘替换选中图片：提示词→生成→字节替换（保留显示尺寸与裁剪参数） */
@@ -2240,8 +2251,13 @@ function RibbonInner({
       {insertImageOpen && (
         <InsertImageDialog
           bridge={insertImageBridge}
-          onInsert={(dataUrl) => {
+          hostKind="docs"
+          onInsert={(dataUrl, meta) => {
             setInsertImageOpen(false)
+            if (meta?.kind === 'video' && meta.video) {
+              void insertVideoForDocs(editor, meta.video)
+              return
+            }
             void insertImageFromDataUrl(editor, dataUrl)
           }}
           onClose={() => setInsertImageOpen(false)}

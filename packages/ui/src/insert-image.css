@@ -321,3 +321,101 @@
   font-size: 12px;
   opacity: 0.7;
 }
+
+/* video task list (AI tab, video models) */
+.insimg-videohint {
+  margin: 2px 0 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: color-mix(in srgb, #4a90d9 12%, transparent);
+  border: 1px solid color-mix(in srgb, #4a90d9 35%, transparent);
+}
+.insimg-vtasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.insimg-vtasks-title {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.65;
+}
+.insimg-vtask {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+}
+.insimg-vtask.vtask-failed {
+  border-color: color-mix(in srgb, #d94848 45%, transparent);
+}
+.insimg-vtask-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+.insimg-vtask-prompt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.insimg-vtask-status {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.insimg-vtask-status.st-succeeded {
+  color: #2e9e5b;
+  opacity: 1;
+}
+.insimg-vtask-status.st-failed {
+  color: #d94848;
+  opacity: 1;
+}
+.insimg-vtask-error {
+  margin: 0;
+  font-size: 12px;
+  color: #d94848;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.insimg-vtask-result {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.insimg-vtask-result video,
+.insimg-vtask-result img {
+  width: 200px;
+  max-height: 120px;
+  border-radius: 6px;
+  background: #000;
+  object-fit: contain;
+}
+.insimg-vtask-actions {
+  display: flex;
+  gap: 8px;
+}
+.insimg-vtask-actions button {
+  padding: 4px 12px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.insimg-vtask-actions .insimg-primary {
+  background: var(--accent, #2f6fd0);
+  color: #fff;
+  border-color: transparent;
+}

@@ -1107,6 +1107,9 @@ export interface AddMediaBytesOp {
   ext: string
   fitWidthPx: number
   name?: string
+  /** cover frame (AI-generated video): base64 without the data: prefix */
+  posterBase64?: string
+  posterExt?: string
 }
 
 /** Element hyperlink target. */
@@ -1285,6 +1288,27 @@ export type MenuCommand =
   | 'cut'
   | 'copy'
   | 'paste'
+
+
+/** Renderer view of one main-process video task (ai-host video-tasks) */
+export interface VideoTaskInfo {
+  id: string
+  profileId: string
+  modelId: string
+  label: string
+  prompt: string
+  status: 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled'
+  submittedAt: number
+  completedAt?: number
+  note?: string
+  error?: string
+  retriable?: boolean
+  result?: {
+    filePath?: string
+    url?: string
+    posterDataUrl?: string
+  }
+}
 
 export interface SlidesApi {
   /** current UI language (persisted by the shell in app-settings.json) */
@@ -1807,7 +1831,7 @@ export interface SlidesApi {
   /** enabled image/video-generation models + param specs (insert-media dialog picker) */
   mediaModels: () => Promise<{
     models: {
-      kind: 'image'
+      kind: 'image' | 'video'
       profileId: string
       modelId: string
       label: string
@@ -1836,6 +1860,19 @@ export interface SlidesApi {
     prompt: string
     params?: Record<string, unknown>
   }) => Promise<{ images?: { dataUrl: string }[]; error?: string }>
+  /** video task registry (ai-host): submit returns immediately, tasks run main-side */
+  videoSubmit: (req: {
+    profileId: string
+    modelId: string
+    label?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) => Promise<{ id?: string; error?: string; code?: string }>
+  videoTasks: () => Promise<{ tasks: VideoTaskInfo[]; error?: string }>
+  videoCancel: (id: string) => Promise<void>
+  videoRetry: (id: string) => Promise<{ error?: string }>
+  videoPreview: (id: string) => Promise<{ dataUrl?: string; url?: string; error?: string }>
+  onVideoTasksChanged: (handler: (payload: { id: string; status: string }) => void) => () => void
   insertImageUrl: (op: {
     slideIndex: number
     url: string

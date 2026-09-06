@@ -499,6 +499,30 @@ const desktopApi: DesktopApi = {
   mediaGenerate(req) {
     return ipcRenderer.invoke('ai:media-generate', req)
   },
+  videoSubmit(req) {
+    return ipcRenderer.invoke('ai:video-submit', req)
+  },
+  videoTasks() {
+    return ipcRenderer.invoke('ai:video-tasks')
+  },
+  videoCancel(id) {
+    return ipcRenderer.invoke('ai:video-cancel', id)
+  },
+  videoRetry(id) {
+    return ipcRenderer.invoke('ai:video-retry', id)
+  },
+  videoPreview(id) {
+    return ipcRenderer.invoke('ai:video-preview', id)
+  },
+  onVideoTasksChanged(handler) {
+    const listener = (_event: unknown, payload: unknown): void => {
+      if (isRecord(payload) && typeof payload.id === 'string' && typeof payload.status === 'string') {
+        handler(payload as { id: string; status: string })
+      }
+    }
+    ipcRenderer.on('ai:video-tasks-changed', listener)
+    return () => ipcRenderer.removeListener('ai:video-tasks-changed', listener)
+  },
   async fetchImage(url) {
     if (typeof url !== 'string' || !/^https?:\/\//i.test(url) || url.length > 2048) {
       throw new Error('Invalid image URL.')

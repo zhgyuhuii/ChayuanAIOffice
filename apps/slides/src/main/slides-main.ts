@@ -3722,6 +3722,14 @@ export function registerSlidesIpc(): void {
             cy,
           },
           ...(op.name ? { name: op.name } : {}),
+          ...(op.posterBase64
+            ? {
+                poster: {
+                  bytes: new Uint8Array(Buffer.from(op.posterBase64, 'base64')),
+                  ext: op.posterExt ?? 'png',
+                },
+              }
+            : {}),
         },
       ],
     })

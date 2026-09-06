@@ -7,6 +7,7 @@
 import { app, dialog, ipcMain, nativeImage, net, shell, BrowserWindow } from 'electron'
 import {
   appendFileSync,
+  createWriteStream,
   existsSync,
   mkdirSync,
   readdirSync,
@@ -16,7 +17,7 @@ import {
   watch,
   writeFileSync,
 } from 'node:fs'
-import { readFile } from 'node:fs/promises'
+import { mkdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   cloudToolsEnabled,
@@ -158,6 +159,19 @@ export function registerAiIpc(): void {
     chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
     translate: (key, params) =>
       tm(key as Parameters<typeof tm>[0], params as Parameters<typeof tm>[1]),
+    videoTasks: {
+      runtime: () => getAiRuntime(),
+      sink: {
+        mkdir: (p, opts) => mkdir(p, opts),
+        createWriteStream: (p) => createWriteStream(p),
+        readFile: (p) => readFile(p),
+        statSize: async (p) => (await stat(p)).size,
+      },
+      mediaDir: join(app.getPath('userData'), 'media', 'videos'),
+      notify: (channel, payload) => {
+        for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
+      },
+    },
   })
 
   ipcMain.handle('ai:log-run-failure', (_event, entry: AiRunFailure) => {

@@ -125,48 +125,153 @@ export function imageParamSpec(vendorId: string, modelId: string): MediaParamSpe
 }
 
 /**
- * Video param spec (videoGeneration models). All current adapters accept a
- * duration and an aspect ratio; vendor quirks refine this as adapters land.
+ * Video param specs (videoGeneration models). Rules are keyed by vendorId with
+ * a modelId regex; ids here are exactly what the media-jobs adapters read from
+ * `MediaJobRequest.params` (or the mapped aspectRatio/durationSeconds). First
+ * matching rule wins; unknown vendors get the generic shape.
  */
-export function videoParamSpec(vendorId: string, _modelId: string): MediaParamSpec {
-  const duration: MediaParamField = {
-    id: 'durationSeconds',
-    label: 'Duration (s)',
-    labelZh: '时长（秒）',
-    type: 'number',
-    min: 5,
-    max: 10,
-    step: 1,
-    default: 5,
-  }
-  if (vendorId === 'kling' || vendorId === 'luma') {
-    return {
-      fields: [
-        {
-          id: 'aspectRatio',
-          label: 'Aspect Ratio',
-          labelZh: '宽高比',
-          type: 'select',
-          options: ['16:9', '9:16', '1:1'],
-          default: '16:9',
-        },
-        duration,
-      ],
-    }
-  }
-  return {
+
+/** shared field builders — labels follow the vendor-catalog bilingual pattern */
+const vAspectRatio = (options: string[], def = '16:9'): MediaParamField => ({
+  id: 'aspectRatio',
+  label: 'Aspect Ratio',
+  labelZh: '宽高比',
+  type: 'select',
+  options,
+  default: def,
+})
+const vDuration = (
+  options?: number[],
+  def = 5,
+  minMax?: { min: number; max: number },
+): MediaParamField =>
+  options
+    ? { id: 'durationSeconds', label: 'Duration (s)', labelZh: '时长（秒）', type: 'select', options, default: def }
+    : {
+        id: 'durationSeconds',
+        label: 'Duration (s)',
+        labelZh: '时长（秒）',
+        type: 'number',
+        default: def,
+        ...(minMax ?? { min: 5, max: 10, step: 1 }),
+      }
+const vSelect = (id: string, label: string, labelZh: string, options: string[], def: string): MediaParamField => ({
+  id,
+  label,
+  labelZh,
+  type: 'select',
+  options,
+  default: def,
+})
+const vText = (id: string, label: string, labelZh: string): MediaParamField => ({
+  id,
+  label,
+  labelZh,
+  type: 'text',
+  default: '',
+})
+
+const VIDEO_SPEC_RULES: Array<{
+  vendorId: string
+  test: RegExp
+  fields: MediaParamField[]
+}> = [
+  {
+    vendorId: 'runway',
+    test: /^gen/,
     fields: [
-      {
-        id: 'aspectRatio',
-        label: 'Aspect Ratio',
-        labelZh: '宽高比',
-        type: 'select',
-        options: ['16:9', '9:16'],
-        default: '16:9',
-      },
-      duration,
+      vAspectRatio(['16:9', '9:16', '1:1', '4:3', '3:4']),
+      vDuration([5, 10], 5),
     ],
+  },
+  {
+    vendorId: 'vidu',
+    test: /^vidu/,
+    fields: [
+      vAspectRatio(['16:9', '9:16']),
+      vDuration([4, 8], 4),
+      vSelect('resolution', 'Resolution', '分辨率', ['540p', '720p', '1080p'], '720p'),
+    ],
+  },
+  {
+    vendorId: 'pixverse',
+    test: /^v[\d.]+$|^c1$/,
+    fields: [
+      vAspectRatio(['16:9', '4:3', '1:1', '3:4', '9:16']),
+      vDuration([5, 8], 5),
+      vSelect('quality', 'Quality', '画质', ['360p', '540p', '720p', '1080p'], '540p'),
+    ],
+  },
+  {
+    vendorId: 'gemini',
+    test: /^veo-3\.1/,
+    fields: [
+      vAspectRatio(['16:9', '9:16']),
+      vDuration([4, 6, 8], 8),
+      vText('negativePrompt', 'Negative Prompt', '反向提示词'),
+    ],
+  },
+  {
+    vendorId: 'gemini',
+    test: /^veo/,
+    // veo-3.0 pins 8s — no duration field, or the API rejects the call
+    fields: [vAspectRatio(['16:9', '9:16']), vText('negativePrompt', 'Negative Prompt', '反向提示词')],
+  },
+  {
+    vendorId: 'openai',
+    test: /^sora/,
+    fields: [vAspectRatio(['16:9', '9:16']), vDuration([4, 8, 12], 4)],
+  },
+  {
+    vendorId: 'kling',
+    test: /^kling/,
+    fields: [
+      vAspectRatio(['16:9', '9:16', '1:1']),
+      vDuration([5, 10], 5),
+      vSelect('mode', 'Mode', '生成模式', ['std', 'pro'], 'std'),
+    ],
+  },
+  {
+    vendorId: 'luma',
+    test: /^ray/,
+    fields: [
+      vAspectRatio(['16:9', '9:16', '1:1', '4:3', '3:4', '21:9', '9:21']),
+      vDuration([5, 9], 5),
+      vSelect('resolution', 'Resolution', '分辨率', ['720p', '1080p', '4k'], '720p'),
+    ],
+  },
+  {
+    vendorId: 'volcengine',
+    test: /seedance|doubao-seed/i,
+    fields: [
+      vAspectRatio(['16:9', '9:16', '1:1', '4:3', '3:4']),
+      vDuration([5, 10], 5),
+      vSelect('resolution', 'Resolution', '分辨率', ['480p', '720p', '1080p'], '720p'),
+    ],
+  },
+  {
+    vendorId: 'zhipu',
+    test: /cogvideox/,
+    fields: [vAspectRatio(['16:9', '9:16']), vDuration([5, 10], 5)],
+  },
+  {
+    vendorId: 'minimax',
+    test: /video-01|hailuo/i,
+    // minimax T2V pins 1280x720 — aspect ratio is not a parameter here
+    fields: [vDuration(undefined, 6)],
+  },
+  // aliyun-bailian (wan t2v) + chatoffice + unknown vendors: the generic shape
+]
+
+/**
+ * Video param spec for a videoGeneration model. Generic fallback: aspect
+ * ratio (16:9/9:16) + duration 5-10s.
+ */
+export function videoParamSpec(vendorId: string, modelId: string): MediaParamSpec {
+  for (const rule of VIDEO_SPEC_RULES) {
+    if (rule.vendorId === vendorId && rule.test.test(modelId)) return { fields: rule.fields }
   }
+  return { fields: [vAspectRatio(['16:9', '9:16']), vDuration(undefined, 5)] }
 }
 
 export { NO_FIELDS as emptyParamSpec }

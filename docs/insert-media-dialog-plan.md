@@ -1,6 +1,37 @@
 # 插入媒体窗口改造共识计划
 
-> 状态：**P1 已实施（2026-09-06）**，代码已落地，全量测试绿。
+> 状态：**P1/P2/P3 全部实施（2026-09-06）**，代码已落地，全量测试绿
+> （ai-search 51 / ai-provider 离线 176 / ai-host 5 / ui 69 / docs 1417 /
+> sheets 1992 / slides 608）。P2/P3 变更清单：
+> - **P2 视频生成链路**：
+>   - `vendor-catalog.ts` 新增 runway / vidu / pixverse 档案（URL 均按官方文档核实）；
+>     `capabilities.ts` 的 `VIDEO_GEN_VENDOR_IDS` 补齐 13 家。
+>   - `media-jobs.ts` 补 6 家适配器：runway（text/image_to_video+X-Runway-Version、
+>     任务 DELETE 取消）、vidu（Token 鉴权、/ent/v2/text2video+creations 轮询、
+>     cover_url 做 poster）、pixverse（API-KEY+Ai-trace-id、ErrCode/Resp.status 映射）、
+>     gemini（veo predictLongRunning+operation 轮询、Files 下载走 downloadHeaders）、
+>     openai/chatoffice（OpenAI videos API 共形工厂，sora content 下载带鉴权头）；
+>     runMediaJob 支持 abort 时远端 best-effort 取消（有 cancel 端点的 vendor）；
+>     zhipu/kling/vidu 结果带封面帧 meta.poster。
+>   - `media-params.ts` 的 `videoParamSpec` 按 vendor+modelId 正则细化
+>     （vidu/pixverse/luma 分辨率、kling mode、veo-3.0 锁 8s 不出时长字段、
+>     sora 4/8/12s、seedance --ratio/--dur/--resolution 文本标签等）。
+>   - `settings-v2.ts` 新增 `isVideoGenModel`；`runtime.listMediaModels()` 返回
+>     image/video 两类条目（chatoffice 视频数据驱动，仅当模型清单真有视频型才出现）；
+>     `runtime.runVideoJob()` 解析模型后驱动 runMediaJob。
+>   - `ai-host` 新增 `video-tasks.ts` 任务注册表：主进程内存态、后台存活、
+>     并发上限 3（超出拒收 code busy）、结果流式落盘 userData/media/videos、
+>     poster 下载为 dataURL、完成/失败广播 `ai:video-tasks-changed`；
+>     共享 IPC `ai:video-submit/-tasks/-cancel/-retry/-preview`。
+>   - `ModelSettingsPage`：vendor-catalog 新增 `keyFields` 声明，kling 渲染
+>     AK/SK 双输入框，保存时按 join 折叠成单 key。
+>   - 对话框：模型下拉分「图像生成/视频生成」两组；视频模型出任务提交 UX
+>     （任务列表/状态/耗时/重试/取消/`<video>` 预览）；i18n zh/en 全量。
+> - **P3 三端插入管线**：对话框新增 `hostKind` prop 与 `onInsert(dataUrl, meta)`
+>   扩展（meta.kind='video' + video ref{filePath,url,posterDataUrl}）；
+>   slides 走既有 `slides:add-media-bytes`（扩展可选 poster 封面帧）真嵌入；
+>   docs 走新增 `insertVideoForDocs`（封面帧图 + `link` mark 超链接段落）；
+>   sheets 对话框内联提示不支持、插入时兜底拒绝。
 > P1 变更清单：
 > - `packages/ai-search`：新增 `bing.ts`（HTML 抓取）+ `openverse.ts`（CC 图库）；
 >   `imageSearch` 重排为 chatoffice→Serper→Bing→Openverse 并返回逐层 `attempts` 诊断；
@@ -184,8 +215,11 @@
 
 | 期 | 内容 | 验收口径 |
 |----|------|----------|
-| P1 | 对话框改造（改名/独立密钥弹窗+测试连接/模型选择器/动态参数渲染/bridge 重构）+ 搜索修复（Bing/Openverse/Serper 设置页/逐层诊断） | 三 app 搜索开箱能搜；图库 key 分窗配置可测试；AI tab 可选图像生成模型并按模型出参数框 |
-| P2 | 视频生成链路（6 家 vendor 档案+13 家适配器+ParamSpec 对齐+ai-host 任务注册表+完成通知） | 已配置 key 的 vendor 可提交视频任务，关窗后台存活、完成有通知、重开取结果 |
-| P3 | 三端插入管线（pptx 真嵌 / docx 封面帧+链接 / xlsx 报错） | 幻灯片可插入可播放；文档出封面帧+链接；表格内联提示不支持 |
+| P1 ✅ | 对话框改造（改名/独立密钥弹窗+测试连接/模型选择器/动态参数渲染/bridge 重构）+ 搜索修复（Bing/Openverse/Serper 设置页/逐层诊断） | 三 app 搜索开箱能搜；图库 key 分窗配置可测试；AI tab 可选图像生成模型并按模型出参数框 |
+| P2 ✅ | 视频生成链路（3 家 vendor 档案+13 家适配器+ParamSpec 对齐+ai-host 任务注册表+完成通知） | 已配置 key 的 vendor 可提交视频任务，关窗后台存活、完成有通知、重开取结果 |
+| P3 ✅ | 三端插入管线（slides 真嵌 / docs 封面帧+链接 / sheets 报错） | 幻灯片可插入可播放；文档出封面帧+链接；表格内联提示不支持 |
+
+> 遗留（后续可再做）：本地 tab 视频文件（共识本期不放开）；veo/vidu 图片生视频
+> （MediaJobRequest.imageUrl 已预留、适配器暂拒）；>48MB 视频的预览降级为外链。
 
 每期完成后对下一期细节再确认。
