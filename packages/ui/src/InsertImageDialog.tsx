@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { insertImageStrings } from './insert-image-strings'
+import { MediaModelPicker } from './MediaModelPicker'
 import './insert-image.css'
 
 export interface WebImageItem {
@@ -348,20 +349,12 @@ export function InsertImageDialog({
     (m) => modelSel && m.profileId === modelSel.profileId && m.modelId === modelSel.modelId,
   )
   const selectedIsVideo = selectedModel?.kind === 'video'
-  const pickModel = (value: string): void => {
-    if (!mediaModels) return
-    if (value === '__manage__') {
-      bridge.openModelSettings?.()
-      return
-    }
-    const [profileId = '', modelId = ''] = value.split('::')
-    const next = mediaModels.find((m) => m.profileId === profileId && m.modelId === modelId)
-    if (!next) return
-    setModelSel({ profileId, modelId })
-    lastMediaSelection = { profileId, modelId }
+  const pickMediaModel = (m: MediaModelOption): void => {
+    setModelSel({ profileId: m.profileId, modelId: m.modelId })
+    lastMediaSelection = { profileId: m.profileId, modelId: m.modelId }
     // seed the dynamic inputs with each field's default
     const seeded: Record<string, string> = {}
-    for (const f of next.spec.fields) seeded[f.id] = String(f.default)
+    for (const f of m.spec.fields) seeded[f.id] = String(f.default)
     setParamValues(seeded)
   }
   const ensureModels = async (): Promise<void> => {
@@ -699,41 +692,17 @@ export function InsertImageDialog({
         {tab === 'ai' && (
           <section className="insimg-body">
             {bridge.listMediaModels && (
-              <label className="insimg-modelrow">
+              <div className="insimg-modelrow">
                 <span>{t.aiModelLabel}</span>
-                <select
-                  className="insimg-select"
-                  value={modelSel ? `${modelSel.profileId}::${modelSel.modelId}` : ''}
-                  onChange={(e) => pickModel(e.target.value)}
-                >
-                  <option value="">{modelsError || t.aiNoModels}</option>
-                  {mediaModels && mediaModels.some((m) => m.kind !== 'video') && (
-                    <optgroup label={t.aiModelGroup}>
-                      {mediaModels
-                        .filter((m) => m.kind !== 'video')
-                        .map((m) => (
-                          <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
-                            {m.label}
-                          </option>
-                        ))}
-                    </optgroup>
-                  )}
-                  {mediaModels && mediaModels.some((m) => m.kind === 'video') && (
-                    <optgroup label={t.aiModelGroupVideo}>
-                      {mediaModels
-                        .filter((m) => m.kind === 'video')
-                        .map((m) => (
-                          <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
-                            {m.label}
-                          </option>
-                        ))}
-                    </optgroup>
-                  )}
-                  {bridge.openModelSettings && (
-                    <option value="__manage__">{t.aiModelManage}</option>
-                  )}
-                </select>
-              </label>
+                <MediaModelPicker
+                  models={mediaModels ?? []}
+                  selected={modelSel}
+                  emptyText={mediaModels === null ? undefined : modelsError || t.aiNoModels}
+                  onOpenSettings={bridge.openModelSettings}
+                  onPick={pickMediaModel}
+                  lang={lang}
+                />
+              </div>
             )}
             {selectedIsVideo && (
               <div className="insimg-videohint">

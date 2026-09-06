@@ -158,4 +158,61 @@ describe('InsertImageDialog web gallery', () => {
     expect(host.querySelector('.insimg-nomore')?.textContent).toBe('已经到底了')
     expect(buttonByText('下一批')).toBeUndefined()
   })
+
+  it('AI tab model picker: vendor groups replace the optgroup select, picking a video model flips the hint', async () => {
+    const openModelSettings = vi.fn()
+    const bridge: InsertImageBridge = {
+      searchWeb: vi.fn(async () => ({ images: [] })),
+      searchStock: vi.fn(async () => ({ images: [] })),
+      fetchImage: vi.fn(async () => null),
+      getStockKeys: async () => ({ pexels: '', pixabay: '' }),
+      setStockKeys: async () => {},
+      listMediaModels: vi.fn(async () => ({
+        models: [
+          {
+            kind: 'image',
+            profileId: 'prof-openai',
+            modelId: 'gpt-image-2',
+            label: 'gpt-image-2',
+            vendorId: 'openai',
+            spec: { fields: [] },
+          },
+          {
+            kind: 'video',
+            profileId: 'prof-kling',
+            modelId: 'kling-v3',
+            label: 'kling-v3',
+            vendorId: 'kling',
+            spec: { fields: [] },
+          },
+        ],
+      })),
+      openModelSettings,
+    }
+    const onInsert = vi.fn()
+    await act(async () => {
+      root!.render(
+        createElement(InsertImageDialog, { bridge, lang: 'zh', onInsert, onClose: vi.fn() }),
+      )
+    })
+    await act(async () => {
+      buttonByText('AI 生成')!.click()
+    })
+    // no legacy optgroup select; ensureModels auto-picks the first model
+    expect(host.querySelector('select.insimg-select')).toBeNull()
+    const pickerTrigger = host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement
+    expect(pickerTrigger.textContent).toContain('gpt-image-2')
+    await act(async () => {
+      pickerTrigger.click()
+    })
+    expect(host.querySelectorAll('.ai-picker-vgroup')).toHaveLength(2)
+    await act(async () => {
+      host.querySelector('[data-picker-model="prof-kling::kling-v3"]')!.click()
+    })
+    // selection flows through: trigger label + the video-capability hint row
+    expect((host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement).textContent).toContain(
+      'kling-v3',
+    )
+    expect(host.querySelector('.insimg-videohint')).toBeTruthy()
+  })
 })
