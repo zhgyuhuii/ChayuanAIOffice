@@ -512,6 +512,7 @@ export function AiPanel({
 
   return (
     <aside className="copilot" style={{ width: '100%' }}>
+      dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
       <PanelTabs
         tabs={aiTabs}
         activeId={tab}
@@ -553,7 +554,7 @@ export function AiPanel({
           if (entry.role === 'user') {
             return (
               <div key={i} className="ai-msg ai-msg-user">
-                {entry.text}
+                <span dir="auto">{entry.text}</span>
                 {entry.undelivered && (
                   <div className="ai-msg-undelivered">
                     {t('aiUndelivered')}
@@ -575,7 +576,11 @@ export function AiPanel({
               className={`ai-msg ai-msg-assistant${entry.isError ? ' ai-msg-error' : ''}`}
             >
               {hasTools && <ToolChipList tools={entry.tools!} />}
-              {entry.text && <Markdown text={entry.text} nav={pdfNav} />}
+              {entry.text && (
+                <div dir="auto">
+                  <Markdown text={entry.text} nav={pdfNav} />
+                </div>
+              )}
             </div>
           )
         })}
