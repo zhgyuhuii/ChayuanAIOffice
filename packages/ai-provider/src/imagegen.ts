@@ -66,6 +66,10 @@ async function generateViaOpenAiImages(
   const n = numParam(req.params, 'n') ?? 1
   const quality = strParam(req.params, 'quality')
   const background = strParam(req.params, 'background')
+  // Recraft's style select (digital_illustration/vector_illustration/…);
+  // vector_illustration returns native SVG — the SVG line's dedicated channel.
+  // Sent only when provided, so OpenAI's strict body validation never sees it.
+  const style = strParam(req.params, 'style')
   const response = await aiFetch(`${call.baseUrl.replace(/\/$/, '')}/images/generations`, {
     method: 'POST',
     ...(req.signal ? { signal: req.signal } : {}),
@@ -81,6 +85,7 @@ async function generateViaOpenAiImages(
       ...(size ? { size } : {}),
       ...(quality ? { quality } : {}),
       ...(background ? { background } : {}),
+      ...(style ? { style } : {}),
     }),
   })
   if (!response.ok) {

@@ -91,3 +91,39 @@ describe('videoParamSpec', () => {
     ])
   })
 })
+
+describe('recraft image params (SVG-line channel)', () => {
+  it('recraft models expose size + style (vector_illustration → native svg) + n', () => {
+    const spec = imageParamSpec('recraft', 'recraftv3')
+    const ids = spec.fields.map((f) => f.id)
+    expect(ids).toEqual(['size', 'style', 'n'])
+    const style = spec.fields.find((f) => f.id === 'style')!
+    expect(style.type).toBe('select')
+    expect((style as { options?: string[] }).options).toContain('vector_illustration')
+  })
+
+  it('imagegen forwards the style param on the openai-images channel', async () => {
+    const { generateImageWithModel } = await import('../src/imagegen')
+    const calls: Array<{ url: string; body: Record<string, unknown> }> = []
+    const origFetch = globalThis.fetch
+    globalThis.fetch = (async (url: unknown, init?: RequestInit) => {
+      calls.push({ url: String(url), body: JSON.parse(String(init?.body)) })
+      return new Response(JSON.stringify({ data: [{ url: 'https://x/img.svg' }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }) as typeof fetch
+    try {
+      const r = await generateImageWithModel(
+        { protocol: 'openai-compatible', baseUrl: 'https://external.api.recraft.ai/v1', apiKey: 'k', model: 'recraftv3', vendorId: 'recraft' },
+        { prompt: 'flat icon', params: { style: 'vector_illustration', size: '1024x1024', n: 1 } },
+      )
+      expect(r.urls).toEqual(['https://x/img.svg'])
+      expect(calls[0]!.url).toBe('https://external.api.recraft.ai/v1/images/generations')
+      expect(calls[0]!.body.style).toBe('vector_illustration')
+      expect(calls[0]!.body.size).toBe('1024x1024')
+    } finally {
+      globalThis.fetch = origFetch
+    }
+  })
+})
