@@ -195,6 +195,7 @@ import { traceWorkbookDependents, traceWorkbookPrecedents } from './ai/formula-a
 import { createFilesSkill } from './ai/files-skill'
 import { createSearchSkill } from './ai/search-skill'
 import { createImageSkill } from './ai/image-skill'
+import { isSvgRef, resolveSvgDataUrl } from './ai/svg-bank'
 import { ATTACHMENT_IMAGE_EXTS } from '../shared/desktop-api'
 import type {
   AttachmentAddResult,
@@ -3034,7 +3035,14 @@ export function App(): React.JSX.Element {
         if (structural.op.op !== 'add_image' || imageData.has(structural.op.path)) continue
         let dataUrl: string
         let mediaType: string
-        if (/^https?:\/\//i.test(structural.op.path)) {
+        if (isSvgRef(structural.op.path)) {
+          // rasterized generate_svg graphic — resolved from the session bank,
+          // already a PNG data URL (no download)
+          const banked = resolveSvgDataUrl(structural.op.path)
+          if (!banked) throw new Error(t('appImageNotLoaded', { path: structural.op.path }))
+          dataUrl = banked
+          mediaType = 'image/png'
+        } else if (/^https?:\/\//i.test(structural.op.path)) {
           const fetched = await window.desktopApi.fetchImage(structural.op.path)
           if (!fetched) throw new Error(t('appCannotReadImage'))
           // Trust the bytes, not the Content-Type header the handler echoed

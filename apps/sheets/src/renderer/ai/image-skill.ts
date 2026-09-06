@@ -1,22 +1,26 @@
 import type { AgentSkill } from '@chatoffice/agent-core'
+import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
 import { t } from '../i18n/locale'
+import { registerSvgDataUrl } from './svg-bank'
 
 /**
  * Image acquisition AgentSkill: image_search (shared main-process channel, same
- * source as docs/slides) and generate_image (sheets-owned ChatOffice channel).
- * Both return a URL; placement happens through the normal propose_operations
+ * source as docs/slides), generate_image (sheets-owned ChatOffice channel) and
+ * generate_svg (offline vector tier — the model draws, we rasterize). All
+ * return a URL/handle; placement happens through the normal propose_operations
  * add_image path, which downloads the URL in the main process on apply.
  */
 
-const PLACEMENT_PROMPT = `- To place an image on a sheet, pass the URL to propose_operations {op:"add_image", sheetId, path:"<https url>", anchorCell} — field details in guide charts. The image anchors at that cell and is written into the file on save (imported xlsx only).
+const PLACEMENT_PROMPT = `- To place an image on a sheet, pass the URL to propose_operations {op:"add_image", sheetId, path:"<https url>", anchorCell} — field details in guide charts. The image anchors at that cell and is written into the file on save (imported xlsx only). A rasterized generate_svg graphic is placed the same way, with path set to its dataref token.
 - Only insert images the user asked for; data correctness always outranks decoration.`
 
 const IMAGES_SYSTEM_PROMPT = `## Images
-- image_search finds real web images (returns direct imageUrl entries); generate_image creates an illustration with AI when no suitable real image exists or the user explicitly wants generated art.
+- image_search finds real web images (returns direct imageUrl entries); generate_image creates an illustration with AI when no suitable real image exists or the user explicitly wants generated art; generate_svg draws simple vector graphics offline (no login/image model needed).
 ${PLACEMENT_PROMPT}`
 
 const IMAGES_SYSTEM_PROMPT_NO_GEN = `## Images
-- image_search finds real web images (returns direct imageUrl entries).
+- image_search finds real web images (returns direct imageUrl entries); generate_svg draws simple illustrations as offline vector graphics (no login needed).
 ${PLACEMENT_PROMPT}`
 
 /**
@@ -58,6 +62,21 @@ export function createImageSkill(chatofficeTools: () => boolean = () => true): A
           },
         },
         required: ['prompt'],
+      },
+    },
+    {
+      name: 'generate_svg',
+      description:
+        'Draw a simple illustration yourself as SVG markup — rasterized offline and placed via add_image with the returned dataref token (no AI image model or login needed). Best for icons, simple diagrams, geometric decoration. Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; convert text to paths or use generic font-family; solid fills only; keep shapes inside the viewBox.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          svg: {
+            type: 'string',
+            description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>',
+          },
+        },
+        required: ['svg'],
       },
     },
   ]
@@ -123,6 +142,46 @@ export function createImageSkill(chatofficeTools: () => boolean = () => true): A
           output: `Image generated: ${result.url}\nInsert it with propose_operations {op:"add_image", path:"${result.url}", ...}.`,
           mutated: false,
           summary: t('aiToolGenImageDone'),
+        }
+      }
+      if (call.name === 'generate_svg') {
+        // Offline vector tier (docs/image-source-plan.md #9): the model draws,
+        // we sanitize + rasterize here and hand back a short dataref token the
+        // model passes to add_image — no login, no image model, no giant
+        // base64 blob in the model's context.
+        const raw = String(call.input.svg ?? '').trim()
+        const clean = sanitizeSvg(raw)
+        if (!clean.ok) {
+          return {
+            output:
+              'generate_svg needs "svg": complete standalone markup starting with <svg … viewBox="0 0 W H">.',
+            isError: true,
+            summary: t('aiToolGenSvg'),
+          }
+        }
+        let raster: Awaited<ReturnType<typeof rasterizeSvg>>
+        try {
+          raster = await rasterizeSvg(clean.svg, { wPx: 480 })
+        } catch (e) {
+          return {
+            output: `SVG render check failed: ${e instanceof Error ? e.message : String(e)} — fix the markup and call generate_svg again.`,
+            isError: true,
+            summary: t('aiToolGenSvg'),
+          }
+        }
+        if (!raster.ok || !raster.base64 || (raster.paintRatio ?? 1) < 0.005) {
+          return {
+            output:
+              'the SVG rendered blank — check the viewBox, fills and geometry, then call generate_svg again.',
+            isError: true,
+            summary: t('aiToolGenSvg'),
+          }
+        }
+        const ref = registerSvgDataUrl(`data:image/png;base64,${raster.base64}`)
+        return {
+          output: `SVG rasterized and registered as ${ref}.\nInsert it with propose_operations {op:"add_image", path:"${ref}", ...}.`,
+          mutated: false,
+          summary: t('aiToolGenSvgDone'),
         }
       }
       return { output: `Unknown tool: ${call.name}`, isError: true, summary: call.name }

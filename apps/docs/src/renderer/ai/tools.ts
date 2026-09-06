@@ -1,6 +1,8 @@
 import type { Editor } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { ChartDisplay, CommentInfo, NewChart } from '@chatoffice/docx-engine'
+import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
 import type { AgentToolCall, AgentToolDef, CreateDocumentType } from '../../shared/ipc'
 import { t } from '../i18n/locale'
 import { executeCommands, type Command, type CommandEnvelope } from './commands'
@@ -181,7 +183,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'Generate an illustration with AI from a text prompt and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires ChatOffice login with cloud tools enabled.',
+      'Generate an illustration with AI from a text prompt and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires ChatOffice login with cloud tools enabled; without login the call auto-falls back to web image search.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -196,6 +198,22 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         maxWidthPx: { type: 'integer', description: 'maximum width (px), default 480' },
       },
       required: ['prompt'],
+    },
+  },
+  {
+    name: 'generate_svg',
+    description:
+      'Draw an illustration yourself as SVG markup and insert it into the document (rasterized PNG, no AI image model or login needed — works offline with BYOK). Best for icons, simple diagrams, geometric decoration, flat illustrations. Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; convert text to paths or use generic font-family; solid fills only; keep shapes inside the viewBox.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        svg: {
+          type: 'string',
+          description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>',
+        },
+        maxWidthPx: { type: 'integer', description: 'maximum width (px), default 480' },
+      },
+      required: ['svg'],
     },
   },
   {
@@ -555,7 +573,37 @@ async function executeAsyncTool(
       if (signal?.aborted)
         return fail(t('aiSumGenerateImage'), 'stopped by the user; the image was not inserted')
       if (!generated.url) {
-        return fail(t('aiSumGenerateImage'), generated.error ?? 'image generation failed')
+        // No-login / BYOK-missing fallback (docs/image-source-plan.md #9): web
+        // search keeps real-photo imagery available without any paid source; a
+        // failed search hands the slot to generate_svg (the model draws it).
+        const searched = await window.desktop.imageSearch(prompt, 5).catch(() => null)
+        if (signal?.aborted)
+          return fail(t('aiSumGenerateImage'), 'stopped by the user; the image was not inserted')
+        const pick =
+          searched && searched.method !== 'error'
+            ? searched.images.find((im) => /^https?:\/\//.test(im.imageUrl))
+            : undefined
+        if (pick) {
+          const r = await insertImageFromUrl(
+            editor,
+            pick.imageUrl,
+            Number(call.input.maxWidthPx) || 480,
+            signal,
+            {
+              failLabel: t('aiSumGenerateImage'),
+              doneLabel: t('aiSumInsertedGenImage'),
+              blockLabel: 'Image (web fallback)',
+            },
+          )
+          return {
+            ...r,
+            output: `AI image generation was unavailable (${generated.error ?? 'error'}); a web image was used instead.\n${r.output}`,
+          }
+        }
+        return fail(
+          t('aiSumGenerateImage'),
+          `${generated.error ?? 'image generation failed'} — no web image matched either. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
+        )
       }
       return insertImageFromUrl(
         editor,
@@ -568,6 +616,42 @@ async function executeAsyncTool(
           blockLabel: 'Image (AI)',
         },
       )
+    }
+    case 'generate_svg': {
+      // No-login imagery tier: the model draws the illustration as SVG; we
+      // sanitize it (scripts/external refs are stripped), rasterize it here in
+      // the renderer, and insert the PNG — no cloud, no image model needed.
+      const raw = String(call.input.svg ?? '').trim()
+      const clean = sanitizeSvg(raw)
+      if (!clean.ok)
+        return fail(
+          t('aiSumGenerateSvg'),
+          'generate_svg needs "svg": complete standalone markup starting with <svg … viewBox="0 0 W H">.',
+        )
+      if (signal?.aborted)
+        return fail(t('aiSumGenerateSvg'), 'stopped by the user; the image was not inserted')
+      let raster: Awaited<ReturnType<typeof rasterizeSvg>>
+      try {
+        raster = await rasterizeSvg(clean.svg, { wPx: Number(call.input.maxWidthPx) || 480 })
+      } catch (e) {
+        return fail(
+          t('aiSumGenerateSvg'),
+          `SVG render check failed: ${e instanceof Error ? e.message : String(e)} — fix the markup and call generate_svg again.`,
+        )
+      }
+      if (!raster.ok || !raster.base64 || (raster.paintRatio ?? 1) < 0.005) {
+        return fail(
+          t('aiSumGenerateSvg'),
+          'the SVG rendered blank — check the viewBox, fills and geometry, then call generate_svg again.',
+        )
+      }
+      const base64 = raster.base64
+      const dataUrl = `data:image/png;base64,${base64}`
+      return insertImageDataUrl(editor, dataUrl, base64, 'image/png', Number(call.input.maxWidthPx) || 480, signal, {
+        failLabel: t('aiSumGenerateSvg'),
+        doneLabel: t('aiSumInsertedSvg'),
+        blockLabel: 'Image (SVG)',
+      })
     }
     case 'create_document': {
       const typeRaw = call.input.type === undefined ? 'docx' : String(call.input.type)
@@ -642,6 +726,19 @@ async function insertImageFromUrl(
     )
   }
   const dataUrl = `data:${mime};base64,${fetched.base64}`
+  return insertImageDataUrl(editor, dataUrl, fetched.base64, mime, maxW, signal, labels)
+}
+
+/** insert an already-decoded image data URL at the cursor as a protected image block */
+async function insertImageDataUrl(
+  editor: Editor,
+  dataUrl: string,
+  base64: string,
+  mime: 'image/png' | 'image/jpeg' | 'image/gif',
+  maxW: number,
+  signal: AbortSignal | undefined,
+  labels: { failLabel: string; doneLabel: string; blockLabel: string },
+): Promise<ToolExecution> {
   try {
     const natural = await imageSizeOf(dataUrl)
     if (signal?.aborted)
@@ -665,7 +762,7 @@ async function insertImageFromUrl(
           imageDataUrl: dataUrl,
           imageWidthPx: w,
           imageHeightPx: h,
-          genImage: { base64: fetched.base64, mime, widthPx: w, heightPx: h },
+          genImage: { base64, mime, widthPx: w, heightPx: h },
         },
       })
       .run()
@@ -707,6 +804,7 @@ export function executeTool(
     call.name === 'image_search' ||
     call.name === 'insert_image' ||
     call.name === 'generate_image' ||
+    call.name === 'generate_svg' ||
     call.name === 'create_document'
   ) {
     return executeAsyncTool(editor, call, signal)

@@ -259,6 +259,7 @@ export function proposeOperations(
           if (
             operation.op === 'add_image' &&
             !/^https?:\/\//i.test(operation.path) &&
+            !/^dataref:svg-/.test(operation.path) &&
             !/\.(png|jpe?g|gif)$/i.test(operation.path)
           ) {
             return {
