@@ -18,6 +18,11 @@
 > 6. 遗留：veo/vidu 图生视频（imageUrl 已在 MediaJobRequest 预留）；
 >    本地 tab 视频；>48MB 预览降级外链。手动 smoke 第 5 条待真机账号验证
 >    （智谱/可灵测试账号当时欠费/401，tmp-realkey 在线测试为环境态失败，非回归）。
+> 7. **无 key 的全链路替代验证**：`packages/ai-host/tests/video-integration.test.ts`
+>    起本地假 vendor（模拟 OpenAI videos 契约），走真实 runtime + 任务注册表
+>    （设置解析→模型解析→key 下传→submit→poll→落盘→preview→401 失败路径），
+>    全部断言通过。真机 smoke 只剩「真实厂商响应形状」一项待账号确认；
+>    想跑真机验证：注册任一有免费额度的厂商（fal/vidu/pixverse）自行在设置页填 key 即可。
 
 > 写给下一个会话：P1（对话框改造+搜索修复）已全部落地并推送，
 > 本文是遗留工作的施工图。开工前先读 `docs/insert-media-dialog-plan.md`
