@@ -279,7 +279,7 @@ configureSheetsRuntime({
   createDocument: createAiDocument,
 })
 configureSlidesRuntime({
-  preloadPath: SLIDES_OUT,
+  preloadPath: join(SLIDES_OUT, 'preload', 'index.js'),
   rendererDevUrl: process.env.SLIDES_RENDERER_URL,
   rendererFilePath: join(SLIDES_OUT, 'renderer', 'index.html'),
   openGeneratedPath: (path) => openGeneratedDocument(path),
