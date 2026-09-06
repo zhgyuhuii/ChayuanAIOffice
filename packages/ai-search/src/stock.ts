@@ -29,7 +29,7 @@ export async function searchStockImages(
   source: StockSource,
   apiKey: string,
   query: string,
-  maxResults = 12,
+  maxResults = 20,
   /** 1-based page (native pagination param of both providers) */
   page = 1,
 ): Promise<StockImageResult[]> {

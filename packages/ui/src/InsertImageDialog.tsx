@@ -309,7 +309,14 @@ export function InsertImageDialog({
     if (!selected || inserting) return
     setInserting(true)
     try {
-      const media = await bridge.fetchImage(selected.full)
+      // full-size origins often refuse programmatic downloads; the hotlinkable
+      // thumbnail is the fallback so a blocked origin degrades to lower
+      // resolution instead of an error
+      const media =
+        (await bridge.fetchImage(selected.full)) ??
+        (selected.thumbnail && selected.thumbnail !== selected.full
+          ? await bridge.fetchImage(selected.thumbnail)
+          : null)
       if (!media) {
         setWebError(t.loadFail)
         return
@@ -650,7 +657,10 @@ export function InsertImageDialog({
                       <button
                         key={`${item.full}-${i}`}
                         className={`insimg-cell ${selected?.full === item.full ? 'selected' : ''}`}
-                        onClick={() => setSelected(item)}
+                        onClick={() => {
+                          setSelected(item)
+                          setWebError('') // a stale insert failure must not shadow the new pick
+                        }}
                         title={item.attribution ?? ''}
                       >
                         <img src={item.thumbnail || item.full} alt="" loading="lazy" />

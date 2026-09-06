@@ -169,18 +169,32 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   // ── picture-source channels (insert-image dialog) ────────────────────
   // Web image search: chatoffice → Serper → Bing → Openverse, per-tier attempts
   // attached for the dialog's diagnostics. Serper key: settings first, env fallback.
+  // Results map to the dialog's WebImageItem wire shape here — ai-search speaks
+  // imageUrl/thumbnail; the gallery renders thumbnail||full and inserts full.
+  // (A bare cast previously shipped undefined `full`s: nothing was selectable
+  // and every insert fetched "undefined".)
   ipcMain.handle(
     'ai:web-image-search',
     async (_event, query: string, maxResults?: number, page?: number) => {
       try {
         const settings = await runtime.readRawSettings()
-        return await imageSearch(
+        const r = await imageSearch(
           String(query),
-          typeof maxResults === 'number' ? maxResults : 12,
+          typeof maxResults === 'number' ? maxResults : 20,
           true,
           settings.searchApiKeys?.serper || process.env.SERPER_API_KEY || undefined,
           typeof page === 'number' && page > 1 ? Math.floor(page) : 1,
         )
+        return {
+          ...r,
+          images: r.images.map((img) => ({
+            thumbnail: img.thumbnail ?? img.imageUrl,
+            full: img.imageUrl,
+            ...(typeof img.width === 'number' ? { width: img.width } : {}),
+            ...(typeof img.height === 'number' ? { height: img.height } : {}),
+            ...(img.attribution ? { attribution: img.attribution } : {}),
+          })),
+        }
       } catch (err) {
         return { images: [], method: 'error', error: String(err), attempts: [] }
       }
@@ -242,7 +256,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
           source,
           key,
           String(req.query),
-          typeof req.maxResults === 'number' ? req.maxResults : 12,
+          typeof req.maxResults === 'number' ? req.maxResults : 20,
           typeof req.page === 'number' && req.page > 1 ? Math.floor(req.page) : 1,
         )
         return { images, source }

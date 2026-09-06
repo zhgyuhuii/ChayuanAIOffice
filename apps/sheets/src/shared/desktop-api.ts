@@ -2838,7 +2838,13 @@ export interface DesktopApi {
     maxResults?: number,
     page?: number,
   ): Promise<{
-    images: unknown[]
+    images: {
+      thumbnail?: string
+      full: string
+      width?: number
+      height?: number
+      attribution?: string
+    }[]
     method?: string
     error?: string
     attempts?: { backend: string; status: 'skipped' | 'ok' | 'error'; detail?: string; count?: number }[]

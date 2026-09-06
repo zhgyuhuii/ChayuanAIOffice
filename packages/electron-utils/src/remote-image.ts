@@ -9,7 +9,10 @@ const RETRY_DELAYS_MS: readonly number[] = [500, 1500]
 
 export function remoteImageHeaders(rawUrl: string): Record<string, string> {
   const headers: Record<string, string> = {
-    'User-Agent': 'Mozilla/5.0',
+    // A bare "Mozilla/5.0" reads as a bot to most origins (403 on sight);
+    // a full Chrome UA turns hotlink-protected sources into plain downloads.
+    'User-Agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
     // Only advertise formats the insert pipelines can label correctly: callers
     // map non-png/gif responses to JPEG, so preferring avif/webp would invite
     // content-negotiating CDNs to send bytes that end up mislabeled.

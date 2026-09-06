@@ -45,7 +45,7 @@ describe('imageSearch page passthrough (serper tier)', () => {
     expect(r.method).toBe('serper')
     expect(calls[0]!.url).toBe('https://google.serper.dev/images')
     expect(serperBody(calls[0]!.init).page).toBe(2)
-    expect(serperBody(calls[0]!.init).num).toBe(10)
+    expect(serperBody(calls[0]!.init).num).toBe(12)
   })
 
   it('page 1 omits the page field (first batch request unchanged)', async () => {

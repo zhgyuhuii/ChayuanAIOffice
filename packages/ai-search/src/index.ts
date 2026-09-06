@@ -143,7 +143,7 @@ export async function imageSearch(
         headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           q: query,
-          num: Math.min(maxResults, 10),
+          num: Math.min(maxResults, 20),
           gl: 'us',
           hl: 'en',
           ...(page > 1 ? { page } : {}),
@@ -163,6 +163,9 @@ export async function imageSearch(
             imageUrl,
             sourceUrl: String(img.link ?? ''),
             source: String(img.source ?? safeHost(img.link)),
+          }
+          if (typeof img.thumbnailUrl === 'string' && img.thumbnailUrl) {
+            entry.thumbnail = img.thumbnailUrl
           }
           if (typeof img.imageWidth === 'number') entry.width = img.imageWidth
           if (typeof img.imageHeight === 'number') entry.height = img.imageHeight
