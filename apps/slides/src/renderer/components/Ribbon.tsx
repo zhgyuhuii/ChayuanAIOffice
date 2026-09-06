@@ -32,6 +32,7 @@ import { THEME_PRESETS, type SlideThemePreset } from '../themes'
 import { restoreEditSelection } from '../TextEditOverlay'
 import { armColorInput, toPickerHex } from '../color-input'
 import { TABLE_SHADING_COLORS } from './table-shading-colors'
+import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import { useI18n, type StringKey } from '../i18n/locale'
 import {
   IconSlideMaster,
@@ -1810,6 +1811,8 @@ export function Ribbon({
   canDistribute,
 }: Props) {
   const { t } = useI18n()
+  // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
+  const tabStrip = useTabStripOverflow()
   // Shapes get their own format tab; text-bearing shapes do not auto-activate it
   // (users are usually after Home's text controls when selecting them).
   const contextTab = contextTabForElement(contextElementType ?? null)
@@ -2446,30 +2449,38 @@ export function Ribbon({
           />
         </label>
         <span className="qa-sep" aria-hidden="true" />
-        {TABS.filter((tb) => tb !== 'file').map((tb) => (
-          <button
-            key={tb}
-            className={`ribbon-tab ${tab === tb ? 'active' : ''}`}
-            onClick={() => {
-              setTab(tb)
-              setFileOpen(false)
-            }}
-            onDoubleClick={() => setCollapsed((v) => !v)}
-          >
-            {t(TAB_LABEL[tb])}
-          </button>
-        ))}
-        {contextTab && (
-          <button
-            key={contextTab}
-            className={`ribbon-tab ribbon-tab-context ${tab === contextTab ? 'active' : ''}`}
-            onClick={() => setTab(contextTab)}
-            data-tip={t(TAB_LABEL[contextTab])}
-          >
-            {t(TAB_LABEL[contextTab])}
-          </button>
-        )}
-        <span className="ribbon-tabs-spacer" />
+        <div className="ribbon-tabs-scroll" ref={tabStrip.viewportRef}>
+          <div className="ribbon-tabs-track" ref={tabStrip.trackRef}>
+            {TABS.filter((tb) => tb !== 'file').map((tb) => (
+              <button
+                key={tb}
+                className={`ribbon-tab ${tab === tb ? 'active' : ''}`}
+                onClick={() => {
+                  setTab(tb)
+                  setFileOpen(false)
+                }}
+                onDoubleClick={() => setCollapsed((v) => !v)}
+              >
+                {t(TAB_LABEL[tb])}
+              </button>
+            ))}
+            {contextTab && (
+              <button
+                key={contextTab}
+                className={`ribbon-tab ribbon-tab-context ${tab === contextTab ? 'active' : ''}`}
+                onClick={() => setTab(contextTab)}
+                data-tip={t(TAB_LABEL[contextTab])}
+              >
+                {t(TAB_LABEL[contextTab])}
+              </button>
+            )}
+          </div>
+          <TabStripArrows
+            overflow={tabStrip}
+            leadLabel={t('ribbonTabScrollLeft')}
+            tailLabel={t('ribbonTabScrollRight')}
+          />
+        </div>
         {aiPanelAvailable && (
           <AiPanelToggle
             open={aiPanelOpen}

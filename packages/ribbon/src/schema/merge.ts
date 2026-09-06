@@ -125,8 +125,9 @@ export function applySchemaPatch<TState, TServices>(
     fn: (tab: RibbonTab<TState, TServices>) => RibbonTab<TState, TServices>,
   ) => {
     const index = tabs.findIndex((tab) => tab.id === tabId)
-    if (index === -1) fail(`tab "${tabId}" not found`)
-    tabs = [...tabs.slice(0, index), fn(tabs[index]), ...tabs.slice(index + 1)]
+    // `?? fail` both guards the -1 index and gives a defined element type
+    const target = tabs[index] ?? fail(`tab "${tabId}" not found`)
+    tabs = [...tabs.slice(0, index), fn(target), ...tabs.slice(index + 1)]
   }
 
   for (const { tab, group, after } of patch.addGroups ?? []) {
@@ -155,8 +156,9 @@ export function applySchemaPatch<TState, TServices>(
   for (const { tab, group, controls, after } of patch.addControls ?? []) {
     mapTab(tab, (target) => {
       const groupIndex = target.groups.findIndex((existing) => existing.id === group)
-      if (groupIndex === -1) fail(`addControls: group "${group}" not found in tab "${tab}"`)
-      const targetGroup = target.groups[groupIndex]
+      const targetGroup =
+        target.groups[groupIndex] ??
+        fail(`addControls: group "${group}" not found in tab "${tab}"`)
       let nextControls: Control[]
       if (after === undefined) {
         nextControls = [...targetGroup.controls, ...controls]

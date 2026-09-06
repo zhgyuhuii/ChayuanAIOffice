@@ -581,6 +581,43 @@ export const RIBBON_GLYPH_ICONS: Record<string, ReactElement> = {
   '🕒': CLOCK_ICON,
   '⟳': REFRESH_ICON,
   '↻': REFRESH_ICON,
+  // counterclockwise pair for the picture tools (rotate left / reset), mirroring REFRESH_ICON
+  '↺': (
+    <Icon>
+      <path d="M5.26 12A6.74 6.74 0 1 0 7.35 7.12" />
+      <path d="M7.12 4.1v3.25h3.25" />
+    </Icon>
+  ),
+  '⟲': (
+    <Icon>
+      <path d="M4.75 12a7.25 7.25 0 1 0 2.12-5.13" />
+      <path d="M6.5 2.9v4h4" />
+    </Icon>
+  ),
+  // flip horizontal: two opposed arrows (WPS picture-tools composition)
+  '⇋': (
+    <Icon>
+      <path d="M4.75 7.75h13.5" />
+      <path d="m15 4.5 3.25 3.25L15 11" />
+      <path d="M19.25 16.25H5.75" />
+      <path d="m9 13-3.25 3.25L9 19.5" />
+    </Icon>
+  ),
+  // crop frame (two interlocking Ls)
+  '⌗': (
+    <Icon>
+      <path d="M7.25 2.75V15.5a1.25 1.25 0 0 0 1.25 1.25h12.75" />
+      <path d="M2.75 7.25H15.5a1.25 1.25 0 0 1 1.25 1.25v12.75" />
+    </Icon>
+  ),
+  // accounting/currency: banknote plate
+  '💰': (
+    <Icon>
+      <rect x="2.75" y="6.25" width="18.5" height="11.5" rx="1.5" />
+      <circle cx="12" cy="12" r="2.75" />
+      <path d="M6 9.5v5M18 9.5v5" />
+    </Icon>
+  ),
   '✕': (
     <Icon>
       <path d="m6 6 12 12M18 6 6 18" />

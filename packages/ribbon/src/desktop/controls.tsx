@@ -164,7 +164,7 @@ export function MenuPanel<TState = unknown, TServices = unknown>({
   className,
 }: {
   items: readonly RibbonMenuItem[]
-  className?: string
+  className?: string | undefined
 }) {
   const env = useRibbonEnv<TState, TServices>()
   return (

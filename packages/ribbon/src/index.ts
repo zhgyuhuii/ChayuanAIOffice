@@ -71,3 +71,9 @@ export {
 } from './desktop/use-ribbon-tabs'
 export { useRibbonEnv, type RibbonEnv, type RibbonIconMap } from './desktop/env'
 export { ControlView, IconCaret, MenuPanel } from './desktop/controls'
+export {
+  useTabStripOverflow,
+  type TabStripOverflow,
+  type TabStripOverflowState,
+} from './desktop/use-tab-strip-overflow'
+export { TabStripArrows, type TabStripArrowsProps } from './desktop/tab-strip-arrows'

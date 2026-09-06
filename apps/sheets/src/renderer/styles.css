@@ -462,7 +462,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 /* the AI bubble icon keeps its own .ai-panel-toggle box (dock.css) */
-.ribbon-tabs > button:not(.qa-btn):not(.ai-panel-toggle) {
+.ribbon-tabs button:not(.qa-btn):not(.ai-panel-toggle):not(.ribbon-tab-file) {
   -webkit-app-region: no-drag;
   position: relative;
   border: 0;
@@ -647,6 +647,11 @@ html.chatoffice-popover-open .ribbon-tabs {
 
 .workbook-status {
   max-width: min(360px, 30vw);
+  /* first sacrifice when the row runs tight: compress to ellipsis before the
+     tab strip has to scroll (agreed order: spacer → status → tabs). The 3×
+     shrink weight makes the status give up width ahead of the tab viewport. */
+  flex: 0 3 auto;
+  min-width: 0;
   overflow: hidden;
   color: var(--text-muted);
   font-size: 11px;
@@ -655,18 +660,18 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 /* Hovering a tab tints the label, it doesn't paint a box */
-.ribbon-tabs > button:not(.qa-btn):hover {
+.ribbon-tabs button:not(.qa-btn):not(.ribbon-tab-file):hover {
   color: var(--accent-dark);
 }
 
-.ribbon-tabs > button:not(.qa-btn).active {
+.ribbon-tabs button:not(.qa-btn):not(.ribbon-tab-file).active {
   color: var(--accent-dark);
   font-weight: 600;
 }
 
 /* active underline: about the label's width (insets past the tab padding),
  * ends slightly rounded — same as the slides ribbon */
-.ribbon-tabs > button:not(.qa-btn).active::after {
+.ribbon-tabs button:not(.qa-btn):not(.ribbon-tab-file).active::after {
   position: absolute;
   right: 13px;
   bottom: -2.5px;
@@ -679,7 +684,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 
 /* Contextual tabs (Chart Design) stand out even while inactive, with a
    colored caption. */
-.ribbon-tabs > button:not(.qa-btn).contextual {
+.ribbon-tabs button:not(.qa-btn):not(.ribbon-tab-file).contextual {
   color: var(--accent-dark);
   font-weight: 600;
 }
@@ -816,21 +821,21 @@ html.chatoffice-popover-open .ribbon-tabs {
   font-weight: 400;
 }
 
-/* the tall buttons carry the ribbon's big 28px glyph; letterform glyphs
-   (ƒx, $, θ, …) get a 23px face so their cap height (~16.5px) matches the
-   ~17px ink of the drawn 28px svgs beside them, and a regular 400 weight —
-   the base 600 paints ~2.4px stems at this size vs the svgs' 1.5px strokes */
+/* the tall buttons carry the ribbon's 24px glyph (WPS ongmani big-button
+   size); letterform glyphs (ƒx, $, θ, …) get a 20px face so their cap height
+   (~14.5px) matches the ~15px ink of the drawn 24px svgs beside them, at a
+   regular 400 weight — the base 600 paints fat stems at this size */
 .ribbon-tool.large .tool-symbol {
-  flex: 0 0 28px;
-  width: 28px;
-  height: 28px;
-  font-size: 23px;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
   font-weight: 400;
 }
 
 .ribbon-tool.large .tool-symbol svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 /* icon + caret row of tall buttons: stretches across the button like the
@@ -842,7 +847,7 @@ html.chatoffice-popover-open .ribbon-tabs {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 28px;
+  min-height: 24px;
   border-radius: 4px;
   padding: 3px 4px;
   margin: 0 -4px;
@@ -941,7 +946,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 .ribbon-tool.large .tool-symbol svg {
-  stroke-width: 1.3; /* 28px → ~1.5px */
+  stroke-width: 1.5; /* 24px box on the 24-canvas → native 1.5px */
 }
 
 .chart-grid .tool-symbol svg {
@@ -979,18 +984,14 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 .ribbon-tool small {
-  margin-top: 2px;
-  color: var(--text-muted);
-  font-size: 9px;
+  /* detail line moved to the screentip entirely (data-tip-detail) — buttons
+     are single-line like WPS; the old <1600px hiding breakpoint is gone */
+  display: none;
 }
 
-/* Narrow windows: drop the detail line first, before falling back to
-   horizontal scrolling. */
+/* Narrow windows: icon-only fallback for the designated compact buttons,
+   before falling back to horizontal scrolling. */
 @media (max-width: 1600px) {
-  .ribbon-tool small {
-    display: none;
-  }
-
   .ribbon-tool,
   .ribbon-tool.accent {
     min-width: 0;

@@ -96,6 +96,7 @@ import {
   spliceCharColors,
 } from './color-runs'
 import type { CharStyle } from './color-runs'
+import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { AiPanelToggle, DockShell, Dropdown, useDismissablePopover } from '@chatoffice/ui'
 import '@chatoffice/ui/dock.css'
@@ -261,6 +262,8 @@ type RibbonTab = (typeof RIBBON_TABS)[number]['id'] | 'fillForm'
 
 export default function App() {
   const { lang, t } = useI18n()
+  // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
+  const tabStrip = useTabStripOverflow()
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [filePath, setFilePath] = useState('')
   const [status, setStatus] = useState<'loading' | 'error' | 'empty' | 'password' | 'ready'>(
@@ -5701,24 +5704,34 @@ export default function App() {
             <IconRedo />
           </button>
           <span className="qa-sep" />
-          {RIBBON_TABS.map(({ id, labelKey }) => (
-            <button
-              key={id}
-              className={`ribbon-tab${ribbonTab === id ? ' active' : ''}`}
-              onClick={() => setRibbonTab(id)}
-            >
-              {t(labelKey)}
-            </button>
-          ))}
-          {!readOnly && (
-            <button
-              className={`ribbon-tab ribbon-tab-context${ribbonTab === 'fillForm' ? ' active' : ''}`}
-              onClick={() => setRibbonTab('fillForm')}
-            >
-              {t('ribbonTabFillForm')}
-            </button>
-          )}
-          <span className="ribbon-tabs-spacer" />
+          <div className="ribbon-tabs-scroll" ref={tabStrip.viewportRef}>
+            <div className="ribbon-tabs-track" ref={tabStrip.trackRef}>
+              {RIBBON_TABS.map(({ id, labelKey }) => (
+                <button
+                  key={id}
+                  className={`ribbon-tab${ribbonTab === id ? ' active' : ''}`}
+                  onClick={() => setRibbonTab(id)}
+                >
+                  {t(labelKey)}
+                </button>
+              ))}
+              {!readOnly && (
+                <button
+                  className={`ribbon-tab ribbon-tab-context${
+                    ribbonTab === 'fillForm' ? ' active' : ''
+                  }`}
+                  onClick={() => setRibbonTab('fillForm')}
+                >
+                  {t('ribbonTabFillForm')}
+                </button>
+              )}
+            </div>
+            <TabStripArrows
+              overflow={tabStrip}
+              leadLabel={t('ribbonTabScrollLeft')}
+              tailLabel={t('ribbonTabScrollRight')}
+            />
+          </div>
           {readOnly && <span className="tb-readonly">{t('roEncrypted')}</span>}
           {/* The file on disk is only touched by an explicit save until then. */}
           {saveState === 'saving' ? (

@@ -53,6 +53,7 @@ import {
   setTableLookOption,
   updateSelectedTableAttrs,
 } from '../editor/table-properties'
+import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import { useI18n, type StringKey } from '../i18n/locale'
 import { FONT_SIZES, MULTILEVEL_LIBRARY, NOOP_CHAIN, previewLevelText } from './ribbon-tab-shared'
 import { HomeTab } from './home-tab'
@@ -460,6 +461,8 @@ function RibbonInner({
   onPagePreview,
 }: RibbonProps) {
   const { t, lang } = useI18n()
+  // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
+  const tabStrip = useTabStripOverflow()
   const [tab, setTab] = useState<RibbonTab>('home')
   // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
   const [collapsed, setCollapsed] = useState(() => {
@@ -1907,61 +1910,69 @@ function RibbonInner({
             </div>
           }
           {quickActions}
-          {TABS.filter((tabName) => tabName !== 'file').map((tabName) => (
-            <button
-              key={tabName}
-              className={`ribbon-tab ${tab === tabName ? 'active' : ''}`}
-              onClick={() => {
-                lastRegularTab.current = tabName
-                setTab(tabName)
-                setDropdown(null)
-              }}
-              onDoubleClick={() => setCollapsed((v) => !v)}
-            >
-              {t(TAB_LABEL_KEYS[tabName])}
-            </button>
-          ))}
-          {/* contextual tabs render as plain tabs appended to the row, like current Word */}
-          {inTable &&
-            TABLE_TABS.map((tableTab) => (
-              <button
-                key={tableTab}
-                className={`ribbon-tab ${tab === tableTab ? 'active' : ''}`}
-                onClick={() => {
-                  setTab(tableTab)
-                  setDropdown(null)
-                }}
-              >
-                {t(TAB_LABEL_KEYS[tableTab])}
-              </button>
-            ))}
-          {inImage &&
-            IMAGE_TABS.map((imageTab) => (
-              <button
-                key={imageTab}
-                className={`ribbon-tab ${tab === imageTab ? 'active' : ''}`}
-                onClick={() => {
-                  setTab(imageTab)
-                  setDropdown(null)
-                }}
-              >
-                {t(TAB_LABEL_KEYS[imageTab])}
-              </button>
-            ))}
-          {inShape &&
-            SHAPE_TABS.map((shapeTab) => (
-              <button
-                key={shapeTab}
-                className={`ribbon-tab ${tab === shapeTab ? 'active' : ''}`}
-                onClick={() => {
-                  setTab(shapeTab)
-                  setDropdown(null)
-                }}
-              >
-                {t(TAB_LABEL_KEYS[shapeTab])}
-              </button>
-            ))}
-          <span className="ribbon-tabs-spacer" />
+          <div className="ribbon-tabs-scroll" ref={tabStrip.viewportRef}>
+            <div className="ribbon-tabs-track" ref={tabStrip.trackRef}>
+              {TABS.filter((tabName) => tabName !== 'file').map((tabName) => (
+                <button
+                  key={tabName}
+                  className={`ribbon-tab ${tab === tabName ? 'active' : ''}`}
+                  onClick={() => {
+                    lastRegularTab.current = tabName
+                    setTab(tabName)
+                    setDropdown(null)
+                  }}
+                  onDoubleClick={() => setCollapsed((v) => !v)}
+                >
+                  {t(TAB_LABEL_KEYS[tabName])}
+                </button>
+              ))}
+              {/* contextual tabs render as plain tabs appended to the row, like current Word */}
+              {inTable &&
+                TABLE_TABS.map((tableTab) => (
+                  <button
+                    key={tableTab}
+                    className={`ribbon-tab ${tab === tableTab ? 'active' : ''}`}
+                    onClick={() => {
+                      setTab(tableTab)
+                      setDropdown(null)
+                    }}
+                  >
+                    {t(TAB_LABEL_KEYS[tableTab])}
+                  </button>
+                ))}
+              {inImage &&
+                IMAGE_TABS.map((imageTab) => (
+                  <button
+                    key={imageTab}
+                    className={`ribbon-tab ${tab === imageTab ? 'active' : ''}`}
+                    onClick={() => {
+                      setTab(imageTab)
+                      setDropdown(null)
+                    }}
+                  >
+                    {t(TAB_LABEL_KEYS[imageTab])}
+                  </button>
+                ))}
+              {inShape &&
+                SHAPE_TABS.map((shapeTab) => (
+                  <button
+                    key={shapeTab}
+                    className={`ribbon-tab ${tab === shapeTab ? 'active' : ''}`}
+                    onClick={() => {
+                      setTab(shapeTab)
+                      setDropdown(null)
+                    }}
+                  >
+                    {t(TAB_LABEL_KEYS[shapeTab])}
+                  </button>
+                ))}
+            </div>
+            <TabStripArrows
+              overflow={tabStrip}
+              leadLabel={t('ribbonTabScrollLeft')}
+              tailLabel={t('ribbonTabScrollRight')}
+            />
+          </div>
           {trailingActions}
         </div>
       )}

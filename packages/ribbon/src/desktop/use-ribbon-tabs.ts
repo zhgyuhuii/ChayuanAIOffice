@@ -16,9 +16,9 @@ import type { RibbonSchema, RibbonTab } from '../schema/types'
 import { evaluateWhen } from '../schema/when'
 
 export interface RibbonTabMachineOptions {
-  readonly activeTab?: string
-  readonly defaultTab?: string
-  readonly onTabChange?: (tabId: string) => void
+  readonly activeTab?: string | undefined
+  readonly defaultTab?: string | undefined
+  readonly onTabChange?: ((tabId: string) => void) | undefined
 }
 
 export interface RibbonTabMachine {
@@ -33,7 +33,7 @@ export interface RibbonTabMachine {
 interface ContextGroupInfo<TState, TServices> {
   readonly key: string
   readonly tabs: readonly RibbonTab<TState, TServices>[]
-  readonly activateTab?: string
+  readonly activateTab?: string | undefined
   readonly visible: boolean
 }
 

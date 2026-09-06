@@ -14,14 +14,15 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@embedpdf/pdfium": "^2.15.0",
     "@chatoffice/agent-core": "*",
     "@chatoffice/ai-provider": "*",
     "@chatoffice/ai-search": "*",
     "@chatoffice/electron-utils": "*",
     "@chatoffice/font-metrics": "*",
     "@chatoffice/i18n": "*",
+    "@chatoffice/ribbon": "*",
     "@chatoffice/ui": "*",
+    "@embedpdf/pdfium": "^2.15.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.4",

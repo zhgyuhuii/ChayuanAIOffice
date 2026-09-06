@@ -116,6 +116,8 @@ export const strings = {
   zh: {
     ...fillFormStringsFor('zh'),
     ribbonTabHome: '开始',
+    ribbonTabScrollLeft: '向左滚动标签',
+    ribbonTabScrollRight: '向右滚动标签',
     ribbonTabAnnotate: '注释',
     ribbonTabEdit: '编辑',
     ribbonTabPage: '页面',
@@ -405,6 +407,8 @@ export const strings = {
   en: {
     ...fillFormStringsFor('en'),
     ribbonTabHome: 'Home',
+    ribbonTabScrollLeft: 'Scroll tabs left',
+    ribbonTabScrollRight: 'Scroll tabs right',
     ribbonTabAnnotate: 'Annotate',
     ribbonTabEdit: 'Edit',
     ribbonTabPage: 'Pages',
@@ -700,6 +704,8 @@ export const strings = {
   ja: {
     ...fillFormStringsFor('ja'),
     ribbonTabHome: 'ホーム',
+    ribbonTabScrollLeft: 'タブを左へスクロール',
+    ribbonTabScrollRight: 'タブを右へスクロール',
     ribbonTabAnnotate: '注釈',
     ribbonTabEdit: '編集',
     ribbonTabPage: 'ページ',
@@ -994,6 +1000,8 @@ export const strings = {
   ko: {
     ...fillFormStringsFor('ko'),
     ribbonTabHome: '홈',
+    ribbonTabScrollLeft: '탭 왼쪽으로 스크롤',
+    ribbonTabScrollRight: '탭 오른쪽으로 스크롤',
     ribbonTabAnnotate: '주석',
     ribbonTabEdit: '편집',
     ribbonTabPage: '페이지',
@@ -1288,6 +1296,8 @@ export const strings = {
   fr: {
     ...fillFormStringsFor('fr'),
     ribbonTabHome: 'Accueil',
+    ribbonTabScrollLeft: 'Faire défiler les onglets vers la gauche',
+    ribbonTabScrollRight: 'Faire défiler les onglets vers la droite',
     ribbonTabAnnotate: 'Annoter',
     ribbonTabEdit: 'Édition',
     ribbonTabPage: 'Pages',
@@ -1588,6 +1598,8 @@ export const strings = {
   de: {
     ...fillFormStringsFor('de'),
     ribbonTabHome: 'Start',
+    ribbonTabScrollLeft: 'Registerkarten nach links scrollen',
+    ribbonTabScrollRight: 'Registerkarten nach rechts scrollen',
     ribbonTabAnnotate: 'Anmerken',
     ribbonTabEdit: 'Bearbeiten',
     ribbonTabPage: 'Seiten',
@@ -1886,6 +1898,8 @@ export const strings = {
   es: {
     ...fillFormStringsFor('es'),
     ribbonTabHome: 'Inicio',
+    ribbonTabScrollLeft: 'Desplazar pestañas a la izquierda',
+    ribbonTabScrollRight: 'Desplazar pestañas a la derecha',
     ribbonTabAnnotate: 'Anotar',
     ribbonTabEdit: 'Editar',
     ribbonTabPage: 'Páginas',
@@ -2185,6 +2199,8 @@ export const strings = {
   th: {
     ...fillFormStringsFor('th'),
     ribbonTabHome: 'หน้าแรก',
+    ribbonTabScrollLeft: 'เลื่อนแท็บไปทางซ้าย',
+    ribbonTabScrollRight: 'เลื่อนแท็บไปทางขวา',
     ribbonTabAnnotate: 'คำอธิบายประกอบ',
     ribbonTabEdit: 'แก้ไข',
     ribbonTabPage: 'หน้า',
@@ -2478,6 +2494,8 @@ export const strings = {
   id: {
     ...fillFormStringsFor('id'),
     ribbonTabHome: 'Beranda',
+    ribbonTabScrollLeft: 'Gulir tab ke kiri',
+    ribbonTabScrollRight: 'Gulir tab ke kanan',
     ribbonTabAnnotate: 'Anotasi',
     ribbonTabEdit: 'Edit',
     ribbonTabPage: 'Halaman',
@@ -2775,6 +2793,8 @@ export const strings = {
   ru: {
     ...fillFormStringsFor('ru'),
     ribbonTabHome: 'Главная',
+    ribbonTabScrollLeft: 'Прокрутить вкладки влево',
+    ribbonTabScrollRight: 'Прокрутить вкладки вправо',
     ribbonTabAnnotate: 'Аннотирование',
     ribbonTabEdit: 'Правка',
     ribbonTabPage: 'Страницы',
@@ -3073,6 +3093,8 @@ export const strings = {
   ar: {
     ...fillFormStringsFor('ar'),
     ribbonTabHome: 'الشريط الرئيسي',
+    ribbonTabScrollLeft: 'مرر علامات التبويب يسارًا',
+    ribbonTabScrollRight: 'مرر علامات التبويب يمينًا',
     ribbonTabAnnotate: 'تعليق توضيحي',
     ribbonTabEdit: 'تحرير',
     ribbonTabPage: 'الصفحات',
@@ -3366,6 +3388,8 @@ export const strings = {
   pt: {
     ...fillFormStringsFor('pt'),
     ribbonTabHome: 'Página Inicial',
+    ribbonTabScrollLeft: 'Rolar guias para a esquerda',
+    ribbonTabScrollRight: 'Rolar guias para a direita',
     ribbonTabAnnotate: 'Anotar',
     ribbonTabEdit: 'Editar',
     ribbonTabPage: 'Páginas',
@@ -3664,6 +3688,8 @@ export const strings = {
   it: {
     ...fillFormStringsFor('it'),
     ribbonTabHome: 'Home',
+    ribbonTabScrollLeft: 'Scorri le schede a sinistra',
+    ribbonTabScrollRight: 'Scorri le schede a destra',
     ribbonTabAnnotate: 'Annota',
     ribbonTabEdit: 'Modifica',
     ribbonTabPage: 'Pagine',
@@ -3964,6 +3990,8 @@ export const strings = {
   pl: {
     ...fillFormStringsFor('pl'),
     ribbonTabHome: 'Narzędzia główne',
+    ribbonTabScrollLeft: 'Przewiń karty w lewo',
+    ribbonTabScrollRight: 'Przewiń karty w prawo',
     ribbonTabAnnotate: 'Adnotacje',
     ribbonTabEdit: 'Edycja',
     ribbonTabPage: 'Strony',
@@ -4262,6 +4290,8 @@ export const strings = {
   nl: {
     ...fillFormStringsFor('nl'),
     ribbonTabHome: 'Start',
+    ribbonTabScrollLeft: 'Tabbladen naar links schuiven',
+    ribbonTabScrollRight: 'Tabbladen naar rechts schuiven',
     ribbonTabAnnotate: 'Annoteren',
     ribbonTabEdit: 'Bewerken',
     ribbonTabPage: "Pagina's",
@@ -4560,6 +4590,8 @@ export const strings = {
   ms: {
     ...fillFormStringsFor('ms'),
     ribbonTabHome: 'Laman Utama',
+    ribbonTabScrollLeft: 'Tatal tab ke kiri',
+    ribbonTabScrollRight: 'Tatal tab ke kanan',
     ribbonTabAnnotate: 'Anotasi',
     ribbonTabEdit: 'Edit',
     ribbonTabPage: 'Halaman',
@@ -4857,6 +4889,8 @@ export const strings = {
   he: {
     ...fillFormStringsFor('he'),
     ribbonTabHome: 'בית',
+    ribbonTabScrollLeft: 'גלול לשוניות שמאלה',
+    ribbonTabScrollRight: 'גלול לשוניות ימינה',
     ribbonTabAnnotate: 'הערות',
     ribbonTabEdit: 'עריכה',
     ribbonTabPage: 'עמודים',
@@ -5147,6 +5181,8 @@ export const strings = {
   hi: {
     ...fillFormStringsFor('hi'),
     ribbonTabHome: 'होम',
+    ribbonTabScrollLeft: 'टैब बाएँ स्क्रॉल करें',
+    ribbonTabScrollRight: 'टैब दाएँ स्क्रॉल करें',
     ribbonTabAnnotate: 'एनोटेट',
     ribbonTabEdit: 'संपादन',
     ribbonTabPage: 'पृष्ठ',
@@ -5442,6 +5478,8 @@ export const strings = {
   'zh-TW': {
     ...fillFormStringsFor('zh-TW'),
     ribbonTabHome: '常用',
+    ribbonTabScrollLeft: '向左捲動標籤',
+    ribbonTabScrollRight: '向右捲動標籤',
     ribbonTabAnnotate: '註解',
     ribbonTabEdit: '編輯',
     ribbonTabPage: '頁面',

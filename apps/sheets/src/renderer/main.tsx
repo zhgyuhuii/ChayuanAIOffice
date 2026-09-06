@@ -8,6 +8,7 @@ import '@chatoffice/ui/screentip.css'
 import '@chatoffice/ui/color-picker.css'
 import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
+import '@chatoffice/ribbon/tab-strip.css'
 import '@univerjs/preset-sheets-core/lib/index.css'
 
 import { App } from './App'

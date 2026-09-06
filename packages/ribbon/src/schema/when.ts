@@ -64,7 +64,7 @@ export function validateWhenExpr(expr: unknown, path = 'when'): string[] {
   }
   const keys = Object.keys(expr)
   if (keys.length !== 1) return [`${path}: exactly one operator required, got ${keys.length}`]
-  const [op] = keys
+  const [op] = keys as [string]
   const value = (expr as any)[op]
   switch (op) {
     case 'eq':

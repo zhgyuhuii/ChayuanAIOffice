@@ -39,7 +39,9 @@ export function schemaToJSON(schema: RibbonSchema<never, never>): SchemaToJSONRe
   return { data: walk(schema, 'schema'), warnings }
 }
 
-const ALLOWED_KEYS: Record<string, readonly string[]> = {
+// Concrete key types (no Record index signature): strict hosts turn index
+// access into `T | undefined`, which would poison every read below.
+const ALLOWED_KEYS = {
   schema: ['id', 'version', 'tabs'],
   tab: [
     'id',
@@ -69,9 +71,9 @@ const ALLOWED_KEYS: Record<string, readonly string[]> = {
     'children',
   ],
   galleryItem: ['id', 'labelKey', 'icon', 'value'],
-}
+} satisfies Record<string, readonly string[]>
 
-const CONTROL_KEYS: Record<string, readonly string[]> = {
+const CONTROL_KEYS = {
   button: ['kind', 'command', 'icon', 'size', 'labelKey'],
   split: [
     'kind',
@@ -106,7 +108,7 @@ const CONTROL_KEYS: Record<string, readonly string[]> = {
   custom: ['kind', 'render'],
   row: ['kind', 'controls'],
   column: ['kind', 'controls'],
-}
+} satisfies Record<string, readonly string[]>
 
 export interface SchemaFromJSONOptions {
   /** Called for each restored placeholder; defaults to console.warn. */
@@ -183,8 +185,9 @@ export function schemaFromJSON(
   function checkControl(control: unknown, controlPath: string) {
     const record = control as Record<string, unknown>
     const kind = record.kind as string
-    const allowed = CONTROL_KEYS[kind]
-    if (!allowed) fail(controlPath, `unknown control kind "${String(kind)}"`)
+    const allowed =
+      CONTROL_KEYS[kind as keyof typeof CONTROL_KEYS] ??
+      fail(controlPath, `unknown control kind "${String(kind)}"`)
     checkKeys(record, [...ALLOWED_KEYS.control, ...allowed], controlPath)
     if ((kind === 'row' || kind === 'column') && Array.isArray(record.controls)) {
       record.controls.forEach((child, i) => checkControl(child, `${controlPath}.controls[${i}]`))

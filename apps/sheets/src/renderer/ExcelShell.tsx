@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { platformShortcuts } from '@chatoffice/i18n'
+import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import {
   AiPanelToggle,
   Dropdown,
@@ -449,6 +450,8 @@ export function ExcelShell({
   onGoalSeek,
 }: ExcelShellProps): React.JSX.Element {
   const { t } = useI18n()
+  // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
+  const tabStrip = useTabStripOverflow()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
   // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
   const [collapsed, setCollapsed] = useState(() => {
@@ -785,17 +788,25 @@ export function ExcelShell({
                 />
               </label>
               <span className="qa-sep" aria-hidden="true" />
-              {visibleTabs.map((tab) => (
-                <button
-                  className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' || tab === 'Picture Tools' ? 'contextual' : ''}`}
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  onDoubleClick={() => setCollapsed((v) => !v)}
-                >
-                  {t(TAB_LABEL[tab])}
-                </button>
-              ))}
-              <span className="ribbon-tabs-spacer" />
+              <div className="ribbon-tabs-scroll" ref={tabStrip.viewportRef}>
+                <div className="ribbon-tabs-track" ref={tabStrip.trackRef}>
+                  {visibleTabs.map((tab) => (
+                    <button
+                      className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' || tab === 'Picture Tools' ? 'contextual' : ''}`}
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      onDoubleClick={() => setCollapsed((v) => !v)}
+                    >
+                      {t(TAB_LABEL[tab])}
+                    </button>
+                  ))}
+                </div>
+                <TabStripArrows
+                  overflow={tabStrip}
+                  leadLabel={t('ribbonTabScrollLeft')}
+                  tailLabel={t('ribbonTabScrollRight')}
+                />
+              </div>
               <span className="workbook-status" role="status" aria-live="polite">
                 {statusMessage}
               </span>
