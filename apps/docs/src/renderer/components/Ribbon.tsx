@@ -932,14 +932,42 @@ function RibbonInner({
     : 23.28
 
   type BorderSide = { style: string; szEighths?: number; color?: string }
-  /** Apply borders to selected cells: all/outer/inner compute the four sides per cell from selection geometry; none clears explicitly */
-  const applyCellBorders = (mode: 'all' | 'outer' | 'inner' | 'none') => {
+  /** Apply borders to selected cells: all/outer/inner compute the four sides per cell from selection geometry; none clears explicitly.
+   *  top/bottom/left/right apply only to that edge of the selection. insideH/insideV
+   *  write the table-level tblBorders attr (per-cell insideH/insideV has no renderer):
+   *  they apply to the whole table, as their tips state. */
+  const applyCellBorders = (
+    mode:
+      | 'all'
+      | 'outer'
+      | 'inner'
+      | 'none'
+      | 'top'
+      | 'bottom'
+      | 'left'
+      | 'right'
+      | 'insideH'
+      | 'insideV',
+  ) => {
     if (!canEdit || !isInTable(editor.state)) return
     editor.view.focus()
     const { state, view } = editor
     const rect = selectedRect(state)
     const solid: BorderSide = { style: 'single', szEighths: borderSz, color: borderColor }
     const none: BorderSide = { style: 'none' }
+    if (mode === 'insideH' || mode === 'insideV') {
+      const tablePos = rect.tableStart - 1
+      const tableNode = state.doc.nodeAt(tablePos)
+      if (!tableNode || tableNode.type.name !== 'docTable') return
+      const prev = (tableNode.attrs.borders as Record<string, BorderSide> | null) ?? {}
+      view.dispatch(
+        state.tr.setNodeMarkup(tablePos, undefined, {
+          ...tableNode.attrs,
+          borders: { ...prev, [mode]: solid },
+        }),
+      )
+      return
+    }
     let tr = state.tr
     const seen = new Set<number>()
     for (let row = rect.top; row < rect.bottom; row++) {
@@ -965,6 +993,7 @@ function RibbonInner({
           else if (mode === 'none') next[side] = none
           else if (mode === 'outer' && edge[side]) next[side] = solid
           else if (mode === 'inner' && !edge[side]) next[side] = solid
+          else if (mode === side && edge[side]) next[side] = solid
         }
         tr = tr.setNodeMarkup(pos, undefined, { ...node.attrs, borders: next })
       }
