@@ -1,4 +1,4 @@
-/** ribbon strings, hi (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const hi = {
   ribbonAiCreditNote: 'AI का उपयोग करता है और क्रेडिट खर्च होते हैं',
   ribbonAiRewriteConfirm: 'यह क्रिया AI को कॉल करती है: इसमें क्रेडिट खर्च होते हैं और पूरी सामग्री फिर से लिखी जा सकती है। जारी रखें? (दोबारा नहीं पूछा जाएगा।)',
@@ -830,4 +830,6 @@ export const hi = {
   ribbonCompressWeb: 'वेब (150 ppi)',
   ribbonCompressEmail: 'ईमेल (96 ppi)',
   ribbonPictureReplaceUnsupported: 'असमर्थित छवि प्रारूप: {ext}',
+  ribbonCollapse: 'रिबन संक्षिप्त करें',
+  ribbonPin: 'रिबन पिन करें',
 }

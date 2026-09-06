@@ -149,8 +149,8 @@ export interface RibbonProps {
   onZoom: (zoom: number) => void
   /** compute zoom from the current window size (Word: page width / whole page) */
   onZoomFit: (mode: 'width' | 'page') => void
-  darkCanvas: boolean
-  onDarkCanvas: (v: boolean) => void
+  darkCanvas?: boolean
+  onDarkCanvas?: (v: boolean) => void
   onAiPreset: (instruction: string) => void
   /** external request (e.g. native menu Page Setup) to switch to a specific tab */
   tabRequest?: { tab: string; nonce: number } | null
@@ -185,6 +185,9 @@ export interface RibbonProps {
   onNewComment: () => void
   trackChanges: boolean
   onTrackChanges: (on: boolean) => void
+  /** native check-as-you-type spellcheck (red squiggle) */
+  spellcheck?: boolean
+  onSpellcheck: (on: boolean) => void
   revisionDisplay: RevisionDisplayMode
   onRevisionDisplay: (mode: RevisionDisplayMode) => void
   revisionCount: number
@@ -437,6 +440,8 @@ function RibbonInner({
   onNewComment,
   trackChanges,
   onTrackChanges,
+  spellcheck,
+  onSpellcheck,
   revisionDisplay,
   onRevisionDisplay,
   revisionCount,
@@ -996,6 +1001,19 @@ function RibbonInner({
           else if (mode === side && edge[side]) next[side] = solid
         }
         tr = tr.setNodeMarkup(pos, undefined, { ...node.attrs, borders: next })
+      }
+    }
+    if (mode === 'none') {
+      // table-level inside lines (Inside Horizontal/Vertical) would otherwise survive No Borders
+      const tablePos = rect.tableStart - 1
+      const tableNode = tr.doc.nodeAt(tablePos)
+      const prev = tableNode?.attrs.borders as Record<string, BorderSide> | null | undefined
+      if (tableNode?.type.name === 'docTable' && prev && (prev.insideH || prev.insideV)) {
+        const { insideH: _h, insideV: _v, ...rest } = prev
+        tr = tr.setNodeMarkup(tablePos, undefined, {
+          ...tableNode.attrs,
+          borders: Object.keys(rest).length ? rest : null,
+        })
       }
     }
     view.dispatch(tr)
@@ -2237,6 +2255,8 @@ function RibbonInner({
             onNewComment={onNewComment}
             trackChanges={trackChanges}
             onTrackChanges={onTrackChanges}
+            spellcheck={spellcheck ?? false}
+            onSpellcheck={onSpellcheck}
             revisionDisplay={revisionDisplay}
             onRevisionDisplay={onRevisionDisplay}
             revisionCount={revisionCount}
@@ -2259,8 +2279,8 @@ function RibbonInner({
             onZoomFit={onZoomFit}
             showAi={showAi}
             onToggleAi={onToggleAi}
-            darkCanvas={darkCanvas}
-            onDarkCanvas={onDarkCanvas}
+            darkCanvas={darkCanvas ?? false}
+            onDarkCanvas={onDarkCanvas ?? (() => {})}
             showRuler={showRuler}
             onShowRuler={onShowRuler}
             showNav={showNav}

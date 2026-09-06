@@ -21,7 +21,9 @@ import type {
 import type { ChartStyleInfo } from '@chatoffice/pptx-render'
 import {
   useDismissablePopover,
+  useRibbonCollapse,
   Dropdown,
+  RibbonCollapseButton,
   THEME_COLORS,
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
@@ -1982,6 +1984,7 @@ export function Ribbon({
   // Expanded/collapsed widths are cached per group so the required width is
   // computable in every state (before the first fold the collapsed width is
   // an estimate, corrected by measurement as soon as the group first folds).
+  const collapse = useRibbonCollapse('ai-slides-ribbon-collapsed')
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const inlineWidthsRef = useRef(new Map<string, number>())
   const collapsedWidthsRef = useRef(new Map<string, number>())
@@ -1995,6 +1998,8 @@ export function Ribbon({
     const order = COLLAPSE_ORDER[tab] ?? []
     if (!order.length) return
     const evaluate = () => {
+      // hidden (collapsed ribbon): offsets read 0 and would poison the width caches
+      if (!el.clientWidth) return
       const kids = Array.from(el.children) as HTMLElement[]
       if (!kids.length) return
       const first = kids[0]!
@@ -2301,6 +2306,7 @@ export function Ribbon({
         className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}${
           anyPanelOpen ? ' ribbon-tabs-nodrag' : ''
         }`}
+        onDoubleClick={collapse.onTabsDoubleClick}
       >
         {/* WPS macOS 同样有常驻「文件」按钮（☰ 文件），三端统一 */}
         {
@@ -4340,6 +4346,10 @@ export function Ribbon({
           </>
         ) : null}
       </div>
+      <RibbonCollapseButton
+        state={collapse}
+        labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }}
+      />
     </div>
   )
 }

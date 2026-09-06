@@ -1,4 +1,4 @@
-/** app strings, id (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const id = {
   appMergeWorkbooks: 'Gabungkan Buku Kerja',
   appMergeWorkbooksTip: 'Tambahkan sheet dari file Excel lain ke buku kerja ini',
@@ -1333,4 +1333,13 @@ export const id = {
   appCellStyleGroupTitle: 'Judul',
   appCellStyleGroupData: 'Data dan Model',
   appCellStyleGroupAccent: 'Aksen',
+  appAiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
+  appFullLoadFilterTitle: 'Filter memerlukan pemuatan penuh',
+  appFullLoadFilterBody: 'Buku kerja ini besar dan baru dimuat sebagian secara streaming. Filter (termasuk hitungan nilai) memerlukan data lengkap agar benar. Muat seluruh buku kerja sekarang?',
+  appFullLoadStart: 'Muat semua',
+  appFullLoadRunning: 'Memuat seluruh buku kerja — filter tersedia setelah selesai…',
+  appFullLoadTooLarge: 'Buku kerja ini terlalu besar untuk dimuat sepenuhnya ke memori; filter tidak tersedia untuk file ini.',
+  appDialogCancel: 'Batal',
+  appRibbonCollapse: 'Ciutkan Pita',
+  appRibbonPin: 'Sematkan Pita',
 }

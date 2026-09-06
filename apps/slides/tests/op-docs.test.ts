@@ -1,12 +1,23 @@
 /**
- * Op docs ↔ registry coverage: the doc table is the single source the AI
- * surfaces consume, so it must track the registry exactly — a new op without
- * a doc line (or a doc line for a removed op) fails here, not in production.
+ * Op docs ↔ registry coverage: the markdown docs (prompts/ops/*.md, parsed
+ * into OP_DOCS) are the single source the AI surfaces consume, so they must
+ * track the registry exactly — a new op without a doc block (or a block for a
+ * removed op) fails here, not in production.
  */
 import { describe, it, expect } from 'vitest'
 import { addElement, createBlankPptx, openPptx } from '@chatoffice/pptx-engine'
 import { runTxn, opNames } from '../src/main/ops'
-import { OP_DOCS, opUsage, opVocabulary } from '../src/shared/op-docs'
+import {
+  OP_DOCS,
+  OP_GROUPS,
+  OP_GUIDES,
+  opGuide,
+  opGuideCatalog,
+  opSignatureIndex,
+  opUsage,
+  opVocabulary,
+  LOCAL_OP_DOCS,
+} from '../src/shared/op-docs'
 
 // pending: true entries document ops of an in-flight branch ahead of its
 // merge so the PRs stay independent; they are hidden from vocabulary and
@@ -32,6 +43,40 @@ describe('op docs coverage', () => {
     expect(vocab).toContain('groupElements')
     expect(vocab).not.toContain('addPicture')
     expect(vocab).not.toContain('pasteSlide')
+  })
+
+  it('every block carries a compact signature and a body', () => {
+    // adapted: 69b4ce0 — ChatOffice-local ops carry sig-only docs (their
+    // prose lives in the local skill prompt, not the upstream ops/*.md)
+    const LOCAL_OPS = new Set(Object.keys(LOCAL_OP_DOCS))
+    for (const [name, doc] of Object.entries(OP_DOCS)) {
+      expect(doc.sig, name).toMatch(/^\{/)
+      expect(doc.sig, name).not.toContain('`')
+      if (!LOCAL_OPS.has(name)) expect(doc.body.length, name).toBeGreaterThan(20)
+      expect(OP_GROUPS).toContain(doc.group)
+    }
+  })
+
+  it('the signature index lists exactly the callable ops, grouped', () => {
+    const index = opSignatureIndex()
+    for (const [name, doc] of Object.entries(OP_DOCS)) {
+      const line = `${name} ${doc.sig}`
+      if (doc.aiCallable === false || doc.pending) expect(index).not.toContain(line)
+      else expect(index).toContain(line)
+    }
+    for (const g of OP_GROUPS) expect(index).toContain(`## ${g}`)
+  })
+
+  it('every group has a guide with title, summary and the full markdown', () => {
+    for (const g of OP_GROUPS) {
+      const guide = OP_GUIDES[g]
+      expect(guide.title).toBeTruthy()
+      expect(guide.summary).toBeTruthy()
+      expect(opGuide(g)).toBe(guide.content)
+      expect(guide.content).toContain(`# ${guide.title}`)
+      expect(opGuideCatalog()).toContain(`${g} — ${guide.summary}`)
+    }
+    expect(opGuide('nope')).toBeUndefined()
   })
 
   it('pending ops are hidden from vocabulary and usage until registered', () => {

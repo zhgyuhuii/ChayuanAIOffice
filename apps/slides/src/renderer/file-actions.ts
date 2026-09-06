@@ -75,10 +75,13 @@ async function runSerialized<T>(pass: () => Promise<T>): Promise<T> {
   return current
 }
 
-export async function save(ctx: ActionCtx, quiet = false): Promise<boolean> {
-  // adapted: 4846ace+ea13074 — runSerialized (upstream's extracted queue) wraps
-  // the local three-branch error handling (ok / error / dismissed first-save dialog)
+export async function save(getCtx: () => ActionCtx, quiet = false): Promise<boolean> {
+  // adapted: 4846ace+ea13074+69b4ce0 — runSerialized wraps the local three-branch
+  // error handling (ok / error / dismissed first-save dialog); ctx resolves inside
+  // the queue so a queued save sees the live editor state
   return runSerialized(async () => {
+    // resolved only now: a queued pass must remap selection against the tree the prior save adopted
+    const ctx = getCtx()
     await flushActiveEdit(ctx)
     await ctx.flushNotes()
     const r = await window.slidesApi.save()
@@ -104,10 +107,11 @@ export async function save(ctx: ActionCtx, quiet = false): Promise<boolean> {
   })
 }
 
-export async function saveAs(ctx: ActionCtx): Promise<void> {
+export async function saveAs(getCtx: () => ActionCtx): Promise<void> {
   // Same queue as save(): Save + Save As (or double Save As) write through
   // the same main-process pipe and would interleave without it.
   await runSerialized(async () => {
+    const ctx = getCtx()
     await flushActiveEdit(ctx)
     await ctx.flushNotes()
     const name = ctx.path?.split('/').pop() ?? 'presentation.pptx'

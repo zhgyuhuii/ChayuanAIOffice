@@ -1,4 +1,4 @@
-/** ribbon strings, de (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const de = {
   ribbonAiCreditNote: 'Ruft KI auf und verbraucht Guthaben',
   ribbonAiRewriteConfirm: 'Diese Aktion ruft die KI auf: Sie verbraucht Guthaben und kann den gesamten Inhalt umschreiben. Fortfahren? (Sie werden nicht erneut gefragt.)',
@@ -726,4 +726,10 @@ export const de = {
   ribbonChartKitTip: 'ECharts-Galerie (39 Familien, inkl. 3D/GL)',
   ribbonEchartLabel: 'ECharts-Diagramm',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Menüband reduzieren',
+  ribbonPin: 'Menüband anheften',
+  ribbonLinkEditTitle: 'Hyperlink bearbeiten',
+  ribbonLinkRemove: 'Link entfernen',
+  ribbonSpellcheckBtn: 'Rechtschreibung',
+  ribbonSpellcheckTip: 'Rechtschreibung während der Eingabe prüfen — unterstreicht mögliche Fehler rot',
 }

@@ -143,6 +143,8 @@ function reviewTabBody(ctx: Ctx) {
       dropdown={dropdown}
       setDropdown={setDropdown}
       onAiPreset={ctx.services.ai.preset}
+      spellcheck={ctx.state.view.spellcheck ?? false}
+      onSpellcheck={ctx.services.view.setSpellcheck ?? (() => {})}
       commentCount={review.commentCount}
       openCommentCount={review.openCommentCount}
       onShowComments={ctx.services.review.showComments}

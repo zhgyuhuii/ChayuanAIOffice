@@ -522,7 +522,7 @@ export interface ValidateTextEditsRequest {
 /** Extract pages into a new PDF written to the ChatOffice save dir and opened in a new tab */
 export interface ExtractPagesRequest {
   path: string
-  /** Original page indices */
+  /** Page indices in the file as saved (the renderer flushes first, so visible positions) */
   pages: number[]
   suggestedName: string
 }

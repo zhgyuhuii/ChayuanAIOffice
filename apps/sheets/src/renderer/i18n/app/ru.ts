@@ -1,4 +1,4 @@
-/** app strings, ru (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ru = {
   appMergeWorkbooks: 'Объединить книги',
   appMergeWorkbooksTip: 'Добавить листы из других файлов Excel в эту книгу',
@@ -1333,4 +1333,13 @@ export const ru = {
   appCellStyleGroupTitle: 'Заголовки',
   appCellStyleGroupData: 'Данные и модель',
   appCellStyleGroupAccent: 'Акцент',
+  appAiTruncatedNote: '(Ответ был обрезан из-за ограничения длины и может быть неполным.)',
+  appFullLoadFilterTitle: 'Для фильтрации нужна полная загрузка',
+  appFullLoadFilterBody: 'Эта книга велика и загружена лишь частично (потоково). Для корректной фильтрации (включая подсчёт значений) нужны полные данные. Загрузить всю книгу сейчас?',
+  appFullLoadStart: 'Загрузить всё',
+  appFullLoadRunning: 'Идёт полная загрузка книги — фильтрация станет доступна после завершения…',
+  appFullLoadTooLarge: 'Книга слишком велика для полной загрузки в память; фильтрация для этого файла недоступна.',
+  appDialogCancel: 'Отмена',
+  appRibbonCollapse: 'Свернуть ленту',
+  appRibbonPin: 'Закрепить ленту',
 }

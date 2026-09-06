@@ -1,4 +1,4 @@
-/** app strings, ms (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ms = {
   appMergeWorkbooks: 'Gabung Buku Kerja',
   appMergeWorkbooksTip: 'Tambah helaian daripada fail Excel lain ke buku kerja ini',
@@ -1333,4 +1333,13 @@ export const ms = {
   appCellStyleGroupTitle: 'Tajuk',
   appCellStyleGroupData: 'Data dan Model',
   appCellStyleGroupAccent: 'Aksen',
+  appAiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
+  appFullLoadFilterTitle: 'Penapisan memerlukan muatan penuh',
+  appFullLoadFilterBody: 'Buku kerja ini besar dan hanya dimuatkan sebahagian secara penstriman. Penapisan (termasuk kiraan nilai) memerlukan data lengkap. Muatkan seluruh buku kerja sekarang?',
+  appFullLoadStart: 'Muat semua',
+  appFullLoadRunning: 'Memuatkan seluruh buku kerja — penapisan tersedia selepas selesai…',
+  appFullLoadTooLarge: 'Buku kerja ini terlalu besar untuk dimuatkan sepenuhnya ke ingatan; penapisan tidak tersedia untuk fail ini.',
+  appDialogCancel: 'Batal',
+  appRibbonCollapse: 'Runtuhkan Reben',
+  appRibbonPin: 'Semat Reben',
 }

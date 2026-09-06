@@ -1,4 +1,4 @@
-/** app strings, ko (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ko = {
   appMergeWorkbooks: '통합 문서 병합',
   appMergeWorkbooksTip: '다른 Excel 파일의 시트를 현재 통합 문서에 추가합니다',
@@ -474,7 +474,7 @@ export const ko = {
   appFromTextCsvTitle: 'CSV/텍스트 파일을 현재 선택 영역으로 가져오기',
   appCsvImported: '파일에서 {rows}행 × {columns}열을 {cell} 위치로 가져왔습니다.',
   appCsvEmpty: 'CSV 파일에 데이터가 없습니다.',
-  appCsvTooLarge: 'CSV가 너무 큽니다 — 5만 셀을 초과하면 \'열기\'로 새 통합 문서로 여십시오.',
+  appCsvTooLarge: 'CSV가 너무 큽니다 — 5만 셀을 초과하면 \\\'열기\\\'로 새 통합 문서로 여십시오.',
   appCsvImportFailed: 'CSV 가져오기에 실패했습니다.',
   appNoNotesOnSheet: '현재 시트에 메모가 없습니다.',
   appNotePrevTitle: '이전 메모로 이동',
@@ -1333,4 +1333,13 @@ export const ko = {
   appCellStyleGroupTitle: '제목',
   appCellStyleGroupData: '데이터 및 모델',
   appCellStyleGroupAccent: '강조',
+  appAiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
+  appFullLoadFilterTitle: '필터를 사용하려면 전체 로드가 필요합니다',
+  appFullLoadFilterBody: '이 통합 문서는 커서 현재 일부만 스트리밍으로 로드되었습니다. 필터(값 개수 포함)가 정확하려면 전체 데이터가 필요합니다. 지금 전체를 로드할까요?',
+  appFullLoadStart: '모두 로드',
+  appFullLoadRunning: '통합 문서 전체를 로드하는 중입니다. 완료되면 필터를 사용할 수 있습니다…',
+  appFullLoadTooLarge: '이 통합 문서는 너무 커서 메모리에 전부 로드할 수 없습니다. 이 파일에서는 필터를 사용할 수 없습니다.',
+  appDialogCancel: '취소',
+  appRibbonCollapse: '리본 축소',
+  appRibbonPin: '리본 고정',
 }

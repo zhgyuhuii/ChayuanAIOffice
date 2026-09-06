@@ -1,4 +1,4 @@
-/** ai strings, ko (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ko = {
   aiInputPlaceholderGen: '만들 프레젠테이션을 설명하거나 질문하세요',
   aiEmptyGenTitle: 'AI에게 프레젠테이션 생성을 맡기세요',
@@ -282,4 +282,26 @@ export const ko = {
   aiNotePoolEmpty: '로컬 이미지 풀이 비어 자동 체인을 사용합니다',
   aiNoteSvgMode: '이미지: 벡터 그래픽(모델이 인라인으로 그림, 편집 가능)',
   aiNoteImgFail: '{page}페이지: "{kw}" 이미지를 가져오지 못해 벡터 그래픽으로 그렸습니다',
+  aiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
+  aiFailLoadGuide: '작업 가이드 불러오기',
+  aiSumLoadGuide: '작업 가이드 불러옴: {names}',
+  aiOpEditText: '텍스트 편집',
+  aiOpEditFormat: '서식 변경',
+  aiOpMoveElement: '요소 이동',
+  aiOpSetFill: '채우기 설정',
+  aiOpSetStroke: '윤곽선 설정',
+  aiOpDeleteElement: '요소 삭제',
+  aiOpUngroup: '그룹 해제',
+  aiOpCropImage: '이미지 자르기',
+  aiOpPictureOpacity: '이미지 투명도',
+  aiOpSpeakerNotes: '발표자 노트 설정',
+  aiOpDeleteSlide: '페이지 삭제',
+  aiOpBackground: '배경 설정',
+  aiOpEditTable: '표 편집',
+  aiOpTableStructure: '표 구조',
+  aiOpNewShape: '새 도형',
+  aiOpNewTextbox: '새 텍스트 상자',
+  aiOpInsertChart: '차트 삽입',
+  aiOpInsertSmartart: '다이어그램 삽입',
+  aiOpInsertTable: '표 삽입',
 }

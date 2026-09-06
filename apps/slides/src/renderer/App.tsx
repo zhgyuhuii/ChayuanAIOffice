@@ -904,7 +904,7 @@ export function App() {
   const askOpenRef = useRef(false)
 
   const save = useCallback(
-    (quiet = false): Promise<boolean> => fileActions.save(ctxRef.current, quiet),
+    (quiet = false): Promise<boolean> => fileActions.save(() => ctxRef.current, quiet),
     [],
   )
 
@@ -975,7 +975,7 @@ export function App() {
     }
   }, [autoSave, path, editing, editingCell, save])
 
-  const saveAs = useCallback(() => fileActions.saveAs(ctxRef.current), [])
+  const saveAs = useCallback(() => fileActions.saveAs(() => ctxRef.current), [])
   const exportImages = useCallback(() => fileActions.exportImages(ctxRef.current), [])
   const exportPdf = useCallback(() => fileActions.exportPdf(ctxRef.current), [])
 
@@ -1488,6 +1488,11 @@ export function App() {
     setSelectedIds([])
     setEditing(null)
     setDirty(true)
+    // The deck is the new truth: drop an in-progress notes draft (same as undo) so a stale
+    // draft can't overwrite what the AI batch wrote via setNotes on the next flush, then
+    // re-fetch notes/comments, which aren't part of RenderSlide.
+    notesDraftRef.current = null
+    setAnnotationsNonce((n) => n + 1)
   }, [])
 
   const addSlide = useCallback(() => slideActions.addSlide(ctxRef.current), [])

@@ -1,4 +1,4 @@
-/** ribbon strings, ar (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ar = {
   ribbonAiCreditNote: 'يستدعي الذكاء الاصطناعي ويستهلك الرصيد',
   ribbonAiRewriteConfirm: 'هذا الإجراء يستدعي الذكاء الاصطناعي: يستهلك الرصيد وقد يعيد كتابة المحتوى بالكامل. هل تريد المتابعة؟ (لن يتم السؤال مرة أخرى.)',
@@ -830,4 +830,6 @@ export const ar = {
   ribbonCompressWeb: 'ويب (150 ppi)',
   ribbonCompressEmail: 'بريد إلكتروني (96 ppi)',
   ribbonPictureReplaceUnsupported: 'تنسيق صورة غير مدعوم: {ext}',
+  ribbonCollapse: 'طي الشريط',
+  ribbonPin: 'تثبيت الشريط',
 }

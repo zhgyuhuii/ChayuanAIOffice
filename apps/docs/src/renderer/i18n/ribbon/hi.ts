@@ -1,4 +1,4 @@
-/** ribbon strings, hi (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const hi = {
   ribbonAiCreditNote: 'AI का उपयोग करता है और क्रेडिट खर्च होते हैं',
   ribbonAiRewriteConfirm: 'यह क्रिया AI को कॉल करती है: इसमें क्रेडिट खर्च होते हैं और पूरी सामग्री फिर से लिखी जा सकती है। जारी रखें? (दोबारा नहीं पूछा जाएगा।)',
@@ -726,4 +726,10 @@ export const hi = {
   ribbonChartKitTip: 'ECharts गैलरी (39 परिवार, 3D/GL सहित)',
   ribbonEchartLabel: 'ECharts चार्ट',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'रिबन संक्षिप्त करें',
+  ribbonPin: 'रिबन पिन करें',
+  ribbonLinkEditTitle: 'हाइपरलिंक संपादित करें',
+  ribbonLinkRemove: 'लिंक हटाएँ',
+  ribbonSpellcheckBtn: 'वर्तनी जाँच',
+  ribbonSpellcheckTip: 'टाइप करते समय वर्तनी जाँचें — संभावित गलत वर्तनी वाले शब्दों को लाल रेखा से रेखांकित करता है',
 }

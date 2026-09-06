@@ -1,4 +1,4 @@
-/** ai strings, pt (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pt = {
   aiInputPlaceholderGen: 'Descreva o deck a gerar, ou pergunte algo',
   aiEmptyGenTitle: 'Deixe a IA gerar sua apresentação',
@@ -282,4 +282,26 @@ export const pt = {
   aiNotePoolEmpty: 'Conjunto local vazio; cadeia automática aplicada',
   aiNoteSvgMode: 'Imagens: gráficos vetoriais (desenhados pelo modelo, editáveis)',
   aiNoteImgFail: 'Página {page}: sem imagem para "{kw}"; desenhada como gráfico vetorial',
+  aiTruncatedNote: '(A resposta foi cortada pelo limite de comprimento e pode estar incompleta.)',
+  aiFailLoadGuide: 'Carregar guia de operações',
+  aiSumLoadGuide: 'Guia de operações carregado: {names}',
+  aiOpEditText: 'Editar texto',
+  aiOpEditFormat: 'Editar formato',
+  aiOpMoveElement: 'Mover elemento',
+  aiOpSetFill: 'Definir preenchimento',
+  aiOpSetStroke: 'Definir contorno',
+  aiOpDeleteElement: 'Excluir elemento',
+  aiOpUngroup: 'Desagrupar',
+  aiOpCropImage: 'Cortar imagem',
+  aiOpPictureOpacity: 'Opacidade da imagem',
+  aiOpSpeakerNotes: 'Definir notas do apresentador',
+  aiOpDeleteSlide: 'Excluir slide',
+  aiOpBackground: 'Definir fundo',
+  aiOpEditTable: 'Editar tabela',
+  aiOpTableStructure: 'Estrutura da tabela',
+  aiOpNewShape: 'Nova forma',
+  aiOpNewTextbox: 'Nova caixa de texto',
+  aiOpInsertChart: 'Inserir gráfico',
+  aiOpInsertSmartart: 'Inserir diagrama',
+  aiOpInsertTable: 'Inserir tabela',
 }

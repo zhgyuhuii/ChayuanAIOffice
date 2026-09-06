@@ -1,4 +1,4 @@
-/** app strings, zh (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zh = {
   appMergeWorkbooks: '合并工作簿',
   appMergeWorkbooksTip: '将其他 Excel 文件的工作表并入当前工作簿',
@@ -1333,4 +1333,13 @@ export const zh = {
   appCellStyleGroupTitle: '标题',
   appCellStyleGroupData: '数据与模型',
   appCellStyleGroupAccent: '强调',
+  appAiTruncatedNote: '（回复因长度限制被截断,内容可能不完整。）',
+  appFullLoadFilterTitle: '筛选需要完整加载',
+  appFullLoadFilterBody: '此工作簿较大，目前以流式方式仅加载了部分数据。筛选（含按值统计）需要完整数据才能给出正确结果。要现在完整加载整个工作簿吗？',
+  appFullLoadStart: '完整加载',
+  appFullLoadRunning: '正在完整加载工作簿，完成后即可使用筛选……',
+  appFullLoadTooLarge: '此工作簿过大，无法完整载入内存，筛选在此文件上暂不可用。',
+  appDialogCancel: '取消',
+  appRibbonCollapse: '折叠功能区',
+  appRibbonPin: '固定功能区',
 }

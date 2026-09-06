@@ -26,6 +26,7 @@ import {
   modelAcceptsImages,
   resolveDefaultModel,
   runMediaJob,
+  setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
@@ -118,6 +119,7 @@ function appendRunFailure(entry: AiRunFailure): void {
 export function registerAiIpc(): void {
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
+  setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
   aiRuntime = registerSharedAiIpc({
     ipcMain,

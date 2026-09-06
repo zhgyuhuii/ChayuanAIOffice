@@ -1,4 +1,4 @@
-/** ai strings, pl (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pl = {
   aiInputPlaceholderGen: 'Opisz prezentację do wygenerowania albo zadaj pytanie',
   aiEmptyGenTitle: 'Pozwól AI wygenerować twoją prezentację',
@@ -282,4 +282,26 @@ export const pl = {
   aiNotePoolEmpty: 'Lokalna pula pusta; zastosowano łańcuch automatyczny',
   aiNoteSvgMode: 'Obrazy: grafika wektorowa (rysowana przez model, edytowalna)',
   aiNoteImgFail: 'Strona {page}: brak obrazu dla „{kw}”; narysowano jako grafika wektorowa',
+  aiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
+  aiFailLoadGuide: 'Wczytaj przewodnik operacji',
+  aiSumLoadGuide: 'Wczytano przewodnik operacji: {names}',
+  aiOpEditText: 'Edycja tekstu',
+  aiOpEditFormat: 'Edycja formatu',
+  aiOpMoveElement: 'Przenoszenie elementu',
+  aiOpSetFill: 'Ustawianie wypełnienia',
+  aiOpSetStroke: 'Ustawianie konturu',
+  aiOpDeleteElement: 'Usuwanie elementu',
+  aiOpUngroup: 'Rozgrupowanie',
+  aiOpCropImage: 'Przytnij obraz',
+  aiOpPictureOpacity: 'Przezroczystość obrazu',
+  aiOpSpeakerNotes: 'Ustawianie notatek prelegenta',
+  aiOpDeleteSlide: 'Usuwanie slajdu',
+  aiOpBackground: 'Ustawianie tła',
+  aiOpEditTable: 'Edycja tabeli',
+  aiOpTableStructure: 'Struktura tabeli',
+  aiOpNewShape: 'Nowy kształt',
+  aiOpNewTextbox: 'Nowe pole tekstowe',
+  aiOpInsertChart: 'Wstawianie wykresu',
+  aiOpInsertSmartart: 'Wstawianie diagramu',
+  aiOpInsertTable: 'Wstawianie tabeli',
 }

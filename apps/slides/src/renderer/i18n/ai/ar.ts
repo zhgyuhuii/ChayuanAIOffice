@@ -1,4 +1,4 @@
-/** ai strings, ar (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ar = {
   aiInputPlaceholderGen: 'صف العرض المطلوب إنشاؤه أو اطرح أي سؤال',
   aiEmptyGenTitle: 'دع الذكاء الاصطناعي ينشئ عرضك التقديمي',
@@ -282,4 +282,26 @@ export const ar = {
   aiNotePoolEmpty: 'مجموعة الصور المحلية فارغة؛ تُستخدم السلسلة التلقائية',
   aiNoteSvgMode: 'الصور: رسومات متجهية (يرسمها النموذج، قابلة للتعديل)',
   aiNoteImgFail: 'الصفحة {page}: لم يتم العثور على صورة لـ «{kw}»؛ رُسمت كرسومات متجهية',
+  aiTruncatedNote: '(تم اقتطاع الرد بسبب حد الطول وقد يكون غير مكتمل.)',
+  aiFailLoadGuide: 'تحميل دليل العمليات',
+  aiSumLoadGuide: 'تم تحميل دليل العمليات: {names}',
+  aiOpEditText: 'تحرير النص',
+  aiOpEditFormat: 'تعديل التنسيق',
+  aiOpMoveElement: 'نقل عنصر',
+  aiOpSetFill: 'تعيين التعبئة',
+  aiOpSetStroke: 'تعيين الحد الخارجي',
+  aiOpDeleteElement: 'حذف عنصر',
+  aiOpUngroup: 'فك التجميع',
+  aiOpCropImage: 'اقتصاص الصورة',
+  aiOpPictureOpacity: 'شفافية الصورة',
+  aiOpSpeakerNotes: 'تعيين ملاحظات المتحدث',
+  aiOpDeleteSlide: 'حذف الصفحة',
+  aiOpBackground: 'تعيين الخلفية',
+  aiOpEditTable: 'تحرير الجدول',
+  aiOpTableStructure: 'بنية الجدول',
+  aiOpNewShape: 'شكل جديد',
+  aiOpNewTextbox: 'مربع نص جديد',
+  aiOpInsertChart: 'إدراج مخطط',
+  aiOpInsertSmartart: 'إدراج رسم تخطيطي',
+  aiOpInsertTable: 'إدراج جدول',
 }

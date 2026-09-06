@@ -300,8 +300,9 @@ export interface DesktopApi {
   setAiCurrentModel(selection: AiModelSelection): Promise<void>
   /** model list discovery; doubles as the settings page connection test */
   aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
-  /** system print dialog for the current window; ok=false without error = canceled */
-  print(): Promise<{ ok: boolean; error?: string }>
+  /** system print dialog for the current window; ok=false without error = canceled.
+   *  scale: print scale inverting the preview's print zoom (print-zoom.ts) */
+  print(scale?: number): Promise<{ ok: boolean; error?: string }>
   /** render the document to PDF and ask where to save; size in twips.
    *  outPath is only honored when a previous export dialog chose that exact path */
   exportPdf(
@@ -309,11 +310,13 @@ export interface DesktopApi {
     pageWidthTwips: number,
     pageHeightTwips: number,
     outPath?: string,
+    scale?: number,
   ): Promise<{ ok: boolean; path?: string; error?: string }>
   /** Mixed paper-size export: produce a set of PDF bytes (base64) at given sizes per the current print layout */
   printPdfBuffer(
     pageWidthTwips: number,
     pageHeightTwips: number,
+    scale?: number,
   ): Promise<{ ok: boolean; base64?: string; error?: string }>
   /** Merge grouped PDF fragments in order and write to disk (missing outPath opens
    *  the save dialog; a given outPath must come from a previous export dialog) */

@@ -1,4 +1,4 @@
-/** ai strings, es (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const es = {
   aiInputPlaceholderGen: 'Describe la presentación a generar, o pregunta lo que quieras',
   aiEmptyGenTitle: 'Deja que la IA genere tu presentación',
@@ -282,4 +282,26 @@ export const es = {
   aiNotePoolEmpty: 'Reserva local vacía; se aplica la cadena automática',
   aiNoteSvgMode: 'Imágenes: gráficos vectoriales (dibujados por el modelo, editables)',
   aiNoteImgFail: 'Página {page}: sin imagen para «{kw}»; dibujada como gráfico vectorial',
+  aiTruncatedNote: '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
+  aiFailLoadGuide: 'Cargar guía de operaciones',
+  aiSumLoadGuide: 'Guía de operaciones cargada: {names}',
+  aiOpEditText: 'Editar texto',
+  aiOpEditFormat: 'Editar formato',
+  aiOpMoveElement: 'Mover elemento',
+  aiOpSetFill: 'Establecer relleno',
+  aiOpSetStroke: 'Establecer contorno',
+  aiOpDeleteElement: 'Eliminar elemento',
+  aiOpUngroup: 'Desagrupar',
+  aiOpCropImage: 'Recortar imagen',
+  aiOpPictureOpacity: 'Opacidad de imagen',
+  aiOpSpeakerNotes: 'Establecer notas del orador',
+  aiOpDeleteSlide: 'Eliminar diapositiva',
+  aiOpBackground: 'Establecer fondo',
+  aiOpEditTable: 'Editar tabla',
+  aiOpTableStructure: 'Estructura de tabla',
+  aiOpNewShape: 'Nueva forma',
+  aiOpNewTextbox: 'Nuevo cuadro de texto',
+  aiOpInsertChart: 'Insertar gráfico',
+  aiOpInsertSmartart: 'Insertar diagrama',
+  aiOpInsertTable: 'Insertar tabla',
 }

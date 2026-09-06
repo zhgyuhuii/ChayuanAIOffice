@@ -99,6 +99,7 @@ export interface DocsCommandServices {
     /** compute zoom from the current window size (Word: page width / whole page) */
     readonly zoomFit: (mode: 'width' | 'page') => void
     readonly setDarkCanvas: (v: boolean) => void
+    readonly setSpellcheck?: (v: boolean) => void
     readonly pagePreview: () => void
   }
   readonly hf: {
@@ -153,6 +154,8 @@ export function ribbonPropsFromHost(
     sources: state.sources as RibbonProps['sources'],
     zoom: state.view.zoom,
     darkCanvas: state.view.darkCanvas,
+    spellcheck: state.view.spellcheck,
+    onSpellcheck: services.view.setSpellcheck ?? (() => {}),
     header: state.doc.header,
     footer: state.doc.footer,
     titlePg: state.doc.titlePg,

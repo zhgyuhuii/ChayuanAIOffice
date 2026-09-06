@@ -1,4 +1,4 @@
-/** app strings, de (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const de = {
   appMergeWorkbooks: 'Arbeitsmappen zusammenführen',
   appMergeWorkbooksTip: 'Blätter aus anderen Excel-Dateien in diese Arbeitsmappe übernehmen',
@@ -1333,4 +1333,13 @@ export const de = {
   appCellStyleGroupTitle: 'Titel',
   appCellStyleGroupData: 'Daten und Modell',
   appCellStyleGroupAccent: 'Akzent',
+  appAiTruncatedNote: '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
+  appFullLoadFilterTitle: 'Filtern erfordert vollständiges Laden',
+  appFullLoadFilterBody: 'Diese Arbeitsmappe ist groß und bisher nur teilweise geladen. Filtern (einschließlich Wertezählung) braucht die vollständigen Daten. Jetzt die gesamte Arbeitsmappe laden?',
+  appFullLoadStart: 'Alles laden',
+  appFullLoadRunning: 'Die gesamte Arbeitsmappe wird geladen — Filtern ist danach verfügbar…',
+  appFullLoadTooLarge: 'Diese Arbeitsmappe ist zu groß, um vollständig geladen zu werden; Filtern ist für diese Datei nicht verfügbar.',
+  appDialogCancel: 'Abbrechen',
+  appRibbonCollapse: 'Menüband reduzieren',
+  appRibbonPin: 'Menüband anheften',
 }

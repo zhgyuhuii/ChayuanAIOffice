@@ -1,4 +1,4 @@
-/** ribbon strings, th (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const th = {
   ribbonAiCreditNote: 'เรียกใช้ AI และใช้เครดิต',
   ribbonAiRewriteConfirm: 'การดำเนินการนี้จะเรียกใช้ AI: ใช้เครดิตและอาจเขียนเนื้อหาทั้งหมดใหม่ ดำเนินการต่อหรือไม่ (จะไม่ถามอีก)',
@@ -830,4 +830,6 @@ export const th = {
   ribbonCompressWeb: 'เว็บ (150 ppi)',
   ribbonCompressEmail: 'อีเมล (96 ppi)',
   ribbonPictureReplaceUnsupported: 'รูปแบบรูปภาพที่ไม่รองรับ: {ext}',
+  ribbonCollapse: 'ยุบ Ribbon',
+  ribbonPin: 'ปักหมุด Ribbon',
 }

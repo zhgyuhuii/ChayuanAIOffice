@@ -60,6 +60,23 @@ const fontCdnUrl = normalizeHttpsBaseUrl(
 // switch.
 const includeMacX64 = process.env.CHATOFFICE_MAC_X64 === '1'
 
+// GENOFFICE_WIN_ARM64=1 — package the Windows ARM64 installer instead of x64.
+// CI runs it as a second electron-builder pass (own BUILD_DIR) after the
+// unchanged x64 pass, so the two never share an output dir or a sidecar path:
+// the sidecar comes from the matching cargo target dir and is checked to
+// exist at beforePack because electron-builder exits 0 on a missing
+// extraResources source (Sheets would ship dead on every ARM install).
+const winArm64 = process.env.GENOFFICE_WIN_ARM64 === '1'
+// 7-Zip packs ARM64 executables with its ARM64 branch filter, which the NSIS
+// install-time extractor (Nsis7z) cannot decode: it silently skips
+// ChatOffice.exe and every dll (electron-builder#9983). BCJ it can decode.
+if (winArm64 && !process.env.ELECTRON_BUILDER_7Z_FILTER) {
+  process.env.ELECTRON_BUILDER_7Z_FILTER = 'BCJ'
+}
+const winArch = winArm64 ? 'arm64' : 'x64'
+const winSidecarTarget = winArm64 ? 'aarch64-pc-windows-msvc' : 'x86_64-pc-windows-gnu'
+const WIN_SIDECAR = `../sheets/native/xlsx-engine/target/${winSidecarTarget}/release/xlsx-sidecar.exe`
+
 // The gsk CLI tree below is copied verbatim from node_modules, and the
 // nested commander path depends on npm's current hoisting layout — fail the
 // build with a clear message if an install ever changes it, instead of
@@ -219,7 +236,7 @@ const config = {
   // the old runtime).
   electronVersion: require('electron/package.json').version,
   directories: {
-    output: 'release',
+    output: process.env.BUILD_DIR || 'release',
   },
   files: ['out/**'],
   extraResources: [
@@ -391,12 +408,12 @@ const config = {
     target: [
       {
         target: 'nsis',
-        arch: ['x64'],
+        arch: [winArch],
       },
     ],
     extraResources: [
       {
-        from: '../sheets/native/xlsx-engine/target/x86_64-pc-windows-gnu/release/xlsx-sidecar.exe',
+        from: WIN_SIDECAR,
         to: 'native/xlsx-sidecar.exe',
       },
     ],
@@ -430,7 +447,7 @@ const config = {
     // not resize a lone png, so deb/rpm would install only
     // hicolor/1024x1024/apps/chatoffice.png — a size absent from the hicolor
     // theme index, leaving GNOME/KDE launchers on the generic fallback icon
-    // (genspark-ai/chatoffice#90). The set ships every standard raster size.
+    // (chatoffice-ai/chatoffice#90). The set ships every standard raster size.
     icon: 'build/icons',
     // mac and win name the binary from productName; linux instead derives it
     // from package.json "name", and "@chatoffice/shell" sanitizes to the
@@ -490,6 +507,11 @@ const config = {
     if (context.electronPlatformName === 'darwin' && includeMacX64) {
       assertUniversalSidecar()
       assertUniversalVisionOcr()
+    }
+    if (context.electronPlatformName === 'win32' && !existsSync(join(__dirname, WIN_SIDECAR))) {
+      throw new Error(
+        `win extraResources source missing: ${WIN_SIDECAR} (cargo build --target ${winSidecarTarget} first)`,
+      )
     }
   },
   dmg: {

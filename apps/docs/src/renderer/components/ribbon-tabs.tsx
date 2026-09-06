@@ -45,6 +45,7 @@ import {
   IconPrintLayout,
   IconReadMode,
   IconRuler,
+  IconSpellcheck,
   IconSplit,
   IconSwitchWindows,
   IconRedo,
@@ -709,6 +710,9 @@ interface ReviewTabProps extends TabProps {
   onNewComment: () => void
   trackChanges: boolean
   onTrackChanges: (on: boolean) => void
+  /** native check-as-you-type spellcheck (red squiggle) */
+  spellcheck: boolean
+  onSpellcheck: (on: boolean) => void
   revisionDisplay: RevisionDisplayMode
   onRevisionDisplay: (mode: RevisionDisplayMode) => void
   revisionCount: number
@@ -740,6 +744,8 @@ export function ReviewTab({
   onNewComment,
   trackChanges,
   onTrackChanges,
+  spellcheck,
+  onSpellcheck,
   revisionDisplay,
   onRevisionDisplay,
   revisionCount,
@@ -785,6 +791,17 @@ export function ReviewTab({
               </span>
             </span>
             <span>{t('ribbonEditorBtn')}</span>
+          </button>
+          <button
+            className={`rb-big ${spellcheck ? 'active' : ''}`}
+            disabled={!hasDoc}
+            data-tip={t('ribbonSpellcheckTip')}
+            onClick={() => onSpellcheck(!spellcheck)}
+          >
+            <span className="rb-big-icon">
+              <IconSpellcheck size={BIG} />
+            </span>
+            <span>{t('ribbonSpellcheckBtn')}</span>
           </button>
         </div>
         <div className="ribbon-group-label">{t('ribbonGroupProofing')}</div>

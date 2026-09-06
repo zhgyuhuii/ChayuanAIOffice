@@ -1,4 +1,4 @@
-/** ribbon strings, zh (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zh = {
   ribbonAiCreditNote: '将调用 AI 并消耗额度',
   ribbonAiRewriteConfirm: '此操作将调用 AI：会消耗额度，并可能改写整篇内容。是否继续？（确认后不再提示）',
@@ -830,4 +830,6 @@ export const zh = {
   ribbonCompressWeb: '网页（150 ppi）',
   ribbonCompressEmail: '电子邮件（96 ppi）',
   ribbonPictureReplaceUnsupported: '不支持的图片格式：{ext}',
+  ribbonCollapse: '折叠功能区',
+  ribbonPin: '固定功能区',
 }

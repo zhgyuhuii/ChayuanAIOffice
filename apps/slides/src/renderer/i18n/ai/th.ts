@@ -1,4 +1,4 @@
-/** ai strings, th (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const th = {
   aiInputPlaceholderGen: 'อธิบายงานนำเสนอที่จะสร้าง หรือถามได้เลย',
   aiEmptyGenTitle: 'ให้ AI สร้างงานนำเสนอให้คุณ',
@@ -282,4 +282,26 @@ export const th = {
   aiNotePoolEmpty: 'คลังรูปในเครื่องว่าง ใช้ห่วงโซ่อัตโนมัติ',
   aiNoteSvgMode: 'รูปภาพ: เวกเตอร์ (โมเดลวาดแบบอินไลน์ แก้ไขได้)',
   aiNoteImgFail: 'หน้า {page}: ไม่มีรูปสำหรับ "{kw}" วาดเป็นเวกเตอร์แทน',
+  aiTruncatedNote: '(คำตอบถูกตัดเนื่องจากถึงขีดจำกัดความยาว เนื้อหาอาจไม่สมบูรณ์)',
+  aiFailLoadGuide: 'โหลดคู่มือการดำเนินการ',
+  aiSumLoadGuide: 'โหลดคู่มือการดำเนินการแล้ว: {names}',
+  aiOpEditText: 'แก้ไขข้อความ',
+  aiOpEditFormat: 'แก้ไขรูปแบบ',
+  aiOpMoveElement: 'ย้ายองค์ประกอบ',
+  aiOpSetFill: 'ตั้งค่าการเติมสี',
+  aiOpSetStroke: 'ตั้งค่าเส้นขอบ',
+  aiOpDeleteElement: 'ลบองค์ประกอบ',
+  aiOpUngroup: 'ยกเลิกการจัดกลุ่ม',
+  aiOpCropImage: 'ครอบตัดรูปภาพ',
+  aiOpPictureOpacity: 'ความทึบของรูปภาพ',
+  aiOpSpeakerNotes: 'ตั้งค่าบันทึกย่อของผู้บรรยาย',
+  aiOpDeleteSlide: 'ลบหน้า',
+  aiOpBackground: 'ตั้งค่าพื้นหลัง',
+  aiOpEditTable: 'แก้ไขตาราง',
+  aiOpTableStructure: 'โครงสร้างตาราง',
+  aiOpNewShape: 'รูปร่างใหม่',
+  aiOpNewTextbox: 'กล่องข้อความใหม่',
+  aiOpInsertChart: 'แทรกแผนภูมิ',
+  aiOpInsertSmartart: 'แทรกไดอะแกรม',
+  aiOpInsertTable: 'แทรกตาราง',
 }

@@ -1,4 +1,4 @@
-/** ribbon strings, ru (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ru = {
   ribbonAiCreditNote: 'Использует ИИ и расходует кредиты',
   ribbonAiRewriteConfirm: 'Это действие вызывает ИИ: расходуются кредиты, и всё содержимое может быть переписано. Продолжить? (Вопрос больше не появится.)',
@@ -726,4 +726,10 @@ export const ru = {
   ribbonChartKitTip: 'Галерея ECharts (39 семейств, включая 3D/GL)',
   ribbonEchartLabel: 'Диаграмма ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Свернуть ленту',
+  ribbonPin: 'Закрепить ленту',
+  ribbonLinkEditTitle: 'Изменить гиперссылку',
+  ribbonLinkRemove: 'Удалить ссылку',
+  ribbonSpellcheckBtn: 'Правописание',
+  ribbonSpellcheckTip: 'Проверять орфографию при вводе — подчёркивает красным слова с возможными ошибками',
 }

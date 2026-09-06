@@ -1,4 +1,4 @@
-/** app strings, he (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const he = {
   appMergeWorkbooks: 'מיזוג חוברות עבודה',
   appMergeWorkbooksTip: 'הוספת גיליונות מקובצי Excel אחרים לחוברת העבודה הזו',
@@ -1333,4 +1333,13 @@ export const he = {
   appCellStyleGroupTitle: 'כותרות',
   appCellStyleGroupData: 'נתונים ומודל',
   appCellStyleGroupAccent: 'הדגשה',
+  appAiTruncatedNote: '(התשובה נחתכה בגלל מגבלת האורך וייתכן שאינה שלמה.)',
+  appFullLoadFilterTitle: 'סינון דורש טעינה מלאה',
+  appFullLoadFilterBody: 'חוברת העבודה גדולה ונטענה רק חלקית בהזרמה. סינון (כולל ספירת ערכים) דורש את מלוא הנתונים. לטעון כעת את כל חוברת העבודה?',
+  appFullLoadStart: 'טען הכול',
+  appFullLoadRunning: 'טוען את כל חוברת העבודה — הסינון יהיה זמין בסיום…',
+  appFullLoadTooLarge: 'חוברת העבודה גדולה מכדי להיטען במלואה לזיכרון; הסינון אינו זמין עבור קובץ זה.',
+  appDialogCancel: 'ביטול',
+  appRibbonCollapse: 'כווץ את רצועת הכלים',
+  appRibbonPin: 'הצמד את רצועת הכלים',
 }

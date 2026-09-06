@@ -1,4 +1,4 @@
-/** app strings, pl (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pl = {
   appMergeWorkbooks: 'Scal skoroszyty',
   appMergeWorkbooksTip: 'Dodaj arkusze z innych plików Excel do tego skoroszytu',
@@ -1333,4 +1333,13 @@ export const pl = {
   appCellStyleGroupTitle: 'Tytuły',
   appCellStyleGroupData: 'Dane i model',
   appCellStyleGroupAccent: 'Akcent',
+  appAiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
+  appFullLoadFilterTitle: 'Filtrowanie wymaga pełnego wczytania',
+  appFullLoadFilterBody: 'Ten skoroszyt jest duży i został wczytany tylko częściowo (strumieniowo). Filtrowanie (w tym zliczanie wartości) wymaga pełnych danych. Wczytać teraz cały skoroszyt?',
+  appFullLoadStart: 'Wczytaj wszystko',
+  appFullLoadRunning: 'Trwa pełne wczytywanie skoroszytu — filtrowanie będzie dostępne po zakończeniu…',
+  appFullLoadTooLarge: 'Ten skoroszyt jest zbyt duży, aby w pełni zmieścić się w pamięci; filtrowanie jest niedostępne dla tego pliku.',
+  appDialogCancel: 'Anuluj',
+  appRibbonCollapse: 'Zwiń Wstążkę',
+  appRibbonPin: 'Przypnij Wstążkę',
 }

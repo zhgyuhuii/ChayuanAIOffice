@@ -1,4 +1,4 @@
-/** app strings, zh-TW (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zhTW = {
   appMergeWorkbooks: '合併活頁簿',
   appMergeWorkbooksTip: '將其他 Excel 檔案的工作表併入目前活頁簿',
@@ -1333,4 +1333,13 @@ export const zhTW = {
   appCellStyleGroupTitle: '標題',
   appCellStyleGroupData: '資料與模型',
   appCellStyleGroupAccent: '強調',
+  appAiTruncatedNote: '（回覆因長度限制被截斷,內容可能不完整。）',
+  appFullLoadFilterTitle: '篩選需要完整載入',
+  appFullLoadFilterBody: '此活頁簿較大，目前以串流方式僅載入了部分資料。篩選（含按值統計）需要完整資料才能給出正確結果。要現在完整載入整個活頁簿嗎？',
+  appFullLoadStart: '完整載入',
+  appFullLoadRunning: '正在完整載入活頁簿，完成後即可使用篩選……',
+  appFullLoadTooLarge: '此活頁簿過大，無法完整載入記憶體，篩選在此檔案上暫不可用。',
+  appDialogCancel: '取消',
+  appRibbonCollapse: '摺疊功能區',
+  appRibbonPin: '固定功能區',
 }

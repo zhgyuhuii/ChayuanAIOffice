@@ -20,6 +20,7 @@ export {
   COMPLETED_VIA_TOOLS_TEXT,
   DEFAULT_MAX_TURNS,
   parseDegradedToolCalls,
+  runtimePreamble,
   sanitizeAgentPayload,
 } from './loop'
 export type {

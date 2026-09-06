@@ -1,4 +1,4 @@
-/** ribbon strings, de (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const de = {
   ribbonAiCreditNote: 'Ruft KI auf und verbraucht Guthaben',
   ribbonAiRewriteConfirm: 'Diese Aktion ruft die KI auf: Sie verbraucht Guthaben und kann den gesamten Inhalt umschreiben. Fortfahren? (Sie werden nicht erneut gefragt.)',
@@ -830,4 +830,6 @@ export const de = {
   ribbonCompressWeb: 'Web (150 ppi)',
   ribbonCompressEmail: 'E-Mail (96 ppi)',
   ribbonPictureReplaceUnsupported: 'Nicht unterstütztes Bildformat: {ext}',
+  ribbonCollapse: 'Menüband reduzieren',
+  ribbonPin: 'Menüband anheften',
 }

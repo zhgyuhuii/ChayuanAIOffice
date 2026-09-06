@@ -1,4 +1,4 @@
-/** ribbon strings, ms (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ms = {
   ribbonAiCreditNote: 'Menggunakan AI dan menggunakan kredit',
   ribbonAiRewriteConfirm: 'Tindakan ini memanggil AI: menggunakan kredit dan mungkin menulis semula keseluruhan kandungan. Teruskan? (Tidak akan ditanya lagi.)',
@@ -830,4 +830,6 @@ export const ms = {
   ribbonCompressWeb: 'Web (150 ppi)',
   ribbonCompressEmail: 'E-mel (96 ppi)',
   ribbonPictureReplaceUnsupported: 'Format imej tidak disokong: {ext}',
+  ribbonCollapse: 'Runtuhkan Reben',
+  ribbonPin: 'Semat Reben',
 }

@@ -1,4 +1,4 @@
-/** ribbon strings, he (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const he = {
   ribbonAiCreditNote: 'משתמש ב-AI וצורך קרדיטים',
   ribbonAiRewriteConfirm: 'פעולה זו מפעילה AI: היא צורכת קרדיטים ועשויה לשכתב את כל התוכן. להמשיך? (לא תישאל שוב.)',
@@ -150,7 +150,7 @@ export const he = {
   ribbonClearBordersTip: 'נקה גבולות מהתאים הנבחרים',
   ribbonBorderColor: 'צבע גבול',
   ribbonBorderWidth: 'עובי גבול',
-  ribbonPtValue: '{n} נק\'',
+  ribbonPtValue: '{n} נק\\\'',
   ribbonGroupBorders: 'גבולות',
   ribbonDeleteTable: 'מחק טבלה',
   ribbonGroupDelete: 'מחיקה',
@@ -461,7 +461,7 @@ export const he = {
   ribbonColorRed: 'אדום',
   ribbonColorYellow: 'צהוב',
   ribbonColorLightYellow: 'צהוב בהיר',
-  ribbonColorBeige: 'בז\'',
+  ribbonColorBeige: 'בז\\\'',
   ribbonMargins: 'שוליים',
   ribbonMarginNormal: 'רגיל',
   ribbonMarginNormalDesc: '2.54 ס"מ בכל הצדדים',
@@ -726,4 +726,10 @@ export const he = {
   ribbonChartKitTip: 'גלריית ECharts (39 משפחות, כולל 3D/GL)',
   ribbonEchartLabel: 'תרשים ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'כווץ את רצועת הכלים',
+  ribbonPin: 'הצמד את רצועת הכלים',
+  ribbonLinkEditTitle: 'עריכת היפר-קישור',
+  ribbonLinkRemove: 'הסרת קישור',
+  ribbonSpellcheckBtn: 'בדיקת איות',
+  ribbonSpellcheckTip: 'בדיקת איות בעת ההקלדה — מסמנת בקו אדום מילים שאולי שגויות',
 }

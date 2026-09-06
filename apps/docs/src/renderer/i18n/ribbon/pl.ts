@@ -1,4 +1,4 @@
-/** ribbon strings, pl (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pl = {
   ribbonAiCreditNote: 'Używa AI i zużywa kredyty',
   ribbonAiRewriteConfirm: 'Ta akcja wywołuje AI: zużywa kredyty i może przepisać całą treść. Kontynuować? (Nie zapytamy ponownie.)',
@@ -726,4 +726,10 @@ export const pl = {
   ribbonChartKitTip: 'Galeria ECharts (39 rodzin, w tym 3D/GL)',
   ribbonEchartLabel: 'Wykres ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Zwiń Wstążkę',
+  ribbonPin: 'Przypnij Wstążkę',
+  ribbonLinkEditTitle: 'Edytuj hiperłącze',
+  ribbonLinkRemove: 'Usuń łącze',
+  ribbonSpellcheckBtn: 'Pisownia',
+  ribbonSpellcheckTip: 'Sprawdzaj pisownię podczas pisania — podkreśla na czerwono możliwe błędy',
 }

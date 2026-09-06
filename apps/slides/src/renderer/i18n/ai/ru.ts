@@ -1,4 +1,4 @@
-/** ai strings, ru (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ru = {
   aiInputPlaceholderGen: 'Опишите презентацию для создания или задайте вопрос',
   aiEmptyGenTitle: 'Пусть ИИ создаст вашу презентацию',
@@ -282,4 +282,26 @@ export const ru = {
   aiNotePoolEmpty: 'Локальный набор пуст; применяется автоматическая цепочка',
   aiNoteSvgMode: 'Иллюстрации: векторная графика (рисует модель, редактируется)',
   aiNoteImgFail: 'Стр. {page}: не найдено изображение для «{kw}»; нарисовано векторной графикой',
+  aiTruncatedNote: '(Ответ был обрезан из-за ограничения длины и может быть неполным.)',
+  aiFailLoadGuide: 'Загрузить руководство по операциям',
+  aiSumLoadGuide: 'Руководство по операциям загружено: {names}',
+  aiOpEditText: 'Правка текста',
+  aiOpEditFormat: 'Изменение формата',
+  aiOpMoveElement: 'Перемещение элемента',
+  aiOpSetFill: 'Настройка заливки',
+  aiOpSetStroke: 'Настройка контура',
+  aiOpDeleteElement: 'Удаление элемента',
+  aiOpUngroup: 'Разгруппировка',
+  aiOpCropImage: 'Обрезать изображение',
+  aiOpPictureOpacity: 'Прозрачность изображения',
+  aiOpSpeakerNotes: 'Настройка заметок докладчика',
+  aiOpDeleteSlide: 'Удаление страницы',
+  aiOpBackground: 'Настройка фона',
+  aiOpEditTable: 'Правка таблицы',
+  aiOpTableStructure: 'Структура таблицы',
+  aiOpNewShape: 'Новая фигура',
+  aiOpNewTextbox: 'Новое текстовое поле',
+  aiOpInsertChart: 'Вставка диаграммы',
+  aiOpInsertSmartart: 'Вставка схемы',
+  aiOpInsertTable: 'Вставка таблицы',
 }

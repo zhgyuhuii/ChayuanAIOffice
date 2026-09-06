@@ -1,4 +1,4 @@
-/** app strings, hi (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const hi = {
   appMergeWorkbooks: 'वर्कबुक मर्ज करें',
   appMergeWorkbooksTip: 'अन्य Excel फ़ाइलों की शीट इस वर्कबुक में जोड़ें',
@@ -1333,4 +1333,13 @@ export const hi = {
   appCellStyleGroupTitle: 'शीर्षक',
   appCellStyleGroupData: 'डेटा और मॉडल',
   appCellStyleGroupAccent: 'एक्सेंट',
+  appAiTruncatedNote: '(उत्तर लंबाई सीमा के कारण कट गया और अधूरा हो सकता है।)',
+  appFullLoadFilterTitle: 'फ़िल्टर के लिए पूर्ण लोड आवश्यक है',
+  appFullLoadFilterBody: 'यह वर्कबुक बड़ी है और अभी केवल आंशिक रूप से स्ट्रीम हुई है। फ़िल्टर (मान गिनती सहित) के सही होने के लिए पूरा डेटा चाहिए। अभी पूरी वर्कबुक लोड करें?',
+  appFullLoadStart: 'सब लोड करें',
+  appFullLoadRunning: 'पूरी वर्कबुक लोड हो रही है — पूरा होते ही फ़िल्टर उपलब्ध होगा…',
+  appFullLoadTooLarge: 'यह वर्कबुक मेमोरी में पूरी तरह लोड करने के लिए बहुत बड़ी है; इस फ़ाइल पर फ़िल्टर उपलब्ध नहीं है।',
+  appDialogCancel: 'रद्द करें',
+  appRibbonCollapse: 'रिबन संक्षिप्त करें',
+  appRibbonPin: 'रिबन पिन करें',
 }

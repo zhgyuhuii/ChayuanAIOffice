@@ -1,4 +1,5 @@
 import type { AgentMessage, AgentToolDef } from '@chatoffice/agent-core'
+import { withOutputCapFallback } from './output-cap'
 import { streamAnthropic } from './protocols/anthropic'
 import { streamGemini } from './protocols/gemini'
 import { streamOpenAiCompatible } from './protocols/openai-compatible'
@@ -58,18 +59,24 @@ export async function streamForProvider(
 ): Promise<void> {
   const endpoint = getProviderAdapter(provider).resolveEndpoint(config)
   const { baseUrl } = endpoint
-  switch (endpoint.protocol) {
-    case 'anthropic':
-      return streamAnthropic(config, system, messages, tools, maxTokens, cb, baseUrl)
-    case 'gemini':
-      return streamGemini(config, system, messages, tools, maxTokens, cb, baseUrl, {
-        omitTemperature: endpoint.omitTemperature,
-      })
-    case 'openai-compatible':
-      return streamOpenAiCompatible(baseUrl, config, system, messages, tools, maxTokens, cb, {
-        omitTemperature: endpoint.omitTemperature,
-        useMaxCompletionTokens: endpoint.useMaxCompletionTokens,
-        bodyExtras: endpoint.bodyExtras,
-      })
-  }
+  return withOutputCapFallback(baseUrl, config.model, maxTokens, (cap) => {
+    switch (endpoint.protocol) {
+      case 'anthropic':
+        return streamAnthropic(config, system, messages, tools, cap, cb, baseUrl)
+      case 'gemini':
+        return streamGemini(config, system, messages, tools, cap, cb, baseUrl, {
+          omitTemperature: endpoint.omitTemperature,
+        })
+      case 'openai-compatible':
+        return streamOpenAiCompatible(baseUrl, config, system, messages, tools, cap, cb, {
+          omitTemperature: endpoint.omitTemperature,
+          useMaxCompletionTokens: endpoint.useMaxCompletionTokens,
+          bodyExtras: endpoint.bodyExtras,
+        })
+      default:
+        return streamOpenAiResponses(baseUrl, config, system, messages, tools, cap, cb, {
+          omitTemperature: endpoint.omitTemperature,
+        })
+    }
+  })
 }
