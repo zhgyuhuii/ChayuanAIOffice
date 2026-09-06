@@ -1811,6 +1811,12 @@ export interface SlidesApi {
     /** failure reason when method === 'error' */
     error?: string
   }>
+  /** pick a local folder and scan image files into data-URI pool items (preview grid) */
+  pickImageFolder: () => Promise<{
+    canceled?: boolean
+    error?: string
+    items: Array<{ name: string; dataUri: string; bytes: number; vector: boolean }>
+  }>
   stockImageSearch: (
     source: string,
     query: string,

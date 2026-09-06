@@ -57,11 +57,15 @@ import {
   defaultSettingsV2,
   enabledChatModels,
   functionCallingVerdict,
+  pickImageModel,
   resolveDefaultModel,
   resolveModelCapabilities,
+  type AiImageSource,
   type AiProtocol,
 } from '@chatoffice/ai-provider'
 import { slidesModelBridge } from './model-bridge'
+import { hydrateSpecSvg } from './spec-svg-hydrate'
+import { ImageSourcePicker } from './ImageSourcePicker'
 import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
@@ -512,6 +516,10 @@ export function AiPanel({
   }, [settings])
   const settingsRef = useRef(panelSettings)
   settingsRef.current = panelSettings
+  /** confirmed local image pool (data URIs) for the deck 'local' imagery source */
+  const [localPool, setLocalPool] = useState<string[]>([])
+  const localPoolRef = useRef<string[]>([])
+  localPoolRef.current = localPool
   /** model id driving the in-flight run — shown on this turn's assistant bubbles */
   const runModelRef = useRef<string | undefined>(undefined)
   const refreshSettings = async () => {
@@ -1072,6 +1080,7 @@ export function AiPanel({
           '- Text: {"type":"text","x":80,"y":60,"w":800,"h":90,"valign":"top","paragraphs":[{"align":"left","lineSpacingPct":110,"spaceAfterPt":6,"bullet":false,"runs":[{"text":"...","sizePt":18,"bold":true,"italic":false,"color":"#RRGGBB","font":"Font Name"}]}]}\n' +
           '  A paragraph may mix runs of different weight/color/size (e.g. a big number run + a small unit run in one line).\n' +
           '- Image: {"type":"image","url":"https://...","x":660,"y":80,"w":540,"h":560} — center-cropped to fill its box (object-fit: cover).\n' +
+          '- Image (vector, drawn by you): {"type":"image","svg":"<svg viewBox=\\"0 0 200 200\\">…</svg>","x":660,"y":80,"w":200,"h":200} — an inline standalone SVG you write for the slot; the system rasterizes it as the fallback and keeps the vector source. Use ONLY for the imagery briefs.\n' +
           '\n' +
           '## Hard layout rules\n' +
           '- Text boxes have ZERO inner padding: the box top-left is exactly where the first glyph starts. Size every box from its content: one line is about sizePt*1.8 px tall at lineSpacingPct 110; a CJK character is about sizePt*1.35 px wide, a Latin character about sizePt*0.7 px. Text wraps at the box width — count the wrapped lines and make the box tall enough, plus one spare line.\n' +
@@ -1093,6 +1102,10 @@ export function AiPanel({
         const imgBlock = args.images.length
           ? `\nAvailable image URLs (put them into image elements; do not invent placeholder blocks):\n${args.images.map((u, i) => `${i + 1}. ${u}`).join('\n')}`
           : ''
+        const briefsBlock = args.imageBriefs?.length
+          ? `\nImagery briefs (no photo could be sourced for these slots — for EACH brief below you MUST emit one image element with an "svg" field, NOT a url):\n${args.imageBriefs.map((b, i) => `${i + 1}. ${b}`).join('\n')}` +
+            '\nSVG rules: complete standalone markup starting <svg viewBox="0 0 200 200"> and ending </svg>; at most 1500 characters each; at most 6 per page; all coordinates inside the viewBox; flat solid fills using this page\'s palette (background/accent colors from the style); simple bold geometry (icons, diagram components, decorations) with no tiny details; NO external images/fonts/CSS/scripts; <text> only with a generic font-family; no emoji.'
+          : ''
         const ctxBlock = args.context
           ? `\n\nReference material (all real names/figures/facts come from here; do not invent):\n${args.context.slice(0, 4000)}`
           : ''
@@ -1101,7 +1114,7 @@ export function AiPanel({
           (args.topic ? `Deck topic: ${args.topic}\n` : '') +
           `Deck-wide narrative Core Hook: ${args.coreHook}\n\n` +
           `Now design page ${args.pageIndex}/${args.totalPages}.\n` +
-          `Title: ${args.title}\nLayout: ${args.layout}\nContent brief (use real data/facts): ${args.brief}${imgBlock}${ctxBlock}\n\n` +
+          `Title: ${args.title}\nLayout: ${args.layout}\nContent brief (use real data/facts): ${args.brief}${imgBlock}${briefsBlock}${ctxBlock}\n\n` +
           "Return only this page's spec JSON."
         // One repair round: feed the exact validation error back so the model can fix its JSON
         let lastErr = ''
@@ -1118,7 +1131,10 @@ export function AiPanel({
             continue
           }
           try {
-            const res = await window.slidesApi.localGeneratePage({ specJson: r.text })
+            // inline SVG elements get sanitized + rasterized here (renderer image
+            // pipeline); failed ones are dropped and the page continues without them
+            const hydrated = await hydrateSpecSvg(r.text)
+            const res = await window.slidesApi.localGeneratePage({ specJson: hydrated.json })
             if (res?.ok && res.marker) return res
             lastErr = res?.error ?? tGlobal('aiErrUnknown')
           } catch (e) {
@@ -1309,6 +1325,27 @@ export function AiPanel({
           return []
         }
       },
+      imageSourcePref: () => settingsRef.current?.imageSource ?? 'auto',
+      setImageSourcePref: (source) => {
+        const cur = settingsRef.current
+        if (!cur || cur.imageSource === source) return
+        // 覆盖即更新默认: a per-run choice (panel picker or verbal tool arg)
+        // becomes the new default
+        void slidesModelBridge
+          .saveSettings({ ...cur, imageSource: source })
+          .then(refreshSettings)
+          .catch(() => {})
+      },
+      hasImageModel: () => !!pickImageModel(settingsRef.current!),
+      generateModelImage: async (prompt) => {
+        try {
+          const r = await window.slidesApi.generateImage({ prompt })
+          return r.url ?? null
+        } catch {
+          return null
+        }
+      },
+      localImagePool: () => localPoolRef.current,
       saveSidecar: async (data) => {
         try {
           await window.slidesApi.saveStyleSidecar(data)
@@ -2452,6 +2489,20 @@ export function AiPanel({
                   void slidesModelBridge.setCurrentModel(selection).then(refreshSettings)
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
+              />
+              <ImageSourcePicker
+                source={panelSettings?.imageSource ?? 'auto'}
+                poolCount={localPool.length}
+                onSourceChange={(s) => {
+                  const cur = settingsRef.current
+                  if (cur) {
+                    void slidesModelBridge
+                      .saveSettings({ ...cur, imageSource: s })
+                      .then(refreshSettings)
+                      .catch(() => {})
+                  }
+                }}
+                onPoolChange={(items) => setLocalPool(items)}
               />
               <button
                 className="ai-attach-btn"

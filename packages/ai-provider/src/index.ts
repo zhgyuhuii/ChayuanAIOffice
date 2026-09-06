@@ -1,6 +1,7 @@
 export type {
   AiChatRequest,
   AiChatResponse,
+  AiImageSource,
   AiModelEntry,
   AiModelSelection,
   AiProviderConfig,

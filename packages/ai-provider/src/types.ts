@@ -60,6 +60,9 @@ export interface AiProviderProfile {
   updatedAt?: string
 }
 
+/** Where deck/document imagery comes from; 'auto' = model→web→svg chain. */
+export type AiImageSource = 'auto' | 'web' | 'model' | 'local' | 'svg'
+
 export interface AiSettingsV2 {
   version: 2
   profiles: AiProviderProfile[]
@@ -75,6 +78,8 @@ export interface AiSettingsV2 {
   stockApiKeys?: { pexels?: string; pixabay?: string }
   /** web-search service API keys (Serper) — settings-first, env var as fallback */
   searchApiKeys?: { serper?: string }
+  /** deck/document imagery source default; per-run UI overrides write back here (last-use-wins) */
+  imageSource?: AiImageSource
 }
 
 /** a v2 stream request carries only the selection — the backend owning the settings resolves the secret */

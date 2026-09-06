@@ -1,4 +1,5 @@
 import type { AgentSkill, ToolDisplay } from '@chatoffice/agent-core'
+import type { AiImageSource } from '@chatoffice/ai-provider'
 import type {
   GroupRenderNode,
   PictureRenderNode,
@@ -11,6 +12,7 @@ import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '
 import { opVocabulary } from '../../shared/op-docs'
 import { auditDeckConsistency, auditSlideLayout, formatAudit } from './layout-audit'
 import { runLayoutScript, type LayoutScriptElement, type SlideStylePatch } from './layout-script'
+import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
 import { t } from '../i18n/locale'
 
@@ -114,6 +116,16 @@ export interface DeckAccess {
    * On search failure returns an empty array (fail-open; doesn't block the main generation path).
    */
   searchImages?(query: string, maxResults: number): Promise<string[]>
+  /** Deck imagery source preference (settings.imageSource, may be 'auto'; live-read per run) */
+  imageSourcePref?(): AiImageSource
+  /** Persist a per-run source override — the override becomes the new default (last use wins) */
+  setImageSourcePref?(source: AiImageSource): void
+  /** Whether an image-generation model is configured and enabled (drives the 'auto' chain) */
+  hasImageModel?(): boolean
+  /** AI image generation for the 'model' source: keyword → image URL; null on failure (slot degrades) */
+  generateModelImage?(prompt: string): Promise<string | null>
+  /** Local image pool (data URIs) from the user's confirmed folder pick, in folder order */
+  localImagePool?(): string[]
   /** Whether cloud single-page generation is available (kill switch + chatoffice login state) */
   isCloudPageGenEnabled?(): Promise<boolean>
   /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image / analyze_media */
@@ -133,6 +145,8 @@ export interface DeckAccess {
     brief: string
     layout: string
     images: string[]
+    /** keywords whose imagery could not be sourced — the design should fill those slots with shapes/typography */
+    imageBriefs?: string[]
     context?: string
     topic?: string
     canvasW: number
@@ -154,6 +168,8 @@ export interface DeckAccess {
     brief: string
     layout: string
     images: string[]
+    /** keywords whose imagery could not be sourced — the writer draws them as inline SVG image elements */
+    imageBriefs?: string[]
     context?: string
     topic?: string
     canvasW: number
@@ -855,6 +871,12 @@ const TOOLS: AgentToolDef[] = [
           type: 'string',
           description:
             "[Recommended] The deck's topic/requirements description (with topic you don't hand-write pages; the system plans internally)",
+        },
+        image_source: {
+          type: 'string',
+          description:
+            "Imagery source for this deck (optional; remembered as the new default): 'web' search, 'model' AI image generation, 'local' the user's picked folder pool, 'svg' vector graphics the writer draws inline (free & editable), 'auto' model→web→svg. Pass ONLY when the user asked for a specific source (e.g. 用本地图片/生成SVG).",
+          enum: ['auto', 'web', 'model', 'local', 'svg'],
         },
         approx_pages: {
           type: 'integer',
@@ -2854,21 +2876,45 @@ ${r.text}`,
         })
       }
 
-      // ── Step 1.5: in-tool image search —
-      // walk every page's image_queries and replace "English keywords (non-URL)" with real image URLs.
-      // Entries that are already http(s) URLs are respected upstream, not re-searched; pages whose search failed keep an empty array (fail-open).
-      // The same keyword is searched once per deck (fetching several candidates at once); allocation skips already-used URLs to avoid duplicate images across pages.
-      if (access.searchImages) {
-        const isUrl = (s: string) => /^https?:\/\//i.test(s)
+      // ── Step 1.5: imagery — resolve every page's image_queries slots per the
+      // deck image source (docs/image-source-plan.md #2/#3):
+      //   web   — keyword → web image search (existing channel)
+      //   model — keyword → AI image generation (BYOK image model, URL result)
+      //   local — the user's folder pool (data URIs) allocated in order
+      //   svg   — keywords stay briefs; the page writer draws them inline
+      // 'auto' resolves model→web; an explicit 'local' with an empty pool falls
+      // back to it too. Slots that fail to source become briefs (the writer
+      // draws them) — never a silent switch to another possibly-paid source.
+      // Explicit http(s)/data URLs in image_queries pass through untouched.
+      const imageNotes: string[] = []
+      {
+        const SOURCE_OPTS: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
+        const prefRaw = typeof call.input.image_source === 'string' ? call.input.image_source : ''
+        const toolPref = SOURCE_OPTS.includes(prefRaw as AiImageSource)
+          ? (prefRaw as AiImageSource)
+          : undefined
+        const persisted = access.imageSourcePref?.() ?? 'auto'
+        if (toolPref && toolPref !== persisted) access.setImageSourcePref?.(toolPref)
+        const pool = access.localImagePool?.() ?? []
+        const resolved = resolveDeckImageSource(
+          toolPref ?? persisted,
+          access.hasImageModel?.() ?? false,
+          pool.length,
+        )
+        const source = resolved.source
+        if (resolved.emptyPoolNote) imageNotes.push(t('aiNotePoolEmpty'))
+        if (source === 'svg') imageNotes.push(t('aiNoteSvgMode'))
+
         const normKw = (s: string) => s.toLowerCase().replace(/\s+/g, ' ')
-        // Collect deduplicated search keywords across the deck
+        const isResolvedUrl = (s: string) => /^(https?:\/\/|data:image\/)/i.test(s)
+        // Unique keywords across the deck, in page order; each is sourced once
         const uniqueKeywords: string[] = []
         const seenKw = new Set<string>()
         for (const p of pages) {
           if (!Array.isArray(p.image_queries)) continue
           for (const q of p.image_queries as unknown[]) {
             const s = String(q).trim()
-            if (!s || isUrl(s)) continue
+            if (!s || isResolvedUrl(s)) continue
             const k = normKw(s)
             if (!seenKw.has(k)) {
               seenKw.add(k)
@@ -2876,79 +2922,77 @@ ${r.text}`,
             }
           }
         }
-        // Each keyword is searched only once, fetching several candidates so cross-page dedup can pick unused images
+
         const candidatesByKw = new Map<string, string[]>()
-        const totalSearches = uniqueKeywords.length
-        if (totalSearches > 0) {
+        const totalSlots = uniqueKeywords.length
+        const progress = (done: number, total: number, summary: string) =>
           access.onProgress?.({
             stage: 'images',
             label: t('aiStageImages'),
-            done: 0,
-            total: totalSearches,
-            status: 'running',
-            summary: t('aiStageImagesRunning', { done: 0, total: totalSearches }),
+            done,
+            total,
+            status: total > 0 && done >= total ? 'done' : 'running',
+            summary,
           })
+        if (source === 'web' && access.searchImages && totalSlots > 0) {
+          progress(0, totalSlots, t('aiStageImagesRunning', { done: 0, total: totalSlots }))
           let imagesDone = 0
           await Promise.all(
             uniqueKeywords.map(async (kw) => {
               if (cancelled()) return
               try {
-                const urls = await access.searchImages!(kw, 5)
-                candidatesByKw.set(normKw(kw), urls)
+                candidatesByKw.set(normKw(kw), await access.searchImages!(kw, 5))
               } catch {
-                /* fail-open */
+                /* fail-open: the slot degrades to a brief */
               }
               imagesDone++
-              access.onProgress?.({
-                stage: 'images',
-                label: t('aiStageImages'),
-                done: imagesDone,
-                total: totalSearches,
-                status: 'running',
-                summary: t('aiStageImagesRunning', { done: imagesDone, total: totalSearches }),
-              })
+              progress(
+                imagesDone,
+                totalSlots,
+                t('aiStageImagesRunning', { done: imagesDone, total: totalSlots }),
+              )
             }),
           )
-        }
-        // Allocate page by page in order: explicit URLs are kept as-is (and counted as used); keywords pick from candidates, preferring images the deck hasn't used yet
-        const usedUrls = new Set<string>()
-        for (const p of pages) {
-          if (!Array.isArray(p.image_queries)) continue
-          for (const q of p.image_queries as unknown[]) {
-            const s = String(q).trim()
-            if (isUrl(s)) usedUrls.add(s)
-          }
-        }
-        for (const p of pages) {
-          if (!Array.isArray(p.image_queries) || p.image_queries.length === 0) continue
-          const resolvedUrls: string[] = []
-          for (const q of p.image_queries as unknown[]) {
-            const s = String(q).trim()
-            if (!s) continue
-            if (isUrl(s)) {
-              resolvedUrls.push(s)
-              continue
-            }
-            const candidates = candidatesByKw.get(normKw(s)) ?? []
-            // If all candidates are used, fall back to reusing the first one (an image beats no image)
-            const pick = candidates.find((u) => !usedUrls.has(u)) ?? candidates[0]
-            if (pick) {
-              usedUrls.add(pick)
-              resolvedUrls.push(pick)
-            }
-          }
-          p.image_queries = resolvedUrls
-        }
-        if (totalSearches > 0) {
-          access.onProgress?.({
-            stage: 'images',
-            label: t('aiStageImages'),
-            done: totalSearches,
-            total: totalSearches,
-            status: 'done',
-            summary: t('aiStageImagesDone', { n: totalSearches }),
+        } else if (source === 'model' && totalSlots > 0) {
+          progress(0, totalSlots, t('aiStageImagesModel', { done: 0, total: totalSlots }))
+          let imagesDone = 0
+          await Promise.all(
+            uniqueKeywords.map(async (kw) => {
+              if (cancelled()) return
+              try {
+                const url = await access.generateModelImage?.(kw)
+                if (url) candidatesByKw.set(normKw(kw), [url])
+              } catch {
+                /* the slot degrades to a brief */
+              }
+              imagesDone++
+              progress(
+                imagesDone,
+                totalSlots,
+                t('aiStageImagesModel', { done: imagesDone, total: totalSlots }),
+              )
+            }),
+          )
+        } else if (source === 'local') {
+          // pool items are handed to keywords in order; unclaimed keywords degrade
+          uniqueKeywords.forEach((kw, i) => {
+            const item = pool[i]
+            if (item) candidatesByKw.set(normKw(kw), [item])
           })
+          progress(totalSlots, totalSlots, t('aiStageImagesLocal', { n: pool.length }))
         }
+
+        const slots = allocateImagery(pages, source, candidatesByKw)
+        pages.forEach((p, i) => {
+          const slot = slots[i] ?? { urls: [], briefs: [] }
+          p.image_queries = slot.urls
+          p.image_briefs = slot.briefs
+          if (slot.briefs.length && source !== 'svg') {
+            imageNotes.push(
+              t('aiNoteImgFail', { page: i + 1, kw: slot.briefs.join('、') }),
+            )
+          }
+        })
       }
 
       if (!coreHook) coreHook = topic || 'Presentation'
@@ -3024,7 +3068,10 @@ ${r.text}`,
         const images = Array.isArray(p.image_queries)
           ? (p.image_queries as unknown[])
               .map((x) => String(x))
-              .filter((x) => /^https?:\/\//.test(x))
+              .filter((x) => /^(https?:\/\/|data:image\/)/.test(x))
+          : []
+        const briefs = Array.isArray(p.image_briefs)
+          ? (p.image_briefs as unknown[]).map((x) => String(x)).filter(Boolean)
           : []
         let lastErr = ''
         const pageArgs = {
@@ -3036,6 +3083,7 @@ ${r.text}`,
           brief: String(p.brief ?? ''),
           layout: String(p.layout ?? ''),
           images,
+          ...(briefs.length ? { imageBriefs: briefs } : {}),
           ...(pageContext ? { context: pageContext } : {}),
           ...(topic ? { topic } : {}),
           canvasW,
@@ -3241,7 +3289,9 @@ ${r.text}`,
       access.onProgress?.({
         stage: 'done',
         total: landedPages,
-        summary: t('aiStageDoneSummary', { n: landedPages }),
+        summary: imageNotes.length
+          ? [t('aiStageDoneSummary', { n: landedPages }), ...imageNotes].join('\n')
+          : t('aiStageDoneSummary', { n: landedPages }),
       })
 
       const note = buildProgressNote(state)
@@ -3250,7 +3300,8 @@ ${r.text}`,
       const stillFailed: number[] = []
       for (let i = 0; i < total; i++) if (!doneFlags[i]) stillFailed.push(i + 1)
       const briefErr = (s?: string) => (s ? (s.length > 80 ? `${s.slice(0, 80)}…` : s) : '')
-      const okMsg = `Self-driven generation produced ${landedPages}/${total} pages (HTML written page by page, displayed as generated; failed pages were auto-retried).`
+      const imageNotesTail = imageNotes.length ? `\n${imageNotes.join('\n')}` : ''
+      const okMsg = `Self-driven generation produced ${landedPages}/${total} pages (HTML written page by page, displayed as generated; failed pages were auto-retried).${imageNotesTail}`
       const failDetail = stillFailed
         .map((n) => `page ${n}${pageErrors[n - 1] ? ` (${briefErr(pageErrors[n - 1])})` : ''}`)
         .join(', ')

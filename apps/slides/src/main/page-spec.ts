@@ -13,6 +13,7 @@
 import {
   addElement,
   addPicture,
+  addSvgPicture,
   setSlideNotes,
   createBlankPptx,
   editPictureSrcRect,
@@ -32,6 +33,13 @@ export const SPEC_CANVAS_H = 720
 const MAX_ELEMENTS = 48
 const MAX_IMAGES = 8
 const MAX_TEXT_LEN = 4000
+/** hard parser cap for an inline SVG element (the writer prompt asks for ≤1500) */
+const MAX_SVG_CHARS = 4000
+/** hard parser cap for an inline data URI (≈9MB binary) */
+const MAX_DATAURI_CHARS = 12_000_000
+/** raster mimes a data URI may carry (svg payloads go through the `svg` field) */
+const DATA_URI_RE = /^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=\s]+$/
+const PNG_DATA_URI_RE = /^data:image\/png;base64,[A-Za-z0-9+/=\s]+$/
 
 /** Preset geometries the spec may use; unknown kinds fall back to rect instead of emitting invalid prst XML. */
 const SHAPE_KINDS = new Set([
@@ -100,7 +108,15 @@ export interface SpecText extends SpecBase {
 
 export interface SpecImage extends SpecBase {
   type: 'image'
-  url: string
+  /** one of the three sources below must be present (validated in that order) */
+  /** http(s) URL fetched at build time */
+  url?: string
+  /** inline raster data URI (data:image/png|jpeg|webp|gif;base64,...) */
+  dataUri?: string
+  /** inline SVG source — vector picture (double part with the PNG fallback) */
+  svg?: string
+  /** required companion of `svg`: renderer-rasterized PNG fallback data URI */
+  pngDataUri?: string
 }
 
 export type SpecElement = SpecShape | SpecText | SpecImage
@@ -298,8 +314,51 @@ export function parsePageSpec(
 
     if (type === 'image') {
       const url = typeof el.url === 'string' ? el.url.trim() : ''
+      const dataUri = typeof el.dataUri === 'string' ? el.dataUri.trim() : ''
+      const svg = typeof el.svg === 'string' ? el.svg.trim() : ''
+      const pngDataUri = typeof el.pngDataUri === 'string' ? el.pngDataUri.trim() : ''
+      if (svg) {
+        if (svg.length > MAX_SVG_CHARS) {
+          warnings.push(`element ${i}: inline svg exceeds ${MAX_SVG_CHARS} chars, dropped`)
+          continue
+        }
+        if (!/^<svg[\s>]/i.test(svg)) {
+          warnings.push(`element ${i}: inline svg must start with <svg>, dropped`)
+          continue
+        }
+        if (!PNG_DATA_URI_RE.test(pngDataUri)) {
+          warnings.push(`element ${i}: inline svg without a pngDataUri raster fallback, dropped`)
+          continue
+        }
+        if (images >= MAX_IMAGES) {
+          warnings.push(`element ${i}: image cap ${MAX_IMAGES} reached, dropped`)
+          continue
+        }
+        images += 1
+        elements.push({ type: 'image', svg, pngDataUri, ...base })
+        continue
+      }
+      if (dataUri) {
+        if (dataUri.length > MAX_DATAURI_CHARS) {
+          warnings.push(`element ${i}: inline dataUri exceeds the size cap, dropped`)
+          continue
+        }
+        if (!DATA_URI_RE.test(dataUri)) {
+          warnings.push(
+            `element ${i}: dataUri must be data:image/png|jpeg|webp|gif;base64, dropped`,
+          )
+          continue
+        }
+        if (images >= MAX_IMAGES) {
+          warnings.push(`element ${i}: image cap ${MAX_IMAGES} reached, dropped`)
+          continue
+        }
+        images += 1
+        elements.push({ type: 'image', dataUri, ...base })
+        continue
+      }
       if (!/^https?:\/\//.test(url)) {
-        warnings.push(`element ${i}: image url must be http(s), dropped`)
+        warnings.push(`element ${i}: image needs an http(s) url, a dataUri or inline svg, dropped`)
         continue
       }
       if (images >= MAX_IMAGES) {
@@ -402,6 +461,26 @@ export interface BuildPageDeps {
   fontMetrics?: FontMetricsProvider
 }
 
+interface ResolvedImage {
+  bytes: Uint8Array
+  ext: string
+  /** set for inline svg elements: the vector source for the double part */
+  svgBytes?: Uint8Array
+}
+
+/** data URI → image bytes; null when the mime or base64 payload is unusable */
+function decodeDataUri(uri: string): ResolvedImage | null {
+  const m = /^data:image\/(png|jpeg|jpg|webp|gif|svg\+xml);base64,([\sA-Za-z0-9+/=]+)$/.exec(uri)
+  if (!m) return null
+  const ext = m[1] === 'jpeg' || m[1] === 'jpg' ? 'jpg' : m[1] === 'svg+xml' ? 'svg' : m[1]!
+  const b64 = m[2]!.replace(/\s+/g, '')
+  try {
+    return { bytes: Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)), ext }
+  } catch {
+    return null
+  }
+}
+
 /**
  * The LLM sizes text boxes from a rough chars-per-line heuristic, which routinely
  * undersizes big CJK titles; the box has no autofit, so the canvas draws the overflow
@@ -488,15 +567,26 @@ export async function buildPagePptx(
 
   const resolved = resolvedSpecElements(spec)
   const imageFailures: string[] = []
-  const fetched = new Map<string, { bytes: Uint8Array; ext: string } | null>()
+  // Three image sources resolve differently (fetch / decode / decode+vector) but
+  // share the cover-crop and insert path below; keyed by resolved-array index.
+  const imgByIndex = new Map<number, ResolvedImage | null>()
   await Promise.all(
-    [
-      ...new Set(resolved.filter((e) => e.type === 'image').map((e) => (e as SpecImage).url)),
-    ].map(async (url) => {
+    resolved.map(async (el, idx) => {
+      if (el.type !== 'image') return
       try {
-        fetched.set(url, await deps.fetchImage(url))
+        if (el.svg) {
+          const png = decodeDataUri(el.pngDataUri ?? '')
+          // Uint8Array.from copies into the local realm — cross-realm typed
+          // arrays (e.g. TextEncoder output under jsdom) fail jszip's instanceof
+          const svgBytes = Uint8Array.from(new TextEncoder().encode(el.svg))
+          imgByIndex.set(idx, png ? { ...png, ext: 'png', svgBytes } : null)
+        } else if (el.dataUri) {
+          imgByIndex.set(idx, decodeDataUri(el.dataUri))
+        } else {
+          imgByIndex.set(idx, await deps.fetchImage(el.url ?? ''))
+        }
       } catch {
-        fetched.set(url, null)
+        imgByIndex.set(idx, null)
       }
     }),
   )
@@ -509,7 +599,7 @@ export async function buildPagePptx(
     })
   }
 
-  for (const el of resolved) {
+  for (const [idx, el] of resolved.entries()) {
     const offset = {
       x: toEmu(el.x),
       y: toEmu(el.y),
@@ -517,14 +607,22 @@ export async function buildPagePptx(
       cy: Math.max(1, toEmu(el.h)),
     }
     if (el.type === 'image') {
-      const img = fetched.get(el.url)
+      const img = imgByIndex.get(idx)
+      const label = el.svg ? 'inline svg' : el.dataUri ? 'inline image' : (el.url ?? 'image')
       if (!img) {
-        imageFailures.push(el.url)
+        imageFailures.push(label)
         continue
       }
-      const pic = addPicture(opened, slide, { bytes: img.bytes, ext: img.ext, offset })
+      const pic = img.svgBytes
+        ? addSvgPicture(opened, slide, {
+            svgBytes: img.svgBytes,
+            bytes: img.bytes,
+            fallbackExt: img.ext,
+            offset,
+          })
+        : addPicture(opened, slide, { bytes: img.bytes, ext: img.ext, offset })
       if (!pic) {
-        imageFailures.push(el.url)
+        imageFailures.push(label)
         continue
       }
       const dims = deps.imageDims?.(img.bytes) ?? null

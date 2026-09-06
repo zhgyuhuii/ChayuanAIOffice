@@ -23,7 +23,7 @@ import type { WebContents } from 'electron'
 import { execFile } from 'node:child_process'
 import { readFile, writeFile, rm, stat, mkdir, open } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
-import { existsSync, mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { userInfo } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { cleanupExpiredGeneratedPages } from './generated-page-temp'
@@ -1115,6 +1115,53 @@ export function registerSlidesIpc(): void {
   ipcMain.handle('slides:font-missing', (e) => {
     const session = sessions.get(e.sender.id)
     return session ? missingCatalogFonts(session.opened) : []
+  })
+
+  // ── Local image pool: pick a folder, scan image files into data-URI items for
+  // the renderer's preview grid; confirmed items become the deck's local image
+  // pool (allocated into page image slots at generation time). Caps keep a
+  // huge folder from ballooning the IPC payload.
+  ipcMain.handle('slides:pick-image-folder', async () => {
+    const r = await showOpenDialogWithMemory(dialog, dialogParent(), {
+      properties: ['openDirectory'],
+    })
+    if (r.canceled || !r.filePaths.length) return { canceled: true, items: [] }
+    const dir = r.filePaths[0]!
+    const MIME_BY_EXT: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      webp: 'image/webp',
+      gif: 'image/gif',
+      svg: 'image/svg+xml',
+    }
+    try {
+      const names = readdirSync(dir)
+        .filter((n) => !!MIME_BY_EXT[n.split('.').pop()?.toLowerCase() ?? ''])
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .slice(0, 60)
+      const items: Array<{ name: string; dataUri: string; bytes: number; vector: boolean }> = []
+      for (const name of names) {
+        try {
+          const full = join(dir, name)
+          const st = statSync(full)
+          if (!st.isFile() || st.size > 20 * 1024 * 1024) continue
+          const mime = MIME_BY_EXT[name.split('.').pop()!.toLowerCase()]!
+          const buf = readFileSync(full)
+          items.push({
+            name,
+            dataUri: `data:${mime};base64,${buf.toString('base64')}`,
+            bytes: st.size,
+            vector: mime === 'image/svg+xml',
+          })
+        } catch {
+          /* unreadable file: skip */
+        }
+      }
+      return { items }
+    } catch (err) {
+      return { items: [], error: err instanceof Error ? err.message : String(err) }
+    }
   })
 
   // Shared shim core: one undo step wrapping a transaction; on failure the step is

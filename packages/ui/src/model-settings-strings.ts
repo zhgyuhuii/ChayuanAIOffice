@@ -120,6 +120,16 @@ const zh = {
     tts: '语音合成默认模型',
     asr: '语音识别默认模型',
   } as Record<string, string>,
+  defaultsImageSourceLabel: '图片来源默认',
+  defaultsImageSourceNote:
+    'PPT/文档/表格配图的来源；生成时可临时覆盖，覆盖后即成为新的默认（上次使用优先）。',
+  imageSourceOpts: {
+    auto: '自动（有生图模型→模型生成，否则网络搜索，再否则矢量图形）',
+    web: '网络图片搜索',
+    model: 'AI 生图模型',
+    local: '本地图片文件夹',
+    svg: '矢量图形（SVG，免费且元素可编辑）',
+  } as Record<string, string>,
   pickerHint:
     '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
   searchSection: '搜索服务（插入媒体 · 网页图片）',
@@ -243,6 +253,16 @@ const en = {
     videoGeneration: 'Default video model',
     tts: 'Default TTS model',
     asr: 'Default ASR model',
+  } as Record<string, string>,
+  defaultsImageSourceLabel: 'Default imagery source',
+  defaultsImageSourceNote:
+    'Where deck/document imagery comes from; the per-run picker overrides this and becomes the new default (last use wins).',
+  imageSourceOpts: {
+    auto: 'Auto (image model → web search → vector graphics)',
+    web: 'Web image search',
+    model: 'AI image model',
+    local: 'Local image folder',
+    svg: 'Vector graphics (SVG, free & editable elements)',
   } as Record<string, string>,
   pickerHint:
     "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",

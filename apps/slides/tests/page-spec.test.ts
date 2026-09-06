@@ -228,3 +228,73 @@ describe('buildPagePptx text-box height fix', () => {
     expect(el.transform.offset.cy).toBe(30 * EMU_PER_PX)
   })
 })
+
+describe('three-state image elements (url / dataUri / svg)', () => {
+  const noImages = { fetchImage: async () => null }
+  const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="#ff0000"/></svg>'
+  const PNG_DATA_URI = `data:image/png;base64,${btoa(
+    String.fromCharCode(...PNG_1PX),
+  )}`
+
+  it('parses dataUri and svg elements alongside url elements', () => {
+    const raw = JSON.stringify({
+      elements: [
+        { type: 'image', url: 'https://ok.example/a.png', x: 0, y: 0, w: 100, h: 100 },
+        { type: 'image', dataUri: PNG_DATA_URI, x: 100, y: 0, w: 100, h: 100 },
+        { type: 'image', svg: SVG, pngDataUri: PNG_DATA_URI, x: 200, y: 0, w: 100, h: 100 },
+      ],
+    })
+    const r = parsePageSpec(raw)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.warnings).toEqual([])
+    const imgs = r.spec.elements.filter((e) => e.type === 'image')
+    expect(imgs).toHaveLength(3)
+  })
+
+  it('rejects svg without a pngDataUri raster fallback and non-raster dataUris', () => {
+    const raw = JSON.stringify({
+      elements: [
+        { type: 'image', svg: SVG, x: 0, y: 0, w: 100, h: 100 },
+        { type: 'image', dataUri: 'data:text/html;base64,PGI+', x: 0, y: 0, w: 100, h: 100 },
+        { type: 'image', url: 'javascript:alert(1)', x: 0, y: 0, w: 100, h: 100 },
+      ],
+    })
+    const r = parsePageSpec(raw)
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.error).toContain('no valid elements')
+  })
+
+  it('builds an svg element as a double part (raster blip + svgBlip extension)', async () => {
+    const spec: PageSpec = {
+      elements: [
+        { type: 'image', svg: SVG, pngDataUri: PNG_DATA_URI, x: 0, y: 0, w: 200, h: 200 },
+        { type: 'image', dataUri: PNG_DATA_URI, x: 200, y: 0, w: 200, h: 200 },
+      ],
+    }
+    const { bytes, imageFailures } = await buildPagePptx(spec, noImages)
+    expect(imageFailures).toEqual([])
+    const opened = await openPptx(bytes)
+    const pics = opened.deck.slides[0]!.elements.filter(
+      (e): e is PictureElement => e.type === 'picture',
+    )
+    expect(pics).toHaveLength(2)
+    // the svg element carries the Office 2016 svgBlip part; the dataUri one does not
+    expect(pics[0]!.svgMediaRef).toBeTruthy()
+    expect(pics[0]!.mediaRef).toBeTruthy()
+    expect(pics[1]!.svgMediaRef).toBeUndefined()
+  })
+
+  it('reports a failed inline decode without failing the page', async () => {
+    const spec: PageSpec = {
+      elements: [
+        { type: 'image', svg: SVG, pngDataUri: 'data:image/png;base64,!!!notb64!!!', x: 0, y: 0, w: 100, h: 100 },
+      ],
+    }
+    const { bytes, imageFailures } = await buildPagePptx(spec, noImages)
+    expect(imageFailures).toEqual(['inline svg'])
+    const opened = await openPptx(bytes)
+    expect(opened.deck.slides[0]!.elements).toHaveLength(0)
+  })
+})

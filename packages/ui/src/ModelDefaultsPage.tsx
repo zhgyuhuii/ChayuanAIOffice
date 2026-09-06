@@ -16,6 +16,7 @@ import {
   inferModelType,
   resolveDefaultModel,
   type AiDefaultKind,
+  type AiImageSource,
   type AiModelSelection,
   type AiSettingsV2,
 } from '@chatoffice/ai-provider'
@@ -28,6 +29,8 @@ export interface ModelDefaultsPageProps {
 }
 
 const KINDS: AiDefaultKind[] = ['chat', 'generation', 'qc', 'image', 'videoGeneration', 'tts', 'asr']
+
+const IMAGE_SOURCES: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
 
 export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): React.JSX.Element {
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
@@ -102,9 +105,32 @@ export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): Rea
     setSettings(next)
   }
 
+  const pickImageSource = async (value: string) => {
+    if (!settings) return
+    const next: AiSettingsV2 = { ...settings, imageSource: value as AiImageSource }
+    await bridge.saveSettings(next)
+    setSettings(next)
+  }
+
   return (
     <div className="msp-defaults" data-model-defaults>
       <p className="msp-note">{t.defaultsNote}</p>
+      <label className="msp-field msp-defaults-field">
+        <span className="msp-label">{t.defaultsImageSourceLabel}</span>
+        <select
+          className="msp-input msp-select"
+          data-image-source
+          value={settings?.imageSource ?? 'auto'}
+          onChange={(e) => void pickImageSource(e.target.value)}
+        >
+          {IMAGE_SOURCES.map((s) => (
+            <option key={s} value={s}>
+              {t.imageSourceOpts[s]}
+            </option>
+          ))}
+        </select>
+        <span className="msp-note">{t.defaultsImageSourceNote}</span>
+      </label>
       {KINDS.map((kind) => {
         const options = kindOptions(kind)
         const effective = effectiveLabel(kind)

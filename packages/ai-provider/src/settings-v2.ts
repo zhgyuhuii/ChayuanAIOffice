@@ -2,6 +2,7 @@ import { inferModelType, matchesModelType, type AiModelType } from './model-type
 import { CHATOFFICE_LLM_BASE_URLS } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
+  AiImageSource,
   AiModelEntry,
   AiModelSelection,
   AiProviderProfile,
@@ -388,6 +389,7 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     // through or every save silently wipes them (they never touch the view merge)
     ...(settings.stockApiKeys ? { stockApiKeys: settings.stockApiKeys } : {}),
     ...(settings.searchApiKeys ? { searchApiKeys: settings.searchApiKeys } : {}),
+    ...normalizeImageSource(settings.imageSource),
   }
   const current = remapSelection(settings.currentModel)
   const resolvedCurrent = resolveCurrentModel({
@@ -422,6 +424,15 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
 
 /** default-model kinds surfaced in the settings window's 默认模型 pane */
 export type AiDefaultKind = 'chat' | 'generation' | 'qc' | 'image' | 'videoGeneration' | 'tts' | 'asr'
+
+const IMAGE_SOURCES: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
+
+/** pass through a valid persisted image source; drop anything else (old blobs, typos) */
+function normalizeImageSource(
+  value: AiImageSource | undefined,
+): Pick<AiSettingsV2, 'imageSource'> {
+  return value && (IMAGE_SOURCES as string[]).includes(value) ? { imageSource: value } : {}
+}
 
 /** the model types each default kind accepts */
 export const DEFAULT_KIND_TYPES: Record<AiDefaultKind, AiModelType[]> = {

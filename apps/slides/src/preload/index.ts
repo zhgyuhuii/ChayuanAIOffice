@@ -399,6 +399,7 @@ const api: SlidesApi = {
     ipcRenderer.invoke('ai:web-search', query, maxResults),
   imageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:image-search', query, maxResults),
+  pickImageFolder: () => ipcRenderer.invoke('slides:pick-image-folder'),
   stockImageSearch: (source: string, query: string, maxResults?: number, page?: number) =>
     ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults, page }),
   stockKeysGet: () => ipcRenderer.invoke('ai:stock-keys-get'),
