@@ -215,6 +215,13 @@ export function installShellShims(): void {
     },
     onChanged: (handler: (tabs: unknown) => void) =>
       tabManager.onChanged(handler as (t: ReturnType<typeof tabManager.list>) => void),
+    // TabBar mirrors home-layout into these unconditionally; on the web the
+    // geometry is handled natively (tab-manager subscribes to home-layout
+    // itself), but the calls must not throw — and setShellModalOpen relays
+    // the settings dialog's lifetime so the covering editor layer hides.
+    setTreeInset: () => {},
+    setTreeWidth: () => {},
+    setShellModalOpen: (open: boolean) => tabManager.setModalOpen(open),
   }
 
   w.chatOffice = {
@@ -393,6 +400,25 @@ export function installShellShims(): void {
     openGitHubRepo: () => undefined,
     starPromptShouldShow: async () => ({ show: false as const, docOpens: 0 }),
     starPromptAction: async () => undefined,
+    // ── surfaces the web can't back yet. These MUST exist: the shell calls
+    // several of them during mount (Home's untitled-restore banner) and a
+    // missing method crashes the whole shell to a blank page, not just the
+    // feature. Stubs degrade the way the desktop contract allows.
+    // No temp-backed crashed documents exist in the web host.
+    listPendingUntitled: async () => [],
+    restorePendingUntitled: async () => false,
+    discardPendingUntitled: async () => true,
+    // updater UI reads the channel; web has no auto-update
+    getUpdateChannel: async () => 'stable' as const,
+    setUpdateChannel: async () => undefined,
+    openGenTeam: () => undefined,
+    // AI-authored standalone file: needs the desktop FS pipeline
+    createDocument: async () => degraded('chatOffice.createDocument'),
+    // attachment pickers/readers need real file access (FS-Access landing TBD);
+    // null = user cancelled, ok:false = unreadable, matching the desktop shapes
+    pickAttachments: async () => null,
+    readAttachment: async () => ({ ok: false, error: '网页版暂不支持读取附件' }),
+    readAttachmentImage: async () => ({ ok: false, error: '网页版暂不支持读取图片附件' }),
   }
 
   w.chatOfficeProject = {

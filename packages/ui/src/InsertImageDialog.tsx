@@ -12,9 +12,42 @@ export interface WebImageItem {
   source?: string
 }
 
+/** one tier of the main-side search fallback chain, for the diagnostics line */
+export interface SearchAttempt {
+  backend: string
+  status: 'skipped' | 'ok' | 'error'
+  detail?: string
+  count?: number
+}
+
+/** a dynamic parameter input declared main-side (packages/ai-provider media-params) */
+export interface MediaParamField {
+  id: string
+  label: string
+  labelZh?: string
+  type: 'select' | 'text' | 'number'
+  options?: Array<string | number>
+  min?: number
+  max?: number
+  step?: number
+  default: string | number
+  required?: boolean
+}
+
+export interface MediaModelOption {
+  kind: 'image'
+  profileId: string
+  modelId: string
+  label: string
+  vendorId: string
+  spec: { fields: MediaParamField[] }
+}
+
 /** App-injected transport: each editor wires these to its own IPC channels. */
 export interface InsertImageBridge {
-  searchWeb(query: string): Promise<{ images: WebImageItem[]; error?: string }>
+  searchWeb(
+    query: string,
+  ): Promise<{ images: WebImageItem[]; error?: string; attempts?: SearchAttempt[] }>
   searchStock(
     source: 'pexels' | 'pixabay',
     query: string,
@@ -22,8 +55,15 @@ export interface InsertImageBridge {
   fetchImage(url: string): Promise<{ mediaType: string; base64: string } | null>
   getStockKeys(): Promise<{ pexels: string; pixabay: string }>
   setStockKeys(keys: { pexels?: string; pixabay?: string }): Promise<void>
-  /** app's image-generation channel; URL or data URL comes back as dataUrl */
-  generate(req: { prompt: string; size?: string; n?: number }): Promise<{
+  /** enabled image/video-generation models with their param specs (model picker) */
+  listMediaModels?(): Promise<{ models: MediaModelOption[]; error?: string }>
+  /** app's image-generation channel; results come back as data URLs */
+  generate(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{
     images?: { dataUrl: string }[]
     error?: string
   }>
@@ -31,14 +71,20 @@ export interface InsertImageBridge {
   openModelSettings?: () => void
 }
 
-const SIZES = ['1024*1024', '1664*928', '928*1664'] as const
-const COUNTS = [1, 2, 4] as const
 const MAX_BYTES = 20 * 1024 * 1024
+const KEY_APPLY_URLS: Record<'pexels' | 'pixabay', string> = {
+  pexels: 'https://www.pexels.com/api/',
+  pixabay: 'https://pixabay.com/api/docs/',
+}
+
+/** session-level model memory: survives closing the dialog, dies with the app */
+let lastMediaSelection: { profileId: string; modelId: string } | null = null
 
 /**
- * 统一插入图片对话框（三 tab：本地 / 网络图片 / AI 生成）。字节以 data: URL
+ * 统一插入媒体对话框（三 tab：本地 / 网络图片 / AI 生成）。字节以 data: URL
  * 交给 onInsert，由各编辑器走自己的插入管线（docx Protected 块 / xlsx
- * journal 图片 / pptx addImageBytes）。
+ * journal 图片 / pptx addImageBytes）。图库密钥各家独立模态设置；AI 生成
+ * 按模型清单选模型并按 spec 动态渲染参数。
  */
 export function InsertImageDialog({
   bridge,
@@ -52,6 +98,7 @@ export function InsertImageDialog({
   readonly onClose: () => void
 }): React.JSX.Element {
   const t = insertImageStrings(lang)
+  const isZh = t.title === '插入媒体'
   const [tab, setTab] = useState<'local' | 'web' | 'ai'>('local')
 
   // ── local ──
@@ -80,12 +127,13 @@ export function InsertImageDialog({
   const [results, setResults] = useState<WebImageItem[] | null>(null)
   const [searching, setSearching] = useState(false)
   const [webError, setWebError] = useState('')
-  const [keysOpen, setKeysOpen] = useState(false)
-  const [keys, setKeys] = useState<{ pexels: string; pixabay: string }>({
-    pexels: '',
-    pixabay: '',
-  })
+  const [attempts, setAttempts] = useState<SearchAttempt[] | null>(null)
+  // one vendor per modal — Pexels and Pixabay never share a panel
+  const [keyModal, setKeyModal] = useState<'pexels' | 'pixabay' | null>(null)
+  const [KeyValue, setKeyValue] = useState('')
   const [keysSaved, setKeysSaved] = useState(false)
+  const [keyTesting, setKeyTesting] = useState(false)
+  const [keyTestResult, setKeyTestResult] = useState<'ok' | 'fail' | null>(null)
   const [selected, setSelected] = useState<WebImageItem | null>(null)
   const [inserting, setInserting] = useState(false)
 
@@ -94,10 +142,13 @@ export function InsertImageDialog({
     if (!q || searching) return
     setSearching(true)
     setWebError('')
+    setAttempts(null)
     setSelected(null)
     try {
-      const r = source === 'web' ? await bridge.searchWeb(q) : await bridge.searchStock(source, q)
+      const r =
+        source === 'web' ? await bridge.searchWeb(q) : await bridge.searchStock(source, q)
       setResults(r.images ?? [])
+      setAttempts('attempts' in r ? (r.attempts ?? null) : null)
       if (r.error) setWebError(r.error)
     } catch (err) {
       setResults([])
@@ -106,18 +157,37 @@ export function InsertImageDialog({
       setSearching(false)
     }
   }
-  const openKeys = async (): Promise<void> => {
-    setKeysOpen(true)
+  const openKeyModal = async (which: 'pexels' | 'pixabay'): Promise<void> => {
+    setKeyModal(which)
     setKeysSaved(false)
+    setKeyTesting(false)
+    setKeyTestResult(null)
     try {
-      setKeys(await bridge.getStockKeys())
+      const keys = await bridge.getStockKeys()
+      setKeyValue(which === 'pexels' ? (keys.pexels ?? '') : (keys.pixabay ?? ''))
     } catch {
-      /* degraded: leave blank */
+      setKeyValue('') // degraded: leave blank
     }
   }
   const saveKeys = async (): Promise<void> => {
-    await bridge.setStockKeys(keys)
+    await bridge.setStockKeys(keyModal === 'pexels' ? { pexels: KeyValue } : { pixabay: KeyValue })
     setKeysSaved(true)
+  }
+  const testKey = async (): Promise<void> => {
+    if (keyTesting || !keyModal) return
+    setKeyTesting(true)
+    setKeyTestResult(null)
+    try {
+      await bridge.setStockKeys(
+        keyModal === 'pexels' ? { pexels: KeyValue } : { pixabay: KeyValue },
+      )
+      const r = await bridge.searchStock(keyModal, 'nature')
+      setKeyTestResult(!r.error && (r.images?.length ?? 0) > 0 ? 'ok' : 'fail')
+    } catch {
+      setKeyTestResult('fail')
+    } finally {
+      setKeyTesting(false)
+    }
   }
   const insertWebImage = async (): Promise<void> => {
     if (!selected || inserting) return
@@ -138,18 +208,71 @@ export function InsertImageDialog({
 
   // ── ai ──
   const [prompt, setPrompt] = useState('')
-  const [size, setSize] = useState<string>('1024*1024')
-  const [count, setCount] = useState<number>(1)
+  const [mediaModels, setMediaModels] = useState<MediaModelOption[] | null>(null)
+  const [modelsError, setModelsError] = useState('')
+  const [modelSel, setModelSel] = useState<{ profileId: string; modelId: string } | null>(null)
+  const [paramValues, setParamValues] = useState<Record<string, string>>({})
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState<{ dataUrl: string }[]>([])
   const [aiError, setAiError] = useState('')
+
+  const selectedModel = mediaModels?.find(
+    (m) => modelSel && m.profileId === modelSel.profileId && m.modelId === modelSel.modelId,
+  )
+  const pickModel = (value: string): void => {
+    if (!mediaModels) return
+    if (value === '__manage__') {
+      bridge.openModelSettings?.()
+      return
+    }
+    const [profileId = '', modelId = ''] = value.split('::')
+    const next = mediaModels.find((m) => m.profileId === profileId && m.modelId === modelId)
+    if (!next) return
+    setModelSel({ profileId, modelId })
+    lastMediaSelection = { profileId, modelId }
+    // seed the dynamic inputs with each field's default
+    const seeded: Record<string, string> = {}
+    for (const f of next.spec.fields) seeded[f.id] = String(f.default)
+    setParamValues(seeded)
+  }
+  const ensureModels = async (): Promise<void> => {
+    if (mediaModels || !bridge.listMediaModels) return
+    try {
+      const r = await bridge.listMediaModels()
+      setMediaModels(r.models ?? [])
+      setModelsError(r.error ?? '')
+      const remembered =
+        r.models?.find(
+          (m) =>
+            lastMediaSelection &&
+            m.profileId === lastMediaSelection.profileId &&
+            m.modelId === lastMediaSelection.modelId,
+        ) ?? r.models?.[0]
+      if (remembered) {
+        setModelSel({ profileId: remembered.profileId, modelId: remembered.modelId })
+        const seeded: Record<string, string> = {}
+        for (const f of remembered.spec.fields) seeded[f.id] = String(f.default)
+        setParamValues(seeded)
+      }
+    } catch (err) {
+      setModelsError(String(err))
+    }
+  }
+  const openAiTab = (): void => {
+    setTab('ai')
+    void ensureModels()
+  }
   const runGenerate = async (): Promise<void> => {
     const p = prompt.trim()
     if (!p || generating) return
     setGenerating(true)
     setAiError('')
     try {
-      const r = await bridge.generate({ prompt: p, size, n: count })
+      const r = await bridge.generate({
+        ...(modelSel ?? {}),
+        prompt: p,
+        ...(Object.keys(paramValues).length ? { params: paramValues } : {}),
+      })
       if (r.images && r.images.length > 0) {
         setGenerated(r.images)
       } else {
@@ -160,6 +283,16 @@ export function InsertImageDialog({
     } finally {
       setGenerating(false)
     }
+  }
+
+  const paramLabel = (f: MediaParamField): string =>
+    isZh ? (f.labelZh ?? f.label) : f.label
+
+  const diagText = (a: SearchAttempt): string => {
+    const name = a.backend.charAt(0).toUpperCase() + a.backend.slice(1)
+    if (a.status === 'ok') return `${name} ${t.diagOk} ${a.count ?? 0}`
+    if (a.status === 'error') return `${name} ${t.diagError}`
+    return `${name} ${t.diagSkipped}`
   }
 
   return (
@@ -183,7 +316,7 @@ export function InsertImageDialog({
               <button
                 key={id}
                 className={`insimg-tab ${tab === id ? 'active' : ''}`}
-                onClick={() => setTab(id)}
+                onClick={id === 'ai' ? openAiTab : () => setTab(id)}
               >
                 {label}
               </button>
@@ -228,6 +361,9 @@ export function InsertImageDialog({
                       setSource(id)
                       setResults(null)
                       setWebError('')
+                      setAttempts(null)
+                      // keyless stock source: guide straight into its own key modal
+                      if (id !== 'web') void openKeyModal(id)
                     }}
                   >
                     {label}
@@ -236,8 +372,10 @@ export function InsertImageDialog({
                 {source !== 'web' && (
                   <button
                     className="insimg-gear"
-                    title={t.keysTitle}
-                    onClick={() => void openKeys()}
+                    title={
+                      source === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay
+                    }
+                    onClick={() => void openKeyModal(source as 'pexels' | 'pixabay')}
                   >
                     ⚙
                   </button>
@@ -262,55 +400,18 @@ export function InsertImageDialog({
                 </button>
               </div>
             </div>
-            {keysOpen && (
-              <div className="insimg-keys">
-                <div className="insimg-keys-hint">
-                  {t.keysHint}
-                  {source === 'pexels' && (
-                    <a href="https://www.pexels.com/api/" target="_blank" rel="noreferrer">
-                      {t.keyApplyUrl}
-                    </a>
-                  )}
-                  {source === 'pixabay' && (
-                    <a href="https://pixabay.com/api/docs/" target="_blank" rel="noreferrer">
-                      {t.keyApplyUrl}
-                    </a>
-                  )}
-                  {t.keysApply}
-                </div>
-                <label className="insimg-keyrow">
-                  <span>{t.pexelsKey}</span>
-                  <input
-                    type="password"
-                    placeholder={t.keyPlaceholder}
-                    value={keys.pexels}
-                    onChange={(e) => setKeys({ ...keys, pexels: e.target.value })}
-                  />
-                </label>
-                <label className="insimg-keyrow">
-                  <span>{t.pixabayKey}</span>
-                  <input
-                    type="password"
-                    placeholder={t.keyPlaceholder}
-                    value={keys.pixabay}
-                    onChange={(e) => setKeys({ ...keys, pixabay: e.target.value })}
-                  />
-                </label>
-                <button
-                  className="insimg-primary"
-                  onClick={() => {
-                    void saveKeys()
-                  }}
-                >
-                  {keysSaved ? t.keysSaved : t.keysSave}
-                </button>
-              </div>
-            )}
             <div className="insimg-grid-wrap">
               {results === null ? (
                 <p className="insimg-hint">{webError || t.emptyQuery}</p>
               ) : results.length === 0 ? (
-                <p className="insimg-hint">{webError || t.noResults}</p>
+                <div className="insimg-hint">
+                  <p>{webError || t.noResults}</p>
+                  {attempts && attempts.length > 0 && (
+                    <p className="insimg-diag">
+                      {t.diagTitle} {attempts.map(diagText).join(' · ')}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="insimg-grid">
                   {results.map((item, i) => (
@@ -320,7 +421,7 @@ export function InsertImageDialog({
                       onClick={() => setSelected(item)}
                       title={item.attribution ?? ''}
                     >
-                      <img src={item.thumbnail} alt="" loading="lazy" />
+                      <img src={item.thumbnail || item.full} alt="" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -341,6 +442,70 @@ export function InsertImageDialog({
 
         {tab === 'ai' && (
           <section className="insimg-body">
+            {bridge.listMediaModels && (
+              <label className="insimg-modelrow">
+                <span>{t.aiModelLabel}</span>
+                <select
+                  className="insimg-select"
+                  value={modelSel ? `${modelSel.profileId}::${modelSel.modelId}` : ''}
+                  onChange={(e) => pickModel(e.target.value)}
+                >
+                  <option value="">{modelsError || t.aiNoModels}</option>
+                  {mediaModels && mediaModels.length > 0 && (
+                    <optgroup label={t.aiModelGroup}>
+                      {mediaModels.map((m) => (
+                        <option key={`${m.profileId}::${m.modelId}`} value={`${m.profileId}::${m.modelId}`}>
+                          {m.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {bridge.openModelSettings && (
+                    <option value="__manage__">{t.aiModelManage}</option>
+                  )}
+                </select>
+              </label>
+            )}
+            {selectedModel && selectedModel.spec.fields.length > 0 && (
+              <div className="insimg-params">
+                {selectedModel.spec.fields.map((f) => (
+                  <label key={f.id} className="insimg-paramrow">
+                    <span>{paramLabel(f)}</span>
+                    {f.type === 'select' ? (
+                      <select
+                        className="insimg-select"
+                        value={paramValues[f.id] ?? String(f.default)}
+                        onChange={(e) =>
+                          setParamValues({ ...paramValues, [f.id]: e.target.value })
+                        }
+                      >
+                        {(f.options ?? []).map((o) => (
+                          <option key={String(o)} value={String(o)}>
+                            {String(o)}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        className="insimg-paraminput"
+                        type={f.type === 'number' ? 'number' : 'text'}
+                        value={paramValues[f.id] ?? String(f.default)}
+                        {...(f.type === 'number'
+                          ? {
+                              min: f.min,
+                              max: f.max,
+                              step: f.step,
+                            }
+                          : {})}
+                        onChange={(e) =>
+                          setParamValues({ ...paramValues, [f.id]: e.target.value })
+                        }
+                      />
+                    )}
+                  </label>
+                ))}
+              </div>
+            )}
             <textarea
               className="insimg-prompt"
               placeholder={t.aiPrompt}
@@ -350,26 +515,6 @@ export function InsertImageDialog({
             />
             <div className="insimg-toolbar">
               <div className="insimg-chips">
-                {SIZES.map((s) => (
-                  <button
-                    key={s}
-                    className={`insimg-chip ${size === s ? 'active' : ''}`}
-                    onClick={() => setSize(s)}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <div className="insimg-chips">
-                {COUNTS.map((n) => (
-                  <button
-                    key={n}
-                    className={`insimg-chip ${count === n ? 'active' : ''}`}
-                    onClick={() => setCount(n)}
-                  >
-                    ×{n}
-                  </button>
-                ))}
                 <button
                   className="insimg-primary"
                   disabled={generating || !prompt.trim()}
@@ -393,7 +538,7 @@ export function InsertImageDialog({
                   {generated.map((img, i) => (
                     <button
                       key={i}
-                      className={`insimg-cell ${false ? 'selected' : ''}`}
+                      className="insimg-cell"
                       onClick={() => onInsert(img.dataUrl)}
                     >
                       <img src={img.dataUrl} alt="" />
@@ -401,10 +546,67 @@ export function InsertImageDialog({
                   ))}
                 </div>
               ) : (
-                !generating && !aiError && <p className="insimg-hint">{t.aiPrompt}</p>
+                !generating &&
+                !aiError && <p className="insimg-hint">{t.aiPrompt}</p>
               )}
             </div>
           </section>
+        )}
+
+        {keyModal && (
+          <div className="insimg-modal-backdrop" onClick={() => setKeyModal(null)}>
+            <div
+              className="insimg-modal"
+              role="dialog"
+              aria-label={keyModal === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <header className="insimg-modal-header">
+                <span>{keyModal === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay}</span>
+                <button
+                  className="insimg-close"
+                  aria-label={t.close}
+                  onClick={() => setKeyModal(null)}
+                >
+                  ✕
+                </button>
+              </header>
+              <p className="insimg-keys-hint">
+                {keyModal === 'pexels' ? t.keysHintPexels : t.keysHintPixabay}
+                <a href={KEY_APPLY_URLS[keyModal]} target="_blank" rel="noreferrer">
+                  {t.keyApplyUrl}
+                </a>
+                {t.keysApply}
+              </p>
+              <label className="insimg-keyrow">
+                <span>{keyModal === 'pexels' ? t.pexelsKey : t.pixabayKey}</span>
+                <input
+                  type="password"
+                  placeholder={t.keyPlaceholder}
+                  value={KeyValue}
+                  onChange={(e) => setKeyValue(e.target.value)}
+                />
+              </label>
+              <div className="insimg-modal-actions">
+                <button className="insimg-primary" onClick={() => void testKey()}>
+                  {keyTesting ? t.keyTesting : t.keyTest}
+                </button>
+                <button
+                  className="insimg-primary"
+                  onClick={() => {
+                    void saveKeys()
+                  }}
+                >
+                  {keysSaved ? t.keysSaved : t.keysSave}
+                </button>
+              </div>
+              {keyTestResult && (
+                <p className={`insimg-keytest ${keyTestResult}`}>
+                  {keyTestResult === 'ok' ? t.keyTestOk : t.keyTestFail}
+                </p>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>

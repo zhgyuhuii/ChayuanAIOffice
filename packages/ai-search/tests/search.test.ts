@@ -84,14 +84,44 @@ describe('DuckDuckGo fallback error surfacing', () => {
     expect(r.error).toBeUndefined()
   })
 
-  it('images: reports method error when the backend is unreachable', async () => {
+  it('images: reports method error with per-tier attempts when all backends fail', async () => {
     mockFetch(() => {
       throw new Error('network down')
     })
     const r = await imageSearch('cats', 8)
     expect(r.method).toBe('error')
     expect(r.images).toHaveLength(0)
-    expect(r.error).toContain('duckduckgo')
+    expect(r.error).toContain('all image backends failed')
+    const byBackend = Object.fromEntries(r.attempts.map((a) => [a.backend, a.status]))
+    // chatoffice unsigned in this harness → skipped; scrape/CC tiers fail on the dead network
+    expect(byBackend.chatoffice).toBe('skipped')
+    expect(byBackend.serper).toBe('skipped')
+    expect(byBackend.bing).toBe('error')
+    expect(byBackend.openverse).toBe('error')
+  })
+
+  it('images: serper hit short-circuits the chain and reports the attempt', async () => {
+    process.env.SERPER_API_KEY = 'test-key'
+    mockFetch((url) => {
+      expect(String(url)).toBe('https://google.serper.dev/images')
+      return {
+        ok: true,
+        json: {
+          images: [
+            {
+              title: 'a',
+              imageUrl: 'https://cdn.example.com/1.jpg',
+              link: 'https://example.com',
+            },
+          ],
+        },
+      }
+    })
+    const r = await imageSearch('cats', 8)
+    expect(r.method).toBe('serper')
+    expect(r.images).toHaveLength(1)
+    expect(r.attempts.find((a) => a.backend === 'chatoffice')?.status).toBe('skipped')
+    expect(r.attempts.find((a) => a.backend === 'serper')?.status).toBe('ok')
   })
 })
 

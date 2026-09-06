@@ -501,14 +501,15 @@ function RibbonInner({
   const [aiReplacePrompt, setAiReplacePrompt] = useState('')
   const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
 
-  /** 统一插入图片对话框的传输桥：共享 ai:* 通道 + docs 生图 */
+  /** 统一插入媒体对话框的传输桥：共享 ai:* 通道 + docs 生图 */
   const insertImageBridge: InsertImageBridge = {
     searchWeb: async (query) => {
-      const r = (await window.desktop?.webImageSearch(query)) as {
-        images?: unknown[]
-        error?: string
-      } | null
-      return { images: (r?.images as WebImageItem[]) ?? [] }
+      const r = await window.desktop?.webImageSearch(query)
+      return {
+        images: (r?.images as WebImageItem[]) ?? [],
+        ...(r?.error ? { error: r.error } : {}),
+        ...(r?.attempts ? { attempts: r.attempts } : {}),
+      }
     },
     searchStock: async (source, query) => {
       const r = await window.desktop?.stockImageSearch(source, query)
@@ -524,12 +525,10 @@ function RibbonInner({
     },
     getStockKeys: async () => (await window.desktop?.stockKeysGet()) ?? { pexels: '', pixabay: '' },
     setStockKeys: (keys) => window.desktop?.stockKeysSet(keys) ?? Promise.resolve(),
-    generate: async ({ prompt }) => {
-      const r = await window.desktop?.aiGenerateImage({ prompt })
-      if (!r?.url) return { error: r?.error ?? 'no image' }
-      const media = await window.desktop?.remoteImage(r.url)
-      if (!media) return { error: 'image download failed' }
-      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    listMediaModels: async () => (await window.desktop?.mediaModels()) ?? { models: [] },
+    generate: async (req) => {
+      const r = await window.desktop?.mediaGenerate(req)
+      return r ?? { error: 'no image' }
     },
   }
 

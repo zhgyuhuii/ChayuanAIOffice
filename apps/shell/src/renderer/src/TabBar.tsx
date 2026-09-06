@@ -230,13 +230,20 @@ export function TabBar() {
 
   // mirror the home tree's visibility and width into the main process: document
   // views inset by the sidebar so the tree strip stays visible beside them
-  // (the sidebar itself is the shell document, always rendered underneath)
+  // (the sidebar itself is the shell document, always rendered underneath).
+  // The same width feeds --tree-width for tabbar.css's .doc-active clip-path —
+  // it must track live or a user-resized strip gets cut at the stale default,
+  // taking the divider and drag handle with it.
   useEffect(() => {
     if (!('chatOfficeTabs' in window)) return
     const send = (): void => {
       const layout = getHomeLayout()
       window.chatOfficeTabs.setTreeInset(!layout.leftCollapsed)
       window.chatOfficeTabs.setTreeWidth(layout.sidebarWidth)
+      document.documentElement.style.setProperty(
+        '--tree-width',
+        layout.leftCollapsed ? '0px' : `${layout.sidebarWidth}px`,
+      )
     }
     send()
     return onHomeLayoutChange(send)

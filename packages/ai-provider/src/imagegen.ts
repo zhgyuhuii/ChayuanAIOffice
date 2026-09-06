@@ -16,12 +16,29 @@ export interface ImageGenRequest {
   prompt: string
   /** '1:1' | '16:9' | '9:16' | ... */
   aspectRatio?: string
+  /** dynamic per-model parameters from the dialog's spec-rendered inputs
+   * (size/n/quality/background/... — ids match media-params.ts field ids) */
+  params?: Record<string, unknown>
   signal?: AbortSignal
 }
 
-/** url is an https link or a data: URL — the renderer download path handles both */
+/** one url per produced image; n>1-capable adapters return as many as asked */
 export interface ImageGenResult {
-  url: string
+  urls: string[]
+}
+
+/** string param probe: trims, ignores empty */
+function strParam(params: Record<string, unknown> | undefined, id: string): string | undefined {
+  const v = params?.[id]
+  return typeof v === 'string' && v.trim() ? v.trim() : undefined
+}
+
+/** numeric param probe: accepts real numbers and numeric strings */
+function numParam(params: Record<string, unknown> | undefined, id: string): number | undefined {
+  const v = params?.[id]
+  if (typeof v === 'number' && Number.isFinite(v)) return v
+  if (typeof v === 'string' && v.trim() && Number.isFinite(Number(v))) return Number(v)
+  return undefined
 }
 
 function aspectToSize(aspectRatio: string | undefined, sep: 'x' | '*'): string | undefined {
@@ -45,7 +62,10 @@ async function generateViaOpenAiImages(
   call: ResolvedModelCall,
   req: ImageGenRequest,
 ): Promise<ImageGenResult> {
-  const size = aspectToSize(req.aspectRatio, 'x')
+  const size = strParam(req.params, 'size') ?? aspectToSize(req.aspectRatio, 'x')
+  const n = numParam(req.params, 'n') ?? 1
+  const quality = strParam(req.params, 'quality')
+  const background = strParam(req.params, 'background')
   const response = await aiFetch(`${call.baseUrl.replace(/\/$/, '')}/images/generations`, {
     method: 'POST',
     ...(req.signal ? { signal: req.signal } : {}),
@@ -57,8 +77,10 @@ async function generateViaOpenAiImages(
     body: JSON.stringify({
       model: call.model,
       prompt: req.prompt,
-      n: 1,
+      n,
       ...(size ? { size } : {}),
+      ...(quality ? { quality } : {}),
+      ...(background ? { background } : {}),
     }),
   })
   if (!response.ok) {
@@ -69,10 +91,13 @@ async function generateViaOpenAiImages(
     error?: { message?: string }
   }
   if (json.error) throw new Error(json.error.message || 'image generation failed')
-  const item = json.data?.[0]
-  if (item?.b64_json) return { url: `data:image/png;base64,${item.b64_json}` }
-  if (item?.url) return { url: item.url }
-  throw new Error('the image API returned neither an image nor a URL')
+  const urls = (json.data ?? [])
+    .map((item) =>
+      item.b64_json ? `data:image/png;base64,${item.b64_json}` : (item.url ?? ''),
+    )
+    .filter((u) => u !== '')
+  if (!urls.length) throw new Error('the image API returned neither an image nor a URL')
+  return { urls }
 }
 
 /** DashScope's image models are task-based: submit with X-DashScope-Async, poll to a result URL.
@@ -85,7 +110,8 @@ async function generateViaDashscope(
   req: ImageGenRequest,
 ): Promise<ImageGenResult> {
   const root = 'https://dashscope.aliyuncs.com'
-  const size = aspectToSize(req.aspectRatio, '*') ?? '1024*1024'
+  const size = strParam(req.params, 'size') ?? aspectToSize(req.aspectRatio, '*') ?? '1024*1024'
+  const n = numParam(req.params, 'n') ?? 1
   const isQwenImage = /qwen-image/i.test(call.model)
   const submit = await aiFetch(
     isQwenImage
@@ -104,12 +130,12 @@ async function generateViaDashscope(
           ? {
               model: call.model,
               input: { messages: [{ role: 'user', content: [{ text: req.prompt }] }] },
-              parameters: { n: 1, size },
+              parameters: { n, size },
             }
           : {
               model: call.model,
               input: { prompt: req.prompt },
-              parameters: { n: 1, size },
+              parameters: { n, size },
             },
       ),
     },
@@ -137,8 +163,10 @@ async function generateViaDashscope(
     }
     const out = status.output ?? {}
     if (out.task_status === 'SUCCEEDED') {
-      const url = out.results?.[0]?.url
-      if (url) return { url }
+      const urls = (out.results ?? [])
+        .map((r) => r.url ?? '')
+        .filter((u) => u !== '')
+      if (urls.length) return { urls }
       throw new Error('dashscope task finished without a result image')
     }
     if (out.task_status === 'FAILED' || out.task_status === 'CANCELED') {
@@ -189,7 +217,7 @@ async function generateViaGemini(
         .inlineData ??
       (part as Record<string, { mimeType?: string; mime_type?: string; data?: string }>).inline_data
     const mime = inline?.mimeType ?? inline?.mime_type ?? 'image/png'
-    if (inline?.data) return { url: `data:${mime};base64,${inline.data}` }
+    if (inline?.data) return { urls: [`data:${mime};base64,${inline.data}`] }
   }
   throw new Error('gemini returned no image part')
 }

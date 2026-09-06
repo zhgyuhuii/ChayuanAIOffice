@@ -1427,7 +1427,11 @@ export function App() {
   const insertImageBridge: InsertImageBridge = {
     searchWeb: async (query) => {
       const r = await window.slidesApi.webImageSearch(query)
-      return { images: (r.images as WebImageItem[]) ?? [] }
+      return {
+        images: (r.images as WebImageItem[]) ?? [],
+        ...(r.error ? { error: r.error } : {}),
+        ...(r.attempts ? { attempts: r.attempts } : {}),
+      }
     },
     searchStock: async (source, query) => {
       const r = await window.slidesApi.stockImageSearch(source, query)
@@ -1443,12 +1447,10 @@ export function App() {
     },
     getStockKeys: () => window.slidesApi.stockKeysGet(),
     setStockKeys: (keys) => window.slidesApi.stockKeysSet(keys),
-    generate: async ({ prompt }) => {
-      const r = await window.slidesApi.generateImage({ prompt })
-      if (!r.url) return { error: r.error ?? 'no image' }
-      const media = await window.slidesApi.remoteImage(r.url)
-      if (!media) return { error: 'image download failed' }
-      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    listMediaModels: async () => (await window.slidesApi.mediaModels()) ?? { models: [] },
+    generate: async (req) => {
+      const r = await window.slidesApi.mediaGenerate(req)
+      return r ?? { error: 'no image' }
     },
   }
 

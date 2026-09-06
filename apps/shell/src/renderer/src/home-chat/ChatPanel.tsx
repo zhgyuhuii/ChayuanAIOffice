@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import { AiComposer, ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
-import sendEnterOn from '../assets/send-enter-on.png'
-import sendEnterOff from '../assets/send-enter-off.png'
-import sendStop from '../assets/send-stop.png'
 import attachIcon from '../assets/attach-icon.png'
 import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
@@ -534,9 +531,6 @@ export function ChatPanel({
         stopLabel={t('chatStop')}
         canSend={(input.trim().length > 0 || attachments.length > 0) && !busy}
         iconOnly
-        sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
-        sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
-        stopIcon={<img src={sendStop} alt="" aria-hidden />}
         textareaRef={inputRef}
         onChange={setInput}
         onSend={send}

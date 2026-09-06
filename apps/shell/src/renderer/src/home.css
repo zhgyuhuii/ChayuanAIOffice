@@ -181,6 +181,7 @@ body.vib .home {
    tabs the editor WebContentsView covers everything right of the tree strip,
    so a handle straddling the border would be mostly covered and undraggable. */
 .sidebar-resizer {
+  position: relative;
   flex-shrink: 0;
   width: 7px;
   margin: 0 0 0 -7px;
@@ -191,6 +192,25 @@ body.vib .home {
 
 .home.pane-left-collapsed > .sidebar-resizer {
   display: none;
+}
+
+/* hover/drag affordance: a 2px accent line along the strip's right edge —
+   the divider itself is the sidebar's 1px border, so this reads as that line
+   waking up. Works beside editor views too (the strip stays inside the tree
+   width the views are inset by). */
+.sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: transparent;
+}
+
+.sidebar-resizer:hover::after,
+body.sidebar-resizing .sidebar-resizer::after {
+  background: var(--accent);
 }
 
 /* while dragging (or hovering the handle): highlight the border position */
@@ -3311,23 +3331,25 @@ body.sidebar-resizing {
   transition: all 0.15s ease;
 }
 
-.ai-send-btn img {
+.ai-send-btn svg {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 16px;
+  height: 16px;
+  color: var(--text);
 }
 
 .ai-send-btn:hover:not(:disabled) {
-  filter: brightness(0.92);
+  background: var(--hover);
 }
 
 .ai-send-btn:active:not(:disabled) {
-  filter: brightness(0.88);
+  background: var(--active-bg);
   transform: scale(0.98);
 }
 
 .ai-send-btn:disabled {
   cursor: default;
+  opacity: 0.45;
 }
 
 /* attach entry at the footer start, brand PNG, mirrors the editor AI panels */

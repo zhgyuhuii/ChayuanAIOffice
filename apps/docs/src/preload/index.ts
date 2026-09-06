@@ -117,6 +117,13 @@ const api: DesktopApi = {
   webImageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:web-image-search', query, maxResults),
   remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
+  mediaModels: () => ipcRenderer.invoke('ai:media-models'),
+  mediaGenerate: (req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) => ipcRenderer.invoke('ai:media-generate', req),
   aiGenerateImage: (op: { prompt: string; aspectRatio?: string }) =>
     ipcRenderer.invoke('docs:ai-generate-image', op),
   pickAttachments: () => ipcRenderer.invoke('files:pick'),

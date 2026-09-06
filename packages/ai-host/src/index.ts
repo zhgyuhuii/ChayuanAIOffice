@@ -37,6 +37,26 @@ export interface StreamEventLike {
   sender: { isDestroyed(): boolean; send(channel: string, chunk: unknown): void }
 }
 
+/** download an https/data URL → base64 + mime (SSRF-guarded, retried); null when unreachable */
+async function downloadAsDataUrl(url: string): Promise<{ base64: string; mime: string } | null> {
+  try {
+    const resp = await fetchRemoteImage(String(url))
+    if (!resp || !resp.ok) return null
+    const buf = Buffer.from(await resp.arrayBuffer())
+    const ct = resp.headers.get('content-type') ?? ''
+    const mime = ct.includes('png')
+      ? 'image/png'
+      : ct.includes('gif')
+        ? 'image/gif'
+        : ct.includes('webp')
+          ? 'image/webp'
+          : 'image/jpeg'
+    return { base64: buf.toString('base64'), mime }
+  } catch {
+    return null
+  }
+}
+
 export interface SharedAiIpcDeps {
   ipcMain: IpcMainLike
   /** absolute path of ai-settings.json in the app's userData */
@@ -137,18 +157,59 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   })
 
   // ── picture-source channels (insert-image dialog) ────────────────────
-  // Web image search (chatoffice → Serper → DuckDuckGo, copyright hosts filtered)
+  // Web image search: chatoffice → Serper → Bing → Openverse, per-tier attempts
+  // attached for the dialog's diagnostics. Serper key: settings first, env fallback.
   ipcMain.handle('ai:web-image-search', async (_event, query: string, maxResults?: number) => {
     try {
+      const settings = await runtime.readRawSettings()
       return await imageSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 12,
         true,
+        settings.searchApiKeys?.serper || process.env.SERPER_API_KEY || undefined,
       )
     } catch (err) {
-      return { images: [], method: 'error', error: String(err) }
+      return { images: [], method: 'error', error: String(err), attempts: [] }
     }
   })
+  // Enabled image/video-generation models + their param specs (model picker list)
+  ipcMain.handle('ai:media-models', async () => {
+    try {
+      return { models: await runtime.listMediaModels() }
+    } catch (err) {
+      return { models: [], error: String(err) }
+    }
+  })
+  // Media generation: model selection + dynamic params, result URLs downloaded
+  // main-side so the renderer only ever sees data: URLs
+  ipcMain.handle(
+    'ai:media-generate',
+    async (
+      _event,
+      req: { profileId?: string; modelId?: string; prompt: string; params?: Record<string, unknown> },
+    ): Promise<{ images?: { dataUrl: string }[]; error?: string }> => {
+      try {
+        const model =
+          req.profileId && req.modelId ? { profileId: req.profileId, modelId: req.modelId } : undefined
+        const r = await runtime.generateImage({
+          prompt: String(req.prompt ?? ''),
+          ...(req.params ? { params: req.params } : {}),
+          ...(model ? { model } : {}),
+        })
+        if (r.error) return { error: r.error }
+        const urls = r.urls ?? (r.url ? [r.url] : [])
+        const images: { dataUrl: string }[] = []
+        for (const url of urls) {
+          const media = await downloadAsDataUrl(url)
+          if (media) images.push({ dataUrl: `data:${media.mime};base64,${media.base64}` })
+        }
+        if (!images.length) return { error: r.error ?? 'image download failed' }
+        return { images }
+      } catch (err) {
+        return { error: err instanceof Error ? err.message : String(err) }
+      }
+    },
+  )
   // Stock libraries (Pexels/Pixabay): keys resolve main-side from ai-settings
   ipcMain.handle(
     'ai:stock-image-search',
@@ -208,27 +269,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     },
   )
   // Download an image URL → base64 (CORS-free, SSRF-guarded, retried)
-  ipcMain.handle(
-    'ai:remote-image',
-    async (_event, url: string): Promise<{ base64: string; mime: string } | null> => {
-      try {
-        const resp = await fetchRemoteImage(String(url))
-        if (!resp || !resp.ok) return null
-        const buf = Buffer.from(await resp.arrayBuffer())
-        const ct = resp.headers.get('content-type') ?? ''
-        const mime = ct.includes('png')
-          ? 'image/png'
-          : ct.includes('gif')
-            ? 'image/gif'
-            : ct.includes('webp')
-              ? 'image/webp'
-              : 'image/jpeg'
-        return { base64: buf.toString('base64'), mime }
-      } catch {
-        return null
-      }
-    },
-  )
+  ipcMain.handle('ai:remote-image', (_event, url: string) => downloadAsDataUrl(String(url)))
 
   return runtime
 }

@@ -504,7 +504,11 @@ export function ExcelShell({
   const insertImageBridge: InsertImageBridge = {
     searchWeb: async (query) => {
       const r = await window.desktopApi.webImageSearch(query)
-      return { images: (r.images as WebImageItem[]) ?? [] }
+      return {
+        images: (r.images as WebImageItem[]) ?? [],
+        ...(r.error ? { error: r.error } : {}),
+        ...(r.attempts ? { attempts: r.attempts } : {}),
+      }
     },
     searchStock: async (source, query) => {
       const r = await window.desktopApi.stockImageSearch(source, query)
@@ -520,12 +524,10 @@ export function ExcelShell({
     },
     getStockKeys: () => window.desktopApi.stockKeysGet(),
     setStockKeys: (keys) => window.desktopApi.stockKeysSet(keys),
-    generate: async ({ prompt }) => {
-      const r = await window.desktopApi.generateImage({ prompt })
-      if (!r.url) return { error: r.error ?? 'no image' }
-      const media = await window.desktopApi.remoteImage(r.url)
-      if (!media) return { error: 'image download failed' }
-      return { images: [{ dataUrl: `data:${media.mime};base64,${media.base64}` }] }
+    listMediaModels: async () => (await window.desktopApi.mediaModels()) ?? { models: [] },
+    generate: async (req) => {
+      const r = await window.desktopApi.mediaGenerate(req)
+      return r ?? { error: 'no image' }
     },
   }
   const onCommandRef = useRef(onCommand)

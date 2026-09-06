@@ -87,6 +87,15 @@ describe('migrateSettingsV2', () => {
     expect(s.currentModel).toBeTruthy()
     expect(s.profiles.map((p) => p.id)).toEqual(['chatoffice', 'openai'])
   })
+
+  it('carries stock/search sidecar keys through v2 normalization (save would otherwise wipe them)', () => {
+    const v2 = defaultSettingsV2()
+    v2.stockApiKeys = { pexels: 'px-key', pixabay: 'pb-key' }
+    v2.searchApiKeys = { serper: 'serper-key' }
+    const s = migrateSettingsV2(v2)
+    expect(s.stockApiKeys).toEqual({ pexels: 'px-key', pixabay: 'pb-key' })
+    expect(s.searchApiKeys).toEqual({ serper: 'serper-key' })
+  })
 })
 
 describe('resolveModelCall', () => {

@@ -238,3 +238,86 @@
   cursor: pointer;
   white-space: nowrap;
 }
+
+/* ── per-vendor key modal (Pexels / Pixabay never share a panel) ── */
+.insimg-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.insimg-modal {
+  background: var(--bg, #fff);
+  border: 1px solid var(--border, #ddd);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  padding: 14px 16px;
+  width: min(420px, 86%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.insimg-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.insimg-modal-actions {
+  display: flex;
+  gap: 8px;
+}
+.insimg-keytest.ok {
+  color: #1a7f37;
+}
+.insimg-keytest.fail {
+  color: #c62828;
+}
+
+/* ── AI tab: model picker + dynamic params ── */
+.insimg-modelrow,
+.insimg-paramrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.insimg-modelrow > span,
+.insimg-paramrow > span {
+  min-width: 64px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+.insimg-select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: var(--bg, #fff);
+  color: inherit;
+}
+.insimg-params {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border, #e3e3e3);
+  border-radius: 8px;
+}
+.insimg-paraminput {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+  background: var(--bg, #fff);
+  color: inherit;
+}
+.insimg-diag {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.7;
+}

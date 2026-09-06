@@ -22,3 +22,6 @@ declare module '*.svg' {
   const src: string
   export default src
 }
+
+/** side-effect stylesheets — bundled and injected by vite */
+declare module '*.css'

@@ -5,6 +5,8 @@
  * Home stays pinned at index 0, exactly like the Electron strip.
  */
 
+import { getHomeLayout, onHomeLayoutChange } from '../../../shell/src/renderer/src/home-layout'
+
 export type TabKind = 'home' | 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown'
 
 export interface TabSummary {
@@ -46,6 +48,8 @@ export class TabManager {
   private readonly handlers = new Set<ChangedHandler>()
   private layer: HTMLDivElement | null = null
   private anchor: HTMLElement | null = null
+  /** shell modal (settings) lifetime: the covering editor layer hides for it */
+  private modalOpen = false
 
   /**
    * The iframe layer lives on <body> and geometrically tracks the shell's
@@ -68,16 +72,22 @@ export class TabManager {
       const bar = document.querySelector('.tab-bar')
       const barBottom = bar ? bar.getBoundingClientRect().bottom : 0
       const top = Math.max(r.top, barBottom)
+      // keep the home tree strip visible beside the editor, mirroring the
+      // main-process WebContentsView inset: the layer starts right of the
+      // sidebar (dragging the splitter re-syncs live via onHomeLayoutChange)
+      const layout = getHomeLayout()
+      const inset = layout.leftCollapsed ? 0 : layout.sidebarWidth
       Object.assign(this.layer.style, {
         top: `${top}px`,
-        left: `${r.left}px`,
-        width: `${r.width}px`,
+        left: `${r.left + inset}px`,
+        width: `${Math.max(0, r.width - inset)}px`,
         height: `${Math.max(0, r.bottom - top)}px`,
       })
     }
     sync()
     new ResizeObserver(sync).observe(this.anchor)
     window.addEventListener('resize', sync)
+    onHomeLayoutChange(sync)
   }
 
   list(): TabSummary[] {
@@ -98,16 +108,24 @@ export class TabManager {
   /** Editor iframes hide when Home (index 0) is active — Home paints itself.
    * The shell hides .app-frame-content for non-home tabs (Electron editors
    * paint over it natively); on the web the layer must undo that so iframes
-   * show — it is opaque, so the Home DOM behind it stays covered. */
+   * show — it is opaque, so the Home DOM behind it stays covered. A shell
+   * modal (settings) needs the whole window, so the layer hides for its
+   * lifetime — the DOM-level mirror of the main process hiding the view. */
   private syncVisibility(): void {
     const homeActive = this.tabs[0]?.summary.active === true
     // anchor visibility stays under the shell's own control (hidden for
     // non-home tabs — exactly what we want now that the layer is on body)
     if (this.anchor) this.anchor.style.visibility = ''
-    if (this.layer) this.layer.style.display = homeActive ? 'none' : 'block'
+    if (this.layer) this.layer.style.display = homeActive || this.modalOpen ? 'none' : 'block'
     for (const t of this.tabs) {
       if (t.frame) t.frame.style.display = t.summary.active ? 'block' : 'none'
     }
+  }
+
+  /** shell modal lifetime relayed from the chatOfficeTabs shim */
+  setModalOpen(open: boolean): void {
+    this.modalOpen = open
+    this.syncVisibility()
   }
 
   /** Loading veil over a freshly opened editor until its iframe finishes. */

@@ -11,8 +11,22 @@ export interface ImageSearchResult {
   imageUrl: string
   sourceUrl: string
   source: string
+  /** hotlinkable preview URL when the backend offers one distinct from imageUrl */
+  thumbnail?: string
+  /** attribution string (creator · license) when the backend provides one */
+  attribution?: string
   width?: number
   height?: number
+}
+
+/** one tier of the image-search fallback chain, for the dialog's diagnostics */
+export interface SearchAttempt {
+  backend: 'chatoffice' | 'serper' | 'bing' | 'openverse'
+  status: 'skipped' | 'ok' | 'error'
+  /** skip reason (not configured / turned off) or the error message */
+  detail?: string
+  /** image count on success */
+  count?: number
 }
 
 // Known stock-photo hosts skipped during image search (matches the upstream filter list)

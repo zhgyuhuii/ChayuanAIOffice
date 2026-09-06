@@ -2814,8 +2814,45 @@ export interface DesktopApi {
   webImageSearch(
     query: string,
     maxResults?: number,
-  ): Promise<{ images: unknown[]; method?: string; error?: string }>
+  ): Promise<{
+    images: unknown[]
+    method?: string
+    error?: string
+    attempts?: { backend: string; status: 'skipped' | 'ok' | 'error'; detail?: string; count?: number }[]
+  }>
   remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
+  /// Enabled image/video-generation models + param specs (insert-media dialog picker)
+  mediaModels(): Promise<{
+    models: {
+      kind: 'image'
+      profileId: string
+      modelId: string
+      label: string
+      vendorId: string
+      spec: {
+        fields: {
+          id: string
+          label: string
+          labelZh?: string
+          type: 'select' | 'text' | 'number'
+          options?: Array<string | number>
+          min?: number
+          max?: number
+          step?: number
+          default: string | number
+          required?: boolean
+        }[]
+      }
+    }[]
+    error?: string
+  }>
+  /// Media generation with model selection + dynamic params; data URLs come back
+  mediaGenerate(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{ images?: { dataUrl: string }[]; error?: string }>
   /// AI image generation via the ChatOffice account (sheets-owned channel)
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<GenerateImageResult>
   /// Downloads an image URL in the main process (SSRF-guarded); null on failure

@@ -123,6 +123,8 @@ export function ModelSettingsPage({
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
   const [chatoffice, setChatOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
+  /** search services (Serper key): null draft = untouched; sentinel = stored key kept */
+  const [serperDraft, setSerperDraft] = useState<string | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
@@ -301,6 +303,24 @@ export function ModelSettingsPage({
   const persist = async (next: AiSettingsV2) => {
     await bridge.saveSettings(next)
     setSettings(next)
+  }
+
+  /** 搜索服务（Serper key）：未触摸时发 KEEP_KEY 保住已存密钥，空值视为清除 */
+  const saveSerperKey = async () => {
+    if (!settings) return
+    const stored = settings.searchApiKeys?.serper
+    const value = serperDraft === null ? KEEP_KEY : serperDraft.trim() || (stored ? KEEP_KEY : '')
+    const next: AiSettingsV2 = {
+      ...settings,
+      searchApiKeys: { serper: value },
+    }
+    try {
+      await persist(next)
+      setSerperDraft(null)
+      flash('ok', t.searchSaved)
+    } catch (error) {
+      flash('err', errorText(error))
+    }
   }
 
   const sanitize = (next: AiSettingsV2): AiSettingsV2 => {

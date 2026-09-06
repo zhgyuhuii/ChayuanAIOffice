@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { IconEnter, IconSend, IconStop } from './icons'
+import { IconSend, IconStop } from './icons'
 
 // Keep in sync with the CSS `max-height` on `.ai-input-box textarea` (7 lines à 24px)
 const MAX_TEXTAREA_HEIGHT = 168
@@ -51,7 +51,7 @@ export function AiComposer({
   readonly footerStart?: React.ReactNode
   /** compact variant: no hint text, icon-only enter/stop button (ChatOffice composer style) */
   readonly iconOnly?: boolean | undefined
-  /** custom art for the icon-only send button (e.g. brand-supplied PNGs); falls back to IconEnter */
+  /** custom art for the icon-only send button (e.g. brand-supplied PNGs); falls back to IconSend */
   readonly sendIconEnabled?: React.ReactNode
   readonly sendIconDisabled?: React.ReactNode
   /** custom art for the icon-only stop button while busy; falls back to IconStop */
@@ -135,7 +135,7 @@ export function AiComposer({
           >
             {iconOnly ? (
               (canSendComputed ? sendIconEnabled : (sendIconDisabled ?? sendIconEnabled)) ?? (
-                <IconEnter size={16} />
+                <IconSend size={16} />
               )
             ) : (
               <IconSend size={16} />

@@ -73,6 +73,8 @@ export interface AiSettingsV2 {
   chatofficeToolsEnabled?: boolean
   /** stock-photo library API keys (Pexels/Pixabay) for the insert-image dialog */
   stockApiKeys?: { pexels?: string; pixabay?: string }
+  /** web-search service API keys (Serper) — settings-first, env var as fallback */
+  searchApiKeys?: { serper?: string }
 }
 
 /** a v2 stream request carries only the selection — the backend owning the settings resolves the secret */

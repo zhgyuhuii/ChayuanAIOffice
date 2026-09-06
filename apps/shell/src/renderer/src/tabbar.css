@@ -333,14 +333,18 @@ html.chatoffice-popover-open .tab-bar {
 }
 
 /* While a document tab is active the home tree stays painted in the strip a
- * document view leaves open (232px = home.css .sidebar = TREE_SIDEBAR_WIDTH
- * in tab-manager.ts): clip-path stops painting the covered rest so home can't
- * ghost through the editors' translucent vibrancy regions. A shell modal
- * (settings, html.chatoffice-shell-modal set by Home's settings funnel) frees
- * the whole window — the main process hides the covering editor view — so the
- * clip must drop or the dialog would still be cut at 232px. */
+ * document view leaves open: clip-path stops painting the covered rest so home
+ * can't ghost through the editors' translucent vibrancy regions. The strip
+ * width rides on --tree-width (set live by TabBar from home-layout.sidebarWidth
+ * and mirrored to the main process inset over setTreeWidth IPC), so a user-
+ * resized tree stays fully visible beside the editor — with its divider and
+ * drag handle, which a stale hardcoded clip used to cut off. 232px fallback =
+ * home-layout SIDEBAR_DEFAULT. A shell modal (settings,
+ * html.chatoffice-shell-modal set by Home's settings funnel) frees the whole
+ * window — the main process hides the covering editor view — so the clip must
+ * drop or the dialog would still be cut at the strip. */
 .app-frame-content.doc-active {
-  clip-path: inset(0 calc(100% - 232px) 0 0);
+  clip-path: inset(0 calc(100% - var(--tree-width, 232px)) 0 0);
 }
 
 html.chatoffice-shell-modal .app-frame-content.doc-active {

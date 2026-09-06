@@ -249,22 +249,27 @@ describe('ModelDefaultsPage', () => {
     ]
     expect(selects.map((s) => s.dataset.defaultKind)).toEqual([
       'chat',
+      'generation',
+      'qc',
       'image',
       'videoGeneration',
       'tts',
       'asr',
     ])
-    // chat + image + tts offer the zhipu models; video/asr stay empty (auto only)
+    // chat/generation/qc/image offer the zhipu models per kind type; video/asr stay empty (auto only)
     expect(selects[0]!.options.length).toBe(2) // auto + glm-5.3
-    expect(selects[1]!.options.length).toBe(2) // auto + qwen-image
-    expect(selects[3]!.options.length).toBe(2) // auto + cogtts
-    expect(selects[2]!.options.length).toBe(1) // auto only
+    expect(selects[1]!.options.length).toBe(2) // auto + glm-5.3 (generation rides chat/vision)
+    expect(selects[2]!.options.length).toBe(1) // auto only (qc rides vision)
+    expect(selects[3]!.options.length).toBe(2) // auto + qwen-image
+    expect(selects[4]!.options.length).toBe(1) // auto only
+    expect(selects[5]!.options.length).toBe(2) // auto + cogtts
+    expect(selects[6]!.options.length).toBe(1) // auto only
 
     // pick the tts default → saved into modelDefaults
     const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')!.set!
     await act(async () => {
-      setter.call(selects[3]!, 'zhipu::cogtts')
-      selects[3]!.dispatchEvent(new Event('change', { bubbles: true }))
+      setter.call(selects[5]!, 'zhipu::cogtts')
+      selects[5]!.dispatchEvent(new Event('change', { bubbles: true }))
     })
     expect(saveSettings).toHaveBeenCalledTimes(1)
     const saved = saveSettings.mock.calls[0]![0] as { modelDefaults?: Record<string, unknown> }

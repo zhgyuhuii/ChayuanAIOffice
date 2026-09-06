@@ -493,6 +493,12 @@ const desktopApi: DesktopApi = {
   async remoteImage(url) {
     return ipcRenderer.invoke('ai:remote-image', url)
   },
+  mediaModels() {
+    return ipcRenderer.invoke('ai:media-models')
+  },
+  mediaGenerate(req) {
+    return ipcRenderer.invoke('ai:media-generate', req)
+  },
   async fetchImage(url) {
     if (typeof url !== 'string' || !/^https?:\/\//i.test(url) || url.length > 2048) {
       throw new Error('Invalid image URL.')

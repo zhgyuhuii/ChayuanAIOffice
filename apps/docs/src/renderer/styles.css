@@ -7315,32 +7315,25 @@ body.docs-crop-active
   transition: all var(--transition-fast);
 }
 
-.ai-send-btn img {
+.ai-send-btn svg {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 16px;
+  height: 16px;
+  color: var(--text);
 }
 
 .ai-send-btn:hover:not(:disabled) {
-  filter: brightness(0.92);
+  background: var(--hover);
 }
 
 .ai-send-btn:active:not(:disabled) {
-  filter: brightness(0.88);
+  background: var(--active-bg);
   transform: scale(0.98);
 }
 
 .ai-send-btn:disabled {
   cursor: default;
-}
-
-/* Stop button while generating: brand-supplied art (white square on black), transparent button chrome */
-.ai-send-btn.ai-stop-btn {
-  background: transparent;
-}
-
-.ai-send-btn.ai-stop-btn:hover {
-  filter: brightness(0.92);
+  opacity: 0.45;
 }
 
 /* ================= status bar ================= */
