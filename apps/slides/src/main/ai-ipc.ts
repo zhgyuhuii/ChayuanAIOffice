@@ -23,17 +23,18 @@ import {
   inferModelType,
   migrateSettingsV2,
   modelAcceptsImages,
+  resolveDefaultModel,
+  runMediaJob,
   setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
-import { inferModelType, resolveDefaultModel, runMediaJob } from '@chatoffice/ai-provider'
-import type { StoredAiSettings } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import {
   webSearch,
   imageSearch,
+  readUrlContent,
   ensureChatofficeLogin,
   chatofficeApiKey,
   chatofficeGenerateImage,
@@ -221,24 +222,33 @@ export function registerSlidesOnlyAiIpc(): void {
       | { error: string }
     > => {
       try {
-        const view = await getAiRuntime().getSettingsView()
-        const raw = (view as unknown as { raw?: StoredAiSettings }).raw
-        let pick: { vendorId: string; model: string; apiKey: string } | null = null
-        if (raw) {
-          const sel = resolveDefaultModel(raw, 'videoGeneration')
-          if (sel) {
-            const profile = raw.profiles.find((p) => p.id === sel.profileId)
-            if (profile?.apiKey) {
-              pick = { vendorId: profile.vendorId ?? profile.id, model: sel.modelId, apiKey: profile.apiKey }
+        // raw settings (unredacted): the redacted view carries no keys, so the
+        // videoGeneration role pick must resolve against the stored file
+        const raw = await getAiRuntime().readRawSettings()
+        let pick: { vendorId: string; model: string; apiKey: string; baseUrl?: string } | null = null
+        const sel = resolveDefaultModel(raw, 'videoGeneration')
+        if (sel) {
+          const profile = raw.profiles.find((p) => p.id === sel.profileId)
+          if (profile?.apiKey) {
+            pick = {
+              vendorId: profile.vendorId ?? profile.id,
+              model: sel.modelId,
+              apiKey: profile.apiKey,
+              ...(profile.baseUrl ? { baseUrl: profile.baseUrl } : {}),
             }
           }
         }
         if (!pick) {
-          for (const profile of view.profiles ?? []) {
+          for (const profile of raw.profiles ?? []) {
             if (!profile.enabled || !profile.apiKey || profile.auth !== 'api-key') continue
             const model = profile.models.find((m) => inferModelType(m.id) === 'video-generation')
             if (model) {
-              pick = { vendorId: profile.vendorId ?? profile.id, model: model.id, apiKey: profile.apiKey }
+              pick = {
+                vendorId: profile.vendorId ?? profile.id,
+                model: model.id,
+                apiKey: profile.apiKey,
+                ...(profile.baseUrl ? { baseUrl: profile.baseUrl } : {}),
+              }
               break
             }
           }
@@ -268,6 +278,7 @@ export function registerSlidesOnlyAiIpc(): void {
           vendorId: pick.vendorId,
           model: pick.model,
           apiKey: pick.apiKey,
+          ...(pick.baseUrl ? { baseUrl: pick.baseUrl } : {}),
           prompt: String(op.prompt ?? ''),
           imageUrl: op.imageUrl,
           aspectRatio: op.aspectRatio,

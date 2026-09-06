@@ -23,6 +23,9 @@ export interface MediaJobRequest {
   model: string
   apiKey: string
   prompt: string
+  /** vendor API root for self-hosted/proxied deployments; adapters fall back
+   * to the official endpoint when absent (openai/chatoffice/gemini use it) */
+  baseUrl?: string
   /** first-frame image for image-to-video (public URL; base64 only where the vendor takes it) */
   imageUrl?: string
   /** e.g. '16:9' — adapters map to their native field */
@@ -328,7 +331,10 @@ registerMediaJobAdapter({
   timeoutMs: 15 * 60_000,
   async submit(req) {
     const auth = await klingJwt(req.apiKey)
-    const res = await aiFetch('https://api.klingai.com/v1/videos/text2video', {
+    // AK/SK pairs are issued per site: global api.klingai.com vs China
+    // api-beijing.klingai.com — the profile's baseUrl selects the site
+    const base = (req.baseUrl?.trim() || 'https://api.klingai.com').replace(/\/+$/, '')
+    const res = await aiFetch(`${base}/v1/videos/text2video`, {
       method: 'POST',
       ...(req.signal ? { signal: req.signal } : {}),
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth}` },
@@ -348,7 +354,8 @@ registerMediaJobAdapter({
   },
   async poll(jobId, req) {
     const auth = await klingJwt(req.apiKey)
-    const res = await aiFetch(`https://api.klingai.com/v1/videos/text2video/${jobId}`, {
+    const base = (req.baseUrl?.trim() || 'https://api.klingai.com').replace(/\/+$/, '')
+    const res = await aiFetch(`${base}/v1/videos/text2video/${jobId}`, {
       headers: { Authorization: `Bearer ${auth}` },
       ...(req.signal ? { signal: req.signal } : {}),
     })

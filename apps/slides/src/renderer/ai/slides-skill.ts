@@ -2190,13 +2190,14 @@ ${r.text}`,
       }
       if ('error' in res) return fail(t('aiFailGenerateVideo'), res.error)
       // Land the clip with the addMedia op (unlocked for AI use) on the current slide
-      const current = access.getCurrent()
-      const idx = access.getSlides().findIndex((sl) => sl === current)
-      const slideIndex = idx >= 0 ? idx : 0
+      const currentIndex = access.getCurrent()
+      const slideIndex =
+        currentIndex >= 0 && currentIndex < access.getSlides().length ? currentIndex : 0
+      const cur = access.getSlides()[slideIndex]
       const W = 480
       const H = 270
-      const x = Math.max(0, Math.round(((current?.widthPx ?? 1280) - W) / 2))
-      const y = Math.max(0, Math.round(((current?.heightPx ?? 720) - H) / 2))
+      const x = Math.max(0, Math.round(((cur?.widthPx ?? 1280) - W) / 2))
+      const y = Math.max(0, Math.round(((cur?.heightPx ?? 720) - H) / 2))
       const r = await window.slidesApi.applyTxn?.({
         ops: [{ op: 'addMedia', kind: 'video', bytes: res.bytes, ext: res.ext, slide: slideIndex, x, y, w: W, h: H }],
       })

@@ -117,4 +117,49 @@ describe('built-in adapters', () => {
     const poll = await adapter.poll(id, baseReq)
     expect(poll.state).toBe('failed')
   })
+
+  it('kling: JWT bearer auth, body fields, and the profile baseUrl selects the site', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonRes({ data: { task_id: 'kl-1' } }))
+      .mockResolvedValueOnce(
+        jsonRes({
+          data: {
+            task_status: 'succeed',
+            task_result: { videos: [{ url: 'https://k/v.mp4', cover_image_url: 'https://k/p.jpg' }] },
+          },
+        }),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    const adapter = getMediaJobAdapter('kling')!
+    const req: MediaJobRequest = {
+      ...baseReq,
+      vendorId: 'kling',
+      model: 'kling-v1-6',
+      apiKey: 'ak-test:sk-test',
+      // China-site keys (api-beijing) vs the global default: the profile's
+      // baseUrl must win — an AK/SK pair only auths on its issuing site
+      baseUrl: 'https://api-beijing.klingai.com',
+      aspectRatio: '16:9',
+      durationSeconds: 5,
+    }
+    const id = await adapter.submit(req)
+    expect(id).toBe('kl-1')
+    const submitCall = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+    expect(submitCall[0]).toBe('https://api-beijing.klingai.com/v1/videos/text2video')
+    expect(submitCall[1]!.headers).toMatchObject({ Authorization: expect.stringMatching(/^Bearer ey/) })
+    expect(JSON.parse(String(submitCall[1]!.body))).toMatchObject({
+      model_name: 'kling-v1-6',
+      duration: '5',
+      aspect_ratio: '16:9',
+    })
+    const poll = await adapter.poll(id, req)
+    const pollCall = fetchMock.mock.calls[1] as unknown as [string, RequestInit]
+    expect(pollCall[0]).toBe('https://api-beijing.klingai.com/v1/videos/text2video/kl-1')
+    // toMatchObject: the poster-in-meta enrichment lands separately
+    expect(poll).toMatchObject({
+      state: 'succeeded',
+      result: { url: 'https://k/v.mp4', mime: 'video/mp4' },
+    })
+  })
 })

@@ -35,14 +35,14 @@ cd apps/slides && npx vitest run              # 608 passed + 8 skipped（原有 
 cd apps/slides && npx tsc --noEmit            # 干净（仅存量 tsconfig baseUrl 弃用警告）
 ```
 
-## 3. 未完成 / 需要人工实测的清单（下一会话从这里接）
+## 3. 未完成 / 需要人工实测的清单（2026-09-06 已用真实 key 实测，见 §5）
 
 ### A. 必须真实 key 实测（代码完成但无线上验证）
-1. **DeepSeek 全链路**：配 deepseek key → ① deepseek-reasoner 应触发"兼容模式"徽标并可完成生成（降级 JSON 协议）；② deepseek-chat 长任务不再被 8192 截断（max_tokens 65536 生效）。若极旧版模型报 400 Invalid max_tokens → 调低 capabilities.ts `MAX_OUTPUT_TOKENS.deepseek`。
-2. **generate_video 全链路**：设置里配 videoGeneration 默认模型（如百炼 wanx2.1-t2v-turbo / 智谱 cogvideox-3 / kling）→ AI 面板要求生成视频 → 确认对话框 → 轮询 → 视频落页可放映。注意 `ai:generate-video` 从 `getAiRuntime().getSettingsView()` 的 `raw` 字段读 modelDefaults（`(view as any).raw`）——**若该字段不存在会自动退回"扫描有 key 的视频模型"分支（功能可用但角色选择不生效）**，实测时确认这条路径。
-3. **音视频附件理解**：gemini 模型传本地视频/音频附件；openai 系传音频；anthropic 传音视频应见明确报错文案。
-4. **厂商视频 API 字段漂移**：7 个适配器字段做了多路径 fallback 但均未实测；任一家 400/字段变更 → 只修 media-jobs.ts 对应 adapter。
-5. **generate_deck 版式骨架 + notes**：本地（BYOK 无云）生成时看页面是否出现骨架结构、备注栏是否有讲稿。
+1. **DeepSeek 全链路**：✅ 已实测通过（§5.1）。
+2. **generate_video 全链路**：✅ 百炼端到端通过；⚠️ 智谱/可灵卡在账户余额（§5.2）。
+3. **音视频附件理解**：⚠️ 无法线上验证——百炼 qwen-vl/omni 全系欠费（Arrearage）、智谱视频理解需付费资源包（glm-4v-flash 免费档不支持视频，返回 1234 网络错误）。转换器格式已有单测覆盖，线上验证需充值后进行。
+4. **厂商视频 API 字段漂移**：百炼/智谱/可灵三家已实测（智谱/可灵到计费层，字段被接受）；MiniMax/火山/Luma/fal 无 key 未测。
+5. **generate_deck 版式骨架 + notes**：✅ 已实测通过（§5.3）。
 
 ### B. 已知限制（设计内，非 bug）
 - kling/luma/fal 仅是媒体 key 容器：chat 不路由（设置页它们的对话模型不可用是预期）。
@@ -58,3 +58,35 @@ cd apps/slides && npx tsc --noEmit            # 干净（仅存量 tsconfig base
 ## 4. 并行工作注意
 
 工作区同时存在另一条线「**插入媒体窗口改造**」（docs/insert-media-dialog-plan.md，共识达成未开工状态可能已变化）及其配套（packages/ai-provider/src/media-params.ts、packages/ai-search/src/{bing,openverse}.ts、各 app 的 UI 改动）。本 commit 已将其余改动单独提交（见 git log「并行线」commit）。两条线都动 ai-provider / ai-search / slides，新会话开工前先 `git log --oneline -10` 对齐最新状态，避免与该线冲突。
+**2026-09-06 更新**：该线已在本工作区活跃开发（video-tasks 后台注册表、ribbon tab-strip、media-jobs params/cancel/downloadHeaders 扩展等），同文件混合改动时必须按 hunk 精确提交。
+
+## 5. 真实 key 实测记录（2026-09-06）
+
+### 5.1 DeepSeek 全链路 ✅
+
+- key 全部有效；`/models` 显示当前模型线为 **V4**（deepseek-v4-flash / v4-pro / v4-flash-vision-exp），`deepseek-chat`/`deepseek-reasoner` 是仍可用的别名（reasoner → v4-flash 带思考）。
+- **max_tokens 65536 被接受**（chat/reasoner/v4-* 均生效），截断根因②确认修复。
+- **重大事实修正：`deepseek-reasoner` 现已支持 function calling**（官方文档的"思考模式不支持工具"描述的是 R1 时代）。用本仓库真实线格式（registry 注入 thinking:disabled）实测 AgentLoop 工具往返，chat 与 reasoner 均完整走通 FC 循环、无降级。据此把 reasoner 移出 capabilities.ts `NO_FUNCTION_CALLING`（保留 r1 遗留名单），AiPanel 静态 gate 相应放行；loop 的静默轮探测仍是动态兜底。
+- ai-settings.json 的 deepseek profile 已补 v4 线模型。
+
+### 5.2 generate_video / 视频适配器 ✅（百炼）/ ⚠️（智谱、可灵）
+
+- **百炼 wanx2.1-t2v-turbo 端到端通过**：runMediaJob 提交 → 轮询（~84s）→ 产出签名 OSS mp4（GET 验证 206 video/mp4；OSS 签名不含 HEAD 动词，勿用 HEAD 探测）。
+- **可灵：发现并修复适配器 bug**——AK/SK 按站点签发（国际站 api.klingai.com vs 国内站 api-beijing.klingai.com），适配器硬编码国际站导致用户 key 401 Auth failed。修法：`MediaJobRequest.baseUrl` 由 profile 透传（ai-ipc 已带出），kling 适配器优先用之（附单测）；用户的 key 属国内站，已把其 profile baseUrl 指到 api-beijing。JWT 签名本身正确（国内站 GET 200）。
+- **智谱 cogvideox-3、可灵生成均卡账户余额**（智谱 1113 余额不足 / 可灵 1102 Account balance not enough）——请求到达计费层，字段与鉴权路径已被厂商接受；充值后即可全链路。cogvideox（无版本号后缀）模型 id 不存在（1211），勿用。
+- MiniMax/火山/Luma/fal 无 key，未测。
+
+### 5.3 generate_deck 本地管线（骨架 + notes）✅
+
+真实 deepseek-chat 按generatePageLocal 同款 prompt 写 spec：`layout: titleSlide` + `layoutContent` + 60-120 字中文讲稿一次产出；parsePageSpec → buildPagePptx → 重新打开 pptx，`getSlideNotes` 回读与 spec.notes 完全一致。骨架/讲稿链路验证通过。注意：模型不总是自选骨架（prompt 里是"recommended"），deck 大纲层已给每页 layout 时遵循良好。
+
+### 5.4 其余 key 状态
+
+- **pexels/pixabay** ✅：stock.ts 双通道实测各返回 12 条；key 已配到 ai-settings.json `stockApiKeys`。
+- **百度千帆** ✅：v2 chat（ernie-4.5-turbo-128k）正常，key 为 bce-v3 格式直接 Bearer。
+- **NVIDIA NIM** ⚠️：key 有效，但账户仅能调用部分模型——`openai/gpt-oss-20b` 可用；`moonshotai/kimi-k3`/`deepseek-ai/deepseek-v4-flash-0731` 列出但首字极慢（>100s 超时）；kimi-k2.6/nemotron-ultra/mistral-large-2 已 EOL 或对该账户 404。profile 模型列表已按实测结果收敛。
+- **ai:generate-video 的 raw bug**（交接 §3.A.2 预警项）确认存在并已修：`getSettingsView()` 返回 redact 视图、无 `raw` 字段，videoGeneration 角色选择从未生效。改用 `readRawSettings()`。
+
+### 5.5 顺带修复（一期提交的存量 tsc 错误，10 处）
+
+970e803 自述"五包 tsc 无错误"与实际不符（vitest 不做类型检查）：apps/slides 有 10 处 tsc 错误，全部修复——ai-ipc 缺 `readUrlContent` 导入；agent-core index 未导出 `AgentAudio`/`AgentVideo`；AiPanel 缺 `resolveModelCapabilities` 导入且调错对象（`window.slidesApi.readAttachmentMedia` → 实际在 `window.desktop`）；slides-skill generate_video 落页代码把 `getCurrent()`（返回页索引 number）当 RenderSlide 用。修复后 slides/agent-core tsc 全清，五包测试全绿（agent-core 80 / ai-provider 176 / ai-search 51 / ui 69 / slides 608+8skip）。

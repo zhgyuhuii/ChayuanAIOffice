@@ -9,10 +9,8 @@ const q = (vendorId: string, protocol: any, modelId: string) => ({ vendorId, pro
 
 describe('functionCallingVerdict', () => {
   it('flags known no-FC models with a reason', () => {
-    expect(functionCallingVerdict(q('deepseek', 'openai-compatible', 'deepseek-reasoner'))).toEqual({
-      supported: false,
-      reason: expect.stringContaining('does not support tool calls'),
-    })
+    // V4-era reasoner alias returns tool_calls (live API, 2026-09); legacy R1 stays no-FC
+    expect(functionCallingVerdict(q('deepseek', 'openai-compatible', 'deepseek-reasoner')).supported).toBe(true)
     expect(functionCallingVerdict(q('deepseek', 'openai-compatible', 'deepseek-r1-0528')).supported).toBe(false)
     expect(functionCallingVerdict(q('openai', 'openai-responses', 'o1-preview')).supported).toBe(false)
   })
@@ -30,7 +28,7 @@ describe('functionCallingVerdict', () => {
 
 describe('resolveModelCapabilities', () => {
   it('a no-FC model cannot be an operator', () => {
-    const caps = resolveModelCapabilities(q('deepseek', 'openai-compatible', 'deepseek-reasoner'))
+    const caps = resolveModelCapabilities(q('deepseek', 'openai-compatible', 'deepseek-r1-0528'))
     expect(caps.functionCalling).toBe(false)
   })
 
@@ -63,10 +61,11 @@ describe('resolveModelCapabilities', () => {
 
 describe('capabilityBlockers', () => {
   it('explains operator/image/attachment blockers', () => {
-    const reasoner = q('deepseek', 'openai-compatible', 'deepseek-reasoner')
-    expect(capabilityBlockers(reasoner, 'operator')).toHaveLength(1)
+    const r1 = q('deepseek', 'openai-compatible', 'deepseek-r1-0528')
+    expect(capabilityBlockers(r1, 'operator')).toHaveLength(1)
     expect(capabilityBlockers(q('deepseek', 'openai-compatible', 'deepseek-chat'), 'operator')).toHaveLength(0)
-    expect(capabilityBlockers(reasoner, 'video')).toHaveLength(1)
+    // a chat model has no media channel regardless of FC
+    expect(capabilityBlockers(r1, 'video')).toHaveLength(1)
     expect(capabilityBlockers(q('anthropic', 'anthropic', 'claude-sonnet-4-6'), 'attachment-video')).toHaveLength(1)
     expect(capabilityBlockers(q('anthropic', 'anthropic', 'claude-sonnet-4-6'), 'attachment-audio')).toHaveLength(1)
   })

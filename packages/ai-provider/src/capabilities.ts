@@ -7,10 +7,13 @@ import { inferModelType } from './model-type'
  * model-id type inference alone cannot express the real gates:
  *
  * - FC (function calling) is a property the type system does not capture —
- *   `deepseek-reasoner` infers as a plain chat model but the API never
- *   returns tool_calls for it (DeepSeek docs: thinking mode supports
- *   conversation only). Without an explicit dimension such a model silently
- *   "talks but never works" in an agent loop.
+ *   legacy ids (`deepseek-r1*`, o1-preview/mini) return text only, so such a
+ *   model silently "talks but never works" in an agent loop. The list is
+ *   conservative and dated: DeepSeek's V4-era `deepseek-reasoner` alias DOES
+ *   return tool_calls (verified against the live API 2026-09, both with and
+ *   without the registry's thinking-disabled patch), so it is no longer
+ *   listed — the loop's silent-turn probe remains the dynamic fallback if a
+ *   vendor regresses.
  * - Multimodal input parts are protocol-gated: anthropic has no audio/video
  *   endpoints at all, openai-compatible video is per-vendor (dashscope
  *   `type:'video'` part lists, zhipu `video_url`, OpenAI itself: none).
@@ -57,10 +60,6 @@ const PROXY_GUARANTEED_VENDORS = new Set(['chatoffice'])
  * matching, which is why this list is conservative and exact.
  */
 const NO_FUNCTION_CALLING: Array<{ test: RegExp; reason: string }> = [
-  {
-    test: /^deep-?seek-reasoner$/i,
-    reason: 'DeepSeek reasoner (thinking mode) does not support tool calls',
-  },
   { test: /^deep-?seek-r1/i, reason: 'DeepSeek R1 does not support tool calls' },
   { test: /^o1-(preview|mini)$/i, reason: 'o1-preview/mini do not support tool calls' },
   {

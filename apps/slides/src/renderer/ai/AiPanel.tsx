@@ -3,7 +3,9 @@ import {
   AgentLoop,
   composeSkills,
   IPC_STREAM_SILENCE_TIMEOUT_MS,
+  type AgentAudio,
   type AgentImage,
+  type AgentVideo,
   type ToolDisplay,
 } from '@chatoffice/agent-core'
 import type { RenderSlide } from '@chatoffice/pptx-render'
@@ -56,6 +58,7 @@ import {
   enabledChatModels,
   functionCallingVerdict,
   resolveDefaultModel,
+  resolveModelCapabilities,
   type AiProtocol,
 } from '@chatoffice/ai-provider'
 import { slidesModelBridge } from './model-bridge'
@@ -1632,7 +1635,7 @@ export function AiPanel({
         failures.push(`${att.name}: ${t('aiMediaUnsupported')}`)
         continue
       }
-      const result = await window.slidesApi.readAttachmentMedia(att.path)
+      const result = await window.desktop.readAttachmentMedia(att.path)
       if (result.ok && result.base64 && result.mime) {
         if (isAudio) audio.push({ base64: result.base64, mime: result.mime })
         else video.push({ base64: result.base64, mime: result.mime })

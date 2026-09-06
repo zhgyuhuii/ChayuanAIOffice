@@ -1,5 +1,7 @@
 export type {
   AgentImage,
+  AgentAudio,
+  AgentVideo,
   AgentMessage,
   AgentStreamCallbacks,
   AgentStreamHandle,
