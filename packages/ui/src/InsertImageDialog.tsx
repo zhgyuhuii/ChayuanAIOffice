@@ -169,6 +169,16 @@ export function InsertImageDialog({
       setKeyValue('') // degraded: leave blank
     }
   }
+  /** switching to a stock source only nags when its key is unconfigured */
+  const guideKeyModal = (which: 'pexels' | 'pixabay'): void => {
+    void bridge
+      .getStockKeys()
+      .then((keys) => {
+        const v = which === 'pexels' ? keys.pexels : keys.pixabay
+        if (!v) void openKeyModal(which)
+      })
+      .catch(() => {})
+  }
   const saveKeys = async (): Promise<void> => {
     await bridge.setStockKeys(keyModal === 'pexels' ? { pexels: KeyValue } : { pixabay: KeyValue })
     setKeysSaved(true)
@@ -362,8 +372,8 @@ export function InsertImageDialog({
                       setResults(null)
                       setWebError('')
                       setAttempts(null)
-                      // keyless stock source: guide straight into its own key modal
-                      if (id !== 'web') void openKeyModal(id)
+                      // keyless stock source: guide into its own key modal when unconfigured
+                      if (id !== 'web') guideKeyModal(id)
                     }}
                   >
                     {label}

@@ -1,6 +1,34 @@
 # 插入媒体窗口改造共识计划
 
-> 状态：共识达成（2026-09-06，9 轮问答收敛），未开工。
+> 状态：**P1 已实施（2026-09-06）**，代码已落地，全量测试绿。
+> P1 变更清单：
+> - `packages/ai-search`：新增 `bing.ts`（HTML 抓取）+ `openverse.ts`（CC 图库）；
+>   `imageSearch` 重排为 chatoffice→Serper→Bing→Openverse 并返回逐层 `attempts` 诊断；
+>   删除 DuckDuckGo 图片链路（web 文本链路保留）；Serper key 支持设置页注入（env 兜底）。
+> - `packages/ai-provider`：`searchApiKeys.serper` 入 AiSettingsV2；**修复 normalizeV2
+>   丢弃 stockApiKeys/searchApiKeys 的落盘 bug**；新增 `media-params.ts`（ParamSpec
+>   单一事实源，`imageParamSpec`/`videoParamSpec`）；`imagegen.ts` 支持动态 params
+>   透传与多张返回（`ImageGenResult.urls`）；`runtime.generateImage` 支持显式模型
+>   选择、新增 `listMediaModels()`（含 spec 主进程侧计算）；redact/merge 覆盖
+>   searchApiKeys；media-jobs kling JWT 改 Web Crypto（浏览器上下文可编译）；
+>   protocols/shared.ts 去 NodeJS.ReadableStream 依赖。
+> - `packages/ai-host`：新增共享 IPC `ai:media-models` / `ai:media-generate`
+>   （URL→dataUrl 下载收敛主进程）；`ai:web-image-search` 透传 attempts 并注入
+>   Serper key。
+> - `packages/ui`：对话框改造完成——改名"插入媒体"；图库 ⚙ 每家独立模态小窗 +
+>   测试连接 + 未配置才主动引导；AI tab 模型分组下拉（会话级记忆）+ 动态参数
+>   渲染 + 多张结果网格；空搜索显示逐层诊断；i18n zh/en 更新；env.d.ts 补
+>   `*.css` 模块声明。
+> - 三宿主（docs/sheets/slides）：shared ipc 类型 + preload + 渲染层 bridge 全部
+>   改形接入（mediaModels/mediaGenerate/attempts）。
+> - 设置页：ModelSettingsPage 右栏底部新增「搜索服务」区块（Serper key，
+>   KEEP_KEY 语义保存）。
+> - 测试：ai-search 51 绿 / ai-provider 173 绿 / ui 69 绿 / docs 1417 绿 /
+>   slides 608 绿 / sheets 1991 绿；新增 bing-openverse、media-params 测试，
+>   补 normalizeV2 落盘回归测试。
+> 遗留：P2（视频生成任务注册表+完成通知+video 模型进选择器）、P3（三端视频
+> 插入管线）未开工；ModelDefaultsPage 的 generation/qc kind 为会话前并行改动，
+> 已对齐其测试。
 > 范围：`packages/ui/src/InsertImageDialog.tsx` 及其三个宿主（docs / sheets / slides）+
 > `packages/ai-search`、`packages/ai-provider`、`packages/ai-host`。
 > 代码约束：本文档落盘前未写任何实现代码。

@@ -126,6 +126,7 @@ const zh = {
   searchSerperKey: 'Serper Key',
   searchKeyHint: '网页图片搜索后端按 chatoffice → Serper → Bing → Openverse 兜底；配置 Serper Key 可提升结果质量（不放 Key 也能搜）。',
   searchKeyEnv: '环境变量 SERPER_API_KEY 仍作为后备。',
+  searchSave: '保存',
   searchSaved: '已保存',
 }
 
@@ -250,6 +251,7 @@ const en = {
   searchKeyHint:
     'Web image search falls back chatoffice → Serper → Bing → Openverse; a Serper key improves results (keyless search still works).',
   searchKeyEnv: 'The SERPER_API_KEY environment variable remains a fallback.',
+  searchSave: 'Save',
   searchSaved: 'Saved',
 }
 

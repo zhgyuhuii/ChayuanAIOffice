@@ -1010,6 +1010,37 @@ export function ModelSettingsPage({
               <p className="msp-note">{t.pickerHint}</p>
             </>
           )}
+
+          {/* 搜索服务：插入媒体对话框网页图片搜索的 Serper 兜底层 */}
+          <div className="msp-search-services" data-search-services="">
+            <div className="msp-field">
+              <span className="msp-label">{t.searchSection}</span>
+              <p className="msp-note">{t.searchKeyHint}</p>
+              <div className="msp-key-row">
+                <input
+                  className="msp-input"
+                  data-search-serper=""
+                  type="password"
+                  placeholder={
+                    serperDraft === null && settings?.searchApiKeys?.serper === KEEP_KEY
+                      ? '••••••••'
+                      : 'SERPER_API_KEY'
+                  }
+                  value={serperDraft ?? ''}
+                  onChange={(e) => setSerperDraft(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="msp-btn"
+                  disabled={!settings || busy !== ''}
+                  onClick={() => void saveSerperKey()}
+                >
+                  {t.searchSave}
+                </button>
+              </div>
+              <span className="msp-note">{t.searchKeyEnv}</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

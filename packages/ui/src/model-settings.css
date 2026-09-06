@@ -719,3 +719,10 @@
   text-overflow: ellipsis;
   padding: 1px 0;
 }
+
+/* 搜索服务（Serper key）区块 */
+.msp-search-services {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--msp-border, #e3e3e3);
+}
