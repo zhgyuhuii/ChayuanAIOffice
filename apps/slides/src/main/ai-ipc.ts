@@ -4,7 +4,7 @@
  * to avoid renderer CORS), search tools, and the slides-only ai:* channels
  * (image generation, media analysis, style templates).
  */
-import { app, ipcMain, nativeImage, net, shell } from 'electron'
+import { app, dialog, ipcMain, nativeImage, net, shell, BrowserWindow } from 'electron'
 import {
   appendFileSync,
   existsSync,
@@ -27,6 +27,8 @@ import {
   type AiRuntime,
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
+import { inferModelType, resolveDefaultModel, runMediaJob } from '@chatoffice/ai-provider'
+import type { StoredAiSettings } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import {
@@ -193,6 +195,97 @@ export function registerAiIpc(): void {
 // never called; docs does not have these channels, so putting them in the wrong place raises
 // "No handler registered".
 export function registerSlidesOnlyAiIpc(): void {
+  // ── read_url: fetch a public page, extract body text for the model ──
+  ipcMain.handle('ai:read-url', async (_event, url: string) => {
+    try {
+      return await readUrlContent(String(url ?? ''))
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : String(e) }
+    }
+  })
+
+  // ── AI video generation ──
+  // Cost-gated by design: every submit shows a native confirmation dialog
+  // (model/length visible) with a per-session "don't ask again" checkbox.
+  // The vendor/model pair resolves from the videoGeneration default role, or
+  // the first enabled profile carrying a video-generation model + key.
+  const videoConfirmSkip = new Set<number>()
+  ipcMain.handle(
+    'ai:generate-video',
+    async (
+      event,
+      op: { prompt: string; imageUrl?: string; aspectRatio?: string; durationSeconds?: number },
+    ): Promise<
+      | { bytes: string; ext: string; url: string; model: string; vendorId: string }
+      | { cancelled: true; reason?: string }
+      | { error: string }
+    > => {
+      try {
+        const view = await getAiRuntime().getSettingsView()
+        const raw = (view as unknown as { raw?: StoredAiSettings }).raw
+        let pick: { vendorId: string; model: string; apiKey: string } | null = null
+        if (raw) {
+          const sel = resolveDefaultModel(raw, 'videoGeneration')
+          if (sel) {
+            const profile = raw.profiles.find((p) => p.id === sel.profileId)
+            if (profile?.apiKey) {
+              pick = { vendorId: profile.vendorId ?? profile.id, model: sel.modelId, apiKey: profile.apiKey }
+            }
+          }
+        }
+        if (!pick) {
+          for (const profile of view.profiles ?? []) {
+            if (!profile.enabled || !profile.apiKey || profile.auth !== 'api-key') continue
+            const model = profile.models.find((m) => inferModelType(m.id) === 'video-generation')
+            if (model) {
+              pick = { vendorId: profile.vendorId ?? profile.id, model: model.id, apiKey: profile.apiKey }
+              break
+            }
+          }
+        }
+        if (!pick) {
+          return { error: 'No video-generation model with an API key is configured — add one in AI settings' }
+        }
+        const wc = event.sender
+        const dur = op.durationSeconds ?? 5
+        if (!videoConfirmSkip.has(wc.id)) {
+          const win = BrowserWindow.fromWebContents(wc)
+          const r = await dialog.showMessageBox(win ?? undefined!, {
+            type: 'info',
+            message: 'Generate an AI video?',
+            detail: `Model: ${pick.vendorId} / ${pick.model}\nLength: ~${dur}s\nVideo generation is billed by the vendor and may take a few minutes.`,
+            buttons: ['Generate', 'Cancel'],
+            defaultId: 0,
+            cancelId: 1,
+            checkboxLabel: "Don't ask again this session",
+            checkboxChecked: false,
+          })
+          if (r.response !== 0) return { cancelled: true, reason: 'user declined' }
+          if (r.checkboxChecked) videoConfirmSkip.add(wc.id)
+        }
+        const result = await runMediaJob({
+          kind: 'video',
+          vendorId: pick.vendorId,
+          model: pick.model,
+          apiKey: pick.apiKey,
+          prompt: String(op.prompt ?? ''),
+          imageUrl: op.imageUrl,
+          aspectRatio: op.aspectRatio,
+          durationSeconds: dur,
+        })
+        const dl = await fetch(result.url)
+        if (!dl.ok) return { error: `video download failed: HTTP ${dl.status}` }
+        const buf = Buffer.from(await dl.arrayBuffer())
+        if (buf.length > 40 * 1024 * 1024) {
+          return { error: `the generated video is too large to embed (${Math.round(buf.length / 1048576)}MB > 40MB)` }
+        }
+        return { bytes: buf.toString('base64'), ext: 'mp4', url: result.url, model: pick.model, vendorId: pick.vendorId }
+      } catch (e) {
+        return { error: e instanceof Error ? e.message : String(e) }
+      }
+    },
+  )
+
   // chatoffice (ChatOffice CLI) capabilities: AI image generation / media analysis. Returns an error prompt when not logged in.
   ipcMain.handle(
     'ai:generate-image',

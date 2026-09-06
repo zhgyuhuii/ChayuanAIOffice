@@ -128,9 +128,8 @@ export const OP_DOCS: Record<string, OpDoc> = {
   },
   addSmartArt: { sig: '{layout,items:[…],offset}', group: 'insert' },
   addMedia: {
-    sig: '{kind:"video"|"audio",bytes:base64|dataURL,ext,offset}',
+    sig: '{kind:"video"|"audio",bytes:base64|dataURL,ext,offset} — bytes ≤40MB; generate via generate_video first',
     group: 'insert',
-    aiCallable: false,
   },
   addModel3d: { sig: '{bytes,ext,offset} — bytes payload', group: 'insert', aiCallable: false },
   addEchart: {

@@ -407,6 +407,13 @@ const api: SlidesApi = {
   webImageSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:web-image-search', query, maxResults),
   remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
+  mediaModels: () => ipcRenderer.invoke('ai:media-models'),
+  mediaGenerate: (req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) => ipcRenderer.invoke('ai:media-generate', req),
   insertImageUrl: (op: {
     slideIndex: number
     url: string
@@ -429,6 +436,13 @@ const api: SlidesApi = {
     aspectRatio?: string
     imageSize?: string
   }) => ipcRenderer.invoke('ai:generate-image', op),
+  readUrl: (url: string) => ipcRenderer.invoke('ai:read-url', url),
+  generateVideo: (op: {
+    prompt: string
+    imageUrl?: string
+    aspectRatio?: string
+    durationSeconds?: number
+  }) => ipcRenderer.invoke('ai:generate-video', op),
   analyzeMedia: (op: { mediaUrls: string[]; requirements: string }) =>
     ipcRenderer.invoke('ai:analyze-media', op),
   chatofficeStatus: () => ipcRenderer.invoke('ai:chatoffice-status'),
@@ -481,6 +495,7 @@ const filesApi: DesktopFilesApi = {
   readAttachment: (path: string, offset: number, maxChars: number) =>
     ipcRenderer.invoke('slides:files-read', path, offset, maxChars),
   readAttachmentImage: (path: string) => ipcRenderer.invoke('slides:files-read-image', path),
+  readAttachmentMedia: (path: string) => ipcRenderer.invoke('slides:files-read-media', path),
   getPathForFile: (file: File) => webUtils.getPathForFile(file),
 }
 

@@ -150,6 +150,8 @@ export interface ResolvedModelCall {
   baseUrl: string
   apiKey: string
   model: string
+  /** originating vendor (capability lookups: output caps, media channels) */
+  vendorId?: string
   omitTemperature?: boolean
   useMaxCompletionTokens?: boolean
   bodyExtras?: Record<string, unknown>
@@ -182,6 +184,7 @@ export function resolveModelCall(
       baseUrl: ep.baseUrl,
       apiKey,
       model: selection.modelId,
+      vendorId: 'chatoffice',
       ...(modelHasFixedSampling(selection.modelId) ? { omitTemperature: true } : {}),
     }
   }
@@ -200,6 +203,7 @@ export function resolveModelCall(
     baseUrl: protocol === 'gemini' ? normalizeGeminiBase(baseUrl) : baseUrl,
     apiKey,
     model: selection.modelId,
+    vendorId: profile.vendorId ?? profile.id,
     ...(modelHasFixedSampling(selection.modelId) || isMoonshot ? { omitTemperature: true } : {}),
     ...(isOpenAiOfficial && protocol !== 'anthropic' ? { useMaxCompletionTokens: true } : {}),
     ...(isDeepSeek && protocol === 'openai-compatible'
@@ -374,6 +378,10 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     version: 2,
     profiles: profiles.length ? profiles : [{ ...chatofficeProfile(), enabled: false }],
     ...(toolsEnabled !== undefined ? { chatofficeToolsEnabled: toolsEnabled } : {}),
+    // sidecar keys ride outside the profile model; normalizeV2 must carry them
+    // through or every save silently wipes them (they never touch the view merge)
+    ...(settings.stockApiKeys ? { stockApiKeys: settings.stockApiKeys } : {}),
+    ...(settings.searchApiKeys ? { searchApiKeys: settings.searchApiKeys } : {}),
   }
   const current = remapSelection(settings.currentModel)
   const resolvedCurrent = resolveCurrentModel({
@@ -407,11 +415,15 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
 }
 
 /** default-model kinds surfaced in the settings window's 默认模型 pane */
-export type AiDefaultKind = 'chat' | 'image' | 'videoGeneration' | 'tts' | 'asr'
+export type AiDefaultKind = 'chat' | 'generation' | 'qc' | 'image' | 'videoGeneration' | 'tts' | 'asr'
 
 /** the model types each default kind accepts */
 export const DEFAULT_KIND_TYPES: Record<AiDefaultKind, AiModelType[]> = {
   chat: ['chat', 'vision'],
+  // page-spec writer for generate_deck — a strong chat model, any protocol
+  generation: ['chat', 'vision'],
+  // visual QC reviewer — needs native image input
+  qc: ['vision'],
   image: ['image-generation'],
   videoGeneration: ['video-generation'],
   tts: ['tts'],

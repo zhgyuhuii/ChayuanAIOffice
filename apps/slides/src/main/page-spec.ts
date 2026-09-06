@@ -13,6 +13,7 @@
 import {
   addElement,
   addPicture,
+  setSlideNotes,
   createBlankPptx,
   editPictureSrcRect,
   openPptx,
@@ -107,6 +108,69 @@ export type SpecElement = SpecShape | SpecText | SpecImage
 export interface PageSpec {
   background?: string
   elements: SpecElement[]
+  /**
+   * Optional deterministic layout skeleton (item 11): when set, the named
+   * skeleton's elements are emitted FIRST and the model's own elements layer
+   * on top — the model fills content, the skeleton fixes the geometry.
+   */
+  layout?: string
+  layoutContent?: Record<string, string>
+  /** speaker notes produced in the same LLM call (item 12) — written into the page pptx */
+  notes?: string
+}
+
+// ── Deterministic layout skeletons ──
+// Each maps semantic content slots to fixed geometry on the 1280×720 canvas.
+// Colors are neutral on purpose; a page's accent comes from background/covers
+// and the model's own layered elements.
+
+const textEl = (x: number, y: number, w: number, h: number, text: string, sizePt: number, o: Partial<SpecText> = {}): SpecText => ({
+  type: 'text',
+  x,
+  y,
+  w,
+  h,
+  valign: 'top',
+  paragraphs: [{ runs: [{ text, sizePt, bold: o.paragraphs ? true : false, color: '#1A1A1A' }] }],
+  ...o,
+})
+
+function stripTo(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max)}…` : text
+}
+
+export const LAYOUT_SKELETONS: Record<string, (W: number, H: number, c: Record<string, string>) => SpecElement[]> = {
+  // big centered title + subtitle line
+  titleSlide: (W, H, c) => [
+    textEl(W * 0.08, H * 0.34, W * 0.84, H * 0.18, stripTo(c.title ?? '', 60), 44, { valign: 'top', paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 44, bold: true, color: '#1A1A1A' }] }] }),
+    textEl(W * 0.08, H * 0.58, W * 0.84, H * 0.12, stripTo(c.subtitle ?? '', 100), 20, { paragraphs: [{ runs: [{ text: stripTo(c.subtitle ?? '', 100), sizePt: 20, color: '#555555' }] }] }),
+  ],
+  // title band + one content block
+  titleContent: (W, H, c) => [
+    textEl(W * 0.07, H * 0.08, W * 0.86, H * 0.14, stripTo(c.title ?? '', 60), 32, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 32, bold: true, color: '#1A1A1A' }] }] }),
+    { type: 'shape', shape: 'rect', x: W * 0.07, y: H * 0.26, w: W * 0.86, h: H * 0.64, fill: '#F2F2F2', paragraphs: c.body ? [{ runs: [{ text: stripTo(c.body, 500), sizePt: 15, color: '#333333' }] }] : [], valign: 'top' },
+  ],
+  // title band + left/right cards
+  twoCol: (W, H, c) => [
+    textEl(W * 0.07, H * 0.08, W * 0.86, H * 0.14, stripTo(c.title ?? '', 60), 32, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 60), sizePt: 32, bold: true, color: '#1A1A1A' }] }] }),
+    { type: 'shape', shape: 'roundRect', x: W * 0.05, y: H * 0.28, w: W * 0.43, h: H * 0.6, fill: '#F2F2F2', paragraphs: c.left ? [{ runs: [{ text: stripTo(c.left, 300), sizePt: 14, color: '#333333' }] }] : [], valign: 'top' },
+    { type: 'shape', shape: 'roundRect', x: W * 0.52, y: H * 0.28, w: W * 0.43, h: H * 0.6, fill: '#F2F2F2', paragraphs: c.right ? [{ runs: [{ text: stripTo(c.right, 300), sizePt: 14, color: '#333333' }] }] : [], valign: 'top' },
+  ],
+  // full-bleed image with a bottom title bar
+  fullImage: (W, H, c) => [
+    ...(c.image_url ? [{ type: 'image', url: c.image_url, x: 0, y: 0, w: W, h: H } as SpecImage] : []),
+    { type: 'shape', shape: 'rect', x: 0, y: H * 0.74, w: W, h: H * 0.26, fill: '#111111' },
+    textEl(W * 0.06, H * 0.79, W * 0.88, H * 0.16, stripTo(c.title ?? '', 70), 30, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 70), sizePt: 30, bold: true, color: '#FFFFFF' }] }] }),
+  ],
+  // one giant statement, centered
+  statement: (W, H, c) => [
+    textEl(W * 0.1, H * 0.38, W * 0.8, H * 0.24, stripTo(c.text ?? c.title ?? '', 40), 48, { valign: 'middle', paragraphs: [{ runs: [{ text: stripTo(c.text ?? c.title ?? '', 40), sizePt: 48, bold: true, color: '#1A1A1A' }] }] }),
+  ],
+  // section divider: number + section title
+  sectionHeader: (W, H, c) => [
+    textEl(W * 0.07, H * 0.3, W * 0.2, H * 0.25, stripTo(c.index ?? '01', 8), 64, { paragraphs: [{ runs: [{ text: stripTo(c.index ?? '01', 8), sizePt: 64, bold: true, color: '#DDDDDD' }] }] }),
+    textEl(W * 0.3, H * 0.4, W * 0.62, H * 0.18, stripTo(c.title ?? '', 40), 36, { paragraphs: [{ runs: [{ text: stripTo(c.title ?? '', 40), sizePt: 36, bold: true, color: '#1A1A1A' }] }] }),
+  ],
 }
 
 const EMU_PER_PT = 12700
@@ -308,6 +372,21 @@ export function parsePageSpec(
     ok: true,
     spec: {
       ...(normColor(root.background) ? { background: normColor(root.background) } : {}),
+      ...(typeof root.layout === 'string' && LAYOUT_SKELETONS[root.layout]
+        ? { layout: root.layout }
+        : {}),
+      ...(typeof root.notes === 'string' && root.notes.trim()
+        ? { notes: root.notes.trim().slice(0, 2000) }
+        : {}),
+      ...(root.layoutContent && typeof root.layoutContent === 'object' && !Array.isArray(root.layoutContent)
+        ? {
+            layoutContent: Object.fromEntries(
+              Object.entries(root.layoutContent as Record<string, unknown>)
+                .filter(([, v]) => typeof v === 'string')
+                .map(([k, v]) => [k, String(v)]),
+            ),
+          }
+        : {}),
       elements,
     },
     warnings,
@@ -407,11 +486,12 @@ export async function buildPagePptx(
   // insets would shift every text off its planned spot.
   const zeroInsets = { l: 0, t: 0, r: 0, b: 0 }
 
+  const resolved = resolvedSpecElements(spec)
   const imageFailures: string[] = []
   const fetched = new Map<string, { bytes: Uint8Array; ext: string } | null>()
   await Promise.all(
     [
-      ...new Set(spec.elements.filter((e) => e.type === 'image').map((e) => (e as SpecImage).url)),
+      ...new Set(resolved.filter((e) => e.type === 'image').map((e) => (e as SpecImage).url)),
     ].map(async (url) => {
       try {
         fetched.set(url, await deps.fetchImage(url))
@@ -429,7 +509,7 @@ export async function buildPagePptx(
     })
   }
 
-  for (const el of spec.elements) {
+  for (const el of resolved) {
     const offset = {
       x: toEmu(el.x),
       y: toEmu(el.y),
@@ -483,7 +563,18 @@ export async function buildPagePptx(
   }
 
   promoteSlideBackground(slide, opened.deck.size)
+  if (spec.notes) setSlideNotes(opened, 0, spec.notes)
   let bytes = await savePptx(opened)
   if (deps.fontMetrics) bytes = (await growTextBoxesToContent(bytes, deps.fontMetrics)) ?? bytes
   return { bytes, imageFailures }
+}
+
+/** Layout skeleton (item 11): when the spec names a known layout, its
+ * deterministic elements go FIRST (z-order bottom) and the model's own
+ * elements layer on top as supplements. */
+function resolvedSpecElements(spec: PageSpec): SpecElement[] {
+  const skeleton = spec.layout
+    ? LAYOUT_SKELETONS[spec.layout]?.(SPEC_CANVAS_W, SPEC_CANVAS_H, spec.layoutContent ?? {})
+    : undefined
+  return skeleton ? [...skeleton, ...spec.elements] : spec.elements
 }

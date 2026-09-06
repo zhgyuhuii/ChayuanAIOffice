@@ -113,6 +113,8 @@ const zh = {
   defaultsNoneAvailable: '暂无可用模型（先在模型设置中启用）',
   defaultsKind: {
     chat: '对话默认模型',
+    generation: '页面生成默认模型（写每页版式 spec，建议配最强模型）',
+    qc: '质检默认模型（视觉审稿，需支持图片）',
     image: '生图默认模型',
     videoGeneration: '视频生成默认模型',
     tts: '语音合成默认模型',
@@ -120,6 +122,11 @@ const zh = {
   } as Record<string, string>,
   pickerHint:
     '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
+  searchSection: '搜索服务（插入媒体 · 网页图片）',
+  searchSerperKey: 'Serper Key',
+  searchKeyHint: '网页图片搜索后端按 chatoffice → Serper → Bing → Openverse 兜底；配置 Serper Key 可提升结果质量（不放 Key 也能搜）。',
+  searchKeyEnv: '环境变量 SERPER_API_KEY 仍作为后备。',
+  searchSaved: '已保存',
 }
 
 const en = {
@@ -228,6 +235,8 @@ const en = {
   defaultsAutoUsing: 'Currently auto-using:',
   defaultsNoneAvailable: 'No models available yet (enable them in Model Settings first)',
   defaultsKind: {
+    generation: 'Page-generation default model (writes per-page layout specs; use your strongest model)',
+    qc: 'QC default model (visual review; must accept images)',
     chat: 'Default chat model',
     image: 'Default image model',
     videoGeneration: 'Default video model',
@@ -236,6 +245,12 @@ const en = {
   } as Record<string, string>,
   pickerHint:
     "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
+  searchSection: 'Search services (Insert Media · web images)',
+  searchSerperKey: 'Serper Key',
+  searchKeyHint:
+    'Web image search falls back chatoffice → Serper → Bing → Openverse; a Serper key improves results (keyless search still works).',
+  searchKeyEnv: 'The SERPER_API_KEY environment variable remains a fallback.',
+  searchSaved: 'Saved',
 }
 
 export type ModelSettingsStrings = typeof zh & typeof en

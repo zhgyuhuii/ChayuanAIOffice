@@ -19,23 +19,45 @@ function openAiMessages(
   system: string,
   messages: AgentMessage[],
   echoReasoning: boolean,
+  baseUrl = '',
 ): unknown[] {
   const out: unknown[] = [{ role: 'system', content: system }]
   for (const m of messages) {
     if (m.role === 'user') {
-      if (!m.images?.length) {
+      const parts: unknown[] = m.text ? [{ type: 'text', text: m.text }] : []
+      // Standard OpenAI audio part (base64; format = mime subtype, e.g. "mp3")
+      for (const a of m.audio ?? []) {
+        const fmt = a.mime.split('/')[1]?.toLowerCase() || 'mp3'
+        parts.push({ type: 'input_audio', input_audio: { data: a.base64, format: fmt } })
+      }
+      // Video on OpenAI routes is vendor-specific and URL-only (dashscope
+      // `type:'video'` part list, zhipu `video_url`). Local base64 video has
+      // no carrier here — the caller must gate it via the capability matrix.
+      for (const v of m.video ?? []) {
+        const host = new URL(baseUrl).hostname
+        if (!v.url) {
+          throw new Error(
+            `Video attachments on ${host} require a public URL; use a gemini model for local video files`,
+          )
+        }
+        if (/dashscope\.aliyuncs\.com$/i.test(host)) {
+          parts.push({ type: 'video', video: [v.url] })
+        } else if (/open\.bigmodel\.cn$/i.test(host)) {
+          parts.push({ type: 'video_url', video_url: { url: v.url } })
+        } else {
+          throw new Error(`Video input is not adapted for ${host}; only gemini supports it today`)
+        }
+      }
+      for (const img of m.images ?? []) {
+        parts.push({
+          type: 'image_url',
+          image_url: { url: `data:${img.mime};base64,${img.base64}` },
+        })
+      }
+      if (parts.length === 1 && m.text) {
         out.push({ role: 'user', content: m.text })
       } else {
-        out.push({
-          role: 'user',
-          content: [
-            ...(m.text ? [{ type: 'text', text: m.text }] : []),
-            ...m.images.map((img) => ({
-              type: 'image_url',
-              image_url: { url: `data:${img.mime};base64,${img.base64}` },
-            })),
-          ],
-        })
+        out.push({ role: 'user', content: parts })
       }
     } else if (m.role === 'assistant') {
       const hasTools = !!(m.toolCalls && m.toolCalls.length > 0)
@@ -189,7 +211,7 @@ async function openAiCompatibleTurn(
           ...(options.useMaxCompletionTokens
             ? { max_completion_tokens: maxTokens }
             : { max_tokens: maxTokens }),
-          messages: openAiMessages(system, messages, modelEchoesReasoning(config.model)),
+          messages: openAiMessages(system, messages, modelEchoesReasoning(config.model), baseUrl),
           ...(tools.length > 0
             ? {
                 tools: tools.map((t) => ({

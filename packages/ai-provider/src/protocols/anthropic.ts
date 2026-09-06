@@ -18,6 +18,14 @@ export const ANTHROPIC_BASE_URL = 'https://api.anthropic.com'
 function anthropicMessages(messages: AgentMessage[]): unknown[] {
   return messages.map((m) => {
     if (m.role === 'user') {
+      // Anthropic has no audio/video input endpoints at all — a part that
+      // slipped past the capability gate gets a loud, actionable error
+      // instead of silently dropped context.
+      if (m.audio?.length || m.video?.length) {
+        throw new Error(
+          'The Anthropic protocol cannot accept audio/video attachments; switch to a gemini model for media understanding',
+        )
+      }
       // Keep plain-text content as a string; only upgrade to a content block array when images are present
       if (!m.images?.length) return { role: 'user', content: m.text }
       return {

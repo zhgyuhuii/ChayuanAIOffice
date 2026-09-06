@@ -77,6 +77,37 @@ export const VENDORS: VendorCatalogEntry[] = [
     keyUrl: 'https://platform.deepseek.com/api_keys',
   },
   {
+    // Media-generation-only vendor: keys + models manage through the settings
+    // UI, but chat does not route here — runMediaJob (media-jobs.ts) drives it.
+    id: 'kling',
+    name: 'Kling AI',
+    nameZh: '快手可灵',
+    group: 'cn',
+    defaultUrl: 'https://api.klingai.com',
+    api: 'openai-completions',
+    keyUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
+    docsUrl: 'https://app.klingai.com/global/dev/document-api/apiReference/commonInfo',
+  },
+  {
+    id: 'luma',
+    name: 'Luma Dream Machine',
+    group: 'global',
+    defaultUrl: 'https://api.lumalabs.ai',
+    api: 'openai-completions',
+    keyUrl: 'https://lumalabs.ai/api/keys',
+    docsUrl: 'https://docs.lumalabs.ai/',
+  },
+  {
+    // Aggregator: one key reaches FLUX, Kling, Veo, Wan and more via queue.fal.run
+    id: 'fal',
+    name: 'fal.ai',
+    group: 'global',
+    defaultUrl: 'https://queue.fal.run',
+    api: 'openai-completions',
+    keyUrl: 'https://fal.ai/dashboard/keys',
+    docsUrl: 'https://fal.ai/models',
+  },
+  {
     id: 'moonshot',
     name: 'Moonshot Kimi',
     nameZh: '月之暗面 Kimi',

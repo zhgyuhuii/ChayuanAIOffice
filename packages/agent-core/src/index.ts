@@ -12,11 +12,12 @@ export type {
   ToolExecution,
 } from './types'
 export { composeSkills } from './skill'
-export type { AgentSkill, ExecutedToolCall } from './skill'
+export type { AgentSkill, DegradedFallback, ExecutedToolCall } from './skill'
 export {
   AgentLoop,
   COMPLETED_VIA_TOOLS_TEXT,
   DEFAULT_MAX_TURNS,
+  parseDegradedToolCalls,
   sanitizeAgentPayload,
 } from './loop'
 export type {

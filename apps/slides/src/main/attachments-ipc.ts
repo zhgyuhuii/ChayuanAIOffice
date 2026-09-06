@@ -16,7 +16,7 @@ import type {
   AttachmentMeta,
   AttachmentReadResult,
 } from '../shared/ipc'
-import { ATTACHMENT_IMAGE_EXTS } from '../shared/ipc'
+import { ATTACHMENT_AUDIO_EXTS, ATTACHMENT_IMAGE_EXTS, ATTACHMENT_VIDEO_EXTS } from '../shared/ipc'
 import { tm } from './i18n-main'
 import { dialogParent } from './session-state'
 
@@ -63,7 +63,26 @@ const ATTACHMENT_EXTS = new Set([
   'xlsm',
   'xls',
   ...ATTACHMENT_IMAGE_EXTS,
+  ...ATTACHMENT_AUDIO_EXTS,
+  ...ATTACHMENT_VIDEO_EXTS,
 ])
+
+const ATTACHMENT_MEDIA_MIME: Record<string, string> = {
+  mp3: 'audio/mpeg',
+  wav: 'audio/wav',
+  m4a: 'audio/mp4',
+  aac: 'audio/aac',
+  ogg: 'audio/ogg',
+  flac: 'audio/flac',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  m4v: 'video/x-m4v',
+}
+
+// gemini inline requests cap around 20MB total; base64 inflates by ~4/3, so
+// the file cap keeps the wire request inside it with system+history headroom
+const ATTACHMENT_MEDIA_MAX_BYTES = 14 * 1024 * 1024
 
 const ATTACHMENT_IMAGE_MIME: Record<string, string> = {
   png: 'image/png',
@@ -209,6 +228,22 @@ export function registerAttachmentIpc(): void {
     try {
       const stat = statSync(filePath)
       if (stat.size > ATTACHMENT_IMAGE_MAX_BYTES) {
+        return { ok: false, error: `${name}: ${tm('errImageTooLarge')}` }
+      }
+      return { ok: true, base64: readFileSync(filePath).toString('base64'), mime }
+    } catch {
+      return { ok: false, error: `${name}: ${tm('errUnreadable')}` }
+    }
+  })
+
+  ipcMain.handle('slides:files-read-media', (_e, filePath: string): AttachmentImageResult => {
+    const name = basename(filePath)
+    const ext = name.split('.').pop()?.toLowerCase() ?? ''
+    const mime = ATTACHMENT_MEDIA_MIME[ext]
+    if (!mime) return { ok: false, error: `${name}: ${tm('errNotImage')}` }
+    try {
+      const stat = statSync(filePath)
+      if (stat.size > ATTACHMENT_MEDIA_MAX_BYTES) {
         return { ok: false, error: `${name}: ${tm('errImageTooLarge')}` }
       }
       return { ok: true, base64: readFileSync(filePath).toString('base64'), mime }

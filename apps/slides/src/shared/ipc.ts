@@ -88,6 +88,12 @@ export interface OpenResult {
 /** Image attachment extensions: no text extraction; read as base64 on send and passed to the model as multimodal images with the user message */
 export const ATTACHMENT_IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp'])
 
+/** audio attachments understood natively by gemini / openai-compatible input_audio */
+export const ATTACHMENT_AUDIO_EXTS = new Set(['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'])
+
+/** video attachments: gemini takes base64 inline; openai-route vendors are URL-only (capability matrix gates) */
+export const ATTACHMENT_VIDEO_EXTS = new Set(['mp4', 'webm', 'mov', 'm4v'])
+
 export interface AttachmentMeta {
   /** Absolute local path; files never leave this machine */
   path: string
@@ -135,6 +141,7 @@ export interface DesktopFilesApi {
   readAttachment(path: string, offset: number, maxChars: number): Promise<AttachmentReadResult>
   /** Read an image attachment as base64 for multimodal (≤5MB) */
   readAttachmentImage(path: string): Promise<AttachmentImageResult>
+  readAttachmentMedia(path: string): Promise<AttachmentImageResult>
   /** Absolute path of a File dropped on the window (Electron webUtils) */
   getPathForFile(file: File): string
 }
@@ -1662,6 +1669,17 @@ export interface SlidesApi {
   ) => Promise<{ slide: RenderSlide } | { error: string } | null>
   /** AI batch surface: apply raw ops as one transaction (atomic/per_op, dry-run supported) */
   applyTxn: (op: ApplyTxnOp) => Promise<ApplyTxnResult | null>
+  /** AI video generation: the main process resolves the videoGeneration default model,
+   *  shows the cost-confirmation dialog (session-skippable), runs the media job, and
+   *  returns the downloaded bytes (addMedia-ready). */
+  /** AI read_url: fetch a public web page and extract title + body text */
+  readUrl: (url: string) => Promise<{ url: string; title: string; text: string; truncated: boolean } | { error: string }>
+  generateVideo: (op: {
+    prompt: string
+    imageUrl?: string
+    aspectRatio?: string
+    durationSeconds?: number
+  }) => Promise<{ bytes: string; ext: string; url: string; model: string; vendorId: string } | { cancelled: true; reason?: string } | { error: string }>
   /** Roll the deck back to an AI rollback point; returns the restored full RenderSlide array, null when the id is unknown */
   aiSnapshotRestore: (id: number) => Promise<RenderSlide[] | null>
   /** Undo/redo (main-process snapshot history): returns the restored full RenderSlide array, null when nothing to undo */
@@ -1779,8 +1797,45 @@ export interface SlidesApi {
   webImageSearch: (
     query: string,
     maxResults?: number,
-  ) => Promise<{ images: unknown[]; method?: string; error?: string }>
+  ) => Promise<{
+    images: unknown[]
+    method?: string
+    error?: string
+    attempts?: { backend: string; status: 'skipped' | 'ok' | 'error'; detail?: string; count?: number }[]
+  }>
   remoteImage: (url: string) => Promise<{ base64: string; mime: string } | null>
+  /** enabled image/video-generation models + param specs (insert-media dialog picker) */
+  mediaModels: () => Promise<{
+    models: {
+      kind: 'image'
+      profileId: string
+      modelId: string
+      label: string
+      vendorId: string
+      spec: {
+        fields: {
+          id: string
+          label: string
+          labelZh?: string
+          type: 'select' | 'text' | 'number'
+          options?: Array<string | number>
+          min?: number
+          max?: number
+          step?: number
+          default: string | number
+          required?: boolean
+        }[]
+      }
+    }[]
+    error?: string
+  }>
+  /** media generation with model selection + dynamic params; data URLs come back */
+  mediaGenerate: (req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) => Promise<{ images?: { dataUrl: string }[]; error?: string }>
   insertImageUrl: (op: {
     slideIndex: number
     url: string

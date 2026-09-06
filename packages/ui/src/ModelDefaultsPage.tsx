@@ -27,7 +27,7 @@ export interface ModelDefaultsPageProps {
   lang?: string
 }
 
-const KINDS: AiDefaultKind[] = ['chat', 'image', 'videoGeneration', 'tts', 'asr']
+const KINDS: AiDefaultKind[] = ['chat', 'generation', 'qc', 'image', 'videoGeneration', 'tts', 'asr']
 
 export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): React.JSX.Element {
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')

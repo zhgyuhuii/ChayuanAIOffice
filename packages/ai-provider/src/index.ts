@@ -33,6 +33,15 @@ export type {
 } from './registry'
 export { chatForProvider, chatResolved } from './chat'
 export { setRescueFetch } from './fetch'
+export {
+  capabilityBlockers,
+  functionCallingVerdict,
+  maxOutputTokensFor,
+  resolveModelCapabilities,
+  IMAGE_GEN_VENDOR_IDS,
+  VIDEO_GEN_VENDOR_IDS,
+} from './capabilities'
+export type { ModelCapabilities, ModelCapabilityQuery, CapabilityVerdict } from './capabilities'
 export { isAiNetworkError } from './network-error'
 export { isAiOverloadedError } from './overload-error'
 export { AiCreditsError, sseLines, streamForProvider, streamResolved } from './stream'
@@ -79,6 +88,19 @@ export type { DiscoveryTarget } from './discovery'
 export { discoverModels } from './discovery'
 export type { ImageGenRequest, ImageGenResult } from './imagegen'
 export { generateImageWithModel } from './imagegen'
+export type {
+  MediaJobAdapter,
+  MediaJobPollResult,
+  MediaJobRequest,
+  MediaJobResult,
+} from './media-jobs'
+export {
+  getMediaJobAdapter,
+  registerMediaJobAdapter,
+  runMediaJob,
+} from './media-jobs'
+export type { MediaParamField, MediaParamSpec } from './media-params'
+export { imageParamSpec, videoParamSpec } from './media-params'
 export type {
   AiSettingsSource,
   DshFileReader,

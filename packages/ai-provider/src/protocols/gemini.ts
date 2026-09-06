@@ -17,14 +17,24 @@ export const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta
 function geminiContents(messages: AgentMessage[]): unknown[] {
   return messages.map((m) => {
     if (m.role === 'user') {
-      if (!m.images?.length) return { role: 'user', parts: [{ text: m.text }] }
-      return {
-        role: 'user',
-        parts: [
-          ...(m.text ? [{ text: m.text }] : []),
-          ...m.images.map((img) => ({ inline_data: { mime_type: img.mime, data: img.base64 } })),
-        ],
+      const parts: unknown[] = m.text ? [{ text: m.text }] : []
+      // Gemini carries audio/video inline natively (base64, size-capped by the API)
+      for (const a of m.audio ?? []) {
+        parts.push({ inline_data: { mime_type: a.mime, data: a.base64 } })
       }
+      for (const v of m.video ?? []) {
+        if (!v.base64) {
+          throw new Error('gemini video input requires inline base64 data; no URL-only video here')
+        }
+        parts.push({ inline_data: { mime_type: v.mime, data: v.base64 } })
+      }
+      if (!m.images?.length && parts.length === 1 && m.text) {
+        return { role: 'user', parts: [{ text: m.text }] }
+      }
+      for (const img of m.images ?? []) {
+        parts.push({ inline_data: { mime_type: img.mime, data: img.base64 } })
+      }
+      return { role: 'user', parts }
     }
     if (m.role === 'assistant') {
       const parts: unknown[] = []

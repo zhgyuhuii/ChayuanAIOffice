@@ -13,7 +13,7 @@ import type {
   AttachmentAddResult,
   AttachmentMeta,
 } from '../../shared/ipc'
-import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
+import { ATTACHMENT_AUDIO_EXTS, ATTACHMENT_IMAGE_EXTS, ATTACHMENT_VIDEO_EXTS } from '../../shared/ipc'
 import {
   createSlidesSkill,
   type DeckAccess,
@@ -43,17 +43,22 @@ import {
 } from './slide-qc'
 import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
 import {
+  IconSend,
+  IconStop,
   Markdown,
   ModelPickerButton,
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
 } from '@chatoffice/ui'
-import { defaultSettingsV2, enabledChatModels } from '@chatoffice/ai-provider'
+import {
+  defaultSettingsV2,
+  enabledChatModels,
+  functionCallingVerdict,
+  resolveDefaultModel,
+  type AiProtocol,
+} from '@chatoffice/ai-provider'
 import { slidesModelBridge } from './model-bridge'
-import sendEnterOn from '../assets/send-enter-on.png'
-import sendEnterOff from '../assets/send-enter-off.png'
-import sendStop from '../assets/send-stop.png'
 import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
@@ -782,10 +787,14 @@ export function AiPanel({
     // On-demand selection with the generation model overridden (the profile must have it enabled).
     const selectionForGen = (): AiModelSelection => {
       const cur = settingsRef.current
-      const sel = cur.currentModel
-      if (!sel) return sel!
+      const sel = cur.currentModel!
+      // 1) explicit cross-protocol "generation" role: page-spec writing is the
+      // quality bottleneck, so any protocol may pin a dedicated strong model
+      const genSel = resolveDefaultModel(cur, 'generation')
+      if (genSel) return genSel
+      // 2) legacy pin: claude-opus inside the current (anthropic) profile
       const profile = cur.profiles.find((p) => p.id === sel.profileId)
-      if (profile?.protocol !== 'anthropic-messages') return sel
+      if (!profile || profile.protocol !== 'anthropic-messages') return sel
       if (!profile.models.some((m) => m.id === SLIDES_GEN_MODEL)) return sel
       return { profileId: profile.id, modelId: SLIDES_GEN_MODEL }
     }
@@ -1040,6 +1049,17 @@ export function AiPanel({
           '\n' +
           '## Canvas\n' +
           `${W}x${H} px, origin top-left. All x/y/w/h are integers in px. Nothing may cross the canvas edges; negative coordinates forbidden. Elements paint in array order: background/decor shapes first, then images, text last (text must never end up underneath a shape).\n` +
+          '\n' +
+          '## Speaker notes (auto-narration): Your JSON object SHOULD also carry "notes": a 60-120 word spoken-style script for this page, in the user\'s language, with key numbers spelled out; it lands in the slide\'s speaker-notes pane.' +
+          '## Layout skeletons (optional but recommended)\n' +
+          'Instead of inventing geometry, you may pass "layout" + "layoutContent" alongside (or instead of) elements; the system draws a deterministic skeleton first and layers your elements on top. Layouts:\n' +
+          '- titleSlide: {title, subtitle}\n' +
+          '- titleContent: {title, body}\n' +
+          '- twoCol: {title, left, right}\n' +
+          '- fullImage: {title, image_url}\n' +
+          '- statement: {text}\n' +
+          '- sectionHeader: {index, title}\n' +
+          'Use them for structural pages; use free elements only for data visuals and supplementary decoration.\n' +
           '\n' +
           '## Format\n' +
           '{"background":"#RRGGBB","elements":[...]}\n' +
@@ -1381,10 +1401,18 @@ export function AiPanel({
             { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
           ])
         },
-        onDone: ({ text, cancelled, turnLimit }) => {
-          const finalText = turnLimit
-            ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
-            : text || (cancelled ? tGlobal('aiStoppedNote') : '')
+        onDone: ({ text, cancelled, turnLimit, degraded }) => {
+          // Degraded runs badge their reply: the operator model lacks native
+          // function calling and tools ran over the JSON-text protocol.
+          const degradedNote = degraded ? tGlobal('aiDegradedMode') : ''
+          const finalText = [
+            turnLimit
+              ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
+              : text || (cancelled ? tGlobal('aiStoppedNote') : ''),
+            degradedNote,
+          ]
+            .filter(Boolean)
+            .join('\n\n')
           const ranTools = runToolsRef.current.length > 0
           setChat((prev) => {
             const next = [...prev]
@@ -1466,6 +1494,29 @@ export function AiPanel({
         },
       },
     })
+    // Static FC gate: a model whose API never returns tool_calls starts in
+    // degraded (JSON-text) mode immediately; FC-capable models rely on the
+    // loop's own silent-turn probe as the dynamic fallback.
+    {
+      const sel = settingsRef.current?.currentModel
+      const profile = sel
+        ? settingsRef.current?.profiles.find((p) => p.id === sel.profileId)
+        : undefined
+      if (sel && profile) {
+        const protocolMap: Record<string, AiProtocol> = {
+          'anthropic-messages': 'anthropic',
+          'openai-completions': 'openai-compatible',
+          'openai-responses': 'openai-responses',
+          'gemini-native': 'gemini',
+        }
+        const verdict = functionCallingVerdict({
+          vendorId: profile.vendorId ?? profile.id,
+          protocol: protocolMap[profile.protocol] ?? 'openai-compatible',
+          modelId: sel.modelId,
+        })
+        if (!verdict.supported) loopRef.current.degrade()
+      }
+    }
   }
 
   useEffect(() => {
@@ -1544,6 +1595,58 @@ export function AiPanel({
     return images
   }
 
+  /** Read audio/video attachments into wire parts; drops (with a notice) the
+   * kinds the current model cannot accept per the capability matrix. */
+  const collectMediaAttachments = async (
+    atts: AttachmentMeta[],
+  ): Promise<{ audio: AgentAudio[]; video: AgentVideo[] }> => {
+    const audio: AgentAudio[] = []
+    const video: AgentVideo[] = []
+    const failures: string[] = []
+    const sel = settingsRef.current?.currentModel
+    const profile = sel
+      ? settingsRef.current?.profiles.find((p) => p.id === sel.profileId)
+      : undefined
+    const protocolMap: Record<string, AiProtocol> = {
+      'anthropic-messages': 'anthropic',
+      'openai-completions': 'openai-compatible',
+      'openai-responses': 'openai-responses',
+      'gemini-native': 'gemini',
+    }
+    const caps = sel && profile
+      ? resolveModelCapabilities({
+          vendorId: profile.vendorId ?? profile.id,
+          protocol: protocolMap[profile.protocol] ?? 'openai-compatible',
+          modelId: sel.modelId,
+        })
+      : null
+    const mediaExts = new Set([...ATTACHMENT_AUDIO_EXTS, ...ATTACHMENT_VIDEO_EXTS])
+    for (const att of atts) {
+      if (!mediaExts.has(att.ext)) continue
+      if (!caps) {
+        failures.push(`${att.name}: ${t('aiMediaUnsupported')}`)
+        continue
+      }
+      const isAudio = ATTACHMENT_AUDIO_EXTS.has(att.ext)
+      if (isAudio ? !caps.audioInput : !caps.videoInput) {
+        failures.push(`${att.name}: ${t('aiMediaUnsupported')}`)
+        continue
+      }
+      const result = await window.slidesApi.readAttachmentMedia(att.path)
+      if (result.ok && result.base64 && result.mime) {
+        if (isAudio) audio.push({ base64: result.base64, mime: result.mime })
+        else video.push({ base64: result.base64, mime: result.mime })
+      } else {
+        failures.push(result.error ?? t('aiReadFailed', { name: att.name }))
+      }
+    }
+    if (failures.length > 0) {
+      setAttachNotice(failures.join(';'))
+      window.setTimeout(() => setAttachNotice(null), 5000)
+    }
+    return { audio, video }
+  }
+
   /** Current slide rendered at pixelRatio 1 (vision-friendly size); null when rendering fails */
   const captureSlideShot = async (pageIndex: number): Promise<AgentImage | null> => {
     const slide = slidesRef.current[pageIndex]
@@ -1604,8 +1707,8 @@ export function AiPanel({
     setBusy(true)
     // Persist the user message (store display text + attachment metadata; loop.restore rebuilds model context on file reopen)
     persistMessage('user', shown, undefined, sentAtts)
-    void collectImageAttachments(sentAtts)
-      .then(async (images) => {
+    void Promise.all([collectImageAttachments(sentAtts), collectMediaAttachments(sentAtts)])
+      .then(async ([images, media]) => {
         // AI Beautify sends the current slide's rendering along, so the model sees what it edits;
         // the note rides on the model instruction only — the chat bubble stays the localized preset text
         let modelInstruction = instruction
@@ -1619,7 +1722,7 @@ export function AiPanel({
         // Clear the flag before run: loop.run sets running synchronously, leaving no re-entry window
         runStartingRef.current = false
         if (await window.slidesApi.beginHistoryBatch()) historyBatchActiveRef.current = true
-        loop.run(modelInstruction, images)
+        loop.run(modelInstruction, images, media)
       })
       .catch(() => {
         runStartingRef.current = false
@@ -1742,7 +1845,11 @@ export function AiPanel({
     const controller = new AbortController()
     qcAbortRef.current = controller
     const capped = pages.slice(0, QC_MAX_PAGES)
-    const transport = createElectronTransport(() => settingsRef.current.currentModel!)
+    // QC reviewer: the explicit "qc" role when configured (must accept images);
+    // the loop downgrades to geometry-only evidence for text-only models anyway
+    const transport = createElectronTransport(
+      () => resolveDefaultModel(settingsRef.current, 'qc') ?? settingsRef.current.currentModel!,
+    )
     const header = tGlobal('aiQcStart', { count: capped.length })
     const lines: string[] = []
     const renderEntry = () => [header, ...lines].join('\n')
@@ -2358,7 +2465,7 @@ export function AiPanel({
                   data-tip={t('aiStopGeneration')}
                   aria-label={t('aiStop')}
                 >
-                  <img src={sendStop} alt="" aria-hidden />
+                  <IconStop size={16} />
                 </button>
               ) : (
                 <button
@@ -2368,7 +2475,7 @@ export function AiPanel({
                   data-tip={t('aiSend')}
                   aria-label={t('aiSend')}
                 >
-                  <img src={input.trim() ? sendEnterOn : sendEnterOff} alt="" aria-hidden />
+                  <IconSend size={16} />
                 </button>
               )}
             </div>

@@ -1,7 +1,9 @@
 import type { AgentSkill, ExecutedToolCall } from './skill'
 import type {
+  AgentAudio,
   AgentImage,
   AgentMessage,
+  AgentVideo,
   AgentStreamHandle,
   AgentToolCall,
   AgentToolResult,
@@ -25,6 +27,8 @@ export interface AgentRunResult {
   cancelled: boolean
   /** true when maxTurns was reached; text is the partial answer from the no-tools finalizing turn */
   turnLimit: boolean
+  /** the run answered via the degraded JSON-text protocol (model without function calling) */
+  degraded?: boolean
   /** the final turn hit the token limit (stop_reason max_tokens): text is incomplete; set only when true */
   truncated?: boolean
 }
@@ -126,6 +130,65 @@ const COMPACT_SUMMARY_PREFIX = '[Summary of earlier conversation'
 const COMPACT_SUMMARY_HEADER = '[Summary of earlier conversation (auto-compacted)]'
 const COMPACT_SUMMARY_ACK = 'Understood, continuing from the progress so far.'
 
+/** Consecutive zero-tool turns that trigger the degraded-mode probe (FC dynamic fallback) */
+const DEGRADE_SILENT_TURNS = 2
+
+/**
+ * Degraded-mode ("compatibility mode") wire format for models whose APIs never
+ * return protocol tool_calls. The model answers in plain text; when it wants
+ * to act it emits one JSON object (or an array) instead:
+ *   {"tool": "generate_deck", "input": {...}}
+ * The loop parses it, executes the tool(s), and feeds results back as a user
+ * message — a ReAct loop over text. Field aliases are accepted because weak
+ * models drift (name/tool_name, arguments/args/parameters).
+ */
+export function parseDegradedToolCalls(
+  text: string,
+  knownTools: readonly string[],
+): AgentToolCall[] {
+  const raw = extractDegradedJson(text)
+  if (!raw) return []
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return []
+  }
+  const entries = Array.isArray(parsed) ? parsed : [parsed]
+  const known = new Set(knownTools)
+  const calls: AgentToolCall[] = []
+  for (const entry of entries) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue
+    const rec = entry as Record<string, unknown>
+    const name = [rec['tool'], rec['name'], rec['tool_name']].find(
+      (v): v is string => typeof v === 'string' && v.trim().length > 0,
+    )
+    if (!name || !known.has(name.trim())) continue
+    const input = [rec['input'], rec['arguments'], rec['args'], rec['parameters']].find(
+      (v): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v),
+    )
+    calls.push({
+      id: `deg_${calls.length}`,
+      name: name.trim(),
+      input: input ?? {},
+    })
+  }
+  return calls
+}
+
+/** Pull the outermost JSON blob out of a possibly chatty reply (fences, preamble, trailing prose). */
+function extractDegradedJson(text: string): string | null {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fenced?.[1]) return fenced[1].trim()
+  const start = text.search(/[{[]/)
+  if (start < 0) return null
+  const open = text[start]!
+  const close = open === '{' ? '}' : ']'
+  const end = text.lastIndexOf(close)
+  if (end <= start) return null
+  return text.slice(start, end + 1)
+}
+
 /** Approximate UTF-8 byte count (ASCII 1 byte, CJK etc. 3; surrogate pairs count as 6 — slight overestimate is harmless) */
 function utf8Size(s: string): number {
   let n = 0
@@ -144,6 +207,12 @@ function messageSize(m: AgentMessage): number {
   let n = utf8Size(m.text)
   if (m.role === 'user' && m.images) {
     n += m.images.reduce((s, img) => s + img.base64.length, 0)
+  }
+  if (m.role === 'user' && m.audio) {
+    n += m.audio.reduce((s, a) => s + a.base64.length, 0)
+  }
+  if (m.role === 'user' && m.video) {
+    n += m.video.reduce((s, v) => s + (v.base64?.length ?? 0), 0)
   }
   if (m.role === 'assistant' && m.toolCalls) {
     for (const c of m.toolCalls) {
@@ -208,6 +277,19 @@ export class AgentLoop<TSnapshot = unknown> {
   private generation = 0
   /** per-run abort: aborted on cancel(); long tools (e.g. generate_deck) use it to break internal loops */
   private abortController: AbortController | null = null
+  /**
+   * Degraded mode ("compatibility mode"): the operator model cannot issue
+   * protocol tool_calls, so turns run without wire tools and the model acts by
+   * emitting JSON text (parseDegradedToolCalls). Set statically via degrade()
+   * (capability matrix) or dynamically by the silent-turn probe below.
+   */
+  private degraded = false
+  /** a probe turn is in flight: tools are withheld and the reply is parsed for JSON tool calls */
+  private degradedProbe = false
+  /** the probe ran once for this loop instance; a failed probe is never retried (model just talks) */
+  private probeUsed = false
+  /** consecutive zero-tool turns within the current run */
+  private silentTurns = 0
 
   constructor(options: AgentLoopOptions<TSnapshot>) {
     this.options = options
@@ -215,6 +297,22 @@ export class AgentLoop<TSnapshot = unknown> {
 
   get busy(): boolean {
     return this.running
+  }
+
+  /** true while this loop runs in degraded (JSON-text protocol) mode */
+  get isDegraded(): boolean {
+    return this.degraded
+  }
+
+  /**
+   * Statically force degraded mode (capability matrix knows the model has no
+   * function calling). Effective for the next and all future runs on this loop.
+   * No-op when the skill does not provide a degradedFallback protocol.
+   */
+  degrade(): boolean {
+    if (this.options.skill.degradedFallback?.() == null) return false
+    this.degraded = true
+    return true
   }
 
   get messages(): readonly AgentMessage[] {
@@ -263,8 +361,17 @@ export class AgentLoop<TSnapshot = unknown> {
     this.trimHistory()
   }
 
-  /** images: inline attachments for this user turn (vision input; see AgentImage) */
-  run(instruction: string, images?: AgentImage[]): void {
+  /**
+   * images/audio/video: inline attachments for this user turn (multimodal
+   * input; see AgentImage/AgentAudio/AgentVideo). Protocol converters reject
+   * parts their wire format cannot carry — gate with the capability matrix
+   * (resolveModelCapabilities().audioInput/videoInput) before calling.
+   */
+  run(
+    instruction: string,
+    images?: AgentImage[],
+    media?: { audio?: AgentAudio[]; video?: AgentVideo[] },
+  ): void {
     if (this.running || !instruction) return
     this.running = true
     this.cancelled = false
@@ -275,6 +382,11 @@ export class AgentLoop<TSnapshot = unknown> {
     this.lastTurnSig = ''
     this.identicalTurns = 0
     this.allErrorTurns = 0
+    // silentTurns deliberately persists across runs: a no-FC model shows the
+    // same symptom on every run (one text-only turn that ends the run), and
+    // the probe must be able to trigger on the second such run. degraded /
+    // probeUsed are instance-level facts about the model, never reset.
+    this.degradedProbe = false
     this.executedCalls = []
     this.verifyRetryUsed = false
     this.abortController = new AbortController()
@@ -286,6 +398,8 @@ export class AgentLoop<TSnapshot = unknown> {
       role: 'user',
       text: format(instruction, context),
       ...(images?.length ? { images } : {}),
+      ...(media?.audio?.length ? { audio: media.audio } : {}),
+      ...(media?.video?.length ? { video: media.video } : {}),
     }
     void this.beginRun(userMsg)
   }
@@ -506,13 +620,20 @@ export class AgentLoop<TSnapshot = unknown> {
     this.turnReasoning = ''
     this.toolCalls = []
     this.turnStopReason = null
+    // Degraded turns withhold wire tools entirely (a no-FC model would ignore
+    // them anyway) and append the skill's JSON-text protocol to the system prompt.
+    const degradedTurn = this.degraded || this.degradedProbe
+    const degradedFallback = degradedTurn ? this.options.skill.degradedFallback?.() : null
     // Some transports emit an extra onDone after cancel — this turn may finalize only once
     let settled = false
     this.handle = this.options.transport.stream(
       {
-        system: this.options.skill.systemPrompt + (this.options.systemSuffix?.() ?? ''),
+        system:
+          this.options.skill.systemPrompt +
+          (this.options.systemSuffix?.() ?? '') +
+          (degradedFallback ? `\n\n${degradedFallback.systemSuffix}` : ''),
         messages: [...this.history],
-        tools: this.finalizing ? [] : this.options.skill.tools,
+        tools: this.finalizing || degradedTurn ? [] : this.options.skill.tools,
       },
       {
         onDelta: (text) => {
@@ -570,15 +691,56 @@ export class AgentLoop<TSnapshot = unknown> {
     )
   }
 
+  private silentFallbackAvailable(): boolean {
+    return this.options.skill.degradedFallback?.() != null
+  }
+
   private async finishTurn(): Promise<void> {
     const { events, skill, captureSnapshot } = this.options
-    const toolCalls = this.toolCalls
+    let toolCalls = this.toolCalls
+
+    // A degraded probe turn that answered with plain text means the model just
+    // talks (a chat round, not a failed tool round) — restore normal mode and
+    // finalize as a zero-tool turn. A probe that DID emit JSON tool calls is
+    // promoted: this loop formally enters degraded mode for good.
+    if (this.degradedProbe && toolCalls.length === 0 && !this.cancelled && !this.finalizing) {
+      const parsed = parseDegradedToolCalls(
+        this.turnText,
+        this.options.skill.tools.map((t) => t.name),
+      )
+      if (parsed.length > 0) {
+        this.degraded = true
+        toolCalls = parsed
+        this.toolCalls = parsed
+      } else {
+        this.degradedProbe = false
+        this.probeUsed = true
+        this.silentTurns = 0
+      }
+    }
 
     // Claimed-action guard: before accepting a final text turn, let the skill
     // check the claims in it against the tools that actually ran this run.
     // A returned correction forces one more model turn (tools stay available,
     // so the model can perform the missing action or reword its claim).
+    if (toolCalls.length > 0) this.silentTurns = 0
     if (toolCalls.length === 0 && !this.cancelled && !this.finalizing) {
+      // Degraded-mode dynamic fallback: two consecutive zero-tool turns from a
+      // loop whose skill supports degradation trigger one probe turn running
+      // the JSON-text protocol. A probe that lands a real tool call promotes
+      // the loop to degraded mode permanently; a probe that just talks is
+      // never retried (a chatty FC model must not lose its native tools).
+      if (!this.degraded && !this.degradedProbe && !this.probeUsed && this.silentFallbackAvailable()) {
+        this.silentTurns++
+        if (this.silentTurns >= DEGRADE_SILENT_TURNS) {
+          this.degradedProbe = true
+          this.probeUsed = true
+          this.silentTurns = 0
+          this.startTurn()
+          return
+        }
+      }
+
       // snapshot copy: the live array keeps growing if the corrective turn
       // runs more tools, and the hook must see the state at check time
       const correction =
@@ -631,6 +793,8 @@ export class AgentLoop<TSnapshot = unknown> {
         text: this.turnText,
         cancelled: this.cancelled,
         turnLimit: this.finalizing,
+        // degraded-mode runs answer via the JSON-text protocol; UIs badge it
+        ...(this.degraded ? { degraded: true } : {}),
         // set only when true so exact-shape consumers/tests stay unaffected
         ...(this.turnStopReason === 'max_tokens' && !this.cancelled ? { truncated: true } : {}),
       })
@@ -643,10 +807,18 @@ export class AgentLoop<TSnapshot = unknown> {
     // history is echoed back on the next turn. The OpenAI-compatible stream
     // paths attach `inputError: undefined` on every parsed call, so without
     // this the second turn of any custom-provider agent run fails validation.
+    // Degraded mode keeps tool calls OUT of the assistant message: no-FC
+    // model APIs reject assistant.tool_calls and role:'tool' messages. The
+    // JSON call text stays as the assistant text, and results are folded
+    // into a user message below.
     this.history.push({
       role: 'assistant',
-      text: this.turnText,
-      toolCalls: toolCalls.map(({ id, name, input }) => ({ id, name, input })),
+      text: this.turnText || COMPLETED_VIA_TOOLS_TEXT,
+      ...(this.degraded || this.degradedProbe
+        ? {}
+        : {
+            toolCalls: toolCalls.map(({ id, name, input }) => ({ id, name, input })),
+          }),
       // interleaved-thinking models degrade in tool loops unless their reasoning is echoed back
       ...(this.turnReasoning ? { reasoning: this.turnReasoning } : {}),
     })
@@ -670,7 +842,7 @@ export class AgentLoop<TSnapshot = unknown> {
       if (call.truncated || call.inputError) {
         this.inputParseFails++
         const output = call.truncated
-          ? 'Tool arguments were cut off by the output length limit; the tool was not executed. Split this operation into several smaller tool calls (less content per call) and try again.'
+          ? 'Tool arguments were cut off by the output length limit; the tool was not executed. Split this operation into several smaller tool calls (less content per call) and try again — e.g. hand over page briefs in batches of at most 4.'
           : `Tool input JSON failed to parse; the tool was not executed: ${call.inputError}\nFix the arguments (make sure quotes inside strings are escaped) and call again.`
         results.push({ id: call.id, name: call.name, output, isError: true })
         events?.onToolExecuted?.({
@@ -711,7 +883,19 @@ export class AgentLoop<TSnapshot = unknown> {
         snapshotBefore: firstMutation ? snapshot : undefined,
       })
     }
-    this.history.push({ role: 'tool', results })
+    // Degraded mode: fold results into one user text message — no-FC model
+    // APIs reject role:'tool' messages outright.
+    if (this.degraded || this.degradedProbe) {
+      const resultText = results
+        .map((r) => `[Tool result: ${r.name}${r.isError ? ' (error)' : ''}]\n${r.output}`)
+        .join('\n\n')
+      this.history.push({
+        role: 'user',
+        text: `[System] Tool execution results follow. To call another tool, output only its JSON object; to finish, answer in plain text.\n\n${resultText}`,
+      })
+    } else {
+      this.history.push({ role: 'tool', results })
+    }
 
     // Cancelled while tools were executing: finish immediately, no further model request
     if (this.cancelled) {

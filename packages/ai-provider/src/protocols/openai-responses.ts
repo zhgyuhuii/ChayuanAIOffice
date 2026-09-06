@@ -30,16 +30,22 @@ function responsesInput(messages: AgentMessage[]): ResponsesInputItem[] {
   const out: ResponsesInputItem[] = []
   for (const m of messages) {
     if (m.role === 'user') {
-      out.push({
-        role: 'user',
-        content: [
-          ...(m.text ? [{ type: 'input_text', text: m.text }] : []),
-          ...(m.images ?? []).map((img) => ({
-            type: 'input_image',
-            image_url: `data:${img.mime};base64,${img.base64}`,
-          })),
-        ],
-      })
+      if (m.video?.length) {
+        throw new Error(
+          'The OpenAI Responses protocol has no video input part; use a gemini model for video understanding',
+        )
+      }
+      const content: Array<Record<string, unknown>> = m.text
+        ? [{ type: 'input_text', text: m.text }]
+        : []
+      for (const a of m.audio ?? []) {
+        const fmt = a.mime.split('/')[1]?.toLowerCase() || 'mp3'
+        content.push({ type: 'input_audio', input_audio: { data: a.base64, format: fmt } })
+      }
+      for (const img of m.images ?? []) {
+        content.push({ type: 'input_image', image_url: `data:${img.mime};base64,${img.base64}` })
+      }
+      out.push({ role: 'user', content })
     } else if (m.role === 'assistant') {
       // split into a text message plus one function_call item per prior tool call
       if (m.text) {

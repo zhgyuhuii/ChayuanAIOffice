@@ -3,7 +3,7 @@ import type { AgentToolCall } from '@chatoffice/agent-core'
 // ---- streaming (SSE line splitting shared by all providers) ----
 
 export async function* sseLines(
-  body: NodeJS.ReadableStream | ReadableStream<Uint8Array>,
+  body: AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>,
   onBytes?: () => void,
 ): AsyncGenerator<string> {
   const decoder = new TextDecoder()

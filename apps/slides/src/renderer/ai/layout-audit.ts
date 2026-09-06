@@ -203,3 +203,99 @@ export function formatAudit(issues: string[], round?: string): string {
     : "\n→ Immediately write another execute_slide_script to fix these issues (don't stop, don't ask the user, don't declare completion). els reflects the new positions after the last apply; compute from it directly. At most 2 fix rounds; only if still unresolved tell the user honestly.\n</layout-audit>"
   return head + body + tail
 }
+
+// ── Deck-level consistency audit (item 13) ──
+// Deterministic cross-page checks that a per-page pass cannot see: title-size
+// rhythm, body-size band, accent-color drift, and text-color spread.
+
+interface PageTextStats {
+  /** largest font size on the page (px) */
+  headlinePx: number
+  /** most common body font size (px, mode of non-headline runs) */
+  bodyPx: number
+  /** distinct text colors weighted by run length */
+  colors: Map<string, number>
+}
+
+function pageTextStats(slide: RenderSlide): PageTextStats {
+  const sizes: Array<{ px: number; len: number }> = []
+  const colors = new Map<string, number>()
+  const walk = (nodes: RenderNode[]): void => {
+    for (const n of nodes) {
+      if (n.decoration) continue
+      if (n.type === 'group') {
+        walk((n as GroupRenderNode).children)
+        continue
+      }
+      if (n.type !== 'shape' && n.type !== 'text') continue
+      const sn = n as ShapeRenderNode
+      for (const line of sn.text?.lines ?? []) {
+        for (const r of line.runs) {
+          if (!r.text.trim()) continue
+          const len = Math.max(1, r.text.length)
+          sizes.push({ px: r.fontSizePx, len })
+          colors.set(r.color, (colors.get(r.color) ?? 0) + len)
+        }
+      }
+    }
+  }
+  walk(slide.nodes)
+  sizes.sort((a, b) => b.px - a.px)
+  const headlinePx = sizes[0]?.px ?? 0
+  const bodyCandidates = sizes.filter((s) => s.px < headlinePx * 0.8)
+  const tally = new Map<number, number>()
+  for (const s2 of bodyCandidates) tally.set(s2.px, (tally.get(s2.px) ?? 0) + s2.len)
+  const bodyPx = [...tally.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? headlinePx
+  return { headlinePx, bodyPx, colors }
+}
+
+/**
+ * Cross-page consistency audit. Returns localized-ready findings (English
+ * strings, same convention as auditSlideLayout) plus an overall verdict word.
+ */
+export function auditDeckConsistency(slides: RenderSlide[]): string[] {
+  const findings: string[] = []
+  const stats = slides.map((s) => pageTextStats(s))
+  const contentPages = stats.map((st, i) => ({ st, i })).filter(({ st }) => st.headlinePx > 0)
+
+  // 1) headline rhythm: the biggest heading per page should stay in one band
+  //    (±35% around the median) — a random giant title screams template decay
+  const heads = contentPages.map(({ st }) => st.headlinePx).sort((a, b) => a - b)
+  if (heads.length >= 4) {
+    const median = heads[Math.floor(heads.length / 2)]!
+    const outliers = contentPages
+      .filter(({ st }) => st.headlinePx > median * 1.35 || st.headlinePx < median * 0.65)
+      .map(({ i }) => i + 1)
+    if (outliers.length > 0) {
+      findings.push(
+        `Headline size rhythm drifts on page(s) ${outliers.join(', ')} — keep the largest heading within ±35% of the deck median (~${Math.round(median)}px).`,
+      )
+    }
+  }
+
+  // 2) body-size band: body text should not jump wildly between pages
+  const bodies = contentPages.map(({ st }) => st.bodyPx).sort((a, b) => a - b)
+  if (bodies.length >= 4) {
+    const spread = bodies[bodies.length - 1]! / Math.max(1, bodies[0]!)
+    if (spread > 2.2) {
+      findings.push(
+        `Body text size spans ${Math.round(bodies[0]!)}–${Math.round(bodies[bodies.length - 1]!)}px across pages — pick one body size (±1pt) and keep it.`,
+      )
+    }
+  }
+
+  // 3) text-color spread: a deck should hold to a small palette of text colors
+  const palette = new Map<string, number>()
+  for (const st of stats) for (const [c, n] of st.colors) palette.set(c, (palette.get(c) ?? 0) + n)
+  const heavy = [...palette.entries()].filter(([, n]) => n >= 30).sort((a, b) => b[1] - a[1])
+  if (heavy.length > 6) {
+    findings.push(
+      `${heavy.length} distinct heavy text colors across the deck (top: ${heavy
+        .slice(0, 4)
+        .map(([c]) => c)
+        .join(', ')}) — consolidate to 1 primary + 1 secondary text color.`,
+    )
+  }
+
+  return findings
+}

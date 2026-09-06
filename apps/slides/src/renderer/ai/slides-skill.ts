@@ -8,7 +8,7 @@ import type {
 } from '@chatoffice/pptx-render'
 import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '../../shared/ipc'
 import { opVocabulary } from '../../shared/op-docs'
-import { auditSlideLayout, formatAudit } from './layout-audit'
+import { auditDeckConsistency, auditSlideLayout, formatAudit } from './layout-audit'
 import { runLayoutScript, type LayoutScriptElement, type SlideStylePatch } from './layout-script'
 import { t } from '../i18n/locale'
 
@@ -282,6 +282,7 @@ Step D Generate (call generate_deck): with many pages pass topic + approx_pages 
 Step E Vary layouts per page (avoid sameness): 3 parallel points→three-column cards; a key number→big-number hero; comparison→two columns; sequence→timeline; image+text→left-text-right-image / full-image with text overlay. **Content pages of one deck must not all use the same layout**.
 
 - **generate_deck is the first choice for a whole new deck**: with many pages pass topic+approx_pages+context; the system plans internally (auto-batching over the threshold), **auto-searches images**, writes HTML page by page, and **lands pages onto the canvas as they generate (the user sees them one by one)**. **Neither "only page 1 got generated" nor "arguments were truncated" can happen — the page count is guaranteed by the system loop**.
+      ' **Batch cap when passing pages directly: at most 4 pages per call** — need more? call again with the next batch (append mode). Larger batches risk having the arguments cut off by the model output limit.' +
 - **When adding just 1 page or a few pages (common case)**: also use generate_deck with **pages (briefs for only the new pages) + insert_mode:"append"** (appended at the end, existing pages untouched). **New pages also go through the generation pipeline for polish — don't fall back to native tools for a crude page just because it's one page**. Before adding, read_slide/get_deck_context to see the existing pages' style (primary color/layout) and pass a matching style description; write each brief with the real content per region.
 - Briefs should be concrete: what text/data/numbers go in each region, which image goes where, and the layout name — the page designer follows your brief; vague briefs produce generic pages.
 - After generation, if the user wants a tweak, edit the corresponding element with the native tools below; don't redo whole pages unprompted "to look better". Use regenerate_slide only when the user explicitly asks to redo a page.
@@ -533,8 +534,51 @@ const TOOLS: AgentToolDef[] = [
       required: ['query'],
     },
   },
-  {
-    name: 'generate_image',
+    {
+      name: 'read_url',
+      description:
+        'Fetch a public web page and read its title + body text. Use when the user gives a link ("make this page into slides") or cites a specific URL as material; prefer web_search to discover URLs in the first place. One page per call.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          url: { type: 'string', description: 'The http(s) URL to read' },
+        },
+        required: ['url'],
+      },
+    },
+    {
+      name: 'generate_video',
+      description:
+        '[Cost-gated] Generate a short AI video (text-to-video, or image-to-video with image_url) and insert it onto the current slide. ' +
+        'The user confirms a paid-generation dialog before the task is submitted — the result may take minutes. ' +
+        'Use only when the user explicitly asks for a video/motion clip; never for decorative stills (use generate_image or image_search instead).',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          prompt: {
+            type: 'string',
+            description: 'Detailed motion description: subject, action, camera movement, scene, mood',
+          },
+          image_url: {
+            type: 'string',
+            description: 'Optional public image URL used as the first frame (image-to-video)',
+          },
+          aspect_ratio: {
+            type: 'string',
+            enum: ['16:9', '9:16', '1:1'],
+            description: 'Frame ratio; default 16:9 (slide-fit)',
+          },
+          duration_seconds: {
+            type: 'integer',
+            enum: [5, 10],
+            description: 'Clip length in seconds; default 5',
+          },
+        },
+        required: ['prompt'],
+      },
+    },
+    {
+      name: 'generate_image',
     description:
       'AI image generation/editing (ChatOffice). Text-to-image, or pass referenceImageUrls for image editing; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
     inputSchema: {
@@ -1589,10 +1633,35 @@ const GSK_ONLY_TOOLS = new Set(['generate_image', 'analyze_media'])
 const CHATOFFICE_TOOLS_OFF_NOTE =
   '\n\nNote: generate_image and analyze_media are currently unavailable (ChatOffice cloud tools are off or the user is signed out). Do not call or promise them; for imagery use image_search + insert_web_image instead.'
 
+/** Core tools kept available in degraded (no-FC compatibility) mode — the
+ * "generate + edit content + gather material" trunk. Long-tail tools (style,
+ * animation, chart fine-tuning) are unavailable in this mode by design. */
+const DEGRADED_TOOL_NAMES = [
+  'generate_deck',
+  'regenerate_slide',
+  'apply_ops',
+  'get_deck_context',
+  'read_attachment',
+  'web_search',
+  'image_search',
+  'insert_web_image',
+  'generate_video',
+  'read_url',
+]
+
+const DEGRADED_PROTOCOL_SUFFIX = `## Compatibility mode (no native tool calling)
+
+Your API does not support function calling, so tools work over text. To act, output ONLY a JSON object (or a JSON array of several) with no other prose:
+{"tool": "<tool name>", "input": { ...arguments... }}
+The system executes it and sends back a "[Tool result: ...]" message. Then either output the next tool call, or answer the user in plain text (a plain-text reply with no JSON ends the run). Never invent tool names.`
+
 export function createSlidesSkill(access: DeckAccess): AgentSkill {
   // The HTML pipeline was already used in this conversation → later calls without an explicit mode default to append.
   // Safety net for when the AI ignores the "pass all pages at once" constraint: separate calls no longer overwrite each other (P0-1).
   const state: SkillState = { htmlGenerated: false }
+  // Live view, same gate as the `tools` getter below
+  const liveTools = () =>
+    access.chatofficeTools?.() === false ? TOOLS.filter((t) => !GSK_ONLY_TOOLS.has(t.name)) : TOOLS
   return {
     id: 'slides',
     // live like tools: the off-note overrides the prose that still mentions the hidden tools
@@ -1603,9 +1672,7 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
     },
     // live view: chatofficeTools is re-read before every model request
     get tools() {
-      return access.chatofficeTools?.() === false
-        ? TOOLS.filter((t) => !GSK_ONLY_TOOLS.has(t.name))
-        : TOOLS
+      return liveTools()
     },
     buildContext: () => {
       const outline = `<deck outline>\n${buildDeckOutline(access.getSlides(), access.getCurrent(), access.getSelectedIds())}\n</deck outline>`
@@ -1613,6 +1680,22 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
       return progress ? `${outline}\n${progress}` : outline
     },
     executeTool: (call, signal) => executeTool(access, call, state, signal),
+    degradedFallback: () => {
+      // Only tools that exist in the current (chatoffice-gated) set are
+      // advertised, each with a one-line trimmed description — the full
+      // 39-tool definitions would blow a no-FC model's context.
+      const live = new Set(liveTools().map((t) => t.name))
+      const lines: string[] = []
+      for (const name of DEGRADED_TOOL_NAMES) {
+        if (!live.has(name)) continue
+        const def = TOOLS.find((t) => t.name === name)
+        if (!def) continue
+        const desc = def.description.replace(/\s+/g, ' ').trim()
+        lines.push(`- ${name}: ${desc.length > 220 ? `${desc.slice(0, 220)}…` : desc}`)
+      }
+      if (lines.length === 0) return null
+      return { systemSuffix: `${DEGRADED_PROTOCOL_SUFFIX}\n\nAvailable tools:\n${lines.join('\n')}` }
+    },
   }
 }
 
@@ -2067,6 +2150,62 @@ async function executeTool(
         mutated: false,
         summary: t('aiSumImageSearch', { query, count: r.images.length }),
         display,
+      }
+    }
+
+    case 'read_url': {
+      const url = String(call.input.url ?? '').trim()
+      if (!/^https?:\/\//i.test(url)) return fail(t('aiFailReadUrl'), 'read_url needs a full http(s) URL')
+      const r = await window.slidesApi.readUrl(url)
+      if ('error' in r) return fail(t('aiFailReadUrl'), r.error)
+      return {
+        output: `Read ${r.url}${r.title ? ` — "${r.title}"` : ''}${r.truncated ? ' (truncated to 8k chars)' : ''}:
+
+${r.text}`,
+        mutated: false,
+        summary: t('aiSumReadUrl'),
+      }
+    }
+
+    case 'generate_video': {
+      const prompt = String(call.input.prompt ?? '').trim()
+      if (!prompt) return fail(t('aiFailGenDeck'), 'generate_video needs a prompt describing the motion')
+      const res = await window.slidesApi.generateVideo({
+        prompt,
+        ...(typeof call.input.image_url === 'string' && call.input.image_url.startsWith('http')
+          ? { imageUrl: call.input.image_url }
+          : {}),
+        ...(typeof call.input.aspect_ratio === 'string' ? { aspectRatio: call.input.aspect_ratio } : {}),
+        ...(typeof call.input.duration_seconds === 'number'
+          ? { durationSeconds: call.input.duration_seconds }
+          : {}),
+      })
+      if ('cancelled' in res) {
+        return {
+          output:
+            'The user declined the video generation. Do not retry; offer alternatives (a generated image, or a shape composition) and continue the task.',
+          mutated: false,
+          summary: t('aiSumGenerateVideoDeclined'),
+        }
+      }
+      if ('error' in res) return fail(t('aiFailGenerateVideo'), res.error)
+      // Land the clip with the addMedia op (unlocked for AI use) on the current slide
+      const current = access.getCurrent()
+      const idx = access.getSlides().findIndex((sl) => sl === current)
+      const slideIndex = idx >= 0 ? idx : 0
+      const W = 480
+      const H = 270
+      const x = Math.max(0, Math.round(((current?.widthPx ?? 1280) - W) / 2))
+      const y = Math.max(0, Math.round(((current?.heightPx ?? 720) - H) / 2))
+      const r = await window.slidesApi.applyTxn?.({
+        ops: [{ op: 'addMedia', kind: 'video', bytes: res.bytes, ext: res.ext, slide: slideIndex, x, y, w: W, h: H }],
+      })
+      if (!r) return fail(t('aiFailGenerateVideo'), 'The addMedia transaction could not be executed')
+      if (r.failures?.length) return fail(t('aiFailGenerateVideo'), r.failures.map((f) => f.error).join('; '))
+      return {
+        output: `Video generated with ${res.vendorId}/${res.model} and inserted on slide ${slideIndex + 1}. Tell the user it plays in presentation mode and that generation was billed by the vendor.`,
+        mutated: true,
+        summary: t('aiSumGenerateVideo'),
       }
     }
 
@@ -3009,7 +3148,20 @@ async function executeTool(
             )} degraded to a plain-text fallback page after conversion failure (all layout and styling lost): immediately redo these pages in place with regenerate_slide following the original brief, then reply to the user.`
         : ''
       return {
-        output: okMsg + failMsg + degradedMsg + imageFailNote(deckImageFails) + progressTail,
+        output:
+          okMsg +
+          failMsg +
+          degradedMsg +
+          imageFailNote(deckImageFails) +
+          progressTail +
+          (() => {
+            // Deck-level consistency audit (item 13): deterministic cross-page
+            // checks; the model sees and can fix drift in a follow-up apply_ops
+            const findings = auditDeckConsistency(access.getSlides())
+            return findings.length
+              ? `\n\nDeck consistency check:\n- ${findings.join('\n- ')}`
+              : ''
+          })(),
         mutated: true,
         summary: t('aiSumDeckGenerated', { done: landedPages, total }),
       }

@@ -6,6 +6,7 @@ import { isAiOverloadedError } from './overload-error'
 import {
   enabledChatModels,
   findProfile,
+  isImageGenModel,
   migrateSettingsV2,
   pickImageModel,
   resolveCurrentModel,
@@ -15,6 +16,8 @@ import {
 import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
+import { IMAGE_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
+import { imageParamSpec, type MediaParamSpec } from './media-params'
 import type {
   AiChatResponse,
   AiModelSelection,
@@ -63,6 +66,9 @@ function redact(settings: AiSettingsV2): AiSettingsV2 {
           },
         }
       : {}),
+    ...(settings.searchApiKeys
+      ? { searchApiKeys: { serper: settings.searchApiKeys.serper ? KEEP_KEY : '' } }
+      : {}),
   }
 }
 
@@ -87,6 +93,16 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
               view.stockApiKeys.pixabay === KEEP_KEY
                 ? (stored.stockApiKeys?.pixabay ?? '')
                 : (view.stockApiKeys.pixabay ?? ''),
+          },
+        }
+      : {}),
+    ...(view.searchApiKeys
+      ? {
+          searchApiKeys: {
+            serper:
+              view.searchApiKeys.serper === KEEP_KEY
+                ? (stored.searchApiKeys?.serper ?? '')
+                : (view.searchApiKeys.serper ?? ''),
           },
         }
       : {}),
@@ -169,13 +185,18 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   ): Promise<void> => {
     const { requestId, system, messages } = request
     const tools = request.tools ?? []
-    const maxTokens = request.maxTokens ?? 8192
+    // per-vendor cap resolved after the call is known; a blanket 8192 truncates long tool arguments on vendors with higher limits
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let maxTokens: number = request.maxTokens ?? 8192
     let call: ResolvedModelCall
     try {
       call = await resolveForRun(request.selection)
     } catch (err) {
       send({ requestId, type: 'error', error: err instanceof Error ? err.message : String(err) })
       return
+    }
+    if (request.maxTokens === undefined) {
+      maxTokens = maxOutputTokensFor(call.vendorId, call.model)
     }
     // wire-activity keepalive: lets the renderer's silence watchdog tell a slow turn from a dead one
     let lastPing = 0
@@ -252,15 +273,28 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
 
   /** BYOK image model first; chatoffice backend as fallback; error when neither exists.
    * If the user configured an image model, its failure is the answer — silent
-   * fallbacks would hide broken keys. */
-  const generateImage = async (req: ImageGenRequest): Promise<{ url?: string; error?: string }> => {
+   * fallbacks would hide broken keys. An explicit `model` selection (insert-media
+   * dialog) is honored when it still points at an enabled image-gen model. */
+  const generateImage = async (
+    req: ImageGenRequest & { model?: AiModelSelection },
+  ): Promise<{ url?: string; urls?: string[]; error?: string }> => {
     const settings = await readRaw()
-    const imageSelection = pickImageModel(settings)
+    let imageSelection: AiModelSelection | undefined
+    if (req.model) {
+      const model = req.model
+      const profile = findProfile(settings, model.profileId)
+      const entry = profile?.models.find((m) => m.id === model.modelId)
+      if (profile?.enabled && entry && isImageGenModel(entry)) imageSelection = model
+    }
+    if (!imageSelection) imageSelection = pickImageModel(settings)
     if (imageSelection) {
       try {
         const call = await resolveForRun(imageSelection)
         const result = await generateImageWithModel(call, req)
-        return { url: result.url }
+        return {
+          urls: result.urls,
+          ...(result.urls[0] !== undefined ? { url: result.urls[0] } : {}),
+        }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }
       }
@@ -268,12 +302,53 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     if (chatoffice.hasAuth()) {
       try {
         const r = await chatoffice.generateImage(req)
-        return { url: r.url }
+        return { urls: [r.url], url: r.url }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }
       }
     }
     return { error: translate('errNoImageModel') }
+  }
+
+  /** enabled image-generation models across profiles with their param specs —
+   *  the insert-media dialog's model picker list (specs are computed main-side
+   *  so the renderer stays vendor-agnostic) */
+  const listMediaModels = async (): Promise<
+    Array<{
+      kind: 'image'
+      profileId: string
+      modelId: string
+      label: string
+      vendorId: string
+      spec: MediaParamSpec
+    }>
+  > => {
+    const settings = await readRaw()
+    const out: Array<{
+      kind: 'image'
+      profileId: string
+      modelId: string
+      label: string
+      vendorId: string
+      spec: MediaParamSpec
+    }> = []
+    for (const profile of settings.profiles) {
+      if (!profile.enabled) continue
+      const vendorId = profile.vendorId ?? profile.id
+      if (!IMAGE_GEN_VENDOR_IDS.has(vendorId)) continue
+      for (const m of profile.models) {
+        if (!isImageGenModel(m)) continue
+        out.push({
+          kind: 'image',
+          profileId: profile.id,
+          modelId: m.id,
+          label: m.name && m.name !== m.id ? `${m.name} (${m.id})` : m.id,
+          vendorId,
+          spec: imageParamSpec(vendorId, m.id),
+        })
+      }
+    }
+    return out
   }
 
   return {
@@ -285,6 +360,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     runChat,
     discover,
     generateImage,
+    listMediaModels,
     /** unredacted settings for main-process features (stock-image keys) */
     readRawSettings: readRaw,
     writeSettings: async (settings: AiSettingsV2): Promise<void> => {
