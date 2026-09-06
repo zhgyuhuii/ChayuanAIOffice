@@ -2023,10 +2023,9 @@ export function AiPanel({
     loopRef.current?.reset()
     setBusy(false)
     setChat([])
-    // Answered clarifications are transcript too: they render under their
-    // original message index, so stale entries would re-attach to unrelated
-    // new messages after an index collision.
-    setClarifyAnswers([])
+    // Same as docs (#195): the restored transcript is painted above the live
+    // turn, so it must clear too — otherwise the old conversation survives.
+    setHistoricChat([])
     sentAttachmentsRef.current = []
     readAttachmentPathsRef.current.clear()
     inputRef.current?.focus()

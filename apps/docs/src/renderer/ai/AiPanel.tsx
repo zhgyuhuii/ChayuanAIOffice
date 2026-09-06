@@ -860,6 +860,9 @@ export function AiPanel({
     loopRef.current?.reset()
     setBusy(false)
     setChat([])
+    // Restored history is painted above the live turn: without this the
+    // previous conversation survives "New chat" on screen (#195).
+    setHistoricChat([])
     sentAttachmentsRef.current = []
     inputRef.current?.focus()
   }
