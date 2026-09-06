@@ -34,7 +34,16 @@ import { fileURLToPath } from 'node:url'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedded'))
 
-const PACKAGES = ['storage-adapter', 'service-core', 'project-store', 'pptx-engine', 'pptx-render']
+// Transitive @chatoffice/* closure of apps/server plus the shipped slides/sheets
+// main sources. The synthetic workspace only links packages present here — a
+// missing one makes npm install fall through to the registry and crash
+// (arborist 'edgesOut' null), or the sidecar to fail on boot (ai-host/i18n/
+// file-parse are phantom imports of the slides/sheets main sources).
+const PACKAGES = [
+  'agent-core', 'ai-host', 'ai-provider', 'ai-search', 'chart-kit', 'docx-engine',
+  'electron-utils', 'file-parse', 'i18n', 'pptx-engine', 'pptx-render',
+  'project-store', 'service-core', 'storage-adapter',
+]
 
 function copyIfExists(from, to) {
   if (!existsSync(from)) throw new Error(`missing: ${from}`)
@@ -99,7 +108,9 @@ writeFileSync(
       type: 'module',
       workspaces: ['apps/*', 'packages/*'],
       overrides: rootPkg.overrides,
-      dependencies: { tsx: '^4.19.2', harfbuzzjs: '^1.5.0' },
+      // ws is a root-level dep (server ws-gateway imports it); outside the root
+      // workspace hoist it must be declared here or the sidecar crashes on boot.
+      dependencies: { tsx: '^4.19.2', harfbuzzjs: '^1.5.0', ws: rootPkg.dependencies.ws },
     },
     null,
     2,
@@ -134,9 +145,11 @@ for (const pkg of PACKAGES) {
   copyIfExists(join(root, 'packages', pkg), join(out, 'packages', pkg))
 }
 
-// Production dependency install inside the bundle
+// Production dependency install inside the bundle. --legacy-peer-deps: npm's
+// loadPeerSet crashes on this synthetic workspace (vitest→jsdom→canvas chain,
+// arborist 'edgesOut' null); legacy mode skips peer-set solving entirely.
 console.log('installing production dependencies (this may take a minute)...')
-execSync('npm install --no-audit --no-fund --omit=dev', {
+execSync('npm install --no-audit --no-fund --omit=dev --legacy-peer-deps', {
   cwd: out,
   stdio: 'inherit',
   shell: process.platform === 'win32',

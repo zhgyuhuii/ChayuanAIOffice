@@ -150,7 +150,7 @@ export function apply(ctx) {
       CHATOFFICE_AUTH: 'off', // 内嵌形态无账号（总体计划 v2.1 决策 #3）
       CHATOFFICE_STATIC_DIR: join(sidecarDir, 'dist', 'web'),
       // 模型设置真融合：供应商档案/密钥读写 harness 的 llm-pi-ai（与 chatop 同源）
-      CHATOFFICE_DSH_HOME: dshHome(),
+      CHATOFFICE_DSH_HOME: dshHomeDir(),
       CHATOFFICE_DSH_RPC_ORIGIN_FILE: rpcOriginFile,
     }
     // dsh web 以 ELECTRON_RUN_AS_NODE 跑在 electron 可执行文件下时，子进程需要同样的标记
