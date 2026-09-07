@@ -514,7 +514,7 @@ function pmNodeText(node: PmNode): string {
 }
 
 /** Sanitize a heading into a safe filename base: strip illegal path chars, collapse whitespace, cap length; null if invalid. (Mirrors slides' draft naming.) */
-function sanitizeFileBaseName(raw: string): string | null {
+export function sanitizeFileBaseName(raw: string): string | null {
   const cleaned = raw
     // eslint-disable-next-line no-control-regex -- stripping control chars is the point here
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
@@ -524,6 +524,10 @@ function sanitizeFileBaseName(raw: string): string | null {
     .replace(/^\.+|\.+$/g, '')
     .trim()
   if (!cleaned) return null
+  // Windows device names stay reserved with an extension (CON.docx is still
+  // CON): decline them so the first save keeps the Untitled name instead of
+  // proposing a file Windows cannot create (same family as the pdf/shell guards).
+  if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(cleaned)) return null
   return cleaned.length > 40 ? cleaned.slice(0, 40).trim() : cleaned
 }
 
