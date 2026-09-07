@@ -150,23 +150,42 @@ describe('resolveAiSettings', () => {
     const resolved = resolveAiSettings(
       {
         providers: {
-          deepseek: { apiKey: ' sk-user\n', model: 'deepseek-v4-pro' },
-          custom: { apiKey: 'k', model: 'm', baseUrl: ' http://localhost:1234/v1 ' },
+          deepseek: { apiKey: ' sk-user\n', model: ' deepseek-v4-pro ' },
+          custom: { apiKey: 'k', model: ' m ', baseUrl: ' http://localhost:1234/v1 ' },
         } as never,
       },
       defaultAiSettings(),
     )
     expect(resolved.providers.deepseek.apiKey).toBe('sk-user')
+    expect(resolved.providers.deepseek.model).toBe('deepseek-v4-pro')
     expect(resolved.providers.deepseek.baseUrl).toBeUndefined()
+    expect(resolved.providers.custom.model).toBe('m')
     expect(resolved.providers.custom.baseUrl).toBe('http://localhost:1234/v1')
+  })
+
+  it('still remaps retired model ids padded with whitespace', () => {
+    const resolved = resolveAiSettings(
+      {
+        providers: {
+          deepseek: { apiKey: 'sk-user', model: ' deepseek-reasoner ' },
+        } as never,
+      },
+      defaultAiSettings(),
+    )
+    expect(resolved.providers.deepseek.model).toBe('deepseek-v4-flash')
   })
 
   it('trims the legacy single-endpoint key and base URL too', () => {
     const resolved = resolveAiSettings(
-      { apiKey: ' legacy-key ', baseUrl: ' https://legacy.example.com/v1 ' },
+      {
+        apiKey: ' legacy-key ',
+        model: ' legacy-model ',
+        baseUrl: ' https://legacy.example.com/v1 ',
+      },
       defaultAiSettings(),
     )
     expect(resolved.providers.custom.apiKey).toBe('legacy-key')
+    expect(resolved.providers.custom.model).toBe('legacy-model')
     expect(resolved.providers.custom.baseUrl).toBe('https://legacy.example.com/v1')
   })
 

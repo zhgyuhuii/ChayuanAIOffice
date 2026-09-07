@@ -323,13 +323,14 @@ export function maxOutputTokensOf(
     : clampMaxOutputTokens(settings.maxOutputTokens)
 }
 
-/** pasted keys/URLs often carry stray whitespace, which turns into a 401 with a valid key */
+/** pasted keys/URLs/model ids often carry stray whitespace, which turns into a 401 with a valid key */
 function trimConfigs(providers: AiSettings['providers']): AiSettings['providers'] {
   const trimmed = { ...providers }
   for (const [id, config] of Object.entries(trimmed)) {
     trimmed[id as AiProviderId] = {
       ...config,
       apiKey: config.apiKey?.trim() ?? '',
+      model: config.model?.trim() ?? '',
       ...(config.baseUrl !== undefined ? { baseUrl: config.baseUrl.trim() } : {}),
     }
   }
@@ -360,7 +361,7 @@ export function resolveAiSettings(
     if (stored.apiKey) {
       defaults.providers.custom = {
         apiKey: stored.apiKey.trim(),
-        model: stored.model ?? '',
+        model: stored.model?.trim() ?? '',
         baseUrl: (stored.baseUrl ?? 'https://api.openai.com/v1').trim(),
       }
     }
@@ -368,7 +369,9 @@ export function resolveAiSettings(
   }
   return {
     provider: stored.provider ?? defaults.provider,
-    providers: trimConfigs(migrateRetiredModels({ ...defaults.providers, ...stored.providers })),
+    // Trim before migrating: a pasted " deepseek-reasoner " must still hit
+    // the retired-id remap instead of being sent to the API verbatim.
+    providers: migrateRetiredModels(trimConfigs({ ...defaults.providers, ...stored.providers })),
     chatofficeToolsEnabled:
       stored.chatofficeToolsEnabled ?? defaults.chatofficeToolsEnabled ?? true,
     // clamped on read: a hand-edited settings file with an absurd cap must not be
