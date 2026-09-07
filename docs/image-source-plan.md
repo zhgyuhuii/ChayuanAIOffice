@@ -2,6 +2,11 @@
 
 > 状态：共识已达成（2026-09-06，8 轮逐题收敛），本文为实施合同。
 > 里程碑：M-A slides 主体 → M-B docs/sheets 兜底 → M-C 验收回归，各自全绿后推送。
+>
+> **实施状态（2026-09-07 收口）**：
+> - M-A slides 主体 ✅（commit 23d51b8：五值设置/来源解析分配/imagery 分支/三态 spec/消毒光栅化/选择器+本地池/IPC，31 新测试）。
+> - M-B docs/sheets 兜底 ✅（commit 24bfc9d 落 generate_svg 双端+web 回退+svg-bank dataref；本 commit 补齐 #9「复用全局默认」：docs docs-skill/imageSkill 读 `AiSettingsV2.imageSource`——显式 web/model/svg 在两端系统提示词加指令行并约束 generate_image 失败回退链（svg 默认跳过 web 档，绝不静默换源），local/auto 不加指令（交互场景无本地池概念，按 auto 行为）；口头改源=模型按用户措辞在三工具间选择+generate_deck 的 image_source 参数即存默认）。
+> - M-C 验收回归 ✅：模型源欠费失败→briefs 降级+报告标注+不切 web、本地池不足→briefs+标注、svg 模式全 briefs+模式标注、image_source 口头改源即存默认 等集成测试补齐（generate-deck +5）；docs web 回退/svg 跳过/generate_svg 三分支（+6）+docs-skill 指令行（+2）、sheets 回退链/指令行（+5）；全量回归 agent-core 80 / ai-provider 182 / ai-search 60 / pptx-render 244 / ui 79 / slides 642+8skip / docs 1425 / sheets 1986 全绿（sheets 另有 15 个 xlsx Rust sidecar 用例因本机无 cargo 未构建原生二进制而失败，stash 验证在 HEAD 同样失败，属环境缺口非代码回归）；slides/docs/sheets 三 app tsc 无错误。断网+单对话模型的真机验收仍需人工跑（口径见 §M-C）。
 
 ## 0. 一句话总纲
 

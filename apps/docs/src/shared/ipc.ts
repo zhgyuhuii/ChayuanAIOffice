@@ -70,6 +70,7 @@ export type { FaceVerticalMetrics }
 
 export type {
   AiChatResponse,
+  AiImageSource,
   AiModelEntry,
   AiModelSelection,
   AiProviderConfig,

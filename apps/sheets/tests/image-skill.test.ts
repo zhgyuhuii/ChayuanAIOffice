@@ -85,6 +85,75 @@ describe('image skill: generate_image', () => {
     expect(result.output).toContain('https://cdn.example.com/gen/1.png')
     expect(result.output).toContain('add_image')
   })
+
+  it('generation fails → falls back to a matching web image (image-source-plan #9)', async () => {
+    const imageSearch = vi.fn().mockResolvedValue({
+      method: 'serper',
+      images: [{ title: 'logo', imageUrl: 'https://img.example.com/logo.png', width: 64, height: 64 }],
+    })
+    stubDesktopApi({
+      generateImage: vi.fn().mockResolvedValue({ error: 'ChatOffice account is not logged in' }),
+      imageSearch,
+    })
+    const result = await createImageSkill().executeTool(
+      call('generate_image', { prompt: 'minimal logo' }),
+    )
+    expect(imageSearch).toHaveBeenCalledWith('minimal logo', 5)
+    expect(result.isError).toBeUndefined()
+    expect(result.output).toContain('web image was used instead')
+    expect(result.output).toContain('https://img.example.com/logo.png')
+    expect(result.output).toContain('add_image')
+  })
+
+  it('generation fails and no web image matches → the error points at generate_svg', async () => {
+    stubDesktopApi({
+      generateImage: vi.fn().mockResolvedValue({ error: 'quota exceeded' }),
+      imageSearch: vi.fn().mockResolvedValue({ method: 'serper', images: [] }),
+    })
+    const result = await createImageSkill().executeTool(
+      call('generate_image', { prompt: 'minimal logo' }),
+    )
+    expect(result.isError).toBe(true)
+    expect(result.output).toContain('no web image matched')
+    expect(result.output).toContain('generate_svg')
+  })
+
+  it("default source 'svg' skips the web tier entirely (never a silent source switch)", async () => {
+    const imageSearch = vi.fn()
+    stubDesktopApi({
+      generateImage: vi.fn().mockResolvedValue({ error: 'quota exceeded' }),
+      imageSearch,
+    })
+    const result = await createImageSkill(() => true, () => 'svg').executeTool(
+      call('generate_image', { prompt: 'minimal logo' }),
+    )
+    expect(imageSearch).not.toHaveBeenCalled()
+    expect(result.isError).toBe(true)
+    expect(result.output).not.toContain('no web image matched')
+    expect(result.output).toContain('generate_svg')
+  })
+})
+
+describe('image skill: global default source directive', () => {
+  it('an explicit default steers the system prompt; auto/local stay neutral', () => {
+    const auto = createImageSkill(() => true, () => 'auto').systemPrompt
+    const local = createImageSkill(() => true, () => 'local').systemPrompt
+    expect(auto).not.toContain('Image source preference')
+    expect(local).not.toContain('Image source preference')
+
+    const svg = createImageSkill(() => true, () => 'svg').systemPrompt
+    expect(svg).toContain('generate_svg first')
+    const web = createImageSkill(() => true, () => 'web').systemPrompt
+    expect(web).toContain('image_search first')
+    const model = createImageSkill(() => true, () => 'model').systemPrompt
+    expect(model).toContain('generate_image first')
+  })
+
+  it('the directive applies without the cloud tools too (no-login tier keeps the steering)', () => {
+    const svg = createImageSkill(() => false, () => 'svg').systemPrompt
+    expect(svg).toContain('generate_svg first')
+    expect(svg).not.toContain('generate_image creates')
+  })
 })
 
 describe('image skill: unknown tool', () => {

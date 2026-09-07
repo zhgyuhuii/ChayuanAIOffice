@@ -1,4 +1,5 @@
 import type { AgentSkill } from '@chatoffice/agent-core'
+import type { AiImageSource } from '@chatoffice/ai-provider'
 import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
 import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
 import { t } from '../i18n/locale'
@@ -24,11 +25,31 @@ const IMAGES_SYSTEM_PROMPT_NO_GEN = `## Images
 ${PLACEMENT_PROMPT}`
 
 /**
+ * One-line steering from the global default image source
+ * (docs/image-source-plan.md #9 — the interactive sheets counterpart of the
+ * deck-level picker). 'auto' stays the model's call; 'local' has no pool in
+ * interactive sheets (folder pools are a deck-generation concept), so it
+ * steers like 'auto'. Every line yields to an explicit per-request source ask.
+ */
+const IMAGE_SOURCE_DIRECTIVE: Record<AiImageSource, string> = {
+  auto: '',
+  local: '',
+  web: '- Image source preference: web images — pick image_search first for pictures; use generate_image only when the user explicitly asks for AI-generated art.',
+  model:
+    '- Image source preference: AI generation — pick generate_image first for illustrations; when it is unavailable (not logged in / failed), fall back to image_search.',
+  svg: '- Image source preference: vector graphics — pick generate_svg first (offline, no login); use image_search only for real photos the user explicitly asks for.',
+}
+
+/**
  * `chatofficeTools` is a live predicate (login state && the ChatOffice-cloud-tools
  * toggle); the loop re-reads tools and systemPrompt before every request,
  * so generate_image appears and disappears without rebuilding the loop.
+ * `getImageSource` reads the persisted global default (AiSettingsV2.imageSource).
  */
-export function createImageSkill(chatofficeTools: () => boolean = () => true): AgentSkill {
+export function createImageSkill(
+  chatofficeTools: () => boolean = () => true,
+  getImageSource: () => AiImageSource = () => 'auto',
+): AgentSkill {
   const allTools = [
     {
       name: 'image_search',
@@ -83,7 +104,9 @@ export function createImageSkill(chatofficeTools: () => boolean = () => true): A
   return {
     id: 'images',
     get systemPrompt() {
-      return chatofficeTools() ? IMAGES_SYSTEM_PROMPT : IMAGES_SYSTEM_PROMPT_NO_GEN
+      const base = chatofficeTools() ? IMAGES_SYSTEM_PROMPT : IMAGES_SYSTEM_PROMPT_NO_GEN
+      const line = IMAGE_SOURCE_DIRECTIVE[getImageSource()]
+      return line ? `${base}\n${line}` : base
     },
     get tools() {
       return chatofficeTools() ? allTools : allTools.filter((t) => t.name !== 'generate_image')
@@ -132,8 +155,34 @@ export function createImageSkill(chatofficeTools: () => boolean = () => true): A
           ...(aspectRatio ? { aspectRatio } : {}),
         })
         if (!result.url) {
+          // Login/cloud failure fallback (docs/image-source-plan.md #9): a web
+          // image keeps the request satisfiable without any paid source. An
+          // explicit 'svg' default skips the web tier — never silently switch
+          // to a source the user turned off — and points at generate_svg.
+          const svgOnly = getImageSource() === 'svg'
+          let pick: { imageUrl: string } | undefined
+          if (!svgOnly) {
+            try {
+              const searched = await window.desktopApi.imageSearch(prompt, 5)
+              pick =
+                searched.method !== 'error'
+                  ? searched.images.find((im) => /^https?:\/\//.test(im.imageUrl))
+                  : undefined
+            } catch {
+              pick = undefined // channel missing/failed — the slot hands down to generate_svg
+            }
+          }
+          if (pick) {
+            return {
+              output:
+                `Image generation failed (${result.error ?? 'unknown error'}); a web image was used instead.\n` +
+                `Insert it with propose_operations {op:"add_image", path:"${pick.imageUrl}", ...}.`,
+              mutated: false,
+              summary: t('aiToolGenImageDone'),
+            }
+          }
           return {
-            output: `image generation failed: ${result.error ?? 'unknown error'}`,
+            output: `image generation failed: ${result.error ?? 'unknown error'}${svgOnly ? '' : ' — no web image matched either'}. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
             isError: true,
             summary: t('aiToolGenImage'),
           }
