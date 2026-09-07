@@ -13,7 +13,8 @@
     "./dropdown.css": "./src/dropdown.css",
     "./model-settings.css": "./src/model-settings.css",
     "./screentip.css": "./src/screentip.css",
-    "./tokens.css": "./src/tokens.css"
+    "./tokens.css": "./src/tokens.css",
+    "./fonts/*": "./src/fonts/*"
   },
   "scripts": {
     "test": "vitest run",

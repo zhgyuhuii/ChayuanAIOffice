@@ -20,16 +20,14 @@ describe('provider registry', () => {
     expect(Object.keys(AI_PROVIDER_ADAPTERS).sort()).toEqual(AI_PROVIDERS.map((m) => m.id).sort())
   })
 
-  it('routes chatoffice by model id prefix onto the three proxy endpoints', () => {
+  // adapted: 9f971ed — provider rebranded chatoffice locally; gemini endpoint
+  // removed server-side (405), so only two proxy endpoints remain
+  it('routes chatoffice by model id prefix onto the two proxy endpoints', () => {
     const resolve = (model: string) =>
       AI_PROVIDER_ADAPTERS.chatoffice.resolveEndpoint(config(model))
     expect(resolve('claude-opus-4-7')).toEqual({
       protocol: 'anthropic',
       baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic,
-    })
-    expect(resolve('gemini-3.1-pro-preview')).toEqual({
-      protocol: 'gemini',
-      baseUrl: CHATOFFICE_LLM_BASE_URLS.gemini,
     })
     // gpt-5.x fixes sampling, so the proxy's OpenAI route also drops temperature
     expect(resolve('gpt-5.2')).toEqual({

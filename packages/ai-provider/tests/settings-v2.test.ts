@@ -99,7 +99,9 @@ describe('migrateSettingsV2', () => {
 })
 
 describe('resolveModelCall', () => {
-  it('routes chatoffice by model prefix across its three proxy protocols', () => {
+  // adapted: 9f971ed — the proxy's gemini endpoint was removed server-side
+  // (405 as of 2026-08-31); gemini models now ride the OpenAI-compatible path
+  it('routes chatoffice by model prefix: claude onto anthropic, rest onto openai-compatible', () => {
     const s = defaultSettingsV2()
     const claude = resolveModelCall(
       s,
@@ -113,7 +115,7 @@ describe('resolveModelCall', () => {
       { profileId: 'chatoffice', modelId: 'gemini-3.7-flash' },
       'chatoffice',
     )
-    expect(gem.protocol).toBe('gemini')
+    expect(gem.protocol).toBe('openai-compatible')
     const gpt = resolveModelCall(s, { profileId: 'chatoffice', modelId: 'gpt-5.6' }, 'chatoffice')
     expect(gpt.protocol).toBe('openai-compatible')
   })

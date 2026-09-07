@@ -1345,6 +1345,8 @@ export function Home() {
   const [confirmDelete, setConfirmDelete] = useState<{ paths: string[]; sessionIds: string[] } | null>(
     null,
   )
+  // unavailable recent entry (missing flag) the user clicked — offer list removal
+  const [confirmMissing, setConfirmMissing] = useState<RecentEntry | null>(null)
   // name in the greeting; omitted when logged out
   const [accountName, setAccountName] = useState('')
   // ChatOffice Projects is web-account data, so its nav entry only shows when logged in
@@ -1537,16 +1539,17 @@ export function Home() {
 
   // Escape closes the row menu and the delete-confirm dialog
   useEffect(() => {
-    if (rowMenu === null && confirmDelete === null) return
+    if (rowMenu === null && confirmDelete === null && confirmMissing === null) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setRowMenu(null)
         setConfirmDelete(null)
+        setConfirmMissing(null)
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [rowMenu, confirmDelete])
+  }, [rowMenu, confirmDelete, confirmMissing])
 
   // 删除确认弹窗与设置弹窗同权：弹窗期隐藏激活编辑器视图（见 useShellModalSurface）
   useShellModalSurface(confirmDelete !== null)
@@ -1957,7 +1960,7 @@ export function Home() {
           />
         </label>
         <div
-          className="side-file-main"
+          className={`side-file-main${entry.missing ? ' missing' : ''}`}
           role="button"
           tabIndex={0}
           title={
@@ -1966,11 +1969,15 @@ export function Home() {
               : undefined
           }
           onClick={() => {
-            if (!isRenaming) void window.chatOffice.openPath(entry.path)
+            if (!isRenaming) {
+              if (entry.missing) setConfirmMissing(entry)
+              else void window.chatOffice.openPath(entry.path)
+            }
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget) {
-              void window.chatOffice.openPath(entry.path)
+              if (entry.missing) setConfirmMissing(entry)
+              else void window.chatOffice.openPath(entry.path)
             }
           }}
         >
@@ -1997,7 +2004,11 @@ export function Home() {
             </span>
           )}
           {/* tree rows: no inline time — the row tooltip carries time/size/path */}
-          {!bare && <span className="side-file-time">{formatModified(entry.mtimeMs, i18n)}</span>}
+          {!bare && (
+            <span className="side-file-time">
+              {entry.missing ? '—' : formatModified(entry.mtimeMs, i18n)}
+            </span>
+          )}
         </div>
         {context === 'global' && (
           <button
@@ -2809,6 +2820,40 @@ export function Home() {
               </button>
               <button className="btn btn-danger" onClick={confirmDeleteNow}>
                 {t('delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmMissing && (
+        <div className="modal-overlay" onClick={() => setConfirmMissing(null)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('missingFileTitle')}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3>{t('missingFileTitle')}</h3>
+            <p>{t('missingFileBody', { name: confirmMissing.name })}</p>
+            <div className="modal-buttons">
+              <button
+                className="btn btn-secondary"
+                autoFocus
+                onClick={() => setConfirmMissing(null)}
+              >
+                {t('cancel')}
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  // main drops the star of an unavailable entry with the row
+                  removeRecent([confirmMissing.path])
+                  setConfirmMissing(null)
+                }}
+              >
+                {t('removeFromList')}
               </button>
             </div>
           </div>

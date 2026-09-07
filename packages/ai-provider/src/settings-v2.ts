@@ -50,12 +50,12 @@ export const WIRE_TO_INTERNAL: Record<AiWireProtocol, AiProtocol> = {
   'gemini-native': 'gemini',
 }
 
-/** chatoffice's proxy speaks all three protocols; route by model id prefix like the v1 adapter did */
+/** chatoffice's proxy routes claude onto the Anthropic protocol; everything
+ * else (gemini included) rides the OpenAI-compatible endpoint — the proxy's
+ * gemini endpoint was removed server-side (405 as of 2026-08-31). */
 export function chatofficeEndpointFor(model: string): { protocol: AiProtocol; baseUrl: string } {
   if (model.startsWith('claude'))
     return { protocol: 'anthropic', baseUrl: CHATOFFICE_LLM_BASE_URLS.anthropic }
-  if (model.startsWith('gemini'))
-    return { protocol: 'gemini', baseUrl: CHATOFFICE_LLM_BASE_URLS.gemini }
   return { protocol: 'openai-compatible', baseUrl: CHATOFFICE_LLM_BASE_URLS.openai }
 }
 
