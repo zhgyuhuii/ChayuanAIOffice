@@ -60,7 +60,12 @@ export function normalizeRecentQuery(
   const limit = Number.isFinite(query.limit)
     ? Math.min(RECENT_PAGE_MAX, Math.max(0, Math.floor(query.limit!)))
     : RECENT_PAGE_DEFAULT
-  const ext = typeof query.ext === 'string' && query.ext ? query.ext.toLowerCase() : undefined
+  // Sidebar keys are bare extensions ("xlsx"), but IPC callers may send
+  // ".xlsx", " XLSX ", or "..." — normalize so openable files cannot hide
+  // behind a filter that only differs in dots/case/whitespace.
+  const rawExt =
+    typeof query.ext === 'string' ? query.ext.trim().toLowerCase().replace(/^\.+/, '') : ''
+  const ext = rawExt ? rawExt : undefined
   return { offset, limit, ext }
 }
 
