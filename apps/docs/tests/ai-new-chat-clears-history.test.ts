@@ -7,14 +7,10 @@ import { createRoot, type Root } from 'react-dom/client'
 import { Editor } from '@tiptap/core'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
-import { AI_PROVIDERS, type AiSettings } from '../src/shared/ipc'
+// adapted: the panel takes the local AiSettingsV2 shape
+import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
-const settings: AiSettings = {
-  provider: 'anthropic',
-  providers: Object.fromEntries(
-    AI_PROVIDERS.map((p) => [p.id, { apiKey: '', model: p.defaultModel }]),
-  ) as AiSettings['providers'],
-}
+const settings: AiSettingsV2 = defaultSettingsV2()
 
 function createEditor(): Editor {
   return new Editor({

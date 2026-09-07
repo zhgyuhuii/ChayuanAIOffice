@@ -1005,7 +1005,8 @@ export function AiPanel({
         activeId={tab}
         onTabChange={selectTab}
         actions={
-          tab === 'chat' && chat.length > 0 ? (
+          // d9769d1: New chat is offered for a restored history transcript too
+          tab === 'chat' && (chat.length > 0 || historicChat.length > 0) ? (
             <button
               className="ai-header-btn"
               onClick={newChat}
