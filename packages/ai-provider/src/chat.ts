@@ -33,7 +33,9 @@ export async function chatForProvider(
       case 'anthropic':
         return chatAnthropic(wd, config, system, user, endpoint.baseUrl)
       case 'gemini':
-        return chatGemini(wd, config, system, user, endpoint.baseUrl)
+        return chatGemini(wd, config, system, user, endpoint.baseUrl, {
+          omitTemperature: endpoint.omitTemperature,
+        })
       case 'openai-compatible':
         return chatOpenAiCompatible(wd, endpoint.baseUrl, config, system, user, {
           omitTemperature: endpoint.omitTemperature,

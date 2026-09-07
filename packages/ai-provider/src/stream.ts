@@ -62,7 +62,9 @@ export async function streamForProvider(
     case 'anthropic':
       return streamAnthropic(config, system, messages, tools, maxTokens, cb, baseUrl)
     case 'gemini':
-      return streamGemini(config, system, messages, tools, maxTokens, cb, baseUrl)
+      return streamGemini(config, system, messages, tools, maxTokens, cb, baseUrl, {
+        omitTemperature: endpoint.omitTemperature,
+      })
     case 'openai-compatible':
       return streamOpenAiCompatible(baseUrl, config, system, messages, tools, maxTokens, cb, {
         omitTemperature: endpoint.omitTemperature,

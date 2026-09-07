@@ -40,10 +40,13 @@ function metaOf(id: AiProviderId): AiProviderMeta {
  * route — vendor API, the ChatOffice proxy, OpenRouter's vendor-prefixed ids,
  * or a mirror behind a custom base URL. Kimi K3 answers "only 1 is allowed";
  * OpenAI's GPT-5 reasoning family rejects any temperature other than the
- * default outright.
+ * default outright. Google's Gemini 3 docs strongly recommend keeping the
+ * default temperature of 1.0 for the whole Gemini 3 family, since lower
+ * values may cause looping or degraded reasoning, so our hard-coded 0.3
+ * must not be sent there either.
  */
 export function modelHasFixedSampling(model: string): boolean {
-  return /(^|\/)(kimi-k3|gpt-5)/.test(model)
+  return /(^|\/)(kimi-k3|gpt-5|gemini-3)/.test(model)
 }
 
 /**

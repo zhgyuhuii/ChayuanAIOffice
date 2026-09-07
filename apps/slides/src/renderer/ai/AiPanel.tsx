@@ -458,15 +458,23 @@ export function AiPanel({
     for (const a of wanted) {
       if (!ATTACHMENT_IMAGE_EXTS.has(a.ext) || previewRequestedRef.current.has(a.path)) continue
       previewRequestedRef.current.add(a.path)
-      void window.desktop.readAttachmentImage(a.path).then((r) => {
-        if (!previewRequestedRef.current.has(a.path)) return // removed while the read was in flight
-        if (r.ok && r.base64 && r.mime) {
-          setAttachmentPreviews((prev) => ({
-            ...prev,
-            [a.path]: `data:${r.mime};base64,${r.base64}`,
-          }))
-        }
-      })
+      void window.desktop
+        .readAttachmentImage(a.path)
+        .then((r) => {
+          if (!previewRequestedRef.current.has(a.path)) return // removed while the read was in flight
+          if (r.ok && r.base64 && r.mime) {
+            setAttachmentPreviews((prev) => ({
+              ...prev,
+              [a.path]: `data:${r.mime};base64,${r.base64}`,
+            }))
+          }
+        })
+        .catch(() => {
+          // A rejected read (bridge error, teardown race) must not leave the
+          // path marked requested forever — that would permanently skip the
+          // thumbnail with no retry. Clear it so the next effect run retries.
+          previewRequestedRef.current.delete(a.path)
+        })
     }
   }, [attachments, chat, historicChat])
   /** paints the strip's scrollbar thumb while the user scrolls it (cleared 800ms after the last event) */
@@ -1485,7 +1493,7 @@ export function AiPanel({
           })
           // Persist the assistant message (deckProgress not stored; tools store the whole run's full activity) —
           // side effects outside the updater (StrictMode double-invokes updaters, duplicating history writes)
-          if (finalText && !cancelled) {
+          if (!cancelled && (finalText || runToolsRef.current.length > 0)) {
             persistMessage('assistant', finalText, runToolsRef.current)
           }
           // A stop with nothing streamed is just the user changing their mind; a stop
@@ -1617,11 +1625,15 @@ export function AiPanel({
     const images: AgentImage[] = []
     const failures: string[] = []
     for (const att of imageAtts.slice(0, MAX_IMAGES_PER_MESSAGE)) {
-      const result = await window.desktop.readAttachmentImage(att.path)
-      if (result.ok && result.base64 && result.mime) {
-        images.push({ base64: result.base64, mime: result.mime })
-      } else {
-        failures.push(result.error ?? t('aiReadFailed', { name: att.name }))
+      try {
+        const result = await window.desktop.readAttachmentImage(att.path)
+        if (result.ok && result.base64 && result.mime) {
+          images.push({ base64: result.base64, mime: result.mime })
+        } else {
+          failures.push(result.error ?? t('aiReadFailed', { name: att.name }))
+        }
+      } catch {
+        failures.push(t('aiReadFailed', { name: att.name }))
       }
     }
     if (imageAtts.length > MAX_IMAGES_PER_MESSAGE) {
