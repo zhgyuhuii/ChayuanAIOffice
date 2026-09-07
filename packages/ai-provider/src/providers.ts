@@ -259,8 +259,6 @@ export function activeProvider(settings: AiSettings): AiProviderId {
   if (provider === 'chatoffice') return 'chatoffice'
   const meta = AI_PROVIDERS.find((m) => m.id === provider)
   const config = settings.providers?.[provider]
-  if (!meta || !config?.apiKey || !config.model) return 'chatoffice'
-  if (meta.needsBaseUrl && !config.baseUrl) return 'chatoffice'
   if (!meta || !config?.model) return 'chatoffice'
   if (meta.needsBaseUrl) {
     // Custom OpenAI-compatible endpoints (Ollama, LM Studio, vLLM) accept

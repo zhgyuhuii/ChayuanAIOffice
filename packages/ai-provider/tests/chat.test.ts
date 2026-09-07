@@ -101,7 +101,6 @@ describe('chatForProvider', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('chatoffice: routes by model prefix to the proxy endpoints', async () => {
   it('custom: omits Authorization when the key is empty for local servers', async () => {
     const fetchMock = vi
       .fn()
@@ -128,7 +127,7 @@ describe('chatForProvider', () => {
     )
   })
 
-  it('genspark: routes by model prefix to the proxy endpoints', async () => {
+  it('chatoffice: routes by model prefix to the proxy endpoints', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(jsonResponse({ content: [{ type: 'text', text: 'ok' }] }))

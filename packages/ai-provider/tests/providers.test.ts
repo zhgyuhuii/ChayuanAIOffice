@@ -256,7 +256,6 @@ describe('activeProvider', () => {
     expect(activeProvider(settings)).toBe('custom')
   })
 
-  it('falls back to chatoffice for unknown ids from a hand-edited settings file', () => {
   it('allows keyless custom endpoints for local servers', () => {
     const settings = defaultAiSettings()
     settings.provider = 'custom'
@@ -266,7 +265,7 @@ describe('activeProvider', () => {
     expect(activeProvider(settings)).toBe('custom')
   })
 
-  it('falls back to genspark for unknown ids from a hand-edited settings file', () => {
+  it('falls back to chatoffice for unknown ids from a hand-edited settings file', () => {
     const settings = defaultAiSettings()
     settings.provider = 'nonsense' as AiProviderId
     expect(activeProvider(settings)).toBe('chatoffice')

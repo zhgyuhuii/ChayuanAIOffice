@@ -197,8 +197,6 @@ async function openAiCompatibleTurn(
     signal: wd.signal,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.apiKey}`,
-      ...chatofficeAttributionHeaders(baseUrl),
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
       ...chatofficeAttributionHeaders(baseUrl),
     },
@@ -355,8 +353,6 @@ export async function chatOpenAiCompatible(
     signal: wd.signal,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.apiKey}`,
-      ...chatofficeAttributionHeaders(baseUrl),
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
       ...chatofficeAttributionHeaders(baseUrl),
     },
