@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { createAiRuntime } from '../src/runtime'
 import type { AiSettingsSource } from '../src/settings-source'
 import type { AiSettingsV2, AiStreamChunk } from '../src/types'

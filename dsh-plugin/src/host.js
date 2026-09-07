@@ -205,7 +205,6 @@ export function apply(ctx) {
 
     const deadline = Date.now() + START_TIMEOUT_MS
     while (Date.now() < deadline) {
-      // eslint-disable-next-line no-await-in-loop
       if (await probe(port)) {
         state.status = 'ready'
         state.origin = `http://127.0.0.1:${port}`
@@ -217,7 +216,6 @@ export function apply(ctx) {
         state.error = state.error ?? 'sidecar exited during startup'
         return
       }
-      // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, PROBE_INTERVAL_MS))
     }
     state.status = 'failed'

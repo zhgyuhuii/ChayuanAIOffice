@@ -37,7 +37,6 @@ for (const job of jobs) {
       rest = (rest + chunk).split('\n').map((l) => (l ? tag + l : l)).join('\n')
       const lines = rest.split('\n')
       rest = lines.pop() ?? ''
-      // eslint-disable-next-line no-console
       console.log(lines.join('\n'))
       void isError
     })
@@ -45,7 +44,6 @@ for (const job of jobs) {
   pipe(child.stdout)
   pipe(child.stderr, true)
   child.on('exit', (code) => {
-    // eslint-disable-next-line no-console
     console.error(`${tag}exited with ${code}`)
   })
   children.push(child)

@@ -26,7 +26,7 @@ export async function openverseImageSearch(
       clearTimeout(t)
     }
   } catch (cause) {
-    throw new Error(`openverse: ${String(cause)}`)
+    throw new Error(`openverse: ${String(cause)}`, { cause })
   }
   if (resp.status === 429) throw new Error('openverse: rate limited')
   if (!resp.ok) throw new Error(`openverse: http ${resp.status}`)

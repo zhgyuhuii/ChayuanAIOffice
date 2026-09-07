@@ -291,7 +291,7 @@ export function htmlToText(html: string): string {
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;|&apos;/gi, "'")
-    .replace(/[ 	]+/g, ' ')
+    .replace(/[ \t]+/g, ' ')
     .replace(/\n\s*\n\s*/g, '\n')
     .trim()
 }

@@ -3,7 +3,6 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
-  chatofficeApiKey,
   chatofficeAuthPath,
   chatofficeLoginInFlight,
   chatofficeLogout,

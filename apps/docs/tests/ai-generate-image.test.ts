@@ -76,7 +76,11 @@ describe('generate_image', () => {
 
   it('surfaces the channel error (not logged in / cloud tools off / generation failure)', async () => {
     const { exec, editor } = await runWithDesktop(
-      { aiGenerateImage: () => Promise.resolve({ error: 'ChatOffice account is not logged in' }) },
+      {
+        aiGenerateImage: () => Promise.resolve({ error: 'ChatOffice account is not logged in' }),
+        // no-url generation falls back to web search; empty results keep the channel error path
+        imageSearch: () => Promise.resolve({ method: 'web', images: [] }),
+      },
       { prompt: 'a watercolor fox' },
     )
     expect(exec.isError).toBe(true)
@@ -110,6 +114,7 @@ describe('generate_image', () => {
           received = op
           return Promise.resolve({ error: 'stop here' }) // fail before the jsdom-unfriendly decode
         },
+        imageSearch: () => Promise.resolve({ method: 'web', images: [] }),
       },
       { prompt: 'a watercolor fox', aspectRatio: '16:9' },
     )

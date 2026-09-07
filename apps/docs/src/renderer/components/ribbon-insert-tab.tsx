@@ -728,7 +728,7 @@ export function InsertTab({
         }
         // 快照:AI 插入也必须有图(sidecar 可重放,快照供打开显示)
         const { renderOptionSnapshot } = await import('@chatoffice/chart-kit/snapshot')
-        let opt: unknown = null
+        let opt: unknown
         try {
           opt = JSON.parse(optionJson)
         } catch {

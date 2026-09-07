@@ -29,8 +29,6 @@ import {
   getHomeLayout,
   onHomeLayoutChange,
   setHomeLayout,
-  SIDEBAR_MAX,
-  SIDEBAR_MIN,
 } from './home-layout'
 
 declare global {

@@ -4,7 +4,6 @@ import {
   copyFileSync,
   cpSync,
   existsSync,
-  mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
@@ -2801,7 +2800,7 @@ function loadPendingUntitled(): Map<string, PendingUntitledDoc> {
   }
 }
 
-let pendingUntitledDocs = loadPendingUntitled()
+const pendingUntitledDocs = loadPendingUntitled()
 
 function persistPendingUntitled(): void {
   try {

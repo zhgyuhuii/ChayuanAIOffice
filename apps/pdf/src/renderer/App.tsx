@@ -1606,7 +1606,6 @@ export default function App() {
     // The line affordance is just as stale after a reload (it hangs at the last
     // pre-save pointer position until the next mousemove)
     clearLineHover()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc])
 
   /** Cluster paragraph boxes for pages scrolled into view while edit-text mode is on.

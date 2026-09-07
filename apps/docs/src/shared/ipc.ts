@@ -61,7 +61,6 @@ import type {
   AiModelSelection,
   AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequestV2,
   DiscoveryTarget,
   ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'

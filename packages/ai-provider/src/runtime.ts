@@ -188,7 +188,6 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     const { requestId, system, messages } = request
     const tools = request.tools ?? []
     // per-vendor cap resolved after the call is known; a blanket 8192 truncates long tool arguments on vendors with higher limits
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let maxTokens: number = request.maxTokens ?? 8192
     let call: ResolvedModelCall
     try {
