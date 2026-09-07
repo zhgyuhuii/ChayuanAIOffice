@@ -16,9 +16,9 @@ const agentHarness = vi.hoisted(() => ({
   restore: vi.fn(),
 }))
 
-vi.mock('@genoffice/agent-core', async () => {
+vi.mock('@chatoffice/agent-core', async () => {
   const actual =
-    await vi.importActual<typeof import('@genoffice/agent-core')>('@genoffice/agent-core')
+    await vi.importActual<typeof import('@chatoffice/agent-core')>('@chatoffice/agent-core')
   return {
     ...actual,
     AgentLoop: class MockAgentLoop {
@@ -68,14 +68,11 @@ vi.mock('react-konva', () => {
 })
 
 import { AiPanel } from '../src/renderer/ai/AiPanel'
-import { AI_PROVIDERS, type AiSettings, type AttachmentMeta } from '../src/shared/ipc'
+import { type AttachmentMeta } from '../src/shared/ipc'
+// adapted: 360ce06 — the panel takes the local AiSettingsV2 shape
+import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
-const settings: AiSettings = {
-  provider: 'anthropic',
-  providers: Object.fromEntries(
-    AI_PROVIDERS.map((provider) => [provider.id, { apiKey: '', model: provider.defaultModel }]),
-  ) as AiSettings['providers'],
-}
+const settings: AiSettingsV2 = defaultSettingsV2()
 
 const mountedRoots: Array<{ root: Root; container: HTMLElement }> = []
 
@@ -118,6 +115,8 @@ function installSlidesApi(): void {
     configurable: true,
     value: {
       aiGskStatus: vi.fn(async () => ({ loggedIn: true })),
+      // adapted: local AiPanel refreshes the ChatOffice login state on mount
+      aiChatOfficeStatus: vi.fn(async () => ({ loggedIn: true })),
       beginHistoryBatch: vi.fn(async () => false),
       endHistoryBatch: vi.fn(async () => null),
       aiLogRunFailure: vi.fn(async () => undefined),
@@ -226,8 +225,10 @@ describe('AiPanel agent run lifecycle (slides)', () => {
 
     expect(readAttachmentImage).toHaveBeenCalledWith('/tmp/good.png')
     expect(readAttachmentImage).toHaveBeenCalledWith('/tmp/bad.png')
+    // adapted: local AiPanel also passes an empty media-attachment slot
+    // ({audio, video}) after the images argument
     expect(agentHarness.run).toHaveBeenCalledWith('Polish this slide', [
       { base64: 'AAAA', mime: 'image/png' },
-    ])
+    ], { audio: [], video: [] })
   })
 })
