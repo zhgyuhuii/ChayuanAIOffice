@@ -620,3 +620,23 @@ describe('selection scope freezing', () => {
     expect(editor.state.doc.child(2).attrs.align).toBe('right')
   })
 })
+
+describe('docs skill: global default image source directive (image-source-plan #9)', () => {
+  it('an explicit default appends a steering line; auto/local keep the base prompt', () => {
+    const editor = createEditor(fixture())
+    const make = (src: 'auto' | 'web' | 'model' | 'local' | 'svg') =>
+      createDocsSkill(() => editor, () => NUM_IDS, undefined, undefined, undefined, () => src)
+        .systemPrompt
+    expect(make('auto')).not.toContain('Image source preference')
+    expect(make('local')).not.toContain('Image source preference') // no pool concept in interactive docs
+    expect(make('svg')).toContain('generate_svg first')
+    expect(make('web')).toContain('image_search first')
+    expect(make('model')).toContain('generate_image first')
+  })
+
+  it('without the accessor the prompt is the unchanged base', () => {
+    const editor = createEditor(fixture())
+    const prompt = createDocsSkill(() => editor, () => NUM_IDS).systemPrompt
+    expect(prompt).not.toContain('Image source preference')
+  })
+})

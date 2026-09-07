@@ -1103,6 +1103,7 @@ export function App(): React.JSX.Element {
           () =>
             chatofficeLoggedInRef.current &&
             aiSettingsRef.current?.chatofficeToolsEnabled !== false,
+          () => aiSettingsRef.current?.imageSource ?? 'auto',
         ),
       ]),
       events: {

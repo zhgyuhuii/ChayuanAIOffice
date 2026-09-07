@@ -3,7 +3,12 @@ import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { ChartDisplay, CommentInfo, NewChart } from '@chatoffice/docx-engine'
 import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
 import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
-import type { AgentToolCall, AgentToolDef, CreateDocumentType } from '../../shared/ipc'
+import type {
+  AgentToolCall,
+  AgentToolDef,
+  AiImageSource,
+  CreateDocumentType,
+} from '../../shared/ipc'
 import { t } from '../i18n/locale'
 import { executeCommands, type Command, type CommandEnvelope } from './commands'
 import {
@@ -508,6 +513,7 @@ async function executeAsyncTool(
   editor: Editor,
   call: AgentToolCall,
   signal?: AbortSignal,
+  getImageSource?: () => AiImageSource,
 ): Promise<ToolExecution> {
   switch (call.name) {
     case 'web_search': {
@@ -576,7 +582,17 @@ async function executeAsyncTool(
         // No-login / BYOK-missing fallback (docs/image-source-plan.md #9): web
         // search keeps real-photo imagery available without any paid source; a
         // failed search hands the slot to generate_svg (the model draws it).
-        const searched = await window.desktop.imageSearch(prompt, 5).catch(() => null)
+        // An explicit 'svg' default skips the web tier — never silently switch
+        // to a source the user turned off.
+        const svgOnly = getImageSource?.() === 'svg'
+        let searched: Awaited<ReturnType<typeof window.desktop.imageSearch>> | null = null
+        if (!svgOnly) {
+          try {
+            searched = await window.desktop.imageSearch(prompt, 5)
+          } catch {
+            searched = null // channel missing/failed — the slot hands down to generate_svg
+          }
+        }
         if (signal?.aborted)
           return fail(t('aiSumGenerateImage'), 'stopped by the user; the image was not inserted')
         const pick =
@@ -602,7 +618,7 @@ async function executeAsyncTool(
         }
         return fail(
           t('aiSumGenerateImage'),
-          `${generated.error ?? 'image generation failed'} — no web image matched either. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
+          `${generated.error ?? 'image generation failed'}${svgOnly ? '' : ' — no web image matched either'}. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
         )
       }
       return insertImageFromUrl(
@@ -786,6 +802,7 @@ export function executeTool(
   frozen?: FrozenSelection | null,
   comments?: AiCommentsAccess,
   hf?: AiHeaderFooterAccess,
+  getImageSource?: () => AiImageSource,
 ): ToolExecution | Promise<ToolExecution> {
   const scope = frozen && frozen.doc === editor.state.doc ? frozen.scope : null
   const staleSummary = INDEX_WRITE_SUMMARIES[call.name]
@@ -807,7 +824,7 @@ export function executeTool(
     call.name === 'generate_svg' ||
     call.name === 'create_document'
   ) {
-    return executeAsyncTool(editor, call, signal)
+    return executeAsyncTool(editor, call, signal, getImageSource)
   }
   return settle(executeSyncTool(editor, call, numIds, track, scope, comments, hf))
 }

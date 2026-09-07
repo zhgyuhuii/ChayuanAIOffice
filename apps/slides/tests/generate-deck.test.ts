@@ -30,6 +30,7 @@ function makeAccess(opts?: {
   const landOrder: string[] = [] // records the landing order
   const imageSearchCalls: string[] = [] // records the queries searchImages was called with
   const imagesSeen: string[][] = [] // records the images each generatePageCloud call received
+  const briefsSeen: string[][] = [] // records the imagery briefs each generatePageLocal call received
   const sidecarSaves: Array<{ topic: string; styleSkill: string; createdAt: string }> = []
   const savedTemplates: Record<
     string,
@@ -95,6 +96,7 @@ function makeAccess(opts?: {
       localPageCalls.push(args.pageIndex)
       stylesSeen.push(args.style)
       imagesSeen.push([...args.images])
+      briefsSeen.push([...(args.imageBriefs ?? [])])
       if (failPages.has(args.pageIndex)) return { ok: false, error: 'mock fail' }
       if (failAttempts[args.pageIndex] && failAttempts[args.pageIndex] > 0) {
         failAttempts[args.pageIndex] -= 1
@@ -160,6 +162,7 @@ function makeAccess(opts?: {
     landOrder,
     imageSearchCalls,
     imagesSeen,
+    briefsSeen,
     sidecarSaves,
     savedTemplates,
     getPages: () => pages,
@@ -553,6 +556,90 @@ describe('generate_deck in-tool image search', () => {
     expect(planEvents.some((e) => e.status === 'running')).toBe(true)
     expect(planEvents.some((e) => e.status === 'error')).toBe(true)
     expect(planEvents.at(-1)?.status).toBe('error')
+  })
+})
+
+describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () => {
+  /** deck call whose every page wants one imagery keyword (no explicit URLs) */
+  const kwCall = (source: string, keywords: string[]): AgentToolCall => ({
+    id: 'c-deck-src',
+    name: 'generate_deck',
+    input: {
+      core_hook: 'Doubled in a decade',
+      style: 'Deep navy + gold',
+      image_source: source,
+      pages: keywords.map((kw, i) => ({
+        title: `Page ${i + 1} Title`,
+        brief: `brief${i + 1}`,
+        layout: 'data',
+        image_queries: [kw],
+      })),
+    },
+  })
+
+  it("model source: generation fails (Arrearage-style) → slots degrade to briefs for the local writer, the report names them, and web is never silently tried", async () => {
+    const m = makeAccess({ cloudEnabled: false })
+    m.access.generateModelImage = async () => null
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('model', ['growth chart']))) as {
+      output: string
+    }
+    expect(m.getPages()).toBe(1)
+    expect(m.briefsSeen[0]).toEqual(['growth chart']) // the writer draws it inline as SVG
+    // degradation is reported (zh is the default test locale), not silent
+    expect(res.output).toContain('未能配图')
+    expect(res.output).toContain('growth chart')
+    expect(res.output).toContain('矢量图形')
+    expect(m.imageSearchCalls).toEqual([]) // never switched to another possibly-paid source
+  })
+
+  it('model source: generation succeeds → the URL reaches the page writer, no degradation note', async () => {
+    const m = makeAccess({ cloudEnabled: false })
+    m.access.generateModelImage = async () => 'https://gen.example/x.png'
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('model', ['growth chart']))) as {
+      output: string
+    }
+    expect(m.imagesSeen[0]).toEqual(['https://gen.example/x.png'])
+    expect(m.briefsSeen[0]).toEqual([])
+    expect(res.output).not.toContain('未能配图')
+  })
+
+  it('local pool exhausted → unclaimed keywords degrade to briefs with a per-page note', async () => {
+    const m = makeAccess({ cloudEnabled: false })
+    m.access.localImagePool = () => ['data:image/png;base64,QUJD'] // one item for two keywords
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('local', ['growth chart', 'team photo']))) as {
+      output: string
+    }
+    expect(m.getPages()).toBe(2)
+    expect(m.imagesSeen[0]).toEqual(['data:image/png;base64,QUJD'])
+    expect(m.briefsSeen[1]).toEqual(['team photo'])
+    expect(res.output).toContain('未能配图')
+    expect(res.output).toContain('team photo')
+  })
+
+  it("svg source: keywords stay briefs (the writer draws), the mode note lands in the report, and no sourcing channel runs", async () => {
+    const m = makeAccess({ cloudEnabled: false })
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('svg', ['growth chart']))) as { output: string }
+    expect(m.briefsSeen[0]).toEqual(['growth chart'])
+    expect(m.imagesSeen[0]).toEqual([])
+    expect(res.output).toContain('配图来源') // aiNoteSvgMode
+    expect(res.output).not.toContain('未能配图') // svg mode is the plan, not a degradation
+    expect(m.imageSearchCalls).toEqual([])
+  })
+
+  it('tool image_source persists as the new default (verbal source change)', async () => {
+    const m = makeAccess({ cloudEnabled: false })
+    let saved: string | undefined
+    m.access.imageSourcePref = () => 'web'
+    m.access.setImageSourcePref = (s) => {
+      saved = s
+    }
+    const skill = createSlidesSkill(m.access)
+    await skill.executeTool(kwCall('svg', ['growth chart']))
+    expect(saved).toBe('svg')
   })
 })
 
