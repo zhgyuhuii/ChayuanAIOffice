@@ -216,6 +216,7 @@ export const ru = {
   appTabRight: 'По правому краю',
   appTabDecimal: 'По разделителю',
   appTabBar: 'С чертой',
+  appTabClear: 'Очистить',
   appAiSettings: 'Настройки ИИ',
   appChatOfficeAccount: 'Учетная запись ChatOffice',
   appChecking: 'Проверка…',

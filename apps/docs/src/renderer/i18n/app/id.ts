@@ -216,6 +216,7 @@ export const id = {
   appTabRight: 'Kanan',
   appTabDecimal: 'Desimal',
   appTabBar: 'Batang',
+  appTabClear: 'Hapus',
   appAiSettings: 'Pengaturan AI',
   appChatOfficeAccount: 'Akun ChatOffice',
   appChecking: 'Memeriksa…',

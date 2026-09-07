@@ -173,6 +173,9 @@ export const strings = {
     aiToolReplaceDone: '已改写 {n} 个块',
     aiToolWebSearch: '联网搜索',
     aiToolWebSearchDone: '搜索"{query}" · {count} 条结果',
+    zoom: '缩放',
+    zoomIn: '放大',
+    zoomOut: '缩小',
   },
   en: {
     aiToolReadFm: 'Read document properties',
@@ -353,6 +356,9 @@ export const strings = {
     aiToolReplaceDone: 'Rewrote {n} block(s)',
     aiToolWebSearch: 'Web search',
     aiToolWebSearchDone: 'Searched "{query}" · {count} results',
+    zoom: 'Zoom',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
   },
   ja: {
     aiToolReadFm: 'ドキュメントのプロパティを読み取り',
@@ -531,6 +537,9 @@ export const strings = {
     aiToolReplaceDone: '{n} 個のブロックを書き換え',
     aiToolWebSearch: 'ウェブ検索',
     aiToolWebSearchDone: '「{query}」を検索 · {count} 件',
+    zoom: 'ズーム',
+    zoomIn: '拡大',
+    zoomOut: '縮小',
   },
   ko: {
     aiToolReadFm: '문서 속성 읽기',
@@ -710,6 +719,9 @@ export const strings = {
     aiToolReplaceDone: '블록 {n}개 다시 씀',
     aiToolWebSearch: '웹 검색',
     aiToolWebSearchDone: '"{query}" 검색 · 결과 {count}개',
+    zoom: '줌',
+    zoomIn: '확대',
+    zoomOut: '축소',
   },
   fr: {
     aiToolReadFm: 'Lecture des propriétés du document',
@@ -894,6 +906,9 @@ export const strings = {
     aiToolReplaceDone: '{n} bloc(s) réécrit(s)',
     aiToolWebSearch: 'Recherche Web',
     aiToolWebSearchDone: 'Recherche « {query} » · {count} résultats',
+    zoom: 'Zoom',
+    zoomIn: 'Zoom avant',
+    zoomOut: 'Zoom arrière',
   },
   de: {
     aiToolReadFm: 'Dokumenteigenschaften lesen',
@@ -1077,6 +1092,9 @@ export const strings = {
     aiToolReplaceDone: '{n} Block/Blöcke umgeschrieben',
     aiToolWebSearch: 'Websuche',
     aiToolWebSearchDone: '„{query}" gesucht · {count} Treffer',
+    zoom: 'Zoom',
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
   },
   es: {
     aiToolReadFm: 'Leer propiedades del documento',
@@ -1261,6 +1279,9 @@ export const strings = {
     aiToolReplaceDone: '{n} bloque(s) reescrito(s)',
     aiToolWebSearch: 'Búsqueda web',
     aiToolWebSearchDone: 'Búsqueda de «{query}» · {count} resultados',
+    zoom: 'Zoom',
+    zoomIn: 'Acercar',
+    zoomOut: 'Alejar',
   },
   th: {
     aiToolReadFm: 'อ่านคุณสมบัติเอกสาร',
@@ -1438,6 +1459,9 @@ export const strings = {
     aiToolReplaceDone: 'เขียนใหม่แล้ว {n} บล็อก',
     aiToolWebSearch: 'ค้นหาเว็บ',
     aiToolWebSearchDone: 'ค้นหา "{query}" · {count} รายการ',
+    zoom: 'ซูม',
+    zoomIn: 'ขยาย',
+    zoomOut: 'ย่อ',
   },
   id: {
     aiToolReadFm: 'Baca properti dokumen',
@@ -1617,6 +1641,9 @@ export const strings = {
     aiToolReplaceDone: '{n} blok ditulis ulang',
     aiToolWebSearch: 'Pencarian web',
     aiToolWebSearchDone: 'Mencari "{query}" · {count} hasil',
+    zoom: 'Zum',
+    zoomIn: 'Perbesar',
+    zoomOut: 'Perkecil',
   },
   ru: {
     aiToolReadFm: 'Чтение свойств документа',
@@ -1797,6 +1824,9 @@ export const strings = {
     aiToolReplaceDone: 'Переписано блоков: {n}',
     aiToolWebSearch: 'Веб-поиск',
     aiToolWebSearchDone: 'Поиск «{query}» · {count} результатов',
+    zoom: 'Масштаб',
+    zoomIn: 'Увеличить',
+    zoomOut: 'Уменьшить',
   },
   ar: {
     aiToolReadFm: 'قراءة خصائص المستند',
@@ -1974,6 +2004,9 @@ export const strings = {
     aiToolReplaceDone: 'أعيدت كتابة {n} كتلة',
     aiToolWebSearch: 'بحث ويب',
     aiToolWebSearchDone: 'بحث عن "{query}" · {count} نتيجة',
+    zoom: 'التكبير',
+    zoomIn: 'تكبير',
+    zoomOut: 'تصغير',
   },
   pt: {
     aiToolReadFm: 'Ler propriedades do documento',
@@ -2156,6 +2189,9 @@ export const strings = {
     aiToolReplaceDone: '{n} bloco(s) reescrito(s)',
     aiToolWebSearch: 'Pesquisa na Web',
     aiToolWebSearchDone: 'Pesquisa por "{query}" · {count} resultados',
+    zoom: 'Zoom',
+    zoomIn: 'Ampliar',
+    zoomOut: 'Reduzir',
   },
   it: {
     aiToolReadFm: 'Lettura delle proprietà del documento',
@@ -2338,6 +2374,9 @@ export const strings = {
     aiToolReplaceDone: '{n} blocchi riscritti',
     aiToolWebSearch: 'Ricerca web',
     aiToolWebSearchDone: 'Cercato "{query}" · {count} risultati',
+    zoom: 'Zoom',
+    zoomIn: 'Ingrandisci',
+    zoomOut: 'Riduci',
   },
   pl: {
     aiToolReadFm: 'Odczyt właściwości dokumentu',
@@ -2518,6 +2557,9 @@ export const strings = {
     aiToolReplaceDone: 'Przepisano bloki: {n}',
     aiToolWebSearch: 'Wyszukiwanie w sieci',
     aiToolWebSearchDone: 'Wyszukano „{query}" · {count} wyników',
+    zoom: 'Zoom',
+    zoomIn: 'Powiększ',
+    zoomOut: 'Pomniejsz',
   },
   nl: {
     aiToolReadFm: 'Documenteigenschappen lezen',
@@ -2699,6 +2741,9 @@ export const strings = {
     aiToolReplaceDone: '{n} blok(ken) herschreven',
     aiToolWebSearch: 'Zoeken op internet',
     aiToolWebSearchDone: 'Gezocht naar "{query}" · {count} resultaten',
+    zoom: 'Zoom',
+    zoomIn: 'Inzoomen',
+    zoomOut: 'Uitzoomen',
   },
   ms: {
     aiToolReadFm: 'Baca sifat dokumen',
@@ -2878,6 +2923,9 @@ export const strings = {
     aiToolReplaceDone: '{n} blok ditulis semula',
     aiToolWebSearch: 'Carian web',
     aiToolWebSearchDone: 'Cari "{query}" · {count} hasil',
+    zoom: 'Zum',
+    zoomIn: 'Zum masuk',
+    zoomOut: 'Zum keluar',
   },
   he: {
     aiToolReadFm: 'קריאת מאפייני המסמך',
@@ -3054,6 +3102,9 @@ export const strings = {
     aiToolReplaceDone: 'שוכתבו {n} בלוקים',
     aiToolWebSearch: 'חיפוש ברשת',
     aiToolWebSearchDone: 'חיפוש "{query}" · {count} תוצאות',
+    zoom: 'זום',
+    zoomIn: 'הגדלה',
+    zoomOut: 'הקטנה',
   },
   hi: {
     aiToolReadFm: 'दस्तावेज़ गुण पढ़ें',
@@ -3234,6 +3285,9 @@ export const strings = {
     aiToolReplaceDone: '{n} ब्लॉक पुनः लिखे',
     aiToolWebSearch: 'वेब खोज',
     aiToolWebSearchDone: '"{query}" खोजा · {count} परिणाम',
+    zoom: 'ज़ूम',
+    zoomIn: 'ज़ूम इन',
+    zoomOut: 'ज़ूम आउट',
   },
   'zh-TW': {
     aiToolReadFm: '讀取文件屬性',
@@ -3409,5 +3463,8 @@ export const strings = {
     aiToolReplaceDone: '已改寫 {n} 個區塊',
     aiToolWebSearch: '網路搜尋',
     aiToolWebSearchDone: '搜尋「{query}」· {count} 筆結果',
+    zoom: '縮放',
+    zoomIn: '放大',
+    zoomOut: '縮小',
   },
 } as const

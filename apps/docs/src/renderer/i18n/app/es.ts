@@ -216,6 +216,7 @@ export const es = {
   appTabRight: 'Derecha',
   appTabDecimal: 'Decimal',
   appTabBar: 'Barra',
+  appTabClear: 'Borrar',
   appAiSettings: 'Configuración de IA',
   appChatOfficeAccount: 'Cuenta de ChatOffice',
   appChecking: 'Comprobando…',

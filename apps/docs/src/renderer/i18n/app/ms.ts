@@ -216,6 +216,7 @@ export const ms = {
   appTabRight: 'Kanan',
   appTabDecimal: 'Perpuluhan',
   appTabBar: 'Bar',
+  appTabClear: 'Padam',
   appAiSettings: 'Tetapan AI',
   appChatOfficeAccount: 'Akaun ChatOffice',
   appChecking: 'Menyemak…',

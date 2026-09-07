@@ -556,6 +556,7 @@ export function AiPanel({
 
   return (
     <aside className="copilot">
+      dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
       <PanelTabs
         tabs={aiTabs}
         activeId={tab}
@@ -620,7 +621,7 @@ export function AiPanel({
           if (entry.role === 'user') {
             return (
               <div key={i} className="ai-msg ai-msg-user">
-                {entry.text}
+                <span dir="auto">{entry.text}</span>
                 {entry.undelivered && (
                   <div className="ai-msg-undelivered">
                     {t('aiUndelivered')}
@@ -652,7 +653,11 @@ export function AiPanel({
                   <AiTypingIndicator label={hasTools ? t('aiWorking') : t('aiThinking')} />
                 </span>
               ) : (
-                entry.text && <Markdown text={entry.text} nav={docNav} />
+                entry.text && (
+                  <div dir="auto">
+                    <Markdown text={entry.text} nav={docNav} />
+                  </div>
+                )
               )}
               {hasTools && <ToolChipList tools={entry.tools!} />}
               {showToolbar && (

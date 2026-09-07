@@ -216,6 +216,8 @@ export const ja = {
   appTabRight: '右揃え',
   appTabDecimal: '小数点揃え',
   appTabBar: '縦棒',
+  appTabClear: 'クリア',
+  // AI settings
   appAiSettings: 'AI 設定',
   appChatOfficeAccount: 'ChatOffice アカウント',
   appChecking: '確認中…',
