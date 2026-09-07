@@ -19,7 +19,6 @@ import {
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
 import {
   createVideoTaskRegistry,
-  type VideoFileSink,
   type VideoTaskRegistry,
   type VideoTaskRegistryDeps,
 } from './video-tasks'
@@ -36,7 +35,6 @@ export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-t
 
 /** structural slice of Electron.IpcMain this module needs (methods are bivariant, so the real IpcMain slots in) */
 export interface IpcMainLike {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- matches Electron's handler signature
   handle(channel: string, listener: (event: any, ...args: any[]) => any): unknown
 }
 

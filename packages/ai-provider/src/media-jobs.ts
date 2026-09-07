@@ -156,14 +156,6 @@ function strParam(params: Record<string, unknown> | undefined, id: string): stri
   return typeof v === 'string' && v.trim() ? v.trim() : undefined
 }
 
-/** numeric param probe: accepts real numbers and numeric strings */
-function numParam(params: Record<string, unknown> | undefined, id: string): number | undefined {
-  const v = params?.[id]
-  if (typeof v === 'number' && Number.isFinite(v)) return v
-  if (typeof v === 'string' && v.trim() && Number.isFinite(Number(v))) return Number(v)
-  return undefined
-}
-
 /** bool param probe: true only when the value is explicitly boolean true */
 function boolParam(params: Record<string, unknown> | undefined, id: string): boolean {
   return params?.[id] === true || params?.[id] === 'true'

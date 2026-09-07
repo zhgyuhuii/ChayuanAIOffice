@@ -18,7 +18,7 @@ for (const [file, edits] of Object.entries(config)) {
   let touched = 0
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
-    const block = line.match(/^  ['"]?([a-zA-Z][\w-]*)['"]?: \{$/)
+    const block = line.match(/^ {2}['"]?([a-zA-Z][\w-]*)['"]?: \{$/)
     if (block) locale = block[1]
     const key = Object.keys(edits).find((k) => new RegExp(`^\\s*${k}:`).test(line))
     if (!key) {

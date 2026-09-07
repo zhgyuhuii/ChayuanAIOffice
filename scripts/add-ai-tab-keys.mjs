@@ -13,7 +13,7 @@ let locale = null
 const out = []
 for (const line of lines) {
   out.push(line)
-  const block = line.match(/^  ['"]?([a-zA-Z][\w-]*)['"]?: \{$/)
+  const block = line.match(/^ {2}['"]?([a-zA-Z][\w-]*)['"]?: \{$/)
   if (block) locale = block[1]
   if (locale && line.includes(`${anchorKey}:`) && translations[locale]) {
     const t = translations[locale]

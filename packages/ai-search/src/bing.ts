@@ -75,7 +75,7 @@ export async function bingImageSearch(
       clearTimeout(t)
     }
   } catch (cause) {
-    throw new Error(`bing: ${String(cause)}`)
+    throw new Error(`bing: ${String(cause)}`, { cause })
   }
   if (!resp.ok) throw new Error(`bing: http ${resp.status}`)
   const html = await resp.text()

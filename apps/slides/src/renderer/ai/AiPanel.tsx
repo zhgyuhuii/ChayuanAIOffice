@@ -60,7 +60,6 @@ import {
   pickImageModel,
   resolveDefaultModel,
   resolveModelCapabilities,
-  type AiImageSource,
   type AiProtocol,
 } from '@chatoffice/ai-provider'
 import { slidesModelBridge } from './model-bridge'

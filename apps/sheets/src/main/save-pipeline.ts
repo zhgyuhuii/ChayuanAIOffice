@@ -6,7 +6,6 @@
 import type { XlsxSidecarClient } from './xlsx-sidecar-client'
 import type { SessionInfo } from './session-info'
 import type { WorkbookSaveRequest } from '../shared/desktop-api'
-import type { StreamingSaveResult } from '../gateway/xlsx-package-io'
 import { saveWorkbookViaSidecar } from '../gateway/xlsx-package-io'
 import type { CellEdit, SheetStructuralOps } from '../gateway/xlsx-gateway'
 import type { SheetEditPlan } from '../gateway/xlsx-sheets'

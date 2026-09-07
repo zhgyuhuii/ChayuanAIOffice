@@ -30,26 +30,6 @@ function countWords(text: string): number {
   return (text.match(ASIAN_RE) ?? []).length + (text.match(NON_ASIAN_WORD_RE) ?? []).length
 }
 
-const PANEL_WIDTH_KEY = 'pdf-ai-panel-width'
-const PANEL_WIDTH_DEFAULT = 360
-const PANEL_WIDTH_MIN = 280
-
-function clampPanelWidth(w: number): number {
-  // The viewport can be transiently tiny (a WebContentsView is 0×0 until the
-  // shell lays it out), so never let the ceiling drop below the minimum
-  const max = Math.max(PANEL_WIDTH_MIN, Math.min(720, Math.round(window.innerWidth * 0.6)))
-  return Math.min(Math.max(w, PANEL_WIDTH_MIN), max)
-}
-
-function loadPanelWidth(): number {
-  const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-  // static bounds only — clamping against the window here would bake a
-  // transiently small viewport into the restored preference
-  return Number.isFinite(saved) && saved > 0
-    ? Math.min(Math.max(saved, PANEL_WIDTH_MIN), 720)
-    : PANEL_WIDTH_DEFAULT
-}
-
 interface ToolActivity {
   name: string
   summary: string
@@ -247,7 +227,6 @@ export function AiPanel({
   }
   useEffect(() => {
     void refreshPanelSettings()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /** chatoffice login state for the cloud-tools gate (refreshed on mount and window focus) */
@@ -746,7 +725,7 @@ function StepIcon({ status }: { status: 'running' | 'done' | 'error' }) {
  *  that auto-opens while tools run, auto-collapses into "Worked · N steps" when they finish,
  *  and a manual toggle that always wins. Rows inside are step rows with 1px connectors. */
 function ToolChipList({ tools }: { tools: ToolActivity[] }) {
-  const { lang, t: tr } = useI18n()
+  const { t: tr } = useI18n()
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [userOpen, setUserOpen] = useState<boolean | null>(null)
 

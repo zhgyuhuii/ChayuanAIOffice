@@ -18,6 +18,8 @@ export default tseslint.config(
       'scripts/drivers/**',
       'apps/*/build/**',
       'packages/*/src/vendor/**',
+      '.tmp/**',
+      'dsh-plugin/vendor/**',
     ],
   },
   js.configs.recommended,

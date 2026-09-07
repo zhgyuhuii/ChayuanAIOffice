@@ -87,7 +87,7 @@ export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): Rea
         const [profileId, modelId] = value.split('::')
         return profileId && modelId ? { profileId, modelId } : undefined
       })()
-    let next: AiSettingsV2 = { ...settings }
+    const next: AiSettingsV2 = { ...settings }
     if (kind === 'chat') {
       if (selection) next.currentModel = selection
       else delete next.currentModel

@@ -11,9 +11,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  TYPE_ORDER,
   VENDOR_BY_ID,
-  findProfile,
   inferModelType,
   type AiModelSelection,
   type AiModelType,
