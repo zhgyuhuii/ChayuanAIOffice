@@ -143,7 +143,6 @@ export const it = {
   ribbonOuterBordersTip: 'Bordi solo sul contorno esterno della selezione',
   ribbonInnerBorders: 'Bordi interni',
   ribbonInnerBordersTip: 'Bordi solo all\'interno della selezione',
-  ribbonInnerBordersTip: "Bordi solo all'interno della selezione",
   ribbonTableInsideHBorders: 'Inside Horizontal',
   ribbonTableInsideHBordersTip: 'Inside horizontal borders for the whole table',
   ribbonTableInsideVBorders: 'Inside Vertical',
