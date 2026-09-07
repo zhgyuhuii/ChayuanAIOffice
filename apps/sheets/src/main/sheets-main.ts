@@ -57,7 +57,6 @@ import { ProjectStore } from '@chatoffice/project-store'
 import {
   cloudToolsEnabled,
   isAiOverloadedError,
-  maxOutputTokensOf,
   migrateSettingsV2,
   setRescueFetch,
   type AiRuntime,

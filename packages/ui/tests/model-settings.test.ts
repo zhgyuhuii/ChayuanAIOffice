@@ -245,7 +245,7 @@ describe('ModelDefaultsPage', () => {
       root!.render(createElement(ModelDefaultsPage, { bridge: b }))
     })
     const selects = [
-      ...(host.querySelectorAll('[data-default-kind]') as NodeListOf<HTMLSelectElement>),
+      ...(host.querySelectorAll('select[data-default-kind]') as NodeListOf<HTMLSelectElement>),
     ]
     expect(selects.map((s) => s.dataset.defaultKind)).toEqual([
       'chat',
@@ -256,6 +256,8 @@ describe('ModelDefaultsPage', () => {
       'tts',
       'asr',
     ])
+    // adapted: f105f36 — the per-turn output cap is a number input, not a select
+    expect(host.querySelector('input[data-default-kind="max-tokens"]')).not.toBeNull()
     // chat/generation/qc/image offer the zhipu models per kind type; video/asr stay empty (auto only)
     expect(selects[0]!.options.length).toBe(2) // auto + glm-5.3
     expect(selects[1]!.options.length).toBe(2) // auto + glm-5.3 (generation rides chat/vision)

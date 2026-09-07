@@ -152,10 +152,11 @@ export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): Rea
         </select>
         <span className="msp-note">{t.defaultsImageSourceNote}</span>
       </label>
-      <label className="msp-field msp-defaults-field" data-default-kind="max-tokens">
+      <label className="msp-field msp-defaults-field">
         <span className="msp-label">{t.maxTokensLabel}</span>
         <input
           className="msp-input"
+          data-default-kind="max-tokens"
           type="number"
           min={MIN_MAX_OUTPUT_TOKENS}
           max={MAX_MAX_OUTPUT_TOKENS}

@@ -65,7 +65,6 @@ import { parseFileToText } from '@chatoffice/file-parse'
 import {
   cloudToolsEnabled,
   isAiOverloadedError,
-  maxOutputTokensOf,
   migrateSettingsV2,
   setRescueFetch,
   type AiModelSelection,
