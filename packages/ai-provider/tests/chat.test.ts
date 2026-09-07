@@ -101,6 +101,32 @@ describe('chatForProvider', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
+  it('custom: omits Authorization when the key is empty for local servers', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ choices: [{ message: { content: 'ok' } }] }))
+    vi.stubGlobal('fetch', fetchMock)
+    await chatForProvider(
+      'custom',
+      { apiKey: '', model: 'llama3', baseUrl: 'http://localhost:11434/v1' },
+      'sys',
+      'hi',
+    )
+    const headers = fetchMock.mock.calls[0]![1].headers as Record<string, string>
+    expect(headers.Authorization).toBeUndefined()
+    fetchMock.mockClear()
+    fetchMock.mockResolvedValue(jsonResponse({ choices: [{ message: { content: 'ok' } }] }))
+    await chatForProvider(
+      'custom',
+      { apiKey: 'k', model: 'm', baseUrl: 'https://my-endpoint.example.com/v1' },
+      'sys',
+      'hi',
+    )
+    expect((fetchMock.mock.calls[0]![1].headers as Record<string, string>).Authorization).toBe(
+      'Bearer k',
+    )
+  })
+
   it('chatoffice: routes by model prefix to the proxy endpoints', async () => {
     const fetchMock = vi
       .fn()

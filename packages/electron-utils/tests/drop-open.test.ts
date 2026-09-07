@@ -101,6 +101,14 @@ describe('droppableFilePaths', () => {
     )
     expect(result).toEqual(['/tmp/doc.docx'])
   })
+
+  it('skips files whose path resolution throws instead of aborting the drop', () => {
+    const result = droppableFilePaths(fileDrag(['bad.docx', 'good.docx']) as never, (file) => {
+      if ((file as { name: string }).name === 'bad.docx') throw new Error('denied')
+      return '/tmp/good.docx'
+    })
+    expect(result).toEqual(['/tmp/good.docx'])
+  })
 })
 
 describe('partitionDropPayload', () => {

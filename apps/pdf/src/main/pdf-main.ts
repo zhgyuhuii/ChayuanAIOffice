@@ -643,7 +643,10 @@ function sanitizePdfBaseName(raw: string): string {
     .replace(/^\.+|\.+$/g, '')
     .trim()
   if (!cleaned) return 'Untitled'
-  return cleaned.length > 40 ? cleaned.slice(0, 40).trim() : cleaned
+  // Windows device names stay reserved with an extension (CON.pdf is still
+  // CON): suffix them so the no-clobber move works there instead of failing.
+  const safe = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(cleaned) ? cleaned + '_' : cleaned
+  return safe.length > 40 ? safe.slice(0, 40).trim() : safe
 }
 
 export type NoClobberMoveResult = 'moved' | 'occupied' | 'failed'

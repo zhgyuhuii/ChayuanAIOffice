@@ -1361,6 +1361,10 @@ export function replaceOccurrences(
   replace: string,
   matchCase: boolean,
 ): string {
+  // An empty needle matches every gap (split('') / /(?:)/gi): callers validate
+  // non-empty via the find_replace schema, but a direct call must stay a no-op
+  // rather than corrupting the cell — mirrors lazy-find's empty-needle guard.
+  if (!find) return text
   if (matchCase) return text.split(find).join(replace)
   const escaped = find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   // Callback form: a literal `$` in the replacement must stay literal.

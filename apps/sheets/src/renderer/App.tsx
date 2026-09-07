@@ -1421,6 +1421,11 @@ export function App(): React.JSX.Element {
     setAiBusy(false)
     setChat([])
     setHistoricChat([])
+    // Unsent composer attachments would otherwise ride into the next chat's
+    // file context (availableAttachments merges sent + live) — same as docs
+    // (#224) and slides. The typed draft itself is kept.
+    setAttachments([])
+    setAttachNotice(null)
     sentAttachmentsRef.current = []
     setPreview(null)
     lazyPreviewRef.current = null

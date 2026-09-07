@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createI18n } from '@chatoffice/i18n'
-import { pageRecentPaths } from '../src/main/recent-files'
+import { normalizeRecentQuery, pageRecentPaths } from '../src/main/recent-files'
 import { fileCountKey, timelineCountKey, visiblePageCount } from '../src/renderer/src/counts'
 import { strings } from '../src/renderer/src/strings'
 
@@ -73,6 +73,28 @@ describe('home visible counts', () => {
     ])
     expect(page.entries[0].mtimeMs).toBe(0)
     expect(page.entries[0].ext).toBe('xlsx')
+  })
+})
+
+describe('recent query ext normalization', () => {
+  it('trims whitespace, strips leading dots, and lowercases the filter', () => {
+    expect(normalizeRecentQuery({ ext: '.XLSX' }).ext).toBe('xlsx')
+    expect(normalizeRecentQuery({ ext: ' xlsx ' }).ext).toBe('xlsx')
+    expect(normalizeRecentQuery({ ext: '...md' }).ext).toBe('md')
+    expect(normalizeRecentQuery({ ext: '...' }).ext).toBeUndefined()
+    expect(normalizeRecentQuery({ ext: '' }).ext).toBeUndefined()
+    expect(normalizeRecentQuery({}).ext).toBeUndefined()
+  })
+
+  it('applies the normalized filter to the page', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'shell-counts-'))
+    tempDirs.push(dir)
+    const bookPath = join(dir, 'book.xlsx')
+    writeFileSync(bookPath, 'sheet')
+
+    const page = pageRecentPaths([bookPath], { ext: '.XLSX', limit: 50 }, new Set())
+    expect(page.total).toBe(1)
+    expect(page.entries.map((entry) => entry.path)).toEqual([bookPath])
   })
 })
 
