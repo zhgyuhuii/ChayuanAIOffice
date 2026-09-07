@@ -238,6 +238,16 @@ describe('activeProvider', () => {
   })
 
   it('falls back to chatoffice for unknown ids from a hand-edited settings file', () => {
+  it('allows keyless custom endpoints for local servers', () => {
+    const settings = defaultAiSettings()
+    settings.provider = 'custom'
+    settings.providers.custom.apiKey = ''
+    settings.providers.custom.baseUrl = 'http://localhost:11434/v1'
+    settings.providers.custom.model = 'llama3'
+    expect(activeProvider(settings)).toBe('custom')
+  })
+
+  it('falls back to genspark for unknown ids from a hand-edited settings file', () => {
     const settings = defaultAiSettings()
     settings.provider = 'nonsense' as AiProviderId
     expect(activeProvider(settings)).toBe('chatoffice')

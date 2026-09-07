@@ -803,6 +803,23 @@ describe('streamForProvider: openai-compatible', () => {
     ).rejects.toThrow(/Base URL/)
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it('omits Authorization for keyless custom endpoints', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(okResponse(sseStream(['data: [DONE]'])))
+    vi.stubGlobal('fetch', fetchMock)
+    const { cb } = collector()
+    await streamForProvider(
+      'custom',
+      { apiKey: '', model: 'llama3', baseUrl: 'http://localhost:11434/v1' },
+      'sys',
+      [],
+      [],
+      100,
+      cb,
+    ).catch(() => {})
+    const headers = fetchMock.mock.calls[0]![1].headers as Record<string, string>
+    expect(headers.Authorization).toBeUndefined()
+  })
 })
 
 describe('streamForProvider: chatoffice', () => {
