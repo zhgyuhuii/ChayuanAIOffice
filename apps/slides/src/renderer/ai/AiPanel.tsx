@@ -2098,6 +2098,10 @@ export function AiPanel({
     // original message index, so stale entries would re-attach to unrelated
     // new messages after an index collision.
     setClarifyAnswers([])
+    // Unsent composer attachments would otherwise ride into the next chat's
+    // file context (availableAttachments merges sent + live), mirroring docs.
+    setAttachments([])
+    setAttachNotice(null)
     sentAttachmentsRef.current = []
     readAttachmentPathsRef.current.clear()
     inputRef.current?.focus()
