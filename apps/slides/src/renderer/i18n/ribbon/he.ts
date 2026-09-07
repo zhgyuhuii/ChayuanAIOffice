@@ -1,4 +1,4 @@
-/** ribbon strings, he (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const he = {
   ribbonAiCreditNote: 'משתמש ב-AI וצורך קרדיטים',
   ribbonAiRewriteConfirm: 'פעולה זו מפעילה AI: היא צורכת קרדיטים ועשויה לשכתב את כל התוכן. להמשיך? (לא תישאל שוב.)',
@@ -830,4 +830,6 @@ export const he = {
   ribbonCompressWeb: 'אינטרנט (150 ppi)',
   ribbonCompressEmail: 'דואר אלקטרוני (96 ppi)',
   ribbonPictureReplaceUnsupported: 'פורמט תמונה לא נתמך: {ext}',
+  ribbonCollapse: 'כווץ את רצועת הכלים',
+  ribbonPin: 'הצמד את רצועת הכלים',
 }

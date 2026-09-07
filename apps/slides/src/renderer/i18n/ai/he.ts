@@ -1,4 +1,4 @@
-/** ai strings, he (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const he = {
   aiInputPlaceholderGen: 'תארו את המצגת ליצירה, או שאלו כל דבר',
   aiEmptyGenTitle: 'תנו ל-AI ליצור את המצגת שלכם',
@@ -282,4 +282,26 @@ export const he = {
   aiNotePoolEmpty: 'מאגר התמונות המקומי ריק; הופעל שרשרת אוטומטית',
   aiNoteSvgMode: 'תמונות: גרפיקה וקטורית (מצוירת על ידי המודל, ניתנת לעריכה)',
   aiNoteImgFail: 'עמוד {page}: לא נמצאה תמונה עבור „{kw}”; צוירה כגרפיקה וקטורית',
+  aiTruncatedNote: '(התשובה נחתכה בגלל מגבלת האורך וייתכן שאינה שלמה.)',
+  aiFailLoadGuide: 'טעינת מדריך פעולות',
+  aiSumLoadGuide: 'מדריך הפעולות נטען: {names}',
+  aiOpEditText: 'עריכת טקסט',
+  aiOpEditFormat: 'עריכת עיצוב',
+  aiOpMoveElement: 'הזזת רכיב',
+  aiOpSetFill: 'הגדרת מילוי',
+  aiOpSetStroke: 'הגדרת קו מתאר',
+  aiOpDeleteElement: 'מחיקת רכיב',
+  aiOpUngroup: 'פירוק קבוצה',
+  aiOpCropImage: 'חיתוך תמונה',
+  aiOpPictureOpacity: 'אטימות תמונה',
+  aiOpSpeakerNotes: 'הגדרת הערות דובר',
+  aiOpDeleteSlide: 'מחיקת שקופית',
+  aiOpBackground: 'הגדרת רקע',
+  aiOpEditTable: 'עריכת טבלה',
+  aiOpTableStructure: 'מבנה טבלה',
+  aiOpNewShape: 'צורה חדשה',
+  aiOpNewTextbox: 'תיבת טקסט חדשה',
+  aiOpInsertChart: 'הוספת תרשים',
+  aiOpInsertSmartart: 'הוספת דיאגרמה',
+  aiOpInsertTable: 'הוספת טבלה',
 }

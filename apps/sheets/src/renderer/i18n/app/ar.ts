@@ -1,4 +1,4 @@
-/** app strings, ar (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ar = {
   appMergeWorkbooks: 'دمج المصنفات',
   appMergeWorkbooksTip: 'إضافة أوراق من ملفات Excel أخرى إلى هذا المصنف',
@@ -1333,4 +1333,13 @@ export const ar = {
   appCellStyleGroupTitle: 'العناوين',
   appCellStyleGroupData: 'البيانات والنموذج',
   appCellStyleGroupAccent: 'تمييز',
+  appAiTruncatedNote: '(تم اقتطاع الرد بسبب حد الطول وقد يكون غير مكتمل.)',
+  appFullLoadFilterTitle: 'تتطلب التصفية التحميل الكامل',
+  appFullLoadFilterBody: 'هذا المصنف كبير وتم تحميله جزئيًا فقط. تحتاج التصفية (بما في ذلك عدّ القيم) إلى البيانات الكاملة لتكون صحيحة. هل تريد تحميل المصنف بالكامل الآن؟',
+  appFullLoadStart: 'تحميل الكل',
+  appFullLoadRunning: 'جارٍ تحميل المصنف بالكامل — ستتوفر التصفية عند الانتهاء…',
+  appFullLoadTooLarge: 'هذا المصنف كبير جدًا بحيث لا يمكن تحميله بالكامل في الذاكرة؛ التصفية غير متاحة لهذا الملف.',
+  appDialogCancel: 'إلغاء',
+  appRibbonCollapse: 'طي الشريط',
+  appRibbonPin: 'تثبيت الشريط',
 }

@@ -1,4 +1,4 @@
-/** ai strings, ja (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ja = {
   aiInputPlaceholderGen: '作りたいプレゼンを説明するか、質問を入力',
   aiEmptyGenTitle: 'AI にプレゼンの作成を任せる',
@@ -282,4 +282,26 @@ export const ja = {
   aiNotePoolEmpty: 'ローカル画像プールが空のため自動チェーンを使用',
   aiNoteSvgMode: '画像：ベクターグラフィック（モデルがインライン描画、編集可）',
   aiNoteImgFail: '{page}ページ：「{kw}」の画像を取得できず、ベクターグラフィックで描画しました',
+  aiTruncatedNote: '（返信は長さ制限により途中で打ち切られ、不完全な可能性があります。）',
+  aiFailLoadGuide: '操作ガイドを読み込む',
+  aiSumLoadGuide: '操作ガイドを読み込みました: {names}',
+  aiOpEditText: 'テキストの編集',
+  aiOpEditFormat: '書式の変更',
+  aiOpMoveElement: '要素の移動',
+  aiOpSetFill: '塗りつぶしの設定',
+  aiOpSetStroke: '枠線の設定',
+  aiOpDeleteElement: '要素の削除',
+  aiOpUngroup: 'グループ解除',
+  aiOpCropImage: '画像のトリミング',
+  aiOpPictureOpacity: '画像の透明度',
+  aiOpSpeakerNotes: '発表者ノートの設定',
+  aiOpDeleteSlide: 'ページの削除',
+  aiOpBackground: '背景の設定',
+  aiOpEditTable: '表の編集',
+  aiOpTableStructure: '表の構造',
+  aiOpNewShape: '新しい図形',
+  aiOpNewTextbox: '新しいテキスト ボックス',
+  aiOpInsertChart: 'グラフの挿入',
+  aiOpInsertSmartart: '図表の挿入',
+  aiOpInsertTable: '表の挿入',
 }

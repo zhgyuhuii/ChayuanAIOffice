@@ -1,4 +1,4 @@
-/** ribbon strings, ja (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ja = {
   ribbonAiCreditNote: 'AI を呼び出し、クレジットを消費します',
   ribbonAiRewriteConfirm: 'この操作は AI を呼び出します。クレジットを消費し、内容全体が書き換えられる可能性があります。続行しますか？（確認後は再表示されません）',
@@ -726,4 +726,10 @@ export const ja = {
   ribbonChartKitTip: 'ECharts ライブラリ(39 分類、3D/GL 含む)',
   ribbonEchartLabel: 'ECharts チャート',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'リボンを折りたたむ',
+  ribbonPin: 'リボンの固定',
+  ribbonLinkEditTitle: 'ハイパーリンクの編集',
+  ribbonLinkRemove: 'リンクの削除',
+  ribbonSpellcheckBtn: 'スペルチェック',
+  ribbonSpellcheckTip: '入力時にスペルをチェックし、誤りの可能性がある単語に赤い波線を表示します',
 }

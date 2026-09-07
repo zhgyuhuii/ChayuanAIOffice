@@ -1,4 +1,4 @@
-/** app strings, ja (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ja = {
   appMergeWorkbooks: 'ブックの結合',
   appMergeWorkbooksTip: '他の Excel ファイルのシートをこのブックに追加します',
@@ -1333,4 +1333,13 @@ export const ja = {
   appCellStyleGroupTitle: 'タイトル',
   appCellStyleGroupData: 'データとモデル',
   appCellStyleGroupAccent: 'アクセント',
+  appAiTruncatedNote: '（返信は長さ制限により途中で打ち切られ、不完全な可能性があります。）',
+  appFullLoadFilterTitle: 'フィルターには完全読み込みが必要です',
+  appFullLoadFilterBody: 'このブックは大きいため、現在は一部のみストリーミング読み込みされています。フィルター（値の集計を含む）を正しく行うには完全なデータが必要です。今すぐブック全体を読み込みますか？',
+  appFullLoadStart: 'すべて読み込む',
+  appFullLoadRunning: 'ブック全体を読み込んでいます。完了するとフィルターが使用できます…',
+  appFullLoadTooLarge: 'このブックは大きすぎるため完全に読み込めません。このファイルではフィルターを使用できません。',
+  appDialogCancel: 'キャンセル',
+  appRibbonCollapse: 'リボンを折りたたむ',
+  appRibbonPin: 'リボンの固定',
 }

@@ -58,7 +58,7 @@ import {
   cloudToolsEnabled,
   isAiOverloadedError,
   migrateSettingsV2,
-  setRescueFetch,
+  setAiUserAgent,  setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
@@ -1935,8 +1935,8 @@ export async function createSheetsWindow(
   const window = new BrowserWindow({
     width: 1440,
     height: 900,
-    minWidth: 1024,
-    minHeight: 680,
+    minWidth: 720,
+    minHeight: 550,
     show: false,
     title: 'ChatOffice Sheets',
     // Traffic lights sit inside the toolbar row.
@@ -3180,6 +3180,7 @@ export function registerSheetsAiIpc(): void {
 
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
+  setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
   aiRuntime = registerSharedAiIpc({
     ipcMain,

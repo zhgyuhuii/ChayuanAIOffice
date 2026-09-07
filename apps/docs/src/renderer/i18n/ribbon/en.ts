@@ -1,4 +1,4 @@
-/** ribbon strings, en (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const en = {
   ribbonAiCreditNote: 'Uses AI and consumes credits',
   ribbonAiRewriteConfirm: 'This action calls the AI assistant: it consumes credits and may rewrite the entire content. Continue? (You will not be asked again.)',
@@ -488,7 +488,7 @@ export const en = {
   ribbonTwoColumns: 'Two',
   ribbonThreeColumns: 'Three',
   ribbonSectionBreak: 'Section Breaks',
-  ribbonSectionBreakTip: 'Insert a section break; content before it keeps the current section\'s page setup',
+  ribbonSectionBreakTip: 'Insert a section break; content before it keeps the current section\\\'s page setup',
   ribbonBreakNextPage: 'Next Page',
   ribbonBreakNextPageDesc: 'Start the new section on the next page',
   ribbonBreakContinuous: 'Continuous',
@@ -634,7 +634,7 @@ export const en = {
   ribbonReadMode: 'Read Mode',
   ribbonReadModeTip: 'Read Mode: hide the ribbon for focused reading, press Esc to exit',
   ribbonPagePreview: 'Page Preview',
-  ribbonPagePreviewTip: 'Page preview: paginate at real page size, showing each page\'s header, footer and page number (read-only)',
+  ribbonPagePreviewTip: 'Page preview: paginate at real page size, showing each page\\\'s header, footer and page number (read-only)',
   ribbonGroupViews: 'Views',
   ribbonZoomOut: 'Zoom Out',
   ribbonZoomIn: 'Zoom In',
@@ -726,4 +726,10 @@ export const en = {
   ribbonChartKitTip: 'ECharts gallery (39 families, incl. 3D/GL)',
   ribbonEchartLabel: 'ECharts chart',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Collapse the Ribbon',
+  ribbonPin: 'Pin the ribbon',
+  ribbonLinkEditTitle: 'Edit Hyperlink',
+  ribbonLinkRemove: 'Remove Link',
+  ribbonSpellcheckBtn: 'Spelling',
+  ribbonSpellcheckTip: 'Check spelling as you type — underlines possible misspellings in red',
 }

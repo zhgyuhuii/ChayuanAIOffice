@@ -1,4 +1,4 @@
-/** ai strings, zh (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zh = {
   aiInputPlaceholderGen: '描述要生成的演示文稿,或直接提问',
   aiEmptyGenTitle: '让 AI 为你生成演示文稿',
@@ -282,4 +282,26 @@ export const zh = {
   aiNotePoolEmpty: '本地图片池为空（未选文件夹），已按自动链处理',
   aiNoteSvgMode: '配图来源：矢量图形（模型内联绘制，元素可编辑）',
   aiNoteImgFail: '第 {page} 页：「{kw}」未能配图，已用矢量图形绘制',
+  aiTruncatedNote: '（回复因长度限制被截断,内容可能不完整。）',
+  aiFailLoadGuide: '加载操作指南',
+  aiSumLoadGuide: '已加载操作指南 {names}',
+  aiOpEditText: '修改文本',
+  aiOpEditFormat: '修改格式',
+  aiOpMoveElement: '移动元素',
+  aiOpSetFill: '设置填充',
+  aiOpSetStroke: '设置描边',
+  aiOpDeleteElement: '删除元素',
+  aiOpUngroup: '取消组合',
+  aiOpCropImage: '裁剪图片',
+  aiOpPictureOpacity: '图片透明度',
+  aiOpSpeakerNotes: '设置演讲者备注',
+  aiOpDeleteSlide: '删除页面',
+  aiOpBackground: '设置背景',
+  aiOpEditTable: '编辑表格',
+  aiOpTableStructure: '表格结构',
+  aiOpNewShape: '新建形状',
+  aiOpNewTextbox: '新建文本框',
+  aiOpInsertChart: '插入图表',
+  aiOpInsertSmartart: '插入图示',
+  aiOpInsertTable: '插入表格',
 }

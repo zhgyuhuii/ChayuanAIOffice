@@ -1,4 +1,4 @@
-/** ai strings, id (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const id = {
   aiInputPlaceholderGen: 'Jelaskan presentasi yang akan dibuat, atau tanyakan apa saja',
   aiEmptyGenTitle: 'Biarkan AI membuat presentasi Anda',
@@ -282,4 +282,26 @@ export const id = {
   aiNotePoolEmpty: 'Kumpulan gambar lokal kosong; rantai otomatis digunakan',
   aiNoteSvgMode: 'Gambar: grafik vektor (digambar model, dapat disunting)',
   aiNoteImgFail: 'Halaman {page}: tidak ada gambar untuk "{kw}"; digambar sebagai vektor',
+  aiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
+  aiFailLoadGuide: 'Muat panduan operasi',
+  aiSumLoadGuide: 'Panduan operasi dimuat: {names}',
+  aiOpEditText: 'Edit teks',
+  aiOpEditFormat: 'Ubah format',
+  aiOpMoveElement: 'Pindahkan elemen',
+  aiOpSetFill: 'Atur isian',
+  aiOpSetStroke: 'Atur garis luar',
+  aiOpDeleteElement: 'Hapus elemen',
+  aiOpUngroup: 'Pisahkan grup',
+  aiOpCropImage: 'Pangkas gambar',
+  aiOpPictureOpacity: 'Opasitas gambar',
+  aiOpSpeakerNotes: 'Atur catatan pembicara',
+  aiOpDeleteSlide: 'Hapus halaman',
+  aiOpBackground: 'Atur latar belakang',
+  aiOpEditTable: 'Edit tabel',
+  aiOpTableStructure: 'Struktur tabel',
+  aiOpNewShape: 'Bentuk baru',
+  aiOpNewTextbox: 'Kotak teks baru',
+  aiOpInsertChart: 'Sisipkan bagan',
+  aiOpInsertSmartart: 'Sisipkan diagram',
+  aiOpInsertTable: 'Sisipkan tabel',
 }

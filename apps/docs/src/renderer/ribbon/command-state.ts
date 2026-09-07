@@ -44,6 +44,7 @@ export interface DocsViewState {
   readonly showGrid: boolean
   readonly splitView: boolean
   readonly darkCanvas: boolean
+  readonly spellcheck?: boolean
   readonly zoom: number
 }
 

@@ -1,4 +1,4 @@
-/** ai strings, zh-TW (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zhTW = {
   aiInputPlaceholderGen: '描述要生成的簡報,或直接提問',
   aiEmptyGenTitle: '讓 AI 為你生成簡報',
@@ -282,4 +282,26 @@ export const zhTW = {
   aiNotePoolEmpty: '本機圖片池為空（未選資料夾），已按自動鏈處理',
   aiNoteSvgMode: '配圖來源：向量圖形（模型內聯繪製，元素可編輯）',
   aiNoteImgFail: '第 {page} 頁：「{kw}」未能配圖，已用向量圖形繪製',
+  aiTruncatedNote: '（回覆因長度限制被截斷,內容可能不完整。）',
+  aiFailLoadGuide: '載入操作指南',
+  aiSumLoadGuide: '已載入操作指南 {names}',
+  aiOpEditText: '修改文字',
+  aiOpEditFormat: '修改格式',
+  aiOpMoveElement: '移動元素',
+  aiOpSetFill: '設定填滿',
+  aiOpSetStroke: '設定外框',
+  aiOpDeleteElement: '刪除元素',
+  aiOpUngroup: '取消組合',
+  aiOpCropImage: '裁剪圖片',
+  aiOpPictureOpacity: '圖片透明度',
+  aiOpSpeakerNotes: '設定演講者備註',
+  aiOpDeleteSlide: '刪除頁面',
+  aiOpBackground: '設定背景',
+  aiOpEditTable: '編輯表格',
+  aiOpTableStructure: '表格結構',
+  aiOpNewShape: '新增圖案',
+  aiOpNewTextbox: '新增文字方塊',
+  aiOpInsertChart: '插入圖表',
+  aiOpInsertSmartart: '插入圖示',
+  aiOpInsertTable: '插入表格',
 }

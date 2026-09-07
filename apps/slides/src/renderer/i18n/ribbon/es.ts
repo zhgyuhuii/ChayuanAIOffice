@@ -1,4 +1,4 @@
-/** ribbon strings, es (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const es = {
   ribbonAiCreditNote: 'Usa IA y consume créditos',
   ribbonAiRewriteConfirm: 'Esta acción llama a la IA: consume créditos y puede reescribir todo el contenido. ¿Continuar? (No se volverá a preguntar.)',
@@ -830,4 +830,6 @@ export const es = {
   ribbonCompressWeb: 'Web (150 ppp)',
   ribbonCompressEmail: 'Correo electrónico (96 ppp)',
   ribbonPictureReplaceUnsupported: 'Formato de imagen no admitido: {ext}',
+  ribbonCollapse: 'Contraer la cinta de opciones',
+  ribbonPin: 'Anclar la cinta de opciones',
 }

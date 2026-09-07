@@ -1,4 +1,4 @@
-/** ribbon strings, ja (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ja = {
   ribbonAiCreditNote: 'AI を呼び出し、クレジットを消費します',
   ribbonAiRewriteConfirm: 'この操作は AI を呼び出します。クレジットを消費し、内容全体が書き換えられる可能性があります。続行しますか？（確認後は再表示されません）',
@@ -830,4 +830,6 @@ export const ja = {
   ribbonCompressWeb: 'Web（150 ppi）',
   ribbonCompressEmail: 'メール（96 ppi）',
   ribbonPictureReplaceUnsupported: 'サポートされていない画像形式: {ext}',
+  ribbonCollapse: 'リボンを折りたたむ',
+  ribbonPin: 'リボンの固定',
 }

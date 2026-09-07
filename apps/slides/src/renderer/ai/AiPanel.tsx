@@ -296,6 +296,9 @@ const starterPrompts = (t: TFunc, deckEmpty: boolean): string[] =>
     : [t('aiStarterPolishTitle'), t('aiStarterTighten'), t('aiStarterProofread')]
 
 interface AiPanelProps {
+  /** page speaker-notes write-through (setNotes op path) */
+  onSetSpeakerNotes?: (slideIndex: number, text: string) => void
+
   slides: RenderSlide[]
   current: number
   selectedIds: string[]
@@ -326,8 +329,8 @@ interface AiPanelProps {
   onUndo?: () => void
   /** Callback to update the path after AI generation lands on disk (title bar sync) */
   onPathChange?: (path: string) => void
-  /** Overwrite a page's speaker notes (persisted to the pptx, marks the deck dirty) */
-  onSetSpeakerNotes?: (slideIndex: number, text: string) => Promise<boolean>
+  /** Flush pending editor state (e.g. the speaker-notes draft) right before an AI run edits the deck, so a stale draft cannot overwrite what the run writes */
+  onBeforeRun?: () => Promise<void> | void
   /** Generation progress callback (for the canvas top progress bar) */
   onDeckProgress?: (event: DeckProgressEvent | null) => void
   /** Absolute path of the currently open file (for chat history persistence) */
@@ -402,7 +405,7 @@ export function AiPanel({
   open = true,
   dockChrome,
   onPathChange,
-  onSetSpeakerNotes,
+  onBeforeRun,
   onDeckProgress,
   currentFilePath,
   editQueue,
@@ -508,8 +511,8 @@ export function AiPanel({
   applySlideRef.current = applySlide
   const applyDeckRef = useRef(applyDeck)
   applyDeckRef.current = applyDeck
-  const onSetSpeakerNotesRef = useRef(onSetSpeakerNotes)
-  onSetSpeakerNotesRef.current = onSetSpeakerNotes
+  const onBeforeRunRef = useRef(onBeforeRun)
+  onBeforeRunRef.current = onBeforeRun
   const onPathChangeRef = useRef(onPathChange)
   onPathChangeRef.current = onPathChange
   const onDeckProgressRef = useRef(onDeckProgress)
@@ -950,8 +953,6 @@ export function AiPanel({
       getSelectedIds: () => (queueRunResolverRef.current ? [] : selectedRef.current),
       applySlide: (i, updated) => applySlideRef.current(i, updated),
       applyDeck: (all, goTo) => applyDeckRef.current(all, goTo),
-      setSpeakerNotes: (i, text) =>
-        onSetSpeakerNotesRef.current?.(i, text) ?? Promise.resolve(false),
       landGeneratedPages: async (
         pageMarkers: string[],
         mode?: 'replace' | 'append' | 'insert_at',
@@ -1448,14 +1449,15 @@ export function AiPanel({
             { role: 'assistant', text: '', streaming: true, model: runModelRef.current },
           ])
         },
-        onDone: ({ text, cancelled, turnLimit, degraded }) => {
+        onDone: ({ text, cancelled, turnLimit, degraded, truncated }) => {
           // Degraded runs badge their reply: the operator model lacks native
           // function calling and tools ran over the JSON-text protocol.
           const degradedNote = degraded ? tGlobal('aiDegradedMode') : ''
+          const baseText = turnLimit
+            ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
+            : text || (cancelled ? tGlobal('aiStoppedNote') : '')
           const finalText = [
-            turnLimit
-              ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
-              : text || (cancelled ? tGlobal('aiStoppedNote') : ''),
+            truncated ? [baseText, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n') : baseText,
             degradedNote,
           ]
             .filter(Boolean)
@@ -1772,6 +1774,7 @@ export function AiPanel({
         }
         // Clear the flag before run: loop.run sets running synchronously, leaving no re-entry window
         runStartingRef.current = false
+        await onBeforeRunRef.current?.()
         if (await window.slidesApi.beginHistoryBatch()) historyBatchActiveRef.current = true
         loop.run(modelInstruction, images, media)
       })
@@ -1807,8 +1810,8 @@ export function AiPanel({
       runStartedAtRef.current = Date.now()
       setBusy(true)
       queueRunResolverRef.current = resolve
-      void window.slidesApi
-        .beginHistoryBatch()
+      void Promise.resolve(onBeforeRunRef.current?.())
+        .then(() => window.slidesApi.beginHistoryBatch())
         .then((ok) => {
           if (ok) historyBatchActiveRef.current = true
           runStartingRef.current = false
@@ -2026,6 +2029,10 @@ export function AiPanel({
     // Same as docs (#195): the restored transcript is painted above the live
     // turn, so it must clear too — otherwise the old conversation survives.
     setHistoricChat([])
+    // Answered clarifications are transcript too: they render under their
+    // original message index, so stale entries would re-attach to unrelated
+    // new messages after an index collision.
+    setClarifyAnswers([])
     sentAttachmentsRef.current = []
     readAttachmentPathsRef.current.clear()
     inputRef.current?.focus()

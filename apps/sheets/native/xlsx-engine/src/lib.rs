@@ -50,7 +50,6 @@ const RANGE_WAIT: Duration = Duration::from_millis(750);
 /// answer immediately instead and let the caller poll.
 const RANGE_WAIT_MAX_LAG_ROWS: usize = 16 * CHUNK_ROW_COUNT;
 const MAX_FORMULA_CELLS: usize = 100_000;
-const MAX_ENTRY_COUNT: usize = 10_000;
 
 #[derive(Debug, Default, Deserialize, Serialize)]
 struct ChunkData {
@@ -125,7 +124,7 @@ impl WorkbookSessions {
         let canonical_path = path.canonicalize()?;
         let file = File::open(&canonical_path)?;
         let mut archive = ZipArchive::new(file)?;
-        validate_archive(&mut archive)?;
+        archive::validate_entries(&mut archive)?;
         let entry_count = archive.len();
         let mut color_context = visuals::read_theme_palette(&mut archive)?;
         visuals::read_indexed_palette(&mut archive, &mut color_context)?;
@@ -292,7 +291,7 @@ impl WorkbookSessions {
         }
 
         let session_id = Uuid::new_v4().to_string();
-        let cache_directory = std::env::temp_dir().join(format!("genspark-ai-excel-{session_id}"));
+        let cache_directory = std::env::temp_dir().join(format!("chatoffice-ai-excel-{session_id}"));
         fs::create_dir(&cache_directory)?;
         let name = canonical_path
             .file_name()

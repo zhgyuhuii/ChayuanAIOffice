@@ -1,4 +1,4 @@
-/** ribbon strings, zh (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zh = {
   ribbonAiCreditNote: '将调用 AI 并消耗额度',
   ribbonAiRewriteConfirm: '此操作将调用 AI：会消耗额度，并可能改写整篇内容。是否继续？（确认后不再提示）',
@@ -726,4 +726,10 @@ export const zh = {
   ribbonChartKitTip: 'ECharts 图表库(39 类,含 3D/GL)',
   ribbonEchartLabel: 'ECharts 图表',
   ribbonZoom100: '100%',
+  ribbonCollapse: '折叠功能区',
+  ribbonPin: '固定功能区',
+  ribbonLinkEditTitle: '编辑超链接',
+  ribbonLinkRemove: '移除链接',
+  ribbonSpellcheckBtn: '拼写检查',
+  ribbonSpellcheckTip: '键入时检查拼写——用红色波浪线标出可能拼错的单词',
 }

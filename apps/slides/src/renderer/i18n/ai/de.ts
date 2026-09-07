@@ -1,4 +1,4 @@
-/** ai strings, de (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const de = {
   aiInputPlaceholderGen: 'Beschreibe die zu erstellende Präsentation oder frag etwas',
   aiEmptyGenTitle: 'Lass die KI deine Präsentation erstellen',
@@ -282,4 +282,26 @@ export const de = {
   aiNotePoolEmpty: 'Lokaler Bildbestand leer; automatische Kette aktiv',
   aiNoteSvgMode: 'Bildmaterial: Vektorgrafiken (vom Modell gezeichnet, editierbar)',
   aiNoteImgFail: 'Seite {page}: kein Bild für „{kw}“ gefunden; als Vektorgrafik gezeichnet',
+  aiTruncatedNote: '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
+  aiFailLoadGuide: 'Operationsleitfaden laden',
+  aiSumLoadGuide: 'Operationsleitfaden geladen: {names}',
+  aiOpEditText: 'Text bearbeiten',
+  aiOpEditFormat: 'Format ändern',
+  aiOpMoveElement: 'Element verschieben',
+  aiOpSetFill: 'Füllung festlegen',
+  aiOpSetStroke: 'Kontur festlegen',
+  aiOpDeleteElement: 'Element löschen',
+  aiOpUngroup: 'Gruppierung aufheben',
+  aiOpCropImage: 'Bild zuschneiden',
+  aiOpPictureOpacity: 'Bildtransparenz',
+  aiOpSpeakerNotes: 'Sprechernotizen festlegen',
+  aiOpDeleteSlide: 'Folie löschen',
+  aiOpBackground: 'Hintergrund festlegen',
+  aiOpEditTable: 'Tabelle bearbeiten',
+  aiOpTableStructure: 'Tabellenstruktur',
+  aiOpNewShape: 'Neue Form',
+  aiOpNewTextbox: 'Neues Textfeld',
+  aiOpInsertChart: 'Diagramm einfügen',
+  aiOpInsertSmartart: 'Schaubild einfügen',
+  aiOpInsertTable: 'Tabelle einfügen',
 }

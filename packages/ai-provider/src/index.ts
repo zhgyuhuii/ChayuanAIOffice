@@ -38,7 +38,7 @@ export type {
   ResolvedEndpoint,
 } from './registry'
 export { chatForProvider, chatResolved } from './chat'
-export { setRescueFetch } from './fetch'
+export { setAiUserAgent, setRescueFetch } from './fetch'
 export {
   capabilityBlockers,
   functionCallingVerdict,
@@ -50,6 +50,7 @@ export {
 export type { ModelCapabilities, ModelCapabilityQuery, CapabilityVerdict } from './capabilities'
 export { isAiNetworkError } from './network-error'
 export { isAiOverloadedError } from './overload-error'
+export { parseOutputCapRejection } from './output-cap'
 export { AiCreditsError, sseLines, streamForProvider, streamResolved } from './stream'
 export type { StreamCallbacks } from './stream'
 export {

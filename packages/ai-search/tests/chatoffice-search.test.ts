@@ -8,8 +8,7 @@ import {
   parseChatOfficeGeneratedImage,
   parseChatOfficeConvertResult,
   parseChatOfficePastProjects,
-  extractChatOfficeText,
-  parseToolCliNdjson,
+  extractChatOfficeText,  parseToolCliNdjson,
 } from '../src/chatoffice'
 
 describe('parseChatOfficeOutput', () => {

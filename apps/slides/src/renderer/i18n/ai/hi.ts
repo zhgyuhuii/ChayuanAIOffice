@@ -1,4 +1,4 @@
-/** ai strings, hi (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const hi = {
   aiInputPlaceholderGen: 'बनाने के लिए प्रस्तुति बताएँ, या कुछ भी पूछें',
   aiEmptyGenTitle: 'AI से अपनी प्रस्तुति बनवाएँ',
@@ -282,4 +282,26 @@ export const hi = {
   aiNotePoolEmpty: 'स्थानीय चित्र संग्रह खाली; स्वतः श्रृंखला लागू',
   aiNoteSvgMode: 'चित्र: वेक्टर ग्राफिक्स (मॉडल द्वारा बनाए गए, संपादन योग्य)',
   aiNoteImgFail: 'पृष्ठ {page}: "{kw}" के लिए कोई चित्र नहीं मिला; वेक्टर ग्राफिक्स में बनाया गया',
+  aiTruncatedNote: '(उत्तर लंबाई सीमा के कारण कट गया और अधूरा हो सकता है।)',
+  aiFailLoadGuide: 'ऑपरेशन गाइड लोड करें',
+  aiSumLoadGuide: 'ऑपरेशन गाइड लोड हुई: {names}',
+  aiOpEditText: 'टेक्स्ट संपादित करें',
+  aiOpEditFormat: 'फ़ॉर्मेट संपादित करें',
+  aiOpMoveElement: 'तत्व स्थानांतरित करें',
+  aiOpSetFill: 'भरण सेट करें',
+  aiOpSetStroke: 'रूपरेखा सेट करें',
+  aiOpDeleteElement: 'तत्व हटाएँ',
+  aiOpUngroup: 'समूह हटाएँ',
+  aiOpCropImage: 'छवि काट-छाँट',
+  aiOpPictureOpacity: 'छवि अपारदर्शिता',
+  aiOpSpeakerNotes: 'वक्ता नोट सेट करें',
+  aiOpDeleteSlide: 'स्लाइड हटाएँ',
+  aiOpBackground: 'पृष्ठभूमि सेट करें',
+  aiOpEditTable: 'तालिका संपादित करें',
+  aiOpTableStructure: 'तालिका संरचना',
+  aiOpNewShape: 'नई आकृति',
+  aiOpNewTextbox: 'नया टेक्स्ट बॉक्स',
+  aiOpInsertChart: 'चार्ट सम्मिलित करें',
+  aiOpInsertSmartart: 'आरेख सम्मिलित करें',
+  aiOpInsertTable: 'तालिका सम्मिलित करें',
 }

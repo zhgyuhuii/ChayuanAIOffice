@@ -1,4 +1,4 @@
-/** ribbon strings, zh-TW (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zhTW = {
   ribbonAiCreditNote: '將呼叫 AI 並消耗額度',
   ribbonAiRewriteConfirm: '此操作將呼叫 AI：會消耗額度，並可能改寫整篇內容。是否繼續？（確認後不再提示）',
@@ -830,4 +830,6 @@ export const zhTW = {
   ribbonCompressWeb: '網頁（150 ppi）',
   ribbonCompressEmail: '電子郵件（96 ppi）',
   ribbonPictureReplaceUnsupported: '不支援的圖片格式：{ext}',
+  ribbonCollapse: '摺疊功能區',
+  ribbonPin: '固定功能區',
 }

@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Editor } from '@tiptap/core'
 import { useEditorState } from '@tiptap/react'
-import { AiPanelToggle, Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import {
+  AiPanelToggle,
+  Dropdown,
+  RibbonCollapseButton,
+  RibbonExpandButton,
+  useDismissablePopover,
+  useRibbonCollapse,
+} from '@chatoffice/ui'
 import { useI18n } from '../i18n/locale'
 import type { StringKey } from '../i18n/locale'
 import { liftFromList } from '../editor/slashCommand'
@@ -114,6 +121,7 @@ export function Ribbon({
   onToggleAiPanel,
 }: Props) {
   const { t } = useI18n()
+  const collapse = useRibbonCollapse('mdapp.ribbonCollapsed')
   const [linkOpen, setLinkOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
   const linkInputRef = useRef<HTMLInputElement>(null)
@@ -177,7 +185,7 @@ export function Ribbon({
   const ICON = 20
 
   return (
-    <div className="ribbon">
+    <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
       {/* quick-access row above the toolbar (save / undo / redo / autosave), same as the docs QAT row */}
       <div className="ribbon-tabs">
         <button
@@ -225,9 +233,9 @@ export function Ribbon({
         {aiPanelAvailable && (
           <AiPanelToggle open={aiPanelOpen} onToggle={onToggleAiPanel} label={t('aiOpenAssistant')} />
         )}
-      </div>
+        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />      </div>
 
-      <div className="ribbon-body">
+      <div className="ribbon-body" data-ribbon-body="">
         <div className="ribbon-group">
           <div className="ribbon-group-items">
             <Dropdown
@@ -380,6 +388,10 @@ export function Ribbon({
           </div>
         </div>
       </div>
+      <RibbonCollapseButton
+        state={collapse}
+        labels={{ collapse: t('ribbonCollapse'), pin: t('ribbonPin') }}
+      />
     </div>
   )
 }

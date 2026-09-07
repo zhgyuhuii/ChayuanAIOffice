@@ -1,4 +1,4 @@
-/** ribbon strings, pt (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pt = {
   ribbonAiCreditNote: 'Usa IA e consome créditos',
   ribbonAiRewriteConfirm: 'Esta ação chama a IA: consome créditos e pode reescrever todo o conteúdo. Continuar? (Não será perguntado novamente.)',
@@ -416,12 +416,12 @@ export const pt = {
   ribbonGroupDocFormatting: 'Formatação do Documento',
   ribbonPageColor: 'Cor da Página',
   ribbonPageColorTip: 'Escolher uma cor para a página',
-  ribbonWatermark: 'Marca d\'Água',
+  ribbonWatermark: 'Marca d\\\'Água',
   ribbonWatermarkTip: 'Adicionar texto fantasma atrás do conteúdo da página',
-  ribbonWatermarkCustom: 'Marca d\'Água de Texto Personalizada…',
-  ribbonWatermarkCustomTitle: 'Marca d\'Água de Texto Personalizada',
-  ribbonWatermarkPh: 'Texto da marca d\'água, ex.: USO INTERNO',
-  ribbonWatermarkRemove: 'Remover Marca d\'Água',
+  ribbonWatermarkCustom: 'Marca d\\\'Água de Texto Personalizada…',
+  ribbonWatermarkCustomTitle: 'Marca d\\\'Água de Texto Personalizada',
+  ribbonWatermarkPh: 'Texto da marca d\\\'água, ex.: USO INTERNO',
+  ribbonWatermarkRemove: 'Remover Marca d\\\'Água',
   ribbonWatermarkConfidential: 'CONFIDENCIAL',
   ribbonWatermarkNoCopy: 'NÃO COPIAR',
   ribbonWatermarkDraft: 'RASCUNHO',
@@ -726,4 +726,10 @@ export const pt = {
   ribbonChartKitTip: 'Galeria ECharts (39 famílias, incl. 3D/GL)',
   ribbonEchartLabel: 'Gráfico ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Recolher a Faixa de Opções',
+  ribbonPin: 'Fixar a Faixa de Opções',
+  ribbonLinkEditTitle: 'Editar hiperlink',
+  ribbonLinkRemove: 'Remover link',
+  ribbonSpellcheckBtn: 'Ortografia',
+  ribbonSpellcheckTip: 'Verificar a ortografia ao digitar — sublinha em vermelho palavras possivelmente erradas',
 }

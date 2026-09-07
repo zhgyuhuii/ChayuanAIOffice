@@ -1,4 +1,4 @@
-/** ribbon strings, th (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const th = {
   ribbonAiCreditNote: 'เรียกใช้ AI และใช้เครดิต',
   ribbonAiRewriteConfirm: 'การดำเนินการนี้จะเรียกใช้ AI: ใช้เครดิตและอาจเขียนเนื้อหาทั้งหมดใหม่ ดำเนินการต่อหรือไม่ (จะไม่ถามอีก)',
@@ -726,4 +726,10 @@ export const th = {
   ribbonChartKitTip: 'แกลเลอรี ECharts (39 ประเภท รวม 3D/GL)',
   ribbonEchartLabel: 'แผนภูมิ ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'ยุบ Ribbon',
+  ribbonPin: 'ปักหมุด Ribbon',
+  ribbonLinkEditTitle: 'แก้ไขไฮเปอร์ลิงก์',
+  ribbonLinkRemove: 'เอาลิงก์ออก',
+  ribbonSpellcheckBtn: 'ตรวจการสะกด',
+  ribbonSpellcheckTip: 'ตรวจการสะกดขณะพิมพ์ — ขีดเส้นใต้สีแดงใต้คำที่อาจสะกดผิด',
 }

@@ -1,4 +1,4 @@
-/** ribbon strings, ru (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ru = {
   ribbonAiCreditNote: 'Использует ИИ и расходует кредиты',
   ribbonAiRewriteConfirm: 'Это действие вызывает ИИ: расходуются кредиты, и всё содержимое может быть переписано. Продолжить? (Вопрос больше не появится.)',
@@ -830,4 +830,6 @@ export const ru = {
   ribbonCompressWeb: 'Веб (150 ppi)',
   ribbonCompressEmail: 'Электронная почта (96 ppi)',
   ribbonPictureReplaceUnsupported: 'Неподдерживаемый формат изображения: {ext}',
+  ribbonCollapse: 'Свернуть ленту',
+  ribbonPin: 'Закрепить ленту',
 }

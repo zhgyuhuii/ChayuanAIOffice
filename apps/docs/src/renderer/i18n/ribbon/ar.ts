@@ -1,4 +1,4 @@
-/** ribbon strings, ar (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ar = {
   ribbonAiCreditNote: 'يستدعي الذكاء الاصطناعي ويستهلك الرصيد',
   ribbonAiRewriteConfirm: 'هذا الإجراء يستدعي الذكاء الاصطناعي: يستهلك الرصيد وقد يعيد كتابة المحتوى بالكامل. هل تريد المتابعة؟ (لن يتم السؤال مرة أخرى.)',
@@ -726,4 +726,10 @@ export const ar = {
   ribbonChartKitTip: 'معرض ECharts (39 عائلة، بما فيها 3D/GL)',
   ribbonEchartLabel: 'مخطط ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'طي الشريط',
+  ribbonPin: 'تثبيت الشريط',
+  ribbonLinkEditTitle: 'تحرير الارتباط التشعبي',
+  ribbonLinkRemove: 'إزالة الارتباط',
+  ribbonSpellcheckBtn: 'تدقيق إملائي',
+  ribbonSpellcheckTip: 'التدقيق الإملائي أثناء الكتابة — يضع خطًا أحمر تحت الكلمات التي قد تكون خاطئة',
 }

@@ -1,4 +1,4 @@
-/** app strings, pt (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pt = {
   appMergeWorkbooks: 'Mesclar pastas de trabalho',
   appMergeWorkbooksTip: 'Adicionar planilhas de outros arquivos do Excel a esta pasta de trabalho',
@@ -1333,4 +1333,13 @@ export const pt = {
   appCellStyleGroupTitle: 'Títulos',
   appCellStyleGroupData: 'Dados e modelo',
   appCellStyleGroupAccent: 'Ênfase',
+  appAiTruncatedNote: '(A resposta foi cortada pelo limite de comprimento e pode estar incompleta.)',
+  appFullLoadFilterTitle: 'A filtragem requer o carregamento completo',
+  appFullLoadFilterBody: 'Esta pasta de trabalho é grande e foi carregada apenas parcialmente em streaming. A filtragem (incluindo a contagem de valores) precisa dos dados completos. Carregar toda a pasta agora?',
+  appFullLoadStart: 'Carregar tudo',
+  appFullLoadRunning: 'Carregando toda a pasta de trabalho — a filtragem ficará disponível ao concluir…',
+  appFullLoadTooLarge: 'Esta pasta de trabalho é grande demais para ser totalmente carregada na memória; a filtragem não está disponível para este arquivo.',
+  appDialogCancel: 'Cancelar',
+  appRibbonCollapse: 'Recolher a Faixa de Opções',
+  appRibbonPin: 'Fixar a Faixa de Opções',
 }

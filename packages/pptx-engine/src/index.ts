@@ -14,7 +14,12 @@ import {
   sliceGroupChildXmls,
   type ParseContext,
 } from './parse'
-import { parsePlaceholderMap, parseMasterTextStyles, parseDefaultTextStyle } from './placeholder'
+import {
+  parsePlaceholderMap,
+  parseMasterTextStyles,
+  parseDefaultTextStyle,
+  type TextStyleLevels,
+} from './placeholder'
 import {
   generateParagraphXml,
   patchElementFill,
@@ -513,6 +518,7 @@ function parseSlideFromArchive(archive: PackageArchive, slidePath: string): Slid
     theme: ctx.theme,
     masterPlaceholders: ctx.masterPlaceholders,
     masterTextStyles: ctx.masterTextStyles,
+    defaultTextStyle: ctx.defaultTextStyle,
   })
   if (decorations.length) slide.decorations = decorations
 
@@ -567,6 +573,7 @@ function buildDecorations(
     theme?: Theme
     masterPlaceholders?: ReturnType<typeof parsePlaceholderMap>
     masterTextStyles?: ReturnType<typeof parseMasterTextStyles>
+    defaultTextStyle?: TextStyleLevels
   },
 ): SlideElement[] {
   const out: SlideElement[] = []
@@ -609,6 +616,7 @@ function buildDecorations(
       const ctx: ParseContext = {
         theme: parts.theme,
         mediaRels: partMediaRels(archive, parts.masterPath),
+        defaultTextStyle: parts.defaultTextStyle,
       }
       out.push(
         ...parseDecorations(masterXml, ctx, {
@@ -628,6 +636,7 @@ function buildDecorations(
         mediaRels: partMediaRels(archive, parts.layoutPath),
         masterPlaceholders: parts.masterPlaceholders,
         masterTextStyles: parts.masterTextStyles,
+        defaultTextStyle: parts.defaultTextStyle,
       }
       out.push(
         ...parseDecorations(layoutXml, ctx, {
@@ -987,6 +996,7 @@ export function setSlideBgGraphicsHidden(opened: OpenedPptx, slide: Slide, hidde
       theme: inherit.theme,
       masterPlaceholders: inherit.masterPlaceholders,
       masterTextStyles: inherit.masterTextStyles,
+      defaultTextStyle: inherit.defaultTextStyle,
     },
   )
   if (decorations.length) slide.decorations = decorations
@@ -1006,6 +1016,7 @@ function slideInheritanceCtx(archive: PackageArchive, slidePath: string) {
       theme.clrMap = parseClrMap(masterXml, layoutXml, archive.readText(slidePath) ?? undefined)
     }
   }
+  const presXml = archive.readText('ppt/presentation.xml')
   return {
     layoutPath: chain.layoutPath,
     masterPath: chain.masterPath,
@@ -1014,6 +1025,7 @@ function slideInheritanceCtx(archive: PackageArchive, slidePath: string) {
     theme,
     masterPlaceholders: masterXml ? parsePlaceholderMap(masterXml, theme) : undefined,
     masterTextStyles: masterXml ? parseMasterTextStyles(masterXml, theme) : undefined,
+    defaultTextStyle: presXml ? parseDefaultTextStyle(presXml, theme) : undefined,
     layoutMediaRels: chain.layoutPath ? partMediaRels(archive, chain.layoutPath) : undefined,
     masterMediaRels: chain.masterPath ? partMediaRels(archive, chain.masterPath) : undefined,
     themeMediaRels: chain.themePath ? partMediaRels(archive, chain.themePath) : undefined,
@@ -2919,6 +2931,7 @@ function applyFontPatch(paragraphs: Paragraph[], patch: ElementFontPatch): void 
         delete r.eaFont
         delete r.csFont
         delete r.fontImplicit
+        delete r.latinFamily
       }
       if (patch.fontSizePt !== undefined) {
         r.fontSize = patch.fontSizePt
@@ -3178,7 +3191,11 @@ export function applyParagraphFormat(
       // Standalone size/color adjustment: only touches paragraphs that render a bullet
       if (p.bullet && p.bullet.type !== 'none') {
         if (patch.bulletSizePct != null) p.bullet.sizePct = patch.bulletSizePct
-        if (patch.bulletColor) p.bullet.color = patch.bulletColor
+        if (patch.bulletColor) {
+          p.bullet.color = patch.bulletColor
+          // a user color replaces the captured theme node, else generate re-emits the old schemeClr
+          delete p.bullet.colorNodeXml
+        }
         mark('bullet')
         dirty.bullet = true
       }

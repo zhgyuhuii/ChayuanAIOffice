@@ -15,6 +15,8 @@ export type AiProviderId =
   | 'xai'
   | 'mistral'
   | 'openrouter'
+  | 'opencode-zen'
+  | 'opencode-go'
   | 'custom'
 
 // ---- settings v2: multi-profile, multi-model, user-chosen wire protocol ----

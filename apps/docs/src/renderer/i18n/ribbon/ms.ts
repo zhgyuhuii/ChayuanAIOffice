@@ -1,4 +1,4 @@
-/** ribbon strings, ms (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ms = {
   ribbonAiCreditNote: 'Menggunakan AI dan menggunakan kredit',
   ribbonAiRewriteConfirm: 'Tindakan ini memanggil AI: menggunakan kredit dan mungkin menulis semula keseluruhan kandungan. Teruskan? (Tidak akan ditanya lagi.)',
@@ -726,4 +726,10 @@ export const ms = {
   ribbonChartKitTip: 'Galeri ECharts (39 keluarga, termasuk 3D/GL)',
   ribbonEchartLabel: 'Carta ECharts',
   ribbonZoom100: '100%',
+  ribbonCollapse: 'Runtuhkan Reben',
+  ribbonPin: 'Semat Reben',
+  ribbonLinkEditTitle: 'Edit Hiperpautan',
+  ribbonLinkRemove: 'Alih Keluar Pautan',
+  ribbonSpellcheckBtn: 'Ejaan',
+  ribbonSpellcheckTip: 'Semak ejaan semasa menaip — menggariskan merah perkataan yang mungkin salah eja',
 }

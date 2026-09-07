@@ -1,4 +1,4 @@
-/** ribbon strings, pl (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const pl = {
   ribbonAiCreditNote: 'Używa AI i zużywa kredyty',
   ribbonAiRewriteConfirm: 'Ta akcja wywołuje AI: zużywa kredyty i może przepisać całą treść. Kontynuować? (Nie zapytamy ponownie.)',
@@ -830,4 +830,6 @@ export const pl = {
   ribbonCompressWeb: 'Sieć (150 ppi)',
   ribbonCompressEmail: 'E-mail (96 ppi)',
   ribbonPictureReplaceUnsupported: 'Nieobsługiwany format obrazu: {ext}',
+  ribbonCollapse: 'Zwiń Wstążkę',
+  ribbonPin: 'Przypnij Wstążkę',
 }

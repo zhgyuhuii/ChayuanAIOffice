@@ -1,4 +1,4 @@
-/** app strings, es (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const es = {
   appMergeWorkbooks: 'Combinar libros',
   appMergeWorkbooksTip: 'Añadir las hojas de otros archivos de Excel a este libro',
@@ -1333,4 +1333,13 @@ export const es = {
   appCellStyleGroupTitle: 'Títulos',
   appCellStyleGroupData: 'Datos y modelo',
   appCellStyleGroupAccent: 'Énfasis',
+  appAiTruncatedNote: '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
+  appFullLoadFilterTitle: 'El filtrado requiere la carga completa',
+  appFullLoadFilterBody: 'Este libro es grande y solo se ha cargado parcialmente en streaming. El filtrado (incluido el recuento de valores) necesita los datos completos. ¿Cargar todo el libro ahora?',
+  appFullLoadStart: 'Cargar todo',
+  appFullLoadRunning: 'Cargando el libro completo: el filtrado estará disponible al terminar…',
+  appFullLoadTooLarge: 'Este libro es demasiado grande para cargarlo por completo en memoria; el filtrado no está disponible para este archivo.',
+  appDialogCancel: 'Cancelar',
+  appRibbonCollapse: 'Contraer la cinta de opciones',
+  appRibbonPin: 'Anclar la cinta de opciones',
 }

@@ -1,4 +1,4 @@
-/** ribbon strings, ko (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ko = {
   ribbonAiCreditNote: 'AI를 호출하며 크레딧이 소모됩니다',
   ribbonAiRewriteConfirm: '이 작업은 AI를 호출합니다. 크레딧이 소모되며 전체 내용이 다시 작성될 수 있습니다. 계속하시겠습니까? (확인 후 다시 묻지 않습니다)',
@@ -726,4 +726,10 @@ export const ko = {
   ribbonChartKitTip: 'ECharts 라이브러리(39종, 3D/GL 포함)',
   ribbonEchartLabel: 'ECharts 차트',
   ribbonZoom100: '100%',
+  ribbonCollapse: '리본 축소',
+  ribbonPin: '리본 고정',
+  ribbonLinkEditTitle: '하이퍼링크 편집',
+  ribbonLinkRemove: '링크 제거',
+  ribbonSpellcheckBtn: '맞춤법 검사',
+  ribbonSpellcheckTip: '입력하는 동안 맞춤법을 검사하여 잘못 입력된 것으로 보이는 단어에 빨간 밑줄을 표시합니다',
 }

@@ -1,4 +1,4 @@
-/** ai strings, ms (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const ms = {
   aiInputPlaceholderGen: 'Terangkan pembentangan untuk dijana, atau tanya apa sahaja',
   aiEmptyGenTitle: 'Biarkan AI menjana pembentangan anda',
@@ -282,4 +282,26 @@ export const ms = {
   aiNotePoolEmpty: 'Kolam imej tempatan kosong; rantaian automatik digunakan',
   aiNoteSvgMode: 'Imej: grafik vektor (dilukis oleh model, boleh disunting)',
   aiNoteImgFail: 'Halaman {page}: tiada imej untuk "{kw}"; dilukis sebagai vektor',
+  aiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
+  aiFailLoadGuide: 'Muatkan panduan operasi',
+  aiSumLoadGuide: 'Panduan operasi dimuatkan: {names}',
+  aiOpEditText: 'Edit teks',
+  aiOpEditFormat: 'Edit format',
+  aiOpMoveElement: 'Alihkan elemen',
+  aiOpSetFill: 'Tetapkan isian',
+  aiOpSetStroke: 'Tetapkan garis luar',
+  aiOpDeleteElement: 'Padam elemen',
+  aiOpUngroup: 'Leraikan kumpulan',
+  aiOpCropImage: 'Pangkas imej',
+  aiOpPictureOpacity: 'Kelegapan imej',
+  aiOpSpeakerNotes: 'Tetapkan nota pembesar suara',
+  aiOpDeleteSlide: 'Padam slaid',
+  aiOpBackground: 'Tetapkan latar belakang',
+  aiOpEditTable: 'Edit jadual',
+  aiOpTableStructure: 'Struktur jadual',
+  aiOpNewShape: 'Bentuk baharu',
+  aiOpNewTextbox: 'Kotak teks baharu',
+  aiOpInsertChart: 'Selitkan carta',
+  aiOpInsertSmartart: 'Selitkan rajah',
+  aiOpInsertTable: 'Selitkan jadual',
 }

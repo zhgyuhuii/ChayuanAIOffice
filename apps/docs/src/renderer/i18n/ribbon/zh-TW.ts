@@ -1,4 +1,4 @@
-/** ribbon strings, zh-TW (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const zhTW = {
   ribbonAiCreditNote: '將呼叫 AI 並消耗額度',
   ribbonAiRewriteConfirm: '此操作將呼叫 AI：會消耗額度，並可能改寫整篇內容。是否繼續？（確認後不再提示）',
@@ -726,4 +726,10 @@ export const zhTW = {
   ribbonChartKitTip: 'ECharts 圖表庫(39 類,含 3D/GL)',
   ribbonEchartLabel: 'ECharts 圖表',
   ribbonZoom100: '100%',
+  ribbonCollapse: '摺疊功能區',
+  ribbonPin: '固定功能區',
+  ribbonLinkEditTitle: '編輯超連結',
+  ribbonLinkRemove: '移除連結',
+  ribbonSpellcheckBtn: '拼字檢查',
+  ribbonSpellcheckTip: '輸入時檢查拼字——以紅色波浪線標出可能拼錯的單字',
 }

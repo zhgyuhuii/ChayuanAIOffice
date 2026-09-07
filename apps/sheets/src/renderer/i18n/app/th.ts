@@ -1,4 +1,4 @@
-/** app strings, th (merged with ChatOffice-local keys) */
+/** strings shard (3-way: local keys + upstream additions) */
 export const th = {
   appMergeWorkbooks: 'รวมเวิร์กบุ๊ก',
   appMergeWorkbooksTip: 'นำชีตจากไฟล์ Excel อื่นมารวมในเวิร์กบุ๊กนี้',
@@ -1333,4 +1333,13 @@ export const th = {
   appCellStyleGroupTitle: 'ชื่อเรื่อง',
   appCellStyleGroupData: 'ข้อมูลและโมเดล',
   appCellStyleGroupAccent: 'เน้นสี',
+  appAiTruncatedNote: '(คำตอบถูกตัดเนื่องจากถึงขีดจำกัดความยาว เนื้อหาอาจไม่สมบูรณ์)',
+  appFullLoadFilterTitle: 'ตัวกรองต้องโหลดข้อมูลทั้งหมด',
+  appFullLoadFilterBody: 'เวิร์กบุ๊กนี้มีขนาดใหญ่และโหลดแบบสตรีมเพียงบางส่วน ตัวกรอง (รวมถึงการนับค่า) ต้องใช้ข้อมูลครบถ้วนจึงถูกต้อง โหลดทั้งเวิร์กบุ๊กตอนนี้หรือไม่?',
+  appFullLoadStart: 'โหลดทั้งหมด',
+  appFullLoadRunning: 'กำลังโหลดเวิร์กบุ๊กทั้งหมด เมื่อเสร็จแล้วจะใช้ตัวกรองได้…',
+  appFullLoadTooLarge: 'เวิร์กบุ๊กนี้ใหญ่เกินกว่าจะโหลดทั้งหมดลงหน่วยความจำ ไม่สามารถใช้ตัวกรองกับไฟล์นี้ได้',
+  appDialogCancel: 'ยกเลิก',
+  appRibbonCollapse: 'ยุบ Ribbon',
+  appRibbonPin: 'ปักหมุด Ribbon',
 }
