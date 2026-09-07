@@ -217,6 +217,17 @@ export function univerLocaleFor(lang: string): LocaleType | null {
   return UNIVER_LOCALES[lang]?.type ?? null
 }
 
+// Force-string cell popup copy (#236): the value renders correctly, so the
+// popup title must read as a warning, not an error. Shared by the en-US boot
+// locale in App.tsx and applyUniverLocale below so a language switch cannot
+// regress one of the two sites.
+export const FORCE_STRING_POPUP_LOCALE = {
+  error: 'Warning',
+  forceStringInfo:
+    'The value in this cell is stored as text — it will not be treated as a ' +
+    'number in formulas.',
+} as const
+
 export async function applyUniverLocale(runtime: UniverRuntime, lang: string): Promise<void> {
   const entry = UNIVER_LOCALES[lang]
   if (!entry) return
@@ -229,10 +240,7 @@ export async function applyUniverLocale(runtime: UniverRuntime, lang: string): P
     ...merged['sheets-ui'],
     info: {
       ...(merged['sheets-ui']?.info as Record<string, string> | undefined),
-      error: 'Number stored as text',
-      forceStringInfo:
-        'The value in this cell is stored as text — it will not be treated as a ' +
-        'number in formulas.',
+      ...FORCE_STRING_POPUP_LOCALE,
     },
   }
   const localeService = runtime.univer.__getInjector().get(LocaleService)
