@@ -257,6 +257,11 @@ export function makeGapEl(m: GapMetrics, kind: GapKind, cols?: number): HTMLElem
         : 'page-gap'
   gap.style.marginLeft = `-${m.marginLeft}px`
   gap.style.marginRight = `-${m.marginRight}px`
+  // the next page's own side margins: a section whose margins differ from the
+  // canvas' first section gets its header/footer strips placed on ITS text
+  // column (alignGapHfStrips), not the cover's margin-less one
+  gap.style.setProperty('--gap-ml', `${m.marginLeft}px`)
+  gap.style.setProperty('--gap-mr', `${m.marginRight}px`)
   // inline-block (not block-level): avoids block-in-inline anonymous-box splitting,
   // which would re-apply text-indent/alignment on continuation lines and drift line
   // breaks; negative margins don't widen an inline-block, so width explicitly adds the bleed
@@ -1113,16 +1118,25 @@ export function alignGapHfStrips(
   factor: number,
 ): void {
   const shared = Array.isArray(secLeftPx) ? (secLeftPx[0] ?? 0) : (secLeftPx as number)
+  const pmLeft = pm.getBoundingClientRect().left
   for (const el of Array.from(pm.querySelectorAll<HTMLElement>('.page-gap-hf'))) {
+    // prefer the gap's own section inset (--gap-ml, makeGapEl): mixed-margin
+    // documents must not pin every strip to the first section's column; table
+    // gaps carry no inset and keep the canvas target
+    const own = el.closest<HTMLElement>('.page-gap')?.style.getPropertyValue('--gap-ml')
+    const ownPx = own ? parseFloat(own) : NaN
     // widget DOM reused from an equal-width era still carries the stylesheet
     // centering (left:50% + translateX(-50%)): pin it before measuring, or the
     // increment is applied against the wrong base
     if (el.style.transform !== 'none') el.style.transform = 'none'
     if (!el.style.left) el.style.left = '0px'
+    // section-resolved target from the per-section start table (data-sec on the
+    // strip names the section); own inset wins where the gap carries one
     const secIdx = Number(el.dataset.sec)
     const bodyLeft =
       Array.isArray(secLeftPx) && Number.isInteger(secIdx) ? (secLeftPx[secIdx] ?? shared) : shared
-    const target = pm.getBoundingClientRect().left + bodyLeft * factor
+    const sectionTarget = pmLeft + bodyLeft * factor
+    const target = Number.isFinite(ownPx) ? pmLeft + ownPx * factor : sectionTarget
     const delta = (target - el.getBoundingClientRect().left) / factor
     if (Math.abs(delta) < 0.5) continue
     el.style.left = `${((parseFloat(el.style.left) || 0) + delta).toFixed(1)}px`

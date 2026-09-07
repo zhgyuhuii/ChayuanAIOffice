@@ -488,10 +488,14 @@ export class AgentLoop<TSnapshot = unknown> {
     if (historySize(this.history) <= maxBytes) return
     const cut = this.findCompactCut(keepRecentBytes)
     if (cut <= 0) return // no foldable prefix
+    const generation = this.generation
     const dropped = this.history.slice(0, cut)
     const opt = this.options.compaction === false ? undefined : this.options.compaction
     let summary: string | null = null
     if (!opt?.disableLlmSummary) summary = await this.summarizeViaLlm(dropped)
+    // A reset may have cleared history or started a new conversation while
+    // the summary was pending. Discard its result before touching that history.
+    if (generation !== this.generation) return
     if (!summary) summary = mechanicalDigest(dropped)
     this.history = [
       { role: 'user', text: `${COMPACT_SUMMARY_HEADER}\n${summary}` },
