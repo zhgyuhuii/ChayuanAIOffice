@@ -11,6 +11,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
   DEFAULT_KIND_TYPES,
+  DEFAULT_MAX_OUTPUT_TOKENS,
+  MAX_MAX_OUTPUT_TOKENS,
+  MIN_MAX_OUTPUT_TOKENS,
+  clampMaxOutputTokens,
   enabledChatModels,
   findProfile,
   inferModelType,
@@ -40,6 +44,23 @@ export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): Rea
   useEffect(() => {
     void bridge.getSettings().then(setSettings).catch(() => setSettings(null))
   }, [bridge])
+
+  /** free-typed value of the output-cap field; committed (and clamped) on blur */
+  const [maxTokensDraft, setMaxTokensDraft] = useState<string | null>(null)
+  const commitMaxTokens = () => {
+    if (!settings || maxTokensDraft === null) return
+    const raw = Number(maxTokensDraft)
+    setMaxTokensDraft(null)
+    const next: AiSettingsV2 = { ...settings }
+    if (Number.isFinite(raw) && maxTokensDraft.trim() !== '') {
+      next.maxOutputTokens = clampMaxOutputTokens(Math.round(raw))
+    } else {
+      delete next.maxOutputTokens
+    }
+    if (next.maxOutputTokens === settings.maxOutputTokens) return
+    setSettings(next)
+    void bridge.saveSettings(next)
+  }
 
   /** enabled models of one kind across all enabled profiles */
   const kindOptions = (kind: AiDefaultKind): Array<{ value: string; label: string }> => {
@@ -130,6 +151,22 @@ export function ModelDefaultsPage({ bridge, lang }: ModelDefaultsPageProps): Rea
           ))}
         </select>
         <span className="msp-note">{t.defaultsImageSourceNote}</span>
+      </label>
+      <label className="msp-field msp-defaults-field">
+        <span className="msp-label">{t.maxTokensLabel}</span>
+        <input
+          className="msp-input"
+          data-default-kind="max-tokens"
+          type="number"
+          min={MIN_MAX_OUTPUT_TOKENS}
+          max={MAX_MAX_OUTPUT_TOKENS}
+          step={1024}
+          value={maxTokensDraft ?? String(settings?.maxOutputTokens ?? DEFAULT_MAX_OUTPUT_TOKENS)}
+          disabled={!settings}
+          onChange={(e) => setMaxTokensDraft(e.target.value)}
+          onBlur={commitMaxTokens}
+        />
+        <span className="msp-note">{t.maxTokensDesc}</span>
       </label>
       {KINDS.map((kind) => {
         const options = kindOptions(kind)

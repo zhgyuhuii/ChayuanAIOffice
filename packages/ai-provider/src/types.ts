@@ -74,6 +74,11 @@ export interface AiSettingsV2 {
   modelDefaults?: Record<string, AiModelSelection>
   /** chatoffice cloud tools toggle (search backends); default on */
   chatofficeToolsEnabled?: boolean
+  /**
+   * Per-turn output-token cap across all profiles (upstream f105f36; absent =
+   * the per-vendor default). Clamped to [MIN,MAX]_MAX_OUTPUT_TOKENS on read.
+   */
+  maxOutputTokens?: number
   /** stock-photo library API keys (Pexels/Pixabay) for the insert-image dialog */
   stockApiKeys?: { pexels?: string; pixabay?: string }
   /** web-search service API keys (Serper) — settings-first, env var as fallback */
@@ -127,6 +132,14 @@ export interface AiSettings {
    * unavailable regardless.
    */
   chatofficeToolsEnabled?: boolean
+  /**
+   * Output-token cap for ONE model turn of agent runs (default
+   * DEFAULT_MAX_OUTPUT_TOKENS). Reasoning models bill their thinking against
+   * this same budget, so a heavy edit turn can consume all of it and close with
+   * finish_reason=length and no prose at all — raising it is the user's lever
+   * (absent = the default, so pre-existing settings files keep working).
+   */
+  maxOutputTokens?: number | undefined
 }
 
 /** pre-provider settings shape (single OpenAI-compatible endpoint); migrated into "custom" */

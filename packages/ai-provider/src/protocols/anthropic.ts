@@ -282,7 +282,19 @@ export async function chatAnthropic(
       error: `Claude HTTP ${response.status}: ${httpBodyDetail(await response.text())}`,
     }
   }
-  const json = (await response.json()) as { content?: Array<{ type: string; text?: string }> }
+  // A 200 with an HTML shell / empty / truncated body (gateway soft-failure)
+  // would make response.json() throw; return ok:false instead of leaking a
+  // raw SyntaxError to the caller.
+  const bodyText = await response.text()
+  let json: { content?: Array<{ type: string; text?: string }> }
+  try {
+    json = JSON.parse(bodyText) as { content?: Array<{ type: string; text?: string }> }
+  } catch {
+    return {
+      ok: false,
+      error: `Claude returned a non-JSON response: ${httpBodyDetail(bodyText)}`,
+    }
+  }
   const content = json.content
     ?.filter((c) => c.type === 'text')
     .map((c) => c.text ?? '')

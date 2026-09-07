@@ -20,9 +20,14 @@ export type {
 export {
   AI_PROVIDERS,
   CHATOFFICE_LLM_BASE_URLS,
+  DEFAULT_MAX_OUTPUT_TOKENS,
+  MAX_MAX_OUTPUT_TOKENS,
+  MIN_MAX_OUTPUT_TOKENS,
   activeProvider,
+  clampMaxOutputTokens,
   cloudToolsEnabled,
   defaultAiSettings,
+  maxOutputTokensOf,
   resolveAiSettings,
 } from './providers'
 export { AI_PROVIDER_ADAPTERS, getProviderAdapter, modelLacksVision } from './registry'

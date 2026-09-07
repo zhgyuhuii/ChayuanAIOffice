@@ -110,6 +110,9 @@ const zh = {
   defaultsNote: '为每类用途指定默认模型；不设置时自动使用识别到的第一个可用模型。',
   defaultsAuto: '自动（使用识别到的第一个可用模型）',
   defaultsAutoUsing: '当前自动使用：',
+  maxTokensLabel: '单次输出上限（tokens）',
+  maxTokensDesc:
+    '一次回合的输出预算。推理模型会先消耗预算用于思考，预算用完时回复可能变成空白，遇到这种情况请调大此项。',
   defaultsNoneAvailable: '暂无可用模型（先在模型设置中启用）',
   defaultsKind: {
     chat: '对话默认模型',
@@ -244,6 +247,9 @@ const en = {
     'Pick a default model per purpose; unset kinds automatically use the first available model detected.',
   defaultsAuto: 'Auto (first available model detected)',
   defaultsAutoUsing: 'Currently auto-using:',
+  maxTokensLabel: 'Max output tokens',
+  maxTokensDesc:
+    'Output budget for one turn. Reasoning models spend part of it thinking, so an answer can come back empty once the budget runs out; raise this value if that happens.',
   defaultsNoneAvailable: 'No models available yet (enable them in Model Settings first)',
   defaultsKind: {
     generation: 'Page-generation default model (writes per-page layout specs; use your strongest model)',
