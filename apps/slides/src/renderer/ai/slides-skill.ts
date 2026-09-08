@@ -124,6 +124,21 @@ export type DeckProgressEvent =
   | { stage: 'done'; total: number; summary: string }
 
 /** Panel/skill access point to the currently open deck (refs provided by App, stay fresh across renders). */
+/** User-attached images (logo etc.) auto-registered as deck brand assets:
+ * the writer references them by handle (`deck:<n>`) and the renderer resolves
+ * the handle to inline bytes before the spec reaches the pptx build. */
+export interface DeckImageAsset {
+  /** stable handle the writer uses, e.g. "deck:1" */
+  id: string
+  /** original file name (for the prompt listing) */
+  name: string
+  /** data:image/...;base64 payload */
+  dataUri: string
+  /** natural pixel size when known (lets the resolver keep the box aspect-true) */
+  width?: number
+  height?: number
+}
+
 export interface DeckAccess {
   getSlides(): RenderSlide[]
   getCurrent(): number
@@ -178,6 +193,8 @@ export interface DeckAccess {
   generateModelImage?(prompt: string): Promise<string | null>
   /** Local image pool (data URIs) from the user's confirmed folder pick, in folder order */
   localImagePool?(): string[]
+  /** Attached images (logo etc.) auto-registered as brand assets; non-empty forces the local writer (the cloud writer cannot place them) */
+  deckImageAssets?(): DeckImageAsset[]
   /** Whether cloud single-page generation is available (kill switch + chatoffice login state) */
   isCloudPageGenEnabled?(): Promise<boolean>
   /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image / analyze_media */
@@ -199,6 +216,8 @@ export interface DeckAccess {
     images: string[]
     /** keywords whose imagery could not be sourced — the design should fill those slots with shapes/typography */
     imageBriefs?: string[]
+    /** brand assets (handles deck:n); the cloud writer cannot place them — routing keeps this unused */
+    assets?: DeckImageAsset[]
     context?: string
     topic?: string
     canvasW: number
@@ -222,6 +241,8 @@ export interface DeckAccess {
     images: string[]
     /** keywords whose imagery could not be sourced — the writer draws them as inline SVG image elements */
     imageBriefs?: string[]
+    /** brand assets referenced by handle (`{"type":"image","asset":"deck:1"}`); resolved to inline bytes before the build */
+    assets?: DeckImageAsset[]
     context?: string
     topic?: string
     canvasW: number
@@ -351,6 +372,7 @@ Step 0 Questionnaire (mandatory when creating a whole new deck): first call ask_
 
 Step A Research: when the topic involves facts/attractions/data, run web_search 1–2 times first for real content. **Use real data and facts in the design; no "XX%" or placeholder names**.
 Step B Image strategy: with generate_deck you **don't need image_search in advance** — the system auto-searches internally per page from the planned image_queries keywords and fills real URLs back (each keyword searched once, deduped across pages). **Travel/product/people/brand decks get images by default without the user asking; never fake images with CSS placeholders — slots needing images must be filled with real ones**. Only when redoing a page via regenerate_slide or adding images to existing pages via insert_web_image do you image_search yourself first (English keywords describing a concrete scene like "summer palace kunming lake", not generic words like "park").
+Step B2 Brand assets: images attached to the conversation (company logo, mascot, product shot) are **auto-registered as deck assets** — the writer lists them with "deck:<n>" handles and places them as independent, editable picture elements (a logo goes on the cover plus a small mark on content pages). Never ask the user to re-attach, never redraw a logo yourself, and don't pass attachment bytes through image_queries.
 Step C Unified style: first define one design system for the whole deck — primary/secondary colors, title and body font-size scale, content margins, card/corner style (e.g. "teal primary + cream background + sans-serif fresh look"). **Every page's HTML strictly follows the same system; style must be consistent across pages**.
 Step D Generate (call generate_deck): with many pages pass topic + approx_pages + context (feed in the real material from Step A) and let the system plan internally; with few pages you may pass core_hook+style+pages directly (image_queries takes English image-search keywords; **the system auto-searches internally and fills real URLs back**, no image_search needed in advance). The system writes HTML page by page and lands pages as they generate; you don't hand-write HTML.
 Step E Vary layouts per page (avoid sameness): 3 parallel points→three-column cards; a key number→big-number hero; comparison→two columns; sequence→timeline; image+text→left-text-right-image / full-image with text overlay. **Content pages of one deck must not all use the same layout**.
@@ -743,7 +765,7 @@ const TOOLS: AgentToolDef[] = [
         image_source: {
           type: 'string',
           description:
-            "Imagery source for this deck (optional; remembered as the new default): 'web' search, 'model' AI image generation, 'local' the user's picked folder pool, 'svg' vector graphics the writer draws inline (free & editable), 'auto' model→web→svg. Pass ONLY when the user asked for a specific source (e.g. 用本地图片/生成SVG).",
+            "Imagery source for this deck (optional; remembered as the new default): 'web' search, 'model' AI image generation, 'local' the user's picked folder pool, 'svg' vector graphics the writer draws inline (free & editable), 'auto' model→web→svg. Pass ONLY when the user asked for a specific source (e.g. 用本地图片/生成SVG). Images attached to the conversation (company logo etc.) are auto-registered as brand assets and placed by the writer regardless of this setting.",
           enum: ['auto', 'web', 'model', 'local', 'svg'],
         },
         approx_pages: {
@@ -2286,8 +2308,11 @@ ${r.text}`,
       const idx = Number(call.input.slideIndex)
       if (!slides[idx])
         return fail(t('aiFailRegen'), `slideIndex out of range (0-${slides.length - 1})`)
+      const regenAssets = access.deckImageAssets?.() ?? []
       const regenUseCloud =
-        !!access.generatePageCloud && !!(await access.isCloudPageGenEnabled?.().catch(() => false))
+        !!access.generatePageCloud &&
+        regenAssets.length === 0 &&
+        !!(await access.isCloudPageGenEnabled?.().catch(() => false))
       if (!access.regenerateSlide || (!regenUseCloud && !access.generatePageLocal))
         return fail(
           t('aiFailRegen'),
@@ -2318,6 +2343,7 @@ ${r.text}`,
         brief,
         layout: String(call.input.layout ?? ''),
         images: regenImages,
+        ...(regenAssets.length ? { assets: regenAssets } : {}),
         canvasW: 1280,
         canvasH: 720,
       }
@@ -2366,6 +2392,8 @@ ${r.text}`,
       // drawn inline by the local spec writer (the cloud HTML writer cannot emit
       // vector elements — briefs aren't even part of its request), so an explicit
       // svg choice forces the local pipeline instead of being silently ignored.
+      // Attached brand assets (logo etc.) are local-writer-only for the same
+      // reason: only the spec writer can place a referenced handle.
       const prefRaw = typeof call.input.image_source === 'string' ? call.input.image_source : ''
       const SOURCE_OPTS: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
       const toolPref = SOURCE_OPTS.includes(prefRaw as AiImageSource)
@@ -2379,9 +2407,11 @@ ${r.text}`,
         access.hasImageModel?.() ?? false,
         localPool.length,
       )
+      const deckAssets = access.deckImageAssets?.() ?? []
       const useCloud =
         !!access.generatePageCloud &&
         resolvedDeckSource.source !== 'svg' &&
+        deckAssets.length === 0 &&
         !!(await access.isCloudPageGenEnabled?.().catch(() => false))
       if (!useCloud && !access.generatePageLocal)
         return fail(
@@ -2772,6 +2802,7 @@ ${r.text}`,
           layout: String(p.layout ?? ''),
           images,
           ...(briefs.length ? { imageBriefs: briefs } : {}),
+          ...(deckAssets.length ? { assets: deckAssets } : {}),
           ...(pageContext ? { context: pageContext } : {}),
           ...(topic ? { topic } : {}),
           canvasW,
@@ -2989,11 +3020,18 @@ ${r.text}`,
       for (let i = 0; i < total; i++) if (!doneFlags[i]) stillFailed.push(i + 1)
       const briefErr = (s?: string) => (s ? (s.length > 80 ? `${s.slice(0, 80)}…` : s) : '')
       const imageNotesTail = imageNotes.length ? `\n${imageNotes.join('\n')}` : ''
+      const writerNote = !useCloud
+        ? resolvedDeckSource.source === 'svg' && deckAssets.length
+          ? ' Vector-imagery mode and the attached brand assets routed page generation to the local writer — the cloud writer cannot emit inline SVG or place asset handles; imagery is drawn as editable vector elements and assets are placed as independent picture elements.'
+          : resolvedDeckSource.source === 'svg'
+            ? ' Vector-imagery mode routed page generation to the local writer — the cloud writer cannot emit inline SVG; imagery is drawn as editable vector elements.'
+            : deckAssets.length
+              ? ' The attached brand assets routed page generation to the local writer (only the local writer can place asset handles); each asset lands as an independent, editable picture element.'
+              : ''
+        : ''
       const okMsg =
         `Self-driven generation produced ${landedPages}/${total} pages (${useCloud ? 'cloud HTML' : 'local spec'} written page by page, displayed as generated; failed pages were auto-retried).` +
-        (!useCloud && resolvedDeckSource.source === 'svg'
-          ? ' Vector-imagery mode routed page generation to the local writer — the cloud writer cannot emit inline SVG; imagery is drawn as editable vector elements.'
-          : '') +
+        writerNote +
         imageNotesTail
       const failDetail = stillFailed
         .map((n) => `page ${n}${pageErrors[n - 1] ? ` (${briefErr(pageErrors[n - 1])})` : ''}`)

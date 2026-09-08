@@ -20,10 +20,12 @@ import {
   createSlidesSkill,
   type DeckAccess,
   type ClarifyQuestion,
+  type DeckImageAsset,
   type DeckProgressEvent,
   type PageProgressItem,
 } from './slides-skill'
 import { extractJsonObject, parseOutlineJson } from './outline-json'
+import { resolveSpecAssets } from './spec-asset-resolve'
 import { EditQueueCard } from './EditQueueCard'
 import {
   buildPageInstruction,
@@ -529,6 +531,10 @@ export function AiPanel({
   /** confirmed local image pool (data URIs) for the deck 'local' imagery source */
   const [localPool, setLocalPool] = useState<string[]>([])
   const localPoolRef = useRef<string[]>([])
+  /** Attached images (company logo etc.) registered as deck brand assets — the
+   * writer references them by `deck:<n>` handle; entries persist across runs
+   * (merged by attachment path) so follow-ups keep the branding. */
+  const deckAssetsRef = useRef<DeckImageAsset[]>([])
   localPoolRef.current = localPool
   /** model id driving the in-flight run — shown on this turn's assistant bubbles */
   const runModelRef = useRef<string | undefined>(undefined)
@@ -1063,6 +1069,7 @@ export function AiPanel({
       generatePageLocal: async (args) => {
         const W = args.canvasW
         const H = args.canvasH
+        const assets = (args.assets ?? []).filter((a) => a.dataUri)
         const sys =
           'You are a professional slide visual designer. Output exactly ONE JSON object describing one slide; no explanations/markdown/code fences.\n' +
           '\n' +
@@ -1089,6 +1096,7 @@ export function AiPanel({
           '  A paragraph may mix runs of different weight/color/size (e.g. a big number run + a small unit run in one line).\n' +
           '- Image: {"type":"image","url":"https://...","x":660,"y":80,"w":540,"h":560} — center-cropped to fill its box (object-fit: cover).\n' +
           '- Image (vector, drawn by you): {"type":"image","svg":"<svg viewBox=\\"0 0 200 200\\">…</svg>","x":660,"y":80,"w":200,"h":200} — an inline standalone SVG you write for the slot; the system rasterizes it as the fallback and keeps the vector source. Use ONLY for the imagery briefs.\n' +
+          '- Image (brand asset): {"type":"image","asset":"deck:1","x":660,"y":80,"w":200,"h":200} — reference a pre-registered deck asset by its handle from the brand-assets list; match w/h to its listed natural aspect.\n' +
           '\n' +
           '## Hard layout rules\n' +
           '- Text boxes have ZERO inner padding: the box top-left is exactly where the first glyph starts. Size every box from its content: one line is about sizePt*1.8 px tall at lineSpacingPct 110; a CJK character is about sizePt*1.35 px wide, a Latin character about sizePt*0.7 px. Text wraps at the box width — count the wrapped lines and make the box tall enough, plus one spare line.\n' +
@@ -1100,6 +1108,7 @@ export function AiPanel({
           '- Photos may only use URLs from the "available images" list, at most as many image elements as URLs. With no available images, fill with typography/color blocks/shapes — never fake photos.\n' +
           '- Icon-like decoration uses the allowed shapes only (at most 4-5 per page, strongly content-related). **Never use emoji**.\n' +
           '- Data visuals: compose bars/rings/timelines from rect/donut/line shapes with sizes proportional to the real values from the brief.\n' +
+          '- Minimal editable units (hard rule): every visual element lands as its own independent element — words ALWAYS as text elements (never inside a picture/SVG), decorative geometry from shape primitives, and an inline SVG carries exactly ONE motif (one icon / one diagram component / one illustration). Never draw a whole page, a title, or several unrelated motifs into a single SVG.\n' +
           '- Solid colors only (alpha allowed) — no gradients. **No placeholders of any kind**: all copy comes from the brief’s real content.\n' +
           '\n' +
           '## Anti-AI design rules (violation = unacceptable)\n' +
@@ -1112,17 +1121,25 @@ export function AiPanel({
           : ''
         const briefsBlock = args.imageBriefs?.length
           ? `\nImagery briefs (no photo could be sourced for these slots — for EACH brief below you MUST emit one image element with an "svg" field, NOT a url):\n${args.imageBriefs.map((b, i) => `${i + 1}. ${b}`).join('\n')}` +
-            '\nSVG rules: complete standalone markup starting <svg viewBox="0 0 200 200"> and ending </svg>; at most 1500 characters each; at most 6 per page; all coordinates inside the viewBox; flat solid fills using this page\'s palette (background/accent colors from the style); simple bold geometry (icons, diagram components, decorations) with no tiny details; NO external images/fonts/CSS/scripts; <text> only with a generic font-family; no emoji.'
+            '\nSVG rules: complete standalone markup starting <svg viewBox="0 0 200 200"> and ending </svg>; at most 1500 characters each; at most 6 per page; one motif per SVG; all coordinates inside the viewBox; flat solid fills using this page\'s palette (background/accent colors from the style); simple bold geometry (icons, diagram components, decorations) with no tiny details; NO text anywhere in the SVG (<text> is forbidden — words belong in text elements); NO external images/fonts/CSS/scripts; no emoji.'
           : ''
         const ctxBlock = args.context
           ? `\n\nReference material (all real names/figures/facts come from here; do not invent):\n${args.context.slice(0, 4000)}`
+          : ''
+        const assetsBlock = assets.length
+          ? `\nBrand assets (pre-registered by the user; reference by handle — the system injects the real image; never invent handles, never echo bytes):\n${assets
+              .map(
+                (a, i) =>
+                  `${i + 1}. handle "${a.id}" — ${a.name}${a.width && a.height ? `, natural size ${a.width}x${a.height}` : ''} — place it on the cover${i === 0 ? ' prominently' : ''} and as a small footer mark on content pages; match w/h to the natural aspect`,
+              )
+              .join('\n')}`
           : ''
         const userMsg =
           `This is the deck's unified style (this page must follow it strictly to stay consistent across pages):\n${args.style}\n\n` +
           (args.topic ? `Deck topic: ${args.topic}\n` : '') +
           `Deck-wide narrative Core Hook: ${args.coreHook}\n\n` +
           `Now design page ${args.pageIndex}/${args.totalPages}.\n` +
-          `Title: ${args.title}\nLayout: ${args.layout}\nContent brief (use real data/facts): ${args.brief}${imgBlock}${briefsBlock}${ctxBlock}\n\n` +
+          `Title: ${args.title}\nLayout: ${args.layout}\nContent brief (use real data/facts): ${args.brief}${imgBlock}${briefsBlock}${assetsBlock}${ctxBlock}\n\n` +
           "Return only this page's spec JSON."
         // One repair round: feed the exact validation error back so the model can fix its JSON
         let lastErr = ''
@@ -1140,9 +1157,12 @@ export function AiPanel({
           }
           try {
             // inline SVG elements get sanitized + rasterized here (renderer image
-            // pipeline); failed ones are dropped and the page continues without them
+            // pipeline); failed ones are dropped and the page continues without them.
+            // Brand-asset handles ("deck:n") then rewrite to inline data URIs with an
+            // aspect-true box, so the model never echoes multi-KB bytes.
             const hydrated = await hydrateSpecSvg(r.text)
-            const res = await window.slidesApi.localGeneratePage({ specJson: hydrated.json })
+            const resolved = resolveSpecAssets(hydrated.json, assets)
+            const res = await window.slidesApi.localGeneratePage({ specJson: resolved.json })
             if (res?.ok && res.marker) return res
             lastErr = res?.error ?? tGlobal('aiErrUnknown')
           } catch (e) {
@@ -1354,6 +1374,10 @@ export function AiPanel({
         }
       },
       localImagePool: () => localPoolRef.current,
+      // Attached images (logo etc.) persist as brand assets for follow-up runs too —
+      // merged by path so re-sending never duplicates a handle; payloadless entries
+      // (read still pending/failed) never route generation
+      deckImageAssets: () => deckAssetsRef.current.filter((a) => a.dataUri),
       saveSidecar: async (data) => {
         try {
           await window.slidesApi.saveStyleSidecar(data)
@@ -1625,6 +1649,8 @@ export function AiPanel({
 
   /** Image attachments read as base64, sent multimodally with this user message (≤5MB per image, max 20; isomorphic to docs) */
   const MAX_IMAGES_PER_MESSAGE = 20
+  /** Brand-asset cap: logos/mascots are few; keeps writer prompts and pptx media small */
+  const MAX_DECK_ASSETS = 6
   const collectImageAttachments = async (atts: AttachmentMeta[]): Promise<AgentImage[]> => {
     const imageAtts = atts.filter((a) => ATTACHMENT_IMAGE_EXTS.has(a.ext))
     const images: AgentImage[] = []
@@ -1715,6 +1741,39 @@ export function AiPanel({
     }
   }
 
+  /** Register image attachments as deck brand assets (deck:1..n, capped): the page
+   * writer references them by handle — the bytes never round-trip through the
+   * model's output. Reads are fire-and-forget; natural size lands async and only
+   * sharpens the resolver's aspect fit. Entries with no payload are filtered at
+   * read time, so a failed read never poisons generation. */
+  const registerDeckAssets = (atts: AttachmentMeta[]) => {
+    const known = new Set(deckAssetsRef.current.map((a) => a.name))
+    for (const att of atts) {
+      if (deckAssetsRef.current.length >= MAX_DECK_ASSETS) break
+      if (!ATTACHMENT_IMAGE_EXTS.has(att.ext) || known.has(att.path)) continue
+      known.add(att.path)
+      const entry: DeckImageAsset = {
+        id: `deck:${deckAssetsRef.current.length + 1}`,
+        name: att.name,
+        dataUri: '',
+      }
+      deckAssetsRef.current = [...deckAssetsRef.current, entry]
+      void window.desktop
+        .readAttachmentImage(att.path)
+        .then((r) => {
+          if (!r.ok || !r.base64 || !r.mime) return
+          entry.dataUri = `data:${r.mime};base64,${r.base64}`
+          const probe = new Image()
+          probe.onload = () => {
+            entry.width = probe.naturalWidth
+            entry.height = probe.naturalHeight
+          }
+          probe.src = entry.dataUri
+        })
+        .catch(() => {})
+    }
+  }
+
   const runWith = (
     instruction: string,
     displayText?: string,
@@ -1741,6 +1800,9 @@ export function AiPanel({
       attachmentsRef.current = []
     }
     lastAttachmentsRef.current = sentAtts
+    // Auto-register image attachments as deck brand assets (idempotent by path):
+    // generate_deck/regenerate_slide place them as independent editable pictures
+    registerDeckAssets(sentAtts)
     inputEditedSinceRunRef.current = false
     instructionRef.current = instruction
     lastInstructionRef.current = instruction

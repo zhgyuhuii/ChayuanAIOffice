@@ -15,7 +15,7 @@ export interface SvgHydrateResult {
   json: string
   /** inline SVG elements that made it through sanitize + decode + raster */
   svgOk: number
-  /** inline SVG elements dropped (markup failure / no intrinsic size / blank raster) */
+  /** inline SVG elements dropped (markup failure / no intrinsic size / blank raster / text inside SVG) */
   svgFailed: number
 }
 
@@ -38,6 +38,13 @@ export async function hydrateSpecSvg(specJson: string): Promise<SvgHydrateResult
     const svg = typeof el?.svg === 'string' ? el.svg.trim() : ''
     if (!svg) {
       kept.push(el)
+      continue
+    }
+    // Writer SVGs are graphics-only: text must land as native text elements
+    // (editable, real fonts). An SVG carrying <text> would rasterize its words
+    // into an uneditable picture — reject it so the page stays minimal-unit.
+    if (/<text[\s/>]/i.test(svg) || /<text>/i.test(svg)) {
+      svgFailed++
       continue
     }
     const clean = sanitizeSvg(svg)

@@ -19,6 +19,7 @@ function makeAccess(opts?: {
   searchImagesMulti?: number
   planImageQueries?: string[]
   styleTemplates?: Record<string, { topic: string; styleSkill: string; createdAt: string }>
+  deckAssets?: number
 }) {
   const failPages = new Set(opts?.failPages ?? [])
   const failAttempts = { ...(opts?.failAttempts ?? {}) } // pageIndex -> how many more times to fail
@@ -31,6 +32,7 @@ function makeAccess(opts?: {
   const imageSearchCalls: string[] = [] // records the queries searchImages was called with
   const imagesSeen: string[][] = [] // records the images each generatePageCloud call received
   const briefsSeen: string[][] = [] // records the imagery briefs each generatePageLocal call received
+  const assetsSeen: Array<Array<{ id: string; name: string }>> = [] // records the brand assets each generatePageLocal call received
   const sidecarSaves: Array<{ topic: string; styleSkill: string; createdAt: string }> = []
   const savedTemplates: Record<
     string,
@@ -97,6 +99,7 @@ function makeAccess(opts?: {
       stylesSeen.push(args.style)
       imagesSeen.push([...args.images])
       briefsSeen.push([...(args.imageBriefs ?? [])])
+      assetsSeen.push([...(args.assets ?? [])])
       if (failPages.has(args.pageIndex)) return { ok: false, error: 'mock fail' }
       if (failAttempts[args.pageIndex] && failAttempts[args.pageIndex] > 0) {
         failAttempts[args.pageIndex] -= 1
@@ -135,6 +138,14 @@ function makeAccess(opts?: {
       }
       return [`https://mock.img/${encodeURIComponent(query)}.jpg`]
     },
+    deckImageAssets: () =>
+      Array.from({ length: opts?.deckAssets ?? 0 }, (_, i) => ({
+        id: `deck:${i + 1}`,
+        name: `logo-${i + 1}.png`,
+        dataUri: `data:image/png;base64,Q0FE${i}`,
+        width: 200,
+        height: 100,
+      })),
     saveSidecar: async (data) => {
       sidecarSaves.push(data)
     },
@@ -163,6 +174,7 @@ function makeAccess(opts?: {
     imageSearchCalls,
     imagesSeen,
     briefsSeen,
+    assetsSeen,
     sidecarSaves,
     savedTemplates,
     getPages: () => pages,
@@ -649,6 +661,33 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     expect(m.genPageCalls).toEqual([1])
     expect(m.localPageCalls).toEqual([])
     expect(m.imagesSeen[0]).toEqual(['https://mock.img/kw.jpg'])
+  })
+
+  it('attached brand assets with cloud available → the LOCAL writer runs and receives the asset descriptors', async () => {
+    const m = makeAccess({ deckAssets: 2 }) // cloud enabled by default — assets must override the writer pick
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('web', ['harbor photo']))) as { output: string }
+    expect(m.genPageCalls).toEqual([]) // cloud never touched
+    expect(m.localPageCalls).toEqual([1])
+    expect(m.assetsSeen[0]).toHaveLength(2)
+    expect(m.assetsSeen[0]![0]).toMatchObject({ id: 'deck:1', name: 'logo-1.png' })
+    expect(res.output).toContain('brand assets') // routing is reported, not silent
+  })
+
+  it('regenerate_slide with brand assets → the LOCAL writer runs too (second routing point)', async () => {
+    const m = makeAccess({ deckAssets: 1 })
+    const slide = { id: 's1' } as unknown as RenderSlide
+    m.access.getSlides = () => [slide]
+    m.access.regenerateSlide = async () => ({ ok: true })
+    const skill = createSlidesSkill(m.access)
+    await skill.executeTool({
+      id: 'c-regen',
+      name: 'regenerate_slide',
+      input: { slideIndex: 0, title: 'Cover', brief: 'redo the cover' },
+    })
+    expect(m.genPageCalls).toEqual([])
+    expect(m.localPageCalls).toEqual([1])
+    expect(m.assetsSeen[0]).toHaveLength(1)
   })
 
   it('tool image_source persists as the new default (verbal source change)', async () => {
