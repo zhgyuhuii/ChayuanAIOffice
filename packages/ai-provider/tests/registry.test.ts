@@ -76,6 +76,23 @@ describe('provider registry', () => {
     }
   })
 
+  it('marks the OpenAI o-series reasoning models as fixed-sampling', () => {
+    for (const model of ['o1', 'o1-mini', 'o1-preview', 'o3', 'o3-mini', 'o4-mini']) {
+      expect(AI_PROVIDER_ADAPTERS.openai.resolveEndpoint(config(model))).toEqual({
+        protocol: 'openai-compatible',
+        baseUrl: 'https://api.openai.com/v1',
+        omitTemperature: true,
+        useMaxCompletionTokens: true,
+      })
+    }
+    // Non-reasoning models still carry the configured temperature.
+    expect(AI_PROVIDER_ADAPTERS.openai.resolveEndpoint(config('gpt-4o'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://api.openai.com/v1',
+      useMaxCompletionTokens: true,
+    })
+  })
+
   it('resolves the catalog additions to their OpenAI-compatible endpoints', () => {
     const cases: Array<[AiProviderId, string, string]> = [
       ['glm', 'glm-5.3', 'https://open.bigmodel.cn/api/paas/v4'],
