@@ -29,6 +29,7 @@ import {
 } from '@chatoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
+import { PasteSpecialDialog, type PasteSpecialVariant } from './PasteSpecialDialog'
 import { PictureCropDialog } from './PictureCropDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { GoToDialog } from './GoToDialog'
@@ -160,6 +161,18 @@ const TRANSLATE_LANGUAGES = [
   'Русский',
   'العربية',
 ] as const
+
+/// 选择性粘贴对话框 variant → sheet command.
+const PASTE_SPECIAL_COMMANDS: Record<PasteSpecialVariant, string> = {
+  all: 'paste',
+  formula: 'paste-special:formula',
+  value: 'paste-special:value',
+  format: 'paste-special:format',
+  'besides-border': 'paste-special:besides-border',
+  'col-width': 'paste-special:col-width',
+  transpose: 'paste-special:transpose',
+  text: 'paste-special:text',
+}
 
 function stepFontSize(current: number, direction: 1 | -1): number {
   if (direction === 1) {
@@ -483,6 +496,7 @@ export function ExcelShell({
     localStorage.setItem('ai-sheets-show-ai', isCopilotOpen ? '1' : '0')
   }, [isCopilotOpen])
   const [showFormatCells, setShowFormatCells] = useState(false)
+  const [showPasteSpecial, setShowPasteSpecial] = useState(false)
   const [axisSizeTarget, setAxisSizeTarget] = useState<'row' | 'col' | null>(null)
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [showSortDialog, setShowSortDialog] = useState(false)
@@ -907,6 +921,7 @@ export function ExcelShell({
                 onIsSelectionInPivot={onIsSelectionInPivot}
                 onCommand={(command) => {
                   if (command === 'format-cells') setShowFormatCells(true)
+                  else if (command === 'paste-special-dialog') setShowPasteSpecial(true)
                   else if (command === 'row-height-open') setAxisSizeTarget('row')
                   else if (command === 'col-width-open') setAxisSizeTarget('col')
                   else if (command === 'link-open') setShowLinkDialog(true)
@@ -1010,6 +1025,15 @@ export function ExcelShell({
           anchorValue={onGetAnchorValue()}
           onCommand={onCommand}
           onClose={() => setShowFormatCells(false)}
+        />
+      )}
+      {showPasteSpecial && (
+        <PasteSpecialDialog
+          onApply={(variant: PasteSpecialVariant) => {
+            setShowPasteSpecial(false)
+            onCommand(PASTE_SPECIAL_COMMANDS[variant])
+          }}
+          onClose={() => setShowPasteSpecial(false)}
         />
       )}
       {showPictureCrop && selectedImage && (
@@ -3558,8 +3582,6 @@ function Ribbon({
               value: 'paste-as-picture',
               label: t('appPasteAsPicture'),
               icon: <ToolSymbol symbol="🖼" />,
-              disabled: true,
-              tip: t('appFeaturePendingTip'),
             },
             {
               value: 'paste-special:text',
@@ -3570,8 +3592,6 @@ function Ribbon({
               value: 'paste-special-dialog',
               label: t('appPasteSpecial'),
               icon: <OptSample>⋯</OptSample>,
-              disabled: true,
-              tip: t('appFeaturePendingTip'),
             },
           ]}
           onMain={() => onCommand('paste')}
@@ -3594,8 +3614,6 @@ function Ribbon({
                 value: 'copy-as-picture',
                 label: t('appCopyAsPicture'),
                 icon: <ToolSymbol symbol="🖼" />,
-                disabled: true,
-                tip: t('appFeaturePendingTip'),
               },
             ]}
             onMain={() => onCommand('copy')}

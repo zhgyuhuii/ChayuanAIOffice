@@ -20,6 +20,7 @@ import { columnLabel, formatAddress } from '../domain/cell-address'
 import { transposeChartSeries, type ChartSeriesVisualState } from '../domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '../domain/flash-fill'
 import { parseTsv, plainTextFromCells } from './clipboard-tsv'
+import { boundingRange, renderRangeToPng } from './range-image'
 import type {
   WorkbookChartEdit,
   WorkbookStyleEdit,
@@ -92,6 +93,7 @@ import {
   handleInsertPicture,
   handleInsertPivotChart,
   handleInsertShape,
+  insertPictureFromData,
   startShapeDraw,
   type VisualActionContext,
 } from './visual-actions'
@@ -309,6 +311,82 @@ async function pasteTextOnly(ctx: RibbonCommandContext): Promise<void> {
     .getRange(target.getRow(), target.getColumn(), cellMatrix.length, cellMatrix[0]?.length ?? 0)
     .setValues(cellMatrix)
   ctx.setMessage(t('appPastedTextOnly'))
+}
+
+/// data: URL → Blob without fetch(): the renderer's CSP blocks fetch(data:),
+/// and the clipboard write needs a real Blob for ClipboardItem.
+function dataUrlToPngBlob(dataUrl: string): Blob | null {
+  const comma = dataUrl.indexOf(',')
+  if (!dataUrl.startsWith('data:image/png;base64,') || comma === -1) return null
+  try {
+    const bytes = Uint8Array.from(atob(dataUrl.slice(comma + 1)), (ch) => ch.charCodeAt(0))
+    return new Blob([bytes], { type: 'image/png' })
+  } catch {
+    return null
+  }
+}
+
+/// 复制为图片: crops the live grid canvas at the selection's screen rect
+/// (renderRangeToPng) and puts the PNG on the OS clipboard, so any app —
+/// or this sheet itself — can paste it as a bitmap.
+async function copyRangeAsPicture(ctx: RibbonCommandContext): Promise<void> {
+  const runtime = ctx.univerRef.current
+  const workbook = runtime?.univerAPI.getActiveWorkbook()
+  const worksheet = workbook?.getActiveSheet()
+  const range = workbook?.getActiveRange()
+  if (!runtime || !workbook || !worksheet || !range) return
+  // Drop Univer's copy marquee first so the ants don't bake into the shot.
+  try {
+    runtime.univer.__getInjector().get(ISheetClipboardService).removeMarkSelection()
+  } catch {
+    /* visual only */
+  }
+  const outcome = await renderRangeToPng(runtime, range.getRange())
+  if (!outcome.ok) {
+    ctx.setMessage(
+      t(outcome.reason === 'too-large' ? 'appRangeTooLarge' : 'appPictureRenderFailed'),
+    )
+    return
+  }
+  const blob = dataUrlToPngBlob(outcome.dataUrl)
+  if (!blob) {
+    ctx.setMessage(t('appPictureRenderFailed'))
+    return
+  }
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+  } catch {
+    ctx.setMessage(t('appPictureRenderFailed'))
+    return
+  }
+  ctx.setMessage(t('appPictureCopied'))
+}
+
+/// 粘贴为图片: re-renders the last internal copy (the copy cache stores the
+/// source coordinates) as a PNG and inserts it as a floating picture at the
+/// active cell — WPS's paste-as-picture without an OS round trip.
+async function pasteRangeAsPicture(ctx: RibbonCommandContext): Promise<void> {
+  const runtime = ctx.univerRef.current
+  if (!runtime) return
+  const cached = lastInternalCopy(runtime)
+  const bounds = cached ? boundingRange(cached.range.rows, cached.range.cols) : null
+  if (!cached || !bounds) {
+    ctx.setMessage(t('appNeedCopyFirst'))
+    return
+  }
+  // 浮点图片依赖文件会话的 visual 日志（与插入图片按钮同一约束）。
+  if (!ctx.lazyWorkbookRef.current) {
+    ctx.setMessage(t('appPictureNeedsFile'))
+    return
+  }
+  const outcome = await renderRangeToPng(runtime, bounds)
+  if (!outcome.ok) {
+    ctx.setMessage(
+      t(outcome.reason === 'too-large' ? 'appRangeTooLarge' : 'appPictureRenderFailed'),
+    )
+    return
+  }
+  insertPictureFromData(ctx.visualContext(), outcome.dataUrl, 'Paste as Picture')
 }
 
 /// Arms the one-shot draw border: listeners live until the next left-button
@@ -752,6 +830,14 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         }
         return
     }
+  }
+  if (command === 'copy-as-picture') {
+    void copyRangeAsPicture(ctx)
+    return
+  }
+  if (command === 'paste-as-picture') {
+    void pasteRangeAsPicture(ctx)
+    return
   }
   if (command.startsWith('draw-border:')) {
     // `draw-border:<outline|grid|erase>:<#color>:<style-name>` — arms the

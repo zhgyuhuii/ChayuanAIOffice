@@ -6112,3 +6112,24 @@ textarea:focus {
   display: flex;
   flex-direction: column;
 }
+
+/* 选择性粘贴对话框：两列单选（WPS 粘贴项布局） */
+.paste-special-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px 18px;
+}
+
+.paste-special-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 2px;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.paste-special-option input {
+  accent-color: var(--accent, #217346);
+}
