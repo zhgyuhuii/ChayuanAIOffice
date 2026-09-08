@@ -97,9 +97,7 @@ async function generateViaOpenAiImages(
   }
   if (json.error) throw new Error(json.error.message || 'image generation failed')
   const urls = (json.data ?? [])
-    .map((item) =>
-      item.b64_json ? `data:image/png;base64,${item.b64_json}` : (item.url ?? ''),
-    )
+    .map((item) => (item.b64_json ? `data:image/png;base64,${item.b64_json}` : (item.url ?? '')))
     .filter((u) => u !== '')
   if (!urls.length) throw new Error('the image API returned neither an image nor a URL')
   return { urls }
@@ -118,6 +116,10 @@ async function generateViaDashscope(
   const size = strParam(req.params, 'size') ?? aspectToSize(req.aspectRatio, '*') ?? '1024*1024'
   const n = numParam(req.params, 'n') ?? 1
   const isQwenImage = /qwen-image/i.test(call.model)
+  // qwen-image / wanx watermark their output ("AI生成" mark, bottom-right) unless
+  // explicitly disabled; flux on dashscope doesn't document the parameter, so it
+  // only goes to the two families that do.
+  const noWatermark = /qwen-image|wanx/i.test(call.model) ? { watermark: false } : {}
   const submit = await aiFetch(
     isQwenImage
       ? `${root}/api/v1/services/aigc/multimodal-generation/generation`
@@ -135,12 +137,12 @@ async function generateViaDashscope(
           ? {
               model: call.model,
               input: { messages: [{ role: 'user', content: [{ text: req.prompt }] }] },
-              parameters: { n, size },
+              parameters: { n, size, ...noWatermark },
             }
           : {
               model: call.model,
               input: { prompt: req.prompt },
-              parameters: { n, size },
+              parameters: { n, size, ...noWatermark },
             },
       ),
     },
@@ -168,9 +170,7 @@ async function generateViaDashscope(
     }
     const out = status.output ?? {}
     if (out.task_status === 'SUCCEEDED') {
-      const urls = (out.results ?? [])
-        .map((r) => r.url ?? '')
-        .filter((u) => u !== '')
+      const urls = (out.results ?? []).map((r) => r.url ?? '').filter((u) => u !== '')
       if (urls.length) return { urls }
       throw new Error('dashscope task finished without a result image')
     }

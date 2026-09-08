@@ -29,8 +29,39 @@ export interface SearchAttempt {
   count?: number
 }
 
-// Known stock-photo hosts skipped during image search (matches the upstream filter list)
-export const COPYRIGHT_HOSTS = ['gettyimages', 'istockphoto', 'shutterstock', 'corbis']
+// Stock/preview hosts skipped during image search (substring-matched against the
+// image URL). Beyond the classic international agencies, the major watermark-
+// preview stock sites are blocked: their CDN previews carry visible watermarks
+// that would land straight onto generated slides.
+export const COPYRIGHT_HOSTS = [
+  // international agencies
+  'gettyimages',
+  'istockphoto',
+  'shutterstock',
+  'corbis',
+  '123rf',
+  'dreamstime',
+  'alamy',
+  'depositphotos',
+  'stock.adobe',
+  'bigstockphoto',
+  'agefotostock',
+  'colourbox',
+  'canstockphoto',
+  'freepik',
+  // China stock/preview sites (视觉中国/图虫/千图/摄图/包图/昵图/我图/千库/觅元素/稿定)
+  'vcg.com',
+  'vcg.cn',
+  'tuchong',
+  '58pic',
+  '699pic',
+  'ibaotu',
+  'nipic',
+  'photophoto',
+  '588ku',
+  '51yuansu',
+  'gaoding',
+]
 
 export function safeHost(url: unknown): string {
   try {
