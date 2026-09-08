@@ -2362,8 +2362,27 @@ ${r.text}`,
       //   2) Generate: batched concurrent page generation (one retry per page), **each batch lands immediately → frontend shows pages one by one**.
       //      Cloud (chatoffice slide_generate) when available; otherwise fully local — the LLM (app AI
       //      transport, works with BYOK) writes a slide spec that is built directly into a pptx.
+      // The imagery source resolves BEFORE the writer pick: 'svg' briefs must be
+      // drawn inline by the local spec writer (the cloud HTML writer cannot emit
+      // vector elements — briefs aren't even part of its request), so an explicit
+      // svg choice forces the local pipeline instead of being silently ignored.
+      const prefRaw = typeof call.input.image_source === 'string' ? call.input.image_source : ''
+      const SOURCE_OPTS: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
+      const toolPref = SOURCE_OPTS.includes(prefRaw as AiImageSource)
+        ? (prefRaw as AiImageSource)
+        : undefined
+      const persistedPref = access.imageSourcePref?.() ?? 'auto'
+      if (toolPref && toolPref !== persistedPref) access.setImageSourcePref?.(toolPref)
+      const localPool = access.localImagePool?.() ?? []
+      const resolvedDeckSource = resolveDeckImageSource(
+        toolPref ?? persistedPref,
+        access.hasImageModel?.() ?? false,
+        localPool.length,
+      )
       const useCloud =
-        !!access.generatePageCloud && !!(await access.isCloudPageGenEnabled?.().catch(() => false))
+        !!access.generatePageCloud &&
+        resolvedDeckSource.source !== 'svg' &&
+        !!(await access.isCloudPageGenEnabled?.().catch(() => false))
       if (!useCloud && !access.generatePageLocal)
         return fail(
           t('aiFailGenDeck'),
@@ -2568,21 +2587,10 @@ ${r.text}`,
       // Explicit http(s)/data URLs in image_queries pass through untouched.
       const imageNotes: string[] = []
       {
-        const SOURCE_OPTS: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
-        const prefRaw = typeof call.input.image_source === 'string' ? call.input.image_source : ''
-        const toolPref = SOURCE_OPTS.includes(prefRaw as AiImageSource)
-          ? (prefRaw as AiImageSource)
-          : undefined
-        const persisted = access.imageSourcePref?.() ?? 'auto'
-        if (toolPref && toolPref !== persisted) access.setImageSourcePref?.(toolPref)
-        const pool = access.localImagePool?.() ?? []
-        const resolved = resolveDeckImageSource(
-          toolPref ?? persisted,
-          access.hasImageModel?.() ?? false,
-          pool.length,
-        )
-        const source = resolved.source
-        if (resolved.emptyPoolNote) imageNotes.push(t('aiNotePoolEmpty'))
+        // Source resolution happened at the writer pick above (svg forces local);
+        // reuse it so the routing decision and the allocation agree.
+        const source = resolvedDeckSource.source
+        if (resolvedDeckSource.emptyPoolNote) imageNotes.push(t('aiNotePoolEmpty'))
         if (source === 'svg') imageNotes.push(t('aiNoteSvgMode'))
 
         const normKw = (s: string) => s.toLowerCase().replace(/\s+/g, ' ')
@@ -2656,10 +2664,10 @@ ${r.text}`,
         } else if (source === 'local') {
           // pool items are handed to keywords in order; unclaimed keywords degrade
           uniqueKeywords.forEach((kw, i) => {
-            const item = pool[i]
+            const item = localPool[i]
             if (item) candidatesByKw.set(normKw(kw), [item])
           })
-          progress(totalSlots, totalSlots, t('aiStageImagesLocal', { n: pool.length }))
+          progress(totalSlots, totalSlots, t('aiStageImagesLocal', { n: localPool.length }))
         }
 
         const slots = allocateImagery(pages, source, candidatesByKw)
@@ -2981,7 +2989,12 @@ ${r.text}`,
       for (let i = 0; i < total; i++) if (!doneFlags[i]) stillFailed.push(i + 1)
       const briefErr = (s?: string) => (s ? (s.length > 80 ? `${s.slice(0, 80)}…` : s) : '')
       const imageNotesTail = imageNotes.length ? `\n${imageNotes.join('\n')}` : ''
-      const okMsg = `Self-driven generation produced ${landedPages}/${total} pages (HTML written page by page, displayed as generated; failed pages were auto-retried).${imageNotesTail}`
+      const okMsg =
+        `Self-driven generation produced ${landedPages}/${total} pages (${useCloud ? 'cloud HTML' : 'local spec'} written page by page, displayed as generated; failed pages were auto-retried).` +
+        (!useCloud && resolvedDeckSource.source === 'svg'
+          ? ' Vector-imagery mode routed page generation to the local writer — the cloud writer cannot emit inline SVG; imagery is drawn as editable vector elements.'
+          : '') +
+        imageNotesTail
       const failDetail = stillFailed
         .map((n) => `page ${n}${pageErrors[n - 1] ? ` (${briefErr(pageErrors[n - 1])})` : ''}`)
         .join(', ')

@@ -577,7 +577,7 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     },
   })
 
-  it("model source: generation fails (Arrearage-style) → slots degrade to briefs for the local writer, the report names them, and web is never silently tried", async () => {
+  it('model source: generation fails (Arrearage-style) → slots degrade to briefs for the local writer, the report names them, and web is never silently tried', async () => {
     const m = makeAccess({ cloudEnabled: false })
     m.access.generateModelImage = async () => null
     const skill = createSlidesSkill(m.access)
@@ -619,7 +619,7 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     expect(res.output).toContain('team photo')
   })
 
-  it("svg source: keywords stay briefs (the writer draws), the mode note lands in the report, and no sourcing channel runs", async () => {
+  it('svg source: keywords stay briefs (the writer draws), the mode note lands in the report, and no sourcing channel runs', async () => {
     const m = makeAccess({ cloudEnabled: false })
     const skill = createSlidesSkill(m.access)
     const res = (await skill.executeTool(kwCall('svg', ['growth chart']))) as { output: string }
@@ -628,6 +628,27 @@ describe('generate_deck imagery source stage (image-source-plan M-A/M-C)', () =>
     expect(res.output).toContain('配图来源') // aiNoteSvgMode
     expect(res.output).not.toContain('未能配图') // svg mode is the plan, not a degradation
     expect(m.imageSearchCalls).toEqual([])
+  })
+
+  it('svg source with cloud available → pages route to the LOCAL writer (the cloud writer cannot emit inline SVG), briefs intact', async () => {
+    const m = makeAccess() // cloud enabled by default — svg must override the writer pick
+    const skill = createSlidesSkill(m.access)
+    const res = (await skill.executeTool(kwCall('svg', ['growth chart']))) as { output: string }
+    expect(m.genPageCalls).toEqual([]) // cloud never touched
+    expect(m.localPageCalls).toEqual([1]) // local spec writer drew the page
+    expect(m.briefsSeen[0]).toEqual(['growth chart'])
+    expect(res.output).toContain('local writer') // routing is reported, not silent
+    expect(res.output).toContain('配图来源') // aiNoteSvgMode
+  })
+
+  it('non-svg source with cloud available → the cloud writer stays in charge (svg override does not leak)', async () => {
+    const m = makeAccess() // cloud enabled; 'web' keeps the cloud pipeline
+    m.access.searchImages = async () => ['https://mock.img/kw.jpg']
+    const skill = createSlidesSkill(m.access)
+    await skill.executeTool(kwCall('web', ['harbor photo']))
+    expect(m.genPageCalls).toEqual([1])
+    expect(m.localPageCalls).toEqual([])
+    expect(m.imagesSeen[0]).toEqual(['https://mock.img/kw.jpg'])
   })
 
   it('tool image_source persists as the new default (verbal source change)', async () => {
