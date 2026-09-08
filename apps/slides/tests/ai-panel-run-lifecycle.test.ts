@@ -8,7 +8,9 @@ const agentHarness = vi.hoisted(() => ({
       call: { id: string; name: string; input: unknown }
       execution: { summary: string; output?: string; isError?: boolean; mutated?: boolean }
     }) => void
+    onTurnEnd?: () => void
     onDone?: (result: { text: string; cancelled: boolean; turnLimit: boolean }) => void
+    onError?: (error: string) => void
   },
   run: vi.fn(),
   cancel: vi.fn(),
@@ -227,8 +229,47 @@ describe('AiPanel agent run lifecycle (slides)', () => {
     expect(readAttachmentImage).toHaveBeenCalledWith('/tmp/bad.png')
     // adapted: local AiPanel also passes an empty media-attachment slot
     // ({audio, video}) after the images argument
-    expect(agentHarness.run).toHaveBeenCalledWith('Polish this slide', [
-      { base64: 'AAAA', mime: 'image/png' },
-    ], { audio: [], video: [] })
+    expect(agentHarness.run).toHaveBeenCalledWith(
+      'Polish this slide',
+      [{ base64: 'AAAA', mime: 'image/png' }],
+      { audio: [], video: [] },
+    )
+  })
+
+  it('offers the sign-in CTA only for chatoffice auth errors, never for generic run failures', async () => {
+    // signed out: the old code stamped the login button onto ANY error
+    Object.defineProperty(window, 'slidesApi', {
+      configurable: true,
+      value: {
+        aiGskStatus: vi.fn(async () => ({ loggedIn: true })),
+        aiChatOfficeStatus: vi.fn(async () => ({ loggedIn: false })),
+        beginHistoryBatch: vi.fn(async () => false),
+        endHistoryBatch: vi.fn(async () => null),
+        aiLogRunFailure: vi.fn(async () => undefined),
+      },
+    })
+
+    const { container } = mount(createElement(AiPanel, panelProps({})))
+    await flushEffects()
+
+    // the exact loop-stop message from an all-tools-failed run: no CTA
+    act(() => {
+      agentHarness.events!.onTurnEnd?.()
+      agentHarness.events!.onError?.(
+        'Every tool call failed for 8 turns in a row; the run was stopped. Please send the request again',
+      )
+    })
+    await flushEffects()
+    expect(container.querySelector('.ai-login-btn')).toBeNull()
+
+    // a chatoffice sign-in failure: the CTA belongs here
+    act(() => {
+      agentHarness.events!.onTurnEnd?.()
+      agentHarness.events!.onError?.(
+        'Not signed in to ChatOffice: click “Sign in” below, sign in, then retry',
+      )
+    })
+    await flushEffects()
+    expect(container.querySelector('.ai-login-btn')).not.toBeNull()
   })
 })

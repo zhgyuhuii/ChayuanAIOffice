@@ -20,19 +20,42 @@ const SVG_OK =
 const PNG_1PX_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
 
-const applyTxn = vi.fn(async (req: { ops: Array<Record<string, unknown>> }) => ({
-  applied: true,
-  records: req.ops.map((o) => ({ op: String(o.op), created: ['e_new1'] })),
-}))
+// Stands in for the main-process txn runner, enforcing the op registry's target
+// contract: an op without target.slide is exactly how the executor rejects it
+// ("needs target.slide") — a regression here is what once made generate_svg fail
+// on every call in the live app while this mock waved everything through.
+const applyTxn = vi.fn(async (req: { ops: Array<Record<string, unknown>> }) => {
+  const rejected = req.ops
+    .map((o, index) =>
+      o.target && typeof (o.target as Record<string, unknown>).slide !== 'undefined'
+        ? null
+        : { index, error: `op "${String(o.op)}" needs target.slide (mock registry contract)` },
+    )
+    .filter(Boolean)
+  if (rejected.length) return { applied: false, failures: rejected }
+  return {
+    applied: true,
+    records: req.ops.map((o) => ({ op: String(o.op), created: ['e_new1'] })),
+  }
+})
 
 const call = (input: Record<string, unknown>): AgentToolCall =>
   ({ id: 't1', name: 'generate_svg', input }) as unknown as AgentToolCall
 
+const generateVideo = vi.fn(async () => ({
+  bytes: 'AAAA',
+  ext: 'mp4',
+  url: 'https://mock.video/clip.mp4',
+  model: 'mock-video-model',
+  vendorId: 'mock-vendor',
+}))
+
 beforeEach(() => {
   vi.mocked(rasterizeSvg).mockReset()
   applyTxn.mockClear()
+  generateVideo.mockClear()
   ;(globalThis as { window?: unknown }).window = {
-    slidesApi: { applyTxn },
+    slidesApi: { applyTxn, generateVideo },
   }
 })
 
@@ -61,7 +84,7 @@ describe('generate_svg tool', () => {
       op: 'addPicture',
       ext: 'png',
       svgText: SVG_OK,
-      slide: 0,
+      target: { slide: 0 },
       bytes: PNG_1PX_BASE64,
       offset: { x: 100 * 9525, y: 50 * 9525, cx: 200 * 9525, cy: 200 * 9525 },
     })
@@ -116,7 +139,13 @@ describe('generate_svg tool', () => {
   it('a success resets the attempt counter', async () => {
     vi.mocked(rasterizeSvg)
       .mockRejectedValueOnce(new Error('decode fail'))
-      .mockResolvedValueOnce({ ok: true, base64: PNG_1PX_BASE64, width: 10, height: 10, paintRatio: 0.3 })
+      .mockResolvedValueOnce({
+        ok: true,
+        base64: PNG_1PX_BASE64,
+        width: 10,
+        height: 10,
+        paintRatio: 0.3,
+      })
       .mockRejectedValueOnce(new Error('decode fail again'))
     const s = skill()
     await s.executeTool!(call({ svg: SVG_OK }))
@@ -131,5 +160,31 @@ describe('generate_svg tool', () => {
     expect(r!.mutated).toBe(false)
     expect(r!.output).toContain('starting with <svg')
     expect(rasterizeSvg).not.toHaveBeenCalled()
+  })
+})
+
+describe('generate_video tool', () => {
+  it('lands addMedia with the registry target contract (target.slide, EMU rect)', async () => {
+    const vcall = {
+      id: 'v1',
+      name: 'generate_video',
+      input: { prompt: 'a rotating logo' },
+    } as unknown as AgentToolCall
+    const r = await skill().executeTool!(vcall)
+    expect(r!.mutated).toBe(true)
+    expect(generateVideo).toHaveBeenCalledTimes(1)
+    expect(applyTxn).toHaveBeenCalledTimes(1)
+    const op = applyTxn.mock.calls[0]![0].ops[0]
+    expect(op).toMatchObject({
+      op: 'addMedia',
+      kind: 'video',
+      target: { slide: 0 },
+      offset: {
+        x: ((1280 - 480) / 2) * 9525,
+        y: ((720 - 270) / 2) * 9525,
+        cx: 480 * 9525,
+        cy: 270 * 9525,
+      },
+    })
   })
 })

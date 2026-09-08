@@ -1518,12 +1518,15 @@ export function AiPanel({
             }
             return next
           })
-          // Signed-out failures get an inline sign-in button; detected via
-          // chatoffice status rather than matching the localized error text
+          // Signed-out failures get an inline sign-in button — but only when the
+          // error is itself a chatoffice auth error (both locales name ChatOffice
+          // next to a sign-in word). Gating on status alone stamped the CTA onto
+          // generic failures (tool-error stops, BYOK key problems) where signing
+          // in fixes nothing and the button reads as required.
           void window.slidesApi
             .aiChatOfficeStatus()
             .then((status) => {
-              if (status.loggedIn) return
+              if (status.loggedIn || !isChatofficeAuthError(error)) return
               setChat((prev) => {
                 const next = [...prev]
                 const last = next.at(-1)
@@ -2582,6 +2585,13 @@ export function AiPanel({
 
 /** Image URL regex: starts with http(s), extension is a common image format */
 const IMAGE_URL_RE = /https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp|gif|bmp|svg)(?:\?[^\s"'<>]*)?/gi
+
+/** The error is a chatoffice sign-in failure (the sign-in CTA's only trigger):
+ * every locale's auth message names ChatOffice next to a sign-in word
+ * (zh「未登录 ChatOffice…登录」, en "Not signed in to ChatOffice… Sign in"). */
+function isChatofficeAuthError(msg: string): boolean {
+  return /chatoffice/i.test(msg) && /sign\s?in|log\s?in|登录/i.test(msg)
+}
 
 /** URL regex (inline link detection) */
 const URL_RE = /https?:\/\/[^\s"'<>]+/g
