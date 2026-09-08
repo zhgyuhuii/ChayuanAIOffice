@@ -31,6 +31,7 @@ import {
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { PasteSpecialDialog, type PasteSpecialVariant } from './PasteSpecialDialog'
+import { InsertDeleteCellsDialog } from './InsertDeleteCellsDialog'
 import { PictureCropDialog } from './PictureCropDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { GoToDialog } from './GoToDialog'
@@ -499,6 +500,9 @@ export function ExcelShell({
   const [showFormatCells, setShowFormatCells] = useState(false)
   const [showPasteSpecial, setShowPasteSpecial] = useState(false)
   const [axisSizeTarget, setAxisSizeTarget] = useState<'row' | 'col' | null>(null)
+  // 标准列宽 / 插入删除单元格弹窗（行和列⌄ 第三轮）
+  const [standardWidthOpen, setStandardWidthOpen] = useState(false)
+  const [cellsDialog, setCellsDialog] = useState<'insert' | 'delete' | null>(null)
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [showSortDialog, setShowSortDialog] = useState(false)
   const [showDedupeDialog, setShowDedupeDialog] = useState(false)
@@ -925,6 +929,9 @@ export function ExcelShell({
                   else if (command === 'paste-special-dialog') setShowPasteSpecial(true)
                   else if (command === 'row-height-open') setAxisSizeTarget('row')
                   else if (command === 'col-width-open') setAxisSizeTarget('col')
+                  else if (command === 'standard-col-width-open') setStandardWidthOpen(true)
+                  else if (command === 'insert-cells-dialog-open') setCellsDialog('insert')
+                  else if (command === 'delete-cells-dialog-open') setCellsDialog('delete')
                   else if (command === 'link-open') setShowLinkDialog(true)
                   else if (command === 'sort-custom-open') setShowSortDialog(true)
                   else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
@@ -1059,6 +1066,16 @@ export function ExcelShell({
             onInsertPictureData(dataUrl)
           }}
           onClose={() => setInsertImageOpen(false)}
+        />
+      )}
+      {standardWidthOpen && (
+        <StandardColWidthDialog onCommand={onCommand} onClose={() => setStandardWidthOpen(false)} />
+      )}
+      {cellsDialog && (
+        <InsertDeleteCellsDialog
+          mode={cellsDialog}
+          onCommand={onCommand}
+          onClose={() => setCellsDialog(null)}
         />
       )}
       {axisSizeTarget && (
@@ -1470,6 +1487,59 @@ function AxisSizeDialog({
         <div className="dialog-body">
           <label>
             {t(axis === 'row' ? 'appRowHeightLabel' : 'appColWidthLabel')}
+            <input
+              autoFocus
+              type="text"
+              inputMode="decimal"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') apply()
+                if (event.key === 'Escape') onClose()
+              }}
+            />
+          </label>
+        </div>
+        <footer className="dialog-actions">
+          <button onClick={onClose}>{t('appCancel')}</button>
+          <button className="primary" disabled={!valid} onClick={apply}>
+            {t('appOk')}
+          </button>
+        </footer>
+      </div>
+    </div>
+  )
+}
+
+/// 行和列⌄ 的标准列宽：默认列宽（字符）输入 → rowcol:standard-col-width。
+function StandardColWidthDialog({
+  onCommand,
+  onClose,
+}: {
+  readonly onCommand: (command: string) => void
+  readonly onClose: () => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [value, setValue] = useState('8.38')
+  const parsed = Number(value.trim().replace(',', '.'))
+  const valid = value.trim() !== '' && Number.isFinite(parsed) && parsed > 0 && parsed <= 255
+  const apply = (): void => {
+    if (!valid) return
+    onCommand(`rowcol:standard-col-width:${parsed}`)
+    onClose()
+  }
+  return (
+    <div className="dialog-backdrop" onClick={onClose}>
+      <div
+        className="format-cells-dialog link-dialog"
+        role="dialog"
+        aria-label={t('appRowcolStandardColWidth')}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header>{t('appRowcolStandardColWidth')}</header>
+        <div className="dialog-body">
+          <label>
+            {t('appStandardColWidthLabel')}
             <input
               autoFocus
               type="text"
@@ -3922,59 +3992,7 @@ function Ribbon({
       {/* WPS 开始 tab #33-34：行和列⌄（上）+ 工作表⌄（下），纵向无边框图标钮 */}
       <RibbonGroup label={t('appRowcolMenu')}>
         <div className="rowcol-stack">
-          <MenuSelect
-            className="select-like compact rowcol-item"
-            label="Rows and Columns"
-            data-tip={t('appRowcolMenu')}
-            display={
-              <>
-                <ToolSymbol symbol="⊞" /> {t('appRowcolMenu')}
-              </>
-            }
-            options={[
-              {
-                value: 'row-height-open',
-                label: t('appRowcolRowHeight'),
-                icon: <OptSample>↕</OptSample>,
-              },
-              {
-                value: 'col-width-open',
-                label: t('appRowcolColWidth'),
-                icon: <OptSample>↔</OptSample>,
-              },
-              {
-                value: 'rowcol:fit-row-height',
-                label: t('appRowcolFitRow'),
-                icon: <OptSample>↕✦</OptSample>,
-              },
-              {
-                value: 'rowcol:fit-col-width',
-                label: t('appRowcolFitCol'),
-                icon: <OptSample>↔✦</OptSample>,
-              },
-              {
-                value: 'rowcol:hide-rows',
-                label: t('appRowcolHideRows'),
-                icon: <OptSample>—▾</OptSample>,
-              },
-              {
-                value: 'rowcol:unhide-rows',
-                label: t('appRowcolUnhideRows'),
-                icon: <OptSample>—▴</OptSample>,
-              },
-              {
-                value: 'rowcol:hide-cols',
-                label: t('appRowcolHideCols'),
-                icon: <OptSample>—◂</OptSample>,
-              },
-              {
-                value: 'rowcol:unhide-cols',
-                label: t('appRowcolUnhideCols'),
-                icon: <OptSample>—▸</OptSample>,
-              },
-            ]}
-            onPick={(value) => onCommand(value)}
-          />
+          <RowcolMenu onCommand={onCommand} />
           <MenuSelect
             className="select-like compact rowcol-item"
             label="Worksheet"
@@ -4108,34 +4126,6 @@ function Ribbon({
             <CaretIcon />
           </button>
           <div className="inline-tools cell-tools">
-            <button
-              data-tip={t('appInsertRow')}
-              aria-label={t('appInsertRow')}
-              onClick={() => onCommand('insert-row-here')}
-            >
-              <ToolSymbol symbol="⤒" />
-            </button>
-            <button
-              data-tip={t('appDeleteRow')}
-              aria-label={t('appDeleteRow')}
-              onClick={() => onCommand('delete-row-here')}
-            >
-              <ToolSymbol symbol="⤓" />
-            </button>
-            <button
-              data-tip={t('appInsertCol')}
-              aria-label={t('appInsertCol')}
-              onClick={() => onCommand('insert-col-here')}
-            >
-              <ToolSymbol symbol="⇤" />
-            </button>
-            <button
-              data-tip={t('appDeleteCol')}
-              aria-label={t('appDeleteCol')}
-              onClick={() => onCommand('delete-col-here')}
-            >
-              <ToolSymbol symbol="⇥" />
-            </button>
             <MenuSelect
               className="select-like compact"
               label="Format"
@@ -4863,17 +4853,21 @@ function useEscapeClose(open: boolean, close: () => void): void {
 }
 
 /// One dropdown option row. `disabled` rows stay visible (WPS parity) but
-/// don't dispatch; `tip` explains why.
+/// don't dispatch; `tip` explains why. `children` turns the row into a
+/// hover submenu host (WPS 插入单元格/删除单元格/隐藏与取消隐藏 pattern).
 interface MenuRowOption {
   readonly value: string
   readonly label: string
   readonly icon?: React.ReactNode
   readonly disabled?: boolean
   readonly tip?: string
+  readonly children?: readonly MenuRowOption[]
 }
 
 /// Shared dropdown body: icon + label rows with the current-value highlight
 /// (used by MenuSelect, the split paste/copy buttons and the border menu).
+/// Rows carrying `children` render a hover-expanded submenu instead of
+/// dispatching themselves; `extra` slots custom rows (数量输入行) at the end.
 function MenuRows({
   options,
   value = '',
@@ -4887,30 +4881,102 @@ function MenuRows({
 }): React.JSX.Element {
   return (
     <>
-      {options.map((option) => (
-        <button
-          type="button"
-          key={option.value}
-          role="option"
-          aria-selected={value !== '' && option.value === value}
-          aria-disabled={option.disabled || undefined}
-          className={value !== '' && option.value === value ? 'on' : ''}
-          title={option.tip}
-          disabled={option.disabled}
-          onClick={() => {
-            onClose()
-            onPick(option.value)
-          }}
-        >
-          {option.icon != null && (
-            <span className="menu-opt-icon" aria-hidden="true">
-              {option.icon}
-            </span>
-          )}
-          <span className="menu-opt-text">{option.label}</span>
-        </button>
-      ))}
+      {options.map((option) =>
+        option.children ? (
+          <div key={option.value} className="submenu-host">
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              {option.icon != null && (
+                <span className="menu-opt-icon" aria-hidden="true">
+                  {option.icon}
+                </span>
+              )}
+              <span className="menu-opt-text">{option.label}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            <div className="menu-select-drop submenu-drop" role="menu" aria-label={option.label}>
+              <MenuRows options={option.children} value={value} onPick={onPick} onClose={onClose} />
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            key={option.value}
+            role="option"
+            aria-selected={value !== '' && option.value === value}
+            aria-disabled={option.disabled || undefined}
+            className={value !== '' && option.value === value ? 'on' : ''}
+            title={option.tip}
+            disabled={option.disabled}
+            onClick={() => {
+              onClose()
+              onPick(option.value)
+            }}
+          >
+            {option.icon != null && (
+              <span className="menu-opt-icon" aria-hidden="true">
+                {option.icon}
+              </span>
+            )}
+            <span className="menu-opt-text">{option.label}</span>
+          </button>
+        ),
+      )}
     </>
+  )
+}
+
+/// 子菜单里的数量插入行：在上方插入行 [3] ✓ —— input 默认 1，点对号执行。
+function InsertCountRow({
+  label,
+  icon,
+  commandPrefix,
+  onCommand,
+  onClose,
+}: {
+  readonly label: string
+  readonly icon: React.ReactNode
+  readonly commandPrefix: string
+  readonly onCommand: (command: string) => void
+  readonly onClose: () => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [count, setCount] = useState('1')
+  const parsed = Number(count)
+  const valid = Number.isInteger(parsed) && parsed >= 1 && parsed <= 500
+  return (
+    <div className="insert-count-row">
+      <span className="menu-opt-icon" aria-hidden="true">
+        {icon}
+      </span>
+      <span className="menu-opt-text">{label}</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        value={count}
+        aria-label={`${label} ${t('dlgRowCount')}`}
+        onChange={(event) => setCount(event.target.value.replace(/[^\d]/g, ''))}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && valid) {
+            onClose()
+            onCommand(`${commandPrefix}:${parsed}`)
+          }
+        }}
+      />
+      <button
+        type="button"
+        className="insert-count-ok"
+        aria-label={t('appOk')}
+        disabled={!valid}
+        onClick={() => {
+          onClose()
+          onCommand(`${commandPrefix}:${parsed}`)
+        }}
+      >
+        ✓
+      </button>
+    </div>
   )
 }
 
@@ -5051,6 +5117,134 @@ function LineStyleGlyph({ style }: { readonly style: string }): React.JSX.Elemen
 /// 边框富菜单（对比清单 8-9）：边框 + 绘图边框两组十五项，无滚动条；
 /// 线条颜色在菜单内展开调色板，线条样式展开线型行；独立边框颜色按钮取消。
 const BORDER_PEN_STYLES = ['thin', 'medium', 'thick', 'double', 'hair', 'dashed', 'dotted'] as const
+/// 行和列⌄（WPS 对齐 B2 第三轮）：五项 + 三个悬停子菜单——插入单元格（弹窗 +
+/// 数量插入行/列）、删除单元格（弹窗 + 删行/列/空行）、隐藏与取消隐藏。
+function RowcolMenu({
+  onCommand,
+}: {
+  readonly onCommand: (command: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  const row = (value: string, label: string): MenuRowOption => ({ value, label })
+  return (
+    <div ref={wrapRef} className="menu-select rowcol-menu">
+      <button
+        type="button"
+        className="select-like compact rowcol-item"
+        data-tip={t('appRowcolMenu')}
+        aria-label={t('appRowcolMenu')}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="menu-select-value">
+          <ToolSymbol symbol="⊞" /> {t('appRowcolMenu')}
+        </span>
+        <CaretIcon />
+      </button>
+      {open && (
+        <div
+          className="menu-select-drop rowcol-drop"
+          role="listbox"
+          aria-label={t('appRowcolMenu')}
+        >
+          <MenuRows
+            options={[
+              { value: 'row-height-open', label: t('appRowcolRowHeight') },
+              { value: 'rowcol:fit-row-height', label: t('appRowcolFitRow') },
+              { value: 'col-width-open', label: t('appRowcolColWidth') },
+              { value: 'rowcol:fit-col-width', label: t('appRowcolFitCol') },
+              { value: 'standard-col-width-open', label: `${t('appRowcolStandardColWidth')}…` },
+            ]}
+            value=""
+            onPick={onCommand}
+            onClose={() => setOpen(false)}
+          />
+          <div className="rb-menu-sep" />
+          {/* 插入单元格子菜单：弹窗入口 + 四条数量插入行 */}
+          <div className="submenu-host submenu-plain">
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              <span className="menu-opt-text">{t('appRowcolInsertCells')}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            <div className="menu-select-drop submenu-drop" role="menu">
+              <MenuRows
+                options={[
+                  { value: 'insert-cells-dialog-open', label: `${t('appRowcolInsertCells')}…` },
+                ]}
+                value=""
+                onPick={onCommand}
+                onClose={() => setOpen(false)}
+              />
+              <InsertCountRow
+                label={t('appRowcolInsertAbove')}
+                icon={<OptSample>↑</OptSample>}
+                commandPrefix="rowcol:insert-rows-above"
+                onCommand={onCommand}
+                onClose={() => setOpen(false)}
+              />
+              <InsertCountRow
+                label={t('appRowcolInsertBelow')}
+                icon={<OptSample>↓</OptSample>}
+                commandPrefix="rowcol:insert-rows-below"
+                onCommand={onCommand}
+                onClose={() => setOpen(false)}
+              />
+              <InsertCountRow
+                label={t('appRowcolInsertLeft')}
+                icon={<OptSample>←</OptSample>}
+                commandPrefix="rowcol:insert-cols-left"
+                onCommand={onCommand}
+                onClose={() => setOpen(false)}
+              />
+              <InsertCountRow
+                label={t('appRowcolInsertRight')}
+                icon={<OptSample>→</OptSample>}
+                commandPrefix="rowcol:insert-cols-right"
+                onCommand={onCommand}
+                onClose={() => setOpen(false)}
+              />
+            </div>
+          </div>
+          <MenuRows
+            options={[
+              {
+                value: 'delete-cells-sub',
+                label: t('appRowcolDeleteCells'),
+                children: [
+                  { value: 'delete-cells-dialog-open', label: `${t('appRowcolDeleteCells')}…` },
+                  row('rowcol:delete-rows', t('appDeleteRow')),
+                  row('rowcol:delete-cols', t('appDeleteCol')),
+                  row('rowcol:delete-empty-rows', t('appRowcolDeleteEmptyRows')),
+                ],
+              },
+              {
+                value: 'hide-unhide-sub',
+                label: t('appRowcolHideUnhide'),
+                children: [
+                  row('rowcol:hide-rows', t('appRowcolHideRows')),
+                  row('rowcol:hide-cols', t('appRowcolHideCols')),
+                  row('rowcol:unhide-rows', t('appRowcolUnhideRows')),
+                  row('rowcol:unhide-cols', t('appRowcolUnhideCols')),
+                ],
+              },
+            ]}
+            value=""
+            onPick={onCommand}
+            onClose={() => setOpen(false)}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function BorderMenu({
   penColor,
   penStyle,

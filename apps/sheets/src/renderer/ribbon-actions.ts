@@ -604,7 +604,10 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     const wb = runtime.univerAPI.getActiveWorkbook()
     const ws = wb?.getActiveSheet()
     const sel = wb?.getActiveRange()
-    const action = command.slice('rowcol:'.length)
+    const raw = command.slice('rowcol:'.length)
+    const colon = raw.indexOf(':')
+    const action = colon === -1 ? raw : raw.slice(0, colon)
+    const extra = colon === -1 ? '' : raw.slice(colon + 1)
     if (!wb || !ws || !sel) {
       ctx.setMessage(t('appSelectCellFirst'))
       return
@@ -619,6 +622,79 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       })
     }
     switch (action) {
+      case 'insert-rows-above':
+      case 'insert-rows-below':
+      case 'insert-cols-left':
+      case 'insert-cols-right': {
+        // 数量插入（WPS 在上/下方插入行、左/右侧插入列 [N] ✓）
+        const count = Math.min(500, Math.max(1, Number(extra.split(':')[0] ?? '') || 1))
+        try {
+          if (action === 'insert-rows-above') ws.insertRowsBefore(rows.startRow, count)
+          else if (action === 'insert-rows-below') ws.insertRowsAfter(rows.endRow, count)
+          else if (action === 'insert-cols-left') ws.insertColumnsBefore(cols.startColumn, count)
+          else ws.insertColumnsAfter(cols.endColumn, count)
+          ctx.setMessage(t('appAppliedToSelection'))
+        } catch {
+          /* protected sheet: its own message */
+        }
+        return
+      }
+      case 'delete-rows':
+        try {
+          ws.deleteRows(rows.startRow, Math.max(1, sel.getHeight()))
+          ctx.setMessage(t('appAppliedToSelection'))
+        } catch {
+          /* protected sheet */
+        }
+        return
+      case 'delete-cols':
+        try {
+          ws.deleteColumns(cols.startColumn, Math.max(1, sel.getWidth()))
+          ctx.setMessage(t('appAppliedToSelection'))
+        } catch {
+          /* protected sheet */
+        }
+        return
+      case 'delete-empty-rows': {
+        // 选区内整行全空的行整行删除；自下而上删避免索引位移。
+        // 「空」按选区列范围判（与 WPS 删除空行直感一致）。
+        let removed = 0
+        try {
+          for (let r = rows.endRow; r >= rows.startRow; r -= 1) {
+            let empty = true
+            for (let c = cols.startColumn; c <= cols.endColumn; c += 1) {
+              const v = ws.getRange(r, c).getValue()
+              if (v != null && v !== '') {
+                empty = false
+                break
+              }
+            }
+            if (empty && r < ws.getMaxRows() - 1) {
+              ws.deleteRows(r, 1)
+              removed += 1
+            }
+          }
+          ctx.setMessage(t('appRowcolEmptyRowsDeleted', { n: removed }))
+        } catch {
+          /* protected sheet */
+        }
+        return
+      }
+      case 'standard-col-width': {
+        // 标准列宽：字符 → 像素，写默认列宽并触发一次重绘
+        const chars = Number(extra.split(':')[0] ?? '')
+        if (!Number.isFinite(chars) || chars <= 0 || chars > 255) return
+        const config = ws.getSheet().getConfig()
+        config.defaultColumnWidth = characterWidthToPixels(chars)
+        try {
+          // no-op 宽度 mutation 让 skeleton 重建（同 toggle-headings 的重绘手法）
+          ws.setColumnWidth(cols.startColumn, ws.getColumnWidth(cols.startColumn))
+        } catch {
+          /* protected sheet: config stays for next full rebuild */
+        }
+        ctx.setMessage(t('appRowcolStandardApplied', { n: Math.round(config.defaultColumnWidth) }))
+        return
+      }
       case 'hide-rows':
         run('sheet.command.set-rows-hidden', { ranges: [{ ...rows, rangeType: 1 }] })
         return
@@ -679,6 +755,39 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       default:
         return
     }
+  }
+  if (command.startsWith('cells:')) {
+    // 插入/删除单元格弹窗的移位选项：Range 移位走 Univer 命令，整行/整列走 facade
+    const kind = command.slice('cells:'.length)
+    const wb = runtime.univerAPI.getActiveWorkbook()
+    const ws = wb?.getActiveSheet()
+    const sel = wb?.getActiveRange()
+    if (!wb || !ws || !sel) {
+      ctx.setMessage(t('appSelectCellFirst'))
+      return
+    }
+    const range = sel.getRange()
+    const unitId = wb.getId()
+    const subUnitId = ws.getSheetId()
+    const run = (id: string, params: Record<string, unknown>) => {
+      void runtime.univerAPI.executeCommand(id, { unitId, subUnitId, ...params }).catch(() => {
+        /* canceled structural command surfaces its own message */
+      })
+    }
+    try {
+      if (kind === 'insert-down') run('sheet.command.insert-range-move-down', { range })
+      else if (kind === 'insert-right') run('sheet.command.insert-range-move-right', { range })
+      else if (kind === 'delete-left') run('sheet.command.delete-range-move-left', { range })
+      else if (kind === 'delete-up') run('sheet.command.delete-range-move-up', { range })
+      else if (kind === 'entire-row')
+        ws.insertRowsBefore(range.startRow, Math.max(1, sel.getHeight()))
+      else if (kind === 'entire-col')
+        ws.insertColumnsBefore(range.startColumn, Math.max(1, sel.getWidth()))
+      ctx.setMessage(t('appAppliedToSelection'))
+    } catch {
+      /* protected sheet: its own message */
+    }
+    return
   }
   if (command.startsWith('convert:')) {
     // WPS 数字组 转换⌄ (B6): batch text<->number over the selection

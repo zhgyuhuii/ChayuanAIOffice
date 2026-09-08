@@ -6207,3 +6207,97 @@ textarea:focus {
 .paste-special-option input {
   accent-color: var(--accent, #217346);
 }
+
+/* ── 行和列⌄ 第三轮：悬停子菜单 + 数量插入行 ─────────────────── */
+
+/* 子菜单宿主：hover 右侧展开（WPS 插入/删除单元格模式） */
+.menu-select-drop .submenu-host {
+  position: relative;
+}
+
+.menu-select-drop .submenu-host > button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 12.5px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.menu-select-drop .submenu-host > button:hover {
+  background: var(--ribbon-hover);
+}
+
+.menu-select-drop .submenu-arrow {
+  margin-left: auto;
+  color: var(--text-dim, var(--text-secondary));
+  font-size: 12px;
+}
+
+.menu-select-drop .submenu-drop {
+  display: none;
+  position: absolute;
+  left: calc(100% + 2px);
+  top: -4px;
+  max-height: none;
+  overflow: visible;
+}
+
+.menu-select-drop .submenu-host:hover > .submenu-drop,
+.menu-select-drop .submenu-host.submenu-open > .submenu-drop {
+  display: flex;
+}
+
+/* 数量插入行：图标 + 文本 + 数字输入 + ✓ */
+.insert-count-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.insert-count-row:hover {
+  background: var(--ribbon-hover);
+}
+
+.insert-count-row input {
+  width: 38px;
+  height: 22px;
+  padding: 0 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  font: inherit;
+  text-align: right;
+}
+
+.insert-count-row .insert-count-ok {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--accent, #217346);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.insert-count-row .insert-count-ok:hover {
+  background: var(--ribbon-hover);
+}
+
+.insert-count-row .insert-count-ok:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
