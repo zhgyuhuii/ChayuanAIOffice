@@ -5676,6 +5676,17 @@ textarea:focus {
   padding: 1px 4px;
 }
 
+/* 转换为数值：纯图标触发器（无边框、无文字），点击才弹下拉 */
+.convert-icon-trigger {
+  min-width: 28px;
+  width: 28px;
+  height: 30px;
+  padding: 0;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
 /* WPS 数字组（RB_Number）：行1=格式框+转换⌄，行2=快捷图标列；组内零缝隙 */
 .num-compact {
   gap: 2px;
@@ -5690,6 +5701,22 @@ textarea:focus {
 /* 快捷图标行：与 WPS 一致的贴身排布（无额外间距），图标即按钮 */
 .num-quick {
   gap: 1px;
+}
+
+/* 行和列（上）/工作表（下）：纵向排布、无边框图标钮（第二轮对比清单） */
+.rowcol-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.rowcol-stack .rowcol-item {
+  border: none;
+  background: transparent;
+  min-width: 0;
+  padding: 0 6px;
+  height: 26px;
 }
 
 /* WPS 编辑组（CT_Home.kuip RB_Editing）：大钮横排 + 双列小钮栈 */
@@ -6127,6 +6154,27 @@ textarea:focus {
   min-width: 176px;
   max-height: none;
   overflow: visible;
+}
+
+/* 常规（数字格式）下拉：菜单项不重叠、全部展开无滚动条（同边框菜单） */
+.numfmt-wrap .menu-select-drop {
+  min-width: 176px;
+  max-height: none;
+  overflow: visible;
+}
+
+.numfmt-wrap .menu-select-drop button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: auto;
+  min-height: 28px;
+  line-height: 1.2;
+  padding: 5px 10px;
+}
+
+.numfmt-wrap .menu-opt-icon {
+  flex-shrink: 0;
 }
 
 .border-menu-palette {

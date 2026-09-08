@@ -3919,112 +3919,122 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      {/* WPS 开始 tab #33-34：行和列⌄ + 工作表⌄（聚合下拉） */}
+      {/* WPS 开始 tab #33-34：行和列⌄（上）+ 工作表⌄（下），纵向无边框图标钮 */}
       <RibbonGroup label={t('appRowcolMenu')}>
-        <MenuSelect
-          className="select-like compact"
-          label="Rows and Columns"
-          data-tip={t('appRowcolMenu')}
-          display={
-            <>
-              <ToolSymbol symbol="⊞" /> {t('appRowcolMenu')}
-            </>
-          }
-          options={[
-            {
-              value: 'row-height-open',
-              label: t('appRowcolRowHeight'),
-              icon: <OptSample>↕</OptSample>,
-            },
-            {
-              value: 'col-width-open',
-              label: t('appRowcolColWidth'),
-              icon: <OptSample>↔</OptSample>,
-            },
-            {
-              value: 'rowcol:fit-row-height',
-              label: t('appRowcolFitRow'),
-              icon: <OptSample>↕✦</OptSample>,
-            },
-            {
-              value: 'rowcol:fit-col-width',
-              label: t('appRowcolFitCol'),
-              icon: <OptSample>↔✦</OptSample>,
-            },
-            {
-              value: 'rowcol:hide-rows',
-              label: t('appRowcolHideRows'),
-              icon: <OptSample>—▾</OptSample>,
-            },
-            {
-              value: 'rowcol:unhide-rows',
-              label: t('appRowcolUnhideRows'),
-              icon: <OptSample>—▴</OptSample>,
-            },
-            {
-              value: 'rowcol:hide-cols',
-              label: t('appRowcolHideCols'),
-              icon: <OptSample>—◂</OptSample>,
-            },
-            {
-              value: 'rowcol:unhide-cols',
-              label: t('appRowcolUnhideCols'),
-              icon: <OptSample>—▸</OptSample>,
-            },
-          ]}
-          onPick={(value) => onCommand(value)}
-        />
-        <MenuSelect
-          className="select-like compact"
-          label="Worksheet"
-          data-tip={t('appSheetMenu')}
-          display={
-            <>
-              <ToolSymbol symbol="▤" /> {t('appSheetMenu')}
-            </>
-          }
-          options={[
-            { value: 'sheetop:rename', label: t('appSheetRename'), icon: <OptSample>✎</OptSample> },
-            {
-              value: 'sheetop:tab-color:none',
-              label: t('appSheetTabColor') + '·' + t('appTabColorNone'),
-              icon: <OptSample>∅</OptSample>,
-            },
-            {
-              value: 'sheetop:tab-color:C00000',
-              label: t('appSheetTabColor') + '·1',
-              icon: <ColorDot color="#C00000" />,
-            },
-            {
-              value: 'sheetop:tab-color:FFC000',
-              label: t('appSheetTabColor') + '·2',
-              icon: <ColorDot color="#FFC000" />,
-            },
-            {
-              value: 'sheetop:tab-color:FFFF00',
-              label: t('appSheetTabColor') + '·3',
-              icon: <ColorDot color="#FFFF00" />,
-            },
-            {
-              value: 'sheetop:tab-color:00B050',
-              label: t('appSheetTabColor') + '·4',
-              icon: <ColorDot color="#00B050" />,
-            },
-            {
-              value: 'sheetop:tab-color:0070C0',
-              label: t('appSheetTabColor') + '·5',
-              icon: <ColorDot color="#0070C0" />,
-            },
-            {
-              value: 'sheetop:tab-color:7030A0',
-              label: t('appSheetTabColor') + '·6',
-              icon: <ColorDot color="#7030A0" />,
-            },
-            { value: 'sheetop:hide', label: t('appSheetHide'), icon: <OptSample>🙈</OptSample> },
-            { value: 'sheetop:unhide', label: t('appSheetUnhide'), icon: <OptSample>👁</OptSample> },
-          ]}
-          onPick={(value) => onCommand(value)}
-        />
+        <div className="rowcol-stack">
+          <MenuSelect
+            className="select-like compact rowcol-item"
+            label="Rows and Columns"
+            data-tip={t('appRowcolMenu')}
+            display={
+              <>
+                <ToolSymbol symbol="⊞" /> {t('appRowcolMenu')}
+              </>
+            }
+            options={[
+              {
+                value: 'row-height-open',
+                label: t('appRowcolRowHeight'),
+                icon: <OptSample>↕</OptSample>,
+              },
+              {
+                value: 'col-width-open',
+                label: t('appRowcolColWidth'),
+                icon: <OptSample>↔</OptSample>,
+              },
+              {
+                value: 'rowcol:fit-row-height',
+                label: t('appRowcolFitRow'),
+                icon: <OptSample>↕✦</OptSample>,
+              },
+              {
+                value: 'rowcol:fit-col-width',
+                label: t('appRowcolFitCol'),
+                icon: <OptSample>↔✦</OptSample>,
+              },
+              {
+                value: 'rowcol:hide-rows',
+                label: t('appRowcolHideRows'),
+                icon: <OptSample>—▾</OptSample>,
+              },
+              {
+                value: 'rowcol:unhide-rows',
+                label: t('appRowcolUnhideRows'),
+                icon: <OptSample>—▴</OptSample>,
+              },
+              {
+                value: 'rowcol:hide-cols',
+                label: t('appRowcolHideCols'),
+                icon: <OptSample>—◂</OptSample>,
+              },
+              {
+                value: 'rowcol:unhide-cols',
+                label: t('appRowcolUnhideCols'),
+                icon: <OptSample>—▸</OptSample>,
+              },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+          <MenuSelect
+            className="select-like compact rowcol-item"
+            label="Worksheet"
+            data-tip={t('appSheetMenu')}
+            display={
+              <>
+                <ToolSymbol symbol="▤" /> {t('appSheetMenu')}
+              </>
+            }
+            options={[
+              {
+                value: 'sheetop:rename',
+                label: t('appSheetRename'),
+                icon: <OptSample>✎</OptSample>,
+              },
+              {
+                value: 'sheetop:tab-color:none',
+                label: t('appSheetTabColor') + '·' + t('appTabColorNone'),
+                icon: <OptSample>∅</OptSample>,
+              },
+              {
+                value: 'sheetop:tab-color:C00000',
+                label: t('appSheetTabColor') + '·1',
+                icon: <ColorDot color="#C00000" />,
+              },
+              {
+                value: 'sheetop:tab-color:FFC000',
+                label: t('appSheetTabColor') + '·2',
+                icon: <ColorDot color="#FFC000" />,
+              },
+              {
+                value: 'sheetop:tab-color:FFFF00',
+                label: t('appSheetTabColor') + '·3',
+                icon: <ColorDot color="#FFFF00" />,
+              },
+              {
+                value: 'sheetop:tab-color:00B050',
+                label: t('appSheetTabColor') + '·4',
+                icon: <ColorDot color="#00B050" />,
+              },
+              {
+                value: 'sheetop:tab-color:0070C0',
+                label: t('appSheetTabColor') + '·5',
+                icon: <ColorDot color="#0070C0" />,
+              },
+              {
+                value: 'sheetop:tab-color:7030A0',
+                label: t('appSheetTabColor') + '·6',
+                icon: <ColorDot color="#7030A0" />,
+              },
+              { value: 'sheetop:hide', label: t('appSheetHide'), icon: <OptSample>🙈</OptSample> },
+              {
+                value: 'sheetop:unhide',
+                label: t('appSheetUnhide'),
+                icon: <OptSample>👁</OptSample>,
+              },
+            ]}
+            onPick={(value) => onCommand(value)}
+          />
+        </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')}>
         {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：2×2 大钮网格 */}
@@ -5058,6 +5068,8 @@ function BorderMenu({
   const [open, setOpen] = useState(false)
   // 线条颜色/线条样式的菜单内展开面板（互斥，再次点击收起）
   const [penPanel, setPenPanel] = useState<'palette' | 'styles' | null>(null)
+  // 触发器图标跟随最后选择（第二轮对比清单）：初值 ⊡，选中后存该边框种类
+  const [lastKind, setLastKind] = useState<string | null>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
   useEscapeClose(open, () => setOpen(false))
@@ -5075,7 +5087,22 @@ function BorderMenu({
         onClick={() => setOpen((v) => !v)}
       >
         <span className="menu-select-value">
-          <ToolSymbol symbol="⊡" /> {t('appBorders')}
+          {lastKind === null ? (
+            <ToolSymbol symbol="⊡" />
+          ) : lastKind.startsWith('draw-') ? (
+            <ToolSymbol
+              symbol={
+                lastKind === 'draw-erase' ? 'eraser' : lastKind === 'draw-grid' ? '▦' : 'pen-nib'
+              }
+            />
+          ) : (
+            <BorderGlyph
+              on={
+                lastKind as 'all' | 'outer' | 'thick' | 'top' | 'bottom' | 'left' | 'right' | 'none'
+              }
+            />
+          )}{' '}
+          {t('appBorders')}
         </span>
         <CaretIcon />
       </button>
@@ -5116,7 +5143,12 @@ function BorderMenu({
               },
             ]}
             value=""
-            onPick={onCommand}
+            onPick={(command) => {
+              // 仅边框类命令回写触发器图标；其他边框(对话框)不动
+              const [, kind = ''] = command.split(':')
+              if (kind) setLastKind(kind === 'thick-outer' ? 'thick' : kind)
+              onCommand(command)
+            }}
             onClose={() => setOpen(false)}
           />
           <div className="rb-menu-sep" />
@@ -5140,7 +5172,10 @@ function BorderMenu({
               },
             ]}
             value=""
-            onPick={onCommand}
+            onPick={(command) => {
+              setLastKind(`draw-${command.split(':')[1] ?? ''}`)
+              onCommand(command)
+            }}
             onClose={() => setOpen(false)}
           />
           <MenuRows
@@ -5818,22 +5853,24 @@ function NumberFormatSelect({
     return labelKey ? t(labelKey) : label
   }
   return (
-    <MenuSelect
-      className="select-like"
-      label="Number format"
-      data-tip={pattern || t('dlgFcNumGeneral')}
-      value={current}
-      display={localized(current)}
-      options={numberFormatCategories().map((category) => ({
-        value: category.label,
-        label: localized(category.label),
-        icon: <OptSample>{NUMFMT_SAMPLES[category.label] ?? category.label}</OptSample>,
-      }))}
-      onPick={(value) => {
-        const category = numberFormatCategories().find((candidate) => candidate.label === value)
-        if (category) onCommand(`format:${category.pattern}`)
-      }}
-    />
+    <div className="numfmt-wrap">
+      <MenuSelect
+        className="select-like"
+        label="Number format"
+        data-tip={pattern || t('dlgFcNumGeneral')}
+        value={current}
+        display={localized(current)}
+        options={numberFormatCategories().map((category) => ({
+          value: category.label,
+          label: localized(category.label),
+          icon: <OptSample>{NUMFMT_SAMPLES[category.label] ?? category.label}</OptSample>,
+        }))}
+        onPick={(value) => {
+          const category = numberFormatCategories().find((candidate) => candidate.label === value)
+          if (category) onCommand(`format:${category.pattern}`)
+        }}
+      />
+    </div>
   )
 }
 

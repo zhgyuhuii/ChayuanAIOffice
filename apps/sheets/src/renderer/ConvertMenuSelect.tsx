@@ -3,11 +3,10 @@ import { useRef, useState } from 'react'
 import { useDismissablePopover } from '@chatoffice/ui'
 import { useI18n } from './i18n/locale'
 import { OptSample } from './ExcelShell'
-import { CaretIcon } from './ribbon-icons'
 
 /**
  * WPS 数字组·转换⌄（CT_Home.kuip typetransform + 用户截图）：图标+转换+caret
- * 触发器；下拉 = 截图全 10 项（VIP 徽标禁用、大小写/中英符号点击展开子项）。
+ * 触发器；下拉 = 截图全 10 项（未实现项仅禁用、不带徽标；大小写/中英符号点击展开子项）。
  */
 export function ConvertMenuSelect({
   'data-tip': tip,
@@ -30,7 +29,7 @@ export function ConvertMenuSelect({
     key: string,
     command: string | null,
     icon: ReactNode,
-    vip: boolean,
+    _vip: boolean,
     label: string,
   ): ReactElement => (
     <button
@@ -42,7 +41,6 @@ export function ConvertMenuSelect({
     >
       <span className="cv-icon">{icon}</span>
       <span className="cv-label">{label}</span>
-      {vip && <span className="cv-vip">VIP</span>}
     </button>
   )
   const groupRow = (key: string, label: string, items: React.ReactNode): ReactElement => (
@@ -66,13 +64,16 @@ export function ConvertMenuSelect({
     <div ref={wrapRef} className="menu-select">
       <button
         type="button"
-        className="select-like compact"
+        className="select-like compact convert-icon-trigger"
         data-tip={tip}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-label={t('appConvertMenu')}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="tool-symbol" aria-hidden="true">
+          {/* WPS 转换图标：上下两条弯曲箭头合成方形——上线右→左行进、左端
+              向下弯出箭头；下线左→右行进、右端向上弯出箭头 */}
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -84,11 +85,12 @@ export function ConvertMenuSelect({
             height={20}
             aria-hidden="true"
           >
-            <path d="M6 8.5h10.5l-2.8-2.8M18 15.5H7.5l2.8 2.8" />
+            <path d="M18.5 5.5H7.5v3.5" />
+            <path d="M9.25 7.25 7.5 9.25 5.75 7.25" />
+            <path d="M5.5 18.5h11V15" />
+            <path d="M14.75 16.75 16.5 14.75l1.75 2" />
           </svg>
         </span>
-        <span className="menu-select-value">{t('appConvertMenu')}</span>
-        <CaretIcon />
       </button>
       {open && (
         <div className="menu-select-drop convert-drop" role="menu" aria-label={t('appConvertMenu')}>
