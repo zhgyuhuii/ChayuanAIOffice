@@ -4867,7 +4867,10 @@ interface MenuRowOption {
 /// Shared dropdown body: icon + label rows with the current-value highlight
 /// (used by MenuSelect, the split paste/copy buttons and the border menu).
 /// Rows carrying `children` render a hover-expanded submenu instead of
-/// dispatching themselves; `extra` slots custom rows (数量输入行) at the end.
+/// dispatching themselves. Submenu visibility is JS-state driven
+/// (mouseenter/leave on the host row) — pure CSS :hover proved fragile, and
+/// the submenu must escape the parent panel's overflow clip (it renders in a
+/// portal-free absolute layer; parents along the chain stay overflow-visible).
 function MenuRows({
   options,
   value = '',
@@ -4879,11 +4882,19 @@ function MenuRows({
   readonly onPick: (value: string) => void
   readonly onClose: () => void
 }): React.JSX.Element {
+  const [openSub, setOpenSub] = useState<string | null>(null)
   return (
     <>
       {options.map((option) =>
         option.children ? (
-          <div key={option.value} className="submenu-host">
+          <div
+            key={option.value}
+            className={`submenu-host${openSub === option.value ? ' submenu-open' : ''}`}
+            onMouseEnter={() => setOpenSub(option.value)}
+            onMouseLeave={() =>
+              setOpenSub((current) => (current === option.value ? null : current))
+            }
+          >
             <button type="button" role="option" aria-haspopup="true" className="has-submenu">
               {option.icon != null && (
                 <span className="menu-opt-icon" aria-hidden="true">
@@ -4895,9 +4906,16 @@ function MenuRows({
                 ›
               </span>
             </button>
-            <div className="menu-select-drop submenu-drop" role="menu" aria-label={option.label}>
-              <MenuRows options={option.children} value={value} onPick={onPick} onClose={onClose} />
-            </div>
+            {openSub === option.value && (
+              <div className="submenu-drop" role="menu" aria-label={option.label}>
+                <MenuRows
+                  options={option.children}
+                  value={value}
+                  onPick={onPick}
+                  onClose={onClose}
+                />
+              </div>
+            )}
           </div>
         ) : (
           <button
@@ -5126,6 +5144,7 @@ function RowcolMenu({
 }): React.JSX.Element {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
+  const [insertSubOpen, setInsertSubOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
   useEscapeClose(open, () => setOpen(false))
@@ -5166,51 +5185,57 @@ function RowcolMenu({
           />
           <div className="rb-menu-sep" />
           {/* 插入单元格子菜单：弹窗入口 + 四条数量插入行 */}
-          <div className="submenu-host submenu-plain">
+          <div
+            className={`submenu-host submenu-plain${insertSubOpen ? ' submenu-open' : ''}`}
+            onMouseEnter={() => setInsertSubOpen(true)}
+            onMouseLeave={() => setInsertSubOpen(false)}
+          >
             <button type="button" role="option" aria-haspopup="true" className="has-submenu">
               <span className="menu-opt-text">{t('appRowcolInsertCells')}</span>
               <span className="submenu-arrow" aria-hidden="true">
                 ›
               </span>
             </button>
-            <div className="menu-select-drop submenu-drop" role="menu">
-              <MenuRows
-                options={[
-                  { value: 'insert-cells-dialog-open', label: `${t('appRowcolInsertCells')}…` },
-                ]}
-                value=""
-                onPick={onCommand}
-                onClose={() => setOpen(false)}
-              />
-              <InsertCountRow
-                label={t('appRowcolInsertAbove')}
-                icon={<OptSample>↑</OptSample>}
-                commandPrefix="rowcol:insert-rows-above"
-                onCommand={onCommand}
-                onClose={() => setOpen(false)}
-              />
-              <InsertCountRow
-                label={t('appRowcolInsertBelow')}
-                icon={<OptSample>↓</OptSample>}
-                commandPrefix="rowcol:insert-rows-below"
-                onCommand={onCommand}
-                onClose={() => setOpen(false)}
-              />
-              <InsertCountRow
-                label={t('appRowcolInsertLeft')}
-                icon={<OptSample>←</OptSample>}
-                commandPrefix="rowcol:insert-cols-left"
-                onCommand={onCommand}
-                onClose={() => setOpen(false)}
-              />
-              <InsertCountRow
-                label={t('appRowcolInsertRight')}
-                icon={<OptSample>→</OptSample>}
-                commandPrefix="rowcol:insert-cols-right"
-                onCommand={onCommand}
-                onClose={() => setOpen(false)}
-              />
-            </div>
+            {insertSubOpen && (
+              <div className="submenu-drop" role="menu">
+                <MenuRows
+                  options={[
+                    { value: 'insert-cells-dialog-open', label: `${t('appRowcolInsertCells')}…` },
+                  ]}
+                  value=""
+                  onPick={onCommand}
+                  onClose={() => setOpen(false)}
+                />
+                <InsertCountRow
+                  label={t('appRowcolInsertAbove')}
+                  icon={<OptSample>↑</OptSample>}
+                  commandPrefix="rowcol:insert-rows-above"
+                  onCommand={onCommand}
+                  onClose={() => setOpen(false)}
+                />
+                <InsertCountRow
+                  label={t('appRowcolInsertBelow')}
+                  icon={<OptSample>↓</OptSample>}
+                  commandPrefix="rowcol:insert-rows-below"
+                  onCommand={onCommand}
+                  onClose={() => setOpen(false)}
+                />
+                <InsertCountRow
+                  label={t('appRowcolInsertLeft')}
+                  icon={<OptSample>←</OptSample>}
+                  commandPrefix="rowcol:insert-cols-left"
+                  onCommand={onCommand}
+                  onClose={() => setOpen(false)}
+                />
+                <InsertCountRow
+                  label={t('appRowcolInsertRight')}
+                  icon={<OptSample>→</OptSample>}
+                  commandPrefix="rowcol:insert-cols-right"
+                  onCommand={onCommand}
+                  onClose={() => setOpen(false)}
+                />
+              </div>
+            )}
           </div>
           <MenuRows
             options={[

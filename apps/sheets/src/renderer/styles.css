@@ -6210,7 +6210,9 @@ textarea:focus {
 
 /* ── 行和列⌄ 第三轮：悬停子菜单 + 数量插入行 ─────────────────── */
 
-/* 子菜单宿主：hover 右侧展开（WPS 插入/删除单元格模式） */
+/* 子菜单宿主：JS 状态驱动（mouseenter/leave 挂 .submenu-open）右侧展开。
+   面板不再挂 .menu-select-drop 基类——那会带来 fixed/anchor 定位与 320px
+   滚动裁剪（子菜单曾因此永远显示不出来）。 */
 .menu-select-drop .submenu-host {
   position: relative;
 }
@@ -6241,18 +6243,35 @@ textarea:focus {
   font-size: 12px;
 }
 
+/* 右侧浮层：贴宿主行右缘外 2px、顶对齐；高于父面板（60）防被相邻层盖 */
 .menu-select-drop .submenu-drop {
-  display: none;
   position: absolute;
   left: calc(100% + 2px);
-  top: -4px;
-  max-height: none;
-  overflow: visible;
+  top: -5px;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  min-width: 168px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--sheets-shadow-drop);
 }
 
-.menu-select-drop .submenu-host:hover > .submenu-drop,
+.menu-select-drop .submenu-host > .submenu-drop {
+  display: none;
+}
+
 .menu-select-drop .submenu-host.submenu-open > .submenu-drop {
   display: flex;
+}
+
+/* 父面板沿链 overflow 可见：子菜单浮层在父面板内容区外，任何一层裁剪都会
+   把它吞掉（rowcol-drop 曾继承 320px/auto 而全盲） */
+.rowcol-drop {
+  max-height: none;
+  overflow: visible;
 }
 
 /* 数量插入行：图标 + 文本 + 数字输入 + ✓ */
