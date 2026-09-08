@@ -50,6 +50,68 @@ export function plainTextFromCells(
     .join('\n')
 }
 
+/// Inverse of the field writer above: parses the (possibly quoted) TSV the
+/// copy path generates — used by 只粘贴文本 to re-type fields from text.
+export function parseTsv(text: string): string[][] {
+  const rows: string[][] = []
+  let row: string[] = []
+  let field = ''
+  let quoted = false
+  let index = 0
+  const pushField = (): void => {
+    row.push(field)
+    field = ''
+  }
+  const pushRow = (): void => {
+    pushField()
+    rows.push(row)
+    row = []
+  }
+  while (index < text.length) {
+    const char = text[index]
+    if (quoted) {
+      if (char === '"') {
+        if (text[index + 1] === '"') {
+          field += '"'
+          index += 2
+          continue
+        }
+        quoted = false
+        index += 1
+        continue
+      }
+      field += char
+      index += 1
+      continue
+    }
+    if (char === '"' && field === '') {
+      quoted = true
+      index += 1
+      continue
+    }
+    if (char === '\t') {
+      pushField()
+      index += 1
+      continue
+    }
+    if (char === '\n') {
+      pushRow()
+      index += 1
+      continue
+    }
+    if (char === '\r') {
+      index += 1
+      continue
+    }
+    field += char
+    index += 1
+  }
+  // The copy path never emits a trailing newline, so a partial row only
+  // exists for truncated input; push it for symmetry anyway.
+  if (field !== '' || row.length > 0) pushRow()
+  return rows
+}
+
 interface CopyContent {
   plain: string
   discreteRange: { rows: number[]; cols: number[] }

@@ -34,10 +34,13 @@ export const th = {
   appPageWatermark: 'หน้า {page}',
   appUnprotectWorkbook: 'ยกเลิกการป้องกันเวิร์กบุ๊ก',
   appProtectWorkbookTitle: 'ล็อกโครงสร้างเวิร์กบุ๊ก (ไม่มีรหัสผ่าน)',
-  appWorkbookProtectionWillWrite: 'การป้องกันโครงสร้างเวิร์กบุ๊กจะถูกเขียนเมื่อบันทึก (ไม่มีรหัสผ่าน)',
+  appWorkbookProtectionWillWrite:
+    'การป้องกันโครงสร้างเวิร์กบุ๊กจะถูกเขียนเมื่อบันทึก (ไม่มีรหัสผ่าน)',
   appWorkbookProtectionWillRemove: 'การป้องกันโครงสร้างเวิร์กบุ๊กจะถูกเอาออกเมื่อบันทึก',
-  appWorkbookProtectedWithPassword: 'โครงสร้างเวิร์กบุ๊กได้รับการป้องกันด้วยรหัสผ่าน จึงไม่สามารถเปลี่ยนได้ที่นี่',
-  appWorkbookStructureLocked: 'โครงสร้างเวิร์กบุ๊กได้รับการป้องกัน จึงไม่สามารถเพิ่ม ลบ เปลี่ยนชื่อ หรือย้ายแผ่นงานได้',
+  appWorkbookProtectedWithPassword:
+    'โครงสร้างเวิร์กบุ๊กได้รับการป้องกันด้วยรหัสผ่าน จึงไม่สามารถเปลี่ยนได้ที่นี่',
+  appWorkbookStructureLocked:
+    'โครงสร้างเวิร์กบุ๊กได้รับการป้องกัน จึงไม่สามารถเพิ่ม ลบ เปลี่ยนชื่อ หรือย้ายแผ่นงานได้',
   appAllowEditRangesTitle: 'ช่วงที่ยังแก้ไขได้ขณะที่แผ่นงานได้รับการป้องกัน',
   appRangesPasswordBlocked: 'แผ่นงานนี้มีช่วงการแก้ไขที่ป้องกันด้วยรหัสผ่าน จึงไม่รองรับการแก้ไข',
   appRangesRecorded: 'จะเขียนช่วงที่อนุญาตให้แก้ไข {count} ช่วงเมื่อบันทึก',
@@ -140,26 +143,35 @@ export const th = {
   appTooManyImages: 'ส่งรูปได้สูงสุด {max} รูปต่อข้อความ รูปที่เกินถูกละไว้',
   appAppliedRevision: 'นำไปใช้แล้ว (รุ่นที่ {revision}) — เลิกทำด้วย ⌘Z บันทึกลงไฟล์ด้วย ⌘S',
   appCannotReadImage: 'ไม่สามารถอ่านไฟล์รูปภาพได้',
-  appTableNotDeletable: 'ตาราง "{name}" ไม่มีอยู่หรือไม่ได้สร้างในเซสชันนี้ — ตารางที่มีอยู่ในไฟล์เดิมยังลบไม่ได้',
+  appTableNotDeletable:
+    'ตาราง "{name}" ไม่มีอยู่หรือไม่ได้สร้างในเซสชันนี้ — ตารางที่มีอยู่ในไฟล์เดิมยังลบไม่ได้',
   appImageNotLoaded: 'โหลดรูปภาพไม่สำเร็จ: {path}',
   appApplyFailed: '⚠️ นำไปใช้ไม่สำเร็จ: {reason}',
   appPivotChartNeedsFile: 'เปิดไฟล์ XLSX ก่อน — PivotChart จะถูกเขียนลงในไฟล์',
-  appCursorNotInPivot: 'เคอร์เซอร์ไม่ได้อยู่ใน PivotTable — เลือกเซลล์ในพื้นที่แสดงผลของ PivotTable ก่อน',
-  appPivotDefNotLoaded: 'คำจำกัดความของ PivotTable ยังโหลดไม่เสร็จ (หรือแยกวิเคราะห์ไม่สำเร็จ) — ลองใหม่อีกสักครู่',
+  appCursorNotInPivot:
+    'เคอร์เซอร์ไม่ได้อยู่ใน PivotTable — เลือกเซลล์ในพื้นที่แสดงผลของ PivotTable ก่อน',
+  appPivotDefNotLoaded:
+    'คำจำกัดความของ PivotTable ยังโหลดไม่เสร็จ (หรือแยกวิเคราะห์ไม่สำเร็จ) — ลองใหม่อีกสักครู่',
   appPivotNoChartData: 'PivotTable นี้ไม่มีแถว/คอลัมน์ข้อมูลสำหรับสร้างแผนภูมิ',
-  appPivotChartInsertedTruncated: 'แทรก PivotChart แล้ว (จุดข้อมูลมากเกินไป ถูกตัดทอน) — บันทึก (⌘S) เพื่อเขียนลงไฟล์',
-  appPivotChartInserted: 'แทรก PivotChart แล้ว — จะอัปเดตตามการรีเฟรช PivotTable บันทึก (⌘S) เพื่อเขียนลงไฟล์',
+  appPivotChartInsertedTruncated:
+    'แทรก PivotChart แล้ว (จุดข้อมูลมากเกินไป ถูกตัดทอน) — บันทึก (⌘S) เพื่อเขียนลงไฟล์',
+  appPivotChartInserted:
+    'แทรก PivotChart แล้ว — จะอัปเดตตามการรีเฟรช PivotTable บันทึก (⌘S) เพื่อเขียนลงไฟล์',
   appSheetNoPivot: 'แผ่นงานนี้ไม่มี PivotTable',
-  appPivotNeedsFullLoad: 'การรีเฟรช PivotTable ต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีม',
+  appPivotNeedsFullLoad:
+    'การรีเฟรช PivotTable ต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีม',
   appPivotSourceSheetMissing: 'ไม่มีแผ่นงานต้นทาง "{name}" ของ PivotTable',
   appPivotLayoutMismatch: 'เค้าโครง PivotTable ไม่ตรงกับช่วงแสดงผล — รีเฟรชใน Excel ก่อนคำนวณใหม่',
-  appPivotGrowUnsupported: 'เค้าโครง PivotTable นี้ (แบบกะทัดรัด/หัวเรื่องหลายแถว) ยังไม่รองรับการขยายอัตโนมัติ — รีเฟรชใน Excel',
-  appPivotGrowConflict: 'พื้นที่ PivotTable ที่ขยายแล้วชนกับเนื้อหาที่มีอยู่ — ล้างพื้นที่เป้าหมายก่อนแล้วจึงรีเฟรช',
+  appPivotGrowUnsupported:
+    'เค้าโครง PivotTable นี้ (แบบกะทัดรัด/หัวเรื่องหลายแถว) ยังไม่รองรับการขยายอัตโนมัติ — รีเฟรชใน Excel',
+  appPivotGrowConflict:
+    'พื้นที่ PivotTable ที่ขยายแล้วชนกับเนื้อหาที่มีอยู่ — ล้างพื้นที่เป้าหมายก่อนแล้วจึงรีเฟรช',
   appShapeNotEditable: 'ไม่มีรูปร่างที่แก้ไขได้ "{id}" (แก้ไขได้เฉพาะรูปร่างที่เพิ่มในเซสชันนี้)',
   appCalcFieldNameClash: 'เขตข้อมูลจากการคำนวณ "{name}" ต้องไม่ซ้ำกับหัวเรื่องต้นทาง',
   appCalcFieldNameDuplicate: 'ชื่อเขตข้อมูลจากการคำนวณต้องไม่ซ้ำกัน',
   appValueFilterFieldMissing: 'ตัวกรองค่าอ้างอิงถึงเขตข้อมูลค่า {index} ซึ่งไม่มีอยู่',
-  appPivotRelayoutOverlap: 'เค้าโครง PivotTable ใหม่จะทับเนื้อหาที่มีอยู่ — ล้างพื้นที่เป้าหมายก่อน',
+  appPivotRelayoutOverlap:
+    'เค้าโครง PivotTable ใหม่จะทับเนื้อหาที่มีอยู่ — ล้างพื้นที่เป้าหมายก่อน',
   appInvalidRowField: 'เขตข้อมูลแถวไม่ถูกต้อง',
   appNeedRowField: 'เลือกเขตข้อมูลแถวอย่างน้อยหนึ่งรายการ',
   appInvalidColumnField: 'เขตข้อมูลคอลัมน์ไม่ถูกต้อง',
@@ -170,17 +182,22 @@ export const th = {
   appWorkbookNotReady: 'เวิร์กบุ๊กยังไม่พร้อม',
   appOpenWorkbookFirst: 'เปิดเวิร์กบุ๊กก่อน',
   appOpenXlsxFirst: 'เปิดไฟล์ XLSX ก่อน',
-  appPivotCreated: 'สร้าง PivotTable แล้วที่ {cell} — จะเขียนลงไฟล์เมื่อบันทึก หลังบันทึกจะใช้ตัวแบ่งส่วนข้อมูล ไทม์ไลน์ และการรีเฟรชได้',
+  appPivotCreated:
+    'สร้าง PivotTable แล้วที่ {cell} — จะเขียนลงไฟล์เมื่อบันทึก หลังบันทึกจะใช้ตัวแบ่งส่วนข้อมูล ไทม์ไลน์ และการรีเฟรชได้',
   appPivotCreateFailed: 'สร้าง PivotTable ไม่สำเร็จ',
   appPutCursorInPivot: 'วางเคอร์เซอร์ในพื้นที่แสดงผลของ PivotTable ที่ต้องการแก้ไขก่อน',
   appPivotNoCacheDef: 'PivotTable นี้ไม่มีคำจำกัดความแคช จึงแก้ไขไม่ได้',
-  appPivotDefNotLoadedSave: 'คำจำกัดความของ PivotTable ยังไม่ถูกโหลด — ถ้าเพิ่งแก้ไขในเซสชันนี้ ให้บันทึก (⌘S) ก่อน',
+  appPivotDefNotLoadedSave:
+    'คำจำกัดความของ PivotTable ยังไม่ถูกโหลด — ถ้าเพิ่งแก้ไขในเซสชันนี้ ให้บันทึก (⌘S) ก่อน',
   appPivotEditUnsupported: 'PivotTable นี้ยังแก้ไขไม่ได้: {reasons}',
-  appPivotEditHasFeatures: 'PivotTable ที่มีการจัดกลุ่ม/ตัวกรอง/ตัวกรองรายงาน/เขตข้อมูลจากการคำนวณ ยังไม่รองรับการแก้ไขเค้าโครง — ปรับใน Excel',
+  appPivotEditHasFeatures:
+    'PivotTable ที่มีการจัดกลุ่ม/ตัวกรอง/ตัวกรองรายงาน/เขตข้อมูลจากการคำนวณ ยังไม่รองรับการแก้ไขเค้าโครง — ปรับใน Excel',
   appPivotEditValuesOnRows: 'PivotTable ที่มีเขตข้อมูลค่าอยู่บนแกนแถว ยังไม่รองรับการแก้ไขเค้าโครง',
-  appPivotEditAggUnsupported: 'วิธีสรุปรวมของ PivotTable นี้ (เช่น ผลคูณหรือนับตัวเลข) ยังไม่รองรับการแก้ไขเค้าโครง',
+  appPivotEditAggUnsupported:
+    'วิธีสรุปรวมของ PivotTable นี้ (เช่น ผลคูณหรือนับตัวเลข) ยังไม่รองรับการแก้ไขเค้าโครง',
   appPivotSourceSheetNotFound: 'ไม่พบแผ่นงานต้นทาง "{name}" ของ PivotTable',
-  appPivotLayoutUpdated: 'อัปเดตเค้าโครง PivotTable แล้ว — บันทึก (⌘S) เพื่อเขียนลงไฟล์ Excel จะสร้างแคชใหม่เมื่อเปิด',
+  appPivotLayoutUpdated:
+    'อัปเดตเค้าโครง PivotTable แล้ว — บันทึก (⌘S) เพื่อเขียนลงไฟล์ Excel จะสร้างแคชใหม่เมื่อเปิด',
   appPivotEditFailed: 'แก้ไข PivotTable ไม่สำเร็จ',
   appNoActiveSheet: 'ไม่มีแผ่นงานที่ใช้งานอยู่',
   appCurrentSheetNoPivot: 'แผ่นงานปัจจุบันไม่มี PivotTable',
@@ -193,23 +210,28 @@ export const th = {
   appBlank: '(ว่าง)',
   appFieldNoMembers: 'เขตข้อมูลนี้ไม่มีสมาชิกให้กรอง',
   appSlicerCreated: 'สร้างตัวแบ่งส่วนข้อมูล "{name}" แล้ว — คลิกสมาชิกเพื่อกรอง PivotTable',
-  appSlicerNeedsFullLoad: 'การกรองด้วยตัวแบ่งส่วนข้อมูลต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีม',
+  appSlicerNeedsFullLoad:
+    'การกรองด้วยตัวแบ่งส่วนข้อมูลต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีม',
   appSlicerPivotMissing: 'PivotTable ที่ผูกกับตัวแบ่งส่วนข้อมูลนี้ไม่มีอยู่แล้ว',
   appSlicerSheetMissing: 'แผ่นงานที่ผูกกับตัวแบ่งส่วนข้อมูลนี้ไม่มีอยู่แล้ว',
   appSlicerFilterFailed: 'การกรองด้วยตัวแบ่งส่วนข้อมูลไม่สำเร็จ',
   appSlicerKeepOne: 'ต้องเลือกสมาชิกในตัวแบ่งส่วนข้อมูลไว้อย่างน้อยหนึ่งรายการ',
-  appSlicerApplied: 'นำตัวแบ่งส่วนข้อมูล "{name}" ไปใช้แล้ว — บันทึก (⌘S) เพื่อเขียน PivotTable ที่กรองแล้ว',
+  appSlicerApplied:
+    'นำตัวแบ่งส่วนข้อมูล "{name}" ไปใช้แล้ว — บันทึก (⌘S) เพื่อเขียน PivotTable ที่กรองแล้ว',
   appSlicerCleared: 'ล้างตัวกรองของตัวแบ่งส่วนข้อมูล "{name}" แล้ว',
   appSlicerRemoved: 'ลบตัวแบ่งส่วนข้อมูล "{name}" แล้ว คืนค่าสมาชิกทั้งหมด',
   appTimelineHintIn: 'แทรกไทม์ไลน์สำหรับเขตข้อมูลวันที่ของ PivotTable ปัจจุบัน',
   appTimelineHintOut: 'เลือกเซลล์ภายในพื้นที่แสดงผลของ PivotTable ก่อน แล้วจึงแทรกไทม์ไลน์',
-  appTimelineNoDateFields: 'PivotTable นี้ไม่มีเขตข้อมูลวันที่ที่ใช้ได้ — ไทม์ไลน์ต้องใช้เขตข้อมูลที่ไม่ได้จัดกลุ่มและมีค่าเป็นวันที่ทั้งหมด',
+  appTimelineNoDateFields:
+    'PivotTable นี้ไม่มีเขตข้อมูลวันที่ที่ใช้ได้ — ไทม์ไลน์ต้องใช้เขตข้อมูลที่ไม่ได้จัดกลุ่มและมีค่าเป็นวันที่ทั้งหมด',
   appTimelineCreated: 'สร้างไทม์ไลน์ "{name}" แล้ว — คลิกเดือนเพื่อกรอง PivotTable',
-  appTimelineApplied: 'นำไทม์ไลน์ "{name}" ไปใช้แล้ว — บันทึก (⌘S) เพื่อเขียน PivotTable ที่กรองแล้ว',
+  appTimelineApplied:
+    'นำไทม์ไลน์ "{name}" ไปใช้แล้ว — บันทึก (⌘S) เพื่อเขียน PivotTable ที่กรองแล้ว',
   appTimelineCleared: 'ล้างตัวกรองของไทม์ไลน์ "{name}" แล้ว',
   appTimelineRemoved: 'ลบไทม์ไลน์ "{name}" แล้ว คืนค่าสมาชิกทั้งหมด',
   appTimelineEmptyRange: 'ไม่มีสมาชิกในช่วงเดือนที่เลือก',
-  appFieldFilterTaken: 'เขตข้อมูลที่เข้าเงื่อนไขทั้งหมดมีตัวแบ่งส่วนข้อมูลหรือไทม์ไลน์อยู่แล้ว — ลบของเดิมก่อน',
+  appFieldFilterTaken:
+    'เขตข้อมูลที่เข้าเงื่อนไขทั้งหมดมีตัวแบ่งส่วนข้อมูลหรือไทม์ไลน์อยู่แล้ว — ลบของเดิมก่อน',
   appGoToNotReady: 'เวิร์กบุ๊กยังไม่พร้อม — ไปยังตำแหน่งไม่ได้',
   appGoToEmpty: 'พิมพ์ที่อยู่เซลล์หรือชื่อที่กำหนดไว้',
   appGoToUnresolved: 'ไปที่ "{ref}" ไม่ได้: ไม่ใช่ที่อยู่ที่ถูกต้องหรือชื่อที่กำหนดไว้ที่นำทางได้',
@@ -220,48 +242,64 @@ export const th = {
   appSymbolNeedsCell: 'เปิดเวิร์กบุ๊กและเลือกเซลล์ก่อน แล้วจึงแทรกสัญลักษณ์',
   appSymbolInsertFailed: 'แทรกสัญลักษณ์ไม่ได้',
   appSymbolInserted: 'แทรก {char} ลงใน {cell} แล้ว',
-  appAdvFilterNeedsFilter: 'ตัวกรองขั้นสูงต้องมีช่วงตัวกรองอัตโนมัติ — เลือกข้อมูลแล้วคลิก Filter ก่อน',
+  appAdvFilterNeedsFilter:
+    'ตัวกรองขั้นสูงต้องมีช่วงตัวกรองอัตโนมัติ — เลือกข้อมูลแล้วคลิก Filter ก่อน',
   appAdvFilterGone: 'แผ่นงานปัจจุบันไม่มีตัวกรองอัตโนมัติ — เปิดใหม่แล้วลองอีกครั้ง',
   appAdvFilterFailed: 'นำตัวกรองขั้นสูงไปใช้ไม่สำเร็จ',
   appAdvFilterApplied: 'นำเงื่อนไขตัวกรองขั้นสูงไปใช้แล้ว — ⌘S บันทึกลงไฟล์',
   appFlashFillNeedsLeft: 'การเติมแบบรวดเร็วต้องมีคอลัมน์ข้อมูลทางซ้ายของคอลัมน์เป้าหมาย',
   appFlashFillNeedsRows: 'การเติมแบบรวดเร็วต้องมีข้อมูลอย่างน้อยสองแถว',
-  appFlashFillNeedsExamples: 'กรอกตัวอย่าง 1-2 รายการในคอลัมน์เป้าหมายก่อน แล้วคลิกการเติมแบบรวดเร็ว',
-  appFlashFillNoPattern: 'ไม่พบรูปแบบจากตัวอย่าง — ค่าเป้าหมายต้องสร้างได้จากคอลัมน์ทางซ้าย ลองเพิ่มตัวอย่างอีกหนึ่งรายการ',
+  appFlashFillNeedsExamples:
+    'กรอกตัวอย่าง 1-2 รายการในคอลัมน์เป้าหมายก่อน แล้วคลิกการเติมแบบรวดเร็ว',
+  appFlashFillNoPattern:
+    'ไม่พบรูปแบบจากตัวอย่าง — ค่าเป้าหมายต้องสร้างได้จากคอลัมน์ทางซ้าย ลองเพิ่มตัวอย่างอีกหนึ่งรายการ',
   appFlashFillNothingToFill: 'ไม่มีแถวว่างให้เติม',
   appFlashFillDone: '⚡ การเติมแบบรวดเร็วเติมข้อมูล {count} แถวตามตัวอย่างของคุณ',
   appSparklineNeedsFile: 'เส้นแบบประกายไฟต้องใช้ไฟล์ XLSX ที่นำเข้าแล้ว',
-  appSparklineNeedsCols: 'เลือกข้อมูลอย่างน้อยสองคอลัมน์ — หนึ่งเส้นประกายไฟต่อแถว วางในคอลัมน์ทางขวาของส่วนที่เลือก',
+  appSparklineNeedsCols:
+    'เลือกข้อมูลอย่างน้อยสองคอลัมน์ — หนึ่งเส้นประกายไฟต่อแถว วางในคอลัมน์ทางขวาของส่วนที่เลือก',
   appSparklineNoSpace: 'ไม่มีพื้นที่วางเส้นแบบประกายไฟทางขวาของส่วนที่เลือก',
-  appSparklinesInserted: 'แทรกเส้นแบบประกายไฟ {count} เส้นในคอลัมน์ทางขวาของส่วนที่เลือกแล้ว — ⌘S บันทึกลงไฟล์',
-  appSaveHeldStranded: 'บันทึก PivotTable/ตารางพร้อมกับแผ่นงานใหม่บวกการเปลี่ยนแถว/คอลัมน์ในครั้งเดียวไม่ได้ — บันทึกโครงสร้างก่อน แล้วจึงเพิ่ม PivotTable/ตาราง',
-  appSaveSecondCanceled: 'การบันทึกช่วงที่สองถูกยกเลิก — โครงสร้างถูกบันทึกแล้ว แต่ PivotTable/ตาราง/ชื่อที่กำหนดยังไม่ถูกเขียน',
+  appSparklinesInserted:
+    'แทรกเส้นแบบประกายไฟ {count} เส้นในคอลัมน์ทางขวาของส่วนที่เลือกแล้ว — ⌘S บันทึกลงไฟล์',
+  appSaveHeldStranded:
+    'บันทึก PivotTable/ตารางพร้อมกับแผ่นงานใหม่บวกการเปลี่ยนแถว/คอลัมน์ในครั้งเดียวไม่ได้ — บันทึกโครงสร้างก่อน แล้วจึงเพิ่ม PivotTable/ตาราง',
+  appSaveSecondCanceled:
+    'การบันทึกช่วงที่สองถูกยกเลิก — โครงสร้างถูกบันทึกแล้ว แต่ PivotTable/ตาราง/ชื่อที่กำหนดยังไม่ถูกเขียน',
   appSavedTwoPhase: 'บันทึกแล้ว',
-  appSaveSecondFailed: 'โครงสร้างถูกบันทึกแล้ว แต่ช่วงที่สอง (PivotTable/ตาราง/ชื่อที่กำหนด) ล้มเหลว: {reason}',
+  appSaveSecondFailed:
+    'โครงสร้างถูกบันทึกแล้ว แต่ช่วงที่สอง (PivotTable/ตาราง/ชื่อที่กำหนด) ล้มเหลว: {reason}',
   appReadyInitial: 'พร้อมสำหรับคำสั่ง AI แบบระบุแน่นอนที่ทำงานในเครื่อง',
   appAiThinking: 'AI กำลังคิด…',
   appAiDone: 'AI เสร็จสิ้นแล้ว',
-  appAiTurnLimit: '(ถึงขีดจำกัดรอบการเรียกเครื่องมือของคำขอนี้แล้ว คำตอบข้างต้นอิงจากข้อมูลที่อ่านมา อาจไม่สมบูรณ์)',
+  appAiTurnLimit:
+    '(ถึงขีดจำกัดรอบการเรียกเครื่องมือของคำขอนี้แล้ว คำตอบข้างต้นอิงจากข้อมูลที่อ่านมา อาจไม่สมบูรณ์)',
   appAiStopped: '(หยุดแล้ว)',
   appAiNoSummary: 'AI ทำงานเสร็จโดยไม่มีสรุป',
   appAiNoAction: 'AI ไม่ได้ดำเนินการใด ๆ และไม่มีคำตอบ โปรดลองอีกครั้งหรือเปลี่ยนคำพูด',
   appNewConversation: 'เริ่มการสนทนาใหม่แล้ว',
   appPivotCellNoEdit: 'เซลล์นี้เป็นส่วนหนึ่งของ PivotTable — ยังไม่รองรับการแก้ไข',
   appAreaStreaming: 'พื้นที่นั้นกำลังโหลดแบบสตรีมอยู่ — ลองใหม่อีกสักครู่',
-  appFormulaRecordedPartial: 'บันทึกสูตรแล้ว — จะถูกบันทึกลงไฟล์ แต่ผลลัพธ์บนหน้าจออาจไม่สมบูรณ์ เพราะเวิร์กบุ๊กขนาดใหญ่นี้โหลดแบบสตรีมบางส่วน',
-  appFormulaTooExpensive: 'สูตรนี้ประเมินช่วงข้อมูลขนาดใหญ่ทีละองค์ประกอบ — การคำนวณจะทำให้แอปค้าง จึงถูกยกเลิก โปรดย่อช่วงที่อ้างอิงแล้วลองอีกครั้ง',
+  appFormulaRecordedPartial:
+    'บันทึกสูตรแล้ว — จะถูกบันทึกลงไฟล์ แต่ผลลัพธ์บนหน้าจออาจไม่สมบูรณ์ เพราะเวิร์กบุ๊กขนาดใหญ่นี้โหลดแบบสตรีมบางส่วน',
+  appFormulaTooExpensive:
+    'สูตรนี้ประเมินช่วงข้อมูลขนาดใหญ่ทีละองค์ประกอบ — การคำนวณจะทำให้แอปค้าง จึงถูกยกเลิก โปรดย่อช่วงที่อ้างอิงแล้วลองอีกครั้ง',
   appPivotSheetNoStructural: 'แผ่นงานนี้มี PivotTable — ยังไม่รองรับการเปลี่ยนโครงสร้าง',
   appDeleteSpanFormulas: 'มีสูตรที่อ้างอิงเฉพาะแถว/คอลัมน์ที่จะถูกลบ — โปรดแก้ไขหรือลบสูตรนั้นก่อน',
   appIconSetUnsupported: 'ชุดไอคอนนี้ไม่สามารถบันทึกเป็น xlsx ได้ โปรดเลือกชุดไอคอนอื่น',
-  appNeedFullLoadSort: 'การเรียงลำดับ กรอง ย้ายช่วง และแยกข้อความเป็นคอลัมน์ต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
+  appNeedFullLoadSort:
+    'การเรียงลำดับ กรอง ย้ายช่วง และแยกข้อความเป็นคอลัมน์ต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
   appPivotSheetNoMove: 'แผ่นงานนี้มี PivotTable — ยังไม่รองรับการย้ายช่วง',
   appTableFilterNoEdit: 'ตัวกรองของแผ่นงานนี้เป็นของตาราง Excel — การแก้ไขยังบันทึกไม่ได้',
   appAutofillStreaming: 'ยังไม่อนุญาตให้เติมอัตโนมัติลงในพื้นที่ที่กำลังโหลดแบบสตรีม',
-  appDvNeedsIndexed: 'การแก้ไขการตรวจสอบความถูกต้องของข้อมูลต้องรอให้แผ่นงานนี้ทำดัชนีเสร็จก่อน — ลองใหม่อีกสักครู่',
-  appDuplicateNeedsFullLoad: 'การทำสำเนาแผ่นงานต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
+  appDvNeedsIndexed:
+    'การแก้ไขการตรวจสอบความถูกต้องของข้อมูลต้องรอให้แผ่นงานนี้ทำดัชนีเสร็จก่อน — ลองใหม่อีกสักครู่',
+  appDuplicateNeedsFullLoad:
+    'การทำสำเนาแผ่นงานต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
   appPivotSheetNoDuplicate: 'แผ่นงานนี้มี PivotTable — ยังไม่รองรับการทำสำเนาแผ่นงานนี้',
-  appDuplicateScopedNames: 'แผ่นงานนี้มีชื่อที่กำหนดระดับแผ่นงาน — ยังไม่รองรับการทำสำเนาแผ่นงานนี้',
-  appMoveRowsColsUnsaved: 'การย้ายทั้งคอลัมน์ยังบันทึกลงเวิร์กบุ๊กที่นำเข้าไม่ได้ — ส่วนการย้ายทั้งแถวรองรับแล้ว',
+  appDuplicateScopedNames:
+    'แผ่นงานนี้มีชื่อที่กำหนดระดับแผ่นงาน — ยังไม่รองรับการทำสำเนาแผ่นงานนี้',
+  appMoveRowsColsUnsaved:
+    'การย้ายทั้งคอลัมน์ยังบันทึกลงเวิร์กบุ๊กที่นำเข้าไม่ได้ — ส่วนการย้ายทั้งแถวรองรับแล้ว',
   appNoWorkbookOpen: 'ไม่มีเวิร์กบุ๊กที่เปิดอยู่',
   appDvListOptions: 'รายการ: {items}',
   appDvListFromRange: 'รายการ (จากช่วง {range})',
@@ -282,9 +320,11 @@ export const th = {
   appAutoFilterRemoveFailed: 'นำตัวกรองอัตโนมัติออกไม่ได้',
   appSelectDataRangeFirst: 'เลือกช่วงข้อมูลก่อน',
   appUnsupportedChartType: 'ชนิดแผนภูมิที่ไม่รองรับ: {kind}',
-  appChartInsertedDemo: 'แทรกแผนภูมิแล้ว — การแก้ไขในโหมดสาธิตอยู่ในหน่วยความจำเท่านั้น เปิดไฟล์ XLSX เพื่อบันทึกลงดิสก์',
+  appChartInsertedDemo:
+    'แทรกแผนภูมิแล้ว — การแก้ไขในโหมดสาธิตอยู่ในหน่วยความจำเท่านั้น เปิดไฟล์ XLSX เพื่อบันทึกลงดิสก์',
   appChartInsertFailed: 'แทรกแผนภูมิไม่ได้',
-  appChartNeedsNumericColumn: 'เลือกช่วงที่มีคอลัมน์ตัวเลขอย่างน้อยหนึ่งคอลัมน์ (หัวเรื่องมีหรือไม่ก็ได้)',
+  appChartNeedsNumericColumn:
+    'เลือกช่วงที่มีคอลัมน์ตัวเลขอย่างน้อยหนึ่งคอลัมน์ (หัวเรื่องมีหรือไม่ก็ได้)',
   appChartInserted: 'แทรกแผนภูมิแล้ว — เลือกเพื่อแก้ไข ⌘S เขียนลงไฟล์',
   appShapeNeedsFile: 'เปิดไฟล์ XLSX ก่อน — รูปร่างที่แทรกจะถูกเขียนลงไฟล์',
   appSelectCellFirst: 'เลือกเซลล์ก่อน',
@@ -314,9 +354,12 @@ export const th = {
   appPivotTooManyColLines: 'PivotTable มีบรรทัดเค้าโครงคอลัมน์เกิน 1,000 บรรทัด',
   appPivotNeedsValues: 'PivotTable ต้องมีเขตข้อมูลค่าหนึ่งรายการ',
   appPivotTooManyRowLines: 'PivotTable มีบรรทัดเค้าโครงแถวเกิน 20,000 บรรทัด',
-  appPivotOverlapSource: 'พื้นที่แสดงผลของ PivotTable จะทับช่วงข้อมูลต้นทาง — เลือกเซลล์เป้าหมายอื่น',
-  appPivotOverlapExisting: 'พื้นที่แสดงผลของ PivotTable จะทับ PivotTable ที่มีอยู่บนแผ่นงานเป้าหมาย',
-  appPivotOverlapSession: 'พื้นที่แสดงผลของ PivotTable จะทับ PivotTable "{name}" ที่สร้างในเซสชันนี้',
+  appPivotOverlapSource:
+    'พื้นที่แสดงผลของ PivotTable จะทับช่วงข้อมูลต้นทาง — เลือกเซลล์เป้าหมายอื่น',
+  appPivotOverlapExisting:
+    'พื้นที่แสดงผลของ PivotTable จะทับ PivotTable ที่มีอยู่บนแผ่นงานเป้าหมาย',
+  appPivotOverlapSession:
+    'พื้นที่แสดงผลของ PivotTable จะทับ PivotTable "{name}" ที่สร้างในเซสชันนี้',
   appPivotNameUsed: 'ชื่อ PivotTable "{name}" ถูกใช้ไปแล้วในเซสชันนี้',
   appActiveCellFallback: 'เซลล์ที่ใช้งานอยู่',
   appFormulaStartsEquals: 'สูตรต้องขึ้นต้นด้วย "="',
@@ -337,8 +380,10 @@ export const th = {
   appConsolidateOverlap: 'พื้นที่แสดงผลทับกับพื้นที่ต้นทาง — เลือกเซลล์เป้าหมายอื่น',
   appConsolidateWriteFailed: 'เขียนผลการรวมข้อมูลไม่ได้',
   appConsolidateDone: 'รวมข้อมูล {count} พื้นที่แล้วที่ {cell} (สูตรสด {rows}×{columns})',
-  appConsolidateMaxMinLabels: 'ค่าสูงสุด/ต่ำสุดไม่รองรับโหมดป้ายชื่อคอลัมน์ซ้าย — ใช้การรวมตามตำแหน่งแทน',
-  appConsolidateLabelNeedsCols: 'โหมดป้ายชื่อต้องมีอย่างน้อยสองคอลัมน์ต่อพื้นที่ (คอลัมน์ป้ายชื่อและคอลัมน์ค่า)',
+  appConsolidateMaxMinLabels:
+    'ค่าสูงสุด/ต่ำสุดไม่รองรับโหมดป้ายชื่อคอลัมน์ซ้าย — ใช้การรวมตามตำแหน่งแทน',
+  appConsolidateLabelNeedsCols:
+    'โหมดป้ายชื่อต้องมีอย่างน้อยสองคอลัมน์ต่อพื้นที่ (คอลัมน์ป้ายชื่อและคอลัมน์ค่า)',
   appConsolidateNoLabels: 'ไม่พบป้ายชื่อในคอลัมน์ซ้ายสุดของพื้นที่ต้นทาง',
   appOutlineNeedsFile: 'เปิดไฟล์ XLSX ก่อน — การจัดกลุ่มเค้าร่างจะถูกเขียนลงไฟล์',
   appOutlineSelectFirst: 'เลือกแถวหรือคอลัมน์ที่จะจัดกลุ่มก่อน',
@@ -356,7 +401,8 @@ export const th = {
   appProtectionNeedsFile: 'เปิดไฟล์ XLSX ก่อน — การป้องกันจะถูกบันทึกลงไฟล์',
   appProtectionNeedsIndexed: 'การป้องกันต้องรอให้แผ่นงานนี้ทำดัชนีเสร็จก่อน — ลองใหม่อีกสักครู่',
   appProtectedWithPassword: 'แผ่นงานนี้ถูกป้องกันด้วยรหัสผ่าน — ไม่รองรับการเอาการป้องกันออก',
-  appProtectionWillWrite: 'การป้องกันแผ่นงานจะถูกเขียนเมื่อบันทึก (ไม่มีรหัสผ่าน) ตัวแก้ไขเองไม่ได้บังคับใช้',
+  appProtectionWillWrite:
+    'การป้องกันแผ่นงานจะถูกเขียนเมื่อบันทึก (ไม่มีรหัสผ่าน) ตัวแก้ไขเองไม่ได้บังคับใช้',
   appProtectionWillRemove: 'การป้องกันแผ่นงานจะถูกเอาออกเมื่อบันทึก',
   appZoom: 'ย่อ/ขยาย {percent}%',
   appTopRowFrozen: 'ตรึงแถวบนสุดแล้ว — บันทึกด้วย ⌘S',
@@ -379,10 +425,12 @@ export const th = {
   appTraceOffSheetDeps: 'เซลล์ที่อ้างถึงบนแผ่นงานอื่น {count} รายการไม่ได้ถูกวาด',
   appTraceArrowsRemoved: 'เอาลูกศรแกะรอยออกแล้ว',
   appNoTraceArrows: 'ไม่มีลูกศรแกะรอยให้เอาออก',
-  appWorkbookStats: 'สถิติเวิร์กบุ๊ก: {sheets} แผ่นงาน · {cells} เซลล์ที่มีข้อมูล · {formulas} สูตร{note}',
+  appWorkbookStats:
+    'สถิติเวิร์กบุ๊ก: {sheets} แผ่นงาน · {cells} เซลล์ที่มีข้อมูล · {formulas} สูตร{note}',
   appFrozenAtSelection: 'ตรึงที่ตำแหน่งที่เลือกแล้ว — บันทึกด้วย ⌘S',
   appSelectCellsFirst: 'เลือกเซลล์ก่อน',
-  appCellStyleApplied: 'นำสไตล์เซลล์ไปใช้แล้ว — ถูกบันทึกเหมือนการแก้ไขรูปแบบทั่วไป (⌘S เพื่อบันทึก)',
+  appCellStyleApplied:
+    'นำสไตล์เซลล์ไปใช้แล้ว — ถูกบันทึกเหมือนการแก้ไขรูปแบบทั่วไป (⌘S เพื่อบันทึก)',
   appSelectRangeFirst: 'เลือกช่วงเซลล์ก่อน',
   appSettingNeedsFile: 'เปิดไฟล์ XLSX ก่อน — การตั้งค่านี้บันทึกลงไฟล์เท่านั้น',
   appTooManyCellsForSetting: 'เลือกน้อยกว่า 10,000 เซลล์สำหรับการตั้งค่านี้',
@@ -394,7 +442,8 @@ export const th = {
   appRowBelowStreaming: 'แถวถัดลงไปกำลังโหลดแบบสตรีมอยู่ — ลองใหม่อีกสักครู่',
   appAutofnInserted: 'แทรก {fn} ใต้ส่วนที่เลือกแล้ว',
   appSortedCustom: 'เรียงตามระดับที่กำหนดเองของคุณแล้ว',
-  appDedupeNeedsFullLoad: 'การเอาค่าที่ซ้ำกันออกต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
+  appDedupeNeedsFullLoad:
+    'การเอาค่าที่ซ้ำกันออกต้องใช้โหมดโหลดเต็ม — เวิร์กบุ๊กนี้ใหญ่เกินไปจึงโหลดแบบสตรีมบางส่วน',
   appDedupeSelectRows: 'เลือกแถวที่จะตรวจหาค่าซ้ำก่อน',
   appNoDuplicates: 'ไม่พบแถวที่ซ้ำกันในส่วนที่เลือก',
   appDuplicatesRemoved: 'เอาแถวที่ซ้ำออกแล้ว {count} แถว',
@@ -447,7 +496,8 @@ export const th = {
   appCsvExportTooLarge: 'ชีตใหญ่เกินไป ส่งออกเป็น CSV ไม่ได้',
   appCsvExportCanceled: 'ยกเลิกการส่งออก CSV แล้ว',
   appCsvExported: 'ส่งออก {path} แล้ว',
-  appCsvExportedActiveOnly: 'ไฟล์ CSV มีได้เพียงชีตเดียว — ส่งออกชีตที่ใช้งานอยู่ “{name}” ไปยัง {path} แล้ว',
+  appCsvExportedActiveOnly:
+    'ไฟล์ CSV มีได้เพียงชีตเดียว — ส่งออกชีตที่ใช้งานอยู่ “{name}” ไปยัง {path} แล้ว',
   appCsvExportFailed: 'ส่งออก CSV ไม่ได้',
   appDemoNoSave: 'การแก้ไขในโหมดสาธิตอยู่ในหน่วยความจำเท่านั้น — เปิดไฟล์ XLSX เพื่อบันทึกลงดิสก์',
   appFilterSnapshotFailed: 'บันทึกภาพรวมสถานะตัวกรองไม่ได้',
@@ -458,19 +508,31 @@ export const th = {
   appSaveCanceled: 'ยกเลิกการบันทึกแล้ว',
   appSaved: 'บันทึกแล้ว',
   appSaveFailed: 'บันทึกเวิร์กบุ๊กไม่ได้',
-  appCfRuleUnsaveable: 'กฎการจัดรูปแบบตามเงื่อนไขนี้ไม่สามารถบันทึกเป็น xlsx ได้ — โปรดใช้กฎประเภทอื่น',
-  appSaveErrX14Dv: 'ชีตนี้มีการตรวจสอบความถูกต้องของข้อมูลแบบขยาย (x14) ยังไม่รองรับการแก้ไขกฎการตรวจสอบของชีตนี้',
-  appSaveErrMultiSelectList: 'การตรวจสอบแบบรายการเลือกหลายรายการไม่สามารถบันทึกเป็น xlsx ได้ — โปรดลบกฎนั้นก่อนบันทึก',
+  appCfRuleUnsaveable:
+    'กฎการจัดรูปแบบตามเงื่อนไขนี้ไม่สามารถบันทึกเป็น xlsx ได้ — โปรดใช้กฎประเภทอื่น',
+  appSaveErrX14Dv:
+    'ชีตนี้มีการตรวจสอบความถูกต้องของข้อมูลแบบขยาย (x14) ยังไม่รองรับการแก้ไขกฎการตรวจสอบของชีตนี้',
+  appSaveErrMultiSelectList:
+    'การตรวจสอบแบบรายการเลือกหลายรายการไม่สามารถบันทึกเป็น xlsx ได้ — โปรดลบกฎนั้นก่อนบันทึก',
   appSaveErrX14Cf: 'ช่วงนี้มีการจัดรูปแบบตามเงื่อนไขแบบขยาย (x14) จึงยังแก้ไขไม่ได้ในขณะนี้',
-  appSaveErrPivotWithSheetOps: 'PivotTable ที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงการจัดการชีตได้ — โปรดบันทึก PivotTable ก่อน',
-  appSaveErrPivotWithRowCol: 'PivotTable ที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์ของชีตนั้นได้ — โปรดบันทึก PivotTable ก่อน',
-  appSaveErrTableWithRowCol: 'ตารางที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์ของชีตนั้นได้ — โปรดบันทึกตารางก่อน',
-  appSaveErrNamesWithStructural: 'การเปลี่ยนแปลงชื่อที่กำหนดไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์หรือโครงสร้างชีตได้ — โปรดแยกบันทึกเป็นสองครั้ง',
-  appSaveErrChangedOnDisk: 'ไฟล์ถูกโปรแกรมอื่นแก้ไขบนดิสก์ — ยกเลิกการบันทึกแล้ว โปรดเปิดไฟล์ใหม่แล้วลองอีกครั้ง',
-  appSaveErrStylesheetLimited: 'สไตล์ชีตของเวิร์กบุ๊กนี้ขาดโครงสร้างพื้นฐาน จึงบันทึกการเปลี่ยนแปลงสไตล์ไม่ได้',
-  appSaveErrPackageGuard: 'การบันทึกจะเปลี่ยนโครงสร้างแพ็กเกจของเวิร์กบุ๊ก — ยกเลิกแล้วเพื่อปกป้องไฟล์',
-  appSaveErrChartUnsupported: 'แผนภูมิประเภทนี้ไม่รองรับการแก้ไขดังกล่าว ยกเลิกการบันทึกแล้ว — โปรดเลิกทำการเปลี่ยนแปลงแผนภูมินั้น',
-  appSaveErrMoveOverlap: 'มีสูตร ช่วงที่จัดรูปแบบ รูปร่าง หรือตารางคร่อมแถวที่ถูกย้าย ยกเลิกการบันทึกแล้ว — โปรดเลิกทำการย้ายนั้น',
+  appSaveErrPivotWithSheetOps:
+    'PivotTable ที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงการจัดการชีตได้ — โปรดบันทึก PivotTable ก่อน',
+  appSaveErrPivotWithRowCol:
+    'PivotTable ที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์ของชีตนั้นได้ — โปรดบันทึก PivotTable ก่อน',
+  appSaveErrTableWithRowCol:
+    'ตารางที่สร้างใหม่ไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์ของชีตนั้นได้ — โปรดบันทึกตารางก่อน',
+  appSaveErrNamesWithStructural:
+    'การเปลี่ยนแปลงชื่อที่กำหนดไม่สามารถบันทึกพร้อมการเปลี่ยนแปลงแถว/คอลัมน์หรือโครงสร้างชีตได้ — โปรดแยกบันทึกเป็นสองครั้ง',
+  appSaveErrChangedOnDisk:
+    'ไฟล์ถูกโปรแกรมอื่นแก้ไขบนดิสก์ — ยกเลิกการบันทึกแล้ว โปรดเปิดไฟล์ใหม่แล้วลองอีกครั้ง',
+  appSaveErrStylesheetLimited:
+    'สไตล์ชีตของเวิร์กบุ๊กนี้ขาดโครงสร้างพื้นฐาน จึงบันทึกการเปลี่ยนแปลงสไตล์ไม่ได้',
+  appSaveErrPackageGuard:
+    'การบันทึกจะเปลี่ยนโครงสร้างแพ็กเกจของเวิร์กบุ๊ก — ยกเลิกแล้วเพื่อปกป้องไฟล์',
+  appSaveErrChartUnsupported:
+    'แผนภูมิประเภทนี้ไม่รองรับการแก้ไขดังกล่าว ยกเลิกการบันทึกแล้ว — โปรดเลิกทำการเปลี่ยนแปลงแผนภูมินั้น',
+  appSaveErrMoveOverlap:
+    'มีสูตร ช่วงที่จัดรูปแบบ รูปร่าง หรือตารางคร่อมแถวที่ถูกย้าย ยกเลิกการบันทึกแล้ว — โปรดเลิกทำการย้ายนั้น',
   appFromTextCsvTitle: 'นำเข้าไฟล์ CSV/ข้อความไปยังส่วนที่เลือกปัจจุบัน',
   appCsvImported: 'นำเข้า {rows} แถว × {columns} คอลัมน์จากไฟล์ไปยัง {cell} แล้ว',
   appCsvEmpty: 'ไฟล์ CSV ไม่มีข้อมูล',
@@ -480,8 +542,10 @@ export const th = {
   appNotePrevTitle: 'ไปยังข้อคิดเห็นก่อนหน้า',
   appNoteNextTitle: 'ไปยังข้อคิดเห็นถัดไป',
   appShowCommentsTitle: 'ปักหมุด/เลิกปักหมุดบอลลูนข้อคิดเห็นของเซลล์ที่เลือก',
-  appStructuralShiftBlocked: 'แผนภูมิหรือตารางในชีตนี้ยึดกับแถว/คอลัมน์ที่ได้รับผลกระทบ จึงเลื่อนไม่ได้ และการเปลี่ยนโครงสร้างไม่ถูกบันทึก โปรดเลิกทำ (⌘Z) แล้วบันทึกอีกครั้ง',
-  appAiChangesNotSaved: 'ปรับใช้การเปลี่ยนแปลงของ AI แล้ว (ยังไม่บันทึก) เลิกทำด้วย ⌘Z บันทึกลงไฟล์ด้วย ⌘S',
+  appStructuralShiftBlocked:
+    'แผนภูมิหรือตารางในชีตนี้ยึดกับแถว/คอลัมน์ที่ได้รับผลกระทบ จึงเลื่อนไม่ได้ และการเปลี่ยนโครงสร้างไม่ถูกบันทึก โปรดเลิกทำ (⌘Z) แล้วบันทึกอีกครั้ง',
+  appAiChangesNotSaved:
+    'ปรับใช้การเปลี่ยนแปลงของ AI แล้ว (ยังไม่บันทึก) เลิกทำด้วย ⌘Z บันทึกลงไฟล์ด้วย ⌘S',
   appChartUpdated: 'อัปเดตแผนภูมิแล้ว',
   appChartNotEditable: 'แผนภูมินี้แก้ไขไม่ได้',
   appChartEditRecorded: 'บันทึกการแก้ไขแผนภูมิแล้ว — บันทึกด้วย ⌘S',
@@ -502,8 +566,10 @@ export const th = {
   appLinkInternal: 'ลิงก์ชี้ไปภายในเวิร์กบุ๊ก: {location}',
   appLinkSheetNotFound: 'ไม่พบแผ่นงาน "{name}"',
   appLinkJumpFailed: 'ข้ามไปยัง {location} ไม่ได้',
-  appClosureActive: 'สูตร {count} รายการคำนวณใหม่แบบสด (โหมดโคลเชอร์) ส่วนที่เหลือของเวิร์กบุ๊กโหลดแบบสตรีมตามต้องการ',
-  appRecalcPartial: 'คำนวณสูตรใหม่ตามการแก้ไขของคุณแล้ว — {count} รายการคงค่าแคชไว้ (ฟังก์ชันที่เอนจินสำรองไม่มี)',
+  appClosureActive:
+    'สูตร {count} รายการคำนวณใหม่แบบสด (โหมดโคลเชอร์) ส่วนที่เหลือของเวิร์กบุ๊กโหลดแบบสตรีมตามต้องการ',
+  appRecalcPartial:
+    'คำนวณสูตรใหม่ตามการแก้ไขของคุณแล้ว — {count} รายการคงค่าแคชไว้ (ฟังก์ชันที่เอนจินสำรองไม่มี)',
   appRecalcDone: 'คำนวณสูตรใหม่ตามการแก้ไขของคุณแล้ว ({count} เซลล์ ใช้เอนจินสำรอง)',
   appIndexing: 'กำลังทำดัชนี {name}: พร้อมแล้ว {rows} แถว',
   appStreamingRows: 'กำลังโหลด {name} แบบสตรีม: ใช้ได้ {rows} แถว',
@@ -574,7 +640,8 @@ export const th = {
   appSortAsc: 'A → Z',
   appSortDesc: 'Z → A',
   appRemoveDuplicates: 'เอาค่าที่ซ้ำกันออก',
-  appRemoveDuplicatesNote: 'แถวในส่วนที่เลือกที่ซ้ำกับแถวก่อนหน้า (เปรียบเทียบทุกคอลัมน์ ไม่สนตัวพิมพ์ใหญ่เล็ก) จะถูกลบ แถวที่เหลือเลื่อนขึ้น',
+  appRemoveDuplicatesNote:
+    'แถวในส่วนที่เลือกที่ซ้ำกับแถวก่อนหน้า (เปรียบเทียบทุกคอลัมน์ ไม่สนตัวพิมพ์ใหญ่เล็ก) จะถูกลบ แถวที่เหลือเลื่อนขึ้น',
   appEditLinkTitle: 'แก้ไขลิงก์',
   appInsertLinkTitle: 'แทรกลิงก์',
   appLinkAddressLabel: 'ที่อยู่ — หน้าเว็บ (https://…) หรือการอ้างอิงแผ่นงาน (Sheet1!A1)',
@@ -1119,6 +1186,34 @@ export const th = {
   appPasteFormattingOnly: 'การจัดรูปแบบเท่านั้น',
   appPasteColWidths: 'ความกว้างคอลัมน์เท่านั้น',
   appPasteExceptBorders: 'ทั้งหมดยกเว้นเส้นขอบ',
+  appPasteTranspose: 'ถ่ายเท',
+  appPasteKeepFormat: 'วางด้วยรูปแบบ',
+  appPasteAsPicture: 'วางเป็นรูปภาพ',
+  appPasteTextOnly: 'วางเฉพาะข้อความ',
+  appCopyAsPicture: 'คัดลอกเป็นรูปภาพ',
+  appFeaturePendingTip: 'ฟังก์ชันนี้ยังไม่รองรับ',
+  appNeedCopyFirst: 'คัดลอกหรือตัดข้อมูลก่อน',
+  appPastedTransposed: 'วางแบบถ่ายเทแล้ว',
+  appPastedTextOnly: 'วางเฉพาะข้อความแล้ว',
+  appCopy: 'คัดลอก',
+  appUnderlineAccounting: 'ขีดสองชั้นแบบบัญชี',
+  appBorderOther: 'เส้นขอบอื่นๆ (M)...',
+  appBorderDiagonal: 'แทรกหัวตารางเส้นทแยง',
+  appDrawBorderGroup: 'วาดเส้นขอบ',
+  appDrawBorderRow: 'วาดเส้นขอบ (R)',
+  appDrawBorderGrid: 'วาดกริดเส้นขอบ (G)',
+  appEraseBorder: 'ลบเส้นขอบ (E)',
+  appPenLineColor: 'สีเส้น (1)',
+  appPenLineStyle: 'สไตล์เส้น (Y)',
+  appPenStyle_thin: 'เส้นทึบบาง',
+  appPenStyle_medium: 'เส้นทึบกลาง',
+  appPenStyle_thick: 'เส้นทึบหนา',
+  appPenStyle_double: 'เส้นคู่',
+  appPenStyle_hair: 'เส้นฝอย',
+  appPenStyle_dashed: 'เส้นประ',
+  appPenStyle_dotted: 'เส้นไข่ปลา',
+  appDrawBorderArmed: 'พร้อมวาดเส้นขอบ: ลากเลือกช่วงในตารางเพื่อใช้',
+  appEraseBorderArmed: 'พร้อมลบเส้นขอบ: ลากเลือกช่วงในตารางเพื่อลบ',
   appCutTitle: 'ตัด ⌘X',
   appCopyTitle: 'คัดลอก ⌘C',
   appFormatPainter: 'ตัวคัดวางรูปแบบ',
@@ -1335,10 +1430,12 @@ export const th = {
   appCellStyleGroupAccent: 'เน้นสี',
   appAiTruncatedNote: '(คำตอบถูกตัดเนื่องจากถึงขีดจำกัดความยาว เนื้อหาอาจไม่สมบูรณ์)',
   appFullLoadFilterTitle: 'ตัวกรองต้องโหลดข้อมูลทั้งหมด',
-  appFullLoadFilterBody: 'เวิร์กบุ๊กนี้มีขนาดใหญ่และโหลดแบบสตรีมเพียงบางส่วน ตัวกรอง (รวมถึงการนับค่า) ต้องใช้ข้อมูลครบถ้วนจึงถูกต้อง โหลดทั้งเวิร์กบุ๊กตอนนี้หรือไม่?',
+  appFullLoadFilterBody:
+    'เวิร์กบุ๊กนี้มีขนาดใหญ่และโหลดแบบสตรีมเพียงบางส่วน ตัวกรอง (รวมถึงการนับค่า) ต้องใช้ข้อมูลครบถ้วนจึงถูกต้อง โหลดทั้งเวิร์กบุ๊กตอนนี้หรือไม่?',
   appFullLoadStart: 'โหลดทั้งหมด',
   appFullLoadRunning: 'กำลังโหลดเวิร์กบุ๊กทั้งหมด เมื่อเสร็จแล้วจะใช้ตัวกรองได้…',
-  appFullLoadTooLarge: 'เวิร์กบุ๊กนี้ใหญ่เกินกว่าจะโหลดทั้งหมดลงหน่วยความจำ ไม่สามารถใช้ตัวกรองกับไฟล์นี้ได้',
+  appFullLoadTooLarge:
+    'เวิร์กบุ๊กนี้ใหญ่เกินกว่าจะโหลดทั้งหมดลงหน่วยความจำ ไม่สามารถใช้ตัวกรองกับไฟล์นี้ได้',
   appDialogCancel: 'ยกเลิก',
   appRibbonCollapse: 'ยุบ Ribbon',
   appRibbonPin: 'ปักหมุด Ribbon',

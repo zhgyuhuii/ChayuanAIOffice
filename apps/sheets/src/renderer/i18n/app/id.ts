@@ -4,7 +4,8 @@ export const id = {
   appMergeWorkbooksTip: 'Tambahkan sheet dari file Excel lain ke buku kerja ini',
   appMergeWorkbooksPicking: 'Pilih file yang akan digabungkan…',
   appMergeWorkbooksReading: 'Mengimpor {sheet} dari {file}…',
-  appMergeWorkbooksDone: '{sheets} sheet dari {files} file digabungkan (rumus diimpor sebagai nilai).',
+  appMergeWorkbooksDone:
+    '{sheets} sheet dari {files} file digabungkan (rumus diimpor sebagai nilai).',
   appMergeWorkbooksFailed: 'Gagal menggabungkan buku kerja.',
   appMergeWorkbooksInsertFailed: 'Tidak dapat membuat sheet {sheet}.',
   appMergeWorkbooksLocked: 'Buku kerja masih dimuat; penggabungan belum tersedia saat ini.',
@@ -14,7 +15,8 @@ export const id = {
   appThemeColorsTitle: 'Ubah warna tema',
   appThemeFontsTitle: 'Ubah font tema',
   appThemeApplied: 'Tema "{name}" diterapkan — akan ditulis ke file saat disimpan.',
-  appThemeNeedsThemePart: 'Buku kerja ini tidak memiliki bagian tema — tema tidak dapat diterapkan.',
+  appThemeNeedsThemePart:
+    'Buku kerja ini tidak memiliki bagian tema — tema tidak dapat diterapkan.',
   appBreaksTitle: 'Sisipkan, hapus, atau atur ulang pemisah halaman manual',
   appInsertPageBreak: 'Sisipkan Pemisah Halaman',
   appRemovePageBreak: 'Hapus Pemisah Halaman',
@@ -34,12 +36,16 @@ export const id = {
   appPageWatermark: 'Halaman {page}',
   appUnprotectWorkbook: 'Buka Proteksi Buku Kerja',
   appProtectWorkbookTitle: 'Kunci struktur buku kerja (tanpa kata sandi)',
-  appWorkbookProtectionWillWrite: 'Proteksi struktur buku kerja akan ditulis saat disimpan (tanpa kata sandi).',
+  appWorkbookProtectionWillWrite:
+    'Proteksi struktur buku kerja akan ditulis saat disimpan (tanpa kata sandi).',
   appWorkbookProtectionWillRemove: 'Proteksi struktur buku kerja akan dihapus saat disimpan.',
-  appWorkbookProtectedWithPassword: 'Struktur buku kerja dilindungi kata sandi — tidak dapat diubah di sini.',
-  appWorkbookStructureLocked: 'Struktur buku kerja dilindungi — lembar tidak dapat ditambahkan, dihapus, diganti nama, atau dipindahkan.',
+  appWorkbookProtectedWithPassword:
+    'Struktur buku kerja dilindungi kata sandi — tidak dapat diubah di sini.',
+  appWorkbookStructureLocked:
+    'Struktur buku kerja dilindungi — lembar tidak dapat ditambahkan, dihapus, diganti nama, atau dipindahkan.',
   appAllowEditRangesTitle: 'Rentang yang tetap dapat diedit saat lembar dilindungi',
-  appRangesPasswordBlocked: 'Lembar ini memiliki rentang edit yang dilindungi kata sandi — mengeditnya tidak didukung.',
+  appRangesPasswordBlocked:
+    'Lembar ini memiliki rentang edit yang dilindungi kata sandi — mengeditnya tidak didukung.',
   appRangesRecorded: '{count} rentang izin edit akan ditulis saat disimpan.',
   appNumFmtAccounting: 'Akuntansi',
   appNumFmtShortDate: 'Tanggal Pendek',
@@ -124,7 +130,8 @@ export const id = {
   appGoToButtonTitle: 'Buka (Go To, ⌘G)',
   appNameBoxTitle: 'Kotak Nama — ketik alamat atau nama, lalu tekan Enter',
   appPivotChartHintIn: 'Buat PivotChart dari PivotTable saat ini',
-  appPivotChartHintOut: 'Pilih dahulu sel di dalam area keluaran PivotTable, lalu pilih jenis bagan',
+  appPivotChartHintOut:
+    'Pilih dahulu sel di dalam area keluaran PivotTable, lalu pilih jenis bagan',
   appChartColumn: 'Kolom',
   appChartBar: 'Batang',
   appChartLine: 'Garis',
@@ -138,28 +145,40 @@ export const id = {
   appRefreshHintOut: 'Pilih dahulu area PivotTable, lalu refresh',
   appAttachmentReadFailed: '{name}: gagal dibaca',
   appTooManyImages: 'Maksimal {max} gambar per pesan; kelebihannya diabaikan',
-  appAppliedRevision: 'Diterapkan (revisi {revision}) — urungkan dengan ⌘Z, simpan ke file dengan ⌘S.',
+  appAppliedRevision:
+    'Diterapkan (revisi {revision}) — urungkan dengan ⌘Z, simpan ke file dengan ⌘S.',
   appCannotReadImage: 'Tidak dapat membaca file gambar.',
-  appTableNotDeletable: 'Tabel "{name}" tidak ada atau tidak dibuat pada sesi ini — tabel yang sudah ada di file belum dapat dihapus.',
+  appTableNotDeletable:
+    'Tabel "{name}" tidak ada atau tidak dibuat pada sesi ini — tabel yang sudah ada di file belum dapat dihapus.',
   appImageNotLoaded: 'Gambar gagal dimuat: {path}',
   appApplyFailed: '⚠️ Gagal menerapkan: {reason}',
   appPivotChartNeedsFile: 'Buka file XLSX dahulu — PivotChart ditulis ke dalam file.',
-  appCursorNotInPivot: 'Kursor tidak berada di dalam PivotTable — pilih dahulu sel di area keluaran PivotTable.',
-  appPivotDefNotLoaded: 'Definisi PivotTable belum selesai dimuat (atau gagal diurai) — coba lagi sebentar lagi.',
+  appCursorNotInPivot:
+    'Kursor tidak berada di dalam PivotTable — pilih dahulu sel di area keluaran PivotTable.',
+  appPivotDefNotLoaded:
+    'Definisi PivotTable belum selesai dimuat (atau gagal diurai) — coba lagi sebentar lagi.',
   appPivotNoChartData: 'PivotTable ini tidak memiliki baris/kolom data untuk dibuat bagan.',
-  appPivotChartInsertedTruncated: 'PivotChart disisipkan (titik data terlalu banyak, dipotong) — simpan (⌘S) untuk menulisnya ke file.',
-  appPivotChartInserted: 'PivotChart disisipkan — mengikuti refresh PivotTable; simpan (⌘S) untuk menulisnya ke file.',
+  appPivotChartInsertedTruncated:
+    'PivotChart disisipkan (titik data terlalu banyak, dipotong) — simpan (⌘S) untuk menulisnya ke file.',
+  appPivotChartInserted:
+    'PivotChart disisipkan — mengikuti refresh PivotTable; simpan (⌘S) untuk menulisnya ke file.',
   appSheetNoPivot: 'Lembar ini tidak memiliki PivotTable.',
-  appPivotNeedsFullLoad: 'Me-refresh PivotTable memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat secara streaming.',
+  appPivotNeedsFullLoad:
+    'Me-refresh PivotTable memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat secara streaming.',
   appPivotSourceSheetMissing: 'Lembar sumber PivotTable "{name}" tidak ada.',
-  appPivotLayoutMismatch: 'Tata letak PivotTable tidak cocok dengan rentang keluarannya — refresh di Excel sebelum menghitung ulang.',
-  appPivotGrowUnsupported: 'Tata letak PivotTable ini (ringkas/header multibaris) belum mendukung perluasan otomatis — refresh di Excel.',
-  appPivotGrowConflict: 'Area PivotTable yang diperluas bentrok dengan konten yang ada — kosongkan dahulu area target, lalu refresh.',
-  appShapeNotEditable: 'Tidak ada bentuk yang dapat diedit "{id}" (hanya bentuk yang ditambahkan pada sesi ini yang dapat diedit).',
+  appPivotLayoutMismatch:
+    'Tata letak PivotTable tidak cocok dengan rentang keluarannya — refresh di Excel sebelum menghitung ulang.',
+  appPivotGrowUnsupported:
+    'Tata letak PivotTable ini (ringkas/header multibaris) belum mendukung perluasan otomatis — refresh di Excel.',
+  appPivotGrowConflict:
+    'Area PivotTable yang diperluas bentrok dengan konten yang ada — kosongkan dahulu area target, lalu refresh.',
+  appShapeNotEditable:
+    'Tidak ada bentuk yang dapat diedit "{id}" (hanya bentuk yang ditambahkan pada sesi ini yang dapat diedit).',
   appCalcFieldNameClash: 'Bidang terhitung "{name}" tidak boleh sama namanya dengan header sumber.',
   appCalcFieldNameDuplicate: 'Nama bidang terhitung harus unik.',
   appValueFilterFieldMissing: 'Filter nilai merujuk ke bidang nilai {index}, yang tidak ada.',
-  appPivotRelayoutOverlap: 'Tata letak PivotTable yang baru akan menimpa konten yang ada — kosongkan dahulu area target.',
+  appPivotRelayoutOverlap:
+    'Tata letak PivotTable yang baru akan menimpa konten yang ada — kosongkan dahulu area target.',
   appInvalidRowField: 'Bidang baris tidak valid.',
   appNeedRowField: 'Pilih setidaknya satu bidang baris.',
   appInvalidColumnField: 'Bidang kolom tidak valid.',
@@ -170,17 +189,23 @@ export const id = {
   appWorkbookNotReady: 'Buku kerja belum siap.',
   appOpenWorkbookFirst: 'Buka buku kerja dahulu.',
   appOpenXlsxFirst: 'Buka file XLSX dahulu.',
-  appPivotCreated: 'PivotTable dibuat di {cell} — ditulis ke file saat disimpan. Setelah disimpan, pemotong, garis waktu, dan refresh dapat digunakan.',
+  appPivotCreated:
+    'PivotTable dibuat di {cell} — ditulis ke file saat disimpan. Setelah disimpan, pemotong, garis waktu, dan refresh dapat digunakan.',
   appPivotCreateFailed: 'Gagal membuat PivotTable.',
   appPutCursorInPivot: 'Letakkan kursor di dalam area keluaran PivotTable yang ingin diedit.',
   appPivotNoCacheDef: 'PivotTable ini tidak memiliki definisi cache dan tidak dapat diedit.',
-  appPivotDefNotLoadedSave: 'Definisi PivotTable belum dimuat — jika Anda mengeditnya pada sesi ini, simpan dahulu (⌘S).',
+  appPivotDefNotLoadedSave:
+    'Definisi PivotTable belum dimuat — jika Anda mengeditnya pada sesi ini, simpan dahulu (⌘S).',
   appPivotEditUnsupported: 'PivotTable ini belum dapat diedit: {reasons}',
-  appPivotEditHasFeatures: 'PivotTable dengan pengelompokan, filter, filter laporan, atau bidang terhitung belum mendukung pengeditan tata letak — sesuaikan di Excel.',
-  appPivotEditValuesOnRows: 'PivotTable dengan bidang nilai pada sumbu baris belum mendukung pengeditan tata letak.',
-  appPivotEditAggUnsupported: 'Agregasi PivotTable ini (mis. hasil kali atau hitung angka) belum mendukung pengeditan tata letak.',
+  appPivotEditHasFeatures:
+    'PivotTable dengan pengelompokan, filter, filter laporan, atau bidang terhitung belum mendukung pengeditan tata letak — sesuaikan di Excel.',
+  appPivotEditValuesOnRows:
+    'PivotTable dengan bidang nilai pada sumbu baris belum mendukung pengeditan tata letak.',
+  appPivotEditAggUnsupported:
+    'Agregasi PivotTable ini (mis. hasil kali atau hitung angka) belum mendukung pengeditan tata letak.',
   appPivotSourceSheetNotFound: 'Tidak dapat menemukan lembar sumber PivotTable "{name}".',
-  appPivotLayoutUpdated: 'Tata letak PivotTable diperbarui — simpan (⌘S) untuk menulisnya ke file; Excel membangun ulang cache saat dibuka.',
+  appPivotLayoutUpdated:
+    'Tata letak PivotTable diperbarui — simpan (⌘S) untuk menulisnya ke file; Excel membangun ulang cache saat dibuka.',
   appPivotEditFailed: 'Gagal mengedit PivotTable.',
   appNoActiveSheet: 'Tidak ada lembar aktif.',
   appCurrentSheetNoPivot: 'Lembar saat ini tidak memiliki PivotTable.',
@@ -193,26 +218,33 @@ export const id = {
   appBlank: '(kosong)',
   appFieldNoMembers: 'Bidang ini tidak memiliki anggota untuk difilter.',
   appSlicerCreated: 'Pemotong "{name}" dibuat — klik anggota untuk memfilter PivotTable.',
-  appSlicerNeedsFullLoad: 'Pemfilteran dengan pemotong memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat secara streaming.',
+  appSlicerNeedsFullLoad:
+    'Pemfilteran dengan pemotong memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat secara streaming.',
   appSlicerPivotMissing: 'PivotTable yang terikat pada pemotong ini sudah tidak ada.',
   appSlicerSheetMissing: 'Lembar yang terikat pada pemotong ini sudah tidak ada.',
   appSlicerFilterFailed: 'Pemfilteran dengan pemotong gagal.',
   appSlicerKeepOne: 'Pertahankan setidaknya satu anggota terpilih di pemotong.',
-  appSlicerApplied: 'Pemotong "{name}" diterapkan — simpan (⌘S) untuk menulis PivotTable yang terfilter.',
+  appSlicerApplied:
+    'Pemotong "{name}" diterapkan — simpan (⌘S) untuk menulis PivotTable yang terfilter.',
   appSlicerCleared: 'Filter pemotong "{name}" dihapus.',
   appSlicerRemoved: 'Pemotong "{name}" dihapus; semua anggota dipulihkan.',
   appTimelineHintIn: 'Sisipkan garis waktu untuk bidang tanggal PivotTable saat ini',
-  appTimelineHintOut: 'Pilih dahulu sel di dalam area keluaran PivotTable, lalu sisipkan garis waktu',
-  appTimelineNoDateFields: 'PivotTable ini tidak memiliki bidang tanggal yang dapat digunakan — garis waktu memerlukan bidang tanpa pengelompokan yang semua nilainya berupa tanggal.',
+  appTimelineHintOut:
+    'Pilih dahulu sel di dalam area keluaran PivotTable, lalu sisipkan garis waktu',
+  appTimelineNoDateFields:
+    'PivotTable ini tidak memiliki bidang tanggal yang dapat digunakan — garis waktu memerlukan bidang tanpa pengelompokan yang semua nilainya berupa tanggal.',
   appTimelineCreated: 'Garis waktu "{name}" dibuat — klik bulan untuk memfilter PivotTable.',
-  appTimelineApplied: 'Garis waktu "{name}" diterapkan — simpan (⌘S) untuk menulis PivotTable yang terfilter.',
+  appTimelineApplied:
+    'Garis waktu "{name}" diterapkan — simpan (⌘S) untuk menulis PivotTable yang terfilter.',
   appTimelineCleared: 'Filter garis waktu "{name}" dihapus.',
   appTimelineRemoved: 'Garis waktu "{name}" dihapus; semua anggota dipulihkan.',
   appTimelineEmptyRange: 'Tidak ada anggota dalam rentang bulan yang dipilih.',
-  appFieldFilterTaken: 'Semua bidang yang memenuhi syarat sudah memiliki pemotong atau garis waktu — hapus dulu yang ada.',
+  appFieldFilterTaken:
+    'Semua bidang yang memenuhi syarat sudah memiliki pemotong atau garis waktu — hapus dulu yang ada.',
   appGoToNotReady: 'Buku kerja belum siap — tidak dapat membuka referensi.',
   appGoToEmpty: 'Masukkan alamat sel atau nama yang ditentukan.',
-  appGoToUnresolved: 'Tidak dapat membuka "{ref}": bukan alamat yang valid atau nama yang ditentukan yang dapat dinavigasi.',
+  appGoToUnresolved:
+    'Tidak dapat membuka "{ref}": bukan alamat yang valid atau nama yang ditentukan yang dapat dinavigasi.',
   appGoToOutOfBounds: 'Tidak dapat membuka "{ref}": di luar batas lembar.',
   appGoToSheetNotFound: 'Tidak dapat membuka "{ref}": lembar tersebut tidak ditemukan.',
   appGoToInvalidAddress: 'Tidak dapat membuka "{ref}": alamat tidak valid.',
@@ -220,48 +252,66 @@ export const id = {
   appSymbolNeedsCell: 'Buka buku kerja dan pilih sel dahulu, lalu sisipkan simbol.',
   appSymbolInsertFailed: 'Tidak dapat menyisipkan simbol.',
   appSymbolInserted: '{char} disisipkan ke {cell}.',
-  appAdvFilterNeedsFilter: 'Filter Lanjutan memerlukan rentang FilterOtomatis — pilih data lalu klik Filter dahulu.',
-  appAdvFilterGone: 'Lembar saat ini tidak memiliki FilterOtomatis — aktifkan lagi lalu coba ulang.',
+  appAdvFilterNeedsFilter:
+    'Filter Lanjutan memerlukan rentang FilterOtomatis — pilih data lalu klik Filter dahulu.',
+  appAdvFilterGone:
+    'Lembar saat ini tidak memiliki FilterOtomatis — aktifkan lagi lalu coba ulang.',
   appAdvFilterFailed: 'Gagal menerapkan filter lanjutan.',
   appAdvFilterApplied: 'Kriteria filter lanjutan diterapkan — ⌘S menyimpan ke file.',
   appFlashFillNeedsLeft: 'Isian Cepat memerlukan kolom data di sebelah kiri kolom target.',
   appFlashFillNeedsRows: 'Isian Cepat memerlukan setidaknya dua baris data.',
   appFlashFillNeedsExamples: 'Isi dahulu 1-2 contoh di kolom target, lalu klik Isian Cepat.',
-  appFlashFillNoPattern: 'Tidak ada pola yang dikenali dari contoh — nilai target harus dapat diturunkan dari kolom di sebelah kiri; coba tambahkan satu contoh lagi.',
+  appFlashFillNoPattern:
+    'Tidak ada pola yang dikenali dari contoh — nilai target harus dapat diturunkan dari kolom di sebelah kiri; coba tambahkan satu contoh lagi.',
   appFlashFillNothingToFill: 'Tidak ada baris kosong untuk diisi.',
   appFlashFillDone: '⚡ Isian Cepat mengisi {count} baris dari contoh Anda.',
   appSparklineNeedsFile: 'Grafik mini memerlukan file XLSX yang diimpor.',
-  appSparklineNeedsCols: 'Pilih setidaknya dua kolom data — satu grafik mini per baris, ditempatkan di kolom sebelah kanan pilihan.',
+  appSparklineNeedsCols:
+    'Pilih setidaknya dua kolom data — satu grafik mini per baris, ditempatkan di kolom sebelah kanan pilihan.',
   appSparklineNoSpace: 'Tidak ada ruang untuk grafik mini di sebelah kanan pilihan.',
-  appSparklinesInserted: '{count} grafik mini disisipkan di kolom sebelah kanan pilihan — ⌘S menyimpan ke file.',
-  appSaveHeldStranded: 'PivotTable/tabel tidak dapat disimpan bersama lembar baru plus perubahan baris/kolom — simpan strukturnya dahulu, lalu tambahkan PivotTable/tabel.',
-  appSaveSecondCanceled: 'Fase penyimpanan kedua dibatalkan — struktur sudah tersimpan; PivotTable/tabel/nama yang ditentukan belum ditulis.',
+  appSparklinesInserted:
+    '{count} grafik mini disisipkan di kolom sebelah kanan pilihan — ⌘S menyimpan ke file.',
+  appSaveHeldStranded:
+    'PivotTable/tabel tidak dapat disimpan bersama lembar baru plus perubahan baris/kolom — simpan strukturnya dahulu, lalu tambahkan PivotTable/tabel.',
+  appSaveSecondCanceled:
+    'Fase penyimpanan kedua dibatalkan — struktur sudah tersimpan; PivotTable/tabel/nama yang ditentukan belum ditulis.',
   appSavedTwoPhase: 'Disimpan.',
-  appSaveSecondFailed: 'Struktur sudah tersimpan, tetapi fase kedua (PivotTable/tabel/nama yang ditentukan) gagal: {reason}',
+  appSaveSecondFailed:
+    'Struktur sudah tersimpan, tetapi fase kedua (PivotTable/tabel/nama yang ditentukan) gagal: {reason}',
   appReadyInitial: 'Siap untuk perintah AI lokal yang deterministik.',
   appAiThinking: 'AI sedang berpikir…',
   appAiDone: 'AI selesai',
-  appAiTurnLimit: '(Batas putaran panggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan yang sudah dibaca dan mungkin tidak lengkap.)',
+  appAiTurnLimit:
+    '(Batas putaran panggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan yang sudah dibaca dan mungkin tidak lengkap.)',
   appAiStopped: '(dihentikan)',
   appAiNoSummary: 'AI selesai tanpa menghasilkan ringkasan.',
-  appAiNoAction: 'AI tidak melakukan tindakan apa pun dan tidak memberi balasan. Coba lagi atau ubah kalimatnya.',
+  appAiNoAction:
+    'AI tidak melakukan tindakan apa pun dan tidak memberi balasan. Coba lagi atau ubah kalimatnya.',
   appNewConversation: 'Percakapan baru dimulai.',
   appPivotCellNoEdit: 'Sel ini bagian dari PivotTable — pengeditannya belum didukung.',
   appAreaStreaming: 'Area itu masih dimuat secara streaming — coba lagi sebentar lagi.',
-  appFormulaRecordedPartial: 'Rumus direkam — akan disimpan ke file, tetapi hasil di layar mungkin tidak lengkap karena buku kerja besar ini dimuat sebagian secara streaming.',
-  appFormulaTooExpensive: 'Rumus ini mengevaluasi rentang besar per elemen — perhitungannya akan membekukan aplikasi, jadi dibatalkan. Persempit rentang yang dirujuk lalu coba lagi.',
+  appFormulaRecordedPartial:
+    'Rumus direkam — akan disimpan ke file, tetapi hasil di layar mungkin tidak lengkap karena buku kerja besar ini dimuat sebagian secara streaming.',
+  appFormulaTooExpensive:
+    'Rumus ini mengevaluasi rentang besar per elemen — perhitungannya akan membekukan aplikasi, jadi dibatalkan. Persempit rentang yang dirujuk lalu coba lagi.',
   appPivotSheetNoStructural: 'Lembar ini berisi PivotTable — perubahan struktur belum didukung.',
-  appDeleteSpanFormulas: 'Ada rumus yang hanya merujuk baris/kolom yang dihapus — perbarui atau hapus rumus itu dahulu.',
+  appDeleteSpanFormulas:
+    'Ada rumus yang hanya merujuk baris/kolom yang dihapus — perbarui atau hapus rumus itu dahulu.',
   appIconSetUnsupported: 'Kombinasi ikon ini tidak dapat disimpan ke xlsx — pilih set ikon lain.',
-  appNeedFullLoadSort: 'Mengurutkan, memfilter, memindahkan rentang, dan memisahkan teks ke kolom memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
+  appNeedFullLoadSort:
+    'Mengurutkan, memfilter, memindahkan rentang, dan memisahkan teks ke kolom memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
   appPivotSheetNoMove: 'Lembar ini berisi PivotTable — memindahkan rentang belum didukung.',
   appTableFilterNoEdit: 'Filter lembar ini milik tabel Excel — pengeditannya belum dapat disimpan.',
   appAutofillStreaming: 'IsiOtomatis ke area yang masih dimuat secara streaming belum diizinkan.',
-  appDvNeedsIndexed: 'Mengedit validasi data memerlukan lembar ini terindeks penuh dahulu — coba lagi sebentar lagi.',
-  appDuplicateNeedsFullLoad: 'Menduplikasi lembar memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
+  appDvNeedsIndexed:
+    'Mengedit validasi data memerlukan lembar ini terindeks penuh dahulu — coba lagi sebentar lagi.',
+  appDuplicateNeedsFullLoad:
+    'Menduplikasi lembar memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
   appPivotSheetNoDuplicate: 'Lembar ini berisi PivotTable — menduplikasinya belum didukung.',
-  appDuplicateScopedNames: 'Lembar ini memiliki nama terdefinisi berlingkup lembar — menduplikasinya belum didukung.',
-  appMoveRowsColsUnsaved: 'Memindahkan seluruh kolom belum dapat disimpan pada buku kerja yang diimpor — memindahkan seluruh baris sudah didukung.',
+  appDuplicateScopedNames:
+    'Lembar ini memiliki nama terdefinisi berlingkup lembar — menduplikasinya belum didukung.',
+  appMoveRowsColsUnsaved:
+    'Memindahkan seluruh kolom belum dapat disimpan pada buku kerja yang diimpor — memindahkan seluruh baris sudah didukung.',
   appNoWorkbookOpen: 'Tidak ada buku kerja yang terbuka.',
   appDvListOptions: 'Daftar: {items}',
   appDvListFromRange: 'Daftar (dari rentang {range})',
@@ -282,9 +332,11 @@ export const id = {
   appAutoFilterRemoveFailed: 'Tidak dapat menghapus FilterOtomatis.',
   appSelectDataRangeFirst: 'Pilih rentang data dahulu.',
   appUnsupportedChartType: 'Jenis bagan tidak didukung: {kind}.',
-  appChartInsertedDemo: 'Bagan disisipkan — pengeditan demo tetap di memori; buka file XLSX untuk menyimpan ke disk.',
+  appChartInsertedDemo:
+    'Bagan disisipkan — pengeditan demo tetap di memori; buka file XLSX untuk menyimpan ke disk.',
   appChartInsertFailed: 'Tidak dapat menyisipkan bagan.',
-  appChartNeedsNumericColumn: 'Pilih rentang dengan setidaknya satu kolom numerik (header opsional).',
+  appChartNeedsNumericColumn:
+    'Pilih rentang dengan setidaknya satu kolom numerik (header opsional).',
   appChartInserted: 'Bagan disisipkan — pilih untuk mengedit, ⌘S menulisnya ke file.',
   appShapeNeedsFile: 'Buka file XLSX dahulu — bentuk yang disisipkan ditulis ke file.',
   appSelectCellFirst: 'Pilih sel dahulu.',
@@ -297,12 +349,14 @@ export const id = {
   appTableNeedsRows: 'Tabel memerlukan satu baris header plus setidaknya satu baris data.',
   appTableTooWide: 'Tabel paling banyak mencakup 1.000 kolom.',
   appTableNameUsed: 'Nama tabel "{name}" sudah dipakai pada sesi ini.',
-  appTableOverlapsSession: 'Rentang tumpang-tindih dengan tabel "{name}" yang dibuat pada sesi ini.',
+  appTableOverlapsSession:
+    'Rentang tumpang-tindih dengan tabel "{name}" yang dibuat pada sesi ini.',
   appTablesNeedFile: 'Buka file XLSX dahulu — tabel ditulis ke file.',
   appTableSelectRange: 'Pilih rentang data dahulu — header di baris pertamanya.',
   appTableCreated: 'Tabel dibuat — simpan dengan ⌘S.',
   appTableCreateFailed: 'Tidak dapat membuat tabel.',
-  appPivotOnAddedSheet: 'PivotTable pada lembar yang ditambahkan pada sesi ini belum didukung — simpan dahulu.',
+  appPivotOnAddedSheet:
+    'PivotTable pada lembar yang ditambahkan pada sesi ini belum didukung — simpan dahulu.',
   appPivotSourceNeedsRows: 'Sumber PivotTable memerlukan satu baris header plus baris data.',
   appPivotSourceRowLimit: 'Sumber PivotTable dibatasi 10.000 baris data.',
   appPivotSourceColLimit: 'Sumber PivotTable dibatasi 200 kolom.',
@@ -314,9 +368,12 @@ export const id = {
   appPivotTooManyColLines: 'PivotTable memiliki lebih dari 1.000 garis tata letak kolom.',
   appPivotNeedsValues: 'PivotTable memerlukan satu bidang nilai.',
   appPivotTooManyRowLines: 'PivotTable memiliki lebih dari 20.000 garis tata letak baris.',
-  appPivotOverlapSource: 'Keluaran PivotTable akan tumpang-tindih dengan rentang sumbernya — pilih sel target lain.',
-  appPivotOverlapExisting: 'Keluaran PivotTable akan tumpang-tindih dengan PivotTable yang ada di lembar target.',
-  appPivotOverlapSession: 'Keluaran PivotTable akan tumpang-tindih dengan PivotTable "{name}" yang dibuat pada sesi ini.',
+  appPivotOverlapSource:
+    'Keluaran PivotTable akan tumpang-tindih dengan rentang sumbernya — pilih sel target lain.',
+  appPivotOverlapExisting:
+    'Keluaran PivotTable akan tumpang-tindih dengan PivotTable yang ada di lembar target.',
+  appPivotOverlapSession:
+    'Keluaran PivotTable akan tumpang-tindih dengan PivotTable "{name}" yang dibuat pada sesi ini.',
   appPivotNameUsed: 'Nama PivotTable "{name}" sudah dipakai pada sesi ini.',
   appActiveCellFallback: 'sel aktif',
   appFormulaStartsEquals: 'Rumus dimulai dengan "=".',
@@ -327,7 +384,8 @@ export const id = {
   appSelectRangeWithHeader: 'Pilih rentang data dengan baris header.',
   appSubtotalSameColumns: 'Pilih kolom kelompok dan kolom nilai yang berbeda.',
   appRangeNoDataRows: 'Rentang yang dipilih tidak memiliki baris data.',
-  appSubtotalTooManyGroups: 'Kelompok terlalu banyak (maks. 200) — urutkan dahulu menurut kolom kelompok.',
+  appSubtotalTooManyGroups:
+    'Kelompok terlalu banyak (maks. 200) — urutkan dahulu menurut kolom kelompok.',
   appSubtotalInsertFailed: 'Tidak dapat menyisipkan baris subtotal.',
   appSubtotalsInserted: 'Subtotal disisipkan: {count} kelompok plus satu total keseluruhan.',
   appSelectTargetCellFirst: 'Pilih sel target dahulu.',
@@ -337,8 +395,10 @@ export const id = {
   appConsolidateOverlap: 'Area keluaran tumpang-tindih dengan area sumber — pilih sel target lain.',
   appConsolidateWriteFailed: 'Tidak dapat menulis hasil konsolidasi.',
   appConsolidateDone: '{count} area dikonsolidasikan di {cell} ({rows}×{columns} rumus langsung).',
-  appConsolidateMaxMinLabels: 'Maks dan Min tidak didukung dengan label kolom kiri — gunakan konsolidasi menurut posisi.',
-  appConsolidateLabelNeedsCols: 'Mode label memerlukan setidaknya dua kolom per area (label plus satu kolom nilai).',
+  appConsolidateMaxMinLabels:
+    'Maks dan Min tidak didukung dengan label kolom kiri — gunakan konsolidasi menurut posisi.',
+  appConsolidateLabelNeedsCols:
+    'Mode label memerlukan setidaknya dua kolom per area (label plus satu kolom nilai).',
   appConsolidateNoLabels: 'Tidak ada label yang ditemukan di kolom kiri area sumber.',
   appOutlineNeedsFile: 'Buka file XLSX dahulu — kelompok kerangka ditulis ke file.',
   appOutlineSelectFirst: 'Pilih dahulu baris atau kolom yang akan dikelompokkan.',
@@ -354,15 +414,20 @@ export const id = {
   appSheetAddFailed: 'Tidak dapat menambahkan lembar.',
   appFormatCopied: 'Format disalin — pilih sel target untuk menerapkannya.',
   appProtectionNeedsFile: 'Buka file XLSX dahulu — proteksi disimpan ke file.',
-  appProtectionNeedsIndexed: 'Proteksi memerlukan lembar ini terindeks penuh dahulu — coba lagi sebentar lagi.',
-  appProtectedWithPassword: 'Lembar ini diproteksi dengan kata sandi — menghapus proteksinya tidak didukung.',
-  appProtectionWillWrite: 'Proteksi lembar akan ditulis saat disimpan (tanpa kata sandi). Editor sendiri tidak memberlakukannya.',
+  appProtectionNeedsIndexed:
+    'Proteksi memerlukan lembar ini terindeks penuh dahulu — coba lagi sebentar lagi.',
+  appProtectedWithPassword:
+    'Lembar ini diproteksi dengan kata sandi — menghapus proteksinya tidak didukung.',
+  appProtectionWillWrite:
+    'Proteksi lembar akan ditulis saat disimpan (tanpa kata sandi). Editor sendiri tidak memberlakukannya.',
   appProtectionWillRemove: 'Proteksi lembar akan dihapus saat disimpan.',
   appZoom: 'Zoom {percent}%.',
   appTopRowFrozen: 'Baris atas dibekukan — simpan dengan ⌘S.',
   appFirstColFrozen: 'Kolom pertama dibekukan — simpan dengan ⌘S.',
-  appFindScanTruncated: 'Lembar besar: pencarian berhenti setelah {cells} sel — hasil mungkin tidak lengkap.',
-  appReplaceNeedsFullLoad: 'Mengganti memerlukan mode muat penuh — gunakan Temukan sebagai gantinya.',
+  appFindScanTruncated:
+    'Lembar besar: pencarian berhenti setelah {cells} sel — hasil mungkin tidak lengkap.',
+  appReplaceNeedsFullLoad:
+    'Mengganti memerlukan mode muat penuh — gunakan Temukan sebagai gantinya.',
   appGridlinesHiddenSave: 'Garis kisi disembunyikan — simpan dengan ⌘S.',
   appGridlinesShownSave: 'Garis kisi ditampilkan — simpan dengan ⌘S.',
   appGridlinesHidden: 'Garis kisi disembunyikan.',
@@ -379,22 +444,27 @@ export const id = {
   appTraceOffSheetDeps: '{count} dependen di lembar lain tidak digambar.',
   appTraceArrowsRemoved: 'Panah pelacakan dihapus.',
   appNoTraceArrows: 'Tidak ada panah pelacakan untuk dihapus.',
-  appWorkbookStats: 'Statistik buku kerja: {sheets} lembar · {cells} sel berisi data · {formulas} rumus{note}.',
+  appWorkbookStats:
+    'Statistik buku kerja: {sheets} lembar · {cells} sel berisi data · {formulas} rumus{note}.',
   appFrozenAtSelection: 'Dibekukan pada pilihan — simpan dengan ⌘S.',
   appSelectCellsFirst: 'Pilih sel dahulu.',
-  appCellStyleApplied: 'Gaya sel diterapkan — tercatat seperti pengeditan format lainnya (⌘S untuk menyimpan).',
+  appCellStyleApplied:
+    'Gaya sel diterapkan — tercatat seperti pengeditan format lainnya (⌘S untuk menyimpan).',
   appSelectRangeFirst: 'Pilih rentang sel dahulu.',
   appSettingNeedsFile: 'Buka file XLSX dahulu — pengaturan ini hanya disimpan ke file.',
   appTooManyCellsForSetting: 'Pilih kurang dari 10.000 sel untuk pengaturan ini.',
   appProtectionFlagsRecorded: 'Penanda proteksi direkam — berlaku saat lembar diproteksi.',
-  appSortSelectRows: 'Pilih dahulu baris yang akan diurutkan — sertakan semua kolom yang berkaitan.',
+  appSortSelectRows:
+    'Pilih dahulu baris yang akan diurutkan — sertakan semua kolom yang berkaitan.',
   appSortedAsc: 'Diurutkan A → Z menurut kolom pertama yang dipilih.',
   appSortedDesc: 'Diurutkan Z → A menurut kolom pertama yang dipilih.',
   appAutofnSelectCells: 'Pilih sel yang akan diagregasi — {fn} diletakkan di baris bawahnya.',
-  appRowBelowStreaming: 'Baris di bawahnya masih dimuat secara streaming — coba lagi sebentar lagi.',
+  appRowBelowStreaming:
+    'Baris di bawahnya masih dimuat secara streaming — coba lagi sebentar lagi.',
   appAutofnInserted: '{fn} disisipkan di bawah pilihan.',
   appSortedCustom: 'Diurutkan menurut level kustom Anda.',
-  appDedupeNeedsFullLoad: 'Menghapus duplikat memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
+  appDedupeNeedsFullLoad:
+    'Menghapus duplikat memerlukan mode muat penuh — buku kerja ini terlalu besar dan dimuat sebagian secara streaming.',
   appDedupeSelectRows: 'Pilih dahulu baris yang akan diperiksa duplikatnya.',
   appNoDuplicates: 'Tidak ada baris duplikat pada pilihan.',
   appDuplicatesRemoved: '{count} baris duplikat dihapus.',
@@ -443,45 +513,64 @@ export const id = {
   appPdfCanceled: 'Ekspor PDF dibatalkan.',
   appPdfExported: '{path} diekspor.',
   appPdfExportFailed: 'Tidak dapat mengekspor PDF.',
-  appCsvExportNeedsFullLoad: 'Ekspor CSV memerlukan buku kerja termuat penuh — tunggu pemuatan selesai.',
+  appCsvExportNeedsFullLoad:
+    'Ekspor CSV memerlukan buku kerja termuat penuh — tunggu pemuatan selesai.',
   appCsvExportTooLarge: 'Lembar terlalu besar untuk diekspor sebagai CSV.',
   appCsvExportCanceled: 'Ekspor CSV dibatalkan.',
   appCsvExported: '{path} diekspor.',
-  appCsvExportedActiveOnly: 'File CSV hanya memuat satu lembar — lembar aktif “{name}” diekspor ke {path}.',
+  appCsvExportedActiveOnly:
+    'File CSV hanya memuat satu lembar — lembar aktif “{name}” diekspor ke {path}.',
   appCsvExportFailed: 'Tidak dapat mengekspor CSV.',
   appDemoNoSave: 'Pengeditan demo tetap di memori — buka file XLSX untuk menyimpan ke disk.',
   appFilterSnapshotFailed: 'Tidak dapat mengambil cuplikan status filter.',
-  appColorFiltersUnsaveable: 'Filter warna belum dapat disimpan sebagai XLSX — hapus dahulu sebelum menyimpan.',
+  appColorFiltersUnsaveable:
+    'Filter warna belum dapat disimpan sebagai XLSX — hapus dahulu sebelum menyimpan.',
   appNoEditsToSave: 'Belum ada pengeditan untuk disimpan.',
   appSheetOrderReadFailed: 'Tidak dapat membaca urutan lembar — coba lagi.',
   appSavingEdits: 'Menyimpan {count} pengeditan…',
   appSaveCanceled: 'Penyimpanan dibatalkan.',
   appSaved: 'Disimpan.',
   appSaveFailed: 'Tidak dapat menyimpan buku kerja.',
-  appCfRuleUnsaveable: 'Aturan pemformatan bersyarat ini tidak dapat disimpan ke xlsx — gunakan jenis aturan lain.',
-  appSaveErrX14Dv: 'Sheet ini memiliki validasi data yang diperluas (x14); mengedit aturan validasinya belum didukung.',
-  appSaveErrMultiSelectList: 'Validasi daftar pilihan ganda tidak dapat disimpan ke xlsx — hapus aturan tersebut sebelum menyimpan.',
-  appSaveErrX14Cf: 'Rentang ini memiliki pemformatan bersyarat yang diperluas (x14) dan untuk saat ini tidak dapat diubah.',
-  appSaveErrPivotWithSheetOps: 'PivotTable yang baru dibuat tidak dapat disimpan bersama perubahan pengelolaan sheet — simpan PivotTable terlebih dahulu.',
-  appSaveErrPivotWithRowCol: 'PivotTable yang baru dibuat tidak dapat disimpan bersama perubahan baris/kolom di sheet-nya — simpan PivotTable terlebih dahulu.',
-  appSaveErrTableWithRowCol: 'Tabel yang baru dibuat tidak dapat disimpan bersama perubahan baris/kolom di sheet-nya — simpan tabel terlebih dahulu.',
-  appSaveErrNamesWithStructural: 'Perubahan nama yang ditentukan tidak dapat disimpan bersama perubahan baris/kolom atau struktur sheet — simpan dalam dua tahap.',
-  appSaveErrChangedOnDisk: 'File diubah di disk oleh program lain — penyimpanan dibatalkan; buka kembali file lalu coba lagi.',
-  appSaveErrStylesheetLimited: 'Stylesheet buku kerja ini tidak memiliki struktur dasar, jadi perubahan gaya tidak dapat disimpan.',
-  appSaveErrPackageGuard: 'Menyimpan akan mengubah struktur paket buku kerja — dibatalkan untuk melindungi file.',
-  appSaveErrChartUnsupported: 'Jenis bagan ini tidak mendukung pengeditan tersebut; penyimpanan dibatalkan — urungkan perubahan bagan itu.',
-  appSaveErrMoveOverlap: 'Ada rumus, rentang berformat, bentuk, atau tabel yang melintasi baris yang dipindahkan; penyimpanan dibatalkan — urungkan pemindahan itu.',
+  appCfRuleUnsaveable:
+    'Aturan pemformatan bersyarat ini tidak dapat disimpan ke xlsx — gunakan jenis aturan lain.',
+  appSaveErrX14Dv:
+    'Sheet ini memiliki validasi data yang diperluas (x14); mengedit aturan validasinya belum didukung.',
+  appSaveErrMultiSelectList:
+    'Validasi daftar pilihan ganda tidak dapat disimpan ke xlsx — hapus aturan tersebut sebelum menyimpan.',
+  appSaveErrX14Cf:
+    'Rentang ini memiliki pemformatan bersyarat yang diperluas (x14) dan untuk saat ini tidak dapat diubah.',
+  appSaveErrPivotWithSheetOps:
+    'PivotTable yang baru dibuat tidak dapat disimpan bersama perubahan pengelolaan sheet — simpan PivotTable terlebih dahulu.',
+  appSaveErrPivotWithRowCol:
+    'PivotTable yang baru dibuat tidak dapat disimpan bersama perubahan baris/kolom di sheet-nya — simpan PivotTable terlebih dahulu.',
+  appSaveErrTableWithRowCol:
+    'Tabel yang baru dibuat tidak dapat disimpan bersama perubahan baris/kolom di sheet-nya — simpan tabel terlebih dahulu.',
+  appSaveErrNamesWithStructural:
+    'Perubahan nama yang ditentukan tidak dapat disimpan bersama perubahan baris/kolom atau struktur sheet — simpan dalam dua tahap.',
+  appSaveErrChangedOnDisk:
+    'File diubah di disk oleh program lain — penyimpanan dibatalkan; buka kembali file lalu coba lagi.',
+  appSaveErrStylesheetLimited:
+    'Stylesheet buku kerja ini tidak memiliki struktur dasar, jadi perubahan gaya tidak dapat disimpan.',
+  appSaveErrPackageGuard:
+    'Menyimpan akan mengubah struktur paket buku kerja — dibatalkan untuk melindungi file.',
+  appSaveErrChartUnsupported:
+    'Jenis bagan ini tidak mendukung pengeditan tersebut; penyimpanan dibatalkan — urungkan perubahan bagan itu.',
+  appSaveErrMoveOverlap:
+    'Ada rumus, rentang berformat, bentuk, atau tabel yang melintasi baris yang dipindahkan; penyimpanan dibatalkan — urungkan pemindahan itu.',
   appFromTextCsvTitle: 'Impor file CSV/teks ke pilihan saat ini',
   appCsvImported: 'Mengimpor {rows} baris × {columns} kolom dari file ke {cell}.',
   appCsvEmpty: 'File CSV tidak berisi data.',
-  appCsvTooLarge: 'CSV terlalu besar — jika lebih dari 50.000 sel, gunakan "Buka" sebagai buku kerja baru.',
+  appCsvTooLarge:
+    'CSV terlalu besar — jika lebih dari 50.000 sel, gunakan "Buka" sebagai buku kerja baru.',
   appCsvImportFailed: 'Impor CSV gagal.',
   appNoNotesOnSheet: 'Tidak ada komentar di sheet saat ini.',
   appNotePrevTitle: 'Lompat ke komentar sebelumnya',
   appNoteNextTitle: 'Lompat ke komentar berikutnya',
   appShowCommentsTitle: 'Sematkan/lepas sematan balon komentar sel yang dipilih',
-  appStructuralShiftBlocked: 'Bagan atau tabel di sheet ini tertaut ke baris/kolom yang terdampak sehingga tidak bisa digeser; perubahan struktur tidak disimpan. Urungkan (⌘Z) lalu simpan lagi.',
-  appAiChangesNotSaved: 'Perubahan AI diterapkan (belum disimpan). Urungkan dengan ⌘Z; simpan dengan ⌘S.',
+  appStructuralShiftBlocked:
+    'Bagan atau tabel di sheet ini tertaut ke baris/kolom yang terdampak sehingga tidak bisa digeser; perubahan struktur tidak disimpan. Urungkan (⌘Z) lalu simpan lagi.',
+  appAiChangesNotSaved:
+    'Perubahan AI diterapkan (belum disimpan). Urungkan dengan ⌘Z; simpan dengan ⌘S.',
   appChartUpdated: 'Bagan diperbarui.',
   appChartNotEditable: 'Bagan ini tidak dapat diedit.',
   appChartEditRecorded: 'Pengeditan bagan direkam — simpan dengan ⌘S.',
@@ -502,23 +591,29 @@ export const id = {
   appLinkInternal: 'Tautan menunjuk ke dalam buku kerja: {location}',
   appLinkSheetNotFound: 'Lembar "{name}" tidak ditemukan.',
   appLinkJumpFailed: 'Tidak dapat melompat ke {location}.',
-  appClosureActive: '{count} rumus dihitung ulang secara langsung (mode klosur); sisa buku kerja dimuat secara streaming sesuai kebutuhan.',
-  appRecalcPartial: 'Rumus dihitung ulang dari pengeditan Anda — {count} mempertahankan nilai cache (fungsi yang tidak ada di mesin cadangan).',
+  appClosureActive:
+    '{count} rumus dihitung ulang secara langsung (mode klosur); sisa buku kerja dimuat secara streaming sesuai kebutuhan.',
+  appRecalcPartial:
+    'Rumus dihitung ulang dari pengeditan Anda — {count} mempertahankan nilai cache (fungsi yang tidak ada di mesin cadangan).',
   appRecalcDone: 'Rumus dihitung ulang dari pengeditan Anda ({count} sel, mesin cadangan).',
   appIndexing: 'Mengindeks {name}: {rows} baris siap.',
   appStreamingRows: 'Memuat {name} secara streaming: {rows} baris tersedia.',
   appLoadRangeFailed: 'Tidak dapat memuat rentang yang terlihat.',
-  appFullyLoaded: 'Buku kerja termuat penuh — rumus dihitung ulang secara langsung, baris/kolom dapat diedit.',
+  appFullyLoaded:
+    'Buku kerja termuat penuh — rumus dihitung ulang secara langsung, baris/kolom dapat diedit.',
   appRangeMustBeVector: '{range} harus berupa satu baris atau satu kolom sel.',
   appRangeTooManyCells: '{range} mencakup lebih dari {max} sel.',
   appSheetStillIndexing: 'Lembar masih diindeks — coba lagi sebentar lagi.',
   appPrintNothing: 'Lembar ini tidak memiliki apa pun untuk dicetak.',
-  appPrintTooLarge: 'Rentang cetak terlalu besar — tetapkan area cetak yang lebih kecil di tab Tata Letak Halaman.',
+  appPrintTooLarge:
+    'Rentang cetak terlalu besar — tetapkan area cetak yang lebih kecil di tab Tata Letak Halaman.',
   appPrintBadArea: 'Area cetak "{area}" tidak valid.',
   appPrintBadTitles: 'Judul cetak "{titles}" tidak valid.',
   appPrintTitlesLimit: 'Judul cetak mengulang paling banyak 21 baris.',
-  appVisualHintText: 'Seret untuk memindahkan · pegangan untuk mengubah ukuran · klik dua kali untuk mengedit teks',
-  appVisualHintEdit: 'Seret untuk memindahkan · pegangan untuk mengubah ukuran · klik dua kali untuk mengedit',
+  appVisualHintText:
+    'Seret untuk memindahkan · pegangan untuk mengubah ukuran · klik dua kali untuk mengedit teks',
+  appVisualHintEdit:
+    'Seret untuk memindahkan · pegangan untuk mengubah ukuran · klik dua kali untuk mengedit',
   appVisualHint: 'Seret untuk memindahkan · pegangan untuk mengubah ukuran',
   appDeleteVisualTitle: 'Hapus objek ini',
   appDrawingObject: 'Objek gambar',
@@ -533,7 +628,8 @@ export const id = {
   appValuesPlaceholder: 'Nilai, mis. B2:B13',
   appLabelsPlaceholder: 'Label, mis. A2:A13',
   appValuesRangeTitle: 'Rentang nilai untuk {name} — satu baris atau kolom, mis. B2:B13',
-  appCategoriesRangeTitle: 'Rentang label kategori untuk {name} — satu baris atau kolom, mis. A2:A13',
+  appCategoriesRangeTitle:
+    'Rentang label kategori untuk {name} — satu baris atau kolom, mis. A2:A13',
   appTypeLabel: 'Jenis',
   appApply: 'Terapkan',
   appTabHome: 'Beranda',
@@ -574,7 +670,8 @@ export const id = {
   appSortAsc: 'A → Z',
   appSortDesc: 'Z → A',
   appRemoveDuplicates: 'Hapus Duplikat',
-  appRemoveDuplicatesNote: 'Baris dalam pilihan yang menduplikasi baris sebelumnya (membandingkan semua kolom, mengabaikan besar-kecil huruf) dihapus; sisanya bergeser ke atas.',
+  appRemoveDuplicatesNote:
+    'Baris dalam pilihan yang menduplikasi baris sebelumnya (membandingkan semua kolom, mengabaikan besar-kecil huruf) dihapus; sisanya bergeser ke atas.',
   appEditLinkTitle: 'Edit Tautan',
   appInsertLinkTitle: 'Sisipkan Tautan',
   appLinkAddressLabel: 'Alamat — halaman web (https://…) atau referensi lembar (Sheet1!A1)',
@@ -880,7 +977,8 @@ export const id = {
   appChartScatter: 'Sebar',
   appPivotChart: 'PivotChart',
   appGroupSparklines: 'Grafik mini',
-  appSparklinesTitle: 'Bagan mini di dalam sel, satu per baris terpilih (ditempatkan di kanan pilihan)',
+  appSparklinesTitle:
+    'Bagan mini di dalam sel, satu per baris terpilih (ditempatkan di kanan pilihan)',
   appSparkLine: 'Garis',
   appSparkColumn: 'Kolom',
   appSparkWinLoss: 'Menang/Kalah',
@@ -966,7 +1064,8 @@ export const id = {
   appDefineName: 'Tentukan Nama',
   appUseInFormula: 'Gunakan dalam Rumus',
   appUseInFormulaTitle: 'Sisipkan nama yang ditentukan ke rumus',
-  appUseInFormulaNeedsEmptyCell: 'Pilih sel kosong terlebih dahulu — menyisipkan nama akan mengganti isi sel ini',
+  appUseInFormulaNeedsEmptyCell:
+    'Pilih sel kosong terlebih dahulu — menyisipkan nama akan mengganti isi sel ini',
   appCreateFromSelection: 'Buat dari Pilihan',
   appCreateFromSelectionTitle: 'Buat nama dari label pilihan',
   appNoNamesYet: 'Belum ada nama yang ditentukan',
@@ -1093,7 +1192,8 @@ export const id = {
   appTranslate: 'Terjemahkan',
   appGroupLanguage: 'Bahasa',
   appTranslateTitle: 'Terjemahkan pilihan dengan AI',
-  appTranslatePrompt: 'Terjemahkan teks dalam rentang terpilih ke {language} dan tulis kembali ke sel yang sama.',
+  appTranslatePrompt:
+    'Terjemahkan teks dalam rentang terpilih ke {language} dan tulis kembali ke sel yang sama.',
   appNewCommentDetail: 'Tambah atau edit',
   appDeleteLabel: 'Hapus',
   appNoteAtSelection: 'Catatan pada pilihan',
@@ -1119,6 +1219,34 @@ export const id = {
   appPasteFormattingOnly: 'Hanya Pemformatan',
   appPasteColWidths: 'Hanya Lebar Kolom',
   appPasteExceptBorders: 'Semua Kecuali Batas',
+  appPasteTranspose: 'Transpos',
+  appPasteKeepFormat: 'Tempel dengan format',
+  appPasteAsPicture: 'Tempel sebagai gambar',
+  appPasteTextOnly: 'Tempel teks saja',
+  appCopyAsPicture: 'Salin sebagai gambar',
+  appFeaturePendingTip: 'Fitur ini belum didukung',
+  appNeedCopyFirst: 'Salin atau potong konten terlebih dahulu',
+  appPastedTransposed: 'Ditempel secara transpos',
+  appPastedTextOnly: 'Ditempel sebagai teks saja',
+  appCopy: 'Salin',
+  appUnderlineAccounting: 'Garis bawah ganda akuntansi',
+  appBorderOther: 'Batas Lainnya (M)...',
+  appBorderDiagonal: 'Sisipkan kepala diagonal',
+  appDrawBorderGroup: 'Gambar batas',
+  appDrawBorderRow: 'Gambar batas (R)',
+  appDrawBorderGrid: 'Gambar kisi batas (G)',
+  appEraseBorder: 'Hapus batas (E)',
+  appPenLineColor: 'Warna garis (1)',
+  appPenLineStyle: 'Gaya garis (Y)',
+  appPenStyle_thin: 'Garis tipis',
+  appPenStyle_medium: 'Garis sedang',
+  appPenStyle_thick: 'Garis tebal',
+  appPenStyle_double: 'Garis ganda',
+  appPenStyle_hair: 'Garis rambut',
+  appPenStyle_dashed: 'Garis putus',
+  appPenStyle_dotted: 'Titik-titik',
+  appDrawBorderArmed: 'Gambar batas siap: seret rentang di tabel untuk menerapkan',
+  appEraseBorderArmed: 'Hapus batas siap: seret rentang di tabel untuk menghapus',
   appCutTitle: 'Potong ⌘X',
   appCopyTitle: 'Salin ⌘C',
   appFormatPainter: 'Penyalin Format',
@@ -1335,10 +1463,12 @@ export const id = {
   appCellStyleGroupAccent: 'Aksen',
   appAiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
   appFullLoadFilterTitle: 'Filter memerlukan pemuatan penuh',
-  appFullLoadFilterBody: 'Buku kerja ini besar dan baru dimuat sebagian secara streaming. Filter (termasuk hitungan nilai) memerlukan data lengkap agar benar. Muat seluruh buku kerja sekarang?',
+  appFullLoadFilterBody:
+    'Buku kerja ini besar dan baru dimuat sebagian secara streaming. Filter (termasuk hitungan nilai) memerlukan data lengkap agar benar. Muat seluruh buku kerja sekarang?',
   appFullLoadStart: 'Muat semua',
   appFullLoadRunning: 'Memuat seluruh buku kerja — filter tersedia setelah selesai…',
-  appFullLoadTooLarge: 'Buku kerja ini terlalu besar untuk dimuat sepenuhnya ke memori; filter tidak tersedia untuk file ini.',
+  appFullLoadTooLarge:
+    'Buku kerja ini terlalu besar untuk dimuat sepenuhnya ke memori; filter tidak tersedia untuk file ini.',
   appDialogCancel: 'Batal',
   appRibbonCollapse: 'Ciutkan Pita',
   appRibbonPin: 'Sematkan Pita',

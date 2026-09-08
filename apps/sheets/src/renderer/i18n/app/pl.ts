@@ -4,7 +4,8 @@ export const pl = {
   appMergeWorkbooksTip: 'Dodaj arkusze z innych plików Excel do tego skoroszytu',
   appMergeWorkbooksPicking: 'Wybierz pliki do scalenia…',
   appMergeWorkbooksReading: 'Importowanie {sheet} z {file}…',
-  appMergeWorkbooksDone: 'Scalono {sheets} arkuszy z {files} plików (formuły zaimportowano jako wartości).',
+  appMergeWorkbooksDone:
+    'Scalono {sheets} arkuszy z {files} plików (formuły zaimportowano jako wartości).',
   appMergeWorkbooksFailed: 'Scalanie skoroszytów nie powiodło się.',
   appMergeWorkbooksInsertFailed: 'Nie można utworzyć arkusza {sheet}.',
   appMergeWorkbooksLocked: 'Skoroszyt wciąż się wczytuje; scalanie jest teraz niedostępne.',
@@ -34,12 +35,16 @@ export const pl = {
   appPageWatermark: 'Strona {page}',
   appUnprotectWorkbook: 'Nie chroń skoroszytu',
   appProtectWorkbookTitle: 'Zablokuj strukturę skoroszytu (bez hasła)',
-  appWorkbookProtectionWillWrite: 'Ochrona struktury skoroszytu zostanie zapisana przy zapisie (bez hasła).',
+  appWorkbookProtectionWillWrite:
+    'Ochrona struktury skoroszytu zostanie zapisana przy zapisie (bez hasła).',
   appWorkbookProtectionWillRemove: 'Ochrona struktury skoroszytu zostanie usunięta przy zapisie.',
-  appWorkbookProtectedWithPassword: 'Struktura skoroszytu jest chroniona hasłem — nie można jej tutaj zmienić.',
-  appWorkbookStructureLocked: 'Struktura skoroszytu jest chroniona — nie można dodawać, usuwać, zmieniać nazw ani przenosić arkuszy.',
+  appWorkbookProtectedWithPassword:
+    'Struktura skoroszytu jest chroniona hasłem — nie można jej tutaj zmienić.',
+  appWorkbookStructureLocked:
+    'Struktura skoroszytu jest chroniona — nie można dodawać, usuwać, zmieniać nazw ani przenosić arkuszy.',
   appAllowEditRangesTitle: 'Zakresy, które pozostają edytowalne, gdy arkusz jest chroniony',
-  appRangesPasswordBlocked: 'Ten arkusz zawiera zakresy edycji chronione hasłem — ich edytowanie nie jest obsługiwane.',
+  appRangesPasswordBlocked:
+    'Ten arkusz zawiera zakresy edycji chronione hasłem — ich edytowanie nie jest obsługiwane.',
   appRangesRecorded: 'Przy zapisie zostanie zapisanych zakresów edycji: {count}.',
   appNumFmtAccounting: 'Księgowy',
   appNumFmtShortDate: 'Data krótka',
@@ -124,42 +129,59 @@ export const pl = {
   appGoToButtonTitle: 'Przejdź do (⌘G)',
   appNameBoxTitle: 'Pole nazwy — wpisz adres lub nazwę, a następnie naciśnij Enter',
   appPivotChartHintIn: 'Utwórz wykres przestawny na podstawie bieżącej tabeli przestawnej',
-  appPivotChartHintOut: 'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wybierz typ wykresu',
+  appPivotChartHintOut:
+    'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wybierz typ wykresu',
   appChartColumn: 'Kolumnowy',
   appChartBar: 'Słupkowy',
   appChartLine: 'Liniowy',
   appChartDoughnut: 'Pierścieniowy',
   appChartRadar: 'Radarowy',
   appSlicerHintIn: 'Wstaw fragmentator dla bieżącej tabeli przestawnej',
-  appSlicerHintOut: 'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wstaw fragmentator',
+  appSlicerHintOut:
+    'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wstaw fragmentator',
   appPivotTable: 'Tabela przestawna',
   appRefresh: 'Odśwież',
   appRefreshHintIn: 'Przelicz ponownie bieżącą tabelę przestawną',
   appRefreshHintOut: 'Najpierw zaznacz obszar tabeli przestawnej, a następnie odśwież',
   appAttachmentReadFailed: '{name}: odczyt nie powiódł się',
   appTooManyImages: 'Maksymalnie {max} obrazów na wiadomość; nadmiarowe zostały zignorowane',
-  appAppliedRevision: 'Zastosowano (wersja {revision}) — cofnij za pomocą ⌘Z, zapisz do pliku za pomocą ⌘S.',
+  appAppliedRevision:
+    'Zastosowano (wersja {revision}) — cofnij za pomocą ⌘Z, zapisz do pliku za pomocą ⌘S.',
   appCannotReadImage: 'Nie można odczytać pliku obrazu.',
-  appTableNotDeletable: 'Tabela „{name}” nie istnieje lub nie została utworzona w tej sesji — tabel istniejących już w pliku nie można jeszcze usuwać.',
+  appTableNotDeletable:
+    'Tabela „{name}” nie istnieje lub nie została utworzona w tej sesji — tabel istniejących już w pliku nie można jeszcze usuwać.',
   appImageNotLoaded: 'Nie udało się załadować obrazu: {path}',
   appApplyFailed: '⚠️ Nie udało się zastosować: {reason}',
   appPivotChartNeedsFile: 'Najpierw otwórz plik XLSX — wykres przestawny jest zapisywany w pliku.',
-  appCursorNotInPivot: 'Kursor nie znajduje się w tabeli przestawnej — najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej.',
-  appPivotDefNotLoaded: 'Definicja tabeli przestawnej nie została jeszcze załadowana (lub analiza nie powiodła się) — spróbuj ponownie za chwilę.',
-  appPivotNoChartData: 'Ta tabela przestawna nie ma wierszy/kolumn danych do przedstawienia na wykresie.',
-  appPivotChartInsertedTruncated: 'Wstawiono wykres przestawny (zbyt wiele punktów danych, obcięto) — zapisz (⌘S), aby zapisać go w pliku.',
-  appPivotChartInserted: 'Wstawiono wykres przestawny — podąża za odświeżeniami tabeli przestawnej; zapisz (⌘S), aby zapisać go w pliku.',
+  appCursorNotInPivot:
+    'Kursor nie znajduje się w tabeli przestawnej — najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej.',
+  appPivotDefNotLoaded:
+    'Definicja tabeli przestawnej nie została jeszcze załadowana (lub analiza nie powiodła się) — spróbuj ponownie za chwilę.',
+  appPivotNoChartData:
+    'Ta tabela przestawna nie ma wierszy/kolumn danych do przedstawienia na wykresie.',
+  appPivotChartInsertedTruncated:
+    'Wstawiono wykres przestawny (zbyt wiele punktów danych, obcięto) — zapisz (⌘S), aby zapisać go w pliku.',
+  appPivotChartInserted:
+    'Wstawiono wykres przestawny — podąża za odświeżeniami tabeli przestawnej; zapisz (⌘S), aby zapisać go w pliku.',
   appSheetNoPivot: 'Ten arkusz nie zawiera tabel przestawnych.',
-  appPivotNeedsFullLoad: 'Odświeżanie tabel przestawnych wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i został załadowany strumieniowo.',
+  appPivotNeedsFullLoad:
+    'Odświeżanie tabel przestawnych wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i został załadowany strumieniowo.',
   appPivotSourceSheetMissing: 'Arkusz źródłowy tabeli przestawnej „{name}” nie istnieje.',
-  appPivotLayoutMismatch: 'Układ tabeli przestawnej nie odpowiada jej zakresowi wyników — odśwież ją w programie Excel przed ponownym przeliczeniem.',
-  appPivotGrowUnsupported: 'Ten układ tabeli przestawnej (kompaktowy/wielowierszowe nagłówki) nie obsługuje jeszcze automatycznego rozrastania — odśwież ją w programie Excel.',
-  appPivotGrowConflict: 'Powiększony obszar tabeli przestawnej koliduje z istniejącą zawartością — wyczyść obszar docelowy, a następnie odśwież.',
-  appShapeNotEditable: 'Brak edytowalnego kształtu „{id}” (edytować można tylko kształty dodane w tej sesji).',
-  appCalcFieldNameClash: 'Pole obliczeniowe „{name}” nie może mieć tej samej nazwy co nagłówek źródła.',
+  appPivotLayoutMismatch:
+    'Układ tabeli przestawnej nie odpowiada jej zakresowi wyników — odśwież ją w programie Excel przed ponownym przeliczeniem.',
+  appPivotGrowUnsupported:
+    'Ten układ tabeli przestawnej (kompaktowy/wielowierszowe nagłówki) nie obsługuje jeszcze automatycznego rozrastania — odśwież ją w programie Excel.',
+  appPivotGrowConflict:
+    'Powiększony obszar tabeli przestawnej koliduje z istniejącą zawartością — wyczyść obszar docelowy, a następnie odśwież.',
+  appShapeNotEditable:
+    'Brak edytowalnego kształtu „{id}” (edytować można tylko kształty dodane w tej sesji).',
+  appCalcFieldNameClash:
+    'Pole obliczeniowe „{name}” nie może mieć tej samej nazwy co nagłówek źródła.',
   appCalcFieldNameDuplicate: 'Nazwy pól obliczeniowych muszą być unikatowe.',
-  appValueFilterFieldMissing: 'Filtr wartości odwołuje się do pola wartości {index}, które nie istnieje.',
-  appPivotRelayoutOverlap: 'Nowy układ tabeli przestawnej nadpisałby istniejącą zawartość — najpierw wyczyść obszar docelowy.',
+  appValueFilterFieldMissing:
+    'Filtr wartości odwołuje się do pola wartości {index}, które nie istnieje.',
+  appPivotRelayoutOverlap:
+    'Nowy układ tabeli przestawnej nadpisałby istniejącą zawartość — najpierw wyczyść obszar docelowy.',
   appInvalidRowField: 'Nieprawidłowe pole wiersza.',
   appNeedRowField: 'Wybierz co najmniej jedno pole wiersza.',
   appInvalidColumnField: 'Nieprawidłowe pole kolumny.',
@@ -170,49 +192,68 @@ export const pl = {
   appWorkbookNotReady: 'Skoroszyt nie jest gotowy.',
   appOpenWorkbookFirst: 'Najpierw otwórz skoroszyt.',
   appOpenXlsxFirst: 'Najpierw otwórz plik XLSX.',
-  appPivotCreated: 'Utworzono tabelę przestawną w {cell} — zostanie zapisana w pliku przy zapisywaniu. Po zapisaniu dostępne będą fragmentatory, osie czasu i odświeżanie.',
+  appPivotCreated:
+    'Utworzono tabelę przestawną w {cell} — zostanie zapisana w pliku przy zapisywaniu. Po zapisaniu dostępne będą fragmentatory, osie czasu i odświeżanie.',
   appPivotCreateFailed: 'Nie udało się utworzyć tabeli przestawnej.',
-  appPutCursorInPivot: 'Umieść kursor w obszarze wyników tabeli przestawnej, którą chcesz edytować.',
-  appPivotNoCacheDef: 'Ta tabela przestawna nie ma definicji pamięci podręcznej i nie można jej edytować.',
-  appPivotDefNotLoadedSave: 'Definicja tabeli przestawnej nie została jeszcze załadowana — jeśli edytowano ją w tej sesji, najpierw zapisz (⌘S).',
+  appPutCursorInPivot:
+    'Umieść kursor w obszarze wyników tabeli przestawnej, którą chcesz edytować.',
+  appPivotNoCacheDef:
+    'Ta tabela przestawna nie ma definicji pamięci podręcznej i nie można jej edytować.',
+  appPivotDefNotLoadedSave:
+    'Definicja tabeli przestawnej nie została jeszcze załadowana — jeśli edytowano ją w tej sesji, najpierw zapisz (⌘S).',
   appPivotEditUnsupported: 'Tej tabeli przestawnej nie można jeszcze edytować: {reasons}',
-  appPivotEditHasFeatures: 'Tabele przestawne z grupowaniem, filtrami, filtrami raportu lub polami obliczeniowymi nie obsługują jeszcze edycji układu — dostosuj je w programie Excel.',
-  appPivotEditValuesOnRows: 'Tabele przestawne z polami wartości na osi wierszy nie obsługują jeszcze edycji układu.',
-  appPivotEditAggUnsupported: 'Agregacja tej tabeli przestawnej (np. Iloczyn lub Licznik num.) nie obsługuje jeszcze edycji układu.',
+  appPivotEditHasFeatures:
+    'Tabele przestawne z grupowaniem, filtrami, filtrami raportu lub polami obliczeniowymi nie obsługują jeszcze edycji układu — dostosuj je w programie Excel.',
+  appPivotEditValuesOnRows:
+    'Tabele przestawne z polami wartości na osi wierszy nie obsługują jeszcze edycji układu.',
+  appPivotEditAggUnsupported:
+    'Agregacja tej tabeli przestawnej (np. Iloczyn lub Licznik num.) nie obsługuje jeszcze edycji układu.',
   appPivotSourceSheetNotFound: 'Nie można znaleźć arkusza źródłowego tabeli przestawnej „{name}”.',
-  appPivotLayoutUpdated: 'Układ tabeli przestawnej zaktualizowany — zapisz (⌘S), aby zapisać go w pliku; Excel odbuduje pamięć podręczną przy otwarciu.',
+  appPivotLayoutUpdated:
+    'Układ tabeli przestawnej zaktualizowany — zapisz (⌘S), aby zapisać go w pliku; Excel odbuduje pamięć podręczną przy otwarciu.',
   appPivotEditFailed: 'Nie udało się edytować tabeli przestawnej.',
   appNoActiveSheet: 'Brak aktywnego arkusza.',
   appCurrentSheetNoPivot: 'Bieżący arkusz nie zawiera tabel przestawnych.',
-  appPivotsRefreshed: 'Odświeżono {count} tabel(e) przestawną(e) — zapisz, aby zapisać w pliku (⌘S).',
+  appPivotsRefreshed:
+    'Odświeżono {count} tabel(e) przestawną(e) — zapisz, aby zapisać w pliku (⌘S).',
   appRefreshFailed: 'Odświeżanie nie powiodło się.',
-  appSlicerNeedsFile: 'Najpierw otwórz plik XLSX — fragmentatory działają na tabelach przestawnych z pliku.',
+  appSlicerNeedsFile:
+    'Najpierw otwórz plik XLSX — fragmentatory działają na tabelach przestawnych z pliku.',
   appFieldN: 'Pole {n}',
   appPivotNoSlicerFields: 'Ta tabela przestawna nie ma pól wymiarów dla fragmentatora.',
   appSlicerPivotStale: 'Docelowa tabela przestawna fragmentatora jest już nieprawidłowa.',
   appBlank: '(puste)',
   appFieldNoMembers: 'To pole nie ma elementów do filtrowania.',
-  appSlicerCreated: 'Utworzono fragmentator „{name}” — klikaj elementy, aby filtrować tabelę przestawną.',
-  appSlicerNeedsFullLoad: 'Filtrowanie fragmentatorem wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i został załadowany strumieniowo.',
+  appSlicerCreated:
+    'Utworzono fragmentator „{name}” — klikaj elementy, aby filtrować tabelę przestawną.',
+  appSlicerNeedsFullLoad:
+    'Filtrowanie fragmentatorem wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i został załadowany strumieniowo.',
   appSlicerPivotMissing: 'Tabela przestawna powiązana z tym fragmentatorem już nie istnieje.',
   appSlicerSheetMissing: 'Arkusz powiązany z tym fragmentatorem już nie istnieje.',
   appSlicerFilterFailed: 'Filtrowanie fragmentatorem nie powiodło się.',
   appSlicerKeepOne: 'Pozostaw co najmniej jeden zaznaczony element we fragmentatorze.',
-  appSlicerApplied: 'Zastosowano fragmentator „{name}” — zapisz (⌘S), aby zapisać przefiltrowaną tabelę przestawną.',
+  appSlicerApplied:
+    'Zastosowano fragmentator „{name}” — zapisz (⌘S), aby zapisać przefiltrowaną tabelę przestawną.',
   appSlicerCleared: 'Wyczyszczono filtr fragmentatora „{name}”.',
   appSlicerRemoved: 'Usunięto fragmentator „{name}”; wszystkie elementy przywrócono.',
   appTimelineHintIn: 'Wstaw oś czasu dla pola daty bieżącej tabeli przestawnej',
-  appTimelineHintOut: 'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wstaw oś czasu',
-  appTimelineNoDateFields: 'Ta tabela przestawna nie ma odpowiednich pól daty — oś czasu wymaga niezgrupowanego pola, którego wszystkie wartości są datami.',
-  appTimelineCreated: 'Utworzono oś czasu „{name}” — klikaj miesiące, aby filtrować tabelę przestawną.',
-  appTimelineApplied: 'Zastosowano oś czasu „{name}” — zapisz (⌘S), aby zapisać przefiltrowaną tabelę przestawną.',
+  appTimelineHintOut:
+    'Najpierw zaznacz komórkę w obszarze wyników tabeli przestawnej, a następnie wstaw oś czasu',
+  appTimelineNoDateFields:
+    'Ta tabela przestawna nie ma odpowiednich pól daty — oś czasu wymaga niezgrupowanego pola, którego wszystkie wartości są datami.',
+  appTimelineCreated:
+    'Utworzono oś czasu „{name}” — klikaj miesiące, aby filtrować tabelę przestawną.',
+  appTimelineApplied:
+    'Zastosowano oś czasu „{name}” — zapisz (⌘S), aby zapisać przefiltrowaną tabelę przestawną.',
   appTimelineCleared: 'Wyczyszczono filtr osi czasu „{name}”.',
   appTimelineRemoved: 'Usunięto oś czasu „{name}”; wszystkie elementy przywrócono.',
   appTimelineEmptyRange: 'Brak elementów w wybranym zakresie miesięcy.',
-  appFieldFilterTaken: 'Wszystkie kwalifikujące się pola mają już fragmentator lub oś czasu — najpierw usuń istniejący element.',
+  appFieldFilterTaken:
+    'Wszystkie kwalifikujące się pola mają już fragmentator lub oś czasu — najpierw usuń istniejący element.',
   appGoToNotReady: 'Skoroszyt nie jest jeszcze gotowy — nie można przejść do odwołania.',
   appGoToEmpty: 'Wprowadź adres komórki lub zdefiniowaną nazwę.',
-  appGoToUnresolved: 'Nie można przejść do „{ref}”: to nie jest prawidłowy adres ani zdefiniowana nazwa, do której można przejść.',
+  appGoToUnresolved:
+    'Nie można przejść do „{ref}”: to nie jest prawidłowy adres ani zdefiniowana nazwa, do której można przejść.',
   appGoToOutOfBounds: 'Nie można przejść do „{ref}”: poza granicami arkusza.',
   appGoToSheetNotFound: 'Nie można przejść do „{ref}”: nie znaleziono tego arkusza.',
   appGoToInvalidAddress: 'Nie można przejść do „{ref}”: adres jest nieprawidłowy.',
@@ -220,48 +261,76 @@ export const pl = {
   appSymbolNeedsCell: 'Najpierw otwórz skoroszyt i zaznacz komórkę, a następnie wstaw symbol.',
   appSymbolInsertFailed: 'Nie można wstawić symbolu.',
   appSymbolInserted: 'Wstawiono {char} do {cell}.',
-  appAdvFilterNeedsFilter: 'Filtr zaawansowany wymaga zakresu Autofiltru — najpierw zaznacz dane i kliknij Filtr.',
+  appAdvFilterNeedsFilter:
+    'Filtr zaawansowany wymaga zakresu Autofiltru — najpierw zaznacz dane i kliknij Filtr.',
   appAdvFilterGone: 'Bieżący arkusz nie ma Autofiltru — włącz go ponownie i spróbuj jeszcze raz.',
   appAdvFilterFailed: 'Nie udało się zastosować filtru zaawansowanego.',
   appAdvFilterApplied: 'Zastosowano kryteria filtru zaawansowanego — ⌘S zapisuje do pliku.',
-  appFlashFillNeedsLeft: 'Wypełnianie błyskawiczne wymaga kolumn danych po lewej stronie kolumny docelowej.',
+  appFlashFillNeedsLeft:
+    'Wypełnianie błyskawiczne wymaga kolumn danych po lewej stronie kolumny docelowej.',
   appFlashFillNeedsRows: 'Wypełnianie błyskawiczne wymaga co najmniej dwóch wierszy danych.',
-  appFlashFillNeedsExamples: 'Najpierw wpisz 1-2 przykłady w kolumnie docelowej, a następnie kliknij Wypełnianie błyskawiczne.',
-  appFlashFillNoPattern: 'Nie rozpoznano wzorca na podstawie przykładów — wartości docelowe muszą dać się wyprowadzić z kolumn po lewej; spróbuj dodać kolejny przykład.',
+  appFlashFillNeedsExamples:
+    'Najpierw wpisz 1-2 przykłady w kolumnie docelowej, a następnie kliknij Wypełnianie błyskawiczne.',
+  appFlashFillNoPattern:
+    'Nie rozpoznano wzorca na podstawie przykładów — wartości docelowe muszą dać się wyprowadzić z kolumn po lewej; spróbuj dodać kolejny przykład.',
   appFlashFillNothingToFill: 'Brak pustych wierszy do wypełnienia.',
-  appFlashFillDone: '⚡ Wypełnianie błyskawiczne wypełniło {count} wiersz(y) na podstawie Twoich przykładów.',
+  appFlashFillDone:
+    '⚡ Wypełnianie błyskawiczne wypełniło {count} wiersz(y) na podstawie Twoich przykładów.',
   appSparklineNeedsFile: 'Wykresy przebiegu w czasie wymagają zaimportowanego pliku XLSX.',
-  appSparklineNeedsCols: 'Zaznacz co najmniej dwie kolumny danych — jeden wykres przebiegu w czasie na wiersz, umieszczony w kolumnie na prawo od zaznaczenia.',
+  appSparklineNeedsCols:
+    'Zaznacz co najmniej dwie kolumny danych — jeden wykres przebiegu w czasie na wiersz, umieszczony w kolumnie na prawo od zaznaczenia.',
   appSparklineNoSpace: 'Brak miejsca na wykresy przebiegu w czasie na prawo od zaznaczenia.',
-  appSparklinesInserted: 'Wstawiono {count} wykres(y) przebiegu w czasie w kolumnie na prawo od zaznaczenia — ⌘S zapisuje do pliku.',
-  appSaveHeldStranded: 'Tabel przestawnych/tabel nie można zapisać razem z nowymi arkuszami i zmianami wierszy/kolumn — najpierw zapisz strukturę, a potem dodaj tabele przestawne/tabele.',
-  appSaveSecondCanceled: 'Druga faza zapisu została anulowana — struktura jest zapisana; tabele przestawne/tabele/zdefiniowane nazwy nie zostały jeszcze zapisane.',
+  appSparklinesInserted:
+    'Wstawiono {count} wykres(y) przebiegu w czasie w kolumnie na prawo od zaznaczenia — ⌘S zapisuje do pliku.',
+  appSaveHeldStranded:
+    'Tabel przestawnych/tabel nie można zapisać razem z nowymi arkuszami i zmianami wierszy/kolumn — najpierw zapisz strukturę, a potem dodaj tabele przestawne/tabele.',
+  appSaveSecondCanceled:
+    'Druga faza zapisu została anulowana — struktura jest zapisana; tabele przestawne/tabele/zdefiniowane nazwy nie zostały jeszcze zapisane.',
   appSavedTwoPhase: 'Zapisano.',
-  appSaveSecondFailed: 'Struktura została zapisana, ale druga faza (tabele przestawne/tabele/zdefiniowane nazwy) nie powiodła się: {reason}',
+  appSaveSecondFailed:
+    'Struktura została zapisana, ale druga faza (tabele przestawne/tabele/zdefiniowane nazwy) nie powiodła się: {reason}',
   appReadyInitial: 'Gotowe na lokalne, deterministyczne polecenie AI.',
   appAiThinking: 'AI myśli…',
   appAiDone: 'AI zakończyła pracę',
-  appAiTurnLimit: '(Osiągnięto limit rund wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas odczytanych informacjach i może być niekompletna.)',
+  appAiTurnLimit:
+    '(Osiągnięto limit rund wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas odczytanych informacjach i może być niekompletna.)',
   appAiStopped: '(zatrzymano)',
   appAiNoSummary: 'AI zakończyła bez podsumowania.',
-  appAiNoAction: 'AI nie wykonała żadnej akcji i nie udzieliła odpowiedzi. Spróbuj ponownie lub przeformułuj.',
+  appAiNoAction:
+    'AI nie wykonała żadnej akcji i nie udzieliła odpowiedzi. Spróbuj ponownie lub przeformułuj.',
   appNewConversation: 'Rozpoczęto nową rozmowę.',
-  appPivotCellNoEdit: 'Ta komórka jest częścią tabeli przestawnej — edycja nie jest jeszcze obsługiwana.',
-  appAreaStreaming: 'Ten obszar jest wciąż ładowany strumieniowo — spróbuj edytować ponownie za chwilę.',
-  appFormulaRecordedPartial: 'Formuła zarejestrowana — zostanie zapisana w pliku, ale wynik na ekranie może być niekompletny, ponieważ ten duży skoroszyt jest ładowany częściowo strumieniowo.',
-  appFormulaTooExpensive: 'Ta formuła ocenia duży zakres element po elemencie — obliczenia zawiesiłyby aplikację, więc ją anulowano. Zawęź zakres odwołań i spróbuj ponownie.',
-  appPivotSheetNoStructural: 'Ten arkusz zawiera tabelę przestawną — zmiany strukturalne nie są jeszcze obsługiwane.',
-  appDeleteSpanFormulas: 'Formuła odwołuje się wyłącznie do usuwanych wierszy/kolumn — najpierw ją zaktualizuj lub usuń.',
-  appIconSetUnsupported: 'Tej kombinacji ikon nie można zapisać w pliku xlsx — wybierz inny zestaw ikon.',
-  appNeedFullLoadSort: 'Sortowanie, filtrowanie, przenoszenie zakresów i dzielenie tekstu wymagają trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
-  appPivotSheetNoMove: 'Ten arkusz zawiera tabelę przestawną — przenoszenie zakresów nie jest jeszcze obsługiwane.',
-  appTableFilterNoEdit: 'Filtr tego arkusza należy do tabeli programu Excel — edycji nie można jeszcze zapisać.',
-  appAutofillStreaming: 'Autouzupełnianie do obszaru, który wciąż jest ładowany strumieniowo, nie jest jeszcze dozwolone.',
-  appDvNeedsIndexed: 'Edycja poprawności danych wymaga najpierw pełnego zaindeksowania tego arkusza — spróbuj ponownie za chwilę.',
-  appDuplicateNeedsFullLoad: 'Duplikowanie arkusza wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
-  appPivotSheetNoDuplicate: 'Ten arkusz zawiera tabelę przestawną — jego duplikowanie nie jest jeszcze obsługiwane.',
-  appDuplicateScopedNames: 'Ten arkusz zawiera nazwy zdefiniowane o zasięgu arkusza — jego duplikowanie nie jest jeszcze obsługiwane.',
-  appMoveRowsColsUnsaved: 'Przenoszenia całych kolumn nie można jeszcze zapisać w zaimportowanych skoroszytach — przenoszenie całych wierszy jest już obsługiwane.',
+  appPivotCellNoEdit:
+    'Ta komórka jest częścią tabeli przestawnej — edycja nie jest jeszcze obsługiwana.',
+  appAreaStreaming:
+    'Ten obszar jest wciąż ładowany strumieniowo — spróbuj edytować ponownie za chwilę.',
+  appFormulaRecordedPartial:
+    'Formuła zarejestrowana — zostanie zapisana w pliku, ale wynik na ekranie może być niekompletny, ponieważ ten duży skoroszyt jest ładowany częściowo strumieniowo.',
+  appFormulaTooExpensive:
+    'Ta formuła ocenia duży zakres element po elemencie — obliczenia zawiesiłyby aplikację, więc ją anulowano. Zawęź zakres odwołań i spróbuj ponownie.',
+  appPivotSheetNoStructural:
+    'Ten arkusz zawiera tabelę przestawną — zmiany strukturalne nie są jeszcze obsługiwane.',
+  appDeleteSpanFormulas:
+    'Formuła odwołuje się wyłącznie do usuwanych wierszy/kolumn — najpierw ją zaktualizuj lub usuń.',
+  appIconSetUnsupported:
+    'Tej kombinacji ikon nie można zapisać w pliku xlsx — wybierz inny zestaw ikon.',
+  appNeedFullLoadSort:
+    'Sortowanie, filtrowanie, przenoszenie zakresów i dzielenie tekstu wymagają trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
+  appPivotSheetNoMove:
+    'Ten arkusz zawiera tabelę przestawną — przenoszenie zakresów nie jest jeszcze obsługiwane.',
+  appTableFilterNoEdit:
+    'Filtr tego arkusza należy do tabeli programu Excel — edycji nie można jeszcze zapisać.',
+  appAutofillStreaming:
+    'Autouzupełnianie do obszaru, który wciąż jest ładowany strumieniowo, nie jest jeszcze dozwolone.',
+  appDvNeedsIndexed:
+    'Edycja poprawności danych wymaga najpierw pełnego zaindeksowania tego arkusza — spróbuj ponownie za chwilę.',
+  appDuplicateNeedsFullLoad:
+    'Duplikowanie arkusza wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
+  appPivotSheetNoDuplicate:
+    'Ten arkusz zawiera tabelę przestawną — jego duplikowanie nie jest jeszcze obsługiwane.',
+  appDuplicateScopedNames:
+    'Ten arkusz zawiera nazwy zdefiniowane o zasięgu arkusza — jego duplikowanie nie jest jeszcze obsługiwane.',
+  appMoveRowsColsUnsaved:
+    'Przenoszenia całych kolumn nie można jeszcze zapisać w zaimportowanych skoroszytach — przenoszenie całych wierszy jest już obsługiwane.',
   appNoWorkbookOpen: 'Żaden skoroszyt nie jest otwarty.',
   appDvListOptions: 'Lista: {items}',
   appDvListFromRange: 'Lista (z zakresu {range})',
@@ -282,9 +351,11 @@ export const pl = {
   appAutoFilterRemoveFailed: 'Nie można usunąć Autofiltru.',
   appSelectDataRangeFirst: 'Najpierw zaznacz zakres danych.',
   appUnsupportedChartType: 'Nieobsługiwany typ wykresu: {kind}.',
-  appChartInsertedDemo: 'Wstawiono wykres — zmiany w trybie demo pozostają w pamięci; otwórz plik XLSX, aby zapisać na dysku.',
+  appChartInsertedDemo:
+    'Wstawiono wykres — zmiany w trybie demo pozostają w pamięci; otwórz plik XLSX, aby zapisać na dysku.',
   appChartInsertFailed: 'Nie można wstawić wykresu.',
-  appChartNeedsNumericColumn: 'Zaznacz zakres z co najmniej jedną kolumną liczbową (nagłówki opcjonalne).',
+  appChartNeedsNumericColumn:
+    'Zaznacz zakres z co najmniej jedną kolumną liczbową (nagłówki opcjonalne).',
   appChartInserted: 'Wstawiono wykres — zaznacz go, aby edytować; ⌘S zapisuje go w pliku.',
   appShapeNeedsFile: 'Najpierw otwórz plik XLSX — wstawione kształty są zapisywane w pliku.',
   appSelectCellFirst: 'Najpierw zaznacz komórkę.',
@@ -302,7 +373,8 @@ export const pl = {
   appTableSelectRange: 'Najpierw zaznacz zakres danych — nagłówki w pierwszym wierszu.',
   appTableCreated: 'Utworzono tabelę — zapisz za pomocą ⌘S.',
   appTableCreateFailed: 'Nie można utworzyć tabeli.',
-  appPivotOnAddedSheet: 'Tabele przestawne na arkuszach dodanych w tej sesji nie są jeszcze obsługiwane — najpierw zapisz.',
+  appPivotOnAddedSheet:
+    'Tabele przestawne na arkuszach dodanych w tej sesji nie są jeszcze obsługiwane — najpierw zapisz.',
   appPivotSourceNeedsRows: 'Źródło tabeli przestawnej wymaga wiersza nagłówka i wierszy danych.',
   appPivotSourceRowLimit: 'Źródło tabeli przestawnej jest ograniczone do 10 000 wierszy danych.',
   appPivotSourceColLimit: 'Źródło tabeli przestawnej jest ograniczone do 200 kolumn.',
@@ -314,9 +386,12 @@ export const pl = {
   appPivotTooManyColLines: 'Tabela przestawna ma ponad 1000 linii układu kolumn.',
   appPivotNeedsValues: 'Tabela przestawna wymaga jednego pola wartości.',
   appPivotTooManyRowLines: 'Tabela przestawna ma ponad 20 000 linii układu wierszy.',
-  appPivotOverlapSource: 'Wyniki tabeli przestawnej nakładałyby się na zakres źródłowy — wybierz inną komórkę docelową.',
-  appPivotOverlapExisting: 'Wyniki tabeli przestawnej nakładałyby się na istniejącą tabelę przestawną w arkuszu docelowym.',
-  appPivotOverlapSession: 'Wyniki tabeli przestawnej nakładałyby się na tabelę przestawną „{name}” utworzoną w tej sesji.',
+  appPivotOverlapSource:
+    'Wyniki tabeli przestawnej nakładałyby się na zakres źródłowy — wybierz inną komórkę docelową.',
+  appPivotOverlapExisting:
+    'Wyniki tabeli przestawnej nakładałyby się na istniejącą tabelę przestawną w arkuszu docelowym.',
+  appPivotOverlapSession:
+    'Wyniki tabeli przestawnej nakładałyby się na tabelę przestawną „{name}” utworzoną w tej sesji.',
   appPivotNameUsed: 'Nazwa tabeli przestawnej „{name}” została już użyta w tej sesji.',
   appActiveCellFallback: 'aktywna komórka',
   appFormulaStartsEquals: 'Formuła zaczyna się od „=”.',
@@ -327,18 +402,23 @@ export const pl = {
   appSelectRangeWithHeader: 'Zaznacz zakres danych z wierszem nagłówka.',
   appSubtotalSameColumns: 'Wybierz różne kolumny grupowania i wartości.',
   appRangeNoDataRows: 'Zaznaczony zakres nie zawiera wierszy danych.',
-  appSubtotalTooManyGroups: 'Zbyt wiele grup (maks. 200) — najpierw posortuj według kolumny grupowania.',
+  appSubtotalTooManyGroups:
+    'Zbyt wiele grup (maks. 200) — najpierw posortuj według kolumny grupowania.',
   appSubtotalInsertFailed: 'Nie można wstawić wierszy sum częściowych.',
   appSubtotalsInserted: 'Wstawiono sumy częściowe: {count} grup(y) plus suma końcowa.',
   appSelectTargetCellFirst: 'Najpierw zaznacz komórkę docelową.',
   appConsolidateBadRef: 'Nieprawidłowe odwołanie: {ref}.',
   appNoSheetNamed: 'Brak arkusza o nazwie „{name}”.',
   appConsolidateEmptySources: 'Obszary źródłowe są puste.',
-  appConsolidateOverlap: 'Obszar wyników nakłada się na obszar źródłowy — wybierz inną komórkę docelową.',
+  appConsolidateOverlap:
+    'Obszar wyników nakłada się na obszar źródłowy — wybierz inną komórkę docelową.',
   appConsolidateWriteFailed: 'Nie można zapisać konsolidacji.',
-  appConsolidateDone: 'Skonsolidowano {count} obszar(y) w {cell} ({rows}×{columns} aktywnych formuł).',
-  appConsolidateMaxMinLabels: 'Maksimum i minimum nie są obsługiwane z etykietami w lewej kolumnie — użyj konsolidacji według położenia.',
-  appConsolidateLabelNeedsCols: 'Tryb etykiet wymaga co najmniej dwóch kolumn na obszar (etykiety plus kolumna wartości).',
+  appConsolidateDone:
+    'Skonsolidowano {count} obszar(y) w {cell} ({rows}×{columns} aktywnych formuł).',
+  appConsolidateMaxMinLabels:
+    'Maksimum i minimum nie są obsługiwane z etykietami w lewej kolumnie — użyj konsolidacji według położenia.',
+  appConsolidateLabelNeedsCols:
+    'Tryb etykiet wymaga co najmniej dwóch kolumn na obszar (etykiety plus kolumna wartości).',
   appConsolidateNoLabels: 'Nie znaleziono etykiet w lewej kolumnie obszarów źródłowych.',
   appOutlineNeedsFile: 'Najpierw otwórz plik XLSX — grupy konspektu są zapisywane w pliku.',
   appOutlineSelectFirst: 'Najpierw zaznacz wiersze lub kolumny do zgrupowania.',
@@ -354,14 +434,18 @@ export const pl = {
   appSheetAddFailed: 'Nie można dodać arkusza.',
   appFormatCopied: 'Skopiowano format — zaznacz komórki docelowe, aby go zastosować.',
   appProtectionNeedsFile: 'Najpierw otwórz plik XLSX — ochrona jest zapisywana w pliku.',
-  appProtectionNeedsIndexed: 'Ochrona wymaga najpierw pełnego zaindeksowania tego arkusza — spróbuj ponownie za chwilę.',
-  appProtectedWithPassword: 'Ten arkusz jest chroniony hasłem — usunięcie jego ochrony nie jest obsługiwane.',
-  appProtectionWillWrite: 'Ochrona arkusza zostanie zapisana przy zapisywaniu (bez hasła). Sam edytor jej nie wymusza.',
+  appProtectionNeedsIndexed:
+    'Ochrona wymaga najpierw pełnego zaindeksowania tego arkusza — spróbuj ponownie za chwilę.',
+  appProtectedWithPassword:
+    'Ten arkusz jest chroniony hasłem — usunięcie jego ochrony nie jest obsługiwane.',
+  appProtectionWillWrite:
+    'Ochrona arkusza zostanie zapisana przy zapisywaniu (bez hasła). Sam edytor jej nie wymusza.',
   appProtectionWillRemove: 'Ochrona arkusza zostanie usunięta przy zapisywaniu.',
   appZoom: 'Powiększenie {percent}%.',
   appTopRowFrozen: 'Zablokowano górny wiersz — zapisz za pomocą ⌘S.',
   appFirstColFrozen: 'Zablokowano pierwszą kolumnę — zapisz za pomocą ⌘S.',
-  appFindScanTruncated: 'Duży arkusz: wyszukiwanie zatrzymane po {cells} komórkach — wyniki mogą być niepełne.',
+  appFindScanTruncated:
+    'Duży arkusz: wyszukiwanie zatrzymane po {cells} komórkach — wyniki mogą być niepełne.',
   appReplaceNeedsFullLoad: 'Zamienianie wymaga trybu pełnego ładowania — użyj funkcji Znajdź.',
   appGridlinesHiddenSave: 'Linie siatki ukryte — zapisz za pomocą ⌘S.',
   appGridlinesShownSave: 'Linie siatki pokazane — zapisz za pomocą ⌘S.',
@@ -379,22 +463,29 @@ export const pl = {
   appTraceOffSheetDeps: '{count} zależności w innych arkuszach nie narysowano.',
   appTraceArrowsRemoved: 'Usunięto strzałki śledzenia.',
   appNoTraceArrows: 'Brak strzałek śledzenia do usunięcia.',
-  appWorkbookStats: 'Statystyki skoroszytu: {sheets} arkuszy · {cells} komórek z danymi · {formulas} formuł{note}.',
+  appWorkbookStats:
+    'Statystyki skoroszytu: {sheets} arkuszy · {cells} komórek z danymi · {formulas} formuł{note}.',
   appFrozenAtSelection: 'Zablokowano w miejscu zaznaczenia — zapisz za pomocą ⌘S.',
   appSelectCellsFirst: 'Najpierw zaznacz komórki.',
-  appCellStyleApplied: 'Zastosowano styl komórki — rejestrowany jak każda zmiana formatu (⌘S, aby zapisać).',
+  appCellStyleApplied:
+    'Zastosowano styl komórki — rejestrowany jak każda zmiana formatu (⌘S, aby zapisać).',
   appSelectRangeFirst: 'Najpierw zaznacz zakres komórek.',
-  appSettingNeedsFile: 'Najpierw otwórz plik XLSX — to ustawienie jest zapisywane wyłącznie w pliku.',
+  appSettingNeedsFile:
+    'Najpierw otwórz plik XLSX — to ustawienie jest zapisywane wyłącznie w pliku.',
   appTooManyCellsForSetting: 'Dla tego ustawienia zaznacz mniej niż 10 000 komórek.',
-  appProtectionFlagsRecorded: 'Zarejestrowano flagi ochrony — obowiązują, gdy arkusz jest chroniony.',
-  appSortSelectRows: 'Najpierw zaznacz wiersze do posortowania — uwzględnij wszystkie powiązane kolumny.',
+  appProtectionFlagsRecorded:
+    'Zarejestrowano flagi ochrony — obowiązują, gdy arkusz jest chroniony.',
+  appSortSelectRows:
+    'Najpierw zaznacz wiersze do posortowania — uwzględnij wszystkie powiązane kolumny.',
   appSortedAsc: 'Posortowano od A do Z według pierwszej zaznaczonej kolumny.',
   appSortedDesc: 'Posortowano od Z do A według pierwszej zaznaczonej kolumny.',
   appAutofnSelectCells: 'Zaznacz komórki do zagregowania — {fn} trafi do wiersza poniżej.',
-  appRowBelowStreaming: 'Wiersz poniżej jest wciąż ładowany strumieniowo — spróbuj ponownie za chwilę.',
+  appRowBelowStreaming:
+    'Wiersz poniżej jest wciąż ładowany strumieniowo — spróbuj ponownie za chwilę.',
   appAutofnInserted: 'Wstawiono {fn} poniżej zaznaczenia.',
   appSortedCustom: 'Posortowano według niestandardowych poziomów.',
-  appDedupeNeedsFullLoad: 'Usuwanie duplikatów wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
+  appDedupeNeedsFullLoad:
+    'Usuwanie duplikatów wymaga trybu pełnego ładowania — ten skoroszyt jest zbyt duży i jest ładowany częściowo strumieniowo.',
   appDedupeSelectRows: 'Najpierw zaznacz wiersze do sprawdzenia pod kątem duplikatów.',
   appNoDuplicates: 'Nie znaleziono zduplikowanych wierszy w zaznaczeniu.',
   appDuplicatesRemoved: 'Usunięto {count} zduplikowany(ch) wiersz(y).',
@@ -407,7 +498,8 @@ export const pl = {
   appAppliedToSelection: 'Zastosowano do bieżącego zaznaczenia.',
   appCommandFailed: 'Nie można zastosować polecenia.',
   appColumnLabel: 'Kolumna {col}',
-  appBridgeUnavailable: 'Most plików aplikacji desktopowej jest niedostępny. Uruchom ponownie aplikację Electron.',
+  appBridgeUnavailable:
+    'Most plików aplikacji desktopowej jest niedostępny. Uruchom ponownie aplikację Electron.',
   appOpenCanceled: 'Anulowano wybór skoroszytu.',
   appOpened: 'Otwarto {name} — zmiany w komórkach zapisujesz z powrotem za pomocą ⌘S.',
   appOpenFailed: 'Nie można otworzyć skoroszytu.',
@@ -438,50 +530,71 @@ export const pl = {
   appHfNeedsFile: 'Najpierw otwórz plik XLSX — nagłówki i stopki są zapisywane w pliku.',
   appActiveSheetUnavailable: 'Aktywny arkusz jest niedostępny.',
   appHfUpdated: 'Zaktualizowano nagłówek i stopkę — zapisz za pomocą ⌘S.',
-  appPdfNeedsFullLoad: 'Eksport do PDF wymaga w pełni załadowanego skoroszytu — poczekaj na zakończenie ładowania.',
+  appPdfNeedsFullLoad:
+    'Eksport do PDF wymaga w pełni załadowanego skoroszytu — poczekaj na zakończenie ładowania.',
   appPdfRendering: 'Renderowanie pliku PDF…',
   appPdfCanceled: 'Anulowano eksport do PDF.',
   appPdfExported: 'Wyeksportowano {path}.',
   appPdfExportFailed: 'Nie można wyeksportować pliku PDF.',
-  appCsvExportNeedsFullLoad: 'Eksport do CSV wymaga w pełni załadowanego skoroszytu — poczekaj na zakończenie ładowania.',
+  appCsvExportNeedsFullLoad:
+    'Eksport do CSV wymaga w pełni załadowanego skoroszytu — poczekaj na zakończenie ładowania.',
   appCsvExportTooLarge: 'Arkusz jest za duży, aby wyeksportować go do CSV.',
   appCsvExportCanceled: 'Anulowano eksport do CSV.',
   appCsvExported: 'Wyeksportowano {path}.',
-  appCsvExportedActiveOnly: 'Pliki CSV zawierają tylko jeden arkusz — aktywny arkusz „{name}” wyeksportowano do {path}.',
+  appCsvExportedActiveOnly:
+    'Pliki CSV zawierają tylko jeden arkusz — aktywny arkusz „{name}” wyeksportowano do {path}.',
   appCsvExportFailed: 'Nie można wyeksportować pliku CSV.',
-  appDemoNoSave: 'Zmiany w trybie demo pozostają w pamięci — otwórz plik XLSX, aby zapisać na dysku.',
+  appDemoNoSave:
+    'Zmiany w trybie demo pozostają w pamięci — otwórz plik XLSX, aby zapisać na dysku.',
   appFilterSnapshotFailed: 'Nie można wykonać migawki stanu filtrów.',
-  appColorFiltersUnsaveable: 'Filtrów kolorów nie można jeszcze zapisać jako XLSX — wyczyść je przed zapisaniem.',
+  appColorFiltersUnsaveable:
+    'Filtrów kolorów nie można jeszcze zapisać jako XLSX — wyczyść je przed zapisaniem.',
   appNoEditsToSave: 'Nie ma jeszcze zmian do zapisania.',
   appSheetOrderReadFailed: 'Nie można odczytać kolejności arkuszy — spróbuj ponownie.',
   appSavingEdits: 'Zapisywanie {count} zmian(y)…',
   appSaveCanceled: 'Anulowano zapisywanie.',
   appSaved: 'Zapisano.',
   appSaveFailed: 'Nie można zapisać skoroszytu.',
-  appCfRuleUnsaveable: 'Tej reguły formatowania warunkowego nie można zapisać w xlsx — użyj innego typu reguły.',
-  appSaveErrX14Dv: 'Ten arkusz ma rozszerzoną (x14) poprawność danych; edytowanie jej reguł nie jest jeszcze obsługiwane.',
-  appSaveErrMultiSelectList: 'Poprawności danych z listą wielokrotnego wyboru nie można zapisać w xlsx — usuń regułę przed zapisaniem.',
-  appSaveErrX14Cf: 'Ten zakres ma rozszerzone (x14) formatowanie warunkowe i na razie nie można go zmieniać.',
-  appSaveErrPivotWithSheetOps: 'Nowo utworzonej tabeli przestawnej nie można zapisać razem ze zmianami zarządzania arkuszami — najpierw zapisz tabelę przestawną.',
-  appSaveErrPivotWithRowCol: 'Nowo utworzonej tabeli przestawnej nie można zapisać razem ze zmianami wierszy/kolumn jej arkusza — najpierw zapisz tabelę przestawną.',
-  appSaveErrTableWithRowCol: 'Nowo utworzonej tabeli nie można zapisać razem ze zmianami wierszy/kolumn jej arkusza — najpierw zapisz tabelę.',
-  appSaveErrNamesWithStructural: 'Zmian nazw zdefiniowanych nie można zapisać razem ze zmianami wierszy/kolumn ani struktury arkuszy — zapisz w dwóch krokach.',
-  appSaveErrChangedOnDisk: 'Plik został zmieniony na dysku przez inny program — zapisywanie przerwano; otwórz plik ponownie i spróbuj jeszcze raz.',
-  appSaveErrStylesheetLimited: 'Arkuszowi stylów tego skoroszytu brakuje podstawowej struktury; zmian stylów nie można zapisać.',
-  appSaveErrPackageGuard: 'Zapisanie zmieniłoby strukturę pakietu skoroszytu — przerwano, aby chronić plik.',
-  appSaveErrChartUnsupported: 'Ten typ wykresu nie obsługuje tej edycji; zapisywanie przerwano — cofnij zmianę wykresu.',
-  appSaveErrMoveOverlap: 'Formuła, sformatowany zakres, kształt lub tabela obejmuje przenoszone wiersze; zapisywanie przerwano — cofnij przeniesienie.',
+  appCfRuleUnsaveable:
+    'Tej reguły formatowania warunkowego nie można zapisać w xlsx — użyj innego typu reguły.',
+  appSaveErrX14Dv:
+    'Ten arkusz ma rozszerzoną (x14) poprawność danych; edytowanie jej reguł nie jest jeszcze obsługiwane.',
+  appSaveErrMultiSelectList:
+    'Poprawności danych z listą wielokrotnego wyboru nie można zapisać w xlsx — usuń regułę przed zapisaniem.',
+  appSaveErrX14Cf:
+    'Ten zakres ma rozszerzone (x14) formatowanie warunkowe i na razie nie można go zmieniać.',
+  appSaveErrPivotWithSheetOps:
+    'Nowo utworzonej tabeli przestawnej nie można zapisać razem ze zmianami zarządzania arkuszami — najpierw zapisz tabelę przestawną.',
+  appSaveErrPivotWithRowCol:
+    'Nowo utworzonej tabeli przestawnej nie można zapisać razem ze zmianami wierszy/kolumn jej arkusza — najpierw zapisz tabelę przestawną.',
+  appSaveErrTableWithRowCol:
+    'Nowo utworzonej tabeli nie można zapisać razem ze zmianami wierszy/kolumn jej arkusza — najpierw zapisz tabelę.',
+  appSaveErrNamesWithStructural:
+    'Zmian nazw zdefiniowanych nie można zapisać razem ze zmianami wierszy/kolumn ani struktury arkuszy — zapisz w dwóch krokach.',
+  appSaveErrChangedOnDisk:
+    'Plik został zmieniony na dysku przez inny program — zapisywanie przerwano; otwórz plik ponownie i spróbuj jeszcze raz.',
+  appSaveErrStylesheetLimited:
+    'Arkuszowi stylów tego skoroszytu brakuje podstawowej struktury; zmian stylów nie można zapisać.',
+  appSaveErrPackageGuard:
+    'Zapisanie zmieniłoby strukturę pakietu skoroszytu — przerwano, aby chronić plik.',
+  appSaveErrChartUnsupported:
+    'Ten typ wykresu nie obsługuje tej edycji; zapisywanie przerwano — cofnij zmianę wykresu.',
+  appSaveErrMoveOverlap:
+    'Formuła, sformatowany zakres, kształt lub tabela obejmuje przenoszone wiersze; zapisywanie przerwano — cofnij przeniesienie.',
   appFromTextCsvTitle: 'Importuj plik CSV/tekstowy do bieżącego zaznaczenia',
   appCsvImported: 'Zaimportowano {rows} wierszy × {columns} kolumn z pliku do {cell}.',
   appCsvEmpty: 'Plik CSV nie zawiera danych.',
-  appCsvTooLarge: 'Plik CSV jest za duży — powyżej 50 000 komórek użyj polecenia „Otwórz” jako nowego skoroszytu.',
+  appCsvTooLarge:
+    'Plik CSV jest za duży — powyżej 50 000 komórek użyj polecenia „Otwórz” jako nowego skoroszytu.',
   appCsvImportFailed: 'Import CSV nie powiódł się.',
   appNoNotesOnSheet: 'W bieżącym arkuszu nie ma komentarzy.',
   appNotePrevTitle: 'Przejdź do poprzedniego komentarza',
   appNoteNextTitle: 'Przejdź do następnego komentarza',
   appShowCommentsTitle: 'Przypnij/odepnij dymek komentarza zaznaczonej komórki',
-  appStructuralShiftBlocked: 'Wykres lub tabela w tym arkuszu jest zakotwiczona w zmienianych wierszach/kolumnach; nie można ich przesunąć, zmiana strukturalna nie została zapisana. Cofnij ją (⌘Z) i zapisz ponownie.',
-  appAiChangesNotSaved: 'Zmiany AI zastosowane (niezapisane). Cofnij za pomocą ⌘Z; zapisz plikiem ⌘S.',
+  appStructuralShiftBlocked:
+    'Wykres lub tabela w tym arkuszu jest zakotwiczona w zmienianych wierszach/kolumnach; nie można ich przesunąć, zmiana strukturalna nie została zapisana. Cofnij ją (⌘Z) i zapisz ponownie.',
+  appAiChangesNotSaved:
+    'Zmiany AI zastosowane (niezapisane). Cofnij za pomocą ⌘Z; zapisz plikiem ⌘S.',
   appChartUpdated: 'Zaktualizowano wykres.',
   appChartNotEditable: 'Tego wykresu nie można edytować.',
   appChartEditRecorded: 'Zarejestrowano edycję wykresu — zapisz za pomocą ⌘S.',
@@ -502,23 +615,30 @@ export const pl = {
   appLinkInternal: 'Link wskazuje wnętrze skoroszytu: {location}',
   appLinkSheetNotFound: 'Nie znaleziono arkusza „{name}”.',
   appLinkJumpFailed: 'Nie można przejść do {location}.',
-  appClosureActive: '{count} formuł jest przeliczanych na żywo (tryb domknięcia); reszta skoroszytu jest ładowana strumieniowo na żądanie.',
-  appRecalcPartial: 'Formuły przeliczono na podstawie Twoich zmian — {count} zachowało wartości z pamięci podręcznej (funkcje nieobsługiwane przez silnik zastępczy).',
-  appRecalcDone: 'Formuły przeliczono na podstawie Twoich zmian ({count} komórek, silnik zastępczy).',
+  appClosureActive:
+    '{count} formuł jest przeliczanych na żywo (tryb domknięcia); reszta skoroszytu jest ładowana strumieniowo na żądanie.',
+  appRecalcPartial:
+    'Formuły przeliczono na podstawie Twoich zmian — {count} zachowało wartości z pamięci podręcznej (funkcje nieobsługiwane przez silnik zastępczy).',
+  appRecalcDone:
+    'Formuły przeliczono na podstawie Twoich zmian ({count} komórek, silnik zastępczy).',
   appIndexing: 'Indeksowanie {name}: {rows} wierszy gotowych.',
   appStreamingRows: 'Ładowanie strumieniowe {name}: dostępnych {rows} wierszy.',
   appLoadRangeFailed: 'Nie można załadować widocznego zakresu.',
-  appFullyLoaded: 'Skoroszyt w pełni załadowany — formuły przeliczają się na żywo, wiersze/kolumny można edytować.',
+  appFullyLoaded:
+    'Skoroszyt w pełni załadowany — formuły przeliczają się na żywo, wiersze/kolumny można edytować.',
   appRangeMustBeVector: '{range} musi być pojedynczym wierszem lub pojedynczą kolumną komórek.',
   appRangeTooManyCells: '{range} obejmuje ponad {max} komórek.',
   appSheetStillIndexing: 'Arkusz jest wciąż indeksowany — spróbuj ponownie za chwilę.',
   appPrintNothing: 'Arkusz nie zawiera nic do wydrukowania.',
-  appPrintTooLarge: 'Zakres wydruku jest zbyt duży — ustaw mniejszy obszar wydruku na karcie Układ strony.',
+  appPrintTooLarge:
+    'Zakres wydruku jest zbyt duży — ustaw mniejszy obszar wydruku na karcie Układ strony.',
   appPrintBadArea: 'Nieprawidłowy obszar wydruku „{area}”.',
   appPrintBadTitles: 'Nieprawidłowe tytuły wydruku „{titles}”.',
   appPrintTitlesLimit: 'Tytuły wydruku powtarzają maksymalnie 21 wierszy.',
-  appVisualHintText: 'Przeciągnij, aby przenieść · uchwyty do zmiany rozmiaru · kliknij dwukrotnie, aby edytować tekst',
-  appVisualHintEdit: 'Przeciągnij, aby przenieść · uchwyty do zmiany rozmiaru · kliknij dwukrotnie, aby edytować',
+  appVisualHintText:
+    'Przeciągnij, aby przenieść · uchwyty do zmiany rozmiaru · kliknij dwukrotnie, aby edytować tekst',
+  appVisualHintEdit:
+    'Przeciągnij, aby przenieść · uchwyty do zmiany rozmiaru · kliknij dwukrotnie, aby edytować',
   appVisualHint: 'Przeciągnij, aby przenieść · uchwyty do zmiany rozmiaru',
   appDeleteVisualTitle: 'Usuń ten obiekt',
   appDrawingObject: 'Obiekt rysunkowy',
@@ -533,7 +653,8 @@ export const pl = {
   appValuesPlaceholder: 'Wartości, np. B2:B13',
   appLabelsPlaceholder: 'Etykiety, np. A2:A13',
   appValuesRangeTitle: 'Zakres wartości dla {name} — pojedynczy wiersz lub kolumna, np. B2:B13',
-  appCategoriesRangeTitle: 'Zakres etykiet kategorii dla {name} — pojedynczy wiersz lub kolumna, np. A2:A13',
+  appCategoriesRangeTitle:
+    'Zakres etykiet kategorii dla {name} — pojedynczy wiersz lub kolumna, np. A2:A13',
   appTypeLabel: 'Typ',
   appApply: 'Zastosuj',
   appTabHome: 'Narzędzia główne',
@@ -574,10 +695,12 @@ export const pl = {
   appSortAsc: 'Od A do Z',
   appSortDesc: 'Od Z do A',
   appRemoveDuplicates: 'Usuń duplikaty',
-  appRemoveDuplicatesNote: 'Wiersze zaznaczenia powtarzające wcześniejszy wiersz (porównanie wszystkich kolumn, bez rozróżniania wielkości liter) są usuwane; pozostałe przesuwają się w górę.',
+  appRemoveDuplicatesNote:
+    'Wiersze zaznaczenia powtarzające wcześniejszy wiersz (porównanie wszystkich kolumn, bez rozróżniania wielkości liter) są usuwane; pozostałe przesuwają się w górę.',
   appEditLinkTitle: 'Edytuj link',
   appInsertLinkTitle: 'Wstaw link',
-  appLinkAddressLabel: 'Adres — strona internetowa (https://…) lub odwołanie do arkusza (Sheet1!A1)',
+  appLinkAddressLabel:
+    'Adres — strona internetowa (https://…) lub odwołanie do arkusza (Sheet1!A1)',
   appLinkPlaceholder: 'https://example.com lub Sheet1!A1',
   appRemoveLink: 'Usuń link',
   appNotAvailableYet: 'Jeszcze niedostępne',
@@ -880,7 +1003,8 @@ export const pl = {
   appChartScatter: 'Punktowy',
   appPivotChart: 'Wykres przestawny',
   appGroupSparklines: 'Wykresy przebiegu w czasie',
-  appSparklinesTitle: 'Miniwykresy w komórkach, po jednym na zaznaczony wiersz (w kolumnie na prawo od zaznaczenia)',
+  appSparklinesTitle:
+    'Miniwykresy w komórkach, po jednym na zaznaczony wiersz (w kolumnie na prawo od zaznaczenia)',
   appSparkLine: 'Liniowy',
   appSparkColumn: 'Kolumnowy',
   appSparkWinLoss: 'Zysk/strata',
@@ -966,7 +1090,8 @@ export const pl = {
   appDefineName: 'Definiuj nazwę',
   appUseInFormula: 'Użyj w formule',
   appUseInFormulaTitle: 'Wstaw zdefiniowaną nazwę do formuły',
-  appUseInFormulaNeedsEmptyCell: 'Najpierw wybierz pustą komórkę — wstawienie nazwy zastąpiłoby zawartość tej komórki',
+  appUseInFormulaNeedsEmptyCell:
+    'Najpierw wybierz pustą komórkę — wstawienie nazwy zastąpiłoby zawartość tej komórki',
   appCreateFromSelection: 'Utwórz z zaznaczenia',
   appCreateFromSelectionTitle: 'Utwórz nazwy z etykiet zaznaczenia',
   appNoNamesYet: 'Brak zdefiniowanych nazw',
@@ -1093,7 +1218,8 @@ export const pl = {
   appTranslate: 'Przetłumacz',
   appGroupLanguage: 'Język',
   appTranslateTitle: 'Przetłumacz zaznaczenie z AI',
-  appTranslatePrompt: 'Przetłumacz tekst z zaznaczonego zakresu na {language} i wpisz tłumaczenia do tych samych komórek.',
+  appTranslatePrompt:
+    'Przetłumacz tekst z zaznaczonego zakresu na {language} i wpisz tłumaczenia do tych samych komórek.',
   appNewCommentDetail: 'Dodaj lub edytuj',
   appDeleteLabel: 'Usuń',
   appNoteAtSelection: 'Notatka w miejscu zaznaczenia',
@@ -1119,6 +1245,34 @@ export const pl = {
   appPasteFormattingOnly: 'Tylko formatowanie',
   appPasteColWidths: 'Tylko szerokości kolumn',
   appPasteExceptBorders: 'Wszystko oprócz obramowań',
+  appPasteTranspose: 'Transponuj',
+  appPasteKeepFormat: 'Wklej z formatowaniem',
+  appPasteAsPicture: 'Wklej jako obraz',
+  appPasteTextOnly: 'Wklej tylko tekst',
+  appCopyAsPicture: 'Kopiuj jako obraz',
+  appFeaturePendingTip: 'Funkcja jeszcze nieobsługiwana',
+  appNeedCopyFirst: 'Najpierw skopiuj lub wytnij zawartość',
+  appPastedTransposed: 'Wklejono transponując',
+  appPastedTextOnly: 'Wklejono tylko tekst',
+  appCopy: 'Kopiuj',
+  appUnderlineAccounting: 'Podwójne podkreślenie księgowe',
+  appBorderOther: 'Inne krawędzie (M)...',
+  appBorderDiagonal: 'Wstaw nagłówek ukośny',
+  appDrawBorderGroup: 'Rysuj krawędzie',
+  appDrawBorderRow: 'Rysuj krawędzie (R)',
+  appDrawBorderGrid: 'Siatka krawędzi (G)',
+  appEraseBorder: 'Wymaż krawędzie (E)',
+  appPenLineColor: 'Kolor linii (1)',
+  appPenLineStyle: 'Styl linii (Y)',
+  appPenStyle_thin: 'Cienka',
+  appPenStyle_medium: 'Średnia',
+  appPenStyle_thick: 'Gruba',
+  appPenStyle_double: 'Podwójna',
+  appPenStyle_hair: 'Włosowa',
+  appPenStyle_dashed: 'Kreskowana',
+  appPenStyle_dotted: 'Punktowana',
+  appDrawBorderArmed: 'Rysowanie krawędzi aktywne: przeciągnij zakres, aby zastosować',
+  appEraseBorderArmed: 'Wymazywanie krawędzi aktywne: przeciągnij zakres, aby wymazać',
   appCutTitle: 'Wytnij ⌘X',
   appCopyTitle: 'Kopiuj ⌘C',
   appFormatPainter: 'Malarz formatów',
@@ -1168,7 +1322,8 @@ export const pl = {
   appGroupStyles: 'Style',
   appConditionalFormatting: 'Formatowanie warunkowe',
   appFormatAsTable: 'Formatuj jako tabelę',
-  appFormatAsTableTitle: 'Utwórz prawdziwą tabelę programu Excel na zaznaczeniu (nagłówki w pierwszym wierszu)',
+  appFormatAsTableTitle:
+    'Utwórz prawdziwą tabelę programu Excel na zaznaczeniu (nagłówki w pierwszym wierszu)',
   appTableStyleLight1: 'Jasny 1 (szary)',
   appTableStyleLight9: 'Jasny 9 (niebieski)',
   appTableStyleMedium2: 'Średni 2 (niebieski)',
@@ -1335,10 +1490,13 @@ export const pl = {
   appCellStyleGroupAccent: 'Akcent',
   appAiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
   appFullLoadFilterTitle: 'Filtrowanie wymaga pełnego wczytania',
-  appFullLoadFilterBody: 'Ten skoroszyt jest duży i został wczytany tylko częściowo (strumieniowo). Filtrowanie (w tym zliczanie wartości) wymaga pełnych danych. Wczytać teraz cały skoroszyt?',
+  appFullLoadFilterBody:
+    'Ten skoroszyt jest duży i został wczytany tylko częściowo (strumieniowo). Filtrowanie (w tym zliczanie wartości) wymaga pełnych danych. Wczytać teraz cały skoroszyt?',
   appFullLoadStart: 'Wczytaj wszystko',
-  appFullLoadRunning: 'Trwa pełne wczytywanie skoroszytu — filtrowanie będzie dostępne po zakończeniu…',
-  appFullLoadTooLarge: 'Ten skoroszyt jest zbyt duży, aby w pełni zmieścić się w pamięci; filtrowanie jest niedostępne dla tego pliku.',
+  appFullLoadRunning:
+    'Trwa pełne wczytywanie skoroszytu — filtrowanie będzie dostępne po zakończeniu…',
+  appFullLoadTooLarge:
+    'Ten skoroszyt jest zbyt duży, aby w pełni zmieścić się w pamięci; filtrowanie jest niedostępne dla tego pliku.',
   appDialogCancel: 'Anuluj',
   appRibbonCollapse: 'Zwiń Wstążkę',
   appRibbonPin: 'Przypnij Wstążkę',

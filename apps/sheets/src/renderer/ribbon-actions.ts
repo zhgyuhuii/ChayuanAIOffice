@@ -7,15 +7,19 @@
 import {
   BooleanNumber,
   BorderStyleTypes,
+  BorderType,
+  CellValueType,
+  IUniverInstanceService,
   WrapStrategy,
   type ICellData,
   type IStyleData,
 } from '@univerjs/core'
 import { IRenderManagerService, SHEET_VIEWPORT_KEY } from '@univerjs/engine-render'
-import { SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
+import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
 import { columnLabel, formatAddress } from '../domain/cell-address'
 import { transposeChartSeries, type ChartSeriesVisualState } from '../domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '../domain/flash-fill'
+import { parseTsv, plainTextFromCells } from './clipboard-tsv'
 import type {
   WorkbookChartEdit,
   WorkbookStyleEdit,
@@ -140,7 +144,7 @@ function selectionStyle(
 /// Every other command treats the whole remainder after the first colon as
 /// the argument, because arguments like number-format patterns
 /// ("h:mm:ss AM/PM") legitimately contain colons.
-const EXTRA_SEGMENT_COMMANDS = new Set(['cellprot', 'sort-custom', 'border'])
+const EXTRA_SEGMENT_COMMANDS = new Set(['cellprot', 'sort-custom', 'border', 'draw-border'])
 
 /// Univer's built-in header sizes, restored when headings toggle back on.
 const DEFAULT_ROW_HEADER_WIDTH = 46
@@ -160,6 +164,211 @@ const BORDER_LINE_STYLE_TYPES: Record<string, BorderStyleTypes> = {
   hair: BorderStyleTypes.HAIR,
   dashed: BorderStyleTypes.DASHED,
   dotted: BorderStyleTypes.DOTTED,
+}
+
+/// One-shot 绘图边框 arm state (WPS's pencil cursor): the next selection
+/// gesture on the grid applies this border op to the selected range. The
+/// pen color / line style ride in from the ribbon at arm time.
+let armedDrawBorder: {
+  readonly kind: 'outline' | 'grid' | 'erase'
+  readonly color: string
+  readonly style: BorderStyleTypes
+} | null = null
+
+/// The last in-app copy, as cached by Univer's clipboard service (public
+/// copyContentCache(); rows/cols are the discrete copy coordinates).
+interface InternalCopyCacheEntry {
+  readonly unitId: string
+  readonly subUnitId: string
+  readonly range: { readonly rows: readonly number[]; readonly cols: readonly number[] }
+  readonly copyType: string
+}
+
+function lastInternalCopy(
+  runtime: NonNullable<RibbonCommandContext['univerRef']['current']>,
+): InternalCopyCacheEntry | null {
+  try {
+    const clipboard = runtime.univer.__getInjector().get(ISheetClipboardService) as {
+      copyContentCache(): {
+        getLastCopyId(): string | null
+        get(id: string): InternalCopyCacheEntry | undefined
+      }
+    }
+    const cache = clipboard.copyContentCache()
+    const id = cache.getLastCopyId()
+    return (id ? cache.get(id) : undefined) ?? null
+  } catch {
+    return null
+  }
+}
+
+/// 转置: rebuilds the last copy transposed into the active range — values,
+/// formulas and composed styles come live off the copy's source sheet (the
+/// cache stores only coordinates). Merged blocks flatten to their top-left
+/// value; WPS additionally recreates the merge transposed, which we skip.
+async function pasteTransposed(ctx: RibbonCommandContext): Promise<void> {
+  const runtime = ctx.univerRef.current
+  const workbook = runtime?.univerAPI.getActiveWorkbook()
+  const worksheet = workbook?.getActiveSheet()
+  if (!runtime || !workbook || !worksheet) return
+  const cached = lastInternalCopy(runtime)
+  if (!cached) {
+    ctx.setMessage(t('appNeedCopyFirst'))
+    return
+  }
+  const sourceSheet = runtime.univer
+    .__getInjector()
+    .get(IUniverInstanceService)
+    .getUniverSheetInstance(cached.unitId)
+    ?.getSheetBySheetId(cached.subUnitId)
+  if (!sourceSheet) return
+  const { rows, cols } = cached.range
+  const matrix = sourceSheet.getMatrixWithMergedCells(
+    Math.min(...rows),
+    Math.min(...cols),
+    Math.max(...rows),
+    Math.max(...cols),
+  )
+  const cellMatrix: ICellData[][] = []
+  for (const column of cols) {
+    const rowCells: ICellData[] = []
+    for (const row of rows) {
+      const merged = sourceSheet.getMergedCell(row, column)
+      if (merged && (merged.startRow !== row || merged.startColumn !== column)) {
+        rowCells.push({})
+        continue
+      }
+      const cell = matrix.getValue(row, column)
+      const raw = sourceSheet.getCellRaw(row, column)
+      const composed = sourceSheet.getComposedCellStyleByCellData(row, column, raw)
+      rowCells.push({
+        v: cell?.v,
+        t: cell?.t,
+        f: cell?.f,
+        si: cell?.si,
+        s: Object.keys(composed).length > 0 ? composed : undefined,
+      } as ICellData)
+    }
+    cellMatrix.push(rowCells)
+  }
+  const target = workbook.getActiveRange()
+  if (!target) return
+  worksheet
+    .getRange(target.getRow(), target.getColumn(), cellMatrix.length, cellMatrix[0]?.length ?? 0)
+    .setValues(cellMatrix)
+  ctx.setMessage(t('appPastedTransposed'))
+}
+
+/// 只粘贴文本: re-derives the copy's plain TSV (same conventions the OS
+/// clipboard gets) and writes it back typed — numbers/booleans parse, no
+/// styling at all, so "001" stays literal text and formats never travel.
+async function pasteTextOnly(ctx: RibbonCommandContext): Promise<void> {
+  const runtime = ctx.univerRef.current
+  const workbook = runtime?.univerAPI.getActiveWorkbook()
+  const worksheet = workbook?.getActiveSheet()
+  if (!runtime || !workbook || !worksheet) return
+  const cached = lastInternalCopy(runtime)
+  if (!cached) {
+    ctx.setMessage(t('appNeedCopyFirst'))
+    return
+  }
+  const sourceSheet = runtime.univer
+    .__getInjector()
+    .get(IUniverInstanceService)
+    .getUniverSheetInstance(cached.unitId)
+    ?.getSheetBySheetId(cached.subUnitId)
+  if (!sourceSheet) return
+  const { rows, cols } = cached.range
+  const matrix = sourceSheet.getMatrixWithMergedCells(
+    Math.min(...rows),
+    Math.min(...cols),
+    Math.max(...rows),
+    Math.max(...cols),
+  )
+  const parsed = parseTsv(
+    plainTextFromCells(rows, cols, (row, column) => matrix.getValue(row, column) ?? null),
+  )
+  const cellMatrix: ICellData[][] = parsed.map((line) =>
+    line.map((text) => {
+      if (text === 'TRUE' || text === 'FALSE')
+        return { v: text === 'TRUE', t: CellValueType.BOOLEAN }
+      if (/^-?\d+(\.\d+)?$/.test(text)) {
+        // 只粘贴文本 keeps "001"/"1.50" literal — only canonical numbers
+        // re-type as numeric, so leading zeros and trailing precision travel.
+        const numeric = Number(text)
+        return String(numeric) === text
+          ? { v: numeric, t: CellValueType.NUMBER }
+          : { v: text, t: CellValueType.STRING }
+      }
+      return { v: text, t: CellValueType.STRING }
+    }),
+  )
+  const target = workbook.getActiveRange()
+  if (!target) return
+  worksheet
+    .getRange(target.getRow(), target.getColumn(), cellMatrix.length, cellMatrix[0]?.length ?? 0)
+    .setValues(cellMatrix)
+  ctx.setMessage(t('appPastedTextOnly'))
+}
+
+/// Arms the one-shot draw border: listeners live until the next left-button
+/// gesture on the grid completes (or Escape). The rAF before reading the
+/// active range lets Univer finish updating the selection on pointerup.
+function armDrawBorder(
+  runtime: NonNullable<RibbonCommandContext['univerRef']['current']>,
+  kind: 'outline' | 'grid' | 'erase',
+  color: string,
+  style: BorderStyleTypes,
+): void {
+  // Re-arming while armed must not stack gesture listeners.
+  disarmDrawBorder()
+  armedDrawBorder = { kind, color, style }
+  // Renderer-only plumbing below; node-side tests just observe the arming.
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+  const grid = document.getElementById('univer-container')
+  const onPointerDown = (event: PointerEvent): void => {
+    if (event.button !== 0 || !(event.target instanceof Node)) return
+    if (!grid?.contains(event.target) || grid.classList.contains('sheet-shape-drawing')) return
+    window.addEventListener(
+      'pointerup',
+      () => {
+        requestAnimationFrame(() => {
+          const armed = armedDrawBorder
+          disarmDrawBorder()
+          if (!armed) return
+          const workbook = runtime.univerAPI.getActiveWorkbook()
+          const range = workbook?.getActiveRange()
+          const worksheet = workbook?.getActiveSheet()
+          if (!range || !worksheet) return
+          const type =
+            armed.kind === 'outline'
+              ? BorderType.OUTSIDE
+              : armed.kind === 'grid'
+                ? BorderType.ALL
+                : BorderType.NONE
+          range.setBorder(type, armed.style, armed.color)
+        })
+      },
+      { capture: true, once: true },
+    )
+  }
+  const onEscape = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') disarmDrawBorder()
+  }
+  window.addEventListener('pointerdown', onPointerDown, { capture: true })
+  window.addEventListener('keydown', onEscape)
+  drawBorderDisposers = () => {
+    window.removeEventListener('pointerdown', onPointerDown, { capture: true })
+    window.removeEventListener('keydown', onEscape)
+  }
+}
+
+let drawBorderDisposers: (() => void) | null = null
+
+function disarmDrawBorder(): void {
+  armedDrawBorder = null
+  drawBorderDisposers?.()
+  drawBorderDisposers = null
 }
 
 /** Splits a `name:argument[:extra]` ribbon style command (see above). */
@@ -544,6 +753,24 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
         return
     }
   }
+  if (command.startsWith('draw-border:')) {
+    // `draw-border:<outline|grid|erase>:<#color>:<style-name>` — arms the
+    // one-shot pencil mode (WPS 绘图边框/擦除边框); color/style come from
+    // the ribbon's pen state at arm time.
+    if (!runtime) return
+    const parsed = parseStyleCommand(command)
+    const [colorPart = '', stylePart = ''] = parsed.extra.split(':')
+    const kind =
+      parsed.argument === 'grid' ? 'grid' : parsed.argument === 'erase' ? 'erase' : 'outline'
+    armDrawBorder(
+      runtime,
+      kind,
+      /^#[0-9a-fA-F]{6}$/.test(colorPart) ? colorPart : '#000000',
+      BORDER_LINE_STYLE_TYPES[stylePart] ?? BorderStyleTypes.THIN,
+    )
+    ctx.setMessage(t(parsed.argument === 'erase' ? 'appEraseBorderArmed' : 'appDrawBorderArmed'))
+    return
+  }
   // Read-only-safe commands work on imported workbooks too.
   const worksheet = runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()
   switch (command) {
@@ -574,6 +801,12 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       return
     case 'paste-special:besides-border':
       void runtime.univerAPI.executeCommand('sheet.command.paste-besides-border')
+      return
+    case 'paste-special:transpose':
+      void pasteTransposed(ctx)
+      return
+    case 'paste-special:text':
+      void pasteTextOnly(ctx)
       return
     case 'insert-sheet': {
       const workbook = runtime.univerAPI.getActiveWorkbook()

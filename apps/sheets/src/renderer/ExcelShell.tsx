@@ -3,6 +3,7 @@ import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import {
   AiPanelToggle,
+  ColorPicker,
   Dropdown,
   DockShell,
   SHAPE_GALLERY_GROUPS,
@@ -1733,6 +1734,8 @@ function Ribbon({
   const [fontColor, setFontColor] = useState('#C00000')
   const [fillColor, setFillColor] = useState('#FFF2CC')
   const [borderColor, setBorderColor] = useState('#000000')
+  // 边框「笔」的线型（对比清单 8 绘图边框组）：thin/medium/thick/double/hair/dashed/dotted
+  const [borderPenStyle, setBorderPenStyle] = useState('thin')
   const { families: systemFontFamilies, load: loadSystemFonts } = useSystemFontFamilies()
   // Large menu button: a native select stretched invisibly over the tool,
   // each option carrying its full command string.
@@ -3507,45 +3510,73 @@ function Ribbon({
   return (
     <div className="ribbon">
       <RibbonGroup label={t('appGroupClipboard')}>
+        {/* WPS 布局（对比清单 1-3）：格式刷升为第一枚大按钮；粘贴改为分体
+            按钮（本体直接粘贴 + 下拉八项）；竖排只剩剪切和分体复制 */}
         <button
           className="ribbon-tool as-button large"
-          data-tip={t('appPasteTitle')}
-          onClick={() => onCommand('paste')}
+          data-tip={t('appFormatPainter')}
+          onClick={() => onCommand('format-painter')}
         >
           <span className="tool-icon-row">
-            <ToolSymbol symbol="📋" />
+            <ToolSymbol symbol="🖌" />
           </span>
           <span>
-            <strong>{t('appPaste')}</strong>
+            <strong>{t('appFormatPainter')}</strong>
           </span>
         </button>
-        {largeMenu(t('appPasteSpecial'), '📑', t('appPasteSpecialTitle'), [
-          {
-            value: 'paste-special:value',
-            label: t('appPasteValuesOnly'),
-            icon: <OptSample>123</OptSample>,
-          },
-          {
-            value: 'paste-special:formula',
-            label: t('appPasteFormulasOnly'),
-            icon: <OptSample>ƒx</OptSample>,
-          },
-          {
-            value: 'paste-special:format',
-            label: t('appPasteFormattingOnly'),
-            icon: <OptSample>Aa</OptSample>,
-          },
-          {
-            value: 'paste-special:col-width',
-            label: t('appPasteColWidths'),
-            icon: <OptSample>↔</OptSample>,
-          },
-          {
-            value: 'paste-special:besides-border',
-            label: t('appPasteExceptBorders'),
-            icon: <BorderGlyph on="none" />,
-          },
-        ])}
+        <SplitMenuTool
+          symbol="📋"
+          label={t('appPaste')}
+          tip={t('appPasteTitle')}
+          options={[
+            {
+              value: 'paste-special:value',
+              label: t('appPasteValuesOnly'),
+              icon: <OptSample>123</OptSample>,
+            },
+            {
+              value: 'paste-special:formula',
+              label: t('appPasteFormulasOnly'),
+              icon: <OptSample>ƒx</OptSample>,
+            },
+            {
+              value: 'paste-special:besides-border',
+              label: t('appPasteExceptBorders'),
+              icon: <BorderGlyph on="none" />,
+            },
+            {
+              value: 'paste-special:transpose',
+              label: t('appPasteTranspose'),
+              icon: <ToolSymbol symbol="transpose" />,
+            },
+            {
+              value: 'paste',
+              label: t('appPasteKeepFormat'),
+              icon: <ToolSymbol symbol="board-format" />,
+            },
+            {
+              value: 'paste-as-picture',
+              label: t('appPasteAsPicture'),
+              icon: <ToolSymbol symbol="🖼" />,
+              disabled: true,
+              tip: t('appFeaturePendingTip'),
+            },
+            {
+              value: 'paste-special:text',
+              label: t('appPasteTextOnly'),
+              icon: <ToolSymbol symbol="board-text" />,
+            },
+            {
+              value: 'paste-special-dialog',
+              label: t('appPasteSpecial'),
+              icon: <OptSample>⋯</OptSample>,
+              disabled: true,
+              tip: t('appFeaturePendingTip'),
+            },
+          ]}
+          onMain={() => onCommand('paste')}
+          onPick={(command) => onCommand(command)}
+        />
         <div className="tool-stack">
           <button
             data-tip={t('appCutTitle')}
@@ -3554,20 +3585,22 @@ function Ribbon({
           >
             <ToolSymbol symbol="✂" />
           </button>
-          <button
-            data-tip={t('appCopyTitle')}
-            aria-label={t('appCopyTitle')}
-            onClick={() => onCommand('copy')}
-          >
-            <ToolSymbol symbol="⧉" />
-          </button>
-          <button
-            data-tip={t('appFormatPainter')}
-            aria-label={t('appFormatPainter')}
-            onClick={() => onCommand('format-painter')}
-          >
-            <ToolSymbol symbol="🖌" />
-          </button>
+          <SplitStackTool
+            symbol="⧉"
+            tip={t('appCopyTitle')}
+            options={[
+              { value: 'copy', label: t('appCopy'), icon: <ToolSymbol symbol="⧉" /> },
+              {
+                value: 'copy-as-picture',
+                label: t('appCopyAsPicture'),
+                icon: <ToolSymbol symbol="🖼" />,
+                disabled: true,
+                tip: t('appFeaturePendingTip'),
+              },
+            ]}
+            onMain={() => onCommand('copy')}
+            onPick={(command) => onCommand(command)}
+          />
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupFont')}>
@@ -3627,32 +3660,58 @@ function Ribbon({
             >
               <em>I</em>
             </button>
-            <button
-              data-tip={t('appUnderline')}
-              className={selectionFormat?.underline ? 'is-active' : ''}
-              onClick={() => onCommand('underline')}
-            >
-              <u>U</u>
-            </button>
-            <button
-              data-tip={t('appDoubleUnderline')}
-              onClick={() => onCommand('underline:double')}
-            >
-              <u style={{ textDecorationStyle: 'double' }}>D</u>
-            </button>
+            {/* WPS（对比清单 5）：单/双下划线合并为一枚分体按钮，会计用
+                双下划线随渲染引擎后续支持 */}
+            <SplitStackTool
+              symbol="u-line"
+              tip={t('appUnderline')}
+              active={Boolean(selectionFormat?.underline)}
+              options={[
+                {
+                  value: 'underline',
+                  label: t('appUnderline'),
+                  icon: <ToolSymbol symbol="u-line" />,
+                },
+                {
+                  value: 'underline:double',
+                  label: t('appDoubleUnderline'),
+                  icon: <ToolSymbol symbol="u-line-double" />,
+                },
+                {
+                  value: 'underline:accounting',
+                  label: t('appUnderlineAccounting'),
+                  icon: <ToolSymbol symbol="u-line-accounting" />,
+                  disabled: true,
+                  tip: t('appFeaturePendingTip'),
+                },
+              ]}
+              onMain={() => onCommand('underline')}
+              onPick={(command) => onCommand(command)}
+            />
             <button
               data-tip={t('appStrikethrough')}
               className={selectionFormat?.strike ? 'is-active' : ''}
               onClick={() => onCommand('strike')}
             >
-              <s>S</s>
+              <ToolSymbol symbol="ab-strike" />
             </button>
+            {/* WPS（对比清单 8-9）：边框排在字体颜色前，完整两组菜单，
+                线条颜色/线条样式并入 */}
+            <BorderMenu
+              penColor={borderColor}
+              penStyle={borderPenStyle}
+              onPenColor={(hex) => setBorderColor(hex)}
+              onPenStyle={setBorderPenStyle}
+              onCommand={onCommand}
+            />
             <ColorDropdown
               label="Font color"
               data-tip={t('appFontColor')}
               display={
-                <span className="swatch-letter">
-                  A<i style={{ background: fontColor }} />
+                <span className="swatch-letter has-caret">
+                  <ToolSymbol symbol="A-color" />
+                  <i style={{ background: fontColor }} />
+                  <CaretIcon />
                 </span>
               }
               value={fontColor}
@@ -3678,45 +3737,6 @@ function Ribbon({
                 onCommand(hex ? `fill:${hex}` : 'fill:none')
               }}
             />
-            <MenuSelect
-              className="select-like compact"
-              label="Borders"
-              data-tip={t('appBorders')}
-              display={
-                <>
-                  <ToolSymbol symbol="⊡" /> {t('appBorders')}
-                </>
-              }
-              options={[
-                { value: 'all', label: t('appBorderAll'), icon: <BorderGlyph on="all" /> },
-                { value: 'outer', label: t('appBorderOuter'), icon: <BorderGlyph on="outer" /> },
-                {
-                  value: 'thick-outer',
-                  label: t('appBorderThickOuter'),
-                  icon: <BorderGlyph on="thick" />,
-                },
-                { value: 'top', label: t('appBorderTop'), icon: <BorderGlyph on="top" /> },
-                { value: 'bottom', label: t('appBorderBottom'), icon: <BorderGlyph on="bottom" /> },
-                { value: 'left', label: t('appBorderLeft'), icon: <BorderGlyph on="left" /> },
-                { value: 'right', label: t('appBorderRight'), icon: <BorderGlyph on="right" /> },
-                { value: 'none', label: t('appBorderNone'), icon: <BorderGlyph on="none" /> },
-              ]}
-              onPick={(value) => onCommand(`border:${value}:${borderColor}`)}
-            />
-            <ColorDropdown
-              label="Border color"
-              data-tip={t('appBorderColor')}
-              display={
-                <span className="swatch-letter">
-                  <ToolSymbol symbol="⊡" />
-                  <i style={{ background: borderColor }} />
-                </span>
-              }
-              value={borderColor}
-              onPick={(hex) => {
-                if (hex) setBorderColor(hex)
-              }}
-            />
           </div>
         </div>
       </RibbonGroup>
@@ -3735,7 +3755,7 @@ function Ribbon({
               aria-label={t('appMiddleAlign')}
               onClick={() => onCommand('valign:middle')}
             >
-              <ToolSymbol symbol="↕" />
+              <ToolSymbol symbol="valign-middle" />
             </button>
             <button
               data-tip={t('appBottomAlign')}
@@ -4293,28 +4313,29 @@ function OptSvg({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** 边框 menu: 3×3 grid with the chosen edges painted 2.2px. */
+/** 边框 menu: 3×3 grid with the chosen edges painted 1.4 units (thin,
+    matching the globally lightened icon strokes). */
 function BorderGlyph({
   on,
 }: {
   on: 'all' | 'outer' | 'thick' | 'top' | 'bottom' | 'left' | 'right' | 'none'
 }) {
-  const w = on === 'thick' ? 2.8 : 2.2
+  const w = on === 'thick' ? 1.8 : 1.4
   const thickFrame = on === 'all' || on === 'outer' || on === 'thick'
   return (
     <OptSvg>
       <rect x="2.5" y="2.5" width="15" height="15" opacity={thickFrame ? 0 : 0.5} />
       <path
         d="M2.5 7.5 h15 M2.5 12.5 h15 M7.5 2.5 v15 M12.5 2.5 v15"
-        opacity="0.45"
-        strokeWidth="1"
+        opacity="0.35"
+        strokeWidth="0.8"
       />
       {thickFrame && <rect x="2.5" y="2.5" width="15" height="15" strokeWidth={w} />}
       {on === 'all' && (
         <path
           d="M2.5 7.5 h15 M2.5 12.5 h15 M7.5 2.5 v15 M12.5 2.5 v15"
           strokeWidth={w}
-          opacity="0.9"
+          opacity="0.8"
         />
       )}
       {on === 'top' && <path d="M2.5 3 h15" strokeWidth={w} />}
@@ -4364,12 +4385,12 @@ function MergeGlyph({ mode }: { mode: 'center' | 'across' | 'cells' | 'none' }) 
   return (
     <OptSvg>
       <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
-      {mode === 'center' && <rect x="3.6" y="3.6" width="12.8" height="12.8" strokeWidth="2" />}
-      {mode === 'across' && <path d="M3.6 3.6 h12.8 M3.6 16.4 h12.8" strokeWidth="2" />}
+      {mode === 'center' && <rect x="3.6" y="3.6" width="12.8" height="12.8" strokeWidth="1.5" />}
+      {mode === 'across' && <path d="M3.6 3.6 h12.8 M3.6 16.4 h12.8" strokeWidth="1.5" />}
       {mode === 'cells' && (
         <>
-          <rect x="3.6" y="3.6" width="12.8" height="5.6" strokeWidth="2" />
-          <rect x="3.6" y="10.8" width="12.8" height="5.6" strokeWidth="2" />
+          <rect x="3.6" y="3.6" width="12.8" height="5.6" strokeWidth="1.5" />
+          <rect x="3.6" y="10.8" width="12.8" height="5.6" strokeWidth="1.5" />
         </>
       )}
       {mode === 'none' && (
@@ -4393,9 +4414,9 @@ function FreezeGlyph({ mode }: { mode: 'cross' | 'row' | 'col' | 'none' }) {
     <OptSvg>
       <rect x="2.5" y="2.5" width="15" height="15" opacity="0.5" />
       <path d="M2.5 7 h15 M2.5 12.5 h15 M7 2.5 v15 M12.5 2.5 v15" strokeWidth="1" opacity="0.45" />
-      {mode === 'cross' && <path d="M2.5 7 h15 M7 2.5 v15" strokeWidth="2.2" />}
-      {mode === 'row' && <path d="M2.5 4.7 h15" strokeWidth="2.4" />}
-      {mode === 'col' && <path d="M4.7 2.5 v15" strokeWidth="2.4" />}
+      {mode === 'cross' && <path d="M2.5 7 h15 M7 2.5 v15" strokeWidth="1.6" />}
+      {mode === 'row' && <path d="M2.5 4.7 h15" strokeWidth="1.7" />}
+      {mode === 'col' && <path d="M4.7 2.5 v15" strokeWidth="1.7" />}
     </OptSvg>
   )
 }
@@ -4812,6 +4833,369 @@ function useEscapeClose(open: boolean, close: () => void): void {
   }, [open])
 }
 
+/// One dropdown option row. `disabled` rows stay visible (WPS parity) but
+/// don't dispatch; `tip` explains why.
+interface MenuRowOption {
+  readonly value: string
+  readonly label: string
+  readonly icon?: React.ReactNode
+  readonly disabled?: boolean
+  readonly tip?: string
+}
+
+/// Shared dropdown body: icon + label rows with the current-value highlight
+/// (used by MenuSelect, the split paste/copy buttons and the border menu).
+function MenuRows({
+  options,
+  value = '',
+  onPick,
+  onClose,
+}: {
+  readonly options: readonly MenuRowOption[]
+  readonly value?: string
+  readonly onPick: (value: string) => void
+  readonly onClose: () => void
+}): React.JSX.Element {
+  return (
+    <>
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option.value}
+          role="option"
+          aria-selected={value !== '' && option.value === value}
+          aria-disabled={option.disabled || undefined}
+          className={value !== '' && option.value === value ? 'on' : ''}
+          title={option.tip}
+          disabled={option.disabled}
+          onClick={() => {
+            onClose()
+            onPick(option.value)
+          }}
+        >
+          {option.icon != null && (
+            <span className="menu-opt-icon" aria-hidden="true">
+              {option.icon}
+            </span>
+          )}
+          <span className="menu-opt-text">{option.label}</span>
+        </button>
+      ))}
+    </>
+  )
+}
+
+/// Big split tool (WPS 粘贴): the body runs the default command, the corner
+/// caret opens the variant menu — one visual shell over two hit targets.
+function SplitMenuTool({
+  symbol,
+  label,
+  tip,
+  options,
+  onMain,
+  onPick,
+}: {
+  readonly symbol: string
+  readonly label: string
+  readonly tip: string
+  readonly options: readonly MenuRowOption[]
+  readonly onMain: () => void
+  readonly onPick: (value: string) => void
+}): React.JSX.Element {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  return (
+    <div ref={wrapRef} className="ribbon-tool large split-menu" data-tip={tip}>
+      <button
+        type="button"
+        className="split-main"
+        aria-label={label}
+        onClick={() => {
+          setOpen(false)
+          onMain()
+        }}
+      >
+        <span className="tool-icon-row">
+          <ToolSymbol symbol={symbol} />
+        </span>
+        <span>
+          <strong>{label}</strong>
+        </span>
+      </button>
+      <button
+        type="button"
+        className="split-caret"
+        aria-label={`${label} ▾`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <CaretIcon />
+      </button>
+      {open && (
+        <div className="menu-select-drop" role="listbox" aria-label={label}>
+          <MenuRows options={options} onPick={onPick} onClose={() => setOpen(false)} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+/// Small split tool inside an .inline-tools row (WPS 下划线/复制): icon button
+/// with a tiny corner caret for the variant menu.
+function SplitStackTool({
+  symbol,
+  tip,
+  active,
+  options,
+  onMain,
+  onPick,
+}: {
+  readonly symbol: string
+  readonly tip: string
+  readonly active?: boolean
+  readonly options: readonly MenuRowOption[]
+  readonly onMain: () => void
+  readonly onPick: (value: string) => void
+}): React.JSX.Element {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  return (
+    <div ref={wrapRef} className={`split-stack${active ? ' is-active' : ''}`}>
+      <button
+        type="button"
+        className={active ? 'is-active' : ''}
+        data-tip={tip}
+        aria-label={tip}
+        onClick={() => {
+          setOpen(false)
+          onMain()
+        }}
+      >
+        <ToolSymbol symbol={symbol} />
+      </button>
+      <button
+        type="button"
+        className="split-caret"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <CaretIcon />
+      </button>
+      {open && (
+        <div className="menu-select-drop" role="listbox" aria-label={tip}>
+          <MenuRows options={options} onPick={onPick} onClose={() => setOpen(false)} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+/// 线条样式行 sample: a short ruled line per ST_BorderStyle name.
+function LineStyleGlyph({ style }: { readonly style: string }): React.JSX.Element {
+  if (style === 'double') {
+    return (
+      <OptSvg>
+        <path d="M4 9.75h12M4 14.25h12" strokeWidth="1.3" />
+      </OptSvg>
+    )
+  }
+  const width = style === 'thick' ? 3.4 : style === 'medium' ? 2.2 : style === 'hair' ? 0.7 : 1.2
+  const dash = style === 'dashed' ? '4.5 3' : style === 'dotted' ? '0.2 3.4' : undefined
+  return (
+    <OptSvg>
+      <path
+        d="M4 10h12"
+        strokeWidth={width}
+        strokeDasharray={dash}
+        strokeLinecap={style === 'dotted' ? 'round' : undefined}
+      />
+    </OptSvg>
+  )
+}
+
+/// 边框富菜单（对比清单 8-9）：边框 + 绘图边框两组十五项，无滚动条；
+/// 线条颜色在菜单内展开调色板，线条样式展开线型行；独立边框颜色按钮取消。
+const BORDER_PEN_STYLES = ['thin', 'medium', 'thick', 'double', 'hair', 'dashed', 'dotted'] as const
+function BorderMenu({
+  penColor,
+  penStyle,
+  onPenColor,
+  onPenStyle,
+  onCommand,
+}: {
+  readonly penColor: string
+  readonly penStyle: string
+  readonly onPenColor: (hex: string) => void
+  readonly onPenStyle: (style: string) => void
+  readonly onCommand: (command: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  // 线条颜色/线条样式的菜单内展开面板（互斥，再次点击收起）
+  const [penPanel, setPenPanel] = useState<'palette' | 'styles' | null>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  const pen = (kind: string): string => `border:${kind}:${penColor}`
+  const draw = (kind: string): string => `draw-border:${kind}:${penColor}:${penStyle}`
+  return (
+    <div ref={wrapRef} className="menu-select border-menu">
+      <button
+        type="button"
+        className="select-like compact"
+        data-tip={t('appBorders')}
+        aria-label={t('appBorders')}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="menu-select-value">
+          <ToolSymbol symbol="⊡" /> {t('appBorders')}
+        </span>
+        <CaretIcon />
+      </button>
+      {open && (
+        <div
+          className="menu-select-drop border-menu-drop"
+          role="listbox"
+          aria-label={t('appBorders')}
+        >
+          <div className="rb-drop-title">{t('appBorders')}</div>
+          <MenuRows
+            options={[
+              { value: pen('none'), label: t('appBorderNone'), icon: <BorderGlyph on="none" /> },
+              { value: pen('all'), label: t('appBorderAll'), icon: <BorderGlyph on="all" /> },
+              { value: pen('outer'), label: t('appBorderOuter'), icon: <BorderGlyph on="outer" /> },
+              {
+                value: pen('thick-outer'),
+                label: t('appBorderThickOuter'),
+                icon: <BorderGlyph on="thick" />,
+              },
+              {
+                value: pen('bottom'),
+                label: t('appBorderBottom'),
+                icon: <BorderGlyph on="bottom" />,
+              },
+              { value: pen('top'), label: t('appBorderTop'), icon: <BorderGlyph on="top" /> },
+              { value: pen('left'), label: t('appBorderLeft'), icon: <BorderGlyph on="left" /> },
+              { value: pen('right'), label: t('appBorderRight'), icon: <BorderGlyph on="right" /> },
+              {
+                value: 'format-cells',
+                label: t('appBorderOther'),
+                icon: <ToolSymbol symbol="▦" />,
+              },
+              {
+                value: pen('tlbr'),
+                label: t('appBorderDiagonal'),
+                icon: <ToolSymbol symbol="diag-cell" />,
+              },
+            ]}
+            value=""
+            onPick={onCommand}
+            onClose={() => setOpen(false)}
+          />
+          <div className="rb-menu-sep" />
+          <div className="rb-drop-title">{t('appDrawBorderGroup')}</div>
+          <MenuRows
+            options={[
+              {
+                value: draw('outline'),
+                label: t('appDrawBorderRow'),
+                icon: <ToolSymbol symbol="pen-nib" />,
+              },
+              {
+                value: draw('grid'),
+                label: t('appDrawBorderGrid'),
+                icon: <ToolSymbol symbol="▦" />,
+              },
+              {
+                value: draw('erase'),
+                label: t('appEraseBorder'),
+                icon: <ToolSymbol symbol="eraser" />,
+              },
+            ]}
+            value=""
+            onPick={onCommand}
+            onClose={() => setOpen(false)}
+          />
+          <MenuRows
+            options={[
+              {
+                value: 'pen-color',
+                label: t('appPenLineColor'),
+                icon: <i className="menu-color-dot" style={{ background: penColor }} />,
+              },
+              {
+                value: 'pen-style',
+                label: t('appPenLineStyle'),
+                icon: <LineStyleGlyph style={penStyle} />,
+              },
+            ]}
+            value=""
+            onPick={(value) => {
+              setPenPanel((current) =>
+                value === 'pen-color'
+                  ? current === 'palette'
+                    ? null
+                    : 'palette'
+                  : current === 'styles'
+                    ? null
+                    : 'styles',
+              )
+            }}
+            onClose={() => {
+              // 线条颜色/线条样式只展开面板，不关菜单
+            }}
+          />
+          {penPanel === 'palette' && (
+            <ColorPicker
+              className="border-menu-palette"
+              value={penColor}
+              strings={{
+                themeColors: t('appThemeColors'),
+                standardColors: t('appStandardColors'),
+                moreColors: t('appMoreColors'),
+              }}
+              onPick={(hex) => {
+                if (hex) onPenColor(hex.toLowerCase())
+                setPenPanel(null)
+              }}
+            />
+          )}
+          {penPanel === 'styles' && (
+            <div className="pen-style-rows">
+              {BORDER_PEN_STYLES.map((style) => (
+                <button
+                  type="button"
+                  key={style}
+                  role="option"
+                  aria-selected={penStyle === style}
+                  className={penStyle === style ? 'on' : ''}
+                  onClick={() => {
+                    onPenStyle(style)
+                    setPenPanel(null)
+                  }}
+                >
+                  <span className="menu-opt-icon" aria-hidden="true">
+                    <LineStyleGlyph style={style} />
+                  </span>
+                  <span className="menu-opt-text">{t(`appPenStyle_${style}` as StringKey)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /// Custom ribbon dropdown replacing the native <select>: macOS pops the native
 /// menu over the control (covering ribbon content), while this panel is
 /// anchored below its trigger — same pattern as the slides ribbon's .rb-drop.
@@ -4865,26 +5249,12 @@ function MenuSelect({
       </button>
       {open && (
         <div className="menu-select-drop" role="listbox" aria-label={label}>
-          {options.map((option) => (
-            <button
-              type="button"
-              key={option.value}
-              role="option"
-              aria-selected={value !== '' && option.value === value}
-              className={value !== '' && option.value === value ? 'on' : ''}
-              onClick={() => {
-                setOpen(false)
-                onPick(option.value)
-              }}
-            >
-              {option.icon != null && (
-                <span className="menu-opt-icon" aria-hidden="true">
-                  {option.icon}
-                </span>
-              )}
-              <span className="menu-opt-text">{option.label}</span>
-            </button>
-          ))}
+          <MenuRows
+            options={options}
+            value={value}
+            onPick={onPick}
+            onClose={() => setOpen(false)}
+          />
         </div>
       )}
     </div>

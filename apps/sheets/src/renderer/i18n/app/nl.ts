@@ -4,7 +4,8 @@ export const nl = {
   appMergeWorkbooksTip: 'Bladen uit andere Excel-bestanden aan deze werkmap toevoegen',
   appMergeWorkbooksPicking: 'Kies bestanden om samen te voegen…',
   appMergeWorkbooksReading: '{sheet} uit {file} importeren…',
-  appMergeWorkbooksDone: '{sheets} bladen uit {files} bestanden samengevoegd (formules als waarden geïmporteerd).',
+  appMergeWorkbooksDone:
+    '{sheets} bladen uit {files} bestanden samengevoegd (formules als waarden geïmporteerd).',
   appMergeWorkbooksFailed: 'Samenvoegen van werkmappen mislukt.',
   appMergeWorkbooksInsertFailed: 'Kan blad {sheet} niet maken.',
   appMergeWorkbooksLocked: 'De werkmap wordt nog geladen; samenvoegen is nu niet beschikbaar.',
@@ -14,7 +15,8 @@ export const nl = {
   appThemeColorsTitle: 'Themakleuren wijzigen',
   appThemeFontsTitle: 'Themalettertypen wijzigen',
   appThemeApplied: 'Thema "{name}" toegepast — wordt bij het opslaan naar het bestand geschreven.',
-  appThemeNeedsThemePart: 'Deze werkmap heeft geen thema-onderdeel — thema\\\'s kunnen niet worden toegepast.',
+  appThemeNeedsThemePart:
+    "Deze werkmap heeft geen thema-onderdeel — thema\\'s kunnen niet worden toegepast.",
   appBreaksTitle: 'Handmatige pagina-einden invoegen, verwijderen of herstellen',
   appInsertPageBreak: 'Pagina-einde invoegen',
   appRemovePageBreak: 'Pagina-einde verwijderen',
@@ -34,12 +36,17 @@ export const nl = {
   appPageWatermark: 'Pagina {page}',
   appUnprotectWorkbook: 'Beveiliging werkmap opheffen',
   appProtectWorkbookTitle: 'De werkmapstructuur vergrendelen (zonder wachtwoord)',
-  appWorkbookProtectionWillWrite: 'De beveiliging van de werkmapstructuur wordt bij het opslaan geschreven (zonder wachtwoord).',
-  appWorkbookProtectionWillRemove: 'De beveiliging van de werkmapstructuur wordt bij het opslaan verwijderd.',
-  appWorkbookProtectedWithPassword: 'De werkmapstructuur is met een wachtwoord beveiligd — deze kan hier niet worden gewijzigd.',
-  appWorkbookStructureLocked: 'De werkmapstructuur is beveiligd — bladen kunnen niet worden toegevoegd, verwijderd, hernoemd of verplaatst.',
+  appWorkbookProtectionWillWrite:
+    'De beveiliging van de werkmapstructuur wordt bij het opslaan geschreven (zonder wachtwoord).',
+  appWorkbookProtectionWillRemove:
+    'De beveiliging van de werkmapstructuur wordt bij het opslaan verwijderd.',
+  appWorkbookProtectedWithPassword:
+    'De werkmapstructuur is met een wachtwoord beveiligd — deze kan hier niet worden gewijzigd.',
+  appWorkbookStructureLocked:
+    'De werkmapstructuur is beveiligd — bladen kunnen niet worden toegevoegd, verwijderd, hernoemd of verplaatst.',
   appAllowEditRangesTitle: 'Bereiken die bewerkbaar blijven terwijl het blad is beveiligd',
-  appRangesPasswordBlocked: 'Dit blad bevat met een wachtwoord beveiligde bewerkingsbereiken — het bewerken ervan wordt niet ondersteund.',
+  appRangesPasswordBlocked:
+    'Dit blad bevat met een wachtwoord beveiligde bewerkingsbereiken — het bewerken ervan wordt niet ondersteund.',
   appRangesRecorded: '{count} bewerkbare bereik(en) worden bij het opslaan geschreven.',
   appNumFmtAccounting: 'Financieel',
   appNumFmtShortDate: 'Korte datumnotatie',
@@ -96,7 +103,8 @@ export const nl = {
   appChartNoRepoint: 'Deze grafiek ondersteunt het opnieuw toewijzen van gegevensbereiken niet.',
   appKeepOneSeries: 'Behoud ten minste één reeks.',
   appNoCategoriesToSwitch: 'Geen categorieën om te wisselen.',
-  appComboNoSelectData: 'Het wijzigen van de gegevensbron van een combinatiegrafiek wordt nog niet ondersteund.',
+  appComboNoSelectData:
+    'Het wijzigen van de gegevensbron van een combinatiegrafiek wordt nog niet ondersteund.',
   appSeriesName: 'Reeksnaam',
   appValuesRange: 'Waardenbereik',
   appCategoriesRange: 'Categoriebereik',
@@ -124,42 +132,60 @@ export const nl = {
   appGoToButtonTitle: 'Ga naar (⌘G)',
   appNameBoxTitle: 'Naamvak — typ een adres of naam en druk op Enter',
   appPivotChartHintIn: 'Een draaigrafiek maken op basis van de huidige draaitabel',
-  appPivotChartHintOut: 'Selecteer eerst een cel in de uitvoer van de draaitabel en kies dan een grafiektype',
+  appPivotChartHintOut:
+    'Selecteer eerst een cel in de uitvoer van de draaitabel en kies dan een grafiektype',
   appChartColumn: 'Kolom',
   appChartBar: 'Staaf',
   appChartLine: 'Lijn',
   appChartDoughnut: 'Ring',
   appChartRadar: 'Radar',
   appSlicerHintIn: 'Een slicer invoegen voor de huidige draaitabel',
-  appSlicerHintOut: 'Selecteer eerst een cel in de uitvoer van de draaitabel en voeg dan een slicer in',
+  appSlicerHintOut:
+    'Selecteer eerst een cel in de uitvoer van de draaitabel en voeg dan een slicer in',
   appPivotTable: 'Draaitabel',
   appRefresh: 'Vernieuwen',
   appRefreshHintIn: 'De huidige draaitabel opnieuw berekenen',
   appRefreshHintOut: 'Selecteer eerst het draaitabelgebied en vernieuw dan',
   appAttachmentReadFailed: '{name}: lezen mislukt',
   appTooManyImages: 'Maximaal {max} afbeeldingen per bericht; de extra zijn genegeerd',
-  appAppliedRevision: 'Toegepast (revisie {revision}) — ongedaan maken met ⌘Z, opslaan in het bestand met ⌘S.',
+  appAppliedRevision:
+    'Toegepast (revisie {revision}) — ongedaan maken met ⌘Z, opslaan in het bestand met ⌘S.',
   appCannotReadImage: 'Kan het afbeeldingsbestand niet lezen.',
-  appTableNotDeletable: 'Tabel "{name}" bestaat niet of is niet in deze sessie gemaakt — tabellen die al in het bestand staan, kunnen nog niet worden verwijderd.',
+  appTableNotDeletable:
+    'Tabel "{name}" bestaat niet of is niet in deze sessie gemaakt — tabellen die al in het bestand staan, kunnen nog niet worden verwijderd.',
   appImageNotLoaded: 'De afbeelding kon niet worden geladen: {path}',
   appApplyFailed: '⚠️ Toepassen mislukt: {reason}',
-  appPivotChartNeedsFile: 'Open eerst een XLSX-bestand — de draaigrafiek wordt in het bestand geschreven.',
-  appCursorNotInPivot: 'De cursor staat niet in een draaitabel — selecteer eerst een cel in de uitvoer van de draaitabel.',
-  appPivotDefNotLoaded: 'De definitie van de draaitabel is nog niet geladen (of kon niet worden geparseerd) — probeer het zo opnieuw.',
-  appPivotNoChartData: 'Deze draaitabel heeft geen gegevensrijen/-kolommen om in een grafiek weer te geven.',
-  appPivotChartInsertedTruncated: 'Draaigrafiek ingevoegd (te veel gegevenspunten, afgekapt) — sla op (⌘S) om deze in het bestand te schrijven.',
-  appPivotChartInserted: 'Draaigrafiek ingevoegd — volgt de vernieuwingen van de draaitabel; sla op (⌘S) om deze in het bestand te schrijven.',
+  appPivotChartNeedsFile:
+    'Open eerst een XLSX-bestand — de draaigrafiek wordt in het bestand geschreven.',
+  appCursorNotInPivot:
+    'De cursor staat niet in een draaitabel — selecteer eerst een cel in de uitvoer van de draaitabel.',
+  appPivotDefNotLoaded:
+    'De definitie van de draaitabel is nog niet geladen (of kon niet worden geparseerd) — probeer het zo opnieuw.',
+  appPivotNoChartData:
+    'Deze draaitabel heeft geen gegevensrijen/-kolommen om in een grafiek weer te geven.',
+  appPivotChartInsertedTruncated:
+    'Draaigrafiek ingevoegd (te veel gegevenspunten, afgekapt) — sla op (⌘S) om deze in het bestand te schrijven.',
+  appPivotChartInserted:
+    'Draaigrafiek ingevoegd — volgt de vernieuwingen van de draaitabel; sla op (⌘S) om deze in het bestand te schrijven.',
   appSheetNoPivot: 'Dit werkblad bevat geen draaitabellen.',
-  appPivotNeedsFullLoad: 'Voor het vernieuwen van draaitabellen is de volledig geladen modus nodig — deze werkmap is te groot en is streamend geladen.',
+  appPivotNeedsFullLoad:
+    'Voor het vernieuwen van draaitabellen is de volledig geladen modus nodig — deze werkmap is te groot en is streamend geladen.',
   appPivotSourceSheetMissing: 'Het bronwerkblad "{name}" van de draaitabel bestaat niet.',
-  appPivotLayoutMismatch: 'De indeling van de draaitabel komt niet overeen met het uitvoerbereik — vernieuw de tabel in Excel voordat u opnieuw berekent.',
-  appPivotGrowUnsupported: 'Deze draaitabelindeling (compact/meerdere veldnamenrijen) ondersteunt nog geen automatische groei — vernieuw de tabel in Excel.',
-  appPivotGrowConflict: 'Het gegroeide draaitabelgebied conflicteert met bestaande inhoud — maak het doelgebied leeg en vernieuw dan.',
-  appShapeNotEditable: 'Geen bewerkbare vorm "{id}" (alleen vormen die in deze sessie zijn toegevoegd, kunnen worden bewerkt).',
-  appCalcFieldNameClash: 'Het berekende veld "{name}" mag niet dezelfde naam hebben als een bronveldnaam.',
+  appPivotLayoutMismatch:
+    'De indeling van de draaitabel komt niet overeen met het uitvoerbereik — vernieuw de tabel in Excel voordat u opnieuw berekent.',
+  appPivotGrowUnsupported:
+    'Deze draaitabelindeling (compact/meerdere veldnamenrijen) ondersteunt nog geen automatische groei — vernieuw de tabel in Excel.',
+  appPivotGrowConflict:
+    'Het gegroeide draaitabelgebied conflicteert met bestaande inhoud — maak het doelgebied leeg en vernieuw dan.',
+  appShapeNotEditable:
+    'Geen bewerkbare vorm "{id}" (alleen vormen die in deze sessie zijn toegevoegd, kunnen worden bewerkt).',
+  appCalcFieldNameClash:
+    'Het berekende veld "{name}" mag niet dezelfde naam hebben als een bronveldnaam.',
   appCalcFieldNameDuplicate: 'Namen van berekende velden moeten uniek zijn.',
-  appValueFilterFieldMissing: 'Het waardefilter verwijst naar waardeveld {index}, dat niet bestaat.',
-  appPivotRelayoutOverlap: 'De nieuwe draaitabelindeling zou bestaande inhoud overschrijven — maak eerst het doelgebied leeg.',
+  appValueFilterFieldMissing:
+    'Het waardefilter verwijst naar waardeveld {index}, dat niet bestaat.',
+  appPivotRelayoutOverlap:
+    'De nieuwe draaitabelindeling zou bestaande inhoud overschrijven — maak eerst het doelgebied leeg.',
   appInvalidRowField: 'Ongeldig rijveld.',
   appNeedRowField: 'Selecteer ten minste één rijveld.',
   appInvalidColumnField: 'Ongeldig kolomveld.',
@@ -170,49 +196,64 @@ export const nl = {
   appWorkbookNotReady: 'De werkmap is niet gereed.',
   appOpenWorkbookFirst: 'Open eerst een werkmap.',
   appOpenXlsxFirst: 'Open eerst een XLSX-bestand.',
-  appPivotCreated: 'Draaitabel gemaakt op {cell} — wordt bij het opslaan in het bestand geschreven. Na het opslaan kunt u slicers, tijdlijnen en vernieuwen gebruiken.',
+  appPivotCreated:
+    'Draaitabel gemaakt op {cell} — wordt bij het opslaan in het bestand geschreven. Na het opslaan kunt u slicers, tijdlijnen en vernieuwen gebruiken.',
   appPivotCreateFailed: 'Kan de draaitabel niet maken.',
   appPutCursorInPivot: 'Plaats de cursor in de uitvoer van de draaitabel die u wilt bewerken.',
   appPivotNoCacheDef: 'Deze draaitabel heeft geen cachedefinitie en kan niet worden bewerkt.',
-  appPivotDefNotLoadedSave: 'De definitie van de draaitabel is nog niet geladen — als u deze in deze sessie hebt bewerkt, sla dan eerst op (⌘S).',
+  appPivotDefNotLoadedSave:
+    'De definitie van de draaitabel is nog niet geladen — als u deze in deze sessie hebt bewerkt, sla dan eerst op (⌘S).',
   appPivotEditUnsupported: 'Deze draaitabel kan nog niet worden bewerkt: {reasons}',
-  appPivotEditHasFeatures: 'Draaitabellen met groepering, filters, rapportfilters of berekende velden ondersteunen nog geen indelingsbewerking — pas ze aan in Excel.',
-  appPivotEditValuesOnRows: 'Draaitabellen met waardevelden op de rijas ondersteunen nog geen indelingsbewerking.',
-  appPivotEditAggUnsupported: 'De aggregatie van deze draaitabel (bijv. Product of Aantal getallen) ondersteunt nog geen indelingsbewerking.',
+  appPivotEditHasFeatures:
+    'Draaitabellen met groepering, filters, rapportfilters of berekende velden ondersteunen nog geen indelingsbewerking — pas ze aan in Excel.',
+  appPivotEditValuesOnRows:
+    'Draaitabellen met waardevelden op de rijas ondersteunen nog geen indelingsbewerking.',
+  appPivotEditAggUnsupported:
+    'De aggregatie van deze draaitabel (bijv. Product of Aantal getallen) ondersteunt nog geen indelingsbewerking.',
   appPivotSourceSheetNotFound: 'Kan het bronwerkblad "{name}" van de draaitabel niet vinden.',
-  appPivotLayoutUpdated: 'Draaitabelindeling bijgewerkt — sla op (⌘S) om deze in het bestand te schrijven; Excel bouwt de cache opnieuw op bij het openen.',
+  appPivotLayoutUpdated:
+    'Draaitabelindeling bijgewerkt — sla op (⌘S) om deze in het bestand te schrijven; Excel bouwt de cache opnieuw op bij het openen.',
   appPivotEditFailed: 'Kan de draaitabel niet bewerken.',
   appNoActiveSheet: 'Geen actief werkblad.',
   appCurrentSheetNoPivot: 'Het huidige werkblad bevat geen draaitabellen.',
-  appPivotsRefreshed: '{count} draaitabel(len) vernieuwd — sla op om in het bestand te schrijven (⌘S).',
+  appPivotsRefreshed:
+    '{count} draaitabel(len) vernieuwd — sla op om in het bestand te schrijven (⌘S).',
   appRefreshFailed: 'Vernieuwen mislukt.',
-  appSlicerNeedsFile: 'Open eerst een XLSX-bestand — slicers werken op de draaitabellen in het bestand.',
+  appSlicerNeedsFile:
+    'Open eerst een XLSX-bestand — slicers werken op de draaitabellen in het bestand.',
   appFieldN: 'Veld {n}',
   appPivotNoSlicerFields: 'Deze draaitabel heeft geen dimensievelden voor een slicer.',
   appSlicerPivotStale: 'De doeldraaitabel van de slicer is niet meer geldig.',
   appBlank: '(leeg)',
   appFieldNoMembers: 'Dit veld heeft geen leden om te filteren.',
   appSlicerCreated: 'Slicer "{name}" gemaakt — klik op leden om de draaitabel te filteren.',
-  appSlicerNeedsFullLoad: 'Filteren met een slicer vereist de volledig geladen modus — deze werkmap is te groot en is streamend geladen.',
+  appSlicerNeedsFullLoad:
+    'Filteren met een slicer vereist de volledig geladen modus — deze werkmap is te groot en is streamend geladen.',
   appSlicerPivotMissing: 'De draaitabel die aan deze slicer is gekoppeld, bestaat niet meer.',
   appSlicerSheetMissing: 'Het werkblad dat aan deze slicer is gekoppeld, bestaat niet meer.',
   appSlicerFilterFailed: 'Filteren met de slicer is mislukt.',
   appSlicerKeepOne: 'Houd ten minste één lid geselecteerd in de slicer.',
-  appSlicerApplied: 'Slicer "{name}" toegepast — sla op (⌘S) om de gefilterde draaitabel te schrijven.',
+  appSlicerApplied:
+    'Slicer "{name}" toegepast — sla op (⌘S) om de gefilterde draaitabel te schrijven.',
   appSlicerCleared: 'Filter van slicer "{name}" gewist.',
   appSlicerRemoved: 'Slicer "{name}" verwijderd; alle leden zijn hersteld.',
   appTimelineHintIn: 'Een tijdlijn invoegen voor een datumveld van de huidige draaitabel',
-  appTimelineHintOut: 'Selecteer eerst een cel in de uitvoer van de draaitabel en voeg dan een tijdlijn in',
-  appTimelineNoDateFields: 'Deze draaitabel heeft geen bruikbare datumvelden — een tijdlijn vereist een niet-gegroepeerd veld waarvan alle waarden datums zijn.',
+  appTimelineHintOut:
+    'Selecteer eerst een cel in de uitvoer van de draaitabel en voeg dan een tijdlijn in',
+  appTimelineNoDateFields:
+    'Deze draaitabel heeft geen bruikbare datumvelden — een tijdlijn vereist een niet-gegroepeerd veld waarvan alle waarden datums zijn.',
   appTimelineCreated: 'Tijdlijn "{name}" gemaakt — klik op maanden om de draaitabel te filteren.',
-  appTimelineApplied: 'Tijdlijn "{name}" toegepast — sla op (⌘S) om de gefilterde draaitabel te schrijven.',
+  appTimelineApplied:
+    'Tijdlijn "{name}" toegepast — sla op (⌘S) om de gefilterde draaitabel te schrijven.',
   appTimelineCleared: 'Filter van tijdlijn "{name}" gewist.',
   appTimelineRemoved: 'Tijdlijn "{name}" verwijderd; alle leden zijn hersteld.',
   appTimelineEmptyRange: 'Geen leden binnen het geselecteerde maandbereik.',
-  appFieldFilterTaken: 'Elk geschikt veld heeft al een slicer of tijdlijn — verwijder eerst de bestaande.',
+  appFieldFilterTaken:
+    'Elk geschikt veld heeft al een slicer of tijdlijn — verwijder eerst de bestaande.',
   appGoToNotReady: 'De werkmap is nog niet gereed — kan niet naar een verwijzing gaan.',
   appGoToEmpty: 'Voer een celadres of een gedefinieerde naam in.',
-  appGoToUnresolved: 'Kan niet naar "{ref}" gaan: geen geldig adres en geen navigeerbare gedefinieerde naam.',
+  appGoToUnresolved:
+    'Kan niet naar "{ref}" gaan: geen geldig adres en geen navigeerbare gedefinieerde naam.',
   appGoToOutOfBounds: 'Kan niet naar "{ref}" gaan: buiten de grenzen van het werkblad.',
   appGoToSheetNotFound: 'Kan niet naar "{ref}" gaan: dat werkblad is niet gevonden.',
   appGoToInvalidAddress: 'Kan niet naar "{ref}" gaan: het adres is ongeldig.',
@@ -220,48 +261,75 @@ export const nl = {
   appSymbolNeedsCell: 'Open eerst een werkmap en selecteer een cel voordat u een symbool invoegt.',
   appSymbolInsertFailed: 'Kan het symbool niet invoegen.',
   appSymbolInserted: '{char} ingevoegd in {cell}.',
-  appAdvFilterNeedsFilter: 'Het uitgebreide filter heeft een AutoFilter-bereik nodig — selecteer eerst de gegevens en klik op Filteren.',
-  appAdvFilterGone: 'Het huidige werkblad heeft geen AutoFilter — schakel het opnieuw in en probeer het nogmaals.',
+  appAdvFilterNeedsFilter:
+    'Het uitgebreide filter heeft een AutoFilter-bereik nodig — selecteer eerst de gegevens en klik op Filteren.',
+  appAdvFilterGone:
+    'Het huidige werkblad heeft geen AutoFilter — schakel het opnieuw in en probeer het nogmaals.',
   appAdvFilterFailed: 'Kan het uitgebreide filter niet toepassen.',
-  appAdvFilterApplied: 'Criteria van het uitgebreide filter toegepast — ⌘S slaat op in het bestand.',
+  appAdvFilterApplied:
+    'Criteria van het uitgebreide filter toegepast — ⌘S slaat op in het bestand.',
   appFlashFillNeedsLeft: 'Snel aanvullen heeft gegevenskolommen links van de doelkolom nodig.',
   appFlashFillNeedsRows: 'Snel aanvullen heeft ten minste twee rijen met gegevens nodig.',
-  appFlashFillNeedsExamples: 'Vul eerst 1-2 voorbeelden in de doelkolom in en klik dan op Snel aanvullen.',
-  appFlashFillNoPattern: 'Geen patroon herkend in de voorbeelden — de doelwaarden moeten af te leiden zijn uit de kolommen links; probeer nog een voorbeeld toe te voegen.',
+  appFlashFillNeedsExamples:
+    'Vul eerst 1-2 voorbeelden in de doelkolom in en klik dan op Snel aanvullen.',
+  appFlashFillNoPattern:
+    'Geen patroon herkend in de voorbeelden — de doelwaarden moeten af te leiden zijn uit de kolommen links; probeer nog een voorbeeld toe te voegen.',
   appFlashFillNothingToFill: 'Geen lege rijen om te vullen.',
   appFlashFillDone: '⚡ Snel aanvullen heeft {count} rij(en) gevuld op basis van uw voorbeelden.',
   appSparklineNeedsFile: 'Sparklines vereisen een geïmporteerd XLSX-bestand.',
-  appSparklineNeedsCols: 'Selecteer ten minste twee kolommen met gegevens — één sparkline per rij, geplaatst in de kolom rechts van de selectie.',
+  appSparklineNeedsCols:
+    'Selecteer ten minste twee kolommen met gegevens — één sparkline per rij, geplaatst in de kolom rechts van de selectie.',
   appSparklineNoSpace: 'Geen ruimte voor sparklines rechts van de selectie.',
-  appSparklinesInserted: '{count} sparkline(s) ingevoegd in de kolom rechts van de selectie — ⌘S slaat op in het bestand.',
-  appSaveHeldStranded: 'Draaitabellen/tabellen kunnen niet samen met nieuwe werkbladen plus rij-/kolomwijzigingen worden opgeslagen — sla eerst de structuur op en voeg daarna de draaitabellen/tabellen toe.',
-  appSaveSecondCanceled: 'De tweede opslagfase is geannuleerd — de structuur is opgeslagen; draaitabellen/tabellen/gedefinieerde namen zijn nog niet geschreven.',
+  appSparklinesInserted:
+    '{count} sparkline(s) ingevoegd in de kolom rechts van de selectie — ⌘S slaat op in het bestand.',
+  appSaveHeldStranded:
+    'Draaitabellen/tabellen kunnen niet samen met nieuwe werkbladen plus rij-/kolomwijzigingen worden opgeslagen — sla eerst de structuur op en voeg daarna de draaitabellen/tabellen toe.',
+  appSaveSecondCanceled:
+    'De tweede opslagfase is geannuleerd — de structuur is opgeslagen; draaitabellen/tabellen/gedefinieerde namen zijn nog niet geschreven.',
   appSavedTwoPhase: 'Opgeslagen.',
-  appSaveSecondFailed: 'De structuur is opgeslagen, maar de tweede fase (draaitabellen/tabellen/gedefinieerde namen) is mislukt: {reason}',
+  appSaveSecondFailed:
+    'De structuur is opgeslagen, maar de tweede fase (draaitabellen/tabellen/gedefinieerde namen) is mislukt: {reason}',
   appReadyInitial: 'Gereed voor een lokale, deterministische AI-opdracht.',
   appAiThinking: 'AI denkt na…',
   appAiDone: 'AI is klaar',
-  appAiTurnLimit: '(Limiet voor toolaanroepen voor deze aanvraag bereikt; het bovenstaande antwoord is gebaseerd op wat tot nu toe is gelezen en kan onvolledig zijn.)',
+  appAiTurnLimit:
+    '(Limiet voor toolaanroepen voor deze aanvraag bereikt; het bovenstaande antwoord is gebaseerd op wat tot nu toe is gelezen en kan onvolledig zijn.)',
   appAiStopped: '(gestopt)',
   appAiNoSummary: 'AI is klaar zonder samenvatting.',
-  appAiNoAction: 'De AI heeft niets uitgevoerd en geen antwoord gegeven. Probeer opnieuw of herformuleer.',
+  appAiNoAction:
+    'De AI heeft niets uitgevoerd en geen antwoord gegeven. Probeer opnieuw of herformuleer.',
   appNewConversation: 'Nieuw gesprek gestart.',
-  appPivotCellNoEdit: 'Deze cel maakt deel uit van een draaitabel — bewerken wordt nog niet ondersteund.',
+  appPivotCellNoEdit:
+    'Deze cel maakt deel uit van een draaitabel — bewerken wordt nog niet ondersteund.',
   appAreaStreaming: 'Dat gebied wordt nog streamend geladen — probeer het zo opnieuw te bewerken.',
-  appFormulaRecordedPartial: 'Formule vastgelegd — wordt in het bestand opgeslagen, maar het resultaat op het scherm kan onvolledig zijn omdat deze grote werkmap gedeeltelijk streamend wordt geladen.',
-  appFormulaTooExpensive: 'Deze formule evalueert een groot bereik per element — de berekening zou de app laten vastlopen, dus is deze geannuleerd. Verklein het bereik en probeer het opnieuw.',
-  appPivotSheetNoStructural: 'Dit werkblad bevat een draaitabel — structuurwijzigingen worden nog niet ondersteund.',
-  appDeleteSpanFormulas: 'Een formule verwijst alleen naar de verwijderde rijen/kolommen — werk deze eerst bij of verwijder deze.',
-  appIconSetUnsupported: 'Deze pictogramcombinatie kan niet worden opgeslagen als xlsx — kies een andere pictogramset.',
-  appNeedFullLoadSort: 'Sorteren, filteren, bereiken verplaatsen en tekst splitsen vereisen de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
-  appPivotSheetNoMove: 'Dit werkblad bevat een draaitabel — bereiken verplaatsen wordt nog niet ondersteund.',
-  appTableFilterNoEdit: 'Het filter van dit werkblad hoort bij een Excel-tabel — de bewerking kan nog niet worden opgeslagen.',
-  appAutofillStreaming: 'Automatisch doorvoeren naar een gebied dat nog streamend wordt geladen, is nog niet toegestaan.',
-  appDvNeedsIndexed: 'Voor het bewerken van gegevensvalidatie moet dit werkblad eerst volledig geïndexeerd zijn — probeer het zo opnieuw.',
-  appDuplicateNeedsFullLoad: 'Het dupliceren van een werkblad vereist de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
-  appPivotSheetNoDuplicate: 'Dit werkblad bevat een draaitabel — dupliceren wordt nog niet ondersteund.',
-  appDuplicateScopedNames: 'Dit blad bevat gedefinieerde namen op bladniveau — dupliceren wordt nog niet ondersteund.',
-  appMoveRowsColsUnsaved: 'Het verplaatsen van hele kolommen kan nog niet worden opgeslagen in geïmporteerde werkmappen — het verplaatsen van hele rijen wordt wel ondersteund.',
+  appFormulaRecordedPartial:
+    'Formule vastgelegd — wordt in het bestand opgeslagen, maar het resultaat op het scherm kan onvolledig zijn omdat deze grote werkmap gedeeltelijk streamend wordt geladen.',
+  appFormulaTooExpensive:
+    'Deze formule evalueert een groot bereik per element — de berekening zou de app laten vastlopen, dus is deze geannuleerd. Verklein het bereik en probeer het opnieuw.',
+  appPivotSheetNoStructural:
+    'Dit werkblad bevat een draaitabel — structuurwijzigingen worden nog niet ondersteund.',
+  appDeleteSpanFormulas:
+    'Een formule verwijst alleen naar de verwijderde rijen/kolommen — werk deze eerst bij of verwijder deze.',
+  appIconSetUnsupported:
+    'Deze pictogramcombinatie kan niet worden opgeslagen als xlsx — kies een andere pictogramset.',
+  appNeedFullLoadSort:
+    'Sorteren, filteren, bereiken verplaatsen en tekst splitsen vereisen de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
+  appPivotSheetNoMove:
+    'Dit werkblad bevat een draaitabel — bereiken verplaatsen wordt nog niet ondersteund.',
+  appTableFilterNoEdit:
+    'Het filter van dit werkblad hoort bij een Excel-tabel — de bewerking kan nog niet worden opgeslagen.',
+  appAutofillStreaming:
+    'Automatisch doorvoeren naar een gebied dat nog streamend wordt geladen, is nog niet toegestaan.',
+  appDvNeedsIndexed:
+    'Voor het bewerken van gegevensvalidatie moet dit werkblad eerst volledig geïndexeerd zijn — probeer het zo opnieuw.',
+  appDuplicateNeedsFullLoad:
+    'Het dupliceren van een werkblad vereist de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
+  appPivotSheetNoDuplicate:
+    'Dit werkblad bevat een draaitabel — dupliceren wordt nog niet ondersteund.',
+  appDuplicateScopedNames:
+    'Dit blad bevat gedefinieerde namen op bladniveau — dupliceren wordt nog niet ondersteund.',
+  appMoveRowsColsUnsaved:
+    'Het verplaatsen van hele kolommen kan nog niet worden opgeslagen in geïmporteerde werkmappen — het verplaatsen van hele rijen wordt wel ondersteund.',
   appNoWorkbookOpen: 'Er is geen werkmap geopend.',
   appDvListOptions: 'Lijst: {items}',
   appDvListFromRange: 'Lijst (uit bereik {range})',
@@ -272,9 +340,12 @@ export const nl = {
   appPreviewFailed: 'Kan geen voorbeeld maken.',
   appApplyTxFailed: 'Kan de transactie niet toepassen.',
   appTxCommitted: 'Transactie doorgevoerd als revisie {revision}.',
-  appPreviewOtherWorkbook: 'Het voorbeeld hoorde bij een andere werkmap — maak een nieuw voorbeeld.',
-  appPreviewSheetGone: 'Het werkblad van het voorbeeld bestaat niet meer — maak een nieuw voorbeeld.',
-  appWorkbookChangedSincePreview: 'De werkmap is gewijzigd sinds het voorbeeld — maak een nieuw voorbeeld.',
+  appPreviewOtherWorkbook:
+    'Het voorbeeld hoorde bij een andere werkmap — maak een nieuw voorbeeld.',
+  appPreviewSheetGone:
+    'Het werkblad van het voorbeeld bestaat niet meer — maak een nieuw voorbeeld.',
+  appWorkbookChangedSincePreview:
+    'De werkmap is gewijzigd sinds het voorbeeld — maak een nieuw voorbeeld.',
   appAppliedJournaled: 'Toegepast — de wijzigingen zijn vastgelegd; sla op met ⌘S.',
   appUndoCommitted: 'Ongedaan maken doorgevoerd als revisie {revision}.',
   appUndoFailed: 'Kan niet ongedaan maken.',
@@ -282,18 +353,24 @@ export const nl = {
   appAutoFilterRemoveFailed: 'Kan het AutoFilter niet verwijderen.',
   appSelectDataRangeFirst: 'Selecteer eerst het gegevensbereik.',
   appUnsupportedChartType: 'Niet-ondersteund grafiektype: {kind}.',
-  appChartInsertedDemo: 'Grafiek ingevoegd — demobewerkingen blijven in het geheugen; open een XLSX-bestand om op schijf op te slaan.',
+  appChartInsertedDemo:
+    'Grafiek ingevoegd — demobewerkingen blijven in het geheugen; open een XLSX-bestand om op schijf op te slaan.',
   appChartInsertFailed: 'Kan de grafiek niet invoegen.',
-  appChartNeedsNumericColumn: 'Selecteer een bereik met ten minste één numerieke kolom (veldnamen optioneel).',
-  appChartInserted: 'Grafiek ingevoegd — selecteer om te bewerken, ⌘S schrijft deze in het bestand.',
-  appShapeNeedsFile: 'Open eerst een XLSX-bestand — ingevoegde vormen worden in het bestand geschreven.',
+  appChartNeedsNumericColumn:
+    'Selecteer een bereik met ten minste één numerieke kolom (veldnamen optioneel).',
+  appChartInserted:
+    'Grafiek ingevoegd — selecteer om te bewerken, ⌘S schrijft deze in het bestand.',
+  appShapeNeedsFile:
+    'Open eerst een XLSX-bestand — ingevoegde vormen worden in het bestand geschreven.',
   appSelectCellFirst: 'Selecteer eerst een cel.',
   appTextBoxInserted: 'Tekstvak ingevoegd — wordt bij het opslaan in het bestand geschreven (⌘S).',
   appShapeInserted: 'Vorm ingevoegd — wordt bij het opslaan in het bestand geschreven (⌘S).',
-  appPictureNeedsFile: 'Open eerst een XLSX-bestand — ingevoegde afbeeldingen worden in het bestand geschreven.',
+  appPictureNeedsFile:
+    'Open eerst een XLSX-bestand — ingevoegde afbeeldingen worden in het bestand geschreven.',
   appPictureTooLarge: 'Afbeeldingen groter dan 20MB worden niet ondersteund.',
   appPictureBadType: 'Alleen PNG-, JPEG- of GIF-afbeeldingen worden ondersteund.',
-  appPictureInserted: 'Afbeelding ingevoegd — wordt bij het opslaan in het bestand geschreven (⌘S).',
+  appPictureInserted:
+    'Afbeelding ingevoegd — wordt bij het opslaan in het bestand geschreven (⌘S).',
   appTableNeedsRows: 'Een tabel heeft een veldnamenrij plus ten minste één gegevensrij nodig.',
   appTableTooWide: 'Een tabel kan maximaal 1.000 kolommen beslaan.',
   appTableNameUsed: 'Tabelnaam "{name}" is in deze sessie al gebruikt.',
@@ -302,8 +379,10 @@ export const nl = {
   appTableSelectRange: 'Selecteer eerst het gegevensbereik — veldnamen in de eerste rij.',
   appTableCreated: 'Tabel gemaakt — sla op met ⌘S.',
   appTableCreateFailed: 'Kan de tabel niet maken.',
-  appPivotOnAddedSheet: 'Draaitabellen op werkbladen die in deze sessie zijn toegevoegd, worden nog niet ondersteund — sla eerst op.',
-  appPivotSourceNeedsRows: 'De bron van de draaitabel heeft een veldnamenrij plus gegevensrijen nodig.',
+  appPivotOnAddedSheet:
+    'Draaitabellen op werkbladen die in deze sessie zijn toegevoegd, worden nog niet ondersteund — sla eerst op.',
+  appPivotSourceNeedsRows:
+    'De bron van de draaitabel heeft een veldnamenrij plus gegevensrijen nodig.',
   appPivotSourceRowLimit: 'De bron van de draaitabel is beperkt tot 10.000 gegevensrijen.',
   appPivotSourceColLimit: 'De bron van de draaitabel is beperkt tot 200 kolommen.',
   appPivotHeaderBlank: 'Elke veldnaamcel van de bron moet gevuld zijn.',
@@ -314,9 +393,12 @@ export const nl = {
   appPivotTooManyColLines: 'De draaitabel heeft meer dan 1.000 kolomindelingsregels.',
   appPivotNeedsValues: 'De draaitabel heeft één waardeveld nodig.',
   appPivotTooManyRowLines: 'De draaitabel heeft meer dan 20.000 rijindelingsregels.',
-  appPivotOverlapSource: 'De uitvoer van de draaitabel zou het bronbereik overlappen — kies een andere doelcel.',
-  appPivotOverlapExisting: 'De uitvoer van de draaitabel zou een bestaande draaitabel op het doelwerkblad overlappen.',
-  appPivotOverlapSession: 'De uitvoer van de draaitabel zou draaitabel "{name}" overlappen die in deze sessie is gemaakt.',
+  appPivotOverlapSource:
+    'De uitvoer van de draaitabel zou het bronbereik overlappen — kies een andere doelcel.',
+  appPivotOverlapExisting:
+    'De uitvoer van de draaitabel zou een bestaande draaitabel op het doelwerkblad overlappen.',
+  appPivotOverlapSession:
+    'De uitvoer van de draaitabel zou draaitabel "{name}" overlappen die in deze sessie is gemaakt.',
   appPivotNameUsed: 'Draaitabelnaam "{name}" is in deze sessie al gebruikt.',
   appActiveCellFallback: 'de actieve cel',
   appFormulaStartsEquals: 'Een formule begint met "=".',
@@ -336,11 +418,15 @@ export const nl = {
   appConsolidateEmptySources: 'De brongebieden zijn leeg.',
   appConsolidateOverlap: 'Het uitvoergebied overlapt een brongebied — kies een andere doelcel.',
   appConsolidateWriteFailed: 'Kan de consolidatie niet schrijven.',
-  appConsolidateDone: '{count} gebied(en) geconsolideerd op {cell} ({rows}×{columns} live formules).',
-  appConsolidateMaxMinLabels: 'Max en Min worden niet ondersteund met labels in de linkerkolom — gebruik consolidatie op positie.',
-  appConsolidateLabelNeedsCols: 'De labelmodus vereist ten minste twee kolommen per gebied (labels plus een waardekolom).',
+  appConsolidateDone:
+    '{count} gebied(en) geconsolideerd op {cell} ({rows}×{columns} live formules).',
+  appConsolidateMaxMinLabels:
+    'Max en Min worden niet ondersteund met labels in de linkerkolom — gebruik consolidatie op positie.',
+  appConsolidateLabelNeedsCols:
+    'De labelmodus vereist ten minste twee kolommen per gebied (labels plus een waardekolom).',
   appConsolidateNoLabels: 'Geen labels gevonden in de linkerkolom van de brongebieden.',
-  appOutlineNeedsFile: 'Open eerst een XLSX-bestand — overzichtsgroepen worden in het bestand geschreven.',
+  appOutlineNeedsFile:
+    'Open eerst een XLSX-bestand — overzichtsgroepen worden in het bestand geschreven.',
   appOutlineSelectFirst: 'Selecteer eerst de rijen of kolommen die u wilt groeperen.',
   appDetailHidden: 'Details verborgen — sla op met ⌘S.',
   appDetailShown: 'Details weergegeven — sla op met ⌘S.',
@@ -353,15 +439,20 @@ export const nl = {
   appSheetAdded: 'Werkblad toegevoegd — dubbelklik op het tabblad om het te hernoemen.',
   appSheetAddFailed: 'Kan geen werkblad toevoegen.',
   appFormatCopied: 'Opmaak gekopieerd — selecteer de doelcellen om deze toe te passen.',
-  appProtectionNeedsFile: 'Open eerst een XLSX-bestand — beveiliging wordt in het bestand opgeslagen.',
-  appProtectionNeedsIndexed: 'Voor beveiliging moet dit werkblad eerst volledig geïndexeerd zijn — probeer het zo opnieuw.',
-  appProtectedWithPassword: 'Dit werkblad is met een wachtwoord beveiligd — het opheffen van de beveiliging wordt niet ondersteund.',
-  appProtectionWillWrite: 'De werkbladbeveiliging wordt bij het opslaan geschreven (zonder wachtwoord). De editor zelf dwingt deze niet af.',
+  appProtectionNeedsFile:
+    'Open eerst een XLSX-bestand — beveiliging wordt in het bestand opgeslagen.',
+  appProtectionNeedsIndexed:
+    'Voor beveiliging moet dit werkblad eerst volledig geïndexeerd zijn — probeer het zo opnieuw.',
+  appProtectedWithPassword:
+    'Dit werkblad is met een wachtwoord beveiligd — het opheffen van de beveiliging wordt niet ondersteund.',
+  appProtectionWillWrite:
+    'De werkbladbeveiliging wordt bij het opslaan geschreven (zonder wachtwoord). De editor zelf dwingt deze niet af.',
   appProtectionWillRemove: 'De werkbladbeveiliging wordt bij het opslaan verwijderd.',
   appZoom: 'Zoomen {percent}%.',
   appTopRowFrozen: 'Bovenste rij geblokkeerd — sla op met ⌘S.',
   appFirstColFrozen: 'Eerste kolom geblokkeerd — sla op met ⌘S.',
-  appFindScanTruncated: 'Groot werkblad: zoeken gestopt na {cells} cellen — resultaten kunnen onvolledig zijn.',
+  appFindScanTruncated:
+    'Groot werkblad: zoeken gestopt na {cells} cellen — resultaten kunnen onvolledig zijn.',
   appReplaceNeedsFullLoad: 'Vervangen vereist de volledig geladen modus — gebruik Zoeken.',
   appGridlinesHiddenSave: 'Rasterlijnen verborgen — sla op met ⌘S.',
   appGridlinesShownSave: 'Rasterlijnen weergegeven — sla op met ⌘S.',
@@ -379,22 +470,28 @@ export const nl = {
   appTraceOffSheetDeps: '{count} doelcel(len) op andere werkbladen niet getekend.',
   appTraceArrowsRemoved: 'Aanwijspijlen verwijderd.',
   appNoTraceArrows: 'Geen aanwijspijlen om te verwijderen.',
-  appWorkbookStats: 'Werkmapstatistieken: {sheets} werkbladen · {cells} cellen met gegevens · {formulas} formules{note}.',
+  appWorkbookStats:
+    'Werkmapstatistieken: {sheets} werkbladen · {cells} cellen met gegevens · {formulas} formules{note}.',
   appFrozenAtSelection: 'Geblokkeerd bij de selectie — sla op met ⌘S.',
   appSelectCellsFirst: 'Selecteer eerst de cellen.',
-  appCellStyleApplied: 'Celstijl toegepast — wordt vastgelegd zoals elke opmaakbewerking (⌘S om op te slaan).',
+  appCellStyleApplied:
+    'Celstijl toegepast — wordt vastgelegd zoals elke opmaakbewerking (⌘S om op te slaan).',
   appSelectRangeFirst: 'Selecteer eerst een celbereik.',
-  appSettingNeedsFile: 'Open eerst een XLSX-bestand — deze instelling wordt alleen in het bestand opgeslagen.',
+  appSettingNeedsFile:
+    'Open eerst een XLSX-bestand — deze instelling wordt alleen in het bestand opgeslagen.',
   appTooManyCellsForSetting: 'Selecteer minder dan 10.000 cellen voor deze instelling.',
-  appProtectionFlagsRecorded: 'Beveiligingsmarkeringen vastgelegd — ze gelden wanneer het werkblad is beveiligd.',
-  appSortSelectRows: 'Selecteer eerst de rijen die u wilt sorteren — neem alle bij elkaar horende kolommen mee.',
+  appProtectionFlagsRecorded:
+    'Beveiligingsmarkeringen vastgelegd — ze gelden wanneer het werkblad is beveiligd.',
+  appSortSelectRows:
+    'Selecteer eerst de rijen die u wilt sorteren — neem alle bij elkaar horende kolommen mee.',
   appSortedAsc: 'Gesorteerd van A naar Z op de eerste geselecteerde kolom.',
   appSortedDesc: 'Gesorteerd van Z naar A op de eerste geselecteerde kolom.',
   appAutofnSelectCells: 'Selecteer de cellen die u wilt aggregeren — {fn} komt in de rij eronder.',
   appRowBelowStreaming: 'De rij eronder wordt nog streamend geladen — probeer het zo opnieuw.',
   appAutofnInserted: '{fn} ingevoegd onder de selectie.',
   appSortedCustom: 'Gesorteerd op uw aangepaste niveaus.',
-  appDedupeNeedsFullLoad: 'Het verwijderen van dubbele waarden vereist de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
+  appDedupeNeedsFullLoad:
+    'Het verwijderen van dubbele waarden vereist de volledig geladen modus — deze werkmap is te groot en wordt gedeeltelijk streamend geladen.',
   appDedupeSelectRows: 'Selecteer eerst de rijen die u op dubbele waarden wilt controleren.',
   appNoDuplicates: 'Geen dubbele rijen gevonden in de selectie.',
   appDuplicatesRemoved: '{count} dubbele rij(en) verwijderd.',
@@ -407,11 +504,13 @@ export const nl = {
   appAppliedToSelection: 'Toegepast op de huidige selectie.',
   appCommandFailed: 'Kan de opdracht niet toepassen.',
   appColumnLabel: 'Kolom {col}',
-  appBridgeUnavailable: 'De bestandsbridge van de desktop is niet beschikbaar. Start de Electron-app opnieuw.',
+  appBridgeUnavailable:
+    'De bestandsbridge van de desktop is niet beschikbaar. Start de Electron-app opnieuw.',
   appOpenCanceled: 'Werkmapselectie geannuleerd.',
   appOpened: '{name} geopend — celbewerkingen slaat u terug op met ⌘S.',
   appOpenFailed: 'Kan de werkmap niet openen.',
-  appPageSetupNeedsFile: 'Open eerst een XLSX-bestand — de pagina-instelling wordt in het bestand opgeslagen.',
+  appPageSetupNeedsFile:
+    'Open eerst een XLSX-bestand — de pagina-instelling wordt in het bestand opgeslagen.',
   appPageSetupRecorded: '{note} — sla op met ⌘S.',
   appOrientationPortrait: 'Afdrukstand: staand',
   appOrientationLandscape: 'Afdrukstand: liggend',
@@ -421,7 +520,7 @@ export const nl = {
   appPaperSizeNote: 'Papierformaat: {name}',
   appPrintScaleNote: 'Afdrukschaal: {scale}%',
   appFitAutomatic: 'automatisch',
-  appFitPages: '{count} pagina(\\\'s)',
+  appFitPages: "{count} pagina(\\'s)",
   appFitWidthNote: 'Breedte aanpassen: {value}',
   appFitHeightNote: 'Hoogte aanpassen: {value}',
   appGridlinesWillPrint: 'Rasterlijnen worden afgedrukt',
@@ -435,90 +534,122 @@ export const nl = {
   appRow1Repeats: 'Rij 1 wordt op elke afgedrukte pagina herhaald',
   appSelectRepeatRows: 'Selecteer eerst de rijen die u wilt herhalen.',
   appRowsRepeat: 'Rijen {rows} worden op elke afgedrukte pagina herhaald',
-  appHfNeedsFile: 'Open eerst een XLSX-bestand — kop- en voetteksten worden in het bestand opgeslagen.',
+  appHfNeedsFile:
+    'Open eerst een XLSX-bestand — kop- en voetteksten worden in het bestand opgeslagen.',
   appActiveSheetUnavailable: 'Het actieve werkblad is niet beschikbaar.',
   appHfUpdated: 'Kop- en voettekst bijgewerkt — sla op met ⌘S.',
-  appPdfNeedsFullLoad: 'PDF-export vereist een volledig geladen werkmap — wacht tot het laden is voltooid.',
+  appPdfNeedsFullLoad:
+    'PDF-export vereist een volledig geladen werkmap — wacht tot het laden is voltooid.',
   appPdfRendering: 'PDF wordt gerenderd…',
   appPdfCanceled: 'PDF-export geannuleerd.',
   appPdfExported: '{path} geëxporteerd.',
   appPdfExportFailed: 'Kan de PDF niet exporteren.',
-  appCsvExportNeedsFullLoad: 'CSV-export vereist een volledig geladen werkmap — wacht tot het laden is voltooid.',
+  appCsvExportNeedsFullLoad:
+    'CSV-export vereist een volledig geladen werkmap — wacht tot het laden is voltooid.',
   appCsvExportTooLarge: 'Het blad is te groot om als CSV te exporteren.',
   appCsvExportCanceled: 'CSV-export geannuleerd.',
   appCsvExported: '{path} geëxporteerd.',
-  appCsvExportedActiveOnly: 'CSV-bestanden bevatten slechts één blad — het actieve blad “{name}” is geëxporteerd naar {path}.',
+  appCsvExportedActiveOnly:
+    'CSV-bestanden bevatten slechts één blad — het actieve blad “{name}” is geëxporteerd naar {path}.',
   appCsvExportFailed: 'Kan de CSV niet exporteren.',
-  appDemoNoSave: 'Demobewerkingen blijven in het geheugen — open een XLSX-bestand om op schijf op te slaan.',
+  appDemoNoSave:
+    'Demobewerkingen blijven in het geheugen — open een XLSX-bestand om op schijf op te slaan.',
   appFilterSnapshotFailed: 'Kan geen momentopname van de filters maken.',
-  appColorFiltersUnsaveable: 'Kleurfilters kunnen nog niet als XLSX worden opgeslagen — wis ze voordat u opslaat.',
+  appColorFiltersUnsaveable:
+    'Kleurfilters kunnen nog niet als XLSX worden opgeslagen — wis ze voordat u opslaat.',
   appNoEditsToSave: 'Nog geen bewerkingen om op te slaan.',
   appSheetOrderReadFailed: 'Kan de werkbladvolgorde niet lezen — probeer het opnieuw.',
   appSavingEdits: '{count} bewerking(en) opslaan…',
   appSaveCanceled: 'Opslaan geannuleerd.',
   appSaved: 'Opgeslagen.',
   appSaveFailed: 'Kan de werkmap niet opslaan.',
-  appCfRuleUnsaveable: 'Deze regel voor voorwaardelijke opmaak kan niet in xlsx worden opgeslagen — gebruik een ander regeltype.',
-  appSaveErrX14Dv: 'Dit blad heeft uitgebreide (x14) gegevensvalidatie; het bewerken van de validatieregels wordt nog niet ondersteund.',
-  appSaveErrMultiSelectList: 'Validatie met een meerkeuzelijst kan niet in xlsx worden opgeslagen — verwijder de regel voordat u opslaat.',
-  appSaveErrX14Cf: 'Dit bereik heeft uitgebreide (x14) voorwaardelijke opmaak en kan voorlopig niet worden gewijzigd.',
-  appSaveErrPivotWithSheetOps: 'Een nieuw gemaakte draaitabel kan niet samen met bladbeheerwijzigingen worden opgeslagen — sla eerst de draaitabel op.',
-  appSaveErrPivotWithRowCol: 'Een nieuw gemaakte draaitabel kan niet samen met rij-/kolomwijzigingen op het blad worden opgeslagen — sla eerst de draaitabel op.',
-  appSaveErrTableWithRowCol: 'Een nieuw gemaakte tabel kan niet samen met rij-/kolomwijzigingen op het blad worden opgeslagen — sla eerst de tabel op.',
-  appSaveErrNamesWithStructural: 'Wijzigingen aan gedefinieerde namen kunnen niet samen met rij-/kolom- of bladstructuurwijzigingen worden opgeslagen — sla in twee stappen op.',
-  appSaveErrChangedOnDisk: 'Het bestand is op schijf gewijzigd door een ander programma — opslaan afgebroken; open het bestand opnieuw en probeer het nog eens.',
-  appSaveErrStylesheetLimited: 'Het stylesheet van deze werkmap mist de basisstructuur; stijlwijzigingen kunnen niet worden opgeslagen.',
-  appSaveErrPackageGuard: 'Opslaan zou de pakketstructuur van de werkmap veranderen — afgebroken om het bestand te beschermen.',
-  appSaveErrChartUnsupported: 'Dit grafiektype ondersteunt die bewerking niet; opslaan afgebroken — maak de grafiekwijziging ongedaan.',
-  appSaveErrMoveOverlap: 'Een formule, opgemaakt bereik, vorm of tabel loopt over de verplaatste rijen; opslaan afgebroken — maak de verplaatsing ongedaan.',
+  appCfRuleUnsaveable:
+    'Deze regel voor voorwaardelijke opmaak kan niet in xlsx worden opgeslagen — gebruik een ander regeltype.',
+  appSaveErrX14Dv:
+    'Dit blad heeft uitgebreide (x14) gegevensvalidatie; het bewerken van de validatieregels wordt nog niet ondersteund.',
+  appSaveErrMultiSelectList:
+    'Validatie met een meerkeuzelijst kan niet in xlsx worden opgeslagen — verwijder de regel voordat u opslaat.',
+  appSaveErrX14Cf:
+    'Dit bereik heeft uitgebreide (x14) voorwaardelijke opmaak en kan voorlopig niet worden gewijzigd.',
+  appSaveErrPivotWithSheetOps:
+    'Een nieuw gemaakte draaitabel kan niet samen met bladbeheerwijzigingen worden opgeslagen — sla eerst de draaitabel op.',
+  appSaveErrPivotWithRowCol:
+    'Een nieuw gemaakte draaitabel kan niet samen met rij-/kolomwijzigingen op het blad worden opgeslagen — sla eerst de draaitabel op.',
+  appSaveErrTableWithRowCol:
+    'Een nieuw gemaakte tabel kan niet samen met rij-/kolomwijzigingen op het blad worden opgeslagen — sla eerst de tabel op.',
+  appSaveErrNamesWithStructural:
+    'Wijzigingen aan gedefinieerde namen kunnen niet samen met rij-/kolom- of bladstructuurwijzigingen worden opgeslagen — sla in twee stappen op.',
+  appSaveErrChangedOnDisk:
+    'Het bestand is op schijf gewijzigd door een ander programma — opslaan afgebroken; open het bestand opnieuw en probeer het nog eens.',
+  appSaveErrStylesheetLimited:
+    'Het stylesheet van deze werkmap mist de basisstructuur; stijlwijzigingen kunnen niet worden opgeslagen.',
+  appSaveErrPackageGuard:
+    'Opslaan zou de pakketstructuur van de werkmap veranderen — afgebroken om het bestand te beschermen.',
+  appSaveErrChartUnsupported:
+    'Dit grafiektype ondersteunt die bewerking niet; opslaan afgebroken — maak de grafiekwijziging ongedaan.',
+  appSaveErrMoveOverlap:
+    'Een formule, opgemaakt bereik, vorm of tabel loopt over de verplaatste rijen; opslaan afgebroken — maak de verplaatsing ongedaan.',
   appFromTextCsvTitle: 'Een CSV-/tekstbestand in de huidige selectie importeren',
   appCsvImported: '{rows} rijen × {columns} kolommen uit het bestand geïmporteerd naar {cell}.',
   appCsvEmpty: 'Het CSV-bestand bevat geen gegevens.',
-  appCsvTooLarge: 'CSV te groot — gebruik bij meer dan 50.000 cellen \\\'Openen\\\' als nieuwe werkmap.',
+  appCsvTooLarge:
+    "CSV te groot — gebruik bij meer dan 50.000 cellen \\'Openen\\' als nieuwe werkmap.",
   appCsvImportFailed: 'CSV-import mislukt.',
   appNoNotesOnSheet: 'Geen opmerkingen op het huidige blad.',
   appNotePrevTitle: 'Naar de vorige opmerking springen',
   appNoteNextTitle: 'Naar de volgende opmerking springen',
   appShowCommentsTitle: 'De opmerkingsballon van de geselecteerde cel vastzetten/losmaken',
-  appStructuralShiftBlocked: 'Een grafiek of tabel op dit blad is verankerd aan de betrokken rijen/kolommen; ze kunnen niet verschuiven en de structuurwijziging is niet opgeslagen. Maak deze ongedaan (⌘Z) en sla opnieuw op.',
-  appAiChangesNotSaved: 'AI-wijzigingen toegepast (niet opgeslagen). Ongedaan maken met ⌘Z; opslaan met ⌘S.',
+  appStructuralShiftBlocked:
+    'Een grafiek of tabel op dit blad is verankerd aan de betrokken rijen/kolommen; ze kunnen niet verschuiven en de structuurwijziging is niet opgeslagen. Maak deze ongedaan (⌘Z) en sla opnieuw op.',
+  appAiChangesNotSaved:
+    'AI-wijzigingen toegepast (niet opgeslagen). Ongedaan maken met ⌘Z; opslaan met ⌘S.',
   appChartUpdated: 'Grafiek bijgewerkt.',
   appChartNotEditable: 'Deze grafiek kan niet worden bewerkt.',
   appChartEditRecorded: 'Grafiekbewerking vastgelegd — sla op met ⌘S.',
   appChartDeleted: 'Grafiek verwijderd.',
   appChartMoved: 'Grafiek verplaatst.',
   appVisualNotEditable: 'Dit object kan niet worden bewerkt.',
-  appVisualNoDelete: 'Dit object kan niet worden verwijderd — de tekenvorm ervan is niet bewerkbaar.',
-  appFileVisualMoveDeleteOnly: 'Voor objecten die al in het bestand staan, wordt alleen verplaatsen of verwijderen ondersteund.',
+  appVisualNoDelete:
+    'Dit object kan niet worden verwijderd — de tekenvorm ervan is niet bewerkbaar.',
+  appFileVisualMoveDeleteOnly:
+    'Voor objecten die al in het bestand staan, wordt alleen verplaatsen of verwijderen ondersteund.',
   appVisualNoMove: 'Dit object kan niet worden verplaatst — de tekenvorm ervan is niet bewerkbaar.',
   appVisualDeleted: 'Object verwijderd — sla op met ⌘S.',
   appShapeTextUpdated: 'Vormtekst bijgewerkt — sla op met ⌘S.',
   appShapeMoved: 'Vorm verplaatst — sla op met ⌘S.',
   appScopeWorkbook: 'Werkmap',
-  appNamesNeedFile: 'Open eerst een XLSX-bestand — gedefinieerde namen worden in het bestand opgeslagen.',
+  appNamesNeedFile:
+    'Open eerst een XLSX-bestand — gedefinieerde namen worden in het bestand opgeslagen.',
   appNameGone: 'Die naam bestaat niet meer.',
   appNameApplyFailed: 'De naam kon niet worden toegepast.',
   appNamesUpdated: 'Gedefinieerde namen bijgewerkt — sla op met ⌘S.',
   appLinkInternal: 'De koppeling wijst naar een locatie in de werkmap: {location}',
   appLinkSheetNotFound: 'Werkblad "{name}" is niet gevonden.',
   appLinkJumpFailed: 'Kan niet naar {location} springen.',
-  appClosureActive: '{count} formules worden live opnieuw berekend (afsluitingsmodus); de rest van de werkmap wordt op aanvraag streamend geladen.',
-  appRecalcPartial: 'Formules opnieuw berekend op basis van uw bewerkingen — {count} behielden waarden uit de cache (functies die de terugvalengine mist).',
-  appRecalcDone: 'Formules opnieuw berekend op basis van uw bewerkingen ({count} cellen, terugvalengine).',
+  appClosureActive:
+    '{count} formules worden live opnieuw berekend (afsluitingsmodus); de rest van de werkmap wordt op aanvraag streamend geladen.',
+  appRecalcPartial:
+    'Formules opnieuw berekend op basis van uw bewerkingen — {count} behielden waarden uit de cache (functies die de terugvalengine mist).',
+  appRecalcDone:
+    'Formules opnieuw berekend op basis van uw bewerkingen ({count} cellen, terugvalengine).',
   appIndexing: '{name} wordt geïndexeerd: {rows} rijen gereed.',
   appStreamingRows: '{name} wordt streamend geladen: {rows} rijen beschikbaar.',
   appLoadRangeFailed: 'Kan het zichtbare bereik niet laden.',
-  appFullyLoaded: 'Werkmap volledig geladen — formules worden live opnieuw berekend, rijen/kolommen bewerkbaar.',
+  appFullyLoaded:
+    'Werkmap volledig geladen — formules worden live opnieuw berekend, rijen/kolommen bewerkbaar.',
   appRangeMustBeVector: '{range} moet één rij of één kolom cellen zijn.',
   appRangeTooManyCells: '{range} beslaat meer dan {max} cellen.',
   appSheetStillIndexing: 'Het werkblad wordt nog geïndexeerd — probeer het zo opnieuw.',
   appPrintNothing: 'Het werkblad bevat niets om af te drukken.',
-  appPrintTooLarge: 'Het afdrukbereik is te groot — stel een kleiner afdrukbereik in op het tabblad Pagina-indeling.',
+  appPrintTooLarge:
+    'Het afdrukbereik is te groot — stel een kleiner afdrukbereik in op het tabblad Pagina-indeling.',
   appPrintBadArea: 'Ongeldig afdrukbereik "{area}".',
   appPrintBadTitles: 'Ongeldige afdruktitels "{titles}".',
   appPrintTitlesLimit: 'Afdruktitels herhalen maximaal 21 rijen.',
-  appVisualHintText: 'Slepen om te verplaatsen · grepen om de grootte te wijzigen · dubbelklik om tekst te bewerken',
-  appVisualHintEdit: 'Slepen om te verplaatsen · grepen om de grootte te wijzigen · dubbelklik om te bewerken',
+  appVisualHintText:
+    'Slepen om te verplaatsen · grepen om de grootte te wijzigen · dubbelklik om tekst te bewerken',
+  appVisualHintEdit:
+    'Slepen om te verplaatsen · grepen om de grootte te wijzigen · dubbelklik om te bewerken',
   appVisualHint: 'Slepen om te verplaatsen · grepen om de grootte te wijzigen',
   appDeleteVisualTitle: 'Dit object verwijderen',
   appDrawingObject: 'Tekenobject',
@@ -533,7 +664,8 @@ export const nl = {
   appValuesPlaceholder: 'Waarden, bijv. B2:B13',
   appLabelsPlaceholder: 'Labels, bijv. A2:A13',
   appValuesRangeTitle: 'Waardenbereik voor {name} — één rij of kolom, bijv. B2:B13',
-  appCategoriesRangeTitle: 'Bereik met categorielabels voor {name} — één rij of kolom, bijv. A2:A13',
+  appCategoriesRangeTitle:
+    'Bereik met categorielabels voor {name} — één rij of kolom, bijv. A2:A13',
   appTypeLabel: 'Type',
   appApply: 'Toepassen',
   appTabHome: 'Start',
@@ -574,7 +706,8 @@ export const nl = {
   appSortAsc: 'A → Z',
   appSortDesc: 'Z → A',
   appRemoveDuplicates: 'Dubbele waarden verwijderen',
-  appRemoveDuplicatesNote: 'Rijen in de selectie die een eerdere rij dupliceren (alle kolommen vergeleken, hoofdletters genegeerd) worden verwijderd; de rest schuift omhoog.',
+  appRemoveDuplicatesNote:
+    'Rijen in de selectie die een eerdere rij dupliceren (alle kolommen vergeleken, hoofdletters genegeerd) worden verwijderd; de rest schuift omhoog.',
   appEditLinkTitle: 'Koppeling bewerken',
   appInsertLinkTitle: 'Koppeling invoegen',
   appLinkAddressLabel: 'Adres — een webpagina (https://…) of een werkbladverwijzing (Sheet1!A1)',
@@ -895,11 +1028,11 @@ export const nl = {
   appGroupText: 'Tekst',
   appTextBox: 'Tekstvak',
   appHeaderFooter: 'Koptekst en voettekst',
-  appPrintedPages: 'Afgedrukte pagina\\\'s',
+  appPrintedPages: "Afgedrukte pagina\\'s",
   appGroupSymbols: 'Symbolen',
   appEquation: 'Vergelijking',
   appSymbol: 'Symbool',
-  appGroupThemes: 'Thema\\\'s',
+  appGroupThemes: "Thema\\'s",
   appColors: 'Kleuren',
   appFonts: 'Lettertypen',
   appGroupPageSetup: 'Pagina-instelling',
@@ -932,7 +1065,7 @@ export const nl = {
   appHeight: 'Hoogte',
   appFitAutomaticOption: 'Automatisch',
   appFitPage1: '{count} pagina',
-  appFitPagesN: '{count} pagina\\\'s',
+  appFitPagesN: "{count} pagina\\'s",
   appGroupSheetOptions: 'Werkbladopties',
   appViewCheck: 'Weergeven',
   appPrintCheck: 'Afdrukken',
@@ -966,7 +1099,8 @@ export const nl = {
   appDefineName: 'Naam definiëren',
   appUseInFormula: 'In formule gebruiken',
   appUseInFormulaTitle: 'Gedefinieerde naam in formule invoegen',
-  appUseInFormulaNeedsEmptyCell: 'Selecteer eerst een lege cel — het invoegen van de naam zou de celinhoud vervangen',
+  appUseInFormulaNeedsEmptyCell:
+    'Selecteer eerst een lege cel — het invoegen van de naam zou de celinhoud vervangen',
   appCreateFromSelection: 'Maken op basis van selectie',
   appCreateFromSelectionTitle: 'Namen maken van selectielabels',
   appNoNamesYet: 'Nog geen gedefinieerde namen',
@@ -1093,7 +1227,8 @@ export const nl = {
   appTranslate: 'Vertalen',
   appGroupLanguage: 'Taal',
   appTranslateTitle: 'Selectie vertalen met AI',
-  appTranslatePrompt: 'Vertaal de tekst in het geselecteerde bereik naar {language} en schrijf de vertalingen terug in dezelfde cellen.',
+  appTranslatePrompt:
+    'Vertaal de tekst in het geselecteerde bereik naar {language} en schrijf de vertalingen terug in dezelfde cellen.',
   appNewCommentDetail: 'Toevoegen of bewerken',
   appDeleteLabel: 'Verwijderen',
   appNoteAtSelection: 'Notitie bij de selectie',
@@ -1119,6 +1254,34 @@ export const nl = {
   appPasteFormattingOnly: 'Alleen opmaak',
   appPasteColWidths: 'Alleen kolombreedten',
   appPasteExceptBorders: 'Alles behalve randen',
+  appPasteTranspose: 'Transponeren',
+  appPasteKeepFormat: 'Plakken met opmaak',
+  appPasteAsPicture: 'Plakken als afbeelding',
+  appPasteTextOnly: 'Alleen tekst plakken',
+  appCopyAsPicture: 'Kopiëren als afbeelding',
+  appFeaturePendingTip: 'Deze functie wordt nog niet ondersteund',
+  appNeedCopyFirst: 'Kopieer of knip eerst',
+  appPastedTransposed: 'Transponerend geplakt',
+  appPastedTextOnly: 'Alleen tekst geplakt',
+  appCopy: 'Kopiëren',
+  appUnderlineAccounting: 'Boekhoudkundige dubbele onderstreping',
+  appBorderOther: 'Meer randen (M)...',
+  appBorderDiagonal: 'Diagonale kop invoegen',
+  appDrawBorderGroup: 'Randen tekenen',
+  appDrawBorderRow: 'Randen tekenen (R)',
+  appDrawBorderGrid: 'Randraster tekenen (G)',
+  appEraseBorder: 'Randen wissen (E)',
+  appPenLineColor: 'Lijnkleur (1)',
+  appPenLineStyle: 'Lijnstijl (Y)',
+  appPenStyle_thin: 'Dun',
+  appPenStyle_medium: 'Middel',
+  appPenStyle_thick: 'Dik',
+  appPenStyle_double: 'Dubbel',
+  appPenStyle_hair: 'Haarlijn',
+  appPenStyle_dashed: 'Gestreept',
+  appPenStyle_dotted: 'Gestippeld',
+  appDrawBorderArmed: 'Randen tekenen gereed: sleep een bereik om toe te passen',
+  appEraseBorderArmed: 'Randen wissen gereed: sleep een bereik om te wissen',
   appCutTitle: 'Knippen ⌘X',
   appCopyTitle: 'Kopiëren ⌘C',
   appFormatPainter: 'Opmaak kopiëren/plakken',
@@ -1168,7 +1331,8 @@ export const nl = {
   appGroupStyles: 'Stijlen',
   appConditionalFormatting: 'Voorwaardelijke opmaak',
   appFormatAsTable: 'Opmaken als tabel',
-  appFormatAsTableTitle: 'Een echte Excel-tabel maken over de selectie (veldnamen in de eerste rij)',
+  appFormatAsTableTitle:
+    'Een echte Excel-tabel maken over de selectie (veldnamen in de eerste rij)',
   appTableStyleLight1: 'Licht 1 (grijs)',
   appTableStyleLight9: 'Licht 9 (blauw)',
   appTableStyleMedium2: 'Gemiddeld 2 (blauw)',
@@ -1265,7 +1429,8 @@ export const nl = {
   appPicCropHint: 'Sleep de grepen om het kader aan te passen; druk op Enter',
   appPicEdited: 'Afbeelding bijgewerkt.',
   appPicResized: 'Afbeeldingsgrootte bijgewerkt.',
-  appPicCropDone: 'Uitsnede toegepast (het origineel blijft bewaard; opnieuw instellen kan altijd).',
+  appPicCropDone:
+    'Uitsnede toegepast (het origineel blijft bewaard; opnieuw instellen kan altijd).',
   appTabFile: 'Bestand',
   appRibbonCollapseTip: 'Lint samenvouwen',
   appRibbonExpandTip: 'Lint uitvouwen',
@@ -1335,10 +1500,12 @@ export const nl = {
   appCellStyleGroupAccent: 'Accent',
   appAiTruncatedNote: '(Het antwoord is afgekapt door de lengtelimiet en is mogelijk onvolledig.)',
   appFullLoadFilterTitle: 'Filteren vereist volledig laden',
-  appFullLoadFilterBody: 'Deze werkmap is groot en slechts gedeeltelijk gestreamd. Filteren (inclusief waardetellingen) heeft de volledige gegevens nodig. De hele werkmap nu laden?',
+  appFullLoadFilterBody:
+    'Deze werkmap is groot en slechts gedeeltelijk gestreamd. Filteren (inclusief waardetellingen) heeft de volledige gegevens nodig. De hele werkmap nu laden?',
   appFullLoadStart: 'Alles laden',
   appFullLoadRunning: 'De hele werkmap wordt geladen — filteren is beschikbaar zodra dit klaar is…',
-  appFullLoadTooLarge: 'Deze werkmap is te groot om volledig in het geheugen te laden; filteren is niet beschikbaar voor dit bestand.',
+  appFullLoadTooLarge:
+    'Deze werkmap is te groot om volledig in het geheugen te laden; filteren is niet beschikbaar voor dit bestand.',
   appDialogCancel: 'Annuleren',
   appRibbonCollapse: 'Het lint samenvouwen',
   appRibbonPin: 'Het lint vastmaken',

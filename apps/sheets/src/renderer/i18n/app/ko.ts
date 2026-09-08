@@ -36,8 +36,10 @@ export const ko = {
   appProtectWorkbookTitle: '통합 문서 구조 잠금(암호 없음)',
   appWorkbookProtectionWillWrite: '저장 시 통합 문서 구조 보호가 기록됩니다(암호 없음).',
   appWorkbookProtectionWillRemove: '저장 시 통합 문서 구조 보호가 제거됩니다.',
-  appWorkbookProtectedWithPassword: '통합 문서 구조가 암호로 보호되어 있어 여기서 변경할 수 없습니다.',
-  appWorkbookStructureLocked: '통합 문서 구조가 보호되어 있어 시트를 추가, 삭제, 이름 바꾸기, 이동할 수 없습니다.',
+  appWorkbookProtectedWithPassword:
+    '통합 문서 구조가 암호로 보호되어 있어 여기서 변경할 수 없습니다.',
+  appWorkbookStructureLocked:
+    '통합 문서 구조가 보호되어 있어 시트를 추가, 삭제, 이름 바꾸기, 이동할 수 없습니다.',
   appAllowEditRangesTitle: '시트가 보호된 상태에서도 편집할 수 있는 범위',
   appRangesPasswordBlocked: '이 시트에는 암호로 보호된 편집 범위가 있어 편집이 지원되지 않습니다.',
   appRangesRecorded: '저장 시 편집 허용 범위 {count}개가 기록됩니다.',
@@ -140,26 +142,37 @@ export const ko = {
   appTooManyImages: '메시지당 이미지는 최대 {max}개까지 보낼 수 있으며, 초과분은 무시되었습니다',
   appAppliedRevision: '적용했습니다(리비전 {revision}) — ⌘Z로 실행 취소, ⌘S로 파일에 저장합니다.',
   appCannotReadImage: '이미지 파일을 읽을 수 없습니다.',
-  appTableNotDeletable: '표 "{name}"이(가) 없거나 이번 세션에서 만든 표가 아닙니다. 파일에 원래 있던 표는 아직 삭제할 수 없습니다.',
+  appTableNotDeletable:
+    '표 "{name}"이(가) 없거나 이번 세션에서 만든 표가 아닙니다. 파일에 원래 있던 표는 아직 삭제할 수 없습니다.',
   appImageNotLoaded: '이미지를 불러오지 못했습니다: {path}',
   appApplyFailed: '⚠️ 적용 실패: {reason}',
   appPivotChartNeedsFile: '먼저 XLSX 파일을 여십시오. 피벗 차트는 파일에 기록됩니다.',
-  appCursorNotInPivot: '커서가 피벗 테이블 안에 있지 않습니다. 먼저 피벗 테이블 출력 영역의 셀을 선택하십시오.',
-  appPivotDefNotLoaded: '피벗 테이블 정의가 아직 로드되지 않았거나 구문 분석에 실패했습니다. 잠시 후 다시 시도하십시오.',
+  appCursorNotInPivot:
+    '커서가 피벗 테이블 안에 있지 않습니다. 먼저 피벗 테이블 출력 영역의 셀을 선택하십시오.',
+  appPivotDefNotLoaded:
+    '피벗 테이블 정의가 아직 로드되지 않았거나 구문 분석에 실패했습니다. 잠시 후 다시 시도하십시오.',
   appPivotNoChartData: '이 피벗 테이블에는 차트로 만들 수 있는 데이터 행/열이 없습니다.',
-  appPivotChartInsertedTruncated: '피벗 차트를 삽입했습니다(데이터 요소가 너무 많아 잘렸습니다). 저장(⌘S)하면 파일에 기록됩니다.',
-  appPivotChartInserted: '피벗 차트를 삽입했습니다. 피벗 테이블 새로 고침과 연동되며, 저장(⌘S)하면 파일에 기록됩니다.',
+  appPivotChartInsertedTruncated:
+    '피벗 차트를 삽입했습니다(데이터 요소가 너무 많아 잘렸습니다). 저장(⌘S)하면 파일에 기록됩니다.',
+  appPivotChartInserted:
+    '피벗 차트를 삽입했습니다. 피벗 테이블 새로 고침과 연동되며, 저장(⌘S)하면 파일에 기록됩니다.',
   appSheetNoPivot: '이 시트에는 피벗 테이블이 없습니다.',
-  appPivotNeedsFullLoad: '피벗 테이블 새로 고침에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
+  appPivotNeedsFullLoad:
+    '피벗 테이블 새로 고침에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
   appPivotSourceSheetMissing: '피벗 테이블의 데이터 원본 시트 "{name}"이(가) 없습니다.',
-  appPivotLayoutMismatch: '피벗 테이블 레이아웃이 출력 영역과 일치하지 않습니다. Excel에서 새로 고친 후 다시 계산할 수 있습니다.',
-  appPivotGrowUnsupported: '이 피벗 테이블의 레이아웃 형식(압축/다중 머리글 행)은 아직 자동 확장을 지원하지 않습니다. Excel에서 새로 고치십시오.',
-  appPivotGrowConflict: '확장된 피벗 테이블 영역이 기존 내용과 충돌합니다. 먼저 대상 영역을 지운 후 새로 고치십시오.',
-  appShapeNotEditable: '편집할 수 있는 도형 "{id}"이(가) 없습니다(이번 세션에서 추가한 도형만 편집할 수 있습니다).',
+  appPivotLayoutMismatch:
+    '피벗 테이블 레이아웃이 출력 영역과 일치하지 않습니다. Excel에서 새로 고친 후 다시 계산할 수 있습니다.',
+  appPivotGrowUnsupported:
+    '이 피벗 테이블의 레이아웃 형식(압축/다중 머리글 행)은 아직 자동 확장을 지원하지 않습니다. Excel에서 새로 고치십시오.',
+  appPivotGrowConflict:
+    '확장된 피벗 테이블 영역이 기존 내용과 충돌합니다. 먼저 대상 영역을 지운 후 새로 고치십시오.',
+  appShapeNotEditable:
+    '편집할 수 있는 도형 "{id}"이(가) 없습니다(이번 세션에서 추가한 도형만 편집할 수 있습니다).',
   appCalcFieldNameClash: '계산 필드 "{name}"은(는) 원본 머리글과 같은 이름을 사용할 수 없습니다.',
   appCalcFieldNameDuplicate: '계산 필드 이름은 중복될 수 없습니다.',
   appValueFilterFieldMissing: '값 필터가 참조하는 값 필드 {index}이(가) 존재하지 않습니다.',
-  appPivotRelayoutOverlap: '피벗 테이블의 새 레이아웃이 기존 내용을 덮어씁니다. 먼저 대상 영역을 지우십시오.',
+  appPivotRelayoutOverlap:
+    '피벗 테이블의 새 레이아웃이 기존 내용을 덮어씁니다. 먼저 대상 영역을 지우십시오.',
   appInvalidRowField: '행 필드가 잘못되었습니다.',
   appNeedRowField: '행 필드를 하나 이상 선택하십시오.',
   appInvalidColumnField: '열 필드가 잘못되었습니다.',
@@ -170,49 +183,64 @@ export const ko = {
   appWorkbookNotReady: '통합 문서가 준비되지 않았습니다.',
   appOpenWorkbookFirst: '먼저 통합 문서를 여십시오.',
   appOpenXlsxFirst: '먼저 XLSX 파일을 여십시오.',
-  appPivotCreated: '피벗 테이블을 만들었습니다. 대상 셀은 {cell}이며, 저장하면 파일에 기록됩니다. 저장 후에는 슬라이서, 시간 표시 막대, 새로 고침을 사용할 수 있습니다.',
+  appPivotCreated:
+    '피벗 테이블을 만들었습니다. 대상 셀은 {cell}이며, 저장하면 파일에 기록됩니다. 저장 후에는 슬라이서, 시간 표시 막대, 새로 고침을 사용할 수 있습니다.',
   appPivotCreateFailed: '피벗 테이블을 만들지 못했습니다.',
   appPutCursorInPivot: '먼저 편집할 피벗 테이블 출력 영역 안에 커서를 두십시오.',
   appPivotNoCacheDef: '이 피벗 테이블에는 캐시 정의가 없어 편집할 수 없습니다.',
-  appPivotDefNotLoadedSave: '이 피벗 테이블의 정의가 아직 로드되지 않았습니다. 이번 세션에서 편집했다면 먼저 저장(⌘S)한 후 계속하십시오.',
+  appPivotDefNotLoadedSave:
+    '이 피벗 테이블의 정의가 아직 로드되지 않았습니다. 이번 세션에서 편집했다면 먼저 저장(⌘S)한 후 계속하십시오.',
   appPivotEditUnsupported: '이 피벗 테이블은 아직 편집할 수 없습니다: {reasons}',
-  appPivotEditHasFeatures: '그룹화/필터/보고서 필터/계산 필드가 있는 피벗 테이블은 아직 레이아웃 편집을 지원하지 않습니다. Excel에서 조정하십시오.',
-  appPivotEditValuesOnRows: '값 필드가 행 축에 있는 피벗 테이블은 아직 레이아웃 편집을 지원하지 않습니다.',
-  appPivotEditAggUnsupported: '이 피벗 테이블의 집계 방식(곱, 숫자 개수 등)은 아직 레이아웃 편집을 지원하지 않습니다.',
+  appPivotEditHasFeatures:
+    '그룹화/필터/보고서 필터/계산 필드가 있는 피벗 테이블은 아직 레이아웃 편집을 지원하지 않습니다. Excel에서 조정하십시오.',
+  appPivotEditValuesOnRows:
+    '값 필드가 행 축에 있는 피벗 테이블은 아직 레이아웃 편집을 지원하지 않습니다.',
+  appPivotEditAggUnsupported:
+    '이 피벗 테이블의 집계 방식(곱, 숫자 개수 등)은 아직 레이아웃 편집을 지원하지 않습니다.',
   appPivotSourceSheetNotFound: '피벗 테이블의 원본 데이터 시트 "{name}"을(를) 찾을 수 없습니다.',
-  appPivotLayoutUpdated: '피벗 테이블 레이아웃을 업데이트했습니다. 저장(⌘S)하면 파일에 기록되며, Excel에서 열 때 캐시가 다시 만들어집니다.',
+  appPivotLayoutUpdated:
+    '피벗 테이블 레이아웃을 업데이트했습니다. 저장(⌘S)하면 파일에 기록되며, Excel에서 열 때 캐시가 다시 만들어집니다.',
   appPivotEditFailed: '피벗 테이블을 편집하지 못했습니다.',
   appNoActiveSheet: '활성 시트가 없습니다.',
   appCurrentSheetNoPivot: '현재 시트에는 피벗 테이블이 없습니다.',
   appPivotsRefreshed: '피벗 테이블 {count}개를 새로 고쳤습니다 — 저장(⌘S)하면 파일에 기록됩니다.',
   appRefreshFailed: '새로 고침에 실패했습니다.',
-  appSlicerNeedsFile: '먼저 XLSX 파일을 여십시오. 슬라이서는 파일에 있는 피벗 테이블을 기반으로 합니다.',
+  appSlicerNeedsFile:
+    '먼저 XLSX 파일을 여십시오. 슬라이서는 파일에 있는 피벗 테이블을 기반으로 합니다.',
   appFieldN: '필드 {n}',
   appPivotNoSlicerFields: '이 피벗 테이블에는 슬라이서로 사용할 수 있는 차원 필드가 없습니다.',
   appSlicerPivotStale: '슬라이서의 대상 피벗 테이블이 더 이상 유효하지 않습니다.',
   appBlank: '(비어 있음)',
   appFieldNoMembers: '이 필드에는 필터링할 수 있는 구성원이 없습니다.',
-  appSlicerCreated: '슬라이서 "{name}"을(를) 만들었습니다. 구성원을 클릭하면 피벗 테이블이 필터링됩니다.',
-  appSlicerNeedsFullLoad: '슬라이서 필터링에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
+  appSlicerCreated:
+    '슬라이서 "{name}"을(를) 만들었습니다. 구성원을 클릭하면 피벗 테이블이 필터링됩니다.',
+  appSlicerNeedsFullLoad:
+    '슬라이서 필터링에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
   appSlicerPivotMissing: '슬라이서에 연결된 피벗 테이블이 더 이상 없습니다.',
   appSlicerSheetMissing: '슬라이서에 연결된 시트가 더 이상 없습니다.',
   appSlicerFilterFailed: '슬라이서 필터링에 실패했습니다.',
   appSlicerKeepOne: '슬라이서에서는 구성원을 하나 이상 선택된 상태로 유지하십시오.',
-  appSlicerApplied: '슬라이서 "{name}"을(를) 적용했습니다. 저장(⌘S)하면 필터링된 피벗 테이블이 기록됩니다.',
+  appSlicerApplied:
+    '슬라이서 "{name}"을(를) 적용했습니다. 저장(⌘S)하면 필터링된 피벗 테이블이 기록됩니다.',
   appSlicerCleared: '슬라이서 "{name}"의 필터를 해제했습니다.',
   appSlicerRemoved: '슬라이서 "{name}"을(를) 삭제했습니다. 모든 구성원이 복원되었습니다.',
   appTimelineHintIn: '현재 피벗 테이블의 날짜 필드로 시간 표시 막대 삽입',
   appTimelineHintOut: '먼저 피벗 테이블 출력 영역의 셀을 선택한 후 시간 표시 막대를 삽입하십시오',
-  appTimelineNoDateFields: '이 피벗 테이블에는 사용할 수 있는 날짜 필드가 없습니다. 시간 표시 막대에는 값이 모두 날짜인 그룹화되지 않은 필드가 필요합니다.',
-  appTimelineCreated: '시간 표시 막대 "{name}"을(를) 만들었습니다. 월을 클릭하면 피벗 테이블이 필터링됩니다.',
-  appTimelineApplied: '시간 표시 막대 "{name}"을(를) 적용했습니다. 저장(⌘S)하면 필터링된 피벗 테이블이 기록됩니다.',
+  appTimelineNoDateFields:
+    '이 피벗 테이블에는 사용할 수 있는 날짜 필드가 없습니다. 시간 표시 막대에는 값이 모두 날짜인 그룹화되지 않은 필드가 필요합니다.',
+  appTimelineCreated:
+    '시간 표시 막대 "{name}"을(를) 만들었습니다. 월을 클릭하면 피벗 테이블이 필터링됩니다.',
+  appTimelineApplied:
+    '시간 표시 막대 "{name}"을(를) 적용했습니다. 저장(⌘S)하면 필터링된 피벗 테이블이 기록됩니다.',
   appTimelineCleared: '시간 표시 막대 "{name}"의 필터를 해제했습니다.',
   appTimelineRemoved: '시간 표시 막대 "{name}"을(를) 삭제했습니다. 모든 구성원이 복원되었습니다.',
   appTimelineEmptyRange: '선택한 월 범위에 구성원이 없습니다.',
-  appFieldFilterTaken: '조건에 맞는 모든 필드에 이미 슬라이서 또는 시간 표시 막대가 있습니다. 먼저 기존 항목을 제거하세요.',
+  appFieldFilterTaken:
+    '조건에 맞는 모든 필드에 이미 슬라이서 또는 시간 표시 막대가 있습니다. 먼저 기존 항목을 제거하세요.',
   appGoToNotReady: '통합 문서가 아직 준비되지 않아 이동할 수 없습니다.',
   appGoToEmpty: '셀 주소나 정의된 이름을 입력하십시오.',
-  appGoToUnresolved: '"{ref}"(으)로 이동할 수 없습니다: 주소가 잘못되었고, 이동할 수 있는 정의된 이름도 아닙니다.',
+  appGoToUnresolved:
+    '"{ref}"(으)로 이동할 수 없습니다: 주소가 잘못되었고, 이동할 수 있는 정의된 이름도 아닙니다.',
   appGoToOutOfBounds: '"{ref}"(으)로 이동할 수 없습니다: 시트 범위를 벗어났습니다.',
   appGoToSheetNotFound: '"{ref}"(으)로 이동할 수 없습니다: 해당 시트를 찾을 수 없습니다.',
   appGoToInvalidAddress: '"{ref}"(으)로 이동할 수 없습니다: 주소가 잘못되었습니다.',
@@ -220,48 +248,67 @@ export const ko = {
   appSymbolNeedsCell: '먼저 통합 문서를 열고 셀을 선택한 후 기호를 삽입하십시오.',
   appSymbolInsertFailed: '기호를 삽입할 수 없습니다.',
   appSymbolInserted: '{char}을(를) {cell}에 삽입했습니다.',
-  appAdvFilterNeedsFilter: '고급 필터에는 자동 필터 범위가 필요합니다 — 먼저 데이터를 선택하고 필터를 켜십시오.',
+  appAdvFilterNeedsFilter:
+    '고급 필터에는 자동 필터 범위가 필요합니다 — 먼저 데이터를 선택하고 필터를 켜십시오.',
   appAdvFilterGone: '현재 시트에 자동 필터가 없습니다 — 다시 켠 후 시도하십시오.',
   appAdvFilterFailed: '고급 필터를 적용하지 못했습니다.',
   appAdvFilterApplied: '고급 필터 조건을 적용했습니다 — ⌘S로 저장하면 파일에 기록됩니다.',
   appFlashFillNeedsLeft: '빠른 채우기에는 대상 열 왼쪽에 데이터 열이 필요합니다.',
   appFlashFillNeedsRows: '빠른 채우기에는 데이터가 두 행 이상 필요합니다.',
   appFlashFillNeedsExamples: '먼저 대상 열에 예를 1~2개 입력한 후 빠른 채우기를 클릭하십시오.',
-  appFlashFillNoPattern: '예에서 패턴을 인식하지 못했습니다. 대상 열의 값은 왼쪽 열에서 만들 수 있어야 합니다. 예를 하나 더 입력해 보십시오.',
+  appFlashFillNoPattern:
+    '예에서 패턴을 인식하지 못했습니다. 대상 열의 값은 왼쪽 열에서 만들 수 있어야 합니다. 예를 하나 더 입력해 보십시오.',
   appFlashFillNothingToFill: '채울 빈 행이 없습니다.',
   appFlashFillDone: '⚡ 빠른 채우기로 예에 따라 {count}개 행을 채웠습니다.',
   appSparklineNeedsFile: '스파크라인에는 가져온 XLSX 파일이 필요합니다.',
-  appSparklineNeedsCols: '데이터를 두 열 이상 선택하십시오. 행마다 스파크라인이 하나씩 만들어져 선택 영역 오른쪽 열에 배치됩니다.',
+  appSparklineNeedsCols:
+    '데이터를 두 열 이상 선택하십시오. 행마다 스파크라인이 하나씩 만들어져 선택 영역 오른쪽 열에 배치됩니다.',
   appSparklineNoSpace: '선택 영역 오른쪽에 스파크라인을 배치할 공간이 없습니다.',
-  appSparklinesInserted: '스파크라인 {count}개를 삽입했습니다(선택 영역 오른쪽 열). ⌘S로 파일에 저장합니다.',
-  appSaveHeldStranded: '피벗 테이블/표는 새 시트 및 행/열 변경과 한 번에 저장할 수 없습니다. 먼저 구조를 저장한 후 피벗 테이블/표를 추가하십시오.',
-  appSaveSecondCanceled: '두 번째 저장 단계가 취소되었습니다. 구조는 저장되었지만 피벗 테이블/표/이름 범위는 아직 기록되지 않았습니다.',
+  appSparklinesInserted:
+    '스파크라인 {count}개를 삽입했습니다(선택 영역 오른쪽 열). ⌘S로 파일에 저장합니다.',
+  appSaveHeldStranded:
+    '피벗 테이블/표는 새 시트 및 행/열 변경과 한 번에 저장할 수 없습니다. 먼저 구조를 저장한 후 피벗 테이블/표를 추가하십시오.',
+  appSaveSecondCanceled:
+    '두 번째 저장 단계가 취소되었습니다. 구조는 저장되었지만 피벗 테이블/표/이름 범위는 아직 기록되지 않았습니다.',
   appSavedTwoPhase: '저장했습니다.',
-  appSaveSecondFailed: '구조는 저장되었지만 두 번째 단계(피벗 테이블/표/이름 범위)가 실패했습니다: {reason}',
+  appSaveSecondFailed:
+    '구조는 저장되었지만 두 번째 단계(피벗 테이블/표/이름 범위)가 실패했습니다: {reason}',
   appReadyInitial: '준비 완료 — 로컬 결정적 AI 명령을 사용할 수 있습니다.',
   appAiThinking: 'AI가 생각하는 중…',
   appAiDone: 'AI가 완료되었습니다',
-  appAiTurnLimit: '(요청당 도구 호출 한도에 도달하여, 지금까지 읽은 정보를 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
+  appAiTurnLimit:
+    '(요청당 도구 호출 한도에 도달하여, 지금까지 읽은 정보를 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
   appAiStopped: '(중지됨)',
   appAiNoSummary: 'AI가 완료되었지만 요약은 생성되지 않았습니다.',
-  appAiNoAction: 'AI가 아무 작업도 수행하지 않았고 응답도 없습니다. 다시 시도하거나 다르게 표현해 보세요.',
+  appAiNoAction:
+    'AI가 아무 작업도 수행하지 않았고 응답도 없습니다. 다시 시도하거나 다르게 표현해 보세요.',
   appNewConversation: '새 대화를 시작했습니다.',
   appPivotCellNoEdit: '이 셀은 피벗 테이블에 속해 있어 아직 편집할 수 없습니다.',
   appAreaStreaming: '이 영역은 아직 스트리밍 로드 중입니다 — 잠시 후 다시 시도하십시오.',
-  appFormulaRecordedPartial: '수식을 기록했습니다 — 파일에는 저장되지만, 이 큰 통합 문서는 부분 스트리밍 방식으로 로드되어 화면의 결과가 불완전할 수 있습니다.',
-  appFormulaTooExpensive: '이 수식은 큰 범위를 요소마다 평가하므로 계산으로 앱이 멈춥니다 — 취소되었습니다. 참조 범위를 줄인 뒤 다시 시도하세요.',
+  appFormulaRecordedPartial:
+    '수식을 기록했습니다 — 파일에는 저장되지만, 이 큰 통합 문서는 부분 스트리밍 방식으로 로드되어 화면의 결과가 불완전할 수 있습니다.',
+  appFormulaTooExpensive:
+    '이 수식은 큰 범위를 요소마다 평가하므로 계산으로 앱이 멈춥니다 — 취소되었습니다. 참조 범위를 줄인 뒤 다시 시도하세요.',
   appPivotSheetNoStructural: '이 시트에는 피벗 테이블이 있어 아직 구조 변경을 지원하지 않습니다.',
-  appDeleteSpanFormulas: '삭제할 행/열만 참조하는 수식이 있습니다 — 먼저 해당 수식을 수정하거나 삭제하세요.',
-  appIconSetUnsupported: '이 아이콘 조합은 xlsx로 저장할 수 없습니다. 다른 아이콘 집합을 선택하세요.',
-  appNeedFullLoadSort: '정렬, 필터, 범위 이동, 텍스트 나누기에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
+  appDeleteSpanFormulas:
+    '삭제할 행/열만 참조하는 수식이 있습니다 — 먼저 해당 수식을 수정하거나 삭제하세요.',
+  appIconSetUnsupported:
+    '이 아이콘 조합은 xlsx로 저장할 수 없습니다. 다른 아이콘 집합을 선택하세요.',
+  appNeedFullLoadSort:
+    '정렬, 필터, 범위 이동, 텍스트 나누기에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
   appPivotSheetNoMove: '이 시트에는 피벗 테이블이 있어 아직 범위 이동을 지원하지 않습니다.',
-  appTableFilterNoEdit: '이 시트의 필터는 Excel 표에 속해 있어 편집 후에도 당분간 저장할 수 없습니다.',
+  appTableFilterNoEdit:
+    '이 시트의 필터는 Excel 표에 속해 있어 편집 후에도 당분간 저장할 수 없습니다.',
   appAutofillStreaming: '아직 스트리밍 로드 중인 영역으로는 자동 채우기를 할 수 없습니다.',
-  appDvNeedsIndexed: '데이터 유효성 검사를 편집하려면 먼저 이 시트의 인덱싱이 완료되어야 합니다 — 잠시 후 다시 시도하십시오.',
-  appDuplicateNeedsFullLoad: '시트 복제에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
+  appDvNeedsIndexed:
+    '데이터 유효성 검사를 편집하려면 먼저 이 시트의 인덱싱이 완료되어야 합니다 — 잠시 후 다시 시도하십시오.',
+  appDuplicateNeedsFullLoad:
+    '시트 복제에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
   appPivotSheetNoDuplicate: '이 시트에는 피벗 테이블이 있어 아직 시트 복제를 지원하지 않습니다.',
-  appDuplicateScopedNames: '이 시트에는 시트 범위로 정의된 이름이 있어 아직 시트 복제를 지원하지 않습니다.',
-  appMoveRowsColsUnsaved: '전체 열 이동은 가져온 통합 문서에 아직 저장할 수 없습니다 — 전체 행 이동은 지원됩니다.',
+  appDuplicateScopedNames:
+    '이 시트에는 시트 범위로 정의된 이름이 있어 아직 시트 복제를 지원하지 않습니다.',
+  appMoveRowsColsUnsaved:
+    '전체 열 이동은 가져온 통합 문서에 아직 저장할 수 없습니다 — 전체 행 이동은 지원됩니다.',
   appNoWorkbookOpen: '열려 있는 통합 문서가 없습니다.',
   appDvListOptions: '목록: {items}',
   appDvListFromRange: '목록(범위 {range}에서)',
@@ -274,7 +321,8 @@ export const ko = {
   appTxCommitted: '트랜잭션을 커밋했습니다(리비전 {revision}).',
   appPreviewOtherWorkbook: '이 미리 보기는 다른 통합 문서의 것입니다 — 다시 만드십시오.',
   appPreviewSheetGone: '미리 본 시트가 더 이상 없습니다 — 미리 보기를 다시 만드십시오.',
-  appWorkbookChangedSincePreview: '미리 보기 이후 통합 문서가 변경되었습니다 — 미리 보기를 다시 만드십시오.',
+  appWorkbookChangedSincePreview:
+    '미리 보기 이후 통합 문서가 변경되었습니다 — 미리 보기를 다시 만드십시오.',
   appAppliedJournaled: '적용했습니다 — 변경 내용이 기록되었습니다. ⌘S로 파일에 저장합니다.',
   appUndoCommitted: '실행 취소를 커밋했습니다(리비전 {revision}).',
   appUndoFailed: '실행 취소할 수 없습니다.',
@@ -282,9 +330,11 @@ export const ko = {
   appAutoFilterRemoveFailed: '자동 필터를 제거할 수 없습니다.',
   appSelectDataRangeFirst: '먼저 데이터 범위를 선택하십시오.',
   appUnsupportedChartType: '지원되지 않는 차트 종류: {kind}.',
-  appChartInsertedDemo: '차트를 삽입했습니다 — 데모 모드의 편집은 메모리에만 저장되며, 디스크에 저장하려면 XLSX 파일을 여십시오.',
+  appChartInsertedDemo:
+    '차트를 삽입했습니다 — 데모 모드의 편집은 메모리에만 저장되며, 디스크에 저장하려면 XLSX 파일을 여십시오.',
   appChartInsertFailed: '차트를 삽입할 수 없습니다.',
-  appChartNeedsNumericColumn: '숫자 열을 하나 이상 포함하는 범위를 선택하십시오(머리글은 선택 사항).',
+  appChartNeedsNumericColumn:
+    '숫자 열을 하나 이상 포함하는 범위를 선택하십시오(머리글은 선택 사항).',
   appChartInserted: '차트를 삽입했습니다 — 선택하면 편집할 수 있으며, ⌘S로 파일에 기록합니다.',
   appShapeNeedsFile: '먼저 XLSX 파일을 여십시오. 삽입한 도형은 파일에 기록됩니다.',
   appSelectCellFirst: '먼저 셀을 선택하십시오.',
@@ -302,7 +352,8 @@ export const ko = {
   appTableSelectRange: '먼저 데이터 범위를 선택하십시오. 첫 행이 머리글이 됩니다.',
   appTableCreated: '표를 만들었습니다 — ⌘S로 저장합니다.',
   appTableCreateFailed: '표를 만들 수 없습니다.',
-  appPivotOnAddedSheet: '이번 세션에서 새로 만든 시트에는 아직 피벗 테이블을 만들 수 없습니다 — 먼저 저장하십시오.',
+  appPivotOnAddedSheet:
+    '이번 세션에서 새로 만든 시트에는 아직 피벗 테이블을 만들 수 없습니다 — 먼저 저장하십시오.',
   appPivotSourceNeedsRows: '피벗 테이블 원본 데이터에는 머리글 행과 데이터 행이 필요합니다.',
   appPivotSourceRowLimit: '피벗 테이블 원본 데이터는 최대 10,000행입니다.',
   appPivotSourceColLimit: '피벗 테이블 원본 데이터는 최대 200개 열입니다.',
@@ -314,9 +365,11 @@ export const ko = {
   appPivotTooManyColLines: '피벗 테이블 열 레이아웃 줄이 1,000개를 초과했습니다.',
   appPivotNeedsValues: '피벗 테이블에는 값 필드가 하나 필요합니다.',
   appPivotTooManyRowLines: '피벗 테이블 행 레이아웃 줄이 20,000개를 초과했습니다.',
-  appPivotOverlapSource: '피벗 테이블 출력 영역이 원본 데이터 영역과 겹칩니다 — 다른 대상 셀을 선택하십시오.',
+  appPivotOverlapSource:
+    '피벗 테이블 출력 영역이 원본 데이터 영역과 겹칩니다 — 다른 대상 셀을 선택하십시오.',
   appPivotOverlapExisting: '피벗 테이블 출력 영역이 대상 시트의 기존 피벗 테이블과 겹칩니다.',
-  appPivotOverlapSession: '피벗 테이블 출력 영역이 이번 세션에서 만든 피벗 테이블 "{name}"과(와) 겹칩니다.',
+  appPivotOverlapSession:
+    '피벗 테이블 출력 영역이 이번 세션에서 만든 피벗 테이블 "{name}"과(와) 겹칩니다.',
   appPivotNameUsed: '피벗 테이블 이름 "{name}"은(는) 이번 세션에서 이미 사용되었습니다.',
   appActiveCellFallback: '활성 셀',
   appFormulaStartsEquals: '수식은 "="로 시작해야 합니다.',
@@ -336,9 +389,12 @@ export const ko = {
   appConsolidateEmptySources: '원본 영역이 모두 비어 있습니다.',
   appConsolidateOverlap: '출력 영역이 원본 영역과 겹칩니다 — 다른 대상 셀을 선택하십시오.',
   appConsolidateWriteFailed: '통합 결과를 쓸 수 없습니다.',
-  appConsolidateDone: '{count}개 영역을 통합했습니다. 결과는 {cell}에 있습니다({rows}×{columns} 실시간 수식).',
-  appConsolidateMaxMinLabels: '최대값/최소값은 왼쪽 열 레이블 모드를 지원하지 않습니다 — 위치 기준 통합을 사용하십시오.',
-  appConsolidateLabelNeedsCols: '레이블 모드에서는 각 영역에 열이 두 개 이상(레이블 열과 값 열) 필요합니다.',
+  appConsolidateDone:
+    '{count}개 영역을 통합했습니다. 결과는 {cell}에 있습니다({rows}×{columns} 실시간 수식).',
+  appConsolidateMaxMinLabels:
+    '최대값/최소값은 왼쪽 열 레이블 모드를 지원하지 않습니다 — 위치 기준 통합을 사용하십시오.',
+  appConsolidateLabelNeedsCols:
+    '레이블 모드에서는 각 영역에 열이 두 개 이상(레이블 열과 값 열) 필요합니다.',
   appConsolidateNoLabels: '원본 영역의 왼쪽 열에서 레이블을 찾을 수 없습니다.',
   appOutlineNeedsFile: '먼저 XLSX 파일을 여십시오. 개요는 파일에 기록됩니다.',
   appOutlineSelectFirst: '먼저 그룹화할 행이나 열을 선택하십시오.',
@@ -354,14 +410,17 @@ export const ko = {
   appSheetAddFailed: '시트를 추가할 수 없습니다.',
   appFormatCopied: '서식을 복사했습니다 — 대상 셀을 선택하면 적용됩니다.',
   appProtectionNeedsFile: '먼저 XLSX 파일을 여십시오. 보호 설정은 파일에 저장됩니다.',
-  appProtectionNeedsIndexed: '보호 설정을 하려면 먼저 이 시트의 인덱싱이 완료되어야 합니다 — 잠시 후 다시 시도하십시오.',
+  appProtectionNeedsIndexed:
+    '보호 설정을 하려면 먼저 이 시트의 인덱싱이 완료되어야 합니다 — 잠시 후 다시 시도하십시오.',
   appProtectedWithPassword: '이 시트는 암호로 보호되어 있습니다 — 보호 해제는 지원되지 않습니다.',
-  appProtectionWillWrite: '저장할 때 시트 보호(암호 없음)가 기록됩니다. 편집기 자체는 보호를 강제하지 않습니다.',
+  appProtectionWillWrite:
+    '저장할 때 시트 보호(암호 없음)가 기록됩니다. 편집기 자체는 보호를 강제하지 않습니다.',
   appProtectionWillRemove: '저장할 때 시트 보호가 제거됩니다.',
   appZoom: '확대/축소 {percent}%.',
   appTopRowFrozen: '첫 행을 고정했습니다 — ⌘S로 저장합니다.',
   appFirstColFrozen: '첫 열을 고정했습니다 — ⌘S로 저장합니다.',
-  appFindScanTruncated: '큰 시트: {cells}개 셀에서 검색을 중단했습니다. 결과가 불완전할 수 있습니다.',
+  appFindScanTruncated:
+    '큰 시트: {cells}개 셀에서 검색을 중단했습니다. 결과가 불완전할 수 있습니다.',
   appReplaceNeedsFullLoad: '바꾸기에는 전체 로드 모드가 필요합니다 — 대신 찾기를 사용하십시오.',
   appGridlinesHiddenSave: '눈금선을 숨겼습니다 — ⌘S로 저장합니다.',
   appGridlinesShownSave: '눈금선을 표시했습니다 — ⌘S로 저장합니다.',
@@ -379,7 +438,8 @@ export const ko = {
   appTraceOffSheetDeps: '다른 시트의 참조하는 셀 {count}개는 표시되지 않았습니다.',
   appTraceArrowsRemoved: '연결선을 제거했습니다.',
   appNoTraceArrows: '제거할 연결선이 없습니다.',
-  appWorkbookStats: '통합 문서 통계: 시트 {sheets}개 · 데이터가 있는 셀 {cells}개 · 수식 {formulas}개{note}.',
+  appWorkbookStats:
+    '통합 문서 통계: 시트 {sheets}개 · 데이터가 있는 셀 {cells}개 · 수식 {formulas}개{note}.',
   appFrozenAtSelection: '선택 위치에서 틀을 고정했습니다 — ⌘S로 저장합니다.',
   appSelectCellsFirst: '먼저 셀을 선택하십시오.',
   appCellStyleApplied: '셀 스타일을 적용했습니다 — 서식 편집과 마찬가지로 기록됩니다(⌘S로 저장).',
@@ -394,7 +454,8 @@ export const ko = {
   appRowBelowStreaming: '아래 행은 아직 스트리밍 로드 중입니다 — 잠시 후 다시 시도하십시오.',
   appAutofnInserted: '선택 영역 아래에 {fn}을(를) 삽입했습니다.',
   appSortedCustom: '사용자 지정 수준에 따라 정렬했습니다.',
-  appDedupeNeedsFullLoad: '중복된 항목 제거에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
+  appDedupeNeedsFullLoad:
+    '중복된 항목 제거에는 전체 로드 모드가 필요합니다. 이 통합 문서는 너무 커서 스트리밍 방식으로만 로드되었습니다.',
   appDedupeSelectRows: '먼저 중복을 확인할 행을 선택하십시오.',
   appNoDuplicates: '선택 영역에 중복 행이 없습니다.',
   appDuplicatesRemoved: '중복 행 {count}개를 제거했습니다.',
@@ -407,7 +468,8 @@ export const ko = {
   appAppliedToSelection: '현재 선택 영역에 적용했습니다.',
   appCommandFailed: '이 명령을 적용할 수 없습니다.',
   appColumnLabel: '열 {col}',
-  appBridgeUnavailable: '데스크톱 파일 브리지를 사용할 수 없습니다. Electron 앱을 다시 시작하십시오.',
+  appBridgeUnavailable:
+    '데스크톱 파일 브리지를 사용할 수 없습니다. Electron 앱을 다시 시작하십시오.',
   appOpenCanceled: '통합 문서 선택을 취소했습니다.',
   appOpened: '{name}을(를) 열었습니다 — 셀 편집은 ⌘S로 파일에 저장합니다.',
   appOpenFailed: '통합 문서를 열 수 없습니다.',
@@ -438,50 +500,69 @@ export const ko = {
   appHfNeedsFile: '먼저 XLSX 파일을 여십시오. 머리글과 바닥글은 파일에 저장됩니다.',
   appActiveSheetUnavailable: '활성 시트를 사용할 수 없습니다.',
   appHfUpdated: '머리글/바닥글을 업데이트했습니다 — ⌘S로 저장합니다.',
-  appPdfNeedsFullLoad: 'PDF 내보내기에는 통합 문서 전체 로드가 필요합니다 — 로드가 완료될 때까지 기다리십시오.',
+  appPdfNeedsFullLoad:
+    'PDF 내보내기에는 통합 문서 전체 로드가 필요합니다 — 로드가 완료될 때까지 기다리십시오.',
   appPdfRendering: 'PDF를 렌더링하는 중…',
   appPdfCanceled: 'PDF 내보내기를 취소했습니다.',
   appPdfExported: '{path}을(를) 내보냈습니다.',
   appPdfExportFailed: 'PDF를 내보낼 수 없습니다.',
-  appCsvExportNeedsFullLoad: 'CSV 내보내기에는 통합 문서 전체 로드가 필요합니다 — 로드가 완료될 때까지 기다리십시오.',
+  appCsvExportNeedsFullLoad:
+    'CSV 내보내기에는 통합 문서 전체 로드가 필요합니다 — 로드가 완료될 때까지 기다리십시오.',
   appCsvExportTooLarge: '시트가 너무 커서 CSV로 내보낼 수 없습니다.',
   appCsvExportCanceled: 'CSV 내보내기를 취소했습니다.',
   appCsvExported: '{path}을(를) 내보냈습니다.',
-  appCsvExportedActiveOnly: 'CSV는 시트 하나만 포함합니다 — 활성 시트 "{name}"을(를) {path}(으)로 내보냈습니다.',
+  appCsvExportedActiveOnly:
+    'CSV는 시트 하나만 포함합니다 — 활성 시트 "{name}"을(를) {path}(으)로 내보냈습니다.',
   appCsvExportFailed: 'CSV를 내보낼 수 없습니다.',
-  appDemoNoSave: '데모 모드의 편집은 메모리에만 저장됩니다 — 디스크에 저장하려면 XLSX 파일을 여십시오.',
+  appDemoNoSave:
+    '데모 모드의 편집은 메모리에만 저장됩니다 — 디스크에 저장하려면 XLSX 파일을 여십시오.',
   appFilterSnapshotFailed: '필터 상태의 스냅숏을 만들 수 없습니다.',
-  appColorFiltersUnsaveable: '색 필터는 아직 XLSX로 저장할 수 없습니다 — 먼저 해제한 후 저장하십시오.',
+  appColorFiltersUnsaveable:
+    '색 필터는 아직 XLSX로 저장할 수 없습니다 — 먼저 해제한 후 저장하십시오.',
   appNoEditsToSave: '아직 저장할 편집 내용이 없습니다.',
   appSheetOrderReadFailed: '시트 순서를 읽을 수 없습니다 — 다시 시도하십시오.',
   appSavingEdits: '편집 {count}개를 저장하는 중…',
   appSaveCanceled: '저장을 취소했습니다.',
   appSaved: '저장했습니다.',
   appSaveFailed: '통합 문서를 저장할 수 없습니다.',
-  appCfRuleUnsaveable: '이 조건부 서식 규칙은 xlsx로 저장할 수 없습니다 — 다른 규칙 유형을 사용하십시오.',
-  appSaveErrX14Dv: '이 시트에는 확장(x14) 데이터 유효성 검사가 있어 해당 유효성 검사 규칙 편집은 아직 지원되지 않습니다.',
-  appSaveErrMultiSelectList: '다중 선택 목록 유효성 검사는 xlsx로 저장할 수 없습니다 — 저장하기 전에 해당 규칙을 삭제하십시오.',
+  appCfRuleUnsaveable:
+    '이 조건부 서식 규칙은 xlsx로 저장할 수 없습니다 — 다른 규칙 유형을 사용하십시오.',
+  appSaveErrX14Dv:
+    '이 시트에는 확장(x14) 데이터 유효성 검사가 있어 해당 유효성 검사 규칙 편집은 아직 지원되지 않습니다.',
+  appSaveErrMultiSelectList:
+    '다중 선택 목록 유효성 검사는 xlsx로 저장할 수 없습니다 — 저장하기 전에 해당 규칙을 삭제하십시오.',
   appSaveErrX14Cf: '이 영역에는 확장(x14) 조건부 서식이 있어 당분간 수정할 수 없습니다.',
-  appSaveErrPivotWithSheetOps: '새로 만든 피벗 테이블은 시트 관리 변경과 함께 저장할 수 없습니다 — 먼저 피벗 테이블을 저장하십시오.',
-  appSaveErrPivotWithRowCol: '새로 만든 피벗 테이블은 해당 시트의 행/열 변경과 함께 저장할 수 없습니다 — 먼저 피벗 테이블을 저장하십시오.',
-  appSaveErrTableWithRowCol: '새로 만든 표는 해당 시트의 행/열 변경과 함께 저장할 수 없습니다 — 먼저 표를 저장하십시오.',
-  appSaveErrNamesWithStructural: '정의된 이름 변경은 행/열 또는 시트 구조 변경과 함께 저장할 수 없습니다 — 두 번에 나누어 저장하십시오.',
-  appSaveErrChangedOnDisk: '다른 프로그램이 디스크의 파일을 변경했습니다 — 저장을 중단했으니 파일을 다시 연 후 시도하십시오.',
-  appSaveErrStylesheetLimited: '이 통합 문서의 스타일시트에 기본 구조가 없어 스타일 변경을 저장할 수 없습니다.',
-  appSaveErrPackageGuard: '저장하면 통합 문서의 패키지 구조가 바뀝니다 — 파일 보호를 위해 중단했습니다.',
-  appSaveErrChartUnsupported: '이 차트 종류는 해당 편집을 지원하지 않아 저장을 중단했습니다 — 차트 변경을 실행 취소하십시오.',
-  appSaveErrMoveOverlap: '수식, 서식 범위, 도형 또는 표가 이동한 행에 걸쳐 있어 저장을 중단했습니다 — 해당 이동을 실행 취소하십시오.',
+  appSaveErrPivotWithSheetOps:
+    '새로 만든 피벗 테이블은 시트 관리 변경과 함께 저장할 수 없습니다 — 먼저 피벗 테이블을 저장하십시오.',
+  appSaveErrPivotWithRowCol:
+    '새로 만든 피벗 테이블은 해당 시트의 행/열 변경과 함께 저장할 수 없습니다 — 먼저 피벗 테이블을 저장하십시오.',
+  appSaveErrTableWithRowCol:
+    '새로 만든 표는 해당 시트의 행/열 변경과 함께 저장할 수 없습니다 — 먼저 표를 저장하십시오.',
+  appSaveErrNamesWithStructural:
+    '정의된 이름 변경은 행/열 또는 시트 구조 변경과 함께 저장할 수 없습니다 — 두 번에 나누어 저장하십시오.',
+  appSaveErrChangedOnDisk:
+    '다른 프로그램이 디스크의 파일을 변경했습니다 — 저장을 중단했으니 파일을 다시 연 후 시도하십시오.',
+  appSaveErrStylesheetLimited:
+    '이 통합 문서의 스타일시트에 기본 구조가 없어 스타일 변경을 저장할 수 없습니다.',
+  appSaveErrPackageGuard:
+    '저장하면 통합 문서의 패키지 구조가 바뀝니다 — 파일 보호를 위해 중단했습니다.',
+  appSaveErrChartUnsupported:
+    '이 차트 종류는 해당 편집을 지원하지 않아 저장을 중단했습니다 — 차트 변경을 실행 취소하십시오.',
+  appSaveErrMoveOverlap:
+    '수식, 서식 범위, 도형 또는 표가 이동한 행에 걸쳐 있어 저장을 중단했습니다 — 해당 이동을 실행 취소하십시오.',
   appFromTextCsvTitle: 'CSV/텍스트 파일을 현재 선택 영역으로 가져오기',
   appCsvImported: '파일에서 {rows}행 × {columns}열을 {cell} 위치로 가져왔습니다.',
   appCsvEmpty: 'CSV 파일에 데이터가 없습니다.',
-  appCsvTooLarge: 'CSV가 너무 큽니다 — 5만 셀을 초과하면 \\\'열기\\\'로 새 통합 문서로 여십시오.',
+  appCsvTooLarge: "CSV가 너무 큽니다 — 5만 셀을 초과하면 \\'열기\\'로 새 통합 문서로 여십시오.",
   appCsvImportFailed: 'CSV 가져오기에 실패했습니다.',
   appNoNotesOnSheet: '현재 시트에 메모가 없습니다.',
   appNotePrevTitle: '이전 메모로 이동',
   appNoteNextTitle: '다음 메모로 이동',
   appShowCommentsTitle: '선택한 셀의 메모 풍선 고정/고정 해제',
-  appStructuralShiftBlocked: '이 시트의 차트나 표가 해당 행/열에 고정되어 있어 이동할 수 없으며, 구조 변경은 저장되지 않았습니다. 실행 취소(⌘Z) 후 다시 저장하세요.',
-  appAiChangesNotSaved: 'AI 변경 사항이 적용되었습니다(저장 안 됨). ⌘Z로 실행 취소, ⌘S로 파일에 저장하세요.',
+  appStructuralShiftBlocked:
+    '이 시트의 차트나 표가 해당 행/열에 고정되어 있어 이동할 수 없으며, 구조 변경은 저장되지 않았습니다. 실행 취소(⌘Z) 후 다시 저장하세요.',
+  appAiChangesNotSaved:
+    'AI 변경 사항이 적용되었습니다(저장 안 됨). ⌘Z로 실행 취소, ⌘S로 파일에 저장하세요.',
   appChartUpdated: '차트를 업데이트했습니다.',
   appChartNotEditable: '이 차트는 편집할 수 없습니다.',
   appChartEditRecorded: '차트 편집을 기록했습니다 — ⌘S로 저장합니다.',
@@ -502,18 +583,22 @@ export const ko = {
   appLinkInternal: '링크가 통합 문서 내부를 가리킵니다: {location}',
   appLinkSheetNotFound: '시트 "{name}"을(를) 찾을 수 없습니다.',
   appLinkJumpFailed: '{location}(으)로 이동할 수 없습니다.',
-  appClosureActive: '수식 {count}개를 실시간으로 다시 계산합니다(클로저 모드). 나머지는 필요할 때 스트리밍 방식으로 로드됩니다.',
-  appRecalcPartial: '편집에 따라 수식을 다시 계산했습니다 — {count}개는 캐시된 값을 유지했습니다(대체 엔진이 지원하지 않는 함수).',
+  appClosureActive:
+    '수식 {count}개를 실시간으로 다시 계산합니다(클로저 모드). 나머지는 필요할 때 스트리밍 방식으로 로드됩니다.',
+  appRecalcPartial:
+    '편집에 따라 수식을 다시 계산했습니다 — {count}개는 캐시된 값을 유지했습니다(대체 엔진이 지원하지 않는 함수).',
   appRecalcDone: '편집에 따라 수식을 다시 계산했습니다({count}개 셀, 엔진 대체).',
   appIndexing: '{name}의 인덱스를 만드는 중: {rows}행 준비됨.',
   appStreamingRows: '{name}을(를) 스트리밍하는 중: {rows}행 사용 가능.',
   appLoadRangeFailed: '표시 범위를 로드할 수 없습니다.',
-  appFullyLoaded: '통합 문서를 모두 로드했습니다 — 수식이 실시간으로 다시 계산되고 행/열을 편집할 수 있습니다.',
+  appFullyLoaded:
+    '통합 문서를 모두 로드했습니다 — 수식이 실시간으로 다시 계산되고 행/열을 편집할 수 있습니다.',
   appRangeMustBeVector: '{range}은(는) 단일 행 또는 단일 열의 셀이어야 합니다.',
   appRangeTooManyCells: '{range}이(가) 셀 {max}개를 초과합니다.',
   appSheetStillIndexing: '시트의 인덱스를 만드는 중입니다 — 잠시 후 다시 시도하십시오.',
   appPrintNothing: '이 시트에는 인쇄할 내용이 없습니다.',
-  appPrintTooLarge: '인쇄 범위가 너무 큽니다 — 페이지 레이아웃 탭에서 더 작은 인쇄 영역을 설정하십시오.',
+  appPrintTooLarge:
+    '인쇄 범위가 너무 큽니다 — 페이지 레이아웃 탭에서 더 작은 인쇄 영역을 설정하십시오.',
   appPrintBadArea: '인쇄 영역 "{area}"이(가) 잘못되었습니다.',
   appPrintBadTitles: '인쇄 제목 "{titles}"이(가) 잘못되었습니다.',
   appPrintTitlesLimit: '인쇄 제목은 최대 21행까지 반복할 수 있습니다.',
@@ -574,7 +659,8 @@ export const ko = {
   appSortAsc: '오름차순',
   appSortDesc: '내림차순',
   appRemoveDuplicates: '중복된 항목 제거',
-  appRemoveDuplicatesNote: '선택 영역에서 앞의 행과 중복되는 행을 제거합니다(모든 열을 비교하며 대/소문자는 무시). 나머지 행은 위로 이동합니다.',
+  appRemoveDuplicatesNote:
+    '선택 영역에서 앞의 행과 중복되는 행을 제거합니다(모든 열을 비교하며 대/소문자는 무시). 나머지 행은 위로 이동합니다.',
   appEditLinkTitle: '링크 편집',
   appInsertLinkTitle: '링크 삽입',
   appLinkAddressLabel: '주소 — 웹 페이지(https://…) 또는 시트 참조(Sheet1!A1)',
@@ -1119,6 +1205,34 @@ export const ko = {
   appPasteFormattingOnly: '서식만',
   appPasteColWidths: '열 너비만',
   appPasteExceptBorders: '테두리만 제외',
+  appPasteTranspose: '전치',
+  appPasteKeepFormat: '서식 유지하여 붙여넣기',
+  appPasteAsPicture: '그림으로 붙여넣기',
+  appPasteTextOnly: '텍스트만 붙여넣기',
+  appCopyAsPicture: '그림으로 복사',
+  appFeaturePendingTip: '아직 지원되지 않는 기능입니다',
+  appNeedCopyFirst: '먼저 복사하거나 잘라내세요',
+  appPastedTransposed: '전치하여 붙여넣었습니다',
+  appPastedTextOnly: '텍스트만 붙여넣었습니다',
+  appCopy: '복사',
+  appUnderlineAccounting: '회계용 이중 밑줄',
+  appBorderOther: '기타 테두리(M)...',
+  appBorderDiagonal: '대각선 머리글 삽입',
+  appDrawBorderGroup: '테두리 그리기',
+  appDrawBorderRow: '테두리 그리기(R)',
+  appDrawBorderGrid: '테두리 그리드 그리기(G)',
+  appEraseBorder: '테두리 지우기(E)',
+  appPenLineColor: '선 색상(1)',
+  appPenLineStyle: '선 스타일(Y)',
+  appPenStyle_thin: '가는 실선',
+  appPenStyle_medium: '중간 실선',
+  appPenStyle_thick: '굵은 실선',
+  appPenStyle_double: '이중선',
+  appPenStyle_hair: '극세선',
+  appPenStyle_dashed: '파선',
+  appPenStyle_dotted: '점선',
+  appDrawBorderArmed: '테두리 그리기 준비됨: 표에서 범위를 드래그하여 적용',
+  appEraseBorderArmed: '테두리 지우기 준비됨: 표에서 범위를 드래그하여 지움',
   appCutTitle: '잘라내기 ⌘X',
   appCopyTitle: '복사 ⌘C',
   appFormatPainter: '서식 복사',
@@ -1335,10 +1449,12 @@ export const ko = {
   appCellStyleGroupAccent: '강조',
   appAiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
   appFullLoadFilterTitle: '필터를 사용하려면 전체 로드가 필요합니다',
-  appFullLoadFilterBody: '이 통합 문서는 커서 현재 일부만 스트리밍으로 로드되었습니다. 필터(값 개수 포함)가 정확하려면 전체 데이터가 필요합니다. 지금 전체를 로드할까요?',
+  appFullLoadFilterBody:
+    '이 통합 문서는 커서 현재 일부만 스트리밍으로 로드되었습니다. 필터(값 개수 포함)가 정확하려면 전체 데이터가 필요합니다. 지금 전체를 로드할까요?',
   appFullLoadStart: '모두 로드',
   appFullLoadRunning: '통합 문서 전체를 로드하는 중입니다. 완료되면 필터를 사용할 수 있습니다…',
-  appFullLoadTooLarge: '이 통합 문서는 너무 커서 메모리에 전부 로드할 수 없습니다. 이 파일에서는 필터를 사용할 수 없습니다.',
+  appFullLoadTooLarge:
+    '이 통합 문서는 너무 커서 메모리에 전부 로드할 수 없습니다. 이 파일에서는 필터를 사용할 수 없습니다.',
   appDialogCancel: '취소',
   appRibbonCollapse: '리본 축소',
   appRibbonPin: '리본 고정',

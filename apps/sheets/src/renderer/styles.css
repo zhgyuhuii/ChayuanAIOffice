@@ -273,8 +273,9 @@
   font-family: Calibri;
   font-style: italic;
   src:
-    local('Calibri Italic'), local('Carlito Italic'), url('@chatoffice/ui/fonts/Carlito-Italic.ttf'),
-    local('Helvetica Neue Italic'), local('Arial Italic');
+    local('Calibri Italic'), local('Carlito Italic'),
+    url('@chatoffice/ui/fonts/Carlito-Italic.ttf'), local('Helvetica Neue Italic'),
+    local('Arial Italic');
 }
 
 @font-face {
@@ -940,23 +941,23 @@ html.chatoffice-popover-open .ribbon-tabs {
 /* Constant rendered stroke instead of proportional scaling: the 24-canvas
    svgs carry a 1.5-unit strokeWidth attr, so left alone a 28px glyph paints
    1.75px lines while a 14px row paints 0.875px hairlines. These overrides
-   pin the painted stroke at ~1.5px for 20px+ glyphs and ~1.25px for the
-   small 13-16px ones (a touch lighter so dense glyphs stay legible).
-   stroke-width is in viewBox units: units = 24 / rendered-px × target-px. */
+   pin the painted stroke (~1.05px small / ~1.25px large after the WPS-pass
+   thinning) — stroke-width is in viewBox units:
+   units = 24 / rendered-px × target-px. */
 .tool-symbol svg {
-  stroke-width: 2.15; /* 14px rows → 1.25px */
+  stroke-width: 1.85; /* 14px rows → ~1.1px */
 }
 
 .ribbon-tool.large .tool-symbol svg {
-  stroke-width: 1.5; /* 24px box on the 24-canvas → native 1.5px */
+  stroke-width: 1.25; /* 24px box on the 24-canvas → ~1.25px */
 }
 
 .chart-grid .tool-symbol svg {
-  stroke-width: 2.2; /* 13px → ~1.2px */
+  stroke-width: 1.9; /* 13px → ~1.05px */
 }
 
 .chev path {
-  stroke-width: 2.6; /* 10px caret → ~1.1px */
+  stroke-width: 2.4; /* 10px caret → ~1px */
 }
 
 /* every inline-row glyph — toggles, dropdown triggers and labeled buttons —
@@ -966,7 +967,7 @@ html.chatoffice-popover-open .ribbon-tabs {
 .inline-tools .tool-symbol svg {
   width: 20px;
   height: 20px;
-  stroke-width: 1.8; /* 20px → 1.5px */
+  stroke-width: 1.5; /* 20px → ~1.25px（WPS 对比反馈：整体变细） */
 }
 
 .ribbon-tool.reserved .tool-symbol {
@@ -1095,7 +1096,8 @@ html.chatoffice-popover-open .ribbon-tabs {
 
 /* font family / size dropdowns share the slides ribbon's fixed widths
    (.rb-font-name 178px / .rb-font-size 68px) instead of sizing to the
-   longest option */
+   longest option; height trimmed 28→24px per the WPS comparison sheet
+   (选择框太大，高度要调整) */
 .select-like.font-name {
   width: 178px;
   min-width: 0;
@@ -1113,6 +1115,15 @@ html.chatoffice-popover-open .ribbon-tabs {
 .select-like.font-size {
   border: 1px solid var(--border-strong);
   background: var(--surface);
+}
+
+/* the trimmed 24px height applies to the two comboboxes only (the 30px
+   toggle rhythm of the row is untouched) */
+.inline-tools .select-like.font-name,
+.inline-tools .select-like.font-size {
+  height: 24px;
+  padding: 0 6px;
+  font-size: 12.5px;
 }
 
 .number-format {
@@ -5964,4 +5975,140 @@ textarea:focus {
 .rb-ai-replace button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* ── WPS 对比清单（调整.rtf）新控件 ─────────────────────────────── */
+
+/* 大分体按钮（粘贴）：本体直接执行，右下角角标 caret 开菜单 */
+.split-menu {
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 7px 6px;
+  text-align: center;
+  cursor: default;
+}
+
+.split-menu .split-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-small);
+}
+
+.split-menu .split-main:hover,
+.split-menu .split-caret:hover {
+  background: var(--ribbon-hover);
+}
+
+.split-menu .split-caret {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-small);
+}
+
+.split-menu .split-caret .chev {
+  width: 8px;
+  height: 8px;
+}
+
+/* 行内小分体（复制/下划线）：图标本体 + 右下角小 caret，同格 */
+.split-stack {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 30px;
+  border-radius: var(--radius-small);
+}
+
+.split-stack > button {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-small);
+  font: inherit;
+}
+
+.split-stack > button:hover {
+  background: var(--ribbon-hover);
+}
+
+.split-stack > button.is-active,
+.split-stack > button.is-active:hover {
+  background: var(--ribbon-active);
+}
+
+.split-stack > .split-caret {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 11px;
+  color: var(--text-secondary);
+}
+
+.split-stack > .split-caret .chev {
+  width: 7px;
+  height: 7px;
+}
+
+/* 字体颜色触发器：右下角小 caret（对比清单 7） */
+.swatch-letter.has-caret .chev {
+  position: absolute;
+  right: -1px;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+  color: var(--text-secondary);
+}
+
+/* 禁用的菜单行（粘贴为图片/复制为图片/会计用双下划线…）：可见但不分发 */
+.menu-select-drop button[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.menu-select-drop button[disabled]:hover {
+  background: none;
+}
+
+/* 边框富菜单：十五项两组全部展开（对比清单 8：不该带滚动条） */
+.border-menu-drop {
+  min-width: 176px;
+  max-height: none;
+  overflow: visible;
+}
+
+.border-menu-palette {
+  margin: 2px 4px 4px;
+}
+
+/* 菜单内展开的线型行（线条样式子列表） */
+.pen-style-rows {
+  display: flex;
+  flex-direction: column;
 }

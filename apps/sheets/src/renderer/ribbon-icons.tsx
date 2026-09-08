@@ -724,16 +724,129 @@ export const RIBBON_GLYPH_ICONS: Record<string, ReactElement> = {
       <path d="M12 4.75v14.5M8.75 8 12 4.75 15.25 8M8.75 16 12 19.25 15.25 16" />
     </Icon>
   ),
+  // WPS 垂直居中：上下两条界线 + 内向双箭头（区别于普通双向箭头 ↕）
+  'valign-middle': (
+    <Icon>
+      <path d="M5 4.75h14M5 19.25h14" />
+      <path d="M12 8.25v7.5M9.5 10.5 12 8.25l2.5 2.25M9.5 13.5l2.5 2.25 2.5-2.25" />
+    </Icon>
+  ),
   'A↑': (
     <Icon>
-      <path d="M3.25 19 8.5 5.25 13.75 19M5.1 14.25h6.8" />
-      <path d="M18 17.5V6.75M14.9 9.85 18 6.75l3.1 3.1" />
+      <path d="M3.75 19 9 5.25 14.25 19M5.6 14.25h6.8" />
+      <path d="M18.25 5.25v5M15.75 7.75h5" />
     </Icon>
   ),
   'A↓': (
     <Icon>
-      <path d="M3.25 19 8.5 5.25 13.75 19M5.1 14.25h6.8" />
-      <path d="M18 6.75V17.5M14.9 14.4l3.1 3.1 3.1-3.1" />
+      <path d="M3.75 19 9 5.25 14.25 19M5.6 14.25h6.8" />
+      <path d="M15.75 7.75h5" />
+    </Icon>
+  ),
+  // WPS 字体组：ab 带中缝删除线 / U 带下划线族（单/双/会计用双）
+  'ab-strike': (
+    <Icon>
+      <text
+        x="3.75"
+        y="16.75"
+        fontSize="12"
+        fill="currentColor"
+        stroke="none"
+        fontFamily="Segoe UI, sans-serif"
+      >
+        ab
+      </text>
+      <path d="M2.75 11.5h18.5" />
+    </Icon>
+  ),
+  'u-line': (
+    <Icon>
+      <path d="M7.25 4.75v8.5a4.75 4.75 0 0 0 9.5 0V4.75" />
+      <path d="M4.75 20.25h14.5" />
+    </Icon>
+  ),
+  'u-line-double': (
+    <Icon>
+      <path d="M7.25 3.75v8.5a4.75 4.75 0 0 0 9.5 0V3.75" />
+      <path d="M4.75 18.75h14.5M4.75 21.25h14.5" />
+    </Icon>
+  ),
+  'u-line-accounting': (
+    <Icon>
+      <path d="M7.25 2.75v9.5a4.75 4.75 0 0 0 9.5 0V2.75" />
+      <path d="M4.75 17.5h14.5M4.75 20.5h14.5" />
+    </Icon>
+  ),
+  // 转置：两个角块 + 对角双向箭头
+  transpose: (
+    <Icon>
+      <rect x="4.25" y="4.25" width="5.75" height="5.75" rx="1" />
+      <rect x="14" y="14" width="5.75" height="5.75" rx="1" />
+      <path d="M9.9 14.1 14.1 9.9" />
+      <path d="M14.35 13.1V9.65H10.9" />
+    </Icon>
+  ),
+  // 只粘贴文本 / 带格式粘贴：同一板夹，分别标 T / Aa
+  'board-text': (
+    <Icon>
+      <path d="M8.15 5.75H6.75c-1.1 0-2 .9-2 2v10.5c0 1.1.9 2 2 2h10.5c1.1 0 2-.9 2-2V7.75c0-1.1-.9-2-2-2h-1.4" />
+      <rect x="9.15" y="3.25" width="5.7" height="3" rx="1" />
+      <text
+        x="12"
+        y="16.75"
+        textAnchor="middle"
+        fontSize="8.5"
+        fill="currentColor"
+        stroke="none"
+        fontFamily="Segoe UI, sans-serif"
+      >
+        T
+      </text>
+    </Icon>
+  ),
+  'board-format': (
+    <Icon>
+      <path d="M8.15 5.75H6.75c-1.1 0-2 .9-2 2v10.5c0 1.1.9 2 2 2h10.5c1.1 0 2-.9 2-2V7.75c0-1.1-.9-2-2-2h-1.4" />
+      <rect x="9.15" y="3.25" width="5.7" height="3" rx="1" />
+      <text
+        x="12"
+        y="16.75"
+        textAnchor="middle"
+        fontSize="8"
+        fill="currentColor"
+        stroke="none"
+        fontFamily="Segoe UI, sans-serif"
+      >
+        Aa
+      </text>
+    </Icon>
+  ),
+  // 字体颜色：细线 A（下方色条由触发器的 <i> 回显）
+  'A-color': (
+    <Icon>
+      <path d="M5.75 19.25 11.05 4.75h1.9l5.3 14.5M7.95 13.75h8.1" />
+    </Icon>
+  ),
+  // 擦除边框：橡皮斜块 + 分隔线
+  eraser: (
+    <Icon>
+      <path d="M13.4 4.9 19.1 10.6a1.6 1.6 0 0 1 0 2.26L13.6 18.4H8.1L4.9 15.2a1.6 1.6 0 0 1 0-2.26l6.24-6.24a1.6 1.6 0 0 1 2.26 0Z" />
+      <path d="m9.4 8.9 5.7 5.7" />
+      <path d="M4.75 20.25h14.5" />
+    </Icon>
+  ),
+  // 插入斜线表头：方格 + 左上-右下对角线
+  'diag-cell': (
+    <Icon>
+      <rect x="4.75" y="4.75" width="14.5" height="14.5" rx="1.5" />
+      <path d="m6 18 12-12" />
+    </Icon>
+  ),
+  // 绘图边框：笔尖（绘图边框/线条颜色共用）
+  'pen-nib': (
+    <Icon>
+      <path d="m13.5 5.5 5 5L8 21H3v-5L13.5 5.5Z" />
+      <path d="m11.25 7.75 5 5" />
     </Icon>
   ),
   // ---- home formatting (borders / fill / merge / orientation) ----

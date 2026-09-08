@@ -4,7 +4,8 @@ export const ms = {
   appMergeWorkbooksTip: 'Tambah helaian daripada fail Excel lain ke buku kerja ini',
   appMergeWorkbooksPicking: 'Pilih fail untuk digabungkan…',
   appMergeWorkbooksReading: 'Mengimport {sheet} daripada {file}…',
-  appMergeWorkbooksDone: '{sheets} helaian daripada {files} fail telah digabungkan (formula diimport sebagai nilai).',
+  appMergeWorkbooksDone:
+    '{sheets} helaian daripada {files} fail telah digabungkan (formula diimport sebagai nilai).',
   appMergeWorkbooksFailed: 'Gagal menggabungkan buku kerja.',
   appMergeWorkbooksInsertFailed: 'Tidak dapat mencipta helaian {sheet}.',
   appMergeWorkbooksLocked: 'Buku kerja masih dimuatkan; penggabungan tidak tersedia buat masa ini.',
@@ -34,12 +35,17 @@ export const ms = {
   appPageWatermark: 'Halaman {page}',
   appUnprotectWorkbook: 'Nyahlindung Buku Kerja',
   appProtectWorkbookTitle: 'Kunci struktur buku kerja (tanpa kata laluan)',
-  appWorkbookProtectionWillWrite: 'Perlindungan struktur buku kerja akan ditulis semasa menyimpan (tanpa kata laluan).',
-  appWorkbookProtectionWillRemove: 'Perlindungan struktur buku kerja akan dialih keluar semasa menyimpan.',
-  appWorkbookProtectedWithPassword: 'Struktur buku kerja dilindungi kata laluan — tidak boleh diubah di sini.',
-  appWorkbookStructureLocked: 'Struktur buku kerja dilindungi — helaian tidak boleh ditambah, dialih keluar, dinamakan semula atau dialihkan.',
+  appWorkbookProtectionWillWrite:
+    'Perlindungan struktur buku kerja akan ditulis semasa menyimpan (tanpa kata laluan).',
+  appWorkbookProtectionWillRemove:
+    'Perlindungan struktur buku kerja akan dialih keluar semasa menyimpan.',
+  appWorkbookProtectedWithPassword:
+    'Struktur buku kerja dilindungi kata laluan — tidak boleh diubah di sini.',
+  appWorkbookStructureLocked:
+    'Struktur buku kerja dilindungi — helaian tidak boleh ditambah, dialih keluar, dinamakan semula atau dialihkan.',
   appAllowEditRangesTitle: 'Julat yang kekal boleh diedit semasa helaian dilindungi',
-  appRangesPasswordBlocked: 'Helaian ini mempunyai julat edit yang dilindungi kata laluan — mengeditnya tidak disokong.',
+  appRangesPasswordBlocked:
+    'Helaian ini mempunyai julat edit yang dilindungi kata laluan — mengeditnya tidak disokong.',
   appRangesRecorded: '{count} julat benarkan edit akan ditulis semasa menyimpan.',
   appNumFmtAccounting: 'Perakaunan',
   appNumFmtShortDate: 'Tarikh Pendek',
@@ -138,28 +144,41 @@ export const ms = {
   appRefreshHintOut: 'Pilih kawasan Jadual Pangsi dahulu, kemudian segar semula',
   appAttachmentReadFailed: '{name}: gagal dibaca',
   appTooManyImages: 'Maksimum {max} imej setiap mesej; yang lebihan telah diabaikan',
-  appAppliedRevision: 'Digunakan (semakan {revision}) — buat asal dengan ⌘Z, simpan ke fail dengan ⌘S.',
+  appAppliedRevision:
+    'Digunakan (semakan {revision}) — buat asal dengan ⌘Z, simpan ke fail dengan ⌘S.',
   appCannotReadImage: 'Tidak dapat membaca fail imej.',
-  appTableNotDeletable: 'Jadual "{name}" tidak wujud atau tidak dicipta dalam sesi ini — jadual yang sedia ada dalam fail belum boleh dipadamkan.',
+  appTableNotDeletable:
+    'Jadual "{name}" tidak wujud atau tidak dicipta dalam sesi ini — jadual yang sedia ada dalam fail belum boleh dipadamkan.',
   appImageNotLoaded: 'Imej gagal dimuatkan: {path}',
   appApplyFailed: '⚠️ Gagal digunakan: {reason}',
   appPivotChartNeedsFile: 'Buka fail XLSX dahulu — Carta Pangsi ditulis ke dalam fail.',
-  appCursorNotInPivot: 'Kursor tidak berada dalam Jadual Pangsi — pilih sel dalam output Jadual Pangsi dahulu.',
-  appPivotDefNotLoaded: 'Takrifan Jadual Pangsi belum selesai dimuatkan (atau gagal dihuraikan) — cuba lagi sebentar.',
+  appCursorNotInPivot:
+    'Kursor tidak berada dalam Jadual Pangsi — pilih sel dalam output Jadual Pangsi dahulu.',
+  appPivotDefNotLoaded:
+    'Takrifan Jadual Pangsi belum selesai dimuatkan (atau gagal dihuraikan) — cuba lagi sebentar.',
   appPivotNoChartData: 'Jadual Pangsi ini tiada baris/lajur data untuk dicartakan.',
-  appPivotChartInsertedTruncated: 'Carta Pangsi diselitkan (titik data terlalu banyak, dipangkas) — simpan (⌘S) untuk menulisnya ke dalam fail.',
-  appPivotChartInserted: 'Carta Pangsi diselitkan — mengikut penyegaran semula Jadual Pangsi; simpan (⌘S) untuk menulisnya ke dalam fail.',
+  appPivotChartInsertedTruncated:
+    'Carta Pangsi diselitkan (titik data terlalu banyak, dipangkas) — simpan (⌘S) untuk menulisnya ke dalam fail.',
+  appPivotChartInserted:
+    'Carta Pangsi diselitkan — mengikut penyegaran semula Jadual Pangsi; simpan (⌘S) untuk menulisnya ke dalam fail.',
   appSheetNoPivot: 'Helaian ini tiada Jadual Pangsi.',
-  appPivotNeedsFullLoad: 'Menyegar semula Jadual Pangsi memerlukan mod muat penuh — buku kerja ini terlalu besar dan dimuatkan secara penstriman.',
+  appPivotNeedsFullLoad:
+    'Menyegar semula Jadual Pangsi memerlukan mod muat penuh — buku kerja ini terlalu besar dan dimuatkan secara penstriman.',
   appPivotSourceSheetMissing: 'Helaian sumber Jadual Pangsi "{name}" tidak wujud.',
-  appPivotLayoutMismatch: 'Tataletak Jadual Pangsi tidak sepadan dengan julat outputnya — segar semula dalam Excel sebelum mengira semula.',
-  appPivotGrowUnsupported: 'Tataletak Jadual Pangsi ini (padat/pengepala berbilang baris) belum menyokong pertumbuhan automatik — segar semula dalam Excel.',
-  appPivotGrowConflict: 'Kawasan Jadual Pangsi yang berkembang bercanggah dengan kandungan sedia ada — kosongkan kawasan sasaran, kemudian segar semula.',
-  appShapeNotEditable: 'Tiada bentuk boleh edit "{id}" (hanya bentuk yang ditambah dalam sesi ini boleh diedit).',
-  appCalcFieldNameClash: 'Medan terkira "{name}" tidak boleh berkongsi nama dengan pengepala sumber.',
+  appPivotLayoutMismatch:
+    'Tataletak Jadual Pangsi tidak sepadan dengan julat outputnya — segar semula dalam Excel sebelum mengira semula.',
+  appPivotGrowUnsupported:
+    'Tataletak Jadual Pangsi ini (padat/pengepala berbilang baris) belum menyokong pertumbuhan automatik — segar semula dalam Excel.',
+  appPivotGrowConflict:
+    'Kawasan Jadual Pangsi yang berkembang bercanggah dengan kandungan sedia ada — kosongkan kawasan sasaran, kemudian segar semula.',
+  appShapeNotEditable:
+    'Tiada bentuk boleh edit "{id}" (hanya bentuk yang ditambah dalam sesi ini boleh diedit).',
+  appCalcFieldNameClash:
+    'Medan terkira "{name}" tidak boleh berkongsi nama dengan pengepala sumber.',
   appCalcFieldNameDuplicate: 'Nama medan terkira mesti unik.',
   appValueFilterFieldMissing: 'Penapis nilai merujuk medan nilai {index}, yang tidak wujud.',
-  appPivotRelayoutOverlap: 'Tataletak baharu Jadual Pangsi akan menulis ganti kandungan sedia ada — kosongkan kawasan sasaran dahulu.',
+  appPivotRelayoutOverlap:
+    'Tataletak baharu Jadual Pangsi akan menulis ganti kandungan sedia ada — kosongkan kawasan sasaran dahulu.',
   appInvalidRowField: 'Medan baris tidak sah.',
   appNeedRowField: 'Pilih sekurang-kurangnya satu medan baris.',
   appInvalidColumnField: 'Medan lajur tidak sah.',
@@ -170,21 +189,28 @@ export const ms = {
   appWorkbookNotReady: 'Buku kerja belum sedia.',
   appOpenWorkbookFirst: 'Buka buku kerja dahulu.',
   appOpenXlsxFirst: 'Buka fail XLSX dahulu.',
-  appPivotCreated: 'Jadual Pangsi dicipta di {cell} — ditulis ke dalam fail semasa disimpan. Selepas disimpan, penghiris, garis masa dan muat semula boleh digunakan.',
+  appPivotCreated:
+    'Jadual Pangsi dicipta di {cell} — ditulis ke dalam fail semasa disimpan. Selepas disimpan, penghiris, garis masa dan muat semula boleh digunakan.',
   appPivotCreateFailed: 'Gagal mencipta Jadual Pangsi.',
   appPutCursorInPivot: 'Letakkan kursor dalam output Jadual Pangsi yang ingin anda edit.',
   appPivotNoCacheDef: 'Jadual Pangsi ini tiada takrifan cache dan tidak boleh diedit.',
-  appPivotDefNotLoadedSave: 'Takrifan Jadual Pangsi belum dimuatkan — jika anda mengeditnya dalam sesi ini, simpan (⌘S) dahulu.',
+  appPivotDefNotLoadedSave:
+    'Takrifan Jadual Pangsi belum dimuatkan — jika anda mengeditnya dalam sesi ini, simpan (⌘S) dahulu.',
   appPivotEditUnsupported: 'Jadual Pangsi ini belum boleh diedit: {reasons}',
-  appPivotEditHasFeatures: 'Jadual Pangsi dengan pengumpulan, penapis, penapis laporan atau medan terkira belum menyokong pengeditan tataletak — laraskan dalam Excel.',
-  appPivotEditValuesOnRows: 'Jadual Pangsi dengan medan nilai pada paksi baris belum menyokong pengeditan tataletak.',
-  appPivotEditAggUnsupported: 'Pengagregatan Jadual Pangsi ini (cth. Hasil Darab atau Kiraan Nombor) belum menyokong pengeditan tataletak.',
+  appPivotEditHasFeatures:
+    'Jadual Pangsi dengan pengumpulan, penapis, penapis laporan atau medan terkira belum menyokong pengeditan tataletak — laraskan dalam Excel.',
+  appPivotEditValuesOnRows:
+    'Jadual Pangsi dengan medan nilai pada paksi baris belum menyokong pengeditan tataletak.',
+  appPivotEditAggUnsupported:
+    'Pengagregatan Jadual Pangsi ini (cth. Hasil Darab atau Kiraan Nombor) belum menyokong pengeditan tataletak.',
   appPivotSourceSheetNotFound: 'Tidak menemui helaian sumber Jadual Pangsi "{name}".',
-  appPivotLayoutUpdated: 'Tataletak Jadual Pangsi dikemas kini — simpan (⌘S) untuk menulisnya ke dalam fail; Excel membina semula cache semasa dibuka.',
+  appPivotLayoutUpdated:
+    'Tataletak Jadual Pangsi dikemas kini — simpan (⌘S) untuk menulisnya ke dalam fail; Excel membina semula cache semasa dibuka.',
   appPivotEditFailed: 'Gagal mengedit Jadual Pangsi.',
   appNoActiveSheet: 'Tiada helaian aktif.',
   appCurrentSheetNoPivot: 'Helaian semasa tiada Jadual Pangsi.',
-  appPivotsRefreshed: '{count} Jadual Pangsi disegar semula — simpan untuk menulis ke dalam fail (⌘S).',
+  appPivotsRefreshed:
+    '{count} Jadual Pangsi disegar semula — simpan untuk menulis ke dalam fail (⌘S).',
   appRefreshFailed: 'Segar semula gagal.',
   appSlicerNeedsFile: 'Buka fail XLSX dahulu — penghiris berfungsi pada Jadual Pangsi dalam fail.',
   appFieldN: 'Medan {n}',
@@ -193,26 +219,32 @@ export const ms = {
   appBlank: '(kosong)',
   appFieldNoMembers: 'Medan ini tiada ahli untuk ditapis.',
   appSlicerCreated: 'Penghiris "{name}" dicipta — klik ahli untuk menapis Jadual Pangsi.',
-  appSlicerNeedsFullLoad: 'Penapisan penghiris memerlukan mod muat penuh — buku kerja ini terlalu besar dan dimuatkan secara penstriman.',
+  appSlicerNeedsFullLoad:
+    'Penapisan penghiris memerlukan mod muat penuh — buku kerja ini terlalu besar dan dimuatkan secara penstriman.',
   appSlicerPivotMissing: 'Jadual Pangsi yang terikat pada penghiris ini tidak lagi wujud.',
   appSlicerSheetMissing: 'Helaian yang terikat pada penghiris ini tidak lagi wujud.',
   appSlicerFilterFailed: 'Penapisan penghiris gagal.',
   appSlicerKeepOne: 'Kekalkan sekurang-kurangnya satu ahli dipilih dalam penghiris.',
-  appSlicerApplied: 'Penghiris "{name}" digunakan — simpan (⌘S) untuk menulis Jadual Pangsi yang ditapis.',
+  appSlicerApplied:
+    'Penghiris "{name}" digunakan — simpan (⌘S) untuk menulis Jadual Pangsi yang ditapis.',
   appSlicerCleared: 'Penapis penghiris "{name}" dikosongkan.',
   appSlicerRemoved: 'Penghiris "{name}" dialih keluar; semua ahli dipulihkan.',
   appTimelineHintIn: 'Selitkan garis masa untuk medan tarikh Jadual Pangsi semasa',
   appTimelineHintOut: 'Pilih sel dalam output Jadual Pangsi dahulu, kemudian selitkan garis masa',
-  appTimelineNoDateFields: 'Jadual Pangsi ini tiada medan tarikh yang boleh digunakan — garis masa memerlukan medan tidak berkumpulan yang semua nilainya ialah tarikh.',
+  appTimelineNoDateFields:
+    'Jadual Pangsi ini tiada medan tarikh yang boleh digunakan — garis masa memerlukan medan tidak berkumpulan yang semua nilainya ialah tarikh.',
   appTimelineCreated: 'Garis masa "{name}" dicipta — klik bulan untuk menapis Jadual Pangsi.',
-  appTimelineApplied: 'Garis masa "{name}" digunakan — simpan (⌘S) untuk menulis Jadual Pangsi yang ditapis.',
+  appTimelineApplied:
+    'Garis masa "{name}" digunakan — simpan (⌘S) untuk menulis Jadual Pangsi yang ditapis.',
   appTimelineCleared: 'Penapis garis masa "{name}" dikosongkan.',
   appTimelineRemoved: 'Garis masa "{name}" dialih keluar; semua ahli dipulihkan.',
   appTimelineEmptyRange: 'Tiada ahli dalam julat bulan yang dipilih.',
-  appFieldFilterTaken: 'Semua medan yang layak sudah mempunyai penghiris atau garis masa — buang yang sedia ada dahulu.',
+  appFieldFilterTaken:
+    'Semua medan yang layak sudah mempunyai penghiris atau garis masa — buang yang sedia ada dahulu.',
   appGoToNotReady: 'Buku kerja belum sedia — tidak dapat pergi ke rujukan.',
   appGoToEmpty: 'Masukkan alamat sel atau nama tertakrif.',
-  appGoToUnresolved: 'Tidak dapat pergi ke "{ref}": bukan alamat yang sah mahupun nama tertakrif yang boleh dinavigasi.',
+  appGoToUnresolved:
+    'Tidak dapat pergi ke "{ref}": bukan alamat yang sah mahupun nama tertakrif yang boleh dinavigasi.',
   appGoToOutOfBounds: 'Tidak dapat pergi ke "{ref}": di luar sempadan helaian.',
   appGoToSheetNotFound: 'Tidak dapat pergi ke "{ref}": helaian itu tidak ditemui.',
   appGoToInvalidAddress: 'Tidak dapat pergi ke "{ref}": alamat tidak sah.',
@@ -220,48 +252,69 @@ export const ms = {
   appSymbolNeedsCell: 'Buka buku kerja dan pilih sel dahulu, kemudian selitkan simbol.',
   appSymbolInsertFailed: 'Tidak dapat menyelitkan simbol.',
   appSymbolInserted: '{char} diselitkan ke dalam {cell}.',
-  appAdvFilterNeedsFilter: 'Penapis Lanjutan memerlukan julat AutoPenapis — pilih data dan klik Tapis dahulu.',
+  appAdvFilterNeedsFilter:
+    'Penapis Lanjutan memerlukan julat AutoPenapis — pilih data dan klik Tapis dahulu.',
   appAdvFilterGone: 'Helaian semasa tiada AutoPenapis — hidupkannya semula dan cuba lagi.',
   appAdvFilterFailed: 'Gagal menggunakan penapis lanjutan.',
   appAdvFilterApplied: 'Kriteria penapis lanjutan digunakan — ⌘S menyimpan ke fail.',
   appFlashFillNeedsLeft: 'Isian Kilat memerlukan lajur data di sebelah kiri lajur sasaran.',
   appFlashFillNeedsRows: 'Isian Kilat memerlukan sekurang-kurangnya dua baris data.',
-  appFlashFillNeedsExamples: 'Isikan 1-2 contoh dalam lajur sasaran dahulu, kemudian klik Isian Kilat.',
-  appFlashFillNoPattern: 'Tiada corak dikenali daripada contoh — nilai sasaran mesti boleh diterbitkan daripada lajur di sebelah kiri; cuba tambah satu lagi contoh.',
+  appFlashFillNeedsExamples:
+    'Isikan 1-2 contoh dalam lajur sasaran dahulu, kemudian klik Isian Kilat.',
+  appFlashFillNoPattern:
+    'Tiada corak dikenali daripada contoh — nilai sasaran mesti boleh diterbitkan daripada lajur di sebelah kiri; cuba tambah satu lagi contoh.',
   appFlashFillNothingToFill: 'Tiada baris kosong untuk diisi.',
   appFlashFillDone: '⚡ Isian Kilat mengisi {count} baris daripada contoh anda.',
   appSparklineNeedsFile: 'Garis percikan memerlukan fail XLSX yang diimport.',
-  appSparklineNeedsCols: 'Pilih sekurang-kurangnya dua lajur data — satu garis percikan setiap baris, diletakkan dalam lajur di sebelah kanan pilihan.',
+  appSparklineNeedsCols:
+    'Pilih sekurang-kurangnya dua lajur data — satu garis percikan setiap baris, diletakkan dalam lajur di sebelah kanan pilihan.',
   appSparklineNoSpace: 'Tiada ruang untuk garis percikan di sebelah kanan pilihan.',
-  appSparklinesInserted: '{count} garis percikan diselitkan dalam lajur di sebelah kanan pilihan — ⌘S menyimpan ke fail.',
-  appSaveHeldStranded: 'Jadual Pangsi/jadual tidak boleh disimpan bersama helaian baharu serta perubahan baris/lajur — simpan struktur dahulu, kemudian tambah Jadual Pangsi/jadual.',
-  appSaveSecondCanceled: 'Fasa simpanan kedua dibatalkan — struktur telah disimpan; Jadual Pangsi/jadual/nama tertakrif belum ditulis.',
+  appSparklinesInserted:
+    '{count} garis percikan diselitkan dalam lajur di sebelah kanan pilihan — ⌘S menyimpan ke fail.',
+  appSaveHeldStranded:
+    'Jadual Pangsi/jadual tidak boleh disimpan bersama helaian baharu serta perubahan baris/lajur — simpan struktur dahulu, kemudian tambah Jadual Pangsi/jadual.',
+  appSaveSecondCanceled:
+    'Fasa simpanan kedua dibatalkan — struktur telah disimpan; Jadual Pangsi/jadual/nama tertakrif belum ditulis.',
   appSavedTwoPhase: 'Disimpan.',
-  appSaveSecondFailed: 'Struktur telah disimpan, tetapi fasa kedua (Jadual Pangsi/jadual/nama tertakrif) gagal: {reason}',
+  appSaveSecondFailed:
+    'Struktur telah disimpan, tetapi fasa kedua (Jadual Pangsi/jadual/nama tertakrif) gagal: {reason}',
   appReadyInitial: 'Sedia untuk perintah AI setempat yang berketentuan.',
   appAiThinking: 'AI sedang berfikir…',
   appAiDone: 'AI selesai',
-  appAiTurnLimit: '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan maklumat yang dibaca setakat ini dan mungkin tidak lengkap.)',
+  appAiTurnLimit:
+    '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan maklumat yang dibaca setakat ini dan mungkin tidak lengkap.)',
   appAiStopped: '(dihentikan)',
   appAiNoSummary: 'AI selesai tanpa ringkasan.',
-  appAiNoAction: 'AI tidak melakukan sebarang tindakan dan tiada balasan. Cuba lagi atau ubah ayat.',
+  appAiNoAction:
+    'AI tidak melakukan sebarang tindakan dan tiada balasan. Cuba lagi atau ubah ayat.',
   appNewConversation: 'Perbualan baharu dimulakan.',
   appPivotCellNoEdit: 'Sel ini sebahagian daripada Jadual Pangsi — pengeditannya belum disokong.',
   appAreaStreaming: 'Kawasan itu masih dimuatkan secara penstriman — cuba edit lagi sebentar.',
-  appFormulaRecordedPartial: 'Formula direkodkan — ia disimpan ke fail, tetapi hasil pada skrin mungkin tidak lengkap kerana buku kerja besar ini distrim sebahagian.',
-  appFormulaTooExpensive: 'Formula ini menilai julat besar bagi setiap elemen — pengiraan akan membekukan aplikasi, jadi ia dibatalkan. Kecilkan julat yang dirujuk dan cuba lagi.',
-  appPivotSheetNoStructural: 'Helaian ini mengandungi Jadual Pangsi — perubahan struktur belum disokong.',
-  appDeleteSpanFormulas: 'Ada formula yang hanya merujuk baris/lajur yang dipadam — kemas kini atau padam formula itu dahulu.',
+  appFormulaRecordedPartial:
+    'Formula direkodkan — ia disimpan ke fail, tetapi hasil pada skrin mungkin tidak lengkap kerana buku kerja besar ini distrim sebahagian.',
+  appFormulaTooExpensive:
+    'Formula ini menilai julat besar bagi setiap elemen — pengiraan akan membekukan aplikasi, jadi ia dibatalkan. Kecilkan julat yang dirujuk dan cuba lagi.',
+  appPivotSheetNoStructural:
+    'Helaian ini mengandungi Jadual Pangsi — perubahan struktur belum disokong.',
+  appDeleteSpanFormulas:
+    'Ada formula yang hanya merujuk baris/lajur yang dipadam — kemas kini atau padam formula itu dahulu.',
   appIconSetUnsupported: 'Gabungan ikon ini tidak boleh disimpan ke xlsx — pilih set ikon lain.',
-  appNeedFullLoadSort: 'Mengisih, menapis, mengalihkan julat dan memisahkan teks memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
+  appNeedFullLoadSort:
+    'Mengisih, menapis, mengalihkan julat dan memisahkan teks memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
   appPivotSheetNoMove: 'Helaian ini mengandungi Jadual Pangsi — pengalihan julat belum disokong.',
-  appTableFilterNoEdit: 'Penapis helaian ini milik jadual Excel — pengeditannya belum boleh disimpan.',
+  appTableFilterNoEdit:
+    'Penapis helaian ini milik jadual Excel — pengeditannya belum boleh disimpan.',
   appAutofillStreaming: 'AutoIsi ke kawasan yang masih distrim belum dibenarkan.',
-  appDvNeedsIndexed: 'Mengedit pengesahihan data memerlukan helaian ini diindeks sepenuhnya dahulu — cuba lagi sebentar.',
-  appDuplicateNeedsFullLoad: 'Menduplikasi helaian memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
-  appPivotSheetNoDuplicate: 'Helaian ini mengandungi Jadual Pangsi — pendupikasiannya belum disokong.',
-  appDuplicateScopedNames: 'Helaian ini mempunyai nama tertakrif berskop helaian — penduaan belum disokong.',
-  appMoveRowsColsUnsaved: 'Pengalihan keseluruhan lajur belum boleh disimpan ke buku kerja yang diimport — pengalihan keseluruhan baris sudah disokong.',
+  appDvNeedsIndexed:
+    'Mengedit pengesahihan data memerlukan helaian ini diindeks sepenuhnya dahulu — cuba lagi sebentar.',
+  appDuplicateNeedsFullLoad:
+    'Menduplikasi helaian memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
+  appPivotSheetNoDuplicate:
+    'Helaian ini mengandungi Jadual Pangsi — pendupikasiannya belum disokong.',
+  appDuplicateScopedNames:
+    'Helaian ini mempunyai nama tertakrif berskop helaian — penduaan belum disokong.',
+  appMoveRowsColsUnsaved:
+    'Pengalihan keseluruhan lajur belum boleh disimpan ke buku kerja yang diimport — pengalihan keseluruhan baris sudah disokong.',
   appNoWorkbookOpen: 'Tiada buku kerja dibuka.',
   appDvListOptions: 'Senarai: {items}',
   appDvListFromRange: 'Senarai (dari julat {range})',
@@ -282,9 +335,11 @@ export const ms = {
   appAutoFilterRemoveFailed: 'Tidak dapat mengalih keluar AutoPenapis.',
   appSelectDataRangeFirst: 'Pilih julat data dahulu.',
   appUnsupportedChartType: 'Jenis carta tidak disokong: {kind}.',
-  appChartInsertedDemo: 'Carta diselitkan — suntingan demo kekal dalam memori; buka fail XLSX untuk menyimpan ke cakera.',
+  appChartInsertedDemo:
+    'Carta diselitkan — suntingan demo kekal dalam memori; buka fail XLSX untuk menyimpan ke cakera.',
   appChartInsertFailed: 'Tidak dapat menyelitkan carta.',
-  appChartNeedsNumericColumn: 'Pilih julat dengan sekurang-kurangnya satu lajur berangka (pengepala pilihan).',
+  appChartNeedsNumericColumn:
+    'Pilih julat dengan sekurang-kurangnya satu lajur berangka (pengepala pilihan).',
   appChartInserted: 'Carta diselitkan — pilihnya untuk mengedit, ⌘S menulisnya ke dalam fail.',
   appShapeNeedsFile: 'Buka fail XLSX dahulu — bentuk yang diselitkan ditulis ke dalam fail.',
   appSelectCellFirst: 'Pilih sel dahulu.',
@@ -302,7 +357,8 @@ export const ms = {
   appTableSelectRange: 'Pilih julat data dahulu — pengepala pada baris pertamanya.',
   appTableCreated: 'Jadual dicipta — simpan dengan ⌘S.',
   appTableCreateFailed: 'Tidak dapat mencipta jadual.',
-  appPivotOnAddedSheet: 'Jadual Pangsi pada helaian yang ditambah dalam sesi ini belum disokong — simpan dahulu.',
+  appPivotOnAddedSheet:
+    'Jadual Pangsi pada helaian yang ditambah dalam sesi ini belum disokong — simpan dahulu.',
   appPivotSourceNeedsRows: 'Sumber pangsi memerlukan baris pengepala serta baris data.',
   appPivotSourceRowLimit: 'Sumber pangsi terhad kepada 10,000 baris data.',
   appPivotSourceColLimit: 'Sumber pangsi terhad kepada 200 lajur.',
@@ -314,9 +370,12 @@ export const ms = {
   appPivotTooManyColLines: 'Pangsi mempunyai lebih daripada 1,000 baris tataletak lajur.',
   appPivotNeedsValues: 'Pangsi memerlukan satu entri nilai.',
   appPivotTooManyRowLines: 'Pangsi mempunyai lebih daripada 20,000 baris tataletak baris.',
-  appPivotOverlapSource: 'Output pangsi akan bertindih dengan julat sumbernya — pilih sel sasaran lain.',
-  appPivotOverlapExisting: 'Output pangsi akan bertindih dengan pangsi sedia ada pada helaian sasaran.',
-  appPivotOverlapSession: 'Output pangsi akan bertindih dengan pangsi "{name}" yang dicipta dalam sesi ini.',
+  appPivotOverlapSource:
+    'Output pangsi akan bertindih dengan julat sumbernya — pilih sel sasaran lain.',
+  appPivotOverlapExisting:
+    'Output pangsi akan bertindih dengan pangsi sedia ada pada helaian sasaran.',
+  appPivotOverlapSession:
+    'Output pangsi akan bertindih dengan pangsi "{name}" yang dicipta dalam sesi ini.',
   appPivotNameUsed: 'Nama pangsi "{name}" telah digunakan dalam sesi ini.',
   appActiveCellFallback: 'sel aktif',
   appFormulaStartsEquals: 'Formula bermula dengan "=".',
@@ -327,7 +386,8 @@ export const ms = {
   appSelectRangeWithHeader: 'Pilih julat data dengan baris pengepala.',
   appSubtotalSameColumns: 'Pilih lajur kumpulan dan lajur nilai yang berbeza.',
   appRangeNoDataRows: 'Julat yang dipilih tiada baris data.',
-  appSubtotalTooManyGroups: 'Terlalu banyak kumpulan (maks 200) — isih mengikut lajur kumpulan dahulu.',
+  appSubtotalTooManyGroups:
+    'Terlalu banyak kumpulan (maks 200) — isih mengikut lajur kumpulan dahulu.',
   appSubtotalInsertFailed: 'Tidak dapat menyelitkan baris subjumlah.',
   appSubtotalsInserted: 'Subjumlah diselitkan: {count} kumpulan serta jumlah keseluruhan.',
   appSelectTargetCellFirst: 'Pilih sel sasaran dahulu.',
@@ -337,8 +397,10 @@ export const ms = {
   appConsolidateOverlap: 'Kawasan output bertindih dengan kawasan sumber — pilih sel sasaran lain.',
   appConsolidateWriteFailed: 'Tidak dapat menulis penyatuan.',
   appConsolidateDone: '{count} kawasan disatukan di {cell} ({rows}×{columns} formula langsung).',
-  appConsolidateMaxMinLabels: 'Maks dan Min tidak disokong dengan label lajur kiri — gunakan penyatuan mengikut kedudukan.',
-  appConsolidateLabelNeedsCols: 'Mod label memerlukan sekurang-kurangnya dua lajur setiap kawasan (label serta lajur nilai).',
+  appConsolidateMaxMinLabels:
+    'Maks dan Min tidak disokong dengan label lajur kiri — gunakan penyatuan mengikut kedudukan.',
+  appConsolidateLabelNeedsCols:
+    'Mod label memerlukan sekurang-kurangnya dua lajur setiap kawasan (label serta lajur nilai).',
   appConsolidateNoLabels: 'Tiada label ditemui dalam lajur kiri kawasan sumber.',
   appOutlineNeedsFile: 'Buka fail XLSX dahulu — kumpulan rangka ditulis ke dalam fail.',
   appOutlineSelectFirst: 'Pilih baris atau lajur untuk dikumpulkan dahulu.',
@@ -354,14 +416,18 @@ export const ms = {
   appSheetAddFailed: 'Tidak dapat menambah helaian.',
   appFormatCopied: 'Format disalin — pilih sel sasaran untuk menggunakannya.',
   appProtectionNeedsFile: 'Buka fail XLSX dahulu — perlindungan disimpan ke dalam fail.',
-  appProtectionNeedsIndexed: 'Perlindungan memerlukan helaian ini diindeks sepenuhnya dahulu — cuba lagi sebentar.',
-  appProtectedWithPassword: 'Helaian ini dilindungi dengan kata laluan — pengalihan keluar perlindungannya tidak disokong.',
-  appProtectionWillWrite: 'Perlindungan helaian akan ditulis semasa disimpan (tanpa kata laluan). Editor itu sendiri tidak menguatkuasakannya.',
+  appProtectionNeedsIndexed:
+    'Perlindungan memerlukan helaian ini diindeks sepenuhnya dahulu — cuba lagi sebentar.',
+  appProtectedWithPassword:
+    'Helaian ini dilindungi dengan kata laluan — pengalihan keluar perlindungannya tidak disokong.',
+  appProtectionWillWrite:
+    'Perlindungan helaian akan ditulis semasa disimpan (tanpa kata laluan). Editor itu sendiri tidak menguatkuasakannya.',
   appProtectionWillRemove: 'Perlindungan helaian akan dialih keluar semasa disimpan.',
   appZoom: 'Zum {percent}%.',
   appTopRowFrozen: 'Baris teratas dibekukan — simpan dengan ⌘S.',
   appFirstColFrozen: 'Lajur pertama dibekukan — simpan dengan ⌘S.',
-  appFindScanTruncated: 'Helaian besar: carian berhenti selepas {cells} sel — hasil mungkin tidak lengkap.',
+  appFindScanTruncated:
+    'Helaian besar: carian berhenti selepas {cells} sel — hasil mungkin tidak lengkap.',
   appReplaceNeedsFullLoad: 'Ganti memerlukan mod muat penuh — gunakan Cari.',
   appGridlinesHiddenSave: 'Garis grid disembunyikan — simpan dengan ⌘S.',
   appGridlinesShownSave: 'Garis grid ditunjukkan — simpan dengan ⌘S.',
@@ -379,14 +445,17 @@ export const ms = {
   appTraceOffSheetDeps: '{count} dependen pada helaian lain tidak dilukis.',
   appTraceArrowsRemoved: 'Anak panah surihan dialih keluar.',
   appNoTraceArrows: 'Tiada anak panah surihan untuk dialih keluar.',
-  appWorkbookStats: 'Statistik buku kerja: {sheets} helaian · {cells} sel berdata · {formulas} formula{note}.',
+  appWorkbookStats:
+    'Statistik buku kerja: {sheets} helaian · {cells} sel berdata · {formulas} formula{note}.',
   appFrozenAtSelection: 'Dibekukan pada pilihan — simpan dengan ⌘S.',
   appSelectCellsFirst: 'Pilih sel dahulu.',
-  appCellStyleApplied: 'Gaya sel digunakan — direkodkan seperti mana-mana suntingan format (⌘S untuk menyimpan).',
+  appCellStyleApplied:
+    'Gaya sel digunakan — direkodkan seperti mana-mana suntingan format (⌘S untuk menyimpan).',
   appSelectRangeFirst: 'Pilih julat sel dahulu.',
   appSettingNeedsFile: 'Buka fail XLSX dahulu — tetapan ini disimpan ke fail sahaja.',
   appTooManyCellsForSetting: 'Pilih kurang daripada 10,000 sel untuk tetapan ini.',
-  appProtectionFlagsRecorded: 'Bendera perlindungan direkodkan — ia berkuat kuasa apabila helaian dilindungi.',
+  appProtectionFlagsRecorded:
+    'Bendera perlindungan direkodkan — ia berkuat kuasa apabila helaian dilindungi.',
   appSortSelectRows: 'Pilih baris untuk diisih dahulu — sertakan semua lajur yang berkaitan.',
   appSortedAsc: 'Diisih A → Z mengikut lajur pertama yang dipilih.',
   appSortedDesc: 'Diisih Z → A mengikut lajur pertama yang dipilih.',
@@ -394,7 +463,8 @@ export const ms = {
   appRowBelowStreaming: 'Baris di bawah masih dimuatkan secara penstriman — cuba lagi sebentar.',
   appAutofnInserted: '{fn} diselitkan di bawah pilihan.',
   appSortedCustom: 'Diisih mengikut aras tersuai anda.',
-  appDedupeNeedsFullLoad: 'Mengalih keluar pendua memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
+  appDedupeNeedsFullLoad:
+    'Mengalih keluar pendua memerlukan mod muat penuh — buku kerja ini terlalu besar dan distrim sebahagian.',
   appDedupeSelectRows: 'Pilih baris untuk disemak pendua dahulu.',
   appNoDuplicates: 'Tiada baris pendua ditemui dalam pilihan.',
   appDuplicatesRemoved: '{count} baris pendua dialih keluar.',
@@ -438,50 +508,70 @@ export const ms = {
   appHfNeedsFile: 'Buka fail XLSX dahulu — pengepala dan pengaki disimpan ke dalam fail.',
   appActiveSheetUnavailable: 'Helaian aktif tidak tersedia.',
   appHfUpdated: 'Pengepala & pengaki dikemas kini — simpan dengan ⌘S.',
-  appPdfNeedsFullLoad: 'Eksport PDF memerlukan buku kerja dimuatkan sepenuhnya — tunggu pemuatan selesai.',
+  appPdfNeedsFullLoad:
+    'Eksport PDF memerlukan buku kerja dimuatkan sepenuhnya — tunggu pemuatan selesai.',
   appPdfRendering: 'Memaparkan PDF…',
   appPdfCanceled: 'Eksport PDF dibatalkan.',
   appPdfExported: '{path} dieksport.',
   appPdfExportFailed: 'Tidak dapat mengeksport PDF.',
-  appCsvExportNeedsFullLoad: 'Eksport CSV memerlukan buku kerja dimuatkan sepenuhnya — tunggu pemuatan selesai.',
+  appCsvExportNeedsFullLoad:
+    'Eksport CSV memerlukan buku kerja dimuatkan sepenuhnya — tunggu pemuatan selesai.',
   appCsvExportTooLarge: 'Helaian terlalu besar untuk dieksport sebagai CSV.',
   appCsvExportCanceled: 'Eksport CSV dibatalkan.',
   appCsvExported: '{path} dieksport.',
-  appCsvExportedActiveOnly: 'Fail CSV hanya mengandungi satu helaian — helaian aktif “{name}” dieksport ke {path}.',
+  appCsvExportedActiveOnly:
+    'Fail CSV hanya mengandungi satu helaian — helaian aktif “{name}” dieksport ke {path}.',
   appCsvExportFailed: 'Tidak dapat mengeksport CSV.',
   appDemoNoSave: 'Suntingan demo kekal dalam memori — buka fail XLSX untuk menyimpan ke cakera.',
   appFilterSnapshotFailed: 'Tidak dapat mengambil syot kilat penapis.',
-  appColorFiltersUnsaveable: 'Penapis warna belum boleh disimpan sebagai XLSX — kosongkannya sebelum menyimpan.',
+  appColorFiltersUnsaveable:
+    'Penapis warna belum boleh disimpan sebagai XLSX — kosongkannya sebelum menyimpan.',
   appNoEditsToSave: 'Belum ada suntingan untuk disimpan.',
   appSheetOrderReadFailed: 'Tidak dapat membaca susunan helaian — cuba lagi.',
   appSavingEdits: 'Menyimpan {count} suntingan…',
   appSaveCanceled: 'Penyimpanan dibatalkan.',
   appSaved: 'Disimpan.',
   appSaveFailed: 'Tidak dapat menyimpan buku kerja.',
-  appCfRuleUnsaveable: 'Peraturan pemformatan bersyarat ini tidak boleh disimpan ke xlsx — gunakan jenis peraturan lain.',
-  appSaveErrX14Dv: 'Helaian ini mempunyai pengesahihan data lanjutan (x14); pengeditan peraturan pengesahihannya belum disokong.',
-  appSaveErrMultiSelectList: 'Pengesahihan senarai berbilang pilihan tidak boleh disimpan ke xlsx — padamkan peraturan itu sebelum menyimpan.',
-  appSaveErrX14Cf: 'Julat ini mempunyai pemformatan bersyarat lanjutan (x14) dan buat masa ini tidak boleh diubah.',
-  appSaveErrPivotWithSheetOps: 'Jadual Pangsi yang baru dicipta tidak boleh disimpan bersama perubahan pengurusan helaian — simpan Jadual Pangsi dahulu.',
-  appSaveErrPivotWithRowCol: 'Jadual Pangsi yang baru dicipta tidak boleh disimpan bersama perubahan baris/lajur helaiannya — simpan Jadual Pangsi dahulu.',
-  appSaveErrTableWithRowCol: 'Jadual yang baru dicipta tidak boleh disimpan bersama perubahan baris/lajur helaiannya — simpan jadual dahulu.',
-  appSaveErrNamesWithStructural: 'Perubahan nama tertakrif tidak boleh disimpan bersama perubahan baris/lajur atau struktur helaian — simpan dalam dua langkah.',
-  appSaveErrChangedOnDisk: 'Fail telah diubah pada cakera oleh program lain — penyimpanan dihentikan; buka semula fail dan cuba lagi.',
-  appSaveErrStylesheetLimited: 'Helaian gaya buku kerja ini kekurangan struktur asas; perubahan gaya tidak boleh disimpan.',
-  appSaveErrPackageGuard: 'Menyimpan akan mengubah struktur pakej buku kerja — dihentikan untuk melindungi fail.',
-  appSaveErrChartUnsupported: 'Jenis carta ini tidak menyokong suntingan itu; penyimpanan dihentikan — buat asal perubahan carta tersebut.',
-  appSaveErrMoveOverlap: 'Terdapat formula, julat berformat, bentuk atau jadual merentangi baris yang dialihkan; penyimpanan dihentikan — buat asal pengalihan itu.',
+  appCfRuleUnsaveable:
+    'Peraturan pemformatan bersyarat ini tidak boleh disimpan ke xlsx — gunakan jenis peraturan lain.',
+  appSaveErrX14Dv:
+    'Helaian ini mempunyai pengesahihan data lanjutan (x14); pengeditan peraturan pengesahihannya belum disokong.',
+  appSaveErrMultiSelectList:
+    'Pengesahihan senarai berbilang pilihan tidak boleh disimpan ke xlsx — padamkan peraturan itu sebelum menyimpan.',
+  appSaveErrX14Cf:
+    'Julat ini mempunyai pemformatan bersyarat lanjutan (x14) dan buat masa ini tidak boleh diubah.',
+  appSaveErrPivotWithSheetOps:
+    'Jadual Pangsi yang baru dicipta tidak boleh disimpan bersama perubahan pengurusan helaian — simpan Jadual Pangsi dahulu.',
+  appSaveErrPivotWithRowCol:
+    'Jadual Pangsi yang baru dicipta tidak boleh disimpan bersama perubahan baris/lajur helaiannya — simpan Jadual Pangsi dahulu.',
+  appSaveErrTableWithRowCol:
+    'Jadual yang baru dicipta tidak boleh disimpan bersama perubahan baris/lajur helaiannya — simpan jadual dahulu.',
+  appSaveErrNamesWithStructural:
+    'Perubahan nama tertakrif tidak boleh disimpan bersama perubahan baris/lajur atau struktur helaian — simpan dalam dua langkah.',
+  appSaveErrChangedOnDisk:
+    'Fail telah diubah pada cakera oleh program lain — penyimpanan dihentikan; buka semula fail dan cuba lagi.',
+  appSaveErrStylesheetLimited:
+    'Helaian gaya buku kerja ini kekurangan struktur asas; perubahan gaya tidak boleh disimpan.',
+  appSaveErrPackageGuard:
+    'Menyimpan akan mengubah struktur pakej buku kerja — dihentikan untuk melindungi fail.',
+  appSaveErrChartUnsupported:
+    'Jenis carta ini tidak menyokong suntingan itu; penyimpanan dihentikan — buat asal perubahan carta tersebut.',
+  appSaveErrMoveOverlap:
+    'Terdapat formula, julat berformat, bentuk atau jadual merentangi baris yang dialihkan; penyimpanan dihentikan — buat asal pengalihan itu.',
   appFromTextCsvTitle: 'Import fail CSV/teks ke pilihan semasa',
   appCsvImported: 'Mengimport {rows} baris × {columns} lajur daripada fail ke {cell}.',
   appCsvEmpty: 'Fail CSV tiada data.',
-  appCsvTooLarge: 'CSV terlalu besar — jika melebihi 50,000 sel, gunakan "Buka" sebagai buku kerja baharu.',
+  appCsvTooLarge:
+    'CSV terlalu besar — jika melebihi 50,000 sel, gunakan "Buka" sebagai buku kerja baharu.',
   appCsvImportFailed: 'Import CSV gagal.',
   appNoNotesOnSheet: 'Tiada komen pada helaian semasa.',
   appNotePrevTitle: 'Lompat ke komen sebelumnya',
   appNoteNextTitle: 'Lompat ke komen seterusnya',
   appShowCommentsTitle: 'Semat/nyahsemat belon komen sel yang dipilih',
-  appStructuralShiftBlocked: 'Carta atau jadual pada helaian ini berlabuh pada baris/lajur terjejas, jadi tidak boleh dianjak; perubahan struktur tidak disimpan. Buat asal (⌘Z) dan simpan semula.',
-  appAiChangesNotSaved: 'Perubahan AI digunakan (belum disimpan). Buat asal dengan ⌘Z; simpan dengan ⌘S.',
+  appStructuralShiftBlocked:
+    'Carta atau jadual pada helaian ini berlabuh pada baris/lajur terjejas, jadi tidak boleh dianjak; perubahan struktur tidak disimpan. Buat asal (⌘Z) dan simpan semula.',
+  appAiChangesNotSaved:
+    'Perubahan AI digunakan (belum disimpan). Buat asal dengan ⌘Z; simpan dengan ⌘S.',
   appChartUpdated: 'Carta dikemas kini.',
   appChartNotEditable: 'Carta ini tidak boleh diedit.',
   appChartEditRecorded: 'Suntingan carta direkodkan — simpan dengan ⌘S.',
@@ -489,7 +579,8 @@ export const ms = {
   appChartMoved: 'Carta dialihkan.',
   appVisualNotEditable: 'Objek ini tidak boleh diedit.',
   appVisualNoDelete: 'Objek ini tidak boleh dipadamkan — bentuk lukisannya tidak boleh diedit.',
-  appFileVisualMoveDeleteOnly: 'Hanya pengalihan atau pemadaman disokong untuk objek yang sedia ada dalam fail.',
+  appFileVisualMoveDeleteOnly:
+    'Hanya pengalihan atau pemadaman disokong untuk objek yang sedia ada dalam fail.',
   appVisualNoMove: 'Objek ini tidak boleh dialihkan — bentuk lukisannya tidak boleh diedit.',
   appVisualDeleted: 'Objek dipadamkan — simpan dengan ⌘S.',
   appShapeTextUpdated: 'Teks bentuk dikemas kini — simpan dengan ⌘S.',
@@ -502,22 +593,27 @@ export const ms = {
   appLinkInternal: 'Pautan menghala ke dalam buku kerja: {location}',
   appLinkSheetNotFound: 'Helaian "{name}" tidak ditemui.',
   appLinkJumpFailed: 'Tidak dapat melompat ke {location}.',
-  appClosureActive: '{count} formula dikira semula secara langsung (mod penutupan); selebihnya buku kerja distrim atas permintaan.',
-  appRecalcPartial: 'Formula dikira semula daripada suntingan anda — {count} mengekalkan nilai cache (fungsi yang tiada pada enjin sandaran).',
+  appClosureActive:
+    '{count} formula dikira semula secara langsung (mod penutupan); selebihnya buku kerja distrim atas permintaan.',
+  appRecalcPartial:
+    'Formula dikira semula daripada suntingan anda — {count} mengekalkan nilai cache (fungsi yang tiada pada enjin sandaran).',
   appRecalcDone: 'Formula dikira semula daripada suntingan anda ({count} sel, enjin sandaran).',
   appIndexing: 'Mengindeks {name}: {rows} baris sedia.',
   appStreamingRows: 'Menstrim {name}: {rows} baris tersedia.',
   appLoadRangeFailed: 'Tidak dapat memuatkan julat yang kelihatan.',
-  appFullyLoaded: 'Buku kerja dimuatkan sepenuhnya — formula dikira semula secara langsung, baris/lajur boleh diedit.',
+  appFullyLoaded:
+    'Buku kerja dimuatkan sepenuhnya — formula dikira semula secara langsung, baris/lajur boleh diedit.',
   appRangeMustBeVector: '{range} mesti satu baris atau satu lajur sel.',
   appRangeTooManyCells: '{range} merangkumi lebih daripada {max} sel.',
   appSheetStillIndexing: 'Helaian masih diindeks — cuba lagi sebentar.',
   appPrintNothing: 'Helaian ini tiada apa untuk dicetak.',
-  appPrintTooLarge: 'Julat cetakan terlalu besar — tetapkan kawasan cetakan yang lebih kecil pada tab Bentangan Halaman.',
+  appPrintTooLarge:
+    'Julat cetakan terlalu besar — tetapkan kawasan cetakan yang lebih kecil pada tab Bentangan Halaman.',
   appPrintBadArea: 'Kawasan cetakan tidak sah "{area}".',
   appPrintBadTitles: 'Tajuk cetakan tidak sah "{titles}".',
   appPrintTitlesLimit: 'Tajuk cetakan mengulang paling banyak 21 baris.',
-  appVisualHintText: 'Seret untuk mengalih · pemegang untuk mengubah saiz · dwiklik untuk mengedit teks',
+  appVisualHintText:
+    'Seret untuk mengalih · pemegang untuk mengubah saiz · dwiklik untuk mengedit teks',
   appVisualHintEdit: 'Seret untuk mengalih · pemegang untuk mengubah saiz · dwiklik untuk mengedit',
   appVisualHint: 'Seret untuk mengalih · pemegang untuk mengubah saiz',
   appDeleteVisualTitle: 'Padamkan objek ini',
@@ -574,7 +670,8 @@ export const ms = {
   appSortAsc: 'A → Z',
   appSortDesc: 'Z → A',
   appRemoveDuplicates: 'Alih Keluar Pendua',
-  appRemoveDuplicatesNote: 'Baris dalam pilihan yang menduplikasi baris terdahulu (membandingkan setiap lajur, mengabaikan huruf besar/kecil) dialih keluar; selebihnya beralih ke atas.',
+  appRemoveDuplicatesNote:
+    'Baris dalam pilihan yang menduplikasi baris terdahulu (membandingkan setiap lajur, mengabaikan huruf besar/kecil) dialih keluar; selebihnya beralih ke atas.',
   appEditLinkTitle: 'Edit Pautan',
   appInsertLinkTitle: 'Selitkan Pautan',
   appLinkAddressLabel: 'Alamat — halaman web (https://…) atau rujukan helaian (Sheet1!A1)',
@@ -880,7 +977,8 @@ export const ms = {
   appChartScatter: 'Serakan',
   appPivotChart: 'Carta Pangsi',
   appGroupSparklines: 'Garis Percikan',
-  appSparklinesTitle: 'Carta mini dalam sel, satu setiap baris yang dipilih (diletakkan di kanan pilihan)',
+  appSparklinesTitle:
+    'Carta mini dalam sel, satu setiap baris yang dipilih (diletakkan di kanan pilihan)',
   appSparkLine: 'Garis',
   appSparkColumn: 'Lajur',
   appSparkWinLoss: 'Menang/Kalah',
@@ -966,7 +1064,8 @@ export const ms = {
   appDefineName: 'Takrifkan Nama',
   appUseInFormula: 'Gunakan dalam Formula',
   appUseInFormulaTitle: 'Sisipkan nama ditakrif ke dalam formula',
-  appUseInFormulaNeedsEmptyCell: 'Pilih sel kosong dahulu — memasukkan nama akan menggantikan kandungan sel ini',
+  appUseInFormulaNeedsEmptyCell:
+    'Pilih sel kosong dahulu — memasukkan nama akan menggantikan kandungan sel ini',
   appCreateFromSelection: 'Cipta daripada Pilihan',
   appCreateFromSelectionTitle: 'Cipta nama daripada label pilihan',
   appNoNamesYet: 'Belum ada nama ditakrif',
@@ -1093,7 +1192,8 @@ export const ms = {
   appTranslate: 'Terjemah',
   appGroupLanguage: 'Bahasa',
   appTranslateTitle: 'Terjemah pilihan dengan AI',
-  appTranslatePrompt: 'Terjemahkan teks dalam julat terpilih ke {language} dan tulis semula ke sel yang sama.',
+  appTranslatePrompt:
+    'Terjemahkan teks dalam julat terpilih ke {language} dan tulis semula ke sel yang sama.',
   appNewCommentDetail: 'Tambah atau edit',
   appDeleteLabel: 'Padam',
   appNoteAtSelection: 'Nota pada pilihan',
@@ -1119,6 +1219,34 @@ export const ms = {
   appPasteFormattingOnly: 'Pemformatan Sahaja',
   appPasteColWidths: 'Lebar Lajur Sahaja',
   appPasteExceptBorders: 'Semua Kecuali Sempadan',
+  appPasteTranspose: 'Transpos',
+  appPasteKeepFormat: 'Tampal dengan format',
+  appPasteAsPicture: 'Tampal sebagai gambar',
+  appPasteTextOnly: 'Tampal teks sahaja',
+  appCopyAsPicture: 'Salin sebagai gambar',
+  appFeaturePendingTip: 'Ciri ini belum disokong',
+  appNeedCopyFirst: 'Salin atau potong kandungan dahulu',
+  appPastedTransposed: 'Ditampal secara transpos',
+  appPastedTextOnly: 'Ditampal sebagai teks sahaja',
+  appCopy: 'Salin',
+  appUnderlineAccounting: 'Garis bawah berganda perakaunan',
+  appBorderOther: 'Sempadan lain (M)...',
+  appBorderDiagonal: 'Sisipkan pengepala pepenjuru',
+  appDrawBorderGroup: 'Lukis sempadan',
+  appDrawBorderRow: 'Lukis sempadan (R)',
+  appDrawBorderGrid: 'Lukis grid sempadan (G)',
+  appEraseBorder: 'Padam sempadan (E)',
+  appPenLineColor: 'Warna garisan (1)',
+  appPenLineStyle: 'Gaya garisan (Y)',
+  appPenStyle_thin: 'Nipis',
+  appPenStyle_medium: 'Sederhana',
+  appPenStyle_thick: 'Tebal',
+  appPenStyle_double: 'Berganda',
+  appPenStyle_hair: 'Rambut',
+  appPenStyle_dashed: 'Sempang',
+  appPenStyle_dotted: 'Bertitik',
+  appDrawBorderArmed: 'Lukis sempadan sedia: seret julat dalam jadual untuk terap',
+  appEraseBorderArmed: 'Padam sempadan sedia: seret julat dalam jadual untuk padam',
   appCutTitle: 'Potong ⌘X',
   appCopyTitle: 'Salin ⌘C',
   appFormatPainter: 'Pelukis Format',
@@ -1168,7 +1296,8 @@ export const ms = {
   appGroupStyles: 'Gaya',
   appConditionalFormatting: 'Pemformatan Bersyarat',
   appFormatAsTable: 'Formatkan sebagai Jadual',
-  appFormatAsTableTitle: 'Cipta jadual Excel sebenar pada pilihan (pengepala pada baris pertamanya)',
+  appFormatAsTableTitle:
+    'Cipta jadual Excel sebenar pada pilihan (pengepala pada baris pertamanya)',
   appTableStyleLight1: 'Cerah 1 (kelabu)',
   appTableStyleLight9: 'Cerah 9 (biru)',
   appTableStyleMedium2: 'Sederhana 2 (biru)',
@@ -1335,10 +1464,12 @@ export const ms = {
   appCellStyleGroupAccent: 'Aksen',
   appAiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
   appFullLoadFilterTitle: 'Penapisan memerlukan muatan penuh',
-  appFullLoadFilterBody: 'Buku kerja ini besar dan hanya dimuatkan sebahagian secara penstriman. Penapisan (termasuk kiraan nilai) memerlukan data lengkap. Muatkan seluruh buku kerja sekarang?',
+  appFullLoadFilterBody:
+    'Buku kerja ini besar dan hanya dimuatkan sebahagian secara penstriman. Penapisan (termasuk kiraan nilai) memerlukan data lengkap. Muatkan seluruh buku kerja sekarang?',
   appFullLoadStart: 'Muat semua',
   appFullLoadRunning: 'Memuatkan seluruh buku kerja — penapisan tersedia selepas selesai…',
-  appFullLoadTooLarge: 'Buku kerja ini terlalu besar untuk dimuatkan sepenuhnya ke ingatan; penapisan tidak tersedia untuk fail ini.',
+  appFullLoadTooLarge:
+    'Buku kerja ini terlalu besar untuk dimuatkan sepenuhnya ke ingatan; penapisan tidak tersedia untuk fail ini.',
   appDialogCancel: 'Batal',
   appRibbonCollapse: 'Runtuhkan Reben',
   appRibbonPin: 'Semat Reben',

@@ -297,4 +297,7 @@ export const BORDER_COMMAND_TYPES: Record<string, BorderType> = {
   left: BorderType.LEFT,
   right: BorderType.RIGHT,
   none: BorderType.NONE,
+  // WPS 插入斜线表头：Univer 的对角线边框按类型字符串 indexOf 匹配，
+  // "tlbr" 命中 tl_br 绘制（反斜向 BLTR 因上游 "bl_tr" 不含 "bltr" 不生效）。
+  tlbr: BorderType.TLBR,
 }
