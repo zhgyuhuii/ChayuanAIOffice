@@ -94,7 +94,7 @@ import { AnimPreviewOverlay } from './components/AnimatedSlide'
 import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/InsertDialogs'
 import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@chatoffice/ui'
-import { DockShell, type DockLayoutState } from '@chatoffice/ui'
+import { DockShell, type DockLayoutState, isMacStandaloneWindow } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import {
   compressImageForDisplay,
@@ -3330,7 +3330,7 @@ export function App() {
         />
       )}
       <DockShell
-        className="app-main"
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         storageKey="aislides.dock"
         open={showAi && !!aiSettings}
         onOpenChange={setAiOpen}

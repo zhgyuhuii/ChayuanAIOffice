@@ -33,6 +33,7 @@ export {
 export { AiTypingIndicator } from './AiTypingIndicator'
 export {
   DockShell,
+  isMacStandaloneWindow,
   type DockChrome,
   type DockLabels,
   type DockLayoutState,

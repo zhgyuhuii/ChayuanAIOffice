@@ -13,7 +13,13 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
 import { DOMParser as PmDOMParser, type Mark as PmMark } from '@tiptap/pm/model'
 import { NodeSelection } from '@tiptap/pm/state'
-import { AiPanelToggle, DockShell, Dropdown, useUIMode } from '@chatoffice/ui'
+import {
+  AiPanelToggle,
+  DockShell,
+  Dropdown,
+  useUIMode,
+  isMacStandaloneWindow,
+} from '@chatoffice/ui'
 import { createCommandRegistry, MobileRibbon } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
 import { IconOutlineView, IconPrintLayout, IconReadMode, IconWebLayout } from './components/icons'
@@ -4903,7 +4909,7 @@ export function App() {
 .editor-scroll .doc-page.measuring-columns { column-count: auto; width: ${colFlow.colWidthPx + twipsToPx(canvasSection?.marginLeft ?? section?.marginLeft ?? 0) + twipsToPx(canvasSection?.marginRight ?? section?.marginRight ?? 0)}px; }`}</style>
       )}
       <DockShell
-        className="app-main"
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         storageKey="aidocs.dock"
         legacyWidthKey="docs-ai-panel-width"
         open={showAi}

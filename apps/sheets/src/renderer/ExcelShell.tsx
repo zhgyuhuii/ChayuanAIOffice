@@ -9,6 +9,7 @@ import {
   SHAPE_GALLERY_GROUPS,
   ShapePreview,
   useDismissablePopover,
+  isMacStandaloneWindow,
 } from '@chatoffice/ui'
 
 import {
@@ -667,7 +668,7 @@ export function ExcelShell({
           of 4 layouts (shared DockShell) — a left/right dock runs level with the
           ribbon's top edge instead of below it */}
       <DockShell
-        className="sheet-body"
+        className={`sheet-body${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         storageKey="aisheets.dock"
         legacyWidthKey="sheets-ai-panel-width"
         open={isCopilotOpen}

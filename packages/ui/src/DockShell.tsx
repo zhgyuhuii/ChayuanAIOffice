@@ -344,6 +344,15 @@ function IconClose(): React.JSX.Element {
 type FloatHandle = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 const FLOAT_HANDLES: FloatHandle[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw']
 
+/// macOS 独立编辑器窗口（titleBarStyle hiddenInset）：原生红绿灯占据左上，
+/// AI 面板头（对话/助手行）需要让位；tab 模式的灯归 shell tab 条、web/dsh
+/// 无窗口——宿主据此给 DockShell 挂 .mac-standalone。
+export function isMacStandaloneWindow(): boolean {
+  const mac = navigator.platform.toLowerCase().includes('mac')
+  const inTab = new URLSearchParams(window.location.search).get('mode') === 'tab'
+  return mac && !inTab
+}
+
 export function DockShell({
   className,
   style,

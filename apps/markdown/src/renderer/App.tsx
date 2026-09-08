@@ -21,7 +21,7 @@ import { TableMenu } from './components/TableMenu'
 import { FrontmatterPanel } from './components/FrontmatterPanel'
 import { AiAskPopover } from './components/AiAskPopover'
 import { AiPanel, type AiPreset, type MarkdownAiDeps } from './ai/AiPanel'
-import { DockShell } from '@chatoffice/ui'
+import { DockShell, isMacStandaloneWindow } from '@chatoffice/ui'
 import { EDIT_QUEUE_MAX, selectionForAnchor, type EditQueueItem } from './ai/edit-queue'
 import { addQueueAnchor, clearQueueAnchors, removeQueueAnchors } from './editor/aiQueueAnchors'
 import { DOCX_MAX_IMAGE_PX, exportDocxBytes } from './export/docxExport'
@@ -621,7 +621,7 @@ export default function App() {
   return (
     <div className="app">
       <DockShell
-        className="app-main"
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         style={status === 'ready' ? undefined : { display: 'none' }}
         storageKey="aimarkdown.dock"
         legacyWidthKey="markdown-ai-panel-width"

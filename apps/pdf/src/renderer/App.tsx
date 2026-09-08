@@ -98,7 +98,7 @@ import {
 import type { CharStyle } from './color-runs'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import { platformShortcuts } from '@chatoffice/i18n'
-import { AiPanelToggle, DockShell, Dropdown, useDismissablePopover } from '@chatoffice/ui'
+import { AiPanelToggle, DockShell, Dropdown, useDismissablePopover, isMacStandaloneWindow } from '@chatoffice/ui'
 import '@chatoffice/ui/dock.css'
 import { useI18n } from './i18n/locale'
 import { useAutosave } from './useAutosave'
@@ -6645,7 +6645,7 @@ export default function App() {
         }}
       />
       <DockShell
-        className="app-main"
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
         storageKey="aipdf.dock"
         legacyWidthKey="pdf-ai-panel-width"
         open={!aiCollapsed}

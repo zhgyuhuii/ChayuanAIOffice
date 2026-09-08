@@ -515,6 +515,13 @@
   flex-shrink: 0;
 }
 
+/* macOS 独立窗口（hiddenInset）：红绿灯占左上 ~84px，左停靠/最大化时面板头
+   （对话/助手行）让位——与各应用 .ribbon-tabs-mac 同值；宿主挂 .mac-standalone */
+.dockshell.mac-standalone.pos-left .ai-tab-header,
+.dockshell.mac-standalone.is-max .ai-tab-header {
+  padding-left: 84px;
+}
+
 /* ---- top-row bubble icon (AiPanelToggle, placed in the app's tab row) ---- */
 
 .ai-toggle-wrap {
