@@ -2,6 +2,10 @@ import katexCss from 'katex/dist/katex.min.css?inline'
 
 /** Print-theme CSS: mirrors the editor typography so the PDF matches the canvas */
 const PRINT_CSS = `
+@page {
+  margin: 2cm;
+  size: auto;
+}
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -35,6 +39,12 @@ ul[data-type='taskList'] { list-style: none; padding-left: 0.4em; }
 ul[data-type='taskList'] li { display: flex; gap: 8px; }
 ul[data-type='taskList'] li > label { flex: 0 0 auto; margin-top: 0.3em; }
 ul[data-type='taskList'] li[data-checked='true'] > div { color: #8b929b; text-decoration: line-through; }
+@media print {
+  /* High-quality rendering for text */
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  pre, blockquote, table { break-inside: avoid; }
+  img { max-width: 100% !important; page-break-inside: avoid; }
+}
 `
 
 /**
