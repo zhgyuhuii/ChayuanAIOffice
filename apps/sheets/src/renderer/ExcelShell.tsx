@@ -32,6 +32,8 @@ import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { PasteSpecialDialog, type PasteSpecialVariant } from './PasteSpecialDialog'
 import { InsertDeleteCellsDialog } from './InsertDeleteCellsDialog'
+import { applyTabFontSize } from './ribbon-actions'
+import { BatchRenameSheetDialog, MoveCopySheetDialog } from './SheetMenuDialogs'
 import { PictureCropDialog } from './PictureCropDialog'
 import { AllowEditRangesDialog } from './AllowEditRangesDialog'
 import { GoToDialog } from './GoToDialog'
@@ -306,6 +308,9 @@ interface ExcelShellProps {
   readonly onGetSortColumns: () => { label: string; colIndex: number }[]
   /// Effective protection of the active sheet (null = unknown / demo).
   readonly onGetSheetProtection: () => boolean | null
+  /// 工作表菜单：表名清单与活动表下标（移动或复制弹窗）
+  readonly onGetSheetNames?: () => readonly string[]
+  readonly onGetActiveSheetIndex?: () => number
   /// Effective workbook structure lock (null = no file open).
   readonly onGetWorkbookProtection: () => boolean | null
   readonly formulaBarVisible: boolean
@@ -398,6 +403,8 @@ export function ExcelShell({
   onRemoveAttachment,
   onGetSortColumns,
   onGetSheetProtection,
+  onGetSheetNames,
+  onGetActiveSheetIndex,
   onGetWorkbookProtection,
   formulaBarVisible,
   crossHighlightVisible,
@@ -503,6 +510,18 @@ export function ExcelShell({
   // 标准列宽 / 插入删除单元格弹窗（行和列⌄ 第三轮）
   const [standardWidthOpen, setStandardWidthOpen] = useState(false)
   const [cellsDialog, setCellsDialog] = useState<'insert' | 'delete' | null>(null)
+  // 工作表菜单：移动或复制 / 批量改名弹窗
+  const [moveCopyOpen, setMoveCopyOpen] = useState(false)
+  const [batchRenameOpen, setBatchRenameOpen] = useState(false)
+  // 工作表标签字号持久化：挂载即恢复
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem('sheets-tab-font-size'))
+      if (Number.isFinite(saved) && saved >= 10 && saved <= 24) applyTabFontSize(saved)
+    } catch {
+      /* storage disabled */
+    }
+  }, [])
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [showSortDialog, setShowSortDialog] = useState(false)
   const [showDedupeDialog, setShowDedupeDialog] = useState(false)
@@ -932,6 +951,8 @@ export function ExcelShell({
                   else if (command === 'standard-col-width-open') setStandardWidthOpen(true)
                   else if (command === 'insert-cells-dialog-open') setCellsDialog('insert')
                   else if (command === 'delete-cells-dialog-open') setCellsDialog('delete')
+                  else if (command === 'move-copy-dialog-open') setMoveCopyOpen(true)
+                  else if (command === 'batch-rename-dialog-open') setBatchRenameOpen(true)
                   else if (command === 'link-open') setShowLinkDialog(true)
                   else if (command === 'sort-custom-open') setShowSortDialog(true)
                   else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
@@ -1076,6 +1097,29 @@ export function ExcelShell({
           mode={cellsDialog}
           onCommand={onCommand}
           onClose={() => setCellsDialog(null)}
+        />
+      )}
+      {moveCopyOpen && (
+        <MoveCopySheetDialog
+          sheets={onGetSheetNames?.() ?? []}
+          activeIndex={onGetActiveSheetIndex?.() ?? 0}
+          onApply={(targetIndex, copy) => {
+            setMoveCopyOpen(false)
+            onCommand(`sheetop:move-to-index:${targetIndex}${copy ? ':copy' : ''}`)
+          }}
+          onClose={() => setMoveCopyOpen(false)}
+        />
+      )}
+      {batchRenameOpen && (
+        <BatchRenameSheetDialog
+          onApply={(find, replace, prefix, suffix) => {
+            setBatchRenameOpen(false)
+            const enc = (text: string): string => encodeURIComponent(text)
+            onCommand(
+              `sheetop:batch-rename:${enc(find)}|${enc(replace)}|${enc(prefix)}|${enc(suffix)}`,
+            )
+          }}
+          onClose={() => setBatchRenameOpen(false)}
         />
       )}
       {axisSizeTarget && (
@@ -3993,65 +4037,7 @@ function Ribbon({
       <RibbonGroup label={t('appRowcolMenu')}>
         <div className="rowcol-stack">
           <RowcolMenu onCommand={onCommand} />
-          <MenuSelect
-            className="select-like compact rowcol-item"
-            label="Worksheet"
-            data-tip={t('appSheetMenu')}
-            display={
-              <>
-                <ToolSymbol symbol="▤" /> {t('appSheetMenu')}
-              </>
-            }
-            options={[
-              {
-                value: 'sheetop:rename',
-                label: t('appSheetRename'),
-                icon: <OptSample>✎</OptSample>,
-              },
-              {
-                value: 'sheetop:tab-color:none',
-                label: t('appSheetTabColor') + '·' + t('appTabColorNone'),
-                icon: <OptSample>∅</OptSample>,
-              },
-              {
-                value: 'sheetop:tab-color:C00000',
-                label: t('appSheetTabColor') + '·1',
-                icon: <ColorDot color="#C00000" />,
-              },
-              {
-                value: 'sheetop:tab-color:FFC000',
-                label: t('appSheetTabColor') + '·2',
-                icon: <ColorDot color="#FFC000" />,
-              },
-              {
-                value: 'sheetop:tab-color:FFFF00',
-                label: t('appSheetTabColor') + '·3',
-                icon: <ColorDot color="#FFFF00" />,
-              },
-              {
-                value: 'sheetop:tab-color:00B050',
-                label: t('appSheetTabColor') + '·4',
-                icon: <ColorDot color="#00B050" />,
-              },
-              {
-                value: 'sheetop:tab-color:0070C0',
-                label: t('appSheetTabColor') + '·5',
-                icon: <ColorDot color="#0070C0" />,
-              },
-              {
-                value: 'sheetop:tab-color:7030A0',
-                label: t('appSheetTabColor') + '·6',
-                icon: <ColorDot color="#7030A0" />,
-              },
-              { value: 'sheetop:hide', label: t('appSheetHide'), icon: <OptSample>🙈</OptSample> },
-              {
-                value: 'sheetop:unhide',
-                label: t('appSheetUnhide'),
-                icon: <OptSample>👁</OptSample>,
-              },
-            ]}
-            onPick={(value) => onCommand(value)}
-          />
+          <SheetMenu onCommand={onCommand} />
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')}>
@@ -4605,10 +4591,6 @@ export function OptSample({ children }: { children: React.ReactNode }) {
 }
 
 /// small round color chip for tab-color menu rows
-function ColorDot({ color }: { color: string }) {
-  return <i className="menu-color-dot" style={{ background: color }} aria-hidden="true" />
-}
-
 /** 配色方案行：一排色点（图表颜色/主题等菜单） */
 function OptDots({ colors }: { colors: readonly string[] }) {
   return (
@@ -5135,6 +5117,179 @@ function LineStyleGlyph({ style }: { readonly style: string }): React.JSX.Elemen
 /// 边框富菜单（对比清单 8-9）：边框 + 绘图边框两组十五项，无滚动条；
 /// 线条颜色在菜单内展开调色板，线条样式展开线型行；独立边框颜色按钮取消。
 const BORDER_PEN_STYLES = ['thin', 'medium', 'thick', 'double', 'hair', 'dashed', 'dotted'] as const
+/// 工作表⌄（WPS 对齐 B3 第四轮）：16 项全覆盖——插删/副本/移动或复制/重命名/
+/// 保护/标签颜色(菜单内调色板)/字号(子菜单)/隐藏取消隐藏/合并/拆分/目录/
+/// 排序(子菜单)/删空白表/批量改名。
+function SheetMenu({
+  onCommand,
+}: {
+  readonly onCommand: (command: string) => void
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [fontSubOpen, setFontSubOpen] = useState(false)
+  const [sortSubOpen, setSortSubOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  const pick = (command: string): void => {
+    setOpen(false)
+    onCommand(command)
+  }
+  const row = (value: string, label: string): MenuRowOption => ({ value, label })
+  const fontSizes = [12, 14, 16, 18]
+  return (
+    <div ref={wrapRef} className="menu-select sheet-menu">
+      <button
+        type="button"
+        className="select-like compact rowcol-item"
+        data-tip={t('appSheetMenu')}
+        aria-label={t('appSheetMenu')}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="menu-select-value">
+          <ToolSymbol symbol="▤" /> {t('appSheetMenu')}
+        </span>
+        <CaretIcon />
+      </button>
+      {open && (
+        <div
+          className="menu-select-drop sheet-menu-drop"
+          role="listbox"
+          aria-label={t('appSheetMenu')}
+        >
+          <MenuRows
+            options={[
+              row('insert-sheet', t('appSheetInsertSheet')),
+              row('sheetop:remove', t('appSheetDeleteSheet')),
+              row('sheetop:duplicate', t('appSheetCreateCopy')),
+              row('move-copy-dialog-open', t('appSheetMoveOrCopy')),
+              row('sheetop:rename', t('appSheetRename')),
+              row('sheet-protect', t('appProtectSheet')),
+            ]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
+          <div className="rb-menu-sep" />
+          {/* 工作表标签颜色：行 hover 在菜单底部展开调色板（同边框菜单模式） */}
+          <div
+            className={`submenu-host${paletteOpen ? ' submenu-open' : ''}`}
+            onMouseEnter={() => setPaletteOpen(true)}
+            onMouseLeave={() => setPaletteOpen(false)}
+          >
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              <span className="menu-opt-icon" aria-hidden="true">
+                <i className="menu-color-dot" style={{ background: '#C00000' }} />
+              </span>
+              <span className="menu-opt-text">{t('appSheetTabColor')}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            {paletteOpen && (
+              <div className="submenu-drop" role="menu">
+                <ColorPicker
+                  className="sheet-menu-palette"
+                  value="#C00000"
+                  strings={{
+                    themeColors: t('appThemeColors'),
+                    standardColors: t('appStandardColors'),
+                    moreColors: t('appMoreColors'),
+                  }}
+                  onPick={(hex) => {
+                    setPaletteOpen(false)
+                    pick(
+                      hex
+                        ? `sheetop:tab-color:${hex.slice(1).toUpperCase()}`
+                        : 'sheetop:tab-color:none',
+                    )
+                  }}
+                />
+              </div>
+            )}
+          </div>
+          {/* 字号子菜单（JS 状态驱动，同 MenuRows 子菜单行为） */}
+          <div
+            className={`submenu-host${fontSubOpen ? ' submenu-open' : ''}`}
+            onMouseEnter={() => setFontSubOpen(true)}
+            onMouseLeave={() => setFontSubOpen(false)}
+          >
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              <span className="menu-opt-text">{t('appSheetTabFont')}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            {fontSubOpen && (
+              <div className="submenu-drop" role="menu">
+                {fontSizes.map((px) => (
+                  <button
+                    type="button"
+                    key={px}
+                    role="option"
+                    onClick={() => pick(`sheetop:tab-font-size:${px}`)}
+                  >
+                    <span className="menu-opt-text">{px}px</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="rb-menu-sep" />
+          <MenuRows
+            options={[
+              row('sheetop:hide', `${t('appSheetHide')}(H)`),
+              row('sheetop:unhide', t('appSheetUnhide')),
+              row('merge-workbooks', t('appSheetMerge')),
+              row('sheetop:split', t('appSheetSplit')),
+              row('sheetop:toc', t('appSheetTocName')),
+            ]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
+          {/* 工作表排序子菜单 */}
+          <div
+            className={`submenu-host${sortSubOpen ? ' submenu-open' : ''}`}
+            onMouseEnter={() => setSortSubOpen(true)}
+            onMouseLeave={() => setSortSubOpen(false)}
+          >
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              <span className="menu-opt-text">{t('appSheetSort')}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            {sortSubOpen && (
+              <div className="submenu-drop" role="menu">
+                <button type="button" role="option" onClick={() => pick('sheetop:sort-asc')}>
+                  <span className="menu-opt-text">{t('appSheetSortAsc')}</span>
+                </button>
+                <button type="button" role="option" onClick={() => pick('sheetop:sort-desc')}>
+                  <span className="menu-opt-text">{t('appSheetSortDesc')}</span>
+                </button>
+              </div>
+            )}
+          </div>
+          <MenuRows
+            options={[
+              row('sheetop:delete-empty', t('appSheetDeleteEmpty')),
+              row('batch-rename-dialog-open', `${t('appSheetBatchRename')}…`),
+            ]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 /// 行和列⌄（WPS 对齐 B2 第三轮）：五项 + 三个悬停子菜单——插入单元格（弹窗 +
 /// 数量插入行/列）、删除单元格（弹窗 + 删行/列/空行）、隐藏与取消隐藏。
 function RowcolMenu({

@@ -19,6 +19,7 @@ import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/p
 import { columnLabel, formatAddress } from '../domain/cell-address'
 import { transposeChartSeries, type ChartSeriesVisualState } from '../domain/chart-visual'
 import { applyFlashFillTemplate, inferFlashFillTemplate } from '../domain/flash-fill'
+import { csvSheetById, serializeActiveSheetCsv } from './csv-export'
 import { parseTsv, plainTextFromCells } from './clipboard-tsv'
 import { boundingRange, renderRangeToPng } from './range-image'
 import type {
@@ -439,6 +440,80 @@ function armDrawBorder(
     window.removeEventListener('pointerdown', onPointerDown, { capture: true })
     window.removeEventListener('keydown', onEscape)
   }
+}
+
+/// 空表判定：整张表的值矩阵里没有任何非空值（保护大数据：用 CellMatrix
+/// 遍历而非 range.getValues() 展平）。
+function isSheetEmptyOfValues(sheet: { getSheet(): unknown }): boolean {
+  let empty = true
+  try {
+    const matrix = (
+      sheet.getSheet() as {
+        getCellMatrix(): {
+          forValue(
+            cb: (row: number, col: number, value: { v?: unknown } | null) => boolean | void,
+          ): unknown
+        }
+      }
+    ).getCellMatrix()
+    matrix.forValue((_row, _column, value) => {
+      if (value && value.v != null && value.v !== '') {
+        empty = false
+        return true // 停止遍历
+      }
+      return undefined
+    })
+  } catch {
+    return false
+  }
+  return empty
+}
+
+/// 创建表格目录：新建/复用「目录」表，逐行写入 序号 + 表名 + HYPERLINK 公式
+/// （公式在引擎里可用；无超链接 UI 弹层时至少呈现目录全貌）。
+async function buildSheetToc(ctx: RibbonCommandContext): Promise<void> {
+  const runtime = ctx.univerRef.current
+  const workbook = runtime?.univerAPI.getActiveWorkbook()
+  if (!runtime || !workbook) return
+  const TOC = t('appSheetTocName')
+  const sheets = workbook.getSheets()
+  let toc = sheets.find((sheet) => sheet.getSheetName() === TOC)
+  if (!toc) {
+    toc = workbook.insertSheet(TOC)
+  } else if (workbookStructureLocked(ctx.lazyWorkbookRef.current)) {
+    ctx.setMessage(t('appWorkbookStructureLocked'))
+    return
+  }
+  const header = [[t('appSheetTocIndex'), t('appSheetTocSheet'), t('appSheetTocLink')]]
+  const rows = sheets
+    .filter((sheet) => sheet.getSheetName() !== TOC)
+    .map((sheet, index) => {
+      const name = sheet.getSheetName()
+      return [
+        index + 1,
+        name,
+        { f: `=HYPERLINK("#'${name.replace(/'/g, "''")}'!A1","${name.replace(/"/g, '""')}")` },
+      ]
+    })
+  try {
+    toc.getRange(0, 0, rows.length + 1, 3).setValues([...header, ...rows] as never)
+    ctx.setMessage(t('appSheetTocBuilt', { n: rows.length }))
+  } catch {
+    ctx.setMessage(t('appSheetTocFailed'))
+  }
+}
+
+/// 工作表标签字号：注入规则命中 Univer 内部标签条文本（幂等，一次一条）。
+export function applyTabFontSize(px: number): void {
+  if (typeof document === 'undefined') return // node 侧测试/SSR 无 DOM
+  const id = 'sheetop-tab-font-size'
+  let style = document.getElementById(id)
+  if (!style) {
+    style = document.createElement('style')
+    style.id = id
+    document.head.appendChild(style)
+  }
+  style.textContent = `#univer-container .univer-sheet-tab { font-size: ${px}px !important }`
 }
 
 let drawBorderDisposers: (() => void) | null = null
@@ -888,9 +963,182 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     // 工作表⌄（WPS 对齐 B3）：重命名/标签颜色/隐藏/取消隐藏。
     const wb = runtime.univerAPI.getActiveWorkbook()
     const ws = wb?.getActiveSheet()
-    const action = command.slice('sheetop:'.length)
+    const raw = command.slice('sheetop:'.length)
+    const colon = raw.indexOf(':')
+    const action = colon === -1 ? raw : raw.slice(0, colon)
+    const extra = colon === -1 ? '' : raw.slice(colon + 1)
     if (!wb || !ws) return
     switch (action) {
+      case 'remove': {
+        // 删除工作表（WPS 对齐）：至少保留一张表
+        if (wb.getSheets().length <= 1) {
+          ctx.setMessage(t('appSheetRemoveLast'))
+          return
+        }
+        const name = ws.getSheetName()
+        try {
+          if (workbookStructureLocked(ctx.lazyWorkbookRef.current)) {
+            ctx.setMessage(t('appWorkbookStructureLocked'))
+            return
+          }
+          wb.deleteSheet(ws)
+          ctx.setMessage(t('appSheetRemoved', { name }))
+        } catch {
+          /* protected workbook: its own message */
+        }
+        return
+      }
+      case 'duplicate': {
+        // 创建副本：Univer 原生 copy-sheet（复制活动表并激活副本）
+        try {
+          if (workbookStructureLocked(ctx.lazyWorkbookRef.current)) {
+            ctx.setMessage(t('appWorkbookStructureLocked'))
+            return
+          }
+          void runtime.univerAPI.executeCommand('sheet.command.copy-sheet')
+          ctx.setMessage(t('appSheetDuplicated'))
+        } catch {
+          ctx.setMessage(t('appSheetDupFailed'))
+        }
+        return
+      }
+      case 'move-to-index': {
+        // 移动或复制工作表：move-to-index:<index>[:copy]（copy 先复制再移动）
+        const [indexPart = '', copyFlag = ''] = extra.split(':')
+        const index = Number(indexPart)
+        if (!Number.isInteger(index)) return
+        try {
+          if (workbookStructureLocked(ctx.lazyWorkbookRef.current)) {
+            ctx.setMessage(t('appWorkbookStructureLocked'))
+            return
+          }
+          if (copyFlag === 'copy') {
+            // 副本由 copy-sheet 创建并激活；等命令落地后移动副本本身
+            void runtime.univerAPI
+              .executeCommand('sheet.command.copy-sheet')
+              .then(() => {
+                const wb2 = runtime.univerAPI.getActiveWorkbook()
+                const active2 = wb2?.getActiveSheet()
+                if (wb2 && active2) wb2.moveSheet(active2, index)
+              })
+              .catch(() => {
+                /* canceled */
+              })
+          } else {
+            wb.moveSheet(ws, index)
+          }
+          ctx.setMessage(t('appSheetMoved'))
+        } catch {
+          ctx.setMessage(t('appSheetMoveFailed'))
+        }
+        return
+      }
+      case 'sort-asc':
+      case 'sort-desc': {
+        // 工作表排序：按名称重排（localeCompare，中文按拼音区）
+        const desc = action === 'sort-desc'
+        const sheets = [...wb.getSheets()].sort((a, b) =>
+          desc
+            ? b.getSheetName().localeCompare(a.getSheetName(), 'zh-Hans-CN')
+            : a.getSheetName().localeCompare(b.getSheetName(), 'zh-Hans-CN'),
+        )
+        if (workbookStructureLocked(ctx.lazyWorkbookRef.current)) {
+          ctx.setMessage(t('appWorkbookStructureLocked'))
+          return
+        }
+        sheets.forEach((sheet, index) => wb.moveSheet(sheet, index))
+        ctx.setMessage(t('appSheetSorted'))
+        return
+      }
+      case 'toc':
+        void buildSheetToc(ctx)
+        return
+      case 'delete-empty': {
+        // 删除空白表：全空表删除；始终保留活动表与至少一张表
+        const sheets = wb.getSheets()
+        if (sheets.length <= 1) {
+          ctx.setMessage(t('appSheetRemoveLast'))
+          return
+        }
+        const activeId = ws.getSheetId()
+        const total = sheets.length
+        let removed = 0
+        for (const sheet of sheets) {
+          if (total - removed <= 1) break
+          if (sheet.getSheetId() === activeId) continue
+          if (isSheetEmptyOfValues(sheet)) {
+            try {
+              wb.deleteSheet(sheet)
+              removed += 1
+            } catch {
+              /* protected workbook */
+            }
+          }
+        }
+        ctx.setMessage(t('appSheetEmptyDeleted', { n: removed }))
+        return
+      }
+      case 'batch-rename': {
+        // 批量改名：find|replace|prefix|suffix（各段 encodeURIComponent）
+        const [find = '', replace = '', prefix = '', suffix = ''] = extra.split('|').map((part) => {
+          try {
+            return decodeURIComponent(part)
+          } catch {
+            return ''
+          }
+        })
+        if (!find && !prefix && !suffix) return
+        let renamed = 0
+        for (const sheet of wb.getSheets()) {
+          const original = sheet.getSheetName()
+          let next = find ? original.split(find).join(replace) : original
+          next = `${prefix}${next}${suffix}`
+          if (next !== original && next.trim()) {
+            try {
+              sheet.setName(next.trim())
+              renamed += 1
+            } catch {
+              /* duplicate name — skip that sheet */
+            }
+          }
+        }
+        ctx.setMessage(t('appSheetBatchRenamed', { n: renamed }))
+        return
+      }
+      case 'split': {
+        // 拆分表格：每张工作表导出为独立 xlsx 文件（默认保存目录，新 tab 打开）
+        const state = ctx.lazyWorkbookRef.current
+        for (const sheet of wb.getSheets()) {
+          const single = csvSheetById(runtime, sheet.getSheetId())
+          if (!single) continue
+          const content = serializeActiveSheetCsv(single, state)
+          if (content === 'too-large') continue
+          void window.desktopApi
+            ?.createDocument({
+              type: 'xlsx',
+              title: sheet.getSheetName(),
+              sheetName: sheet.getSheetName(),
+              content,
+            })
+            .catch(() => {
+              /* per-sheet failure: keep splitting */
+            })
+        }
+        ctx.setMessage(t('appSheetSplitDone'))
+        return
+      }
+      case 'tab-font-size': {
+        // 工作表标签字号：持久化 + 注入规则到 Univer 内部标签条
+        const px = Number(extra) || 14
+        try {
+          localStorage.setItem('sheets-tab-font-size', String(px))
+        } catch {
+          /* storage disabled */
+        }
+        applyTabFontSize(px)
+        ctx.setMessage(t('appSheetTabFontApplied', { n: px }))
+        return
+      }
       case 'hide':
         try {
           if (wb.getSheets().filter((s) => !s.isSheetHidden()).length <= 1) {

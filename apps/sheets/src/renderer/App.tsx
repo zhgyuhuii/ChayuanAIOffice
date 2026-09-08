@@ -5615,6 +5615,16 @@ export function App(): React.JSX.Element {
         }}
         onGetSortColumns={sortColumnOptions}
         onGetSheetProtection={sheetProtectionEcho}
+        onGetSheetNames={() => {
+          const wb = univerRef.current?.univerAPI.getActiveWorkbook()
+          return wb ? wb.getSheets().map((sheet) => sheet.getSheetName()) : []
+        }}
+        onGetActiveSheetIndex={() => {
+          const wb = univerRef.current?.univerAPI.getActiveWorkbook()
+          if (!wb) return 0
+          const activeId = wb.getActiveSheet().getSheetId()
+          return wb.getSheets().findIndex((sheet) => sheet.getSheetId() === activeId)
+        }}
         onGetWorkbookProtection={workbookProtectionEcho}
         formulaBarVisible={formulaBarVisible}
         crossHighlightVisible={crossHighlightVisible}

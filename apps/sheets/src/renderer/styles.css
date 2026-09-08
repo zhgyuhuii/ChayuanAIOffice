@@ -6334,3 +6334,15 @@ textarea:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* 工作表⌄（B3 第四轮）：16 项 + 颜色/字号/排序子面板 */
+.sheet-menu-drop {
+  max-height: none;
+  overflow: visible;
+  min-width: 190px;
+}
+
+.sheet-menu-palette {
+  margin: 2px 4px 4px;
+  min-width: 180px;
+}
