@@ -6320,3 +6320,17 @@ textarea:focus {
   opacity: 0.4;
   cursor: default;
 }
+
+/* 数字格式下拉第二轮：样例列定宽截断——24px 图标列装不下「1234.5」这类
+   长样例，溢出文字直接压到右侧类别名上（样例与名称重叠的根因） */
+.numfmt-wrap .menu-select-drop button .menu-opt-icon {
+  width: 96px;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.numfmt-wrap .menu-opt-sample {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
