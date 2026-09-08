@@ -17,7 +17,9 @@ function makeHarness(opts: { emptySheets?: string[]; locked?: boolean } = {}) {
     setName: (next: string) => calls.push(`setName(${name}→${next})`),
     getSheet: () => ({
       getCellMatrix: () => ({
-        forValue: (cb: (row: number, col: number, value: { v?: unknown } | null) => boolean | void) => {
+        forValue: (
+          cb: (row: number, col: number, value: { v?: unknown } | null) => boolean | void,
+        ) => {
           if (!empty) {
             // 非空表：A1 有值
             if (cb(0, 0, { v: 'x' }) === true) return
