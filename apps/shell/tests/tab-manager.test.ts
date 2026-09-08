@@ -42,7 +42,12 @@ function makeFakeView(): FakeView {
   }
 }
 
-vi.mock('electron', () => ({ BrowserWindow: class {} }))
+vi.mock('electron', () => ({
+  BrowserWindow: class {},
+  // editor mains build their brand window icon at import time (see
+  // tools/gen-app-icon.mjs); the mock must expose nativeImage for that
+  nativeImage: { createFromPath: () => ({ addRepresentation: () => {} }) },
+}))
 
 const createDocsView = vi.fn(() => makeFakeView())
 const docsQueryDirty = vi.fn(() => Promise.resolve(false))

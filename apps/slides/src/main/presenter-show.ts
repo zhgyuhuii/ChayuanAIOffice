@@ -6,10 +6,14 @@
  * get-transition…) works naturally, and it sees the in-memory document
  * (including unsaved changes) without re-reading from disk.
  */
-import { BrowserWindow, ipcMain, screen } from 'electron'
+import { BrowserWindow, ipcMain, nativeImage, screen } from 'electron'
 import type { WebContents } from 'electron'
 import type { AudienceNavAction, ShowInkEvent, ShowSyncState } from '../shared/ipc'
 import { runtime, sessions, viewerWcIds, windowRefs } from './session-state'
+import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
+
+// Brand icon for the audience window's taskbar / Alt-Tab entry
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 
 interface PresenterShow {
   presenterWc: WebContents
@@ -80,6 +84,7 @@ export function registerPresenterIpc(): void {
       frame: false,
       show: false,
       backgroundColor: '#000000',
+      icon: APP_ICON,
       webPreferences: {
         preload: runtime.preloadPath,
         contextIsolation: true,

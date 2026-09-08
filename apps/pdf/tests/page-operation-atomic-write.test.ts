@@ -61,6 +61,7 @@ vi.mock('../src/main/save-pdf', async (importOriginal) => {
 })
 
 vi.mock('electron', () => ({
+  nativeImage: { createFromPath: () => ({}) },
   app: { on: vi.fn(), whenReady: vi.fn(() => new Promise(() => {})) },
   dialog: {},
   shell: {},

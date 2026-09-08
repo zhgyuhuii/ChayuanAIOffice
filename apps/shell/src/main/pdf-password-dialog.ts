@@ -1,7 +1,11 @@
 import { join } from 'node:path'
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, ipcMain, nativeImage } from 'electron'
 import type { PdfPasswordUiState } from '../shared/pdf-password-api'
 import { PDF_PASSWORD_CHANNELS } from '../shared/pdf-password-api'
+import appIconPath from './assets/app-icon.png?asset'
+
+// Alt-Tab / taskbar icon for the modal password prompt
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 
 /**
  * Password prompt for encrypted PDFs (P23): a frameless modal card centered
@@ -82,6 +86,7 @@ export function promptPdfPassword(
     fullscreenable: false,
     show: false,
     title: state.strings.title,
+    icon: APP_ICON,
     webPreferences: {
       preload: join(__dirname, '../preload/pdf-password.js'),
       contextIsolation: true,

@@ -36,6 +36,12 @@ import menuMdIcon1x from './assets/menu-md.png?asset'
 import menuMdIcon2x from './assets/menu-md@2x.png?asset'
 import menuHomeIcon1x from './assets/menu-home.png?asset'
 import menuHomeIcon2x from './assets/menu-home@2x.png?asset'
+import appIconPath from './assets/app-icon.png?asset'
+
+// Brand icon for every window the shell creates: the taskbar / Alt-Tab / native
+// title-bar icon on Windows and Linux, and the macOS dock icon in dev builds
+// (packaged mac/win bake the same artwork into the app bundle / exe).
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { createI18n, isLang, normalizeLang, setUiLang, type Lang } from '@chatoffice/i18n'
 import {
   DEFAULT_SAVE_DIR_KEY,
@@ -2385,6 +2391,7 @@ function createShellWindow(): void {
     minWidth: 980,
     minHeight: 600,
     title: 'ChatOffice',
+    icon: APP_ICON,
     // 全平台隐藏系统标题栏（自绘最小化/最大化/关闭：mac 左侧、win 右侧，位于 tab 条内）
     titleBarStyle: 'hidden' as const,
     autoHideMenuBar: true,
@@ -3096,8 +3103,7 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.restorePendingUntitled, (_event, tempPath: unknown) => {
-    const doc =
-      typeof tempPath === 'string' ? pendingUntitledDocs.get(tempPath) : undefined
+    const doc = typeof tempPath === 'string' ? pendingUntitledDocs.get(tempPath) : undefined
     if (!doc) return false
     try {
       if (doc.kind === 'sheet') {
@@ -4500,6 +4506,9 @@ function installBackToHomeItems(): void {
 
 function installDockMenu(): void {
   if (process.platform !== 'darwin') return
+  // Dev runs from the stock Electron.app, whose dock icon is Electron's own;
+  // packaged builds take the brand icon from icon.icns at full quality.
+  if (!app.isPackaged) app.dock?.setIcon(APP_ICON)
   app.dock?.setMenu(
     Menu.buildFromTemplate([
       { label: tm('menuHome'), click: () => tabManager?.openHomeTab() },

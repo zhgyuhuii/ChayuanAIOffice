@@ -12,8 +12,14 @@ import {
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { join } from 'node:path'
-import { BrowserWindow, WebContentsView, app, dialog, ipcMain, shell } from 'electron'
+import { BrowserWindow, WebContentsView, app, dialog, ipcMain, nativeImage, shell } from 'electron'
 import type { WebContents } from 'electron'
+import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
+
+// Brand icon for the window/taskbar and the macOS dock icon in dev builds;
+// packaged bundles take the same artwork from their baked-in icon — see
+// tools/gen-app-icon.mjs
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 import {
   buildPrintableHtml,
   configuredDefaultSaveDir,
@@ -1550,10 +1556,13 @@ export function startPdfStandalone(): void {
     createDocument: createStandaloneDocument,
   })
   void app.whenReady().then(() => {
+    // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
+    if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
     registerPdfIpc()
     const win = new BrowserWindow({
       width: 1200,
       height: 850,
+      icon: APP_ICON,
       webPreferences: {
         preload: runtime.preloadPath,
         contextIsolation: true,

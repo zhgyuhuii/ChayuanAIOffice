@@ -25,6 +25,12 @@ import {
   net,
   shell,
 } from 'electron'
+import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
+
+// Brand icon for the window/taskbar and the macOS dock icon in dev builds;
+// packaged bundles take the same artwork from their baked-in icon — see
+// tools/gen-app-icon.mjs
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 import {
   appMenuLabels,
   buildPrintableHtml,
@@ -3954,11 +3960,12 @@ export function registerDocsIpc(): void {
       event.sender.print(
         { margins: { marginType: 'none' }, ...printScale(scale) },
         (success, failureReason) => {
-        resolve({
-          ok: success,
-          ...(failureReason && !/cancel/i.test(failureReason) ? { error: failureReason } : {}),
-        })
-      })
+          resolve({
+            ok: success,
+            ...(failureReason && !/cancel/i.test(failureReason) ? { error: failureReason } : {}),
+          })
+        },
+      )
     })
   })
 
@@ -4469,6 +4476,7 @@ export function createDocsWindow(openPath?: string): BrowserWindow {
     minWidth: 720,
     minHeight: 550,
     title: 'ChatOffice Docs',
+    icon: APP_ICON,
     // Word-like custom title bar (document name centered, quick-access buttons)
     ...(process.platform === 'darwin'
       ? { titleBarStyle: 'hiddenInset' as const }
@@ -4791,7 +4799,7 @@ export function startDocsStandalone(): void {
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
     // packaged builds get the Dock icon from icon.icns; dev shows Electron's default
     if (isDev && process.platform === 'darwin') {
-      app.dock?.setIcon(join(app.getAppPath(), 'build/icon.png'))
+      app.dock?.setIcon(APP_ICON)
     }
     buildDocsMenu()
     createDocsWindow()

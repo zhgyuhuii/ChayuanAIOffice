@@ -21,6 +21,7 @@ import {
   dialog,
   ipcMain,
   Menu,
+  nativeImage,
   net,
   screen,
   session as electronSession,
@@ -35,6 +36,12 @@ import type {
   SaveDialogOptions,
   WebContents,
 } from 'electron'
+import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
+
+// Brand icon for the window/taskbar and the macOS dock icon in dev builds;
+// packaged bundles take the same artwork from their baked-in icon — see
+// tools/gen-app-icon.mjs
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { z } from 'zod'
 import {
   appMenuLabels,
@@ -58,12 +65,18 @@ import {
   cloudToolsEnabled,
   isAiOverloadedError,
   migrateSettingsV2,
-  setAiUserAgent,  setRescueFetch,
+  setAiUserAgent,
+  setRescueFetch,
   type AiRuntime,
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
-import { blankXlsxBuffer, csvToXlsxBuffer, decodeCsvBuffer, sheetCsvToXlsxBuffer } from '../gateway/csv-import'
+import {
+  blankXlsxBuffer,
+  csvToXlsxBuffer,
+  decodeCsvBuffer,
+  sheetCsvToXlsxBuffer,
+} from '../gateway/csv-import'
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -1939,6 +1952,7 @@ export async function createSheetsWindow(
     minHeight: 550,
     show: false,
     title: 'ChatOffice Sheets',
+    icon: APP_ICON,
     // Traffic lights sit inside the toolbar row.
     ...(process.platform === 'darwin' ? { titleBarStyle: 'hiddenInset' as const } : {}),
     webPreferences: {
@@ -2366,7 +2380,10 @@ export function registerSheetsIpc(): void {
       suggestSaveAs:
         prepared.suggestSaveAs ??
         (blankDraft
-          ? join(saveDir ?? configuredDefaultSaveDir(app), `${blankRequest?.name ?? 'Untitled'}.xlsx`)
+          ? join(
+              saveDir ?? configuredDefaultSaveDir(app),
+              `${blankRequest?.name ?? 'Untitled'}.xlsx`,
+            )
           : undefined),
       csvImport: prepared.csvImport,
       csvSourcePath: prepared.csvSourcePath,
@@ -4025,6 +4042,8 @@ export function startSheetsStandalone(): void {
   void applyMainProcessProxy()
   app.whenReady().then(() => {
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
+    // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
+    if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
     app.setAccessibilitySupportEnabled(true)
     installApplicationMenu()
     startCaptureServer()

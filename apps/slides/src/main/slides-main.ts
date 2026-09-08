@@ -20,6 +20,12 @@ import {
   WebContentsView,
 } from 'electron'
 import type { WebContents } from 'electron'
+import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
+
+// Brand icon for the window/taskbar and the macOS dock icon in dev builds;
+// packaged bundles take the same artwork from their baked-in icon — see
+// tools/gen-app-icon.mjs
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 import { execFile } from 'node:child_process'
 import { readFile, writeFile, rm, stat, mkdir, open } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
@@ -4305,9 +4311,7 @@ export function registerSlidesIpc(): void {
       session.path && session.path.startsWith(hiddenDraftsDir()) ? session.path : undefined
     if (!session.path || draftPath) {
       const parent = dialogParent()
-      const base = draftPath
-        ? basename(draftPath).replace(/\.pptx$/i, '')
-        : tm('untitledDeck')
+      const base = draftPath ? basename(draftPath).replace(/\.pptx$/i, '') : tm('untitledDeck')
       const r = await showSaveDialogWithMemory(
         dialog,
         parent,
@@ -4707,6 +4711,7 @@ export function createSlidesWindow(openPath?: string | null): BrowserWindow {
     width: 1280,
     height: 840,
     title: 'ChatOffice Slides',
+    icon: APP_ICON,
     ...(process.platform === 'darwin'
       ? { titleBarStyle: 'hiddenInset' as const }
       : {
@@ -4993,6 +4998,8 @@ export function startSlidesStandalone(): void {
 
   app.whenReady().then(async () => {
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
+    // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
+    if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
     registerSlidesIpc()
     registerAiIpc()
     registerProjectIpc()

@@ -45,6 +45,7 @@ function makeFakeWebContents(): FakeWebContents {
 }
 
 vi.mock('electron', () => ({
+  nativeImage: { createFromPath: () => ({}) },
   app: { on: vi.fn(), whenReady: vi.fn(() => new Promise(() => {})) },
   dialog: {},
   shell: {},

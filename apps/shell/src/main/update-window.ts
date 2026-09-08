@@ -1,7 +1,11 @@
 import { join } from 'node:path'
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, ipcMain, nativeImage } from 'electron'
 import type { UpdateUiState } from '../shared/update-api'
 import { UPDATE_CHANNELS } from '../shared/update-api'
+import appIconPath from './assets/app-icon.png?asset'
+
+// Alt-Tab / taskbar icon for the modal update prompt
+const APP_ICON = nativeImage.createFromPath(appIconPath)
 
 /**
  * The strong-guidance update window: a frameless modal
@@ -63,6 +67,7 @@ export function showUpdateWindow(
     fullscreenable: false,
     show: false,
     title: state.strings.title,
+    icon: APP_ICON,
     webPreferences: {
       preload: join(__dirname, '../preload/update.js'),
       contextIsolation: true,
