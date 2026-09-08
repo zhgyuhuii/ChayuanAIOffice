@@ -57,7 +57,10 @@ describe('parseDegradedToolCalls', () => {
       parseDegradedToolCalls('```json\n[{"name":"do_thing","arguments":{"b":2}}]\n```', known),
     ).toEqual([{ id: 'deg_0', name: 'do_thing', input: { b: 2 } }])
     expect(
-      parseDegradedToolCalls('Sure! {"tool_name":"do_thing","args":{"c":3}} hope that helps', known),
+      parseDegradedToolCalls(
+        'Sure! {"tool_name":"do_thing","args":{"c":3}} hope that helps',
+        known,
+      ),
     ).toEqual([{ id: 'deg_0', name: 'do_thing', input: { c: 3 } }])
   })
 
@@ -169,6 +172,39 @@ describe('degraded mode', () => {
     expect(transport.requests[0]!.toolCount).toBe(0)
     expect(transport.requests[0]!.system).toContain('DEGRADED MODE')
     expect(loop.isDegraded).toBe(true)
+  })
+
+  it('degrade() parses and executes JSON tool calls in static mode, folds results as user text', async () => {
+    const transport = scriptedTransport([
+      (cb) => {
+        cb.onDelta('{"tool":"do_thing","input":{"n":1}}')
+        cb.onDone()
+      },
+      (cb) => {
+        cb.onDelta('All done!')
+        cb.onDone()
+      },
+    ])
+    const executions: string[] = []
+    let lastResult: { text?: string; degraded?: boolean } | undefined
+    const loop = new AgentLoop({
+      transport,
+      skill: makeSkill((call) => {
+        executions.push(call.name)
+        return { output: 'done-ok', summary: 'done', mutated: true }
+      }),
+      events: { onDone: (res) => (lastResult = res) },
+    })
+    expect(loop.degrade()).toBe(true)
+    loop.run('go')
+    await flushAll()
+    expect(executions).toEqual(['do_thing'])
+    expect(lastResult?.degraded).toBe(true)
+    expect(lastResult?.text).toBe('All done!')
+    // degraded runs never put role:'tool' on the wire: the result is folded into a user text message
+    const msgs = loop.messages as Array<{ role: string; text?: string }>
+    expect(msgs.some((m) => m.role === 'tool')).toBe(false)
+    expect(msgs.some((m) => m.role === 'user' && m.text?.includes('done-ok'))).toBe(true)
   })
 
   it('degrade() is a no-op for skills without degradedFallback', () => {

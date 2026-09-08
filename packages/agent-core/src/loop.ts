@@ -716,11 +716,18 @@ export class AgentLoop<TSnapshot = unknown> {
     const { events, skill, captureSnapshot } = this.options
     let toolCalls = this.toolCalls
 
-    // A degraded probe turn that answered with plain text means the model just
-    // talks (a chat round, not a failed tool round) — restore normal mode and
-    // finalize as a zero-tool turn. A probe that DID emit JSON tool calls is
-    // promoted: this loop formally enters degraded mode for good.
-    if (this.degradedProbe && toolCalls.length === 0 && !this.cancelled && !this.finalizing) {
+    // Degraded turns that answered with plain text: parse the JSON-text
+    // protocol (static degrade() and the silent-turn probe share this branch).
+    // A probe that landed a real tool call is promoted: this loop formally
+    // enters degraded mode for good. A probe that just talks is never retried;
+    // static mode keeps parsing on every zero-tool turn, so a plain-text
+    // answer still finalizes the run below (parsed empty → fall through).
+    if (
+      (this.degraded || this.degradedProbe) &&
+      toolCalls.length === 0 &&
+      !this.cancelled &&
+      !this.finalizing
+    ) {
       const parsed = parseDegradedToolCalls(
         this.turnText,
         this.options.skill.tools.map((t) => t.name),
@@ -747,7 +754,12 @@ export class AgentLoop<TSnapshot = unknown> {
       // the JSON-text protocol. A probe that lands a real tool call promotes
       // the loop to degraded mode permanently; a probe that just talks is
       // never retried (a chatty FC model must not lose its native tools).
-      if (!this.degraded && !this.degradedProbe && !this.probeUsed && this.silentFallbackAvailable()) {
+      if (
+        !this.degraded &&
+        !this.degradedProbe &&
+        !this.probeUsed &&
+        this.silentFallbackAvailable()
+      ) {
         this.silentTurns++
         if (this.silentTurns >= DEGRADE_SILENT_TURNS) {
           this.degradedProbe = true
