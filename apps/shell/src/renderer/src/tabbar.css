@@ -455,3 +455,9 @@ html.chatoffice-shell-modal .app-frame-content.doc-active {
 .win-controls.side-right .win-control-close:hover {
   background: #e81123;
 }
+
+/* macOS：原生红绿灯占位（与自绘三键同宽同位，纯空盒不可点） */
+.mac-native-spacer {
+  width: 90px;
+  pointer-events: none;
+}

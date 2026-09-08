@@ -19,13 +19,20 @@ declare global {
  *  macOS 用原生红绿灯、web/dsh 无窗口概念——preload 的 controls=false 时不出现在 DOM。 */
 function WindowControls({ side }: { side: 'left' | 'right' }): ReactElement | null {
   const [maximized, setMaximized] = useState(false)
+  const controls = window.chatOfficeWindow
   useEffect(() => {
-    const controls = window.chatOfficeWindow
     if (!controls?.controls) return
     void controls.isMaximized().then(setMaximized)
     return controls.onMaximizeChange(setMaximized)
-  }, [])
-  if (!window.chatOfficeWindow?.controls) return null
+  }, [controls])
+  if (!controls?.controls) {
+    // macOS 原生红绿灯占左侧同一格：留一个与自绘三键等宽的空占位，
+    // tab 条首元素不得滑进灯下（win/linux 走上面的自绘分支）。
+    if (side === 'left' && controls?.platform === 'darwin') {
+      return <div className="win-controls side-left mac-native-spacer" aria-hidden="true" />
+    }
+    return null
+  }
   return (
     <div className={`win-controls side-${side}`}>
       <button

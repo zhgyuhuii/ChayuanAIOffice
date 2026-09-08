@@ -419,8 +419,10 @@ const tabsApi: TabsApi = {
 }
 
 const windowControlsApi: WindowControlsApi = {
-  // 桌面全平台自绘窗口控制；web/dsh 无 preload 自然没有
-  controls: true,
+  // 桌面自绘窗口控制；mac 的 titleBarStyle:'hidden' 仍显示原生红绿灯，
+  // 不再自绘第二套（win/linux 的 hidden 无原生按钮，必须自绘）。
+  // web/dsh 无 preload 自然没有。
+  controls: process.platform !== 'darwin',
   platform: process.platform,
   minimize: () => ipcRenderer.send(WINDOW_CHANNELS.minimize),
   toggleMaximize: () => ipcRenderer.send(WINDOW_CHANNELS.toggleMaximize),

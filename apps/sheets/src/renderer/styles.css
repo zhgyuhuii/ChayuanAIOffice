@@ -1099,7 +1099,8 @@ html.chatoffice-popover-open .ribbon-tabs {
    longest option; height trimmed 28→24px per the WPS comparison sheet
    (选择框太大，高度要调整) */
 .select-like.font-name {
-  width: 178px;
+  /* 对比清单第二轮：收窄到 150px，与下方颜色工具两列对齐（见 .border-menu 宽度注记） */
+  width: 150px;
   min-width: 0;
 }
 
@@ -6010,8 +6011,8 @@ textarea:focus {
 
 .split-menu .split-caret {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 1px;
+  bottom: 1px;
   display: grid;
   place-items: center;
   width: 16px;
@@ -6062,12 +6063,20 @@ textarea:focus {
   background: var(--ribbon-active);
 }
 
+/* 主图示上移一点，把右下角让给 caret（WPS 式角落箭头） */
+.split-stack > button:not(.split-caret) .tool-symbol {
+  transform: translateY(-2px);
+}
+
 .split-stack > .split-caret {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 12px;
-  height: 11px;
+  /* min-width:0 必须赢过 .inline-tools button 的 28px 下限，否则 caret 被
+     撑满按钮宽、内容居中，看起来落在按钮中间而非右下角 */
+  min-width: 0;
+  width: 13px;
+  height: 12px;
   color: var(--text-secondary);
 }
 
@@ -6076,14 +6085,31 @@ textarea:focus {
   height: 7px;
 }
 
+/* 字体组两行对齐（对比清单第二轮）：行1 = 字体框150 + 3 + 字号框68 + 3 + 28 + 3 + 28
+   = 283px；行2 = 28×4 + 边框X + 28×2 + 间隙6×3 = 186 + X → X = 97px 时两行左右缘
+   严格对齐，A± 恰好落在 字体颜色/填充颜色 正上方。改字体框宽度需同步调 X。 */
+.font-group-rows .border-menu {
+  width: 97px;
+}
+
+.font-group-rows .border-menu > .select-like {
+  width: 100%;
+  min-width: 0;
+}
+
 /* 字体颜色触发器：右下角小 caret（对比清单 7） */
 .swatch-letter.has-caret .chev {
   position: absolute;
-  right: -1px;
-  bottom: 0;
+  right: -2px;
+  bottom: -1px;
   width: 8px;
   height: 8px;
   color: var(--text-secondary);
+}
+
+/* A 左移给 caret 让出右下角 */
+.swatch-letter.has-caret .tool-symbol {
+  transform: translateX(-3px);
 }
 
 /* 禁用的菜单行（粘贴为图片/复制为图片/会计用双下划线…）：可见但不分发 */

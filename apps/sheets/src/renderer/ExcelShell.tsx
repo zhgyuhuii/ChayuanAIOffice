@@ -3622,7 +3622,7 @@ function Ribbon({
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupFont')}>
-        <div className="ribbon-rows">
+        <div className="ribbon-rows font-group-rows">
           <div className="inline-tools">
             <EditableMenuSelect
               className="select-like font-name"
