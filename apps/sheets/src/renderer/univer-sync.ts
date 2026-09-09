@@ -362,6 +362,26 @@ export function applyFormatPatchToRange(
   }
 }
 
+/**
+ * File freeze state mapped onto Univer's `setFreeze` shape for workbook open.
+ * Univer uses -1 as the "no freeze on this axis" sentinel (see the
+ * freeze-top-row/freeze-first-col commands); a literal 0 start misaligns the
+ * frozen viewport or opens the grid blank, so an unfrozen axis maps to -1.
+ */
+export function toUniverFreeze(freeze: { frozenRows: number; frozenColumns: number } | null): {
+  freeze?: { xSplit: number; ySplit: number; startRow: number; startColumn: number }
+} {
+  if (freeze === null) return {}
+  return {
+    freeze: {
+      xSplit: freeze.frozenColumns,
+      ySplit: freeze.frozenRows,
+      startRow: freeze.frozenRows === 0 ? -1 : freeze.frozenRows,
+      startColumn: freeze.frozenColumns === 0 ? -1 : freeze.frozenColumns,
+    },
+  }
+}
+
 export function loadWorkbookSkeleton(runtime: UniverRuntime | null, file: WorkbookFile): void {
   if (!runtime) return
   const activeWorkbook = runtime.univerAPI.getActiveWorkbook()
@@ -422,16 +442,7 @@ export function loadWorkbookSkeleton(runtime: UniverRuntime | null, file: Workbo
             defaultColumnWidth: characterWidthToPixels(
               sheet.defaultColumnWidth ?? paddedBaseColumnWidth(sheet.baseColumnWidth),
             ),
-            ...(sheet.freeze === null
-              ? {}
-              : {
-                  freeze: {
-                    xSplit: sheet.freeze.frozenColumns,
-                    ySplit: sheet.freeze.frozenRows,
-                    startRow: sheet.freeze.frozenRows,
-                    startColumn: sheet.freeze.frozenColumns,
-                  },
-                }),
+            ...toUniverFreeze(sheet.freeze),
             // Excel restores the saved normal-view zoom on open; without it
             // a sheet authored at 70% opens cropped to the 100% viewport.
             ...(sheet.zoomScale === undefined ? {} : { zoomRatio: sheet.zoomScale / 100 }),

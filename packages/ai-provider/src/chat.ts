@@ -2,6 +2,7 @@ import { chatAnthropic } from './protocols/anthropic'
 import { chatGemini } from './protocols/gemini'
 import { chatOpenAiCompatible } from './protocols/openai-compatible'
 import { chatOpenAiResponses } from './protocols/openai-responses'
+import { chatCodexAppServer } from './codex-app-server'
 import type { ResolvedModelCall } from './settings-v2'
 import { getProviderAdapter, type ResolvedEndpoint } from './registry'
 import type { AiChatResponse, AiProviderConfig, AiProviderId } from './types'
@@ -30,6 +31,8 @@ export async function chatForProvider(
       })
     }
     switch (endpoint.protocol) {
+      case 'codex-app-server':
+        return chatCodexAppServer(config, system, user, wd.signal)
       case 'anthropic':
         return chatAnthropic(wd, config, system, user, endpoint.baseUrl)
       case 'gemini':
@@ -64,6 +67,8 @@ export async function chatResolved(
         return chatGemini(wd, config, system, user, call.baseUrl)
       case 'openai-responses':
         return chatOpenAiResponses(wd, call.baseUrl, config, system, user)
+      case 'codex-app-server':
+        return chatCodexAppServer(config, system, user, wd.signal)
       case 'openai-compatible':
         return chatOpenAiCompatible(wd, call.baseUrl, config, system, user, {
           omitTemperature: call.omitTemperature,

@@ -79,6 +79,7 @@ import {
   setAiUserAgent,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -2853,6 +2854,10 @@ export function registerAiIpc(): void {
         for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
       },
     },
+  })
+  app.once('before-quit', shutdownCodexAppServers)
+  ipcMain.handle('ai:codex-models', async (_event, cliPath: unknown) => {
+    return listCodexModels(typeof cliPath === 'string' ? cliPath : undefined)
   })
 
   // shared search tools (content + images): Serper with DuckDuckGo fallback (same source as slides/sheets)

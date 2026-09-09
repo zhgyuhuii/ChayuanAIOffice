@@ -82,6 +82,9 @@ function protocolMediaInput(protocol: AiProtocol): { audio: boolean; video: bool
     case 'openai-compatible':
     case 'openai-responses':
       return { audio: true, video: 'vendor' }
+    case 'codex-app-server':
+      // coding-agent bridge: image parts only, no audio/video input
+      return { audio: false, video: false }
   }
 }
 
