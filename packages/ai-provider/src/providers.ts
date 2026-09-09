@@ -40,6 +40,16 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     keyPlaceholder: 'Not required - sign in to ChatOffice',
   },
   {
+    id: 'codex',
+    label: 'Codex CLI',
+    // Populated at runtime from codex app-server model/list. Empty also lets
+    // the CLI select the account's current default without a stale hardcode.
+    models: [],
+    defaultModel: '',
+    keyPlaceholder: '',
+    needsCliPath: true,
+  },
+  {
     id: 'anthropic',
     label: 'Claude',
     // current-generation ids per platform.claude.com models overview (2026-08)
@@ -234,6 +244,7 @@ export function defaultAiSettings(
       apiKey: defaultApiKeys?.[meta.id] ?? '',
       model: meta.defaultModel,
       baseUrl: meta.needsBaseUrl ? '' : undefined,
+      cliPath: meta.needsCliPath ? '' : undefined,
     }
   }
   return { provider: 'chatoffice', providers, chatofficeToolsEnabled: true }
@@ -248,8 +259,8 @@ export function cloudToolsEnabled(settings: {
 
 /**
  * The stored provider selection is honored only when its config is usable
- * (api-key providers need a key and a model id; providers flagged
- * needsBaseUrl also need a base URL). Anything else — including unknown
+ * (api-key providers need a key and a model id; custom also needs a base URL).
+ * Codex can auto-discover its executable. Anything else — including unknown
  * ids from a hand-edited
  * settings file — falls back to chatoffice, so a half-filled setup degrades
  * to the signed-in default instead of silently disabling AI.
@@ -259,7 +270,9 @@ export function activeProvider(settings: AiSettings): AiProviderId {
   if (provider === 'chatoffice') return 'chatoffice'
   const meta = AI_PROVIDERS.find((m) => m.id === provider)
   const config = settings.providers?.[provider]
-  if (!meta || !config?.model) return 'chatoffice'
+  if (!meta || !config) return 'chatoffice'
+  if (meta.needsCliPath) return provider
+  if (!config.model) return 'chatoffice'
   if (meta.needsBaseUrl) {
     // Custom OpenAI-compatible endpoints (Ollama, LM Studio, vLLM) accept
     // anonymous requests: base URL + model suffice, the key stays optional.
@@ -330,6 +343,7 @@ function trimConfigs(providers: AiSettings['providers']): AiSettings['providers'
       apiKey: config.apiKey?.trim() ?? '',
       model: config.model?.trim() ?? '',
       ...(config.baseUrl !== undefined ? { baseUrl: config.baseUrl.trim() } : {}),
+      ...(config.cliPath !== undefined ? { cliPath: config.cliPath.trim() } : {}),
     }
   }
   return trimmed

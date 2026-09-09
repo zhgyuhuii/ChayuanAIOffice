@@ -3,12 +3,21 @@ import { GEMINI_BASE_URL } from './protocols/gemini'
 import { AI_PROVIDERS, CHATOFFICE_LLM_BASE_URLS } from './providers'
 import type { AiProviderConfig, AiProviderId, AiProviderMeta } from './types'
 
-/** The wire protocols every provider maps onto. */
-export type AiProtocol = 'anthropic' | 'gemini' | 'openai-compatible' | 'openai-responses'
+/** Wire protocols every provider maps onto, including the official Codex app-server bridge. */
+export type AiProtocol =
+  | 'anthropic'
+  | 'gemini'
+  | 'openai-compatible'
+  | 'openai-responses'
+  | 'codex-app-server'
 
 export interface ProviderCapabilities {
-  /** 'chatoffice-login': the ChatOffice session key is injected by the main process; 'api-key': the user supplies their own key */
-  auth: 'chatoffice-login' | 'api-key'
+  /**
+   * 'chatoffice-login': the ChatOffice session key is injected by the main process;
+   * 'api-key': the user supplies their own key;
+   * 'codex-chatgpt': the Codex CLI's existing login is reused.
+   */
+  auth: 'chatoffice-login' | 'api-key' | 'codex-chatgpt'
   /** chat models accept image input (declarative; for custom endpoints it is assumed, not known) */
   vision: boolean
 }
@@ -148,6 +157,13 @@ export const AI_PROVIDER_ADAPTERS: Record<AiProviderId, ProviderAdapter> = {
         baseUrl: CHATOFFICE_LLM_BASE_URLS.openai,
         ...(modelHasFixedSampling(config.model) ? { omitTemperature: true } : {}),
       }
+    },
+  },
+  codex: {
+    meta: metaOf('codex'),
+    capabilities: { auth: 'codex-chatgpt', vision: true },
+    resolveEndpoint() {
+      return { protocol: 'codex-app-server', baseUrl: '' }
     },
   },
   anthropic: {

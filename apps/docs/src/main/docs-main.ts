@@ -79,6 +79,7 @@ import {
   setAiUserAgent,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -2833,6 +2834,10 @@ export function registerAiIpc(): void {
         const r = await chatofficeGenerateImage({
           prompt: req.prompt,
           ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
+  app.once('before-quit', shutdownCodexAppServers)
+  ipcMain.handle('ai:codex-models', async (_event, cliPath: unknown) => {
+    return listCodexModels(typeof cliPath === 'string' ? cliPath : undefined)
+  })
         })
         return { url: r.url }
       },

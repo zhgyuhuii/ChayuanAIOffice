@@ -4,6 +4,7 @@ export type {
   AiImageSource,
   AiModelEntry,
   AiModelSelection,
+  CodexModelCatalog,
   AiProviderConfig,
   AiProviderId,
   AiProviderMeta,

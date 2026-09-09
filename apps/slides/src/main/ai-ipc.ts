@@ -33,6 +33,7 @@ import {
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
+import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   webSearch,
   imageSearch,
@@ -117,6 +118,7 @@ function appendRunFailure(entry: AiRunFailure): void {
 }
 
 export function registerAiIpc(): void {
+  app.once('before-quit', shutdownCodexAppServers)
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)

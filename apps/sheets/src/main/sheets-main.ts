@@ -71,6 +71,7 @@ import {
   type StoredAiSettings,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   blankXlsxBuffer,
   csvToXlsxBuffer,
@@ -3192,6 +3193,7 @@ export function registerSheetsIpc(): void {
 let aiIpcRegistered = false
 
 export function registerSheetsAiIpc(): void {
+  app.once('before-quit', shutdownCodexAppServers)
   if (aiIpcRegistered) return
   aiIpcRegistered = true
 
