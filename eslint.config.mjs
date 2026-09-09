@@ -20,6 +20,8 @@ export default tseslint.config(
       'packages/*/src/vendor/**',
       '.tmp/**',
       'dsh-plugin/vendor/**',
+      // Generated assistant data packs (tools/gen-docs-assistants.mjs).
+      'apps/docs/src/renderer/ai/assistants/packs/**',
     ],
   },
   js.configs.recommended,
