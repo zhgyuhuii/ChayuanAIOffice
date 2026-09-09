@@ -26,6 +26,10 @@ export default defineConfig({
         replacement: local('../../packages/electron-utils/src/index.ts'),
       },
       {
+        find: '@chatoffice/ai-provider/browser',
+        replacement: local('../../packages/ai-provider/src/browser.ts'),
+      },
+      {
         find: '@chatoffice/ai-provider',
         replacement: local('../../packages/ai-provider/src/index.ts'),
       },
