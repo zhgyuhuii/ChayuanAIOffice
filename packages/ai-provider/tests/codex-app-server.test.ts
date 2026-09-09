@@ -25,7 +25,7 @@ const tools: AgentToolDef[] = [
 
 describe('Codex app-server bridge', () => {
   it('automatically selects the newest complete desktop-managed Codex install', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'genoffice-codex-discovery-'))
+    const root = await mkdtemp(join(tmpdir(), 'chatoffice-codex-discovery-'))
     try {
       const older = join(root, 'old-release')
       const newer = join(root, 'new-release')
@@ -49,7 +49,7 @@ describe('Codex app-server bridge', () => {
   })
 
   it('migrates a stale saved hash path to the current managed install', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'genoffice-codex-migration-'))
+    const root = await mkdtemp(join(tmpdir(), 'chatoffice-codex-migration-'))
     try {
       const current = join(root, 'current-release')
       await mkdir(current)
@@ -103,7 +103,7 @@ describe('Codex app-server bridge', () => {
     expect(prompt).toContain('8192 output tokens')
   })
 
-  it('parses text and JSON-encoded GenOffice tool arguments', () => {
+  it('parses text and JSON-encoded ChatOffice tool arguments', () => {
     expect(
       parseCodexAppServerTurn(
         JSON.stringify({
