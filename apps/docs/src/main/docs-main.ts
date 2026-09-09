@@ -41,6 +41,7 @@ import {
   installNavigationGuard,
   printHtmlToPdf,
   safeExternalUrl,
+  saveAsSuggestion,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
   toggleDevToolsItem,
@@ -164,6 +165,7 @@ const tMain = createI18n({
     filterSupported: '支持的文件',
     filterAll: '所有文件',
     dlgExportPdf: '导出为 PDF',
+    dlgExportHtml: '导出为 HTML',
     errUnsupportedExt: '暂不支持 .{ext} 类型',
     errNotFile: '不是文件',
     errTooLarge: '超过 {mb}MB 上限',
@@ -190,6 +192,7 @@ const tMain = createI18n({
     menuSaveAs: '另存为…',
     menuPageSetup: '页面设置…',
     menuExportPdf: '导出为 PDF…',
+    menuExportHtml: '导出为 HTML…',
     menuPrint: '打印…',
     menuEdit: '编辑',
     menuUndo: '撤销',
@@ -265,6 +268,7 @@ const tMain = createI18n({
     filterSupported: 'Supported Files',
     filterAll: 'All Files',
     dlgExportPdf: 'Export as PDF',
+    dlgExportHtml: 'Export as HTML',
     errUnsupportedExt: '.{ext} files are not supported',
     errNotFile: 'not a file',
     errTooLarge: 'exceeds the {mb}MB limit',
@@ -294,6 +298,7 @@ const tMain = createI18n({
     menuSaveAs: 'Save As…',
     menuPageSetup: 'Page Setup…',
     menuExportPdf: 'Export as PDF…',
+    menuExportHtml: 'Export as HTML…',
     menuPrint: 'Print…',
     menuEdit: 'Edit',
     menuUndo: 'Undo',
@@ -367,6 +372,7 @@ const tMain = createI18n({
     filterSupported: 'サポートされているファイル',
     filterAll: 'すべてのファイル',
     dlgExportPdf: 'PDF としてエクスポート',
+    dlgExportHtml: 'HTML としてエクスポート',
     errUnsupportedExt: '.{ext} 形式には対応していません',
     errNotFile: 'ファイルではありません',
     errTooLarge: '{mb}MB の上限を超えています',
@@ -397,6 +403,7 @@ const tMain = createI18n({
     menuSaveAs: '名前を付けて保存…',
     menuPageSetup: 'ページ設定…',
     menuExportPdf: 'PDF としてエクスポート…',
+    menuExportHtml: 'HTML としてエクスポート…',
     menuPrint: '印刷…',
     menuEdit: '編集',
     menuUndo: '元に戻す',
@@ -471,6 +478,7 @@ const tMain = createI18n({
     filterSupported: '지원되는 파일',
     filterAll: '모든 파일',
     dlgExportPdf: 'PDF로 내보내기',
+    dlgExportHtml: 'HTML로 내보내기',
     errUnsupportedExt: '.{ext} 형식은 지원되지 않습니다',
     errNotFile: '파일이 아닙니다',
     errTooLarge: '{mb}MB 제한을 초과했습니다',
@@ -501,6 +509,7 @@ const tMain = createI18n({
     menuSaveAs: '다른 이름으로 저장…',
     menuPageSetup: '페이지 설정…',
     menuExportPdf: 'PDF로 내보내기…',
+    menuExportHtml: 'HTML로 내보내기…',
     menuPrint: '인쇄…',
     menuEdit: '편집',
     menuUndo: '실행 취소',
@@ -576,6 +585,7 @@ const tMain = createI18n({
     filterSupported: 'Fichiers pris en charge',
     filterAll: 'Tous les fichiers',
     dlgExportPdf: 'Exporter au format PDF',
+    dlgExportHtml: 'Exporter au format HTML',
     errUnsupportedExt: 'les fichiers .{ext} ne sont pas pris en charge',
     errNotFile: "n'est pas un fichier",
     errTooLarge: 'dépasse la limite de {mb} Mo',
@@ -606,6 +616,7 @@ const tMain = createI18n({
     menuSaveAs: 'Enregistrer sous…',
     menuPageSetup: 'Mise en page…',
     menuExportPdf: 'Exporter au format PDF…',
+    menuExportHtml: 'Exporter au format HTML…',
     menuPrint: 'Imprimer…',
     menuEdit: 'Édition',
     menuUndo: 'Annuler',
@@ -681,6 +692,7 @@ const tMain = createI18n({
     filterSupported: 'Unterstützte Dateien',
     filterAll: 'Alle Dateien',
     dlgExportPdf: 'Als PDF exportieren',
+    dlgExportHtml: 'Als HTML exportieren',
     errUnsupportedExt: '.{ext}-Dateien werden nicht unterstützt',
     errNotFile: 'keine Datei',
     errTooLarge: 'überschreitet das Limit von {mb} MB',
@@ -711,6 +723,7 @@ const tMain = createI18n({
     menuSaveAs: 'Speichern unter…',
     menuPageSetup: 'Seite einrichten…',
     menuExportPdf: 'Als PDF exportieren…',
+    menuExportHtml: 'Als HTML exportieren…',
     menuPrint: 'Drucken…',
     menuEdit: 'Bearbeiten',
     menuUndo: 'Rückgängig',
@@ -785,6 +798,7 @@ const tMain = createI18n({
     filterSupported: 'Archivos compatibles',
     filterAll: 'Todos los archivos',
     dlgExportPdf: 'Exportar como PDF',
+    dlgExportHtml: 'Exportar como HTML',
     errUnsupportedExt: 'los archivos .{ext} no son compatibles',
     errNotFile: 'no es un archivo',
     errTooLarge: 'supera el límite de {mb} MB',
@@ -816,6 +830,7 @@ const tMain = createI18n({
     menuSaveAs: 'Guardar como…',
     menuPageSetup: 'Configurar página…',
     menuExportPdf: 'Exportar como PDF…',
+    menuExportHtml: 'Exportar como HTML…',
     menuPrint: 'Imprimir…',
     menuEdit: 'Edición',
     menuUndo: 'Deshacer',
@@ -889,6 +904,7 @@ const tMain = createI18n({
     filterSupported: 'ไฟล์ที่รองรับ',
     filterAll: 'ไฟล์ทั้งหมด',
     dlgExportPdf: 'ส่งออกเป็น PDF',
+    dlgExportHtml: 'ส่งออกเป็น HTML',
     errUnsupportedExt: 'ไม่รองรับไฟล์ .{ext}',
     errNotFile: 'ไม่ใช่ไฟล์',
     errTooLarge: 'เกินขีดจำกัด {mb}MB',
@@ -919,6 +935,7 @@ const tMain = createI18n({
     menuSaveAs: 'บันทึกเป็น…',
     menuPageSetup: 'ตั้งค่าหน้ากระดาษ…',
     menuExportPdf: 'ส่งออกเป็น PDF…',
+    menuExportHtml: 'ส่งออกเป็น HTML…',
     menuPrint: 'พิมพ์…',
     menuEdit: 'แก้ไข',
     menuUndo: 'เลิกทำ',
@@ -994,6 +1011,7 @@ const tMain = createI18n({
     filterSupported: 'File yang Didukung',
     filterAll: 'Semua File',
     dlgExportPdf: 'Ekspor sebagai PDF',
+    dlgExportHtml: 'Ekspor sebagai HTML',
     errUnsupportedExt: 'file .{ext} tidak didukung',
     errNotFile: 'bukan file',
     errTooLarge: 'melebihi batas {mb}MB',
@@ -1023,6 +1041,7 @@ const tMain = createI18n({
     menuSaveAs: 'Simpan Sebagai…',
     menuPageSetup: 'Penyetelan Halaman…',
     menuExportPdf: 'Ekspor sebagai PDF…',
+    menuExportHtml: 'Ekspor sebagai HTML…',
     menuPrint: 'Cetak…',
     menuEdit: 'Edit',
     menuUndo: 'Urungkan',
@@ -1097,6 +1116,7 @@ const tMain = createI18n({
     filterSupported: 'Поддерживаемые файлы',
     filterAll: 'Все файлы',
     dlgExportPdf: 'Экспорт в PDF',
+    dlgExportHtml: 'Экспорт в HTML',
     errUnsupportedExt: 'файлы .{ext} не поддерживаются',
     errNotFile: 'не является файлом',
     errTooLarge: 'превышает лимит {mb} МБ',
@@ -1127,6 +1147,7 @@ const tMain = createI18n({
     menuSaveAs: 'Сохранить как…',
     menuPageSetup: 'Параметры страницы…',
     menuExportPdf: 'Экспорт в PDF…',
+    menuExportHtml: 'Экспорт в HTML…',
     menuPrint: 'Печать…',
     menuEdit: 'Правка',
     menuUndo: 'Отменить',
@@ -1201,6 +1222,7 @@ const tMain = createI18n({
     filterSupported: 'الملفات المدعومة',
     filterAll: 'كل الملفات',
     dlgExportPdf: 'تصدير بتنسيق PDF',
+    dlgExportHtml: 'تصدير بتنسيق HTML',
     errUnsupportedExt: 'ملفات .{ext} غير مدعومة',
     errNotFile: 'ليس ملفًا',
     errTooLarge: 'يتجاوز الحد {mb}MB',
@@ -1231,6 +1253,7 @@ const tMain = createI18n({
     menuSaveAs: 'حفظ باسم…',
     menuPageSetup: 'إعداد الصفحة…',
     menuExportPdf: 'تصدير بتنسيق PDF…',
+    menuExportHtml: 'تصدير بتنسيق HTML…',
     menuPrint: 'طباعة…',
     menuEdit: 'تحرير',
     menuUndo: 'تراجع',
@@ -1305,6 +1328,7 @@ const tMain = createI18n({
     filterSupported: 'Arquivos Compatíveis',
     filterAll: 'Todos os Arquivos',
     dlgExportPdf: 'Exportar como PDF',
+    dlgExportHtml: 'Exportar como HTML',
     errUnsupportedExt: 'arquivos .{ext} não são suportados',
     errNotFile: 'não é um arquivo',
     errTooLarge: 'excede o limite de {mb}MB',
@@ -1335,6 +1359,7 @@ const tMain = createI18n({
     menuSaveAs: 'Salvar Como…',
     menuPageSetup: 'Configurar Página…',
     menuExportPdf: 'Exportar como PDF…',
+    menuExportHtml: 'Exportar como HTML…',
     menuPrint: 'Imprimir…',
     menuEdit: 'Editar',
     menuUndo: 'Desfazer',
@@ -1410,6 +1435,7 @@ const tMain = createI18n({
     filterSupported: 'File supportati',
     filterAll: 'Tutti i file',
     dlgExportPdf: 'Esporta come PDF',
+    dlgExportHtml: 'Esporta come HTML',
     errUnsupportedExt: 'i file .{ext} non sono supportati',
     errNotFile: 'non è un file',
     errTooLarge: 'supera il limite di {mb} MB',
@@ -1440,6 +1466,7 @@ const tMain = createI18n({
     menuSaveAs: 'Salva con nome…',
     menuPageSetup: 'Imposta pagina…',
     menuExportPdf: 'Esporta come PDF…',
+    menuExportHtml: 'Esporta come HTML…',
     menuPrint: 'Stampa…',
     menuEdit: 'Modifica',
     menuUndo: 'Annulla',
@@ -1514,6 +1541,7 @@ const tMain = createI18n({
     filterSupported: 'Obsługiwane pliki',
     filterAll: 'Wszystkie pliki',
     dlgExportPdf: 'Eksportuj jako PDF',
+    dlgExportHtml: 'Eksportuj jako HTML',
     errUnsupportedExt: 'pliki .{ext} nie są obsługiwane',
     errNotFile: 'to nie jest plik',
     errTooLarge: 'przekracza limit {mb} MB',
@@ -1544,6 +1572,7 @@ const tMain = createI18n({
     menuSaveAs: 'Zapisz jako…',
     menuPageSetup: 'Ustawienia strony…',
     menuExportPdf: 'Eksportuj jako PDF…',
+    menuExportHtml: 'Eksportuj jako HTML…',
     menuPrint: 'Drukuj…',
     menuEdit: 'Edycja',
     menuUndo: 'Cofnij',
@@ -1589,6 +1618,113 @@ const tMain = createI18n({
     menuShortcuts: 'Skróty klawiaturowe',
     menuDocsHelp: 'Pomoc ChatOffice Docs',
   },
+  cs: {
+    dlgOpenDoc: 'Otevřít dokument',
+    filterWord: 'Dokumenty Wordu',
+    dlgSaveAs: 'Uložit jako',
+    closeUnsavedMsg: 'Tento dokument obsahuje neuložené změny.',
+    closeUnsavedDetail: 'Chcete je před zavřením uložit?',
+    closeNoReplyMsg: 'Dokument neodpovídá a může obsahovat neuložené změny.',
+    closeNoReplyDetail: 'Přesto zavřít? Neuložené změny budou ztraceny.',
+    btnCloseAnyway: 'Přesto zavřít',
+    autosaveFoundTitle: 'Nalezena obnovená verze',
+    autosaveFoundBody:
+      'Z poslední relace existují neuložené změny. Obnovit automaticky uloženou verzi?',
+    autosaveRestore: 'Obnovit',
+    autosaveDiscard: 'Zahodit',
+    btnDontSave: 'Neukládat',
+    btnCancel: 'Zrušit',
+    extModifiedMsg: 'Soubor byl změněn jiným programem.',
+    extModifiedDetail: 'Přesto uložit a přepsat změny na disku?',
+    btnOverwrite: 'Přepsat',
+    dlgInsertImage: 'Vložit obrázek',
+    filterImages: 'Obrázky',
+    dlgAddAttachment: 'Přidat přílohy',
+    filterSupported: 'Podporované soubory',
+    filterAll: 'Všechny soubory',
+    dlgExportPdf: 'Exportovat jako PDF',
+    dlgExportHtml: 'Exportovat jako HTML',
+    errUnsupportedExt: 'soubory .{ext} nejsou podporovány',
+    errNotFile: 'není soubor',
+    errTooLarge: 'překračuje limit {mb} MB',
+    errImageTooLarge: 'obrázek překračuje limit 5 MB',
+    errUnreadable: 'nelze přečíst',
+    errFileTooLarge: 'Soubor překračuje limit velikosti',
+    errParseFailed: 'Soubor se nepodařilo zpracovat',
+    errImageNoText:
+      'Obrázkové přílohy neobsahují text; obrázek se odesílá spolu se zprávou uživatele',
+    errNotImage: 'nepodporovaný typ obrázku',
+    errChatOfficeNotLoggedIn:
+      'Nejste přihlášeni do Genspark: klikněte níže na „Přihlásit se do Genspark“, přihlaste se a zkuste to znovu',
+    errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
+    errAiBusy: 'Služba AI je právě zaneprázdněna — zkuste to prosím za chvíli znovu',
+    errNoModel: 'Není nakonfigurován název modelu',
+    menuFile: 'Soubor',
+    menuNewDoc: 'Nový dokument',
+    menuNewWindow: 'Nové okno',
+    menuOpen: 'Otevřít…',
+    menuOpenRecent: 'Otevřít poslední',
+    menuNoRecent: 'Žádné poslední dokumenty',
+    menuClose: 'Zavřít',
+    menuSave: 'Uložit',
+    menuSaveAs: 'Uložit jako…',
+    menuPageSetup: 'Vzhled stránky…',
+    menuExportPdf: 'Exportovat jako PDF…',
+    menuExportHtml: 'Exportovat jako HTML…',
+    menuPrint: 'Tisk…',
+    menuEdit: 'Úpravy',
+    menuUndo: 'Zpět',
+    menuRedo: 'Znovu',
+    menuCut: 'Vyjmout',
+    menuCopy: 'Kopírovat',
+    menuPaste: 'Vložit',
+    menuPasteMatch: 'Vložit a přizpůsobit styl',
+    menuFindReplace: 'Najít a nahradit…',
+    menuSelectAll: 'Vybrat vše',
+    menuView: 'Zobrazení',
+    menuZoomIn: 'Zvětšit',
+    menuZoomOut: 'Zmenšit',
+    menuZoom100: 'Skutečná velikost (100 %)',
+    menuPageWidth: 'Šířka stránky',
+    menuWholePage: 'Celá stránka',
+    menuAiSidebar: 'Boční panel AI',
+    menuDarkMode: 'Tmavý režim',
+    menuFullscreen: 'Přejít na celou obrazovku',
+    menuInsert: 'Vložení',
+    menuInsertTable: 'Tabulka (3×3)',
+    menuInsertImage: 'Obrázek…',
+    menuInsertPageBreak: 'Konec stránky',
+    menuInsertLink: 'Hypertextový odkaz…',
+    menuInsertEquation: 'Rovnice…',
+    menuComment: 'Komentář',
+    menuFormat: 'Formát',
+    menuBold: 'Tučné',
+    menuItalic: 'Kurzíva',
+    menuUnderline: 'Podtržení',
+    menuAlign: 'Zarovnat',
+    menuAlignLeft: 'Zarovnat vlevo',
+    menuAlignCenter: 'Zarovnat na střed',
+    menuAlignRight: 'Zarovnat vpravo',
+    menuAlignJustify: 'Zarovnat do bloku',
+    menuFont: 'Písmo…',
+    menuParagraph: 'Odstavec…',
+    menuTools: 'Nástroje',
+    menuWordCount: 'Počet slov…',
+    menuAiProofread: 'Korektura AI',
+    menuWindow: 'Okno',
+    menuHelp: 'Nápověda',
+    menuShortcuts: 'Klávesové zkratky',
+    menuDocsHelp: 'Nápověda GenOffice Docs',
+    rsConflictMsg: 'The remote file was changed on another device.',
+    rsConflictOverwrite: 'Overwrite with my version',
+    rsConflictCopy: 'Save my version as a copy',
+    errNoImageModel:
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChatOffice',
+    rsConflictDetail:
+      'Your version differs from the one currently in remote storage. Choose how to proceed:',
+    errChatOfficeToolsOff:
+      'ChatOffice cloud tools are turned off in Model Settings; enable them to use this tool',
+  },
   nl: {
     dlgOpenDoc: 'Document openen',
     filterWord: 'Word-documenten',
@@ -1618,6 +1754,7 @@ const tMain = createI18n({
     filterSupported: 'Ondersteunde bestanden',
     filterAll: 'Alle bestanden',
     dlgExportPdf: 'Exporteren als PDF',
+    dlgExportHtml: 'Exporteren als HTML',
     errUnsupportedExt: '.{ext}-bestanden worden niet ondersteund',
     errNotFile: 'geen bestand',
     errTooLarge: 'overschrijdt de limiet van {mb} MB',
@@ -1648,6 +1785,7 @@ const tMain = createI18n({
     menuSaveAs: 'Opslaan als…',
     menuPageSetup: 'Pagina-instelling…',
     menuExportPdf: 'Exporteren als PDF…',
+    menuExportHtml: 'Exporteren als HTML…',
     menuPrint: 'Afdrukken…',
     menuEdit: 'Bewerken',
     menuUndo: 'Ongedaan maken',
@@ -1722,6 +1860,7 @@ const tMain = createI18n({
     filterSupported: 'Fail yang Disokong',
     filterAll: 'Semua Fail',
     dlgExportPdf: 'Eksport sebagai PDF',
+    dlgExportHtml: 'Eksport sebagai HTML',
     errUnsupportedExt: 'fail .{ext} tidak disokong',
     errNotFile: 'bukan fail',
     errTooLarge: 'melebihi had {mb}MB',
@@ -1752,6 +1891,7 @@ const tMain = createI18n({
     menuSaveAs: 'Simpan Sebagai…',
     menuPageSetup: 'Persediaan Halaman…',
     menuExportPdf: 'Eksport sebagai PDF…',
+    menuExportHtml: 'Eksport sebagai HTML…',
     menuPrint: 'Cetak…',
     menuEdit: 'Edit',
     menuUndo: 'Buat Asal',
@@ -1825,6 +1965,7 @@ const tMain = createI18n({
     filterSupported: 'קבצים נתמכים',
     filterAll: 'כל הקבצים',
     dlgExportPdf: 'ייצוא כ-PDF',
+    dlgExportHtml: 'ייצוא כ-HTML',
     errUnsupportedExt: 'קובצי .{ext} אינם נתמכים',
     errNotFile: 'אינו קובץ',
     errTooLarge: 'חורג מהמגבלה של {mb}MB',
@@ -1854,6 +1995,7 @@ const tMain = createI18n({
     menuSaveAs: 'שמירה בשם…',
     menuPageSetup: 'הגדרת עמוד…',
     menuExportPdf: 'ייצוא כ-PDF…',
+    menuExportHtml: 'ייצוא כ-HTML…',
     menuPrint: 'הדפסה…',
     menuEdit: 'עריכה',
     menuUndo: 'בטל',
@@ -1928,6 +2070,7 @@ const tMain = createI18n({
     filterSupported: 'समर्थित फ़ाइलें',
     filterAll: 'सभी फ़ाइलें',
     dlgExportPdf: 'PDF के रूप में निर्यात करें',
+    dlgExportHtml: 'HTML के रूप में निर्यात करें',
     errUnsupportedExt: '.{ext} फ़ाइलें समर्थित नहीं हैं',
     errNotFile: 'फ़ाइल नहीं है',
     errTooLarge: '{mb}MB की सीमा से अधिक है',
@@ -1958,6 +2101,7 @@ const tMain = createI18n({
     menuSaveAs: 'इस रूप में सहेजें…',
     menuPageSetup: 'पृष्ठ सेटअप…',
     menuExportPdf: 'PDF के रूप में निर्यात करें…',
+    menuExportHtml: 'HTML के रूप में निर्यात करें…',
     menuPrint: 'प्रिंट करें…',
     menuEdit: 'संपादन',
     menuUndo: 'पूर्ववत करें',
@@ -2031,6 +2175,7 @@ const tMain = createI18n({
     filterSupported: '支援的檔案',
     filterAll: '所有檔案',
     dlgExportPdf: '匯出為 PDF',
+    dlgExportHtml: '匯出為 HTML',
     errUnsupportedExt: '暫不支援 .{ext} 類型',
     errNotFile: '不是檔案',
     errTooLarge: '超過 {mb}MB 上限',
@@ -2057,6 +2202,7 @@ const tMain = createI18n({
     menuSaveAs: '另存新檔…',
     menuPageSetup: '版面設定…',
     menuExportPdf: '匯出為 PDF…',
+    menuExportHtml: '匯出為 HTML…',
     menuPrint: '列印…',
     menuEdit: '編輯',
     menuUndo: '復原',
@@ -3385,6 +3531,7 @@ export function registerProjectIpc(): void {
           output?: string
         }>
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
+        scope?: { label: string; text?: string }
       },
     ) => {
       const store = getProjectStore()
@@ -3394,6 +3541,8 @@ export function registerProjectIpc(): void {
       }
       if (args.tools) msg.tools = args.tools
       if (args.attachments) msg.attachments = args.attachments
+      if (args.scope) msg.scope = args.scope
+
       store.appendChatMessage(args.projectId, args.chatId, msg)
     },
   )
@@ -3714,6 +3863,25 @@ export function registerDocsIpc(): void {
     }
   })
 
+  // Blink only respells an editable as a consequence of real (trusted) typing
+  // of a word-committing character inside it: attribute flips, focus cycles,
+  // script selection moves, execCommand edits, fresh DOM nodes, synthetic
+  // clicks/arrow keys — and even a typed zero-width space — all leave existing
+  // typos unmarked (each verified pixel-by-pixel).
+  // Type one trusted space; the RENDERER removes it again by script (a
+  // trusted Backspace would work too, but its deletion re-suppresses the
+  // caret paragraph and that line stays unmarked) with ProseMirror's DOM
+  // observer paused, so the round trip never becomes a transaction.
+  ipcMain.handle('docs:respell-kick', async (event) => {
+    const wc = event.sender
+    if (tornDownWcIds.has(wc.id) || wc.isDestroyed()) return
+    wc.focus()
+    wc.sendInputEvent({ type: 'char', keyCode: ' ' })
+    // resolve only after the input pipeline has delivered the keystroke, so
+    // the caller can scrub the space it produced
+    await new Promise((r) => setTimeout(r, 120))
+  })
+
   ipcMain.handle(
     'docs:save-as',
     async (event, defaultName: string, data: ArrayBuffer, sourcePath?: string | null) => {
@@ -3721,7 +3889,10 @@ export function registerDocsIpc(): void {
       if (tornDownWcIds.has(event.sender.id)) return { ok: false }
       const result = await saveDialog(event, {
         title: tm('dlgSaveAs'),
-        defaultPath: defaultName,
+        defaultPath: saveAsSuggestion(
+          typeof sourcePath === 'string' ? sourcePath : null,
+          defaultName,
+        ),
         filters: [{ name: tm('filterWord'), extensions: ['docx'] }],
       })
       if (result.canceled || !result.filePath) return { ok: false }
@@ -4013,6 +4184,34 @@ export function registerDocsIpc(): void {
         return { ok: true, path: filePath }
       } catch (err) {
         // path is already authorized, so the renderer can retry chunked to the same target
+        return { ok: false, error: String(err), path: filePath }
+      }
+    },
+  )
+
+  ipcMain.handle(
+    'docs:export-html',
+    async (event, defaultName: string, html: string, outPath?: string) => {
+      if (typeof html !== 'string' || !html) return { ok: false, error: 'empty document' }
+      let filePath = outPath ?? null
+      if (filePath && !canPdfWrite(event.sender.id, filePath)) {
+        return { ok: false, error: 'export target is not an authorized path' }
+      }
+      if (!filePath) {
+        const result = await saveDialog(event, {
+          title: tm('dlgExportHtml'),
+          defaultPath: defaultName.replace(/\.docx$/i, '') + '.html',
+          filters: [{ name: 'HTML', extensions: ['html'] }],
+        })
+        if (result.canceled || !result.filePath) return { ok: false }
+        filePath = result.filePath
+        allowPdfWrite(event.sender.id, filePath)
+      }
+      try {
+        writeFileSync(filePath, html, 'utf8')
+        openGeneratedFile(filePath)
+        return { ok: true, path: filePath }
+      } catch (err) {
         return { ok: false, error: String(err), path: filePath }
       }
     },
@@ -4318,6 +4517,7 @@ export function buildDocsMenu(): void {
         { type: 'separator' },
         { label: tm('menuPageSetup'), click: () => sendCommand('page-setup') },
         { label: tm('menuExportPdf'), click: () => sendCommand('export-pdf') },
+        { label: tm('menuExportHtml'), click: () => sendCommand('export-html') },
         {
           label: tm('menuPrint'),
           accelerator: 'CmdOrCtrl+P',

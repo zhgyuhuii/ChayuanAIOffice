@@ -1,5 +1,6 @@
 import { defineStrings } from '@chatoffice/i18n'
 import { zh } from './ribbon/zh'
+import { cs } from './ribbon/cs'
 import { en } from './ribbon/en'
 import { ja } from './ribbon/ja'
 import { ko } from './ribbon/ko'
@@ -22,6 +23,7 @@ import { zhTW } from './ribbon/zh-TW'
 /** Copy for Ribbon / InsertDialogs / insert-presets / icons */
 export const ribbonStrings = defineStrings({
   zh,
+  cs,
   en,
   ja,
   ko,

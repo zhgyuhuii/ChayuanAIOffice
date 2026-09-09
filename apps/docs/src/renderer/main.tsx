@@ -10,9 +10,11 @@ import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ribbon/tab-strip.css'
 import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
+import '@chatoffice/ui/ai-panel-prefs.css'
+import '@chatoffice/ui/ai-scope-quote.css'
 import './styles.css'
 import './fonts/fonts.css'
-import { installScreenTips } from '@chatoffice/ui'
+import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 installScreenTips()

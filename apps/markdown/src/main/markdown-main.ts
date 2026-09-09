@@ -229,6 +229,18 @@ const tDlg = createI18n({
     btnDontSave: 'Nie zapisuj',
     btnCancel: 'Anuluj',
   },
+  cs: {
+    dlgSaveTitle: 'Uložit dokument Markdown',
+    filterMarkdown: 'Dokumenty Markdown',
+    dlgPickImage: 'Vyberte obrázek',
+    filterImages: 'Obrázky',
+    untitledFile: 'Bez názvu',
+    closeUnsavedMsg: 'Tento dokument má neuložené změny.',
+    closeUnsavedDetail: 'Chcete je před zavřením uložit?',
+    btnSave: 'Uložit',
+    btnDontSave: 'Neukládat',
+    btnCancel: 'Zrušit',
+  },
   nl: {
     dlgSaveTitle: 'Markdown-document opslaan',
     filterMarkdown: 'Markdown-documenten',

@@ -33,6 +33,7 @@ export function AiComposer({
   onSend,
   onStop,
   onPasteFiles,
+  spellcheck,
 }: {
   readonly value: string
   readonly busy: boolean
@@ -63,6 +64,8 @@ export function AiComposer({
   readonly onStop: () => void
   /** clipboard files pasted into the textarea (screenshots, copied files); text paste stays native */
   readonly onPasteFiles?: ((files: File[]) => void) | undefined
+  /** native spellcheck on the textarea (hosts with a spellcheck pref wire their own state) */
+  readonly spellcheck?: boolean | undefined
 }): React.JSX.Element {
   const innerRef = useRef<HTMLTextAreaElement | null>(null)
   const ref = textareaRef ?? innerRef
@@ -91,6 +94,7 @@ export function AiComposer({
         aria-label={ariaLabel}
         rows={1}
         dir="auto"
+        spellCheck={spellcheck}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {

@@ -118,6 +118,7 @@ export const ru = {
   aiSumCreateDocument: 'Создание нового документа',
   aiSumCreatedDocument: 'Создан {name}',
   aiSumReplaceContent: 'Замена содержимого',
+  aiSumReplaceSelection: 'Заменить выделенный текст',
   aiSumReplacedBlocks: 'Заменены блоки {start}-{end}',
   aiSumInsertChart: 'Вставка диаграммы',
   aiSumInsertedChart: 'Вставлена диаграмма «{title}»',

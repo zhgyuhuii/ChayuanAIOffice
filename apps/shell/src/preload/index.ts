@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import type { AiModelEntry, AiSettingsV2, ChatOfficeAccountStatus } from '@chatoffice/ai-provider'
+import { normalizeAiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type {
@@ -37,6 +38,7 @@ const UI_LANGUAGES: readonly UiLanguage[] = [
   'pt',
   'it',
   'pl',
+  'cs',
   'nl',
   'ms',
   'he',
@@ -90,6 +92,9 @@ const homeApi: HomeApi = {
   },
   async newMarkdown(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newMarkdown, opts)
+  },
+  async newHtml(opts) {
+    await ipcRenderer.invoke(HOME_CHANNELS.newHtml, opts)
   },
   async newPdf(opts) {
     await ipcRenderer.invoke(HOME_CHANNELS.newPdf, opts)
@@ -185,6 +190,18 @@ const homeApi: HomeApi = {
       throw new Error('Invalid theme.')
     await ipcRenderer.invoke(HOME_CHANNELS.setTheme, theme)
   },
+  async getAutoSaveDefault() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAutoSaveDefault)
+    const r = result as { on?: unknown; updatedAt?: unknown } | null
+    return {
+      on: r?.on === true,
+      updatedAt: typeof r?.updatedAt === 'number' ? r.updatedAt : 0,
+    }
+  },
+  async setAutoSaveDefault(on) {
+    if (typeof on !== 'boolean') throw new Error('Invalid AutoSave default.')
+    await ipcRenderer.invoke(HOME_CHANNELS.setAutoSaveDefault, on)
+  },
   async getAnalyticsEnabled() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAnalyticsEnabled)
     return result !== false
@@ -193,6 +210,12 @@ const homeApi: HomeApi = {
     if (typeof enabled !== 'boolean') throw new Error('Invalid analytics consent.')
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.setAnalyticsEnabled, enabled)
     return result === true
+  },
+  async getAiPanelPrefs() {
+    return normalizeAiPanelPrefs(await ipcRenderer.invoke(HOME_CHANNELS.getAiPanelPrefs))
+  },
+  async setAiPanelPrefs(patch) {
+    return normalizeAiPanelPrefs(await ipcRenderer.invoke(HOME_CHANNELS.setAiPanelPrefs, patch))
   },
   async getDefaultSaveDir() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getDefaultSaveDir)

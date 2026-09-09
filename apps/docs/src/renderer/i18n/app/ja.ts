@@ -1,4 +1,5 @@
-/** app strings, ja (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ja = {
   appScTitle: 'キーボードショートカット',
   appScFilter: 'ショートカットを検索',
@@ -30,6 +31,7 @@ export const ja = {
   appScListDemote: 'リストのレベルを下げる',
   appScListPromote: 'リストのレベルを上げる',
   appScProofread: '校正',
+  // Common
   appClose: '閉じる',
   appCancel: 'キャンセル',
   appOk: 'OK',
@@ -40,6 +42,7 @@ export const ja = {
   appReady: '準備完了',
   appParagraph: '段落',
   appCharacter: '文字',
+  // File / save status
   appUntitledDocx: '無題の文書.docx',
   appOpenedFile: '{name} を開きました',
   appOpenFailed: '開けませんでした: {error}',
@@ -50,20 +53,26 @@ export const ja = {
   appSaveFailed: '保存に失敗しました: {error}',
   appAutoSavedAt: '自動保存しました ({time})',
   appSaved: '保存しました',
+  // Section breaks
   appSectionBreakInserted: 'セクション区切りを挿入しました({type})',
-  appSectionBreakPending: 'セクション区切りを挿入しました。新しいセクションは保存後に有効になります',
+  appSectionBreakPending:
+    'セクション区切りを挿入しました。新しいセクションは保存後に有効になります',
   appBreakNextPage: '次のページから開始',
   appBreakContinuous: '現在の位置から開始',
   appBreakEvenPage: '偶数ページから開始',
   appBreakOddPage: '奇数ページから開始',
-  appSectionSettingsApplied: 'ページ設定をセクション {n} に適用しました。保存時に文書へ書き込まれます',
+  appSectionSettingsApplied:
+    'ページ設定をセクション {n} に適用しました。保存時に文書へ書き込まれます',
+  // List numbering / fields
   appNumberingRestarted: '番号を振り直しました',
   appNumberingContinued: '番号を継続しました',
   appFieldInserted: 'フィールド {instr} を挿入しました',
   appNoFieldsToUpdate: '更新するフィールドはありません',
   appFieldsUpdated: '{n} 個のフィールドを更新しました',
+  // Styles
   appStyleUpdated: 'スタイル「{name}」を選択範囲の書式で更新しました。保存時に文書へ書き込まれます',
   appStyleCreated: 'スタイル「{name}」を作成し、選択範囲に適用しました',
+  // Page number format
   appPgNumFormatSet: 'ページ番号の書式を設定しました',
   appPageNumFormatTitle: 'ページ番号の書式',
   appNumberFormat: '番号書式',
@@ -71,9 +80,12 @@ export const ja = {
   appContinueFromPrev: '前のセクションから継続',
   appPgNumHintBlank: '開始番号を空欄にすると前のセクションから継続します',
   appPgNumAppliesTo: '。セクション {n} に適用',
+  // Export PDF
   appExportingPdf: 'PDF をエクスポートしています…',
+  appExportingHtml: 'HTML をエクスポートしています…',
   appExportPdf: 'PDF のエクスポート',
   appExportPdfFailed: 'PDF のエクスポートに失敗しました: {error}',
+  appExportHtmlFailed: 'HTML のエクスポートに失敗しました: {error}',
   appPrintGroupFailed: 'ページ グループの印刷に失敗しました',
   appPrintTitle: '印刷',
   appPrintProgress: '印刷を準備しています…',
@@ -89,12 +101,19 @@ export const ja = {
   appPrintPrevPage: '前のページ',
   appPrintNextPage: '次のページ',
   appExportedPdf: 'PDF をエクスポートしました: {path}',
-  appExportedPdfMixed: 'PDF をエクスポートしました: {path}(用紙サイズ混在、{n} グループをページ順に結合)',
+  appExportedHtml: 'HTML をエクスポートしました: {path}',
+  appExportedPdfMixed:
+    'PDF をエクスポートしました: {path}(用紙サイズ混在、{n} グループをページ順に結合)',
   appExportPdfCanceled: 'PDF のエクスポートをキャンセルしました',
-  appMixedExportOpening: '用紙サイズが混在する文書:ページ プレビューを開き、ページごとに結合してエクスポートしています…',
+  appExportHtmlCanceled: 'HTML のエクスポートをキャンセルしました',
+  appMixedExportOpening:
+    '用紙サイズが混在する文書:ページ プレビューを開き、ページごとに結合してエクスポートしています…',
+  // Comments
   appSelectTextToComment: 'コメントを付けるテキストを先に選択してください',
-  appCommentSelectionLost: '選択範囲が無効になりました。コメントを付けるテキストをもう一度選択してください',
+  appCommentSelectionLost:
+    '選択範囲が無効になりました。コメントを付けるテキストをもう一度選択してください',
   appCommentAdded: 'コメントを追加しました。保存時に文書へ書き込まれます',
+  appCommentEdited: 'コメントを更新しました。保存時に文書へ書き込まれます',
   appCommentAnchorGone: '元のコメントのアンカーが存在しないため、返信できません',
   appCommentReplied: 'コメントに返信しました。保存時に文書へ書き込まれます',
   appCommentResolvedMsg: 'コメントを解決済みにしました',
@@ -105,6 +124,7 @@ export const ja = {
   appUnknownAuthor: '(作成者不明)',
   appResolved: '解決済み',
   appResolvedComments: '解決済みのコメント ({n})',
+  appEditComment: 'コメントの編集',
   appDeleteComment: 'コメントの削除',
   appDeleteCommentWithReplies: 'コメントの削除(返信を含む)',
   appDeleteReply: '返信の削除',
@@ -113,6 +133,7 @@ export const ja = {
   appReopen: '再開',
   appResolve: '解決',
   appNoComments: 'この文書にはコメントがありません',
+  // Revisions / protection
   appAllRevisionsAccepted: 'すべての変更を承諾しました',
   appAllRevisionsRejected: 'すべての変更を元に戻しました',
   appNoRevisionsToHandle: '処理する変更履歴はありません',
@@ -123,7 +144,8 @@ export const ja = {
   appOptionalBlank: '(省略可)',
   appProtectOpenPwd: 'この文書を開くパスワード',
   appProtectModifyPwd: 'この文書を変更するパスワード',
-  appProtectPwdKeepHint: '設定済みのパスワードはドットで表示されます。そのままにすると保持、欄を空にすると削除されます',
+  appProtectPwdKeepHint:
+    '設定済みのパスワードはドットで表示されます。そのままにすると保持、欄を空にすると削除されます',
   appProtectSectionTitle: '保護',
   appProtectFor: '編集方法を制限',
   appProtectModeTracked: '変更履歴',
@@ -135,10 +157,12 @@ export const ja = {
   appProtectRemovePersonal: '保存時にこのファイルから作成者と組織のメタデータを削除する',
   appProtectUpdated: '保護設定を更新しました。保存時に適用されます',
   appModifyPwdTitle: '書き込みパスワード',
-  appModifyPwdBody: '「{name}」には書き込みパスワードが設定されています。編集するにはパスワードを入力するか、読み取り専用で開いてください。',
+  appModifyPwdBody:
+    '「{name}」には書き込みパスワードが設定されています。編集するにはパスワードを入力するか、読み取り専用で開いてください。',
   appOpenReadOnly: '読み取り専用で開く',
   appProtectPwdOptional: '保護パスワード',
   appWrongPassword: 'パスワードが正しくありません',
+  // Compare
   appCompareFailed: '比較に失敗しました: {error}',
   appCompareResult: '比較結果',
   appCompareWithPrefix: '',
@@ -146,15 +170,20 @@ export const ja = {
   appCompareIdentical: '2 つの文書の内容は同一です',
   appCompareSameRun: '… 同一の段落 {n} 件 …',
   appEmptyParagraph: '(空の段落)',
+  // Ink / watermark / theme
   appInksCleared: 'すべてのインクを削除しました。保存後に有効になります',
   appWatermarkSet: '透かし「{text}」を設定しました。保存時に文書へ書き込まれます',
   appWatermarkRemoved: '透かしを削除しました。保存後に有効になります',
-  appThemeFontsChanged: 'テーマのフォントを変更しました。保存時に文書へ書き込まれます(テーマ フォントを参照するスタイルは Word で有効になります)',
+  appThemeFontsChanged:
+    'テーマのフォントを変更しました。保存時に文書へ書き込まれます(テーマ フォントを参照するスタイルは Word で有効になります)',
   appThemeColorsApplied: 'テーマの色「{name}」を適用しました。保存時に文書へ書き込まれます',
   appSourceAdded: '資料文献「{title}」を追加しました。「引用文献の挿入」から引用できます',
-  appTitlePgOn: '「先頭ページのみ別指定」を有効にしました。ページ上部の切り替えで先頭ページのヘッダー/フッターを編集できます',
+  // Header & footer
+  appTitlePgOn:
+    '「先頭ページのみ別指定」を有効にしました。ページ上部の切り替えで先頭ページのヘッダー/フッターを編集できます',
   appTitlePgOff: '「先頭ページのみ別指定」を無効にしました',
-  appEvenOddOn: '「奇数/偶数ページ別指定」を有効にしました。ページ上部の切り替えで偶数ページのヘッダー/フッターを編集できます',
+  appEvenOddOn:
+    '「奇数/偶数ページ別指定」を有効にしました。ページ上部の切り替えで偶数ページのヘッダー/フッターを編集できます',
   appEvenOddOff: '「奇数/偶数ページ別指定」を無効にしました',
   appFirstPage: '先頭ページ',
   appOddPage: '奇数ページ',
@@ -163,6 +192,7 @@ export const ja = {
   appDblclickEditHeader: 'ダブルクリックしてヘッダーを編集',
   appDblclickEditFooter: 'ダブルクリックしてフッターを編集',
   appHfPageNumHint: '(# は自動ページ番号)',
+  // Footnotes / endnotes
   appDblclickEditFootnote: 'ダブルクリックして脚注を編集',
   appEditFootnote: '脚注の編集',
   appDeleteFootnote: '脚注の削除',
@@ -172,11 +202,13 @@ export const ja = {
   appInsertEndnote: '文末脚注の挿入',
   appFootnotePlaceholder: '脚注の内容…',
   appEndnotePlaceholder: '文末脚注の内容…',
+  // Quick actions bar
   appAutoSave: '自動保存',
   appAutoSaveTip: '自動保存(30 秒ごと、およびウィンドウのフォーカスが外れたとき)',
   appSaveShortcutTip: '上書き保存 (⌘S)',
   appUndo: '元に戻す',
   appRedo: 'やり直し',
+  // Start screen
   appStartOpening: '開いています…',
   appDocPwdTitle: 'パスワード保護されています',
   appDocPwdBody: '「{name}」はパスワードで保護されています。開くにはパスワードを入力してください。',
@@ -186,15 +218,18 @@ export const ja = {
   appPwdShow: 'パスワードを表示',
   appPwdHide: 'パスワードを非表示',
   appDocPwdWrong: 'パスワードが正しくありません。もう一度入力してください。',
-  appDocPwdUnsupported: 'この文書は復号できません:サポートされていない暗号化方式です(WPS アカウント暗号化など)。元のアプリで暗号化を解除してから再試行してください。',
+  appDocPwdUnsupported:
+    'この文書は復号できません:サポートされていない暗号化方式です(WPS アカウント暗号化など)。元のアプリで暗号化を解除してから再試行してください。',
   appEncConfirmLabel: 'パスワードの確認',
   appEncMismatch: 'パスワードが一致しません',
   appRecentDocs: '最近使った文書',
+  // View
   appSplitPaneLabel: '分割ウィンドウ(読み取り専用プレビュー、独立してスクロール可能)',
   appRemoveSplit: '分割の解除',
   appExitReadMode: '閲覧モードを終了 (Esc)',
   appExpandAiPanel: 'AI 編集パネルを展開',
   appAiRail: 'AI',
+  // Status bar / word count
   appPageOf: '{current} / {total} ページ',
   appWordCountTitle: '文字カウント',
   appWordCountN: '{n} 文字',
@@ -206,8 +241,10 @@ export const ja = {
   appStatCharsWithSpaces: '文字数(スペースを含める)',
   appStatParagraphs: '段落数',
   appStatLines: '行数',
+  // Navigation pane
   appNavTitle: 'ナビゲーション',
   appNavNoHeadings: '文書に見出しがありません',
+  // Ruler
   appTabTypeTip: 'タブの種類: {type}(クリックで切り替え)',
   appTabStopTitle: '{type}タブ @ {pos}cm',
   appTabLeader: '、リーダー:{leader}',
@@ -219,14 +256,15 @@ export const ja = {
   appTabClear: 'クリア',
   // AI settings
   appAiSettings: 'AI 設定',
-  appChatOfficeAccount: 'ChatOffice アカウント',
+  appGensparkAccount: 'Genspark アカウント',
   appChecking: '確認中…',
   appLoggedIn: 'サインイン済み',
   appLoggedInEmail: 'サインイン済み:{email}',
-  appNotLoggedIn: '未サインイン(AI 機能には ChatOffice アカウントが必要です)',
+  appNotLoggedIn: '未サインイン(AI 機能には Genspark アカウントが必要です)',
   appWaitingBrowserLogin: 'ブラウザーでのサインインを待っています…',
-  appLoginChatOffice: 'ChatOffice にサインイン',
+  appLoginGenspark: 'Genspark にサインイン',
   appModel: 'モデル',
+  // Context menu
   appCut: '切り取り',
   appCopy: 'コピー',
   appPaste: '貼り付け',
@@ -237,8 +275,10 @@ export const ja = {
   appRestartNumbering: '1 から再開',
   appContinueNumbering: '番号の継続',
   appSynonyms: '類義語',
-  appSynonymsPrompt: '「{text}」のより良い類義語や言い換え表現を 3〜5 個挙げ、違いを簡潔に説明してください。ドキュメントは変更しないでください。',
-  appTranslateSelectionPrompt: '現在選択中のテキストを{lang}に翻訳し、訳文で原文を置き換えてください。書式は変えないでください：「{text}」',
+  appSynonymsPrompt:
+    '「{text}」のより良い類義語や言い換え表現を 3〜5 個挙げ、違いを簡潔に説明してください。ドキュメントは変更しないでください。',
+  appTranslateSelectionPrompt:
+    '現在選択中のテキストを{lang}に翻訳し、訳文で原文を置き換えてください。書式は変えないでください：「{text}」',
   appAiBadgeTip: 'AI を使用します',
   appTranslate: '翻訳',
   appTranslateTo: '{lang}に翻訳',
@@ -263,6 +303,7 @@ export const ja = {
   appBringForward: '前面へ移動',
   appSendBackward: '背面へ移動',
   appSendToBack: '最背面へ移動',
+  // Font dialog
   appFontDialogTitle: 'フォント',
   appFontFamilyLabel: '日本語用のフォント / 英数字用のフォント',
   appDefaultBodyFont: '(既定の本文フォント)',
@@ -278,6 +319,7 @@ export const ja = {
   appSuperscript: '上付き',
   appSubscript: '下付き',
   appFontPreviewSample: 'あア亜 AaBbCc',
+  // Paragraph dialog
   appAlignment: '配置',
   appAlignLeft: '左揃え',
   appAlignCenter: '中央揃え',
@@ -299,8 +341,9 @@ export const ja = {
   appIndentFirstLine: '1 行目の字下げ',
   appSpaceBefore: '段落前の間隔',
   appSpaceAfter: '段落後の間隔',
+  // Equations
   appInsertEquation: '数式の挿入',
-  appLatexPlaceholder: '例: x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: '例: x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: 'LaTeX を入力するとプレビューが表示されます',
   appPreviewUnavailable: 'プレビューを生成できません',
   appInlineEquationToggle: 'インライン数式(カーソル位置に挿入し、文字列と一緒に移動)',
@@ -313,6 +356,7 @@ export const ja = {
   appEqQuadratic: '二次方程式の解の公式',
   appEqTaylor: 'テイラー展開',
   appEqTrigIdentity: '三角恒等式',
+  // Find & replace
   appFindPlaceholder: '検索',
   appMatchCase: '大文字と小文字を区別する',
   appWholeWord: '完全に一致する単語だけを検索する',
@@ -323,11 +367,14 @@ export const ja = {
   appReplacePlaceholder: '置換後の文字列',
   appReplace: '置換',
   appReplaceAll: 'すべて置換',
+  // Pagination preview
   appPaginationPreview: 'ページ プレビュー',
   appPvCommented: 'コメント',
   appTotalPagesN: '全 {n} ページ',
   appPvHint: '読み取り専用スナップショット。編集後は再度開いてください · Esc で閉じる',
-  appPvExportTip: 'プレビューどおりにページ単位でエクスポートします。ヘッダー/フッターとページ番号は表示と一致します',
+  appPvExportTip:
+    'プレビューどおりにページ単位でエクスポートします。ヘッダー/フッターとページ番号は表示と一致します',
+  // Styles pane
   appStylesTitle: 'スタイル',
   appParagraphStyles: '段落スタイル',
   appCharacterStyles: '文字スタイル',
@@ -335,4 +382,6 @@ export const ja = {
   appUpdateStyleTip: '現在の選択範囲の書式でこのスタイルを更新します(styles.xml に書き戻し)',
   appNewStyleFromSelection: '選択範囲から新しいスタイルを作成',
   appStyleNamePlaceholder: 'スタイル名',
-}
+  appChatOfficeAccount: "ChatOffice アカウント",
+  appLoginChatOffice: "ChatOffice にサインイン",
+} satisfies Record<keyof typeof zh, string>

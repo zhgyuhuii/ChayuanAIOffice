@@ -1,3 +1,8 @@
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import { aiPanelFontPx, AiFontSize, DEFAULT_AI_PANEL_PREFS,
+  clampAiCustomFontSize,
+  AI_CUSTOM_FONT_MIN_PX,
+  AI_CUSTOM_FONT_MAX_PX, } from '@chatoffice/ui/ai-panel-prefs'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
@@ -20,6 +25,7 @@ import './settings.css'
 // shared alphabet, so the code is the ordering key
 const LANG_OPTIONS = [
   { value: 'ar', label: 'العربية' },
+  { value: 'cs', label: 'Čeština' },
   { value: 'de', label: 'Deutsch' },
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Español' },
@@ -46,6 +52,13 @@ const THEME_OPTIONS = [
   { value: 'light', labelKey: 'themeLight' },
   { value: 'dark', labelKey: 'themeDark' },
 ] as const satisfies readonly { value: UiTheme; labelKey: StringKey }[]
+
+const AI_FONT_SIZE_OPTIONS = [
+  { value: 'default', labelKey: 'aiFontSizeDefault' },
+  { value: 'large', labelKey: 'aiFontSizeLarge' },
+  { value: 'xlarge', labelKey: 'aiFontSizeXLarge' },
+  { value: 'custom', labelKey: 'aiFontSizeCustom' },
+] as const satisfies readonly { value: AiFontSize; labelKey: StringKey }[]
 
 const CHANNEL_OPTIONS = [
   { value: 'stable', labelKey: 'channelStable' },
@@ -235,6 +248,8 @@ export function SettingsModal({
   const [saveDir, setSaveDir] = useState('')
   const [analyticsOn, setAnalyticsOn] = useState(true)
   const [analyticsSaving, setAnalyticsSaving] = useState(false)
+  const [autoSaveOn, setAutoSaveOn] = useState(false)
+  const [aiPrefs, setAiPrefs] = useState<AiPanelPrefs>(DEFAULT_AI_PANEL_PREFS)
   const [channel, setChannel] = useState<'stable' | 'beta'>('stable')
   const [appVersion, setAppVersion] = useState('')
   const [githubStars, setGithubStars] = useState<number | null>(null)
@@ -277,6 +292,11 @@ export function SettingsModal({
     void window.chatOffice.setTheme(next)
     if (next === 'system') document.documentElement.removeAttribute('data-theme')
     else document.documentElement.setAttribute('data-theme', next)
+  }
+
+  const updateAiPrefs = (patch: Partial<AiPanelPrefs>) => {
+    setAiPrefs((prev) => ({ ...prev, ...patch }))
+    void window.chatOffice.setAiPanelPrefs(patch).then(setAiPrefs)
   }
 
   const changeSaveDir = () => {
@@ -357,6 +377,51 @@ export function SettingsModal({
                     onPick={(v) => applyTheme(v as UiTheme)}
                   />
                 </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <label className="set-field-label">{t('setAiFontSize')}</label>
+                  </div>
+                  {aiPrefs.fontSize === 'custom' && (
+                    <CustomFontSizeInput
+                      value={aiPrefs.customFontSize}
+                      label={t('aiFontSizeCustom')}
+                      onCommit={(px) => updateAiPrefs({ customFontSize: px })}
+                    />
+                  )}
+                  <Dropdown
+                    className="set-dd"
+                    value={aiPrefs.fontSize}
+                    ariaLabel={t('setAiFontSize')}
+                    options={AI_FONT_SIZE_OPTIONS.map((opt) => ({
+                      value: opt.value,
+                      label: t(opt.labelKey),
+                    }))}
+                    onPick={(v) => {
+                      const fontSize = v as AiFontSize
+                      // start the custom size from the preset being left so nothing jumps
+                      updateAiPrefs(
+                        fontSize === 'custom' && aiPrefs.fontSize !== 'custom'
+                          ? { fontSize, customFontSize: aiPanelFontPx(aiPrefs) }
+                          : { fontSize },
+                      )
+                    }}
+                  />
+                </div>
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAiSpellcheck')}</div>
+                      <div className="set-field-desc">{t('setAiSpellcheckDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={aiPrefs.spellcheck}
+                    aria-label={t('setAiSpellcheck')}
+                    onClick={() => updateAiPrefs({ spellcheck: !aiPrefs.spellcheck })}
+                  />
+                </div>
                 <Field
                   label={t('saveLocation')}
                   value={saveDir || '—'}
@@ -367,6 +432,25 @@ export function SettingsModal({
                     </button>
                   }
                 />
+                <div className="set-field">
+                  <div className="set-field-text">
+                    <div className="set-field-stack">
+                      <div className="set-field-label">{t('setAutoSave')}</div>
+                      <div className="set-field-desc">{t('setAutoSaveDesc')}</div>
+                    </div>
+                  </div>
+                  <button
+                    className="set-switch"
+                    role="switch"
+                    aria-checked={autoSaveOn}
+                    aria-label={t('setAutoSave')}
+                    onClick={() => {
+                      const next = !autoSaveOn
+                      setAutoSaveOn(next)
+                      void window.chatOffice.setAutoSaveDefault?.(next).catch(() => {})
+                    }}
+                  />
+                </div>
                 <div className="set-field">
                   <div className="set-field-text">
                     <div className="set-field-stack">
@@ -468,5 +552,57 @@ export function SettingsModal({
         </footer>
       </div>
     </div>
+  )
+}
+
+/** px stepper for the custom AI panel text size; in-range values apply live,
+ * out-of-range or partial input is clamped on blur */
+function CustomFontSizeInput({
+  value,
+  label,
+  onCommit,
+}: {
+  value: number
+  label: string
+  onCommit: (px: number) => void
+}) {
+  const [draft, setDraft] = useState(String(value))
+  const [editing, setEditing] = useState(false)
+  const shown = editing ? draft : String(value)
+  const commit = (raw: string) => {
+    const px = clampAiCustomFontSize(raw)
+    if (px !== null && px !== value) onCommit(px)
+  }
+  return (
+    <label className="set-num">
+      <input
+        type="number"
+        className="set-input set-num-input"
+        aria-label={label}
+        min={AI_CUSTOM_FONT_MIN_PX}
+        max={AI_CUSTOM_FONT_MAX_PX}
+        step={1}
+        value={shown}
+        onFocus={() => {
+          setDraft(String(value))
+          setEditing(true)
+        }}
+        onChange={(e) => {
+          setDraft(e.target.value)
+          const n = Number(e.target.value)
+          if (Number.isInteger(n) && n >= AI_CUSTOM_FONT_MIN_PX && n <= AI_CUSTOM_FONT_MAX_PX) {
+            onCommit(n)
+          }
+        }}
+        onBlur={() => {
+          commit(draft)
+          setEditing(false)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.currentTarget.blur()
+        }}
+      />
+      <span className="set-num-unit">px</span>
+    </label>
   )
 }

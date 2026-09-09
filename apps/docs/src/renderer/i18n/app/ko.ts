@@ -1,4 +1,5 @@
-/** app strings, ko (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ko = {
   appScTitle: '키보드 바로 가기',
   appScFilter: '바로 가기 검색',
@@ -30,6 +31,7 @@ export const ko = {
   appScListDemote: '목록 수준 내리기',
   appScListPromote: '목록 수준 올리기',
   appScProofread: '교정',
+  // Common
   appClose: '닫기',
   appCancel: '취소',
   appOk: '확인',
@@ -40,16 +42,20 @@ export const ko = {
   appReady: '준비',
   appParagraph: '단락',
   appCharacter: '문자',
+  // File / save status
   appUntitledDocx: '제목 없는 문서.docx',
   appOpenedFile: '{name}을(를) 열었습니다',
   appOpenFailed: '열기 실패: {error}',
   appFontsMissing: '문서 글꼴이 설치되어 있지 않습니다: {names} (대체 글꼴로 표시)',
-  appVerticalTextNotice: '세로쓰기 텍스트가 포함된 문서입니다(현재 가로쓰기로 표시되며 저장에는 영향이 없습니다)',
-  appNewDocCreated: '빈 문서를 만들었습니다. 왼쪽 AI 패널에서 생성할 내용을 바로 입력할 수 있습니다',
+  appVerticalTextNotice:
+    '세로쓰기 텍스트가 포함된 문서입니다(현재 가로쓰기로 표시되며 저장에는 영향이 없습니다)',
+  appNewDocCreated:
+    '빈 문서를 만들었습니다. 왼쪽 AI 패널에서 생성할 내용을 바로 입력할 수 있습니다',
   appNewFailed: '새로 만들기 실패: {error}',
   appSaveFailed: '저장 실패: {error}',
   appAutoSavedAt: '자동 저장됨 ({time})',
   appSaved: '저장됨',
+  // Section breaks
   appSectionBreakInserted: '구역 나누기를 삽입했습니다({type})',
   appSectionBreakPending: '구역 나누기를 삽입했습니다. 새 구역은 저장 후 적용됩니다',
   appBreakNextPage: '다음 페이지부터',
@@ -57,13 +63,17 @@ export const ko = {
   appBreakEvenPage: '짝수 페이지부터',
   appBreakOddPage: '홀수 페이지부터',
   appSectionSettingsApplied: '페이지 설정을 {n}구역에 적용했습니다. 저장 시 문서에 기록됩니다',
+  // List numbering / fields
   appNumberingRestarted: '번호 매기기를 다시 시작했습니다',
   appNumberingContinued: '번호 매기기를 계속합니다',
   appFieldInserted: '필드 {instr}을(를) 삽입했습니다',
   appNoFieldsToUpdate: '업데이트할 필드가 없습니다',
   appFieldsUpdated: '필드 {n}개를 업데이트했습니다',
-  appStyleUpdated: '스타일 \'{name}\'을(를) 선택 영역의 서식으로 업데이트했습니다. 저장 시 문서에 기록됩니다',
-  appStyleCreated: '스타일 \'{name}\'을(를) 새로 만들어 선택 영역에 적용했습니다',
+  // Styles
+  appStyleUpdated:
+    "스타일 '{name}'을(를) 선택 영역의 서식으로 업데이트했습니다. 저장 시 문서에 기록됩니다",
+  appStyleCreated: "스타일 '{name}'을(를) 새로 만들어 선택 영역에 적용했습니다",
+  // Page number format
   appPgNumFormatSet: '페이지 번호 서식을 설정했습니다',
   appPageNumFormatTitle: '페이지 번호 서식',
   appNumberFormat: '번호 서식',
@@ -71,9 +81,12 @@ export const ko = {
   appContinueFromPrev: '이전 구역에 이어서',
   appPgNumHintBlank: '시작 번호를 비워 두면 이전 구역에 이어서 매깁니다',
   appPgNumAppliesTo: '; {n}구역에 적용',
+  // Export PDF
   appExportingPdf: 'PDF 내보내는 중…',
+  appExportingHtml: 'HTML 내보내는 중…',
   appExportPdf: 'PDF 내보내기',
   appExportPdfFailed: 'PDF 내보내기 실패: {error}',
+  appExportHtmlFailed: 'HTML 내보내기 실패: {error}',
   appPrintGroupFailed: '페이지 그룹 인쇄 실패',
   appPrintTitle: '인쇄',
   appPrintProgress: '인쇄 준비 중…',
@@ -89,12 +102,19 @@ export const ko = {
   appPrintPrevPage: '이전 페이지',
   appPrintNextPage: '다음 페이지',
   appExportedPdf: 'PDF를 내보냈습니다: {path}',
-  appExportedPdfMixed: 'PDF를 내보냈습니다: {path}(용지 크기 혼합, {n}개 그룹을 페이지 순서로 병합)',
+  appExportedHtml: 'HTML를 내보냈습니다: {path}',
+  appExportedPdfMixed:
+    'PDF를 내보냈습니다: {path}(용지 크기 혼합, {n}개 그룹을 페이지 순서로 병합)',
   appExportPdfCanceled: 'PDF 내보내기를 취소했습니다',
-  appMixedExportOpening: '용지 크기가 혼합된 문서: 페이지 미리 보기를 열어 페이지별로 병합하여 내보내는 중…',
+  appExportHtmlCanceled: 'HTML 내보내기를 취소했습니다',
+  appMixedExportOpening:
+    '용지 크기가 혼합된 문서: 페이지 미리 보기를 열어 페이지별로 병합하여 내보내는 중…',
+  // Comments
   appSelectTextToComment: '메모를 추가할 텍스트를 먼저 선택하세요',
-  appCommentSelectionLost: '선택 영역이 더 이상 유효하지 않습니다. 메모를 추가할 텍스트를 다시 선택하세요',
+  appCommentSelectionLost:
+    '선택 영역이 더 이상 유효하지 않습니다. 메모를 추가할 텍스트를 다시 선택하세요',
   appCommentAdded: '메모를 추가했습니다. 저장 시 문서에 기록됩니다',
+  appCommentEdited: '메모를 수정했습니다. 저장 시 문서에 기록됩니다',
   appCommentAnchorGone: '원래 메모의 앵커가 더 이상 존재하지 않아 회신할 수 없습니다',
   appCommentReplied: '메모에 회신했습니다. 저장 시 문서에 기록됩니다',
   appCommentResolvedMsg: '메모를 해결했습니다',
@@ -105,6 +125,7 @@ export const ko = {
   appUnknownAuthor: '(작성자 알 수 없음)',
   appResolved: '해결됨',
   appResolvedComments: '해결된 메모 ({n})',
+  appEditComment: '메모 편집',
   appDeleteComment: '메모 삭제',
   appDeleteCommentWithReplies: '메모 삭제(회신 포함)',
   appDeleteReply: '회신 삭제',
@@ -113,6 +134,7 @@ export const ko = {
   appReopen: '다시 열기',
   appResolve: '해결',
   appNoComments: '이 문서에는 메모가 없습니다',
+  // Revisions / protection
   appAllRevisionsAccepted: '모든 변경 내용을 적용했습니다',
   appAllRevisionsRejected: '모든 변경 내용을 적용하지 않았습니다',
   appNoRevisionsToHandle: '처리할 변경 내용이 없습니다',
@@ -135,10 +157,12 @@ export const ko = {
   appProtectRemovePersonal: '저장할 때 이 파일에서 작성자 및 조직 메타데이터 제거',
   appProtectUpdated: '보호 설정이 업데이트되었습니다. 저장 후 적용됩니다',
   appModifyPwdTitle: '쓰기 보호됨',
-  appModifyPwdBody: '"{name}"에 수정 암호가 설정되어 있습니다. 편집하려면 암호를 입력하거나 읽기 전용으로 여세요.',
+  appModifyPwdBody:
+    '"{name}"에 수정 암호가 설정되어 있습니다. 편집하려면 암호를 입력하거나 읽기 전용으로 여세요.',
   appOpenReadOnly: '읽기 전용으로 열기',
   appProtectPwdOptional: '보호 암호',
   appWrongPassword: '암호가 올바르지 않습니다',
+  // Compare
   appCompareFailed: '비교 실패: {error}',
   appCompareResult: '비교 결과',
   appCompareWithPrefix: '',
@@ -146,16 +170,21 @@ export const ko = {
   appCompareIdentical: '두 문서의 내용이 동일합니다',
   appCompareSameRun: '… 동일한 단락 {n}개 …',
   appEmptyParagraph: '(빈 단락)',
+  // Ink / watermark / theme
   appInksCleared: '모든 잉크를 제거했습니다. 저장 후 적용됩니다',
-  appWatermarkSet: '워터마크 \'{text}\'을(를) 설정했습니다. 저장 시 문서에 기록됩니다',
+  appWatermarkSet: "워터마크 '{text}'을(를) 설정했습니다. 저장 시 문서에 기록됩니다",
   appWatermarkRemoved: '워터마크를 제거했습니다. 저장 후 적용됩니다',
-  appThemeFontsChanged: '테마 글꼴을 변경했습니다. 저장 시 문서에 기록됩니다(테마 글꼴을 참조하는 스타일은 Word에서 적용됩니다)',
-  appThemeColorsApplied: '테마 색 \'{name}\'을(를) 적용했습니다. 저장 시 문서에 기록됩니다',
-  appSourceAdded: '출처 \'{title}\'을(를) 추가했습니다. \'인용 삽입\'에서 인용할 수 있습니다',
-  appTitlePgOn: '\'첫 페이지를 다르게 지정\'을 설정했습니다. 페이지 위쪽에서 전환하여 첫 페이지 머리글/바닥글을 편집할 수 있습니다',
-  appTitlePgOff: '\'첫 페이지를 다르게 지정\'을 해제했습니다',
-  appEvenOddOn: '\'짝수와 홀수 페이지를 다르게 지정\'을 설정했습니다. 페이지 위쪽에서 전환하여 짝수 페이지 머리글/바닥글을 편집할 수 있습니다',
-  appEvenOddOff: '\'짝수와 홀수 페이지를 다르게 지정\'을 해제했습니다',
+  appThemeFontsChanged:
+    '테마 글꼴을 변경했습니다. 저장 시 문서에 기록됩니다(테마 글꼴을 참조하는 스타일은 Word에서 적용됩니다)',
+  appThemeColorsApplied: "테마 색 '{name}'을(를) 적용했습니다. 저장 시 문서에 기록됩니다",
+  appSourceAdded: "출처 '{title}'을(를) 추가했습니다. '인용 삽입'에서 인용할 수 있습니다",
+  // Header & footer
+  appTitlePgOn:
+    "'첫 페이지를 다르게 지정'을 설정했습니다. 페이지 위쪽에서 전환하여 첫 페이지 머리글/바닥글을 편집할 수 있습니다",
+  appTitlePgOff: "'첫 페이지를 다르게 지정'을 해제했습니다",
+  appEvenOddOn:
+    "'짝수와 홀수 페이지를 다르게 지정'을 설정했습니다. 페이지 위쪽에서 전환하여 짝수 페이지 머리글/바닥글을 편집할 수 있습니다",
+  appEvenOddOff: "'짝수와 홀수 페이지를 다르게 지정'을 해제했습니다",
   appFirstPage: '첫 페이지',
   appOddPage: '홀수 페이지',
   appEvenPage: '짝수 페이지',
@@ -163,6 +192,7 @@ export const ko = {
   appDblclickEditHeader: '두 번 클릭하여 머리글 편집',
   appDblclickEditFooter: '두 번 클릭하여 바닥글 편집',
   appHfPageNumHint: '(#은 자동 페이지 번호)',
+  // Footnotes / endnotes
   appDblclickEditFootnote: '두 번 클릭하여 각주 편집',
   appEditFootnote: '각주 편집',
   appDeleteFootnote: '각주 삭제',
@@ -172,11 +202,13 @@ export const ko = {
   appInsertEndnote: '미주 삽입',
   appFootnotePlaceholder: '각주 내용…',
   appEndnotePlaceholder: '미주 내용…',
+  // Quick actions bar
   appAutoSave: '자동 저장',
   appAutoSaveTip: '자동 저장(30초마다, 창 포커스가 해제될 때)',
   appSaveShortcutTip: '저장 (⌘S)',
   appUndo: '실행 취소',
   appRedo: '다시 실행',
+  // Start screen
   appStartOpening: '여는 중…',
   appDocPwdTitle: '암호로 보호됨',
   appDocPwdBody: '"{name}"은(는) 암호로 보호되어 있습니다. 열려면 암호를 입력하세요.',
@@ -186,15 +218,18 @@ export const ko = {
   appPwdShow: '암호 표시',
   appPwdHide: '암호 숨기기',
   appDocPwdWrong: '암호가 올바르지 않습니다. 다시 시도하세요.',
-  appDocPwdUnsupported: '이 문서를 해독할 수 없습니다. 지원되지 않는 암호화 방식(예: WPS 계정 암호화)일 수 있습니다. 원본 앱에서 암호화를 해제한 후 다시 시도하세요.',
+  appDocPwdUnsupported:
+    '이 문서를 해독할 수 없습니다. 지원되지 않는 암호화 방식(예: WPS 계정 암호화)일 수 있습니다. 원본 앱에서 암호화를 해제한 후 다시 시도하세요.',
   appEncConfirmLabel: '암호 확인',
   appEncMismatch: '암호가 일치하지 않습니다',
   appRecentDocs: '최근에 사용한 문서',
+  // View
   appSplitPaneLabel: '분할 창(읽기 전용 미리 보기, 독립 스크롤 가능)',
   appRemoveSplit: '분할 제거',
   appExitReadMode: '읽기 모드 끝내기 (Esc)',
   appExpandAiPanel: 'AI 편집 패널 펼치기',
   appAiRail: 'AI',
+  // Status bar / word count
   appPageOf: '{current}/{total} 페이지',
   appWordCountTitle: '단어 개수',
   appWordCountN: '단어 {n}개',
@@ -206,8 +241,10 @@ export const ko = {
   appStatCharsWithSpaces: '공백을 포함한 문자 수',
   appStatParagraphs: '단락 수',
   appStatLines: '줄 수',
+  // Navigation pane
   appNavTitle: '탐색',
   appNavNoHeadings: '문서에 제목이 없습니다',
+  // Ruler
   appTabTypeTip: '탭 종류: {type}(클릭하여 전환)',
   appTabStopTitle: '{type} 탭 @ {pos}cm',
   appTabLeader: ', 채움선: {leader}',
@@ -219,14 +256,15 @@ export const ko = {
   appTabClear: '지우기',
   // AI settings
   appAiSettings: 'AI 설정',
-  appChatOfficeAccount: 'ChatOffice 계정',
+  appGensparkAccount: 'Genspark 계정',
   appChecking: '확인 중…',
   appLoggedIn: '로그인됨',
   appLoggedInEmail: '로그인됨: {email}',
-  appNotLoggedIn: '로그인되지 않음(AI 기능을 사용하려면 ChatOffice 계정 로그인이 필요합니다)',
+  appNotLoggedIn: '로그인되지 않음(AI 기능을 사용하려면 Genspark 계정 로그인이 필요합니다)',
   appWaitingBrowserLogin: '브라우저 로그인 대기 중…',
-  appLoginChatOffice: 'ChatOffice 로그인',
+  appLoginGenspark: 'Genspark 로그인',
   appModel: '모델',
+  // Context menu
   appCut: '잘라내기',
   appCopy: '복사',
   appPaste: '붙여넣기',
@@ -237,8 +275,10 @@ export const ko = {
   appRestartNumbering: '1에서 다시 시작',
   appContinueNumbering: '번호 매기기 계속',
   appSynonyms: '동의어',
-  appSynonymsPrompt: '"{text}"의 더 나은 동의어나 유사 표현을 3-5개 나열하고 차이를 간단히 설명해 주세요. 문서는 수정하지 마세요.',
-  appTranslateSelectionPrompt: '현재 선택된 텍스트를 {lang}(으)로 번역하여 원문을 번역문으로 바꿔 주세요. 서식은 유지해 주세요: "{text}"',
+  appSynonymsPrompt:
+    '"{text}"의 더 나은 동의어나 유사 표현을 3-5개 나열하고 차이를 간단히 설명해 주세요. 문서는 수정하지 마세요.',
+  appTranslateSelectionPrompt:
+    '현재 선택된 텍스트를 {lang}(으)로 번역하여 원문을 번역문으로 바꿔 주세요. 서식은 유지해 주세요: "{text}"',
   appAiBadgeTip: 'AI를 사용합니다',
   appTranslate: '번역',
   appTranslateTo: '{lang}(으)로 번역',
@@ -263,6 +303,7 @@ export const ko = {
   appBringForward: '앞으로 가져오기',
   appSendBackward: '뒤로 보내기',
   appSendToBack: '맨 뒤로 보내기',
+  // Font dialog
   appFontDialogTitle: '글꼴',
   appFontFamilyLabel: '한글 글꼴 / 영어 글꼴',
   appDefaultBodyFont: '(기본 본문 글꼴)',
@@ -278,6 +319,7 @@ export const ko = {
   appSuperscript: '위 첨자',
   appSubscript: '아래 첨자',
   appFontPreviewSample: '가나다 AaBbCc',
+  // Paragraph dialog
   appAlignment: '맞춤',
   appAlignLeft: '왼쪽 맞춤',
   appAlignCenter: '가운데 맞춤',
@@ -299,8 +341,9 @@ export const ko = {
   appIndentFirstLine: '첫 줄 들여쓰기',
   appSpaceBefore: '단락 앞 간격',
   appSpaceAfter: '단락 뒤 간격',
+  // Equations
   appInsertEquation: '수식 삽입',
-  appLatexPlaceholder: '예: x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: '예: x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: 'LaTeX를 입력하면 미리 보기가 표시됩니다',
   appPreviewUnavailable: '미리 보기를 생성할 수 없습니다',
   appInlineEquationToggle: '인라인 수식(커서 위치에 삽입, 텍스트와 함께 이동)',
@@ -313,6 +356,7 @@ export const ko = {
   appEqQuadratic: '근의 공식',
   appEqTaylor: '테일러 전개',
   appEqTrigIdentity: '삼각 항등식',
+  // Find & replace
   appFindPlaceholder: '찾기',
   appMatchCase: '대/소문자 구분',
   appWholeWord: '단어 단위로',
@@ -323,11 +367,14 @@ export const ko = {
   appReplacePlaceholder: '바꿀 내용',
   appReplace: '바꾸기',
   appReplaceAll: '모두 바꾸기',
+  // Pagination preview
   appPaginationPreview: '페이지 미리 보기',
   appPvCommented: '메모',
   appTotalPagesN: '전체 {n}페이지',
   appPvHint: '읽기 전용 스냅숏입니다. 편집 후 다시 여세요 · Esc로 닫기',
-  appPvExportTip: '미리 보기 그대로 페이지 단위로 내보냅니다. 머리글/바닥글과 페이지 번호가 화면과 일치합니다',
+  appPvExportTip:
+    '미리 보기 그대로 페이지 단위로 내보냅니다. 머리글/바닥글과 페이지 번호가 화면과 일치합니다',
+  // Styles pane
   appStylesTitle: '스타일',
   appParagraphStyles: '단락 스타일',
   appCharacterStyles: '문자 스타일',
@@ -335,4 +382,6 @@ export const ko = {
   appUpdateStyleTip: '현재 선택 영역의 서식으로 이 스타일을 업데이트합니다(styles.xml에 기록)',
   appNewStyleFromSelection: '선택 영역에서 새 스타일 만들기',
   appStyleNamePlaceholder: '스타일 이름',
-}
+  appChatOfficeAccount: "ChatOffice 계정",
+  appLoginChatOffice: "ChatOffice 로그인",
+} satisfies Record<keyof typeof zh, string>

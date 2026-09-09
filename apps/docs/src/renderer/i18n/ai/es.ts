@@ -118,6 +118,7 @@ export const es = {
   aiSumCreateDocument: 'Crear documento nuevo',
   aiSumCreatedDocument: '{name} creado',
   aiSumReplaceContent: 'Reemplazar contenido',
+  aiSumReplaceSelection: 'Reemplazar texto seleccionado',
   aiSumReplacedBlocks: 'Bloques {start}-{end} reemplazados',
   aiSumInsertChart: 'Insertar gráfico',
   aiSumInsertedChart: 'Gráfico «{title}» insertado',

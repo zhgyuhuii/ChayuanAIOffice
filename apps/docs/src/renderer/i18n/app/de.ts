@@ -1,4 +1,5 @@
-/** app strings, de (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const de = {
   appScTitle: 'Tastenkombinationen',
   appScFilter: 'Tastenkombination suchen',
@@ -44,25 +45,30 @@ export const de = {
   appOpenedFile: '{name} geöffnet',
   appOpenFailed: 'Öffnen fehlgeschlagen: {error}',
   appFontsMissing: 'Fehlende Dokumentschriftarten: {names} (Ersatzschriften werden angezeigt)',
-  appVerticalTextNotice: 'Dieses Dokument enthält vertikalen Text (vorerst horizontal angezeigt; das Speichern ist nicht betroffen)',
-  appNewDocCreated: 'Leeres Dokument erstellt. Beschreiben Sie im KI-Bereich links, was generiert werden soll',
+  appVerticalTextNotice:
+    'Dieses Dokument enthält vertikalen Text (vorerst horizontal angezeigt; das Speichern ist nicht betroffen)',
+  appNewDocCreated:
+    'Leeres Dokument erstellt. Beschreiben Sie im KI-Bereich links, was generiert werden soll',
   appNewFailed: 'Erstellen des Dokuments fehlgeschlagen: {error}',
   appSaveFailed: 'Speichern fehlgeschlagen: {error}',
   appAutoSavedAt: 'Automatisch gespeichert ({time})',
   appSaved: 'Gespeichert',
   appSectionBreakInserted: 'Abschnittsumbruch eingefügt ({type})',
-  appSectionBreakPending: 'Abschnittsumbruch eingefügt; der neue Abschnitt wird nach dem Speichern wirksam',
+  appSectionBreakPending:
+    'Abschnittsumbruch eingefügt; der neue Abschnitt wird nach dem Speichern wirksam',
   appBreakNextPage: 'Nächste Seite',
   appBreakContinuous: 'Fortlaufend',
   appBreakEvenPage: 'Gerade Seite',
   appBreakOddPage: 'Ungerade Seite',
-  appSectionSettingsApplied: 'Seiteneinrichtung auf Abschnitt {n} angewendet; wird beim Speichern in das Dokument geschrieben',
+  appSectionSettingsApplied:
+    'Seiteneinrichtung auf Abschnitt {n} angewendet; wird beim Speichern in das Dokument geschrieben',
   appNumberingRestarted: 'Nummerierung neu begonnen',
   appNumberingContinued: 'Nummerierung fortgesetzt',
   appFieldInserted: 'Feld {instr} eingefügt',
   appNoFieldsToUpdate: 'Keine zu aktualisierenden Felder',
   appFieldsUpdated: '{n} Felder aktualisiert',
-  appStyleUpdated: 'Formatvorlage „{name}“ mit der Formatierung der Auswahl aktualisiert; wird beim Speichern in das Dokument geschrieben',
+  appStyleUpdated:
+    'Formatvorlage „{name}“ mit der Formatierung der Auswahl aktualisiert; wird beim Speichern in das Dokument geschrieben',
   appStyleCreated: 'Formatvorlage „{name}“ erstellt und auf die Auswahl angewendet',
   appPgNumFormatSet: 'Seitenzahlenformat festgelegt',
   appPageNumFormatTitle: 'Seitenzahlenformat',
@@ -72,8 +78,10 @@ export const de = {
   appPgNumHintBlank: '„Beginnen bei“ leer lassen, um vom vorherigen Abschnitt fortzusetzen',
   appPgNumAppliesTo: '; gilt für Abschnitt {n}',
   appExportingPdf: 'PDF wird exportiert…',
+  appExportingHtml: 'HTML wird exportiert…',
   appExportPdf: 'PDF exportieren',
   appExportPdfFailed: 'PDF-Export fehlgeschlagen: {error}',
+  appExportHtmlFailed: 'HTML-Export fehlgeschlagen: {error}',
   appPrintGroupFailed: 'Drucken der Seitengruppe fehlgeschlagen',
   appPrintTitle: 'Drucken',
   appPrintProgress: 'Druck wird vorbereitet…',
@@ -89,13 +97,20 @@ export const de = {
   appPrintPrevPage: 'Vorherige Seite',
   appPrintNextPage: 'Nächste Seite',
   appExportedPdf: 'PDF exportiert: {path}',
-  appExportedPdfMixed: 'PDF exportiert: {path} (gemischte Papierformate, {n} Gruppen seitenweise zusammengeführt)',
+  appExportedHtml: 'HTML exportiert: {path}',
+  appExportedPdfMixed:
+    'PDF exportiert: {path} (gemischte Papierformate, {n} Gruppen seitenweise zusammengeführt)',
   appExportPdfCanceled: 'PDF-Export abgebrochen',
-  appMixedExportOpening: 'Gemischte Papierformate: Seitenvorschau wird geöffnet, um die Seiten zusammengeführt zu exportieren…',
+  appExportHtmlCanceled: 'HTML-Export abgebrochen',
+  appMixedExportOpening:
+    'Gemischte Papierformate: Seitenvorschau wird geöffnet, um die Seiten zusammengeführt zu exportieren…',
   appSelectTextToComment: 'Wählen Sie zuerst den zu kommentierenden Text aus',
-  appCommentSelectionLost: 'Die Auswahl ist nicht mehr gültig; wählen Sie den zu kommentierenden Text erneut aus',
+  appCommentSelectionLost:
+    'Die Auswahl ist nicht mehr gültig; wählen Sie den zu kommentierenden Text erneut aus',
   appCommentAdded: 'Kommentar hinzugefügt; wird beim Speichern in das Dokument geschrieben',
-  appCommentAnchorGone: 'Der Anker des ursprünglichen Kommentars existiert nicht mehr; Antworten nicht möglich',
+  appCommentEdited: 'Kommentar aktualisiert; wird beim Speichern in das Dokument geschrieben',
+  appCommentAnchorGone:
+    'Der Anker des ursprünglichen Kommentars existiert nicht mehr; Antworten nicht möglich',
   appCommentReplied: 'Antwort hinzugefügt; wird beim Speichern in das Dokument geschrieben',
   appCommentResolvedMsg: 'Kommentar gelöst',
   appCommentReopenedMsg: 'Kommentar erneut geöffnet',
@@ -105,6 +120,7 @@ export const de = {
   appUnknownAuthor: '(Unbekannter Autor)',
   appResolved: 'Gelöst',
   appResolvedComments: 'Gelöste Kommentare ({n})',
+  appEditComment: 'Kommentar bearbeiten',
   appDeleteComment: 'Kommentar löschen',
   appDeleteCommentWithReplies: 'Kommentar löschen (mit Antworten)',
   appDeleteReply: 'Antwort löschen',
@@ -118,12 +134,14 @@ export const de = {
   appNoRevisionsToHandle: 'Keine nachverfolgten Änderungen zu verarbeiten',
   appProtectTitle: 'Dokument schützen',
   appProtectSecurity: 'Sicherheit',
-  appProtectDesc: 'Kennwörter zum Öffnen und Ändern, Bearbeitungseinschränkungen und Datenschutzoptionen festlegen; wird beim Speichern angewendet',
+  appProtectDesc:
+    'Kennwörter zum Öffnen und Ändern, Bearbeitungseinschränkungen und Datenschutzoptionen festlegen; wird beim Speichern angewendet',
   appOptional: '(optional)',
   appOptionalBlank: '(optional)',
   appProtectOpenPwd: 'Kennwort zum Öffnen dieses Dokuments',
   appProtectModifyPwd: 'Kennwort zum Ändern dieses Dokuments',
-  appProtectPwdKeepHint: 'Ein vorhandenes Kennwort wird als Punkte angezeigt: unverändert lassen, um es zu behalten, oder das Feld leeren, um es zu entfernen',
+  appProtectPwdKeepHint:
+    'Ein vorhandenes Kennwort wird als Punkte angezeigt: unverändert lassen, um es zu behalten, oder das Feld leeren, um es zu entfernen',
   appProtectSectionTitle: 'Schutz',
   appProtectFor: 'Bearbeitung einschränken',
   appProtectModeTracked: 'Änderungen nachverfolgen',
@@ -132,10 +150,13 @@ export const de = {
   appProtectModeForms: 'Formulare',
   appProtectUnlockPwd: 'Geben Sie das Schutzkennwort ein, um ihn zu ändern oder aufzuheben',
   appProtectPrivacy: 'Datenschutz',
-  appProtectRemovePersonal: 'Autoren- und Organisationsmetadaten beim Speichern aus dieser Datei entfernen',
-  appProtectUpdated: 'Schutzeinstellungen aktualisiert; sie werden beim Speichern des Dokuments angewendet',
+  appProtectRemovePersonal:
+    'Autoren- und Organisationsmetadaten beim Speichern aus dieser Datei entfernen',
+  appProtectUpdated:
+    'Schutzeinstellungen aktualisiert; sie werden beim Speichern des Dokuments angewendet',
   appModifyPwdTitle: 'Schreibgeschützt',
-  appModifyPwdBody: '„{name}“ hat ein Kennwort zum Ändern. Geben Sie es ein, um zu bearbeiten, oder öffnen Sie das Dokument schreibgeschützt.',
+  appModifyPwdBody:
+    '„{name}“ hat ein Kennwort zum Ändern. Geben Sie es ein, um zu bearbeiten, oder öffnen Sie das Dokument schreibgeschützt.',
   appOpenReadOnly: 'Schreibgeschützt öffnen',
   appProtectPwdOptional: 'Schutzkennwort',
   appWrongPassword: 'Falsches Kennwort',
@@ -147,14 +168,19 @@ export const de = {
   appCompareSameRun: '… {n} identische Absätze …',
   appEmptyParagraph: '(leerer Absatz)',
   appInksCleared: 'Alle Freihandeingaben entfernt; wird nach dem Speichern wirksam',
-  appWatermarkSet: 'Wasserzeichen „{text}“ festgelegt; wird beim Speichern in das Dokument geschrieben',
+  appWatermarkSet:
+    'Wasserzeichen „{text}“ festgelegt; wird beim Speichern in das Dokument geschrieben',
   appWatermarkRemoved: 'Wasserzeichen entfernt; wird nach dem Speichern wirksam',
-  appThemeFontsChanged: 'Designschriftarten geändert; wird beim Speichern in das Dokument geschrieben (Formatvorlagen, die Designschriftarten referenzieren, werden in Word wirksam)',
-  appThemeColorsApplied: 'Designfarben „{name}“ angewendet; wird beim Speichern in das Dokument geschrieben',
+  appThemeFontsChanged:
+    'Designschriftarten geändert; wird beim Speichern in das Dokument geschrieben (Formatvorlagen, die Designschriftarten referenzieren, werden in Word wirksam)',
+  appThemeColorsApplied:
+    'Designfarben „{name}“ angewendet; wird beim Speichern in das Dokument geschrieben',
   appSourceAdded: 'Quelle „{title}“ hinzugefügt; über „Zitat einfügen“ zitierbar',
-  appTitlePgOn: '„Erste Seite anders“ aktiviert; wechseln Sie oben auf der Seite, um Kopf- und Fußzeile der ersten Seite zu bearbeiten',
+  appTitlePgOn:
+    '„Erste Seite anders“ aktiviert; wechseln Sie oben auf der Seite, um Kopf- und Fußzeile der ersten Seite zu bearbeiten',
   appTitlePgOff: '„Erste Seite anders“ deaktiviert',
-  appEvenOddOn: '„Gerade & ungerade Seiten unterschiedlich“ aktiviert; wechseln Sie oben auf der Seite, um Kopf- und Fußzeile der geraden Seiten zu bearbeiten',
+  appEvenOddOn:
+    '„Gerade & ungerade Seiten unterschiedlich“ aktiviert; wechseln Sie oben auf der Seite, um Kopf- und Fußzeile der geraden Seiten zu bearbeiten',
   appEvenOddOff: '„Gerade & ungerade Seiten unterschiedlich“ deaktiviert',
   appFirstPage: 'Erste Seite',
   appOddPage: 'Ungerade Seiten',
@@ -173,7 +199,8 @@ export const de = {
   appFootnotePlaceholder: 'Fußnotentext…',
   appEndnotePlaceholder: 'Endnotentext…',
   appAutoSave: 'Automatisches Speichern',
-  appAutoSaveTip: 'Automatisches Speichern (alle 30 Sekunden und wenn das Fenster den Fokus verliert)',
+  appAutoSaveTip:
+    'Automatisches Speichern (alle 30 Sekunden und wenn das Fenster den Fokus verliert)',
   appSaveShortcutTip: 'Speichern (⌘S)',
   appUndo: 'Rückgängig',
   appRedo: 'Wiederholen',
@@ -186,7 +213,8 @@ export const de = {
   appPwdShow: 'Kennwort anzeigen',
   appPwdHide: 'Kennwort ausblenden',
   appDocPwdWrong: 'Das Kennwort ist falsch. Versuchen Sie es erneut.',
-  appDocPwdUnsupported: 'Dieses Dokument kann nicht entschlüsselt werden: Die Verschlüsselung wird nicht unterstützt (z. B. WPS-Konto-Verschlüsselung). Entfernen Sie die Verschlüsselung in der Ursprungsanwendung und versuchen Sie es erneut.',
+  appDocPwdUnsupported:
+    'Dieses Dokument kann nicht entschlüsselt werden: Die Verschlüsselung wird nicht unterstützt (z. B. WPS-Konto-Verschlüsselung). Entfernen Sie die Verschlüsselung in der Ursprungsanwendung und versuchen Sie es erneut.',
   appEncConfirmLabel: 'Kennwort bestätigen',
   appEncMismatch: 'Die Kennwörter stimmen nicht überein',
   appRecentDocs: 'Zuletzt verwendete Dokumente',
@@ -218,13 +246,13 @@ export const de = {
   appTabBar: 'Vertikale Linie',
   appTabClear: 'Löschen',
   appAiSettings: 'KI-Einstellungen',
-  appChatOfficeAccount: 'ChatOffice-Konto',
+  appGensparkAccount: 'Genspark-Konto',
   appChecking: 'Wird überprüft…',
   appLoggedIn: 'Angemeldet',
   appLoggedInEmail: 'Angemeldet: {email}',
-  appNotLoggedIn: 'Nicht angemeldet (KI-Funktionen erfordern ein ChatOffice-Konto)',
+  appNotLoggedIn: 'Nicht angemeldet (KI-Funktionen erfordern ein Genspark-Konto)',
   appWaitingBrowserLogin: 'Warten auf Anmeldung im Browser…',
-  appLoginChatOffice: 'Bei ChatOffice anmelden',
+  appLoginGenspark: 'Bei Genspark anmelden',
   appModel: 'Modell',
   appCut: 'Ausschneiden',
   appCopy: 'Kopieren',
@@ -236,8 +264,10 @@ export const de = {
   appRestartNumbering: 'Neu beginnen mit 1',
   appContinueNumbering: 'Nummerierung fortsetzen',
   appSynonyms: 'Synonyme',
-  appSynonymsPrompt: 'Welche besseren Synonyme oder ähnliche Ausdrücke gibt es für „{text}“? Nenne 3–5 mit kurzer Erläuterung der Unterschiede; das Dokument nicht ändern.',
-  appTranslateSelectionPrompt: 'Übersetze den aktuell markierten Text in {lang}, ersetze das Original durch die Übersetzung und behalte die Formatierung bei: „{text}“',
+  appSynonymsPrompt:
+    'Welche besseren Synonyme oder ähnliche Ausdrücke gibt es für „{text}“? Nenne 3–5 mit kurzer Erläuterung der Unterschiede; das Dokument nicht ändern.',
+  appTranslateSelectionPrompt:
+    'Übersetze den aktuell markierten Text in {lang}, ersetze das Original durch die Übersetzung und behalte die Formatierung bei: „{text}“',
   appAiBadgeTip: 'Verwendet KI',
   appTranslate: 'Übersetzen',
   appTranslateTo: 'In {lang} übersetzen',
@@ -299,7 +329,7 @@ export const de = {
   appSpaceBefore: 'Abstand vor',
   appSpaceAfter: 'Abstand nach',
   appInsertEquation: 'Formel einfügen',
-  appLatexPlaceholder: 'z. B. x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: 'z. B. x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: 'LaTeX eingeben, um eine Vorschau anzuzeigen',
   appPreviewUnavailable: 'Vorschau kann nicht erstellt werden',
   appInlineEquationToggle: 'Eingebettete Formel (wird am Cursor eingefügt und fließt mit dem Text)',
@@ -325,13 +355,18 @@ export const de = {
   appPaginationPreview: 'Seitenvorschau',
   appPvCommented: 'Kommentar',
   appTotalPagesN: '{n} Seiten',
-  appPvHint: 'Schreibgeschützte Momentaufnahme; nach der Bearbeitung erneut öffnen · Esc zum Schließen',
-  appPvExportTip: 'Exportiert Seite für Seite wie in der Vorschau; Kopf-/Fußzeilen und Seitenzahlen entsprechen der Anzeige',
+  appPvHint:
+    'Schreibgeschützte Momentaufnahme; nach der Bearbeitung erneut öffnen · Esc zum Schließen',
+  appPvExportTip:
+    'Exportiert Seite für Seite wie in der Vorschau; Kopf-/Fußzeilen und Seitenzahlen entsprechen der Anzeige',
   appStylesTitle: 'Formatvorlagen',
   appParagraphStyles: 'Absatzformatvorlagen',
   appCharacterStyles: 'Zeichenformatvorlagen',
   appApplyStyle: 'Formatvorlage {name} anwenden',
-  appUpdateStyleTip: 'Diese Formatvorlage mit der Formatierung der aktuellen Auswahl aktualisieren (wird in styles.xml zurückgeschrieben)',
+  appUpdateStyleTip:
+    'Diese Formatvorlage mit der Formatierung der aktuellen Auswahl aktualisieren (wird in styles.xml zurückgeschrieben)',
   appNewStyleFromSelection: 'Neue Formatvorlage aus der aktuellen Auswahl',
   appStyleNamePlaceholder: 'Name der Formatvorlage',
-}
+  appChatOfficeAccount: "ChatOffice-Konto",
+  appLoginChatOffice: "Bei ChatOffice anmelden",
+} satisfies Record<keyof typeof zh, string>

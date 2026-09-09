@@ -1,4 +1,4 @@
-/** app strings, zh (merged with ChatOffice-local keys) */
+/** app strings, zh: defines the key set every other locale shard must match. */
 export const zh = {
   appScTitle: '键盘快捷键',
   appScFilter: '搜索快捷键',
@@ -30,6 +30,7 @@ export const zh = {
   appScListDemote: '降低列表级别',
   appScListPromote: '提升列表级别',
   appScProofread: '校对',
+  // Common
   appClose: '关闭',
   appCancel: '取消',
   appOk: '确定',
@@ -40,6 +41,7 @@ export const zh = {
   appReady: '就绪',
   appParagraph: '段落',
   appCharacter: '字符',
+  // File / save status
   appUntitledDocx: '未命名文档.docx',
   appOpenedFile: '已打开 {name}',
   appOpenFailed: '打开失败: {error}',
@@ -50,6 +52,7 @@ export const zh = {
   appSaveFailed: '保存失败: {error}',
   appAutoSavedAt: '已自动保存 ({time})',
   appSaved: '已保存',
+  // Section breaks
   appSectionBreakInserted: '已插入分节符({type})',
   appSectionBreakPending: '已插入分节符,保存后新节生效',
   appBreakNextPage: '下一页',
@@ -57,13 +60,16 @@ export const zh = {
   appBreakEvenPage: '偶数页',
   appBreakOddPage: '奇数页',
   appSectionSettingsApplied: '页面设置已应用于第 {n} 节,保存后写入文档',
+  // List numbering / fields
   appNumberingRestarted: '已重新开始编号',
   appNumberingContinued: '已继续编号',
   appFieldInserted: '已插入域 {instr}',
   appNoFieldsToUpdate: '没有需要更新的域',
   appFieldsUpdated: '已更新 {n} 个域',
+  // Styles
   appStyleUpdated: '已用选区格式更新样式“{name}”,保存后写入文档',
   appStyleCreated: '已新建样式“{name}”并应用到选区',
+  // Page number format
   appPgNumFormatSet: '已设置页码格式',
   appPageNumFormatTitle: '页码格式',
   appNumberFormat: '编号格式',
@@ -71,9 +77,12 @@ export const zh = {
   appContinueFromPrev: '续前节',
   appPgNumHintBlank: '起始页码留空 = 续前节',
   appPgNumAppliesTo: ';作用于第 {n} 节',
+  // Export PDF
   appExportingPdf: '正在导出 PDF…',
+  appExportingHtml: '正在导出 HTML…',
   appExportPdf: '导出 PDF',
   appExportPdfFailed: '导出 PDF 失败: {error}',
+  appExportHtmlFailed: '导出 HTML 失败: {error}',
   appPrintGroupFailed: '打印分组失败',
   appPrintTitle: '打印',
   appPrintProgress: '正在准备打印…',
@@ -89,12 +98,16 @@ export const zh = {
   appPrintPrevPage: '上一页',
   appPrintNextPage: '下一页',
   appExportedPdf: '已导出 PDF: {path}',
+  appExportedHtml: '已导出 HTML: {path}',
   appExportedPdfMixed: '已导出 PDF: {path}(混合纸张,{n} 组已按页合并)',
   appExportPdfCanceled: '已取消导出 PDF',
+  appExportHtmlCanceled: '已取消导出 HTML',
   appMixedExportOpening: '混合纸张文档:正在打开分页预览并按页合并导出…',
+  // Comments
   appSelectTextToComment: '先选中要批注的文字',
   appCommentSelectionLost: '选区已失效,请重新选中要批注的文字',
   appCommentAdded: '已添加批注,保存后写入文档',
+  appCommentEdited: '批注已更新,保存后写入文档',
   appCommentAnchorGone: '原批注的锚点已不存在,无法回复',
   appCommentReplied: '已回复批注,保存后写入文档',
   appCommentResolvedMsg: '批注已解决',
@@ -105,6 +118,7 @@ export const zh = {
   appUnknownAuthor: '(未知作者)',
   appResolved: '已解决',
   appResolvedComments: '已解决的批注 ({n})',
+  appEditComment: '编辑批注',
   appDeleteComment: '删除批注',
   appDeleteCommentWithReplies: '删除批注(含回复)',
   appDeleteReply: '删除回复',
@@ -113,6 +127,7 @@ export const zh = {
   appReopen: '重新打开',
   appResolve: '解决',
   appNoComments: '该文档没有批注',
+  // Revisions / protection
   appAllRevisionsAccepted: '已接受所有修订',
   appAllRevisionsRejected: '已拒绝所有修订',
   appNoRevisionsToHandle: '没有可处理的修订',
@@ -139,6 +154,7 @@ export const zh = {
   appOpenReadOnly: '只读打开',
   appProtectPwdOptional: '保护密码',
   appWrongPassword: '密码不正确',
+  // Compare
   appCompareFailed: '比较失败: {error}',
   appCompareResult: '比较结果',
   appCompareWithPrefix: '与 ',
@@ -146,12 +162,14 @@ export const zh = {
   appCompareIdentical: '两个文档内容一致',
   appCompareSameRun: '… {n} 段相同 …',
   appEmptyParagraph: '(空段落)',
+  // Ink / watermark / theme
   appInksCleared: '已清除所有笔迹,保存后生效',
   appWatermarkSet: '已设置水印“{text}”,保存后写入文档',
   appWatermarkRemoved: '已删除水印,保存后生效',
   appThemeFontsChanged: '已更改主题字体,保存后写入文档(引用主题字体的样式在 Word 中生效)',
   appThemeColorsApplied: '已应用主题颜色“{name}”,保存后写入文档',
   appSourceAdded: '已添加源“{title}”,可通过“插入引文”引用',
+  // Header & footer
   appTitlePgOn: '已开启“首页不同”,在页面顶部切换编辑首页页眉页脚',
   appTitlePgOff: '已关闭“首页不同”',
   appEvenOddOn: '已开启“奇偶页不同”,在页面顶部切换编辑偶数页页眉页脚',
@@ -163,6 +181,7 @@ export const zh = {
   appDblclickEditHeader: '双击编辑页眉',
   appDblclickEditFooter: '双击编辑页脚',
   appHfPageNumHint: '(# 代表自动页码)',
+  // Footnotes / endnotes
   appDblclickEditFootnote: '双击编辑脚注',
   appEditFootnote: '编辑脚注',
   appDeleteFootnote: '删除脚注',
@@ -172,11 +191,13 @@ export const zh = {
   appInsertEndnote: '插入尾注',
   appFootnotePlaceholder: '脚注内容…',
   appEndnotePlaceholder: '尾注内容…',
+  // Quick actions bar
   appAutoSave: '自动保存',
   appAutoSaveTip: '自动保存(每 30 秒及窗口失焦时)',
   appSaveShortcutTip: '保存 (⌘S)',
   appUndo: '撤销',
   appRedo: '恢复',
+  // Start screen
   appStartOpening: '正在打开…',
   appDocPwdTitle: '文档已加密',
   appDocPwdBody: '“{name}”设有打开密码,请输入密码以打开。',
@@ -186,15 +207,18 @@ export const zh = {
   appPwdShow: '显示密码',
   appPwdHide: '隐藏密码',
   appDocPwdWrong: '密码不正确,请重试',
-  appDocPwdUnsupported: '无法解密此文档:加密方式不受支持(例如 WPS 账号加密),请在原软件中解除加密后重试',
+  appDocPwdUnsupported:
+    '无法解密此文档:加密方式不受支持(例如 WPS 账号加密),请在原软件中解除加密后重试',
   appEncConfirmLabel: '确认密码',
   appEncMismatch: '两次输入的密码不一致',
   appRecentDocs: '最近使用的文档',
+  // View
   appSplitPaneLabel: '拆分窗格(只读预览,可独立滚动)',
   appRemoveSplit: '取消拆分',
   appExitReadMode: '退出阅读视图 (Esc)',
   appExpandAiPanel: '展开 AI 编辑面板',
   appAiRail: 'AI',
+  // Status bar / word count
   appPageOf: '第 {current} 页,共 {total} 页',
   appWordCountTitle: '字数统计',
   appWordCountN: '{n} 个字',
@@ -206,8 +230,10 @@ export const zh = {
   appStatCharsWithSpaces: '字符数(计空格)',
   appStatParagraphs: '段落数',
   appStatLines: '行数',
+  // Navigation pane
   appNavTitle: '导航',
   appNavNoHeadings: '文档中没有标题',
+  // Ruler
   appTabTypeTip: '制表位类型: {type}（点击切换）',
   appTabStopTitle: '{type}制表位 @ {pos}cm',
   appTabLeader: '，前导符:{leader}',
@@ -219,14 +245,15 @@ export const zh = {
   appTabClear: '清除',
   // AI settings
   appAiSettings: 'AI 设置',
-  appChatOfficeAccount: 'ChatOffice 账号',
+  appGensparkAccount: 'Genspark 账号',
   appChecking: '检测中…',
   appLoggedIn: '已登录',
   appLoggedInEmail: '已登录：{email}',
-  appNotLoggedIn: '未登录（AI 功能需要登录 ChatOffice 账号）',
+  appNotLoggedIn: '未登录（AI 功能需要登录 Genspark 账号）',
   appWaitingBrowserLogin: '等待浏览器登录…',
-  appLoginChatOffice: '登录 ChatOffice',
+  appLoginGenspark: '登录 Genspark',
   appModel: '模型',
+  // Context menu
   appCut: '剪切',
   appCopy: '复制',
   appPaste: '粘贴',
@@ -237,8 +264,10 @@ export const zh = {
   appRestartNumbering: '重新开始编号',
   appContinueNumbering: '继续编号',
   appSynonyms: '同义词',
-  appSynonymsPrompt: '“{text}”有哪些更好的同义词或近义表达?请列出 3-5 个并简要说明差别,不要修改文档。',
-  appTranslateSelectionPrompt: '将文中当前选中的这段文字翻译成{lang},用译文替换原文,保持格式不变:“{text}”',
+  appSynonymsPrompt:
+    '“{text}”有哪些更好的同义词或近义表达?请列出 3-5 个并简要说明差别,不要修改文档。',
+  appTranslateSelectionPrompt:
+    '将文中当前选中的这段文字翻译成{lang},用译文替换原文,保持格式不变:“{text}”',
   appAiBadgeTip: '将调用 AI',
   appTranslate: '翻译',
   appTranslateTo: '翻译成{lang}',
@@ -263,6 +292,7 @@ export const zh = {
   appBringForward: '上移一层',
   appSendBackward: '下移一层',
   appSendToBack: '置于底层',
+  // Font dialog
   appFontDialogTitle: '字体',
   appFontFamilyLabel: '中文字体 / 西文字体',
   appDefaultBodyFont: '(默认正文字体)',
@@ -278,6 +308,7 @@ export const zh = {
   appSuperscript: '上标',
   appSubscript: '下标',
   appFontPreviewSample: '微软卓越 AaBbCc',
+  // Paragraph dialog
   appAlignment: '对齐方式',
   appAlignLeft: '左对齐',
   appAlignCenter: '居中',
@@ -299,8 +330,9 @@ export const zh = {
   appIndentFirstLine: '首行缩进',
   appSpaceBefore: '段前间距',
   appSpaceAfter: '段后间距',
+  // Equations
   appInsertEquation: '插入公式',
-  appLatexPlaceholder: '例如 x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: '例如 x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: '输入 LaTeX 查看预览',
   appPreviewUnavailable: '无法生成预览',
   appInlineEquationToggle: '行内公式(插入光标处,随文字流动)',
@@ -313,6 +345,7 @@ export const zh = {
   appEqQuadratic: '二次求根公式',
   appEqTaylor: '泰勒展开式',
   appEqTrigIdentity: '三角恒等式',
+  // Find & replace
   appFindPlaceholder: '查找',
   appMatchCase: '区分大小写',
   appWholeWord: '全字匹配',
@@ -323,11 +356,13 @@ export const zh = {
   appReplacePlaceholder: '替换为',
   appReplace: '替换',
   appReplaceAll: '全部替换',
+  // Pagination preview
   appPaginationPreview: '分页预览',
   appPvCommented: '批注',
   appTotalPagesN: '共 {n} 页',
   appPvHint: '只读快照,编辑后请重新打开 · Esc 关闭',
   appPvExportTip: '按预览逐页导出,页眉页脚/页码与所见一致',
+  // Styles pane
   appStylesTitle: '样式',
   appParagraphStyles: '段落样式',
   appCharacterStyles: '字符样式',
@@ -335,4 +370,6 @@ export const zh = {
   appUpdateStyleTip: '用当前选区的格式更新此样式(写回 styles.xml)',
   appNewStyleFromSelection: '从当前选区新建样式',
   appStyleNamePlaceholder: '样式名称',
+  appChatOfficeAccount: "ChatOffice 账号",
+  appLoginChatOffice: "登录 ChatOffice",
 }

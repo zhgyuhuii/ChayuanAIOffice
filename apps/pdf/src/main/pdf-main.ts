@@ -329,6 +329,23 @@ const tDlg = createI18n({
     btnDontSave: 'Nie zapisuj',
     btnCancel: 'Anuluj',
   },
+  cs: {
+    dlgExportImages: 'Exportovat obrázky do složky',
+    dlgExtract: 'Extrahovat stránky jako PDF',
+    dlgInsert: 'Vyberte PDF k importu',
+    dlgSplit: 'Rozdělit PDF do složky',
+    dlgMerge: 'Vyberte soubory PDF ke sloučení',
+    dlgMergeSave: 'Uložit sloučený PDF jako',
+    dlgMergePages: 'Uložit sloučené stránky jako',
+    dlgReplace: 'Vyberte náhradní PDF',
+    dlgSplitPages: 'Uložit rozdělené stránky jako',
+    filterPdf: 'Dokumenty PDF',
+    closeUnsavedMsg: 'Tento PDF obsahuje neuložené změny.',
+    closeUnsavedDetail: 'Chcete je před zavřením uložit?',
+    btnSave: 'Uložit',
+    btnDontSave: 'Neukládat',
+    btnCancel: 'Zrušit',
+  },
   nl: {
     dlgExportImages: 'Afbeeldingen naar map exporteren',
     dlgExtract: "Pagina's extraheren als PDF",
@@ -481,10 +498,10 @@ function sanitizeGeneratedDocumentTitle(title: string): string {
   return cleaned && cleaned !== '.' && cleaned !== '..' ? cleaned : 'Untitled'
 }
 
-function uniqueGeneratedMarkdownPath(dir: string, title: string): string {
+function uniqueGeneratedTextPath(dir: string, title: string, ext: 'md' | 'html'): string {
   const stem = sanitizeGeneratedDocumentTitle(title)
-  let candidate = join(dir, `${stem}.md`)
-  for (let i = 2; existsSync(candidate); i += 1) candidate = join(dir, `${stem}-${i}.md`)
+  let candidate = join(dir, `${stem}.${ext}`)
+  for (let i = 2; existsSync(candidate); i += 1) candidate = join(dir, `${stem}-${i}.${ext}`)
   return candidate
 }
 
@@ -510,7 +527,8 @@ async function createStandaloneDocument(
       openGeneratedPdf(path)
       return { ok: true, path }
     }
-    const path = uniqueGeneratedMarkdownPath(configuredDefaultSaveDir(app), title)
+    // md / html: the source is the file; standalone has no sibling editor to open it in
+    const path = uniqueGeneratedTextPath(configuredDefaultSaveDir(app), title, request.type)
     await writeFile(path, request.content, 'utf8')
     shell.showItemInFolder(path)
     return { ok: true, path }

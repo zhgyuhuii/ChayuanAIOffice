@@ -155,6 +155,21 @@ function MarkdownIcon() {
   return <img src={tabIconMd} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
+function HtmlIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 240 240" fill="none" aria-hidden="true">
+      <rect width="240" height="240" rx="48" fill="#0FA3A3" />
+      <path
+        d="M92 72L44 120L92 168M148 72L196 120L148 168"
+        stroke="#fff"
+        strokeWidth="20"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 const KIND_ICON: Record<TabSummary['kind'], ReactElement> = {
   home: <HomeIcon />,
   docs: <DocIcon />,
@@ -162,6 +177,7 @@ const KIND_ICON: Record<TabSummary['kind'], ReactElement> = {
   slides: <SlideIcon />,
   pdf: <PdfIcon />,
   markdown: <MarkdownIcon />,
+  html: <HtmlIcon />,
 }
 
 export function TabBar() {

@@ -1,3 +1,4 @@
+import { uiOp, type StylableMark, type ListKind, type BlockType } from '../editor/ops'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Editor } from '@tiptap/core'
@@ -12,7 +13,6 @@ import {
 } from '@chatoffice/ui'
 import { useI18n } from '../i18n/locale'
 import type { StringKey } from '../i18n/locale'
-import { liftFromList } from '../editor/slashCommand'
 import {
   IconBullets,
   IconHr,
@@ -23,16 +23,25 @@ import {
   IconProperties,
   IconRedo,
   IconSave,
+  IconSearch,
   IconTable,
   IconTaskList,
   IconUndo,
 } from './icons'
+
+const toggleStyle = (editor: Editor | null, style: StylableMark) =>
+  editor && uiOp(editor, { op: 'setStyle', target: 'selection', style, mode: 'toggle' })
+
+const toggleList = (editor: Editor | null, list: ListKind) =>
+  editor && uiOp(editor, { op: 'toggleList', target: 'selection', list })
+
 
 interface Props {
   editor: Editor | null
   disabled: boolean
   dirty: boolean
   onSave: () => void
+  onFind?: () => void
   autoSave: boolean
   onToggleAutoSave: (on: boolean) => void
   imageEnabled: boolean
@@ -59,22 +68,14 @@ const STYLE_LABEL: Record<BlockStyle, StringKey> = {
 }
 
 function applyBlockStyle(editor: Editor, style: BlockStyle): void {
-  // block-type conversions are illegal inside list items — leave the list first
-  liftFromList(editor)
-  const chain = editor.chain().focus()
-  switch (style) {
-    case 'paragraph':
-      chain.setParagraph().run()
-      break
-    case 'quote':
-      chain.setParagraph().setBlockquote().run()
-      break
-    case 'codeBlock':
-      chain.setCodeBlock().run()
-      break
-    default:
-      chain.setHeading({ level: Number(style.slice(1)) as 1 | 2 | 3 | 4 | 5 | 6 }).run()
-  }
+  const type: BlockType =
+    style === 'quote'
+      ? 'blockquote'
+      : style === 'paragraph' || style === 'codeBlock'
+        ? style
+        : 'heading'
+  const level = type === 'heading' ? Number(style.slice(1)) : undefined
+  uiOp(editor, { op: 'setBlockType', target: 'selection', type, ...(level ? { level } : {}) })
 }
 
 function IconBtn({
@@ -110,6 +111,7 @@ export function Ribbon({
   disabled,
   dirty,
   onSave,
+  onFind,
   autoSave,
   onToggleAutoSave,
   imageEnabled,
@@ -173,10 +175,7 @@ export function Ribbon({
 
   const applyLink = () => {
     if (!editor) return
-    const url = linkUrl.trim()
-    const chain = editor.chain().focus().extendMarkRange('link')
-    if (url) chain.setLink({ href: url }).run()
-    else chain.unsetLink().run()
+    uiOp(editor, { op: 'setLink', target: 'selection', href: linkUrl.trim() || null })
     setLinkOpen(false)
   }
 
@@ -221,6 +220,17 @@ export function Ribbon({
         >
           <IconRedo size={16} />
         </button>
+        <button
+          type="button"
+          className="qa-btn"
+          data-tip={t('findTip')}
+          aria-label={t('findTip')}
+          disabled={off}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={onFind}
+        >
+          <IconSearch size={16} />
+        </button>
         <label className={`autosave-toggle${autoSave ? ' on' : ''}`} data-tip={t('autoSaveTip')}>
           <span className="autosave-knob" />
           <span className="autosave-text">{t('autoSave')}</span>
@@ -259,7 +269,7 @@ export function Ribbon({
               title={t('bold')}
               active={state?.bold}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleBold().run()}
+              onClick={() => toggleStyle(editor, 'bold')}
             >
               <b>B</b>
             </IconBtn>
@@ -267,7 +277,7 @@ export function Ribbon({
               title={t('italic')}
               active={state?.italic}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              onClick={() => toggleStyle(editor, 'italic')}
             >
               <i>I</i>
             </IconBtn>
@@ -275,7 +285,7 @@ export function Ribbon({
               title={t('strike')}
               active={state?.strike}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleStrike().run()}
+              onClick={() => toggleStyle(editor, 'strike')}
             >
               <s>ab</s>
             </IconBtn>
@@ -283,7 +293,7 @@ export function Ribbon({
               title={t('inlineCode')}
               active={state?.code}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleCode().run()}
+              onClick={() => toggleStyle(editor, 'code')}
             >
               <IconInlineCode size={ICON} />
             </IconBtn>
@@ -320,7 +330,7 @@ export function Ribbon({
               title={t('bulletList')}
               active={state?.bullet}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleBulletList().run()}
+              onClick={() => toggleList(editor, 'bullet')}
             >
               <IconBullets size={ICON} />
             </IconBtn>
@@ -328,7 +338,7 @@ export function Ribbon({
               title={t('orderedList')}
               active={state?.ordered}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+              onClick={() => toggleList(editor, 'ordered')}
             >
               <IconNumbered size={ICON} />
             </IconBtn>
@@ -336,7 +346,7 @@ export function Ribbon({
               title={t('taskList')}
               active={state?.task}
               disabled={off}
-              onClick={() => editor?.chain().focus().toggleTaskList().run()}
+              onClick={() => toggleList(editor, 'task')}
             >
               <IconTaskList size={ICON} />
             </IconBtn>
@@ -350,9 +360,7 @@ export function Ribbon({
             <IconBtn
               title={t('insertTable')}
               disabled={off}
-              onClick={() =>
-                editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-              }
+              onClick={() => editor && uiOp(editor, { op: 'insertTable', after: 'selection' })}
             >
               <IconTable size={ICON} />
             </IconBtn>
@@ -366,7 +374,9 @@ export function Ribbon({
             <IconBtn
               title={t('insertHr')}
               disabled={off}
-              onClick={() => editor?.chain().focus().setHorizontalRule().run()}
+              onClick={() =>
+                editor && uiOp(editor, { op: 'insertHorizontalRule', after: 'selection' })
+              }
             >
               <IconHr size={ICON} />
             </IconBtn>
@@ -395,3 +405,4 @@ export function Ribbon({
     </div>
   )
 }
+

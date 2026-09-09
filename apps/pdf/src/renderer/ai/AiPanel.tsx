@@ -9,7 +9,8 @@ import {
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
-} from '@chatoffice/ui'
+  AiScopeQuote,
+  type AiScopeQuoteData, } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider'
@@ -47,7 +48,12 @@ interface ChatEntry {
   /** the run failed and this user message was rolled back out of the model context */
   undelivered?: boolean
   tools?: ToolActivity[]
+  /** the passage this user message targeted, frozen at send */
+  scope?: AiScopeQuoteData
 }
+
+/** longest selection excerpt echoed on a user bubble */
+const SCOPE_TEXT_MAX = 200
 
 type Phase = 'thinking' | 'replying' | 'working'
 
@@ -113,12 +119,14 @@ export function AiPanel({
             role: 'user' | 'assistant'
             text: string
             tools?: Array<{ name: string; summary: string; isError?: boolean; output?: string }>
+            scope?: AiScopeQuoteData
           }): Promise<void>
           loadChat(args: { projectId: string; chatId: string; limit?: number }): Promise<
             Array<{
               role: 'user' | 'assistant'
               text: string
               tools?: Array<{ name: string; summary: string; isError?: boolean; output?: string }>
+              scope?: AiScopeQuoteData
             }>
           >
           rebindChat(args: {
@@ -133,6 +141,7 @@ export function AiPanel({
     role: 'user' | 'assistant',
     text: string,
     tools?: ToolActivity[],
+    scope?: AiScopeQuoteData,
   ): void => {
     const ids = chatIdsRef.current
     const store = chatStore()
@@ -153,6 +162,7 @@ export function AiPanel({
               })),
             }
           : {}),
+        ...(scope ? { scope } : {}),
       })
       .catch(() => {
         /* silent */
@@ -194,6 +204,7 @@ export function AiPanel({
               isError: tool.isError,
               output: tool.output,
             })),
+            ...(m.scope ? { scope: m.scope } : {}),
           })),
           ...prev,
         ])
@@ -344,14 +355,9 @@ export function AiPanel({
       deleteTextInsert: (id) => apiRef.current.deleteTextInsert(id),
       editFonts: () => apiRef.current.editFonts(),
       formEdits: () => apiRef.current.formEdits(),
-      applyFormEdit: (v) => apiRef.current.applyFormEdit(v),
-      rotatePages: (idxs, dir) => apiRef.current.rotatePages(idxs, dir),
-      deletePage: (idx) => apiRef.current.deletePage(idx),
+      applyOps: (ops, opts) => apiRef.current.applyOps(ops, opts),
       metadata: () => apiRef.current.metadata(),
-      setMetadata: (meta) => apiRef.current.setMetadata(meta),
       pageOrder: () => apiRef.current.pageOrder(),
-      movePage: (from, to) => apiRef.current.movePage(from, to),
-      reversePages: () => apiRef.current.reversePages(),
       pageGeom: (idx) => apiRef.current.pageGeom(idx),
       listImages: () => apiRef.current.listImages(),
       isImageClaimed: (ref) => apiRef.current.isImageClaimed(ref),
@@ -477,12 +483,14 @@ export function AiPanel({
     stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48
   }
 
-  const send = (text: string): void => {
+  /** retryScope: null = a retry that had no scope; undefined = capture the live selection */
+  const send = (text: string, retryScope?: AiScopeQuoteData | null): void => {
     const instruction = text.trim()
     const loop = loopRef.current
     if (!instruction || !loop || loop.busy) return
     stickToBottomRef.current = true
-    persistMessage('user', instruction)
+    const scope = retryScope !== undefined ? (retryScope ?? undefined) : selectionScopeQuote()
+    persistMessage('user', instruction, undefined, scope)
     segTextRef.current = ''
     runTextsRef.current = []
     runToolsRef.current = []
@@ -527,6 +535,19 @@ export function AiPanel({
   // scope chip data, read per render (App re-renders on every selection change)
   const scopeSel = api.selection()
   const hasScopeSelection = !!scopeSel && scopeSel.text.trim().length > 0
+
+  const selectionScopeQuote = (): AiScopeQuoteData | undefined => {
+    const sel = api.selection()
+    const text = sel?.text.replace(/\s+/g, ' ').trim() ?? ''
+    if (!sel || !text) return undefined
+    return {
+      label: t('aiScopeSelection', {
+        page: sel.lastPage > sel.page ? `${sel.page}-${sel.lastPage}` : sel.page,
+        words: countWords(text),
+      }),
+      text: text.length > SCOPE_TEXT_MAX ? `${text.slice(0, SCOPE_TEXT_MAX)}…` : text,
+    }
+  }
 
   // the selection can vanish without the × (click-away, another file): close the preview too
   useEffect(() => {
@@ -610,12 +631,16 @@ export function AiPanel({
           if (entry.role === 'user') {
             return (
               <div key={i} className="ai-msg ai-msg-user">
+                {entry.scope && <AiScopeQuote scope={entry.scope} />}
                 <span dir="auto">{entry.text}</span>
                 {entry.undelivered && (
                   <div className="ai-msg-undelivered">
                     {t('aiUndelivered')}
                     {!busy && (
-                      <button className="ai-retry-btn" onClick={() => send(entry.text)}>
+                      <button
+                        className="ai-retry-btn"
+                        onClick={() => send(entry.text, entry.scope ?? null)}
+                      >
                         {t('aiRetry')}
                       </button>
                     )}

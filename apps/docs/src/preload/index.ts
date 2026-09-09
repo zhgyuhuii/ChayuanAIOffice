@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type { IpcRendererEvent } from 'electron'
+import type { AiPanelPrefs } from '@chatoffice/ui'
 import type {
   AiModelSelection,
   AiSettingsV2,
@@ -9,6 +10,7 @@ import type {
   DiscoveryTarget,
   DesktopApi,
   MenuCommand,
+  AutoSaveDefault,
   UiTheme,
 } from '../shared/ipc'
 import type { ProjectApi } from '@chatoffice/project-store'
@@ -29,6 +31,18 @@ const api: DesktopApi = {
     const listener = (_event: IpcRendererEvent, theme: UiTheme) => handler(theme)
     ipcRenderer.on('app:theme-changed', listener)
     return () => ipcRenderer.removeListener('app:theme-changed', listener)
+  },
+  getAutoSaveDefault: () => ipcRenderer.invoke('app:get-auto-save-default'),
+  onAutoSaveDefaultChanged: (handler) => {
+    const listener = (_event: IpcRendererEvent, value: AutoSaveDefault) => handler(value)
+    ipcRenderer.on('app:auto-save-default-changed', listener)
+    return () => ipcRenderer.removeListener('app:auto-save-default-changed', listener)
+  },
+  getAiPanelPrefs: () => ipcRenderer.invoke('app:get-ai-panel-prefs'),
+  onAiPanelPrefsChanged: (handler) => {
+    const listener = (_event: IpcRendererEvent, prefs: AiPanelPrefs) => handler(prefs)
+    ipcRenderer.on('app:ai-panel-prefs-changed', listener)
+    return () => ipcRenderer.removeListener('app:ai-panel-prefs-changed', listener)
   },
   onChromePressed: (handler) => {
     const listener = () => handler()
@@ -74,6 +88,7 @@ const api: DesktopApi = {
     ipcRenderer.on('docs:teardown', listener)
     return () => ipcRenderer.removeListener('docs:teardown', listener)
   },
+  respellKick: () => ipcRenderer.invoke('docs:respell-kick'),
   saveDocxAs: (defaultName: string, data: ArrayBuffer, sourcePath?: string | null) =>
     ipcRenderer.invoke('docs:save-as', defaultName, data, sourcePath ?? null),
   saveDocxNew: (defaultName: string, data: ArrayBuffer) =>
@@ -97,6 +112,8 @@ const api: DesktopApi = {
       outPath,
       scale,
     ),
+  exportHtml: (defaultName: string, html: string, outPath?: string) =>
+    ipcRenderer.invoke('docs:export-html', defaultName, html, outPath),
   printPdfBuffer: (pageWidthTwips: number, pageHeightTwips: number, scale?: number) =>
     ipcRenderer.invoke('docs:print-pdf-buffer', pageWidthTwips, pageHeightTwips, scale),
   saveMergedPdf: (defaultName: string, base64Parts: string[], outPath?: string) =>

@@ -5,6 +5,7 @@ import iconXlsx from './assets/file-xlsx.png'
 import iconPptx from './assets/file-pptx.png'
 import iconPdf from './assets/file-pdf.svg'
 import iconMd from './assets/file-md.png'
+import iconHtml from './assets/file-html.svg'
 import type {
   AccountStatus,
   CloudProjectKind,
@@ -63,12 +64,14 @@ const FILE_ICONS: Record<string, string> = {
   pdf: iconPdf,
   md: iconMd,
   markdown: iconMd,
+  html: iconHtml,
+  htm: iconHtml,
 }
 
 /* Formats the open-local card advertises. Too long for the card at any window
    width, so it ellipsizes and a hover ScreenTip carries the full list. Keep in
    sync with the main-process open-dialog filter (OPEN_DIALOG_EXTENSIONS). */
-const OPEN_LOCAL_EXTENSIONS = '.docx / .xlsx / .xlsm / .xls / .csv / .pptx / .pdf / .md'
+const OPEN_LOCAL_EXTENSIONS = '.docx / .xlsx / .xlsm / .xls / .csv / .pptx / .pdf / .md / .html'
 
 function FileBadge({ ext, size }: { ext: string; size: number }) {
   const icon = FILE_ICONS[ext]
@@ -1877,6 +1880,10 @@ export function Home() {
     )
   }
 
+  const handleNewHtml = () => {
+    void window.chatOffice.newHtml(selectedProjectId ? { projectId: selectedProjectId } : undefined)
+  }
+
   const handleNewPdf = () => {
     void window.chatOffice.newPdf(selectedProjectId ? { projectId: selectedProjectId } : undefined)
   }
@@ -1886,6 +1893,7 @@ export function Home() {
     { ext: 'xlsx', title: t('newSheet'), sub: '.xlsx', action: handleNewSheet },
     { ext: 'pptx', title: t('newSlide'), sub: '.pptx', action: handleNewSlide },
     { ext: 'md', title: t('newMarkdown'), sub: '.md', action: handleNewMarkdown },
+    { ext: 'html', title: t('newHtml'), sub: '.html', action: handleNewHtml },
     { ext: 'pdf', title: t('newPdf'), sub: '.pdf', action: handleNewPdf },
   ]
 

@@ -1,16 +1,11 @@
 import { ChartDesignerModal } from '@chatoffice/chart-kit/designer'
+import { pushBulkFillUndo } from './bulk-fill-undo'
 import {
-  absRangeRef,
   activateFormulaClosure,
-  applyAiConditionalFormat,
-  applyAiDataValidation,
-  applyAiHyperlink,
   applyDefinedNames,
-  applyFilterCriteria,
   applyFormatPatchToRange,
   applyWorkbookNotes,
   cellValueBounds,
-  applyRangeInLoadedChunks,
   clearLazyState,
   columnLetter,
   disposeVisuals,
@@ -18,17 +13,11 @@ import {
   journalRangeSnapshot,
   lazyWorkbookCellReader,
   loadSnapshotIntoUniver,
-  applyJournalOverlay,
   loadVisibleRange,
   loadWorkbookSkeleton,
   matrixBounds,
-  measureImage,
   navigateToAnchor,
-  sniffImageMime,
-  pinStreamedPrecedents,
   preloadEntireWorkbook,
-  protectSheetGuard,
-  pushVisualUndo,
   workbookStructureLocked,
   queueFormulaRecalc,
   queueSparklineInstall,
@@ -36,16 +25,26 @@ import {
   recalcOverBudgetAtOpen,
   RECALC_MAX_FAILURES,
   queueVisualInstall,
-  readCopySourceDirect,
   sheetOutline,
   syncUniver,
   univerDefinedNames,
   installFindRevealFix,
   installInjectorResolutionGuard,
   installWrapMeasureLifecycle,
-} from './univer-sync'
+  sniffImageMime,
+  absRangeRef,
+  protectSheetGuard,
+  applyAiHyperlink,
+  readCopySourceDirect,
+  applyJournalOverlay,
+  applyAiDataValidation,
+  measureImage,
+  pinStreamedPrecedents,
+  pushVisualUndo,
+  applyAiConditionalFormat,
+  applyRangeInLoadedChunks,
+  applyFilterCriteria, } from './univer-sync'
 import {
-  aiBulkUndoGate,
   installJournalSuppressionUndoFilter,
   installLoadAutoHeightGate,
   journalSuppression,
@@ -54,32 +53,31 @@ import {
   type LazyWorkbookState,
   type UniverRuntime,
   type UniverWorksheet,
-} from './univer-state'
-import { pushBulkFillUndo } from './bulk-fill-undo'
-import {
-  applyAiPivotAdd,
-  applyAiTableAdd,
-  applyAiTableColumnAdd,
-  applyAiTableColumnDelete,
+  aiBulkUndoGate, } from './univer-state'
+import { applyChangePlan, planFromOps, type OpExecutorContext,
+  richCellText, } from './op-executor'
+import { renameChartRefsForSheet,
   applyAiTableRowAdd,
+  applyAiTableAdd,
+  applyAiPivotAdd,
   applyAiTableRowDelete,
-  renameChartRefsForSheet,
-} from './workbook-ops'
+  applyAiTableColumnDelete,
+  applyAiTableColumnAdd, } from './workbook-ops'
 import {
-  carryCopyFormulasPlan,
-  collectStreamedFormulaPrecedents,
-  lazyGateError,
   proposeOperations as proposeOperationsImpl,
   runDeterministicPlan as runDeterministicPlanImpl,
-  streamedRefSheetList,
-  structuralDeleteFormulaError,
   structuralDeleteFormulaErrorSync,
   type PlanContext,
+  streamedRefSheetList,
+  carryCopyFormulasPlan,
+  lazyGateError,
   type StreamedRefSheet,
-} from './plan-operations'
+  structuralDeleteFormulaError,
+  collectStreamedFormulaPrecedents, } from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useAutoSavePref, type AiScopeQuoteData } from '@chatoffice/ui'
 
 import {
   CellValueType,
@@ -95,6 +93,8 @@ import {
   type IRange,
   type IStyleData,
 } from '@univerjs/core'
+import { FormulaExecutedStateType } from '@univerjs/engine-formula'
+import { IFindReplaceService } from '@univerjs/find-replace'
 import { UniverSheetsConditionalFormattingPreset } from '@univerjs/preset-sheets-conditional-formatting'
 import UniverPresetSheetsConditionalFormattingEnUS from '@univerjs/preset-sheets-conditional-formatting/locales/en-US'
 import '@univerjs/preset-sheets-conditional-formatting/lib/index.css'
@@ -163,6 +163,7 @@ import {
 import { InMemoryWorkbookAdapter } from '../domain/in-memory-workbook'
 import { cfRuleUnsaveableReason, iconSetSaveable } from '../gateway/xlsx-cf'
 import { installLazyFindBridge } from './lazy-find'
+import { installReplaceAutoSearch } from './replace-autosearch'
 import {
   installCrossHighlight,
   loadCrossHighlightPreference,
@@ -177,7 +178,7 @@ import {
   type FrozenSelection,
   type SheetsSkillDeps,
 } from './ai/tools'
-import type { AiChatMessage } from './ai/AiChatPanel'
+import { scopeLabel, type AiChatMessage } from './ai/AiChatPanel'
 import { pruneFailedExchange } from './ai/retry-prune'
 import { parseSheetNavHref } from './ai/sheet-nav'
 import {
@@ -207,7 +208,7 @@ import type {
   WorkbookFile,
   WorkbookVisualObject,
 } from '../shared/desktop-api'
-import type { PageSetupJournalState, StructuralJournalOp } from './edit-journal'
+import type { StructuralJournalOp } from './edit-journal'
 import {
   AUTO_FILL_COMMAND,
   AXIS_ATTR_MUTATIONS,
@@ -272,16 +273,13 @@ import {
   isSelectionInPivot as isSelectionInPivotImpl,
   pivotEditInitial as pivotEditInitialImpl,
   pivotFieldOptions as pivotFieldOptionsImpl,
-  refreshPivotTables as refreshPivotTablesImpl,
   type PivotActionContext,
   type PivotEditContext,
   type SlicerPickerState,
   type TimelinePickerState,
-} from './pivot-actions'
+  refreshPivotTables as refreshPivotTablesImpl } from './pivot-actions'
 import type { ChartRecommendations } from '../domain/chart-recommend'
 import {
-  applyAiShapeEdit as applyAiShapeEditImpl,
-  buildAiChartEdit as buildAiChartEditImpl,
   handleInsertChart as handleInsertChartImpl,
   handleInsertEquation as handleInsertEquationImpl,
   handleInsertIcon as handleInsertIconImpl,
@@ -294,7 +292,8 @@ import {
   type VisualActionContext,
   insertEchartVisual as insertEchartVisualImpl,
   insertPictureFromData as insertPictureFromDataImpl,
-} from './visual-actions'
+  applyAiShapeEdit as applyAiShapeEditImpl,
+  buildAiChartEdit as buildAiChartEditImpl } from './visual-actions'
 import {
   activeCellLabel as activeCellLabelImpl,
   consolidateDefaultReference as consolidateDefaultReferenceImpl,
@@ -309,27 +308,35 @@ import {
 } from './data-tools-actions'
 import { installTsvClipboardFix } from './clipboard-tsv'
 import { installFilteredCopyHook } from './filtered-copy'
+import { installFilterRangeOutlineSuppression } from './filter-range-outline'
 import { installFormulaBarAutosize } from './formula-bar-autosize'
 import {
   applyShowFormulasView,
-  indexedFormulaText,
   installFormulaTextInterceptor,
   installFormulaViewInterceptor,
-} from './formula-view'
+  indexedFormulaText, } from './formula-view'
 import { installCachedValueFallbackInterceptor } from './formula-cached-fallback'
 import { installSupportedFunctionProbe } from './function-registry-probe'
 import { installCellFilenameFunction } from './cell-function'
 import { installFormulaLexerFix } from './formula-lexer-fix'
+import { installFormulaNewlineDisplay } from './formula-newline-display'
 import { installCfDisplayKeyCompare } from './cf-duplicate-key'
 import { installCfFormulaFold } from './cf-formula-fold'
 import { installSheetRenameFix } from './sheet-rename-fix'
+import { installArrowCollapse } from './arrow-collapse-fix'
+import { installMenuInputEnter } from './menu-input-enter'
+import { installClipboardAnchorTile } from './clipboard-anchor-tile'
 import { installSelectionWrapGuard } from './selection-wrap-fix'
+import { sharedFormulaResolverFor } from './shared-formula-journal'
 import { installCellClipAnchorFix } from './cell-clip-anchor-fix'
 import { installMergeBorderFix } from './merge-border-fix'
 import { installThickBorderFix } from './thick-border-fix'
 import { installCenterContinuousRender } from './center-continuous'
 import { installForceStringMarkGate, installLongTextRender } from './long-text-render'
+import { installAutofitWrapBudget } from './autofit-wrap-budget'
+import { installAutofitLinePitch } from './autofit-line-pitch'
 import { installHeaderUnhideDebounce } from './load-perf-patches'
+import { installNumberAsTextAlertSeverity } from './number-as-text-alert'
 import { installFormulaStreamHold } from './formula-stream-hold'
 import { installRichTextBidiFix } from './rich-text-bidi-fix'
 import { installRtlTextDirectionFix } from './rtl-text-fix'
@@ -338,7 +345,7 @@ import { installMultiRowAutofit } from './autofit-multi-row'
 import { registerExcelJumpNav } from './excel-jump-nav'
 import { registerExcelShortcuts } from './excel-shortcuts'
 import { installCopyMaterialize } from './copy-materialize'
-import { applyUniverLocale, FORCE_STRING_POPUP_LOCALE } from './univer-locales'
+import { applyUniverLocale, insertRowsBelowLocale, numberAsTextAlertLocale } from './univer-locales'
 import { installRuleDetail } from './univer-rule-detail'
 import { installActiveCellDataValidationChrome } from './data-validation-dropdown'
 import { installFormulaNullResultFix } from './formula-null-result'
@@ -363,6 +370,7 @@ import { handleSave as handleSaveImpl, type SaveContext } from './save-actions'
 import {
   applyChartEdit as applyChartEditImpl,
   applyShapeEdit as applyShapeEditImpl,
+  flushPendingChartDataSync,
   queueChartDataSync as queueChartDataSyncImpl,
   readChartVector as readChartVectorImpl,
   type VisualSyncContext,
@@ -379,14 +387,9 @@ import {
   recordDvChange,
   recordNoteChange,
   recordProtectedRangesChange,
-  recordSheetProtection,
   recordFilterChange,
   recordSetNumfmt,
   recordSetRangeValues,
-  journalCellContentAt,
-  recordBulkConstantFill,
-  removeBulkConstantFill,
-  restoreJournalCells,
   recordSheetHidden,
   recordSheetDuplicate,
   recordSheetInsert,
@@ -395,9 +398,14 @@ import {
   recordSheetRename,
   recordStructuralOp,
   shiftVisualForStructuralOp,
+  restoreJournalCells,
+  type PageSetupJournalState,
   removeTableAdd,
-  recordSparklineAdd,
-} from './edit-journal'
+  recordSheetProtection,
+  removeBulkConstantFill,
+  recordBulkConstantFill,
+  journalCellContentAt,
+  recordSparklineAdd, } from './edit-journal'
 import { shiftPinnedCells } from './formula-closure'
 import { getLang, t, aiLangDirective } from './i18n/locale'
 import { planStillMatches } from './lazy-plan'
@@ -472,12 +480,6 @@ function dateTextKind(value: string): 'date-like' | 'text' {
   return kind
 }
 
-function richCellText(cell: unknown): string | null {
-  const stream = (cell as { p?: { body?: { dataStream?: unknown } } } | null | undefined)?.p?.body
-    ?.dataStream
-  return typeof stream === 'string' ? stream.replace(/\r\n$/, '').replace(/\r/g, '\n') : null
-}
-
 export function App(): React.JSX.Element {
   const adapterRef = useRef(new InMemoryWorkbookAdapter(initialSnapshot))
   const univerRef = useRef<UniverRuntime | null>(null)
@@ -546,15 +548,10 @@ export function App(): React.JSX.Element {
   useEffect(() => {
     window.desktopApi?.notifyPendingEdits?.(pendingEdits)
   }, [pendingEdits])
-  const [autoSave, setAutoSave] = useState(
-    () => localStorage.getItem('ai-sheets-auto-save') === '1',
-  )
+  const [autoSave, setAutoSave] = useAutoSavePref('ai-sheets-auto-save', window.desktopApi)
   // Ref mirror for callbacks captured when an AI run starts
   const autoSaveRef = useRef(autoSave)
   autoSaveRef.current = autoSave
-  useEffect(() => {
-    localStorage.setItem('ai-sheets-auto-save', autoSave ? '1' : '0')
-  }, [autoSave])
   // AutoSave tick (docs/slides parity): every 30 s and on window blur, flush
   // pending edits of the open workbook. The journal is read at tick time so
   // the interval stays stable; demo mode has no backing file and is skipped.
@@ -811,6 +808,7 @@ export function App(): React.JSX.Element {
       setMessage,
       setPendingEdits,
       refreshPageBreakPreview,
+      runOps: runUiOps,
     }
   }
 
@@ -1048,6 +1046,7 @@ export function App(): React.JSX.Element {
                     })),
                 }
               : {}),
+            ...(m.scope ? { scope: m.scope } : {}),
           })),
         )
         // Restore model context: follow-ups after reopening the file continue the
@@ -1070,6 +1069,7 @@ export function App(): React.JSX.Element {
       output?: string
     }>,
     attachments?: readonly AttachmentMeta[],
+    scope?: AiScopeQuoteData,
   ): boolean => {
     // Reports whether a write was issued: right after a workbook opens the
     // chat refs resolve asynchronously, and a send in that window is dropped.
@@ -1095,6 +1095,7 @@ export function App(): React.JSX.Element {
               })),
             }
           : {}),
+        ...(scope ? { scope } : {}),
       })
       .catch(() => {
         /* silent */
@@ -1506,30 +1507,10 @@ export function App(): React.JSX.Element {
           UniverPresetSheetsFindReplaceEnUS,
           UniverPresetSheetsSortEnUS,
           UniverPresetSheetsTableEnUS,
-          // sheets-ui code in 0.25.1 references these two keys, but the language
-          // pack shipped without the entries — unless patched, the raw
-          // "sheets-ui.info.forceStringInfo" pops up for users.
-          // mergeLocales shallow-merges namespaces, so the existing entries must
-          // be spread; otherwise the whole sheets-ui namespace gets overwritten
-          // (the sheet-tab context menu turns into bare keys).
-          // #236: force-string renders correctly, so the popup is a warning,
-          // not an error (shared constant with univer-locales.ts).
-          {
-            'sheets-ui': {
-              ...(UniverPresetSheetsCoreEnUS as Record<string, Record<string, unknown>>)[
-                'sheets-ui'
-              ],
-              info: {
-                ...(
-                  UniverPresetSheetsCoreEnUS as Record<
-                    string,
-                    Record<string, Record<string, string>>
-                  >
-                )['sheets-ui']?.info,
-                ...FORCE_STRING_POPUP_LOCALE,
-              },
-            },
-          },
+          numberAsTextAlertLocale(UniverPresetSheetsCoreEnUS),
+          // last wins per namespace: feed the alert-patched pack through so
+          // both sheets-ui patches survive the shallow merge
+          insertRowsBelowLocale(numberAsTextAlertLocale(UniverPresetSheetsCoreEnUS)),
         ),
       },
       presets: [
@@ -1566,6 +1547,9 @@ export function App(): React.JSX.Element {
         { plugins: [[UniverSheetsTableUIPlugin, { hideAnchor: true }]] },
       ],
     })
+    // must precede the first render: the filter render module registers at
+    // lifecycle Rendered, and Excel draws no outline around a filtered range
+    installFilterRangeOutlineSuppression(runtime)
     loadSnapshotIntoUniver(runtime, initialSnapshot, 'new-workbook', 'Untitled')
     univerRef.current = runtime
     // a throwing construction must not poison the injector's depth counter
@@ -1624,7 +1608,12 @@ export function App(): React.JSX.Element {
     // Paragraph-sized plain text cells: draw only the slice that can reach the
     // clip box instead of shaping the whole string every frame.
     installLongTextRender()
+    installAutofitWrapBudget()
+    // Wrapped auto rows must stack Excel's per-font row height, not the
+    // canvas line box (Calibri 10: 12.75 pt per line, not ~10 pt).
+    installAutofitLinePitch()
     installHeaderUnhideDebounce()
+    installNumberAsTextAlertSeverity()
     installForceStringMarkGate(runtime.univer.__getInjector().get(SheetInterceptorService))
     // Hold the formula engine's per-chunk recalculation while file data streams
     // in; one merged cycle follows once the chunks stop.
@@ -1672,6 +1661,8 @@ export function App(): React.JSX.Element {
     // A file formula the engine re-computes into an error shows the file's
     // cached result instead; display-only.
     const cachedValueDisposable = installCachedValueFallbackInterceptor(runtime, lazyWorkbookRef)
+    // A wrapped formula result with CR/LF renders its line breaks.
+    const formulaNewlineDisposable = installFormulaNewlineDisplay(runtime)
     // A file formula calling a function the engine lacks keeps its cached
     // value at install time — even when IFERROR/ISERROR would otherwise
     // swallow the #NAME? into the fallback literal.
@@ -1704,6 +1695,15 @@ export function App(): React.JSX.Element {
     const sheetRenameFixDisposable = installSheetRenameFix()
     // Arrow keys stop at the sheet edge instead of wrapping to the far side.
     const selectionWrapGuardDisposable = installSelectionWrapGuard(runtime)
+    // Arrows on a multi-cell selection collapse to the active cell first,
+    // then move one step (Excel), instead of stepping past the range edge.
+    const arrowCollapseDisposable = installArrowCollapse(runtime)
+    // Enter in a context-menu count box (insert N rows/columns, column
+    // width) runs the row's action instead of only committing the number.
+    installMenuInputEnter(runtime)
+    // Pasting into an anchor-shaped target (rows a multiple, columns
+    // narrower than the copy — or vice versa) repeats like Excel.
+    installClipboardAnchorTile(runtime)
     // Row-header double-click autofits every selected row, like Excel.
     const multiRowAutofitDisposable = installMultiRowAutofit(runtime)
     // Ctrl/Cmd+Arrow data-edge jumps must stop at formula cells even when
@@ -1748,6 +1748,11 @@ export function App(): React.JSX.Element {
     // Ctrl+F covers every row of a streamed workbook, not just the loaded
     // window: the bridge pages the underlying file for out-of-window hits.
     const lazyFindDisposable = installLazyFindBridge({ runtime, lazyWorkbookRef, setMessage })
+    // Replace mode searches as you type, like find mode, so Replace / Replace
+    // All enable without a separate Find click.
+    const replaceAutoSearchDisposable = installReplaceAutoSearch(
+      runtime.univer.__getInjector().get(IFindReplaceService),
+    )
     // A canvas extension highlights the active row and column without
     // allocating per-selection float DOM or covering interactive visuals.
     crossHighlightRef.current = installCrossHighlight(runtime, {
@@ -1900,6 +1905,11 @@ export function App(): React.JSX.Element {
         }
       },
     )
+    const calcEndDisposable = runtime.univerAPI.getFormula().calculationEnd((executed) => {
+      if (executed === FormulaExecutedStateType.SUCCESS) {
+        flushPendingChartDataSync(visualSyncContext())
+      }
+    })
     const journalDisposable = runtime.univerAPI.addEvent(
       runtime.univerAPI.Event.CommandExecuted,
       (event) => {
@@ -2314,7 +2324,12 @@ export function App(): React.JSX.Element {
         const recorded =
           event.id === SET_NUMFMT_MUTATION
             ? recordSetNumfmt(state.editJournal, params.subUnitId, params)
-            : recordSetRangeValues(state.editJournal, params.subUnitId, params.cellValue)
+            : recordSetRangeValues(
+                state.editJournal,
+                params.subUnitId,
+                params.cellValue,
+                sharedFormulaResolverFor(runtime, params.subUnitId),
+              )
         if (recorded.length === 0) return
         setPendingEdits(journalSize(state.editJournal))
         const contentEdited = recorded.some(
@@ -2783,6 +2798,7 @@ export function App(): React.JSX.Element {
       formulaTextDisposable.dispose()
       formulaBarAutosizeDisposable.dispose()
       cachedValueDisposable.dispose()
+      formulaNewlineDisposable.dispose()
       functionProbeDisposable.dispose()
       numberFormatFixDisposable.dispose()
       cellFilenameDisposable.dispose()
@@ -2792,6 +2808,7 @@ export function App(): React.JSX.Element {
       formulaLexerFixDisposable.dispose()
       sheetRenameFixDisposable.dispose()
       selectionWrapGuardDisposable.dispose()
+      arrowCollapseDisposable.dispose()
       multiRowAutofitDisposable.dispose()
       cfFormulaFoldDisposable.dispose()
       cfDisplayKeyDisposable.dispose()
@@ -2800,6 +2817,7 @@ export function App(): React.JSX.Element {
       dataValidationChromeDisposable.dispose()
       ruleDetailDisposable()
       lazyFindDisposable.dispose()
+      replaceAutoSearchDisposable.dispose()
       crossHighlightRef.current?.dispose()
       crossHighlightRef.current = null
       scrollDisposable.dispose()
@@ -2808,6 +2826,7 @@ export function App(): React.JSX.Element {
       editEndDisposable.dispose()
       sheetDisposable.dispose()
       editDisposable.dispose()
+      calcEndDisposable.dispose()
       journalDisposable.dispose()
       structuralDisposable.dispose()
       selectionDisposable.dispose()
@@ -2863,14 +2882,22 @@ export function App(): React.JSX.Element {
     // A retried message was usually persisted by its original send — but that
     // write is skipped while the chat refs are still resolving, so re-issue it
     // then instead of dropping the question from the stored transcript.
+    // a retry quotes what the failed message quoted; a fresh send the live scope runAgent freezes for the run
+    const scope =
+      retryIndex !== undefined
+        ? chat[retryIndex]?.scope
+        : aiScope && !aiScopeDismissed
+          ? { label: scopeLabel(aiScope.a1, aiScope.columns ?? null, t) }
+          : undefined
     const persisted =
-      alreadyPersisted || persistChatMessage('user', instruction, undefined, sentAtts)
+      alreadyPersisted || persistChatMessage('user', instruction, undefined, sentAtts, scope)
     appendChat({
       role: 'user',
       text: instruction,
       tools: [],
       persisted,
       ...(sentAtts.length > 0 ? { attachments: sentAtts } : {}),
+      ...(scope ? { scope } : {}),
     })
     if (!overrideInstruction) setPrompt('')
     // the deterministic path consumes the composer too — the bubble already echoes the set
@@ -3153,6 +3180,19 @@ export function App(): React.JSX.Element {
     }
   }
 
+    const reportFailure = (reason: string): void => {
+      // The chat answer already promised the change — surface the failure
+      // there too, or it silently never lands on the canvas.
+      patchLastAssistant((entry) =>
+        entry.text.includes(reason)
+          ? entry
+          : {
+              ...entry,
+              text: `${entry.text}\n\n${t('appApplyFailed', { reason })}`,
+              isError: true,
+            },
+      )
+    }
   async function handleLazyApply(state: LazyWorkbookState): Promise<ApplyOutcome> {
     const stored = lazyPreviewRef.current
     const runtime = univerRef.current
@@ -4477,14 +4517,97 @@ export function App(): React.JSX.Element {
               isError: true,
             },
       )
-      // Settle here, not just in finally: the return value is computed first,
-      // and a budget-dropped batch must not advertise the ⌘Z rollback.
-      settleUndoBatch()
-      return anyApplied
-        ? { ok: false, reason, partiallyApplied: true, undoDropped: aiBulkUndoGate.dropped }
-        : { ok: false, reason }
-    } finally {
-      settleUndoBatch()
+    }
+    let verified: ApplyOutcome | null = null
+    const outcome = await applyChangePlan(
+      stored.plan,
+      opExecutorContext(runtime, workbook, state),
+      {
+        verifyBeforeApply: () => {
+          if (lazyPreviewRef.current !== stored || lazyWorkbookRef.current !== state) {
+            verified = { ok: false, reason: t('appApplyTxFailed') }
+            return verified
+          }
+          // The reader throws when a planned sheet no longer exists — treat that as
+          // drift too (the plan can no longer apply as previewed).
+          let stillMatches: boolean
+          try {
+            stillMatches = planStillMatches(stored.plan, lazyWorkbookCellReader(workbook))
+          } catch {
+            stillMatches = false
+          }
+          if (stillMatches) return null
+          const reason = t('appWorkbookChangedSincePreview')
+          setMessage(reason)
+          reportFailure(reason)
+          verified = { ok: false, reason }
+          return verified
+        },
+      },
+    )
+    if (outcome.ok) {
+      lazyPreviewRef.current = null
+      setPreview(null)
+    } else if (outcome !== verified && outcome.reason) {
+      reportFailure(outcome.reason)
+    }
+    return outcome
+  }
+
+  /** Ribbon/dialog edits run the same executor as AI proposals (op-executor.ts). */
+  function runUiOps(
+    ops: readonly WorkbookOperation[],
+    successMessage?: string | null,
+  ): Promise<ApplyOutcome> {
+    const runtime = univerRef.current
+    const state = lazyWorkbookRef.current
+    const workbook = runtime?.univerAPI.getActiveWorkbook()
+    if (!runtime || !state || !workbook) {
+      return Promise.resolve({ ok: false, reason: t('appNoWorkbookOpen') })
+    }
+    let plan: ChangePlan
+    try {
+      plan = planFromOps(ops, workbook, 'ribbon')
+    } catch (error: unknown) {
+      const reason = error instanceof Error ? error.message : t('appApplyTxFailed')
+      setMessage(reason)
+      return Promise.resolve({ ok: false, reason })
+    }
+    return applyChangePlan(plan, opExecutorContext(runtime, workbook, state), {
+      userFacing: true,
+      ...(successMessage === undefined ? {} : { successMessage }),
+      // The apply queues behind in-flight applies; the file may be closed or
+      // replaced meanwhile — drop the click silently rather than mutate the
+      // wrong workbook.
+      verifyBeforeApply: () =>
+        lazyWorkbookRef.current !== state ||
+        univerRef.current !== runtime ||
+        runtime.univerAPI.getActiveWorkbook()?.getId() !== workbook.getId()
+          ? { ok: false, reason: t('appApplyTxFailed') }
+          : null,
+    })
+  }
+
+  /** App-scope refs/state bundle for the extracted op executors (op-executor.ts). */
+  function opExecutorContext(
+    runtime: UniverRuntime,
+    workbook: ActiveWorkbook,
+    state: LazyWorkbookState,
+  ): OpExecutorContext {
+    return {
+      runtime,
+      workbook,
+      state,
+      lazyWorkbookRef,
+      sparklineDisposablesRef,
+      sparklineTimerRef,
+      shapeEditRef,
+      chartEditRef,
+      setMessage,
+      setPendingEdits,
+      visualContext,
+      pivotContext,
+      queueChartDataSync,
     }
   }
 
@@ -4611,6 +4734,7 @@ export function App(): React.JSX.Element {
     return {
       univerRef,
       lazyWorkbookRef,
+      runOps: runUiOps,
       traceArrowsRef,
       sparklineDisposablesRef,
       sparklineTimerRef,
@@ -4906,6 +5030,7 @@ export function App(): React.JSX.Element {
       hyperlinkTargets: new Map(),
       frozenStripKeys: new Map(),
       filterOrigins: new Map(),
+      restoredFilterSpans: new Map(),
       showFormulaSheets: new Set(
         selected.sheets.filter((sheet) => sheet.showFormulas).map((sheet) => sheet.id),
       ),
@@ -4976,6 +5101,8 @@ export function App(): React.JSX.Element {
       // aggregate_range / propose_operations) without an LLM in the loop.
       ;(window as unknown as Record<string, unknown>).__workbookSkill =
         createWorkbookSkill(sheetsSkillDeps())
+      // Ribbon commands by wire name, so UI-path drivers need no DOM clicks.
+      ;(window as unknown as Record<string, unknown>).__ribbonCommand = handleRibbonCommand
     }
     // Built-app e2e hook, off by default: the preload exposes
     // __chatofficeDebugHooks only when GENOFFICE_DEBUG_HOOKS=1 (scroll/freeze
@@ -5228,7 +5355,8 @@ export function App(): React.JSX.Element {
   const chartSyncRef = useRef<{
     timer: ReturnType<typeof setTimeout> | null
     dirty: Map<string, CellBounds>
-  }>({ timer: null, dirty: new Map() })
+    pending: Map<string, CellBounds>
+  }>({ timer: null, dirty: new Map(), pending: new Map() })
 
   function queueChartDataSync(sheetId: string, bounds: CellBounds): void {
     queueChartDataSyncImpl(visualSyncContext(), sheetId, bounds)

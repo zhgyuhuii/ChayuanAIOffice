@@ -13,6 +13,14 @@ import {
 } from '@chatoffice/ui'
 
 import {
+  BorderAllIcon,
+  BorderBottomIcon,
+  BorderLeftIcon,
+  BorderNoneIcon,
+  BorderOuterIcon,
+  BorderRightIcon,
+  BorderThickOuterIcon,
+  BorderTopIcon,
   CaretIcon,
   RIBBON_GLYPH_ICONS,
   RedoIcon,
@@ -3840,6 +3848,7 @@ function Ribbon({
             <ColorDropdown
               label="Font color"
               data-tip={t('appFontColor')}
+              split
               display={
                 <span className="swatch-letter has-caret">
                   <ToolSymbol symbol="A-color" />
@@ -3857,6 +3866,7 @@ function Ribbon({
             <ColorDropdown
               label="Fill color"
               data-tip={t('appFillColor')}
+              split
               display={
                 <span className="swatch-letter">
                   <ToolSymbol symbol="◧" />
