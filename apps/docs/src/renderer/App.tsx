@@ -534,6 +534,7 @@ export function App() {
   )
   const [status, setStatus] = useState('')
   const [zoom, setZoom] = useState(100)
+  const scrollContainerRef = useRef<HTMLElement>(null)
   /** anchor of the WPS-style zoom popover (显示比例) opened from the status-bar % label */
   const [zoomPopAt, setZoomPopAt] = useState<{ x: number; y: number } | null>(null)
   const [darkCanvas, setDarkCanvas] = useState(false)
@@ -1050,16 +1051,48 @@ export function App() {
 
   // Pinch-to-zoom: Chromium delivers trackpad pinch as a wheel event
   // with ctrlKey set. Also support ⌘+scroll. Must be non-passive to preventDefault.
+  // The cursor-anchored zoom center is stashed for the zoom effect below so a
+  // Ctrl+wheel zoom keeps the content under the cursor in place (issue #238).
+  const zoomCenterRef = useRef<{ x: number; y: number } | null>(null)
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (!e.ctrlKey && !e.metaKey) return
       if (!(e.target as HTMLElement | null)?.closest?.('.editor-scroll')) return
       e.preventDefault()
+      const container = scrollContainerRef.current
+      if (container) {
+        const rect = container.getBoundingClientRect()
+        zoomCenterRef.current = {
+          x: e.clientX - rect.left + container.scrollLeft,
+          y: e.clientY - rect.top + container.scrollTop,
+        }
+      }
       setZoom((z) => Math.min(200, Math.max(50, z - e.deltaY * 0.6)))
     }
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
   }, [])
+
+  // Preserve scroll position when zoom changes (issue #238): rescale the
+  // scroll offsets around the zoom anchor (cursor for wheel zoom, viewport
+  // center for slider/menu/ribbon zoom) so the visible page stays in view.
+  const prevZoomRef = useRef(zoom)
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    const prevZoom = prevZoomRef.current
+    if (prevZoom === zoom) return
+    prevZoomRef.current = zoom
+
+    const ratio = zoom / prevZoom
+    const anchor = zoomCenterRef.current
+    const centerX = anchor ? anchor.x : container.scrollLeft + container.clientWidth / 2
+    const centerY = anchor ? anchor.y : container.scrollTop + container.clientHeight / 2
+    zoomCenterRef.current = null
+
+    container.scrollLeft = centerX * ratio - container.clientWidth / 2
+    container.scrollTop = centerY * ratio - container.clientHeight / 2
+  }, [zoom])
 
   // ---- protection enforcement (Review > Protect Document) ----
   const editRestriction = protection?.enforced ? protection.edit : null
@@ -5025,7 +5058,7 @@ export function App() {
                 />
               )}
               <div className="editor-area">
-                <main className="editor-scroll">
+                <main className="editor-scroll" ref={scrollContainerRef}>
                   {doc ? (
                     <div
                       className={docZoomClass}

@@ -1,7 +1,7 @@
 import { LocaleType } from '@univerjs/core'
 import { describe, expect, it } from 'vitest'
 
-import { univerLocaleFor } from '../src/renderer/univer-locales'
+import { FORCE_STRING_POPUP_LOCALE, univerLocaleFor } from '../src/renderer/univer-locales'
 
 describe('univerLocaleFor', () => {
   it('maps every app language Univer has packs for', () => {
@@ -23,5 +23,10 @@ describe('univerLocaleFor', () => {
       default: Record<string, { list?: { name?: string } }>
     }
     expect(pack.default['sheets-data-validation']?.list?.name).toBe('值必须是列表中的值')
+  })
+
+  it('labels the force-string popup as a warning, not an error (#236)', () => {
+    expect(FORCE_STRING_POPUP_LOCALE.error).toBe('Warning')
+    expect(FORCE_STRING_POPUP_LOCALE.forceStringInfo).toContain('stored as text')
   })
 })

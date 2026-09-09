@@ -338,7 +338,7 @@ import { installMultiRowAutofit } from './autofit-multi-row'
 import { registerExcelJumpNav } from './excel-jump-nav'
 import { registerExcelShortcuts } from './excel-shortcuts'
 import { installCopyMaterialize } from './copy-materialize'
-import { applyUniverLocale } from './univer-locales'
+import { applyUniverLocale, FORCE_STRING_POPUP_LOCALE } from './univer-locales'
 import { installRuleDetail } from './univer-rule-detail'
 import { installActiveCellDataValidationChrome } from './data-validation-dropdown'
 import { installFormulaNullResultFix } from './formula-null-result'
@@ -1512,6 +1512,8 @@ export function App(): React.JSX.Element {
           // mergeLocales shallow-merges namespaces, so the existing entries must
           // be spread; otherwise the whole sheets-ui namespace gets overwritten
           // (the sheet-tab context menu turns into bare keys).
+          // #236: force-string renders correctly, so the popup is a warning,
+          // not an error (shared constant with univer-locales.ts).
           {
             'sheets-ui': {
               ...(UniverPresetSheetsCoreEnUS as Record<string, Record<string, unknown>>)[
@@ -1524,10 +1526,7 @@ export function App(): React.JSX.Element {
                     Record<string, Record<string, string>>
                   >
                 )['sheets-ui']?.info,
-                error: 'Number stored as text',
-                forceStringInfo:
-                  'The value in this cell is stored as text — it will not be treated as a ' +
-                  'number in formulas.',
+                ...FORCE_STRING_POPUP_LOCALE,
               },
             },
           },

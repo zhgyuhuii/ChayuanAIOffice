@@ -599,6 +599,81 @@ describe('installLazyFindBridge', () => {
     bridge.dispose()
   })
 
+  it('visits every same-row match in order and wraps (issue #220)', async () => {
+    // Issue #220's repro: the same word in A10, C10, F10 and H10 of one row
+    // must each surface as an individual stop, with Next cycling through
+    // every occurrence instead of reporting one match per row.
+    const harness = facade(state({}))
+    const inner = new CursorInnerModel([
+      match('s1', 9, 0),
+      match('s1', 9, 2),
+      match('s1', 9, 5),
+      match('s1', 9, 7),
+      match('s1', 12, 1),
+    ])
+    inner.onFocus = (row, column) => {
+      harness.active.row = row
+      harness.active.column = column
+    }
+    const builtin = { find: vi.fn().mockResolvedValue([inner]), terminate: vi.fn() }
+    harness.providers.add(builtin)
+    const bridge = installLazyFindBridge(harness)
+
+    mockRead.mockResolvedValue(mapped([]))
+
+    const models = await harnessLookup(harness)(query({ findString: 'Example' }))
+    const model = models[0]!
+    await vi.waitFor(() => expect(model.getMatches()).toHaveLength(5))
+
+    const move = () => model.moveToNextMatch({ loop: true }) as LazyCellMatch | null
+    const posOf = (m: LazyCellMatch | null) =>
+      `${m!.range.range.startRow}:${m!.range.range.startColumn}`
+    expect(posOf(move())).toBe('9:0')
+    expect(posOf(move())).toBe('9:2')
+    expect(posOf(move())).toBe('9:5')
+    expect(posOf(move())).toBe('9:7')
+    expect(posOf(move())).toBe('12:1')
+    // Full cycle wraps back to the first same-row hit.
+    expect(posOf(move())).toBe('9:0')
+    bridge.dispose()
+  })
+
+  it('walks Previous through every same-row match in reverse (issue #220)', async () => {
+    const harness = facade(state({}))
+    const inner = new CursorInnerModel([
+      match('s1', 9, 0),
+      match('s1', 9, 2),
+      match('s1', 9, 5),
+      match('s1', 9, 7),
+      match('s1', 12, 1),
+    ])
+    inner.onFocus = (row, column) => {
+      harness.active.row = row
+      harness.active.column = column
+    }
+    const builtin = { find: vi.fn().mockResolvedValue([inner]), terminate: vi.fn() }
+    harness.providers.add(builtin)
+    const bridge = installLazyFindBridge(harness)
+
+    mockRead.mockResolvedValue(mapped([]))
+
+    const models = await harnessLookup(harness)(query({ findString: 'Example' }))
+    const model = models[0]!
+    await vi.waitFor(() => expect(model.getMatches()).toHaveLength(5))
+
+    const move = () => model.moveToPreviousMatch({ loop: true }) as LazyCellMatch | null
+    const posOf = (m: LazyCellMatch | null) =>
+      `${m!.range.range.startRow}:${m!.range.range.startColumn}`
+    expect(posOf(move())).toBe('12:1')
+    expect(posOf(move())).toBe('9:7')
+    expect(posOf(move())).toBe('9:5')
+    expect(posOf(move())).toBe('9:2')
+    expect(posOf(move())).toBe('9:0')
+    // Full cycle wraps back to the last hit.
+    expect(posOf(move())).toBe('12:1')
+    bridge.dispose()
+  })
+
   it('keeps file matches findable under style-only journal edits', async () => {
     const journalCells = new Map([
       [

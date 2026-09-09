@@ -2392,6 +2392,17 @@ describe('sectionPageBox — editor/preview physical page parity', () => {
     expect(letterLandscape.height).toBeCloseTo(816)
     expect(letterLandscape.footerDist).toBeCloseTo(24)
   })
+
+  it("keeps each section's own box when pages differ in width (issue #246)", () => {
+    // A4 portrait followed by a narrower page: mixed-width documents must
+    // keep per-section geometry so every page measures against its own width.
+    const portrait = sectionPageBox(sec({ pageWidth: 11906 }).settings)
+    const narrow = sectionPageBox(sec({ pageWidth: 8391 }).settings)
+    expect(portrait.width).toBeCloseTo((11906 / 1440) * 96)
+    expect(narrow.width).toBeCloseTo((8391 / 1440) * 96)
+    expect(narrow.contentWidth).toBeCloseTo(((8391 - 1440 - 1440) / 1440) * 96)
+    expect(narrow.width).toBeLessThan(portrait.width)
+  })
 })
 
 describe('tableHeaderFlags', () => {
