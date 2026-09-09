@@ -2834,10 +2834,6 @@ export function registerAiIpc(): void {
         const r = await chatofficeGenerateImage({
           prompt: req.prompt,
           ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
-  app.once('before-quit', shutdownCodexAppServers)
-  ipcMain.handle('ai:codex-models', async (_event, cliPath: unknown) => {
-    return listCodexModels(typeof cliPath === 'string' ? cliPath : undefined)
-  })
         })
         return { url: r.url }
       },
@@ -2858,6 +2854,10 @@ export function registerAiIpc(): void {
         for (const w of BrowserWindow.getAllWindows()) w.webContents.send(channel, payload)
       },
     },
+  })
+  app.once('before-quit', shutdownCodexAppServers)
+  ipcMain.handle('ai:codex-models', async (_event, cliPath: unknown) => {
+    return listCodexModels(typeof cliPath === 'string' ? cliPath : undefined)
   })
 
   // shared search tools (content + images): Serper with DuckDuckGo fallback (same source as slides/sheets)

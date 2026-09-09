@@ -196,6 +196,16 @@ export function resolveModelCall(
     }
   }
 
+  if (profile.vendorId === 'codex' || profile.id === 'codex') {
+    // Codex endpoints are the locally spawned app-server; no base URL exists.
+    return {
+      protocol: 'codex-app-server',
+      baseUrl: '',
+      apiKey,
+      model: selection.modelId,
+      vendorId: 'codex',
+    }
+  }
   const vendor = profile.vendorId ? VENDOR_BY_ID.get(profile.vendorId) : undefined
   const baseUrl = (profile.baseUrl || vendor?.defaultUrl || '').replace(/\/+$/, '')
   if (!baseUrl) throw new Error(`${profile.displayName} has no API base URL configured`)

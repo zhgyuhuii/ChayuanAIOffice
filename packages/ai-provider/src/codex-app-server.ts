@@ -4,7 +4,7 @@ import { access, mkdtemp, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { createInterface } from 'node:readline'
 import { delimiter, dirname, isAbsolute, join, resolve, sep } from 'node:path'
 import { tmpdir } from 'node:os'
-import type { AgentImage, AgentMessage, AgentToolCall, AgentToolDef } from '@genoffice/agent-core'
+import type { AgentImage, AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 import type { AiChatResponse, AiProviderConfig, CodexModelCatalog } from './types'
 import { parseToolInput, type StreamCallbacks } from './protocols/shared'
 import { createStreamWatchdog } from './watchdog'
@@ -56,7 +56,7 @@ const REQUEST_TIMEOUT_MS = 30_000
 const IDLE_SHUTDOWN_MS = 120_000
 const MAX_NATIVE_SESSIONS = 64
 const MAX_MODEL_PAGES = 10
-const CODEX_TEMP_PREFIX = 'genoffice-codex-app-server-'
+const CODEX_TEMP_PREFIX = 'chatoffice-codex-app-server-'
 const CODEX_BASE_INSTRUCTIONS =
   'You are the language-model backend embedded in GenOffice. Never inspect or modify local files, run shell commands, browse, call MCP, use apps, or invoke any built-in Codex tool. The caller supplies the complete relevant conversation and a JSON Schema. Return exactly one assistant response matching that schema; GenOffice itself executes document tools.'
 
@@ -332,7 +332,7 @@ class CodexAppServerClient {
 
   private async initialize(): Promise<void> {
     await this.requestWire('initialize', {
-      clientInfo: { name: 'genoffice', title: 'GenOffice', version: '0.1.0' },
+      clientInfo: { name: 'chatoffice', title: 'ChatOffice', version: '0.1.0' },
       capabilities: { experimentalApi: false, requestAttestation: false },
     })
     this.notify('initialized')
@@ -552,9 +552,9 @@ export function buildCodexAppServerPrompt(
     'Do not use Codex tools. GenOffice will execute only the tool calls returned in the required response schema.',
     'Put user-visible prose in text. Put requested GenOffice tool calls in toolCalls; inputJson must be a JSON-encoded object matching the listed inputSchema. Use only listed tool names. If no tool is needed, return an empty toolCalls array.',
     `Keep this one-turn response within roughly ${maxTokens} output tokens.`,
-    '<genoffice_payload>',
+    '<chatoffice_payload>',
     JSON.stringify(payload),
-    '</genoffice_payload>',
+    '</chatoffice_payload>',
   ].join('\n')
 }
 

@@ -176,9 +176,12 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
         throw new Error(translate('errChatOfficeNotLoggedIn'))
       return resolveModelCall(settings, selection, chatoffice.apiKey())
     }
-    if (profile.auth === 'codex-chatgpt') {
-      // Codex reuses the Codex CLI's own ChatGPT login: no key is stored or sent.
-      // The codex-app-server protocol ignores the key; the sentinel passes the shared path.
+    if (profile.vendorId === 'codex' || profile.id === 'codex') {
+      // Codex reuses the Codex CLI's own ChatGPT login (catalog auth
+      // 'codex-chatgpt'): no key is stored or sent. The codex-app-server
+      // protocol ignores the key; the sentinel passes the shared path.
+      // UI wiring that creates codex profiles is deferred — see
+      // docs/upstream-sync.md round-2 ledger.
       return resolveModelCall(settings, selection, 'codex-cli')
     }
     const key = profile.apiKey || (profile.ollamaLike ? 'local' : '')

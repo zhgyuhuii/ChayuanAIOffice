@@ -67,6 +67,8 @@ export async function chatResolved(
         return chatGemini(wd, config, system, user, call.baseUrl)
       case 'openai-responses':
         return chatOpenAiResponses(wd, call.baseUrl, config, system, user)
+      case 'codex-app-server':
+        return chatCodexAppServer(config, system, user, wd.signal)
       case 'openai-compatible':
         return chatOpenAiCompatible(wd, call.baseUrl, config, system, user, {
           omitTemperature: call.omitTemperature,
