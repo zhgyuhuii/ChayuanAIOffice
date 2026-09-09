@@ -14,9 +14,11 @@ export const es = {
   aiSummarizePrompt: 'Resume el contenido principal y los puntos clave de este documento',
   aiPolishBtn: 'Pulido IA',
   aiPolishPrompt: 'Pule todo el documento para que la redacción sea más clara y fluida',
-  aiPolishSelectionPrompt: 'Pule el contenido seleccionado para que la redacción sea más clara y fluida',
+  aiPolishSelectionPrompt:
+    'Pule el contenido seleccionado para que la redacción sea más clara y fluida',
   aiScopeSelection: 'Seleccionado: {words} palabras',
-  aiScopeSelectionTip: 'Las instrucciones de reescritura se aplican por defecto a la selección; haz clic para previsualizar',
+  aiScopeSelectionTip:
+    'Las instrucciones de reescritura se aplican por defecto a la selección; haz clic para previsualizar',
   aiScopeClearTitle: 'Quitar el ámbito de selección',
   aiAskBtn: 'Pedir a la IA',
   aiAskTitle: 'Pedir un cambio sobre la selección',
@@ -36,7 +38,8 @@ export const es = {
   aiChipChartTitle: 'Cambiar el título del gráfico',
   aiChipTableEdit: 'Ajustar filas y columnas',
   aiQueueTitle: 'Cambios en cola',
-  aiQueueHint: 'Haz clic en una fila para localizar el pasaje; al enviar se aplican todos los cambios en una sola solicitud',
+  aiQueueHint:
+    'Haz clic en una fila para localizar el pasaje; al enviar se aplican todos los cambios en una sola solicitud',
   aiQueueSend: 'Enviar {count} cambios',
   aiQueueDiscard: 'Vaciar',
   aiQueueDiscardConfirm: '¿Vaciar los {count} cambios en cola?',
@@ -49,7 +52,8 @@ export const es = {
   aiSumReplyComment: 'Respuesta al comentario',
   aiSumResolveComment: 'Comentario resuelto',
   aiTidyBtn: 'Formato IA',
-  aiTidyPrompt: 'Ordena el formato de todo el documento; por ejemplo, corrige los niveles de título, unifica las listas, elimina negritas y cursivas innecesarias y homogeneiza la sangría de los párrafos. Ajusta solo el formato, sin cambiar el texto',
+  aiTidyPrompt:
+    'Ordena el formato de todo el documento; por ejemplo, corrige los niveles de título, unifica las listas, elimina negritas y cursivas innecesarias y homogeneiza la sangría de los párrafos. Ajusta solo el formato, sin cambiar el texto',
   aiSwitchModelTitle: 'Cambiar modelo de IA',
   aiNewChatTitle: 'Nueva conversación',
   aiCollapseTitle: 'Contraer panel',
@@ -83,19 +87,26 @@ export const es = {
   aiAttachTitle: 'Adjuntar archivos locales (o arrástralos al panel)',
   aiRemoveAttachmentTitle: 'Quitar dato adjunto',
   aiTrackChanges: 'Control de cambios',
-  aiTrackOnTitle: 'Control de cambios activado: los cambios de contenido de la IA se marcan como revisiones (inserciones subrayadas, eliminaciones tachadas); acéptalas o recházalas en Revisar',
-  aiTrackOffTitle: 'Control de cambios desactivado: los cambios de la IA se aplican de inmediato (aún puedes revertir mediante instantáneas de versión)',
-  aiTurnLimit: '(Se alcanzó el límite de llamadas a herramientas de esta solicitud; la respuesta anterior refleja los pasos completados hasta ahora y puede estar incompleta.)',
+  aiTrackOnTitle:
+    'Control de cambios activado: los cambios de contenido de la IA se marcan como revisiones (inserciones subrayadas, eliminaciones tachadas); acéptalas o recházalas en Revisar',
+  aiTrackOffTitle:
+    'Control de cambios desactivado: los cambios de la IA se aplican de inmediato (aún puedes revertir mediante instantáneas de versión)',
+  aiTurnLimit:
+    '(Se alcanzó el límite de llamadas a herramientas de esta solicitud; la respuesta anterior refleja los pasos completados hasta ahora y puede estar incompleta.)',
   aiStopped: '(Detenido)',
   aiNoReply: 'La IA no devolvió contenido.',
   aiTruncatedNote: '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
-  aiImagesSendFailed: 'No se pudieron leer las imágenes adjuntas; este mensaje se envió sin imágenes',
+  aiImagesSendFailed:
+    'No se pudieron leer las imágenes adjuntas; este mensaje se envió sin imágenes',
   aiImageReadFail: '{name}: error de lectura',
   aiTooManyImages: 'Como máximo {max} imágenes por mensaje; las sobrantes se ignoraron',
   aiUnknownError: 'Error desconocido',
-  aiTimeoutError: 'La solicitud de IA agotó el tiempo de espera: no hubo respuesta de la red y se detuvo. Comprueba tu conexión e inténtalo de nuevo',
-  aiOverloadedError: 'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
-  aiNetworkError: 'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
+  aiTimeoutError:
+    'La solicitud de IA agotó el tiempo de espera: no hubo respuesta de la red y se detuvo. Comprueba tu conexión e inténtalo de nuevo',
+  aiOverloadedError:
+    'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
+  aiNetworkError:
+    'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
   aiCreditsExhausted: 'Sin créditos — recarga en la página de precios',
   aiSumReadAttachment: 'Leer dato adjunto',
   aiSumImageAttachment: 'Imagen adjunta {name}',
@@ -127,7 +138,8 @@ export const es = {
   aiSumSetFooter: 'Pie de página actualizado',
   aiSumApplyCommands: 'Aplicar comandos de formato',
   aiCmdNone: 'No hay bloques coincidentes; el documento no se modificó.',
-  aiCmdNoneSkipped: 'No hay bloques editables; el documento no se modificó ({count} bloques protegidos omitidos: las tablas/imágenes no se pueden modificar con comandos de estilo).',
+  aiCmdNoneSkipped:
+    'No hay bloques editables; el documento no se modificó ({count} bloques protegidos omitidos: las tablas/imágenes no se pueden modificar con comandos de estilo).',
   aiCmdTextStyle: 'Estilo de texto actualizado en {count} bloque(s)',
   aiCmdMatchedStyle: 'Estilo aplicado a {count} coincidencia(s) en {blocks} bloque(s)',
   aiCmdParaStyle: 'Formato de párrafo actualizado en {count} bloque(s)',
@@ -144,7 +156,8 @@ export const es = {
   aiCmdSkipped: ' ({count} bloque(s) protegido(s) omitido(s))',
   aiChatOfficeLoginBtn: 'Iniciar sesión',
   aiNoModelErrorTitle: 'Aún no hay ningún modelo disponible',
-  aiNoModelErrorBody: 'Configura tu propio proveedor (tu clave, listo para usar) o inicia sesión en ChatOffice para los modelos predeterminados. No se requiere cuenta.',
+  aiNoModelErrorBody:
+    'Configura tu propio proveedor (tu clave, listo para usar) o inicia sesión en ChatOffice para los modelos predeterminados. No se requiere cuenta.',
   aiOpenModelSettings: 'Abrir Ajustes de modelos',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Asistente',
@@ -160,4 +173,15 @@ export const es = {
   aiDockRestore: 'Restaurar panel',
   aiSumGenerateSvg: 'Generar ilustración SVG',
   aiSumInsertedSvg: 'Ilustración SVG insertada',
+  aiAssistantCommon: 'Acciones rápidas',
+  aiAssistantSearch: 'Buscar asistentes…',
+  aiAssistantBack: 'Volver a los grupos',
+  aiAssistantRecent: 'Usados recientemente',
+  aiAssistantCount: '{count} asistentes',
+  aiAssistantNoMatch: 'No hay asistentes coincidentes',
+  aiAssistantNeedSelection: 'Seleccione primero texto del documento',
+  aiAssistantLoading: 'Cargando asistentes…',
+  aiAssistantScopeDoc: 'Documento completo',
+  aiAssistantScopeSelection: 'Selección',
+  aiAssistantAll: 'Todos los grupos',
 }

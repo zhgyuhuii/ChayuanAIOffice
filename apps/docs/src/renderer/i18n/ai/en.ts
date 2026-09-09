@@ -14,7 +14,8 @@ export const en = {
   aiSummarizePrompt: 'Summarize the main content and key points of this document',
   aiPolishBtn: 'AI Polish',
   aiPolishPrompt: 'Polish the whole document to make the writing clearer and more fluent',
-  aiPolishSelectionPrompt: 'Polish the selected content to make the writing clearer and more fluent',
+  aiPolishSelectionPrompt:
+    'Polish the selected content to make the writing clearer and more fluent',
   aiScopeSelection: 'Selected: {words} words',
   aiScopeSelectionTip: 'Rewrite-style requests apply to the selection by default; click to preview',
   aiScopeClearTitle: 'Clear the selection scope',
@@ -49,7 +50,8 @@ export const en = {
   aiSumReplyComment: 'Replied to comment',
   aiSumResolveComment: 'Resolved comment',
   aiTidyBtn: 'AI Format',
-  aiTidyPrompt: 'Tidy up the document formatting — for example fix heading levels, unify list formatting, remove unnecessary bold and italics, and make paragraph indentation consistent. Adjust formatting only — do not change any text content',
+  aiTidyPrompt:
+    'Tidy up the document formatting — for example fix heading levels, unify list formatting, remove unnecessary bold and italics, and make paragraph indentation consistent. Adjust formatting only — do not change any text content',
   aiSwitchModelTitle: 'Switch AI model',
   aiNewChatTitle: 'New chat',
   aiCollapseTitle: 'Collapse panel',
@@ -83,9 +85,12 @@ export const en = {
   aiAttachTitle: 'Attach local files (or drag them onto the panel)',
   aiRemoveAttachmentTitle: 'Remove attachment',
   aiTrackChanges: 'Track changes',
-  aiTrackOnTitle: 'Track changes on: AI content edits are marked as revisions (insertions underlined, deletions struck through); accept or reject in Review',
-  aiTrackOffTitle: 'Track changes off: AI edits apply immediately (you can still roll back via snapshots)',
-  aiTurnLimit: 'This task paused before every step was finished. Completed edits are preserved; select Continue to finish the remaining work.',
+  aiTrackOnTitle:
+    'Track changes on: AI content edits are marked as revisions (insertions underlined, deletions struck through); accept or reject in Review',
+  aiTrackOffTitle:
+    'Track changes off: AI edits apply immediately (you can still roll back via snapshots)',
+  aiTurnLimit:
+    'This task paused before every step was finished. Completed edits are preserved; select Continue to finish the remaining work.',
   aiStopped: '(Stopped)',
   aiNoReply: 'The AI returned no content.',
   aiTruncatedNote: '(The reply was cut off by the length limit and may be incomplete.)',
@@ -93,9 +98,11 @@ export const en = {
   aiImageReadFail: '{name}: failed to read',
   aiTooManyImages: 'At most {max} images per message; extras were ignored',
   aiUnknownError: 'Unknown error',
-  aiTimeoutError: 'AI request timed out: no response from the network, so the run was stopped. Check your connection and try again',
+  aiTimeoutError:
+    'AI request timed out: no response from the network, so the run was stopped. Check your connection and try again',
   aiOverloadedError: 'The AI service is busy right now — please try again in a moment',
-  aiNetworkError: 'Network problem: could not reach the AI service. Check your connection and try again',
+  aiNetworkError:
+    'Network problem: could not reach the AI service. Check your connection and try again',
   aiCreditsExhausted: 'Out of credits — top up on the pricing page',
   aiSumReadAttachment: 'Read attachment',
   aiSumImageAttachment: 'Image attachment {name}',
@@ -127,7 +134,8 @@ export const en = {
   aiSumSetFooter: 'Updated footer',
   aiSumApplyCommands: 'Apply formatting commands',
   aiCmdNone: 'No matching blocks; the document was not changed.',
-  aiCmdNoneSkipped: 'No editable blocks; the document was not changed ({count} protected blocks skipped — tables/images cannot be changed by style commands).',
+  aiCmdNoneSkipped:
+    'No editable blocks; the document was not changed ({count} protected blocks skipped — tables/images cannot be changed by style commands).',
   aiCmdTextStyle: 'Updated text style on {count} block(s)',
   aiCmdMatchedStyle: 'Styled {count} match(es) across {blocks} block(s)',
   aiCmdParaStyle: 'Updated paragraph format on {count} block(s)',
@@ -144,7 +152,8 @@ export const en = {
   aiCmdSkipped: ' ({count} protected block(s) skipped)',
   aiChatOfficeLoginBtn: 'Sign in',
   aiNoModelErrorTitle: 'No model available yet',
-  aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.',
+  aiNoModelErrorBody:
+    'Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.',
   aiOpenModelSettings: 'Open Model Settings',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistant',
@@ -160,4 +169,15 @@ export const en = {
   aiDockRestore: 'Restore panel',
   aiSumGenerateSvg: 'Generate SVG illustration',
   aiSumInsertedSvg: 'Inserted SVG illustration',
+  aiAssistantCommon: 'Quick actions',
+  aiAssistantSearch: 'Search assistants…',
+  aiAssistantBack: 'Back to groups',
+  aiAssistantRecent: 'Recently used',
+  aiAssistantCount: '{count} assistants',
+  aiAssistantNoMatch: 'No matching assistants',
+  aiAssistantNeedSelection: 'Select text in the document first',
+  aiAssistantLoading: 'Loading assistants…',
+  aiAssistantScopeDoc: 'Whole document',
+  aiAssistantScopeSelection: 'Selection',
+  aiAssistantAll: 'All groups',
 }

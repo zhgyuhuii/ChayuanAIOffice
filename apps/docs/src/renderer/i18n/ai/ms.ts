@@ -16,7 +16,8 @@ export const ms = {
   aiPolishPrompt: 'Gilap keseluruhan dokumen supaya penulisan lebih jelas dan lancar',
   aiPolishSelectionPrompt: 'Gilap kandungan yang dipilih supaya penulisan lebih jelas dan lancar',
   aiScopeSelection: 'Dipilih: {words} patah perkataan',
-  aiScopeSelectionTip: 'Arahan tulis semula secara lalai hanya terpakai pada pilihan; klik untuk pratonton',
+  aiScopeSelectionTip:
+    'Arahan tulis semula secara lalai hanya terpakai pada pilihan; klik untuk pratonton',
   aiScopeClearTitle: 'Buang skop pilihan',
   aiAskBtn: 'Tanya AI',
   aiAskTitle: 'Minta perubahan pada pilihan',
@@ -36,7 +37,8 @@ export const ms = {
   aiChipChartTitle: 'Tukar tajuk carta',
   aiChipTableEdit: 'Laraskan baris/lajur',
   aiQueueTitle: 'Perubahan dalam baris gilir',
-  aiQueueHint: 'Klik baris untuk mencari bahagiannya; penghantaran menggunakan semua perubahan dalam satu permintaan',
+  aiQueueHint:
+    'Klik baris untuk mencari bahagiannya; penghantaran menggunakan semua perubahan dalam satu permintaan',
   aiQueueSend: 'Hantar {count} perubahan',
   aiQueueDiscard: 'Kosongkan',
   aiQueueDiscardConfirm: 'Kosongkan {count} perubahan dalam baris gilir?',
@@ -49,7 +51,8 @@ export const ms = {
   aiSumReplyComment: 'Membalas komen',
   aiSumResolveComment: 'Menyelesaikan komen',
   aiTidyBtn: 'Format AI',
-  aiTidyPrompt: 'Kemaskan format keseluruhan dokumen, contohnya betulkan tahap tajuk, seragamkan format senarai, buang huruf tebal/condong yang tidak perlu, dan selaraskan inden perenggan. Laraskan format sahaja, jangan ubah sebarang teks',
+  aiTidyPrompt:
+    'Kemaskan format keseluruhan dokumen, contohnya betulkan tahap tajuk, seragamkan format senarai, buang huruf tebal/condong yang tidak perlu, dan selaraskan inden perenggan. Laraskan format sahaja, jangan ubah sebarang teks',
   aiSwitchModelTitle: 'Tukar model AI',
   aiNewChatTitle: 'Perbualan baharu',
   aiCollapseTitle: 'Runtuhkan panel',
@@ -83,9 +86,12 @@ export const ms = {
   aiAttachTitle: 'Lampirkan fail setempat (atau seret ke panel)',
   aiRemoveAttachmentTitle: 'Alih keluar lampiran',
   aiTrackChanges: 'Jejak perubahan',
-  aiTrackOnTitle: 'Jejak perubahan dihidupkan: suntingan kandungan AI ditandakan sebagai semakan (sisipan bergaris bawah, pemadaman bergaris batal); terima atau tolak dalam Semakan',
-  aiTrackOffTitle: 'Jejak perubahan dimatikan: suntingan AI terus berkuat kuasa (masih boleh dikembalikan melalui snapshot versi)',
-  aiTurnLimit: '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
+  aiTrackOnTitle:
+    'Jejak perubahan dihidupkan: suntingan kandungan AI ditandakan sebagai semakan (sisipan bergaris bawah, pemadaman bergaris batal); terima atau tolak dalam Semakan',
+  aiTrackOffTitle:
+    'Jejak perubahan dimatikan: suntingan AI terus berkuat kuasa (masih boleh dikembalikan melalui snapshot versi)',
+  aiTurnLimit:
+    '(Had pusingan panggilan alat untuk permintaan ini telah dicapai; jawapan di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
   aiStopped: '(Dihentikan)',
   aiNoReply: 'AI tidak memulangkan sebarang kandungan.',
   aiTruncatedNote: '(Balasan terpotong kerana had panjang dan mungkin tidak lengkap.)',
@@ -93,9 +99,11 @@ export const ms = {
   aiImageReadFail: '{name}: gagal dibaca',
   aiTooManyImages: 'Maksimum {max} imej setiap mesej; yang lebihan diabaikan',
   aiUnknownError: 'Ralat tidak diketahui',
-  aiTimeoutError: 'Permintaan AI tamat masa: rangkaian tidak memberi respons, proses dihentikan. Semak sambungan anda dan cuba lagi',
+  aiTimeoutError:
+    'Permintaan AI tamat masa: rangkaian tidak memberi respons, proses dihentikan. Semak sambungan anda dan cuba lagi',
   aiOverloadedError: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
-  aiNetworkError: 'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
+  aiNetworkError:
+    'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
   aiCreditsExhausted: 'Kredit habis — tambah nilai di halaman harga',
   aiSumReadAttachment: 'Baca lampiran',
   aiSumImageAttachment: 'Lampiran imej {name}',
@@ -127,7 +135,8 @@ export const ms = {
   aiSumSetFooter: 'Pengaki dikemas kini',
   aiSumApplyCommands: 'Guna perintah pemformatan',
   aiCmdNone: 'Tiada blok sepadan; dokumen tidak diubah.',
-  aiCmdNoneSkipped: 'Tiada blok boleh disunting; dokumen tidak diubah ({count} blok dilindungi dilangkau — jadual/imej tidak boleh diubah dengan perintah gaya).',
+  aiCmdNoneSkipped:
+    'Tiada blok boleh disunting; dokumen tidak diubah ({count} blok dilindungi dilangkau — jadual/imej tidak boleh diubah dengan perintah gaya).',
   aiCmdTextStyle: 'Gaya teks dikemas kini pada {count} blok',
   aiCmdMatchedStyle: 'Gaya digunakan pada {count} padanan dalam {blocks} blok',
   aiCmdParaStyle: 'Format perenggan dikemas kini pada {count} blok',
@@ -144,7 +153,8 @@ export const ms = {
   aiCmdSkipped: ' ({count} blok dilindungi dilangkau)',
   aiChatOfficeLoginBtn: 'Log masuk',
   aiNoModelErrorTitle: 'Belum ada model tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.',
+  aiNoModelErrorBody:
+    'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.',
   aiOpenModelSettings: 'Buka Tetapan Model',
   aiTabChat: 'Sembang',
   aiTabAssistant: 'Pembantu',
@@ -160,4 +170,15 @@ export const ms = {
   aiDockRestore: 'Pulihkan panel',
   aiSumGenerateSvg: 'Jana ilustrasi SVG',
   aiSumInsertedSvg: 'Ilustrasi SVG disisipkan',
+  aiAssistantCommon: 'Tindakan pantas',
+  aiAssistantSearch: 'Cari pembantu…',
+  aiAssistantBack: 'Kembali ke kumpulan',
+  aiAssistantRecent: 'Baru digunakan',
+  aiAssistantCount: '{count} pembantu',
+  aiAssistantNoMatch: 'Tiada pembantu yang sepadan',
+  aiAssistantNeedSelection: 'Pilih teks dalam dokumen dahulu',
+  aiAssistantLoading: 'Memuatkan pembantu…',
+  aiAssistantScopeDoc: 'Keseluruhan dokumen',
+  aiAssistantScopeSelection: 'Pemilihan',
+  aiAssistantAll: 'Semua kumpulan',
 }

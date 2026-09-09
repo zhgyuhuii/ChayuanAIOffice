@@ -14,9 +14,11 @@ export const de = {
   aiSummarizePrompt: 'Fasse den Hauptinhalt und die Kernpunkte dieses Dokuments zusammen',
   aiPolishBtn: 'KI-Feinschliff',
   aiPolishPrompt: 'Überarbeite das gesamte Dokument, damit der Text klarer und flüssiger wird',
-  aiPolishSelectionPrompt: 'Überarbeite den ausgewählten Inhalt, damit der Text klarer und flüssiger wird',
+  aiPolishSelectionPrompt:
+    'Überarbeite den ausgewählten Inhalt, damit der Text klarer und flüssiger wird',
   aiScopeSelection: 'Ausgewählt: {words} Wörter',
-  aiScopeSelectionTip: 'Umschreib-Anweisungen wirken standardmäßig nur auf die Auswahl; zum Vorschauen klicken',
+  aiScopeSelectionTip:
+    'Umschreib-Anweisungen wirken standardmäßig nur auf die Auswahl; zum Vorschauen klicken',
   aiScopeClearTitle: 'Auswahlbereich aufheben',
   aiAskBtn: 'KI fragen',
   aiAskTitle: 'Änderung an der Auswahl anfragen',
@@ -36,7 +38,8 @@ export const de = {
   aiChipChartTitle: 'Diagrammtitel ändern',
   aiChipTableEdit: 'Zeilen/Spalten anpassen',
   aiQueueTitle: 'Wartende Änderungen',
-  aiQueueHint: 'Klicke auf eine Zeile, um die Stelle zu finden; beim Senden werden alle Änderungen in einer Anfrage angewendet',
+  aiQueueHint:
+    'Klicke auf eine Zeile, um die Stelle zu finden; beim Senden werden alle Änderungen in einer Anfrage angewendet',
   aiQueueSend: '{count} Änderungen senden',
   aiQueueDiscard: 'Verwerfen',
   aiQueueDiscardConfirm: 'Alle {count} wartenden Änderungen verwerfen?',
@@ -49,7 +52,8 @@ export const de = {
   aiSumReplyComment: 'Auf Kommentar geantwortet',
   aiSumResolveComment: 'Kommentar erledigt',
   aiTidyBtn: 'KI-Formatierung',
-  aiTidyPrompt: 'Bringe die Formatierung des gesamten Dokuments in Ordnung – zum Beispiel Überschriftenebenen korrigieren, Listen vereinheitlichen, überflüssige Fett- und Kursivauszeichnungen entfernen, Absatzeinzüge angleichen. Passe nur die Formatierung an, ohne den Text zu verändern',
+  aiTidyPrompt:
+    'Bringe die Formatierung des gesamten Dokuments in Ordnung – zum Beispiel Überschriftenebenen korrigieren, Listen vereinheitlichen, überflüssige Fett- und Kursivauszeichnungen entfernen, Absatzeinzüge angleichen. Passe nur die Formatierung an, ohne den Text zu verändern',
   aiSwitchModelTitle: 'KI-Modell wechseln',
   aiNewChatTitle: 'Neuer Chat',
   aiCollapseTitle: 'Bereich einklappen',
@@ -73,7 +77,8 @@ export const de = {
   aiScopeSelected: '{count} Absatz/Absätze ausgewählt',
   aiScopeEmptyDoc: 'Leeres Dokument',
   aiScopeCursor: 'An der Cursorposition',
-  aiInputPlaceholder: 'Beschreiben Sie eine Änderung oder Schreibaufgabe, oder stellen Sie eine Frage',
+  aiInputPlaceholder:
+    'Beschreiben Sie eine Änderung oder Schreibaufgabe, oder stellen Sie eine Frage',
   aiHintIdle: 'Eingabetaste zum Senden',
   aiHintBusy: 'Esc zum Stoppen',
   aiHintIdleTitle: 'Eingabetaste zum Senden · Umschalt+Eingabetaste für neue Zeile',
@@ -83,19 +88,26 @@ export const de = {
   aiAttachTitle: 'Lokale Dateien anhängen (oder auf den Bereich ziehen)',
   aiRemoveAttachmentTitle: 'Anlage entfernen',
   aiTrackChanges: 'Änderungen nachverfolgen',
-  aiTrackOnTitle: 'Änderungsnachverfolgung ein: KI-Inhaltsänderungen werden als Überarbeitungen markiert (Einfügungen unterstrichen, Löschungen durchgestrichen); unter „Überprüfen“ annehmen oder ablehnen',
-  aiTrackOffTitle: 'Änderungsnachverfolgung aus: KI-Änderungen werden sofort übernommen (Zurücksetzen über Versionsschnappschüsse weiterhin möglich)',
-  aiTurnLimit: '(Limit für Toolaufrufe in dieser Anfrage erreicht; die obige Antwort basiert auf den bisher abgeschlossenen Schritten und ist möglicherweise unvollständig.)',
+  aiTrackOnTitle:
+    'Änderungsnachverfolgung ein: KI-Inhaltsänderungen werden als Überarbeitungen markiert (Einfügungen unterstrichen, Löschungen durchgestrichen); unter „Überprüfen“ annehmen oder ablehnen',
+  aiTrackOffTitle:
+    'Änderungsnachverfolgung aus: KI-Änderungen werden sofort übernommen (Zurücksetzen über Versionsschnappschüsse weiterhin möglich)',
+  aiTurnLimit:
+    '(Limit für Toolaufrufe in dieser Anfrage erreicht; die obige Antwort basiert auf den bisher abgeschlossenen Schritten und ist möglicherweise unvollständig.)',
   aiStopped: '(Gestoppt)',
   aiNoReply: 'Die KI hat keinen Inhalt zurückgegeben.',
-  aiTruncatedNote: '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
-  aiImagesSendFailed: 'Bildanhänge konnten nicht gelesen werden; diese Nachricht wurde ohne Bilder gesendet',
+  aiTruncatedNote:
+    '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
+  aiImagesSendFailed:
+    'Bildanhänge konnten nicht gelesen werden; diese Nachricht wurde ohne Bilder gesendet',
   aiImageReadFail: '{name}: Lesen fehlgeschlagen',
   aiTooManyImages: 'Höchstens {max} Bilder pro Nachricht; überzählige wurden ignoriert',
   aiUnknownError: 'Unbekannter Fehler',
-  aiTimeoutError: 'Zeitüberschreitung der KI-Anfrage: keine Antwort vom Netzwerk, der Vorgang wurde abgebrochen. Prüfe deine Verbindung und versuche es erneut',
+  aiTimeoutError:
+    'Zeitüberschreitung der KI-Anfrage: keine Antwort vom Netzwerk, der Vorgang wurde abgebrochen. Prüfe deine Verbindung und versuche es erneut',
   aiOverloadedError: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
-  aiNetworkError: 'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
+  aiNetworkError:
+    'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
   aiCreditsExhausted: 'Guthaben aufgebraucht — auf der Preisseite aufladen',
   aiSumReadAttachment: 'Anlage lesen',
   aiSumImageAttachment: 'Bildanlage {name}',
@@ -127,7 +139,8 @@ export const de = {
   aiSumSetFooter: 'Fußzeile aktualisiert',
   aiSumApplyCommands: 'Formatierungsbefehle anwenden',
   aiCmdNone: 'Keine passenden Blöcke gefunden; das Dokument wurde nicht geändert.',
-  aiCmdNoneSkipped: 'Keine bearbeitbaren Blöcke; das Dokument wurde nicht geändert ({count} geschützte Blöcke übersprungen — Tabellen/Bilder können nicht per Formatbefehl geändert werden).',
+  aiCmdNoneSkipped:
+    'Keine bearbeitbaren Blöcke; das Dokument wurde nicht geändert ({count} geschützte Blöcke übersprungen — Tabellen/Bilder können nicht per Formatbefehl geändert werden).',
   aiCmdTextStyle: 'Textformat in {count} Block/Blöcken aktualisiert',
   aiCmdMatchedStyle: 'Stil auf {count} Treffer in {blocks} Block/Blöcken angewendet',
   aiCmdParaStyle: 'Absatzformat in {count} Block/Blöcken aktualisiert',
@@ -144,7 +157,8 @@ export const de = {
   aiCmdSkipped: ' ({count} geschützte Blöcke übersprungen)',
   aiChatOfficeLoginBtn: 'Anmelden',
   aiNoModelErrorTitle: 'Noch kein Modell verfügbar',
-  aiNoModelErrorBody: 'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.',
+  aiNoModelErrorBody:
+    'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.',
   aiOpenModelSettings: 'Modelleinstellungen öffnen',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',
@@ -160,4 +174,15 @@ export const de = {
   aiDockRestore: 'Bereich wiederherstellen',
   aiSumGenerateSvg: 'SVG-Illustration erzeugen',
   aiSumInsertedSvg: 'SVG-Illustration eingefügt',
+  aiAssistantCommon: 'Häufig genutzt',
+  aiAssistantSearch: 'Assistenten suchen…',
+  aiAssistantBack: 'Zurück zu den Gruppen',
+  aiAssistantRecent: 'Kürzlich genutzt',
+  aiAssistantCount: '{count} Assistenten',
+  aiAssistantNoMatch: 'Keine passenden Assistenten',
+  aiAssistantNeedSelection: 'Bitte zuerst Text im Dokument auswählen',
+  aiAssistantLoading: 'Assistenten werden geladen…',
+  aiAssistantScopeDoc: 'Gesamtdokument',
+  aiAssistantScopeSelection: 'Auswahl',
+  aiAssistantAll: 'Alle Gruppen',
 }

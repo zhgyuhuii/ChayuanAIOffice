@@ -36,7 +36,8 @@ import {
 } from '@chatoffice/ui'
 import { enabledChatModels } from '@chatoffice/ai-provider'
 import type { DockChrome } from '@chatoffice/ui'
-import { AssistantTab, IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
+import { IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
+import { AssistantBrowser, type AssistantRun } from './AssistantBrowser'
 import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
@@ -1017,6 +1018,19 @@ export function AiPanel({
     },
   ]
 
+  /** current selection as plain text, sampled at assistant-run time */
+  const getSelectionText = () => {
+    const ed = editorRef.current
+    if (!ed || ed.state.selection.empty) return ''
+    const { from, to } = ed.state.selection
+    return ed.state.doc.textBetween(from, to, '\n\n')
+  }
+
+  const runAssistant = ({ instruction, display }: AssistantRun) => {
+    runWith(instruction, display)
+    selectTab('chat')
+  }
+
   return (
     <aside
       dir={isRtl ? 'rtl' : undefined}
@@ -1260,7 +1274,13 @@ export function AiPanel({
         })}
       </div>
 
-      <AssistantTab items={assistItems} hidden={tab !== 'assistant'} />
+      <AssistantBrowser
+        quickItems={assistItems}
+        getSelectionText={getSelectionText}
+        docEmpty={docEmpty}
+        onRun={runAssistant}
+        hidden={tab !== 'assistant'}
+      />
 
       <div className="ai-composer" style={tab === 'chat' ? undefined : { display: 'none' }}>
         {attachNotice && <div className="ai-attach-notice">{attachNotice}</div>}

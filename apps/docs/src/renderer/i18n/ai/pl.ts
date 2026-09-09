@@ -16,7 +16,8 @@ export const pl = {
   aiPolishPrompt: 'Dopracuj cały dokument, aby tekst był jaśniejszy i płynniejszy',
   aiPolishSelectionPrompt: 'Dopracuj zaznaczoną treść, aby tekst był jaśniejszy i płynniejszy',
   aiScopeSelection: 'Zaznaczono: {words} słów',
-  aiScopeSelectionTip: 'Polecenia przepisania domyślnie dotyczą tylko zaznaczenia; kliknij, aby zobaczyć podgląd',
+  aiScopeSelectionTip:
+    'Polecenia przepisania domyślnie dotyczą tylko zaznaczenia; kliknij, aby zobaczyć podgląd',
   aiScopeClearTitle: 'Usuń zakres zaznaczenia',
   aiAskBtn: 'Zapytaj AI',
   aiAskTitle: 'Poproś o zmianę zaznaczenia',
@@ -36,7 +37,8 @@ export const pl = {
   aiChipChartTitle: 'Zmień tytuł wykresu',
   aiChipTableEdit: 'Dostosuj wiersze/kolumny',
   aiQueueTitle: 'Zmiany w kolejce',
-  aiQueueHint: 'Kliknij wiersz, aby zlokalizować fragment; wysłanie zastosuje wszystkie zmiany w jednym żądaniu',
+  aiQueueHint:
+    'Kliknij wiersz, aby zlokalizować fragment; wysłanie zastosuje wszystkie zmiany w jednym żądaniu',
   aiQueueSend: 'Wyślij zmiany: {count}',
   aiQueueDiscard: 'Wyczyść',
   aiQueueDiscardConfirm: 'Wyczyścić wszystkie zmiany w kolejce ({count})?',
@@ -49,7 +51,8 @@ export const pl = {
   aiSumReplyComment: 'Odpowiedź na komentarz',
   aiSumResolveComment: 'Komentarz rozwiązany',
   aiTidyBtn: 'Formatowanie AI',
-  aiTidyPrompt: 'Uporządkuj formatowanie całego dokumentu — na przykład popraw poziomy nagłówków, ujednolić listy, usuń zbędne pogrubienia i kursywę, wyrównaj wcięcia akapitów. Zmieniaj tylko formatowanie, nie zmieniając tekstu',
+  aiTidyPrompt:
+    'Uporządkuj formatowanie całego dokumentu — na przykład popraw poziomy nagłówków, ujednolić listy, usuń zbędne pogrubienia i kursywę, wyrównaj wcięcia akapitów. Zmieniaj tylko formatowanie, nie zmieniając tekstu',
   aiSwitchModelTitle: 'Przełącz model AI',
   aiNewChatTitle: 'Nowa rozmowa',
   aiCollapseTitle: 'Zwiń panel',
@@ -83,19 +86,25 @@ export const pl = {
   aiAttachTitle: 'Załącz pliki lokalne (lub przeciągnij je na panel)',
   aiRemoveAttachmentTitle: 'Usuń załącznik',
   aiTrackChanges: 'Śledzenie zmian',
-  aiTrackOnTitle: 'Śledzenie zmian włączone: zmiany treści wprowadzane przez AI są oznaczane jako poprawki (wstawienia podkreślone, usunięcia przekreślone); zaakceptuj lub odrzuć je w sekcji Recenzja',
-  aiTrackOffTitle: 'Śledzenie zmian wyłączone: zmiany AI są stosowane od razu (nadal możesz przywrócić stan przez migawki wersji)',
-  aiTurnLimit: '(Osiągnięto limit rund wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas ukończonych krokach i może być niepełna.)',
+  aiTrackOnTitle:
+    'Śledzenie zmian włączone: zmiany treści wprowadzane przez AI są oznaczane jako poprawki (wstawienia podkreślone, usunięcia przekreślone); zaakceptuj lub odrzuć je w sekcji Recenzja',
+  aiTrackOffTitle:
+    'Śledzenie zmian wyłączone: zmiany AI są stosowane od razu (nadal możesz przywrócić stan przez migawki wersji)',
+  aiTurnLimit:
+    '(Osiągnięto limit rund wywołań narzędzi dla tego żądania; powyższa odpowiedź opiera się na dotychczas ukończonych krokach i może być niepełna.)',
   aiStopped: '(Zatrzymano)',
   aiNoReply: 'AI nie zwróciła żadnej treści.',
   aiTruncatedNote: '(Odpowiedź została ucięta przez limit długości i może być niepełna.)',
-  aiImagesSendFailed: 'Nie udało się odczytać załączonych obrazów; ta wiadomość została wysłana bez obrazów',
+  aiImagesSendFailed:
+    'Nie udało się odczytać załączonych obrazów; ta wiadomość została wysłana bez obrazów',
   aiImageReadFail: '{name}: odczyt nie powiódł się',
   aiTooManyImages: 'Maksymalnie {max} obrazów na wiadomość; nadmiarowe zostały zignorowane',
   aiUnknownError: 'Nieznany błąd',
-  aiTimeoutError: 'Przekroczono limit czasu żądania AI: brak odpowiedzi sieci, przerwano. Sprawdź połączenie i spróbuj ponownie',
+  aiTimeoutError:
+    'Przekroczono limit czasu żądania AI: brak odpowiedzi sieci, przerwano. Sprawdź połączenie i spróbuj ponownie',
   aiOverloadedError: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
-  aiNetworkError: 'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
+  aiNetworkError:
+    'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
   aiCreditsExhausted: 'Brak kredytów — doładuj na stronie cen',
   aiSumReadAttachment: 'Odczyt załącznika',
   aiSumImageAttachment: 'Załącznik graficzny {name}',
@@ -127,7 +136,8 @@ export const pl = {
   aiSumSetFooter: 'Zaktualizowano stopkę',
   aiSumApplyCommands: 'Zastosuj polecenia formatowania',
   aiCmdNone: 'Brak pasujących bloków; dokument nie został zmieniony.',
-  aiCmdNoneSkipped: 'Brak bloków do edycji; dokument nie został zmieniony (pominięto chronione bloki: {count} — tabel/obrazów nie można zmieniać poleceniami stylu).',
+  aiCmdNoneSkipped:
+    'Brak bloków do edycji; dokument nie został zmieniony (pominięto chronione bloki: {count} — tabel/obrazów nie można zmieniać poleceniami stylu).',
   aiCmdTextStyle: 'Zaktualizowano styl tekstu w blokach: {count}',
   aiCmdMatchedStyle: 'Zastosowano styl do {count} dopasowań w {blocks} blokach',
   aiCmdParaStyle: 'Zaktualizowano format akapitu w blokach: {count}',
@@ -144,7 +154,8 @@ export const pl = {
   aiCmdSkipped: ' (pominięto chronione bloki: {count})',
   aiChatOfficeLoginBtn: 'Zaloguj się',
   aiNoModelErrorTitle: 'Brak dostępnych modeli',
-  aiNoModelErrorBody: 'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChatOffice, aby korzystać z domyślnych modeli. Bez konta.',
+  aiNoModelErrorBody:
+    'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChatOffice, aby korzystać z domyślnych modeli. Bez konta.',
   aiOpenModelSettings: 'Otwórz ustawienia modeli',
   aiTabChat: 'Czat',
   aiTabAssistant: 'Asystent',
@@ -160,4 +171,15 @@ export const pl = {
   aiDockRestore: 'Przywróć panel',
   aiSumGenerateSvg: 'Wygeneruj ilustrację SVG',
   aiSumInsertedSvg: 'Wstawiono ilustrację SVG',
+  aiAssistantCommon: 'Szybkie akcje',
+  aiAssistantSearch: 'Szukaj asystentów…',
+  aiAssistantBack: 'Powrót do grup',
+  aiAssistantRecent: 'Ostatnio używane',
+  aiAssistantCount: 'Asystenci: {count}',
+  aiAssistantNoMatch: 'Brak pasujących asystentów',
+  aiAssistantNeedSelection: 'Najpierw zaznacz tekst w dokumencie',
+  aiAssistantLoading: 'Wczytywanie asystentów…',
+  aiAssistantScopeDoc: 'Cały dokument',
+  aiAssistantScopeSelection: 'Zaznaczenie',
+  aiAssistantAll: 'Wszystkie grupy',
 }
