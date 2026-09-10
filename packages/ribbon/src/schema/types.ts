@@ -108,6 +108,14 @@ interface ControlBase<TState> {
   readonly disabledWhen?: When<TState>
   /** Static args passed to the command on execution (per-value buttons). */
   readonly args?: unknown
+  /**
+   * WPS-style space hint (loose/suitable/topsuitable/compact/autocompact) for
+   * the adaptive engine (M2). Optional: the renderer derives a default from
+   * kind+size when omitted; explicit values are the per-control override.
+   */
+  readonly spaceHint?: 'loose' | 'suitable' | 'topsuitable' | 'compact' | 'autocompact'
+  /** Narrow layouts may drop the label and keep the icon only (WPS canHideText). */
+  readonly canHideText?: boolean
 }
 
 export interface ButtonControl<TState = unknown> extends ControlBase<TState> {
@@ -187,6 +195,8 @@ export interface ToggleControl<TState = unknown> extends ControlBase<TState> {
   readonly statePath: string
   readonly labelKey: string
   readonly icon?: string
+  /** Omitted: 'icon' when an icon is set, 'small' (label text) otherwise. */
+  readonly size?: 'big' | 'small' | 'icon'
 }
 
 export interface ColorControl<TState = unknown> extends ControlBase<TState> {
