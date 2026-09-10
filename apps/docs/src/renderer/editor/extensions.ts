@@ -1,6 +1,6 @@
 import { Editor, Extension, Node } from '@tiptap/core'
 import type { ChainedCommands, RawCommands } from '@tiptap/core'
-import { UndoRedo } from '@tiptap/extensions'
+import { Gapcursor, UndoRedo } from '@tiptap/extensions'
 import { DOMSerializer } from '@tiptap/pm/model'
 import type { DOMOutputSpec, Node as PmNode } from '@tiptap/pm/model'
 import {
@@ -159,6 +159,7 @@ import { AutoDirectionExtension } from './direction'
 import { InactiveSelectionExtension } from './inactive-selection'
 import { AiQueueAnchorsExtension } from './ai-queue-anchors'
 import { PageGapNavExtension } from './page-gap-nav'
+import { TrailingTableExitExtension } from './trailing-table-exit'
 import { moveBlocks } from './move-block'
 import {
   foldQuarterTurnMargins,
@@ -2797,12 +2798,32 @@ export const DocNestedTable = Node.create({
   },
 })
 
-/** Delete only an explicitly selected whole table; leave cursors and partial cell selections alone. */
+function emptyTopLevelTableAtCursor(state: EditorState): { from: number; to: number } | null {
+  const { selection } = state
+  if (!(selection instanceof TextSelection) || !selection.empty) return null
+  const table = selection.$from.node(1)
+  if (table.type.name !== 'docTable') return null
+  let hasLeaf = false
+  table.descendants((node) => {
+    if (node.isLeaf) hasLeaf = true
+    return !hasLeaf
+  })
+  if (hasLeaf) return null
+  const from = selection.$from.before(1)
+  return { from, to: from + table.nodeSize }
+}
+
+/** Delete a selected table, or a completely empty table under a text cursor. */
 export function deleteSelectedWholeTable(
   state: EditorState,
   dispatch?: (transaction: Transaction) => void,
 ): boolean {
   const { selection } = state
+  const emptyTable = emptyTopLevelTableAtCursor(state)
+  if (emptyTable) {
+    dispatch?.(state.tr.delete(emptyTable.from, emptyTable.to).scrollIntoView())
+    return true
+  }
   if (selection instanceof NodeSelection) {
     if (selection.node.type.spec.tableRole !== 'table') return false
     dispatch?.(state.tr.delete(selection.from, selection.to).scrollIntoView())
@@ -5623,6 +5644,8 @@ export const editorExtensions = [
   InactiveSelectionExtension,
   AiQueueAnchorsExtension,
   PageGapNavExtension,
+  TrailingTableExitExtension,
+  Gapcursor,
   ImageCopyExtension,
   EnterReplacesSelection,
   AutoLinkOnDelimiter,
