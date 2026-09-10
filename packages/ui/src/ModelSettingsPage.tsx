@@ -768,19 +768,14 @@ export function ModelSettingsPage({
           />
         </div>
         <div className="msp-scroll">
-          <VendorGroupEl
-            id="enabled"
-            label={`${t.enabledGroup} · ${enabledList.length}`}
-            rows={
-              enabledRows.length > 0 ? (
-                enabledRows
-              ) : (
-                <p className="msp-empty-hint" data-vendor-enabled-empty>
-                  {t.enabledEmpty}
-                </p>
-              )
-            }
-          />
+          {/* 「已启用」分组只在确实有已启用厂商时出现；空态不占位 */}
+          {enabledRows.length > 0 && (
+            <VendorGroupEl
+              id="enabled"
+              label={`${t.enabledGroup} · ${enabledList.length}`}
+              rows={enabledRows}
+            />
+          )}
           {catalogRows.map((group) => (
             <VendorGroupEl
               key={group.id}

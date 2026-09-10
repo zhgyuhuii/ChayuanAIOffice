@@ -51,9 +51,9 @@ describe('ModelSettingsPage', () => {
     const groups = [...document.body.querySelectorAll('.msp-group-head')].map(
       (el) => el.textContent,
     )
-    // enabled group first, then the four catalog groups
+    // nothing enabled yet → no 已启用 group at all, just the four catalog groups
     expect(groups.length).toBeGreaterThanOrEqual(4)
-    expect(groups[0]).toMatch(/已启用|Enabled/)
+    expect(groups.some((g) => /已启用|Enabled/.test(g ?? ''))).toBe(false)
     // landing = guide page, not the chatoffice sign-in card
     expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
     expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
@@ -325,12 +325,14 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     // landing = guide page, which is guidance enough — no banner on top of it
     expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
     expect(document.body.querySelector('[data-model-guide]')).toBeNull()
-    // selecting a vendor surfaces the banner above its form
+    // selecting a vendor surfaces the banner above its form (no empty-group
+    // placeholder in the directory — the group is gone entirely at 0 enabled)
     await act(async () => {
       ;(document.body.querySelector('[data-vendor-row="openai"]') as HTMLButtonElement).click()
     })
     expect(document.body.querySelector('[data-model-guide]')).toBeTruthy()
-    expect(document.body.querySelector('[data-vendor-enabled-empty]')).toBeTruthy()
+    expect(document.body.querySelector('[data-vendor-enabled-empty]')).toBeNull()
+    expect(document.body.querySelector('[data-vendor-group="enabled"]')).toBeNull()
   })
 
   it('hides the guidance banner once a vendor is enabled', async () => {
@@ -348,6 +350,9 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     })
     await renderWith(s)
     expect(document.body.querySelector('[data-model-guide]')).toBeNull()
+    // with a vendor enabled, the 已启用 group (with count) appears again
+    expect(document.body.querySelector('[data-vendor-group="enabled"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-vendor-row="openai"]')).toBeTruthy()
   })
 
   it('tags vendor rows with key/free badges from the catalog', async () => {

@@ -12,7 +12,6 @@ const zh = {
   searchPlaceholder: '搜索供应商…',
   filterHint: '可按「免费」筛选厂商',
   enabledGroup: '已启用',
-  enabledEmpty: '还没有启用的厂商，在下方目录选择一个开始配置',
   noModelsGuide:
     '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 ChatOffice 直接使用内置模型。',
   noModelsGuideNoLogin: '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启。',
@@ -156,7 +155,6 @@ const en = {
   searchPlaceholder: 'Search providers…',
   filterHint: 'Tip: filter vendors by free plans',
   enabledGroup: 'Enabled',
-  enabledEmpty: 'No vendor enabled yet — pick one from the catalog below to start',
   noModelsGuide:
     'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChatOffice to use its built-in models.',
   noModelsGuideNoLogin:
