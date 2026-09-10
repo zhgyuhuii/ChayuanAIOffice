@@ -118,6 +118,7 @@ export const id = {
   aiSumCreateDocument: 'Buat dokumen baru',
   aiSumCreatedDocument: '{name} dibuat',
   aiSumReplaceContent: 'Ganti konten',
+  aiSumReplaceSelection: 'Ganti teks yang dipilih',
   aiSumReplacedBlocks: 'Blok {start}-{end} diganti',
   aiSumInsertChart: 'Sisipkan bagan',
   aiSumInsertedChart: 'Bagan "{title}" disisipkan',

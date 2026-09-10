@@ -59,6 +59,10 @@ function insertTabBody(ctx: Ctx) {
       onEvenOddHf={ctx.services.hf.setEvenOddHf}
       commentCount={ctx.state.review.commentCount}
       onShowComments={ctx.services.review.showComments}
+      canComment={ctx.state.review.canComment}
+      onNewComment={ctx.services.review.newComment}
+      isProtected={ctx.state.review.isProtected}
+      commentsAllowed={ctx.state.review.commentsAllowed}
     />
   )
 }

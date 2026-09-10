@@ -185,11 +185,7 @@ export function registerAiIpc(): void {
   // Search tools (content + images), Serper with DuckDuckGo fallback
   ipcMain.handle('ai:web-search', async (_event, query: string, maxResults?: number) => {
     try {
-      return await webSearch(
-        String(query),
-        typeof maxResults === 'number' ? maxResults : 6,
-        chatofficeCloudToolsOn(),
-      )
+      return await webSearch(String(query), typeof maxResults === 'number' ? maxResults : 6, chatofficeCloudToolsOn())
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
     }
@@ -197,11 +193,7 @@ export function registerAiIpc(): void {
 
   ipcMain.handle('ai:image-search', async (_event, query: string, maxResults?: number) => {
     try {
-      return await imageSearch(
-        String(query),
-        typeof maxResults === 'number' ? maxResults : 8,
-        chatofficeCloudToolsOn(),
-      )
+      return await imageSearch(String(query), typeof maxResults === 'number' ? maxResults : 8, chatofficeCloudToolsOn())
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
     }

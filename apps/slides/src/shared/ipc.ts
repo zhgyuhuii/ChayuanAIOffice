@@ -1,3 +1,4 @@
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 /**
  * slides main-process <-> renderer IPC contract (Phase 3: open/save/edit, AI not included yet).
  *
@@ -50,6 +51,12 @@ export interface AiStreamWireRequest {
 export type { AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 
 export type UiTheme = 'light' | 'dark' | 'system'
+
+/** shell-wide AutoSave default; updatedAt is 0 until the user has ever set it */
+export interface AutoSaveDefault {
+  on: boolean
+  updatedAt: number
+}
 
 /** Effects patch for setEffects (mirrors pptx-engine's EffectsPatch): null clears an
  * effect, undefined leaves it untouched. Distances/radii in EMU (12700 per pt),
@@ -1325,6 +1332,12 @@ export interface SlidesApi {
   getTheme: () => Promise<UiTheme>
   /** theme switched from the shell home page */
   onThemeChanged: (handler: (theme: UiTheme) => void) => () => void
+  /** shell-wide AutoSave default (see useAutoSavePref) */
+  getAutoSaveDefault: () => Promise<AutoSaveDefault>
+  onAutoSaveDefaultChanged: (handler: (value: AutoSaveDefault) => void) => () => void
+  /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
+  getAiPanelPrefs: () => Promise<AiPanelPrefs>
+  onAiPanelPrefsChanged: (handler: (prefs: AiPanelPrefs) => void) => () => void
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed: (handler: () => void) => () => void
@@ -1525,6 +1538,8 @@ export interface SlidesApi {
   flipElements: (op: FlipElementOp) => Promise<RenderSlide | null>
   /** Returns the full affected RenderSlide array (when applied to all pages) */
   editBackground: (op: EditBackgroundOp) => Promise<RenderSlide[] | null>
+  /** Show the system image picker and return the file's bytes (for Replace Picture); cancel returns null */
+  pickPictureFile: () => Promise<{ base64: string; ext: string } | null>
   /** Show the system image picker and insert into the current page; returns the updated page + new element id, cancel returns null, undecodable format returns the error */
   insertImage: (
     slideIndex: number,

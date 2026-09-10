@@ -1,3 +1,4 @@
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import type { Lang } from '@chatoffice/i18n'
 import type { AiModelSelection, AiSettingsV2, AiStreamChunk } from '@chatoffice/ai-provider'
 
@@ -44,6 +45,8 @@ export const PDF_CHANNELS = {
   languageChanged: 'app:language-changed',
   getTheme: 'app:get-theme',
   themeChanged: 'app:theme-changed',
+  getAiPanelPrefs: 'app:get-ai-panel-prefs',
+  aiPanelPrefsChanged: 'app:ai-panel-prefs-changed',
 } as const
 
 export const VISUAL_SIGNATURE_CONTENT_PREFIX = 'ChatOffice visual signature field: '
@@ -76,7 +79,7 @@ export interface SavedSignature {
 export type PdfConvertFormat = 'docx' | 'xlsx' | 'pptx'
 
 /** target file type of the AI create_document tool (mirrors the docs app's contract) */
-export type CreateDocumentType = 'docx' | 'pdf' | 'md'
+export type CreateDocumentType = 'docx' | 'pdf' | 'md' | 'html'
 
 export interface CreateDocumentRequest {
   type: CreateDocumentType
@@ -760,6 +763,9 @@ export interface PdfApi {
   onLanguageChanged(handler: (lang: Lang) => void): () => void
   getTheme(): Promise<UiTheme>
   onThemeChanged(handler: (theme: UiTheme) => void): () => void
+  /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
+  getAiPanelPrefs(): Promise<AiPanelPrefs>
+  onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void

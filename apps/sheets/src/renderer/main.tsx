@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { htmlLang, type Lang } from '@chatoffice/i18n'
-import { installScreenTips } from '@chatoffice/ui'
+import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 import type { DesktopApi } from '../shared/desktop-api'
 
 import '@chatoffice/ui/tokens.css'
@@ -11,6 +11,8 @@ import '@chatoffice/ui/dock.css'
 import '@chatoffice/ribbon/tab-strip.css'
 import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
+import '@chatoffice/ui/ai-panel-prefs.css'
+import '@chatoffice/ui/ai-scope-quote.css'
 import '@univerjs/preset-sheets-core/lib/index.css'
 
 import { App } from './App'
@@ -90,6 +92,11 @@ async function bootstrap(): Promise<void> {
   applyTheme(theme)
   await loadCellFonts()
   window.desktopApi?.onThemeChanged(applyTheme)
+  void window.desktopApi
+    ?.getAiPanelPrefs?.()
+    .then(applyAiPanelPrefs)
+    .catch(() => {})
+  window.desktopApi?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
   ReactDOM.createRoot(root!).render(
     <LocaleProvider initial={lang}>
       <App />

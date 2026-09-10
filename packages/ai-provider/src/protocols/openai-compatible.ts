@@ -240,6 +240,7 @@ async function openAiCompatibleTurn(
   let stopReason: string | undefined
   let abnormalFinish: string | undefined
   let sawFinish = false
+  let sawDone = false
   let emitted = false
   const flushTools = () => {
     const entries = [...pendingTools.entries()].sort(([a], [b]) => a - b)
@@ -264,7 +265,10 @@ async function openAiCompatibleTurn(
     if (!line.startsWith('data:')) continue
     const payload = line.slice(5).trim()
     if (!payload) continue
-    if (payload === '[DONE]') break
+    if (payload === '[DONE]') {
+      sawDone = true
+      break
+    }
     // A truncated frame or a non-JSON keep-alive from a proxy should skip
     // that event, not kill the entire AI turn with a parser error.
     let event
@@ -325,6 +329,16 @@ async function openAiCompatibleTurn(
         abnormalFinish = choice.finish_reason
       }
       flushTools()
+    }
+  }
+  // No finish and no [DONE] with half-received arguments: the connection dropped
+  if (!sawFinish && !sawDone) {
+    const broken = [...pendingTools.values()].filter((p) => p.name && parseToolInput(p.json).error)
+    if (broken.length > 0) {
+      const received = broken.reduce((n, p) => n + p.json.length, 0)
+      throw new Error(
+        `The model stream closed while sending tool arguments (${received} chars received); the connection was dropped`,
+      )
     }
   }
   flushTools()

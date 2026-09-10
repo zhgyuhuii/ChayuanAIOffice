@@ -74,6 +74,7 @@ import {
   insertImageFromDataUrl,
   insertVideoForDocs,
   applyParagraphStyle,
+  setParaAttrs,
 } from './ribbon-tabs'
 import { CropDialog, CutoutDialog } from './PictureDialogs'
 import { IconTableProperties } from './icons'
@@ -1284,23 +1285,9 @@ function RibbonInner({
     else setTextStyle({ fontAscii: name })
   }
 
-  /** apply paragraph-level attrs to every block type in the selection */
+  /** apply paragraph-level attrs to every paragraph in the selection (textbox sub-editor included) */
   const setParaAttr = (attrs: Record<string, unknown>) => {
-    if (sub) {
-      // textbox paragraphs only support alignment; other keys are ignored
-      chain().updateAttributes('docParagraph', attrs).run()
-      setDropdown(null)
-      return
-    }
-    let c = chain()
-      .updateAttributes('docParagraph', attrs)
-      .updateAttributes('docHeading', attrs)
-      .updateAttributes('docListItem', attrs)
-    // alignment also applies to selected images (w:jc on the image paragraph)
-    if ('align' in attrs) {
-      c = c.updateAttributes('docProtected', { imageAlign: attrs.align ?? null })
-    }
-    c.run()
+    if (canEdit) setParaAttrs(ed, attrs)
     setDropdown(null)
   }
 
@@ -2197,6 +2184,10 @@ function RibbonInner({
             onEvenOddHf={onEvenOddHf}
             commentCount={commentCount}
             onShowComments={onShowComments}
+            canComment={canComment}
+            onNewComment={onNewComment}
+            isProtected={isProtected}
+            commentsAllowed={commentsAllowed}
             insertImageDialogOpen={() => setInsertImageOpen(true)}
           />
         ) : tab === 'page' ? (

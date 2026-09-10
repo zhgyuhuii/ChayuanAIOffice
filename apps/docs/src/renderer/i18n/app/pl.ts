@@ -1,4 +1,5 @@
-/** app strings, pl (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const pl = {
   appScTitle: 'Skróty klawiaturowe',
   appScFilter: 'Szukaj skrótu',
@@ -44,7 +45,8 @@ export const pl = {
   appOpenedFile: 'Otwarto {name}',
   appOpenFailed: 'Otwieranie nie powiodło się: {error}',
   appFontsMissing: 'Brak czcionek dokumentu: {names} (wyświetlane zamienniki)',
-  appVerticalTextNotice: 'Ten dokument zawiera tekst pionowy (na razie wyświetlany poziomo; zapis pozostaje bez zmian)',
+  appVerticalTextNotice:
+    'Ten dokument zawiera tekst pionowy (na razie wyświetlany poziomo; zapis pozostaje bez zmian)',
   appNewDocCreated: 'Utworzono pusty dokument. Opisz w panelu AI po lewej, co wygenerować.',
   appNewFailed: 'Nie udało się utworzyć dokumentu: {error}',
   appSaveFailed: 'Zapisywanie nie powiodło się: {error}',
@@ -56,13 +58,15 @@ export const pl = {
   appBreakContinuous: 'Ciągły',
   appBreakEvenPage: 'Strona parzysta',
   appBreakOddPage: 'Strona nieparzysta',
-  appSectionSettingsApplied: 'Ustawienia strony zastosowano do sekcji {n}; zostaną zapisane w dokumencie przy zapisie',
+  appSectionSettingsApplied:
+    'Ustawienia strony zastosowano do sekcji {n}; zostaną zapisane w dokumencie przy zapisie',
   appNumberingRestarted: 'Numerowanie rozpoczęto od nowa',
   appNumberingContinued: 'Numerowanie kontynuowane',
   appFieldInserted: 'Wstawiono pole {instr}',
   appNoFieldsToUpdate: 'Brak pól do zaktualizowania',
   appFieldsUpdated: 'Zaktualizowano pól: {n}',
-  appStyleUpdated: 'Styl „{name}” zaktualizowano formatem zaznaczenia; zostanie zapisany w dokumencie przy zapisie',
+  appStyleUpdated:
+    'Styl „{name}” zaktualizowano formatem zaznaczenia; zostanie zapisany w dokumencie przy zapisie',
   appStyleCreated: 'Utworzono styl „{name}” i zastosowano go do zaznaczenia',
   appPgNumFormatSet: 'Ustawiono format numerów stron',
   appPageNumFormatTitle: 'Format numeru strony',
@@ -72,8 +76,10 @@ export const pl = {
   appPgNumHintBlank: 'Pozostaw „Rozpocznij od” puste, aby kontynuować od poprzedniej sekcji',
   appPgNumAppliesTo: '; dotyczy sekcji {n}',
   appExportingPdf: 'Eksportowanie PDF…',
+  appExportingHtml: 'Eksportowanie HTML…',
   appExportPdf: 'Eksportuj PDF',
   appExportPdfFailed: 'Eksport PDF nie powiódł się: {error}',
+  appExportHtmlFailed: 'Eksport HTML nie powiódł się: {error}',
   appPrintGroupFailed: 'nie udało się wydrukować grupy stron',
   appPrintTitle: 'Drukuj',
   appPrintProgress: 'Przygotowywanie do drukowania…',
@@ -89,13 +95,20 @@ export const pl = {
   appPrintPrevPage: 'Poprzednia strona',
   appPrintNextPage: 'Następna strona',
   appExportedPdf: 'Wyeksportowano PDF: {path}',
-  appExportedPdfMixed: 'Wyeksportowano PDF: {path} (mieszane rozmiary papieru, {n} grup scalono według stron)',
+  appExportedHtml: 'Wyeksportowano HTML: {path}',
+  appExportedPdfMixed:
+    'Wyeksportowano PDF: {path} (mieszane rozmiary papieru, {n} grup scalono według stron)',
   appExportPdfCanceled: 'Anulowano eksport PDF',
-  appMixedExportOpening: 'Mieszane rozmiary papieru: otwieranie podglądu podziału na strony w celu eksportu ze scaleniem według stron…',
+  appExportHtmlCanceled: 'Anulowano eksport HTML',
+  appMixedExportOpening:
+    'Mieszane rozmiary papieru: otwieranie podglądu podziału na strony w celu eksportu ze scaleniem według stron…',
   appSelectTextToComment: 'Najpierw zaznacz tekst do skomentowania',
-  appCommentSelectionLost: 'Zaznaczenie jest już nieaktualne; zaznacz ponownie tekst do skomentowania',
+  appCommentSelectionLost:
+    'Zaznaczenie jest już nieaktualne; zaznacz ponownie tekst do skomentowania',
   appCommentAdded: 'Dodano komentarz; zostanie zapisany w dokumencie przy zapisie',
-  appCommentAnchorGone: 'Zakotwiczenie pierwotnego komentarza już nie istnieje; nie można odpowiedzieć',
+  appCommentEdited: 'Zaktualizowano komentarz; zostanie zapisany w dokumencie przy zapisie',
+  appCommentAnchorGone:
+    'Zakotwiczenie pierwotnego komentarza już nie istnieje; nie można odpowiedzieć',
   appCommentReplied: 'Dodano odpowiedź; zostanie zapisana w dokumencie przy zapisie',
   appCommentResolvedMsg: 'Komentarz rozwiązany',
   appCommentReopenedMsg: 'Komentarz otwarto ponownie',
@@ -105,6 +118,7 @@ export const pl = {
   appUnknownAuthor: '(Nieznany autor)',
   appResolved: 'Rozwiązano',
   appResolvedComments: 'Rozwiązane komentarze ({n})',
+  appEditComment: 'Edytuj komentarz',
   appDeleteComment: 'Usuń komentarz',
   appDeleteCommentWithReplies: 'Usuń komentarz (wraz z odpowiedziami)',
   appDeleteReply: 'Usuń odpowiedź',
@@ -118,12 +132,14 @@ export const pl = {
   appNoRevisionsToHandle: 'Brak śledzonych zmian do przetworzenia',
   appProtectTitle: 'Chroń dokument',
   appProtectSecurity: 'Zabezpieczenia',
-  appProtectDesc: 'Ustaw hasła otwierania i modyfikacji, ograniczenia edycji oraz opcje prywatności; zastosowane przy zapisie',
+  appProtectDesc:
+    'Ustaw hasła otwierania i modyfikacji, ograniczenia edycji oraz opcje prywatności; zastosowane przy zapisie',
   appOptional: '(opcjonalne)',
   appOptionalBlank: '(opcjonalne)',
   appProtectOpenPwd: 'Hasło do otwarcia tego dokumentu',
   appProtectModifyPwd: 'Hasło do modyfikacji tego dokumentu',
-  appProtectPwdKeepHint: 'Istniejące hasło jest wyświetlane jako kropki: pozostaw bez zmian, aby je zachować, lub wyczyść pole, aby je usunąć',
+  appProtectPwdKeepHint:
+    'Istniejące hasło jest wyświetlane jako kropki: pozostaw bez zmian, aby je zachować, lub wyczyść pole, aby je usunąć',
   appProtectSectionTitle: 'Ochrona',
   appProtectFor: 'Ogranicz edycję',
   appProtectModeTracked: 'Śledzenie zmian',
@@ -133,9 +149,11 @@ export const pl = {
   appProtectUnlockPwd: 'Wprowadź hasło ochrony, aby ją zmienić lub usunąć',
   appProtectPrivacy: 'Prywatność',
   appProtectRemovePersonal: 'Usuwaj metadane autora i organizacji z tego pliku przy zapisywaniu',
-  appProtectUpdated: 'Zaktualizowano ustawienia ochrony; zostaną zastosowane przy zapisie dokumentu',
+  appProtectUpdated:
+    'Zaktualizowano ustawienia ochrony; zostaną zastosowane przy zapisie dokumentu',
   appModifyPwdTitle: 'Chroniony przed zapisem',
-  appModifyPwdBody: 'Dokument „{name}” ma hasło modyfikacji. Wprowadź je, aby edytować, lub otwórz tylko do odczytu.',
+  appModifyPwdBody:
+    'Dokument „{name}” ma hasło modyfikacji. Wprowadź je, aby edytować, lub otwórz tylko do odczytu.',
   appOpenReadOnly: 'Otwórz tylko do odczytu',
   appProtectPwdOptional: 'Hasło ochrony',
   appWrongPassword: 'Nieprawidłowe hasło',
@@ -149,12 +167,16 @@ export const pl = {
   appInksCleared: 'Usunięto cały pismo odręczne; zacznie obowiązywać po zapisaniu',
   appWatermarkSet: 'Ustawiono znak wodny „{text}”; zostanie zapisany w dokumencie przy zapisie',
   appWatermarkRemoved: 'Usunięto znak wodny; zacznie obowiązywać po zapisaniu',
-  appThemeFontsChanged: 'Zmieniono czcionki motywu; zostaną zapisane w dokumencie przy zapisie (style odwołujące się do czcionek motywu działają w programie Word)',
-  appThemeColorsApplied: 'Zastosowano kolory motywu „{name}”; zostaną zapisane w dokumencie przy zapisie',
+  appThemeFontsChanged:
+    'Zmieniono czcionki motywu; zostaną zapisane w dokumencie przy zapisie (style odwołujące się do czcionek motywu działają w programie Word)',
+  appThemeColorsApplied:
+    'Zastosowano kolory motywu „{name}”; zostaną zapisane w dokumencie przy zapisie',
   appSourceAdded: 'Dodano źródło „{title}”; możesz się na nie powołać przez „Wstaw cytat”',
-  appTitlePgOn: 'Włączono „Inne na pierwszej stronie”; przełącz u góry strony, aby edytować nagłówek i stopkę pierwszej strony',
+  appTitlePgOn:
+    'Włączono „Inne na pierwszej stronie”; przełącz u góry strony, aby edytować nagłówek i stopkę pierwszej strony',
   appTitlePgOff: 'Wyłączono „Inne na pierwszej stronie”',
-  appEvenOddOn: 'Włączono „Inne na stronach parzystych i nieparzystych”; przełącz u góry strony, aby edytować nagłówek i stopkę stron parzystych',
+  appEvenOddOn:
+    'Włączono „Inne na stronach parzystych i nieparzystych”; przełącz u góry strony, aby edytować nagłówek i stopkę stron parzystych',
   appEvenOddOff: 'Wyłączono „Inne na stronach parzystych i nieparzystych”',
   appFirstPage: 'Pierwsza strona',
   appOddPage: 'Strony nieparzyste',
@@ -186,7 +208,8 @@ export const pl = {
   appPwdShow: 'Pokaż hasło',
   appPwdHide: 'Ukryj hasło',
   appDocPwdWrong: 'Hasło jest nieprawidłowe. Spróbuj ponownie.',
-  appDocPwdUnsupported: 'Nie można odszyfrować tego dokumentu: schemat szyfrowania nie jest obsługiwany (np. szyfrowanie kontem WPS). Usuń szyfrowanie w oryginalnej aplikacji i spróbuj ponownie.',
+  appDocPwdUnsupported:
+    'Nie można odszyfrować tego dokumentu: schemat szyfrowania nie jest obsługiwany (np. szyfrowanie kontem WPS). Usuń szyfrowanie w oryginalnej aplikacji i spróbuj ponownie.',
   appEncConfirmLabel: 'Potwierdź hasło',
   appEncMismatch: 'Hasła nie są zgodne',
   appRecentDocs: 'Ostatnio używane dokumenty',
@@ -218,13 +241,13 @@ export const pl = {
   appTabBar: 'Paskowy',
   appTabClear: 'Wyczyść',
   appAiSettings: 'Ustawienia AI',
-  appChatOfficeAccount: 'Konto ChatOffice',
+  appGensparkAccount: 'Konto ChatOffice',
   appChecking: 'Sprawdzanie…',
   appLoggedIn: 'Zalogowano',
   appLoggedInEmail: 'Zalogowano: {email}',
   appNotLoggedIn: 'Nie zalogowano (funkcje AI wymagają konta ChatOffice)',
   appWaitingBrowserLogin: 'Oczekiwanie na logowanie w przeglądarce…',
-  appLoginChatOffice: 'Zaloguj się do ChatOffice',
+  appLoginGenspark: 'Zaloguj się do ChatOffice',
   appModel: 'Model',
   appCut: 'Wytnij',
   appCopy: 'Kopiuj',
@@ -236,8 +259,10 @@ export const pl = {
   appRestartNumbering: 'Rozpocznij ponownie od 1',
   appContinueNumbering: 'Kontynuuj numerowanie',
   appSynonyms: 'Synonimy',
-  appSynonymsPrompt: 'Jakie są lepsze synonimy lub bliskie wyrażenia dla „{text}”? Wymień 3–5 z krótkim objaśnieniem różnic; nie modyfikuj dokumentu.',
-  appTranslateSelectionPrompt: 'Przetłumacz aktualnie zaznaczony fragment na {lang}, zastąp oryginał tłumaczeniem, zachowując formatowanie: „{text}”',
+  appSynonymsPrompt:
+    'Jakie są lepsze synonimy lub bliskie wyrażenia dla „{text}”? Wymień 3–5 z krótkim objaśnieniem różnic; nie modyfikuj dokumentu.',
+  appTranslateSelectionPrompt:
+    'Przetłumacz aktualnie zaznaczony fragment na {lang}, zastąp oryginał tłumaczeniem, zachowując formatowanie: „{text}”',
   appAiBadgeTip: 'Używa AI',
   appTranslate: 'Przetłumacz',
   appTranslateTo: 'Przetłumacz na {lang}',
@@ -299,7 +324,7 @@ export const pl = {
   appSpaceBefore: 'Odstęp przed',
   appSpaceAfter: 'Odstęp po',
   appInsertEquation: 'Wstaw równanie',
-  appLatexPlaceholder: 'np. x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: 'np. x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: 'Wpisz LaTeX, aby zobaczyć podgląd',
   appPreviewUnavailable: 'Nie można wygenerować podglądu',
   appInlineEquationToggle: 'Równanie w wierszu (wstawiane przy kursorze, przepływa z tekstem)',
@@ -326,12 +351,16 @@ export const pl = {
   appPvCommented: 'Komentarz',
   appTotalPagesN: 'Stron: {n}',
   appPvHint: 'Migawka tylko do odczytu; po edycji otwórz ponownie · Esc — zamknij',
-  appPvExportTip: 'Eksportuje strona po stronie zgodnie z podglądem; nagłówki, stopki i numery stron odpowiadają temu, co widzisz',
+  appPvExportTip:
+    'Eksportuje strona po stronie zgodnie z podglądem; nagłówki, stopki i numery stron odpowiadają temu, co widzisz',
   appStylesTitle: 'Style',
   appParagraphStyles: 'Style akapitu',
   appCharacterStyles: 'Style znaku',
   appApplyStyle: 'Zastosuj styl {name}',
-  appUpdateStyleTip: 'Zaktualizuj ten styl formatem bieżącego zaznaczenia (zapisywane z powrotem do styles.xml)',
+  appUpdateStyleTip:
+    'Zaktualizuj ten styl formatem bieżącego zaznaczenia (zapisywane z powrotem do styles.xml)',
   appNewStyleFromSelection: 'Nowy styl z bieżącego zaznaczenia',
   appStyleNamePlaceholder: 'Nazwa stylu',
-}
+  appChatOfficeAccount: "Konto ChatOffice",
+  appLoginChatOffice: "Zaloguj się do ChatOffice",
+} satisfies Record<keyof typeof zh, string>

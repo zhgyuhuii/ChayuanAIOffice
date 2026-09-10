@@ -10,13 +10,15 @@ import {
   ModelSettingsPage,
   PanelTabs,
   usePanelTab,
-} from '@chatoffice/ui'
+  AiScopeQuote,
+  type AiScopeQuoteData, } from '@chatoffice/ui'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { clearAiHighlights } from '../editor/aiHighlight'
+import { setInactiveSelectionShown } from '../editor/inactiveSelection'
 import { createMarkdownSkill } from './markdown-skill'
 import { createSearchSkill } from './search-skill'
 import { createElectronTransport } from './transport'
@@ -62,7 +64,12 @@ interface ChatEntry {
   /** the run failed and this user message was rolled back out of the model context */
   undelivered?: boolean
   tools?: ToolActivity[]
+  /** the selection this user message targeted, frozen at send */
+  scope?: AiScopeQuoteData
 }
+
+/** longest selection excerpt echoed on a user bubble */
+const SCOPE_TEXT_MAX = 200
 
 /** structured, not the serialized file text: a body starting with `---` must
  *  never be re-parsed as a frontmatter block on rollback */
@@ -166,13 +173,20 @@ export function AiPanel({
   const runInstructionRef = useRef('')
   /** what the user saw for that instruction (queue submissions show a summary) */
   const runDisplayRef = useRef('')
+  /** the scope quote of the last send, so a retry reuses it instead of re-reading the live selection */
+  const lastScopeRef = useRef<AiScopeQuoteData | undefined>(undefined)
   const runMutatedRef = useRef(false)
   /** tool activity of the whole run, for transcript persistence */
   const runToolsRef = useRef<ToolActivity[]>([])
   const chatIdsRef = useRef<{ projectId: string; chatId: string } | null>(null)
   /** messages sent before resolveChat returned, flushed once the chat id is known */
   const pendingPersistRef = useRef<
-    Array<{ role: 'user' | 'assistant'; text: string; tools?: ToolActivity[] }>
+    Array<{
+      role: 'user' | 'assistant'
+      text: string
+      tools?: ToolActivity[]
+      scope?: AiScopeQuoteData
+    }>
   >([])
 
   const patchLast = (patch: Partial<ChatEntry> | ((last: ChatEntry) => Partial<ChatEntry>)) => {
@@ -185,11 +199,16 @@ export function AiPanel({
     })
   }
 
-  const persistMessage = (role: 'user' | 'assistant', text: string, tools?: ToolActivity[]) => {
+  const persistMessage = (
+    role: 'user' | 'assistant',
+    text: string,
+    tools?: ToolActivity[],
+    scope?: AiScopeQuoteData,
+  ) => {
     const ids = chatIdsRef.current
     if (!window.projectApi) return
     if (!ids) {
-      pendingPersistRef.current.push({ role, text, tools })
+      pendingPersistRef.current.push({ role, text, tools, scope })
       return
     }
     void window.projectApi
@@ -199,6 +218,7 @@ export function AiPanel({
         role,
         text,
         ...(tools && tools.length > 0 ? { tools } : {}),
+        ...(scope ? { scope } : {}),
       })
       .catch(() => {
         /* persistence failures are silent */
@@ -212,10 +232,14 @@ export function AiPanel({
       // the request carries only the selection; the owning main process resolves profile + secret
       transport: createElectronTransport(() => settingsRef.current!.currentModel!),
       skill: composeSkills('markdown+search', '', [
-        createMarkdownSkill(() => depsRef.current.getEditor(), {
-          read: () => depsRef.current.getFrontmatter(),
-          write: (inner) => depsRef.current.setFrontmatter(inner),
-        }),
+        createMarkdownSkill(
+          () => depsRef.current.getEditor(),
+          {
+            read: () => depsRef.current.getFrontmatter(),
+            write: (inner) => depsRef.current.setFrontmatter(inner),
+          },
+          () => false // image-gen capability deferred: local media layer wiring pending (docs/upstream-sync.md round-2),
+        ),
         createSearchSkill(),
       ]),
       captureSnapshot: () => depsRef.current.getSnapshot(),
@@ -331,7 +355,7 @@ export function AiPanel({
       .then((ids) => {
         chatIdsRef.current = ids
         for (const msg of pendingPersistRef.current.splice(0)) {
-          persistMessage(msg.role, msg.text, msg.tools)
+          persistMessage(msg.role, msg.text, msg.tools, msg.scope)
         }
         return api.loadChat({ projectId: ids.projectId, chatId: ids.chatId, limit: 200 })
       })
@@ -352,6 +376,7 @@ export function AiPanel({
               isError: tool.isError,
               output: tool.output ? tool.output.slice(0, TOOL_OUTPUT_MAX_CHARS) : undefined,
             })),
+            ...(m.scope ? { scope: m.scope } : {}),
           }))
         })
         if (applied && !loopRef.current?.busy) {
@@ -390,7 +415,8 @@ export function AiPanel({
     stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48
   }
 
-  const send = (text: string, displayText?: string): void => {
+  /** retryScope: null = a retry that had no scope; undefined = capture the live selection */
+  const send = (text: string, displayText?: string, retryScope?: AiScopeQuoteData | null): void => {
     const instruction = text.trim()
     const loop = loopRef.current
     if (!instruction || !loop || loop.busy) return
@@ -399,6 +425,16 @@ export function AiPanel({
     runDisplayRef.current = displayText ?? instruction
     runMutatedRef.current = false
     runToolsRef.current = []
+    // a queue batch carries its own display text: no selection quote
+    const scope =
+      retryScope !== undefined
+        ? (retryScope ?? undefined)
+        : displayText === undefined
+          ? selectionScopeQuote()
+          : undefined
+    lastScopeRef.current = scope
+    // the popover input / composer own the DOM selection now: keep the targeted range visible until the run ends
+    if (scope) setInactiveSelectionShown(depsRef.current.getEditor(), true)
     setChat((prev) => [
       ...prev,
       { role: 'user', text: displayText ?? instruction },
@@ -408,7 +444,7 @@ export function AiPanel({
     setBusy(true)
     // persist what the user saw — a restored transcript must not surface the
     // internal batch protocol text behind a queue submission
-    persistMessage('user', displayText ?? instruction)
+    persistMessage('user', displayText ?? instruction, undefined, scope)
     void (async () => {
       try {
         settingsRef.current = await window.markdownApi.getAiSettings()
@@ -428,7 +464,8 @@ export function AiPanel({
 
   const stop = (): void => loopRef.current?.cancel()
 
-  const retry = (): void => send(runInstructionRef.current, runDisplayRef.current)
+  const retry = (): void =>
+    send(runInstructionRef.current, runDisplayRef.current, lastScopeRef.current ?? null)
 
   // keep the scope chip & queue rows in sync with the editor selection/content
   useEffect(() => {
@@ -459,6 +496,32 @@ export function AiPanel({
   const clearScopeSelection = (): void => {
     if (editor) editor.commands.setTextSelection(editor.state.selection.to)
   }
+
+  const selectionScopeQuote = (): AiScopeQuoteData | undefined => {
+    const ed = depsRef.current.getEditor()
+    if (!ed || ed.state.selection.empty) return undefined
+    const { from, to } = ed.state.selection
+    const text = ed.state.doc.textBetween(from, to, ' ', ' ').replace(/\s+/g, ' ').trim()
+    if (!text) return undefined
+    return {
+      label: t('aiScopeSelection', { words: countWords(text) }),
+      text: text.length > SCOPE_TEXT_MAX ? `${text.slice(0, SCOPE_TEXT_MAX)}…` : text,
+    }
+  }
+
+  // the frozen-range highlight ends with the run, or as soon as the editor is focused again
+  useEffect(() => {
+    if (!busy) setInactiveSelectionShown(depsRef.current.getEditor(), false)
+  }, [busy])
+  useEffect(() => {
+    const ed = depsRef.current.getEditor()
+    if (!ed) return
+    const off = () => setInactiveSelectionShown(ed, false)
+    ed.on('focus', off)
+    return () => {
+      ed.off('focus', off)
+    }
+  }, [])
 
   /** [label](mdnav://block/N) links in replies select and scroll to that block */
   const docNav = {
@@ -621,12 +684,16 @@ export function AiPanel({
           if (entry.role === 'user') {
             return (
               <div key={i} className="ai-msg ai-msg-user">
+                {entry.scope && <AiScopeQuote scope={entry.scope} />}
                 <span dir="auto">{entry.text}</span>
                 {entry.undelivered && (
                   <div className="ai-msg-undelivered">
                     {t('aiUndelivered')}
                     {!busy && (
-                      <button className="ai-retry-btn" onClick={() => send(entry.text)}>
+                      <button
+                        className="ai-retry-btn"
+                        onClick={() => send(entry.text, undefined, entry.scope ?? null)}
+                      >
                         {t('aiRetry')}
                       </button>
                     )}

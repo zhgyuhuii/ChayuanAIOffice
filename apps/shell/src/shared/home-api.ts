@@ -16,6 +16,7 @@ import type {
   CreateDocumentResult,
 } from '../../../docs/src/shared/ipc'
 import type { UpdateChannel } from './update-api'
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 
 /** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
 export type UiLanguage =
@@ -33,6 +34,7 @@ export type UiLanguage =
   | 'pt'
   | 'it'
   | 'pl'
+  | 'cs'
   | 'nl'
   | 'ms'
   | 'he'
@@ -41,6 +43,12 @@ export type UiLanguage =
 
 /** UI theme preference */
 export type UiTheme = 'light' | 'dark' | 'system'
+
+/** shell-wide AutoSave default for every editor; updatedAt is 0 until first set */
+export interface AutoSaveDefault {
+  on: boolean
+  updatedAt: number
+}
 
 /** a recent file entry shown on the home screen; type derives from the extension */
 export interface RecentEntry {
@@ -106,6 +114,8 @@ export interface HomeApi {
   newSlide(opts?: { projectId?: string }): Promise<void>
   /** open a blank markdown editor tab */
   newMarkdown(opts?: { projectId?: string }): Promise<void>
+  /** open a blank html editor tab */
+  newHtml(opts?: { projectId?: string }): Promise<void>
   /** create a blank single-page PDF in the default save folder and open it */
   newPdf(opts?: { projectId?: string }): Promise<void>
   /** Untitled temp-backed documents (crashed before first save) offered on the Home restore banner */
@@ -154,6 +164,10 @@ export interface HomeApi {
   getTheme(): Promise<UiTheme>
   /** switch + persist the UI theme; broadcasts 'app:theme-changed' to all web contents */
   setTheme(theme: UiTheme): Promise<void>
+  /** AutoSave default applied by every editor window (persisted in userData/app-settings.json) */
+  getAutoSaveDefault(): Promise<AutoSaveDefault>
+  /** persist the AutoSave default; broadcasts 'app:auto-save-default-changed' to all web contents */
+  setAutoSaveDefault(on: boolean): Promise<void>
   /** whether anonymous usage statistics are enabled (default true in official builds) */
   getAnalyticsEnabled(): Promise<boolean>
   /** persist an explicit analytics opt-in or opt-out */
@@ -215,6 +229,9 @@ export interface HomeApi {
   chatSessionsLoad(): Promise<HomeChatSession[]>
   /** persist home chat sessions */
   chatSessionsSave(sessions: HomeChatSession[]): Promise<void>
+  /** AI panel layout prefs (upstream parity; applied by editor panels) */
+  getAiPanelPrefs(): Promise<AiPanelPrefs>
+  setAiPanelPrefs(patch: Partial<AiPanelPrefs>): Promise<AiPanelPrefs>
 }
 
 // ── Home chat (AI agent on the home screen) ─────────────────
@@ -384,6 +401,7 @@ export const HOME_CHANNELS = {
   newSheet: 'home:new-sheet',
   newSlide: 'home:new-slide',
   newMarkdown: 'home:new-markdown',
+  newHtml: 'home:new-html',
   newPdf: 'home:new-pdf',
   listPendingUntitled: 'home:list-pending-untitled',
   restorePendingUntitled: 'home:restore-pending-untitled',
@@ -408,8 +426,12 @@ export const HOME_CHANNELS = {
   setOnboardingSeen: 'home:set-onboarding-seen',
   getTheme: 'home:get-theme',
   setTheme: 'home:set-theme',
+  getAutoSaveDefault: 'home:get-auto-save-default',
+  setAutoSaveDefault: 'home:set-auto-save-default',
   getAnalyticsEnabled: 'home:get-analytics-enabled',
   setAnalyticsEnabled: 'home:set-analytics-enabled',
+  getAiPanelPrefs: 'home:get-ai-panel-prefs',
+  setAiPanelPrefs: 'home:set-ai-panel-prefs',
   getDefaultSaveDir: 'home:get-default-save-dir',
   pickDefaultSaveDir: 'home:pick-default-save-dir',
   openGenTeam: 'home:open-genteam',

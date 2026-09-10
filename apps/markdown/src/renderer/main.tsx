@@ -9,9 +9,11 @@ import '@chatoffice/ui/dropdown.css'
 import '@chatoffice/ui/dock.css'
 import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
+import '@chatoffice/ui/ai-panel-prefs.css'
+import '@chatoffice/ui/ai-scope-quote.css'
 import 'katex/dist/katex.min.css'
 import './styles.css'
-import { installScreenTips } from '@chatoffice/ui'
+import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 
 installScreenTips()
 
@@ -28,6 +30,11 @@ void (async () => {
   document.documentElement.lang = htmlLang(lang as Lang)
   applyTheme(theme)
   window.markdownApi.onThemeChanged(applyTheme)
+  void window.markdownApi
+    ?.getAiPanelPrefs?.()
+    .then(applyAiPanelPrefs)
+    .catch(() => {})
+  window.markdownApi?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
   createRoot(document.getElementById('root')!).render(
     <LocaleProvider initial={lang}>
       <App />

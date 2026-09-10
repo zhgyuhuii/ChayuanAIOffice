@@ -723,9 +723,11 @@ export function InsertTab({
   onTitlePg,
   evenOddHf,
   onEvenOddHf,
-  commentCount,
-  onShowComments,
   insertImageDialogOpen,
+  canComment,
+  onNewComment,
+  isProtected,
+  commentsAllowed,
 }: InsertTabProps) {
   const { t, lang } = useI18n()
   const [grid, setGrid] = useState<{ r: number; c: number }>({ r: 0, c: 0 })
@@ -1360,15 +1362,15 @@ export function InsertTab({
 
       <div className="ribbon-group">
         <div className="ribbon-group-items">
+          {/* Word: Insert → Comment starts a new comment; the pane toggle stays on Review.
+              Deliberately not gated on this tab's hasDoc (= canEdit): under the comments-only
+              restriction the body is read-only yet commenting stays allowed, matching the
+              Review tab's New Comment. Without a document canComment is false anyway. */}
           <button
             className="rb-big"
-            disabled={!hasDoc}
-            data-tip={
-              commentCount > 0
-                ? t('ribbonViewCommentsTip', { count: commentCount })
-                : t('ribbonViewCommentsNoneTip')
-            }
-            onClick={onShowComments}
+            disabled={!canComment || (isProtected && !commentsAllowed)}
+            data-tip={canComment ? t('ribbonNewCommentTip') : t('ribbonNewCommentSelectTip')}
+            onClick={onNewComment}
           >
             <span className="rb-big-icon">
               <IconComment size={BIG} />

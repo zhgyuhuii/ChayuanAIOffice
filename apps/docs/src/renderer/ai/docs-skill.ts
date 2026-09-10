@@ -17,6 +17,9 @@ import {
   type FrozenSelection,
 } from './tools'
 
+const _IMAGE_GEN_OFF_NOTE =
+  '\n\nNote: generate_image is currently unavailable (no image provider: signed out of ChatOffice or cloud tools off, and no media API key in Settings). Do not call or promise it; use image_search for imagery.'
+
 /**
  * One-line steering from the global default image source
  * (docs/image-source-plan.md #9 — the interactive docs counterpart of the

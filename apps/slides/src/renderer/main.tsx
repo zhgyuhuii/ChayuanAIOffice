@@ -13,8 +13,10 @@ import '@chatoffice/ui/dock.css'
 import '@chatoffice/ribbon/tab-strip.css'
 import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
+import '@chatoffice/ui/ai-panel-prefs.css'
+import '@chatoffice/ui/ai-scope-quote.css'
 import './styles.css'
-import { installScreenTips } from '@chatoffice/ui'
+import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 installScreenTips()
@@ -75,6 +77,11 @@ async function bootstrap(): Promise<void> {
   if (mode !== 'audience') {
     applyTheme(theme)
     window.slidesApi?.onThemeChanged(applyTheme)
+    void window.slidesApi
+      ?.getAiPanelPrefs?.()
+      .then(applyAiPanelPrefs)
+      .catch(() => {})
+    window.slidesApi?.onAiPanelPrefsChanged?.(applyAiPanelPrefs)
   }
   installAnchorPanelFallback()
   createRoot(document.getElementById('root')!).render(

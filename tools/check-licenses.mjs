@@ -35,6 +35,8 @@ const EXCEPTIONS = {
   '@univerjs/telemetry': 'Apache-2.0',
   // echarts-gl 的 WebGL 引擎;发布包无 license 字段,LICENSE 文件实为 BSD-2-Clause
   claygl: 'BSD-2-Clause',
+  // mermaid dependency; ships an MIT `license` file but no package.json field
+  khroma: 'MIT',
 }
 
 /** Minimal SPDX expression check: OR passes if any branch is allowed,

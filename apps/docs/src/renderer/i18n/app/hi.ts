@@ -1,4 +1,5 @@
-/** app strings, hi (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const hi = {
   appScTitle: 'कीबोर्ड शॉर्टकट',
   appScFilter: 'शॉर्टकट खोजें',
@@ -44,7 +45,8 @@ export const hi = {
   appOpenedFile: '{name} खोला गया',
   appOpenFailed: 'खोलने में विफल: {error}',
   appFontsMissing: 'दस्तावेज़ के फ़ॉन्ट इंस्टॉल नहीं हैं: {names} (विकल्प फ़ॉन्ट दिखाए गए)',
-  appVerticalTextNotice: 'इस दस्तावेज़ में लंबवत पाठ है (फ़िलहाल क्षैतिज रूप में दिखाया गया है; सहेजने पर असर नहीं)',
+  appVerticalTextNotice:
+    'इस दस्तावेज़ में लंबवत पाठ है (फ़िलहाल क्षैतिज रूप में दिखाया गया है; सहेजने पर असर नहीं)',
   appNewDocCreated: 'खाली दस्तावेज़ बनाया गया। बाईं ओर AI पैनल में बताएँ कि क्या जनरेट करना है।',
   appNewFailed: 'दस्तावेज़ बनाने में विफल: {error}',
   appSaveFailed: 'सहेजने में विफल: {error}',
@@ -56,7 +58,8 @@ export const hi = {
   appBreakContinuous: 'निरंतर',
   appBreakEvenPage: 'सम पृष्ठ',
   appBreakOddPage: 'विषम पृष्ठ',
-  appSectionSettingsApplied: 'पृष्ठ सेटअप अनुभाग {n} पर लागू किया गया; सहेजने पर दस्तावेज़ में लिखा जाएगा',
+  appSectionSettingsApplied:
+    'पृष्ठ सेटअप अनुभाग {n} पर लागू किया गया; सहेजने पर दस्तावेज़ में लिखा जाएगा',
   appNumberingRestarted: 'क्रमांकन फिर से शुरू किया गया',
   appNumberingContinued: 'क्रमांकन जारी रखा गया',
   appFieldInserted: 'फ़ील्ड {instr} सम्मिलित किया गया',
@@ -72,8 +75,10 @@ export const hi = {
   appPgNumHintBlank: 'पिछले अनुभाग से जारी रखने के लिए "यहाँ से शुरू करें" खाली छोड़ें',
   appPgNumAppliesTo: '; अनुभाग {n} पर लागू',
   appExportingPdf: 'PDF निर्यात हो रहा है…',
+  appExportingHtml: 'HTML निर्यात हो रहा है…',
   appExportPdf: 'PDF निर्यात करें',
   appExportPdfFailed: 'PDF निर्यात विफल: {error}',
+  appExportHtmlFailed: 'HTML निर्यात विफल: {error}',
   appPrintGroupFailed: 'पृष्ठ समूह प्रिंट करने में विफल',
   appPrintTitle: 'प्रिंट करें',
   appPrintProgress: 'मुद्रण की तैयारी हो रही है…',
@@ -89,12 +94,17 @@ export const hi = {
   appPrintPrevPage: 'पिछला पृष्ठ',
   appPrintNextPage: 'अगला पृष्ठ',
   appExportedPdf: 'PDF निर्यात किया गया: {path}',
-  appExportedPdfMixed: 'PDF निर्यात किया गया: {path} (मिश्रित कागज़ आकार, {n} समूह पृष्ठ अनुसार मर्ज किए गए)',
+  appExportedHtml: 'HTML निर्यात किया गया: {path}',
+  appExportedPdfMixed:
+    'PDF निर्यात किया गया: {path} (मिश्रित कागज़ आकार, {n} समूह पृष्ठ अनुसार मर्ज किए गए)',
   appExportPdfCanceled: 'PDF निर्यात रद्द किया गया',
-  appMixedExportOpening: 'मिश्रित कागज़ आकार: पृष्ठ अनुसार मर्ज करके निर्यात के लिए पृष्ठांकन पूर्वावलोकन खोला जा रहा है…',
+  appExportHtmlCanceled: 'HTML निर्यात रद्द किया गया',
+  appMixedExportOpening:
+    'मिश्रित कागज़ आकार: पृष्ठ अनुसार मर्ज करके निर्यात के लिए पृष्ठांकन पूर्वावलोकन खोला जा रहा है…',
   appSelectTextToComment: 'पहले वह टेक्स्ट चुनें जिस पर टिप्पणी करनी है',
   appCommentSelectionLost: 'चयन अब मान्य नहीं है; टिप्पणी के लिए टेक्स्ट फिर से चुनें',
   appCommentAdded: 'टिप्पणी जोड़ी गई; सहेजने पर दस्तावेज़ में लिखी जाएगी',
+  appCommentEdited: 'टिप्पणी अपडेट की गई; सहेजने पर दस्तावेज़ में लिखी जाएगी',
   appCommentAnchorGone: 'मूल टिप्पणी का एंकर अब मौजूद नहीं है; जवाब नहीं दिया जा सकता',
   appCommentReplied: 'जवाब जोड़ा गया; सहेजने पर दस्तावेज़ में लिखा जाएगा',
   appCommentResolvedMsg: 'टिप्पणी हल की गई',
@@ -105,6 +115,7 @@ export const hi = {
   appUnknownAuthor: '(अज्ञात लेखक)',
   appResolved: 'हल हो गया',
   appResolvedComments: 'हल की गई टिप्पणियाँ ({n})',
+  appEditComment: 'टिप्पणी संपादित करें',
   appDeleteComment: 'टिप्पणी हटाएँ',
   appDeleteCommentWithReplies: 'टिप्पणी हटाएँ (जवाबों सहित)',
   appDeleteReply: 'जवाब हटाएँ',
@@ -118,12 +129,14 @@ export const hi = {
   appNoRevisionsToHandle: 'संसाधित करने के लिए कोई ट्रैक किया गया परिवर्तन नहीं',
   appProtectTitle: 'दस्तावेज़ सुरक्षित करें',
   appProtectSecurity: 'सुरक्षा',
-  appProtectDesc: 'खोलने/संशोधित करने के पासवर्ड, संपादन प्रतिबंध और गोपनीयता विकल्प सेट करें; सहेजने पर लागू',
+  appProtectDesc:
+    'खोलने/संशोधित करने के पासवर्ड, संपादन प्रतिबंध और गोपनीयता विकल्प सेट करें; सहेजने पर लागू',
   appOptional: '(वैकल्पिक)',
   appOptionalBlank: '(वैकल्पिक)',
   appProtectOpenPwd: 'इस दस्तावेज़ को खोलने का पासवर्ड',
   appProtectModifyPwd: 'इस दस्तावेज़ को संशोधित करने का पासवर्ड',
-  appProtectPwdKeepHint: 'मौजूदा पासवर्ड बिंदुओं के रूप में दिखता है: बनाए रखने के लिए उसे वैसा ही छोड़ें, या हटाने के लिए फ़ील्ड खाली करें',
+  appProtectPwdKeepHint:
+    'मौजूदा पासवर्ड बिंदुओं के रूप में दिखता है: बनाए रखने के लिए उसे वैसा ही छोड़ें, या हटाने के लिए फ़ील्ड खाली करें',
   appProtectSectionTitle: 'संरक्षण',
   appProtectFor: 'संपादन प्रतिबंधित करें',
   appProtectModeTracked: 'परिवर्तन ट्रैकिंग',
@@ -135,7 +148,8 @@ export const hi = {
   appProtectRemovePersonal: 'सहेजते समय इस फ़ाइल से लेखक और संगठन का मेटाडेटा हटाएँ',
   appProtectUpdated: 'सुरक्षा सेटिंग्स अपडेट हुईं; दस्तावेज़ सहेजने पर लागू होंगी',
   appModifyPwdTitle: 'लेखन-सुरक्षित',
-  appModifyPwdBody: '"{name}" में संशोधन पासवर्ड सेट है। संपादित करने के लिए उसे दर्ज करें, या केवल पढ़ने के लिए खोलें।',
+  appModifyPwdBody:
+    '"{name}" में संशोधन पासवर्ड सेट है। संपादित करने के लिए उसे दर्ज करें, या केवल पढ़ने के लिए खोलें।',
   appOpenReadOnly: 'केवल पढ़ने के लिए खोलें',
   appProtectPwdOptional: 'सुरक्षा पासवर्ड',
   appWrongPassword: 'गलत पासवर्ड',
@@ -149,12 +163,15 @@ export const hi = {
   appInksCleared: 'सारी स्याही हटा दी गई; सहेजने के बाद प्रभावी होगा',
   appWatermarkSet: 'वॉटरमार्क "{text}" सेट किया गया; सहेजने पर दस्तावेज़ में लिखा जाएगा',
   appWatermarkRemoved: 'वॉटरमार्क हटाया गया; सहेजने के बाद प्रभावी होगा',
-  appThemeFontsChanged: 'थीम फ़ॉन्ट बदले गए; सहेजने पर दस्तावेज़ में लिखे जाएँगे (थीम फ़ॉन्ट का संदर्भ देने वाली शैलियाँ Word में प्रभावी होती हैं)',
+  appThemeFontsChanged:
+    'थीम फ़ॉन्ट बदले गए; सहेजने पर दस्तावेज़ में लिखे जाएँगे (थीम फ़ॉन्ट का संदर्भ देने वाली शैलियाँ Word में प्रभावी होती हैं)',
   appThemeColorsApplied: 'थीम रंग "{name}" लागू किए गए; सहेजने पर दस्तावेज़ में लिखे जाएँगे',
   appSourceAdded: 'स्रोत "{title}" जोड़ा गया; "उद्धरण सम्मिलित करें" के ज़रिए इसका संदर्भ दें',
-  appTitlePgOn: '"पहला पृष्ठ भिन्न" चालू किया गया; पहले पृष्ठ के शीर्षलेख और पादलेख संपादित करने के लिए पृष्ठ के शीर्ष पर स्विच करें',
+  appTitlePgOn:
+    '"पहला पृष्ठ भिन्न" चालू किया गया; पहले पृष्ठ के शीर्षलेख और पादलेख संपादित करने के लिए पृष्ठ के शीर्ष पर स्विच करें',
   appTitlePgOff: '"पहला पृष्ठ भिन्न" बंद किया गया',
-  appEvenOddOn: '"सम और विषम पृष्ठ भिन्न" चालू किया गया; सम पृष्ठों के शीर्षलेख और पादलेख संपादित करने के लिए पृष्ठ के शीर्ष पर स्विच करें',
+  appEvenOddOn:
+    '"सम और विषम पृष्ठ भिन्न" चालू किया गया; सम पृष्ठों के शीर्षलेख और पादलेख संपादित करने के लिए पृष्ठ के शीर्ष पर स्विच करें',
   appEvenOddOff: '"सम और विषम पृष्ठ भिन्न" बंद किया गया',
   appFirstPage: 'पहला पृष्ठ',
   appOddPage: 'विषम पृष्ठ',
@@ -186,7 +203,8 @@ export const hi = {
   appPwdShow: 'पासवर्ड दिखाएँ',
   appPwdHide: 'पासवर्ड छिपाएँ',
   appDocPwdWrong: 'पासवर्ड गलत है। फिर से प्रयास करें।',
-  appDocPwdUnsupported: 'इस दस्तावेज़ को डिक्रिप्ट नहीं किया जा सकता: इसकी एन्क्रिप्शन विधि समर्थित नहीं है (जैसे WPS खाता एन्क्रिप्शन)। मूल ऐप में एन्क्रिप्शन हटाकर फिर से प्रयास करें।',
+  appDocPwdUnsupported:
+    'इस दस्तावेज़ को डिक्रिप्ट नहीं किया जा सकता: इसकी एन्क्रिप्शन विधि समर्थित नहीं है (जैसे WPS खाता एन्क्रिप्शन)। मूल ऐप में एन्क्रिप्शन हटाकर फिर से प्रयास करें।',
   appEncConfirmLabel: 'पासवर्ड की पुष्टि करें',
   appEncMismatch: 'पासवर्ड मेल नहीं खाते',
   appRecentDocs: 'हाल के दस्तावेज़',
@@ -218,13 +236,13 @@ export const hi = {
   appTabBar: 'बार',
   appTabClear: 'साफ़ करें',
   appAiSettings: 'AI सेटिंग्स',
-  appChatOfficeAccount: 'ChatOffice खाता',
+  appGensparkAccount: 'ChatOffice खाता',
   appChecking: 'जाँच हो रही है…',
   appLoggedIn: 'साइन इन किया गया',
   appLoggedInEmail: 'साइन इन: {email}',
   appNotLoggedIn: 'साइन इन नहीं किया गया (AI सुविधाओं के लिए ChatOffice खाता आवश्यक है)',
   appWaitingBrowserLogin: 'ब्राउज़र साइन-इन की प्रतीक्षा हो रही है…',
-  appLoginChatOffice: 'ChatOffice में साइन इन करें',
+  appLoginGenspark: 'ChatOffice में साइन इन करें',
   appModel: 'मॉडल',
   appCut: 'काटें',
   appCopy: 'कॉपी करें',
@@ -236,8 +254,10 @@ export const hi = {
   appRestartNumbering: '1 से फिर से शुरू करें',
   appContinueNumbering: 'क्रमांकन जारी रखें',
   appSynonyms: 'पर्यायवाची',
-  appSynonymsPrompt: '"{text}" के लिए बेहतर पर्यायवाची या मिलते-जुलते भाव क्या हैं? 3-5 सूचीबद्ध करें और अंतर संक्षेप में बताएं; दस्तावेज़ में बदलाव न करें।',
-  appTranslateSelectionPrompt: 'वर्तमान में चयनित अंश का {lang} में अनुवाद करें, मूल पाठ को अनुवाद से बदलें और स्वरूपण अपरिवर्तित रखें: "{text}"',
+  appSynonymsPrompt:
+    '"{text}" के लिए बेहतर पर्यायवाची या मिलते-जुलते भाव क्या हैं? 3-5 सूचीबद्ध करें और अंतर संक्षेप में बताएं; दस्तावेज़ में बदलाव न करें।',
+  appTranslateSelectionPrompt:
+    'वर्तमान में चयनित अंश का {lang} में अनुवाद करें, मूल पाठ को अनुवाद से बदलें और स्वरूपण अपरिवर्तित रखें: "{text}"',
   appAiBadgeTip: 'AI का उपयोग करता है',
   appTranslate: 'अनुवाद करें',
   appTranslateTo: '{lang} में अनुवाद करें',
@@ -299,7 +319,7 @@ export const hi = {
   appSpaceBefore: 'पहले रिक्ति',
   appSpaceAfter: 'बाद में रिक्ति',
   appInsertEquation: 'समीकरण सम्मिलित करें',
-  appLatexPlaceholder: 'जैसे x = \\\\frac{-b \\\\pm \\\\sqrt{b^2-4ac}}{2a}',
+  appLatexPlaceholder: 'जैसे x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
   appLatexPreviewHint: 'पूर्वावलोकन देखने के लिए LaTeX लिखें',
   appPreviewUnavailable: 'पूर्वावलोकन जनरेट नहीं किया जा सका',
   appInlineEquationToggle: 'इनलाइन समीकरण (कर्सर पर सम्मिलित, टेक्स्ट के साथ प्रवाहित)',
@@ -326,7 +346,8 @@ export const hi = {
   appPvCommented: 'टिप्पणी',
   appTotalPagesN: 'कुल {n} पृष्ठ',
   appPvHint: 'केवल-पठन स्नैपशॉट; संपादन के बाद फिर से खोलें · बंद करने के लिए Esc',
-  appPvExportTip: 'पूर्वावलोकन के अनुसार पृष्ठ-दर-पृष्ठ निर्यात करता है; शीर्षलेख, पादलेख और पृष्ठ संख्याएँ वैसी ही रहती हैं जैसी आप देखते हैं',
+  appPvExportTip:
+    'पूर्वावलोकन के अनुसार पृष्ठ-दर-पृष्ठ निर्यात करता है; शीर्षलेख, पादलेख और पृष्ठ संख्याएँ वैसी ही रहती हैं जैसी आप देखते हैं',
   appStylesTitle: 'शैलियाँ',
   appParagraphStyles: 'अनुच्छेद शैलियाँ',
   appCharacterStyles: 'वर्ण शैलियाँ',
@@ -334,4 +355,6 @@ export const hi = {
   appUpdateStyleTip: 'वर्तमान चयन से इस शैली को अपडेट करें (styles.xml में वापस लिखा जाता है)',
   appNewStyleFromSelection: 'वर्तमान चयन से नई शैली',
   appStyleNamePlaceholder: 'शैली का नाम',
-}
+  appChatOfficeAccount: "ChatOffice खाता",
+  appLoginChatOffice: "ChatOffice में साइन इन करें",
+} satisfies Record<keyof typeof zh, string>

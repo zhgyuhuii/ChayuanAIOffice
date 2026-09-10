@@ -1,3 +1,4 @@
+import type { AiPanelPrefs } from '@chatoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import type { RenderSlide } from '@chatoffice/pptx-render'
@@ -85,6 +86,7 @@ import type {
   MenuCommand,
   OpenResult,
   SlidesApi,
+  AutoSaveDefault,
   UiTheme,
   SetEffectsPatch,
 } from '../shared/ipc'
@@ -104,6 +106,18 @@ const api: SlidesApi = {
     const listener = (_event: IpcRendererEvent, theme: UiTheme) => handler(theme)
     ipcRenderer.on('app:theme-changed', listener)
     return () => ipcRenderer.removeListener('app:theme-changed', listener)
+  },
+  getAutoSaveDefault: () => ipcRenderer.invoke('app:get-auto-save-default'),
+  onAutoSaveDefaultChanged: (handler) => {
+    const listener = (_event: IpcRendererEvent, value: AutoSaveDefault) => handler(value)
+    ipcRenderer.on('app:auto-save-default-changed', listener)
+    return () => ipcRenderer.removeListener('app:auto-save-default-changed', listener)
+  },
+  getAiPanelPrefs: () => ipcRenderer.invoke('app:get-ai-panel-prefs'),
+  onAiPanelPrefsChanged: (handler) => {
+    const listener = (_event: IpcRendererEvent, prefs: AiPanelPrefs) => handler(prefs)
+    ipcRenderer.on('app:ai-panel-prefs-changed', listener)
+    return () => ipcRenderer.removeListener('app:ai-panel-prefs-changed', listener)
   },
   onChromePressed: (handler) => {
     const listener = () => handler()
@@ -224,6 +238,7 @@ const api: SlidesApi = {
   editStroke: (op: EditStrokeOp) => ipcRenderer.invoke('slides:edit-stroke', op),
   flipElements: (op: FlipElementOp) => ipcRenderer.invoke('slides:flip-elements', op),
   editBackground: (op: EditBackgroundOp) => ipcRenderer.invoke('slides:edit-background', op),
+  pickPictureFile: () => ipcRenderer.invoke('slides:pick-picture-file'),
   insertImage: (slideIndex: number, fitWidthPx: number) =>
     ipcRenderer.invoke('slides:insert-image', slideIndex, fitWidthPx),
   copySlide: (slideIndex: number, pngBase64?: string) =>

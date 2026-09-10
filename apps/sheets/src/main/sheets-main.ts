@@ -1057,6 +1057,71 @@ const tMain = createI18n({
     csvKeepFormatDetail:
       'CSV zachowuje tylko wartości jednego arkusza — formuły, formatowanie i dodatkowe arkusze nie są zapisywane w pliku .csv.',
   },
+  cs: {
+    filterSpreadsheets: 'Tabulky',
+    filterXlsx: 'Sešity Excelu',
+    filterXlsm: 'Sešity Excelu s podporou maker',
+    dlgAddAttachment: 'Přidat přílohy',
+    filterSupported: 'Podporované soubory',
+    filterAll: 'Všechny soubory',
+    errUnsupportedExt: 'soubory .{ext} nejsou podporovány',
+    errNotFile: 'není soubor',
+    errTooLarge: 'překračuje limit {mb} MB',
+    errImageTooLarge: 'obrázek překračuje limit 5 MB',
+    errUnreadable: 'nelze přečíst',
+    errFileTooLarge: 'Soubor překračuje limit velikosti',
+    errParseFailed: 'Soubor se nepodařilo zpracovat',
+    errImageNoText:
+      'Obrázkové přílohy neobsahují text; obrázek se odesílá spolu se zprávou uživatele',
+    errNotImage: 'nepodporovaný typ obrázku',
+    errChatOfficeNotLoggedIn:
+      'Nejste přihlášeni ke Genspark: klikněte níže na „Přihlásit se ke Genspark“, přihlaste se a zkuste to znovu',
+    errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
+    errAiBusy: 'Služba AI je momentálně zaneprázdněna — zkuste to prosím za chvíli znovu',
+    errNoModel: 'Není nakonfigurován název modelu',
+    errImgAbsPath: 'Cesta k obrázku musí být absolutní.',
+    errImgNotFound: 'Soubor obrázku nebyl nalezen: {path}',
+    errImgTooLarge20: 'Obrázek překračuje 20 MB a nelze ho vložit.',
+    errImgBadType: 'Soubor není obrázek PNG/JPEG/GIF.',
+    errDiskChanged: 'Sešit byl po otevření změněn na disku — použijte místo toho Uložit jako.',
+    autosaveFoundTitle: 'Nalezena obnovená verze',
+    autosaveFoundBody:
+      'Z poslední relace existují neuložené změny. Obnovit automaticky uloženou verzi? Uložení po obnovení přepíše původní soubor.',
+    autosaveRestore: 'Obnovit',
+    autosaveDiscard: 'Zahodit',
+    menuFile: 'Soubor',
+    menuOpenWorkbook: 'Otevřít sešit…',
+    menuSave: 'Uložit',
+    menuSaveAs: 'Uložit jako…',
+    menuExportPdf: 'Exportovat PDF…',
+    menuClose: 'Zavřít',
+    menuQuit: 'Ukončit',
+    menuEdit: 'Úpravy',
+    menuUndo: 'Zpět',
+    menuRedo: 'Znovu',
+    closeUnsavedMsg: 'Neuložené změny: {count}',
+    closeUnsavedDetail: 'Pokud zavřete bez uložení, změny budou ztraceny.',
+    btnDontSave: 'Neukládat',
+    btnCancel: 'Zrušit',
+    csvSaveAsNotice:
+      'Soubory CSV nezachovávají formátování — uložením jako .xlsx zachováte všechny změny.',
+    menuExportCsv: 'Exportovat CSV…',
+    filterCsv: 'CSV (oddělený čárkami)',
+    csvFormulaLossMsg: 'Tento list obsahuje vzorce, které formát CSV nezachová.',
+    csvFormulaLossDetail:
+      'CSV zachovává pouze hodnoty — vzorce se nahradí aktuálními výsledky a formátování se ztratí.',
+    csvKeepXlsxBtn: 'Uložit jako .xlsx',
+    csvContinueBtn: 'Pokračovat jako CSV',
+    csvActiveSheetOnlyNotice:
+      'Soubory CSV obsahují jen jeden list — exportován bude pouze aktivní list „{name}“.',
+    csvKeepFormatMsg: 'Pokračovat v ukládání ve formátu CSV?',
+    csvKeepFormatDetail:
+      'CSV zachovává pouze hodnoty jednoho listu — vzorce, formátování a další listy se do souboru .csv neuloží.',
+    errNoImageModel:
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChatOffice',
+    errChatOfficeToolsOff:
+      'ChatOffice cloud tools are turned off in Model Settings; enable them to use this tool',
+  },
   nl: {
     filterSpreadsheets: 'Spreadsheets',
     filterXlsx: 'Excel-werkmappen',
@@ -1422,7 +1487,7 @@ interface SessionInfo {
 /** AI create_document content the sheets app cannot build itself — the shell
  * routes it into the docs-owned creation flow (docx opens a fresh docs tab). */
 export interface SheetsAiHostDocumentRequest {
-  type: 'docx' | 'pdf' | 'md'
+  type: 'docx' | 'pdf' | 'md' | 'html'
   title: string
   content: string
 }
@@ -1486,9 +1551,9 @@ export function uniquePathIn(dir: string, fileName: string): string {
   return candidate
 }
 
-/** Standalone-window fallback for AI docx/pdf/md creation (mirrors pdf-main's
- * createStandaloneDocument): pdf renders in a hidden sandboxed window, md
- * writes the Markdown source; docx needs the Docs app and is refused. */
+/** Standalone-window fallback for AI docx/pdf/md/html creation (mirrors pdf-main's
+ * createStandaloneDocument): pdf renders in a hidden sandboxed window, md/html
+ * write the source as-is; docx needs the Docs app and is refused. */
 async function createStandaloneSheetsDocument(
   request: SheetsAiHostDocumentRequest,
 ): Promise<WorkbookCreateDocumentResult> {
@@ -1508,7 +1573,7 @@ async function createStandaloneSheetsDocument(
       openGeneratedFile(path)
       return { ok: true, path }
     }
-    const path = uniquePathIn(configuredDefaultSaveDir(app), `${title}.md`)
+    const path = uniquePathIn(configuredDefaultSaveDir(app), `${title}.${request.type}`)
     await writeFile(path, request.content, 'utf8')
     openGeneratedFile(path)
     return { ok: true, path }
@@ -3193,9 +3258,9 @@ export function registerSheetsIpc(): void {
 let aiIpcRegistered = false
 
 export function registerSheetsAiIpc(): void {
-  app.once('before-quit', shutdownCodexAppServers)
   if (aiIpcRegistered) return
   aiIpcRegistered = true
+  app.once('before-quit', shutdownCodexAppServers)
 
   // Node fetch (undici) direct connections get reset under VPN/tun setups; retry over Chromium's stack
   setRescueFetch((url, init) => net.fetch(url, init))
@@ -3273,22 +3338,14 @@ export function registerSheetsAiIpc(): void {
   // (same source as slides/docs)
   ipcMain.handle('ai:web-search', async (_event, query: unknown, maxResults?: unknown) => {
     try {
-      return await webSearch(
-        z.string().parse(query),
-        typeof maxResults === 'number' ? maxResults : 6,
-        chatofficeCloudToolsOn(),
-      )
+      return await webSearch(z.string().parse(query), typeof maxResults === 'number' ? maxResults : 6, chatofficeCloudToolsOn())
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
     }
   })
   ipcMain.handle('ai:image-search', async (_event, query: unknown, maxResults?: unknown) => {
     try {
-      return await imageSearch(
-        z.string().parse(query),
-        typeof maxResults === 'number' ? maxResults : 8,
-        chatofficeCloudToolsOn(),
-      )
+      return await imageSearch(z.string().parse(query), typeof maxResults === 'number' ? maxResults : 8, chatofficeCloudToolsOn())
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
     }
@@ -3392,6 +3449,7 @@ export function registerProjectIpc(): void {
           output?: string
         }>
         attachments?: Array<{ name: string; path?: string; ext?: string; sizeBytes?: number }>
+        scope?: { label: string; text?: string }
       },
     ) => {
       const msg: Parameters<ProjectStore['appendChatMessage']>[2] = {
@@ -3400,6 +3458,8 @@ export function registerProjectIpc(): void {
       }
       if (args.tools) msg.tools = args.tools
       if (args.attachments) msg.attachments = args.attachments
+      if (args.scope) msg.scope = args.scope
+
       getSheetsProjectStore().appendChatMessage(args.projectId, args.chatId, msg)
     },
   )

@@ -15,6 +15,7 @@ import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
 import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '../../shared/op-docs'
 import { t } from '../i18n/locale'
+import _systemPrompt from './prompts/system.md?raw'
 
 const PARAGRAPHS_DEF = {
   paragraphs: {
@@ -563,7 +564,7 @@ const TOOLS: AgentToolDef[] = [
         model: {
           type: 'string',
           description:
-            'Optional, defaults to the general model. Specify only for special purposes: fal-bria-rmbg=background removal, fal-ai/recraft-clarity-upscale=upscale, flux-pro/outpaint=outpaint, fal-ai/image-editing/text-removal=remove text watermark',
+            'Optional, defaults to the configured model. Genspark only — specify for special purposes: fal-bria-rmbg=background removal, fal-ai/recraft-clarity-upscale=upscale, flux-pro/outpaint=outpaint, fal-ai/image-editing/text-removal=remove text watermark',
         },
         referenceImageUrls: {
           type: 'array',
@@ -1150,7 +1151,7 @@ const TOOLS: AgentToolDef[] = [
   {
     name: 'apply_ops',
     description:
-      '[Canonical edit surface] Apply a list of canonical edit ops as ONE transaction — atomic by default: any failure rolls everything back, nothing is half-applied. Set dry_run:true to validate the plan without touching the deck (rehearse risky batches). This is THE tool for every edit without a dedicated tool (fill, stroke, transform, delete, z-order, grouping, crop, opacity, effects, links, table cells and structure, page background, speaker notes, page delete/move/duplicate, transitions, sections, theme) and for multi-page or many-element batches; a single op is a perfectly fine batch. For one-page layout math prefer execute_slide_script.\n' +
+      '[Canonical edit surface] Apply a list of canonical edit ops as ONE transaction — atomic by default: any failure rolls everything back, nothing is half-applied. Set dry_run:true to validate the plan without touching the deck (rehearse risky batches). This is THE tool for every edit without a dedicated tool (fill, stroke, transform, delete, z-order, grouping, crop, opacity, effects, links, table cells, structure and styling, page background, speaker notes, page delete/move/duplicate, transitions, sections, theme) and for multi-page or many-element batches; a single op is a perfectly fine batch. For one-page layout math prefer execute_slide_script.\n' +
       'Addressing: every op takes target:{slide, el?} — slide = 0-based index or durable "s_<n>"; el = an element id from the outline/read_slide (e_* ids are durable). Group children: put the child id in target.el and add group:"<group id>".\n' +
       'Units are document-space EMU. read_slide reports px and its exact "1 px = N EMU" factor — convert with that N (9525 only on a standard 16:9 deck; other page sizes differ). Font sizes are pt.\n' +
       'Full op reference (the same executor every editing surface uses), one signature per op; ? marks optional fields:\n' +
@@ -1723,6 +1724,8 @@ const OP_LABEL_KEYS: Record<string, string> = {
   setTableCell: 'aiOpEditTable',
   tableStructure: 'aiOpTableStructure',
   tableMerge: 'aiOpTableStructure',
+  setTableStyle: 'aiOpTableStyle',
+  duplicateSlide: 'aiOpNewSlide',
   addElement: 'aiOpNewShape',
   addChart: 'aiOpInsertChart',
   addSmartArt: 'aiOpInsertSmartart',
@@ -2174,7 +2177,8 @@ ${r.text}`,
       if (!slides[idx])
         return fail(t('aiFailInsertImage'), `slideIndex out of range (0-${slides.length - 1})`)
       const url = String(call.input.url ?? '')
-      if (!/^https?:\/\//.test(url)) return fail(t('aiFailInsertImage'), 'Invalid url')
+      // file:// = a BYOK-generated image in the local store (the main process only resolves its own files)
+      if (!/^(https?|file):\/\//.test(url)) return fail(t('aiFailInsertImage'), 'Invalid url')
       const r = await window.slidesApi.insertImageUrl({
         slideIndex: idx,
         url,
@@ -2215,7 +2219,7 @@ ${r.text}`,
         )
 
       const url = String(call.input.url ?? '')
-      if (!/^https?:\/\//.test(url)) return fail(t(failKey), 'Invalid url')
+      if (!/^(https?|file):\/\//.test(url)) return fail(t(failKey), 'Invalid url')
       const updated = await window.slidesApi.replacePictureUrl({
         slideIndex: idx,
         sourceId,
