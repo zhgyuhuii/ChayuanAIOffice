@@ -84,9 +84,18 @@ export function sniffDelimiter(text: string): string {
   const counts = new Map<string, number>(DELIMITERS.map((d) => [d, 0]))
   for (const line of sample) {
     let quoted = false
-    for (const character of line) {
-      if (character === '"') quoted = !quoted
-      else if (!quoted && counts.has(character)) {
+    for (let index = 0; index < line.length; index += 1) {
+      const character = line[index]
+      if (character === undefined) continue
+      if (character === '"') {
+        // An escaped quote ("") stays inside the quoted field; only a lone
+        // quote toggles quoting, mirroring parseCsv below.
+        if (quoted && line[index + 1] === '"') {
+          index += 1
+        } else {
+          quoted = !quoted
+        }
+      } else if (!quoted && counts.has(character)) {
         counts.set(character, (counts.get(character) ?? 0) + 1)
       }
     }
