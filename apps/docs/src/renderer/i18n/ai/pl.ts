@@ -145,7 +145,7 @@ export const pl = {
   aiCmdSkipped: ' (pominięto chronione bloki: {count})',
   aiChatOfficeLoginBtn: 'Zaloguj się',
   aiNoModelErrorTitle: 'Brak dostępnych modeli',
-  aiNoModelErrorBody: 'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChatOffice, aby korzystać z domyślnych modeli. Bez konta.',
+  aiNoModelErrorBody: 'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) i zacznij.',
   aiOpenModelSettings: 'Otwórz ustawienia modeli',
   aiTabChat: 'Czat',
   aiTabAssistant: 'Asystent',

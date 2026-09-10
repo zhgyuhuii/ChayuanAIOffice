@@ -145,7 +145,7 @@ export const de = {
   aiCmdSkipped: ' ({count} geschützte Blöcke übersprungen)',
   aiChatOfficeLoginBtn: 'Anmelden',
   aiNoModelErrorTitle: 'Noch kein Modell verfügbar',
-  aiNoModelErrorBody: 'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.',
+  aiNoModelErrorBody: 'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) und leg los.',
   aiOpenModelSettings: 'Modelleinstellungen öffnen',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

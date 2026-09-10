@@ -145,7 +145,7 @@ export const id = {
   aiCmdSkipped: ' ({count} blok terlindungi dilewati)',
   aiChatOfficeLoginBtn: 'Masuk',
   aiNoModelErrorTitle: 'Belum ada model yang tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChatOffice untuk model bawaan. Tanpa perlu akun.',
+  aiNoModelErrorBody: 'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai) untuk mulai.',
   aiOpenModelSettings: 'Buka Pengaturan Model',
   aiTabChat: 'Obrolan',
   aiTabAssistant: 'Asisten',

@@ -145,7 +145,7 @@ export const th = {
   aiCmdSkipped: ' (ข้ามบล็อกที่ได้รับการป้องกัน {count} บล็อก)',
   aiChatOfficeLoginBtn: 'ลงชื่อเข้าใช้',
   aiNoModelErrorTitle: 'ยังไม่มีโมเดลที่ใช้ได้',
-  aiNoModelErrorBody: 'กำหนดค่าผู้ให้บริการของคุณเอง (ใช้คีย์ของคุณได้ทันที) หรือลงชื่อเข้าใช้ ChatOffice เพื่อใช้โมเดลเริ่มต้น ไม่ต้องมีบัญชี',
+  aiNoModelErrorBody: 'กำหนดค่าผู้ให้บริการของคุณเอง (ใช้คีย์ของคุณได้ทันที) เพื่อเริ่มต้น',
   aiOpenModelSettings: 'เปิดการตั้งค่าโมเดล',
   aiTabChat: 'แชท',
   aiTabAssistant: 'ผู้ช่วย',

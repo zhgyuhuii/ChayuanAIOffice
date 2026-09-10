@@ -105,7 +105,7 @@ export const en = {
   aiTabAssistant: 'Assistant',
   aiCheckDesc: 'Check the sheet for formula errors and data issues',
   aiNoModelErrorTitle: 'No model available yet',
-  aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.',
+  aiNoModelErrorBody: 'Configure your own provider (your key, ready to use) to get started.',
   aiOpenModelSettings: 'Open Model Settings',
   aiAnalyzeDesc: 'Summarize key findings, trends, and outliers',
   aiDockLayoutTitle: 'Panel layout',

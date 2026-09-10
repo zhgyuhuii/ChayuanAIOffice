@@ -145,7 +145,7 @@ export const ms = {
   aiCmdSkipped: ' ({count} blok dilindungi dilangkau)',
   aiChatOfficeLoginBtn: 'Log masuk',
   aiNoModelErrorTitle: 'Belum ada model tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.',
+  aiNoModelErrorBody: 'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan) untuk bermula.',
   aiOpenModelSettings: 'Buka Tetapan Model',
   aiTabChat: 'Sembang',
   aiTabAssistant: 'Pembantu',

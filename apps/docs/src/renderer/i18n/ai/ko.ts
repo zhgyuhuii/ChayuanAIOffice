@@ -145,7 +145,7 @@ export const ko = {
   aiCmdSkipped: ' (보호된 블록 {count}개 건너뜀)',
   aiChatOfficeLoginBtn: '로그인',
   aiNoModelErrorTitle: '아직 사용할 수 있는 모델이 없습니다',
-  aiNoModelErrorBody: '자체 공급자를 구성하거나(키만 있으면 바로 사용) ChatOffice에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.',
+  aiNoModelErrorBody: '자체 공급자를 구성하면(키만 있으면 바로 사용) 바로 사용할 수 있습니다.',
   aiOpenModelSettings: '모델 설정 열기',
   aiTabChat: '채팅',
   aiTabAssistant: '어시스턴트',

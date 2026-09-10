@@ -145,7 +145,7 @@ export const ru = {
   aiCmdSkipped: ' (пропущено защищенных блоков: {count})',
   aiChatOfficeLoginBtn: 'Войти',
   aiNoModelErrorTitle: 'Пока нет доступных моделей',
-  aiNoModelErrorBody: 'Настройте собственного провайдера (ваш ключ — и всё готово) или войдите в ChatOffice для моделей по умолчанию. Учётная запись не нужна.',
+  aiNoModelErrorBody: 'Настройте собственного провайдера (ваш ключ — и всё готово) и начните.',
   aiOpenModelSettings: 'Открыть настройки моделей',
   aiTabChat: 'Чат',
   aiTabAssistant: 'Помощник',

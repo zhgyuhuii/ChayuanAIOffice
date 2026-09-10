@@ -277,7 +277,7 @@ export const pt = {
   aiTabAssistant: "Assistente",
   aiAskDesc: "Dar uma instrução de edição ao elemento selecionado",
   aiNoModelErrorTitle: "Ainda não há modelo disponível",
-  aiNoModelErrorBody: "Configure seu próprio provedor (sua chave, pronto para usar) ou entre no ChatOffice para os modelos padrão. Não é necessário conta.",
+  aiNoModelErrorBody: "Configure seu próprio provedor (sua chave, pronto para usar) para começar.",
   aiOpenModelSettings: "Abrir configurações de modelos",
   aiBeautifyDesc: "Refinar o layout, as cores e a hierarquia tipográfica do slide",
   aiFactCheckDesc: "Verificar dados, nomes e afirmações dos slides",

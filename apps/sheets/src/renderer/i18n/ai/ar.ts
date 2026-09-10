@@ -105,7 +105,7 @@ export const ar = {
   aiTabAssistant: 'المساعد',
   aiCheckDesc: 'فحص أخطاء الصيغ ومشكلات البيانات',
   aiNoModelErrorTitle: 'لا يوجد نموذج متاح بعد',
-  aiNoModelErrorBody: 'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) أو سجّل الدخول إلى ChatOffice للنماذج الافتراضية. لا حاجة إلى حساب.',
+  aiNoModelErrorBody: 'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) للبدء.',
   aiOpenModelSettings: 'فتح إعدادات النماذج',
   aiAnalyzeDesc: 'تلخيص أبرز النتائج والاتجاهات والقيم الشاذة',
   aiDockLayoutTitle: 'تخطيط اللوحة',

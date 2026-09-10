@@ -145,7 +145,7 @@ export const fr = {
   aiCmdSkipped: ' ({count} bloc(s) protégé(s) ignoré(s))',
   aiChatOfficeLoginBtn: 'Se connecter',
   aiNoModelErrorTitle: 'Aucun modèle disponible pour le moment',
-  aiNoModelErrorBody: 'Configurez votre propre fournisseur (votre clé, prêt à l\'emploi), ou connectez-vous à ChatOffice pour les modèles par défaut. Aucun compte requis.',
+  aiNoModelErrorBody: 'Configurez votre propre fournisseur (votre clé, prêt à l\'emploi) pour commencer.',
   aiOpenModelSettings: 'Ouvrir les paramètres des modèles',
   aiTabChat: 'Discussion',
   aiTabAssistant: 'Assistant',

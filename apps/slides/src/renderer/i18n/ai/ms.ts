@@ -276,7 +276,7 @@ export const ms = {
   aiTabAssistant: "Pembantu",
   aiAskDesc: "Berikan arahan suntingan kepada elemen terpilih",
   aiNoModelErrorTitle: "Belum ada model tersedia",
-  aiNoModelErrorBody: "Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.",
+  aiNoModelErrorBody: "Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan) untuk bermula.",
   aiOpenModelSettings: "Buka Tetapan Model",
   aiBeautifyDesc: "Perhalusi susun atur, warna dan hierarki fon slaid semasa",
   aiFactCheckDesc: "Semak data, nama dan dakwaan pada slaid",

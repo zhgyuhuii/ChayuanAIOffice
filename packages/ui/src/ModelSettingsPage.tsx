@@ -36,6 +36,7 @@ import {
 } from '@chatoffice/ai-provider/browser'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
 import { useDismissablePopover } from './popover-dismiss'
+import { USER_LOGIN_READY } from './feature-flags'
 import { VendorLogo } from './VendorLogo'
 // self-contained styles: every consumer gets them with the component
 import './model-settings.css'
@@ -226,6 +227,9 @@ export function ModelSettingsPage({
           .join(keyJoiner)
       : apiKeyInput
   const isChatOffice = selected === 'chatoffice'
+  /** 登录功能未开放（USER_LOGIN_READY=false）时，ChatOffice 视同不可用：
+   * 目录行、已启用列表与登录卡整体隐藏 */
+  const chatofficeUsable = USER_LOGIN_READY && chatofficeAvailable
 
   /** vendor rows not currently enabled (a disabled profile still prefills its stored values) */
   const catalogRows = useMemo(() => {
@@ -241,13 +245,13 @@ export function ModelSettingsPage({
       vendors: VENDORS.filter(
         (v) =>
           v.group === group.id &&
-          !(!chatofficeAvailable && v.id === 'chatoffice') &&
+          !(!chatofficeUsable && v.id === 'chatoffice') &&
           !enabledProfiles.some((p) => (p.vendorId ?? p.id) === v.id) &&
           matchesTagFilter(v, tagFilter) &&
           match(v.name, v.nameZh, v.id),
       ),
     })).filter((g) => g.vendors.length > 0)
-  }, [enabledProfiles, search, tagFilter, chatofficeAvailable, locale])
+  }, [enabledProfiles, search, tagFilter, chatofficeUsable, locale])
 
   // ── form seeding on vendor switch ─────────────────────────────────────
   useEffect(() => {
@@ -488,7 +492,7 @@ export function ModelSettingsPage({
   }
 
   // ── chatop-shaped pieces ──────────────────────────────────────────────
-  const enabledList = chatofficeAvailable
+  const enabledList = chatofficeUsable
     ? enabledProfiles.filter((p) => p.id !== 'chatoffice' || p.models.length > 0)
     : enabledProfiles.filter((p) => p.id !== 'chatoffice')
 
@@ -817,7 +821,7 @@ export function ModelSettingsPage({
             <div className="msp-guide-page" data-model-guide-page>
               <div className="msp-guide-head">
                 <div className="msp-guide-title">{t.guideTitle}</div>
-                <p className="msp-note">{t.guideDesc}</p>
+                <p className="msp-note">{USER_LOGIN_READY ? t.guideDesc : t.guideDescNoLogin}</p>
               </div>
               {[
                 { id: 'cn', label: t.guideCnTitle, ids: GUIDE_CN_VENDORS },
@@ -1126,7 +1130,8 @@ export function ModelSettingsPage({
       {/* 说明页本身就是引导，横幅只在进入具体厂商表单时补充提示 */}
       {nothingEnabled && selected !== '' && (
         <div className="msp-guide" data-model-guide>
-          {t.noModelsGuide}
+          {/* 登录未开放时横幅文案不含登录入口 */}
+          {USER_LOGIN_READY ? t.noModelsGuide : t.noModelsGuideNoLogin}
         </div>
       )}
       {body}

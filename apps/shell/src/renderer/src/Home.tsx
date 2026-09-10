@@ -17,7 +17,7 @@ import type {
   ProjectSummaryEntry,
   RecentEntry,
 } from '../../shared/home-api'
-import { useDismissablePopover } from '@chatoffice/ui'
+import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
 import { fileCountKey } from './counts'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
@@ -1070,12 +1070,21 @@ function CloudProjectsView() {
 
   const renderBody = () => {
     if (snapshot && !snapshot.available) {
+      // 用户登录未开放（USER_LOGIN_READY=false）：不可用态复用中性「加载失败」文案，不出现登录入口
       return (
         <p className="empty proj-empty">
-          <span className="empty-hint">{t('cloudLoginHint')}</span>
-          <button className="btn btn-secondary" disabled={loginWaiting} onClick={startLogin}>
-            {loginWaiting ? t('waitingShort') : t('loginChatOffice')}
-          </button>
+          <span className="empty-hint">
+            {USER_LOGIN_READY ? t('cloudLoginHint') : t('cloudError')}
+          </span>
+          {USER_LOGIN_READY ? (
+            <button className="btn btn-secondary" disabled={loginWaiting} onClick={startLogin}>
+              {loginWaiting ? t('waitingShort') : t('loginChatOffice')}
+            </button>
+          ) : (
+            <button className="btn btn-secondary" onClick={() => startSync()}>
+              {t('cloudRetry')}
+            </button>
+          )}
         </p>
       )
     }

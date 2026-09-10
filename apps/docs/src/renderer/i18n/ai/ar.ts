@@ -145,7 +145,7 @@ export const ar = {
   aiCmdSkipped: ' (تم تخطي {count} كتلة محمية)',
   aiChatOfficeLoginBtn: 'تسجيل الدخول',
   aiNoModelErrorTitle: 'لا يوجد نموذج متاح بعد',
-  aiNoModelErrorBody: 'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) أو سجّل الدخول إلى ChatOffice للنماذج الافتراضية. لا حاجة إلى حساب.',
+  aiNoModelErrorBody: 'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) للبدء.',
   aiOpenModelSettings: 'فتح إعدادات النماذج',
   aiTabChat: 'الدردشة',
   aiTabAssistant: 'المساعد',

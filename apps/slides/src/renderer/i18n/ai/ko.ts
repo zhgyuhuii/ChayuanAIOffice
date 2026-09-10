@@ -276,7 +276,7 @@ export const ko = {
   aiTabAssistant: "어시스턴트",
   aiAskDesc: "선택한 요소에 편집 지시 내리기",
   aiNoModelErrorTitle: "아직 사용할 수 있는 모델이 없습니다",
-  aiNoModelErrorBody: "자체 공급자를 구성하거나(키만 있으면 바로 사용) ChatOffice에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.",
+  aiNoModelErrorBody: "자체 공급자를 구성하면(키만 있으면 바로 사용) 바로 사용할 수 있습니다.",
   aiOpenModelSettings: "모델 설정 열기",
   aiBeautifyDesc: "현재 슬라이드의 레이아웃·색상·서체 위계 다듬기",
   aiFactCheckDesc: "슬라이드의 데이터·이름·주장 검증",

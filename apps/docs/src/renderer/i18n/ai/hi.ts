@@ -145,7 +145,7 @@ export const hi = {
   aiCmdSkipped: ' ({count} सुरक्षित ब्लॉक छोड़े गए)',
   aiChatOfficeLoginBtn: 'साइन इन करें',
   aiNoModelErrorTitle: 'अभी कोई मॉडल उपलब्ध नहीं है',
-  aiNoModelErrorBody: 'अपना प्रोवाइडर कॉन्फ़िगर करें (आपकी कुंजी, तुरंत उपयोग के लिए तैयार), या डिफ़ॉल्ट मॉडलों के लिए ChatOffice में साइन इन करें। खाते की आवश्यकता नहीं है।',
+  aiNoModelErrorBody: 'अपना प्रोवाइडर कॉन्फ़िगर करें (आपकी कुंजी, तुरंत उपयोग के लिए तैयार) और शुरू करें।',
   aiOpenModelSettings: 'मॉडल सेटिंग्स खोलें',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

@@ -269,7 +269,7 @@ export const zhTW = {
   aiTabAssistant: "助手",
   aiAskDesc: "為選取的元素下達一條編輯指令",
   aiNoModelErrorTitle: "還沒有可用的模型",
-  aiNoModelErrorBody: "設定一個自己的供應商（密鑰即用），或登入 ChatOffice 使用預設模型。全程無需帳號。",
+  aiNoModelErrorBody: "設定一個自己的供應商（密鑰即用）即可開始。",
   aiOpenModelSettings: "開啟模型設定",
   aiBeautifyDesc: "最佳化目前頁面的版面、配色與字型層級",
   aiFactCheckDesc: "核查頁面中的資料、名稱與論斷",

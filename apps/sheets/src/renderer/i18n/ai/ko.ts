@@ -105,7 +105,7 @@ export const ko = {
   aiTabAssistant: '어시스턴트',
   aiCheckDesc: '수식 오류와 데이터 이상을 점검하고 수정 제안',
   aiNoModelErrorTitle: '아직 사용할 수 있는 모델이 없습니다',
-  aiNoModelErrorBody: '자체 공급자를 구성하거나(키만 있으면 바로 사용) ChatOffice에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.',
+  aiNoModelErrorBody: '자체 공급자를 구성하면(키만 있으면 바로 사용) 바로 사용할 수 있습니다.',
   aiOpenModelSettings: '모델 설정 열기',
   aiAnalyzeDesc: '주요 발견, 추세, 이상치 요약',
   aiDockLayoutTitle: '패널 레이아웃',

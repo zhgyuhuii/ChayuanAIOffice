@@ -15,10 +15,12 @@ const zh = {
   enabledEmpty: '还没有启用的厂商，在下方目录选择一个开始配置',
   noModelsGuide:
     '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 ChatOffice 直接使用内置模型。',
+  noModelsGuideNoLogin: '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启。',
   // 说明页（初次进入的落地）
   guideTitle: '支持接入的模型服务',
   guideDesc:
     '点击任意卡片即可配置并启用对应服务；也可以登录 ChatOffice 直接使用内置模型（见左侧目录）。',
+  guideDescNoLogin: '点击任意卡片即可配置并启用对应服务。',
   guideCnTitle: '国内常用模型',
   guideGlobalTitle: '国外常用模型',
   guideCardHint: '点击配置',
@@ -157,10 +159,13 @@ const en = {
   enabledEmpty: 'No vendor enabled yet — pick one from the catalog below to start',
   noModelsGuide:
     'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChatOffice to use its built-in models.',
+  noModelsGuideNoLogin:
+    'No models enabled yet: pick a vendor on the left, add your API key and enable it.',
   // guide landing (first entry)
   guideTitle: 'Supported model providers',
   guideDesc:
     'Click any card to configure and enable that provider; you can also sign in to ChatOffice to use its built-in models (see the catalog on the left).',
+  guideDescNoLogin: 'Click any card to configure and enable that provider.',
   guideCnTitle: 'Popular in China',
   guideGlobalTitle: 'Popular worldwide',
   guideCardHint: 'Click to configure',

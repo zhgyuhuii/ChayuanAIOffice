@@ -15,7 +15,11 @@ import type {
   AttachmentAddResult,
   AttachmentMeta,
 } from '../../shared/ipc'
-import { ATTACHMENT_AUDIO_EXTS, ATTACHMENT_IMAGE_EXTS, ATTACHMENT_VIDEO_EXTS } from '../../shared/ipc'
+import {
+  ATTACHMENT_AUDIO_EXTS,
+  ATTACHMENT_IMAGE_EXTS,
+  ATTACHMENT_VIDEO_EXTS,
+} from '../../shared/ipc'
 import {
   createSlidesSkill,
   type DeckAccess,
@@ -53,9 +57,11 @@ import {
   ModelPickerButton,
   ModelSettingsPage,
   PanelTabs,
+  USER_LOGIN_READY,
   usePanelTab,
   AiScopeQuote,
-  type AiScopeQuoteData, } from '@chatoffice/ui'
+  type AiScopeQuoteData,
+} from '@chatoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -1490,7 +1496,9 @@ export function AiPanel({
             ? [text, tGlobal('aiTurnLimit')].filter(Boolean).join('\n\n')
             : text || (cancelled ? tGlobal('aiStoppedNote') : '')
           const finalText = [
-            truncated ? [baseText, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n') : baseText,
+            truncated
+              ? [baseText, tGlobal('aiTruncatedNote')].filter(Boolean).join('\n\n')
+              : baseText,
             degradedNote,
           ]
             .filter(Boolean)
@@ -1707,13 +1715,14 @@ export function AiPanel({
       'openai-responses': 'openai-responses',
       'gemini-native': 'gemini',
     }
-    const caps = sel && profile
-      ? resolveModelCapabilities({
-          vendorId: profile.vendorId ?? profile.id,
-          protocol: protocolMap[profile.protocol] ?? 'openai-compatible',
-          modelId: sel.modelId,
-        })
-      : null
+    const caps =
+      sel && profile
+        ? resolveModelCapabilities({
+            vendorId: profile.vendorId ?? profile.id,
+            protocol: protocolMap[profile.protocol] ?? 'openai-compatible',
+            modelId: sel.modelId,
+          })
+        : null
     const mediaExts = new Set([...ATTACHMENT_AUDIO_EXTS, ...ATTACHMENT_VIDEO_EXTS])
     for (const att of atts) {
       if (!mediaExts.has(att.ext)) continue
@@ -2374,7 +2383,8 @@ export function AiPanel({
                   {entry.model}
                 </div>
               )}
-              {entry.loginRequired && (
+              {/* 用户登录未开放（USER_LOGIN_READY=false）：失败重试的登录按钮隐藏 */}
+              {USER_LOGIN_READY && entry.loginRequired && (
                 <button
                   className="ai-login-btn"
                   onClick={() => void window.slidesApi.aiChatOfficeLogin()}

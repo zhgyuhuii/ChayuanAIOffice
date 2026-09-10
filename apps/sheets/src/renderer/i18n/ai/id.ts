@@ -105,7 +105,7 @@ export const id = {
   aiTabAssistant: 'Asisten',
   aiCheckDesc: 'Periksa kesalahan rumus dan masalah data',
   aiNoModelErrorTitle: 'Belum ada model yang tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChatOffice untuk model bawaan. Tanpa perlu akun.',
+  aiNoModelErrorBody: 'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai) untuk mulai.',
   aiOpenModelSettings: 'Buka Pengaturan Model',
   aiAnalyzeDesc: 'Ringkas temuan, tren, dan pencilan utama',
   aiDockLayoutTitle: 'Tata letak panel',

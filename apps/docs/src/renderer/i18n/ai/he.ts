@@ -145,7 +145,7 @@ export const he = {
   aiCmdSkipped: ' (דולגו {count} בלוקים מוגנים)',
   aiChatOfficeLoginBtn: 'התחבר',
   aiNoModelErrorTitle: 'אין עדיין מודל זמין',
-  aiNoModelErrorBody: 'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) או התחבר ל-ChatOffice למודלים ברירת המחדל. לא נדרש חשבון.',
+  aiNoModelErrorBody: 'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) כדי להתחיל.',
   aiOpenModelSettings: 'פתח את הגדרות המודלים',
   aiTabChat: 'צ׳אט',
   aiTabAssistant: 'עוזר',

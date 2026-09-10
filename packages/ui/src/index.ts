@@ -94,6 +94,7 @@ export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerBut
 export { MediaModelPicker, type MediaModelPickerProps } from './MediaModelPicker'
 export { ModelDefaultsPage, type ModelDefaultsPageProps } from './ModelDefaultsPage'
 export { VendorLogo, type VendorLogoProps } from './VendorLogo'
+export { USER_LOGIN_READY } from './feature-flags'
 export {
   decideIsMobile,
   mobileQueries,

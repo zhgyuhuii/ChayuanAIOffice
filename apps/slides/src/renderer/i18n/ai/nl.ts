@@ -278,7 +278,7 @@ export const nl = {
   aiTabAssistant: "Assistent",
   aiAskDesc: "Geef het geselecteerde element een bewerkingsinstructie",
   aiNoModelErrorTitle: "Nog geen model beschikbaar",
-  aiNoModelErrorBody: "Stel je eigen provider in (jouw sleutel, direct bruikbaar) of log in bij ChatOffice voor de standaardmodellen. Geen account nodig.",
+  aiNoModelErrorBody: "Stel je eigen provider in (jouw sleutel, direct bruikbaar) om te beginnen.",
   aiOpenModelSettings: "Modelinstellingen openen",
   aiBeautifyDesc: "Verfijn lay-out, kleuren en typografie van de huidige dia",
   aiFactCheckDesc: "Controleer gegevens, namen en beweringen op de dia\\'s",

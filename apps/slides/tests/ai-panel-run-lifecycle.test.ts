@@ -262,7 +262,9 @@ describe('AiPanel agent run lifecycle (slides)', () => {
     await flushEffects()
     expect(container.querySelector('.ai-login-btn')).toBeNull()
 
-    // a chatoffice sign-in failure: the CTA belongs here
+    // a chatoffice sign-in failure would be the CTA's home — but the login
+    // feature is not built yet (USER_LOGIN_READY=false), so the button is
+    // suppressed everywhere until it ships
     act(() => {
       agentHarness.events!.onTurnEnd?.()
       agentHarness.events!.onError?.(
@@ -270,6 +272,6 @@ describe('AiPanel agent run lifecycle (slides)', () => {
       )
     })
     await flushEffects()
-    expect(container.querySelector('.ai-login-btn')).not.toBeNull()
+    expect(container.querySelector('.ai-login-btn')).toBeNull()
   })
 })

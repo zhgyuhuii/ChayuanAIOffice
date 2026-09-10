@@ -268,7 +268,7 @@ export const zh = {
   aiTabAssistant: "助手",
   aiAskDesc: "为选中的元素下达一条编辑指令",
   aiNoModelErrorTitle: "还没有可用的模型",
-  aiNoModelErrorBody: "配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用默认模型。全程无需账号。",
+  aiNoModelErrorBody: "配置一个自己的供应商（密钥即用）即可开始。",
   aiOpenModelSettings: "打开模型设置",
   aiBeautifyDesc: "优化当前页的排版、配色与字体层级",
   aiFactCheckDesc: "核查页面中的数据、名称与论断",

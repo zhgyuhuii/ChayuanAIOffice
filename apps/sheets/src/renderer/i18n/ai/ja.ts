@@ -105,7 +105,7 @@ export const ja = {
   aiTabAssistant: 'アシスタント',
   aiCheckDesc: '数式のエラーやデータの異常をチェックし、修正案を提示',
   aiNoModelErrorTitle: '利用可能なモデルがまだありません',
-  aiNoModelErrorBody: '独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChatOffice にサインインして既定のモデルを使ってください。アカウントは不要です。',
+  aiNoModelErrorBody: '独自のプロバイダーを設定する（キーがあればすぐ利用可）だけで利用できます。',
   aiOpenModelSettings: 'モデル設定を開く',
   aiAnalyzeDesc: '重要な発見、傾向、異常をまとめる',
   aiDockLayoutTitle: 'パネルレイアウト',

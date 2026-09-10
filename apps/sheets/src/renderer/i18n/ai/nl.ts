@@ -105,7 +105,7 @@ export const nl = {
   aiTabAssistant: 'Assistent',
   aiCheckDesc: 'Formulefouten en dataproblemen controleren',
   aiNoModelErrorTitle: 'Nog geen model beschikbaar',
-  aiNoModelErrorBody: 'Stel je eigen provider in (jouw sleutel, direct bruikbaar) of log in bij ChatOffice voor de standaardmodellen. Geen account nodig.',
+  aiNoModelErrorBody: 'Stel je eigen provider in (jouw sleutel, direct bruikbaar) om te beginnen.',
   aiOpenModelSettings: 'Modelinstellingen openen',
   aiAnalyzeDesc: 'Belangrijkste bevindingen, trends en uitschieters samenvatten',
   aiDockLayoutTitle: 'Paneelindeling',

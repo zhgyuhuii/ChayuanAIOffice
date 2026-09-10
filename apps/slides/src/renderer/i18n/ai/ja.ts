@@ -275,7 +275,7 @@ export const ja = {
   aiTabAssistant: "アシスタント",
   aiAskDesc: "選択した要素に編集指示を出す",
   aiNoModelErrorTitle: "利用可能なモデルがまだありません",
-  aiNoModelErrorBody: "独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChatOffice にサインインして既定のモデルを使ってください。アカウントは不要です。",
+  aiNoModelErrorBody: "独自のプロバイダーを設定する（キーがあればすぐ利用可）だけで利用できます。",
   aiOpenModelSettings: "モデル設定を開く",
   aiBeautifyDesc: "現在のスライドのレイアウト・配色・書体階層を整える",
   aiFactCheckDesc: "スライド内のデータ・名称・主張を確認する",

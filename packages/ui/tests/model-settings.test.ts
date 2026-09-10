@@ -8,11 +8,7 @@ import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { normalizeSettingsLang, modelSettingsStrings } from '../src/model-settings-strings'
 import { ModelSettingsPage, type ModelSettingsBridge } from '../src/ModelSettingsPage'
-import {
-  CHATOFFICE_PRESET_MODELS,
-  defaultSettingsV2,
-  type AiSettingsV2,
-} from '@chatoffice/ai-provider'
+import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
   getSettings: async () => defaultSettingsV2(),
@@ -76,17 +72,13 @@ describe('ModelSettingsPage', () => {
     expect(document.body.querySelector('[data-model-key]')).toBeTruthy()
   })
 
-  it('keeps the ChatOffice sign-in card behind an explicit catalog selection', async () => {
+  it('hides the ChatOffice login entry entirely while USER_LOGIN_READY is false', async () => {
     await render()
+    // no chatoffice row in the enabled group or any catalog group
+    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
     expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
-    await act(async () => {
-      ;(document.body.querySelector('[data-vendor-row="chatoffice"]') as HTMLButtonElement).click()
-    })
-    expect(document.body.querySelector('.msp-chatoffice-row')).toBeTruthy()
-    // the preset model checklist (对话 · 9) rides the sign-in card
-    expect(document.body.querySelectorAll('[data-model-toggle]').length).toBe(
-      CHATOFFICE_PRESET_MODELS.length,
-    )
+    // and none of the guide cards is chatoffice
+    expect(document.body.querySelector('[data-guide-card="chatoffice"]')).toBeNull()
   })
 
   it('switches to a catalog vendor form with protocol select and key row', async () => {
@@ -369,8 +361,8 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     expect(tagsOf('zhipu')).toContain('Free tier')
     expect(tagsOf('openai')).toContain('Key needed')
     expect(tagsOf('openai')).not.toContain('Free tier')
-    // 登录即用 badge was removed — chatoffice carries no tag
-    expect(tagsOf('chatoffice')).toEqual([])
+    // chatoffice is hidden entirely while the login feature is off
+    expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
     expect(tagsOf('ollama')).toContain('No key')
     expect(tagsOf('ollama')).toContain('Free')
   })

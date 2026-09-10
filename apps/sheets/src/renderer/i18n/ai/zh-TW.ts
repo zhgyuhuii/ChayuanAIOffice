@@ -105,7 +105,7 @@ export const zhTW = {
   aiTabAssistant: 'सहायक',
   aiCheckDesc: 'सूत्र त्रुटियाँ और डेटा समस्याएँ जाँचें',
   aiNoModelErrorTitle: '還沒有可用的模型',
-  aiNoModelErrorBody: '設定一個自己的供應商（密鑰即用），或登入 ChatOffice 使用預設模型。全程無需帳號。',
+  aiNoModelErrorBody: '設定一個自己的供應商（密鑰即用）即可開始。',
   aiOpenModelSettings: '開啟模型設定',
   aiAnalyzeDesc: 'मुख्य निष्कर्ष, रुझान और विषमताएँ सारांशित करें',
   aiDockLayoutTitle: '面板版面配置',

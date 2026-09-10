@@ -27,15 +27,14 @@ import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
 import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
-import { Markdown,
-  AiScopeQuote,
-  type AiScopeQuoteData, } from '@chatoffice/ui'
+import { Markdown, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
 import {
   AiComposer,
   AiTypingIndicator,
   ModelPickerButton,
   ModelSettingsPage,
   PanelTabs,
+  USER_LOGIN_READY,
   usePanelTab,
 } from '@chatoffice/ui'
 import { enabledChatModels } from '@chatoffice/ai-provider/browser'
@@ -1231,7 +1230,8 @@ export function AiPanel({
               {entry.error && (
                 <div className="ai-msg-error">{t('aiErrorPrefix', { error: entry.error })}</div>
               )}
-              {entry.loginRequired && (
+              {/* 用户登录未开放（USER_LOGIN_READY=false）：失败重试的登录按钮隐藏 */}
+              {USER_LOGIN_READY && entry.loginRequired && (
                 <button
                   className="ai-login-btn"
                   onClick={() => void window.desktop.aiChatOfficeLogin()}

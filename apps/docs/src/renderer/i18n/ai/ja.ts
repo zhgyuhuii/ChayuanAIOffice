@@ -145,7 +145,7 @@ export const ja = {
   aiCmdSkipped: '({count} 個の保護されたブロックをスキップ)',
   aiChatOfficeLoginBtn: 'サインイン',
   aiNoModelErrorTitle: '利用可能なモデルがまだありません',
-  aiNoModelErrorBody: '独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChatOffice にサインインして既定のモデルを使ってください。アカウントは不要です。',
+  aiNoModelErrorBody: '独自のプロバイダーを設定する（キーがあればすぐ利用可）だけで利用できます。',
   aiOpenModelSettings: 'モデル設定を開く',
   aiTabChat: 'チャット',
   aiTabAssistant: 'アシスタント',

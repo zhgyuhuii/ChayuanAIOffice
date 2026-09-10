@@ -105,7 +105,7 @@ export const ms = {
   aiTabAssistant: 'Pembantu',
   aiCheckDesc: 'Semak ralat formula dan masalah data',
   aiNoModelErrorTitle: 'Belum ada model tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.',
+  aiNoModelErrorBody: 'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan) untuk bermula.',
   aiOpenModelSettings: 'Buka Tetapan Model',
   aiAnalyzeDesc: 'Ringkaskan penemuan, trend dan pencilan utama',
   aiDockLayoutTitle: 'Tataletak panel',

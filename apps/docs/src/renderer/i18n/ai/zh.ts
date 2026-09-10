@@ -145,7 +145,7 @@ export const zh = {
   aiCmdSkipped: '(跳过 {count} 个受保护块)',
   aiChatOfficeLoginBtn: '登录',
   aiNoModelErrorTitle: '还没有可用的模型',
-  aiNoModelErrorBody: '配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用默认模型。全程无需账号。',
+  aiNoModelErrorBody: '配置一个自己的供应商（密钥即用）即可开始。',
   aiOpenModelSettings: '打开模型设置',
   aiTabChat: '对话',
   aiTabAssistant: '助手',

@@ -274,7 +274,7 @@ export const ar = {
   aiTabAssistant: "المساعد",
   aiAskDesc: "إصدار تعليمة تحرير للعنصر المحدد",
   aiNoModelErrorTitle: "لا يوجد نموذج متاح بعد",
-  aiNoModelErrorBody: "هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) أو سجّل الدخول إلى ChatOffice للنماذج الافتراضية. لا حاجة إلى حساب.",
+  aiNoModelErrorBody: "هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) للبدء.",
   aiOpenModelSettings: "فتح إعدادات النماذج",
   aiBeautifyDesc: "تحسين تخطيط الشريحة الحالية وألوانها وتدرج الخطوط",
   aiFactCheckDesc: "التحقق من البيانات والأسماء والادعاءات في الشرائح",

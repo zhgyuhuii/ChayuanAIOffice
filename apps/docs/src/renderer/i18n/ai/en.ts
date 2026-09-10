@@ -145,7 +145,7 @@ export const en = {
   aiCmdSkipped: ' ({count} protected block(s) skipped)',
   aiChatOfficeLoginBtn: 'Sign in',
   aiNoModelErrorTitle: 'No model available yet',
-  aiNoModelErrorBody: 'Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.',
+  aiNoModelErrorBody: 'Configure your own provider (your key, ready to use) to get started.',
   aiOpenModelSettings: 'Open Model Settings',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistant',

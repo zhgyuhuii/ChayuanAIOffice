@@ -276,7 +276,7 @@ export const pl = {
   aiTabAssistant: "Asystent",
   aiAskDesc: "Nadaj wybranemu elementowi instrukcję edycji",
   aiNoModelErrorTitle: "Brak dostępnych modeli",
-  aiNoModelErrorBody: "Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChatOffice, aby korzystać z domyślnych modeli. Bez konta.",
+  aiNoModelErrorBody: "Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) i zacznij.",
   aiOpenModelSettings: "Otwórz ustawienia modeli",
   aiBeautifyDesc: "Popraw układ, kolory i hierarchię czcionek bieżącego slajdu",
   aiFactCheckDesc: "Sprawdź dane, nazwy i twierdzenia na slajdach",

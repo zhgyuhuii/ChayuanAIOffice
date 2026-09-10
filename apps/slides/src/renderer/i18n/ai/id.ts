@@ -277,7 +277,7 @@ export const id = {
   aiTabAssistant: "Asisten",
   aiAskDesc: "Beri instruksi pengeditan untuk elemen terpilih",
   aiNoModelErrorTitle: "Belum ada model yang tersedia",
-  aiNoModelErrorBody: "Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChatOffice untuk model bawaan. Tanpa perlu akun.",
+  aiNoModelErrorBody: "Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai) untuk mulai.",
   aiOpenModelSettings: "Buka Pengaturan Model",
   aiBeautifyDesc: "Perbaiki tata letak, warna, dan hierarki font slide saat ini",
   aiFactCheckDesc: "Periksa data, nama, dan klaim pada slide",

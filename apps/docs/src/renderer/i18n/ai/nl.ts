@@ -145,7 +145,7 @@ export const nl = {
   aiCmdSkipped: ' ({count} beveiligde blok(ken) overgeslagen)',
   aiChatOfficeLoginBtn: 'Aanmelden',
   aiNoModelErrorTitle: 'Nog geen model beschikbaar',
-  aiNoModelErrorBody: 'Stel je eigen provider in (jouw sleutel, direct bruikbaar) of log in bij ChatOffice voor de standaardmodellen. Geen account nodig.',
+  aiNoModelErrorBody: 'Stel je eigen provider in (jouw sleutel, direct bruikbaar) om te beginnen.',
   aiOpenModelSettings: 'Modelinstellingen openen',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

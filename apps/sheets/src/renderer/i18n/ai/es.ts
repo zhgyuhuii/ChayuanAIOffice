@@ -105,7 +105,7 @@ export const es = {
   aiTabAssistant: 'Asistente',
   aiCheckDesc: 'Revisar errores de fórmula y datos',
   aiNoModelErrorTitle: 'Aún no hay ningún modelo disponible',
-  aiNoModelErrorBody: 'Configura tu propio proveedor (tu clave, listo para usar) o inicia sesión en ChatOffice para los modelos predeterminados. No se requiere cuenta.',
+  aiNoModelErrorBody: 'Configura tu propio proveedor (tu clave, listo para usar) para empezar.',
   aiOpenModelSettings: 'Abrir Ajustes de modelos',
   aiAnalyzeDesc: 'Resumir hallazgos, tendencias y valores atípicos',
   aiDockLayoutTitle: 'Diseño del panel',

@@ -258,7 +258,7 @@ export const cs = {
   aiTabAssistant: "Assistant",
   aiAskDesc: "Give the selected element an edit instruction",
   aiNoModelErrorTitle: "No model available yet",
-  aiNoModelErrorBody: "Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.",
+  aiNoModelErrorBody: "Nastavte si vlastního poskytovatele (váš klíč, připraven k okamžitému použití) a začněte.",
   aiOpenModelSettings: "Open Model Settings",
   aiBeautifyDesc: "Refine the current slide\\'s layout, colors, and type hierarchy",
   aiFactCheckDesc: "Verify the data, names, and claims on your slides",

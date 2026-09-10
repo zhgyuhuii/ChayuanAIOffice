@@ -271,7 +271,7 @@ export const he = {
   aiTabAssistant: "עוזר",
   aiAskDesc: "תנו לרכיב הנבחר הוראת עריכה",
   aiNoModelErrorTitle: "אין עדיין מודל זמין",
-  aiNoModelErrorBody: "הגדר ספק משלך (המפתח שלך, מוכן לשימוש) או התחבר ל-ChatOffice למודלים ברירת המחדל. לא נדרש חשבון.",
+  aiNoModelErrorBody: "הגדר ספק משלך (המפתח שלך, מוכן לשימוש) כדי להתחיל.",
   aiOpenModelSettings: "פתח את הגדרות המודלים",
   aiBeautifyDesc: "שיפור הפריסה, הצבעים והיררכיית הגופנים של השקף הנוכחי",
   aiFactCheckDesc: "אימות נתונים, שמות וטענות בשקפים",

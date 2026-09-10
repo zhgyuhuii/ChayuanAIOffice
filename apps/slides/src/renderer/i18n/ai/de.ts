@@ -280,7 +280,7 @@ export const de = {
   aiTabAssistant: "Assistent",
   aiAskDesc: "Dem ausgewählten Element eine Bearbeitungsanweisung geben",
   aiNoModelErrorTitle: "Noch kein Modell verfügbar",
-  aiNoModelErrorBody: "Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.",
+  aiNoModelErrorBody: "Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) und leg los.",
   aiOpenModelSettings: "Modelleinstellungen öffnen",
   aiBeautifyDesc: "Layout, Farben und Schrifthierarchie der Folie verfeinern",
   aiFactCheckDesc: "Daten, Namen und Aussagen der Folien prüfen",

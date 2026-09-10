@@ -145,7 +145,7 @@ export const zhTW = {
   aiCmdSkipped: '(略過 {count} 個受保護區塊)',
   aiChatOfficeLoginBtn: '登入',
   aiNoModelErrorTitle: '還沒有可用的模型',
-  aiNoModelErrorBody: '設定一個自己的供應商（密鑰即用），或登入 ChatOffice 使用預設模型。全程無需帳號。',
+  aiNoModelErrorBody: '設定一個自己的供應商（密鑰即用）即可開始。',
   aiOpenModelSettings: '開啟模型設定',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

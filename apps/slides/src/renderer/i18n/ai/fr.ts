@@ -278,7 +278,7 @@ export const fr = {
   aiTabAssistant: "Assistant",
   aiAskDesc: "Donner une consigne de modification à l\\'élément sélectionné",
   aiNoModelErrorTitle: "Aucun modèle disponible pour le moment",
-  aiNoModelErrorBody: "Configurez votre propre fournisseur (votre clé, prêt à l\\'emploi), ou connectez-vous à ChatOffice pour les modèles par défaut. Aucun compte requis.",
+  aiNoModelErrorBody: "Configurez votre propre fournisseur (votre clé, prêt à l'emploi) pour commencer.",
   aiOpenModelSettings: "Ouvrir les paramètres des modèles",
   aiBeautifyDesc: "Affiner la mise en page, les couleurs et la hiérarchie de la diapo",
   aiFactCheckDesc: "Vérifier les données, noms et affirmations des diapositives",

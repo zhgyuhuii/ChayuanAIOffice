@@ -113,7 +113,7 @@ export const cs = {
   aiTabAssistant: "助手",
   aiCheckDesc: "校验公式错误与数据异常，并给出修复建议",
   aiNoModelErrorTitle: "还没有可用的模型",
-  aiNoModelErrorBody: "配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用默认模型。全程无需账号。",
+  aiNoModelErrorBody: "Nastavte si vlastního poskytovatele (váš klíč, připraven k okamžitému použití) a začněte.",
   aiOpenModelSettings: "打开模型设置",
   aiAnalyzeDesc: "总结关键发现、趋势和异常",
   aiDockLayoutTitle: "面板布局",

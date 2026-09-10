@@ -105,7 +105,7 @@ export const de = {
   aiTabAssistant: 'Assistent',
   aiCheckDesc: 'Formelfehler und Datenprobleme prüfen',
   aiNoModelErrorTitle: 'Noch kein Modell verfügbar',
-  aiNoModelErrorBody: 'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.',
+  aiNoModelErrorBody: 'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) und leg los.',
   aiOpenModelSettings: 'Modelleinstellungen öffnen',
   aiAnalyzeDesc: 'Wichtige Erkenntnisse, Trends und Ausreißer zusammenfassen',
   aiDockLayoutTitle: 'Bereichslayout',

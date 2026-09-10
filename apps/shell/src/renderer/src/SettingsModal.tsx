@@ -9,6 +9,7 @@ import {
   Dropdown,
   ModelDefaultsPage,
   ModelSettingsPage,
+  USER_LOGIN_READY,
   type ModelSettingsBridge,
 } from '@chatoffice/ui'
 import { useI18n } from './locale'
@@ -522,34 +523,37 @@ export function SettingsModal({
             )}
           </div>
         </div>
-        <footer className="set-footer">
-          {loggedIn ? (
-            <>
-              <span className="set-footer-user" title={email}>
-                {email}
-              </span>
-              <button className="set-btn" disabled={loggingOut} onClick={onLogout}>
-                {loggingOut ? t('loggingOut') : t('logout')}
-              </button>
-            </>
-          ) : (
-            <>
-              {loginWaiting && loginUrl && (
-                <>
-                  <button className="set-btn" onClick={onOpenLoginUrl}>
-                    {t('loginOpenManually')}
-                  </button>
-                  <button className="set-btn" onClick={onCopyLoginUrl}>
-                    {urlCopied ? t('loginCopied') : t('loginCopyUrl')}
-                  </button>
-                </>
-              )}
-              <button className="set-btn primary" onClick={onLogin}>
-                {loginWaiting ? t('waitingShort') : t('userLogin')}
-              </button>
-            </>
-          )}
-        </footer>
+        {/* 用户登录功能未开放（USER_LOGIN_READY=false）：登录/退出入口整体隐藏 */}
+        {USER_LOGIN_READY && (
+          <footer className="set-footer">
+            {loggedIn ? (
+              <>
+                <span className="set-footer-user" title={email}>
+                  {email}
+                </span>
+                <button className="set-btn" disabled={loggingOut} onClick={onLogout}>
+                  {loggingOut ? t('loggingOut') : t('logout')}
+                </button>
+              </>
+            ) : (
+              <>
+                {loginWaiting && loginUrl && (
+                  <>
+                    <button className="set-btn" onClick={onOpenLoginUrl}>
+                      {t('loginOpenManually')}
+                    </button>
+                    <button className="set-btn" onClick={onCopyLoginUrl}>
+                      {urlCopied ? t('loginCopied') : t('loginCopyUrl')}
+                    </button>
+                  </>
+                )}
+                <button className="set-btn primary" onClick={onLogin}>
+                  {loginWaiting ? t('waitingShort') : t('userLogin')}
+                </button>
+              </>
+            )}
+          </footer>
+        )}
       </div>
     </div>
   )
