@@ -172,6 +172,8 @@ export function ModelSettingsPage({
   const [toolBusy, setToolBusy] = useState<'install' | 'start' | ''>('')
   const [toolLine, setToolLine] = useState('')
   const [toolProbeTick, setToolProbeTick] = useState(0)
+  /** 安装/启动失败的持久提示（含手动下载兜底）；成功或重新操作时清除 */
+  const [toolNote, setToolNote] = useState<string | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
@@ -334,16 +336,20 @@ export function ModelSettingsPage({
     if (!bridge.localToolInstall) return
     setToolBusy('install')
     setToolLine('')
+    setToolNote(null)
     try {
       const r = await bridge.localToolInstall(selected, (line) => setToolLine(line))
       if (r.ok) {
         flash('ok', r.message || t.localInstallDone)
         setToolProbeTick((n) => n + 1)
       } else {
+        setToolNote(r.message ?? '')
         flash('err', fmt(t.localInstallFailed, { message: r.message ?? '' }))
       }
     } catch (error) {
-      flash('err', fmt(t.localInstallFailed, { message: errorText(error) }))
+      const message = errorText(error)
+      setToolNote(message)
+      flash('err', fmt(t.localInstallFailed, { message }))
     } finally {
       setToolBusy('')
     }
@@ -352,16 +358,20 @@ export function ModelSettingsPage({
   const startLocalTool = async () => {
     if (!bridge.localToolStart) return
     setToolBusy('start')
+    setToolNote(null)
     try {
       const r = await bridge.localToolStart(selected)
       if (r.ok) {
         flash('ok', r.message || t.localStartOk)
         setToolProbeTick((n) => n + 1)
       } else {
+        setToolNote(r.message ?? '')
         flash('err', fmt(t.localInstallFailed, { message: r.message ?? '' }))
       }
     } catch (error) {
-      flash('err', fmt(t.localInstallFailed, { message: errorText(error) }))
+      const message = errorText(error)
+      setToolNote(message)
+      flash('err', fmt(t.localInstallFailed, { message }))
     } finally {
       setToolBusy('')
     }
@@ -1049,7 +1059,10 @@ export function ModelSettingsPage({
                         className="msp-btn msp-btn-mini"
                         data-local-tool-redetect
                         disabled={toolBusy !== '' || toolProbing}
-                        onClick={() => setToolProbeTick((n) => n + 1)}
+                        onClick={() => {
+                          setToolNote(null)
+                          setToolProbeTick((n) => n + 1)
+                        }}
                       >
                         {t.localRedetect}
                       </button>
@@ -1076,7 +1089,10 @@ export function ModelSettingsPage({
                         className="msp-btn msp-btn-mini"
                         data-local-tool-redetect
                         disabled={toolBusy !== '' || toolProbing}
-                        onClick={() => setToolProbeTick((n) => n + 1)}
+                        onClick={() => {
+                          setToolNote(null)
+                          setToolProbeTick((n) => n + 1)
+                        }}
                       >
                         {t.localRedetect}
                       </button>
@@ -1098,6 +1114,11 @@ export function ModelSettingsPage({
                       <span className="msp-note">{t.localInstallHint}</span>
                     </div>
                   ) : null}
+                  {toolNote && (
+                    <p className="msp-note msp-local-note" data-local-tool-note>
+                      {toolNote}
+                    </p>
+                  )}
                 </div>
               )}
 

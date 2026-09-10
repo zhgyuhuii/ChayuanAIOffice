@@ -815,6 +815,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.msp-local-note {
+  color: var(--danger, #d13438);
+  word-break: break-all;
+}
 
 /* multi-field credentials (kling AK/SK) */
 .msp-key-fields {

@@ -106,4 +106,68 @@ describe('local tools (本地与自建 一键安装)', () => {
     expect(r.ok).toBe(true)
     expect(lines).toEqual(['==> Downloading ollama', '==> Pouring ollama'])
   })
+
+  it('direct download streams percent progress (mac, no brew)', async () => {
+    const lines: string[] = []
+    const chunk = new Uint8Array(1024 * 1024) // 1MB
+    let reads = 0
+    const body = {
+      getReader: () => ({
+        read: async () => {
+          reads += 1
+          return reads <= 5 ? { done: false, value: chunk } : { done: true, value: undefined }
+        },
+      }),
+    }
+    const tools = createLocalTools(
+      fakeDeps({
+        which: async () => null, // no brew → zip download path
+        fetch: (async () => ({
+          ok: true,
+          status: 200,
+          headers: new Headers({ 'content-length': String(5 * 1024 * 1024) }),
+          body,
+        })) as unknown as typeof globalThis.fetch,
+        run: async () => {},
+      }),
+    )
+    const r = await tools.install('ollama', (l) => lines.push(l))
+    expect(r.ok).toBe(true)
+    expect(lines.some((l) => l.includes('下载中'))).toBe(true)
+    expect(lines.some((l) => l.includes('%'))).toBe(true)
+  })
+
+  it('install failure carries the manual download fallback URL', async () => {
+    const tools = createLocalTools(
+      fakeDeps({
+        which: async () => null, // no brew → zip download
+        fetch: (async () => {
+          throw new Error('connect refused')
+        }) as unknown as typeof globalThis.fetch,
+      }),
+    )
+    const r = await tools.install('ollama')
+    expect(r.ok).toBe(false)
+    expect(r.message).toContain('手动下载')
+    expect(r.message).toContain('https://ollama.com/download')
+  })
+
+  it('codex: falls back to the npmmirror registry when the default registry fails', async () => {
+    const runs: Array<{ cmd: string; args: string[] }> = []
+    const tools = createLocalTools(
+      fakeDeps({
+        which: async (b) => (b === 'npm' ? '/usr/bin/npm' : null),
+        run: async (cmd, args) => {
+          runs.push({ cmd, args })
+          // mirror retry succeeds; element equality, not substring
+          if (args.some((a) => a.startsWith('--registry'))) return
+          throw new Error('npm 退出码 1')
+        },
+      }),
+    )
+    const r = await tools.install('codex')
+    expect(r.ok).toBe(true)
+    expect(runs).toHaveLength(2)
+    expect(runs[1]!.args).toContain('--registry=https://registry.npmmirror.com')
+  })
 })

@@ -198,6 +198,20 @@ describe('ModelSettingsPage local tools (本地与自建 一键安装)', () => {
     )
   })
 
+  it('install failure persists the note (with manual-download fallback) inside the card', async () => {
+    const status = vi.fn().mockResolvedValue(baseStatus)
+    const install = vi.fn(async () => ({
+      ok: false,
+      message: '下载失败（可手动下载安装：https://ollama.com/download ，装完点「重新检测」）',
+    }))
+    await renderLocal({ status, install })
+    await act(async () => {
+      ;(document.body.querySelector('[data-local-tool-install]') as HTMLButtonElement).click()
+    })
+    const note = document.body.querySelector('[data-local-tool-note]')?.textContent ?? ''
+    expect(note).toContain('ollama.com/download')
+  })
+
   it('installed-but-stopped offers 启动服务; starting re-probes to running', async () => {
     const status = vi
       .fn()
