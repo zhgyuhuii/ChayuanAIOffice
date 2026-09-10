@@ -71,7 +71,7 @@ export function normalizeRecentQuery(
 
 /** sidebar filter keys that stand for a family of extensions, not one exact ext */
 const EXT_FAMILY: Record<string, readonly string[]> = {
-  xlsx: ['xlsx', 'xlsm'],
+  xlsx: ['xlsx', 'xlsm', 'xls'],
   html: ['html', 'htm'],
 }
 

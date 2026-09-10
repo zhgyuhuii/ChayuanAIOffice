@@ -54,6 +54,26 @@ describe('home visible counts', () => {
     expect(page.entries.map((entry) => entry.path)).toEqual([bookPath, macroPath])
   })
 
+  it('counts legacy .xls under the sheets (xlsx) filter', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'shell-counts-'))
+    tempDirs.push(dir)
+    const bookPath = join(dir, 'book.xlsx')
+    const legacyPath = join(dir, 'legacy.xls')
+    const docPath = join(dir, 'notes.docx')
+    writeFileSync(bookPath, 'sheet')
+    writeFileSync(legacyPath, 'sheet')
+    writeFileSync(docPath, 'doc')
+
+    const page = pageRecentPaths(
+      [bookPath, legacyPath, docPath],
+      { ext: 'xlsx', offset: 0, limit: 50 },
+      new Set(),
+    )
+
+    expect(page.total).toBe(2)
+    expect(page.entries.map((entry) => entry.path)).toEqual([bookPath, legacyPath])
+  })
+
   it('keeps unavailable paths listed at their position, flagged missing (r158)', () => {
     const dir = mkdtempSync(join(tmpdir(), 'shell-counts-'))
     tempDirs.push(dir)
