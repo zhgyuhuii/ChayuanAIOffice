@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { evictOldestEntry } from '../src/advance'
 import { advanceWidths, isFamilyInstalled } from '../src/index'
 
 const darwin = process.platform === 'darwin'
@@ -42,8 +43,40 @@ describe('advanceWidths', () => {
 
   it('marks unmapped codepoints as NaN instead of guessing', () => {
     if (!hasHelvetica) return
-    const w = advanceWidths('Helvetica', '\u{10FFF0}x', 12)!
+    const w = advanceWidths('Helvetica', '￿x', 12)!
     expect(Number.isNaN(w[0]!)).toBe(true)
     expect(w[1]!).toBeGreaterThan(0)
+  })
+})
+
+describe('evictOldestEntry', () => {
+  it('is a no-op below capacity', () => {
+    const cache = new Map([
+      ['a', 1],
+      ['b', 2],
+    ])
+    evictOldestEntry(cache, 8)
+    expect([...cache.keys()]).toEqual(['a', 'b'])
+  })
+
+  it('evicts only the oldest entry at capacity', () => {
+    const cache = new Map([
+      ['a', 1],
+      ['b', 2],
+      ['c', 3],
+    ])
+    evictOldestEntry(cache, 3)
+    expect([...cache.keys()]).toEqual(['b', 'c'])
+  })
+
+  it('evicts repeatedly until under max', () => {
+    const cache = new Map([
+      ['a', 1],
+      ['b', 2],
+      ['c', 3],
+      ['d', 4],
+    ])
+    evictOldestEntry(cache, 2)
+    expect([...cache.keys()]).toEqual(['c', 'd'])
   })
 })
