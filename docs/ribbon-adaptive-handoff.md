@@ -194,7 +194,22 @@ WPS 自己的功能区 = **纯声明式明文 XML 资源，运行时延迟加载
 
 **不问、直接定（实现细节，共识表评审时可推翻）**：
 
-- 样式归属：包自带 `ribbon.css`（结构 chrome + 默认 token，tab-strip.css 先例），app 侧只留 theme token 覆盖——对应 WPS 皮肤与结构分离；
+- 样式归属：包自带 `controls.css`（结构 chrome + 默认 token，tab-strip.css 先例），app 侧只留 theme token 覆盖——对应 WPS 皮肤与结构分离；
 - sheets 富菜单（MenuRows/三级子菜单/色块画廊）进 schema 先走 `renderMenu` 原样搬，菜单声明化后置；
 - checkbox 不设独立 kind（toggle 承担，必要时加视觉变体）；
 - M1 的规格提取以 `CT_TableTools.kuip` + 皮肤 `uicontrol.kuip` + wps-screen 截图三方互证。
+
+## 11. 施工进度（2026-09-10 深夜批次）
+
+**已落地（全部提交推送）**：
+
+1. **控件族补全**（4da894b6 前):DesktopRibbon 12 kind 全渲染（toggle/number/combobox/colorpicker/gallery 五视图 + 内置三调色板 + `controls.css` 默认样式），schema 增 `spaceHint`/`canHideText`/toggle `size`。
+2. **Q19 差距清单 v1**：`docs/ribbon-wps-parity-gap.md`——三端 vs WPS tab 级全对照（45/36/39 tabs）、docs 开始 tab 组级深比对（缺口=查找编辑组/中文版式裁定）、spaceHint 语义档案（含野值 autoconsize/selfadaption 与 dynamicSpaceHint 区间语义）、施工勾选骨架、4 条裁定遗留。解析脚本在参考目录 `_scripts/`（inventory_kuip.py / inventory_ours.py，可复跑）。
+3. **M2 引擎核心**：`desktop/adaptive.ts`（deriveSpaceHint/deriveCanHideText 推导表 + textHideOrder + planCollapse 终态兜底数学）+ DesktopRibbon 测量驱动降级循环（ResizeObserver+useLayoutEffect，溢出→隐文字→右起逐组收拢成组名按钮，组名弹原布局面板； retreated 带 28px 滞回）+ GroupItems hideText 作用域 env + `.ribbon-body-row` 测量容器（schema 组接管溢出，renderBody 遗留体保持横向滚动）+ bodyOnly 模式 + collapsed 受控开关（`.ribbon-collapse-btn`/`.ribbon-collapsed`，偏好存储留给宿主）。包内 111 测试全绿。
+
+**下一步（按序）**：
+
+1. **C=docs 蛙跳切换**（未做，入口在此）：先调和 `DOCS_SCHEMA v2` 与现实——legacy Ribbon 已把 Design+Layout 合并为「页面」tab，而 schema 仍是 Design/Layout 两独立 tab；需要 schema 侧合并成 page（renderBody 双组件承载）。然后 App.tsx 挂 DesktopRibbon：6 个已提取 tab 用现成 host-tabs 适配器；Home（`components/home-tab.tsx` 已是独立组件！）+ 上下文四 tab（`contextual-tabs.tsx`）补 renderBody 适配器（照 legacyDropdown 桥接手法）；移动换装桥切 DesktopRibbon bodyOnly（MobileRibbon 不动）；legacy `components/Ribbon.tsx` 退役。风险面：App↔Ribbon ~45 回调 props 的承接、ribbon-collapse/记忆键迁移、docs 2010 测试回归。
+2. M1 规格 token（WPS 硬规格进 controls.css 变量：字体框 minimumWidth=151/字号框 fixedWidth=60 等）+ 表格工具校验场按差距清单 §4 勾选推进。
+3. merge-row（并单行）真实现（schema `group.adapt` 已预留类型）。
+4. sheets/slides 收敛 + 差距清单回填。
