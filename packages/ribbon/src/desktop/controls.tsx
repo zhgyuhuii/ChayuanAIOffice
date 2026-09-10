@@ -108,6 +108,19 @@ function ButtonView<TState, TServices>({
   const run = () => {
     if (control.command) env.registry.execute(control.command, env.ctx, control.args)
   }
+  // Adaptive degradation (M2): drop label text, keep the icon (rb-icon form).
+  if (env.hideText && control.icon) {
+    return (
+      <button
+        className={`${withClass('rb-icon', control.className)} ${gate.active ? 'active' : ''}`}
+        disabled={gate.disabled}
+        {...tipProps(tip ?? env.t(control.labelKey), true)}
+        onClick={run}
+      >
+        {iconOf(env.icons, control.icon)}
+      </button>
+    )
+  }
   if (control.size === 'big') {
     return (
       <button
@@ -225,8 +238,9 @@ function SplitView<TState, TServices>({
   const caretClass = color
     ? `rb-caret rb-color-caret${open ? ' active' : ''}`
     : `rb-caret${open ? ' active' : ''}`
+  const iconOnly = control.size !== 'big' || (env.hideText === true && Boolean(control.icon))
   const mainContent =
-    control.size === 'big' ? (
+    !iconOnly && control.size === 'big' ? (
       <>
         <span className="rb-big-icon">
           {iconOf(env.icons, control.icon)}
@@ -243,7 +257,7 @@ function SplitView<TState, TServices>({
       (iconOf(env.icons, control.icon) ?? env.t(control.labelKey))
     )
   const mainClass =
-    control.size === 'big'
+    !iconOnly && control.size === 'big'
       ? withClass('rb-big', undefined)
       : withClass(`rb-icon${color ? ' rb-color-btn' : ''}`, undefined)
   return (
@@ -289,7 +303,8 @@ function DropdownView<TState, TServices>({
     if (control.command) env.registry.execute(control.command, env.ctx, control.args)
     env.dropdown.toggle(control.id)
   }
-  if (control.size === 'big') {
+  const bigForm = control.size === 'big' && !(env.hideText === true && Boolean(control.icon))
+  if (bigForm) {
     return (
       <div className={withClass('rb-split-wrap', control.className)}>
         <button
@@ -351,6 +366,18 @@ function ToggleView<TState, TServices>({
   if (!gate.visible) return null
   const tip = control.tipKey ? env.t(control.tipKey) : undefined
   const run = () => env.registry.execute(control.command, env.ctx, control.args)
+  if (env.hideText && control.icon) {
+    return (
+      <button
+        className={`${withClass('rb-icon', control.className)} ${pressed ? 'active' : ''}`}
+        disabled={gate.disabled}
+        {...tipProps(tip ?? env.t(control.labelKey), true)}
+        onClick={run}
+      >
+        {iconOf(env.icons, control.icon)}
+      </button>
+    )
+  }
   if (control.size === 'big') {
     return (
       <button

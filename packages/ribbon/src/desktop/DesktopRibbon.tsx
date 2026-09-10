@@ -7,8 +7,23 @@
  *
  * Enablement: the optional `disabledWhen` prop is ANDed with each group's
  * `disabledWhen` and each command's `isEnabled` (see controls.tsx).
+ *
+ * Adaptation (M2, WPS 连续 spaceHint 模型): for schema-group tabs the body is
+ * measured after every render (ResizeObserver + layout effect); on overflow
+ * stage 1 hides label text of controls whose canHideText allows it, stage ≥2
+ * collapses groups into their name buttons right-to-left (WPS 终态兜底) — the
+ * name button reopens the original layout in a panel. renderBody-hosted tabs
+ * manage their own layout and are excluded from the loop.
  */
-import { Fragment, useMemo, useState, type ReactNode } from 'react'
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { useDismissablePopover } from '@chatoffice/ui/popover-dismiss'
 import type { CommandRegistry } from '../command/registry'
 import type {
@@ -19,6 +34,7 @@ import type {
   RibbonTranslate,
 } from '../schema/types'
 import { evaluateWhen, type When } from '../schema/when'
+import { planCollapse } from './adaptive'
 import { RibbonEnvProvider, useRibbonEnv, type RibbonEnv, type RibbonIconMap } from './env'
 import { ControlView } from './controls'
 import { useRibbonTabs } from './use-ribbon-tabs'
@@ -45,6 +61,16 @@ export interface DesktopRibbonProps<TState = unknown, TServices = unknown> {
   readonly quickActions?: ReactNode
   /** Slot after the spacer (window controls etc.). */
   readonly trailingActions?: ReactNode
+  /**
+   * Body-only mode (mobile 换装桥 / strangler hosting): render just the active
+   * tab body — no strip, no collapse chrome. Tab selection stays with the host.
+   */
+  readonly bodyOnly?: boolean
+  /** Controlled collapse (WPS 80/24 条形态); host owns the preference store. */
+  readonly collapsed?: boolean
+  readonly onToggleCollapsed?: () => void
+  /** 'off' disables the measuring/degradation loop (default 'auto'). */
+  readonly adaptation?: 'auto' | 'off'
 }
 
 export function DesktopRibbon<TState, TServices>(props: DesktopRibbonProps<TState, TServices>) {
@@ -60,6 +86,10 @@ export function DesktopRibbon<TState, TServices>(props: DesktopRibbonProps<TStat
     disabledWhen,
     quickActions,
     trailingActions,
+    bodyOnly = false,
+    collapsed = false,
+    onToggleCollapsed,
+    adaptation = 'auto',
   } = props
 
   const ctx = useMemo(() => ({ state, services }), [state, services])
@@ -124,22 +154,55 @@ export function DesktopRibbon<TState, TServices>(props: DesktopRibbonProps<TStat
 
   return (
     <RibbonEnvProvider value={env}>
-      <div className="ribbon">
+      <div className={`ribbon${collapsed ? ' ribbon-collapsed' : ''}`}>
+        {!bodyOnly && (
+          <div
+            className={`ribbon-tabs ${inTab ? '' : platform === 'mac' ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
+          >
+            {platform !== 'mac' && fileTabs.map((tab) => <FileTabView key={tab.id} tab={tab} />)}
+            {quickActions}
+            {regularTabs.map(tabButton)}
+            {contextualTabs.map(tabButton)}
+            <span className="ribbon-tabs-spacer" />
+            {trailingActions}
+          </div>
+        )}
+        {!bodyOnly && onToggleCollapsed && (
+          <button
+            type="button"
+            className="ribbon-collapse-btn"
+            aria-label={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+            data-tip={collapsed ? t('ribbonExpandTip') : t('ribbonCollapseTip')}
+            onClick={onToggleCollapsed}
+          >
+            {icons.collapse ?? <CollapseChevron up={collapsed} />}
+          </button>
+        )}
         <div
-          className={`ribbon-tabs ${inTab ? '' : platform === 'mac' ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
+          className="ribbon-body"
+          style={collapsed && !bodyOnly ? { display: 'none' } : undefined}
         >
-          {platform !== 'mac' && fileTabs.map((tab) => <FileTabView key={tab.id} tab={tab} />)}
-          {quickActions}
-          {regularTabs.map(tabButton)}
-          {contextualTabs.map(tabButton)}
-          <span className="ribbon-tabs-spacer" />
-          {trailingActions}
-        </div>
-        <div className="ribbon-body">
-          {displayedTab && displayedTab.kind !== 'file' ? <TabBody tab={displayedTab} /> : null}
+          {displayedTab && displayedTab.kind !== 'file' ? (
+            <TabBody tab={displayedTab} adaptation={bodyOnly ? 'off' : adaptation} />
+          ) : null}
         </div>
       </div>
     </RibbonEnvProvider>
+  )
+}
+
+function CollapseChevron({ up }: { up: boolean }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d={up ? 'M5.5 14.75 12 8.25l6.5 6.5' : 'M5.5 9.25 12 15.75l6.5-6.5'}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 
@@ -183,8 +246,61 @@ function FileTabView<TState, TServices>({ tab }: { tab: RibbonTab<TState, TServi
   )
 }
 
-function TabBody<TState, TServices>({ tab }: { tab: RibbonTab<TState, TServices> }) {
+/** Adaptation stage per tab body: 0 full → 1 text hidden → ≥2 collapse k = stage-1 groups. */
+function TabBody<TState, TServices>({
+  tab,
+  adaptation,
+}: {
+  tab: RibbonTab<TState, TServices>
+  adaptation: 'auto' | 'off'
+}) {
   const env = useRibbonEnv<TState, TServices>()
+  const bodyRef = useRef<HTMLDivElement | null>(null)
+  const [stage, setStage] = useState(0)
+  const stageRef = useRef(stage)
+  stageRef.current = stage
+
+  const groups = tab.renderBody
+    ? []
+    : tab.groups.filter((group) => evaluateWhen(group.when, env.ctx.state))
+  const applicable = adaptation === 'auto' && !tab.renderBody && groups.length > 0
+
+  const measure = () => {
+    const el = bodyRef.current
+    if (!el) return
+    if (!applicable) {
+      if (stageRef.current !== 0) setStage(0)
+      return
+    }
+    const overflow = el.scrollWidth > el.clientWidth + 1
+    if (overflow) {
+      if (stageRef.current === 0) {
+        setStage(1)
+        return
+      }
+      const widths = [...el.querySelectorAll<HTMLElement>('.ribbon-group')].map(
+        (node) => node.offsetWidth,
+      )
+      if (widths.length === 0) return
+      const { collapseFromRight } = planCollapse(widths, widths, el.clientWidth)
+      const target = 1 + collapseFromRight
+      if (target > stageRef.current) setStage(target)
+    } else if (stageRef.current > 0 && el.clientWidth - el.scrollWidth > 28) {
+      // one step back per pass; the re-measure keeps retreating while it fits
+      setStage(stageRef.current - 1)
+    }
+  }
+
+  useLayoutEffect(measure)
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => measure())
+    if (bodyRef.current) ro.observe(bodyRef.current)
+    return () => ro.disconnect()
+    // measure closes over the current stage via stageRef
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicable])
+
   if (tab.renderBody) {
     return (
       <>
@@ -197,25 +313,45 @@ function TabBody<TState, TServices>({ tab }: { tab: RibbonTab<TState, TServices>
       </>
     )
   }
-  const groups = tab.groups.filter((group) => evaluateWhen(group.when, env.ctx.state))
+  const hideText = stage >= 1
+  const collapseCount = Math.max(0, stage - 1)
   return (
-    <>
-      {groups.map((group, index) => (
-        <Fragment key={group.id}>
-          {index > 0 ? <div className="ribbon-sep" /> : null}
-          <GroupView group={group} />
-        </Fragment>
-      ))}
-    </>
+    <div className="ribbon-body-row" ref={bodyRef}>
+      {groups.map((group, index) => {
+        const collapsed = index >= groups.length - collapseCount
+        return (
+          <Fragment key={group.id}>
+            {index > 0 ? <div className="ribbon-sep" /> : null}
+            {collapsed ? (
+              <CollapsedGroup group={group} />
+            ) : (
+              <GroupView group={group} hideText={hideText} />
+            )}
+          </Fragment>
+        )
+      })}
+    </div>
   )
 }
 
-function GroupView<TState, TServices>({ group }: { group: RibbonGroup<TState, TServices> }) {
+/** Group items at their declared form, inside a scoped hideText env. */
+function GroupItems<TState, TServices>({
+  group,
+  hideText,
+}: {
+  group: RibbonGroup<TState, TServices>
+  hideText: boolean
+}) {
   const env = useRibbonEnv<TState, TServices>()
   const groupDisabled =
     group.disabledWhen !== undefined && evaluateWhen(group.disabledWhen, env.ctx.state)
+  const scopedEnv = useMemo<RibbonEnv<TState, TServices>>(
+    () => ({ ...env, hideText }),
+    // env identity changes with dropdown/state churn; hideText is the semantic input
+    [env, hideText],
+  )
   return (
-    <div className="ribbon-group">
+    <RibbonEnvProvider value={scopedEnv}>
       <div
         className={group.className ? `ribbon-group-items ${group.className}` : 'ribbon-group-items'}
         style={group.layout === 'column' ? { flexDirection: 'column' } : undefined}
@@ -224,7 +360,45 @@ function GroupView<TState, TServices>({ group }: { group: RibbonGroup<TState, TS
           <ControlView key={control.id} control={control} groupDisabled={groupDisabled} />
         ))}
       </div>
+    </RibbonEnvProvider>
+  )
+}
+
+function GroupView<TState, TServices>({
+  group,
+  hideText,
+}: {
+  group: RibbonGroup<TState, TServices>
+  hideText: boolean
+}) {
+  const env = useRibbonEnv<TState, TServices>()
+  return (
+    <div className="ribbon-group">
+      <GroupItems group={group} hideText={hideText} />
       <div className="ribbon-group-label">{env.t(group.labelKey)}</div>
+    </div>
+  )
+}
+
+/** WPS 终态兜底: the group folds into its name button; clicking reopens the
+ * original layout in a panel. */
+function CollapsedGroup<TState, TServices>({ group }: { group: RibbonGroup<TState, TServices> }) {
+  const env = useRibbonEnv<TState, TServices>()
+  const openId = `group:${group.id}`
+  const open = env.dropdown.isOpen(openId)
+  return (
+    <div className="ribbon-group ribbon-group-collapsed">
+      <button
+        className={`ribbon-group-name ${open ? 'active' : ''}`}
+        onClick={() => env.dropdown.toggle(openId)}
+      >
+        {env.t(group.labelKey)}
+      </button>
+      {open ? (
+        <div data-rb-panel="" className="ribbon-group-panel">
+          <GroupItems group={group} hideText={false} />
+        </div>
+      ) : null}
     </div>
   )
 }

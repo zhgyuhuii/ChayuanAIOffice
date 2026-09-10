@@ -62,6 +62,15 @@ export {
   type SchemaToJSONResult,
 } from './schema/serialize'
 export { DesktopRibbon, type DesktopRibbonProps } from './desktop/DesktopRibbon'
+export {
+  deriveCanHideText,
+  deriveSpaceHint,
+  planCollapse,
+  SPACE_HINT_RANK,
+  textHideOrder,
+  type GroupAdapt,
+  type SpaceHint,
+} from './desktop/adaptive'
 export { MobileRibbon, type MobileRibbonProps } from './mobile/MobileRibbon'
 export {
   useRibbonTabs,

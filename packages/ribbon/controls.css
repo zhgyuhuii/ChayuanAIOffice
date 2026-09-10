@@ -236,6 +236,59 @@
   outline-offset: 0;
 }
 
+/* ---- adaptive body row (M2 measuring container) ----
+ * Takes over .ribbon-body's flex row so the degradation loop can measure
+ * content vs available width (overflow-x hidden: WPS degrades, never scrolls).
+ * renderBody-hosted tab bodies bypass this wrapper and keep legacy scrolling. */
+
+.ribbon-body-row {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* group caption: hidden by per-app legacy CSS (display:none) until a host
+ * adopts the schema renderer — WPS shows captions and the collapsed-strip
+ * (Q16) depends on them. */
+
+.ribbon-group-collapsed {
+  justify-content: flex-end;
+}
+
+.ribbon-group-name {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ribbon-group-name:hover,
+.ribbon-group-name.active {
+  background: var(--rb-control-hover-bg);
+}
+
+.ribbon-group-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 30;
+  padding: 8px;
+  background: var(--rb-panel-bg);
+  border: 1px solid var(--rb-panel-border);
+  box-shadow: var(--rb-panel-shadow);
+}
+
+.ribbon-group-panel .ribbon-group-items {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
 /* ---- gallery (.rb-gallery) ----
  * Fallback only: hosts with their own .rb-gallery (slides' fixed 2-row grids)
  * keep theirs. Height packs two rows of 16px icons + gaps. */

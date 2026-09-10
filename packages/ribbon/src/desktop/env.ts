@@ -19,6 +19,12 @@ export interface RibbonEnv<TState = unknown, TServices = unknown> {
   /** Renderer-level disabled gate (the `disabledWhen` prop, already evaluated). */
   readonly globalDisabled: boolean
   readonly dropdown: RibbonDropdownApi
+  /**
+   * Adaptive degradation (M2): when the row overflows, hidable label text is
+   * dropped (WPS canHideText). GroupView nests a scoped provider with this
+   * flipped on; controls render their icon-only form.
+   */
+  readonly hideText?: boolean
 }
 
 const RibbonEnvContext = createContext<RibbonEnv<any, any> | null>(null)
