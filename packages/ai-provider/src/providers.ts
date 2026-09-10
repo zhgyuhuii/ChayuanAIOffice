@@ -1,3 +1,5 @@
+import { defaultAiMediaSettings, resolveAiMediaSettings } from './media'
+import { defaultAiSearchSettings, resolveAiSearchSettings } from './search-settings'
 import type { AiProviderId, AiProviderMeta, AiSettings, LegacyAiSettings } from './types'
 
 /**
@@ -247,7 +249,13 @@ export function defaultAiSettings(
       cliPath: meta.needsCliPath ? '' : undefined,
     }
   }
-  return { provider: 'chatoffice', providers, chatofficeToolsEnabled: true }
+  return {
+    provider: 'chatoffice',
+    providers,
+    chatofficeToolsEnabled: true,
+    media: defaultAiMediaSettings(),
+    search: defaultAiSearchSettings(),
+  }
 }
 
 /** false only on an explicit opt-out; absent (pre-toggle settings files) means on */
@@ -377,6 +385,8 @@ export function resolveAiSettings(
         baseUrl: (stored.baseUrl ?? 'https://api.openai.com/v1').trim(),
       }
     }
+    defaults.media = resolveAiMediaSettings(stored.media ?? defaults.media)
+    defaults.search = resolveAiSearchSettings(stored.search ?? defaults.search)
     return defaults
   }
   return {
@@ -386,6 +396,8 @@ export function resolveAiSettings(
     providers: migrateRetiredModels(trimConfigs({ ...defaults.providers, ...stored.providers })),
     chatofficeToolsEnabled:
       stored.chatofficeToolsEnabled ?? defaults.chatofficeToolsEnabled ?? true,
+    media: resolveAiMediaSettings(stored.media ?? defaults.media),
+    search: resolveAiSearchSettings(stored.search ?? defaults.search),
     // clamped on read: a hand-edited settings file with an absurd cap must not be
     // forwarded to the endpoint verbatim
     ...(stored.maxOutputTokens !== undefined || defaults.maxOutputTokens !== undefined

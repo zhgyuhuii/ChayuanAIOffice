@@ -275,11 +275,12 @@ export function ModelSettingsPage({
       apiKeyEffective.trim() ||
       (keyConfigured || selectedVendor?.ollamaLike || selectedProfile?.ollamaLike ? '' : ''),
     ...(selectedVendor?.ollamaLike || selectedProfile?.ollamaLike ? { ollamaLike: true } : {}),
+    ...(selectedVendor?.codexLike ? { codexLike: true } : {}),
     ...(selectedProfile && !apiKeyEffective.trim() ? { profileId: selectedProfile.id } : {}),
   })
 
   const fetchModels = async () => {
-    if (!apiUrl.trim()) return flash('err', t.errApiUrl)
+    if (!apiUrl.trim() && !selectedVendor?.codexLike) return flash('err', t.errApiUrl)
     setBusy('fetch')
     try {
       const found = await bridge.discoverModels(discoveryTarget())
@@ -350,8 +351,9 @@ export function ModelSettingsPage({
   const saveProfile = async () => {
     if (!apiUrl.trim()) return flash('err', t.errApiUrl)
     const ollama = selectedVendor?.ollamaLike
+    const codex = selectedVendor?.codexLike
     const effectiveKey = apiKeyEffective.trim()
-    if (!effectiveKey && !keyConfigured && !ollama) return flash('err', t.errApiKey)
+    if (!effectiveKey && !keyConfigured && !ollama && !codex) return flash('err', t.errApiKey)
     const enabledModels = models.filter((m) => m.enabled)
     if (enabledModels.length === 0) return flash('err', t.errPickModel)
     setBusy('save')

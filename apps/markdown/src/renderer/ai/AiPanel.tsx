@@ -12,7 +12,7 @@ import {
   usePanelTab,
   AiScopeQuote,
   type AiScopeQuoteData, } from '@chatoffice/ui'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
@@ -152,6 +152,25 @@ export function AiPanel({
   const mountedRef = useRef(true)
 
   const settingsRef = useRef<AiSettingsV2 | null>(null)
+  /** ChatOffice login state for the generate_image gate (refreshed on mount and window focus) */
+  const chatOfficeLoggedInRef = useRef(false)
+  useEffect(() => {
+    let alive = true
+    const refresh = () => {
+      void window.markdownApi
+        .aiChatOfficeStatus?.()
+        .then((s) => {
+          if (alive) chatOfficeLoggedInRef.current = !!s?.loggedIn
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+    }
+  }, [])
   const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
   const refreshPanelSettings = async () => {
@@ -238,7 +257,7 @@ export function AiPanel({
             read: () => depsRef.current.getFrontmatter(),
             write: (inner) => depsRef.current.setFrontmatter(inner),
           },
-          () => false // image-gen capability deferred: local media layer wiring pending (docs/upstream-sync.md round-2),
+          () => imageGenerationAvailable(settingsRef.current, chatOfficeLoggedInRef.current),
         ),
         createSearchSkill(),
       ]),

@@ -34,7 +34,7 @@ import {
   showSaveDialogWithMemory,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
+import { generateImageTool } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
@@ -1388,15 +1388,10 @@ function registerHtmlIpc(): void {
   ipcMain.handle(
     HTML_CHANNELS.aiGenerateImage,
     (_e, op: { prompt?: unknown; aspectRatio?: unknown }) =>
-      (async () => {
-        // ChatOffice CLI image generation (BYOK routing deferred — see
-        // docs/upstream-sync.md round-2 ledger).
-        if (!hasChatOfficeAuth()) return { error: 'ChatOffice account is not logged in on this machine; ask the user to log in first' }
-        return await chatofficeGenerateImage({
-          prompt: String(op?.prompt ?? ''),
-          ...(op?.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
-        })
-      })(),
+      generateImageTool(join(app.getPath('userData'), 'ai-settings.json'), {
+        prompt: String(op?.prompt ?? ''),
+        aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
+      }),
   )
 
   const MIME_BY_EXT: Record<string, ImageData['mime']> = {

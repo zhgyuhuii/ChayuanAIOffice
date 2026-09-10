@@ -135,7 +135,7 @@ export interface AiProviderMeta {
 
 /** Image generation / media analysis backends (separate from the chat provider) */
 export type AiMediaProviderId =
-  'genspark' | 'openai' | 'gemini' | 'doubao' | 'glm' | 'xai' | 'qwen' | 'minimax' | 'custom'
+  'chatoffice' | 'openai' | 'gemini' | 'doubao' | 'glm' | 'xai' | 'qwen' | 'minimax' | 'custom'
 
 /** wire shape of the image endpoint */
 export type AiImageProtocol = 'openai-images' | 'gemini' | 'dashscope' | 'minimax'
@@ -159,7 +159,7 @@ export interface AiMediaProviderMeta {
   description: string
   keyPlaceholder: string
   needsBaseUrl?: boolean
-  /** '' for genspark (gsk login) and custom (user-supplied) */
+  /** '' for chatoffice (CLI login) and custom (user-supplied) */
   defaultBaseUrl: string
   /** absent = the provider does not generate images */
   imageProtocol?: AiImageProtocol
@@ -185,8 +185,8 @@ export interface AiMediaSettings {
   provider?: AiMediaProviderId | undefined
 }
 
-/** web/image search backends: Genspark (gsk) or a user key for Serper / Tavily */
-export type AiSearchProviderId = 'genspark' | 'serper' | 'tavily'
+/** web/image search backends: ChatOffice (gsk) or a user key for Serper / Tavily */
+export type AiSearchProviderId = 'chatoffice' | 'serper' | 'tavily'
 
 export interface AiSearchProviderMeta {
   id: AiSearchProviderId
@@ -198,10 +198,14 @@ export interface AiSearchProviderMeta {
 
 export interface AiSearchSettings {
   provider: AiSearchProviderId
-  providers: Record<Exclude<AiSearchProviderId, 'genspark'>, { apiKey: string }>
+  providers: Record<Exclude<AiSearchProviderId, 'chatoffice'>, { apiKey: string }>
 }
 
 export interface AiSettings {
+  /** media (generate_image / analyze_media) provider settings; absent = ChatOffice CLI behind the login gate */
+  media?: AiMediaSettings | undefined
+  /** web/image search backend settings; absent = CLI when signed in, then the free chain */
+  search?: AiSearchSettings | undefined
   provider: AiProviderId
   providers: Record<AiProviderId, AiProviderConfig>
   /**

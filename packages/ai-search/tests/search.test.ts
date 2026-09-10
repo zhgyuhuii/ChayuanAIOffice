@@ -211,3 +211,13 @@ describe('imageSearch (Serper)', () => {
     })
   })
 })
+
+describe('search-tools', () => {
+  it('maps the settings block onto the ChatOffice-backend gate', async () => {
+    const { useChatOfficeBackend, webSearchTool } = await import('../src/search-tools')
+    const base = (await import('@chatoffice/ai-provider')).defaultAiSettings()
+    expect(useChatOfficeBackend(base)).toBe(true)
+    expect(useChatOfficeBackend({ ...base, chatofficeToolsEnabled: false })).toBe(false)
+    expect(typeof webSearchTool).toBe('function')
+  })
+})

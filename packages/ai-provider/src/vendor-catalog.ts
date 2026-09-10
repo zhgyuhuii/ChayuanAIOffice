@@ -24,6 +24,8 @@ export interface VendorCatalogEntry {
   api: AiWireProtocol
   /** endpoint serves Ollama-style /api/tags and accepts an empty key */
   ollamaLike?: boolean
+  /** provider rides the local Codex CLI's ChatGPT login; models come from the CLI catalog */
+  codexLike?: boolean
   /** console page where an API key can be created */
   keyUrl?: string
   docsUrl?: string
@@ -616,6 +618,17 @@ export const VENDORS: VendorCatalogEntry[] = [
     api: 'openai-completions',
     ollamaLike: true,
     docsUrl: 'https://ollama.com/',
+    free: 'nokey',
+  },
+  {
+    id: 'codex',
+    name: 'Codex (local CLI)',
+    nameZh: 'Codex（本地 CLI）',
+    group: 'local',
+    defaultUrl: '',
+    api: 'openai-completions',
+    codexLike: true,
+    docsUrl: 'https://developers.openai.com/codex/',
     free: 'nokey',
   },
   {

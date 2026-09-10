@@ -38,6 +38,37 @@ export type {
   ProviderCapabilities,
   ResolvedEndpoint,
 } from './registry'
+export {
+  activeMediaConfig,
+  activeMediaProvider,
+  defaultAiMediaSettings,
+  getMediaProviderMeta,
+  imageGenerationAvailable,
+  mediaAnalysisAvailable,
+  mediaConfigUsable,
+  providerHasCapability,
+  resolveAiMediaSettings,
+  videoAnalysisAvailable,
+} from './media'
+export type { MediaCapability } from './media'
+export {
+  AI_SEARCH_PROVIDERS,
+  activeSearchProvider,
+  defaultAiSearchSettings,
+  resolveAiSearchSettings,
+} from './search-settings'
+export {
+  analyzeMediaWithProvider,
+  generateImageWithProvider,
+  sniffImageMime,
+  testMediaProvider,
+} from './media-protocols'
+export type {
+  AnalyzeMediaInput,
+  ByokMediaProviderId,
+  GenerateImageInput,
+  MediaBlob,
+} from './media-protocols'
 export { chatForProvider, chatResolved } from './chat'
 export { setAiUserAgent, setRescueFetch } from './fetch'
 export {
