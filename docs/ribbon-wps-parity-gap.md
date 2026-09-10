@@ -141,3 +141,26 @@ Document Settings → Smart Official → RB_AIAssistant → RB_OfficialModeEntry
 2. docs 表格上下文两 tab 是否按 WPS 合并为单 tab 校验场（Q15 建议：按原样单 tab 还原）；
 3. 中文版式组归并策略（并入字体菜单 vs 独立组）；
 4. et 组名 caption 刻意隐藏（ExcelShell 6840「No visible group captions」）与 WPS 组名常显相悖——schema 化时统一为常显（Q16 组名行依赖）。
+
+## 6. 像素级对比（playground 自测 vs WPS 实测，2026-09-11）
+
+自测配方：`packages/ribbon/playground/`（12 kind 全渲染 + 5 组样例 schema），esbuild 打包 →
+静态服务 → 无头 Chrome `--headless --screenshot --virtual-time-budget=5000` 多宽度截图 →
+PIL 剖析（组分隔线检测/控件簇/体带高度）。**WPS 视觉规则实证：控件无边框、无毛边，
+唯一的线是组分隔浅灰竖线**（wps-word/1.png 实测：全条带仅组间灰线，控件idle态零描边）——
+controls.css 已按此重写（border:none + hover 平涂，面板类下拉除外）。
+
+| 指标 | WPS（wps-word/1.png 实测 @2x） | 我们（playground 实测） | 结论 |
+|---|---|---|---|
+| 体带高度（内容+组名行） | ~74 内容 + 组名行 ≈ 84-90 | 84（含 14px 组名行） | ✅ 对齐 |
+| 大钮（粘贴类）高度 | 42 逻辑 px | 40 | ✅ ±2 抗锯齿内 |
+| 大钮布局 | 粘贴=图标左文字右（117 宽水平大钮） | icon-over-label 垂直 | 🟡 M1 控件规格项：big 变体需补水平布局形态 |
+| 组分隔线 | 组间浅灰竖线，仅此有线 | 1px `--rb-sep` 仅组间（全宽态实测仅 4 条） | ✅ 对齐 |
+| 控件 idle 边框 | 无（干净） | 无（controls.css 重写后） | ✅ 对齐 |
+| 降级阶梯 | spaceHint 连续降级→并单行→组名收拢 | 全显 ≥800 → 隐文字（窗口窄段）→ 右起收拢（≤780 全段，darkpx 364/335/289 随宽度自适应，无振荡） | ✅ 引擎生效；merge-row 待实现 |
+
+宽度扫描记录（体带 h / 内容暗像素）：880-800: 84/485（全显）｜780: 51/364｜760-620: 51/335｜
+560: 51/289——收拢数随可用宽度递增，回退滞回工作正常。
+
+**M1 新增规格项（从本次对比发现）**：big 变体水平形态（图标左文字右，粘贴/对齐类专用）——
+schema 或需 `bigLayout?: 'vertical' | 'horizontal'`，施工时随校验场裁定。
