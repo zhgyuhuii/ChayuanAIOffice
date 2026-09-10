@@ -126,17 +126,21 @@ const BORDER_PRESETS: { readonly labelKey: StringKey; readonly value: string }[]
 export function FormatCellsDialog({
   selectionFormat,
   anchorValue,
+  initialTab = 'Number',
   onCommand,
   onClose,
 }: {
   readonly selectionFormat: SelectionFormat | null
   /// Value of the selection's top-left cell, for the number-format preview.
   readonly anchorValue: number | string | null
+  /// 组角落启动箭头按来源组定位初始 tab（字体→Font、对齐→Alignment、
+  /// 数字→Number、其他边框→Border）；默认 Number（⌘1）。
+  readonly initialTab?: Tab
   readonly onCommand: (command: string) => void
   readonly onClose: () => void
 }): React.JSX.Element {
   const { t } = useI18n()
-  const [tab, setTab] = useState<Tab>('Number')
+  const [tab, setTab] = useState<Tab>(initialTab)
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') onClose()

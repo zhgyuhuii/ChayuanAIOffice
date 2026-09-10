@@ -44,6 +44,24 @@ import { categoryOptionForPattern, numberFormatCategories } from './number-forma
 import { type SelectionFormat } from './selection-format'
 import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
 import { isGridKeyTarget, shouldInterceptClearSelection } from './clear-selection-keyboard'
+import { COLOR_SCALE_PRESETS, DATA_BAR_PRESETS, iconSetOf } from './cf-gallery'
+import { listCustomCellStyles, listCustomTableStyles } from './custom-styles'
+import { columnLabel, parseAddress } from '../domain/cell-address'
+import {
+  CfRuleDialog,
+  CondStatsDialog,
+  FillInsertTextDialog,
+  NewCellStyleDialog,
+  NewTableStyleDialog,
+  SelectionPaneDialog,
+  SeriesDialog,
+  FILL_DATE_PATTERNS,
+  fillDateLabel,
+  persistCustomCellStyle,
+  persistCustomTableStyle,
+  type CfRuleDialogMode,
+} from './data-process-dialogs'
+import type { SheetVisualRef } from './ribbon-actions'
 
 import type { ChartSeriesVisualState } from '../domain/chart-visual'
 import type { ChangePlan } from '../domain/workbook.types'
@@ -251,6 +269,11 @@ interface ExcelShellProps {
   readonly onIsCellEditing: () => boolean
   /// Left side of the status bar (ready / streaming / AI progress messages).
   readonly statusMessage: string
+  /// 状态栏消息写入（样式对话框保存后的回执走这里）
+  readonly onStatus: (message: string) => void
+  /// 选择窗格：当前工作表浮动对象清单 + 定位回调
+  readonly onGetVisualObjects: () => readonly SheetVisualRef[]
+  readonly onLocateVisual: (item: SheetVisualRef) => void
   /// Zoom of the active sheet in percent, echoed by the status-bar slider.
   readonly zoomPercent: number
   /// True when the edit journal has unsaved changes (enables the QAT Save).
@@ -444,6 +467,9 @@ export function ExcelShell({
   onCommand,
   onIsCellEditing,
   statusMessage,
+  onStatus,
+  onGetVisualObjects,
+  onLocateVisual,
   zoomPercent,
   canSave,
   onSave,
@@ -505,6 +531,19 @@ export function ExcelShell({
     localStorage.setItem('ai-sheets-show-ai', isCopilotOpen ? '1' : '0')
   }, [isCopilotOpen])
   const [showFormatCells, setShowFormatCells] = useState(false)
+  // 设置单元格格式对话框的初始 tab（字体/对齐/数字组的角落启动箭头定位）
+  const [formatCellsTab, setFormatCellsTab] = useState<
+    'Number' | 'Alignment' | 'Font' | 'Border' | 'Fill' | 'Protection'
+  >('Number')
+  // 数据处理组 / 样式组富菜单的配套对话框
+  const [fillInsertWhere, setFillInsertWhere] = useState<'start' | 'mid' | 'end' | null>(null)
+  const [showSeries, setShowSeries] = useState(false)
+  const [showCondStats, setShowCondStats] = useState(false)
+  const [cfRuleMode, setCfRuleMode] = useState<CfRuleDialogMode | null>(null)
+  const [newTableStyleKind, setNewTableStyleKind] = useState<'table' | 'pivot' | null>(null)
+  const [showNewCellStyle, setShowNewCellStyle] = useState(false)
+  const [showSelectionPane, setShowSelectionPane] = useState(false)
+  const [selectionPaneItems, setSelectionPaneItems] = useState<readonly SheetVisualRef[]>([])
   const [showPasteSpecial, setShowPasteSpecial] = useState(false)
   const [axisSizeTarget, setAxisSizeTarget] = useState<'row' | 'col' | null>(null)
   // 标准列宽 / 插入删除单元格弹窗（行和列⌄ 第三轮）
@@ -943,9 +982,80 @@ export function ExcelShell({
                 calcManual={calcManual}
                 onRefreshPivot={onRefreshPivot}
                 onIsSelectionInPivot={onIsSelectionInPivot}
+                activeCell={(() => {
+                  try {
+                    return parseAddress(activeCellA1)
+                  } catch {
+                    return { row: 0, column: 0 }
+                  }
+                })()}
                 onCommand={(command) => {
-                  if (command === 'format-cells') setShowFormatCells(true)
-                  else if (command === 'paste-special-dialog') setShowPasteSpecial(true)
+                  if (command === 'format-cells') {
+                    setFormatCellsTab('Number')
+                    setShowFormatCells(true)
+                  } else if (command.startsWith('format-cells:')) {
+                    // 字体/对齐方式/数字样式组角落的 45° 启动箭头：打开设置
+                    // 单元格格式并定位对应 tab（WPS 对比清单 5）
+                    const tab = command.slice('format-cells:'.length)
+                    if (
+                      tab === 'Number' ||
+                      tab === 'Alignment' ||
+                      tab === 'Font' ||
+                      tab === 'Border' ||
+                      tab === 'Fill' ||
+                      tab === 'Protection'
+                    ) {
+                      setFormatCellsTab(tab)
+                      setShowFormatCells(true)
+                    }
+                  } else if (command.startsWith('fill-insert-text-open:')) {
+                    const where = command.slice('fill-insert-text-open:'.length)
+                    if (where === 'start' || where === 'mid' || where === 'end') {
+                      setFillInsertWhere(where)
+                    }
+                  } else if (command === 'series-open') setShowSeries(true)
+                  else if (command === 'cond-stats-open') setShowCondStats(true)
+                  else if (command.startsWith('cf-hl-dialog:')) {
+                    const mode = command.slice('cf-hl-dialog:'.length)
+                    if (
+                      mode === 'gt' ||
+                      mode === 'lt' ||
+                      mode === 'eq' ||
+                      mode === 'between' ||
+                      mode === 'contains' ||
+                      mode === 'dup'
+                    ) {
+                      setCfRuleMode(mode)
+                    }
+                  } else if (command.startsWith('cf-rank-dialog:')) {
+                    const [bottom, percent] = command
+                      .slice('cf-rank-dialog:'.length)
+                      .split(':')
+                    setCfRuleMode(
+                      bottom === '1'
+                        ? percent === '1'
+                          ? 'bottom-pct'
+                          : 'bottom-n'
+                        : percent === '1'
+                          ? 'top-pct'
+                          : 'top-n',
+                    )
+                  } else if (command === 'table-style-new-open') setNewTableStyleKind('table')
+                  else if (command === 'pivot-style-new-open') setNewTableStyleKind('pivot')
+                  else if (command === 'cell-style-new-open') setShowNewCellStyle(true)
+                  else if (command === 'selection-pane-open') {
+                    setSelectionPaneItems(onGetVisualObjects())
+                    setShowSelectionPane(true)
+                  } else if (command === 'ai-fill') {
+                    setIsCopilotOpen(true)
+                    onSend(t('appAiFillPrompt'))
+                  } else if (command === 'ai-cf') {
+                    setIsCopilotOpen(true)
+                    onSend(t('appCfAiPrompt'))
+                  } else if (command === 'ai-write-formula') {
+                    setIsCopilotOpen(true)
+                    onSend(t('appWriteFormulaPrompt'))
+                  } else if (command === 'paste-special-dialog') setShowPasteSpecial(true)
                   else if (command === 'row-height-open') setAxisSizeTarget('row')
                   else if (command === 'col-width-open') setAxisSizeTarget('col')
                   else if (command === 'standard-col-width-open') setStandardWidthOpen(true)
@@ -1052,8 +1162,108 @@ export function ExcelShell({
         <FormatCellsDialog
           selectionFormat={selectionFormat}
           anchorValue={onGetAnchorValue()}
+          initialTab={formatCellsTab}
           onCommand={onCommand}
           onClose={() => setShowFormatCells(false)}
+        />
+      )}
+      {fillInsertWhere && (
+        <FillInsertTextDialog
+          where={fillInsertWhere}
+          onApply={(text) =>
+            onCommand(`fill-insert-text:${fillInsertWhere}:${encodeURIComponent(text)}`)
+          }
+          onClose={() => setFillInsertWhere(null)}
+        />
+      )}
+      {showSeries && (
+        <SeriesDialog
+          onApply={(dir, type, step, stop) =>
+            onCommand(`fill-series:${dir}:${type}:${step}:${stop === null ? 'none' : stop}`)
+          }
+          onClose={() => setShowSeries(false)}
+        />
+      )}
+      {showCondStats && (
+        <CondStatsDialog
+          onApply={(fn, criteriaRange, criteria, sumRange) =>
+            onCommand(
+              `cond-stats:${fn}:${encodeURIComponent(criteriaRange)}:${encodeURIComponent(
+                criteria,
+              )}:${sumRange ? encodeURIComponent(sumRange) : 'none'}`,
+            )
+          }
+          onClose={() => setShowCondStats(false)}
+        />
+      )}
+      {cfRuleMode && (
+        <CfRuleDialog
+          mode={cfRuleMode}
+          onApplyHighlight={(op, value, value2, styleId) =>
+            onCommand(
+              op === 'between'
+                ? `cf-hl:between:${value}:${value2}:${styleId}`
+                : op === 'contains'
+                  ? `cf-hl:contains:${encodeURIComponent(value)}:${styleId}`
+                  : op === 'dup'
+                    ? `cf-hl:dup::${styleId}`
+                    : `cf-hl:${op}:${value}:${styleId}`,
+            )
+          }
+          onApplyRank={(bottom, percent, count) =>
+            onCommand(`cf-top:${bottom ? '1' : '0'}:${percent ? '1' : '0'}:${count}`)
+          }
+          onClose={() => setCfRuleMode(null)}
+        />
+      )}
+      {newTableStyleKind && (
+        <NewTableStyleDialog
+          kind={newTableStyleKind}
+          onApply={(name, headerFill, bandFill) => {
+            persistCustomTableStyle(newTableStyleKind, name, headerFill, bandFill)
+            onStatus(t('appTableStyleSaved', { name }))
+          }}
+          onClose={() => setNewTableStyleKind(null)}
+        />
+      )}
+      {showNewCellStyle && (
+        <NewCellStyleDialog
+          currentPatch={
+            selectionFormat
+              ? {
+                  ...(selectionFormat.bold !== null && selectionFormat.bold !== undefined
+                    ? { bold: selectionFormat.bold }
+                    : {}),
+                  ...(selectionFormat.italic !== null && selectionFormat.italic !== undefined
+                    ? { italic: selectionFormat.italic }
+                    : {}),
+                  ...(selectionFormat.underline !== null && selectionFormat.underline !== undefined
+                    ? { underline: selectionFormat.underline }
+                    : {}),
+                  ...(selectionFormat.strike ? { strikethrough: selectionFormat.strike } : {}),
+                  ...(selectionFormat.fontFamily ? { fontFamily: selectionFormat.fontFamily } : {}),
+                  ...(selectionFormat.fontSize ? { fontSize: selectionFormat.fontSize } : {}),
+                  ...(selectionFormat.fontColor ? { fontColor: selectionFormat.fontColor } : {}),
+                  ...(selectionFormat.fillColor ? { fillColor: selectionFormat.fillColor } : {}),
+                  ...(selectionFormat.numberFormat ? { numberFormat: selectionFormat.numberFormat } : {}),
+                }
+              : null
+          }
+          onApply={(name, patch) => {
+            persistCustomCellStyle(name, patch)
+            onStatus(t('appCellStyleSaved', { name }))
+          }}
+          onClose={() => setShowNewCellStyle(false)}
+        />
+      )}
+      {showSelectionPane && (
+        <SelectionPaneDialog
+          items={selectionPaneItems}
+          onLocate={(item) => {
+            onLocateVisual(item)
+            onStatus(t('appObjectLocated', { n: 1 }))
+          }}
+          onClose={() => setShowSelectionPane(false)}
         />
       )}
       {showPasteSpecial && (
@@ -1800,6 +2010,7 @@ function Ribbon({
   calcManual,
   onRefreshPivot,
   onIsSelectionInPivot,
+  activeCell,
 }: {
   readonly activeTab: RibbonTab
   readonly selectionFormat: SelectionFormat | null
@@ -1844,6 +2055,8 @@ function Ribbon({
   readonly onAiRun: (prompt: string) => void
   readonly onRefreshPivot: () => string | null
   readonly onIsSelectionInPivot: () => boolean
+  /// 当前活动格（0 基行列），冻结⌄ 的动态标签（冻结至第 N 行 M 列）取自它
+  readonly activeCell: { readonly row: number; readonly column: number }
 }): React.JSX.Element {
   const { t } = useI18n()
   const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
@@ -3646,6 +3859,31 @@ function Ribbon({
   const sizeOptions = fontSizes.includes(echoSize)
     ? fontSizes
     : [...fontSizes, echoSize].sort((a, b) => a - b)
+  const freezeMenuOptions: readonly MenuRowOption[] = [
+    {
+      value: `freeze-rows-cols:${activeCell.row + 1}:${activeCell.column + 1}`,
+      label: t('appFreezeToRC', {
+        rows: activeCell.row + 1,
+        cols: columnLabel(activeCell.column),
+      }),
+      disabled: activeCell.row === 0 || activeCell.column === 0,
+    },
+    {
+      value: `freeze-rows:${activeCell.row + 1}`,
+      label: t('appFreezeToRows', { rows: activeCell.row + 1 }),
+      disabled: activeCell.row === 0,
+    },
+    {
+      value: `freeze-cols:${activeCell.column + 1}`,
+      label: t('appFreezeToCols', { cols: columnLabel(activeCell.column) }),
+      disabled: activeCell.column === 0,
+    },
+    { value: 'freeze-header', label: t('appFreezeHeader') },
+    { value: 'freeze-top-row', label: t('appFreezeTopRow') },
+    { value: 'freeze-first-col', label: t('appFreezeFirstCol') },
+    { value: 'freeze-here', label: t('appFreezeAtSelection') },
+    { value: 'unfreeze', label: t('appUnfreeze') },
+  ]
   return (
     <div className="ribbon">
       <RibbonGroup label={t('appGroupClipboard')}>
@@ -3736,7 +3974,13 @@ function Ribbon({
           />
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupFont')}>
+      <RibbonGroup
+        label={t('appGroupFont')}
+        launcher={{
+          tip: `${t('appFormatCells')} · ${t('dlgFcTabFont')}`,
+          onClick: () => onCommand('format-cells:Font'),
+        }}
+      >
         <div className="ribbon-rows font-group-rows">
           <div className="inline-tools">
             <EditableMenuSelect
@@ -3875,7 +4119,13 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupAlignment')}>
+      <RibbonGroup
+        label={t('appGroupAlignment')}
+        launcher={{
+          tip: `${t('appFormatCells')} · ${t('dlgFcTabAlignment')}`,
+          onClick: () => onCommand('format-cells:Alignment'),
+        }}
+      >
         <div className="ribbon-rows">
           <div className="inline-tools alignment-tools">
             <button
@@ -3969,7 +4219,13 @@ function Ribbon({
           </div>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupNumber')}>
+      <RibbonGroup
+        label={t('appGroupNumber')}
+        launcher={{
+          tip: `${t('appFormatCells')} · ${t('dlgFcTabNumber')}`,
+          onClick: () => onCommand('format-cells:Number'),
+        }}
+      >
         {/* WPS 数字组布局（CT_Home.kuip RB_Number）：行1=格式框+转换⌄，
             行2=货币/会计⌄ % 千分位 增小数 减小数 快捷图标，紧凑无缝 */}
         <div className="ribbon-rows num-compact">
@@ -4043,8 +4299,9 @@ function Ribbon({
         </div>
       </RibbonGroup>
       <RibbonGroup label={t('appGroupStyles')}>
-        {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：2×2 大钮网格 */}
-        <div className="style-big-grid">
+        {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：条件格式
+            大钮在左，表格样式（上）+ 单元格样式（下）纵排，数据透视表殿后 */}
+        <div className="style-wps-row">
           <div className="ribbon-tool large as-button" data-tip={t('appConditionalFormatting')}>
             <span className="tool-icon-row">
               <ToolSymbol symbol="▤" />
@@ -4059,33 +4316,37 @@ function Ribbon({
               onCommand={onCommand}
             />
           </div>
-          <div className="ribbon-tool large as-button" data-tip={t('appFormatAsTableTitle')}>
-            <span className="tool-icon-row">
-              <ToolSymbol symbol="▦" />
-              <CaretIcon />
-            </span>
-            <span>
-              <strong>{t('appFormatAsTable')}</strong>
-            </span>
-            <TableStyleGallerySelect
-              label={t('appFormatAsTable')}
-              data-tip={t('appFormatAsTableTitle')}
-              onPick={(value) => onCommand(`format-as-table:${value}`)}
-            />
-          </div>
-          <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
-            <span className="tool-icon-row">
-              <ToolSymbol symbol="🎨" />
-              <CaretIcon />
-            </span>
-            <span>
-              <strong>{t('appCellStyles')}</strong>
-            </span>
-            <CellStyleSelect
-              label={t('appCellStyles')}
-              data-tip={t('appCellStylesTitle')}
-              onPick={(value) => onCommand(`cell-style:${value}`)}
-            />
+          <div className="style-wps-stack">
+            <div className="ribbon-tool large as-button" data-tip={t('appFormatAsTableTitle')}>
+              <span className="tool-icon-row">
+                <ToolSymbol symbol="▦" />
+                <CaretIcon />
+              </span>
+              <span>
+                <strong>{t('appTableStyleMenu')}</strong>
+              </span>
+              <TableStyleGallerySelect
+                label={t('appTableStyleMenu')}
+                data-tip={t('appFormatAsTableTitle')}
+                onPick={(value) => onCommand(`format-as-table:${value}`)}
+                onCommand={onCommand}
+              />
+            </div>
+            <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
+              <span className="tool-icon-row">
+                <ToolSymbol symbol="🎨" />
+                <CaretIcon />
+              </span>
+              <span>
+                <strong>{t('appCellStyles')}</strong>
+              </span>
+              <CellStyleSelect
+                label={t('appCellStyles')}
+                data-tip={t('appCellStylesTitle')}
+                onPick={(value) => onCommand(`cell-style:${value}`)}
+                onCommand={onCommand}
+              />
+            </div>
           </div>
           <button
             className="ribbon-tool large as-button"
@@ -4101,195 +4362,117 @@ function Ribbon({
           </button>
         </div>
       </RibbonGroup>
-      <RibbonGroup label={t('appGroupCells')}>
-        <div className="ribbon-rows">
-          <button
-            className="styles-row as-button"
-            data-tip={t('appFormatCells')}
-            data-tip-kbd={platformShortcuts('⌘1')}
-            onClick={() => onCommand('format-cells')}
-          >
-            <ToolSymbol symbol="🎨" />
-            {t('appFormatCells')} {platformShortcuts('⌘1')}
-            <CaretIcon />
-          </button>
-          <div className="inline-tools cell-tools">
-            <MenuSelect
-              className="select-like compact"
-              label="Format"
-              data-tip={t('appFormatMenu')}
-              display={
-                <>
-                  <ToolSymbol symbol="⇳" /> {t('appFormatMenu')}
-                </>
-              }
-              options={[
-                { value: 'row-height-open', label: `${t('appRowHeight')}…` },
-                { value: 'col-width-open', label: `${t('appColWidth')}…` },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-          </div>
-        </div>
-      </RibbonGroup>
-      <RibbonGroup label={t('appGroupEditing')}>
-        {/* WPS 编辑组布局（CT_Home.kuip RB_Editing）：填充大钮⌄ + 求和大钮⌄ +
-            排序/筛选、冻结/查找、清除 双列小钮栈 */}
-        <div className="edit-big-row">
-          <div className="ribbon-tool large as-button" data-tip={t('appFillMenu')}>
-            <span className="tool-icon-row">
-              <ToolSymbol symbol="↓" />
-              <CaretIcon />
-            </span>
-            <span>
-              <strong>{t('appFillMenu')}</strong>
-            </span>
-            <MenuSelect
-              cover
-              label="Fill"
-              options={[
-                { value: 'down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
-                { value: 'right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
-              ]}
-              onPick={(value) => onCommand(`fill-${value}`)}
-            />
-          </div>
-          <div className="ribbon-tool large as-button" data-tip={t('appAutoSumTitle')}>
-            <span className="tool-icon-row">
-              <ToolSymbol symbol="Σ" />
-              <CaretIcon />
-            </span>
-            <span>
-              <strong>{t('appAutoSum')}</strong>
-            </span>
-            <MenuSelect
-              cover
-              label="AutoSum"
-              options={[
-                { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
-                {
-                  value: 'autofn:AVERAGE',
-                  label: t('appFnAverage'),
-                  icon: <OptSample>x̄</OptSample>,
-                },
-                {
-                  value: 'autofn:COUNT',
-                  label: t('appFnCountNumbers'),
-                  icon: <OptSample>#</OptSample>,
-                },
-                { value: 'autofn:MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
-                { value: 'autofn:MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
-                {
-                  value: 'insert-function-open',
-                  label: t('appFnCatMore') + '…',
-                  icon: <OptSample>fx</OptSample>,
-                },
-              ]}
-              onPick={(value) => onCommand(value)}
-            />
-          </div>
-        </div>
-        <div className="edit-mini-grid">
-          <MenuSelect
-            className="select-like compact"
-            label="Sort"
-            data-tip={t('appSortSelectionTitle')}
-            display={
-              <>
-                <ToolSymbol symbol="⇅" /> {t('appSort')}
-              </>
-            }
+      <RibbonGroup label={t('appGroupDataProcess')}>
+        {/* WPS 数据处理组（对比清单 6-11）：填充/求和/排序/筛选/冻结/查找
+            六枚上下结构大钮 + 清除（保留原有清除功能，复用同款大钮） */}
+        <div className="process-big-row">
+          <BigMenuTool
+            label={t('appFillMenu')}
+            tip={t('appFillMenu')}
+            symbol="↓"
+            options={[
+              { value: 'fill-down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
+              { value: 'fill-right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
+              { value: 'fill-up', label: t('appFillUp'), icon: <OptSample>↑</OptSample> },
+              { value: 'fill-left', label: t('appFillLeft'), icon: <OptSample>←</OptSample> },
+              { value: 'fill-123', label: t('appFill123'), icon: <OptSample>123</OptSample> },
+              { value: 'fill-rank', label: t('appFillRank'), icon: <OptSample>1·2·3</OptSample> },
+              { value: 'fill-blanks', label: t('appFillBlanks'), icon: <OptSample>▢⇢</OptSample> },
+              {
+                value: 'fill-insert-group',
+                label: t('appFillInsertText'),
+                children: [
+                  { value: 'fill-insert-text-open:start', label: t('appFillInsertStart') },
+                  { value: 'fill-insert-text-open:mid', label: t('appFillInsertMid') },
+                  { value: 'fill-insert-text-open:end', label: t('appFillInsertEnd') },
+                ],
+              },
+              {
+                value: 'fill-date-group',
+                label: t('appFillDate'),
+                icon: <OptSample>📅</OptSample>,
+                children: FILL_DATE_PATTERNS.map((entry) => ({
+                  value: `fill-date:${entry.pattern}`,
+                  label: fillDateLabel(entry.pattern),
+                  sep: entry.wide,
+                })),
+              },
+              { value: 'fill-to-sheets', label: t('appFillToSheets'), icon: <OptSample>⇉</OptSample> },
+              { value: 'series-open', label: `${t('appFillSeries')}…`, icon: <OptSample>⋮⋮⋮</OptSample> },
+              { value: 'flash-fill', label: t('appFillSmart'), icon: <OptSample>⚡</OptSample> },
+              { value: 'ai-fill', label: t('appFillAi'), icon: <OptSample>✨</OptSample> },
+            ]}
+            onPick={onCommand}
+          />
+          <BigMenuTool
+            label={t('appFnSum')}
+            tip={t('appAutoSumTitle')}
+            symbol="Σ"
+            options={[
+              { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
+              { value: 'autofn:AVERAGE', label: t('appFnAverage'), icon: <OptSample>x̄</OptSample> },
+              { value: 'autofn:COUNT', label: t('appFnCountNumbers'), icon: <OptSample>#</OptSample> },
+              { value: 'autofn:MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
+              { value: 'autofn:MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
+              { value: 'cond-stats-open', label: `${t('appCondStats')}…`, icon: <OptSample>¿Σ</OptSample> },
+              { value: 'insert-function-open', label: `${t('appFnCatMore')}…`, icon: <OptSample>fx</OptSample> },
+              { value: 'ai-write-formula', label: t('appWriteFormula'), icon: <OptSample>✨fx</OptSample> },
+            ]}
+            onPick={onCommand}
+          />
+          <BigMenuTool
+            label={t('appSort')}
+            tip={t('appSortSelectionTitle')}
+            symbol="⇅"
             options={[
               { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
               { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
-              {
-                value: 'sort-custom-open',
-                label: t('appCustomSort'),
-                icon: <OptSample>⚙</OptSample>,
-              },
+              { value: 'sort-custom-open', label: t('appCustomSort'), icon: <OptSample>⚙</OptSample> },
             ]}
-            onPick={(value) => onCommand(value)}
+            onPick={onCommand}
           />
-          <MenuSelect
-            className="select-like compact"
-            label="Filter"
-            data-tip={t('appFilterToggleDetail')}
-            display={
-              <>
-                <ToolSymbol symbol="▽" /> {t('appFilter')}
-              </>
-            }
+          <BigMenuTool
+            label={t('appFilter')}
+            tip={t('appFilterToggleDetail')}
+            symbol="▽"
             options={[
               { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
-              { value: 'filter-clear', label: t('appClear'), icon: <OptSample>⊘</OptSample> },
+              { value: 'filter-advanced', label: t('appFilterAdvanced'), icon: <OptSample>⚙▽</OptSample> },
               { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
+              { value: 'filter-clear', label: t('appShowAll'), icon: <OptSample>☀</OptSample> },
             ]}
-            onPick={(value) => onCommand(value)}
+            onPick={onCommand}
           />
-          <MenuSelect
-            className="select-like compact"
-            label="Freeze"
-            data-tip={t('appFreezeTitle')}
-            display={
-              <>
-                <ToolSymbol symbol="❄" /> {t('appFreezePanes')}
-              </>
-            }
-            options={[
-              {
-                value: 'freeze-here',
-                label: t('appFreezeAtSelection'),
-                icon: <FreezeGlyph mode="cross" />,
-              },
-              {
-                value: 'freeze-top-row',
-                label: t('appFreezeTopRow'),
-                icon: <FreezeGlyph mode="row" />,
-              },
-              {
-                value: 'freeze-first-col',
-                label: t('appFreezeFirstCol'),
-                icon: <FreezeGlyph mode="col" />,
-              },
-              { value: 'unfreeze', label: t('appUnfreeze'), icon: <FreezeGlyph mode="none" /> },
-            ]}
-            onPick={(value) => onCommand(value)}
+          <BigMenuTool
+            label={t('appFreezePanes')}
+            tip={t('appFreezeTitle')}
+            symbol="❄"
+            options={freezeMenuOptions}
+            onPick={onCommand}
           />
-          <MenuSelect
-            className="select-like compact"
-            label="Find"
-            data-tip={t('appFindTitle')}
-            display={
-              <>
-                <ToolSymbol symbol="🔍" /> {t('appFind')}
-              </>
-            }
+          <BigMenuTool
+            label={t('appFind')}
+            tip={t('appFindTitle')}
+            symbol="🔍"
             options={[
-              { value: 'find', label: t('appFind'), icon: <OptSample>🔍</OptSample> },
+              { value: 'find', label: `${t('appFind')} ${platformShortcuts('⌘F')}`, icon: <OptSample>🔍</OptSample> },
               { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
-              { value: 'goto-open', label: `${t('appGoTo')} ⌘G`, icon: <OptSample>⌖</OptSample> },
+              { value: 'goto-open', label: `${t('appGoTo')} ${platformShortcuts('⌘G')}`, icon: <OptSample>⌖</OptSample> },
+              { value: 'select-object', label: t('appSelectObjects'), icon: <OptSample>☐</OptSample> },
+              { value: 'selection-pane-open', label: t('appSelectionPane'), icon: <OptSample>☰</OptSample> },
             ]}
-            onPick={(value) => onCommand(value)}
+            onPick={onCommand}
           />
-          <MenuSelect
-            className="select-like compact"
-            label="Clear"
-            data-tip={t('appClear')}
-            display={
-              <>
-                <ToolSymbol symbol="⌫" /> {t('appClear')}
-              </>
-            }
+          <BigMenuTool
+            label={t('appClear')}
+            tip={t('appClear')}
+            symbol="⌫"
             options={[
-              { value: 'all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
-              { value: 'formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
-              {
-                value: 'contents',
-                label: t('appClearContents'),
-                icon: <OptSample>123</OptSample>,
-              },
+              { value: 'clear-all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
+              { value: 'clear-formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
+              { value: 'clear-contents', label: t('appClearContents'), icon: <OptSample>123</OptSample> },
             ]}
-            onPick={(value) => onCommand(`clear-${value}`)}
+            onPick={onCommand}
           />
         </div>
       </RibbonGroup>
@@ -4839,13 +5022,16 @@ function useEscapeClose(open: boolean, close: () => void): void {
 /// One dropdown option row. `disabled` rows stay visible (WPS parity) but
 /// don't dispatch; `tip` explains why. `children` turns the row into a
 /// hover submenu host (WPS 插入单元格/删除单元格/隐藏与取消隐藏 pattern).
-interface MenuRowOption {
+/// Exported for ConvertMenuSelect (数字组的转换⌄ 富菜单复用同一渲染)。
+export interface MenuRowOption {
   readonly value: string
   readonly label: string
   readonly icon?: React.ReactNode
   readonly disabled?: boolean
   readonly tip?: string
   readonly children?: readonly MenuRowOption[]
+  /// 渲染为行上方的分组细线（录入当前日期的宽/窄格式分组）
+  readonly sep?: boolean
 }
 
 /// Shared dropdown body: icon + label rows with the current-value highlight
@@ -4855,7 +5041,7 @@ interface MenuRowOption {
 /// (mouseenter/leave on the host row) — pure CSS :hover proved fragile, and
 /// the submenu must escape the parent panel's overflow clip (it renders in a
 /// portal-free absolute layer; parents along the chain stay overflow-visible).
-function MenuRows({
+export function MenuRows({
   options,
   value = '',
   onPick,
@@ -4908,7 +5094,9 @@ function MenuRows({
             role="option"
             aria-selected={value !== '' && option.value === value}
             aria-disabled={option.disabled || undefined}
-            className={value !== '' && option.value === value ? 'on' : ''}
+            className={`${value !== '' && option.value === value ? 'on' : ''}${
+              option.sep ? ' sep-above' : ''
+            }`}
             title={option.tip}
             disabled={option.disabled}
             onClick={() => {
@@ -5508,7 +5696,7 @@ function BorderMenu({
               { value: pen('left'), label: t('appBorderLeft'), icon: <BorderGlyph on="left" /> },
               { value: pen('right'), label: t('appBorderRight'), icon: <BorderGlyph on="right" /> },
               {
-                value: 'format-cells',
+                value: 'format-cells:Border',
                 label: t('appBorderOther'),
                 icon: <ToolSymbol symbol="▦" />,
               },
@@ -5752,66 +5940,87 @@ function ShapeGallerySelect({
   )
 }
 
-/// 代表性色板：xlsx 只存内置样式名（TableStyleMedium2 等），真实强调色由
-/// Excel/WPS 打开时按主题渲染；画廊缩略图只需家族忠实的区分度（对齐 Excel
-/// 自家画廊的做法）。Medium2 蓝 / Medium4 橙 / Medium7 绿 / Dark2 深蓝。
-const TABLE_STYLE_PREVIEWS = [
+/// WPS 表格样式画廊（第六节 A4 第三轮）：7 色 × 3 深浅共 20 款内置
+/// TableStyle（黑色列无浅色款），缩略图用 header/band 家族色区分深浅；
+/// 自定义段列出「新建表格样式/数据透视表样式」对话框保存的样式。
+interface TableStyleGalleryPreset {
+  readonly value: string
+  readonly nameKey: 'appTableStyleMediumN' | 'appTableStyleLightN' | 'appTableStyleDarkN'
+  readonly variant: number
+  readonly header: string
+  readonly ink: string
+  readonly band: string | null
+  readonly grid: string | null
+}
+
+const TABLE_STYLE_GALLERY: ReadonlyArray<{
+  readonly color: string
+  readonly labelKey: StringKey
+  readonly presets: readonly TableStyleGalleryPreset[]
+}> = [
   {
-    value: 'TableStyleLight1',
-    labelKey: 'appTableStyleLight1',
-    header: '#FFFFFF',
-    ink: '#1F1F1F',
-    band: null,
-    grid: '#B4B4B4',
+    color: '#4472C4',
+    labelKey: 'appTableStyleColBlue',
+    presets: [
+      { value: 'TableStyleMedium2', nameKey: 'appTableStyleMediumN', variant: 2, header: '#4472C4', ink: '#FFFFFF', band: '#D9E1F2', grid: null },
+      { value: 'TableStyleLight2', nameKey: 'appTableStyleLightN', variant: 2, header: '#4472C4', ink: '#FFFFFF', band: null, grid: '#B4C6E7' },
+      { value: 'TableStyleDark2', nameKey: 'appTableStyleDarkN', variant: 2, header: '#2F5597', ink: '#FFFFFF', band: '#D9E1F2', grid: null },
+    ],
   },
   {
-    value: 'TableStyleLight9',
-    labelKey: 'appTableStyleLight9',
-    header: '#9DC3E6',
-    ink: '#1F1F1F',
-    band: null,
-    grid: '#B4B4B4',
+    color: '#ED7D31',
+    labelKey: 'appTableStyleColOrange',
+    presets: [
+      { value: 'TableStyleMedium3', nameKey: 'appTableStyleMediumN', variant: 3, header: '#ED7D31', ink: '#FFFFFF', band: '#FBE5D6', grid: null },
+      { value: 'TableStyleLight3', nameKey: 'appTableStyleLightN', variant: 3, header: '#ED7D31', ink: '#FFFFFF', band: null, grid: '#F8CBAD' },
+      { value: 'TableStyleDark3', nameKey: 'appTableStyleDarkN', variant: 3, header: '#C55A11', ink: '#FFFFFF', band: '#FBE5D6', grid: null },
+    ],
   },
   {
-    value: 'TableStyleMedium2',
-    labelKey: 'appTableStyleMedium2',
-    header: '#4472C4',
-    ink: '#FFFFFF',
-    band: '#D9E1F2',
-    grid: null,
+    color: '#A5A5A5',
+    labelKey: 'appTableStyleColGray',
+    presets: [
+      { value: 'TableStyleMedium4', nameKey: 'appTableStyleMediumN', variant: 4, header: '#A5A5A5', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+      { value: 'TableStyleLight4', nameKey: 'appTableStyleLightN', variant: 4, header: '#A5A5A5', ink: '#FFFFFF', band: null, grid: '#D9D9D9' },
+      { value: 'TableStyleDark4', nameKey: 'appTableStyleDarkN', variant: 4, header: '#7F7F7F', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+    ],
   },
   {
-    value: 'TableStyleMedium4',
-    labelKey: 'appTableStyleMedium4',
-    header: '#ED7D31',
-    ink: '#FFFFFF',
-    band: '#FBE5D6',
-    grid: null,
+    color: '#FFC000',
+    labelKey: 'appTableStyleColGold',
+    presets: [
+      { value: 'TableStyleMedium5', nameKey: 'appTableStyleMediumN', variant: 5, header: '#FFC000', ink: '#FFFFFF', band: '#FFF2CC', grid: null },
+      { value: 'TableStyleLight5', nameKey: 'appTableStyleLightN', variant: 5, header: '#FFC000', ink: '#FFFFFF', band: null, grid: '#FFE699' },
+      { value: 'TableStyleDark5', nameKey: 'appTableStyleDarkN', variant: 5, header: '#BF9000', ink: '#FFFFFF', band: '#FFF2CC', grid: null },
+    ],
   },
   {
-    value: 'TableStyleMedium7',
-    labelKey: 'appTableStyleMedium7',
-    header: '#70AD47',
-    ink: '#FFFFFF',
-    band: '#E2EFDA',
-    grid: null,
+    color: '#5B9BD5',
+    labelKey: 'appTableStyleColLightBlue',
+    presets: [
+      { value: 'TableStyleMedium6', nameKey: 'appTableStyleMediumN', variant: 6, header: '#5B9BD5', ink: '#FFFFFF', band: '#DEEBF7', grid: null },
+      { value: 'TableStyleLight6', nameKey: 'appTableStyleLightN', variant: 6, header: '#5B9BD5', ink: '#FFFFFF', band: null, grid: '#BDD7EE' },
+      { value: 'TableStyleDark6', nameKey: 'appTableStyleDarkN', variant: 6, header: '#2E75B6', ink: '#FFFFFF', band: '#DEEBF7', grid: null },
+    ],
   },
   {
-    value: 'TableStyleDark2',
-    labelKey: 'appTableStyleDark2',
-    header: '#2F5597',
-    ink: '#FFFFFF',
-    band: '#D9E1F2',
-    grid: null,
+    color: '#70AD47',
+    labelKey: 'appTableStyleColGreen',
+    presets: [
+      { value: 'TableStyleMedium7', nameKey: 'appTableStyleMediumN', variant: 7, header: '#70AD47', ink: '#FFFFFF', band: '#E2EFDA', grid: null },
+      { value: 'TableStyleLight7', nameKey: 'appTableStyleLightN', variant: 7, header: '#70AD47', ink: '#FFFFFF', band: null, grid: '#C5E0B4' },
+      { value: 'TableStyleDark7', nameKey: 'appTableStyleDarkN', variant: 7, header: '#538135', ink: '#FFFFFF', band: '#E2EFDA', grid: null },
+    ],
   },
-] as const satisfies ReadonlyArray<{
-  value: string
-  labelKey: StringKey
-  header: string
-  ink: string
-  band: string | null
-  grid: string | null
-}>
+  {
+    color: '#3F3F3F',
+    labelKey: 'appTableStyleColBlack',
+    presets: [
+      { value: 'TableStyleMedium1', nameKey: 'appTableStyleMediumN', variant: 1, header: '#3F3F3F', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+      { value: 'TableStyleDark1', nameKey: 'appTableStyleDarkN', variant: 1, header: '#262626', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+    ],
+  },
+]
 
 /// 4×3 mini table in the style's header/band colors (Excel gallery look).
 function TableStyleThumb({
@@ -5852,22 +6061,35 @@ function TableStyleThumb({
   )
 }
 
-/// 套用表格格式: thumbnail gallery (Excel/WPS gallery look) over the usual
-/// invisible cover trigger.
+/// 表格样式: WPS 画廊（7 色 20 款缩略图 + 自定义 + 新建表格样式/新建数据
+/// 透视表样式），trigger 仍是无形 cover。
 function TableStyleGallerySelect({
   label,
   'data-tip': tip,
   onPick,
+  onCommand,
 }: {
   readonly label: string
   readonly 'data-tip'?: string
   readonly onPick: (style: string) => void
+  readonly onCommand: (command: string) => void
 }): React.JSX.Element {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
+  const [customTick, setCustomTick] = useState(0)
   const wrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
   useEscapeClose(open, () => setOpen(false))
+  const pickStyle = (style: string): void => {
+    setOpen(false)
+    onPick(style)
+  }
+  const pickCommand = (command: string): void => {
+    setOpen(false)
+    setCustomTick((tick) => tick + 1)
+    onCommand(command)
+  }
+  const customStyles = open ? listCustomTableStyles() : []
   return (
     <div ref={wrapRef} className="menu-select menu-select-cover">
       <button
@@ -5880,25 +6102,75 @@ function TableStyleGallerySelect({
         onClick={() => setOpen((v) => !v)}
       />
       {open && (
-        <div className="menu-select-drop style-gallery-drop" role="listbox" aria-label={label}>
+        <div
+          className="menu-select-drop style-gallery-drop"
+          role="listbox"
+          aria-label={label}
+          key={customTick}
+        >
           <div className="rb-drop-title">{label}</div>
-          <div className="style-thumb-grid">
-            {TABLE_STYLE_PREVIEWS.map((p) => (
-              <button
-                type="button"
-                key={p.value}
-                role="option"
-                aria-selected={false}
-                className="style-thumb-cell"
-                onClick={() => {
-                  setOpen(false)
-                  onPick(p.value)
-                }}
-              >
-                <TableStyleThumb header={p.header} ink={p.ink} band={p.band} grid={p.grid} />
-                <span>{t(p.labelKey)}</span>
-              </button>
-            ))}
+          {customStyles.length > 0 && (
+            <>
+              <div className="rb-drop-title">{t('appTableStyleCustom')}</div>
+              <div className="style-thumb-grid custom">
+                {customStyles.map((style) => (
+                  <button
+                    type="button"
+                    key={style.id}
+                    role="option"
+                    className="style-thumb-cell"
+                    data-tip={style.name}
+                    onClick={() => pickStyle(`custom:${style.id}`)}
+                  >
+                    <TableStyleThumb
+                      header={style.headerFill}
+                      ink="#FFFFFF"
+                      band={style.bandFill}
+                      grid={null}
+                    />
+                    <span>{style.name}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <div className="style-thumb-grid cols7">
+            {TABLE_STYLE_GALLERY.map((column) =>
+              column.presets.map((preset) => (
+                <button
+                  type="button"
+                  key={preset.value}
+                  role="option"
+                  className="style-thumb-cell"
+                  data-tip={t(preset.nameKey, { n: preset.variant })}
+                  onClick={() => pickStyle(preset.value)}
+                >
+                  <TableStyleThumb
+                    header={preset.header}
+                    ink={preset.ink}
+                    band={preset.band}
+                    grid={preset.grid}
+                  />
+                </button>
+              )),
+            )}
+          </div>
+          <div className="rb-menu-sep" role="separator" />
+          <div className="style-new-menu">
+            <button
+              type="button"
+              role="option"
+              onClick={() => pickCommand('table-style-new-open')}
+            >
+              {t('appTableStyleNew')}
+            </button>
+            <button
+              type="button"
+              role="option"
+              onClick={() => pickCommand('pivot-style-new-open')}
+            >
+              {t('appPivotStyleNew')}
+            </button>
           </div>
         </div>
       )}
@@ -5906,8 +6178,8 @@ function TableStyleGallerySelect({
   )
 }
 
-/// 单元格样式: fill-swatch groups (好差中性 / 标题 / 数据与模型 / 强调),
-/// mirroring Excel's grouped cell-style gallery.
+/// 单元格样式: WPS 分组色板（好/差和适中、数据和模型、标题、主题单元格式
+/// 样式、数字格式）+ 自定义 + 新建单元格样式/合并样式。
 const CELL_STYLE_GROUPS: ReadonlyArray<{
   titleKey: StringKey
   items: ReadonlyArray<{ value: string; labelKey: StringKey; fill: string; ink?: string }>
@@ -5921,29 +6193,38 @@ const CELL_STYLE_GROUPS: ReadonlyArray<{
     ],
   },
   {
-    titleKey: 'appCellStyleGroupTitle',
-    items: [
-      { value: 'title', labelKey: 'appTitle', fill: '#FFFFFF', ink: '#1F1F1F' },
-      { value: 'heading-1', labelKey: 'appStyleHeading1', fill: '#4472C4', ink: '#FFFFFF' },
-      { value: 'heading-2', labelKey: 'appStyleHeading2', fill: '#D9E1F2', ink: '#1F1F1F' },
-    ],
-  },
-  {
     titleKey: 'appCellStyleGroupData',
     items: [
-      { value: 'input', labelKey: 'appStyleInput', fill: '#E7F1FB', ink: '#1F1F1F' },
-      { value: 'output', labelKey: 'appStyleOutput', fill: '#FFFFFF', ink: '#2F5597' },
-      { value: 'calculation', labelKey: 'appStyleCalculation', fill: '#E2EFDA', ink: '#375623' },
-      { value: 'warning-text', labelKey: 'appStyleWarningText', fill: '#FFF2CC', ink: '#7F6000' },
+      { value: 'input', labelKey: 'appStyleInput', fill: '#FFCC99', ink: '#3F3F76' },
+      { value: 'output', labelKey: 'appStyleOutput', fill: '#F2F2F2', ink: '#3F3F3F' },
+      { value: 'calculation', labelKey: 'appStyleCalculation', fill: '#F2F2F2', ink: '#FA7D00' },
+      { value: 'warning-text', labelKey: 'appStyleWarningText', fill: '#FFFFFF', ink: '#FF0000' },
     ],
   },
   {
-    titleKey: 'appCellStyleGroupAccent',
+    titleKey: 'appCellStyleGroupTitle',
+    items: [
+      { value: 'title', labelKey: 'appTitle', fill: '#FFFFFF', ink: '#44546A' },
+      { value: 'heading-1', labelKey: 'appStyleHeading1', fill: '#4472C4', ink: '#FFFFFF' },
+      { value: 'heading-2', labelKey: 'appStyleHeading2', fill: '#D9E1F2', ink: '#44546A' },
+    ],
+  },
+  {
+    titleKey: 'appCellStyleGroupTheme',
     items: [
       { value: 'accent1-20', labelKey: 'appStyleAccent120', fill: '#D9E1F2', ink: '#1F1F1F' },
       { value: 'accent1-40', labelKey: 'appStyleAccent140', fill: '#B4C6E7', ink: '#1F1F1F' },
       { value: 'accent1', labelKey: 'appStyleAccent1', fill: '#4472C4', ink: '#FFFFFF' },
-      { value: 'total', labelKey: 'appStyleTotal', fill: '#F2F2F2', ink: '#1F1F1F' },
+      { value: 'total', labelKey: 'appStyleTotal', fill: '#44546A', ink: '#FFFFFF' },
+    ],
+  },
+  {
+    titleKey: 'appCellStyleGroupNumber',
+    items: [
+      { value: 'num-thousand', labelKey: 'appNumStyleThousand', fill: '#FFFFFF', ink: '#1F1F1F' },
+      { value: 'num-thousand-red', labelKey: 'appNumStyleThousandRed', fill: '#FFFFFF', ink: '#9C0006' },
+      { value: 'num-currency', labelKey: 'appNumStyleCurrency', fill: '#FFFFFF', ink: '#1F1F1F' },
+      { value: 'num-percent', labelKey: 'appNumStylePercent', fill: '#FFFFFF', ink: '#1F1F1F' },
     ],
   },
 ]
@@ -5952,16 +6233,27 @@ function CellStyleSelect({
   label,
   'data-tip': tip,
   onPick,
+  onCommand,
 }: {
   readonly label: string
   readonly 'data-tip'?: string
   readonly onPick: (style: string) => void
+  readonly onCommand: (command: string) => void
 }): React.JSX.Element {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
   useEscapeClose(open, () => setOpen(false))
+  const pick = (value: string): void => {
+    setOpen(false)
+    onPick(value)
+  }
+  const pickCommand = (command: string): void => {
+    setOpen(false)
+    onCommand(command)
+  }
+  const customStyles = open ? listCustomCellStyles() : []
   return (
     <div ref={wrapRef} className="menu-select menu-select-cover">
       <button
@@ -5975,6 +6267,33 @@ function CellStyleSelect({
       />
       {open && (
         <div className="menu-select-drop style-gallery-drop" role="listbox" aria-label={label}>
+          {customStyles.length > 0 && (
+            <div key="custom">
+              <div className="rb-drop-title">{t('appCellStyleCustom')}</div>
+              <div className="cell-style-col">
+                {customStyles.map((style) => (
+                  <button
+                    type="button"
+                    key={style.id}
+                    role="option"
+                    className="cell-style-row"
+                    onClick={() => pick(`custom:${style.id}`)}
+                  >
+                    <span
+                      className="cell-style-swatch"
+                      style={{
+                        background: style.patch.fillColor ?? '#FFFFFF',
+                        color: style.patch.fontColor ?? '#1F1F1F',
+                      }}
+                    >
+                      <i>{t('appCellStyleSwatchSample')}</i>
+                    </span>
+                    {style.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {CELL_STYLE_GROUPS.map((group) => (
             <div key={group.titleKey}>
               <div className="rb-drop-title">{t(group.titleKey)}</div>
@@ -5984,15 +6303,11 @@ function CellStyleSelect({
                     type="button"
                     key={item.value}
                     role="option"
-                    aria-selected={false}
                     className="cell-style-row"
-                    onClick={() => {
-                      setOpen(false)
-                      onPick(item.value)
-                    }}
+                    onClick={() => pick(item.value)}
                   >
                     <span className="cell-style-swatch" style={{ background: item.fill }}>
-                      {item.ink ? <i style={{ color: item.ink }}>ab</i> : null}
+                      {item.ink ? <i style={{ color: item.ink }}>{t('appCellStyleSwatchSample')}</i> : null}
                     </span>
                     {t(item.labelKey)}
                   </button>
@@ -6000,14 +6315,137 @@ function CellStyleSelect({
               </div>
             </div>
           ))}
+          <div className="rb-menu-sep" role="separator" />
+          <div className="style-new-menu">
+            <button type="button" role="option" onClick={() => pickCommand('cell-style-new-open')}>
+              {t('appCellStyleNew')}
+            </button>
+            <button type="button" role="option" onClick={() => pickCommand('merge-cell-styles')}>
+              {t('appCellStyleMerge')}
+            </button>
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-/// 条件格式: WPS-style typed menu — each entry opens the Univer CF panel
-/// preseeded with that rule type; 管理规则 keeps the old manage-list behavior.
+/// ── 条件格式富菜单画廊 ─────────────────────────────────────────────
+/// 数据条/色阶以色块展示，图标集以图形展示（对齐 WPS 画廊）。
+
+function DataBarSwatch({ color, solid }: { readonly color: string; readonly solid: boolean }): React.JSX.Element {
+  const background = solid
+    ? color
+    : `linear-gradient(90deg, ${color} 0%, ${color} 72%, rgba(255,255,255,0.92) 72%)`
+  return (
+    <span className="cf-bar-swatch" aria-hidden="true">
+      <i style={{ background }} />
+      <u style={{ borderTopColor: '#B4B4B4' }} />
+    </span>
+  )
+}
+
+function ColorScaleSwatch({ stops }: { readonly stops: readonly [string, string | null, string] }): React.JSX.Element {
+  const gradient = stops[1]
+    ? `linear-gradient(90deg, ${stops[0]}, ${stops[1]}, ${stops[2]})`
+    : `linear-gradient(90deg, ${stops[0]}, ${stops[2]})`
+  return <i className="cf-scale-swatch" style={{ background: gradient }} aria-hidden="true" />
+}
+
+/// 图标集小样（方向/形状/标记/等级），WPS 画廊同款图形的轻量近似。
+function IconSetPreview({ id, count }: { readonly id: string; readonly count: number }): React.JSX.Element {
+  const icons: React.ReactNode[] = []
+  for (let index = 0; index < count; index += 1) {
+    const first = index === 0
+    const last = index === count - 1
+    if (id === '3arrows' || id === '4arrows' || id === '5arrows' || id === '3arrows-gray') {
+      const gray = id.endsWith('-gray')
+      const color = gray ? '#8A8A8A' : first ? '#23B123' : last ? '#E03030' : '#E8A213'
+      const shape = first ? '▲' : last ? '▼' : '▶'
+      icons.push(
+        <b key={index} style={{ color }}>
+          {shape}
+        </b>,
+      )
+    } else if (id === '3traffic' || id === '4traffic') {
+      const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
+      icons.push(
+        <i key={index} className="cf-ico-dot" style={{ background: color }} />,
+      )
+    } else if (id === '3signs') {
+      const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
+      const shape = first ? '✕' : last ? '✓' : '!'
+      icons.push(
+        <i key={index} className="cf-ico-dot" style={{ background: color, color: '#FFFFFF', fontStyle: 'normal' }}>
+          {shape}
+        </i>,
+      )
+    } else if (id === '5quarters') {
+      const level = (index + 1) / count
+      icons.push(
+        <i
+          key={index}
+          className="cf-ico-dot"
+          style={{
+            background: `conic-gradient(#4472C4 ${level * 360}deg, #D9D9D9 0deg)`,
+          }}
+        />,
+      )
+    } else if (id === '3flags') {
+      const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
+      icons.push(
+        <b key={index} style={{ color }}>
+          ⚑
+        </b>,
+      )
+    } else if (id === '3symbols' || id === '3symbols2') {
+      const circled = id === '3symbols'
+      const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
+      const shape = first ? '✕' : last ? '✓' : '!'
+      icons.push(
+        <b key={index} style={{ color }}>
+          {circled ? shape : shape}
+        </b>,
+      )
+    } else if (id === '3stars') {
+      const color = last ? '#D9D9D9' : '#E8A213'
+      icons.push(
+        <b key={index} style={{ color }}>
+          ★
+        </b>,
+      )
+    } else if (id === '4rating' || id === '5rating') {
+      const color = last ? '#B4B4B4' : '#4472C4'
+      icons.push(
+        <i key={index} className="cf-ico-bar" style={{ background: color }} />,
+      )
+    } else {
+      // 5boxes
+      const color = last ? '#D9D9D9' : '#ED7D31'
+      icons.push(
+        <i key={index} className="cf-ico-box" style={{ background: color }} />,
+      )
+    }
+  }
+  return (
+    <span className="cf-ico-preview" aria-hidden="true">
+      {icons}
+    </span>
+  )
+}
+
+const CF_ICON_SET_GROUPS: ReadonlyArray<{
+  readonly groupKey: StringKey
+  readonly ids: readonly string[]
+}> = [
+  { groupKey: 'appCfIconGroupDir', ids: ['3arrows', '3arrows-gray', '4arrows', '5arrows'] },
+  { groupKey: 'appCfIconGroupShape', ids: ['3traffic', '3signs', '4traffic', '5quarters'] },
+  { groupKey: 'appCfIconGroupMark', ids: ['3flags', '3symbols', '3symbols2'] },
+  { groupKey: 'appCfIconGroupRating', ids: ['3stars', '4rating', '5rating', '5boxes'] },
+]
+
+/// 条件格式: WPS 全量富菜单——突出显示单元格规则/项目选取规则（对话框子菜
+/// 单）、数据条/色阶/图标集（色块画廊直接应用）、新建/清除/管理规则、AI。
 function CondFormatSelect({
   label,
   'data-tip': tip,
@@ -6026,6 +6464,22 @@ function CondFormatSelect({
     setOpen(false)
     onCommand(command)
   }
+  const highlightChildren: readonly MenuRowOption[] = [
+    { value: 'cf-hl-dialog:gt', label: t('appCfGreaterThan') },
+    { value: 'cf-hl-dialog:lt', label: t('appCfLessThan') },
+    { value: 'cf-hl-dialog:between', label: t('appCfBetween') },
+    { value: 'cf-hl-dialog:eq', label: t('appCfEqual') },
+    { value: 'cf-hl-dialog:contains', label: t('appCfTextContains') },
+    { value: 'cf-hl-dialog:dup', label: t('appCfDuplicate') },
+  ]
+  const rankChildren: readonly MenuRowOption[] = [
+    { value: 'cf-rank-dialog:0:0', label: t('appCfTop10') },
+    { value: 'cf-rank-dialog:0:1', label: t('appCfTop10Pct') },
+    { value: 'cf-rank-dialog:1:0', label: t('appCfBottom10') },
+    { value: 'cf-rank-dialog:1:1', label: t('appCfBottom10Pct') },
+    { value: 'cf-average:above', label: t('appCfAboveAvg') },
+    { value: 'cf-average:below', label: t('appCfBelowAvg') },
+  ]
   return (
     <div ref={wrapRef} className="menu-select menu-select-cover">
       <button
@@ -6038,66 +6492,188 @@ function CondFormatSelect({
         onClick={() => setOpen((v) => !v)}
       />
       {open && (
-        <div className="menu-select-drop" role="listbox" aria-label={label}>
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:3')}
-          >
-            {t('appCfHlRule')}
-          </button>
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:4')}
-          >
-            {t('appCfRankRule')}
-          </button>
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:5')}
-          >
-            {t('appCfFormulaRule')}
-          </button>
+        <div className="menu-select-drop cf-menu-drop" role="listbox" aria-label={label}>
+          <MenuRows
+            options={[
+              {
+                value: 'cf-hl-group',
+                label: t('appCfHlRule'),
+                children: highlightChildren,
+              },
+              {
+                value: 'cf-rank-group',
+                label: t('appCfRankRule'),
+                children: rankChildren,
+              },
+              {
+                value: 'cf-databar-group',
+                label: t('appCfDataBar'),
+                children: [
+                  {
+                    value: 'cf-databar-header-grad',
+                    label: t('appCfDataBarGradient'),
+                    children: DATA_BAR_PRESETS.filter((preset) => !preset.solid).map((preset) => ({
+                      value: `cf-databar:${preset.id}`,
+                      label: '',
+                      tip: preset.id,
+                      icon: <DataBarSwatch color={preset.color} solid={false} />,
+                    })),
+                  },
+                  {
+                    value: 'cf-databar-header-solid',
+                    label: t('appCfDataBarSolid'),
+                    children: DATA_BAR_PRESETS.filter((preset) => preset.solid).map((preset) => ({
+                      value: `cf-databar:${preset.id}`,
+                      label: '',
+                      tip: preset.id,
+                      icon: <DataBarSwatch color={preset.color} solid />,
+                    })),
+                  },
+                ],
+              },
+              {
+                value: 'cf-colorscale-group',
+                label: t('appCfColorScale'),
+                children: [
+                  {
+                    value: 'cf-scale-header-3',
+                    label: t('appCfScale3'),
+                    children: COLOR_SCALE_PRESETS.filter((preset) => preset.stops[1] !== null).map(
+                      (preset) => ({
+                        value: `cf-colorscale:${preset.id}`,
+                        label: '',
+                        tip: preset.id,
+                        icon: <ColorScaleSwatch stops={preset.stops} />,
+                      }),
+                    ),
+                  },
+                  {
+                    value: 'cf-scale-header-2',
+                    label: t('appCfScale2'),
+                    children: COLOR_SCALE_PRESETS.filter((preset) => preset.stops[1] === null).map(
+                      (preset) => ({
+                        value: `cf-colorscale:${preset.id}`,
+                        label: '',
+                        tip: preset.id,
+                        icon: <ColorScaleSwatch stops={preset.stops} />,
+                      }),
+                    ),
+                  },
+                ],
+              },
+              {
+                value: 'cf-iconset-group',
+                label: t('appCfIconSet'),
+                children: CF_ICON_SET_GROUPS.map((group) => ({
+                  value: `cf-iconset-group-${group.groupKey}`,
+                  label: t(group.groupKey),
+                  children: group.ids.map((id) => {
+                    const preset = iconSetOf(id)
+                    if (!preset) return { value: `cf-iconset:${id}`, label: id }
+                    return {
+                      value: `cf-iconset:${preset.id}`,
+                      label: '',
+                      tip: preset.id,
+                      icon: <IconSetPreview id={preset.id} count={preset.count} />,
+                    }
+                  }),
+                })),
+              },
+            ]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
           <div className="rb-menu-sep" role="separator" />
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:6')}
+          <MenuRows
+            options={[{ value: 'cf-new:5', label: t('appCfNewRule') }]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
+          <div
+            className="submenu-host cf-clear-host"
+            onMouseEnter={(event) => event.currentTarget.classList.add('submenu-open')}
+            onMouseLeave={(event) => event.currentTarget.classList.remove('submenu-open')}
           >
-            {t('appCfColorScale')}
-          </button>
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:7')}
-          >
-            {t('appCfDataBar')}
-          </button>
-          <button
-            type="button"
-            role="option"
-            aria-selected={false}
-            onClick={() => pick('cf-new:8')}
-          >
-            {t('appCfIconSet')}
-          </button>
-          <div className="rb-menu-sep" role="separator" />
-          <button type="button" role="option" aria-selected={false} onClick={() => pick('cf-open')}>
-            {t('appCfManage')}
-          </button>
+            <button type="button" role="option" aria-haspopup="true" className="has-submenu">
+              <span className="menu-opt-text">{t('appCfClearRule')}</span>
+              <span className="submenu-arrow" aria-hidden="true">
+                ›
+              </span>
+            </button>
+            <div className="submenu-drop" role="menu">
+              <button type="button" role="option" onClick={() => pick('cf-clear:selection')}>
+                {t('appCfClearSelection')}
+              </button>
+              <button type="button" role="option" onClick={() => pick('cf-clear:sheet')}>
+                {t('appCfClearSheet')}
+              </button>
+            </div>
+          </div>
+          <MenuRows
+            options={[
+              { value: 'cf-open', label: t('appCfManage') },
+              { value: 'ai-cf', label: t('appCfAi') },
+            ]}
+            value=""
+            onPick={pick}
+            onClose={() => setOpen(false)}
+          />
         </div>
       )}
     </div>
   )
 }
 
+/// 数据处理组大钮（图标在上文字在下 + 下拉菜单），填充/求和/排序/筛选/
+/// 冻结/查找/清除共用。
+function BigMenuTool({
+  label,
+  tip,
+  symbol,
+  options,
+  onPick,
+}: {
+  readonly label: string
+  readonly tip: string
+  readonly symbol: string
+  readonly options: readonly MenuRowOption[]
+  readonly onPick: (value: string) => void
+}): React.JSX.Element {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
+  useEscapeClose(open, () => setOpen(false))
+  const pick = (value: string): void => {
+    setOpen(false)
+    onPick(value)
+  }
+  return (
+    <div ref={wrapRef} className="ribbon-tool large as-button" data-tip={tip}>
+      <span className="tool-icon-row">
+        <ToolSymbol symbol={symbol} />
+        <CaretIcon />
+      </span>
+      <span>
+        <strong>{label}</strong>
+      </span>
+      {open && (
+        <div className="menu-select-drop" role="listbox" aria-label={label}>
+          <MenuRows options={options} value="" onPick={pick} onClose={() => setOpen(false)} />
+        </div>
+      )}
+      <button
+        type="button"
+        className="cover-select"
+        aria-label={label}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+    </div>
+  )
+}
 /// MenuSelect variant whose trigger is a free-text input (Excel's font
 /// name/size boxes): Enter or clicking away commits the typed value, Esc
 /// reverts, the caret opens the preset list.
@@ -6253,14 +6829,31 @@ function NumberFormatSelect({
 function RibbonGroup({
   label,
   children,
+  launcher,
 }: {
   readonly label: string
   readonly children: React.ReactNode
+  /// 组右下角的 45° 对话框启动箭头（Excel/WPS 组角落小图标），点击打开
+  /// 设置单元格格式对话框并定位到对应 tab。
+  readonly launcher?: { readonly tip: string; readonly onClick: () => void }
 }): React.JSX.Element {
   // No visible group captions — the label stays for assistive tech.
   return (
     <section className="ribbon-group" aria-label={label}>
       <div className="ribbon-group-content">{children}</div>
+      {launcher && (
+        <button
+          type="button"
+          className="group-launcher"
+          data-tip={launcher.tip}
+          aria-label={launcher.tip}
+          onClick={launcher.onClick}
+        >
+          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 4l4 4M8 5.2V8H5.2" />
+          </svg>
+        </button>
+      )}
     </section>
   )
 }

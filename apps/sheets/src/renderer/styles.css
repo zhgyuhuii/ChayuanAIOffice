@@ -6390,3 +6390,286 @@ textarea:focus {
   margin: 2px 4px 4px;
   min-width: 180px;
 }
+
+/* ── WPS 开始 tab 第四轮：组角落启动器 + 样式/数据处理富菜单 ─────────────── */
+
+/* 组右下角的 45° 对话框启动箭头（Excel/WPS）：字体→字体 tab、对齐→对齐、
+   数字→数字；ribbon-group 本身就是 position:relative */
+.group-launcher {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-secondary, inherit);
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.group-launcher:hover {
+  background: var(--ribbon-hover);
+  opacity: 1;
+}
+
+/* 样式组（RB_ConditionalFormatting）：条件格式大钮在左，表格样式（上）+
+   单元格样式（下）纵排，数据透视表殿后 */
+.style-wps-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.style-wps-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.style-wps-stack .ribbon-tool.large {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 数据处理组：填充/求和/排序/筛选/冻结/查找/清除 七枚上下结构大钮 */
+.process-big-row {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* BigMenuTool 内部再放一枚无形 cover-select 触发整块按钮 */
+.process-big-row .ribbon-tool.large > .cover-select,
+.style-wps-row .ribbon-tool.large > .cover-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* 转换⌄：图标 + 「转换」+ caret，与行和列/工作表菜单同款触发器 */
+.convert-trigger {
+  min-width: 0;
+  padding: 0 6px;
+  height: 26px;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+/* 转换富菜单：与行和列一致的展开面板——无滚动条（菜单整体可见），
+   子菜单沿链溢出可见 */
+.convert-drop {
+  max-height: none;
+  overflow: visible;
+  min-width: 200px;
+}
+
+/* 条件格式富菜单：子菜单画廊更宽（色块/图标样例横向排布） */
+.cf-menu-drop {
+  max-height: none;
+  overflow: visible;
+  min-width: 196px;
+}
+
+/* 数据条样例：横条 + 细基线（渐变/实心由内联 background 决定） */
+.cf-bar-swatch {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 46px;
+  height: 16px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: #ffffff;
+}
+
+.cf-bar-swatch i {
+  display: block;
+  height: 9px;
+  margin: 2px 2px 2px;
+  border-radius: 1px;
+}
+
+.cf-bar-swatch u {
+  display: block;
+  height: 0;
+  margin: 0 2px 2px;
+  border-top: 1px solid #b4b4b4;
+}
+
+/* 色阶样例：左→右渐变色带 */
+.cf-scale-swatch {
+  display: inline-block;
+  width: 46px;
+  height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+/* 图标集小样行 */
+.cf-ico-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 52px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.cf-ico-preview b {
+  font-weight: 600;
+}
+
+.cf-ico-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.cf-ico-bar {
+  display: inline-block;
+  width: 8px;
+  height: 12px;
+  border-radius: 1px;
+}
+
+.cf-ico-box {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+/* 表格样式画廊：7 色 × 3 深浅（第 3 行 6 款）网格，自定义段行在前 */
+.style-thumb-grid.cols7 {
+  grid-template-columns: repeat(7, 96px);
+}
+
+.style-thumb-grid.custom {
+  grid-template-columns: repeat(7, 96px);
+}
+
+.style-thumb-grid .style-thumb-cell span {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.style-new-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 新建样式对话框辅助 */
+.dp-color-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dp-color-field > span {
+  min-width: 72px;
+  font-size: 12.5px;
+}
+
+.dp-color-chip {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.dp-table-preview {
+  display: flex;
+  flex-direction: column;
+  width: 132px;
+  margin: 2px auto;
+  border: 1px solid #b4b4b4;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dp-table-preview .dp-row {
+  display: flex;
+  flex: 1;
+  height: 12px;
+}
+
+.dp-table-preview .dp-row i {
+  flex: 1;
+  margin: 2px 3px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.dp-table-preview .dp-head i {
+  background: rgba(255, 255, 255, 0.85);
+  opacity: 1;
+}
+
+/* 选择窗格 */
+.dp-pane-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+}
+
+.dp-pane-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dp-pane-list button:hover {
+  background: var(--ribbon-hover);
+}
+
+.dp-pane-kind {
+  min-width: 34px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+.dp-pane-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 数据处理组/样式组大钮紧凑化：WPS 同款结构下 7 枚大钮 + 样式堆叠要吃掉
+   约 700px，收窄内边距/最小宽让常用窗口少触发功能区横向滚动 */
+.process-big-row .ribbon-tool.large,
+.style-wps-row .ribbon-tool.large,
+.style-wps-stack .ribbon-tool.large {
+  min-width: 44px;
+  padding: 3px 5px 4px;
+  gap: 2px;
+}

@@ -16,6 +16,8 @@ import {
 } from '@univerjs/core'
 import { IRenderManagerService, SHEET_VIEWPORT_KEY } from '@univerjs/engine-render'
 import { ISheetClipboardService, SheetSkeletonManagerService } from '@univerjs/preset-sheets-core'
+import { CFNumberOperator, CFValueType } from '@univerjs/preset-sheets-conditional-formatting'
+import type { IIconSetType } from '@univerjs/sheets-conditional-formatting'
 import { columnLabel, formatAddress } from '../domain/cell-address'
 import type { WorkbookOperation } from '../domain/workbook-dsl'
 import type { ApplyOutcome } from '../domain/workbook.types'
@@ -30,6 +32,7 @@ import type {
   WorkbookStyleEdit,
   WorkbookVisualObject,
 } from '../shared/desktop-api'
+import type { CellFormatPatch } from '../domain/workbook-dsl'
 import {
   CELL_STYLE_PRESETS,
   CHART_LABEL_COMMANDS,
@@ -48,6 +51,24 @@ import {
 } from './data-tools-actions'
 import { dedupeRows } from './dedupe'
 import { runStreamedErrorCheck } from './error-checking'
+import {
+  fillBlanksFromAbove,
+  fillLeftMatrix,
+  fillSeries123,
+  fillUpMatrix,
+  condStatsFormula,
+  formatFillDate,
+  insertTextAtPosition,
+  rankColumn,
+  seriesValues,
+  type Matrix,
+} from './fill-tools'
+import { colorScaleStopsOf, cfHlStyleOf, dataBarOf, iconSetOf } from './cf-gallery'
+import {
+  getCustomCellStyle,
+  getCustomTableStyle,
+  mergeCustomCellStyles,
+} from './custom-styles'
 import {
   isSheetRemoved,
   journalSize,
@@ -89,6 +110,7 @@ import {
   type ActiveWorkbook,
   type LazyWorkbookState,
   type UniverRuntime,
+  type UniverWorksheet,
 } from './univer-state'
 import {
   handleInsertChart,
@@ -148,6 +170,144 @@ function selectionStyle(
   range: NonNullable<ReturnType<ActiveWorkbook['getActiveRange']>>,
 ): IStyleData {
   return range.getCellStyleData() ?? {}
+}
+
+/// 选区写入前的流式加载闸：部分流式导入的工作簿只装了已浏览区域，对未加载
+/// 格的读改写会把看不见的数据清掉（与 remove-duplicates 同一判断）。
+function requireLoadedSelection(
+  ctx: RibbonCommandContext,
+  worksheet: UniverWorksheet,
+  range: NonNullable<ReturnType<ActiveWorkbook['getActiveRange']>>,
+): boolean {
+  const state = ctx.lazyWorkbookRef.current
+  if (!state || state.flags.preloadComplete) return true
+  if (state.editJournal.sheets.added.has(worksheet.getSheetId())) return true
+  if (state.formulaMode && state.flags.preloadComplete) return true
+  ctx.setMessage(t('appFillNeedsFullLoad'))
+  void range
+  return false
+}
+
+/// 写选区外一格（排名/条件统计落点）前的行加载闸（autofn 同款）。
+function guardTargetRowLoaded(ctx: RibbonCommandContext, worksheet: { getSheetId(): string }, targetRow: number): boolean {
+  const state = ctx.lazyWorkbookRef.current
+  if (!state || state.flags.preloadComplete) return true
+  const sheet = state.file.sheets.find((candidate) => candidate.id === worksheet.getSheetId())
+  const loaded = state.loadedRanges.get(worksheet.getSheetId())
+  const targetInData = sheet !== undefined && targetRow < sheet.rowCount
+  const targetLoaded =
+    loaded !== undefined && targetRow >= loaded.startRow && targetRow <= loaded.endRow
+  if (targetInData && !targetLoaded) {
+    ctx.setMessage(t('appRowBelowStreaming'))
+    return false
+  }
+  return true
+}
+
+/// 冻结至第 N 行 M 列的统一落点：流式簿走 runOps，普通簿直接 setFreeze。
+function applyFreeze(
+  ctx: RibbonCommandContext,
+  worksheet: UniverWorksheet,
+  rows: number,
+  columns: number,
+  message: string,
+): void {
+  if (ctx.lazyWorkbookRef.current) {
+    void ctx.runOps(
+      [{ op: 'set_freeze', sheetId: worksheet.getSheetId(), rows, columns }],
+      message,
+    )
+    return
+  }
+  worksheet.setFreeze({
+    startRow: rows > 0 ? rows : -1,
+    startColumn: columns > 0 ? columns : -1,
+    xSplit: columns,
+    ySplit: rows,
+  })
+  ctx.setMessage(message)
+}
+
+/// 图标集阈值：除末档（min）外按等分百分比（3 档 67/33，5 档 80/60/40/20）。
+export function iconThresholds(count: number): number[] {
+  return Array.from({ length: count - 1 }, (_, index) =>
+    Math.round(100 - ((index + 1) * 100) / count),
+  )
+}
+
+/// 当前工作表上可定位的浮动对象（图片/图表/形状，含会话新增、剔除已删），
+/// 按文档顺序返回锚点起点——选择对象取最上层即末项。选择窗格对话框也用它。
+export interface SheetVisualRef {
+  readonly id: string
+  readonly kind: string
+  readonly fromRow: number
+  readonly fromColumn: number
+}
+
+export function listSheetVisuals(
+  ctx: RibbonCommandContext,
+  worksheet: UniverWorksheet | null | undefined,
+): readonly SheetVisualRef[] {
+  const state = ctx.lazyWorkbookRef.current
+  if (!state || !worksheet) return []
+  const sheetId = worksheet.getSheetId()
+  const removed = new Set<string>()
+  for (const [id, edit] of state.editJournal.visualEdits) {
+    if (edit.remove) removed.add(id)
+  }
+  const visuals = [...state.file.visuals, ...state.editJournal.visualAdds].filter(
+    (visual) => visual.sheetId === sheetId && !removed.has(visual.id),
+  )
+  return visuals.map((visual) => ({
+    id: visual.id,
+    kind: visual.kind,
+    fromRow: visual.anchor.fromRow,
+    fromColumn: visual.anchor.fromColumn,
+  }))
+}
+
+/// 两个 0 基行列矩形是否相交（cf-clear:selection 用）。
+function rangesIntersect(
+  a: { startRow: number; endRow: number; startColumn: number; endColumn: number },
+  b: { startRow: number; endRow: number; startColumn: number; endColumn: number } | undefined,
+): boolean {
+  if (!b) return false
+  return (
+    a.startRow <= b.endRow &&
+    b.startRow <= a.endRow &&
+    a.startColumn <= b.endColumn &&
+    b.startColumn <= a.endColumn
+  )
+}
+
+/// 浅底色上的可读字色（自定义表头填充 → 白字或深字）。
+function pickReadableInk(hex: string): '#FFFFFF' | '#1F1F1F' {
+  const match = /^#?([0-9a-fA-F]{6})$/.exec(hex)
+  if (!match) return '#FFFFFF'
+  const value = Number.parseInt(match[1] ?? '000000', 16)
+  const r = (value >> 16) & 0xff
+  const g = (value >> 8) & 0xff
+  const b = value & 0xff
+  return 0.299 * r + 0.587 * g + 0.114 * b < 150 ? '#FFFFFF' : '#1F1F1F'
+}
+
+/// 突出显示规则构建链（whenXxx → setBackground/setFontColor/setBorder）。
+type CfHighlightChain = ReturnType<
+  ReturnType<UniverWorksheet['newConditionalFormattingRule']>['whenCellNotEmpty']
+>
+
+type CfRuleBuilder = ReturnType<UniverWorksheet['newConditionalFormattingRule']>
+
+function addStyledCfRule(
+  worksheet: UniverWorksheet,
+  _builder: CfRuleBuilder,
+  styled: CfHighlightChain,
+  preset: { readonly fill: string | null; readonly ink: string | null; readonly border: string | null },
+  range: { startRow: number; endRow: number; startColumn: number; endColumn: number },
+): void {
+  if (preset.fill) styled = styled.setBackground(preset.fill)
+  if (preset.ink) styled = styled.setFontColor(preset.ink)
+  worksheet.addConditionalFormattingRule(styled.setRanges([range]).build())
 }
 
 /// Commands whose wire format is `name:argument:extra` (three segments).
@@ -1227,6 +1387,26 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     case 'find':
       void runtime.univerAPI.executeCommand('ui.operation.open-find-dialog')
       return
+    case 'select-object': {
+      // 选择对象：定位当前工作表最上层的浮动对象（图片/图表/形状），滚动到
+      // 其锚点并提示；真正的画布选中仍由点击完成。
+      const found = listSheetVisuals(ctx, worksheet)
+      const top = found[found.length - 1]
+      if (!top) {
+        ctx.setMessage(t('appNoObjects'))
+        return
+      }
+      void runtime.univerAPI.executeCommand('sheet.command.scroll-to-cell', {
+        range: {
+          startRow: top.fromRow,
+          endRow: top.fromRow,
+          startColumn: top.fromColumn,
+          endColumn: top.fromColumn,
+        },
+      })
+      ctx.setMessage(t('appObjectLocated', { n: found.length }))
+      return
+    }
     case 'copy':
     case 'cut':
     case 'paste':
@@ -1880,6 +2060,95 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
       }
       worksheet.cancelFreeze()
       return
+    case 'fill-up':
+    case 'fill-left': {
+      // Univer 只有 copy-down/copy-right；向上/向左镜像同款语义——以方向远端
+      // 行/列为源整体复制（向上=末行，向左=最右列）。
+      if (!worksheet) return
+      const fillRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+      if (!fillRange || !requireLoadedSelection(ctx, worksheet, fillRange)) return
+      const values = fillRange.getValues() as unknown as Matrix
+      const filled = command === 'fill-up' ? fillUpMatrix(values) : fillLeftMatrix(values)
+      fillRange.setValues(filled as unknown as ICellData[][])
+      ctx.setMessage(t('appAppliedToSelection'))
+      return
+    }
+    case 'fill-123': {
+      // 录入123序列：选区内按列（先向下再右移）填 1..N。
+      if (!worksheet) return
+      const range123 = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+      if (!range123 || !requireLoadedSelection(ctx, worksheet, range123)) return
+      const matrix = fillSeries123(range123.getHeight(), range123.getWidth())
+      range123.setValues(matrix as unknown as ICellData[][])
+      ctx.setMessage(t('appAppliedToSelection'))
+      return
+    }
+    case 'fill-rank': {
+      // 计算并录入排名：每列数值在列内的名次（RANK.EQ 语义）写入选区右侧
+      // 相邻列。写选区外一格，遵循 autofn 同款流式加载闸。
+      if (!worksheet) return
+      const rankRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+      if (!rankRange || !worksheet || !guardTargetRowLoaded(ctx, worksheet, rankRange.getRow())) {
+        return
+      }
+      const targetColumn = rankRange.getColumn() + rankRange.getWidth()
+      if (targetColumn >= worksheet.getMaxColumns()) {
+        ctx.setMessage(t('appSparklineNoSpace'))
+        return
+      }
+      const rows = rankRange.getValues() as unknown as Matrix
+      // getValues 是行主序；每列单独做一次 RANK.EQ
+      const ranks = Array.from({ length: rankRange.getWidth() }, (_, column) =>
+        rankColumn(rows.map((row) => row[column] ?? null)),
+      )
+      const startRow = rankRange.getRow()
+      // 非数值列不参与排名（rank 为 0），目标格清空
+      const rankMatrix = Array.from({ length: rankRange.getHeight() }, (_, rowOffset) =>
+        Array.from({ length: rankRange.getWidth() }, (_, columnOffset) => {
+          const rank = ranks[columnOffset]?.[rowOffset] ?? 0
+          return rank > 0 ? rank : null
+        }),
+      )
+      worksheet
+        .getRange(startRow, targetColumn, rankRange.getHeight(), rankRange.getWidth())
+        .setValues(rankMatrix as unknown as ICellData[][])
+      ctx.setMessage(t('appFillRankDone', { n: rankRange.getWidth() }))
+      return
+    }
+    case 'fill-blanks': {
+      // 填充空白单元格：选区内空格取同列上方最近的非空值。
+      if (!worksheet) return
+      const blankRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+      if (!blankRange || !requireLoadedSelection(ctx, worksheet, blankRange)) return
+      const filledBlanks = fillBlanksFromAbove(blankRange.getValues() as unknown as Matrix)
+      blankRange.setValues(filledBlanks as unknown as ICellData[][])
+      ctx.setMessage(t('appFillBlanksDone'))
+      return
+    }
+    case 'fill-to-sheets': {
+      // 至同组工作表：把选区值原位写到簿内其余每张表（本应用没有工作表
+      // 分组，等价于全组选择）；仅回写值，不改目标表格式。
+      if (!worksheet) return
+      const workbookToSheets = runtime.univerAPI.getActiveWorkbook()
+      const sourceRange = workbookToSheets?.getActiveRange()
+      if (!workbookToSheets || !sourceRange || !requireLoadedSelection(ctx, worksheet, sourceRange)) {
+        return
+      }
+      const matrix = sourceRange.getValues() as unknown as Matrix
+      const sheetId = worksheet.getSheetId()
+      let touched = 0
+      for (const sheet of workbookToSheets.getSheets()) {
+        if (sheet.getSheetId() === sheetId) continue
+        sheet
+          .getRange(sourceRange.getRow(), sourceRange.getColumn(), sourceRange.getHeight(), sourceRange.getWidth())
+          .setValues(matrix as unknown as ICellData[][])
+        touched += 1
+      }
+      ctx.setMessage(
+        touched === 0 ? t('appSheetNoHidden') : t('appFillToSheetsDone', { n: touched }),
+      )
+      return
+    }
     case 'insert-row-here':
     case 'delete-row-here':
     case 'insert-col-here':
@@ -1922,6 +2191,340 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     handleFormatAsTable(ctx.dataToolsContext(), command.slice('format-as-table:'.length))
     return
   }
+  if (command.startsWith('format-as-table-custom:')) {
+    // 自定义表格样式（新建表格样式对话框产物）：以直接格式把表头填充 +
+    // 镶边行落到选区——保存管线尚不支持写自定义 dxfs 命名样式。
+    const style = getCustomTableStyle(command.slice('format-as-table-custom:'.length))
+    const customRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!style || !customRange || !worksheet) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const startRow = customRange.getRow()
+    const startColumn = customRange.getColumn()
+    for (let offset = 0; offset < customRange.getHeight(); offset += 1) {
+      const patch: CellFormatPatch =
+        offset === 0
+          ? { fillColor: style.headerFill, fontColor: pickReadableInk(style.headerFill), bold: true }
+          : style.bandFill && offset % 2 === 1
+            ? { fillColor: style.bandFill }
+            : {}
+      if (Object.keys(patch).length === 0) continue
+      applyFormatPatchToRange(
+        worksheet.getRange(startRow + offset, startColumn, 1, customRange.getWidth()),
+        patch,
+      )
+    }
+    ctx.setMessage(t('appTableStyleApplied', { name: style.name }))
+    return
+  }
+  if (command.startsWith('fill-insert-text:')) {
+    // 批量插入文本到单元格：`fill-insert-text:<start|mid|end>:<encodeURIComponent(text)>`
+    if (!worksheet) return
+    const [where, encoded = ''] = command.slice('fill-insert-text:'.length).split(':')
+    const text = decodeURIComponent(encoded)
+    const insertRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!insertRange || !requireLoadedSelection(ctx, worksheet, insertRange)) return
+    if (where !== 'start' && where !== 'mid' && where !== 'end') return
+    const matrix = (insertRange.getValues() as unknown as Matrix).map((row) =>
+      row.map((value) => insertTextAtPosition(value, text, where)),
+    )
+    insertRange.setValues(matrix as unknown as ICellData[][])
+    ctx.setMessage(t('appFillInsertDone', { n: insertRange.getHeight() * insertRange.getWidth() }))
+    return
+  }
+  if (command.startsWith('fill-date:')) {
+    // 录入当前日期：模式串原样透传（yyyy年m月d日 / yyyy-m-d / yyyymmdd…）。
+    if (!worksheet) return
+    const pattern = command.slice('fill-date:'.length)
+    if (!pattern) return
+    const dateRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!dateRange || !requireLoadedSelection(ctx, worksheet, dateRange)) return
+    const text = formatFillDate(new Date(), pattern)
+    const matrix = Array.from({ length: dateRange.getHeight() }, () =>
+      Array.from({ length: dateRange.getWidth() }, () => text),
+    )
+    dateRange.setValues(matrix as unknown as ICellData[][])
+    ctx.setMessage(t('appAppliedToSelection'))
+    return
+  }
+  if (command.startsWith('fill-series:')) {
+    // 序列对话框落点：`fill-series:<down|right>:<linear|growth>:<step>[:<stop>]`
+    const [dir, type, stepText = '', stopText = ''] = command.slice('fill-series:'.length).split(':')
+    const step = Number(stepText)
+    if (!Number.isFinite(step) || step === 0) return
+    const stop = stopText === '' || stopText === 'none' ? null : Number(stopText)
+    if (stop !== null && !Number.isFinite(stop)) return
+    if (!worksheet) return
+    const seriesRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!seriesRange || !requireLoadedSelection(ctx, worksheet, seriesRange)) return
+    const grid = seriesRange.getValues() as unknown as Matrix
+    const start = typeof grid[0]?.[0] === 'number' && Number.isFinite(grid[0][0]) ? (grid[0][0] as number) : 1
+    const matrix = seriesValues({
+      height: seriesRange.getHeight(),
+      width: seriesRange.getWidth(),
+      down: dir !== 'right',
+      growth: type === 'growth',
+      step,
+      stop,
+      start,
+    })
+    seriesRange.setValues(matrix as unknown as ICellData[][])
+    ctx.setMessage(t('appSeriesDone'))
+    return
+  }
+  if (command.startsWith('cond-stats:')) {
+    // 条件统计对话框落点：`cond-stats:<fn>:<enc(critRange)>:<enc(criteria)>[:<enc(sumRange)>]`
+    if (!worksheet) return
+    const [fn, critRange = '', criteria = '', sumRange = ''] = command
+      .slice('cond-stats:'.length)
+      .split(':')
+      .map((part, index) => (index === 0 ? part : decodeURIComponent(part)))
+    if (fn !== 'sum' && fn !== 'average' && fn !== 'count') return
+    if (!critRange || !criteria || (fn !== 'count' && !sumRange)) {
+      ctx.setMessage(t('appCondStatsBadRange'))
+      return
+    }
+    const formula = condStatsFormula({ fn, criteriaRange: critRange, criteria, sumRange })
+    const statsRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!statsRange || !worksheet) return
+    // autofn 同款落点：纵向选区 → 下方一格；横向单行 → 右侧一格；单格 → 本格
+    const isHorizontal = statsRange.getHeight() === 1 && statsRange.getWidth() >= 2
+    const isSingle = statsRange.getHeight() === 1 && statsRange.getWidth() === 1
+    const target = isSingle
+      ? { row: statsRange.getRow(), column: statsRange.getColumn() }
+      : isHorizontal
+        ? { row: statsRange.getRow(), column: statsRange.getColumn() + statsRange.getWidth() }
+        : { row: statsRange.getRow() + statsRange.getHeight(), column: statsRange.getColumn() }
+    if (!guardTargetRowLoaded(ctx, worksheet, target.row)) return
+    worksheet.getRange(target.row, target.column).setFormula(formula)
+    ctx.setMessage(t('appCondStatsDone'))
+    return
+  }
+  if (command.startsWith('cf-hl:')) {
+    // 突出显示单元格规则落点（对话框）：greaterThan / lessThan / equal /
+    // between / contains / duplicate + 格式预设 id。
+    if (!worksheet) return
+    const payload = command.slice('cf-hl:'.length)
+    const styleId = payload.slice(payload.lastIndexOf(':') + 1)
+    const spec = payload.slice(0, payload.length - styleId.length - 1)
+    const [op, ...operands] = spec.split(':')
+    const preset = cfHlStyleOf(styleId)
+    if (!preset) return
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const builder = worksheet.newConditionalFormattingRule()
+    let styled: CfHighlightChain
+    if (op === 'between') {
+      const [low, high] = operands
+      styled = builder.whenNumberBetween(Number(low), Number(high))
+    } else if (op === 'contains') {
+      styled = builder.whenTextContains(decodeURIComponent(operands[0] ?? ''))
+    } else if (op === 'duplicate') {
+      styled = builder.setDuplicateValues()
+    } else {
+      const value = Number(operands[0])
+      if (!Number.isFinite(value)) return
+      styled =
+        op === 'gt'
+          ? builder.whenNumberGreaterThan(value)
+          : op === 'lt'
+            ? builder.whenNumberLessThan(value)
+            : builder.whenNumberEqualTo(value)
+    }
+    addStyledCfRule(worksheet, builder, styled, preset, ruleRange.getRange())
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-top:')) {
+    // 项目选取规则落点：`cf-top:<bottom 0|1>:<percent 0|1>:<n>`
+    if (!worksheet) return
+    const [bottomText = '', percentText = '', countText = ''] = command.slice('cf-top:'.length).split(':')
+    const count = Number(countText)
+    if (!Number.isInteger(count) || count < 1) return
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const rule = worksheet
+      .newConditionalFormattingRule()
+      .setRank({
+        isBottom: bottomText === '1',
+        isPercent: percentText === '1',
+        value: count,
+      })
+      .setBackground('#FFC7CE')
+      .setFontColor('#9C0006')
+      .setRanges([ruleRange.getRange()])
+      .build()
+    worksheet.addConditionalFormattingRule(rule)
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-average:')) {
+    // 高于/低于平均值（直接应用，浅红预设）
+    if (!worksheet) return
+    const above = command.slice('cf-average:'.length) === 'above'
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const rule = worksheet
+      .newConditionalFormattingRule()
+      .setAverage(above ? CFNumberOperator.greaterThan : CFNumberOperator.lessThan)
+      .setBackground('#FFC7CE')
+      .setFontColor('#9C0006')
+      .setRanges([ruleRange.getRange()])
+      .build()
+    worksheet.addConditionalFormattingRule(rule)
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-databar:')) {
+    if (!worksheet) return
+    const bar = dataBarOf(command.slice('cf-databar:'.length))
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!bar || !ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const rule = worksheet
+      .newConditionalFormattingRule()
+      .setDataBar({
+        min: { type: CFValueType.min },
+        max: { type: CFValueType.max },
+        positiveColor: bar.color,
+        nativeColor: '#FF555A',
+        isShowValue: true,
+      })
+      .setRanges([ruleRange.getRange()])
+      .build()
+    worksheet.addConditionalFormattingRule(rule)
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-colorscale:')) {
+    if (!worksheet) return
+    const stops = colorScaleStopsOf(command.slice('cf-colorscale:'.length))
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!stops || !ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const scale = [stops[0], stops[1], stops[2]]
+      .filter((color): color is string => color !== null)
+      .map((color, index, list) => ({
+        index,
+        color,
+        value:
+          index === 0
+            ? { type: CFValueType.min }
+            : index === list.length - 1
+              ? { type: CFValueType.max }
+              : { type: CFValueType.percentile, value: 50 },
+      }))
+    const rule = worksheet
+      .newConditionalFormattingRule()
+      .setColorScale(scale)
+      .setRanges([ruleRange.getRange()])
+      .build()
+    worksheet.addConditionalFormattingRule(rule)
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-iconset:')) {
+    if (!worksheet) return
+    const preset = iconSetOf(command.slice('cf-iconset:'.length))
+    const ruleRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (!preset || !ruleRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    // Excel 语义：共 count 档，除最后一档取 min 外，其余 greaterThanOrEqual
+    // + 等分百分比（3 档 67/33）
+    const thresholds = iconThresholds(preset.count)
+    const rule = worksheet
+      .newConditionalFormattingRule()
+      .setIconSet({
+        iconConfigs: Array.from({ length: preset.count }, (_, index) => ({
+          iconType: preset.iconType as IIconSetType,
+          iconId: String(index),
+          operator: CFNumberOperator.greaterThanOrEqual,
+          value:
+            index === preset.count - 1
+              ? { type: CFValueType.min }
+              : { type: CFValueType.percent, value: thresholds[index] ?? 0 },
+        })),
+        isShowValue: true,
+      })
+      .setRanges([ruleRange.getRange()])
+      .build()
+    worksheet.addConditionalFormattingRule(rule)
+    ctx.setMessage(t('appCfApplied'))
+    return
+  }
+  if (command.startsWith('cf-clear:')) {
+    // 清除规则：selection = 与选区相交的规则；sheet = 全部规则
+    if (!worksheet) return
+    const scope = command.slice('cf-clear:'.length)
+    const clearRange = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
+    if (scope === 'selection' && !clearRange) {
+      ctx.setMessage(t('appSelectRangeFirst'))
+      return
+    }
+    const selection = clearRange?.getRange()
+    let removed = 0
+    for (const rule of worksheet.getConditionalFormattingRules()) {
+      if (!rule.cfId) continue
+      if (scope !== 'sheet' && selection && !rangesIntersect(selection, rule.ranges[0])) continue
+      worksheet.deleteConditionalFormattingRule(rule.cfId)
+      removed += 1
+    }
+    ctx.setMessage(t('appCfCleared', { n: removed }))
+    return
+  }
+  if (
+    command.startsWith('freeze-rows:') ||
+    command.startsWith('freeze-cols:') ||
+    command.startsWith('freeze-rows-cols:')
+  ) {
+    // 冻结至第 N 行 / 第 M 列 / 第 N 行 M 列（WPS 动态标签菜单落点）
+    if (!worksheet) return
+    const parts = command.split(':').slice(1)
+    const rows = command.startsWith('freeze-cols:') ? 0 : Number(parts[0])
+    const columns =
+      command.startsWith('freeze-rows:') ? 0 : Number(parts[command.startsWith('freeze-rows-cols:') ? 1 : 0])
+    if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 0 || columns < 0) return
+    applyFreeze(ctx, worksheet, rows, columns, t('appFreezeApplied'))
+    return
+  }
+  if (command === 'freeze-header') {
+    // 冻结表头：选区/工作表上有表格对象 → 冻到表头之下；否则冻首行
+    if (!worksheet) return
+    const state = ctx.lazyWorkbookRef.current
+    const sheetId = worksheet.getSheetId()
+    const journalTable = state?.editJournal.tableAdds.find((table) => table.sheetId === sheetId)
+    const fileSheet = state?.file.sheets.find((sheet) => sheet.id === sheetId)
+    const fileTable = fileSheet?.tables?.[0]
+    const rows = journalTable
+      ? journalTable.area.startRow + 1
+      : fileTable
+        ? fileTable.range.startRow + Math.max(1, fileTable.headerRowCount)
+        : 1
+    applyFreeze(ctx, worksheet, rows, 0, t('appFreezeApplied'))
+    return
+  }
+  if (command === 'merge-cell-styles') {
+    // 合并样式：按名称归并重名自定义单元格样式
+    const merged = mergeCustomCellStyles()
+    ctx.setMessage(t('appCellStyleMerged', { n: merged }))
+    return
+  }
   if (command.startsWith('use-in-formula:')) {
     // Unlike Excel, this commits immediately instead of opening the editor,
     // so a non-empty cell (say, the header a Create-from-Selection left
@@ -1954,7 +2557,9 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     return
   }
   if (command.startsWith('cell-style:')) {
-    const presets = CELL_STYLE_PRESETS[command.slice('cell-style:'.length)]
+    const styleKey = command.slice('cell-style:'.length)
+    const custom = styleKey.startsWith('custom:') ? getCustomCellStyle(styleKey.slice(7)) : null
+    const presets = custom ? [custom.patch] : CELL_STYLE_PRESETS[styleKey]
     const range = runtime.univerAPI.getActiveWorkbook()?.getActiveRange()
     if (!presets || !range) {
       ctx.setMessage(t('appSelectCellsFirst'))

@@ -355,6 +355,7 @@ import { installCriteriaCompareCacheFix } from './criteria-compare-cache'
 import { installRateFallback } from './rate-function'
 import {
   handleRibbonCommand as handleRibbonCommandImpl,
+  listSheetVisuals,
   type RibbonCommandContext,
 } from './ribbon-actions'
 import {
@@ -5686,6 +5687,24 @@ export function App(): React.JSX.Element {
         }}
         selectionFormat={selectionFormat}
         statusMessage={message}
+        onStatus={setMessage}
+        onGetVisualObjects={() => {
+          const runtimeNow = univerRef.current
+          const ws = runtimeNow?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+          return ws ? listSheetVisuals(ribbonContext(), ws) : []
+        }}
+        onLocateVisual={(item) => {
+          const runtimeNow = univerRef.current
+          if (!runtimeNow) return
+          void runtimeNow.univerAPI.executeCommand('sheet.command.scroll-to-cell', {
+            range: {
+              startRow: item.fromRow,
+              endRow: item.fromRow,
+              startColumn: item.fromColumn,
+              endColumn: item.fromColumn,
+            },
+          })
+        }}
         aiBusy={aiBusy}
         chat={chat}
         historicChat={historicChat}
