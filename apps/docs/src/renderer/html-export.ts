@@ -97,7 +97,7 @@ const BIDI_KEEP = new Set(['bidi-override', 'isolate-override', 'plaintext', 'em
 /** Review / content-control badges drawn by the editor, not document text. */
 const CHROME_PSEUDO_CONTENT = /attr\(\s*data-(?:ppr-change-label|sdt-alias)\s*\)/
 
-const INTERNAL_FONTS = /,\s*"(?:[A-Za-z ]+ GO|GenOffice [A-Za-z ]+)"/g
+const INTERNAL_FONTS = /,\s*"(?:[A-Za-z ]+ GO|ChatOffice [A-Za-z ]+)"/g
 
 const SIDES = ['top', 'right', 'bottom', 'left'] as const
 

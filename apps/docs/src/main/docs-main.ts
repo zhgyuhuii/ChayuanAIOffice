@@ -1655,7 +1655,7 @@ const tMain = createI18n({
       'Obrázkové přílohy neobsahují text; obrázek se odesílá spolu se zprávou uživatele',
     errNotImage: 'nepodporovaný typ obrázku',
     errChatOfficeNotLoggedIn:
-      'Nejste přihlášeni do Genspark: klikněte níže na „Přihlásit se do Genspark“, přihlaste se a zkuste to znovu',
+      'Nejste přihlášeni do ChatOffice: klikněte níže na „Přihlásit se do ChatOffice“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errAiBusy: 'Služba AI je právě zaneprázdněna — zkuste to prosím za chvíli znovu',
     errNoModel: 'Není nakonfigurován název modelu',
@@ -1714,7 +1714,7 @@ const tMain = createI18n({
     menuWindow: 'Okno',
     menuHelp: 'Nápověda',
     menuShortcuts: 'Klávesové zkratky',
-    menuDocsHelp: 'Nápověda GenOffice Docs',
+    menuDocsHelp: 'Nápověda ChatOffice Docs',
     rsConflictMsg: 'The remote file was changed on another device.',
     rsConflictOverwrite: 'Overwrite with my version',
     rsConflictCopy: 'Save my version as a copy',
