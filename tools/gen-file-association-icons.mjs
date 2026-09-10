@@ -35,7 +35,6 @@ const TYPES = {
   xlsx: 'file-xlsx.png',
   pptx: 'file-pptx.png',
   pdf: 'file-pdf.svg',
-  md: 'file-md.png',
   md: 'file-md.svg',
   html: 'file-html.svg',
 }
