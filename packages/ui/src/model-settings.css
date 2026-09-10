@@ -726,15 +726,6 @@
   flex-direction: column;
   gap: 16px;
 }
-.msp-guide-head {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.msp-guide-title {
-  font-size: 16px;
-  font-weight: 600;
-}
 .msp-guide-section {
   display: flex;
   flex-direction: column;

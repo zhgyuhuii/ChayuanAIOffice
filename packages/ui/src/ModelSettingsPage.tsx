@@ -814,10 +814,6 @@ export function ModelSettingsPage({
             /* 说明页：支持的模型服务以卡片列出，国内在前、国外在后；
              * 登录卡片与厂商表单只在左侧目录显式选中后出现 */
             <div className="msp-guide-page" data-model-guide-page>
-              <div className="msp-guide-head">
-                <div className="msp-guide-title">{t.guideTitle}</div>
-                <p className="msp-note">{USER_LOGIN_READY ? t.guideDesc : t.guideDescNoLogin}</p>
-              </div>
               {[
                 { id: 'cn', label: t.guideCnTitle, ids: GUIDE_CN_VENDORS },
                 { id: 'global', label: t.guideGlobalTitle, ids: GUIDE_GLOBAL_VENDORS },
