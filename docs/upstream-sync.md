@@ -130,11 +130,15 @@
 4. **`strings-ai.ts` 逐 key 合并**：本地已加 imageSource 等 18+1 语言 keys，上游同期也改了此文件。
 5. **agent-core compaction**（`566c1f3`）：本地 agent-core 有自有改造。
 
-## 6b. 挂账待办（第二轮）
+## 6b. 挂账收割（第二轮，2026-09-09 当日全量完成）
 
-1. **Codex 设置面接入（裁定 B）**：引擎层已就绪（vendorId='codex' 全链），UI 待仿 ollamaLike 模式接入 vendor-catalog+ModelSettingsPage+discovery 分支，约 1-2h；届时补 19 语言 cs 键。
-2. **上游媒体/搜索设置层**：media.ts/media-protocols.ts（BYOK 生图协议栈+AI_MEDIA_PROVIDERS 目录）与 search-tools/media-tools 工具层未采纳（本地自有管线覆盖同类能力）；若日后需要 BYOK 媒体分析（analyzeMediaWithProvider）可从 d24c964 复活。
-3. **markdown generate_image 谓词**：暂 `() => false`，随挂账 2 一并处理。
+三项挂账已于同日全量收割（提交 15b5aa80）：
+
+1. **Codex 设置面 ✅**：vendor-catalog 新增 codex 条目（group local、codexLike、free nokey）；discovery.ts 增加 codex 分支（listCodexModels 走 CLI 目录）；ModelSettingsPage 免 key/URL 门控+discoveryTarget 携 codexLike；运行时链（vendorId='codex'）批 B 已就绪。无需新增 i18n 键（供应商名走 vendor-catalog）。
+2. **媒体/搜索设置层 ✅ 整体采纳**：media.ts（AI_MEDIA_PROVIDERS 目录+设置访问器）/media-protocols.ts（openai-images/gemini/dashscope/minimax 四协议生图+BYOK 媒体分析+testMediaProvider）/search-settings.ts 恢复；AiSettings 增 media?/search? 段；providers 默认值+解析链接线；index/browser 重导出；ai-search media-tools/search-tools 恢复（search-tools 按本地布尔门控语义重写）；供应商 id 'genspark'→'chatoffice' 全量一致改名（本地无存量设置文件，安全）。
+3. **markdown generate_image 谓词 ✅**：接 imageGenerationAvailable(settings, login) + aiChatOfficeStatus 登录态跟踪（mount+window focus 刷新）。
+
+与本地 imagegen 引擎的关系：上游媒体层服务 ai-settings.json 的 media/search 段（工具调用路径），本地 imagegen/media-jobs 服务 V2 MediaModelPicker 路径——两套并行、配置域不同、互不覆盖。
 
 ## 7. 风险登记
 
