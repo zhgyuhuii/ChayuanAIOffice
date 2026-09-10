@@ -8,7 +8,7 @@
  * the full AiSettingsV2.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { VENDOR_BY_ID } from '@chatoffice/ai-provider'
+import { VENDOR_BY_ID } from '@chatoffice/ai-provider/browser'
 import { useDismissablePopover } from './popover-dismiss'
 import { VendorLogo } from './VendorLogo'
 import './dropdown.css'

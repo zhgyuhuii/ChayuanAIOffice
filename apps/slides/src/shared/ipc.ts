@@ -37,7 +37,7 @@ export type {
   DiscoveryTarget,
   ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
-export { AI_PROVIDERS } from '@chatoffice/ai-provider'
+export { AI_PROVIDERS } from '@chatoffice/ai-provider/browser'
 
 /** wire shape of an ai:stream request: the settings slot carries the selection */
 export interface AiStreamWireRequest {

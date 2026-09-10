@@ -3,7 +3,7 @@ import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab,
   type AiScopeQuoteData,
   AiScopeQuote, } from '@chatoffice/ui'
 import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
-import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
 import type { ChangePlan } from '../../domain/workbook.types'

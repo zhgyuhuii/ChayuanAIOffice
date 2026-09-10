@@ -29,7 +29,7 @@ import {
   type AiWireProtocol,
   type DiscoveryTarget,
   type VendorCatalogEntry,
-} from '@chatoffice/ai-provider'
+} from '@chatoffice/ai-provider/browser'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
 import { useDismissablePopover } from './popover-dismiss'
 import { VendorLogo } from './VendorLogo'

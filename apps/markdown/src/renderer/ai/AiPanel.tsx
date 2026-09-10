@@ -12,7 +12,7 @@ import {
   usePanelTab,
   AiScopeQuote,
   type AiScopeQuoteData, } from '@chatoffice/ui'
-import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider'
+import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'

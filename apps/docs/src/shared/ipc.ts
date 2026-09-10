@@ -87,7 +87,7 @@ export type {
   DiscoveryTarget,
   ChatOfficeAccountStatus,
 } from '@chatoffice/ai-provider'
-export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider'
+export { AI_PROVIDERS, KEEP_KEY } from '@chatoffice/ai-provider/browser'
 
 // ---- agent protocol: canonical types live in @chatoffice/agent-core ----
 

@@ -64,7 +64,7 @@ import {
   resolveDefaultModel,
   resolveModelCapabilities,
   type AiProtocol,
-} from '@chatoffice/ai-provider'
+} from '@chatoffice/ai-provider/browser'
 import { slidesModelBridge } from './model-bridge'
 import { hydrateSpecSvg } from './spec-svg-hydrate'
 import { ImageSourcePicker } from './ImageSourcePicker'

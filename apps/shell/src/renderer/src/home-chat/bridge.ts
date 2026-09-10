@@ -1,4 +1,4 @@
-import { resolveCurrentModel } from '@chatoffice/ai-provider'
+import { resolveCurrentModel } from '@chatoffice/ai-provider/browser'
 import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type { AgentMessage } from '@chatoffice/agent-core'
 import type { HomeAgentBridge } from './agent'

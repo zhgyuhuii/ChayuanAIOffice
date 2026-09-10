@@ -13,7 +13,7 @@ import {
   type AiScopeQuoteData, } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { Markdown } from '@chatoffice/ui'

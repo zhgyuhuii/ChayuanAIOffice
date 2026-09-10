@@ -1,11 +1,20 @@
 /** Browser-safe settings surface. Keep Node-backed transports out of renderer bundles. */
 export type {
   AiProviderConfig,
+  AiImageSource,
   AiProviderId,
   AiProviderMeta,
   AiSettings,
   CodexModelCatalog,
+  AiSettingsV2,
+  AiModelSelection,
+  AiModelEntry,
+  AiProviderProfile,
+  AiWireProtocol,
 } from './types'
+export type { DiscoveryTarget } from './discovery'
+export type { AiDefaultKind } from './settings-v2'
+export type { VendorCatalogEntry } from './vendor-catalog'
 export {
   AI_PROVIDERS,
   DEFAULT_MAX_OUTPUT_TOKENS,
@@ -13,6 +22,32 @@ export {
   MIN_MAX_OUTPUT_TOKENS,
   clampMaxOutputTokens,
 } from './providers'
+export {
+  DEFAULT_KIND_TYPES,
+  findProfile,
+  defaultSettingsV2,
+  enabledChatModels,
+  pickImageModel,
+  resolveCurrentModel,
+  resolveDefaultModel,
+} from './settings-v2'
+export { inferModelType } from './model-type'
+export type { AiModelType } from './model-type'
+export { modelAcceptsImages } from './settings-v2'
+export { functionCallingVerdict, resolveModelCapabilities } from './capabilities'
+export { imageGenerationAvailable, mediaAnalysisAvailable } from './media'
+export {
+  CHATOFFICE_PRESET_MODELS,
+  NO_MODELS_API,
+  VENDORS,
+  VENDOR_BY_ID,
+  VENDOR_GROUPS,
+} from './vendor-catalog'
+export { groupByType } from './model-type'
+export { isImageGenModel } from './settings-v2'
+/** sentinel: untouched key field so the backend keeps the stored secret */
+export const KEEP_KEY = '__keep__'
 export { getProviderAdapter, modelLacksVision } from './registry'
-export { AI_MEDIA_PROVIDERS, imageGenerationAvailable, mediaAnalysisAvailable } from './media'
+export type { AiProtocol } from './registry'
+export { AI_MEDIA_PROVIDERS } from './media'
 export { AI_SEARCH_PROVIDERS } from './search-settings'

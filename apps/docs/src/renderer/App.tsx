@@ -47,7 +47,7 @@ import {
   type ThemeFonts,
 } from '@chatoffice/docx-engine'
 import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
 import { applyHfText, hfEditText } from './editor/hf-text'

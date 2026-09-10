@@ -133,7 +133,7 @@ import {
   composeSkills,
   type AgentImage,
 } from '@chatoffice/agent-core'
-import { enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import { enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
 import {
   copyTargetBounds,
   filteredCopySourceRows,

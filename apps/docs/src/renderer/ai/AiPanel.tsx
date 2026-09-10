@@ -38,7 +38,7 @@ import {
   PanelTabs,
   usePanelTab,
 } from '@chatoffice/ui'
-import { enabledChatModels } from '@chatoffice/ai-provider'
+import { enabledChatModels } from '@chatoffice/ai-provider/browser'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
 import attachIcon from '../assets/attach-icon.png'

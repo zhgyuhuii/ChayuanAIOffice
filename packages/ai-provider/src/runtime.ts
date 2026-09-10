@@ -277,6 +277,13 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   const discover = async (
     target: DiscoveryTarget,
   ): Promise<{ models: Array<{ id: string; name?: string }> }> => {
+    // Codex routes through the local app-server CLI (node-only; discovery.ts
+    // must stay browser-bundlable, so the branch lives here).
+    if (target.codexLike) {
+      const { listCodexModels } = await import('./codex-app-server')
+      const catalog = await listCodexModels(target.cliPath || undefined)
+      return { models: catalog.models.map((id) => ({ id })) }
+    }
     if (!target.apiKey && target.profileId) {
       const settings = await readRaw()
       const profile = findProfile(settings, target.profileId)

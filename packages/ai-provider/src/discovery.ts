@@ -15,20 +15,13 @@ export interface DiscoveryTarget {
   apiKey: string
   /** endpoint serves Ollama-style /api/tags instead of /models */
   ollamaLike?: boolean
-  /** route discovery through the local Codex app-server CLI catalog */
+  /** route discovery through the local Codex app-server CLI catalog (handled by the electron-side discover wrapper, never here — this module is browser-bundled) */
   codexLike?: boolean
   /** Codex CLI path override; empty = auto-discover on PATH */
   cliPath?: string
   /** when set and apiKey is empty, the backend resolves the stored key for this profile */
   profileId?: string
   signal?: AbortSignal
-}
-
-/** Codex CLI catalog: model ids come straight from the local app-server process */
-async function codexModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {
-  const { listCodexModels } = await import('./codex-app-server')
-  const catalog = await listCodexModels(target.cliPath || undefined)
-  return catalog.models.map((id) => ({ id }))
 }
 
 function originOf(baseUrl: string): string {
@@ -121,7 +114,6 @@ async function geminiModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {
 }
 
 export async function discoverModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {
-  if (target.codexLike) return codexModels(target)
   if (target.ollamaLike) return ollamaTags(target)
   switch (target.protocol) {
     case 'anthropic-messages':
