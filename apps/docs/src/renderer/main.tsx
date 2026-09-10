@@ -14,7 +14,7 @@ import '@chatoffice/ui/ai-panel-prefs.css'
 import '@chatoffice/ui/ai-scope-quote.css'
 import './styles.css'
 import './fonts/fonts.css'
-import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
+import { installScreenTips } from '@chatoffice/ui'
 import { installAnchorPanelFallback } from '@chatoffice/ui'
 
 installScreenTips()

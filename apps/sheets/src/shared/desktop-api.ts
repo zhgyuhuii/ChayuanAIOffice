@@ -2586,7 +2586,7 @@ const aiProviderConfigSchema = z
   })
   .strict()
 
-const aiMediaProviderConfigSchema = z
+const _aiMediaProviderConfigSchema = z
   .object({
     apiKey: z.string(),
     baseUrl: z.string().optional(),

@@ -723,8 +723,6 @@ export function InsertTab({
   onTitlePg,
   evenOddHf,
   onEvenOddHf,
-  commentCount,
-  onShowComments,
   insertImageDialogOpen,
   canComment,
   onNewComment,

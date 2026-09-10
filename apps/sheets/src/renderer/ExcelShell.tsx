@@ -13,14 +13,6 @@ import {
 } from '@chatoffice/ui'
 
 import {
-  BorderAllIcon,
-  BorderBottomIcon,
-  BorderLeftIcon,
-  BorderNoneIcon,
-  BorderOuterIcon,
-  BorderRightIcon,
-  BorderThickOuterIcon,
-  BorderTopIcon,
   CaretIcon,
   RIBBON_GLYPH_ICONS,
   RedoIcon,

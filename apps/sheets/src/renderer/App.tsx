@@ -3363,7 +3363,7 @@ export function App(): React.JSX.Element {
     // Set only AFTER a mutation actually committed (end of each op, plus the
     // intermediate commit points of multi-step handlers): a throw with the
     // flag still false really is "unchanged".
-    let anyApplied = false
+    let _anyApplied = false
     try {
       // Structural and layout changes go through the same facade commands as
       // the ribbon, so BeforeCommandExecute gating and the edit journal apply.
@@ -3457,7 +3457,7 @@ export function App(): React.JSX.Element {
         } else if (op.op === 'duplicate_sheet') {
           if (!workbook) throw new Error(t('appNoWorkbookOpen'))
           const copy = workbook.duplicateSheet(sheetById(op.sheetId))
-          anyApplied = true
+          _anyApplied = true
           if (op.name) copy.setName(op.name)
         } else if (op.op === 'set_sheet_hidden') {
           if (op.hidden) sheetById(op.sheetId).hideSheet()
@@ -3545,7 +3545,7 @@ export function App(): React.JSX.Element {
             // Only count a verified removal — the remove command can be
             // cancelled by an edit gate.
             if (target.getFilter()) throw new Error(t('appAutoFilterRemoveFailed'))
-            anyApplied = true
+            _anyApplied = true
           }
           if (!target.getRange(op.range).createFilter()) {
             throw new Error(t('appAutoFilterCreateFailed'))
@@ -3569,7 +3569,7 @@ export function App(): React.JSX.Element {
           for (const rule of target.getConditionalFormattingRules()) {
             if (rule.cfId) {
               target.deleteConditionalFormattingRule(rule.cfId)
-              anyApplied = true
+              _anyApplied = true
             }
           }
         } else if (op.op === 'set_data_validation') {
@@ -4432,7 +4432,7 @@ export function App(): React.JSX.Element {
             await buildAiChartEditImpl(visualContext(), state, workbook, op),
           )
         }
-        anyApplied = true
+        _anyApplied = true
       }
       setPendingEdits(journalSize(state.editJournal))
       // Streaming mode: formulas in this batch may reference file cells the
@@ -4478,7 +4478,7 @@ export function App(): React.JSX.Element {
               : [{ v: change.after.value, f: null, si: null }],
           ])
         }
-        anyApplied = true
+        _anyApplied = true
       }
       // Same facade setters as the ribbon, so the edit journal records them
       // (indent included — it lands as a pd patch in set-range-values).
@@ -4487,11 +4487,11 @@ export function App(): React.JSX.Element {
           sheetById(formatChange.sheetId).getRange(formatChange.range),
           formatChange.format,
         )
-        anyApplied = true
+        _anyApplied = true
       }
       for (const rename of stored.plan.sheetRenames) {
         sheetById(rename.sheetId).setName(rename.after)
-        anyApplied = true
+        _anyApplied = true
       }
       lazyPreviewRef.current = null
       setPreview(null)

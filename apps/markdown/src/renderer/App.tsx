@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAutoSavePref } from '@chatoffice/ui'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { FindPanel, type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
+import { type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
 import { useI18n } from './i18n/locale'
 import {
@@ -133,8 +133,8 @@ export default function App() {
   editQueueRef.current = editQueue
   const queueSeqRef = useRef(0)
   const [autoSave, setAutoSave] = useAutoSavePref('mdapp.autoSave', window.markdownApi)
-  const [showFind, setShowFind] = useState(false)
-  const [findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [_showFind, setShowFind] = useState(false)
+  const [_findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
   const [zoom, setZoom] = useState(100)
 
   const statusRef = useRef<LoadStatus>('loading')
@@ -197,7 +197,7 @@ export default function App() {
   })
   editorRef.current = editor
   filePathRef.current = filePath
-  const findTarget = useMemo(() => (editor ? tiptapFindTarget(editor) : null), [editor])
+  const _findTarget = useMemo(() => (editor ? tiptapFindTarget(editor) : null), [editor])
 
   useEffect(() => {
     setImageBaseDir(filePath ? dirOf(filePath) : null)
@@ -631,7 +631,7 @@ export default function App() {
             ? t('savedOk')
             : ''
 
-  const findStrings: FindPanelStrings = {
+  const _findStrings: FindPanelStrings = {
     findPlaceholder: t('findPlaceholder'),
     replacePlaceholder: t('replacePlaceholder'),
     matchCase: t('matchCase'),

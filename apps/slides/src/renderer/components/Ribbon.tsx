@@ -1670,7 +1670,7 @@ export function Ribbon({
   formatOpen,
   onToggleFormat,
   hasSelection,
-  onAskSelection,
+  onAskSelection: _onAskSelection,
   hasTextSelection,
   canPaste,
   onCopy,

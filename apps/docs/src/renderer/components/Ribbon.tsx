@@ -2184,6 +2184,10 @@ function RibbonInner({
             onEvenOddHf={onEvenOddHf}
             commentCount={commentCount}
             onShowComments={onShowComments}
+            canComment={canComment}
+            onNewComment={onNewComment}
+            isProtected={isProtected}
+            commentsAllowed={commentsAllowed}
             insertImageDialogOpen={() => setInsertImageOpen(true)}
           />
         ) : tab === 'page' ? (

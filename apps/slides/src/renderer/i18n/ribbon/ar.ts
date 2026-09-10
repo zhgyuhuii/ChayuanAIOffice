@@ -172,7 +172,7 @@ export const ar = {
   ribbonFlipH: 'انعكاس أفقي',
   ribbonFlipV: 'انعكاس رأسي',
   ribbonDistributeHint: '{title} (حدد 3 عناصر على الأقل)',
-  ribbonAiAssistant: 'Genspark',
+  ribbonAiAssistant: 'ChatOffice',
   ribbonAiAssistantTip: 'إظهار أو إخفاء لوحة مساعد الذكاء الاصطناعي',
   ribbonGroupTable: 'جدول',
   ribbonInsertTableTip: 'إدراج جدول (نمط افتراضي؛ اختر الصفوف والأعمدة)',

@@ -15,7 +15,7 @@ import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
 import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '../../shared/op-docs'
 import { t } from '../i18n/locale'
-import systemPrompt from './prompts/system.md?raw'
+import _systemPrompt from './prompts/system.md?raw'
 
 const PARAGRAPHS_DEF = {
   paragraphs: {

@@ -2201,7 +2201,7 @@ export function App() {
   )
   const cancelCrop = useCallback(() => pictureEditActions.cancelCrop(ctxRef.current), [])
   const startCutout = useCallback(() => pictureEditActions.startCutout(ctxRef.current), [])
-  const replacePicture = useCallback(() => pictureEditActions.replacePicture(ctxRef.current), [])
+  const _replacePicture = useCallback(() => pictureEditActions.replacePicture(ctxRef.current), [])
   const applyCutout = useCallback(
     (pngDataUrl: string) => pictureEditActions.applyCutout(ctxRef.current, pngDataUrl),
     [],
@@ -2217,7 +2217,7 @@ export function App() {
     (axis: 'h' | 'v') => arrangeActions.flipSelected(ctxRef.current, axis),
     [],
   )
-  const rotateSelected = useCallback(
+  const _rotateSelected = useCallback(
     (deltaDeg: number) => arrangeActions.rotateSelected(ctxRef.current, deltaDeg),
     [],
   )

@@ -256,13 +256,13 @@ export const ja = {
   appTabClear: 'クリア',
   // AI settings
   appAiSettings: 'AI 設定',
-  appGensparkAccount: 'Genspark アカウント',
+  appGensparkAccount: 'ChatOffice アカウント',
   appChecking: '確認中…',
   appLoggedIn: 'サインイン済み',
   appLoggedInEmail: 'サインイン済み:{email}',
-  appNotLoggedIn: '未サインイン(AI 機能には Genspark アカウントが必要です)',
+  appNotLoggedIn: '未サインイン(AI 機能には ChatOffice アカウントが必要です)',
   appWaitingBrowserLogin: 'ブラウザーでのサインインを待っています…',
-  appLoginGenspark: 'Genspark にサインイン',
+  appLoginGenspark: 'ChatOffice にサインイン',
   appModel: 'モデル',
   // Context menu
   appCut: '切り取り',

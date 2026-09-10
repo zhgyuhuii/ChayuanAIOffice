@@ -2021,7 +2021,7 @@ export function App() {
     (parentId: string, text: string) => replyToCommentImpl(reviewCtxRef.current, parentId, text),
     [],
   )
-  const editComment = useCallback(
+  const _editComment = useCallback(
     (id: string, text: string) => editCommentImpl(reviewCtxRef.current, id, text),
     [],
   )
