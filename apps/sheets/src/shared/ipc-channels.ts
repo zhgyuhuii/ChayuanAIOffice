@@ -90,6 +90,10 @@ export const IPC_CHANNELS = {
   aiStreamChunk: 'ai:stream-chunk',
   aiChatOfficeStatus: 'ai:chatoffice-status',
   aiChatOfficeLogin: 'ai:chatoffice-login',
+  aiLocalToolStatus: 'ai:local-tool-status',
+  aiLocalToolInstall: 'ai:local-tool-install',
+  aiLocalToolStart: 'ai:local-tool-start',
+  aiLocalToolProgress: 'ai:local-tool-progress',
   aiImageSearch: 'ai:image-search',
   aiFetchImage: 'ai:fetch-image',
   // sheets: prefix — slides' ai:generate-image only registers once a slides view exists

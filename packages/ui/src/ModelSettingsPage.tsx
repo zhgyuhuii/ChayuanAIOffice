@@ -32,6 +32,8 @@ import {
   type AiSettingsV2,
   type AiWireProtocol,
   type DiscoveryTarget,
+  type LocalToolOpResult,
+  type LocalToolStatus,
   type VendorCatalogEntry,
 } from '@chatoffice/ai-provider/browser'
 import { fmt, modelSettingsStrings } from './model-settings-strings'
@@ -40,6 +42,8 @@ import { USER_LOGIN_READY } from './feature-flags'
 import { VendorLogo } from './VendorLogo'
 // self-contained styles: every consumer gets them with the component
 import './model-settings.css'
+
+export type { LocalToolStatus, LocalToolOpResult } from '@chatoffice/ai-provider/browser'
 
 export interface ModelSettingsBridge {
   getSettings(): Promise<AiSettingsV2>
@@ -50,6 +54,10 @@ export interface ModelSettingsBridge {
   chatofficeLogin?(): void | Promise<void>
   /** web form: chatoffice login is desktop-only — the page hides the chatoffice card */
   capabilities?(): Promise<{ chatofficeAvailable: boolean }>
+  /** 本地与自建：探测/一键安装/启动 —— 仅桌面桥实现；web 桥不接，UI 自动隐藏 */
+  localToolStatus?(vendorId: string): Promise<LocalToolStatus>
+  localToolInstall?(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
+  localToolStart?(vendorId: string): Promise<LocalToolOpResult>
 }
 
 export interface ModelSettingsPageProps {
@@ -158,6 +166,12 @@ export function ModelSettingsPage({
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
   const [chatoffice, setChatOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
+  /** 本地与自建：一键安装/探测状态（仅桌面桥实现） */
+  const [tool, setTool] = useState<LocalToolStatus | null>(null)
+  const [toolProbing, setToolProbing] = useState(false)
+  const [toolBusy, setToolBusy] = useState<'install' | 'start' | ''>('')
+  const [toolLine, setToolLine] = useState('')
+  const [toolProbeTick, setToolProbeTick] = useState(0)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
@@ -230,6 +244,9 @@ export function ModelSettingsPage({
   /** 登录功能未开放（USER_LOGIN_READY=false）时，ChatOffice 视同不可用：
    * 目录行、已启用列表与登录卡整体隐藏 */
   const chatofficeUsable = USER_LOGIN_READY && chatofficeAvailable
+  /** 本地与自建厂商（排除自定义兼容入口）才探测本地安装 */
+  const localToolVendor =
+    selectedVendor?.group === 'local' && selectedVendor.id !== 'openai-compatible' ? selected : ''
 
   /** vendor rows not currently enabled (a disabled profile still prefills its stored values) */
   const catalogRows = useMemo(() => {
@@ -286,6 +303,69 @@ export function ModelSettingsPage({
     setKeyConfigured(!!selectedProfile.apiKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected, settings])
+
+  // 本地工具探测：切到本地厂商（或点「重新检测」）时查安装/运行状态
+  useEffect(() => {
+    if (!localToolVendor || typeof bridge.localToolStatus !== 'function') {
+      setTool(null)
+      setToolProbing(false)
+      return
+    }
+    let alive = true
+    setToolProbing(true)
+    bridge.localToolStatus(localToolVendor).then(
+      (s) => {
+        if (!alive) return
+        setTool(s)
+        setToolProbing(false)
+      },
+      () => {
+        if (!alive) return
+        setTool(null)
+        setToolProbing(false)
+      },
+    )
+    return () => {
+      alive = false
+    }
+  }, [localToolVendor, bridge, toolProbeTick])
+
+  const installLocalTool = async () => {
+    if (!bridge.localToolInstall) return
+    setToolBusy('install')
+    setToolLine('')
+    try {
+      const r = await bridge.localToolInstall(selected, (line) => setToolLine(line))
+      if (r.ok) {
+        flash('ok', r.message || t.localInstallDone)
+        setToolProbeTick((n) => n + 1)
+      } else {
+        flash('err', fmt(t.localInstallFailed, { message: r.message ?? '' }))
+      }
+    } catch (error) {
+      flash('err', fmt(t.localInstallFailed, { message: errorText(error) }))
+    } finally {
+      setToolBusy('')
+    }
+  }
+
+  const startLocalTool = async () => {
+    if (!bridge.localToolStart) return
+    setToolBusy('start')
+    try {
+      const r = await bridge.localToolStart(selected)
+      if (r.ok) {
+        flash('ok', r.message || t.localStartOk)
+        setToolProbeTick((n) => n + 1)
+      } else {
+        flash('err', fmt(t.localInstallFailed, { message: r.message ?? '' }))
+      }
+    } catch (error) {
+      flash('err', fmt(t.localInstallFailed, { message: errorText(error) }))
+    } finally {
+      setToolBusy('')
+    }
+  }
 
   const vendorName = (id: string): string => {
     const v = VENDOR_BY_ID.get(id)
@@ -940,6 +1020,86 @@ export function ModelSettingsPage({
                   disabled={busy !== ''}
                 />
               </div>
+
+              {/* 本地与自建：安装/运行状态卡（桌面桥才渲染） */}
+              {localToolVendor && typeof bridge.localToolStatus === 'function' && (
+                <div className="msp-local-tool" data-local-tool={selected}>
+                  {toolBusy === 'install' ? (
+                    <>
+                      <p className="msp-note" data-local-tool-installing>
+                        {t.localInstalling}
+                      </p>
+                      {toolLine && (
+                        <p className="msp-note msp-local-line" data-local-tool-line>
+                          {toolLine}
+                        </p>
+                      )}
+                    </>
+                  ) : toolProbing && !tool ? (
+                    <p className="msp-note">{t.localDetecting}</p>
+                  ) : !tool || !tool.supported ? null : tool.running ? (
+                    <div className="msp-local-state">
+                      <span className="msp-dot is-big is-on" aria-hidden />
+                      <span className="msp-local-text" data-local-tool-running>
+                        {t.localRunning}
+                        {tool.version ? ` · v${tool.version}` : ''}
+                      </span>
+                      <button
+                        type="button"
+                        className="msp-btn msp-btn-mini"
+                        data-local-tool-redetect
+                        disabled={toolBusy !== '' || toolProbing}
+                        onClick={() => setToolProbeTick((n) => n + 1)}
+                      >
+                        {t.localRedetect}
+                      </button>
+                    </div>
+                  ) : tool.installed ? (
+                    <div className="msp-local-state">
+                      <span className="msp-dot is-big is-off" aria-hidden />
+                      <span className="msp-local-text" data-local-tool-installed>
+                        {t.localInstalledNoServer}
+                      </span>
+                      {tool.startable && bridge.localToolStart && (
+                        <button
+                          type="button"
+                          className="msp-btn"
+                          data-local-tool-start
+                          disabled={toolBusy !== ''}
+                          onClick={() => void startLocalTool()}
+                        >
+                          {toolBusy === 'start' ? t.localStarting : t.localStartBtn}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="msp-btn msp-btn-mini"
+                        data-local-tool-redetect
+                        disabled={toolBusy !== '' || toolProbing}
+                        onClick={() => setToolProbeTick((n) => n + 1)}
+                      >
+                        {t.localRedetect}
+                      </button>
+                    </div>
+                  ) : tool.installable && bridge.localToolInstall ? (
+                    <div className="msp-local-state">
+                      <span className="msp-local-text" data-local-tool-missing>
+                        {t.localNotInstalled}
+                      </span>
+                      <button
+                        type="button"
+                        className="msp-btn msp-btn-primary"
+                        data-local-tool-install
+                        disabled={toolBusy !== ''}
+                        onClick={() => void installLocalTool()}
+                      >
+                        {t.localInstallBtn}
+                      </button>
+                      <span className="msp-note">{t.localInstallHint}</span>
+                    </div>
+                  ) : null}
+                </div>
+              )}
 
               {msg && (
                 <p className={`msp-msg ${msg.kind}`} data-model-msg>

@@ -134,11 +134,7 @@ export type {
   MediaJobRequest,
   MediaJobResult,
 } from './media-jobs'
-export {
-  getMediaJobAdapter,
-  registerMediaJobAdapter,
-  runMediaJob,
-} from './media-jobs'
+export { getMediaJobAdapter, registerMediaJobAdapter, runMediaJob } from './media-jobs'
 export type { MediaParamField, MediaParamSpec } from './media-params'
 export { imageParamSpec, videoParamSpec } from './media-params'
 export type {
@@ -157,3 +153,4 @@ export {
 } from './settings-source'
 export { KEEP_KEY, createAiRuntime } from './runtime'
 export type { AiRuntime, AiRuntimeDeps, AiRuntimeChatOffice } from './runtime'
+export type { LocalToolStatus, LocalToolOpResult } from './local-tool'

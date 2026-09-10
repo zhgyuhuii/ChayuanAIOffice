@@ -13,6 +13,7 @@ export type {
   AiWireProtocol,
 } from './types'
 export type { DiscoveryTarget } from './discovery'
+export type { LocalToolStatus, LocalToolOpResult } from './local-tool'
 export type { AiDefaultKind } from './settings-v2'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {

@@ -297,6 +297,28 @@ const homeApi: HomeApi = {
   async chatofficeLogin() {
     await ipcRenderer.invoke('ai:chatoffice-login')
   },
+  async aiLocalToolStatus(vendorId: string) {
+    return (await ipcRenderer.invoke(
+      'ai:local-tool-status',
+      vendorId,
+    )) as import('@chatoffice/ai-provider').LocalToolStatus
+  },
+  async aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void) {
+    if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
+    const listener = (_event: Electron.IpcRendererEvent, vid: string, line: string) => {
+      if (vid === vendorId) onLine(line)
+    }
+    ipcRenderer.on('ai:local-tool-progress', listener)
+    return ipcRenderer
+      .invoke('ai:local-tool-install', vendorId)
+      .finally(() => ipcRenderer.removeListener('ai:local-tool-progress', listener))
+  },
+  async aiLocalToolStart(vendorId: string) {
+    return (await ipcRenderer.invoke(
+      'ai:local-tool-start',
+      vendorId,
+    )) as import('@chatoffice/ai-provider').LocalToolOpResult
+  },
   // ai:stream / files:* / docs:create-document channels are registered process-wide
   // by the aggregated editor mains the shell loads (ai-host / docs-main)
   async aiStream(request) {

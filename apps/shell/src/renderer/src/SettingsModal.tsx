@@ -1,8 +1,12 @@
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
-import { aiPanelFontPx, AiFontSize, DEFAULT_AI_PANEL_PREFS,
+import {
+  aiPanelFontPx,
+  AiFontSize,
+  DEFAULT_AI_PANEL_PREFS,
   clampAiCustomFontSize,
   AI_CUSTOM_FONT_MIN_PX,
-  AI_CUSTOM_FONT_MAX_PX, } from '@chatoffice/ui/ai-panel-prefs'
+  AI_CUSTOM_FONT_MAX_PX,
+} from '@chatoffice/ui/ai-panel-prefs'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
@@ -212,6 +216,9 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     discoverModels: (target) => window.chatOffice.aiDiscoverModels(target),
     chatofficeStatus: (withEmail) => window.chatOffice.chatofficeStatus(withEmail),
     chatofficeLogin: () => void window.chatOffice.chatofficeLogin(),
+    localToolStatus: (vendorId) => window.chatOffice.aiLocalToolStatus(vendorId),
+    localToolInstall: (vendorId, onLine) => window.chatOffice.aiLocalToolInstall(vendorId, onLine),
+    localToolStart: (vendorId) => window.chatOffice.aiLocalToolStart(vendorId),
   }
 }
 

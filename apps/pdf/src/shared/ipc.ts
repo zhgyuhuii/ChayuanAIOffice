@@ -654,6 +654,9 @@ export const AI_CHANNELS = {
   discoverModels: 'ai:discover-models',
   chatofficeStatus: 'ai:chatoffice-status',
   chatofficeLogin: 'ai:chatoffice-login',
+  localToolStatus: 'ai:local-tool-status',
+  localToolInstall: 'ai:local-tool-install',
+  localToolStart: 'ai:local-tool-start',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -776,6 +779,13 @@ export interface PdfApi {
     target: import('@chatoffice/ai-provider').DiscoveryTarget,
   ): Promise<{ models: import('@chatoffice/ai-provider').AiModelEntry[]; error?: string }>
   aiChatOfficeLogin(): Promise<void>
+  /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
+  aiLocalToolStatus(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolStatus>
+  aiLocalToolInstall(
+    vendorId: string,
+    onLine?: (line: string) => void,
+  ): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<import('@chatoffice/ai-provider').LocalToolOpResult>
   /** ChatOffice login state (chatoffice); gates the cloud-only generate_image tool */
   chatofficeStatus(
     withEmail?: boolean,

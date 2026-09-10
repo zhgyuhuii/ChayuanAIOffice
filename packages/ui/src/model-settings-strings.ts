@@ -141,6 +141,20 @@ const zh = {
   } as Record<string, string>,
   pickerHint:
     '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
+  // 本地与自建：一键安装
+  localDetecting: '正在检测本地安装…',
+  localRunning: '本地服务运行中',
+  localInstalledNoServer: '已安装，服务未运行',
+  localNotInstalled: '未检测到本地安装',
+  localInstallBtn: '一键安装',
+  localInstalling: '正在下载安装，可能需要几分钟…',
+  localStartBtn: '启动服务',
+  localStarting: '启动中…',
+  localStartOk: '服务已启动',
+  localRedetect: '重新检测',
+  localInstallHint: '从官方源下载安装，耗时视网络而定。',
+  localInstallDone: '安装完成',
+  localInstallFailed: '操作失败：{message}',
 }
 
 const en = {
@@ -280,6 +294,20 @@ const en = {
   } as Record<string, string>,
   pickerHint:
     "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
+  // local self-hosted: one-click install
+  localDetecting: 'Checking the local install…',
+  localRunning: 'Local server is running',
+  localInstalledNoServer: 'Installed — server not running',
+  localNotInstalled: 'Not installed on this machine',
+  localInstallBtn: 'Install',
+  localInstalling: 'Downloading & installing — this can take a few minutes…',
+  localStartBtn: 'Start server',
+  localStarting: 'Starting…',
+  localStartOk: 'Server started',
+  localRedetect: 'Re-check',
+  localInstallHint: 'Downloads from the official source; duration depends on your network.',
+  localInstallDone: 'Install complete',
+  localInstallFailed: 'Operation failed: {message}',
 }
 
 export type ModelSettingsStrings = typeof zh & typeof en

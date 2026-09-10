@@ -8,4 +8,7 @@ export const markdownModelBridge: ModelSettingsBridge = {
   discoverModels: (target) => window.markdownApi.aiDiscoverModels(target),
   chatofficeStatus: (withEmail) => window.markdownApi.aiChatOfficeStatus(withEmail),
   chatofficeLogin: () => window.markdownApi.aiChatOfficeLogin(),
+  localToolStatus: (vendorId) => window.markdownApi.aiLocalToolStatus(vendorId),
+  localToolInstall: (vendorId, onLine) => window.markdownApi.aiLocalToolInstall(vendorId, onLine),
+  localToolStart: (vendorId) => window.markdownApi.aiLocalToolStart(vendorId),
 }

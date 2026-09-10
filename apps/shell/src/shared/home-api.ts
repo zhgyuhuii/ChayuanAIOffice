@@ -4,6 +4,8 @@ import type {
   AiSettingsV2,
   DiscoveryTarget,
   ChatOfficeAccountStatus,
+  LocalToolOpResult,
+  LocalToolStatus,
 } from '@chatoffice/ai-provider'
 import type {
   AiStreamChunk,
@@ -209,6 +211,10 @@ export interface HomeApi {
   chatofficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
   /** open the browser to log in to ChatOffice */
   chatofficeLogin(): Promise<void>
+  /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
+  aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
+  aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
   /** start a streaming AI turn for the home chat; chunks arrive via onAiStream (same ai:* channels the editors use) */
   aiStream(request: AiStreamWireRequest): Promise<void>
   /** abort an in-flight home chat turn */

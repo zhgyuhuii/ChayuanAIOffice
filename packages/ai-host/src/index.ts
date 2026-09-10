@@ -22,8 +22,15 @@ import {
   type VideoTaskRegistry,
   type VideoTaskRegistryDeps,
 } from './video-tasks'
+import { localToolInstall, localToolStart, localToolStatus } from './local-tools'
 
 export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
+export {
+  createLocalTools,
+  defaultLocalToolDeps,
+  localTools,
+  type LocalToolDeps,
+} from './local-tools'
 
 /**
  * Shared registration of the generic ai:* IPC channels — identical channel
@@ -40,7 +47,7 @@ export interface IpcMainLike {
 
 /** the sender half of an invoke event, as far as the stream loop cares */
 export interface StreamEventLike {
-  sender: { isDestroyed(): boolean; send(channel: string, chunk: unknown): void }
+  sender: { isDestroyed(): boolean; send(channel: string, ...data: unknown[]): void }
 }
 
 /** download an https/data URL → base64 + mime (SSRF-guarded, retried); null when unreachable */
@@ -132,6 +139,21 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     }
   })
 
+  // ── 本地与自建：一键安装/探测/启动（spec 表见 local-tools.ts） ──────────
+  ipcMain.handle('ai:local-tool-status', (_event, vendorId: string) =>
+    localToolStatus(String(vendorId)),
+  )
+  ipcMain.handle('ai:local-tool-install', (event, vendorId: string) => {
+    const sender = (event as StreamEventLike).sender
+    const onLine = (line: string) => {
+      if (!sender.isDestroyed()) sender.send('ai:local-tool-progress', String(vendorId), line)
+    }
+    return localToolInstall(String(vendorId), onLine)
+  })
+  ipcMain.handle('ai:local-tool-start', (_event, vendorId: string) =>
+    localToolStart(String(vendorId)),
+  )
+
   ipcMain.handle('ai:stream', async (event, wireRequest: AiStreamWireRequest) => {
     const streamEvent = event as StreamEventLike
     const { requestId, settings: selection } = wireRequest
@@ -212,11 +234,18 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     'ai:media-generate',
     async (
       _event,
-      req: { profileId?: string; modelId?: string; prompt: string; params?: Record<string, unknown> },
+      req: {
+        profileId?: string
+        modelId?: string
+        prompt: string
+        params?: Record<string, unknown>
+      },
     ): Promise<{ images?: { dataUrl: string }[]; error?: string }> => {
       try {
         const model =
-          req.profileId && req.modelId ? { profileId: req.profileId, modelId: req.modelId } : undefined
+          req.profileId && req.modelId
+            ? { profileId: req.profileId, modelId: req.modelId }
+            : undefined
         const r = await runtime.generateImage({
           prompt: String(req.prompt ?? ''),
           ...(req.params ? { params: req.params } : {}),
@@ -309,8 +338,17 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     })
     ipcMain.handle(
       'ai:video-submit',
-      (_event, req: { profileId: string; modelId: string; label?: string; prompt: string; params?: Record<string, unknown>; imageUrl?: string }) =>
-        videoRegistry!.submit(req),
+      (
+        _event,
+        req: {
+          profileId: string
+          modelId: string
+          label?: string
+          prompt: string
+          params?: Record<string, unknown>
+          imageUrl?: string
+        },
+      ) => videoRegistry!.submit(req),
     )
     ipcMain.handle('ai:video-tasks', () => videoRegistry!.list())
     ipcMain.handle('ai:video-cancel', (_event, id: string) => videoRegistry!.cancel(String(id)))

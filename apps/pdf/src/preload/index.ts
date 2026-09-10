@@ -93,6 +93,18 @@ const api: PdfApi = {
   setAiCurrentModel: (selection) => ipcRenderer.invoke(AI_CHANNELS.setCurrentModel, selection),
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
   aiChatOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
+  aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
+  aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
+    if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
+    const ch = (_e: Electron.IpcRendererEvent, vid: string, line: string) => {
+      if (vid === vendorId) onLine(line)
+    }
+    ipcRenderer.on('ai:local-tool-progress', ch)
+    return ipcRenderer
+      .invoke('ai:local-tool-install', vendorId)
+      .finally(() => ipcRenderer.removeListener('ai:local-tool-progress', ch))
+  },
+  aiLocalToolStart: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-start', vendorId),
   chatofficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chatofficeStatus, withEmail),
   aiStream: (request) => ipcRenderer.invoke(AI_CHANNELS.stream, request),
   aiStreamCancel: (requestId) => ipcRenderer.invoke(AI_CHANNELS.streamCancel, requestId),

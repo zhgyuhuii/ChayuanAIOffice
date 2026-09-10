@@ -8,4 +8,7 @@ export const pdfModelBridge: ModelSettingsBridge = {
   discoverModels: (target) => window.pdfApi.aiDiscoverModels(target),
   chatofficeStatus: (withEmail) => window.pdfApi.chatofficeStatus(withEmail),
   chatofficeLogin: () => window.pdfApi.aiChatOfficeLogin(),
+  localToolStatus: (vendorId) => window.pdfApi.aiLocalToolStatus(vendorId),
+  localToolInstall: (vendorId, onLine) => window.pdfApi.aiLocalToolInstall(vendorId, onLine),
+  localToolStart: (vendorId) => window.pdfApi.aiLocalToolStart(vendorId),
 }

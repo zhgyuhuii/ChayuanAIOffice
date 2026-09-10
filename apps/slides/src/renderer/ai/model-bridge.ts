@@ -8,4 +8,7 @@ export const slidesModelBridge: ModelSettingsBridge = {
   discoverModels: (target) => window.slidesApi.aiDiscoverModels(target),
   chatofficeStatus: (withEmail) => window.slidesApi.aiChatOfficeStatus(withEmail),
   chatofficeLogin: () => window.slidesApi.aiChatOfficeLogin(),
+  localToolStatus: (vendorId) => window.slidesApi.aiLocalToolStatus(vendorId),
+  localToolInstall: (vendorId, onLine) => window.slidesApi.aiLocalToolInstall(vendorId, onLine),
+  localToolStart: (vendorId) => window.slidesApi.aiLocalToolStart(vendorId),
 }

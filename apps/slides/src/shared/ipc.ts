@@ -17,6 +17,8 @@ import type {
   AiStreamChunk,
   DiscoveryTarget,
   ChatOfficeAccountStatus,
+  LocalToolOpResult,
+  LocalToolStatus,
 } from '@chatoffice/ai-provider'
 
 export type { SlideComment, SectionInfo } from '@chatoffice/pptx-engine'
@@ -1296,7 +1298,6 @@ export type MenuCommand =
   | 'copy'
   | 'paste'
 
-
 /** Renderer view of one main-process video task (ai-host video-tasks) */
 export interface VideoTaskInfo {
   id: string
@@ -1712,13 +1713,19 @@ export interface SlidesApi {
    *  shows the cost-confirmation dialog (session-skippable), runs the media job, and
    *  returns the downloaded bytes (addMedia-ready). */
   /** AI read_url: fetch a public web page and extract title + body text */
-  readUrl: (url: string) => Promise<{ url: string; title: string; text: string; truncated: boolean } | { error: string }>
+  readUrl: (
+    url: string,
+  ) => Promise<{ url: string; title: string; text: string; truncated: boolean } | { error: string }>
   generateVideo: (op: {
     prompt: string
     imageUrl?: string
     aspectRatio?: string
     durationSeconds?: number
-  }) => Promise<{ bytes: string; ext: string; url: string; model: string; vendorId: string } | { cancelled: true; reason?: string } | { error: string }>
+  }) => Promise<
+    | { bytes: string; ext: string; url: string; model: string; vendorId: string }
+    | { cancelled: true; reason?: string }
+    | { error: string }
+  >
   /** Roll the deck back to an AI rollback point; returns the restored full RenderSlide array, null when the id is unknown */
   aiSnapshotRestore: (id: number) => Promise<RenderSlide[] | null>
   /** Undo/redo (main-process snapshot history): returns the restored full RenderSlide array, null when nothing to undo */
@@ -1798,6 +1805,10 @@ export interface SlidesApi {
   aiChatOfficeStatus: (withEmail?: boolean) => Promise<ChatOfficeAccountStatus>
   /** Open the browser to log into ChatOffice (fire-and-forget; aiChatOfficeStatus turns logged-in once done) */
   aiChatOfficeLogin: () => Promise<void>
+  /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
+  aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
+  aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
   /** Record a run that ended without a usable reply, for post-mortem (fire-and-forget, never throws) */
   aiLogRunFailure: (entry: AiRunFailure) => Promise<void>
   webSearch: (
@@ -1854,7 +1865,12 @@ export interface SlidesApi {
     }[]
     method?: string
     error?: string
-    attempts?: { backend: string; status: 'skipped' | 'ok' | 'error'; detail?: string; count?: number }[]
+    attempts?: {
+      backend: string
+      status: 'skipped' | 'ok' | 'error'
+      detail?: string
+      count?: number
+    }[]
   }>
   remoteImage: (url: string) => Promise<{ base64: string; mime: string } | null>
   /** enabled image/video-generation models + param specs (insert-media dialog picker) */

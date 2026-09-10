@@ -786,6 +786,36 @@
   gap: 3px;
 }
 
+/* 本地与自建：安装/运行状态卡 */
+.msp-local-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 10px;
+  background: var(--color-bg-page, var(--surface, #fff));
+}
+.msp-local-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.msp-dot.is-off {
+  background: var(--color-text-tertiary, var(--text-tertiary, #909499));
+}
+.msp-local-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+}
+.msp-local-line {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* multi-field credentials (kling AK/SK) */
 .msp-key-fields {
   display: flex;

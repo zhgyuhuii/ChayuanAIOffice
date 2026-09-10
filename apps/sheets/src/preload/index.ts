@@ -485,6 +485,28 @@ const desktopApi: DesktopApi = {
   async aiChatOfficeLogin() {
     await ipcRenderer.invoke(IPC_CHANNELS.aiChatOfficeLogin)
   },
+  async aiLocalToolStatus(vendorId: string) {
+    return (await ipcRenderer.invoke(
+      IPC_CHANNELS.aiLocalToolStatus,
+      vendorId,
+    )) as import('@chatoffice/ai-provider').LocalToolStatus
+  },
+  async aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void) {
+    if (!onLine) return ipcRenderer.invoke(IPC_CHANNELS.aiLocalToolInstall, vendorId)
+    const listener = (_event: Electron.IpcRendererEvent, vid: string, line: string) => {
+      if (vid === vendorId) onLine(line)
+    }
+    ipcRenderer.on(IPC_CHANNELS.aiLocalToolProgress, listener)
+    return ipcRenderer
+      .invoke(IPC_CHANNELS.aiLocalToolInstall, vendorId)
+      .finally(() => ipcRenderer.removeListener(IPC_CHANNELS.aiLocalToolProgress, listener))
+  },
+  async aiLocalToolStart(vendorId: string) {
+    return (await ipcRenderer.invoke(
+      IPC_CHANNELS.aiLocalToolStart,
+      vendorId,
+    )) as import('@chatoffice/ai-provider').LocalToolOpResult
+  },
   async webSearch(query, maxResults) {
     if (typeof query !== 'string' || !query.trim() || query.length > 512) {
       throw new Error('Invalid search query.')
@@ -551,7 +573,11 @@ const desktopApi: DesktopApi = {
   },
   onVideoTasksChanged(handler) {
     const listener = (_event: unknown, payload: unknown): void => {
-      if (isRecord(payload) && typeof payload.id === 'string' && typeof payload.status === 'string') {
+      if (
+        isRecord(payload) &&
+        typeof payload.id === 'string' &&
+        typeof payload.status === 'string'
+      ) {
         handler(payload as { id: string; status: string })
       }
     }
@@ -2890,7 +2916,13 @@ function isCropSide(value: unknown): value is number {
 
 /** a:srcRect summarized as 0..1 fractions (engine sidecar summary of srcRect). */
 function parseCropFractions(input: unknown): NonNullable<WorkbookVisualObject['crop']> {
-  if (!isRecord(input) || !isCropSide(input.left) || !isCropSide(input.top) || !isCropSide(input.right) || !isCropSide(input.bottom)) {
+  if (
+    !isRecord(input) ||
+    !isCropSide(input.left) ||
+    !isCropSide(input.top) ||
+    !isCropSide(input.right) ||
+    !isCropSide(input.bottom)
+  ) {
     throw new Error('Invalid workbook image crop.')
   }
   return { left: input.left, top: input.top, right: input.right, bottom: input.bottom }
@@ -2911,7 +2943,12 @@ function parseSrcRect(input: unknown): NonNullable<WorkbookVisualObject['srcRect
 /** a:blip/a:lum — brightness/contrast in thousandths of a percent. */
 function parsePictureLum(input: unknown): NonNullable<WorkbookVisualObject['lum']> {
   const part = (value: unknown): number => {
-    if (typeof value !== 'number' || !Number.isInteger(value) || value < -100_000 || value > 100_000) {
+    if (
+      typeof value !== 'number' ||
+      !Number.isInteger(value) ||
+      value < -100_000 ||
+      value > 100_000
+    ) {
       throw new Error('Invalid workbook picture lum.')
     }
     return value
@@ -2993,8 +3030,7 @@ function parseVisualObject(input: unknown): WorkbookVisualObject {
   const customPath = input.customPath === undefined ? undefined : parseCustomPath(input.customPath)
   const echartMeta =
     input.echartMeta === undefined ? undefined : parseVisualEchartMeta(input.echartMeta)
-  const crop =
-    input.crop === undefined ? undefined : parseCropFractions(input.crop)
+  const crop = input.crop === undefined ? undefined : parseCropFractions(input.crop)
   const srcRect = input.srcRect === undefined ? undefined : parseSrcRect(input.srcRect)
   const lum = input.lum === undefined ? undefined : parsePictureLum(input.lum)
   const shadow = input.shadow === undefined ? undefined : parsePictureShadow(input.shadow)
@@ -3088,7 +3124,6 @@ function parseVisualObject(input: unknown): WorkbookVisualObject {
     ...(input.drawingIndex === undefined ? {} : { drawingIndex: input.drawingIndex }),
   }
 }
-
 
 function parseCustomPath(input: unknown): NonNullable<WorkbookVisualObject['customPath']> {
   if (

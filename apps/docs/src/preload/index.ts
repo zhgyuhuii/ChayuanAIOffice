@@ -130,6 +130,18 @@ const api: DesktopApi = {
   aiChatOfficeStatus: (withEmail?: boolean) =>
     ipcRenderer.invoke('ai:chatoffice-status', withEmail),
   aiChatOfficeLogin: () => ipcRenderer.invoke('ai:chatoffice-login'),
+  aiLocalToolStatus: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-status', vendorId),
+  aiLocalToolInstall: (vendorId: string, onLine?: (line: string) => void) => {
+    if (!onLine) return ipcRenderer.invoke('ai:local-tool-install', vendorId)
+    const ch = (_e: IpcRendererEvent, vid: string, line: string) => {
+      if (vid === vendorId) onLine(line)
+    }
+    ipcRenderer.on('ai:local-tool-progress', ch)
+    return ipcRenderer
+      .invoke('ai:local-tool-install', vendorId)
+      .finally(() => ipcRenderer.removeListener('ai:local-tool-progress', ch))
+  },
+  aiLocalToolStart: (vendorId: string) => ipcRenderer.invoke('ai:local-tool-start', vendorId),
   webSearch: (query: string, maxResults?: number) =>
     ipcRenderer.invoke('ai:web-search', query, maxResults),
   imageSearch: (query: string, maxResults?: number) =>

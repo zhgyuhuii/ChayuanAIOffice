@@ -8,4 +8,7 @@ export const docsModelBridge: ModelSettingsBridge = {
   discoverModels: (target) => window.desktop.aiDiscoverModels(target),
   chatofficeStatus: (withEmail) => window.desktop.aiChatOfficeStatus(withEmail),
   chatofficeLogin: () => window.desktop.aiChatOfficeLogin(),
+  localToolStatus: (vendorId) => window.desktop.aiLocalToolStatus(vendorId),
+  localToolInstall: (vendorId, onLine) => window.desktop.aiLocalToolInstall(vendorId, onLine),
+  localToolStart: (vendorId) => window.desktop.aiLocalToolStart(vendorId),
 }

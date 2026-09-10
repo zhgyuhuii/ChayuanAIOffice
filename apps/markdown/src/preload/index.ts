@@ -80,6 +80,18 @@ const api: MarkdownApi = {
   aiDiscoverModels: (target) => ipcRenderer.invoke(AI_CHANNELS.discoverModels, target),
   aiChatOfficeStatus: (withEmail) => ipcRenderer.invoke(AI_CHANNELS.chatofficeStatus, withEmail),
   aiChatOfficeLogin: () => ipcRenderer.invoke(AI_CHANNELS.chatofficeLogin),
+  aiLocalToolStatus: (vendorId) => ipcRenderer.invoke(AI_CHANNELS.localToolStatus, vendorId),
+  aiLocalToolInstall: (vendorId, onLine) => {
+    if (!onLine) return ipcRenderer.invoke(AI_CHANNELS.localToolInstall, vendorId)
+    const ch = (_e: Electron.IpcRendererEvent, vid: string, line: string) => {
+      if (vid === vendorId) onLine(line)
+    }
+    ipcRenderer.on(AI_CHANNELS.localToolProgress, ch)
+    return ipcRenderer
+      .invoke(AI_CHANNELS.localToolInstall, vendorId)
+      .finally(() => ipcRenderer.removeListener(AI_CHANNELS.localToolProgress, ch))
+  },
+  aiLocalToolStart: (vendorId) => ipcRenderer.invoke(AI_CHANNELS.localToolStart, vendorId),
   aiStream: (request) => ipcRenderer.invoke(AI_CHANNELS.stream, request),
   aiStreamCancel: (requestId) => ipcRenderer.invoke(AI_CHANNELS.streamCancel, requestId),
   onAiStream: (handler) => {

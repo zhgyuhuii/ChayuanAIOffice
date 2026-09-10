@@ -21,6 +21,8 @@ import type {
   AiStreamChunk,
   DiscoveryTarget,
   ChatOfficeAccountStatus,
+  LocalToolOpResult,
+  LocalToolStatus,
 } from '@chatoffice/ai-provider'
 
 const MAX_RANGE_CELLS = 100_000
@@ -2888,7 +2890,6 @@ export interface RecoveryPromptPayload {
   savedAtMs: number
 }
 
-
 /// Renderer view of one main-process video task (ai-host video-tasks)
 export interface VideoTaskInfo {
   id: string
@@ -3016,6 +3017,10 @@ export interface DesktopApi {
   /// Opens the browser to sign in to ChatOffice (fire-and-forget; aiChatOfficeStatus
   /// becomes signed-in on completion)
   aiChatOfficeLogin(): Promise<void>
+  /// 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡）
+  aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
+  aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
   /// Web search (main-process Serper/DuckDuckGo, shared with docs/slides)
   webSearch(query: string, maxResults?: number): Promise<WebSearchResult>
   /// Image search (same shared main-process channel as docs/slides)
@@ -3042,7 +3047,12 @@ export interface DesktopApi {
     }[]
     method?: string
     error?: string
-    attempts?: { backend: string; status: 'skipped' | 'ok' | 'error'; detail?: string; count?: number }[]
+    attempts?: {
+      backend: string
+      status: 'skipped' | 'ok' | 'error'
+      detail?: string
+      count?: number
+    }[]
   }>
   remoteImage(url: string): Promise<{ base64: string; mime: string } | null>
   /// Enabled image/video-generation models + param specs (insert-media dialog picker)

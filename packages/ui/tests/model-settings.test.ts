@@ -7,7 +7,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { normalizeSettingsLang, modelSettingsStrings } from '../src/model-settings-strings'
-import { ModelSettingsPage, type ModelSettingsBridge } from '../src/ModelSettingsPage'
+import {
+  ModelSettingsPage,
+  type LocalToolStatus,
+  type ModelSettingsBridge,
+} from '../src/ModelSettingsPage'
 import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
@@ -125,6 +129,88 @@ describe('ModelSettingsPage', () => {
     // landing stays the guide page — no chatoffice fallback pane anymore
     expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
     expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
+  })
+})
+
+describe('ModelSettingsPage local tools (本地与自建 一键安装)', () => {
+  const baseStatus: LocalToolStatus = {
+    vendorId: 'ollama',
+    supported: true,
+    installed: false,
+    running: false,
+    installable: true,
+    startable: true,
+  }
+
+  async function renderLocal(over: {
+    status: LocalToolStatus | ReturnType<typeof vi.fn>
+    install?: ModelSettingsBridge['localToolInstall']
+    start?: ModelSettingsBridge['localToolStart']
+  }) {
+    const statusFn =
+      typeof over.status === 'function'
+        ? (over.status as NonNullable<ModelSettingsBridge['localToolStatus']>)
+        : (vi.fn(async () => over.status) as NonNullable<ModelSettingsBridge['localToolStatus']>)
+    const b: ModelSettingsBridge = {
+      ...bridge,
+      localToolStatus: statusFn,
+      ...(over.install ? { localToolInstall: over.install } : {}),
+      ...(over.start ? { localToolStart: over.start } : {}),
+    }
+    await act(async () => {
+      root!.render(createElement(ModelSettingsPage, { bridge: b, onClose: () => {} }))
+    })
+    await act(async () => {
+      ;(document.body.querySelector('[data-vendor-row="ollama"]') as HTMLButtonElement).click()
+    })
+  }
+
+  it('renders nothing when the bridge has no local-tool methods (web)', async () => {
+    await render()
+    const ollama = document.body.querySelector('[data-vendor-row="ollama"]') as HTMLButtonElement
+    await act(async () => {
+      ollama.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
+    expect(document.body.querySelector('[data-local-tool]')).toBeNull()
+  })
+
+  it('missing binary → one-click install card', async () => {
+    await renderLocal({ status: baseStatus, install: vi.fn(async () => ({ ok: true })) })
+    expect(document.body.querySelector('[data-local-tool="ollama"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-local-tool-missing]')).toBeTruthy()
+    const btn = document.body.querySelector('[data-local-tool-install]') as HTMLButtonElement
+    expect(btn.textContent).toMatch(/一键安装|Install/)
+  })
+
+  it('install click runs the installer then re-probes to the running state', async () => {
+    const status = vi
+      .fn()
+      .mockResolvedValueOnce(baseStatus)
+      .mockResolvedValueOnce({ ...baseStatus, installed: true, running: true, version: '0.12.1' })
+    const install = vi.fn(async () => ({ ok: true, message: '已通过 Homebrew 安装 Ollama' }))
+    await renderLocal({ status, install })
+    await act(async () => {
+      ;(document.body.querySelector('[data-local-tool-install]') as HTMLButtonElement).click()
+    })
+    expect(install).toHaveBeenCalledWith('ollama', expect.any(Function))
+    expect(document.body.querySelector('[data-local-tool-running]')?.textContent).toContain(
+      '0.12.1',
+    )
+  })
+
+  it('installed-but-stopped offers 启动服务; starting re-probes to running', async () => {
+    const status = vi
+      .fn()
+      .mockResolvedValueOnce({ ...baseStatus, installed: true })
+      .mockResolvedValueOnce({ ...baseStatus, installed: true, running: true })
+    const start = vi.fn(async () => ({ ok: true, message: 'Ollama 服务已启动' }))
+    await renderLocal({ status, start })
+    expect(document.body.querySelector('[data-local-tool-installed]')).toBeTruthy()
+    await act(async () => {
+      ;(document.body.querySelector('[data-local-tool-start]') as HTMLButtonElement).click()
+    })
+    expect(start).toHaveBeenCalledWith('ollama')
+    expect(document.body.querySelector('[data-local-tool-running]')).toBeTruthy()
   })
 })
 
