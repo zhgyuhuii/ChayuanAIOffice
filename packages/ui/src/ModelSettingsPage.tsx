@@ -5,6 +5,10 @@
  * (vendor header with enable switch, URL/protocol/key fields, fetch/test/save
  * buttons, grouped model checklist with per-group toggles).
  *
+ * First entry lands on a guide page — supported providers as cards, China
+ * first then global; vendor forms and the ChatOffice sign-in card open on
+ * explicit selection from the directory (or a guide card).
+ *
  * Rendered through a portal onto document.body — the panel it opens from is
  * a positioned/transformed ancestor that would otherwise clip a fixed overlay.
  *
@@ -97,6 +101,35 @@ function matchesTagFilter(v: VendorCatalogEntry, f: TagFilter): boolean {
   }
 }
 
+/** 说明页卡片精选的常用厂商 —— 国内在前、国外在后；本地/聚合等其余
+ * 厂商不占卡片位，走左侧完整目录（左下角也可接任意 OpenAI 兼容服务）。 */
+const GUIDE_CN_VENDORS = [
+  'deepseek',
+  'zhipu',
+  'aliyun-bailian',
+  'moonshot',
+  'volcengine',
+  'minimax',
+  'baidu-qianfan',
+  'tencent-hunyuan',
+  'step-ai',
+  'siliconflow',
+  'modelscope',
+]
+
+const GUIDE_GLOBAL_VENDORS = [
+  'openai',
+  'anthropic',
+  'gemini',
+  'grok',
+  'azure-openai',
+  'mistral',
+  'perplexity',
+  'groq',
+  'github-models',
+  'openrouter',
+]
+
 export function ModelSettingsPage({
   bridge,
   onClose,
@@ -107,7 +140,8 @@ export function ModelSettingsPage({
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
   const [chatofficeAvailable, setChatOfficeAvailable] = useState(true)
-  const [selected, setSelected] = useState<string>('chatoffice')
+  /** '' = 说明页（初次进入的落地）；厂商 id = 该厂商的配置表单 */
+  const [selected, setSelected] = useState<string>('')
   const [search, setSearch] = useState('')
   /** 目录过滤（单选下拉）：全部 / 免费 / 需要 Key / 无需 Key / 免费额度 */
   const [tagFilter, setTagFilter] = useState<TagFilter>('all')
@@ -123,8 +157,6 @@ export function ModelSettingsPage({
   /** enabled-profile rows expanded to show their model sub-lists in the left pane */
   const [expandedVendors, setExpandedVendors] = useState<Set<string>>(new Set())
   const [chatoffice, setChatOffice] = useState<{ loggedIn: boolean; email?: string } | null>(null)
-  /** search services (Serper key): null draft = untouched; sentinel = stored key kept */
-  const [serperDraft, setSerperDraft] = useState<string | null>(null)
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
@@ -146,7 +178,6 @@ export function ModelSettingsPage({
     setMsg({ kind, text })
     window.setTimeout(() => setMsg(null), 4000)
   }
-
 
   // the entering hint fades on any interaction or after a while
   useEffect(() => {
@@ -252,19 +283,22 @@ export function ModelSettingsPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected, settings])
 
-  // web form: no chatoffice card — land on the first enabled profile instead
-  useEffect(() => {
-    if (!chatofficeAvailable && selected === 'chatoffice') {
-      const first = enabledProfiles.find((p) => p.id !== 'chatoffice')
-      setSelected(first?.id ?? 'openai')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatofficeAvailable, settings])
-
   const vendorName = (id: string): string => {
     const v = VENDOR_BY_ID.get(id)
     if (!v) return id
     return locale === 'zh' && v.nameZh ? v.nameZh : v.name
+  }
+
+  /** 徽标：需不需要 Key / 是否免费 —— 目录行与说明页卡片共用 */
+  const vendorTags = (id: string): Array<{ kind: string; label: string }> => {
+    const meta = VENDOR_BY_ID.get(id)
+    const tags: Array<{ kind: string; label: string }> = []
+    if (meta?.ollamaLike) tags.push({ kind: 'nokey', label: t.tagNoKey })
+    else if (meta?.keyUrl) tags.push({ kind: 'key', label: t.tagNeedsKey })
+    if (meta?.free === 'nokey' || meta?.free === 'freekey')
+      tags.push({ kind: 'free', label: t.tagFree })
+    else if (meta?.free === 'tier') tags.push({ kind: 'tier', label: t.tagFreeTier })
+    return tags
   }
 
   // ── fetch / test / save / disable ─────────────────────────────────────
@@ -321,24 +355,6 @@ export function ModelSettingsPage({
   const persist = async (next: AiSettingsV2) => {
     await bridge.saveSettings(next)
     setSettings(next)
-  }
-
-  /** 搜索服务（Serper key）：未触摸时发 KEEP_KEY 保住已存密钥，空值视为清除 */
-  const saveSerperKey = async () => {
-    if (!settings) return
-    const stored = settings.searchApiKeys?.serper
-    const value = serperDraft === null ? KEEP_KEY : serperDraft.trim() || (stored ? KEEP_KEY : '')
-    const next: AiSettingsV2 = {
-      ...settings,
-      searchApiKeys: { serper: value },
-    }
-    try {
-      await persist(next)
-      setSerperDraft(null)
-      flash('ok', t.searchSaved)
-    } catch (error) {
-      flash('err', errorText(error))
-    }
   }
 
   const sanitize = (next: AiSettingsV2): AiSettingsV2 => {
@@ -479,14 +495,7 @@ export function ModelSettingsPage({
   const VendorRow = ({ id, name, active }: { id: string; name: string; active?: boolean }) => {
     const profile = active ? profiles.find((p) => p.id === id) : undefined
     const expanded = expandedVendors.has(id)
-    // badges: 需不需要 Key / 是否免费 — from the vendor catalog
-    const vendorMeta = VENDOR_BY_ID.get(profile?.vendorId ?? id)
-    const tags: Array<{ kind: string; label: string }> = []
-    if (vendorMeta?.ollamaLike) tags.push({ kind: 'nokey', label: t.tagNoKey })
-    else if (vendorMeta?.keyUrl) tags.push({ kind: 'key', label: t.tagNeedsKey })
-    if (vendorMeta?.free === 'nokey' || vendorMeta?.free === 'freekey')
-      tags.push({ kind: 'free', label: t.tagFree })
-    else if (vendorMeta?.free === 'tier') tags.push({ kind: 'tier', label: t.tagFreeTier })
+    const tags = vendorTags(profile?.vendorId ?? id)
     return (
       <div
         className={`msp-vendor-wrap${selected === id ? ' is-selected' : ''}${active && expanded ? ' is-open' : ''}`}
@@ -799,10 +808,61 @@ export function ModelSettingsPage({
         </div>
       </aside>
 
-      {/* 右：配置表单 */}
+      {/* 右：配置表单（初次进入 = 说明页） */}
       <section className="msp-right" data-model-pane={selected}>
         <div className="msp-form">
-          {isChatOffice ? (
+          {selected === '' ? (
+            /* 说明页：支持的模型服务以卡片列出，国内在前、国外在后；
+             * 登录卡片与厂商表单只在左侧目录显式选中后出现 */
+            <div className="msp-guide-page" data-model-guide-page>
+              <div className="msp-guide-head">
+                <div className="msp-guide-title">{t.guideTitle}</div>
+                <p className="msp-note">{t.guideDesc}</p>
+              </div>
+              {[
+                { id: 'cn', label: t.guideCnTitle, ids: GUIDE_CN_VENDORS },
+                { id: 'global', label: t.guideGlobalTitle, ids: GUIDE_GLOBAL_VENDORS },
+              ].map((section) => (
+                <div key={section.id} className="msp-guide-section" data-guide-section={section.id}>
+                  <div className="msp-guide-section-title">{section.label}</div>
+                  <div className="msp-cards">
+                    {section.ids.map((id) => {
+                      if (!VENDOR_BY_ID.has(id)) return null
+                      const enabled = enabledProfiles.some((p) => (p.vendorId ?? p.id) === id)
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          className="msp-card"
+                          data-guide-card={id}
+                          title={t.guideCardHint}
+                          onClick={() => setSelected(id)}
+                        >
+                          <span className="msp-card-head">
+                            <VendorLogo vendorId={id} size={20} fallback={vendorName(id)} />
+                            <span className="msp-card-name">{vendorName(id)}</span>
+                            {enabled && (
+                              <span className="msp-card-on" data-guide-card-enabled={id}>
+                                {t.enabledBadge}
+                              </span>
+                            )}
+                          </span>
+                          <span className="msp-card-tags">
+                            {vendorTags(id).map((tag) => (
+                              <span key={tag.kind} className={`msp-tag is-${tag.kind}`}>
+                                {tag.label}
+                              </span>
+                            ))}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+              <p className="msp-note">{t.guideMore}</p>
+            </div>
+          ) : isChatOffice ? (
             <>
               <div className="msp-pane-head">
                 <span className="msp-avatar is-big" aria-hidden>
@@ -1053,37 +1113,6 @@ export function ModelSettingsPage({
               <p className="msp-note">{t.pickerHint}</p>
             </>
           )}
-
-          {/* 搜索服务：插入媒体对话框网页图片搜索的 Serper 兜底层 */}
-          <div className="msp-search-services" data-search-services="">
-            <div className="msp-field">
-              <span className="msp-label">{t.searchSection}</span>
-              <p className="msp-note">{t.searchKeyHint}</p>
-              <div className="msp-key-row">
-                <input
-                  className="msp-input"
-                  data-search-serper=""
-                  type="password"
-                  placeholder={
-                    serperDraft === null && settings?.searchApiKeys?.serper === KEEP_KEY
-                      ? '••••••••'
-                      : 'SERPER_API_KEY'
-                  }
-                  value={serperDraft ?? ''}
-                  onChange={(e) => setSerperDraft(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="msp-btn"
-                  disabled={!settings || busy !== ''}
-                  onClick={() => void saveSerperKey()}
-                >
-                  {t.searchSave}
-                </button>
-              </div>
-              <span className="msp-note">{t.searchKeyEnv}</span>
-            </div>
-          </div>
         </div>
       </section>
     </div>
@@ -1094,7 +1123,8 @@ export function ModelSettingsPage({
   const pane = (
     <div className={variant === 'overlay' ? 'msp-dialog' : 'msp-inline-dialog'} data-model-settings>
       {header}
-      {nothingEnabled && (
+      {/* 说明页本身就是引导，横幅只在进入具体厂商表单时补充提示 */}
+      {nothingEnabled && selected !== '' && (
         <div className="msp-guide" data-model-guide>
           {t.noModelsGuide}
         </div>

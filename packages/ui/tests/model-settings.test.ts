@@ -8,7 +8,11 @@ import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { normalizeSettingsLang, modelSettingsStrings } from '../src/model-settings-strings'
 import { ModelSettingsPage, type ModelSettingsBridge } from '../src/ModelSettingsPage'
-import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+import {
+  CHATOFFICE_PRESET_MODELS,
+  defaultSettingsV2,
+  type AiSettingsV2,
+} from '@chatoffice/ai-provider'
 
 const bridge: ModelSettingsBridge = {
   getSettings: async () => defaultSettingsV2(),
@@ -46,7 +50,7 @@ describe('ModelSettingsPage', () => {
     expect(overlay!.parentElement).toBe(document.body)
   })
 
-  it('shows the chatoffice card + vendor catalog groups by default (desktop)', async () => {
+  it('lands on the supported-models guide page: China cards before global, no login card', async () => {
     await render()
     const groups = [...document.body.querySelectorAll('.msp-group-head')].map(
       (el) => el.textContent,
@@ -54,6 +58,35 @@ describe('ModelSettingsPage', () => {
     // enabled group first, then the four catalog groups
     expect(groups.length).toBeGreaterThanOrEqual(4)
     expect(groups[0]).toMatch(/已启用|Enabled/)
+    // landing = guide page, not the chatoffice sign-in card
+    expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
+    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
+    // 国内在前、国外在后
+    const sections = [...document.body.querySelectorAll('[data-guide-section]')].map((el) =>
+      el.getAttribute('data-guide-section'),
+    )
+    expect(sections).toEqual(['cn', 'global'])
+    expect(document.body.querySelector('[data-guide-card="deepseek"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-guide-card="openai"]')).toBeTruthy()
+
+    // a guide card opens that vendor's config form
+    await act(async () => {
+      ;(document.body.querySelector('[data-guide-card="zhipu"]') as HTMLButtonElement).click()
+    })
+    expect(document.body.querySelector('[data-model-key]')).toBeTruthy()
+  })
+
+  it('keeps the ChatOffice sign-in card behind an explicit catalog selection', async () => {
+    await render()
+    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
+    await act(async () => {
+      ;(document.body.querySelector('[data-vendor-row="chatoffice"]') as HTMLButtonElement).click()
+    })
+    expect(document.body.querySelector('.msp-chatoffice-row')).toBeTruthy()
+    // the preset model checklist (对话 · 9) rides the sign-in card
+    expect(document.body.querySelectorAll('[data-model-toggle]').length).toBe(
+      CHATOFFICE_PRESET_MODELS.length,
+    )
   })
 
   it('switches to a catalog vendor form with protocol select and key row', async () => {
@@ -97,8 +130,9 @@ describe('ModelSettingsPage', () => {
   it('hides the chatoffice card when capabilities report chatoffice unavailable (web form)', async () => {
     await render({ capabilities: async () => ({ chatofficeAvailable: false }) })
     expect(document.body.querySelector('[data-vendor-row="chatoffice"]')).toBeNull()
-    // falls back to a catalog vendor pane instead of the chatoffice card
-    expect(document.body.querySelector('.msp-switch')).toBeTruthy()
+    // landing stays the guide page — no chatoffice fallback pane anymore
+    expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
+    expect(document.body.querySelector('.msp-chatoffice-row')).toBeNull()
   })
 })
 
@@ -294,8 +328,15 @@ describe('no-default model settings (guidance, badges, free filter)', () => {
     })
   }
 
-  it('shows the guidance banner when nothing is enabled', async () => {
+  it('shows the guidance banner on vendor panes when nothing is enabled (guide page on landing)', async () => {
     await renderWith(defaultSettingsV2())
+    // landing = guide page, which is guidance enough — no banner on top of it
+    expect(document.body.querySelector('[data-model-guide-page]')).toBeTruthy()
+    expect(document.body.querySelector('[data-model-guide]')).toBeNull()
+    // selecting a vendor surfaces the banner above its form
+    await act(async () => {
+      ;(document.body.querySelector('[data-vendor-row="openai"]') as HTMLButtonElement).click()
+    })
     expect(document.body.querySelector('[data-model-guide]')).toBeTruthy()
     expect(document.body.querySelector('[data-vendor-enabled-empty]')).toBeTruthy()
   })

@@ -720,11 +720,79 @@
   padding: 1px 0;
 }
 
-/* 搜索服务（Serper key）区块 */
-.msp-search-services {
-  margin-top: 20px;
-  padding-top: 14px;
-  border-top: 1px solid var(--msp-border, #e3e3e3);
+/* 说明页（初次进入的默认落地）：支持的模型服务卡片 */
+.msp-guide-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msp-guide-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msp-guide-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.msp-guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.msp-guide-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary, var(--text-secondary, #606366));
+}
+.msp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 8px;
+}
+.msp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default, var(--border, #e3e6ea));
+  border-radius: 10px;
+  background: var(--color-bg-page, var(--surface, #fff));
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.msp-card:hover {
+  border-color: var(--accent, #2f6fdc);
+  background: var(--color-bg-hover-subtle, var(--bg-hover-subtle, #f0f2f5));
+}
+.msp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.msp-card-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msp-card-on {
+  flex-shrink: 0;
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--success, #107c41);
+}
+.msp-card-tags {
+  display: flex;
+  gap: 3px;
 }
 
 /* multi-field credentials (kling AK/SK) */

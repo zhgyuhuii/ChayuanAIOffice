@@ -15,6 +15,15 @@ const zh = {
   enabledEmpty: '还没有启用的厂商，在下方目录选择一个开始配置',
   noModelsGuide:
     '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 ChatOffice 直接使用内置模型。',
+  // 说明页（初次进入的落地）
+  guideTitle: '支持接入的模型服务',
+  guideDesc:
+    '点击任意卡片即可配置并启用对应服务；也可以登录 ChatOffice 直接使用内置模型（见左侧目录）。',
+  guideCnTitle: '国内常用模型',
+  guideGlobalTitle: '国外常用模型',
+  guideCardHint: '点击配置',
+  guideMore:
+    '更多服务见左侧完整目录：本地与自建（Ollama / LM Studio 等）、API 聚合（OpenRouter 等）；左下角「自定义供应商」可接入任意 OpenAI 兼容接口。',
   tagNeedsKey: '需 Key',
   tagNoKey: '无需 Key',
   tagFree: '免费',
@@ -135,12 +144,6 @@ const zh = {
   } as Record<string, string>,
   pickerHint:
     '勾选的模型会出现在 AI 面板的模型选择器中；对话模型可直接切换，生图模型用于绘画工具。',
-  searchSection: '搜索服务（插入媒体 · 网页图片）',
-  searchSerperKey: 'Serper Key',
-  searchKeyHint: '网页图片搜索后端按 chatoffice → Serper → Bing → Openverse 兜底；配置 Serper Key 可提升结果质量（不放 Key 也能搜）。',
-  searchKeyEnv: '环境变量 SERPER_API_KEY 仍作为后备。',
-  searchSave: '保存',
-  searchSaved: '已保存',
 }
 
 const en = {
@@ -154,6 +157,15 @@ const en = {
   enabledEmpty: 'No vendor enabled yet — pick one from the catalog below to start',
   noModelsGuide:
     'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChatOffice to use its built-in models.',
+  // guide landing (first entry)
+  guideTitle: 'Supported model providers',
+  guideDesc:
+    'Click any card to configure and enable that provider; you can also sign in to ChatOffice to use its built-in models (see the catalog on the left).',
+  guideCnTitle: 'Popular in China',
+  guideGlobalTitle: 'Popular worldwide',
+  guideCardHint: 'Click to configure',
+  guideMore:
+    'The full catalog on the left has more — local & self-hosted (Ollama, LM Studio…), API aggregators (OpenRouter…); "Custom provider" at the bottom left connects any OpenAI-compatible endpoint.',
   tagNeedsKey: 'Key needed',
   tagNoKey: 'No key',
   tagFree: 'Free',
@@ -252,7 +264,8 @@ const en = {
     'Output budget for one turn. Reasoning models spend part of it thinking, so an answer can come back empty once the budget runs out; raise this value if that happens.',
   defaultsNoneAvailable: 'No models available yet (enable them in Model Settings first)',
   defaultsKind: {
-    generation: 'Page-generation default model (writes per-page layout specs; use your strongest model)',
+    generation:
+      'Page-generation default model (writes per-page layout specs; use your strongest model)',
     qc: 'QC default model (visual review; must accept images)',
     chat: 'Default chat model',
     image: 'Default image model',
@@ -272,13 +285,6 @@ const en = {
   } as Record<string, string>,
   pickerHint:
     "Checked models appear in the AI panel's model picker; chat models switch instantly, image models drive the drawing tool.",
-  searchSection: 'Search services (Insert Media · web images)',
-  searchSerperKey: 'Serper Key',
-  searchKeyHint:
-    'Web image search falls back chatoffice → Serper → Bing → Openverse; a Serper key improves results (keyless search still works).',
-  searchKeyEnv: 'The SERPER_API_KEY environment variable remains a fallback.',
-  searchSave: 'Save',
-  searchSaved: 'Saved',
 }
 
 export type ModelSettingsStrings = typeof zh & typeof en
