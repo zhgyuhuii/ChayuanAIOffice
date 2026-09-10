@@ -60,6 +60,7 @@ import {
   USER_LOGIN_READY,
   usePanelTab,
   AiScopeQuote,
+  useAiPanelPrefs,
   type AiScopeQuoteData,
 } from '@chatoffice/ui'
 import {
@@ -435,6 +436,9 @@ export function AiPanel({
   ]
   const [tab, selectTab] = usePanelTab('aislides.aiTab', aiTabs)
   const [input, setInput] = useState('')
+  // Shared AI panel pref (Settings → General): the bespoke slides composer
+  // must honor it like the shared AiComposer does.
+  const { spellcheck } = useAiPanelPrefs()
   const [busy, setBusy] = useState(false)
   const [chat, setChat] = useState<ChatEntry[]>([])
   /** Past conversation restored from JSONL (read-only transcript, not fed to the model) */
@@ -2588,6 +2592,7 @@ export function AiPanel({
               ref={inputRef}
               value={input}
               dir="auto"
+              spellCheck={spellcheck}
               data-slides-ai-input="true"
               data-deck-undo-ready={!busy && !inputEditedSinceRunRef.current ? 'true' : 'false'}
               placeholder={t(deckEmpty ? 'aiInputPlaceholderGen' : 'aiInputPlaceholder')}

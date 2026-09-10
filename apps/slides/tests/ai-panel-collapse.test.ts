@@ -28,7 +28,12 @@ vi.mock('react-konva', () => {
 
 import { DockShell, type DockChrome } from '@chatoffice/ui'
 import { AiPanel } from '../src/renderer/ai/AiPanel'
+<<<<<<< HEAD
 import { defaultSettingsV2, type AiSettingsV2 } from '@chatoffice/ai-provider'
+=======
+import { AI_PROVIDERS, type AiSettings } from '../src/shared/ipc'
+import { applyAiPanelPrefs } from '@genoffice/ui'
+>>>>>>> c0415b6d (fix(slides): respect AI composer spellcheck pref (#287))
 
 const settings: AiSettingsV2 = defaultSettingsV2()
 
@@ -132,4 +137,36 @@ describe('AiPanel collapse (slides)', () => {
 
     cleanup()
   })
+<<<<<<< HEAD
+=======
+
+  it('expands back through the rail button', () => {
+    const onExpand = vi.fn()
+    const { container, cleanup } = mount(
+      createElement(AiPanel, panelProps({ open: false, onExpand })),
+    )
+
+    const rail = container.querySelector<HTMLButtonElement>('.ai-rail')
+    expect(rail).not.toBeNull()
+    act(() => rail!.click())
+    expect(onExpand).toHaveBeenCalledTimes(1)
+
+    cleanup()
+  })
+
+  it('reflects the shared spellcheck pref on the composer (issue #249)', () => {
+    applyAiPanelPrefs({ fontSize: 'default', customFontSize: 14, spellcheck: false })
+    try {
+      const { container, cleanup } = mount(createElement(AiPanel, panelProps()))
+      const textarea = container.querySelector<HTMLTextAreaElement>(
+        'textarea[data-slides-ai-input]',
+      )
+      expect(textarea).not.toBeNull()
+      expect(textarea!.spellcheck).toBe(false)
+      cleanup()
+    } finally {
+      applyAiPanelPrefs({ fontSize: 'default', customFontSize: 14, spellcheck: true })
+    }
+  })
+>>>>>>> c0415b6d (fix(slides): respect AI composer spellcheck pref (#287))
 })
