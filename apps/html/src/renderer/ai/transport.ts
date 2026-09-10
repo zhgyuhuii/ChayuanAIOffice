@@ -1,14 +1,14 @@
 import { createIpcTransport, type AgentTransport } from '@chatoffice/agent-core'
-import type { AiSettings } from '@chatoffice/ai-provider'
+import type { AiModelSelection } from '@chatoffice/ai-provider'
 import { t } from '../i18n/locale'
 
-/** The shared IPC transport wired to the html preload bridge (window.htmlApi). */
-export function createElectronTransport(getSettings: () => AiSettings): AgentTransport {
-  return createIpcTransport<AiSettings>({
+/** The shared IPC transport; the stream request carries only the model selection. */
+export function createElectronTransport(getSelection: () => AiModelSelection): AgentTransport {
+  return createIpcTransport<AiModelSelection>({
     onStream: (listener) => window.htmlApi.onAiStream(listener),
     start: (request) => window.htmlApi.aiStream(request),
     cancel: (requestId) => void window.htmlApi.aiStreamCancel(requestId),
-    getSettings,
+    getSettings: getSelection,
     unknownErrorText: () => t('aiUnknownError'),
     timeoutErrorText: () => t('aiTimeoutError'),
     creditsErrorText: () => t('aiCreditsExhausted'),

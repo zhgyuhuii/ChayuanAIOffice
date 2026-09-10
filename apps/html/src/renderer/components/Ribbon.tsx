@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  AiPanelToggle,
   RibbonCollapseButton,
   RibbonExpandButton,
   useDismissablePopover,
@@ -7,7 +8,6 @@ import {
 } from '@chatoffice/ui'
 import { useI18n } from '../i18n/locale'
 import type { StringKey } from '../i18n/locale'
-import { GensparkMark } from '../ai/AiPanel'
 import {
   IconChevronDown,
   IconCode,
@@ -62,8 +62,9 @@ interface Props {
   onToggleAutoSave: (on: boolean) => void
   view: ViewMode
   onView: (view: ViewMode) => void
-  aiOpen: boolean
-  onToggleAi: () => void
+  aiPanelAvailable: boolean
+  aiPanelOpen: boolean
+  onToggleAiPanel: () => void
   /** page-wide AI actions: send this instruction to the assistant right away */
   onAiPreset: (text: string) => void
   canvasMode: CanvasMode
@@ -120,6 +121,7 @@ export function Ribbon(p: Props) {
 
   return (
     <div className={`ribbon ${collapse.rootClass}`} ref={collapse.rootRef}>
+      {/* quick-access row above the toolbar (save / undo / redo / autosave), same as the docs QAT row */}
       <div className="ribbon-tabs">
         <button
           type="button"
@@ -174,6 +176,9 @@ export function Ribbon(p: Props) {
             onChange={(e) => p.onToggleAutoSave(e.target.checked)}
           />
         </label>
+        {p.aiPanelAvailable && (
+          <AiPanelToggle open={p.aiPanelOpen} onToggle={p.onToggleAiPanel} label={t('aiOpenAssistant')} />
+        )}
         <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />
       </div>
 
@@ -182,21 +187,7 @@ export function Ribbon(p: Props) {
           <div className="ribbon-group-items">
             <button
               type="button"
-              className={`rb-big ai-entry${p.aiOpen ? ' active' : ''}`}
-              data-tip={t('aiOpenAssistant')}
-              aria-pressed={p.aiOpen}
-              disabled={off}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={p.onToggleAi}
-            >
-              <span className="rb-big-icon">
-                <GensparkMark size={26} />
-              </span>
-              <span>Genspark AI</span>
-            </button>
-            <button
-              type="button"
-              className="rb-big ai-entry"
+              className="rb-big"
               data-tip={t('aiRestyleBtn')}
               disabled={off}
               onMouseDown={(e) => e.preventDefault()}
@@ -212,7 +203,7 @@ export function Ribbon(p: Props) {
             <div className="rb-menu-wrap" ref={themeRef}>
               <button
                 type="button"
-                className={`rb-big ai-entry${themeOpen ? ' active' : ''}`}
+                className={`rb-big${themeOpen ? ' active' : ''}`}
                 data-tip={t('aiThemeBtn')}
                 aria-haspopup="menu"
                 aria-expanded={themeOpen}
@@ -248,7 +239,7 @@ export function Ribbon(p: Props) {
             </div>
             <button
               type="button"
-              className="rb-big ai-entry"
+              className="rb-big"
               data-tip={t('aiSummarizeBtn')}
               disabled={off}
               onMouseDown={(e) => e.preventDefault()}

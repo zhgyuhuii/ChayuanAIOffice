@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
+  DockShell,
   Dropdown,
   FindPanel,
   type FindFocusRequest,
   type AiScopeQuoteData,
+  isMacStandaloneWindow,
   useAutoSavePref,
   type FindPanelStrings,
   type FindTarget,
@@ -15,7 +17,7 @@ import { PreviewFrame, type PreviewFrameHandle } from './preview/PreviewFrame'
 import { instrumentForPreview } from './preview/instrument'
 import type { ComputedSnapshot, ElementRect, FromInspector } from './preview/inspector-protocol'
 import inspectorSource from './preview/inspector.js?raw'
-import { AiPanel, GensparkMark, type AiPreset, type HtmlAiDeps } from './ai/AiPanel'
+import { AiPanel, type AiPreset, type HtmlAiDeps } from './ai/AiPanel'
 import { AiAskPopover, type AnchorRect, type AskMode } from './components/AiAskPopover'
 import {
   EDIT_QUEUE_MAX,
@@ -1218,63 +1220,74 @@ export default function App() {
     <div
       className={`app${canvasMode === 'present' ? ` present${presentFull ? ' present-full' : ''}` : ''}`}
     >
-      <Ribbon
-        disabled={status !== 'ready'}
-        dirty={dirty}
-        onSave={() => void doSave('save')}
-        onFind={() => openFind(false)}
-        canUndo={historyState.undo}
-        canRedo={historyState.redo}
-        onUndo={() => {
-          editorRef.current?.undo()
-          editorRef.current?.focus()
+      <DockShell
+        className={`app-main${isMacStandaloneWindow() ? ' mac-standalone' : ''}`}
+        storageKey="aihtml.dock"
+        legacyWidthKey="html-ai-panel-width"
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        panelAvailable={status === 'ready'}
+        labels={{
+          panelTitle: t('aiPanelTitle'),
+          layoutMenu: t('aiDockLayoutTitle'),
+          dockLeft: t('aiDockLeft'),
+          dockRight: t('aiDockRight'),
+          dockBottom: t('aiDockBottom'),
+          float: t('aiDockFloat'),
+          maximize: t('aiDockMaximize'),
+          restore: t('aiDockRestore'),
+          collapse: t('aiCollapsePanel'),
         }}
-        onRedo={() => {
-          editorRef.current?.redo()
-          editorRef.current?.focus()
-        }}
-        autoSave={autoSave}
-        onToggleAutoSave={setAutoSave}
-        view={view}
-        onView={setView}
-        aiOpen={aiOpen}
-        onToggleAi={() => setAiOpen((v) => !v)}
-        onAiPreset={(text) => {
-          flushPending()
-          setAiOpen(true)
-          setAiPreset({ text, nonce: Date.now() })
-        }}
-        canvasMode={canvasMode}
-        onPresent={startPresent}
-      />
-
-      <div className="app-main">
-        <div className={`ai-dock${aiOpen ? '' : ' collapsed'}`}>
-          {!aiOpen && (
-            <button
-              className="ai-rail"
-              data-tip={t('aiOpenAssistant')}
-              aria-label={t('aiOpenAssistant')}
-              onClick={() => setAiOpen(true)}
-            >
-              <GensparkMark size={18} />
-            </button>
-          )}
-          {/* stays mounted while collapsed: an in-flight run, its snapshots and the loop context survive */}
+        renderPanel={(dockChrome) => (
           <AiPanel
             deps={aiDeps}
             filePath={path}
             preset={aiPreset}
+            dockChrome={dockChrome}
             editQueue={editQueue}
             onQueueEditInstruction={queueUpdate}
             onQueueRemove={queueRemove}
             onQueueClear={() => setEditQueue([])}
             onQueueFocus={queueFocus}
             onQueueConsume={queueConsume}
-            onCollapse={() => setAiOpen(false)}
           />
-        </div>
-        <div className="app-content">
+        )}
+      >
+        <div className="editor-col">
+          {/* ribbon inside the dock body: a left/right docked AI panel spans the
+              full window height, level with the ribbon's top edge */}
+          <Ribbon
+            disabled={status !== 'ready'}
+            dirty={dirty}
+            onSave={() => void doSave('save')}
+            onFind={() => openFind(false)}
+            canUndo={historyState.undo}
+            canRedo={historyState.redo}
+            onUndo={() => {
+              editorRef.current?.undo()
+              editorRef.current?.focus()
+            }}
+            onRedo={() => {
+              editorRef.current?.redo()
+              editorRef.current?.focus()
+            }}
+            autoSave={autoSave}
+            onToggleAutoSave={setAutoSave}
+            view={view}
+            onView={setView}
+            aiPanelAvailable={status === 'ready'}
+            aiPanelOpen={aiOpen}
+            onToggleAiPanel={() => setAiOpen((v) => !v)}
+            onAiPreset={(text) => {
+              flushPending()
+              setAiOpen(true)
+              setAiPreset({ text, nonce: Date.now() })
+            }}
+            canvasMode={canvasMode}
+            onPresent={startPresent}
+          />
+
+          <div className="app-content">
           {findTarget && (
             <FindPanel
               target={findTarget}
@@ -1448,8 +1461,9 @@ export default function App() {
               <span className="zoom-value">{Math.round(zoom)}%</span>
             </div>
           </footer>
+          </div>
         </div>
-      </div>
+      </DockShell>
       {askTarget && askMode && canvasMode !== 'present' && (
         <AiAskPopover
           key={askMode.kind === 'edit' ? askMode.qid : 'new'}

@@ -1,10 +1,14 @@
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import type { Lang } from '@chatoffice/i18n'
 import type {
-  AiSettings,
+  AiModelSelection,
+  AiSettingsV2,
   AiStreamChunk,
-  AiStreamRequest,
   ChatOfficeAccountStatus,
+  DiscoveryTarget,
+  AiModelEntry,
+  LocalToolStatus,
+  LocalToolOpResult,
 } from '@chatoffice/ai-provider'
 
 export const HTML_CHANNELS = {
@@ -119,7 +123,15 @@ export type SaveHtmlResult =
 /** AI channels are app-wide shared ipcMain handlers (shell registers via docs-main registerAiIpc); pass-through only */
 export const AI_CHANNELS = {
   getSettings: 'ai:get-settings',
-  gskStatus: 'ai:gsk-status',
+  setSettings: 'ai:set-settings',
+  setCurrentModel: 'ai:set-current-model',
+  discoverModels: 'ai:discover-models',
+  chatofficeStatus: 'ai:chatoffice-status',
+  chatofficeLogin: 'ai:chatoffice-login',
+  localToolStatus: 'ai:local-tool-status',
+  localToolInstall: 'ai:local-tool-install',
+  localToolStart: 'ai:local-tool-start',
+  localToolProgress: 'ai:local-tool-progress',
   stream: 'ai:stream',
   streamChunk: 'ai:stream-chunk',
   streamCancel: 'ai:stream-cancel',
@@ -245,10 +257,28 @@ export interface HtmlApi {
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void
-  getAiSettings(): Promise<AiSettings>
-  /** Genspark login state (shell-registered ai:gsk-status) — gates generate_image with the cloud-tools toggle */
-  aiGskStatus(): Promise<ChatOfficeAccountStatus>
-  aiStream(request: AiStreamRequest): Promise<void>
+  getAiSettings(): Promise<AiSettingsV2>
+  setAiSettings(view: AiSettingsV2): Promise<void>
+  setAiCurrentModel(selection: AiModelSelection): Promise<void>
+  aiDiscoverModels(target: DiscoveryTarget): Promise<{ models: AiModelEntry[]; error?: string }>
+  aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
+  aiChatOfficeLogin(): Promise<void>
+  /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
+  aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
+  aiLocalToolInstall(
+    vendorId: string,
+    onLine?: (line: string) => void,
+  ): Promise<LocalToolOpResult>
+  aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
+  /** the stream request carries only the model selection; the shared main-process handler resolves profile + secret */
+  aiStream(request: {
+    requestId: string
+    settings: AiModelSelection
+    system: string
+    messages: unknown[]
+    tools?: unknown[]
+    maxTokens?: number
+  }): Promise<void>
   aiStreamCancel(requestId: string): Promise<void>
   onAiStream(handler: (chunk: AiStreamChunk) => void): () => void
   /** Main-process web search (Serper/DuckDuckGo via the shared ai:web-search handler) */

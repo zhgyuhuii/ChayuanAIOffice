@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent, ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
 import type { AgentImage } from '@chatoffice/agent-core'
-import type { AiSettings } from '@chatoffice/ai-provider'
+import type { AiSettingsV2 } from '@chatoffice/ai-provider'
+import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
 import {
@@ -10,12 +11,17 @@ import {
   AiScopeQuote,
   AiTypingIndicator,
   Markdown,
+  ModelPickerButton,
+  ModelSettingsPage,
+  PanelTabs,
+  usePanelTab,
   type AiScopeQuoteData,
+  type DockChrome,
 } from '@chatoffice/ui'
-import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
-import sendEnterOn from '../assets/send-enter-on.png'
-import sendEnterOff from '../assets/send-enter-off.png'
-import sendStop from '../assets/send-stop.png'
+import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
+import { htmlModelBridge } from './model-bridge'
+import { AssistantTab } from './AssistantTab'
+import { IconPalette, IconSummarize, IconWand } from '../components/icons'
 import attachIcon from '../assets/attach-icon.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileExcelIcon from '../assets/file-excel.png'
@@ -158,27 +164,8 @@ function AttachmentList({
   )
 }
 
-const PANEL_WIDTH_KEY = 'html-ai-panel-width'
-const PANEL_WIDTH_DEFAULT = 360
-const PANEL_WIDTH_MIN = 280
 const MAX_SNAPSHOTS = 20
 const TOOL_OUTPUT_MAX_CHARS = 2000
-
-function clampPanelWidth(w: number): number {
-  // The viewport can be transiently tiny (a WebContentsView is 0×0 until the
-  // shell lays it out), so never let the ceiling drop below the minimum
-  const max = Math.max(PANEL_WIDTH_MIN, Math.min(720, Math.round(window.innerWidth * 0.6)))
-  return Math.min(Math.max(w, PANEL_WIDTH_MIN), max)
-}
-
-function loadPanelWidth(): number {
-  const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-  // static bounds only — clamping against the window here would bake a
-  // transiently small viewport into the restored preference
-  return Number.isFinite(saved) && saved > 0
-    ? Math.min(Math.max(saved, PANEL_WIDTH_MIN), 720)
-    : PANEL_WIDTH_DEFAULT
-}
 
 interface ToolActivity {
   name: string
@@ -259,27 +246,33 @@ export function AiPanel({
   filePath,
   preset,
   draft,
+  dockChrome,
   editQueue,
   onQueueEditInstruction,
   onQueueRemove,
   onQueueClear,
   onQueueFocus,
   onQueueConsume,
-  onCollapse,
 }: {
   deps: HtmlAiDeps
   filePath: string | null
   preset?: AiPreset | null
   draft?: AiDraft | null
+  /** shared DockShell header chrome (drag-to-dock + layout buttons) */
+  dockChrome?: DockChrome
   editQueue: EditQueueItem[]
   onQueueEditInstruction: (qid: string, instruction: string) => void
   onQueueRemove: (qid: string) => void
   onQueueClear: () => void
   onQueueFocus: (qid: string) => void
   onQueueConsume: (qids: string[]) => void
-  onCollapse: () => void
 }): ReactElement {
   const { lang, t } = useI18n()
+  const aiTabs = [
+    { id: 'chat', label: t('aiTabChat') },
+    { id: 'assistant', label: t('aiTabAssistant') },
+  ]
+  const [tab, selectTab] = usePanelTab('aihtml.aiTab', aiTabs)
   const [chat, setChat] = useState<ChatEntry[]>([])
   const [prompt, setPrompt] = useState('')
   const [busy, setBusy] = useState(false)
@@ -414,21 +407,22 @@ export function AiPanel({
     showAttachNotice(failures)
     return images
   }
-  // preferred = the user's chosen width (the only value persisted); panelWidth =
-  // what fits the current window. Deriving the display width from the preference
-  // means a transiently small window never permanently shrinks the panel.
-  const preferredWidthRef = useRef(loadPanelWidth())
-  const [panelWidth, setPanelWidth] = useState(() => clampPanelWidth(preferredWidthRef.current))
-  const [resizing, setResizing] = useState(false)
-  const asideRef = useRef<HTMLElement>(null)
-  const mountedRef = useRef(true)
-
+  // preferred = the user's chosen width (the only value persisted); the DockShell
+  // owns the width preference (migrated from the pre-DockShell key on first load)
+  const settingsRef = useRef<AiSettingsV2 | null>(null)
+  const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(() => defaultSettingsV2())
+  const [modelSettingsOpen, setModelSettingsOpen] = useState(false)
+  const refreshPanelSettings = async () => {
+    try {
+      setPanelSettings(await htmlModelBridge.getSettings())
+    } catch {
+      /* keep the last known settings */
+    }
+  }
   useEffect(() => {
-    const dock = asideRef.current?.closest('.ai-dock') as HTMLElement | null
-    dock?.style.setProperty('--ai-panel-width', `${panelWidth}px`)
-  }, [panelWidth])
-
-  const settingsRef = useRef<AiSettings | null>(null)
+    void refreshPanelSettings()
+  }, [])
+  const mountedRef = useRef(true)
   const langRef = useRef(lang)
   langRef.current = lang
   const depsRef = useRef(deps)
@@ -500,7 +494,8 @@ export function AiPanel({
   // The loop is built once; every mutable value goes through a ref getter
   const transportRef = useRef<ReturnType<typeof createElectronTransport> | null>(null)
   if (!transportRef.current) {
-    transportRef.current = createElectronTransport(() => settingsRef.current!)
+    // the request carries only the selection; the owning main process resolves profile + secret
+    transportRef.current = createElectronTransport(() => settingsRef.current!.currentModel!)
   }
 
   /**
@@ -978,57 +973,57 @@ export function AiPanel({
     setSnapshots((prev) => prev.filter((s) => s !== snapshot))
   }
 
-  // Re-derive the display width on window resize (max is 60% of the window);
-  // growing the window back restores the preferred width
-  useEffect(() => {
-    const onResize = (): void => setPanelWidth(clampPanelWidth(preferredWidthRef.current))
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  const resizeCleanupRef = useRef<(() => void) | null>(null)
-  useEffect(() => () => resizeCleanupRef.current?.(), [])
-
-  /** Drag the right edge to resize: the panel is flush with the window's left edge, so width = clientX */
-  const startResize = (e: ReactPointerEvent<HTMLDivElement>): void => {
-    e.preventDefault()
-    const resizer = e.currentTarget
-    setResizing(true)
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-    const onMove = (ev: PointerEvent): void => {
-      const w = clampPanelWidth(ev.clientX)
-      preferredWidthRef.current = w
-      setPanelWidth(w)
-    }
-    let done = false
-    const cleanup = (): void => {
-      if (done) return
-      done = true
-      resizeCleanupRef.current = null
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', cleanup)
-      window.removeEventListener('pointercancel', cleanup)
-      resizer.removeEventListener('lostpointercapture', cleanup)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-      setResizing(false)
-      localStorage.setItem(PANEL_WIDTH_KEY, String(Math.round(preferredWidthRef.current)))
-    }
-    resizeCleanupRef.current = cleanup
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', cleanup)
-    window.addEventListener('pointercancel', cleanup)
-    resizer.addEventListener('lostpointercapture', cleanup)
-    resizer.setPointerCapture(e.pointerId)
-  }
-
   const docEmpty = chat.length === 0 && isDocEmpty(deps.access.getText())
+
+  // 助手 tab: the page-wide one-click AI actions (same set as the ribbon's AI group);
+  // every item sends right away and flips back to the chat tab
+  const runAssist = (promptKey: StringKey): void => {
+    selectTab('chat')
+    if (loopRef.current?.busy) setPrompt(t(promptKey))
+    else send(t(promptKey))
+  }
+  const assistantItems = [
+    {
+      id: 'restyle',
+      label: t('aiRestyleBtn'),
+      desc: t('aiRestyleDesc'),
+      icon: <IconWand size={24} />,
+      run: () => runAssist('aiRestylePrompt'),
+    },
+    {
+      id: 'summarize',
+      label: t('aiSummarizeBtn'),
+      desc: t('aiSummarizeDesc'),
+      icon: <IconSummarize size={24} />,
+      disabled: docEmpty,
+      run: () => runAssist('aiSummarizePrompt'),
+    },
+    ...(
+      [
+        ['aiThemeMinimal', 'aiThemeMinimalDesc'],
+        ['aiThemeEditorial', 'aiThemeEditorialDesc'],
+        ['aiThemeTech', 'aiThemeTechDesc'],
+        ['aiThemePlayful', 'aiThemePlayfulDesc'],
+        ['aiThemeDark', 'aiThemeDarkDesc'],
+      ] as const
+    ).map(([labelKey, descKey]) => ({
+      id: `theme-${labelKey}`,
+      label: t(labelKey),
+      desc: t(descKey),
+      icon: <IconPalette size={24} />,
+      disabled: docEmpty,
+      run: () => {
+        selectTab('chat')
+        const instruction = t('aiThemePrompt', { direction: t(labelKey) })
+        if (loopRef.current?.busy) setPrompt(instruction)
+        else send(instruction)
+      },
+    })),
+  ]
 
   return (
     <aside
-      ref={asideRef}
-      className={`copilot${resizing ? ' ai-panel-resizing' : ''}${dragOver ? ' ai-panel-dragover' : ''}`}
+      className={`copilot${dragOver ? ' ai-panel-dragover' : ''}`}
       style={{ width: '100%' }}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
       onDragOver={(e) => {
@@ -1043,20 +1038,12 @@ export function AiPanel({
       }}
       onDrop={(e) => void onDrop(e)}
     >
-      <div
-        className="ai-panel-resizer"
-        onPointerDown={startResize}
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Genspark"
-      />
-      <header className="ai-panel-header">
-        <span className="ai-panel-title">
-          <GensparkMark size={22} />
-          Genspark
-        </span>
-        <div className="ai-panel-header-actions">
-          {chat.length > 0 && (
+      <PanelTabs
+        tabs={aiTabs}
+        activeId={tab}
+        onTabChange={selectTab}
+        actions={
+          tab === 'chat' && chat.length > 0 ? (
             <button
               className="ai-header-btn"
               onClick={() => {
@@ -1074,19 +1061,17 @@ export function AiPanel({
             >
               <IconNewChat />
             </button>
-          )}
-          <button
-            className="ai-header-btn"
-            onClick={onCollapse}
-            data-tip={t('aiCollapsePanel')}
-            aria-label={t('aiCollapsePanel')}
-          >
-            <IconCollapse />
-          </button>
-        </div>
-      </header>
-
-      <div className="ai-chat" ref={chatRef} onScroll={onChatScroll}>
+          ) : null
+        }
+        chromeActions={dockChrome?.buttons}
+        dragProps={dockChrome?.dragProps}
+      />
+      <div
+        className="ai-chat"
+        ref={chatRef}
+        onScroll={onChatScroll}
+        style={tab === 'chat' ? undefined : { display: 'none' }}
+      >
         {chat.length === 0 && (
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-title">
@@ -1266,7 +1251,7 @@ export function AiPanel({
         })}
       </div>
 
-      {snapshots.length > 0 && (
+      {tab === 'chat' && snapshots.length > 0 && (
         <div className="ai-versions">
           <div className="ai-versions-title">
             <IconClock />
@@ -1286,7 +1271,9 @@ export function AiPanel({
         </div>
       )}
 
-      {activeClarify && (
+      <AssistantTab items={assistantItems} hidden={tab !== 'assistant'} />
+
+      {tab === 'chat' && activeClarify && (
         <div className="ai-composer">
           <ClarifyCard
             questions={activeClarify}
@@ -1305,7 +1292,7 @@ export function AiPanel({
           />
         </div>
       )}
-      {activeBrief && !activeClarify && (
+      {tab === 'chat' && activeBrief && !activeClarify && (
         <div className="ai-composer">
           <BriefCard
             key={activeBrief.core_hook + activeBrief.sections.length}
@@ -1323,7 +1310,7 @@ export function AiPanel({
           />
         </div>
       )}
-      {activePartial && !activeClarify && !activeBrief && (
+      {tab === 'chat' && activePartial && !activeClarify && !activeBrief && (
         <div className="ai-composer">
           <div className="brief-card ai-partial-card" role="group" aria-label={t('aiPartialTitle')}>
             <div className="ai-partial-title">{t('aiPartialTitle')}</div>
@@ -1347,7 +1334,11 @@ export function AiPanel({
       )}
       <div
         className="ai-composer"
-        style={activeClarify || activeBrief || activePartial ? { display: 'none' } : undefined}
+        style={
+          tab !== 'chat' || activeClarify || activeBrief || activePartial
+            ? { display: 'none' }
+            : undefined
+        }
       >
         {chat.length === 0 && docEmpty && (
           <div className="ai-intent-bar">
@@ -1429,27 +1420,43 @@ export function AiPanel({
           sendLabel={t('aiSend')}
           stopLabel={t('aiStop')}
           iconOnly
-          sendIconEnabled={<img src={sendEnterOn} alt="" aria-hidden />}
-          sendIconDisabled={<img src={sendEnterOff} alt="" aria-hidden />}
-          stopIcon={<img src={sendStop} alt="" aria-hidden />}
           textareaRef={inputRef}
           onChange={setPrompt}
           onSend={() => send(prompt)}
           onStop={stop}
           onPasteFiles={(files) => void onPasteFiles(files)}
           footerStart={
-            <button
-              type="button"
-              className="ai-attach-btn"
-              onClick={() => void pickAttachments()}
-              data-tip={t('aiAttachTitle')}
-              aria-label={t('aiAttachTitle')}
-            >
-              <img src={attachIcon} alt="" aria-hidden />
-            </button>
+            <>
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void htmlModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
+              <button
+                type="button"
+                className="ai-attach-btn"
+                onClick={() => void pickAttachments()}
+                data-tip={t('aiAttachTitle')}
+                aria-label={t('aiAttachTitle')}
+              >
+                <img src={attachIcon} alt="" aria-hidden />
+              </button>
+            </>
           }
         />
       </div>
+      {modelSettingsOpen && (
+        <ModelSettingsPage
+          bridge={htmlModelBridge}
+          lang={lang}
+          onClose={() => {
+            setModelSettingsOpen(false)
+            void refreshPanelSettings()
+          }}
+        />
+      )}
     </aside>
   )
 }
@@ -1616,25 +1623,6 @@ function IconNewChat(): ReactElement {
   )
 }
 
-function IconCollapse(): ReactElement {
-  return (
-    <svg
-      width={15}
-      height={15}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-      aria-hidden
-    >
-      <rect x="1.5" y="2.5" width="13" height="11" rx="1" />
-      <path d="M5.5 2.5v11" />
-      <path d="M12.5 8H8.1M9.8 5.9 7.7 8l2.1 2.1" strokeWidth="1.3" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function IconClock(): ReactElement {
   return (
     <svg
@@ -1649,25 +1637,6 @@ function IconClock(): ReactElement {
     >
       <circle cx="8" cy="8" r="6" />
       <path d="M8 4.8V8l2.2 1.6" />
-    </svg>
-  )
-}
-
-/** Genspark brand mark, inline for crisp device-resolution rendering */
-export function GensparkMark({ size = 18 }: { size?: number }): React.JSX.Element {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 130 130.025"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M105.115 0H24.6428C11.0443 0 0 11.0686 0 24.6915V105.334C0 118.981 11.0199 130.025 24.6428 130.025H105.115C118.714 130.025 129.758 118.957 129.758 105.334V24.6915C129.758 11.0443 118.714 0 105.115 0ZM71.5201 35.2735C85.5078 33.1571 86.7729 31.9164 88.865 17.88C88.938 17.4421 89.3028 17.1259 89.7407 17.1259C90.1786 17.1259 90.5435 17.4421 90.6164 17.88C92.7328 31.8921 93.9735 33.1571 107.961 35.2735C108.399 35.3465 108.715 35.7114 108.715 36.1493C108.715 36.5871 108.399 36.952 107.961 37.025C93.9249 39.1414 92.7085 40.4064 90.5677 54.6131C90.5191 54.9537 90.2516 55.197 89.911 55.197C89.5704 55.197 89.3028 54.9537 89.2542 54.6131C87.1134 40.4064 85.5565 39.1658 71.4958 37.025C71.0579 36.952 70.7417 36.5871 70.7417 36.1493C70.7417 35.7114 71.0579 35.3465 71.4958 35.2735H71.5201ZM101.758 78.5261C101.758 78.8181 101.563 79.037 101.271 79.0856C92.3193 80.4236 91.5652 81.2264 90.2029 90.2759C90.1786 90.4948 89.9839 90.6408 89.7893 90.6408C89.5703 90.6408 89.4001 90.4948 89.3758 90.2759C88.0135 81.2507 87.0161 80.4479 78.0883 79.0856C77.7964 79.037 77.6017 78.7937 77.6017 78.5261C77.6017 78.2342 77.7964 78.0153 78.0883 77.9666C86.9918 76.6287 87.7703 75.8259 89.1326 66.898C89.1812 66.6061 89.4244 66.4115 89.692 66.4115C89.9839 66.4115 90.2028 66.6061 90.2515 66.898C91.5894 75.8259 92.3923 76.6043 101.296 77.9666C101.588 78.0153 101.782 78.2585 101.782 78.5261H101.758ZM16.5178 54.8077C16.5178 54.1023 17.0286 53.4941 17.7341 53.3968C40.1388 50.0154 42.1093 47.9963 45.4907 25.5672C45.588 24.8861 46.1961 24.3509 46.9016 24.3509C47.6071 24.3509 48.191 24.8617 48.3126 25.5672C51.694 47.9963 53.6887 50.0154 76.0691 53.3968C76.7503 53.4941 77.2855 54.1023 77.2855 54.8077C77.2855 55.5132 76.7746 56.1214 76.0691 56.2187C53.5914 59.6244 51.6696 61.6192 48.2639 84.3645C48.1909 84.8754 47.7287 85.2889 47.2179 85.2889C46.707 85.2889 46.2448 84.8997 46.1718 84.3645C42.7418 61.6435 40.2604 59.6244 17.7584 56.2187C17.0772 56.1214 16.542 55.5132 16.542 54.8077H16.5178ZM112.097 109.591C112.097 111.416 110.613 112.9 108.813 112.9H21.2614C19.4369 112.9 17.9774 111.416 17.9774 109.591V102.658C17.9774 100.834 19.4612 99.3497 21.2614 99.3497H108.813C110.637 99.3497 112.097 100.834 112.097 102.658V109.591Z"
-        fill="currentColor"
-      />
     </svg>
   )
 }

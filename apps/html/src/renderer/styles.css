@@ -330,18 +330,13 @@ html.chatoffice-popover-open .ribbon-tabs {
   margin: 0 -4px;
 }
 
-.rb-big:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.rb-big.ai-entry:hover:not(:disabled) {
+.rb-big:hover:not(:disabled) {
   background: var(--hover);
 }
 
-.rb-big.ai-entry.active {
-  background: var(--active-bg);
-  color: var(--text-primary);
+.rb-big:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .ai-feature-icon {
@@ -365,6 +360,16 @@ html.chatoffice-popover-open .ribbon-tabs {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ribbon + content stacked inside the dock body — a left/right docked AI panel
+   spans the full window height, level with the ribbon's top edge */
+.editor-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-width: 0;
   min-height: 0;
 }
@@ -540,133 +545,16 @@ html.chatoffice-popover-open .ribbon-tabs {
   height: 24px;
 }
 
-/* ── AI sidebar (aligned with docs/sheets panel language) ── */
-
-.ai-dock {
-  display: flex;
-  flex-shrink: 0;
-  min-height: 0;
-  width: var(--ai-panel-width, 360px);
-  overflow: hidden;
-  transition: width 180ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-dock.collapsed {
-  width: 34px;
-}
-
-/* while dragging the resizer, follow the pointer without easing */
-.ai-dock:has(.ai-panel-resizing) {
-  transition: none;
-}
-
-/* the panel stays mounted (chat history survives) but hidden while collapsed */
-.ai-dock.collapsed .copilot {
-  display: none;
-}
-
-/* the rail stretches to fill the dock while the width animates */
-.ai-dock .ai-rail {
-  flex: 1;
-  width: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ai-dock {
-    transition: none;
-  }
-}
-
-/* collapsed AI sidebar: thin rail on the left edge (same as docs) */
-.ai-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 34px;
-  padding: 12px 2px;
-  border: none;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.ai-rail:hover {
-  background: var(--hover);
-}
-
 .copilot {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 360px;
-  flex-shrink: 0;
+  flex: 1;
   min-height: 0;
   overflow: hidden;
-  /* the dock clips at its own width, so the divider must sit inside the 100% width */
-  box-sizing: border-box;
-  border-right: 1px solid var(--color-border-strong);
   background: var(--color-bg-page);
   font-family: var(--gs-font-sans);
   color: var(--color-text-primary);
-}
-
-/* drag handle on the panel's right edge — resize the panel horizontally */
-.ai-panel-resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: col-resize;
-  z-index: 20;
-  background: transparent;
-}
-
-/* while dragging: keep the col-resize cursor everywhere, no text selection */
-.ai-panel-resizing {
-  cursor: col-resize;
-  user-select: none;
-}
-
-.ai-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px 10px 14px;
-  border-bottom: 1px solid var(--color-border-default);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-text-primary);
-}
-
-.ai-panel-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-}
-
-/* Genspark brand logo (shared by the collapsed entry and the AI panel title) */
-.chatoffice-badge {
-  display: block;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
-
-.ai-panel-title .chatoffice-badge {
-  width: 18px;
-  height: 18px;
-}
-
-.ai-panel-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
 }
 
 .ai-header-btn {
@@ -688,6 +576,76 @@ html.chatoffice-popover-open .ribbon-tabs {
 .ai-header-btn:hover {
   background: var(--color-bg-subtle);
   color: var(--color-text-primary);
+}
+
+/* 助手 tab: one-click AI actions as a list (icon tile + name + description) */
+.ai-assistant {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-assist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-8);
+  background: var(--color-bg-page);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--gs-font-sans);
+}
+
+.ai-assist-item:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.ai-assist-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ai-assist-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-8);
+  background: color-mix(in srgb, var(--color-brand-secondary) 12%, transparent);
+  color: var(--color-brand-secondary);
+}
+
+.ai-assist-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.ai-assist-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-assist-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ai-assist-desc {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .ai-chat {
@@ -3322,7 +3280,9 @@ html.chatoffice-popover-open .ribbon-tabs {
 .app.present .ribbon-collapse-btn,
 .app.present .crumbs,
 .app.present .status-bar,
-.app.present .ai-dock {
+/* the AI panel stays mounted (in-flight runs survive) but invisible */
+.app.present .dockshell-panel,
+.app.present .dockshell-slot {
   display: none;
 }
 /* Fullscreen: the whole screen is the page; only the exit button floats */
