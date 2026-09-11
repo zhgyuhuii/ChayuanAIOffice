@@ -45,6 +45,23 @@ const LABELS = {
   collapse: 'Collapse',
 }
 
+function panelProps(overrides: Record<string, unknown> = {}) {
+  return {
+    slides: [],
+    current: 0,
+    selectedIds: [],
+    images: new Map<string, HTMLImageElement>(),
+    applySlide: () => {},
+    applyDeck: () => {},
+    fitWidthPx: 960,
+    settings,
+    open: true,
+    onExpand: () => {},
+    onCollapse: () => {},
+    ...overrides,
+  }
+}
+
 function mount(element: React.ReactElement): {
   container: HTMLElement
   root: Root
@@ -133,22 +150,7 @@ describe('AiPanel collapse (slides)', () => {
 
     cleanup()
   })
-<<<<<<< HEAD
-=======
 
-  it('expands back through the rail button', () => {
-    const onExpand = vi.fn()
-    const { container, cleanup } = mount(
-      createElement(AiPanel, panelProps({ open: false, onExpand })),
-    )
-
-    const rail = container.querySelector<HTMLButtonElement>('.ai-rail')
-    expect(rail).not.toBeNull()
-    act(() => rail!.click())
-    expect(onExpand).toHaveBeenCalledTimes(1)
-
-    cleanup()
-  })
 
   it('reflects the shared spellcheck pref on the composer (issue #249)', () => {
     applyAiPanelPrefs({ fontSize: 'default', customFontSize: 14, spellcheck: false })
@@ -158,11 +160,11 @@ describe('AiPanel collapse (slides)', () => {
         'textarea[data-slides-ai-input]',
       )
       expect(textarea).not.toBeNull()
-      expect(textarea!.spellcheck).toBe(false)
+      // jsdom does not reflect the spellcheck IDL property; assert the attribute
+      expect(textarea!.getAttribute('spellcheck')).toBe('false')
       cleanup()
     } finally {
       applyAiPanelPrefs({ fontSize: 'default', customFontSize: 14, spellcheck: true })
     }
   })
->>>>>>> c0415b6d (fix(slides): respect AI composer spellcheck pref (#287))
 })

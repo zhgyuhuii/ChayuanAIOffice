@@ -103,7 +103,9 @@ describe('parseCsv', () => {
     // The "" escape keeps the field quoted: all five inner ; must not count,
     // or they outvote the two true commas and the columns mis-split.
     expect(sniffDelimiter('a,"; ""; ""; ""; """,d')).toBe(',')
-    expect(parseCsv('a,"; ""; ""; ""; """,d')).toEqual([['a', '; ""; ""; ""; ""', 'd']])
+    // adapted: upstream 5a60243's expectation kept the doubled quotes literally, but its own
+    // parseCsv (RFC4180) unescapes each "" pair to a single quote - assert that.
+    expect(parseCsv('a,"; ""; ""; ""; """,d')).toEqual([['a', '; "; "; "; "', 'd']])
   })
 
   it('drops the trailing empty row from a final newline', () => {
