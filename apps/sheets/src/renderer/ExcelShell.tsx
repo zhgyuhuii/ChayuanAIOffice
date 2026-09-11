@@ -20,6 +20,7 @@ import {
   SaveIcon,
   UndoIcon,
 } from './ribbon-icons'
+import { RibbonMenuButton, useCompactWhenOverflow } from './ribbon-menu'
 import { ConvertMenuSelect } from './ConvertMenuSelect'
 
 import {
@@ -2059,6 +2060,9 @@ function Ribbon({
   readonly activeCell: { readonly row: number; readonly column: number }
 }): React.JSX.Element {
   const { t } = useI18n()
+  // WPS 宽度降级：数据处理组大钮整行放不下 → 一列两钮紧凑栅格
+  const processRowRef = useRef<HTMLDivElement>(null)
+  const processCompact = useCompactWhenOverflow(processRowRef)
   const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
   const [aiReplacePrompt, setAiReplacePrompt] = useState('')
   const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
@@ -4365,8 +4369,12 @@ function Ribbon({
       <RibbonGroup label={t('appGroupDataProcess')}>
         {/* WPS 数据处理组（对比清单 6-11）：填充/求和/排序/筛选/冻结/查找
             六枚上下结构大钮 + 清除（保留原有清除功能，复用同款大钮） */}
-        <div className="process-big-row">
-          <BigMenuTool
+        <div
+          ref={processRowRef}
+          className={`process-big-row${processCompact ? ' is-compact' : ''}`}
+        >
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appFillMenu')}
             tip={t('appFillMenu')}
             symbol="↓"
@@ -4412,7 +4420,8 @@ function Ribbon({
             ]}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appFnSum')}
             tip={t('appAutoSumTitle')}
             symbol="Σ"
@@ -4444,7 +4453,8 @@ function Ribbon({
             ]}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appSort')}
             tip={t('appSortSelectionTitle')}
             symbol="⇅"
@@ -4459,7 +4469,8 @@ function Ribbon({
             ]}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appFilter')}
             tip={t('appFilterToggleDetail')}
             symbol="▽"
@@ -4475,14 +4486,16 @@ function Ribbon({
             ]}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appFreezePanes')}
             tip={t('appFreezeTitle')}
             symbol="❄"
             options={freezeMenuOptions}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appFind')}
             tip={t('appFindTitle')}
             symbol="🔍"
@@ -4511,7 +4524,8 @@ function Ribbon({
             ]}
             onPick={onCommand}
           />
-          <BigMenuTool
+          <RibbonMenuButton
+            variant={processCompact ? 'compact' : 'big'}
             label={t('appClear')}
             tip={t('appClear')}
             symbol="⌫"
@@ -6857,52 +6871,6 @@ function CondFormatSelect({
 
 /// 数据处理组大钮（图标在上文字在下 + 下拉菜单），填充/求和/排序/筛选/
 /// 冻结/查找/清除共用。
-function BigMenuTool({
-  label,
-  tip,
-  symbol,
-  options,
-  onPick,
-}: {
-  readonly label: string
-  readonly tip: string
-  readonly symbol: string
-  readonly options: readonly MenuRowOption[]
-  readonly onPick: (value: string) => void
-}): React.JSX.Element {
-  const [open, setOpen] = useState(false)
-  const wrapRef = useRef<HTMLDivElement>(null)
-  useDismissablePopover(open, () => setOpen(false), { inside: () => [wrapRef.current] })
-  useEscapeClose(open, () => setOpen(false))
-  const pick = (value: string): void => {
-    setOpen(false)
-    onPick(value)
-  }
-  return (
-    <div ref={wrapRef} className="ribbon-tool large as-button" data-tip={tip}>
-      <span className="tool-icon-row">
-        <ToolSymbol symbol={symbol} />
-        <CaretIcon />
-      </span>
-      <span>
-        <strong>{label}</strong>
-      </span>
-      {open && (
-        <div className="menu-select-drop" role="listbox" aria-label={label}>
-          <MenuRows options={options} value="" onPick={pick} onClose={() => setOpen(false)} />
-        </div>
-      )}
-      <button
-        type="button"
-        className="cover-select"
-        aria-label={label}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-      />
-    </div>
-  )
-}
 /// MenuSelect variant whose trigger is a free-text input (Excel's font
 /// name/size boxes): Enter or clicking away commits the typed value, Esc
 /// reverts, the caret opens the preset list.

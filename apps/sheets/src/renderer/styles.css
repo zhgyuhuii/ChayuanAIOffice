@@ -6445,6 +6445,68 @@ textarea:focus {
   gap: 2px;
 }
 
+/* ── 统一菜单钮（ribbon-menu.tsx）：portal 面板 + 视口翻转定位 ── */
+/* portal 面板复用 .menu-select-drop 的行样式，但定位走 JS（inline
+   left/top），关掉 anchor 机制与内部滚动——子菜单 fixed 层不会再被
+   父面板的 max-height/overflow 裁剪，可无限级展开 */
+.menu-select-drop.is-portal {
+  position-anchor: none;
+  position-try-fallbacks: none;
+  position-visibility: visible;
+  max-height: none;
+  overflow: visible;
+}
+
+/* 数据处理组紧凑降级（WPS 机制）：大钮整行放不下 → 一列两钮
+   （填充+求和一列、排序+筛选一列……），图标自动变小，消灭横向滚动条 */
+.process-big-row.is-compact {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  gap: 2px 4px;
+  align-items: start;
+  justify-content: start;
+}
+
+.process-big-row.is-compact .menu-btn-compact {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  height: 27px;
+  min-width: 0;
+  gap: 5px;
+  padding: 0 6px;
+  text-align: left;
+}
+
+.process-big-row.is-compact .menu-btn-compact .tool-icon-row {
+  align-self: center;
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.process-big-row.is-compact .menu-btn-compact .tool-symbol {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  font-size: 15px;
+}
+
+.process-big-row.is-compact .menu-btn-compact .tool-symbol svg {
+  width: 18px;
+  height: 18px;
+}
+
+.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover .tool-icon-row {
+  background: transparent;
+}
+
+.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover {
+  background: var(--ribbon-hover);
+}
+
 /* BigMenuTool 内部再放一枚无形 cover-select 触发整块按钮 */
 .process-big-row .ribbon-tool.large > .cover-select,
 .style-wps-row .ribbon-tool.large > .cover-select {
