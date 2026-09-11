@@ -94,9 +94,13 @@ import { AnimPreviewOverlay } from './components/AnimatedSlide'
 import { EquationDialog, HeaderFooterDialog, LinkDialog } from './components/InsertDialogs'
 import { CutoutDialog } from './components/CutoutDialog'
 import type { WordArtPreset } from '@chatoffice/ui'
-import { DockShell, type DockLayoutState, isMacStandaloneWindow,
+import {
+  DockShell,
+  type DockLayoutState,
+  isMacStandaloneWindow,
   useAutoSavePref,
-  type AiScopeQuoteData, } from '@chatoffice/ui'
+  type AiScopeQuoteData,
+} from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import {
   compressImageForDisplay,
@@ -1676,10 +1680,24 @@ export function App() {
       }
     }
     const flatInput = payload.data ?? null
+    // 图表库示例(代码页,无 spec)按 option 实际内容派生原生类型,而不是按
+    // 组 id——画廊把面积图/平滑折线都收在「折线」组下,按组路由会把它们全
+    // 插成普通折线(面积填充与平滑全丢,用户的「插入都有问题」即此)。
+    const optionText = payload.optionJson ?? ''
+    const optionSeriesType = /"type"\s*:\s*"(line|bar|pie|scatter|radar)"/.exec(optionText)?.[1]
+    const optionHasArea = /"areaStyle"/.test(optionText)
+    const optionSmooth = /"smooth"\s*:\s*true/.test(optionText)
+    const flatNativeBase = flatInput && !flatInput.columns.includes('层级1')
     const nativeKind = payload.spec
       ? NATIVE[payload.spec.type]
-      : flatInput && !flatInput.columns.includes('层级1')
-        ? NATIVE[payload.groupId]
+      : flatNativeBase
+        ? optionSeriesType === 'line'
+          ? optionHasArea
+            ? 'area'
+            : 'line'
+          : optionSeriesType
+            ? NATIVE[optionSeriesType]
+            : NATIVE[payload.groupId]
         : undefined
     const table = payload.spec?.data ?? null
     const flat =
@@ -1714,6 +1732,7 @@ export function App() {
           name: sr.name,
           values: sr.values.map((v) => (v === null ? 0 : v)),
         })),
+        ...(nativeKind === 'line' && optionSmooth ? { smooth: true } : {}),
         xPx: Math.round((slide.widthPx - w) / 2),
         yPx: Math.round((slide.heightPx - h) / 2),
         wPx: w,

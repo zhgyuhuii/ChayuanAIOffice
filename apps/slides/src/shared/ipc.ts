@@ -1064,6 +1064,8 @@ export interface AddChartOp {
   title?: string
   categories: string[]
   series: Array<{ name: string; values: number[] }>
+  /** Smoothed line curve (chart gallery's 基础平滑折线图; c:smooth, kind 'line' only) */
+  smooth?: boolean
   xPx: number
   yPx: number
   wPx: number

@@ -3402,6 +3402,7 @@ export function registerSlidesIpc(): void {
           ...(op.title ? { title: op.title } : {}),
           categories: op.categories,
           series: op.series,
+          ...(op.smooth === true ? { smooth: true } : {}),
           offset: { x: toEmu(op.xPx), y: toEmu(op.yPx), cx: toEmu(op.wPx), cy: toEmu(op.hPx) },
         },
       ],

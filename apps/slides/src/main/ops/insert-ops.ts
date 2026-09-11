@@ -350,6 +350,7 @@ register({
       offset: reqRect(op),
       ...(op.colorScheme ? { colorScheme: op.colorScheme as string[] } : {}),
       ...(typeof op.holeSizePct === 'number' ? { holeSizePct: op.holeSizePct } : {}),
+      ...(op.smooth === true ? { smooth: true } : {}),
     })
     if (!r) throw new GuidedError('op "addChart": the chart could not be inserted.')
     return { op, created: [r.elementId] }

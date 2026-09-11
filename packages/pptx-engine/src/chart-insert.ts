@@ -54,6 +54,8 @@ export interface NewChartOptions extends ChartStyleOptions {
   offset: EmuRect
   /** Bar direction (bar = horizontal bar chart; no insert entry point, used to preserve the direction when rebuilding an externally created chart during edits) */
   barDir?: 'col' | 'bar'
+  /** Smoothed line series (c:smooth val="1", kind 'line' only; the chart gallery's 基础平滑折线图 routes here) */
+  smooth?: boolean
   /** Per-point fills, [seriesIdx][pointIdx] (sparse; written as <c:dPt>, wins over the series color) */
   pointColors?: Array<Array<string | undefined> | undefined>
   /** Per-series solid colors (#RRGGBB, cycled); line-like series color the stroke, others the fill */
@@ -146,6 +148,8 @@ export function buildChartSpaceXml(opts: NewChartOptions, externalDataRid?: stri
       dPtXml(i) +
       catXml +
       `<c:val>${numCacheXml(ser.values.slice(0, rows), `Sheet1!$${col}$2:$${col}$${rows + 1}`)}</c:val>` +
+      // c:smooth is schema-valid only inside line/scatter/radar ser — bar ser must not get it
+      (opts.smooth === true && opts.kind === 'line' ? '<c:smooth val="1"/>' : '') +
       '</c:ser>'
     )
   }
