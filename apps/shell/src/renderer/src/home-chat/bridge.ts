@@ -27,7 +27,7 @@ export function createHomeChatBridge(getProjectId: () => string | null): HomeAge
     aiStream: (request) => window.chatOffice.aiStream(request),
     aiStreamCancel: (requestId) => window.chatOffice.aiStreamCancel(requestId),
     onAiStream: (listener) => window.chatOffice.onAiStream(listener),
-    createDocument: (request) => window.chatOffice.createDocument(request),
+    createDocument: (request) => window.chatOffice.createDocument({ ...request, dock: true }),
     readAttachment: (path, offset, maxChars) =>
       window.chatOffice.readAttachment(path, offset, maxChars),
     readAttachmentImage: async (path) => {
@@ -48,10 +48,10 @@ export function createHomeChatBridge(getProjectId: () => string | null): HomeAge
         return []
       }
     },
-    // the editors cannot receive a transcript yet (no handoff receiver on the
-    // docs side), so this opens the file and the conversation stays on Home
+    // P1 停靠契约: open_document docks the file into the Home right pane and
+    // the conversation stays right here, beside the document
     openWithHandoff: async (path: string, _transcript: AgentMessage[]) => {
-      await window.chatOffice.openPath(path)
+      await window.chatOffice.openPath(path, { dock: true })
     },
     getCurrentModel: () => {
       if (!cachedModel) throw new Error('no usable model configured')

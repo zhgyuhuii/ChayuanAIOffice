@@ -106,7 +106,9 @@ export interface HomeApi {
   /** star / unstar a file */
   toggleStar(path: string): Promise<void>
   /** open an existing file, routing to the right module by extension */
-  openPath(path: string): Promise<void>
+  /** options.dock (home-chat open_document): dock the file into the Home
+   *  right pane instead of opening a full tab (P1 契约) */
+  openPath(path: string, options?: { dock?: boolean }): Promise<void>
   /** file picker accepting every supported extension, then routes */
   browse(): Promise<void>
   /** open a docs window at its start screen */

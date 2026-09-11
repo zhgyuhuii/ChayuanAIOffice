@@ -338,6 +338,16 @@ export class TabManager {
     this.activateTab(id)
   }
 
+  /** focus an existing document tab in its current placement: a docked tab
+   *  becomes the pane's active dock (Home keeps the window); a full tab
+   *  takes over the window (P1 dock routing, home-chat open_document) */
+  activateDocumentTab(id: string): void {
+    const tab = this.tabs.find((t) => t.id === id)
+    if (!tab) return
+    if (tab.docked) this.activateDockedTab(id)
+    else this.activateTab(id)
+  }
+
   /** dock an editor into the Home right pane. Reuses an already-docked tab
    *  holding the same file — except when the caller wants a fresh seeded
    *  document (newBlank/aiContent), which always opens its own tab. */
@@ -518,6 +528,16 @@ export class TabManager {
       filePath: openPath,
     })
     this.activateTab(id)
+    return id
+  }
+
+  /** docked variant of openMarkdownTabWithContent: an untitled markdown dock
+   *  seeded with AI-authored content (home-chat create_document, P1 契约) */
+  dockMarkdownWithContent(content: string, suggestedName: string): string | null {
+    const id = this.dockEditorTab('markdown')
+    if (!id) return null
+    const tab = this.tabs.find((t) => t.id === id)
+    if (tab?.view) queueMarkdownAiContent(tab.view.webContents, content, suggestedName)
     return id
   }
 

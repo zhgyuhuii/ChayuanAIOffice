@@ -214,6 +214,9 @@ export interface CreateDocumentRequest {
   title: string
   /** docx/pdf: restricted HTML; md: Markdown source; html: a complete HTML document */
   content: string
+  /** home-chat callers: dock the result into the Home right pane instead of a
+   *  full tab (P1 契约 — the conversation stays beside the document) */
+  dock?: boolean
 }
 
 export interface CreateDocumentResult {

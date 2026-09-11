@@ -2977,8 +2977,75 @@ function openGeneratedDocument(filePath: string): boolean {
   return openDocumentPath(filePath)
 }
 
-function routeDocumentPath(filePath: string): boolean {
+function routeDocumentPath(filePath: string, dock = false): boolean {
   if (!existsSync(filePath) || !tabManager) return false
+  // P1 停靠契约 (dock=true, home-chat open_document): the file docks into the
+  // Home right pane. An already-open tab of any placement wins (its editor
+  // holds the live document); otherwise a docked tab is created per kind.
+  if (dock) {
+    if (DOCX_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findDocsTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('docs', { file: filePath, hidePanel: true })
+      }
+      return true
+    }
+    if (XLSX_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findSheetsTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('sheets', { file: filePath })
+      }
+      return true
+    }
+    if (PPTX_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findSlidesTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('slides', { file: filePath })
+      }
+      return true
+    }
+    if (PDF_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findPdfTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('pdf', { file: filePath })
+      }
+      return true
+    }
+    if (MD_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findMarkdownTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('markdown', { file: filePath })
+      }
+      return true
+    }
+    if (HTML_RE.test(filePath)) {
+      recordRecentFile(filePath)
+      const existing = tabManager.findHtmlTabByPath(filePath)
+      if (existing) {
+        tabManager.activateDocumentTab(existing)
+      } else {
+        tabManager.dockEditorTab('html', { file: filePath })
+      }
+      return true
+    }
+    notifyUnsupportedFile(filePath)
+    return false
+  }
   if (DOCX_RE.test(filePath)) {
     recordRecentFile(filePath)
     const existing = tabManager.findDocsTabByPath(filePath)
@@ -3303,13 +3370,14 @@ function registerHomeIpc(): void {
     if (typeof path === 'string') toggleStarredFile(path)
   })
 
-  ipcMain.handle(HOME_CHANNELS.openPath, (_event, path: unknown) => {
+  ipcMain.handle(HOME_CHANNELS.openPath, (_event, path: unknown, options?: { dock?: boolean }) => {
     if (typeof path !== 'string') return
+    const dock = options?.dock === true
     if (isRemoteUri(path)) {
       // materialize the object into the local cache, then open that copy; its
       // file-backed identity routes saves back to the bucket (consensus Q4)
       void openRemoteDocument(path)
-        .then((cachePath) => openDocumentPath(cachePath))
+        .then((cachePath) => routeDocumentPath(cachePath, dock))
         .catch((err: unknown) => {
           console.warn('[shell] remote open failed:', err)
           void dialog.showMessageBox({
@@ -3320,7 +3388,7 @@ function registerHomeIpc(): void {
         })
       return
     }
-    openDocumentPath(path)
+    routeDocumentPath(path, dock)
   })
 
   ipcMain.handle(HOME_CHANNELS.browse, async (event) => {
@@ -4143,6 +4211,13 @@ function registerDockIpc(): void {
   ipcMain.handle(DOCK_CHANNELS.open, (_event, kind: unknown, options: unknown) => {
     if (!tabManager || typeof kind !== 'string') return null
     const opts = (options ?? {}) as DockEditorOptions
+    // an existing file rides the extension router (dock placement, panel
+    // hidden for docs); kind is only the fallback for blank/seeded docks
+    if (opts.file && existsSync(opts.file)) {
+      const routed = routeDocumentPath(opts.file, true)
+      if (!routed) return null
+      return tabManager.dockedTabs().find((t) => t.filePath === opts.file) ?? null
+    }
     const id = tabManager.dockEditorTab(kind as DockKind, opts)
     if (!id) return null
     return tabManager.dockedTabs().find((t) => t.id === id) ?? null

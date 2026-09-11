@@ -4321,6 +4321,9 @@ interface DocsShellHooks {
   openUntitledPdf?(bytes: Uint8Array, suggestedName: string): boolean
   /** Shell-mode AI-created Markdown opens as an untitled tab carrying the content. */
   openUntitledMarkdown?(content: string, suggestedName: string): boolean
+  /** P1 停靠契约: home-chat create_document docks instead of opening a full tab */
+  openAiDockTab?(content: AiDocContent): boolean
+  openMarkdownDockTab?(content: string, suggestedName: string): boolean
 }
 let shellHooks: DocsShellHooks | null = null
 export function setDocsShellHooks(hooks: DocsShellHooks | null): void {
@@ -4370,6 +4373,7 @@ export async function createAiDocument(
   try {
     if (type === 'docx') {
       const payload: AiDocContent = { title, html: content }
+      if (request.dock && shellHooks?.openAiDockTab?.(payload)) return { ok: true }
       if (shellHooks?.openAiDocTab) shellHooks.openAiDocTab(payload)
       else {
         const win = createDocsWindow(undefined)
@@ -4391,6 +4395,7 @@ export async function createAiDocument(
       return { ok: true, path: filePath }
     }
     if (type === 'md') {
+      if (request.dock && shellHooks?.openMarkdownDockTab?.(content, title)) return { ok: true }
       if (shellHooks?.openUntitledMarkdown?.(content, title)) return { ok: true }
       const filePath = uniquePathIn(defaultSaveDir(), `${title}.md`)
       await writeFile(filePath, content, 'utf8')

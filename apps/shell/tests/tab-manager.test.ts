@@ -918,4 +918,28 @@ describe('Home right-pane docking (P1 契约)', () => {
       height: WINDOW_HEIGHT,
     })
   })
+
+  it('activateDocumentTab focuses a docked tab without leaving Home', () => {
+    manager.setDockRect(DOCK_RECT)
+    const a = manager.dockEditorTab('docs')
+    const b = manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' })
+    const bView = viewOf(createSheetsView)
+
+    manager.activateDocumentTab(b)
+    expect(manager.list().find((t) => t.id === 'home')?.active).toBe(true)
+    expect(manager.dockedTabs().find((t) => t.id === b)?.active).toBe(true)
+    expect(manager.dockedTabs().find((t) => t.id === a)?.active).toBe(false)
+    expect(bView.setVisible).toHaveBeenLastCalledWith(true)
+  })
+
+  it('activateDocumentTab hands the window to a full tab', () => {
+    manager.setDockRect(DOCK_RECT)
+    const dockId = manager.dockEditorTab('docs')
+    manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' })
+    const fullId = manager.openSheetsTab('/tmp/c.xlsx')
+
+    manager.activateDocumentTab(fullId)
+    expect(manager.list().find((t) => t.id === fullId)?.active).toBe(true)
+    expect(manager.list().find((t) => t.id === dockId)?.docked).toBe(true)
+  })
 })

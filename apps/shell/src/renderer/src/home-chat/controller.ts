@@ -86,12 +86,10 @@ export class HomeChatController {
               }
               if (card) messages[messages.length - 1] = { ...last, card }
             }
-            const handedOff = createdDoc
-              ? { docTitle: createdDoc.title }
-              : openedDoc
-                ? { docTitle: openedDoc.title, filePath: openedDoc.filePath }
-                : s.handedOff
-            return { ...s, messages, handedOff }
+            // P1 停靠契约: documents dock beside the conversation — it does
+            // NOT move into an editor tab's panel, so handedOff stays as-is
+            // (legacy sessions that really moved keep their read-only mark)
+            return { ...s, messages }
           })
           watch.pendingDocType = null
           watch.pendingDocTitle = null
