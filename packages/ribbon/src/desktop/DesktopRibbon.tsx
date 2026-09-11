@@ -259,6 +259,10 @@ function TabBody<TState, TServices>({
   const [stage, setStage] = useState(0)
   const stageRef = useRef(stage)
   stageRef.current = stage
+  // 实测档宽记忆：回退只在「上一档实测宽度放得下」时发生——相邻档宽度差
+  // 可远大于任何固定滞回，固定阈值回退会在窗口宽度落在「本档溢出、
+  // 上一档大富余」的区间时无限振荡（React 更新循环白屏）。
+  const stageWidths = useRef<number[]>([])
 
   const groups = tab.renderBody
     ? []
@@ -284,10 +288,14 @@ function TabBody<TState, TServices>({
       if (widths.length === 0) return
       const { collapseFromRight } = planCollapse(widths, widths, el.clientWidth)
       const target = 1 + collapseFromRight
-      if (target > stageRef.current) setStage(target)
-    } else if (stageRef.current > 0 && el.clientWidth - el.scrollWidth > 28) {
-      // one step back per pass; the re-measure keeps retreating while it fits
-      setStage(stageRef.current - 1)
+      if (target !== stageRef.current) setStage(target)
+    } else {
+      stageWidths.current[stageRef.current] = el.scrollWidth
+      const prev = stageRef.current - 1
+      const prevW = stageWidths.current[prev]
+      if (prev >= 0 && prevW !== undefined && prevW <= el.clientWidth) {
+        setStage(prev)
+      }
     }
   }
 

@@ -362,9 +362,11 @@ export function RibbonMenuButton({
 
 /// WPS 式多级宽度降级（用户 2026-09-11 裁定的完整阶梯）：
 /// 0=平铺大钮 → 1=一列两行 → 2=一列三行 → 3=分组名钮平铺 → 4=单个分组钮。
-/// 测量驱动迭代循环（与 packages/ribbon DesktopRibbon 引擎同款）：每轮渲染
-/// 实测滚动容器横向溢出，仍溢出升一级、富余 >28px 降一级（滞回防振荡），
-/// 直到收敛。stage 由调用方映射为形态。
+/// 测量驱动迭代循环：每轮渲染实测本档内容宽并记入 stageWidths，放不下
+/// 升一级；回退只在「上一档的实测宽度能放进当前可用宽」时发生——
+/// 相邻档宽度差可远大于任何固定滞回，固定阈值回退会在窗口宽度落在
+/// 「本档溢出、上一档大富余」的区间时无限振荡（React 更新循环崩掉整页，
+/// 2026-09-11 用户实证：先缩小再最大化白屏）。
 export function useRibbonDegradeStage(
   ref: React.RefObject<HTMLElement | null>,
   maxStage = 4,
@@ -372,6 +374,7 @@ export function useRibbonDegradeStage(
   const [stage, setStage] = useState(0)
   const stageRef = useRef(stage)
   stageRef.current = stage
+  const stageWidths = useRef<number[]>([])
   useLayoutEffect(() => {
     const el = ref.current
     if (!el || typeof ResizeObserver === 'undefined') return
@@ -390,10 +393,15 @@ export function useRibbonDegradeStage(
       }
       avail = Math.max(avail, 80)
       const natural = el.scrollWidth
+      stageWidths.current[stageRef.current] = natural
       if (natural > avail + 1) {
         if (stageRef.current < maxStage) setStage(stageRef.current + 1)
-      } else if (stageRef.current > 0 && avail - natural > 28) {
-        setStage(stageRef.current - 1)
+      } else {
+        const prev = stageRef.current - 1
+        const prevW = stageWidths.current[prev]
+        if (prev >= 0 && prevW !== undefined && prevW <= avail) {
+          setStage(prev)
+        }
       }
     }
     const ro = new ResizeObserver(measure)
