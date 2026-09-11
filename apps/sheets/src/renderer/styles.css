@@ -6557,25 +6557,52 @@ textarea:focus {
   background: var(--ribbon-hover);
 }
 
-/* 组合框钳宽（WPS 同款：窄带下字体框缩宽）——字体/数字组的主要宽度来源 */
-.degrade-grid .menu-select,
-.degrade-grid .menu-select-edit {
+/* 组合框钳宽（WPS 同款：窄带下字体框缩宽）——字体/数字组的主要宽度来源。
+   分级钳：三行档比两行档更紧；下拉包装（边框/颜色/对齐行距等）一并钳 */
+.ribbon-group.degrade-1 :is(.menu-select, .menu-select-edit, .rb-drop-wrap) {
   min-width: 0;
   max-width: 88px;
 }
 
-.degrade-grid .menu-select-edit input {
+.ribbon-group.degrade-1 .menu-select-edit input,
+.ribbon-group.degrade-1 :is(.rb-size-input, .rb-font-input) {
   width: 56px;
   min-width: 0;
 }
 
-.degrade-grid .num-row1 {
+.ribbon-group.degrade-1 :is(.border-menu, .color-split) {
+  max-width: 72px;
+  min-width: 0;
+}
+
+.ribbon-group.degrade-1 .num-row1 {
   min-width: 0;
   max-width: 96px;
 }
 
-.degrade-grid .num-row1 .menu-select {
-  max-width: 88px;
+.ribbon-group.degrade-2 :is(.menu-select, .menu-select-edit, .rb-drop-wrap) {
+  min-width: 0;
+  max-width: 60px;
+}
+
+.ribbon-group.degrade-2 .menu-select-edit input,
+.ribbon-group.degrade-2 :is(.rb-size-input, .rb-font-input) {
+  width: 36px;
+  min-width: 0;
+}
+
+.ribbon-group.degrade-2 :is(.border-menu, .color-split) {
+  max-width: 56px;
+  min-width: 0;
+}
+
+.ribbon-group.degrade-2 .num-row1 {
+  min-width: 0;
+  max-width: 72px;
+}
+
+.degrade-grid :is(.border-menu, .color-split) {
+  min-width: 0;
 }
 
 /* 画廊保持紧凑尺寸不参与压缩 */
@@ -6611,11 +6638,16 @@ textarea:focus {
   white-space: nowrap;
 }
 
-/* 名钮不可压缩：压住宽度会让文字重叠而 scrollWidth 谎报「放得下」，
-   stage 4（单分组钮）就永远轮不到 */
+/* 名钮不可压缩且按内容撑宽：压住宽度会让 nowrap 文字溢出按钮框互相重叠
+   （视觉=分组混乱），且 scrollWidth 谎报「放得下」让 stage 4 永远轮不到。
+   溢出时带级循环会正确推进到单分组钮 */
 .menu-btn-name,
 .ribbon-group-named {
   flex-shrink: 0;
+}
+
+.menu-btn-name {
+  width: max-content;
 }
 
 /* 名钮点击命中：cover-select 必须覆盖整钮（absolute inset:0），否则真实
