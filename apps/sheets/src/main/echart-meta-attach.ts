@@ -16,6 +16,11 @@ const manifestSchema = z.object({
   entries: z.array(z.object({ name: z.string() })),
 })
 
+/// readEntries 落盘为平铺的 entry-N.bin,返回 archive 名 → 磁盘路径的映射。
+const extractedSchema = z.object({
+  entries: z.array(z.object({ name: z.string(), path: z.string() })),
+})
+
 interface EchartSidecar {
   option: string
   code: string | null
@@ -55,17 +60,30 @@ export async function attachEchartMetadata(
 
   const outDir = await mkdtemp(join(tmpdir(), 'ck-echart-'))
   try {
-    await client.readEntries({
-      path: snapshotPath,
-      entries: [...drawings, ...rels, ...sidecars],
-      outputDir: outDir,
-    })
+    // readEntries 落盘的是平铺的 entry-N.bin(返回 name→path 映射),必须按
+    // 映射读——按包内相对路径 join(outDir, name) 永远读不到,echartMeta
+    // 也就从未挂回,保存重开后双击回显一直失效。
+    const extracted = extractedSchema.parse(
+      await client.readEntries({
+        path: snapshotPath,
+        entries: [...drawings, ...rels, ...sidecars],
+        outputDir: outDir,
+      }),
+    )
+    const partByPath = new Map(extracted.entries.map((entry) => [entry.name, entry.path]))
+    const readPart = async (name: string): Promise<string | null> => {
+      const path = partByPath.get(name)
+      if (path === undefined) return null
+      return readFile(path, 'utf8').catch(() => null)
+    }
 
     // sidecar 内容
     const sidecarByPath = new Map<string, EchartSidecar>()
     for (const path of sidecars) {
       try {
-        const parsed = JSON.parse(await readFile(join(outDir, path), 'utf8')) as EchartSidecar
+        const content = await readPart(path)
+        if (content === null) continue
+        const parsed = JSON.parse(content) as EchartSidecar
         if (parsed && typeof parsed.option === 'string') sidecarByPath.set(path, parsed)
       } catch {
         /* 损坏的 sidecar 忽略 */
@@ -76,10 +94,10 @@ export async function attachEchartMetadata(
     // 锚点 descr 指针 + r:embed → mediaPath 映射
     const metaByMediaPath = new Map<string, EchartSidecar>()
     for (const drawingPath of drawings) {
-      const xml = await readFile(join(outDir, drawingPath), 'utf8').catch(() => null)
+      const xml = await readPart(drawingPath)
       if (!xml || !xml.includes('chatoffice-echart:')) continue
       const relsPath = `xl/drawings/_rels/${drawingPath.split('/').pop()}.rels`
-      const relsXml = await readFile(join(outDir, relsPath), 'utf8').catch(() => null)
+      const relsXml = await readPart(relsPath)
       const relTarget = new Map<string, string>()
       if (relsXml) {
         for (const m of relsXml.matchAll(/<Relationship\b[^>]*>/g)) {
