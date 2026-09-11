@@ -4,6 +4,7 @@ import { useAutoSavePref } from '@chatoffice/ui'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
+import { TextSelection } from '@tiptap/pm/state'
 import { useI18n } from './i18n/locale'
 import {
   buildFrontmatterRaw,
@@ -15,10 +16,12 @@ import {
 } from './markdown/docText'
 import { buildExtensions } from './editor/extensions'
 import { tiptapFindTarget } from './editor/findTarget'
+import { collectOutline, type OutlineItem } from './editor/outline'
 import { buildSlashItems } from './editor/slashCommand'
 import type { SlashController, SlashMenuState } from './editor/slashCommand'
 import { setImageBaseDir } from './editor/localImage'
 import { Ribbon } from './components/Ribbon'
+import { OutlinePane } from './components/OutlinePane'
 import { SlashMenu, type SlashMenuHandle } from './components/SlashMenu'
 import { ToastHost } from './components/toast'
 import { TableMenu } from './components/TableMenu'
@@ -151,6 +154,8 @@ export default function App() {
   const [autoSave, setAutoSave] = useAutoSavePref('mdapp.autoSave', window.markdownApi)
   const [_showFind, setShowFind] = useState(false)
   const [_findFocus, setFindFocus] = useState<FindFocusRequest>({ field: 'find', nonce: 0 })
+  const [outlineOpen, setOutlineOpen] = useState(false)
+  const [outlineItems, setOutlineItems] = useState<OutlineItem[]>([])
   const [zoom, setZoom] = useState(100)
 
   const statusRef = useRef<LoadStatus>('loading')
@@ -207,8 +212,9 @@ export default function App() {
     autofocus: true,
     editorProps: { attributes: { class: 'doc-editor' } },
     // uiOnly transactions (toggle fold state) never reach the file — not dirty
-    onUpdate: ({ transaction }) => {
+    onUpdate: ({ editor: updated, transaction }) => {
       if (!transaction.getMeta('uiOnly')) markDirty()
+      setOutlineItems(collectOutline(updated))
     },
   })
   editorRef.current = editor
@@ -597,6 +603,14 @@ export default function App() {
     current.view.dispatch(current.state.tr.setSelection(selection).scrollIntoView())
     current.view.focus()
   }, [])
+  /** outline click: move the cursor into the heading and scroll it into view */
+  const jumpToOutline = useCallback((pos: number): void => {
+    const current = editorRef.current
+    if (!current) return
+    const selection = TextSelection.near(current.state.doc.resolve(pos))
+    current.view.dispatch(current.state.tr.setSelection(selection).scrollIntoView())
+    current.view.focus()
+  }, [])
   const askSendNow = useCallback((text: string): void => {
     if (dockedRef.current) return
     setAiOpen(true)
@@ -721,6 +735,9 @@ export default function App() {
             onInsertImage={insertImage}
             frontmatterOpen={fmOpen}
             onToggleFrontmatter={() => setFmOpen((v) => !v)}
+            outlineOpen={outlineOpen}
+            onToggleOutline={() => setOutlineOpen((v) => !v)}
+            hasOutline={outlineItems.length > 0}
             aiPanelAvailable={!dockedEditor && status === 'ready'}
             aiPanelOpen={aiOpen}
             onToggleAiPanel={() => setAiOpen((v) => !v)}
@@ -731,52 +748,55 @@ export default function App() {
               {t('loading')}
             </div>
           )}
-          <div className="app-content">
-            <div className="editor-scroll" ref={scrollRef}>
-              <div className="doc-page" style={{ zoom: zoom / 100 }}>
-                {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
-                <EditorContent editor={editor} />
+          <div className="editor-body-row">
+            {outlineOpen && <OutlinePane items={outlineItems} onJump={jumpToOutline} />}
+            <div className="app-content">
+              <div className="editor-scroll" ref={scrollRef}>
+                <div className="doc-page" style={{ zoom: zoom / 100 }}>
+                  {fmOpen && <FrontmatterPanel value={fmText} onChange={onFrontmatterChange} />}
+                  <EditorContent editor={editor} />
+                </div>
               </div>
+              <footer className="status-bar">
+                <div className="status-left">
+                  {fileName && <span className="status-item status-file">{fileName}</span>}
+                </div>
+                <div className="status-right">
+                  {statusText && (
+                    <span className={`status-save status-${saveState}`}>{statusText}</span>
+                  )}
+                  <button
+                    type="button"
+                    className="zoom-btn"
+                    aria-label={t('zoomOut')}
+                    onClick={zoomOut}
+                    disabled={zoom <= MIN_ZOOM}
+                  >
+                    −
+                  </button>
+                  <input
+                    className="zoom-slider"
+                    type="range"
+                    min={MIN_ZOOM}
+                    max={MAX_ZOOM}
+                    step={ZOOM_STEP}
+                    value={Math.round(zoom)}
+                    aria-label={t('zoom')}
+                    onChange={(event) => setZoom(Number(event.target.value))}
+                  />
+                  <button
+                    type="button"
+                    className="zoom-btn"
+                    aria-label={t('zoomIn')}
+                    onClick={zoomIn}
+                    disabled={zoom >= MAX_ZOOM}
+                  >
+                    +
+                  </button>
+                  <span className="zoom-value">{Math.round(zoom)}%</span>
+                </div>
+              </footer>
             </div>
-            <footer className="status-bar">
-              <div className="status-left">
-                {fileName && <span className="status-item status-file">{fileName}</span>}
-              </div>
-              <div className="status-right">
-                {statusText && (
-                  <span className={`status-save status-${saveState}`}>{statusText}</span>
-                )}
-                <button
-                  type="button"
-                  className="zoom-btn"
-                  aria-label={t('zoomOut')}
-                  onClick={zoomOut}
-                  disabled={zoom <= MIN_ZOOM}
-                >
-                  −
-                </button>
-                <input
-                  className="zoom-slider"
-                  type="range"
-                  min={MIN_ZOOM}
-                  max={MAX_ZOOM}
-                  step={ZOOM_STEP}
-                  value={Math.round(zoom)}
-                  aria-label={t('zoom')}
-                  onChange={(event) => setZoom(Number(event.target.value))}
-                />
-                <button
-                  type="button"
-                  className="zoom-btn"
-                  aria-label={t('zoomIn')}
-                  onClick={zoomIn}
-                  disabled={zoom >= MAX_ZOOM}
-                >
-                  +
-                </button>
-                <span className="zoom-value">{Math.round(zoom)}%</span>
-              </div>
-            </footer>
           </div>
         </div>
       </DockShell>

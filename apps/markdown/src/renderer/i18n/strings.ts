@@ -1,5 +1,7 @@
 export const strings = {
   zh: {
+    outline: "大纲",
+    outlineEmpty: "暂无标题",
     aiToolReadFm: "读取文档属性",
     aiToolSetFm: "更新文档属性",
     aiScopeSelection: "已选中 {words} 字",
@@ -199,6 +201,8 @@ export const strings = {
     aiToolReplaceDone: "已改写 {n} 个块",
   },
   en: {
+    outline: "Outline",
+    outlineEmpty: "No headings yet",
     aiToolReadFm: "Read document properties",
     aiToolSetFm: "Update document properties",
     aiScopeSelection: "Selected: {words} words",
@@ -398,6 +402,8 @@ export const strings = {
     aiToolReplaceDone: "Rewrote {n} block(s)",
   },
   ja: {
+    outline: "アウトライン",
+    outlineEmpty: "見出しがありません",
     aiToolReadFm: "ドキュメントのプロパティを読み取り",
     aiToolSetFm: "ドキュメントのプロパティを更新",
     aiScopeSelection: "選択中: {words} 文字",
@@ -597,6 +603,8 @@ export const strings = {
     aiToolReplaceDone: "{n} 個のブロックを書き換え",
   },
   ko: {
+    outline: "개요",
+    outlineEmpty: "제목이 없습니다",
     aiToolReadFm: "문서 속성 읽기",
     aiToolSetFm: "문서 속성 업데이트",
     aiScopeSelection: "선택됨: {words}자",
@@ -796,6 +804,8 @@ export const strings = {
     aiToolReplaceDone: "블록 {n}개 다시 씀",
   },
   fr: {
+    outline: "Signets",
+    outlineEmpty: "Aucun titre pour le moment",
     aiToolReadFm: "Lecture des propriétés du document",
     aiToolSetFm: "Mise à jour des propriétés du document",
     aiScopeSelection: "Sélection : {words} mots",
@@ -995,6 +1005,8 @@ export const strings = {
     aiToolReplaceDone: "{n} bloc(s) réécrit(s)",
   },
   de: {
+    outline: "Gliederung",
+    outlineEmpty: "Noch keine Überschriften",
     aiToolReadFm: "Dokumenteigenschaften lesen",
     aiToolSetFm: "Dokumenteigenschaften aktualisieren",
     aiScopeSelection: "Ausgewählt: {words} Wörter",
@@ -1194,6 +1206,8 @@ export const strings = {
     aiToolReplaceDone: "{n} Block/Blöcke umgeschrieben",
   },
   es: {
+    outline: "Esquema",
+    outlineEmpty: "Sin encabezados todavía",
     aiToolReadFm: "Leer propiedades del documento",
     aiToolSetFm: "Actualizar propiedades del documento",
     aiScopeSelection: "Seleccionado: {words} palabras",
@@ -1393,6 +1407,8 @@ export const strings = {
     aiToolReplaceDone: "{n} bloque(s) reescrito(s)",
   },
   th: {
+    outline: "สารบัญ",
+    outlineEmpty: "ยังไม่มีหัวข้อ",
     aiToolReadFm: "อ่านคุณสมบัติเอกสาร",
     aiToolSetFm: "อัปเดตคุณสมบัติเอกสาร",
     aiScopeSelection: "เลือกแล้ว {words} คำ",
@@ -1592,6 +1608,8 @@ export const strings = {
     aiToolReplaceDone: "เขียนใหม่แล้ว {n} บล็อก",
   },
   id: {
+    outline: "Kerangka",
+    outlineEmpty: "Belum ada judul",
     aiToolReadFm: "Baca properti dokumen",
     aiToolSetFm: "Perbarui properti dokumen",
     aiScopeSelection: "Terpilih: {words} kata",
@@ -1791,6 +1809,8 @@ export const strings = {
     aiToolReplaceDone: "{n} blok ditulis ulang",
   },
   ru: {
+    outline: "Оглавление",
+    outlineEmpty: "Заголовков пока нет",
     aiToolReadFm: "Чтение свойств документа",
     aiToolSetFm: "Обновление свойств документа",
     aiScopeSelection: "Выделено: {words} слов",
@@ -1990,6 +2010,8 @@ export const strings = {
     aiToolReplaceDone: "Переписано блоков: {n}",
   },
   ar: {
+    outline: "المخطط",
+    outlineEmpty: "لا توجد عناوين بعد",
     aiToolReadFm: "قراءة خصائص المستند",
     aiToolSetFm: "تحديث خصائص المستند",
     aiScopeSelection: "المحدد: {words} كلمة",
@@ -2189,6 +2211,8 @@ export const strings = {
     aiToolReplaceDone: "أعيدت كتابة {n} كتلة",
   },
   pt: {
+    outline: "Estrutura",
+    outlineEmpty: "Sem títulos ainda",
     aiToolReadFm: "Ler propriedades do documento",
     aiToolSetFm: "Atualizar propriedades do documento",
     aiScopeSelection: "Selecionado: {words} palavras",
@@ -2388,6 +2412,8 @@ export const strings = {
     aiToolReplaceDone: "{n} bloco(s) reescrito(s)",
   },
   it: {
+    outline: "Struttura",
+    outlineEmpty: "Nessuna intestazione",
     aiToolReadFm: "Lettura delle proprietà del documento",
     aiToolSetFm: "Aggiornamento delle proprietà del documento",
     aiScopeSelection: "Selezionato: {words} parole",
@@ -2587,6 +2613,8 @@ export const strings = {
     aiToolReplaceDone: "{n} blocchi riscritti",
   },
   pl: {
+    outline: "Konspekt",
+    outlineEmpty: "Brak nagłówków",
     aiToolReadFm: "Odczyt właściwości dokumentu",
     aiToolSetFm: "Aktualizacja właściwości dokumentu",
     aiScopeSelection: "Zaznaczono: {words} słów",
@@ -2786,6 +2814,8 @@ export const strings = {
     aiToolReplaceDone: "Przepisano bloki: {n}",
   },
   cs: {
+    outline: "Osnova",
+    outlineEmpty: "Zatím žádné nadpisy",
     aiToolReadFm: "Číst vlastnosti dokumentu",
     aiToolSetFm: "Aktualizovat vlastnosti dokumentu",
     aiScopeSelection: "Vybráno: {words} slov",
@@ -2985,6 +3015,8 @@ export const strings = {
     aiToolReplaceDone: "已改寫 {n} 個區塊",
   },
   nl: {
+    outline: "Overzicht",
+    outlineEmpty: "Nog geen koppen",
     aiToolReadFm: "Documenteigenschappen lezen",
     aiToolSetFm: "Documenteigenschappen bijwerken",
     aiScopeSelection: "Geselecteerd: {words} woorden",
@@ -3184,6 +3216,8 @@ export const strings = {
     aiToolReplaceDone: "{n} blok(ken) herschreven",
   },
   ms: {
+    outline: "Rangka",
+    outlineEmpty: "Tiada tajuk lagi",
     aiToolReadFm: "Baca sifat dokumen",
     aiToolSetFm: "Kemas kini sifat dokumen",
     aiScopeSelection: "Dipilih: {words} patah perkataan",
@@ -3383,6 +3417,8 @@ export const strings = {
     aiToolReplaceDone: "{n} blok ditulis semula",
   },
   he: {
+    outline: "מתאר",
+    outlineEmpty: "אין כותרות עדיין",
     aiToolReadFm: "קריאת מאפייני המסמך",
     aiToolSetFm: "עדכון מאפייני המסמך",
     aiScopeSelection: "נבחרו: {words} מילים",
@@ -3582,6 +3618,8 @@ export const strings = {
     aiToolReplaceDone: "שוכתבו {n} בלוקים",
   },
   hi: {
+    outline: "रूपरेखा",
+    outlineEmpty: "अभी कोई शीर्षक नहीं",
     aiToolReadFm: "दस्तावेज़ गुण पढ़ें",
     aiToolSetFm: "दस्तावेज़ गुण अपडेट करें",
     aiScopeSelection: "चयनित: {words} शब्द",
@@ -3781,6 +3819,8 @@ export const strings = {
     aiToolReplaceDone: "{n} ब्लॉक पुनः लिखे",
   },
   'zh-TW': {
+    outline: "大綱",
+    outlineEmpty: "尚無標題",
     aiToolReadFm: "讀取文件屬性",
     aiToolSetFm: "更新文件屬性",
     aiScopeSelection: "已選中 {words} 字",
