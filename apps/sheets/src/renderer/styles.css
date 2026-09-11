@@ -6478,80 +6478,63 @@ textarea:focus {
   overflow: visible;
 }
 
-/* 数据处理组紧凑降级（WPS 机制）：大钮整行放不下 → 一列两钮
-   （填充+求和一列、排序+筛选一列……），图标自动变小，消灭横向滚动条；
-   更窄 → 一列三钮（degrade-2）；再窄 → 子簇名钮平铺 / 单分组钮
-   （degrade-name，菜单进面板） */
-.process-big-row.is-compact,
-.process-big-row.degrade-2 {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 2px 4px;
-  align-items: start;
-  justify-content: start;
+/* ── 全带五阶梯降级（WPS 机制，全部组共用）：带级统一档挂在 .ribbon 根上 ──
+   0=平铺 1=紧凑(间距/图标缩小) 2=隐文字(WPS canHideText 全局语义)
+   3=各组收成分组名钮(面板=原布局) 4=全带唯一分组钮(面板分节收集)
+   stage 1/2 不重排组内部结构，只做全局收紧——收缩量由 stage 3 兜底 */
+
+.ribbon.degrade-1 .ribbon-group-content {
+  gap: 2px;
 }
 
-.process-big-row.is-compact {
-  grid-template-rows: repeat(2, auto);
+.ribbon.degrade-1 .ribbon-group {
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
-.process-big-row.degrade-2 {
-  grid-template-rows: repeat(3, auto);
+.ribbon.degrade-1 .ribbon-tool.large {
+  gap: 2px;
+  padding: 2px 4px 3px;
 }
 
-.process-big-row.is-compact .menu-btn-compact,
-.process-big-row.degrade-2 .menu-btn-compact {
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  height: 27px;
-  min-width: 0;
-  gap: 5px;
-  padding: 0 6px;
-  text-align: left;
-}
-
-.process-big-row.is-compact .menu-btn-compact .tool-icon-row,
-.process-big-row.degrade-2 .menu-btn-compact .tool-icon-row {
-  align-self: center;
-  flex: 0 0 auto;
-  min-height: 0;
-  padding: 0;
-  margin: 0;
-}
-
-.process-big-row.is-compact .menu-btn-compact .tool-symbol,
-.process-big-row.degrade-2 .menu-btn-compact .tool-symbol {
+.ribbon.degrade-1 .ribbon-tool.large .tool-symbol {
   flex: 0 0 18px;
   width: 18px;
   height: 18px;
   font-size: 15px;
 }
 
-.process-big-row.is-compact .menu-btn-compact .tool-symbol svg,
-.process-big-row.degrade-2 .menu-btn-compact .tool-symbol svg {
+.ribbon.degrade-1 .ribbon-tool.large .tool-symbol svg {
   width: 18px;
   height: 18px;
 }
 
-.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover .tool-icon-row,
-.process-big-row.degrade-2 .menu-btn-compact:not(.reserved):hover .tool-icon-row {
-  background: transparent;
+.ribbon.degrade-1 .ribbon-tool.large .tool-icon-row {
+  min-height: 18px;
+  padding: 2px 3px;
+  margin: 0 -3px;
 }
 
-.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover,
-.process-big-row.degrade-2 .menu-btn-compact:not(.reserved):hover {
-  background: var(--ribbon-hover);
+.ribbon.degrade-1 .menu-select,
+.ribbon.degrade-1 .menu-select-edit {
+  min-width: 0;
 }
 
-/* 降级 3/4：子簇名钮 / 单分组钮——纯文字触发钮，菜单走统一面板 */
-.process-big-row.degrade-name {
-  display: flex;
-  gap: 4px;
-  align-items: center;
+.ribbon.degrade-1 .menu-select-edit input {
+  width: 72px;
+  min-width: 0;
 }
 
-.process-big-row.degrade-name .menu-btn-name {
+.ribbon.degrade-2 .ribbon-tool.large strong {
+  display: none;
+}
+
+.ribbon.degrade-2 .ribbon-tool.large {
+  padding: 3px 5px;
+}
+
+/* 分组名钮（stage 3 各组 / stage 4 全带唯一） */
+.menu-btn-name {
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -6561,18 +6544,50 @@ textarea:focus {
   padding: 0 7px;
 }
 
-.process-big-row.degrade-name .menu-btn-name strong {
+.menu-btn-name strong {
   font-size: 12px;
   font-weight: 400;
   white-space: nowrap;
 }
 
-.process-big-row.degrade-name .menu-btn-name .caret-svg,
-.process-big-row.degrade-name .menu-btn-name .rb-caret-svg {
-  width: 9px;
-  height: 9px;
+/* 名钮不可压缩：压住宽度会让文字重叠而 scrollWidth 谎报「放得下」，
+   stage 4（单分组钮）就永远轮不到 */
+.menu-btn-name,
+.ribbon-group-named {
+  flex-shrink: 0;
 }
 
+.menu-btn-name:not(.reserved):hover {
+  background: var(--ribbon-hover);
+}
+
+/* stage-4 全带唯一分组钮的面板：分节展示各组原布局 */
+.band-drop {
+  max-width: min(920px, calc(100vw - 16px));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 8px 10px;
+}
+
+.band-section {
+  min-width: 150px;
+}
+
+.band-section-label {
+  font-size: 11px;
+  color: #8a8a8a;
+  padding: 2px 4px 4px;
+  white-space: nowrap;
+}
+
+.band-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
 /* BigMenuTool 内部再放一枚无形 cover-select 触发整块按钮 */
 .process-big-row .ribbon-tool.large > .cover-select,
 .style-wps-row .ribbon-tool.large > .cover-select {

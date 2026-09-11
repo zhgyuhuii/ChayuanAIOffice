@@ -12,7 +12,16 @@
  * - useCompactWhenOverflow：WPS 式宽度自适应——内容放不下整行大钮时降级
  *   紧凑形态（图标变小、一列两钮），窗口变宽到能容纳大钮再回退。
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { useDismissablePopover } from '@chatoffice/ui/popover-dismiss'
 import { CaretIcon, RIBBON_GLYPH_ICONS } from './ribbon-icons'
@@ -360,55 +369,155 @@ export function RibbonMenuButton({
   )
 }
 
-/// WPS 式多级宽度降级（用户 2026-09-11 裁定的完整阶梯）：
-/// 0=平铺大钮 → 1=一列两行 → 2=一列三行 → 3=分组名钮平铺 → 4=单个分组钮。
-/// 测量驱动迭代循环：每轮渲染实测本档内容宽并记入 stageWidths，放不下
-/// 升一级；回退只在「上一档的实测宽度能放进当前可用宽」时发生——
+/// WPS 式全带多级降级（用户 2026-09-11 裁定：全部菜单共用同一套阶梯）：
+/// 0=平铺 → 1=一列两行 → 2=一列三行 → 3=分组名钮平铺 → 4=单个分组钮。
+/// 带级统一 stage（WPS spaceHint 全带同档语义）：量 .ribbon 滚动容器整体，
+/// 溢出升一级；回退只在「上一档实测总宽能放进当前可用宽」时发生——
 /// 相邻档宽度差可远大于任何固定滞回，固定阈值回退会在窗口宽度落在
-/// 「本档溢出、上一档大富余」的区间时无限振荡（React 更新循环崩掉整页，
+/// 「本档溢出、上一档大富余」区间时无限振荡（React 更新循环崩掉整页，
 /// 2026-09-11 用户实证：先缩小再最大化白屏）。
-export function useRibbonDegradeStage(
-  ref: React.RefObject<HTMLElement | null>,
-  maxStage = 4,
-): number {
-  const [stage, setStage] = useState(0)
+export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, maxStage = 4): number {
+  const [stage, setStage] = useState(() => {
+    // 调试/验收：?bandStage=N 钉住档位（M4 宽度梯度验收用）。
+    // 注意 Number(null)===0 陷阱：参数缺席时必须保持 NaN。
+    const raw = new URLSearchParams(window.location.search).get('bandStage')
+    const forced = raw === null || raw === '' ? NaN : Number(raw)
+    return Number.isInteger(forced) && forced >= 0 && forced <= maxStage ? forced : 0
+  })
   const stageRef = useRef(stage)
   stageRef.current = stage
-  const stageWidths = useRef<number[]>([])
+  const stageTotals = useRef<number[] & { frozen?: boolean }>([])
   useLayoutEffect(() => {
-    const el = ref.current
-    if (!el || typeof ResizeObserver === 'undefined') return
-    const scroller = el.closest('.ribbon')
-    const group = el.closest('.ribbon-group')
+    const scroller = ref.current
+    if (!scroller || typeof ResizeObserver === 'undefined') return
     const measure = () => {
-      if (!scroller) return
-      // 本组的可用宽 = 功能区带内宽 −（兄弟组 + 分隔线 + 内边距）。
-      // 别的组还没接入降级时它们的溢出不应把本组推到最深层。
-      let avail = scroller.clientWidth - 24
-      if (group && scroller !== group) {
-        for (const child of scroller.children) {
-          if (child === group) continue
-          avail -= child.getBoundingClientRect().width + 9
-        }
-      }
-      avail = Math.max(avail, 80)
-      const natural = el.scrollWidth
-      stageWidths.current[stageRef.current] = natural
-      if (natural > avail + 1) {
+      if (stageTotals.current.frozen) return
+      const avail = scroller.clientWidth
+      // 逐子件内容宽求和：flex 压缩会让容器 scrollWidth 谎报「放得下」，
+      // 子件的 scrollWidth 才是真实内容需求（nowrap 文本等）
+      const total = [...scroller.children].reduce(
+        (sum, child) =>
+          sum + Math.max((child as HTMLElement).offsetWidth, (child as HTMLElement).scrollWidth),
+        0,
+      )
+      stageTotals.current[stageRef.current] = total
+      if (total > avail + 1) {
         if (stageRef.current < maxStage) setStage(stageRef.current + 1)
       } else {
+        // 回退一步实测自愈：mem[prev] 只拦「已实测放不下」的情况；
+        // resize 时旧记忆清空（下方 RO 回调），陈旧虚高值据此自愈
         const prev = stageRef.current - 1
-        const prevW = stageWidths.current[prev]
-        if (prev >= 0 && prevW !== undefined && prevW <= avail) {
+        const prevTotal = stageTotals.current[prev]
+        if (prev >= 0 && !(prevTotal !== undefined && prevTotal > avail)) {
           setStage(prev)
         }
       }
     }
-    const ro = new ResizeObserver(measure)
-    if (scroller) ro.observe(scroller)
-    ro.observe(el)
+    const ro = new ResizeObserver(() => {
+      // 尺寸变了：旧档宽记忆全部作废（加载瞬态/字体交换的虚高值据此自愈）
+      stageTotals.current = []
+      measure()
+    })
+    ro.observe(scroller)
     measure()
     return () => ro.disconnect()
   })
+  const rawStage = new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get(
+    'bandStage',
+  )
+  const forcedStage = rawStage === null || rawStage === '' ? NaN : Number(rawStage)
+  if (Number.isInteger(forcedStage) && forcedStage >= 0 && forcedStage <= maxStage) {
+    stageTotals.current.frozen = true
+    return forcedStage
+  }
   return stage
+}
+
+/** 全带当前降级档（Ribbon 根供给，全部 RibbonGroup 消费）。 */
+export const RibbonBandStageContext = createContext(0)
+
+/** 消费带级降级档（RibbonGroup 每组据此渲染本档形态）。 */
+export function useRibbonBandStageValue(): number {
+  return useContext(RibbonBandStageContext)
+}
+
+/** stage-4 单分组钮的内容收集器（各组把自己的面板体注册进来）。 */
+export interface BandSection {
+  readonly id: string
+  readonly label: string
+  readonly node: ReactNode
+}
+export const BandCollectorContext = createContext<{
+  readonly register: (section: BandSection) => void
+  readonly unregister: (id: string) => void
+} | null>(null)
+
+/**
+ * 名钮 + 任意内容面板（分组名钮/单分组钮共用）：纯文字触发，面板 portal
+ * 到 body 走 placeDrop 定位，内容为该组（或全带）原布局控件。
+ */
+export function NodeDropButton({
+  label,
+  children,
+  className = '',
+}: {
+  readonly label: string
+  readonly children: ReactNode
+  readonly className?: string
+}): React.JSX.Element {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const portalRef = useRef<HTMLDivElement>(null)
+  const getAnchor = useCallback(() => rectOf(wrapRef.current), [])
+  const [panelRef, placed] = usePlacement(open, getAnchor, 'below')
+  useDismissablePopover(open, () => setOpen(false), {
+    inside: () => [wrapRef.current, portalRef.current],
+  })
+  useEscapeClose(open, () => setOpen(false))
+  useEffect(() => {
+    if (!open) return
+    const onResize = () => setOpen(false)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [open])
+  return (
+    <div ref={wrapRef} className={`ribbon-tool large as-button menu-btn-name ${className}`.trim()}>
+      <span>
+        <strong>{label}</strong>
+      </span>
+      <CaretIcon />
+      {open &&
+        createPortal(
+          <div ref={portalRef}>
+            <div
+              ref={panelRef}
+              role="menu"
+              aria-label={label}
+              className="menu-select-drop is-portal band-drop"
+              style={
+                placed.placed
+                  ? {
+                      left: placed.left,
+                      top: placed.top,
+                      maxHeight: placed.maxHeight ?? undefined,
+                      visibility: 'visible',
+                    }
+                  : { visibility: 'hidden' }
+              }
+            >
+              {children}
+            </div>
+          </div>,
+          document.body,
+        )}
+      <button
+        type="button"
+        className="cover-select"
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      />
+    </div>
+  )
 }
