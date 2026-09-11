@@ -402,7 +402,11 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
       )
       stageTotals.current[stageRef.current] = total
       if (total > avail + 1) {
-        if (stageRef.current < maxStage) setStage(stageRef.current + 1)
+        // 进入收拢档（3/4）门槛更高：轻度溢出交给 stage 2 横向滚动容忍，
+        // 否则停靠面板占半宽的常态布局会被过早收成两枚小名钮（观感=菜单没了）
+        const severe = total - avail > 150
+        const next = stageRef.current + 1
+        if (stageRef.current < maxStage && (next < 3 || severe)) setStage(next)
       } else {
         // 回退一步实测自愈：mem[prev] 只拦「已实测放不下」的情况；
         // resize 时旧记忆清空（下方 RO 回调），陈旧虚高值据此自愈
@@ -413,14 +417,21 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
         }
       }
     }
-    const ro = new ResizeObserver(() => {
-      // 尺寸变了：旧档宽记忆全部作废（加载瞬态/字体交换的虚高值据此自愈）
+    const remeasure = () => {
+      // 记忆作废重探：两档真值互证后稳定，振荡有界（白屏根修的协议）
       stageTotals.current = []
       measure()
-    })
+    }
+    const ro = new ResizeObserver(remeasure)
     ro.observe(scroller)
     measure()
-    return () => ro.disconnect()
+    // 加载瞬态自愈：字体就绪/首帧布局稳定后重探，否则虚高档宽永久卡死深层档
+    const timer = setTimeout(remeasure, 400)
+    if (document.fonts?.ready) document.fonts.ready.then(remeasure)
+    return () => {
+      ro.disconnect()
+      clearTimeout(timer)
+    }
   })
   const rawStage = new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get(
     'bandStage',

@@ -2076,9 +2076,12 @@ function Ribbon({
   const [, bumpBandSections] = useState(0)
   const bandCollector = useMemo(
     () => ({
+      // 幂等注册：每次渲染都会重注册（node 静默刷新），但只有成员/组名
+      // 真变化才触发重渲染——无条件 bump 会在 stage 4 无限循环崩掉功能区
       register: (section: BandSection): void => {
+        const prev = bandSections.current.get(section.id)
         bandSections.current.set(section.id, section)
-        bumpBandSections((n) => n + 1)
+        if (!prev || prev.label !== section.label) bumpBandSections((n) => n + 1)
       },
       unregister: (id: string): void => {
         if (bandSections.current.delete(id)) bumpBandSections((n) => n + 1)
@@ -7147,6 +7150,7 @@ function RibbonGroup({
   return (
     <section className="ribbon-group" aria-label={label}>
       <div className="ribbon-group-content">{children}</div>
+      {stage >= 2 && <div className="ribbon-group-caption">{label}</div>}
       {launcher && stage === 0 && (
         <button
           type="button"

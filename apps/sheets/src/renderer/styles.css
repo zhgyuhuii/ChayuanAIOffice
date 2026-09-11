@@ -6557,8 +6557,38 @@ textarea:focus {
   flex-shrink: 0;
 }
 
+/* 名钮平铺态占满整条带：均布展开而不是挤在左侧留大片空白 */
+.ribbon-group-named {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.ribbon-group-named .menu-btn-name {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 56px;
+  max-height: 64px;
+  font-size: 12.5px;
+}
+
+.menu-btn-name strong {
+  font-size: 12.5px;
+}
+
 .menu-btn-name:not(.reserved):hover {
   background: var(--ribbon-hover);
+}
+
+/* 降级档（stage≥2）组名常驻：隐文字后组名是唯一的方位标识（WPS 组名常显） */
+.ribbon-group-caption {
+  font-size: 11px;
+  line-height: 14px;
+  color: #8a8a8a;
+  text-align: center;
+  white-space: nowrap;
+  padding-top: 2px;
 }
 
 /* stage-4 全带唯一分组钮的面板：分节展示各组原布局 */
