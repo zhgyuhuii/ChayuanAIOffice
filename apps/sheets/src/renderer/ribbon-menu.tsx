@@ -369,77 +369,97 @@ export function RibbonMenuButton({
   )
 }
 
-/// WPS 式全带多级降级（用户 2026-09-11 裁定：全部菜单共用同一套阶梯）：
-/// 0=平铺 → 1=一列两行 → 2=一列三行 → 3=分组名钮平铺 → 4=单个分组钮。
-/// 带级统一 stage（WPS spaceHint 全带同档语义）：量 .ribbon 滚动容器整体，
-/// 溢出升一级；回退只在「上一档实测总宽能放进当前可用宽」时发生——
-/// 相邻档宽度差可远大于任何固定滞回，固定阈值回退会在窗口宽度落在
-/// 「本档溢出、上一档大富余」区间时无限振荡（React 更新循环崩掉整页，
-/// 2026-09-11 用户实证：先缩小再最大化白屏）。
-export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, maxStage = 4): number {
-  const [stage, setStage] = useState(() => {
-    // 调试/验收：?bandStage=N 钉住档位（M4 宽度梯度验收用）。
-    // 注意 Number(null)===0 陷阱：参数缺席时必须保持 NaN。
-    const raw = new URLSearchParams(window.location.search).get('bandStage')
-    const forced = raw === null || raw === '' ? NaN : Number(raw)
-    return Number.isInteger(forced) && forced >= 0 && forced <= maxStage ? forced : 0
-  })
-  const stageRef = useRef(stage)
-  stageRef.current = stage
-  const stageTotals = useRef<number[] & { frozen?: boolean }>([])
+/// WPS 式组级贪心降级（用户裁定：逐个向前降级，动态拖拽逐档扫过，特别窄时
+/// 保留一个分组钮下拉展示全部）：每组独立级别 0=平铺 1=一列两行 2=一列三行
+/// 3=分组名钮。测量驱动贪心分配：溢出时把「级别最低的最左组」降一级（轮转：
+/// 全部到 L1 才开始 L2，全部到 L2 才开始 L3——混合形态逐档扫过）；放得下且
+/// 富余时按组回退一级；全部到 L3 仍溢出 → collapsed=true（全带唯一分组钮，
+/// 面板分节展示各组）。每组每档实测宽度记忆：回退只在「升回上一档的投影
+/// 总宽 ≤ 可用宽」时发生（按事实回退，振荡有界）；RO 连发经 rAF 合帧。
+export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, maxLevel = 3): { levels: number[]; collapsed: boolean } {
+  const [levels, setLevels] = useState<number[]>([])
+  const [collapsed, setCollapsed] = useState(false)
+  const stateRef = useRef<{ levels: number[]; collapsed: boolean }>({ levels: [], collapsed: false })
+  stateRef.current = { levels, collapsed }
+  const frozen = useRef(false)
   const last = useRef<{ total: number; avail: number }>({ total: -1, avail: -1 })
+  const widths = useRef<Map<string, number>>(new Map())
   useLayoutEffect(() => {
     const scroller = ref.current
     if (!scroller || typeof ResizeObserver === 'undefined') return
     const measure = () => {
-      if (stageTotals.current.frozen) return
+      if (frozen.current) return
       const avail = scroller.clientWidth
-      // 逐子件内容宽求和：flex 压缩会让容器 scrollWidth 谎报「放得下」，
-      // 子件的 scrollWidth 才是真实内容需求（nowrap 文本等）
-      const total = [...scroller.children].reduce(
-        (sum, child) =>
-          sum + Math.max((child as HTMLElement).offsetWidth, (child as HTMLElement).scrollWidth),
+      const sections = [...scroller.querySelectorAll(':scope > .ribbon-group')]
+      if (sections.length === 0) return
+      const total = sections.reduce(
+        (sum, el) => sum + Math.max((el as HTMLElement).offsetWidth, (el as HTMLElement).scrollWidth),
         0,
       )
-      // 无变化短路：同一宽度下的重复测量（无关状态渲染触发）直接跳过
       if (total === last.current.total && avail === last.current.avail) return
       last.current = { total, avail }
-      stageTotals.current[stageRef.current] = total
+      const cur = stateRef.current.levels.slice(0, sections.length)
+      while (cur.length < sections.length) cur.push(0)
+      cur.length = sections.length
+      sections.forEach((el, i) => {
+        widths.current.set(
+          `${i}@${cur[i]}`,
+          Math.max((el as HTMLElement).offsetWidth, (el as HTMLElement).scrollWidth),
+        )
+      })
+      if (stateRef.current.collapsed) {
+        if (total <= avail - 24) {
+          stateRef.current.collapsed = false
+          setCollapsed(false)
+        }
+        return
+      }
       if (total > avail + 1) {
-        // 进入收拢档（3/4）门槛更高：轻度溢出交给 stage 2 横向滚动容忍，
-        // 否则停靠面板占半宽的常态布局会被过早收成两枚小名钮（观感=菜单没了）
-        const severe = total - avail > 150
-        const next = stageRef.current + 1
-        if (stageRef.current < maxStage && (next < 3 || severe)) setStage(next)
-      } else {
-        // 回退一步实测自愈：mem[prev] 只拦「已实测放不下」的情况；
-        // resize 时旧记忆清空（下方 RO 回调），陈旧虚高值据此自愈
-        const prev = stageRef.current - 1
-        const prevTotal = stageTotals.current[prev]
-        if (prev >= 0 && !(prevTotal !== undefined && prevTotal > avail)) {
-          setStage(prev)
+        let target = -1
+        outer: for (let r = 0; r < maxLevel; r++) {
+          for (let i = 0; i < cur.length; i++) {
+            if (cur[i] === r) { target = i; break outer }
+          }
+        }
+        const t0 = target >= 0 ? target : 0
+        if (target < 0) {
+          stateRef.current.collapsed = true
+          setCollapsed(true)
+        } else {
+          cur[t0] = (cur[t0] ?? 0) + 1
+          setLevels(cur)
+        }
+        return
+      }
+      for (let i = cur.length - 1; i >= 0; i--) {
+        const lv = cur[i]!
+        if (lv <= 0) continue
+        const prevW = widths.current.get(`${i}@${lv - 1}`)
+        if (prevW === undefined) continue
+        const projected = total - (widths.current.get(`${i}@${lv}`) ?? 0) + prevW
+        if (projected <= avail) {
+          cur[i] = lv - 1
+          setLevels(cur)
+          return
         }
       }
     }
     const remeasure = () => {
-      // 记忆作废重探：两档真值互证后稳定，振荡有界（白屏根修的协议）
-      stageTotals.current = []
+      frozen.current = false
+      last.current = { total: -1, avail: -1 }
       measure()
     }
-    // 拖拽窗口 = RO 每帧连发：rAF 合帧，一帧最多一次全量测量/升档，
-    // 防止每帧多次整条 Ribbon 重渲染把主线程打满（用户实证拖拽卡死）
     let rafId: number | null = null
     const schedule = () => {
       if (rafId !== null) return
       rafId = requestAnimationFrame(() => {
         rafId = null
-        remeasure()
+        measure()
       })
     }
     const ro = new ResizeObserver(schedule)
     ro.observe(scroller)
     measure()
-    // 加载瞬态自愈：字体就绪/首帧布局稳定后重探，否则虚高档宽永久卡死深层档
     const timer = setTimeout(remeasure, 400)
     if (document.fonts?.ready) document.fonts.ready.then(remeasure)
     return () => {
@@ -448,15 +468,27 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
   })
-  const rawStage = new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get(
-    'bandStage',
-  )
-  const forcedStage = rawStage === null || rawStage === '' ? NaN : Number(rawStage)
-  if (Number.isInteger(forcedStage) && forcedStage >= 0 && forcedStage <= maxStage) {
-    stageTotals.current.frozen = true
-    return forcedStage
-  }
-  return stage
+  if (frozen.current) return { levels: stateRef.current.levels, collapsed: stateRef.current.collapsed }
+  return { levels, collapsed }
+}
+
+/** 组级级别向量（Ribbon 根供给，RibbonGroup 按槽位消费）。 */
+export const RibbonGroupLevelsContext = createContext<readonly number[]>([])
+
+/** 组槽位分配：每组按首次渲染顺序认领稳定下标（与 DOM 序一致）。 */
+export const GroupSlotContext = createContext<{ claim: (id: string) => number } | null>(null)
+
+export function useRibbonGroupSlot(id: string): number {
+  const ctx = useContext(GroupSlotContext)
+  const idxRef = useRef(-1)
+  if (idxRef.current < 0 && ctx) idxRef.current = ctx.claim(id)
+  return ctx ? idxRef.current : 0
+}
+
+/** 消费本组级别（RibbonGroup 据此渲染形态）。 */
+export function useRibbonGroupLevel(idx: number): number {
+  const levels = useContext(RibbonGroupLevelsContext)
+  return levels[idx] ?? 0
 }
 
 /** 全带当前降级档（Ribbon 根供给，全部 RibbonGroup 消费）。 */

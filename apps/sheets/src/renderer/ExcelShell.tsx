@@ -22,11 +22,13 @@ import {
 } from './ribbon-icons'
 import {
   BandCollectorContext,
+  GroupSlotContext,
   NodeDropButton,
-  RibbonBandStageContext,
+  RibbonGroupLevelsContext,
   RibbonMenuButton,
-  useRibbonBandStage,
-  useRibbonBandStageValue,
+  useRibbonGroupLevel,
+  useRibbonGroupLevels,
+  useRibbonGroupSlot,
   type BandSection,
 } from './ribbon-menu'
 import { ConvertMenuSelect } from './ConvertMenuSelect'
@@ -2071,7 +2073,14 @@ function Ribbon({
   // WPS 全带降级：一个带级 stage 驱动全部组（0 平铺→1 一列两行→2 一列三行
   // →3 分组名钮平铺→4 单个分组钮），RibbonGroup 消费上下文各按档渲染
   const ribbonRef = useRef<HTMLDivElement>(null)
-  const bandStage = useRibbonBandStage(ribbonRef)
+  const groupSlots = useRef<string[]>([])
+  const claimSlot = (id: string): number => {
+    const at = groupSlots.current.indexOf(id)
+    if (at >= 0) return at
+    groupSlots.current.push(id)
+    return groupSlots.current.length - 1
+  }
+  const { levels: groupLevels, collapsed: bandCollapsed } = useRibbonGroupLevels(ribbonRef)
   const bandSections = useRef(new Map<string, BandSection>())
   const [, bumpBandSections] = useState(0)
   const bandCollector = useMemo(
@@ -4092,10 +4101,10 @@ function Ribbon({
     <div
       // 隐文字/紧凑只属 stage 1/2：根类不得在 stage 3/4 残留，否则分组名钮
       // 的文字也被 canHideText 规则藏掉（用户实证：名钮档「没有名称」）
-      className={`ribbon${bandStage === 1 ? ' degrade-1' : bandStage === 2 ? ' degrade-2' : ''}`}
+      className="ribbon"
       ref={ribbonRef}
     >
-      {bandStage === 4 && (
+      {bandCollapsed && (
         <NodeDropButton label={t(TAB_LABEL[activeTab] ?? 'appGroupClipboard')}>
           {([...bandSections.current.values()] as readonly BandSection[]).map((section) => (
             <div key={section.id} className="band-section">
@@ -4105,8 +4114,9 @@ function Ribbon({
           ))}
         </NodeDropButton>
       )}
-      <RibbonBandStageContext.Provider value={bandStage}>
-        <BandCollectorContext.Provider value={bandCollector}>
+      <RibbonGroupLevelsContext.Provider value={groupLevels}>
+        <GroupSlotContext.Provider value={{ claim: claimSlot }}>
+          <BandCollectorContext.Provider value={bandCollector}>
           <RibbonGroup label={t('appGroupClipboard')}>
             {/* WPS 布局（对比清单 1-3）：格式刷升为第一枚大按钮；粘贴改为分体
             按钮（本体直接粘贴 + 下拉八项）；竖排只剩剪切和分体复制 */}
@@ -4639,8 +4649,9 @@ function Ribbon({
               ))}
             </div>
           </RibbonGroup>
-        </BandCollectorContext.Provider>
-      </RibbonBandStageContext.Provider>
+          </BandCollectorContext.Provider>
+        </GroupSlotContext.Provider>
+      </RibbonGroupLevelsContext.Provider>
     </div>
   )
 }
@@ -7132,17 +7143,17 @@ function RibbonGroup({
   // No visible group captions — the label stays for assistive tech.
   // WPS 五阶梯（带级统一档）：0 平铺 → 1 一列两行 → 2 一列三行 →
   // 3 本组收成分组名钮（面板=原布局） → 4 注册进全带唯一分组钮
-  const stage = useRibbonBandStageValue()
+  const slot = useRibbonGroupSlot(label)
+  const level = useRibbonGroupLevel(slot)
   const collector = useContext(BandCollectorContext)
   const sectionKey = useId()
   const sectionNode = <div className="band-section-body">{children}</div>
   useEffect(() => {
-    if (stage !== 4 || !collector) return
+    if (level !== 3 || !collector) return
     collector.register({ id: sectionKey, label, node: sectionNode })
     return () => collector.unregister(sectionKey)
   })
-  if (stage === 4) return null
-  if (stage === 3) {
+  if (level === 3) {
     return (
       <section className="ribbon-group ribbon-group-named" aria-label={label}>
         <NodeDropButton label={label}>{children}</NodeDropButton>
@@ -7151,14 +7162,14 @@ function RibbonGroup({
   }
   return (
     <section
-      className={`ribbon-group${stage > 0 && stage <= 2 ? ` degrade-${stage}` : ''}`}
+      className={`ribbon-group${level > 0 ? ` degrade-${level}` : ''}`}
       aria-label={label}
     >
       <div className="ribbon-group-content">
-        {stage > 0 && stage <= 2 ? <div className="degrade-grid">{children}</div> : children}
+        {level > 0 ? <div className="degrade-grid">{children}</div> : children}
       </div>
-      {stage >= 2 && <div className="ribbon-group-caption">{label}</div>}
-      {launcher && stage === 0 && (
+      {level >= 2 && <div className="ribbon-group-caption">{label}</div>}
+      {launcher && level === 0 && (
         <button
           type="button"
           className="group-launcher"
