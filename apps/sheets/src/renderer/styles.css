@@ -6557,6 +6557,19 @@ textarea:focus {
   flex-shrink: 0;
 }
 
+/* 名钮点击命中：cover-select 必须覆盖整钮（absolute inset:0），否则真实
+   指针点在文字/空白上不命中任何处理器——点击无反应（用户实证）。
+   .ribbon-tool 已是 position:relative，覆盖层以其为定位根 */
+.menu-btn-name > .cover-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 /* 名钮平铺态占满整条带：均布展开而不是挤在左侧留大片空白 */
 .ribbon-group-named {
   flex: 1 1 0;

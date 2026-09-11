@@ -387,6 +387,7 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
   const stageRef = useRef(stage)
   stageRef.current = stage
   const stageTotals = useRef<number[] & { frozen?: boolean }>([])
+  const last = useRef<{ total: number; avail: number }>({ total: -1, avail: -1 })
   useLayoutEffect(() => {
     const scroller = ref.current
     if (!scroller || typeof ResizeObserver === 'undefined') return
@@ -400,6 +401,9 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
           sum + Math.max((child as HTMLElement).offsetWidth, (child as HTMLElement).scrollWidth),
         0,
       )
+      // 无变化短路：同一宽度下的重复测量（无关状态渲染触发）直接跳过
+      if (total === last.current.total && avail === last.current.avail) return
+      last.current = { total, avail }
       stageTotals.current[stageRef.current] = total
       if (total > avail + 1) {
         // 进入收拢档（3/4）门槛更高：轻度溢出交给 stage 2 横向滚动容忍，
@@ -422,7 +426,17 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
       stageTotals.current = []
       measure()
     }
-    const ro = new ResizeObserver(remeasure)
+    // 拖拽窗口 = RO 每帧连发：rAF 合帧，一帧最多一次全量测量/升档，
+    // 防止每帧多次整条 Ribbon 重渲染把主线程打满（用户实证拖拽卡死）
+    let rafId: number | null = null
+    const schedule = () => {
+      if (rafId !== null) return
+      rafId = requestAnimationFrame(() => {
+        rafId = null
+        remeasure()
+      })
+    }
+    const ro = new ResizeObserver(schedule)
     ro.observe(scroller)
     measure()
     // 加载瞬态自愈：字体就绪/首帧布局稳定后重探，否则虚高档宽永久卡死深层档
@@ -431,6 +445,7 @@ export function useRibbonBandStage(ref: React.RefObject<HTMLElement | null>, max
     return () => {
       ro.disconnect()
       clearTimeout(timer)
+      if (rafId !== null) cancelAnimationFrame(rafId)
     }
   })
   const rawStage = new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get(
