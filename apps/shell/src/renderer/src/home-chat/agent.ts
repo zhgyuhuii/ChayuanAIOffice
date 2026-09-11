@@ -14,6 +14,10 @@ export interface HomeAgentBridge {
   recents: HomeApi['recents']
   starred: HomeApi['starred']
   listProjectFiles(): Promise<string[]>
+  /** 项目中心模型 (P1-7): resolve (or lazily create) the project this
+   *  conversation's documents belong to; null = creation failed, the
+   *  document falls back to the global default directory */
+  ensureProject?(title: string): Promise<string | null>
   /** open a document in a new tab, carrying the conversation over (docx/md) */
   openWithHandoff(path: string, transcript: AgentMessage[]): Promise<void>
   /** the UI only runs the agent when a current model is configured */
@@ -167,7 +171,22 @@ function homeSkill(
           if (body.length < MIN_DOC_BODY_CHARS) {
             return { output: texts.docBodyMissing, isError: true, summary: 'create_document' }
           }
-          const result = await bridge.createDocument({ type: docType, title, content: body })
+          // 惰性建项目: an unattached session's first document creates the
+          // project (named after the conversation) and re-scopes the session
+          let projectId: string | null | undefined
+          if (bridge.ensureProject) {
+            try {
+              projectId = await bridge.ensureProject(title)
+            } catch {
+              projectId = null
+            }
+          }
+          const result = await bridge.createDocument({
+            type: docType,
+            title,
+            content: body,
+            ...(projectId ? { projectId } : {}),
+          })
           if (!result.ok) {
             return {
               output: texts.createFailed(result.error ?? ''),

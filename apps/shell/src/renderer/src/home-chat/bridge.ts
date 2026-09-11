@@ -22,8 +22,15 @@ export async function refreshHomeModelCache(): Promise<void> {
   }
 }
 
-export function createHomeChatBridge(getProjectId: () => string | null): HomeAgentBridge {
+export function createHomeChatBridge(
+  getProjectId: () => string | null,
+  /** P1-7 项目中心模型: lazily create the project for an unattached
+   *  session's first document and re-scope that session (ChatPanel supplies
+   *  it — it owns the store and the project IPC). */
+  ensureProject?: (title: string) => Promise<string | null>,
+): HomeAgentBridge {
   return {
+    ...(ensureProject ? { ensureProject: (title) => ensureProject(title) } : {}),
     aiStream: (request) => window.chatOffice.aiStream(request),
     aiStreamCancel: (requestId) => window.chatOffice.aiStreamCancel(requestId),
     onAiStream: (listener) => window.chatOffice.onAiStream(listener),

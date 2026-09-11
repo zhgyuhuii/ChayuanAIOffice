@@ -2327,8 +2327,15 @@ async function openDialog(event: IpcMainInvokeEvent, options: OpenDialogOptions)
 
 async function saveDialog(event: IpcMainInvokeEvent, options: SaveDialogOptions) {
   // before any pick is remembered, bare-name suggestions anchor in the
-  // configurable default save folder instead of Electron's Downloads pin
-  return showSaveDialogWithMemory(dialog, dialogParent(event), options, defaultSaveDir())
+  // configurable default save folder instead of Electron's Downloads pin;
+  // project-seeded documents anchor in their project root instead (P1)
+  const override = saveDirOverrideByWc.get(event.sender.id)
+  return showSaveDialogWithMemory(
+    dialog,
+    dialogParent(event),
+    options,
+    override ?? defaultSaveDir(),
+  )
 }
 
 /** default folder where new files land on their first (silent) save; shared with the other editors via shell. User-configurable (app-settings.json), falls back to <Documents>/ChatOffice. */
@@ -3086,6 +3093,16 @@ export function registerAiIpc(): void {
 }
 
 // ── project-store IPC (shared across docs / slides / sheets) ──────────────
+
+/** per-tab first-save directory override (P1 项目中心模型): a docked/seeded
+ *  document created for a project saves into that project's root instead of
+ *  the global default. Set at dock time, consumed by saveDialog, cleared on
+ *  webContents destroy. */
+const saveDirOverrideByWc = new Map<number, string>()
+
+export function queueDocsSaveDir(webContentsId: number, dir: string): void {
+  saveDirOverrideByWc.set(webContentsId, dir)
+}
 
 let projectStore: ProjectStore | null = null
 let projectIpcRegistered = false
@@ -4318,12 +4335,13 @@ interface DocsShellHooks {
   openGeneratedPath?(path: string): boolean
   /** Shell-mode AI-created PDFs open as untitled temp-backed documents: nothing
    * lands on disk until the user's first save (Save As prefilled with title). */
-  openUntitledPdf?(bytes: Uint8Array, suggestedName: string): boolean
+  openUntitledPdf?(bytes: Uint8Array, suggestedName: string, saveDir?: string): boolean
   /** Shell-mode AI-created Markdown opens as an untitled tab carrying the content. */
   openUntitledMarkdown?(content: string, suggestedName: string): boolean
-  /** P1 停靠契约: home-chat create_document docks instead of opening a full tab */
-  openAiDockTab?(content: AiDocContent): boolean
-  openMarkdownDockTab?(content: string, suggestedName: string): boolean
+  /** P1 停靠契约: home-chat create_document docks instead of opening a full
+   *  tab; saveDir anchors the document's first save in its project root */
+  openAiDockTab?(content: AiDocContent, saveDir?: string): boolean
+  openMarkdownDockTab?(content: string, suggestedName: string, saveDir?: string): boolean
 }
 let shellHooks: DocsShellHooks | null = null
 export function setDocsShellHooks(hooks: DocsShellHooks | null): void {
@@ -4370,10 +4388,22 @@ export async function createAiDocument(
   const title = sanitizeAiDocFileBase(request?.title)
   const content = String(request?.content ?? '')
   if (!content.trim()) return { ok: false, error: 'content must not be empty' }
+  // 项目中心模型: the project root (when resolvable) anchors both direct
+  // writes and the docked document's first save
+  let projectDir: string | null = null
+  if (request.projectId) {
+    try {
+      const root = getProjectStore().projectRootPath(request.projectId)
+      if (root && existsSync(root)) projectDir = root
+    } catch {
+      // unreadable store: fall back to the global default
+    }
+  }
   try {
     if (type === 'docx') {
       const payload: AiDocContent = { title, html: content }
-      if (request.dock && shellHooks?.openAiDockTab?.(payload)) return { ok: true }
+      if (request.dock && shellHooks?.openAiDockTab?.(payload, projectDir ?? undefined))
+        return { ok: true }
       if (shellHooks?.openAiDocTab) shellHooks.openAiDocTab(payload)
       else {
         const win = createDocsWindow(undefined)
@@ -4388,16 +4418,20 @@ export async function createAiDocument(
         () =>
           new BrowserWindow({ show: false, webPreferences: { sandbox: true, javascript: false } }),
       )
-      if (shellHooks?.openUntitledPdf?.(bytes, title)) return { ok: true }
-      const filePath = uniquePathIn(defaultSaveDir(), `${title}.pdf`)
+      if (shellHooks?.openUntitledPdf?.(bytes, title, projectDir ?? undefined)) return { ok: true }
+      const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.pdf`)
       await writeFile(filePath, bytes)
       openGeneratedFile(filePath)
       return { ok: true, path: filePath }
     }
     if (type === 'md') {
-      if (request.dock && shellHooks?.openMarkdownDockTab?.(content, title)) return { ok: true }
+      if (
+        request.dock &&
+        shellHooks?.openMarkdownDockTab?.(content, title, projectDir ?? undefined)
+      )
+        return { ok: true }
       if (shellHooks?.openUntitledMarkdown?.(content, title)) return { ok: true }
-      const filePath = uniquePathIn(defaultSaveDir(), `${title}.md`)
+      const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.md`)
       await writeFile(filePath, content, 'utf8')
       openGeneratedFile(filePath)
       return { ok: true, path: filePath }
@@ -4961,6 +4995,7 @@ export function createDocsView(openPath?: string, opts?: { hidePanel?: boolean }
   const wcId = view.webContents.id
   view.webContents.once('destroyed', () => {
     pendingWindowOpens.delete(wcId)
+    saveDirOverrideByWc.delete(wcId)
     dropDocWriter(wcId)
     closeCheckWaiters.get(wcId)?.({ dirty: false, autoSave: false })
     closeCheckWaiters.delete(wcId)

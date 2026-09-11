@@ -117,6 +117,7 @@ import {
   registerAiIpc,
   registerProjectIpc,
   toggleStarredFile,
+  queueDocsSaveDir,
   registerDocsIpc,
   setDocsExtraFileMenuItems,
   setDocsMenuGate,
@@ -2679,23 +2680,31 @@ function createShellWindow(): void {
       manager.openDocsTab(undefined, { newBlank: true, aiContent: content }),
     // P1 停靠契约: home-chat create_document lands in the Home right pane —
     // untitled blank docs tab seeded with the AI content, panel hidden
-    openAiDockTab: (content) => {
+    openAiDockTab: (content, saveDir) => {
       try {
-        return (
-          manager.dockEditorTab('docs', {
-            newBlank: true,
-            aiContent: content,
-            hidePanel: true,
-          }) !== null
-        )
+        const id = manager.dockEditorTab('docs', {
+          newBlank: true,
+          aiContent: content,
+          hidePanel: true,
+        })
+        if (id && saveDir) {
+          const wcId = manager.webContentsIdOf(id)
+          if (wcId) queueDocsSaveDir(wcId, saveDir)
+        }
+        return id !== null
       } catch (err) {
         console.error('[shell] ai dock tab failed:', err)
         return false
       }
     },
-    openMarkdownDockTab: (content, suggestedName) => {
+    openMarkdownDockTab: (content, suggestedName, saveDir) => {
       try {
-        return manager.dockMarkdownWithContent(content, suggestedName) !== null
+        const id = manager.dockMarkdownWithContent(content, suggestedName)
+        if (id && saveDir) {
+          const wcId = manager.webContentsIdOf(id)
+          if (wcId) queueDocsSaveDir(wcId, saveDir)
+        }
+        return id !== null
       } catch (err) {
         console.error('[shell] markdown dock tab failed:', err)
         return false
@@ -2709,18 +2718,19 @@ function createShellWindow(): void {
     focusTab: (id) => manager.activateTab(id),
     closeActiveTab: () => manager.closeActiveTab(),
     openGeneratedPath: (path) => openGeneratedDocument(path),
-    openUntitledPdf: (bytes, suggestedName) => {
+    openUntitledPdf: (bytes, suggestedName, saveDir) => {
       // AI-created PDF as a hidden temp-backed untitled document: the AI title
       // only prefills the first save — nothing lands on disk until then.
       try {
         const tempPath = uniquePathIn(blankDraftsDir(), `ai-${randomUUID()}.pdf`)
         writeFileSync(tempPath, bytes)
-        markPdfUntitledPath(tempPath, { defaultDir: defaultSaveDir(), suggestedName })
+        const pdfDir = saveDir ?? defaultSaveDir()
+        markPdfUntitledPath(tempPath, { defaultDir: pdfDir, suggestedName })
         registerPendingUntitled({
           kind: 'pdf',
           tempPath,
           suggestedName,
-          defaultDir: defaultSaveDir(),
+          defaultDir: pdfDir,
         })
         manager.openPdfTab(tempPath, { untitledTitle: suggestedName })
         return true

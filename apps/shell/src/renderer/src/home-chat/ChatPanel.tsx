@@ -256,10 +256,36 @@ export function ChatPanel({
     unknownError: t('chatUnknownError'),
     docOpenedInTab: (title) => t('chatDocOpenedInTab', { title }),
   }
+  // P1-7 项目中心模型: an unattached session's first created document lazily
+  // creates a project named after the conversation and re-scopes the session,
+  // so the document (and its first save) lands inside that project
+  const ensureProjectRef = useRef<(title: string) => Promise<string | null>>(async () => null)
+  ensureProjectRef.current = async (title) => {
+    const existing = projectIdRef.current
+    if (existing) return existing
+    const api = window.chatOfficeProject
+    if (!api?.createProject) return null
+    const name = title.trim().slice(0, 40) || t('chatUnattached')
+    const project = await api.createProject(name, undefined)
+    if (!project?.id) return null
+    const sid = activeIdRef.current
+    if (sid) {
+      storeRef.current?.updateSession(sid, (s) => ({
+        ...s,
+        scope: { kind: 'project', id: project.id },
+      }))
+    }
+    projectIdRef.current = project.id
+    return project.id
+  }
+
   const controller = useMemo(
     () =>
       new HomeChatController(
-        createHomeChatBridge(() => projectIdRef.current),
+        createHomeChatBridge(
+          () => projectIdRef.current,
+          (title) => ensureProjectRef.current(title),
+        ),
         // stable facade: field reads delegate to the latest texts
         {
           get docBodyMissing() {

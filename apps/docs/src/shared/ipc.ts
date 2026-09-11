@@ -217,6 +217,9 @@ export interface CreateDocumentRequest {
   /** home-chat callers: dock the result into the Home right pane instead of a
    *  full tab (P1 契约 — the conversation stays beside the document) */
   dock?: boolean
+  /** project the document belongs to (项目中心模型): its root becomes the
+   *  first-save / direct-write directory instead of the global default */
+  projectId?: string
 }
 
 export interface CreateDocumentResult {

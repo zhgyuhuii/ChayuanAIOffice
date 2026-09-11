@@ -654,6 +654,12 @@ export class TabManager {
     this.onChanged()
   }
 
+  /** the webContents id behind a tab (shell-side saveDir queueing at dock time) */
+  webContentsIdOf(id: string): number | undefined {
+    const wc = this.tabs.find((t) => t.id === id)?.view?.webContents
+    return wc && !wc.isDestroyed() ? wc.id : undefined
+  }
+
   tabIdForWebContents(webContentsId: number): string | undefined {
     return this.tabs.find((t) => t.view?.webContents.id === webContentsId)?.id
   }
