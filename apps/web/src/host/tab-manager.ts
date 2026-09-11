@@ -6,6 +6,7 @@
  */
 
 import { getHomeLayout, onHomeLayoutChange } from '../../../shell/src/renderer/src/home-layout'
+import bootLogoUrl from '../assets/boot-logo.png'
 
 export type TabKind = 'home' | 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown'
 
@@ -29,7 +30,8 @@ type ChangedHandler = (tabs: TabSummary[]) => void
 const EDITOR_KEYS: TabKind[] = ['docs', 'sheets', 'slides', 'pdf', 'markdown']
 
 export function editorUrl(key: TabKind): string {
-  const map = (window as unknown as { CHATOFFICE_EDITORS?: Record<string, string> }).CHATOFFICE_EDITORS
+  const map = (window as unknown as { CHATOFFICE_EDITORS?: Record<string, string> })
+    .CHATOFFICE_EDITORS
   return map?.[key] ?? `/editors/${key}/`
 }
 
@@ -43,7 +45,11 @@ export class TabManager {
   private seq = 1
   /** Home stays pinned at index 0, exactly like the Electron strip. */
   private readonly tabs: TabEntry[] = [
-    { summary: { id: 'home', kind: 'home', title: '主页', closable: false, active: true }, frame: null, fileId: null },
+    {
+      summary: { id: 'home', kind: 'home', title: '主页', closable: false, active: true },
+      frame: null,
+      fileId: null,
+    },
   ]
   private readonly handlers = new Set<ChangedHandler>()
   private layer: HTMLDivElement | null = null
@@ -133,23 +139,35 @@ export class TabManager {
     const veil = document.createElement('div')
     veil.className = 'go-editor-veil'
     veil.style.cssText = [
-      'position:absolute', 'inset:0', 'z-index:2', 'display:grid', 'place-items:center',
-      'background:#fafafa', 'font:13px/1.6 system-ui,sans-serif', 'color:#666',
+      'position:absolute',
+      'inset:0',
+      'z-index:2',
+      'display:grid',
+      'place-items:center',
+      'background:#fafafa',
+      'font:13px/1.6 system-ui,sans-serif',
+      'color:#666',
       'transition:opacity .25s',
     ].join(';')
     const box = document.createElement('div')
     box.style.cssText = 'text-align:center'
-    const spinner = document.createElement('div')
-    spinner.style.cssText = [
-      'width:34px', 'height:34px', 'margin:0 auto 12px', 'border-radius:50%',
-      'border:3px solid #e0e0e0', 'border-top-color:#e35205', 'animation:go-spin 1s linear infinite',
+    const logo = document.createElement('img')
+    logo.src = bootLogoUrl
+    logo.alt = ''
+    logo.style.cssText = [
+      'width:56px',
+      'height:56px',
+      'margin:0 auto 14px',
+      'display:block',
+      'animation:go-boot-pulse 1.4s ease-in-out infinite',
     ].join(';')
     const text = document.createElement('div')
     text.textContent = '正在打开编辑器…'
-    box.append(spinner, text)
+    box.append(logo, text)
     veil.appendChild(box)
     const style = document.createElement('style')
-    style.textContent = '@keyframes go-spin{to{transform:rotate(360deg)}}'
+    style.textContent =
+      '@keyframes go-boot-pulse{0%,100%{opacity:.45;transform:scale(.94)}50%{opacity:1;transform:scale(1)}}'
     veil.appendChild(style)
     frame.insertAdjacentElement('afterend', veil)
     const drop = () => {
@@ -203,13 +221,20 @@ export class TabManager {
     const id = `tab-${this.seq++}`
     const title = opts.title ?? kind[0].toUpperCase() + kind.slice(1)
     const frame = document.createElement('iframe')
-    const hash = opts.fileId ? `#gofile=${encodeURIComponent(opts.fileId)}&name=${encodeURIComponent(title)}` : ''
+    const hash = opts.fileId
+      ? `#gofile=${encodeURIComponent(opts.fileId)}&name=${encodeURIComponent(title)}`
+      : ''
     frame.src = editorUrl(kind) + hash
-    frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;display:none'
+    frame.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;display:none'
     this.layer?.appendChild(frame)
     this.addLoadingVeil(frame)
     for (const t of this.tabs) t.summary.active = false
-    this.tabs.push({ summary: { id, kind, title, closable: true, active: true }, frame, fileId: opts.fileId ?? null })
+    this.tabs.push({
+      summary: { id, kind, title, closable: true, active: true },
+      frame,
+      fileId: opts.fileId ?? null,
+    })
     this.notify()
     return id
   }

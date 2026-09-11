@@ -4228,3 +4228,27 @@ button {
   /* clamp: intrinsic content height must not push the status bar off-screen */
   min-height: 0;
 }
+
+/* boot / loading logo（37 号家族品牌 logo，等待画面统一元素） */
+.boot-logo {
+  width: 64px;
+  height: 64px;
+  display: block;
+  margin: 0 auto 14px;
+  animation: boot-logo-pulse 1.4s ease-in-out infinite;
+}
+@keyframes boot-logo-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.pdf-placeholder {
+  flex-direction: column;
+  gap: 4px;
+}

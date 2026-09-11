@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import bootLogo from './assets/boot-logo.png'
 import { useAutoSavePref } from '@chatoffice/ui'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { type FindFocusRequest, type FindPanelStrings } from '@chatoffice/ui'
@@ -706,7 +707,12 @@ export default function App() {
             aiPanelOpen={aiOpen}
             onToggleAiPanel={() => setAiOpen((v) => !v)}
           />
-          {status === 'loading' && <div className="center-note">{t('loading')}</div>}
+          {status === 'loading' && (
+            <div className="center-note">
+              <img src={bootLogo} className="boot-logo" alt="" aria-hidden="true" />
+              {t('loading')}
+            </div>
+          )}
           <div className="app-content">
             <div className="editor-scroll" ref={scrollRef}>
               <div className="doc-page" style={{ zoom: zoom / 100 }}>

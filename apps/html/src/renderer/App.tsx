@@ -10,6 +10,7 @@ import {
   type FindPanelStrings,
   type FindTarget,
 } from '@chatoffice/ui'
+import bootLogo from './assets/boot-logo.png'
 import { useI18n } from './i18n/locale'
 import { parseDocText, serializeDocText, type Envelope } from './document/envelope'
 import { SourceEditor, type CursorInfo, type SourceEditorHandle } from './source/SourceEditor'
@@ -1182,7 +1183,13 @@ export default function App() {
   }, [saveState, dirty, t])
 
   if (status === 'error') return <div className="center-note">{t('loadFailed')}</div>
-  if (status === 'loading') return <div className="center-note">{t('loading')}</div>
+  if (status === 'loading')
+    return (
+      <div className="center-note">
+        <img src={bootLogo} className="boot-logo" alt="" aria-hidden="true" />
+        {t('loading')}
+      </div>
+    )
 
   const hasElement = !!selectedEntry && !STRUCTURAL.has(selectedEntry.tag)
   const panelShown = panelOpen && selectedEntry?.sid !== panelDismissedSid
@@ -1288,179 +1295,188 @@ export default function App() {
           />
 
           <div className="app-content">
-          {findTarget && (
-            <FindPanel
-              target={findTarget}
-              strings={findStrings}
-              onClose={closeFind}
-              focusRequest={findFocus}
-            />
-          )}
-          {view !== 'preview' && (
-            <Breadcrumb
-              text={text}
-              map={getMap()}
-              sid={selectedSid}
-              state={selectedState}
-              onSelect={(sid) => selectSid(sid, { reveal: true })}
-            />
-          )}
-          <div className={`workspace view-${canvasMode === 'present' ? 'preview' : view}`}>
-            <div className="pane pane-preview">
-              <div
-                className="preview-stage"
-                ref={stageRef}
-                data-device={device}
-                onPointerDown={(e) => {
-                  if (e.target === e.currentTarget) selectSid(null)
-                }}
-              >
-                <PreviewFrame
-                  ref={previewRef}
-                  url={previewUrl}
-                  nonce={previewNonce}
-                  zoom={zoom}
-                  onMessage={onInspectorMessage}
-                  onLoad={onPreviewLoad}
-                  draft={draftHtml}
-                />
-                {canvasMode === 'present' && (
-                  <button
-                    type="button"
-                    className="present-exit"
-                    onClick={() => setCanvasMode('edit')}
-                  >
-                    {t('presentExit')}
-                  </button>
-                )}
-                {canvasMode === 'edit' && hasElement && selectedEntry && selRect && selComputed && (
-                  <FloatToolbar
-                    barRef={barRef}
-                    {...floatPosition(selRect, floatLayout())}
-                    computed={selComputed}
-                    pending={pendingStylesRef.current}
-                    canEditText={selText.run !== null}
-                    onStyle={previewStyle}
-                    onEditText={() =>
-                      previewRef.current?.post({ type: 'gx:beginTextEdit', sid: selectedEntry.sid })
-                    }
-                    onReplaceImage={replaceImage}
-                    onCropImage={() => void openPictureDialog('crop')}
-                    onCutoutImage={() => void openPictureDialog('cutout')}
-                    canAskAi={askTarget !== null}
-                    onAskAi={askAi}
-                    tag={selectedEntry.tag}
-                    onMove={moveSelected}
-                    onDuplicate={duplicateSelected}
-                    onDelete={() => runManual([{ op: 'remove', sid: selectedEntry.sid }], 'clear')}
-                    panelOpen={panelShown}
-                    onTogglePanel={() => {
-                      if (panelShown) setPanelOpen(false)
-                      else {
-                        setPanelDismissedSid(null)
-                        setPanelOpen(true)
-                      }
-                    }}
+            {findTarget && (
+              <FindPanel
+                target={findTarget}
+                strings={findStrings}
+                onClose={closeFind}
+                focusRequest={findFocus}
+              />
+            )}
+            {view !== 'preview' && (
+              <Breadcrumb
+                text={text}
+                map={getMap()}
+                sid={selectedSid}
+                state={selectedState}
+                onSelect={(sid) => selectSid(sid, { reveal: true })}
+              />
+            )}
+            <div className={`workspace view-${canvasMode === 'present' ? 'preview' : view}`}>
+              <div className="pane pane-preview">
+                <div
+                  className="preview-stage"
+                  ref={stageRef}
+                  data-device={device}
+                  onPointerDown={(e) => {
+                    if (e.target === e.currentTarget) selectSid(null)
+                  }}
+                >
+                  <PreviewFrame
+                    ref={previewRef}
+                    url={previewUrl}
+                    nonce={previewNonce}
+                    zoom={zoom}
+                    onMessage={onInspectorMessage}
+                    onLoad={onPreviewLoad}
+                    draft={draftHtml}
                   />
-                )}
-                {canvasMode === 'edit' &&
-                  hasElement &&
-                  selectedEntry &&
-                  selComputed &&
-                  panelShown && (
-                    <StylePanel
-                      key={selectedEntry.sid}
-                      tag={selectedEntry.tag}
-                      computed={selComputed}
-                      textRun={selText.run}
-                      onStyle={previewStyle}
-                      onText={setRunText}
-                      onAttr={setAttr}
-                      draftRef={flushDraftsRef}
-                      onCustomCss={(css) => {
-                        const decls = parseDeclarations(css)
-                        if (Object.keys(decls).length) previewStyle(decls)
-                      }}
-                      pending={pendingCount > 0}
-                      onRevert={revertStyles}
-                      onClose={() => setPanelDismissedSid(selectedEntry.sid)}
-                    />
+                  {canvasMode === 'present' && (
+                    <button
+                      type="button"
+                      className="present-exit"
+                      onClick={() => setCanvasMode('edit')}
+                    >
+                      {t('presentExit')}
+                    </button>
                   )}
+                  {canvasMode === 'edit' &&
+                    hasElement &&
+                    selectedEntry &&
+                    selRect &&
+                    selComputed && (
+                      <FloatToolbar
+                        barRef={barRef}
+                        {...floatPosition(selRect, floatLayout())}
+                        computed={selComputed}
+                        pending={pendingStylesRef.current}
+                        canEditText={selText.run !== null}
+                        onStyle={previewStyle}
+                        onEditText={() =>
+                          previewRef.current?.post({
+                            type: 'gx:beginTextEdit',
+                            sid: selectedEntry.sid,
+                          })
+                        }
+                        onReplaceImage={replaceImage}
+                        onCropImage={() => void openPictureDialog('crop')}
+                        onCutoutImage={() => void openPictureDialog('cutout')}
+                        canAskAi={askTarget !== null}
+                        onAskAi={askAi}
+                        tag={selectedEntry.tag}
+                        onMove={moveSelected}
+                        onDuplicate={duplicateSelected}
+                        onDelete={() =>
+                          runManual([{ op: 'remove', sid: selectedEntry.sid }], 'clear')
+                        }
+                        panelOpen={panelShown}
+                        onTogglePanel={() => {
+                          if (panelShown) setPanelOpen(false)
+                          else {
+                            setPanelDismissedSid(null)
+                            setPanelOpen(true)
+                          }
+                        }}
+                      />
+                    )}
+                  {canvasMode === 'edit' &&
+                    hasElement &&
+                    selectedEntry &&
+                    selComputed &&
+                    panelShown && (
+                      <StylePanel
+                        key={selectedEntry.sid}
+                        tag={selectedEntry.tag}
+                        computed={selComputed}
+                        textRun={selText.run}
+                        onStyle={previewStyle}
+                        onText={setRunText}
+                        onAttr={setAttr}
+                        draftRef={flushDraftsRef}
+                        onCustomCss={(css) => {
+                          const decls = parseDeclarations(css)
+                          if (Object.keys(decls).length) previewStyle(decls)
+                        }}
+                        pending={pendingCount > 0}
+                        onRevert={revertStyles}
+                        onClose={() => setPanelDismissedSid(selectedEntry.sid)}
+                      />
+                    )}
+                </div>
+              </div>
+              <div className="pane pane-source">
+                <SourceEditor
+                  ref={editorRef}
+                  className="source-editor"
+                  initialText={text}
+                  onChange={onEditorChange}
+                  onCursor={onCursor}
+                />
               </div>
             </div>
-            <div className="pane pane-source">
-              <SourceEditor
-                ref={editorRef}
-                className="source-editor"
-                initialText={text}
-                onChange={onEditorChange}
-                onCursor={onCursor}
-              />
-            </div>
-          </div>
 
-          <footer className="status-bar">
-            <div className="status-left">
-              {notice ? (
-                <span className="status-item status-notice">{notice}</span>
-              ) : (
-                !path && <span className="status-item status-hint">{t('previewNeedsSave')}</span>
-              )}
-            </div>
-            <div className="status-right">
-              {statusText && (
-                <span className={`status-save status-${saveState}`}>{statusText}</span>
-              )}
-              {view !== 'preview' && (
-                <span className="status-item">
-                  {t('cursorPos', { line: cursor.line, col: cursor.col })}
-                </span>
-              )}
-              <span className="status-item">{t('charCount', { n: text.length })}</span>
-              <Dropdown
-                className="device-dd"
-                value={device}
-                ariaLabel={t('device')}
-                tip={t('device')}
-                options={DEVICES.map((d) => ({
-                  value: d,
-                  label: t(
-                    d === 'desktop' ? 'devDesktop' : d === 'tablet' ? 'devTablet' : 'devPhone',
-                  ),
-                }))}
-                onPick={setDevice}
-              />
-              <button
-                type="button"
-                className="zoom-btn"
-                aria-label={t('zoomOut')}
-                onClick={zoomOut}
-                disabled={zoom <= MIN_ZOOM}
-              >
-                −
-              </button>
-              <input
-                className="zoom-slider"
-                type="range"
-                min={MIN_ZOOM}
-                max={MAX_ZOOM}
-                step={ZOOM_STEP}
-                value={Math.round(zoom)}
-                aria-label={t('zoom')}
-                onChange={(event) => setZoom(Number(event.target.value))}
-              />
-              <button
-                type="button"
-                className="zoom-btn"
-                aria-label={t('zoomIn')}
-                onClick={zoomIn}
-                disabled={zoom >= MAX_ZOOM}
-              >
-                +
-              </button>
-              <span className="zoom-value">{Math.round(zoom)}%</span>
-            </div>
-          </footer>
+            <footer className="status-bar">
+              <div className="status-left">
+                {notice ? (
+                  <span className="status-item status-notice">{notice}</span>
+                ) : (
+                  !path && <span className="status-item status-hint">{t('previewNeedsSave')}</span>
+                )}
+              </div>
+              <div className="status-right">
+                {statusText && (
+                  <span className={`status-save status-${saveState}`}>{statusText}</span>
+                )}
+                {view !== 'preview' && (
+                  <span className="status-item">
+                    {t('cursorPos', { line: cursor.line, col: cursor.col })}
+                  </span>
+                )}
+                <span className="status-item">{t('charCount', { n: text.length })}</span>
+                <Dropdown
+                  className="device-dd"
+                  value={device}
+                  ariaLabel={t('device')}
+                  tip={t('device')}
+                  options={DEVICES.map((d) => ({
+                    value: d,
+                    label: t(
+                      d === 'desktop' ? 'devDesktop' : d === 'tablet' ? 'devTablet' : 'devPhone',
+                    ),
+                  }))}
+                  onPick={setDevice}
+                />
+                <button
+                  type="button"
+                  className="zoom-btn"
+                  aria-label={t('zoomOut')}
+                  onClick={zoomOut}
+                  disabled={zoom <= MIN_ZOOM}
+                >
+                  −
+                </button>
+                <input
+                  className="zoom-slider"
+                  type="range"
+                  min={MIN_ZOOM}
+                  max={MAX_ZOOM}
+                  step={ZOOM_STEP}
+                  value={Math.round(zoom)}
+                  aria-label={t('zoom')}
+                  onChange={(event) => setZoom(Number(event.target.value))}
+                />
+                <button
+                  type="button"
+                  className="zoom-btn"
+                  aria-label={t('zoomIn')}
+                  onClick={zoomIn}
+                  disabled={zoom >= MAX_ZOOM}
+                >
+                  +
+                </button>
+                <span className="zoom-value">{Math.round(zoom)}%</span>
+              </div>
+            </footer>
           </div>
         </div>
       </DockShell>

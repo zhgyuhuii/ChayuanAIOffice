@@ -3,9 +3,11 @@ import type { ReactElement } from 'react'
 import iconDocx from './assets/file-docx.png'
 import iconXlsx from './assets/file-xlsx.png'
 import iconPptx from './assets/file-pptx.png'
-import iconPdf from './assets/file-pdf.svg'
+import iconPdf from './assets/file-pdf.png'
 import iconMd from './assets/file-md.png'
-import iconHtml from './assets/file-html.svg'
+import iconHtml from './assets/file-html.png'
+import iconDwg from './assets/file-dwg.png'
+import iconMind from './assets/file-mind.png'
 import type {
   AccountStatus,
   CloudProjectKind,
@@ -19,18 +21,14 @@ import type {
 } from '../../shared/home-api'
 import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
 import { fileCountKey } from './counts'
+import { MonoFileIcon } from './file-icons'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
-import {
-  clampSidebarWidth,
-  getHomeLayout,
-  onHomeLayoutChange,
-  setHomeLayout,
-} from './home-layout'
+import { clampSidebarWidth, getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
 
 declare global {
   interface Window {
@@ -58,14 +56,21 @@ const PAGE_SIZE = 50
 
 const FILE_ICONS: Record<string, string> = {
   docx: iconDocx,
+  doc: iconDocx,
   xlsx: iconXlsx,
   xlsm: iconXlsx,
+  xls: iconXlsx,
+  csv: iconXlsx,
   pptx: iconPptx,
   pdf: iconPdf,
   md: iconMd,
   markdown: iconMd,
   html: iconHtml,
   htm: iconHtml,
+  dwg: iconDwg,
+  dxf: iconDwg,
+  mind: iconMind,
+  mindmap: iconMind,
 }
 
 /* Formats the open-local card advertises. Too long for the card at any window
@@ -76,8 +81,7 @@ const OPEN_LOCAL_EXTENSIONS = '.docx / .xlsx / .xlsm / .xls / .csv / .pptx / .pd
 function FileBadge({ ext, size }: { ext: string; size: number }) {
   const icon = FILE_ICONS[ext]
   if (icon) {
-    // the brand document icons are 162×211 (portrait sheet): scale by height
-    // and let the width follow the artwork's aspect ratio
+    // brand file icons are square squircle badges: scale by height, width follows
     return <img src={icon} style={{ height: size, width: 'auto' }} alt="" aria-hidden="true" />
   }
   const label = ext ? ext[0].toUpperCase() : '?'
@@ -429,24 +433,25 @@ function ProjectPanel({
                   }
                 }}
               >
-                {projectSelect && (() => {
-                  const info = projectSelect(proj.id)
-                  return (
-                    <input
-                      ref={(el) => {
-                        if (el) el.indeterminate = info.indeterminate
-                      }}
-                      type="checkbox"
-                      className="proj-check"
-                      checked={info.checked}
-                      onChange={() => onToggleProjectSelect?.(proj.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={t('selectFile', {
-                        name: proj.isDefault ? t('defaultProject') : proj.name,
-                      })}
-                    />
-                  )
-                })()}
+                {projectSelect &&
+                  (() => {
+                    const info = projectSelect(proj.id)
+                    return (
+                      <input
+                        ref={(el) => {
+                          if (el) el.indeterminate = info.indeterminate
+                        }}
+                        type="checkbox"
+                        className="proj-check"
+                        checked={info.checked}
+                        onChange={() => onToggleProjectSelect?.(proj.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={t('selectFile', {
+                          name: proj.isDefault ? t('defaultProject') : proj.name,
+                        })}
+                      />
+                    )
+                  })()}
                 <button
                   className={`proj-expand-btn${isExpanded ? ' expanded' : ''}`}
                   aria-label={isExpanded ? t('collapse') : t('expand')}
@@ -494,7 +499,10 @@ function ProjectPanel({
                     }}
                   />
                 ) : (
-                  <span className="proj-item-name">
+                  <span
+                    className="proj-item-name"
+                    title={proj.isDefault ? t('defaultProject') : proj.name}
+                  >
                     {proj.isDefault ? t('defaultProject') : proj.name}
                   </span>
                 )}
@@ -561,62 +569,62 @@ function ProjectPanel({
                 {!proj.isDefault && (
                   <div
                     className="proj-menu-wrap"
-                  ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
-                >
-                  <button
-                    className="proj-more-btn"
-                    aria-label={t('projMoreActions', { name: proj.name })}
-                    aria-expanded={projMenu?.id === proj.id}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      if (projMenu?.id === proj.id) {
-                        setProjMenu(null)
-                        return
-                      }
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      setProjMenu({
-                        id: proj.id,
-                        top: rect.bottom + 4,
-                        right: window.innerWidth - rect.right,
-                      })
-                    }}
+                    ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
                   >
-                    <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                      <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-                      <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-                      <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
-                    </svg>
-                  </button>
-                  {projMenu?.id === proj.id && (
-                    <div
-                      className="proj-menu"
-                      role="menu"
-                      style={{ top: projMenu.top, right: projMenu.right }}
-                    >
-                      <button
-                        role="menuitem"
-                        onClick={(e) => {
-                          e.stopPropagation()
+                    <button
+                      className="proj-more-btn"
+                      aria-label={t('projMoreActions', { name: proj.name })}
+                      aria-expanded={projMenu?.id === proj.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (projMenu?.id === proj.id) {
                           setProjMenu(null)
-                          setRenaming({ id: proj.id, value: proj.name })
-                        }}
+                          return
+                        }
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        setProjMenu({
+                          id: proj.id,
+                          top: rect.bottom + 4,
+                          right: window.innerWidth - rect.right,
+                        })
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
+                        <circle cx="8" cy="8" r="1.35" fill="currentColor" />
+                        <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
+                      </svg>
+                    </button>
+                    {projMenu?.id === proj.id && (
+                      <div
+                        className="proj-menu"
+                        role="menu"
+                        style={{ top: projMenu.top, right: projMenu.right }}
                       >
-                        {t('rename')}
-                      </button>
-                      <div className="row-menu-divider" />
-                      <button
-                        role="menuitem"
-                        className="danger"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          doDelete(proj.id)
-                        }}
-                      >
-                        {t('deleteProject')}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                        <button
+                          role="menuitem"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setProjMenu(null)
+                            setRenaming({ id: proj.id, value: proj.name })
+                          }}
+                        >
+                          {t('rename')}
+                        </button>
+                        <div className="row-menu-divider" />
+                        <button
+                          role="menuitem"
+                          className="danger"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            doDelete(proj.id)
+                          }}
+                        >
+                          {t('deleteProject')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -1350,13 +1358,18 @@ export function Home() {
       .catch(() => setPendingUntitled([]))
   }, [])
   const [rowMenu, setRowMenu] = useState<string | null>(null)
+  const [newMenuOpen, setNewMenuOpen] = useState(false)
+  const newMenuWrapRef = useRef<HTMLSpanElement>(null)
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false)
+  const filterMenuWrapRef = useRef<HTMLSpanElement>(null)
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
   const rowMenuWrapRef = useRef<HTMLSpanElement>(null)
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
   /** 待确认的磁盘删除：paths=文件，sessionIds=显式勾选的会话（执行时还会并入被删文件下的对话） */
-  const [confirmDelete, setConfirmDelete] = useState<{ paths: string[]; sessionIds: string[] } | null>(
-    null,
-  )
+  const [confirmDelete, setConfirmDelete] = useState<{
+    paths: string[]
+    sessionIds: string[]
+  } | null>(null)
   // unavailable recent entry (missing flag) the user clicked — offer list removal
   const [confirmMissing, setConfirmMissing] = useState<RecentEntry | null>(null)
   // name in the greeting; omitted when logged out
@@ -1548,6 +1561,12 @@ export function Home() {
   useDismissablePopover(rowMenu !== null, () => setRowMenu(null), {
     inside: () => [rowMenuWrapRef.current],
   })
+  useDismissablePopover(newMenuOpen, () => setNewMenuOpen(false), {
+    inside: () => [newMenuWrapRef.current],
+  })
+  useDismissablePopover(filterMenuOpen, () => setFilterMenuOpen(false), {
+    inside: () => [filterMenuWrapRef.current],
+  })
 
   // Escape closes the row menu and the delete-confirm dialog
   useEffect(() => {
@@ -1671,7 +1690,10 @@ export function Home() {
       void api.listFiles(id).then(async (paths) => {
         const stats = await window.chatOffice.statPaths(paths)
         if (!active) return
-        setProjectFilesMap((prev) => ({ ...prev, [id]: stats.sort((a, b) => b.mtimeMs - a.mtimeMs) }))
+        setProjectFilesMap((prev) => ({
+          ...prev,
+          [id]: stats.sort((a, b) => b.mtimeMs - a.mtimeMs),
+        }))
       })
     }
     return () => {
@@ -1801,9 +1823,7 @@ export function Home() {
   /** 挂在待删文件下的对话会话 id（连带清理，共识：文件没了对话无意义） */
   const chatIdsUnderFiles = (paths: string[]) =>
     (chatStore.sessions ?? [])
-      .filter(
-        (s) => s.scope?.kind === 'file' && paths.includes(s.scope.id) && !s.handedOff,
-      )
+      .filter((s) => s.scope?.kind === 'file' && paths.includes(s.scope.id) && !s.handedOff)
       .map((s) => s.id)
 
   const requestDeleteSelection = (paths: string[], sessionIds: string[]) => {
@@ -1910,32 +1930,68 @@ export function Home() {
 
   function renderSideActions() {
     return (
-      <div className="side-links">
-        {NEW_ITEMS.map((item) => (
-          <a
-            key={item.ext}
-            className="side-link"
-            href="#"
-            title={item.sub}
-            onClick={(event) => {
-              event.preventDefault()
-              void item.action()
-            }}
+      <div className="side-launcher">
+        <span className="launch-anchor" ref={newMenuWrapRef}>
+          <button
+            className={`launch-btn primary${newMenuOpen ? ' open' : ''}`}
+            aria-expanded={newMenuOpen}
+            onClick={() => setNewMenuOpen((v) => !v)}
           >
-            <FileBadge ext={item.ext} size={15} />
-            <span className="side-link-label">{item.title}</span>
-          </a>
-        ))}
-        <a
-          className="side-link"
-          href="#"
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M7 1v12M1 7h12"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="launch-label">{t('new')}</span>
+            <svg
+              className="launch-chevron"
+              width="10"
+              height="10"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 6l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          {newMenuOpen && (
+            <div className="launch-menu" role="menu">
+              <div className="launch-grid">
+                {NEW_ITEMS.map((item) => (
+                  <button
+                    key={item.ext}
+                    className="launch-item"
+                    role="menuitem"
+                    title={item.sub}
+                    onClick={() => {
+                      setNewMenuOpen(false)
+                      void item.action()
+                    }}
+                  >
+                    <FileBadge ext={item.ext} size={30} />
+                    <span className="launch-item-label">{item.title}</span>
+                    <span className="launch-item-sub">{item.sub}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </span>
+        <button
+          className="launch-btn secondary"
           title={OPEN_LOCAL_EXTENSIONS}
-          onClick={(event) => {
-            event.preventDefault()
-            void window.chatOffice.browse()
-          }}
+          onClick={() => void window.chatOffice.browse()}
         >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
               d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
               stroke="currentColor"
@@ -1943,8 +1999,8 @@ export function Home() {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="side-link-label">{t('openLocal')}</span>
-        </a>
+          <span className="launch-label">{t('openLocal')}</span>
+        </button>
       </div>
     )
   }
@@ -1998,7 +2054,7 @@ export function Home() {
             }
           }}
         >
-          <FileBadge ext={entry.ext} size={bare ? 15 : 18} />
+          <MonoFileIcon ext={entry.ext} size={16} />
           {isRenaming ? (
             <input
               className="rename-input side"
@@ -2328,13 +2384,9 @@ export function Home() {
     )
     const tasks = q
       ? projectPool.filter((s) => sessionMatchesQuery(s, q))
-      : projectPool.filter(
-          (s) => s.messages.length > 0 || s.id === chatStore.activeId,
-        )
+      : projectPool.filter((s) => s.messages.length > 0 || s.id === chatStore.activeId)
     const allFiles = projectFilesMap[projectId] ?? []
-    const fileEntries = q
-      ? allFiles.filter((e) => e.name.toLowerCase().includes(q))
-      : allFiles
+    const fileEntries = q ? allFiles.filter((e) => e.name.toLowerCase().includes(q)) : allFiles
     /** chats attached to a file node; searching looks at titles + user questions */
     const chatsFor = (path: string) => {
       const pool = (chatStore.sessions ?? []).filter(
@@ -2347,9 +2399,7 @@ export function Home() {
     return (
       <>
         {tasks.length > 0 && (
-          <ul className="tree-chat-list">
-            {tasks.map((s) => renderTreeChat(s, 'task', zone))}
-          </ul>
+          <ul className="tree-chat-list">{tasks.map((s) => renderTreeChat(s, 'task', zone))}</ul>
         )}
         {fileEntries.length === 0 ? (
           tasks.length === 0 ? (
@@ -2403,6 +2453,7 @@ export function Home() {
     onToggle: () => void,
     onClear?: () => void,
     clearLabel?: string,
+    headExtra?: ReactElement,
   ): ReactElement {
     return (
       <div
@@ -2433,6 +2484,7 @@ export function Home() {
         </svg>
         <span className="side-files-title">{title}</span>
         <span className="side-files-count">{t(fileCountKey(count), { n: count })}</span>
+        {headExtra}
         {onClear && (
           <button
             className="row-remove-btn side group-clear"
@@ -2510,6 +2562,45 @@ export function Home() {
           () => setHomeLayout({ recentCollapsed: !layout.recentCollapsed }),
           clearAllRecent,
           t('clearRecent'),
+          <span className="funnel-anchor" ref={filterMenuWrapRef}>
+            <button
+              className={`side-head-btn funnel${filter !== 'all' ? ' active' : ''}${filterMenuOpen ? ' open' : ''}`}
+              aria-label={t('filterAria')}
+              title={t('filterAria')}
+              onClick={(event) => {
+                event.stopPropagation()
+                setFilterMenuOpen((v) => !v)
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {filterMenuOpen && (
+              <div className="funnel-menu" role="menu">
+                {RECENT_FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    role="menuitem"
+                    className={`funnel-item${filter === f.key ? ' active' : ''}`}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      changeFilter(f.key)
+                      setFilterMenuOpen(false)
+                    }}
+                  >
+                    <span className="funnel-check">{filter === f.key ? '✓' : ''}</span>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </span>,
         )}
         <div className="side-group-body">
           {selCount > 0 && (
@@ -2526,17 +2617,6 @@ export function Home() {
               </button>
             </div>
           )}
-          <div className="side-filters" role="tablist" aria-label={t('filterAria')}>
-            {RECENT_FILTERS.map((f) => (
-              <button
-                key={f.key}
-                className={`side-filter${filter === f.key ? ' active' : ''}`}
-                onClick={() => changeFilter(f.key)}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
           {entries.length === 0 ? (
             <p className="side-files-empty">
               {listTotal === 0 ? t('emptyRecent') : t('emptyFiltered')}
@@ -2589,19 +2669,22 @@ export function Home() {
           </span>
         </div>
       )}
-      <aside className="sidebar" style={{ width: layout.sidebarWidth }}>
+      <aside
+        className={`sidebar${layout.sidebarWidth < 210 ? ' narrow' : ''}`}
+        style={{ width: layout.sidebarWidth }}
+      >
         {renderSideActions()}
 
         {loggedIn && (
           <nav className="sidebar-nav">
             <button
-              className={`nav-item${cloudMode ? ' active' : ''}`}
+              className={`side-sec-head-row cloud-head${cloudMode ? ' active' : ''}`}
               onClick={() => {
                 setCloudMode(!cloudMode)
                 setRowMenu(null)
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path
                   d="M8 1.8l1.55 4.65L14.2 8l-4.65 1.55L8 14.2 6.45 9.55 1.8 8l4.65-1.55z"
                   stroke="currentColor"
@@ -2609,7 +2692,7 @@ export function Home() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="nav-label">{t('navCloud')}</span>
+              <span className="side-files-title">{t('navCloud')}</span>
               <svg
                 className="nav-external"
                 width="13"
@@ -2637,13 +2720,7 @@ export function Home() {
             <div className={`side-sec${hasProjSelection ? ' selecting' : ''}`}>
               <div className="proj-search">
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <circle
-                    cx="7"
-                    cy="7"
-                    r="4.4"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                  />
+                  <circle cx="7" cy="7" r="4.4" stroke="currentColor" strokeWidth="1.3" />
                   <path
                     d="M10.4 10.4L14 14"
                     stroke="currentColor"
@@ -2696,7 +2773,10 @@ export function Home() {
                           return t('selectedFilesChats', { n: s.files, m: s.chats })
                         })()}
                       </span>
-                      <button className="zone-toolbar-btn danger" onClick={batchDeleteProjectSelection}>
+                      <button
+                        className="zone-toolbar-btn danger"
+                        onClick={batchDeleteProjectSelection}
+                      >
                         {t('deleteFiles')}
                       </button>
                       <button className="zone-toolbar-btn" onClick={clearProjSelection}>
@@ -2707,8 +2787,7 @@ export function Home() {
                 }
                 renderChildren={(id) => {
                   const q = projQuery.trim().toLowerCase()
-                  const show =
-                    expandedProjects.includes(id) || (q !== '' && projectHasMatch(id, q))
+                  const show = expandedProjects.includes(id) || (q !== '' && projectHasMatch(id, q))
                   return show ? renderProjectFiles(id, q) : null
                 }}
               />

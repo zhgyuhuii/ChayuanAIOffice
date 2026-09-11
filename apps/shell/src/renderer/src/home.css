@@ -2347,15 +2347,6 @@ body.sidebar-resizing {
   flex-shrink: 0;
 }
 
-.side-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 0 4px;
-  margin-bottom: 8px;
-  flex-shrink: 0;
-}
-
 .side-filter {
   padding: 3px 9px;
   border: none;
@@ -3630,26 +3621,6 @@ body.sidebar-resizing {
 }
 
 /* 侧栏新建/打开入口：紧凑 a 标签行 */
-.side-links {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 2px 6px 8px;
-}
-.side-link {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 24px;
-  padding: 0 7px;
-  border-radius: 5px;
-  font-size: 12px;
-  color: var(--text-secondary, #555);
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-}
 .side-link:hover {
   background: var(--surface-hover, rgba(0, 0, 0, 0.06));
   color: var(--text-primary, #222);
@@ -3700,4 +3671,270 @@ body.sidebar-resizing {
 
 .pending-untitled-banner button:hover {
   background: var(--bg-hover);
+}
+
+/* ═══ 侧栏重构（37 家族期）：发射器双钮 / 分区头统一 / 单色行 / 省略号 ═══ */
+
+/* ── 发射器：＋新建（唯一饱和元素）+ 打开 ── */
+.side-launcher {
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px 10px;
+  position: relative;
+}
+.launch-anchor {
+  position: relative;
+  flex: 1.35;
+  display: flex;
+  min-width: 0;
+}
+.launch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.launch-btn.primary {
+  background: linear-gradient(135deg, #e3342f, #f4542c);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(227, 52, 47, 0.28);
+}
+.launch-btn.primary:hover,
+.launch-btn.primary.open {
+  background: linear-gradient(135deg, #d02b26, #e84a22);
+}
+.launch-btn.secondary {
+  flex: 1;
+  border-color: var(--border);
+  color: var(--text-secondary);
+  background: transparent;
+}
+.launch-btn.secondary:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+.launch-chevron {
+  margin-left: auto;
+  opacity: 0.75;
+}
+.launch-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 70;
+  width: 268px;
+  padding: 8px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(15, 20, 40, 0.16);
+}
+.launch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+.launch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 4px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+.launch-item:hover {
+  background: var(--surface-subtle);
+}
+.launch-item-label {
+  font-size: 12px;
+  color: var(--text);
+}
+.launch-item-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+/* ── 分区头统一规格：11px 灰字 · count 右对齐 · hover 显操作 ── */
+.side-group-head,
+.proj-panel-head,
+.side-sec-head-row.cloud-head {
+  align-items: center;
+  min-height: 26px;
+}
+.side-group-head .side-files-title,
+.proj-panel-head .proj-panel-title,
+.cloud-head .side-files-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.side-files-head,
+.side-group-head {
+  align-items: center;
+}
+.side-files-count,
+.proj-item-count {
+  margin-left: auto;
+  font-size: 11px;
+}
+.side-group-head .group-clear,
+.side-files-head .group-clear {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.side-group-head:hover .group-clear,
+.side-files-head:hover .group-clear {
+  opacity: 1;
+}
+.proj-add-btn {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.proj-panel-head:hover .proj-add-btn {
+  opacity: 1;
+}
+
+/* 云端分区头（由孤立 nav 行降为分区头） */
+.side-sec-head-row.cloud-head {
+  display: flex;
+  gap: 7px;
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+.cloud-head:hover {
+  background: var(--surface-subtle);
+}
+.cloud-head .nav-external {
+  margin-left: auto;
+  opacity: 0.6;
+}
+.cloud-head.active .side-files-title {
+  color: var(--accent);
+}
+
+/* ── 行：26px 密度 + 单色徽标槽 ── */
+.side-file {
+  min-height: 26px;
+}
+.side-file-main {
+  gap: 7px;
+  padding: 2px 0;
+}
+.side-file-name,
+.proj-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 横向滚动废除：长文件名一律省略号（Q6） ── */
+.sidebar-scroll {
+  overflow-x: hidden;
+}
+.sidebar-scroll > .side-sec,
+.sidebar-scroll > .side-files {
+  min-width: 0;
+}
+
+/* ── 漏斗：recents 类型筛选（Q7，降级自常驻 chips） ── */
+.side-head-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.side-group-head:hover .side-head-btn,
+.side-head-btn.open,
+.side-head-btn.active {
+  opacity: 1;
+}
+.side-head-btn:hover,
+.side-head-btn.open {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+.side-head-btn.funnel.active {
+  color: var(--accent);
+}
+.funnel-anchor {
+  position: relative;
+  display: inline-flex;
+}
+.funnel-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 70;
+  min-width: 128px;
+  padding: 5px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(15, 20, 40, 0.16);
+}
+.funnel-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.funnel-item:hover {
+  background: var(--surface-subtle);
+}
+.funnel-item.active {
+  color: var(--accent);
+}
+.funnel-check {
+  width: 12px;
+  flex-shrink: 0;
+}
+
+/* ── 极窄侧栏（180-210px）：双钮收纯图标 ── */
+.sidebar.narrow .launch-label,
+.sidebar.narrow .launch-chevron {
+  display: none;
+}
+.sidebar.narrow .launch-btn.secondary {
+  flex: 0 0 32px;
+  width: 32px;
+}
+.sidebar.narrow .launch-btn .launch-label + * {
+  display: none;
 }

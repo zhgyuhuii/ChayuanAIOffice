@@ -7,6 +7,8 @@ import tabIconDocx from './assets/file-docx.png'
 import tabIconXlsx from './assets/file-xlsx.png'
 import tabIconPptx from './assets/file-pptx.png'
 import tabIconMd from './assets/file-md.png'
+import tabIconPdf from './assets/file-pdf.png'
+import tabIconHtml from './assets/file-html.png'
 
 declare global {
   interface Window {
@@ -112,15 +114,8 @@ function SheetIcon() {
 }
 
 function PdfIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 240 240" fill="none" aria-hidden="true">
-      <rect width="240" height="240" rx="48" fill="#EF4444" />
-      <path
-        d="M102.719 63.0153C105.738 52.1477 126.265 50.9398 128.68 66.6374C131.699 75.6938 127.472 90.7878 125.661 100.448C130.491 113.127 137.133 122.183 147.397 128.22C158.264 127.013 179.395 125.202 186.641 132.447C192.678 138.485 191.471 155.389 175.774 155.389C166.717 155.389 153.434 151.767 141.963 145.126C129.284 147.541 114.19 152.974 100.907 157.804C70.7196 209.727 53.2104 186.181 55.0216 176.521C57.4366 164.446 73.7385 154.786 85.8136 148.749C91.8511 137.277 100.907 117.957 106.944 103.466C102.718 86.5617 100.304 72.6754 102.719 63.0153ZM85.2149 158.437C81.5921 161.456 70.1214 171.117 67.1026 179.569C67.1026 179.569 73.7436 176.55 85.2149 158.437ZM116.605 113.718C112.378 124.586 107.548 136.662 101.511 146.925C111.171 142.699 122.039 137.869 134.718 134.85C127.473 130.02 121.435 122.775 116.605 113.718ZM180.613 143.932C183.028 142.121 179.406 137.291 158.275 139.102C177.595 147.555 180.613 143.932 180.613 143.932ZM116.013 64.2419C114.805 64.2436 114.806 80.5436 117.221 88.9958C120.239 83.5616 120.843 64.2421 116.013 64.2419Z"
-        fill="#fff"
-      />
-    </svg>
-  )
+  // brand file icon (square squircle badge), height-driven
+  return <img src={tabIconPdf} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 function HomeIcon() {
@@ -156,18 +151,8 @@ function MarkdownIcon() {
 }
 
 function HtmlIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 240 240" fill="none" aria-hidden="true">
-      <rect width="240" height="240" rx="48" fill="#0FA3A3" />
-      <path
-        d="M92 72L44 120L92 168M148 72L196 120L148 168"
-        stroke="#fff"
-        strokeWidth="20"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+  // brand file icon (square squircle badge), height-driven
+  return <img src={tabIconHtml} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 const KIND_ICON: Record<TabSummary['kind'], ReactElement> = {

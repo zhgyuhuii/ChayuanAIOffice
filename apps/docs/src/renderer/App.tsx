@@ -1,3 +1,4 @@
+import bootLogo from './assets/boot-logo.png'
 import { DOC_CSS_COMMITTED_EVENT } from './editor/cjk-punct-shrink'
 import {
   useCallback,
@@ -19,7 +20,8 @@ import {
   Dropdown,
   useUIMode,
   isMacStandaloneWindow,
-  useAutoSavePref, } from '@chatoffice/ui'
+  useAutoSavePref,
+} from '@chatoffice/ui'
 import { createCommandRegistry, MobileRibbon } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
 import { IconOutlineView, IconPrintLayout, IconReadMode, IconWebLayout } from './components/icons'
@@ -5349,7 +5351,10 @@ export function App() {
                       </div>
                     </div>
                   ) : (
-                    <div className="start-screen start-booting">{t('appStartOpening')}</div>
+                    <div className="start-screen start-booting">
+                      <img src={bootLogo} className="boot-logo" alt="" aria-hidden="true" />
+                      {t('appStartOpening')}
+                    </div>
                   )}
                 </main>
                 {doc && splitView && (

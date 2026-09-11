@@ -1,3 +1,4 @@
+import bootLogo from './assets/boot-logo.png'
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type {
   GroupRenderNode,
@@ -3901,7 +3902,10 @@ export function App() {
             )}
             <div className="workspace">
               {!slide ? (
-                <div className="start-screen start-booting">{t('appStartOpening')}</div>
+                <div className="start-screen start-booting">
+                  <img src={bootLogo} className="boot-logo" alt="" aria-hidden="true" />
+                  {t('appStartOpening')}
+                </div>
               ) : viewMode === 'reading' ? (
                 (() => {
                   // Reading view: page fills the available area, click/arrow keys to turn pages, Esc to exit
