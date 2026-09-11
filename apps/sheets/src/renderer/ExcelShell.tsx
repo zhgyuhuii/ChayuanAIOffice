@@ -1028,9 +1028,7 @@ export function ExcelShell({
                       setCfRuleMode(mode)
                     }
                   } else if (command.startsWith('cf-rank-dialog:')) {
-                    const [bottom, percent] = command
-                      .slice('cf-rank-dialog:'.length)
-                      .split(':')
+                    const [bottom, percent] = command.slice('cf-rank-dialog:'.length).split(':')
                     setCfRuleMode(
                       bottom === '1'
                         ? percent === '1'
@@ -1245,7 +1243,9 @@ export function ExcelShell({
                   ...(selectionFormat.fontSize ? { fontSize: selectionFormat.fontSize } : {}),
                   ...(selectionFormat.fontColor ? { fontColor: selectionFormat.fontColor } : {}),
                   ...(selectionFormat.fillColor ? { fillColor: selectionFormat.fillColor } : {}),
-                  ...(selectionFormat.numberFormat ? { numberFormat: selectionFormat.numberFormat } : {}),
+                  ...(selectionFormat.numberFormat
+                    ? { numberFormat: selectionFormat.numberFormat }
+                    : {}),
                 }
               : null
           }
@@ -4320,11 +4320,11 @@ function Ribbon({
             <div className="ribbon-tool large as-button" data-tip={t('appFormatAsTableTitle')}>
               <span className="tool-icon-row">
                 <ToolSymbol symbol="▦" />
-                <CaretIcon />
               </span>
               <span>
                 <strong>{t('appTableStyleMenu')}</strong>
               </span>
+              <CaretIcon />
               <TableStyleGallerySelect
                 label={t('appTableStyleMenu')}
                 data-tip={t('appFormatAsTableTitle')}
@@ -4335,11 +4335,11 @@ function Ribbon({
             <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
               <span className="tool-icon-row">
                 <ToolSymbol symbol="🎨" />
-                <CaretIcon />
               </span>
               <span>
                 <strong>{t('appCellStyles')}</strong>
               </span>
+              <CaretIcon />
               <CellStyleSelect
                 label={t('appCellStyles')}
                 data-tip={t('appCellStylesTitle')}
@@ -4397,8 +4397,16 @@ function Ribbon({
                   sep: entry.wide,
                 })),
               },
-              { value: 'fill-to-sheets', label: t('appFillToSheets'), icon: <OptSample>⇉</OptSample> },
-              { value: 'series-open', label: `${t('appFillSeries')}…`, icon: <OptSample>⋮⋮⋮</OptSample> },
+              {
+                value: 'fill-to-sheets',
+                label: t('appFillToSheets'),
+                icon: <OptSample>⇉</OptSample>,
+              },
+              {
+                value: 'series-open',
+                label: `${t('appFillSeries')}…`,
+                icon: <OptSample>⋮⋮⋮</OptSample>,
+              },
               { value: 'flash-fill', label: t('appFillSmart'), icon: <OptSample>⚡</OptSample> },
               { value: 'ai-fill', label: t('appFillAi'), icon: <OptSample>✨</OptSample> },
             ]}
@@ -4411,12 +4419,28 @@ function Ribbon({
             options={[
               { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
               { value: 'autofn:AVERAGE', label: t('appFnAverage'), icon: <OptSample>x̄</OptSample> },
-              { value: 'autofn:COUNT', label: t('appFnCountNumbers'), icon: <OptSample>#</OptSample> },
+              {
+                value: 'autofn:COUNT',
+                label: t('appFnCountNumbers'),
+                icon: <OptSample>#</OptSample>,
+              },
               { value: 'autofn:MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
               { value: 'autofn:MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
-              { value: 'cond-stats-open', label: `${t('appCondStats')}…`, icon: <OptSample>¿Σ</OptSample> },
-              { value: 'insert-function-open', label: `${t('appFnCatMore')}…`, icon: <OptSample>fx</OptSample> },
-              { value: 'ai-write-formula', label: t('appWriteFormula'), icon: <OptSample>✨fx</OptSample> },
+              {
+                value: 'cond-stats-open',
+                label: `${t('appCondStats')}…`,
+                icon: <OptSample>¿Σ</OptSample>,
+              },
+              {
+                value: 'insert-function-open',
+                label: `${t('appFnCatMore')}…`,
+                icon: <OptSample>fx</OptSample>,
+              },
+              {
+                value: 'ai-write-formula',
+                label: t('appWriteFormula'),
+                icon: <OptSample>✨fx</OptSample>,
+              },
             ]}
             onPick={onCommand}
           />
@@ -4427,7 +4451,11 @@ function Ribbon({
             options={[
               { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
               { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
-              { value: 'sort-custom-open', label: t('appCustomSort'), icon: <OptSample>⚙</OptSample> },
+              {
+                value: 'sort-custom-open',
+                label: t('appCustomSort'),
+                icon: <OptSample>⚙</OptSample>,
+              },
             ]}
             onPick={onCommand}
           />
@@ -4437,7 +4465,11 @@ function Ribbon({
             symbol="▽"
             options={[
               { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
-              { value: 'filter-advanced', label: t('appFilterAdvanced'), icon: <OptSample>⚙▽</OptSample> },
+              {
+                value: 'filter-advanced',
+                label: t('appFilterAdvanced'),
+                icon: <OptSample>⚙▽</OptSample>,
+              },
               { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
               { value: 'filter-clear', label: t('appShowAll'), icon: <OptSample>☀</OptSample> },
             ]}
@@ -4455,11 +4487,27 @@ function Ribbon({
             tip={t('appFindTitle')}
             symbol="🔍"
             options={[
-              { value: 'find', label: `${t('appFind')} ${platformShortcuts('⌘F')}`, icon: <OptSample>🔍</OptSample> },
+              {
+                value: 'find',
+                label: `${t('appFind')} ${platformShortcuts('⌘F')}`,
+                icon: <OptSample>🔍</OptSample>,
+              },
               { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
-              { value: 'goto-open', label: `${t('appGoTo')} ${platformShortcuts('⌘G')}`, icon: <OptSample>⌖</OptSample> },
-              { value: 'select-object', label: t('appSelectObjects'), icon: <OptSample>☐</OptSample> },
-              { value: 'selection-pane-open', label: t('appSelectionPane'), icon: <OptSample>☰</OptSample> },
+              {
+                value: 'goto-open',
+                label: `${t('appGoTo')} ${platformShortcuts('⌘G')}`,
+                icon: <OptSample>⌖</OptSample>,
+              },
+              {
+                value: 'select-object',
+                label: t('appSelectObjects'),
+                icon: <OptSample>☐</OptSample>,
+              },
+              {
+                value: 'selection-pane-open',
+                label: t('appSelectionPane'),
+                icon: <OptSample>☰</OptSample>,
+              },
             ]}
             onPick={onCommand}
           />
@@ -4469,8 +4517,16 @@ function Ribbon({
             symbol="⌫"
             options={[
               { value: 'clear-all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
-              { value: 'clear-formats', label: t('appClearFormats'), icon: <OptSample>Aa</OptSample> },
-              { value: 'clear-contents', label: t('appClearContents'), icon: <OptSample>123</OptSample> },
+              {
+                value: 'clear-formats',
+                label: t('appClearFormats'),
+                icon: <OptSample>Aa</OptSample>,
+              },
+              {
+                value: 'clear-contents',
+                label: t('appClearContents'),
+                icon: <OptSample>123</OptSample>,
+              },
             ]}
             onPick={onCommand}
           />
@@ -5962,62 +6018,222 @@ const TABLE_STYLE_GALLERY: ReadonlyArray<{
     color: '#4472C4',
     labelKey: 'appTableStyleColBlue',
     presets: [
-      { value: 'TableStyleMedium2', nameKey: 'appTableStyleMediumN', variant: 2, header: '#4472C4', ink: '#FFFFFF', band: '#D9E1F2', grid: null },
-      { value: 'TableStyleLight2', nameKey: 'appTableStyleLightN', variant: 2, header: '#4472C4', ink: '#FFFFFF', band: null, grid: '#B4C6E7' },
-      { value: 'TableStyleDark2', nameKey: 'appTableStyleDarkN', variant: 2, header: '#2F5597', ink: '#FFFFFF', band: '#D9E1F2', grid: null },
+      {
+        value: 'TableStyleMedium2',
+        nameKey: 'appTableStyleMediumN',
+        variant: 2,
+        header: '#4472C4',
+        ink: '#FFFFFF',
+        band: '#D9E1F2',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight2',
+        nameKey: 'appTableStyleLightN',
+        variant: 2,
+        header: '#4472C4',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#B4C6E7',
+      },
+      {
+        value: 'TableStyleDark2',
+        nameKey: 'appTableStyleDarkN',
+        variant: 2,
+        header: '#2F5597',
+        ink: '#FFFFFF',
+        band: '#D9E1F2',
+        grid: null,
+      },
     ],
   },
   {
     color: '#ED7D31',
     labelKey: 'appTableStyleColOrange',
     presets: [
-      { value: 'TableStyleMedium3', nameKey: 'appTableStyleMediumN', variant: 3, header: '#ED7D31', ink: '#FFFFFF', band: '#FBE5D6', grid: null },
-      { value: 'TableStyleLight3', nameKey: 'appTableStyleLightN', variant: 3, header: '#ED7D31', ink: '#FFFFFF', band: null, grid: '#F8CBAD' },
-      { value: 'TableStyleDark3', nameKey: 'appTableStyleDarkN', variant: 3, header: '#C55A11', ink: '#FFFFFF', band: '#FBE5D6', grid: null },
+      {
+        value: 'TableStyleMedium3',
+        nameKey: 'appTableStyleMediumN',
+        variant: 3,
+        header: '#ED7D31',
+        ink: '#FFFFFF',
+        band: '#FBE5D6',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight3',
+        nameKey: 'appTableStyleLightN',
+        variant: 3,
+        header: '#ED7D31',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#F8CBAD',
+      },
+      {
+        value: 'TableStyleDark3',
+        nameKey: 'appTableStyleDarkN',
+        variant: 3,
+        header: '#C55A11',
+        ink: '#FFFFFF',
+        band: '#FBE5D6',
+        grid: null,
+      },
     ],
   },
   {
     color: '#A5A5A5',
     labelKey: 'appTableStyleColGray',
     presets: [
-      { value: 'TableStyleMedium4', nameKey: 'appTableStyleMediumN', variant: 4, header: '#A5A5A5', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
-      { value: 'TableStyleLight4', nameKey: 'appTableStyleLightN', variant: 4, header: '#A5A5A5', ink: '#FFFFFF', band: null, grid: '#D9D9D9' },
-      { value: 'TableStyleDark4', nameKey: 'appTableStyleDarkN', variant: 4, header: '#7F7F7F', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+      {
+        value: 'TableStyleMedium4',
+        nameKey: 'appTableStyleMediumN',
+        variant: 4,
+        header: '#A5A5A5',
+        ink: '#FFFFFF',
+        band: '#F2F2F2',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight4',
+        nameKey: 'appTableStyleLightN',
+        variant: 4,
+        header: '#A5A5A5',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#D9D9D9',
+      },
+      {
+        value: 'TableStyleDark4',
+        nameKey: 'appTableStyleDarkN',
+        variant: 4,
+        header: '#7F7F7F',
+        ink: '#FFFFFF',
+        band: '#F2F2F2',
+        grid: null,
+      },
     ],
   },
   {
     color: '#FFC000',
     labelKey: 'appTableStyleColGold',
     presets: [
-      { value: 'TableStyleMedium5', nameKey: 'appTableStyleMediumN', variant: 5, header: '#FFC000', ink: '#FFFFFF', band: '#FFF2CC', grid: null },
-      { value: 'TableStyleLight5', nameKey: 'appTableStyleLightN', variant: 5, header: '#FFC000', ink: '#FFFFFF', band: null, grid: '#FFE699' },
-      { value: 'TableStyleDark5', nameKey: 'appTableStyleDarkN', variant: 5, header: '#BF9000', ink: '#FFFFFF', band: '#FFF2CC', grid: null },
+      {
+        value: 'TableStyleMedium5',
+        nameKey: 'appTableStyleMediumN',
+        variant: 5,
+        header: '#FFC000',
+        ink: '#FFFFFF',
+        band: '#FFF2CC',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight5',
+        nameKey: 'appTableStyleLightN',
+        variant: 5,
+        header: '#FFC000',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#FFE699',
+      },
+      {
+        value: 'TableStyleDark5',
+        nameKey: 'appTableStyleDarkN',
+        variant: 5,
+        header: '#BF9000',
+        ink: '#FFFFFF',
+        band: '#FFF2CC',
+        grid: null,
+      },
     ],
   },
   {
     color: '#5B9BD5',
     labelKey: 'appTableStyleColLightBlue',
     presets: [
-      { value: 'TableStyleMedium6', nameKey: 'appTableStyleMediumN', variant: 6, header: '#5B9BD5', ink: '#FFFFFF', band: '#DEEBF7', grid: null },
-      { value: 'TableStyleLight6', nameKey: 'appTableStyleLightN', variant: 6, header: '#5B9BD5', ink: '#FFFFFF', band: null, grid: '#BDD7EE' },
-      { value: 'TableStyleDark6', nameKey: 'appTableStyleDarkN', variant: 6, header: '#2E75B6', ink: '#FFFFFF', band: '#DEEBF7', grid: null },
+      {
+        value: 'TableStyleMedium6',
+        nameKey: 'appTableStyleMediumN',
+        variant: 6,
+        header: '#5B9BD5',
+        ink: '#FFFFFF',
+        band: '#DEEBF7',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight6',
+        nameKey: 'appTableStyleLightN',
+        variant: 6,
+        header: '#5B9BD5',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#BDD7EE',
+      },
+      {
+        value: 'TableStyleDark6',
+        nameKey: 'appTableStyleDarkN',
+        variant: 6,
+        header: '#2E75B6',
+        ink: '#FFFFFF',
+        band: '#DEEBF7',
+        grid: null,
+      },
     ],
   },
   {
     color: '#70AD47',
     labelKey: 'appTableStyleColGreen',
     presets: [
-      { value: 'TableStyleMedium7', nameKey: 'appTableStyleMediumN', variant: 7, header: '#70AD47', ink: '#FFFFFF', band: '#E2EFDA', grid: null },
-      { value: 'TableStyleLight7', nameKey: 'appTableStyleLightN', variant: 7, header: '#70AD47', ink: '#FFFFFF', band: null, grid: '#C5E0B4' },
-      { value: 'TableStyleDark7', nameKey: 'appTableStyleDarkN', variant: 7, header: '#538135', ink: '#FFFFFF', band: '#E2EFDA', grid: null },
+      {
+        value: 'TableStyleMedium7',
+        nameKey: 'appTableStyleMediumN',
+        variant: 7,
+        header: '#70AD47',
+        ink: '#FFFFFF',
+        band: '#E2EFDA',
+        grid: null,
+      },
+      {
+        value: 'TableStyleLight7',
+        nameKey: 'appTableStyleLightN',
+        variant: 7,
+        header: '#70AD47',
+        ink: '#FFFFFF',
+        band: null,
+        grid: '#C5E0B4',
+      },
+      {
+        value: 'TableStyleDark7',
+        nameKey: 'appTableStyleDarkN',
+        variant: 7,
+        header: '#538135',
+        ink: '#FFFFFF',
+        band: '#E2EFDA',
+        grid: null,
+      },
     ],
   },
   {
     color: '#3F3F3F',
     labelKey: 'appTableStyleColBlack',
     presets: [
-      { value: 'TableStyleMedium1', nameKey: 'appTableStyleMediumN', variant: 1, header: '#3F3F3F', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
-      { value: 'TableStyleDark1', nameKey: 'appTableStyleDarkN', variant: 1, header: '#262626', ink: '#FFFFFF', band: '#F2F2F2', grid: null },
+      {
+        value: 'TableStyleMedium1',
+        nameKey: 'appTableStyleMediumN',
+        variant: 1,
+        header: '#3F3F3F',
+        ink: '#FFFFFF',
+        band: '#F2F2F2',
+        grid: null,
+      },
+      {
+        value: 'TableStyleDark1',
+        nameKey: 'appTableStyleDarkN',
+        variant: 1,
+        header: '#262626',
+        ink: '#FFFFFF',
+        band: '#F2F2F2',
+        grid: null,
+      },
     ],
   },
 ]
@@ -6157,18 +6373,10 @@ function TableStyleGallerySelect({
           </div>
           <div className="rb-menu-sep" role="separator" />
           <div className="style-new-menu">
-            <button
-              type="button"
-              role="option"
-              onClick={() => pickCommand('table-style-new-open')}
-            >
+            <button type="button" role="option" onClick={() => pickCommand('table-style-new-open')}>
               {t('appTableStyleNew')}
             </button>
-            <button
-              type="button"
-              role="option"
-              onClick={() => pickCommand('pivot-style-new-open')}
-            >
+            <button type="button" role="option" onClick={() => pickCommand('pivot-style-new-open')}>
               {t('appPivotStyleNew')}
             </button>
           </div>
@@ -6222,7 +6430,12 @@ const CELL_STYLE_GROUPS: ReadonlyArray<{
     titleKey: 'appCellStyleGroupNumber',
     items: [
       { value: 'num-thousand', labelKey: 'appNumStyleThousand', fill: '#FFFFFF', ink: '#1F1F1F' },
-      { value: 'num-thousand-red', labelKey: 'appNumStyleThousandRed', fill: '#FFFFFF', ink: '#9C0006' },
+      {
+        value: 'num-thousand-red',
+        labelKey: 'appNumStyleThousandRed',
+        fill: '#FFFFFF',
+        ink: '#9C0006',
+      },
       { value: 'num-currency', labelKey: 'appNumStyleCurrency', fill: '#FFFFFF', ink: '#1F1F1F' },
       { value: 'num-percent', labelKey: 'appNumStylePercent', fill: '#FFFFFF', ink: '#1F1F1F' },
     ],
@@ -6307,7 +6520,9 @@ function CellStyleSelect({
                     onClick={() => pick(item.value)}
                   >
                     <span className="cell-style-swatch" style={{ background: item.fill }}>
-                      {item.ink ? <i style={{ color: item.ink }}>{t('appCellStyleSwatchSample')}</i> : null}
+                      {item.ink ? (
+                        <i style={{ color: item.ink }}>{t('appCellStyleSwatchSample')}</i>
+                      ) : null}
                     </span>
                     {t(item.labelKey)}
                   </button>
@@ -6333,7 +6548,13 @@ function CellStyleSelect({
 /// ── 条件格式富菜单画廊 ─────────────────────────────────────────────
 /// 数据条/色阶以色块展示，图标集以图形展示（对齐 WPS 画廊）。
 
-function DataBarSwatch({ color, solid }: { readonly color: string; readonly solid: boolean }): React.JSX.Element {
+function DataBarSwatch({
+  color,
+  solid,
+}: {
+  readonly color: string
+  readonly solid: boolean
+}): React.JSX.Element {
   const background = solid
     ? color
     : `linear-gradient(90deg, ${color} 0%, ${color} 72%, rgba(255,255,255,0.92) 72%)`
@@ -6345,7 +6566,11 @@ function DataBarSwatch({ color, solid }: { readonly color: string; readonly soli
   )
 }
 
-function ColorScaleSwatch({ stops }: { readonly stops: readonly [string, string | null, string] }): React.JSX.Element {
+function ColorScaleSwatch({
+  stops,
+}: {
+  readonly stops: readonly [string, string | null, string]
+}): React.JSX.Element {
   const gradient = stops[1]
     ? `linear-gradient(90deg, ${stops[0]}, ${stops[1]}, ${stops[2]})`
     : `linear-gradient(90deg, ${stops[0]}, ${stops[2]})`
@@ -6353,7 +6578,13 @@ function ColorScaleSwatch({ stops }: { readonly stops: readonly [string, string 
 }
 
 /// 图标集小样（方向/形状/标记/等级），WPS 画廊同款图形的轻量近似。
-function IconSetPreview({ id, count }: { readonly id: string; readonly count: number }): React.JSX.Element {
+function IconSetPreview({
+  id,
+  count,
+}: {
+  readonly id: string
+  readonly count: number
+}): React.JSX.Element {
   const icons: React.ReactNode[] = []
   for (let index = 0; index < count; index += 1) {
     const first = index === 0
@@ -6369,14 +6600,16 @@ function IconSetPreview({ id, count }: { readonly id: string; readonly count: nu
       )
     } else if (id === '3traffic' || id === '4traffic') {
       const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
-      icons.push(
-        <i key={index} className="cf-ico-dot" style={{ background: color }} />,
-      )
+      icons.push(<i key={index} className="cf-ico-dot" style={{ background: color }} />)
     } else if (id === '3signs') {
       const color = first ? '#E03030' : last ? '#23B123' : '#E8A213'
       const shape = first ? '✕' : last ? '✓' : '!'
       icons.push(
-        <i key={index} className="cf-ico-dot" style={{ background: color, color: '#FFFFFF', fontStyle: 'normal' }}>
+        <i
+          key={index}
+          className="cf-ico-dot"
+          style={{ background: color, color: '#FFFFFF', fontStyle: 'normal' }}
+        >
           {shape}
         </i>,
       )
@@ -6416,15 +6649,11 @@ function IconSetPreview({ id, count }: { readonly id: string; readonly count: nu
       )
     } else if (id === '4rating' || id === '5rating') {
       const color = last ? '#B4B4B4' : '#4472C4'
-      icons.push(
-        <i key={index} className="cf-ico-bar" style={{ background: color }} />,
-      )
+      icons.push(<i key={index} className="cf-ico-bar" style={{ background: color }} />)
     } else {
       // 5boxes
       const color = last ? '#D9D9D9' : '#ED7D31'
-      icons.push(
-        <i key={index} className="cf-ico-box" style={{ background: color }} />,
-      )
+      icons.push(<i key={index} className="cf-ico-box" style={{ background: color }} />)
     }
   }
   return (
@@ -6849,7 +7078,17 @@ function RibbonGroup({
           aria-label={launcher.tip}
           onClick={launcher.onClick}
         >
-          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            viewBox="0 0 12 12"
+            width="10"
+            height="10"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <path d="M4 4l4 4M8 5.2V8H5.2" />
           </svg>
         </button>

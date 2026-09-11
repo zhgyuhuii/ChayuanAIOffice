@@ -6673,3 +6673,39 @@ textarea:focus {
   padding: 3px 5px 4px;
   gap: 2px;
 }
+
+/* 样式组右侧两钮（表格样式/单元格样式）：WPS 同款左右结构——图标在左、
+   文字右、caret 殿后，各约 27px 高在组内上下排布；竖排大钮会两倍超出
+   功能区带高互相遮挡（用户 2026-09-11 反馈）。置于此处以胜过上方紧凑块 */
+.style-wps-stack .ribbon-tool.large {
+  flex: 0 0 auto;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  height: 27px;
+  min-width: 0;
+  padding: 0 6px;
+  text-align: left;
+}
+
+.style-wps-stack .ribbon-tool.large .tool-icon-row {
+  align-self: center;
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* 横排钮 hover 平涂整钮（同 rowcol-item），图标行不再单独着色 */
+.style-wps-stack .ribbon-tool.large:hover {
+  background: var(--ribbon-hover);
+}
+
+.style-wps-stack .ribbon-tool.large:hover .tool-icon-row {
+  background: transparent;
+}
+
+.style-wps-stack .ribbon-tool.large.as-button:disabled:hover {
+  background: transparent;
+}
