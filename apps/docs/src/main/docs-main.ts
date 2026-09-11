@@ -24,6 +24,7 @@ import {
   nativeImage,
   net,
   shell,
+  webContents as electronWebContents,
 } from 'electron'
 import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 
@@ -4818,6 +4819,25 @@ ipcMain.on('docs:view-menu-state', (event, state: unknown) => {
   if (ai) ai.checked = next.aiSidebar
   const dark = menu?.getMenuItemById('docs-menu-dark-mode')
   if (dark) dark.checked = next.darkCanvas
+})
+
+// ── P2 中继: shell ⇄ docked editor conversation relay ──
+type RelayEventForwarder = (webContentsId: number, event: unknown) => void
+let relayEventForwarder: RelayEventForwarder | null = null
+
+/** shell main injects its sink for relay events coming from editor renderers */
+export function setRelayEventForwarder(fn: RelayEventForwarder | null): void {
+  relayEventForwarder = fn
+}
+
+/** shell main routes a RelayCommand to one docked editor's webContents */
+export function forwardRelayCommand(webContentsId: number, command: unknown): void {
+  const target = electronWebContents.fromId(webContentsId)
+  if (target && !target.isDestroyed()) target.send('docs:relay-command', command)
+}
+
+ipcMain.on('docs:relay-event', (event, payload: unknown) => {
+  relayEventForwarder?.(event.sender.id, payload)
 })
 
 ipcMain.on('docs:close-check-result', (event, state: unknown) => {

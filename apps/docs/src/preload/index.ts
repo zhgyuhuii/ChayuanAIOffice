@@ -227,6 +227,13 @@ const api: DesktopApi = {
     return () => ipcRenderer.removeListener('docs:close-save-request', listener)
   },
   reportCloseSaveResult: (ok: boolean) => ipcRenderer.send('docs:close-save-result', ok === true),
+  // P2 中继服务: docked editor's conversation relay (RelayEvent out / RelayCommand in)
+  relaySend: (event: unknown) => ipcRenderer.send('docs:relay-event', event),
+  onRelayCommand: (handler: (command: unknown) => void) => {
+    const listener = (_event: IpcRendererEvent, command: unknown) => handler(command)
+    ipcRenderer.on('docs:relay-command', listener)
+    return () => ipcRenderer.removeListener('docs:relay-command', listener)
+  },
 }
 
 const projectApi: ProjectApi = {

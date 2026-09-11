@@ -51,6 +51,7 @@ import {
 import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
+import { startDocsRelayServer } from './ai/relay-server'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
 import { applyHfText, hfEditText } from './editor/hf-text'
 import { textColorValue } from './editor/text-color'
@@ -207,7 +208,7 @@ import { applyCase, nextCaseMode, selectionText } from './editor/case-transform'
 import { stepHangingIndent, stepParagraphIndent } from './editor/indent'
 import { PasswordDialog } from './components/PasswordDialog'
 import { ProtectDialog, type ProtectDialogResult } from './components/ProtectDialog'
-import { t, useI18n } from './i18n/locale'
+import { t, useI18n, aiLangDirective } from './i18n/locale'
 import {
   getActiveSubEditor,
   setActiveSubEditor,
@@ -4619,6 +4620,34 @@ export function App() {
     exportPdf: () => void exportPdf(),
     printDoc: () => printDoc(),
   })
+
+  // P2 中继服务: docked boot (?panel=0) hosts the document's own AgentLoop
+  // driven by the Home conversation (方案 B 双 loop 中继). Same skill deps
+  // as AiPanel; the panel itself stays untouched (上游红线).
+  const relayNumIds = useRef<{ bullet: string | null; ordered: string | null }>({
+    bullet: null,
+    ordered: null,
+  })
+  useEffect(() => {
+    relayNumIds.current = doc?.isBlank
+      ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID }
+      : { bullet: null, ordered: null }
+  }, [doc?.isBlank])
+
+  useEffect(() => {
+    if (!panelBootHiddenRef.current) return
+    const server = startDocsRelayServer({
+      getEditor: () => editor,
+      getNumIds: () => relayNumIds.current,
+      getComments: () => aiCommentsAccess,
+      getHf: () => aiHfAccess,
+      getImageSource: () => settings.imageSource ?? 'auto',
+      getSettings: () => settings,
+      systemSuffix: aiLangDirective(),
+    })
+    return () => server.dispose()
+    // re-created when the core skill inputs change (new doc / settings swap)
+  }, [editor, doc?.isBlank, aiCommentsAccess, aiHfAccess, settings])
   const insertServices = useStableCallbacks({
     sectionBreak: (type: 'nextPage' | 'continuous' | 'evenPage' | 'oddPage') =>
       insertSectionBreak(type),

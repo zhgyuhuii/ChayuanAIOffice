@@ -513,4 +513,8 @@ export interface DesktopApi {
   reportCloseSaveResult(ok: boolean): void
   /** keep the native View menu's checkbox items in sync with renderer state */
   reportViewMenuState(state: { aiSidebar: boolean; darkCanvas: boolean }): void
+  /** P2 中继: emit a RelayEvent to the shell (docked conversation relay) */
+  relaySend(event: unknown): void
+  /** P2 中继: subscribe to RelayCommands from the shell; returns unsubscribe */
+  onRelayCommand(handler: (command: unknown) => void): () => void
 }

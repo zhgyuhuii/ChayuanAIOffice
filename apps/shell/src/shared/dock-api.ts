@@ -1,5 +1,6 @@
 import type { AiDocContent } from '../../../docs/src/shared/ipc'
 import type { TabKind } from './tabs-api'
+import type { RelayCommand, RelayEvent } from './relay-protocol'
 
 /**
  * 右栏停靠契约（组件化 P1）：Home 右侧 content-pane 里停靠编辑器视图的
@@ -76,6 +77,10 @@ export interface DockApi {
   setRect(rect: DockRect): void
   /** dock tab list changes (open/close/activate/title); returns unsubscribe */
   onChanged(handler: (tabs: DockTabSummary[]) => void): () => void
+  /** P2 中继: send a RelayCommand to one docked editor's loop */
+  relayCommand(dockTabId: string, command: RelayCommand): void
+  /** P2 中继: subscribe to RelayEvents from all docked editors; returns unsubscribe */
+  onRelayEvent(handler: (dockTabId: string, event: RelayEvent) => void): () => void
 }
 
 export const DOCK_CHANNELS = {
@@ -86,6 +91,8 @@ export const DOCK_CHANNELS = {
   undock: 'dock:undock',
   setRect: 'dock:set-rect',
   changed: 'dock:changed',
+  relayCommand: 'dock:relay-command',
+  relayEvent: 'dock:relay-event',
 } as const
 
 declare global {

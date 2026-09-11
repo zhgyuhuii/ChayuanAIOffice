@@ -117,8 +117,10 @@ import {
   registerAiIpc,
   registerProjectIpc,
   toggleStarredFile,
+  forwardRelayCommand,
   queueDocsSaveDir,
   registerDocsIpc,
+  setRelayEventForwarder,
   setDocsExtraFileMenuItems,
   setDocsMenuGate,
   setDocsShellHooks,
@@ -4265,6 +4267,23 @@ function registerDockIpc(): void {
   ipcMain.handle(DOCK_CHANNELS.undock, (_event, id: unknown) => {
     if (typeof id === 'string') tabManager?.undockTab(id)
   })
+  // P2 中继: shell renderer ⇄ docked editor loop (RelayCommand in, RelayEvent out)
+  ipcMain.on(DOCK_CHANNELS.relayCommand, (_event, dockTabId: unknown, command: unknown) => {
+    if (typeof dockTabId !== 'string' || !tabManager) return
+    const wcId = tabManager.webContentsIdOf(dockTabId)
+    if (wcId) forwardRelayCommand(wcId, command)
+  })
+}
+
+/** dock 渲染器的 RelayEvent → 壳渲染器(补 tab id);web 形态走 postMessage 不经此 */
+function installRelayEventForwarder(): void {
+  setRelayEventForwarder((wcId, event) => {
+    if (!shellWindow || shellWindow.isDestroyed() || !tabManager) return
+    const tabId = tabManager.tabIdForWebContents(wcId)
+    if (tabId && tabManager.list().find((t) => t.id === tabId)?.docked) {
+      shellWindow.webContents.send(DOCK_CHANNELS.relayEvent, tabId, event)
+    }
+  })
 }
 
 // ---- home menu ----
@@ -5212,6 +5231,7 @@ registerDocsIpc()
 registerHomeIpc()
 registerTabsIpc()
 registerDockIpc()
+installRelayEventForwarder()
 registerWindowControlsIpc()
 registerDroppedFilesIpc()
 registerRemoteFilesIpc()

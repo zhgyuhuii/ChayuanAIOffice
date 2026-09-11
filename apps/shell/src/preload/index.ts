@@ -23,6 +23,7 @@ import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
 import type { DockApi, DockTabSummary } from '../shared/dock-api'
+import type { RelayEvent } from '../shared/relay-protocol'
 import { DOCK_CHANNELS } from '../shared/dock-api'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
@@ -510,6 +511,15 @@ const dockApi: DockApi = {
     const listener = (_event: IpcRendererEvent, tabs: DockTabSummary[]) => handler(tabs)
     ipcRenderer.on(DOCK_CHANNELS.changed, listener)
     return () => ipcRenderer.removeListener(DOCK_CHANNELS.changed, listener)
+  },
+  relayCommand(dockTabId, command) {
+    ipcRenderer.send(DOCK_CHANNELS.relayCommand, dockTabId, command)
+  },
+  onRelayEvent(handler) {
+    const listener = (_event: IpcRendererEvent, dockTabId: string, event: RelayEvent) =>
+      handler(dockTabId, event)
+    ipcRenderer.on(DOCK_CHANNELS.relayEvent, listener)
+    return () => ipcRenderer.removeListener(DOCK_CHANNELS.relayEvent, listener)
   },
 }
 contextBridge.exposeInMainWorld('chatOfficeDock', dockApi)
