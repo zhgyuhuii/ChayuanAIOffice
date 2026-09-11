@@ -6478,59 +6478,120 @@ textarea:focus {
   overflow: visible;
 }
 
-/* ── 全带五阶梯降级（WPS 机制，全部组共用）：带级统一档挂在 .ribbon 根上 ──
-   0=平铺 1=紧凑(间距/图标缩小) 2=隐文字(WPS canHideText 全局语义)
-   3=各组收成分组名钮(面板=原布局) 4=全带唯一分组钮(面板分节收集)
-   stage 1/2 不重排组内部结构，只做全局收紧——收缩量由 stage 3 兜底 */
+/* ── 全带五阶梯降级（WPS 机制，全部组共用）：带级统一档 ──
+   0=平铺 1=一列两行 2=一列三行 3=分组名钮平铺 4=全带唯一分组钮。
+   stage 1/2 每组内容重排为网格：内层布局包装 display:contents 打散，
+   控件升为网格单元按列优先流排（一列两行/一列三行），大钮压成横排紧凑 */
 
-.ribbon.degrade-1 .ribbon-group-content {
-  gap: 2px;
+.ribbon-group.degrade-1 .degrade-grid,
+.ribbon-group.degrade-2 .degrade-grid {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: start;
+  justify-content: start;
 }
 
-.ribbon.degrade-1 .ribbon-group {
-  padding-left: 3px;
-  padding-right: 3px;
+.ribbon-group.degrade-1 .degrade-grid {
+  grid-template-rows: repeat(2, auto);
+  gap: 2px 8px;
 }
 
-.ribbon.degrade-1 .ribbon-tool.large {
-  gap: 2px;
-  padding: 2px 4px 3px;
+.ribbon-group.degrade-2 .degrade-grid {
+  grid-template-rows: repeat(3, auto);
+  gap: 2px 6px;
 }
 
-.ribbon.degrade-1 .ribbon-tool.large .tool-symbol {
+/* 内层布局包装打散：真正的控件升为网格单元 */
+.degrade-grid .process-big-row,
+.degrade-grid .style-wps-row,
+.degrade-grid .style-wps-stack,
+.degrade-grid .edit-big-row,
+.degrade-grid .edit-mini-grid,
+.degrade-grid .rowcol-stack,
+.degrade-grid .rb-row,
+.degrade-grid .rb-col,
+.degrade-grid .ribbon-rows,
+.degrade-grid .ribbon-row,
+.degrade-grid .inline-tools,
+.degrade-grid .tool-stack {
+  display: contents;
+}
+
+/* 网格内竖排大钮一律压成横排紧凑钮（图标左/文字右），图标自动变小 */
+.degrade-grid .ribbon-tool.large {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  height: 27px;
+  min-width: 0;
+  gap: 5px;
+  padding: 0 6px;
+  text-align: left;
+}
+
+.degrade-grid .ribbon-tool.large .tool-icon-row {
+  align-self: center;
+  flex: 0 0 auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.degrade-grid .ribbon-tool.large .tool-symbol {
   flex: 0 0 18px;
   width: 18px;
   height: 18px;
   font-size: 15px;
 }
 
-.ribbon.degrade-1 .ribbon-tool.large .tool-symbol svg {
+.degrade-grid .ribbon-tool.large .tool-symbol svg {
   width: 18px;
   height: 18px;
 }
 
-.ribbon.degrade-1 .ribbon-tool.large .tool-icon-row {
-  min-height: 18px;
-  padding: 2px 3px;
-  margin: 0 -3px;
+.degrade-grid .ribbon-tool.large:not(.reserved):hover .tool-icon-row {
+  background: transparent;
 }
 
-.ribbon.degrade-1 .menu-select,
-.ribbon.degrade-1 .menu-select-edit {
+.degrade-grid .ribbon-tool.large:not(.reserved):hover {
+  background: var(--ribbon-hover);
+}
+
+/* 组合框钳宽（WPS 同款：窄带下字体框缩宽）——字体/数字组的主要宽度来源 */
+.degrade-grid .menu-select,
+.degrade-grid .menu-select-edit {
+  min-width: 0;
+  max-width: 88px;
+}
+
+.degrade-grid .menu-select-edit input {
+  width: 56px;
   min-width: 0;
 }
 
-.ribbon.degrade-1 .menu-select-edit input {
-  width: 72px;
+.degrade-grid .num-row1 {
   min-width: 0;
+  max-width: 96px;
 }
 
-.ribbon.degrade-2 .ribbon-tool.large strong {
-  display: none;
+.degrade-grid .num-row1 .menu-select {
+  max-width: 88px;
 }
 
-.ribbon.degrade-2 .ribbon-tool.large {
-  padding: 3px 5px;
+/* 画廊保持紧凑尺寸不参与压缩 */
+.degrade-grid .rb-gallery {
+  width: 132px;
+  max-height: 40px;
+}
+
+/* 降级档组名常驻：网格化后组名是唯一方位标识（WPS 组名常显语义） */
+.ribbon-group-caption {
+  font-size: 11px;
+  line-height: 14px;
+  color: #8a8a8a;
+  text-align: center;
+  white-space: nowrap;
+  padding-top: 2px;
 }
 
 /* 分组名钮（stage 3 各组 / stage 4 全带唯一） */
@@ -6592,16 +6653,6 @@ textarea:focus {
 
 .menu-btn-name:not(.reserved):hover {
   background: var(--ribbon-hover);
-}
-
-/* 降级档（stage≥2）组名常驻：隐文字后组名是唯一的方位标识（WPS 组名常显） */
-.ribbon-group-caption {
-  font-size: 11px;
-  line-height: 14px;
-  color: #8a8a8a;
-  text-align: center;
-  white-space: nowrap;
-  padding-top: 2px;
 }
 
 /* stage-4 全带唯一分组钮的面板：分节展示各组原布局 */

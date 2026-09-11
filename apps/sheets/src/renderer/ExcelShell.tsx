@@ -7150,8 +7150,13 @@ function RibbonGroup({
     )
   }
   return (
-    <section className="ribbon-group" aria-label={label}>
-      <div className="ribbon-group-content">{children}</div>
+    <section
+      className={`ribbon-group${stage > 0 && stage <= 2 ? ` degrade-${stage}` : ''}`}
+      aria-label={label}
+    >
+      <div className="ribbon-group-content">
+        {stage > 0 && stage <= 2 ? <div className="degrade-grid">{children}</div> : children}
+      </div>
       {stage >= 2 && <div className="ribbon-group-caption">{label}</div>}
       {launcher && stage === 0 && (
         <button
