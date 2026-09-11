@@ -6605,20 +6605,15 @@ textarea:focus {
   min-width: 0;
 }
 
+/* 行和列/工作表菜单是宽触发块，不参与组合框钳宽（钳了文字被截半） */
+.degrade-grid .rowcol-menu {
+  max-width: none;
+}
+
 /* 画廊保持紧凑尺寸不参与压缩 */
 .degrade-grid .rb-gallery {
   width: 132px;
   max-height: 40px;
-}
-
-/* 降级档组名常驻：网格化后组名是唯一方位标识（WPS 组名常显语义） */
-.ribbon-group-caption {
-  font-size: 11px;
-  line-height: 14px;
-  color: #8a8a8a;
-  text-align: center;
-  white-space: nowrap;
-  padding-top: 2px;
 }
 
 /* 分组名钮（stage 3 各组 / stage 4 全带唯一） */

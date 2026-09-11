@@ -4117,538 +4117,544 @@ function Ribbon({
       <RibbonGroupLevelsContext.Provider value={groupLevels}>
         <GroupSlotContext.Provider value={{ claim: claimSlot }}>
           <BandCollectorContext.Provider value={bandCollector}>
-          <RibbonGroup label={t('appGroupClipboard')}>
-            {/* WPS 布局（对比清单 1-3）：格式刷升为第一枚大按钮；粘贴改为分体
+            <RibbonGroup label={t('appGroupClipboard')}>
+              {/* WPS 布局（对比清单 1-3）：格式刷升为第一枚大按钮；粘贴改为分体
             按钮（本体直接粘贴 + 下拉八项）；竖排只剩剪切和分体复制 */}
-            <button
-              className="ribbon-tool as-button large"
-              data-tip={t('appFormatPainter')}
-              onClick={() => onCommand('format-painter')}
-            >
-              <span className="tool-icon-row">
-                <ToolSymbol symbol="🖌" />
-              </span>
-              <span>
-                <strong>{t('appFormatPainter')}</strong>
-              </span>
-            </button>
-            <SplitMenuTool
-              symbol="📋"
-              label={t('appPaste')}
-              tip={t('appPasteTitle')}
-              options={[
-                {
-                  value: 'paste-special:value',
-                  label: t('appPasteValuesOnly'),
-                  icon: <OptSample>123</OptSample>,
-                },
-                {
-                  value: 'paste-special:formula',
-                  label: t('appPasteFormulasOnly'),
-                  icon: <OptSample>ƒx</OptSample>,
-                },
-                {
-                  value: 'paste-special:besides-border',
-                  label: t('appPasteExceptBorders'),
-                  icon: <BorderGlyph on="none" />,
-                },
-                {
-                  value: 'paste-special:transpose',
-                  label: t('appPasteTranspose'),
-                  icon: <ToolSymbol symbol="transpose" />,
-                },
-                {
-                  value: 'paste',
-                  label: t('appPasteKeepFormat'),
-                  icon: <ToolSymbol symbol="board-format" />,
-                },
-                {
-                  value: 'paste-as-picture',
-                  label: t('appPasteAsPicture'),
-                  icon: <ToolSymbol symbol="🖼" />,
-                },
-                {
-                  value: 'paste-special:text',
-                  label: t('appPasteTextOnly'),
-                  icon: <ToolSymbol symbol="board-text" />,
-                },
-                {
-                  value: 'paste-special-dialog',
-                  label: t('appPasteSpecial'),
-                  icon: <OptSample>⋯</OptSample>,
-                },
-              ]}
-              onMain={() => onCommand('paste')}
-              onPick={(command) => onCommand(command)}
-            />
-            <div className="tool-stack">
               <button
-                data-tip={t('appCutTitle')}
-                aria-label={t('appCutTitle')}
-                onClick={() => onCommand('cut')}
+                className="ribbon-tool as-button large"
+                data-tip={t('appFormatPainter')}
+                onClick={() => onCommand('format-painter')}
               >
-                <ToolSymbol symbol="✂" />
+                <span className="tool-icon-row">
+                  <ToolSymbol symbol="🖌" />
+                </span>
+                <span>
+                  <strong>{t('appFormatPainter')}</strong>
+                </span>
               </button>
-              <SplitStackTool
-                symbol="⧉"
-                tip={t('appCopyTitle')}
+              <SplitMenuTool
+                symbol="📋"
+                label={t('appPaste')}
+                tip={t('appPasteTitle')}
                 options={[
-                  { value: 'copy', label: t('appCopy'), icon: <ToolSymbol symbol="⧉" /> },
                   {
-                    value: 'copy-as-picture',
-                    label: t('appCopyAsPicture'),
+                    value: 'paste-special:value',
+                    label: t('appPasteValuesOnly'),
+                    icon: <OptSample>123</OptSample>,
+                  },
+                  {
+                    value: 'paste-special:formula',
+                    label: t('appPasteFormulasOnly'),
+                    icon: <OptSample>ƒx</OptSample>,
+                  },
+                  {
+                    value: 'paste-special:besides-border',
+                    label: t('appPasteExceptBorders'),
+                    icon: <BorderGlyph on="none" />,
+                  },
+                  {
+                    value: 'paste-special:transpose',
+                    label: t('appPasteTranspose'),
+                    icon: <ToolSymbol symbol="transpose" />,
+                  },
+                  {
+                    value: 'paste',
+                    label: t('appPasteKeepFormat'),
+                    icon: <ToolSymbol symbol="board-format" />,
+                  },
+                  {
+                    value: 'paste-as-picture',
+                    label: t('appPasteAsPicture'),
                     icon: <ToolSymbol symbol="🖼" />,
                   },
+                  {
+                    value: 'paste-special:text',
+                    label: t('appPasteTextOnly'),
+                    icon: <ToolSymbol symbol="board-text" />,
+                  },
+                  {
+                    value: 'paste-special-dialog',
+                    label: t('appPasteSpecial'),
+                    icon: <OptSample>⋯</OptSample>,
+                  },
                 ]}
-                onMain={() => onCommand('copy')}
+                onMain={() => onCommand('paste')}
                 onPick={(command) => onCommand(command)}
               />
-            </div>
-          </RibbonGroup>
-          <RibbonGroup
-            label={t('appGroupFont')}
-            launcher={{
-              tip: `${t('appFormatCells')} · ${t('dlgFcTabFont')}`,
-              onClick: () => onCommand('format-cells:Font'),
-            }}
-          >
-            <div className="ribbon-rows font-group-rows">
-              <div className="inline-tools">
-                <EditableMenuSelect
-                  className="select-like font-name"
-                  label="Font family"
-                  data-tip={t('appFontFamilyTip')}
-                  value={echoFamily}
-                  options={familyOptions}
-                  onOpen={loadSystemFonts}
-                  onPick={(value) => onCommand(`font-family:${value}`)}
-                  commit={(text) => onCommand(`font-family:${text}`)}
-                />
-                <EditableMenuSelect
-                  className="select-like font-size"
-                  label="Font size"
-                  data-tip={t('appFontSizeTip')}
-                  value={String(echoSize)}
-                  options={sizeOptions.map((size) => ({
-                    value: String(size),
-                    label: String(size),
-                  }))}
-                  onPick={(value) => onCommand(`font-size:${value}`)}
-                  commit={(text) => {
-                    const size = Number(text.replace(',', '.'))
-                    // Excel's font-size bounds
-                    if (Number.isFinite(size) && size >= 1 && size <= 409)
-                      onCommand(`font-size:${size}`)
-                  }}
-                />
+              <div className="tool-stack">
                 <button
-                  data-tip={t('appIncreaseFontSize')}
-                  aria-label={t('appIncreaseFontSize')}
-                  onClick={() => onCommand(`font-size:${stepFontSize(echoSize, 1)}`)}
+                  data-tip={t('appCutTitle')}
+                  aria-label={t('appCutTitle')}
+                  onClick={() => onCommand('cut')}
                 >
-                  <ToolSymbol symbol="A↑" />
+                  <ToolSymbol symbol="✂" />
                 </button>
-                <button
-                  data-tip={t('appDecreaseFontSize')}
-                  aria-label={t('appDecreaseFontSize')}
-                  onClick={() => onCommand(`font-size:${stepFontSize(echoSize, -1)}`)}
-                >
-                  <ToolSymbol symbol="A↓" />
-                </button>
-              </div>
-              <div className="inline-tools">
-                <button
-                  data-tip={t('appBold')}
-                  className={selectionFormat?.bold ? 'is-active' : ''}
-                  onClick={() => onCommand('bold')}
-                >
-                  <b>B</b>
-                </button>
-                <button
-                  data-tip={t('appItalic')}
-                  className={selectionFormat?.italic ? 'is-active' : ''}
-                  onClick={() => onCommand('italic')}
-                >
-                  <em>I</em>
-                </button>
-                {/* WPS（对比清单 5）：单/双下划线合并为一枚分体按钮，会计用
-                双下划线随渲染引擎后续支持 */}
                 <SplitStackTool
-                  symbol="u-line"
-                  tip={t('appUnderline')}
-                  active={Boolean(selectionFormat?.underline)}
+                  symbol="⧉"
+                  tip={t('appCopyTitle')}
                   options={[
+                    { value: 'copy', label: t('appCopy'), icon: <ToolSymbol symbol="⧉" /> },
                     {
-                      value: 'underline',
-                      label: t('appUnderline'),
-                      icon: <ToolSymbol symbol="u-line" />,
-                    },
-                    {
-                      value: 'underline:double',
-                      label: t('appDoubleUnderline'),
-                      icon: <ToolSymbol symbol="u-line-double" />,
-                    },
-                    {
-                      value: 'underline:accounting',
-                      label: t('appUnderlineAccounting'),
-                      icon: <ToolSymbol symbol="u-line-accounting" />,
-                      disabled: true,
-                      tip: t('appFeaturePendingTip'),
+                      value: 'copy-as-picture',
+                      label: t('appCopyAsPicture'),
+                      icon: <ToolSymbol symbol="🖼" />,
                     },
                   ]}
-                  onMain={() => onCommand('underline')}
+                  onMain={() => onCommand('copy')}
                   onPick={(command) => onCommand(command)}
                 />
-                <button
-                  data-tip={t('appStrikethrough')}
-                  className={selectionFormat?.strike ? 'is-active' : ''}
-                  onClick={() => onCommand('strike')}
-                >
-                  <ToolSymbol symbol="ab-strike" />
-                </button>
-                {/* WPS（对比清单 8-9）：边框排在字体颜色前，完整两组菜单，
+              </div>
+            </RibbonGroup>
+            <RibbonGroup
+              label={t('appGroupFont')}
+              launcher={{
+                tip: `${t('appFormatCells')} · ${t('dlgFcTabFont')}`,
+                onClick: () => onCommand('format-cells:Font'),
+              }}
+            >
+              <div className="ribbon-rows font-group-rows">
+                <div className="inline-tools">
+                  <EditableMenuSelect
+                    className="select-like font-name"
+                    label="Font family"
+                    data-tip={t('appFontFamilyTip')}
+                    value={echoFamily}
+                    options={familyOptions}
+                    onOpen={loadSystemFonts}
+                    onPick={(value) => onCommand(`font-family:${value}`)}
+                    commit={(text) => onCommand(`font-family:${text}`)}
+                  />
+                  <EditableMenuSelect
+                    className="select-like font-size"
+                    label="Font size"
+                    data-tip={t('appFontSizeTip')}
+                    value={String(echoSize)}
+                    options={sizeOptions.map((size) => ({
+                      value: String(size),
+                      label: String(size),
+                    }))}
+                    onPick={(value) => onCommand(`font-size:${value}`)}
+                    commit={(text) => {
+                      const size = Number(text.replace(',', '.'))
+                      // Excel's font-size bounds
+                      if (Number.isFinite(size) && size >= 1 && size <= 409)
+                        onCommand(`font-size:${size}`)
+                    }}
+                  />
+                  <button
+                    data-tip={t('appIncreaseFontSize')}
+                    aria-label={t('appIncreaseFontSize')}
+                    onClick={() => onCommand(`font-size:${stepFontSize(echoSize, 1)}`)}
+                  >
+                    <ToolSymbol symbol="A↑" />
+                  </button>
+                  <button
+                    data-tip={t('appDecreaseFontSize')}
+                    aria-label={t('appDecreaseFontSize')}
+                    onClick={() => onCommand(`font-size:${stepFontSize(echoSize, -1)}`)}
+                  >
+                    <ToolSymbol symbol="A↓" />
+                  </button>
+                </div>
+                <div className="inline-tools">
+                  <button
+                    data-tip={t('appBold')}
+                    className={selectionFormat?.bold ? 'is-active' : ''}
+                    onClick={() => onCommand('bold')}
+                  >
+                    <b>B</b>
+                  </button>
+                  <button
+                    data-tip={t('appItalic')}
+                    className={selectionFormat?.italic ? 'is-active' : ''}
+                    onClick={() => onCommand('italic')}
+                  >
+                    <em>I</em>
+                  </button>
+                  {/* WPS（对比清单 5）：单/双下划线合并为一枚分体按钮，会计用
+                双下划线随渲染引擎后续支持 */}
+                  <SplitStackTool
+                    symbol="u-line"
+                    tip={t('appUnderline')}
+                    active={Boolean(selectionFormat?.underline)}
+                    options={[
+                      {
+                        value: 'underline',
+                        label: t('appUnderline'),
+                        icon: <ToolSymbol symbol="u-line" />,
+                      },
+                      {
+                        value: 'underline:double',
+                        label: t('appDoubleUnderline'),
+                        icon: <ToolSymbol symbol="u-line-double" />,
+                      },
+                      {
+                        value: 'underline:accounting',
+                        label: t('appUnderlineAccounting'),
+                        icon: <ToolSymbol symbol="u-line-accounting" />,
+                        disabled: true,
+                        tip: t('appFeaturePendingTip'),
+                      },
+                    ]}
+                    onMain={() => onCommand('underline')}
+                    onPick={(command) => onCommand(command)}
+                  />
+                  <button
+                    data-tip={t('appStrikethrough')}
+                    className={selectionFormat?.strike ? 'is-active' : ''}
+                    onClick={() => onCommand('strike')}
+                  >
+                    <ToolSymbol symbol="ab-strike" />
+                  </button>
+                  {/* WPS（对比清单 8-9）：边框排在字体颜色前，完整两组菜单，
                 线条颜色/线条样式并入 */}
-                <BorderMenu
-                  penColor={borderColor}
-                  penStyle={borderPenStyle}
-                  onPenColor={(hex) => setBorderColor(hex)}
-                  onPenStyle={setBorderPenStyle}
-                  onCommand={onCommand}
-                />
-                <ColorDropdown
-                  label="Font color"
-                  data-tip={t('appFontColor')}
-                  split
-                  display={
-                    <span className="swatch-letter has-caret">
-                      <ToolSymbol symbol="A-color" />
-                      <i style={{ background: fontColor }} />
-                      <CaretIcon />
-                    </span>
-                  }
-                  value={fontColor}
-                  auto={t('appAutomaticColor')}
-                  onPick={(hex) => {
-                    setFontColor(hex ?? '#000000')
-                    onCommand(hex ? `font-color:${hex}` : 'font-color:auto')
-                  }}
-                />
-                <ColorDropdown
-                  label="Fill color"
-                  data-tip={t('appFillColor')}
-                  split
-                  display={
-                    <span className="swatch-letter">
-                      <ToolSymbol symbol="◧" />
-                      <i style={{ background: fillColor }} />
-                    </span>
-                  }
-                  value={fillColor}
-                  auto={t('dlgFcNoFill')}
-                  onPick={(hex) => {
-                    if (hex) setFillColor(hex)
-                    onCommand(hex ? `fill:${hex}` : 'fill:none')
-                  }}
-                />
+                  <BorderMenu
+                    penColor={borderColor}
+                    penStyle={borderPenStyle}
+                    onPenColor={(hex) => setBorderColor(hex)}
+                    onPenStyle={setBorderPenStyle}
+                    onCommand={onCommand}
+                  />
+                  <ColorDropdown
+                    label="Font color"
+                    data-tip={t('appFontColor')}
+                    split
+                    display={
+                      <span className="swatch-letter has-caret">
+                        <ToolSymbol symbol="A-color" />
+                        <i style={{ background: fontColor }} />
+                        <CaretIcon />
+                      </span>
+                    }
+                    value={fontColor}
+                    auto={t('appAutomaticColor')}
+                    onPick={(hex) => {
+                      setFontColor(hex ?? '#000000')
+                      onCommand(hex ? `font-color:${hex}` : 'font-color:auto')
+                    }}
+                  />
+                  <ColorDropdown
+                    label="Fill color"
+                    data-tip={t('appFillColor')}
+                    split
+                    display={
+                      <span className="swatch-letter">
+                        <ToolSymbol symbol="◧" />
+                        <i style={{ background: fillColor }} />
+                      </span>
+                    }
+                    value={fillColor}
+                    auto={t('dlgFcNoFill')}
+                    onPick={(hex) => {
+                      if (hex) setFillColor(hex)
+                      onCommand(hex ? `fill:${hex}` : 'fill:none')
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          </RibbonGroup>
-          <RibbonGroup
-            label={t('appGroupAlignment')}
-            launcher={{
-              tip: `${t('appFormatCells')} · ${t('dlgFcTabAlignment')}`,
-              onClick: () => onCommand('format-cells:Alignment'),
-            }}
-          >
-            <div className="ribbon-rows">
-              <div className="inline-tools alignment-tools">
-                <button
-                  data-tip={t('appTopAlign')}
-                  aria-label={t('appTopAlign')}
-                  onClick={() => onCommand('valign:top')}
-                >
-                  <ToolSymbol symbol="⤒" />
-                </button>
-                <button
-                  data-tip={t('appMiddleAlign')}
-                  aria-label={t('appMiddleAlign')}
-                  onClick={() => onCommand('valign:middle')}
-                >
-                  <ToolSymbol symbol="valign-middle" />
-                </button>
-                <button
-                  data-tip={t('appBottomAlign')}
-                  aria-label={t('appBottomAlign')}
-                  onClick={() => onCommand('valign:bottom')}
-                >
-                  <ToolSymbol symbol="⤓" />
-                </button>
-                <button
-                  data-tip={t('dlgFcWrapText')}
-                  aria-label={t('dlgFcWrapText')}
-                  className={selectionFormat?.wrap ? 'is-active' : ''}
-                  onClick={() => onCommand('wrap')}
-                >
-                  <ToolSymbol symbol="↩" />
-                </button>
-                <MenuSelect
-                  className="select-like compact"
-                  label="Orientation"
-                  data-tip={t('dlgFcOrientation')}
-                  display={<ToolSymbol symbol="⤴" />}
-                  options={[
-                    {
-                      value: '45',
-                      label: t('appAngleCcw'),
-                      icon: <TextDirGlyph deg={-45} ch="ab" />,
-                    },
-                    {
-                      value: '-45',
-                      label: t('appAngleCw'),
-                      icon: <TextDirGlyph deg={45} ch="ab" />,
-                    },
-                    {
-                      value: 'vertical',
-                      label: t('appVerticalText'),
-                      icon: <TextDirGlyph deg={90} ch="ab" />,
-                    },
-                    {
-                      value: '90',
-                      label: t('appRotateUp'),
-                      icon: <TextDirGlyph deg={180} ch="ab" />,
-                    },
-                    {
-                      value: '-90',
-                      label: t('appRotateDown'),
-                      icon: <TextDirGlyph deg={0} ch="ab" />,
-                    },
-                    {
-                      value: '0',
-                      label: t('appClearRotation'),
-                      icon: <TextDirGlyph deg={0} ch="↺" />,
-                    },
-                  ]}
-                  onPick={(value) => onCommand(`rotate:${value}`)}
-                />
+            </RibbonGroup>
+            <RibbonGroup
+              label={t('appGroupAlignment')}
+              launcher={{
+                tip: `${t('appFormatCells')} · ${t('dlgFcTabAlignment')}`,
+                onClick: () => onCommand('format-cells:Alignment'),
+              }}
+            >
+              <div className="ribbon-rows">
+                <div className="inline-tools alignment-tools">
+                  <button
+                    data-tip={t('appTopAlign')}
+                    aria-label={t('appTopAlign')}
+                    onClick={() => onCommand('valign:top')}
+                  >
+                    <ToolSymbol symbol="⤒" />
+                  </button>
+                  <button
+                    data-tip={t('appMiddleAlign')}
+                    aria-label={t('appMiddleAlign')}
+                    onClick={() => onCommand('valign:middle')}
+                  >
+                    <ToolSymbol symbol="valign-middle" />
+                  </button>
+                  <button
+                    data-tip={t('appBottomAlign')}
+                    aria-label={t('appBottomAlign')}
+                    onClick={() => onCommand('valign:bottom')}
+                  >
+                    <ToolSymbol symbol="⤓" />
+                  </button>
+                  <button
+                    data-tip={t('dlgFcWrapText')}
+                    aria-label={t('dlgFcWrapText')}
+                    className={selectionFormat?.wrap ? 'is-active' : ''}
+                    onClick={() => onCommand('wrap')}
+                  >
+                    <ToolSymbol symbol="↩" />
+                  </button>
+                  <MenuSelect
+                    className="select-like compact"
+                    label="Orientation"
+                    data-tip={t('dlgFcOrientation')}
+                    display={<ToolSymbol symbol="⤴" />}
+                    options={[
+                      {
+                        value: '45',
+                        label: t('appAngleCcw'),
+                        icon: <TextDirGlyph deg={-45} ch="ab" />,
+                      },
+                      {
+                        value: '-45',
+                        label: t('appAngleCw'),
+                        icon: <TextDirGlyph deg={45} ch="ab" />,
+                      },
+                      {
+                        value: 'vertical',
+                        label: t('appVerticalText'),
+                        icon: <TextDirGlyph deg={90} ch="ab" />,
+                      },
+                      {
+                        value: '90',
+                        label: t('appRotateUp'),
+                        icon: <TextDirGlyph deg={180} ch="ab" />,
+                      },
+                      {
+                        value: '-90',
+                        label: t('appRotateDown'),
+                        icon: <TextDirGlyph deg={0} ch="ab" />,
+                      },
+                      {
+                        value: '0',
+                        label: t('appClearRotation'),
+                        icon: <TextDirGlyph deg={0} ch="↺" />,
+                      },
+                    ]}
+                    onPick={(value) => onCommand(`rotate:${value}`)}
+                  />
+                </div>
+                <div className="inline-tools alignment-tools">
+                  <button
+                    data-tip={t('appAlignLeft')}
+                    aria-label={t('appAlignLeft')}
+                    onClick={() => onCommand('align:left')}
+                  >
+                    <ToolSymbol symbol="≡" />
+                  </button>
+                  <button
+                    data-tip={t('appAlignCenter')}
+                    aria-label={t('appAlignCenter')}
+                    onClick={() => onCommand('align:center')}
+                  >
+                    <ToolSymbol symbol="≣" />
+                  </button>
+                  <button
+                    data-tip={t('appAlignRight')}
+                    aria-label={t('appAlignRight')}
+                    onClick={() => onCommand('align:right')}
+                  >
+                    <ToolSymbol symbol="☰" />
+                  </button>
+                  <MenuSelect
+                    className="select-like compact"
+                    label="Merge cells"
+                    data-tip={t('appMergeCells')}
+                    display={
+                      <>
+                        <ToolSymbol symbol="⇔" /> {t('appMerge')}
+                      </>
+                    }
+                    options={[
+                      {
+                        value: 'center',
+                        label: t('appMergeCenter'),
+                        icon: <MergeGlyph mode="center" />,
+                      },
+                      {
+                        value: 'across',
+                        label: t('appMergeAcross'),
+                        icon: <MergeGlyph mode="across" />,
+                      },
+                      {
+                        value: 'cells',
+                        label: t('appMergeCells'),
+                        icon: <MergeGlyph mode="cells" />,
+                      },
+                      {
+                        value: 'unmerge',
+                        label: t('appUnmergeCells'),
+                        icon: <MergeGlyph mode="none" />,
+                      },
+                    ]}
+                    onPick={(value) => onCommand(`merge:${value}`)}
+                  />
+                </div>
               </div>
-              <div className="inline-tools alignment-tools">
-                <button
-                  data-tip={t('appAlignLeft')}
-                  aria-label={t('appAlignLeft')}
-                  onClick={() => onCommand('align:left')}
-                >
-                  <ToolSymbol symbol="≡" />
-                </button>
-                <button
-                  data-tip={t('appAlignCenter')}
-                  aria-label={t('appAlignCenter')}
-                  onClick={() => onCommand('align:center')}
-                >
-                  <ToolSymbol symbol="≣" />
-                </button>
-                <button
-                  data-tip={t('appAlignRight')}
-                  aria-label={t('appAlignRight')}
-                  onClick={() => onCommand('align:right')}
-                >
-                  <ToolSymbol symbol="☰" />
-                </button>
-                <MenuSelect
-                  className="select-like compact"
-                  label="Merge cells"
-                  data-tip={t('appMergeCells')}
-                  display={
-                    <>
-                      <ToolSymbol symbol="⇔" /> {t('appMerge')}
-                    </>
-                  }
-                  options={[
-                    {
-                      value: 'center',
-                      label: t('appMergeCenter'),
-                      icon: <MergeGlyph mode="center" />,
-                    },
-                    {
-                      value: 'across',
-                      label: t('appMergeAcross'),
-                      icon: <MergeGlyph mode="across" />,
-                    },
-                    {
-                      value: 'cells',
-                      label: t('appMergeCells'),
-                      icon: <MergeGlyph mode="cells" />,
-                    },
-                    {
-                      value: 'unmerge',
-                      label: t('appUnmergeCells'),
-                      icon: <MergeGlyph mode="none" />,
-                    },
-                  ]}
-                  onPick={(value) => onCommand(`merge:${value}`)}
-                />
-              </div>
-            </div>
-          </RibbonGroup>
-          <RibbonGroup
-            label={t('appGroupNumber')}
-            launcher={{
-              tip: `${t('appFormatCells')} · ${t('dlgFcTabNumber')}`,
-              onClick: () => onCommand('format-cells:Number'),
-            }}
-          >
-            {/* WPS 数字组布局（CT_Home.kuip RB_Number）：行1=格式框+转换⌄，
+            </RibbonGroup>
+            <RibbonGroup
+              label={t('appGroupNumber')}
+              launcher={{
+                tip: `${t('appFormatCells')} · ${t('dlgFcTabNumber')}`,
+                onClick: () => onCommand('format-cells:Number'),
+              }}
+            >
+              {/* WPS 数字组布局（CT_Home.kuip RB_Number）：行1=格式框+转换⌄，
             行2=货币/会计⌄ % 千分位 增小数 减小数 快捷图标，紧凑无缝 */}
-            <div className="ribbon-rows num-compact">
-              <div className="num-row1">
-                <NumberFormatSelect
-                  pattern={selectionFormat?.numberFormat ?? ''}
-                  onCommand={onCommand}
-                />
-                <ConvertMenuSelect data-tip={t('appConvertMenu')} onCommand={onCommand} />
+              <div className="ribbon-rows num-compact">
+                <div className="num-row1">
+                  <NumberFormatSelect
+                    pattern={selectionFormat?.numberFormat ?? ''}
+                    onCommand={onCommand}
+                  />
+                  <ConvertMenuSelect data-tip={t('appConvertMenu')} onCommand={onCommand} />
+                </div>
+                <div className="inline-tools num-quick">
+                  <MenuSelect
+                    className="select-like compact"
+                    label="Accounting"
+                    data-tip={t('appCurrency')}
+                    display={
+                      <>
+                        <ToolSymbol symbol="💰" /> ⌄
+                      </>
+                    }
+                    options={[
+                      {
+                        value: 'format:$#,##0.00',
+                        label: t('appCurrency'),
+                        icon: <OptSample>$</OptSample>,
+                      },
+                      {
+                        value: 'format:"¥"#,##0.00',
+                        label: t('appRmbAccounting'),
+                        icon: <OptSample>¥</OptSample>,
+                      },
+                    ]}
+                    onPick={(value) => onCommand(value)}
+                  />
+                  <button
+                    data-tip={t('appPercentTitle')}
+                    aria-label={t('appPercentTitle')}
+                    onClick={() => onCommand('format:0.00%')}
+                  >
+                    %
+                  </button>
+                  <button
+                    data-tip={t('appThousands')}
+                    aria-label={t('appThousands')}
+                    onClick={() => onCommand('format:#,##0')}
+                  >
+                    ,
+                  </button>
+                  <button
+                    data-tip={t('appIncreaseDecimal')}
+                    aria-label={t('appIncreaseDecimal')}
+                    onClick={() => onCommand('decimal-inc')}
+                  >
+                    .0+
+                  </button>
+                  <button
+                    data-tip={t('appDecreaseDecimal')}
+                    aria-label={t('appDecreaseDecimal')}
+                    onClick={() => onCommand('decimal-dec')}
+                  >
+                    .0−
+                  </button>
+                </div>
               </div>
-              <div className="inline-tools num-quick">
-                <MenuSelect
-                  className="select-like compact"
-                  label="Accounting"
-                  data-tip={t('appCurrency')}
-                  display={
-                    <>
-                      <ToolSymbol symbol="💰" /> ⌄
-                    </>
-                  }
-                  options={[
-                    {
-                      value: 'format:$#,##0.00',
-                      label: t('appCurrency'),
-                      icon: <OptSample>$</OptSample>,
-                    },
-                    {
-                      value: 'format:"¥"#,##0.00',
-                      label: t('appRmbAccounting'),
-                      icon: <OptSample>¥</OptSample>,
-                    },
-                  ]}
-                  onPick={(value) => onCommand(value)}
-                />
-                <button
-                  data-tip={t('appPercentTitle')}
-                  aria-label={t('appPercentTitle')}
-                  onClick={() => onCommand('format:0.00%')}
-                >
-                  %
-                </button>
-                <button
-                  data-tip={t('appThousands')}
-                  aria-label={t('appThousands')}
-                  onClick={() => onCommand('format:#,##0')}
-                >
-                  ,
-                </button>
-                <button
-                  data-tip={t('appIncreaseDecimal')}
-                  aria-label={t('appIncreaseDecimal')}
-                  onClick={() => onCommand('decimal-inc')}
-                >
-                  .0+
-                </button>
-                <button
-                  data-tip={t('appDecreaseDecimal')}
-                  aria-label={t('appDecreaseDecimal')}
-                  onClick={() => onCommand('decimal-dec')}
-                >
-                  .0−
-                </button>
+            </RibbonGroup>
+            {/* WPS 开始 tab #33-34：行和列⌄（上）+ 工作表⌄（下），纵向无边框图标钮 */}
+            <RibbonGroup label={t('appRowcolMenu')}>
+              <div className="rowcol-stack">
+                <RowcolMenu onCommand={onCommand} />
+                <SheetMenu onCommand={onCommand} />
               </div>
-            </div>
-          </RibbonGroup>
-          {/* WPS 开始 tab #33-34：行和列⌄（上）+ 工作表⌄（下），纵向无边框图标钮 */}
-          <RibbonGroup label={t('appRowcolMenu')}>
-            <div className="rowcol-stack">
-              <RowcolMenu onCommand={onCommand} />
-              <SheetMenu onCommand={onCommand} />
-            </div>
-          </RibbonGroup>
-          <RibbonGroup label={t('appGroupStyles')}>
-            {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：条件格式
+            </RibbonGroup>
+            <RibbonGroup label={t('appGroupStyles')}>
+              {/* WPS 样式组布局（CT_Home.kuip RB_ConditionalFormatting）：条件格式
             大钮在左，表格样式（上）+ 单元格样式（下）纵排，数据透视表殿后 */}
-            <div className="style-wps-row">
-              <div className="ribbon-tool large as-button" data-tip={t('appConditionalFormatting')}>
-                <span className="tool-icon-row">
-                  <ToolSymbol symbol="▤" />
-                  <CaretIcon />
-                </span>
-                <span>
-                  <strong>{t('appConditionalFormatting')}</strong>
-                </span>
-                <CondFormatSelect
-                  label={t('appConditionalFormatting')}
+              <div className="style-wps-row">
+                <div
+                  className="ribbon-tool large as-button"
                   data-tip={t('appConditionalFormatting')}
-                  onCommand={onCommand}
-                />
-              </div>
-              <div className="style-wps-stack">
-                <div className="ribbon-tool large as-button" data-tip={t('appFormatAsTableTitle')}>
+                >
                   <span className="tool-icon-row">
-                    <ToolSymbol symbol="▦" />
+                    <ToolSymbol symbol="▤" />
                   </span>
                   <span>
-                    <strong>{t('appTableStyleMenu')}</strong>
+                    <strong>{t('appConditionalFormatting')}</strong>
+                    <CaretIcon />
                   </span>
-                  <CaretIcon />
-                  <TableStyleGallerySelect
-                    label={t('appTableStyleMenu')}
+                  <CondFormatSelect
+                    label={t('appConditionalFormatting')}
+                    data-tip={t('appConditionalFormatting')}
+                    onCommand={onCommand}
+                  />
+                </div>
+                <div className="style-wps-stack">
+                  <div
+                    className="ribbon-tool large as-button"
                     data-tip={t('appFormatAsTableTitle')}
-                    onPick={(value) => onCommand(`format-as-table:${value}`)}
-                    onCommand={onCommand}
-                  />
+                  >
+                    <span className="tool-icon-row">
+                      <ToolSymbol symbol="▦" />
+                    </span>
+                    <span>
+                      <strong>{t('appTableStyleMenu')}</strong>
+                    </span>
+                    <CaretIcon />
+                    <TableStyleGallerySelect
+                      label={t('appTableStyleMenu')}
+                      data-tip={t('appFormatAsTableTitle')}
+                      onPick={(value) => onCommand(`format-as-table:${value}`)}
+                      onCommand={onCommand}
+                    />
+                  </div>
+                  <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
+                    <span className="tool-icon-row">
+                      <ToolSymbol symbol="🎨" />
+                    </span>
+                    <span>
+                      <strong>{t('appCellStyles')}</strong>
+                    </span>
+                    <CaretIcon />
+                    <CellStyleSelect
+                      label={t('appCellStyles')}
+                      data-tip={t('appCellStylesTitle')}
+                      onPick={(value) => onCommand(`cell-style:${value}`)}
+                      onCommand={onCommand}
+                    />
+                  </div>
                 </div>
-                <div className="ribbon-tool large as-button" data-tip={t('appCellStylesTitle')}>
+                <button
+                  className="ribbon-tool large as-button"
+                  data-tip={t('appRefreshHintIn')}
+                  onClick={() => onRefreshPivot()}
+                >
                   <span className="tool-icon-row">
-                    <ToolSymbol symbol="🎨" />
+                    <ToolSymbol symbol="▩" />
                   </span>
                   <span>
-                    <strong>{t('appCellStyles')}</strong>
+                    <strong>{t('appPivotTable')}</strong>
                   </span>
-                  <CaretIcon />
-                  <CellStyleSelect
-                    label={t('appCellStyles')}
-                    data-tip={t('appCellStylesTitle')}
-                    onPick={(value) => onCommand(`cell-style:${value}`)}
-                    onCommand={onCommand}
-                  />
-                </div>
+                </button>
               </div>
-              <button
-                className="ribbon-tool large as-button"
-                data-tip={t('appRefreshHintIn')}
-                onClick={() => onRefreshPivot()}
-              >
-                <span className="tool-icon-row">
-                  <ToolSymbol symbol="▩" />
-                </span>
-                <span>
-                  <strong>{t('appPivotTable')}</strong>
-                </span>
-              </button>
-            </div>
-          </RibbonGroup>
-          <RibbonGroup label={t('appGroupDataProcess')}>
-            {/* WPS 数据处理组（对比清单 6-11）：填充/求和/排序/筛选/冻结/查找
+            </RibbonGroup>
+            <RibbonGroup label={t('appGroupDataProcess')}>
+              {/* WPS 数据处理组（对比清单 6-11）：填充/求和/排序/筛选/冻结/查找
             六枚上下结构大钮 + 清除（保留原有清除功能，复用同款大钮） */}
-            <div className="process-big-row">
-              {processMenus.map((menu) => (
-                <RibbonMenuButton
-                  key={menu.key}
-                  variant="big"
-                  label={menu.label}
-                  tip={menu.tip}
-                  symbol={menu.symbol}
-                  options={menu.options}
-                  onPick={onCommand}
-                />
-              ))}
-            </div>
-          </RibbonGroup>
+              <div className="process-big-row">
+                {processMenus.map((menu) => (
+                  <RibbonMenuButton
+                    key={menu.key}
+                    variant="big"
+                    label={menu.label}
+                    tip={menu.tip}
+                    symbol={menu.symbol}
+                    options={menu.options}
+                    onPick={onCommand}
+                  />
+                ))}
+              </div>
+            </RibbonGroup>
           </BandCollectorContext.Provider>
         </GroupSlotContext.Provider>
       </RibbonGroupLevelsContext.Provider>
@@ -7161,14 +7167,10 @@ function RibbonGroup({
     )
   }
   return (
-    <section
-      className={`ribbon-group${level > 0 ? ` degrade-${level}` : ''}`}
-      aria-label={label}
-    >
+    <section className={`ribbon-group${level > 0 ? ` degrade-${level}` : ''}`} aria-label={label}>
       <div className="ribbon-group-content">
         {level > 0 ? <div className="degrade-grid">{children}</div> : children}
       </div>
-      {level >= 2 && <div className="ribbon-group-caption">{label}</div>}
       {launcher && level === 0 && (
         <button
           type="button"

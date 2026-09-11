@@ -447,7 +447,8 @@ export function useRibbonGroupLevels(
       // 该组升回上一档后的总宽 ≤ avail 才回退——否则档位边界上乒乓循环
       // （Maximum update depth 白屏，用户实证）
       for (let k = undoStack.current.length - 1; k >= 0; k--) {
-        const g = undoStack.current[k]
+        const g = undoStack.current[k] ?? -1
+        if (g < 0) continue
         const lv = cur[g] ?? 0
         if (lv <= 0) continue
         const prevW = widths.current.get(`${g}@${lv - 1}`)
