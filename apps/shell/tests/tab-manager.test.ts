@@ -862,9 +862,11 @@ describe('Home right-pane docking (P1 契约)', () => {
     expect(queueDocsAiContent).toHaveBeenCalledTimes(2)
   })
 
-  it('hides the editor panel at boot when hidePanel is set (?panel=0)', () => {
-    manager.dockEditorTab('docs', { newBlank: true, hidePanel: true })
-    expect(createDocsView).toHaveBeenCalledWith(undefined, { hidePanel: true })
+  it('docks default to a hidden AI panel (?panel=0); an explicit false opts out', () => {
+    manager.dockEditorTab('docs', { newBlank: true })
+    expect(createDocsView).toHaveBeenLastCalledWith(undefined, { hidePanel: true })
+    manager.dockEditorTab('docs', { newBlank: true, hidePanel: false })
+    expect(createDocsView).toHaveBeenLastCalledWith(undefined, { hidePanel: false })
   })
 
   it('closing the active dock falls back to the neighbor while Home stays active', async () => {

@@ -369,7 +369,10 @@ export class TabManager {
     let title = ''
     switch (kind) {
       case 'docs': {
-        view = createDocsView(options?.file, { hidePanel: options?.hidePanel })
+        // docked = panel hidden by default (P1 契约); explicit false opts out
+        view = createDocsView(options?.file, {
+          hidePanel: options?.hidePanel !== false,
+        })
         if (options?.newBlank) markDocsNewBlank(view.webContents.id)
         if (options?.aiContent) queueDocsAiContent(view.webContents.id, options.aiContent)
         title = options?.file ? basename(options.file) : this.untitled('docs', 'ChatOffice Docs')

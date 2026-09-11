@@ -461,3 +461,14 @@ html.chatoffice-shell-modal .app-frame-content.doc-active {
   width: 90px;
   pointer-events: none;
 }
+
+/* docked-in-home-pane marker (P1): a small dot after the title — clicking
+   this tab pops it out of the pane to a full tab, so the state must read at
+   a glance (title tooltip already carries the dockTabList label) */
+.tab-docked-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent, #4a90d9);
+  flex-shrink: 0;
+}

@@ -26,8 +26,10 @@ export interface DockEditorOptions {
   aiContent?: AiDocContent
   /**
    * boot the editor with its own AI side panel hidden (?panel=0) — the
-   * Home conversation is the chat surface for docked editors. The editor's
-   * persisted panel preference is not touched.
+   * Home conversation is the chat surface for docked editors. Defaults to
+   * true (docked = no panel, signed consensus): pass an explicit false only
+   * for a "docked with panel" variant. The editor's persisted panel
+   * preference is never touched either way.
    */
   hidePanel?: boolean
 }

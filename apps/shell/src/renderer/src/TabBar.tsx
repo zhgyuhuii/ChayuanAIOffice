@@ -422,6 +422,7 @@ export function TabBar() {
               <span className="tab-plate" aria-hidden="true" />
               <span className="tab-icon">{KIND_ICON[tab.kind]}</span>
               <span className="tab-title">{tab.title}</span>
+              {tab.docked && <span className="tab-docked-dot" aria-hidden="true" />}
               {tab.closable && (
                 <button
                   className="tab-close"
