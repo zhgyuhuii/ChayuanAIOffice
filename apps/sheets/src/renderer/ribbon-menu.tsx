@@ -390,6 +390,7 @@ export function useRibbonGroupLevels(
   const frozen = useRef(false)
   const last = useRef<{ total: number; avail: number }>({ total: -1, avail: -1 })
   const widths = useRef<Map<string, number>>(new Map())
+  const undoStack = useRef<number[]>([])
   useLayoutEffect(() => {
     const scroller = ref.current
     if (!scroller || typeof ResizeObserver === 'undefined') return
@@ -432,28 +433,32 @@ export function useRibbonGroupLevels(
             }
           }
         }
-        const t0 = target >= 0 ? target : 0
         if (target < 0) {
           stateRef.current.collapsed = true
           setCollapsed(true)
         } else {
-          cur[t0] = (cur[t0] ?? 0) + 1
+          cur[target] = (cur[target] ?? 0) + 1
+          undoStack.current.push(target)
           setLevels(cur)
         }
         return
       }
-      // 回退方向与降级相反（向前）：最左的最高级别组先升回
-      for (let i = 0; i < cur.length; i++) {
-        const lv = cur[i]!
+      // 回退 = LIFO 撤销最近的降级（与从后向前方向互逆），但必须过投影守卫：
+      // 该组升回上一档后的总宽 ≤ avail 才回退——否则档位边界上乒乓循环
+      // （Maximum update depth 白屏，用户实证）
+      for (let k = undoStack.current.length - 1; k >= 0; k--) {
+        const g = undoStack.current[k]
+        const lv = cur[g] ?? 0
         if (lv <= 0) continue
-        const prevW = widths.current.get(`${i}@${lv - 1}`)
-        if (prevW === undefined) continue
-        const projected = total - (widths.current.get(`${i}@${lv}`) ?? 0) + prevW
-        if (projected <= avail) {
-          cur[i] = lv - 1
-          setLevels(cur)
-          return
-        }
+        const prevW = widths.current.get(`${g}@${lv - 1}`)
+        const curW = widths.current.get(`${g}@${lv}`)
+        if (prevW === undefined || curW === undefined) continue
+        const projected = total - curW + prevW
+        if (projected > avail) continue
+        undoStack.current.splice(k, 1)
+        cur[g] = lv - 1
+        setLevels(cur)
+        break
       }
     }
     const remeasure = () => {
