@@ -376,10 +376,16 @@ export function RibbonMenuButton({
 /// 富余时按组回退一级；全部到 L3 仍溢出 → collapsed=true（全带唯一分组钮，
 /// 面板分节展示各组）。每组每档实测宽度记忆：回退只在「升回上一档的投影
 /// 总宽 ≤ 可用宽」时发生（按事实回退，振荡有界）；RO 连发经 rAF 合帧。
-export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, maxLevel = 3): { levels: number[]; collapsed: boolean } {
+export function useRibbonGroupLevels(
+  ref: React.RefObject<HTMLElement | null>,
+  maxLevel = 3,
+): { levels: number[]; collapsed: boolean } {
   const [levels, setLevels] = useState<number[]>([])
   const [collapsed, setCollapsed] = useState(false)
-  const stateRef = useRef<{ levels: number[]; collapsed: boolean }>({ levels: [], collapsed: false })
+  const stateRef = useRef<{ levels: number[]; collapsed: boolean }>({
+    levels: [],
+    collapsed: false,
+  })
   stateRef.current = { levels, collapsed }
   const frozen = useRef(false)
   const last = useRef<{ total: number; avail: number }>({ total: -1, avail: -1 })
@@ -393,7 +399,8 @@ export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, m
       const sections = [...scroller.querySelectorAll(':scope > .ribbon-group')]
       if (sections.length === 0) return
       const total = sections.reduce(
-        (sum, el) => sum + Math.max((el as HTMLElement).offsetWidth, (el as HTMLElement).scrollWidth),
+        (sum, el) =>
+          sum + Math.max((el as HTMLElement).offsetWidth, (el as HTMLElement).scrollWidth),
         0,
       )
       if (total === last.current.total && avail === last.current.avail) return
@@ -415,10 +422,14 @@ export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, m
         return
       }
       if (total > avail + 1) {
+        // WPS 方向：从后向前——最右的最低级别组先降，逐个向前推进
         let target = -1
         outer: for (let r = 0; r < maxLevel; r++) {
-          for (let i = 0; i < cur.length; i++) {
-            if (cur[i] === r) { target = i; break outer }
+          for (let i = cur.length - 1; i >= 0; i--) {
+            if (cur[i] === r) {
+              target = i
+              break outer
+            }
           }
         }
         const t0 = target >= 0 ? target : 0
@@ -431,7 +442,8 @@ export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, m
         }
         return
       }
-      for (let i = cur.length - 1; i >= 0; i--) {
+      // 回退方向与降级相反（向前）：最左的最高级别组先升回
+      for (let i = 0; i < cur.length; i++) {
         const lv = cur[i]!
         if (lv <= 0) continue
         const prevW = widths.current.get(`${i}@${lv - 1}`)
@@ -468,7 +480,8 @@ export function useRibbonGroupLevels(ref: React.RefObject<HTMLElement | null>, m
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
   })
-  if (frozen.current) return { levels: stateRef.current.levels, collapsed: stateRef.current.collapsed }
+  if (frozen.current)
+    return { levels: stateRef.current.levels, collapsed: stateRef.current.collapsed }
   return { levels, collapsed }
 }
 
