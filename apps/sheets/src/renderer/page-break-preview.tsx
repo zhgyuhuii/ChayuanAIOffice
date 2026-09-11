@@ -21,6 +21,14 @@ export interface PageBoundary {
   readonly manual: boolean
 }
 
+/// The effective print area in 0-based inclusive screen coordinates.
+export interface PrintAreaBounds {
+  readonly startRow: number
+  readonly startColumn: number
+  readonly endRow: number
+  readonly endColumn: number
+}
+
 /// Printable page size in points for the session's page setup, mirroring the
 /// export pipeline's paper/margin tables.
 const PAPER_INCHES: Record<number, { width: number; height: number }> = {
@@ -53,17 +61,20 @@ export function printablePagePt(pageSetup: PageSetupJournalState): {
 
 /// Walks one axis accumulating scaled pt sizes; a boundary lands where the
 /// next row/column would overflow the printable size, or at a manual break.
+/// `from` starts the walk (and the per-page budget) at a print area's first
+/// line instead of the sheet origin.
 export function computePageBoundaries(
   sizeOf: (index: number) => number,
   count: number,
   printableSizePt: number,
   scale: number,
   manual: readonly number[],
+  from = 0,
 ): PageBoundary[] {
-  const manualSet = new Set(manual.filter((index) => index > 0 && index < count))
+  const manualSet = new Set(manual.filter((index) => index > from && index < count))
   const boundaries: PageBoundary[] = []
   let used = 0
-  for (let index = 0; index < count; index += 1) {
+  for (let index = from; index < count; index += 1) {
     if (manualSet.has(index)) {
       boundaries.push({ index, manual: true })
       used = 0
@@ -136,31 +147,50 @@ export function installPageBreakPreview(
   /// getLastRow/getLastColumn only see the rows already loaded into Univer.
   extent: { rows: number; columns: number },
   idPrefix: string,
+  /// Effective print area (WPS/Excel 分页预览语义): pages tile inside it and
+  /// everything outside is shaded. null = the whole used range prints.
+  printArea?: PrintAreaBounds | null,
 ): Disposable[] {
   const rows = Math.min(Math.max(worksheet.getLastRow() + 1, extent.rows, 1), MAX_EXTENT_ROWS)
   const columns = Math.min(
     Math.max(worksheet.getLastColumn() + 1, extent.columns, 1),
     MAX_EXTENT_COLUMNS,
   )
+  // Multiple print areas print as separate tables in the export; the preview
+  // tiles the bounding envelope (a compromise the PDF path does not share).
+  const area: PrintAreaBounds | null = printArea
+    ? {
+        startRow: Math.min(printArea.startRow, rows - 1),
+        startColumn: Math.min(printArea.startColumn, columns - 1),
+        endRow: Math.min(printArea.endRow, rows - 1),
+        endColumn: Math.min(printArea.endColumn, columns - 1),
+      }
+    : null
   const page = printablePagePt(pageSetup)
+  const walkFrom = area?.startRow ?? 0
+  const walkTo = area ? area.endRow + 1 : rows
+  const walkFromCol = area?.startColumn ?? 0
+  const walkToCol = area ? area.endColumn + 1 : columns
   let contentWidthPt = 0
-  for (let column = 0; column < columns; column += 1) {
+  for (let column = walkFromCol; column < walkToCol; column += 1) {
     contentWidthPt += worksheet.getColumnWidth(column) * 0.75
   }
   const scale = effectiveScale(pageSetup, contentWidthPt, page.width)
   const rowBoundaries = computePageBoundaries(
     (index) => worksheet.getRowHeight(index),
-    rows,
+    walkTo,
     page.height,
     scale,
     breaks.rowBreaks,
+    walkFrom,
   ).slice(0, MAX_BOUNDARY_LINES)
   const colBoundaries = computePageBoundaries(
     (index) => worksheet.getColumnWidth(index),
-    columns,
+    walkToCol,
     page.width,
     scale,
     breaks.colBreaks,
+    walkFromCol,
   ).slice(0, MAX_BOUNDARY_LINES)
 
   const disposables: Disposable[] = []
@@ -182,23 +212,80 @@ export function installPageBreakPreview(
     if (floating) disposables.push(floating)
   }
 
-  layer(`${idPrefix}-outline`, 0, 0, rows, columns, () => (
-    <div className="page-break-line page-break-outline" />
-  ))
+  layer(
+    `${idPrefix}-outline`,
+    walkFrom,
+    walkFromCol,
+    walkTo - walkFrom,
+    walkToCol - walkFromCol,
+    () => <div className="page-break-line page-break-outline" />,
+  )
   rowBoundaries.forEach((boundary, index) => {
-    layer(`${idPrefix}-row-${index}`, boundary.index, 0, 1, columns, () => (
-      <div className={`page-break-line page-break-row${boundary.manual ? ' manual' : ''}`} />
-    ))
+    layer(
+      `${idPrefix}-row-${index}`,
+      boundary.index,
+      walkFromCol,
+      1,
+      walkToCol - walkFromCol,
+      () => <div className={`page-break-line page-break-row${boundary.manual ? ' manual' : ''}`} />,
+    )
   })
   colBoundaries.forEach((boundary, index) => {
-    layer(`${idPrefix}-col-${index}`, 0, boundary.index, rows, 1, () => (
+    layer(`${idPrefix}-col-${index}`, walkFrom, boundary.index, walkTo - walkFrom, 1, () => (
       <div className={`page-break-line page-break-col${boundary.manual ? ' manual' : ''}`} />
     ))
   })
 
+  // WPS 分页预览语义：打印区域外的内容盖灰（不打印）。四条遮罩带贴着
+  // 区域包络铺（上/下整幅，左/右只占区域行段），没有区域时一条都不装。
+  const shade = (key: string, band: PrintAreaBounds): void => {
+    layer(
+      key,
+      band.startRow,
+      band.startColumn,
+      band.endRow - band.startRow + 1,
+      band.endColumn - band.startColumn + 1,
+      () => <div className="page-break-shade" />,
+    )
+  }
+  if (area) {
+    if (area.startRow > 0) {
+      shade(`${idPrefix}-shade-top`, {
+        startRow: 0,
+        startColumn: 0,
+        endRow: area.startRow - 1,
+        endColumn: columns - 1,
+      })
+    }
+    if (area.endRow < rows - 1) {
+      shade(`${idPrefix}-shade-bottom`, {
+        startRow: area.endRow + 1,
+        startColumn: 0,
+        endRow: rows - 1,
+        endColumn: columns - 1,
+      })
+    }
+    if (area.startColumn > 0) {
+      shade(`${idPrefix}-shade-left`, {
+        startRow: area.startRow,
+        startColumn: 0,
+        endRow: area.endRow,
+        endColumn: area.startColumn - 1,
+      })
+    }
+    if (area.endColumn < columns - 1) {
+      shade(`${idPrefix}-shade-right`, {
+        startRow: area.startRow,
+        startColumn: area.endColumn + 1,
+        endRow: area.endRow,
+        endColumn: columns - 1,
+      })
+    }
+  }
+
   // Page watermarks, numbered down-then-over like Excel's default page order.
-  const rowEdges = [0, ...rowBoundaries.map((boundary) => boundary.index), rows]
-  const colEdges = [0, ...colBoundaries.map((boundary) => boundary.index), columns]
+  const rowEdges = [walkFrom, ...rowBoundaries.map((boundary) => boundary.index), walkTo]
+  const colEdges = [walkFromCol, ...colBoundaries.map((boundary) => boundary.index), walkToCol]
   let pageNumber = 0
   for (
     let colPage = 0;
@@ -214,13 +301,42 @@ export function installPageBreakPreview(
       const label = t('appPageWatermark', { page: pageNumber })
       layer(
         `${idPrefix}-page-${pageNumber}`,
-        rowEdges[rowPage] ?? 0,
-        colEdges[colPage] ?? 0,
-        (rowEdges[rowPage + 1] ?? rows) - (rowEdges[rowPage] ?? 0),
-        (colEdges[colPage + 1] ?? columns) - (colEdges[colPage] ?? 0),
+        rowEdges[rowPage] ?? walkFrom,
+        colEdges[colPage] ?? walkFromCol,
+        (rowEdges[rowPage + 1] ?? walkTo) - (rowEdges[rowPage] ?? walkFrom),
+        (colEdges[colPage + 1] ?? walkToCol) - (colEdges[colPage] ?? walkFromCol),
         () => <div className="page-break-watermark">{label}</div>,
       )
     }
   }
+  return disposables
+}
+
+/// Normal-view print-area marker (Excel parity): one dashed boundary per
+/// print area, so setting 打印区域 has visible feedback outside 分页预览.
+/// The float anchors to the area's range, scrolling/zooming with the grid.
+export function installPrintAreaMarker(
+  runtime: UniverRuntime,
+  worksheet: UniverWorksheet,
+  area: PrintAreaBounds,
+  idPrefix: string,
+): Disposable[] {
+  const disposables: Disposable[] = []
+  const key = `${idPrefix}-marker`
+  disposables.push(
+    runtime.univerAPI.registerComponent(key, () => <div className="print-area-marker" />),
+  )
+  const floating = worksheet.addFloatDomToRange(
+    worksheet.getRange(
+      area.startRow,
+      area.startColumn,
+      Math.max(1, area.endRow - area.startRow + 1),
+      Math.max(1, area.endColumn - area.startColumn + 1),
+    ),
+    { componentKey: key, allowTransform: false, eventPassThrough: true },
+    {},
+    key,
+  )
+  if (floating) disposables.push(floating)
   return disposables
 }

@@ -55,6 +55,11 @@ describe('computePageBoundaries', () => {
   it('an oversized single row never yields a boundary at index 0', () => {
     expect(computePageBoundaries(() => 1000, 2, 200, 1, [])).toEqual([{ index: 1, manual: false }])
   })
+
+  it('a print area starts the page budget at the area, not the sheet origin', () => {
+    // Rows 0-2 sit before the area; the first page holds area rows 3-4 only.
+    expect(computePageBoundaries(rows100, 6, 200, 1, [], 3)).toEqual([{ index: 5, manual: false }])
+  })
 })
 
 function stateWith(setup: (state: LazyWorkbookState) => void): LazyWorkbookState {

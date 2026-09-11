@@ -43,7 +43,8 @@ import {
   pushVisualUndo,
   applyAiConditionalFormat,
   applyRangeInLoadedChunks,
-  applyFilterCriteria, } from './univer-sync'
+  applyFilterCriteria,
+} from './univer-sync'
 import {
   installJournalSuppressionUndoFilter,
   installLoadAutoHeightGate,
@@ -53,16 +54,18 @@ import {
   type LazyWorkbookState,
   type UniverRuntime,
   type UniverWorksheet,
-  aiBulkUndoGate, } from './univer-state'
-import { applyChangePlan, planFromOps, type OpExecutorContext,
-  richCellText, } from './op-executor'
-import { renameChartRefsForSheet,
+  aiBulkUndoGate,
+} from './univer-state'
+import { applyChangePlan, planFromOps, type OpExecutorContext, richCellText } from './op-executor'
+import {
+  renameChartRefsForSheet,
   applyAiTableRowAdd,
   applyAiTableAdd,
   applyAiPivotAdd,
   applyAiTableRowDelete,
   applyAiTableColumnDelete,
-  applyAiTableColumnAdd, } from './workbook-ops'
+  applyAiTableColumnAdd,
+} from './workbook-ops'
 import {
   proposeOperations as proposeOperationsImpl,
   runDeterministicPlan as runDeterministicPlanImpl,
@@ -73,7 +76,8 @@ import {
   lazyGateError,
   type StreamedRefSheet,
   structuralDeleteFormulaError,
-  collectStreamedFormulaPrecedents, } from './plan-operations'
+  collectStreamedFormulaPrecedents,
+} from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
@@ -277,7 +281,8 @@ import {
   type PivotEditContext,
   type SlicerPickerState,
   type TimelinePickerState,
-  refreshPivotTables as refreshPivotTablesImpl } from './pivot-actions'
+  refreshPivotTables as refreshPivotTablesImpl,
+} from './pivot-actions'
 import type { ChartRecommendations } from '../domain/chart-recommend'
 import {
   handleInsertChart as handleInsertChartImpl,
@@ -293,7 +298,8 @@ import {
   insertEchartVisual as insertEchartVisualImpl,
   insertPictureFromData as insertPictureFromDataImpl,
   applyAiShapeEdit as applyAiShapeEditImpl,
-  buildAiChartEdit as buildAiChartEditImpl } from './visual-actions'
+  buildAiChartEdit as buildAiChartEditImpl,
+} from './visual-actions'
 import {
   activeCellLabel as activeCellLabelImpl,
   consolidateDefaultReference as consolidateDefaultReferenceImpl,
@@ -314,7 +320,8 @@ import {
   applyShowFormulasView,
   installFormulaTextInterceptor,
   installFormulaViewInterceptor,
-  indexedFormulaText, } from './formula-view'
+  indexedFormulaText,
+} from './formula-view'
 import { installCachedValueFallbackInterceptor } from './formula-cached-fallback'
 import { installSupportedFunctionProbe } from './function-registry-probe'
 import { installCellFilenameFunction } from './cell-function'
@@ -365,7 +372,13 @@ import {
   type PageLayoutContext,
 } from './page-layout-actions'
 import { handleExportCsv as handleExportCsvImpl, type CsvExportContext } from './csv-export'
-import { effectivePageBreaks, installPageBreakPreview } from './page-break-preview'
+import { resolveEffectivePageSetup } from './print-settings'
+import {
+  effectivePageBreaks,
+  installPageBreakPreview,
+  installPrintAreaMarker,
+  type PrintAreaBounds,
+} from './page-break-preview'
 import { mapProtectedRanges } from './protected-ranges'
 import { handleSave as handleSaveImpl, type SaveContext } from './save-actions'
 import {
@@ -406,7 +419,8 @@ import {
   removeBulkConstantFill,
   recordBulkConstantFill,
   journalCellContentAt,
-  recordSparklineAdd, } from './edit-journal'
+  recordSparklineAdd,
+} from './edit-journal'
 import { shiftPinnedCells } from './formula-closure'
 import { getLang, t, aiLangDirective } from './i18n/locale'
 import { planStillMatches } from './lazy-plan'
@@ -501,6 +515,10 @@ export function App(): React.JSX.Element {
   )
   const pageBreakLayersRef = useRef<Map<string, { dispose(): void }[]>>(new Map())
   const pageBreakIdRef = useRef(0)
+  /// Normal-view print-area markers per sheet (dashed boundaries); separate
+  /// from the preview overlay so both can coexist and refresh on their own.
+  const printAreaLayersRef = useRef<Map<string, { dispose(): void }[]>>(new Map())
+  const printAreaIdRef = useRef(0)
   /// App-level setting, Excel-style: not stored in the file, kept across
   /// workbook switches.
   const [formulaBarVisible, setFormulaBarVisible] = useState(true)
@@ -1848,6 +1866,11 @@ export function App(): React.JSX.Element {
           shapeEditRef,
         )
         queueSparklineInstall(runtime, lazyWorkbookRef, sparklineDisposablesRef, sparklineTimerRef)
+        // Print-area markers are per-sheet; the newly active sheet's areas
+        // resolve fresh (structural ops may have shifted them while hidden).
+        void loadVisibleRange(runtime, lazyWorkbookRef, activeSheet, setMessage).then(() =>
+          refreshPrintAreaMarkers(),
+        )
       },
     )
     const editDisposable = runtime.univerAPI.addEvent(
@@ -2270,6 +2293,16 @@ export function App(): React.JSX.Element {
           }
           if (pageBreakLayersRef.current.has(structuralSheetId)) {
             installPageBreakLayers(structuralSheetId)
+          }
+          // Print-area markers anchor to cell indices; inserts/deletes above
+          // or left of the area move it in the file's coordinates, so
+          // re-resolve. Inactive sheets refresh on their ActiveSheetChanged.
+          if (
+            printAreaLayersRef.current.has(structuralSheetId) &&
+            structuralSheetId ===
+              runtime.univerAPI.getActiveWorkbook()?.getActiveSheet()?.getSheetId()
+          ) {
+            installPrintAreaMarkers(structuralSheetId)
           }
           // Univer shifted its installed cells itself, but the loaded-range
           // bookkeeping and frozen strip are now stale — refetch the viewport
@@ -3181,19 +3214,19 @@ export function App(): React.JSX.Element {
     }
   }
 
-    const reportFailure = (reason: string): void => {
-      // The chat answer already promised the change — surface the failure
-      // there too, or it silently never lands on the canvas.
-      patchLastAssistant((entry) =>
-        entry.text.includes(reason)
-          ? entry
-          : {
-              ...entry,
-              text: `${entry.text}\n\n${t('appApplyFailed', { reason })}`,
-              isError: true,
-            },
-      )
-    }
+  const reportFailure = (reason: string): void => {
+    // The chat answer already promised the change — surface the failure
+    // there too, or it silently never lands on the canvas.
+    patchLastAssistant((entry) =>
+      entry.text.includes(reason)
+        ? entry
+        : {
+            ...entry,
+            text: `${entry.text}\n\n${t('appApplyFailed', { reason })}`,
+            isError: true,
+          },
+    )
+  }
   async function handleLazyApply(state: LazyWorkbookState): Promise<ApplyOutcome> {
     const stored = lazyPreviewRef.current
     const runtime = univerRef.current
@@ -4683,6 +4716,33 @@ export function App(): React.JSX.Element {
     pageBreakIdRef.current += 1
     const fileSheet = state.file.sheets.find((sheet) => sheet.id === sheetId)
     const ops = state.editJournal.structuralOps.get(sheetId) ?? []
+    // The preview tiles pages inside the effective print area (envelope of
+    // multiple areas) and shades everything outside — WPS 分页预览 semantics.
+    const setup = resolveEffectivePageSetup(
+      state.editJournal.pageSetup.get(sheetId) ?? {},
+      state.sheetFilePageSetups.get(sheetId) ?? null,
+      {
+        ...(fileSheet?.printArea === undefined ? {} : { printArea: fileSheet.printArea }),
+        ...(fileSheet?.printTitles === undefined ? {} : { printTitles: fileSheet.printTitles }),
+      },
+      ops,
+    )
+    let printArea: PrintAreaBounds | null = null
+    for (const area of setup.printAreas) {
+      try {
+        const bounds = parseRange(area)
+        printArea = printArea
+          ? {
+              startRow: Math.min(printArea.startRow, bounds.startRow),
+              startColumn: Math.min(printArea.startColumn, bounds.startColumn),
+              endRow: Math.max(printArea.endRow, bounds.endRow),
+              endColumn: Math.max(printArea.endColumn, bounds.endColumn),
+            }
+          : bounds
+      } catch {
+        // An unparsable area falls back to whole-sheet tiling, like the export.
+      }
+    }
     pageBreakLayersRef.current.set(
       sheetId,
       installPageBreakPreview(
@@ -4695,12 +4755,74 @@ export function App(): React.JSX.Element {
           columns: (fileSheet?.columnCount ?? 0) + netAxisDelta(ops, 'column'),
         },
         `page-break-${pageBreakIdRef.current}`,
+        printArea,
       ),
     )
   }
 
   function refreshPageBreakPreview(): void {
     for (const sheetId of pageBreakPreviewSheets) installPageBreakLayers(sheetId)
+    refreshPrintAreaMarkers()
+  }
+
+  function disposePrintAreaMarkers(sheetId: string): void {
+    const layers = printAreaLayersRef.current.get(sheetId) ?? []
+    printAreaLayersRef.current.delete(sheetId)
+    for (const layer of layers) {
+      try {
+        layer.dispose()
+      } catch {
+        // The float layer already died with a closed workbook.
+      }
+    }
+  }
+
+  /// (Re)installs the dashed print-area boundaries of one sheet (Normal view
+  /// feedback for 打印区域 — the PDF export always honored them silently).
+  function installPrintAreaMarkers(sheetId: string): void {
+    const runtime = univerRef.current
+    const state = lazyWorkbookRef.current
+    const worksheet = runtime?.univerAPI.getActiveWorkbook()?.getSheetBySheetId(sheetId)
+    if (!runtime || !state || !worksheet) return
+    disposePrintAreaMarkers(sheetId)
+    const fileSheet = state.file.sheets.find((sheet) => sheet.id === sheetId)
+    const ops = state.editJournal.structuralOps.get(sheetId) ?? []
+    const setup = resolveEffectivePageSetup(
+      state.editJournal.pageSetup.get(sheetId) ?? {},
+      state.sheetFilePageSetups.get(sheetId) ?? null,
+      {
+        ...(fileSheet?.printArea === undefined ? {} : { printArea: fileSheet.printArea }),
+        ...(fileSheet?.printTitles === undefined ? {} : { printTitles: fileSheet.printTitles }),
+      },
+      ops,
+    )
+    if (setup.printAreas.length === 0) return
+    const layers: { dispose(): void }[] = []
+    for (const area of setup.printAreas) {
+      try {
+        printAreaIdRef.current += 1
+        layers.push(
+          ...installPrintAreaMarker(
+            runtime,
+            worksheet,
+            parseRange(area),
+            `print-area-${printAreaIdRef.current}`,
+          ),
+        )
+      } catch {
+        // Unparsable area string: skip the marker, keep the others.
+      }
+    }
+    if (layers.length > 0) printAreaLayersRef.current.set(sheetId, layers)
+  }
+
+  /// Refresh markers wherever they exist, plus the active sheet (it may have
+  /// just gained or cleared its area via the Page Layout commands).
+  function refreshPrintAreaMarkers(): void {
+    const active = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()?.getSheetId()
+    const ids = new Set([...printAreaLayersRef.current.keys()])
+    if (active !== undefined) ids.add(active)
+    for (const sheetId of ids) installPrintAreaMarkers(sheetId)
   }
 
   function togglePageBreakPreview(): void {
@@ -5008,6 +5130,7 @@ export function App(): React.JSX.Element {
     demoVisualDisposablesRef.current = []
     // The preview's float layers belong to the closed workbook's sheets.
     for (const sheetId of [...pageBreakLayersRef.current.keys()]) disposePageBreakLayers(sheetId)
+    for (const sheetId of [...printAreaLayersRef.current.keys()]) disposePrintAreaMarkers(sheetId)
     setPageBreakPreviewSheets(new Set())
     const state: LazyWorkbookState = {
       file: selected,
@@ -5244,7 +5367,7 @@ export function App(): React.JSX.Element {
           restore && restoredSheet
             ? { row: restore.viewRow, column: restore.viewColumn }
             : undefined,
-        )
+        ).then(() => refreshPrintAreaMarkers())
         if (state.formulaMode) {
           void preloadEntireWorkbook(runtime, lazyWorkbookRef, setMessage)
         } else {
@@ -5558,19 +5681,47 @@ export function App(): React.JSX.Element {
 
   const activePageLayout = (() => {
     const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
-    const journalState = worksheet
-      ? (lazyWorkbookRef.current?.editJournal.pageSetup.get(worksheet.getSheetId()) ?? {})
-      : {}
+    const state = lazyWorkbookRef.current
+    const sheetId = worksheet?.getSheetId()
+    const journalState = sheetId ? (state?.editJournal.pageSetup.get(sheetId) ?? {}) : {}
+    const showGridlines =
+      journalState.showGridlines ?? (worksheet ? !worksheet.hasHiddenGridLines() : true)
+    const showHeadings =
+      journalState.showHeadings ??
+      (worksheet ? worksheet.getSheet().getConfig().rowHeader.hidden !== BooleanNumber.TRUE : true)
+    const pageBreakPreview = sheetId ? pageBreakPreviewSheets.has(sheetId) : false
+    if (!worksheet || !state || !sheetId) {
+      return { ...journalState, showGridlines, showHeadings, pageBreakPreview }
+    }
+    // Ribbon echoes resolve through the same pipeline as the PDF export, so a
+    // file-saved print area / gridlines / headings check on instead of
+    // reading as off until the user re-sets it.
+    const fileSheet = state.file.sheets.find((sheet) => sheet.id === sheetId)
+    const ops = state.editJournal.structuralOps.get(sheetId) ?? []
+    const setup = resolveEffectivePageSetup(
+      journalState,
+      state.sheetFilePageSetups.get(sheetId) ?? null,
+      {
+        ...(fileSheet?.printArea === undefined ? {} : { printArea: fileSheet.printArea }),
+        ...(fileSheet?.printTitles === undefined ? {} : { printTitles: fileSheet.printTitles }),
+      },
+      ops,
+    )
     return {
       ...journalState,
-      showGridlines:
-        journalState.showGridlines ?? (worksheet ? !worksheet.hasHiddenGridLines() : true),
-      showHeadings:
-        journalState.showHeadings ??
-        (worksheet
-          ? worksheet.getSheet().getConfig().rowHeader.hidden !== BooleanNumber.TRUE
-          : true),
-      pageBreakPreview: worksheet ? pageBreakPreviewSheets.has(worksheet.getSheetId()) : false,
+      orientation: setup.orientation,
+      paperSize: setup.paperSize,
+      scale: setup.scale,
+      fitToWidth: setup.fitToWidth,
+      fitToHeight: setup.fitToHeight,
+      fitToPage: setup.fitToPage,
+      printGridlines: setup.printGridlines,
+      printHeadings: setup.printHeadings,
+      printArea: setup.printAreas.length > 0 ? setup.printAreas.join(',') : undefined,
+      printTitles: setup.printTitles ?? undefined,
+      showGridlines,
+      showHeadings,
+      pageBreakPreview,
     }
   })()
 
