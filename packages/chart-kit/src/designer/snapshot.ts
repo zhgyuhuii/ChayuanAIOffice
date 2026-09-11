@@ -36,14 +36,17 @@ export async function renderOptionSnapshot(
 
   if (optionNeedsGl(stillOption)) {
     const host = document.createElement('div')
-    host.style.cssText = `position:fixed;left:-99999px;top:0;width:${width}px;height:${height}px;`
+    // 必须留在视口内且不能完全透明:移出屏幕或 opacity:0 都会让合成器
+    // 跳过该 iframe,iframe 的 rAF 被节流,claygl 永远画不完——快照截到
+    // 空轴/一根柱。0.01 不透明度保持合成器绘制,对用户不可见。
+    host.style.cssText = `position:fixed;left:0;top:0;width:${width}px;height:${height}px;opacity:0.01;pointer-events:none;z-index:-2147483648;`
     document.body.append(host)
     const frame = new GlFrame(host)
     try {
       const ok = await frame.update(stillOption, width, height)
       if (!ok) throw new Error('gl frame unavailable')
       await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => setTimeout(resolve, 120))
+        requestAnimationFrame(() => setTimeout(resolve, 150))
       })
       const url = await frame.snapshot(pixelRatio, backgroundColor)
       if (!url) throw new Error('gl snapshot failed')
@@ -55,7 +58,7 @@ export async function renderOptionSnapshot(
   }
 
   const host = document.createElement('div')
-  host.style.cssText = `position:fixed;left:-99999px;top:0;width:${width}px;height:${height}px;`
+  host.style.cssText = `position:fixed;left:0;top:0;width:${width}px;height:${height}px;opacity:0;pointer-events:none;z-index:-2147483648;`
   document.body.append(host)
   ensureEchartsGlobal()
   const instance = echarts.init(host, null, { renderer: 'canvas', width, height })

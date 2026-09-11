@@ -6,7 +6,7 @@ import { extractTableFromOption, optionFromChartSpec, type OptionTable } from '.
 import { toFlatTable, type FlatTable } from '../spec/data-table'
 import { renderOptionSnapshot } from './snapshot'
 import { thumbUrl } from './thumbs'
-import { EchartsPreview } from './EchartsPreview'
+import { EchartsPreview, type EchartsPreviewHandle } from './EchartsPreview'
 import { ChartErrorBoundary } from './ChartErrorBoundary'
 import type { ChartSpec } from '../spec/chartspec'
 import './designer.css'
@@ -88,6 +88,7 @@ export function ChartDesignerModal({
   )
   const [query, setQuery] = useState('')
   const [inserting, setInserting] = useState(false)
+  const previewRef = useRef<EchartsPreviewHandle>(null)
   const codeRef = useRef(code)
   codeRef.current = code
 
@@ -210,7 +211,12 @@ export function ChartDesignerModal({
         return
       }
       if (!option) return
-      const snapshotPng = await renderOptionSnapshot(option)
+      // 优先从右侧活预览直接出图:预览是已渲染完成的真实场景(GL 3D 图
+      // 的 claygl 首帧远晚于 zrender finished,离屏重渲的时序不可靠,曾
+      // 截到只剩 visualMap 的空海报);活预览不在(理论不可达)才离屏重渲。
+      const snapshotPng =
+        (await previewRef.current?.snapshot({ pixelRatio: 2, backgroundColor: '#ffffff' })) ??
+        (await renderOptionSnapshot(option))
       onInsert({
         engine: 'echarts',
         groupId: group.id,
@@ -313,7 +319,12 @@ export function ChartDesignerModal({
             <div className="ck-designer-preview">
               {option ? (
                 <ChartErrorBoundary label="图表">
-                  <EchartsPreview option={option} heightPx={360} className="ck-designer-canvas" />
+                  <EchartsPreview
+                    ref={previewRef}
+                    option={option}
+                    heightPx={360}
+                    className="ck-designer-canvas"
+                  />
                 </ChartErrorBoundary>
               ) : (
                 <div className="ck-designer-canvas ck-designer-canvas-empty">
