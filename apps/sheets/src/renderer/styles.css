@@ -6652,8 +6652,10 @@ textarea:focus {
 
 /* 名钮点击命中：cover-select 必须覆盖整钮（absolute inset:0），否则真实
    指针点在文字/空白上不命中任何处理器——点击无反应（用户实证）。
-   .ribbon-tool 已是 position:relative，覆盖层以其为定位根 */
-.menu-btn-name > .cover-select {
+   .ribbon-tool 已是 position:relative，覆盖层以其为定位根。
+   统一规则：所有 ribbon-tool 系触发钮（名钮/紧凑钮/大钮/横排钮）的
+   cover-select 一律覆盖整钮——一处规则管全部变体，不再逐作用域补 */
+.ribbon .ribbon-tool > .cover-select {
   position: absolute;
   inset: 0;
   width: 100%;
