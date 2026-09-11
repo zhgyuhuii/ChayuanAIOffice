@@ -20,7 +20,7 @@ import {
   SaveIcon,
   UndoIcon,
 } from './ribbon-icons'
-import { RibbonMenuButton, useCompactWhenOverflow } from './ribbon-menu'
+import { RibbonMenuButton, useRibbonDegradeStage } from './ribbon-menu'
 import { ConvertMenuSelect } from './ConvertMenuSelect'
 
 import {
@@ -2062,7 +2062,7 @@ function Ribbon({
   const { t } = useI18n()
   // WPS 宽度降级：数据处理组大钮整行放不下 → 一列两钮紧凑栅格
   const processRowRef = useRef<HTMLDivElement>(null)
-  const processCompact = useCompactWhenOverflow(processRowRef)
+  const processStage = useRibbonDegradeStage(processRowRef)
   const [aiReplaceOpen, setAiReplaceOpen] = useState(false)
   const [aiReplacePrompt, setAiReplacePrompt] = useState('')
   const [aiReplaceBusy, setAiReplaceBusy] = useState(false)
@@ -3888,6 +3888,188 @@ function Ribbon({
     { value: 'freeze-here', label: t('appFreezeAtSelection') },
     { value: 'unfreeze', label: t('appUnfreeze') },
   ]
+  /// 数据处理组七枚菜单钮（统一 RibbonMenuButton）：WPS 逐级降级阶梯
+  /// 0=平铺大钮 1=一列两行 2=一列三行 3=子簇名钮平铺 4=单分组合并面板
+  const processMenus: readonly {
+    readonly key: string
+    readonly label: string
+    readonly tip: string
+    readonly symbol: string
+    readonly options: readonly MenuRowOption[]
+  }[] = [
+    {
+      key: 'fill',
+      label: t('appFillMenu'),
+      tip: t('appFillMenu'),
+      symbol: '↓',
+      options: [
+        { value: 'fill-down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
+        { value: 'fill-right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
+        { value: 'fill-up', label: t('appFillUp'), icon: <OptSample>↑</OptSample> },
+        { value: 'fill-left', label: t('appFillLeft'), icon: <OptSample>←</OptSample> },
+        { value: 'fill-123', label: t('appFill123'), icon: <OptSample>123</OptSample> },
+        { value: 'fill-rank', label: t('appFillRank'), icon: <OptSample>1·2·3</OptSample> },
+        { value: 'fill-blanks', label: t('appFillBlanks'), icon: <OptSample>▢⇢</OptSample> },
+        {
+          value: 'fill-insert-group',
+          label: t('appFillInsertText'),
+          children: [
+            { value: 'fill-insert-text-open:start', label: t('appFillInsertStart') },
+            { value: 'fill-insert-text-open:mid', label: t('appFillInsertMid') },
+            { value: 'fill-insert-text-open:end', label: t('appFillInsertEnd') },
+          ],
+        },
+        {
+          value: 'fill-date-group',
+          label: t('appFillDate'),
+          icon: <OptSample>📅</OptSample>,
+          children: FILL_DATE_PATTERNS.map((entry) => ({
+            value: `fill-date:${entry.pattern}`,
+            label: fillDateLabel(entry.pattern),
+            sep: entry.wide,
+          })),
+        },
+        {
+          value: 'fill-to-sheets',
+          label: t('appFillToSheets'),
+          icon: <OptSample>⇉</OptSample>,
+        },
+        {
+          value: 'series-open',
+          label: `${t('appFillSeries')}…`,
+          icon: <OptSample>⋮⋮⋮</OptSample>,
+        },
+        { value: 'flash-fill', label: t('appFillSmart'), icon: <OptSample>⚡</OptSample> },
+        { value: 'ai-fill', label: t('appFillAi'), icon: <OptSample>✨</OptSample> },
+      ],
+    },
+    {
+      key: 'sum',
+      label: t('appFnSum'),
+      tip: t('appAutoSumTitle'),
+      symbol: 'Σ',
+      options: [
+        { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
+        { value: 'autofn:AVERAGE', label: t('appFnAverage'), icon: <OptSample>x̄</OptSample> },
+        {
+          value: 'autofn:COUNT',
+          label: t('appFnCountNumbers'),
+          icon: <OptSample>#</OptSample>,
+        },
+        { value: 'autofn:MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
+        { value: 'autofn:MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
+        {
+          value: 'cond-stats-open',
+          label: `${t('appCondStats')}…`,
+          icon: <OptSample>¿Σ</OptSample>,
+        },
+        {
+          value: 'insert-function-open',
+          label: `${t('appFnCatMore')}…`,
+          icon: <OptSample>fx</OptSample>,
+        },
+        {
+          value: 'ai-write-formula',
+          label: t('appWriteFormula'),
+          icon: <OptSample>✨fx</OptSample>,
+        },
+      ],
+    },
+    {
+      key: 'sort',
+      label: t('appSort'),
+      tip: t('appSortSelectionTitle'),
+      symbol: '⇅',
+      options: [
+        { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
+        { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
+        {
+          value: 'sort-custom-open',
+          label: t('appCustomSort'),
+          icon: <OptSample>⚙</OptSample>,
+        },
+      ],
+    },
+    {
+      key: 'filter',
+      label: t('appFilter'),
+      tip: t('appFilterToggleDetail'),
+      symbol: '▽',
+      options: [
+        { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
+        {
+          value: 'filter-advanced',
+          label: t('appFilterAdvanced'),
+          icon: <OptSample>⚙▽</OptSample>,
+        },
+        { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
+        { value: 'filter-clear', label: t('appShowAll'), icon: <OptSample>☀</OptSample> },
+      ],
+    },
+    {
+      key: 'freeze',
+      label: t('appFreezePanes'),
+      tip: t('appFreezeTitle'),
+      symbol: '❄',
+      options: freezeMenuOptions,
+    },
+    {
+      key: 'find',
+      label: t('appFind'),
+      tip: t('appFindTitle'),
+      symbol: '🔍',
+      options: [
+        {
+          value: 'find',
+          label: `${t('appFind')} ${platformShortcuts('⌘F')}`,
+          icon: <OptSample>🔍</OptSample>,
+        },
+        { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
+        {
+          value: 'goto-open',
+          label: `${t('appGoTo')} ${platformShortcuts('⌘G')}`,
+          icon: <OptSample>⌖</OptSample>,
+        },
+        {
+          value: 'select-object',
+          label: t('appSelectObjects'),
+          icon: <OptSample>☐</OptSample>,
+        },
+        {
+          value: 'selection-pane-open',
+          label: t('appSelectionPane'),
+          icon: <OptSample>☰</OptSample>,
+        },
+      ],
+    },
+    {
+      key: 'clear',
+      label: t('appClear'),
+      tip: t('appClear'),
+      symbol: '⌫',
+      options: [
+        { value: 'clear-all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
+        {
+          value: 'clear-formats',
+          label: t('appClearFormats'),
+          icon: <OptSample>Aa</OptSample>,
+        },
+        {
+          value: 'clear-contents',
+          label: t('appClearContents'),
+          icon: <OptSample>123</OptSample>,
+        },
+      ],
+    },
+  ]
+  /// 降级 3=子簇名钮（平铺），降级 4=合并为单个分组钮
+  const processClusters: readonly {
+    readonly label: string
+    readonly menus: readonly number[]
+  }[] = [
+    { label: t('appFillMenu'), menus: [0, 1, 2, 3] },
+    { label: t('appFreezePanes'), menus: [4, 5, 6] },
+  ]
   return (
     <div className="ribbon">
       <RibbonGroup label={t('appGroupClipboard')}>
@@ -4371,179 +4553,54 @@ function Ribbon({
             六枚上下结构大钮 + 清除（保留原有清除功能，复用同款大钮） */}
         <div
           ref={processRowRef}
-          className={`process-big-row${processCompact ? ' is-compact' : ''}`}
+          className={`process-big-row${processStage === 1 ? ' is-compact' : ''}${
+            processStage === 2 ? ' degrade-2' : ''
+          }${processStage >= 3 ? ' degrade-name' : ''}`}
         >
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appFillMenu')}
-            tip={t('appFillMenu')}
-            symbol="↓"
-            options={[
-              { value: 'fill-down', label: t('appFillDown'), icon: <OptSample>↓</OptSample> },
-              { value: 'fill-right', label: t('appFillRight'), icon: <OptSample>→</OptSample> },
-              { value: 'fill-up', label: t('appFillUp'), icon: <OptSample>↑</OptSample> },
-              { value: 'fill-left', label: t('appFillLeft'), icon: <OptSample>←</OptSample> },
-              { value: 'fill-123', label: t('appFill123'), icon: <OptSample>123</OptSample> },
-              { value: 'fill-rank', label: t('appFillRank'), icon: <OptSample>1·2·3</OptSample> },
-              { value: 'fill-blanks', label: t('appFillBlanks'), icon: <OptSample>▢⇢</OptSample> },
-              {
-                value: 'fill-insert-group',
-                label: t('appFillInsertText'),
-                children: [
-                  { value: 'fill-insert-text-open:start', label: t('appFillInsertStart') },
-                  { value: 'fill-insert-text-open:mid', label: t('appFillInsertMid') },
-                  { value: 'fill-insert-text-open:end', label: t('appFillInsertEnd') },
-                ],
-              },
-              {
-                value: 'fill-date-group',
-                label: t('appFillDate'),
-                icon: <OptSample>📅</OptSample>,
-                children: FILL_DATE_PATTERNS.map((entry) => ({
-                  value: `fill-date:${entry.pattern}`,
-                  label: fillDateLabel(entry.pattern),
-                  sep: entry.wide,
-                })),
-              },
-              {
-                value: 'fill-to-sheets',
-                label: t('appFillToSheets'),
-                icon: <OptSample>⇉</OptSample>,
-              },
-              {
-                value: 'series-open',
-                label: `${t('appFillSeries')}…`,
-                icon: <OptSample>⋮⋮⋮</OptSample>,
-              },
-              { value: 'flash-fill', label: t('appFillSmart'), icon: <OptSample>⚡</OptSample> },
-              { value: 'ai-fill', label: t('appFillAi'), icon: <OptSample>✨</OptSample> },
-            ]}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appFnSum')}
-            tip={t('appAutoSumTitle')}
-            symbol="Σ"
-            options={[
-              { value: 'autofn:SUM', label: t('appFnSum'), icon: <OptSample>Σ</OptSample> },
-              { value: 'autofn:AVERAGE', label: t('appFnAverage'), icon: <OptSample>x̄</OptSample> },
-              {
-                value: 'autofn:COUNT',
-                label: t('appFnCountNumbers'),
-                icon: <OptSample>#</OptSample>,
-              },
-              { value: 'autofn:MAX', label: t('appFnMax'), icon: <OptSample>▲</OptSample> },
-              { value: 'autofn:MIN', label: t('appFnMin'), icon: <OptSample>▼</OptSample> },
-              {
-                value: 'cond-stats-open',
-                label: `${t('appCondStats')}…`,
-                icon: <OptSample>¿Σ</OptSample>,
-              },
-              {
-                value: 'insert-function-open',
-                label: `${t('appFnCatMore')}…`,
-                icon: <OptSample>fx</OptSample>,
-              },
-              {
-                value: 'ai-write-formula',
-                label: t('appWriteFormula'),
-                icon: <OptSample>✨fx</OptSample>,
-              },
-            ]}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appSort')}
-            tip={t('appSortSelectionTitle')}
-            symbol="⇅"
-            options={[
-              { value: 'sort:asc', label: t('appSortAToZ'), icon: <SortGlyph asc /> },
-              { value: 'sort:desc', label: t('appSortZToA'), icon: <SortGlyph asc={false} /> },
-              {
-                value: 'sort-custom-open',
-                label: t('appCustomSort'),
-                icon: <OptSample>⚙</OptSample>,
-              },
-            ]}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appFilter')}
-            tip={t('appFilterToggleDetail')}
-            symbol="▽"
-            options={[
-              { value: 'filter-toggle', label: t('appFilter'), icon: <OptSample>▽</OptSample> },
-              {
-                value: 'filter-advanced',
-                label: t('appFilterAdvanced'),
-                icon: <OptSample>⚙▽</OptSample>,
-              },
-              { value: 'filter-reapply', label: t('appReapply'), icon: <OptSample>↻</OptSample> },
-              { value: 'filter-clear', label: t('appShowAll'), icon: <OptSample>☀</OptSample> },
-            ]}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appFreezePanes')}
-            tip={t('appFreezeTitle')}
-            symbol="❄"
-            options={freezeMenuOptions}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appFind')}
-            tip={t('appFindTitle')}
-            symbol="🔍"
-            options={[
-              {
-                value: 'find',
-                label: `${t('appFind')} ${platformShortcuts('⌘F')}`,
-                icon: <OptSample>🔍</OptSample>,
-              },
-              { value: 'replace', label: t('appReplace'), icon: <OptSample>⇄</OptSample> },
-              {
-                value: 'goto-open',
-                label: `${t('appGoTo')} ${platformShortcuts('⌘G')}`,
-                icon: <OptSample>⌖</OptSample>,
-              },
-              {
-                value: 'select-object',
-                label: t('appSelectObjects'),
-                icon: <OptSample>☐</OptSample>,
-              },
-              {
-                value: 'selection-pane-open',
-                label: t('appSelectionPane'),
-                icon: <OptSample>☰</OptSample>,
-              },
-            ]}
-            onPick={onCommand}
-          />
-          <RibbonMenuButton
-            variant={processCompact ? 'compact' : 'big'}
-            label={t('appClear')}
-            tip={t('appClear')}
-            symbol="⌫"
-            options={[
-              { value: 'clear-all', label: t('appClearAll'), icon: <OptSample>⌫</OptSample> },
-              {
-                value: 'clear-formats',
-                label: t('appClearFormats'),
-                icon: <OptSample>Aa</OptSample>,
-              },
-              {
-                value: 'clear-contents',
-                label: t('appClearContents'),
-                icon: <OptSample>123</OptSample>,
-              },
-            ]}
-            onPick={onCommand}
-          />
+          {processStage <= 2 &&
+            processMenus.map((menu) => (
+              <RibbonMenuButton
+                key={menu.key}
+                label={menu.label}
+                tip={menu.tip}
+                symbol={menu.symbol}
+                options={menu.options}
+                onPick={onCommand}
+                variant={processStage === 0 ? 'big' : 'compact'}
+              />
+            ))}
+          {processStage === 3 &&
+            processClusters.map((cluster) => (
+              <RibbonMenuButton
+                key={cluster.label}
+                variant="name"
+                label={cluster.label}
+                tip={cluster.label}
+                symbol=""
+                options={cluster.menus
+                  .map((mi) => processMenus[mi]!)
+                  .map((menu) => ({
+                    value: menu.key,
+                    label: menu.label,
+                    children: menu.options,
+                  }))}
+                onPick={onCommand}
+              />
+            ))}
+          {processStage === 4 && (
+            <RibbonMenuButton
+              variant="name"
+              label={t('appGroupDataProcess')}
+              tip={t('appGroupDataProcess')}
+              symbol=""
+              options={processMenus.flatMap((menu, mi) =>
+                menu.options.map((option, oi) =>
+                  mi > 0 && oi === 0 ? { ...option, sep: true } : option,
+                ),
+              )}
+              onPick={onCommand}
+            />
+          )}
         </div>
       </RibbonGroup>
     </div>

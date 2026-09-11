@@ -280,7 +280,7 @@ export function RibbonMenuButton({
   readonly symbol: string
   readonly options: readonly MenuOption[]
   readonly onPick: (value: string) => void
-  readonly variant?: 'big' | 'compact'
+  readonly variant?: 'big' | 'compact' | 'name'
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -304,17 +304,21 @@ export function RibbonMenuButton({
   return (
     <div
       ref={wrapRef}
-      className={`ribbon-tool large as-button${variant === 'compact' ? ' menu-btn-compact' : ''}`}
+      className={`ribbon-tool large as-button${
+        variant === 'compact' ? ' menu-btn-compact' : ''
+      }${variant === 'name' ? ' menu-btn-name' : ''}`}
       data-tip={tip}
     >
-      <span className="tool-icon-row">
-        <ToolSymbol symbol={symbol} />
-        {variant === 'big' && <CaretIcon />}
-      </span>
+      {variant !== 'name' && (
+        <span className="tool-icon-row">
+          <ToolSymbol symbol={symbol} />
+          {variant === 'big' && <CaretIcon />}
+        </span>
+      )}
       <span>
         <strong>{label}</strong>
       </span>
-      {variant === 'compact' && <CaretIcon />}
+      {variant !== 'big' && <CaretIcon />}
       {open &&
         createPortal(
           <div ref={portalRef}>
@@ -356,28 +360,40 @@ export function RibbonMenuButton({
   )
 }
 
-/// WPS 式宽度降级：滚动容器（ribbon-body）出现横向溢出时返回 true
-/// （调用方换紧凑形态），重新放得下大钮时返回 false。
-/// 阈值机制：大钮态量得行自然宽 bigW；紧凑态量得行宽 compactW 与富余
-/// slack——富余 ≥ (bigW − compactW) + 8px 滞回才回退，避免抖动。
-export function useCompactWhenOverflow(ref: React.RefObject<HTMLElement | null>): boolean {
-  const [compact, setCompact] = useState(false)
-  const bigW = useRef<number | null>(null)
+/// WPS 式多级宽度降级（用户 2026-09-11 裁定的完整阶梯）：
+/// 0=平铺大钮 → 1=一列两行 → 2=一列三行 → 3=分组名钮平铺 → 4=单个分组钮。
+/// 测量驱动迭代循环（与 packages/ribbon DesktopRibbon 引擎同款）：每轮渲染
+/// 实测滚动容器横向溢出，仍溢出升一级、富余 >28px 降一级（滞回防振荡），
+/// 直到收敛。stage 由调用方映射为形态。
+export function useRibbonDegradeStage(
+  ref: React.RefObject<HTMLElement | null>,
+  maxStage = 4,
+): number {
+  const [stage, setStage] = useState(0)
+  const stageRef = useRef(stage)
+  stageRef.current = stage
   useLayoutEffect(() => {
     const el = ref.current
     if (!el || typeof ResizeObserver === 'undefined') return
-    const scroller = el.closest('.ribbon') ?? el.parentElement
+    const scroller = el.closest('.ribbon')
+    const group = el.closest('.ribbon-group')
     const measure = () => {
       if (!scroller) return
-      const overflow = scroller.scrollWidth - scroller.clientWidth
-      if (!compact) {
-        const natural = el.scrollWidth
-        if (natural > 0) bigW.current = natural
-        if (overflow > 1) setCompact(true)
-      } else if (bigW.current !== null) {
-        const compactW = el.scrollWidth
-        const slack = -overflow
-        if (slack >= bigW.current - compactW + 8) setCompact(false)
+      // 本组的可用宽 = 功能区带内宽 −（兄弟组 + 分隔线 + 内边距）。
+      // 别的组还没接入降级时它们的溢出不应把本组推到最深层。
+      let avail = scroller.clientWidth - 24
+      if (group && scroller !== group) {
+        for (const child of scroller.children) {
+          if (child === group) continue
+          avail -= child.getBoundingClientRect().width + 9
+        }
+      }
+      avail = Math.max(avail, 80)
+      const natural = el.scrollWidth
+      if (natural > avail + 1) {
+        if (stageRef.current < maxStage) setStage(stageRef.current + 1)
+      } else if (stageRef.current > 0 && avail - natural > 28) {
+        setStage(stageRef.current - 1)
       }
     }
     const ro = new ResizeObserver(measure)
@@ -385,6 +401,6 @@ export function useCompactWhenOverflow(ref: React.RefObject<HTMLElement | null>)
     ro.observe(el)
     measure()
     return () => ro.disconnect()
-  }, [ref, compact])
-  return compact
+  })
+  return stage
 }

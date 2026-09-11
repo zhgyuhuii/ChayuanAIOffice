@@ -6458,17 +6458,28 @@ textarea:focus {
 }
 
 /* 数据处理组紧凑降级（WPS 机制）：大钮整行放不下 → 一列两钮
-   （填充+求和一列、排序+筛选一列……），图标自动变小，消灭横向滚动条 */
-.process-big-row.is-compact {
+   （填充+求和一列、排序+筛选一列……），图标自动变小，消灭横向滚动条；
+   更窄 → 一列三钮（degrade-2）；再窄 → 子簇名钮平铺 / 单分组钮
+   （degrade-name，菜单进面板） */
+.process-big-row.is-compact,
+.process-big-row.degrade-2 {
   display: grid;
   grid-auto-flow: column;
-  grid-template-rows: repeat(2, auto);
   gap: 2px 4px;
   align-items: start;
   justify-content: start;
 }
 
-.process-big-row.is-compact .menu-btn-compact {
+.process-big-row.is-compact {
+  grid-template-rows: repeat(2, auto);
+}
+
+.process-big-row.degrade-2 {
+  grid-template-rows: repeat(3, auto);
+}
+
+.process-big-row.is-compact .menu-btn-compact,
+.process-big-row.degrade-2 .menu-btn-compact {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
@@ -6479,7 +6490,8 @@ textarea:focus {
   text-align: left;
 }
 
-.process-big-row.is-compact .menu-btn-compact .tool-icon-row {
+.process-big-row.is-compact .menu-btn-compact .tool-icon-row,
+.process-big-row.degrade-2 .menu-btn-compact .tool-icon-row {
   align-self: center;
   flex: 0 0 auto;
   min-height: 0;
@@ -6487,24 +6499,57 @@ textarea:focus {
   margin: 0;
 }
 
-.process-big-row.is-compact .menu-btn-compact .tool-symbol {
+.process-big-row.is-compact .menu-btn-compact .tool-symbol,
+.process-big-row.degrade-2 .menu-btn-compact .tool-symbol {
   flex: 0 0 18px;
   width: 18px;
   height: 18px;
   font-size: 15px;
 }
 
-.process-big-row.is-compact .menu-btn-compact .tool-symbol svg {
+.process-big-row.is-compact .menu-btn-compact .tool-symbol svg,
+.process-big-row.degrade-2 .menu-btn-compact .tool-symbol svg {
   width: 18px;
   height: 18px;
 }
 
-.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover .tool-icon-row {
+.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover .tool-icon-row,
+.process-big-row.degrade-2 .menu-btn-compact:not(.reserved):hover .tool-icon-row {
   background: transparent;
 }
 
-.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover {
+.process-big-row.is-compact .menu-btn-compact:not(.reserved):hover,
+.process-big-row.degrade-2 .menu-btn-compact:not(.reserved):hover {
   background: var(--ribbon-hover);
+}
+
+/* 降级 3/4：子簇名钮 / 单分组钮——纯文字触发钮，菜单走统一面板 */
+.process-big-row.degrade-name {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.process-big-row.degrade-name .menu-btn-name {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 27px;
+  min-width: 0;
+  gap: 3px;
+  padding: 0 7px;
+}
+
+.process-big-row.degrade-name .menu-btn-name strong {
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.process-big-row.degrade-name .menu-btn-name .caret-svg,
+.process-big-row.degrade-name .menu-btn-name .rb-caret-svg {
+  width: 9px;
+  height: 9px;
 }
 
 /* BigMenuTool 内部再放一枚无形 cover-select 触发整块按钮 */
