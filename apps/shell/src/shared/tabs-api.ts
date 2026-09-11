@@ -7,6 +7,9 @@ export interface TabSummary {
   title: string
   closable: boolean
   active: boolean
+  /** docked into the Home right pane (「已停靠」): paints at the mirrored
+   *  pane rect while Home is active; clicking it in the strip pops it full */
+  docked?: boolean
 }
 
 export interface TabsApi {

@@ -225,6 +225,8 @@ import {
 } from '@chatoffice/ui/ai-panel-prefs'
 import type { TabKind } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
+import type { DockEditorOptions, DockKind, DockRect } from '../shared/dock-api'
+import { DOCK_CHANNELS } from '../shared/dock-api'
 import { showErrorDialog } from './error-dialog'
 import { normalizeRecentQuery, pageRecentPaths, statPathEntries } from './recent-files'
 import { isSameFile, isValidRenameName } from './rename-validation'
@@ -2631,7 +2633,10 @@ function createShellWindow(): void {
 
   const manager = new TabManager(
     win,
-    () => win.webContents.send(TABS_CHANNELS.changed, manager.list()),
+    () => {
+      win.webContents.send(TABS_CHANNELS.changed, manager.list())
+      win.webContents.send(DOCK_CHANNELS.changed, manager.dockedTabs())
+    },
     applyMenuFor,
     // no extension: these tabs have no file on disk yet; the title becomes the
     // real filename (the localized untitled default + .docx etc.) once the first save lands
@@ -4115,6 +4120,44 @@ function registerTabsIpc(): void {
   })
 }
 
+/** Home 右栏停靠契约的 IPC 面（P1, apps/shell/src/shared/dock-api.ts） */
+function registerDockIpc(): void {
+  ipcMain.on(DOCK_CHANNELS.setRect, (_event, rect: unknown) => {
+    if (!tabManager) return
+    const r = rect as DockRect | null
+    if (
+      !r ||
+      typeof r.x !== 'number' ||
+      typeof r.y !== 'number' ||
+      typeof r.width !== 'number' ||
+      typeof r.height !== 'number' ||
+      !Number.isFinite(r.x) ||
+      !Number.isFinite(r.y) ||
+      !Number.isFinite(r.width) ||
+      !Number.isFinite(r.height)
+    )
+      return
+    tabManager.setDockRect({ x: r.x, y: r.y, width: r.width, height: r.height })
+  })
+  ipcMain.handle(DOCK_CHANNELS.list, () => tabManager?.dockedTabs() ?? [])
+  ipcMain.handle(DOCK_CHANNELS.open, (_event, kind: unknown, options: unknown) => {
+    if (!tabManager || typeof kind !== 'string') return null
+    const opts = (options ?? {}) as DockEditorOptions
+    const id = tabManager.dockEditorTab(kind as DockKind, opts)
+    if (!id) return null
+    return tabManager.dockedTabs().find((t) => t.id === id) ?? null
+  })
+  ipcMain.handle(DOCK_CHANNELS.activate, (_event, id: unknown) => {
+    if (typeof id === 'string') tabManager?.activateDockedTab(id)
+  })
+  ipcMain.handle(DOCK_CHANNELS.close, (_event, id: unknown) => {
+    if (typeof id === 'string') return tabManager?.closeTab(id)
+  })
+  ipcMain.handle(DOCK_CHANNELS.undock, (_event, id: unknown) => {
+    if (typeof id === 'string') tabManager?.undockTab(id)
+  })
+}
+
 // ---- home menu ----
 
 async function openFileViaDialog(): Promise<void> {
@@ -5059,6 +5102,7 @@ registerProjectIpc()
 registerDocsIpc()
 registerHomeIpc()
 registerTabsIpc()
+registerDockIpc()
 registerWindowControlsIpc()
 registerDroppedFilesIpc()
 registerRemoteFilesIpc()

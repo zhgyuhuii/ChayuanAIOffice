@@ -45,6 +45,7 @@ import {
   slidesIsDirty,
 } from '../../../slides/src/main/slides-main'
 import type { TabKind, TabSummary } from '../shared/tabs-api'
+import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
 
 interface TabRecord {
   id: string
@@ -55,6 +56,10 @@ interface TabRecord {
   filePath?: string
   /** chrome-free Present tab: no file, no editor menu or save/export targets */
   present?: boolean
+  /** docked into the Home right pane: paints at the mirrored dockRect while
+   *  Home is active (P1 契约, apps/shell/src/shared/dock-api.ts); clicking
+   *  the tab in the strip pops it out to a full tab */
+  docked?: boolean
 }
 
 /** must match the tab strip's rendered height (apps/shell/src/renderer/src/TabBar.tsx) */
@@ -92,6 +97,11 @@ export class TabManager {
   private shellModalOpen = false
   /** tabs mid unsaved-changes prompt, so a second close click doesn't stack dialogs */
   private readonly closingIds = new Set<string>()
+  /** Home right-pane dock (P1 契约): mirrored pane rect (CSS px ≡ DIP) and
+   *  which docked tab fills the pane; docked views only paint while Home is
+   *  the active tab */
+  private dockRect: DockRect | null = null
+  private activeDockId: string | null = null
 
   constructor(
     private readonly shellWindow: BrowserWindow,
@@ -155,11 +165,14 @@ export class TabManager {
     if (this.shellModalOpen === open) return
     this.shellModalOpen = open
     const active = this.tabs.find((t) => t.id === this.activeId)
-    if (!active?.view) return
     if (open) {
-      active.view.setVisible(false)
+      // hide every painting view: the active full tab, and — when Home is
+      // active — the dock filling the pane
+      if (active?.view) active.view.setVisible(false)
+      const dock = this.tabs.find((t) => t.id === this.activeDockId)
+      dock?.view?.setVisible(false)
     } else {
-      active.view.setVisible(true)
+      if (active?.view) active.view.setVisible(true)
       this.layout()
     }
   }
@@ -178,6 +191,9 @@ export class TabManager {
    */
   private trackHtmlFullScreen(id: string, view: WebContentsView): void {
     view.webContents.on('enter-html-full-screen', () => {
+      // a docked editor cannot bleed its fullscreen over Home — pop it out
+      // to a full tab first (activateTab clears the docked flag)
+      if (this.tabs.find((t) => t.id === id)?.docked) this.activateTab(id)
       this.htmlFullScreenId = id
       this.layout()
     })
@@ -200,6 +216,7 @@ export class TabManager {
       this.tabs.splice(idx, 1)
       if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
       this.bleedWcIds.delete(wcId)
+      if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
       if (!this.shellWindow.isDestroyed()) {
         const children = this.shellWindow.contentView.children
         if (children.includes(view)) {
@@ -242,16 +259,22 @@ export class TabManager {
       active.view.setBounds(this.contentBounds())
       return
     }
-    // Home (or a view-less tab) is active: nothing may cover the shell's own
-    // DOM, yet every mounted child must track the window. Registered views
-    // are already hidden by activateTab(home) and only get fresh bounds; a
-    // child that slipped past tab registration (the §12 orphan — a view
-    // whose creator never pushed a TabRecord) would otherwise keep frozen
-    // bounds forever AND sit over Home stealing input, so it is re-fitted
-    // and hidden.
+    // Home (or a view-less tab) is active: the docked editors own the pane.
+    // Registered full-tab views are already hidden by activateTab(home) and
+    // only take fresh bounds; docked views paint at the mirrored pane rect
+    // (the active dock visible, the rest hidden until switched to); a child
+    // that slipped past tab registration (the §12 orphan — a view whose
+    // creator never pushed a TabRecord) would otherwise keep frozen bounds
+    // forever AND sit over Home stealing input, so it is re-fitted and hidden.
     for (const child of this.shellWindow.contentView.children) {
-      child.setBounds(this.contentBounds())
-      if (!this.tabs.some((t) => t.view === child)) child.setVisible(false)
+      const tab = this.tabs.find((t) => t.view === child)
+      if (tab?.docked) {
+        if (this.dockRect) child.setBounds(this.dockRect)
+        child.setVisible(tab.id === this.activeDockId && !!this.dockRect && !this.shellModalOpen)
+      } else {
+        child.setBounds(this.contentBounds())
+        if (!tab) child.setVisible(false)
+      }
     }
   }
 
@@ -262,11 +285,140 @@ export class TabManager {
       title: t.title,
       closable: t.id !== HOME_ID,
       active: t.id === this.activeId,
+      ...(t.docked ? { docked: true } : {}),
     }))
   }
 
   openHomeTab(): void {
     this.activateTab(HOME_ID)
+  }
+
+  // ── Home right-pane docking (P1 契约, apps/shell/src/shared/dock-api.ts) ──
+
+  /** signed LRU cap: how many docked editor tabs may stay alive at once */
+  private static readonly DOCK_TAB_CAP = 3
+
+  /** the next docked tab to fall back to when one closes/detaches */
+  private dockedNeighbor(ofId: string): string | null {
+    const docked = this.tabs.filter((t) => t.docked)
+    if (docked.length === 0) return null
+    const idx = docked.findIndex((t) => t.id === ofId)
+    if (idx < 0) return docked[0]!.id
+    return (docked[idx + 1] ?? docked[idx - 1] ?? docked[0])!.id
+  }
+
+  /** renderer mirrored the dock pane's rect (CSS px ≡ DIP, same assumption as setTreeWidth) */
+  setDockRect(rect: DockRect): void {
+    this.dockRect = rect
+    this.layout()
+  }
+
+  dockedTabs(): DockTabSummary[] {
+    return this.tabs
+      .filter((t) => t.docked)
+      .map((t) => ({
+        id: t.id,
+        kind: t.kind as DockKind,
+        title: t.title,
+        ...(t.filePath ? { filePath: t.filePath } : {}),
+        active: t.id === this.activeDockId,
+      }))
+  }
+
+  /** switch which docked tab fills the pane (Home's right-pane tab strip) */
+  activateDockedTab(id: string): void {
+    if (!this.tabs.some((t) => t.id === id && t.docked)) return
+    this.activeDockId = id
+    this.onChanged()
+    this.layout()
+  }
+
+  /** pop a docked tab out to a full-window tab (its AI panel returns) */
+  undockTab(id: string): void {
+    this.activateTab(id)
+  }
+
+  /** dock an editor into the Home right pane. Reuses an already-docked tab
+   *  holding the same file — except when the caller wants a fresh seeded
+   *  document (newBlank/aiContent), which always opens its own tab. */
+  dockEditorTab(kind: DockKind, options?: DockEditorOptions): string | null {
+    const wantsFresh = options?.newBlank || options?.aiContent
+    if (!wantsFresh) {
+      const reuse = this.tabs.find(
+        (t) =>
+          t.docked &&
+          t.kind === kind &&
+          (options?.file ? t.filePath === options.file : !t.filePath),
+      )
+      if (reuse) {
+        this.activateDockedTab(reuse.id)
+        return reuse.id
+      }
+    }
+    let view: WebContentsView | null = null
+    let title = ''
+    switch (kind) {
+      case 'docs': {
+        view = createDocsView(options?.file, { hidePanel: options?.hidePanel })
+        if (options?.newBlank) markDocsNewBlank(view.webContents.id)
+        if (options?.aiContent) queueDocsAiContent(view.webContents.id, options.aiContent)
+        title = options?.file ? basename(options.file) : this.untitled('docs', 'ChatOffice Docs')
+        break
+      }
+      case 'sheets': {
+        view = createSheetsView({ includeAiHandlers: false })
+        if (options?.file) queueWorkbookForView(view.webContents, options.file)
+        title = options?.file ? basename(options.file) : this.untitled('sheets', 'AI Sheets')
+        break
+      }
+      case 'slides': {
+        view = createSlidesView(options?.file)
+        title = options?.file ? basename(options.file) : this.untitled('slides', 'AI Slides')
+        break
+      }
+      case 'pdf': {
+        if (!options?.file) return null
+        view = createPdfView(options.file)
+        title = basename(options.file)
+        break
+      }
+      case 'markdown': {
+        view = createMarkdownView(options?.file)
+        title = options?.file ? basename(options.file) : this.untitled('markdown', 'AI Markdown')
+        break
+      }
+      case 'html': {
+        view = createHtmlView(options?.file)
+        title = options?.file ? basename(options.file) : this.untitled('html', 'AI HTML')
+        break
+      }
+    }
+    if (!view) return null
+    const id = `t${this.nextId++}`
+    this.shellWindow.contentView.addChildView(view)
+    view.setVisible(false)
+    this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
+    this.tabs.push({
+      id,
+      kind,
+      view,
+      title,
+      ...(options?.file ? { filePath: options.file } : {}),
+      docked: true,
+    })
+    this.activeDockId = id
+    // signed LRU cap: over the limit, really close the oldest other dock
+    // (closeTab runs the same unsaved-changes guards as the strip)
+    const otherDocks = this.tabs.filter((t) => t.docked && t.id !== id).map((t) => t.id)
+    const overflow = otherDocks.length - (TabManager.DOCK_TAB_CAP - 1)
+    for (let i = 0; i < overflow; i++) void this.closeTab(otherDocks[i]!)
+    // docking happens from Home: make sure Home owns the window so the dock
+    // paints beside the conversation
+    if (this.activeId !== HOME_ID) this.activateTab(HOME_ID)
+    else this.layout()
+    this.onChanged()
+    return id
   }
 
   openDocsTab(
@@ -436,12 +588,21 @@ export class TabManager {
   activateTab(id: string): void {
     const target = this.tabs.find((t) => t.id === id)
     if (!target) return
+    // activating a docked tab pops it out to a full tab (strip click = undock)
+    if (target.docked) {
+      target.docked = false
+      if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
+    }
     // while a shell modal owns the window, newly activated views stay hidden
-    // too — the dialog must remain the topmost interactive surface
-    for (const t of this.tabs) t.view?.setVisible(t.id === id && !this.shellModalOpen)
-    if (target.view) target.view.setBounds(this.contentBounds())
+    // too — the dialog must remain the topmost interactive surface; docked
+    // views only ever paint while Home is the active tab
+    for (const t of this.tabs) {
+      if (!t.view) continue
+      t.view.setVisible(!t.docked && t.id === id && !this.shellModalOpen)
+    }
     this.activeId = id
     this.refreshActiveTargets()
+    this.layout()
     this.onChanged()
   }
 
@@ -597,10 +758,14 @@ export class TabManager {
     if (idx < 0) return
     if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
     const [removed] = this.tabs.splice(idx, 1)
+    if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
     if (this.activeId === id) {
       const fallback = this.tabs[idx - 1] ?? this.tabs[0]
       this.activateTab(fallback.id)
     } else {
+      // closing a docked tab while Home is active: the pane switches to the
+      // neighboring dock (or empties) without touching the strip's activation
+      if (removed.docked) this.layout()
       this.onChanged()
     }
     if (removed.view) {

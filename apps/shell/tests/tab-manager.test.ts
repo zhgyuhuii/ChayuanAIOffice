@@ -54,6 +54,7 @@ vi.mock('electron', () => ({
 
 const createDocsView = vi.fn(() => makeFakeView())
 const docsQueryDirty = vi.fn(() => Promise.resolve(false))
+const queueDocsAiContent = vi.fn()
 const markDocsNewBlank = vi.fn()
 const requestDocsClose = vi.fn(() => Promise.resolve(true))
 const setActiveDocsResolver = vi.fn()
@@ -62,10 +63,11 @@ const teardownDocsRenderer = vi.fn()
 vi.mock('../../docs/src/main/docs-main', () => ({
   createDocsView: (...args: unknown[]) => createDocsView(...(args as [])),
   docsQueryDirty: (...args: unknown[]) => docsQueryDirty(...(args as [])),
-  markDocsNewBlank: (...args: unknown[]) => markDocsNewBlank(...args),
+  markDocsNewBlank: (...args: unknown[]) => markDocsNewBlank(...(args as [])),
+  queueDocsAiContent: (...args: unknown[]) => queueDocsAiContent(...(args as [])),
   requestDocsClose: (...args: unknown[]) => requestDocsClose(...(args as [])),
-  setActiveDocsResolver: (...args: unknown[]) => setActiveDocsResolver(...args),
-  teardownDocsRenderer: (...args: unknown[]) => teardownDocsRenderer(...args),
+  setActiveDocsResolver: (...args: unknown[]) => setActiveDocsResolver(...(args as [])),
+  teardownDocsRenderer: (...args: unknown[]) => teardownDocsRenderer(...(args as [])),
 }))
 
 const createPdfView = vi.fn(() => makeFakeView())
@@ -104,8 +106,32 @@ const slidesIsDirty = vi.fn(() => false)
 vi.mock('../../slides/src/main/slides-main', () => ({
   createSlidesView: (...args: unknown[]) => createSlidesView(...(args as [])),
   requestSlidesClose: (...args: unknown[]) => requestSlidesClose(...(args as [])),
-  setActiveSlidesWebContents: (...args: unknown[]) => setActiveSlidesWebContents(...args),
+  setActiveSlidesWebContents: (...args: unknown[]) => setActiveSlidesWebContents(...(args as [])),
   slidesIsDirty: (...args: unknown[]) => slidesIsDirty(...(args as [])),
+}))
+
+const createMarkdownView = vi.fn(() => makeFakeView())
+const markdownIsDirty = vi.fn(() => false)
+const queueMarkdownAiContent = vi.fn()
+const requestMarkdownClose = vi.fn(() => Promise.resolve(true))
+
+vi.mock('../../markdown/src/main/markdown-main', () => ({
+  createMarkdownView: (...args: unknown[]) => createMarkdownView(...(args as [])),
+  markdownIsDirty: (...args: unknown[]) => markdownIsDirty(...(args as [])),
+  queueMarkdownAiContent: (...args: unknown[]) => queueMarkdownAiContent(...(args as [])),
+  requestMarkdownClose: (...args: unknown[]) => requestMarkdownClose(...(args as [])),
+}))
+
+const createHtmlView = vi.fn(() => makeFakeView())
+const createHtmlPresentView = vi.fn(() => makeFakeView())
+const htmlIsDirty = vi.fn(() => false)
+const requestHtmlClose = vi.fn(() => Promise.resolve(true))
+
+vi.mock('../../html/src/main/html-main', () => ({
+  createHtmlView: (...args: unknown[]) => createHtmlView(...(args as [])),
+  createHtmlPresentView: (...args: unknown[]) => createHtmlPresentView(...(args as [])),
+  htmlIsDirty: (...args: unknown[]) => htmlIsDirty(...(args as [])),
+  requestHtmlClose: (...args: unknown[]) => requestHtmlClose(...(args as [])),
 }))
 
 import { TabManager } from '../src/main/tab-manager'
@@ -726,5 +752,170 @@ describe('§12 orphan-view hardening', () => {
     view.webContents.listeners.get('destroyed')!()
     expect(manager.list()).toHaveLength(1)
     expect(onChanged).not.toHaveBeenCalled()
+  })
+})
+
+describe('Home right-pane docking (P1 契约)', () => {
+  const DOCK_RECT = { x: 500, y: 40, width: 300, height: 500 }
+
+  function viewOf(factory: ReturnType<typeof vi.fn>): FakeView {
+    return factory.mock.results.at(-1)!.value as FakeView
+  }
+
+  it('docks a registered tab that stays hidden until the renderer mirrors a rect', () => {
+    manager.setDockRect(DOCK_RECT)
+    const id = manager.dockEditorTab('docs')
+    const view = viewOf(createDocsView)
+    expect(id).toBe('t1')
+    // docking keeps Home active: the pane paints beside the conversation
+    expect(manager.list().find((t) => t.id === 'home')?.active).toBe(true)
+    expect(manager.list().find((t) => t.id === id)?.docked).toBe(true)
+    expect(view.setBounds).toHaveBeenLastCalledWith(DOCK_RECT)
+    expect(view.setVisible).toHaveBeenLastCalledWith(true)
+  })
+
+  it('keeps the dock view hidden while no rect has arrived (pre-boot guard)', () => {
+    manager.dockEditorTab('docs')
+    const view = viewOf(createDocsView)
+    expect(view.setVisible).toHaveBeenLastCalledWith(false)
+  })
+
+  it('dock views only paint while Home is the active tab', () => {
+    manager.setDockRect(DOCK_RECT)
+    manager.dockEditorTab('docs')
+    const dockView = viewOf(createDocsView)
+
+    const sheetsId = manager.openSheetsTab()
+    const sheetsView = viewOf(createSheetsView)
+    expect(manager.list().find((t) => t.id === sheetsId)?.active).toBe(true)
+    expect(dockView.setVisible).toHaveBeenLastCalledWith(false)
+    expect(sheetsView.setVisible).toHaveBeenLastCalledWith(true)
+
+    manager.openHomeTab()
+    expect(dockView.setVisible).toHaveBeenLastCalledWith(true)
+    expect(sheetsView.setVisible).toHaveBeenLastCalledWith(false)
+  })
+
+  it('activating a docked tab in the strip pops it out to a full tab', () => {
+    manager.setDockRect(DOCK_RECT)
+    const dockId = manager.dockEditorTab('docs')
+    const dockView = viewOf(createDocsView)
+
+    manager.activateTab(dockId)
+    expect(manager.list().find((t) => t.id === dockId)?.docked).toBeUndefined()
+    expect(manager.list().find((t) => t.id === dockId)?.active).toBe(true)
+    expect(dockView.setVisible).toHaveBeenLastCalledWith(true)
+    expect(dockView.setBounds).toHaveBeenLastCalledWith({
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    })
+  })
+
+  it('undockTab is the same pop-out, and the pane falls back to the neighbor dock', () => {
+    manager.setDockRect(DOCK_RECT)
+    const first = manager.dockEditorTab('docs')
+    const second = manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' })
+    const secondView = viewOf(createSheetsView)
+
+    manager.undockTab(first)
+    expect(manager.list().find((t) => t.id === first)?.docked).toBeUndefined()
+    expect(manager.dockedTabs().map((t) => t.id)).toEqual([second])
+    // the popped tab fills the window now; back on Home the remaining dock
+    // takes over the pane
+    manager.openHomeTab()
+    expect(secondView.setVisible).toHaveBeenLastCalledWith(true)
+  })
+
+  it('activateDockedTab switches which dock fills the pane', () => {
+    manager.setDockRect(DOCK_RECT)
+    const a = manager.dockEditorTab('docs')
+    const b = manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' })
+    const aView = viewOf(createDocsView)
+    const bView = viewOf(createSheetsView)
+
+    manager.activateDockedTab(a)
+    expect(aView.setVisible).toHaveBeenLastCalledWith(true)
+    expect(bView.setVisible).toHaveBeenLastCalledWith(false)
+    expect(manager.dockedTabs().find((t) => t.id === a)?.active).toBe(true)
+    expect(manager.dockedTabs().find((t) => t.id === b)?.active).toBe(false)
+  })
+
+  it('re-docking the same file reuses the already-docked tab', () => {
+    manager.setDockRect(DOCK_RECT)
+    const first = manager.dockEditorTab('sheets', { file: '/tmp/a.xlsx' })
+    const again = manager.dockEditorTab('sheets', { file: '/tmp/a.xlsx' })
+    expect(again).toBe(first)
+    expect(createSheetsView).toHaveBeenCalledTimes(1)
+  })
+
+  it('a fresh seeded document never reuses a blank dock', () => {
+    manager.setDockRect(DOCK_RECT)
+    manager.dockEditorTab('docs', { newBlank: true, aiContent: { title: 'T', html: '<p>x</p>' } })
+    const second = manager.dockEditorTab('docs', {
+      newBlank: true,
+      aiContent: { title: 'T2', html: '<p>y</p>' },
+    })
+    expect(second).not.toBe('t1')
+    expect(createDocsView).toHaveBeenCalledTimes(2)
+    expect(queueDocsAiContent).toHaveBeenCalledTimes(2)
+  })
+
+  it('hides the editor panel at boot when hidePanel is set (?panel=0)', () => {
+    manager.dockEditorTab('docs', { newBlank: true, hidePanel: true })
+    expect(createDocsView).toHaveBeenCalledWith(undefined, { hidePanel: true })
+  })
+
+  it('closing the active dock falls back to the neighbor while Home stays active', async () => {
+    manager.setDockRect(DOCK_RECT)
+    const a = manager.dockEditorTab('docs')
+    manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' })
+    const bView = viewOf(createSheetsView)
+
+    await manager.closeTab(a)
+    expect(manager.list().map((t) => t.id)).toEqual(['home', 't2'])
+    expect(manager.list().find((t) => t.active)?.id).toBe('home')
+    expect(bView.setVisible).toHaveBeenLastCalledWith(true)
+  })
+
+  it('enforces the signed LRU cap: over 3 docks, the oldest is really closed', async () => {
+    manager.setDockRect(DOCK_RECT)
+    const ids = [
+      manager.dockEditorTab('docs'),
+      manager.dockEditorTab('sheets', { file: '/tmp/b.xlsx' }),
+      manager.dockEditorTab('slides', { file: '/tmp/c.pptx' }),
+      manager.dockEditorTab('markdown', { file: '/tmp/d.md' }),
+    ]
+    await Promise.resolve()
+    expect(manager.dockedTabs().map((t) => t.id)).toEqual(ids.slice(1))
+    expect(manager.list().map((t) => t.id)).toEqual(['home', ...ids.slice(1)])
+  })
+
+  it('a shell modal hides the dock view too, and closing it restores the pane', () => {
+    manager.setDockRect(DOCK_RECT)
+    manager.dockEditorTab('docs')
+    const view = viewOf(createDocsView)
+
+    manager.setShellModalOpen(true)
+    expect(view.setVisible).toHaveBeenLastCalledWith(false)
+    manager.setShellModalOpen(false)
+    expect(view.setVisible).toHaveBeenLastCalledWith(true)
+    expect(view.setBounds).toHaveBeenLastCalledWith(DOCK_RECT)
+  })
+
+  it('a docked editor entering HTML fullscreen pops out first', () => {
+    manager.setDockRect(DOCK_RECT)
+    const id = manager.dockEditorTab('slides')
+    const view = viewOf(createSlidesView)
+
+    view.webContents.listeners.get('enter-html-full-screen')!()
+    expect(manager.list().find((t) => t.id === id)?.docked).toBeUndefined()
+    expect(view.setBounds).toHaveBeenLastCalledWith({
+      x: 0,
+      y: 0,
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT,
+    })
   })
 })

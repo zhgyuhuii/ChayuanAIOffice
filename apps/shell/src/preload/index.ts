@@ -22,6 +22,8 @@ import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
+import type { DockApi, DockTabSummary } from '../shared/dock-api'
+import { DOCK_CHANNELS } from '../shared/dock-api'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
   'zh',
@@ -481,6 +483,36 @@ const windowControlsApi: WindowControlsApi = {
 }
 contextBridge.exposeInMainWorld('chatOfficeWindow', windowControlsApi)
 contextBridge.exposeInMainWorld('chatOfficeTabs', tabsApi)
+
+// Home 右栏停靠契约（P1）——与 chatOfficeTabs 同通道风格
+const dockApi: DockApi = {
+  async open(kind, options) {
+    const result: unknown = await ipcRenderer.invoke(DOCK_CHANNELS.open, kind, options ?? {})
+    return (result ?? null) as DockTabSummary | null
+  },
+  async list() {
+    const result: unknown = await ipcRenderer.invoke(DOCK_CHANNELS.list)
+    return Array.isArray(result) ? (result as DockTabSummary[]) : []
+  },
+  async activate(id) {
+    await ipcRenderer.invoke(DOCK_CHANNELS.activate, id)
+  },
+  async close(id) {
+    await ipcRenderer.invoke(DOCK_CHANNELS.close, id)
+  },
+  async undock(id) {
+    await ipcRenderer.invoke(DOCK_CHANNELS.undock, id)
+  },
+  setRect(rect) {
+    ipcRenderer.send(DOCK_CHANNELS.setRect, rect)
+  },
+  onChanged(handler) {
+    const listener = (_event: IpcRendererEvent, tabs: DockTabSummary[]) => handler(tabs)
+    ipcRenderer.on(DOCK_CHANNELS.changed, listener)
+    return () => ipcRenderer.removeListener(DOCK_CHANNELS.changed, listener)
+  },
+}
+contextBridge.exposeInMainWorld('chatOfficeDock', dockApi)
 
 // remote storage (MinIO / OSS): settings, listing, object transfer, pending queue
 contextBridge.exposeInMainWorld(

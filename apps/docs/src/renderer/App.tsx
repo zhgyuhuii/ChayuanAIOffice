@@ -529,7 +529,16 @@ export function App() {
   } | null>(null)
   const [recent, setRecent] = useState<string[]>([])
   const [settings, setSettings] = useState<AiSettingsV2>(DEFAULT_SETTINGS)
-  const [showAi, setShowAi] = useState(() => localStorage.getItem('aidocs.showAi') !== '0')
+  // ?panel=0 (docked boot, P1 契约): start with the AI panel hidden for this
+  // session only — the Home conversation is the chat surface. The persisted
+  // preference is untouched, so a later pop-out to a full tab keeps the
+  // user's own choice for undocked tabs.
+  const panelBootHiddenRef = useRef(
+    new URLSearchParams(window.location.search).get('panel') === '0',
+  )
+  const [showAi, setShowAi] = useState(
+    () => !panelBootHiddenRef.current && localStorage.getItem('aidocs.showAi') !== '0',
+  )
   const [spellcheck, setSpellcheck] = useState(spellcheckEnabled)
   /** Increments on every open/new document: AiPanel remounts by key to reset the conversation and history (save path changes don't bump it, so the session continues) */
   const [aiPanelKey, setAiPanelKey] = useState(0)
@@ -1043,6 +1052,12 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    // the ?panel=0 docked boot must not clobber the user's persisted
+    // preference on mount — only explicit toggles persist
+    if (panelBootHiddenRef.current) {
+      panelBootHiddenRef.current = false
+      return
+    }
     localStorage.setItem('aidocs.showAi', showAi ? '1' : '0')
   }, [showAi])
 

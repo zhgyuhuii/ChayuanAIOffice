@@ -4918,7 +4918,7 @@ async function performDocsClose(
   return requestRendererSave(contents)
 }
 
-export function createDocsView(openPath?: string): WebContentsView {
+export function createDocsView(openPath?: string, opts?: { hidePanel?: boolean }): WebContentsView {
   const view = new WebContentsView({
     webPreferences: {
       preload: runtime.preloadPath,
@@ -4938,14 +4938,19 @@ export function createDocsView(openPath?: string): WebContentsView {
   })
 
   // mode=tab: the shell's tab strip owns the traffic lights / caption buttons,
-  // so the ribbon must not reserve space for them
+  // so the ribbon must not reserve space for them.
+  // panel=0: a docked editor boots with its own AI panel hidden (P1 契约) —
+  // the Home conversation is the chat surface for docked editors. Boot-time
+  // only; the editor's persisted panel preference is not touched.
+  const query: Record<string, string> = { mode: 'tab' }
+  if (opts?.hidePanel) query.panel = '0'
   if (runtime.rendererUrl) {
     // append via URL so a dev URL that already carries query params stays valid
     const devUrl = new URL(runtime.rendererUrl)
-    devUrl.searchParams.set('mode', 'tab')
+    for (const [key, value] of Object.entries(query)) devUrl.searchParams.set(key, value)
     void view.webContents.loadURL(devUrl.toString())
   } else {
-    void view.webContents.loadFile(runtime.rendererFile, { query: { mode: 'tab' } })
+    void view.webContents.loadFile(runtime.rendererFile, { query })
   }
   // view.webContents becomes undefined after destroy, so grab the id beforehand
   const wcId = view.webContents.id
