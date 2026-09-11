@@ -4090,7 +4090,9 @@ function Ribbon({
   ]
   return (
     <div
-      className={`ribbon${bandStage > 0 ? ` degrade-${Math.min(bandStage, 2)}` : ''}`.trim()}
+      // 隐文字/紧凑只属 stage 1/2：根类不得在 stage 3/4 残留，否则分组名钮
+      // 的文字也被 canHideText 规则藏掉（用户实证：名钮档「没有名称」）
+      className={`ribbon${bandStage === 1 ? ' degrade-1' : bandStage === 2 ? ' degrade-2' : ''}`}
       ref={ribbonRef}
     >
       {bandStage === 4 && (
