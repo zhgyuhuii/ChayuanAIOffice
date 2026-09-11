@@ -8,7 +8,7 @@
 import { getHomeLayout, onHomeLayoutChange } from '../../../shell/src/renderer/src/home-layout'
 import bootLogoUrl from '../assets/boot-logo.png'
 
-export type TabKind = 'home' | 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown'
+export type TabKind = 'home' | 'docs' | 'sheets' | 'slides' | 'pdf' | 'markdown' | 'html'
 
 export interface TabSummary {
   id: string
@@ -27,7 +27,7 @@ export interface EditorOpenOptions {
 
 type ChangedHandler = (tabs: TabSummary[]) => void
 
-const EDITOR_KEYS: TabKind[] = ['docs', 'sheets', 'slides', 'pdf', 'markdown']
+const EDITOR_KEYS: TabKind[] = ['docs', 'sheets', 'slides', 'pdf', 'markdown', 'html']
 
 export function editorUrl(key: TabKind): string {
   const map = (window as unknown as { CHATOFFICE_EDITORS?: Record<string, string> })

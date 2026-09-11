@@ -17,7 +17,13 @@ describe('editorForFile', () => {
     expect(editorForFile('plaindoc')).toBeNull()
   })
 
-  it('lists the five editors in shell order', () => {
-    expect(EDITOR_KEYS).toEqual(['docs', 'sheets', 'slides', 'pdf', 'markdown'])
+  it('lists the six editors in shell order (html joined at P1)', () => {
+    expect(EDITOR_KEYS).toEqual(['docs', 'sheets', 'slides', 'pdf', 'markdown', 'html'])
+  })
+
+  it('routes html files to the html editor', () => {
+    expect(editorForFile('page.html')).toBe('html')
+    expect(editorForFile('page.htm')).toBe('html')
+    expect(editorForFile('page.docx')).toBe('docs')
   })
 })

@@ -9,6 +9,7 @@
 
 import { degradeInfo } from '@chatoffice/web-bridge'
 import { tabManager, type TabKind } from './tab-manager.js'
+import { dockHost } from './dock.js'
 import {
   entryFor,
   pageRecents,
@@ -222,6 +223,25 @@ export function installShellShims(): void {
     setTreeInset: () => {},
     setTreeWidth: () => {},
     setShellModalOpen: (open: boolean) => tabManager.setModalOpen(open),
+  }
+
+  // Home 右栏停靠(P1 契约 web 侧): dock iframes live in their own layer;
+  // the layer element is attached by shell-boot alongside the editor layer.
+  w.chatOfficeDock = {
+    open: async (kind: string, options?: { file?: string; newBlank?: boolean }) =>
+      dockHost.open(kind as never, {
+        // web 的「文件」= FS-Access fileId(契约 options.file 在 web 语义下即 id)
+        ...(options?.file ? { fileId: options.file } : {}),
+        ...(options?.newBlank ? { newBlank: true } : {}),
+      }),
+    list: async () => dockHost.list(),
+    activate: async (id: string) => dockHost.activate(id),
+    close: async (id: string) => dockHost.close(id),
+    undock: async (id: string) => dockHost.undock(id),
+    setRect: (rect: { x: number; y: number; width: number; height: number }) =>
+      dockHost.setRect(rect),
+    onChanged: (handler: (tabs: unknown) => void) =>
+      dockHost.onChanged(handler as (t: ReturnType<typeof dockHost.list>) => void),
   }
 
   w.chatOffice = {

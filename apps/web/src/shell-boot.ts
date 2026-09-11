@@ -8,6 +8,7 @@ import { registerBatch1Degradations } from '@chatoffice/web-bridge'
 import { installShellShims } from './host/shell-shims.js'
 import { startBridgeHost } from './host/bridge-host.js'
 import { tabManager } from './host/tab-manager.js'
+import { dockHost } from './host/dock.js'
 
 registerBatch1Degradations()
 installShellShims()
@@ -28,6 +29,12 @@ if (window.parent !== window) {
 const layer = document.createElement('div')
 layer.style.cssText = 'position:fixed;z-index:1;background:#fff;display:none'
 document.body.appendChild(layer)
+
+// Dock iframe layer (P1): the Home right pane's docked editors — positioned
+// from the shell renderer's mirrored .dock-area rect via chatOfficeDock.setRect
+const dockLayer = document.createElement('div')
+document.body.appendChild(dockLayer)
+dockHost.attach(dockLayer)
 
 // The shell mounts async (language/theme bootstrap); poll briefly for the
 // content anchor so the layer tracks .app-frame-content from first paint.
