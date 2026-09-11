@@ -27,13 +27,20 @@ export async function renderOptionSnapshot(
   const pixelRatio = opts.pixelRatio ?? 2
   const backgroundColor = opts.backgroundColor ?? '#ffffff'
 
-  if (optionNeedsGl(option)) {
+  // 快照是静态图：入场动画不关，40ms 等待只会截到动画起点——面积图成
+  // 左侧一条窄柱、折线图整条线还没画出来（docs/sheets/slides 共用此口）。
+  const stillOption =
+    option !== null && typeof option === 'object'
+      ? { ...(option as Record<string, unknown>), animation: false }
+      : option
+
+  if (optionNeedsGl(stillOption)) {
     const host = document.createElement('div')
     host.style.cssText = `position:fixed;left:-99999px;top:0;width:${width}px;height:${height}px;`
     document.body.append(host)
     const frame = new GlFrame(host)
     try {
-      const ok = await frame.update(option, width, height)
+      const ok = await frame.update(stillOption, width, height)
       if (!ok) throw new Error('gl frame unavailable')
       await new Promise<void>((resolve) => {
         requestAnimationFrame(() => setTimeout(resolve, 120))
@@ -53,8 +60,8 @@ export async function renderOptionSnapshot(
   ensureEchartsGlobal()
   const instance = echarts.init(host, null, { renderer: 'canvas', width, height })
   try {
-    await ensureMapsForOption(option)
-    instance.setOption(option as never)
+    await ensureMapsForOption(stillOption)
+    instance.setOption(stillOption as never)
     // 等首帧绘制完成(getDataURL 立即调用会拿到空画布)
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => setTimeout(resolve, 40))
