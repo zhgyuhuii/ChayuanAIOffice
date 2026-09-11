@@ -10,6 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 interface FakeWebContents {
   id: number
   on: ReturnType<typeof vi.fn>
+  once: ReturnType<typeof vi.fn>
   close: ReturnType<typeof vi.fn>
   reload: ReturnType<typeof vi.fn>
   isDestroyed: ReturnType<typeof vi.fn>
@@ -26,13 +27,15 @@ let nextWebContentsId = 1
 
 function makeFakeView(): FakeView {
   const listeners = new Map<string, () => void>()
+  const remember = (event: string, handler: () => void) => {
+    listeners.set(event, handler)
+  }
   return {
     webContents: {
       id: nextWebContentsId++,
       listeners,
-      on: vi.fn((event: string, handler: () => void) => {
-        listeners.set(event, handler)
-      }),
+      on: vi.fn(remember),
+      once: vi.fn(remember),
       close: vi.fn(),
       reload: vi.fn(),
       isDestroyed: vi.fn(() => false),
@@ -119,15 +122,27 @@ interface FakeShellWindow {
   contentView: {
     addChildView: ReturnType<typeof vi.fn>
     removeChildView: ReturnType<typeof vi.fn>
+    /** maintained by the addChildView/removeChildView implementations */
+    children: FakeView[]
   }
 }
 
 function makeShellWindow(): FakeShellWindow {
+  const children: FakeView[] = []
   return {
     on: vi.fn(),
     isDestroyed: vi.fn(() => false),
     getContentBounds: () => ({ x: 0, y: 0, width: WINDOW_WIDTH, height: WINDOW_HEIGHT }),
-    contentView: { addChildView: vi.fn(), removeChildView: vi.fn() },
+    contentView: {
+      addChildView: vi.fn((view: FakeView) => {
+        children.push(view)
+      }),
+      removeChildView: vi.fn((view: FakeView) => {
+        const idx = children.indexOf(view)
+        if (idx >= 0) children.splice(idx, 1)
+      }),
+      children,
+    },
   }
 }
 
@@ -611,5 +626,105 @@ describe('dirty-tab queries (shell close guard)', () => {
     manager.openSheetsTab()
     manager.openDocsTab('/tmp/a.docx')
     expect(manager.docsTabs().map((t) => t.id)).toEqual(['t1', 't3'])
+  })
+})
+
+describe('§12 orphan-view hardening', () => {
+  function contentBounds() {
+    return {
+      x: TREE_SIDEBAR_WIDTH,
+      y: TAB_STRIP_HEIGHT,
+      width: WINDOW_WIDTH - TREE_SIDEBAR_WIDTH,
+      height: WINDOW_HEIGHT - TAB_STRIP_HEIGHT,
+    }
+  }
+
+  it('layout() recovers from a stale activeId whose tab record was lost', () => {
+    manager.openDocsTab()
+    manager.openSheetsTab()
+    manager.openHomeTab()
+    // simulate the record being lost under the manager (§12 repro shape)
+    ;(manager as unknown as { activeId: string }).activeId = 'ghost'
+
+    manager.layout()
+    expect(manager.list().find((t) => t.active)?.kind).toBe('home')
+    // every mounted view was re-fitted instead of being skipped forever
+    for (const view of shellWindow.contentView.children) {
+      expect(view.setBounds).toHaveBeenLastCalledWith(contentBounds())
+    }
+  })
+
+  it('home-active layout re-fits hidden registered views without touching their visibility', () => {
+    const docsId = manager.openDocsTab()
+    const view = lastCreatedView(createDocsView)
+    manager.openHomeTab()
+    view.setBounds.mockClear()
+    view.setVisible.mockClear()
+
+    manager.layout()
+    expect(view.setBounds).toHaveBeenLastCalledWith(contentBounds())
+    expect(view.setVisible).not.toHaveBeenCalled()
+    expect(manager.list().find((t) => t.id === docsId)?.active).toBe(false)
+  })
+
+  it('a view mounted without a tab record (orphan) is re-fitted and hidden', () => {
+    manager.openHomeTab()
+    const orphan = makeFakeView()
+    orphan.setVisible.mockClear()
+    shellWindow.contentView.addChildView(orphan as never)
+
+    manager.layout()
+    expect(orphan.setBounds).toHaveBeenLastCalledWith(contentBounds())
+    expect(orphan.setVisible).toHaveBeenLastCalledWith(false)
+  })
+
+  it('an editor-active layout only re-fits the active view (orphans left alone)', () => {
+    manager.openDocsTab()
+    const activeView = lastCreatedView(createDocsView)
+    const orphan = makeFakeView()
+    shellWindow.contentView.addChildView(orphan as never)
+    orphan.setBounds.mockClear()
+
+    manager.layout()
+    expect(activeView.setBounds).toHaveBeenLastCalledWith(contentBounds())
+    expect(orphan.setBounds).not.toHaveBeenCalled()
+  })
+
+  it('webContents destroyed under a background tab drops its record and notifies', () => {
+    manager.openSheetsTab()
+    const sheetsView = lastCreatedView(createSheetsView)
+    const slidesId = manager.openSlidesTab()
+    onChanged.mockClear()
+
+    sheetsView.webContents.listeners.get('destroyed')!()
+    const tabs = manager.list()
+    expect(tabs.map((t) => t.id)).toEqual(['home', slidesId])
+    expect(tabs.find((t) => t.id === slidesId)?.active).toBe(true)
+    expect(onChanged).toHaveBeenCalled()
+    expect(shellWindow.contentView.children).not.toContain(sheetsView)
+  })
+
+  it('webContents destroyed under the active tab falls back to the previous tab', () => {
+    const sheetsId = manager.openSheetsTab()
+    manager.openSlidesTab()
+    const slidesView = lastCreatedView(createSlidesView)
+    // the dead view owned the fullscreen/bleed state — both must clear
+    slidesView.webContents.listeners.get('enter-html-full-screen')!()
+
+    slidesView.webContents.listeners.get('destroyed')!()
+    const tabs = manager.list()
+    expect(tabs.map((t) => t.id)).toEqual(['home', sheetsId])
+    expect(tabs.find((t) => t.id === sheetsId)?.active).toBe(true)
+  })
+
+  it('destroyed firing after closeTab already removed the record is a no-op', async () => {
+    const id = manager.openSheetsTab()
+    const view = lastCreatedView(createSheetsView)
+    await manager.closeTab(id)
+    onChanged.mockClear()
+
+    view.webContents.listeners.get('destroyed')!()
+    expect(manager.list()).toHaveLength(1)
+    expect(onChanged).not.toHaveBeenCalled()
   })
 })

@@ -187,20 +187,72 @@ export class TabManager {
     })
   }
 
+  /** §12 hardening: a tab whose webContents died outside closeTab (renderer
+   *  teardown, crash cleanup) must leave the tab list immediately — a stale
+   *  record would keep activeId pointing at a dead view and every later
+   *  layout() would skip its setBounds. closeTab's own path is idempotent
+   *  here: by the time its close() fires this event, the record is gone. */
+  private watchViewLifetime(id: string, view: WebContentsView): void {
+    const wcId = view.webContents.id
+    view.webContents.once('destroyed', () => {
+      const idx = this.tabs.findIndex((t) => t.id === id && t.view === view)
+      if (idx < 0) return
+      this.tabs.splice(idx, 1)
+      if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
+      this.bleedWcIds.delete(wcId)
+      if (!this.shellWindow.isDestroyed()) {
+        const children = this.shellWindow.contentView.children
+        if (children.includes(view)) {
+          this.shellWindow.contentView.removeChildView(view)
+        }
+      }
+      if (this.activeId === id) {
+        const fallback = this.tabs[idx - 1] ?? this.tabs[0]
+        this.activateTab(fallback ? fallback.id : HOME_ID)
+      } else {
+        this.onChanged()
+      }
+    })
+  }
+
   /** re-fit the active tab's view after a window resize */
   layout(): void {
     // Deferred resize layouts can land after the shell window was closed.
     if (this.shellWindow.isDestroyed()) return
+    // §12 hardening: an activeId whose tab record is gone (closed/lost under
+    // us) must never wedge the layout chain — fall back to Home so the
+    // mounted-view sweep below still runs.
+    if (!this.tabs.some((t) => t.id === this.activeId)) this.activeId = HOME_ID
     const active = this.tabs.find((t) => t.id === this.activeId)
     if (process.env.CHATOFFICE_MENU_DEBUG) {
       console.log(
-        '[layout-debug] layout active=', active?.label ?? '(none)',
-        'activeId=', String(this.activeId),
-        'tabs=', JSON.stringify(this.tabs.map((x) => ({ id: x.id, kind: x.kind, label: x.label, hasView: !!x.view }))),
-        'content=', JSON.stringify(this.shellWindow.getContentBounds()),
+        '[layout-debug] layout active=',
+        active?.title ?? '(none)',
+        'activeId=',
+        String(this.activeId),
+        'tabs=',
+        JSON.stringify(
+          this.tabs.map((x) => ({ id: x.id, kind: x.kind, label: x.title, hasView: !!x.view })),
+        ),
+        'content=',
+        JSON.stringify(this.shellWindow.getContentBounds()),
       )
     }
-    if (active?.view) active.view.setBounds(this.contentBounds())
+    if (active?.view) {
+      active.view.setBounds(this.contentBounds())
+      return
+    }
+    // Home (or a view-less tab) is active: nothing may cover the shell's own
+    // DOM, yet every mounted child must track the window. Registered views
+    // are already hidden by activateTab(home) and only get fresh bounds; a
+    // child that slipped past tab registration (the §12 orphan — a view
+    // whose creator never pushed a TabRecord) would otherwise keep frozen
+    // bounds forever AND sit over Home stealing input, so it is re-fitted
+    // and hidden.
+    for (const child of this.shellWindow.contentView.children) {
+      child.setBounds(this.contentBounds())
+      if (!this.tabs.some((t) => t.view === child)) child.setVisible(false)
+    }
   }
 
   list(): TabSummary[] {
@@ -228,6 +280,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'docs',
@@ -259,6 +312,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'sheets',
@@ -276,6 +330,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'slides',
@@ -302,6 +357,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'pdf',
@@ -328,6 +384,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'markdown',
@@ -345,6 +402,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'html',
@@ -363,6 +421,7 @@ export class TabManager {
     this.shellWindow.contentView.addChildView(view)
     view.setVisible(false)
     this.trackHtmlFullScreen(id, view)
+    this.watchViewLifetime(id, view)
     this.tabs.push({
       id,
       kind: 'html',

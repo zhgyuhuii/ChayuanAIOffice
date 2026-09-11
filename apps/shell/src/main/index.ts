@@ -3992,7 +3992,9 @@ function registerWindowControlsIpc(): void {
                 if (
                   shellWindow &&
                   !shellWindow.isDestroyed() &&
+                  typeof width === 'number' &&
                   Number.isFinite(width) &&
+                  typeof height === 'number' &&
                   Number.isFinite(height)
                 ) {
                   shellWindow.setBounds({
