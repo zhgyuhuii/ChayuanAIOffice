@@ -2677,6 +2677,30 @@ function createShellWindow(): void {
     openTab: (openPath, options) => manager.openDocsTab(openPath, options),
     openAiDocTab: (content) =>
       manager.openDocsTab(undefined, { newBlank: true, aiContent: content }),
+    // P1 停靠契约: home-chat create_document lands in the Home right pane —
+    // untitled blank docs tab seeded with the AI content, panel hidden
+    openAiDockTab: (content) => {
+      try {
+        return (
+          manager.dockEditorTab('docs', {
+            newBlank: true,
+            aiContent: content,
+            hidePanel: true,
+          }) !== null
+        )
+      } catch (err) {
+        console.error('[shell] ai dock tab failed:', err)
+        return false
+      }
+    },
+    openMarkdownDockTab: (content, suggestedName) => {
+      try {
+        return manager.dockMarkdownWithContent(content, suggestedName) !== null
+      } catch (err) {
+        console.error('[shell] markdown dock tab failed:', err)
+        return false
+      }
+    },
     listTabs: () =>
       manager
         .list()
