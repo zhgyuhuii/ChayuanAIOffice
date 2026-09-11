@@ -3978,10 +3978,40 @@ function registerWindowControlsIpc(): void {
   })
   if (process.env.CHATOFFICE_MENU_DEBUG) {
     console.log('[wc-debug] ipc registered')
-    // 无屏/自动化环境下的窗口真值端点（仅调试用，只读）
+    // 无屏/自动化环境下的窗口真值端点（仅调试用）。POST /bounds 支持
+    // 自动化驱动真实窗口缩放（ribbon 自适应阶梯的 M4 验收钩子）
     void import('node:http').then(({ default: http }) => {
       http
-        .createServer((_req, res) => {
+        .createServer((req, res) => {
+          if (req.method === 'POST' && req.url === '/bounds') {
+            let body = ''
+            req.on('data', (chunk) => (body += chunk))
+            req.on('end', () => {
+              try {
+                const { width, height } = JSON.parse(body) as { width?: number; height?: number }
+                if (
+                  shellWindow &&
+                  !shellWindow.isDestroyed() &&
+                  Number.isFinite(width) &&
+                  Number.isFinite(height)
+                ) {
+                  shellWindow.setBounds({
+                    ...shellWindow.getBounds(),
+                    width: Math.round(width),
+                    height: Math.round(height),
+                  })
+                  res.setHeader('content-type', 'application/json')
+                  res.end(JSON.stringify({ ok: true, bounds: shellWindow.getBounds() }))
+                  return
+                }
+              } catch {
+                // fallthrough to 400
+              }
+              res.statusCode = 400
+              res.end(JSON.stringify({ ok: false }))
+            })
+            return
+          }
           res.setHeader('content-type', 'application/json')
           res.end(
             JSON.stringify({

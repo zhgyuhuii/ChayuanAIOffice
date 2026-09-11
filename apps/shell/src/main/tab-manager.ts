@@ -106,6 +106,7 @@ export class TabManager {
     // pre-maximize size inside the handler and a follow-up layout is required.
     // See https://github.com/genspark-ai/chatoffice/issues/15
     shellWindow.on('resize', () => {
+      if (process.env.CHATOFFICE_MENU_DEBUG) console.log('[layout-debug] resize event')
       this.layout()
       setImmediate(() => this.layout())
     })
@@ -191,6 +192,14 @@ export class TabManager {
     // Deferred resize layouts can land after the shell window was closed.
     if (this.shellWindow.isDestroyed()) return
     const active = this.tabs.find((t) => t.id === this.activeId)
+    if (process.env.CHATOFFICE_MENU_DEBUG) {
+      console.log(
+        '[layout-debug] layout active=', active?.label ?? '(none)',
+        'activeId=', String(this.activeId),
+        'tabs=', JSON.stringify(this.tabs.map((x) => ({ id: x.id, kind: x.kind, label: x.label, hasView: !!x.view }))),
+        'content=', JSON.stringify(this.shellWindow.getContentBounds()),
+      )
+    }
     if (active?.view) active.view.setBounds(this.contentBounds())
   }
 

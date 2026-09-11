@@ -213,3 +213,18 @@ WPS 自己的功能区 = **纯声明式明文 XML 资源，运行时延迟加载
 2. M1 规格 token（WPS 硬规格进 controls.css 变量：字体框 minimumWidth=151/字号框 fixedWidth=60 等）+ 表格工具校验场按差距清单 §4 勾选推进。
 3. merge-row（并单行）真实现（schema `group.adapt` 已预留类型）。
 4. sheets/slides 收敛 + 差距清单回填。
+
+## 12. 桌面端「不能伸缩/卡死/没有菜单」追踪（2026-09-11 深夜，证据链闭合）
+
+**结论：编辑器 WebContentsView 不跟随窗口缩放——shell tab 管理器视图生命周期 bug，非 ribbon 阶梯回归。**
+
+证据（真桌面 Electron + CDP + 5278 窗口真值端点）：
+1. OS 窗口真实改宽（POST /bounds 5278→getBounds 980 确认），编辑器页 `innerWidth` 恒死在 **2168**（=某次 2400 宽窗口时 2400−treeWidth(232) 的正确值，此后永不更新）→ 视图在创建后某刻与 resize→layout 链脱钩，尺寸冻结在被裁剪状态 → 用户视角「菜单没了/不能伸缩/卡死」。
+2. 量循环无辜：innerWidth 不变 → 阶梯根本观测不到宽度变化。web 模式（无 shell）全阶梯已验证正常。
+3. resize→layout 链路本身活着（CHATOFFICE_MENU_DEBUG layout-debug 已插桩并观测到触发），但 `layout()` 只 fit `active?.view`——复现态 tabs=[home]/activeId=home 而工作簿视图存在=**孤儿视图**（创建路径绕过 tabs 注册，构建模式 boot 自动开 deck.pptx/工作簿同样绕过）→ active 查不到 → setBounds 永久跳过。
+
+**修复方向（shell 侧，非本轮范围）**：① 找到绕过 openTab 的视图创建路径并注册；② layout() 兜底：active 查不到时 fit 所有已挂视图；③ tab 关闭/失联时清理 activeId。插桩已就位（MENU_DEBUG 下 [layout-debug] 输出 activeId/tabs/content）。
+
+**自动化验收配方（已可用）**：
+- 隔离桌面：`CHATOFFICE_MENU_DEBUG=1 node /tmp/launch-desktop-test.mjs`（渲染器 5283-5288 + shell CDP 5299 + POST /bounds 5278 驱动真实窗口缩放）；压测脚本 `/tmp/real-window-test.cjs`（raw CDP over WebSocket，探测 stage/溢出/卡死）。
+- 纯 web 模式阶梯验收：`?bandStage=N` 钉档 + 无头 Chrome 多宽度截图（§6）。
