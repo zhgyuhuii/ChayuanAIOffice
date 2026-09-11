@@ -16,6 +16,8 @@ export interface HomeLayoutState {
   /** sidebar width in px (tree strip); the main process insets document views
    *  by the same amount, mirrored over setTreeWidth IPC */
   sidebarWidth: number
+  /** dock pane width in px; null = equal flex split (never dragged yet) */
+  dockWidth: number | null
 }
 
 const STORAGE_KEY = 'chatoffice.home-layout'
@@ -29,12 +31,22 @@ export function clampSidebarWidth(w: number): number {
   return Math.round(Math.min(Math.max(w, SIDEBAR_MIN), SIDEBAR_MAX))
 }
 
+/** dock pane width bounds: floor keeps an editor usable, cap keeps the
+ *  conversation readable on wide windows */
+export const DOCK_MIN = 320
+export const DOCK_MAX = 1100
+
+export function clampDockWidth(w: number): number {
+  return Math.round(Math.min(Math.max(w, DOCK_MIN), DOCK_MAX))
+}
+
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
   starredCollapsed: false,
   recentCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
+  dockWidth: null,
 }
 
 function load(): HomeLayoutState {
@@ -53,6 +65,10 @@ function load(): HomeLayoutState {
           typeof obj.sidebarWidth === 'number' && Number.isFinite(obj.sidebarWidth)
             ? clampSidebarWidth(obj.sidebarWidth)
             : SIDEBAR_DEFAULT,
+        dockWidth:
+          typeof obj.dockWidth === 'number' && Number.isFinite(obj.dockWidth)
+            ? clampDockWidth(obj.dockWidth)
+            : null,
       }
     }
   } catch {
@@ -75,7 +91,8 @@ export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
     next.rightCollapsed === state.rightCollapsed &&
     next.starredCollapsed === state.starredCollapsed &&
     next.recentCollapsed === state.recentCollapsed &&
-    next.sidebarWidth === state.sidebarWidth
+    next.sidebarWidth === state.sidebarWidth &&
+    next.dockWidth === state.dockWidth
   ) {
     return
   }

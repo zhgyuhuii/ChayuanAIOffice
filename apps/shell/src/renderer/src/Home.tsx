@@ -28,7 +28,16 @@ import { SettingsModal } from './SettingsModal'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
-import { clampSidebarWidth, getHomeLayout, onHomeLayoutChange, setHomeLayout } from './home-layout'
+import {
+  clampSidebarWidth,
+  clampDockWidth,
+  getHomeLayout,
+  onHomeLayoutChange,
+  setHomeLayout,
+} from './home-layout'
+import { DockPane } from './DockPane'
+import { restoreDockTabs, snapshotFromTabs } from './dock-session'
+import type { DockTabSummary } from '../../shared/dock-api'
 
 declare global {
   interface Window {
@@ -1429,6 +1438,18 @@ export function Home() {
     return () => window.removeEventListener('pointerup', endSidebarDrag)
   }, [endSidebarDrag])
 
+  // dock pane splitter: same contract as the sidebar's (active state rides on
+  // the element class; a window-level pointerup ends drags that leave the strip)
+  const dockResizerRef = useRef<HTMLDivElement>(null)
+  const endDockDrag = useCallback(() => {
+    if (dockResizerRef.current) delete dockResizerRef.current.dataset.dragging
+    document.body.classList.remove('dock-resizing')
+  }, [])
+  useEffect(() => {
+    window.addEventListener('pointerup', endDockDrag)
+    return () => window.removeEventListener('pointerup', endDockDrag)
+  }, [endDockDrag])
+
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -1452,6 +1473,31 @@ export function Home() {
   const [chatOpenSignal, setChatOpenSignal] = useState<{ sessionId: string; nonce: number } | null>(
     null,
   )
+
+  // ── Dock pane ↔ session memory (P1): the conversation remembers which
+  //    right-pane editor tabs belong to it; switching back re-docks them ──
+  const chatStoreRef = useRef(chatStore)
+  chatStoreRef.current = chatStore
+  const handleDockTabs = useCallback((tabs: DockTabSummary[]) => {
+    const store = chatStoreRef.current
+    const session = store.active
+    if (!session) return
+    if (tabs.length === 0) {
+      if (session.dock) store.updateSession(session.id, (s) => ({ ...s, dock: undefined }))
+      return
+    }
+    store.updateSession(session.id, (s) => ({ ...s, dock: snapshotFromTabs(tabs) }))
+  }, [])
+  const dockRestoreSessionId = chatStore.activeId
+  useEffect(() => {
+    const dock = window.chatOfficeDock
+    if (!dock || !dockRestoreSessionId) return
+    const session = chatStoreRef.current.sessions?.find((s) => s.id === dockRestoreSessionId)
+    if (!session?.dock) return
+    // dock.open dedupes by file, so already-docked tabs are reused, not reopened
+    void restoreDockTabs(dock, session.dock).catch(() => undefined)
+  }, [dockRestoreSessionId])
+
   const openChatSession = useCallback((sessionId: string) => {
     setChatOpenSignal((prev) => ({ sessionId, nonce: (prev?.nonce ?? 0) + 1 }))
   }, [])
@@ -2849,27 +2895,42 @@ export function Home() {
             settingsRefreshNonce={settingsNonce}
             projects={projects}
           />
-          {/* right content pane: editors borrow this rect on the home tab in a
-              later phase; for now it carries the empty-state hint */}
-          <section className="content-pane">
-            <div className="content-pane-empty">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M6 3.5h8.2L19 8.3V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V5A1.5 1.5 0 0 1 6.5 3.5Z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M13.8 3.8V8.5H18.6M8.5 12.5h7M8.5 15.5h5"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <p>{t('contentPaneEmpty')}</p>
-            </div>
+          {/* drag handle between the conversation and the dock pane; hidden
+              with the pane itself (pane-right-collapsed) via the sibling
+              selector in CSS */}
+          <div
+            ref={dockResizerRef}
+            className="dock-resizer"
+            role="separator"
+            aria-orientation="vertical"
+            onPointerDown={(event) => {
+              if (event.button !== 0) return
+              try {
+                event.currentTarget.setPointerCapture(event.pointerId)
+              } catch {
+                /* synthetic events have no active pointer — the window-level
+                   pointerup below ends the drag regardless */
+              }
+              event.currentTarget.dataset.dragging = '1'
+              document.body.classList.add('dock-resizing')
+            }}
+            onPointerMove={(event) => {
+              if (!event.currentTarget.dataset.dragging) return
+              // the pane's left edge: width = window right minus pointer x
+              setHomeLayout({ dockWidth: clampDockWidth(window.innerWidth - event.clientX) })
+            }}
+            onPointerUp={endDockDrag}
+            onLostPointerCapture={endDockDrag}
+          />
+
+          {/* right content pane: docked editor views (P1) borrow this rect —
+              the editors are main-process WebContentsViews painting over the
+              .dock-area element's mirrored rectangle */}
+          <section
+            className="content-pane"
+            style={layout.dockWidth ? { width: layout.dockWidth, flex: 'none' } : undefined}
+          >
+            <DockPane onTabs={handleDockTabs} />
           </section>
         </>
       )}

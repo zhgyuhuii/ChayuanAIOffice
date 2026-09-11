@@ -19,6 +19,7 @@ import type {
 } from '../../../docs/src/shared/ipc'
 import type { UpdateChannel } from './update-api'
 import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
+import type { DockKind } from './dock-api'
 
 /** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
 export type UiLanguage =
@@ -288,10 +289,15 @@ export interface HomeChatSession {
    * copy becomes read-only and offers "open that tab" instead of continuing */
   handedOff?: { docTitle: string; filePath?: string | undefined } | undefined
   /** session-scoped model picked in the composer; falls back to the global
-   * current model when absent (the picker writes here, never to the global) */
+   *  current model when absent (the picker writes here, never to the global) */
   modelId?: AiModelSelection | undefined
   /** composer mode: 'plan' constrains the agent to advice-only replies */
   mode?: 'default' | 'plan' | undefined
+  /** docked-editor tab group this conversation works with (P1 契约):
+   *  remembered across session switches — the views live in the main process,
+   *  only the arrangement is persisted here and re-docked on switch-back */
+  dock?:
+    { tabs: Array<{ kind: DockKind; file?: string | undefined }>; activeIndex?: number } | undefined
 }
 
 /** 'starred' = went to GitHub or said "already starred" (never prompt again);
