@@ -30,8 +30,13 @@
           var source = ev.source
           import(m.echartsUrl)
             .then(function (mod) {
-              // 兼容 ESM 命名空间与 default 导出两种形态
-              var lib = mod.use ? mod : mod.default && mod.default.use ? mod.default : mod
+              // UMD dist 没有模块导出,靠执行副作用挂 window.echarts;
+              // ESM 形态(经 vite 的 dev 服务)则取命名空间/default
+              var lib = mod.use
+                ? mod
+                : mod.default && mod.default.use
+                  ? mod.default
+                  : window.echarts
               window.echarts = lib
               booted = true
               var waiters = bootWaiters.splice(0)

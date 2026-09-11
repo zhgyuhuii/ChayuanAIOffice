@@ -8,10 +8,13 @@
  */
 
 import glFrameUrl from './gl-frame.html?url'
-// Vite 把依赖入口也 emit 成 URL 资源(dev=/@fs/ 真实地址,build=哈希 chunk),
-// 帧内动态 import 用;import.meta.resolve('echarts') 在 Vite 下不可用(实测)
-import echartsUrl from 'echarts?url'
-import echartsGlUrl from 'echarts-gl?url'
+// 必须用自包含 UMD dist:Vite 对 `?url` 只原样拷贝入口文件,包内模块
+// import(lib/… 兄弟文件)不会被一起 emit——dev 下 vite 能服务到真实文件
+// 掩盖了这一点,打包产物里 echarts-gl 入口全部 404,GL 预览空白、插入
+// 静默失败。UMD 由帧内动态 import 执行并挂 window.echarts(boot 顺序:
+// 先 echarts 后 echarts-gl,gl 的 UMD 取 window.echarts)。
+import echartsUrl from 'echarts/dist/echarts.min.js?url'
+import echartsGlUrl from 'echarts-gl/dist/echarts-gl.min.js?url'
 import { stringifyOption } from '../sandbox/serialize'
 import { mapNamesInOption, loadBundledMap } from './maps'
 
@@ -24,7 +27,12 @@ interface FrameDone {
 type Resolve = (r: FrameDone) => void
 
 function resolveModuleUrls(): { echartsUrl: string; echartsGlUrl: string } {
-  return { echartsUrl, echartsGlUrl }
+  // 帧文档位于 assets/ 下,相对 URL 会按帧目录多解析一层目录
+  // (assets/assets/…,404)——按主页 baseURI 绝对化后传给帧。
+  return {
+    echartsUrl: new URL(echartsUrl, document.baseURI).href,
+    echartsGlUrl: new URL(echartsGlUrl, document.baseURI).href,
+  }
 }
 
 export class GlFrame {

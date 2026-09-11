@@ -61,8 +61,17 @@
             // gl 内部 echarts 为 undefined(registerPostInit 报错)
             import(m.echartsUrl)
               .then(function (mod) {
-                var lib = mod.default && mod.default.use ? mod : mod.echarts || mod
-                window.echarts = lib.use ? lib : mod
+                // UMD dist(打包产物)没有模块导出,靠执行副作用挂
+                // window.echarts——此时绝不能用空命名空间 mod 覆盖它,
+                // 否则 gl 初始化在空对象上找 registerPostInit 直接报错;
+                // ESM 形态(dev 经 vite 服务)取命名空间/default。
+                var lib =
+                  mod.use || (mod.default && mod.default.use)
+                    ? mod.use
+                      ? mod
+                      : mod.default
+                    : window.echarts || mod
+                window.echarts = lib
                 return import(m.echartsGlUrl)
               })
               .then(function () {

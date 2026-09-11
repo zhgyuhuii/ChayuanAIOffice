@@ -25,8 +25,17 @@ let assetUrlsP: Promise<{ frame: string; echarts: string } | null> | null = null
 function resolveAssetUrls(): Promise<{ frame: string; echarts: string } | null> {
   assetUrlsP ??= (async () => {
     try {
-      const [f, e] = await Promise.all([import('./eval-frame.html?url'), import('echarts?url')])
-      return { frame: f.default, echarts: e.default }
+      // 自包含 UMD dist(?url 只拷贝入口文件,ESM 入口的 lib/ 模块引用在
+      // 打包产物里全部 404);绝对化:帧文档在 assets/ 下,相对 URL 会多
+      // 解析一层目录
+      const [f, e] = await Promise.all([
+        import('./eval-frame.html?url'),
+        import('echarts/dist/echarts.min.js?url'),
+      ])
+      return {
+        frame: f.default,
+        echarts: new URL(e.default, document.baseURI).href,
+      }
     } catch {
       return null
     }
