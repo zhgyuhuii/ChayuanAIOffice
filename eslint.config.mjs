@@ -23,6 +23,8 @@ export default tseslint.config(
       // Browser-side extractor fragments are function-body slices (top-level
       // return), not modules; they are injected as raw text.
       'packages/html2docx/src/browser/**',
+      // Generated assistant data packs (tools/gen-docs-assistants.mjs).
+      'apps/docs/src/renderer/ai/assistants/packs/**',
     ],
   },
   js.configs.recommended,

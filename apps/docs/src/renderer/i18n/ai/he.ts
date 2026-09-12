@@ -49,7 +49,8 @@ export const he = {
   aiSumReplyComment: 'תשובה להערה',
   aiSumResolveComment: 'הערה נפתרה',
   aiTidyBtn: 'עיצוב AI',
-  aiTidyPrompt: 'סדר את העיצוב של המסמך כולו — למשל תקן רמות כותרות, אחד את עיצוב הרשימות, הסר הדגשות והטיות מיותרות ויישר את הזחות הפסקאות. שנה רק את העיצוב, בלי לשנות את הטקסט',
+  aiTidyPrompt:
+    'סדר את העיצוב של המסמך כולו — למשל תקן רמות כותרות, אחד את עיצוב הרשימות, הסר הדגשות והטיות מיותרות ויישר את הזחות הפסקאות. שנה רק את העיצוב, בלי לשנות את הטקסט',
   aiSwitchModelTitle: 'החלפת מודל AI',
   aiNewChatTitle: 'שיחה חדשה',
   aiCollapseTitle: 'כיווץ החלונית',
@@ -83,9 +84,12 @@ export const he = {
   aiAttachTitle: 'צירוף קבצים מקומיים (אפשר גם לגרור אל החלונית)',
   aiRemoveAttachmentTitle: 'הסרת הקובץ המצורף',
   aiTrackChanges: 'מעקב אחר שינויים',
-  aiTrackOnTitle: 'מעקב אחר שינויים פועל: שינויי תוכן של ה-AI מסומנים כתיקונים (הוספות בקו תחתון, מחיקות בקו חוצה); קבלו או דחו בסקירה',
-  aiTrackOffTitle: 'מעקב אחר שינויים כבוי: שינויי ה-AI חלים מיד (עדיין אפשר לשחזר באמצעות תמונות מצב של גרסאות)',
-  aiTurnLimit: '(הגעתם למגבלת סבבי קריאות הכלים לבקשה זו; התשובה שלמעלה מבוססת על השלבים שהושלמו עד כה ועשויה להיות חלקית.)',
+  aiTrackOnTitle:
+    'מעקב אחר שינויים פועל: שינויי תוכן של ה-AI מסומנים כתיקונים (הוספות בקו תחתון, מחיקות בקו חוצה); קבלו או דחו בסקירה',
+  aiTrackOffTitle:
+    'מעקב אחר שינויים כבוי: שינויי ה-AI חלים מיד (עדיין אפשר לשחזר באמצעות תמונות מצב של גרסאות)',
+  aiTurnLimit:
+    '(הגעתם למגבלת סבבי קריאות הכלים לבקשה זו; התשובה שלמעלה מבוססת על השלבים שהושלמו עד כה ועשויה להיות חלקית.)',
   aiStopped: '(נעצר)',
   aiNoReply: 'ה-AI לא החזיר תוכן.',
   aiTruncatedNote: '(התשובה נחתכה בגלל מגבלת האורך וייתכן שאינה שלמה.)',
@@ -128,7 +132,8 @@ export const he = {
   aiSumSetFooter: 'הכותרת התחתונה עודכנה',
   aiSumApplyCommands: 'החלת פקודות עיצוב',
   aiCmdNone: 'לא נמצאו בלוקים מתאימים; המסמך לא שונה.',
-  aiCmdNoneSkipped: 'אין בלוקים הניתנים לעריכה; המסמך לא שונה (דולגו {count} בלוקים מוגנים — טבלאות/תמונות אינן ניתנות לשינוי בפקודות סגנון).',
+  aiCmdNoneSkipped:
+    'אין בלוקים הניתנים לעריכה; המסמך לא שונה (דולגו {count} בלוקים מוגנים — טבלאות/תמונות אינן ניתנות לשינוי בפקודות סגנון).',
   aiCmdTextStyle: 'עודכן סגנון הטקסט ב-{count} בלוקים',
   aiCmdMatchedStyle: 'הסגנון הוחל על {count} התאמות ב-{blocks} בלוקים',
   aiCmdParaStyle: 'עודכן עיצוב הפסקה ב-{count} בלוקים',
@@ -145,7 +150,8 @@ export const he = {
   aiCmdSkipped: ' (דולגו {count} בלוקים מוגנים)',
   aiChatOfficeLoginBtn: 'התחבר',
   aiNoModelErrorTitle: 'אין עדיין מודל זמין',
-  aiNoModelErrorBody: 'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) כדי להתחיל.',
+  aiNoModelErrorBody:
+    'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) או התחבר ל-ChatOffice למודלים ברירת המחדל. לא נדרש חשבון.',
   aiOpenModelSettings: 'פתח את הגדרות המודלים',
   aiTabChat: 'צ׳אט',
   aiTabAssistant: 'עוזר',
@@ -161,4 +167,15 @@ export const he = {
   aiDockRestore: 'שחזר חלונית',
   aiSumGenerateSvg: 'צור איור SVG',
   aiSumInsertedSvg: 'איור SVG הוכנס',
+  aiAssistantCommon: 'פעולות מהירות',
+  aiAssistantSearch: 'חיפוש עוזרים…',
+  aiAssistantBack: 'חזרה לקבוצות',
+  aiAssistantRecent: 'בשימוש לאחרונה',
+  aiAssistantCount: '{count} עוזרים',
+  aiAssistantNoMatch: 'אין עוזרים תואמים',
+  aiAssistantNeedSelection: 'יש לסמן טקסט במסמך תחילה',
+  aiAssistantLoading: 'טוען עוזרים…',
+  aiAssistantScopeDoc: 'המסמך כולו',
+  aiAssistantScopeSelection: 'בחירה',
+  aiAssistantAll: 'כל הקבוצות',
 }

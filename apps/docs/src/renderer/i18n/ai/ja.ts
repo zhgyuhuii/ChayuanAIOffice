@@ -36,7 +36,8 @@ export const ja = {
   aiChipChartTitle: 'グラフのタイトルを変更',
   aiChipTableEdit: '行と列を調整',
   aiQueueTitle: '送信待ちの修正',
-  aiQueueHint: '行をクリックすると本文の該当箇所へ移動します。送信時にすべての修正を 1 回のリクエストにまとめます',
+  aiQueueHint:
+    '行をクリックすると本文の該当箇所へ移動します。送信時にすべての修正を 1 回のリクエストにまとめます',
   aiQueueSend: '{count} 件の修正を送信',
   aiQueueDiscard: 'クリア',
   aiQueueDiscardConfirm: '送信待ちの修正 {count} 件をクリアしますか?',
@@ -49,7 +50,8 @@ export const ja = {
   aiSumReplyComment: 'コメントに返信',
   aiSumResolveComment: 'コメントを解決',
   aiTidyBtn: 'AI 書式整理',
-  aiTidyPrompt: '文書全体の書式を整えてください。例えば見出しレベルの修正、リスト形式の統一、不要な太字・斜体の削除、本文段落の字下げの調整など。書式のみを変更し、本文の文字は一切変更しないでください',
+  aiTidyPrompt:
+    '文書全体の書式を整えてください。例えば見出しレベルの修正、リスト形式の統一、不要な太字・斜体の削除、本文段落の字下げの調整など。書式のみを変更し、本文の文字は一切変更しないでください',
   aiSwitchModelTitle: 'AI モデルを切り替え',
   aiNewChatTitle: '新しいチャット',
   aiCollapseTitle: 'パネルを折りたたむ',
@@ -83,19 +85,25 @@ export const ja = {
   aiAttachTitle: 'ローカルファイルを添付(パネルへのドラッグ&ドロップも可)',
   aiRemoveAttachmentTitle: '添付ファイルを削除',
   aiTrackChanges: '変更履歴',
-  aiTrackOnTitle: '変更履歴オン:AI による内容の変更は変更履歴として記録されます(挿入は下線、削除は取り消し線)。校閲で承諾または元に戻せます',
-  aiTrackOffTitle: '変更履歴オフ:AI の変更はすぐに反映されます(バージョンスナップショットからロールバック可能)',
-  aiTurnLimit: '（1 回のリクエストのツール呼び出し上限に達したため、ここまでに完了した内容に基づく回答です。不完全な場合があります。）',
+  aiTrackOnTitle:
+    '変更履歴オン:AI による内容の変更は変更履歴として記録されます(挿入は下線、削除は取り消し線)。校閲で承諾または元に戻せます',
+  aiTrackOffTitle:
+    '変更履歴オフ:AI の変更はすぐに反映されます(バージョンスナップショットからロールバック可能)',
+  aiTurnLimit:
+    '（1 回のリクエストのツール呼び出し上限に達したため、ここまでに完了した内容に基づく回答です。不完全な場合があります。）',
   aiStopped: '(停止しました)',
   aiNoReply: 'AI から回答がありませんでした。',
   aiTruncatedNote: '（返信は長さ制限により途中で打ち切られ、不完全な可能性があります。）',
-  aiImagesSendFailed: '画像添付ファイルを読み込めなかったため、このメッセージは画像なしで送信されました',
+  aiImagesSendFailed:
+    '画像添付ファイルを読み込めなかったため、このメッセージは画像なしで送信されました',
   aiImageReadFail: '{name}: 読み取りに失敗しました',
   aiTooManyImages: '画像は 1 メッセージにつき最大 {max} 枚までです。超過分は無視されました',
   aiUnknownError: '不明なエラー',
-  aiTimeoutError: 'AIリクエストがタイムアウトしました：ネットワークからの応答がないため中断しました。接続を確認して再試行してください',
+  aiTimeoutError:
+    'AIリクエストがタイムアウトしました：ネットワークからの応答がないため中断しました。接続を確認して再試行してください',
   aiOverloadedError: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
-  aiNetworkError: 'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
+  aiNetworkError:
+    'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
   aiCreditsExhausted: 'クレジット不足です。チャージページでチャージしてください',
   aiSumReadAttachment: '添付ファイルを読み取り',
   aiSumImageAttachment: '画像添付 {name}',
@@ -128,7 +136,8 @@ export const ja = {
   aiSumSetFooter: 'フッターを更新',
   aiSumApplyCommands: '書式コマンドを実行',
   aiCmdNone: '変更対象のブロックが見つからなかったため、文書は変更されていません。',
-  aiCmdNoneSkipped: '変更可能なブロックがないため、文書は変更されていません({count} 個の保護されたブロックをスキップ。表や画像などはスタイルコマンドでは変更できません)。',
+  aiCmdNoneSkipped:
+    '変更可能なブロックがないため、文書は変更されていません({count} 個の保護されたブロックをスキップ。表や画像などはスタイルコマンドでは変更できません)。',
   aiCmdTextStyle: '{count} 個のブロックの文字スタイルを更新しました',
   aiCmdMatchedStyle: '{count} 件の一致テキストのスタイルを更新しました({blocks} ブロック)',
   aiCmdParaStyle: '{count} 個のブロックの段落書式を更新しました',
@@ -145,7 +154,8 @@ export const ja = {
   aiCmdSkipped: '({count} 個の保護されたブロックをスキップ)',
   aiChatOfficeLoginBtn: 'サインイン',
   aiNoModelErrorTitle: '利用可能なモデルがまだありません',
-  aiNoModelErrorBody: '独自のプロバイダーを設定する（キーがあればすぐ利用可）だけで利用できます。',
+  aiNoModelErrorBody:
+    '独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChatOffice にサインインして既定のモデルを使ってください。アカウントは不要です。',
   aiOpenModelSettings: 'モデル設定を開く',
   aiTabChat: 'チャット',
   aiTabAssistant: 'アシスタント',
@@ -161,4 +171,15 @@ export const ja = {
   aiDockRestore: 'パネルを元に戻す',
   aiSumGenerateSvg: 'SVGイラストを生成',
   aiSumInsertedSvg: 'SVGイラストを挿入しました',
+  aiAssistantCommon: 'よく使う',
+  aiAssistantSearch: 'アシスタントを検索…',
+  aiAssistantBack: 'グループに戻る',
+  aiAssistantRecent: '最近使用',
+  aiAssistantCount: '{count} 件のアシスタント',
+  aiAssistantNoMatch: '一致するアシスタントがありません',
+  aiAssistantNeedSelection: 'まず文書内のテキストを選択してください',
+  aiAssistantLoading: 'アシスタントを読み込み中…',
+  aiAssistantScopeDoc: '全文',
+  aiAssistantScopeSelection: '選択範囲',
+  aiAssistantAll: 'すべてのグループ',
 }

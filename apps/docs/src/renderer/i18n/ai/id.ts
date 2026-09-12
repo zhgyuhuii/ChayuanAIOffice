@@ -16,7 +16,8 @@ export const id = {
   aiPolishPrompt: 'Poles seluruh dokumen agar tulisan lebih jelas dan mengalir',
   aiPolishSelectionPrompt: 'Poles konten yang dipilih agar tulisan lebih jelas dan mengalir',
   aiScopeSelection: 'Terpilih: {words} kata',
-  aiScopeSelectionTip: 'Instruksi penulisan ulang secara default hanya berlaku pada teks terpilih; klik untuk pratinjau',
+  aiScopeSelectionTip:
+    'Instruksi penulisan ulang secara default hanya berlaku pada teks terpilih; klik untuk pratinjau',
   aiScopeClearTitle: 'Hapus cakupan pilihan',
   aiAskBtn: 'Tanya AI',
   aiAskTitle: 'Minta perubahan pada teks terpilih',
@@ -36,7 +37,8 @@ export const id = {
   aiChipChartTitle: 'Ubah judul grafik',
   aiChipTableEdit: 'Sesuaikan baris/kolom',
   aiQueueTitle: 'Perubahan dalam antrean',
-  aiQueueHint: 'Klik baris untuk menemukan bagiannya; pengiriman menerapkan semua perubahan dalam satu permintaan',
+  aiQueueHint:
+    'Klik baris untuk menemukan bagiannya; pengiriman menerapkan semua perubahan dalam satu permintaan',
   aiQueueSend: 'Kirim {count} perubahan',
   aiQueueDiscard: 'Kosongkan',
   aiQueueDiscardConfirm: 'Kosongkan {count} perubahan dalam antrean?',
@@ -49,7 +51,8 @@ export const id = {
   aiSumReplyComment: 'Membalas komentar',
   aiSumResolveComment: 'Menyelesaikan komentar',
   aiTidyBtn: 'Format AI',
-  aiTidyPrompt: 'Rapikan format seluruh dokumen, misalnya perbaiki level judul, seragamkan format daftar, hapus cetak tebal/miring yang tidak perlu, dan samakan indentasi paragraf. Ubah format saja, jangan mengubah teks apa pun',
+  aiTidyPrompt:
+    'Rapikan format seluruh dokumen, misalnya perbaiki level judul, seragamkan format daftar, hapus cetak tebal/miring yang tidak perlu, dan samakan indentasi paragraf. Ubah format saja, jangan mengubah teks apa pun',
   aiSwitchModelTitle: 'Ganti model AI',
   aiNewChatTitle: 'Obrolan baru',
   aiCollapseTitle: 'Ciutkan panel',
@@ -83,9 +86,12 @@ export const id = {
   aiAttachTitle: 'Lampirkan file lokal (atau seret ke panel)',
   aiRemoveAttachmentTitle: 'Hapus lampiran',
   aiTrackChanges: 'Lacak perubahan',
-  aiTrackOnTitle: 'Lacak perubahan aktif: perubahan konten AI ditandai sebagai revisi (sisipan digarisbawahi, penghapusan dicoret); terima atau tolak di Tinjau',
-  aiTrackOffTitle: 'Lacak perubahan nonaktif: perubahan AI langsung diterapkan (masih dapat dikembalikan melalui snapshot versi)',
-  aiTurnLimit: '(Batas putaran pemanggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
+  aiTrackOnTitle:
+    'Lacak perubahan aktif: perubahan konten AI ditandai sebagai revisi (sisipan digarisbawahi, penghapusan dicoret); terima atau tolak di Tinjau',
+  aiTrackOffTitle:
+    'Lacak perubahan nonaktif: perubahan AI langsung diterapkan (masih dapat dikembalikan melalui snapshot versi)',
+  aiTurnLimit:
+    '(Batas putaran pemanggilan alat untuk permintaan ini tercapai; jawaban di atas berdasarkan langkah yang telah selesai dan mungkin tidak lengkap.)',
   aiStopped: '(Dihentikan)',
   aiNoReply: 'AI tidak mengembalikan konten.',
   aiTruncatedNote: '(Balasan terpotong karena batas panjang dan mungkin tidak lengkap.)',
@@ -93,9 +99,11 @@ export const id = {
   aiImageReadFail: '{name}: gagal dibaca',
   aiTooManyImages: 'Maksimal {max} gambar per pesan; kelebihannya diabaikan',
   aiUnknownError: 'Kesalahan tidak dikenal',
-  aiTimeoutError: 'Permintaan AI habis waktu: jaringan tidak merespons sehingga proses dihentikan. Periksa koneksi Anda lalu coba lagi',
+  aiTimeoutError:
+    'Permintaan AI habis waktu: jaringan tidak merespons sehingga proses dihentikan. Periksa koneksi Anda lalu coba lagi',
   aiOverloadedError: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
-  aiNetworkError: 'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
+  aiNetworkError:
+    'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
   aiCreditsExhausted: 'Kredit habis — isi ulang di halaman harga',
   aiSumReadAttachment: 'Baca lampiran',
   aiSumImageAttachment: 'Lampiran gambar {name}',
@@ -128,7 +136,8 @@ export const id = {
   aiSumSetFooter: 'Footer diperbarui',
   aiSumApplyCommands: 'Terapkan perintah pemformatan',
   aiCmdNone: 'Tidak ada blok yang cocok; dokumen tidak diubah.',
-  aiCmdNoneSkipped: 'Tidak ada blok yang dapat diedit; dokumen tidak diubah ({count} blok terlindungi dilewati — tabel/gambar tidak dapat diubah dengan perintah gaya).',
+  aiCmdNoneSkipped:
+    'Tidak ada blok yang dapat diedit; dokumen tidak diubah ({count} blok terlindungi dilewati — tabel/gambar tidak dapat diubah dengan perintah gaya).',
   aiCmdTextStyle: 'Gaya teks diperbarui pada {count} blok',
   aiCmdMatchedStyle: 'Gaya diterapkan pada {count} kecocokan di {blocks} blok',
   aiCmdParaStyle: 'Format paragraf diperbarui pada {count} blok',
@@ -145,7 +154,8 @@ export const id = {
   aiCmdSkipped: ' ({count} blok terlindungi dilewati)',
   aiChatOfficeLoginBtn: 'Masuk',
   aiNoModelErrorTitle: 'Belum ada model yang tersedia',
-  aiNoModelErrorBody: 'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai) untuk mulai.',
+  aiNoModelErrorBody:
+    'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChatOffice untuk model bawaan. Tanpa perlu akun.',
   aiOpenModelSettings: 'Buka Pengaturan Model',
   aiTabChat: 'Obrolan',
   aiTabAssistant: 'Asisten',
@@ -161,4 +171,15 @@ export const id = {
   aiDockRestore: 'Pulihkan panel',
   aiSumGenerateSvg: 'Hasilkan ilustrasi SVG',
   aiSumInsertedSvg: 'Ilustrasi SVG disisipkan',
+  aiAssistantCommon: 'Aksi cepat',
+  aiAssistantSearch: 'Cari asisten…',
+  aiAssistantBack: 'Kembali ke grup',
+  aiAssistantRecent: 'Baru digunakan',
+  aiAssistantCount: '{count} asisten',
+  aiAssistantNoMatch: 'Tidak ada asisten yang cocok',
+  aiAssistantNeedSelection: 'Pilih teks di dokumen terlebih dahulu',
+  aiAssistantLoading: 'Memuat asisten…',
+  aiAssistantScopeDoc: 'Seluruh dokumen',
+  aiAssistantScopeSelection: 'Pilihan',
+  aiAssistantAll: 'Semua grup',
 }

@@ -14,9 +14,11 @@ export const pt = {
   aiSummarizePrompt: 'Resuma o conteúdo principal e os pontos-chave deste documento',
   aiPolishBtn: 'Aprimorar IA',
   aiPolishPrompt: 'Aprimore todo o documento para deixar o texto mais claro e fluente',
-  aiPolishSelectionPrompt: 'Aprimore o conteúdo selecionado para deixar o texto mais claro e fluente',
+  aiPolishSelectionPrompt:
+    'Aprimore o conteúdo selecionado para deixar o texto mais claro e fluente',
   aiScopeSelection: 'Selecionado: {words} palavras',
-  aiScopeSelectionTip: 'Instruções de reescrita aplicam-se por padrão à seleção; clique para pré-visualizar',
+  aiScopeSelectionTip:
+    'Instruções de reescrita aplicam-se por padrão à seleção; clique para pré-visualizar',
   aiScopeClearTitle: 'Remover o escopo da seleção',
   aiAskBtn: 'Perguntar à IA',
   aiAskTitle: 'Pedir uma alteração na seleção',
@@ -36,7 +38,8 @@ export const pt = {
   aiChipChartTitle: 'Alterar o título do gráfico',
   aiChipTableEdit: 'Ajustar linhas/colunas',
   aiQueueTitle: 'Alterações na fila',
-  aiQueueHint: 'Clique numa linha para localizar o trecho; o envio aplica todas as alterações numa única solicitação',
+  aiQueueHint:
+    'Clique numa linha para localizar o trecho; o envio aplica todas as alterações numa única solicitação',
   aiQueueSend: 'Enviar {count} alterações',
   aiQueueDiscard: 'Limpar',
   aiQueueDiscardConfirm: 'Limpar as {count} alterações na fila?',
@@ -49,7 +52,8 @@ export const pt = {
   aiSumReplyComment: 'Resposta ao comentário',
   aiSumResolveComment: 'Comentário resolvido',
   aiTidyBtn: 'Formatação IA',
-  aiTidyPrompt: 'Organize a formatação de todo o documento — por exemplo, corrija os níveis de título, uniformize as listas, remova negritos e itálicos desnecessários e padronize o recuo dos parágrafos. Ajuste apenas a formatação, sem alterar o texto',
+  aiTidyPrompt:
+    'Organize a formatação de todo o documento — por exemplo, corrija os níveis de título, uniformize as listas, remova negritos e itálicos desnecessários e padronize o recuo dos parágrafos. Ajuste apenas a formatação, sem alterar o texto',
   aiSwitchModelTitle: 'Trocar modelo de IA',
   aiNewChatTitle: 'Nova conversa',
   aiCollapseTitle: 'Recolher painel',
@@ -83,19 +87,26 @@ export const pt = {
   aiAttachTitle: 'Anexar arquivos locais (ou arraste-os para o painel)',
   aiRemoveAttachmentTitle: 'Remover anexo',
   aiTrackChanges: 'Controlar alterações',
-  aiTrackOnTitle: 'Controle de alterações ativado: as edições de conteúdo da IA são marcadas como revisões (inserções sublinhadas, exclusões tachadas); aceite ou rejeite em Revisão',
-  aiTrackOffTitle: 'Controle de alterações desativado: as edições da IA são aplicadas imediatamente (ainda é possível reverter pelos instantâneos de versão)',
-  aiTurnLimit: '(Limite de chamadas de ferramentas desta solicitação atingido; a resposta acima reflete as etapas concluídas até agora e pode estar incompleta.)',
+  aiTrackOnTitle:
+    'Controle de alterações ativado: as edições de conteúdo da IA são marcadas como revisões (inserções sublinhadas, exclusões tachadas); aceite ou rejeite em Revisão',
+  aiTrackOffTitle:
+    'Controle de alterações desativado: as edições da IA são aplicadas imediatamente (ainda é possível reverter pelos instantâneos de versão)',
+  aiTurnLimit:
+    '(Limite de chamadas de ferramentas desta solicitação atingido; a resposta acima reflete as etapas concluídas até agora e pode estar incompleta.)',
   aiStopped: '(Interrompido)',
   aiNoReply: 'A IA não retornou conteúdo.',
   aiTruncatedNote: '(A resposta foi cortada pelo limite de comprimento e pode estar incompleta.)',
-  aiImagesSendFailed: 'Não foi possível ler as imagens anexadas; esta mensagem foi enviada sem imagens',
+  aiImagesSendFailed:
+    'Não foi possível ler as imagens anexadas; esta mensagem foi enviada sem imagens',
   aiImageReadFail: '{name}: falha na leitura',
   aiTooManyImages: 'No máximo {max} imagens por mensagem; as excedentes foram ignoradas',
   aiUnknownError: 'Erro desconhecido',
-  aiTimeoutError: 'A solicitação de IA expirou: sem resposta da rede, a execução foi interrompida. Verifique sua conexão e tente novamente',
-  aiOverloadedError: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
-  aiNetworkError: 'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
+  aiTimeoutError:
+    'A solicitação de IA expirou: sem resposta da rede, a execução foi interrompida. Verifique sua conexão e tente novamente',
+  aiOverloadedError:
+    'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
+  aiNetworkError:
+    'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
   aiCreditsExhausted: 'Créditos esgotados — recarregue na página de preços',
   aiSumReadAttachment: 'Ler anexo',
   aiSumImageAttachment: 'Imagem anexada {name}',
@@ -128,7 +139,8 @@ export const pt = {
   aiSumSetFooter: 'Rodapé atualizado',
   aiSumApplyCommands: 'Aplicar comandos de formatação',
   aiCmdNone: 'Nenhum bloco correspondente; o documento não foi alterado.',
-  aiCmdNoneSkipped: 'Nenhum bloco editável; o documento não foi alterado ({count} blocos protegidos ignorados — tabelas/imagens não podem ser alteradas por comandos de estilo).',
+  aiCmdNoneSkipped:
+    'Nenhum bloco editável; o documento não foi alterado ({count} blocos protegidos ignorados — tabelas/imagens não podem ser alteradas por comandos de estilo).',
   aiCmdTextStyle: 'Estilo de texto atualizado em {count} bloco(s)',
   aiCmdMatchedStyle: 'Estilo aplicado a {count} ocorrência(s) em {blocks} bloco(s)',
   aiCmdParaStyle: 'Formato de parágrafo atualizado em {count} bloco(s)',
@@ -145,7 +157,8 @@ export const pt = {
   aiCmdSkipped: ' ({count} bloco(s) protegido(s) ignorado(s))',
   aiChatOfficeLoginBtn: 'Entrar',
   aiNoModelErrorTitle: 'Ainda não há modelo disponível',
-  aiNoModelErrorBody: 'Configure seu próprio provedor (sua chave, pronto para usar) para começar.',
+  aiNoModelErrorBody:
+    'Configure seu próprio provedor (sua chave, pronto para usar) ou entre no ChatOffice para os modelos padrão. Não é necessário conta.',
   aiOpenModelSettings: 'Abrir configurações de modelos',
   aiTabChat: 'Bate-papo',
   aiTabAssistant: 'Assistente',
@@ -161,4 +174,15 @@ export const pt = {
   aiDockRestore: 'Restaurar painel',
   aiSumGenerateSvg: 'Gerar ilustração SVG',
   aiSumInsertedSvg: 'Ilustração SVG inserida',
+  aiAssistantCommon: 'Ações rápidas',
+  aiAssistantSearch: 'Pesquisar assistentes…',
+  aiAssistantBack: 'Voltar aos grupos',
+  aiAssistantRecent: 'Usados recentemente',
+  aiAssistantCount: '{count} assistentes',
+  aiAssistantNoMatch: 'Nenhum assistente correspondente',
+  aiAssistantNeedSelection: 'Selecione primeiro o texto no documento',
+  aiAssistantLoading: 'Carregando assistentes…',
+  aiAssistantScopeDoc: 'Documento inteiro',
+  aiAssistantScopeSelection: 'Seleção',
+  aiAssistantAll: 'Todos os grupos',
 }

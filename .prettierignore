@@ -22,3 +22,5 @@ apps/slides/src/renderer/ai/prompts/*.md
 
 # In-page extractor fragments: concatenated into one function body, kept verbatim.
 packages/html2docx/src/browser/
+# Generated assistant packs (tools/gen-docs-assistants.mjs) — data only.
+apps/docs/src/renderer/ai/assistants/packs/

@@ -36,7 +36,8 @@ export const ko = {
   aiChipChartTitle: '차트 제목 변경',
   aiChipTableEdit: '행/열 조정',
   aiQueueTitle: '보낼 수정 목록',
-  aiQueueHint: '항목을 클릭하면 본문 위치로 이동합니다. 보내면 모든 수정이 한 번의 요청으로 적용됩니다',
+  aiQueueHint:
+    '항목을 클릭하면 본문 위치로 이동합니다. 보내면 모든 수정이 한 번의 요청으로 적용됩니다',
   aiQueueSend: '수정 {count}건 보내기',
   aiQueueDiscard: '비우기',
   aiQueueDiscardConfirm: '대기 중인 수정 {count}건을 비울까요?',
@@ -49,7 +50,8 @@ export const ko = {
   aiSumReplyComment: '메모에 회신',
   aiSumResolveComment: '메모 해결',
   aiTidyBtn: 'AI 서식 정리',
-  aiTidyPrompt: '문서 전체 서식을 정리해 주세요. 예를 들어 제목 수준 수정, 목록 형식 통일, 불필요한 굵게/기울임 제거, 본문 단락 들여쓰기 정리 등. 서식만 조정하고 본문 텍스트는 절대 변경하지 마세요',
+  aiTidyPrompt:
+    '문서 전체 서식을 정리해 주세요. 예를 들어 제목 수준 수정, 목록 형식 통일, 불필요한 굵게/기울임 제거, 본문 단락 들여쓰기 정리 등. 서식만 조정하고 본문 텍스트는 절대 변경하지 마세요',
   aiSwitchModelTitle: 'AI 모델 전환',
   aiNewChatTitle: '새 대화',
   aiCollapseTitle: '패널 접기',
@@ -83,9 +85,11 @@ export const ko = {
   aiAttachTitle: '로컬 파일을 첨부 (패널로 끌어다 놓아도 됩니다)',
   aiRemoveAttachmentTitle: '첨부 파일 제거',
   aiTrackChanges: '변경 내용 추적',
-  aiTrackOnTitle: '변경 내용 추적 켜짐: AI의 내용 변경은 변경 내용으로 표시됩니다(삽입은 밑줄, 삭제는 취소선). 검토에서 적용하거나 거부하세요',
+  aiTrackOnTitle:
+    '변경 내용 추적 켜짐: AI의 내용 변경은 변경 내용으로 표시됩니다(삽입은 밑줄, 삭제는 취소선). 검토에서 적용하거나 거부하세요',
   aiTrackOffTitle: '변경 내용 추적 꺼짐: AI 변경 사항이 바로 적용됩니다(버전 스냅샷으로 롤백 가능)',
-  aiTurnLimit: '(요청당 도구 호출 한도에 도달하여, 지금까지 완료한 내용을 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
+  aiTurnLimit:
+    '(요청당 도구 호출 한도에 도달하여, 지금까지 완료한 내용을 기반으로 한 답변입니다. 불완전할 수 있습니다.)',
   aiStopped: '(중지됨)',
   aiNoReply: 'AI가 응답을 반환하지 않았습니다.',
   aiTruncatedNote: '(응답이 길이 제한으로 잘려 내용이 불완전할 수 있습니다.)',
@@ -93,9 +97,11 @@ export const ko = {
   aiImageReadFail: '{name}: 읽기 실패',
   aiTooManyImages: '이미지는 메시지당 최대 {max}장까지 보낼 수 있으며, 초과분은 무시되었습니다',
   aiUnknownError: '알 수 없는 오류',
-  aiTimeoutError: 'AI 요청 시간 초과: 네트워크 응답이 없어 중단되었습니다. 연결을 확인한 후 다시 시도해 주세요',
+  aiTimeoutError:
+    'AI 요청 시간 초과: 네트워크 응답이 없어 중단되었습니다. 연결을 확인한 후 다시 시도해 주세요',
   aiOverloadedError: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
-  aiNetworkError: '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
+  aiNetworkError:
+    '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
   aiCreditsExhausted: '크레딧이 부족합니다. 충전 페이지에서 충전하세요',
   aiSumReadAttachment: '첨부 파일 읽기',
   aiSumImageAttachment: '이미지 첨부 {name}',
@@ -128,7 +134,8 @@ export const ko = {
   aiSumSetFooter: '바닥글 업데이트',
   aiSumApplyCommands: '서식 명령 실행',
   aiCmdNone: '수정할 블록이 없어 문서가 변경되지 않았습니다.',
-  aiCmdNoneSkipped: '수정 가능한 블록이 없어 문서가 변경되지 않았습니다(보호된 블록 {count}개 건너뜀. 표/그림 등은 스타일 명령으로 수정할 수 없습니다).',
+  aiCmdNoneSkipped:
+    '수정 가능한 블록이 없어 문서가 변경되지 않았습니다(보호된 블록 {count}개 건너뜀. 표/그림 등은 스타일 명령으로 수정할 수 없습니다).',
   aiCmdTextStyle: '블록 {count}개의 텍스트 스타일을 업데이트했습니다',
   aiCmdMatchedStyle: '일치 텍스트 {count}곳의 스타일을 업데이트했습니다({blocks}개 블록)',
   aiCmdParaStyle: '블록 {count}개의 단락 서식을 업데이트했습니다',
@@ -145,7 +152,8 @@ export const ko = {
   aiCmdSkipped: ' (보호된 블록 {count}개 건너뜀)',
   aiChatOfficeLoginBtn: '로그인',
   aiNoModelErrorTitle: '아직 사용할 수 있는 모델이 없습니다',
-  aiNoModelErrorBody: '자체 공급자를 구성하면(키만 있으면 바로 사용) 바로 사용할 수 있습니다.',
+  aiNoModelErrorBody:
+    '자체 공급자를 구성하거나(키만 있으면 바로 사용) ChatOffice에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.',
   aiOpenModelSettings: '모델 설정 열기',
   aiTabChat: '채팅',
   aiTabAssistant: '어시스턴트',
@@ -161,4 +169,15 @@ export const ko = {
   aiDockRestore: '패널 복원',
   aiSumGenerateSvg: 'SVG 일러스트 생성',
   aiSumInsertedSvg: 'SVG 일러스트를 삽입했습니다',
+  aiAssistantCommon: '자주 사용',
+  aiAssistantSearch: '어시스턴트 검색…',
+  aiAssistantBack: '그룹으로 돌아가기',
+  aiAssistantRecent: '최근 사용',
+  aiAssistantCount: '어시스턴트 {count}개',
+  aiAssistantNoMatch: '일치하는 어시스턴트가 없습니다',
+  aiAssistantNeedSelection: '문서에서 텍스트를 먼저 선택하세요',
+  aiAssistantLoading: '어시스턴트 불러오는 중…',
+  aiAssistantScopeDoc: '전체 문서',
+  aiAssistantScopeSelection: '선택 영역',
+  aiAssistantAll: '모든 그룹',
 }
