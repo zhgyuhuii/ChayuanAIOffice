@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>分列16_TextToColumns_EtToolbox_AdvanceSplit</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line" d="M13 11.5H2C1.72386 11.5 1.5 11.7239 1.5 12V14C1.5 14.2761 1.72386 14.5 2 14.5H13C13.2761 14.5 13.5 14.2761 13.5 14V12C13.5 11.7239 13.2761 11.5 13 11.5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M5.5 11.5V14.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M9.5 11.5V14.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_4" d="M1.5 1.5H3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M6.5 1.5H8.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M11.5 1.5H13.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7" d="M1.5 4.5H3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_8" d="M6.5 4.5H8.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_9" d="M11.5 4.5H13.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_10" d="M7.5 6.5V8.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_11" d="M5.5 7.5L7.49293 9.49293C7.49683 9.49683 7.50317 9.49683 7.50707 9.49293L9.5 7.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>参考线24_GridGuides</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" opacity="0.4" d="M15 14.5H16" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" opacity="0.4" d="M17 14.5H19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" opacity="0.4" d="M13 14.5H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" opacity="0.4" d="M10 14.5H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" opacity="0.4" d="M5 14.5H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" opacity="0.4" d="M2.5 14.5H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" opacity="0.4" d="M14.5 5V7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" opacity="0.4" d="M14.5 2.5V4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" opacity="0.4" d="M14.5 10V12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_10" opacity="0.4" d="M14.5 13V14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_11" opacity="0.4" d="M14.5 15V16" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_12" opacity="0.4" d="M14.5 17V19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_13" d="M20 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V20C2.5 20.2761 2.72386 20.5 3 20.5H20C20.2761 20.5 20.5 20.2761 20.5 20V3C20.5 2.72386 20.2761 2.5 20 2.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_14" d="M2.5 8.5H20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_15" d="M8.5 2.5V20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

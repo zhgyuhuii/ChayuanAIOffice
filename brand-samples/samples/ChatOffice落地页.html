@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatOffice 茶园办公 — AI 原生办公套件</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --accent: #ff862f;
+    --text: #1e293b;
+    --muted: #64748b;
+    --hair: #e2e8f0;
+    --tint: #eef2ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif; color: var(--text); background: #fff; line-height: 1.6; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  header { position: sticky; top: 0; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--hair); z-index: 10; }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-size: 20px; font-weight: 700; color: var(--primary-dark); letter-spacing: .5px; }
+  .logo span { color: var(--accent); }
+  .nav a.cta { background: var(--primary); color: #fff; padding: 9px 20px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .nav a.cta:hover { background: var(--primary-dark); }
+
+  .hero { background: linear-gradient(135deg, #10153a 0%, #4338ca 58%, #6d28d9 100%); color: #fff; padding: 96px 0 104px; }
+  .hero .kicker { font-size: 14px; letter-spacing: 4px; color: #c7d2fe; font-weight: 700; margin-bottom: 18px; }
+  .hero h1 { font-size: 52px; line-height: 1.18; font-weight: 800; max-width: 760px; }
+  .hero p { margin-top: 22px; font-size: 19px; color: #d8dcf8; max-width: 640px; }
+  .hero .actions { margin-top: 38px; display: flex; gap: 16px; }
+  .btn { padding: 13px 28px; border-radius: 12px; font-size: 16px; font-weight: 600; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.ghost { border: 1.5px solid rgba(255,255,255,.55); color: #fff; }
+  .trio { margin-top: 52px; display: flex; gap: 14px; }
+  .trio .chip { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #fff; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); }
+
+  .band { background: #f8f9fe; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 34px 0; text-align: center; }
+  .stats b { display: block; font-size: 30px; color: var(--primary-dark); }
+  .stats span { font-size: 13px; color: var(--muted); }
+
+  section { padding: 84px 0; }
+  h2 { font-size: 32px; font-weight: 800; }
+  .sub { color: var(--muted); margin-top: 10px; font-size: 16px; max-width: 620px; }
+  .grid { margin-top: 44px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card { background: #fff; border: 1px solid var(--hair); border-radius: 16px; padding: 26px; box-shadow: 0 6px 18px rgba(30,27,75,.06); }
+  .card .badge { width: 46px; height: 46px; border-radius: 12px; background: var(--tint); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+  .card h3 { font-size: 18px; margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--muted); }
+
+  .forms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
+  .form-card { border-radius: 16px; padding: 28px; background: linear-gradient(180deg, #fbfbfe, #f1f3fd); border: 1px solid var(--hair); }
+  .form-card h3 { font-size: 19px; }
+  .form-card em { display: block; font-style: normal; color: var(--primary); font-size: 13px; font-weight: 700; margin: 6px 0 12px; }
+  .form-card li { font-size: 14px; color: var(--muted); margin: 7px 0 7px 18px; }
+
+  footer { background: #141a3c; color: #b7bee4; padding: 46px 0; font-size: 14px; }
+  footer .cols { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  footer b { color: #fff; }
+  @media (max-width: 860px) {
+    .hero h1 { font-size: 36px; }
+    .grid, .forms, .stats { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .grid, .forms { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">ChatOffice <span>茶园办公</span></div>
+    <a class="cta" href="#download">免费开始</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">AI NATIVE OFFICE SUITE</div>
+    <h1>把时间花在内容上，<br>而不是软件上。</h1>
+    <p>文档、表格、演示、PDF、Markdown，五款编辑器一个工作台；AI 对话直达成稿，与 WPS / Office 双向无损兼容。</p>
+    <div class="actions">
+      <a class="btn primary" href="#download">立即下载</a>
+      <a class="btn ghost" href="#features">了解能力</a>
+    </div>
+    <div class="trio">
+      <div class="chip">文</div>
+      <div class="chip">表</div>
+      <div class="chip">演</div>
+    </div>
+  </div>
+</div>
+
+<div class="band">
+  <div class="wrap stats">
+    <div><b>5</b><span>一体编辑器</span></div>
+    <div><b>400+</b><span>表格函数</span></div>
+    <div><b>36 类</b><span>演示切换动画</span></div>
+    <div><b>3 端</b><span>桌面 · Web · Docker</span></div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>一套套件，六项看家本领</h2>
+    <p class="sub">编辑器为体、AI 为魂、兼容为界 —— 每一项都为真实办公场景打磨。</p>
+    <div class="grid">
+      <div class="card"><div class="badge">文</div><h3>文档编辑器</h3><p>所见即所得排版，目录、题注、页眉页脚一步到位，docx 双向保真。</p></div>
+      <div class="card"><div class="badge">表</div><h3>表格编辑器</h3><p>400+ 函数与条件格式，xlsx 往返不丢样，数据条实时预览。</p></div>
+      <div class="card"><div class="badge">演</div><h3>演示编辑器</h3><p>母版双向保留，36 类切换动画，一句话生成整组幻灯片。</p></div>
+      <div class="card"><div class="badge">P</div><h3>PDF 工具箱</h3><p>高亮、手写、签名，页面合并拆分拖拽即排，OCR 在路上。</p></div>
+      <div class="card"><div class="badge">M</div><h3>Markdown 编辑器</h3><p>严格 GFM 方言，源码与预览分栏同步，mermaid 图表原生渲染。</p></div>
+      <div class="card"><div class="badge">AI</div><h3>AI 生产矩阵</h3><p>首页对话、编辑器助手、一键生成管线三层待命，本地模型可接入。</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#f8f9fe; border-top:1px solid var(--hair); border-bottom:1px solid var(--hair);">
+  <div class="wrap">
+    <h2>三端一体，数据随行</h2>
+    <p class="sub">同一保存链路，本地与云端双通道，行为一致、无感切换。</p>
+    <div class="forms">
+      <div class="form-card"><h3>桌面端</h3><em>macOS · Windows · Linux</em><li>安装即用，离线全功能</li><li>多标签 DockShell 工作台</li></div>
+      <div class="form-card"><h3>Web 端</h3><em>浏览器直达</em><li>零安装，协作即开</li><li>与桌面端同一渲染内核</li></div>
+      <div class="form-card"><h3>Docker 私有部署</h3><em>组织内网自足</em><li>一条 compose 命令拉起</li><li>数据与索引完全本地</li></div>
+    </div>
+  </div>
+</section>
+
+<footer id="download">
+  <div class="wrap cols">
+    <div><b>ChatOffice 茶园办公</b><br>AI 办公，茶园同行。<br>官网 chatoffice.cn · 团队邮箱 hello@chatoffice.cn</div>
+    <div>V1.0 · 2026 年 9 月<br>桌面端 / Web 端 / Docker 三形态下载</div>
+  </div>
+</footer>
+
+</body>
+</html>

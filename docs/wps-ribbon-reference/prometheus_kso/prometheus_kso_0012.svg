@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g fill-rule="evenodd" transform="translate(19 5)">
+    <path fill-rule="nonzero" d="M5.27,33.706 C2.754,33.4 0.782,31.258 0.782,28.64 C0.782,26.022 2.754,23.88 5.27,23.574 L5.27,20.684 C5.27,14.054 8.432,13 10.812,13 C11.186,13 11.492,13.034 11.764,13.102 L11.662,14.122 C11.424,14.054 11.186,14.02 10.812,14.02 C9.248,14.02 6.494,14.326 6.494,20.582 L6.494,23.574 C9.01,23.88 10.982,26.022 10.982,28.64 C10.982,31.258 9.01,33.4 6.494,33.706 L6.494,36.596 C6.494,43.226 3.332,44.28 0.952,44.28 C0.578,44.28 0.272,44.246 5.32907052e-15,44.178 L0.102,43.158 C0.34,43.226 0.578,43.26 0.952,43.26 C2.516,43.26 5.27,42.954 5.27,36.698 L5.27,33.706 Z M5.27,24.458 C3.23,24.764 1.666,26.532 1.666,28.64 C1.666,30.748 3.23,32.516 5.27,32.822 L5.27,24.458 Z M6.494,32.822 C8.534,32.516 10.098,30.748 10.098,28.64 C10.098,26.532 8.534,24.764 6.494,24.458 L6.494,32.822 Z"/>
+    <g transform="translate(17 25)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+    <g transform="translate(0 45)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+    <g transform="translate(6)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>对齐网格16_snap_to_grid</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 2388" d="M5 2.5H13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2389" d="M1.5 12.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2390" d="M1.5 7.5H13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2391" d="M2.5 5V13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2392" d="M7.5 1.5V13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2393" d="M12.5 1.5V9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2399" d="M12.5 9V11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2400" d="M2.5 4V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2396" d="M4 2.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2398" d="M9 12.5H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 2394" d="M2.5 1.5V2.49C2.5 2.49552 2.49552 2.5 2.49 2.5H1.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2395" d="M12.5 13.5V12.51C12.5 12.5045 12.5045 12.5 12.51 12.5H13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_headerfooter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxWpsHeaderFooterPageNumCommand customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbersHF" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KxWpsHeaderFooterPageNumCommandOfficialVersion controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbersHFOfficialVersion" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KProxyCommand customTip="InsertHeaderFooterGroup" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dialogHint="1" entryPos="dropmenu-group" height="-1" icon="doc_header_footer_page_number_kd" id="InsertOnlineHeaderFooter" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="25" pluginName="konlineheaderfooter" targetModule="konlineheaderfooter" text="@Docer HeaderFooterGroup" waitingType="group_dp" width="380"/>
+		<KProxyCommand customTip="InsertHeader" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dialogHint="1" entryPos="dropmenu-header" height="-1" icon="doc_header_kd" id="InsertOnlineHeader" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="57" pluginName="konlineheaderfooter" targetModule="konlineheaderfooter" text="@Docer Header" width="380"/>
+		<KProxyCommand customTip="InsertFooter" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dialogHint="1" entryPos="dropmenu-footer" height="-1" icon="doc_footer_kd" id="InsertOnlineFooter" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="57" pluginName="konlineheaderfooter" targetModule="konlineheaderfooter" text="@Docer Footer" width="380"/>
+		<KDocerProxyCommand customTip="InsertHeaderFooterGroup" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dependPlugins="kwebonlinecover" dialogHint="1" entryPos="dropmenu-group" height="-1" icon="doc_header_footer_page_number_kd" id="InsertOnlineHeaderFooter_personal" idKey="WpsInsertHeaderFooataerPer" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="25" skeletonAlias="kwebonlinecover" targetModule="kdocerjsapi20" text="@Docer HeaderFooterGroup" waitingType="group_dp" width="380"/>
+		<KDocerProxyCommand customTip="InsertHeader" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dependPlugins="kwebonlinecover" dialogHint="1" entryPos="dropmenu-header" height="-1" icon="doc_header_kd" id="InsertOnlineHeader_personal" idKey="WpsInsertHeader" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="57" skeletonAlias="kwebonlinecover" targetModule="kdocerjsapi20" text="@Docer Header" width="380"/>
+		<KDocerProxyCommand customTip="InsertFooter" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dependPlugins="kwebonlinecover" dialogHint="1" entryPos="dropmenu-footer" height="-1" icon="doc_footer_kd" id="InsertOnlineFooter_personal" idKey="WpsInsertFooter" isCefPopupWithProgressBar="true" isMenuButton="true" isTriggerable="false" localMenuHeight="57" skeletonAlias="kwebonlinecover" targetModule="kdocerjsapi20" text="@Docer Footer" width="380"/>
+		<KDocerProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dependPlugins="kwebonlinecover" entryPos="dropmenu-pagenum" height="-1" id="HeaderFooterOnlinePageNum_personal" idKey="WpsInsertOnlinePageNum" localMenuHeight="354" skeletonAlias="kwebonlinecover" targetModule="kdocerjsapi20" text="@page number recommend style" waitingType="pageNum_dp" width="380"/>
+		<KxWpsDeletePageNumCommand hotKey="R" icon="doc_page_number_delete_kd" id="DeletePageNumTab" rbHotKey="R" text="@Delete Page Num"/>
+		<KxWpsHeaderEditCommand hotKey="E" icon="edit_header_kd" id="EditHeaderTab" rbHotKey="E" text="@Edit Header"/>
+		<KxWpsHeaderDeleteCommand icon="delete_header_kd" id="DeleteHeaderTab" text="@Delete Header"/>
+		<KxWpsFooterEditCommand hotKey="E" icon="edit_footer_kd" id="EditFooterTab" rbHotKey="E" text="@Edit Footer"/>
+		<KxWpsFooterDeleteCommand icon="delete_footer_kd" id="DeleteFooterTab" text="@Delete Footer"/>
+		<KxWpsDeleteAllDocHeaderCommand icon="delete_header_batch_kd" id="DeleteAllDocHeaderTab" text="@Delete the header of the entire document"/>
+		<KxWpsDeleteAllDocFooterCommand icon="delete_footer_batch_kd" id="DeleteAllDocFooterTab" text="@Delete the footer of the entire document"/>
+		<KxWpsDeleteHeaderMenuCommand hotKey="R" icon="delete_header_kd" id="DeleteHeaderMenu" rbHotKey="R" text="@Delete Header">
+			<command idQ="DeleteHeaderTab"/>
+			<command idQ="DeleteAllDocHeaderTab"/>
+		</KxWpsDeleteHeaderMenuCommand>
+		<KxWpsDeleteFooterMenuCommand hotKey="R" icon="delete_footer_kd" id="DeleteFooterMenu" rbHotKey="R" text="@Delete Footer">
+			<command idQ="DeleteFooterTab"/>
+			<command idQ="DeleteAllDocFooterTab"/>
+		</KxWpsDeleteFooterMenuCommand>
+		<KxWpsDeleteHeaderFooterGroupCommand hotKey="R" icon="delete_header_footer_kd" id="DeleteHeaderFooterGroup" rbHotKey="R" text="@Delete Header Footer Group"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" customTip="PageNumber" icon="doc_page_number_kd" id="HeaderFooataer_InsertPageNumbers" idKey="WpsInsertHeaderFooataer" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbersHF" spaceHint="loose" text="@Page&#10;Number" triggerAble="true">
+			<KxSmartPageNumSettingsMenuItemCommand dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" customTip="PageNumber" icon="doc_page_number_kd" id="HeaderFooataer_InsertPageNumbers" idKey="WpsInsertHeaderFooataerPer" onlineCmd="HeaderFooterOnlinePageNum_personal" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbersHF" spaceHint="loose" text="@Page&#10;Number" triggerAble="true">
+			<KxSmartPageNumSettingsMenuItemCommand dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" customTip="PageNumber" icon="doc_page_number_kd" id="HeaderFooataer_InsertPageNumbersOfficialVersion" idKey="WideOfficialEntrance" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbersHFOfficialVersion" spaceHint="loose" text="@Page&#10;Number" triggerAble="true">
+			<KxSmartPageNumSettingsMenuItemCommand dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" controlType="4" customTip="InsertHeaderFooterGroup" dialogHint="1" icon="doc_header_footer_page_number_kd" id="InsertHeaderFooter" idKey="WpsInsertHeaderFooataerPer" onlineCmd="InsertOnlineHeaderFooter_personal" text="@HeaderFooterGroup" triggerAble="false">
+			<command idQ="DeleteHeaderFooterGroup"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxWpsHeaderFooterPageNumCommandOfficial customTip="PageNumber" galleryHeight="415" galleryWidth="518" icon="doc_page_number_kd" id="m_InsertPageNumbersOfficial" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number">
+			<KxSmartPageNumSettingsMenuItemCommand dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<KxSmartPageNumDeleteAllInOfficial hotKey="R" icon="DeleteAllPageNumberOfficial" id="SmartPageNumDeleteAllInOfficial" rbHotKey="R" text="@Delete All Page Number"/>
+		</KxWpsHeaderFooterPageNumCommandOfficial>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" controlType="4" customTip="InsertHeader" hotKey="U" icon="doc_header_kd" id="InsertHeader" idKey="WpsInsertHeader" onlineCmd="InsertOnlineHeader_personal" rbHotKey="U" text="@Header" triggerAble="false">
+			<command idQ="EditHeaderTab"/>
+			<command idQ="DeleteHeaderMenu"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxOnlineWpsHeaderFooterPageNumCommand canHideText="0" controlType="4" customTip="InsertFooter" hotKey="O" icon="doc_footer_kd" id="InsertFooter" idKey="WpsInsertFooter" onlineCmd="InsertOnlineFooter_personal" rbHotKey="O" text="@Footer" triggerAble="false">
+			<command idQ="EditFooterTab"/>
+			<command idQ="DeleteFooterMenu"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxPropComposeListCommand customTip="PageSetup" groupTip="HeaderFooterHeaderFooterGroup" icon="doc_header_footer_kd" id="RB_HeaderFooterTool" ksoCmd="PageSetup" needsinglerowmorebutton="true" rbFileMenuEmbed="1" tabIndex="2" text="@Header and Footer">
+			<command idQ="InsertHeader"/>
+			<command idQ="m_InsertPageNumbersOfficial"/>
+			<command idQ="InsertFooter"/>
+			<command idQ="HeaderFooataer_InsertPageNumbers" singlerowfold="1"/>
+			<command idQ="HeaderFooataer_InsertPageNumbersOfficialVersion"/>
+			<KxWpsShowHeaderLineCommand bLikePopuMenu="1" canHideText="0" customTip="HeaderLine" hotKey="W" icon="doc_header_line_kd" id="HeaderLine" rbHotKey="I" spaceHint="loose" text="@Show Header Line">
+				<KxWpsHeaderLineColorCommand hotKey="C" id="HeaderLineColorInHeaderFooterTab" qtspyName="HeaderLineColor" rbHotKey="C" text="@Header Line Color">
+					<KxWpsHeaderLineMoreColorCommand hotKey="M" id="MoreHeaderLineColor" qtspyName="MoreColors" rbHotKey="M" text="@More Colors"/>
+				</KxWpsHeaderLineColorCommand>
+			</KxWpsShowHeaderLineCommand>
+		</KxPropComposeListCommand>
+		<KxLegacyTriggerCommand id="PageNumberOnHeaderAndFooter" ksoCmd="PageNumberOnHeaderAndFooter" text="@- Page -"/>
+		<KxLegacyTriggerCommand id="PageNumerOfOnHeaderAndFooter" ksoCmd="PageNumerOfOnHeaderAndFooter" text="@Page X"/>
+		<KxLegacyTriggerCommand id="PageCountOnHeaderAndFooter" ksoCmd="PageCountOnHeaderAndFooter" text="@Total of Y Page"/>
+		<KxLegacyTriggerCommand id="PageOfCountOnHeaderAndFooter" ksoCmd="PageOfCountOnHeaderAndFooter" text="@Page X of Y"/>
+		<KxLegacyTriggerCommand aid="768" controlType="0" customTip="InsertDateTime" dialogHint="1" hotKey="T" icon="date_time_kd" id="InsertDateTime" idMso="DateAndTimeInsert" ksoCmd="InsertDateTime" rbHotKey="D" text="@Date and&#10;Time"/>
+		<KDocerPictureProxyCommand customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInHeaderFooterTab" idKey="CommonOnlineInsertResource" localMenuHeight="90" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetModule="kdocercore" text="@My Picture"/>
+		<KProxyCommand autoLoad="false" customTip="InsertOnlinePictureFromFile" delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="I" icon="pic_online_kd" id="ProxyInsertOnlinePictureFromFileInHeaderFooterTab" idKey="CommonInsertOnlinePicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlinePictureFromFileInHeaderFooterTab" targetModule="konlinepicture" text="@My Picture"/>
+		<KxListPicturesCommand customTip2="InsertPictureFromFile2" customTip="InsertPictureFromFile" detail="@Insert Picture" disableTrigger="1" icon="pic_kd" iconQat="pic_kd" id="m_rInsertPictureInHeaderFooter" idKey="InsertPictureInHeaderFooterTab" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<KxLegacyTriggerCommand controlType="0" detail="@Insert Picture" dialogHint="1" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="InsertPictureFromFile" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<command idKey="CommonOnlinePictureFromFile" idQ="InsertOnlinePictureFromFileInHeaderFooterTabUnpersonal"/>
+			<KxLegacyTriggerCommand detail="@From Scanner" dialogHint="1" hotKey="s" icon="insert_picture_from_scan_kd" id="InsertPictureFromScanInHeaderFooterTab" idKey="InsertScanImage" ksoCmd="InsertPictureFromScan" qtspyName="InsertPictureFromScan" rbHotKey="S" text="@From Scanner"/>
+			<command idQ="Photo2Pdf"/>
+			<command idQ="InsertOnlinePictureFromFileInHeaderFooterTab"/>
+		</KxListPicturesCommand>
+		<KxLegacyTriggerCommand aid="100048" customTip="InsertClipArt" detail="@Insert Clip Art" icon="docer_resource_img_kd" id="m_rInsertClipArt" idKey="ArmyFunction" ksoCmd="InsertClipArt" rbHotKey="F" text="@Clip Art"/>
+		<KxLegacyTriggerCommand aid="772" controlType="0" customTip="InsertField" dialogHint="1" hotKey="f" icon="field_kd" id="HeaderFooterInsertField" idMso="FieldInsert" ksoCmd="InsertField" rbHotKey="QF" text="@Fields"/>
+		<KListCommand controlType="0" groupTip="HeaderFooterInsertGroup" icon="insert_content_kd" id="RB_InsertHeaderFooter" idMso="HeaderFooterInsert" text="@Insert">
+			<KxSingleRowMergeGroupCommand customTip="HeaderFooterInsertGroup" icon="insert_content_kd" id="SingleRow_InsertHeaderFooter" text="@Insert"/>
+			<KListCommand customTip="InsertAutoText" icon="insert_auto_text_kd" id="AutoTextMenu" qtspyName="InsertAutoText" rbHotKey="A" singlerowmergegroup="SingleRow_InsertHeaderFooter" text="@AutoText">
+				<command idQ="PageNumberOnHeaderAndFooter"/>
+				<command idQ="PageNumerOfOnHeaderAndFooter"/>
+				<command idQ="PageCountOnHeaderAndFooter"/>
+				<command idQ="PageOfCountOnHeaderAndFooter"/>
+			</KListCommand>
+			<command idQ="InsertDateTime" singlerowmergegroup="SingleRow_InsertHeaderFooter"/>
+			<command idQ="m_rInsertPictureInHeaderFooter" singlerowmergegroup="SingleRow_InsertHeaderFooter"/>
+			<command idKey="ArmyFunction" idQ="m_rInsertClipArt"/>
+			<command idQ="HeaderFooterInsertField" singlerowmergegroup="SingleRow_InsertHeaderFooter"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="PreviousHeader" hotKey="p" icon="previous_header_kd" id="PreviousHeader" ksoCmd="PreviousHeader" rbHotKey="R" spaceHint="suitable" text="@Previous&#10;Header"/>
+		<KxLegacyTriggerCommand customTip="NextHeader" hotKey="n" icon="previous_next_header_kd" id="NextHeader" ksoCmd="NextHeader" rbHotKey="X" spaceHint="suitable" text="@Next&#10;Header"/>
+		<KxLegacyTriggerCommand customTip="LinktoPreviousHeader" hotKey="l" icon="link_to_previous_header_kd" id="LinktoPreviousHeader" ksoCmd="LinktoPreviousHeader" rbHotKey="K" text="@Link to&#10;Previous"/>
+		<KListCommand groupTip="HeaderFooterNavigationGroup" icon="doc_header_footer_switch_kd" id="RB_Navigate" text="@Navigation">
+			<KxLegacyTriggerCommand customTip="ShowHeaderOrFooter" icon="doc_header_footer_switch_kd" id="SwitchBetweenHeaderAndFooter" ksoCmd="ShowHeaderOrFooter" qtspyName="ShowHeaderOrFooter" rbHotKey="E" text="@Switch between&#10;Header and Footer"/>
+			<command idQ="PreviousHeader" singlerowfoldgroup="navigation_pair"/>
+			<command idQ="NextHeader" singlerowfoldgroup="navigation_pair"/>
+			<command idQ="LinktoPreviousHeader"/>
+		</KListCommand>
+		<KListCommand groupTip="HeaderFooterOptionGroup" icon="general_options_kd" id="RB_HeaderFooterOption" text="@Option">
+			<KxSingleRowMergeGroupCommand customTip="HeaderFooterOptionGroup" icon="general_options_kd" id="SingleRow_HeaderFooterOption" text="@Option"/>
+			<KxWpsBookFormatDlgTriggerCommand customTip="HeaderAndFooterSetting" icon="doc_header_footer_settings_kd" id="HeaderFooterOptions" rbHotKey="H" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text2="@Header and Footer&#10;Options" text="@Header and Footer Options"/>
+			<KxLegacyTriggerCommand customTip="InsertPTab" icon="insert_tab_kd" id="InsertPTab" ksoCmd="InsertPTab" rbHotKey="T" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text="@Insert Alignment Tab"/>
+			<KxWpsPageDifferCommand controlType="1" customTip="FirstPageIsDifferent" firstPageDiffer="true" hotKey="A" id="FirstPageIsDifferent" idMso="HeaderFooterDifferentFirstPageWord" qtspyName="HeaderFooterDifferentFirstPageWord" rbHotKey="A" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text="@Different First Page"/>
+			<KxWpsPageDifferCommand controlType="1" customTip="PageDiffOddEven" firstPageDiffer="false" id="PageDiffOddEven" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text="@Different odd and even"/>
+			<KxWpsHFLinkToPreviousCommand controlType="1" customTip="HeaderLinkToPrevious" id="HeaderLinkToPrevious" idMso="HeaderLinkToPrevious" linkedType="0" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text="@Link to Previous Header"/>
+			<KxWpsHFLinkToPreviousCommand controlType="1" customTip="FooterLinkToPrevious" id="FooterLinkToPrevious" idMso="FooterLinkToPrevious" isHeader="false" linkedType="0" singlerowmergegroup="SingleRow_HeaderFooterOption" spaceHint="suitable" text="@Link to Previous Footer"/>
+		</KListCommand>
+		<KxHeaderDistanceCommand buttonSymbols="UpDownArrows" controlType="7" customTip="HeaderDistance" embedHint="1" forceVisible="1" icon="doc_header_distance_kd" id="HeaderDistance" idMso="HeaderFooterPositionHeaderFromTop" ksoCmd="HeaderDistance" spaceHint="suitable" text="@Header Height"/>
+		<KxFooterDistanceCommand buttonSymbols="UpDownArrows" controlType="7" customTip="FooterDistance" embedHint="1" forceVisible="1" icon="doc_footer_distance_kd" id="FooterDistance" idMso="HeaderFooterPositionFooterFromBottom" ksoCmd="FooterDistance" spaceHint="suitable" text="@Footer Height"/>
+		<KListCommand groupTip="HeaderFooterPositionGroup" icon="doc_header_distance_kd" id="HeaderFooterDistance" text="@Position">
+			<KxSingleRowMergeGroupCommand customTip="HeaderFooterPositionGroup" icon="doc_header_distance_kd" id="SingleRow_HeaderFooterDistance" text="@Position"/>
+			<command idQ="HeaderDistance" singlerowmergegroup="SingleRow_HeaderFooterDistance"/>
+			<command idQ="FooterDistance" singlerowmergegroup="SingleRow_HeaderFooterDistance"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="CloseHeaderAndFooter" icon="close_window_kd" id="CloseHeaderAndFooter" ksoCmd="CloseHeaderAndFooter" needLogin="false" rbHotKey="C" text="@Close"/>
+		<KListCommand groupTip="HeaderFooterCloseGroup" id="RB_CloseHeaderFooter" rbFileMenuEmbed="1" text="@Close">
+			<command idQ="CloseHeaderAndFooter" singlerowpriority="100"/>
+		</KListCommand>
+		<KListCommand id="DetailedSettings_HFTools" text="@Settings">
+			<KListCommand customTip="DetailedSettings_HFTools" icon="detailed_settings_kd" id="DetailedSettingsList_HFTools" qtspyName="DetailedSettings" text="@Settings">
+				<KxLegacyTriggerCommand customTip="PageSetup" dialogHint="1" hotKey="P" id="PageSetup_HFTools" ksoCmd="PageSetup" qtspyName="PageSetup" rbFileMenuEmbed="1" tabIndex="2" text="@Page Setup"/>
+				<command idQ="FormatObject"/>
+			</KListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_HeaderFooter">
+			<command idQ="RB_HeaderFooterTool"/>
+			<separator/>
+			<command idQ="RB_InsertHeaderFooter"/>
+			<separator/>
+			<command idQ="RB_Navigate"/>
+			<separator/>
+			<command idQ="RB_HeaderFooterOption"/>
+			<separator/>
+			<command idQ="HeaderFooterDistance"/>
+			<separator/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_HFTools"/>
+			<separator/>
+			<command idQ="RB_CloseHeaderFooter"/>
+		</subcommand>
+	</subcommands>
+</shell>

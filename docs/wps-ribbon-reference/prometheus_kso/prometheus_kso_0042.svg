@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 64">
+  <g fill="none" fill-rule="evenodd">
+    <g fill="#000" transform="translate(59 15)">
+      <rect width="2" height="2"/>
+      <rect width="2" height="2" x="4"/>
+      <rect width="2" height="2" x="8"/>
+    </g>
+    <g fill="#000" transform="translate(59 51)">
+      <rect width="2" height="2"/>
+      <rect width="2" height="2" x="4"/>
+      <rect width="2" height="2" x="8"/>
+    </g>
+    <g fill="#000" transform="translate(89 28)">
+      <rect width="2" height="2" y="8" transform="rotate(-90 1 9)"/>
+      <rect width="2" height="2" y="4" transform="rotate(-90 1 5)"/>
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+    </g>
+    <g fill="#000" transform="translate(36 28)">
+      <rect width="2" height="2" y="8" transform="rotate(-90 1 9)"/>
+      <rect width="2" height="2" y="4" transform="rotate(-90 1 5)"/>
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+    </g>
+    <g fill="#000" transform="translate(60 29)">
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+      <rect width="2" height="2" x="3" y="3" transform="rotate(-90 4 4)"/>
+      <rect width="2" height="2" x="6" y="6" transform="rotate(-90 7 7)"/>
+    </g>
+    <path fill="#000" fill-rule="nonzero" d="M37,20 L37,19 L38,19 L38,20 L37,20 Z M33,13 L34,13 L34,14 L33,14 L33,13 Z M41,13 L42,13 L42,14 L41,14 L41,13 Z M35,20 L35,19 L36,19 L36,20 L35,20 Z M33,11 L34,11 L34,12 L33,12 L33,11 Z M41,11 L42,11 L42,12 L41,12 L41,11 Z M35,11 L36,11 L36,12 L35,12 L35,11 Z M37,11 L38,11 L38,12 L37,12 L37,11 Z M39,11 L40,11 L40,12 L39,12 L39,11 Z M33,20 L33,19 L34,19 L34,20 L33,20 Z M39,20 L39,19 L40,19 L40,20 L39,20 Z M33,15 L34,15 L34,16 L33,16 L33,15 Z M41,15 L42,15 L42,16 L41,16 L41,15 Z M41,20 L41,19 L42,19 L42,20 L41,20 Z M33,17 L34,17 L34,18 L33,18 L33,17 Z M41,17 L42,17 L42,18 L41,18 L41,17 Z" transform="matrix(1 0 0 -1 0 31)"/>
+    <path fill="#000" fill-rule="nonzero" d="M37,56 L37,55 L38,55 L38,56 L37,56 Z M33,49 L34,49 L34,50 L33,50 L33,49 Z M41,49 L42,49 L42,50 L41,50 L41,49 Z M35,56 L35,55 L36,55 L36,56 L35,56 Z M33,47 L34,47 L34,48 L33,48 L33,47 Z M41,47 L42,47 L42,48 L41,48 L41,47 Z M35,47 L36,47 L36,48 L35,48 L35,47 Z M37,47 L38,47 L38,48 L37,48 L37,47 Z M39,47 L40,47 L40,48 L39,48 L39,47 Z M33,56 L33,55 L34,55 L34,56 L33,56 Z M39,56 L39,55 L40,55 L40,56 L39,56 Z M33,51 L34,51 L34,52 L33,52 L33,51 Z M41,51 L42,51 L42,52 L41,52 L41,51 Z M41,56 L41,55 L42,55 L42,56 L41,56 Z M33,53 L34,53 L34,54 L33,54 L33,53 Z M41,53 L42,53 L42,54 L41,54 L41,53 Z" transform="matrix(1 0 0 -1 0 103)"/>
+    <path fill="#000" fill-rule="nonzero" d="M90,20 L90,19 L91,19 L91,20 L90,20 Z M86,13 L87,13 L87,14 L86,14 L86,13 Z M94,13 L95,13 L95,14 L94,14 L94,13 Z M88,20 L88,19 L89,19 L89,20 L88,20 Z M86,11 L87,11 L87,12 L86,12 L86,11 Z M94,11 L95,11 L95,12 L94,12 L94,11 Z M88,11 L89,11 L89,12 L88,12 L88,11 Z M90,11 L91,11 L91,12 L90,12 L90,11 Z M92,11 L93,11 L93,12 L92,12 L92,11 Z M86,20 L86,19 L87,19 L87,20 L86,20 Z M92,20 L92,19 L93,19 L93,20 L92,20 Z M86,15 L87,15 L87,16 L86,16 L86,15 Z M94,15 L95,15 L95,16 L94,16 L94,15 Z M94,20 L94,19 L95,19 L95,20 L94,20 Z M86,17 L87,17 L87,18 L86,18 L86,17 Z M94,17 L95,17 L95,18 L94,18 L94,17 Z" transform="matrix(1 0 0 -1 0 31)"/>
+    <path fill="#000" fill-rule="nonzero" d="M90,56 L90,55 L91,55 L91,56 L90,56 Z M86,49 L87,49 L87,50 L86,50 L86,49 Z M94,49 L95,49 L95,50 L94,50 L94,49 Z M88,56 L88,55 L89,55 L89,56 L88,56 Z M86,47 L87,47 L87,48 L86,48 L86,47 Z M94,47 L95,47 L95,48 L94,48 L94,47 Z M88,47 L89,47 L89,48 L88,48 L88,47 Z M90,47 L91,47 L91,48 L90,48 L90,47 Z M92,47 L93,47 L93,48 L92,48 L92,47 Z M86,56 L86,55 L87,55 L87,56 L86,56 Z M92,56 L92,55 L93,55 L93,56 L92,56 Z M86,51 L87,51 L87,52 L86,52 L86,51 Z M94,51 L95,51 L95,52 L94,52 L94,51 Z M94,56 L94,55 L95,55 L95,56 L94,56 Z M86,53 L87,53 L87,54 L86,54 L86,53 Z M94,53 L95,53 L95,54 L94,54 L94,53 Z" transform="matrix(1 0 0 -1 0 103)"/>
+    <path fill="#000" d="M29,56 L28,56 L28,12 L28,11 L31,11 L31,12 L29,12 L29,55 L31,55 L31,56 L29,56 Z"/>
+    <path fill="#000" d="M98,56 L97,56 L97,12 L97,11 L100,11 L100,12 L98,12 L98,55 L100,55 L100,56 L98,56 Z" transform="matrix(-1 0 0 1 197 0)"/>
+  </g>
+</svg>

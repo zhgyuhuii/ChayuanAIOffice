@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wpp" tc="ongmani.ct_premiumservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxWppPlayerCaptureListCommand customTip="PlayerCapture" icon="player_capture_kd" id="PlayerCaptureSetting" idKey="WppPlayerCaptureList" rbHotKey="" text="@Player Capture">
+			<KxWppPlayerCaptureOpenDirCommand hotKey="" icon="play_kd" id="PlayerCaptureLookOver" rbHotKey="" text="@View the video"/>
+			<KxWppPlayerCaptureSettingCommand hotKey="" icon="vcr_kd" id="PlayerCaptureStartRecording" rbHotKey="" text="@Start recording (with watermark)"/>
+			<KxWppPlayerCaptureSettingCommand hotKey="" icon="vcr_kd" id="PlayerCaptureStartRecordingVip" idKey="WPPPlayerCaptureStartRecordingVipWithoutVipIcon" rbHotKey="" text="@Start recording (unwatermark)"/>
+		</KxWppPlayerCaptureListCommand>
+		<KAppCommand action="split" appCmdObj="Split" appId="ksplitmerge" icon="doc_split_kd" id="app_splitDocument" idKey="CommonSplitDocument" idMso="SplitDocument" text="@Split"/>
+		<KAppCommand action="merge" appCmdObj="Merge" appId="ksplitmerge" icon="doc_merge_kd" id="app_mergeDocument" idKey="CommonMergeDocument" idMso="MergeDocument" text="@Merge"/>
+		<KxFileSaveAsPictureCommand appCmdObj="kexportimage" appId="kexportimage" icon="change_to_pic_two_kd" id="RbFileMenuExportWeiboImage" idKey="ProWPPExportToImage" idMso="FileSaveAsPicture" text="@Export as Image"/>
+		<KxExportPdfFileMenuLegacyTriggerCommand controlType="0" hotKey="f" icon="change_to_pdf_two_kd" iconQat="change_to_pdf_two_kd" id="convert_printtopdf" idKey="CommonPremiumServiceExportToPdf" idMso="FileSaveAsPdfOrXps" infoId="f" ksoCmd="PrintToPDF" qtspyName="PrintToPDF" text="@Export to PDF"/>
+		<KAppCommand appCmdObj="PhotoExchange" appId="photoeditapp" icon="select_cutout_kd" id="app_photoeditapp_premiumservices" idKey="BasicImageMatting" text="@Basic Image Matting"/>
+		<KListCommand id="RB_PremiumServices_OutputConversion" rbFileMenuEmbed="1" text="@OutputConversion" visibleDependsOnSubCmds="1">
+			<command idQ="convert_pdf2word"/>
+			<command idQ="convert_pdf2excel"/>
+			<command idQ="convert_pdf2ppt"/>
+			<command idQ="convert_ofd2word"/>
+			<command idQ="convert_ofd2excel"/>
+			<command idQ="convert_ofd2ppt"/>
+			<command idQ="convert_pdf2word_v7"/>
+			<command idQ="app_splitDocument"/>
+			<command idQ="app_mergeDocument"/>
+			<command idQ="RbFileMenuExportWeiboImage"/>
+			<command idQ="PremiumServices_OCR_Tool"/>
+			<command idQ="app_photoeditapp_premiumservices"/>
+			<command idQ="convert_printtopdf"/>
+		</KListCommand>
+		<KListCommand id="RB_PremiumServices_ConvenientTool" rbFileMenuEmbed="1" text="@ConvenientTool" visibleDependsOnSubCmds="1">
+			<command idQ="PlayerCaptureSetting"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PremiumServices">
+			<command idQ="RB_PremiumServices_OutputConversion"/>
+			<separator/>
+			<command idQ="RB_PremiumServices_ConvenientTool"/>
+			<separator/>
+			<command idQ="RB_PremiumServices_DocerResource"/>
+			<separator/>
+			<command idQ="RB_MoreApp"/>
+		</subcommand>
+	</subcommands>
+</shell>

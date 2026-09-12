@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand action="7" appId="pdfadvancedtool" icon="doc_merge_kd" id="app_kpdf2wordv2_filemenu_merge" idKey="PdfFileMenuSplitMergeEntry" shortcutHint="Ctrl+Alt+D" text="@MergePDFPage"/>
+		<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" icon="doc_split_kd" id="app_kpdf2wordv2_filemenu_split" idKey="PdfFileMenuSplitMergeEntry" shortcutHint="Ctrl+Alt+S" text="@SplitPDFPage"/>
+		<KAppCommand action="6" appId="pdfadvancedtool" canHideText="0" icon="doc_split_kd" id="app_pdfadvancedtool_FileTab_MergePdf" idKey="PdfFileMenuSplitMergeNewEntry" rbHotKey="PW" text="@SplitPDF" wpsIsEanble="false"/>
+		<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_FileTab_SplitPdf" idKey="PdfFileMenuSplitMergeNewEntry" rbHotKey="PW" text="@MergePDFPage" wpsIsEanble="false"/>
+		<KxSplitMergeCommand hotKey="S" icon="SplitMergePdf_Split" id="SplitDocument" ksoCmd="RightsInfo" text="@Split"/>
+		<KxSplitMergeCommand hotKey="M" icon="SplitMergePdf_Merge" id="MergeDocument" ksoCmd="RightsInfo" text="@Merge"/>
+		<KxSplitMergeListCommand icon="doc_merge_kd" id="RbFileMenuSplitMerge" ksoCmd="RightsInfo" text="@Split and Merge" title="@Split and Merge">
+			<command idQ="app_pdfadvancedtool_FileTab_SplitPdf"/>
+			<command idQ="app_pdfadvancedtool_FileTab_MergePdf"/>
+		</KxSplitMergeListCommand>
+		<KxPdfRbFileMenuPopupPaneCommand hotKey="M" icon="doc_merge_kd" id="RbFileMenuSplitMergePersonal" text="@SplitAndMergePage" title="@SplitAndMergePage">
+			<command idQ="app_kpdf2wordv2_filemenu_split"/>
+			<command idQ="app_kpdf2wordv2_filemenu_merge"/>
+			<command idQ="app_pdfadvancedtool_FileTab_SplitPdf"/>
+			<command idQ="app_pdfadvancedtool_FileTab_MergePdf"/>
+		</KxPdfRbFileMenuPopupPaneCommand>
+		<KxFileMenuLegacyTriggerCommand aid="23" businessFrom="FD_Pdf_RbFileMenuOpenFile" controlType="0" hotKey="o" icon="open_file_kd" id="RbFileMenuOpenFileMenu" idMso="FileOpen" infoId="1" ksoCmd="OpenFile" shellEntryType="filemenu" text="@Open"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="e" icon="save_as_kd" id="Ebook_File_SaveAs" infoId="7" ksoCmd="EbookSaveAs" popupReadOnlyHint="save_as" qtspyName="EbookSaveAs" shellEntryType="filemenu" text="@SaveAs"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="q" icon="exit_two_kd" id="Ebook_File_Quit" infoId="n" ksoCmd="EbookExit" qtspyName="EbookExit" rbHotKey="Q" shellEntryType="filemenu" text="@Exit"/>
+		<KxFileMenuLegacyTriggerCommand id="Ebook_File_Reserve" ksoCmd="EbookReserve"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="i" icon="page_properties_kd" id="RbFileMenuProperties" infoId="h" ksoCmd="Properties" qtspyName="Properties" shellEntryType="filemenu" text="@Properties"/>
+		<KxFileMenuLegacyTriggerCommand icon="file_compression_kd" id="RbSaveAs_CompressBridge" idKey="PdfFileMenuSaveAsCompressBridge" ksoCmd="SaveAs_CompressBridge" shellEntryType="filemenu" spaceHint="singleloose" text="@SaveAsCompress"/>
+		<KAppFileMenuCommand appCmdObj="BatchCompress" appId="batchcompress" detail="filemenu" icon="file_compression_kd" id="RbFileMenuBatchCompress" idKey="PdfFileMenuCompressApp" shellEntryType="filemenu" text="@SaveAsCompress"/>
+		<KxPdfFileMenuPopupPaneForPrintCommand hotKey="p" icon="print_kd" id="RbFileMenuPrintAndTemplatesPrintMenu" idKey="PdfFileMenuPrintAndTemplates" idMso="FilePrintMenu" ksoCmd="Print" text="@Print" title="@Print">
+			<KxFileMenuLegacyTriggerCommand hotKey="p" icon="print_kd" id="RbFileMenuPrintMenu" idMso="FilePrint" infoId="5" ksoCmd="Print" qtspyName="Print" shellEntryType="filemenu" text="@Print"/>
+			<KxPdfOnlinePrintMuneCommand icon="print_kd" id="RbFileMenuOnlinePrint" ksoCmd="OnlinePrint" qtspyName="Print" shellEntryType="filemenu" text="@onlinePrint"/>
+			<KxFileMenuLegacyTriggerCommand icon="print_template_kd" id="RbFileMenuTemplatesPrintMenu" idKey="ToolsTemplatesPrint" ksoCmd="TemplatesPrint" shellEntryType="filemenu" text="@TemplatesPrint"/>
+		</KxPdfFileMenuPopupPaneForPrintCommand>
+		<KxPdfTemplatePrintTriggerCommand hotKey="p" icon="print_kd" id="RbNewFileMenuPrintAndTemplatesPrintMenu" idMso="FilePrintMenu" ksoCmd="Print" shellEntryType="filemenu_external" text="@Print" title="@Print"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="p" icon="print_kd" id="RbFileMenuPrintMenu" idMso="FilePrint" infoId="5" ksoCmd="Print" qtspyName="Print" shellEntryType="filemenu" text="@Print"/>
+		<KAppFileMenuCommand appCmdObj="PdfBatchPrint" appId="pdfbatchprint" detail="filemenu" hotKey="b" icon="batch_printing_kd" id="RbFileMenuBatchPrint" idMso="FileBatchPrint" shellEntryType="filemenu" text="@BatchPrint"/>
+		<KAppFileMenuCommand appCmdObj="PdfBatchPrint" appId="pdfnewbatchprintapp" detail="filemenu" hotKey="b" icon="batch_printing_kd" id="RbFileMenuNewBatchPrint" shellEntryType="filemenu" text="@BatchPrint"/>
+		<KAppFileMenuCommand appCmdObj="kexportimage" appId="kexportimage" detail="startmenu" icon="change_to_pic_two_kd" id="RbFileMenuPdf2PicMenu" idMso="FileSaveAsPicture" qtspyName="PDF2Photo" text="@PDF2Photo"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="s" icon="save_kd" id="RbFileMenuSaveFileMenu" infoId="6" ksoCmd="SaveFile" qtspyName="Save" shellEntryType="filemenu" text="@Save"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="e" icon="save_as_kd" id="RbFileMenuSaveAsFileMenu" infoId="7" ksoCmd="SaveAs" popupReadOnlyHint="save_as" qtspyName="SaveAs" shellEntryType="filemenu" text="@SaveAs"/>
+		<KxFileMenuLegacyTriggerCommand dialogHint="1" hotKey="O" icon="p-helpassociate-normal;p-helpassociate-normal;p-helpassociate-normal;p-helpassociate-disable" id="RbFileMenuAssociatePDF" ksoCmd="AssociatePdf" text="@Associate PDF"/>
+		<KxPdfRbFileMenuPopupPaneCommand icon="doc_add_kd" id="RbFileMenuCreatFileMenu" popupReadOnlyHint="create" text="@Creat PDF File" title="@Creat PDF File">
+			<KAppFileMenuCommand appCmdObj="PdfImportCurrentPic" appId="photo2pdf" hotKey="p" icon="change_pic_to_pdf_kd" id="app_photo2pdf_filemenu" idKey="PdfNewPhotoFile" qtspyName="Photo2PDF" text="@Photo2PDF"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="f" icon="doc_add_kd" id="RbFileMenuFile2PdfMenu" ksoCmd="File2Pdf" popupReadOnlyHint="create" text="@File2Pdf"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="s" icon="create_from_scan_kd" id="RbFileMenuScan2PdfMenu" ksoCmd="Scan2PDF" popupReadOnlyHint="create" qtspyName="Scan2PDF" text="@Scan2PDF"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="n" icon="create_blank_page_kd" id="RbFileMenuNewBlankFileMenu" ksoCmd="NewBlankPage" popupReadOnlyHint="create" text="@NewBlankFile"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="C" icon="p-clipboard2pdf-newBuild" id="RbFileMenuNewClipboardFileMenu" idKey="PdfNewClipboardFile" ksoCmd="NewClipboardFile" text="@NewClipboardFile"/>
+			<command idKey="PdfSmartLayout" idQ="Separator"/>
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="layout_create_file_rbmenu" idKey="PdfSmartLayout" text="@Creat PDF File From SmartLayout"/>
+			<KPanelListCommand icon="smart_layout_kd" id="app_pdfsmartlayout_file_rbmenu_panel" idKey="PdfSmartLayout" panelColumns="3" panelStyle="1" text="@SmartLayout Pages">
+				<KAppCommand action="double_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="book_double_flip_kd" id="app_pdfsmartlayout_file_rbmenu_double" qtspyname="pdfsmartlayout_file_rbmenu_double" text="@Two-Page Layout"/>
+				<KAppCommand action="four_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="four_page_spread_kd" id="app_pdfsmartlayout_file_rbmenu_four" qtspyname="pdfsmartlayout_file_rbmenu_four" text="@Four-Page Layout"/>
+				<KAppCommand action="id_card_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="id_card_kd" id="app_pdfsmartlayout_file_rbmenu_id_card" qtspyname="pdfsmartlayout_file_rbmenu_id_card" text="@ID Card Layout"/>
+				<KAppCommand action="invoice_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="bill_kd" id="app_pdfsmartlayout_file_rbmenu_invoice" qtspyname="pdfsmartlayout_file_rbmenu_invoice" text="@Invoice Layout"/>
+				<KAppCommand action="exam_paper_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="testpaper_assembly_kd" id="app_pdfsmartlayout_file_rbmenu_exam_paper" qtspyname="pdfsmartlayout_file_rbmenu_exam_paper" text="@Exam Paper Layout"/>
+				<KAppCommand action="more_template" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="pdf_file_rbmenu" icon="shape_three_kd" id="app_pdfsmartlayout_file_rbmenu_more_template" qtspyname="pdfsmartlayout_file_rbmenu_more_template" text="@More Templates"/>
+			</KPanelListCommand>
+		</KxPdfRbFileMenuPopupPaneCommand>
+		<KxRbFileMenuPopupPaneCommand groupindex="5" hotKey="h" icon="question_kd" id="RbFileMenuHelpMenu" infoId="a" shortcutHint="F1" text="@Help" title="@Feedback and Product Information">
+			<KxFileMenuLegacyTriggerCommand aid="927" controlType="0" hotKey="a" icon="info_kd" id="RbFileMenuAbout" idMso="About" ksoCmd="About" text="@About Kingsoft PDF"/>
+		</KxRbFileMenuPopupPaneCommand>
+		<KxPdfRbFileMenuPopupPaneCommand icon="export_kd" id="RbFileMenuExportMenu" idKey="PDFFileMenuExportShow" text="@The export of PDF is" title="@The export of PDF is">
+			<KAppFileMenuCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="fileoutput_pdf_2word" entrance="pdf_menu&amp;module=pdf&amp;sub_module=menulist&amp;new_position=export_pdf" icon="change_to_word_kd" id="app_kpdf2wordv2_outputpdf" qtspyName="PDFToWord" text="@Word"/>
+			<KAppFileMenuCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="fileoutput_pdf_2excel" entrance="pdf_menu&amp;module=pdf&amp;sub_module=menulist&amp;new_position=export_pdf" icon="change_to_et_kd" id="app_kpdf2wordv2_outputpdf_pdf2excel" qtspyName="PDF2Excel" text="@Excel"/>
+			<KAppFileMenuCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="fileoutput_pdf_2ppt" entrance="pdf_menu&amp;module=pdf&amp;sub_module=menulist&amp;new_position=export_pdf" icon="change_to_ppt_kd" id="app_kpdf2wordv2_outputpdf_pdf2ppt" qtspyName="PDFToPPT" text="@PPT"/>
+			<KxFileMenuLegacyTriggerCommand icon="change_to_txt_kd" id="RbFileMenuPdf2TxtMenu" idKey="PDF2TXTConvert" ksoCmd="PDF2TXT" qtspyName="PDF2TXT" text="@TXT"/>
+			<KAppFileMenuCommand appCmdObj="kexportimage" appId="kexportimage" detail="filemenu" entrance="pdf_menu&amp;module=pdf&amp;sub_module=menulist&amp;new_position=exporttopicture" icon="change_to_pic_two_kd" id="RbFileMenuPdf2PicMenu" idKey="FileMenuPDF2Photo" idMso="FileSaveAsPicture" qtspyName="PDF2Photo" text="@Photo"/>
+			<KAppFileMenuCommand action="ConvertToImgPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" icon="change_pdf_to_imgpdf_kd" id="app_kpdf2wordv2_outputpdf_pdf2imgpdf" idKey="PdfFileConvertToImgPDF" qtspyName="PDFToImgPDF" text="@ImgPDF"/>
+			<KxPdfMenuLabelCommand idKey="RbFileMenuPdfFromTitle" qtspyName="RbFileMenuPdfFromTitle" text="@Generate from PDF"/>
+			<separator idKey="RbFileMenuPdfFromSeparator" startEndTransparent="1"/>
+			<KProxyCommand delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="ppt_star_kd" id="RbFileMenuPdfFileToAiPpt" idKey="RbFileMenuPdfFileToAiPpt" targetId="RbFileMenuPdfFileToAiPpt" targetModule="kpdfcopilot" text="@RbFileMenuPdfAiDoc2ppt"/>
+			<KAppCommand appCmdObj="MindMapGuide" appId="mindmapguide" icon="ai_mindmap_kd" id="RbFileMenuPdfMindMapGuide" idKey="RbFileMenuPdfMindMapGuide" qtspyName="RbFileMenuPdfMindMapGuide" text="@RbFileMenuMindMapGuide"/>
+		</KxPdfRbFileMenuPopupPaneCommand>
+		<KxFileMenuOpenUrlCommand aid="80037" controlType="0" hotKey="h" icon="p-menu-help" id="RbFileMenuKingsoftPDFHelp" idMso="BlogHomePage" ksourl="Product:HelpPagePDF" text="@Kingsoft PDF Help"/>
+		<KxFileMenuOpenUrlCommand aid="100009" customShortcutEnabled="false" hotKey="c" icon="p-menu-community" id="RbFileMenuKingsoftPDFCommunity" ksourl="PDFStudyOnlinePageUrl" text="@Kingsoft PDF Community"/>
+		<KxFileMenuLegacyTriggerCommand aid="927" controlType="0" hotKey="a" icon="p-menu-about" id="RbFileMenuAbout" idMso="About" ksoCmd="About" shellEntryType="filemenu" text="@About Kingsoft PDF"/>
+		<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="c" icon="setup_kd" id="RbFileMenuSettings" idMso="Settings" ksoCmd="CustomSetting" shellEntryType="filemenu" text="@Custom settings"/>
+		<KxFileMenuProxyCommand controlType="0" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="RbFileMenuNewShare_kos" idKey="WpsEnableCloudDocs" infoId="s" targetId="RbFileMenuNewShare_kos" targetModule="officespace" text="@File Share"/>
+		<KxFileMenuBackupCenterCommand dialogHint="1" hotKey="k" icon="folder_cloud_kd" id="RbBackupCenter" idKey="PdfCtFileBackupCenter" infoId="9" text="@Backup Center"/>
+		<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="PDFFileShareEntrace" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+		<kxKOSFileMenuNewShareListCommand controlType="0" hotKey="d" icon="share_to_kd" id="RbFileMenuShareMenuList" idKey="RbFileMenuShareMenuList" idMso="FileShare" infoId="s" targetModule="officespace">
+			<kxKOSFileMenuNewShareViewAndEditCommand controlType="5" icon="people_double_kd" id="RbFileMenuShareMenuViewAndEdit" idKey="RbFileMenuShareMenuList" idMso="FileShare" qtspyName="ShareAndView" targetModule="officespace"/>
+			<kxKOSFileMenuNewShareSendFileCommand controlType="5" icon="doc_file_kd" id="RbFileMenuShareMenuSendFile" idKey="RbFileMenuShareMenuList" idMso="FileShare" qtspyName="ShareSendFile" targetModule="officespace"/>
+			<kxKOSFileMenuNewShareSendToDeviceCommand controlType="5" icon="equipment_kd" id="RbFileMenuShareMenuSendToDevice" idKey="RbFileMenuShareMenuList" idMso="FileShare" qtspyName="ShareSendToMyDevice" targetModule="officespace"/>
+			<kxKOSFileMenuAirDropCommand controlType="5" icon="wave_kd" id="RbFileMenuShareMenuAirDrop" idKey="RbFileMenuShareMenuList" idMso="FileShare" qtspyName="ShareFileAirDrop" targetModule="officespace"/>
+		</kxKOSFileMenuNewShareListCommand>
+		<KxClassifyLabelCommand disableCustomRibbon="true" icon="shield_lock_kd" id="RbFileMenuClassifyLabel" text="@Set Classify Label"/>
+		<KxKOSFileMenuShareUnifiedCommand controlType="15" hotKey="d" icon="share_to_kd" id="RbFileMenuShareUnifiedMenu" idKey="ShareUnified" idMso="FileShareUnified" infoId="s" targetModule="officespace"/>
+		<KxRbFileMenuImportPopupPaneCommand controlType="15" hotKey="I" icon="ImportFile" id="RbFileMenuImportMenu" popupReadOnlyHint="create" text="@Import" title="@Import">
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_1"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_2"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_3"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_4"/>
+		</KxRbFileMenuImportPopupPaneCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_File">
+			<command idQ="RbFileMenuOpenFileMenu"/>
+			<command idQ="Ebook_File_SaveAs"/>
+			<command idQ="Ebook_File_Quit"/>
+			<command idQ="Ebook_File_Reserve"/>
+			<command idQ="Ebook_File_Reserve"/>
+			<command idQ="RbFileMenuSaveFileMenu"/>
+			<command idQ="RbFileMenuSaveAsFileMenu"/>
+			<command idKey="ThirdPartyCloud" idQ="RbFileMenuImportMenu"/>
+			<command idQ="RbFileMenuShareUnifiedMenu"/>
+			<command idKey="PdfFileMenuExportMenu" idQ="RbFileMenuExportMenu"/>
+			<command idKey="PdfFileMenuSplitMerge" idQ="RbFileMenuSplitMergePersonal"/>
+			<command idKey="FileMenuSplitMerge" idQ="RbFileMenuSplitMerge"/>
+			<command idKey="PDFCompressInHome" idQ="RbSaveAs_CompressBridge"/>
+			<command idQ="RbFileMenuBatchCompress"/>
+			<command idQ="RbFileMenuPrintMenu"/>
+			<command idQ="RbNewFileMenuPrintAndTemplatesPrintMenu"/>
+			<command idQ="RbFileMenuBatchPrint"/>
+			<KAppFileMenuCommand NeedSendEntryInfo="true" appCmdObj="BatchOperationWithCurrentFile" appFlags="wpsmember" appId="batchprint" hotKey="b" icon="batch_printing_kd" id="app_batchprint_filemenu" text="@batchprint"/>
+			<command idQ="RbFileMenuNewBatchPrint"/>
+			<separator startEndTransparent="1"/>
+			<command idKey="RbFileMenuShareMenuList" idQ="RbFileMenuShareMenuList"/>
+			<command idKey="ShareUnified" idQ="RbFileMenuNewShare_kos"/>
+			<KxRbFileMenuPopupShareDocCommandXa customTip="KOSDocShare" icon="share_to_kd" id="KOSShareDocCommandXaFileMenu" idKey="ShareXa" shellEntry="rbFileMenu;pdf|menulist|menu_share" text="@Share"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="m" icon="mail_kd" id="RbFileMenuSendMail" infoId="7" ksoCmd="SendMail" text="@Send E-mail"/>
+			<command idQ="RbFileMenuClassifyLabel"/>
+			<command idQ="RbFileMenuProperties"/>
+			<command idQ="RbBackupCenter"/>
+			<KAppFileMenuCommand appId="kdocfinalizedmgr" customTip="@Document Finalized" icon="doc_finalized_kd" id="KDocFinalizedMgrCommand" idKey="PdfDocFinalizedMgr" qtspyName="kdocfinalizedmgr" text="@Document Finalized"/>
+			<separator startEndTransparent="1"/>
+			<command idQ="RbFileMenuHelpMenu"/>
+			<command idQ="RbFileMenuSettings"/>
+			<command idQ="RbFileMenuExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

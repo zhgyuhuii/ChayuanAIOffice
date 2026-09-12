@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_postil" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfAnnotationExportCommand customTip="Postil_Export" icon="bubble_export_kd" id="Postil_Export" spaceHint="autocompact" text="@annotationExport"/>
+		<KxPdfAnnotationImportCommand customTip="Postil_Import" icon="bubble_import_kd" id="Postil_Import" spaceHint="autocompact" text="@annotationImport"/>
+		<KxListCommand controlType="0" customTip="AutoWheel" icon="rolling_auto_kd" id="AutoWheel" index="0" ksoCmd="AutoWheel" layout_lineCount="1" rbFileMenuEmbed="1" shortcutHint="Ctrl+Shift+N" text="@Auto Wheel">
+			<KxLegacyTriggerCommand id="NegativeTwoTimesSpeed" ksoCmd="NegativeTwoTimesSpeed" text="@Negative Two Times Speed"/>
+			<KxLegacyTriggerCommand id="NegativeOneTimesSpeed" index="2" ksoCmd="NegativeOneTimesSpeed" text="@Negative One Times Speed"/>
+			<KxLegacyTriggerCommand id="OneTimesSpeed" ksoCmd="OneTimesSpeed" text="@One Times Speed"/>
+			<KxLegacyTriggerCommand id="TwoTimesSpeed" ksoCmd="TwoTimesSpeed" text="@Two Times Speed"/>
+		</KxListCommand>
+		<KAppCommand appCmdObj="OpenappWithDocPath" appId="AK20220415DGHHFM" customTip="appcmd_kpromedocdiff_review_compare" icon="doc_comparison_kd" id="app_kpromedocdiff_review_compare" text="@app_kpromedocdiff" vipMode="2"/>
+		<KxPdfUnderlineColorCommand customTip="UnderlineBorder" icon="underscore_wps_kd" id="Reviews_UnderlineBorder" ksoCmd="Underline" ksoTriggerCmd="Underline" referenceCommand="Underline" shellEntryType="tab_comments" shortcutHint="Ctrl+5" text="@Underline">
+			<command idQ="UnderlineMoreFontColors"/>
+			<command idQ="UnderlineSnapFontColors"/>
+			<command idQ="UnderlineShape"/>
+		</KxPdfUnderlineColorCommand>
+		<KxPdfStrikeoutColorCommand customTip="StrikeoutBorder" icon="strikethrough_kd" id="Reviews_StrikeoutBorder" ksoCmd="Strikeout" ksoTriggerCmd="Strikeout" referenceCommand="Strikeout" shellEntryType="tab_comments" shortcutHint="Ctrl+D" text="@Strikeout">
+			<command idQ="StrikeoutMoreFontColors"/>
+			<command idQ="StrikeoutSnapFontColors"/>
+		</KxPdfStrikeoutColorCommand>
+		<KxPdfInsertColorCommand customTip="InsertBorder" dynamicSpaceHint="loose;suitable" icon="inserter_kd" id="Reviews_InsertBorder" ksoCmd="InsertText" ksoTriggerCmd="InsertText" referenceCommand="InsertText" shellEntryType="tab_comments" shortcutHint="Ctrl+6" text="@Insert Text">
+			<command idQ="InsertMoreFontColors"/>
+			<command idQ="InsertSnapFontColors"/>
+		</KxPdfInsertColorCommand>
+		<KxPdfReplaceColorCommand customTip="ReplaceBorder" dynamicSpaceHint="loose;suitable" icon="font_replace_symbol_kd" id="Reviews_ReplaceBorder" ksoCmd="ReplaceText" ksoTriggerCmd="ReplaceText" referenceCommand="ReplaceText" shellEntryType="tab_comments" shortcutHint="Ctrl+G" text="@Replace Text">
+			<command idQ="ReplaceMoreFontColors"/>
+			<command idQ="ReplaceSnapFontColors"/>
+		</KxPdfReplaceColorCommand>
+		<KxPdfUnderlineColorCommand customTip="UnderlineBorder" icon="underscore_wps_kd" id="Insert_UnderlineBorder" ksoCmd="Underline" ksoTriggerCmd="Underline" referenceCommand="Underline" shellEntryType="tab_insert" shortcutHint="Ctrl+5" spaceHint="autocompact" text="@Underline">
+			<command idQ="UnderlineMoreFontColors"/>
+			<command idQ="UnderlineSnapFontColors"/>
+			<command idQ="UnderlineShape"/>
+		</KxPdfUnderlineColorCommand>
+		<KxPdfStrikeoutColorCommand customTip="StrikeoutBorder" icon="strikethrough_kd" id="Insert_StrikeoutBorder" ksoCmd="Strikeout" ksoTriggerCmd="Strikeout" referenceCommand="Strikeout" shellEntryType="tab_insert" shortcutHint="Ctrl+D" spaceHint="autocompact" text="@Strikeout">
+			<command idQ="StrikeoutMoreFontColors"/>
+			<command idQ="StrikeoutSnapFontColors"/>
+		</KxPdfStrikeoutColorCommand>
+		<KxPdfInsertColorCommand customTip="InsertBorder" icon="inserter_kd" id="Insert_InsertBorder" ksoCmd="InsertText" ksoTriggerCmd="InsertText" referenceCommand="InsertText" shellEntryType="tab_insert" shortcutHint="Ctrl+6" spaceHint="autocompact" text="@Insert Text">
+			<command idQ="InsertMoreFontColors"/>
+			<command idQ="InsertSnapFontColors"/>
+		</KxPdfInsertColorCommand>
+		<KxPdfReplaceColorCommand customTip="ReplaceBorder" icon="inserter_kd" id="Insert_ReplaceBorder" ksoCmd="ReplaceText" ksoTriggerCmd="ReplaceText" referenceCommand="ReplaceText" shellEntryType="tab_insert" shortcutHint="Ctrl+G" spaceHint="autocompact" text="@Replace Text">
+			<command idQ="ReplaceMoreFontColors"/>
+			<command idQ="ReplaceSnapFontColors"/>
+		</KxPdfReplaceColorCommand>
+		<KxLegacyTriggerCommand customTip="AttachmentTip" dynamicSpaceHint="loose;suitable" icon="paperclip_kd" id="Comments_Attachment" ksoCmd="AnnotAttachment" shellEntryType="tab_comments" text="@Attachment"/>
+		<KListCommand groupTip="PostilAnnotateManagementGroup" icon="bubble_setup_kd" id="SuperNote" rbFileMenuEmbed="1" text="@Annotate Management">
+			<KxSingleRowMergeGroupCommand customTip="PostilAnnotateManagementGroup" icon="bubble_setup_kd" id="SingleRow_Supernote" text="@Annotate Management"/>
+			<command idQ="Reviews_Supernote" singlerowmergegroup="SingleRow_Supernote"/>
+			<command idQ="HideAnnotations" singlerowmergegroup="SingleRow_Supernote"/>
+			<command idQ="Reviews_AnnotManagement" singlerowmergegroup="SingleRow_Supernote"/>
+			<command idQ="Postil_Export" singlerowmergegroup="SingleRow_Supernote"/>
+			<command idQ="Postil_Import" singlerowmergegroup="SingleRow_Supernote"/>
+		</KListCommand>
+		<KxPdfHighlightColorCommand canHideText="0" customTip="HighlightBorder" icon="highlight_kd" id="Reviews_HighlightBorder" ksoCmd="Highlight" ksoTriggerCmd="Highlight" referenceCommand="Highlight" shellEntryType="tab_comments" shortcutHint="Ctrl+F2" text="@Highlight Text">
+			<command idQ="HighlightMoreFontColors"/>
+			<command idQ="HighlightSnapFontColors"/>
+		</KxPdfHighlightColorCommand>
+		<KxPdfNoteColorCommand customTip="NoteBorder" icon="bubble_add_kd" id="Reviews_NoteBorder" idMso="Reviews_NoteBorder" ksoCmd="Note" ksoTriggerCmd="Note" referenceCommand="Note" shellEntryType="tab_comments" shortcutHint="Ctrl+3" text="@Note">
+			<command idQ="NoteMoreFontColors"/>
+			<command idQ="NoteSnapFontColors"/>
+		</KxPdfNoteColorCommand>
+		<KxPdfQuickMenuCommandEx icon="line_shape_kd" id="Reviews_ShapeComment" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="AnnotShape" shellEntryType="tab_comments" text="@Shape">
+			<command idQ="Line"/>
+			<command idQ="Arrow"/>
+			<command idQ="Square"/>
+			<command idQ="Circle"/>
+			<command idQ="Polygon"/>
+			<command idQ="Cloudy"/>
+			<command idQ="PolyLine"/>
+		</KxPdfQuickMenuCommandEx>
+		<KListCommand groupTip="PostilAnnotateGroup" icon="bubble_add_kd" id="TMp" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Annotates">
+			<command idQ="Reviews_HighlightBorder"/>
+			<command idQ="Reviews_AreaHighlight"/>
+			<command idQ="AnnotGraffiti"/>
+			<command idQ="Reviews_TextComment"/>
+			<command idQ="Reviews_TextCommentBox"/>
+			<command idQ="Reviews_InstructBox"/>
+			<command idQ="Reviews_ShapeComment" singlerowfold="1"/>
+			<command idQ="Reviews_NoteBorder" singlerowfold="1"/>
+			<command idQ="Reviews_UnderlineBorder"/>
+			<command idQ="Reviews_StrikeoutBorder"/>
+			<command embedHint="1" idQ="Reviews_ReplaceBorder" isShowText="true" singlerowfold="1"/>
+			<command embedHint="1" idQ="Reviews_InsertBorder" isShowText="true" singlerowfold="1"/>
+			<command embedHint="1" idKey="PDFAttachmentInPostilTab" idQ="Comments_Attachment" isShowText="true" singlerowfold="1"/>
+			<command embedHint="1" idQ="SpecialFunc_MeasureTool" isShowText="true" singlerowfold="1"/>
+		</KListCommand>
+		<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" idKey="PDFTextToSpeechOption" rbHotKey="A" text="@AISpeaker"/>
+		<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="TextSpeech" id="AISpeaker" idKey="AISpeaker_TextSpeech" rbHotKey="A" text="@Text Speech"/>
+		<KListCommand groupTip="PostilCheckApproveGroup" icon="doc_comparison_kd" id="RB_AnnotateTool" rbFileMenuEmbed="1" text="@Check and Approve">
+			<command idKey="WpsCompareWithOtherDoc" idQ="app_kpromedocdiff_review_compare"/>
+			<command idKey="PDFAutoWheelInPostilTab" idQ="AutoWheel"/>
+			<KQuickMenuCommandFix hotKey="RL" icon="doc_voice_reading_kd" id="TextToSpeechOption" idKey="PDFTextToSpeechOption" rbHotKey="RL" referenceCommand="AISpeaker" text="@AISpeaker">
+				<command idQ="AISpeaker"/>
+				<separator/>
+				<KAppCommand appCmdObj="ImportActivePdfFile" appId="text2voice" hotKey="o" icon="text_to_voice_kd" id="TextToVoice" idKey="PDFTextOutputVoice" rbHotKey="O" text="@TextOutputVoice"/>
+			</KQuickMenuCommandFix>
+			<KQuickMenuCommandFix hotKey="RL" icon="TextSpeech" id="TextToSpeechOption" idKey="AISpeaker_TextSpeech" rbHotKey="RL" referenceCommand="AISpeaker" text="@Text Speech">
+				<command idQ="AISpeaker"/>
+			</KQuickMenuCommandFix>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption" proxyCmdId="ProxyOldTextToSpeechOption"/>
+		</KListCommand>
+		<KProxyCommand autoLoad="true" customTip="StampTool" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="stamp_kd" id="ProxyInsert_PdfStampTool" targetId="Insert_PdfStampTool" targetModule="kstamptool" text="@Stamp"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Postil">
+			<command idQ="RB_MouseTool_Postil"/>
+			<command idQ="Separator"/>
+			<command idQ="TMp"/>
+			<command idQ="Separator"/>
+			<command idQ="SuperNote"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_AnnotateTool"/>
+		</subcommand>
+	</subcommands>
+</shell>

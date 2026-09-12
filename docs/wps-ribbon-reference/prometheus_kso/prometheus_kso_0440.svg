@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>显示标记24_显示以审阅_ShowReviewer_显示审阅者</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M19.5 10V7.20717C19.5 7.07456 19.4473 6.94738 19.3536 6.85361L15.1464 2.64645C15.0527 2.55268 14.9255 2.5 14.7929 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V21C2.5 21.2761 2.72386 21.5 3 21.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M14.5 2.5V7C14.5 7.27614 14.7239 7.5 15 7.5H19.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M5.5 6.5H10.5M5.5 9.5L8.5 9.49994" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_4" d="M20 12.5H9C8.72386 12.5 8.5 12.7239 8.5 13V21.4792C8.5 21.4876 8.5097 21.4922 8.51625 21.487L10.863 19.6096C10.9517 19.5386 11.0619 19.5 11.1754 19.5H20C20.2761 19.5 20.5 19.2761 20.5 19V13C20.5 12.7239 20.2761 12.5 20 12.5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M19.5 10V7.20717C19.5 7.07456 19.4473 6.94738 19.3536 6.85361L15.1464 2.64645C15.0527 2.55268 14.9255 2.5 14.7929 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V21C2.5 21.2761 2.72386 21.5 3 21.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2-rtl" d="M14.5 2.5V7C14.5 7.27614 14.7239 7.5 15 7.5H19.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3-rtl" d="M5.5 6.5H10.5M5.5 9.5L8.5 9.49994" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,29.0,0)"><path id="line_4-rtl" d="M20 12.5H9C8.72386 12.5 8.5 12.7239 8.5 13V21.4792C8.5 21.4876 8.5097 21.4922 8.51625 21.487L10.863 19.6096C10.9517 19.5386 11.0619 19.5 11.1754 19.5H20C20.2761 19.5 20.5 19.2761 20.5 19V13C20.5 12.7239 20.2761 12.5 20 12.5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="mirror" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-mirror-scheme"><desc>自动滚动</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-red-primary kd-stroke-width-icon-regular"><path id="line" d="M17.5 5.5L19.4929 3.50707C19.4968 3.50317 19.5032 3.50317 19.5071 3.50707L21.5 5.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M17.5 18.5L19.4929 20.4929C19.4968 20.4968 19.5032 20.4968 19.5071 20.4929L21.5 18.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M19.5 4V20" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_4" d="M14 2.5H4C3.72386 2.5 3.5 2.72386 3.5 3V21C3.5 21.2761 3.72386 21.5 4 21.5H14C14.2761 21.5 14.5 21.2761 14.5 21V3C14.5 2.72386 14.2761 2.5 14 2.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M6.5 7.5L8.99293 5.00707C8.99683 5.00317 9.00317 5.00317 9.00707 5.00707L11.5 7.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M7.5 10.5H10.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7" d="M7.5 13.5H10.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_8" d="M6.5 16.5L8.99293 18.9929C8.99683 18.9968 9.00317 18.9968 9.00707 18.9929L11.5 16.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

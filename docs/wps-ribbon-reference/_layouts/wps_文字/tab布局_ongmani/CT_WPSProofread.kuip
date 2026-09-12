@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_wpsproofread" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand action="EnglishProofread" appCmdObj="EnglishProofread" appId="kproofread" customTip="EnglishProofread" hotKey="e" icon="proofread_english_kd" id="app_kproofread_english_proofread" idMso="app_kproofread_english_proofread" rbHotKey="E" text="@English Proofread"/>
+		<KListCommand id="Proofread" rbFileMenuEmbed="1" text="@Proofread">
+			<KxAIProofreadProxyCommand autoLoad="false" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyProofreadGovernmentTriggerCmd" idKey="GovernmentProofread" idMso="ProxyProofreadGovernmentTriggerCmd" targetId="ProofreadGovernmentTriggerCmd" targetModule="kproofread" text="@Proofread"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_two_kd" id="ProxyProofreadGeneralCmd" idKey="PublicProofread" idMso="ProxyProofreadGeneralCmd" targetId="ProofreadGeneralCmd" targetModule="kproofread" text="@General Proofread"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_two_kd" id="ProxyProofreadAICmd" idKey="PublicProofread" idMso="ProxyProofreadAICmd" targetId="ProofreadAICmd" targetModule="kproofread" text="@AI Proofread"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="official_documents_review_kd" id="ProxyProofreadOfficialTriggerCmd" idKey="ProofreadOfficial" idMso="ProxyProofreadOfficialTriggerCmd" targetId="ProofreadOfficialTriggerCmd" targetModule="kproofread" text="@Official Proofread"/>
+			<command idKey="ProofreadEnglish" idQ="app_kproofread_english_proofread"/>
+		</KListCommand>
+		<KListCommand id="WordDictManagement" rbFileMenuEmbed="1" text="@WordDictManagement">
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_add_kd" id="ProxyProofreadAddRightWordCmd" targetId="ProofreadAddRightWordCmd" targetModule="kproofread" text="@Add Right Word"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_word_bank_wrong_kd" id="ProxyProofreadAddErrorWordCmd" targetId="ProofreadAddErrorWordCmd" targetModule="kproofread" text="@Add Error Word"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_vocabulary_kd" id="ProxyProofreadWordDictManagementCmd" targetId="ProofreadWordDictManagementCmd" targetModule="kproofread" text="@WordDictManagement"/>
+		</KListCommand>
+		<KListCommand id="Assistant" rbFileMenuEmbed="1" text="@Assistant">
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="customer_service_kd" id="ProxyProofreadFeedbackCmd" targetId="ProofreadFeedbackCmd" targetModule="kproofread" text="@Feedback"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="setup_kd" id="ProxyProofreadSettingCmd" targetId="ProofreadSettingCmd" targetModule="kproofread" text="@Setting"/>
+		</KListCommand>
+		<KListCommand id="ProofreadClose" text="@Close">
+			<KxAIProofreadProxyCommand customTip="Login" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="KLoginMenu_AccountInfo" id="ProxyProofreadLoginCmd" targetId="ProofreadLoginCmd" targetModule="kproofread" text="@Login"/>
+			<KxAIProofreadProxyCommand customTip="CloseProofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="close_window_kd" id="ProxyCloseProofreadCmd" singlerowpriority="100" targetId="CloseProofreadCmd" targetModule="kproofread" text="@Exit Proofread"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Proofread">
+			<command idQ="Proofread"/>
+			<separator/>
+			<command idQ="WordDictManagement"/>
+			<separator/>
+			<command idQ="Assistant"/>
+			<separator/>
+			<command idQ="ProofreadClose"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>设置阴影24_ShadowOnOff</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" opacity="0.08" d="M20.5 7V20C20.5 20.2761 20.2761 20.5 20 20.5H7C6.72386 20.5 6.5 20.2761 6.5 20V19C6.5 18.7239 6.72386 18.5 7 18.5H18C18.2761 18.5 18.5 18.2761 18.5 18V7C18.5 6.72386 18.7239 6.5 19 6.5H20C20.2761 6.5 20.5 6.72386 20.5 7Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" opacity="0.08" d="M20.5 7V20C20.5 20.2761 20.2761 20.5 20 20.5H7C6.72386 20.5 6.5 20.2761 6.5 20V19C6.5 18.7239 6.72386 18.5 7 18.5H18C18.2761 18.5 18.5 18.2761 18.5 18V7C18.5 6.72386 18.7239 6.5 19 6.5H20C20.2761 6.5 20.5 6.72386 20.5 7Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" opacity="0.08" d="M20.5 7V20C20.5 20.2761 20.2761 20.5 20 20.5H7C6.72386 20.5 6.5 20.2761 6.5 20V19C6.5 18.7239 6.72386 18.5 7 18.5H18C18.2761 18.5 18.5 18.2761 18.5 18V7C18.5 6.72386 18.7239 6.5 19 6.5H20C20.2761 6.5 20.5 6.72386 20.5 7Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" opacity="0.08" d="M20.5 7V20C20.5 20.2761 20.2761 20.5 20 20.5H7C6.72386 20.5 6.5 20.2761 6.5 20V19C6.5 18.7239 6.72386 18.5 7 18.5H18C18.2761 18.5 18.5 18.2761 18.5 18V7C18.5 6.72386 18.7239 6.5 19 6.5H20C20.2761 6.5 20.5 6.72386 20.5 7Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_5" d="M18.5 3V18C18.5 18.2761 18.2761 18.5 18 18.5H3C2.72386 18.5 2.5 18.2761 2.5 18V3C2.5 2.72386 2.72386 2.5 3 2.5H18C18.2761 2.5 18.5 2.72386 18.5 3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M5.5 10.5H15.5M10.5 5.5V15.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

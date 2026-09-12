@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_equationtools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand icon="math_latex_kd" id="RB_EquationInsert" text="@Insert">
+			<KxWpsEquationToolsListCommand customTip="EquationInsert" galleryWidth="367" hotKey="E" icon="math_latex_kd" id="EquationInsert" qtspyName="EquationInsert" rbHotKey="E" shortcutHint="Alt+=" text="@Common Equation">
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="common" galleryWidth="367" icon="math_function_kd" id="MathEquationInsert" ksoCmd="EquationInsertEquation" position="equationtools" predefinedFormula="true" text="@Math Formula"/>
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="physics" galleryWidth="367" icon="math_physics_formula_kd" id="PhysicsEquationInsert" ksoCmd="EquationInsertEquation" position="equationtools" predefinedFormula="true" text="@Physics Formula"/>
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="chemister" galleryWidth="367" icon="chemistry_equation_kd" id="ChemistryEquationInsert" ksoCmd="EquationInsertEquation" position="equationtools" predefinedFormula="true" text="@Chemistry Formula"/>
+				<KxWpsCollectFormulaGalleryCommand canHideText="0" equationGalleryType="chemister" galleryWidth="367" icon="star_kd" id="CollectFormulaInsert" ksoCmd="EquationInsertEquation" position="equationtools" text="@My Collection"/>
+			</KxWpsEquationToolsListCommand>
+			<KxWpsAIWriteFormulaProxyCommand autoLoad="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="W" icon="ai_edit_kd" id="equationtools_AIWriteFormula" targetId="equationtools_AIWriteFormula" targetModule="kwpsaigc" text="@Write Formula"/>
+			<KxWpsEquationRecognitionProxyCommand autoload="true" customTip="EquationRecognition" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwebmultformulamatch" icon="scan_ocr_formulas_kd" id="equationtools_EquationRecognition" openPosition="tab_formulaassistant" shortcutHint="Ctrl+Alt+=" targetId="equationtools_EquationRecognition" targetModule="kwpsmathor" text="@Equation Recognition"/>
+		</KListCommand>
+		<KListCommand icon="math_latex_kd" id="RB_EquationTransfer" text="@Equation Transfer">
+			<KxWpsOMathEquationTransferCommand enableDependsOnSubCommands="true" hotKey="L" icon="math_latex_kd" id="EquationTransfer" ksoCmd="EquationInsertNew" rbHotKey="L" text="@Equation Transfer">
+				<KProxyCommand autoload="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="P" icon="math_transfer_fomula_kd" id="RB_WpsMathor_LaTex2OMML" targetModule="kwpsmathor" text="@LaTex2OMML"/>
+				<KProxyCommand autoload="true" closeTryFindHotKey="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="L" icon="math_transfer_latex_kd" id="RB_WpsMathor_OMML2LaTex" targetModule="kwpsmathor" text="@OMML2LaTex"/>
+			</KxWpsOMathEquationTransferCommand>
+		</KListCommand>
+		<KxWpsEquationFormatSettingListCommand groupTip="EquationOptions" icon="setup_kd" id="RB_EquationFormat" idMso="EquationOptions" ksoCmd="EquationOptions" singlerowmergesetting="SingleRow_EquationFormat" text="@Formula Format">
+			<KxSingleRowMergeGroupCommand customTip="EquationOptions" icon="setup_kd" id="SingleRow_EquationFormat" text="@Formula Format"/>
+			<KxWpsEquationFormatListCommand groupTip="FormulaFormatGroup" icon="setup_kd" id="EquationFormat" qtspyName="FormulaFormat" rbHotKey="T" singlerowmergegroup="SingleRow_EquationFormat" text="@Formula Format">
+				<KxWpsFormulaFontListCommand hotKey="F" icon="symbol_a_kd" id="FormulaFont" qtspyName="FormulaFont" rbHotKey="F" text="@Formula Font"/>
+				<KxWpsFormulaNumberTriggerCommand customTip="FormulaNumber" hotKey="N" icon="list_ordered_number_kd" id="FormulaNumber" qtspyName="FormulaNumber" rbHotKey="N" showCustomTipInMenu="true" text="@Formula Number"/>
+				<KxWpsOMathTriggerCommand hotKey="S" icon="more_kd" id="EquationToolsFormatSetting" ksoCmd="EquationOptions" qtspyName="FormulaFormatMoreSetting" text="@More Setting"/>
+			</KxWpsEquationFormatListCommand>
+		</KxWpsEquationFormatSettingListCommand>
+		<KxWpsHoverListCommand groupTip="EquationToolSymbolGroup" icon="math_omega_kd" id="RB_EquationSymbols" needsinglerowmorebutton="true" text="@Symbols">
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationBasicMathSymbol" icon="math_percentage_kd" id="EquationBasicMathSymbol" idMso="EquationBasicMathSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationBasicMathSymbol" spaceHint="suitable" symbolsCategory="basicMath" text="@Basic math"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationGreekLettersSymbol" icon="math_omega_kd" id="EquationGreekLettersSymbol" idMso="EquationGreekLettersSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationGreekLettersSymbol" spaceHint="suitable" symbolsCategory="greekLetters" text="@Greek letters"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationLetterLikeSymbol" icon="math_trigonometry_kd" id="EquationLetterLikeSymbol" idMso="EquationLetterLikeSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationLetterLikeSymbol" spaceHint="suitable" symbolsCategory="letterLikeSymbols" text="@Alphabetic symbols"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationNegatedRelationsSymbol" icon="math_not_equal_to_kd" id="EquationNegatedRelationsSymbol" idMso="EquationNegatedRelationsSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationNegatedRelationsSymbol" singlerowfold="1" spaceHint="suitable" symbolsCategory="negatedRelations" text="@Negation relational operator"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationOperatorSymbol" icon="math_operator_kd" id="EquationOperatorSymbol" idMso="EquationOperatorSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationOperatorSymbol" spaceHint="suitable" symbolsCategory="operator" text="@Operators"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationScriptsSymbol" icon="math_script_capital_r_kd" id="EquationScriptsSymbol" idMso="EquationScriptsSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationScriptsSymbol" singlerowfold="1" spaceHint="suitable" symbolsCategory="scripts" text="@Scripts"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationArrowsSymbol" icon="math_right_arrow_kd" id="EquationArrowsSymbol" idMso="EquationArrowsSymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationArrowsSymbol" singlerowfold="1" spaceHint="suitable" symbolsCategory="arrows" text="@Arrows"/>
+			<KxWpsSymbolGalleryCommand columnNumber="10" customTip="EquationGeometrySymbol" icon="math_delta_uppercase_kd" id="EquationGeometrySymbol" idMso="EquationGeometrySymbol" ksoCmd="EquationInsertSymbol" maxVisibleNumber="10" minVisibleNumber="8" qtspyName="EquationGeometrySymbol" singlerowfold="1" spaceHint="suitable" symbolsCategory="geometry" text="@Geometry"/>
+		</KxWpsHoverListCommand>
+		<KxWpsHoverListCommand groupTip="EquationToolStructureGroup" icon="code_xml_structure_kd" id="RB_EquationStructures" needsinglerowmorebutton="true" text="@Structures">
+			<KxWpsFunctionGalleryCommand customTip="EquationFractionGallery" equationGalleryType="fraction" galleryHeight="399" galleryWidth="341" hotKey="F" icon="math_fraction_gallery_kd" id="EquationFractionGallery" idMso="EquationFractionGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationFractionGallery" rbHotKey="F" text="@Fraction"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationScriptGallery" equationGalleryType="script" galleryHeight="290" galleryWidth="341" hotKey="S" icon="math_natural_exponential_kd" id="EquationScriptGallery" idMso="EquationScriptGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationScriptGallery" rbHotKey="S" text="@Script"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationRadicalGallery" equationGalleryType="radical" galleryHeight="290" galleryWidth="341" hotKey="R" icon="math_radical_form_kd" id="EquationRadicalGallery" idMso="EquationRadicalGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationRadicalGallery" rbHotKey="R" text="@Radical"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationIntegralGallery" equationGalleryType="integral" galleryHeight="706" galleryWidth="261" hotKey="I" icon="math_integral_operation_kd" id="EquationIntegralGallery" idMso="EquationIntegralGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationIntegralGallery" rbHotKey="I" text="@Integral"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationLargeOperatorGallery" equationGalleryType="largeOperator" galleryHeight="768" galleryWidth="421" hotKey="G" icon="math_large_operator_kd" id="EquationLargeOperatorGallery" idMso="EquationLargeOperatorGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationLargeOperatorGallery" rbHotKey="G" text="@Large Operator"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationDelimiterGallery" equationGalleryType="bracket" galleryHeight="743" galleryWidth="341" hotKey="B" icon="math_delimiter_kd" id="EquationDelimiterGallery" idMso="EquationDelimiterGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationDelimiterGallery" rbHotKey="B" text="@Bracket"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationFunctionGallery" equationGalleryType="function" galleryHeight="743" galleryWidth="261" hotKey="U" icon="math_trigonometric_function_kd" id="EquationFunctionGallery" idMso="EquationFunctionGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationFunctionGallery" rbHotKey="U" singlerowfold="1" text="@Function"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationAccentGallery" equationGalleryType="accent" galleryHeight="823" galleryWidth="245" hotKey="A" icon="math_accent_kd" id="EquationAccentGallery" idMso="EquationAccentGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationAccentGallery" rbHotKey="A" singlerowfold="1" text="@Accent"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationLimitGallery" equationGalleryType="limitAndLog" galleryHeight="398" galleryWidth="261" hotKey="M" icon="math_limit_kd" id="EquationLimitGallery" idMso="EquationLimitGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationLimitGallery" rbHotKey="M" singlerowfold="1" text="@Limit and Log"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationOperatorGallery" equationGalleryType="operator" galleryHeight="617" galleryWidth="245" hotKey="O" icon="math_operator_kd" id="EquationOperatorGallery" idMso="EquationOperatorGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationOperatorGallery" rbHotKey="O" singlerowfold="1" text="@Operator"/>
+			<KxWpsFunctionGalleryCommand customTip="EquationMatrixGallery" equationGalleryType="matrix" galleryHeight="833" galleryWidth="341" hotKey="X" icon="math_matrix_kd" id="EquationMatrixGallery" idMso="EquationMatrixGallery" ksoCmd="EquationInsertEquation" predefinedFormula="false" qtspyName="EquationMatrixGallery" rbHotKey="X" singlerowfold="1" text="@Matrix"/>
+		</KxWpsHoverListCommand>
+		<KListCommand id="DetailedSettings_EquationTools" text="@Settings">
+			<KListCommand customTip="DetailedSettingsList_EquationTools" icon="detailed_settings_kd" id="DetailedSettingsList_EquationTools" qtspyName="DetailedSettings" text="@Settings">
+				<KxLegacyTriggerCommand customTip="EquationOptions" dialogHint="1" hotKey="T" icon="math_latex_kd" id="EquationTools" ksoCmd="EquationOptions" rbHotKey="T" text="@Equation Options"/>
+			</KListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_EquationTools">
+			<command idQ="RB_EquationInsert"/>
+			<separator/>
+			<command idQ="RB_EquationTransfer"/>
+			<separator/>
+			<command idQ="RB_EquationFormat"/>
+			<separator/>
+			<command idQ="RB_EquationSymbols"/>
+			<separator/>
+			<command idQ="RB_EquationStructures"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_EquationTools"/>
+		</subcommand>
+	</subcommands>
+</shell>

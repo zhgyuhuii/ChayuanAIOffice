@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>page_number_format</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line" d="M5.5 8.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M5.5 10.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M6.5 7.5V11.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M8.5 7.5V11.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5648" d="M4.5 12.5H4C3.72386 12.5 3.5 12.2761 3.5 12V7C3.5 6.72386 3.72386 6.5 4 6.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5649" d="M10.5 12.5H11C11.2761 12.5 11.5 12.2761 11.5 12V7C11.5 6.72386 11.2761 6.5 11 6.5H10.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_5" d="M10.2929 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V14C1.5 14.2761 1.72386 14.5 2 14.5H13C13.2761 14.5 13.5 14.2761 13.5 14V4.70711C13.5 4.5745 13.4473 4.44732 13.3536 4.35355L10.6464 1.64645C10.5527 1.55268 10.4255 1.5 10.2929 1.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M10.5 1.5L10.5 4C10.5 4.27614 10.7238 4.5 11 4.5H13.5001" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

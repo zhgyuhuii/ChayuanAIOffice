@@ -1,0 +1,583 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wpp" tc="ongmani.proxycommands" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modules>
+		<module name="shareplay">
+			<KxCellPhoneControlCommand customTip="cellphoneControl" hotKey="C" icon="remote_kd" id="cellphoneControl" needLogin="false" rbHotKey="1" text="@Cellphone Control"/>
+			<KxCellPhoneControlExCommand customTip="cellphoneControl" hotKey="C" icon="remote_kd" id="cellphoneControlAmi" rbHotKey="C" text="@Cellphone Control"/>
+		</module>
+		<module name="processonentry">
+			<ProcessOnCommand customTip="ProcessOnEntry" hotKey="f" icon="chart_flow_kd" id="ProcessOnEntry" qtspyName="ProcessOnEntry" rbHotKey="F" text="@ProcessOnEntry"/>
+		</module>
+		<module name="wpsspeaker">
+			<KxWppBridgeSpeakListCommand customShortcutEnabled="false" customTip="TextSpeech" hotKey="RL" icon="doc_voice_reading_kd" id="OldTextToSpeechOption" rbHotKey="RL" speakingTip="TextSpeech2" text="@Text Speech">
+				<KxWppBridgeSpeakAllCommand allSlideMode="1" customShortcutEnabled="false" hotKey="a" icon="TextSpeechAll" id="TextToSpeechAll" rbHotKey="A" text="@Full-Text Speech"/>
+				<KxWppBridgeSpeakAllCommand allSlideMode="0" customShortcutEnabled="false" hotKey="b" icon="TextSpeechCurrent" id="TextToSpeechSlide" rbHotKey="B" text="@Current Slide Speech"/>
+				<KxWppBridgeSpeakSelectionCommand customShortcutEnabled="false" hotKey="s" icon="TextSpeechSelect" id="TextToSpeechSelect" rbHotKey="S" text="@Selection Speech"/>
+				<separator/>
+				<KxWppSpeakToolBarCommand customShortcutEnabled="false" hotKey="d" id="TextToSpeechToolBar" rbHotKey="D" text="@Show Toolbar"/>
+			</KxWppBridgeSpeakListCommand>
+		</module>
+		<module name="kdocumentfix">
+			<KDocumentFixCommand customTip="DocumentFix" hotKey="RF" icon="doc_modification_kd" id="DocumentFix" needLogin="false" rbHotKey="RF" text="@Document Fix"/>
+		</module>
+		<module name="kpdf2wordv2">
+			<KPDF2WordV2Command customTip="PDFToWord" hotKey="PW" icon="change_to_word_kd" id="PDF2WordV2" rbHotKey="PW" text="@PDF To Word"/>
+			<KPDF2ExcelCommand customTip="PDFToExcel" icon="change_to_sheet_kd" id="PDF2ExcelV2" text="@PDF To Excel"/>
+			<KPDF2PPTCommand customTip="PDFToPPT" icon="change_to_ppt_kd" id="PDF2PPTV2" text="@PDF To PPT"/>
+			<KPDFSplitCommand customTip="PDFSplit" icon="PDFSplit" id="PDFSplitV2" text="@PDF Split"/>
+			<KPDFMergeCommand customTip="PDFMerge" icon="PDFMerge" id="PDFMergeV2" text="@PDF Merge"/>
+		</module>
+		<module name="konlinefonts">
+			<KxWppOlFontQhbCommand customTip="OnlineFonts" icon="font_replace_kd" id="OnlineFonts" ksoCmd="FontName" text="@Online Fonts"/>
+			<KxMoreOnlineFontsCommand customTip="OnlineFonts" icon="font_replace_kd" id="MoreOnlineFonts" ksoCmd="FontName" text="@Online Fonts"/>
+			<KxMoreOnlineFontsCommand customTip="OnlineFonts" icon="font_replace_kd" id="AppCenterMoreOnlineFonts" ksoCmd="FontName" text="@Online Fonts"/>
+			<KxMoreOnlineFontsCommand customTip="OnlineFonts" icon="font_replace_kd" id="MoreOnlineFonts_workspace" ksoCmd="FontName" needLogin="false" text="@Online Fonts"/>
+			<KxReplaceOnlineFontsCommand id="ReplaceOnlineFonts"/>
+			<KxMoreOnlineFontsCommand id="MoreOnlineFontsLink"/>
+			<KxInsertOnlineBulletCommand id="OnlineBullets"/>
+		</module>
+		<module name="konlinedocer_xa">
+			<KOnlineDocerTaskPaneCommand from="tools_designlibrary" id="TpOnlineTaskPaneCommands"/>
+			<KOnlineDocerTaskPaneCommand from="insert_chartlabriry" id="TpOnlineTaskPaneCommands_Chart" urlLocation="chart"/>
+			<KOnlineDocerTaskPaneCommand id="TpOnlineTaskPaneCommands_Template" urlLocation="template"/>
+			<KOnlineDocerTaskPaneCommand id="TpOnlineTaskPaneCommands_Font" urlLocation="fontRecommend"/>
+			<KOnlineDocerWindowCommand from="insert_iconlabriry" id="OnlineDocerCommand_Icon" urlLocation="icon"/>
+			<KOnlineDocerWindowCommand from="insert_chartlabriry" id="OnlineDocerCommand_Chart" urlLocation="chart"/>
+			<KOnlineDocerWindowCommand from="more_fonts" id="OnlineDocerCommand_Font" urlLocation="font"/>
+		</module>
+		<module name="kfeedback">
+			<KxTabbarQAndACommand id="TabbarQAndA" shortcutHint="Alt+Q"/>
+			<KFBMessageCommand icon="notification" id="feedBackMessage" idKey="WPSFeedBackMessage" newsIcon="notification_new" normalIcon="notification" text="@News"/>
+		</module>
+		<module name="konlinechart">
+			<KxOnlineChartGalleryCommand customTip="OnlineChart" icon="chart_online_kd" id="OnlineChart" idKey="DocerOnlineChart" ksoCmd="OnlineChart" qtspyName="OnlineChart" rbHotKey="SO" text="@Online Chart"/>
+			<KxInsertOnlineChartGalleryCommand customTip="OnlineChart" icon="chart_online_kd" id="InsertOnlineChart" idKey="DocerOnlineChart" ksoCmd="OnlineChart" qtspyName="OnlineChart" rbHotKey="SO" spaceHint="suitable" text="@Online Chart"/>
+			<KxOnlineChartQhbCommand customTip="OnlineChart" icon="DocerBulb;DocerBulb-mos;DocerBulb-down;DocerBulb-dis" id="QuickBarOnlineChart" idKey="DocerOnlineChart" isCefPopup="true" text="@Online Chart"/>
+			<KxChartDlgOnlineChartCommand id="ChartDlgOnlineChart"/>
+			<KxOnlineChartStyleCommand id="OnlineChartStyle" idKey="DocerOnlineChart" text="Chart Style"/>
+			<KxOnlineChartStyleExtendCommand id="DocerChartStyles" idKey="ChartToolsDocerChartStyles" isExtend="true"/>
+			<KxOnlineChartStyleQhCommand id="DocerChartStyles_QuickBar" idKey="DocerOnlineChart" isQuickBar="true"/>
+		</module>
+		<module name="kdocerjsapi20">
+			<KxWebChartFormatCommand customTip="QuickBarFormatChartArea" icon="setup_kd" id="WebChartFormat"/>
+			<KxWebChartDataSourceCommand customTip="WebChartDataSource" icon="select_data_kd" id="WebChartDataSource"/>
+			<KxWebChartExportCommand customTip="WebChartExport" icon="chart_shape_export_kd" id="WebChartExport"/>
+			<KxWebChartGalleryCommand id="WebChartGallery"/>
+			<KxDsWebExtensionSetCommand icon="setup_kd" id="DsWebExtensionSet" isShowText="1" text="@Ds Webshape Set"/>
+			<KxDsWebExtensionExportCommand icon="chart_shape_export_kd" id="DsWebExtensionExport" isShowText="1" text="@Ds Webshape Export"/>
+			<KxDsWebExtensionDelCommand icon="trash_can_kd" id="DsWebExtensionDel" isShowText="1" text="@Ds Webshape Del"/>
+			<KxResourceSplitDropMenuCommand appId="wordart_resourceshop_split" entry="insert" id="OnlineWordArt"/>
+			<KxResourceSplitDropMenuCommand appId="wordart_resourceshop_split" entry="insert" id="OnlineWordArtInInsertTab"/>
+			<KxResourceSplitDropMenuCommand appId="wordart_resourceshop_split" applyAction="5" entry="txttool" id="OnlineWordArtInTextToolTab"/>
+			<KxResourceSplitDropMenuCommand appId="wordart_resourceshop_split" applyAction="5" entry="drawtool" id="OnlineWordArtInPictureToolTab"/>
+			<KxResourcePicutreFillCommand hotKey="o" icon="pic_online_kd" id="FillPictureFromOnline" relatedKsoCmd="FillColor" text="@My Picture"/>
+			<KxWebOnlineResourceCommand entryURL="entry.html#/pocket/home?entrance=topmenu" id="MenuOnlineSound" skeletonName="kwebonlinesound_dp" targetModule="kwebonlinesound" useLocalUrl="true" usePageReady="0" viewID="kwebonlinesound"/>
+			<KxWebOnlineResourceCommand entryURL="entry.html#/main?type=drop_menu" id="OnlineSymbol" targetModule="kwebonlinesymbol" useLocalUrl="true"/>
+			<KxWebOnlineResourceCommand entryURL="entry.html#/index" id="OnlineThemeColor" targetModule="kwebonlinethemecolor" useLocalUrl="true"/>
+			<KxTextToPictureCommand hotKey="C" id="GeneratePicture"/>
+			<KxProcessonCommand customTip="InsertProcesson_Flow" hotKey="r" icon="chart_flow_kd" id="InsertProcessonFlow" poType="flow" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" text="@InsertProcesson_Flow"/>
+			<KxProcessonCommand customTip="InsertProcesson_Mind" hotKey="r" icon="chart_mind_map_kd" id="InsertProcessonMind" poType="mind" qtspyName="InsertProcesson_Mind" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" text="@InsertProcesson_Mind"/>
+			<KxProcessonCommand icon="import_processon_kd" id="ImportProcesson_Flow" poType="flow" relatedKsoCmd="InsertPictureFromFile" text="@Import Processon Flow"/>
+			<KxTextToBackgroundCommand hotKey="G" id="GenerateBackground"/>
+			<KxRessourceTriggerDialogCommand action="subsequent-open" appId="picture_resourceshop_split" customTip="OnlineIconMore" entry="ct_insert" extra="7B22726F757465724E616D65223A2269636F6E2D6C697374227D" id="onlineiconInsert" idKey="DocerOnlineIconI18n" ksoCmd="InsertPictureFromFile"/>
+			<KWebDocerTpFeatureCommand adaptiveWidths="ja_JP=1.15;en_US=1.15;ru_RU=1.25" entryURL="entry.html#/main" id="TpOnlineSymbol_TaskPane" targetModule="kwebonlinesymbol" useLocalUrl="true"/>
+		</module>
+		<module name="kphonepicture">
+			<KxInsertPhonePictureCommand dialogHint="1" hotKey="m" icon="camera_kd" id="InsertPictureFromPhonePicture" rbHotKey="M" text="@From Phone"/>
+			<KxTpPhonePictureCommand alias="TpPhonePicture" id="TpPhonePicture" shortHint="@Send pictures" text="@Insert Pictures From Phone" tpIcon="iphonepicture;iphonepicture-mos;iphonepicture-down;iphonepicture-dis"/>
+		</module>
+		<module name="officespace">
+			<KxFileMenuLinkPreviewTriggerCommand hotKey="l" icon="shared_kd" id="RbLinkPreview" idKey="WPSRbLinkPreview" text="@Link Preview"/>
+			<KxFileMenuWebPreviewTriggerCommand hotKey="w" icon="share_to_kd" id="RbWebPreview" idKey="WPSRbWebPreview" text="@Web Preview"/>
+			<KxFileMenuShareLinkToQQTriggerCommand hotKey="q" icon="sendbyqq" id="RbShareLinkToQQ" idKey="WPSRbShareLinkToQQ" text="@Share To QQ"/>
+			<KxFileMenuShareLinkToWechatTriggerCommand hotKey="w" icon="sendtowechat" id="RbShareLinkToWechat" idKey="WPSRbShareLinkToQQ" text="@Share To Wechat"/>
+			<KxFileMenuSettingLinkTriggerCommand hotKey="s" id="RbSettingLink" idKey="WPSRbSettingLink" text="@Setting Link"/>
+			<KxPopupLinkPreviewCommand customTip="LinkShareTip" filter="lang=zh_CN" hotKey="l" icon="shared_kd" id="LinkPreview" text="@Link Preview"/>
+			<KxPopupShareLinkToQQCommand filter="lang=zh_CN" hotKey="q" icon="sendbyqq" id="ShareLinkToQQ" text="@Share To QQ"/>
+			<KxPopupShareLinkToWechatCommand filter="lang=zh_CN" hotKey="w" icon="sendtowechat" id="ShareLinkToWechat" text="@Share To Wechat"/>
+			<KxPopupSettingLinkCommand filter="lang=zh_CN" hotKey="s" id="SettingLink" text="@Setting Link"/>
+			<KxLinkPreviewToolTipCommand icon="shared_kd" id="TpLinkPreview" idKey="WPSTpLinkPreview" text="@Link Preview"/>
+			<KxPopupSendFileCommand hotKey="x" icon="send_file_kd" id="PopUpSendFile" idKey="WPSPopUpSendFile" text="@File Send"/>
+			<KxDocumentHistoryCommand hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" idKey="FileMenuDocumentHistory" text="@Document History"/>
+			<KxNewShareForMenuCommand controlType="0" hotKey="d" icon="share_to_kd" id="newShare" idMso="FileShare" infoId="s" text="@File Share"/>
+			<KxNewShareForRClickTabCommand controlType="0" hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineCn" idMso="FileShare" infoId="s" text="@File Share"/>
+			<KxKOSShareDocCommandXa icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineXa" shellEntry="doctab_rbclick;ppt|topbar|workspace_file_rightclick_share" text="@Share"/>
+			<kxKOSFileMenuNewShareCommand controlType="0" hotKey="d" icon="share_to_kd" id="RbFileMenuNewShare_kos" idMso="FileShare" infoId="s" text="@File Share"/>
+			<KxNewShareForTraditionMenuCommand controlType="0" hotKey="d" icon="share_to_kd" id="newShareForTraditionMenu" idMso="FileShare" infoId="s" text="@File Share"/>
+			<KxNewShareForRecentFilePanelCommand controlType="0" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idMso="FileShare" infoId="s" text="@File Share"/>
+			<kxKOSSaveFileCommand hotKey="s" icon="save_kd" id="SaveFileProxy" shortcutHint="Ctrl+S" text="@Save"/>
+			<kxKOSFileMenuSaveFileCommand controlType="0" hotKey="s" icon="save_kd" id="RbFileMenuSaveFileMenu_kos" idMso="FileSave" qtspyName="RbFileMenuSaveFileMenu" shellEntryType="rbFileMenu" text="@Save"/>
+			<KxNewShareForRightTopCommand buttonStyle="3" detail="@Share documents." icon="share_to_kd" id="newShareForRightTop" text="@File Share"/>
+			<KxInsertCommentWPPForRightTopCommand buttonStyle="3" detail="@Add comments in your document." fileType="ppt" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="CommentPannel" menuType="add" qtspyName="NewComment" rbHotKey="m" refCommand="InsertCommentInReviewTab" text="@Comment"/>
+			<kxKOSOpenCloudFileCommand customTip="KOSOpenCloudFileTip" dialogHint="1" hotKey="O" icon="folder_cloud_kd" id="OSOpenCloudFileCmd" idKey="CloudDocOnlineEntryFilterNoPersion" ksoCmd="KOSOpenCloudFileCmd" rbHotKey="O" text="@Open from Cloud Docs"/>
+			<kxKOSSaveToCloudCommand customTip="KOSSaveFileTocloudTip" dialogHint="1" hotKey="Y" icon="transmit_upload_kd" id="OSSaveToCloudCmd" idKey="CloudDocOnlineEntryFilter" ksoCmd="KOSSaveToCloudCmd" needLogin="false" rbHotKey="Y" text="@Save to Cloud Docs"/>
+			<kxKOSRoamingfileCommand customTip="KOSRoamingfileTip_WPSCloud" dialogHint="1" hotKey="R" icon="cloud_logo_line_kd" id="OSWPS_Cloud" idKey="OpenWpsCloudFile" ksoCmd="KOSRoamingfileCmd" qtspyName="KOSRoamingfileCmd" rbHotKey="R" text="WPS Cloud"/>
+			<KMeetingListCommand customTip2="WppSharePlay2" customTip="WppSharePlay" ensureReferToSubCmd="1" icon="vcr_kd" id="WppSharePlay" needLogin="false" text="@Share Play">
+				<KMeetingLaunchCommand icon="vcr_kd" id="WppSharePlayLaunch" text="@Share Play"/>
+				<KMeetingJoinCommand icon="vcr_add_kd" id="WppSharePlayJoin" referenceDisable="1" text="@Enter the access code"/>
+			</KMeetingListCommand>
+		</module>
+		<module name="addsignature">
+			<KxSignaturePopMenuCommand customTip="Signature" id="Insert_Signature_Web" text="@Signature"/>
+			<KxSignShortCutCommand id="Insert_Web_NewSign"/>
+		</module>
+		<module name="kweibo">
+			<KxWeiboCommand hotKey="W" icon="cweibo32" id="WeiboCmd" ksoCmd="WeiboCmd" rbHotKey="W" text2="@Share to Microblog" text="@Share to Microblog"/>
+			<KxExportWeiboImageCommand customTip="ExportWeiboImageCmd" detail="CloudSvr" dialogHint="1" hotKey="X" icon="change_to_pic_two_kd" id="ExportWeiboImageCmd" ksoCmd="ExportWeiboImageCmd" needLogin="false" rbHotKey="X" text2="@Export as Image" text="@Export as Image"/>
+			<KxOpenWebWeiboCommand hotKey="O" icon="weibowebshare" id="OpenWebWeiboCmd" ksoCmd="OpenWebWeiboCmd" rbHotKey="O" text2="@Share to Microblog Webpage" text="@Share to Microblog Webpage"/>
+			<KxFileMenuExportWeiboImageCommand customTip="ExportWeiboImageCmd" detail="WpsMenu" hotKey="G" icon="change_to_pic_two_kd" id="RbFileMenuExportWeiboImage" ksoCmd="ExportWeiboImageCmd" rbHotKey="G" text2="@Export as Image" text="@Export as Image"/>
+			<KxExportWeiboImageCommand customTip="ExportWeiboImageCmd" dialogHint="1" hotKey="OP" icon="change_to_pic_two_kd" id="SpecialAppsExportWeiboImage" ksoCmd="ExportWeiboImageCmd" rbHotKey="OP" text2="@Export as Image" text="@Export as Image"/>
+			<KxExportWeiboImageCommand customTip="ExportWeiboImageCmd" detail="ShortcutBar" dialogHint="1" hotKey="OP" icon="change_to_pic_two_kd" id="ShortcutBarExportImage" ksoCmd="ExportWeiboImageCmd" rbHotKey="OP" text2="@Export as Image" text="@Export as Image"/>
+			<KxExportWeiboImageCommand customTip="ExportWeiboImageCmd" detail="FileMenu" dialogHint="1" hotKey="OP" icon="change_to_pic_two_kd" id="FileMenuExportImage" ksoCmd="ExportWeiboImageCmd" rbHotKey="OP" text2="@Export as Image" text="@Export as Image"/>
+		</module>
+		<module name="kexportpureppt">
+			<KxFileMenuExportPurepptCommand customTip="RbFileMenuExportPureppt" icon="change_pic_to_ppt_kd" id="RbFileMenuExportPureppt" ksoCmd="RbFileMenuExportPureppt" text2="@Export as Graph ppt" text="@Export as Graph ppt"/>
+		</module>
+		<module name="kwpspackage">
+			<KWpsPackageCommand hotKey="P" icon="WpsPackage" id="KWpsPackagePlugin" ksoCmd="KWpsPackagePlugin" text="@WpsPackagePlugin"/>
+		</module>
+		<module name="photo2pdfentry">
+			<Photo2PdfContextMenuCommand_ConvertOne customTip="Photo2PdfConvertOne" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2PdfConvertOne" qtspyName="Photo2PdfConvertOne" rbHotKey="D" text="@Photo2PdfConvertOne"/>
+			<Photo2PdfContextMenuCommand_ConvertAll customTip="Photo2PdfConvertAll" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2PdfConvertAll" qtspyName="Photo2PdfConvertAll" rbHotKey="D" text="@Photo2PdfConvertAll"/>
+			<Photo2PdfCommand customTip="Photo2Pdf" from="tools" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2Pdf" qtspyName="Photo2Pdf" rbHotKey="D" text="@Photo2Pdf"/>
+			<Photo2PdfCommand customTip="Photo2Pdf" from="picinsert" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2Pdf_PicInsert" qtspyName="Photo2Pdf" rbHotKey="D" text="@Photo2Pdf"/>
+			<Photo2PdfCommand customTip="Photo2Pdf" from="pictool" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2Pdf_PicTool" qtspyName="Photo2Pdf" rbHotKey="D" text="@Photo2Pdf"/>
+			<Photo2PdfContextMenuCommand_ConvertOne customTip="Photo2Pdf" from="quickbar" hotKey="d" icon="change_pic_to_pdf_kd" id="Photo2Pdf_QuickBar" qtspyName="Photo2Pdf" rbHotKey="D" text="@Photo2Pdf"/>
+		</module>
+		<module name="advancedexportpdf">
+			<KxAdvancedExportPdfCommand id="AdvancedExportPdf"/>
+			<KxCmdAdvancedExportPdfCommand id="CmdAdvancedExportPdf"/>
+		</module>
+		<module name="keversheet">
+			<KEverSheetCommand appID="YP00002" customTip="EverSheet" entryName="homepage" hotKey="RF" icon="EverSheet" id="EverSheetStorage" productName="storage_eversheet" rbHotKey="RF" text="@Ever Sheet"/>
+			<KEverSheetCommand appID="YP00703" customTip="EverSheet" entryName="homepage" hotKey="RF" icon="EverSheet" id="EverSheetMember" productName="member_eversheet" rbHotKey="RF" text="@Ever Sheet"/>
+			<KEverSheetCommand appID="YP00504" customTip="EverSheet" entryName="homepage" hotKey="RF" icon="EverSheet" id="EverSheetContract" productName="contract_eversheet" rbHotKey="RF" text="@Ever Sheet"/>
+		</module>
+		<module name="ksphotokitbridge">
+			<KsPhotoKitSceneDetectedCommand id="PhotoKitBridgeAutoLoadEntry" visible="false"/>
+		</module>
+		<module name="kwpsassistlegacy">
+			<KModelEssayCommand customTip="modelessay" hotKey="m" icon="doc_model_essay_kd" id="ModelEssayInHomeTab" rbHotKey="M" text="@Model Essay"/>
+			<KModelEssayCommand customTip="modelessay" hotKey="E" icon="doc_model_essay_kd" id="ModelEssay" idKey="WPPModelEssay" rbHotKey="E" text="@Model Essay"/>
+			<KNewFileOnlineTemplateCommand hotKey="w" icon="doc_add_kd" id="NewFileOnlineTemplate" text="@New"/>
+			<KxWpsAssistNewSlideCommand customTip="NewSlideOnline" hotKey="w" icon="NewSlideFromLibrary" id="NewSlideFromOnline" idKey="WppProxyNewSlideSpecial" ksoCmd="NewSlideSpecial" rbHotKey="W" text="@New Slide Online"/>
+			<KxWpsAssistNewSlideCommand id="NewSlideOnline" ksoCmd="NewSlideSpecial"/>
+			<KOnlinePictureUnpersonalCommand customTip="InsertOnlinePicture" detail="@Insert Online Pictures" hotKey="o" icon="pic_online_kd" id="FromOnline" idKey="CommonOnlinePictureUnper" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@Online Pictures"/>
+			<KOnlinePictureUnpersonalCommand customTip="InsertOnlinePictureFromFile" detail="@Insert Online Pictures" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTabUnpersonal" idKey="CommonOnlinePictureUnper" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@Online Pictures"/>
+			<KOnlinePictureUnpersonalCommand customTip="InsertOnlinePictureFromFile" detail="@Insert Online Picture" hotKey="n" icon="pic_online_kd" id="OnlinePictureInPictureToolTab" idKey="CommonOnlinePictureUnper" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@Online Picture"/>
+			<KPictureFillFromOnlineCommand hotKey="o" icon="pic_online_kd" id="FillPictureFromOnlineUnpersonal" relatedKsoCmd="FillColor" text="@Online Pictures"/>
+		</module>
+		<module name="docpermission">
+			<KxDocPermissionCommand defaultPage="Account" id="CommonAccountEncyption" idKey="DocSecurityPermission" infoNum="21" qtspyName="CommonAccountEncyption"/>
+			<KxDocPermissionCommand defaultPage="Password" id="CommonPasswordEncyption" infoNum="22" qtspyName="CommonPasswordEncyption"/>
+			<KxDocPermissionCommand enterpriseWebPageUrl="/webdlg/myright.html" hotKey="V" id="CurUserPermission" text="@Check Mine Permission"/>
+			<KxDocPermissionCommand enterpriseWebPageUrl="/webdlg/rightlist.html" hotKey="R" id="CheckUserPermission" text="@Check Users Permissions"/>
+			<KxDocPermissionCommand_NormalEncryption hotKey="C" icon="lock_kd" id="NormalEncryption" idKey="NormalEncryption" qtspyName="NormalEncryption" rbHotKey="N" text="@Normal Encryption"/>
+			<KxDocPermissionCommand_CoreEncryption hotKey="B" icon="shield_lock_kd" id="CoreEncryption" idKey="CoreEncryption" qtspyName="CoreEncryption" rbHotKey="C" text="@Core Encryption"/>
+			<KxDocPermissionCommand_Encryption hotKey="S" icon="doc_lock_kd" id="CustomFormatSecurityDocEncryption" idKey="CustomFormatSecurityDoc" qtspyName="Encryption" rbHotKey="E" text="@Encryption"/>
+			<KxDocPermissionCommand_Decryption hotKey="I" icon="decryption_kd" id="CustomFormatSecurityDocDecryption" idKey="CustomFormatSecurityDoc" qtspyName="Decryption" rbHotKey="D" text="@Decryption"/>
+			<KxDocPermissionCommand customTip="DocPermission" defaultPage="Account" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInWorkSpaceTab" idKey="DocSecurityPermission" infoNum="15" qtspyName="DocumentsPremissions" rbHotKey="PE" text="@Document Encryption"/>
+			<KxDocPermissionCommand defaultPage="Account" enterpriseWebPageUrl="/webdlg/myright.html" hotKey="i" icon="people_key_kd" id="CheckMyPermissionInReviewTab" idKey="CheckMinePermissionInRerview" qtspyName="CheckMinePermission" rbHotKey="I" text="@Check Mine Permission"/>
+			<KxDocPermissionCommand customTip="DocPermissionProtection" defaultPage="Account" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInReviewTab" idKey="DocSecurityPermission" infoNum="4" qtspyName="DocumentsPremissions" rbHotKey="PE" text="@Document Permission"/>
+			<KxDocPermissionCommand customTip="DocPermission" defaultPage="Account" enterpriseWebPageUrl="/webdlg/rightlist.html" hotKey="p" icon="doc_encryption_kd" id="OptionSecurityAccountEncryption" idKey="DocumentEncryptionAbility" infoNum="18" qtspyName="DocumentsPremissions" rbHotKey="PE" text="@Document Encryption"/>
+			<KxDocPermissionCommand_AccountEncyption aid="80005" hotKey="p" icon="doc_encryption_kd" id="TooltipDocumentEncryption" idKey="DocSecurityPermission" infoNum="23" qtspyName="CommonAccountEncyption" text="@Document Encryption"/>
+			<KxDocPermissionCommand_AccountEncyption aid="80005" hotKey="p" icon="doc_encryption_kd" id="DocumentEncryption" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyption" text="@Document Encryption"/>
+			<KxDocPermissionCommand_AccountEncyption icon="doc_encryption_kd" id="DocumentPasswordEncryption" idKey="DocumentEncryptionAbility" qtspyName="CommonAccountEncyption" text="@Document Encryption"/>
+			<KxFileMenuDocPermissionCommand defaultPage="Account" enterpriseWebPageUrl="/webdlg/rightlist.html" hotKey="U" icon="doc_encryption_kd" id="RbFileMenuAccountEncryption" infoNum="1" qtspyName="AccountEncryption" text="@Account Encryption"/>
+			<KxFileMenuBatchDocumentDecryptionCommand hotKey="D" icon="BatchDocDecrypt" id="RbFileMenuBatchDocDecryption" idKey="CommonFileBatchDocDecrypt" infoNum="5" qtspyName="BatchDecryption" text="@Batch Document Decryption"/>
+			<KxFileMenuDocPermissionCommand defaultPage="Password" hotKey="P" icon="password_encryption_kd" id="RbFileMenuPasswordEncryption" idMso="FileMenuPasswordEncrypt" infoNum="2" qtspyName="PasswordEncryption" text="@Password Encryption"/>
+			<KStatusPermissionLabelCommand2 buttonStyle="3" icon="shield_key_kd" id="StatusPermissionLabelCommand" idKey="DocSecurityPermissionStateLabel" minimumWidth="105" text="@Permission Protected" textColor="#538033"/>
+			<KxDocPermissionCommand_AccountEncyptionAdvanced aid="80005" hotKey="p" icon="doc_encryption_kd" id="AccountEncyptionAdvanced" idKey="DocSecurityPermission" infoNum="19" qtspyName="CommonAccountEncyptionAdvanced" text="@Document Encryption"/>
+			<KxStatusMBSignCommand id="StatusMBSignCommand" idKey="MBVersionFlag" minimumWidth="105"/>
+		</module>
+		<module name="wpppresentationtool">
+			<KxCustomTextFormatCommand dialogHint="1" hotKey="f" icon="custom_text_format_kd" id="CustomTextFormat" text="@Custom Text Format"/>
+			<KxBatchSetFontCommand dialogHint="1" hotKey="S" icon="batch_set_font_kd" id="BatchSetFontStandalone" text="@Bulk Font Setting"/>
+		</module>
+		<module name="kaiwpp">
+			<KxWppTxToDgmLockCommand customTip="TextToDiagram" icon="smart_diagram_kd" id="WppTextToDiagram" idKey="WppTextToDiagram" text="@Text To Diagram"/>
+			<KxTextToDiagramCommand customTip="TextToDiagram" icon="smart_diagram_kd" id="WppTextToDiagramPopup" idKey="WppTextToDiagramWithCommon" text="@Text To Diagram"/>
+			<KxShapesSmartartCommand customTip="ShapesSmartArt" hotKey="S" icon="smart_diagram_kd" id="ShapesSmartart" idKey="WPPShapesSmartart" text="@Shapes SmartArt"/>
+			<KxSmartDiagramCommand customTip="InsertSmartDiagram" from="insertlist" hotKey="m" id="InsertSmartDiagram" idKey="WPPInsertSmartDiagram" ksoCmd="InsertOrgSmartArt" rbHotKey="SA"/>
+			<KxSmartDiagramCommand customTip="InsertSmartDiagram" entrance="start_insert" from="start_insert" hotKey="m" id="HomeInsertSmartDiagram" idKey="WppHomeSmartDiagrmXa" ksoCmd="InsertOrgSmartArt" rbHotKey="SA"/>
+			<KxSmartDiagramCommand from="doc_insert" hotKey="v" id="InsertOrgSmartDiagramPopup" idKey="WPSInsertOrgSmartDiagramPopup" ksoCmd="InsertOrgSmartArt" rbHotKey="v"/>
+			<KxBeautifyAssistantCommand canStack="0" customTip="BeautifyAssistant" icon="stick_kd" id="beautifyAssistant" idKey="KAIWPPBeautifyAssistant" needLogin="false" text="@Beautify assistant"/>
+			<KWpsAssistOnlineTemplateInlineCommand embedHint="1" galleryHeight="100" galleryWidth="542" id="KxOnlinetemplateInline" idKey="WPSOnlinetemplateInline" text="@Design Templates"/>
+			<KxWppChangeThemeInlineCommand columnNumber="6" embedHint="1" id="KxWppChangeThemeInline" idKey="WppChangeThemeInline" text="@Design Templates"/>
+			<KxWppChangeThemeInlineCommand columnNumber="4" embedHint="1" id="app_CT_WorkSpace_wppchangethemeinlinecommand" idKey="WppChangeThemeInline" text="@Design Templates"/>
+			<KWppChangeThemeTriggerCommand canStack="0" customTip="MoreTheme" icon="clothing_kd" id="moretheme" idKey="WppMoreTheme" needLogin="false" text="@More Theme"/>
+			<KWpsAssistMoreOnlineTemplateCommand canStack="0" icon="writing_brush_kd" id="moredesign" idKey="WppMoreDesign" needLogin="false" text="@More design"/>
+			<KWppConvertTemplateFromFileCommand canStack="0" id="styleClone" idKey="WppStyleClone" needLogin="false"/>
+			<KWpsAssistOnlineTemplateCommand customTip="WpsAssistOnlineTemplate" hotKey="c" icon="template_kd" id="WpsAssistOnlineTemplate" idKey="KaiWppWpsAssistOnlineTemplateMenuEntry" rbHotKey="C" text="@More Templates"/>
+			<KWpsAssistOnlineTemplateCommand aid="5819" dialogHint="1" hotKey="e" icon="SlideDesign" id="DesignTemplates" idKey="WPPShowDesignTemplates" text="@Design Templates"/>
+			<KWpsAssistOnlineTemplateCommand aid="5819" customTip="WpsAssistOnlineTemplate" dialogHint="1" hotKey="e" icon="template_kd" id="DesignTemplates" idKey="WPPMoreDesignTemplates" text="@More DesignTemplates"/>
+			<KxWppBeautifySingleSlideCommand id="BeautifySingleSlide" text="@beautify Single Slide"/>
+			<KxWppChangeThemeCommand id="WppChangeTheme" text="@wpp Change Theme"/>
+			<KxWppSmartAnimationWebGalleryCommand customTip="SmartAnimation" icon="smart_animation_kd" id="SmartAnimation" idKey="KAIWppSmartAnimation" ksoCmd="SmartAnimation" text="@Smart Animation"/>
+			<KxWppAiAnimationWebGalleryCommand customTip="AiAnimation" icon="smart_animation_kd" id="AiAnimation" idKey="KAIWppAiAnimation" ksoCmd="AiAnimation" text="@AI Animation Effect"/>
+			<KxDeleteAnimationTriggerCommand customTip="delete animation" icon="delete_animation_kd" id="DeleteAnimation" idKey="KAIWppDeleteAnimation" text="@delete animation"/>
+			<KxWppFlashPictureWebGalleryCommand customTip="FlashPicture" icon="flash_pic_kd" id="FlashPicture" idKey="KAIWppFlashPicture" ksoCmd="FlashPicture" text="@Flash Picture"/>
+			<KxWppUnitedFontGalleryCommand customTip="UnitedFont" icon="font_united_kd" id="UnitedFontGallery" idKey="KAIWppUnitedFont" needLogin="false" text="@United Font">
+				<command idQ="ReplaceFont RainBow"/>
+				<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="S" icon="batch_set_font_kd" id="ProxyBatchSetFont" targetId="BatchSetFont" targetModule="wpppresentationtool" text="@Bulk Font Setting" visible="true"/>
+				<KxWppUnitedFontGalleryMoreCommand icon="magic_kd" id="MoreFontCommand" text="@more"/>
+			</KxWppUnitedFontGalleryCommand>
+			<KxWppMediaCoverCommand id="VideoCover_Setting" idKey="VideoCover_Setting" text="@media cover"/>
+			<KxWppMediaCoverPlayBtnCommand id="VideoCover_Play_Btn" idKey="VideoCover_Play_Btn" text="@display play button"/>
+			<KxWppMediaCoverResetCommand id="VideoCover_Reset" idKey="VideoCover_Reset" text="@reset media"/>
+			<KxWppTextboxBeautifyCommand customTip="TextboxBeautify" icon="doc_fast_typesetting_kd" id="TextboxBeautify" idKey="TextboxBeautify" ksoCmd="TextboxBeautify" text="@One-click combing of content to make writing more organized" visible="false"/>
+			<KxWppTextboxBeautifyCommand customTip="TextboxBeautify" icon="doc_fast_typesetting_kd" id="TextboxBeautifyText" idKey="TextboxBeautify" ksoCmd="TextboxBeautify" text="@One-click combing of content to make writing more organized" visible="false"/>
+			<KxWppOnlineGalleryTableCommand customTip="InsertTable" detail="@Insert Table" icon="sheet_kd" id="KAiWppOnlineTable" ksoCmd="InsertTablePalette" qtspyName="InsertTablePalette" text="@Table"/>
+			<KxTextToDocerSmartArtMoreCmd id="TextToDocerSmartArt"/>
+			<KxGalleryTableCommand customTip="InsertTable" detail="@Insert Table" icon="sheet_kd" id="InsertTablePalette" ksoCmd="InsertTablePalette" qtspyName="InsertTablePalette" rbHotKey="T" text="@Table">
+				<command idQ="RbDataTable"/>
+			</KxGalleryTableCommand>
+			<KFullTextBeautifySlideCommand customTip="Full Text Beautify Slide" icon="slide_beautify_single_kd" id="FullTextBeautifySlide" idKey="WPPKAIBeautifyFullTextBeautifySlide" needLogin="false" text="@Full Text Beautify Slide"/>
+			<KxThemeColorsBeautifyCommand icon="color_palette_kd" id="ThemeColorsBeautify" needLogin="false"/>
+			<KxThemePaneCommand alias="changeThemeSideWidget" icon="clothing_kd" id="changeThemeSideWidget" idKey="WppSideChangeTheme" needBetaIcon="true" shortHint="@Change Theme" text="@Change Theme"/>
+			<KxThemeModalCommand alias="changeThemeModalWidget" icon="clothing_kd" id="changeThemeModalWidget" idKey="WppModalChangeTheme" shortHint="@Change Theme" text="@Change Theme"/>
+			<KxPictureToSmartDiagramCommand customTip="PictureToDiagram" icon="smart_diagram_kd" id="PictureToSmartDiagram" idKey="WPPPictureToSmartDiagram" text="@Picture To Diagram"/>
+			<KxWppSmartSummarizeTableCommand customTip="SmartSummarizeTable" icon="ai_smart_filling_kd" id="SmartSummarizeTable"/>
+			<KxWppSmartSummarizeChartCommand customTip="SmartSummarizeChart" icon="ai_smart_filling_kd" id="SmartSummarizeChart"/>
+		</module>
+		<module name="kdocerwpppicture">
+			<KxCreativeCropCommand customTip="CreativeCrop" dialogHint="1" icon="creative_crop_kd" id="CreativeCrop" idKey="WppCreativeCrop" text="@Creative Crop"/>
+			<KxWppCreativeCropWebGalleryCommand customTip="CreativeCrop" hotKey="c" icon="creative_crop_kd" id="Picturen_CreativeCrop" idKey="WppCreativeCrop_Online" text="@Creative Crop"/>
+			<KxWppPictureCollageWebGalleryCommand customTip="PictureCollage" hotKey="c" icon="shape_three_kd" id="Picture Collage" idKey="WppPictureCollage" text="@Picture Collage"/>
+			<KxWppPictureCollageCommand customTip="PictureCollage" hotKey="c" icon="shape_three_kd" id="Picture_PictureCollage" idKey="WppPictureCollage_Local" text="@Picture Collage"/>
+		</module>
+		<module name="konlinepicture">
+			<KxCreativeCropCommand customTip="CreativeCrop" dialogHint="1" icon="creative_crop_kd" id="CreativeCrop" idKey="WppCreativeCrop" text="@Creative Crop"/>
+			<KxWppCreativeCropWebGalleryCommand customTip="CreativeCrop" hotKey="c" icon="creative_crop_kd" id="Picturen_CreativeCrop" idKey="WppCreativeCrop_OnlineWithoutMacOS" text="@Creative Crop"/>
+			<KOnlinePictureCommand aid="100071" customShortcutEnabled="false" customTip="InsertOnlinePictureFromFile" detail="@Insert Online Pictures" dialogHint="1" filter="support:IntranetVersion=false" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTab" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@My Picture"/>
+			<KOnlinePicturePaddingCommand hotKey="o" icon="pic_online_kd" id="FillPictureFromOnline" relatedKsoCmd="FillColor" text="@My Picture"/>
+			<KOnlinePictureCommand customTip="InsertOnlinePictureFromFile" detail="@Insert Online Picture" filter="support:IntranetVersion=false" icon="pic_online_kd" id="InsertOnlinePictureFromFileInPictureToolTab" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@My Picture"/>
+			<KOnlinePictureCommand customTip="InsertOnlinePicture" detail="@Insert Online Pictures" filter="support:IntranetVersion=false" hotKey="o" icon="pic_online_kd" id="FromOnline" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@My Picture"/>
+			<KxTpWppOnlinePictureCommand alias="TpOnlinePicture" filter="support:IntranetVersion=false" id="TpOnlinePicture" shortHint="@Online Picture Gallery" text="@Online Picture Recommend" tpIcon="tponlinepicture;tponlinepicture-mos;tponlinepicture-down;tponlinepicture-dis"/>
+			<KOnlinePictureCommand aid="100071" customShortcutEnabled="false" customTip="InsertOnlinePictureFromFile" detail="@Insert Online Pictures" dialogHint="1" filter="support:IntranetVersion=false" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInHomeTab" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" text="@My Picture"/>
+			<KOnlinePictureQhChangeCommand alias="MenuPictureChange" customTip="PictureChange" filter="support:IntranetVersion=false" icon="replace_pic_kd" id="MenuPictureChange" relatedKsoCmd="InsertPictureFromFile" text="@Online Picture Change"/>
+			<KOnlinePictureQhFillommand filter="support:IntranetVersion=false" icon="MenuPictureFill" id="MenuPictureFill" relatedKsoCmd="InsertPictureFromFile"/>
+			<KOnlinePictureBackgroundCommand id="OnlineBackgroundPopup" ksoCmd="Background" ksoTriggerCmd="Background" needIcon="0" text="@Online Background"/>
+			<KOnlinePictureBackgroundCommand id="OnlineBackgroundPopupMenu" ksoCmd="Background" ksoTriggerCmd="Background" text="@Online Background"/>
+			<KxQhAddOnlinePicFrameCommand customTip="AddPicFrame" filter="support:IntranetVersion=false" icon="pic_outline_kd" id="QhAddOnlinePicFrame" text="@Add Picture Frame"/>
+		</module>
+		<module name="kaiwppcover">
+			<KAiWppCoverGenerateCommand customTip="AiGenerateCover" hotKey="y" icon="ai_cover_kd" id="KAiWppCoverGenerateCover_Insert" isAIIntentionCmd="true" position="tab_insert" rbHotKey="Y" switchType="pic" text="@AiGenerateCover"/>
+			<KAiWppCoverGenerateCommand customTip="AiGenerateCover" hotKey="y" icon="ai_cover_kd" id="KAiWppCoverGenerateCover_NewSlideSmartWidgetMenu" position="float_addcover" rbHotKey="Y" switchType="pic" text="@AiGenerateCover"/>
+			<KAiWppCoverGenerateCommand customTip="AiGenerateCover" icon="ai_cover_kd" id="KAiWppCoverGenerateCover_NewSlideSmartWidgetMenu_CanvasMenu" position="float_aientrance" switchType="pic" text="@AiGenerateCover"/>
+			<KAiWppCoverGenerateCommand icon="ai_cover_kd" id="KAiWppCoverGenerateCover_Insert_Trigger" isAIIntentionCmd="true" position="tab_insert" switchType="pic" text="@AiGenerateCover" visible="false"/>
+			<KAiWppCoverGenerateCommand icon="ai_cover_kd" id="KAiWppCoverGenerateCover_WpsAi_Trigger" isAIIntentionCmd="true" position="tab_ai" switchType="pic" text="@AiGenerateCover" visible="false"/>
+			<KAiWppCoverGenerateCommand hotKey="y" icon="ai_cover_kd" id="KAiWppCoverGenerateCover_Insert_Sub" position="tab_insert_daicover" rbHotKey="Y" switchType="pic" text="@AiGenerateCover"/>
+			<KAiWppVideoCoverGenerateCommand hotKey="v" icon="ai_change_video_cover_kd" id="KAiWppCoverGenerateVideoCover_Insert_Sub" position="tab_insert_daivideocover" rbHotKey="V" switchType="video" text="@AiGenerateVideoCover"/>
+			<KAiWppCoverGenerateCommand icon="ai_cover_kd" id="KAiWppCoverGenerateCover_WpsAi_Sub" position="tab_ai_daicover" switchType="pic" text="@AiGenerateCover"/>
+			<KAiWppVideoCoverGenerateCommand icon="ai_change_video_cover_kd" id="KAiWppCoverGenerateVideoCover_WpsAi_Sub" position="tab_ai_daivideocover" switchType="video" text="@AiGenerateVideoCover"/>
+		</module>
+		<module name="kgroupsendingassist">
+			<KxGroupSendingAssistCommand customTip="" icon="GroupSending" id="KxGroupSendingAssistCommand" text="@GroupSending"/>
+		</module>
+		<module name="aiocr2pdf">
+			<AIOCR2PdfCommand customTip="AIOCR2Pdf" from="PdfReader" icon="AIOCR2Pdf" id="AIOCR2Pdf" qtspyName="AIOCR2Pdf" text="@AIOCR2Pdf"/>
+		</module>
+		<module name="pdfbatchcompression">
+			<PdfBatchCompressionCommand customTip="PDFCompress" id="MoreApp_Compress" text="@PDFCompress"/>
+		</module>
+		<module name="pdfcadmutualconverter">
+			<PdfCadMutualConverterCommand customTip="CADTOPdf" from="PdfReader" id="PdfCadMutualConverter" qtspyName="PdfCadMutualConverter" text="@CADTOPdf"/>
+			<PdfAppCenterPdf2CadCommand customTip="PDFTOCad" from="PdfReader" id="PdfAppCenterPdf2Cad" qtspyName="PdfCadMutualConverter" text="@PDFTOCad"/>
+		</module>
+		<module name="konlinegradient">
+			<KxOnlineGradientCommand customTip="OnlineGradient" icon="OnlineGradient" id="OnlineGradient" ksoCmd="Background" ksoTriggerCmd="Background" text="@Online Gradient"/>
+			<KxOnlineGradientCommand customTip="OnlineGradient" icon="OnlineGradient" id="OnlineGradientPopup" idKey="WPPOnlineGradient" isHideSeprator="true" ksoCmd="Background" ksoTriggerCmd="Background" text="@Online Gradient"/>
+			<KxOnlineGradientMoreCommand customTip="OnlineGradient" icon="OnlineGradientMore" id="OnlineGradientMore" ksoCmd="Background" ksoTriggerCmd="Background" text="@Online Gradient"/>
+		</module>
+		<module name="kspellcheckset">
+			<KxSetSpellcheckLanguageCommand_XA customTip="SetSpellcheckLanguage" dialogHint="1" icon="language_kd" id="SetSpellcheckLanguageCommand_XA" rbHotKey="L" text="@Set Language"/>
+		</module>
+		<module name="kscreengrab">
+			<KScreenGrabCommand hotKey="S" id="ScreenGrab" idKey="WppScreenGrabCmd" rbHotKey="S" shortcutHint="Ctrl+Alt+X" text="@Screen Grab"/>
+			<KScreenGrabCommandHide hotKey="H" id="ScreenGrabHide" idKey="WppScreenGrabCmd" rbHotKey="H" shortcutHint="Ctrl+Alt+C" text="@Hide Current Window when Grabbing Screen"/>
+			<KScreenGrabShortcutSettingCommand id="ScreenGrabShortcutSetting" idKey="WppScreenGrabCmd" text="@Shortcut Setting"/>
+			<KScreenGrabMenuCommand customTip="ScreenGrab" icon="cut_screen_kd" id="InsertScreenGrab" idKey="WppScreenGrabCmd" rbHotKey="SC" referenceCommand="ScreenGrab" text="@Screen Grab@Menu">
+				<KScreenGrabCommand hotKey="S" id="ScreenGrab" idKey="WppScreenGrabCmd" rbHotKey="S" shortcutHint="Ctrl+Alt+X" text="@Screen Grab"/>
+				<KScreenGrabCommandHide hotKey="H" id="ScreenGrabHide" idKey="WppScreenGrabCmd" rbHotKey="H" shortcutHint="Ctrl+Alt+C" text="@Hide Current Window when Grabbing Screen"/>
+				<separator/>
+				<KScreenGrabShortcutSettingCommand id="ScreenGrabShortcutSetting" idKey="WppScreenGrabCmd" text="@Shortcut Setting"/>
+			</KScreenGrabMenuCommand>
+		</module>
+		<module name="kscreengrabocr">
+			<KxScrngrabCommand id="KxScrngrabCommand" targetModule="kscreengrabocr" text="@Screen Grab"/>
+			<KxScrngrabHideCommand id="KxScrngrabHideCommand" targetModule="kscreengrabocr" text="@Hide current window when taking screenshots"/>
+			<KxScrngrabOcrCommand id="KxScrngrabOcrCommand" targetModule="kscreengrabocr" text="@Screen Grab Ocr"/>
+			<KxScrngrabOcrHideCommand id="KxScrngrabOcrHideCommand" targetModule="kscreengrabocr" text="@Hide Current Window when Grabbing Screen"/>
+		</module>
+		<module name="kdoccontentstudio">
+			<KDocContentStudioCommand alias="DocContentStudio" id="TpDocContentStudio" shortHint="@DocumentContentStudioHint" text="@DocumentContentStudio" tpIcon="tpdoccontentstudio;tpdoccontentstudio-mos;tpdoccontentstudio-down;tpdoccontentstudio-dis"/>
+		</module>
+		<module name="kdocfinalizedmgr">
+			<KDocFinalizedMgrCommand alias="TpDocFinalizedMgr" icon="doc_finalized_kd" id="TpDocFinalizedMgr" shortHint="@Document Finalized" text="@Document Finalized"/>
+		</module>
+		<module name="aiocr2pdf">
+			<AIOCR2PdfCommand customTip="AIOCR2Pdf" from="PdfReader" icon="AIOCR2Pdf" id="AIOCR2Pdf" qtspyName="AIOCR2Pdf" text="@AIOCR2Pdf"/>
+		</module>
+		<module name="pdfbatchcompression">
+			<PdfBatchCompressionCommand customTip="PDFCompress" id="MoreApp_Compress" text="@PDFCompress"/>
+		</module>
+		<module name="pdfcadmutualconverter">
+			<PdfCadMutualConverterCommand customTip="CADTOPdf" from="PdfReader" id="PdfCadMutualConverter" qtspyName="PdfCadMutualConverter" text="@CADTOPdf"/>
+			<PdfAppCenterPdf2CadCommand customTip="PDFTOCad" from="PdfReader" id="PdfAppCenterPdf2Cad" qtspyName="PdfCadMutualConverter" text="@PDFTOCad"/>
+		</module>
+		<module name="kinsertornamentation">
+			<KxInsertOrnamentationCommand customTip="Ornamentation" icon="ornamentation_kd" id="Ornamentation" text="@Ornamentation"/>
+		</module>
+		<module name="knowledgecard">
+			<KxKnowledgeCardCommand customTip="KnowledgeCard" dialogHint="1" hotKey="p" icon="InsertKnowledgeCard" id="KnowledgeCard" qtspyName="KnowledgeCard" rbHotKey="PK" text="@KnowledgeCard"/>
+			<KxKnowledgeCardCommand customTip="KnowledgeCard" dialogHint="1" hotKey="p" icon="InsertKnowledgeCard" id="KnowledgeCardEx" isJsapi="true" qtspyName="KnowledgeCard" rbHotKey="PK" text="@KnowledgeCard Jsapi"/>
+		</module>
+		<module name="konlinewpptablestyle">
+			<KxWppTableStyleGalleryCommand customTip="OnlineTableStyle" icon="OnlineTableStyle" id="OnlineTableStyle" ksoCmd="FormatAsTable" text="@Online TableStyle"/>
+			<KxTpWppOnlineTableStyleCommand alias="TpTableStyle" id="TpTableStyle" text="@DocerTableStyle" tpIcon="tpdocertablestyle;tpdocertablestyle-mos;tpdocertablestyle-down;tpdocertablestyle-dis"/>
+			<KInsertWppOnlineTableStyleCommand id="InsertStyleTable" ksoCmd="InsertTablePalette"/>
+		</module>
+		<module name="kdocerlibrary">
+			<KDocerLibraryCommand alias="TpDocerLibrary" icon="book_magnifier_kd" id="TpDocerLibrary" shortHint="@TpDocerLibrary" text="@Docer Library"/>
+		</module>
+		<module name="kdocumenttheme">
+			<KxDocThemeCommand bForceScrollToIndex="1" completeColumnNumber="4" id="DocumentTheme"/>
+			<KxDocThemeEffectsCommand bForceScrollToIndex="1" completeColumnNumber="4" id="DocumentThemeEffect"/>
+		</module>
+		<module name="kdocerresource">
+			<KxDocerResourceCommand entry="dcstore" id="DocerResourceShopInOnlineTab"/>
+			<KxDocerResourceTriggerCommand action="task-search" entry="lookup" id="DocerResourceTaskpane_Search"/>
+			<KxDocerResourceTriggerCommand action="task-icon" entry="lookup" id="DocerResourceTaskpane_Icon"/>
+			<KxDocerResourceTriggerCommand action="task-font" entry="lookup" id="DocerResourceTaskpane_Font"/>
+			<KxDocerResourceTriggerCommand action="task-audio" entry="lookup" id="DocerResourceTaskpane_Sound"/>
+			<KxDocerResourceTriggerCommand action="task-chart" entry="lookup" id="DocerResourceTaskpane_Chart"/>
+			<KxDocerResourceTriggerCommand action="task-picture" entry="lookup" id="DocerResourceTaskpane_Picture"/>
+			<KxDocerResourceTriggerCommand action="task-textbox" entry="lookup" id="DocerResourceTaskpane_Textbox"/>
+			<KxDocerResourceTriggerCommand action="task-wordart" entry="lookup" id="DocerResourceTaskpane_Wordart"/>
+			<KxDocerResourceTriggerCommand action="task-search" entry="float" id="DocerResourceTaskpane_SelectSearch"/>
+			<KxDocerResourceTriggerCommand action="open-window" entry="_insertpic" id="FromOnlinePicProxy"/>
+			<KxTpDocerResourceShopCommand alias="TpDocerResourceShop" icon="docer_resource_shop_kd" id="TpDocerResourceShop" shortHint="@TpDocerResourceShop" text="@Docer Resource Shop"/>
+		</module>
+		<module name="kdocercore">
+			<KDocerTpFeatureCommand alias="DocerTpFeature" icon="stick_kd" id="DocerTpFeature" shortHint="@DocerTpFeature" text="@Docer Tp Feature"/>
+			<KxDocerChangeIconCommand entryPos="beautify_changeicon_tool" hotKey="F" icon="earth_kd" id="ChangeOnlineIconGraphicTool" qtspyName="ChangeOnlineIconGraphicTool" rbHotKey="F" text="@Online Icon"/>
+			<KxDocerChangeIconCommand entryPos="beautify_changeicon_rightclick" hotKey="F" icon="earth_kd" id="ChangeOnlineIconPopupMenu" qtspyName="ChangeOnlineIconPopupMenu" rbHotKey="F" text="@Online Icon"/>
+			<KDocerIconGalleryCommand customTip="OnlineIconMore" disableTrigger="1" entry="insert" hotKey="o" icon="shape_four_three_kd" id="onlineiconInsert" ksoCmd="InsertPictureFromFile" qtspyName="InsertDocerIcon" rbHotKey="o" text="@IconLibrary"/>
+			<KDocerPicGalleryCommand applyAction="1" entry="begin" id="InsertOnlinePictureFromFileInHomeTab"/>
+			<KDocerPicGalleryCommand applyAction="1" entry="insert" id="InsertOnlinePictureFromFileInInsertTab"/>
+			<KDocerPicGalleryCommand applyAction="2" entry="destab" id="OnlineBackgroundPopup"/>
+			<KDocerPicGalleryCommand applyAction="1" entry="pictool" id="InsertOnlinePictureFromFileInPictureToolTab"/>
+			<KDocerPicGalleryCommand applyAction="3" entry="pictool_change" id="InsertOnlinePictureFromFileInPictureToolTabChange"/>
+			<KDocerPicGalleryCommand applyAction="3" entry="replace" id="ReplaceOnlinePictureFromMenu"/>
+			<KDocerPicGalleryCommand applyAction="2" entry="change" id="OnlineBackgroundPopupMenu"/>
+			<KDocerFillWithPictureGalleryCommand id="FillOnlinePictureFromMenu"/>
+			<KDocerChartGalleryCommand chartType="column" entry="charttool_icondrop" id="OnlineTypeQuickChartColumn"/>
+			<KDocerChartGalleryCommand chartType="bar" entry="charttool_icondrop" id="OnlineTypeQuickChartBar"/>
+			<KDocerChartGalleryCommand chartType="line" entry="charttool_icondrop" id="OnlineTypeQuickChartLine"/>
+			<KDocerChartGalleryCommand chartType="radar" entry="charttool_icondrop" id="OnlineTypeQuickChartRadar"/>
+			<KDocerChartGalleryCommand chartType="stock" entry="charttool_icondrop" id="OnlineTypeQuickChartStock"/>
+			<KDocerChartGalleryCommand chartType="area" entry="charttool_icondrop" id="OnlineTypeQuickChartArea"/>
+			<KDocerChartGalleryCommand chartType="combo" entry="charttool_icondrop" id="OnlineTypeQuickChartCombo"/>
+			<KDocerChartGalleryCommand chartType="pie" entry="charttool_icondrop" id="OnlineTypeQuickChartPie"/>
+			<KDocerChartGalleryCommand chartType="scatter" entry="charttool_icondrop" id="OnlineTypeQuickChartScatter"/>
+			<KDocerChartGalleryCommand chartType="bubble" entry="charttool_icondrop" id="OnlineTypeQuickChartBubble"/>
+			<KDocerTextBoxGalleryCommand entry="insert" id="InsertOnlineTextboxCommand"/>
+			<KDocerTextBoxGalleryCommand entry="begin" id="InsertOnlineTextboxCommandInHomeTab"/>
+			<KDocerTextBoxGalleryCommand entry="insert" id="InsertOnlineTextboxCommandInInsertTab"/>
+			<KDocerTextBoxGalleryCommand entry="drawtool" id="InsertOnlineTextboxCommandInPictureToolTab"/>
+			<KxAIChangeImgCommand entrance="pic_floating" id="OnlineAIChangeImgQuickBar" tipContent="@AI Change Img Tip Content" tipTitle="@AI Change Img Tip Title"/>
+			<KxAIChangeImgCommand entrance="pic_rightclick" id="OnlineAIChangeImgMenu" tipContent="@AI Change Img Tip Content" tipTitle="@AI Change Img Tip Title"/>
+		</module>
+		<module name="kresourcesclip">
+			<KResourcesClipCommand alias="TpResourcesClip" icon="folder_star_kd" id="TpResourcesClip" shortHint="@Resources Clip" text="@Resources Clip"/>
+		</module>
+		<module name="screenrecorder">
+			<KxScreenRecorderCommand customTip="ScreenRecorder" icon="start_making_kd" id="ScreenRecorder" rbHotKey="" text="@Screen Recorder"/>
+		</module>
+		<module name="kinsertchuangkit">
+			<KxInsertChuangkitCommand action="edit" entry="popupmenu" id="EditChuangkit"/>
+		</module>
+		<module name="kinsertlatex">
+			<KxInsertLatexCommand customTip="﻿Equation" icon="math_latex_two_kd" id="InsertLatex" qtspyName="InsertLatex" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" text="@LaTeXEquation"/>
+			<KxInsertLatexCommand customTip="PCLaTeXEquation" detail="@Insert LaTeX Equation" hotKey="ym" icon="math_latex_kd" id="InsertLatex" idKey="CommonInsertLatex" qtspyName="InsertLatex" rbHotKey="YM" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" text="@PCLatexEquation"/>
+		</module>
+		<module name="ktaskpanelcopilot">
+			<KTaskPanelCopilotCommand alias="TpCopilot" icon="ai_kd" id="TpCopilot" idKey="CopilotSetting" shortHint="@Copilot AI" text="@WPS Copilot AI"/>
+		</module>
+		<module name="kwppaiquoteppt">
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_HomeTab" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_InsertTab" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_ThumbTab" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_ThumbBlankPopup" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_ThumbFrame" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" icon="generate_ppt_kd" id="NewSlideOnQuotePpt_ThumbSlide" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppAiQuotePptTriggerCommand alias="AiQuotePptTrigger" appFlags="darknessQuestion" customTip="NewSlideOnQuotePpt_EduworkbenchTab" icon="ai_reuse_slides_kd" id="NewSlideOnQuotePpt_EduworkbenchTab" menuItemRightPosIconOriginalSize="14*14" shortHint="@AiQuotePpt" text="@Quote Ppt"/>
+			<KWppQuotePptTaskPaneCommand alias="QuotePptOnTaskPane" icon="generate_ppt_kd" id="QuotePptOnTaskPane" shortHint="@Quote" text="@QuotePptOnTaskPane"/>
+		</module>
+		<module name="kpubaigcbox">
+			<KxAISCLingxiEntryCommand id="LingxiEntry"/>
+		</module>
+		<module name="kwppcopilotentry">
+			<KxWppText2TextFloatbarListCommand alias="WppTextGenerateText" enableTrigger="true" honeyMask="wpp_textGenerateTextRightTextEntry_visible" icon="WPSAILOGO" id="wps_ai_rightmeue_text_floatbar" idKey="AITextGenerateText" shortHint="@Text Generate Text" text="@Text Generate Text"/>
+			<KxWppText2TextFloatbarListCommand alias="WppTextGenerateText" enableTrigger="true" honeyMask="wpp_textGenerateTextSelectedTextEntry_visible" icon="WPSAILOGO" id="wps_ai_selected_text_floatbar" idKey="AITextGenerateText" shortHint="@Text Generate Text" text="@Text Generate Text"/>
+			<KxWppText2TextFloatbarListCommand alias="WppTextGenerateText" enableTrigger="true" honeyMask="wpp_textGenerateTextRightObjectEntry_visible" icon="WPSAILOGO" id="wps_ai_rightmeue_object_floatbar" idKey="AITextGenerateText" shortHint="@Text Generate Text" text="@Text Generate Text"/>
+			<KxWppText2TextFloatbarListCommand alias="AI Modify" customMargins="true" customTheme="KxAigcModifyMenuButton" enableTrigger="false" honeyMask="wpp_textGenerateTextRightTextEntry_visible" icon="wps_aigc_helpmemodify" id="wps_ai_rightmeue_text_floatbar_translate" shortHint="@AI Modify" text="@AI Modify"/>
+			<KxWppText2TextFloatbarListCommand alias="AI Modify" customMargins="true" customTheme="KxAigcModifyMenuButton" enableTrigger="false" honeyMask="wpp_textGenerateTextSelectedTextEntry_visible" icon="wps_aigc_helpmemodify" id="wps_ai_selected_text_floatbar_translate" shortHint="@AI Modify" text="@AI Modify"/>
+			<KxWppText2TextQuickTriggerCommand alias="WppTextGenerateText" honeyMask="wpp_textGenerateTextLeftObjectEntry_visible" icon="WPSAILOGO" id="wps_ai_object_quickbar" shortHint="@Text Generate Text" text="@Text Generate Text"/>
+			<KxWppText2TextQuickTriggerCommand alias="WppTextGenerateText" honeyMask="wpp_settingShortCut_visible" icon="WPSAILOGO" id="WppGenerateText_ShortCut" shortHint="@Text Generate Text" text="@Text Generate Text"/>
+			<KxWppText2TextQuickTriggerCommand alias="Polish" honeyMask="wpp_textGenerateTextRightTextEntry_visible" icon="polish_kd" id="Wpp_aigc_Polish_textedit" shortHint="@Polish" text="@Polish"/>
+			<KxWppText2TextQuickTriggerCommand alias="Polish" honeyMask="wpp_textGenerateTextSelectedTextEntry_visible" icon="polish_kd" id="Wpp_aigc_Polish_texteditSel" shortHint="@Polish" text="@Polish"/>
+			<KxWppText2TextQuickTriggerCommand alias="Polish" honeyMask="wpp_textGenerateTextRightTextEntry_visible" icon="polish_kd" id="Wpp_aigc_Polish_table" shortHint="@Polish" text="@Polish"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_HelpMeWrite" functionCode="wpp_normal" icon="ai_edit_kd" id="wppGenerateText_HelpMeWrite" shortHint="@GenerateText_HelpMeWrite" text="@GenerateText_HelpMeWrite"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_Expand" functionCode="wpp_generate_text_expand_content_prompt" icon="expand_kd" id="wppGenerateText_Expand" shortHint="@GenerateText_Expand" text="@GenerateText_Expand"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_Shorter" functionCode="wpp_generate_text_shorter" icon="simplify_kd" id="wppGenerateText_Shorter" shortHint="@GenerateText_Shorter" text="@GenerateText_Shorter"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishFast" functionCode="wpp_generate_text_polishing" id="wppGenerateText_PolishFast" shortHint="@GenerateText_PolishFast" text="@GenerateText_PolishFast"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishNormal" functionCode="wpp_generate_text_modify_formal" id="wppGenerateText_PolishNormal" shortHint="@GenerateText_PolishNormal" text="@GenerateText_PolishNormal"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishLively" functionCode="wpp_generate_text_modify_lively" id="wppGenerateText_PolishLively" shortHint="@GenerateText_PolishLively" text="@GenerateText_PolishLively"/>
+			<KWppNewQuickAigcListCommand alias="GenerateText_PolishText" icon="polish_kd" id="wppGenerateText_PolishText" shortHint="@GenerateText_PolishText" text="@GenerateText_PolishText">
+				<command idQ="wppGenerateText_PolishFast"/>
+				<separator/>
+				<command idQ="wppGenerateText_PolishNormal"/>
+				<command idQ="wppGenerateText_PolishLively"/>
+			</KWppNewQuickAigcListCommand>
+			<KWppNewQuickAigcListCommand alias="GenerateText_HelpMeModify" icon="doc_star_kd" id="wppGenerateText_HelpMeModify" shortHint="@GenerateText_HelpMeModify" text="@GenerateText_HelpMeModify">
+				<command idQ="wppGenerateText_PolishText"/>
+				<command idQ="wppGenerateText_Expand"/>
+				<command idQ="wppGenerateText_Shorter"/>
+			</KWppNewQuickAigcListCommand>
+			<KWppNewQuickAigcCommand alias="GenerateText_HelpMeWrite" functionCode="wpp_normal" icon="ai_edit_kd" id="wppGenerateText_HelpMeWrite_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_HelpMeWrite" text="@GenerateText_HelpMeWrite"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_Expand" functionCode="wpp_generate_text_expand_content_prompt" icon="expand_kd" id="wppGenerateText_Expand_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_Expand" text="@GenerateText_Expand"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_Shorter" functionCode="wpp_generate_text_shorter" icon="simplify_kd" id="wppGenerateText_Shorter_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_Shorter" text="@GenerateText_Shorter"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishNormal" functionCode="wpp_generate_text_modify_formal" id="wppGenerateText_PolishNormal_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_PolishNormal" text="@GenerateText_PolishNormal"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishLively" functionCode="wpp_generate_text_modify_lively" id="wppGenerateText_PolishLively_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_PolishLively" text="@GenerateText_PolishLively"/>
+			<KWppNewQuickAigcCommand alias="GenerateText_PolishFast" functionCode="wpp_generate_text_polishing" id="wppGenerateText_PolishFast_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_PolishFast" text="@GenerateText_PolishFast"/>
+			<KWppNewQuickAigcListCommand alias="GenerateText_PolishText" icon="polish_kd" id="wppGenerateText_PolishText_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_PolishText" text="@GenerateText_PolishText">
+				<command idQ="wppGenerateText_PolishFast_MembershipTab"/>
+				<separator/>
+				<command idQ="wppGenerateText_PolishNormal_MembershipTab"/>
+				<command idQ="wppGenerateText_PolishLively_MembershipTab"/>
+			</KWppNewQuickAigcListCommand>
+			<KWppNewQuickAigcListCommand alias="GenerateText_HelpMeModify" icon="doc_star_kd" id="wppGenerateText_HelpMeModify_MembershipTab" openPosition="RBMembershipTab" shortHint="@GenerateText_HelpMeModify" text="@GenerateText_HelpMeModify">
+				<command idQ="wppGenerateText_PolishText_MembershipTab"/>
+				<command idQ="wppGenerateText_Expand_MembershipTab"/>
+				<command idQ="wppGenerateText_Shorter_MembershipTab"/>
+			</KWppNewQuickAigcListCommand>
+			<KAiQuickHelpAITextListCommand bottomSpace="5" clickPos="wpp_textBox_quickBar" customTip="QuickHelpAIText" hLayout="false" icon="WpsCopilotEntry" id="QuickHelpAIText" idKey="WppQuickHelpAIText" isShowText="1" layoutOnly="1" leftSpace="1" rightSpace="1" text="@WPS AI" topSpace="5"/>
+			<KAiQuickHelpAITextListCommand bottomSpace="5" clickPos="wpp_shapes_quickBar" customTip="QuickHelpAIText" hLayout="false" icon="WpsCopilotEntry" id="QuickHelpAITextSelected" idKey="WppQuickHelpAIText" isShowText="1" layoutOnly="1" leftSpace="1" rightSpace="1" text="@WPS AI" topSpace="5"/>
+			<KxExpandImgCommand icon="ai_image_enlargement_kd" id="app_ai_WppExpandImgPopup" idKey="WppAIExpandImg" text="@AiExpandImg"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="Home_NewSlideMenu" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_Home_NewSlideMenu" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="Insert_NewSlideMenu" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_Insert_NewSlideMenu" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="Thumb_View_Bottom" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_Thumb_View_Bottom" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="SlideMiniature_NewSlideSmartWidget" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_SlideMiniature_NewSlideSmartWidget" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="Slide Miniature Popup Menu" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_SlidePopup" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="None Slide Miniature Popup Menu" hotKey="a" icon="ppt_star_kd" id="WppGenerateSlide_NoneSlidePopup" rbHotKey="A" shortHint="@AiGenerateSlide" text="@AiGenerateSlide"/>
+			<KAiNewGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="insert_tab" hotKey="a" icon="single_ppt_kd" id="WppGenerateSlide_CT_Insert" rbHotKey="AI" shortHint="@AiGenerateSingleSlide" text="@AiGenerateSingleSlide"/>
+			<KAiNewGenerateSlideTriggerCommand alias="AiGenerateSlideTrigger" entry="home_tab" hotKey="a" icon="single_ppt_kd" id="WppGenerateSlide_CT_Home" rbHotKey="AI" shortHint="@AiGenerateSingleSlide" text="@AiGenerateSingleSlide"/>
+			<KAiOutlineEditorSwitchCommand alias="AiOutlineEditorSwitch" id="WppAiOutlineEditor_Home_Outline_View" shortHint="@OutlineEditor" text="@OutlineEditor"/>
+			<KxWppGenerateNotesCommand disableCustomRibbon="true" icon="ai_speech_kd" id="toolBarGenerateNode" idKey="WppAIGenerateNotes" shortHint="@AiGenerateNotes" text="@AiGenerateNotes"/>
+			<KxWppGenerateNotesCommand disableCustomRibbon="true" icon="ai_speech_kd" id="StatusBarGenerateNotes" idKey="WppAIGenerateNotes" shortHint="@AiGenerateNotes" text="@AiGenerateNotes"/>
+			<KxWppGenerateNotesCommandEx disableCustomRibbon="true" id="NotePageGenerateNotesComment" idKey="WppAIGenerateNotes" shortHint="@AiGenerateNotes"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_top" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePictureTop" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_float" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePictureFloat" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_picTool" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePicturePicTool" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_StartPicTool" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePictureStartPicTool" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_PicToolChange" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePicturePicToolChange" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_FillPic" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePictureFillPic" rbHotKey="G" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiNewGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_QuickHelp" hotKey="g" icon="pic_star_two_kd" id="AiGeneratePictureQuickHelp" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KAiNewGenerateImgTriggerCommand alias="AiGeneratePicture" entry="wpp_AiGeneratePicture_PicTool_outside" hotKey="cp" icon="pic_star_two_kd" id="AiGeneratePicturePicToolOutside" rbHotKey="CP" shortHint="@Ai Generate Picture" text="@Ai Generate Picture"/>
+			<KxGallerySlideLayoutNewCommand honeyMask="isNewInsertLayout" hotKey="l" icon="slide_layout_kd" id="NewSlideInsertFromLayout" rbHotKey="L" shortHint="@OutlineEditor" text="@New Slide From Layout"/>
+			<KxGallerySlideLayoutNewCommand honeyMask="isNewReplaceLayout" hotKey="l" icon="slide_layout_kd" id="NewSlideReplaceLayout" rbHotKey="L" shortHint="@OutlineEditor" text="@Layout"/>
+			<KxGallerySlideLayoutNewCommand honeyMask="isNewReplaceLayout" hotKey="l" icon="slide_layout_kd" id="NewSlideReplaceLayoutInDesignTab" rbHotKey="L" shortHint="@OutlineEditor" text="@Layout"/>
+			<KxGallerySlideLayoutNewCommand honeyMask="isNewReplaceLayout" hotKey="l" icon="slide_layout_kd" id="NewSlideReplaceLayoutPopup" rbHotKey="L" shortHint="@OutlineEditor" text="@Layout"/>
+			<KxGallerySlideLayoutNewCommand honeyMask="isNewReplaceLayout" hotKey="l" icon="slide_layout_kd" id="NewSlideReplaceLayoutFormatTab" rbHotKey="L" shortHint="@OutlineEditor" text="@Layout"/>
+			<KAiOutlineToPptTriggerCommand alias="AiOutlineToPpt" entry="ribbon_startnew" icon="outline_star_kd" id="AiOutlineToPptHomeBar" shortHint="@Ai Outline To Ppt" text="@Ai Outline To Ppt"/>
+			<KAiOutlineToPptTriggerCommand alias="AiOutlineToPpt" entry="ribbon_insertnew" icon="outline_star_kd" id="AiOutlineToPptInsertBar" shortHint="@Ai Outline To Ppt" text="@Ai Outline To Ppt"/>
+			<KxWppTranslateListCommand id="TextEdit Floatbar Translate" layoutOnly="1" relatedCmdId="TextEdit_Float_Base">
+				<KListCommand>
+					<command idQ="Float_FontPopup_2013"/>
+				</KListCommand>
+				<separator idKey="AISelectContentSeparatorOnlyOem"/>
+				<command idQ="wpp_selectContent"/>
+			</KxWppTranslateListCommand>
+			<KxWppTranslateListCommand id="TextEditSel Floatbar Translate" layoutOnly="1" relatedCmdId="TextEditSel_Float_Base">
+				<KListCommand>
+					<command idQ="Float_FontSelPopup_2013"/>
+					<command idQ="app_kdoctranslate_HyperTranslate"/>
+				</KListCommand>
+				<separator idKey="AISelectContentSeparatorOnlyOem"/>
+				<command idQ="wpp_selectContent"/>
+			</KxWppTranslateListCommand>
+			<KxWppTranslateListCommand id="Table Floatbar Translate" layoutOnly="1" relatedCmdId="Table_Floatbar_Base">
+				<KListCommand>
+					<command idQ="Float_TableTextPopup_2013"/>
+				</KListCommand>
+				<separator idKey="AISelectContentSeparatorOnlyOem"/>
+				<command idQ="wpp_selectContent"/>
+			</KxWppTranslateListCommand>
+			<KSmartExtractTableCommand icon="ai_smart_extract_table" id="app_ai_smartextracttable" text="@Ai Smart Extract Table"/>
+			<KSmartExtractFormulaCommand icon="ai_smart_extract_table" id="app_ai_smartextractformula" text="@Ai Smart Extract Formula"/>
+		</module>
+		<module name="kxiaomidraw">
+			<KXiaoMiCrossTerminalDrawCommand hotKey="D" id="XiaoMiCrossTerminalDraw" rbHotKey="D"/>
+		</module>
+		<module name="khuaweicollab">
+			<KHuaweiCollabPhotoCommand controlType="4" id="ImportFromHuaweiDevice"/>
+		</module>
+		<module name="kproofread">
+			<KProofreadCommand customTip="Proofread" id="WppProofreadCmd"/>
+			<KxProofreadTirggerCommand customTip="CommonProofread" id="ProofreadGeneralCmd"/>
+			<KxProofreadAddRightWordCommand id="ProofreadAddRightWordCmd"/>
+			<KxProofreadAddErrorWordCommand id="ProofreadAddErrorWordCmd"/>
+			<KxProofreadWordDictManagementCommand id="ProofreadWordDictManagementCmd"/>
+			<KxProofreadFeedbackCommand id="ProofreadFeedbackCmd"/>
+			<KxProofreadSettingCommand id="ProofreadSettingCmd"/>
+			<KxProofreadLoginCommand id="ProofreadLoginCmd"/>
+			<KxProofreadCloseCommand id="CloseProofreadCmd"/>
+		</module>
+		<module name="keduworkbench">
+			<KEduworkbenchRbTabCommand id="CT_EduWorkbenchBase"/>
+		</module>
+		<module name="ktranslation">
+			<KTranslationCommand customTip="Translation" hotKey="t" icon="translation_ai_kd" iconQat="translation_kd" id="app_translation_cthome" idKey="OnlineFeatures" rbHotKey="T" shortcutHint="F6" text="@Sentence Translation"/>
+			<KxTranslationAutoHideCommand customTip="Translation" filter="support:IsEulerOSInHwpad!=true" hotKey="PR" icon="translation_kd" iconQat="translation_kd" id="TranslationMenu_cthome" rbHotKey="PR" referenceCommand="app_translation_cthome" text="@Translation">
+				<KxTranslationSelectCommand hotKey="h" icon="select_translate_kd" place="0" qtspyName="translationselect" text="@Translate selected text"/>
+			</KxTranslationAutoHideCommand>
+			<KxTranslationInitCommand id="TranslationInit"/>
+			<KxTpTranslationCommand alias="TpTranslation" id="TpTranslation" idKey="OnlineFeatures" tpIcon="itranslation;itranslation-mos;itranslation-down;itranslation-dis"/>
+		</module>
+		<module name="ktpdoctranslation">
+			<KxTpDocTranslationInitCommand id="TpDocTranslationInit"/>
+			<KxTpDocTranslationCommand alias="TpDocTranslation" icon="translation_kd" id="TpDocTranslation" shortHint="@TpDocTranslation" text="@Doc Translation"/>
+		</module>
+		<module name="kwppmathor">
+			<KxWppMathorCommand dstType="OMML" hotKey="P" id="WppMathorLaTex2OMML"/>
+			<KxWppMathorCommand closeTryFindHotKey="true" dstType="LaTex" hotKey="L" id="WppMathorOMML2LaTex"/>
+		</module>
+		<module name="kwppbeautifyshell">
+			<KxEChartsFormatCommand customTip="QuickBarFormatChartArea" icon="setup_kd" id="WebAiChartFormat" text="@WebAiChart Format"/>
+			<KxEChartsEditCommand customTip="WebChartDataSource" icon="select_data_kd" id="WebAiChartEdit" text="@WebAiChart Edit"/>
+			<KxEChartsRefreshCommand customTip="WebAiChartRefresh" icon="refresh_two_kd" id="WebAiChartRefresh" text="@WebAiChart Refresh"/>
+			<KxEChartsDeleteCommand customTip="WebAiChartDelete" hotKey="D" icon="trash_can_kd" id="WebAiChartDelete" text="@WebAiChart Delete"/>
+		</module>
+	</modules>
+	<proxycommands>
+		<proxycommand id="ProxyChangePaste" targetId="ChangePaste"/>
+		<proxycommand id="ProxycellphoneControlAmi" targetId="cellphoneControlAmi"/>
+		<proxycommand id="ProxyOldTextToSpeechOption" targetId="OldTextToSpeechOption"/>
+		<proxycommand id="ProxyDocumentFix" targetId="DocumentFix"/>
+		<proxycommand id="ProxyOnlineFonts" targetId="OnlineFonts" visible="false"/>
+		<proxycommand id="ProxyProcessOnEntry" targetId="ProcessOnEntry"/>
+		<proxycommand id="ProxyWppSharePlay" targetId="WppSharePlay"/>
+		<proxycommand id="ProxyEverSheetStorage" targetId="EverSheetStorage"/>
+		<proxycommand id="ProxyEverSheetMember" targetId="EverSheetMember"/>
+		<proxycommand id="ProxyEverSheetContract" targetId="EverSheetContract"/>
+		<proxycommand id="ProxyKxGroupSendingAssistCommand" targetId="KxGroupSendingAssistCommand"/>
+		<proxycommand id="ProxyQuickBarOnlineChart" targetId="QuickBarOnlineChart" visible="false"/>
+		<proxycommand id="ProxyInsertEduTools" targetId="InsertEduTools"/>
+		<proxycommand id="ProxyInsertTianYu" targetId="InsertTianYu"/>
+		<proxycommand id="ProxyTranslationInit" targetId="TranslationInit"/>
+		<proxycommand id="ProxyTranslationMenu_ctreview" targetId="TranslationMenu_ctreview"/>
+		<proxycommand id="ProxyTranslationSelect" targetId="TranslationSelect"/>
+	</proxycommands>
+</shell>

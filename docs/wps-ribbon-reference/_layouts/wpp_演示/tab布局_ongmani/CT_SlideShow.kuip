@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_slideshow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxLegacyTriggerCommand customTip="SlideShow" hotKey="w" icon="play_current_slide_kd" id="SlideShow2" idMso="ViewSlideShowView" ksoCmd="SlideShow" rbHotKey="B" shortcutHint="F5" text="@From&#10;Beginning"/>
+		<KListCommand groupTip="StartShowGroup" icon="play_kd" id="RB_StartSlideShow" rbFileMenuEmbed="1" text="@Start Slide Show">
+			<KxLegacyTriggerCommand customTip="SlideShow" hotKey="w" icon="play_current_slide_kd" id="FromBeginningInSlideShowTab" idMso="SlideShowFromBeginning" ksoCmd="SlideShow" qtspyName="SlideShow" rbHotKey="B" shortcutHint="Shift+Ctrl+Return" text="@From Beginning"/>
+			<command idQ="SlideShowFromCurrent"/>
+			<command idQ="SlideShowPresenterView"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="SkipSlide" hotKey="i" icon="hide_slide_kd" id="SkipSlide" ksoCmd="HideSlide" needLogin="false" rbHotKey="H" text="@Hide Slide"/>
+		<KListCommand groupTip="ShowSettingGroup" icon="show_setup_kd" id="RB_SetUpSlideShow" rbFileMenuEmbed="1" text="@Slide Show Settings">
+			<KxWppSetUpShowListCommand customTip2="SlideShowSetManualOrAuto" customTip="SetUpShow" hotKey="s" icon="show_setup_kd" id="SetUpShowWays" ksoCmd="SetUpShow" needLogin="false" rbHotKey="S" text2="@Slide Show Settings" text="@Set Up Show">
+				<KxLegacyTriggerCommand hotKey="M" id="SlideShowManual" ksoCmd="SlideShowManual" text="@Manual"/>
+				<KxLegacyTriggerCommand hotKey="A" id="SlideShowAuto" ksoCmd="SlideShowAuto" text="@Auto"/>
+				<separator/>
+				<KxWppSetUpShowWaysCommand hotKey="U" id="SetUpShowWays" ksoCmd="SetUpShow" text="@Set Up Show"/>
+			</KxWppSetUpShowListCommand>
+			<KxLegacyTriggerCommand customTip="CustomShows" hotKey="w" icon="show_custom_kd" id="CustomShows" idMso="SlideShowCustom" ksoCmd="CustomShows" needLogin="false" rbHotKey="M" text="@Custom &#10;Slide Shows"/>
+			<command idQ="SkipSlide"/>
+			<KxWppRehearseListCommand customTip2="Rehearse" customTip="RehearseAllSlides" icon="play_timing_kd" id="SlideShowPlayTiming" ksoCmd="PlayTiming" needLogin="false" text="@Rehearse &#10;Timings">
+				<KxWppPlayTimingCommand aid="1120" hotKey="A" id="SlideShowRehearse" idMso="SlideShowRehearseTimings" ksoCmd="PlayTiming" text="@Rehearse All"/>
+				<KxLegacyTriggerCommand hotKey="C" id="SlideShowPlayTimingCurSlide" ksoCmd="SlideShowPlayTimingCurSlide" text="@Rehearse This Slide"/>
+			</KxWppRehearseListCommand>
+			<KxWppSpeakerNotesListCommand icon="speaker_notes_kd" id="SpeakerNotes" idKey="WppSpeakerNotes" needLogin="false" text="@Speaker&#10;Notes">
+				<KxLegacyTriggerCommand customTip="SpeakerNotes" hotKey="N" icon="speaker_notes_kd" id="SpeakerNotesCmd" ksoCmd="SpeakerNotes" needLogin="false" rbHotKey="P" text="@Speaker&#10;Notes"/>
+				<KxWppGenerateNotesProxyCommand defaultVisible="false" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" hotKey="G" icon="ai_speech_kd" id="toolBarGenerateNode" targetModule="kwppcopilotentry" text="@AiGenerateNotes"/>
+			</KxWppSpeakerNotesListCommand>
+			<KxLegacyTriggerCommand customTip="SpeakerNotes" icon="speaker_notes_kd" id="SpeakerNotes" idKey="WppSpeakerNote" ksoCmd="SpeakerNotes" needLogin="false" rbHotKey="P" text="@Speaker&#10;Notes"/>
+			<KAppCommand appCmdObj="AIPluginPane" appFlags="wpsmember" appId="kaippt2video" icon="ai_meeting_kd" id="app_kaippt2video_slideshowtab" needLogin="false" text="@app_kaippt2video_slideshowtab_text" tipContent="@app_kaippt2video_slideshowtab_tipContent" tipTitle="@app_kaippt2video_slideshowtab_tipTitle" vipMode="4"/>
+		</KListCommand>
+		<KListCommand groupTip="MultiMonitorGroup" icon="multimonitor_kd" id="RB_MultiMonitor" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Multi Monitor">
+			<KxWppSlideShowLocationCommand controlType="2" id="SlideShowLocation" ksoCmd="SlideShowLocation" labelText="@Show On" needLogin="false" spaceHint="suitable" text="@Slide Show Location"/>
+			<KxCheckBoxCommand customTip="UsePresenterView" id="UsePresenterView" ksoCmd="UsePresenterView" needLogin="false" qtspyName="UsePresenterView" singlerowfold="1" spaceHint="suitable" text="@Use Presenter View"/>
+		</KListCommand>
+		<KListCommand id="RB_SlideTransition" text="@Slide Transition">
+			<KxLegacyTriggerCommand customTip="SlideTransition" hotKey="t" icon="slide_transition_kd" id="SlideTransitionInSlideShowTab" ksoCmd="SlideTransition" qtspyName="SlideTransition" rbHotKey="L" text="@Slide&#10;Transition"/>
+		</KListCommand>
+		<KAppCommand appId="kapower" icon="start_making_kd" id="app_kapower_slideshowtab" needLogin="false" text="@Screen Recorder"/>
+		<KListCommand groupTip="ShowToolGroup" icon="ppt_tool_kd" id="RB_CellPhoneControl" text="@Slide Show Tool" visibleDependsOnSubCmds="1">
+			<KProxyCommand customTip="cellphoneControl" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" hotKey="e" icon="remote_kd" id="cellphoneControl" idKey="WppCellphoneControl" needLogin="false" relatedKsoCmd="InsertPictureFromFile" targetId="cellphoneControl" targetModule="shareplay" text="@Cellphone Control"/>
+			<command idKey="WppSharePlay" idQ="WppSharePlay"/>
+			<command idQ="ScreenRecorder"/>
+			<command idQ="ScreenRecorder"/>
+			<command idQ="app_kapower_slideshowtab"/>
+			<KxWppShowCountDownCommand customTip="CountDownTipText" icon="clock_count_down_kd" id="wpp_countdown" idKey="WPPCountDownEx" text="@Countdown"/>
+		</KListCommand>
+		<KListCommand groupTip="ShowToolGroup" icon="ppt_tool_kd" id="RB_CellPhoneControl_mac" text="@Slide Show Tool" visibleDependsOnSubCmds="1">
+			<KxWppShowCountDownCommand customTip="CountDownTipText" icon="clock_count_down_kd" id="wpp_countdown" idKey="WPPCountDownEx" text="@Countdown"/>
+		</KListCommand>
+		<KListCommand id="RB_PomotedFeature" text="@Player Capture" visibleDependsOnSubCmds="1">
+			<KxWppPlayerCaptureListCommand customTip="PlayerCapture" icon="player_capture_kd" id="PlayerCaptureSetting" idKey="WppPlayerCaptureList" rbHotKey="" text="@Player Capture">
+				<KxWppPlayerCaptureOpenDirCommand hotKey="" icon="play_kd" id="PlayerCaptureLookOver" rbHotKey="" text="@View the video"/>
+				<KxWppPlayerCaptureSettingCommand hotKey="" icon="vcr_kd" id="PlayerCaptureStartRecording" rbHotKey="" text="@Start recording (with watermark)"/>
+				<KxWppPlayerCaptureSettingCommand hotKey="" icon="CaptureVip" id="PlayerCaptureStartRecordingVip" idKey="WPPPlayerCaptureStartRecordingVip" rbHotKey="" text="@Start recording (unwatermark)"/>
+				<KxWppPlayerCaptureSettingCommand hotKey="" icon="vcr_kd" id="PlayerCaptureStartRecordingVip" idKey="WPPPlayerCaptureStartRecordingVipWithoutVipIcon" rbHotKey="" text="@Start recording (unwatermark)"/>
+			</KxWppPlayerCaptureListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand hotKey="B" id="CountDownShow" ksoCmd="CountDownShow" text="@CountDownShow"/>
+		<KControlListCommand id="RB_ScreenRecorder" rbFileMenuEmbed="1" text="@Screen Recorder">
+			<command idQ="ScreenRecorder"/>
+		</KControlListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_SlideShow">
+			<command idQ="RB_StartSlideShow"/>
+			<separator/>
+			<command idQ="RB_SetUpSlideShow"/>
+			<separator/>
+			<command idQ="RB_SetUp"/>
+			<separator/>
+			<command idQ="RB_SlideTransition"/>
+			<separator/>
+			<command idKey="WppExtendedScreenDisplay" idQ="RB_MultiMonitor"/>
+			<separator idKey="WppExtendedScreenDisplay"/>
+			<command idKey="OnlineFeatures" idQ="RB_CellPhoneControl_mac" needLogin="false"/>
+			<separator idKey="WppPlayerCapture"/>
+			<command idQ="RB_PomotedFeature"/>
+			<separator/>
+			<command idQ="RB_ScreenRecorder"/>
+		</subcommand>
+	</subcommands>
+</shell>

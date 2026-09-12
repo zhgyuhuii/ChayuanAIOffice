@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>上一文本框24_前一文本框_PreviousTextBox</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="fill" d="M1 3C1 2.44772 1.44772 2 2 2H3C3.55228 2 4 2.44772 4 3V4C4 4.55228 3.55228 5 3 5H2C1.44772 5 1 4.55228 1 4V3Z" stroke="none"/><path id="fill_2" d="M1 20C1 19.4477 1.44772 19 2 19H3C3.55228 19 4 19.4477 4 20V21C4 21.5523 3.55228 22 3 22H2C1.44772 22 1 21.5523 1 21V20Z" stroke="none"/><path id="fill_3" d="M20 3C20 2.44772 20.4477 2 21 2H22C22.5523 2 23 2.44772 23 3V4C23 4.55228 22.5523 5 22 5H21C20.4477 5 20 4.55228 20 4V3Z" stroke="none"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M2.5 7V17M21.5 7V13M10 20.5H6M6 3.5H18" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_2" d="M10.5 17.4999L21 17.5M17.5 13.5L21.4929 17.4928C21.4968 17.4967 21.4968 17.503 21.4929 17.5069L17.5 21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g id="group-2-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="fill-rtl" d="M1 3C1 2.44772 1.44772 2 2 2H3C3.55228 2 4 2.44772 4 3V4C4 4.55228 3.55228 5 3 5H2C1.44772 5 1 4.55228 1 4V3Z" stroke="none"/><path id="fill_2-rtl" d="M1 20C1 19.4477 1.44772 19 2 19H3C3.55228 19 4 19.4477 4 20V21C4 21.5523 3.55228 22 3 22H2C1.44772 22 1 21.5523 1 21V20Z" stroke="none"/><path id="fill_3-rtl" d="M20 3C20 2.44772 20.4477 2 21 2H22C22.5523 2 23 2.44772 23 3V4C23 4.55228 22.5523 5 22 5H21C20.4477 5 20 4.55228 20 4V3Z" stroke="none"/></g><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M2.5 7V17M21.5 7V13M10 20.5H6M6 3.5H18" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1-rtl" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,31.995825000000004,0)"><path id="line_2-rtl" d="M10.5 17.4999L21 17.5M17.5 13.5L21.4929 17.4928C21.4968 17.4967 21.4968 17.503 21.4929 17.5069L17.5 21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></svg>

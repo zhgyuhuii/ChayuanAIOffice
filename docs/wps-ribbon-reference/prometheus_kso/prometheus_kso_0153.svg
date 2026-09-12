@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>形状样式16_新样式_ShapeStyles</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-quaternary {
+       fill: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       stroke: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       km_fill: #FDE0CE;
+       km_stroke: #FDE0CE;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-2" class="kd-color-icon-orange-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M10.5 10.5H10.419C9.35916 10.5 8.5 11.3592 8.5 12.419C8.5 12.7978 8.38786 13.1682 8.17771 13.4834L7.5 14.5H10.5C11.6046 14.5 12.5 13.6046 12.5 12.5C12.5 11.3954 11.6046 10.5 10.5 10.5Z" stroke="none"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M15 6.5L11 10.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M15 9.5L12.5 12" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M12.5 5.5L9.58787 2.58787C9.53161 2.53161 9.4553 2.5 9.37574 2.5H2.22426C1.95699 2.5 1.82314 2.82314 2.01213 3.01213L5.28787 6.28787C5.40503 6.40503 5.40503 6.59497 5.28787 6.71213L2.01213 9.98787C1.82314 10.1769 1.95699 10.5 2.22426 10.5H6.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line_4" d="M10.5 10.5H10.419C9.35916 10.5 8.5 11.3592 8.5 12.419C8.5 12.7978 8.38786 13.1682 8.17771 13.4834L7.5 14.5H10.5C11.6046 14.5 12.5 13.6046 12.5 12.5C12.5 11.3954 11.6046 10.5 10.5 10.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

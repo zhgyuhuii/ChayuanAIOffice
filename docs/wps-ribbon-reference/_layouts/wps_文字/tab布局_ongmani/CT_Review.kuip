@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_review" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxAIProofreadProxyCommand autoLoad="false" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyWpsProofreadCmd" idKey="CommonSupportProofread" isLoadByAppObj="true" targetId="WpsProofreadCmd" targetModule="kproofread" text="@WPS Proofread"/>
+		<KxWpsCheckSpellingToolbarCommand controlType="5" customTip="CheckSpelling" dynamicSpaceHint="loose;suitable" forceVisible="1" icon="spell_check_kd" id="CheckSpellingToolBar" idKey="SmartSpellCheckEntry" idMso="SpellingMenu" ksoCmd="CheckSpelling" rbHotKey="S" shortcutHint="F7" text="@Spell Check">
+			<command idQ="CheckSpelling"/>
+			<command idQ="SetSpellcheckLanguageCommand"/>
+			<command idQ="ExportarmyDictionaryCommand"/>
+		</KxWpsCheckSpellingToolbarCommand>
+		<KxSpellCheckChooseCommand controlType="15" customTip="AI Proof" hotKey="S" icon="spell_check_kd" id="CheckSpellingToolBar_ai" idKey="AiSpellcheckEntry" shellEntry="review_grammar_toolbar_spell" text="@AI Proof"/>
+		<KxSpellCheckChooseCommand controlType="15" customTip="AI Proof" hotKey="I" icon="ai_refine_kd" id="CheckSpellingToolBar_refine" idKey="AiSpellcheckEntry" shellEntry="review_grammar_toolbar_refine" text="@Improve Writing"/>
+		<KxProofreadAppCommand action="AIProofread" appId="kproofread" args="ai_open_position:writer_CT_Review_Spellcheck_Proofread" customTip="AIProofing" icon="doc_tick_kd" id="CheckSpellingToolBar_review_aiproofread" idKey="WPSAIProofread" text="@AI Proofing"/>
+		<KxLegacyTriggerCommand customTip="CheckSpelling" icon="spell_check_kd" id="CheckSpellingToolBar" idKey="SmartSpellCheckEntry" ksoCmd="CheckSpelling" rbHotKey="S" text="@Spell Check"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="WordCount" dynamicSpaceHint="loose;suitable" icon="count_kd" id="WordCountToolBar" idMso="WordCount" ksoCmd="WordCount" rbHotKey="W" text="@Word&#10;Count"/>
+		<KxWpsAigcTriggerCommand customTip="WPSAIPolish" functionCode="wps_generate_gReview" icon="doc_polish_kd" id="WpsAiPolish" idKey="WpsAiPolish" openPosition="tab_review" scene="ai_polish" showCustomTipInMenu="true" text="@Ai Polish"/>
+		<KProxyCommand autoLoad="true" customTip="Translation" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="translation_kd" iconQat="translation_kd" id="ProxyTranslationMenu_ctreview" idKey="WpsTranslationMenu" relatedKsoCmd="InsertPictureFromFile" targetId="TranslationMenu_ctreview" targetModule="ktranslation" text="@Translation"/>
+		<KAppCommand appCmdObj="DocCorrect" appId="kstdexamine" hotKey="R" icon="doc_official_stamp_kd" id="app_kstdexamine_correct_card" idKey="WpsStandardExamine" text="@Standard Examine" tipContent="@Review the validity of the national standards and industry standards (name, standard number) cited in the document" tipTitle="@Standard Examine"/>
+		<KListCommand controlType="15" customTip="Compare" icon="compare_documents_kd" id="CompareMenu" idKey="CompareMenuEntry" idMso="ReviewCompareMenu" rbHotKey="M" text="@Compare">
+			<KxWpsCmpAndMergeCommand controlType="0" dialogHint="1" hotKey="C" icon="compare_documents_kd" id="MergeCompare" idMso="ReviewCompareTwoVersions" index="0" ksoCmd="MergeCompare" qtspyName="MergeCompare" text="@Compare"/>
+			<KxListCommand controlType="4" disableTrigger="true" hotKey="S" icon="show_source_documents_kd" id="ShowSourceDocuments" idMso="ReviewShowSourceDocumentsMenu" ksoCmd="ShowSourceDocumentsNone" text="@Show Source Documents">
+				<KxLegacyTriggerCommand controlType="4" hotKey="H" id="ShowSourceDocumentsNone" idMso="ReviewHideSourceDocumentsMenu" ksoCmd="ShowSourceDocumentsNone" text="@Hide Source Documents"/>
+				<KxLegacyTriggerCommand controlType="0" hotKey="O" id="ShowSourceDocumentsOriginal" idMso="ReviewShowSourceDocumentsOriginal" ksoCmd="ShowSourceDocumentsOriginal" text="@Show Original"/>
+				<KxLegacyTriggerCommand controlType="0" hotKey="R" id="ShowSourceDocumentsRevised" idMso="ReviewShowSourceDocumentsRevised" ksoCmd="ShowSourceDocumentsRevised" text="@Show Revised"/>
+				<KxLegacyTriggerCommand controlType="0" hotKey="B" id="ShowSourceDocumentsBoth" idMso="ReviewShowSourceDocumentsBoth" ksoCmd="ShowSourceDocumentsBoth" text="@Show Both"/>
+			</KxListCommand>
+			<KAppCommand appCmdObj="OpenappWithDocPath" appFlags="wpsmember" appId="AK20220415DGHHFM" icon="doc_comparison_kd" id="app_AK20220415DGHHFM_review" idKey="WpsCompareWithOtherDoc" text="@Compare with other document"/>
+		</KListCommand>
+		<KListCommand customTip="AI Proof" icon="spell_check_kd" id="CheckSpellToolBarList_Review" idKey="AiSpellcheckEntry" text="@AI Proof" visibleDependsOnSubCmds="1">
+			<command idQ="CheckSpellingToolBar_ai"/>
+			<command idQ="CheckSpellingToolBar_review_aiproofread"/>
+			<command idQ="CheckSpellingToolBar_refine"/>
+		</KListCommand>
+		<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" idKey="AISpeaker" rbHotKey="A" text="@AISpeaker"/>
+		<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="TextSpeech" id="AISpeaker" idKey="AISpeaker_TextSpeech" rbHotKey="A" text="@Text Speech"/>
+		<KWpsNormalListCommand controlType="16" groupTip="ProofingGroup" icon="doc_tick_kd" id="RB_Proofing" idMso="GroupProofing" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Proofing">
+			<KProofreadAppQuickMenuCommand customTip="Proofread" disableCustomRibbon="true" icon="doc_tick_kd" id="WPSProofreadQuickMenuCmd" idKey="PublicProofread" idMso="WPSProofreadQuickMenuCmd" referenceCommand="WpsProofreadCmd" text="@AI Proofread">
+				<KxProofreadAppCommand action="CommonProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="CommonProofread" icon="doc_tick_two_kd" id="ProofreadCommonAppCommandInQuickMenu" text="@General Proofread"/>
+				<KxProofreadAppCommand action="AIProofread" appId="kproofread" args="ai_open_position:tab_review_proofread;AutoSwitchTab:true" customTip="AIProofread" icon="doc_tick_two_kd" id="ProofreadAIAppCommandInQuickMenu" text="@AI Proofread"/>
+				<KxProofreadAppCommand action="OfficialProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="OfficialProofread" icon="official_documents_review_kd" id="ProofreadOfficialAppCommandInQuickMenu" idKey="ProofreadOfficial" text="@Official Proofread"/>
+				<KxProofreadAppCommand action="EnglishProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="EnglishProofread" icon="proofread_english_kd" id="ProofreadEnglishAppCommandInQuickMenu" idKey="ProofreadEnglish" text="@English Proofread"/>
+			</KProofreadAppQuickMenuCommand>
+			<KxProofreadAppCommand action="GovernmentProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="GovernmentProofead" icon="doc_tick_kd" id="ProofreadGovernmentAppCommand" idKey="GovernmentProofread" idMso="ProofreadGovernmentAppCommand" text="@WPS Proofread"/>
+			<KQuickMenuAutoHideCommand icon="app_aicontractreview" id="WPSContractReviewMenu" idKey="WPSContractReviewMenu" needLogin="false" referenceCommand="app_kaicontractreview_workspace_wpsai" text="@AI Contract Review" tipContent="@app_kaicontractreview_workspace_wpsai" tipTitle="@AI Contract Review">
+				<command idQ="app_kaicontractreview_workspace_wpsai"/>
+				<command idQ="app_kstdexamine_correct_card"/>
+			</KQuickMenuAutoHideCommand>
+			<KQuickMenuCommandFix hotKey="RL" id="TextToSpeechOption" rbHotKey="RL" referenceCommand="AISpeaker">
+				<command idQ="AISpeaker"/>
+				<separator/>
+				<KAppCommand appId="kwpsai_text_to_audio" hotKey="o" icon="text_to_voice_kd" id="TextToVoice" idKey="WpsSpeakerTextToSpeechOutput" rbHotKey="O" text="@Output Voice"/>
+			</KQuickMenuCommandFix>
+			<command idQ="WpsAiPolish" singlerowfold="1"/>
+			<command idQ="CheckSpellToolBarList_Review"/>
+			<command idQ="CompareMenu" singlerowfold="1"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption" proxyCmdId="OldTextToSpeechOption"/>
+			<command idQ="WordCountToolBar"/>
+			<command idQ="CheckSpellingToolBar"/>
+			<command idKey="FormatProof" idQ="KsoFormatProofCmd" proxyCmdId="ProxyKsoFormatProofCmd"/>
+			<command idQ="Thesaurus"/>
+			<command idQ="WpsTTSTool"/>
+		</KWpsNormalListCommand>
+		<KWpsOfficialListCommand id="RB_OfficialProofing" idKey="OfficialViewEnable" rbFileMenuEmbed="1" text="@Official Proofing">
+			<command idKey="FormatProof" idQ="KsoFormatProofCmd" proxyCmdId="ProxyKsoFormatProofCmd"/>
+			<command idQ="WordCountToolBar"/>
+		</KWpsOfficialListCommand>
+		<KxWpsNormalListCommand controlType="16" detail="@Simplified and Traditional Chinese Conversion" groupTip="LanguageGroup" icon="translation_kd" id="RB_Language" idKey="NormalChineseTranslation" idMso="GroupChineseTranslation" ksoCmd="ChineseTranslation" rbFileMenuEmbed="1" singlerowmergesetting="SingleRow_Language" text="@Language">
+			<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" customTip="SyncTranslate" entrance="wps_review_tab&amp;module=wps&amp;sub_module=review_tab&amp;new_position=top_bar_review_tab" icon="translation_kd" id="app_immersive_translate_review" idKey="CommonFullTextTranslate" text="@Sync Translate"/>
+			<command idQ="TranslationMenu_ctreview"/>
+			<KxSingleRowMergeGroupCommand icon="translate_to_traditional_chinese_kd" id="SingleRow_Language" ksoCmd="TranslateToTraditionalChinese" text="@Convert to Traditional Chinese"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="TraditionalChinese" icon="translate_to_traditional_chinese_kd" id="TranslateToTraditionalChineseInReviewTab" idMso="TranslateToTraditionalChinese" ksoCmd="TranslateToTraditionalChinese" qtspyName="TranslateToTraditionalChinese" rbHotKey="OT" singlerowmergegroup="SingleRow_Language" spaceHint="suitable" text="@Convert to Traditional Chinese"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="SimplifiedChinese" icon="translate_to_simplified_chinese_kd" id="TranslateToSimplifiedChineseInReviewTab" idMso="TranslateToSimplifiedChinese" ksoCmd="TranslateToSimplifiedChinese" qtspyName="TranslateToSimplifiedChinese" rbHotKey="OS" singlerowmergegroup="SingleRow_Language" spaceHint="suitable" text="@Convert to Simplified Chinese"/>
+			<KxLegacyTriggerCommand customTip="Chinese Translation" icon="traditional_simplified_kd" id="SwitchSimplifiedAndTraditionalChinese" idKey="LogicGroupShowExtensionButton" ksoCmd="ChineseTranslation" qtspyName="ChineseTranslation" rbHotKey="OC" text="@Chinese Translation"/>
+		</KxWpsNormalListCommand>
+		<KxWpsNormalListCommand controlType="16" detail="@Simplified and Traditional Chinese Conversion" disableTrigger="true" groupTip="LanguageGroup" icon="translation_kd" id="RB_Language" idKey="I18nChineseTranslation" idMso="GroupChineseTranslation" ksoCmd="ChineseTranslation" rbFileMenuEmbed="1" text="@Language">
+			<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" customTip="SyncTranslate" entrance="wps_review_tab&amp;module=wps&amp;sub_module=review_tab&amp;new_position=top_bar_review_tab" icon="translation_kd" id="app_immersive_translate_review" idKey="CommonFullTextTranslate" text="@Sync Translate"/>
+			<command idQ="TranslationMenu_ctreview"/>
+			<KxLegacyTriggerCommand customTip="Chinese Translation" icon="traditional_simplified_kd" id="SwitchSimplifiedAndTraditionalChinese" idKey="LogicGroupShowExtensionButton" ksoCmd="ChineseTranslation" qtspyName="ChineseTranslation" rbHotKey="OC" text="@Chinese Translation"/>
+		</KxWpsNormalListCommand>
+		<KxWpsShowInkToolsContextCommand controlType="0" customTip="Handwriting" icon="pen_strokes_kd" id="ShowInkToolsContext" idKey="WpsReviewHandwriting" idMso="ReviewHandwritingComment" text="@Handwriting Comments"/>
+		<KxListCommand canHideText="0" controlType="5" customTip2="sp_DeleteComment2" customTip="sp_DeleteComment" icon="bubble_delete_kd" id="sp_DeleteComment" idMso="ReviewDeleteCommentsMenu" ksoCmd="DeleteCommentOnTB" text="@Delete">
+			<KxLegacyTriggerCommand controlType="5" hotKey="d" icon="bubble_delete_kd" id="DeleteComment" idMso="ReviewDeleteComment" ksoCmd="DeleteComment" text="@Delete &#10;Comment"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="o" icon="bubble_delete_all_kd" id="DeleteAllCommentsinDoc" idMso="ReviewDeleteAllCommentsInDocument" ksoCmd="DeleteAllCommentsinDoc" text="@Delete All Comments in Document"/>
+		</KxListCommand>
+		<KListCommand controlType="16" groupTip="ReviewCommentGroup" icon="bubble_add_kd" id="RB_Comments" idMso="GroupComments" rbFileMenuEmbed="1" text="@Comments">
+			<command idQ="InsertCommentInToolBar"/>
+			<command idQ="InsertCommentList"/>
+			<command idQ="sp_DeleteComment"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="PreviousComment" detail="@Previous" icon="previous_comment_kd" id="PreviousComment" idMso="ReviewPreviousComment" ksoCmd="PreviousComment" rbHotKey="v" singlerowfoldgroup="comments_pair" spaceHint="compact" text="@Previous"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="NextComment" detail="@Next" icon="previous_next_comment_kd" id="NextComment" idMso="ReviewNextComment" ksoCmd="NextComment" rbHotKey="n" singlerowfoldgroup="comments_pair" spaceHint="compact" text="@Next"/>
+		</KListCommand>
+		<KxWpsRevisionListCommand controlType="5" customTip2="TrackChanges2" customTip="TrackChanges" icon="doc_pen_kd" id="sp_TrackChanges" idMso="ReviewTrackChangesMenu" ksoCmd="TrackChanges" rbHotKey="G" shortcutHint="Ctrl+Shift+E" text="@Track&#10;Changes">
+			<command idQ="RbTrackChangesToolBar"/>
+			<KxWpsRevisionOptionsPropComposeCommand controlType="0" hotKey="O" icon="doc_setup_kd" id="TrackChangesOptions" idMso="ReviewChangeTrackingOptions" ksoCmd="Options" qtspyName="TrackChangesOptions" tabIndex="5" text="@Track Changes Options..."/>
+			<KxWpsRevisionChangeUserPropComposeCommand controlType="0" hotKey="U" icon="people_pen_kd" id="ChangeUserName" idMso="ReviewChangeUserName" ksoCmd="Options" qtspyName="ChangeUserName" tabIndex="8" text="@Change User Name..."/>
+			<KProxyCommand controlType="0" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="I" icon="people_add_kd" id="CoopRevision" targetId="CoopRevision" targetModule="officespace" text="@ReviewWithOthers"/>
+			<command idQ="ReviewAssistantEntry"/>
+		</KxWpsRevisionListCommand>
+		<KxLegacyTriggerCommand controlType="1" hotKey="a" id="Reviewers" idMso="ReviewShowAllReviewers" ksoCmd="Reviewers" text="@All Reviewers"/>
+		<KxWpsReviewersAuthorsCommand id="Reviewers_Authors" ksoCmd="Reviewers_Authors"/>
+		<KListCommand controlType="15" customTip="m_ShowReviewer" icon="show_reviewer_kd" iconQat="show_reviewer_kd" id="m_ShowReviewer" idMso="ReviewShowReviewersMenu" rbHotKey="TM" showIconAndText="3" spaceHint="suitable" text="@Show Reviewers">
+			<KxLegacyTriggerCommand controlType="6" hotKey="c" id="ShowComments" idMso="ReviewShowComments" ksoCmd="ShowComments" rbHotKey="C" text="@Show Comments"/>
+			<KxLegacyTriggerCommand controlType="6" hotKey="i" id="ShowInsAndDel" idMso="ReviewShowInsertionsAndDeletions" ksoCmd="ShowInsAndDel" rbHotKey="I" text="@Show Insertions and Deletions"/>
+			<KxLegacyTriggerCommand controlType="6" hotKey="f" id="ShowFormatChange" idMso="ReviewShowFormatting" ksoCmd="ShowFormatChange" rbHotKey="F" text="@Show Formatting"/>
+			<KxWpsReviewsFilterCommand controlType="15" hotKey="R" id="ReviewersMenu" idMso="ReviewShowReviewersMenu" qtspyName="ReviewersList" rbHotKey="R" text="@Reviewers">
+				<KxLegacyTriggerCommand id="Reviewers"/>
+			</KxWpsReviewsFilterCommand>
+			<KListCommand controlType="15" hotKey="B" id="UsingBalloons" idMso="ReviewBalloonsMenu" qtspyName="UseBalloons" rbHotKey="B" text="@Use Balloons">
+				<KxLegacyTriggerCommand controlType="6" hotKey="b" id="RB_BalloonRevisions" idMso="ReviewShowRevisionsInBalloons" ksoCmd="BalloonRevisions" rbHotKey="B" text="@Show Revisions in Balloons"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="i" id="RB_InLineRevisions" idMso="ReviewShowRevisionsInline" ksoCmd="InLineRevisions" rbHotKey="I" text="@Show All Revisions Inline"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="f" id="RB_MixedRevisions" idMso="ReviewShowRevisorInformationInBalloons" ksoCmd="MixedRevisions" rbHotKey="F" text="@Show Revisor Information in Balloons"/>
+				<separator/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="a" id="ShowBalloonTitleAuthor" idMso="ReviewShowRevisor" ksoCmd="ShowBalloonTitleAuthor" rbHotKey="A" text="@Show Author"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="u" id="ShowBalloonTitleImage" idMso="ReviewShowRevisorImage" ksoCmd="ShowBalloonTitleImage" rbHotKey="U" text="@Show Author Image"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="d" id="ShowBalloonTitleDate" idMso="ReviewShowDate" ksoCmd="ShowBalloonTitleDate" rbHotKey="D" text="@Show Date"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="t" id="ShowBalloonTitleTime" idMso="ReviewShowTime" ksoCmd="ShowBalloonTitleTime" rbHotKey="T" text="@Show Time"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="c" id="ShowCommentShading" idMso="ReviewShowCommentShading" ksoCmd="ShowCommentShading" rbHotKey="C" text="@Show Comment Shading"/>
+			</KListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" hotKey="h" icon="doc_accept_all_revisions_kd" id="AcceptAllChangesinDoc" idMso="ReviewAcceptAllChangesInDocument" ksoCmd="AcceptAllChangesinDoc" rbHotKey="D" text="@Accept All Changes in Document"/>
+		<KxListCommand canHideText="0" controlType="5" customTip2="AcceptChangeOnTB2" customTip="AcceptChangeOnTB" detail="@Accept Selected Change" icon="doc_accept_revision_kd" id="sp_AcceptChange" idMso="ReviewAcceptChangeMenu" ksoCmd="AcceptChangeOnTB" rbHotKey="A" text="@Accept">
+			<KxLegacyTriggerCommand controlType="0" hotKey="C" icon="doc_accept_revision_kd" id="m_AcceptChangeOnTB" idMso="ReviewAcceptChange" ksoCmd="AcceptChange" text="@Accept Change"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="F" id="ReviewAcceptAllFormatChanges" idMso="ReviewAcceptAllFormatChanges" ksoCmd="AcceptAllFormatChanges" text="@Accept Format Changes in Document"/>
+			<KxLegacyTriggerCommand hotKey="A" id="ReviewAcceptAllChangesShown" idMso="ReviewAcceptAllChangesShown" ksoCmd="AcceptAllChangesShown" text="@Accept Shown Changes in Document"/>
+			<command idQ="AcceptAllChangesinDoc"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" hotKey="d" icon="doc_reject_all_revisions_kd" id="RbRejectAllChangesinDoc" idMso="ReviewRejectAllChangesInDocument" ksoCmd="RejectAllChangesinDoc" text="@Reject All Changes in Document"/>
+		<KxListCommand canHideText="0" controlType="5" customTip2="RejectRevisionOnTB2" customTip="RejectRevisionOnTB" detail="@Reject Change" icon="doc_reject_revision_kd" id="sp_RejectRevision" idMso="ReviewRejectChangeMenu" ksoCmd="RejectRevisionOnTB" rbHotKey="J" text="@Reject">
+			<KxLegacyTriggerCommand controlType="0" hotKey="r" icon="doc_reject_revision_kd" id="RejectRevision" idMso="ReviewRejectChange" ksoCmd="RejectRevision" rbHotKey="R" text="@Reject Change"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="F" id="ReviewRejectAllFormatChanges" idMso="ReviewRejectAllFormatChanges" ksoCmd="RejectAllFormatChanges" text="@Reject Format Changes in Document"/>
+			<KxLegacyTriggerCommand hotKey="A" id="ReviewRejectAllChangesShown" idMso="ReviewRejectAllChangesShown" ksoCmd="RejectAllChangesShown" text="@Reject Shown Changes in Document"/>
+			<command idQ="RbRejectAllChangesinDoc"/>
+		</KxListCommand>
+		<KxListCommand controlType="5" customTip2="ReviewTip2" customTip="ReviewTip" icon="window_vert_review_kd" id="sp_ReviewPane" idMso="ReviewMenu" ksoCmd="ReviewPane" rbHotKey="TP" showIconAndText="1" spaceHint="suitable" text="@Review">
+			<KxWpsReviewsFilterCommand controlType="5" hotKey="R" icon="Reviewer" id="ReviewersMenuCopy" idMso="ReviewShowReviewersMenu" qtspyName="ReviewersList" rbHotKey="R" text="@Reviewers">
+				<KxLegacyTriggerCommand controlType="0" id="ReviewersCopy" idMso="ReviewShowReviewers"/>
+			</KxWpsReviewsFilterCommand>
+			<KxShowTimeReviewCommand controlType="5" hotKey="T" icon="ReviewTime" id="ReviewTimeMenu" idMso="ReviewShowReviewTimeMenu" rbHotKey="T" text="@ReviewTime">
+				<KxLegacyTriggerCommand controlType="0" id="TimeReviewCmd" idMso="ReviewShowReviewTime"/>
+			</KxShowTimeReviewCommand>
+			<KComposeListCommand controlType="5" hotKey="p" icon="ReviewPaneSub" id="ReviewPane" idMso="ReviewReviewingPaneMenu" ksoCmd="VertReviewPane" rbHotKey="P" text="@Reviewing Pane">
+				<KxLegacyTriggerCommand controlType="6" hotKey="V" icon="window_vert_review_kd" id="VerticalReviewPane" idMso="ReviewReviewingPaneVertical" ksoCmd="VertReviewPane" qtspyName="VertReviewPane" text="@Reviewing Pane Vertical"/>
+				<KxLegacyTriggerCommand controlType="6" hotKey="H" icon="horizontal_review_pane_kd" id="HorizontalReviewPane" idMso="ReviewReviewingPaneHorizontal" ksoCmd="HorzReviewPane" qtspyName="HorzReviewPane" text="@Reviewing Pane Horizontal"/>
+			</KComposeListCommand>
+		</KxListCommand>
+		<KListCommand controlType="16" groupTip="TrackChangeGroup" icon="doc_pen_kd" id="RB_Review" idMso="GroupChangesTracking" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Track Changes">
+			<command idQ="sp_TrackChanges"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<KRbLayoutListCommand enableSmartLayout="1" layoutName="vbox" layoutOnly="1" spaceHint="suitable" verticalSpacing="4">
+				<KxWpsComboBoxCommand controlType="3" customTip="DisplayForReview" icon="show_reviewer_kd" iconQat="show_reviewer_kd" id="DisplayForReview" idMso="ReviewDisplayForReview" items="@Final Show Markup;Final;Original Show Markup;Original" ksoCmd="DisplayForReview" qtspyName="DisplayForReview" rbHotKey="TD" spaceHint="suitable" text="@Display for Review"/>
+				<KRbLayoutListCommand isShowText="1" layoutOnly="1" spaceHint="suitable">
+					<command idQ="m_ShowReviewer" singlerowfold="1"/>
+					<command idQ="sp_ReviewPane" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand controlType="5" groupTip="ChangeGroup" icon="doc_accept_revision_kd" id="RB_Changes" idMso="ReviewTrackChangesMenu" rbFileMenuEmbed="1" text="@Change">
+			<command idQ="sp_AcceptChange" singlerowfoldgroup="accept_reject_pair"/>
+			<command idQ="sp_RejectRevision" singlerowfoldgroup="accept_reject_pair"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="PreviousChange" detail="@Previous Change" icon="previous_comment_kd" id="ReviewPreviousChange" idMso="ReviewPreviousChange" ksoCmd="PreviousChangeOrComment" qtspyName="PreviousChangeOrComment" rbHotKey="F" singlerowfoldgroup="changes_pair" spaceHint="compact" text="@Previous"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="NextChange" detail="@Next Change" icon="previous_next_comment_kd" id="ReviewNextChange" idMso="ReviewNextChange" ksoCmd="NextChangeOrComment" qtspyName="NextChangeOrComment" rbHotKey="H" singlerowfoldgroup="changes_pair" spaceHint="compact" text="@Next"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand hotKey="e" id="OfficialDocumentMapLeft" ksoCmd="DocumentMapLeft" text="@Place on Left"/>
+		<KxLegacyTriggerCommand hotKey="r" id="OfficialDocumentMapRight" ksoCmd="DocumentMapRight" text="@Place on Right"/>
+		<KxLegacyTriggerCommand hotKey="v" id="OfficialDocumentMapVisible" ksoCmd="DocumentMapVisible" text="@Invisible"/>
+		<KxWpsOfficialListCommand customTip2="ShowNavigationPane2" customTip="ShowNavigationPane" detail="@Show Document Map" hotKey="d" icon="navigation_pane_kd" id="OfficialShowDocumentMap" ksoCmd="ShowDocumentMap" rbHotKey="D" text="@Navigation&#10;Pane">
+			<command idQ="OfficialDocumentMapLeft"/>
+			<command idQ="OfficialDocumentMapRight"/>
+			<command idQ="OfficialDocumentMapVisible"/>
+		</KxWpsOfficialListCommand>
+		<KxWpsOfficialListCommand id="OfficialDocumentview" idKey="OfficialViewEnable" rbFileMenuEmbed="1" text="@Document view">
+			<command idQ="OfficialShowDocumentMap"/>
+			<KxCheckBoxCommand controlType="1" customTip="Ruler" hotKey="l" id="OfficialViewRulerWord" ksoCmd="Ruler" rbHotKey="R" spaceHint="suitable" text="@Ruler"/>
+			<KxCheckBoxCommand controlType="1" customTip="Gridlines" hotKey="g" id="OfficialViewGridlinesWord" ksoCmd="Gridlines" rbHotKey="G" spaceHint="suitable" text="@View Gridlines"/>
+			<KxCheckBoxCommand customTip="ShowGridlines" hotKey="g" id="OfficialTableGridlines" ksoCmd="ShowGridlines" rbHotKey="VG" spaceHint="suitable" text="@Table Gridlines"/>
+			<KxTaskPaneCheckBoxCommand customTip="TaskPane" hotKey="t" id="OfficialTaskPaneInViewTab" ksoCmd="TaskPane" rbHotKey="K" spaceHint="suitable" text="@Task Window"/>
+			<KxValueCommand controlType="0" customTip="OfficialZoomOnePage" icon="doc_file_kd" id="OfficialZoomOnePage" index="-3" ksoCmd="ZoomCombo" rbHotKey="1" spaceHint="suitable" text="@One Page"/>
+			<KxValueCommand controlType="0" customTip="OfficialZoomTwoPages" icon="pages_multiple_kd" id="OfficialZoomTwoPages" index="-4" ksoCmd="ZoomCombo" rbHotKey="2" spaceHint="suitable" text="@Two Pages"/>
+		</KxWpsOfficialListCommand>
+		<KListCommand filter="feature_33554469=0;reg:DisableInkDraw!=true" groupTip="InkDrawGroup" icon="pen_strokes_kd" id="RB_InkDrawEnter" text="@InkDrawEnter">
+			<command idQ="InkDrawEnter"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="RestrictEditing" icon="doc_lock_kd" id="RestrictEditingRainbow" idMso="ReviewRestrictFormatting" ksoCmd="RestrictEditing" rbHotKey="PE" text="@Restrict Editing"/>
+		<KWpsNormalListCommand controlType="6" groupTip="DocumentSecurityGroup" icon="document_authentication_kd" id="RB_Security" idMso="ReviewRestrictFormatting" rbFileMenuEmbed="1" text="@Document Security">
+			<KxSingleRowMergeGroupCommand customTip="DocumentSecurityGroup" icon="document_authentication_kd" id="SingleRow_Security" text="@Document Security"/>
+			<command idQ="RestrictEditingRainbow" singlerowmergegroup="SingleRow_Security"/>
+			<KProxyCommand customTip="CoopLimitArea" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="content_protection_kd" id="CoopLimitArea" targetModule="officespace" text="@Limit Area"/>
+			<KxCurUserPermissionCommand filter="support:OnlineSecurityDocument=true" icon="merge_cell_kd" id="CheckMinePermission" qtspyName="MergeCenter" text="@Check Mine Permission"/>
+			<KxCheckPermissionsCommand filter="support:OnlineSecurityDocument=true" icon="brush_kd" id="CheckUsersPermissions" qtspyName="FormatPainter" text="@Check Users Permissions"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" enterpriseWebPageUrl="/webdlg/myright.html" hotKey="i" icon="people_key_kd" id="CheckMyPermissionInReviewTab" idKey="CheckMinePermissionInRerview" idMso="ReviewCheckMinePermission" qtspyName="CheckMinePermission" rbHotKey="I" targetModule="docpermission" text="@Check Mine Permission"/>
+			<KProxyCommand customTip="DocPermissionProtection" defaultPage="Account" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInReviewTab" idKey="DocSecurityPermission" idMso="ReviewDocumentsEncryption" infoNum="4" qtspyName="DocumentsPremissions" rbHotKey="PE" singlerowmergegroup="SingleRow_Security" targetModule="docpermission" text="@Document Permission"/>
+			<KAppQuickMenuCommand appId="kdocfinalizedmgr" customTip="kdocfinalized" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_list_tab" idKey="WpsDocumentsFinalized" idMso="ReviewDocumentsFinalized" singlerowmergegroup="SingleRow_Security" text="@app doc kdocfinalized">
+				<KAppCommand appId="kdocfinalizedmgr" customTip="kdocfinalized" hotKey="f" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_tab" rbHotKey="F" text="@app doc kdocfinalized"/>
+				<KAppCommand appId="kdocfinalizedlist" customTip="kdocfinalizedlist" hotKey="l" icon="finalized_document_list_kd" id="app_kdocfinalizedlist_tab" rbHotKey="L" text="@app doc kdocfinalized list"/>
+				<command idKey="DocAuthenticate" idQ="DocumentAuthentication"/>
+			</KAppQuickMenuCommand>
+		</KWpsNormalListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Review">
+			<command idQ="RB_Proofing"/>
+			<command idQ="RB_OfficialProofing"/>
+			<separator/>
+			<command idQ="RB_Comments"/>
+			<separator/>
+			<command idQ="RB_Review"/>
+			<separator/>
+			<command idQ="RB_Changes"/>
+			<separator/>
+			<command idQ="RB_InkDrawEnter"/>
+			<separator idKey="OfficialViewEnable"/>
+			<separator/>
+			<command filter="l10n:TCSC_CONVERSION_SUPPORT=true" idQ="RB_Language"/>
+			<separator filter="l10n:TCSC_CONVERSION_SUPPORT=true"/>
+			<command idQ="OfficialDocumentview"/>
+			<separator idKey="QuickPartsInsertGalleryVmlRibbonScale"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="RB_Security"/>
+		</subcommand>
+	</subcommands>
+</shell>

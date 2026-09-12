@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_inktools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxInkDrawPenToolCommand icon="ball_pen_kd" id="sp_ShowBallpointPen" idMso="InkBallpointPen" penIndex="0" text="@Ball Pen"/>
+		<KxInkDrawPenToolCommand icon="cursor_watercolor_pen_kd" id="sp_ShowWatercolorPen" idMso="InkWatercolorPen" penIndex="1" text="@Watercolor Pen"/>
+		<KxInkDrawPenToolCommand icon="color_marker_wps_kd" id="sp_ShowHighlighterPen" idMso="InkHighlighterPen" penIndex="2" text="@Highlighter Pen"/>
+		<KxWpsInkDrawPenCommand controlType="5" icon="pen_signature_kd" id="sp_Pen" idMso="InkDrawPen" ksoCmd="InkDrawPen" text="@Ink Pen">
+			<command idQ="sp_ShowBallpointPen"/>
+			<command idQ="sp_ShowWatercolorPen"/>
+			<command idQ="sp_ShowHighlighterPen"/>
+		</KxWpsInkDrawPenCommand>
+		<KListCommand id="RB_Pen" text="@Ink Pen">
+			<command idQ="sp_Pen"/>
+		</KListCommand>
+		<KxInkDrawPenToolCommand icon="symbol_horizontal_line_kd" id="sp_ShowLine" idMso="InkShowLine" penIndex="3" text="@Line"/>
+		<KxInkDrawPenToolCommand icon="draw_wave_kd" id="sp_ShowWave" idMso="InkShowWave" penIndex="4" text="@Wave"/>
+		<KxInkDrawPenToolCommand icon="shape_square_kd" id="sp_ShowRect" idMso="InkShowRect" penIndex="5" text="@Rectangle"/>
+		<KxWpsInkDrawShapeCommand controlType="5" icon="pen_strokes_kd" id="sp_Shape" idMso="InkDrawShape" ksoCmd="InkDrawShape" text="@Ink Shape">
+			<command idQ="sp_ShowLine"/>
+			<command idQ="sp_ShowWave"/>
+			<command idQ="sp_ShowRect"/>
+		</KxWpsInkDrawShapeCommand>
+		<KListCommand id="RB_Shape" text="@Ink Shape">
+			<command idQ="sp_Shape"/>
+		</KListCommand>
+		<KxInkDrawEraserCommand controlType="0" eraserType="1" icon="erase_all_kd" id="sp_InkAllEraser" idMso="InkAllEraser" text="@Ink AllEraser"/>
+		<KxInkDrawEraserCommand controlType="0" eraserType="2" icon="erase_part_kd" id="sp_InkPartEraser" idMso="InkPartEraser" text="@Ink PartEraser"/>
+		<KxWpsInkDrawEraserCommand controlType="5" icon="eraser_kd" id="sp_Eraser" idMso="InkEraser" ksoCmd="InkDrawEraser" text="@Ink Eraser">
+			<command idQ="sp_InkAllEraser"/>
+			<command idQ="sp_InkPartEraser"/>
+		</KxWpsInkDrawEraserCommand>
+		<KListCommand id="RB_Eraser" text="@Ink Eraser">
+			<command idQ="sp_Eraser"/>
+		</KListCommand>
+		<KListCommand controlType="4" id="RB_InkStyle" text="@Ink Style">
+			<KxWpsInkColorCommand controlType="15" icon="color_border_wps_kd" id="InkColor" idMso="InkColor" ksoCmd="InkDrawColor" spaceHint="suitable" text="@Ink Color"/>
+			<KxWpsInkLineStyleStaticGalleryCommand column="1" controlType="4" icon="frame_line_type_kd" id="InkLineStyle" idMso="InkLineStyle" ksoCmd="InkDrawPenWidth" spaceHint="suitable" text="@Ink Line Style">
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt"/>
+			</KxWpsInkLineStyleStaticGalleryCommand>
+		</KListCommand>
+		<KListCommand id="RB_Operation" text="@Ink Operation">
+			<KxWpsInkSelectObjectsCommand icon="mouse_kd" id="SelectInkObjects" ksoCmd="InkDrawSelectObjects" text="@Select Objects"/>
+		</KListCommand>
+		<KListCommand id="RB_Close" text="@Close">
+			<KxWpsCloseInkToolsContextCommand controlType="0" icon="close_window_kd" id="CloseInkToolsContext" idMso="ExitInkDraw" text="@Close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_InkTools">
+			<command idQ="RB_Pen"/>
+			<separator/>
+			<command idQ="RB_Shape"/>
+			<separator/>
+			<command idQ="RB_Eraser"/>
+			<separator/>
+			<command idQ="RB_InkStyle"/>
+			<separator/>
+			<command idQ="RB_Operation"/>
+			<separator/>
+			<command idQ="RB_Close"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

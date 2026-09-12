@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>字数统计16_WordCount_统计</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-bold"><path id="line" d="M13.5 13.4961H10.6719C11.1674 12.3904 12.2422 11.9307 12.9369 11.2335C13.9476 10.2192 13.4166 8.78206 12.229 8.7094C11.5047 8.66509 11.0234 9.12071 10.8335 9.69298" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M7 10L8.5 8.5V13.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_3" d="M1.5 1.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M1.5 5.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M1.5 9.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M1.5 13.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g><g class="kd-dir-rtl"><g transform="translate(16,0) scale(-1,1)"><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-bold"><g transform="matrix(-1,0,0,1,20.5,0)"><path id="line-rtl" d="M13.5 13.4961H10.6719C11.1674 12.3904 12.2422 11.9307 12.9369 11.2335C13.9476 10.2192 13.4166 8.78206 12.229 8.7094C11.5047 8.66509 11.0234 9.12071 10.8335 9.69298" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2-rtl" d="M7 10L8.5 8.5V13.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_3-rtl" d="M1.5 1.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4-rtl" d="M1.5 5.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5-rtl" d="M1.5 9.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6-rtl" d="M1.5 13.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g></g></svg>

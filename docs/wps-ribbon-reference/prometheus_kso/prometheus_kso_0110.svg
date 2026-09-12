@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>有序列表_数字16_编号_项目编号_Numbering_显示行号</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M7.5 2.5L14.5 2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M7.5 7.5L14.5 7.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M7.5 12.5H14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_4" d="M2 2.5L3.5 1.5V5.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M4.75 13.5006H2C2.43805 12.3694 3.3549 12.3459 4.08333 11.7499C5 10.9998 4.5 9.50016 3.37642 9.5C2.73459 9.49991 2.16786 9.91443 2 10.4999" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g transform="translate(16,0) scale(-1,1)"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M7.5 2.5L14.5 2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2-rtl" d="M7.5 7.5L14.5 7.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3-rtl" d="M7.5 12.5H14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,6.75,0)"><path id="line_4-rtl" d="M2 2.5L3.5 1.5V5.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5-rtl" d="M4.75 13.5006H2C2.43805 12.3694 3.3549 12.3459 4.08333 11.7499C5 10.9998 4.5 9.50016 3.37642 9.5C2.73459 9.49991 2.16786 9.91443 2 10.4999" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></g></svg>

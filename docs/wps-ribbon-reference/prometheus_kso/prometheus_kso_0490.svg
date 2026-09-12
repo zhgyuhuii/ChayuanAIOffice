@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>隐藏24_PivotTableHide_pivot_table_hide</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M2.5 6V3C2.5 2.72386 2.72386 2.5 3 2.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M2.5 15V18" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M2.5 7V10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M2.5 11V14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M8.5 7V10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M8.5 4V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M8.5 11V12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" d="M14.5 4V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" d="M14.5 8.5V20.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_10" d="M8.5 14.5V20.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_11" d="M4 8.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_12" d="M4 14.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_13" d="M7 8.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_14" d="M8.5 14.5H20.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_15" d="M14.5 8.5H20.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_16" d="M11 8.5H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_17" d="M7 2.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_18" d="M11 2.5H14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_19" d="M15 2.5H18" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_20" d="M2.5 20.5H20C20.2761 20.5 20.5 20.2761 20.5 20V2.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line_21" d="M21 2L2 21" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

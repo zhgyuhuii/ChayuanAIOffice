@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_insert" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxLegacyTriggerCommandEx controlType="6" hotKey="h" icon="text_frame_kd" id="InsertTextboxHorizontal" idMso="TextBoxInsertHorizontal" ksoCmd="InsertTextboxHorizontal" rbHotKey="H" text="@Horizontal"/>
+		<KxLegacyTriggerCommandEx controlType="6" hotKey="v" icon="text_frame_vertical_kd" id="InsertTextboxVertical" idMso="TextBoxInsertVertical" ksoCmd="InsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+		<KxListCommand controlType="5" customTip="InsertTextboxHorizontal2" dynamicSpaceHint="loose;suitable" hotKey="h" icon="text_frame_kd" id="InsertTextbox" idMso="TextBoxInsertMenu" ksoCmd="InsertTextboxHorizontal" qtspyName="sp_TextBox" rbHotKey="X" text="@Text Box">
+			<command idQ="InsertTextboxHorizontal"/>
+			<command idQ="InsertTextboxVertical"/>
+			<command idQ="InsertOnlineTextboxCommandInInsertTab"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="PivotTable" hotKey="p" hoverTips="PivotTable" icon="sheet_pivot_kd" id="PivotTableWizardInInsertTab" idMso="PivotTableReport" ksoCmd="InsertPivotTable" qtspyName="PivotTableWizard" rbHotKey="V" text="@PivotTable"/>
+		<KListCommand id="RB_InsertTable" rbFileMenuEmbed="1" text="@Tables">
+			<command idQ="InsertTable"/>
+		</KListCommand>
+		<KListCommand groupTip="TableGroup" icon="sheet_kd" id="RB_PivotInsertTable" rbFileMenuEmbed="1" text="@Tables">
+			<KxLegacyTriggerCommand controlType="0" customTip="PivotTable" hotKey="p" hoverTips="PivotTable" icon="sheet_pivot_kd" id="PivotTableInsert" idMso="PivotTableInsert" ksoCmd="InsertPivotTable" qtspyName="PivotTableInsert" rbHotKey="V" text="@PivotTable"/>
+			<KxLegacyTriggerCommand customTip="PivotChart" entrance="tab_insert" forceVisible="1" hoverTips="PivotChart" icon="pivot_chart_wizard_kd" id="PivotChartWizardInInsertTab" ksoCmd="InsertPivotChart" qtspyName="PivotChartWizard" rbHotKey="SZ" text="@PivotChart"/>
+			<command idQ="InsertTable"/>
+		</KListCommand>
+		<KDocerProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="dropmenu" height="365" id="OnlineSymbol" idKey="EtOnlineSymbol" pluginName="konlinesymbol" targetModule="konlinesymbol" text="@Complete symbol" width="338"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="m" icon="math_omega_kd" id="rMoreSymbols" ksoCmd="InsertSymbol" rbHotKey="M" text="@More Symbols"/>
+		<KxEtGallerySymbolCommand canHideText="0" customTip="InsertSymbol" hoverTips="InsertSymbol" icon="math_omega_kd" id="InsertSymbolInInsertTab" ksoCmd="InsertSymbol" qtspyName="InsertSymbol" rbHotKey="U" text="@Symbol"/>
+		<KDocerProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependPlugins="kwebonlinesymbol" height="-1" id="OnlineSymbol" idKey="EtWebOnlineSymbol" localMenuHeight="320" skeletonAlias="kwebonlinesymbol" spaceHint="suitable" targetId="OnlineSymbol" targetModule="kdocerjsapi20" width="338"/>
+		<KListCommand groupTip="SymbolGroup" icon="math_omega_kd" id="RB_Symbol" text="@Symbol">
+			<KxOMathEquationGalleryCommand customTip="EquationInsertGallery" equationGalleryType="common" galleryHeight="758" galleryWidth="379" hotKey="E" icon="math_latex_kd" id="EquationInsertGallery" idMso="EquationInsertGallery" ksoCmd="EquationInsertEquation" ksoTriggerCmd="EquationInsertNew" qtspyName="KingsoftEquationEditor" rbHotKey="E" singlerowmergegroup="SingleRow_Symbol" text="@Equation">
+				<KxLegacyTriggerCommand hotKey="I" icon="math_latex_kd" id="EquationInsertNew" idMso="EquationInsertNew" ksoCmd="EquationInsertNew" text="@Insert New Equation"/>
+				<command idKey="WpsLatexEquationEditor" idQ="InsertLatex"/>
+				<command idKey="CommonInsertLatex" idQ="InsertLatex"/>
+			</KxOMathEquationGalleryCommand>
+			<KxSingleRowMergeGroupCommand customTip="SymbolGroup" icon="math_omega_kd" id="SingleRow_Symbol" text="@Symbol"/>
+			<KxOnlineGalleryCommand canHideText="0" customTip="InsertSymbol" hoverTips="InsertSymbol" icon="math_omega_kd" id="DocerSymbol" idKey="EtInsertSymbolEmoji" isOnlyOnline="false" ksoCmd="InsertSymbol" onlineCmd="OnlineSymbol" qtspyName="InsertSymbol" rbHotKey="U" refLocalCmd="InsertSymbolInInsertTab" singlerowmergegroup="SingleRow_Symbol" text="@Symbol">
+				<command idQ="rMoreSymbols"/>
+			</KxOnlineGalleryCommand>
+			<KxOnlineGalleryCommand canHideText="0" customTip="InsertSymbol_Pro" hoverTips="InsertSymbol_Pro" icon="math_omega_kd" id="DocerSymbol" idKey="EtInsertSymbolCopyright" isOnlyOnline="false" ksoCmd="InsertSymbol" onlineCmd="OnlineSymbol" qtspyName="InsertSymbol" rbHotKey="U" refLocalCmd="InsertSymbolInInsertTab" singlerowmergegroup="SingleRow_Symbol" text="@Symbol">
+				<command idQ="rMoreSymbols"/>
+			</KxOnlineGalleryCommand>
+		</KListCommand>
+		<KScreenGrabOcrCommand checkAble="false" customAttribute="IF(platform=!mac){appFlags=wpsmember}" icon="ocr_area_kd" id="ScreenGrabOcrText" idKey="EtScreenGrabOcrText" isVipIconEanble="true" text="@Screen Grab Ocr Text"/>
+		<KScreenGrabOcrCommand appFlags="wpsmember" checkAble="false" icon="ocr_area_kd" id="ScreenGrabOcrText_MAC" idKey="EtScreenGrabOcrText" text="@Screen Grab Ocr Text"/>
+		<KScreenGrabMenuCommand customTip="ScreenGrab" icon="cut_screen_kd" id="InsertScreenGrab_MAC" text="@Screen Grab">
+			<command idQ="ScreenGrabRect"/>
+			<command idQ="ScreenGrabEllipse"/>
+			<command idKey="ScreenGrabRoundedRect" idQ="ScreenGrabRoundedRect"/>
+			<command idKey="ScreenGrabPolygon" idQ="ScreenGrabPolygon"/>
+			<command idQ="ScreenGrabOcrText_MAC"/>
+			<separator/>
+			<command idQ="ScreenGrab"/>
+			<command idQ="ScreenGrabHide"/>
+			<separator/>
+			<command idQ="ScreenGrabWindow"/>
+		</KScreenGrabMenuCommand>
+		<KScreenGrabOcrCommand appFlags="wpsmember" checkAble="false" icon="ocr_area_kd" id="ScreenGrabOcrText" idKey="EtScreenGrabOcrText" isVipIconEanble="true" text="@Screen Grab Ocr Text"/>
+		<KScreenGrabMenuCommand aid="100070" barid="40065" customTip="ScreenGrab" icon="cut_screen_kd" id="InsertScreenGrab_Insert" idKey="ScreenGrabMenu" rbHotKey="SC" referenceCommand="ScreenGrab" text="@Screen Grab@Menu">
+			<command idQ="ScreenGrabRect"/>
+			<command idQ="ScreenGrabEllipse"/>
+			<command idQ="ScreenGrabRoundedRect"/>
+			<command idQ="ScreenGrabPolygon"/>
+			<command idQ="ScreenGrabOcrText"/>
+			<separator/>
+			<command idQ="ScreenGrab"/>
+			<command idQ="ScreenGrabHide"/>
+			<separator/>
+			<command idQ="ScreenGrabShortcutSetting"/>
+			<command idQ="ScreenGrabWindow"/>
+		</KScreenGrabMenuCommand>
+		<KxChangeChartTypeCommand controlType="0" customTip="Chart" entrance="insertTab_Layout" hotKey="r" icon="chart_column_kd" id="ChartInInsertTab" idMso="ChartTypeAllInsertDialog" ksoCmd="InsertNewChart" qtspyName="InsertNewChart" rbHotKey="r" text="@InsertChart"/>
+		<KxLegacyTriggerCommand customTip="DashBoard" hotKey="a" icon="shape_three_kd" id="DashBoardInInsertTab" ksoCmd="InsertDashBoardSheet" qtspyName="InsertDashBoardSheet" rbHotKey="a" text="@DashBoard"/>
+		<KListCommand groupTip="ChartGroup" hotKey="k" icon="chart_column_kd" id="RB_Chars" ksoCmd="InsertNewChart" rbFileMenuEmbed="1" rbHotKey="k" text="@Chart">
+			<command idQ="DashBoardInInsertTab"/>
+			<KxSingleRowMergeGroupCommand customTip="ChartGroup" icon="chart_column_kd" id="SingleRow_Chart" text="@Chart"/>
+			<command idKey="EtInsertTabWebChart" idQ="ChartInInsertTab" singlerowmergegroup="SingleRow_Chart"/>
+			<command idKey="EtInsertTabNewChart" idQ="ChartInInsertTab" singlerowmergegroup="SingleRow_Chart"/>
+			<command idQ="OnlineDocerCommand_Chart"/>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="autocompact" topSpace="0">
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartColumn" customTip="ChartColumn" hotKey="c" hoverTips="ChartColumn" icon="chart_column_kd" id="ChartColumn" idKey="EtInsertTabChart" ksoCmd="InsertNewChart" rbHotKey="c" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartColumn" type="Column">
+					<command idQ="OnlineTypeQuickChartColumn"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartLine" customTip="ChartLine" hotKey="n" hoverTips="ChartLine" icon="chart_line_kd" id="ChartLine" idKey="EtInsertTabChart" ksoCmd="InsertNewChart" rbHotKey="n" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartLine" type="Line">
+					<command idQ="OnlineTypeQuickChartLine"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartColumn" customTip="ChartColumn" hotKey="c" hoverTips="ChartColumn" icon="chart_column_kd" id="ChartClusteredColumn" idKey="EtInsertTabChartNormal" ksoCmd="InsertNewChart" rbHotKey="c" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartColumn" type="clustered-column">
+					<command idQ="OnlineTypeQuickChartclustered-column"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartLine" customTip="ChartLine" hotKey="n" hoverTips="ChartLine" icon="chart_line_kd" id="ChartNormalLine" idKey="EtInsertTabChartNormal" ksoCmd="InsertNewChart" rbHotKey="n" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartLine" type="normal-line">
+					<command idQ="OnlineTypeQuickChartnormal-line"/>
+				</KxEtChartTypeGalleryCommand>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="autocompact" topSpace="0">
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartPie" customTip="ChartPie" hotKey="q" hoverTips="ChartPie" icon="chart_pie_kd" id="ChartPie" idKey="EtInsertTabChart" ksoCmd="InsertNewChart" rbHotKey="q" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartPie" type="Pie">
+					<command idQ="OnlineTypeQuickChartPie"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartScatter" customTip="ChartScatter" hotKey="d" hoverTips="ChartScatter" icon="chart_scatter_kd" id="ChartScatter" idKey="EtInsertTabChart" ksoCmd="InsertNewChart" rbHotKey="d" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartScatter" type="Scatter">
+					<command idQ="OnlineTypeQuickChartScatter"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartPie" customTip="ChartPie" hotKey="q" hoverTips="ChartPie" icon="chart_pie_kd" id="ChartNormalPie" idKey="EtInsertTabChartNormal" ksoCmd="InsertNewChart" rbHotKey="q" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartPie" type="normal-pie">
+					<command idQ="OnlineTypeQuickChartnormal-pie"/>
+				</KxEtChartTypeGalleryCommand>
+				<KxEtChartTypeGalleryCommand accessibleName="@ChartScatter" customTip="ChartScatter" hotKey="d" hoverTips="ChartScatter" icon="chart_scatter_kd" id="ChartNormalScatter" idKey="EtInsertTabChartNormal" ksoCmd="InsertNewChart" rbHotKey="d" singlerowmergegroup="SingleRow_Chart" spaceHint="autocompact" text="@ChartScatter" type="normal-scatter">
+					<command idQ="OnlineTypeQuickChartnormal-scatter"/>
+				</KxEtChartTypeGalleryCommand>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand hotKey="k" icon="InsertChart" id="RB_Chars_Ribbon" idKey="ETInsertCharsGroupAdvance" ksoCmd="InsertNewChart" rbFileMenuEmbed="1" rbHotKey="k" text="@Chart">
+			<command idQ="ChartInInsertTab"/>
+			<command idQ="InsertRecommendChart"/>
+			<command idQ="OnlineDocerCommand_Chart"/>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartColumn" customTip="ChartColumn" hotKey="c" icon="icon_chart_Column" id="ChartColumn" ksoCmd="InsertNewChart" rbHotKey="c" spaceHint="autocompact" type="Column">
+				<command idQ="OnlineTypeQuickChartColumn"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartArea" customTip="ChartArea" hotKey="a" icon="icon_chart_Area" id="ChartArea" ksoCmd="InsertNewChart" rbHotKey="a" spaceHint="autocompact" type="Area">
+				<command idQ="OnlineTypeQuickChartArea"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartBar" customTip="ChartBar" hotKey="b" icon="icon_chart_Bar" id="ChartBar" ksoCmd="InsertNewChart" rbHotKey="b" spaceHint="autocompact" type="Bar">
+				<command idQ="OnlineTypeQuickChartBar"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartCombination" customTip="ChartCombination" hotKey="sd" icon="icon_chart_Combination" id="ChartCombination" ksoCmd="InsertNewChart" rbHotKey="sd" spaceHint="autocompact" type="Combo">
+				<command idQ="OnlineTypeQuickChartCombo"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartLine" customTip="ChartLine" hotKey="n" icon="icon_chart_Line" id="ChartLine" ksoCmd="InsertNewChart" rbHotKey="n" spaceHint="autocompact" type="Line">
+				<command idQ="OnlineTypeQuickChartLine"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartPie" customTip="ChartPie" hotKey="q" icon="icon_chart_Pie" id="ChartPie" ksoCmd="InsertNewChart" rbHotKey="q" spaceHint="autocompact" type="Pie">
+				<command idQ="OnlineTypeQuickChartPie"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartRadar" customTip="ChartRadar" hotKey="o" icon="icon_chart_Radar" id="ChartRadar" ksoCmd="InsertNewChart" rbHotKey="o" spaceHint="autocompact" type="Radar">
+				<command idQ="OnlineTypeQuickChartRadar"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartScatter" customTip="ChartScatter" hotKey="d" icon="icon_chart_Scatter" id="ChartScatter" ksoCmd="InsertNewChart" rbHotKey="d" spaceHint="autocompact" type="Scatter">
+				<command idQ="OnlineTypeQuickChartScatter"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartStock" customTip="ChartStock" hotKey="o" icon="icon_chart_Stock" id="ChartStock" ksoCmd="InsertNewChart" rbHotKey="o" spaceHint="autocompact" type="Stock">
+				<command idQ="OnlineTypeQuickChartStock"/>
+			</KxEtChartTypeGalleryCommand>
+			<KxEtChartTypeGalleryCommand accessibleName="@ChartBubble" customTip="ChartBubble" hotKey="o" icon="icon_chart_Bubble" id="ChartBubble" ksoCmd="InsertNewChart" rbHotKey="o" spaceHint="autocompact" type="Bubble">
+				<command idQ="OnlineTypeQuickChartBubble"/>
+			</KxEtChartTypeGalleryCommand>
+		</KListCommand>
+		<KListCommand groupTip="SparklinesGroup" icon="chart_sparkline_kd" id="RB_Sparks" text="@Sparklines">
+			<KAppQuickMenuCommand icon="chart_sparkline_kd" id="RB_Sparks_02" text="@Sparklines">
+				<KxLegacyTriggerCommand customTip="LineSparkline" icon="chart_sparkline_kd" id="Sparkline" ksoCmd="InsertSparkline" rbHotKey="SL" text="@Line"/>
+				<KxLegacyTriggerCommand customTip="ColumnSparkline" icon="chart_normal_column_kd" id="SparkColumn" ksoCmd="InsertSparkColumn" rbHotKey="SO" text="@Column"/>
+				<KxLegacyTriggerCommand customTip="WinLossSparkline" icon="chart_up_down_bar_kd" id="SparkWinLoss" ksoCmd="InsertSparkWinLoss" rbHotKey="SW" text="@Win/Loss"/>
+			</KAppQuickMenuCommand>
+		</KListCommand>
+		<KProxyCommand aid="100071" autoLoad="true" customShortcutEnabled="false" customTip="InsertOnlinePictureFromFile" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" detail="@Insert Online Pictures" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTabUnpersonal" idKey="EtInsertOnlinePictureFromFileInInsertTab" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetModule="kwpsassistlegacy" text="@Online Pictures"/>
+		<KxLegacyTriggerCommand icon="pic_cell_kd" id="InsertPictureIntoCell" ksoCmd="InsertCellPicture" text="@Insert Into Cell"/>
+		<KxEtListPicturesCommand customTip2="InsertPictureFromFile2" customTip="InsertPictureFromFile" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="Insert_InsertPictureFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<KxEtInsertPictureCommand customTip="InsertPictureFromFile" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="InsertPictureInInsertTab" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<command idKey="EtInsertOnlinePictureFromFileInInsertTab1" idQ="InsertOnlinePictureFromFileInInsertTabUnpersonal"/>
+			<command idQ="app_ketinsertpicture_insert"/>
+			<command idKey="EtPhoto2Pdf" idQ="Photo2Pdf"/>
+			<KxImportFromDeviceCommand customTip="InsertFromOtherDeivce" hoverShowPreview="true" icon="camera_kd" id="ImportFromDevice" idKey="CommonInsertFromOtherDevice" text="@InsertFromOtherDeivce"/>
+			<command idQ="InsertOnlinePictureFromFileInInsertTab"/>
+		</KxEtListPicturesCommand>
+		<KProxyCommand customTip="OnlineIconMore" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="o" icon="shape_four_three_kd" id="onlineiconInsert" idKey="DocerOnlineIconI18n" isCef="1" qtspyName="OnlineIcon" rbHotKey="o" relatedKsoCmd="InsertPictureFromFile" targetId="onlineiconInsert" targetModule="kdocerjsapi20" text="@IconLibrary"/>
+		<KProxyCommand customTip="OnlineIconMore" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="o" icon="shape_four_three_kd" id="onlineiconInsert" idKey="DocerOnlineIconCommon" qtspyName="OnlineIcon" rbHotKey="o" relatedKsoCmd="InsertPictureFromFile" targetId="onlineiconInsert" targetModule="kdocercore" text="@IconLibrary"/>
+		<KDependsProxyCommand customTip="OnlineIcons" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependAppId="docerresourceshop" dependPlugins="kdocerresourceshop;kcopilotjsapi" icon="shape_four_three_kd" id="DocerResourceShop" idKey="EtDocerResourceShop" targetId="DocerResourceShop" targetModule="kdocerresource" text="@IconLibrary"/>
+		<KMultiProxyCommand id="DocerResourceShopMulti" idKey="EtDocerResourceShopMulti" proxyCmds="DocerResourceShop;OnlineIcons"/>
+		<KAutoHideListCommand customTip="ChartGallery" detail="@Chart Gallery" icon="chart_gallery_kd" id="ChartGallery" idKey="EtChartGallery" rbHotKey="SG" text="@Chart Gallery">
+			<command idQ="InsertBarcode"/>
+			<command idQ="InsertQRCode"/>
+			<command idQ="InsertMap"/>
+		</KAutoHideListCommand>
+		<KAutoHideListCommand customTip="ChartGallery_pro" detail="@Chart Gallery" icon="chart_gallery_kd" id="ChartGallery_pro" idKey="EtChartGallerypro" rbHotKey="SG" text="@Chart Gallery">
+			<command idQ="InsertBarcode"/>
+			<command idKey="EtInsertQRCode" idQ="InsertQRCode"/>
+		</KAutoHideListCommand>
+		<KxLegacyTriggerCommand customTip="InsertPictureFromFile" dialogHint="1" hotKey="f" icon="pic_kd" iconQat="pic_kd" id="Insert_InsertPictureFromFile" idKey="EtInsertPictureDropDownMenu" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@Picture"/>
+		<KListCommand groupTip="IllustrationGroup" icon="bookmark_list_kd" id="RB_Illustrations" rbFileMenuEmbed="1" text="@Illustrations">
+			<command idQ="Insert_InsertPictureFromFile"/>
+			<KxEtInsertFileObjectCommand customTip="InsertDocument" icon="doc_file_kd" id="InsertDocumentFromInsertTab" rbHotKey="F" text="@InsertDocument"/>
+			<command idQ="EtWaterMarkMenu"/>
+			<command idQ="InsertScreenGrab_MAC"/>
+			<command idQ="InsertScreenGrab"/>
+			<command idQ="ScreenGrabOcrMenuLocal"/>
+			<KxGalleryShapesCommand controlType="4" customTip="DynamicShape" galleryWidth="416" icon="shape_kd" id="Shape" idMso="ShapesInsertGallery" ksoCmd="DynamicShape" rbHotKey="SH" text="@Shapes" triggerAble="0"/>
+			<command idQ="onlineiconInsert"/>
+			<command idQ="OnlineDocerCommand_Icon"/>
+			<KxWordArtInsertCommand customTip="InsertWordArt" dynamicSpaceHint="loose;suitable" galleryWidth="492" hotKey="w" icon="font_art_style_kd" id="InsertWordArtInInsertTab" ksoCmd="InsertWordArt" qtspyName="InsertWordArt" rbHotKey="W" text="@WordArt" wordArtCmd="OnlineWordArt"/>
+			<KxLegacyTriggerCommand customTip="InsertClipArt" detail="@Insert Clip Art" hotKey="c" icon="docer_resource_img_kd" id="InsertClipArtInInsertTab" idKey="ArmyFunction" ksoCmd="InsertClipArt" rbHotKey="F" text="@Clip Art"/>
+			<command idQ="InsertTextbox"/>
+			<KDependsProxyCommand customTip="InsertProcesson_Flow" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependAppId="kinsertpo" hotKey="r" icon="chart_flow_kd" id="InsertProcessonFlow" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="autocompact" targetId="InsertProcessonFlow" targetModule="kdocerjsapi20" text="@InsertProcesson_Flow"/>
+			<KDependsProxyCommand customTip="InsertProcesson_Mind" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependAppId="kinsertpo" hotKey="r" icon="chart_mind_map_kd" id="InsertProcessonMind" qtspyName="InsertProcesson_Mind" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" targetId="InsertProcessonMind" targetModule="kdocerjsapi20" text="@InsertProcesson_Mind"/>
+		</KListCommand>
+		<KListCommand groupTip="HyperlinkGroup" icon="chain_kd" id="RB_Hyperlink" rbFileMenuEmbed="1" text="@Hyperlink">
+			<KxPropComposeCommand controlType="0" customTip="Hyperlink" forceVisible="1" hotKey="i" hoverTips="Hyperlink" icon="chain_kd" id="InsertOrEditHyperlinkInInsertTab" idMso="HyperlinkInsert" ksoCmd="InsertOrEditHyperlink" qtspyName="InsertOrEditHyperlink" rbHotKey="I" shortcutHint="Ctrl+K" text="@Hyperlink"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="222" customTip="FTB_Property" hotKey="R" icon="control_property_kd" id="FTB_Property" ksoCmd="FTB_Property" rbHotKey="K" spaceHint="suitable" text="@Control &#10;Properties"/>
+		<KxLegacyTriggerCommandEx aid="476" controlType="0" hotKey="L" icon="label_kd" id="FTB_Label" idMso="ActiveXLabel" ksoCmd="FTB_Label" rbHotKey="FL" spaceHint="compact" text="@Label"/>
+		<KxLegacyTriggerCommandEx aid="467" controlType="0" hotKey="Z" icon="group_box_kd" id="FTB_GroupBox" idMso="FormControlGroupBox" ksoCmd="FTB_GroupBox" rbHotKey="FZ" spaceHint="compact" text="@Group Box"/>
+		<KxLegacyTriggerCommandEx aid="282" controlType="0" hotKey="B" icon="command_button_kd" id="FTB_CommandButton" idMso="ActiveXButton" ksoCmd="FTB_CommandButton" rbHotKey="FB" spaceHint="compact" text="@Button"/>
+		<KxLegacyTriggerCommandEx aid="220" controlType="0" hotKey="K" icon="tick_box_kd" id="FTB_CheckBox" idMso="FormControlCheckBox" ksoCmd="FTB_CheckBox" rbHotKey="FK" spaceHint="compact" text="@Check Box"/>
+		<KxLegacyTriggerCommandEx aid="446" hotKey="O" icon="circle_dot_kd" id="FTB_OptionButton" ksoCmd="FTB_OptionButton" rbHotKey="FO" spaceHint="compact" text="@Option Button"/>
+		<KxLegacyTriggerCommandEx aid="448" controlType="0" hotKey="S" icon="list_box_kd" id="FTB_ListBox" idMso="ActiveXListBox" ksoCmd="FTB_ListBox" rbHotKey="FS" spaceHint="compact" text="@List Box"/>
+		<KxLegacyTriggerCommandEx aid="221" controlType="0" hotKey="F" icon="control_box_kd" id="FTB_ComboBox" idMso="ActiveXComboBox" ksoCmd="FTB_ComboBox" rbHotKey="FM" spaceHint="compact" text="@Combo Box"/>
+		<KxLegacyTriggerCommandEx aid="447" controlType="0" hotKey="A" icon="scroll_bar_kd" id="FTB_ScrollBar" idMso="ActiveXScrollBar" ksoCmd="FTB_ScrollBar" rbHotKey="FA" spaceHint="compact" text="@Scroll Bar"/>
+		<KxLegacyTriggerCommandEx aid="468" controlType="0" hotKey="N" icon="spin_button_kd" id="FTB_SpinButton" idMso="ActiveXSpinButton" ksoCmd="FTB_SpinButton" rbHotKey="FN" spaceHint="compact" text="@Spinner"/>
+		<KListCommand customTip="FormsToolbox" hotKey="y" icon="control_box_kd" id="RB_FormsToolboxPop" rbHotKey="SM" refIdForCollapsed="FTB_Label" spaceHint="autocompact" text="@Forms">
+			<command idQ="FTB_Label"/>
+			<command idQ="FTB_GroupBox"/>
+			<command idKey="EtFormsToolboxCommandButton" idQ="FTB_CommandButton"/>
+			<command idQ="FTB_CheckBox"/>
+			<command idQ="FTB_OptionButton"/>
+			<command idQ="FTB_ListBox"/>
+			<command idQ="FTB_ComboBox"/>
+			<command idQ="FTB_ScrollBar"/>
+			<command idQ="FTB_SpinButton"/>
+			<separator/>
+			<command idQ="FTB_Property"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="164" controlType="0" hotKey="g" icon="group_kd" id="Group" idMso="ObjectsGroup" ksoCmd="Group" rbHotKey="G" text="@Group"/>
+		<KxLegacyTriggerCommand aid="165" controlType="0" hotKey="u" icon="group_cancel_kd" id="UnGroup" idMso="ObjectsUngroup" ksoCmd="UnGroup" rbHotKey="U" text="@Ungroup"/>
+		<KListCommand controlType="15" customTip="Group" hoverTips="Group" icon="group_kd" id="m_Group" idMso="ObjectsGroupMenu" rbHotKey="AG" text="@Group">
+			<command idQ="Group"/>
+			<command idQ="UnGroup"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="688" controlType="0" hotKey="t" icon="rotate_angle_kd" id="FreeRotate" idMso="ObjectRotateFree" ksoCmd="FreeRotate" rbHotKey="T" text="@Free Rotate"/>
+		<KxLegacyTriggerCommand aid="199" controlType="0" hotKey="l" icon="rotate_left_kd" id="RotateLeft" idMso="ObjectRotateLeft90" ksoCmd="RotateLeft" rbHotKey="L" text="@Rotate Left 90°"/>
+		<KxLegacyTriggerCommand aid="198" controlType="0" hotKey="r" icon="rotate_right_kd" id="RotateRight" idMso="ObjectRotateRight90" ksoCmd="RotateRight" rbHotKey="R" text="@Rotate Right 90°"/>
+		<KxLegacyTriggerCommand aid="196" controlType="0" hotKey="h" icon="flip_horizontal_kd" id="FlipHorizontal" idMso="ObjectFlipHorizontal" ksoCmd="FlipHorizontal" rbHotKey="H" text="@Flip Horizontal"/>
+		<KxLegacyTriggerCommand aid="197" controlType="0" hotKey="v" icon="flip_vertical_kd" id="FlipVertical" idMso="ObjectFlipVertical" ksoCmd="FlipVertical" rbHotKey="V" text="@Flip Vertical"/>
+		<KListCommand customTip="RotateRight" icon="rotate_right_kd" id="m_Rotate" rbHotKey="AY" text="@Rotate">
+			<command idQ="RotateLeft"/>
+			<command idQ="RotateRight"/>
+			<separator/>
+			<command idQ="FlipHorizontal"/>
+			<command idQ="FlipVertical"/>
+		</KListCommand>
+		<KListCommand controlType="16" id="RB_Arrange" idMso="GroupArrange" rbFileMenuEmbed="1" text="@Arrange">
+			<command idQ="sp_BringForward"/>
+			<command idQ="sp_SendBackward"/>
+			<command idQ="m_Align"/>
+			<command idQ="m_Group"/>
+			<command idQ="m_Rotate"/>
+		</KListCommand>
+		<KxObjectSelectCommand customTip="ObjectSelect" hotKey="J" icon="object_select_kd" id="ObjectSelect_insert" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Selection &#10;Pane"/>
+		<KListCommand id="RB_ObjectSelect">
+			<command idQ="ObjectSelect_insert"/>
+		</KListCommand>
+		<KListCommand id="RB_Media" rbFileMenuEmbed="1" rbHotKey="V" text="@Media">
+			<KxLegacyTriggerCommand customTip="Sound" icon="volume_broadcasting_kd" id="InsertSound" ksoCmd="InsertLocalSound" qtspyName="SoundFile" rbHotKey="zy" text="@Sound"/>
+			<KxLegacyTriggerCommand customTip="Media" icon="video_two_kd" id="InsertMovie" ksoCmd="InsertLocalVideo" qtspyName="MovieFile" rbHotKey="zs" text="@Movie"/>
+		</KListCommand>
+		<KAppQuickMenuCommand icon="paperclip_kd" id="sp_Appendix_Pop" text="@File Object">
+			<KxEtInsertFileObjectCommand aid="92003" customTip="InsertFileObject" dialogHint="1" hotKey="Z" hoverTips="InsertFileObject" icon="paperclip_kd" id="InsertFileObjectInInsertTab" qtspyName="InsertFileObject" rbHotKey="SF" text="@File Object"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertObject" hotKey="o" icon="insert_object_kd" id="OleObjectctInsert" idKey="EtInsertObject" idMso="OleObjectctInsert" ksoCmd="InsertObject" qtspyName="InsertObject" rbHotKey="J" spaceHint="suitable" text="@Object"/>
+			<KxEtSignatureProxyCommand canHideText="0" customTip="Signature" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="pen_signature_kd" id="Insert_Signature_Web" idKey="InsertSignatureWeb" targetModule="addsignature" text="@Signature"/>
+			<KxEtSignatureCommand customTip="CloudSignature" icon="cloud_pen_kd" id="Insert_Signature" idKey="CommonInsertSignature" spaceHint="suitable" text="@Sign">
+				<KxEtShareNewSignatureCommand icon="pen_signature_create_kd" id="NewSignature" text="@NewSignature"/>
+			</KxEtSignatureCommand>
+		</KAppQuickMenuCommand>
+		<KInsertTabDocerResourceAllCommand action="find" appId="docerresourceshop" customTip="DocerResourceShop" entry="more_dreshop" hotKey="d" icon="docer_resource_shop_kd" id="app_kdocerresource_complex" isCef="1" needLogin="false" text="@Docer Resource Shop"/>
+		<KAppCommand appId="kresourcesclip" customTip="KResourceClip" hotKey="r" icon="folder_star_kd" id="app_kresourcesclip_tab" rbHotKey="R" text="@appcmd_resourcesclip"/>
+		<KListCommand groupTip="MoreObjGroup" icon="more_kd" id="RB_ComplexObj" rbFileMenuEmbed="1" text="@RB MoreObj">
+			<KxSingleRowMergeGroupCommand customTip="MoreObjGroup" icon="more_kd" id="SingleRow_ComplexObj" text="@RB MoreObj"/>
+			<command idQ="sp_Appendix_Pop" singlerowmergegroup="SingleRow_ComplexObj"/>
+			<command idQ="RB_FormsToolboxPop" singlerowmergegroup="SingleRow_ComplexObj"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Camera" forceVisible="1" hotKey="o" hoverTips="Camera" icon="camera_kd" id="CameraInInsertTab" idMso="Camera" ksoCmd="Camera" qtspyName="Camera" rbHotKey="G" singlerowmergegroup="SingleRow_ComplexObj" spaceHint="suitable" text="@Camera"/>
+			<command idKey="DocerResourceComplex" idQ="app_kdocerresource_complex"/>
+			<KDocerAppQuickMenuCommand _APP_SRC_="RB_MoreComplexObj" icon="docer_resource_shop_kd" id="RB_MoreComplexObj" idKey="CommonMoreComplexObj" text="@RB More ComplexObj">
+				<command idKey="CommonDocerResource" idQ="app_kdocerresource_complex"/>
+				<command idKey="CommonResourcesClip" idQ="app_kresourcesclip_tab"/>
+				<command idQ="InsertBarcode"/>
+				<command idQ="InsertQRCode"/>
+			</KDocerAppQuickMenuCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Insert">
+			<command idQ="RB_PivotInsertTable"/>
+			<separator/>
+			<command idQ="RB_Illustrations"/>
+			<separator/>
+			<command idQ="RB_Chars"/>
+			<separator/>
+			<command idQ="RB_Sparks"/>
+			<separator/>
+			<command idQ="RB_Hyperlink"/>
+			<separator/>
+			<command idQ="RB_Symbol"/>
+			<separator idKey="SoundMovie"/>
+			<command idKey="SoundMovie" idQ="RB_Media"/>
+			<separator/>
+			<command idKey="ETComplexObj" idQ="RB_ComplexObj"/>
+		</subcommand>
+	</subcommands>
+</shell>

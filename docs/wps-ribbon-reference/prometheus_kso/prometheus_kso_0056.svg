@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>更改智能图形排版16_smart_art change_layout</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="Vector 2401" d="M14.5 9.51V14.49C14.5 14.4955 14.4955 14.5 14.49 14.5H9.51C9.50448 14.5 9.5 14.4955 9.5 14.49V9.51C9.5 9.50448 9.50448 9.5 9.51 9.5H14.49C14.4955 9.5 14.5 9.50448 14.5 9.51Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 2402" d="M6.5 1.5H5.51C5.50448 1.5 5.5 1.50448 5.5 1.51V2.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2403" d="M9.5 1.5H10.49C10.4955 1.5 10.5 1.50448 10.5 1.51V2.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2404" d="M10.5 5.5V6.49C10.5 6.49552 10.4955 6.5 10.49 6.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2405" d="M6.5 6.5H5.51C5.50448 6.5 5.5 6.49552 5.5 6.49V5.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2406" d="M5.5 10.5L7.49293 12.4929C7.49683 12.4968 7.49683 12.5032 7.49293 12.5071L5.5 14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2407" d="M7.5 12.5H6C3.51472 12.5 1.5 10.4853 1.5 8.00001C1.5 6.23315 2.51828 4.70412 4 3.96777" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

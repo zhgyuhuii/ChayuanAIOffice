@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>开启网格线_网格线</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M1.5 2.5H13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M2.5 1.5V13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M7.5 1.5V2.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M7.5 2.5V9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M12.5 1.5V2.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M12.5 2.5V7.5H7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M1.5 7.5H7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" d="M1.5 12.5H2.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" d="M2.5 12.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_10" d="M11.2501 9.5C9.23948 9.5 7.97446 11.1594 7.50324 11.9945C7.50129 11.998 7.50157 12.0019 7.50395 12.0051C8.12982 12.8401 9.28191 14.5 11.2501 14.5C13.2184 14.5 14.3705 12.8401 14.9963 12.0051C14.9987 12.0019 14.999 11.998 14.997 11.9945C14.5258 11.1594 13.2608 9.5 11.2501 9.5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_11" d="M12.1992 12C12.1992 12.5523 11.7515 13 11.1992 13C10.6469 13 10.1992 12.5523 10.1992 12C10.1992 11.4477 10.6469 11 11.1992 11C11.7515 11 12.1992 11.4477 12.1992 12Z" stroke="none"/></g></svg>

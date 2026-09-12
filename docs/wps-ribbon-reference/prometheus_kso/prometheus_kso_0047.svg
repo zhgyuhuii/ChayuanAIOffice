@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g fill="none" fill-rule="evenodd">
+    <rect width="64" height="64"/>
+    <g fill="#000" transform="translate(15 19)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+      <rect width="1" height="1" y="18"/>
+      <rect width="1" height="1" y="20"/>
+      <rect width="1" height="1" y="22"/>
+      <rect width="1" height="1" y="24"/>
+      <rect width="1" height="1" y="26"/>
+      <rect width="1" height="1" x="2" y="26"/>
+      <rect width="1" height="1" x="4" y="26"/>
+      <rect width="1" height="1" x="6" y="26"/>
+      <rect width="1" height="1" x="2" y="18"/>
+      <rect width="1" height="1" x="4" y="18"/>
+      <rect width="1" height="1" x="6" y="18"/>
+      <rect width="1" height="1" x="8" y="18"/>
+      <rect width="1" height="1" x="8" y="20"/>
+      <rect width="1" height="1" x="8" y="22"/>
+      <rect width="1" height="1" x="8" y="24"/>
+      <rect width="1" height="1" x="8" y="26"/>
+      <rect width="1" height="1" x="25" y="18"/>
+      <rect width="1" height="1" x="25" y="20"/>
+      <rect width="1" height="1" x="25" y="22"/>
+      <rect width="1" height="1" x="25" y="24"/>
+      <rect width="1" height="1" x="25" y="26"/>
+      <rect width="1" height="1" x="27" y="26"/>
+      <rect width="1" height="1" x="29" y="26"/>
+      <rect width="1" height="1" x="31" y="26"/>
+      <rect width="1" height="1" x="27" y="18"/>
+      <rect width="1" height="1" x="29" y="18"/>
+      <rect width="1" height="1" x="31" y="18"/>
+      <rect width="1" height="1" x="33" y="18"/>
+      <rect width="1" height="1" x="33" y="20"/>
+      <rect width="1" height="1" x="33" y="22"/>
+      <rect width="1" height="1" x="33" y="24"/>
+      <rect width="1" height="1" x="33" y="26"/>
+      <rect width="1" height="1" x="25"/>
+      <rect width="1" height="1" x="25" y="2"/>
+      <rect width="1" height="1" x="25" y="4"/>
+      <rect width="1" height="1" x="25" y="6"/>
+      <rect width="1" height="1" x="25" y="8"/>
+      <rect width="1" height="1" x="27" y="8"/>
+      <rect width="1" height="1" x="29" y="8"/>
+      <rect width="1" height="1" x="31" y="8"/>
+      <rect width="1" height="1" x="27"/>
+      <rect width="1" height="1" x="29"/>
+      <rect width="1" height="1" x="31"/>
+      <rect width="1" height="1" x="33"/>
+      <rect width="1" height="1" x="33" y="2"/>
+      <rect width="1" height="1" x="33" y="4"/>
+      <rect width="1" height="1" x="33" y="6"/>
+      <rect width="1" height="1" x="33" y="8"/>
+    </g>
+    <path fill="#000" fill-rule="nonzero" d="M12.92 20.498C11.8973282 22.1446749 11.0826697 23.9473235 10.476 25.906 9.73066294 28.1593446 9.358 30.4039888 9.358 32.64 9.358 34.8413443 9.73066294 37.0859886 10.476 39.374 11.1000031 41.3673433 11.9146616 43.1699919 12.92 44.782L11.906 44.782C10.8659948 43.0833248 10.0426697 41.2893428 9.436 39.4 8.72532978 37.1466554 8.37 34.8933446 8.37 32.64 8.37 30.3866554 8.72532978 28.1420112 9.436 25.906 10.0426697 23.9819904 10.8659948 22.1793417 11.906 20.498L12.92 20.498zM52.094 20.498C53.0993384 22.1793417 53.9226635 23.9819904 54.564 25.906 55.2746702 28.2286783 55.63 30.4733225 55.63 32.64 55.63 34.8066775 55.2746702 37.0599883 54.564 39.4 53.9226635 41.2893428 53.0993384 43.0833248 52.094 44.782L51.08 44.782C52.0680049 43.1699919 52.8826635 41.3673433 53.524 39.374 54.2693371 36.9993215 54.642 34.7546772 54.642 32.64 54.642 30.4906559 54.2693371 28.2460117 53.524 25.906 52.8999969 23.9473235 52.0853384 22.1446749 51.08 20.498L52.094 20.498z"/>
+  </g>
+</svg>

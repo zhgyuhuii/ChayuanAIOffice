@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_correct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KPdfCorrectExitCommand customTip="PageCorrectExit" icon="p-esc-normal;p-esc-hover;p-esc-active;p-esc-disable" id="PageCorrectExit" text="@PageCorrectExit" wpsIsEanble="false"/>
+		<KListCommand id="PageCorrect" layout_lineCount="1" rbFileMenuEmbed="1" text="@Menu Correct">
+			<command idQ="PageCorrectManualAdjust"/>
+			<command idQ="PageCorrectFinished"/>
+			<command idQ="PageCorrectExit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Correct">
+			<command idQ="PageCorrect"/>
+		</subcommand>
+	</subcommands>
+</shell>

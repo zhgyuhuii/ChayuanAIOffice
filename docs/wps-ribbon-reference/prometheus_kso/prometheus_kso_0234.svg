@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>虚线线型16_DashStyleMenu</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M1 2.50012H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M5 2.50012H8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M1 7.50012H2" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M8 7.50012H9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M14 7.50012H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M9 2.50012H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M13 2.50012H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" d="M3 7.50012H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" d="M10 7.50012H13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_10" d="M1 13H3" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_11" d="M4 13H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_12" d="M7 13H9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_13" d="M10 13H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_14" d="M13 13H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

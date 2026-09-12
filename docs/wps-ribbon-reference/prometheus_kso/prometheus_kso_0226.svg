@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>选项16_pivot_options</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="04" d="M7.5 9.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="05" d="M9.5 7.5V14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="06" d="M12.5 7.5V14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="07" d="M7.5 12.5H14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="01" d="M5.5 5.5V14.5H2C1.72386 14.5 1.5 14.2761 1.5 14V5.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="02" d="M5.5 1.5H14C14.2761 1.5 14.5 1.72386 14.5 2V5.5H5.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="03" d="M1.5 2C1.5 1.72386 1.72386 1.5 2 1.5H5.5V5.5H1.5V2Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

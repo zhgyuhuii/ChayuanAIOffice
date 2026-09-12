@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxDevelopToolsListCommand controlType="16" groupTip="DevelopToolGroup" icon="macros_kd" id="RB_DevelopTools" idKey="VBADevelopDisableJSIDE" idMso="GroupMacroPlay" ksoCmd="RunMacro" rbHotKey="M" text="@DevelopTools">
+			<KxRunMacroCommand controlType="0" customTip="RunJSMacro" hotKey="V" icon="js_macro_kd" id="MacrosInDevelopToolsTab" idMso="MacroPlay" ksoCmd="RunMacro" qtspyName="RunMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@Run Macros"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Security" dialogHint="1" hotKey="s" icon="security_kd" id="MacroSecurityInDevelopToolsTab" idMso="MacroSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@SecurityTools"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="TemplateAddIns" filter="support:MacAddin=true" icon="cube_two_kd" id="RB_TemplateAddIns" idMso="AddInManager" ksoCmd="TemplateAddIns" rbHotKey="AI" text="@Add-InsTools"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="JSAddIns" icon="js_addin_kd" id="RB_JSAddIns" idKey="CommonSafeJsAddins" idMso="JsAddInsDialog" ksoCmd="JSAddIns" rbHotKey="JS" text="@WPS Add-Ins"/>
+			<KxDevelopToolsContextCommand hotKey="L" icon="code_edit_kd" id="CT_DevelopCommand" idMso="TabDeveloper" rbHotKey="L" tabName="CT_DevelopTools" text="@DeveloperToolsContext"/>
+		</KxDevelopToolsListCommand>
+		<KListCommand groupTip="EfficiencyToolGroup" icon="detailed_settings_kd" id="app_ktablefetch_sheettoollist" text="@Efficiency Tools" visibleDependsOnSubCmds="1">
+			<KAppCommand appId="ktablefetch" customTip="AppTableFetch" icon="sheet_extract_kd" id="app_ktablefetch_wordtool" text="@tableFetch"/>
+			<command idQ="JumpEducationTools"/>
+			<KAutoHideListCommand customTip="CorrectionService" icon="correction_service_kd" id="correctionservice" idKey="WpsCTToolCorrectionService" text="@Correction Service">
+				<KAppCommand appCmdObj="OpenappWithDocPath" appId="AK20220415DGHHFM" icon="doc_comparison_kd" id="app_AK20220415DGHHFM_wordtool" text="@Document Comparison"/>
+				<KAppCommand appCmdObj="DocCorrect" appId="kstdexamine" icon="doc_official_stamp_kd" id="app_kstdexamine_wordtool" text="@Standard Examine"/>
+				<KAppCommand appCmdObj="DocCorrect" appId="kenglishgrade" icon="proofread_english_kd" id="app_kenglishgrade_wordtool" text="@English Grade"/>
+				<KAppCommand action="EnglishProofread" appCmdObj="EnglishProofread" appId="kproofread" icon="proofread_english_kd" id="app_kproofread_englishproofread_writertool" text="@English Proofread"/>
+				<KAppCommand appId="kpapercheckex" icon="magnifier_plagiarism_check_kd" id="app_kpapercheckex_wordtool" text="@PaperCheck"/>
+			</KAutoHideListCommand>
+			<KProxyCommand appId="AK20241210DEZWKX" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="import_pic_kd" id="OpenMarketAssistant_test" idKey="MarketAssistantTestCommand" targetModule="kappcenter" text="@WPS Market Assistant"/>
+			<KProxyCommand appId="AK20250107XJULXY" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="import_pic_kd" id="OpenMarketAssistant" idKey="MarketAssistantCommand" targetModule="kappcenter" text="@WPS Market Assistant"/>
+			<KAppCommand appId="kcontractpanel" customTip="kcontractpanel" filter="lang=zh_CN" icon="contract_assistant_kd" id="app_kcontract_tab" idKey="KcontractPanelCommand" text="@app kcontractpanel"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Tools">
+			<command idQ="RB_DevelopTools"/>
+			<separator/>
+			<command idQ="app_ktablefetch_sheettoollist"/>
+		</subcommand>
+	</subcommands>
+</shell>

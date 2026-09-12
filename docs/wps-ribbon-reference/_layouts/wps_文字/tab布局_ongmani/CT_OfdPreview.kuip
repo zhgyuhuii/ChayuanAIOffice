@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_ofdpreview" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="200" customTip="ExportOfdFile" faceid="200" hotKey="g" icon="doc_file_kd" id="ExportOfdFile" idKey="WpsExportOfdFile" idMso="FileSaveAsOfd" ksoCmd="OfdPrintPreviewExportOfd" rbHotKey="G" text="@Export To OFD"/>
+		<KListCommand id="RB_OPP_Main" text="@OfdPreview">
+			<command idQ="ExportOfdFile"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="202" customTip="FitWidth" faceid="202" hotKey="8" icon="page_width_kd" id="OfdPrintPreviewFitWidth" ksoCmd="OfdPrintPreviewFitWidth" rbHotKey="8" text="@Fit Width"/>
+		<KxLegacyTriggerCommand aid="203" customTip="FitPage" faceid="203" hotKey="9" icon="screen_fit_kd" id="OfdPrintPreviewFitPage" ksoCmd="OfdPrintPreviewFitPage" rbHotKey="9" text="@Fit Page"/>
+		<KListCommand id="RB_OPP_Settings" text="@OfdPrintPreviewSettings">
+			<KxLegacyTriggerCommand aid="201" customTip="ActualSize" faceid="201" hotKey="0" icon="screen_actual_size_kd" id="OfdPrintPreviewActualSize" ksoCmd="OfdPrintPreviewActualSize" rbHotKey="0" text="@Actual Size"/>
+			<KRbLayoutListCommand horizontalSpacing="15" isShowText="1" layoutName="grid" layoutOnly="1" leftSpace="15" rightSpace="3" verticalSpacing="5">
+				<command idQ="OfdPrintPreviewFitWidth"/>
+				<command idQ="OfdPrintPreviewFitPage"/>
+			</KRbLayoutListCommand>
+			<separator/>
+			<KxLegacyTriggerCommand aid="211" customTip="OfdPrintPreviewZoomOut" faceid="211" hotKey="z" icon="magnifier_zoom_out_kd" id="OfdPrintPreviewZoomOut" ksoCmd="OfdPrintPreviewZoomOut" rbHotKey="Z" text="@Zoom Out"/>
+			<KxWpsOfdPreviewZoomCommand customTip="OfdPrintPreviewZoomCombo" id="OfdPrintPreviewZoomCombo" ksoCmd="OfdPrintPreviewZoomCombo" labelText="" spaceHint="suitable" text="@Zoom Ratio"/>
+			<KxLegacyTriggerCommand aid="210" customTip="OfdPrintPreviewZoomIn" faceid="210" hotKey="s" icon="magnifier_zoom_in_kd" id="OfdPrintPreviewZoomIn" ksoCmd="OfdPrintPreviewZoomIn" rbHotKey="S" text="@Zoom In"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="204" customTip="FirstPage" faceid="204" hotKey="h" icon="arrow_first_small_wps_kd" id="OfdPrintPreviewFirstPage" ksoCmd="OfdPrintPreviewFirstPage" rbHotKey="H" text="@FirstPage"/>
+		<KxLegacyTriggerCommand aid="205" customTip="LastPage" faceid="205" hotKey="e" icon="arrow_last_small_wps_kd" id="OfdPrintPreviewLastPage" ksoCmd="OfdPrintPreviewLastPage" rbHotKey="E" text="@LastPage"/>
+		<KxLegacyTriggerCommand aid="206" customTip="PrevPage" faceid="206" hotKey="u" icon="arrow_left_hollow_shape_kd" id="OfdPrintPreviewPrevPage" ksoCmd="OfdPrintPreviewPrevPage" rbHotKey="U" text="@PrevPage"/>
+		<KxLegacyTriggerCommand aid="207" customTip="NextPage" faceid="207" hotKey="d" icon="arrow_right_hollow_shape_kd" id="OfdPrintPreviewNextPage" ksoCmd="OfdPrintPreviewNextPage" rbHotKey="D" text="@NextPage"/>
+		<KxOfdPrintPreviewPageNumberCommand aid="208" customTip="OfdPrintPreviewPageLocation" fixedWidth="100" id="OfdPrintPreviewPageLocation" ksoCmd="OfdPrintPreviewPageNumber" space="5" spaceHint="suitable" text="@PageNumber"/>
+		<KListCommand id="RB_OPP_Show" text="@Show">
+			<command idQ="OfdPrintPreviewFirstPage"/>
+			<command idQ="OfdPrintPreviewPrevPage"/>
+			<command idQ="OfdPrintPreviewPageLocation"/>
+			<command idQ="OfdPrintPreviewNextPage"/>
+			<command idQ="OfdPrintPreviewLastPage"/>
+		</KListCommand>
+		<KListCommand id="RB_OPP_Close" text="@Close">
+			<KxLegacyTriggerCommand customTip="CloseOfdPrintPreview" detail="@Close" hotKey="c" icon="close_window_kd" id="CloseOfdPrintPreview" idMso="CloseOfdPrintPreviewExit" ksoCmd="CloseOfdPrintPreview" rbHotKey="C" text="@Close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_OfdPrintPreview">
+			<command idQ="RB_OPP_Main"/>
+			<separator/>
+			<command idQ="RB_OPP_Settings"/>
+			<separator/>
+			<command idQ="RB_OPP_Show"/>
+			<separator/>
+			<command idQ="RB_OPP_Close"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

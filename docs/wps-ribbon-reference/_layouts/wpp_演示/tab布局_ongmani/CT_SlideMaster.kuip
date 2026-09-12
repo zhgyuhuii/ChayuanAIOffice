@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_slidemaster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="92212" customTip="DeleteMaster" faceid="116" hotKey="d" icon="delete_master_kd" id="DeleteMaster" ksoCmd="DeleteMaster" rbHotKey="D" text="@Delete Master"/>
+		<KxLegacyTriggerCommand aid="1131" customTip="MasterLayout" dialogHint="1" faceid="119" hotKey="l" icon="slide_layout_kd" id="MasterLayout" ksoCmd="MasterLayout" rbHotKey="L" text="@Master Layout"/>
+		<KListCommand icon="view_master_layout_kd" id="RB_EditMaster" rbFileMenuEmbed="1" text="@Edit Master">
+			<KxLegacyTriggerCommand aid="1126" customTip="NewSlideMaster" faceid="114" hotKey="w" icon="slide_master_add_kd" id="NewSlideMasterInSlideMasterTab" ksoCmd="NewSlideMaster" qtspyName="NewSlideMaster" rbHotKey="N" text2="@New Slide &#10;Master" text="@New Slide &#10;Master"/>
+			<KxLegacyTriggerCommand aid="1127" customTip="NewTitleMaster" faceid="115" hotKey="r" icon="notes_master_kd" id="NewTitleMasterInSlideMasterTab" ksoCmd="NewSlideLayout" qtspyName="NewSlideLayout" rbHotKey="I" text="@New Slide Layout"/>
+			<KxListCommand customTip2="content1" customTip="content" icon="insert_placeholder_kd" id="NewLayoutPlaceHolder" ksoCmd="NewLayoutPlaceHolder" text="@Insert Placeholder">
+				<KxValueCommand hotKey="C" icon="insert_content_kd" index="1" ksoCmd="NewLayoutPlaceHolder" text="@content"/>
+				<KxValueCommand hotKey="N" icon="text_content_vertical_kd" index="2" ksoCmd="NewLayoutPlaceHolder" text="@VerticalContent"/>
+				<KxValueCommand hotKey="X" icon="insert_placeholder_kd" index="3" ksoCmd="NewLayoutPlaceHolder" text="@text"/>
+				<KxValueCommand hotKey="V" icon="text_frame_vertical_kd" index="4" ksoCmd="NewLayoutPlaceHolder" text="@VerticalText"/>
+				<KxValueCommand hotKey="P" icon="pic_kd" index="5" ksoCmd="NewLayoutPlaceHolder" text="@picture"/>
+				<KxValueCommand hotKey="H" icon="chart_element_add_kd" index="6" ksoCmd="NewLayoutPlaceHolder" text="@chart"/>
+				<KxValueCommand hotKey="T" icon="sheet_kd" index="7" ksoCmd="NewLayoutPlaceHolder" text="@table"/>
+				<KxValueCommand hotKey="M" icon="video_two_kd" index="8" ksoCmd="NewLayoutPlaceHolder" text="@media"/>
+				<KxValueCommand filter="support:SmartartTextToWpsart=false" hotKey="S" icon="smart_diagram_kd" index="9" ksoCmd="NewLayoutPlaceHolder" text="@smartArt"/>
+				<KxValueCommand filter="support:SmartartTextToWpsart=true" hotKey="S" icon="smart_diagram_kd" index="9" ksoCmd="NewLayoutPlaceHolder" text="@smartArtInternational"/>
+			</KxListCommand>
+		</KListCommand>
+		<KListCommand icon="view_master_layout_kd" id="RB_EditMaster_Part2" text="@Master">
+			<KxLegacyTriggerCommand aid="1128" customTip="DeleteMaster" faceid="116" hotKey="d" icon="delete_master_kd" id="DeleteMasterInSlideMasterTab" ksoCmd="DeleteMaster" qtspyName="DeleteMaster" rbHotKey="D" text="@Delete"/>
+			<KxLegacyTriggerCommand aid="1129" customTip="PreserveMaster" faceid="117" hotKey="m" icon="preserve_master_kd" id="PreserveMasterInSlideMasterTab" ksoCmd="PreserveMaster" qtspyName="PreserveMaster" rbHotKey="V" text="@Preserve Master"/>
+			<KxLegacyTriggerCommand aid="1130" customTip="RenameMaster" faceid="118" hotKey="n" icon="rename_kd" id="RenameMasterInSlideMasterTab" ksoCmd="RenameMaster" qtspyName="RenameMaster" rbHotKey="R" text="@Rename"/>
+			<KxLegacyTriggerCommand aid="1131" customTip="MasterLayout" dialogHint="1" faceid="119" hotKey="l" icon="slide_layout_kd" id="MasterLayoutInSlideMasterTab" ksoCmd="MasterLayout" qtspyName="MasterLayout" rbHotKey="L" text="@Master Layout"/>
+		</KListCommand>
+		<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" height="480" id="DocumentTheme" targetModule="kdocumenttheme" text="@Document theme" width="100"/>
+		<KListCommand filter="lang!=th_TH" icon="theme_kd" id="RB_MasterEditTheme" qtspyName="RB_EditTheme" rbFileMenuEmbed="1" text="@Edit Theme">
+			<KxListOnlineAndLocalCommand customTip="Themes" disableTrigger="1" icon="theme_kd" id="OnlineDocumentTheme" isCefPopup="false" isOnlyOnline="true" ksoCmd="Themes" qtspyName="Themes" rbHotKey="TT" text="@Themes" tpOnlineCmd="DocumentTheme">
+				<KxThemesGalleryCommand bForceScrollToIndex="1" customTip="Themes" galleryWidth="305" icon="theme_kd" id="ThemesInSlideMasterTab" ksoCmd="Themes" qtspyName="Themes" rbHotKey="TT" text="@Themes"/>
+			</KxListOnlineAndLocalCommand>
+			<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="Theme Colors" galleryWidth="250" icon="color_palette_kd" id="ThemeColorsInSlideMasterTab" ksoCmd="ThemeColors" onlineCmd="OnlineThemeColor" qtspyName="ThemeColors" rbHotKey="TC" text="@Colors">
+				<command idQ="CustomThemeColors"/>
+			</KxThemeColorsGalleryCommand>
+			<KxThemeFontsGalleryCommand bForceScrollToIndex="1" customTip="Theme Fonts" icon="font_style_kd" id="ThemeFontsInSlideMasterTab" ksoCmd="ThemeFonts" qtspyName="ThemeFonts" rbHotKey="TF" text="@Fonts">
+				<command idQ="SlideMasterCustomThemeFonts"/>
+			</KxThemeFontsGalleryCommand>
+			<KxListOnlineAndLocalCommand customTip="Theme Effects" disableTrigger="1" icon="theme_effect_kd" id="OnlineDocumentThemeEffect" isCefPopup="false" isOnlyOnline="true" isPreferred="true" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects" tpOnlineCmd="DocumentThemeEffect">
+				<KxThemeEffectsGalleryCommand bForceScrollToIndex="1" customTip="Theme Effects" galleryWidth="340" icon="theme_effect_kd" id="ThemeEffectsInSlideMasterTab" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects"/>
+			</KxListOnlineAndLocalCommand>
+		</KListCommand>
+		<KListCommand icon="close_window_kd" id="RB_Close" rbFileMenuEmbed="1" text="@Close">
+			<KxLegacyTriggerCommand customTip="SlideMasterClose" hotKey="c" icon="close_window_kd" id="CloseSlideMasterTab" ksoCmd="SlideMasterClose" qtspyName="SlideMasterClose" rbHotKey="C" singlerowpriority="100" text2="@Close&#10;Master View" text="@Close"/>
+		</KListCommand>
+		<KxSetBackgroundCommand customTip="Backdrop" dialogHint="1" entrance="CT_SlideMaster" hotKey="k" icon="background_kd" id="SlideMaster_BackDrop" ksoCmd="Background" rbHotKey="B" text="@Background"/>
+		<KxSaveBackgroundPictureCommand customTip="SaveBackgroundPicture" dialogHint="1" entrance="CT_SlideMaster" hotKey="p" icon="save_background_as_pic_kd" id="SlideMaster_SaveBackgroundPicture" ksoCmd="SaveBackgroundPicture" rbHotKey="P" text="@Save Background Picture"/>
+		<KListCommand icon="background_kd" id="SlideMaster_RB_BackDrop" rbFileMenuEmbed="1" text="@Background">
+			<KxSingleRowMergeGroupCommand icon="background_kd" id="SingleRow_SlideMaster_BackDrop" text="@Background"/>
+			<command idQ="SlideMaster_BackDrop" singlerowmergegroup="SingleRow_SlideMaster_BackDrop"/>
+			<command idQ="SlideMaster_SaveBackgroundPicture" singlerowmergegroup="SingleRow_SlideMaster_BackDrop"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="605" controlType="6" customTip="Bold" faceid="316" hotKey="b" icon="bold_wps_kd" iconQat="bold_wps_kd" id="Bold" idMso="Bold" ksoCmd="Bold" rbHotKey="1" text="@Bold"/>
+		<KxLegacyTriggerCommand aid="606" customTip="Italic" faceid="317" hotKey="i" icon="italic_wps_kd" id="Italic" ksoCmd="Italic" rbHotKey="2" text="@Italic"/>
+		<KxLegacyTriggerCommand aid="607" controlType="6" customTip="Underline" faceid="318" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="Underline" idMso="Underline" ksoCmd="Underline" rbHotKey="3" text="@Underline"/>
+		<KxLegacyTriggerCommand controlType="4" customTip="ShadowButton" hotKey="s" icon="text_projection_kd" id="ShadowButton" idMso="ObjectEffectShadowGallery" ksoCmd="Shadow" rbHotKey="5" text="@Shadow"/>
+		<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" rbHotKey="M" text="@More Font Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapFontColor" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+		<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" height="-1" id="OnlineBullets" localMenuHeight="176" skeletonAlias="konlinebullet" targetModule="konlinefonts" text="@Docer Bullet" width="380"/>
+		<KxWppBulletsNumberingGalleryCommand aid="128" column="4" controlType="6" customTip2="Bullets2" customTip="Bullets" icon="list_unordered_kd" id="Bullets" idMso="Bullets" ksoCmd="Bullets" ksoTriggerCmd="Bullets" rbHotKey="U" text="@Bullets"/>
+		<KxOnlineGalleryCommand customTip="Bullets" icon="list_unordered_kd" id="DocerBullets" ksoCmd="Bullets" onlineCmd="OnlineBullets" qtspyName="Bullets" rbHotKey="U" refLocalCmd="Bullets" text="@Bullets">
+			<KxPropComposeCommand aid="783" dialogHint="1" hotKey="m" icon="list_unordered_kd" id="MoreBullets" idMso="BulletsAndNumberingBulletsDialog" ksoCmd="BulletsNumber" qtspyName="BulletsNumber" rbHotKey="N" tabIndex="0" text="@More Bullets"/>
+		</KxOnlineGalleryCommand>
+		<KxWppBulletsNumberingGalleryCommand aid="125" column="4" customTip2="Numbering2" customTip="Numbering" icon="list_ordered_number_kd" id="Numbering" ksoCmd="Numbering" ksoTriggerCmd="Numbering" rbHotKey="N" tc="Num" text="@Numbering">
+			<KxPropComposeCommand aid="783" controlType="0" dialogHint="1" hotKey="m" icon="list_unordered_kd" idMso="BulletsAndNumberingBulletsDialog" ksoCmd="BulletsNumber" qtspyName="BulletsNumber" rbHotKey="N" tabIndex="1" text="@More Numbering"/>
+		</KxWppBulletsNumberingGalleryCommand>
+		<KxListCommand customTip="RB_Font" forceVisible="1" icon="symbol_a_kd" id="RB_SlideMaster_Font" ksoCmd="Font" rbFileMenuEmbed="1" singlerowmergesetting="SingleRow_SlideMaster_Font" text="@Font">
+			<KxSingleRowMergeGroupCommand icon="symbol_a_kd" id="SingleRow_SlideMaster_Font" text="@Font"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand layoutOnly="1">
+					<KFontRbLayoutListCommand horizontalSpacing="1" id="FontLayoutListInSlideMasterTab" isDrawInnerBorder="1">
+						<KxWppFontComboboxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" id="FontName" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="141" rbHotKey="FF" singlerowmergegroup="SingleRow_SlideMaster_Font" text="@Font" verticalPolicy="Preferred"/>
+						<KxWppFontSizePreviewCommand controlType="2" customTip="FontSize" fixedWidth="60" horizontalPolicy="Preferred" id="FontSize" ksoCmd="FontSize" layoutOnRight="true" rbHotKey="FS" singlerowmergegroup="SingleRow_SlideMaster_Font" text="@Font Size" verticalPolicy="Preferred"/>
+					</KFontRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" topSpace="0">
+					<command idQ="Bold" singlerowmergegroup="SingleRow_SlideMaster_Font"/>
+					<command idQ="Italic" singlerowmergegroup="SingleRow_SlideMaster_Font"/>
+					<command idQ="Underline" singlerowmergegroup="SingleRow_SlideMaster_Font"/>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" topSpace="0">
+						<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<KxWppFontColorCommand customTip2="FontColor2" customTip="FontColor" icon="color_font_wps_kd" id="FontColorInSlideMasterTab" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" qtspyName="FontColor" rbHotKey="FC" singlerowmergegroup="SingleRow_SlideMaster_Font" text="@Font Color">
+								<command idQ="MoreFontColors"/>
+								<command idQ="SnapFontColor"/>
+								<separator/>
+								<command idQ="MoreFontFill"/>
+							</KxWppFontColorCommand>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="DocerBullets" singlerowmergegroup="SingleRow_SlideMaster_Font"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="Numbering" singlerowmergegroup="SingleRow_SlideMaster_Font"/>
+						</KRbLayoutListCommand>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_SlideMaster">
+			<command idQ="RB_EditMaster"/>
+			<separator/>
+			<command idQ="RB_MasterEditTheme"/>
+			<separator/>
+			<command idQ="RB_EditMaster_Part2"/>
+			<separator/>
+			<command idQ="RB_SlideMaster_Font"/>
+			<separator/>
+			<command idQ="SlideMaster_RB_BackDrop"/>
+			<separator/>
+			<command idQ="RB_Close"/>
+		</subcommand>
+	</subcommands>
+</shell>

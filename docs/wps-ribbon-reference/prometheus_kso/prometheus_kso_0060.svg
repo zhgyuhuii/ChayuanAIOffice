@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>相交选择_IntersectSelect</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular">
+<path id="line" d="M9.2749 14.4747L7.00546 7.01794C7.00313 7.01028 7.01028 7.00313 7.01794 7.00546L14.4747 9.2749C14.4835 9.27758 14.4843 9.28975 14.4759 9.29357L10.913 10.913L9.29357 14.4759C9.28975 14.4843 9.27758 14.4835 9.2749 14.4747Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="Rectangle 34624861" d="M5 6.5H2C1.72386 6.5 1.5 6.27614 1.5 6V2C1.5 1.72386 1.72386 1.5 2 1.5H6C6.27614 1.5 6.5 1.72386 6.5 2V5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3479" d="M7 14.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3480" d="M5 14.5H4C3.72386 14.5 3.5 14.2761 3.5 14V12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3481" d="M3.5 11V9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3482" d="M3.5 8V6.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3483" d="M3.5 5V4C3.5 3.72386 3.72386 3.5 4 3.5H5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3484" d="M6.5 3.5H8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3485" d="M9 3.5H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3486" d="M12 3.5H14C14.2761 3.5 14.5 3.72386 14.5 4V5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3488" d="M14.5 7V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

@@ -1,0 +1,187 @@
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>WPS Office Cloud</title>
+        <style type="text/css">
+            html{font: 12px/24px "Tahoma","微软雅黑","宋体","Lucida Grande","Lucida Sans Unicode",Helvetica,Arial,Verdana,sans-serif;color:#000;}
+            body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}input,textarea,select{*font-size:100%}legend{color:#000}a{text-decoration: none;}
+            img { border: none; }
+            #process_page {
+            	position:absolute;
+            	top: 30px;
+            	bottom: 0;
+            	left: 0;
+            	right: 0;	
+            }
+            .process_img {
+            	position: absolute;
+            	top: 50%;
+            	left: 50%;
+            	margin-left: -118px;
+            	margin-top: -30px;
+            }
+            .cb { clear: both; }
+            
+            html{
+                height: 100%;
+            }
+            
+            body{
+              width: 100%;
+              height: 100%;
+              position: relative;
+			  background: #FFFFFF;
+            }
+            
+            #client-wrap{
+              position: absolute;
+              left:0;
+              right:0;
+              top:0;
+              bottom:0;
+            }
+            
+            /*客戶端嵌套*/
+            .client #client-wrap{
+                border: 1px solid #49566b;
+                border-top-right-radius:2px;
+                border-top-left-radius:2px;
+                box-shadow: 0 0 15px #333333;
+            }
+            
+            .client #main_nav, .client #twork-wrap, .client #group-wrap, .client #tline-wrap, .client #atme-wrap, .client #twork-cover{
+                top: 30px;
+            }
+            
+            .client header{
+                display: block;
+            }
+            
+            /*头部*/
+            header {
+              position: relative;
+              height: 28px;
+              z-index: 1;
+              border-top:1px solid #9ca6b5;
+              border-bottom:1px solid #56657b;
+              background: #717f94;
+            }
+            header #logo {
+              float: left;
+              display: block;
+              height: 20px;
+              line-height: 20px;
+              padding-left: 25px;
+              margin: 4px 0 4px 10px;
+              color: #FFFFFF;
+              background: url("kzone-img/tworkIcon.png") 0 -520px no-repeat;
+            }
+            header .header-nav li {
+              float: left;
+            }
+            header .header-nav li a {
+              line-height: 16px;
+              height: 16px;
+              padding: 14px 22px;
+              display: block;
+            }
+            header .header-nav li a:hover {
+              background: #005591;
+            }
+            header .header-nav li a span {
+              height: 16px;
+              line-height: 16px;
+              font-size: 16px;
+              color: #FFFFFF;
+              display: inline-block;
+              overflow: hidden;
+            }
+            header .header-nav li.selected a {
+              background: #005591;
+            }
+            
+            header #clientActionBtn {
+              position: absolute;
+              top: 0;
+              right: 5px;
+              font-size: 10px;
+            }
+            
+            header #clientActionBtn a {
+              display: inline-block;
+              width: 24px;
+              height: 24px;
+              line-height: 30px;
+              text-align: center;
+              margin-left: 1px;
+              color: #FFFFFF;
+              border-radius:10px;
+              vertical-align: middle;
+              text-align: center;
+            }
+            
+            #clientActionBtn #minWin{
+                background: url("kzone-img/min_normal.png") -2px -3px no-repeat;
+            }
+            
+            #clientActionBtn #closeWin{
+                background: url("kzone-img/close_normal.png") -2px -3px no-repeat;
+            }
+            
+            #clientActionBtn #minWin:hover {
+                background: url("kzone-img/min_hover.png") -2px -3px no-repeat;
+            }
+            
+            #clientActionBtn #closeWin:hover{
+                background: url("kzone-img/close_hover.png") -2px -3px no-repeat;
+            }
+            
+            #clientActionBtn #minWin:active {
+                background: url("kzone-img/min_up.png") -2px -3px no-repeat;
+            }
+            
+            #clientActionBtn #closeWin:active{
+                background: url("kzone-img/close_up.png") -2px -3px no-repeat;
+            }
+        
+        </style>
+    </head>
+    <body class="client">
+        <div id="client-wrap">
+            <header class="pr" onmousedown="moveWin()" unselectable="on" onselectstart="return false;" style="-moz-user-select:none;">      
+                <span id="logo" class="fl">WPS Office Cloud</span>
+                <p id="clientActionBtn" class="pa">
+                    <a title="Minimize" id="minWin" href="#minWin" onclick="minWin()"></a>
+                    <a title="Close" id="closeWin" href="#closeWin" onclick="closeWin()"></a>
+                </p>
+            </header>
+                
+            <div id="process_page">
+            	<div class="process_img">
+            	    <img src="kzone-img/loading.gif" alt=""/>
+        	    </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            //最小化
+            function minWin(){
+                clientAPI.jsMinWin();
+                return false;
+            };
+            
+            //关闭窗口
+            function closeWin(){
+                clientAPI.jsCloseWin();
+                return false;
+            };
+            
+            //标题添加拖动属性
+            function moveWin(){
+                clientAPI.jsMoveWin();
+                return false;
+            }
+
+        </script>
+    </body>
+</html>

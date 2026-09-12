@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>输出为OFD24_ExportToOFD</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line" d="M21.5 12V3C21.5 2.72386 21.2761 2.5 21 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V21C2.5 21.2761 2.72386 21.5 3 21.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-bold">
+<path id="line_2" d="M11 10.5H12C13.3807 10.5 14.5 9.38071 14.5 8C14.5 6.61929 13.3807 5.5 12 5.5H11M7.5 8C7.5 6.61929 8.61929 5.5 10 5.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_3" d="M7.5 8V15.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_4" d="M10 10.5H6.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_5" d="M8 10.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular">
+<path id="line_6" d="M19.5 15.5C19.5 17.7091 17.7091 19.5 15.5 19.5C13.2909 19.5 11.5 17.7091 11.5 15.5C11.5 13.2909 13.2909 11.5 15.5 11.5C17.7091 11.5 19.5 13.2909 19.5 15.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_7" d="M18.5 18.5L21.5 21.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

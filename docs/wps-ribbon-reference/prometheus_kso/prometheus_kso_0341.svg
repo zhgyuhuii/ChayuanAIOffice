@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>批量抠图24_app_photonewbatchapp_sub_matting_icon</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 2067" d="M7.5 11V8C7.5 7.72386 7.72386 7.5 8 7.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2068" d="M16 7.5H19C19.2761 7.5 19.5 7.72386 19.5 8V11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2069" d="M12 7.5H15" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2070" d="M7.5 16V19C7.5 19.2761 7.72386 19.5 8 19.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2071" d="M12 19.5H15" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2072" d="M19.5 16V19C19.5 19.2761 19.2761 19.5 19 19.5H16" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2073" d="M7.5 12V15" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 2074" d="M19.5 12V15" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M21 5.5H6C5.72386 5.5 5.5 5.72386 5.5 6V21C5.5 21.2761 5.72386 21.5 6 21.5H21C21.2761 21.5 21.5 21.2761 21.5 21V6C21.5 5.72386 21.2761 5.5 21 5.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M17.5 2.50024H3C2.72386 2.50024 2.5 2.7241 2.5 3.00024V17.5002" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_formedit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="FormFontColorMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FormFontColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="FormBoxBkMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="FormBoxBkColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="FormBoxBorderMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="FormBoxBorderColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="FormFontColorSnapFontColors" ksoCmd="FormFontColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="FormBoxBkSnapColor" ksoCmd="FormBoxBkColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="FormBoxBorderSnapColor" ksoCmd="FormBoxBorderColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="FormEdit_HandTool" ksoCmd="HandTool" shellEntryType="tab_formedit" shortcutHint="Ctrl+H" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="FormEdit_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_formedit" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfFontCommand customTip="FontName" id="FontForFormEdit%" spaceHint="autocompact" text="@FontName"/>
+		<KxPdfFontSizeCommand customTip="FontSize" id="FontSizeForFormEdit%" spaceHint="autocompact" text="@FontSize"/>
+		<KListCommand id="RB_MouseTool_FormEdit" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="FormEdit_HandTool"/>
+			<command idQ="FormEdit_SelectionTool"/>
+		</KListCommand>
+		<KxPdfQuickMenuCommandEx id="FormEdit_AddFormField" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="FormTextBox" shellEntryType="new_tab" text="@AddFormField">
+			<command idQ="FormTextBox"/>
+			<command idQ="FormCheckBox"/>
+			<command idQ="FormRadioButton"/>
+			<command idQ="FormComboBox"/>
+			<command idQ="FormListBox"/>
+			<command idQ="FormButton"/>
+		</KxPdfQuickMenuCommandEx>
+		<KxPdfFormFontColorCommand customTip="TextColor" icon="color_font_wps_kd" id="FormFontColorSetting" ksoCmd="FormFontColor" ksoTriggerCmd="FormFontColor" referenceCommand="FormFontColor" text="@TextColor">
+			<command idQ="FormFontColorMoreFontColors"/>
+			<command idQ="FormFontColorSnapFontColors"/>
+		</KxPdfFormFontColorCommand>
+		<KxPdfFormFillColorCommand customTip="TextBoxBkColor" icon="color_paint_wps_kd" id="FormBoxBkColorSetting" ksoCmd="FormBoxBkColor" ksoTriggerCmd="FormBoxBkColor" referenceCommand="FormBoxBkColor" text="@TextBoxBkColor">
+			<command idQ="FormBoxBkMoreColors"/>
+			<command idQ="FormBoxBkSnapColor"/>
+		</KxPdfFormFillColorCommand>
+		<KxPdfFormBorderColorCommand customTip="TextBoxBorderColor" icon="color_border_wps_kd" id="FormBoxBorderColorSetting" ksoCmd="FormBoxBorderColor" ksoTriggerCmd="FormBoxBorderColor" referenceCommand="FormBoxBorderColor" text="@TextBoxBorderColor">
+			<command idQ="FormBoxBorderMoreColors"/>
+			<command idQ="FormBoxBorderSnapColor"/>
+		</KxPdfFormBorderColorCommand>
+		<KxPdfTextBoxBorderStyleCommand customTip="TBLineStyle" id="FormBoxBorderStyle%" spaceHint="autocompact" text="@Line Style"/>
+		<KxPdfTextBoxBorderSizeCommand customTip="TBLineWidth" id="FormBoxBorderSize%" spaceHint="autocompact" text="@Line Width"/>
+		<KListCommand horizontalSpacing="6" id="RB_AddFormField" layout_lineCount="1" rbFileMenuEmbed="1" text="@add">
+			<command idQ="FormEdit_AddFormField"/>
+		</KListCommand>
+		<KListCommand horizontalSpacing="6" icon="font_style_kd" id="RB_FontStyle" rbFileMenuEmbed="1" text="@Font Style">
+			<command idQ="FontForFormEdit%" spaceHint="suitable"/>
+			<command idQ="FontSizeForFormEdit%" spaceHint="suitable"/>
+			<command idQ="FormFontColorSetting"/>
+		</KListCommand>
+		<KListCommand horizontalSpacing="6" icon="setup_kd" id="RB_BoxStyle" rbFileMenuEmbed="1" text="@Appearance settings">
+			<command idQ="FormBoxBkColorSetting"/>
+			<command idQ="FormBoxBorderColorSetting"/>
+			<command idQ="FormBoxBorderStyle%" spaceHint="suitable"/>
+			<command idQ="FormBoxBorderSize%" spaceHint="suitable"/>
+		</KListCommand>
+		<KListCommand horizontalSpacing="6" icon="close_window_kd" id="FormEditExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@exit">
+			<command idQ="FormEdit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_FormEdit">
+			<command idQ="RB_MouseTool_FormEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_AddFormField"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_FontStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_BoxStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="FormEditExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

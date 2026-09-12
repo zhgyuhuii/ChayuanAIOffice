@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_pagelayout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" height="480" id="DocumentTheme" targetModule="kdocumenttheme" text="@Document theme" width="100"/>
+		<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" height="480" id="DocumentThemeEffect" targetModule="kdocumenttheme" text="@Document theme effect" width="100"/>
+		<KDocerPictureProxyCommand customTip="@Picture Background" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" height="491" icon="pic_kd" id="OnlineBackgroundPopupLayout" idKey="WpsOnlineBackgroundPopupLayoutInPageLayout" relatedKsoCmd="ChangeBack" skeletonAlias="kdocerpicture_background" targetId="OnlineBackgroundPopupLayout" targetModule="kdocercore" text="@Online Background" waitingType="wps_qh" width="444"/>
+		<KxWpsFillColorCommand4Rainbow canHideText="0" controlType="4" customTip="BackgroundShapeFillColor" icon="background_kd" id="RbNewBackGroundColor" idMso="PageColorGallery" ksoCmd="BackgroundShapeFillColor" rbHotKey="PC" text="@Page Color">
+			<KxWpsMoreColorCommand aid="1051" controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreBackgroundShapeColors" idMso="PageColorMoreColorsDialog" ksoCmd="BackgroundShapeFillColor" text="@More Fill Colors"/>
+			<KxWpsSnapColorCommand controlType="4" forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="RbSnapBackgroundShapeColors" idMso="PageColorPicker" ksoCmd="BackgroundShapeFillColor" rbHotKey="E" text="@Snapper"/>
+			<separator/>
+			<KxWpsPictureFillCommand controlType="0" dialogHint="1" hotKey="p" icon="pic_kd" id="PictureFillInPageLayoutTab" idKey="WpsPictureFillInPageLayoutTab" idMso="BackgroundPicture" ksoCmd="BackgroundShape" qtspyName="PictureFillInPageLayoutTab" rbHotKey="P" tabIndex="3" text="@Picture Background"/>
+			<KxPictureBackgroundPrivilegesCommand dialogHint="1" hotKey="p" icon="pic_kd" id="PictureFillInPageLayout" idKey="PicFillInPageLayoutTabEntrace" ksoCmd="BackgroundShape" rbHotKey="P" text="@Picture Background">
+				<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="p" icon="pic_kd" id="PictureFillInPageLayoutTab" idMso="BackgroundPicture" ksoCmd="BackgroundShape" qtspyName="PictureFillInPageLayoutTab" rbHotKey="P" tabIndex="3" text="@From File"/>
+				<command idQ="OnlineBackgroundPopupLayout"/>
+			</KxPictureBackgroundPrivilegesCommand>
+			<KListCommand controlType="0" id="OtherBackGroundInPageLayoutTab" idMso="BackgroundMoreBackgroundDialog" text="@Other Background">
+				<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="g" icon="gradiant_fill_kd" id="GradiantFillInPageLayoutTab" idKey="WPSGradiantFillInPageLayout" idMso="Gradient" ksoCmd="BackgroundShape" qtspyName="GradiantFillInPageLayoutTab" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+				<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="t" icon="texture_fill_kd" id="TextureFillInPageLayoutTab" idMso="Texture" ksoCmd="BackgroundShape" qtspyName="TextureFillInPageLayoutTab" rbHotKey="T" tabIndex="1" text="@Texture"/>
+				<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="n" icon="pattern_fill_kd" id="PatternFillInPageLayoutTab" idMso="Pattern" ksoCmd="BackgroundShape" qtspyName="PatternFillInPageLayoutTab" tabIndex="2" text="@Pattern"/>
+			</KListCommand>
+			<separator/>
+			<KxWpsWaterMarkGalleryCommand additionTitleIndex="1" additionalCmd="HardwareEncryption" controlType="4" customTip="WaterMark" galleryHeight="465" galleryWidth="318" icon="watermark_kd" id="WaterMarkMenuInPageLayoutTab" idMso="WatermarkGallery" qtspyName="WaterMark" rbHotKey="G" text="@Watermark">
+				<KxWpsInsertWaterMarkCommand commandMark="0" controlType="0" dialogHint="1" hotKey="w" icon="watermark_kd" id="InsertWaterMarkInPageLayoutTab" idMso="WatermarkCustomDialog" qtspyName="WaterMark" rbHotKey="W" text="@Insert Watermark"/>
+				<KxWpsDeleteWaterMarkCommand commandMark="0" controlType="0" hotKey="r" icon="watermark_delete_kd" id="DeleteWaterMarkInPageLayoutTab" idKey="WpsRemoveWatermark" idMso="WatermarkRemove" qtspyName="deleteWaterMark" rbHotKey="R" text="@Remove Watermark"/>
+			</KxWpsWaterMarkGalleryCommand>
+		</KxWpsFillColorCommand4Rainbow>
+		<KxWpsPageBorderCommand canHideText="0" controlType="0" customTip="m_PageBorder" hotKey="b" icon="page_border_color_kd" id="m_PageBorder" idMso="PageBorderAndShadingDialog" ksoCmd="BorderShading" rbHotKey="PB" tabIndex="1" text="@Page&#10;Borders"/>
+		<KxWpsWaterMarkGalleryCommand additionTitleIndex="1" additionalCmd="HardwareEncryption" canHideText="0" controlType="4" customTip="WaterMark" galleryHeight="465" galleryWidth="318" icon="watermark_kd" id="WaterMarkMenuInInsertTab" idMso="WatermarkGallery" qtspyName="WaterMark" rbHotKey="G" spaceHint="loose" text="@Watermark">
+			<KxWpsInsertWaterMarkCommand commandMark="0" controlType="0" dialogHint="1" hotKey="w" icon="watermark_kd" id="InsertWaterMarkInInsertTab" idMso="WatermarkInsert" qtspyName="WaterMark" rbHotKey="W" text="@Insert Watermark"/>
+			<KxWpsDeleteWaterMarkCommand commandMark="0" controlType="0" hotKey="r" icon="watermark_delete_kd" id="DeleteWaterMarkInInsertTab" idKey="WpsRemoveWatermark" idMso="WatermarkRemove" qtspyName="deleteWaterMark" rbHotKey="R" text="@Remove Watermark"/>
+		</KxWpsWaterMarkGalleryCommand>
+		<KxPropComposeCommand canHideText="0" controlType="0" customTip="GenkoSetting" hotKey="g" icon="genko_setting_kd" id="m_Genko_Setting" idMso="GenkoSettingDialog" ksoCmd="GenkoSetting" rbHotKey="G" tabIndex="1" text="@Genko Setting"/>
+		<KxLegacyTriggerCommand aid="92019" controlType="0" hotKey="v" icon="doc_direction_vertical_kd" id="PageLayout_InsertVerticalBlankPage" idMso="BlankPageVertical" ksoCmd="InsertVerticalBlankPage" qtspyName="InsertVerticalBlankPage" text="@Vertical"/>
+		<KxLegacyTriggerCommand aid="92020" controlType="0" hotKey="h" icon="doc_direction_horizontal_kd" id="PageLayout_InsertHorizonBlankPage" idMso="BlankPageHorizontal" ksoCmd="InsertHorizonBlankPage" qtspyName="InsertHorizonBlankPage" text="@Horizontal"/>
+		<KxListCommand canHideText="0" controlType="4" customTip2="InsertBlankPage2" customTip="InsertBlankPage" icon="doc_kd" id="PageLayoutInsertBlankPage" idMso="BlankPageInsertGallery" ksoCmd="InsertBlankPage" qtspyname="InsertBlankPage" rbHotKey="NP" text="@Blank Page">
+			<command idQ="PageLayout_InsertVerticalBlankPage"/>
+			<command idQ="PageLayout_InsertHorizonBlankPage"/>
+			<command idQ="WpsAIAutoSeparatePage"/>
+		</KxListCommand>
+		<KxWpsCustomTableOfContentsCommand controlType="0" dialogHint="1" hotKey="C" icon="custom_table_of_contents_kd" id="CustomTableOfContents" idMso="TableOfContentsDialog" ksoCmd="CustomTableOfContents" qtspyName="CustomTableOfContents" text="@Insert Table Of Contents"/>
+		<KxWpsRemoveTableOfContentsCommand controlType="0" hotKey="R" icon="remove_table_of_contents_kd" id="RemoveTableOfContents" idMso="TableOfContentsRemove" ksoCmd="RemoveTableOfContents" qtspyName="RemoveTableOfContents" text="@Remove Table Of Contents"/>
+		<KxWpsTableOfContentsGalleryCommand controlType="4" customTip="InsertIndexTables4ZhCnPage" galleryWidth="250" icon="insert_content_kd" id="InsertTableOfContentsPage" idMso="TableOfContentsGallery" isInsertBreak="true" ksoCmd="InsertTableOfContents" openPosition="tab_page" qtspyName="InsertTableOfContents" text="@TableOfContents">
+			<command idQ="CustomTableOfContents"/>
+			<command idQ="RemoveTableOfContents"/>
+		</KxWpsTableOfContentsGalleryCommand>
+		<KxLegacyTriggerCommand aid="85" controlType="0" customTip="InsertPageBreak" hotKey="p" icon="page_break_kd" id="InsertPageBreak" idMso="BreakPage" ksoCmd="InsertPageBreak" rbHotKey="B" text="@Page &#10;Break"/>
+		<KxLegacyTriggerCommand aid="87" controlType="0" hotKey="T" icon="line_break_wrap_kd" id="RbInsertTextWrappingBreak" idMso="BreakTextWrapping" ksoCmd="InsertTextWrappingBreak" text="@Text Wrapping Break"/>
+		<KxLegacyTriggerCommand aid="88" controlType="0" hotKey="n" icon="page_break_next_section_kd" id="InsertNextPageSectionBreak" idMso="BreakNextPageSection" ksoCmd="InsertNextPageSectionBreak" rbHotKey="N" text="@Next Page Section Break"/>
+		<KxLegacyTriggerCommand aid="89" controlType="0" hotKey="O" icon="page_break_continuous_section_kd" id="RbInsertContinuousSectionBreak" idMso="BreakContinuousSection" ksoCmd="InsertContinuousSectionBreak" text="@Continuous Section Break"/>
+		<KxLegacyTriggerCommand aid="90" controlType="0" hotKey="e" icon="page_break_even_section_kd" id="InsertEvenPageSectionBreak" idMso="BreakEvenPageSection" ksoCmd="InsertEvenPageSectionBreak" rbHotKey="E" text="@Even Page Section Break"/>
+		<KxLegacyTriggerCommand aid="91" controlType="0" hotKey="d" icon="page_break_odd_section_kd" id="RbInsertOddPageSectionBreak" idMso="BreakOddPageSection" ksoCmd="InsertOddPageSectionBreak" text="@Odd Page Section Break"/>
+		<KxWpsBreaksListCommand canHideText="0" controlType="15" customTip="m_Breaks" icon="page_break_kd" id="m_Breaks" idMso="BreaksMenu" rbHotKey="B" text="@Breaks">
+			<command idQ="InsertPageBreak"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="c" icon="page_break_column_kd" id="InsertColumnBreakInPageLayoutTab" idMso="BreakColumn" ksoCmd="InsertColumnBreak" qtspyName="InsertColumnBreak" rbHotKey="C" text="@Column Break"/>
+			<command idQ="RbInsertTextWrappingBreak"/>
+			<separator/>
+			<command idQ="InsertNextPageSectionBreak"/>
+			<command idQ="RbInsertContinuousSectionBreak"/>
+			<command idQ="InsertEvenPageSectionBreak"/>
+			<command idQ="RbInsertOddPageSectionBreak"/>
+			<separator/>
+			<command idQ="WpsAIAutoSeparatePage"/>
+		</KxWpsBreaksListCommand>
+		<KxWpsShowHideNavigationPaneCommand canHideText="0" controlType="0" customTip="SectionNavigationPane" detail="@Show/Hide Section Navigation" hotKey="S" icon="section_navigation_kd" id="NavigationPane" idMso="NavigationPaneFind" qtspyName="SectionNavigation" rbHotKey="C" text="@SectionNavigation&#10;Pane"/>
+		<KxWpsDeleteSectionCommand canHideText="0" controlType="0" customTip="DeleteSection" hotKey="D" icon="section_delete_kd" id="DeleteSection" idMso="SectionDelete" rbHotKey="D" text="@Delete&#10;Section"/>
+		<KListCommand controlType="16" groupTip="StructureGroup" icon="code_xml_structure_kd" id="RB_Genko_Setting" idMso="GroupGenkoSetting" rbFileMenuEmbed="1" text="@Structure">
+			<command idQ="PageLayoutInsertBlankPage"/>
+			<command idQ="InsertTableOfContentsPage"/>
+			<command idQ="m_Breaks"/>
+			<command idQ="NavigationPane"/>
+			<command idQ="DeleteSection"/>
+		</KListCommand>
+		<KxWpsHeaderAndFooterCommand controlType="0" customTip="HeaderFooter" hotKey="h" icon="doc_header_footer_kd" id="m_HeaderAndFooter" idMso="HeaderAndFooter" ksoCmd="HeaderFooter" rbHotKey="H" spaceHint="autocompact" text="@Header and&#10;Footer"/>
+		<KxWpsDeletePageNumCommand controlType="0" hotKey="R" icon="doc_page_number_delete_kd" id="PageLayout_DeletePageNumTab" idMso="DeletePageNumInsertWord" qtspyName="DeletePageNumTab" rbHotKey="R" text="@Delete Page Num"/>
+		<KxWpsHeaderFooterPageNumCommand controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbers" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KxWpsHeaderFooterPageNumCommand controlType="4" customTip="PageNumber" icon="doc_page_number_kd" id="PageLayout_InsertPageNumbers" idKey="WpsInsertPageNumbers" idMso="HeaderFooterPageNumberInsertGallery" isIncludeInsideOutside="true" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbers" spaceHint="autocompact" text="@Page&#10;Number">
+			<KxSmartPageNumSettingsMenuItemCommand controlType="4" dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInInsertTab" idMso="PageNumberFormatGallery" qtspyName="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="PageLayout_DeletePageNumTab"/>
+		</KxWpsHeaderFooterPageNumCommand>
+		<KxWpsHeaderFooterPageNumCommandOfficialVersion controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbersOfficialVersion" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand controlType="4" customTip="PageNumber" icon="doc_page_number_kd" id="PageLayout_InsertPageNumbersOfficialVersion" idMso="HeaderFooterPageNumberInsertGallery" isIncludeInsideOutside="true" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbersOfficialVersion" text="@Page&#10;Number">
+			<command idQ="Official_InsertCurPosPageNumTab"/>
+			<command idQ="PageLayout_DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KListCommand groupTip="HeaderFooterGroup" icon="doc_header_footer_kd" id="RB_PageLayoutHeaderAndFooter" text="@Header And Footer">
+			<KxSingleRowMergeGroupCommand customTip="HeaderFooterGroup" icon="doc_header_footer_kd" id="SingleRow_PageLayoutHeaderAndFooter" text="@Header And Footer"/>
+			<command idQ="PageLayout_InsertPageNumbers" singlerowmergegroup="SingleRow_PageLayoutHeaderAndFooter"/>
+			<command idQ="PageLayout_InsertPageNumbersOfficialVersion"/>
+			<command idQ="m_HeaderAndFooter" singlerowmergegroup="SingleRow_PageLayoutHeaderAndFooter"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="92011" controlType="6" hotKey="n" id="LineNumOff" idMso="LineNumbersOff" ksoCmd="LineNumOff" text="@None"/>
+		<KxLegacyTriggerCommand aid="92012" controlType="6" hotKey="c" id="LineNumContinuous" idMso="LineNumbersContinuous" ksoCmd="LineNumContinuous" text="@Continuous"/>
+		<KxLegacyTriggerCommand aid="92013" controlType="6" hotKey="r" id="LineNumRestPage" idMso="LineNumbersResetPage" ksoCmd="LineNumRestPage" text="@Restart Each Page"/>
+		<KxLegacyTriggerCommand aid="92014" controlType="6" hotKey="e" id="LineNumResetSection" idMso="LineNumbersResetSection" ksoCmd="LineNumResetSection" text="@Restart Each Section"/>
+		<KxLegacyTriggerCommand aid="92015" controlType="6" hotKey="s" id="LineNumSuppress" idMso="LineNumbersSuppress" ksoCmd="LineNumSuppress" text="@Suppress for Current Paragraph"/>
+		<KxLegacyTriggerCommand aid="92016" controlType="6" hotKey="k" id="LineNumBlanklineNoLnn" idMso="LineNumbersDoNotShowLineNumbeforBlank" ksoCmd="LineNumBlanklineNoLnn" text="@Do not Show Line Number for Blank Line"/>
+		<KxLegacyTriggerCommand aid="92017" controlType="6" dialogHint="1" hotKey="l" id="SetLineNumbering" idMso="LineNumbersOptionsDialog" ksoCmd="SetLineNumbering" text="@Line Number Options"/>
+		<KListCommand canHideText="0" controlType="15" customTip="m_LineNumber" icon="line_number_kd" id="m_LineNumber" idMso="LineNumbersMenu" rbHotKey="L" text="@Line Numbers">
+			<command idQ="LineNumOff"/>
+			<command idQ="LineNumContinuous"/>
+			<command idQ="LineNumRestPage"/>
+			<command idQ="LineNumResetSection"/>
+			<separator/>
+			<command idQ="LineNumSuppress"/>
+			<command idQ="LineNumBlanklineNoLnn"/>
+			<separator/>
+			<command idQ="SetLineNumbering"/>
+		</KListCommand>
+		<KDocerProxyCommand controlType="4" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="dropmenu" height="-1" icon="cover_kd" id="OnlineCoverPageLayout" idKey="WPSPageLayoutCoverPagesDocer" idMso="CoverPageInsertGallery" localMenuHeight="246" spaceHint="suitable" targetId="OnlineCoverPageLayout" targetModule="kdocercore" text="@Cover Pages" width="500"/>
+		<KListCommand controlType="16" groupTip="EffectGroup" icon="theme_effect_kd" id="RB_EditTheme" idMso="GroupThemeEdit" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Effects">
+			<command idQ="PageLayout_CoverPageInsert" singlerowfold="1"/>
+			<command idQ="m_PageBorder" singlerowfold="1"/>
+			<command idQ="RbNewBackGroundColor"/>
+			<command idQ="WaterMarkMenuInInsertTab"/>
+			<command idQ="m_Genko_Setting" singlerowfold="1"/>
+			<command idQ="m_LineNumber" singlerowfold="1"/>
+			<KxListCommand canHideText="0" customTip="Themes" disableTrigger="1" icon="theme_kd" id="PageLayout_Theme" ksoCmd="Themes" qtspyName="Themes" rbHotKey="TT" singlerowfold="1" spaceHint="autocompact" text="@Themes">
+				<KxListOnlineAndLocalCommand controlType="0" customTip="Themes" disableTrigger="1" hotKey="T" icon="theme_kd" id="OnlineDocumentTheme" idMso="ThemeSearchOfficeOnline" isCefPopup="false" isOnlyOnline="true" ksoCmd="Themes" qtspyName="Themes" text="@Themes" tpOnlineCmd="DocumentTheme">
+					<KxThemesGalleryCommand bForceScrollToIndex="1" controlType="4" customTip="Themes" galleryWidth="330" icon="theme_kd" id="Themes" idMso="ThemesGallery" ksoCmd="Themes" rbHotKey="TT" text="@Themes"/>
+				</KxListOnlineAndLocalCommand>
+				<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="Theme Colors" galleryWidth="250" hotKey="C" icon="color_palette_kd" id="ThemeColors" ksoCmd="ThemeColors" onlineCmd="OnlineThemeColor" spaceHint="autocompact" text="@Colors">
+					<command idQ="CustomThemeColors"/>
+				</KxThemeColorsGalleryCommand>
+				<KxThemeFontsGalleryCommand bForceScrollToIndex="1" controlType="15" customTip="Theme Fonts" hotKey="F" icon="font_style_kd" id="ThemeFonts" idMso="ThemeFontsMenu" ksoCmd="ThemeFonts" spaceHint="autocompact" text="@Fonts"/>
+				<KxListOnlineAndLocalCommand controlType="0" customTip="Theme Effects" disableTrigger="1" hotKey="E" icon="theme_effect_kd" id="OnlineDocumentThemeEffect" idMso="ThemeEffectsSearchOfficeOnline" isCefPopup="false" isOnlyOnline="true" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" text="@Effects" tpOnlineCmd="DocumentThemeEffect">
+					<KxThemeEffectsGalleryCommand bForceScrollToIndex="1" controlType="4" customTip="Theme Effects" galleryWidth="350" icon="theme_effect_kd" id="ThemeEffects" idMso="ThemeEffectsGallery" ksoCmd="ThemeEffects" rbHotKey="TE" text="@Effects"/>
+				</KxListOnlineAndLocalCommand>
+			</KxListCommand>
+			<KxCoverSectionGalleryCommand canHideText="0" controlType="4" customTip="CoverPages" galleryWidth="498" hotKey="C" icon="cover_kd" id="PageLayout_CoverPageInsert" idMso="CoverPageInsertGallery" onlineCoverCmd="OnlineCoverPageInsert" qtspyName="Cover" rbHotKey="V" singlerowfold="1" spaceHint="autocompact" text="@Cover&#10;Pages"/>
+		</KListCommand>
+		<KxWpsTextDirectionCommand bLikePopuMenu="1" controlType="4" customTip="ChangeTextDirection" detail="@Change Text Direction" icon="text_direction_kd" id="m_TextDirection" idMso="TextDirectionGalleryWord" ksoCmd="ChangeTextDirection" rbHotKey="Q" text="@Text&#10;Direction">
+			<KxWpsTextDirectionDlgCommand controlType="0" dialogHint="1" hotKey="x" icon="text_direction_kd" id="TextDirectionOptions" idMso="TextDirectionOptionsDialog" qtspyName="TextDirection" rbHotKey="X" text="@Text Direction Options"/>
+		</KxWpsTextDirectionCommand>
+		<KxWpsPageMarginCommand bLikePopuMenu="1" controlType="4" customTip="m_Margins" icon="doc_margins_kd" id="m_Margins" idMso="PageMarginsGallery" ksoCmd="PageSetup" rbHotKey="M" text="@Margins">
+			<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="a" icon="doc_margins_custom_kd" id="MoreMargins" idMso="MarginsCustomMargins" ksoCmd="PageSetup" qtspyName="PageSetup" rbHotKey="A" tabIndex="0" text="@Custom Margins"/>
+		</KxWpsPageMarginCommand>
+		<KxWpsPageOrientationCommand bLikePopuMenu="1" controlType="4" customTip="PageOrientation" hotKey="O" icon="direction_rotate_doc_kd" id="PageOrientation" idMso="PageOrientationGallery" ksoCmd="PageSetup" rbHotKey="O" text="@Orientation"/>
+		<KxWpsPageSizeCommand bLikePopuMenu="1" controlType="4" customTip="m_PageSize" galleryHeight="656" icon="scale_size_kd" id="m_PageSize" idMso="PageSizeGallery" ksoCmd="PageSetup" rbHotKey="SZ" text="@Size">
+			<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="a" icon="OtherPageSize" id="OtherPageSize" idMso="PageSizeMorePaperSizesDialog" ksoCmd="PageSetup" qtspyName="PageSetup" rbHotKey="A" tabIndex="1" text="@More Paper Sizes"/>
+		</KxWpsPageSizeCommand>
+		<KxValueCommand controlType="0" hotKey="O" icon="columns_one_kd" id="ColumnsOne" idMso="ColumnsOne" index="65536" ksoCmd="ColumnsPalette" text="@One"/>
+		<KxValueCommand controlType="0" hotKey="W" icon="columns_two_kd" id="ColumnsTwo" idMso="ColumnsTwo" index="131072" ksoCmd="ColumnsPalette" text="@Two"/>
+		<KxValueCommand controlType="0" hotKey="T" icon="columns_three_kd" id="ColumnsThree" idMso="ColumnsThree" index="196608" ksoCmd="ColumnsPalette" text="@Three"/>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="C" icon="columns_three_kd" id="ColumnsMore" idMso="ColumnsDialog" ksoCmd="Columns" text="@More Columns"/>
+		<KListCommand controlType="4" customTip="m_ColumnsPalette" icon="columns_kd" id="m_ColumnsPalette" idMso="TableColumnsGallery" rbHotKey="J" text="@Columns">
+			<command idQ="ColumnsOne"/>
+			<command idQ="ColumnsTwo"/>
+			<command idQ="ColumnsThree"/>
+			<command idQ="ColumnsMore"/>
+		</KListCommand>
+		<KxListCommand controlType="16" customTip="PageSetup" enableSmartLayout="1" forceVisible="1" groupTip="PageSetupGroup" icon="doc_margins_kd" id="RB_Page_Setup" idMso="GroupPageLayoutSetup" ksoCmd="PageSetup" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="SP" text="@Page Setup">
+			<command idQ="m_Margins"/>
+			<KLayoutWidgetCommand fixedWidth="0"/>
+			<KxWpsPageMarginSingleSpinCommand component="2" customTip="m_Margins" fixedSpinBoxWidth="84" ksoCmd="PageSetup" qtspyName="PageSetupTop" singlerowfold="1" spaceHint="suitable" text="@Top"/>
+			<KxWpsPageMarginSingleSpinCommand component="0" customTip="m_Margins" fixedSpinBoxWidth="84" ksoCmd="PageSetup" qtspyName="PageSetupLeft" singlerowfold="1" spaceHint="suitable" text="@Left"/>
+			<KxWpsPageMarginSingleSpinCommand component="3" customTip="m_Margins" fixedSpinBoxWidth="84" ksoCmd="PageSetup" qtspyName="PageSetupBottom" singlerowfold="1" spaceHint="suitable" text="@Bottom"/>
+			<KxWpsPageMarginSingleSpinCommand component="1" customTip="m_Margins" fixedSpinBoxWidth="84" ksoCmd="PageSetup" qtspyName="PageSetupRight" singlerowfold="1" spaceHint="suitable" text="@Right"/>
+			<command idQ="PageOrientation"/>
+			<command idQ="m_PageSize"/>
+			<command idQ="m_ColumnsPalette"/>
+			<command idQ="m_TextDirection" singlerowfold="1"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="533" controlType="6" faceid="255" hotKey="i" icon="pic_surround_embed_kd" id="WrappingInLineWithText" idMso="TextWrappingInLineWithText" ksoCmd="WrappingInLineWithText" text="@In Line with Text"/>
+		<KxLegacyTriggerCommand aid="534" controlType="6" faceid="256" hotKey="s" icon="pic_surround_kd" id="WrappingSquare" idMso="TextWrappingSquare" ksoCmd="WrappingSquare" rbHotKey="S" text="@Square"/>
+		<KxLegacyTriggerCommand aid="535" controlType="6" faceid="257" hotKey="t" icon="pic_surround_tightly_kd" id="WrappingTight" idMso="TextWrappingTight" ksoCmd="WrappingTight" rbHotKey="T" text="@Tight"/>
+		<KxLegacyTriggerCommand aid="536" controlType="6" faceid="258" hotKey="d" icon="pic_surround_down_kd" id="WrappingBehindText" idMso="TextWrappingBehindText" ksoCmd="WrappingBehindText" rbHotKey="D" text="@Behind Text"/>
+		<KxLegacyTriggerCommand aid="537" controlType="6" faceid="259" hotKey="n" icon="pic_surround_up_kd" id="WrappingInFrontofText" idMso="TextWrappingInFrontOfText" ksoCmd="WrappingInFrontofText" rbHotKey="N" text="@In Front of Text"/>
+		<KxLegacyTriggerCommand aid="538" controlType="6" faceid="260" hotKey="o" icon="pic_surround_up_down_kd" id="WrappingTopandBottom" idMso="TextWrappingTopAndBottom" ksoCmd="WrappingTopandBottom" rbHotKey="O" text="@Top and Bottom"/>
+		<KxLegacyTriggerCommand aid="539" controlType="6" faceid="254" hotKey="h" icon="pic_surround_through_kd" id="WrappingThrough" idMso="TextWrappingThrough" ksoCmd="WrappingThrough" rbHotKey="H" text="@Through"/>
+		<KxValueCommand aid="355" controlType="0" faceid="182" hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" idMso="ObjectsAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+		<KxValueCommand aid="356" controlType="0" faceid="183" hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" idMso="ObjectsAlignCenterHorizontalSmart" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+		<KxValueCommand aid="357" controlType="0" faceid="184" hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" idMso="ObjectsAlignRightSmart" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+		<KxValueCommand aid="358" controlType="0" faceid="185" hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" idMso="ObjectsAlignTopSmart" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+		<KxValueCommand aid="359" controlType="0" faceid="186" hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" idMso="ObjectsAlignMiddleVerticalSmart" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+		<KxValueCommand aid="360" controlType="0" faceid="187" hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" idMso="ObjectsAlignBottomSmart" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+		<KxLegacyTriggerCommand aid="361" controlType="0" faceid="188" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" idMso="AlignDistributeHorizontally" ksoCmd="AlignDistributeHori" text="@Distribute Horizontally"/>
+		<KxLegacyTriggerCommand aid="362" controlType="0" faceid="189" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" idMso="AlignDistributeVertically" ksoCmd="AlignDistributeVert" text="@Distribute Vertically"/>
+		<KxLegacyTriggerCommand aid="351" controlType="0" faceid="179" hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" idMso="EqualHeight" ksoCmd="EqualHeight" text="@Equal Height"/>
+		<KxLegacyTriggerCommand aid="352" controlType="0" faceid="180" hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" idMso="EqualWidth" ksoCmd="EqualWidth" text="@Equal Width"/>
+		<KxLegacyTriggerCommand aid="353" controlType="0" faceid="181" hotKey="Q" icon="equal_size_kd" id="RbEqualSize" idMso="EqualSize" ksoCmd="EqualSize" text="@Equal Size"/>
+		<KxLegacyTriggerCommand aid="28" controlType="1" hotKey="s" icon="nine_grids_kd" id="RbGridlines" idMso="ViewGridlinesWord" ksoCmd="Gridlines" spaceHint="suitable" text="@Gridlines"/>
+		<KxLegacyTriggerCommand aid="162" controlType="0" dialogHint="1" faceid="102" hotKey="g" icon="grid_switch_kd" id="RbGrid" idMso="GridSettings" ksoCmd="Grid" text="@Grid"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="G" icon="group_kd" id="RbGroupInToolBar" idMso="ObjectsGroup" ksoCmd="Group" text="@Group"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="U" icon="group_cancel_kd" id="RbUnGroupInToolBar" idMso="ObjectsUngroup" ksoCmd="UnGroup" text="@Ungroup"/>
+		<KAppCommand action="photobatchrotate" appCmdObj="PictureBatchProcess" appFlags="wpsmember" appId="photonewbatchapp" icon="batch_rotation_kd" id="app_photonewbatchapp_pagelayout_allrotation" idKey="WpsPhotonewBatchApp" text="@Rotate all picture"/>
+		<KxLegacyTriggerCommand aid="76" controlType="16" dialogHint="1" faceid="61" hotKey="p" icon="paragraph_kd" id="Paragraph" idMso="GroupParagraphLayout" ksoCmd="Paragraph" text="@Paragraph"/>
+		<KListCommand id="DetailedSettings_PageLayout" text="@Settings">
+			<KListCommand customTip="DetailedSettings_PageLayout" icon="detailed_settings_kd" id="DetailedSettingsList_PageLayout" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="PageSetup"/>
+				<command idQ="Paragraph"/>
+			</KListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PageLayout">
+			<command idQ="RB_Page_Setup"/>
+			<separator/>
+			<command idQ="RB_EditTheme"/>
+			<separator/>
+			<command idQ="RB_Genko_Setting"/>
+			<separator/>
+			<command idQ="RB_PageLayoutHeaderAndFooter"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_PageLayout"/>
+		</subcommand>
+	</subcommands>
+</shell>

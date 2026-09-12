@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_graffiti" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxInkDrawGeneralPenCommand customTip="InkDrawShapePen" hotKey="h" icon="symbol_slash_kd" id="InkDrawLineShapePen" penIndex="3" qtspyName="GraffitiSline" rbHotKey="H" shortcutHint="Alt+H" text="@Draw Line Shape"/>
+		<KxInkDrawGeneralPenCommand customTip="InkDrawShapePen" hotKey="r" icon="draw_curve_kd" id="InkDrawSquareShapePen" penIndex="7" qtspyName="GraffitiDraw" rbHotKey="R" shortcutHint="Alt+R" text="@Draw Square Shape"/>
+		<KxInkDrawShapePenQuickMenuCommand groupTip="InkDrawLinePenGallery" icon="draw_curve_kd" id="RB_InkDrawShapePenQuickMenu" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="InkDrawLineShapePen" text="@shape">
+			<command idQ="InkDrawLineShapePen"/>
+			<command idQ="InkDrawSquareShapePen"/>
+		</KxInkDrawShapePenQuickMenuCommand>
+		<KxPdfNewInkList groupTip="InkDrawPenToolGroup" icon="pen_kd" id="RB_InkDrawPenTool" text="@Pens and tool">
+			<KxInkDrawGeneralPenCommand customTip="InkDrawWaterColorPen" icon="cursor_watercolor_pen_kd" id="InkDrawWaterColorPen" penIndex="1" rbHotKey="W" text="@Water color pen"/>
+			<KxInkDrawGeneralPenCommand customTip="InkDrawNiteWriterPen" icon="cursor_highlighter_kd" id="InkDrawNiteWriterPen" penIndex="2" rbHotKey="H" text="@Nite writer pen"/>
+			<command idQ="RB_InkDrawShapePenQuickMenu"/>
+		</KxPdfNewInkList>
+		<KxInkDrawColorGalleryCommand customTip="InkDrawBrushColor" icon="color_marker_wps_kd" id="InkDrawColorSetting" ksoTriggerCmd="InkDrawColorItem" text="@Custom color">
+			<KxInkDrawMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="InkDrawMoreColor" text="@More Colors"/>
+			<KxInkDrawSnapColorCommand hotKey="e" icon="cursor_snapper_fill_kd" id="InkDrawSnapColor" text="@Snapper"/>
+		</KxInkDrawColorGalleryCommand>
+		<KxInkDrawWidthCommand id="InkDrawWidth"/>
+		<KxInkDrawOpacityCommand id="InkDrawOpacity"/>
+		<KxPdfNewInkList groupTip="GraffitiLinePropertyGroup" icon="writing_brush_kd" id="RB_InkDrawProperty" rbFileMenuEmbed="1" text="@GraffitiLineProperty">
+			<command idQ="InkDrawColorSetting"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+					<command idQ="InkDrawWidth"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+					<command idQ="InkDrawOpacity"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxPdfNewInkList>
+		<KxInkDrawEraserCommand customTip="InkDrawEraserLocalArea" eraserType="2" icon="erase_part_kd" id="InkDrawEraserLocalArea" text="@EraserLocalArea"/>
+		<KxInkDrawPartEraserSettingCommand id="InkDrawEraserLocalAreaSetting"/>
+		<KxInkDrawEraserCommand customTip="InkDrawEraserPart" eraserType="1" icon="erase_all_kd" id="InkDrawEraserPart" text="@EraserPart"/>
+		<KxInkDrawEraserCommand customTip="InkDrawEraserAll" eraserType="0" icon="eraser_kd" id="InkDrawEraserAll" text="@EraserAll"/>
+		<KxInkDrawEraserListCommand customTip="InkDrawEraserList" groupTip="InkDrawEraserList" icon="eraser_kd" id="InkDraw_Eraser" layout_lineCount="1" rbFileMenuEmbed="1" text="@Eraser">
+			<command idQ="InkDrawEraserLocalArea"/>
+			<command idQ="InkDrawEraserLocalAreaSetting"/>
+			<command idQ="InkDrawEraserPart"/>
+			<separator/>
+			<command idQ="InkDrawEraserAll"/>
+		</KxInkDrawEraserListCommand>
+		<KxPdfNewInkList groupTip="GraffitiEraserGroup" id="RB_InkDraw_Eraser" layout_lineCount="1" rbFileMenuEmbed="1" text="@Eraser">
+			<command idQ="InkDraw_Eraser"/>
+		</KxPdfNewInkList>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Graffiti_HandTool" ksoCmd="HandTool" shellEntryType="tab_graffiti" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Graffiti_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_graffiti" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="GraffitiLineColorMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="GraffitiLineColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="GraffitiLineColorSnapColor" ksoCmd="GraffitiLineColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfGraffitiColorCommand icon="color_marker_wps_kd" id="Graffiti_Color" ksoCmd="GraffitiLineColor" text="@GraffitiLineColor">
+			<command idQ="GraffitiLineColorMoreFontColors"/>
+			<command idQ="GraffitiLineColorSnapColor"/>
+		</KxPdfGraffitiColorCommand>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Graffiti" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Graffiti_HandTool"/>
+			<command idQ="Graffiti_SelectionTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand canHideText="0" customTip="GraffitiDraw" hotKey="r" icon="draw_curve_kd" id="Annot_GraffitiDraw" ksoCmd="GraffitiDraw" qtspyName="GraffitiDraw" rbHotKey="R" shortcutHint="Alt+R" text="@GraffitiDraw"/>
+		<KxLegacyTriggerCommand customTip="GraffitiSline" hotKey="h" icon="draw_straightline_kd" id="Annot_GraffitiSline" ksoCmd="GraffitiSline" qtspyName="GraffitiSline" rbHotKey="H" shortcutHint="Alt+H" text="@GraffitiSline"/>
+		<KxPdfGraffitiWidthCommand id="GraffitiWidth"/>
+		<KxPdfGraffitiOpacityCommand id="GraffitiOpacity"/>
+		<KxLegacyTriggerCommand customTip="PDFEditTextExit" icon="close_window_kd" id="Graffiti_Exit" ksoCmd="GraffitiExit" text="@EditExit" wpsIsEanble="false"/>
+		<KxPdfOldInkList groupTip="GraffitiLineTypeGroup" icon="draw_straightline_kd" id="RB_GraffitiLineType" layout_lineCount="2" rbFileMenuEmbed="1" text="@GraffitiLineType">
+			<command idQ="Annot_GraffitiDraw"/>
+			<command idQ="Annot_GraffitiSline"/>
+		</KxPdfOldInkList>
+		<KxPdfOldInkList groupTip="GraffitiLinePropertyGroup" icon="writing_brush_kd" id="RB_GraffitiLineProperty" rbFileMenuEmbed="1" text="@GraffitiLineProperty">
+			<command idQ="Graffiti_Color"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+					<command idQ="GraffitiWidth"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+					<command idQ="GraffitiOpacity"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxPdfOldInkList>
+		<KxPdfOldInkList groupTip="GraffitiEraserGroup" id="RB_Graffiti_Eraser" layout_lineCount="1" rbFileMenuEmbed="1" text="@Eraser">
+			<command idQ="GraffitiEraser"/>
+		</KxPdfOldInkList>
+		<KListCommand groupTip="GraffitiExitGroup" id="RB_Graffiti_Exit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Graffiti_Exit" singlerowpriority="100"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Graffiti">
+			<command idQ="RB_MouseTool_Graffiti"/>
+			<separator/>
+			<command idQ="RB_InkDrawPenTool"/>
+			<command idQ="RB_GraffitiLineType"/>
+			<separator/>
+			<command idQ="RB_InkDrawProperty"/>
+			<command idQ="RB_GraffitiLineProperty"/>
+			<separator/>
+			<command idQ="RB_InkDraw_Eraser"/>
+			<command idQ="RB_Graffiti_Eraser"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Graffiti_Exit"/>
+		</subcommand>
+	</subcommands>
+</shell>

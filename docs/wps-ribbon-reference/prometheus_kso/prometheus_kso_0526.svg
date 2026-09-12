@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>查找录入24_appcmd_ketlookup</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line" d="M8.5 11.5H16" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M13.5 8.5L16.4929 11.4929C16.4968 11.4968 16.4968 11.5032 16.4929 11.5071L13.5 14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M13.5 6V3C13.5 2.72386 13.7239 2.5 14 2.5H21C21.2761 2.5 21.5 2.72386 21.5 3V20C21.5 20.2761 21.2761 20.5 21 20.5H14C13.7239 20.5 13.5 20.2761 13.5 20V17" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4" d="M17 8.5H21.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M17 14.5H21.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_6" d="M10.5 9V3C10.5 2.72386 10.2761 2.5 10 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V20C2.5 20.2761 2.72386 20.5 3 20.5H10C10.2761 20.5 10.5 20.2761 10.5 20V14" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7" d="M2.5 8.5H8" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_8" d="M2.5 14.5H8" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

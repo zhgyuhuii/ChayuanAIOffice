@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_insertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Insert_HandTool" ksoCmd="HandTool" shellEntryType="tab_insert" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Insert_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_insert" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="FreeText" icon="bubble_text_kd" id="Insert_TextComment" ksoCmd="FreeText" rbHotKey="i" shellEntryType="tab_insert" shortcutHint="Ctrl+F3" text="@TextPrinter"/>
+		<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="TextCommentBox" descName="Insert_TextCommentBox" icon="text_frame_kd" id="Insert_TextCommentBox" ksoCmd="TextCommentBox" shellEntryType="tab_insert" text="@TextCommentBox"/>
+		<KListCommand groupTip="ToolGroup" id="RB_MouseTool_Insert" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Insert_HandTool"/>
+			<command idQ="Insert_SelectTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand canHideText="0" customTip="AddVideo" icon="video_two_kd" id="Media_Video" ksoCmd="Video" text="@Video"/>
+		<KxLegacyTriggerCommand canHideText="0" customTip="AddAudio" icon="volume_broadcasting_kd" id="Media_Audio" ksoCmd="Audio" text="@Audio"/>
+		<KxLegacyTriggerCommand canHideText="0" customTip="AnnotGraffiti" icon="pen_strokes_kd" id="AnnotGraffiti_Insert" ksoCmd="GraffitiAnnot" shellEntryType="tab_insert" shortcutHint="Alt+R" text="@AnnotGraffiti"/>
+		<KListCommand canHideText="0" customTip="InsertPages" icon="insert_kd" id="Insert_PdfInsertPages" idKey="PDFInsertPageUseKxCmd" layout_lineCount="1" text="@Insert Pages">
+			<KxValueCommand customTip="InsertBlankPages" id="insertblankpagesT" index="5" ksoCmd="InsertBlankPages" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+			<KxValueCommand customTip="InsertPagesFromDoc" id="insertPagesFromDocT" index="5" ksoCmd="InsertPagesFromDoc" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+		</KListCommand>
+		<KListCommand canHideText="0" customTip="InsertPages" icon="insert_kd" id="Insert_PdfInsertPages" idKey="PDFInsertPageNoCatalog" layout_lineCount="1" text="@InsertPages2">
+			<KAppCommand action="1" appCmdObj="InsertBlankPages" appId="pdfpageoperator" customTip="InsertBlankPages" icon="doc_add_kd" id="importblankpages" index="5" shortcutHint="Ctrl+Alt+I" text="@Insert Blank Pages"/>
+			<separator/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" customTip="ImporPagesFromDoc" icon="doc_import_kd" id="importPagesFromDoc" index="5" shortcutHint="Ctrl+Alt+T" text="@Import Pages From Doc"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="pdf" icon="import_pdf_kd" id="importPagesFromPDF" index="5" text="@Import Pages From PDF"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="word" icon="import_word_kd" id="importPagesFromWord" index="5" text="@Import Pages From Word"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="excel" icon="import_excel_kd" id="importPagesFromExcel" index="5" text="@Import Pages From Excel"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="ppt" icon="import_ppt_kd" id="importPagesFromPPT" index="5" text="@Import Pages From PPT"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="image" icon="import_pic_kd" id="importPagesFromImage" index="5" text="@Import Pages From Image"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="txt" icon="import_txt_kd" id="importPagesFromTXT" index="5" text="@Import Pages From TXT"/>
+		</KListCommand>
+		<KxPdfPageInsertMenuCommand canHideText="0" customTip="InsertPages" icon="insert_kd" id="Insert_PdfInsertPages" idKey="WPSPDFEnhanceVersion" layout_lineCount="1" text="@Insert Pages">
+			<KxValueCommand customTip="InsertBlankPages" id="insertblankpagesT" index="5" ksoCmd="InsertBlankPages" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+			<KxValueCommand customTip="InsertPagesFromDoc" id="insertPagesFromDocT" index="5" ksoCmd="InsertPagesFromDoc" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+			<KxValueCommand customTip="InsertPagesFromPic" id="insertPagesFromPicT" index="5" ksoCmd="InsertPagesFromPic" text="@Pages From Pic"/>
+			<KxValueCommand customTip="InsertPagesFromScan" id="insertPagesFromScanT" idKey="PDFInsertPagesFromScan" index="5" ksoCmd="InsertPagesFromScan" text="@Pages From Scan"/>
+			<KxValueCommand customTip="InsertPagesFromClipboard" id="InsertPagesFromClipboardT" idKey="PDFInsertPagesFromClipboardNoIcon" index="5" ksoCmd="InsertPagesFromClipboard" shortcutHint="Ctrl+Shift+B" text="@Pages From Clipboard"/>
+		</KxPdfPageInsertMenuCommand>
+		<KxPdfHeaderFooterCommandList canHideText="0" customTip="EditPageHeaderFooter" icon="doc_header_footer_kd" id="Insert_Headerfooter" layout_lineCount="1" text="@PageHeaderFooter">
+			<command idQ="AddHeaderFooter_Page" proxyCmdId="ProxyAddHeaderFooter_Page"/>
+			<command idQ="UpdateHeaderFooter_Page" proxyCmdId="ProxyUpdateHeaderFooter_Page"/>
+			<command idQ="DeleteHeaderFooter_Page" proxyCmdId="ProxyDeleteHeaderFooter_Page"/>
+		</KxPdfHeaderFooterCommandList>
+		<KxPdfPageNumberCommandList canHideText="0" customTip="AddPageNumberTips" icon="doc_page_number_kd" id="Insert_pageNumber" layout_lineCount="1" shortcutHint="Ctrl+Alt+P" text="@PageNumber">
+			<command idQ="Insert_AddPageNumber" proxyCmdId="ProxyInsert_AddPageNumber"/>
+			<command idQ="Insert_UpdatePageNumber" proxyCmdId="ProxyInsert_UpdatePageNumber"/>
+			<command idQ="Insert_DeletePageNumber" proxyCmdId="ProxyInsert_DeletePageNumber"/>
+		</KxPdfPageNumberCommandList>
+		<KControlListCommand groupTip="InsertionPageGroup" icon="insert_kd" id="RB_InsertGraphic" rbFileMenuEmbed="1" text="@Pages">
+			<command idQ="Insert_PdfInsertPages"/>
+			<command idQ="Insert_Watermark"/>
+			<command idQ="Insert_pageNumber"/>
+			<command idQ="Insert_Headerfooter"/>
+		</KControlListCommand>
+		<KListCommand embedHint="1" id="RB_InsertMedia" idKey="PDFInsertMedia">
+			<KRbLayoutListCommand bottomSpace="0" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="Media_Audio"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="Media_Video"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KxPdfSignatureCommand canHideText="0" customTip="PdfSignature" icon="pen_signature_kd" id="Insert_Signature" ksoCmd="PdfSignature" text="@Signature">
+			<command idQ="PdfNewSignature"/>
+		</KxPdfSignatureCommand>
+		<KProxyCommand autoLoad="false" canHideText="0" customTip="StampTool" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="stamp_kd" id="ProxyInsert_PdfStampTool" targetId="Insert_PdfStampTool" targetModule="kstamptool" text="@StampTool"/>
+		<KAutoHideListCommand canHideText="0" customTip="PDFImage" icon="pic_kd" id="Insert_Images" layout_lineCount="1" shortcutHint="Ctrl+J" text="@insertImage" wpsIsEanble="false">
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="title_insert_images_insert_tab" text="@Insert Image"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFImage" icon="pic_kd" id="Insert_AddImage" idKey="PDFStandardEnhance" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@insert local image" wpsIsEanble="false"/>
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="title_quick_template_insert_tab" text="@Quick Templates"/>
+			<KPanelListCommand icon="smart_layout_kd" id="app_pdfsmartlayout_insert_tab_panel" panelColumns="2" text="@SmartLayout Pages">
+				<KAppCommand action="double_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@2 Pages on One Page" entrance="insert_tab_image" icon="book_double_flip_kd" id="app_pdfsmartlayout_insert_tab_double" qtspyname="pdfsmartlayout_insert_tab_double" text="@Two-Page Layout"/>
+				<KAppCommand action="four_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Four pages on one page" entrance="insert_tab_image" icon="four_page_spread_kd" id="app_pdfsmartlayout_insert_tab_four" qtspyname="pdfsmartlayout_insert_tab_four" text="@Four-Page Layout"/>
+				<KAppCommand action="id_card_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Front and Back Standard Layout" entrance="insert_tab_image" icon="id_card_kd" id="app_pdfsmartlayout_insert_tab_id_card" qtspyname="pdfsmartlayout_insert_tab_id_card" text="@ID Card Layout"/>
+				<KAppCommand action="invoice_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Invoices on One Page" entrance="insert_tab_image" icon="bill_kd" id="app_pdfsmartlayout_insert_tab_invoice" qtspyname="pdfsmartlayout_insert_tab_invoice" text="@Invoice Layout"/>
+				<KAppCommand action="exam_paper_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Exam Papers Auto-Paginated" entrance="insert_tab_image" icon="testpaper_assembly_kd" id="app_pdfsmartlayout_insert_tab_exam_paper" qtspyname="pdfsmartlayout_insert_tab_exam_paper" text="@Exam Paper Layout"/>
+				<KAppCommand action="more_template" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@View All Layout Templates" entrance="insert_tab_image" icon="shape_three_kd" id="app_pdfsmartlayout_insert_tab_more_template" qtspyname="pdfsmartlayout_insert_tab_more_template" text="@More Templates"/>
+			</KPanelListCommand>
+		</KAutoHideListCommand>
+		<KListCommand groupTip="InsertionInsertObjectGroup" icon="edit_text_kd" id="RB_InsertPageMarks" rbFileMenuEmbed="1" text="@Insert Object">
+			<command idQ="Insert_AddText"/>
+			<command idKey="PdfSmartLayoutPhotoEntry" idQ="Insert_AddImage"/>
+			<command idKey="PdfSmartLayout" idQ="Insert_Images"/>
+			<command idQ="Insert_AddTable"/>
+			<command idQ="Insert_Signature"/>
+			<command idQ="Insert_Signature_Web"/>
+			<command idKey="PDFInsertStamp" idQ="Insert_PdfStampTool"/>
+			<command idQ="RB_InsertMedia"/>
+		</KListCommand>
+		<KListCommand groupTip="InsertionAnnotationGroup" icon="bubble_add_kd" id="RB_InsertTextMarks" rbFileMenuEmbed="1" text="@Insert Annotation">
+			<command idQ="AnnotGraffiti_Insert"/>
+			<command idQ="Insert_TextComment"/>
+			<command idQ="Insert_TextCommentBox"/>
+			<command idQ="MorePostil"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Insertion">
+			<command idQ="RB_MouseTool_Insert"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_InsertGraphic"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_InsertPageMarks"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_InsertTextMarks"/>
+		</subcommand>
+	</subcommands>
+</shell>

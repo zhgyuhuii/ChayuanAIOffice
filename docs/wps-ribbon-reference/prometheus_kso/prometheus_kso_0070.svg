@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>正则表达式_regexp</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 1565" d="M12.5 1.5H14C14.2761 1.5 14.5 1.72386 14.5 2V13C14.5 13.2761 14.2761 13.5 14 13.5H12.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1580" d="M3.5 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V13C1.5 13.2761 1.72386 13.5 2 13.5H3.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 5689" d="M3.5 4.5V10.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5690" d="M6.5 10.5L4.5 7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5691" d="M3.5 7.5H5C5.82843 7.5 6.5 6.82843 6.5 6C6.5 5.17157 5.82843 4.5 5 4.5H3.50256C3.50188 4.5 3.50123 4.50027 3.50075 4.50075C3.50027 4.50123 3.5 4.50188 3.5 4.50256V5.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5692" d="M12.5 4.5H10C9.72386 4.5 9.5 4.72386 9.5 5V10C9.5 10.2761 9.72386 10.5 10 10.5H12.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 5693" d="M12.5 7.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

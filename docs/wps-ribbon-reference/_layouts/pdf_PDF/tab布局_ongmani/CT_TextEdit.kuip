@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_textedit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommandEx customTip="FormatBrush" icon="brush_kd" id="FormatPainter" ksoCmd="FormatBrush" text="@FormatBrush" wpsIsEanble="false"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="EditText_HighlightMoreColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="HighlightColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="EditText_FontColorMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="EditText_FontColorSnapFontColors" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="EditText_HighlightSnapColors" ksoCmd="HighlightColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="TextEdit_HandTool" ksoCmd="HandTool" shellEntryType="tab_textedit" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="TextEdit_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_textedit" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand accessibleName="@ClearFormat" customTip="ClearFormat" icon="eraser_kd" id="ClearFormat" ksoCmd="ClearFormatsRainbow" text="@ClearFormat" wpsIsEanble="false"/>
+		<KxPdfEditTextTypesettingCommand component="2" customTip="IndentFisrtLine" fixedSpinBoxHeight="24" fixedSpinBoxWidth="80" id="IndentFisrtLine" ksoCmd="PageSetup" qtspyName="PageSetupBottom" spaceHint="suitable" text="@IndentFisrtLine"/>
+		<KxPdfGallerySymbolCommand customTip="InsertSymbol" icon="math_omega_kd" id="Edit_InsertSymbol" idKey="PDFTextEditSymbol" text="@symbol">
+			<KxPdfSymbolDialogCommand controlType="0" dialogHint="1" icon="math_omega_kd" id="SymbolDialog" qtspyName="InsertSymbol" text="@SymbolDialog"/>
+		</KxPdfGallerySymbolCommand>
+		<KxPdfFontColorCommand customTip="TextColor" icon="color_font_wps_kd" id="EditText_FontColor" ksoCmd="FontColor" ksoTriggerCmd="FontColor" referenceCommand="FontColor" text="@TextColor">
+			<command idQ="EditText_FontColorMoreFontColors"/>
+			<command idQ="EditText_FontColorSnapFontColors"/>
+		</KxPdfFontColorCommand>
+		<KxPdfTextHighlightColorCommand customTip="HighlightColor" icon="color_marker_wps_kd" id="EditText_HighLight" ksoCmd="HighlightColor" ksoTriggerCmd="Highlight" referenceCommand="Highlight" text="@Highlight">
+			<command idQ="EditText_HighlightMoreColors"/>
+			<command idQ="EditText_HighlightSnapColors"/>
+		</KxPdfTextHighlightColorCommand>
+		<KListCommand groupTip="TextEditToolGroup" icon="mouse_kd" id="RB_MouseTool_TextEdit" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="TextEdit_HandTool"/>
+			<command idQ="TextEdit_SelectionTool"/>
+			<command idQ="FormatPainter"/>
+		</KListCommand>
+		<KxPdfSuperscriptCommandList accessibleName="@Text_SuperScript" customTip="Superscript" icon="math_superscript_kd" id="Text_SuperScript" text="@Text_SuperScript" wpsIsEanble="false">
+			<command idQ="SuperScript"/>
+			<command idQ="Subscript"/>
+		</KxPdfSuperscriptCommandList>
+		<KxListCommand customTip="RB_Font" forceVisible="1" icon="symbol_a_kd" id="RB_Insert" ksoCmd="Font" rbFileMenuEmbed="1" rbHotKey="FN" text="@Insert">
+			<command id="Edit_InsertText_TextEdit" idQ="Edit_InsertText"/>
+			<command idQ="Edit_InsertSymbol"/>
+		</KxListCommand>
+		<KxListCommand customTip="RB_Font" forceVisible="1" groupTip="TextEditFontPropertyGroup" icon="page_properties_kd" id="RB_EditFont" ksoCmd="Font" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="FN" text="@Font Properties">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="4" rightSpace="0" topSpace="0">
+					<KFontRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+						<command fixedWidth="142" horizontalPolicy="Expanding" idQ="FontForEditText%" layoutOnLeft="true" singlerowfoldgroup="font_pair" verticalPolicy="Preferred"/>
+						<command fixedWidth="60" horizontalPolicy="Expanding" idQ="FontSizeForEditText%" layoutOnRight="true" singlerowfoldgroup="font_pair" verticalPolicy="Preferred"/>
+					</KFontRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="6" rightSpace="0" topSpace="0">
+						<command idQ="MagnifyFontSize" singlerowfoldgroup="font_size_pair"/>
+						<command idQ="ReduceFontSize" singlerowfoldgroup="font_size_pair"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="4" rightSpace="0" topSpace="0">
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="Bold" singlerowfoldgroup="font_effect_pair"/>
+						<command idQ="Tilt" singlerowfoldgroup="font_effect_pair"/>
+						<command idQ="EditText_Underline" singlerowfoldgroup="font_effect_pair"/>
+						<command idQ="DeleteLine" singlerowfold="1"/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="4" rightSpace="0" topSpace="0">
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="Text_SuperScript" singlerowfold="1"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="EditText_HighLight"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="1" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="EditText_FontColor"/>
+						</KRbLayoutListCommand>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="3" rightSpace="0" topSpace="0">
+						<command idQ="ClearFormat"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KxCheckBoxCommand customTip="AutoTextEditKeyPress" id="AutoTextEditKeyPress" ksoCmd="AutoTextEditKeyPress" qtspyName="AutoTextEditKeyPress" spaceHint="suitable" text="@Keyboard Input Text Editing"/>
+		<KxListCommand customTip="RB_Font" forceVisible="1" groupTip="TextEditParagraphAttributeGroup" icon="paragraph_properties_kd" id="RB_EditParagraph" ksoCmd="Font" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="FN" text="@Paragraph Attributes">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" id="LayoutListInHomeTab" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="ReduceIndentation" singlerowfoldgroup="indentation_pair"/>
+					<command idQ="MagnifyIndentation" singlerowfoldgroup="indentation_pair"/>
+					<command idQ="AlignLeft" singlerowfoldgroup="alignment_pair"/>
+					<command idQ="AlignCenter" singlerowfoldgroup="alignment_pair"/>
+					<command idQ="AlignRight" singlerowfoldgroup="alignment_pair"/>
+					<command idQ="AlignJustify" singlerowfoldgroup="alignment_pair"/>
+					<KRbLayoutListCommand bottomSpace="0" id="LayoutListInHomeTab" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+						<command idQ="AutoTextEditKeyPress" singlerowfold="1"/>
+						<command idQ="TextEdit_Show_Content_Frame"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand alignment="1" bottomSpace="0" horizontalSpacing="6" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="LineSpace" singlerowfold="1"/>
+					<command idQ="LetterSpace" singlerowfold="1"/>
+					<command idQ="IndentFisrtLine" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KListCommand groupTip="ArrangeGroup" id="RB_TextEdit_Arrange" rbFileMenuEmbed="1" text="@Arrange">
+			<command idQ="TextEdit_ObjectAlign"/>
+		</KListCommand>
+		<KListCommand groupTip="TextEditAIReflowGroup" id="FontAIReflow" layout_lineCount="1" rbFileMenuEmbed="1" text="@AI Fix">
+			<command idQ="AITextReflow"/>
+		</KListCommand>
+		<KListCommand groupTip="TextEditExitGroup" id="FontEditExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_TextEdit">
+			<command idQ="RB_MouseTool_TextEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Insert"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_EditFont"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_EditParagraph"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_TextEdit_Arrange"/>
+			<command idQ="Separator"/>
+			<command idQ="FontAIReflow"/>
+			<command idQ="Separator"/>
+			<command idQ="FontEditExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

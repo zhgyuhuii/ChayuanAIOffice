@@ -1,0 +1,591 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_picturetools_vml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KDocerPictureProxyCommand aid="100071" customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" detail="@Insert Online Picture" height="433" hotKey="n" icon="pic_online_kd" id="InsertOnlinePictureFromFileInPictureToolTabVml" idKey="WpsInsertPictureFromFile" localMenuHeight="90" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" skeletonAlias="kdocerpicture" targetId="" targetModule="kdocercore" text="@OMy Picture" width="588"/>
+		<KxListPicturesCommand canHideText="0" customTip="InsertPictureFromFileInPictureTools" detail="@Insert Picture" disableTrigger="1" icon="pic_kd" iconQat="pic_kd" id="m_InsertPicture_Vml" idKey="PhotoOldRibbonLayout" ksoCmd="InsertPictureFromFile" rbHotKey="P" spaceHint="suitable" text="@Insert Picture">
+			<KxLegacyTriggerCommand controlType="0" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<KxWpsAiText2ImageCommand hotKey="g" icon="pic_star_two_kd" id="aiWpsText2Image_pictool_addimage" idKey="AIWPSText2Image" openPosition="tab_picture_add" rbHotKey="G" text="@Ai Generate Picture"/>
+			<KxLegacyTriggerCommand detail="@From Scanner" hotKey="s" icon="insert_picture_from_scan_kd" idKey="InsertScanImage" ksoCmd="InsertPictureFromScan" qtspyName="InsertPictureFromScan" rbHotKey="S" text="@From Scanner"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="m" icon="camera_kd" id="InsertPictureFromPhonePicture" idKey="InsertPictureFromPhonePicture" rbHotKey="M" relatedKsoCmd="InsertPictureFromFile" targetId="InsertPictureFromPhonePicture" targetModule="kphonepicture" text="@From Phone"/>
+			<command idQ="Photo2Pdf"/>
+			<command idQ="InsertOnlinePictureFromFileInPictureToolTabVml"/>
+		</KxListPicturesCommand>
+		<KxListPicturesCommand customTip="InsertPictureFromFileInPictureTools" detail="@Insert Picture" disableTrigger="1" icon="pic_kd" iconQat="pic_kd" id="m_InsertPicture_Vml" idKey="PhotoNewRibbonLayout" ksoCmd="InsertPictureFromFile" rbHotKey="P" spaceHint="suitable" text="@Insert Picture">
+			<KxLegacyTriggerCommand controlType="0" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<KxWpsAiText2ImageCommand hotKey="g" icon="pic_star_two_kd" id="aiWpsText2Image_pictool_addimage" idKey="AIWPSText2Image" openPosition="tab_picture_add" rbHotKey="G" text="@Ai Generate Picture"/>
+			<KxLegacyTriggerCommand detail="@From Scanner" hotKey="s" icon="insert_picture_from_scan_kd" idKey="InsertScanImage" ksoCmd="InsertPictureFromScan" qtspyName="InsertPictureFromScan" rbHotKey="S" text="@From Scanner"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="m" icon="camera_kd" id="InsertPictureFromPhonePicture" idKey="InsertPictureFromPhonePicture" rbHotKey="M" relatedKsoCmd="InsertPictureFromFile" targetId="InsertPictureFromPhonePicture" targetModule="kphonepicture" text="@From Phone"/>
+			<command idQ="Photo2Pdf"/>
+			<command idQ="InsertOnlinePictureFromFileInPictureToolTabVml"/>
+		</KxListPicturesCommand>
+		<KListCommand customTip="ImageDbClickSetting" icon="setup_kd" id="ImageDbClickSettingMenuNew_Vml" idKey="PhotoNewRibbonLayout" qtspyName="ImageDbClickSettingMenu" text="@ImageDbClickSetting">
+			<KxImageDbClickOptionViewImageCommand customTip="double click to preview" id="ImageDbclickPreview" index="0" text="@double click to preview"/>
+			<KxImageDbClickOptionSetPropertiesCommand customTip="double click to set property" id="ImageDbclickSetPropery" index="1" text="@double click to set property"/>
+		</KListCommand>
+		<KListCommand groupTip="PictureToolVmlAdjustGroup" icon="reset_pic_style_kd" id="RB_Illustrations_PictureTool_Vml" idKey="PhotoOldRibbonLayout" rbFileMenuEmbed="1" text="@Adjust">
+			<KxSingleRowMergeGroupCommand customTip="PictureToolVmlAdjustGroup" icon="reset_pic_style_kd" id="SingleRow_AdjustVml" text="@Adjust"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="ChangePicture" icon="replace_pic_kd" ksoCmd="ChangePicture" qtspyName="ChangePicture" rbHotKey="G" singlerowmergegroup="SingleRow_AdjustVml" spaceHint="suitable" text="@Replace Picture"/>
+			<command idQ="m_InsertPicture_Vml" singlerowmergegroup="SingleRow_AdjustVml"/>
+			<KxWpsAiText2ImageCommand hotKey="g" icon="pic_star_two_kd" id="aiWpsText2Image_pictool" idKey="AIWPSText2Image" openPosition="picturetool_tab" rbHotKey="CP" text="@Ai Generate Picture"/>
+			<KxLegacyTriggerCommand customTip="InsertClipArt" detail="@Insert Clip Art" filter="lang=jp_JP" icon="docer_resource_img_kd" idKey="ArmyFunction" ksoCmd="InsertClipArt" qtspyName="InsertClipArt" rbHotKey="F" text="@Clip Art"/>
+			<KGalleryLibraryCommand customTip="Gallery" icon="wpsgallery32" id="GalleryLibrary" idKey="WpsGalleryLibrary" ksoCmd="GalleryLibrary" rbHotKey="y" text="@Gallery"/>
+			<command idQ="ImageDbClickSettingMenu_Vml"/>
+		</KListCommand>
+		<KListCommand groupTip="PictureToolVmlAdjustGroup" icon="reset_pic_style_kd" id="RB_Illustrations_PictureTool_Vml" idKey="PhotoNewRibbonLayout" rbFileMenuEmbed="1" text="@Adjust">
+			<KxLegacyTriggerCommand customTip="ChangePicture" icon="replace_pic_kd" ksoCmd="ChangePicture" qtspyName="ChangePicture" rbHotKey="G" spaceHint="suitable" text="@Replace Picture"/>
+			<command idQ="m_InsertPicture_Vml"/>
+			<KxWpsAiText2ImageCommand hotKey="g" icon="pic_star_two_kd" id="aiWpsText2Image_pictool" idKey="AIWPSText2Image" openPosition="picturetool_tab" rbHotKey="CP" text="@Ai Generate Picture"/>
+			<KxLegacyTriggerCommand customTip="InsertClipArt" detail="@Insert Clip Art" filter="lang=jp_JP" icon="docer_resource_img_kd" idKey="ArmyFunction" ksoCmd="InsertClipArt" qtspyName="InsertClipArt" rbHotKey="F" text="@Clip Art"/>
+			<KGalleryLibraryCommand customTip="Gallery" icon="wpsgallery32" id="GalleryLibrary" idKey="WpsGalleryLibrary" ksoCmd="GalleryLibrary" rbHotKey="y" text="@Gallery"/>
+			<command idQ="ImageDbClickSettingMenuNew_Vml"/>
+		</KListCommand>
+		<KxWpsAddPicFrameCommand bridgeCommand="AddOnlinePicFrameBridge" customTip="AddPicFrame" hotKey="f" icon="pic_outline_kd" id="MenuInsertOnlinePicFrameVml" idKey="WpsMenuInsertOnlinePicFrameVml" rbHotKey="F" text="@Picture Frame"/>
+		<KxLegacyTriggerCommand hotKey="m" icon="increase_contrast_kd" id="PictureMoreContrast" ksoCmd="PictureMoreContrast" rbHotKey="CM" text="@More Contrast"/>
+		<KxLegacyTriggerCommand hotKey="c" icon="decrease_contrast_kd" id="PictureLessContrast" ksoCmd="PictureLessContrast" rbHotKey="CC" text="@Less Contrast"/>
+		<KxLegacyTriggerCommand hotKey="b" icon="sun_increase_brightness_kd" id="PictureMoreBrightness" ksoCmd="PictureMoreBrightness" rbHotKey="CB" text="@More Brightness"/>
+		<KxLegacyTriggerCommand hotKey="l" icon="sun_decrease_brightness_kd" id="PictureLessBrightness" ksoCmd="PictureLessBrightness" rbHotKey="CL" text="@Less Brightness"/>
+		<KxValueCommand hotKey="a" id="PictureColorAutomatic" index="0" ksoCmd="PictureColor" text="@Automatic"/>
+		<KxValueCommand hotKey="g" id="PictureColorGrayscale" index="1" ksoCmd="PictureColor" text="@Grayscale"/>
+		<KxValueCommand hotKey="b" id="PictureColorBlackAndWhite" index="2" ksoCmd="PictureColor" text="@Black and White"/>
+		<KxValueCommand hotKey="w" id="PictureColorWashout" index="3" ksoCmd="PictureColor" text="@Washout"/>
+		<KxLegacyTriggerCommandEx customTip="PictureSetTransparentColor" hotKey="s" icon="pic_transparent_color_setup_kd" id="PictureSetTransparentColorVml" ksoCmd="PictureSetTransparentColor" rbHotKey="SP" text="@Set Transparent Color"/>
+		<KxWpsMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" idMso="ObjectFillMoreColorsDialog" ksoCmd="FillColor" text="@More Fill Colors"/>
+		<KxWpsMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreLineColors" ksoCmd="LineColor" text="@More Line Colors"/>
+		<KxWpsSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" ksoCmd="FillColor" rbHotKey="E" text="@Eyedropper"/>
+		<KxWpsSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperLines" ksoCmd="LineColor" rbHotKey="E" text="@Eyedropper"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="p" id="PatternedLines" ksoCmd="PatternedLines" text="@Patterned Lines"/>
+		<KxLineStyleStaticGalleryCommand column="1" hotKey="w" icon="frame_line_type_kd" id="LineStylePalette" ksoCmd="LineStylePalette" rbHotKey="W" text="@Line Weight">
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt"/>
+			<KxPropComposeCommand dialogHint="1" hotKey="m" id="MoreLines" ksoCmd="MoreLines" tabIndex="0" text="@More Lines"/>
+		</KxLineStyleStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" hotKey="s" icon="dash_style_menu_kd" id="DashStylePalette" ksoCmd="DashStylePalette" rbHotKey="S" text="@Dash Style">
+			<KxStaticGalleryItemCommand detail="@Solid" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_30_display_kd" index="0" qtspyName="DashStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Round Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_31_display_kd" index="1" qtspyName="DashStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Square Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_32_display_kd" index="2" qtspyName="DashStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_33_display_kd" index="3" qtspyName="DashStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_34_display_kd" index="4" qtspyName="DashStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_35_display_kd" index="5" qtspyName="DashStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_36_display_kd" index="6" qtspyName="DashStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_37_display_kd" index="7" qtspyName="DashStyle_7"/>
+		</KxStaticGalleryCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appId="photomattingapp" customTip="AiMatting" icon="select_cutout_kd" id="app_photomattingapp_PicTool" text="@AiMatting"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photomattingapp" customTip="AiMatting" icon="select_cutout_kd" id="app_photomattingapp_PicToolMenu" text="@AiMatting"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" customTip="AiErasepen" icon="eraser_kd" id="app_photoerasepen2_pictool_remove" idKey="CommonPhotoErasepen2" text="@AiErasepen"/>
+		<KAiMattingMenuCommand icon="select_cutout_kd" id="DigOutPictureBackground" idKey="VmlAiMattingMenu" referenceCommand="app_photomattingapp_PicTool" text="@AiMatting@Menu">
+			<command idQ="app_photomattingapp_PicToolMenu"/>
+			<command idQ="PictureSetTransparentColorVml"/>
+			<command idQ="app_photoerasepen2_pictool_remove"/>
+		</KAiMattingMenuCommand>
+		<KAppCommand appCmdObj="ImportCurrentPic" appId="photoeditapp" customTip="Image Edit" icon="pic_edit_kd" id="app_photoeditapp_pictool_picedit" idKey="VmlPhotoEdit" text="@Image Edit"/>
+		<KxImagePreviewCommand action="editor/aiedit" aiControlName="app/photoeditlite" customTip="Image Edit" entrance="pictool" icon="pic_edit_kd" id="photoeditlite_pictool" idKey="PhotoEdit2Editlite" text="@Image Edit"/>
+		<KxListCommand customTip="FormatObject" forceVisible="1" groupTip="PictureToolVmlPictureStyleGroup" icon="pic_style_kd" id="RB_DC_PictureStyles_Vml" idKey="PhotoNewRibbonLayout" ksoCmd="FormatObject" rbFileMenuEmbed="1" rbHotKey="O" text="@Picture Styles">
+			<KListCommand customTip="PictureColor" icon="pic_style_kd" qtspyName="PictureColor" rbHotKey="I" text="@Color">
+				<command idQ="PictureColorAutomatic"/>
+				<command idQ="PictureColorGrayscale"/>
+				<command idQ="PictureColorBlackAndWhite"/>
+				<command idQ="PictureColorWashout"/>
+			</KListCommand>
+			<command idQ="app_photoeditapp_pictool_picedit"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="2" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="PictureMoreContrast"/>
+					<command idQ="PictureLessContrast"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="2" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="PictureMoreBrightness"/>
+					<command idQ="PictureLessBrightness"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<KxWpsFillColorCommand4Rainbow customTip2="PictureFill2" customTip="PictureFill" icon="color_paint_wps_kd" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" qtspyName="FillColor" rbHotKey="SF" spaceHint="compact" text="@Picture Fill">
+				<command idQ="MoreFillColors"/>
+				<command idQ="SnapperFill"/>
+				<KxPropComposeCommand hotKey="g" icon="gradiant_fill_kd" idKey="VmlGradientFill" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+				<KxPropComposeCommand hotKey="t" icon="texture_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="T" tabIndex="1" text="@Texture"/>
+				<KxPropComposeCommand hotKey="n" icon="pattern_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" tabIndex="2" text="@Pattern"/>
+				<KxPropComposeCommand hotKey="p" icon="pic_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="P" tabIndex="3" text="@Picture"/>
+			</KxWpsFillColorCommand4Rainbow>
+			<KxWpsLineColorCommand customTip2="PictureOutline2" customTip="PictureOutline" icon="color_border_wps_kd" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" qtspyName="LineColor" rbHotKey="SO" spaceHint="compact" text="@Picture Outline">
+				<command idQ="MoreLineColors"/>
+				<command idQ="SnapperLines"/>
+				<command idQ="PatternedLines"/>
+				<command idQ="LineStylePalette"/>
+				<command idQ="DashStylePalette"/>
+				<command idQ="MenuInsertOnlinePicFrameVml"/>
+			</KxWpsLineColorCommand>
+			<KxGalleryPictureTransparencyCommand customTip="PictureTransparency" disableTrigger="1" icon="transparency_kd" id="PictureSetTransparency" ksoCmd="PictureSetTransparency" spaceHint="suitable" text="@Transparency"/>
+			<KxListCommand customTip="ResetPictures" forceVisible="1" icon="reset_pic_style_kd" id="ResetPicture" ksoCmd="ResetPicture" rbHotKey="Q" spaceHint="suitable" text="@Reset Picture">
+				<KxPropComposeCommand hotKey="r" icon="reset_pic_style_kd" ksoCmd="ResetPicture" qtspyName="ResetPicture" rbHotKey="R" text="@Reset Picture"/>
+				<KxPropComposeCommand hotKey="s" icon="reset_size_kd" ksoCmd="ResetPictureAndSize" qtspyName="ResetPictureAndSize" rbHotKey="S" text="@Reset Picture and Size"/>
+			</KxListCommand>
+		</KxListCommand>
+		<KxListCommand customTip="FormatObject" forceVisible="1" groupTip="PictureToolVmlPictureStyleGroup" icon="pic_style_kd" id="RB_DC_PictureStyles_Vml" idKey="PhotoOldRibbonLayout" ksoCmd="FormatObject" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="O" text="@Picture Styles">
+			<command idQ="DigOutPictureBackground"/>
+			<command idQ="app_photoeditapp_pictool_picedit"/>
+			<command idQ="photoeditlite_pictool"/>
+			<command idQ="PicAddFilter"/>
+			<KListCommand customTip="PictureColor" icon="pic_style_kd" qtspyName="PictureColor" rbHotKey="I" text="@Color">
+				<command idQ="PictureColorAutomatic"/>
+				<command idQ="PictureColorGrayscale"/>
+				<command idQ="PictureColorBlackAndWhite"/>
+				<command idQ="PictureColorWashout"/>
+			</KListCommand>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="2" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="PictureMoreContrast" singlerowfoldgroup="contrast_pair"/>
+					<command idQ="PictureLessContrast" singlerowfoldgroup="contrast_pair"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="2" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="PictureMoreBrightness" singlerowfoldgroup="brightness_pair"/>
+					<command idQ="PictureLessBrightness" singlerowfoldgroup="brightness_pair"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<KxWpsFillColorCommand4Rainbow customTip2="PictureFill2" customTip="PictureFill" icon="color_paint_wps_kd" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" qtspyName="FillColor" rbHotKey="SF" singlerowfold="1" spaceHint="compact" text="@Picture Fill">
+				<command idQ="MoreFillColors"/>
+				<command idQ="SnapperFill"/>
+				<KxPropComposeCommand hotKey="g" icon="gradiant_fill_kd" idKey="VmlGradientFill" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+				<KxPropComposeCommand hotKey="t" icon="texture_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="T" tabIndex="1" text="@Texture"/>
+				<KxPropComposeCommand hotKey="n" icon="pattern_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" tabIndex="2" text="@Pattern"/>
+				<KxPropComposeCommand hotKey="p" icon="pic_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="P" tabIndex="3" text="@Picture"/>
+			</KxWpsFillColorCommand4Rainbow>
+			<KxWpsLineColorCommand customTip2="PictureOutline2" customTip="PictureOutline" icon="color_border_wps_kd" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" qtspyName="LineColor" rbHotKey="SO" singlerowfold="1" spaceHint="compact" text="@Picture Outline">
+				<command idQ="MoreLineColors"/>
+				<command idQ="SnapperLines"/>
+				<command idQ="PatternedLines"/>
+				<command idQ="LineStylePalette"/>
+				<command idQ="DashStylePalette"/>
+				<command idQ="MenuInsertOnlinePicFrameVml"/>
+			</KxWpsLineColorCommand>
+			<KxListCommand customTip="ResetPictures" forceVisible="1" icon="reset_pic_style_kd" id="ResetPicture" ksoCmd="ResetPicture" rbHotKey="Q" singlerowfold="1" text="@Reset Picture">
+				<KxPropComposeCommand hotKey="r" icon="reset_pic_style_kd" ksoCmd="ResetPicture" qtspyName="ResetPicture" rbHotKey="R" text="@Reset Picture"/>
+				<KxPropComposeCommand hotKey="s" icon="reset_size_kd" ksoCmd="ResetPictureAndSize" qtspyName="ResetPictureAndSize" rbHotKey="S" text="@Reset Picture and Size"/>
+			</KxListCommand>
+		</KxListCommand>
+		<KxLegacyTriggerCommand hotKey="i" icon="pic_surround_embed_kd" id="WrappingInLineWithText" ksoCmd="WrappingInLineWithText" text="@In Line with Text"/>
+		<KxLegacyTriggerCommand hotKey="s" icon="pic_surround_kd" id="WrappingSquare" ksoCmd="WrappingSquare" rbHotKey="S" text="@Square"/>
+		<KxLegacyTriggerCommand hotKey="t" icon="pic_surround_tightly_kd" id="WrappingTight" ksoCmd="WrappingTight" rbHotKey="T" text="@Tight"/>
+		<KxLegacyTriggerCommand hotKey="d" icon="pic_surround_down_kd" id="WrappingBehindText" ksoCmd="WrappingBehindText" rbHotKey="D" text="@Behind Text"/>
+		<KxLegacyTriggerCommand hotKey="n" icon="pic_surround_up_kd" id="WrappingInFrontofText" ksoCmd="WrappingInFrontofText" rbHotKey="N" text="@In Front of Text"/>
+		<KxLegacyTriggerCommand hotKey="o" icon="pic_surround_up_down_kd" id="WrappingTopandBottom" ksoCmd="WrappingTopandBottom" rbHotKey="O" text="@Top and Bottom"/>
+		<KxLegacyTriggerCommand hotKey="h" icon="pic_surround_through_kd" id="WrappingThrough" ksoCmd="WrappingThrough" rbHotKey="H" text="@Through"/>
+		<KxLegacyTriggerCommand hotKey="F" icon="level_bring_forward_kd" id="RbBringForwardInToolBar" ksoCmd="BringForward" text="@Bring Forward"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="level_top_kd" id="RbBringToFrontInToolBar" idMso="ObjectBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+		<KxLegacyTriggerCommand aid="168" hotKey="t" icon="level_top_kd" id="RbBringInFrontOfText" ksoCmd="BringInFrontOfText" text="@Bring in Front of Text"/>
+		<KxListCommand customTip2="BringForward2" customTip="BringForward" hotKey="f" icon="level_bring_forward_kd" id="Pic_sp_BringForward_Vml" ksoCmd="BringForward" rbHotKey="AF" spaceHint="suitable" text="@Bring Forward">
+			<command idQ="RbBringForwardInToolBar"/>
+			<command idQ="RbBringToFrontInToolBar"/>
+			<command idQ="RbBringInFrontOfText"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand hotKey="B" icon="level_send_backward_kd" id="RbSendBackwardInToolBar" ksoCmd="SendBackward" text="@Send Backward"/>
+		<KxLegacyTriggerCommand hotKey="K" icon="level_bottom_kd" id="RbSendToBackInToolBar" ksoCmd="SendToBack" text="@Send to Back"/>
+		<KxLegacyTriggerCommand aid="169" hotKey="h" icon="pic_surround_down_kd" id="RbSendBehindText" idMso="ObjectSendBehindText" ksoCmd="SendBehindText" qtspyname="SendBehindText" rbHotKey="H" text="@Send Behind Text"/>
+		<KxListCommand customTip2="SendBackward2" customTip="SendBackward" hotKey="b" icon="level_send_backward_kd" id="Pic_sp_SendBackward_Vml" ksoCmd="SendBackward" rbHotKey="AE" spaceHint="suitable" text="@Send Backward">
+			<command idQ="RbSendBackwardInToolBar"/>
+			<command idQ="RbSendToBackInToolBar"/>
+			<command idQ="RbSendBehindText"/>
+		</KxListCommand>
+		<KxObjectSelectCommand customTip="ObjectSelect" hotKey="J" icon="object_select_kd" id="ObjectSelectVml" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Selection Pane"/>
+		<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+		<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+		<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+		<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+		<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+		<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" idMso="AlignDistributeHorizontally" ksoCmd="AlignDistributeHori" text="@Distribute Horizontally"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" idMso="AlignDistributeVertically" ksoCmd="AlignDistributeVert" text="@Distribute Vertically"/>
+		<KxLegacyTriggerCommand hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" ksoCmd="EqualHeight" text="@Equal Height"/>
+		<KxLegacyTriggerCommand hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" ksoCmd="EqualWidth" text="@Equal Width"/>
+		<KxLegacyTriggerCommand hotKey="Q" icon="equal_size_kd" id="RbEqualSize" ksoCmd="EqualSize" text="@Equal Size"/>
+		<KxLegacyTriggerCommand aid="300" hotKey="s" icon="nine_grids_kd" id="RbGridlines" ksoCmd="Gridlines" spaceHint="suitable" text="@Gridlines"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="g" icon="grid_switch_kd" id="RbGrid" ksoCmd="Grid" text="@Grid"/>
+		<KxLegacyTriggerCommand hotKey="G" icon="group_kd" id="RbGroupInToolBar" ksoCmd="Group" text="@Group"/>
+		<KxLegacyTriggerCommand hotKey="U" icon="group_cancel_kd" id="RbUnGroupInToolBar" ksoCmd="UnGroup" text="@Ungroup"/>
+		<KxLegacyTriggerCommand hotKey="l" icon="rotate_left_kd" id="RotateLeft" ksoCmd="RotateLeft" rbHotKey="L" text="@Rotate Left 90°"/>
+		<KxLegacyTriggerCommand hotKey="r" icon="rotate_right_kd" id="RotateRight" ksoCmd="RotateRight" rbHotKey="R" text="@Rotate Right 90°"/>
+		<KxLegacyTriggerCommand hotKey="h" icon="flip_horizontal_kd" id="FlipHorizontal" ksoCmd="FlipHorizontal" rbHotKey="H" text="@Flip Horizontal"/>
+		<KxLegacyTriggerCommand hotKey="v" icon="flip_vertical_kd" id="FlipVertical" ksoCmd="FlipVertical" rbHotKey="V" text="@Flip Vertical"/>
+		<KAppCommand action="photobatchrotate" appCmdObj="PictureBatchProcess" appFlags="wpsmember" appId="photonewbatchapp" icon="batch_rotation_kd" id="app_photonewbatchapp_picturetools_allrotation" idKey="WpsPictureBatchProcess" text="@Rotate all picture"/>
+		<KListCommand canHideText="0" customTip="m_Rotate" icon="rotate_right_kd" id="PictureToolsVml_Rotate" qtspyName="m_Rotate_Vml" rbHotKey="AY" text="@Rotate ">
+			<command idQ="RotateLeft"/>
+			<command idQ="RotateRight"/>
+			<separator/>
+			<command idQ="FlipHorizontal"/>
+			<command idQ="FlipVertical"/>
+			<command idQ="app_photonewbatchapp_picturetools_allrotation"/>
+		</KListCommand>
+		<KListCommand customTip="m_Group" icon="group_kd" id="m_Group" rbHotKey="AG" spaceHint="suitable" text="@Group">
+			<command idQ="RbGroupInToolBar"/>
+			<command idQ="RbUnGroupInToolBar"/>
+		</KListCommand>
+		<KListCommand customTip="m_Align" icon="align_draw_left_kd" id="PictureToolsVml_Align" qtspyName="m_Align" rbHotKey="AA" spaceHint="suitable" text="@Align">
+			<command idQ="AlignmentControl"/>
+			<command idQ="DrawAlignLeft"/>
+			<command idQ="DrawAlignCenter"/>
+			<command idQ="DrawAlignRight"/>
+			<command idQ="DrawAlignTop"/>
+			<command idQ="DrawAlignMiddle"/>
+			<command idQ="DrawAlignBottom"/>
+			<separator/>
+			<command idQ="AlignDistributeHori"/>
+			<command idQ="AlignDistributeVert"/>
+			<separator/>
+			<command idQ="EqualHeight"/>
+			<command idQ="EqualWidth"/>
+			<command idQ="RbEqualSize"/>
+			<separator/>
+			<command idQ="RbGridlines"/>
+			<command idQ="RbGrid"/>
+		</KListCommand>
+		<KListCommand groupTip="PictureToolVmlArrangeGroup" icon="align_draw_left_kd" id="RB_ObjectSelect_Vml" needsinglerowmorebutton="true" text="@Arrange">
+			<KxWpsWrapTextCommand canHideText="0" customTip="m_Wrapping" detail="@Wrap Text" icon="pic_surround_kd" qtspyName="TextWrappingMenu" rbHotKey="TW" text="@Wrap Text">
+				<command idQ="WrappingInLineWithText"/>
+				<separator/>
+				<command idQ="WrappingSquare"/>
+				<command idQ="WrappingTight"/>
+				<command idQ="WrappingBehindText"/>
+				<command idQ="WrappingInFrontofText"/>
+				<separator/>
+				<command idQ="WrappingTopandBottom"/>
+				<command idQ="WrappingThrough"/>
+			</KxWpsWrapTextCommand>
+			<command idQ="PictureToolsVml_Rotate"/>
+			<command idQ="m_Group" singlerowfold="1"/>
+			<command idQ="PictureToolsVml_Align" singlerowfold="1"/>
+			<command idQ="Pic_sp_BringForward_Vml" singlerowfold="1"/>
+			<command idQ="Pic_sp_SendBackward_Vml" singlerowfold="1"/>
+			<command idQ="ObjectSelectVml" singlerowfold="1"/>
+		</KListCommand>
+		<KxStaticGalleryItemCommand forceLine="true" galleryItemHeight="24" galleryItemWidth="108" id="NoShadow" ksoCmd="NoShadow" text="@No Shadow"/>
+		<KxWpsMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreShadowColors" ksoCmd="ShadowColor" text="@More Shadow Colors"/>
+		<KxWpsSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapShadowColors" ksoCmd="ShadowColor" rbHotKey="E" text="@Eyedropper"/>
+		<KxLegacyTriggerCommand hotKey="s" id="SemitransparentShadow" ksoCmd="SemitransparentShadow" text="@Semitransparent Shadow"/>
+		<KxWpsShadowColorCommand customTip2="ShadowColor2" customTip="ShadowColor" icon="shadow_color_kd" id="Pic_ShadowColor" ksoCmd="ShadowColor" ksoTriggerCmd="RecentShadowColor" rbHotKey="SC" spaceHint="suitable" text="@Shadow Color">
+			<command idQ="MoreShadowColors"/>
+			<command idQ="SnapShadowColors"/>
+			<command idQ="SemitransparentShadow"/>
+		</KxWpsShadowColorCommand>
+		<KRbDonotShowHotKeyCommand id="NULL" rbHotKey="" spaceHint="compact"/>
+		<KxLegacyTriggerCommand customTip="NudgeShadowLeft" icon="shadow_left_kd" id="NudgeShadowLeft" ksoCmd="NudgeShadowLeft" rbHotKey="2" spaceHint="compact" text="@Nudge Shadow Left"/>
+		<KxLegacyTriggerCommand customTip="NudgeShadowUp" icon="shadow_up_kd" id="NudgeShadowUp" ksoCmd="NudgeShadowUp" rbHotKey="1" spaceHint="compact" text="@Nudge Shadow Up"/>
+		<KxLegacyTriggerCommand customTip="ShadowOnOff" icon="shadow_setup_kd" id="ShadowOnOff" ksoCmd="ShadowOnOff" rbHotKey="z" text="@Shadow On"/>
+		<KxLegacyTriggerCommand customTip="NudgeShadowDown" icon="shadow_down_kd" id="NudgeShadowDown" ksoCmd="NudgeShadowDown" rbHotKey="4" spaceHint="compact" text="@Nudge Shadow Down"/>
+		<KxLegacyTriggerCommand customTip="NudgeShadowRight" icon="shadow_right_kd" id="NudgeShadowRight" ksoCmd="NudgeShadowRight" rbHotKey="3" spaceHint="compact" text="@Nudge Shadow Right"/>
+		<KListCommand groupTip="PictureToolVmlShadowSettingGroup" icon="shadow_setup_kd" id="Pic_RB_ShadowSettings_Vml" rbFileMenuEmbed="1" text="@Shadow Setting">
+			<KxSingleRowMergeGroupCommand customTip="PictureToolVmlShadowSettingGroup" icon="shadow_setup_kd" id="SingleRow_ShadowSettings_Vml" text="@Shadow Setting"/>
+			<command idQ="ShadowOnOff" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+			<KxShadowStaticGalleryCommand column="4" customTip="ShadowSetting" icon="shadow_style_kd" ksoCmd="ShadowPalette" qtspyName="ShadowPalette" rbHotKey="SS" singlerowmergegroup="SingleRow_ShadowSettings_Vml" spaceHint="suitable" text="@Shadow Style">
+				<command idQ="NoShadow"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 1" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_0" index="0" qtspyName="ShadowStyle_0"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 2" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_1" index="1" qtspyName="ShadowStyle_1"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 3" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_2" index="2" qtspyName="ShadowStyle_2"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 4" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_3" index="3" qtspyName="ShadowStyle_3"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 5" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_4" index="4" qtspyName="ShadowStyle_4"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 6" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_5" index="5" qtspyName="ShadowStyle_5"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 7" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_6" index="6" qtspyName="ShadowStyle_6"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 8" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_7" index="7" qtspyName="ShadowStyle_7"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 9" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_8" index="8" qtspyName="ShadowStyle_8"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 10" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_9" index="9" qtspyName="ShadowStyle_9"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 11" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_10" index="10" qtspyName="ShadowStyle_10"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 12" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_11" index="11" qtspyName="ShadowStyle_11"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 13" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_12" index="12" qtspyName="ShadowStyle_12"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 14" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_13" index="13" qtspyName="ShadowStyle_13"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 15" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_14" index="14" qtspyName="ShadowStyle_14"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 16" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_15" index="15" qtspyName="ShadowStyle_15"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 17" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_16" index="16" qtspyName="ShadowStyle_16"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 18" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_17" index="17" qtspyName="ShadowStyle_17"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 19" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_18" index="18" qtspyName="ShadowStyle_18"/>
+				<KxStaticGalleryItemCommand detail="@Shadow Style 20" galleryItemHeight="24" galleryItemWidth="24" icon="ShadowStyle_19" index="19" qtspyName="ShadowStyle_19"/>
+			</KxShadowStaticGalleryCommand>
+			<command idQ="Pic_ShadowColor" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="NudgeShadowUp" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+					<command idQ="NudgeShadowDown" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+				</KRbLayoutListCommand>
+				<separator filter="lang!=jp_JP"/>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="NudgeShadowLeft" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+					<command idQ="NudgeShadowRight" singlerowmergegroup="SingleRow_ShadowSettings_Vml"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="3249" dialogHint="1" hotKey="o" icon="chart_objects_kd" id="FormatObject" ksoCmd="FormatObject" text="@Format Object"/>
+		<KListCommand id="DetailedSettings_PictureTools_Vml" text="@Detailed Settings">
+			<KListCommand customTip="DetailedSettings_PictureTools_Vml" icon="detailed_settings_kd" id="DetailedSettingsList_PictureTools_Vml" qtspyName="DetailedSettings" text="@Detailed Settings">
+				<command idQ="FormatObject"/>
+			</KListCommand>
+		</KListCommand>
+		<KxPropComposeCommand customTip="PictureSize" dialogHint="1" hotKey="o" icon="ShapeSize" id="m_Size" ksoCmd="FormatObject" rbHotKey="SZ" tabIndex="1" text="@PictureSize"/>
+		<KxListCommand customTip="FormatObjectSize" groupTip="PictureToolVmlSizeGroup" icon="slide_orientation_kd" id="RB_PictureSize_Vml" ksoCmd="FormatObject" text="@Size">
+			<KxLegacyTriggerCommand customTip="PictureCrop" hotKey="p" icon="crop_kd" id="PictureCrop" ksoCmd="PictureCrop" rbHotKey="V" text="@Crop"/>
+			<command idKey="ImagePreview" idQ="ImagePreview"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<KxWpsHeightSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeHeight" embedHint="1" icon="ranks_rows_height_kd" id="ShapeHeight" ksoCmd="ShapeHeight" spaceHint="suitable"/>
+			<KxWpsWidthSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeWidth" embedHint="1" icon="ranks_column_width_kd" id="ShapeWidth" ksoCmd="ShapeWidth" spaceHint="suitable"/>
+		</KxListCommand>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_wps_kd" id="app_kocrtool_picturetool" idKey="AppOcrToolPictureToolNoHotkey" text="@Picture to Text" tipContent="@Convert Text in Picture" tipTitle="@Picture to Text"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="photo2pdf" icon="change_pic_to_pdf_kd" id="app_photo2pdf_pictool" idKey="AppPhoto2PdfPicTool" qtspyName="Photo2Pdf" text="@Picture to PDF" tipContent="@Picture Batch to PDF" tipTitle="@Picture to PDF"/>
+		<KAppCommand appId="kbatchextractpicture" icon="pic_extract_kd" id="app_kbatchextractpicture_picture_tool" idKey="VmlBatchExtractPicture" text="@Picture Extraction"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="ktranslateimagev2" icon="pic_translate_kd" id="app_ktranslateimagev2_pictool" idKey="CommonTranslateImage" text="@Translate Image" tipContent="@Text Translation in Image" tipTitle="@Translate Image"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoprintapp" icon="print_kd" id="app_photoprintapp_picturetool" idKey="VmlPhotoprintApp" text="@Photo Print" tipContent="@Photo Print Tips" tipTitle="@Photo Print"/>
+		<KAppCommand appId="kinsertchuangkit" customTip="InsertChuangkit" icon="poster_kd" id="app_kinsertchuangkit_pictool" text="@Picture Design"/>
+		<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="scan_ocr_kd" id="app_kocrtool_picturetool_2txt" idKey="OCRPictureToolPic2Txt" text="@Image To Text"/>
+		<KAppCommand action="Pic2Xls" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appFlags_xa="PrivilegePhotoXa" appId="kocrtool" icon="change_pic_to_et_kd" id="app_kocrtool_picturetool_2xlsl" idKey="OCRPictureToolPic2Xlsl" text="@Image To Table"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appFlags_xa="PrivilegePhotoXa" appId="kocrtool" icon="change_pic_to_et_kd" id="app_kocrtool_picturetool_2xlsl_xa" idKey="MacOldImageOcrEntry" text="@Image To Table"/>
+		<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="scan_ocr_kd" id="app_kocrtool_menu_2text" idKey="VmlOcrToolMenu" text="@Extract pure text"/>
+		<KAppCommand action="Pic2Word" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_wps_kd" id="app_kocrtool_menu_2txt" idKey="VmlOcrToolMenu" text="@Convert to doc"/>
+		<KAppCommand action="Pic2Xls" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_et_kd" id="app_kocrtool_menu_2xlsl" idKey="VmlOcrToolMenu" text="@Convert to excel"/>
+		<KAppCommand action="Pic2Pptx" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_ppt_kd" id="app_kocrtool_menu_2ppt" idKey="VmlOcrToolMenu" text="@Convert to ppt"/>
+		<KAppCommand action="Card2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="id_card_kd" id="app_kocrtool_menu_card2txt" idKey="VmlOcrToolMenu" text="@Extract card"/>
+		<KAutoHideListCommand icon="change_pic_to_wps_kd" id="KOcrToolMenu" idKey="VmlOcrToolMenu" referenceCommand="app_ocrtool_menu_ref" text="@Picture to Text">
+			<command idQ="app_kocrtool_menu_2text"/>
+			<command idQ="app_kocrtool_menu_2txt"/>
+			<command idQ="app_kocrtool_menu_2xlsl"/>
+			<command idQ="app_kocrtool_menu_2ppt"/>
+			<command idQ="app_kocrtool_menu_card2txt"/>
+		</KAutoHideListCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" icon="pic_repair_kd" id="app_photorepairapp_pictool_clarity" idKey="CommonPhotoRepairapp" text="@AiRepair"/>
+		<KAppQuickMenuCommand customTip="AiRepair" id="PhotoEdit" idKey="CommonPhotoRepairapp" referenceCommand="app_photorepairapp_pictool_clarity" spaceHint="suitable">
+			<KAppCommand action="clear" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" icon="pic_sharpness_kd" id="app_photorepairapp_clarity" text="@Clarity"/>
+			<KAppCommand action="contrast" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" icon="text_repair_kd" id="app_photorepairapp_enhance" text="@TextEnhancement"/>
+			<KAppCommand action="portraitbeauty" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" icon="portrait_beauty_kd" id="app_photorepairapp_portraitbeauty" text="@Portraitbeauty"/>
+			<KAppCommand action="enlarge_2" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" icon="inlarge_2x_kd" id="app_photorepairapp_enlarge" text="@Enlarge2x"/>
+		</KAppQuickMenuCommand>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="writer_picture_tools&amp;module=writer&amp;sub_module=picture_tools_tab&amp;new_position=picturetotext" hotKey="PT" icon="change_pic_to_wps_kd" id="app_kocrtool_picturetool_xa" idKey="MacOldImageOcrEntry" rbHotKey="PT" spaceHint="autocompact" text="@Picture to Text" tipContent="@Convert Text in Picture" tipTitle="@Picture to Text"/>
+		<KQuickMenuCommandFixNoRefIcon icon="pic_convert_kd" id="Picture_OCR_Tool_Vml" idKey="PictureOCRToolVml" referenceCommand="app_photo2pdf_pictool" text="@Picture Conversion">
+			<command idQ="app_photo2pdf_pictool"/>
+			<command idKey="ImageOcrEntry" idQ="KOcrToolMenu"/>
+			<command idQ="app_kocrtool_picturetool_xa"/>
+			<command idKey="WpsVmlOcrToolToXlsl" idQ="app_kocrtool_picturetool_2xlsl"/>
+			<command idKey="MacOldImageOcrEntry" idQ="app_kocrtool_picturetool_2xlsl_xa"/>
+			<command idQ="app_photoprintapp_picturetool"/>
+			<command idQ="app_ktranslateimagev2_pictool"/>
+			<command idQ="app_kinsertchuangkit_pictool"/>
+		</KQuickMenuCommandFixNoRefIcon>
+		<KRbDualVLayoutListCommand id="Pictures_Compress_Tool_Vml" text="@Compress Pictures">
+			<command idQ="PhotoEdit"/>
+			<KxLegacyTriggerCommand customTip="CompressPictures" icon="pic_compress_kd" idKey="VmlCompressPictures" ksoCmd="CompressPictures" qtspyName="CompressPictures" rbHotKey="M" text="@Compress Pictures"/>
+			<KAppCommand appId="kpicturecompress" customTip="popupmenu" icon="pic_compress_kd" id="app_kpicturecompress_PicTool" idKey="WpsCompressPicturesCustom" text="@Compress Pictures" tipContent="@Compress the selected picture or all pictures in the document to reduce the picture size." tipTitle="@Compress Pictures"/>
+			<KAppPhotoAiControlCommand action="photobatchcompress" aiControlName="app/photobatchcompress" appCmdObj="PictureBatchProcess2" appId="photobatchcompress" customTip="popupmenu" icon="pic_compress_kd" id="app_photobatchcompress_PicTool" idKey="PhotoBatchCompressCommon" text="@Compress Pictures" tipContent="@Compress the selected picture or all pictures in the document to reduce the picture size." tipTitle="@Compress Pictures"/>
+		</KRbDualVLayoutListCommand>
+		<KAutoHideTilingListCommand icon="apply_to_all_kd" id="Picture_Batch_Tool" idKey="PictureBatchTool" text="@batch process" visible="true">
+			<KAutoHideTilingCommand appFlags="wpsmember" idKey="CommonMenuItemRightPhotoVipIcon" text="@batch export">
+				<KAppCommand appId="kbatchprocess" icon="batch_export_kd" id="app_batchprocess_exportimage" idKey="VmlbatchProcessExportimage" text="@Export Images"/>
+				<KAppCommand action="photobatchconvert" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_change_type_kd" id="app_photonewbatchapp_picturetools_formatting" idKey="WpsPhotonewBatchAppExportandFormat" text="@Export and Format"/>
+				<KAppCommand action="photobatchrename" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_rename_kd" id="app_photonewbatchapp_picturetools_renaming" idKey="WpsPhotonewBatchAppExportandRename" text="@Export and Rename"/>
+			</KAutoHideTilingCommand>
+			<KAutoHideTilingCommand appFlags="wpsmember" idKey="CommonMenuItemRightPhotoVipIcon" text="@batch adjust">
+				<KAppCommand action="photobatchcompress" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_compression_kd" id="app_photonewbatchapp_picturetools_compress" idKey="VmlPictureBatchProcess" text="@Compress"/>
+				<KAppCommand action="photobatchresize" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_resize_kd" id="app_photonewbatchapp_picturetools_dimension" idKey="VmlPictureBatchProcess" text="@Resize"/>
+				<KAppCommand action="photobatchcrop" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_crop_kd" id="app_photonewbatchapp_picturetools_clipping" idKey="VmlPictureBatchProcessPer" text="@Crop"/>
+				<KAppCommand action="photobatchcrop" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_correction_kd" id="app_photonewbatchapp_picturetools_correcting" idKey="VmlPictureBatchProcess" text="@Correct"/>
+				<KAppCommand action="photobatchrotate" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_rotation_kd" id="app_photonewbatchapp_picturetools_rotation" idKey="VmlPictureBatchProcessPer" text="@Rotate"/>
+			</KAutoHideTilingCommand>
+			<KAutoHideTilingCommand appFlags="wpsmember" idKey="CommonMenuItemRightPhotoVipIcon" text="@batch edit">
+				<KAppPhotoAiControlCommand action="photobatchmatting" aiControlName="app/photomattingapp" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="select_cutout_kd" id="app_photonewbatchapp_picturetools_matting" idKey="VmlPhotoBatchEditPer" text="@Cutout"/>
+				<KAppCommand action="photobatchtext" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="watermark_batch_kd" id="app_photonewbatchapp_picturetools_text_watermark" idKey="VmlPhotoBatchEdit" text="@Add Text Watermark"/>
+				<KAppCommand action="photobatchwatermark" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="watermark_batch_kd" id="app_photonewbatchapp_picturetools_pic_watermark" idKey="VmlPhotoBatchEdit" text="@Add Image Watermark"/>
+				<KAppCommand appCmdObj="PictureBatchProcess" appId="photospliceapp" icon="shape_three_kd" id="app_photospliceapp" idKey="VmlPhotoBatchEditPer" text="@Photo Splicing"/>
+			</KAutoHideTilingCommand>
+		</KAutoHideTilingListCommand>
+		<KListCommand groupTip="PictureToolVmlAdvancedFunctionGroup" icon="shape_four_kd" id="RB_AdvancedPictureTool_Vml" idKey="PhotoOldRibbonLayout" text="@Advanced Features">
+			<command idQ="Pictures_Compress_Tool_Vml"/>
+			<command idQ="Picture_Batch_Tool"/>
+			<command idQ="Picture_OCR_Tool_Vml"/>
+		</KListCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appId="photoeditapp" customTip="Image Edit" entrance="Ribbon_PicToolTab" icon="pic_edit_kd" id="app_photoeditapp_pictool" idKey="PhotoTool2Plugin" text="@Image Edit"/>
+		<KxImagePreviewCommand action="editor/aiedit" aiControlName="app/photoeditlite" customTip="Image Edit" entrance="pictool" icon="pic_edit_kd" id="photoeditlite_pictool" idKey="PhotoTool2Editlite" text="@Image Edit"/>
+		<KAppCommand action="brush" appCmdObj="PhotoExchange" appId="photoeditapp" entrance="Ribbon_PicToolTab" icon="writing_brush_kd" id="app_photoeditapp_brush" idKey="PhotoTool2Plugin" text="@Annotate"/>
+		<KxImagePreviewCommand action="editor/add_annotation_textedit" entrance="brush" icon="writing_brush_kd" id="photoeditapplite_brush" idKey="PhotoTool2Editlite" text="@Annotate"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photowatermark" entrance="Ribbon_PicToolTab" icon="watermark_kd" id="app_photowatermark" idKey="PhotoTool2Plugin" text="@Watermark"/>
+		<KxImagePreviewCommand action="editor/watermark" appFlags="wpsmember" entrance="appcenter_watermark" icon="watermark_kd" id="photowatermarklite_pictool" idKey="PhotoTool2Editlite" text="@Watermark"/>
+		<KAutoHideAppQuickMenuCommand customTip="Annotate" entrance="Ribbon_PicToolTab" id="app_photoeditapp_menu" idKey="PhotoTool2Plugin" referenceCommand="app_photoeditapp_brush" spaceHint="suitable">
+			<command idQ="app_photowatermark"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAutoHideAppQuickMenuCommand customTip="Annotate" id="photoeditapplite_menu" idKey="PhotoTool2Editlite" referenceCommand="photoeditapplite_brush" spaceHint="suitable">
+			<command idQ="photowatermarklite_pictool"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KxBridgeTriggerCommand bridgeCommand="AddPicFilterBridge" customTip="PicAddFilter" icon="filter_photo_kd" id="app_photofilter" idKey="PhotoEditDomestic" spaceHint="suitable" text="@Picture Filter"/>
+		<KxImagePreviewCommand action="editor/filter" customTip="PicAddFilter" entrance="pictool" icon="filter_photo_kd" id="app_photofilter_intl" idKey="PhotoEditInternational" spaceHint="suitable" text="@Picture Filter"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" entrance="Ribbon_PicToolTab" icon="pic_repair_kd" id="app_photorepairapp" idKey="PhotoTool2Plugin" text="@AiRepair"/>
+		<KxImagePreviewCommand action="editor/aiclear" appFlags="wpsmember" entrance="appcenter_clear" icon="pic_sharpness_kd" id="photorepairlite_pictool" idKey="PhotoTool2Editlite" text="@AiRepair"/>
+		<KAppCommand action="clear" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" entrance="Ribbon_PicToolTab" icon="pic_sharpness_kd" id="app_photorepairapp_clarity" text="@Clarity"/>
+		<KxImagePreviewCommand action="editor/oneclick" appFlags="wpsmember" entrance="clarity" icon="pic_sharpness_kd" id="photorepairlite_clarity" text="@Clarity"/>
+		<KAppCommand action="contrast" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" entrance="Ribbon_PicToolTab" icon="text_repair_kd" id="app_photorepairapp_enhance" text="@TextEnhancement"/>
+		<KxImagePreviewCommand action="editor/textrepair" appFlags="wpsmember" entrance="enhance" icon="text_repair_kd" id="photorepairlite_enhance" text="@TextEnhancement"/>
+		<KAppCommand action="portraitbeauty" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" entrance="Ribbon_PicToolTab" icon="portrait_beauty_kd" id="app_photorepairapp_portraitbeauty" text="@Portraitbeauty"/>
+		<KxImagePreviewCommand action="editor/beautify" appFlags="wpsmember" entrance="portraitbeauty" icon="portrait_beauty_kd" id="photorepairlite_portraitbeauty" text="@Portraitbeauty"/>
+		<KAppCommand action="enlarge_2" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photorepairapp" entrance="Ribbon_PicToolTab" icon="inlarge_2x_kd" id="app_photorepairapp_enlarge" text="@Enlarge2x"/>
+		<KxImagePreviewCommand action="editor/upscalex2" appFlags="wpsmember" entrance="enlarge" icon="inlarge_2x_kd" id="photorepairlite_enlarge" text="@Enlarge2x"/>
+		<KAutoHideAppQuickMenuCommand canHideText="0" customTip="AiRepair" entrance="Ribbon_PicToolTab" id="app_photorepairapp_menu" idKey="PhotoTool2Plugin" referenceCommand="app_photorepairapp" spaceHint="suitable">
+			<command idQ="app_photorepairapp_clarity"/>
+			<command idQ="app_photorepairapp_enhance"/>
+			<command idQ="app_photorepairapp_portraitbeauty"/>
+			<command idQ="app_photorepairapp_enlarge"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAutoHideAppQuickMenuCommand canHideText="0" customTip="AiRepair" id="photorepairlite_menu" idKey="PhotoTool2Editlite" referenceCommand="photorepairlite_pictool" spaceHint="suitable">
+			<command idQ="photorepairlite_clarity"/>
+			<command idQ="photorepairlite_enhance"/>
+			<command idQ="photorepairlite_portraitbeauty"/>
+			<command idQ="photorepairlite_enlarge"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="eraser_kd" id="app_photoerasepen2" idKey="PhotoTool2Plugin" text="@AiErasepen"/>
+		<KxImagePreviewCommand action="editor/aierasepen" appFlags="wpsmember" entrance="appcenter_remove" icon="eraser_kd" id="photoerasepenlite_pictool" idKey="PhotoTool2Editlite" text="@AiErasepen"/>
+		<KxImagePreviewCommand action="editor/text_edit_magicmodify" appFlags="wpsmember" entrance="ribbon_secondary" icon="MagicModifyTextEdit" id="photoeditlite_magicmodify" idKey="PhotoTool2Editlite" text="@PhotoAiMagicEditText"/>
+		<KAppCommand action="eraserClear" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="eraser_kd" id="app_photoerasepen2_eraserclear" text="@EraserClear"/>
+		<KxImagePreviewCommand action="editor/eraserclean" appFlags="wpsmember" entrance="pictool" icon="eraser_kd" id="photoerasepenlite_eraserclear" text="@EraserClear"/>
+		<KAppCommand action="removeWaterMark" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="watermark_delete_kd" id="app_photoerasepen2_removewatermark" text="@RemoveWaterMark"/>
+		<KxImagePreviewCommand action="editor/removewatermark" appFlags="wpsmember" entrance="pictool" icon="watermark_delete_kd" id="photoerasepenlite_removewatermark" text="@RemoveWaterMark"/>
+		<KAppCommand action="removeHandwriting" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="pen_strokes_remove_kd" id="app_photoerasepen2_removehandwriting" text="@RemoveHandwriting"/>
+		<KxImagePreviewCommand action="editor/removehandwriting" appFlags="wpsmember" entrance="pictool" icon="pen_strokes_remove_kd" id="photoerasepenlite_removehandwriting" text="@RemoveHandwriting"/>
+		<KAppCommand action="removeShadow" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="delete_shadow_kd" id="app_photoerasepen2_removeshadow" text="@RemoveShadow"/>
+		<KxImagePreviewCommand action="editor/removeshadow" appFlags="wpsmember" entrance="pictool" icon="delete_shadow_kd" id="photoerasepenlite_removeshadow" text="@RemoveShadow"/>
+		<KAppCommand action="removeNoise" appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoerasepen2" entrance="Ribbon_PicToolTab" icon="delete_moire_kd" id="app_photoerasepen2_removenoise" text="@RemoveNoise"/>
+		<KxImagePreviewCommand action="editor/removemoire" appFlags="wpsmember" entrance="pictool" icon="delete_moire_kd" id="photoerasepenlite_removenoise" text="@RemoveNoise"/>
+		<KAutoHideAppQuickMenuCommand canHideText="0" customTip="AiErasepen" entrance="Ribbon_PicToolTab" id="app_photoerasepen2_menu" idKey="PhotoTool2Plugin" referenceCommand="app_photoerasepen2" spaceHint="suitable">
+			<command idQ="app_photoerasepen2_eraserclear"/>
+			<command idQ="app_photoerasepen2_removewatermark"/>
+			<command idQ="app_photoerasepen2_removehandwriting"/>
+			<command idQ="app_photoerasepen2_removeshadow"/>
+			<command idQ="app_photoerasepen2_removenoise"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAutoHideAppQuickMenuCommand canHideText="0" customTip="AiErasepen" id="photoerasepenlite_menu" idKey="PhotoTool2Editlite" referenceCommand="photoerasepenlite_pictool" spaceHint="suitable">
+			<command idQ="photoerasepenlite_eraserclear"/>
+			<command idQ="photoerasepenlite_removewatermark"/>
+			<command idQ="photoerasepenlite_removehandwriting"/>
+			<command idQ="photoerasepenlite_removeshadow"/>
+			<command idQ="photoerasepenlite_removenoise"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photomattingapp" canHideText="0" customTip="AiMatting" entrance="Ribbon_PicToolTab" icon="select_cutout_kd" id="app_photomattingapp" idKey="PhotoTool2Plugin" text="@AiMatting"/>
+		<KxImagePreviewCommand action="editor/aimatting" appFlags="wpsmember" canHideText="0" customTip="AiMatting" entrance="appcenter_cutout" icon="select_cutout_kd" id="photomattinglite_pictool" idKey="PhotoTool2Editlite" text="@AiMatting"/>
+		<KAppCommand appCmdObj="AILongChart" appFlags="wpsmember" appId="photoailongchart" entrance="Ribbon_PicToolTab" icon="ai_summarizes_raw_imges_kd" id="app_photoailongchart" idKey="WpsCTPictureToolsVmlAppCTPictureToolsVmlPhotoailongchart" text="@PhotoAiInfographic"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoenchantapp" entrance="Ribbon_PicToolTab" icon="pic_star_two_kd" id="app_photoenchantapp" text="@PhotoAiEnchant"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoexpandapp" entrance="Ribbon_PicToolTab" icon="ai_image_enlargement_kd" id="app_photoexpandapp" idKey="PhotoTool2Plugin" text="@PhotoAiExpand"/>
+		<KxImagePreviewCommand action="editor/aiexpand" appFlags="wpsmember" entrance="appcenter_aiexpand" icon="ai_image_enlargement_kd" id="photoexpandlite_pictool" idKey="PhotoTool2Editlite" text="@PhotoAiExpand"/>
+		<KAppCommand appCmdObj="PhotoExchange" appFlags="wpsmember" appId="photoportraitapp" entrance="Ribbon_PicToolTab" icon="ai_portrait_kd" id="app_photoportraitapp" text="@PhotoAiPortrait"/>
+		<KAppCommand action="ProductImage" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="AK20250522ZTIHIV" icon="ai_e_commerce_quick_pic_kd" id="app_photoaiproductimage" idKey="PhotoEditDomestic" text="@PhotoAiProductImage"/>
+		<KAppCommand action="PosterImage" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="AK20250522ZTIHIV" icon="ai_poster_pic_kd" id="app_photoaiposterimage" idKey="PhotoEditDomestic" text="@PhotoAiPosterImage"/>
+		<KAutoHideListCommand customTip="PhotoAI" icon="ai_box_kd" id="app_photoai_menu" text="@PhotoAI">
+			<command idQ="app_photomattingapp"/>
+			<command idQ="photomattinglite_pictool"/>
+			<command idQ="app_photoerasepen2"/>
+			<command idQ="photoeditlite_magicmodify"/>
+			<command idQ="photoerasepenlite_pictool"/>
+			<command idQ="app_photorepairapp"/>
+			<command idQ="photorepairlite_pictool"/>
+			<command idQ="app_photoenchantapp"/>
+			<command idQ="app_photoexpandapp"/>
+			<command idQ="photoexpandlite_pictool"/>
+			<command idQ="app_photoportraitapp"/>
+			<command idQ="app_photoailongchart"/>
+			<command idQ="app_photoaiproductimage"/>
+			<command idQ="app_photoaiposterimage"/>
+		</KAutoHideListCommand>
+		<KAppPhotoAiControlCommand action="photobatchcompress" aiControlName="app/photobatchcompress" appCmdObj="PictureBatchProcess2" appId="photobatchcompress" canHideText="0" customTip="Compress" entrance="Ribbon_PicToolTab" icon="pic_compress_kd" id="app_photobatchcompress" qtspyName="rCompressPictures" text="@Photo Compress"/>
+		<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="Ribbon_PicToolTab" icon="scan_ocr_kd" id="app_kocrtool_2text" text="@Photo Extract pure text"/>
+		<KAppCommand action="Pic2Word" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="Ribbon_PicToolTab" icon="change_pic_to_wps_kd" id="app_kocrtool_2txt" text="@Photo Convert to doc"/>
+		<KAppCommand action="Pic2Xls" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="Ribbon_PicToolTab" icon="change_pic_to_et_kd" id="app_kocrtool_2xlsl" text="@Photo Convert to excel"/>
+		<KAppCommand action="Pic2Pptx" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="Ribbon_PicToolTab" icon="change_pic_to_ppt_kd" id="app_kocrtool_2ppt" text="@Photo Convert to ppt"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="photo2pdf" entrance="Ribbon_PicToolTab" icon="change_pic_to_pdf_kd" id="app_photo2pdf" idKey="CommonMenuItemRightPhotoVipIcon" qtspyName="Photo2Pdf" text="@Picture to PDF" tipContent="@Picture Batch to PDF" tipTitle="@Picture to PDF"/>
+		<KAppCommand action="Card2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" entrance="Ribbon_PicToolTab" icon="id_card_kd" id="app_kocrtool_card2txt" text="@Extract card"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="ktranslateimagev2" entrance="Ribbon_PicToolTab" icon="pic_translate_kd" id="app_ktranslateimagev2" text="@Translate Image"/>
+		<KAutoHideAppQuickMenuCommand customTip="Convert" entrance="Ribbon_PicToolTab" icon="pic_convert_kd" id="app_photoconvert_menu" idKey="PhotoEditDomestic" referenceCommand="app_photo2pdf" text="@Convert">
+			<command idQ="app_kocrtool_2text"/>
+			<command idQ="app_kocrtool_2txt"/>
+			<command idQ="app_kocrtool_2xlsl"/>
+			<command idQ="app_kocrtool_2ppt"/>
+			<command idQ="app_photo2pdf"/>
+			<command idQ="app_kocrtool_card2txt"/>
+			<command idQ="app_ktranslateimagev2"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAutoHideAppQuickMenuCommand customTip="ConvertIntl" entrance="Ribbon_PicToolTab" icon="pic_convert_kd" id="app_photoconvert_menu_intl" idKey="PhotoEditInternational" referenceCommand="app_photo2pdf" text="@Convert">
+			<command idQ="app_kocrtool_2text"/>
+			<command idQ="app_kocrtool_2txt"/>
+			<command idQ="app_kocrtool_2xlsl"/>
+			<command idQ="app_kocrtool_2ppt"/>
+			<command idQ="app_photo2pdf"/>
+			<command idQ="app_kocrtool_card2txt"/>
+			<command idQ="app_ktranslateimagev2"/>
+		</KAutoHideAppQuickMenuCommand>
+		<KAutoHideTilingListCommand customTip="BatchProcess" icon="batch_export_kd" id="app_picture_batch_menu" spaceHint="suitable" text="@Batch" visible="true">
+			<KAutoHideTilingCommand appFlags="wpsmember" text="@batch export">
+				<KAppCommand appId="kbatchprocess" icon="batch_export_kd" id="app_batchprocess_exportimage" text="@Export Images"/>
+				<KAppCommand action="photobatchconvert" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_change_type_kd" id="app_photonewbatchapp_picturetools_formatting" text="@Export and Format"/>
+				<KAppCommand action="photobatchrename" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_rename_kd" id="app_photonewbatchapp_picturetools_renaming" text="@Export and Rename"/>
+			</KAutoHideTilingCommand>
+			<KAutoHideTilingCommand appFlags="wpsmember" text="@batch adjust">
+				<KAppCommand action="photobatchcompress" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_pic_compression_kd" id="app_photonewbatchapp_picturetools_compress" text="@Compress"/>
+				<KAppCommand action="photobatchresize" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_pic_resize_kd" id="app_photonewbatchapp_picturetools_dimension" text="@Resize"/>
+				<KAppCommand action="photobatchclipping" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_pic_crop_kd" id="app_photonewbatchapp_picturetools_clipping" text="@Crop"/>
+				<KAppCommand action="photobatchcorrecting" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_pic_correction_kd" id="app_photonewbatchapp_picturetools_correcting" text="@Correct"/>
+				<KAppCommand action="photobatchrotate" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="batch_rotation_kd" id="app_photonewbatchapp_picturetools_rotation" text="@Rotate"/>
+			</KAutoHideTilingCommand>
+			<KAutoHideTilingCommand appFlags="wpsmember" text="@batch edit">
+				<KAppPhotoAiControlCommand action="photobatchmatting" aiControlName="app/photomattingapp" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="select_cutout_kd" id="app_photonewbatchapp_picturetools_matting" text="@Cutout"/>
+				<KAppCommand action="photobatchtext" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="watermark_batch_kd" id="app_photonewbatchapp_picturetools_text_watermark" text="@Add Text Watermark"/>
+				<KAppCommand action="photobatchwatermark" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" entrance="Ribbon_PicToolTab" icon="watermark_batch_kd" id="app_photonewbatchapp_picturetools_pic_watermark" text="@Add Image Watermark"/>
+				<KAppCommand appCmdObj="PictureBatchProcess" appId="photospliceapp" entrance="Ribbon_PicToolTab" icon="shape_three_kd" id="app_photospliceapp" text="@Photo Splicing"/>
+			</KAutoHideTilingCommand>
+		</KAutoHideTilingListCommand>
+		<KAppCommand appCmdObj="PhotoExchange" appId="photoprintapp" customTip="PhotoPrint" entrance="Ribbon_PicToolTab" icon="print_kd" id="app_photoprintapp" spaceHint="suitable" text="@Print"/>
+		<KListCommand groupTip="PictureToolVmlAdvancedFunctionGroup" icon="shape_four_kd" id="RB_AdvancedPictureTool_Vml" idKey="PhotoNewRibbonLayout" text="@Advanced Features">
+			<command idQ="app_photoeditapp_pictool"/>
+			<command idQ="photoeditlite_pictool"/>
+			<command idQ="app_photomattingapp"/>
+			<command idQ="photomattinglite_pictool"/>
+			<command idQ="app_photobatchcompress"/>
+			<command idQ="app_photorepairapp_menu"/>
+			<command idQ="photorepairlite_menu"/>
+			<command idQ="app_photoerasepen2_menu"/>
+			<command idQ="photoerasepenlite_menu"/>
+			<command idQ="app_photoeditapp_menu"/>
+			<command idQ="photoeditapplite_menu"/>
+			<command idQ="app_photofilter"/>
+			<command idQ="app_photofilter_intl"/>
+			<command idQ="app_photoai_menu"/>
+			<command idQ="app_photoconvert_menu"/>
+			<command idQ="app_photoconvert_menu_intl"/>
+			<command idQ="app_picture_batch_menu"/>
+			<command idQ="app_photoprintapp"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PictureTools_Vml" idKey="PhotoNewRibbonLayout">
+			<command idQ="RB_Illustrations_PictureTool_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_PictureSize_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_ObjectSelect_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Pic_RB_ShadowSettings_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_DC_PictureStyles_Vml"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_PictureTools_Vml"/>
+			<separator/>
+			<command idQ="RB_AdvancedPictureTool_Vml"/>
+		</subcommand>
+		<subcommand id="CT_PictureTools_Vml" idKey="PhotoOldRibbonLayout">
+			<command idQ="RB_Illustrations_PictureTool_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_PictureSize_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_DC_PictureStyles_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Pic_RB_ShadowSettings_Vml"/>
+			<separator filter="lang!=jp_JP"/>
+			<command idQ="RB_ObjectSelect_Vml"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_PictureTools_Vml"/>
+			<separator/>
+			<command idQ="RB_AdvancedPictureTool_Vml"/>
+		</subcommand>
+	</subcommands>
+</shell>

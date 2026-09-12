@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>箱型图_chart_box plot_16</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 11" d="M3.5 2.5H5.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 17" d="M2.5 5.8C2.5 5.63431 2.63431 5.5 2.8 5.5H6.2C6.36569 5.5 6.5 5.63431 6.5 5.8V12.2C6.5 12.3657 6.36569 12.5 6.2 12.5H2.8C2.63431 12.5 2.5 12.3657 2.5 12.2V5.8Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 10" d="M4.5 2.5L4.5 5.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 12" d="M4.5 14.5L4.5 12.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 13" d="M3.5 14.5H5.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 18" d="M9.5 3.8C9.5 3.63431 9.63431 3.5 9.8 3.5H13.2C13.3657 3.5 13.5 3.63431 13.5 3.8V10.2C13.5 10.3657 13.3657 10.5 13.2 10.5H9.8C9.63431 10.5 9.5 10.3657 9.5 10.2V3.8Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 14" d="M11.5 13.5V10.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 17" d="M10.5 13.5H12.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 16" d="M11.5 1.5L11.5 3.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 11_2" d="M10.5 1.5H12.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

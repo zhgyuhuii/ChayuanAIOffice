@@ -1,0 +1,189 @@
+<mainwindow>
+	<common_list ui="etrainbow">
+		<select_card>
+			<command idQ="CT_File" option="0sp"/>
+			<command idQ="CT_Home" option="1"/>
+			<command idQ="CT_Insert" option="1"/>
+			<command idQ="CT_Layout" option="1"/>
+			<command idQ="CT_Formulas" option="1"/>
+			<command idQ="CT_Data" option="1"/>
+			<command idQ="CT_Review" option="1"/>
+			<command idQ="CT_View" option="1"/>
+			<command idQ="CT_DevelopTools" option="1"/>
+			<command idQ="CT_Design" option="1"/>
+			<command idQ="CT_DrawingTools" option="2"/>
+			<command idQ="CT_PictureTool" option="2"/>
+			<command idQ="CT_WordArt" option="2"/>
+			<command idQ="CT_ChartTools" option="2"/>
+			<command idQ="CT_PivotTableTools" option="2"/>
+			<command idQ="CT_PrintPreview" option="2"/>
+			<command idQ="CT_AdPlatform" option="2"/>
+		</select_card>
+		<command idQ="NewBlankFile"/>
+		<command idQ="OpenFile"/>
+		<command idQ="SaveFile"/>
+		<command idQ="SendMail"/>
+		<command idQ="ExportPDF"/>
+		<command idQ="Print"/>
+		<command idQ="TranslateToTraditionalChinese"/>
+		<command idQ="PrintPreview"/>
+		<command idQ="Copy"/>
+		<command idQ="Cut"/>
+		<command idQ="FormatPainter"/>
+		<command idQ="Undo" text="Undo"/>
+		<command idQ="Redo" text="Redo"/>
+		<command idQ="InsertOrEditHyperlink"/>
+		<command idQ="sp_AutoSum_01"/>
+		<command idQ="rSortAscending"/>
+		<command idQ="rSortDescending"/>
+		<command idQ="AutoFilter"/>
+		<command idQ="rInsertCellsDialog"/>
+		<command idQ="rInsertColumns"/>
+		<command idQ="rInsertRows"/>
+		<command idQ="rInsertSheet"/>
+		<command idQ="SaveAs"/>
+		<command idQ="rFreezeAndUnfreeze"/>
+		<command idQ="rDeleteCells"/>
+		<command idQ="DeleteSheet"/>
+		<command idQ="Shape"/>
+		<command idQ="RbMergeCenter"/>
+		<command idQ="CellFillColor"/>
+		<command idQ="rConditionalFormat"/>
+		<command idQ="PasteSpecial"/>
+		<command idQ="GrowFont"/>
+		<command idQ="ShrinkFont"/>
+		<command idQ="FontSize"/>
+		<command idQ="FontName"/>
+		<command idQ="FontColor"/>
+		<command idQ="CustomDataSort"/>
+		<command idQ="SpellCheck"/>
+		<command idQ="rSum"/>
+		<command idQ="SetPrintArea"/>
+		<command idQ="PageSetup"/>
+		<command idQ="rFreezeAndUnfreeze"/>
+		<command idQ="sp_DrawBorder" text="Border"/>
+		<command idQ="RB_Illustrations.InsertPictureFromFile"/>
+		<command idQ="RB_Table"/>
+		<command idQ="Find"/>
+		<command idQ="sp_DrawBorder"/>
+		<command idQ="FuncLibInsertFunction"/>
+		<command idQ="RB_Table.PivotTable"/>
+		<command idQ="RB_Chars.Chart"/>
+		<command idQ="rHilightRepeatItems"/>
+		<command idQ="Name_Manager"/>
+		<command idQ="RB_DC_Macros.Macros"/>
+		<command idQ="rDeleteRows"/>
+		<command idQ="rDeleteColumns"/>
+	</common_list>
+	<common_list ui="wpsrainbow">
+		<command idQ="RbFileMenuSaveAsMenu.PrintToPDF"/>
+		<command idQ="SaveFile"/>
+		<command idQ="Numbering"/>
+		<command idQ="Table"/>
+		<command idQ="InsertPageBreak"/>
+		<command idQ="InsertCommentInToolBar"/>
+		<command idQ="m_rInsertPicture"/>
+		<command idQ="Find"/>
+		<command idQ="m_rbHyperlink"/>
+		<command idQ="QT_Menu.Undo" text="Undo"/>
+		<command idQ="QT_Menu.Redo" text="Redo"/>
+		<command idQ="RbFileMenuOpenFileMenu"/>
+		<command idQ="Print"/>
+		<command idQ="PrintPreview"/>
+		<command idQ="RB_Paragraph"/>
+		<command idQ="SendMail"/>
+		<command idQ="m_ColumnsPalette"/>
+		<command idQ="Copy"/>
+		<command idQ="FormatPainter"/>
+		<command idQ="KingsoftEquationEditor"/>
+		<command idQ="DrawTableInToolbar"/>
+		<command idQ="Cut"/>
+		<command idQ="FormatAlignCenter"/>
+		<command idQ="NewBlankFile"/>
+		<command idQ="RainbowStyle"/>
+		<command idQ="SaveAs"/>
+		<command idQ="CheckSpelling"/>
+		<command idQ="GrowFontRainbow"/>
+		<command idQ="ShrinkFontRainbow"/>
+		<command idQ="HighlightColor"/>
+		<command idQ="CTB_TextBox"/>
+		<command idQ="sp_ShowDocumentMap"/>
+		<command idQ="Bullets"/>
+		<command idQ="Shape"/>
+		<command idQ="RbTrackChangesToolBar"/>
+		<command idQ="RB_Style"/>
+		<command idQ="RB_Page_Setup"/>
+		<command idQ="RB_Language.TranslateToTraditionalChinese"/>
+		<command idQ="FontSize"/>
+		<command idQ="FontColor"/>
+		<command idQ="FormatAlignLeft"/>
+		<command idQ="tb_Font.FontName"/>
+		<command idQ="RbFileMenuNewFileMenu"/>
+		<command idQ="InsertTableInToolbar"/>
+		<command idQ="RB_Zoom.OnePage"/>
+		<command idQ="m_TextDirection"/>
+		<command idQ="RB_Footnotes.InsertFootnote"/>
+		<command idQ="sp_Macros_Develop.RunMacro"/>
+		<command idQ="RB_Data.RecentFastCalc"/>
+		<command idQ="m_Style"/>
+		<command idQ="RB_Zoom.DoublePages"/>
+		<command idQ="m_LineSpacing"/>
+		<command idQ="RB_Zoom.PageWidth"/>
+	</common_list>
+	<common_list ui="wpprainbow">
+		<command idQ="NewBlankFile"/>
+		<command idQ="OpenFile"/>
+		<command idQ="SaveFile"/>
+		<command idQ="SendMail"/>
+		<command idQ="ExportToPDF"/>
+		<command idQ="Print"/>
+		<command idQ="PrintPreview"/>
+		<command idQ="Copy"/>
+		<command idQ="Cut"/>
+		<command idQ="FormatPainter"/>
+		<command idQ="Undo" text="Undo"/>
+		<command idQ="Redo" text="Redo"/>
+		<command idQ="Equation"/>
+		<command idQ="RB_Illustrations.Chart"/>
+		<command idQ="RB_Tables.InsertTablePalette"/>
+		<command idQ="HyperlinkOnToolBar"/>
+		<command idQ="RbShowHideGrid"/>
+		<command idQ="Find"/>
+		<command idQ="RB_Transform"/>
+		<command idQ="RbDataTable"/>
+		<command idQ="SlideShowFromCurrent"/>
+		<command idQ="CustomAnimation"/>
+		<command idQ="RB_Links.ActionSetting"/>
+		<command idQ="SlidePreview"/>
+		<command idQ="CTB_TextBox"/>
+		<command idQ="RB_MasterView"/>
+		<command idQ="IncreaseFontSize"/>
+		<command idQ="DecreaseFontSize"/>
+		<command idQ="SaveAs"/>
+		<command idQ="CheckSpelling"/>
+		<command idQ="RB_Transform"/>
+		<command idQ="Group"/>
+		<command idQ="UnGroup"/>
+		<command idQ="BringForward"/>
+		<command idQ="SendBackward"/>
+		<command idQ="RbBringToFront"/>
+		<command idQ="BackDrop"/>
+		<command idQ="SendToBack"/>
+		<command idQ="Bullets"/>
+		<command idQ="Numbering"/>
+		<command idQ="RbFileMenuNewFileMenu"/>
+		<command idQ="CTB_TextBox"/>
+		<command idQ="SlideShow2"/>
+		<command idQ="FormatObject"/>
+		<command idQ="SlideSorter"/>
+		<command idQ="SlideLayout"/>
+		<command idQ="RB_Drawing.FillColor"/>
+		<command idQ="RB_Images.InsertPictureFromFile"/>
+		<command idQ="RB_Macros_Develop.RunMacro"/>
+		<command idQ="RB_Illustrations.DynamicShape"/>
+		<command idQ="RB_WordArt.InsertWordArt"/>
+		<command idQ="RB_InsertShape.ShapeSize"/>
+		<command idQ="FontSize"/>
+		<command idQ="FontName"/>
+	</common_list>
+</mainwindow>

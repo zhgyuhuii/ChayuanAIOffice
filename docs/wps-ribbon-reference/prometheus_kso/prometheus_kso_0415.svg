@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>更多24_kactab_moreapps</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-warning {
+       fill: var(--kd-color-icon-warning, #E2651A);
+       stroke: var(--kd-color-icon-warning, #E2651A);
+       km_fill: #E2651A;
+       km_stroke: #E2651A;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-3" class="kd-color-icon-red-primary kd-stroke-width-icon-regular"><path id="line" d="M21 13.5H16C15.7239 13.5 15.5 13.2761 15.5 13V3C15.5 2.72386 15.7239 2.5 16 2.5H21C21.2761 2.5 21.5 2.72386 21.5 3V13C21.5 13.2761 21.2761 13.5 21 13.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-2" class="kd-color-icon-warning kd-stroke-width-icon-regular"><path id="line_2" d="M10.5 21V16C10.5 15.7239 10.7239 15.5 11 15.5H21C21.2761 15.5 21.5 15.7239 21.5 16V21C21.5 21.2761 21.2761 21.5 21 21.5H11C10.7239 21.5 10.5 21.2761 10.5 21Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line_3" d="M2.5 21V11C2.5 10.7239 2.72386 10.5 3 10.5H8C8.27614 10.5 8.5 10.7239 8.5 11V21C8.5 21.2761 8.27614 21.5 8 21.5H3C2.72386 21.5 2.5 21.2761 2.5 21Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_4" d="M2.5 8V3C2.5 2.72386 2.72386 2.5 3 2.5H13C13.2761 2.5 13.5 2.72386 13.5 3V8C13.5 8.27614 13.2761 8.5 13 8.5H3C2.72386 8.5 2.5 8.27614 2.5 8Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

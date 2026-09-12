@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>黑屏</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-secondary {
+       fill: var(--kd-color-icon-secondary, #757575);
+       stroke: var(--kd-color-icon-secondary, #757575);
+       km_fill: #757575;
+       km_stroke: #757575;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-1" class="kd-color-icon-secondary kd-stroke-width-icon-regular">
+<path id="line" d="M17.2 5.5H6.8C6.63431 5.5 6.5 5.63431 6.5 5.8V12.2C6.5 12.3657 6.63431 12.5 6.8 12.5H17.2C17.3657 12.5 17.5 12.3657 17.5 12.2V5.8C17.5 5.63431 17.3657 5.5 17.2 5.5Z" stroke="none"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line_2" d="M17.2 5.5H6.8C6.63431 5.5 6.5 5.63431 6.5 5.8V12.2C6.5 12.3657 6.63431 12.5 6.8 12.5H17.2C17.3657 12.5 17.5 12.3657 17.5 12.2V5.8C17.5 5.63431 17.3657 5.5 17.2 5.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_3" d="M2.5 2.5H21.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_4" d="M3.5 3V15C3.5 15.2761 3.72386 15.5 4 15.5H20C20.2761 15.5 20.5 15.2761 20.5 15V3" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_5" d="M7.5 20.5H16.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_6" d="M12 15.5V20.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+
+</svg>

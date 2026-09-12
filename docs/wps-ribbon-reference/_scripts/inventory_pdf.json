@@ -1,0 +1,2442 @@
+{
+ "component": "pdf",
+ "dir": "pdf_PDF",
+ "tabs": [
+  {
+   "tab": "CT_Convert",
+   "file": "CT_Convert.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_SpecialFunc",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pdf2OtherFile",
+     "text": "Convert",
+     "class": "KListCommand",
+     "childControls": 10,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pdf2Photo",
+     "text": "Convert to PDF",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KPdfAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "ic_list",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pdf_OtherSpecialFeatures",
+     "text": "Recognition Extraction",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Correct",
+   "file": "CT_Correct.kuip",
+   "groups": [
+    {
+     "id": "PageCorrect",
+     "text": "Menu Correct",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_EbookFile",
+   "file": "CT_EbookFile.kuip",
+   "groups": [
+    {
+     "id": "RbFileMenuOpenEbookFileMenu",
+     "text": "Open",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSaveAsEbookFileMenu",
+     "text": "SaveAs",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuEbookExit",
+     "text": "Exit",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_EbookRead",
+   "file": "CT_EbookRead.kuip",
+   "groups": [
+    {
+     "id": "EbookReadView",
+     "text": "Reading Settings",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "EbookReadFontStyle",
+     "text": "Font Settings",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EbookReadSearch",
+     "text": "Seek",
+     "class": "KListCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Edit",
+   "file": "CT_Edit.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Edit",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Edit",
+     "text": "Edit Content",
+     "class": "KControlListCommand",
+     "childControls": 13,
+     "childClasses": {
+      "KAppCommand": 1,
+      "KpdfBeautifyTabCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_EditPage",
+     "text": "Edit Page",
+     "class": "KControlListCommand",
+     "childControls": 6,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Form",
+     "text": "Form",
+     "class": "KControlListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "OrgPageToolEdit",
+     "text": "Document Processing",
+     "class": "KControlListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KAppCommand": 1,
+      "KPdfSplitPdfAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_FeaturedApp",
+   "file": "CT_FeaturedApp.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_SpecialFunc",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PdfConvertMD",
+     "text": "PDFPagesOper",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pdf_OtherSpecialFeatures",
+     "text": "OtherSpecialFeatures",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_FileCollect",
+     "text": "",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KFileCollectCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_File",
+   "file": "CT_File.kuip",
+   "groups": [
+    {
+     "id": "RbFileMenuOpenFileMenu",
+     "text": "Open",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Ebook_File_SaveAs",
+     "text": "SaveAs",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Ebook_File_Quit",
+     "text": "Exit",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Ebook_File_Reserve",
+     "text": "",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Ebook_File_Reserve",
+     "text": "",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSaveFileMenu",
+     "text": "Save",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSaveAsFileMenu",
+     "text": "SaveAs",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuImportMenu",
+     "text": "Import",
+     "class": "KxRbFileMenuImportPopupPaneCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxFileMenuImportFromCloudCommand": 4
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuShareUnifiedMenu",
+     "text": "",
+     "class": "KxKOSFileMenuShareUnifiedCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuExportMenu",
+     "text": "The export of PDF is",
+     "class": "KxPdfRbFileMenuPopupPaneCommand",
+     "childControls": 10,
+     "childClasses": {
+      "KAppFileMenuCommand": 5,
+      "KxFileMenuLegacyTriggerCommand": 1,
+      "KxPdfMenuLabelCommand": 1,
+      "KProxyCommand": 1,
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSplitMergePersonal",
+     "text": "SplitAndMergePage",
+     "class": "KxPdfRbFileMenuPopupPaneCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSplitMerge",
+     "text": "Split and Merge",
+     "class": "KxSplitMergeListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbSaveAs_CompressBridge",
+     "text": "SaveAsCompress",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuBatchCompress",
+     "text": "SaveAsCompress",
+     "class": "KAppFileMenuCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuPrintMenu",
+     "text": "Print",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbNewFileMenuPrintAndTemplatesPrintMenu",
+     "text": "Print",
+     "class": "KxPdfTemplatePrintTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuBatchPrint",
+     "text": "BatchPrint",
+     "class": "KAppFileMenuCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "app_batchprint_filemenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuNewBatchPrint",
+     "text": "BatchPrint",
+     "class": "KAppFileMenuCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuShareMenuList",
+     "text": "",
+     "class": "kxKOSFileMenuNewShareListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuNewShare_kos",
+     "text": "File Share",
+     "class": "KxFileMenuProxyCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "KOSShareDocCommandXaFileMenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuSendMail",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuClassifyLabel",
+     "text": "Set Classify Label",
+     "class": "KxClassifyLabelCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuProperties",
+     "text": "Properties",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbBackupCenter",
+     "text": "Backup Center",
+     "class": "KxFileMenuBackupCenterCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "KDocFinalizedMgrCommand",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuHelpMenu",
+     "text": "Help",
+     "class": "KxRbFileMenuPopupPaneCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxFileMenuLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSettings",
+     "text": "Custom settings",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuExit",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Font",
+   "file": "CT_Font.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Font",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TextComment",
+     "text": "Add",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_FontEdit",
+     "text": "Font Style",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FontEditeExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_FormEdit",
+   "file": "CT_FormEdit.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_FormEdit",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_AddFormField",
+     "text": "add",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_FontStyle",
+     "text": "Font Style",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_BoxStyle",
+     "text": "Appearance settings",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FormEditExit",
+     "text": "exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_FormFilling",
+   "file": "CT_FormFilling.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_FormFilling",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_FormFilling",
+     "text": "Fill content",
+     "class": "KListCommand",
+     "childControls": 11,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_FormDataImportExport",
+     "text": "Import Export FormData",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FormFillingExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Graffiti",
+   "file": "CT_Graffiti.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Graffiti",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawPenTool",
+     "text": "Pens and tool",
+     "class": "KxPdfNewInkList",
+     "childControls": 3,
+     "childClasses": {
+      "KxInkDrawGeneralPenCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_GraffitiLineType",
+     "text": "GraffitiLineType",
+     "class": "KxPdfOldInkList",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawProperty",
+     "text": "GraffitiLineProperty",
+     "class": "KxPdfNewInkList",
+     "childControls": 2,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_GraffitiLineProperty",
+     "text": "GraffitiLineProperty",
+     "class": "KxPdfOldInkList",
+     "childControls": 2,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDraw_Eraser",
+     "text": "Eraser",
+     "class": "KxPdfNewInkList",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Graffiti_Eraser",
+     "text": "Eraser",
+     "class": "KxPdfOldInkList",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Graffiti_Exit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Home",
+   "file": "CT_Home.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Start",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Document",
+     "text": "Convert",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pages",
+     "text": "View",
+     "class": "KxListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KListCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ToolBox",
+     "text": "Reading and Editing",
+     "class": "KxListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KxPdfAIReadingCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Insertion",
+   "file": "CT_Insertion.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Insert",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_InsertGraphic",
+     "text": "Pages",
+     "class": "KControlListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_InsertPageMarks",
+     "text": "Insert Object",
+     "class": "KListCommand",
+     "childControls": 8,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_InsertTextMarks",
+     "text": "Insert Annotation",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_InstructBox",
+   "file": "CT_InstructBox.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Instruct",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "InstructBox",
+     "text": "Add",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_TMFont",
+     "text": "Font Style",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TMBoxStyle",
+     "text": "Appearance settings",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TMFontEditeExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Invoice",
+   "file": "CT_Invoice.kuip",
+   "groups": [
+    {
+     "id": "invoicelist_manage",
+     "text": "manage",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "invoicelist_process",
+     "text": "process",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "invoicelist_close",
+     "text": "exit",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_MeasureTool",
+   "file": "CT_MeasureTool.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_MessaureTool",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_MeasureTool",
+     "text": "Measure Type",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_MeasureManagement",
+     "text": "Measure Setting",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "MeasureToolExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Media",
+   "file": "CT_Media.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Media",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_MediaTool",
+     "text": "Setting",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ExitEdit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Merge",
+   "file": "CT_Merge.kuip",
+   "groups": [
+    {
+     "id": "RB_PdfMergeAddDocument",
+     "text": "Edit",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_PdfMergeSetting",
+     "text": "MergeSetting",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KLayoutWidgetCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PdfMergeOutputSetting",
+     "text": "OutputSetting",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KLayoutWidgetCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_StartMerge",
+     "text": "Start",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KLayoutWidgetCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ExitMerge",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KLayoutWidgetCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_NewFillSign",
+   "file": "CT_NewFillSign.kuip",
+   "groups": [
+    {
+     "id": "FillSign_Form",
+     "text": "Form",
+     "class": "KControlListCommand",
+     "childControls": 6,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FillSign_Sign",
+     "text": "Sign",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Page",
+   "file": "CT_Page.kuip",
+   "groups": [
+    {
+     "id": "RB_OrgPageEdit",
+     "text": "Edit Page",
+     "class": "KAutoHideListCommand",
+     "childControls": 16,
+     "childClasses": {
+      "KpdfBeautifyTabCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "OrgPageTool",
+     "text": "Document Processing",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KAppCommand": 1,
+      "KPdfSplitPdfAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_OrgPageRotation",
+     "text": "Page View",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PathStyle",
+   "file": "CT_PathStyle.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_PathStyle",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "PathEdit",
+     "text": "Add",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PathTool",
+     "text": "Appearance settings",
+     "class": "KListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KRbLayoutListCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PathEdit_Arrange",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "PathEditExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PdfProofread",
+   "file": "CT_PdfProofread.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Proofread",
+     "text": "tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Proofread",
+     "text": "proofread",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 2,
+      "KxProofreadAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "WordDictManagement",
+     "text": "proofreadWordManagement",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 3
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Assistant",
+     "text": "assistant",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "ProofreadClose",
+     "text": "close",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PictureEdit",
+   "file": "CT_PictureEdit.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_PictureEdit",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_EditImageTool",
+     "text": "Edit",
+     "class": "KListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KAppCommand": 1,
+      "KpdfBeautifyTabCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PictureEdit",
+     "text": "Beautify",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KpdfBeautifyTabCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_EditImageExtract",
+     "text": "Extraction and Conversion",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PictureEdit_Arrange",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PictureExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Postil",
+   "file": "CT_Postil.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Postil",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TMp",
+     "text": "Annotates",
+     "class": "KListCommand",
+     "childControls": 14,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "SuperNote",
+     "text": "Annotate Management",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_AnnotateTool",
+     "text": "Check and Approve",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PremiumServices",
+   "file": "CT_PremiumServices.kuip",
+   "groups": [
+    {
+     "id": "RB_PremiumServices_OutputConversion",
+     "text": "OutputConversion",
+     "class": "KListCommand",
+     "childControls": 12,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Review",
+     "text": "Check and Approve",
+     "class": "KAutoHideListCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_MoreApp",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Protect",
+   "file": "CT_Protect.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Protect",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Protect",
+     "text": "Encryption Protection",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KAppQuickMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Redact",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_RemoveHiddenData",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_ScannedEditPro",
+   "file": "CT_ScannedEditPro.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_PictureEdit",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_beautify",
+     "text": "beautifyGallery",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_HdTool",
+     "text": "RB_HdTool",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KAppCommand": 3
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ExtractAndTransform",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ScannerEdit",
+     "text": "RB_ScannerEdit_text",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KAppQuickMenuCommand": 1,
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ScannedEditPro_ExtractAndConvert",
+     "text": "RB_ScannedEditPro_ExtractAndConvert_text",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ScannedEditProExit",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KpdfBeautifyFeedbackCommand": 1,
+      "KpdfBeautifyCloseCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_ShapeStyle",
+   "file": "CT_ShapeStyle.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_ShapeStyle",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "AppearanceSetting",
+     "text": "Appearance settings",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "ShapeStyleExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_TableEdit",
+   "file": "CT_TableEdit.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_TableEdit",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableEditRowAndColumn",
+     "text": "Rows and Columns",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableMergeSplit",
+     "text": "MergeSplit",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableEditText",
+     "text": "Font",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableEditAlignment",
+     "text": "Alignment",
+     "class": "KxListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableEditParagraph",
+     "text": "Paragraph Attributes",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableEditExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_TextCommentBox",
+   "file": "CT_TextCommentBox.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_TextTool",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TextCommentBox",
+     "text": "Add",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_TCFont",
+     "text": "Font Style",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TextBoxStyle",
+     "text": "Appearance settings",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "TCFontEditeExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_TextEdit",
+   "file": "CT_TextEdit.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_TextEdit",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Insert",
+     "text": "Insert",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_EditFont",
+     "text": "Font Properties",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_EditParagraph",
+     "text": "Paragraph Attributes",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_TextEdit_Arrange",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FontAIReflow",
+     "text": "AI Fix",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "FontEditExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Tools",
+   "file": "CT_Tools.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool_Tool",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_DevelopTool",
+     "text": "Develop Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Print",
+     "text": "Printing Tools",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KAppCommand": 4
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "End_Box",
+     "text": "Receipt Assistant",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Proofread",
+     "text": "Proofread",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KProofreadAppQuickMenuCommand": 1,
+      "KxProofreadAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_KContract",
+     "text": "KContract",
+     "class": "KAutoHideListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_WorkSpace",
+   "file": "CT_WorkSpace.kuip",
+   "groups": [
+    {
+     "id": "RB_MouseTool",
+     "text": "Tool",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Output",
+     "text": "Output",
+     "class": "KListCommand",
+     "childControls": 13,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Pdf_OtherSpecialFeatures_WorkSpace",
+     "text": "OCR",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KAppQuickMenuCommand": 1,
+      "KScreenGrabOcrMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Separator",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Tools",
+     "text": "Tools",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Pdf2Photo",
+     "text": "PDFPagesOper",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  }
+ ]
+}

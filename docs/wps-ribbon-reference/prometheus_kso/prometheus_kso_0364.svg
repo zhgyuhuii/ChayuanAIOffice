@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>输出为OFD24_ExportToOFD</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M2.5 11.9999V2.99994C2.5 2.7238 2.72386 2.49994 3 2.49994H21C21.2761 2.49994 21.5 2.7238 21.5 2.99994V20.9999C21.5 21.2761 21.2761 21.4999 21 21.4999H14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-bold"><path id="line_2" d="M15 10.4999H16C17.3807 10.4999 18.5 9.38065 18.5 7.99994C18.5 6.61923 17.3807 5.49994 16 5.49994H15M11.5 7.99994C11.5 6.61923 12.6193 5.49994 14 5.49994" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M11.5 8.00006V15.5001" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M14 10.4999H10.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M12 10.4999H8.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_6" d="M7.5 18L9.99293 20.4929C9.99683 20.4968 9.99683 20.5032 9.99293 20.5071L7.5 23" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M3 15.5V20C3 20.2761 3.22386 20.5 3.5 20.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

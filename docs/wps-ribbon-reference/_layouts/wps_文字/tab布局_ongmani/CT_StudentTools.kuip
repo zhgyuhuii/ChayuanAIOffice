@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_studenttools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<import path="CT_View.kuip"/>
+	<import path="wppcommon.kuip"/>
+	<import path="CT_DrawingTools.kuip"/>
+	<import path="PopupMenu.kuip"/>
+	<import path="CT_Insert.kuip"/>
+	<import path="CT_PictureTool.kuip"/>
+	<import path="CT_Review.kuip"/>
+	<commands>
+		<KxWpsFontColorCommand controlType="4" customTip2="FontColor2" customTip="FontColor" hotKey="FT" icon="color_font_wps_kd" id="FontColor_Student" idMso="FontColorPicker" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" rbHotKey="FC" text="@Text Color">
+			<command idQ="MoreFontColors"/>
+			<command idQ="SnapFontColors"/>
+		</KxWpsFontColorCommand>
+		<KxListPicturesCommand customTip2="InsertPictureFromFile2" customTip="InsertPictureFromFile" detail="@Insert Picture" icon="pic_kd" iconQat="pic_kd" id="InsertPicture_student" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<KxLegacyTriggerCommand controlType="0" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="InsertPictureFromFile_Student" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<command filter="lang!=ja_JP" idQ="InsertOnlinePictureFromFileInInsertTabUnpersonal"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="m" icon="camera_kd" id="InsertPictureFromPhonePicture_Student" rbHotKey="M" relatedKsoCmd="InsertPictureFromFile" targetId="InsertPictureFromPhonePicture" targetModule="kphonepicture" text="@From Phone"/>
+			<KOCRToolCommand customTip="PictureToText" hotKey="PT" icon="scan_ocr_kd" id="OCRToolCmd_Student" rbHotKey="PT" text="@Picture to Text"/>
+			<command idQ="InsertOnlinePictureFromFileInInsertTab"/>
+		</KxListPicturesCommand>
+		<KxGalleryShapesCommand controlType="4" customTip="Shapes" detail="@AutoShape" galleryWidth="416" icon="shape_kd" id="Shape_Student" idMso="ShapesInsertGallery" ksoCmd="DynamicShape" rbHotKey="SH" text="@Shapes" triggerAble="0">
+			<command idQ="ProcessOnEntry"/>
+			<KxLegacyTriggerCommand aid="2619" controlType="0" hotKey="n" icon="slide_add_kd" id="InsertCanvas_Student" idMso="InsertCanvas" ksoCmd="InsertCanvas" rbHotKey="N" text="@New Drawing Canvas"/>
+		</KxGalleryShapesCommand>
+		<KxListCommand controlType="5" customTip2="TrackChanges2" customTip="TrackChanges" icon="doc_pen_kd" id="sp_TrackChanges_Student" idMso="ReviewTrackChangesMenu" ksoCmd="TrackChanges" rbHotKey="G" shortcutHint="Ctrl+Shift+E" text="@Track&#10;Changes">
+			<command idQ="RbTrackChangesToolBar"/>
+			<command idQ="TrackChangesOptions"/>
+			<command idQ="ChangeUserName"/>
+		</KxListCommand>
+		<KxListCommand customTip2="ReviewTip2" customTip="ReviewTip" icon="window_vert_review_kd" id="sp_ReviewPane_Student" ksoCmd="ReviewPane" rbHotKey="TP" text="@Review">
+			<KxWpsReviewsFilterCommand hotKey="R" icon="Reviewer" id="ReviewersMenuCopy_Student" qtspyName="ReviewersList" rbHotKey="R" text="@Reviewers">
+				<command idQ="ReviewersCopy"/>
+			</KxWpsReviewsFilterCommand>
+			<KxShowTimeReviewCommand hotKey="T" icon="ReviewTime" id="ReviewTimeMenu_Student" rbHotKey="T" text="@ReviewTime">
+				<command idQ="TimeReviewCmd"/>
+			</KxShowTimeReviewCommand>
+			<KComposeListCommand hotKey="p" icon="ReviewPaneSub" id="ReviewPane_Student" ksoCmd="VertReviewPane" rbHotKey="P" text="@Reviewing Pane">
+				<command idQ="VerticalReviewPane"/>
+				<command idQ="HorizontalReviewPane"/>
+			</KComposeListCommand>
+		</KxListCommand>
+		<KListCommand customTip="Student_FeedBack" hotKey="b" icon="emojis_kd" id="StudentFeedBack" rbFileMenuEmbed="1" rbHotKey="B" text="@Feedback">
+			<KxFeedbackMenuItemCommand customTip="Feed Back" feedbackOpt="1" from="wps_studentTool" hotKey="c" icon="student_like" id="FeedbackLike" rbHotKey="C" text="@I like the Student Tools, because..."/>
+			<KxFeedbackMenuItemCommand customTip="Feed Back" from="wps_studentTool" hotKey="d" icon="student_dislike" id="FeedbackDislike" rbHotKey="D" text="@I don't like the Student Tools, because..."/>
+			<KxFeedbackMenuItemCommand customTip="Feed Back" feedbackOpt="3" from="wps_studentTool" hotKey="e" icon="student_suggestion" id="FeedbackSuggestion" rbHotKey="E" text="@I have a suggestion"/>
+			<KxRecommendWpsCommand customTip="Feed Back" hotKey="f" icon="student_recommend" id="recommendWps" rbHotKey="F" text="@Recommend to friends"/>
+		</KListCommand>
+		<KFileCollectCommand customTip="FileCollect" icon="box_two_kd" id="FileCollect_Student" text="@File Collect"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="WordCount" icon="count_kd" id="WordCountToolBar_Student" idMso="WordCount" ksoCmd="WordCount" rbHotKey="W" text="@Word&#10;Count"/>
+		<KxLegacyTriggerCommand customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentInToolBar_Student" ksoCmd="InsertComment" rbHotKey="C" text="@New&#10;Comment"/>
+		<KListCommand customTip="Protect_Eyes" hotKey="b" icon="eye_kd" id="RB_EyeProtection_Student" rbFileMenuEmbed="1" rbHotKey="B" text="@Eye Protection Mode">
+			<KxWpsProtectEyeBackgroundCommand customTip="Protect_Eyes" hotKey="b" id="ProtectEyes_green_view_Student" rbHotKey="B" text="@Eye Protection Mode"/>
+			<KxWpsNightBackgroundCommand customTip="Night_Mode" hotKey="d" id="ProtectEyes_dark_view_Student" rbHotKey="D" text="@Dark Mode"/>
+			<KxWpsDaylightBackgroundCommand customTip="Daylight_Mode" hotKey="l" id="ProtectEyes_light_view_Student" rbHotKey="L" text="@Light Mode"/>
+		</KListCommand>
+		<KListCommand icon="video_kd" id="RB_Reading" rbFileMenuEmbed="1" text="@Reading">
+			<command idQ="ReadingView"/>
+			<command idQ="RB_EyeProtection_Student"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="1207" faceid="39" hotKey="M" icon="text_frame_horizontal_kd" id="RbInsertTextboxMultiLine" ksoCmd="InsertTextboxMultiLine" text="@Multi-line Text"/>
+		<KxListTextBoxCommand checkCompatible="true" controlType="15" customTip2="TextBox2" customTip="TextBox" hLayout="false" headerText="@Local Text Box" hotKey="h" icon="text_frame_kd" id="InsertStudentTextbox" idMso="TextBoxDrawMenu" isCefPopup="true" ksoCmd="WpsInsertTextboxHorizontal" qtspyName="m_TextBox" rbHotKey="X" text="@Text Box">
+			<KxLegacyTriggerCommand hotKey="h" icon="text_frame_kd" id="InsertTextboxHorizontal" ksoCmd="WpsInsertTextboxHorizontal" rbHotKey="D" text="@Horizontal"/>
+			<KxLegacyTriggerCommand hotKey="v" icon="text_frame_vertical_kd" id="InsertTextboxVertical" ksoCmd="WpsInsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+			<command idQ="RbInsertTextboxMultiLine"/>
+		</KxListTextBoxCommand>
+		<KListCommand icon="color_font_wps_kd" id="RB_Writing" rbFileMenuEmbed="1" text="@Writing">
+			<command idQ="ReadingHighlightColor"/>
+			<command idQ="FontColor_Student"/>
+			<command idQ="WordCountToolBar_Student"/>
+			<command idQ="OpenThesaurus"/>
+			<command idQ="CheckSpellingToolBar_Student"/>
+			<command idQ="InsertStudentTextbox"/>
+			<command idQ="Shape_Student"/>
+			<command idQ="InsertScreenGrab"/>
+			<command idQ="InsertPicture_student"/>
+		</KListCommand>
+		<KListCommand icon="math_latex_kd" id="RB_Math" rbFileMenuEmbed="1" text="@Math">
+			<command idQ="EquationInsertGallery"/>
+			<command idQ="InsertLatex"/>
+			<command idQ="m_Symbols"/>
+		</KListCommand>
+		<KListCommand icon="people_double_kd" id="RB_Collaborate" rbFileMenuEmbed="1" text="@Collaborate">
+			<command idQ="InkDrawEnter"/>
+			<command idQ="InsertCommentInToolBar_Student"/>
+			<KxWpsAnnoteAsPdfCommand customTip="AnnoteAsPdf" hotKey="G" icon="bubble_kd" id="AnnoteAsPdf" qtspyName="AnnoteAsPdf" rbHotKey="G" text="@Annote As Pdf"/>
+			<command idQ="sp_ReviewPane_Student"/>
+			<command idQ="FileCollect_Student"/>
+		</KListCommand>
+		<KListCommand id="RB_Feedback" rbFileMenuEmbed="1" text="@Feedback">
+			<command idQ="StudentFeedBack"/>
+		</KListCommand>
+		<KListCommand id="RB_CloseStudentToolsContext" text="@Close">
+			<KxStudentToolsCloseCommand customTip="CloseStudentTools" hotKey="G" icon="close_window_kd" id="CloseStudentToolsTab" qtspyName="CloseWindow" rbHotKey="G" text="@Close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_StudentTools">
+			<command idQ="RB_Reading"/>
+			<separator/>
+			<command idQ="RB_Writing"/>
+			<separator/>
+			<command idQ="RB_Math"/>
+			<separator/>
+			<command idQ="RB_Collaborate"/>
+			<separator/>
+			<command idQ="RB_Feedback"/>
+			<command idQ="RB_CloseStudentToolsContext"/>
+		</subcommand>
+	</subcommands>
+</shell>

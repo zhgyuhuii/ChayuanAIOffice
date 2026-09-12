@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_smartartdesign" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand icon="create_graph_kd" id="RB_CreateGraph" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Create Graph">
+			<KListCommand canHideText="0" icon="add_item_kd" qtspyName="SmartArtInsertShape" spaceHint="suitable" text="@Insert Shape">
+				<KxValueCommand hotKey="W" icon="smart_art_add_below_kd" index="1" ksoCmd="SmartArtInsShapeOnBelow" qtspyName="SmartArtInsShapeOnBelow" text="@Insert shape on below"/>
+				<KxValueCommand hotKey="V" icon="smart_art_add_upside_kd" index="2" ksoCmd="SmartArtInsShapeOnAbove" qtspyName="SmartArtInsShapeOnAbove" text="@Insert shape on above"/>
+				<KxValueCommand hotKey="A" icon="smart_art_add_after_kd" index="3" ksoCmd="SmartArtInsShapeInAfter" qtspyName="SmartArtInsShapeInAfter" text="@Insert shape in after"/>
+				<KxValueCommand hotKey="B" icon="smart_art_add_front_kd" index="4" ksoCmd="SmartArtInsShapeInBefore" qtspyName="SmartArtInsShapeInBefore" text="@Insert shape in before"/>
+				<KxValueCommand hotKey="T" icon="smart_art_add_assistant_kd" index="5" ksoCmd="SmartArtInsAssistant" qtspyName="SmartArtInsAssistant" text="@Insert assist"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand canHideText="0" hotKey="b" icon="sa-addbullet-nomal;sa-addbullet-click" id="SmartArtInsertBullet" ksoCmd="SmartArtInsertBullet" rbHotKey="b" spaceHint="suitable" text="@Insert Bullet"/>
+			<KxLegacyTriggerCommand hotKey="p" icon="arrow_left_hollow_shape_kd" id="SmartArtIncreaseLevel" ksoCmd="SmartArtIncreaseLevel" rbHotKey="p" singlerowfold="1" spaceHint="suitable" text="@Increase Level"/>
+			<KxLegacyTriggerCommand hotKey="d" icon="arrow_right_hollow_shape_kd" id="SmartArtReduceLevel" ksoCmd="SmartArtReduceLevel" rbHotKey="d" singlerowfold="1" spaceHint="suitable" text="@Reduce Level"/>
+			<KxLegacyTriggerCommand hotKey="u" icon="arrow_top_hollow_shape_kd" id="SmartArtMoveForward" ksoCmd="SmartArtMoveForward" rbHotKey="u" singlerowfold="1" spaceHint="suitable" text="@Forward"/>
+			<KxLegacyTriggerCommand hotKey="w" icon="arrow_down_hollow_shape_kd" id="SmartArtMoveBackward" ksoCmd="SmartArtMoveBackward" rbHotKey="w" singlerowfold="1" spaceHint="suitable" text="@Backward"/>
+			<KListCommand hotKey="o" icon="change_layout_kd" id="SmartArtChangeLayout" ksoCmd="SmartArtChangeLayout" rbHotKey="o" spaceHint="suitable" text="@Layout">
+				<KxValueCommand hotKey="S" icon="change_layout_kd" index="1" ksoCmd="SmartArtStandardLayout" qtspyName="SmartArtStandardLayout" text="@Standard"/>
+				<KxValueCommand hotKey="B" icon="smart_art_both_layout_kd" index="2" ksoCmd="SmartArtBothLayout" qtspyName="SmartArtBothLayout" text="@Both"/>
+				<KxValueCommand hotKey="L" icon="smart_art_left_hang_layout_kd" index="3" ksoCmd="SmartArtLeftHangLayout" qtspyName="SmartArtLeftHangLayout" text="@Left Hang"/>
+				<KxValueCommand hotKey="R" icon="smart_art_right_hang_layout_kd" index="4" ksoCmd="SmartArtRightHangLayout" qtspyName="SmartArtRightHangLayout" text="@Right Hang"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand hotKey="r" icon="arrow_right_to_left_hollow_shape_kd" id="SmartArtRToLLayout" ksoCmd="SmartArtRToLLayout" rbHotKey="r" spaceHint="suitable" text="@RightToLeft Layout"/>
+		</KListCommand>
+		<KListCommand icon="smart_diagram_kd" id="RB_SmartArtStyles" text="@SmartArt Styles">
+			<KxWpsSmartArtColorsGalleryCommand galleryHeight="520" galleryWidth="350" hotKey="c" icon="color_palette_kd" id="SmartArtChangeColors" ksoCmd="SmartArtChangeColors" rbHotKey="c" text="@Change Colors"/>
+			<KxWpsSmartArtQuickStylesGalleryCommand columnNumber="5" embedHint="1" groupTip="SmartArtDesignSmartArtStyleGalleryGroup" hotKey="s" iconQat="smart_diagram_kd" id="SmartArtChangeStyles" ksoCmd="SmartArtChangeQuickStyles" rbHotKey="s" text="@Change Styles" triggerAble="1"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand hotKey="F" icon="level_bring_forward_kd" id="RbBringForwardInToolBar" ksoCmd="BringForward" text="@Bring Forward"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="level_top_kd" id="RbBringToFrontInToolBar" idMso="ObjectBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+		<KxLegacyTriggerCommand aid="168" hotKey="t" icon="level_top_kd" id="RbBringInFrontOfText" ksoCmd="BringInFrontOfText" text="@Bring in Front of Text"/>
+		<KxListCommand controlType="0" customTip2="BringForward2" customTip="BringForward" hotKey="f" icon="level_bring_forward_kd" id="RbBringForward" idMso="ObjectBringForward" ksoCmd="BringForward" rbHotKey="AF" spaceHint="suitable" text="@Bring Forward">
+			<command idQ="RbBringForwardInToolBar"/>
+			<command idQ="RbBringToFrontInToolBar"/>
+			<command idQ="RbBringInFrontOfText"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand hotKey="B" icon="level_send_backward_kd" id="RbSendBackwardInToolBar" ksoCmd="SendBackward" text="@Send Backward"/>
+		<KxLegacyTriggerCommand contorlType="0" hotKey="K" icon="level_bottom_kd" id="RbSendToBackInToolBar" idMso="ObjectSendToBack" ksoCmd="SendToBack" text="@Send To Back"/>
+		<KxLegacyTriggerCommand aid="169" controlType="0" hotKey="h" icon="pic_surround_down_kd" id="RbSendBehindText" idMso="ObjectSendBehindText" ksoCmd="SendBehindText" qtspyname="SendBehindText" rbHotKey="H" text="@Send Behind Text"/>
+		<KxListCommand customTip2="SendBackward2" customTip="SendBackward" hotKey="b" icon="level_send_backward_kd" id="RbSendBackward" ksoCmd="SendBackward" rbHotKey="AE" spaceHint="suitable" text="@Send Backward">
+			<command idQ="RbSendBackwardInToolBar"/>
+			<command idQ="RbSendToBackInToolBar"/>
+			<command idQ="RbSendBehindText"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="6" hotKey="i" icon="pic_surround_embed_kd" id="WrappingInLineWithText" idMso="TextWrappingInLineWithText" ksoCmd="WrappingInLineWithText" text="@In Line with Text"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="s" icon="pic_surround_kd" id="WrappingSquare" idMso="TextWrappingSquare" ksoCmd="WrappingSquare" rbHotKey="S" text="@Square"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="t" icon="pic_surround_tightly_kd" id="WrappingTight" idMso="TextWrappingTight" ksoCmd="WrappingTight" rbHotKey="T" text="@Tight"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="d" icon="pic_surround_down_kd" id="WrappingBehindText" idMso="TextWrappingBehindText" ksoCmd="WrappingBehindText" rbHotKey="D" text="@Behind Text"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="n" icon="pic_surround_up_kd" id="WrappingInFrontofText" idMso="TextWrappingInFrontOfText" ksoCmd="WrappingInFrontofText" rbHotKey="N" text="@In Front of Text"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="o" icon="pic_surround_up_down_kd" id="WrappingTopandBottom" idMso="TextWrappingTopAndBottom" ksoCmd="WrappingTopandBottom" rbHotKey="O" text="@Top and Bottom"/>
+		<KxLegacyTriggerCommand controlType="6" hotKey="h" icon="pic_surround_through_kd" id="WrappingThrough" idMso="TextWrappingThrough" ksoCmd="WrappingThrough" rbHotKey="H" text="@Through"/>
+		<KxLegacyTriggerCommand hotKey="F" icon="level_bring_forward_kd" id="RbBringForwardInToolBar" ksoCmd="BringForward" text="@Bring Forward"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="level_top_kd" id="RbBringToFrontInToolBar" idMso="ObjectBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+		<KxLegacyTriggerCommand aid="168" hotKey="t" icon="level_top_kd" id="RbBringInFrontOfText" ksoCmd="BringInFrontOfText" text="@Bring in Front of Text"/>
+		<KxObjectSelectCommand customTip="ObjectSelect" hotKey="J" icon="object_select_kd" id="RbObjectSelect" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Selection Pane"/>
+		<KxValueCommand controlType="0" hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" idMso="ObjectsAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+		<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+		<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+		<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+		<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+		<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" idMso="AlignDistributeHorizontally" ksoCmd="AlignDistributeHori" text="@Distribute Horizontally"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" idMso="AlignDistributeVertically" ksoCmd="AlignDistributeVert" text="@Distribute Vertically"/>
+		<KxLegacyTriggerCommand hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" ksoCmd="EqualHeight" text="@Equal Height"/>
+		<KxLegacyTriggerCommand hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" ksoCmd="EqualWidth" text="@Equal Width"/>
+		<KxLegacyTriggerCommand hotKey="Q" icon="equal_size_kd" id="RbEqualSize" ksoCmd="EqualSize" text="@Equal Size"/>
+		<KxLegacyTriggerCommand aid="300" controlType="1" hotKey="s" icon="nine_grids_kd" id="RbGridlines" idMso="ViewGridlinesWord" ksoCmd="Gridlines" spaceHint="suitable" text="@Gridlines"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="g" icon="grid_switch_kd" id="RbGrid" ksoCmd="Grid" text="@Grid"/>
+		<KListCommand canHideText="0" customTip="m_Align" icon="align_draw_left_kd" id="RbAlign" rbHotKey="AA" text="@Align">
+			<command idQ="AlignmentControl"/>
+			<command idQ="DrawAlignLeft"/>
+			<command idQ="DrawAlignCenter"/>
+			<command idQ="DrawAlignRight"/>
+			<command idQ="DrawAlignTop"/>
+			<command idQ="DrawAlignMiddle"/>
+			<command idQ="DrawAlignBottom"/>
+			<separator/>
+			<command idQ="AlignDistributeHori"/>
+			<command idQ="AlignDistributeVert"/>
+			<separator/>
+			<command idQ="EqualHeight"/>
+			<command idQ="EqualWidth"/>
+			<command idQ="RbEqualSize"/>
+			<separator/>
+			<command idQ="RbGridlines"/>
+			<command idQ="RbGrid"/>
+		</KListCommand>
+		<KListCommand icon="align_draw_left_kd" id="RB_SmartArtArrange" rbFileMenuEmbed="1" text="@Arrange">
+			<KxWpsWrapTextCommand canHideText="0" customTip="m_Wrapping" detail="@Text Wrapping" icon="pic_surround_kd" id="TextWrappingMenuInSmartArtDesignTab" qtspyName="TextWrappingMenu" rbHotKey="TW" text="@Wrap Text@rainbow">
+				<command idQ="WrappingInLineWithText"/>
+				<separator/>
+				<command idQ="WrappingSquare"/>
+				<command idQ="WrappingTight"/>
+				<command idQ="WrappingBehindText"/>
+				<command idQ="WrappingInFrontofText"/>
+				<separator/>
+				<command idQ="WrappingTopandBottom"/>
+				<command idQ="WrappingThrough"/>
+			</KxWpsWrapTextCommand>
+			<command idQ="RbAlign"/>
+			<command idQ="RbBringForward" singlerowfoldgroup="arrange_pair"/>
+			<command idQ="RbSendBackward" singlerowfoldgroup="arrange_pair"/>
+			<command idQ="RbObjectSelect"/>
+		</KListCommand>
+		<KxListCommand customTip="FormatObjectSize" forceVisible="1" icon="slide_orientation_kd" id="RB_SmartArtSize" rbFileMenuEmbed="1" text="@Size">
+			<KxSingleRowMergeGroupCommand customTip="FormatObjectSize" icon="slide_orientation_kd" id="SingleRow_SmartArtSize" text="@Size"/>
+			<KxWpsHeightSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeHeight" embedHint="1" icon="ranks_rows_height_kd" id="ShapeHeight" ksoCmd="ShapeHeight" singlerowmergegroup="SingleRow_SmartArtSize" spaceHint="suitable"/>
+			<KxWpsWidthSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeWidth" embedHint="1" icon="ranks_column_width_kd" id="ShapeWidth" ksoCmd="ShapeWidth" singlerowmergegroup="SingleRow_SmartArtSize" spaceHint="suitable"/>
+		</KxListCommand>
+	</commands>
+	<subcommands>
+		<subcommands id="CT_SmartArtDesign">
+			<command idQ="RB_CreateGraph"/>
+			<separator/>
+			<command idQ="RB_SmartArtStyles"/>
+			<separator/>
+			<command idQ="RB_SmartArtArrange"/>
+			<separator/>
+			<command idQ="RB_SmartArtSize"/>
+		</subcommands>
+	</subcommands>
+</shell>

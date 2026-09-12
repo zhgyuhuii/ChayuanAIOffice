@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>总选项_general_options</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M3 3C3 2.72386 3.22386 2.5 3.5 2.5H20.5C20.7761 2.5 21 2.72386 21 3V21C21 21.2761 20.7761 21.5 20.5 21.5H3.5C3.22386 21.5 3 21.2761 3 21V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 3030" d="M14 8H18.4444" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 3031" d="M14 15H18.4444" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 3029" d="M6 7.5L6.88889 8.25L7.77778 9L10.4444 6" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Ellipse 481" d="M10 15C10 16.1046 9.10457 17 8 17C6.89543 17 6 16.1046 6 15C6 13.8954 6.89543 13 8 13C9.10457 13 10 13.8954 10 15Z" stroke-opacity="0.9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g><g class="kd-dir-rtl"><g transform="translate(24,0) scale(-1,1)"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M3 3C3 2.72386 3.22386 2.5 3.5 2.5H20.5C20.7761 2.5 21 2.72386 21 3V21C21 21.2761 20.7761 21.5 20.5 21.5H3.5C3.22386 21.5 3 21.2761 3 21V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 3030-rtl" d="M14 8H18.4444" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector 3031-rtl" d="M14 15H18.4444" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,16.000000000000004,0)"><path id="Vector 3029-rtl" d="M6 7.5L6.88889 8.25L7.77778 9L10.4444 6" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Ellipse 481-rtl" d="M10 15C10 16.1046 9.10457 17 8 17C6.89543 17 6 16.1046 6 15C6 13.8954 6.89543 13 8 13C9.10457 13 10 13.8954 10 15Z" stroke-opacity="0.9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g></g></g></svg>

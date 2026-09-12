@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>发票查验16</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M8 14.5H2C1.72386 14.5 1.5 14.2761 1.5 14V2C1.5 1.72386 1.72386 1.5 2 1.5H14C14.2761 1.5 14.5 1.72386 14.5 2V8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M3.5 3V5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M3.5 7V9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M3.5 11V13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M12.5 3V5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M13.5 11C13.5 12.3807 12.3807 13.5 11 13.5C9.61929 13.5 8.5 12.3807 8.5 11C8.5 9.61929 9.61929 8.5 11 8.5C12.3807 8.5 13.5 9.61929 13.5 11Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M13 13L15 15" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-red-primary kd-stroke-width-icon-regular"><path id="line_8" d="M10.5 5C10.5 5.82843 9.38071 6.5 8 6.5C6.61929 6.5 5.5 5.82843 5.5 5C5.5 4.17157 6.61929 3.5 8 3.5C9.38071 3.5 10.5 4.17157 10.5 5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

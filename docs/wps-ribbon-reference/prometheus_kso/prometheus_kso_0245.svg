@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>粗边框线24_粗匣框线_ThickBoxBorder</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+<g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" opacity="0.3" d="M7.5 2V4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" opacity="0.3" d="M7.5 5V7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" opacity="0.3" d="M7.5 8V10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" opacity="0.3" d="M7.5 11V13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" opacity="0.3" d="M2 7.5H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" opacity="0.3" d="M5 7.5H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" opacity="0.3" d="M8 7.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" opacity="0.3" d="M11 7.5H13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary"><path id="line_9" d="M12.5 2H2.5C2.22386 2 2 2.22386 2 2.5V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V2.5C13 2.22386 12.7761 2 12.5 2Z" stroke-linejoin="round" fill="none" stroke-width="2" vector-effect="non-scaling-stroke"/>
+</g>
+</svg>

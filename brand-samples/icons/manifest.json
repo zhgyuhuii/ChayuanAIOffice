@@ -1,0 +1,727 @@
+[
+  {
+    "group": "01-gradient-modern",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_m4FvW73N0RA6wZQolI48plQRBJQjgADf/output_7552c3dc8ca4427b8b1e3475581aafd5.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/02.jpg",
+    "ms": 56087,
+    "attempts": 2
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_mDP9mLEfuVR2ClARYrZJm7pqcGdX723j/output_907eb498a11949928c734372177637e9.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/01.jpg",
+    "ms": 56149,
+    "attempts": 2
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_hpbrbCIlMihu4YtAzC2UTfHJfSlQ9jB1/output_abd90d854eb54085af0fc13d95888ca0.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/03.jpg",
+    "ms": 56156,
+    "attempts": 2
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_0dmD4Z5mf1QNis65lI4ovF8MiyqsTXRy/output_13499eb6e9c14917a5c737874b350a96.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/05.jpg",
+    "ms": 7819,
+    "attempts": 1
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_agg03fxLtZ2ESWAJClpc2m52ZKn0vriB/output_a933b1b79f4540b99932832b9d366258.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/04.jpg",
+    "ms": 9403,
+    "attempts": 1
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_3xcCww44F4RxmjPTxPJNTblRTSkE1Gid/output_762b1d027b7a4afa9e98a2eb56fe5e67.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/06.jpg",
+    "ms": 9538,
+    "attempts": 1
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_bZphp3A5RkgHltHGv0B69tGA11ybhtZh/output_05056ec38d494ccc9f5b496907d50a0a.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/09.jpg",
+    "ms": 10134,
+    "attempts": 1
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_XgbBXKF9k93xl3B39iIvNDUPEN7xoFyg/output_339c788c6bc649079dddc2e5f6d6f02d.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/07.jpg",
+    "ms": 11934,
+    "attempts": 1
+  },
+  {
+    "group": "01-gradient-modern",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_VNtiK5PdeWUjZQcyIzwNdBBBZ2J8PWQi/output_2139d34dc1a54928a032e92e0044f9ae.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/01-gradient-modern/08.jpg",
+    "ms": 10486,
+    "attempts": 1
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_WmePwET37tbWQYZhEomefNCwuPkwv5it/output_9d46f78bbc8e41158e6ac7b8d59138fc.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/02.jpg",
+    "ms": 14562,
+    "attempts": 1
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_JG2iHFOLRFpyLPIGzcXf6zebMq7ieWET/output_a632252a64554718a85c90ca3a566ca3.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/03.jpg",
+    "ms": 14652,
+    "attempts": 1
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_VaGrI7rcGhc5UKMJCTx7aonZBEmU9oVa/output_a0e1902654e54d41a7a3b71e2a3e4205.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/01.jpg",
+    "ms": 14835,
+    "attempts": 1
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_s8LxUZhkpD5Jyw2MezWyBD2MhDVHwKJG/output_dd3c0941666445aeac745d57777c0b35.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/06.jpg",
+    "ms": 47362,
+    "attempts": 2
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_bYTNBvc2ifkw8LVl8OxbDBOqfVI3r9Af/output_8e7014a099d748c284014dc34b663a33.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/05.jpg",
+    "ms": 49480,
+    "attempts": 2
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_Uh0wOlEu2BpZND72JNxDOUGOOgQWstkX/output_5d0d57b60d344267a76fb4ed6a21d46e.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/04.jpg",
+    "ms": 67601,
+    "attempts": 2
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_xIBuOhKzJkh4UX0h0hQvFziI25syZnCw/output_a2b172e403dc4b03a76ca2777e9ceba2.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/09.jpg",
+    "ms": 28744,
+    "attempts": 1
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_YSpp4CqoCb6ixQl1ZINz2K3NePO3dfXT/output_1c78f9d5085e41ca9846e26c41412479.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/08.jpg",
+    "ms": 50515,
+    "attempts": 2
+  },
+  {
+    "group": "02-letter-c",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_lFmaGAYPltMcQZsAV8Wxb1FctDHH3Sy2/output_4cd220b3d06e41e2b7369c1a19ca07e3.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/02-letter-c/07.jpg",
+    "ms": 52825,
+    "attempts": 2
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_6sVCalaFIbawqDK39XrkvlsbIvKVlnom/output_856ad15ef7de4a508652b8bfec350bd4.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/03.jpg",
+    "ms": 9345,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_eahGeuRYPVdKQGkEvxCVX1dY1WEgKA3I/output_d13c508af71b4514bbbffb2afe2b99ba.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/02.jpg",
+    "ms": 9628,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_l6YKSafOrY44XVVQrvz38HazDbFjyxk4/output_b975499c407d402c81ef87aec7f6febb.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/04.jpg",
+    "ms": 97896,
+    "attempts": 3
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_5rPupVF733Jlwt6sKKrxuaNPfQUakjQe/output_83cbd0d526dc4c3c8d76fa5f3c295454.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/05.jpg",
+    "ms": 97924,
+    "attempts": 3
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_Sx68XfXYNpWBOKEWBGqfRk9LyA2XT6q0/output_f7330c0cfb39422a98c7455edd91f6cf.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/07.jpg",
+    "ms": 8121,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_31BVGiMxWpAGXesFhwwOcoOAqQml2hBY/output_ee8d0c8666ef4812acba4b03c2b8bb7d.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/06.jpg",
+    "ms": 8231,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 1,
+    "error": "fetch failed"
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_7GHj11JYDmZuHhfWgLnyRAZKh3drfUs4/output_a677e0219eb04a559895a681908ddc06.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/08.jpg",
+    "ms": 9651,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_VlJWdbpl4T6AQEEpf7UGpQy0oYXDynEm/output_8851db3dd2b941c996622b0c6f744508.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/09.jpg",
+    "ms": 9655,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_E0IwtozT9vZ6IQ6DPRJPiTEPLXtZKRkg/output_ef24b435c84e4ea99750da182513369c.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/02.jpg",
+    "ms": 28920,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_PPLIRdiJLoqP5FhLcCJ0hdXhtDXW9ufL/output_94f88c51383d46cc8072efc30e3cf3c3.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/03.jpg",
+    "ms": 38211,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_ZRE03Rt2A7Qc8P5FqzDcIgpa7WMoz1bj/output_403332df0409492791ef593a3f011008.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/04.jpg",
+    "ms": 13160,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_uWngyuuMAJlJBchOa6QritbAb9rvvGIP/output_92f64a28c3064c0daf2c923dfe363570.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/01.jpg",
+    "ms": 57722,
+    "attempts": 2
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_d1U3NK13nMviB4lYf9zR9eK26dWmkdUM/output_98e7eea74e0d4e889af3dd00e947085b.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/05.jpg",
+    "ms": 14771,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_OZwGpNvgh79UF6e6y5DcWReRvmnSYm7E/output_0955a4d664174689908a61c7b27f6b73.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/06.jpg",
+    "ms": 10990,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_wOfbof5mMAHhETJXb8HT7bWCz6V8Hwg7/output_3baa4a85db49441994eefb0923c2376d.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/07.jpg",
+    "ms": 13492,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_nrJbJyFKW8COyabFWTBrMEqa3EajPcHE/output_3e75b2d389bf4999ac0ec304698903db.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/09.jpg",
+    "ms": 13222,
+    "attempts": 1
+  },
+  {
+    "group": "04-flat-badge",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_8iFbfeTCELIw6CJ0MWLrB3XoxojEOXjb/output_21c6481e35fb4ea08a6c74d33c582845.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/04-flat-badge/08.jpg",
+    "ms": 13312,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_Embxw2Ir2PILTSss3t7lzapVresJ5MdB/output_9f4cef48735e4853b8d4765a5378cfc9.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/02.jpg",
+    "ms": 12131,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_NxK1kG27qBxiqwHZZQTJgs6QKh82J531/output_639e0be6231e49d3a30fc2c5670b5c59.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/03.jpg",
+    "ms": 12134,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_lphzRissLJ0KxWsEsmy3l3wPgoHO06HF/output_984696b6497c403ca020a113d96aeb30.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/01.jpg",
+    "ms": 12983,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_SPC26P1srqhXoRWM37u0UXVRuyOhPAET/output_a0252f7b608c4637bf05bc960056a047.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/04.jpg",
+    "ms": 10432,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_9lUIZ7fLsMvynV0IpPoGyUmBGjcUeF9j/output_a95af1c01fb84e6bb965b8c0404db8d5.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/05.jpg",
+    "ms": 10777,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_YbaSn6JaAoaYW7s5tXJQcVET2Pc1jF68/output_6e5c150033b34591b9d8a6a598a3be97.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/06.jpg",
+    "ms": 15336,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_u9Ghk79J0uwzed5r5c5CSG5iEF3xFLXm/output_c75088b20bff4d02904bd50b676a87ac.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/07.jpg",
+    "ms": 7480,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_VbeY5zJVpy7MslTggzCBYiaRpwTcwYQT/output_060fe44eea1c403e9105c2ce6edf0b30.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/08.jpg",
+    "ms": 8524,
+    "attempts": 1
+  },
+  {
+    "group": "05-glass-3d",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_6z99ZmlDcLDqTwEAQfWR867YjENjxmxM/output_c23f94851f244c21bc62c631053e538c.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/05-glass-3d/09.jpg",
+    "ms": 7331,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_oBlJtYuCpwpr1cVwmd0P4mAzYKXOhsA9/output_30302f95870d4ffbb3d61be980b2ef30.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/02.jpg",
+    "ms": 8245,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_XXqGNJcRbMluXhdB5ryUFMhPJDFevHgY/output_aeb56581ba25444f9df81a95798beb00.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/01.jpg",
+    "ms": 9896,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_MiJcCGkotIbgIIfXDUkiEbFrvYFVBSNd/output_497bd862e7ae4f6e9e8178eb1a479d56.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/05.jpg",
+    "ms": 44639,
+    "attempts": 2
+  },
+  {
+    "group": "06-outline",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_0oZIIFZKUO1Mqh46HKE1LR2ISZee3I4V/output_e8f75a3318f044079b14d7e47b77bf61.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/03.jpg",
+    "ms": 48996,
+    "attempts": 2
+  },
+  {
+    "group": "06-outline",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_qlMbK06ofmlpH6MMW4vTZiEUF9bb0hdX/output_dae305e3fd4f4bc1a7d86981a1d0cfe0.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/04.jpg",
+    "ms": 44926,
+    "attempts": 2
+  },
+  {
+    "group": "06-outline",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_eFNcwoG4rIzq0xVXxi9bzv08GmbcfoVx/output_52d15b5a5a354343abe80591a97a7add.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/08.jpg",
+    "ms": 23399,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_4RsSXOp1Bv9PBmsQXUGkL9tSw3xKgAAk/output_da71a16212ab458cb0e729bc3f36129d.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/06.jpg",
+    "ms": 24820,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_PetX1nhuzRTQvyRzqcmtkg5vc8SYAGRO/output_942db9bb10ed4c0e9234124ec93d49ae.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/07.jpg",
+    "ms": 24817,
+    "attempts": 1
+  },
+  {
+    "group": "06-outline",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_tRUU26WmXqQi50SVdVc6MgudWEQOQTCB/output_cae463dbbd1b455792dd63888c85e6f9.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/06-outline/09.jpg",
+    "ms": 10338,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_PzN5HIlBohfx1jIU0A5F2RFTjr7OF9QR/output_c79117ca09e5465f9ede2525906bcda0.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/01.jpg",
+    "ms": 11145,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_DYgLwC50kf9o0m2eKlAhVghruDhDghhy/output_0d26d45a91014dc180b256e2dd4da0b0.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/02.jpg",
+    "ms": 11642,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_S4Joq2DuQiyxggmiVAZne8caMv1cO5gr/output_e292d5521ca84c6a97d9797f6ad08133.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/05.jpg",
+    "ms": 7895,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_dbr1M8Sjz90TERRZFRrKzJpGO4hFsZEO/output_236fa72a33d94c81b5e54735a960eabe.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/03.jpg",
+    "ms": 10620,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_DokBOaKYtOnriSdgJ5jMnCZokhjCFOMp/output_06812ec7eb494341b744147cb61c6562.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/04.jpg",
+    "ms": 8530,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_SBjGIPcho8kmFd1aYspPJ0nsnl0K5rNm/output_a9d930c193e14149b47d5796c1048d35.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/06.jpg",
+    "ms": 7087,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_rEgvfNbhIcb8o1E7dTIFKKCfP2K6ZhC3/output_6d1dff661d234bac8ea0ee65aeb49fa7.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/08.jpg",
+    "ms": 7133,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_B3KGQa3JD9PINzdxKndMjvBiy9vKLBDf/output_2e978450f81a40128a46a62c5e8d68a6.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/07.jpg",
+    "ms": 7271,
+    "attempts": 1
+  },
+  {
+    "group": "07-tea-sprout",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_FPwjPWeFzNmXefjoB7JkdzXO6vyRQQoU/output_6b8dd631b2fb45cda95caed084e1646b.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/07-tea-sprout/09.jpg",
+    "ms": 49288,
+    "attempts": 2
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_qaWRmk9HtB6PqE60SxuMBFjWYc8DpghH/output_d4c5ad65d16a4ae3acd39a76ede4e581.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/02.jpg",
+    "ms": 49248,
+    "attempts": 2
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_E0eG6SGnkfUkK0GPoN7Uws50doPiPkEQ/output_b2450dd2bf194c2ab39f258c514c3e12.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/01.jpg",
+    "ms": 49348,
+    "attempts": 2
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_M9Hf2PfKIS8XIYBCXWOwC2l74gxIu9ti/output_0f4ae6ad594a4845ac0e616a0f59f435.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/05.jpg",
+    "ms": 8105,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_RKCGEfc3ju5GMm3ioS4fV82OsTKQCa0A/output_3fea2d8667674a909f393b4c44e200a2.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/03.jpg",
+    "ms": 8359,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_TCYRsfjs4pf69rEh1oRafquTELjDqJbQ/output_f09f4b7118844cd5a287629bc8a6d37d.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/04.jpg",
+    "ms": 8243,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_reieg2xPcjvpLV23nsoLr0gL12xn5hr7/output_f7d13802c74b44a5be38be6bfde439ae.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/08.jpg",
+    "ms": 9038,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_avVfo0WQMhxl2iFbI4WpgUODByOMVmfg/output_99538d5902324ac3a08e631f595706f9.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/06.jpg",
+    "ms": 9258,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_XEES1h3SxQOwb96YzNzTVBAgEawYcSOT/output_adb23847fb42497ca96fd685dc46fc8a.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/07.jpg",
+    "ms": 9265,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_4M1sngIMg4L4mFAcsQOaxvDMICo279O4/output_6a6cf2df9e2442d99ad6da81244f5b39.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/02.jpg",
+    "ms": 9124,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_YHyZGDn1tR95QWeH1APmEtvvMPIKatfz/output_c88e2f8fa5c541f88dd89545b58eb108.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/01.jpg",
+    "ms": 9438,
+    "attempts": 1
+  },
+  {
+    "group": "08-retro-print",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_58ZkVJPeJ1ySzkQruta5Ymxx9SM5CS3Z/output_ba88c3ff2ce94238a33b7bf8bfeb8b8a.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/08-retro-print/09.jpg",
+    "ms": 9604,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_C2oRA7dKsaRqevijLZtts3qEGfVfR1u0/output_b011547f18a84319be90fd68648d16d5.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/04.jpg",
+    "ms": 9895,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_ouOT6YGIIK2b2x3mDGQZzo7tuAA589DS/output_2261f7343ce74d2090120b07419b2566.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/03.jpg",
+    "ms": 10332,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_oXglv7fIASGgvSbiypJbdoCfr6m4KDdB/output_2655f01bafbb4859a18cb42269cc736e.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/05.jpg",
+    "ms": 10073,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_FGPFSiStMb5pY93LuZ9OCSanJKXQXai3/output_477af72e357d4b8ca31047f773dbfa0e.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/07.jpg",
+    "ms": 11935,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_sHTdL5RHOjSm0Z37C3ZngqwUJHthfDNF/output_3e4ba949205340c9b2ff4e190e845981.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/08.jpg",
+    "ms": 11908,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_ixtXBc6nLVtvSYGBrKx8lsSK6A9P0rtP/output_a7c8142c152749b9b0c3385ae69bf426.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/09.jpg",
+    "ms": 8207,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_tMSVDNV21BZpPR5Eo2ZM43u5crqVlh6E/output_225b0f54497347aab57f38e10cbb3b1c.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/01.jpg",
+    "ms": 8207,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 3,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_m9MdejRIFM7o3fnbqI2vSOhSyFYyFqfE/output_2ed3162f79814490a4bf67050be571eb.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/03.jpg",
+    "ms": 8157,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 2,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_2L3TTIMmg3KY0aApbcDPb6odDk8L1IQp/output_713c40ddc871447585f0426f99a09589.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/02.jpg",
+    "ms": 8218,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 5,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_y4uELUu118Lxj2jPLvyQEjXbdmK2WYtY/output_375d9a017a884927a1ba321f7719f810.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/05.jpg",
+    "ms": 17670,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 4,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_YqCRJ7k4MxesjJU8AKXodhaPxOtSWoXe/output_a8cd25821c404037b3b008a89217c85b.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/04.jpg",
+    "ms": 17941,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_6oWYzYB5WefveCERcqqwkeJQLdtWQkl9/output_5b91715678cd42b0afd04e76e11d4bb3.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/06.jpg",
+    "ms": 7964,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 7,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_vEQshHrFlt4MGKHQhJQKrXDSMRsPMLkN/output_3521a1e33e194acfbc4d84e1cfd83e3c.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/07.jpg",
+    "ms": 7770,
+    "attempts": 1
+  },
+  {
+    "group": "09-dark-neon",
+    "idx": 6,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_6W7UYVjzODdlFOv0XsayLLO9oGtcSnG0/output_39a5ac25d093457caad9f5a5d81d1b43.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/09-dark-neon/06.jpg",
+    "ms": 59969,
+    "attempts": 2
+  },
+  {
+    "group": "10-origami",
+    "idx": 9,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_CccUXd6osebTuaeeKLiCF0J5dIEdnjwx/output_91b8fd2a23f9424c9ff58dceb9cdb9f5.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/09.jpg",
+    "ms": 9853,
+    "attempts": 1
+  },
+  {
+    "group": "10-origami",
+    "idx": 8,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_k3aGlx55R4huCucnRRp6LC04th6de6Ip/output_b098f21e1ed94152a7d2c9302f31358a.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/10-origami/08.jpg",
+    "ms": 10071,
+    "attempts": 1
+  },
+  {
+    "group": "03-ai-bubble",
+    "idx": 1,
+    "url": "https://cos-platform-outputs.agnes-ai.cn/images/t2i/task_Wwg4szx15DkClVXvxJBydLDmhb43LqzQ/output_111589c03b77407a8751e86e1dbf55fe.png",
+    "file": "/Users/zyh/work/chayuan-office/brand-samples/icons/03-ai-bubble/01.jpg",
+    "ms": 146178,
+    "attempts": 4
+  }
+]

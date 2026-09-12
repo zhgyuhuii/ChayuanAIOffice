@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_sparklinetools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="HiddenAndEmptyCells" dialogHint="1" hotKey="H" id="SparklineHiddenAndEmptyCells" ksoCmd="SparklineHiddenAndEmptyCell" text="@HiddenAndEmptyCells"/>
+		<KxLegacyTriggerCommand customTip="SwitchRowColumn" hotKey="W" icon="switch_row_column_kd" id="SparklineSwitchRowColumn" ksoCmd="SparklineSwitchRowCol" text="@SwitchRowColumn"/>
+		<KxListCommand customTip="SparklineEditGroupData" icon="pen_kd" id="SparklineEditData" ksoCmd="SparklineEditGroupData" rbHotKey="D" text="@Edit data">
+			<command idQ="SparklineEditGroupData"/>
+			<command idQ="SparklineEditSingleData"/>
+			<command idQ="SparklineHiddenAndEmptyCells"/>
+			<command idQ="SparklineSwitchRowColumn"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand customTip="SparklineConvertToLine" icon="chart_sparkline_kd" id="ConvertToLine" ksoCmd="SparklineConvertToLine" rbHotKey="L" text="@Line"/>
+		<KxLegacyTriggerCommand customTip="SparklineConvertToColumn" icon="chart_normal_column_kd" id="ConvertToColumn" ksoCmd="SparklineConvertToColumn" rbHotKey="O" text="@Column"/>
+		<KxLegacyTriggerCommand customTip="SparklineConvertToWinLoss" icon="chart_up_down_bar_kd" id="ConvertToWinLoss" ksoCmd="SparklineConvertToWinLoss" rbHotKey="W" text="@Win/Loss"/>
+		<KListCommand groupTip="SparklineToolDataGroup" id="Sparkline_edit" rbFileMenuEmbed="1" text="@Data">
+			<command idQ="SparklineEditData"/>
+		</KListCommand>
+		<KListCommand groupTip="SparklineToolTypeGroup" icon="chart_group_style_kd" id="Sparkline_type" rbFileMenuEmbed="1" text="@Type">
+			<command idQ="ConvertToLine"/>
+			<command idQ="ConvertToColumn"/>
+			<command idQ="ConvertToWinLoss"/>
+		</KListCommand>
+		<KxEtSparkLineWeightCommand column="1" hotKey="W" icon="frame_line_type_kd" id="LineWeight" ksoCmd="SparklineLineWeight" text="@Line Weight">
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="W" id="CustomWeight" ksoCmd="SparklineCustomLineWeight" text="@Custom Weight"/>
+		</KxEtSparkLineWeightCommand>
+		<KListCommand groupTip="SparklineToolShowGroup" horizontalSpacing="6" icon="eye_kd" id="Sparkline_show" rbFileMenuEmbed="1" text="@Show">
+			<KxSingleRowMergeGroupCommand customTip="SparklineToolShowGroup" icon="eye_kd" id="SingleRow_Sparkline_show" text="@Show"/>
+			<KxCheckBoxCommand customTip="SparklineHighPoint" id="HighPoint" ksoCmd="SparklineHighPoint" rbHotkey="H" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@High Point"/>
+			<KxCheckBoxCommand customTip="SparklineLowPoint" id="LowPoint" ksoCmd="SparklineLowPoint" rbHotkey="P" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@Low Point"/>
+			<KxCheckBoxCommand customTip="SparklineNegativePoint" id="NegativePoint" ksoCmd="SparklineNegativePoint" rbHotkey="N" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@Negative Points"/>
+			<KxCheckBoxCommand customTip="SparklineFirstPoint" id="FirstPoint" ksoCmd="SparklineFirstPoint" rbHotkey="F" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@First Point"/>
+			<KxCheckBoxCommand customTip="SparklineLastPoint" id="LastPoint" ksoCmd="SparklineLastPoint" rbHotkey="S" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@Last Point"/>
+			<KxCheckBoxCommand customTip="SparklineMarkers" id="Markers" ksoCmd="SparklineMarkers" rbHotkey="M" singlerowmergegroup="SingleRow_Sparkline_show" spaceHint="suitable" text="@Markers"/>
+		</KListCommand>
+		<KxEtSparklineThemeCommand customTip="SparklineSeriesColor" icon="color_paint_wps_kd" id="SparklineSeriesColor" ksoCmd="SparklineSeriesColor" ksoTriggerCmd="RecentFillColor" rbHotKey="R" spaceHint="suitable" text="@Sparkline Color">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+			<command idQ="LineWeight"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="N" icon="color_paint_wps_kd" id="NegativePointColor" ksoCmd="SparklineNegativeColor" spaceHint="suitable" text="@Negative Points">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="M" icon="color_paint_wps_kd" id="MarkersColor" ksoCmd="SparklineMarkersColor" spaceHint="suitable" text="@Markers">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="H" icon="color_paint_wps_kd" id="HighPointColor" ksoCmd="SparklineHighColor" spaceHint="suitable" text="@High Point">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="L" icon="color_paint_wps_kd" id="LowPointColor" ksoCmd="SparklineLowColor" spaceHint="suitable" text="@Low Point">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="F" icon="color_paint_wps_kd" id="FirstPointColor" ksoCmd="SparklineFirstColor" spaceHint="suitable" text="@First Point">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KxEtSparklineThemeCommand hotKey="P" icon="color_paint_wps_kd" id="LastPointColor" ksoCmd="SparklineLastColor" spaceHint="suitable" text="@Last Point">
+			<KxEtMoreColorThemeCommand colorUsage="SparkColor" dialogHint="1" hotKey="M" icon="color_palette_kd" id="MoreColors" text="@More Colors"/>
+		</KxEtSparklineThemeCommand>
+		<KListCommand groupTip="SparklineToolStyleGroup" icon="sparkline_style_kd" id="Sparkline_style" rbFileMenuEmbed="1" text="@Style">
+			<KxEtSparklineStyleCommand columnNumber="6" embedHint="1" galleryHeight="10" iconQat="sparkline_style_kd" id="SparklineStyle" ksoCmd="SparklineStyle" maxVisibleNumber="6" rbHotKey="E" text="@Sparkline Style"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<command idQ="SparklineSeriesColor"/>
+			<KListCommand customTip="SparklineMarkerColor" icon="sparkline_marker_kd" id="MarkerColor" rbHotKey="T" spaceHint="suitable" text="@Marker Color">
+				<command idQ="NegativePointColor"/>
+				<command idQ="MarkersColor"/>
+				<separator/>
+				<command idQ="HighPointColor"/>
+				<command idQ="LowPointColor"/>
+				<command idQ="FirstPointColor"/>
+				<command idQ="LastPointColor"/>
+			</KListCommand>
+		</KListCommand>
+		<KListCommand customTip="SparkAxis" icon="chart_axis_kd" id="SparkAxis" rbHotKey="A" text="@Axis">
+			<KxTitleLabelCommand bold="0" font="Pingfang SC" fontSize="13" id="RB_ListTitle_01" text="@Horizontal Axis Options"/>
+			<KxLegacyTriggerCommand hotKey="G" id="GeneralAxis" ksoCmd="SparklineGeneralAxis" text="@General Axis Type"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="D" id="DateAxis" ksoCmd="SparklineDateAxis" text="@Date Axis Type"/>
+			<separator/>
+			<KxLegacyTriggerCommand hotKey="S" id="ShowAxis" ksoCmd="SparklineShowAxis" text="@Show Axis"/>
+			<KxLegacyTriggerCommand hotKey="P" id="RightToLeft" ksoCmd="SparklinePlotDataRightToLeft" text="@Plot Data Right-to-Left"/>
+			<KxTitleLabelCommand bold="0" font="Pingfang SC" fontSize="13" id="RB_ListTitle_01" text="@Vertical Axis Minimum Value Options"/>
+			<KxLegacyTriggerCommand hotKey="A" id="MinAutomaticForEach" ksoCmd="SparklineVertMinAuto" text="@Automatic for Each Sparkline"/>
+			<KxLegacyTriggerCommand hotKey="F" id="MinSameForAll" ksoCmd="SparklineVertMinGroup" text="@Same for All Sparklines"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="C" id="MinCustomValue" ksoCmd="SparklineVertMinCustom" text="@Custom Value"/>
+			<KxTitleLabelCommand bold="0" font="Pingfang SC" fontSize="13" id="RB_ListTitle_01" text="@Vertical Axis Maximum Value Options"/>
+			<KxLegacyTriggerCommand hotKey="E" id="MaxAutomaticForEach" ksoCmd="SparklineVertMaxAuto" text="@Automatic for Each Sparkline"/>
+			<KxLegacyTriggerCommand hotKey="M" id="MaxSameForAll" ksoCmd="SparklineVertMaxGroup" text="@Same for All Sparklines"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="V" id="MaxCustomValue" ksoCmd="SparklineVertMaxCustom" text="@Custom Value"/>
+		</KListCommand>
+		<KxListCommand customTip="SparklineClear" icon="eraser_kd" id="Clear" ksoCmd="SparklineClear" rbHotKey="C" text="@Clear">
+			<command idQ="ClearSelectedSparkline"/>
+			<command idQ="ClearSelectedSparklineGroup"/>
+		</KxListCommand>
+		<KListCommand groupTip="SparklineToolOperationGroup" icon="select_group_kd" id="Sparkline_group" rbFileMenuEmbed="1" text="@Operation">
+			<command idQ="SparkAxis"/>
+			<command idQ="GroupSparkline"/>
+			<command idQ="UnGroupSparkline"/>
+			<command idQ="Clear"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_SparklineTools">
+			<command idQ="Sparkline_edit"/>
+			<separator/>
+			<command idQ="Sparkline_type"/>
+			<separator/>
+			<command idQ="Sparkline_show"/>
+			<separator/>
+			<command idQ="Sparkline_style"/>
+			<separator/>
+			<command idQ="Sparkline_group"/>
+		</subcommand>
+	</subcommands>
+</shell>

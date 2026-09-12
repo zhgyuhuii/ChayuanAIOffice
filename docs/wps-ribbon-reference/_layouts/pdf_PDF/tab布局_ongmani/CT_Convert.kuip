@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_convert" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KPdfAppCommand appCmdObj="kexportimage" appId="kexportimage" canHideText="0" customTip="ConvertPDF2Photo" detail="tab_convert" icon="change_to_pic_two_kd" id="Convert_PDFToPhoto" idMso="FileSaveAsPicture" shortcutHint="Ctrl+Shift+I" text="@ConvertPDF2Photo" wpsIsEanble="false"/>
+		<KAppCommand appCmdObj="kextractpage" appId="kextractpage" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="PageExtract_ConvertTab" text="@pdfextractpage"/>
+		<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" customTip="TableRegonize" hotKey="" icon="sheet_extract_kd" id="MenuBar_PDFTableRecognize" idKey="PDFExtractTable" idType="currentpage" rbHotKey="" tabId="converttab" text="@RMenuTableRegonize"/>
+		<KPdfAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="PDFToWord" docExceptionPos="convert_2word" icon="change_to_word_kd" id="app_kpdf2wordv2_workspace" shortcutHint="Ctrl+Shift+W" text="@PDFToWord_L"/>
+		<KPdfAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="PDF2Excel" docExceptionPos="convert_2excel" icon="change_to_et_kd" id="app_kpdf2wordv2_workspace_pdf2excel" shortcutHint="Ctrl+Shift+X" text="@PDF2Excel"/>
+		<KPdfAppCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="PDF2PPT" docExceptionPos="convert_2ppt" icon="change_to_ppt_kd" id="app_kpdf2wordv2_workspace_pdf2ppt" shortcutHint="Ctrl+Shift+P" text="@PDF2PPT"/>
+		<KPdfAppCommand action="ConvertToImgPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="ImgPDF" docExceptionPos="convert_2img" icon="change_pdf_to_imgpdf_kd" id="app_kpdf2wordv2_workspace_pdf2imgpdf" text="@ImgPDF"/>
+		<KPdfAppCommand action="Merge" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="MergePDF" icon="doc_split_kd" id="app_kpdf2wordv2_workspace_merge" shortcutHint="Ctrl+Alt+D" text="@MergePDF"/>
+		<KPdfAppCommand action="Split" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="app_kpdf2wordv2_workspace_split" shortcutHint="Ctrl+Alt+S" text="@SplitPDF"/>
+		<KAppCommand appCmdObj="KPdfImageExtract" appId="kpdfimageextract" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_imageextract_tab_convert" text="@ImageExtract"/>
+		<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="doc_extract_page_kd" id="app_kocrtool_menu_2text_convert" idKey="PDFConvertPic2Txt" text="@Extract pure text"/>
+		<KListCommand groupTip="ConvertConvertGroup" icon="change_to_word_kd" id="RB_Pdf2OtherFile" rbFileMenuEmbed="1" text="@Convert">
+			<command idKey="PDFConvertFuncs" idQ="app_kpdf2wordv2_workspace"/>
+			<command idKey="PDFConvertFuncs" idQ="app_kpdf2wordv2_workspace_pdf2excel"/>
+			<command idKey="PDFConvertFuncs" idQ="app_kpdf2wordv2_workspace_pdf2ppt"/>
+			<command idQ="convert_ofd2word"/>
+			<command idQ="convert_ofd2excel"/>
+			<command idQ="convert_ofd2ppt"/>
+			<command filter="platfor!=ios" idKey="ConvertPDF2Photo" idQ="Convert_PDFToPhoto"/>
+			<command idQ="Pdf2Photo" proxyCmdId="ProxyPdf2Photo"/>
+			<command id="SpecialFunc_PDFZZ_PDF2TXT_Convert" idQ="SpecialFunc_PDFZZ_PDF2TXT"/>
+			<command idQ="app_kpdf2wordv2_tabstartPDF2CAD"/>
+		</KListCommand>
+		<KListCommand groupTip="ConvertConvertToPDFGroup" icon="change_pic_to_pdf_kd" id="RB_Pdf2Photo" rbFileMenuEmbed="1" text="@Convert to PDF" visibleDependsOnSubCmds="1">
+			<command idKey="ConvertPhoto2PDF" idQ="app_photo2pdf_tab_convert"/>
+			<command idKey="PDFConvertFuncs" idQ="app_kpdf2wordv2_workspace_pdf2imgpdf"/>
+			<KPdfAppCommand action="CADConvertToPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="CAD2PDF" icon="change_cad_to_pdf_kd" id="SpecialFunc_PDFZZ_CAD2PDFv2" idKey="PDFTabStartCAD2PDF" text="@CAD2PDF"/>
+		</KListCommand>
+		<KListCommand groupTip="ConvertRecognitionExtractionGroup" icon="doc_extract_page_kd" id="RB_Pdf_OtherSpecialFeatures" rbFileMenuEmbed="1" text="@Recognition Extraction" visibleDependsOnSubCmds="1">
+			<command idKey="PDFExtractPageInConvert" idQ="PageExtract_ConvertTab"/>
+			<command idQ="MenuBar_PDFTableRecognize"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Convert">
+			<command idQ="RB_MouseTool_SpecialFunc"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Pdf2OtherFile"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Pdf2Photo"/>
+			<command idQ="Separator"/>
+			<command idQ="ic_list"/>
+			<command idKey="PdfCTConvertIcListSeparator" idQ="Separator"/>
+			<command idQ="RB_Pdf_OtherSpecialFeatures"/>
+		</subcommand>
+	</subcommands>
+</shell>

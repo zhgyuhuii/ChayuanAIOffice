@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>延迟布局_delay_layout</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="315 deg" d="M10.293 3.20703L11.0001 2.49992" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="315 deg_2" d="M10.293 12.793L11.0001 13.5001" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="45 deg" d="M5.70715 3.20715L5.00005 2.50005" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="45 deg_2" d="M5.70715 12.7929L5.00005 13.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="0 deg" d="M8 2.5V1.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="0 deg_2" d="M8 13.5V14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 2825" d="M10 7.5H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2851" d="M5.5 7.5H6.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2852" d="M9.5 7.5H10.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2824" d="M6 7.5H6.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624799" d="M1.5 6C1.5 5.72386 1.72386 5.5 2 5.5H5C5.27614 5.5 5.5 5.72386 5.5 6V10C5.5 10.2761 5.27614 10.5 5 10.5H2C1.72386 10.5 1.5 10.2761 1.5 10V6Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624800" d="M10.5 6C10.5 5.72386 10.7239 5.5 11 5.5H14C14.2761 5.5 14.5 5.72386 14.5 6V10C14.5 10.2761 14.2761 10.5 14 10.5H11C10.7239 10.5 10.5 10.2761 10.5 10V6Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

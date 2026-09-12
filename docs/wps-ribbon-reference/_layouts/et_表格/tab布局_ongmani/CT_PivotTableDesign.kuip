@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_pivottabledesign" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand hotKey="d" icon="classification_not_show_subtotals_kd" id="PivotTableHideSubtotals" ksoCmd="PTHideSubtotals" rbHotKey="D" text="@Do Not Show Subtotals"/>
+		<KxLegacyTriggerCommand hotKey="t" icon="pivot_subtotals_top_kd" id="PivotTableShowSubtotalsTop" ksoCmd="PTShowSubtotalsTop" rbHotKey="T" text="@Show all Subtotals at Top of Group"/>
+		<KxLegacyTriggerCommand hotKey="b" icon="pivot_subtotals_bottom_kd" id="PivotTableShowSubtotalsBottom" ksoCmd="PTShowSubtotalsBottom" rbHotKey="B" text="@Show all Subtotals at Bottom of Group"/>
+		<KxLegacyTriggerCommand hotKey="c" icon="pivot_report_layout_kd" id="PivotTableShowInCompact" ksoCmd="PTShowInCompact" rbHotKey="C" text="@Show in Compact Form"/>
+		<KxLegacyTriggerCommand hotKey="o" icon="pivot_report_layout_kd" id="PivotTableShowInOutline" ksoCmd="PTShowInOutline" rbHotKey="O" text="@Show in Outline Form"/>
+		<KxLegacyTriggerCommand hotKey="t" icon="pivot_tabular_form_kd" id="PivotTableShowInTabular" ksoCmd="PTShowInTabular" rbHotKey="T" text="@Show in Tabular Form"/>
+		<KxLegacyTriggerCommand hotKey="i" icon="ranks_insert_blank_kd" id="PivotTableInsertBlank" ksoCmd="PTInsertBlank" rbHotKey="I" text="@Insert Blank Line after Each Item"/>
+		<KxLegacyTriggerCommand hotKey="r" icon="ranks_rows_delete_blank_kd" id="PivotTableRemoveBlank" ksoCmd="PTRemoveBlank" rbHotKey="R" text="@Remove Blank Line after Each Item"/>
+		<KxLegacyTriggerCommand hotKey="r" icon="repeat_labels_kd" id="PivotTableRepeatLabels" ksoCmd="PTRepeatLabels" rbHotKey="R" text="@Repeat All &#10;Item Labels"/>
+		<KxLegacyTriggerCommand hotKey="n" icon="repeat_labels_hide_kd" id="PivotTableNotRepeatLabels" ksoCmd="PTNotRepeatLabels" rbHotKey="N" text="@Do Not &#10;Repeat Item Labels"/>
+		<KxLegacyTriggerCommand hotKey="f" icon="ranks_grand_kd" id="PivotTableShowAllGrand" ksoCmd="PTShowAllGrand" rbHotKey="F" text="@Enable Row Column Grand Totals"/>
+		<KxLegacyTriggerCommand hotKey="n" icon="ranks_grand_none_kd" id="PivotTableHideAllGrand" ksoCmd="PTHideAllGrand" rbHotKey="N" text="@Disable Row Column Grand Totals"/>
+		<KxLegacyTriggerCommand hotKey="r" icon="ranks_row_grand_kd" id="PivotTableShowOnlyRowGrand" ksoCmd="PTShowOnlyRowGrand" rbHotKey="R" text="@Enable Only Row Grand Totals"/>
+		<KxLegacyTriggerCommand hotKey="c" icon="ranks_column_grand_kd" id="PivotTableShowOnlyColumnGrand" ksoCmd="PTShowOnlyColumnGrand" rbHotKey="C" text="@Enable Only Column Grand Totals"/>
+		<KListCommand customTip="PivotSubtotals" icon="pivot_subtotals_bottom_kd" id="PivotTableSubtotals" rbHotKey="T" text="@Subtotals">
+			<command idQ="PivotTableHideSubtotals"/>
+			<command idQ="PivotTableShowSubtotalsBottom"/>
+			<command idQ="PivotTableShowSubtotalsTop"/>
+		</KListCommand>
+		<KListCommand customTip="PivotTableGrandTotals" icon="ranks_grand_kd" id="PivotTableGrandTotals" rbHotKey="G" text="@Grand Totals">
+			<command idQ="PivotTableShowAllGrand"/>
+			<command idQ="PivotTableHideAllGrand"/>
+			<command idQ="PivotTableShowOnlyRowGrand"/>
+			<command idQ="PivotTableShowOnlyColumnGrand"/>
+		</KListCommand>
+		<KListCommand customTip="PivotReportLayout" icon="pivot_report_layout_kd" id="ReportLayout" rbHotKey="N" text="@Report Layout">
+			<command idQ="PivotTableShowInCompact"/>
+			<command idQ="PivotTableShowInOutline"/>
+			<command idQ="PivotTableShowInTabular"/>
+			<separator/>
+			<command idQ="PivotTableRepeatLabels"/>
+			<command idQ="PivotTableNotRepeatLabels"/>
+		</KListCommand>
+		<KListCommand customTip="PivotBlankRows" icon="ranks_rows_blank_kd" id="BlankRows" rbHotKey="B" text="@Blank Rows">
+			<command idQ="PivotTableInsertBlank"/>
+			<command idQ="PivotTableRemoveBlank"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableDesignLayoutGroup" icon="pivot_report_layout_kd" id="RB_PT_Layout" text="@Layout">
+			<command idQ="PivotTableSubtotals"/>
+			<command idQ="PivotTableGrandTotals"/>
+			<command idQ="ReportLayout"/>
+			<command idQ="BlankRows"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PivotTableDesign">
+			<command idQ="RB_PT_Layout"/>
+			<separator/>
+			<command idQ="PivotTableStyleOptions"/>
+			<separator/>
+			<command idQ="PivotTableStyles"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

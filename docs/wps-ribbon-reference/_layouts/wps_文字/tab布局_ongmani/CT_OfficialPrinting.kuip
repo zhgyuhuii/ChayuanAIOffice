@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_officialprinting" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries>
+		<library name="wpswordtool" path="."/>
+	</libraries>
+	<commands>
+		<KxWpsOfficialPrintingGalleryCommand controlType="0" hotKey="" icon="doc_official_mode_kd" id="OfficialPrinting" rbHotKey="" text="@Official Printing"/>
+		<KxWpsSmartOfficialVersionCommand controlType="0" customTip="OfficialVersionTransform" hotKey="3" icon="official_version_transform_kd" id="OfficialPrintingTransform" rbHotKey="3" text="@Official Printing Transform"/>
+		<KxWpsOfficialDeepSeekCommand hotKey="Z" id="OfficialPrintingDeepSeek" rbHotKey="Z"/>
+		<KxWpsOfficialWriteCommand customTip="OfficialPrintingWriting" icon="pen_kd" id="OfficialPrintingWrite" text="@Official Printing Generate"/>
+		<KxWpsOfficialImitateWriteCommand customTip="OfficialPrintingImitation" hotKey="I" icon="doc_pen_two_kd" id="OfficialPrintingImitate" rbHotKey="I" text="@Official Printing Imitate"/>
+		<KxWpsOfficialAIGCListCommand customTip="OfficialPrintingGeneration" hotKey="G" icon="ai_edit_kd" id="OfficialPrintingAIGCGenerate" rbHotKey="G" text="@Ai Write Official Printing"/>
+		<KxWpsOfficialAIGCListCommand customTip="OfficialPrintingRewriting" hotKey="R" icon="doc_star_kd" id="OfficialPrintingAIGCReWrite" rbHotKey="R" text="@Ai ReWrite Official Printing"/>
+		<KxWpsOfficialProofreadEntryProxyCommand cutomTip="Official Proofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" filter="isIntranet=false" icon="official_documents_review_kd" id="OfficialModeProofreadTriggerCmd" targetId="OfficialModeProofreadTriggerCmd" targetModule="kproofread" text="@Official Proofread"/>
+		<KxWpsOfficialModeTemplateProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwebwpsdocofficial" height="600" id="OnlineOfficialPrintingTemplate" idKey="OnlineOfficialTemplate" skeletonAlias="kwpsofficialmode_template" targetId="OnlineOfficialPrintingTemplate" targetModule="kwpsofficial" width="468"/>
+		<KxWpsOfficialOnlineGalleryCommand customTip="OfficialModeTemplates" hotKey="4" icon="doc_official_template_kd" id="OfficialPrintingTemplates" idKey="OfficialTemplateEntry" onlineCmd="OnlineOfficialPrintingTemplate" rbHotKey="4" text="@Official Printing Templates"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="DocFieldTree" icon="document_field_tree_kd" id="DocFieldTree" ksoCmd="DocumentFieldView" qtspyName="DocFieldTree" text="@Document SemanticsTree"/>
+		<KxWpsTextAsWholeCommand hotKey="T" icon="text_as_awhole_kd" id="TextAsWhole" text="@Whole Text"/>
+		<KListCommand hotKey="M" icon="PunctuationWidthAdjust" id="PuncWidthAdjust" text="@Punctuation Width Adjust">
+			<KxWpsPunctuationWidthAdjustCommand id="PunctuationWidthType"/>
+		</KListCommand>
+		<KxWpsOfficialVersionEditionTableToEvenPageCommand controlType="6" customTip="EditionTableToEvenPage" icon="even_pag_printing_kd" id="EditionTableToEvenPage" qtspyName="EditionTableToEvenPage" rbHotKey="B" text="@EditionTable To EvenPage"/>
+		<KxWpsOfficialPrintingElementsGalleryCommand customTip="OfficialVersionElementsInsert" hotKey="6" icon="doc_official_elements_kd" id="OfficialPrintingElementsInsert" rbHotKey="6" text="@Official Elements"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="template_kd" id="PrintingModelCase" idKey="OfficialMaterialContainModelCaseEntry" showCustomTipInMenu="true" targetId="PrintingModelCase" targetModule="kwpsofficial" text="@Model Case"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="doc_star_two_kd" id="PrintingIdeologicalPolicy" idKey="OfficialMaterialContainIdeologicalPolicyEntry" showCustomTipInMenu="true" targetId="PrintingIdeologicalPolicy" targetModule="kwpsofficial" text="@Ideological Policy"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="official_documents_and_poems_kd" id="PrintingLiteraryGrace" idKey="OfficialVersionContainLiteraryGraceStateEntry" showCustomTipInMenu="true" targetId="PrintingLiteraryGrace" targetModule="kwpsofficial" text="@Literary Grace"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="GovernmentMaterial" id="PrintingGovernmentMaterial" idKey="OfficialContainGovMaterial" showCustomTipInMenu="true" targetId="PrintingGovernmentMaterial" targetModule="kwpsofficial" text="@Government Material"/>
+		<KxWpsOfficialVersionMaterialCommand customTip="OfficialVersionMaterial" hotKey="M" icon="folder_official_materials_kd" id="OfficialPrintingMaterial" idKey="OfficialVersionContainMaterialStateEntry" rbHotKey="M" text="@Official Material">
+			<command idQ="PrintingModelCase"/>
+			<command idQ="PrintingIdeologicalPolicy"/>
+			<command idQ="PrintingLiteraryGrace"/>
+			<command idQ="PrintingGovernmentMaterial"/>
+		</KxWpsOfficialVersionMaterialCommand>
+		<KxWpsOfficialFontSettingCommand icon="batch_set_font_kd" id="OfficialFontSetting" text="@font setting"/>
+		<KxWpsOfficialPageSettingCommand icon="doc_setup_kd" id="OfficialPageSetting" text="@page setting"/>
+		<KxWpsOfficialTypesetSettingCommand icon="doc_type_setting_kd" id="OfficialTypesetSetting" text="@typeset setting"/>
+		<KxWpsOfficialFontSettingCompoundCommand icon="batch_set_font_kd" id="OfficialFontSettingCompound" text="@font setting"/>
+		<KxWpsOfficialPageSettingCompoundCommand icon="doc_setup_kd" id="OfficialPageSettingCompound" text="@page setting"/>
+		<KxWpsOfficialTypesetSettingCompoundCommand icon="doc_type_setting_kd" id="OfficialTypesetSettingCompound" text="@typeset setting"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tools_kd" id="ProxyPrintingTypeset" targetId="PrintingTypeset" targetModule="kwpsofficial" text="@One click layout"/>
+		<KListCommand hotKey="V" icon="paragraph_increase_line_spacing_kd" id="ParagraphVerticalAdjust" text="@Paragraph Vertical Adjust">
+			<KxWpsParagraphVerticalAdjustCommand id="ParagraphVerticalValue"/>
+		</KListCommand>
+		<KxWpsTextHangAlignCommand hotKey="X" icon="align_hanging_kd" id="TextHangAlignment" text="@Text Hanging Alignment"/>
+		<KInsertParagraphIndCommand hotKey="I" icon="paragraph_indent_first_line_kd" id="ParagraphIndent2Spaces" text="@Indent Paragraph by 2 Characters"/>
+		<KxWpsOfficialVersionEditionTableToEvenPageCommand hotKey="E" icon="even_pag_printing_kd" id="OfficialModeEditionTableToEvenPage" text="@EditionTable To EvenPage"/>
+		<KListCommand id="OfficialPrintingDoc" rbFileMenuEmbed="1" text="@Official Printing Doc">
+			<command idQ="OfficialPrintingTemplates"/>
+			<command idQ="OfficialPrintingTransform"/>
+		</KListCommand>
+		<KxWpsOfficialModeListCommand customTip="TypesettingTools" icon="typesetting_tools_kd" id="OfficialPrintingTypeset" rbFileMenuEmbed="1" text="@Official Printing Typeset">
+			<command idQ="OfficialModeEditionTableToEvenPage"/>
+			<command idQ="ParagraphVerticalAdjust"/>
+			<command idQ="ParagraphIndent2Spaces"/>
+			<command idQ="FitText"/>
+			<command idQ="TextHangAlignment"/>
+			<command idQ="TextAsWhole"/>
+			<command idQ="PuncWidthAdjust"/>
+			<KxAdjustTableCenterCommand hotKey="Z" icon="table_auto_fit_window_kd" id="AdjustTableToCenterWidth" text="@Table Adapt To The Center Width"/>
+		</KxWpsOfficialModeListCommand>
+		<KListCommand id="OfficialPrintingTypeSetting" rbFileMenuEmbed="1" text="@Official TypeSetting">
+			<KxWpsCompoundListCommand compoundListCmdTriggerable="true" customTip="OfficialTypeset" icon="doc_tools_kd" id="OfficialTypesetCompoundList" text="@One click layout" triggerCmdId="PrintingTypeset">
+				<KxWpsOfficialTitleCommand text="@One-click typesetting performs Settings"/>
+				<command idQ="OfficialFontSettingCompound"/>
+				<command idQ="OfficialPageSettingCompound"/>
+				<command idQ="OfficialTypesetSettingCompound"/>
+			</KxWpsCompoundListCommand>
+			<command idQ="OfficialPrintingTypeset"/>
+			<KListCommand customTip="OfficialSetting" enableDependsOnSubCommands="true" icon="doc_type_setting_kd" id="OfficialSetting" text="@official setting">
+				<command idQ="OfficialFontSetting"/>
+				<command idQ="OfficialPageSetting"/>
+				<command idQ="OfficialTypesetSetting"/>
+			</KListCommand>
+		</KListCommand>
+		<KxWpsOfficialAIListCommand id="OfficialPrintingProofRead" rbFileMenuEmbed="1" text="@Proofread">
+			<command idQ="OfficialModeProofreadTriggerCmd"/>
+		</KxWpsOfficialAIListCommand>
+		<KxWpsOfficialVersionDocumentFieldCommand controlType="0" customTip="InsertDocumentField" hotKey="D" icon="doc_field_kd" id="OfficialModeInsertDocumentField" ksoCmd="InsertDocumentField" rbHotKey="D" text="@DocumentField"/>
+		<command idQ="OfficialVersionLockAreaReadOnly"/>
+		<command idQ="OfficialVersionDocumentFieldException"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="DocFieldTree" hotKey="T" icon="document_field_tree_kd" id="OfficialModeDocFieldTree" ksoCmd="DocumentFieldView" qtspyName="DocFieldTree" rbHotKey="T" text="@Document SemanticsTree"/>
+		<KListCommand id="OfficialPrintingMediaParts" rbFileMenuEmbed="1" text="@Media Parts">
+			<command idQ="OfficialVersionMetaData"/>
+			<command idQ="OfficialVersionLockArea"/>
+			<command idQ="OfficialModeDocFieldTree"/>
+		</KListCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialPrintingAI" rbFileMenuEmbed="1" text="@Official Printing AI">
+			<command idQ="OfficialPrintingAIGCGenerate"/>
+			<KRbDualVLayoutListCommand id="OfficialPrintingWriteField">
+				<command idQ="OfficialPrintingWrite"/>
+				<command idQ="OfficialPrintingImitate"/>
+			</KRbDualVLayoutListCommand>
+			<command idQ="OfficialPrintingAIGCReWrite"/>
+			<command idQ="OfficialPrintingAiaccompanyWrite"/>
+			<command idQ="OfficialPrintingDeepSeek"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistReferenceLibrary" targetId="OfficialdocAssistReferenceLibrary" targetModule="kofficialdocumentassist" text="@Reference Library"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistSyllabus" targetId="OfficialdocAssistSyllabus" targetModule="kofficialdocumentassist" text="@Syllabus Recommend"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocMaterialLibrary" targetId="OfficialdocMaterialLibrary" targetModule="kofficialdocumentassist" text="@Material Library"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialDocWritingSetting" targetId="OfficialDocWritingSetting" targetModule="kofficialdocumentassist" text="@Material Setting"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialMaterialContentCmd" targetId="OfficialMaterialContentCmd" targetModule="kofficialdocumentassist"/>
+		<KListCommand id="OfficialDocMaterialWriting" idKey="OfficialDocMaterialLibrary" rbFileMenuEmbed="1" text="@Material Writing">
+			<command idQ="OfficialdocAssistReferenceLibrary"/>
+			<command idQ="OfficialdocAssistSyllabus"/>
+			<command idQ="OfficialdocMaterialLibrary"/>
+			<KxMaterialToolGalleryCommand controlType="4" customTip="MaterialTools" icon="materialTool" id="materialPopupCmd" qtspyName="MaterialTool" targetProxyCmd="OfficialMaterialContentCmd" text="@Material Tools">
+				<command idQ="OfficialDocWritingSetting"/>
+			</KxMaterialToolGalleryCommand>
+		</KListCommand>
+		<KxSmartPageNumSettingsMenuItemCommand controlType="4" dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="OfficialPrinting_InsertPageNumInInsertTab" idMso="PageNumberFormatGallery" rbHotKey="N" text="@Insert Page Number"/>
+		<KxWpsDeletePageNumCommand hotKey="R" icon="doc_page_number_delete_kd" id="OfficialPrinting_DeletePageNumTab" rbHotKey="R" text="@Delete Page Num"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand controlType="4" customTip="OfficialPageNumber" icon="doc_page_number_kd" id="Printing_InsertPageNumbers" idMso="HeaderFooterPageNumberInsertGallery" isIncludeInsideOutside="true" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" refLocalCmd="LocalInsertPageNumbersOfficialVersion" text="@Page&#10;Number"/>
+		<KxWpsHeaderFooterPageNumCommandOfficialVersion controlType="4" customTip="PageNumber" hotKey="P" icon="doc_page_number_kd" id="OfficialPrinting_InsertPageNumbers" idMso="HeaderFooterPageNumberInsertGallery" isIncludeInsideOutside="true" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="P" refLocalCmd="LocalInsertPageNumbers" text="@Page&#10;Number">
+			<command idQ="Official_InsertCurPosPageNumTab"/>
+			<command idQ="OfficialPrinting_InsertPageNumInInsertTab"/>
+			<command idQ="OfficialPrinting_DeletePageNumTab"/>
+		</KxWpsHeaderFooterPageNumCommandOfficialVersion>
+		<KListCommand id="OfficialPrintingElements" rbFileMenuEmbed="1" text="@Official Printing Elements">
+			<command idQ="OfficialPrintingMaterial"/>
+			<command idQ="OfficialPrintingElementsInsert"/>
+			<command idQ="OfficialModeInsertDocumentField"/>
+			<command idQ="OfficialInsertDocBarcode"/>
+			<KRbDualVLayoutListCommand id="PageNumbers">
+				<command idQ="OfficialPrinting_InsertPageNumbers"/>
+				<command idQ="m_Symbols"/>
+			</KRbDualVLayoutListCommand>
+		</KListCommand>
+		<KxWpsOfficialPrintingHVFontSizeListCommand controlType="15" customTip="OfficialHVFont" icon="horizontal_and_vertical_settings_kd" id="OfficialPrintingHV_Font2" text="@HVFont Size" vertspace="0">
+			<command idQ="OfficialPrintingHFontSize"/>
+			<command idQ="OfficialPrintingVFontSize"/>
+		</KxWpsOfficialPrintingHVFontSizeListCommand>
+		<KxValueCommand id="LineSpacing1_0" index="10" ksoCmd="LineSpacingNumber" shortcutHint="Ctrl+1" text="@1.0"/>
+		<KxValueCommand id="LineSpacing1_5" index="15" ksoCmd="LineSpacingNumber" text="@1.5"/>
+		<KxValueCommand id="LineSpacing2_0" index="20" ksoCmd="LineSpacingNumber" shortcutHint="Ctrl+2" text="@2.0"/>
+		<KxValueCommand aid="80061" id="LineSpacing2_5" index="25" ksoCmd="LineSpacingNumber" text="@2.5"/>
+		<KxValueCommand aid="80062" id="LineSpacing3_0" index="30" ksoCmd="LineSpacingNumber" text="@3.0"/>
+		<KxLegacyTriggerCommand aid="80063" controlType="0" dialogHint="1" hotKey="m" id="LineSpacingMore" idMso="LineSpacingMoreLineSpacingDialog" ksoCmd="LineSpacingMore" text="@More"/>
+		<KxWpsOfficialPrintingLineSpaceEditCommand fixedEditWidth="100" id="OfficialPrintingLineSpace" idKey="WideOfficialEntrance" ksoCmd="OfficialPrintingLineSpace" text="@Official Printing Line Interval: "/>
+		<KxWpsOfficialModeListCommand controlType="4" customTip="m_LineSpacing" dialogHint="1" icon="line_spacing_kd" id="LineSpacing" idMso="LineSpacingGallery" rbHotKey="K" text="@Line Spacing">
+			<command idQ="LineSpacing1_0"/>
+			<command idQ="LineSpacing1_5"/>
+			<command idQ="LineSpacing2_0"/>
+			<command idQ="LineSpacing2_5"/>
+			<command idQ="LineSpacing3_0"/>
+			<command idQ="OfficialPrintingLineSpace"/>
+			<command idQ="LineSpacingMore"/>
+		</KxWpsOfficialModeListCommand>
+		<KxWpsFontComboBoxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" icon="symbol_a_kd" id="Official_Printing_FontNameInHomeTab" idMso="Font" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="172" text="@Font Name" verticalPolicy="Preferred"/>
+		<KxLegacyDblTriggerCommandEx canHideText="0" controlType="6" customTip="FormatPainter" hotKey="FP" icon="brush_kd" iconQat="brush_kd" id="OfficialPrintFormatPainter" idMso="FormatPainter" ksoCmd="FormatPainter" rbHotKey="FP" text2="@Format&#10;Painter" text="@Format &#10;Painter"/>
+		<KxWpsNormalListCommand controlType="16" customTip="OfficialPrintingFontArea" forceVisible="1" groupTip="FontGroup" horizontalSpacing="8" icon="symbol_a_kd" id="OfficialPrintingFontArea" text="@Official Format Setting">
+			<command idQ="OfficialPrintFormatPainter"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand horizontalSpacing="0" layoutOnly="1" rightSpace="0">
+					<KFontRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+						<command idQ="Official_Printing_FontNameInHomeTab"/>
+						<command idQ="FontSize"/>
+					</KFontRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="OfficialPrintingCustomBoldWidth"/>
+					<command idQ="FontColor"/>
+					<command idQ="EncloseCharactersInHomeTab"/>
+					<command idQ="LineSpacing"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="OfficialPrintingHV_Font2"/>
+					<command idQ="OfficialVersionNumbering"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxWpsNormalListCommand>
+		<KListCommand id="OfficalPrintingOthers" idKey="OfficalPrintingOthers" text="@Others">
+			<KRbLayoutListCommand fixedwidgetWidth="60" layoutOnly="1" leftSpace="0" rightSpace="0">
+				<KOfficialRbDualVLayoutListCommand>
+					<KxWpsHelpCommand helpDetail="wyms" icon="question_kd" id="OfficialMode_Help" productId="1000235" text="@Help"/>
+					<KxWpsFeedbackCommand appName="printingmode" icon="bubble_two_kd" id="OfficialPrinting_Feedback" productId="1000235" productName="@Official Printing Mode" text="@Feedback"/>
+				</KOfficialRbDualVLayoutListCommand>
+			</KRbLayoutListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_OfficialPrinting">
+			<command idQ="OfficialPrintingDoc"/>
+			<separator/>
+			<command idQ="OfficialPrintingAI"/>
+			<separator/>
+			<command idQ="OfficialPrintingElements"/>
+			<separator/>
+			<command idQ="OfficialPrintingFontArea"/>
+			<separator/>
+			<command idQ="OfficialPrintingTypeSetting"/>
+			<separator/>
+			<command idQ="OfficialPrintingProofRead"/>
+			<separator/>
+			<command idQ="OfficialPrintingMediaParts"/>
+			<separator/>
+			<command idKey="OfficialDocMaterialLibrary" idQ="OfficialDocMaterialWriting"/>
+			<separator/>
+			<command idQ="OfficalPrintingOthers"/>
+		</subcommand>
+	</subcommands>
+</shell>

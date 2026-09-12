@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>忽略打印​​区域16_IgnorePrintArea</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-red-primary kd-stroke-width-icon-regular"><path id="line" d="M14.5 11C14.5 12.933 12.933 14.5 11 14.5C9.067 14.5 7.5 12.933 7.5 11C7.5 9.067 9.067 7.5 11 7.5C12.933 7.5 14.5 9.067 14.5 11Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M13.5 8.5L8.5 13.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_3" d="M3.5 6V3.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M3.5 10V12.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M12.5 6V3.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M14.5 7V1.51C14.5 1.50448 14.4955 1.5 14.49 1.5H1.51C1.50448 1.5 1.5 1.50448 1.5 1.51V14.49C1.5 14.4955 1.50448 14.5 1.51 14.5H7" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7" d="M3.5 7V9" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_8" d="M7 3.5H9" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

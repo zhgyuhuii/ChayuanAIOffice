@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_scannededitpro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KpdfBeautifyTabCommand customTip="scannededitpro" icon="three_d_rotation_kd" id="scannedbeautify_tab" idKey="PDFScannedbeautifyTab" text="@scandocument"/>
+		<KpdfBeautifyApply2AllCommand id="apply2all" text="@apply2all"/>
+		<KpdfBeautifyCustomPageCommand icon="apply_to_all_kd" id="batch_filter" idKey="PDFBatchFilter" text="@batchapplyfilter"/>
+		<KListCommand horizontalSpacing="2" id="RB_beautify" rbFileMenuEmbed="1" refIdForCollapsed="TransitionEffects" text="@beautifyGallery">
+			<PdfBeautifyCommand embedHint="1" galleryHeight="100" geometryWidth="342" iconQat="scan_edit_kd" id="beautifyGallery" idMso="AnimationTransitionGallery" maxVisibleNumber="5" qtspyName="PdfBeautify" rbHotKey="S" text="@beautifyGallery"/>
+		</KListCommand>
+		<KListCommand icon="ai_layout_kd" id="RB_HdTool" layout_lineCount="2" rbFileMenuEmbed="1" text="@RB_HdTool">
+			<KAppCommand action="ConvertType_HighDefinition" appCmdObj="Common" appId="kpdfscannededitpro" customTip="app_scannedtab_imagehd" icon="pic_sharpness_kd" id="app_scannedtab_imagehd" idKey="PDFRHdTool" text="@app_scannedtab_imagehd"/>
+			<KAppCommand action="ConvertType_HandWriting" appCmdObj="Common" appId="kpdfscannededitpro" customTip="app_scannedtab_deldraw" icon="eraser_kd" id="app_scannedtab_deldraw" idKey="PDFRHdTool" text="@app_scannedtab_deldraw"/>
+			<KAppCommand action="ConvertType_Deskew" appCmdObj="Common" appId="kpdfscannededitpro" customTip="app_scannedtab_adjustpos" icon="pic_scale_kd" id="app_scannedtab_adjustpos" idKey="PDFRHdTool" text="@app_scannedtab_adjustpos"/>
+			<command idQ="batch_filter"/>
+		</KListCommand>
+		<KListCommand icon="doc_extract_page_kd" id="ocrtext" idKey="PDFOcrExtract" layout_lineCount="2" text="@Extract">
+			<KAppCommand appCmdObj="ImportCurrentPic" appId="kocrtool" icon="change_pic_to_wps_kd" id="ocrtext_text" idKey="PDFOcrExtractTxt" ocrExtractTextEntry="4" text="@RMunuOcrExtractImage"/>
+			<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" icon="sheet_extract_kd" id="ocrtext_excel" idKey="PDFOcrExtractTable" idType="currentpage" tabId="scannededit" text="@ExtractTable"/>
+		</KListCommand>
+		<KListCommand icon="close_window_kd" id="RB_ScannedEditProExit" layout_lineCount="2" rbFileMenuEmbed="1" text="@Close">
+			<KpdfBeautifyFeedbackCommand icon="setup_kd" id="Feedback_Scanned" idKey="PDFScannedEditProFeedback" text="@Feedback"/>
+			<KpdfBeautifyCloseCommand customTip="PDFScannedEditExit" icon="close_window_kd" id="Exit_Optim" idKey="PdfScannedEditProClose" text="@Close"/>
+		</KListCommand>
+		<KListCommand icon="scan_edit_kd" id="RB_ScannerEdit" idKey="PdfCTScannedEditProRBScannerEdit" text="@RB_ScannerEdit_text">
+			<KAppQuickMenuCommand action="5" appId="pdfadvancedtool" icon="pic_extract_kd" id="app_CT_ScannedEditPro_pdfadvancedtool_5" idKey="PdfCTScannedEditProAppCTScannedEditProPdfadvancedtool5" text="@app_CT_ScannedEditPro_pdfadvancedtool_5_text">
+				<KPdfImageRecognizeCommand appId="kpdfscannedocr" icon="doc_two_kd" id="app_CT_ScannedEditPro_kpdfscannedocr_singledocument" idKey="PdfCTScannedEditProAppCTScannedEditProKpdfscannedocrSingledocument" text="@app_CT_ScannedEditPro_kpdfscannedocr_singledocument_text"/>
+				<KAppCommand action="ConvertToEditPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" icon="pages_multiple_two_kd" id="app_CT_ScannedEditPro_kpdf2wordv2_ConvertToEditPDF" text="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToEditPDF_text"/>
+			</KAppQuickMenuCommand>
+			<KAppCommand action="3" appCmdObj="PdfImageRecognize" appFlags="wpsmember" appId="pdfadvancedtool" canHideText="0" icon="pic_edit_kd" id="app_CT_ScannedEditPro_pdfadvancedtool_2" idKey="PdfCTScannedEditProAppCTScannedEditProPdfadvancedtool2" idType="pdf_co_scantab" text="@app_CT_ScannedEditPro_pdfadvancedtool_2_text" tipContent="@app_CT_ScannedEditPro_pdfadvancedtool_2_tipContent" tipTitle="@app_CT_ScannedEditPro_pdfadvancedtool_2_tipTitle"/>
+		</KListCommand>
+		<KAutoHideListCommand canHideText="0" icon="doc_convert_list_kd" id="RB_ScannedEditPro_ConvertList" idKey="PdfCTScannedEditProRBScannedEditProConvertList" text="@RB_ScannedEditPro_ConvertList_text">
+			<KAppCommand appCmdObj="Pdf2Word" appFlags="null" appId="kpdf2wordv2" icon="change_to_word_kd" id="app_CT_ScannedEditPro_kpdf2wordv2_" idKey="PdfCTScannedEditProAppCTScannedEditProKpdf2wordv2" text="@app_CT_ScannedEditPro_kpdf2wordv2__text" tipContent="@app_CT_ScannedEditPro_kpdf2wordv2__tipContent" tipTitle="@app_CT_ScannedEditPro_kpdf2wordv2__tipTitle" vipModeUrlId="pdf2doc"/>
+			<KAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appFlags="null" appId="kpdf2wordv2" icon="change_to_et_kd" id="app_CT_ScannedEditPro_kpdf2wordv2_ConvertToExcel" idKey="PdfCTScannedEditProAppCTScannedEditProKpdf2wordv2ConvertToExcel" text="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToExcel_text"/>
+			<KAppCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appFlags="null" appId="kpdf2wordv2" icon="change_to_ppt_kd" id="app_CT_ScannedEditPro_kpdf2wordv2_ConvertToPowerPoint" idKey="PdfCTScannedEditProAppCTScannedEditProKpdf2wordv2ConvertToPowerPoint" text="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToPowerPoint_text" tipContent="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToPowerPoint_tipContent" tipTitle="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToPowerPoint_tipTitle" vipModeUrlId="pdf2ppt"/>
+			<KAppCommand action="CAD" appCmdObj="Pdf2Word" appFlags="null" appId="kpdf2wordv2" icon="change_to_cad_kd" id="app_CT_ScannedEditPro_kpdf2wordv2_CAD" idKey="PdfCTScannedEditProAppCTScannedEditProKpdf2wordv2CAD" text="@app_CT_ScannedEditPro_kpdf2wordv2_CAD_text"/>
+		</KAutoHideListCommand>
+		<KListCommand icon="doc_extract_convert_list_kd" id="RB_ScannedEditPro_ExtractAndConvert" idKey="PdfCTScannedEditProRBScannedEditProExtractAndConvert" text="@RB_ScannedEditPro_ExtractAndConvert_text">
+			<command idQ="RB_ScannedEditPro_ExtractList"/>
+			<command idQ="ocrtext"/>
+			<command idQ="RB_ScannedEditPro_ConvertList"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_ScannedEditPro">
+			<command idQ="RB_MouseTool_PictureEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_beautify"/>
+			<command idQ="RB_HdTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_ExtractAndTransform"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_ScannerEdit"/>
+			<separator idKey="PdfCTScannedEditProSeparator"/>
+			<command idQ="RB_ScannedEditPro_ExtractAndConvert"/>
+			<command idQ="RB_ScannedEditProExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

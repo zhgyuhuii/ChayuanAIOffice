@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>播放</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-quaternary {
+       fill: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       stroke: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       km_fill: #FDE0CE;
+       km_stroke: #FDE0CE;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-2" class="kd-color-icon-orange-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M6.5 10.482V5.51804C6.5 5.51019 6.50864 5.5054 6.5153 5.50956L10.4864 7.99152C10.4927 7.99544 10.4927 8.00456 10.4864 8.00848L6.5153 10.4904C6.50864 10.4946 6.5 10.4898 6.5 10.482Z" stroke="none"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line" d="M6.5 10.482V5.51804C6.5 5.51019 6.50864 5.5054 6.5153 5.50956L10.4864 7.99152C10.4927 7.99544 10.4927 8.00456 10.4864 8.00848L6.5153 10.4904C6.50864 10.4946 6.5 10.4898 6.5 10.482Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_2" d="M1.5 3C1.5 2.72386 1.72386 2.5 2 2.5H14C14.2761 2.5 14.5 2.72386 14.5 3V13C14.5 13.2761 14.2761 13.5 14 13.5H2C1.72386 13.5 1.5 13.2761 1.5 13V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_equationtools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxListCommand customTip="EquationOptions" groupTip="EquationToolEquationGroup" id="RB_EquationTools" idMso="EquationOptions" text="@Equation Options">
+			<KxOMathEquationGalleryCommand customTip="EquationInsertGallery" equationGalleryType="common" galleryHeight="758" galleryWidth="379" hotKey="E" icon="math_latex_kd" id="EquationInsertGallery" idMso="EquationInsertGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationInsertGallery" rbHotKey="E" text="@Equation"/>
+			<KxLegacyTriggerCommand customTip="EquationProfessional" disableCustomRibbon="true" hotKey="P" icon="math_equation_professional_format_kd" id="EquationProfessional" idMso="EquationProfessional" ksoCmd="EquationProfessional" rbHotKey="P" text="@Professional"/>
+			<KxLegacyTriggerCommand customTip="EquationLinearFormat" disableCustomRibbon="true" hotKey="L" icon="math_equation_linear_format_kd" id="EquationLinearFormat" idMso="EquationLinearFormat" ksoCmd="EquationLinearFormat" rbHotKey="L" text="@Linear"/>
+			<KxLegacyTriggerCommand customTip="EquationNormalText" disableCustomRibbon="true" hotKey="N" icon="math_routine_kd" id="EquationNormalText" idMso="EquationNormalText" ksoCmd="EquationNormalText" rbHotKey="N" text="@Normal Text"/>
+		</KxListCommand>
+		<KListCommand groupTip="EquationToolSymbolGroup" icon="math_omega_kd" id="RB_EquationSymbols" text="@Symbols">
+			<KxOMathSymbolsGalleryCommand columnNumber="20" embedHint="1" galleryHeight="379" hotKey="Q" icon="math_omega_kd" iconQat="math_omega_kd" id="EquationSymbolsInsertGallery" idMso="EquationSymbolsInsertGallery" inlineRowHeightMultiple="1" ksoCmd="EquationInsertSymbol" maxVisibleNumber="20" minVisibleNumber="8" rbHotKey="Q" text="@Symbols"/>
+		</KListCommand>
+		<KListCommand groupTip="EquationToolStructureGroup" icon="code_xml_structure_kd" id="RB_EquationStructures" text="@Structures">
+			<KxOMathEquationGalleryCommand customTip="EquationFractionGallery" equationGalleryType="fraction" galleryHeight="399" galleryWidth="341" hotKey="F" icon="math_fraction_gallery_kd" id="EquationFractionGallery" idMso="EquationFractionGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationFractionGallery" rbHotKey="F" text="@Fraction"/>
+			<KxOMathEquationGalleryCommand customTip="EquationScriptGallery" equationGalleryType="script" galleryHeight="290" galleryWidth="341" hotKey="S" icon="math_natural_exponential_kd" id="EquationScriptGallery" idMso="EquationScriptGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationScriptGallery" rbHotKey="S" text="@Script"/>
+			<KxOMathEquationGalleryCommand customTip="EquationRadicalGallery" equationGalleryType="radical" galleryHeight="290" galleryWidth="341" hotKey="R" icon="math_radical_form_kd" id="EquationRadicalGallery" idMso="EquationRadicalGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationRadicalGallery" rbHotKey="R" text="@Radical"/>
+			<KxOMathEquationGalleryCommand customTip="EquationIntegralGallery" equationGalleryType="integral" galleryHeight="706" galleryWidth="261" hotKey="I" icon="math_integral_operation_kd" id="EquationIntegralGallery" idMso="EquationIntegralGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationIntegralGallery" rbHotKey="I" text="@Integral"/>
+			<KxOMathEquationGalleryCommand customTip="EquationLargeOperatorGallery" equationGalleryType="largeOperator" galleryHeight="768" galleryWidth="421" hotKey="G" icon="math_large_operator_kd" id="EquationLargeOperatorGallery" idMso="EquationLargeOperatorGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationLargeOperatorGallery" rbHotKey="G" text="@Large Operator"/>
+			<KxOMathEquationGalleryCommand customTip="EquationDelimiterGallery" equationGalleryType="bracket" galleryHeight="743" galleryWidth="341" hotKey="B" icon="math_delimiter_kd" id="EquationDelimiterGallery" idMso="EquationDelimiterGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationDelimiterGallery" rbHotKey="B" text="@Bracket"/>
+			<KxOMathEquationGalleryCommand customTip="EquationFunctionGallery" equationGalleryType="function" galleryHeight="743" galleryWidth="261" hotKey="U" icon="math_trigonometric_function_kd" id="EquationFunctionGallery" idMso="EquationFunctionGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationFunctionGallery" rbHotKey="U" text="@Function"/>
+			<KxOMathEquationGalleryCommand customTip="EquationAccentGallery" equationGalleryType="accent" galleryHeight="823" galleryWidth="245" hotKey="A" icon="math_accent_kd" id="EquationAccentGallery" idMso="EquationAccentGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationAccentGallery" rbHotKey="A" text="@Accent"/>
+			<KxOMathEquationGalleryCommand customTip="EquationLimitGallery" equationGalleryType="limitAndLog" galleryHeight="398" galleryWidth="261" hotKey="M" icon="math_limit_kd" id="EquationLimitGallery" idMso="EquationLimitGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationLimitGallery" rbHotKey="M" text="@Limit and Log"/>
+			<KxOMathEquationGalleryCommand customTip="EquationOperatorGallery" equationGalleryType="operator" galleryHeight="617" galleryWidth="245" hotKey="O" icon="math_operator_kd" id="EquationOperatorGallery" idMso="EquationOperatorGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationOperatorGallery" rbHotKey="O" text="@Operator"/>
+			<KxOMathEquationGalleryCommand customTip="EquationMatrixGallery" equationGalleryType="matrix" galleryHeight="833" galleryWidth="341" hotKey="X" icon="math_matrix_kd" id="EquationMatrixGallery" idMso="EquationMatrixGallery" ksoCmd="EquationInsertEquation" qtspyName="EquationMatrixGallery" rbHotKey="X" text="@Matrix"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_EquationTools">
+			<command idQ="RB_EquationTools"/>
+			<separator/>
+			<command idQ="RB_EquationSymbols"/>
+			<separator/>
+			<command idQ="RB_EquationStructures"/>
+		</subcommand>
+	</subcommands>
+</shell>

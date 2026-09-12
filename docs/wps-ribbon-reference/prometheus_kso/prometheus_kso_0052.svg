@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g fill="none" fill-rule="evenodd">
+    <g fill="#000" transform="translate(2 27)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+    <g fill="#000" transform="translate(27 27)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+    <g fill="#000" transform="translate(52 27)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>数据处理_data_processing</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="Vector 1604" d="M4.5 14.5L10 9" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 1605" d="M10 9L13 12" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 1607" d="M0.5 19H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 1608" d="M3 2.5V21.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 1606" d="M20.5 4.5L13 12L10 9L4.5 14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3301" d="M7 19H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular">
+<path id="Vector 1586" d="M16.5 20.5L22 15" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 1585" d="M14 18L16.5 20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

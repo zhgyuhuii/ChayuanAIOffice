@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_drawingtools_vml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommandEx hotKey="h" icon="text_frame_kd" id="rInsertTextboxHorizontal" ksoCmd="InsertTextboxHorizontal" rbHotKey="H" text="@Horizontal Text Box"/>
+		<KxLegacyTriggerCommandEx hotKey="v" icon="text_frame_vertical_kd" id="rInsertTextboxVertical" ksoCmd="InsertTextboxVertical" rbHotKey="V" text="@Vertical Text Box"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="EditPoints" hotKey="e" icon="edit_points_kd" id="rEditPoints" idMso="ObjectEditPoints" ksoCmd="EditPoints" rbHotKey="E" text="@Edit Points"/>
+		<KxGalleryChangeShapesCommand customTip="ChangeAutoShape" hotKey="n" icon="shape_kd" id="rChangAutoShape" ksoCmd="DynamicShape" ksoTriggerCmd="ChangeAutoShape" rbHotKey="N" text="@Change Shapes" triggerAble="0"/>
+		<KListCommand icon="shape_kd" id="RB_DC_InsertShape_Vml" rbFileMenuEmbed="1" text="@Insert Shape">
+			<KxGalleryShapesCommand embedHint="1" galleryWidth="144" iconQat="shape_kd" ksoCmd="DynamicShape" qtspyName="DynamicShape" rbHotKey="SH" text="@Insert Shape" triggerAble="1"/>
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<KListCommand customTip="EditShape" filter="lang!=ja_JP" hotKey="e" icon="edit_points_kd" qtspyName="EditPoints" rbHotKey="E" spaceHint="suitable" text="@Edit Shape">
+				<command idQ="rChangAutoShape"/>
+				<command idQ="rEditPoints"/>
+			</KListCommand>
+			<KxListCommand customTip2="InsertTextboxHorizontal2" customTip="InsertTextboxHorizontal" filter="lang!=jp_JP" hotKey="h" icon="text_frame_kd" ksoCmd="InsertTextboxHorizontal" qtspyName="InsertTextboxHorizontal" rbHotKey="X" spaceHint="suitable" text="@Text Box">
+				<command idQ="rInsertTextboxHorizontal"/>
+				<command idQ="rInsertTextboxVertical"/>
+			</KxListCommand>
+			<KxListCommand customTip2="InsertTextboxHorizontal2" customTip="InsertTextboxHorizontal" filter="lang=jp_JP" hotKey="h" icon="text_frame_kd" ksoCmd="InsertTextboxHorizontal" qtspyName="InsertTextboxHorizontal" rbHotKey="X" text="@Text Box">
+				<command idQ="rInsertTextboxHorizontal"/>
+				<command idQ="rInsertTextboxVertical"/>
+			</KxListCommand>
+		</KListCommand>
+		<KxPropComposeCommand controlType="0" hotKey="p" icon="pic_kd" id="PictureFill" idMso="ObjectPictureFill" ksoCmd="FillEffects" rbHotKey="P" tabIndex="3" text="@Picture"/>
+		<KxEtShapeFillThemeCommand customTip2="ShapeFillColor2" customTip="ShapeFillColor" icon="color_paint_wps_kd" id="m_rShapeFillColor_Vml" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" rbHotKey="SF" spaceHint="suitable" text="@Shape Fill">
+			<KxEtMoreColorThemeCommand colorUsage="FillColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" ksoCmd="FillColor" text="@More Fill Colors"/>
+			<KxEtSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" ksoCmd="FillColor" rbHotKey="E" text="@Snapper"/>
+			<command idKey="EtGradiantFill" idQ="GradiantFill"/>
+			<command idQ="TextureFill"/>
+			<command idQ="PatternFill"/>
+		</KxEtShapeFillThemeCommand>
+		<KxLegacyTriggerCommand aid="1053" dialogHint="1" hotKey="p" id="PatternedLines" ksoCmd="PatternedLines" text="@Line Pattern"/>
+		<KxLineStyleStaticGalleryCommand aid="6050" column="1" hotKey="w" icon="frame_line_type_kd" id="LineStylePalette" ksoCmd="LineStylePalette" rbHotKey="W" text="@Line Weight">
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt."/>
+			<KxPropComposeCommand aid="1054" controlType="0" dialogHint="1" hotKey="m" id="MoreLines" idMso="LineStylesDialog" ksoCmd="MoreLines" tabIndex="2" text="@More Lines"/>
+		</KxLineStyleStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" hotKey="s" icon="dash_style_menu_kd" id="DashStylePalette" ksoCmd="DashStylePalette" rbHotKey="S" text="@Dash Style">
+			<KxStaticGalleryItemCommand detail="@Solid" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_30_display_kd" index="0" qtspyName="DashStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Round Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_31_display_kd" index="1" qtspyName="DashStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Square Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_32_display_kd" index="2" qtspyName="DashStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_33_display_kd" index="3" qtspyName="DashStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Dash-Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_34_display_kd" index="4" qtspyName="DashStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_35_display_kd" index="5" qtspyName="DashStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash-Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_36_display_kd" index="6" qtspyName="DashStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Dash-Dot-Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_37_display_kd" index="7" qtspyName="DashStyle_7"/>
+		</KxStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" controlType="4" hotKey="r" icon="arrow_style_kd" id="ArrowStylePalette" idMso="ArrowStyleGallery" ksoCmd="ArrowStylePalette" rbHotKey="R" text="@Arrow Style">
+			<KxStaticGalleryItemCommand detail="@Arrow Style 1" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_0" index="0" qtspyName="ArrowStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 2" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_1" index="1" qtspyName="ArrowStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 3" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_2" index="2" qtspyName="ArrowStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 4" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_3" index="3" qtspyName="ArrowStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 5" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_4" index="4" qtspyName="ArrowStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 6" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_5" index="5" qtspyName="ArrowStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 7" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_6" index="6" qtspyName="ArrowStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 8" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_7" index="7" qtspyName="ArrowStyle_7"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 9" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_8" index="8" qtspyName="ArrowStyle_8"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 10" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_9" index="9" qtspyName="ArrowStyle_9"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 11" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_10" index="10" qtspyName="ArrowStyle_10"/>
+			<KxPropComposeCommand aid="1055" controlType="0" dialogHint="1" hotKey="m" id="MoreArrows" idMso="ArrowsMore" ksoCmd="MoreArrows" tabIndex="2" text="@More Arrows"/>
+		</KxStaticGalleryCommand>
+		<KxEtShapeLineThemeCommand customTip2="ShapeLineColor2" customTip="ShapeLineColor" icon="color_border_wps_kd" id="m_rShapeLineColor_Vml" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" rbHotKey="SO" spaceHint="suitable" text="@Shape Outline">
+			<KxEtMoreColorThemeCommand colorUsage="LineColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreLineColors" ksoCmd="LineColor" text="@More Line Colors"/>
+			<KxEtSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperLines" ksoCmd="LineColor" rbHotKey="E" text="@Snapper"/>
+			<command idQ="PatternedLines"/>
+			<command idQ="LineStylePalette"/>
+			<command idQ="DashStylePalette"/>
+			<command idQ="ArrowStylePalette"/>
+		</KxEtShapeLineThemeCommand>
+		<KxIndexListCommand customTip="FormatObject" icon="shape_styles_kd" id="RB_DC_ShapeStyles_Vml" index="2" ksoCmd="FormatObject" rbFileMenuEmbed="1" rbHotKey="O" text="@Shape Styles">
+			<command idQ="m_rShapeFillColor_Vml"/>
+			<command idQ="m_rShapeLineColor_Vml"/>
+		</KxIndexListCommand>
+		<KxLegacyTriggerCommand aid="170" hotKey="f" icon="level_bring_forward_kd" id="BringForward" ksoCmd="BringForward" rbHotKey="F" text="@Bring Forward"/>
+		<KxLegacyTriggerCommand aid="166" hotKey="R" icon="level_top_kd" id="RbBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+		<KxListCommand customTip2="BringForward2" customTip="BringForward" hotKey="f" icon="level_bring_forward_kd" id="Drawing_sp_BringForward_Vml" ksoCmd="BringForward" rbHotKey="AF" spaceHint="suitable" text="@Bring Forward">
+			<command idQ="BringForward"/>
+			<command idQ="RbBringToFront"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="171" hotKey="b" icon="level_send_backward_kd" id="SendBackward" ksoCmd="SendBackward" rbHotKey="B" text="@Send Backward"/>
+		<KxLegacyTriggerCommand aid="167" hotKey="k" icon="level_bottom_kd" id="SendToBack" ksoCmd="SendToBack" rbHotKey="K" text="@Send to Back"/>
+		<KxListCommand customTip2="SendBackward2" customTip="SendBackward" hotKey="b" icon="level_send_backward_kd" id="Drawing_sp_SendBackward_Vml" ksoCmd="SendBackward" rbHotKey="AE" spaceHint="suitable" text="@Send Backward">
+			<command idQ="SendBackward"/>
+			<command idQ="SendToBack"/>
+		</KxListCommand>
+		<KxObjectSelectCommand customTip="ObjectSelect" hotKey="J" icon="object_select_kd" id="ObjectSelect_drawingtool_Vml" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Object Select"/>
+		<KxValueCommand aid="664" controlType="0" hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" idMso="ObjectsAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+		<KxValueCommand aid="668" controlType="0" hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" idMso="ObjectsAlignCenterHorizontal" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+		<KxValueCommand aid="665" controlType="0" hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" idMso="ObjectsAlignRight" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+		<KxValueCommand aid="666" controlType="0" hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" idMso="ObjectsAlignTop" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+		<KxValueCommand aid="669" controlType="0" hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" idMso="ObjectsAlignMiddleVertical" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+		<KxValueCommand aid="667" controlType="0" hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" idMso="ObjectsAlignBottom" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+		<KxLegacyTriggerCommand aid="408" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" ksoCmd="AlignDistributeHori" rbHotKey="H" text="@Distribute Horizontally"/>
+		<KxLegacyTriggerCommand aid="465" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" ksoCmd="AlignDistributeVert" rbHotKey="V" text="@Distribute Vertically"/>
+		<KxLegacyTriggerCommand aid="80050" hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" ksoCmd="EqualHeight" rbHotKey="EH" text="@Equal Height"/>
+		<KxLegacyTriggerCommand aid="80051" hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" ksoCmd="EqualWidth" rbHotKey="EW" text="@Equal Width"/>
+		<KxLegacyTriggerCommand aid="80052" hotKey="s" icon="equal_size_kd" id="EqualSize" ksoCmd="EqualSize" rbHotKey="ES" text="@Equal Size"/>
+		<KxLegacyTriggerCommand aid="549" controlType="6" hotKey="P" icon="snap_to_grid_kd" id="RbSnaptoGrid" idMso="SnapToGrid" ksoCmd="SnaptoGrid" text="@Snap to Grid"/>
+		<KxLegacyTriggerCommand hotKey="G" icon="grid_switch_kd" id="rShowGrid" ksoCmd="FTB_GridSwitch" text="@Show Grid"/>
+		<KListCommand customTip="Align" icon="align_draw_left_kd" id="drawing_m_Align_Vml" rbHotKey="AA" text="@Align">
+			<command idQ="AlignmentControl"/>
+			<command idQ="DrawAlignLeft"/>
+			<command idQ="DrawAlignCenter"/>
+			<command idQ="DrawAlignRight"/>
+			<command idQ="DrawAlignTop"/>
+			<command idQ="DrawAlignMiddle"/>
+			<command idQ="DrawAlignBottom"/>
+			<separator/>
+			<command idQ="AlignDistributeHori"/>
+			<command idQ="AlignDistributeVert"/>
+			<separator/>
+			<command idQ="EqualHeight"/>
+			<command idQ="EqualWidth"/>
+			<command idQ="EqualSize"/>
+			<separator/>
+			<command idQ="RbSnaptoGrid"/>
+			<command idQ="rShowGrid"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="164" controlType="0" hotKey="g" icon="group_kd" id="Group" idMso="ObjectsGroup" ksoCmd="Group" rbHotKey="G" text="@Group"/>
+		<KxLegacyTriggerCommand aid="165" controlType="0" hotKey="u" icon="group_cancel_kd" id="UnGroup" idMso="ObjectsUngroup" ksoCmd="UnGroup" rbHotKey="U" text="@Ungroup"/>
+		<KListCommand customTip="Group" icon="group_kd" id="drawing_m_Group_Vml" rbHotKey="AG" spaceHint="suitable" text="@Group">
+			<command idQ="Group"/>
+			<command idQ="UnGroup"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="688" controlType="0" hotKey="t" icon="rotate_angle_kd" id="FreeRotate" idMso="ObjectRotateFree" ksoCmd="FreeRotate" rbHotKey="T" text="@Free Rotate"/>
+		<KxLegacyTriggerCommand aid="199" controlType="0" hotKey="l" icon="rotate_left_kd" id="RotateLeft" idMso="ObjectRotateLeft90" ksoCmd="RotateLeft" rbHotKey="L" text="@Rotate Left 90°"/>
+		<KxLegacyTriggerCommand aid="198" controlType="0" hotKey="r" icon="rotate_right_kd" id="RotateRight" idMso="ObjectRotateRight90" ksoCmd="RotateRight" rbHotKey="R" text="@Rotate Right 90°"/>
+		<KxLegacyTriggerCommand aid="196" controlType="0" hotKey="h" icon="flip_horizontal_kd" id="FlipHorizontal" idMso="ObjectFlipHorizontal" ksoCmd="FlipHorizontal" rbHotKey="H" text="@Flip Horizontally"/>
+		<KxLegacyTriggerCommand aid="197" controlType="0" hotKey="v" icon="flip_vertical_kd" id="FlipVertical" idMso="ObjectFlipVertical" ksoCmd="FlipVertical" rbHotKey="V" text="@Flip Vertically"/>
+		<KListCommand customTip="RotateRight" icon="rotate_right_kd" id="drawing_m_Rotate_Vml" rbHotKey="AY" spaceHint="suitable" text="@Rotate">
+			<command idQ="RotateLeft"/>
+			<command idQ="RotateRight"/>
+			<separator/>
+			<command idQ="FlipHorizontal"/>
+			<command idQ="FlipVertical"/>
+		</KListCommand>
+		<KListCommand icon="align_draw_left_kd" id="Drawing_RB_Arrange_Vml" rbFileMenuEmbed="1" text="@Arrange">
+			<command idQ="drawing_m_Align_Vml"/>
+			<command idQ="drawing_m_Group_Vml"/>
+			<command idQ="drawing_m_Rotate_Vml"/>
+		</KListCommand>
+		<KListCommand icon="doc_header_distance_kd" id="RB_DC_ObjectSelect_Vml" text="@Position">
+			<command idQ="ObjectSelect_drawingtool_Vml"/>
+			<command idQ="Drawing_sp_BringForward_Vml"/>
+			<command idQ="Drawing_sp_SendBackward_Vml"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="962" dialogHint="1" hotKey="o" icon="chart_objects_kd" id="FormatObject2" ksoCmd="FormatObject" text="@Format Object"/>
+		<KListCommand id="DetailedSettings_DrawingTools_Vml" text="@Detailed Settings">
+			<KListCommand customTip="DetailedSettings_DrawingTools" icon="detailed_settings_kd" id="DetailedSettingsList_DrawingTools_Vml" qtspyName="DetailedSettings" text="@Detailed Settings">
+				<command idQ="FormatObject2"/>
+			</KListCommand>
+		</KListCommand>
+		<KxEtFontPreviewComboboxCommand aid="603" controlType="2" customTip="FontName" horizontalPolicy="Expanding" hotKey="f" icon="symbol_a_kd" id="Drawing_FontName_Vml" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="130" rbHotKey="FF" text="@Font" verticalPolicy="Preferred"/>
+		<KxEtFontSizePreviewComboboxCommand aid="604" customTip="FontSize" fixedWidth="60" fontSizeList="6;8;9;10;11;12;14;16;18;20;22;24;26;28;36;48;72" horizontalPolicy="Preferred" hotKey="f" icon="vertical_font_size_kd" iconQat="vertical_font_size_kd" id="FontSize" ksoCmd="FontSize" layoutOnRight="true" rbHotKey="FS" text="@Font Size" verticalPolicy="Preferred"/>
+		<KxLegacyTriggerCommand aid="605" customTip="Bold" faceid="283" hotKey="b" icon="bold_wps_kd" iconQat="bold_wps_kd" id="Bold" ksoCmd="Bold" rbHotKey="1" text="@Bold"/>
+		<KxLegacyTriggerCommand aid="606" customTip="Italic" faceid="284" hotKey="i" icon="italic_wps_kd" id="Italic" ksoCmd="Italic" rbHotKey="2" text="@Italic"/>
+		<KxLegacyTriggerCommand aid="607" customTip="Underline" faceid="285" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="Underline" ksoCmd="Underline" rbHotKey="3" text="@Underline"/>
+		<KxLegacyTriggerCommand aid="135" customTip="GrowFont" hotKey="FG" icon="font_size_increase_wps_kd" id="GrowFont_Vml" ksoCmd="IncreaseFontSize" rbHotKey="FG" text="@Increase Font Size"/>
+		<KxLegacyTriggerCommand aid="136" customTip="ShrinkFont" hotKey="FK" icon="font_size_reduce_wps_kd" iconQat="font_size_reduce_wps_kd" id="ShrinkFont_Vml" ksoCmd="DecreaseFontSize" rbHotKey="FK" text="@Decrease Font Size"/>
+		<KxLegacyTriggerCommand aid="132" customTip="DecreaseIndent" faceid="46" hotKey="d" icon="indent_decrease_kd" id="RB_DecreaseIndent_Vml" ksoCmd="DecreaseIndent" rbHotKey="5" spaceHint="suitable" text="@Decrease Indent"/>
+		<KxLegacyTriggerCommand aid="131" customTip="IncreaseIndent" faceid="47" hotKey="i" icon="indent_increase_kd" id="RB_IncreaseIndent_Vml" ksoCmd="IncreaseIndent" rbHotKey="6" spaceHint="suitable" text="@Increase Indent"/>
+		<KListCommand embedHint="1" id="Drawing_tb_Font_Vml">
+			<KRbLayoutListCommand isDrawInnerBorder="1">
+				<command idQ="Drawing_FontName_Vml"/>
+				<command idQ="FontSize"/>
+			</KRbLayoutListCommand>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="Bold"/>
+				<command idQ="Italic"/>
+				<command idQ="Underline"/>
+				<separator filter="lang!=jp_JP,en_US"/>
+				<KxEtFontThemeCommand customTip2="TextFill2" customTip="TextFill" icon="color_font_wps_kd" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" qtspyName="FontColor" rbHotKey="FC" spaceHint="suitable" text="@Text Fill">
+					<KxEtMoreColorThemeCommand aid="100130" colorUsage="FontColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontColors" rbHotKey="M" text="@More Fill Colors"/>
+					<KxEtSnapColorCommand colorUsage="FontColor" forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFont" rbHotKey="E" text="@Snapper"/>
+					<command idQ="PictureFill"/>
+					<command idKey="EtGradiantFill" idQ="GradiantFill"/>
+					<command idQ="TextureFill"/>
+				</KxEtFontThemeCommand>
+				<KListCommand customTip="Clear" icon="eraser_kd" id="m_Clear" rbHotKey="E" text="@Clear">
+					<command idQ="ClearAll"/>
+					<command idQ="ClearFormats"/>
+					<command idQ="ClearContents"/>
+					<command idQ="ClearComments"/>
+					<command idQ="ClearSeries"/>
+				</KListCommand>
+			</KRbLayoutListCommand>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="RB_DecreaseIndent_Vml"/>
+			<command idQ="RB_IncreaseIndent_Vml"/>
+			<separator/>
+			<command idQ="GrowFont_Vml"/>
+			<command idQ="ShrinkFont_Vml"/>
+		</KListCommand>
+		<KxIndexListCommand customTip="FontFormatCells" forceVisible="1" hotKey="f" icon="symbol_a_kd" id="Drawing_RB_Font_Vml" index="2" ksoCmd="FormatCells" rbFileMenuEmbed="1" rbHotKey="FN" text="@Font">
+			<command idQ="Drawing_tb_Font_Vml"/>
+		</KxIndexListCommand>
+		<KxValueCommand customTip="VAlignTop" icon="align_top_two_kd" id="VAlignTop" index="-4160" ksoCmd="BaseLine" rbHotKey="AT" spaceHint="suitable" text="@Align Top"/>
+		<KxValueCommand aid="829" customTip="AlignLeft" faceid="37" icon="align_left_kd" iconQat="align_left_kd" id="rAlignLeft" index="-4131" ksoCmd="FormatAlignLeft" rbHotKey="AL" spaceHint="suitable" text="@Align Left"/>
+		<KxValueCommand customTip="VAlignCenter" icon="align_vertical_two_kd" id="VAlignCenter" index="-4108" ksoCmd="BaseLine" rbHotKey="AX" spaceHint="suitable" text="@Vertical Center"/>
+		<KxValueCommand aid="830" customTip="AlignCenter" faceid="38" icon="align_center_kd" iconQat="align_center_kd" id="rAlignCenter" index="-4108" ksoCmd="FormatAlignCenter" rbHotKey="AC" spaceHint="suitable" text="@Center"/>
+		<KxValueCommand customTip="VAlignBottom" icon="align_bottom_two_kd" id="VAlignBottom" index="-4107" ksoCmd="BaseLine" rbHotKey="AB" spaceHint="suitable" text="@Align Bottom"/>
+		<KxValueCommand aid="831" customTip="AlignRight" faceid="39" icon="align_right_kd" id="rAlignRight" index="-4152" ksoCmd="FormatAlignRight" rbHotKey="AR" spaceHint="suitable" text="@Align Right"/>
+		<KxListCommand icon="align_left_kd" id="Drawing_RB_Alignment_Vml" text="@Alignment">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="VAlignTop"/>
+					<command idQ="VAlignCenter"/>
+					<command idQ="VAlignBottom"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="rAlignLeft"/>
+					<command idQ="rAlignCenter"/>
+					<command idQ="rAlignRight"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KxListCommand customTip="FormatObjectSize" icon="slide_orientation_kd" id="Drawing_RB_Size_Vml" ksoCmd="FormatObject" rbFileMenuEmbed="1" text="@Size">
+			<KxEtHeightSpinboxCommand controlType="7" customTip="ShapeHeight" embedHint="1" icon="ranks_rows_height_kd" id="ShapeHeight" ksoCmd="ShapeHeight" spaceHint="suitable" text="@Height:"/>
+			<KxEtWidthSpinboxCommand controlType="7" customTip="ShapeWidth" embedHint="1" icon="ranks_column_width_kd" id="ShapeWidth" ksoCmd="ShapeWidth" spaceHint="suitable" text="@Width: "/>
+		</KxListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_DrawingTools_Vml">
+			<command idQ="RB_DC_InsertShape_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="RB_DC_ShapeStyles_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Drawing_RB_Font_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Drawing_RB_Alignment_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Drawing_RB_Arrange_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="RB_DC_ObjectSelect_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idQ="Drawing_RB_Size_Vml"/>
+			<separator filter="lang!=jp_JP,en_US"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_DrawingTools_Vml"/>
+		</subcommand>
+	</subcommands>
+</shell>

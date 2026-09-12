@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_merge" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMergeAddFileCommand customTip="PDFMergeAddFile" icon="insert_kd" id="PdfMergeAddFile" ksoCmd="MergeAddFile" text="@addFile" wpsIsEanble="false"/>
+		<KxPdfMergeAddBlankPageCommand canHideText="0" customTip="PDFMergeAddBlankPage" icon="doc_add_kd" id="PdfMergeAddBlankPage" index="2" text="@MergeAddBlankPage" wpsIsEanble="false"/>
+		<KxPdfMergeSettingCommand canHideText="0" customTip="PDFMergeSetting" icon="doc_setup_kd" id="PdfMergeSetting" index="2" spaceHint="suitable" text="@MergeSetting" wpsIsEanble="false"/>
+		<KxPdfMergeFeedbackCommand canHideText="0" customTip="PDFMergeFeedback" icon="bubble_two_kd" id="PdfMergeFeedback" idKey="PdfMergeFeedback" index="2" spaceHint="suitable" text="@Feedback" wpsIsEanble="false"/>
+		<KxPdfStartMergeCommand canHideText="0" customTip="PDFStartMerge" icon="play_kd" id="PdfStartMerge" index="2" text="@StartMerge" wpsIsEanble="false"/>
+		<KxPdfExitMergeCommand canHideText="0" customTip="PDFExitMerge" icon="close_window_kd" id="PdfExitMerge" index="2" text="@ExitMerge" wpsIsEanble="false"/>
+		<KxPdfMergeOutputPathCommand canHideText="0" id="PdfMergeOutputLocationSetting" spaceHint="suitable" text="@OutputLocation" wpsIsEanble="false"/>
+		<KxPdfMergeOutputFileNameCommand canHideText="0" id="PdfMergeOutputFileNameSetting" spaceHint="suitable" text="@OutputFileName" wpsIsEanble="false"/>
+		<KListCommand groupTip="MergeSettingGroup" icon="GroupMerge" id="RB_PdfMergeAddDocument" layout_lineCount="2" rbFileMenuEmbed="1" text="@Edit">
+			<command idQ="PdfMergeAddFile"/>
+			<command idQ="PdfMergeAddBlankPage"/>
+		</KListCommand>
+		<KListCommand controlType="16" groupTip="MergeSettingGroup" icon="GroupMerge" id="RB_PdfMergeSetting" layout_lineCount="2" rbFileMenuEmbed="1" text="@MergeSetting">
+			<command idQ="PdfMergeSetting"/>
+			<command idQ="PdfMergeFeedback"/>
+			<KLayoutWidgetCommand fixedWidth="6"/>
+		</KListCommand>
+		<KListCommand controlType="16" groupTip="MergeSettingGroup" icon="GroupMerge" id="RB_PdfMergeOutputSetting" layout_lineCount="2" rbFileMenuEmbed="1" text="@OutputSetting">
+			<KLayoutWidgetCommand fixedWidth="6"/>
+			<command idQ="PdfMergeOutputLocationSetting"/>
+			<command idQ="PdfMergeOutputFileNameSetting"/>
+			<KLayoutWidgetCommand fixedWidth="6"/>
+		</KListCommand>
+		<KListCommand groupTip="MergeStateGroup" id="RB_StartMerge" layout_lineCount="1" rbFileMenuEmbed="1" text="@Start">
+			<KLayoutWidgetCommand fixedWidth="6"/>
+			<command idQ="PdfStartMerge"/>
+			<KLayoutWidgetCommand fixedWidth="6"/>
+		</KListCommand>
+		<KListCommand groupTip="MergeStateGroup" id="RB_ExitMerge" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<KLayoutWidgetCommand fixedWidth="6"/>
+			<command idQ="PdfExitMerge"/>
+			<KLayoutWidgetCommand fixedWidth="6"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Merge">
+			<command idQ="RB_PdfMergeAddDocument"/>
+			<command idQ="RB_PdfMergeSetting"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PdfMergeOutputSetting"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_StartMerge"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_ExitMerge"/>
+		</subcommand>
+	</subcommands>
+</shell>

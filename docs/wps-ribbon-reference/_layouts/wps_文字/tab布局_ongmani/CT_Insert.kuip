@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_insert" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxLegacyTriggerCommand aid="85" controlType="0" customTip="InsertPageBreak" hotKey="p" icon="page_break_kd" id="InsertPageBreak" idMso="PageBreakInsertWord" ksoCmd="InsertPageBreak" text="@Page &#10;Break"/>
+		<KxLegacyTriggerCommand aid="87" controlType="0" hotKey="T" icon="line_break_wrap_kd" id="InsertTextWrappingBreak" idMso="TextWrappingBreakInsertWord" ksoCmd="InsertTextWrappingBreak" text="@Text Wrapping Break"/>
+		<KxLegacyTriggerCommand aid="88" controlType="0" hotKey="n" icon="page_break_next_section_kd" id="InsertNextPageSectionBreak" idMso="NextPageSectionBreakInsertWord" ksoCmd="InsertNextPageSectionBreak" text="@Next Page Section Break"/>
+		<KxLegacyTriggerCommand aid="89" controlType="0" hotKey="t" icon="page_break_continuous_section_kd" id="InsertContinuousSectionBreak" idMso="ContinuousSectionBreakInsertWord" ksoCmd="InsertContinuousSectionBreak" text="@Continuous Section Break"/>
+		<KxLegacyTriggerCommand aid="90" controlType="0" hotKey="e" icon="page_break_even_section_kd" id="InsertEvenPageSectionBreak" idMso="EvenPageSectionBreakInsertWord" ksoCmd="InsertEvenPageSectionBreak" text="@Even Page Section Break"/>
+		<KxLegacyTriggerCommand aid="91" controlType="0" hotKey="o" icon="page_break_odd_section_kd" id="InsertOddPageSectionBreak" idMso="OddPageSectionBreakInsertWord" ksoCmd="InsertOddPageSectionBreak" text="@Odd Page Section Break"/>
+		<KxWpsBreaksListCommand canHideText="0" controlType="4" customTip="InsertPageBreak" dynamicSpaceHint="loose;suitable" icon="page_break_kd" id="InsertBreaks" idMso="PageBreakGallery" ksoCmd="InsertPageBreak" rbHotKey="B" text="@Breaks">
+			<command idQ="InsertPageBreak"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="c" icon="page_break_column_kd" id="InsertColumnBreakInInsertTab" idMso="ColumnBreakInsertWord" ksoCmd="InsertColumnBreak" qtspyName="InsertColumnBreak" text="@Column Break"/>
+			<command idQ="InsertTextWrappingBreak"/>
+			<separator/>
+			<command idQ="InsertNextPageSectionBreak"/>
+			<command idQ="InsertContinuousSectionBreak"/>
+			<command idQ="InsertEvenPageSectionBreak"/>
+			<command idQ="InsertOddPageSectionBreak"/>
+			<separator/>
+			<command idQ="WpsAIAutoSeparatePage"/>
+		</KxWpsBreaksListCommand>
+		<KxWpsDeletePageNumCommand controlType="0" hotKey="R" icon="doc_page_number_delete_kd" id="DeletePageNumTab" idMso="DeletePageNumInsertWord" rbHotKey="R" text="@Delete Page Num"/>
+		<KxLegacyTriggerCommand aid="92019" controlType="0" hotKey="v" icon="doc_direction_vertical_kd" id="InsertVerticalBlankPage" idMso="BlankPageVertical" ksoCmd="InsertVerticalBlankPage" text="@Vertical"/>
+		<KxLegacyTriggerCommand aid="92020" controlType="0" hotKey="h" icon="doc_direction_horizontal_kd" id="InsertHorizonBlankPage" idMso="BlankPageHorizontal" ksoCmd="InsertHorizonBlankPage" text="@Horizontal"/>
+		<KxListCommand controlType="4" customTip2="InsertBlankPage2" customTip="InsertBlankPage" icon="doc_kd" id="InsertBlankPage" idMso="BlankPageInsertGallery" ksoCmd="InsertBlankPage" rbHotKey="NP" text="@Blank Page">
+			<command idQ="InsertVerticalBlankPage"/>
+			<command idQ="InsertHorizonBlankPage"/>
+			<command idQ="WpsAIAutoSeparatePage"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand hotKey="i" icon="ranks_kd" id="InsertTableInToolbar" idMso="TableInsertDialogWord" ksoCmd="InsertTable" rbHotKey="I" text="@More Rows And Columns"/>
+		<KxLegacyTriggerCommand aid="192" controlType="6" customTip="DrawTable" faceid="120" hotKey="w" icon="sheet_style_kd" id="DrawTableInToolbar" idMso="TableDrawTable" ksoCmd="DrawTable" rbHotKey="DR" spaceHint="suitable" text="@Draw Table"/>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="T" icon="change_text_to_et_kd" id="ConvertTexttoTableRainbow" idMso="ConvertTextToTable" ksoCmd="ConvertTexttoTable" rbHotKey="V" text="@Convert Text to Table"/>
+		<KxWpsAIGCLegacyTriggerCommand controlType="0" customTip="WPSAIConvertToTable" dialogHint="1" icon="ai_change_to_et_kd" id="WPSAIConvertToTableRainbow" idMso="WPSAIConvertToTable" ksoCmd="WPSAIConvertToTable" showCustomTipInMenu="true" text="@AI Generate Table from Text"/>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="F" icon="change_table_to_text_kd" id="ConvertTabletoTextRainbow" idMso="ConvertTableToText" ksoCmd="ConvertTabletoText" text="@Convert Table to Text"/>
+		<KAiBeautifyProxyCommand autoLoad="true" canHideText="0" controlType="4" customTip="Table" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" detail="@Table" icon="sheet_kd" id="OnlineTable" idKey="WPSInsertTablePalette" idMso="TableInsertGallery" ksoCmd="InsertTablePalette" targetModule="kaiwps" text="@Content Table"/>
+		<KxOnlineGalleryCommand customTip="Table" detail="@Table" icon="merge_content_kd" id="InsertContentTable" idKey="InsertContentTable" isCefPopup="true" isOnlyOnline="true" onlineCmd="OnlineTable" qtspyName="InsertContentTable" text="@Content Table"/>
+		<KProxyCommand controlType="4" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="InsertStyleTable" idKey="WPSOnlineTableStyle" ksoCmd="InsertTablePalette" skeletonAlias="konlinetablestyle_insert" targetId="InsertStyleTable" targetModule="konlinetablestyle"/>
+		<KxWpsGalleryTableCommand aiGenerateTableCmd="WPSAIGenerateTableRainbow" canHideText="0" controlType="4" customTip="Table" detail="@Table" icon="sheet_kd" id="Table" idMso="TableInsertGallery" insertTableToolCmd="InsertTableInToolbar" ksoCmd="InsertTablePalette" onlineCmd="InsertStyleTable" rbHotKey="T" text="@Table">
+			<command idQ="DrawTableInToolbar"/>
+			<command idQ="ConvertTexttoTableRainbow"/>
+			<command idQ="WPSAIConvertToTableRainbow"/>
+			<command idQ="ConvertTabletoTextRainbow"/>
+		</KxWpsGalleryTableCommand>
+		<KxGalleryTableCommand canHideText="0" controlType="4" icon="sheet_kd" id="writeModeTable" idMso="TableInsertGallery" ksoCmd="InsertTablePalette" rbHotKey="T" text="@Table"/>
+		<KProxyCommand aid="100056" autoLoad="true" customShortcutEnabled="false" customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" detail="@Insert Online Pictures" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTabUnpersonal" idKey="WpsInsertOnlinePicNotApp" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetModule="kwpsassistlegacy" text="@Online Pictures"/>
+		<KDocerPictureProxyCommand customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTab" idKey="CommonOnlineInsertResource" localMenuHeight="90" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlinePictureFromFileInInsertTab" targetModule="kdocercore" text="@My Picture"/>
+		<KxListPicturesCommand canHideText="0" controlType="4" customTip2="InsertPictureFromFile2" customTip="InsertPictureFromFile" detail="@Insert Picture" disableTrigger="1" icon="pic_kd" iconQat="pic_kd" id="m_rInsertPicture" idMso="PictureInsertGallery" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertPictureFromFile" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="InsertPictureFromFile" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<KxWpsAiText2ImageCommand hotKey="g" icon="pic_star_two_kd" id="aiWpsText2Image_insert" idKey="AIWPSText2Image" openPosition="tab_insert" rbHotKey="G" text="@Ai Generate Picture"/>
+			<command filter="lang!=ja_JP" idKey="CommonOnlinePictureFromFile" idQ="InsertOnlinePictureFromFileInInsertTabUnpersonal"/>
+			<KxLegacyTriggerCommand detail="@From Scanner" hotKey="s" icon="insert_picture_from_scan_kd" id="InsertPictureFromScanInInsertTab" idKey="InsertScanImage" ksoCmd="InsertPictureFromScan" qtspyName="InsertPictureFromScan" rbHotKey="S" text="@From Scanner"/>
+			<command idKey="WPSInsertPhoto2Pdf" idQ="Photo2Pdf"/>
+			<KxImportFromDeviceCommand customTip="InsertFromOtherDeivce" hoverShowPreview="true" icon="camera_kd" id="ImportFromDevice" idKey="CommonInsertFromOtherDevice" text="@InsertFromOtherDeivce"/>
+			<command idQ="InsertOnlinePictureFromFileInInsertTab"/>
+		</KxListPicturesCommand>
+		<KxWpsInsertFileObjectCommand customTip="InsertDocument" dialogHint="1" icon="doc_file_kd" id="InsertDocument" rbHotKey="F" text="@Insert Document"/>
+		<KScreenGrabOcrCommand checkAble="false" customAttribute="IF(platform=!mac){appFlags=wpsmember}" icon="ScreenGrabOcrText" id="ScreenGrabOcrText" idKey="WPSScreenGrabOcrText" isVipIconEanble="true" text="@Screen Grab Ocr Text"/>
+		<KScreenGrabOcrCommand appFlags="wpsmember" checkAble="false" icon="ScreenGrabOcrText" id="ScreenGrabOcrText_MAC" idKey="WPSScreenGrabOcrText" text="@Screen Grab Ocr Text"/>
+		<KScreenGrabMenuCommand customTip="ScreenGrab" icon="cut_screen_kd" id="InsertScreenGrab_MAC" text="@Screen Grab">
+			<command idQ="ScreenGrabRect"/>
+			<command idQ="ScreenGrabEllipse"/>
+			<command idKey="ScreenGrabRoundedRect" idQ="ScreenGrabRoundedRect"/>
+			<command idKey="ScreenGrabPolygon" idQ="ScreenGrabPolygon"/>
+			<command idQ="ScreenGrabOcrText_MAC"/>
+			<separator/>
+			<command idQ="ScreenGrab"/>
+			<command idQ="ScreenGrabHide"/>
+			<separator/>
+			<command idQ="ScreenGrabWindow"/>
+		</KScreenGrabMenuCommand>
+		<KxLegacyTriggerCommand canHideText="0" controlType="0" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="WriteModeInsertPictureFromFile" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@Picture"/>
+		<KQuickMenuCommandAutoHide controlType="0" customTip2="DocBarcode_pro2" customTip="DocBarcode_pro" detail="@Document Barcode" icon="doc_bar_code_kd" id="WpsBarcodeMenu_pro" idKey="DocBarcode" idMso="DocumentBarcode" rbHotKey="SG" referenceCommand="InsertDocBarcode" text="@Document Barcode">
+			<command idQ="InsertDocBarcode"/>
+			<command idQ="InsertBarcode"/>
+			<command idQ="InsertQRCode"/>
+		</KQuickMenuCommandAutoHide>
+		<KxLegacyTriggerCommand controlType="6" customTip="InsertClipArt" detail="@Insert Clip Art" icon="docer_resource_img_kd" id="m_rInsertClipArt" idKey="ArmyFunction" idMso="ClipArtInsert" ksoCmd="InsertClipArt" rbHotKey="F" text="@Clip Art"/>
+		<KxGalleryShapesCommand canHideText="0" controlType="4" customTip="Shapes" detail="@AutoShape" galleryWidth="500" icon="shape_kd" id="Shape" idMso="ShapesInsertGallery" ksoCmd="DynamicShape" onlineResCmd="ShapesSmartart" rbHotKey="SH" text="@Shapes" triggerAble="0">
+			<command idKey="WpsInsertProcessOnEntry" idQ="ProcessOnEntry"/>
+			<KxLegacyTriggerCommand aid="2619" controlType="0" hotKey="n" icon="slide_add_kd" id="InsertCanvas" idMso="InsertCanvas" ksoCmd="InsertCanvas" rbHotKey="N" text="@New Drawing Canvas"/>
+		</KxGalleryShapesCommand>
+		<KxChangeChartTypeCommand controlType="0" customTip="InsertChart" entrance="insertTab_Layout" hotKey="c" icon="chart_column_kd" id="InsertChartRainbow" idMso="ChartInsert" ksoCmd="InsertChart" rbHotKey="C" spaceHint="suitable" text="@Chart"/>
+		<KQuickMenuCommand customTip="InsertChart" icon="chart_column_kd" id="m_InsertChartRainbow" rbHotKey="C" referenceCommand="InsertChartRainbow" spaceHint="suitable" text="@Chart">
+			<command idQ="InsertChartRainbow"/>
+			<KxOnlineGalleryCommand customTip="OnlineChart" hotKey="o" icon="chart_online_kd" id="m_InsertOnlineChart" isCefPopup="true" isOnlyOnline="true" onlineCmd="InsertOnlineChart" qtspyName="OnlineChart" rbHotKey="SO" text="@Online Chart"/>
+		</KQuickMenuCommand>
+		<KDocerWebChartGalleryProxyCommand customTip="InsertDynamicChart" hotKey="sd" icon="chart_star_kd" id="InsertDynamicChart" ksoCmd="InsertChart" onlineCmd="WebChartGallery" qtspyName="InsertDynamicChart" rbHotKey="SD" spaceHint="suitable" text="@InsertDynamicChart" tipPicPosition="4"/>
+		<KxLegacyTriggerCommand aid="1207" controlType="6" faceid="39" hotKey="M" icon="text_frame_horizontal_kd" id="RbInsertTextboxMultiLine" idMso="TextMulti-line" ksoCmd="InsertTextboxMultiLine" text="@Multi-line Text"/>
+		<KxListCommand controlType="15" customTip2="TextBox2" customTip="TextBox" hotKey="h" icon="text_frame_kd" id="InsertTextbox" idMso="TextBoxDrawMenu" isSendRibbonClose="true" ksoCmd="WpsInsertTextboxHorizontal" qtspyName="m_TextBox" rbHotKey="X" text="@Text Box">
+			<KxLegacyTriggerCommand controlType="0" hotKey="h" icon="text_frame_horizontal_kd" id="InsertTextboxHorizontal" idMso="TextBoxInsertHorizontalWord" ksoCmd="WpsInsertTextboxHorizontal" qtspyName="InsertTextboxHorizontal" rbHotKey="D" text="@Horizontal"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="v" icon="text_frame_vertical_kd" id="InsertTextboxVertical" idMso="TextBoxInsertVerticalWord" ksoCmd="WpsInsertTextboxVertical" qtspyName="InsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+			<command idQ="RbInsertTextboxMultiLine"/>
+			<command idQ="InsertOnlineTextboxCommandInInsertTab"/>
+		</KxListCommand>
+		<KxWpsWordArtInsertCommand controlType="4" customTip="InsertWordArt" detail="@WordArt" galleryWidth="492" icon="font_art_style_kd" id="m_WordArtDml" idMso="WordArtInsertGallery" ksoCmd="InsertWordArt" rbHotKey="W" text="@WordArt" wordArtCmd="OnlineWordArt"/>
+		<KxLegacyTriggerCommand aid="289" controlType="0" customTip="DropCap" dialogHint="1" faceid="65" hotKey="d" icon="first_word_sink_kd" id="sDropCap" idMso="DropCapOptionsDialog" ksoCmd="DropCap" rbHotKey="RC" spaceHint="suitable" text="@Drop Cap"/>
+		<KxLegacyTriggerCommand controlType="5" dialogHint="1" hotKey="J" icon="insert_object_kd" id="RbInsertObjectToolBar" idKey="WpsInsertObject" idMso="OleObjectInsertMenu" ksoCmd="InsertObject" text="@Object"/>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="F" icon="text_in_file_kd" id="RbInsertFileToolBar" idKey="WpsInsertTextFromFile" idMso="TextFromFileInsert" ksoCmd="InsertFile" text="@Insert Text from File"/>
+		<KxWpsInsertFileObjectCommand aid="92034" customTip="InsertFileObject" dialogHint="1" hotKey="Z" icon="paperclip_kd" id="InsertFileObjectInInsert" qtspyName="InsertFileObject" rbHotKey="NF" spaceHint="suitable" text="@File Object"/>
+		<KListCommand customTip="InsertFileObject" dialogHint="1" hotKey="Z" icon="paperclip_kd" id="sp_InsertObject" rbHotKey="NF" spaceHint="suitable" text="@Appendix Object">
+			<command idQ="InsertFileObjectInInsert"/>
+			<command idQ="RbInsertObjectToolBar"/>
+			<command idQ="RbInsertFileToolBar"/>
+			<KxWpsSignatureProxyCommand canHideText="0" customTip="Signature" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="pen_signature_kd" id="Insert_Signature_Web" idKey="InsertSignatureWeb" targetModule="addsignature" text="@Signature"/>
+			<KxWpsSignatureCommand customTip="CloudSignature" icon="cloud_pen_kd" id="Insert_Signature" idKey="CommonInsertSignature" spaceHint="suitable" text="@Sign">
+				<KxWpsShareNewSignatureCommand icon="pen_signature_create_kd" id="NewSignature2" text="@NewSignature"/>
+			</KxWpsSignatureCommand>
+		</KListCommand>
+		<KxWpsEnvelopesCommand customTip="InsertEnvelopes" icon="mail_kd" id="InsertEnvelopes" idKey="WpsInsertEnvelopes" ksoCmd="InsertEnvelopes" text="@Envelopes"/>
+		<KListCommand groupTip="InsertCommentGroup" icon="bubble_add_kd" id="RB_InsertComments" rbFileMenuEmbed="1" text="@Comment">
+			<command idQ="m_InsertCommentInToolBar"/>
+			<command idQ="InsertEnvelopes"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="4" customTip="HeaderFooter" hotKey="h" icon="doc_header_footer_kd" id="HeaderAndFooterInInsertTab" idMso="HeaderFooterGallery" ksoCmd="HeaderFooter" qtspyName="m_HeaderAndFooter" rbHotKey="H" text="@Header and &#10;Footer"/>
+		<KxWpsHeaderFooterPageNumCommand controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbers" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KDocerProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" dependPlugins="kwebonlinecover" entryPos="dropmenu-pagenum" height="-1" id="InsertOnlinePageNum" idKey="WpsInsertOnlinePageNum" localMenuHeight="354" skeletonAlias="kwebonlinecover" targetId="InsertOnlinePageNum" targetModule="kdocerjsapi20" text="@page number recommend style" waitingType="pageNum_dp" width="380"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand controlType="4" customTip="PageNumber" icon="doc_page_number_kd" id="m_InsertPageNumbers" idMso="HeaderFooterPageNumberInsertGallery" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbers" text="@Page&#10;Number">
+			<KxSmartPageNumSettingsMenuItemCommand controlType="4" dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInInsertTab" idMso="PageNumberFormatGallery" qtspyName="InsertPageNumInHeaderFooterTab" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxWpsHeaderFooterPageNumCommandOfficialVersion controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbersOfficialVersion" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand controlType="4" customTip="PageNumber" icon="doc_page_number_kd" id="m_InsertPageNumbersOfficialVersion" idMso="HeaderFooterPageNumberInsertGallery" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="NU" refLocalCmd="LocalInsertPageNumbersOfficialVersion" text="@Page&#10;Number">
+			<KxSmartPageNumSettingsMenuItemCommand controlType="4" dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInInsertTab" idMso="PageNumberFormatGallery" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="InsertCurPosPageNumTab"/>
+			<command idQ="DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KListCommand controlType="16" groupTip="LinkGroup" icon="chain_kd" id="RB_Links" idMso="GroupInsertLinks" rbFileMenuEmbed="1" text="@Links">
+			<KxSingleRowMergeGroupCommand customTip="LinkGroup" icon="chain_kd" id="SingleRow_Links" text="@Links"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertHyperlink" forceVisible="1" icon="chain_kd" id="m_rbHyperlink" idMso="HyperlinkInsert" ksoCmd="InsertHyperlink" rbHotKey="I" singlerowmergegroup="SingleRow_Links" text="@Hyperlink"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertBookmark" icon="bookmark_kd" id="m_rbInsertBookmark" idMso="BookmarkInsert" ksoCmd="InsertBookmark" rbHotKey="K" singlerowmergegroup="SingleRow_Links" text="@Bookmark"/>
+		</KListCommand>
+		<KProxyCommand customTip="OnlineIconMore" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="o" icon="shape_four_three_kd" id="onlineiconInsert" idKey="DocerOnlineIconI18n" isCef="1" qtspyName="OnlineIcon" rbHotKey="o" relatedKsoCmd="InsertPictureFromFile" targetId="onlineiconInsert" targetModule="kdocerjsapi20" text="@IconLibrary"/>
+		<KProxyCommand customTip="OnlineIconMore" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="o" icon="shape_four_three_kd" id="onlineiconInsert" idKey="DocerOnlineIconCommon" qtspyName="OnlineIcon" rbHotKey="o" relatedKsoCmd="InsertPictureFromFile" targetId="onlineiconInsert" targetModule="kdocercore" text="@IconLibrary"/>
+		<KxLegacyTriggerCommand controlType="0" forceVisible="1" icon="chain_kd" id="WriteModeHyperlink" idMso="HyperlinkInsert" ksoCmd="InsertHyperlink" rbHotKey="I" text="@Hyperlink"/>
+		<KDocerProxyCommand controlType="4" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="dropmenu" height="-1" icon="cover_kd" id="OnlineCoverPageInsert" idKey="WPSOnlineCoverPageInsert" idMso="CoverPageInsertGallery" localMenuHeight="246" spaceHint="suitable" targetId="OnlineCoverPageInsert" targetModule="kdocercore" text="@Cover Pages" width="500"/>
+		<KAiWpsCoverProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" fpcCombKey="ct_insert_aicover" icon="ai_wps_cover_kd" id="CT_InsertWpsAiCover" idKey="EnableAiWpsGenerateCover" position="tab_insert_wpsaicover" targetModule="kaiwpscover" text="@AiGenerateCover"/>
+		<KListCommand groupTip="PageGroup" icon="doc_kd" id="RB_Pages" rbFileMenuEmbed="1" text="@Pages">
+			<command idQ="InsertBlankPage"/>
+			<KxCoverSectionGalleryCommand aiCoverCmd="CT_InsertWpsAiCover" canHideText="0" controlType="4" customTip="CoverPages" dynamicSpaceHint="loose;suitable" galleryWidth="498" hotKey="C" icon="cover_kd" id="CoverPageInsert" idMso="CoverPageInsertGallery" onlineCoverCmd="OnlineCoverPageInsert" qtspyName="Cover" rbHotKey="V" text="@Cover&#10;Pages"/>
+			<command idQ="InsertBreaks"/>
+			<KListCommand embedHint="1" id="RB_HeaderAndFooter">
+				<KRbLayoutListCommand alignment="1" bottomSpace="0" id="PageNumbers" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="m_InsertPageNumbers"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" id="HeaderAndFooter" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="HeaderAndFooterInInsertTab"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KListCommand>
+		<KProxyCommand customTip="Ornamentation" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="ornamentation_kd" id="Ornamentation" idKey="CommonOrnamentation" relatedKsoCmd="InsertPictureFromFile" targetId="Ornamentation" targetModule="kinsertornamentation" text="@Ornamentation"/>
+		<KAiBeautifyProxyCommand autoLoad="true" customTip="InsertSmartDiagram" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="sm" icon="smart_diagram_kd" id="OnlineDiagramMoreInsert" rbHotKey="sm" relatedKsoCmd="InsertOrgSmartArt" spaceHint="suitable" targetModule="kaiwps" text="@SmartArt"/>
+		<KxLegacyTrigCtlByIdCommand customTip="SmartArtOnly" icon="change_layout_kd" id="InsertSmartArtOnly" ksoCmd="InsertOrgSmartArt" spaceHint="suitable" text="@SmartArtOnly"/>
+		<KxInsertOrgSmartArtCommand controlType="0" customTip="InsertSmartArt" hotKey="m" icon="smart_diagram_kd" id="InsertOrgSmartArt" idMso="SmartArtInsert" ksoCmd="InsertOrgSmartArt" rbHotKey="SA" spaceHint="suitable" text="@SmartArtOnlyPro"/>
+		<KxInsertOrgSmartArtCommand controlType="0" customTip="InsertSmartArt" hotKey="m" icon="smart_diagram_kd" id="InsertOrgSmartArt" idMso="SmartArtInsert" ksoCmd="InsertOrgSmartArt" rbHotKey="SA" spaceHint="suitable" text="@SmartArt"/>
+		<KListCommand groupTip="CommonObjectGroup" icon="bookmark_list_kd" id="RB_Illustrations" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Common Object">
+			<command idQ="Table"/>
+			<command idQ="m_rInsertPicture"/>
+			<command idQ="InsertDocument" singlerowfold="1"/>
+			<command idQ="InsertScreenGrab_MAC"/>
+			<command idQ="InsertScreenGrab"/>
+			<command idQ="ScreenGrabOcrMenuLocal"/>
+			<command idQ="InsertHomeDesign"/>
+			<command idQ="Shape"/>
+			<command idQ="onlineiconInsert"/>
+			<command idQ="OnlineDocerCommand_Icon"/>
+			<command idQ="ChartGallery"/>
+			<command idQ="InsertTextbox"/>
+			<command idQ="OnlineContentBlockInsert"/>
+			<command idQ="m_WordArtDml"/>
+			<command idKey="ArmyFunction" idQ="m_rInsertClipArt"/>
+			<command idQ="OnlineDocerCommand_Chart"/>
+			<command idQ="InsertChartRainbow" singlerowfold="1"/>
+			<command idKey="WPSInsertDynamicChart" idQ="InsertDynamicChart"/>
+			<KxLegacyTrigCtlByIdCommand customTip="InsertSmartArt" hotKey="m" icon="smart_diagram_kd" id="InsertOrgSmartArt" ksoCmd="InsertOrgSmartArt" rbHotKey="m" singlerowfold="1" spaceHint="suitable" text="@SmartArtOnlyPro"/>
+			<KDependsProxyCommand customTip="InsertProcesson_Flow" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependAppId="kinsertpo" hotKey="r" icon="chart_flow_kd" id="InsertProcessonFlow" qtspyName="InsertProcesson_Flow" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="autocompact" targetId="InsertProcessonFlow" targetModule="kdocerjsapi20" text="@InsertProcesson_Flow"/>
+			<KDependsProxyCommand customTip="InsertProcesson_Mind" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependAppId="kinsertpo" hotKey="r" icon="chart_mind_map_kd" id="InsertProcessonMind" qtspyName="InsertProcesson_Mind" rbHotKey="R" relatedKsoCmd="InsertPictureFromFile" spaceHint="autocompact" targetId="InsertProcessonMind" targetModule="kdocerjsapi20" text="@InsertProcesson_Mind"/>
+		</KListCommand>
+		<KListCommand groupTip="ComponentGroup" icon="insert_quick_parts_kd" id="RB_Text" rbFileMenuEmbed="1" text="@Component">
+			<KxSingleRowMergeGroupCommand customTip="ComponentGroup" icon="insert_quick_parts_kd" id="SingleRow_Component" text="@Component"/>
+			<KListCommand controlType="4" customTip="QuickParts" icon="insert_quick_parts_kd" id="QuickPartsInsertGallery" idMso="QuickPartsInsertGallery" rbHotKey="Q" singlerowmergegroup="SingleRow_Component" text="@Quick Parts">
+				<KxLegacyTriggerCommand controlType="0" customTip="InsertDateTime" hotKey="D" icon="date_time_kd" id="InsertDateTimeToolBar" idMso="DateAndTimeInsert" ksoCmd="InsertDateTime" showIconAndText="1" spaceHint="suitable" text="@Date and Time"/>
+				<KListCommand customTip="InsertForm" hotKey="B" icon="control_box_kd" id="RB_FormsToolbox" text="@Forms">
+					<KxLegacyTriggerCommand controlType="0" hotKey="E" icon="text_form_field_kd" id="TextFormField" idMso="FieldText" ksoCmd="TextOnFormField" qtspyName="TextOnFormField" rbHotKey="NE" text="@Text Form Field"/>
+					<KxLegacyTriggerCommand controlType="0" hotKey="H" icon="tick_box_kd" id="CheckboxFormField" idMso="FieldCheckBox" ksoCmd="CheckboxOnFormField" qtspyName="CheckboxOnFormField" rbHotKey="NH" text="@Check Box Form Field"/>
+					<KxLegacyTriggerCommand controlType="0" hotKey="C" icon="control_box_kd" id="DropdownFormField" idMso="FieldDrop-Down" ksoCmd="DropdownOnFormField" qtspyName="DropdownOnFormField" rbHotKey="NC" text="@Drop-Down Form Field"/>
+					<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="O" icon="form_field_option_kd" id="FormFieldOptionInInsertTab" idMso="FieldOptions" ksoCmd="FormFieldOption" qtspyName="FormFieldOption" rbHotKey="NO" text="@Form Field Options"/>
+					<separator/>
+					<KxLegacyTriggerCommand controlType="6" hotKey="S" icon="form_field_shading_kd" id="FormFieldShadingInInsertTab" idMso="FieldShading" ksoCmd="FormFieldShading" qtspyName="FormFieldShading" rbHotKey="NS" text="@Form Field Shading"/>
+					<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="form_field_reset_kd" id="FormFieldResetInInsertTab" idMso="FieldsReset" ksoCmd="FormFieldReset" qtspyName="FormFieldReset" rbHotKey="NR" text="@Reset Form Fields"/>
+					<KxLegacyTriggerCommand controlType="6" hotKey="F" icon="form_field_protection_kd" id="FormFieldProtectionInInsertTab" idMso="FieldsProtect" ksoCmd="FormFieldProtection" qtspyName="FormFieldProtection" rbHotKey="NF" text="@Protect Form"/>
+				</KListCommand>
+				<KxWpsAutotextListCommand aid="539" controlType="4" hotKey="A" icon="pic_autotext_list_kd" id="AutoText" idMso="AutoTextGallery" ksoCmd="AutoTextGallery" spaceHint="suitable" text="@Autotext List">
+					<KxLegacyTriggerCommand id="PageNumberOnHeaderAndFooter" ksoCmd="PageNumberOnHeaderAndFooter" text="@- Page -"/>
+					<KxLegacyTriggerCommand controlType="0" id="PageNumerOfOnHeaderAndFooter" idMso="PageX" ksoCmd="PageNumerOfOnHeaderAndFooter" text="@Page X"/>
+					<KxLegacyTriggerCommand controlType="0" id="PageCountOnHeaderAndFooter" idMso="TotalofYPage" ksoCmd="PageCountOnHeaderAndFooter" text="@Total of Y Page"/>
+					<KxLegacyTriggerCommand controlType="0" id="PageOfCountOnHeaderAndFooter" idMso="PageXofY" ksoCmd="PageOfCountOnHeaderAndFooter" text="@Page X of Y"/>
+					<KxWpsAddAutotextCommand aid="205" controlType="0" hotKey="S" icon="pic_autotext_list_kd" id="SaveSelectionToAutoTextGallery" idMso="SaveSelectionToAutoTextGallery" spaceHint="suitable" text="@addAutotext"/>
+				</KxWpsAutotextListCommand>
+				<KxLegacyTriggerCommand aid="772" controlType="0" customTip="InsertField" dialogHint="1" hotKey="f" icon="field_kd" id="InsertField" idMso="FieldInsert" ksoCmd="InsertField" rbHotKey="QF" spaceHint="suitable" text="@Fields"/>
+				<KxWpsInsertDocumentFieldCommand controlType="0" customTip="InsertDocumentField" hotKey="C" icon="doc_field_kd" id="m_rbInsertDocumentField" idKey="WpsRbInsertDocumentField" idMso="DocumentFieldInsert" ksoCmd="InsertDocumentField" rbHotKey="F" spaceHint="suitable" text="@DocumentField"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="InsertCodeBlock" icon="code_edit_kd" id="InsertCodeBlock" idKey="WPSCodeBlockEntry" ksoCmd="InsertCodeBlock" qtspyName="CodeBlock" text="@Code Block"/>
+			</KListCommand>
+			<command idQ="sDropCap" singlerowmergegroup="SingleRow_Component"/>
+			<command idQ="sp_InsertObject" singlerowmergegroup="SingleRow_Component"/>
+		</KListCommand>
+		<KxWpsOfficialModeElementsGalleryCommand customTip="OfficialVersionElementsInsert" hotKey="6" icon="doc_official_elements_kd" id="OfficialModeElementsInsert" idKey="OfficialVersionElementsInsert" rbHotKey="6" text="@Official Elements"/>
+		<KxWpsOfficialPrintingElementsGalleryCommand customTip="OfficialVersionElementsInsert" hotKey="6" icon="doc_official_elements_kd" id="OfficialPrintingElementsInsert" idKey="OfficialPrintingElementsInsert" rbHotKey="6" text="@Official Elements"/>
+		<KListCommand controlType="16" groupTip="SymbolGroup" icon="math_omega_kd" id="RB_Symbol" idMso="GroupInsertSymbols" text="@Symbol">
+			<command idQ="OfficialModeElementsInsert"/>
+			<command idQ="OfficialPrintingElementsInsert"/>
+			<command idQ="m_Symbols"/>
+			<KxWpsEquationListCommand canHideText="0" customTip="EquationInsert" hotKey="E" icon="math_latex_kd" id="EquationInsert" idMso="EquationInsert" ksoCmd="EquationInsertEquation" ksoTriggerCmd="EquationInsertNew" qtspyName="KingsoftEquationEditor" rbHotKey="E" text="@Equation">
+				<KxWpsOMathTriggerCommand hotKey="I" icon="math_latex_kd" id="EquationInsertNew" idMso="EquationInsertNew" ksoCmd="EquationInsertNew" text="@Insert Equation"/>
+				<KxWpsOMathTriggerCommand closeTryFindHotKey="true" customTip="EquationInsertLaTexTip" hotKey="L" icon="math_latex_two_kd" id="EquationInsertLaTex" idMso="EquationInsertNew" ksoCmd="EquationInsertNew" showCustomTipInMenu="true" text="@Insert LaTeX"/>
+				<KxWpsEquationRecognitionProxyCommand customTip="EquationRecognition" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="P" icon="scan_ocr_formulas_kd" id="toolbar_EquationRecognition" openPosition="insert_formula" shortcutHint="Ctrl+Alt+=" targetId="toolbar_EquationRecognition" targetModule="kwpsmathor" text="@Equation Recognition"/>
+				<KxWpsAIWriteFormulaProxyCommand autoLoad="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="W" icon="ai_edit_kd" id="toolbar_AIWriteFormula" targetId="toolbar_AIWriteFormula" targetModule="kwpsaigc" text="@Write Formula"/>
+				<KxWpsEquationTitleCommand id="EquationCommonTitle" text="@Common Formula"/>
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="common" galleryWidth="367" icon="math_function_kd" id="MathFormulaInsert" ksoCmd="EquationInsertEquation" position="toolbar" predefinedFormula="true" text="@Math Formula"/>
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="physics" galleryWidth="367" icon="math_physics_formula_kd" id="PhysicsFormulaInsert" ksoCmd="EquationInsertEquation" position="toolbar" predefinedFormula="true" text="@Physics Formula"/>
+				<KxWpsOMathEquationGalleryCommand canHideText="0" equationGalleryType="chemister" galleryWidth="367" icon="chemistry_equation_kd" id="ChemistryFormulaInsert" ksoCmd="EquationInsertEquation" position="toolbar" predefinedFormula="true" text="@Chemistry Formula"/>
+				<KxWpsCollectFormulaGalleryCommand canHideText="0" equationGalleryType="chemister" galleryWidth="367" icon="star_kd" id="CollectFormulaInsert" ksoCmd="EquationInsertEquation" position="toolbar" text="@My Collection"/>
+				<separator/>
+				<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="E" icon="math_latex_two_kd" id="LatexEquationEditor" idKey="WpsLatexEquationEditor" relatedKsoCmd="InsertPictureFromFile" targetExtendId="334E55B0-647D-440b-865C-3EC943EB4CBC" targetId="LatexEquationEditor" targetModule="kinsertlatex" text="@LaTeXEquationEditor"/>
+			</KxWpsEquationListCommand>
+			<command idQ="InsertMathType"/>
+			<command idQ="InsertSignature"/>
+		</KListCommand>
+		<KListCommand id="RB_Media" rbFileMenuEmbed="1" rbHotKey="V" text="@Media">
+			<KxLegacyTriggerCommand customTip="Sound" hotKey="j" icon="volume_broadcasting_kd" id="InsertSound" ksoCmd="InsertLocalSound" qtspyName="SoundFile" rbHotKey="zy" text="@Sound"/>
+			<KxLegacyTriggerCommand customTip="Media" hotKey="q" icon="video_two_kd" id="InsertMovie" ksoCmd="InsertLocalVideo" qtspyName="MovieFile" rbHotKey="zs" text="@Movie"/>
+		</KListCommand>
+		<KInsertTabDocerResourceAllCommand action="find" appId="docerresourceshop" customTip="DocerResourceShop" entry="more_dreshop" hotKey="d" icon="docer_resource_shop_kd" id="app_kdocerresource_complex" isCef="1" needLogin="false" text="@Docer Resource Shop"/>
+		<KAppCommand appId="kresourcesclip" customTip="KResourceClip" hotKey="r" icon="folder_star_kd" id="app_kresourcesclip_tab" rbHotKey="R" text="@appcmd_resourcesclip"/>
+		<KListCommand groupTip="MoreObjectGroup" icon="more_kd" id="RB_ComplexObj" rbFileMenuEmbed="1" text="@More Object" visibleDependsOnSubCmds="true">
+			<command idKey="DocerResourceComplex" idQ="app_kdocerresource_complex"/>
+			<KDocerAppQuickMenuCommand _APP_SRC_="RB_MoreComplexObj" icon="docer_resource_shop_kd" id="RB_MoreComplexObj" idKey="WPSMoreComplexObjDocerIcon" text="@RB More ComplexObj">
+				<command idKey="CommonDocerResource" idQ="app_kdocerresource_complex"/>
+				<command idKey="CommonResourcesClip" idQ="app_kresourcesclip_tab"/>
+				<command filter="lang=zh_CN" idQ="InsertBarcode"/>
+				<command filter="lang=zh_CN" idQ="InsertQRCode"/>
+				<command idKey="WPSInsertDocBarcode" idQ="InsertDocBarcode"/>
+				<command idQ="OfficialInsertDocBarcode"/>
+			</KDocerAppQuickMenuCommand>
+			<KDocerAppQuickMenuCommand _APP_SRC_="RB_MoreComplexObj" icon="docer_resource_shop_kd" id="RB_MoreComplexObj" idKey="WPSMoreComplexObj" text="@RB More ComplexObj">
+				<command idKey="CommonDocerResource" idQ="app_kdocerresource_complex"/>
+				<command idKey="CommonResourcesClip" idQ="app_kresourcesclip_tab"/>
+				<command filter="lang=zh_CN" idQ="InsertBarcode"/>
+				<command filter="lang=zh_CN" idQ="InsertQRCode"/>
+				<command idKey="WPSInsertDocBarcodePro" idQ="InsertDocBarcode"/>
+			</KDocerAppQuickMenuCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Insert">
+			<command idQ="RB_Pages"/>
+			<separator/>
+			<command idQ="RB_Illustrations"/>
+			<separator/>
+			<command idQ="RB_Symbol"/>
+			<separator/>
+			<command idQ="RB_InsertComments"/>
+			<separator/>
+			<command idQ="RB_Links"/>
+			<separator/>
+			<command idQ="RB_Text"/>
+			<separator/>
+			<command filter="CommonComplexObj" idQ="RB_ComplexObj"/>
+			<separator filter="CommonComplexObj"/>
+			<command idKey="SoundMovie" idQ="RB_Media"/>
+			<separator idKey="SoundMovie"/>
+		</subcommand>
+	</subcommands>
+</shell>

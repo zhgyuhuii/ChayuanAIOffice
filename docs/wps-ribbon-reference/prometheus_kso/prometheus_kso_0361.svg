@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>图表对象_ChartObjects</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 4049" d="M5 21.5H3C2.72386 21.5 2.5 21.2761 2.5 21V19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4050" d="M2.5 18V15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4051" d="M6 21.5H9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4053" d="M10 21.5H14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4054" d="M15 21.5H18" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4055" d="M19 21.5H21C21.2761 21.5 21.5 21.2761 21.5 21V19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4057" d="M21.5 18V15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4058" d="M21.5 14V10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4059" d="M21.5 9V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4060" d="M21.5 5V3C21.5 2.72386 21.2761 2.5 21 2.5H19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4061" d="M18 2.5H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4062" d="M14 2.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4063" d="M9 2.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4064" d="M5 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4065" d="M2.5 6V9" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4066" d="M2.5 10V14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 4070" d="M13.5 8.5H7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624920" d="M10.8428 8.5L13.7675 5.57523C13.9628 5.37997 14.2794 5.37997 14.4746 5.57523L18.5962 9.69674C18.7914 9.892 18.7914 10.2086 18.5962 10.4038L10.3536 18.6464C10.1583 18.8417 9.84171 18.8417 9.64645 18.6464L5.52494 14.5249C5.32968 14.3297 5.32968 14.0131 5.52494 13.8178L8.34277 11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_animation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="AnimationPreviewGroup" icon="animation_preview_kd" id="RB_AnimaPreview" rbFileMenuEmbed="1" text="@Preview">
+			<KxWppSlidePreviewListCommand customTip="SlidePreview" icon="animation_preview_kd" id="PreviewSection" ksoCmd="AnimaPreview" rbHotKey="P" text="@Preview Effect">
+				<KxLegacyTriggerCommand customTip="SlidePreview" hotKey="P" id="AnimaPreviewEx" ksoCmd="AnimaPreview" text="@Preview Effect"/>
+				<KxLegacyTriggerCommand hotKey="A" id="AnimaAutoPreview" ksoCmd="AnimaAutoPreview" text="@Auto Preview"/>
+			</KxWppSlidePreviewListCommand>
+		</KListCommand>
+		<KxListCommand customTip="AnimationEffectOption" groupTip="AnimationGroup" icon="star_kd" id="RB_Animaform" ksoCmd="AnimationEffectOption" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Animation">
+			<KxWppAnimaCommand controlType="4" embedHint="1" galleryHeight="100" icon="star_kd" id="AnimaformGallery" idMso="AnimationGallery" maxVisibleNumber="11" needCompress="1" qtspyName="WppTrans" rbHotKey="S" text="@Animation"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<KxWppAnimationPropertyCommand customTip="AnimationProperty" icon="animation_property_kd" id="AnimationProperty" rbHotKey="o" spaceHint="suitable" text="@Animation Properties"/>
+			<KxWppAnimatonTextCommand customTip="AnimationText" icon="animation_text_word_kd" id="AnimatonText" qtspyName="AnimationText" rbHotKey="x" spaceHint="suitable" text="@Text Play Method">
+				<KxLegacyTriggerCommand customTip="AnimationTextMixed" hotKey="a" icon="animation_text_mixed_kd" id="AnimationTextMixed" ksoCmd="AnimationTextMixed" qtspyName="AnimationTextMixed" text="@By All"/>
+				<KxLegacyTriggerCommand customTip="AnimationTextParagraphs" hotKey="t" icon="animation_text_paragraphs_kd" id="AnimationTextParagraphs" ksoCmd="AnimationTextParagraphs" qtspyName="AnimationTextParagraphs" text="@By Paragraph"/>
+				<KxLegacyTriggerCommand customTip="AnimationTextWord" hotKey="w" icon="animation_text_word_kd" id="AnimationTextWord" ksoCmd="AnimationTextWord" qtspyName="AnimationTextWord" text="@By Word"/>
+				<separator/>
+				<KxLegacyTriggerCommand customTip="AnimationEffectOption" dialogHint="1" hotKey="g" id="AnimationEffectOption" ksoCmd="AnimationEffectOption" qtspyName="AnimationEffectOption" text="@More Text Animations"/>
+			</KxWppAnimatonTextCommand>
+		</KxListCommand>
+		<KAiBeautifyProxyCommand autoLoad="false" canHideText="0" canStack="0" customTip="SmartAnimation" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="smart_animation_kd" id="SmartAnimation" idKey="WppSmartAnimation" ksoCmd="SmartAnimation" targetModule="kaiwpp" text="@Smart Animation"/>
+		<KxLegacyTriggerCommandEx customTip="AnimationPainter" icon="brush_animation_kd" id="AnimationPainter" ksoCmd="AnimationPainter" rbHotKey="B" text="@Animation Painter"/>
+		<KListCommand canHideText="0" canStack="0" customTip="AnimationDelete" icon="delete_animation_kd" id="AnimatonDelete" qtspyName="AnimationDelete" rbHotKey="s" text="@Delete Animation">
+			<KxLegacyTriggerCommand customTip="AnimationDeleteSelect" hotKey="o" icon="animation_delete_select_kd" id="AnimationDeleteSelect" ksoCmd="AnimationDeleteSelect" qtspyName="AnimationDeleteSelect" text="@Delete All Animations from Selected Object"/>
+			<KxLegacyTriggerCommand customTip="AnimationDeleteSlide" hotKey="s" icon="delete_slide_kd" id="AnimationDeleteSlide" ksoCmd="AnimationDeleteSlide" qtspyName="AnimationDeleteSlide" text="@Delete All Animations from Selected Slide"/>
+			<KxLegacyTriggerCommand customTip="AnimationDeletePresentation" hotKey="p" icon="delete_contents_page_kd" id="AnimationDeletePresentation" ksoCmd="AnimationDeletePresentation" qtspyName="AnimationDeletePresentation" text="@Delete All Animations from Presentation"/>
+			<separator/>
+			<KxLegacyTriggerCommand customTip="AnimationDeleteOption" dialogHint="1" hotKey="g" id="AnimationDeleteOption" ksoCmd="AnimationDeleteOption" qtspyName="AnimationDeleteOption" text="@More Options"/>
+		</KListCommand>
+		<KListCommand groupTip="AnimationPainterGroup" icon="brush_animation_kd" id="RB_AnimationPainter" rbFileMenuEmbed="1" text="@AnimationPainter">
+			<command idQ="AnimationPainter"/>
+		</KListCommand>
+		<KxListCommand enableSmartLayout="1" groupTip="TimeGroup" icon="clock_kd" id="RB_AnimationTime" rbFileMenuEmbed="1" text="@time">
+			<KxWppAnimationStartPlayCommand controlType="2" customTip="AnimationStartPlay" fixedWidth="204" icon="play_kd" iconSize="16" id="AnimationStartPlay" ksoCmd="AnimationStartPlay" popupWidth="150" spaceHint="suitable" text="@Start"/>
+			<KRbLayoutListCommand layoutOnly="1" spaceHint="suitable">
+				<KxWppAnimationDurationEditCommand customTip="AnimationDuration" icon="clock_kd" id="AnimationDuration" lineEditWidth="70" spaceHint="autocompact" text="@Continued"/>
+				<KxWppAnimationDelayTimeEditCommand customTip="AnimationDelayTime" icon="hourglass_kd" id="AnimationDelayTime" lineEditWidth="70" spaceHint="autocompact" text="@Latency"/>
+			</KRbLayoutListCommand>
+		</KxListCommand>
+		<KListCommand groupTip="AnimationToolGroup" icon="detailed_settings_kd" id="RB_AnimationTool" rbFileMenuEmbed="1" text="@AnimationTool">
+			<command idKey="WppSmartAnimation" idQ="SmartAnimation"/>
+			<command idQ="AnimatonDelete"/>
+			<KxLegacyTriggerCommand canHideText="0" canStack="0" controlType="6" customTip="CustomAnimation" hotKey="m" icon="star_animation_add_kd" id="CustomAnimationInAnimationTab" idMso="AnimationCustom" ksoCmd="CustomAnimation" qtspyName="CustomAnimation" rbHotKey="C" text="@Custom&#10;Animation"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Animation">
+			<command idQ="RB_AnimationPainter"/>
+			<separator/>
+			<command idQ="RB_AnimaPreview"/>
+			<separator/>
+			<command idQ="RB_Animaform"/>
+			<separator idKey="QuickPartsInsertGalleryVmlRibbonScale"/>
+			<command idQ="RB_AnimationAndTextPlay"/>
+			<separator/>
+			<command idQ="RB_AnimationTime"/>
+			<separator/>
+			<command idQ="RB_AnimationTool"/>
+		</subcommand>
+	</subcommands>
+</shell>

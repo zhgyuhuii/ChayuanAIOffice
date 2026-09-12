@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_ebookread" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxEbookFontCommand customTip="FontName" id="Ebook_tab_FontStyle"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="EbookIncreaseFont" icon="font_size_increase_wps_kd" id="Ebook_FontSize_Zoom" ksoCmd="GrowFontRainbow" shellEntryType="tab_read" shortcutHint="Ctrl+]" text="@EbookIncreaseFont"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="EbookDecreaseFont" icon="font_size_reduce_wps_kd" id="Ebook_FontSize_Narrow" ksoCmd="ShrinkFontRainbow" shellEntryType="tab_read" shortcutHint="Ctrl+[" text="@EbookDecreaseFont"/>
+		<KListCommand groupTip="EbookReadReadingSettingGroup" id="EbookReadView" layout_lineCount="2" rbFileMenuEmbed="1" text="@Reading Settings">
+			<command idQ="Ebook_bookmark_Bg"/>
+			<command idQ="Ebook_tab_view"/>
+		</KListCommand>
+		<KListCommand groupTip="EbookReadFontSettingGroup" icon="font_more_styles_kd" id="EbookReadFontStyle" layout_lineCount="2" rbFileMenuEmbed="1" text="@Font Settings">
+			<command idQ="Ebook_tab_FontStyle"/>
+			<command idQ="Ebook_FontSize_Zoom"/>
+			<command idQ="Ebook_FontSize_Narrow"/>
+		</KListCommand>
+		<KListCommand groupTip="EbookReadSeekGroup" id="RB_EbookReadSearch" layout_lineCount="2" rbFileMenuEmbed="1" text="@Seek"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_EbookRead">
+			<command idQ="EbookReadView"/>
+			<separator/>
+			<command idQ="EbookReadFontStyle"/>
+			<separator/>
+			<command idQ="RB_EbookReadSearch"/>
+		</subcommand>
+	</subcommands>
+</shell>

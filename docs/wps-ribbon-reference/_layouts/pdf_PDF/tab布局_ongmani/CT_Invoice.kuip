@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_invoice" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand appCmdObj="ImportActivePdfFile" appId="invoicecheck" icon="change_to_et_kd" id="invoice2excel_invoicetab" text="@expense account" tipContent="@expense account content" tipTitle="@expense account title"/>
+		<KAppCommand appCmdObj="ImportActivePdfFile" appId="invoicecheck" icon="invoice_inspection_kd" id="invoicecheck_invoicetab" text="@invoicecheck" tipContent="@invoicecheck content" tipTitle="@invoicecheck title"/>
+		<KAppCommand appCmdObj="ImportActiveInvoiceFile" appId="kbillprintv2" icon="invoice_printing_kd" id="kbillprintv2_invoicetab" text="@billprint" tipContent="@billprint content" tipTitle="@billprint title"/>
+		<KAppCommand appCmdObj="BatchOperationWithCurrentFile" appId="batchprint" icon="batch_printing_kd" id="batchprint_invoicetab" text="@batchprint" tipContent="@batchprint content" tipTitle="@batchprint title"/>
+		<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillmgr" icon="invoice_filing_kd" id="kbillmgr_invoicetab" text="@billfile" tipContent="@billfile content" tipTitle="@billfile title"/>
+		<KpdfBillCloseCommand icon="close_window_kd" id="invoicetab_close" tabId="CT_Invoice" text="@close"/>
+		<KAppQuickMenuCommand icon="print_kd" id="ic_print" layout_lineCount="1" referenceCommand="kbillprintv2_invoicetab" text="@billprint" tipContent="@billprint content" tipTitle="@billprint title">
+			<command idQ="kbillprintv2_invoicetab"/>
+			<command idQ="batchprint_invoicetab"/>
+		</KAppQuickMenuCommand>
+		<KListCommand groupTip="InvoiceManageGroup" icon="admin_kd" id="invoicelist_manage" text="@manage" visibleDependsOnSubCmds="1">
+			<command idQ="kbillmgr_invoicetab"/>
+			<command idQ="ic_print"/>
+			<command idQ="invoice2excel_invoicetab"/>
+			<command idQ="invoicecheck_invoicetab"/>
+		</KListCommand>
+		<KListCommand groupTip="InvoiceProcessGroup" icon="group_process_kd" id="invoicelist_process" text="@process" visibleDependsOnSubCmds="1">
+			<command idKey="PdfInvoiceTabExportImage" idQ="kexportimage_invoicetab"/>
+			<command idKey="PdfInvoiceTabBillMerge" idQ="kpdf2wordv2_merge_invoicetab"/>
+		</KListCommand>
+		<KListCommand groupTip="InvoiceExitGroup" id="invoicelist_close" text="@exit" visibleDependsOnSubCmds="1">
+			<command idQ="ic_close"/>
+			<command idQ="invoicetab_close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Invoice">
+			<command idQ="invoicelist_manage"/>
+			<command idQ="Separator"/>
+			<command idQ="invoicelist_process"/>
+			<command idQ="Separator"/>
+			<command idQ="invoicelist_close"/>
+		</subcommand>
+	</subcommands>
+</shell>

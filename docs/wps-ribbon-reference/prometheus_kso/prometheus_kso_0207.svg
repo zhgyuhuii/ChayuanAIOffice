@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>模拟分析16_GoalSeek_sheet_table_表</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M7.49 1.5H1.51C1.50448 1.5 1.5 1.50448 1.5 1.51V7.49C1.5 7.49552 1.50448 7.5 1.51 7.5H7.49C7.49552 7.5 7.5 7.49552 7.5 7.49V1.51C7.5 1.50448 7.49552 1.5 7.49 1.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M7.5 1.5H13.49C13.4955 1.5 13.5 1.50448 13.5 1.51V6" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M7.5 7.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4" d="M1.5 7.5V13.49C1.5 13.4955 1.50448 13.5 1.51 13.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M7.5 13.5V7.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_6" d="M12 9C12 8.17157 12.6716 7.5 13.5 7.5C14.3284 7.5 15 8.17531 15 9.00374C15 9.82805 14.3318 10.5 13.5075 10.5C13.5033 10.5 13.5 10.5033 13.5 10.5075V11.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M14.25 13.25C14.25 13.6642 13.9142 14 13.5 14C13.0858 14 12.75 13.6642 12.75 13.25C12.75 12.8358 13.0858 12.5 13.5 12.5C13.9142 12.5 14.25 12.8358 14.25 13.25Z" stroke="none"/></g></g><g class="kd-dir-rtl"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M7.49 1.5H1.51C1.50448 1.5 1.5 1.50448 1.5 1.51V7.49C1.5 7.49552 1.50448 7.5 1.51 7.5H7.49C7.49552 7.5 7.5 7.49552 7.5 7.49V1.51C7.5 1.50448 7.49552 1.5 7.49 1.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2-rtl" d="M7.5 1.5H13.49C13.4955 1.5 13.5 1.50448 13.5 1.51V6" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3-rtl" d="M7.5 7.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4-rtl" d="M1.5 7.5V13.49C1.5 13.4955 1.50448 13.5 1.51 13.5H11" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5-rtl" d="M7.5 13.5V7.5" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,27.000000000000004,0)"><path id="line_6-rtl" d="M12 9C12 8.17157 12.6716 7.5 13.5 7.5C14.3284 7.5 15 8.17531 15 9.00374C15 9.82805 14.3318 10.5 13.5075 10.5C13.5033 10.5 13.5 10.5033 13.5 10.5075V11.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7-rtl" d="M14.25 13.25C14.25 13.6642 13.9142 14 13.5 14C13.0858 14 12.75 13.6642 12.75 13.25C12.75 12.8358 13.0858 12.5 13.5 12.5C13.9142 12.5 14.25 12.8358 14.25 13.25Z" stroke="none"/></g></g></g></svg>

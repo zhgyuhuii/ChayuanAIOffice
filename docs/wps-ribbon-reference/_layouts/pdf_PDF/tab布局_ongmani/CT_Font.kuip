@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_font" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Font_HandTool" ksoCmd="HandTool" shellEntryType="tab_commenttools" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Font_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_commenttools" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Italic" icon="italic_wps_kd" id="FontItatic" ksoCmd="FontItatic" rbHotKey="i"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Strikethrough" icon="strikethrough_kd" id="FontCenterLine" ksoCmd="FontCenterLine" rbHotKey="i"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Bold" icon="bold_wps_kd" id="FontBold" ksoCmd="FontBold" rbHotKey="i"/>
+		<KxLegacyTriggerCommand controlType="0" customTip2="Underline2" customTip="Underline" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="FontUnderLine" ksoCmd="FontUnderLine" rbHotKey="i"/>
+		<KxPdfFontCommand customTip="FontName" id="FontForEdit%" shellEntryType="text_comment" spaceHint="autocompact" text="@FontName"/>
+		<KxPdfFontSizeCommand customTip="FontSize" id="FontSizeForEdit%" spaceHint="autocompact" text="@FontSize"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="FreeText" icon="bubble_text_kd" id="Ct_TextComment" ksoCmd="FreeText" rbHotKey="i" shellEntryType="tab_font" shortcutHint="Ctrl+F3" text="@TextPrinter"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Font" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Font_HandTool"/>
+			<command idQ="Font_SelectTool"/>
+		</KListCommand>
+		<KListCommand id="RB_EditTextTool" rbFileMenuEmbed="1" text="@Edit Tool">
+			<command id="Edit_InsertText_Font" idQ="Edit_InsertText"/>
+		</KListCommand>
+		<KListCommand groupTip="FontAddGroup" id="TextComment" rbFileMenuEmbed="1" text="@Add">
+			<command idQ="Ct_TextComment"/>
+		</KListCommand>
+		<KListCommand groupTip="FontFontStyleGroup" icon="font_style_kd" id="RB_FontEdit" rbFileMenuEmbed="1" text="@Font Style">
+			<command idQ="FontForEdit%"/>
+			<command idQ="FontSizeForEdit%"/>
+			<command idQ="FontColorSetting"/>
+		</KListCommand>
+		<KListCommand id="FontStyle" layout_lineCount="1" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="FontBold"/>
+			<command idQ="FontItatic"/>
+			<command idQ="FontUnderLine"/>
+			<command idQ="FontCenterLine"/>
+		</KListCommand>
+		<KListCommand groupTip="FontExitGroup" id="FontEditeExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Font">
+			<command idQ="RB_MouseTool_Font"/>
+			<command idQ="Separator"/>
+			<command idQ="TextComment"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_FontEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="FontEditeExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

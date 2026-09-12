@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>求解器24_solver</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 2408" d="M4.5 3.5H2.515C2.50672 3.5 2.5 3.50672 2.5 3.515V20.485C2.5 20.4933 2.50672 20.5 2.515 20.5H4.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2409" d="M19.5 3.5H21.485C21.4933 3.5 21.5 3.50672 21.5 3.515V20.485C21.5 20.4933 21.4933 20.5 21.485 20.5H19.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2410" d="M8.5 7.5V16.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 2412" d="M10.5256 3.47439L11.9894 2.01061C11.9953 2.00475 12.0047 2.00475 12.0106 2.01061L13.4744 3.47439C13.4838 3.48384 13.4772 3.5 13.4638 3.5H10.5362C10.5228 3.5 10.5162 3.48384 10.5256 3.47439Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 2413" d="M10.5256 20.5256L11.9894 21.9894C11.9953 21.9953 12.0047 21.9953 12.0106 21.9894L13.4744 20.5256C13.4838 20.5162 13.4772 20.5 13.4638 20.5H10.5362C10.5228 20.5 10.5162 20.5162 10.5256 20.5256Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-bold"><path id="Vector 2411" d="M15.5 16.5V11C15.5 9.067 13.933 7.5 12 7.5V7.5C10.067 7.5 8.5 9.067 8.5 11V16.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>按行拆分24_SplitTable</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line" d="M2 11.5H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M9 11.5H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M13 11.5H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M5 11.5H8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M17.5 4.5L19.4929 2.50707C19.4968 2.50317 19.5032 2.50317 19.5071 2.50707L21.5 4.5M19.5 3V8.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M17.5 18.5L19.4929 20.4929C19.4968 20.4968 19.5032 20.4968 19.5071 20.4929L21.5 18.5M19.5 20V14.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_7" d="M2.5 3C2.5 2.72386 2.72386 2.5 3 2.5H14C14.2761 2.5 14.5 2.72386 14.5 3V8C14.5 8.27614 14.2761 8.5 14 8.5H3C2.72386 8.5 2.5 8.27614 2.5 8V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" d="M2.5 15C2.5 14.7239 2.72386 14.5 3 14.5H14C14.2761 14.5 14.5 14.7239 14.5 15V20C14.5 20.2761 14.2761 20.5 14 20.5H3C2.72386 20.5 2.5 20.2761 2.5 20V15Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_formfilling" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="FormFilling_HandTool" ksoCmd="HandTool" shellEntryType="tab_messauretool" shortcutHint="Ctrl+H" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="FormFilling_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_messauretool" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand id="FormFilling_Date_Ch" ksoCmd="FormDateCh" text="@FormFillingDate Ch"/>
+		<KxLegacyTriggerCommand id="FormFilling_Date_Transverse" ksoCmd="FormDateTransverse" text="@FormFillingDate Transverse"/>
+		<KxLegacyTriggerCommand id="FormFilling_Date_Point" ksoCmd="FormDatePoint" text="@FormFillingDate Point"/>
+		<KxLegacyTriggerCommand id="FormFilling_Date_Backslash" ksoCmd="FormDateBackslash" text="@FormFillingDate Backslash"/>
+		<KxPdfFormDataExportCommand customTip="FormData_Export" icon="export_kd" id="FormData_Export" spaceHint="autocompact" text="@formdataExport"/>
+		<KxPdfFormDataImportCommand customTip="FormData_Import" icon="doc_import_kd" id="FormData_Import" spaceHint="autocompact" text="@formdataImport"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_FormFilling" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="FormFilling_HandTool"/>
+			<command idQ="FormFilling_SelectTool"/>
+		</KListCommand>
+		<KQuickMenuCommandFix icon="calendar_kd" id="FormFilling_Date" idKey="PdfFormFillAddDate" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="Form_Date" text="@FormFilling Date">
+			<command idQ="FormFilling_Date_Ch"/>
+			<command idQ="FormFilling_Date_Transverse"/>
+			<command idQ="FormFilling_Date_Point"/>
+			<command idQ="FormFilling_Date_Backslash"/>
+		</KQuickMenuCommandFix>
+		<KxPdfAddDateMenuCommand icon="calendar_kd" id="FormFilling_Date" idKey="PdfFormFillCommonDate" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="Form_Date" text="@FormFilling Date">
+			<command idQ="Form_Date"/>
+			<command idQ="FormFilling_Date_Backslash"/>
+			<KxLegacyTriggerCommand id="FormFilling_Date_BackslashMMDD" ksoCmd="FormDateBackslashMMDD"/>
+			<command idQ="FormFilling_Date_Point"/>
+			<command idQ="FormFilling_Date_Ch"/>
+			<command idQ="FormFilling_Date_Transverse"/>
+		</KxPdfAddDateMenuCommand>
+		<KxValueCommand customTip="PDFEditTextExit" icon="close_window_kd" id="FormFilling_Exit" ksoCmd="FormExit" text="@FormFilling Exit" wpsIsEanble="false"/>
+		<KListCommand groupTip="FormFillingFillContentGroup" icon="screen_full_kd" id="RB_FormFilling" rbFileMenuEmbed="1" text="@Fill content">
+			<command idQ="Reviews_TextComment"/>
+			<command idKey="PdfFormFillShape" idQ="FillSign_Cross"/>
+			<command idKey="PdfFormFillShape" idQ="FillSign_Check"/>
+			<command idKey="PdfFormFillShape" idQ="FillSign_Circle"/>
+			<command idKey="PdfFormFillShape" idQ="FillSign_Line"/>
+			<command idKey="PdfFormFillShape" idQ="FillSign_Dot"/>
+			<command idQ="FormFilling_Date"/>
+			<command idQ="Insert_Signature"/>
+			<command idQ="Insert_Signature_Web"/>
+			<command idQ="FormFilling_AddImage"/>
+			<command idKey="WPSPDFEnhanceVersion" idQ="Insert_AddImage"/>
+		</KListCommand>
+		<KListCommand id="RB_FormDataImportExport" rbFileMenuEmbed="1" text="@Import Export FormData">
+			<command idQ="FormData_Import"/>
+		</KListCommand>
+		<KListCommand groupTip="FormFillingExitGroup" id="FormFillingExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="FormFilling_Exit" singlerowpriority="100"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_FormFilling">
+			<command idQ="RB_MouseTool_FormFilling"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_FormFilling"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_FormDataImportExport"/>
+			<command idQ="Separator"/>
+			<command idQ="FormFillingExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

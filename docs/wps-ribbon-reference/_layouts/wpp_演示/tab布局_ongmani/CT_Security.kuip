@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand filter="feature_16777331!=0;support:EnterpriseDocpermission=true|platform!=win32" id="RB_Permissions" rbFileMenuEmbed="1" text="@Permissions">
+			<KxDocPermissionCommand enterpriseWebPageUrl="/webdlg/myright.html" icon="people_key_kd" id="CurUserPermissionInSecurytyTab" idKey="SecDocMyRight" qtspyName="CurUserPermission" rbHotKey="V" text="@Check Mine Permission"/>
+			<KxDocPermissionCommand enterpriseWebPageUrl="/webdlg/rightlist.html" icon="magnifier_lock_kd" id="CheckPermissionsInSecurytyTab" idKey="CheckPermissionsInSecurytyTab" qtspyName="CheckPermissions" rbHotKey="R" text="@Check Users Permissions"/>
+			<KxDocPermissionCommand defaultPage="Account" icon="doc_encryption_kd" id="DocPermissionsInSecurytyTab" idKey="DocPermissionsInSecurytyTab" qtspyName="DocPermissionProtection" rbHotKey="R" text="@Document Permission"/>
+		</KListCommand>
+		<KListCommand id="RB_CloudEncryption" rbFileMenuEmbed="1" text="@document security">
+			<KxDocPermissionCommand customTip="DocPermissionProtection" defaultPage="Account" filter="support:DocPermission=true|support:EnterpriseDocpermission=true" icon="doc_encryption_kd" id="CurUserPermissionInSecurytyTab" infoNum="16" rbHotKey="N" text="@Document Permission"/>
+			<KxWechatPermissionCommand icon="DocumentSharing" id="WechatPermissionSecurytyTab" rbHotKey="M" text="@document authorization"/>
+			<KxDocAuthenticationCommand icon="document_authentication_kd" id="DocumentAuthenticationSecurytyTab" rbHotKey="Q" text="@document authentication"/>
+		</KListCommand>
+		<KListCommand id="RB_FileToolCenter" rbFileMenuEmbed="1" text="@File backup">
+			<command idQ="BackupCenter"/>
+			<KxKOSHomepageRoamingFileCommand icon="doc_cloud_kd" id="RoamingFile" text="@Roaming File"/>
+		</KListCommand>
+		<KListCommand id="RB_FileMenuDataCommands" rbFileMenuEmbed="1" text="@File tools">
+			<command idQ="DocumentFix" proxyCmdId="ProxyDocumentFix"/>
+			<KxFileMenuDataRecoverCommand customTip="DataRecover" hotKey="r" icon="data_recover_kd" id="RbFileMenuDataRecover" idKey="DataRecoveryMaster" infoId="r" ksourl="L10N:DATA_RECOVER_URL" processName="@WPS Data Recovery Master" text="@Data Recovery"/>
+		</KListCommand>
+		<KListCommand id="RB_EditDocumentHistory" rbFileMenuEmbed="1" text="@document set">
+			<command idQ="RbFileMenuDocumentHistory"/>
+		</KListCommand>
+		<KxMakeOutwardDocEntranceCommand icon="export_kd" id="RB_MakeOutwardDoc" rbHotKey="M" text="@Make Outward"/>
+		<KListCommand id="RB_ApplyForward" idKey="MakeExternalDoc" rbFileMenuEmbed="1" text="@Forward">
+			<command idQ="RB_MakeOutwardDoc"/>
+		</KListCommand>
+		<KListCommand filter="feature_16777344!=0" id="RB_OfflineManagement" rbFileMenuEmbed="1" text="@Offline Management">
+			<KxOfflineManagementCommand icon="wifi_offline_kd" id="OfflineManagementInSecurytyTab" qtspyName="OfflineManagement" rbHotKey="O" text="@Offline Secret Key"/>
+		</KListCommand>
+		<KListCommand id="RB_BatchOperation" idKey="CommonSecurityBatchDocDecrypt" rbFileMenuEmbed="1" text="@Batch Operation">
+			<KxBatchDocumentDecryptionCommand customTip="BatchDocDecrypt" icon="BatchDocDecrypt" id="BatchDocDecryption" rbHotKey="J" text="@Batch Document Decryption"/>
+		</KListCommand>
+		<KListCommand id="RB_Wukuang" idKey="CommonEncryption" rbFileMenuEmbed="1" text="@File Format">
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="lock_kd" id="NormalEncryption" idKey="NormalEncryption" qtspyName="NormalEncryption" rbHotKey="N" targetModule="docpermission" text="@Normal Encryption"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="shield_lock_kd" id="CoreEncryption" idKey="CoreEncryption" qtspyName="CoreEncryption" rbHotKey="C" targetModule="docpermission" text="@Core Encryption"/>
+		</KListCommand>
+		<KListCommand id="RB_MB" idKey="MBVersionFlag" rbFileMenuEmbed="1" text="@SecurityMB Management">
+			<KxSetMBCommand icon="pushpin_kd" id="setMBInSecurytyTab" idKey="SetMB" rbHotKey="L" text="@setting MB"/>
+			<KxConfirmMBCommand icon="successful_kd" id="confirmMBInSecurytyTab" idKey="ConfirmMB" rbHotKey="S" text="@confirm MB"/>
+			<KxSignedMBCommand icon="pen_kd" id="signedMBInSecurytyTab" idKey="SignedMB" rbHotKey="I" text="@signed MB"/>
+			<KxWithdrawSignedMBCommand icon="doc_extract_page_kd" id="withdrawSignedMBInSecurytyTab" idKey="SignedMB" rbHotKey="R" text="@withdraw signed MB"/>
+			<KxCheckMBCommand icon="magnifier_kd" id="checkMBInSecurytyTab" idKey="CheckMB" rbHotKey="C" text="@check MB"/>
+			<KxChangeMBCommand icon="change_kd" id="changeMBInSecurytyTab" idKey="ChangeMB" rbHotKey="M" text="@change MB"/>
+			<KxDecryptMBCommand icon="cancel_kd" id="decryptMBInSecurytyTab" idKey="DecryptMB" rbHotKey="F" text="@decrypt MB"/>
+			<KxLiftMBCommand icon="lock_open_kd" id="liftMBInSecurytyTab" idKey="DocLiftMB" rbHotKey="D" text="@lift MB"/>
+		</KListCommand>
+		<KListCommand id="RB_CustomFormatSecurityDoc" idKey="CustomFormatSecurityDoc" rbFileMenuEmbed="1" text="@Encryption/Decryption">
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="doc_lock_kd" id="CustomFormatSecurityDocEncryption" qtspyName="Encryption" rbHotKey="E" targetModule="docpermission" text="@Encryption"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="decryption_kd" id="CustomFormatSecurityDocDecryption" qtspyName="Decryption" rbHotKey="D" targetModule="docpermission" text="@Decryption"/>
+		</KListCommand>
+		<KListCommand id="RB_DocumentSecurityCenter" text="@Document security information">
+			<KxDocumentSecurityCenterCommand customTip="DocumentSecurityCenter" icon="shield_kd" rbHotKey="DI" text="@Document security information"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Security" idKey="CommonSecurityCommand">
+			<command idQ="RB_Permissions"/>
+			<separator/>
+			<command idQ="RB_BatchOperation"/>
+			<separator/>
+			<command idQ="RB_MB"/>
+			<separator/>
+			<command idQ="RB_Wukuang"/>
+			<separator/>
+			<command idQ="RB_CustomFormatSecurityDoc"/>
+			<separator/>
+			<command idQ="RB_Apply"/>
+			<separator/>
+			<command idQ="RB_ApplyForward"/>
+			<separator/>
+			<command idQ="RB_OfflineManagement"/>
+			<separator/>
+		</subcommand>
+		<subcommand id="CT_Security" idKey="CommonSecurityCommandPer">
+			<command idQ="RB_CloudEncryption"/>
+			<command idQ="RB_OfflineManagement"/>
+			<separator/>
+			<command idQ="RB_FileToolCenter"/>
+			<separator/>
+			<command idQ="RB_FileMenuDataCommands"/>
+			<separator/>
+			<command idQ="RB_EditDocumentHistory"/>
+			<separator/>
+			<command idQ="RB_DocumentSecurityCenter"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_measuretool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="MessaureTool_HandTool" ksoCmd="HandTool" shellEntryType="tab_messauretool" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="MessaureTool_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_messauretool" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_MessaureTool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="MessaureTool_HandTool"/>
+			<command idQ="MessaureTool_SelectTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="PDFMeasureDistance" icon="ruler_kd" id="Measure_Distance" ksoCmd="MeasureDistance" text="@Measure Distance"/>
+		<KxLegacyTriggerCommand customTip="PDFMeasurePerimeter" icon="measure_perimeter_kd" id="Measure_Perimeter" ksoCmd="MeasurePerimeter" text="@Measure Perimeter"/>
+		<KxLegacyTriggerCommand customTip="PDFMeasureArea" icon="measure_area_kd" id="Measure_Area" ksoCmd="MeasureArea" text="@Measure Area"/>
+		<KxLegacyTriggerCommand customTip="PDFMeasureScale" icon="ruler_scale_kd" id="Measure_Scale" ksoCmd="MeasureScale" spaceHint="autocompact" text="@Measure Scale"/>
+		<KxLegacyTriggerCommand customTip="PDFMeasureResultPanel" icon="measure_result_panel_kd" id="Measure_ResultPanel" ksoCmd="MeasureResultPanel" spaceHint="autocompact" text="@Measure ResultPanel"/>
+		<KxLegacyTriggerCommand accessibleName="@AdsorptionEndpoint" customTip="PDFAdsorptionEndpoint" icon="measure_endpoint_kd" id="AdsorptionEndpoint" ksoCmd="AdsorptionEndpoint" spaceHint="compact" text="@AdsorptionEndpoint"/>
+		<KxLegacyTriggerCommand accessibleName="@AdsorptionMidpoint" customTip="PDFAdsorptionMidpoint" icon="measure_adsorption_midpoint_kd" id="AdsorptionMidpoint" ksoCmd="AdsorptionMidpoint" spaceHint="compact" text="@AdsorptionMidpoint"/>
+		<KxLegacyTriggerCommand accessibleName="@AdsorptionPath" customTip="PDFAdsorptionPath" icon="measure_adsorption_path_kd" id="AdsorptionPath" ksoCmd="AdsorptionPath" spaceHint="compact" text="@AdsorptionPath"/>
+		<KxLegacyTriggerCommand accessibleName="@AdsorptionIntersection" customTip="PDFAdsorptionIntersection" icon="measure_adsorption_intersection_kd" id="AdsorptionIntersection" ksoCmd="AdsorptionIntersection" spaceHint="compact" text="@AdsorptionIntersection"/>
+		<KxLegacyTriggerCommand customTip="PDFEditTextExit" icon="close_window_kd" id="MeasureTool_Exit" ksoCmd="MeasureToolExit" text="@EditExit"/>
+		<KListCommand groupTip="MeasureToolMeasureTypeGroup" icon="ruler_kd" id="RB_MeasureTool" rbFileMenuEmbed="1" text="@Measure Type">
+			<command idQ="Measure_Distance"/>
+			<command idQ="Measure_Perimeter"/>
+			<command idQ="Measure_Area"/>
+		</KListCommand>
+		<KListCommand groupTip="MeasureToolMeasureSettingGroup" icon="setup_kd" id="RB_MeasureManagement" rbFileMenuEmbed="1" text="@Measure Setting">
+			<command idQ="Measure_Scale"/>
+			<command idQ="Measure_ResultPanel"/>
+			<command idQ="AdsorptionEndpoint"/>
+			<command idQ="AdsorptionPath"/>
+			<command idQ="AdsorptionMidpoint"/>
+			<command idQ="AdsorptionIntersection"/>
+		</KListCommand>
+		<KListCommand groupTip="MeasureToolExitGroup" id="MeasureToolExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="MeasureTool_Exit" singlerowpriority="100"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_MeasureTool">
+			<command idQ="RB_MouseTool_MessaureTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_MeasureTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_MeasureManagement"/>
+			<command idQ="Separator"/>
+			<command idQ="MeasureToolExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

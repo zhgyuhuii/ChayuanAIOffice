@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_videotool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="VideoToolMediaPlayGroup" icon="play_kd" id="Media_Play" text="@media play">
+			<KxWppMediaPlayCommand canHideText="0" canStack="0" icon="play_kd" id="VideoPlay" qtspyName="MediaPlay" rbHotKey="P" text="@media play"/>
+		</KListCommand>
+		<KxWppVolListCommand canHideText="0" canStack="0" customTip="MediaVol" icon="volume_broadcasting_kd" id="Media_Vol" qtspyName="MediaVol" rbHotKey="V" text="@media vol">
+			<KxWppMediaVolCommand id="VideoHightVol" index="3" qtspyName="MediaVolHight" text="@hight"/>
+			<KxWppMediaVolCommand id="VideoMidVol" index="2" qtspyName="MediaVolMid" text="@mid"/>
+			<KxWppMediaVolCommand id="VideoLowVol" index="1" qtspyName="MediaVolLow" text="@low"/>
+			<KxWppMediaVolCommand id="VideoMuteVol" index="0" qtspyName="MediaVolMute" text="@mute"/>
+		</KxWppVolListCommand>
+		<KListCommand groupTip="VideoToolTrimGroup" icon="video_trim_kd" id="Media_Trim" text="@trim">
+			<KxWppEditVideoCommand canHideText="0" canStack="0" customTip="VideoTrim" icon="video_trim_kd" id="VideoTool_MediaTrim" qtspyName="MediaTrim" rbHotKey="T" text="@media trim"/>
+		</KListCommand>
+		<KxListCommand customTip="FormatObjectSize" groupTip="VideoToolVideoOptionGroup" icon="general_options_kd" id="Media_Play_Setting" rbFileMenuEmbed="1" text="@Video Play Setting">
+			<command idQ="Media_Vol"/>
+			<KxWppNoTriggerCommand customTip="VideoBegin" disableCustomRibbon="true" icon="video_start_wpp_kd" id="VideoTool_MediaBegin" qtspyName="MediaStartModeLabel" rbHotKey="" spaceHint="suitable" text="@Start:"/>
+			<KxWppMediaStartModeCommand controlType="3" customTip="VideoBegin" id="VideoTool_MediaStartMode" qtspyName="MediaStartMode" rbHotKey="U" spaceHint="suitable" text="@Auto"/>
+			<KxWppVideoFullSceenCommand customTip="FullScreenPlay" id="VideoTool_FullScreenPlay" leftSpace="2" qtspyName="FullSceen" rbHotKey="C" spaceHint="suitable" text="@full screen paly"/>
+			<KxWppMediaHideCommand customTip="HideVideo" id="VideoTool_HideMedia" leftSpace="2" qtspyName="HideMedia" rbHotKey="I" spaceHint="suitable" text="@hidden when stop"/>
+			<KxWppMediaLoopCommand customTip="LoopVideo" id="VideoTool_LoopMedia" qtspyName="LoopMedia" rbHotKey="L" spaceHint="suitable" text="@Loop until stopped"/>
+			<KxWppMediaRewindCommand customTip="RewindVideo" id="VideoTool_RewindMedia" qtspyName="RewindMedia" rbHotKey="E" spaceHint="suitable" text="@Rewind movie when done playing"/>
+		</KxListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_VideoTool">
+			<command idQ="Media_Play"/>
+			<separator/>
+			<command idQ="Media_Trim"/>
+			<separator/>
+			<command idQ="Media_Play_Setting"/>
+			<separator idKey="WppCTVideoTool"/>
+			<command idKey="WppCTVideoTool" idQ="Media_Cover"/>
+			<separator idKey="WppCTVideoTool"/>
+			<command idKey="WppCTVideoTool" idQ="Media_Cover_Reset"/>
+			<separator idKey="WppCTVideoTool"/>
+			<command idKey="WppCTVideoTool" idQ="Media_Advance"/>
+		</subcommand>
+	</subcommands>
+</shell>

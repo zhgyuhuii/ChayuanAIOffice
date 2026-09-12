@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>逻辑24_Logical_logic</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><path id="line" d="M8.89062 11.3947C8.89062 9.84043 9.9167 8.28613 11.9992 8.28613C13.1703 8.28613 15.1078 8.98471 15.1078 11.3947C15.1078 11.9128 15.0252 13.0442 13.7633 13.7262C13.1753 13.9448 11.9992 14.7257 11.9992 16.1001" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M12 18.4683V18.8356" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_3" d="M3.5 4C3.5 7.25934 3.5 15.6471 3.5 19.5047C3.5 20.6093 4.39543 21.5 5.5 21.5H20C20.2761 21.5 20.5 21.2761 20.5 21V6C20.5 5.72386 20.2761 5.5 20 5.5H14" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4" d="M15.5 5V3C15.5 2.72386 15.278 2.5 15.0018 2.5H5C3.5 2.5 3.5 4 3.5 4C3.5 5.01953 4.25 5.5 5 5.5H15C15.2761 5.5 15.5 5.27614 15.5 5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g id="group-1-rtl" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><g transform="matrix(-1,0,0,1,23.99842,0)"><path id="line-rtl" d="M8.89062 11.3947C8.89062 9.84043 9.9167 8.28613 11.9992 8.28613C13.1703 8.28613 15.1078 8.98471 15.1078 11.3947C15.1078 11.9128 15.0252 13.0442 13.7633 13.7262C13.1753 13.9448 11.9992 14.7257 11.9992 16.1001" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2-rtl" d="M12 18.4683V18.8356" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_3-rtl" d="M3.5 4C3.5 7.25934 3.5 15.6471 3.5 19.5047C3.5 20.6093 4.39543 21.5 5.5 21.5H20C20.2761 21.5 20.5 21.2761 20.5 21V6C20.5 5.72386 20.2761 5.5 20 5.5H14" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4-rtl" d="M15.5 5V3C15.5 2.72386 15.278 2.5 15.0018 2.5H5C3.5 2.5 3.5 4 3.5 4C3.5 5.01953 4.25 5.5 5 5.5H15C15.2761 5.5 15.5 5.27614 15.5 5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></svg>

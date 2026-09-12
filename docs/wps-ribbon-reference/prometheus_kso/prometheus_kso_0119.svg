@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>编辑批注16_编辑批注_批注管理_EditComment_edit_comment</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M14.5 7V2C14.5 1.72386 14.2761 1.5 14 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V13.4793C1.5 13.4877 1.5097 13.4924 1.51625 13.4871L4 11.5001H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_2" d="M12.1464 7.85355L7.64645 12.3536C7.55268 12.4473 7.5 12.5745 7.5 12.7071V14.4901C7.5 14.4956 7.50448 14.5001 7.51 14.5001H9.29289C9.4255 14.5001 9.55268 14.4474 9.64645 14.3537L14.1465 9.85355C14.3417 9.65829 14.3417 9.34171 14.1465 9.14645L12.8536 7.85355C12.6583 7.65829 12.3417 7.65829 12.1464 7.85355Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M9.5 14.5H14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g transform="translate(16,0) scale(-1,1)"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M14.5 7V2C14.5 1.72386 14.2761 1.5 14 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V13.4793C1.5 13.4877 1.5097 13.4924 1.51625 13.4871L4 11.5001H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,21.999999999999996,0)"><path id="line_2-rtl" d="M12.1464 7.85355L7.64645 12.3536C7.55268 12.4473 7.5 12.5745 7.5 12.7071V14.4901C7.5 14.4956 7.50448 14.5001 7.51 14.5001H9.29289C9.4255 14.5001 9.55268 14.4474 9.64645 14.3537L14.1465 9.85355C14.3417 9.65829 14.3417 9.34171 14.1465 9.14645L12.8536 7.85355C12.6583 7.65829 12.3417 7.65829 12.1464 7.85355Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3-rtl" d="M9.5 14.5H14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></g></svg>

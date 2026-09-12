@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>渐变24_GradiantFill</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-tertiary {
+       fill: var(--kd-color-icon-tertiary, #A3A3A3);
+       stroke: var(--kd-color-icon-tertiary, #A3A3A3);
+       km_fill: #A3A3A3;
+       km_stroke: #A3A3A3;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-4" class="kd-color-icon-tertiary kd-stroke-width-icon-regular"><path id="fill" opacity="0.8" d="M10.5 20L15.768 14.632L20 10.5V17C18.5 17 17 18.5 17 20H10.5Z" stroke="none"/></g><g id="group-3" class="kd-color-icon-tertiary kd-stroke-width-icon-regular"><path id="fill_2" opacity="0.4" d="M4 13.5V20H10.5L20 10.5V4H13.5L4 13.5Z" stroke="none"/></g><g id="group-2" class="kd-color-icon-tertiary kd-stroke-width-icon-regular"><path id="fill_3" opacity="0.2" d="M4 13.5V7C5.44194 6.6676 6.66759 5.44193 7 4H13.5L4 13.5Z" stroke="none"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line" d="M5.5 4C5.5 4.82843 4.82843 5.5 4 5.5C3.17157 5.5 2.5 4.82843 2.5 4C2.5 3.17157 3.17157 2.5 4 2.5C4.82843 2.5 5.5 3.17157 5.5 4Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M21.5 20C21.5 20.8284 20.8284 21.5 20 21.5C19.1716 21.5 18.5 20.8284 18.5 20C18.5 19.1716 19.1716 18.5 20 18.5C20.8284 18.5 21.5 19.1716 21.5 20Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M5 5L19 19" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_4" d="M7 3.5H20C20.2761 3.5 20.5 3.72386 20.5 4V17M3.5 7V20C3.5 20.2761 3.72386 20.5 4 20.5H17" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_handoutmaster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand icon="doc_setup_kd" id="RB_HandoutMasterPageSetup" rbFileMenuEmbed="1" text="@Page Setup">
+			<KListCommand customTip="HandoutOrientation" icon="handout_orientation_kd" qtspyName="HandoutOrientation" rbHotKey="0" text="@Handout Orientation">
+				<KxValueCommand icon="doc_direction_horizontal_kd" index="1" ksoCmd="NotesOrientation" qtspyName="HandoutOrient_Landscape" text="@Landscape"/>
+				<KxValueCommand icon="doc_kd" index="2" ksoCmd="NotesOrientation" qtspyName="HandoutOrient_Portrait" text="@Portrait"/>
+			</KListCommand>
+			<KxWppListCommand customTip="SlideSize" icon="slide_orientation_kd" qtspyName="SlideOrientation" text="@Slide Size">
+				<KxValueCommand icon="standard_screen_kd" index="1" ksoCmd="ChangeSlideAspectRatio" qtspyName="StandScreen" text="@Stand Screen(4:3)"/>
+				<KxValueCommand icon="screen_sixteen_to_nine_kd" index="2" ksoCmd="ChangeSlideAspectRatio" qtspyName="WideScreen" text="@Wide Screen(16:9)"/>
+				<KxValueCommand filter="lang=th_TH" icon="equipment_cell_phone_kd" index="3" ksoCmd="ChangeSlideAspectRatio" qtspyName="PhoneScreen" text="@Phone Screen(9:16)"/>
+				<separator/>
+				<KxValueCommand dialogHint="1" index="4" ksoCmd="PageSetup" qtspyName="PageSetup" text="@Custom Size"/>
+			</KxWppListCommand>
+			<KListCommand customTip="SlideAmount" icon="slide_amount_kd" qtspyName="SlideAmount" text="@Count of Slide Per Page">
+				<KxValueCommand icon="one_slide_kd" index="1" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="OneSlide" text="@One Slide"/>
+				<KxValueCommand icon="shape_two_kd" index="2" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="TwoSlide" text="@Two Slide"/>
+				<KxValueCommand icon="three_square_kd" index="3" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="ThreeSlide" text="@Three Slide"/>
+				<KxValueCommand icon="shape_four_kd" index="4" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="FourSlide" text="@Four Slide"/>
+				<KxValueCommand icon="six_square_kd" index="5" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="SixSlide" text="@Six Slide"/>
+				<KxValueCommand icon="nine_square_kd" index="6" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="NineSlide" text="@Nine Slide"/>
+				<KxValueCommand icon="doc_catalog_kd" index="7" ksoCmd="ChangeAmountOfShowSlideFrame" qtspyName="OutlineSlide" text="@Outline"/>
+			</KListCommand>
+		</KListCommand>
+		<KListCommand horizontalSpacing="0" icon="slide_layout_kd" id="RB_HandoutMasterPlaceHolder" rbFileMenuEmbed="1" text="@Master Layout">
+			<KxCheckBoxCommand customTip="HeaderPlaceHolder" ksoCmd="AddHeaderPhOnMaster" qtspyName="AddHeaderPhOnMaster" spaceHint="suitable" text="@Header PlaceHolder"/>
+			<KxCheckBoxCommand customTip="DataPlaceHolder" ksoCmd="AddDatePhOnMaster" qtspyName="AddDatePhOnMaster" spaceHint="suitable" text="@data PlaceHolder"/>
+			<KxCheckBoxCommand customTip="FooterPlaceHolder" ksoCmd="AddFooterPhOnMaster" qtspyName="AddFooterPhOnMaster" spaceHint="suitable" text="@footer PlaceHolder"/>
+			<KxCheckBoxCommand customTip="PageNumber" ksoCmd="AddSlideNumberPhOnMaster" qtspyName="AddSlideNumberPhOnMaster" spaceHint="suitable" text="@Slide Number PlaceHolder"/>
+		</KListCommand>
+		<KListCommand filter="lang!=th_TH" icon="background_kd" id="RB_HandoutBackGround" rbFileMenuEmbed="1" text="@BackGround">
+			<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="Theme Colors" galleryWidth="250" icon="color_palette_kd" id="ThemeColorsInHandoutMasterTab" ksoCmd="ThemeColors" onlineCmd="OnlineThemeColor" qtspyName="ThemeColors" rbHotKey="TC" text="@Colors">
+				<command idQ="CustomThemeColorsInHandoutMasterTab"/>
+			</KxThemeColorsGalleryCommand>
+			<KxThemeFontsGalleryCommand customTip="Theme Fonts" galleryWidth="250" icon="font_style_kd" ksoCmd="ThemeFonts" qtspyName="ThemeFonts" rbHotKey="TF" text="@Fonts">
+				<command idQ="HandoutMasterCustomThemeFonts"/>
+			</KxThemeFontsGalleryCommand>
+			<KxListOnlineAndLocalCommand customTip="Theme Effects" disableTrigger="1" icon="theme_effect_kd" isCefPopup="false" isOnlyOnline="true" isPreferred="true" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects" tpOnlineCmd="DocumentThemeEffect">
+				<KxThemeEffectsGalleryCommand customTip="Theme Effects" galleryWidth="350" icon="theme_effect_kd" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects"/>
+			</KxListOnlineAndLocalCommand>
+		</KListCommand>
+		<KListCommand id="RB_HandoutMasterClose" rbFileMenuEmbed="1" text="@Close">
+			<KxLegacyTriggerCommand customTip="HandoutMasterClose" hotKey="c" icon="close_window_kd" ksoCmd="HandoutMasterClose" qtspyName="HandoutMasterClose" rbHotKey="C" singlerowpriority="100" text="@Close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_HandoutMaster">
+			<command idQ="RB_HandoutMasterPageSetup"/>
+			<separator/>
+			<command idQ="RB_HandoutMasterPlaceHolder"/>
+			<separator/>
+			<command idQ="RB_HandoutBackGround"/>
+			<separator/>
+			<command idQ="RB_HandoutMasterClose"/>
+		</subcommand>
+	</subcommands>
+</shell>

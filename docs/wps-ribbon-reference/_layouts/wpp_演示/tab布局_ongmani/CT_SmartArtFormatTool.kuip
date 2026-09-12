@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_smartartformattool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="605" controlType="6" customTip="Bold" faceid="316" hotKey="b" icon="bold_wps_kd" iconQat="bold_wps_kd" id="Bold" idMso="Bold" ksoCmd="Bold" rbHotKey="1" text="@Bold"/>
+		<KxLegacyTriggerCommand aid="606" controlType="6" customTip="Italic" faceid="317" hotKey="i" icon="italic_wps_kd" id="Italic" idMso="Italic" ksoCmd="Italic" rbHotKey="2" text="@Italic"/>
+		<KxLegacyTriggerCommand aid="607" controlType="6" customTip="Underline" faceid="318" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="Underline" idMso="Underline" ksoCmd="Underline" rbHotKey="3" text="@Underline"/>
+		<KxLegacyTriggerCommand controlType="4" customTip="ShadowButton" hotKey="s" icon="text_projection_kd" id="ShadowButton" idMso="ObjectEffectShadowGallery" ksoCmd="Shadow" rbHotKey="5" text="@Shadow"/>
+		<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" rbHotKey="M" text="@More Font Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapFontColors" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand aid="137" controlType="0" customTip="Superscript" faceid="26" hotKey="r" icon="math_superscript_kd" id="Superscript" idMso="OutlineExpand" ksoCmd="Superscript" rbHotKey="8" text="@Superscript"/>
+		<KxLegacyTriggerCommand aid="138" controlType="0" customTip="Subscript" faceid="27" hotKey="t" icon="math_subscript_kd" id="Subscript" idMso="OutlineCollapse" ksoCmd="Subscript" rbHotKey="9" text="@Subscript"/>
+		<KxLegacyTriggerCommand aid="957" controlType="0" customTip="IncreaseFontSize" faceid="18" icon="font_size_increase_wps_kd" id="IncreaseFontSize" idMso="FontSizeIncrease" ksoCmd="IncreaseFontSize" rbHotKey="FG" text="@Increase Font Size"/>
+		<KxLegacyTriggerCommand aid="958" controlType="0" customTip="DecreaseFontSize" faceid="19" icon="font_size_reduce_wps_kd" iconQat="font_size_reduce_wps_kd" id="DecreaseFontSize" idMso="FontSizeDecrease" ksoCmd="DecreaseFontSize" rbHotKey="FK" text="@Decrease Font Size"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ClearFormats" hotKey="E" icon="eraser_kd" id="ClearFormats" idMso="ClearFormats" ksoCmd="ClearFormats" rbHotKey="E" text="@Clear Formatting"/>
+		<KxListCommand customTip="RB_Font" forceVisible="1" groupTip="SmartArtFormatToolFontGroup" icon="symbol_a_kd" id="RB_SAFont" ksoCmd="Font" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Font">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand horizontalSpacing="6" layoutOnly="1">
+					<KFontRbLayoutListCommand horizontalSpacing="1" id="FontLayoutListInHomeTab" isDrawInnerBorder="1">
+						<KxWppFontComboboxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" id="FontName" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="116" rbHotKey="FF" singlerowfoldgroup="font_info_pair" text="@Font" verticalPolicy="Preferred"/>
+						<KxWppFontSizePreviewCommand controlType="2" customTip="FontSize" fixedWidth="60" horizontalPolicy="Preferred" id="FontSize" idMso="FontSize" ksoCmd="FontSize" layoutOnRight="true" rbHotKey="FS" singlerowfoldgroup="font_info_pair" text="@Font Size" verticalPolicy="Preferred"/>
+					</KFontRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+						<command idQ="IncreaseFontSize" singlerowfoldgroup="font_size_pair"/>
+						<command idQ="DecreaseFontSize" singlerowfoldgroup="font_size_pair"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Bold" singlerowfoldgroup="format_pair"/>
+					<command idQ="Italic" singlerowfoldgroup="format_pair"/>
+					<command idQ="Underline" singlerowfoldgroup="format_pair"/>
+					<command idQ="ShadowButton"/>
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<KxWppSAFontColorCommand customTip2="FontColor2" customTip="FontColor" icon="color_font_wps_kd" id="FontColorGallery" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" qtspyName="FontColor" rbHotKey="FC" text="@Text Color">
+							<command idQ="MoreFontColors"/>
+							<command idQ="SnapFontColors"/>
+							<separator/>
+							<command idQ="MoreFontFill"/>
+						</KxWppSAFontColorCommand>
+					</KRbLayoutListCommand>
+					<command idQ="Superscript" singlerowfold="1"/>
+					<command idQ="Subscript" singlerowfold="1"/>
+					<command idQ="ClearFormats" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KxOnlineGalleryCommand customTip="Bullets" icon="list_unordered_kd" id="DocerBullets" ksoCmd="Bullets" onlineCmd="OnlineBullets" qtspyName="Bullets" rbHotKey="U" refLocalCmd="Bullets" text="@Bullets">
+			<KxPropComposeCommand aid="783" dialogHint="1" hotKey="m" icon="list_unordered_kd" id="MoreBullets" ksoCmd="MoreBullets" qtspyName="MoreBullets" rbHotKey="N" tabIndex="0" text="@More Bullets"/>
+		</KxOnlineGalleryCommand>
+		<KxWppBulletsNumberingGalleryCommand aid="125" column="4" customTip2="Numbering2" customTip="Numbering" icon="list_ordered_number_kd" id="Numbering" ksoCmd="Numbering" ksoTriggerCmd="Numbering" rbHotKey="N" tc="Num" text="@Numbering">
+			<KxPropComposeCommand aid="783" dialogHint="1" hotKey="m" icon="list_unordered_kd" id="MoreNumbering" ksoCmd="MoreNumber" qtspyName="MoreNumber" rbHotKey="N" tabIndex="1" text="@More Numbering"/>
+		</KxWppBulletsNumberingGalleryCommand>
+		<KxLegacyTriggerCommand aid="132" controlType="0" customTip="DecreaseIndent" faceid="113" icon="indent_decrease_kd" id="DecreaseIndent" idMso="IndentDecreaseExcel" ksoCmd="DecreaseIndent" rbHotKey="AO" text="@Decrease Indent"/>
+		<KxLegacyTriggerCommand aid="131" controlType="0" customTip="IncreaseIndent" faceid="112" icon="indent_increase_kd" id="IncreaseIndent" idMso="IndentIncreaseExcel" ksoCmd="IncreaseIndent" rbHotKey="AI" text="@Increase Indent"/>
+		<KxListCommand customTip="Text Direction" disableTrigger="1" icon="text_direction_kd" id="TextDirection" ksoCmd="TextDirection" rbHotKey="AX" text="@Text Direction">
+			<KxValueCommand icon="text_left_to_right_kd" index="1" ksoCmd="TextDirection" qtspyName="TextDirection_Horizontal" rbHotKey="H" text="@Horizontal direction"/>
+			<KxValueCommand icon="text_up_to_down_kd" index="2" ksoCmd="TextDirection" qtspyName="TextDirection_VerticalR2L" rbHotKey="V" text="@Vertical direction(right to left)"/>
+			<KxValueCommand icon="text_vertical_left_to_right_kd" index="7" ksoCmd="TextDirection" qtspyName="TextDirection_VerticalL2R" rbHotKey="W" text="@Vertical direction(left to right)"/>
+			<KxValueCommand icon="text_90_orient_kd" index="3" ksoCmd="TextDirection" qtspyName="TextDirection_Rotate90" rbHotKey="R" text="@Rotate all text 90°"/>
+			<KxValueCommand icon="text_270_orient_kd" index="4" ksoCmd="TextDirection" qtspyName="TextDirection_Rotate270" rbHotKey="O" text="@Rotate all text 270°"/>
+			<KxValueCommand icon="accumulation_kd" index="5" ksoCmd="TextDirection" qtspyName="TextDirection_Stacked" rbHotKey="S" text="@Stacked"/>
+			<separator/>
+			<KxValueCommand icon="text_direction_kd" index="6" ksoCmd="TextDirection" qtspyName="TextDirection_More" rbHotKey="M" text="@More Options..."/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand customTip="FormatAlignLeft" forceVisible="1" hotKey="l" icon="align_left_kd" iconQat="align_left_kd" id="Left" ksoCmd="FormatAlignLeft" rbHotKey="AL" text="@Left"/>
+		<KxLegacyTriggerCommand customTip="FormatAlignCenter" forceVisible="1" hotKey="c" icon="align_center_kd" iconQat="align_center_kd" id="Center" ksoCmd="FormatAlignCenter" rbHotKey="AC" text="@Center"/>
+		<KxLegacyTriggerCommand customTip="FormatAlignRight" forceVisible="1" hotKey="r" icon="align_right_kd" id="Right" ksoCmd="FormatAlignRight" rbHotKey="AR" text="@Right"/>
+		<KxLegacyTriggerCommand customTip="Justify" forceVisible="1" hotKey="j" icon="align_both_side_kd" id="Justify" ksoCmd="FormatAlignJustify" rbHotKey="AJ" text="@Justify"/>
+		<KxLegacyTriggerCommand customTip="Distributed" forceVisible="1" hotKey="d" icon="align_distributed_kd" id="Distributed" ksoCmd="FormatAlignDistributed" rbHotKey="AD" text="@Distributed"/>
+		<KxWPPFormatAlignThaiDistributedCommand customTip="FormatAlignThaiDistributed" descName="@Align Text Thai Distributed" hotKey="h" icon="align_type_kd" id="FormatAlignThaiDistributed" idKey="ThaiFormatAlignDistributed" ksoCmd="FormatAlignmentThaiDistributed" rbHotKey="AH" text="@Thai Distributed"/>
+		<KxLegacyTriggerCommand aid="960" customTip="DecreaseSpace" faceid="21" forceVisible="1" hotKey="e" icon="paragraph_reduce_line_spacing_kd" id="DecreaseSpace" ksoCmd="DecreaseSpace" rbHotKey="E" text="@Decrease Spacing"/>
+		<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" height="-1" id="TextToDocerSmartArt" localMenuHeight="298" targetModule="kaiwpp" text="@To Docer Smart art" waitingType="textToSmartArt" width="500"/>
+		<KxListCommand customTip="RB_Paragraph" forceVisible="1" groupTip="SmartArtFormatToolParagraphGroup" horizontalSpacing="0" icon="menu_kd" id="RB_SAParagraph" ksoCmd="Paragraph" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Paragraph">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="4" spaceHint="compact" topSpace="0">
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="DocerBullets" singlerowfoldgroup="paragraph_pair"/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="Numbering" singlerowfoldgroup="paragraph_pair"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="68" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="5" spaceHint="compact" topSpace="0">
+						<command idQ="DecreaseIndent" singlerowfoldgroup="indent_pair"/>
+						<command idQ="IncreaseIndent" singlerowfoldgroup="indent_pair"/>
+					</KRbLayoutListCommand>
+					<KLayoutWidgetCommand fixedWidth="2"/>
+					<separator/>
+					<KLayoutWidgetCommand fixedWidth="2"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="4" rightSpace="0" spaceHint="compact" topSpace="0">
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<KxWppAlignFontCommand customTip="DrawFontAlign" hotKey="n" icon="font_align_kd" id="FontAlignMenuInHomeTab" qtspyName="FontAlign" rbHotKey="AF" singlerowfold="1" text="@Align Font">
+							<command idQ="Hanging"/>
+							<command idQ="Centered"/>
+							<command idQ="Roman"/>
+							<command idQ="UpHoldingFixed"/>
+						</KxWppAlignFontCommand>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="TextDirection" singlerowfold="1"/>
+					</KRbLayoutListCommand>
+					<KxWppBaseLineAlignCommand customTip="DrawTextAlign" filter="lang=th_TH" hotKey="A" icon="align_text_kd" id="TextAlignInSATab" ksoCmd="BaseLine" rbHotKey="AT" text="@Align Text">
+						<command idQ="RbAlignTop"/>
+						<command idQ="RbAlignCenter"/>
+						<command idQ="RbAlignBottom"/>
+					</KxWppBaseLineAlignCommand>
+				</KRbLayoutListCommand>
+				<separator/>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" spaceHint="compact" topSpace="0">
+					<command idQ="Left" singlerowfoldgroup="align_pair"/>
+					<command idQ="Center" singlerowfoldgroup="align_pair"/>
+					<command idQ="Right" singlerowfoldgroup="align_pair"/>
+					<command idQ="Justify" singlerowfold="1"/>
+					<command idQ="Distributed" singlerowfold="1"/>
+					<command idQ="IncreaseSpace" singlerowfold="1"/>
+					<command idQ="DecreaseSpace" singlerowfold="1"/>
+					<KxWppLineSpacingCommand customTip="LineSpacing" dialogHint="1" icon="line_spacing_kd" id="LineSpacingInSmartArtTab" rbHotKey="K" singlerowfold="1" text="@Line Spacing">
+						<command idQ="LineSpacing1_0"/>
+						<command idQ="LineSpacing1_5"/>
+						<command idQ="LineSpacing2_0"/>
+						<command idQ="LineSpacing2_5"/>
+						<command idQ="LineSpacing3_0"/>
+						<KxLegacyTriggerCommand dialogHint="1" id="ParagraphLineSpace" ksoCmd="Paragraph" text="@More"/>
+					</KxWppLineSpacingCommand>
+					<command idQ="FormatAlignThaiDistributed"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<KxWppBaseLineAlignCommand customTip="DrawTextAlign" filter="lang!=th_TH" hotKey="A" icon="align_text_kd" id="TextAlignInHomeTab" ksoCmd="BaseLine" rbHotKey="AT" text="@Align Text">
+				<command idQ="RbAlignTop"/>
+				<command idQ="RbAlignCenter"/>
+				<command idQ="RbAlignBottom"/>
+			</KxWppBaseLineAlignCommand>
+		</KxListCommand>
+		<KListCommand groupTip="SmartArtFormatToolShapeStyleGroup" icon="shape_styles_kd" id="RB_SAShapeStyles" rbFileMenuEmbed="1" text="@smart-art Shape Styles">
+			<KxWppSAShapesStyleCommand columnNumber="6" embedHint="1" iconQat="shape_styles_kd" id="ShapeStylesInDrawingToolTab" ksoCmd="ShapeStyles" maxVisibleNumber="8" text="@smart-art Shape Styles" triggerAble="1"/>
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<KxWppSAFillColorCommand customTip2="ShapeFill2" customTip="ShapeFill" icon="color_paint_wps_kd" id="SA_FillColor_ShapeStyle" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" qtspyName="m_Style_FillColor_ShapeStyle" rbHotKey="SF" text="@Shape Fill">
+				<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" idMso="ObjectFillMoreColorsDialog" ksoCmd="FillColor" rbHotKey="M" text="@More Fill Colors"/>
+				<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" ksoCmd="FillColor" rbHotKey="E" text="@Snapper"/>
+				<KxPicOrTextureFillCommand fillType="1" hotKey="t" icon="texture_fill_kd" id="TextureFillInDrawingToolTab" ksoCmd="FillEffects" rbHotKey="T" tabIndex="1" text="@PicOrTexture"/>
+				<KxPatternFillCommand fillType="1" hotKey="n" icon="pattern_fill_kd" id="PatternFillInDrawingToolTab" ksoCmd="FillEffects" tabIndex="2" text="@Pattern"/>
+			</KxWppSAFillColorCommand>
+			<KxWppSALineColorCommand customTip2="ShapeLine2" customTip="ShapeLine" icon="color_border_wps_kd" id="SA_LineColor_ShapeStyle" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" qtspyName="m_Style_LineColor_ShapeStyle" rbHotKey="SO" text="@Shape Line">
+				<KxWppMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreLineColors" ksoCmd="LineColor" rbHotKey="M" text="@More Line Colors"/>
+				<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperLines" ksoCmd="LineColor" rbHotKey="E" text="@Snapper"/>
+				<KxWppSAShapesLineStyleCommand column="1" hotKey="w" icon="frame_line_type_kd" id="LineStylePalette" ksoCmd="LineStylePalette" rbHotKey="W" text="@Line Weight">
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt"/>
+					<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt"/>
+				</KxWppSAShapesLineStyleCommand>
+				<KxWppSAShapesDashStyleCommand column="1" hotKey="s" icon="dash_style_menu_kd" id="DashStyle" ksoCmd="DashStylePalette" rbHotKey="S" text="@Dash Style">
+					<KxStaticGalleryItemCommand detail="@Solid" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_30_display_kd" index="0" qtspyName="DashStyle_0"/>
+					<KxStaticGalleryItemCommand detail="@Round Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_31_display_kd" index="1" qtspyName="DashStyle_1"/>
+					<KxStaticGalleryItemCommand detail="@Square Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_32_display_kd" index="2" qtspyName="DashStyle_2"/>
+					<KxStaticGalleryItemCommand detail="@Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_33_display_kd" index="3" qtspyName="DashStyle_3"/>
+					<KxStaticGalleryItemCommand detail="@Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_34_display_kd" index="4" qtspyName="DashStyle_4"/>
+					<KxStaticGalleryItemCommand detail="@Long Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_35_display_kd" index="5" qtspyName="DashStyle_5"/>
+					<KxStaticGalleryItemCommand detail="@Long Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_36_display_kd" index="6" qtspyName="DashStyle_6"/>
+					<KxStaticGalleryItemCommand detail="@Long Dash Dot Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_37_display_kd" index="7" qtspyName="DashStyle_7"/>
+				</KxWppSAShapesDashStyleCommand>
+			</KxWppSALineColorCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommands id="CT_SmartArtFormatTool">
+			<command idQ="RB_SAFont"/>
+			<separator/>
+			<command idQ="RB_SAParagraph"/>
+			<separator/>
+			<command idQ="RB_SAShapeStyles"/>
+			<separator/>
+		</subcommands>
+	</subcommands>
+</shell>

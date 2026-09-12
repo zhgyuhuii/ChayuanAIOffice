@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_designtable" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxKsoTableStyleOptionListCommand embedHint="1" horizontalSpacing="6" id="RB_TableStyleOption" text="@Table Style Options"/>
+		<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" idMso="ObjectFillMoreColorsDialog" ksoCmd="FillColor" rbHotKey="M" text="@More Fill Colors"/>
+		<KxPropComposeCommand controlType="4" hotKey="g" icon="gradiant_fill_kd" id="GradiantFill" idMso="GradientGallery" ksoCmd="FillEffects" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+		<KxPropComposeCommand controlType="0" hotKey="t" icon="texture_fill_kd" id="TextureFill" idMso="MoreTextureOptions" ksoCmd="FillEffects" rbHotKey="T" tabIndex="1" text="@Texture"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" ksoCmd="FillColor" rbHotKey="E" text="@Snapper"/>
+		<KxPropComposeCommand hotKey="n" icon="pattern_fill_kd" id="PatternFill" ksoCmd="FillEffects" rbHotKey="N" tabIndex="2" text="@Pattern"/>
+		<KxPropComposeCommand hotKey="p" icon="pic_kd" id="PictureFill" ksoCmd="FillEffects" rbHotKey="P" tabIndex="3" tc="Fill" text="@Picture"/>
+		<KxWppMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontOutlineColors" ksoCmd="FontOutlineColor" rbHotKey="M" text="@More Outline Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapFontOutlineColors" ksoCmd="FontOutlineColor" rbHotKey="E" text="@Snapper"/>
+		<KxWppBorderStyleGalleryCommand controlType="3" customTip="TableBorderStyle" icon="border_style_kd" id="TableBorderStyle" ksoCmd="TableBorderStyle" rbHotKey="L" text="@Line Style"/>
+		<KxWppBorderWidthGalleryCommand controlType="3" customTip="TableBorderWidth" hotKey="b" icon="frame_thickness_kd" id="TableBorderWidth" ksoCmd="TableBorderWidth" rbHotKey="W" text="@Line Weight"/>
+		<KxWppMoreColorCommand dialogHint="1" hotKey="m" id="MoreTableBorderColor" ksoCmd="TableBorderColor" text="@More Line Colors"/>
+		<KxWppTableBorderColorCommand customTip2="TableBorderColor2" customTip="TableBorderColor" hotKey="b" icon="color_border_wps_kd" id="TableBorderColor" ksoCmd="TableBorderColor" ksoTriggerCmd="RecentTableBorderColor" rbHotKey="O" text="@Border Color"/>
+		<KxWppFillColorCommand canHideText="0" controlType="0" customTip2="RecentFillColor2" customTip="RecentFillColor" icon="color_paint_wps_kd" id="FillColorInDesignTableTab" idMso="ShapeFillMoreGradientsDialog" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" rbHotKey="H" text="@Shading">
+			<command idQ="MoreFillColors"/>
+			<command idQ="SnapperFill"/>
+			<command idKey="WPPFillColorGradientFill" idQ="GradiantFill"/>
+			<command idQ="TextureFill"/>
+			<command idQ="PatternFill"/>
+			<separator/>
+			<command idQ="MoreFill"/>
+		</KxWppFillColorCommand>
+		<KxWppFontColorCommand customTip="ksoTextFill" hotKey="TI" icon="color_font_wps_kd" id="TextFill" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" rbHotKey="TI" spaceHint="suitable" text="@Text Fill">
+			<command idQ="MoreFontColors"/>
+			<command idQ="SnapFontColors"/>
+			<KxLegacyTriggerCommand hotKey="g" icon="gradiant_fill_kd" idKey="WPPFillColorGradientFill" ksoCmd="MoreFontFill" qtspyName="MoreFontFill" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+			<KxPicOrTextureFillCommand fillType="2" hotKey="t" icon="texture_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="T" text="@PicOrTexture">
+				<command idQ="MoreFontFill"/>
+			</KxPicOrTextureFillCommand>
+			<KxPatternFillCommand fillType="2" hotKey="n" icon="pattern_fill_kd" ksoCmd="FillEffects" qtspyName="FillEffects" rbHotKey="N" text="@Pattern">
+				<command idQ="MoreFontFill"/>
+			</KxPatternFillCommand>
+			<separator/>
+			<command idQ="MoreFontFill"/>
+		</KxWppFontColorCommand>
+		<KxWppFontOutlineCommand customTip2="TextFontOutline2" customTip="TextFontOutline" icon="font_outline_kd" id="FontOutLine" ksoCmd="FontOutlineColor" ksoTriggerCmd="RecentFontColor" rbHotKey="FO" spaceHint="suitable" text="@Text Outline">
+			<command idQ="MoreFontOutlineColors"/>
+			<command idQ="SnapFontOutlineColors"/>
+			<command idQ="FontLineStyle"/>
+			<command idQ="FontDashStyle"/>
+			<separator/>
+			<command idQ="MoreFontOutline"/>
+		</KxWppFontOutlineCommand>
+		<KListCommand groupTip="DesignTableTableStyleOptionGroup" icon="general_options_kd" id="RB_TableStyleChoose" text="@Table Styles Option">
+			<KxSingleRowMergeGroupCommand customTip="DesignTableTableStyleOptionGroup" icon="general_options_kd" id="SingleRow_TableStyleChoose" text="@Table Styles Option"/>
+			<command idKey="TableStyleOption" idQ="RB_TableStyleOption"/>
+		</KListCommand>
+		<KListCommand groupTip="DesignTableTableStyleGroup" icon="sheet_style_kd" id="RB_TableStyle" text="@Table Styles">
+			<command idQ="TableStyleGallery"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<command idQ="FillColorInDesignTableTab"/>
+			<KxListCommand canHideText="0" customTip="TableEffects" disableTrigger="1" icon="shape_effect_one_kd" id="TableEffects" ksoCmd="TableEffects" rbHotKey="F" text="@Table Effects">
+				<KShapeShadowCommand columnNumber="3" hotKey="s" icon="shadow_style_kd" qtspyName="shape_shadow_ongmani" rbHotKey="S" text="@Shadow"/>
+				<KShapeReflectionCommand columnNumber="3" hotKey="r" icon="shape_reflection_ongmani_kd" qtspyName="shape_reflection_ongmani" rbHotKey="R" text="@Reflection"/>
+			</KxListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="TableEraser" icon="sheet_erase_kd" id="TableEraser" ksoCmd="TableEraser" text="@Eraser"/>
+		<KxLegacyTriggerCommand customTip="DrawTable" icon="sheet_style_kd" id="DrawTableInToolbar" ksoCmd="DrawTable" text="@Draw Table"/>
+		<KListCommand groupTip="DesignTableDrawingBorderGroup" icon="sheet_style_kd" id="RB_DrawTable" text="@Drawing Border">
+			<KxSingleRowMergeGroupCommand customTip="DesignTableDrawingBorderGroup" icon="sheet_style_kd" id="SingleRow_DrawTableBorder" text="@Drawing Border"/>
+			<KListCommand embedHint="1">
+				<command idQ="TableBorderStyle" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+				<KLayoutWidgetCommand fixedWidth="2"/>
+				<KRbLayoutListCommand alignment="2" bottomSpace="0" isAddLastStrech="false" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="suitable" topSpace="0">
+					<command idQ="TableBorderColor" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+				</KRbLayoutListCommand>
+				<command idQ="TableBorderWidth" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+				<KLayoutWidgetCommand fixedWidth="10"/>
+				<KLabelCommand singlerowmergegroup="SingleRow_DrawTableBorder" text="@Apply To :"/>
+				<KRbLayoutListCommand bottomSpace="0" isShowText="1" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="suitable" topSpace="0">
+					<command idQ="Border" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<command idQ="DrawTableInToolbar" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+			<command idQ="TableEraser" singlerowmergegroup="SingleRow_DrawTableBorder"/>
+		</KListCommand>
+		<KListCommand groupTip="DesignTableClearStyleGroup" icon="clear_rules_kd" id="RB_ClearTableStyles" text="@Clear Table Style">
+			<command idQ="RB_ClearTableStyle"/>
+		</KListCommand>
+		<KListCommand groupTip="DesignTableWordArtStyleGroup" icon="font_art_style_kd" id="RB_TableFontStyle" text="@Word Art Style">
+			<KxWppTableWordArtStylesCommand completeColumnNumber="10" icon="font_style_kd" id="TableFontStyles" ksoCmd="TableFontStyles" text="@Word Art Styles" triggerAble="1">
+				<command idQ="MoreFontEffects"/>
+				<KxLegacyTriggerCommand controlType="0" hotKey="c" icon="eraser_kd" ksoCmd="ClearWordArt" qtspyName="ClearWordArt" rbHotKey="C" text="@Clear WordArt"/>
+			</KxWppTableWordArtStylesCommand>
+			<command idQ="TextFill"/>
+			<command idQ="FontOutLine"/>
+			<KxListCommand customTip="TableFontEffects" disableTrigger="1" icon="font_art_style_kd" id="TableFontEffects" ksoCmd="TableFontEffects" rbHotKey="TX" text="@Text Effects">
+				<KFontShadowCommand columnNumber="3" hotKey="s" icon="font_shadow_kd" qtspyName="font_shadow_ongmani" rbHotKey="S" text="@Shadow"/>
+				<KFontReflectionCommand columnNumber="3" hotKey="r" icon="font_reflection_kd" qtspyName="font_reflection_ongmani" rbHotKey="R" text="@Reflection"/>
+				<KFontGlowCommand columnNumber="6" hotKey="g" icon="font_glow_kd" qtspyName="font_glow_ongmani" rbHotKey="G" text="@Glow"/>
+				<separator/>
+				<command idQ="MoreFontEffects"/>
+			</KxListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_DesignTable">
+			<command idQ="RB_TableStyleChoose"/>
+			<separator/>
+			<command idQ="RB_TableStyle"/>
+			<separator/>
+			<command idQ="RB_DrawTable"/>
+			<separator/>
+			<command idQ="RB_ClearTableStyles"/>
+			<separator/>
+			<command idQ="RB_TableFontStyle"/>
+		</subcommand>
+	</subcommands>
+</shell>

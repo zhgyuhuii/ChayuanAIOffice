@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_officialmode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries>
+		<library name="wpswordtool" path="."/>
+	</libraries>
+	<commands>
+		<KxWpsOfficialDocToWordCommand icon="OfficialDocToWord" id="OfficialDocToWord" text="@doc to word"/>
+		<KxWpsOfficialAudioToTextCommand icon="OfficialAudioToText" id="OfficialAudioToText" text="@audio to text"/>
+		<KxWpsOfficialVoiceToTextCommand icon="OfficialVoiceToText" id="OfficialVoiceToText" text="@voice to text"/>
+		<KxLegacyDblTriggerCommandEx canHideText="0" controlType="6" customTip="FormatPainter" hotKey="FP" icon="brush_kd" iconQat="brush_kd" id="OfficialFormatPainter" idMso="FormatPainter" ksoCmd="FormatPainter" rbHotKey="FP" text2="@Format&#10;Painter" text="@Format &#10;Painter"/>
+		<KxWpsFontComboBoxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" icon="symbol_a_kd" id="Official_FontNameInHomeTab" idMso="Font" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="120" text="@Font Name" verticalPolicy="Preferred"/>
+		<KxWpsFontSizeComboBoxCommand controlType="2" customTip="FontSize" fixedWidth="60" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" icon="vertical_font_size_kd" iconQat="vertical_font_size_kd" id="Official_FontSize" ksoCmd="FontSize" layoutOnRight="true" openOnLeft="true" text="@Font Size" verticalPolicy="Preferred"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="template_kd" id="OfficialModelCase" idKey="OfficialMaterialContainModelCaseEntry" showCustomTipInMenu="true" targetId="OfficialModelCase" targetModule="kwpsofficial" text="@Model Case"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="doc_star_two_kd" id="OfficialIdeologicalPolicy" idKey="OfficialMaterialContainIdeologicalPolicyEntry" showCustomTipInMenu="true" targetId="OfficialIdeologicalPolicy" targetModule="kwpsofficial" text="@Ideological Policy"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="official_documents_and_poems_kd" id="OfficialLiteraryGrace" idKey="OfficialVersionContainLiteraryGraceStateEntry" showCustomTipInMenu="true" targetId="OfficialLiteraryGrace" targetModule="kwpsofficial" text="@Literary Grace"/>
+		<KProxyCommand controlType="0" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" icon="GovernmentMaterial" id="OfficialGovernmentMaterial" idKey="OfficialContainGovMaterial" showCustomTipInMenu="true" targetId="OfficialGovernmentMaterial" targetModule="kwpsofficial" text="@Government Material"/>
+		<KxWpsDeletePageNumCommand hotKey="R" icon="doc_page_number_delete_kd" id="Official_DeletePageNumTab" rbHotKey="R" text="@Delete Page Num"/>
+		<KxWpsHeaderFooterPageNumCommandOfficialVersion controlType="0" customTip="PageNumber" icon="doc_page_number_kd" id="LocalInsertPageNumbersOfficialVersion" idMso="PageNumber" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number"/>
+		<KxOnlineWpsHeaderFooterPageNumCommand controlType="4" customTip="OfficialPageNumber" hotKey="P" icon="doc_page_number_kd" id="Official_InsertPageNumbers" idMso="HeaderFooterPageNumberInsertGallery" isIncludeInsideOutside="true" onlineCmd="InsertOnlinePageNum" qtspyName="m_InsertPageNumbers" rbHotKey="P" refLocalCmd="LocalInsertPageNumbersOfficialVersion" text="@Page&#10;Number">
+			<command idQ="Official_InsertCurPosPageNumTab"/>
+			<KxSmartPageNumSettingsMenuItemCommand controlType="4" dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInInsertTab" idMso="PageNumberFormatGallery" rbHotKey="N" text="@Insert Page Number"/>
+			<command idQ="Official_DeletePageNumTab"/>
+		</KxOnlineWpsHeaderFooterPageNumCommand>
+		<KxWpsInsertSymbolOnlineGalleryCommand canHideText="0" customTip="OfficialSymbol" icon="math_omega_kd" id="OfficialSymbols" isOnlyOnline="false" ksoCmd="InsertSymbol" onlineCmd="OnlineSymbol" qtspyName="m_Symbols" rbHotKey="U" refLocalCmd="LocalSymbols" text="@Official Symbols">
+			<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="M" icon="math_other_symbol_kd" id="OtherSymbol" idMso="SymbolsDialog" ksoCmd="InsertSymbol" qtspyName="InsertSymbol" rbHotKey="M" text="@More Symbols"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertNumber" hotKey="N" icon="number_kd" id="InsertNumber" idMso="NumberInsert" ksoCmd="InsertNumber" qtspyName="InsertNumber" showiconAndText="1" text="@Number"/>
+		</KxWpsInsertSymbolOnlineGalleryCommand>
+		<KxWpsSmartOfficialVersionCommand controlType="0" customTip="OfficialVersionTransform" hotKey="3" icon="official_version_transform_kd" id="OfficialModeTransform" rbHotKey="3" text="@Official Mode Transform"/>
+		<KxWpsOfficialModeTemplateProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwebwpsdocofficial" height="600" id="OnlineOfficialModeTemplate" idKey="OnlineOfficialTemplate" skeletonAlias="kwpsofficialmode_template" targetId="OnlineOfficialModeTemplate" targetModule="kwpsofficial" width="468"/>
+		<KxWpsOfficialModeElementsProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwebwpsdocofficial" height="562" id="OnlineOfficialModeElements" idKey="OnlineOfficialElements" targetId="OnlineOfficialModeElements" targetModule="kwpsofficial" width="484"/>
+		<KxWpsOfficialOnlineGalleryCommand customTip="OfficialModeTemplates" hotKey="4" icon="doc_official_template_kd" id="OfficialModeTemplates" idKey="OfficialModeContainOfficialTemplateState" onlineCmd="OnlineOfficialModeTemplate" rbHotKey="4" text="@Official Mode Templates"/>
+		<KxWpsOfficialVersionMaterialCommand customTip="OfficialVersionMaterial" hotKey="M" icon="folder_official_materials_kd" id="OfficialVersionMaterial" idKey="OfficialVersionContainMaterialState" rbHotKey="M" text="@Official Material">
+			<command idQ="OfficialModelCase"/>
+			<command idQ="OfficialIdeologicalPolicy"/>
+			<command idQ="OfficialLiteraryGrace"/>
+			<command idQ="OfficialGovernmentMaterial"/>
+		</KxWpsOfficialVersionMaterialCommand>
+		<KxWpsOfficialFontSettingCompoundCommand icon="batch_set_font_kd" id="OfficialFontSettingCompound" text="@font setting"/>
+		<KxWpsOfficialPageSettingCompoundCommand icon="doc_setup_kd" id="OfficialPageSettingCompound" text="@page setting"/>
+		<KxWpsOfficialTypesetSettingCompoundCommand icon="doc_type_setting_kd" id="OfficialTypesetSettingCompound" text="@typeset setting"/>
+		<KxWpsOfficialOnlineElementsGalleryCommand customTip="OfficialRedOverlay" filter="isIntranet=true" icon="doc_official_elements_kd" id="OfficialModeElements" onlineCmd="OnlineOfficialModeElements" text="@Official Redlining"/>
+		<KxWpsOfficialModeElementsGalleryCommand customTip="OfficialVersionElementsInsert" filter="isIntranet=false" hotKey="6" icon="doc_official_elements_kd" id="OfficialModeElementsInsertOM" rbHotKey="6" text="@Official Elements"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tools_kd" id="ProxyOfficialTypeset" targetId="OfficialTypeset" targetModule="kwpsofficial" text="@One click layout"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="layout_kd" id="ProxyAIOfficialTypeset" targetId="AIOfficialTypeset" targetModule="kwpsofficial" text="@AI Official Layout"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="list_bullets_ten_kd" id="ProxyOfficialAttachmentList" targetId="OfficialAttachmentList" targetModule="kwpsofficial" text="@Attachment List"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="align_right_bottom_kd" id="ProxyOfficialSignRight" targetId="OfficialSignRight" targetModule="kwpsofficial" text="@Sign Right"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="paperclip_kd" id="ProxyOfficialAddAttachment" targetId="OfficialAddAttachment" targetModule="kwpsofficial" text="@Add Attachment"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="edit_footer_kd" id="ProxyOfficialAddInscribe" targetId="OfficialAddInscribe" targetModule="kwpsofficial" text="@Add Inscribe"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="calendar_kd" id="ProxyOfficialAddDate" targetId="OfficialAddDate" targetModule="kwpsofficial" text="@Add Date"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="math_omega_kd" id="ProxyOfficialSymbolCorrection" targetId="OfficialSymbolCorrection" targetModule="kwpsofficial" text="@Symbol Correction"/>
+		<KProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="paragraph_delete_space_kd" id="ProxyOfficialRemoveSpace" targetId="OfficialRemoveSpace" targetModule="kwpsofficial" text="@Remove Space"/>
+		<KxWpsOfficialVersionToolsListCommand forceVisible="1" hotKey="T" icon="doc_tools_kd" id="OfficialVersionTools" rbHotKey="T" text="@Official Tools">
+			<command idQ="OfficialAttachmentList"/>
+			<command idQ="OfficialSignRight"/>
+			<command idQ="OfficialAddAttachment"/>
+			<command idQ="OfficialAddInscribe"/>
+			<command idQ="OfficialAddDate"/>
+			<command idQ="OfficialSymbolCorrection"/>
+			<command idQ="OfficialRemoveSpace"/>
+		</KxWpsOfficialVersionToolsListCommand>
+		<KxWpsOfficialVersionEditionTableToEvenPageCommand hotKey="E" icon="even_pag_printing_kd" id="OfficialModeEditionTableToEvenPage" text="@EditionTable To EvenPage"/>
+		<KInsertParagraphIndCommand hotKey="I" icon="paragraph_indent_first_line_kd" id="ParagraphIndent2Spaces" text="@Indent Paragraph by 2 Characters"/>
+		<KxWpsTextHangAlignCommand hotKey="X" icon="align_hanging_kd" id="TextHangAlignment" text="@Text Hanging Alignment"/>
+		<KListCommand hotKey="V" icon="paragraph_increase_line_spacing_kd" id="ParagraphVerticalAdjust" text="@Paragraph Vertical Adjust">
+			<KxWpsParagraphVerticalAdjustCommand id="ParagraphVerticalValue"/>
+		</KListCommand>
+		<KxWpsOfficialModeListCommand customTip="TypesettingTools" icon="typesetting_tools_kd" id="OfficialModeTypeset" rbFileMenuEmbed="1" text="@Official Mode Typeset">
+			<command idQ="OfficialVersionTools"/>
+			<command idQ="OfficialModeEditionTableToEvenPage"/>
+			<command idQ="ParagraphVerticalAdjust"/>
+			<command idQ="ParagraphIndent2Spaces"/>
+			<command idQ="FitText"/>
+			<command idQ="TextHangAlignment"/>
+			<KxAdjustTableCenterCommand hotKey="Z" icon="table_auto_fit_window_kd" id="AdjustTableToCenterWidth" text="@Table Adapt To The Center Width"/>
+		</KxWpsOfficialModeListCommand>
+		<KxWpsOfficialTypesetSettingCommand icon="doc_type_setting_kd" id="OfficialTypesetSetting" text="@typeset setting"/>
+		<KxWpsOfficialFontSettingCommand icon="batch_set_font_kd" id="OfficialFontSetting" text="@font setting"/>
+		<KxWpsOfficialPageSettingCommand icon="doc_setup_kd" id="OfficialPageSetting" text="@page setting"/>
+		<KListCommand customTip="OfficialSetting" enableDependsOnSubCommands="true" icon="doc_type_setting_kd" id="OfficialSetting" text="@official setting">
+			<command idQ="OfficialFontSetting"/>
+			<command idQ="OfficialPageSetting"/>
+			<command idQ="OfficialTypesetSetting"/>
+		</KListCommand>
+		<KxWpsOfficialDeepSeekCommand hotKey="Z" id="OfficialDeepSeek" rbHotKey="Z"/>
+		<KxWpsOfficialWriteCommand customTip="OfficialWriting" icon="pen_kd" id="OfficialWrite" text="@Official Generate"/>
+		<KxWpsOfficialImitateWriteCommand customTip="OfficialImitation" hotKey="I" icon="doc_pen_two_kd" id="OfficialImitate" rbHotKey="I" text="@Official Imitate"/>
+		<KxWpsOfficialAIGCListCommand customTip="OfficialGeneration" hotKey="G" icon="ai_edit_kd" id="OfficialAIGCGenerate" rbHotKey="G" text="@Ai Write Official"/>
+		<KxWpsOfficialAIGCListCommand customTip="OfficialRewriting" hotKey="R" icon="doc_star_kd" id="OfficialAIGCReWrite" rbHotKey="R" text="@Ai ReWrite Official"/>
+		<KxWpsOfficialSummarizationCommand customTip="OfficialSummarization" hotKey="S" icon="summarize_all_kd" id="OfficialSummarization" rbHotKey="S" text="@Official Summarization"/>
+		<KxWpsOfficialDuplicateCheckCommand customTip="OfficialDuplicateCheck" icon="OfficialDuplicateCheck" id="OfficialDuplicateCheck" idKey="OfficialDuplicateCheck" text="@Official Duplicate Check"/>
+		<KxWpsOfficialFactCheckCommand customTip="FactCheck" hotKey="V" icon="ai_search_kd" id="factCheck" rbHotKey="V" text="@Official Fact Check"/>
+		<KxWpsOfficialComparisonCommand customTip="DocumentComparison" hotKey="C" icon="compare_documents_kd" id="OfficialComparison" rbHotKey="C" text="@Official Comparison"/>
+		<KxWpsOfficialProofreadEntryProxyCommand customTip="OfficialProofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="official_documents_review_kd" id="OfficialModeProofreadTriggerCmd" idKey="ProofreadOfficial" targetId="OfficialModeProofreadTriggerCmd" targetModule="kproofread" text="@Official Proofread"/>
+		<KxGovProofreadProxyCommand customTip="Proofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyProofreadGovernmentTriggerCmd" isLoadByAppObj="true" targetId="ProofreadGovernmentTriggerCmd" targetModule="kproofread" text="@WPS Proofread"/>
+		<KProofreadAppQuickMenuCommand customTip="Proofread" disableCustomRibbon="true" icon="doc_tick_kd" id="OfficialProofreadQuickMenuCmd" idKey="GovernmentProofread" idMso="OfficialProofreadQuickMenuCmd" referenceCommand="ProofreadGovernmentTriggerCmd" text="@WPS Proofread">
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_add_kd" id="ProxyProofreadAddRightWordCmd" targetId="ProofreadAddRightWordCmd" targetModule="kproofread" text="@Add Right Word"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_word_bank_wrong_kd" id="ProxyProofreadAddErrorWordCmd" targetId="ProofreadAddErrorWordCmd" targetModule="kproofread" text="@Add Error Word"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_vocabulary_kd" id="ProxyProofreadWordDictManagementCmd" targetId="ProofreadWordDictManagementCmd" targetModule="kproofread" text="@WordDictManagement"/>
+			<KxAIProofreadProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="setup_kd" id="ProxyProofreadSettingCmd" targetId="ProofreadSettingCmd" targetModule="kproofread" text="@Setting"/>
+		</KProofreadAppQuickMenuCommand>
+		<KxWpsOfficialVersionDocumentFieldCommand controlType="0" customTip="InsertDocumentField" hotKey="D" icon="doc_field_kd" id="OfficialModeInsertDocumentField" ksoCmd="InsertDocumentField" rbHotKey="D" text="@DocumentField"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="DocFieldTree" hotKey="T" icon="document_field_tree_kd" id="OfficialModeDocFieldTree" ksoCmd="DocumentFieldView" qtspyName="DocFieldTree" rbHotKey="T" text="@Document SemanticsTree"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistReferenceLibrary" targetId="OfficialdocAssistReferenceLibrary" targetModule="kofficialdocumentassist" text="@Reference Library"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistSyllabus" targetId="OfficialdocAssistSyllabus" targetModule="kofficialdocumentassist" text="@Syllabus Recommend"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocMaterialLibrary" targetId="OfficialdocMaterialLibrary" targetModule="kofficialdocumentassist" text="@Material Library"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialDocWritingSetting" targetId="OfficialDocWritingSetting" targetModule="kofficialdocumentassist" text="@Material Setting"/>
+		<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialMaterialContentCmd" targetId="OfficialMaterialContentCmd" targetModule="kofficialdocumentassist"/>
+		<KxWpsOfficialLogicGroupCommand id="OfficialIntelligentApplicationGroup" idKey="OfficialVersionCustomPuDong" rbFileMenuEmbed="1" text="@Intelligent Application">
+			<command idQ="OfficialDocToWord"/>
+			<command idQ="OfficialAudioToText"/>
+			<command idQ="OfficialWorkDocumentary"/>
+			<command idQ="OfficialVoiceToText"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialFormatPainterGroup" rbFileMenuEmbed="1">
+			<command idQ="OfficialFormatPainter"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsNormalListCommand controlType="16" customTip="OfficialFontArea" forceVisible="1" groupTip="FontGroup" horizontalSpacing="8" icon="symbol_a_kd" id="OfficialFontArea" text="@Official Format Setting">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand horizontalSpacing="0" layoutOnly="1" rightSpace="0">
+					<KFontRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+						<command idQ="Official_FontNameInHomeTab"/>
+						<command idQ="Official_FontSize"/>
+					</KFontRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Bold"/>
+					<command idQ="FontColor"/>
+					<command idQ="EncloseCharactersInHomeTab"/>
+					<command idQ="m_LineSpacing"/>
+					<command idQ="OfficialVersionNumbering"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxWpsNormalListCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialInsert" rbFileMenuEmbed="1" text="@Official Insert">
+			<KRbDualVLayoutListCommand id="Official Insert">
+				<command idQ="Official_InsertPageNumbers"/>
+				<command idQ="OfficialSymbols"/>
+			</KRbDualVLayoutListCommand>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialTemplateMaterial" rbFileMenuEmbed="1" text="@OfficialTemplateMaterial">
+			<command idQ="OfficialModeTemplates"/>
+			<command idQ="OfficialVersionMaterial"/>
+			<command idQ="OfficialModeTransform"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialTypeSetting" rbFileMenuEmbed="1" text="@Official TypeSetting">
+			<KxWpsCompoundListCommand compoundListCmdTriggerable="true" customTip="OfficialTypeset" icon="doc_tools_kd" id="OfficialTypesetCompoundList" text="@One click layout" triggerCmdId="OfficialTypeset">
+				<KxWpsOfficialTitleCommand text="@One-click typesetting performs Settings"/>
+				<command idQ="OfficialFontSettingCompound"/>
+				<command idQ="OfficialPageSettingCompound"/>
+				<command idQ="OfficialTypesetSettingCompound"/>
+			</KxWpsCompoundListCommand>
+			<command idQ="AIOfficialTypeset"/>
+			<command idQ="OfficialModeElements"/>
+			<command idQ="OfficialModeElementsInsertOM"/>
+			<command idQ="ProxyOfficialTypeset"/>
+			<KRbDualVLayoutListCommand id="OfficialTypeSet">
+				<command idQ="OfficialModeTypeset"/>
+				<command idQ="OfficialSetting"/>
+			</KRbDualVLayoutListCommand>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialAI" rbFileMenuEmbed="1" text="@Official Writing">
+			<command idQ="OfficialAIGCGenerate"/>
+			<KRbDualVLayoutListCommand id="OfficialWriteField">
+				<command idQ="OfficialWrite"/>
+				<command idQ="OfficialImitate"/>
+			</KRbDualVLayoutListCommand>
+			<command idQ="OfficialAIGCReWrite"/>
+			<command idQ="OfficialAiaccompanyWrite"/>
+			<command idQ="OfficialDeepSeek"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialReading" rbFileMenuEmbed="1">
+			<command idQ="OfficialSummarization"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialProofRead" rbFileMenuEmbed="1" text="@Proofread">
+			<command idQ="OfficialModeProofreadTriggerCmd"/>
+			<command idQ="factCheck"/>
+			<command idQ="OfficialComparison"/>
+			<command idQ="OfficialProofreadQuickMenuCmd"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialModeMediaParts" rbFileMenuEmbed="1" text="@Media Parts">
+			<command idQ="OfficialVersionMetaData"/>
+			<KRbDualVLayoutListCommand id="OfficialMediaParts">
+				<command idQ="OfficialVersionLockArea"/>
+				<command idQ="OfficialModeInsertDocumentField"/>
+			</KRbDualVLayoutListCommand>
+			<KRbDualVLayoutListCommand id="OfficialDocField">
+				<command idQ="OfficialModeDocFieldTree"/>
+				<command idQ="OfficialInsertDocBarcode"/>
+			</KRbDualVLayoutListCommand>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialDocMaterialWriting" idKey="OfficialDocMaterialLibrary" rbFileMenuEmbed="1" text="@Material Writing">
+			<command idQ="OfficialdocAssistReferenceLibrary"/>
+			<command idQ="OfficialdocAssistSyllabus"/>
+			<command idQ="OfficialdocMaterialLibrary"/>
+			<KxMaterialToolGalleryCommand controlType="4" customTip="MaterialTools" icon="materialTool" id="materialPopupCmd" qtspyName="MaterialTool" targetProxyCmd="OfficialMaterialContentCmd" text="@Material Tools">
+				<command idQ="OfficialDocWritingSetting"/>
+			</KxMaterialToolGalleryCommand>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialModeOthers" rbFileMenuEmbed="1" text="@Others">
+			<KOfficialRbDualVLayoutListCommand idKey="WpsOfficialMode">
+				<KxWpsHelpCommand helpDetail="gwms" icon="question_kd" id="OfficialMode_Help" productId="1000234" text="@Help"/>
+				<KxWpsFeedbackCommand appName="officialmode" icon="bubble_two_kd" id="OfficialMode_Feedback" productId="1000234" productName="@Official Mode" text="@Feedback"/>
+			</KOfficialRbDualVLayoutListCommand>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialCheck" text="@Official Duplicate Check">
+			<command idQ="OfficialDuplicateCheck"/>
+		</KxWpsOfficialLogicGroupCommand>
+		<KxWpsOfficialLogicGroupCommand id="OfficialModeClose" rbFileMenuEmbed="1" text="@Close">
+			<KxWpsOfficialModeStandardDocumentCloseCommand hotKey="E" icon="close_window_kd" id="CloseOfficialMode" idKey="WpsOfficialDocument" rbHotKey="E" text="@Exit official document mode"/>
+		</KxWpsOfficialLogicGroupCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_OfficialMode">
+			<command idQ="OfficialIntelligentApplicationGroup"/>
+			<separator/>
+			<command idQ="OfficialFormatPainterGroup"/>
+			<separator/>
+			<command idQ="OfficialFontArea"/>
+			<separator/>
+			<command idQ="OfficialInsert"/>
+			<separator/>
+			<command idQ="OfficialTemplateMaterial"/>
+			<separator/>
+			<command idQ="OfficialTypeSetting"/>
+			<separator/>
+			<command idQ="OfficialAI"/>
+			<separator/>
+			<command idQ="OfficialReading"/>
+			<separator/>
+			<command idQ="OfficialProofRead"/>
+			<separator/>
+			<command idQ="OfficialCheck"/>
+			<separator/>
+			<command idQ="OfficialModeMediaParts"/>
+			<separator/>
+			<command idKey="OfficialDocMaterialLibrary" idQ="OfficialDocMaterialWriting"/>
+			<separator/>
+			<command idQ="OfficialModeOthers"/>
+			<separator/>
+			<command idQ="OfficialModeClose"/>
+		</subcommand>
+	</subcommands>
+</shell>

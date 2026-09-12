@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="MenuHandTool" ksoCmd="HandTool" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="MenuSelectionTool" ksoCmd="SelectionTool" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KListCommand id="RB_MouseTool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="MenuHandTool"/>
+			<command idQ="MenuSelectionTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="AIOCR2PDF" icon="scan_ocr_kd" id="Spac_PDFZZ_AIOCR2PDF" index="1" ksoCmd="AIOCR2PDF" text="@AIOCR2PDF" wpsIsEanble="false"/>
+		<KAppCommand appCmdObj="KPdfImageExtract" appId="pdfphotobatchexport" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_batchimageextract_convert_tab" idKey="BatchImageExtract" text="@Extract Images"/>
+		<KAppCommand appCmdObj="KPdfImageExtract" appId="kpdfimageextract" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_kpdfimageextract_convert_tab" idKey="PdfImageExtractMenu" text="@Extract Images"/>
+		<KAppCommand appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="PDFToWord" hotKey="PW" icon="change_to_word_kd" id="app_kpdf2wordv3_workspace" rbHotKey="PW" text="@PDF to Word"/>
+		<KAppCommand appCmdObj="Pdf2Excel" appId="kpdf2wordv2" customTip="PDF2Excel" hotKey="PW" icon="change_to_et_kd" id="app_kpdf2wordv3_workspace_pdf2excel" rbHotKey="PW" text="@PDF to Excel"/>
+		<KAppCommand appCmdObj="Pdf2PPT" appId="kpdf2wordv2" customTip="PDF2PPT" hotKey="PW" icon="change_to_ppt_kd" id="app_kpdf2wordv3_workspace_pdf2ppt" rbHotKey="PW" text="@PDF to PPT"/>
+		<KAppCommand appCmdObj="PdfSplit" appId="kpdf2wordv2" customTip="SplitPDF" hotKey="PW" icon="doc_split_kd" id="app_kpdf2wordv3_workspace_pdfsplit" rbHotKey="PW" text="@SplitPDF"/>
+		<KAppCommand appCmdObj="PdfMerge" appId="kpdf2wordv2" customTip="MergePDF" hotKey="PW" icon="doc_split_kd" id="app_kpdf2wordv3_workspace_pdfmerge" rbHotKey="PW" text="@MergePDF"/>
+		<KAppCommand action="CAD" appCmdObj="Pdf2CAD" appId="kpdf2wordv2" customTip="PDF2CAD" hotKey="PW" icon="change_to_cad_kd" id="app_kpdf2wordv3_workspace_pdf2cad" text="@PDF2CAD"/>
+		<KAppCommand action="CADConvertToPDF" appCmdObj="CAD2Pdf" appId="kpdf2wordv2" customTip="CAD2PDF" hotKey="PW" icon="change_cad_to_pdf_kd" id="app_kpdf2wordv3_workspace_cad2pdf" text="@CAD2PDF"/>
+		<KAppCommand action="ConvertToImgPDF" appCmdObj="Pdf2IMGPDF" appId="kpdf2wordv2" customTip="ImgPDF" hotKey="PW" icon="change_pdf_to_imgpdf_kd" id="app_kpdf2wordv3_workspace_pdf2imgpdf" rbHotKey="PW" text="@ImgPDF"/>
+		<KAppCommand action="singlepic" appCmdObj="ImportCurrentPic" appId="photo2pdf" customTip="Photo2PDF" hotKey="d" icon="change_pic_to_pdf_kd" id="app_photo2pdf_workspace" rbHotKey="D" text="@Photo to PDF"/>
+		<KPdfTranslateAppCommand appId="kpdfwebtranslate" customTip="TranslationAll" icon="translation_kd" id="kpdfwebtranslate_workspace_button_cmd" open_position="tab_workspace" spaceHint="autocompact" text="@Document Translate"/>
+		<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" canHideText="0" customTip="SplitPDF" icon="doc_split_kd" id="app_pdfadvancedtool_WorkSpaceTab_SplitPdf" text="@SplitPDF" wpsIsEanble="false"/>
+		<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_WorkSpaceTab_MergePdf" rbHotKey="PW" text="@MergePDF" wpsIsEanble="false"/>
+		<KListCommand id="RB_Pdf2Photo" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDF2Photo">
+			<command idQ="Spac_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+			<command idQ="app_photo2pdf_workspace"/>
+		</KListCommand>
+		<KListCommand id="RB_POper" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_SplitPdf"/>
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_MergePdf"/>
+		</KListCommand>
+		<KListCommand id="RB_POper" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="DeletePages"/>
+			<command idQ="PdfInsertPages"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfConvertPhoto" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDF2Word">
+			<command idQ="Spac_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+		</KListCommand>
+		<KListCommand id="RB_Pdf2Photo" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="Spac_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+		</KListCommand>
+		<KAppCommand action="singlepic" appCmdObj="ImportCurrentPic" appId="kocrtool" hotKey="Q" icon="scan_ocr_kd" id="kocrtoolPhotoMenuOcrExtractPage" ocrExtractTextEntry="4" rbHotKey="Q" text="@OCRExtractPageText"/>
+		<KListCommand id="RB_AIOCR_ExtractPageText" layout_lineCount="1" rbFileMenuEmbed="1">
+			<command idQ="kocrtoolPhotoMenuOcrExtractPage"/>
+			<command idQ="Spac_PDFZZ_AIOCR2PDF"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfOpt" text="@PDF2Word">
+			<command idQ="app_kpdf2wordv3_workspace"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2excel"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2ppt"/>
+			<command idQ="Spac_PDFZZ_PDFToTXT"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfConvertMD" text="@PDFPagesOper">
+			<command idQ="SpecialFunc_PDFZZ_MD2PDF" proxyCmdId="ProxySpecialFunc_PDFZZ_MD2PDF"/>
+		</KListCommand>
+		<KListCommand icon="doc_extract_page_kd" id="RB_Pdf_OtherSpecialFeatures_WorkSpace" text="@OCR">
+			<command idQ="kocrtoolPhotoMenuOcrExtractPage"/>
+			<KAppQuickMenuCommand action="5" appId="pdfadvancedtool" icon="pic_extract_kd" id="app_CT_WorkSpace_pdfadvancedtool" text="@app_CT_ScannedEditPro_pdfadvancedtool_5_text">
+				<KPdfImageRecognizeCommand appId="kpdfscannedocr" icon="doc_two_kd" id="app_CT_WorkSpace_kpdfscannedocr_singledocument" text="@app_CT_ScannedEditPro_kpdfscannedocr_singledocument_text"/>
+				<KAppCommand action="ConvertToEditPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" icon="pages_multiple_two_kd" id="app_CT_WorkSpace_kpdf2wordv2_ConvertToEditPDF" text="@app_CT_ScannedEditPro_kpdf2wordv2_ConvertToEditPDF_text"/>
+			</KAppQuickMenuCommand>
+			<command idQ="app_batchimageextract_convert_tab"/>
+			<command idQ="app_kpdfimageextract_convert_tab"/>
+			<command idQ="app_kocrtool_workspace"/>
+			<KScreenGrabOcrMenuCommand customTip="ScreenGrabOcr" icon="scan_ocr_kd" id="ScrngrabOcr" referenceCommand="KxScrngrabOcrCommand" text="@ScreenGrabOcr">
+				<command idQ="KScreenGrabOcrCommand"/>
+				<command idQ="KScreenGrabOcrCommandHide"/>
+			</KScreenGrabOcrMenuCommand>
+		</KListCommand>
+		<KListCommand id="RB_DocTranslate">
+			<command idQ="kpdfwebtranslate_workspace_button_cmd"/>
+		</KListCommand>
+		<KListCommand icon="scan_ocr_kd" id="RB_ScrngrabOcr" text="@ScreenGrabOcr">
+			<KScreenGrabOcrMenuCommand customTip="ScreenGrabOcr" icon="scan_ocr_kd" id="ScrngrabOcr" referenceCommand="KxScrngrabOcrCommand" text="@ScreenGrabOcr">
+				<command idQ="KScreenGrabOcrCommand"/>
+				<command idQ="KScreenGrabOcrCommandHide"/>
+			</KScreenGrabOcrMenuCommand>
+		</KListCommand>
+		<KListCommand id="RB_ScreenRecorder" rbFileMenuEmbed="1" text="@Screen Recorder">
+			<command idQ="ScreenRecorder"/>
+		</KListCommand>
+		<KListCommand id="RB_Proofread_WorkSpace" visibleDependsOnSubCmds="1">
+			<KxAIProofreadProxyCommand autoLoad="false" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyPdfProofreadCmd" idKey="CommonSupportProofread" targetId="PdfProofreadCmd" targetModule="kproofread" text="@Pdf Proofread"/>
+		</KListCommand>
+		<KListCommand icon="batch_change_type_kd" id="RB_Output" rbFileMenuEmbed="1" text="@Output">
+			<command idQ="app_kpdf2wordv3_workspace"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2excel"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2ppt"/>
+			<command idQ="Spac_PDFZZ_PDFToTXT"/>
+			<command idKey="PDFTabStartPDF2CAD" idQ="app_kpdf2wordv3_workspace_pdf2cad"/>
+			<command idKey="PDFTabStartCAD2PDF" idQ="app_kpdf2wordv3_workspace_cad2pdf"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2imgpdf"/>
+			<command idKey="PDFWorkSpaceToPhoto" idQ="Spac_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+			<command idKey="PDFSpecialFuncToPhoto" idQ="SpecialFunc_PDFZZ_PDFToPhoto"/>
+			<command idQ="app_photo2pdf_workspace"/>
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_SplitPdf"/>
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_MergePdf"/>
+			<command idQ="app_photoailongchart"/>
+		</KListCommand>
+		<KListCommand icon="handy_tool_kd" id="RB_Tools" rbFileMenuEmbed="1" text="@Tools">
+			<command idQ="SpecialFunc_PDFZZ_Compress"/>
+			<command idQ="kpdfwebtranslate_workspace_button_cmd"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption" proxyCmdId="ProxyOldTextToSpeechOption"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" idKey="PDFTextToSpeechOption" rbHotKey="A" text="@AISpeaker"/>
+			<command idQ="ScreenRecorder"/>
+			<command idKey="PublicProofread" idQ="PdfProofreadCmd"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_WorkSpace">
+			<command idQ="RB_MouseTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Output"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Pdf_OtherSpecialFeatures_WorkSpace"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Tools"/>
+		</subcommand>
+		<subcommand id="CT_Spac">
+			<command idQ="RB_Pdf2Photo"/>
+		</subcommand>
+	</subcommands>
+</shell>

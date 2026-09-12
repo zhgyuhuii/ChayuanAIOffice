@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_pictureedit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfImageTranslateCommand customTip="PDFImageTranslate" icon="pic_translate_kd" id="PdfEditImgTabTranslate" ksoCmd="ImageTranslate" text="@imageTranslate" wpsIsEanble="false"/>
+		<KxPdfEditImageOpacityCommand canHideText="0" customTip="ImageEditTransparency" icon="translation_kd" id="PdfEditImageOpacity" index="2" text="@ImageOpacity" wpsIsEanble="false"/>
+		<KPdfAppCommand appCmdObj="PhotoExchange" appId="photomatting2" canHideText="0" customTip="PdfPhotomatting2" icon="select_cutout_kd" id="app_photomatting2_tab_editpic" text="@Photomatting2"/>
+		<KPdfAppCommand appCmdObj="PhotoExchange" appId="photomattingapp" canHideText="0" customTip="PdfPhotomattingapp" icon="select_cutout_kd" id="app_photomattingapp_tab_editpic" idKey="PhotoTool2Plugin" text="@Photomattingapp"/>
+		<KxPdfImagePreviewCommand action="editor/aimatting" appCmdObj="PhotoExchange" appId="photomattingapp" canHideText="0" customTip="PdfPhotomattingapp" entrance="co_tab_editpic_cutout" icon="select_cutout_kd" id="photomattinglite_pictool_tab_editpic" idKey="PhotoTool2Editlite" text="@Photomattingapp"/>
+		<KxPdfImageDeleteCommand canStack="0" customTip="ImageEditDelete" icon="trash_can_kd" id="PdfEditDeleteImageMenu" index="2" text="@Delete" wpsIsEanble="false"/>
+		<KxPdfImageClipCommand canHideText="0" customTip="ImageClip" icon="crop_kd" id="PdfEditPicClip" text="@ImageClip" wpsIsEanble="false"/>
+		<KListCommand groupTip="PictureEditEditGroup" icon="pic_edit_kd" id="RB_EditImageTool" layout_lineCount="2" rbFileMenuEmbed="1" text="@Edit">
+			<command id="PdfEditAddImage_PictureEdit" idQ="PdfEditAddImage"/>
+			<KAppCommand action="3" appCmdObj="PdfImageRecognize" appId="pdfadvancedtool" canStack="0" customTip="EditTextInPicture" icon="scan_edit_kd" id="PictureEdit_EditTextInPicture" idKey="EditTextInPicture" idType="pdf_co_pictab" index="1" text="@EditTextInPicture"/>
+			<KpdfBeautifyTabCommand action="ConvertType_Clear" appId="kpdfscannededitpro" canHideText="0" icon="intelligent_optimization_kd" id="PictureEdit_Kpdfscannededitpro_Clear" idKey="PDFScannedEditpro" text="@ConvertTypeClear"/>
+			<command idQ="PdfEditImageReverse"/>
+			<command embedHint="1" idQ="PdfEditImageInverseRotate" isShowText="true"/>
+			<command embedHint="1" idQ="PdfEditImageRotate90" isShowText="true"/>
+			<command embedHint="1" idKey="PdfRightMenuPhotobatchcompress" idQ="app_photobatchcompress_RightMenu" isShowText="true"/>
+			<command idKey="PdfEditImageReplace" idQ="PdfEditImageReplace"/>
+			<command idQ="PdfEditDeleteImageMenu"/>
+		</KListCommand>
+		<KAppCommand appCmdObj="PhotoTranslate" appFlags="wpsmember" appId="phototranslateapp" entrance="pdf_ribbon" icon="appcmd_kwebphototranslate" id="app_kwebphototranslate" idkey="WebPhotoTranslate" qtspyName="pdf_app_kwebphototranslate" text="@Translate Image"/>
+		<KListCommand groupTip="PictureEditExtractionConversionGroup" icon="scan_ocr_kd" id="RB_EditImageExtract" layout_lineCount="2" rbFileMenuEmbed="1" text="@Extraction and Conversion" visibleDependsOnSubCmds="1">
+			<command idQ="pdfImageExtract_PicEdit" proxyCmdId="ProxyPdfImageExtract_PicEdit"/>
+			<KAppCommand appCmdObj="KPdfImageExtract" appId="pdfphotobatchexport" customTip="ImageExtractTip" icon="Pdf_ImageExtract" id="app_batchimageextract_tab_picedit" idKey="BatchImageExtract" text="@Extract Images"/>
+			<command idQ="app_imageextract_tab_picedit"/>
+			<command idQ="PdfEditImgTabTranslate"/>
+			<command idQ="app_kwebphototranslate"/>
+		</KListCommand>
+		<KxPdfImageEditCommand appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="photoeditapp" customTip="Image Quality" icon="pic_sharpness_kd" id="app_photoeditapp_pictool_clarify" text="@Image Quality Restore"/>
+		<KListCommand groupTip="PictureEditBeautifyGroup" icon="polish_kd" id="RB_PictureEdit" layout_lineCount="2" rbFileMenuEmbed="1" text="@Beautify">
+			<command idQ="PdfEditImageOpacity"/>
+			<KpdfBeautifyTabCommand action="ConvertType_HighDefinition" appId="kpdfscannededitpro" canHideText="0" icon="pic_sharpness_kd" id="PictureEdit_Kpdfscannededitpro_HighDefinition" idKey="PDFScannedEditpro" text="@ConvertTypeHighDefinition"/>
+			<command idQ="PdfEditPicClip"/>
+		</KListCommand>
+		<KListCommand groupTip="ArrangeGroup" id="RB_PictureEdit_Arrange" rbFileMenuEmbed="1" text="@Arrange">
+			<command idQ="PictureEdit_ObjectAlign"/>
+		</KListCommand>
+		<KListCommand groupTip="PictureEditExitGroup" id="RB_PictureExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PictureEdit">
+			<command idQ="RB_MouseTool_PictureEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_EditImageTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PictureEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_EditImageExtract"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PictureEdit_Arrange"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PictureExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

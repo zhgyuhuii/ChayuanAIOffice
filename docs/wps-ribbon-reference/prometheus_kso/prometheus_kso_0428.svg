@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>截屏24_GrabScreenMenu</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M18.5 5V3C18.5 2.72386 18.2761 2.5 18 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V18C2.5 18.2761 2.72386 18.5 3 18.5H5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M14.5 10.5L18.5 20" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M18.5 10.5L14.5 20" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_4" d="M18.5 9V7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M9 18.5H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M14.5 19.5C14.5 20.6046 13.6046 21.5 12.5 21.5C11.3954 21.5 10.5 20.6046 10.5 19.5C10.5 18.3954 11.3954 17.5 12.5 17.5C13.6046 17.5 14.5 18.3954 14.5 19.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M22.5 19.5C22.5 20.6046 21.6046 21.5 20.5 21.5C19.3954 21.5 18.5 20.6046 18.5 19.5C18.5 18.3954 19.3954 17.5 20.5 17.5C21.6046 17.5 22.5 18.3954 22.5 19.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

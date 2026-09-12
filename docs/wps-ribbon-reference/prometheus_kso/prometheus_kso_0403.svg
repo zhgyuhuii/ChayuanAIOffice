@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>样式集24_字符样式_新样式_样式_艺术字样式_StyleFormat_FontStyles</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-quaternary {
+       fill: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       stroke: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       km_fill: #FDE0CE;
+       km_stroke: #FDE0CE;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M21 10L14.5 16.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M21 14L16.5 18.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-3" class="kd-color-icon-primary kd-stroke-width-icon-bold"><path id="line_3" d="M6 14.4H12" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M11 3L15 12" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M3 21L11 3" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-2" class="kd-color-icon-orange-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M10.5 21.5H14C15.3807 21.5 16.5 20.3807 16.5 19C16.5 17.6193 15.3807 16.5 14 16.5C12.6193 16.5 11.5 17.6193 11.5 19V19.1866C11.5 19.717 11.343 20.2355 11.0488 20.6768L10.5 21.5Z" stroke="none"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line_6" d="M10.5 21.5H14C15.3807 21.5 16.5 20.3807 16.5 19C16.5 17.6193 15.3807 16.5 14 16.5C12.6193 16.5 11.5 17.6193 11.5 19V19.1866C11.5 19.717 11.343 20.2355 11.0488 20.6768L10.5 21.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

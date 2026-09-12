@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_shapestyle" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="ShapeFillMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="ShapeFillColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="ShapeBorderMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="ShapeBorderColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="ShapeFillSnapFontColors" ksoCmd="ShapeFillColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="ShapeBorderSnapFontColors" ksoCmd="ShapeBorderColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="ShapeStyle_HandTool" ksoCmd="HandTool" shellEntryType="tab_shapestyle" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="ShapeStyle_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_shapestyle" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfShapeFillColorCommand customTip="ShapeFillColor" icon="color_paint_wps_kd" id="ShapeFillColorSetting" ksoCmd="ShapeFillColor" ksoTriggerCmd="ShapeFillColor" referenceCommand="ShapeFillColor" text="@FillColor">
+			<command idQ="ShapeFillMoreFontColors"/>
+			<command idQ="ShapeFillSnapFontColors"/>
+		</KxPdfShapeFillColorCommand>
+		<KxPdfShapeColorCommand customTip="ShapeBorderColor" icon="color_marker_wps_kd" id="ShapeBorderColorSetting" ksoCmd="ShapeBorderColor" ksoTriggerCmd="ShapeBorderColor" referenceCommand="ShapeBorderColor" text="@BorderColor">
+			<command idQ="ShapeBorderMoreFontColors"/>
+			<command idQ="ShapeBorderSnapFontColors"/>
+		</KxPdfShapeColorCommand>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_ShapeStyle" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="ShapeStyle_HandTool"/>
+			<command idQ="ShapeStyle_SelectTool"/>
+		</KListCommand>
+		<KListCommand embedHint="1" id="ShapeLineStyle">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="RB_LineStyle" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="RB_LineWidth" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand embedHint="1" id="ShapeLineStart">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="RB_LineStart" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="RB_LineEnd" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand groupTip="ShapeStyleAppearanceSettingGroup" icon="setup_kd" id="AppearanceSetting" layout_lineCount="2" rbFileMenuEmbed="1" text="@Appearance settings">
+			<command idQ="ShapeFillColorSetting"/>
+			<command idQ="ShapeBorderColorSetting"/>
+			<command idQ="ShapeLineStyle"/>
+			<command idQ="ShapeLineStart"/>
+		</KListCommand>
+		<KListCommand groupTip="ShapeStyleExitGroup" id="ShapeStyleExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_ShapeStyle">
+			<command idQ="RB_MouseTool_ShapeStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="AppearanceSetting"/>
+			<command idQ="Separator"/>
+			<command idQ="ShapeStyleExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

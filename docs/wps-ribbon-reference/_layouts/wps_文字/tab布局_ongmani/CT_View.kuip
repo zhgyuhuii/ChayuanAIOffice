@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="wps_ongmani.ct_view" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxWpsPrintLayoutViewCommand aid="287" controlType="6" customTip="PrintLayoutView" hotKey="g" icon="print_layout_kd" id="PrintLayoutView" idMso="ViewPrintLayoutView" ksoCmd="PrintLayoutView" rbHotKey="P" text="@Print &#10;Layout"/>
+		<KxWpsFullScreenCommand aid="178" controlType="0" customTip="FullScreenMode" hotKey="u" icon="screen_full_kd" id="FullScreenModeOnMenu" idKey="CommonShowFullScreenBtn" idMso="ViewFullScreenView" ksoCmd="FullScreenModeOnMenu" rbHotKey="F" text="@Full &#10;Screen"/>
+		<KxLegacyTriggerCommand aid="4387" controlType="6" customTip="OutLine" hotKey="o" icon="doc_catalog_kd" id="OutLine" idMso="ViewOutlineView" ksoCmd="OutLine" rbHotKey="U" text="@Outline"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="WebLayoutView" hotKey="w" icon="earth_kd" id="WebLayoutView" idMso="ViewOutlineView" ksoCmd="WebLayoutView" rbHotKey="L" text="@Web Layout"/>
+		<KxReadingViewCommand controlType="6" customTip="ReadingView" hotKey="r" icon="video_kd" id="ReadingView" idMso="ViewFullScreenReadingView" ksoCmd="ReadingView" rbHotKey="R" shortcutHint="Ctrl+Alt+R" text="@Reading View"/>
+		<KListCommand controlType="16" groupTip="ViewGroup" icon="view_kd" id="RB_Document_View" idMso="GroupDocumentViews" rbFileMenuEmbed="1" text="@Views">
+			<KxSingleRowMergeGroupCommand icon="print_layout_kd" id="SingleRow_DocumentView" ksoCmd="PrintLayoutView" text="@Print &#10;Layout"/>
+			<KxWpsFullScreenCommand aid="178" controlType="0" customTip="FullScreenMode" hotKey="u" icon="screen_full_kd" id="RB_FullScreenModeOnMenu" idMso="ViewFullScreenView" ksoCmd="FullScreenModeOnMenu" rbHotKey="F" singlerowmergegroup="SingleRow_DocumentView" text="@Full &#10;Screen"/>
+			<command idQ="OfficialView"/>
+			<KxWpsComposeViewCommand appCmdObj="kcomposeassist" appId="kcomposeassist" icon="pen_signature_kd" id="app_kcomposeassist_ctview" idKey="ComposeAssistControl" text="@ComposeAssist"/>
+			<KxWpsPrintLayoutViewCommand aid="287" controlType="6" customTip="PrintLayoutView" hotKey="g" icon="print_layout_kd" id="RB_ViewPrintLayoutView" idMso="ViewPrintLayoutView" ksoCmd="PrintLayoutView" needLogin="false" qtspyName="PrintLayoutView" rbHotKey="P" shortcutHint="Command+Option+G" singlerowmergegroup="SingleRow_DocumentView" text="@Print &#10;Layout"/>
+			<command idQ="OutLine" singlerowmergegroup="SingleRow_DocumentView"/>
+			<command idQ="WebLayoutView" singlerowmergegroup="SingleRow_DocumentView"/>
+		</KListCommand>
+		<KListCommand groupTip="ProtectEyesGroup" icon="eye_kd" id="RB_EyeProtection" rbFileMenuEmbed="1" text="@Protect Eyes">
+			<KxWpsProtectEyesCommand controlType="6" customTip="Protect_Eyes" hotKey="b" icon="eye_kd" id="ProtectEyes" idMso="ProtectEyes" needLogin="false" rbHotKey="B" text="@Eye Protection Mode"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="80011" controlType="6" hotKey="e" id="DocumentMapLeft" idMso="NavigationPanePlaceOnLeft" ksoCmd="DocumentMapLeft" text="@Place on Left"/>
+		<KxLegacyTriggerCommand aid="80012" controlType="6" hotKey="r" id="DocumentMapRight" idMso="NavigationPanePlaceOnRight" ksoCmd="DocumentMapRight" text="@Place on Right"/>
+		<KxLegacyTriggerCommand aid="80013" controlType="6" hotKey="v" id="DocumentMapVisible" idMso="NavigationPaneInvisible" ksoCmd="DocumentMapVisible" text="@Invisible"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="DocFieldTree" icon="document_field_tree_kd" id="OfficialModeDocFieldTree" idKey="WPSOfficialModeDocFieldTree" ksoCmd="DocumentFieldView" qtspyName="DocFieldTree" text="@Document SemanticsTree"/>
+		<KxListCommand controlType="5" customTip2="ShowNavigationPane2" customTip="ShowNavigationPane" detail="@Show Document Map" hotKey="d" icon="navigation_pane_kd" id="sp_ShowDocumentMap" idMso="NavigationPaneShowHide" ksoCmd="ShowDocumentMap" rbHotKey="D" text="@Navigation&#10;Pane">
+			<command idQ="DocumentMapLeft"/>
+			<command idQ="DocumentMapRight"/>
+			<command idQ="DocumentMapVisible"/>
+		</KxListCommand>
+		<KListCommand controlType="16" groupTip="ShowGroup" icon="window_vert_review_left_kd" id="RB_Show" idMso="GroupViewShowHide" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Show">
+			<command idQ="sp_ShowDocumentMap"/>
+			<command idQ="OfficialModeDocFieldTree"/>
+			<KLayoutWidgetCommand fixedWidth="4"/>
+			<KxCheckBoxCommand controlType="1" customTip="Ruler" hotKey="l" id="ViewRulerWord" idMso="ViewRulerWord" ksoCmd="Ruler" qtspyName="Ruler" rbHotKey="R" spaceHint="suitable" text="@Ruler"/>
+			<KxCheckBoxCommand controlType="1" customTip="Markup" hotKey="a" id="CommentOrTrackingChangeMarkup" idMso="ViewMarkup" ksoCmd="Markup" qtspyName="Markup" rbHotKey="M" spaceHint="suitable" text="@Markup"/>
+			<KxCheckBoxCommand controlType="1" customTip="ShowGridlines" hotKey="g" id="TableGridlines" idMso="ViewTableGridlines" ksoCmd="ShowGridlines" qtspyName="ShowGridlines" rbHotKey="VG" singlerowfold="1" spaceHint="suitable" text="@Table Gridlines"/>
+			<KxTaskPaneCheckBoxCommand controlType="1" customTip="TaskPane" hotKey="t" id="TaskPaneInViewTab" idMso="ViewTaskWindow" ksoCmd="TaskPane" qtspyName="TaskPane" rbHotKey="K" singlerowfold="1" spaceHint="suitable" text="@Task Window"/>
+			<KxCheckBoxCommand controlType="1" customTip="Gridlines" hotKey="g" id="ViewGridlinesWord" idMso="ViewGridlinesWord" ksoCmd="Gridlines" qtspyName="Gridlines" rbHotKey="G" singlerowfold="1" spaceHint="suitable" text="@View Gridlines"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="Zoom" icon="screen_zoom_kd" id="ZoomToolBar" idMso="ZoomDialog" ksoCmd="Zoom" needLogin="false" rbHotKey="Q" text="@Zoom"/>
+		<KxValueCommand controlType="0" customTip="100%" icon="screen_actual_size_kd" id="100%" idMso="ZoomCurrent100" index="100" ksoCmd="ZoomCombo" needLogin="false" rbHotKey="J" spaceHint="suitable" text="@100%"/>
+		<KListCommand controlType="16" groupTip="RatioGroup" icon="screen_zoom_kd" id="RB_Zoom" idMso="GroupZoom" rbFileMenuEmbed="1" text="@Ratio">
+			<KxSingleRowMergeGroupCommand icon="screen_zoom_kd" id="SingleRow_Zoom" ksoCmd="Zoom" text="@Zoom"/>
+			<command idQ="ZoomToolBar" singlerowmergegroup="SingleRow_Zoom"/>
+			<command idQ="100%" singlerowmergegroup="SingleRow_Zoom"/>
+			<KxValueCommand controlType="0" customTip="PageWidth" icon="page_width_kd" id="ZoomPageWidth" idMso="ZoomPageWidth" index="-1" ksoCmd="ZoomCombo" needLogin="false" qtspyName="ZoomPageWidth" rbHotKey="I" singlerowmergegroup="SingleRow_Zoom" spaceHint="suitable" text="@Page Width"/>
+			<KxValueCommand controlType="0" customTip="OnePage" icon="doc_file_kd" id="ZoomOnePage" idMso="ZoomOnePage" index="-3" ksoCmd="ZoomCombo" needLogin="false" qtspyName="ZoomOnePage" rbHotKey="1" spaceHint="suitable" text="@One Page"/>
+			<KxValueCommand controlType="0" customTip="MultiplePages" icon="pages_multiple_kd" id="ZoomTwoPages" idMso="ZoomTwoPages" index="-4" ksoCmd="ZoomCombo" needLogin="false" qtspyName="ZoomTwoPages" rbHotKey="2" spaceHint="suitable" text="@Two Pages"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="303" controlType="0" customTip="NewWindow" hotKey="n" icon="window_add_kd" id="rNewWindow" idMso="WindowNew" ksoCmd="NewWindow" rbHotKey="N" spaceHint="suitable" text="@New&#10;Window"/>
+		<KxWpsLockSideBySideCommand controlType="6" customTip="LockSideBySide" icon="rolling_sync_kd" id="LockSideBySide" idKey="CommonWindowArrangeAllAndCompare" idMso="WindowSideBySideSynchronousScrolling" rbHotKey="VS" spaceHint="suitable" text="@Synchronous Scrolling"/>
+		<KxWpsVerbSideBySideCommand controlType="6" customTip="VerbSideBySide" icon="reset_position_kd" id="VerbSideBySide" idKey="CommonWindowArrangeAllAndCompare" idMso="WindowResetPosition" rbHotKey="T" spaceHint="suitable" text="@Reset Window Position"/>
+		<KxCurrentFileMRUCommand aid="92123" autoShortCut="1" id="CurrentFileListInView" text="Current File List"/>
+		<KxCloseWindowCommand aid="80033" customTip="CloseWindow" icon="close_window_kd" id="RbCloseWindow" ksoCmd="CloseWindow" rbHotKey="C" spaceHint="suitable" text="@Close Window"/>
+		<KxWpsCmpSideBySideCommand controlType="6" customTip="CmpSideBySide" icon="ne_abreast_display_kd" id="CmpSideBySideRibbon" idKey="CommonWindowArrangeAllAndCompare" idMso="WindowSideBySide" rbHotKey="B" showiconAndText="1" text="@View&#10;Side by Side"/>
+		<KListCommand controlType="16" groupTip="WindowGroup" icon="window_unhide_kd" id="RB_NewWindow" idMso="GroupWindow" rbFileMenuEmbed="1" text="@Window">
+			<KxSingleRowMergeGroupCommand customTip="WindowGroup" icon="window_unhide_kd" id="SingleRow_NewWindow" text="@Window"/>
+			<KListCommand controlType="5" customTip="ArrangeAll" icon="window_reset_kd" id="WindowsArrangeAll" idKey="WindowsArrangeAll" idMso="WindowsArrangeAll" qtspyName="WindowReset" rbHotKey="A" singlerowmergegroup="SingleRow_NewWindow" text="@Arrange&#10;All">
+				<KxHorzTileCommand controlType="6" hotKey="O" icon="horizontal_tile_kd" id="HorizontalTileInViewTab" idMso="WindowsHorizontal" qtspyName="HorizontalTile" text="@Horizontal"/>
+				<KxVertTileCommand controlType="6" hotKey="V" icon="window_vert_tile_kd" id="VerticalTileInViewTab" idMso="WindowsVertical" qtspyName="VerticalTile" text="@Vertical"/>
+				<KxCascadeCommand controlType="6" hotKey="C" icon="cascade_kd" id="CascadeInViewTab" idMso="WindowsCascade" qtspyName="Cascade" text="@Cascade"/>
+			</KListCommand>
+			<command filter="support:ShieldMode=false" idQ="rNewWindow" singlerowmergegroup="SingleRow_NewWindow"/>
+			<command idQ="Split Window" singlerowmergegroup="SingleRow_NewWindow"/>
+		</KListCommand>
+		<KListCommand filter="support:ShieldMode=false" groupTip="CompareGroup" icon="ne_abreast_display_kd" id="RB_View_Compare" rbFileMenuEmbed="1" text="@Compare">
+			<command idQ="CmpSideBySideRibbon"/>
+			<command idQ="LockSideBySide"/>
+			<command idQ="VerbSideBySide"/>
+		</KListCommand>
+		<KListCommand id="RB_Switch" rbFileMenuEmbed="1" text="@Compare">
+			<KComposeListCommand customTip="SwitchWindow" icon="window_switch_kd" id="rSwitchWindow" rbHotKey="W" text="@Switch&#10;Window">
+				<compose idQ="CurrentFileListInView"/>
+				<KxShowMoreWindowCommand dialogHint="1" hotKey="M" id="ShowMoreWindowsInViewTab" qtspyName="ShowMoreWindows" text="@Show More Windows"/>
+			</KComposeListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_View">
+			<command idQ="RB_Document_View"/>
+			<separator/>
+			<command idQ="RB_Show"/>
+			<separator/>
+			<command idQ="RB_Zoom"/>
+			<separator/>
+			<command idQ="RB_EyeProtection"/>
+			<separator/>
+			<command idQ="RB_NewWindow"/>
+			<separator/>
+			<command idQ="RB_View_Compare"/>
+		</subcommand>
+	</subcommands>
+</shell>

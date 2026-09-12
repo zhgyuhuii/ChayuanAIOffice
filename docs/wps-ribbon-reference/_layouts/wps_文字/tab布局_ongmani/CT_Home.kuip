@@ -1,0 +1,614 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_home" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" hotKey="k" icon="form_paste_format_kd" id="ExpandOriginFormatPaste" idMso="PasteKeepSourceFormat" ksoCmd="ExpandOriginFormatPaste" rbHotKey="K" text="@Keep Source Formating"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="M" icon="form_match_format_kd" id="ExpandPasteMatchingFormat" idMso="PasteMatchCurrentFormat" ksoCmd="ExpandPasteMatchingFormat" rbHotKey="M" text="@Matching Current Format"/>
+		<KxLegacyTriggerCommand hotKey="C" icon="form_match_format_kd" id="PasteEmbedMatchingFormat" ksoCmd="PasteEmbedMatchingFormat" text="@PasteEmbedMatchingFormat"/>
+		<KxLegacyTriggerCommand hotKey="L" icon="form_paste_format_kd" id="PasteEmbedOriginFormat" ksoCmd="PasteEmbedOriginFormat" text="@PasteEmbedOriginFormat"/>
+		<KxPropComposeCommand canHideText="0" controlType="0" dialogHint="1" hotKey="A" icon="form_setup_kd" id="m_DefaultPaste" idMso="PasteSetDefault" ksoCmd="Options" tabIndex="1" text="@Set Default Paste"/>
+		<KxWpsClipboardStatusCacheCommand id="ClipboardStatusCache" ksoCmd="ClipboardCacheEnable"/>
+		<KxWpsQuickMenuCommandFix_Paste canHideText="0" controlType="5" customCommand="ClipboardStatusCache" customTip2="sp_Paste2" customTip="sp_Paste" hotKey="p" icon="paste_kd" id="sp_Paste" idMso="PasteMenu" rbHotKey="V" referenceCommand="Paste" shortcutHint="Ctrl+V" text="@Paste">
+			<command idQ="ExpandOriginFormatPaste"/>
+			<command idQ="ExpandPasteMatchingFormat"/>
+			<command idQ="PasteEmbedMatchingFormat"/>
+			<command idQ="PasteEmbedOriginFormat"/>
+			<command idQ="ExpandPasteText"/>
+			<separator/>
+			<command idQ="PasteSpecial"/>
+			<command idQ="m_DefaultPaste"/>
+			<command idQ="PastePreviousContent_StartTab"/>
+		</KxWpsQuickMenuCommandFix_Paste>
+		<KxOleLegacyTriggerCommand aid="21" controlType="0" customTip="Cut" hotKey="t" icon="cut_kd" id="Cut" idMso="Cut" ksoCmd="Cut" rbHotKey="X" spaceHint="autocompact" text="@Cut"/>
+		<KxOleLegacyTriggerCommand aid="19" controlType="0" customTip="Copy" hotKey="c" icon="copy_kd" iconQat="copy_kd" id="Copy" idMso="Copy" ksoCmd="Copy" rbHotKey="C" spaceHint="autocompact" text="@Copy"/>
+		<KClipboardGroupCommand id="RB_Clipboard" idKey="WpsMultiClipboard" refcommand="Copy" refcutcommand="Cut"/>
+		<KxClipboardGroupCommandWrapper controlType="0" customAttribute="IF(platform=win32){customTip=RB_AIClipboard}" customTip="RB_Clipboard" groupTip="ClipboardGroup" icon="cut_kd" id="RB_ClipboardWrapper" idMso="ShowClipboard" rbFileMenuEmbed="1" rbHotKey="FO" refcommand="RB_Clipboard" text="@Clipboard">
+			<command idQ="FormatPainter"/>
+			<KxSingleRowMergeGroupCommand customTip="ClipboardGroup" icon="clipboard_kd" id="SingleRow_Clipboard" spaceHint="compact" text="@Clipboard"/>
+			<command idQ="sp_Paste" singlerowmergegroup="SingleRow_Clipboard"/>
+			<command idQ="Cut" singlerowmergegroup="SingleRow_Clipboard"/>
+			<command idQ="Copy" singlerowmergegroup="SingleRow_Clipboard"/>
+		</KxClipboardGroupCommandWrapper>
+		<KxNormalLegacyTriggerCommand controlType="6" customTip="Bold" hotKey="b" icon="bold_wps_kd" iconQat="bold_wps_kd" id="Bold" idMso="Bold" ksoCmd="Bold" rbHotKey="1" text="@Bold"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="Italic" hotKey="i" icon="italic_wps_kd" id="Italic" idMso="Italic" ksoCmd="Italic" rbHotKey="2" text="@Italic"/>
+		<KxStaticGalleryCommand column="1" controlType="4" customTip2="Underline2" customTip="Underline" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="Underline" idMso="UnderlineGallery" ksoCmd="UnderlinePalette" ksoTriggerCmd="Underline" rbHotKey="3" text="@Underline">
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_1_display_kd" index="0" qtspyName="Underline_0"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_7_display_kd" index="1" qtspyName="Underline_1"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_25_display_kd" index="2" qtspyName="Underline_2"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_2_display_kd" index="3" qtspyName="Underline_3"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_4_display_kd" index="4" qtspyName="Underline_4"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_5_display_kd" index="5" qtspyName="Underline_5"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_6_display_kd" index="6" qtspyName="Underline_6"/>
+			<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_18_display_kd" index="7" qtspyName="Underline_7"/>
+			<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="m" id="MoreUnderlines" idMso="UnderlineMoreUnderlinesDialog" ksoCmd="MoreUnderlines" rbHotKey="M" text="@More Underlines"/>
+			<KxWpsUnderlineColorCommand controlType="4" hotKey="u" id="UnderLineColor" idMso="UnderlineColorGallery" ksoCmd="UnderLineColor" rbHotKey="U" text="@Underline Color">
+				<KxWpsMoreUnderlineColorCommand controlType="0" dialogHint="1" hotKey="m" id="MoreUnderLineColor" idMso="UnderlineColorMoreColorsDialog" ksoCmd="UnderLineColor" text="@More Underline Colors"/>
+				<KxWpsSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapUnderLineColor" ksoCmd="UnderLineColor" rbHotKey="E" text="@Snapper"/>
+			</KxWpsUnderlineColorCommand>
+		</KxStaticGalleryCommand>
+		<KxLegacyTriggerCommand controlType="6" customTip="Underline" hotKey="u" icon="underscore_wps_kd" id="WriteModeUnderline" idMso="UnderlineGallery" ksoCmd="Underline" rbHotKey="3" text="@Underline"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="EmphasisMark" filter="lang!=th_TH" hotKey="E" icon="emphasis_mark_kd" id="EmphasisMark" idMso="EmphasisMark" ksoCmd="EmphasisMark" rbHotKey="M" text="@Emphasis Mark"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="Superscript" hotKey="p" icon="math_superscript_kd" id="Superscript" idMso="Superscript" ksoCmd="Superscript" rbHotKey="6" text="@Superscript"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="Subscript" hotKey="b" icon="math_subscript_kd" id="Subscript" idMso="Subscript" ksoCmd="Subscript" rbHotKey="5" text="@Subscript"/>
+		<KxListCommand controlType="4" customTip="FontEffects" disableTrigger="1" icon="font_art_style_kd" id="FontEffects" idMso="TextEffectsGallery" ksoCmd="FontEffects" rbHotKey="FT" spaceHint="suitable" text="@Text Effects">
+			<KxWpsWordArtStylesCommand columnNumber="4" completeColumnNumber="10" controlType="4" embedHint="1" hotKey="a" icon="font_art_style_kd" id="WordArtStyle" idMso="WordArtInsertGallery" ksoCmd="FontStyles" qtspyName="FontStyles" rbHotKey="A" text="@WordArt" triggerAble="1"/>
+			<KWpsFontShadowCommand columnNumber="3" controlType="4" hotKey="s" icon="font_shadow_kd" id="FontShadow" idMso="TextEffectShadowGallery" qtspyName="font_shadow_ongmani" rbHotKey="S" text="@Shadow"/>
+			<KWpsFontReflectionCommand columnNumber="3" controlType="4" hotKey="r" icon="font_reflection_kd" id="FontReflection" idMso="TextReflectionGallery" qtspyName="font_reflection_ongmani" rbHotKey="R" text="@Reflection"/>
+			<KWpsFontGlowCommand columnNumber="6" controlType="4" hotKey="g" icon="font_glow_kd" id="FontGlow" idMso="TextEffectGlowGallery" qtspyName="font_glow_ongmani" rbHotKey="G" text="@Glow"/>
+			<KFontThreeDRotationCommand columnNumber="4" controlType="4" hotKey="d" icon="font_3d_rotation_kd" id="FontThreeDRotation" idMso="TextEffectThreeDRotationGallery" qtspyName="font_3d_rotation_ongmani" rbHotKey="D" text="@ThreeDRotation"/>
+			<KWpsFontTransformCommand columnNumber="4" controlType="4" hotKey="t" icon="font_transform_kd" id="FontTransform" idMso="TextEffectTransformGallery" qtspyName="font_transform_ongmani" rbHotKey="T" text="@Transform"/>
+			<command idQ="MoreFontEffects"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="ClearFormats" hotKey="E" icon="eraser_kd" id="ClearFormatsRainbow" idMso="ClearFormatting" ksoCmd="ClearFormats" rbHotKey="E" text="@Clear Formatting"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="CharacterShading" hotKey="FH" icon="font_shading_kd" id="CharacterShadingRainbow" idMso="CharacterShading" ksoCmd="CharacterShading" rbHotKey="FH" text="@Character Shading"/>
+		<KxLegacyTriggerCommand controlType="4" customTip="ChangeCase" dialogHint="1" hotKey="c" icon="change_case_kd" id="ChangeCaseRainbow" idMso="ChangeCaseGallery" ksoCmd="ChangeCase" rbHotKey="7" text="@Change Case"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="CharacterBorder" hotKey="B" icon="font_border_kd" id="CharacterBorder" idMso="CharacterBorder" ksoCmd="CharacterBorder" rbHotKey="FB" text="@Character Border"/>
+		<KxWpsEncloseCharactersCommand controlType="0" customTip="EncloseCharacters" detail="@Enclose Characters..." dialogHint="1" forceVisible="1" hotKey="E" icon="enclose_characters_kd" id="EncloseCharactersInHomeTab" idMso="AsianLayoutCharactersEnclose" ksoCmd="EncloseCharacters" qtspyName="EncloseCharacters" rbHotKey="FE" text="@Enclose Characters"/>
+		<KxLegacyTriggerCommand aid="3511" controlType="0" customTip="PhoneticGuide" detail="@Phonetic Guide..." dialogHint="1" filter="l10n:PHONETIC_GUIDE_SUPPORT=true" forceVisible="1" hotKey="u" icon="phonetic_guide_kd" id="PhoneticGuide" idMso="AsianLayoutPhoneticGuide" ksoCmd="PhoneticGuide" rbHotKey="FR" text="@Phonetic Guide"/>
+		<KAppCommand appId="kphoneticsymbolex" appPersistEntry="true" controlType="0" customTip="PhoneticGuide" detail="@Phonetic Guide..." dialogHint="1" hotKey="u" icon="phonetic_guide_kd" id="app_kphoneticsymbolex_start" idMso="AsianLayoutPhoneticGuide" rbHotKey="FR" text="@Phonetic Guide"/>
+		<KxWpsFontComboBoxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" hotKey="FF" icon="symbol_a_kd" id="FontNameInHomeTab" idMso="Font" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="130" qtspyName="FontName" rbHotKey="FF" text="@Font Name" verticalPolicy="Preferred"/>
+		<KxWpsFontComboBoxCommand controlType="2" customTip="FontName" horizontalPolicy="Expanding" hotKey="FF" icon="symbol_a_kd" id="OfficialFontNameInHomeTab" ksoCmd="FontName" layoutOnLeft="true" minimumWidth="114" rbHotKey="FF" supportOfficialFont="true" text="@Official Font Name" verticalPolicy="Preferred"/>
+		<KQuickMenuCommand controlType="5" customTip2="Strikethought2" customTip="Strikethought" hotKey="s" icon="strikethrough_kd" id="Font2" idMso="StrikethroughAndEmphasisMark" rbHotKey="4" referenceCommand="Strikethought" text="@Strikethrough">
+			<command idQ="Strikethought"/>
+			<command idQ="EmphasisMark"/>
+		</KQuickMenuCommand>
+		<KQuickMenuAutoHideCommand controlType="4" customTip="ChangeCase" forceVisible="1" hotKey="c" icon="change_case_kd" id="Font1" idKey="PhoneticGuideChangeCase" idMso="ChangeCaseGallery" rbHotKey="7" referenceCommand="ChangeCaseRainbow" showFirstVisibleSubCommand="true" text="@Change Case">
+			<command filter="l10n:PHONETIC_GUIDE_SUPPORT=true;l10n:USE_PHONETIC_GUIDE_ICON=true" idQ="PhoneticGuide"/>
+			<command idQ="ChangeCaseRainbow"/>
+			<command idQ="EncloseCharactersInHomeTab"/>
+			<command idQ="CharacterBorder"/>
+			<command filter="l10n:PHONETIC_GUIDE_SUPPORT=true;l10n:USE_PHONETIC_GUIDE_ICON=false" idQ="PhoneticGuide"/>
+		</KQuickMenuAutoHideCommand>
+		<KQuickMenuAutoHideCommand controlType="4" customTip="ChangeCase" forceVisible="1" hotKey="c" icon="change_case_kd" id="Font1" idKey="PhoneticSymbolChangeCase" idMso="ChangeCaseGallery" rbHotKey="7" referenceCommand="app_kphoneticsymbolex_start" showFirstVisibleSubCommand="true" text="@Change Case">
+			<command filter="l10n:PHONETIC_GUIDE_SUPPORT=true;l10n:USE_PHONETIC_GUIDE_ICON=true" idQ="app_kphoneticsymbolex_start"/>
+			<command idQ="ChangeCaseRainbow"/>
+			<command idQ="EncloseCharactersInHomeTab"/>
+			<command idQ="CharacterBorder"/>
+			<command filter="l10n:PHONETIC_GUIDE_SUPPORT=true;l10n:USE_PHONETIC_GUIDE_ICON=false" idQ="app_kphoneticsymbolex_start"/>
+		</KQuickMenuAutoHideCommand>
+		<KQuickMenuAutoHideCommand controlType="4" customTip="PhoneticGuide" forceVisible="1" hotKey="c" icon="phonetic_guide_kd" id="Font1" idKey="PhoneticSymbolEx" idMso="AsianLayoutPhoneticGuide" rbHotKey="FR" referenceCommand="app_kphoneticsymbolex_start" showFirstVisibleSubCommand="true" text="@Phonetic Guide">
+			<command idQ="app_kphoneticsymbolex_start"/>
+			<command idQ="ChangeCaseRainbow"/>
+			<command idQ="EncloseCharactersInHomeTab"/>
+			<command idQ="CharacterBorder"/>
+		</KQuickMenuAutoHideCommand>
+		<KQuickMenuCommandWriteMode id="writeModeFormatAlign" referenceCommand="FormatAlignLeft">
+			<KxValueCommand customTip="FormatAlignLeft" descName="@Align Text Left" icon="align_left_kd" iconQat="align_left_kd" id="FormatAlignLeft" index="0" ksoCmd="FormatAlignment" text="@Align Left"/>
+			<KxValueCommand customTip="FormatAlignCenter" descName="@Align Text Center" icon="align_center_kd" iconQat="align_center_kd" id="FormatAlignCenter" index="1" ksoCmd="FormatAlignment" text="@Center"/>
+			<KxValueCommand customTip="FormatAlignRight" descName="@Align Text Right" icon="align_right_kd" id="FormatAlignRight" index="2" ksoCmd="FormatAlignment" text="@Align Right"/>
+			<KxValueCommand customTip="FormatAlignJustify" descName="@Align Text Justify" icon="align_both_side_kd" id="FormatAlignJustify" index="3" ksoCmd="FormatAlignment" text="@Justify"/>
+			<KxValueCommand customTip="FormatAlignDistributed" descName="@Align Text Distributed" icon="align_distributed_kd" id="FormatAlignDistributed" index="4" ksoCmd="FormatAlignment" text="@Distributed"/>
+		</KQuickMenuCommandWriteMode>
+		<KxWpsOfficialPrintingHVFontSizeListCommand controlType="15" customTip="OfficialHVFont" icon="horizontal_and_vertical_settings_kd" id="OfficialPrintingHV_Font" text="@HVFont Size" vertspace="0">
+			<command idQ="OfficialPrintingHFontSize"/>
+			<command idQ="OfficialPrintingVFontSize"/>
+		</KxWpsOfficialPrintingHVFontSizeListCommand>
+		<KxWpsNormalListCommand controlType="16" customTip="RB_Font" forceVisible="1" groupTip="FontGroup" horizontalSpacing="0" icon="symbol_a_kd" id="RB_Font" idMso="GroupFont" ksoCmd="Font" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="FN" text="@Font">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand horizontalSpacing="0" layoutOnly="1">
+					<KRbLayoutListCommand horizontalSpacing="0" layoutOnly="1" rightSpace="6">
+						<KFontRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+							<command idQ="FontNameInHomeTab" singlerowfoldgroup="font_info_pair" singlerowpriority="12"/>
+							<command idQ="FontSize" singlerowfoldgroup="font_info_pair" singlerowpriority="12"/>
+						</KFontRbLayoutListCommand>
+					</KRbLayoutListCommand>
+					<command idQ="OfficialPrintingHV_Font"/>
+					<command idQ="GrowFontRainbow" singlerowfoldgroup="font_size_pair" singlerowpriority="5"/>
+					<KLayoutWidgetCommand fixedWidth="4"/>
+					<command idQ="ShrinkFontRainbow" singlerowfoldgroup="font_size_pair" singlerowpriority="5"/>
+					<KLayoutWidgetCommand fixedWidth="4"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Font1" singlerowfold="1"/>
+					<command idQ="ClearFormatsRainbow" singlerowpriority="1"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Bold"/>
+					<command idQ="OfficialPrintingCustomBoldWidth"/>
+					<command idQ="Italic"/>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="Underline"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="Font2" singlerowfold="1"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<KQuickMenuCommandWriteMode controlType="6" customTip2="Superscript2" customTip="Superscript" hotKey="p" icon="math_superscript_kd" id="Font4" rbHotKey="6" referenceCommand="Superscript" singlerowfold="1" text="@Superscript">
+								<command idQ="Superscript"/>
+								<command idQ="Subscript"/>
+							</KQuickMenuCommandWriteMode>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="4" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="FontEffects" singlerowfold="1"/>
+						</KRbLayoutListCommand>
+						<KRbLayoutListCommand alignment="1" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="HighlightColor" singlerowpriority="10"/>
+						</KRbLayoutListCommand>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="FontColor" singlerowpriority="11"/>
+					<command idQ="CharacterShadingRainbow" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxWpsNormalListCommand>
+		<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" height="304" id="OnlineBullets" localMenuHeight="182" skeletonAlias="konlinebullet" targetModule="konlinefonts" text="@Docer Bullet" width="444"/>
+		<KListCommand controlType="15" customTip="OfficialHVFont" icon="OfficialHVFont" id="HV_Font" text="@HVFont Size" vertspace="0">
+			<command idQ="HFontSize"/>
+			<command idQ="VFontSize"/>
+		</KListCommand>
+		<KxWpsOfficialListCommand customTip="RB_Font" forceVisible="1" horizontalSpacing="4" icon="symbol_a_kd" id="RB_OfficialFont" idKey="OfficialViewEnable" ksoCmd="Font" rbHotKey="FN" text="@Official Font">
+			<KxWpsFontNameAndSizeCommand customTip="OfficialFont" icon="font_more_styles_kd" id="CombinationFontAndSize" initCustomItems="true" text="@Font Format"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand horizontalSpacing="3" layoutOnly="1">
+					<KRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+						<command idQ="OfficialFontNameInHomeTab"/>
+						<command idQ="FontSize"/>
+					</KRbLayoutListCommand>
+					<command idQ="ClearFormatsRainbow"/>
+					<command idQ="CharacterShadingRainbow"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="CustomBoldWidth"/>
+					<command idQ="Italic"/>
+					<command idQ="Font2"/>
+					<command idQ="Underline"/>
+					<command idQ="HV_Font"/>
+					<command idQ="FontColor"/>
+					<command idQ="HighlightColor"/>
+					<command idQ="Font1"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxWpsOfficialListCommand>
+		<KxWpsBulletsGalleryCommand column="4" controlType="6" customTip2="Bullets2" customTip="Bullets" hotKey="b" icon="list_unordered_kd" id="Bullets" idMso="Bullets" ksoCmd="BulletsPalette" ksoTriggerCmd="RecentBullets" rbHotKey="U" spaceHint="suitable" text="@Bullets">
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@None" icon="list_none_display_kd" iconDark="wps_numbering_dark_0" idKey="CommonBulletsGallery" index="0" qtspyName="wps_numbering_0"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@None" icon="list_none_display_kd" iconDark="wps_numbering_dark_0" index="0" qtspyName="wps_numbering_0"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Large Round-Shaped Bullets" icon="list_bullets_eight_display_kd" iconDark="wps_bullets_dark_0" index="1" qtspyName="wps_bullets_0"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Large Square-Shaped Bullets" icon="list_bullets_nine_display_kd" iconDark="wps_bullets_dark_1" index="2" qtspyName="wps_bullets_1"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Diamond-Shaped Bullets" icon="list_bullets_ten_display_kd" iconDark="wps_bullets_dark_2" index="3" qtspyName="wps_bullets_2"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@Bold Square-Hollow Bullets" icon="list_bullets_eleven_display_kd" iconDark="wps_bullets_dark_3" index="4" qtspyName="wps_bullets_3"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@Sagittate Bullet " icon="list_bullets_twelve_display_kd" iconDark="wps_bullets_dark_4" index="5" qtspyName="wps_bullets_4"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@The Check Mark-shaped Bullets" icon="list_bullets_thirteen_display_kd" iconDark="wps_bullets_dark_5" index="6" qtspyName="wps_bullets_5"/>
+			<KxWpsBulletsGalleryItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Round-Shaped Bullets" icon="list_bullets_fourteen_display_kd" iconDark="wps_bullets_dark_6" index="7" qtspyName="wps_bullets_6"/>
+		</KxWpsBulletsGalleryCommand>
+		<KxWpsBulletsGalleryCommand column="4" controlType="6" hotKey="b" icon="list_unordered_kd" id="WriteModeBullets" idMso="Bullets" ksoCmd="BulletsPalette" ksoTriggerCmd="RecentBullets" rbHotKey="U" spaceHint="suitable" text="@Bullets">
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@None" icon="list_none_display_kd" index="0" qtspyName="wps_numbering_0"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Large Round-Shaped Bullets" icon="list_bullets_eight_display_kd" index="1" qtspyName="wps_bullets_0"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Large Square-Shaped Bullets" icon="list_bullets_nine_display_kd" index="2" qtspyName="wps_bullets_1"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Diamond-Shaped Bullets" icon="list_bullets_ten_display_kd" index="3" qtspyName="wps_bullets_2"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@Bold Square-Hollow Bullets" icon="list_bullets_eleven_display_kd" index="4" qtspyName="wps_bullets_3"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@Sagittate Bullet " icon="list_bullets_twelve_display_kd" index="5" qtspyName="wps_bullets_4"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@The Check Mark-shaped Bullets" icon="list_bullets_thirteen_display_kd" index="6" qtspyName="wps_bullets_5"/>
+			<KxWpsBulletsGalleryItemCommand customAttribute="IF(lang=en_US){customTip=}" customTip="@With Filling Effect Of Round-Shaped Bullets" icon="list_bullets_fourteen_display_kd" index="7" qtspyName="wps_bullets_6"/>
+		</KxWpsBulletsGalleryCommand>
+		<KxOnlineGalleryCommand controlType="4" customTip2="Bullets2" customTip="Bullets" disabledInCoopMode="true" icon="list_unordered_kd" id="DocerBullets" idMso="BulletsGalleryWord" ksoCmd="RecentBullets" onlineCmd="OnlineBullets" qtspyName="Bullets" rbHotKey="U" refLocalCmd="Bullets" spaceHint="suitable" text="@Bullets">
+			<command idQ="WpsAITidySymbol"/>
+			<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="m" icon="more_kd" id="MoreBullets" idMso="BulletDefineNew" ksoCmd="MoreBullets" text="@More Bullets"/>
+		</KxOnlineGalleryCommand>
+		<KxStaticGalleryCommand aid="80064" column="4" controlType="4" customTip2="Numbering2" customTip="Numbering" filter="lang!=zh_CN" hotKey="n" icon="list_ordered_number_kd" id="Numbering" idMso="NumberingGalleryWord" ksoCmd="NumberingPalette" ksoTriggerCmd="RecentNumbering" rbHotKey="N" spaceHint="suitable" tc="Num" text="@Numbering">
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@None" galleryItemHeight="70" galleryItemWidth="70" icon="list_none_display_kd" iconDark="wps_numbering_dark_0" index="0" qtspyName="wps_numbering_0"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@1.2.3." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_seven_display_kd" iconDark="wps_numbering_dark_1" index="1" qtspyName="wps_numbering_1"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@With The Circle Number." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_three_display_kd" iconDark="wps_numbering_dark_2" index="2" qtspyName="wps_numbering_2"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@Ⅰ.Ⅱ.Ⅲ." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_twelve_display_kd" iconDark="wps_numbering_dark_3" index="3" qtspyName="wps_numbering_3"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@A.B.C." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_thirteen_display_kd" iconDark="wps_numbering_dark_4" index="4" qtspyName="wps_numbering_4"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@a).b).c)." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_twenty_display_kd" iconDark="wps_numbering_dark_5" index="5" qtspyName="wps_numbering_5"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@a.b.c." galleryItemHeight="70" galleryItemWidth="70" icon="list_number_nine_display_kd" iconDark="wps_numbering_dark_6" index="6" qtspyName="wps_numbering_6"/>
+			<KxStaticGalleryUnCheckableItemCommand applyAccentIconEffect="false" customAttribute="IF(lang=en_US){customTip=}" customTip="@Pictographic Number, Wide End" galleryItemHeight="70" galleryItemWidth="70" icon="list_number_fifteen_display_kd" iconDark="wps_numbering_dark_7" index="7" qtspyName="wps_numbering_7"/>
+			<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="m" icon="more_kd" id="MoreNumbering" idMso="DefineNewNumberFormat" ksoCmd="MoreNumbering" text="@More Numbering"/>
+		</KxStaticGalleryCommand>
+		<KxWpsNumberingGalleryCommand aid="80064" controlType="4" customTip2="Numbering2" customTip="Numbering" filter="lang=zh_CN" galleryWidth="210" hotKey="n" icon="list_ordered_number_kd" id="Numbering" idMso="NumberingGalleryWord" ksoCmd="NumberingPalette" ksoTriggerCmd="RecentNumbering" rbHotKey="N" spaceHint="suitable" tc="Num" text="@Numbering">
+			<KxWpsChangeListLevelGalleryCommand bLikePopuMenu="1" controlType="4" hotKey="e" icon="list_numbering_change_level_kd" id="ChangeListLevel" idMso="ListLevelGallery" ksoCmd="ChangeListLevel" text="@ChangeListLevel"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="m" icon="more_kd" id="MoreNumbering" ksoCmd="MoreNumbering" text="@More Numbering"/>
+			<separator/>
+			<KxWpsApplyAutoNumberingSwitchCommand hasToolTip="1" hotKey="a" icon="list_numbering_auto_kd" id="AutoNumberingSwitch" text="@ApplyAutoNumberingOnEnter"/>
+		</KxWpsNumberingGalleryCommand>
+		<KxWpsWriteModeNumberingGalleryCommand aid="80064" filter="lang=zh_CN" galleryWidth="266" hotKey="n" icon="list_ordered_number_kd" id="writeModeNumbering" ksoCmd="NumberingPalette" ksoTriggerCmd="RecentNumbering" rbHotKey="N" spaceHint="suitable" text="@Numbering"/>
+		<KxWpsOfficialNumberingGalleryCommand customTip2="Numbering2" customTip="Numbering" filter="lang=zh_CN" hotKey="n" icon="list_ordered_number_kd" id="NumberingOfficial" ksoCmd="NumberingPalette" ksoTriggerCmd="RecentNumbering" rbHotKey="N" spaceHint="suitable" tc="Num" text="@Numbering">
+			<KxWpsChangeListLevelGalleryCommand bLikePopuMenu="1" hotKey="e" icon="list_numbering_change_level_kd" id="ChangeListLevel" ksoCmd="ChangeListLevel" text="@ChangeListLevel"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="m" icon="more_kd" id="MoreNumbering" ksoCmd="MoreNumbering" text="@More Numbering"/>
+		</KxWpsOfficialNumberingGalleryCommand>
+		<KxLegacyTriggerCommand aid="80088" controlType="0" customTip="DecreaseIndent" hotKey="d" icon="indent_decrease_kd" id="DecreaseIndent" idMso="IndentDecreaseWord" ksoCmd="DecreaseIndent" rbHotKey="AO" text="@Decrease Indent"/>
+		<KxLegacyTriggerCommand aid="2000065" controlType="0" customTip="LTRTextDirection" forceVisible="1" hotKey="l" icon="text_left_to_right_kd" id="LTRTextDirection" ksoCmd="LTRTextDirection" rbHotKey="9" text="@Left-to-Right"/>
+		<KxLegacyTriggerCommand aid="2000066" controlType="0" customTip="RTLTextDirection" forceVisible="1" hotKey="r" icon="text_right_to_left_kd" id="RTLTextDirection" ksoCmd="RTLTextDirection" rbHotKey="0" text="@Right-to-Left"/>
+		<KxValueCommand controlType="6" customTip="FormatAlignLeft" descName="@Align Text Left" hotKey="l" icon="align_left_kd" id="FormatAlignLeft" idMso="AlignLeft" index="0" ksoCmd="FormatAlignmentLeft" rbHotKey="AL" text="@Align Left"/>
+		<KxValueCommand controlType="6" customTip="FormatAlignCenter" descName="@Align Text Center" hotKey="c" icon="align_center_kd" id="FormatAlignCenter" idMso="AlignCenter" index="1" ksoCmd="FormatAlignmentCenter" rbHotKey="AC" text="@Center"/>
+		<KxValueCommand controlType="6" customTip="FormatAlignRight" descName="@Align Text Right" hotKey="r" icon="align_right_kd" id="FormatAlignRight" idMso="AlignRight" index="2" ksoCmd="FormatAlignmentRight" rbHotKey="AR" text="@Align Right"/>
+		<KxValueCommand controlType="6" customTip="FormatAlignJustify" descName="@Align Text Justify" hotKey="j" icon="align_both_side_kd" id="FormatAlignJustify" idMso="AlignJustify" index="3" ksoCmd="FormatAlignmentJustify" rbHotKey="AJ" text="@Justify"/>
+		<KxValueCommand controlType="6" customTip="FormatAlignDistributed" descName="@Align Text Distributed" hotKey="d" icon="align_distributed_kd" id="FormatAlignDistributed" idMso="ParagraphDistributed" index="4" ksoCmd="FormatAlignmentDistributed" rbHotKey="AD" text="@Distributed"/>
+		<KxFormatAlignThaiDistributedCommand controlType="6" customTip="FormatAlignThaiDistributed" descName="@Align Text Thai Distributed" hotKey="h" icon="align_type_kd" id="FormatAlignThaiDistributed" idKey="WpsThaiFormatAlignDistributed" idMso="ParagraphDistributed" index="9" ksoCmd="FormatAlignmentThaiDistributed" rbHotKey="AH" text="@Thai Distributed"/>
+		<KxValueCommand id="LineSpacing1_0" index="10" ksoCmd="LineSpacingNumber" shortcutHint="Ctrl+1" text="@1.0"/>
+		<KxValueCommand id="LineSpacing1_5" index="15" ksoCmd="LineSpacingNumber" text="@1.5"/>
+		<KxValueCommand id="LineSpacing2_0" index="20" ksoCmd="LineSpacingNumber" shortcutHint="Ctrl+2" text="@2.0"/>
+		<KxValueCommand aid="80061" id="LineSpacing2_5" index="25" ksoCmd="LineSpacingNumber" text="@2.5"/>
+		<KxValueCommand aid="80062" id="LineSpacing3_0" index="30" ksoCmd="LineSpacingNumber" text="@3.0"/>
+		<KxLegacyTriggerCommand aid="80063" controlType="0" dialogHint="1" hotKey="m" id="LineSpacingMore" idMso="LineSpacingMoreLineSpacingDialog" ksoCmd="LineSpacingMore" text="@More"/>
+		<KxWpsOfficialLineSpaceEditCommand fixedEditWidth="100" id="OfficialLineSpace" idKey="OfficialViewEnable" ksoCmd="OfficialLineSpace" text="@Official Line Interval: "/>
+		<KxWpsOfficialPrintingLineSpaceEditCommand fixedEditWidth="100" id="OfficialPrintingLineSpace" idKey="WideOfficialEntrance" ksoCmd="OfficialPrintingLineSpace" text="@Official Printing Line Interval: "/>
+		<KListCommand controlType="4" customTip="m_LineSpacing" enableDependsOnSubCommands="true" icon="line_spacing_kd" id="m_LineSpacing" idMso="LineSpacingGallery" rbHotKey="K" text="@Line Spacing">
+			<command idQ="LineSpacing1_0"/>
+			<command idQ="LineSpacing1_5"/>
+			<command idQ="LineSpacing2_0"/>
+			<command idQ="LineSpacing2_5"/>
+			<command idQ="LineSpacing3_0"/>
+			<command idQ="OfficialLineSpace"/>
+			<command idQ="OfficialPrintingLineSpace"/>
+			<command idQ="LineSpacingMore"/>
+		</KListCommand>
+		<KxWpsMoreColorCommand aid="1051" controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreTableShandColor" idMso="FillColorsMoreFillColorsDialog" ksoCmd="TableShadingColor" text="@More Fill Colors"/>
+		<KxWpsTableFillColorCommand controlType="4" customTip2="TableShadingColor2" customTip="TableShadingColor" hotKey="s" icon="color_paint_wps_kd" id="TableShadingColor" idMso="ShadingColorPicker" ksoCmd="TableShadingColor" ksoTriggerCmd="RecentTableShadingColor" rbHotKey="H" text="@Shading">
+			<command idQ="MoreTableShandColor"/>
+		</KxWpsTableFillColorCommand>
+		<KxValueCommand controlType="0" hotKey="b" icon="border_bottom_kd" id="BottomBorder" idMso="BorderBottomNoToggle" index="7" ksoCmd="TableOutsideBorderPalette" text="@Bottom Border"/>
+		<KxValueCommand controlType="0" hotKey="p" icon="border_top_kd" id="TopBorder" idMso="BorderTopWord" index="2" ksoCmd="TableOutsideBorderPalette" text="@Top Border"/>
+		<KxValueCommand controlType="0" hotKey="l" icon="border_left_kd" id="LeftBorder" idMso="BorderLeftWord" index="3" ksoCmd="TableOutsideBorderPalette" text="@Left Border"/>
+		<KxValueCommand controlType="0" hotKey="r" icon="border_right_kd" id="RightBorder" idMso="BorderRightWord" index="8" ksoCmd="TableOutsideBorderPalette" text="@Right Border"/>
+		<KxValueCommand controlType="0" hotKey="n" icon="border_less_kd" id="NoBorder" idMso="BorderNone" index="6" ksoCmd="TableOutsideBorderPalette" text="@No Border"/>
+		<KxValueCommand controlType="0" hotKey="a" icon="border_kd" id="AllBorders" idMso="BordersAll" index="1" ksoCmd="TableOutsideBorderPalette" text="@All Borders"/>
+		<KxValueCommand controlType="0" hotKey="s" icon="border_outer_kd" id="OutsideBorders" idMso="BorderOutside" index="0" ksoCmd="TableOutsideBorderPalette" text="@Outside Borders"/>
+		<KxValueCommand controlType="0" hotKey="i" icon="border_inter_kd" id="CrossBorder" idMso="BorderInside" index="5" ksoCmd="TableOutsideBorderPalette" text="@Inside Border"/>
+		<KxValueCommand controlType="0" hotKey="h" icon="border_inter_horizontal_kd" id="HMiddleBorder" idMso="BorderInsideHorizontal" index="4" ksoCmd="TableOutsideBorderPalette" text="@Inside Horizontal Border"/>
+		<KxValueCommand controlType="0" hotKey="v" icon="border_inter_vertical_kd" id="VMiddleBorder" idMso="BorderInsideVertical" index="9" ksoCmd="TableOutsideBorderPalette" text="@Inside Vertical Border"/>
+		<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="o" icon="page_border_color_kd" id="BordersAndShading" idMso="BordersShadingDialogWord" ksoCmd="BorderShading" qtspyName="BorderShading" text="@Borders and Shading"/>
+		<KQuickMenuCommandEx controlType="5" customTip2="RbTableOutsideBorder2" customTip="RbTableOutsideBorder" icon="border_outer_kd" id="RbTableOutsideBorder" idMso="TableBordersMenu" rbHotKey="B" referenceCommand="OutsideBorders" spaceHint="suitable" text="@Outside Borders">
+			<command idQ="BottomBorder"/>
+			<command idQ="TopBorder"/>
+			<command idQ="LeftBorder"/>
+			<command idQ="RightBorder"/>
+			<separator/>
+			<command idQ="NoBorder"/>
+			<command idQ="AllBorders"/>
+			<command idQ="OutsideBorders"/>
+			<command idQ="CrossBorder"/>
+			<separator/>
+			<command idQ="HMiddleBorder"/>
+			<command idQ="VMiddleBorder"/>
+			<separator/>
+			<command idQ="BordersAndShading"/>
+		</KQuickMenuCommandEx>
+		<KListCommand controlType="5" customTip2="RbTableOutsideBorder2" customTip="RbTableOutsideBorder" icon="border_outer_kd" id="RbOfficialTableOutsideBorder" rbHotKey="B" spaceHint="suitable" text="@Borders">
+			<command idQ="BottomBorder"/>
+			<command idQ="TopBorder"/>
+			<command idQ="LeftBorder"/>
+			<command idQ="RightBorder"/>
+			<separator/>
+			<command idQ="NoBorder"/>
+			<command idQ="AllBorders"/>
+			<command idQ="OutsideBorders"/>
+			<command idQ="CrossBorder"/>
+			<separator/>
+			<command idQ="HMiddleBorder"/>
+			<command idQ="VMiddleBorder"/>
+			<separator/>
+			<command idQ="BordersAndShading"/>
+		</KListCommand>
+		<KListCommand controlType="15" customTip="ShowHideEditMark" icon="paragraph_tags_kd" id="m_ShowHideEditMark" idMso="EastAsianEditingMarks" spaceHint="suitable" text="@Show/Hide Edit Mark">
+			<KxLegacyTriggerCommand controlType="6" customTip="ShowHideFormattingMarks" id="ShowHideFormattingMarksInHomeTab" idMso="EastAsianParagraphMarks" ksoCmd="ShowHideFormattingMarks" qtspyName="ShowHideFormattingMarks" rbHotKey="8" text="@Show/Hide Paragraph Marks"/>
+			<KxWpsTextOctopusCommand controlType="6" customTip="ShowHideTextOctopus" id="ShowHideTextOctopusInHomeTab" idMso="EastAsianParagraphDistributed" qtspyName="ShowHideTextOctopus" rbHotKey="9" text="@Show/Hide Paragraph Layout"/>
+			<KxWpsSmallPlussignOptionsCommand controlType="6" customTip="ShowHideSmallPlussign" id="ShowHideSmallPlussignOptionsInHomeTab" rbHotKey="9" text="@Show/Hide SmallPlussign"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="780" controlType="0" customTip="Tabs" dialogHint="1" faceid="64" hotKey="t" icon="ruler_format_tabs_kd" id="Tabs" idMso="Tabs" ksoCmd="Tabs" rbHotKey="T" text="@Tabs"/>
+		<KListCommand controlType="15" customTip="OfficialParaTools" icon="OfficialParaTools" id="Official Para Tools" spaceHint="suitable" text="@Paragraph Tools">
+			<command idQ="RbOfficialTableOutsideBorder"/>
+			<command idQ="Sort"/>
+			<command idQ="m_CharacterScaling"/>
+			<command idQ="m_ShowHideEditMark"/>
+			<command idQ="Tabs"/>
+		</KListCommand>
+		<KListCommand controlType="16" embedHint="1" id="tb_Paragraph" idMso="GroupParagraph">
+			<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" id="LayoutListInHomeTab" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<KRbLayoutListCommand alignment="1" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="DocerBullets" singlerowfoldgroup="paragraph_tools_pair" singlerowpriority="8"/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand alignment="2" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="Numbering" singlerowfoldgroup="paragraph_tools_pair" singlerowpriority="8"/>
+						<command idQ="OfficialVersionNumbering"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<command idQ="DecreaseIndent" singlerowfoldgroup="indent_pair" singlerowpriority="7"/>
+				<command idQ="IncreaseIndent" singlerowfoldgroup="indent_pair" singlerowpriority="7"/>
+				<command idQ="LTRTextDirection"/>
+				<command idQ="RTLTextDirection"/>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="m_CharacterScaling" singlerowfold="1"/>
+					<command idQ="m_ShowHideEditMark" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+				<command idQ="Sort" singlerowfold="1"/>
+				<command idQ="Tabs" singlerowfold="1"/>
+			</KRbLayoutListCommand>
+			<separator/>
+			<KRbLayoutListCommand alignment="1" bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="4" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<KLayoutDirectionCommand layoutDirection="0" spacing="4">
+						<command idQ="FormatAlignLeft" singlerowfoldgroup="alignment_pair" singlerowpriority="6"/>
+						<command idQ="FormatAlignCenter" singlerowfoldgroup="alignment_pair" singlerowpriority="6"/>
+						<command idQ="FormatAlignRight" singlerowfoldgroup="alignment_pair" singlerowpriority="6"/>
+					</KLayoutDirectionCommand>
+					<command idQ="FormatAlignJustify" singlerowfoldgroup="alignment_pair" singlerowpriority="6"/>
+					<command idQ="FormatAlignDistributed" singlerowfoldgroup="alignment_pair" singlerowpriority="6"/>
+					<command idQ="FormatAlignThaiDistributed"/>
+					<command idQ="m_LineSpacing" singlerowpriority="9"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<KRbLayoutListCommand bottomSpace="0" fixedwidgetWidth="16" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<KLayoutWidgetCommand/>
+						<separator/>
+						<KLayoutWidgetCommand/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<KRbLayoutListCommand alignment="1" bottomSpace="0" fixedwidgetWidth="40" horizontalSpacing="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+							<command idQ="TableShadingColor" singlerowfold="1"/>
+						</KRbLayoutListCommand>
+						<command idQ="RbTableOutsideBorder" singlerowfold="1"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KxWpsNormalListCommand controlType="16" customTip="RB_Paragraph" forceVisible="1" groupTip="ParagraphGroup" icon="align_both_side_kd" id="RB_Paragraph" idMso="GroupParagraph" ksoCmd="Paragraph" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="PG" text="@Paragraph">
+			<command idQ="tb_Paragraph"/>
+		</KxWpsNormalListCommand>
+		<KxWpsOfficialListCommand customTip="RB_Paragraph" forceVisible="1" icon="menu_kd" id="RB_OfficialParagraph" idKey="OfficialViewEnable" ksoCmd="Paragraph" rbFileMenuEmbed="1" rbHotKey="PG" text="@Official Paragraph">
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="NumberingOfficial"/>
+					<separator/>
+					<command idQ="DecreaseIndent"/>
+					<command idQ="IncreaseIndent"/>
+					<separator/>
+					<command idQ="m_LineSpacing"/>
+					<command idQ="TableShadingColor"/>
+				</KRbLayoutListCommand>
+				<separator/>
+				<KRbLayoutListCommand alignment="1" bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="FormatAlignJustify"/>
+					<KLayoutDirectionCommand layoutDirection="0">
+						<command idQ="FormatAlignLeft"/>
+						<command idQ="FormatAlignCenter"/>
+						<command idQ="FormatAlignRight"/>
+					</KLayoutDirectionCommand>
+					<command idQ="FormatAlignDistributed"/>
+					<command idQ="FormatAlignThaiDistributed"/>
+					<command idQ="Official Para Tools"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxWpsOfficialListCommand>
+		<KAppCommand appId="onlinewpsstyle" hotKey="S" icon="font_style_kd" id="onlineWpsStyle" idKey="WPSOnlineStyle" qtspyName="OnlineStyleFormat" text="@Online Wps Style"/>
+		<KxWpsStyleGalleryCommand bSupportOptimizedWpsWordStyle="true" controlType="4" embedHint="1" gallerySmallWidth="147" groupTip="StyleGalleryGroup" icon="font_art_size_kd" id="RainbowStyle" idMso="QuickStylesGallery" ksoCmd="Style" maxVisibleNumber="6" minVisibleNumber="2" rbHotKey="L" resizeable="1" style2023="true" text="@Styles">
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="N" icon="font_style_kd" id="TPNewStyle" ksoCmd="TPNewStyle" text="@New Style"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="C" icon="clear_contents_kd" id="TPClearStyle" idMso="ClearFormatting" ksoCmd="TPClearFormatting" qtspyName="TPClearFormatting" text="@Clear Style"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="A" id="TPStyleFormat" ksoCmd="StyleFormat" qtspyName="StyleFormat" text="@Show More Styles"/>
+			<KxLegacyTriggerCommand controlType="0" icon="save_as_kd" id="TPSaveNewStyleSet" ksoCmd="TPSaveNewStyleSet" text="@Save This Document to My Style Set"/>
+		</KxWpsStyleGalleryCommand>
+		<KxListCommand controlType="5" customTip2="m_Style2" customTip="m_Style" hotKey="G" icon="font_style_kd" id="m_Style" idMso="QuickStylesSaveClearSelection" ksoCmd="TPNewStyle" rbHotKey="G" text="@New Style">
+			<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="N" icon="font_style_kd" id="TPNewStyle" idMso="QuickStylesSaveSelectionAsNew" ksoCmd="TPNewStyle" text="@New Style"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="C" icon="clear_contents_kd" id="TPClearStyle" idMso="ClearFormatting" ksoCmd="TPClearFormatting" qtspyName="TPClearFormatting" text="@Clear Style"/>
+		</KxListCommand>
+		<KxListCommand controlType="16" customTip="RB_Style" forceVisible="1" groupTip="StyleGroup" icon="font_art_size_kd" id="RB_Style" idMso="GroupStyles" ksoCmd="StyleFormat" text="@Styles" triggerAble="FY">
+			<KxSingleRowMergeGroupCommand customTip="StyleGroup" icon="font_art_size_kd" id="SingleRow_Style" singlerowpriority="4" text="@Styles"/>
+			<command idQ="RainbowStyle" singlerowmergegroup="SingleRow_Style" singlerowtext="@Main Boby"/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<KxOnlineWpsStyleSetGalleryCommand icon="font_style_kd" id="onlineWpsStyleSet" refLocalCmd="WpsStyleSet" singlerowmergegroup="SingleRow_Style" text="@Style"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="F" icon="magnifier_kd" id="FindRainbow" idMso="FindDialog" ksoCmd="Find" shortcutHint="Ctrl+F" text="@Find"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Replace" dialogHint="1" hotKey="R" icon="replace_kd" id="ReplaceRainbow" idMso="ReplaceDialog" ksoCmd="Replace" rbHotKey="R" showiconAndText="1" spaceHint="suitable" text="@Replace"/>
+		<KxLegacyTriggerCommand aid="757" controlType="0" dialogHint="1" hotKey="g" icon="target_kd" id="GoTo" idMso="GoTo" ksoCmd="GoTo" rbHotKey="G" text="@Go to"/>
+		<KxWpsFindListCommand controlType="0" customTip2="Find2" customTip="Find" dialogHint="1" hotKey="FD" icon="magnifier_kd" id="sp_Find" idMso="FindAndReplaceDialog" ksoCmd="Find" rbHotKey="FD" shortcutHint="Ctrl+F" text="@Find and &#10;Replace">
+			<command idQ="FindRainbow"/>
+			<command idQ="ReplaceRainbow"/>
+			<command idQ="GoTo"/>
+		</KxWpsFindListCommand>
+		<KxLegacyTriggerCommand controlType="6" hotKey="o" icon="mouse_kd" id="RbSelectObjects" idMso="ObjectsSelect" ksoCmd="SelectObjects" text="@Select Objects"/>
+		<KxLegacyTriggerCommand aid="80026" controlType="6" hotKey="T" icon="table_selection_kd" id="RbTableSelection" idMso="SelectTableWithDashedBorders" ksoCmd="TableSelection" text="@Select Table with Dashed Borders"/>
+		<KxLegacyTriggerCommand hotKey="S" icon="select_similar_format_kd" id="SelectSimilarFormat" ksoCmd="SelectSimilarFormat" text="@Select All Text With Similar Formatting"/>
+		<KxObjectSelectCommand controlType="0" customTip="ObjectSelect" hotKey="J" icon="object_select_kd" id="HomeObjectSelect" idMso="SelectionPane" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Selection Pane"/>
+		<KxWpsAIAllSelectListCommand hotKey="b" icon="ai_select_star_kd" id="WpsAIAllSelectList" idKey="WpsAiBaseTypo" rbHotKey="B" text="@AI Select All"/>
+		<KListCommand controlType="15" customAttribute="IF(support:WpsTranslationMenuStartTab=true){spaceHint=suitable}" customTip="Select" hotKey="SL" icon="mouse_kd" id="m_Select" idMso="SelectMenu" rbHotKey="SL" text="@Select">
+			<KxLegacyTriggerCommand controlType="0" hotKey="A" icon="select_all_kd" id="SelectAllInHomeTab" idMso="SelectAll" ksoCmd="SelectAll" qtspyName="SelectAll" shortcutHint="Ctrl+A" text="@Select All"/>
+			<command idQ="RbSelectObjects"/>
+			<command idQ="RbTableSelection"/>
+			<command idQ="SelectSimilarFormat"/>
+			<command idQ="HomeObjectSelect"/>
+			<command idQ="WpsAIAllSelectList"/>
+			<command idQ="WpsAIAllSelect"/>
+		</KListCommand>
+		<KProxyCommand autoLoad="true" customTip="Translation" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="translation_kd" iconQat="translation_kd" id="ProxyTranslationMenu_cthome" idKey="WpsTranslationMenu" relatedKsoCmd="InsertPictureFromFile" spaceHint="suitable" targetId="TranslationMenu_cthome" targetModule="ktranslation" text="@Translation"/>
+		<KListCommand customTip="AI Proof" icon="spell_check_kd" id="CheckSpellToolBarList_Home" idKey="AiSpellcheckEntry" text="@AI Proof" visibleDependsOnSubCmds="1">
+			<KxSpellCheckChooseCommand controlType="15" customTip="AI Proof" hotKey="S" icon="spell_check_kd" id="CheckSpellingToolBar_home_spell" idKey="AiSpellcheckEntry" shellEntry="home_grammar_toolbar_spell" text="@AI Proof"/>
+			<KxProofreadAppCommand action="AIProofread" appId="kproofread" args="ai_open_position:writer_CT_Home_Spellcheck_Proofread" customTip="AIProofing" icon="doc_tick_kd" id="CheckSpellingToolBar_home_aiproofread" idKey="WPSAIProofread" text="@AI Proofing"/>
+			<KxSpellCheckChooseCommand controlType="15" customTip="AI Proof" hotKey="I" icon="ai_refine_kd" id="CheckSpellingToolBar_home_refine" idKey="AiSpellcheckEntry" shellEntry="home_grammar_toolbar_refine" text="@Improve Writing"/>
+		</KListCommand>
+		<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" customTip="SyncTranslate" entrance="wps_comp_rightclick&amp;module=wps&amp;sub_module=comp_rightclick&amp;new_position=right_click_menu" icon="translation_kd" id="app_immersive_translate_home" idKey="CommonFullTextTranslate" text="@Sync Translate"/>
+		<KListCommand controlType="16" groupTip="FindGroup" icon="magnifier_kd" id="RB_Editing" idMso="GroupEditing" rbFileMenuEmbed="1" text="@Find">
+			<KxSingleRowMergeGroupCommand customTip="FindGroup" icon="magnifier_kd" id="SingleRow_Editing" singlerowpriority="3" spaceHint="compact" text="@Find and &#10;Replace"/>
+			<command idQ="sp_Find" singlerowmergegroup="SingleRow_Editing"/>
+			<command idQ="CheckSpellToolBarList_Home"/>
+			<command idQ="app_immersive_translate_home"/>
+			<command idQ="m_Select" singlerowmergegroup="SingleRow_Editing"/>
+			<command idQ="app_translation_cthome"/>
+			<command idKey="WpsTranslationMenuStartTab" idQ="TranslationMenu_cthome"/>
+		</KListCommand>
+		<KxWpsCitationSettingCommand customTip="CitationSetting" icon="doc_tools_kd" id="citationSetting" text="@Citation Setting"/>
+		<KxWpsWordToolsCommand aid="92115" barid="44536" controlType="15" customTip="WordTools" delayloadPath="commands/wps/WordTools.kuip" hotKey="d" icon="doc_tools_kd" id="WordTools" idMso="WordTools" rbHotKey="D" text="@Word Tools"/>
+		<KxStudentToolsCommand customTip="StudentTools" icon="education_kd" id="StudentTools" idKey="WpsStudentTools" text="@Student Tools"/>
+		<KxWpsWrapTextCommand controlType="15" customTip="m_Wrapping" enableDependsOnSubCommands="1" hotKey="S" icon="pic_surround_kd" id="Home_Wrapping" idMso="TextWrappingMenu" text="@Wrap Text">
+			<KxLegacyTriggerCommand aid="533" controlType="6" faceid="255" hotKey="i" icon="pic_surround_embed_kd" id="WrappingInLineWithText" idMso="TextWrappingInLineWithText" ksoCmd="WrappingInLineWithText" text="@In Line with Text"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="534" controlType="6" faceid="256" hotKey="s" icon="pic_surround_kd" id="WrappingSquare" idMso="TextWrappingSquare" ksoCmd="WrappingSquare" rbHotKey="S" text="@Square"/>
+			<KxLegacyTriggerCommand aid="535" controlType="6" faceid="257" hotKey="t" icon="pic_surround_tightly_kd" id="WrappingTight" idMso="TextWrappingTight" ksoCmd="WrappingTight" rbHotKey="T" text="@Tight"/>
+			<KxLegacyTriggerCommand aid="536" controlType="6" faceid="258" hotKey="d" icon="pic_surround_down_kd" id="WrappingBehindText" idMso="TextWrappingBehindText" ksoCmd="WrappingBehindText" rbHotKey="D" text="@Behind Text"/>
+			<KxLegacyTriggerCommand aid="537" controlType="6" faceid="259" hotKey="n" icon="pic_surround_up_kd" id="WrappingInFrontofText" idMso="TextWrappingInFrontOfText" ksoCmd="WrappingInFrontofText" rbHotKey="N" text="@In Front of Text"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="538" controlType="6" faceid="260" hotKey="o" icon="pic_surround_up_down_kd" id="WrappingTopandBottom" idMso="TextWrappingTopAndBottom" ksoCmd="WrappingTopandBottom" rbHotKey="O" text="@Top and Bottom"/>
+			<KxLegacyTriggerCommand aid="539" controlType="6" faceid="254" hotKey="h" icon="pic_surround_through_kd" id="WrappingThrough" idMso="TextWrappingThrough" ksoCmd="WrappingThrough" rbHotKey="H" text="@Through"/>
+		</KxWpsWrapTextCommand>
+		<KListCommand controlType="6" customTip="m_Align" hotKey="A" icon="align_draw_left_kd" id="Home_Align" idMso="AlignJustifyMenu" text="@Align">
+			<command idQ="AlignmentControl"/>
+			<KxValueCommand aid="355" controlType="0" faceid="182" hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" idMso="ObjectsAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+			<KxValueCommand aid="356" controlType="0" faceid="183" hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" idMso="ObjectsAlignCenterHorizontalSmart" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+			<KxValueCommand aid="357" controlType="0" faceid="184" hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" idMso="ObjectsAlignRightSmart" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+			<KxValueCommand aid="358" controlType="0" faceid="185" hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" idMso="ObjectsAlignTopSmart" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+			<KxValueCommand aid="359" controlType="0" faceid="186" hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" idMso="ObjectsAlignMiddleVerticalSmart" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+			<KxValueCommand aid="360" controlType="0" faceid="187" hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" idMso="ObjectsAlignBottomSmart" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="361" controlType="0" faceid="188" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" idMso="AlignDistributeHorizontally" ksoCmd="AlignDistributeHori" text="@Distribute Horizontally"/>
+			<KxLegacyTriggerCommand aid="362" controlType="0" faceid="189" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" idMso="AlignDistributeVertically" ksoCmd="AlignDistributeVert" text="@Distribute Vertically"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="351" controlType="0" faceid="179" hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" idMso="EqualHeight" ksoCmd="EqualHeight" text="@Equal Height"/>
+			<KxLegacyTriggerCommand aid="352" controlType="0" faceid="180" hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" idMso="EqualWidth" ksoCmd="EqualWidth" text="@Equal Width"/>
+			<KxLegacyTriggerCommand aid="353" controlType="0" faceid="181" hotKey="Q" icon="equal_size_kd" id="RbEqualSize" idMso="EqualSize" ksoCmd="EqualSize" text="@Equal Size"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="28" controlType="1" hotKey="s" icon="nine_grids_kd" id="RbGridlines" idMso="ViewGridlinesWord" ksoCmd="Gridlines" spaceHint="suitable" text="@Gridlines"/>
+			<KxLegacyTriggerCommand aid="162" controlType="0" dialogHint="1" faceid="102" hotKey="g" icon="grid_switch_kd" id="RbGrid" idMso="GridSettings" ksoCmd="Grid" text="@Grid"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" hotKey="G" icon="group_kd" id="Home_Group" idMso="ObjectsGroup" ksoCmd="Group" text="@Group"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="U" icon="group_cancel_kd" id="Home_UnGroup" idMso="ObjectsUngroup" ksoCmd="UnGroup" text="@Ungroup"/>
+		<KListCommand controlType="15" customTip="m_Rotate" enableDependsOnSubCommands="1" hotKey="R" icon="rotate_right_kd" id="Home_Rotate" idMso="ObjectRotateMenu" qtspyName="RotateRight" spaceHint="suitable" text="@Rotate">
+			<KxLegacyTriggerCommand aid="364" controlType="0" faceid="190" hotKey="t" icon="rotate_angle_kd" id="FreeRotate" idMso="ObjectRotateFree" ksoCmd="FreeRotate" text="@Free Rotate"/>
+			<KxLegacyTriggerCommand aid="365" controlType="0" faceid="191" hotKey="l" icon="rotate_left_kd" id="RotateLeft" idMso="ObjectRotateLeft90" ksoCmd="RotateLeft" rbHotKey="L" text="@Rotate Left 90°"/>
+			<KxLegacyTriggerCommand aid="366" controlType="0" faceid="192" hotKey="r" icon="rotate_right_kd" id="RotateRight" idMso="ObjectRotateRight90" ksoCmd="RotateRight" rbHotKey="R" text="@Rotate Right 90°"/>
+			<separator/>
+			<KxLegacyTriggerCommand aid="367" controlType="0" faceid="193" hotKey="h" icon="flip_horizontal_kd" id="FlipHorizontal" idMso="FlipHorizontal" ksoCmd="FlipHorizontal" rbHotKey="H" text="@Flip Horizontal"/>
+			<KxLegacyTriggerCommand aid="368" controlType="0" faceid="194" hotKey="v" icon="flip_vertical_kd" id="FlipVertical" idMso="FlipVertical" ksoCmd="FlipVertical" rbHotKey="V" text="@Flip Vertical"/>
+			<KAppCommand action="photobatchrotate" appCmdObj="PictureBatchProcess" appFlags="wpsmember" appId="photonewbatchapp" icon="batch_rotation_kd" id="app_photonewbatchapp_pagelayout_rotation" idKey="WpsPictureBatchProcess" text="@Rotate all picture"/>
+		</KListCommand>
+		<KxListCommand controlType="0" customTip2="BringForward2" customTip="BringForward" hotKey="f" icon="level_bring_forward_kd" id="Home_BringForward" idMso="ObjectBringForward" ksoCmd="BringForward" rbHotKey="AF" spaceHint="suitable" text="@Bring Forward">
+			<KxLegacyTriggerCommand controlType="5" hotKey="F" icon="level_bring_forward_kd" id="RbBringForwardInToolBar" idMso="ObjectBringForwardMenu" ksoCmd="BringForward" text="@Bring Forward"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="level_top_kd" id="RbBringToFrontInToolBar" idMso="ObjectBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+			<KxLegacyTriggerCommand aid="160" controlType="0" faceid="100" hotKey="t" icon="level_top_kd" id="RbBringInFrontOfText" idMso="ObjectBringInFrontOfText" ksoCmd="BringInFrontOfText" text="@Bring in Front of Text"/>
+		</KxListCommand>
+		<KxListCommand controlType="0" customTip2="SendBackward2" customTip="SendBackward" hotKey="b" icon="level_send_backward_kd" id="Home_SendBackward" idMso="ObjectSendBackward" ksoCmd="SendBackward" rbHotKey="AE" spaceHint="suitable" text="@Send Backward">
+			<KxLegacyTriggerCommand controlType="5" hotKey="B" icon="level_send_backward_kd" id="RbSendBackwardInToolBar" idMso="ObjectSendBackwardMenu" ksoCmd="SendBackward" text="@Send Backward"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="K" icon="level_bottom_kd" id="RbSendToBackInToolBar" idMso="ObjectSendToBack" ksoCmd="SendToBack" text="@Send to Back"/>
+			<KxLegacyTriggerCommand aid="169" controlType="0" faceid="101" hotKey="h" icon="pic_surround_down_kd" id="RbSendBehindText" idMso="ObjectSendBehindText" ksoCmd="SendBehindText" qtspyname="SendBehindText" rbHotKey="H" text="@Send Behind Text"/>
+		</KxListCommand>
+		<KListCommand customTip="Arrange" icon="level_top_kd" id="Home_Arrange" rbHotKey="G" text="@Arrange">
+			<command idQ="Home_Wrapping"/>
+			<command idQ="Home_Align"/>
+			<command idQ="Home_Rotate"/>
+			<separator/>
+			<command idQ="Home_Group"/>
+			<command idQ="Home_UnGroup"/>
+			<separator/>
+			<command idQ="Home_BringForward"/>
+			<command idQ="Home_SendBackward"/>
+			<command idQ="HomeObjectSelect"/>
+		</KListCommand>
+		<KxWpsAITypesetEntryTriggerCommand customTip="WPSAIEntryPaper" entry="toolbar" functionName="SmartLayoutThesis" icon="ai_education_kd" id="TypesetEntryPaper" idKey="WPSAIEntryPaper" openPosition="tab_start" pluginName="kwebwpsdoccomposing" routeName="paper" showCustomTipInMenu="true" text="@PaperDoc" visible="true"/>
+		<KxWpsAITypesetEntryTriggerCommand customTip="WPSAIEntryOfficial" entry="OfficialMode_AIOfficialTypesetting" functionName="SmartLayoutOfficial" icon="ai_box_kd" id="TypesetEntryOfficial" idKey="WPSAIEntryOfficial" openPosition="tab_start" pluginName="kwebwpsdoccomposing" routeName="category" showCustomTipInMenu="true" source="KxWpsAIOfficialTypesetCommand" text="@OfficialDoc" visible="true"/>
+		<KxWpsAITypesetProxyCommand categoryId="SmartLayoutGen" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="ai_layout_kd" id="SmartLayoutGen" idKey="WPSSmartLayoutGen" targetId="SmartLayoutGen" targetModule="kwpsaitypeset" text="@GeneralDoc" visible="true"/>
+		<KxWpsAITypesetEntryTriggerCommand customTip="WPSAIEntryMoreTypeset" entry="toolbar" functionName="SmartLayoutMore" icon="more_kd" id="TypesetEntryMore" idKey="WPSAIEntryMoreTypeset" openPosition="tab_start" pluginName="kwebwpsdoccomposing" routeName="composing" showCustomTipInMenu="true" text="@MoreTypesetDoc" visible="true"/>
+		<KxWpsAIParaTidyProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="summarize_all_kd" id="AIParaTidy" idKey="WPSAIParaTidy" targetId="AIParaTidy" targetModule="kwpsaitypeset" text="@AI ParaTidy" visible="true"/>
+		<KxHomeAITypoListCommand customTip="RB AI Typeset" hotKey="T" icon="ai_layout_kd" id="AITypesetEntryList" idKey="WpsAITypesetEntryList" rbHotKey="T" referenceCommand="TypesetEntryMore" text="@AI Typeset">
+			<command idQ="TypesetEntryPaper"/>
+			<command idQ="TypesetEntryOfficial"/>
+			<command idQ="SmartLayoutGen"/>
+			<command idQ="TypesetEntryMore"/>
+			<separator/>
+			<command idQ="AIParaTidy"/>
+		</KxHomeAITypoListCommand>
+		<KxWpsAITableStyleProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" disableCustomRibbon="true" id="AITableStyle" idKey="WPSAITableStyle" idMso="WPSAITableStyle" targetId="AITableStyle" targetModule="kwpsaitablestyle"/>
+		<KxWpsAITypesetEntryTriggerCommand customTip="WPSAIEntryMoreTypeset" entry="toolbar" functionName="SmartLayoutI18nMore" icon="more_kd" id="TypesetEntryI18nMore_Home" idKey="WPSAISeparateEntryPaper" openPosition="wps_home_AItypesetting" pluginName="kwebwpsdoccomposing" routeName="composing" showCustomTipInMenu="true" text="@MoreTypesetDoc" visible="true"/>
+		<KxHomeAITypoListCommand customTip="RB AI Typeset" hotKey="T" icon="ai_layout_kd" id="AITypesetI18nEntryList_Home" idKey="WPSAISeparateEntryPaper" rbHotKey="T" redPoint="true" referenceCommand="TypesetEntryI18nMore_Home" text="@AI Typeset">
+			<command id="TypesetSeparateEntryPaper_Home" idQ="TypesetSeparateEntryPaper"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutI18nGen" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="ai_layout_kd" id="SmartLayoutI18nGen_Home" idKey="WPSAISeparateEntryPaper" targetId="SmartLayoutI18nGen" targetModule="kwpsaitypeset" text="@GeneralDoc" visible="true"/>
+		</KxHomeAITypoListCommand>
+		<KListCommand controlType="16" forceVisible="1" groupTip="TypographyGroup" icon="doc_tools_kd" id="RB_ParagraphTools" idMso="GroupParagraphTools" ksoCmd="Paragraph" rbFileMenuEmbed="1" rbHotKey="PG" text="@Typography">
+			<KxSingleRowMergeGroupCommand customTip="TypographyGroup" icon="doc_tools_kd" id="SingleRow_ParagraphTools" singlerowpriority="2" text="@Typography"/>
+			<command idQ="AITypesetEntryList" singlerowmergegroup="SingleRow_ParagraphTools"/>
+			<command idQ="AITypesetI18nEntryList_Home"/>
+			<command idKey="WordTools" idQ="WordTools" singlerowmergegroup="SingleRow_ParagraphTools"/>
+			<command idQ="Home_Arrange" singlerowmergegroup="SingleRow_ParagraphTools"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="253" controlType="0" dialogHint="1" hotKey="f" icon="symbol_a_kd" id="Font" idMso="FontDialog" ksoCmd="Font" text="@Font"/>
+		<KxLegacyTriggerCommand aid="779" controlType="0" dialogHint="1" hotKey="p" icon="paragraph_kd" id="Paragraph" idMso="ParagraphDialog" ksoCmd="Paragraph" shortcutHint="Ctrl+Alt+M" text="@Paragraph"/>
+		<KxLegacyTriggerCommand aid="5757" controlType="0" dialogHint="1" hotKey="s" icon="font_style_kd" id="StyleFormat" idMso="StylesPane" ksoCmd="StyleFormat" text="@Styles and Formatting"/>
+		<KListCommand icon="detailed_settings_kd" id="DetailedSettings_Home" text="@Settings">
+			<command idQ="CheckSpellToolBarList_Home"/>
+			<command idKey="WpsStudentTools" idQ="StudentTools"/>
+			<KListCommand customTip="DetailedSettings_Home" icon="detailed_settings_kd" id="DetailedSettingsList_Home" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="Font"/>
+				<command idQ="Paragraph"/>
+				<command idQ="StyleFormat"/>
+			</KListCommand>
+		</KListCommand>
+		<KxWpsOfficialListCommand id="RB_OfficialTemplates" idKey="OfficialViewEnable" text="@Official Templates">
+			<KxWpsOfficialTemplateGalleryCommand customTip="OfficialTemplates" icon="doc_official_template_kd" id="OfficialTemplates" text="@Official Templates"/>
+		</KxWpsOfficialListCommand>
+		<KxWpsOfficialListCommand id="RB_Material" idKey="OfficialViewEnable" text="@Official Material">
+			<command idQ="AILocalsearchView"/>
+			<KScreenGrabOcrMenuCommand customTip="OfficialTextIdentification" icon="text_frame_kd" id="OfficialTextIdentification" idKey="WpsOfficialTextIdentification" rbHotKey="SE" referenceCommand="ScreenGrabOcr" text="@Text Identification">
+				<command idQ="ScreenGrabOcr"/>
+				<command idQ="ScreenGrabOcrHide"/>
+			</KScreenGrabOcrMenuCommand>
+		</KxWpsOfficialListCommand>
+		<KxWpsOfficialListCommand id="RB_OfficialSettings" idKey="OfficialViewEnable" text="@Document Settings">
+			<KWpsOfficialSettingsCommand customTip="OfficialSettings" icon="OfficialSettings" id="OfficialSettings" rbHotKey="" text="@Official Settings"/>
+			<command idKey="OfficialDocMaterialLibrary" idQ="MaterialSelectMenu" proxyCmdId="ProxyMaterialSelectMenu"/>
+		</KxWpsOfficialListCommand>
+		<KxNewOfficialDocumentListCommand id="Rb_FileMenuNewOfficialDocument" idKey="OfficialViewEnable">
+			<KxFileMenuNewOfficialDocumentCommand customTip="NewOfficialDocument" icon="collect_kd" id="RbFileMenuNewOfficialDocument" text="@New Official Document"/>
+		</KxNewOfficialDocumentListCommand>
+		<KxWpsSearchComputerList id="RB_SearchComputer" idKey="LocalFileSearch" text="@Local File Search"/>
+		<KxWpsNormalListCommand id="RB_Official" idKey="OfficialViewEnable" text="@Smart Official">
+			<command idQ="AILocalsearchViewNormal" proxyCmdId="ProxyAILocalsearchViewNormal"/>
+			<command idKey="OfficialDocMaterialLibrary" idQ="MaterialSelectMenu" proxyCmdId="ProxyMaterialSelectMenu"/>
+		</KxWpsNormalListCommand>
+		<KxWpsOfficialModeEntryProxyCommand customTip="GBOfficialMode" delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="O" id="ProxyWpsOfficial" idKey="OfficialModeEntry" idMso="ProxyWpsOfficial" rbHotKey="O" showCustomTipInMenu="true" targetId="WpsOfficial" targetModule="kwpsofficial" text="@GB Official Mode"/>
+		<KxWpsOfficialPrintingEntryProxyCommand customTip="GBOfficialPrinting" delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="P" id="ProxyGBOfficialPrinting" idKey="OfficialPrintingEntry" rbHotKey="P" showCustomTipInMenu="true" targetId="GBOfficialPrinting" targetModule="kwpsofficial" text="@GB Official Printing"/>
+		<KxWpsOfficialGJBPrintingEntryProxyCommand customTip="GJBOfficialPrinting" delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="J" id="ProxyGJBOfficialPrinting" idKey="OfficialGJBEntrance" rbHotKey="J" showCustomTipInMenu="true" targetId="GJBOfficialPrinting" targetModule="kwpsofficial" text="@GJB Official Printing"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Home">
+			<command idQ="RB_OfficialTemplates"/>
+			<separator idKey="OfficialViewEnable"/>
+			<command idQ="RB_Material"/>
+			<separator idKey="OfficialViewEnable"/>
+			<command idQ="RB_ClipboardWrapper"/>
+			<separator/>
+			<command idQ="RB_Font"/>
+			<command idQ="RB_OfficialFont"/>
+			<separator/>
+			<command idQ="RB_Paragraph"/>
+			<command idQ="RB_OfficialParagraph"/>
+			<separator/>
+			<command idQ="RB_Style"/>
+			<separator draggable="1"/>
+			<command idQ="RB_Editing"/>
+			<separator/>
+			<command idQ="RB_ParagraphTools"/>
+			<separator/>
+			<command idQ="RB_ProfessionalMode"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_Home"/>
+			<separator idKey="OfficialViewEnable"/>
+			<command idQ="RB_OfficialSettings"/>
+			<separator idKey="LocalFileSearch"/>
+			<separator idKey="OfficialViewEnable"/>
+			<command idQ="RB_Official"/>
+			<separator/>
+			<command idQ="RB_AIAssistant"/>
+			<separator/>
+			<command idQ="RB_OfficialModeEntry"/>
+		</subcommand>
+	</subcommands>
+</shell>

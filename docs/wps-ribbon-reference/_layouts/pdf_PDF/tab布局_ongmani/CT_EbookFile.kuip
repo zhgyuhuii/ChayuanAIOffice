@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_ebookfile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxFileMenuLegacyTriggerCommand aid="23" businessFrom="FD_Pdf_EbookRbFileMenuOpenFile" controlType="0" hotKey="o" icon="open_file_kd" id="RbFileMenuOpenEbookFileMenu" idMso="FileOpen" infoId="1" ksoCmd="OpenFile" text="@Open"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="e" icon="save_as_kd" id="RbFileMenuSaveAsEbookFileMenu" infoId="7" ksoCmd="EbookSaveAs" qtspyName="EbookSaveAs" text="@SaveAs"/>
+		<KxFileMenuLegacyTriggerCommand hotKey="q" icon="exit_two_kd" id="RbFileMenuEbookExit" infoId="n" ksoCmd="EbookExit" qtspyName="EbookExit" rbHotKey="Q" text="@Exit"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_EbookFile">
+			<command idQ="RbFileMenuOpenEbookFileMenu"/>
+			<command idQ="RbFileMenuSaveAsEbookFileMenu"/>
+			<command idQ="RbFileMenuEbookExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

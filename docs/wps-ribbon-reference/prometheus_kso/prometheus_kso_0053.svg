@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g fill="none" fill-rule="evenodd">
+    <rect width="64" height="64"/>
+    <g fill="#000" transform="translate(15 19)">
+      <rect width="1" height="1"/>
+      <rect width="1" height="1" y="2"/>
+      <rect width="1" height="1" y="4"/>
+      <rect width="1" height="1" y="6"/>
+      <rect width="1" height="1" y="8"/>
+      <rect width="1" height="1" x="2" y="8"/>
+      <rect width="1" height="1" x="4" y="8"/>
+      <rect width="1" height="1" x="6" y="8"/>
+      <rect width="1" height="1" x="2"/>
+      <rect width="1" height="1" x="4"/>
+      <rect width="1" height="1" x="6"/>
+      <rect width="1" height="1" x="8"/>
+      <rect width="1" height="1" x="8" y="2"/>
+      <rect width="1" height="1" x="8" y="4"/>
+      <rect width="1" height="1" x="8" y="6"/>
+      <rect width="1" height="1" x="8" y="8"/>
+      <rect width="1" height="1" y="18"/>
+      <rect width="1" height="1" y="20"/>
+      <rect width="1" height="1" y="22"/>
+      <rect width="1" height="1" y="24"/>
+      <rect width="1" height="1" y="26"/>
+      <rect width="1" height="1" x="2" y="26"/>
+      <rect width="1" height="1" x="4" y="26"/>
+      <rect width="1" height="1" x="6" y="26"/>
+      <rect width="1" height="1" x="2" y="18"/>
+      <rect width="1" height="1" x="4" y="18"/>
+      <rect width="1" height="1" x="6" y="18"/>
+      <rect width="1" height="1" x="8" y="18"/>
+      <rect width="1" height="1" x="8" y="20"/>
+      <rect width="1" height="1" x="8" y="22"/>
+      <rect width="1" height="1" x="8" y="24"/>
+      <rect width="1" height="1" x="8" y="26"/>
+      <rect width="1" height="1" x="25" y="18"/>
+      <rect width="1" height="1" x="25" y="20"/>
+      <rect width="1" height="1" x="25" y="22"/>
+      <rect width="1" height="1" x="25" y="24"/>
+      <rect width="1" height="1" x="25" y="26"/>
+      <rect width="1" height="1" x="27" y="26"/>
+      <rect width="1" height="1" x="29" y="26"/>
+      <rect width="1" height="1" x="31" y="26"/>
+      <rect width="1" height="1" x="27" y="18"/>
+      <rect width="1" height="1" x="29" y="18"/>
+      <rect width="1" height="1" x="31" y="18"/>
+      <rect width="1" height="1" x="33" y="18"/>
+      <rect width="1" height="1" x="33" y="20"/>
+      <rect width="1" height="1" x="33" y="22"/>
+      <rect width="1" height="1" x="33" y="24"/>
+      <rect width="1" height="1" x="33" y="26"/>
+      <rect width="1" height="1" x="25"/>
+      <rect width="1" height="1" x="25" y="2"/>
+      <rect width="1" height="1" x="25" y="4"/>
+      <rect width="1" height="1" x="25" y="6"/>
+      <rect width="1" height="1" x="25" y="8"/>
+      <rect width="1" height="1" x="27" y="8"/>
+      <rect width="1" height="1" x="29" y="8"/>
+      <rect width="1" height="1" x="31" y="8"/>
+      <rect width="1" height="1" x="27"/>
+      <rect width="1" height="1" x="29"/>
+      <rect width="1" height="1" x="31"/>
+      <rect width="1" height="1" x="33"/>
+      <rect width="1" height="1" x="33" y="2"/>
+      <rect width="1" height="1" x="33" y="4"/>
+      <rect width="1" height="1" x="33" y="6"/>
+      <rect width="1" height="1" x="33" y="8"/>
+    </g>
+    <polygon fill="#000" fill-rule="nonzero" points="11 20 11 45 12 45 12 20"/>
+    <polygon fill="#000" fill-rule="nonzero" points="55 20 55 45 56 45 56 20"/>
+    <polygon fill="#000" fill-rule="nonzero" points="8 20 8 45 9 45 9 20"/>
+    <polygon fill="#000" fill-rule="nonzero" points="52 20 52 45 53 45 53 20"/>
+  </g>
+</svg>

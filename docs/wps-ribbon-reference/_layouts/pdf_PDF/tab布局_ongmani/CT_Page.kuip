@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_page" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" hotKey="d" icon="delet_empty_pages_kd" id="PageDelete_Tab" index="1" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+		<KxLegacyTriggerCommand customTip="PdfReplacePages" icon="page_replace_kd" id="PdfReplacePages_page" idKey="PDFReplacePageUseKxValueCmd" ksoCmd="PdfReplacePages_page" text="@PdfReplacePages" wpsIsEanble="false"/>
+		<KAppCommand action="2" appCmdObj="PdfReplacePages" appId="pdfadvancedtool" canHideText="0" customTip="PdfReplacePages" icon="page_replace_kd" id="PdfReplacePages_page" idKey="PDFReplacePageUseAdvanceTool" index="3" text="@PdfReplacePages" wpsIsEanble="false"/>
+		<KxValueCommand canHideText="0" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="PageExtract_Tab" index="3" ksoCmd="PDFExtractPage" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage" wpsIsEanble="false"/>
+		<KxValueCommand canHideText="0" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="PageExtract_Tab" index="3" ksoCmd="PDFExtractPage" text="@pdfextractpage" wpsIsEanble="false"/>
+		<KxValueCommand customTip="Clockwise" icon="rotate_right_kd" id="PageRotate90_Tab" index="5" ksoCmd="RotatePages" shellEntryType="tab_RBMenu" shortcutHint="Ctrl+Shift++" text="@clockwise rotation"/>
+		<KxValueCommand customTip="Counterclockwise" icon="rotate_left_kd" id="PageReverse90_Tab" index="6" ksoCmd="RotatePages" shellEntryType="tab_RBMenu" shortcutHint="Ctrl+Shift+-" text="@anticlockwise rotation"/>
+		<KAppCommand action="1" appCmdObj="InsertBlankPages" appId="pdfpageoperator" canHideText="0" customTip="InsertBlankPages" icon="doc_kd" id="Page_PdfInsertBlankPages" idKey="PDFPdfInsertBlankPages" index="1" shortcutHint="Ctrl+Alt+I" text="@Insert Blank Pages"/>
+		<KAppCommand action="5" appCmdObj="PdfMergePage" appId="pdfpageoperator" canHideText="0" customTip="MergePage" icon="shape_three_kd" id="Page_PdfMergePage" idKey="PDFMergePage" index="13" text="@Merge Page" wpsIsEanble="false"/>
+		<KAppCommand action="4" appCmdObj="PdfReversePage" appId="pdfpageoperator" canHideText="0" customTip="ReversePage" icon="page_replace_kd" id="Page_PdfReversePage" idKey="PDFReversePage" index="12" text="@Reverse Page" wpsIsEanble="false"/>
+		<KAppCommand appCmdObj="kextractpage" appId="kextractpage" canHideText="0" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="app_kextractpage_Tab" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage"/>
+		<KAppCommand appCmdObj="PdfSplit" appId="kpdf2wordv2" customTip="SplitPDF" hotKey="PW" icon="doc_split_kd" id="app_kpdf2wordv3_page_pdfsplit" idKey="SplitAndMergePDFV3" rbHotKey="PW" text="@SplitPDF"/>
+		<KAppCommand appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" entrance="page_tab" icon="smart_layout_kd" id="app_pdfsmartlayout_page" qtspyname="pdfsmartlayout_page" text="@SmartLayout Pages"/>
+		<KQuickMenuCommand icon="smart_layout_kd" id="app_pdfsmartlayout_page_split_main" idKey="PdfSmartLayout" referenceCommand="app_pdfsmartlayout_page" text="@SmartLayout Pages">
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="title_pdfsmartlayout_page_tab" text="@SmartLayout Pages"/>
+			<KPanelListCommand icon="smart_layout_kd" id="app_pdfsmartlayout_page_tab_panel" panelColumns="2" text="@SmartLayout Pages">
+				<KAppCommand action="double_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@2 Pages on One Page" entrance="page_tab" icon="book_double_flip_kd" id="app_pdfsmartlayout_page_tab_double" qtspyname="pdfsmartlayout_page_tab_double" text="@Two-Page Layout"/>
+				<KAppCommand action="four_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Four pages on one page" entrance="page_tab" icon="four_page_spread_kd" id="app_pdfsmartlayout_page_tab_four" qtspyname="pdfsmartlayout_page_tab_four" text="@Four-Page Layout"/>
+				<KAppCommand action="id_card_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Front and Back Standard Layout" entrance="page_tab" icon="id_card_kd" id="app_pdfsmartlayout_page_tab_id_card" qtspyname="pdfsmartlayout_page_tab_id_card" text="@ID Card Layout"/>
+				<KAppCommand action="invoice_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Invoices on One Page" entrance="page_tab" icon="bill_kd" id="app_pdfsmartlayout_page_tab_invoice" qtspyname="pdfsmartlayout_page_tab_invoice" text="@Invoice Layout"/>
+				<KAppCommand action="exam_paper_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Exam Papers Auto-Paginated" entrance="page_tab" icon="testpaper_assembly_kd" id="app_pdfsmartlayout_page_tab_exam_paper" qtspyname="pdfsmartlayout_page_tab_exam_paper" text="@Exam Paper Layout"/>
+				<KAppCommand action="more_template" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@View All Layout Templates" entrance="page_tab" icon="shape_three_kd" id="app_pdfsmartlayout_page_tab_more_template" qtspyname="pdfsmartlayout_page_tab_more_template" text="@More Templates"/>
+			</KPanelListCommand>
+		</KQuickMenuCommand>
+		<KAppCommand appCmdObj="PdfMerge" appId="kpdf2wordv2" customTip="MergePDF" hotKey="PW" icon="doc_split_kd" id="app_kpdf2wordv3_page_pdfmerge" idKey="SplitAndMergePDFV3" rbHotKey="PW" text="@MergePDF"/>
+		<KAutoHideListCommand canHideText="0" customTip="ImportPages" enableDependsOnSubCommands="1" icon="insert_kd" id="Page_PdfImportPagesFromFile" idKey="PdfImportPagesFromFile" layout_lineCount="1" text="@ImportPages">
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" customTip="ImporPagesFromDoc" icon="doc_import_kd" id="importPagesFromDoc" index="1" shortcutHint="Ctrl+Alt+T" text="@Import Pages From Doc"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="pdf" icon="import_pdf_kd" id="importPagesFromPDF" index="1" text="@Import Pages From PDF"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="word" icon="import_word_kd" id="importPagesFromWord" index="1" text="@Import Pages From Word"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="excel" icon="import_excel_kd" id="importPagesFromExcel" index="1" text="@Import Pages From Excel"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="ppt" icon="import_ppt_kd" id="importPagesFromPPT" index="1" text="@Import Pages From PPT"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="image" icon="import_pic_kd" id="importPagesFromImage" index="1" text="@Import Pages From Image"/>
+			<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" filetype="txt" icon="import_txt_kd" id="importPagesFromTXT" index="1" text="@Import Pages From TXT"/>
+		</KAutoHideListCommand>
+		<KListCommand customTip="InsertPages" icon="insert_kd" id="Page_PdfInsertPages" idKey="PdfInsertPages" layout_lineCount="1" text="@Insert Pages">
+			<KxValueCommand customTip="InsertBlankPages" id="insertblankpagesT" index="1" ksoCmd="InsertBlankPages" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+			<KxValueCommand customTip="InsertPagesFromDoc" id="insertPagesFromDocT" index="1" ksoCmd="InsertPagesFromDoc" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+		</KListCommand>
+		<KxPdfPageInsertMenuCommand customTip="InsertPages" icon="insert_kd" id="Page_PdfInsertPages" idKey="WPSPDFEnhanceVersion" layout_lineCount="1" text="@Insert Pages">
+			<KxValueCommand customTip="InsertBlankPages" id="insertblankpagesT" index="1" ksoCmd="InsertBlankPages" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+			<KxValueCommand customTip="InsertPagesFromDoc" id="insertPagesFromDocT" index="1" ksoCmd="InsertPagesFromDoc" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+			<KxValueCommand customTip="InsertPagesFromPic" id="insertPagesFromPicT" index="1" ksoCmd="InsertPagesFromPic" text="@Pages From Pic"/>
+			<KxValueCommand customTip="InsertPagesFromScan" id="insertPagesFromScanT" idKey="PDFInsertPagesFromScan" index="1" ksoCmd="InsertPagesFromScan" text="@Pages From Scan"/>
+			<KxValueCommand customTip="InsertPagesFromClipboard" id="InsertPagesFromClipboardT" idKey="PDFInsertPagesFromClipboardNoIcon" index="1" ksoCmd="InsertPagesFromClipboard" shortcutHint="Ctrl+Shift+B" text="@Pages From Clipboard"/>
+		</KxPdfPageInsertMenuCommand>
+		<KxPdfPageSelectCommand controlType="2" customTip="Page Select" id="PageSelect"/>
+		<KAppCommand appCmdObj="Common" appId="pdfpagesize" customTip="setpagesizeTip" icon="scale_size_kd" id="app_pdfpagesize_tab_page" shellEntryType="tab_page" text="@setpagesize"/>
+		<KxValueCommand canHideText="0" customTip="SplitPage" icon="split_page_kd" id="Page_SplitPage" idKey="PDFStandardEnhance" index="2" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+		<KxValueCommand canHideText="0" customTip="SplitPage" icon="split_page_kd" id="Page_SplitPage" idKey="PDFStandardEnhance" index="2" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+		<KxValueCommand customTip="SplitPageNoVip" icon="split_page_kd" id="Page_SplitPage" idKey="WPSPDFEnhanceVersion" index="2" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+		<KListCommand groupTip="PageDocumentProcessingGroup" icon="doc_merge_kd" id="OrgPageTool" rbFileMenuEmbed="1" text="@Document Processing" visibleDependsOnSubCmds="1">
+			<command idQ="app_kpdf2wordv3_page_pdfmerge"/>
+			<command idQ="app_kpdf2wordv3_page_pdfsplit"/>
+			<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_PageTab_MergePdf" rbHotKey="PW" shortcutHint="Ctrl+Alt+D" singlerowfoldgroup="page_merge_split_pair" text="@MergePDF" wpsIsEanble="false"/>
+			<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" canHideText="0" customTip="SplitPDF" icon="doc_split_kd" id="app_pdfadvancedtool_PageTab_SplitPdf" shortcutHint="Ctrl+Alt+S" singlerowfoldgroup="page_merge_split_pair" text="@SplitPDF" wpsIsEanble="false"/>
+		</KListCommand>
+		<KAutoHideListCommand groupTip="PageEditPageGroup" icon="doc_kd" id="RB_OrgPageEdit" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Edit Page">
+			<command idQ="Page_PdfInsertPages"/>
+			<command idQ="Page_PdfInsertBlankPages"/>
+			<command idQ="Page_PdfImportPagesFromFile"/>
+			<command idQ="app_pdfsmartlayout_page_split_main"/>
+			<command idKey="PDFPageDeleteTab" idQ="PageDelete_Tab"/>
+			<command idQ="PdfPageDelete_Tab"/>
+			<command idKey="PDFExtractPageUseKxValueCmd" idQ="PageExtract_Tab"/>
+			<command idKey="PDFExtractPage" idQ="app_kextractpage_Tab"/>
+			<command idKey="PageTabPdfReplacePages" idQ="PdfReplacePages_page"/>
+			<command idQ="Page_CropPage"/>
+			<command idQ="Page_SplitPage"/>
+			<command idQ="Page_PdfMergePage"/>
+			<command idQ="app_pdfpagesize_tab_page"/>
+			<KpdfBeautifyTabCommand action="ConvertType_Deskew" appId="kpdfscannededitpro" canHideText="0" icon="pic_scale_kd" id="OrgPage_Kpdfscannededitpro_Deskew" idKey="PDFScannedEditpro" text="@convertTypeDeskew"/>
+			<command idQ="Page_PdfReversePage" singlerowfold="1"/>
+			<command idQ="Page_PdfImportCatalog"/>
+		</KAutoHideListCommand>
+		<KListCommand groupTip="PagePageViewGroup" icon="direction_rotate_doc_kd" id="RB_OrgPageRotation" needsinglerowmorebutton="true" rbFileMenuEmbed="1" refIdForCollapsed="ClockwiseDoc" text="@Page View">
+			<command idQ="PageSelect" singlerowfold="1"/>
+			<command idQ="PageReverse90_Tab" singlerowfoldgroup="page_rotation_pair"/>
+			<command idQ="PageRotate90_Tab" singlerowfoldgroup="page_rotation_pair"/>
+			<command idQ="ClockwiseDoc"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Page">
+			<command idQ="RB_OrgPageEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="OrgPageTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_OrgPageRotation"/>
+		</subcommand>
+	</subcommands>
+</shell>

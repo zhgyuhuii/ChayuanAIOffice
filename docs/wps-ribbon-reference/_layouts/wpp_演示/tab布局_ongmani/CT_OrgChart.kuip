@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_orgchart" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="1446" customTip="AddSubordinate" detail="@Add Subordinate" faceid="260" hotKey="b" icon="OrgChartAddSubordinate" id="OrgChartAddSubordinate" ksoCmd="OrgChartInsertSubordinate" rbHotKey="B" tc="OrgChartAndDiagram" text="@Add Subordinate"/>
+		<KxLegacyTriggerCommand aid="1447" customTip="AddCoworker" detail="@Add Coworker" faceid="261" hotKey="c" icon="OrgChartAddCoworker" id="OrgChartAddCoworker" ksoCmd="OrgChartInsertCoworker" rbHotKey="W" tc="OrgChartAndDiagram" text="@Add Coworker"/>
+		<KxLegacyTriggerCommand aid="1448" customTip="AddAssistant" detail="@Add Assistant" faceid="262" hotKey="a" icon="OrgChartAddAssistant" id="OrgChartAddAssistant" ksoCmd="OrgChartInsertAssistant" rbHotKey="A" tc="OrgChartAndDiagram" text="@Add Assistant"/>
+		<KxLegacyTriggerCommand aid="1450" faceid="263" hotKey="s" icon="chart_standard_kd" id="OrgChartStandard" ksoCmd="OrgChartStandard" rbHotKey="S" tc="OrgChartAndDiagram" text="@Standard"/>
+		<KxLegacyTriggerCommand aid="1451" faceid="264" hotKey="b" icon="chart_both_hanging_kd" id="OrgChartBothHanging" ksoCmd="OrgChartBothHanging" rbHotKey="B" tc="OrgChartAndDiagram" text="@Both Hanging"/>
+		<KxLegacyTriggerCommand aid="1452" faceid="265" hotKey="l" icon="chart_left_hanging_kd" id="OrgChartLeftHanging" ksoCmd="OrgChartLeftHanging" rbHotKey="L" tc="OrgChartAndDiagram" text="@Left Hanging"/>
+		<KxLegacyTriggerCommand aid="1453" faceid="266" hotKey="r" icon="chart_right_hanging_kd" id="OrgChartRightHanging" ksoCmd="OrgChartRightHanging" rbHotKey="R" tc="OrgChartAndDiagram" text="@Right Hanging"/>
+		<KxLegacyTriggerCommand aid="1456" faceid="268" hotKey="l" icon="chart_select_level_kd" id="OrgChartSelectLevel" ksoCmd="OrgChartSelectLevel" rbHotKey="L" tc="OrgChartAndDiagram" text="@Level"/>
+		<KxLegacyTriggerCommand hotKey="w" icon="OrgChartSelectAll" id="OrgChartSelectAll" ksoCmd="OrgChartSelectAll" rbHotKey="W" tc="OrgChartAndDiagram" text="@All Organization Chart"/>
+		<KxLegacyTriggerCommand aid="1457" faceid="269" hotKey="b" icon="OrgChartSelectBranch" id="OrgChartSelectBranch" ksoCmd="OrgChartSelectBranch" rbHotKey="B" tc="OrgChartAndDiagram" text="@Branch"/>
+		<KxLegacyTriggerCommand aid="1458" faceid="270" hotKey="a" icon="OrgChartSelectAssistants" id="OrgChartSelectAssistants" ksoCmd="OrgChartSelectAssistants" rbHotKey="A" tc="OrgChartAndDiagram" text="@All Assistants"/>
+		<KxLegacyTriggerCommand aid="1459" faceid="271" hotKey="c" icon="OrgChartSelectLines" id="OrgChartSelectLines" ksoCmd="OrgChartSelectLines" rbHotKey="C" tc="OrgChartAndDiagram" text="@All Connecting Lines"/>
+		<KxLegacyTriggerCommand aid="1460" customTip="FitTextTip" detail="@Resize shape to fit text" hotKey="x" icon="OrgChartFitTextNew" id="OrgChartFitTextNew" ksoCmd="OrgChartFitText" rbHotKey="X" tc="OrgChartAndDiagram" text="@Fit Text"/>
+		<KxLegacyTriggerCommand customTip="ResetShape" detail="@Reset Shape" hotKey="t" icon="OrgChartResetShape" id="OrgChartReset" ksoCmd="OrgChartReset" rbHotKey="T" tc="OrgChartAndDiagram" text="@Reset Shape"/>
+		<KxLegacyTriggerCommand aid="1461" customTip="DeleteMember" detail="@Delete Member" hotKey="o" icon="OrgChartDeleteMember" id="OrgChartDeleteOneNode" ksoCmd="OrgChartDeleteShape" rbHotKey="O" tc="OrgChartAndDiagram" text="@Delete Member"/>
+		<KxLegacyTriggerCommand aid="1462" customTip="ResetLayout" detail="@Reset Layout" faceid="272" hotKey="r" icon="OrgChartResetLayout" id="ResetLayout" ksoCmd="OrgChartResetLayout" rbHotKey="R" spaceHint="suitable" tc="OrgChartAndDiagram" text="@Reset Layout"/>
+		<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" idMso="ObjectFillMoreColorsDialog" ksoCmd="FillColor" rbHotKey="M" text="@More Fill Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" ksoCmd="FillColor" rbHotKey="E" text="@Snapper"/>
+		<KxPropComposeCommand controlType="4" hotKey="g" icon="gradiant_fill_kd" id="GradiantFill" idMso="GradientGallery" ksoCmd="FillEffects" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+		<KxPropComposeCommand controlType="0" hotKey="t" icon="texture_fill_kd" id="TextureFill" idMso="MoreTextureOptions" ksoCmd="FillEffects" rbHotKey="T" tabIndex="1" text="@Texture"/>
+		<KxPropComposeCommand hotKey="n" icon="pattern_fill_kd" id="PatternFill" ksoCmd="FillEffects" rbHotKey="N" tabIndex="2" text="@Pattern"/>
+		<KxPropComposeCommand hotKey="p" icon="pic_kd" id="PictureFill" ksoCmd="FillEffects" rbHotKey="P" tabIndex="3" tc="Fill" text="@Picture"/>
+		<KxWppMoreColorCommand dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreLineColors" ksoCmd="LineColor" rbHotKey="M" text="@More Line Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperLines" ksoCmd="LineColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand aid="387" dialogHint="1" hotKey="p" id="PatternedLines" ksoCmd="PatternedLines" text="@Line Effects"/>
+		<KxLineStyleStaticGalleryCommand column="1" hotKey="w" icon="frame_line_type_kd" id="LineStyle" ksoCmd="LineStylePalette" rbHotKey="W" text="@Line Weight">
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_9" index="9" qtspyName="LineStyle_9" text="@3 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_10" index="10" qtspyName="LineStyle_10" text="@4.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_11" index="11" qtspyName="LineStyle_11" text="@4.5 pt."/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_12" index="12" qtspyName="LineStyle_12" text="@6 pt."/>
+			<KxPropComposeCommand aid="390" dialogHint="1" hotKey="m" id="MoreLines" ksoCmd="MoreLines" rbHotKey="M" tabIndex="0" text="@More Lines"/>
+		</KxLineStyleStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" hotKey="s" icon="dash_style_menu_kd" id="DashStyle" ksoCmd="DashStylePalette" rbHotKey="S" text="@Dash Style">
+			<KxStaticGalleryItemCommand detail="@Solid" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_30_display_kd" index="0" qtspyName="DashStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Round Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_31_display_kd" index="1" qtspyName="DashStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Square Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_32_display_kd" index="2" qtspyName="DashStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_33_display_kd" index="3" qtspyName="DashStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_34_display_kd" index="4" qtspyName="DashStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_35_display_kd" index="5" qtspyName="DashStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_36_display_kd" index="6" qtspyName="DashStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_37_display_kd" index="7" qtspyName="DashStyle_7"/>
+		</KxStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" controlType="4" hotKey="r" icon="arrow_style_kd" id="ArrowStyle" idMso="ArrowStyleGallery" ksoCmd="ArrowStylePalette" rbHotKey="R" text="@Arrow Style">
+			<KxStaticGalleryItemCommand detail="@Arrow Style 1" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_0" index="0" qtspyName="ArrowStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 2" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_1" index="1" qtspyName="ArrowStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 3" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_2" index="2" qtspyName="ArrowStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 4" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_3" index="3" qtspyName="ArrowStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 5" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_4" index="4" qtspyName="ArrowStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 6" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_5" index="5" qtspyName="ArrowStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 7" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_6" index="6" qtspyName="ArrowStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 8" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_7" index="7" qtspyName="ArrowStyle_7"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 9" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_8" index="8" qtspyName="ArrowStyle_8"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 10" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_9" index="9" qtspyName="ArrowStyle_9"/>
+			<KxStaticGalleryItemCommand detail="@Arrow Style 11" galleryItemHeight="16" galleryItemWidth="98" icon="ArrowStyle_10" index="10" qtspyName="ArrowStyle_10"/>
+			<KxPropComposeCommand controlType="0" dialogHint="1" hotKey="m" idMso="ArrowsMore" ksoCmd="MoreArrows" qtspyName="MoreArrows" rbHotKey="M" tabIndex="0" text="@More Arrows"/>
+		</KxStaticGalleryCommand>
+		<KxWppMoreColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" rbHotKey="M" text="@More Font Colors"/>
+		<KxWppSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapFontColors" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+		<KxWppFillColorCommand controlType="4" customTip2="ShapeFill2" customTip="ShapeFill" icon="color_paint_wps_kd" id="m_Style_FillColor_ShapeStyle" idMso="ShapeFillColorPicker" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" rbHotKey="SF" text="@Shape Fill">
+			<command idQ="MoreFillColors"/>
+			<command idQ="SnapperFill"/>
+			<command idKey="WPPFillColorGradientFill" idQ="GradiantFill"/>
+			<command idQ="TextureFill"/>
+			<command idQ="PatternFill"/>
+			<command idQ="PictureFill"/>
+			<separator/>
+			<command idQ="MoreFill"/>
+		</KxWppFillColorCommand>
+		<KxWppLineColorCommand customTip2="ShapeLine2" customTip="ShapeLine" icon="color_border_wps_kd" id="m_Style_LineColor_ShapeStyle" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" rbHotKey="SO" text="@Line Style">
+			<command idQ="MoreLineColors"/>
+			<command idQ="SnapperLines"/>
+			<command idQ="PatternedLines"/>
+			<command idQ="LineStyle"/>
+			<command idQ="DashStyle"/>
+			<command idQ="ArrowStyle"/>
+			<separator/>
+			<command idQ="MoreOutline"/>
+		</KxWppLineColorCommand>
+		<KxWppFontColorCommand customTip2="TextFontColor2" customTip="TextFontColor" icon="color_font_wps_kd" id="m_Style_FontColor" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" rbHotKey="FC" text="@Text Color">
+			<command idQ="MoreFontColors"/>
+			<command idQ="SnapFontColors"/>
+			<separator/>
+			<command idQ="MoreFontFill"/>
+		</KxWppFontColorCommand>
+		<KListCommand customTip="SmartChoice" detail="@Smart Choice" hotKey="c" icon="OrgChartSmartChoice" id="SmartChoice" rbHotKey="C" text="@Smart Choice">
+			<command idQ="OrgChartSelectAll"/>
+			<command idQ="OrgChartSelectLevel"/>
+			<command idQ="OrgChartSelectBranch"/>
+			<command idQ="OrgChartSelectAssistants"/>
+			<command idQ="OrgChartSelectLines"/>
+		</KListCommand>
+		<KListCommand customTip="OrgChartLayout" detail="@Organization Chart Layout" hotKey="l" icon="OrgChartLayout" id="Layout" rbHotKey="L" spaceHint="suitable" text="@Layout">
+			<command idQ="OrgChartStandard"/>
+			<command idQ="OrgChartBothHanging"/>
+			<command idQ="OrgChartLeftHanging"/>
+			<command idQ="OrgChartRightHanging"/>
+		</KListCommand>
+		<KListCommand id="AdjustStructure" text="@Adjust Structure">
+			<command idQ="OrgChartAddSubordinate"/>
+			<command idQ="OrgChartAddCoworker"/>
+			<command idQ="OrgChartAddAssistant"/>
+			<command idQ="OrgChartDeleteOneNode"/>
+			<command idQ="ResetLayout"/>
+			<command idQ="Layout"/>
+		</KListCommand>
+		<KListCommand id="Choice" text="@Choice">
+			<command idQ="SmartChoice"/>
+		</KListCommand>
+		<KListCommand id="RB_Theme" rbFileMenuEmbed="1" text="@Theme">
+			<KxWppOrgChartCommand embedHint="1" galleryHeight="100" galleryWidth="480" id="OrgChartGallery" rbHotKey="T"/>
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<command idQ="m_Style_FillColor_ShapeStyle"/>
+			<command idQ="m_Style_LineColor_ShapeStyle"/>
+			<command idQ="m_Style_FontColor"/>
+			<command idQ="OrgChartReset"/>
+		</KListCommand>
+		<KListCommand id="TextAdapted" text="@Text">
+			<command idQ="OrgChartFitTextNew"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_OrgChart">
+			<command idQ="AdjustStructure"/>
+			<separator/>
+			<command idQ="Choice"/>
+			<separator/>
+			<command idQ="RB_Theme"/>
+			<separator/>
+			<command idQ="TextAdapted"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

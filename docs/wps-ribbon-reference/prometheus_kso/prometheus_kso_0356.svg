@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>删除幻灯片24_DeleteSlide_DeleteSlideQat</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector 1853" d="M21.5 10.9999V2.99994C21.5 2.7238 21.2761 2.49994 21 2.49994H3C2.72386 2.49994 2.5 2.7238 2.5 2.99994V19.9999C2.5 20.2761 2.72386 20.4999 3 20.4999H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1854" d="M5.5 9.99994V5.99994C5.5 5.7238 5.72386 5.49994 6 5.49994H18C18.2761 5.49994 18.5 5.7238 18.5 5.99994V9.99994C18.5 10.2761 18.2761 10.4999 18 10.4999H6C5.72386 10.4999 5.5 10.2761 5.5 9.99994Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1856" d="M5.5 13.4999H9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1855" d="M5.5 16.4999H7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1857" d="M6.5 16.4999H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1858" d="M8.5 13.4999H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-red-primary kd-stroke-width-icon-regular"><path id="line" d="M21.5 13.4999L13.5 21.4999M21.5 21.4999L13.5 13.4999" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

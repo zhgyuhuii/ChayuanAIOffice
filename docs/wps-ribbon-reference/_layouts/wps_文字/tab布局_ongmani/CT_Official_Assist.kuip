@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_official_assist" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand id="RB_Officialdoc_Assist_NewPage_Template" text="@RB_NewPage_Template">
+			<command idQ="KOfficialdocAssistNewPage" proxyCmdId="ProxyKOfficialdocAssistNewPage"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Assist_Doc_Template" text="@RB_Doc_Template">
+			<command idQ="OfficialdocAssistTemplateDoc" proxyCmdId="ProxyOfficialdocAssistTemplateDoc"/>
+			<command idQ="OfficialdocAssistExtranetReference" proxyCmdId="ProxyOfficialdocAssistExtranetReference"/>
+			<command idQ="OfficialdocPoliciesRegulations" proxyCmdId="ProxyOfficialdocPoliciesRegulations"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Assist_Outline" text="@RB_Outline">
+			<command idQ="OfficialdocAssistSyllabus" proxyCmdId="ProxyOfficialdocAssistSyllabus"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Assist_Search" text="@RB_Assist_Search">
+			<command idQ="OfficialdocAssistPoetryArchaism" proxyCmdId="ProxyOfficialdocAssistPoetryArchaism"/>
+			<command idQ="OfficialdocAssistLeaderQuotations" proxyCmdId="ProxyOfficialdocAssistLeaderQuotations"/>
+			<command idQ="OfficialdocAssistMaterialRepertory" proxyCmdId="ProxyOfficialdocAssistMaterialRepertory"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Assist_Proofing" text="@Official Proofing">
+			<command idQ="KfProofreadCmd" proxyCmdId="ProxyKfProofreadCmd"/>
+			<command idQ="KOfficialdocAssistAutoFill" proxyCmdId="ProxyKOfficialdocAssistAutoFill"/>
+			<command idQ="OfficialdocIntelligentRewriting" proxyCmdId="ProxyOfficialdocIntelligentRewriting"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Assist_Setting" text="@RB_Assist_Setting">
+			<command idQ="OfficialdocAssistQuote" proxyCmdId="ProxyOfficialdocAssistQuote"/>
+		</KListCommand>
+		<KListCommand id="RB_Assist_OfficialDocMode" idKey="OfficialViewEnable" text="@RB_Assist_OfficialDocMode">
+			<command idQ="OfficialdocAssistOfficialDocMode" proxyCmdId="ProxyOfficialdocAssistOfficialDocMode"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Official_Assist">
+			<command idQ="RB_Officialdoc_Assist_NewPage_Template"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Assist_Doc_Template"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Assist_Outline"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Assist_Search"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Assist_Proofing"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Assist_Setting"/>
+			<separator/>
+			<command idQ="RB_Assist_OfficialDocMode"/>
+		</subcommand>
+	</subcommands>
+</shell>

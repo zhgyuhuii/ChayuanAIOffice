@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>其他边框24_OtherBorders</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" opacity="0.3" d="M12 8V11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" opacity="0.3" d="M2.5 8V11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" opacity="0.3" d="M2.5 13V16" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" opacity="0.3" d="M2.5 18V21" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" opacity="0.3" d="M3 12H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" opacity="0.3" d="M8 12H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" opacity="0.3" d="M6 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V6" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_8" opacity="0.3" d="M8 2.5H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" opacity="0.3" d="M13 2.5H16" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_10" opacity="0.3" d="M18 2.5H21" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_11" opacity="0.3" d="M12 3V6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_12" d="M21.5 2V21C21.5 21.2761 21.2761 21.5 21 21.5H2" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_13" d="M20 12.5H12" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_14" d="M12.5 20V12" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

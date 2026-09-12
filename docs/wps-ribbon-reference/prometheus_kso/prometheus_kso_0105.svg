@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>数据标签16_ChartDatalabel</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M14.5 14.5H1.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M2.5 14.5001V11.0001C2.5 10.724 2.72386 10.5001 3 10.5001H6C6.27614 10.5001 6.5 10.724 6.5 11.0001V14.5001" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M9.5 14.5001V9.00012C9.5 8.72398 9.72386 8.50012 10 8.50012H13C13.2761 8.50012 13.5 8.72398 13.5 9.00012V14.5001" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><path id="line_4" d="M3 5.00024L4.5 3.50024V8.50024" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-2" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><path id="line_5" d="M10.0762 2.2284C10.3303 1.66059 10.7511 1.30007 11.4747 1.30005C12.3767 1.30003 12.9462 2.14901 12.6134 3.10159C12.4363 3.60848 11.8752 3.82558 11.3383 3.82558" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M10 5.51528C10.2018 6.08814 10.7158 6.49991 11.4832 6.49988C12.4831 6.49984 13.1563 5.47931 12.7717 4.53488C12.553 3.99804 11.9182 3.82576 11.3386 3.82576" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g transform="translate(16,0) scale(-1,1)"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M14.5 14.5H1.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2-rtl" d="M2.5 14.5001V11.0001C2.5 10.724 2.72386 10.5001 3 10.5001H6C6.27614 10.5001 6.5 10.724 6.5 11.0001V14.5001" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3-rtl" d="M9.5 14.5001V9.00012C9.5 8.72398 9.72386 8.50012 10 8.50012H13C13.2761 8.50012 13.5 8.72398 13.5 9.00012V14.5001" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1-rtl" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><g transform="matrix(-1,0,0,1,7.5,0)"><path id="line_4-rtl" d="M3 5.00024L4.5 3.50024V8.50024" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g id="group-2-rtl" class="kd-color-icon-green-primary kd-stroke-width-icon-bold"><g transform="matrix(-1,0,0,1,22.88144349661774,0)"><path id="line_5-rtl" d="M10.0762 2.2284C10.3303 1.66059 10.7511 1.30007 11.4747 1.30005C12.3767 1.30003 12.9462 2.14901 12.6134 3.10159C12.4363 3.60848 11.8752 3.82558 11.3383 3.82558" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6-rtl" d="M10 5.51528C10.2018 6.08814 10.7158 6.49991 11.4832 6.49988C12.4831 6.49984 13.1563 5.47931 12.7717 4.53488C12.553 3.99804 11.9182 3.82576 11.3386 3.82576" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></g></svg>

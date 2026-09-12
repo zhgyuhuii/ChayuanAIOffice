@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxFileSaveAsPictureCommand appCmdObj="kexportimage" appId="kexportimage" customTip="ExportWeiboImageCmd" detail="WpsMenu" entrance="et_menu&amp;module=et&amp;sub_module=menulist&amp;new_position=exporttopicture" hotKey="G" icon="replace_pic_kd" id="RbFileMenuExportWeiboImage" idKey="FileSaveAsPicture" idMso="FileSaveAsPicture" rbHotKey="G" text2="@Export as Image" text="@Export as Image"/>
+		<KxFileMenuProxyCommand autoLoad="false" customTip="ExportWeiboImageCmd" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="G" icon="replace_pic_kd" id="RbFileMenuExportWeiboImage" idKey="WeiboPlugin" ksoCmd="ExportWeiboImageCmd" rbHotKey="G" relatedKsoCmd="ExportPDF" targetId="RbFileMenuExportWeiboImage" targetModule="kweibo" text2="@Export as Image" text="@Export as Image"/>
+		<KxPromeRbFileMenuPopupPaneCommand controlType="15" hotKey="n" icon="doc_add_kd" id="RbFileMenuNewFileMenu" idMso="FileNewMenu" infoId="0" ksoCmd="NewBlankFile" popupReadOnlyHint="create" shellEntryType="rbFileMenu" text="@New" title="@New Workbook">
+			<KxPromeFileMenuLegacyTriggerCommand aid="18" controlType="0" hotKey="n" icon="doc_add_kd" id="RbFileMenuNewBlankWorkbook" idMso="FileNewDefault" infoId="b" ksoCmd="NewBlankFile" qtspyName="NewBlankFile" shellEntryType="rbFileMenuSubMenu" text="@New Blank Workbook"/>
+			<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="e" icon="doc_add_kd" id="RbFileMenuNewBlankXlsxFile" idMso="NewBlankXlsxFile" infoId="b" ksoCmd="NewBlankXlsxFile" popupReadOnlyHint="create" qtspyName="NewBlankXlsxFile" shellEntryType="rbFileMenuSubMenu" text="@New Excel 2007-2010 Workbook"/>
+			<KxFileMenuLegacyTriggerCommand aid="80141" dialogHint="1" hotKey="m" icon="create_from_default_template_et_kd" id="RbFileMenuNewFileFromTemplates" idMso="FileNew" infoId="c" ksoCmd="NewFileFromTemplates" popupReadOnlyHint="create" qtspyName="NewFileFromTemplates" shellEntryType="rbFileMenuSubMenu" text="@New from Other Templates"/>
+			<KxFileMenuDocerResourceShopCommand hotKey="d" icon="create_from_docer_template_kd" id="RbFileMenuDocerResourceShop" idKey="EtCreateFromDocerTemplate" qtspyName="CreateFromDocerTemplate" text="@Create From Docer Template"/>
+			<KAppFileMenuCommand action="Pic2Xls" appId="kocrtool" hotKey="h" icon="change_pic_to_et_kd" id="app_kocrtool_newfiles_2xls" idKey="EtCreateFromImage2table" text="@Create Table From Ocr"/>
+			<KAppFileMenuCommand appCmdObj="SnapSheet" appId="ksnapsheet" customTip="SnapToSheet" entrance="et_filemenu&amp;module=createfromsnap" icon="et_snapsheet_kd" id="CreateFromSnap_FileMenu" idKey="EtSnapSheet" popupReadOnlyHint="create" qtspyName="CreateFromSnap" shellEntryType="rbFileMenuSubMenu" text="@Create from Snap"/>
+		</KxPromeRbFileMenuPopupPaneCommand>
+		<KxEtRbFileMenuPrintPopupPaneCommand controlType="5" hotKey="p" icon="print_kd" id="RbFileMenuPrintMenu" idMso="FilePrintMenu" infoId="5" ksoCmd="Print" text="@Print" title="@Print">
+			<KxPrint2022FileMenuLegacyTriggerCommand dialogHint="1" hotKey="P" icon="print_kd" id="CTF_Print2022Dialog" idMso="FilePrint" infoId="5" ksoCmd="Print" qtspyName="Print2022Dialog" text="@Print"/>
+			<KxEtPrintFileMenuLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="v" icon="print_preview_kd" id="CTF_Print" idKey="CommonPrintPreview" idMso="FilePrintPreview" infoId="5" ksoCmd="PrintPreview" qtspyName="Print" text="@Print Preview"/>
+			<KxFileMenuLegacyTriggerCommand icon="print_duplex_kd" id="CTF_PrintManualDuplex" ksoCmd="PrintManualDuplex" qtspyName="PrintManualDuplex" text="@Print Manual Duplex"/>
+		</KxEtRbFileMenuPrintPopupPaneCommand>
+		<KxRbFileMenuPopupShareDocCommandXa controlType="0" customTip="KOSDocShare" icon="share_to_kd" id="KOSShareDocCommandXaFileMenu" shellEntry="rbFileMenu;et|menulist|menu_share" text="@Share"/>
+		<KxRbFileMenuPopupPaneCommand disableTrigger="true" hotKey="e" icon="doc_encryption_kd" id="RbFileMenuDocSecureMenu" idKey="NotDocSecurityPermission" idMso="FileInfoMenu" infoId="8" ksoCmd="Properties" qtspyName="RbFileMenuDocInfoMenu" text="@Document Encryption" title="@Document Encryption">
+			<KxFileMenuProxyCommand autoLoad="false" defaultPage="Account" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="U" icon="doc_encryption_kd" id="RbFileMenuAccountEncryption" idKey="RbFileMenuAccountEncryption" infoNum="1" qtspyName="AccountEncryption" targetModule="docpermission" text="@Document Permission"/>
+			<KxFileMenuBatchDocumentDecryptionCommand dialogHint="1" hotKey="D" icon="BatchDocDecrypt" id="RbFileMenuBatchDocDecryption" idKey="CommonFileBatchDocDecrypt" infoId="g" ksoCmd="BatchDecrypt" qtspyName="BatchEncrypt" text="@Batch Document Decryption"/>
+			<KxFileMenuLegacyTriggerCommand dialogHint="1" hotKey="y" icon="doc_encryption_kd" id="RbFileMenuEncrypt" idKey="CommonEncryptMenu" idMso="FileMenuFileEncrypt" infoId="g" ksoCmd="Encrypt" qtspyName="Encrypt" text="@Encryption"/>
+			<KxFileMenuProxyCommand autoLoad="false" defaultPage="Password" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="P" icon="password_encryption_kd" id="RbFileMenuPasswordEncryption" idKey="EncryptionFileMenu" idMso="FileMenuPasswordEncrypt" infoNum="2" qtspyName="PasswordEncryption" targetModule="docpermission" text="@Password Encryption"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="g" icon="magnifier_lock_kd" idKey="RightsManagementServices" ksoCmd="ViewPermission" qtspyName="ViewPermission" text="@View Permissions"/>
+			<KxFileMenuPermissionCommand customTip2="" customTip="Restrict Permission by People" id="RestrictPermission" idKey="RightsManagementServices" ksoCmd="RestrictPermission" menuHotKey="B" menuIcon="RestrictPermission" menuText="@Restrict Permission by People" triggerHotKey="B" triggerIcon="ViewPermission" triggerText="@View Permissions">
+				<KxLegacyTriggerCommand hotKey="u" id="RbFileMenuUnrestrictedAccess" infoId="i" ksoCmd="UnrestrictedAccess" qtspyName="UnrestrictedAccess" text="@Unrestricted Access"/>
+				<KxLegacyTriggerCommand hotKey="r" id="RbFileMenuRestrictedAccess" infoId="i" ksoCmd="RestrictedAccess" qtspyName="RestrictedAccess" text="@Restricted Access"/>
+			</KxFileMenuPermissionCommand>
+			<KxFileMenuLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="i" icon="admin_kd" id="RbFileMenuProperties" idMso="FileProperties" infoId="h" ksoCmd="Properties" qtspyName="Properties" text="@Properties"/>
+		</KxRbFileMenuPopupPaneCommand>
+		<KxRbFileMenuPopupPaneCommand disableTrigger="true" hotKey="m" icon="doc_split_kd" id="RbFileMenuSplitMergeMenu" idMso="FileInfoMenu" ksoCmd="Properties" qtspyName="RbFileMenuSplitMergeMenu" text="@Split Merge" title="@Split Merge">
+			<command idQ="MergeSheet_ettool"/>
+			<command idQ="SplitSheet_ettool"/>
+		</KxRbFileMenuPopupPaneCommand>
+		<KxRbFileMenuPopupPaneCommand controlType="15" disableTrigger="true" hotKey="e" icon="doc_encryption_kd" id="RbFileMenuDocSecureMenu" idKey="DocSecurityPermissionMenu" idMso="FileInfoMenu" infoId="8" ksoCmd="Properties" qtspyName="RbFileMenuDocInfoMenu" text="@Document Encryption" title="@Document Encryption">
+			<KxFileMenuProxyCommand autoLoad="false" defaultPage="Account" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="U" icon="doc_encryption_kd" id="RbFileMenuAccountEncryption" idKey="DocSecurityPermission" idMso="FileMenuFileEncrypt" infoNum="1" qtspyName="AccountEncryption" targetModule="docpermission" text="@Document Permission"/>
+			<KxFileMenuBatchDocumentDecryptionCommand defaultPage="Account" hotKey="D" icon="BatchDocDecrypt" id="BatchDocDecryption" idKey="CommonFileBatchDocDecrypt" infoNum="4" text="@Batch Document Decryption"/>
+			<KxFileMenuProxyCommand autoLoad="false" defaultPage="Password" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="P" icon="password_encryption_kd" id="RbFileMenuPasswordEncryption" idMso="FileMenuPasswordEncrypt" infoNum="2" qtspyName="PasswordEncryption" targetModule="docpermission" text="@Password Encryption"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="g" icon="magnifier_lock_kd" idKey="RightsManagementServices" ksoCmd="ViewPermission" qtspyName="ViewPermission" text="@View Permissions"/>
+			<KxFileMenuPermissionCommand customTip2="" customTip="Restrict Permission by People" id="RestrictPermission" idKey="RightsManagementServices" ksoCmd="RestrictPermission" menuHotKey="B" menuIcon="RestrictPermission" menuText="@Restrict Permission by People" triggerHotKey="B" triggerIcon="ViewPermission" triggerText="@View Permissions">
+				<KxLegacyTriggerCommand hotKey="u" id="RbFileMenuUnrestrictedAccess" infoId="i" ksoCmd="UnrestrictedAccess" qtspyName="UnrestrictedAccess" text="@Unrestricted Access"/>
+				<KxLegacyTriggerCommand hotKey="r" id="RbFileMenuRestrictedAccess" infoId="i" ksoCmd="RestrictedAccess" qtspyName="RestrictedAccess" text="@Restricted Access"/>
+			</KxFileMenuPermissionCommand>
+			<KxFileMenuLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="i" icon="setup_kd" id="RbFileMenuProperties" idMso="FileProperties" infoId="h" ksoCmd="Properties" qtspyName="Properties" text="@Properties"/>
+		</KxRbFileMenuPopupPaneCommand>
+		<KxRbFileMenuFileForceLoadOfficespaceCommand controlType="0" disableTrigger="true" hotKey="k" icon="folder_update_kd" id="RbFileMenuBackupManagement" idKey="EtBackupManagement" idMso="FileBackupManagementMenu" infoId="9" ksoCmd="BackupManagement" text="@Backup and Recover" title="@Backup and Recovery">
+			<command idKey="CommonBackupCenterFileMenu" idQ="BackupCenterFileMenu"/>
+			<KAppFileMenuCommand appId="yunyidocfix" customTip="DocumentFix" hotKey="f" icon="doc_paper_format_kd" id="yunyidoxfixCmd" idKey="DocumentFix" qtspyName="DocumentFix" text="@Document Fix"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="k" icon="folder_update_kd" id="RbFileMenuBackupManagementBtn" infoId="9" ksoCmd="BackupManagement" qtspyName="BackupManagement" text="@Backup Management"/>
+			<KxFileMenuDocumentHistoryCommand controlType="0" hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" idMso="FileBackupHistory" text="@Document History"/>
+		</KxRbFileMenuFileForceLoadOfficespaceCommand>
+		<KxRbFileMenuPopupPaneCommand controlType="15" groupindex="5" hotKey="h" icon="question_kd" id="RbFileMenuHelpMenu" idMso="FileHelp" infoId="a" shortcutHint="F1" text="@Help" title="@Feedback and Product Information">
+			<KFileMenuHelpDocumentCommand controlType="0" hotKey="h" icon="question_kd" id="RbFileMenuHelp" idKey="CommonFileMenuHelp" idMso="Help" ksoCmd="Help" qtspyName="Help" tc="Help" text="@WPS Spreadsheets Help"/>
+			<KxFileMenuOpenUrlCommand hotKey="S" icon="StudyOnline" id="RbFileMenuStudyOnline" idKey="WPSStudyOnlinePage" ksourl="WPSStudyOnlinePage:value" qtspyName="StudyOnline" text="@Study Online"/>
+			<KxFileMenuFeedbackCommand aid="92014" hotKey="b" icon="mail_merge_recipients_kd" id="UserFeedbackByMail" idKey="EtHelpMenuUserFeedbackByMail" ksourl="UserFeedbackMail" showIconAndText="1" text="@Feedback by Email"/>
+			<KxFileMenuOpenUrlCommand hotKey="f" icon="bubble_kd" id="RbFileMenuWPSBBS" idKey="MacFileMenuWPSBBS" infoId="j" ksourl="ForumUrl" qtspyName="WPSBBS" text="@WPS BBS"/>
+			<KxFileMenuOpenUrlCommand args="-snmanager" featureid="16777262" hotKey="m" icon="ProductManagementCenter" id="RbFileMenuProductManagementCenter" idKey="FileProductManagementCenter" qtspyName="ProductManagementCenter" text="@Product Management Center" url="ksomisc"/>
+			<KxFileMenuOpenUrlCommand args="-snmanager -forceperusermode" featureid="16777262" hotKey="m" icon="ProductManagementCenter" id="RbFileMenuProductManagementCenter" idKey="FileProductManagementCenterForce" qtspyName="ProductManagementCenter" text="@Product Management Center" url="ksomisc"/>
+			<KxFileMenuTrialToolCommand hotKey="p" icon="shopping_cart_kd" id="RbFileMenuPurchaseSerialNumber" idKey="SerialNumberCart" ksourl="Auth:ProBuySerialNumberUrl" qtspyName="PurchaseSerialNumber" text="@Purchase Serial Number"/>
+			<KxAboutFileMenuLegacyTriggerCommand aid="927" controlType="0" hotKey="a" icon="info_kd" id="RbFileMenuAbout" idMso="About" ksoCmd="About" text="@About WPS Spreadsheets"/>
+			<KxFileMenuReportCloudFileComand hotKey="r" icon="danger_kd" id="RbFileMenuReport" idKey="EtRbFileMenuReport" qtspyName="ReportFile" text="@Report File"/>
+		</KxRbFileMenuPopupPaneCommand>
+		<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="CTFNewShareForRecentFilePanel" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+		<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="s" icon="save_kd" id="RbFileMenuSaveFileMenu" idMso="FileSave" infoId="3" ksoCmd="SaveFile" text="@Save"/>
+		<kxKOSFileMenuNewShareListCommand controlType="0" hotKey="d" icon="share_to_kd" id="RbFileMenuShareMenuList" idKey="KOSFileMenuCommand" idMso="FileShare" infoId="s" targetModule="officespace">
+			<kxKOSFileMenuNewShareViewAndEditCommand controlType="5" icon="people_double_kd" id="RbFileMenuShareMenuViewAndEdit" idKey="KOSFileMenuCommand" idMso="FileShare" qtspyName="ShareAndView" targetModule="officespace"/>
+			<kxKOSFileMenuNewShareSendFileCommand controlType="5" icon="doc_file_kd" id="RbFileMenuShareMenuSendFile" idKey="KOSFileMenuCommand" idMso="FileShare" qtspyName="ShareSendFile" targetModule="officespace"/>
+			<kxKOSFileMenuNewShareDocumentTemplateCommand controlType="5" icon="change_to_template_kd" id="RbFileMenuShareDocumentTemplate" idKey="KOSFileMenuCommand" qtspyName="ShareDocumentTemplate" targetModule="officespace"/>
+			<kxKOSFileMenuNewShareSendToDeviceCommand controlType="5" icon="equipment_kd" id="RbFileMenuShareMenuSendToDevice" idKey="KOSFileMenuCommand" idMso="FileShare" qtspyName="ShareSendToMyDevice" targetModule="officespace"/>
+			<kxKOSFileMenuAirDropCommand controlType="5" icon="wave_kd" id="RbFileMenuShareMenuAirDrop" idKey="EtFileMenuShareMenuAirDrop" idMso="FileShare" qtspyName="ShareFileAirDrop" targetModule="officespace"/>
+		</kxKOSFileMenuNewShareListCommand>
+		<kxKOSFileMenuTurnToOnlineDocumentCommand hotKey="Z" icon="doc_cloud_kd" id="RbFileMenuTurnToOnlineDocument" idKey="CloudDocOnlineCn" idMso="RbFileMenuTurnToOnlineDocument" rbHotKey="Z" text="@Turn to online document"/>
+		<KxClassifyLabelCommand disableCustomRibbon="true" icon="ClassifyLabel" id="RbFileMenuClassifyLabel" text="@Set Classify Label"/>
+		<KxKOSFileMenuShareUnifiedCommand controlType="15" hotKey="d" icon="share_to_kd" id="RbFileMenuShareUnifiedMenu" idMso="FileShareUnified" infoId="s" targetModule="officespace"/>
+		<KxRbFileMenuImportPopupPaneCommand controlType="15" hotKey="I" icon="ImportFile" id="RbFileMenuImportMenu" popupReadOnlyHint="create" text="@Import" title="@Import">
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_1"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_2"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_3"/>
+			<KxFileMenuImportFromCloudCommand id="RbFileMenuImportCloudDrive_4"/>
+		</KxRbFileMenuImportPopupPaneCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_File">
+			<command idQ="RbFileMenuNewFileMenu"/>
+			<KxFileMenuLegacyTriggerCommand aid="23" controlType="0" hotKey="o" icon="open_file_kd" id="RbFileMenuOpenFileMenu" idMso="FileOpen" infoId="1" ksoCmd="OpenFile" text="@Open"/>
+			<KxFileMenuLegacyTriggerCommand hotKey="r" icon="doc_import_kd" id="RbFileMenuReloadTxtFile" infoId="2" ksoCmd="ReloadTxtFileWithEncodingDlg" qtspyName="ReloadTxtFileWithEncodingDlg" text="@Reload"/>
+			<KxFileMenuProxyCommand autoLoad="true" controlType="0" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="s" icon="save_kd" id="RbFileMenuSaveFileMenu_kos" idKey="LoadCloudDocLib" idMso="FileSave" infoId="3" qtspyName="RbFileMenuSaveFileMenu" relatedKsoCmd="SaveFile" targetId="RbFileMenuSaveFileMenu_kos" targetModule="officespace" text="@Save"/>
+			<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="s" icon="save_kd" id="RbFileMenuSaveFileMenu" idKey="FileMenuSaveFileMenu" idMso="FileSave" infoId="3" ksoCmd="SaveFile" text="@Save"/>
+			<command idQ="RbFileMenuSaveAsMenu"/>
+			<command idKey="ThirdPartyCloud" idQ="RbFileMenuImportMenu"/>
+			<command idQ="RbFileMenuShareUnifiedMenu"/>
+			<command idQ="RbFileMenuTurnToOnlineDocument"/>
+			<command idQ="RbFileMenuExportToPDF"/>
+			<command idQ="RbFileMenuExportWeiboImage"/>
+			<command idKey="EtFileMenuSplitMergeMenu" idQ="RbFileMenuSplitMergeMenu"/>
+			<command idQ="RbFileMenuPrintMenu"/>
+			<separator startEndTransparent="1"/>
+			<command idQ="RbFileMenuShareMenuList"/>
+			<KxFileMenuProxyCommand controlType="0" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="RbFileMenuNewShare_kos" idKey="CloudDocOnlineCn" idMso="FileShare" infoId="s" relatedKsoCmd="ExportPDF" targetModule="officespace" text="@File Share"/>
+			<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="m" icon="mail_kd" iconQat="mail_kd" id="RbFileMenuSendMail" idKey="RbFileMenuLegacySendMailEntry" idMso="FileMenuSendMail" infoId="7" ksoCmd="SendMail" text="@Send E-mail"/>
+			<command idQ="RbFileMenuDocInfoMenu"/>
+			<command idQ="RbFileMenuClassifyLabel"/>
+			<command idQ="RbFileMenuDocSecureMenu"/>
+			<command idQ="RbFileMenuBackupManagement"/>
+			<KAppFileMenuCommand appCmdObj="BatchCompress" appId="kdocumentslimming" icon="file_compression_kd" id="app_kdocumentslimming_filemenu" idKey="EtCTFileAppKdocumentslimmingFilemenu" text="@app_kdocumentslimming_filemenu_text"/>
+			<KAppFileMenuCommand appId="kdocfinalizedmgr" customTip="@Document Finalized" icon="doc_finalized_kd" id="KDocFinalizedMgrCommand" idKey="DocFinalizedMgr" qtspyName="kdocfinalizedmgr" text="@Document Finalized"/>
+			<separator startEndTransparent="1"/>
+			<command idQ="RbFileMenuHelpMenu"/>
+			<KxFileMenuThemeLegacyTriggerCommand hotKey="l" icon="setup_kd" id="RbOptions" idMso="ApplicationOptionsDialog" infoId="m" ksoCmd="Options" rbHotKey="L" text="@ET Options"/>
+		</subcommand>
+	</subcommands>
+</shell>

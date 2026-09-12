@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_review" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxEtAnalyzeSplitListCommand customTip="SpellCheck" forceVisible="1" hotKey="s" icon="spell_check_kd" id="CheckSpellingToolBar" idKey="SpellCheck" ksoCmd="SpellCheck" rbHotKey="S" shortcutHint="F7" text="@Spell Check">
+			<command idQ="SpellCheck"/>
+			<command idQ="SetSpellcheckLanguageCommand"/>
+		</KxEtAnalyzeSplitListCommand>
+		<KListCommand groupTip="ProofingGroup" icon="doc_tick_kd" id="RB_Proofing" rbFileMenuEmbed="1" text="@Proofing">
+			<KxSingleRowMergeGroupCommand customTip="ProofingGroup" icon="doc_tick_kd" id="SingleRow_Proofing" text="@Proofing"/>
+			<KxAIProofreadProxyCommand autoLoad="false" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyEtProofreadCmd" idKey="EtReviewProofread" idMso="ProxyEtProofreadCmd" singlerowmergegroup="SingleRow_Proofing" targetId="EtProofreadCmd" targetModule="kproofread" text="@ET Proofread"/>
+			<command idQ="CheckSpellingToolBar" singlerowmergegroup="SingleRow_Proofing"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" idKey="AISpeaker" rbHotKey="A" text="@AISpeaker"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="TextSpeech" id="AISpeaker" idKey="AISpeaker_TextSpeech" rbHotKey="A" text="@Text Speech"/>
+			<command idQ="OpenThesaurus"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption"/>
+		</KListCommand>
+		<KxLegacyTriggerCommandEx canHideText="0" controlType="0" customTip="TranslateToSimplifiedChinese" entrance="review_start" icon="translate_to_simplified_chinese_kd" id="rTranslateToSimplifiedChinese" idMso="TranslateToSimplifiedChinese" ksoCmd="TranslateToSimplifiedChinese" rbHotKey="Y1" spaceHint="suitable" text="@Translate to Simplified Chinese"/>
+		<KxLegacyTriggerCommandEx canHideText="0" controlType="0" customTip="TranslateToTraditionalChinese" entrance="review_start" icon="translate_to_traditional_chinese_kd" id="rTranslateToTraditionalChinese" idMso="TranslateToTraditionalChinese" ksoCmd="TranslateToTraditionalChinese" rbHotKey="Y2" spaceHint="suitable" text="@Translate to Traditional Chinese"/>
+		<KxLegacyTriggerCommand customTip="ChineseTranslation" hotKey="s" icon="traditional_simplified_kd" id="rChineseTranslation" idKey="ChineseTranslation" ksoCmd="ChineseTranslation" rbHotKey="Y3" text="@Translation"/>
+		<KxListCommand customTip="ChineseTranslation" groupTip="LanguageGroup" icon="translation_kd" id="RB_Chinese_Translation" idKey="ChineseTranslation" ksoCmd="ChineseTranslation" rbFileMenuEmbed="1" singlerowmergesetting="SingleRow_Chinese_Translation" text="@Language">
+			<KxSingleRowMergeGroupCommand customTip="LanguageGroup" icon="translation_kd" id="SingleRow_Chinese_Translation" text="@Language"/>
+			<command idQ="rTranslateToSimplifiedChinese" singlerowmergegroup="SingleRow_Chinese_Translation"/>
+			<command idQ="rTranslateToTraditionalChinese" singlerowmergegroup="SingleRow_Chinese_Translation"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="rChineseTranslation" singlerowmergegroup="SingleRow_Chinese_Translation"/>
+		</KxListCommand>
+		<KxEtInsertOrEditCommentCommand commentPos="Review" controlType="0" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="rComment" idMso="ReviewNewComment" ksoCmd="Comment" rbHotKey="C" shortcutHint="Shift+F2" text="@New &#10;Comment"/>
+		<KxPropComposeCommand customTip="EditComment" hotKey="e" icon="edit_comment_kd" id="rEditComment" ksoCmd="EditComment" rbHotKey="T" text="@Edit&#10;Comment"/>
+		<KxPropComposeCommand controlType="0" customTip="DeleteComment" forceVisible="1" hotKey="d" icon="bubble_delete_kd" id="rDeleteComment" idMso="ReviewDeleteComment" ksoCmd="DeleteComment" rbHotKey="D" text="@Delete &#10;Comment"/>
+		<KxPropComposeCommand controlType="0" customTip="PreviousComment" forceVisible="1" hotKey="v" icon="previous_comment_kd" id="rPreviousComment" idMso="ReviewPreviousComment" ksoCmd="PreviousComment" rbHotKey="V" spaceHint="suitable" text="@Previous"/>
+		<KxPropComposeCommand controlType="0" customTip="NextComment" forceVisible="1" hotKey="n" icon="previous_next_comment_kd" id="rNextComment" idMso="ReviewNextComment" ksoCmd="NextComment" rbHotKey="N" spaceHint="suitable" text="@Next"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="ShowOrHideComment" forceVisible="1" hotKey="h" icon="bubble_eye_kd" id="rShowOrHideComment" idMso="ReviewShowOrHideComment" ksoCmd="ShowOrHideComment" rbHotKey="H" spaceHint="autocompact" text="@Show/Hide Comment"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="ShowAllComments" forceVisible="1" hotKey="a" icon="bubble_eye_all_kd" id="rShowAllComments" idMso="ReviewShowAllComments" ksoCmd="ShowAllComments" rbHotKey="A" spaceHint="autocompact" text="@Show All Comments"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="ResetCommentAnchor" forceVisible="1" icon="bubble_reset_kd" id="rResetCommentAnchor" ksoCmd="ResetCommentAnchor" rbHotKey="R1" spaceHint="autocompact" text="@Reset Comment"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="ResetAllCommentsAnchor" forceVisible="1" icon="batch_bubble_reset_kd" id="rResetAllCommentsAnchor" ksoCmd="ResetAllCommentsAnchor" rbHotKey="R2" spaceHint="autocompact" text="@Reset All Comments"/>
+		<KListCommand customTip="ShowComment" enableDependsOnSubCommands="true" icon="bubble_eye_kd" id="rShowComment" spaceHint="autocompact" text="@Show">
+			<command idQ="rShowOrHideComment"/>
+			<command idQ="rShowAllComments"/>
+		</KListCommand>
+		<KListCommand customTip="ResetComment" enableDependsOnSubCommands="true" icon="bubble_reset_kd" id="rResetComment" spaceHint="autocompact" text="@Reset">
+			<command idQ="rResetCommentAnchor"/>
+			<command idQ="rResetAllCommentsAnchor"/>
+		</KListCommand>
+		<KListCommand groupTip="CommentsGroup" icon="bubble_add_kd" id="RB_Comments" rbFileMenuEmbed="1" text="@Comments">
+			<command idQ="rComment"/>
+			<command idQ="rDeleteComment"/>
+			<command idQ="rPreviousComment" singlerowfoldgroup="comment_pair"/>
+			<command idQ="rNextComment" singlerowfoldgroup="comment_pair"/>
+			<command idQ="rResetComment"/>
+			<command idQ="rShowComment"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="LockCell" icon="lock_cell_kd" id="rLockCell" ksoCmd="LockCell" rbHotKey="L" spaceHint="suitable" text="@Lock Cell"/>
+		<KxProtectSheetCommand canHideText="0" controlType="0" customTip="ProtectSheet" icon="worksheet_protect_kd" id="rProtectSheet" idMso="SheetProtect" ksoCmd="ProtectSheet" rbHotKey="PS" secondText="@Unprotect &#10;Sheet" text="@Protect &#10;Sheet"/>
+		<KxBookProtectionCommand canHideText="0" controlType="6" customTip="BookProtection" icon="doc_protect_workbook_kd" id="rBookProtection" idMso="ReviewRestrictEditing" ksoCmd="BookProtection" rbHotKey="PW" secondText="@Unprotect &#10;Workbook" text="@Protect&#10;Workbook"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ShareWorkbook" hotKey="b" icon="workbook_share_kd" id="rShareWorkbook" idMso="ReviewShareWorkbook" ksoCmd="ShareWorkbook" rbHotKey="W" text="@Share&#10;Workbook"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="c" icon="workbook_unshare_kd" id="rUnShareWorkbook" ksoCmd="UnShareWorkbook" text="@UnShare Workbook"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ProtectAndShare" filter="lang!=ja_JP" icon="workbook_share_lock_kd" id="rProtectAndShare" idMso="ReviewProtectAndShareWorkbook" ksoCmd="ProtectAndShare" rbHotKey="O" spaceHint="suitable" text="@Protect and Share Workbook"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="AllowEditRanges" icon="allow_edit_ranges_kd" id="rAllowEditRanges" idMso="ReviewAllowUsersToEditRanges" ksoCmd="AllowEditRanges" rbHotKey="U" spaceHint="suitable" text="@Allow to Edit Ranges"/>
+		<KxLegacyTriggerCommand aid="2042" controlType="0" dialogHint="1" hotKey="h" icon="doc_pen_kd" id="HighlightChanges" idMso="ReviewHighlightChanges" ksoCmd="HighlightChanges" rbHotKey="H" text="@Highlight Changes"/>
+		<KxLegacyTriggerCommand aid="80058" customShortcutEnabled="false" hotKey="a" id="AcceptRevision" ksoCmd="AcceptRevision" rbHotKey="C" text="@Accept Changes"/>
+		<KxLegacyTriggerCommand aid="80059" customShortcutEnabled="false" hotKey="r" id="RejectRevision" ksoCmd="RejectRevision" rbHotKey="C" text="@Reject Changes"/>
+		<KListCommand controlType="15" customTip="TrackChanges" hotKey="G" icon="doc_pen_kd" id="m_Track_Changes" idMso="ReviewTrackChangesMenu" rbHotKey="G" text="@Track&#10;Changes">
+			<command idQ="HighlightChanges"/>
+			<command idQ="AcceptRevision"/>
+			<command idQ="RejectRevision"/>
+		</KListCommand>
+		<KListCommand groupTip="ProtectGroup" icon="worksheet_protect_kd" id="RB_Protect" text="@Protect">
+			<command idQ="rLockCell"/>
+			<command idQ="rAllowEditRanges"/>
+			<command idQ="rProtectSheet"/>
+			<command idQ="rBookProtection"/>
+			<command idQ="l_ShareWorkBook"/>
+		</KListCommand>
+		<KAutoHideListCommand groupTip="DocumentSecurityGroup" icon="document_authentication_kd" id="RB_Security" rbFileMenuEmbed="1" text="@Document Security">
+			<KxCurUserPermissionCommand filter="support:OnlineSecurityDocument=true" icon="merge_cell_kd" qtspyName="MergeCenter" text="@Check Mine Permission"/>
+			<KxCheckPermissionsCommand filter="support:OnlineSecurityDocument=true" icon="brush_kd" qtspyName="FormatPainter" text="@Check Users Permissions"/>
+			<KProxyCommand defaultPage="Account" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" enterpriseWebPageUrl="/webdlg/myright.html" hotKey="i" icon="people_key_kd" id="CheckMyPermissionInReviewTab" idKey="CheckMinePermissionInRerview" idMso="ReviewCheckMinePermission" qtspyName="CheckMinePermission" rbHotKey="I" targetModule="docpermission" text="@Check Mine Permission"/>
+			<KxSingleRowMergeGroupCommand customTip="DocumentSecurityGroup" icon="document_authentication_kd" id="SingleRow_Security" text="@Document Security"/>
+			<KProxyCommand canHideText="0" customTip="DocPermissionProtection" defaultPage="Account" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInReviewTab" idKey="DocSecurityPermission" idMso="ReviewDocumentsEncryption" infoNum="4" qtspyName="DocumentsPremissions" rbHotKey="PE" singlerowmergegroup="SingleRow_Security" targetModule="docpermission" text="@Document Permission"/>
+			<KAppQuickMenuCommand appId="kdocfinalizedmgr" canHideText="0" customTip="DocumentFinalized" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_list_tab" idKey="EtOrWppAppQuickMenu" idMso="ReviewDocumentsFinalized" singlerowmergegroup="SingleRow_Security" text="@app doc kdocfinalized">
+				<KAppCommand appId="kdocfinalizedmgr" customTip="kdocfinalized" hotKey="f" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_tab" rbHotKey="F" text="@app doc kdocfinalized"/>
+				<KAppCommand appId="kdocfinalizedlist" customTip="kdocfinalizedlist" hotKey="l" icon="finalized_document_list_kd" id="app_kdocfinalizedlist_tab" rbHotKey="L" text="@app doc kdocfinalized list"/>
+			</KAppQuickMenuCommand>
+		</KAutoHideListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Review">
+			<command idQ="RB_Proofing"/>
+			<separator/>
+			<command idQ="RB_Comments"/>
+			<separator/>
+			<command idQ="RB_Protect"/>
+			<separator idKey="EtReviewChinese_Translation"/>
+			<command idKey="EtReviewChinese_Translation" idQ="RB_Chinese_Translation"/>
+			<separator/>
+			<command idQ="RB_Security"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

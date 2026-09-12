@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_smartartdesign" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand id="RB_CreateGraph" rbFileMenuEmbed="1" text="@Create Graph">
+			<KxListCommand ksoCmd="SmartArtInsertShape" qtspyName="SmartArtInsertShape" text="@Insert Shape">
+				<KxValueCommand icon="smart_art_add_after_kd" index="1" ksoCmd="SmartArtInsShapeInAfter" qtspyName="SmartArtInsShapeInAfter" text="@Insert shape in after"/>
+				<KxValueCommand icon="smart_art_add_front_kd" index="2" ksoCmd="SmartArtInsShapeInBefore" qtspyName="SmartArtInsShapeInBefore" text="@Insert shape in before"/>
+				<KxValueCommand icon="smart_art_add_upside_kd" index="3" ksoCmd="SmartArtInsShapeOnAbove" qtspyName="SmartArtInsShapeOnAbove" text="@Insert shape on above"/>
+				<KxValueCommand icon="smart_art_add_below_kd" index="4" ksoCmd="SmartArtInsShapeOnBelow" qtspyName="SmartArtInsShapeOnBelow" text="@Insert shape on below"/>
+				<KxValueCommand icon="smart_art_add_assistant_kd" index="5" ksoCmd="SmartArtInsAssistant" qtspyName="SmartArtInsAssistant" text="@Insert assist"/>
+			</KxListCommand>
+			<KxLegacyTriggerCommand hotKey="p" icon="arrow_left_hollow_shape_kd" id="SmartArtIncreaseLevel" ksoCmd="SmartArtIncreaseLevel" rbHotKey="p" spaceHint="suitable" text="@Increase Level"/>
+			<KxLegacyTriggerCommand hotKey="d" icon="arrow_right_hollow_shape_kd" id="SmartArtReduceLevel" ksoCmd="SmartArtReduceLevel" rbHotKey="d" spaceHint="suitable" text="@Reduce Level"/>
+			<KxLegacyTriggerCommand hotKey="u" icon="arrow_top_hollow_shape_kd" id="SmartArtMoveForward" ksoCmd="SmartArtMoveForward" rbHotKey="u" spaceHint="suitable" text="@Forward"/>
+			<KxLegacyTriggerCommand hotKey="w" icon="arrow_down_hollow_shape_kd" id="SmartArtMoveBackward" ksoCmd="SmartArtMoveBackward" rbHotKey="w" spaceHint="suitable" text="@Backward"/>
+			<KxLegacyTriggerCommand hotKey="r" icon="arrow_right_to_left_hollow_shape_kd" id="SmartArtRToLLayout" ksoCmd="SmartArtRToLLayout" rbHotKey="r" spaceHint="suitable" text="@RightToLeft Layout"/>
+			<KxListCommand hotKey="o" icon="change_layout_kd" id="SmartArtChangeLayout" ksoCmd="SmartArtChangeLayout" rbHotKey="o" spaceHint="suitable" text="@Layout">
+				<KxValueCommand icon="change_layout_kd" index="1" ksoCmd="SmartArtStandardLayout" qtspyName="SmartArtStandardLayout" text="@Standard"/>
+				<KxValueCommand icon="smart_art_both_layout_kd" index="2" ksoCmd="SmartArtBothLayout" qtspyName="SmartArtBothLayout" text="@Both"/>
+				<KxValueCommand icon="smart_art_left_hang_layout_kd" index="3" ksoCmd="SmartArtLeftHangLayout" qtspyName="SmartArtLeftHangLayout" text="@Left Hang"/>
+				<KxValueCommand icon="smart_art_right_hang_layout_kd" index="4" ksoCmd="SmartArtRightHangLayout" qtspyName="SmartArtRightHangLayout" text="@Right Hang"/>
+			</KxListCommand>
+			<KxSmartArtColorsGalleryCommand galleryWidth="490" hotKey="c" icon="color_palette_kd" id="SmartArtChangeColors" ksoCmd="SmartArtChangeColors" rbHotKey="c" text="@Change Colors"/>
+			<KxSmartArtQuickStylesGalleryCommand columnNumber="5" embedHint="1" hotKey="s" id="SmartArtChangeStyles" ksoCmd="SmartArtChangeQuickStyles" rbHotKey="s" text="@Change Styles"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommands id="CT_SmartArtDesign">
+			<command idQ="RB_CreateGraph"/>
+			<separator/>
+			<command idQ="RB_LayoutOfSmartArt"/>
+			<separator/>
+		</subcommands>
+	</subcommands>
+</shell>

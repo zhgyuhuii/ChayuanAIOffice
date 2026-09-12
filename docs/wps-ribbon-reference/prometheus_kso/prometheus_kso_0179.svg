@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>按行拆分16_SplitTable</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line" d="M1 7.5H3" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M8 7.5H10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M4 7.5H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M11.5 2.5L12.4929 1.50707C12.4968 1.50317 12.5032 1.50317 12.5071 1.50707L13.5 2.5M12.5 2V5.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M11.5 12.5L12.4929 13.4929C12.4968 13.4968 12.5032 13.4968 12.5071 13.4929L13.5 12.5M12.5 13V9.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_6" d="M1.5 2C1.5 1.72386 1.72386 1.5 2 1.5H9C9.27614 1.5 9.5 1.72386 9.5 2V5C9.5 5.27614 9.27614 5.5 9 5.5H2C1.72386 5.5 1.5 5.27614 1.5 5V2Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M1.5 10C1.5 9.72386 1.72386 9.5 2 9.5H9C9.27614 9.5 9.5 9.72386 9.5 10V13C9.5 13.2761 9.27614 13.5 9 13.5H2C1.72386 13.5 1.5 13.2761 1.5 13V10Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

@@ -1,0 +1,1315 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="et" tc="etcommon" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries>
+		<library idKey="TrialToolDsmPlugin" name="dsm" path="."/>
+		<library filter="feature_16777276!=0" name="acm" path="."/>
+		<library name="ettouchkeyboard" path="./addons/touchkeyboard"/>
+		<library idKey="TcomComponent" name="ktptcomcs" path="./addons/ktptcomcs"/>
+		<library idKey="BillAssistant" name="kbillassistant" path="./addons/kbillassistant"/>
+	</libraries>
+	<mainwindow tc="mainwindow">
+		<commands tc="commands">
+			<KEtDriverLoadCommand id="et_driver_load"/>
+			<KAppExtendQRCodeCommand appCmdObj="extendObj" appId="kqrcode" customTip="InsertQRCode" extendObj="44B7C0F4-79DB-4F8B-9303-0E098D69D8BE" hotKey="q" icon="qrcode_kd" id="InsertQRCode" idKey="OnlineFeatures" qtspyName="InsertQRCode" rbHotKey="SQ" relatedKsoCmd="InsertPictureFromFile" text="@QRCode"/>
+			<KAppCommand action="/tools/calculaterank" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="calculate_and_enter_rankings_kd" id="app_kformulaassistant_tab_calculateRank" text="@app_kformulaassistant_tab_calculateRank"/>
+			<KAppCommand action="/conditional/statistics" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="sheet_simulated_operation_kd" id="app_kformulaassistant_tab_sum_conditionalStatistics" text="@app_kformulaassistant_tab_conditionalStatistics"/>
+			<KAppCommand action="/conditional/judgment" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="data_judgment_kd" id="app_kformulaassistant_tab_conditionalJudgment" text="@app_kformulaassistant_tab_conditionalJudgment"/>
+			<KAppCommand action="/conditional/statistics" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="sheet_simulated_operation_kd" id="app_kformulaassistant_tab_conditionalStatistics" text="@app_kformulaassistant_tab_conditionalStatistics"/>
+			<KAppCommand action="/text/computed" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="sheet_across_references_kd" id="app_kformulaassistant_tab_textFamula" text="@app_kformulaassistant_tab_textFamula"/>
+			<KAppCommand action="/text/merge" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="merge_content_kd" id="app_kformulaassistant_tab_textMerge" text="@app_kformulaassistant_tab_textMerge"/>
+			<KAppCommand action="/data/calculatedatediff" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="math_calculate_kd" id="app_kformulaassistant_tab_calculateDateDiff" text="@app_kformulaassistant_tab_calculateDateDiff"/>
+			<KAppCommand action="/tools/extractionidcard" appCmdObj="EtEdit" appFlags="wpsmember" appId="kformulaassistant" icon="id_card_kd" id="app_kformulaassistant_tab_extractionIDCardInfo" text="@app_kformulaassistant_tab_extractionIDCardInfo"/>
+			<KAppCommand action="/" appCmdObj="EtEdit" appFlags="" appId="kformulaassistant" icon="formula_assistant_kd" id="app_kformulaassistant_tab" text="@Convenient Formula"/>
+			<KAppCommand appCmdObj="EtEdit" appFlags="wpsmember" appId="ketlookup" icon="lookup_kd" id="app_ketlookup_data" text="@app_ketlookup_data"/>
+			<KAppExtendBarcodeCommand appCmdObj="extendObj" appId="kbarcode" customTip="InsertBarcode" extendObj="11875FA4-B263-4FB5-9052-7E12DCA7BDF3" hotKey="f" icon="bar_code_kd" id="InsertBarcode" qtspyName="InsertBarcode" rbHotKey="F" relatedKsoCmd="InsertPictureFromFile" text="@InsertBarcode"/>
+			<KOCRToolCommand customTip="PictureToText" icon="scan_ocr_kd" id="OCRToolCmd_workspace" text="@Picture to Text"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="change_pic_to_pdf_kd" id="ProxyPhoto2Pdf" rbHotKey="D" targetId="Photo2Pdf" targetModule="photo2pdfentry" text="@Photo2Pdf" visible="false"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="change_pic_to_pdf_kd" id="ProxyPhoto2Pdf_PicInsert" rbHotKey="D" targetId="Photo2Pdf_PicInsert" targetModule="photo2pdfentry" text="@Photo2Pdf" visible="false"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="change_pic_to_pdf_kd" id="ProxyPhoto2Pdf_PicTool" rbHotKey="D" targetId="Photo2Pdf_PicTool" targetModule="photo2pdfentry" text="@Photo2Pdf" visible="false"/>
+			<KProxyCommand autoLoad="true" customTip="Photo2Pdf" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="change_pic_to_pdf_kd" id="ProxyPhoto2Pdf_QuickBar" rbHotKey="D" targetId="Photo2Pdf_QuickBar" targetModule="photo2pdfentry" text="@Photo2Pdf" visible="false"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="change_pic_to_pdf_kd" id="ProxyPhoto2PdfConvertOne" targetId="Photo2PdfConvertOne" targetModule="photo2pdfentry" text="@Photo2PdfConvertOne" visible="false"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="pic_to_pdf_batch_kd" id="ProxyPhoto2PdfConvertAll" targetId="Photo2PdfConvertAll" targetModule="photo2pdfentry" text="@Photo2PdfConvertAll" visible="false"/>
+			<KProxyCommand autoLoad="true" customTip="ExportWeiboImageCmd" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="change_to_pic_two_kd" id="ProxyExportWeiboImageCmd" idKey="EtProxyExportWeiboImage" needLogin="false" targetId="ExportWeiboImageCmd" targetModule="kweibo" text="@Export as Image" visible="false"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="kinsertchemistryequation" customTip="InsertChemistryEquation" extendObj="61704547-3176-4FA0-AAD0-7DF1A1D1964B" hotKey="c" icon="chemistry_equation_kd" id="InsertChemistryEquation" idKey="CommonChemistryEquation" qtspyName="InsertChemistryEquation" rbHotKey="SY" relatedKsoCmd="InsertPictureFromFile" text="@ChemistryEquation"/>
+			<KxAiFuncLegacyCommand hotKey="a" icon="intelligent_classification_kd" id="AiSmartSplitColProxy" idKey="EtSmartSplitColumns" ksoCmd="SplitColumns" open_position="toolbar" rbHotKey="A" subfunction_name="enableAi" text="@Smart Split Columns"/>
+			<KxAiFuncLegacyCommand customTip="InsertAiFunction" hotKey="f" icon="ai_math_function_kd" id="AiFunctionInFormulasProxy" idKey="EtSearchBoxAIFuncCommand" ksoCmd="Function" qtspyName="Function" rbHotKey="F" subfunction_name="WPSAI" text="@AI Func"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="kinsertpo" extendObj="ECB019B1-382A-4266-B25C-5B523AA43C14" id="InsertExtObjFlow" relatedKsoCmd="InsertPictureFromFile"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="kinsertpo" extendObj="C9F754DE-2CAD-44b6-B708-469DEB6407EB" id="InsertExtObjMind" relatedKsoCmd="InsertPictureFromFile"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="kinsertpo" extendObj="E657119C-6982-421D-8BA7-E74DEB70A7D9" id="InsertExtObjFlowMindAttach" relatedKsoCmd="InsertPictureFromFile"/>
+			<KDependsProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependAppId="kinsertpo" icon="import_processon_kd" id="ImportProcesson_Flow" relatedKsoCmd="InsertPictureFromFile" targetId="ImportProcesson_Flow" targetModule="kdocerjsapi20" text="@Import Processon Flow"/>
+			<KListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="TableRecommendMenu"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="AK20260421JTOOLE" extendObj="5E50DAB7-B6CE-6CBE-859A-F796AC3DC1D0" id="Text2Infographic" relatedKsoCmd="InsertPictureFromFile"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="d" icon="duplicate_mgr_remind_repeat_display_kd" id="app_remindrepeat_ettool" imageTip="RemindRepeatItemsImageTip" imageTipHeight="46" imageTipWidth="141" ksoCmd="RemindRepeatItems" text="@Highlight duplicates"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="v" icon="duplicate_mgr_remind_unique_display_kd" id="app_remindunique_ettool" imageTip="RemindUniqueItemsImageTip" imageTipHeight="46" imageTipWidth="141" ksoCmd="RemindUniqueItems" text="@Highlight unique values"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="i" icon="duplicate_mgr_export_repeat_display_kd" id="app_exportrepeat_ettool" imageTip="ExportRepeatItemsImageTip" imageTipHeight="122" imageTipWidth="141" ksoCmd="ExportRepeatItems" text="@Fetch duplicates"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="u" icon="duplicate_mgr_export_unique_display_kd" id="app_exportunique_ettool" imageTip="ExportUniqueItemsImageTip" imageTipHeight="122" imageTipWidth="141" ksoCmd="ExportUniqueItems" text="@Fetch unique values"/>
+			<KxEtIconSizeListCommand customTip="DuplicateItemsManager" hotKey="r" icon="data_comparison_kd" id="ettoolbox_DuplicateMgrItems" text="@Manage Duplicates">
+				<command customTip="InsertDropDownList" idQ="app_remindrepeat_ettool"/>
+				<command customTip="InsertDropDownList" idQ="app_exportrepeat_ettool"/>
+				<separator/>
+				<command customTip="InsertDropDownList" idQ="app_remindunique_ettool"/>
+				<command customTip="InsertDropDownList" idQ="app_exportunique_ettool"/>
+			</KxEtIconSizeListCommand>
+			<KxEtSplitMergeImageTooltipCommand appFlags="wpsmember" appFlags_xa="wpsmember" entrance="splitbooks" hotKey="t" icon="menu_item_split_book_display_kd" id="app_splitbooks" idKey="EtMergeSplit" imageTip="SplitBookImageTip" imageTipHeight="188" imageTipWidth="272" ksoCmd="SplitBook" rbHotKey="T" text="@Split Books"/>
+			<KxEtSplitMergeImageTooltipCommand appFlags="wpsmember" appFlags_xa="wpsmember" entrance="splitsheets" hotKey="o" icon="menu_item_split_sheet_display_kd" id="app_splitsheets" idKey="EtMergeSplit" imageTip="SplitSheetImageTip" imageTipHeight="202" imageTipWidth="272" ksoCmd="SplitSheet" rbHotKey="O" text="@Split Sheets"/>
+			<KxEtSplitMergeListCommand customTip="SplitSheet" hotKey="C" icon="split_sheet_kd" id="SplitSheet_ettool" idMso="wps_SplitSheet" menuIconHeight="60" menuIconWidth="60" text="@Split Tables">
+				<command customTip="InsertDropDownList" idQ="app_splitsheets"/>
+				<command customTip="InsertDropDownList" idQ="app_splitbooks"/>
+				<KAppImageTooltipCommand action="split" appCmdObj="Split" appFlags="wpsmember_right" appId="ksplitmerge" hotKey="c" icon="docsplit" id="app_ksplitmerge_cthomeworksheet_split" idKey="EtHomeKsplitmerge" imageTip="docsplittip_XA" imageTipHeight="160" imageTipWidth="204" rbHotKey="C" showTip="true" text="@Split Book"/>
+			</KxEtSplitMergeListCommand>
+			<KxImageTooltipCommand appFlags="wpsmember_right" appFlags_xa="wpsmember" entrance="mergebooks" hotKey="b" icon="ms_menu_item_copy_display_kd" id="app_mergebooks" imageTip="MergeCopySheetImageTip" imageTipHeight="203" imageTipText="@Source Merge copy workbooks function" imageTipWidth="272" ksoCmd="MSCopySheet" rbHotKey="B" text="@Merge workbooks"/>
+			<KxEtSplitMergeImageTooltipCommand appFlags="wpsmember_right" appFlags_xa="wpsmember" entrance="mergesheets" hotKey="s" icon="ms_menu_item_merge_display_kd" id="app_mergesheets" imageTip="MergeSheetImageTip" imageTipHeight="188" imageTipText="@Source Merge worksheets function" imageTipWidth="272" ksoCmd="MSMergeSheet" rbHotKey="S" text="@Merge worksheets"/>
+			<KxEtSplitMergeImageTooltipCommand appFlags="wpsmember_right" appFlags_xa="wpsmember" entrance="mergesamenamesheets" hotKey="n" icon="ms_menu_item_merge_same_name_display_kd" id="app_mergesamenamesheets" imageTip="MergeSameNameImageTip" imageTipHeight="202" imageTipText="@Source Merge worksheets with same name in workbooks function" imageTipWidth="272" ksoCmd="MSMergeSameName" rbHotKey="N" text="@Merge worksheets &#10;with same name in workbooks"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" appFlags_xa="wpsmember" entrance="mergerange" hotKey="d" icon="ms_merge_range_data_display_kd" id="app_mergerange" imageTip="MergeRangeDataTip" imageTipHeight="212" imageTipWidth="328" ksoCmd="MergeRangeData" rbHotKey="D" text="@Merge Range Data"/>
+			<KxImageTooltipCommand appFlags="wpsmember_right" appFlags_xa="wpsmember" entrance="organizebooks" hotKey="k" icon="ms_recombine_same_name_sheet_display_kd" id="app_organizebooks" imageTip="RecombineSameNameTip" imageTipHeight="196" imageTipText="@Source Recombine Same Name function" imageTipWidth="272" ksoCmd="MSRecombineSameNameSheet" rbHotKey="K" text="@Recombine Same Name"/>
+			<KxEtSplitMergeListCommand customTip="MergeSheet" hotKey="E" icon="merge_sheet_kd" id="MergeSheet_ettool" idMso="wps_MergeSheet" menuIconHeight="60" menuIconWidth="60" text="@Merge Tables">
+				<command customTip="InsertDropDownList" idQ="app_mergesheets"/>
+				<command customTip="InsertDropDownList" idQ="app_mergesamenamesheets"/>
+				<command customTip="InsertDropDownList" idQ="app_mergerange"/>
+				<separator/>
+				<command customTip="InsertDropDownList" idQ="app_mergebooks"/>
+				<command customTip="InsertDropDownList" idQ="app_organizebooks"/>
+				<KAppImageTooltipCommand action="merge" appCmdObj="SplitMerge" appFlags="wpsmember_right" appId="ksplitmerge" hotKey="h" icon="docmerge" id="app_ksplitmerge_cthomeworksheet_merge" idKey="EtHomeKsplitmerge" imageTip="docmergetip_XA" imageTipHeight="160" imageTipWidth="204" rbHotKey="H" showTip="true" text="@Merge Book"/>
+			</KxEtSplitMergeListCommand>
+			<KxLegacyTriggerCommand aid="40003" descName="@Insert Cells" id="InsertCellsProxy" ksoCmd="InsertCellsProxy" shortcutHint="Ctrl+Shift+="/>
+			<KxClipboardMenuCommand dialogHint="1" entryType="right_click" hotKey="L" icon="ai_form_paste_kd" id="PastePreviousContent_RightMenu" idKey="EtMultiClipboard" text="@Enable WPS AI Clipboard"/>
+			<KxClipboardMenuCommand dialogHint="1" entryType="finish_paste" hotKey="L" icon="ai_form_paste_kd" id="PastePreviousContent_Pasted" idKey="EtMultiClipboard" text="@Enable WPS AI Clipboard"/>
+			<KxClipboardMenuCommand dialogHint="1" entryType="start_tab" hotKey="L" icon="ai_form_paste_kd" id="PastePreviousContent_StartTab" idKey="EtMultiClipboard" text="@Enable WPS AI Clipboard"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ProxyEtChartRecommend" idKey="EtChartRecommend" targetId="EtChartRecommend" targetModule="etchartrecommend" visible="false"/>
+			<KProxyCommand autoLoad="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ProxyAdvancedExportPdf" targetId="AdvancedExportPdf" targetModule="advancedexportpdf" visible="false"/>
+			<KProxyCommand autoLoad="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ProxyCmdAdvancedExportPdf" targetId="CmdAdvancedExportPdf" targetModule="advancedexportpdf" visible="false"/>
+			<KAppCommand appId="backupcenterv3" icon="folder_cloud_kd" id="BackupCenter" needLogin="false" spaceHint="suitable" text="@Backup Center"/>
+			<KAppCommand appId="backupcenterv3" icon="folder_cloud_kd" id="BackupCenterUserMenu" text="@Backup Center"/>
+			<KxLegacyTriggerCommand aid="40004" descName="@Delete Cells" id="DeleteCellsProxy" ksoCmd="DeleteCellsProxy" shortcutHint="Ctrl+-"/>
+			<KxLegacyTriggerCommand aid="899" faceid="11" hotKey="f" icon="filter_kd" iconQat="filter_kd" id="AutoFilter" ksoCmd="AutoFilter" rbHotKey="F" shortcutHint="Ctrl+Shift+L" text="@Filter"/>
+			<KxEtCreateDBFilterViewCommand applyAccentEffect="true" badgeText="@DBSheet" createType="FilterView" helpLinkText="@View Feature Introduction" helpLinkUrl="DBSheetViewHelp" icon="symbol_cross_kd" id="DBFilterView" imageTip="DBViewTip_Filter" imageTipHeight="202" imageTipText="@Export as DBSheet and create multiple filter views based on the selected range for convenient data comparison" imageTipWidth="330" showTitle="true" sourceType="filter" text="@Create Filter View"/>
+			<KxLegacyTriggerCommand customTip="DataGroup" dynamicSpaceHint="loose;suitable" hotKey="g" icon="data_group_kd" id="DataGroup" idMso="OutlineGroup" ksoCmd="DataGroup" rbHotKey="G" shortcutHint="Shift+Alt+Right" tc="DataGroup" text="@Group"/>
+			<KxLegacyTriggerCommand aid="3160" dialogHint="1" hotKey="u" icon="data_ungroup_kd" id="DataUngroup" idMso="OutlineUngroup" ksoCmd="DataUngroup" rbHotKey="U" shortcutHint="Shift+Alt+Left" text="@Ungroup"/>
+			<KxLegacyTriggerCommand aid="459" controlType="0" customTip="Refresh" hotKey="r" icon="refresh_two_kd" id="Refresh" idMso="Refresh" ksoCmd="Refresh" rbHotKey="R" shortcutHint="Alt+F5" text="@Refresh Data"/>
+			<KxLegacyTriggerCommand aid="1952" controlType="0" customTip="RefreshAll" hotKey="a" icon="refresh_two_kd" id="RefreshAll" idMso="RefreshAll" ksoCmd="RefreshAll" rbHotKey="A" shortcutHint="Ctrl+Alt+F5" showiconAndText="1" text="@Refresh All"/>
+			<KxPropComposeCommand aid="1576" dialogHint="1" forceVisible="1" hotKey="i" icon="chain_kd" id="InsertOrEditHyperlink" idKey="CommonFilterPadFileSystem" ksoCmd="InsertOrEditHyperlink" rbHotKey="I" shortcutHint="Ctrl+K" text="@Hyperlink"/>
+			<KxLegacyTriggerCommand aid="313" dialogHint="1" hotKey="R" icon="replace_kd" id="RbReplace" ksoCmd="Replace" shortcutHint="Ctrl+H" text="@Replace"/>
+			<KxLegacyTriggerCommand aid="757" controlType="0" dialogHint="1" hotKey="S" icon="target_kd" id="RbGoTo" idMso="GoTo" ksoCmd="GoTo" shortcutHint="Ctrl+G" text="@Go To"/>
+			<KxLegacyTriggerCommand customTip="FlashFill" hotKey="f" icon="smart_filling_kd" id="FlashFill" ksoCmd="FlashFill" rbHotKey="FF" shortcutHint="Ctrl+E" showiconAndText="1" text="@FlashFill"/>
+			<KxEtTextToTableCommand align="1" entrance="PasteMenu" gifTip="resource/et/text_to_table_tip.gif" hotKey="D" icon="change_text_to_et_kd" id="MenuTextToTable" imageTipHeight="200" imageTipText="@Help you quickly organize text content into tables" imageTipWidth="300" showTip="true" text="@Text To Table"/>
+			<KxAIFillCommand customTip="AIFill" icon="ai_smart_filling_kd" id="AIFill" idKey="AIFill" openPosition="shortcut" shortcutHint="Ctrl+Alt+E" showiconAndText="1" text="@AI Fill"/>
+			<KxAIFillCommand id="AIFillProxy" openPosition="toolbar"/>
+			<KComposeListCommand OLEMenuCategory="file" aid="30002" availableForReadOnlyMode="1" barid="384" delayloadPath="commands/et/PopupMenu.kuip" hotKey="f" id="FileMenu" name="File" text="@File"/>
+			<KListCommand OLEMenuCategory="edit" aid="30003" barid="41" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" hotKey="e" id="EditMenu" name="Edit" text="@Edit"/>
+			<KListCommand OLEMenuCategory="edit" aid="30004" barid="42" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" hotKey="v" id="ViewMenu" name="View" text="@View"/>
+			<KListCommand OLEMenuCategory="edit" aid="30005" barid="43" delayloadPath="commands/et/PopupMenu.kuip" groupindex="1" hotKey="i" id="InsertMenu" name="Insert" text="@Insert"/>
+			<KListCommand OLEMenuCategory="edit" aid="30006" barid="44" delayloadPath="commands/et/PopupMenu.kuip" hotKey="o" id="FormatMenu" name="Format" text="@Format"/>
+			<KListCommand OLEMenuCategory="edit" aid="30007" barid="45" delayloadPath="commands/et/PopupMenu.kuip" hotKey="t" id="ToolsMenu" name="Tools" text="@Tools"/>
+			<KxListCommand OLEMenuCategory="edit" aid="30011" barid="448" delayloadPath="commands/et/PopupMenu.kuip" disableTrigger="true" hotKey="d" id="DataMenu" ksoCmd="DataMenu" name="Data" text="@Data"/>
+			<KxListCommand OLEMenuCategory="edit" aid="30022" barid="500" customShortcutEnabled="false" delayloadPath="commands/et/PopupMenu.kuip" disableTrigger="true" hotKey="c" id="ChartMenu" ksoCmd="ChartMenu" name="Chart" text="@Chart" visible="false"/>
+			<KComposeListCommand delayloadPath="commands/et/PopupMenu.kuip" id="WorkspaceMenu" name="Workspace" text="@Workspace"/>
+			<KComposeListCommand OLEMenuCategory="window" aid="30009" barid="47" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" hotKey="w" id="WindowMenu" name="Window" text="@Window"/>
+			<KxSecurityMenuCommand delayloadPath="commands/et/PopupMenu.kuip" hotKey="y" id="SecurityMenu" name="Security" text="@Security"/>
+			<KListCommand OLEMenuCategory="help" aid="30010" barid="48" delayloadPath="commands/et/PopupMenu.kuip" hotKey="h" icon="Help;Help-hover;Help-down" id="HelpMenu" name="Help" text="@Help"/>
+			<KListCommand delayloadPath="commands/et/PopupMenu.kuip" id="AppMenu" name="AppMenu" text="@AppMenu"/>
+			<KListCommand OLEMenuCategory="help" aid="30010" barid="48" delayloadPath="commands/et/PopupMenu.kuip" hotKey="h" icon="Help;Help-hover;Help-down" id="HelpMenuForMac" name="Help" text="@Help"/>
+			<KxEtInsertOrEditCommentCommand commentPos="Proxy" controlType="0" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="rProxyComment" idMso="ReviewNewComment" ksoCmd="Comment" rbHotKey="C" text="@New &#10;Comment"/>
+			<KxEtInsertOrEditCommentCommand aid="1589" commentPos="Normal" controlType="0" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="Comment" idMso="ReviewNewComment" ksoCmd="Comment" shortcutHint="Shift+F2" text="@Comment"/>
+			<KxLegacyTriggerCommand controlType="6" customTip="ShowAllComments" forceVisible="1" hotKey="a" icon="bubble_eye_all_kd" id="rShowAllComments" idMso="ReviewShowAllComments" ksoCmd="ShowAllComments" rbHotKey="A" spaceHint="autocompact" text="@Show All Comments"/>
+			<KxFeedbackCommand aid="80173" featureid="16777260" hotKey="b" icon="bubble_kd" id="UserFeedback" ksourl="UserFeedbackMail" showIconAndText="1" text="@Feedback"/>
+			<KProxyTabbarQAndACommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" filter="support:ShieldMode=false" id="TabbarQAndA" idMso="TabbarQAndA" shortcutHint="Alt+Q" targetModule="kfeedback"/>
+			<KListCommand barid="424" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Cell" idMso="ContextMenuCell" text="@Cell"/>
+			<KListCommand barid="426" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Column" text="@Column"/>
+			<KListCommand barid="425" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Row" text="@Row"/>
+			<KListCommand barid="433" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="AutoFill" text="@Fill"/>
+			<KxEtStatusCommand barid="40000" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Status bar Popup Menu" text="@Status Bar"/>
+			<KTComCloudStorageCommand id="TComCS" idKey="TcomComponent"/>
+			<KxLegacyTriggerCommand aid="832" descName="@Merge and Center" faceid="40" id="rMergeCenter" ksoCmd="MergeCenter"/>
+			<KListCommand barid="40004" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Chart Area Popup Menu" text="@NewChart ChartArea"/>
+			<KListCommand barid="438" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Plot Area" text="@NewChart PlotArea"/>
+			<KListCommand barid="1072" delayloadPath="commands/et/PopupMenu.kuip" id="Format Data Series" text="@NewChart Series"/>
+			<KListCommand barid="40007" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Data Point Popup Menu" text="@NewChart Datapoint"/>
+			<KListCommand barid="447" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Title Bar (Charting)" text="@NewChart ChartTitle"/>
+			<KListCommand barid="40013" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Data Table Popup Menu" text="@NewChart DataTable"/>
+			<KListCommand barid="1073" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Format Axis" text="@NewChart Axis"/>
+			<KListCommand barid="40010" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Legend Key Popup Menu" text="@NewChart Legend"/>
+			<KListCommand barid="1074" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Format Legend Entry" text="@NewChart LegendEntry"/>
+			<KListCommand barid="40008" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Data Label Popup Menu" text="@NewChart DataLabels"/>
+			<KListCommand barid="440" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Trendline" text="@NewChart TrendLine Label"/>
+			<KListCommand barid="40005" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="NewChart TrendLineLabel Menu" text="@NewChart TrendLine Label"/>
+			<KListCommand barid="40001" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Axis Title Popup Menu" text="@NewChart AxisTitle"/>
+			<KListCommand barid="40015" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Up Bars Popup Menu" text="@NewChart UpBar"/>
+			<KListCommand barid="40016" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Down Bars Popup Menu" text="@NewChart DownBar"/>
+			<KListCommand barid="40014" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Error Bars Popup Menu" text="@NewChart ErrorBar"/>
+			<KListCommand barid="40012" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Hi Lo Line Popup Menu" text="@NewChart HighLowLine"/>
+			<KListCommand barid="40011" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Drop Line Popup Menu" text="@NewChart DropLine"/>
+			<KListCommand barid="40006" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Series Line Popup Menu" text="@NewChart SeriesLine"/>
+			<KListCommand barid="40003" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Gridlines Popup Menu" text="@NewChart Gridline"/>
+			<KListCommand barid="40002" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Display Unit Label Popup Menu" text="@NewChart UnitLabel"/>
+			<KListCommand barid="40009" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Lead Line Popup Menu" text="@NewChart LeadLine"/>
+			<KListCommand barid="40100" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Pivot Field Button Popup Menu" text="@NewChart LeadLine"/>
+			<KListCommand barid="54" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Shapes" text="@Shapes Popup Menu"/>
+			<KListCommand barid="40081" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Dml Shapes" text="@Shapes Popup Menu"/>
+			<KListCommand barid="40087" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Comment Shape" text="@Comment Popup Menu"/>
+			<KListCommand barid="40088" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Comment Text" text="@Comment Text Popup Menu"/>
+			<KListCommand barid="40089" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Slicer" text="@Comment Popup Menu"/>
+			<KListCommand barid="232" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Curve" text="@Curve"/>
+			<KListCommand barid="233" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Curve Point" name="Curve Node" text="@Curve Point"/>
+			<KListCommand barid="40082" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Curve Point For VML" name="Curve Node For VML" text="@Curve Point"/>
+			<KListCommand barid="234" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Curve Segment" text="@Curve Segment"/>
+			<KListCommand barid="236" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Connector" text="@Connector"/>
+			<KListCommand barid="65" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Picture Context Menu" idKey="PictContextMenuQuickHelpBar" name="Pictures Context Menu" text="@Picture"/>
+			<KListCommand barid="235" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="OLE Object" text="@OLE Object"/>
+			<KListCommand barid="237" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Word Art Context Menu" name="WordArt Context Menu" text="@WordArt"/>
+			<KListCommand barid="598" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="ActiveX Control" text="@ActiveX Controls"/>
+			<KListCommand barid="40117" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="JdeControl Popup Menu" text="@JdeControl Popup Menu"/>
+			<KListCommand barid="40083" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Form Control" text="@Form Control Popup Menu"/>
+			<KListCommand barid="40101" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="WebExtension Popup Menu" text="@WebExtension Popup Menu"/>
+			<KListCommand barid="40102" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Accent Popup Menu" text="@Equation Accent Popup Menu"/>
+			<KListCommand barid="40103" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Bar Popup Menu" text="@Equation Bar Popup Menu"/>
+			<KListCommand barid="40104" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation BorderBox Popup Menu" text="@Equation BorderBox Popup Menu"/>
+			<KListCommand barid="40105" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Operator Popup Menu" text="@Equation Operator Popup Menu"/>
+			<KListCommand barid="40106" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Delimiter Popup Menu" text="@Equation Delimiter Popup Menu"/>
+			<KListCommand barid="40107" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Array Popup Menu" text="@Equation Array Popup Menu"/>
+			<KListCommand barid="40108" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Fraction Popup Menu" text="@Equation Fraction Popup Menu"/>
+			<KListCommand barid="40109" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Function Popup Menu" text="@Equation Function Popup Menu"/>
+			<KListCommand barid="40110" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Limit Popup Menu" text="@Equation Limit Popup Menu"/>
+			<KListCommand barid="40111" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Group Popup Menu" text="@Equation Group Popup Menu"/>
+			<KListCommand barid="40112" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Matrix Popup Menu" text="@Equation Matrix Popup Menu"/>
+			<KListCommand barid="40113" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Large Operator Popup Menu" text="@Equation Large Operator Popup Menu"/>
+			<KListCommand barid="40114" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Radical Popup Menu" text="@Equation Radical Popup Menu"/>
+			<KListCommand barid="40115" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Script Popup Menu" text="@Equation Script Popup Menu"/>
+			<KListCommand barid="40116" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Equation Normal Popup Menu" text="@Equation Normal Popup Menu"/>
+			<KListCommand barid="40120" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Pareto Line Popup Menu" text="@NewChart ParetoLine"/>
+			<KListCommand barid="442" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Formula Bar" text="@Formula Bar"/>
+			<KListCommand barid="40017" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Dlg Formula Bar Popup Menu" text="@Formula Bar"/>
+			<KListCommand barid="40018" delayloadPath="commands/et/PopupMenu.kuip" disableCustomRibbon="true" filterFlag="1" id="Numberincell Fortext Popup Menu"/>
+			<KToolBarPopupMenuCommand aid="30045" barid="3" delayloadPath="commands/et/PopupMenu.kuip" disableCustomRibbon="true" filterFlag="1" hotKey="t" icon="toolbar_kd" id="Toolbar List" text="@Toolbars"/>
+			<KListCommand barid="430" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Ply" text="@Sheet"/>
+			<KListCommand barid="40019" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TabBarMenu Popup Menu"/>
+			<KListCommand barid="40020" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TabMenu Popup Menu"/>
+			<KListCommand barid="40118" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TextBox Popup Menu" text="@TextBox Popup Menu"/>
+			<KListCommand barid="40119" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Math Equation Popup Menu" text="@Math Equation Popup Menu"/>
+			<KxLegacyTriggerCommand aid="6382" dialogHint="1" hotKey="c" icon="pic_compress_kd" iconQat="pic_compress_kd" id="CompressPictures" ksoCmd="CompressPictures" text="@Compress Pictures"/>
+			<KxEtNameBoxCommand aid="40005" id="FormulaBarNameBox" ksoCmd="FormulaBarNameBox" text="@Name Box"/>
+			<KxLegacyTriggerCommand aid="40006" icon="symbol_cross_two_kd" id="FormulaBarCancel" ksoCmd="FormulaBarCancel" text="@Cancel"/>
+			<KxLegacyTriggerCommand aid="40007" icon="symbol_tick_kd" id="FormulaBarEnter" ksoCmd="FormulaBarEnter" text="@Enter"/>
+			<KxLegacyTriggerCommand aid="40008" icon="math_function_kd" id="FormulaBarInsertFunction" ksoCmd="FormulaBarInsertFunction" text="@Insert Function"/>
+			<KxLegacyTriggerCommand aid="40009" icon="magnifier_formula_result_kd" id="FormulaBarBrowseResult" ksoCmd="FormulaBarBrowseResult" text="@Browse Formula Result"/>
+			<KxLegacyTriggerCommand hotKey="n" icon="select_current_region_kd" id="SelectCurrentRegion" ksoCmd="SelectCurrentRegion" text="@Select Current Region"/>
+			<KxLegacyTriggerCommand aid="40010" icon="select_visible_cells_kd" id="SelectVisibleCells" ksoCmd="SelectVisibleCells" shortcutHint="Alt+;" text="@Select Visible Cells"/>
+			<KxDevelopEditorCommand controlType="0" customTip="JavaScriptEditor" hotKey="d" icon="edit_code_kd" id="DevelopEditor" idKey="CommonPadFileSystem" idMso="VisualBasic" ksoCmd="DevelopEditor" qtspyName="DevelopEditor" rbHotKey="DE" shortcutHint="Alt+F11" text="@WPS Macro Editor"/>
+			<KxRunMacroCommand controlType="0" customTip="RunJSMacro" hotKey="m" icon="js_macro_kd" id="RunMacro" idKey="CommonPadFileSystem" idMso="MacroPlay" ksoCmd="RunMacro" qtspyName="RunJSMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@JS Macros"/>
+			<KxLegacyTriggerCommand aid="40011" controlType="0" id="InsertTime" idMso="HeaderFooterCurrentTimeInsert" ksoCmd="InsertTime" shortcutHint="Ctrl+Shift+'"/>
+			<KxLegacyTriggerCommand aid="855" controlType="0" dialogHint="1" entrance="shortcut" hotKey="E" icon="setup_kd" id="FormatCells" idMso="FormatCellsDialog" ksoCmd="FormatCells" rbHotKey="E" shortcutHint="Ctrl+1" tc="SetFormatCells" text="@Format Cells"/>
+			<KxLegacyTriggerCommand aid="40012" controlType="0" id="InsertDate" idMso="HeaderFooterCurrentDate" ksoCmd="InsertDate" shortcutHint="Ctrl+;"/>
+			<KxOleLegacyTriggerCommand aid="40013" filterFlag="1" id="SelectAll" ksoCmd="SelectAll" shortcutHint="Ctrl+A" text="Select All"/>
+			<KxLegacyTriggerCommand aid="113" controlType="0" customTip="Bold" hotKey="b" icon="bold_wps_kd" iconQat="bold_wps_kd" id="Bold" idMso="Bold" ksoCmd="Bold" rbHotKey="1" shortcutHint="Ctrl+B" text="@Bold"/>
+			<KxLegacyTriggerCommand controlType="1" customTip="Superscript" icon="math_superscript_kd" id="Superscript" idMso="Superscript" ksoCmd="Superscript" text="@Superscript"/>
+			<KxLegacyTriggerCommand controlType="1" customTip="Subscript" icon="math_subscript_kd" id="Subscript" idMso="Subscript" ksoCmd="Subscript" text="@Subscript"/>
+			<KxLegacyTriggerCommand customTip="StrikeThrough" descName="@StrikeThrough" icon="strikethrough_kd" id="StrikeThrough" ksoCmd="StrikeThrough" rbHotKey="d" shortcutHint="Ctrl+5" text="@StrikeThrough"/>
+			<KxLegacyTriggerCommand descName="@HideRow" id="HideRow" ksoCmd="HideRow" shortcutHint="Ctrl+9"/>
+			<KxLegacyTriggerCommand descName="@HideColumn" id="HideColumn_ShortCut" ksoCmd="HideColumn" shortcutHint="Ctrl+7"/>
+			<KxEtCopyLegacyTriggerCommand aid="19" controlType="0" filterFlag="1" hotKey="c" icon="copy_kd" iconQat="copy_kd" id="Copy" idMso="Copy" ksoCmd="Copy" shortcutHint="Ctrl+C" text="@Copy"/>
+			<KxEtCopyLegacyTriggerCommand hotKey="x" icon="copy_only_text_kd" id="CopyOnlyText" ksoCmd="CopyOnlyText" shortcutHint="Alt+Ctrl+C" text="@Copy Unformatted Text"/>
+			<KxLegacyTriggerCommand aid="7193" controlType="0" customTip="Table" dialogHint="1" hotKey="C" icon="sheet_kd" id="InsertTable" idMso="TableInsertExcel" ksoCmd="InsertTable" rbHotKey="T" shortcutHint="Ctrl+T" text="@Table@Table"/>
+			<KxLegacyTriggerCommand aid="372" controlType="0" hotKey="d" icon="copy_fill_kd" id="FillDown" idMso="FillDown" ksoCmd="FillDown" rbHotKey="D" shortcutHint="Ctrl+D" text="@Down"/>
+			<KxOleLegacyTriggerCommand aid="1849" controlType="0" dialogHint="1" hotKey="f" icon="magnifier_kd" iconQat="magnifier_kd" id="Find" idMso="FindDialogExcel" ksoCmd="Find" popupReadOnlyHint="hotkey" rbHotKey="F" shortcutHint="Ctrl+F" text="@Find"/>
+			<KxTaskPaneLegacyTriggerCommand aid="5746" hotKey="K" icon="task_window_kd" id="TaskPane" ksoCmd="TaskPane" rbHotKey="T" shortcutHint="Ctrl+F1" text2="@Task&#10;Window" text="@Task Window"/>
+			<KxLegacyTriggerCommand aid="757" controlType="0" dialogHint="1" hotKey="g" id="GoTo" idMso="GoTo" ksoCmd="GoTo" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+G" text="@Go To"/>
+			<KxLegacyTriggerCommand aid="313" controlType="0" dialogHint="1" hotKey="e" id="Replace" idMso="ReplaceDialog" ksoCmd="Replace" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+H" text="@Replace"/>
+			<KxLegacyTriggerCommand aid="114" controlType="6" customTip="Italic" hotKey="i" icon="italic_wps_kd" id="Italic" idMso="Italic" ksoCmd="Italic" rbHotKey="2" shortcutHint="Ctrl+I" text="@Italic"/>
+			<KxLegacyTriggerCommand aid="1576" dialogHint="1" hotKey="H" icon="chain_kd" id="InsertHyperlinkInPopup" idKey="CommonFilterPadFileSystem" ksoCmd="InsertHyperlink" shortcutHint="Ctrl+K" text="@Hyperlink"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" iconQat="doc_add_kd" id="NewBlankFile" idMso="FileNewBlankDocument" ksoCmd="NewBlankFile" shellEntryType="qaToolbar" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" id="ContextMenuNewBlankFile" idMso="FileNewBlankDocument" ksoCmd="NewBlankFile" qtspyName="NewBlankFile" shellEntryType="contextMenu" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" id="ShortCutNewBlankFile" idMso="FileNewBlankDocument" ksoCmd="NewBlankFile" qtspyName="NewBlankFile" shellEntryType="shortcut" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" iconQat="doc_add_kd" id="NewDefaultFile" idMso="FileNewBlankDocument" ksoCmd="NewDefaultFile" popupReadOnlyHint="create" shellEntryType="qaToolbar" shortcutHint="Ctrl+N" text="@New"/>
+			<KxNewBlankFileShortCutCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" id="ShortCutNewDefaultFile" idMso="FileNewBlankDocument" ksoCmd="NewDefaultFile" popupReadOnlyHint="create" qtspyName="NewDefaultFile" shellEntryType="shortcut" shortcutHint="Ctrl+N" text="@New"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" id="FileNewBlankDocument" idMso="FileNewBlankDocument" ksoCmd="NewBlankFile" popupReadOnlyHint="create" qtspyName="NewBlankFile" shellEntryType="fileMenu" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxLegacyTriggerCommand aid="18" controlType="0" dialogHint="1" hotKey="n" icon="doc_add_kd" id="TaskPaneNewBlankFile" idMso="FileNewBlankDocument" ksoCmd="NewBlankFile" qtspyName="NewBlankFile" shellEntryType="taskPane" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxTpNewBlankXlsxFileCommand aid="85004" id="tpNewBlankXlsxFile" ksoCmd="NewBlankXlsxFile" shellEntryType="taskPane" text="@New Excel Workbook"/>
+			<KxOleLegacyTriggerCommand aid="23" controlType="0" dialogHint="1" hotKey="o" icon="open_file_kd" iconQat="open_file_kd" id="OpenFile" idMso="FileOpen" ksoCmd="OpenFile" shortcutHint="Ctrl+O" text="@Open" wpsIsEanble="false"/>
+			<KxOlePrintTriggerCommand aid="2521" controlType="0" customTip="PrintDirect" hotKey="t" icon="print_direct_kd" iconQat="print_direct_kd" id="PrintDirect" idMso="FilePrintQuick" ksoCmd="PrintDirect" oleCmdExecOpt="2" text="@Print &#10;Directly"/>
+			<KxOleLegacyTriggerCommand customTip="PrintManualDuplex" icon="print_duplex_kd" id="PrintManualDuplex" ksoCmd="PrintManualDuplex" oleCmdExecOpt="2" text="@Print Manual Duplex"/>
+			<KxPrint2022DialogleLegacyTriggerCommand controlType="0" customTip="Print" dialogHint="1" hotKey="p" icon="print_kd" iconQat="print_kd" id="Print2022Dialog" idMso="FilePrint" ksoCmd="Print" oleCmdExecOpt="2" rbHotKey="P" shortcutHint="Ctrl+P" silentCmd="PrintDirect" text="@Print" wpsIsEanble="true"/>
+			<KxEtPrintOleLegacyTriggerCommand aid="4" controlType="0" customTip="Print2022" dialogHint="1" hotKey="p" icon="print_preview_kd" iconQat="print_preview_kd" id="Print" idKey="CommonPrintPreview" idMso="FilePrint" ksoCmd="PrintPreview" oleCmdExecOpt="2" qtspyName="PrintPreview" rbHotKey="P" shortcutHint="Meta+Alt+P" silentCmd="PrintDirect" text="@Print Preview and Print" wpsIsEanble="true"/>
+			<KxOleLegacyTriggerCommand aid="106" controlType="0" hotKey="c" icon="delet_empty_pages_kd" id="CloseFile" idMso="FileClose" ksoCmd="CloseFile" text="@Close" wpsIsEanble="false"/>
+			<KxOleLegacyTriggerCommand aid="247" controlType="0" dialogHint="1" hotKey="u" icon="doc_setup_kd" id="PageSetup" idMso="PageSetupDialog" ksoCmd="PageSetup" text="@Page Setup"/>
+			<KxEtWaterMarkGalleryCommand columnNumber="4" controlType="4" customTip="WaterMark" galleryHeight="380" galleryWidth="396" icon="watermark_kd" id="EtWaterMarkMenu" idKey="ETWatermark" ksoCmd="WatermarkGallery" qtspyName="WaterMark" rbHotKey="SY" text="@Watermark">
+				<KxEtInsertWaterMarkCommand commandMark="0" controlType="0" dialogHint="1" hotKey="w" icon="watermark_update_kd" id="EtInsertWaterMark" ksoCmd="WatermarkCustomDialog" qtspyName="WaterMark" rbHotKey="W" text="@Insert Watermark" tooltipText="@No watermark found. If you can see a watermark, it is not in standard format and cannot be updated."/>
+				<KxEtDeleteWaterMarkCommand commandMark="0" controlType="0" hotKey="r" icon="watermark_delete_kd" id="EtDeleteWaterMark" idKey="EtRemoveWatermark" ksoCmd="WatermarkRemove" qtspyName="deleteWaterMark" rbHotKey="R" text="@Remove Watermark" tooltipText="@No watermark found. If you can see a watermark, it is not in standard format and cannot be deleted."/>
+			</KxEtWaterMarkGalleryCommand>
+			<KxOleLegacyTriggerCommand aid="750" controlType="0" dialogHint="1" hotKey="i" icon="admin_kd" id="Properties" idMso="Properties" ksoCmd="Properties" text="@Properties"/>
+			<KxOleLegacyTriggerCommand aid="755" controlType="0" dialogHint="1" hotKey="S" icon="form_paste_special_kd" id="PasteSpecial" idMso="PasteSpecialDialog" ksoCmd="PasteSpecial" rbHotKey="S" shortcutHint="Ctrl+Meta+V" text="@Paste Special"/>
+			<KxOleLegacyTriggerCommand aid="873" controlType="0" hotKey="c" id="ClearContents" idMso="ClearContents" ksoCmd="ClearContents" rbHotKey="C" text="@Contents"/>
+			<KxLegacyTriggerCommand aid="371" controlType="0" hotKey="r" icon="fill_right_kd" id="FillRight" idMso="FillRight" ksoCmd="FillRight" rbHotKey="R" shortcutHint="Ctrl+R" text="@Right"/>
+			<KxOleLegacyTriggerCommand aid="3" controlType="0" hotKey="s" icon="save_kd" iconQat="save_kd" id="SaveFile_Ole" idMso="FileSave" ksoCmd="SaveFile" shortcutHint="Ctrl+S" text="@Save" wpsIsEanble="false"/>
+			<KxOleLegacyTriggerCommand aid="3" controlType="0" hotKey="s" icon="save_kd" iconQat="save_kd" id="SaveFile" idKey="SaveFileOleEntry" idMso="FileSave" ksoCmd="SaveFile" shortcutHint="Ctrl+S" text="@Save" wpsIsEanble="false"/>
+			<kxSaveFileCommand aid="3" controlType="0" hotKey="s" icon="save_kd" iconQat="save_kd" id="SaveFile" idKey="LoadCloudDocLib" idMso="FileSave" shortcutHint="Ctrl+S" text="@Save" wpsIsEanble="false"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="save_kd" id="SaveFileProxy" targetId="SaveFileProxy" targetModule="officespace" text="@Save"/>
+			<KxLegacyTriggerCommand aid="80179" controlType="0" customTip="ShrinkFont" hotKey="FK" icon="font_size_reduce_wps_kd" iconQat="font_size_reduce_wps_kd" id="ShrinkFont" idMso="FontSizeDecrease" ksoCmd="DecreaseFontSize" rbHotKey="FK" shortcutHint="Ctrl+Shift+," text="@Decrease Font Size"/>
+			<KxLegacyTriggerCommand aid="80979" customTip="FindDirectReference" hotKey="QK" icon="FindDirectReference" id="FindDirectReference" ksoCmd="FindDirectReference" rbHotKey="QK" shortcutHint="Ctrl+[" text="@Find Direct Reference"/>
+			<KxLegacyTriggerCommand aid="80980" customTip="FindAllLocalReference" hotKey="FK" icon="FindAllLocalReference" id="FindAllLocalReference" ksoCmd="FindAllLocalReference" rbHotKey="FK" shortcutHint="Meta+Shift+[" text="@Find All Local Reference"/>
+			<KxLegacyTriggerCommand aid="80178" controlType="0" customTip="GrowFont" hotKey="FG" icon="font_size_increase_wps_kd" iconQat="font_size_increase_wps_kd" id="GrowFont" idMso="FontSizeIncrease" ksoCmd="IncreaseFontSize" rbHotKey="FG" shortcutHint="Ctrl+Shift+." text="@Increase Font Size"/>
+			<KxLegacyTriggerCommand aid="295" controlType="0" descName="@Cells Dialog" dialogHint="1" hotKey="e" icon="cell_insert_kd" id="InsertCellsDialog" idMso="CellsInsertDialog" ksoCmd="InsertCellsDialog" text="@Cells"/>
+			<KxEtShowSheetsDlgCommand aid="40014" filterFlag="1" id="ShowSheetsDialog" shortcutHint="Ctrl+Shift+T"/>
+			<KxLegacyTriggerCommand aid="25203" customTip="SlicerReportConnection" dialogHint="1" hotKey="p" icon="chain_kd" id="SlicerReportConnection" ksoCmd="SlicerReportConnection" qtspyName="SlicerReportConnection" rbHotKey="I" spaceHint="autocompact" text="@Report Connections"/>
+			<KxLegacyTriggerCommand aid="25204" customTip="SlicerSetting" dialogHint="1" hotKey="e" icon="setup_kd" id="SlicerSetting" ksoCmd="SlicerSetting" qtspyName="SlicerSetting" rbHotKey="E" spaceHint="autocompact" text="@Slicer Settings"/>
+			<KxLegacyTriggerCommand aid="25202" hotKey="a" icon="filter_clear_kd" id="ClearSlicerFilter" ksoCmd="ClearSlicerFilter" qtspyName="ClearSlicerFilter" text="@Clear Filter from Slicers"/>
+			<KxLegacyTriggerCommand aid="25207" hotKey="f" icon="multi_kd" id="SlicerMultiSelect" ksoCmd="SlicerMultiSelect" qtspyName="SlicerMultiSelect" text="@Multi-Select"/>
+			<KxLegacyTriggerCommand descName="@Name Manager" id="nameManager" ksoCmd="NameManager" shortcutHint="Ctrl+F3"/>
+			<KxLegacyTriggerCommand id="DataTypeInfo" ksoCmd="DataTypeInfo" shortcutHint="Ctrl+Shift+F5"/>
+			<KxActivatePreviousSubWindowCommand aid="40015" detail="@Previous" id="ActivatePreviousSubWindow" shortcutHint="Ctrl+Shift+Tab" text="@Previous"/>
+			<KxActivateNextSubWindowCommand aid="40016" detail="@Next" id="ActivateNextSubWindow" shortcutHint="Ctrl+Tab" text="@Next"/>
+			<KxLegacyTriggerCommand aid="115" controlType="6" customTip="Underline" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="Underline" idMso="Underline" ksoCmd="Underline" rbHotKey="3" shortcutHint="Ctrl+U" text="@Underline"/>
+			<KxEtPasteLegacyTriggerCommand aid="22" controlType="0" hotKey="p" icon="paste_kd" iconQat="paste_kd" id="Paste" idMso="Paste" ksoCmd="Paste" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+V" text="@Paste"/>
+			<KxEtCutLegacyTriggerCommand aid="21" controlType="0" hotKey="t" icon="cut_kd" iconQat="cut_kd" id="Cut" idMso="Cut" ksoCmd="Cut" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+X" text="@Cut"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="v" icon="form_paste_values_kd" id="PasteValuesPopup" idMso="PasteValues" ksoCmd="Values" rbHotKey="V" shortcutHint="Ctrl+Shift+V" spaceHint="autocompact" text="@PasteAsValues"/>
+			<KxOleLegacyTriggerCommand_UndoRedo aid="129" controlType="0" descName="@Redo" hotKey="r" icon="arrow_recover_kd" iconQat="arrow_recover_kd" id="Redo" idMso="Redo" ksoCmd="Redo" shortcutHint="Ctrl+Y" text="@Redo"/>
+			<KxOleLegacyTriggerCommand_UndoRedo aid="128" controlType="0" descName="@Undo" hotKey="u" icon="arrow_revoke_kd" iconQat="arrow_revoke_kd" id="Undo" idMso="Undo" ksoCmd="Undo" shortcutHint="Ctrl+Z" text="@Undo"/>
+			<KHelpDocumentCommand aid="984" hotKey="h" icon="question_kd" id="Help" idKey="CommonFileMenuHelp" ksoCmd="Help" shortcutHint="F1" tc="Help" text="@WPS Spreadsheets Help"/>
+			<KxLegacyTriggerCommand aid="40017" id="QuickChart" ksoCmd="QuickChart" shortcutHint="F11" text="@Quick Chart"/>
+			<KxOleLegacyTriggerCommand aid="748" controlType="0" dialogHint="1" hotKey="a" icon="save_as_kd" iconQat="save_as_kd" id="SaveAs" idMso="FileSaveAs" ksoCmd="SaveAs" popupReadOnlyHint="save_as" shortcutHint="F12" text="@Save As"/>
+			<KxLegacyTriggerCommand aid="2" dialogHint="1" forceVisible="1" hotKey="s" icon="spell_check_kd" id="SpellCheck" idKey="SpellCheck" ksoCmd="SpellCheck" rbHotKey="S" shortcutHint="F7" text="@Spell Check"/>
+			<KxSetSpellcheckLanguageCommand aid="40018" customTip="SetSpellcheckLanguage" dialogHint="1" forceVisible="1" hotKey="C" icon="language_kd" id="SetSpellcheckLanguageCommand" idKey="SpellCheck" rbHotKey="A" text="@Set Language"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ProxySetSpellcheckLanguageCommand_XA" idKey="SpellCheckSetLanguage" targetId="SetSpellcheckLanguageCommand_XA" targetModule="kspellcheckset" visible="false"/>
+			<KxLegacyTriggerCommand aid="80160" hotKey="e" icon="recalculate_book_kd" iconQat="recalculate_book_kd" id="RecalculateBook" ksoCmd="RecalculateBook" shortcutHint="F9" text="@Recalculate Workbook"/>
+			<KxLegacyTriggerCommand aid="80161" controlType="0" hotKey="j" id="CalculateSheet" idMso="CalculateSheet" ksoCmd="CalculateSheet" shortcutHint="Shift+F9" text="@Calculate Sheet"/>
+			<KxEtInsertSheetCommand aid="40019" descName="@Insert Sheet" id="InsertSheet_Shortcut" shortcutHint="Shift+F11"/>
+			<KxLegacyTriggerCommand aid="40020" id="GrowZoom" ksoCmd="GrowZoom"/>
+			<KxLegacyTriggerCommand aid="40021" id="ShrinkZoom" ksoCmd="ShrinkZoom"/>
+			<KxLegacyTriggerCommand aid="40022" filterFlag="1" id="ResetZoom" ksoCmd="ResetZoom"/>
+			<KxLegacyTriggerCommand id="OleExitPreview" ksoCmd="ExitPreview" text="@Close"/>
+			<KxPropComposeCommand dialogHint="1" hotKey="a" icon="doc_margins_custom_kd" id="MoreMargins" ksoCmd="PageSetup" qtspyName="PageSetup" rbHotKey="A" tabIndex="1" text="@Custom Margins"/>
+			<KProxyCommand customTip="OnlineChart" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="qh" filter="category=mac" icon="DocerBulb;DocerBulb-mos;DocerBulb-down;DocerBulb-dis" id="ProxyQuickBarOnlineChart" isAutoPopup="false" isCefPopup="true" isQuickHelpButton="true" pluginName="konlinechart" showAfterPluginLoaded="true" targetId="QuickBarOnlineChart" targetModule="konlinechart" text="@Online Chart"/>
+			<KProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ProxyOnlineChartStyle" isAutoPopup="false" showAfterPluginLoaded="true" targetId="OnlineChartStyle" targetModule="konlinechart" text="@Online Chart"/>
+			<KProxyCommand autoPopupTimeout="10" customTip="PictureChange" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="qh" icon="replace_pic_kd" id="QuickHelpPictureChange" idKey="CommonInsertOnlinePicture" isAutoPopup="false" isCefPopup="true" isCompletedHide="true" pluginName="konlinepicture" relatedKsoCmd="InsertPictureFromFile" showAfterPluginLoaded="true" targetId="QuickHelpPictureChange" targetModule="konlinepicture" text="@Online Picture Change"/>
+			<KDocerPictureProxyCommand customTip="PictureChange" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="true" entryPos="qh" height="400" icon="replace_pic_kd" id="MenuPictureChange" idKey="CommonInsertOnlinePicture" isAutoPopup="false" isCefPopup="true" isCompletedHide="true" pluginName="konlinepicture" relatedKsoCmd="InsertPictureFromFile" showAfterPluginLoaded="true" targetId="MenuPictureChange" targetModule="konlinepicture" text="@Online Picture Change" width="380"/>
+			<KDocerPictureProxyCommand customTip="PictureChange" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="true" height="433" icon="replace_pic_kd" id="ReplaceOnlinePictureFromMenu" idKey="docerReplaceOnlinePictureFromMenu" isAutoPopup="false" isCompletedHide="true" relatedKsoCmd="InsertPictureFromFile" showAfterPluginLoaded="true" skeletonAlias="kdocerresource_picture" targetId="ReplaceOnlinePictureFromMenu" targetModule="kdocercore" text="@Online Picture Change" width="444"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" dialogHint="1" hotKey="I" id="InsertOnlineTextboxCommandInInsertTab" idKey="EtOnlineTextbox" localMenuHeight="96" rbHotKey="SI" relatedKsoCmd="InsertTextboxHorizontal" targetId="InsertOnlineTextboxCommandInInsertTab" targetModule="kdocercore" text="@Online Textbox"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" dialogHint="1" hotKey="I" id="InsertOnlineTextboxCommandInPictureToolTab" idKey="EtOnlineTextbox" localMenuHeight="96" rbHotKey="SI" relatedKsoCmd="InsertTextboxHorizontal" targetId="InsertOnlineTextboxCommandInPictureToolTab" targetModule="kdocercore" text="@Online Textbox"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="DocerResourceTaskpane_Search" idKey="EtDocerResourceTaskpaneSearch" targetModule="kdocerresource"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="shape_four_three_kd" id="DocerResourceTaskpane_Icon" idKey="EtDocerResourceTaskpaneIcon" targetModule="kdocerresource" text="@Online Icon"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="font_replace_kd" id="DocerResourceTaskpane_Font" idKey="EtDocerResourceTaskpaneFont" targetModule="kdocerresource" text="@Online Fonts"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="chart_online_kd" id="DocerResourceTaskpane_Chart" idKey="EtDocerResourceTaskpaneChart" targetModule="kdocerresource" text="@Docer Chart"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="pic_online_kd" id="DocerResourceTaskpane_Picture" idKey="EtDocerResourceTaskpanePicture" targetModule="kdocerresource" text="@Docer Picture"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="text_frame_kd" id="DocerResourceTaskpane_Textbox" idKey="EtDocerResourceTaskpaneTextbox" targetModule="kdocerresource" text="@Online Textbox"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="font_art_style_kd" id="DocerResourceTaskpane_Wordart" idKey="EtDocerResourceTaskpaneWordart" targetModule="kdocerresource" text="@DocerWordArt"/>
+			<KxLegacyTriggerCommand aid="752" controlType="0" hotKey="x" icon="exit_two_kd" id="Exit" idMso="ApplicationExit" ksoCmd="Exit" text="@Exit"/>
+			<KxNewBlankFileShortCutCommand aid="18" hotKey="n" icon="doc_add_kd" iconQat="doc_add_kd" id="TabButtonNewBlankFile" ksoCmd="NewBlankFile" shellEntryType="tabButton" shortcutHint="Ctrl+N" text="@New Blank Workbook"/>
+			<KxLegacyTriggerCommand aid="85004" controlType="0" filter="lang!=ja_JP" hotKey="e" icon="doc_add_kd" id="TabButtonNewBlankXlsxFile" idMso="FileNewXlsxFile" ksoCmd="NewBlankXlsxFile" shellEntryType="tabButton" text="@New Excel Workbook"/>
+			<KxLegacyTriggerCommand aid="80174" hotKey="t" icon="create_online_et_kd" id="TabButtonDefaultTemplate" ksoCmd="NewFileFromDefaultTemplate" shellEntryType="tabButton" text="@New from Default Template"/>
+			<KxKsoNewHomepageCommand aid="40023" hotKey="i" icon="ethome" id="NewFileFromOnlineTemplates" ksoCmd="HomepagePlugin" referenceDisable="1" text="@New from Online Templates" toggle="false"/>
+			<KxDocerFakeTabCommand filter="support:NewHomePage=true" id="KxDocerFakeTabCommand" useFakeTab="true"/>
+			<KxCloudpageFakeTabCommand filter="support:NewHomePage=true" id="KxCloudpageFakeTabCommand" useFakeTab="true"/>
+			<KxCloudpageTriggerCommand enabled="false" hotKey="c" icon="doc_docer_kd" id="TabButtonNewCloudpage" ksoCmd="CloudpagePlugin" text="@Cloud Page" toggle="false" visible="false"/>
+			<KProxyCommand customTip="OnlineFonts" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="font_replace_kd" id="MoreOnlineFonts" idKey="CloudFonts" targetId="OnlineFonts" targetModule="konlinefonts" text="@Online Fonts"/>
+			<KProxyCommand customTip="OnlineFonts" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="font_replace_kd" id="AppCenterMoreOnlineFonts" idKey="CloudFonts" targetId="OnlineFonts" targetModule="konlinefonts" text="@Online Fonts"/>
+			<KxOleLegacyTriggerCommand aid="2520" controlType="0" enabled="false" icon="doc_add_kd" id="OleNewFile" idMso="FileNew" ksoCmd="NewBlankFile" oleCmdExecOpt="2" text="@New Blank Workbook" visible="false" wpsIsEanble="false"/>
+			<KProxyCommand customTip="Recommended Chart" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="chart_star_two_kd" id="InsertRecommendChart" idKey="EtInsertRecommendChart" ksoCmd="InsertNewChart" qtspyName="Recommended Chart" targetId="InsertRecommendChart" targetModule="etchartrecommend" text="@Recommended Chart"/>
+			<KProxyCommand customTip="OnlineChart" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="550" icon="chart_online_kd" id="OnlineChart" idKey="EtOnlineChart" ksoCmd="OnlineChart" qtspyName="OnlineChart" rbHotKey="SO" relatedKsoCmd="InsertPictureFromFile" targetId="OnlineChart" targetModule="konlinechart" text="@Online Chart" width="716"/>
+			<KProxyCommand customTip="OnlineChart" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="550" icon="chart_online_kd" id="InsertOnlineChart" idKey="EtInsertOnlineChart" ksoCmd="OnlineChart" qtspyName="OnlineChart" rbHotKey="SO" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlineChart" targetModule="konlinechart" text="@Online Chart" width="716"/>
+			<KProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="ChartDlgOnlineChart" ksoCmd="OnlineChart" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlineChart" targetModule="konlinechart"/>
+			<KProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="DsOnlineChart" idKey="EtDsOnlineChartMac" ksoCmd="OnlineChart" targetId="DsOnlineChart" targetModule="konlinechart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartColumn" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartColumn" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartLine" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartLine" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartclustered-column" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartclustered-column" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartnormal-line" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartnormal-line" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartPie" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartPie" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartScatter" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartScatter" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartnormal-pie" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartnormal-pie" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartnormal-scatter" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartnormal-scatter" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartArea" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartArea" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartBar" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartBar" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartCombo" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartCombo" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartRadar" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartRadar" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartStock" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartStock" targetModule="kdocercore" text="@Online Chart"/>
+			<KDocerResourceProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependOnKic="false" id="OnlineTypeQuickChartBubble" idKey="OnlineTypeQuickChart" ksoCmd="OnlineChart" targetId="OnlineTypeQuickChartBubble" targetModule="kdocercore" text="@Online Chart"/>
+			<KProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="WebChartGallery" idKey="WebChartGallery" targetId="WebChartGallery" targetModule="kdocerjsapi20"/>
+			<KxEtTabNewQuickMenuCommand aid="18" barid="40032" id="TabbarButton" referenceCommand="TabButtonNewBlankFile">
+				<command idQ="TabButtonNewBlankFile"/>
+				<command filter="lang!=ja_JP" idQ="TabButtonNewBlankXlsxFile"/>
+				<command idQ="TabButtonDefaultTemplate"/>
+			</KxEtTabNewQuickMenuCommand>
+			<KListCommand aid="40024" barid="40021" id="TabBar NewFile" text="@New File Menu" visible="false">
+				<command idQ="TabbarButton"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand aid="100064" dialogHint="1" hotKey="s" id="setHilightRepeatItems" ksoCmd="RepeatWordRemind" text="@Set"/>
+			<KxLegacyTriggerCommand aid="100063" hotKey="c" id="clearHilightRepeatItems" ksoCmd="ClearRepeatWordRemind" text="@Clear"/>
+			<KListCommand aid="92008" barid="40060" hotKey="r" icon="repeat_items_hightlight_kd" id="rHilightRepeatItems" text="@Highlight Duplicates">
+				<command idQ="setHilightRepeatItems"/>
+				<command idQ="clearHilightRepeatItems"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand aid="100066" dialogHint="1" hotKey="L" icon="repeat_items_reject_kd" id="setRejectInsertRepeatItems" ksoCmd="RepeatWordInputDeny" text="@Set Reject Insert Repeat Items"/>
+			<KxLegacyTriggerCommand aid="100067" hotKey="R" icon="reject_input_clear_kd" id="clearRejectInsertRepeatItems" ksoCmd="ClearRepeatWordInputDeny" text="@Clear rejection of entry restrictions"/>
+			<KListCommand aid="92009" barid="40061" hotKey="i" icon="repeat_items_reject_kd" id="rRejectInsertRepeatItems" text="@Reject Duplicate Entries">
+				<command idQ="setRejectInsertRepeatItems"/>
+				<command idQ="clearRejectInsertRepeatItems"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand aid="92010" hotKey="d" icon="repeat_items_delete_kd" iconQat="repeat_items_delete_kd" id="rDeleteRepeatItems" ksoCmd="RepeatWordDelete" text="@Remove Duplicates"/>
+			<KListCommand aid="92027" barid="40027" customTip="Duplicates" hotKey="R" icon="repeat_items_hightlight_kd" id="rDuplicates" rbHotKey="M" text="@Duplicates">
+				<command idQ="rHilightRepeatItems"/>
+				<command idQ="rRejectInsertRepeatItems"/>
+				<command idQ="rDeleteRepeatItems"/>
+			</KListCommand>
+			<KListCommand aid="40025" barid="40022" id="SmartLabelIcons">
+				<KxLegacyTriggerCommand icon="paste_kd" qtspyName="Paste"/>
+				<KxLegacyTriggerCommand icon="SmartLabelErrTip" qtspyName="SmartLabelErrTip"/>
+			</KListCommand>
+			<KxRecentFileListCommand aid="80147" autoShortCut="1" id="RecentFileList" ksoCmd="RecentFileList" maxItems="9" text="@Recent File Management"/>
+			<KListCommand groupTip="TableStyleOptionGroup" icon="general_options_kd" id="TableStyleOptions" text="@Table Style Options">
+				<KxEtCheckboxCommand customTip="HeaderRow" id="HeaderRow" ksoCmd="HeaderRow" spaceHint="suitable" text="@Header Row"/>
+				<KxCheckBoxCommand customTip="FirstColumn" id="FirstColumn" ksoCmd="FirstColumn" singlerowfoldgroup="column_pair" spaceHint="suitable" text="@First Column"/>
+				<KxEtCheckboxCommand aid="7372" customTip="TotalRow" id="TotalRow" ksoCmd="TotalRow" spaceHint="suitable" text="@Total Row"/>
+				<KxCheckBoxCommand customTip="LastColumn" id="LastColumn" ksoCmd="LastColumn" singlerowfoldgroup="column_pair" spaceHint="suitable" text="@Last Column"/>
+				<KxCheckBoxCommand customTip="BandedRows" id="BandedRows" ksoCmd="BandedRows" singlerowfoldgroup="banded_pair" spaceHint="suitable" text="@Banded Rows"/>
+				<KxCheckBoxCommand customTip="BandedColumns" id="BandedColumns" ksoCmd="BandedColumns" singlerowfoldgroup="banded_pair" spaceHint="suitable" text="@Banded Columns"/>
+			</KListCommand>
+			<KListCommand groupTip="PivotTableStyleOptionGroup" horizontalSpacing="6" icon="general_options_kd" id="PivotTableStyleOptions" text="@Pivot Table Style Options">
+				<KxCheckBoxCommand customTip="RowHeader" id="PivotRowHeader" ksoCmd="PivotRowHeader" singlerowfoldgroup="pivotheader_pair" spaceHint="suitable" text="@Row Header"/>
+				<KxCheckBoxCommand customTip="ColumnHeader" id="PivotColumnHeader" ksoCmd="PivotColumnHeader" singlerowfoldgroup="pivothead_pair" spaceHint="suitable" text="@Column Header"/>
+				<KxCheckBoxCommand customTip="BandedRows" id="PivotBandedRows" ksoCmd="PivotBandedRows" singlerowfoldgroup="pivotbanded_pair" spaceHint="suitable" text="@Banded Rows"/>
+				<KxCheckBoxCommand customTip="BandedColumns" id="PivotBandedColumns" ksoCmd="PivotBandedColumns" singlerowfoldgroup="pivotbanded_pair" spaceHint="suitable" text="@Banded Columns"/>
+			</KListCommand>
+			<KListCommand groupTip="TableStyleGroup" icon="sheet_style_kd" id="TableStyles" text="@Table Style">
+				<KxEtListobjectTableStyleCommand bSupportThemeColorPane="1" bThemeColorPaneInBottom="0" columnNumber="6" completeColumnNumber="4" embedHint="1" galleryHeight="100" iconQat="sheet_style_kd" id="TableStyleGallery" ksoCmd="TableStyle" maxVisibleNumber="9" onlineCmd="OnlineTableStyle" popupHeight="260" popupWidth="418" text="@Table Style">
+					<KxLegacyTriggerCommand customTip="New Table Style" dialogHint="1" hotKey="N" icon="sheet_style_kd" id="NewTableStyle" idKey="EtNewTableStyle" ksoCmd="NewTableStyle" text="@New Table Style"/>
+					<KxLegacyTriggerCommand customTip="ClearStyle" hotKey="C" icon="clear_format_kd" id="ClearTableStyle" ksoCmd="ClearTableStyle" text="@Clear"/>
+				</KxEtListobjectTableStyleCommand>
+			</KListCommand>
+			<KListCommand groupTip="PivotTableStyleGroup" icon="sheet_style_kd" id="PivotTableStyles" text="@Pivot Table Styles">
+				<KxEtPivotTableStyleCommand bSupportThemeColorPane="1" bThemeColorPaneInBottom="0" columnNumber="6" completeColumnNumber="4" embedHint="1" galleryHeight="100" iconQat="sheet_style_kd" id="PivotTableStyleGallery" ksoCmd="PivotTableStyle" maxVisibleNumber="8" onlineCmd="PivotOnlineTableStyle" popupHeight="198" popupWidth="418" text="@Format as Pivot Table">
+					<KxLegacyTriggerCommand customTip="New Pivot Table Style" dialogHint="1" hotKey="N" icon="sheet_style_kd" id="NewPivotTableStyle" ksoCmd="NewPivotTableStyle" text="@New Pivot Table Style"/>
+					<KxLegacyTriggerCommand customTip="ClearStyle" hotKey="C" icon="clear_format_kd" id="ClearPivotTableStyle" ksoCmd="ClearPivotTableStyle" text="@Clear"/>
+				</KxEtPivotTableStyleCommand>
+			</KListCommand>
+			<KListCommand groupTip="SlicerOptionStyleGroup" icon="slicer_style_kd" id="SlicerStyles" text="@Styles">
+				<KxEtSlicerStyleCommand columnNumber="6" embedHint="1" galleryHeight="60" iconQat="slicer_style_kd" id="SlicerStyleGallery" ksoCmd="SlicerStyle" maxVisibleNumber="8" text="@Styles">
+					<KxLegacyTriggerCommand customTip="New Slicer Style" dialogHint="1" hotKey="N" icon="sheet_style_kd" id="NewSlicerStyle" ksoCmd="NewSlicerStyle" text="@New Slicer Style"/>
+				</KxEtSlicerStyleCommand>
+			</KListCommand>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="GlobalFilterAiAysMenu"/>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="TableFilterAiAysMenu"/>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="PivotAiAysMenu"/>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="HoneycombGlobalFilterAiAysMenu"/>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="HoneycombTableFilterAiAysMenu"/>
+			<KxEtAIQuickAnalysisMenuListCommand delayloadPath="commands/et/PopupMenu.kuip" icon="bulb_kd" id="HoneycombPivotAiAysMenu"/>
+			<KxRecentFileListCommand aid="80147" autoShortCut="1" id="RecentFileList" ksoCmd="RecentFileList" maxItems="9" text="@Recently File Management"/>
+			<KxLegacyTriggerCommand aid="80141" dialogHint="1" hotKey="m" icon="create_from_default_template_et_kd" id="NewFileFromTemplates" ksoCmd="NewFileFromTemplates" text="@New from Other Templates"/>
+			<KxLegacyTriggerCommand aid="80141" controlType="0" dialogHint="1" hotKey="m" icon="create_from_default_template_et_kd" id="FileMenuNewFileFromTemplates" idMso="FileNewFromTemplate" ksoCmd="NewFileFromTemplates" popupReadOnlyHint="create" qtspyName="NewFileFromTemplates" shellEntryType="fileMenu" text="@New from Other Templates"/>
+			<KxLegacyTriggerCommand aid="80141" dialogHint="1" hotKey="m" icon="create_from_default_template_et_kd" id="TaskPaneNewFileFromTemplates" ksoCmd="NewFileFromTemplates" qtspyName="NewFileFromTemplates" shellEntryType="taskPane" text="@New from Other Templates"/>
+			<KxLegacyTriggerCommand aid="40026" dialogHint="1" icon="FromDesignTemplate" id="FromDesignTemplate" ksoCmd="FromDesignTemplate" text="@New from Default Template"/>
+			<KxLegacyTriggerCommand aid="80174" hotKey="t" icon="create_online_et_kd" id="NewFileFromDefaultTemplate" ksoCmd="NewFileFromDefaultTemplate" text="@New from Default Template"/>
+			<KxLegacyTriggerCommand aid="80174" hotKey="t" icon="create_online_et_kd" id="TaskPaneNewFileFromDefaultTemplate" ksoCmd="NewFileFromDefaultTemplate" qtspyName="NewFileFromDefaultTemplate" shellEntryType="taskPane" text="@New from Default Template"/>
+			<KxTemplateOnLineCommand aid="40027" id="templateOnLine" idKey="NewFromOlineTemplatesTaskPane" text="@WPS Online Template"/>
+			<KxLegacyTriggerCommandEx aid="139" controlType="6" hotKey="h" icon="text_frame_horizontal_kd" iconQat="text_frame_horizontal_kd" id="InsertTextboxHorizontal" idMso="TextBoxInsertHorizontal" ksoCmd="InsertTextboxHorizontal" rbHotKey="H" text="@Horizontal Text Box"/>
+			<KxLegacyTriggerCommandEx aid="138" controlType="6" hotKey="v" icon="text_frame_vertical_kd" id="InsertTextboxVertical" idMso="TextBoxInsertVertical" ksoCmd="InsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+			<KxDataRecoverCommand customTip="DataRecover" hotKey="r" icon="data_recover_kd" id="dataRecover" idKey="DataRecoveryMaster" infoId="r" ksourl="L10N:DATA_RECOVER_URL" processName="@WPS Data Recovery Master" text="@Data Recovery"/>
+			<KScreenGrabCommandEx id="screenGrabEx"/>
+			<KExtendObjectTriggerCommand customTip="TriggerExtendObject" icon="edit_extend_object_kd" id="ExtendObjecterTrigger" qtspyName="ExtendObjecterTrigger" text="@ExtendObjectTrigger"/>
+			<KExtendObjectTriggerCommand customTip="TriggerExtendObject" icon="edit_extend_object_kd" id="ExtendObjecterTriggerQuickbar" qtspyName="ExtendObjecterTrigger" text="@ExtendObjectTrigger"/>
+			<KxBridgeTriggerCommand bridgeCommand="LayoutSmartOrganizeBridge" customTip="LayoutSmartOrganize" icon="sheet_tidy_kd" id="LayoutSmartOrganize" idKey="EtAiSmartOrganize" rbHotKey="1" text="@Layout Smart Organize"/>
+			<KxBridgeTriggerCommand bridgeCommand="AiSmartOrganizePopupBridge" icon="sheet_tidy_kd" id="AiSmartOrganizePopup" idKey="EtAiSmartOrganize" text="@Smart Organize"/>
+			<KxBridgeTriggerCommand bridgeCommand="AiSmartOrganizeArrangePopupBridge" icon="stick_kd" id="AiSmartOrganizeArrangePopup" idKey="EtAiSmartOrganize" text="@Smart Organize Arrange"/>
+			<KxBridgeTriggerCommand bridgeCommand="AiSmartOrganizeArrangePopupUnityBridge" icon="sheet_tidy_kd" id="AiSmartOrganizeArrangePopupUnity" idKey="EtAiSmartOrganize" text="@Smart Organize Arrange"/>
+			<KxHLayoutListCommand iconVisible="1,0,1" id="AiSmartOrganize" idKey="EtAiSmartOrganize" itemWidth="-1,7,34" separatorHeight="16" textVisible="1,0,0">
+				<command idQ="AiSmartOrganizePopup"/>
+				<separator/>
+				<command idQ="AiSmartOrganizeArrangePopup"/>
+			</KxHLayoutListCommand>
+			<KxBridgeTriggerCommand bridgeCommand="AiSmartOrganizeTabBridge" customTip="AiSmartOrganizeTab" icon="sheet_tidy_kd" id="AiSmartOrganizeTab" idKey="EtAiSmartOrganize" needLogin="false" rbHotKey="1" text="@Smart Organize Arrange"/>
+			<KxBridgeTriggerCommand bridgeCommand="AiSmartOrganizeToolBridge" customTip="AiSmartOrganizeTab" icon="sheet_tidy_kd" id="AiSmartOrganizeTool" idKey="EtAiSmartOrganize" rbHotKey="1" text="@Smart Organize Arrange"/>
+			<KAiBeautifyProxyCommand customTip="AiSmartProofing" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="sheet_tidy_kd" id="AiSmartProofing" idKey="EtAiSmartProofing" spaceHint="suitable" targetId="AiSmartProofing" targetModule="kaietproofread" text="@Smart Proofing"/>
+			<KAiBeautifyProxyCommand customTip="AiSmartChart" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_smart_analysis_kd" id="AiSmartChart" idKey="EtAiSmartChart" targetId="AiSmartChart" targetModule="kaiet" text="@Smart Chart Ai"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="close_window_kd" id="AiClose" idKey="EtAiClose" targetId="AiClose" targetModule="kaiet" text="@Close"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_field_list_kd" id="AiFieldList" idKey="EtAiFieldList" targetId="AiFieldList" targetModule="kaiet" text="@Field List"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_field_list_kd" id="AiDataSummary" idKey="EtAiDataSummary" targetId="AiDataSummary" targetModule="kaiet" text="@Data Summary"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_field_graph_kd" id="AiFieldGraph" idKey="EtAiFieldGraph" targetId="AiFieldGraph" targetModule="kaiet" text="@field Graph"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="insert_kd" id="AiNewAnalysis" idKey="EtAiNewAnalysis" targetId="AiNewAnalysis" targetModule="kaiet" text="@New Analysis"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_smart_analysis_kd" id="AiMyAnalysis" idKey="EtAiMyAnalysis" targetId="AiMyAnalysis" targetModule="kaiet" text="@My Analysis"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="table_refresh_kd" id="AiRefresh" idKey="EtAiRefresh" targetId="AiRefresh" targetModule="kaiet" text="@Refresh"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="ai_interpretation_kd" id="AiInterpretation" idKey="EtAiInterpretation" targetId="AiInterpretation" targetModule="kaiet" text="@Interpretation"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="setup_kd" id="AiInterpretationManage" idKey="EtAiInterpretationManage" targetId="AiInterpretationManage" targetModule="kaiet" text="@InterpretationManage"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="customer_service_kd" id="AiVote" idKey="EtAiVote" targetId="AiVote" targetModule="kaiet" text="@Vote Center"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="math_currency_kd" id="AiSourceSheet" idKey="EtAiSourceSheet" targetId="AiSourceSheet" targetModule="kaiet" text="@Source Sheet"/>
+			<KAiBeautifyProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="math_currency_kd" id="AiSourceSheetNew" idKey="EtAiSourceSheetNew" targetId="AiSourceSheetNew" targetModule="kaiet" text="@Source Sheet New"/>
+			<KListCommand controlType="5" customTip="AiSmartEntrace" icon="ai_data_kd" id="AiSmartEntrace" text="@AI entrance">
+				<command idQ="AiSmartOrganize"/>
+				<command idQ="AiSmartProofing"/>
+				<command idQ="AiSmartChart"/>
+			</KListCommand>
+			<KControlListCommand customTip="LayoutSmartOrganize" groupTip="LayoutSmartOrganizeGroup" icon="sheet_tidy_kd" id="SmartOrganize_Layout" idKey="EtAiSmartOrganize" rbHotKey="1" text="@Layout Smart Organize">
+				<command idQ="LayoutSmartOrganize"/>
+			</KControlListCommand>
+			<KProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependPlugins="kwebonlinesymbol" id="TpOnlineSymbol_TaskPane" targetId="TpOnlineSymbol_TaskPane" targetModule="kdocerjsapi20"/>
+			<KDocerFpcControlProxyCommand delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" feature="ai_generate_chart" fpcCombKey="ai_generate_chart" fpcGroupId="85016" fpcProjectId="60" id="TpAiGenerateChart_TaskPane" targetId="TpAiGenerateChart_TaskPane" targetModule="kdocerjsapi20" text="@AI Generate Chart"/>
+			<KListCommand id="TaskpaneCommandPackage" idKey="EtTaskpaneCommandPackage">
+				<KxTpEtSelectShapeCommand alias="TpSelectShape" defaultVisible="true" id="TpSelectShape" qtspyName="iselShape;iselShape-emos;iselShape-edown;iselShape-dis" shortHint="@Select Shape" text="@Selection Pane" tpIcon="mouse_kd"/>
+				<KxTpEtFormatCommand alias="TpFormatting" defaultVisible="true" id="TpFormatting" qtspyName="property;property-emos;property-edown;property-dis" shortHint="@Formatting" text="@Formatting" tpIcon="admin_kd"/>
+				<KxTpPivotTableCommand alias="TpPivotTable" defaultVisible="true" id="TpPivotTable" qtspyName="idata;idata-emos;idata-edown;idata-dis" shortHint="@Parse" text="@PivotTable" tpIcon="sheet_pivot_kd"/>
+				<KxTaskPanePluginCommand alias="TpDocerResourceShop" defaultVisible="true" icon="docer_resource_shop_kd" id="TpDocerResourceShop" idKey="EtDocerResource" pluginName="kdocerresource" shortHint="@DocerResourceShop" targetCmd="KxTpDocerResourceShopCommand" text="@Docer Resource Shop"/>
+				<KxTaskPanePluginCommand alias="TpAiGenerateChart" autoLoad="false" defaultVisible="true" id="TpAiGenerateChart" idKey="EtTpAiGenerateChart" proxyCmdId="TpAiGenerateChart_TaskPane" shortHint="@Chart" text="@AI Generate Chart" tpIcon="ai_chart_kd"/>
+				<KxTaskPanePluginCommand alias="DocerTpFeature" defaultVisible="true" icon="stick_kd" id="DocerTpFeature" idKey="EtDocerTaskPanePlugin" pluginName="kdocercore" shortHint="@DocerTpFeature" targetCmd="KDocerTpFeatureCommand" targetId="DocerTpFeature" text="@Docer Tp Feature"/>
+				<KxTaskPanePluginCommand alias="DataMarketTool" icon="math_finance_function_kd" id="TpDataMarket" idKey="EtTpDataMarket" pluginName="kdatamarket" shortHint="@ShortDataMarket" targetCmd="KDataMarketTpCommand" text="@Data Market"/>
+				<KxTaskPaneProxyCommand alias="TpFormulaEditor" autoLoad="false" defaultVisible="true" id="TpFormulaEditor" idKey="EtTpFormulaEditor" shortHint="@Formula" targetId="TpFormulaEditor" targetModule="kwebformulaeditor" text="@Formula Editor" tpIcon="tpformulaeditor;tpformulaeditor-hover;tpformulaeditor-down;tpformulaeditor-dis"/>
+				<KxTaskPanePluginCommand alias="TpOnlineSymbol" defaultVisible="false" id="TpOnlineSymbol" idKey="EtTpOnlineSymbol" proxyCmdId="TpOnlineSymbol_TaskPane" shortHint="@ShortSymbol" text="@Insert Symbol" tpIcon="math_omega_kd"/>
+				<KxTaskPanePluginCommand alias="TpResourcesClip" icon="folder_star_kd" id="TpResourcesClip" pluginName="kresourcesclip" shortHint="@Resources Clip" targetCmd="KResourcesClipCommand" text="@Resources Clip"/>
+				<KxTaskPanePluginCommand alias="TpDocFinalizedMgr" icon="doc_finalized_kd" id="TpDocFinalizedMgr" pluginName="kdocfinalizedmgr" shortHint="@Finalized" targetCmd="KDocFinalizedMgrCommand" text="@Document Finalized"/>
+				<KxTaskPanePluginCommand alias="TpKDelivery" icon="delivery_mgr_kd" id="kdeliverymgr" pluginName="kdeliverymgr" shortHint="@DeliveryHit" targetCmd="KDeliveryMgrCommand" text="@Delivery"/>
+				<KxAIDaAysProxyCommand alias="EtAiDaAys" autoLoad="false" defaultVisible="true" id="EtAiDaAys" idKey="EtTaskPaneAnalysis" pluginName="ketaidataanalysis" shortHint="@Question" targetCmd="KxEtAIDaAysCommand" text="@AI Analysis Copilot" tpIcon="etai_daays_logo"/>
+				<KxTaskPanePluginCommand alias="TpPhonePicture" id="TpPhonePicture" pluginName="kphonepicture" shortHint="@Send pictures" targetCmd="KxTpPhonePictureCommand" text="@Insert Pictures From Phone" tpIcon="camera_kd"/>
+				<KxTaskPaneProxyCommand alias="TpColumnStatistics" autoLoad="false" defaultVisible="true" id="TpColumnStatistics" shortHint="@Statistics" targetId="TpColumnStatistics" targetModule="kwebettaskpane" text="@Column Statistics" tpIcon="sheet_condition_statistics_kd"/>
+				<KxTaskPaneProxyCommand alias="TpFormulaPerf" autoLoad="false" defaultVisible="true" id="TpFormulaPerf" shortHint="@Optimization" targetId="TpFormulaPerf" targetModule="kwebettaskpane" text="@Formula Calculation Diagnosis" tpIcon="math_completed_kd"/>
+				<KxTpEtBackupCommand alias="TpBackupFile" dataRecoverCmd="dataRecover" documentFixCmd="documentFixCmd" id="TpBackupFile" shortHint="@Backup" text="@Backup Management" tpIcon="restore_kd"/>
+				<KxTpOfiicespaceCommand alias="Document collaboration" filter="l10n:DOCUMENT_COLLABORATION_SUPPORT=true" icon="isycm;isycm-emos;isycm-edown;isycm-dis" id="Document collaboration" shortHint="@Note@shortHint" text="@Note"/>
+				<KxTaskPanePluginCommand alias="SkyEyeDataTool" icon="tpskyeyedata;tpskyeyedata-mos;tpskyeyedata-down;tpskyeyedata-dis" id="TpSkyEyeData" idKey="EtTpSkyEyeData" pluginName="kskyeyedata" shortHint="@Query Enterprise" targetCmd="KSkyEyeTpCommand" text="@Enterprise Query"/>
+				<KxTpHelpDocSearchCommand alias="TpHelpDocSearch" id="TpHelpDocSearch" idKey="TpHelpDocSearch" shortHint="@HelpDocSearch" text="@Search Help Information" tpIcon="Search;Search;Search;Search"/>
+				<KxTaskPanePluginCommand alias="TpWpsSkill" autoLoad="false" icon="skill_picture_kd" id="TpWpsSkill" idKey="EtTpWpsSkill" pluginName="kwpsskill" shortHint="@WPS Skill" targetCmd="KWPSSkillCommand" text="@WPS Office Skill"/>
+				<KxProtectAreaPaneCommand defaultVisible="false" icon="shield_kd" id="TpProtectArea" idKey="EtProtectArea" shortHint="@ShortProtectArea" text="@ProtectArea"/>
+				<KxTaskPanePluginCommand alias="TpQuickFilter" autoLoad="false" defaultVisible="true" id="TpQuickFilter" idKey="EtTpQuickFilter" pluginName="kquickfilter" shortHint="@Filter" targetCmd="KxTpQuickFilterCommand" text="@QuickFilter" tpIcon="filter_dynamic_kd"/>
+			</KListCommand>
+			<KListCommand filter="isIntranet=true" id="TaskpaneCommandPackage">
+				<KxTaskPaneProxyCommand alias="TpColumnStatistics" autoLoad="false" defaultVisible="true" id="TpColumnStatistics" shortHint="@Statistics" targetId="TpColumnStatistics" targetModule="kwebettaskpane" text="@Column Statistics" tpIcon="sheet_condition_statistics_kd"/>
+				<KxAIDaAysProxyCommand alias="EtAiDaAys" autoLoad="false" defaultVisible="true" filter="isIntranet=true" id="EtAiDaAys" pluginName="ketaidataanalysis" shortHint="@Question" targetCmd="KxEtAIDaAysCommand" text="@AI Analysis Copilot" tpIcon="etai_daays_logo"/>
+				<KxTaskPaneProxyCommand alias="TpFormulaPerf" autoLoad="false" defaultVisible="true" id="TpFormulaPerf" shortHint="@Optimization" targetId="TpFormulaPerf" targetModule="kwebettaskpane" text="@Formula Calculation Diagnosis" tpIcon="math_completed_kd"/>
+			</KListCommand>
+			<KListCommand id="EtPQTaskpaneCommandPackage">
+				<KxEtTpDataManageCommand alias="TpPowerQuery" autoLoad="false" defaultVisible="true" id="TpPowerQuery" shortHint="@Data" targetId="TpPowerQuery" targetModule="kwebetpowerquerysidepanel" text="@Data Management" tpIcon="etpqdatamanager"/>
+			</KListCommand>
+			<KxTaskPaneListCommand aid="40029" barid="40023" delayloadPath="commands/et/TaskPane.kuip" filterFlag="1" id="ClassicalTaskpane" idKey="EtClassicalTaskPaneDelayload" text="@Task Window"/>
+			<KxTaskPaneListCommand aid="40029" barid="40023" filterFlag="1" from="et_taskpane" id="ClassicalTaskpane" idKey="EtClassicalTaskPane" text="@Task Window">
+				<KxTpEtNewDocCommand alias="TpNewDoc" docerEntranceCmd="DocerURLEntrance" fromDesignTemplateCmd="FromDesignTemplate" id="ND_TpNewDoc" idKey="ETNewWorkBook" newDocCmd2="tpNewBlankXlsxFile" newDocCmd="TaskPaneNewBlankFile" newFromDefaultTemplateCmd="TaskPaneNewFileFromDefaultTemplate" openFileCmd="OpenFile" recentFileListCmd="RecentFileList" shortHint="@New" templateOnLineCmd="templateOnLine" templatesOnMyComputerCmd="TaskPaneNewFileFromTemplates" text="@New Workbook" tpIcon="idocument;idocument-mos;idocument-down;idocument-dis"/>
+				<KxTpEtSelectShapeCommand alias="TpSelectShape" id="TpSelectShape" qtspyName="iselShape;iselShape-mos;iselShape-down;iselShape-dis" shortHint="@Select Shape" text="@Selection Pane" tpIcon="iselShape;iselShape-mos;iselShape-down;"/>
+				<KxTpPivotTableCommand alias="TpPivotTable" id="TpPivotTable" qtspyName="idata;idata-mos;idata-down;idata-dis" shortHint="@Parse" text="@PivotTable" tpIcon="sheet_pivot_kd"/>
+				<KxTpEtClipArtCommand alias="TpClipArt" id="TpClipArt" idKey="ArmyFunction" qtspyName="iclipArt;iclipArt-mos;iclipArt-down;iclipArt-dis" shortHint="@Clip Art" text="@Clip Art" tpIcon="iclipArt;iclipArt-mos;iclipArt-down;iclipArt-dis"/>
+				<KxTpEtFormatCommand alias="TpFormatting" id="TpFormatting" shortHint="@Formatting" text="@Formatting" tpIcon="property;property-mos;property-down;propert-dis"/>
+				<KxTpEtBackupCommand alias="TpBackupFile" dataRecoverCmd="dataRecover" documentFixCmd="documentFixCmd" id="TpBackupFile" shortHint="@Backup" text="@Backup Management" tpIcon="restore_kd"/>
+				<KTpTComCloudStorageCommand alias="TpTComCS" id="TpTComCS" idKey="TcomComponent"/>
+				<KxTpHelpDocSearchCommand alias="TpHelpDocSearch" id="TpHelpDocSearch" idKey="TpHelpDocSearch" shortHint="@HelpDocSearch" text="@Search Help Information" tpIcon="Search;Search;Search;Search"/>
+				<KxProtectAreaPaneCommand defaultVisible="false" icon="shield_kd" id="TpProtectArea" idKey="EtTaskPaneProtectArea" shortHint="@ShortProtectArea" text="@ProtectArea"/>
+				<KxTaskPanePluginCommand alias="DocerTpFeature" defaultVisible="true" icon="stick_kd" id="DocerTpFeature" idKey="EtDocerTaskPanePlugin" pluginName="kdocercore" shortHint="@DocerTpFeature" targetCmd="KDocerTpFeatureCommand" targetId="DocerTpFeature" text="@Docer Tp Feature"/>
+				<KxEtTpDataManageCommand alias="TpPowerQuery" autoLoad="false" defaultVisible="true" id="TpPowerQuery" idKey="EtTpDataManage" shortHint="@Data" targetId="TpPowerQuery" targetModule="kwebetpowerquerysidepanel" text="@Data Management" tpIcon="etpqdatamanager"/>
+			</KxTaskPaneListCommand>
+			<KTaskPanelCopilotProxyCommand alias="TpCopilot" autoLoad="false" defaultVisible="false" id="TpCopilot" idKey="EtTpCopilot" pluginName="ktaskpanelcopilot" shortHint="@Copilot AI" targetCmd="KTaskPanelCopilotCommand" text="@WPS Copilot AI" tpIcon="tpcopilot"/>
+			<KxLegacyTriggerCommand aid="723" controlType="6" customTip="NormalViewEt" filterFlag="1" hotKey="n" icon="sheet_normal_kd" id="Normal" idMso="ViewNormalViewExcel" ksoCmd="Normal" needLogin="false" rbHotKey="L" text="@Normal"/>
+			<KxLegacyTriggerCommand aid="11441" controlType="6" customTip="PageLayoutView" filterFlag="1" hotKey="g" icon="columns_view_two_kd" id="PageLayoutView" idMso="ViewPageLayoutView" ksoCmd="PageLayoutView" needLogin="false" rbHotKey="G" text="@Page Layout"/>
+			<KxLegacyTriggerCommand aid="724" controlType="6" customTip="PageBreakPreview" filterFlag="1" hotKey="p" icon="page_break_preview_kd" id="PageBreakPreview" idMso="ViewPageBreakPreviewView" ksoCmd="PageBreakPreview" rbHotKey="I" text="@Page Break Preview"/>
+			<KxEtStatusBarReadingLayoutColorCommand aid="80152" barid="40040" customTip2="ReadingLayout2" customTip="ReadingLayout" hotKey="r" icon="reading_mode_kd" id="ReadingLayout" ksoCmd="ReadingLayout" ksoTriggerCmd="RecentReadingLayout" text="@Reading Layout">
+				<KxEtMoreColorCommand aid="2000030" dialogHint="1" hotKey="m" ksoCmd="ReadingLayoutMoreColor" qtspyName="ReadingLayoutMoreColor" text="@More Colors"/>
+			</KxEtStatusBarReadingLayoutColorCommand>
+			<KxEtAIFfunctionCommand controlType="0" icon="ai_math_function_kd" id="SearchAIFunction" text="@AI Function"/>
+			<KxEtAIAssistantCommand controlType="0" icon="sheet_assistant_kd" id="SearchAIAssistant" text="@AI Assistant"/>
+			<KxEtStatusCommand aid="40032" filterFlag="1" id="statusbar" text="@Status Bar">
+				<KxAuthorizedExpirationCommand idKey="StatusBarAuthorizedExpiration"/>
+				<KxEtStatusFormulaPerfCommand filterFlag="1" id="FormulaPerf" qtspyName="EtFormulaPerfCommand"/>
+				<KxEtStatusResumeCalcCommand filterFlag="1" id="StatusResumeCalc" qtspyName="EtStatusResumeCalcCommand"/>
+				<KxEtStatusOverrideText filterFlag="1" qtspyName="EtStatusOverrideText"/>
+				<KxEtStatusTaskProgressBarCommand filterFlag="1" qtspyName="KxEtStatusTaskProgressBarCommand"/>
+				<KxEtStatusAutoBackupText qtspyName="EtStatusAutoBackupText"/>
+				<KxEtStatusIOProgressText filterFlag="1" id="StatusIOProgressText" qtspyName="EtStatusIOProgressText"/>
+				<KStatusPermissionLabelCommand buttonStyle="3" detail="@Permission Protected" filterFlag="1" icon="successful_kd" id="StatusPermissionLabelCommand" idKey="NotDocSecurityPermissionCallback" minimumWidth="105" text="@Permission Protected" textColor="#538033"/>
+				<KStatusPermissionLabelProxyCommand2 autoLoad="false" buttonStyle="3" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" filterFlag="1" id="StatusPermissionLabelCommand" idKey="DocSecurityPermissionCallback" minimumWidth="105" targetModule="docpermission" text="@Permission Protected" visible="false"/>
+				<KStatusWindowProtectCommand buttonStyle="3" detail="@Editing is limited" filterFlag="1" id="KStatusWindowProtectCommand" text="@Editing is limited"/>
+				<separator idKey="DocSecurityPermission"/>
+				<KxEtStatusRecordMacroCommand detail="@Record Macro Statusbar" idKey="EtStatusRecordMacro" ksoCmd="RecordMacro" minimumWidth="75" qtspyName="RecordMacro"/>
+				<KxEtStatusBackgroundQueryCommand icon="BackgroundQuery_6;BackgroundQuery_5;BackgroundQuery_4;BackgroundQuery_3;BackgroundQuery_2;BackgroundQuery_1" minimumWidth="120" qtspyName="EtStatusBackgroundQueryCommand"/>
+				<separator idKey="DocSecurityPermission"/>
+				<KxStatusMBSignProxyCommand autoLoad="false" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="StatusMBSignCommand" idKey="MBVersionFlag" minimumWidth="105" targetModule="docpermission" visible="false"/>
+				<separator/>
+				<KStatusSecretLevelLabelCommand filterFlag="1" id="SecretLevelLabelCommand" minimumWidth="75"/>
+				<KStatusBackupCommand detail="@Click to turn on/off AutoBackup" id="BackupStatusCommand" minimumWidth="90" needLight="1"/>
+				<KxEtStatusSimpleText qtspyName="EtStatusSimpleText"/>
+				<KxEtStatusFilterText qtspyName="EtStatusFilterText"/>
+				<KxEtStatusBarSettingCommand barid="40000" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" hideArrowHint="true" icon="count_items_kd" id="Status bar Popup Menu"/>
+				<KxEtStatusSmartTipCommand filterFlag="1" id="EtStatusSmartTip" qtspyName="EtStatusSmartTip"/>
+				<KStatusStrechCommand id="StatusBarStretch_1" text="stretch"/>
+				<KStatusStrechCommand text="stretch"/>
+				<KxEtDisplaySetCommand barid="40120" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" hideArrowHint="true" icon="sheet_setup_kd" id="DisplaySetting" ksoCmd="DisplaySetting" text="@Display Setting"/>
+				<KxEtProtectEyesCommand customTip="Protect_Eyes" filterFlag="1" hotKey="b" icon="eye_kd" id="ProtectEyes2" needLogin="false" rbHotKey="B" text="@Eye Protection Mode"/>
+				<KxEtStatusBarReadingLayoutColorCommand aid="80152" barid="40040" customTip2="ReadingLayout2" customTip="ReadingLayout" filterFlag="1" hotKey="r" icon="reading_mode_kd" id="ReadingLayoutProme" ksoCmd="ReadingLayout" ksoTriggerCmd="RecentReadingLayout" qtspyName="ReadingLayout2" text="@Reading Layout">
+					<KxEtMoreColorCommand aid="2000030" dialogHint="1" filterFlag="1" hotKey="m" ksoCmd="ReadingLayoutMoreColor" qtspyName="ReadingLayoutMoreColor" text="@More Colors"/>
+				</KxEtStatusBarReadingLayoutColorCommand>
+				<separator/>
+				<KxEtStatusNormalViewCommand aid="723" customTip="NormalViewEt" filterFlag="1" hotKey="n" icon="sheet_kd" id="NormalCommandProBedding" ksoCmd="Normal" qtspyName="Normal" rbHotKey="L" text="@Normal"/>
+				<KxEtStatusPageBreakPreviewCommand aid="724" controlType="6" customTip="PageBreakPreview" filterFlag="1" hotKey="h" icon="page_break_preview_kd" id="PageBreakPreviewCommandProBedding" ksoCmd="PageBreakPreview" qtspyName="PageBreakPreview" rbHotKey="I" text="@Page Break Preview"/>
+				<separator/>
+				<KxEtStatusZoomSliderCommand filterFlag="1" id="ZoomCommand" qtspyName="EtStatusZoomSlider" tooltipAdd="@Zoom In" tooltipSlide="@Zoom" tooltipSub="@Zoom Out" tooltipTrigger="@Click to adjust Zoom level"/>
+				<KxEtStatusFullScreenViewCommand customTip="FullScreenMode" filterFlag="1" hotKey="u" icon="screen_full_kd" idKey="CommonShowFullScreenBtn" ksoCmd="FullScreenModeOnMenu" qtspyName="ViewFullScreenView" text="@Full &#10;Screen"/>
+			</KxEtStatusCommand>
+			<KxEtStatusZoomInSliderCommand filterFlag="1" id="ZoomInCommand"/>
+			<KxEtStatusZoomOutSliderCommand filterFlag="1" id="ZoomOutCommand"/>
+			<KListCommand aid="40033" barid="40024" id="NoTabPage" text="@No Tab Page">
+				<KxNoTabPageButtonCommand aid="18" icon="NewFileOnNoTabPage" id="NewFileOnNoTabPage" ksoCmd="NewBlankFile" shellEntryType="noTabPage" text="@New Blank Workbook"/>
+				<separator/>
+				<KxNoTabPageButtonCommand aid="90041" icon="OpenFileOnNoTabPage" id="OpenFileOnNoTabPage" ksoCmd="OpenFile" text="@Open"/>
+			</KListCommand>
+			<KxToolbarGroupCommand aid="40034" id="ToolBarGroup" ksoCmd="ToolbarGroup" visible="false"/>
+			<KxHostEventFilterCommand aid="40035" id="mainwindowFirstShowEvent">
+				<KxAuthLuanchCheckCommand/>
+				<KxAssoLuanchCheckCommand/>
+				<KxOfficeSpaceInitCommand id="officeSpaceInit"/>
+				<KxNetAutobackupCommand_ET idKey="CloudAutoBackup"/>
+				<KxDelayAutoUpdateCommand idKey="DelayAutoUpdate"/>
+				<KxTrialToolInitCommand/>
+				<KxActivePluginInitCommand/>
+				<KxOperationDocStrategyCommand idKey="CommercialCategory"/>
+				<KEduOperationTipCommand idKey="EduOperationTip"/>
+			</KxHostEventFilterCommand>
+			<KxEtSymbolBarCommand aid="40036" barid="40045" id="Symbol" ksoCmd="InsertSymbol" text="@Symbol Toolbar" visible="false"/>
+			<KListCommand aid="40037" barid="14" delayloadPath="commands/et/classics/Full_Screen.kuip" id="Full Screen" text="@Full Screen" visible="false"/>
+			<KFileAssociateCommand aid="40038" id="FileAssociate" idKey="RbFileAssociation"/>
+			<KListCommand barid="40025" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Auto Backup Popup Menu" text="@Auto Backup Menu"/>
+			<KListCommand barid="40026" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Timing Backup Popup Menu" text="@Timing Backup Menu"/>
+			<KxLegacyTriggerCommand aid="40039" descName="@Sum" id="Sum_Shortcut" ksoCmd="Sum" shortcutHint="Alt+="/>
+			<KScreenGrabRectCommand aid="100071" filter="feature_16777325!=0" icon="screen_grab_square_kd" id="ScreenGrabRect" idKey="EtScreenGrabbyShape" text="@Screen Grab Rect"/>
+			<KScreenGrabRoundedRectCommand aid="100072" appFlags="wpsmember" filter="feature_16777325!=0" icon="screen_grab_rounded_kd" id="ScreenGrabRoundedRect" idKey="EtScreenGrabbyShape" text="@Screen Grab Rounded Rect"/>
+			<KScreenGrabEllipseCommand aid="100073" filter="feature_16777325!=0" icon="screen_grab_ellipse_kd" id="ScreenGrabEllipse" idKey="EtScreenGrabbyShape" text="@Screen Grab Ellipse"/>
+			<KScreenGrabPolygonCommand aid="100074" appFlags="wpsmember" filter="feature_16777325!=0" icon="screen_grab_polygon_kd" id="ScreenGrabPolygon" idKey="EtScreenGrabbyShape" text="@Screen Grab Polygon"/>
+			<KScreenGrabCommand aid="100068" filter="feature_16777325!=0" hotKey="S" id="ScreenGrab" rbHotKey="S" shortcutHint="Ctrl+Alt+X" text="@Screen Grab"/>
+			<KScreenGrabCommandWindow aid="100075" filter="feature_16777325!=0" icon="screen_grab_window_kd" id="ScreenGrabWindow" idKey="EtScreenGrabbyShape" text="@Screen Grab Main Window"/>
+			<KScreenGrabCommandHide aid="100054" filter="feature_16777325!=0" hotKey="H" id="ScreenGrabHide" idKey="EtScreenGrabHide" rbHotKey="H" shortcutHint="Ctrl+Alt+C" text="@Hide Current Window when Grabbing Screen"/>
+			<KScreenGrabShortcutSettingCommand filter="feature_16777325!=0" id="ScreenGrabShortcutSetting" idKey="EtScreenGrabShortcutSetting" text="@Shortcut Setting"/>
+			<KScreenGrabMenuCommand aid="100070" barid="40065" customTip="ScreenGrab" filter="feature_16777325!=0" icon="cut_screen_kd" id="InsertScreenGrab" idKey="EtScreenGrabMenu" rbHotKey="SC" referenceCommand="ScreenGrab" text="@Screen Grab@Menu">
+				<command idQ="ScreenGrabRect"/>
+				<command idQ="ScreenGrabEllipse"/>
+				<command idQ="ScreenGrabRoundedRect"/>
+				<command idQ="ScreenGrabPolygon"/>
+				<separator/>
+				<command idQ="ScreenGrab"/>
+				<command idQ="ScreenGrabHide"/>
+				<separator/>
+				<command idQ="ScreenGrabShortcutSetting"/>
+				<command idQ="ScreenGrabWindow"/>
+			</KScreenGrabMenuCommand>
+			<KScreenGrabOcrCommand filter="kstyle!=classic|feature_16777325!=0" hotKey="S" id="ScreenGrabOcr" idKey="CommonScreenGrabOcr" idMso="ScreenGrabOcr" rbHotKey="S" shortcutHint="Ctrl+Alt+S" text="@Screen Grab Ocr"/>
+			<KScreenGrabOcrCommandHide filter="kstyle!=classic|feature_16777325!=0" hotKey="H" id="ScreenGrabOcrHide" idKey="CommonScreenGrabOcr" idMso="ScreenGrabOcrHide" rbHotKey="H" text="@Hide Current Window when Grabbing Screen"/>
+			<KScreenGrabOcrMenuCommand customTip="ScreenGrabOcr" filter="feature_16777325!=0" icon="scan_ocr_kd" id="ScreenGrabOcrMenu" idKey="EtScreenGrabOcr" needLogin="false" rbHotKey="SC" referenceCommand="ScreenGrabOcr" text="@Screen Grab Ocr@Menu" vipMode="2" vipModeUrlId="screen_ocr">
+				<command idQ="ScreenGrabOcr"/>
+				<command idQ="ScreenGrabOcrHide"/>
+			</KScreenGrabOcrMenuCommand>
+			<KScreenGrabOcrMenuCommand customTip="ScreenGrabOcr" icon="scan_ocr_kd" id="ScreenGrabOcrMenuLocal" idKey="CommonScreenGrabOcrMenuLocal" rbHotKey="SE" referenceCommand="ScreenGrabOcr" text="@Screen Grab Ocr@Menu">
+				<command idQ="ScreenGrabOcr"/>
+				<command idQ="ScreenGrabOcrHide"/>
+			</KScreenGrabOcrMenuCommand>
+			<KxMiniToolBarMultiListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Font Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="FontSel Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TextEdit Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TextEditSel Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Picture Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Shapes Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Shapes Floatbar Dml" idKey="MiniToolbar"/>
+			<KxMiniToolBarMultiListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Formula Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarMultiListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="FormulaSel Floatbar" idKey="MiniToolbar"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Chart Floatbar" idKey="MiniToolbar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Shapes QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommandEx delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Ink QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="TextBox QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Svg QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" dynFold="true" filter="support:IsSupportAIPictureEdit=false" filterFlag="1" id="Picture QuickBar" idKey="PictContextMenuQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" dynFold="true" filter="support:IsSupportAIPictureEdit=true" filterFlag="1" id="Picture QuickBar" idKey="PictContextMenuQuickHelpBar" pictureAiMode="true"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="PictureCrop QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="EtCellPicture QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpToolBarCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="MultipleShapes QuickBar" idKey="StyleQuickHelpBar" layoutMethod="right;top;horizontal;horizontal"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Chart QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="WebShape QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="WebChart QuickBar" idKey="PopupWebChartQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="SmartChart WebShape QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpWordArtBarCommand delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="WordArt QuickBar" idKey="StyleQuickHelpBar"/>
+			<KListCommand barid="40084" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Text Edit Popup Menu" text="@Text Edit Popup Menu"/>
+			<KListCommand barid="1746" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="List Range Popup" idMso="ContextMenuCellListRange" text="@List Range Popup"/>
+			<KListCommand barid="443" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="PivotTable Context Menu" text="@PivotTable Context Menu"/>
+			<KListCommand barid="444" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Query" text="@Query"/>
+			<KxImagePreviewCommand customTip="ImagePreview" dialogHint="1" icon="magnifier_zoom_in_kd" id="ImagePreview" screenGrabCmd="screenGrabEx" text="@Image Previewer"/>
+			<KxImagePreviewCommand customTip="ImagePreview" hideMiniToolBar="1" icon="magnifier_zoom_in_kd" id="ImagePreviewFloat" text="@Image Preview Float"/>
+			<KAppCommand appCmdObj="PhotoExchange" appId="photoeditapp" customTip="EtPhotoedit2" icon="pic_edit_kd" id="app_photoeditapp_et_rightfloat" idKey="AppPhotoEditAppRightFloatBasicImageMatting" text="@Photoedit2"/>
+			<KAppCommand appCmdObj="ImportCurrentPic" appId="photoeditapp" customTip="EtPhotoedit2" icon="pic_edit_kd" id="app_photoeditapp_popup_edit" idKey="PhotoEditDomestic" text="@Photoedit2"/>
+			<KxImagePreviewCommand action="editor/aiedit" aiControlName="app/photoeditlite" customTip="EtPhotoedit2" entrance="rightfloat" hideMiniToolBar="1" icon="pic_edit_kd" id="photoeditlite_et_rightfloat" idKey="PhotoTool2Editlite" text="@Photoedit2"/>
+			<KxImagePreviewCommand action="editor/erase_manul_apply" customTip="EtPhotoedit2" entrance="quickbar" icon="pic_edit_kd" id="photoeditlite_et_quickbar" idKey="PhotoEdit2Editlite" text="@Photoedit"/>
+			<KxEtCellImgPreviewCommand customTip="ImagePreview" filterFlag="1" icon="magnifier_zoom_in_kd" id="CellImagePreview" text="@Image Preview"/>
+			<KxUrlImgReloadCommand icon="refresh_kd" id="UrlImgReload" text="@Reload image"/>
+			<KxUrlImgReloadCommand icon="refresh_kd" id="UrlImgReloadQuickbar" text="@Reload image"/>
+			<KxBillAssistantCommand from="tools_billassistant" id="BillassistantCommands_common" idKey="BillAssistant"/>
+			<KTempalteProxyCommand autoLoad="false" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="doc_manager_kd" id="TpOnlineTaskPaneCommands" idKey="OnlineDocerXa" needLogin="false" targetId="TpOnlineTaskPaneCommands" targetModule="konlinedocer_xa" text="@Design Library"/>
+			<KTempalteProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="TpOnlineTaskPaneCommands_Template" idKey="OnlineDocerXa" targetId="TpOnlineTaskPaneCommands_Template" targetModule="konlinedocer_xa"/>
+			<KTempalteProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="shape_four_three_kd" id="OnlineDocerCommand_Icon" idKey="OnlineDocerXa" relatedKsoCmd="InsertPictureFromFile" targetId="OnlineDocerCommand_Icon" targetModule="konlinedocer_xa" text="@IconLibrary"/>
+			<KTempalteProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="chart_online_kd" id="OnlineDocerCommand_Chart" idKey="OnlineDocerXa" idMso="OnlineDocerCommand_Chart" relatedKsoCmd="InsertNewChart" targetId="OnlineDocerCommand_Chart" targetModule="konlinedocer_xa" text="@Chart Library"/>
+			<KTempalteProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="OnlineDocerCommand_Font" idKey="OnlineDocerXa" targetId="OnlineDocerCommand_Font" targetModule="konlinedocer_xa"/>
+			<KxLegacyTriggerCommand aid="100129" dialogHint="1" hotKey="o" icon="MoreFill" id="MoreFill" ksoCmd="MoreFill" rbHotKey="O" text="@MoreFill"/>
+			<KxLegacyTriggerCommand aid="100130" dialogHint="1" hotKey="o" icon="MoreOutline" id="MoreOutline" ksoCmd="MoreOutline" rbHotKey="O" text="@MoreOutline"/>
+			<KxLegacyTriggerCommand aid="100131" dialogHint="1" hotKey="o" icon="more_kd" id="MoreEffects" ksoCmd="MoreEffects" rbHotKey="O" text="@MoreEffects"/>
+			<KxLegacyTriggerCommand aid="100132" dialogHint="1" hotKey="o" icon="MoreFontFill" id="MoreFontFill" ksoCmd="MoreFontFill" rbHotKey="O" text="@MoreFontFill"/>
+			<KxLegacyTriggerCommand aid="100133" dialogHint="1" hotKey="o" icon="MoreFontOutline" id="MoreFontOutline" ksoCmd="MoreFontOutline" rbHotKey="O" text="@MoreFontOutline"/>
+			<KxLegacyTriggerCommand aid="100134" dialogHint="1" hotKey="o" icon="more_kd" id="MoreFontEffects" ksoCmd="MoreFontEffects" rbHotKey="O" text="@MoreFontEffects"/>
+			<KxEtSnapColorCommand aid="100125" forceEnabled="1" hotKey="e" id="SnapColor" ksoCmd="FillColor" rbHotKey="E" text="@Snapper"/>
+			<KxPropComposeCommand controlType="4" hotKey="g" icon="gradiant_fill_kd" id="GradiantFill" idMso="GradientGallery" ksoCmd="FillEffects" rbHotKey="G" tabIndex="0" text="@Gradient"/>
+			<KxPicOrTextureFillCommand controlType="0" fillType="1" hotKey="t" icon="texture_fill_kd" id="TextureFill" idMso="MoreTextureOptions" ksoCmd="FillEffects" rbHotKey="T" tabIndex="1" text="@PicOrTexture">
+				<command idQ="MoreFill"/>
+			</KxPicOrTextureFillCommand>
+			<KxPatternFillCommand fillType="1" hotKey="n" icon="pattern_fill_kd" id="PatternFill" ksoCmd="FillEffects" rbHotKey="A" tabIndex="2" text="@Pattern">
+				<command idQ="MoreFill"/>
+			</KxPatternFillCommand>
+			<KxLegacyTriggerCommand aid="2000062" controlType="0" customTip="Thesaurus" dialogHint="1" hotKey="h" icon="thesaurus_kd" id="OpenThesaurus" idKey="SynonymAndThesaurus" ksoCmd="OpenThesaurus" rbHotKey="h" shortcutHint="Shift+F7" text="@Thesaurus"/>
+			<KxLegacyTriggerCommand aid="3125" hotKey="n" icon="clear_contents_kd" iconQat="ClearContents2Qat" id="ClearContents2" ksoCmd="ClearContents" text="@Clear Contents"/>
+			<KxRbFileMenuPopupPaneCommand controlType="15" hotKey="a" icon="save_as_kd" iconQat="save_as_kd" id="RbFileMenuSaveAsMenu" idMso="FileSaveAsMenu" infoId="4" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@Save As" title="@Save a Copy of the Document">
+				<KProxyCommand autoLoad="true" defaultVisible="true" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="RbConverEt2As" idKey="EtSearchBoxOnlineSmartForms" targetModule="officespace" text="@Convert to As"/>
+				<KProxyCommand autoLoad="true" defaultVisible="true" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="RbConverEt2DB" targetModule="officespace" text="@WPS Online Multidimensional Tables"/>
+				<KxEtFileMenuFormatSaveAsCommand associateSuffix="et" controlType="0" fileFormatIdx="65521" id="RbFileMenuSaveAsEt" idMso="FileSaveAsExcelEt" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@WPS Spreadsheets Files"/>
+				<KxEtFileMenuFormatSaveAsCommand associateSuffix="ett" controlType="0" fileFormatIdx="65522" id="RbFileMenuSaveAsEtt" idMso="FileSaveAsExcelEtt" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@WPS Spreadsheets Templates"/>
+				<KxEtFileMenuFormatSaveAsEtxCommand associateSuffix="et" controlType="0" fileFormatIdx="65524" id="RbFileMenuSaveAsEtx" idMso="FileSaveAsExcelEtx" ksoCmd="SaveAs" text="@WPS Spreadsheets 2007/2010 Files"/>
+				<KxEtFileMenuFormatSaveAsCommand associateSuffix="xls" controlType="0" fileFormatIdx="56" id="RbFileMenuSaveAsXls" idMso="FileSaveAsExcelXls" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@Microsoft Excel 97-2003 Files"/>
+				<KxEtFileMenuFormatSaveAsCommand associateSuffix="xlt" controlType="0" fileFormatIdx="17" id="RbFileMenuSaveAsXlt" idMso="FileSaveAsExcelXlt" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@Microsoft Excel 97-2003 Templates"/>
+				<KxEtFileMenuFormatSaveAsCommand associateSuffix="xlsx" controlType="0" fileFormatIdx="51" id="RbFileMenuSaveAsXlsx" idMso="FileSaveAsExcelXlsx" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@Microsoft Excel Files"/>
+				<KxFileMenuLegacyTriggerCommand controlType="0" hotKey="g" icon="export_to_ofd_kd" idKey="ExportToOFD" idMso="FileSaveAsOfd" ksoCmd="ExportOFD" qtspyName="ExportOFD" text="@Export to OFD"/>
+				<KxFileMenuLegacyTriggerCommand associateSuffix="other" controlType="0" hotKey="m" id="RbFileMenuSaveAsOtherFormat" idMso="FileSaveAsOtherFormats" ksoCmd="SaveAs" popupReadOnlyHint="save_as" text="@Other Formats"/>
+			</KxRbFileMenuPopupPaneCommand>
+			<KxExportPdfFileMenuLegacyTriggerCommand filter="support:ExportToPDF=true" hotKey="f" icon="change_to_pdf_two_kd" iconQat="change_to_pdf_two_kd" id="RbFileMenuExportToPDF" infoId="f" ksoCmd="ExportPDF" text="@Export to PDF"/>
+			<KAppCommand appCmdObj="BatchCompress" appId="kdocumentslimming" customTip="DocumentSlimming" dialogHint="1" hotKey="V" icon="file_compression_kd" id="DocumentSlimmingTab" idKey="CommonDocumentSlimming" idMso="DocumentSlimming" needLogin="false" qtspyName="DocumentSlimmingTab" rbHotKey="V" text="@Document Slimming"/>
+			<KxJumpRBEducationToolCategoryCommand customTip="DocerResourceEduResource" icon="education_tool_kd" id="JumpEducationTools" idRbCategory="CT_EducationTools" text="@Education Tools"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" filter="support:FileMenuDocumentHistory=true" hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" targetId="RbFileMenuDocumentHistory" targetModule="officespace" text="@Document History"/>
+			<KxRbFileMenuFileSharePopupPaneCommand disableTrigger="false" hotKey="d" icon="share_to_kd" id="RbFileMenuShareMenu" idKey="FileMenuFileSharePopup" infoId="s" text="@File Share" title="@File Share">
+				<KProxyCommand autoLoad="true" defaultVisible="false" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="l" icon="shared_kd" id="LinkPreview" idKey="EtFileShareLinkPreview" targetId="RbLinkPreview" targetModule="officespace" text="@Link Preview"/>
+				<KProxyCommand autoLoad="true" defaultVisible="false" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="sendbyqq" id="ShareLinkToQQ" idKey="EtFileShareLinkToApp" targetId="RbShareLinkToQQ" targetModule="officespace" text="@Share To QQ"/>
+				<KProxyCommand autoLoad="true" defaultVisible="false" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="sendtowechat" id="ShareLinkToWechat" idKey="EtFileShareLinkToApp" targetId="RbShareLinkToWechat" targetModule="officespace" text="@Share To Wechat"/>
+				<separator idKey="EtSettingLinkSeparator"/>
+				<KProxyCommand autoLoad="true" defaultVisible="false" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="SettingLink" idKey="SettingLink" targetId="RbSettingLink" targetModule="officespace" text="@Setting Link"/>
+			</KxRbFileMenuFileSharePopupPaneCommand>
+			<KxEtInsertOrEditCommentCommand aid="2031" commentPos="Popup" controlType="0" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertComment" ksoCmd="Comment" shortcutHint="Shift+F2" text="@Insert Comment"/>
+			<KxEtCellFillThemeCommand customTip2="FillColor2" customTip="FillColor" forceVisible="1" icon="color_paint_wps_kd" id="CellFillColorPopup" ksoCmd="CellFillColor" ksoTriggerCmd="RecentCellFillColor" rbHotKey="H" text="@Fill Color">
+				<KxEtMoreColorThemeCommand colorUsage="FillColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreCellFillColorsPopup" text="@More Colors"/>
+			</KxEtCellFillThemeCommand>
+			<KxEtFontThemeCommand customTip2="FontColor2" customTip="FontColor" forceVisible="1" icon="color_font_wps_kd" id="qat_FontColor" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" qtspyName="FontColor" rbHotKey="FC" text="@Font Color">
+				<KxEtMoreColorThemeCommand colorUsage="FontColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="qat_MoreCellFontColors" text="@More Font Colors"/>
+			</KxEtFontThemeCommand>
+			<KxLegacyTriggerCommand aid="899" faceid="11" hotKey="f" icon="filter_kd" iconQat="filter_kd" id="AutoFilter" ksoCmd="AutoFilter" rbHotKey="F" text="@AutoFilter"/>
+			<KxLegacyTriggerCommand forceVisible="1" hotKey="v" icon="form_paste_values_kd" iconQat="form_paste_values_kd" id="qat_PasteValues" ksoCmd="Values" rbHotKey="V" shortcutHint="Ctrl+Shift+V" text="@PasteAsValues"/>
+			<KxLegacyTriggerCommand forceVisible="1" hotKey="f" icon="form_paste_formulas_kd" iconQat="form_paste_formulas_kd" id="qat_PasteFormulas" ksoCmd="Formulas" rbHotKey="F" text="@PasteAsFormulas"/>
+			<KxLegacyTriggerCommand hotKey="Y" icon="filter_kd" iconQat="filter_kd" id="qat_AutoFilterAgain" ksoCmd="AutoFilterAgain" text="@Reapply"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="a" icon="filter_sort_kd" iconQat="filter_sort_kd" id="qat_AdvancedFilter" ksoCmd="AdvancedFilter" rbHotKey="A" text="@Advanced Filter"/>
+			<KxLegacyTriggerCommand customTip="Camera" forceVisible="1" hotKey="o" icon="camera_kd" iconQat="camera_kd" id="qat_InsertCamera" ksoCmd="Camera" qtspyName="Camera" rbHotKey="G" text="@Camera"/>
+			<KxPropComposeCommand forceVisible="1" hotKey="r" icon="ranks_delete_rows_kd" iconQat="ranks_delete_rows_kd" id="qat_DeleteRows" ksoCmd="DeleteRowsInWorkgroup" rbHotKey="R" text="@Delete Rows"/>
+			<KxPropComposeCommand forceVisible="1" hotKey="c" icon="ranks_delete_columns_kd" iconQat="ranks_delete_columns_kd" id="qat_DeleteColumns" ksoCmd="DeleteColumnsInWorkgroup" rbHotKey="C" text="@Delete Columns"/>
+			<KxLegacyTriggerCommand dialogHint="1" forceVisible="1" hotKey="s" icon="worksheet_kd" iconQat="worksheet_kd" id="qat_InsertSheet" ksoCmd="InsertSheet" rbHotKey="S" text="@Insert Sheet"/>
+			<KxLegacyTriggerCommand forceVisible="1" hotKey="D" icon="delete_blank_table_kd" iconQat="delete_blank_table_kd" id="qat_DeleteSheet" ksoCmd="DeleteSheet" qtspyName="DeleteSheet" text="@Delete Sheet"/>
+			<KListCommand barid="445" delayloadPath="commands/et/PopupMenu.kuip" filterFlag="1" id="Smart Paste Popup Menu"/>
+			<KxQingActiveCodeCommand aid="100040" disableCustomRibbon="true" forcevisible="0" id="EnterActivationCodeHide" showIconAndText="0"/>
+			<KProxyCommand defaultPage="Account" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="CommonAccountEncyption" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyption" targetModule="docpermission"/>
+			<KProxyCommand defaultPage="Password" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="CommonPasswordEncyption" qtspyName="CommonPasswordEncyption" targetModule="docpermission"/>
+			<KProxyCommand aid="80005" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="DocumentEncryption" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyption" targetModule="docpermission" text="@Document Encryption"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_encryption_kd" id="DocumentPasswordEncryption" idKey="DocumentEncryptionAbility" qtspyName="CommonAccountEncyption" targetModule="docpermission" text="@Document Encryption"/>
+			<KProxyCommand aid="80005" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="OptionSecurityAccountEncryption" idKey="DocumentEncryptionAbility" qtspyName="CommonAccountEncyption" targetModule="docpermission" text="@Document Encryption"/>
+			<KProxyCommand aid="80005" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="TooltipDocumentEncryption" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyption" targetModule="docpermission" text="@Document Encryption"/>
+			<KProxyCommand aid="80005" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncyptionAdvanced" idKey="DocSecurityPermission" infoNum="19" qtspyName="CommonAccountEncyptionAdvanced" targetModule="docpermission" text="@Document Encryption"/>
+			<KxMakeOutwardDocEntranceCommand icon="export_kd" id="makeOutwardDoc" idKey="MBVersionFlag" rbHotKey="M" text="@Make Outward"/>
+			<KxLegacyTriggerCommand aid="80005" dialogHint="1" hotKey="p" icon="doc_encryption_kd" id="DocumentEncryption" idKey="NotDocSecurityPermission" ksoCmd="Encrypt" qtspyName="Encypt" text="@Document Encryption"/>
+			<KxFileMenuDocPermissionCommand defaultPage="Password" dialogHint="1" id="DocumentEncryptionForSave" text="@Document Encryption"/>
+			<KProxyCommand autoLoad="true" customTip="LinkShareTip" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="l" icon="shared_kd" id="LinkPreview" idKey="LinkPreview" targetId="LinkPreview" targetModule="officespace" text="@Link Preview"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="q" icon="sendbyqq" id="ShareLinkToQQ" idKey="SendByQQ" targetId="ShareLinkToQQ" targetModule="officespace" text="@Share To QQ"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="w" icon="sendtowechat" id="ShareLinkToWechat" idKey="SendToWeChat" targetId="ShareLinkToWechat" targetModule="officespace" text="@Share To Wechat"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="s" id="SettingLink" idKey="SettingLink" targetId="SettingLink" targetModule="officespace" text="@Setting Link"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="shared_kd" id="TpLinkPreview" idKey="LinkPreview" targetId="TpLinkPreview" targetModule="officespace" text="@Link Preview"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="shared_kd" id="TpLinkPreview_viamail" idKey="ShareXa" targetId="TpLinkPreview" targetModule="officespace" text="@Link Preview"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="shared_kd" id="TpLinkPreview_vialink" idKey="ShareXa" targetId="TpLinkPreview" targetModule="officespace" text="@Link Preview"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="x" icon="send_file_kd" id="PopUpSendFile" idKey="EtPopUpSendFile" targetId="PopUpSendFile" targetModule="officespace" text="@File Send"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShare" idKey="NewShare" targetId="newShare" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="share_to_kd" id="newShareForCloudShareBtn" idKey="EtShareWorkBookShareOnline" targetId="newShareForCloudShareBtn" targetModule="officespace" text="@Share Online"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="share_to_kd" id="newShareForRightCorner" idKey="ShareXa" targetId="newShareForRightCorner" targetModule="officespace" text="@Share Online"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="MacNewShareFile" targetId="newShareForRClickTab" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="NewShareForRecentFile" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="NewShareForRecentFile" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="NewShareForXa" targetId="newShareForRClickTab" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="ShareXa" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KxLinkPreviewCommand autoLoad="true" customTip="LinkShareTip" defaultVisible="false" icon="share_to_kd" id="WSLinkPreview" idKey="FileShareLinkPreview" needLogin="false" text="@File Share"/>
+			<KProxyCommand appId="wordart_resourceshop_split" customTip="OnlineWordArt" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="320" icon="OnlineWordArt" id="OnlineWordArt" idKey="EtOnlineWordArt" localMenuHeight="126" skeletonAlias="konlinewordart" spaceHint="suitable" targetId="OnlineWordArt" targetModule="kdocerjsapi20" text="@Online WordArt" width="588"/>
+			<KProxyCommand appId="wordart_resourceshop_split" customTip="OnlineWordArt" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="320" icon="OnlineWordArt" id="OnlineWordArtInInsertTab" idKey="EtOnlineWordArt" localMenuHeight="126" skeletonAlias="konlinewordart" spaceHint="suitable" targetId="OnlineWordArtInInsertTab" targetModule="kdocerjsapi20" text="@Online WordArt" width="588"/>
+			<KProxyCommand appId="wordart_resourceshop_split" customTip="OnlineWordArt" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="320" icon="OnlineWordArt" id="OnlineWordArtInTextToolTab" idKey="EtOnlineWordArt" localMenuHeight="126" skeletonAlias="konlinewordart" spaceHint="suitable" targetId="OnlineWordArtInTextToolTab" targetModule="kdocerjsapi20" text="@Online WordArt" width="588"/>
+			<KProxyCommand appId="wordart_resourceshop_split" customTip="OnlineWordArt" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="320" icon="OnlineWordArt" id="OnlineWordArtInPictureToolTab" idKey="EtOnlineWordArt" localMenuHeight="126" skeletonAlias="konlinewordart" spaceHint="suitable" targetId="OnlineWordArtInPictureToolTab" targetModule="kdocerjsapi20" text="@Online WordArt" width="588"/>
+			<KProxyCommand customTip="OnlineGradient" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="188" icon="OnlineGradient" id="OnlineGradient" idKey="EtOnlineGradientWithSize" spaceHint="suitable" targetId="OnlineGradient" targetModule="konlinegradient" text="@Online Gradient" width="189"/>
+			<KProxyCommand customTip="OnlineGradient" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="OnlineGradient" id="OnlineGradient" idKey="EtOnlineGradient" spaceHint="suitable" targetId="OnlineGradient" targetModule="konlinegradient" text="@Online Gradient"/>
+			<KProxyCommand customTip="OnlineGradientMore" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="OnlineGradientMore" id="OnlineGradientMore" idKey="EtOnlineGradientMore" spaceHint="suitable" targetId="OnlineGradientMore" targetModule="konlinegradient" text="@Online Gradient More"/>
+			<KxOnlineGalleryCommand icon="OnlineGradientMore" id="OnlineGradientGallery" idKey="EtOnlineGradientGallery" isOnlyOnline="true" onlineCmd="OnlineGradientMore" qtspyName="OnlineGradientGallery" text="@Online Gradient More"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="ShowFormulas" hotKey="hf" icon="show_formulas_kd" id="ShowFormulas" idMso="ShowFormulas" ksoCmd="ShowFormulas" qtspyName="ShowFormulas" rbHotKey="HF" shortcutHint="Meta+`" spaceHint="suitable" text="@Show Formulas"/>
+			<KxLegacyTriggerCommand controlType="0" id="DisplayOutline" idMso="DisplayOutline" ksoCmd="DisplayOutline" qtspyName="DisplayOutline" shortcutHint="Ctrl+8" spaceHint="suitable" text="@Display Outline"/>
+			<KxHardwareEncryptionCommand customTip="HardwareEncryption" hotKey="p" icon="encrypt_hardware_kd" id="HardwareEncryption" idKey="HardwareEncryption" ksoCmd="Encrypt" rbHotKey="PH" text="@Hardware Encryption"/>
+			<KListCommand canHideText="0" customTip="FreezePanes" dynamicSpaceHint="loose;suitable" filterFlag="1" icon="cell_freeze_kd" iconQat="cell_freeze_kd" id="rFreezeOptions" rbHotKey="FW" text="@Freeze">
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="a" icon="unfreeze_panes_kd" id="rUnfreeze" ksoCmd="UnFreezePanes" text="@Unfreeze Panes"/>
+				<separator/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="f" icon="cell_freeze_kd" id="rFreeze" ksoCmd="FreezePanes" text="@Freeze Panes"/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="f" icon="cell_freeze_kd" id="rFreezePlus" ksoCmd="FreezePanesPlus" text="@Freeze Panes"/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="o" icon="cell_freeze_row_kd" id="rFreezeRow" ksoCmd="FreezeRow" text="@Freeze Row"/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="l" icon="cell_freeze_column_kd" id="rFreezeColumn" ksoCmd="FreezeColumn" text="@Freeze Column"/>
+				<KxEtFreezeTableHeadCommand align="1" controlType="0" filterFlag="1" hotKey="h" icon="cell_freeze_leader_kd" id="rFreezeHead" idKey="ETFreezeTableHeadEntrance" imageTip="FreezeTableHeadTip" imageTipHeight="112" imageTipText="@Intelligent recognition and freezing of table title rows and columns based on selection criteria" imageTipWidth="214" ksoCmd="FreezeTopRow" openPosition="restab_start_freeze" showTip="true" text="@Freeze Table Head"/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="r" icon="cell_freeze_top_row_kd" id="rFreezeTopRow" ksoCmd="FreezeTopRow" text="@Freeze Top Row"/>
+				<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="c" icon="cell_freeze_top_arrange_kd" id="rFreezeFirstColumn" ksoCmd="FreezeFirstColumn" text="@Freeze First Column"/>
+			</KListCommand>
+			<KxValueCommand customTip="Photo to PDF" icon="change_pic_to_pdf_kd" id="Spac_PDFZZ_Photo2PDF" ksoCmd="Photo2PDF" text="@Photo2Pdf"/>
+			<KProxyCommand autoload="true" customTip="ScreenRecorder" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="start_making_kd" id="ScreenRecorder" rbHotKey="" targetId="ScreenRecorder" targetModule="screenrecorder" text="@Screen Recorder"/>
+			<KProxyCommand autoLoad="true" customTip="Equation" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="p" icon="math_latex_kd" id="InsertLatex" idKey="ETLaTeXEquation" relatedKsoCmd="InsertPictureFromFile" targetExtendId="334E55B0-647D-440b-865C-3EC943EB4CBC" targetId="InsertLatex" targetModule="kinsertlatex" text="@LaTeXEquation"/>
+			<KProxyCommand customTip="PCLaTeXEquation" delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="p" icon="math_latex_kd" id="InsertLatex" idKey="CommonInsertLatex" relatedKsoCmd="InsertPictureFromFile" targetExtendId="2384804F-3998-4D57-9195-F3826E402611" targetId="InsertLatex" targetModule="kinsertlatex" text="@PCLaTeXEquation"/>
+			<KProxyCommand customTip="OnlineTableStyle" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="186" icon="OnlineTableStyle" id="OnlineTableStyle" idKey="EtOnlineTableStyle" skeletonAlias="konlinetablestyle_dp_size" spaceHint="suitable" targetId="OnlineTableStyle" targetModule="konlinetablestyle" text="@Online TableStyle" width="418"/>
+			<KProxyCommand customTip="OnlineTableStyle" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="186" icon="OnlineTableStyle" id="OnlineTableStyleInHomeTab" idKey="EtOnlineTableStyleInHomeTab" skeletonAlias="konlinetablestyle_dp_size" spaceHint="suitable" targetId="OnlineTableStyleInHomeTab" targetModule="konlinetablestyle" text="@Online TableStyle" width="418"/>
+			<KProxyCommand customTip="OnlineTableStyle" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="186" icon="OnlineTableStyle" id="PivotOnlineTableStyle" idKey="EtPivotOnlineTableStyle" skeletonAlias="konlinetablestyle_dp_size" spaceHint="suitable" targetId="PivotOnlineTableStyle" targetModule="konlinetablestyle" text="@Online TableStyle" width="418"/>
+			<KProxyCommand customTip="OnlineTableStyle" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="186" icon="OnlineTableStyle" id="PivotOnlineTableStyleInHomeTab" idKey="EtPivotOnlineTableStyleInHomeTab" skeletonAlias="konlinetablestyle_dp_size" spaceHint="suitable" targetId="PivotOnlineTableStyleInHomeTab" targetModule="konlinetablestyle" text="@Online TableStyle" width="418"/>
+			<KxPropComposeCommand dialogHint="1" hotKey="x" icon="page_zoom_kd" id="PageSetupInLayoutTab" ksoCmd="PageSetup" qtspyName="PageSetup" tabIndex="0" text="@Custom Zoom"/>
+			<KDocerProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependPlugins="kwebonlinethemecolor" height="296" id="OnlineThemeColor" idKey="OnlineThemeColor" localMenuHeight="320" skeletonAlias="kwebonlinethemecolor" spaceHint="suitable" targetId="OnlineThemeColor" targetModule="kdocerjsapi20" width="250"/>
+			<KAppExtendObjectCommand appCmdObj="extendObj" appId="kinsertlatex" customTip="InsertLatex" extendObj="334E55B0-647D-440b-865C-3EC943EB4CBC" hotKey="rm" icon="math_latex_kd" id="InsertLatex" qtspyName="InsertLatex" rbHotKey="RM" relatedKsoCmd="InsertPictureFromFile" text="@InsertLatex"/>
+			<KAppExtendObjectCommand appCmdObj="insertchuangkit_extendObj" appId="kinsertchuangkit" customTip="InsertChuangkit" extendObj="F35B0BEE-F18A-47BB-8FCB-E00DA2F2635D" icon="poster_kd" id="InsertChuangkit" qtspyName="InsertChuangkit" relatedKsoCmd="InsertPictureFromFile" text="@InsertChuangkit"/>
+			<KxLegacyTriggerCommand hotKey="r" icon="pic_kd" id="FloatPic2CellPic" ksoCmd="FloatPic2CellPic" text="@To Cell Picture"/>
+			<KxSplitMergeCommand icon="doc_split_kd" id="SplitMerge" idKey="ETSplitMergeEntrance" text="@SplitMerge"/>
+			<KxSplitMergeCommand controlType="0" filter="category=domestic" hotKey="S" icon="doc_merge_kd" id="SplitDocument" idMso="DocumentSplit" ksoCmd="SplitDocument" text="@Split"/>
+			<KxSplitMergeCommand controlType="0" filter="category=domestic" hotKey="M" icon="doc_split_kd" id="MergeDocument" idMso="DocumentMerge" ksoCmd="MergeDocument" text="@Merge"/>
+			<KxSplitMergeCommand hotKey="S" icon="doc_merge_kd" id="SplitDocument" idKey="ETSplitMergeDocument" idMso="DocumentSplit" ksoCmd="SplitDocument" text="@Split"/>
+			<KxSplitMergeCommand hotKey="M" icon="doc_split_kd" id="MergeDocument" idKey="ETSplitMergeDocument" idMso="DocumentMerge" ksoCmd="MergeDocument" text="@Merge"/>
+			<KxLegacyTriggerCommand hotKey="r" icon="float_picture_kd" id="CellPic2FloatPic" ksoCmd="CellPic2FloatPic" text="@To Float Picture"/>
+			<KDependsProxyCommand customTip="OnlineIcons" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dependAppId="docerresourceshop" icon="shape_four_three_kd" id="FillPictureFromDocerResourceShop" idKey="EtFillPictureFromDocerResourceShop" targetId="FillPictureFromDocerResourceShop" targetModule="kdocerresource" text="@IconLibrary"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="E" icon="pen_kd" id="SparklineEditGroupData" ksoCmd="SparklineEditGroupData" text="@EditGroupData"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="S" id="SparklineEditSingleData" ksoCmd="SparklineEditSingleData" text="@EditSingleData"/>
+			<KxLegacyTriggerCommand hotKey="C" icon="eraser_kd" id="ClearSelectedSparkline" ksoCmd="SparklineClear" text="@ClearSelectedSparkline"/>
+			<KxLegacyTriggerCommand hotKey="L" icon="eraser_kd" id="ClearSelectedSparklineGroup" ksoCmd="SparklineClearGroup" text="@ClearSelectedSparklineGroup"/>
+			<KxLegacyTriggerCommand customTip="SparklineGroup" hotKey="G" icon="group_kd" id="GroupSparkline" ksoCmd="SparklineGroup" rbHotKey="G" spaceHint="suitable" text="@Group"/>
+			<KxLegacyTriggerCommand customTip="SparklineUnGroup" hotKey="U" icon="group_cancel_kd" id="UnGroupSparkline" ksoCmd="SparklineUnGroup" rbHotKey="U" spaceHint="suitable" text="@UnGroup"/>
+			<KxLegacyTriggerCommand controlType="0" icon="reset_pic_style_kd" id="PictureResetCrop" ksoCmd="PictureResetCrop" text="@Reset Shape and Size"/>
+			<KxLegacyTriggerCommand id="FuctionInFormulasTab_Shortcut" ksoCmd="Function" shortcutHint="Shift+F3"/>
+			<KxValueCommand id="FormatFonts_Shortcut" index="2" ksoCmd="FormatFonts" shortcutHint="Ctrl+Shift+F"/>
+			<KxLegacyTriggerCommand id="RecalculateBook_Shortcut" ksoCmd="RecalculateBook" shortcutHint="Ctrl+Alt+F9"/>
+			<KxValueCommand id="NoBorderPopup_Shortcut" index="0" ksoCmd="BordersPalette" shortcutHint="Ctrl+Shift+-"/>
+			<KxEtPopupErrorCheckLabelCommand id="PopupErrorCheckLabel_Shortcut" shortcutHint="Alt+Shift+F10"/>
+			<KxEtDisplayOrHideShapeCommand id="DisplayOrHideShape_Shortcut" shortcutHint="Ctrl+6"/>
+			<KxEtFormatNumberCommand id="FormatNumber_Shortcut" shortHint="Ctrl+Shift+`"/>
+			<KxLegacyTriggerCommand id="GeneralFormat" ksoCmd="GeneralFormat" shortcutHint="Shift+Meta+`"/>
+			<KxLegacyTriggerCommand id="CurrentFormat" ksoCmd="CurrentFormat" shortcutHint="Shift+Meta+1"/>
+			<KxLegacyTriggerCommand id="CustomFormat" ksoCmd="CustomFormat" shortcutHint="Shift+Meta+2"/>
+			<KxLegacyTriggerCommand id="DateFormat" ksoCmd="DateFormat" shortcutHint="Shift+Meta+3"/>
+			<KxLegacyTriggerCommand id="CurrentSymbolFormat" ksoCmd="CurrentSymbolFormat" shortcutHint="Shift+Meta+4"/>
+			<KxLegacyTriggerCommand id="PercentFormat" ksoCmd="PercentFormat" shortcutHint="Shift+Meta+5"/>
+			<KxLegacyTriggerCommand id="ScientificFormat" ksoCmd="ScientificFormat" shortcutHint="Shift+Meta+6"/>
+			<KxLegacyTriggerCommand hotKey="O" icon="align_normal_control_kd" id="RbNormalAlign" ksoCmd="NormalAlignControl" qtspyName="RbNormalAlignControl" text="@Relative to the object"/>
+			<KxLegacyTriggerCommand hotKey="F" icon="align_normal_control_kd" id="RbReferenceObjectAlign" ksoCmd="ReferenceObjectAlignControl" qtspyName="RbReferenceObjectAlignControl" text="@Relative to the last selected object"/>
+			<KAlignControlListCommand hotKey="O" icon="align_normal_control_kd" id="AlignmentControl" ksoCmd="AlignControlTypes" qtspyName="RbNormalAlignControl" referenceCommand="RbNormalAlign" text="@Relative to the object">
+				<command idQ="RbNormalAlign"/>
+				<command idQ="RbReferenceObjectAlign"/>
+			</KAlignControlListCommand>
+			<KxLegacyTriggerCommand aid="80021" icon="text_type_to_number_kd" id="EtTools_Text2Num" ksoCmd="ConvertTextToNumber" text="@Text2Num"/>
+			<KxEtToolsNum2TextCommand icon="number_to_text_kd" id="EtTools_Num2Text" text="@Num2Text"/>
+			<KxEtSheetToDBCommand applyAccentEffect="true" helpLinkText="@View Feature Introduction" helpLinkUrl="DBSheetHelp" icon="change_to_db_kd" id="RB_SheetToDB" imageTip="et_convert_db_guide_background" imageTipHeight="200" imageTipText="@A single piece of data in a DBSheet can create multiple views, supporting rich business fields, AI fields, automated workflows, visual dashboards, and more" imageTipWidth="330" ksoCmd="ExportActiveSheetToDb" showTitle="true" sourceType="global" text="@Export To DBSheet"/>
+			<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appId="kocrtool" icon="scan_ocr_kd" id="app_ocrtool_menu_2txt" text="@Image To Text"/>
+			<KAppCommand action="Pic2Xls" appCmdObj="ImportCurrentPic" appId="kocrtool" icon="change_pic_to_et_kd" id="app_ocrtool_menu_2xlsl" text="@Image To Table"/>
+			<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appId="kocrtool" icon="change_pic_to_wps_kd" id="app_ocrtool_menu_ref" text="@Image To Text"/>
+			<KAppQuickMenuCommand icon="change_pic_to_wps_kd" id="AppOcrToolMenu" idKey="AppOcrToolMenu" referenceCommand="app_ocrtool_menu_ref" text="@Picture to Text">
+				<command idQ="app_ocrtool_menu_2txt"/>
+				<command idQ="app_ocrtool_menu_2xlsl"/>
+			</KAppQuickMenuCommand>
+			<KxEtCFFillColorCommand controlType="4" customTip2="FillColor2" customTip="FillColor" forceVisible="1" icon="color_paint_wps_kd" id="CFFillColor" idMso="" ksoCmd="CFFillColor" ksoTriggerCmd="CFFillColor" qtspyName="CFFillColor" text="@Fill Color">
+				<KxEtMoreColorThemeCommand colorUsage="CFFillColor" dialogHint="1" icon="color_palette_kd" id="CFMoreFillColor" text="@More Colors"/>
+				<KxEtMoreColorThemeCommand colorUsage="TouchbarFillColor" visible="false"/>
+				<command idQ="MoreFill"/>
+			</KxEtCFFillColorCommand>
+			<KxEtCFFontColorCommand controlType="4" customTip2="FontColor2" customTip="FontColor" forceVisible="1" icon="color_font_wps_kd" id="CFFontColor" idMso="" ksoCmd="CFFontColor" ksoTriggerCmd="CFFontColor" qtspyName="CFFontColor" text="@Font Color">
+				<KxEtMoreColorThemeCommand colorUsage="CFFillColor" dialogHint="1" icon="color_palette_kd" id="CFMoreFontColor" text="@More Colors"/>
+				<KxEtMoreColorThemeCommand colorUsage="TouchbarFillColor" visible="false"/>
+				<command idQ="MoreFill"/>
+			</KxEtCFFontColorCommand>
+			<KxLegacyTriggerCommand aid="113" controlType="6" customTip="Bold" faceid="283" icon="bold_wps_kd" iconQat="bold_wps_kd" id="CFBold" idMso="" ksoCmd="CFBold" qtspyName="CFBold" text="@Bold"/>
+			<KxLegacyTriggerCommand aid="114" controlType="6" customTip="Italic" faceid="284" icon="italic_wps_kd" id="CFItalic" idMso="" ksoCmd="CFItalic" qtspyName="CFItalic" text="@Italic"/>
+			<KxLegacyTriggerCommand aid="115" controlType="6" customTip="Underline" faceid="285" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="CFUnderline" idMso="" ksoCmd="CFUnderline" qtspyName="CFUnderline" text="@Underline"/>
+			<KAppCommand action="RemoveFormula" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="remove_formula_kd" id="RB_EtToolbox_RemoveFormula" idKey="EtRBToolbox" text="@Remove formula"/>
+			<KAppCommand action="TextToFormula" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="text_to_formula_kd" id="RB_EtToolbox_TextToFormula" idKey="EtRBToolbox" text="@Text to formula"/>
+			<KAppCommand action="FormulaToText" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="formula_to_text_kd" id="RB_EtToolbox_FormulaToText" idKey="EtRBToolbox" text="@Formula to text"/>
+			<KAppCommand action="Round" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="rounding_kd" id="RB_EtToolbox_Round" idKey="EtRBToolbox" text="@Round"/>
+			<KAppCommand action="ToUpperCase" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="format" icon="font_all_caps_kd" id="RB_EtToolbox_ToUpperCase" idKey="EtRBToolbox" text="@To upper case"/>
+			<KAppCommand action="ToLowerCase" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="format" icon="font_all_lowercase_kd" id="RB_EtToolbox_ToLowerCase" idKey="EtRBToolbox" text="@To lower case"/>
+			<KAppCommand action="InitialsToUpperCase" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="format" icon="initials_to_upper_case_kd" id="RB_EtToolbox_InitialsToUpperCase" idKey="EtRBToolbox" text="@Initials to upper case"/>
+			<KAppCommand action="InitialsOfSentenceToUpperCase" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="format" icon="capitalize_sentence_first_letter_kd" id="RB_EtToolbox_InitialsOfSentenceToUpperCase" idKey="EtRBToolbox" text="@Initials of sentence to upper case"/>
+			<KAppCommand action="ReverseCase" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="format" icon="case_invert_kd" id="RB_EtToolbox_ReverseCase" idKey="EtRBToolbox" text="@Reverse case"/>
+			<KAppCommand action="ConvertToEnglishSymbol" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="convert_to_english_symbols_kd" id="RB_EtToolbox_ConvertToEnglishSymbol" idKey="EtRBToolbox" text="@Convert to english symbol"/>
+			<KAppCommand action="ConvertToChineseSymbol" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="convert_to_chinese_symbol_kd" id="RB_EtToolbox_ConvertToChineseSymbol" idKey="EtRBToolbox" text="@Convert to chinese symbol"/>
+			<KAppCommand action="CharacterSuperSubScript" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="format" icon="math_superscript_subscript_convert_kd" id="RB_EtToolbox_CharacterSuperSubScript" idKey="EtRBToolbox" text="@Character super sub script"/>
+			<KAppCommand action="InputNumericSequence" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="format" icon="input_numeric_sequence_kd" id="RB_EtToolbox_InputNumericSequence" idKey="EtRBToolbox" text="@Input Numeric Sequence"/>
+			<KAppCommand action="FillBlankCells" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="format" icon="cell_fill_blank_kd" id="RB_EtToolbox_FillBlankCells" idKey="EtRBToolbox" text="@Fill Blank Cells"/>
+			<KAppCommand action="InsertTextToBeginning" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="insert" icon="insert_text_to_beginning_kd" id="RB_EtToolbox_InsertTextToBeginning" idKey="EtRBToolbox" text="@Insert text to the beginning"/>
+			<KAppCommand action="InsertTextToMiddle" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="insert" icon="insert_text_to_middle_kd" id="RB_EtToolbox_InsertTextToMiddle" idKey="EtRBToolbox" text="@Insert text into the middle"/>
+			<KAppCommand action="InsertTextToEnding" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="insert" icon="insert_text_to_ending_kd" id="RB_EtToolbox_InsertTextToEnding" idKey="EtRBToolbox" text="@Insert text to the back"/>
+			<KAppCommand action="RemoveBlankRow" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="paragraph_delete_blank_row_kd" id="RB_EtToolbox_RemoveBlankRow" idKey="EtRBToolbox" text="@Remove Blank Row"/>
+			<KAppCommand action="CreateTableCatalog" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" editdisable="true" entrance="catalog" icon="create_table_catalog_kd" id="RB_EtToolbox_CreateTableCatalog" idKey="EtRBToolbox" text="@Create table directory"/>
+			<KAppCommand action="SortWorksheets" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="catalog" icon="worksheet_sort_kd" id="RB_EtToolbox_SortWorksheets" idKey="EtRBToolbox" text="@Sort worksheets"/>
+			<KAppCommand action="RenameWorksheets" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="catalog" icon="rename_kd" id="RB_EtToolbox_RenameWorksheets" idKey="EtRBToolbox" text="@Rename worksheets"/>
+			<KAppCommand action="DeleteBlankTable" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" entrance="delete" icon="delete_blank_table_kd" id="RB_EtToolbox_DeleteBlankTable" idKey="EtRBToolbox" text="@Delete Blank Table"/>
+			<KAppCommand action="InsertDiagonalHeader" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="insert" icon="insert_diagonal_header_kd" id="RB_EtToolbox_InsertDiagonalHeader" idKey="EtRBToolbox" text="@Insert Diagonal Header"/>
+			<KAppCommand action="AdvanceSplit" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" icon="advance_split_kd" id="RB_EtToolbox_AdvanceSplit" idKey="EtRBToolbox" text="@Advance Split"/>
+			<KAppCommand action="RemoveLeadingText" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="CellRightClear" icon="paragraph_delete_leading_text_kd" id="RB_EtToolbox_RemoveLeadingText" idKey="EtRBToolbox" text="@Remove leading Text"/>
+			<KAppCommand action="RemoveMiddleText" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="CellRightClear" icon="paragraph_delete_middle_text_kd" id="RB_EtToolbox_RemoveMiddleText" idKey="EtRBToolbox" text="@Remove Middle Text"/>
+			<KAppCommand action="RemoveTrailingText" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="CellRightClear" icon="paragraph_delete_ending_text_kd" id="RB_EtToolbox_RemoveTrailingText" idKey="EtRBToolbox" text="@Remove Trailing Text"/>
+			<KAppCommand action="ClearObjects" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kettoolbox" dialogHint="1" entrance="delete" icon="delete_images_textboxes_kd" id="RB_EtToolbox_ClearObjects" idKey="EtRBToolbox" text="@Clear Image And Text Box"/>
+			<KListCommand icon="SheetRightClick" id="MoreTableFunctionsForSheet" idKey="EtRBToolbox" text="@More Table Functions">
+				<command idQ="RB_EtToolbox_CreateTableCatalog"/>
+				<command idQ="RB_EtToolbox_SortWorksheets"/>
+				<command idQ="RB_EtToolbox_DeleteBlankTable"/>
+				<command idQ="RB_EtToolbox_RenameWorksheets"/>
+				<command idQ="RB_SheetToDB"/>
+			</KListCommand>
+			<KListCommand icon="insert_text_to_cell_kd" id="RB_EtToolbox_InsertText" idKey="EtRBToolbox" text="@Batch Insert text to Cells">
+				<command idQ="RB_EtToolbox_InsertTextToBeginning"/>
+				<command idQ="RB_EtToolbox_InsertTextToMiddle"/>
+				<command idQ="RB_EtToolbox_InsertTextToEnding"/>
+			</KListCommand>
+			<KListCommand icon="EtToolbox_RemoveText" id="RB_EtToolbox_ClearPartText" idKey="EtRBToolbox" text="@Remove Part Text">
+				<command idQ="RB_EtToolbox_RemoveLeadingText"/>
+				<command idQ="RB_EtToolbox_RemoveMiddleText"/>
+				<command idQ="RB_EtToolbox_RemoveTrailingText"/>
+			</KListCommand>
+			<KxAddonsListCommand addons_name="kettoolbox" appFlags_xa="WPSMemberXA" id="BatchProcessCells" idKey="EtToolboxXaBatchProcessCells" menuItemRightPosIconOriginalSize="14*14" text="@Batch process cells">
+				<KxEtToolsText2NumberCommand icon="text_type_to_number_kd" id="EtTools_Text2Num" ksoCmd="ConvertTextToNumber" text="@Text2Num"/>
+				<KAppCommand action="RemoveBlankRow" appId="kettoolbox" icon="paragraph_delete_blank_row_kd" id="EtToolbox_RemoveBlankRow" text="@Remove Blank Row"/>
+				<KAppCommand action="ToUpperCase" appId="kettoolbox" icon="font_all_caps_kd" id="EtToolbox_ToUpperCase" text="@To upper case"/>
+				<KAppCommand action="BatchAdd" appId="kettoolbox" dialogHint="1" icon="expand_on_outlining_kd" id="EtToolbox_BatchAdd" text="@Batch Add"/>
+				<KAppCommand action="FillBlankCells" appId="kettoolbox" dialogHint="1" icon="cell_fill_blank_kd" id="EtToolbox_FillBlankCells" text="@Fill Blank Cells"/>
+				<KAppCommand action="DeleteBlankTable" appId="kettoolbox" icon="delete_blank_table_kd" id="EtToolbox_DeleteBlankTable" text="@Delete Blank Table"/>
+				<KAppCommand action="InputNumericSequence" appId="kettoolbox" icon="input_numeric_sequence_kd" id="EtToolbox_InputNumericSequence" text="@Input Numeric Sequence"/>
+				<KxEtJumpSmartToolBoxCommand id="More_Batch_Features" jumpTab="kettoolboxtab" text="@More Batch Features"/>
+			</KxAddonsListCommand>
+			<KxLegacyTriggerCommand id="InsertPictureFloat" ksoCmd="InsertPictureFromFile"/>
+			<KDocerPictureProxyCommand customTip="InsertOnlinePictureFromFile" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTab" idKey="CommonOnlineInsertResource" localMenuHeight="150" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlinePictureFromFileInInsertTab" targetModule="kdocercore" text="@My Picture"/>
+			<KDocerPictureProxyCommand aid="100071" appId="picture_resourceshop_split" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="433" hotKey="n" icon="pic_online_kd" id="InsertOnlinePictureFromFileInPictureToolTab" idKey="EtInsertPictureFromFile" localMenuHeight="150" qtspyName="onlinepicture" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" skeletonAlias="kdocerpicture" targetModule="kdocercore" width="588"/>
+			<KxEtSignShortCutCommand id="EtSignShortCut" idKey="CommonSignShortCut" shortcutHint="Alt+U"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" id="Insert_Web_NewSign" idKey="CommonInsertWebNewSign" targetModule="addsignature"/>
+			<KProxyCommand autoLoad="false" id="aiTrain" idKey="AITrain" targetId="aiTrain" targetModule="kwebexamaitraining"/>
+			<KAppCommand action="BatchInsertMode" appCmdObj="ETBatchInsertPic" appId="ketinsertpicture" hotKey="B" icon="batch_pic_add_kd" id="app_ketinsertpicture_insert" idKey="EtBatchPicture" text="@Batch Insert Picture"/>
+			<KAppCommand action="RearrangeMode" appCmdObj="ETBatchInsertPic" appId="ketinsertpicture" hotKey="W" icon="shape_three_kd" id="app_ketinsertpicture_rearrange" idKey="EtBatchPicture" text="@Batch Rearrange Picture" tipContent="@ET_Rearrange_Tips" tipTitle="@Batch Rearrange Picture"/>
+			<KAppCommand action="/tools/calculaterank" appFlags="wpsmember" appId="kformulaassistant" icon="calculate_and_enter_rankings_kd" id="app_kformulaassistant_fill_calculateRank" text="@app_kformulaassistant_fill_calculateRank_text"/>
+			<KAppQuickMenuCommand appId="kformulaassistant" customTip="ConvenientFormula" icon="formula_assistant_kd" id="app_kformulaassistant_tool" idKey="EtConvenientFormula" referenceCommand="app_kformulaassistant_tab" text="@Convenient Formula">
+				<command idQ="app_kformulaassistant_tab_conditionalJudgment"/>
+				<command idQ="app_kformulaassistant_tab_conditionalStatistics"/>
+				<command idQ="app_kformulaassistant_tab_textFamula"/>
+				<command idQ="app_kformulaassistant_tab_textMerge"/>
+				<command idQ="app_kformulaassistant_tab_calculateDateDiff"/>
+				<command idQ="app_kformulaassistant_tab_extractionIDCardInfo"/>
+				<command idQ="app_kformulaassistant_tab_calculateRank"/>
+				<command idQ="app_ketlookup_data"/>
+			</KAppQuickMenuCommand>
+		</commands>
+		<popupmenu cmd="Cell"/>
+		<popupmenu cmd="Column"/>
+		<popupmenu cmd="Row"/>
+		<popupmenu cmd="Ply"/>
+		<popupmenu cmd="AutoFill"/>
+		<popupmenu cmd="Status bar Popup Menu"/>
+		<popupmenu cmd="Format Axis"/>
+		<popupmenu cmd="Chart Area Popup Menu"/>
+		<popupmenu cmd="Plot Area"/>
+		<popupmenu cmd="TabMenu Popup Menu"/>
+		<popupmenu cmd="Format Data Series"/>
+		<popupmenu cmd="Data Point Popup Menu"/>
+		<popupmenu cmd="Title Bar (Charting)"/>
+		<popupmenu cmd="Data Table Popup Menu"/>
+		<popupmenu cmd="Format Axis"/>
+		<popupmenu cmd="Legend Key Popup Menu"/>
+		<popupmenu cmd="Format Legend Entry"/>
+		<popupmenu cmd="Data Label Popup Menu"/>
+		<popupmenu cmd="Trendline"/>
+		<popupmenu cmd="NewChart TrendLineLabel Menu"/>
+		<popupmenu cmd="Axis Title Popup Menu"/>
+		<popupmenu cmd="Up Bars Popup Menu"/>
+		<popupmenu cmd="Down Bars Popup Menu"/>
+		<popupmenu cmd="Error Bars Popup Menu"/>
+		<popupmenu cmd="Hi Lo Line Popup Menu"/>
+		<popupmenu cmd="Drop Line Popup Menu"/>
+		<popupmenu cmd="Series Line Popup Menu"/>
+		<popupmenu cmd="Gridlines Popup Menu"/>
+		<popupmenu cmd="Display Unit Label Popup Menu"/>
+		<popupmenu cmd="Lead Line Popup Menu"/>
+		<popupmenu cmd="Pivot Field Button Popup Menu"/>
+		<popupmenu cmd="Shapes"/>
+		<popupmenu cmd="Dml Shapes"/>
+		<popupmenu cmd="Comment Shape"/>
+		<popupmenu cmd="Comment Text"/>
+		<popupmenu cmd="Curve"/>
+		<popupmenu cmd="Curve Point"/>
+		<popupmenu cmd="Curve Point For VML"/>
+		<popupmenu cmd="Curve Segment"/>
+		<popupmenu cmd="Connector"/>
+		<popupmenu cmd="Picture Context Menu"/>
+		<popupmenu cmd="OLE Object"/>
+		<popupmenu cmd="Word Art Context Menu"/>
+		<popupmenu cmd="ActiveX Control"/>
+		<popupmenu cmd="JdeControl Popup Menu"/>
+		<popupmenu cmd="Form Control"/>
+		<popupmenu cmd="Formula Bar"/>
+		<popupmenu cmd="Dlg Formula Bar Popup Menu"/>
+		<popupmenu cmd="Numberincell Fortext Popup Menu"/>
+		<popupmenu cmd="Toolbar List"/>
+		<popupmenu cmd="TabBar NewFile"/>
+		<popupmenu cmd="Auto Backup Popup Menu"/>
+		<popupmenu cmd="Timing Backup Popup Menu"/>
+		<popupmenu cmd="Text Edit Popup Menu"/>
+		<popupmenu cmd="List Range Popup"/>
+		<popupmenu cmd="PivotTable Context Menu"/>
+		<popupmenu cmd="Query"/>
+		<popupmenu cmd="Slicer"/>
+		<popupmenu cmd="WebExtension Popup Menu"/>
+		<popupmenu cmd="Equation Accent Popup Menu"/>
+		<popupmenu cmd="Equation Bar Popup Menu"/>
+		<popupmenu cmd="Equation BorderBox Popup Menu"/>
+		<popupmenu cmd="Equation Operator Popup Menu"/>
+		<popupmenu cmd="Equation Delimiter Popup Menu"/>
+		<popupmenu cmd="Equation Array Popup Menu"/>
+		<popupmenu cmd="Equation Fraction Popup Menu"/>
+		<popupmenu cmd="Equation Function Popup Menu"/>
+		<popupmenu cmd="Equation Limit Popup Menu"/>
+		<popupmenu cmd="Equation Group Popup Menu"/>
+		<popupmenu cmd="Equation Normal Popup Menu"/>
+		<popupmenu cmd="Equation Matrix Popup Menu"/>
+		<popupmenu cmd="Equation Large Operator Popup Menu"/>
+		<popupmenu cmd="Equation Radical Popup Menu"/>
+		<popupmenu cmd="Equation Script Popup Menu"/>
+		<popupmenu cmd="Math Equation Popup Menu"/>
+		<popupmenu cmd="TextBox Popup Menu"/>
+		<popupmenu cmd="Pareto Line Popup Menu"/>
+		<minitoolbar cmd="Font Floatbar"/>
+		<minitoolbar cmd="FontSel Floatbar"/>
+		<minitoolbar cmd="Shapes Floatbar"/>
+		<minitoolbar cmd="Shapes Floatbar Dml"/>
+		<minitoolbar cmd="Picture Floatbar"/>
+		<minitoolbar cmd="TextEdit Floatbar"/>
+		<minitoolbar cmd="TextEditSel Floatbar"/>
+		<minitoolbar cmd="Formula Floatbar"/>
+		<minitoolbar cmd="FormulaSel Floatbar"/>
+		<minitoolbar cmd="Chart Floatbar"/>
+		<quickhelpbar cmd="Shapes QuickBar"/>
+		<quickhelpbar cmd="Ink QuickBar"/>
+		<quickhelpbar cmd="TextBox QuickBar"/>
+		<quickhelpbar cmd="Svg QuickBar"/>
+		<quickhelpbar cmd="Picture QuickBar"/>
+		<quickhelpbar cmd="PictureCrop QuickBar"/>
+		<quickhelpbar cmd="EtCellPicture QuickBar"/>
+		<quickhelpbar cmd="MultipleShapes QuickBar"/>
+		<quickhelpbar cmd="Chart QuickBar"/>
+		<quickhelpbar cmd="WordArt QuickBar"/>
+		<quickhelpbar cmd="WordArt Font QuickBar"/>
+		<quickhelpbar cmd="WebShape QuickBar"/>
+		<quickhelpbar cmd="WebChart QuickBar"/>
+		<quickhelpbar cmd="Ds WebShape QuickBar"/>
+		<quickhelpbar cmd="SmartChart WebShape QuickBar"/>
+		<statusbar cmd="statusbar"/>
+		<KRbTabBarNewButton cmd="TabbarButton"/>
+		<shortcuts>
+			<shortcut cmd="Print" key="Ctrl+Alt+P"/>
+			<shortcut cmd="GoTo" key="F5"/>
+			<shortcut cmd="DisplayOrHideShape_Shortcut" key="Ctrl+6"/>
+			<shortcut cmd="FormatNumber_Shortcut" key="Ctrl+Shift+`"/>
+			<shortcut cmd="ActivateNextSubWindow" key="Meta+Tab"/>
+			<shortcut cmd="ActivatePreviousSubWindow" key="Meta+Shift+Tab"/>
+			<shortcut autoRepeat="false" cmd="ShortCutNewDefaultFile" key="Ctrl+N"/>
+			<shortcut cmd="ShortCutNewBlankFile" key="Meta+N"/>
+			<shortcut cmd="OpenFile" key="Ctrl+O"/>
+			<shortcut cmd="OpenFile" key="Meta+O"/>
+			<shortcut cmd="SaveFile" key="Ctrl+S"/>
+			<shortcut cmd="SaveFile" key="Meta+S"/>
+			<shortcut cmd="CloseWindow" key="Ctrl+W"/>
+			<shortcut cmd="SaveAs" key="F12"/>
+			<shortcut cmd="SaveAs" key="Ctrl+Shift+S"/>
+			<shortcut cmd="SaveAs" key="Meta+Shift+S"/>
+			<shortcut cmd="Print2022Dialog" key="Ctrl+P"/>
+			<shortcut cmd="Print2022Dialog" key="Ctrl+F2"/>
+			<shortcut cmd="Print" key="Meta+P"/>
+			<shortcut cmd="Undo" key="Ctrl+Z"/>
+			<shortcut cmd="Undo" key="Meta+Z"/>
+			<shortcut cmd="Redo" key="Ctrl+Y"/>
+			<shortcut cmd="Redo" key="Meta+Y"/>
+			<shortcut cmd="Redo" key="Ctrl+Shift+Z"/>
+			<shortcut cmd="Copy" key="Ctrl+Ins"/>
+			<shortcut cmd="Cut" key="Shift+Del"/>
+			<shortcut cmd="Paste" key="Shift+Ins"/>
+			<shortcut cmd="Copy" key="Ctrl+C"/>
+			<shortcut cmd="Copy" key="Meta+C"/>
+			<shortcut cmd="Cut" key="Ctrl+X"/>
+			<shortcut cmd="Cut" key="Meta+X"/>
+			<shortcut cmd="Paste" key="Ctrl+V"/>
+			<shortcut cmd="Paste" key="Meta+V"/>
+			<shortcut cmd="PasteValuesPopup" key="Ctrl+Shift+V"/>
+			<shortcut cmd="PasteValuesPopup" key="Meta+Shift+V"/>
+			<shortcut cmd="FillDown" key="Ctrl+D"/>
+			<shortcut cmd="FillDown" key="Meta+D"/>
+			<shortcut cmd="FillRight" key="Ctrl+R"/>
+			<shortcut cmd="FillRight" key="Meta+R"/>
+			<shortcut cmd="Find" key="Ctrl+F"/>
+			<shortcut cmd="Find" key="Meta+F"/>
+			<shortcut cmd="Replace" key="Ctrl+H"/>
+			<shortcut cmd="Replace" key="Meta+H"/>
+			<shortcut cmd="GoTo" key="Ctrl+G"/>
+			<shortcut cmd="GoTo" key="Meta+G"/>
+			<shortcut cmd="TaskPane" key="Ctrl+F1"/>
+			<shortcut cmd="TaskPane" key="Meta+F1"/>
+			<shortcut cmd="nameManager" key="Ctrl+F3"/>
+			<shortcut cmd="nameManager" key="Meta+F3"/>
+			<shortcut cmd="DataTypeInfo" key="Ctrl+Shift+F5"/>
+			<shortcut cmd="InsertOrEditHyperlink" key="Ctrl+K"/>
+			<shortcut cmd="InsertOrEditHyperlink" key="Meta+K"/>
+			<shortcut cmd="FormatCells" key="Ctrl+1"/>
+			<shortcut cmd="FormatCells" key="Meta+1"/>
+			<shortcut cmd="Bold" key="Ctrl+2"/>
+			<shortcut cmd="Italic" key="Ctrl+3"/>
+			<shortcut cmd="Underline" key="Ctrl+4"/>
+			<shortcut cmd="StrikeThrough" key="Ctrl+5"/>
+			<shortcut cmd="HideRow" key="Ctrl+9"/>
+			<shortcut cmd="HideColumn_ShortCut" key="Ctrl+7"/>
+			<shortcut cmd="HideRow" key="Meta+9"/>
+			<shortcut cmd="UnhideRows" key="Shift+Meta+9"/>
+			<shortcut cmd="HideColumn" key="Meta+0"/>
+			<shortcut cmd="UnhideColumns" key="Shift+Meta+0"/>
+			<shortcut cmd="SpellCheck" key="F7"/>
+			<shortcut cmd="OpenThesaurus" key="Shift+F7"/>
+			<shortcut cmd="RecalculateBook" key="F9"/>
+			<shortcut cmd="CalculateSheet" key="Shift+F9"/>
+			<shortcut cmd="RunMacro" key="Alt+F8"/>
+			<shortcut cmd="SelectVisibleCells" key="Alt+;"/>
+			<shortcut cmd="DevelopEditor" key="Alt+F11"/>
+			<shortcut cmd="Bold" key="Ctrl+B"/>
+			<shortcut cmd="Bold" key="Meta+B"/>
+			<shortcut autoRepeat="false" cmd="Help" key="F1"/>
+			<shortcut cmd="Italic" key="Ctrl+I"/>
+			<shortcut cmd="Italic" key="Meta+I"/>
+			<shortcut cmd="Underline" key="Ctrl+U"/>
+			<shortcut cmd="Underline" key="Meta+U"/>
+			<shortcut cmd="QuickChart" key="F11"/>
+			<shortcut cmd="QuickChart" key="Alt+F1"/>
+			<shortcut cmd="SelectAll" key="Ctrl+A"/>
+			<shortcut cmd="SelectAll" key="Meta+A"/>
+			<shortcut cmd="InsertDate" key="Ctrl+;"/>
+			<shortcut cmd="InsertDate" key="Meta+;"/>
+			<shortcut cmd="InsertTime" key="Ctrl+Shift+;"/>
+			<shortcut cmd="InsertTime" key="Meta+Shift+;"/>
+			<shortcut cmd="InsertTime" key="Ctrl+'"/>
+			<shortcut cmd="InsertTime" key="Meta+'"/>
+			<shortcut cmd="InsertTable" key="Ctrl+T"/>
+			<shortcut cmd="InsertTable" key="Meta+T"/>
+			<shortcut cmd="InsertTable" key="Ctrl+L"/>
+			<shortcut cmd="InsertTable" key="Meta+L"/>
+			<shortcut cmd="InsertTime" key="Ctrl+Shift+'"/>
+			<shortcut cmd="InsertTime" key="Meta+Shift+'"/>
+			<shortcut cmd="Comment" key="Shift+F2"/>
+			<shortcut cmd="FindDirectReference" key="Ctrl+["/>
+			<shortcut cmd="FindDirectReference" key="Meta+["/>
+			<shortcut cmd="FindAllLocalReference" key="Meta+Shift+["/>
+			<shortcut cmd="GrowFont" key="Ctrl+Shift+。"/>
+			<shortcut cmd="GrowFont" key="Meta+Shift+."/>
+			<shortcut cmd="GrowFont" key="Ctrl+Shift+."/>
+			<shortcut cmd="ShrinkFont" key="Ctrl+Shift+，"/>
+			<shortcut cmd="ShrinkFont" key="Meta+Shift+,"/>
+			<shortcut cmd="ShrinkFont" key="Ctrl+Shift+,"/>
+			<shortcut cmd="GrowZoom" key="Ctrl+Alt+="/>
+			<shortcut cmd="ShrinkZoom" key="Ctrl+Alt+-"/>
+			<shortcut cmd="ResetZoom" key="Ctrl+0"/>
+			<shortcut cmd="ResetZoom" key="Meta+0"/>
+			<shortcut cmd="InsertSheet_Shortcut" key="Shift+F11"/>
+			<shortcut cmd="InsertSheet_Shortcut" key="Alt+shift+F1"/>
+			<shortcut cmd="ShowSheetsDialog" key="Meta+Shift+T"/>
+			<shortcut cmd="Sum_Shortcut" key="Alt+="/>
+			<shortcut cmd="InsertCellsProxy" key="Ctrl+Shift+="/>
+			<shortcut cmd="InsertCellsProxy" key="Meta+Shift+="/>
+			<shortcut cmd="InsertCellsProxy" key="Ctrl++"/>
+			<shortcut cmd="InsertCellsProxy" key="Meta++"/>
+			<shortcut cmd="DeleteCellsProxy" key="Ctrl+-"/>
+			<shortcut cmd="DeleteCellsProxy" key="Meta+-"/>
+			<shortcut cmd="ScreenGrab" key="Ctrl+Alt+X"/>
+			<shortcut cmd="ScreenGrab" key="Meta+Alt+X"/>
+			<shortcut cmd="ScreenGrabOcr" key="Ctrl+Alt+E"/>
+			<shortcut cmd="ScreenGrabHide" key="Ctrl+Alt+C"/>
+			<shortcut cmd="ScreenGrabHide" key="Meta+Alt+C"/>
+			<shortcut cmd="Refresh" key="Alt+F5"/>
+			<shortcut cmd="RefreshAll" key="Ctrl+Alt+F5"/>
+			<shortcut cmd="RefreshAll" key="Shift+Alt+F5"/>
+			<shortcut cmd="DataGroup" key="Shift+Alt+Right"/>
+			<shortcut cmd="DataUngroup" key="Shift+Alt+Left"/>
+			<shortcut cmd="AutoFilter" key="Ctrl+Shift+L"/>
+			<shortcut cmd="AutoFilter" key="Meta+Shift+L"/>
+			<shortcut cmd="ClearSlicerFilter" key="Alt+C"/>
+			<shortcut cmd="SlicerMultiSelect" key="Alt+G"/>
+			<shortcut cmd="ShowFormulas" key="Meta+·"/>
+			<shortcut cmd="ShowFormulas" key="Meta+`"/>
+			<shortcut cmd="FlashFill" key="Ctrl+E"/>
+			<shortcut cmd="AIFill" key="Ctrl+Alt+E"/>
+			<shortcut cmd="DisplayOutline" key="Ctrl+8"/>
+			<shortcut cmd="PasteSpecial" key="Ctrl+Alt+V"/>
+			<shortcut cmd="FuctionInFormulasTab_Shortcut" key="Shift+F3"/>
+			<shortcut cmd="NoBorderPopup_Shortcut" key="Ctrl+Shift+-"/>
+			<shortcut cmd="FormatFonts_Shortcut" key="Ctrl+Shift+F"/>
+			<shortcut cmd="FormatFonts_Shortcut" key="Ctrl+Shift+P"/>
+			<shortcut cmd="RecalculateBook_Shortcut" key="Ctrl+Alt+F9"/>
+			<shortcut cmd="PopupErrorCheckLabel_Shortcut" key="Alt+Shift+F10"/>
+			<shortcut cmd="FlashFill" key="Meta+E"/>
+			<shortcut cmd="rMergeCenter" key="Meta+M"/>
+			<shortcut cmd="InsertColumnLeft" key="Alt+Left"/>
+			<shortcut cmd="InsertColumnRight" key="Alt+Right"/>
+			<shortcut cmd="InsertRowUp" key="Alt+Up"/>
+			<shortcut cmd="InsertRowDown" key="Alt+Down"/>
+			<shortcut cmd="GeneralFormat" key="Shift+Meta+`"/>
+			<shortcut cmd="CurrentFormat" key="Shift+Meta+1"/>
+			<shortcut cmd="CustomFormat" key="Shift+Meta+2"/>
+			<shortcut cmd="DateFormat" key="Shift+Meta+3"/>
+			<shortcut cmd="CurrentSymbolFormat" key="Shift+Meta+4"/>
+			<shortcut cmd="PercentFormat" key="Shift+Meta+5"/>
+			<shortcut cmd="ScientificFormat" key="Shift+Meta+6"/>
+			<shortcut cmd="PasteSpecial" key="Ctrl+Meta+V"/>
+			<shortcut cmd="EtSignShortCut" idKey="EtSignShortCut" key="Alt+U"/>
+		</shortcuts>
+	</mainwindow>
+	<smartarttextpanewindow>
+		<shortcuts>
+			<shortcut cmd="Print" key="Ctrl+Alt+P"/>
+			<shortcut cmd="GoTo" key="F5"/>
+			<shortcut cmd="DisplayOrHideShape_Shortcut" key="Ctrl+6"/>
+			<shortcut cmd="FormatNumber_Shortcut" key="Ctrl+Shift+`"/>
+			<shortcut cmd="ActivateNextSubWindow" key="Meta+Tab"/>
+			<shortcut cmd="ActivatePreviousSubWindow" key="Meta+Shift+Tab"/>
+			<shortcut autoRepeat="false" cmd="ShortCutNewDefaultFile" key="Ctrl+N"/>
+			<shortcut cmd="ShortCutNewBlankFile" key="Meta+N"/>
+			<shortcut cmd="OpenTabManagerPanel" key="Ctrl+Alt+A"/>
+			<shortcut cmd="OpenTabManagerPanel" key="Meta+Alt+A"/>
+			<shortcut cmd="OpenFile" key="Ctrl+O"/>
+			<shortcut cmd="OpenFile" key="Meta+O"/>
+			<shortcut cmd="SaveFile" key="Ctrl+S"/>
+			<shortcut cmd="SaveFile" key="Meta+S"/>
+			<shortcut cmd="CloseWindow" key="Ctrl+W"/>
+			<shortcut cmd="SaveAs" key="F12"/>
+			<shortcut cmd="SaveAs" key="Ctrl+Shift+S"/>
+			<shortcut cmd="SaveAs" key="Meta+Shift+S"/>
+			<shortcut cmd="Print2022Dialog" key="Ctrl+P"/>
+			<shortcut cmd="Print2022Dialog" key="Ctrl+F2"/>
+			<shortcut cmd="Print" key="Meta+P"/>
+			<shortcut cmd="Undo" key="Ctrl+Z"/>
+			<shortcut cmd="Undo" key="Meta+Z"/>
+			<shortcut cmd="Redo" key="Ctrl+Y"/>
+			<shortcut cmd="Redo" key="Meta+Y"/>
+			<shortcut cmd="Redo" key="Ctrl+Shift+Z"/>
+			<shortcut cmd="Copy" key="Ctrl+Ins"/>
+			<shortcut cmd="Cut" key="Shift+Del"/>
+			<shortcut cmd="Paste" key="Shift+Ins"/>
+			<shortcut cmd="Copy" key="Ctrl+C"/>
+			<shortcut cmd="Copy" key="Meta+C"/>
+			<shortcut cmd="Cut" key="Ctrl+X"/>
+			<shortcut cmd="Cut" key="Meta+X"/>
+			<shortcut cmd="Paste" key="Ctrl+V"/>
+			<shortcut cmd="Paste" key="Meta+V"/>
+			<shortcut cmd="PasteValuesPopup" key="Ctrl+Shift+V"/>
+			<shortcut cmd="PasteValuesPopup" key="Meta+Shift+V"/>
+			<shortcut cmd="FillDown" key="Ctrl+D"/>
+			<shortcut cmd="FillDown" key="Meta+D"/>
+			<shortcut cmd="FillRight" key="Ctrl+R"/>
+			<shortcut cmd="FillRight" key="Meta+R"/>
+			<shortcut cmd="Find" key="Ctrl+F"/>
+			<shortcut cmd="Find" key="Meta+F"/>
+			<shortcut cmd="Replace" key="Ctrl+H"/>
+			<shortcut cmd="Replace" key="Meta+H"/>
+			<shortcut cmd="GoTo" key="Ctrl+G"/>
+			<shortcut cmd="GoTo" key="Meta+G"/>
+			<shortcut cmd="TaskPane" key="Ctrl+F1"/>
+			<shortcut cmd="TaskPane" key="Meta+F1"/>
+			<shortcut cmd="nameManager" key="Ctrl+F3"/>
+			<shortcut cmd="nameManager" key="Meta+F3"/>
+			<shortcut cmd="DataTypeInfo" key="Ctrl+Shift+F5"/>
+			<shortcut cmd="InsertOrEditHyperlink" key="Ctrl+K"/>
+			<shortcut cmd="InsertOrEditHyperlink" key="Meta+K"/>
+			<shortcut cmd="FormatCells" key="Ctrl+1"/>
+			<shortcut cmd="FormatCells" key="Meta+1"/>
+			<shortcut cmd="Bold" key="Ctrl+2"/>
+			<shortcut cmd="Italic" key="Ctrl+3"/>
+			<shortcut cmd="Underline" key="Ctrl+4"/>
+			<shortcut cmd="StrikeThrough" key="Ctrl+5"/>
+			<shortcut cmd="HideRow" key="Ctrl+9"/>
+			<shortcut cmd="HideColumn_ShortCut" key="Ctrl+7"/>
+			<shortcut cmd="HideRow" key="Meta+9"/>
+			<shortcut cmd="UnhideRows" key="Shift+Meta+9"/>
+			<shortcut cmd="HideColumn" key="Meta+0"/>
+			<shortcut cmd="UnhideColumns" key="Shift+Meta+0"/>
+			<shortcut cmd="SpellCheck" key="F7"/>
+			<shortcut cmd="OpenThesaurus" key="Shift+F7"/>
+			<shortcut cmd="RecalculateBook" key="F9"/>
+			<shortcut cmd="CalculateSheet" key="Shift+F9"/>
+			<shortcut cmd="RunMacro" key="Alt+F8"/>
+			<shortcut cmd="SelectVisibleCells" key="Alt+;"/>
+			<shortcut cmd="DevelopEditor" key="Alt+F11"/>
+			<shortcut cmd="Bold" key="Ctrl+B"/>
+			<shortcut cmd="Bold" key="Meta+B"/>
+			<shortcut autoRepeat="false" cmd="Help" key="F1"/>
+			<shortcut cmd="Italic" key="Ctrl+I"/>
+			<shortcut cmd="Italic" key="Meta+I"/>
+			<shortcut cmd="Underline" key="Ctrl+U"/>
+			<shortcut cmd="Underline" key="Meta+U"/>
+			<shortcut cmd="QuickChart" key="F11"/>
+			<shortcut cmd="QuickChart" key="Alt+F1"/>
+			<shortcut cmd="SelectAll" key="Ctrl+A"/>
+			<shortcut cmd="SelectAll" key="Meta+A"/>
+			<shortcut cmd="InsertDate" key="Ctrl+;"/>
+			<shortcut cmd="InsertDate" key="Meta+;"/>
+			<shortcut cmd="InsertTime" key="Ctrl+Shift+;"/>
+			<shortcut cmd="InsertTime" key="Meta+Shift+;"/>
+			<shortcut cmd="InsertTime" key="Ctrl+'"/>
+			<shortcut cmd="InsertTime" key="Meta+'"/>
+			<shortcut cmd="InsertTable" key="Ctrl+T"/>
+			<shortcut cmd="InsertTable" key="Meta+T"/>
+			<shortcut cmd="InsertTable" key="Ctrl+L"/>
+			<shortcut cmd="InsertTable" key="Meta+L"/>
+			<shortcut cmd="InsertTime" key="Ctrl+Shift+'"/>
+			<shortcut cmd="InsertTime" key="Meta+Shift+'"/>
+			<shortcut cmd="Comment" key="Shift+F2"/>
+			<shortcut cmd="FindDirectReference" key="Ctrl+["/>
+			<shortcut cmd="FindDirectReference" key="Meta+["/>
+			<shortcut cmd="FindAllLocalReference" key="Meta+Shift+["/>
+			<shortcut cmd="GrowFont" key="Ctrl+Shift+。"/>
+			<shortcut cmd="GrowFont" key="Meta+Shift+."/>
+			<shortcut cmd="GrowFont" key="Ctrl+Shift+."/>
+			<shortcut cmd="ShrinkFont" key="Ctrl+Shift+，"/>
+			<shortcut cmd="ShrinkFont" key="Meta+Shift+,"/>
+			<shortcut cmd="ShrinkFont" key="Ctrl+Shift+,"/>
+			<shortcut cmd="GrowZoom" key="Ctrl+Alt+="/>
+			<shortcut cmd="ShrinkZoom" key="Ctrl+Alt+-"/>
+			<shortcut cmd="ResetZoom" key="Ctrl+0"/>
+			<shortcut cmd="ResetZoom" key="Meta+0"/>
+			<shortcut cmd="InsertSheet_Shortcut" key="Shift+F11"/>
+			<shortcut cmd="InsertSheet_Shortcut" key="Alt+shift+F1"/>
+			<shortcut cmd="ShowSheetsDialog" key="Meta+Shift+T"/>
+			<shortcut cmd="Sum_Shortcut" key="Alt+="/>
+			<shortcut cmd="InsertCellsProxy" key="Ctrl+Shift+="/>
+			<shortcut cmd="InsertCellsProxy" key="Meta+Shift+="/>
+			<shortcut cmd="InsertCellsProxy" key="Ctrl++"/>
+			<shortcut cmd="InsertCellsProxy" key="Meta++"/>
+			<shortcut cmd="DeleteCellsProxy" key="Ctrl+-"/>
+			<shortcut cmd="DeleteCellsProxy" key="Meta+-"/>
+			<shortcut cmd="ScreenGrab" key="Ctrl+Alt+X"/>
+			<shortcut cmd="ScreenGrab" key="Meta+Alt+X"/>
+			<shortcut cmd="ScreenGrabOcr" key="Ctrl+Alt+E"/>
+			<shortcut cmd="ScreenGrabHide" key="Ctrl+Alt+C"/>
+			<shortcut cmd="ScreenGrabHide" key="Meta+Alt+C"/>
+			<shortcut cmd="Refresh" key="Alt+F5"/>
+			<shortcut cmd="RefreshAll" key="Ctrl+Alt+F5"/>
+			<shortcut cmd="RefreshAll" key="Shift+Alt+F5"/>
+			<shortcut cmd="DataGroup" key="Shift+Alt+Right"/>
+			<shortcut cmd="DataUngroup" key="Shift+Alt+Left"/>
+			<shortcut cmd="AutoFilter" key="Ctrl+Shift+L"/>
+			<shortcut cmd="AutoFilter" key="Meta+Shift+L"/>
+			<shortcut cmd="ClearSlicerFilter" key="Alt+C"/>
+			<shortcut cmd="SlicerMultiSelect" key="Alt+G"/>
+			<shortcut cmd="ShowFormulas" key="Meta+·"/>
+			<shortcut cmd="ShowFormulas" key="Meta+`"/>
+			<shortcut cmd="FlashFill" key="Ctrl+E"/>
+			<shortcut cmd="AIFill" key="Ctrl+Shift+E"/>
+			<shortcut cmd="DisplayOutline" key="Ctrl+8"/>
+			<shortcut cmd="PasteSpecial" key="Ctrl+Alt+V"/>
+			<shortcut cmd="FuctionInFormulasTab_Shortcut" key="Shift+F3"/>
+			<shortcut cmd="NoBorderPopup_Shortcut" key="Ctrl+Shift+-"/>
+			<shortcut cmd="FormatFonts_Shortcut" key="Ctrl+Shift+F"/>
+			<shortcut cmd="FormatFonts_Shortcut" key="Ctrl+Shift+P"/>
+			<shortcut cmd="RecalculateBook_Shortcut" key="Ctrl+Alt+F9"/>
+			<shortcut cmd="PopupErrorCheckLabel_Shortcut" key="Alt+Shift+F10"/>
+			<shortcut cmd="FlashFill" key="Meta+E"/>
+			<shortcut cmd="rMergeCenter" key="Meta+M"/>
+			<shortcut cmd="InsertColumnLeft" key="Alt+Left"/>
+			<shortcut cmd="InsertColumnRight" key="Alt+Right"/>
+			<shortcut cmd="InsertRowUp" key="Alt+Up"/>
+			<shortcut cmd="InsertRowDown" key="Alt+Down"/>
+			<shortcut cmd="GeneralFormat" key="Shift+Meta+`"/>
+			<shortcut cmd="CurrentFormat" key="Shift+Meta+1"/>
+			<shortcut cmd="CustomFormat" key="Shift+Meta+2"/>
+			<shortcut cmd="DateFormat" key="Shift+Meta+3"/>
+			<shortcut cmd="CurrentSymbolFormat" key="Shift+Meta+4"/>
+			<shortcut cmd="PercentFormat" key="Shift+Meta+5"/>
+			<shortcut cmd="ScientificFormat" key="Shift+Meta+6"/>
+			<shortcut cmd="PasteSpecial" key="Ctrl+Meta+V"/>
+			<shortcut cmd="EtSignShortCut" filter="category!=common;category!=professional" key="Alt+U"/>
+		</shortcuts>
+	</smartarttextpanewindow>
+</shell>

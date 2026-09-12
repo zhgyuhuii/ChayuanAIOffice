@@ -1,0 +1,1409 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<mainwindow tc="mainwindow">
+		<commands tc="commands">
+			<KPdfDriverLoadCommand id="pdf_driver_load"/>
+			<KAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" id="app_kpdf2wordv2_common"/>
+			<KProxyCommand customShortcutEnabled="false" customTip="TextSpeech" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="RL" icon="doc_voice_reading_kd" id="ProxyOldTextToSpeechOption" rbHotKey="RL" speakingTip="TextSpeech2" targetId="OldTextToSpeechOption" targetModule="wpsspeaker" text="@Text Speech"/>
+			<KAppCommand appCmdObj="kexportimage" appId="kexportimage" id="pdf2photo_pluginentry" idMso="FileSaveAsPicture"/>
+			<KxLegacyTriggerCommand id="TurnOrTransPageLeft" ksoCmd="TurnOrTransPageLeft"/>
+			<KxLegacyTriggerCommand id="TurnOrTransPageRight" ksoCmd="TurnOrTransPageRight"/>
+			<KxLegacyTriggerCommand id="TurnOrTransPageTop" ksoCmd="TurnOrTransPageTop"/>
+			<KxLegacyTriggerCommand id="TurnOrTransPageBottom" ksoCmd="TurnOrTransPageBottom"/>
+			<KxPdfFloatZoomPageCommand controlType="2" customTip="ZoomPage" id="FloatZoom%" shellEntryType="tab_start" text="@FloatZoom%"/>
+			<KxLegacyTriggerCommand aid="23" businessFrom="FD_Pdf_TabOpenFile" customTip="Open" dialogHint="1" hotKey="o" icon="open_file_kd" iconQat="open_file_kd" id="OpenFile" ksoCmd="OpenFile" rbHotKey="o" shellEntryType="quickstart" shortcutHint="Ctrl+O" text="@Open" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand aid="23" businessFrom="FD_Pdf_ShortcutOpenFile" customTip="Open" dialogHint="1" hotKey="o" icon="open_file_kd" id="OpenFile_shortcut" ksoCmd="OpenFile" rbHotKey="o" shellEntryType="shortcut" shortcutHint="Ctrl+O" text="@Open" wpsIsEanble="false"/>
+			<KxOleLegacyTriggerCommand customTip="Save" hotKey="s" icon="save_kd" iconQat="save_kd" id="SaveFile_shortcut" idMso="FileSave" ksoCmd="SaveFile" rbHotKey="s" shellEntryType="shortcut" shortcutHint="Ctrl+S" text="@Save"/>
+			<KxOleLegacyTriggerCommand customTip="Save" hotKey="s" icon="save_kd" iconQat="save_kd" id="SaveFile" idMso="FileSave" ksoCmd="SaveFile" rbHotKey="s" shellEntryType="quickstart" shortcutHint="Ctrl+S" text="@Save"/>
+			<KxOleLegacyTriggerCommand customTip="SaveAs" dialogHint="1" hotKey="e" id="Ebook_SaveAsFile" ksoCmd="EbookSaveAs" rbHotKey="e" shellEntryType="shortcut" text="@SaveAs"/>
+			<KxOleLegacyTriggerCommand customTip="SaveAs" dialogHint="1" hotKey="e" icon="p-saveas-normal" id="SaveAsFile_shortcut" idMso="FileSaveAs" ksoCmd="SaveAs" popupReadOnlyHint="hotkey" rbHotKey="e" shellEntryType="shortcut" shortcutHint="F12" text="@SaveAs"/>
+			<KxOleLegacyTriggerCommand aid="4" customTip="Print" defaultCmd="PrintDirect" dialogHint="1" hotKey="p" icon="print_kd" iconQat="print_kd" id="Print" idMso="Print" ksoCmd="Print" oleCmdExecOpt="2" rbHotKey="p" shellEntryType="quickstart" shortcutHint="Ctrl+P" silentCmd="PrintDirect" text="@Print" wpsIsEanble="true"/>
+			<KxOleLegacyTriggerCommand aid="4" customTip="Print" defaultCmd="PrintDirect" dialogHint="1" hotKey="p" icon="print_kd" iconQat="print_kd" id="Shortcut_Print" idMso="ShortcutPrint" ksoCmd="Print" oleCmdExecOpt="2" rbHotKey="p" shellEntryType="shortcut" shortcutHint="Ctrl+P" silentCmd="PrintDirect" text="@Print" wpsIsEanble="true"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Find" hotKey="F" icon="p-find-normal;p-find-active;p-find-selected;pdf-find-disable" id="Find" idMso="Find" ksoCmd="Find" qtspyName="Find" shortcutHint="Ctrl+F" text="@Find"/>
+			<KxOleLegacyTriggerCommand id="Redo_Shortcut" ksoCmd="Redo" shellEntryType="shortcut"/>
+			<KxOleLegacyTriggerCommand id="Redo_Shortcut2" ksoCmd="Redo" shellEntryType="shortcut"/>
+			<KxOleLegacyTriggerCommand id="Undo_Shortcut" ksoCmd="Undo" shellEntryType="shortcut"/>
+			<KxOleLegacyTriggerCommand controlType="0" icon="arrow_recover_kd" iconQat="arrow_recover_kd" id="Redo" ksoCmd="Redo" shellEntryType="quickstart" shortcutHint="Ctrl+Y" text="@ReDo"/>
+			<KxOleLegacyTriggerCommand controlType="0" icon="arrow_revoke_kd" iconQat="arrow_revoke_kd" id="Undo" ksoCmd="Undo" shellEntryType="quickstart" shortcutHint="Ctrl+Z" text="@UnDo"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="TextQuery" icon="magnifier_kd" id="Start_TextQuery" ksoCmd="TextQuery" qtspyName="TextQuery" rbHotKey="F" shellEntryType="tab_start" shortcutHint="Ctrl+F" text="@TextQuery"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="TextContentQuery" icon="magnifier_kd" id="FunctionSearch_TextQuery" ksoCmd="ShortcutTextQuery" rbHotKey="F" shellEntryType="function_search" text="@TextContentQuery"/>
+			<KxLegacyTriggerCommand id="Shortcut_Start_TextQuery" ksoCmd="ShortcutTextQuery" popupReadOnlyHint="hotkey" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand id="Shortcut_Start_TextReplace" ksoCmd="ShortcutTextReplace" shellEntryType="shortcut"/>
+			<KxTaskPaneLegacyTriggerCommand aid="5746" hotKey="k" icon="task_window_kd" id="TaskPane" ksoCmd="TaskPane" shortcutHint="Ctrl+F1" text="@Task Window"/>
+			<KxLegacyTriggerCommand customTip="PDFCompress" icon="file_compression_kd" id="PDFCompress" ksoCmd="Compress" text="@PDFCompress" wpsIsEanble="false"/>
+			<KxValueCommand customTip="PDFToWord" icon="change_to_word_kd" id="Spac_PDFZZ_PDFToWord" idKey="PdfToWordCustom" index="2" isVipIconEanble="0" ksoCmd="PDF2Word" text="@PDFToWord_L" wpsIsEanble="false"/>
+			<KxValueCommand customTip="PDFToWord" icon="change_to_word_kd" iconQat="change_to_word_kd" id="QAT_PDFZZ_PDFToWord" idKey="PdfToWordCustom" index="3" ksoCmd="PDF2Word" text="@PDFToWord" wpsIsEanble="false"/>
+			<KxOleLegacyTriggerCommand controlType="0" hotKey="s" icon="save_kd" iconQat="save_kd" id="QtSave" ksoCmd="SaveFile" rbHotKey="s" shellEntryType="quickstart" shortcutHint="Ctrl+S" text="@QtSave"/>
+			<KxLegacyTriggerCommand action="Split" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="Spac_PDFZZ_SplitPDF" idKey="PdfToWordCustom" ksoCmd="SplitPDF" text="@SplitPDF" wpsIsEanble="false"/>
+			<KxPdfHasViewCommandList customTip="ChangeBackGround" icon="eye_kd" id="StatusBar_ChangeBackGround_Normal" layout_lineCount="1" rbFileMenuEmbed="1" text="@ChangeBackGround" tipPicName="Pdf_Merge">
+				<KxValueCommand id="BgNormal" index="0" ksoCmd="ChangeBackGround" rbHotKey="1" text="@Bg_Normal"/>
+				<KxValueCommand id="BgDaylight" index="1" ksoCmd="ChangeBackGround" rbHotKey="2" text="@Bg_Daylight"/>
+				<KxValueCommand id="BgNight" index="2" ksoCmd="ChangeBackGround" rbHotKey="3" text="@Bg_Night"/>
+				<KxValueCommand id="BgHuyan" index="3" ksoCmd="ChangeBackGround" rbHotKey="4" text="@Bg_Huyan"/>
+				<KxValueCommand id="BgYangpizhi" index="4" ksoCmd="ChangeBackGround" rbHotKey="5" text="@Bg_Yangpizhi"/>
+			</KxPdfHasViewCommandList>
+			<KxLegacyTriggerCommand action="Merge" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="MergePDF" icon="doc_split_kd" id="Spac_PDFZZ_MergePDF" idKey="WorkSpaceMergePDF" ksoCmd="MergePDF" text="@MergePDF" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand action="Split" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="Spac_PDFZZ_SplitPDF" idKey="WorkSpaceSpiltPDF" ksoCmd="SplitPDF" text="@SplitPDF" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDF2Photo" icon="change_to_pic_two_kd" id="Spac_PDFZZ_PDFToPhoto" ksoCmd="PDF2Photo" text="@PDF2Photo" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand appCmdObj="kexportimage" appId="kexportimage" appPersistEntry="true" customTip="PDF2Photo" detail="tab_start" icon="change_to_pic_two_kd" id="Start_PDFZZ_PDFToPhoto" idKey="PDFZZPDFToPhoto" ksoCmd="PDF2Photo" sshortcutHint="Ctrl+Shift+I" text="@PDF2Photo" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand autoLoad="true" customTip="TranslationAll" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="SpecialFunc_FullTranslation" ksoCmd="TranslationAll" targetModule="kdoctranslate" text="@TranslationAll"/>
+			<KPdfAppCommand appCmdObj="kexportimage" appId="kexportimage" customTip="PDF2Photo" detail="tab_convert" icon="change_to_pic_two_kd" id="SpecialFunc_PDFZZ_PDFToPhoto" idMso="FileSaveAsPicture" shortcutHint="Ctrl+Shift+I" text="@PDF2Photo" wpsIsEanble="false"/>
+			<KAppCommand appCmdObj="AILongChart" appId="photoailongchart" icon="pic_star_two_kd" id="app_photoailongchart" idKey="AIPhotolongchart" text="@PhotoAiInfographic"/>
+			<KAppCommand appCmdObj="kexportimage" appId="kexportimage" appPersistEntry="true" customTip="PDF2Photo" detail="tab_start" icon="change_to_pic_two_kd" id="Start_PDFZZ_PDFToPhoto" idKey="PDFStartExportImage" idMso="FileSaveAsPicture" shortcutHint="Ctrl+Shift+I" text="@PDF2Photo" wpsIsEanble="false"/>
+			<KxValueCommand customTip="TranslationAll" icon="translation_kd" id="ShortCut_FullTranslation" idKey="PDFShortCutFullTranslate" ksoCmd="TranslationAll" shellEntryType="shortcut" shortcutHint="Ctrl+F6" text="@TranslationAll"/>
+			<KxValueCommand customTip="PDF2Excel" icon="change_to_et_kd" id="Spac_PDFZZ_PDFToExcel" idKey="PdfToWordCustom" isVipIconEanble="0" ksoCmd="PDF2Excel" text="@PDF2Excel" wpsIsEanble="false"/>
+			<KxValueCommand customTip="PDF2PPT" icon="change_to_ppt_kd" id="Spac_PDFZZ_PDFToPPT" idKey="PdfToWordCustom" isVipIconEanble="0" ksoCmd="PDF2PPT" text="@PDF2PPT" wpsIsEanble="false"/>
+			<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" hotKey="d" id="DeletePages" index="3" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+			<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" hotKey="d" icon="delet_empty_pages_kd" id="PageDelete_Tab" index="1" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+			<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" hotKey="d" icon="delet_empty_pages_kd" id="PageDelete_TabUp" index="1" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+			<KAppCommand action="3" appCmdObj="PdfDeleteEmptyPages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" icon="delet_empty_pages_kd" id="EmptyPageDelete_Tab" index="1" text="@Delete Empty Pages" wpsIsEanble="false"/>
+			<KAppQuickMenuCommand icon="delet_empty_pages_kd" id="PdfPageDelete_Tab" idKey="PDFPageDelete" referenceCommand="PageDelete_TabUp">
+				<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" hotKey="d" icon="deprecated_kd" id="PageDelete_Tab_menu" index="6" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+				<command idQ="EmptyPageDelete_Tab"/>
+			</KAppQuickMenuCommand>
+			<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" customTip="PageDelete" hotKey="d" id="PageDelete_toolmenu" index="2" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+			<KxValueCommand hotKey="d" icon="delet_empty_pages_kd" id="DeletePagesMenu" index="1" ksoCmd="DeleteCurPage" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages"/>
+			<KxLegacyTriggerCommand customTip="DeletePages" id="DeleteCurPage" ksoCmd="DeleteCurPage" text="@DeletePages" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="ActualSize" icon="screen_actual_size_kd" id="Zoom100Shortcut" idMso="ZoomCurrent100" ksoCmd="ZoomCurrent100" rbHotKey="j" shellEntryType="shortcut" shortcutHint="Ctrl+1" text="@100%"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitPageSize" icon="screen_fit_kd" id="FitPageSizeShortcut" ksoCmd="FitPageSize" qtspyName="FitPageSize" rbHotKey="i" shellEntryType="shortcut" shortcutHint="Ctrl+0" text="@Fit PageSize"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitWidth" icon="fit_width_kd" id="FitWidthShortcut" ksoCmd="FitWidth" qtspyName="FitWidth" rbHotKey="w" shellEntryType="shortcut" shortcutHint="Ctrl+2" text="@Fit Width"/>
+			<KComposeListCommand OLEMenuCategory="file" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="0" hotKey="f" id="FileMenu" name="File" text="@File"/>
+			<KListCommand OLEMenuCategory="edit" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="e" id="EditMenu" name="Edit" text="@Edit"/>
+			<KListCommand OLEMenuCategory="edit" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="v" id="ViewMenu" name="View" text="@View"/>
+			<KListCommand OLEMenuCategory="edit" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="t" id="ToolsMenu" name="Tools" text="@Tools"/>
+			<KListCommand OLEMenuCategory="insert" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="i" id="Insert" name="Insert" text="@Insert"/>
+			<KListCommand OLEMenuCategory="annotation" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="m" id="Annotation" name="Annotation" text="@Annotation"/>
+			<KListCommand OLEMenuCategory="page" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="1" hotKey="p" id="Page" name="Page" text="@Page Menu"/>
+			<KComposeListCommand aid="30009" barid="47" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="4" hotKey="w" id="WindowMenu" name="Window" text="@Window"/>
+			<KComposeListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="WorkspaceMenu" name="Workspace" text="@Workspace"/>
+			<KListCommand OLEMenuCategory="help" aid="30010" barid="48" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="5" hotKey="h" icon="p-helpmenu-normal;p-helpmenu-hover;p-helpmenu-click;p-helpmenu-normal" id="HelpMenu" name="Help" text="@Help"/>
+			<KListCommand OLEMenuCategory="help" aid="30010" barid="48" delayloadPath="commands/pdf/PopupMenu.kuip" groupindex="5" hotKey="h" icon="p-helpmenu-normal;p-helpmenu-hover;p-helpmenu-click;p-helpmenu-normal" id="HelpMenuForMac" name="Help" text="@Help"/>
+			<KListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="AppMenu" name="AppMenu" text="@AppMenu"/>
+			<KxFeedbackCommand aid="100001" featureid="16777260" hotKey="b" icon="UserFeedback;UserFeedback-hover;UserFeedback-down" id="UserFeedback" ksourl="UserFeedbackMail" showIconAndText="1" text="@Feedback"/>
+			<KProxyTabbarQAndACommand customTip="FindFunctionsTips" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="TabbarQAndA" relatedKsoCmd="RXFAdocKsoCmd" shortcutHint="Alt+Q" targetModule="kfeedback" text="@FindFunctions"/>
+			<KListCommand barid="44500" delayloadPath="commands/pdf/PopupMenu.kuip" id="TabMenu Popup Menu"/>
+			<KListCommand barid="65" delayloadPath="commands/pdf/PopupMenu.kuip" id="ViewportNone" name="ViewportNone" text="@Picture"/>
+			<KListCommand barid="66" delayloadPath="commands/pdf/PopupMenu.kuip" id="CopyMenu" name="CopyMenu" text="@Picture"/>
+			<KListCommand barid="67" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentMenu" name="CommentMenu" text="@Comment"/>
+			<KListCommand barid="68" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentMenuClose" name="CommentMenuClose" text="@Comment"/>
+			<KListCommand barid="69" delayloadPath="commands/pdf/PopupMenu.kuip" id="FreeTextMenu" name="FreeTextMenu" text="@FreeText"/>
+			<KListCommand barid="70" delayloadPath="commands/pdf/PopupMenu.kuip" id="FreeTextSelectionMenu" name="FreeTextSelectionMenu" text="@FreeText"/>
+			<KListCommand barid="71" delayloadPath="commands/pdf/PopupMenu.kuip" id="ThumbailMenu" name="ThumbailMenu" text="@FreeText"/>
+			<KListCommand barid="72" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfImageMenu" name="PdfImageMenu" text="@FreeText"/>
+			<KListCommand barid="112851" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfImageEditMenu" name="PdfImageEditMenu" text="@FreeText"/>
+			<KListCommand barid="72" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentSignMenu" name="CommentSignMenu" text="@Comment"/>
+			<KListCommand barid="72" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentSignMenuBatch" name="CommentSignMenuBatch" text="@Comment"/>
+			<KListCommand barid="72" delayloadPath="commands/pdf/PopupMenu.kuip" id="CrossPageStampMenu" name="CrossPageStampMenu" text="@Comment"/>
+			<KListCommand barid="73" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentSignMenuClose" name="CommentSignMenuClose" text="@Comment"/>
+			<KListCommand barid="74" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfEraserMenu" name="PdfEraserMenu" text="@PdfEraserMenu"/>
+			<KListCommand barid="75" delayloadPath="commands/pdf/PopupMenu.kuip" id="DigitalSignature" name="DigitalSignature" text="@DigitalSignature"/>
+			<KListCommand barid="76" delayloadPath="commands/pdf/PopupMenu.kuip" id="OrganizePage RB Menu" name="OrganizePage RB Menu" text="@FreeText"/>
+			<KListCommand barid="77" delayloadPath="commands/pdf/PopupMenu.kuip" id="OrganizePage LB Menu" name="OrganizePage LB Menu" text="@FreeText"/>
+			<KListCommand barid="78" delayloadPath="commands/pdf/PopupMenu.kuip" id="EditTextRightMenu" name="EditTextRightMenu" text="@Picture"/>
+			<KListCommand barid="79" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfOcrExtractMenu" name="PdfOcrExtractMenu" text="@FreeText"/>
+			<KListCommand barid="80" delayloadPath="commands/pdf/PopupMenu.kuip" id="SuperNoteRightMenu" name="SuperNoteRightMenu" text="@Comment"/>
+			<KListCommand barid="81" delayloadPath="commands/pdf/PopupMenu.kuip" id="TextCommentBoxTextRightMenu" name="TextCommentBoxTextRightMenu" text="@FreeText"/>
+			<KListCommand barid="82" delayloadPath="commands/pdf/PopupMenu.kuip" id="TextCommentBoxRightMenu" name="TextCommentBoxRightMenu" text="@FreeText"/>
+			<KListCommand barid="83" delayloadPath="commands/pdf/PopupMenu.kuip" id="EditLink RB Menu" name="EditLink RB Menu" text="@Edit Link"/>
+			<KListCommand barid="84" delayloadPath="commands/pdf/PopupMenu.kuip" id="MeasureToolRBmenu" name="MeasureToolRBmenu" text="@Comment"/>
+			<KListCommand barid="85" delayloadPath="commands/pdf/PopupMenu.kuip" id="AttachmentRightMenu" name="Attachment" text="@Attachment"/>
+			<KListCommand barid="86" delayloadPath="commands/pdf/PopupMenu.kuip" id="MixedEditRightMenu" name="MixedEditRightMenu" text="@MixedEdit"/>
+			<KListCommand barid="87" delayloadPath="commands/pdf/PopupMenu.kuip" id="VectorDiagramEditRightMenu" name="VectorDiagramEditRightMenu"/>
+			<KListCommand barid="88" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfImageEditSelectMultipleMenu" name="PdfImageEditSelectMultipleMenu"/>
+			<KListCommand barid="89" delayloadPath="commands/pdf/PopupMenu.kuip" id="MultipleVectorDiagramEditMenu" name="MultipleVectorDiagramEditMenu"/>
+			<KListCommand barid="90" delayloadPath="commands/pdf/PopupMenu.kuip" id="PathEditRightMenu" name="PathEditRightMenu"/>
+			<KListCommand barid="91" delayloadPath="commands/pdf/PopupMenu.kuip" id="MultiplePathEditMenu" name="MultiplePathEditMenu"/>
+			<KListCommand barid="92" delayloadPath="commands/pdf/PopupMenu.kuip" id="MixedEditMultipleSelectMenu" name="MixedEditMultipleSelectMenu"/>
+			<KListCommand barid="93" delayloadPath="commands/pdf/PopupMenu.kuip" id="MixedEditTextRightMenu" name="MixedEditTextRightMenu" text="@MixedEditText"/>
+			<KListCommand barid="94" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfImageMenu" name="PdfImageMenu" text="@FreeText"/>
+			<KListCommand barid="94" delayloadPath="commands/pdf/PopupMenu.kuip" id="InstructBoxTextRightMenu" name="InstructBoxTextRightMenu" text="@FreeText"/>
+			<KListCommand barid="95" delayloadPath="commands/pdf/PopupMenu.kuip" id="InstructBoxRightMenu" name="InstructBoxRightMenu" text="@FreeText"/>
+			<KListCommand barid="96" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfMediaDefaultMenu" name="PdfMediaDefaultMenu" text="@FreeText"/>
+			<KListCommand barid="97" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfMediaEditMenu" name="PdfMediaEditMenu" text="@FreeText"/>
+			<KListCommand barid="98" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentSignFieldMenu" name="CommentSignFieldMenu" text="@Comment"/>
+			<KListCommand barid="99" delayloadPath="commands/pdf/PopupMenu.kuip" id="CommentFormFiledMenu" name="CommentFormFiledMenu" text="@Comment"/>
+			<KListCommand barid="100" delayloadPath="commands/pdf/PopupMenu.kuip" id="FormEditRightMenu" name="FormEditRightMenu" text="@Comment"/>
+			<KListCommand barid="101" delayloadPath="commands/pdf/PopupMenu.kuip" id="PdfCLipPathEditVertex" name="PdfCLipPathEditVertex"/>
+			<KListCommand barid="99" delayloadPath="commands/pdf/PopupMenu.kuip" id="CatalogSelectMenu" name="CatalogSelectMenu"/>
+			<KAppCommand appCmdObj="kextractpage" appId="kextractpage" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="app_kextractpage" idKey="PDFExtractPage" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage"/>
+			<KListCommand barid="106" delayloadPath="commands/pdf/PopupMenu.kuip" id="TableEditRightMenu" name="TableEditRightMenu"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="OrganizePage QuickBar Hover" idKey="StyleQuickHelpBar"/>
+			<KxPdfMiniToolBarMultiListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="TextEdit_FloatBar" idKey="MiniToolbar" multiType="edit_status"/>
+			<KxPdfMultipleMiniFormFillToolBarCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="FormFill_FloatBar" idKey="MiniToolbar"/>
+			<KxPdfMiniToolBarAnnotClickListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="AnnotClick_FloatBar" idKey="MiniToolbar"/>
+			<KxPdfMiniToolBarTableEditCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="TableEdit_FloatBar" idKey="MiniToolbar"/>
+			<KAppCommand action="2" appCmdObj="PdfReplacePages" appId="pdfadvancedtool" hotKey="r" icon="page_replace_kd" id="PageReplace_RBMenu" idKey="PDFReplacePageUseAdvanceTool" index="2" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+			<KxValueCommand hotKey="r" icon="page_replace_kd" id="PageReplace_RBMenu" idKey="PDFReplacePageUseKxValueCmd" index="2" ksoCmd="PdfReplacePagesNoIcon" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+			<KxValueCommand customTip="Clockwise" icon="rotate_right_kd" id="PageRotate90_RBMenu" index="7" ksoCmd="RotatePages" shortcutHint="Ctrl+Shift++" text="@Page clockwise rotation"/>
+			<KxValueCommand customTip="Counterclockwise" icon="rotate_left_kd" id="PageReverse90_RBMenu" index="8" ksoCmd="RotatePages" shortcutHint="Ctrl+Shift+-" text="@Page anticlockwise rotation"/>
+			<KxPdfPageRotate90Command customTip="Clockwise" id="PageRotate90_RBMenu" shortcutHint="Ctrl+Shift++" text="@Page clockwise rotation"/>
+			<KxPdfPageReverse90Command customTip="Counterclockwise" id="PageReverse90_RBMenu" shortcutHint="Ctrl+Shift+-" text="@Page anticlockwise rotation"/>
+			<KxPdfPageDeleteCommand customTip="PageDelete" hotKey="d" icon="delet_empty_pages_kd" id="PageDelete_RBMenu" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages"/>
+			<KxPdfPageDeleteCommand customTip="PageDelete" hotKey="d" id="Page_PageDelete" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages"/>
+			<KxValueCommand icon="doc_extract_page_kd" id="PageExtract_RBMenu" index="2" ksoCmd="PDFExtractPage" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage" wpsIsEanble="false"/>
+			<KPdfPageRecognizeCommand icon="scan_ocr_kd" id="PageRecognize_RBMenu" text="@pdfpagerecognize"/>
+			<KxPdfTableRecognizeCommand customTip="PdfTableRecognize" icon="sheet_extract_kd" id="Table_Recognize" idKey="PDFTableRecognize" text="@pdftablerecognize"/>
+			<KxPdfOcrCopyTextCommand icon="copy_kd" id="OcrCopyText_RBMenu" idKey="PDFExtractCopyText" text="@ExtractAndCopyText"/>
+			<KxPdfPageSelectCommand controlType="2" customTip="Page Select" id="PageSelect"/>
+			<KAutoHideListCommand enableDependsOnSubCommands="1" icon="page_break_kd" id="PageInsert_RBMenu" idKey="PDFStandardEnhance" text="@Insert Pages">
+				<KxValueCommand customTip="InsertBlankPages" hotKey="i" icon="doc_kd" id="PageInsertBlankPages" idKey="PDFInsertDocUseKxValueCmd" index="4" ksoCmd="InsertBlankPages" rbHotKey="I" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+				<KAppCommand action="1" appCmdObj="InsertBlankPages" appId="pdfpageoperator" customTip="InsertBlankPages" hotKey="i" icon="doc_add_kd" id="PageInsertBlankPages" idKey="PDFInsertPageUsePageOperator" index="4" rbHotKey="I" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+				<KxValueCommand customTip="InsertPagesFromDoc" hotKey="t" icon="open_file_kd" id="PageInsertPagesFromDoc" idKey="PDFInsertDocUseKxValueCmd" index="4" ksoCmd="InsertPagesFromDoc" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+				<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" customTip="InsertPagesFromDoc" hotKey="t" icon="doc_import_kd" id="PageInsertPagesFromDoc" idKey="PDFInsertDocUseAdvancedTool" index="4" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Import Pages From Doc"/>
+			</KAutoHideListCommand>
+			<KxPdfPageInsertMenuCommand id="PageInsert_RBMenu" idKey="WPSPDFEnhanceVersion" text="@Insert Pages">
+				<KxValueCommand customTip="InsertBlankPages" hotKey="i" id="PageInsertBlankPages" index="4" ksoCmd="InsertBlankPages" rbHotKey="I" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+				<KxValueCommand customTip="InsertPagesFromDoc" hotKey="t" id="PageInsertPagesFromDoc" index="4" ksoCmd="InsertPagesFromDoc" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+				<KxValueCommand customTip="InsertPagesFromPic" hotKey="p" id="PageInsertPagesFromPic" index="4" ksoCmd="InsertPagesFromPic" rbHotKey="P" text="@Pages From Pic"/>
+				<KxValueCommand customTip="InsertPagesFromScan" hotKey="s" id="PageInsertPagesFromScan" idKey="PDFInsertPagesFromScan" index="4" ksoCmd="InsertPagesFromScan" rbHotKey="S" text="@Pages From Scan"/>
+				<KxValueCommand customTip="InsertPagesFromClipboard" hotKey="b" id="PageInsertPagesFromClipboardNoIcon" idKey="PDFInsertPagesFromClipboardNoIcon" index="4" ksoCmd="InsertPagesFromClipboard" rbHotKey="B" shortcutHint="Ctrl+Shift+B" text="@Pages From Clipboard"/>
+			</KxPdfPageInsertMenuCommand>
+			<KxLegacyTriggerCommand customTip="Print" hotKey="p" icon="print_kd" id="PageRightMenuPrint" idMso="RightMenuPrint" ksoCmd="Print" rbHotKey="p" shellEntryType="tab_page_Thumbnail_rightmenu" shortcutHint="Ctrl+P" text="@Print"/>
+			<KxLegacyTriggerCommand customTip="HyperLink" icon="chain_kd" id="LinkMode" ksoCmd="LinkMode" text="@HyperLink"/>
+			<KxLegacyTriggerCommand icon="chain_kd" id="Edit_EnterLinkMode" ksoCmd="EnterLinkMode" text="@Add or Edit Link"/>
+			<KxLegacyTriggerCommand icon="chain_disconnect_kd" id="Edit_DeleteAllHyperLink" ksoCmd="DeleteAllHyperLink" text="@Delete All Link"/>
+			<KListCommand id="Edit_HyperLink" layout_lineCount="1" rbFileMenuEmbed="1" text="@HyperLink">
+				<KQuickMenuCommandFix qtspyName="Edit_HyperLinkEx" referenceCommand="LinkMode" text="@HyperLink">
+					<command idQ="Edit_EnterLinkMode"/>
+					<command idQ="Edit_DeleteAllHyperLink"/>
+				</KQuickMenuCommandFix>
+			</KListCommand>
+			<KxQuickHelpBarLayoutCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Signature QuickBar" idKey="StyleQuickHelpBar" layoutMethod="left;top;horizontal;horizontal"/>
+			<KxQuickHelpBarLayoutCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Signature QuickBar Batch" idKey="StyleQuickHelpBar" layoutMethod="left;top;horizontal;horizontal"/>
+			<KxQuickHelpBarLayoutCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="CrossPageStamp QuickBar" idKey="StyleQuickHelpBar" layoutMethod="left;top;horizontal;horizontal"/>
+			<KxQuickHelpToolBarCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ObjectAlignQuickBar" idKey="ObjectAlignQuickBar" layoutMethod="left;top;horizontal;horizontal" separatorAutoAdapt="true"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Picture QuickBar" idKey="PictureQuickBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" dynFold="true" id="Picture QuickBar Read" idKey="PDFOldPictureQuickBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" dynFold="true" id="Picture QuickBar Read" idKey="PDFNewPictureQuickBar" pictureAiMode="true"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="PageCorrect QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxPdfCorrectMiniToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="PageCorrect MiniFloatbar" idKey="MiniToolbar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Picture QuickBar EditRead" idKey="StyleQuickHelpBar"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" fidKey="StyleQuickHelpBar" id="PlayRightMenu"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="TableRecognize QuickBar" idKey="StyleQuickHelpBar"/>
+			<KxTabMgrPanelTriggerCommand controlType="0" id="OpenTabManagerPanel" ksoCmd="OpenTabManagerPanel" shortcutHint="Ctrl+Alt+A"/>
+			<KxPdfConvertCommand icon="" id="Menu_PDFZZ_PdfConvert" idType="Pdf2Word_selecttext" text="@RightMenuPdf2Wrod"/>
+			<KxPdfHandleCatalogCommand icon="symbol_cross_kd" id="Pdf_GenerateCatalog_Ribbon" idKey="PDFInsertCatalog" idType="blank" index="1" text="@GenerateCatalog"/>
+			<KxPdfHandleCatalogCommand icon="refresh_kd" id="Insert_UpdateCatalog_RightMenu" idKey="PDFUpdateCatalog" idType="blank" text="@UpdateCatalog"/>
+			<KxPdfHandleCatalogCommand icon="refresh_kd" id="Insert_UpdateCatalog_Menu" idKey="PDFUpdateCatalog" idType="blank" text="@UpdateCatalog"/>
+			<KxPdfHandleCatalogCommand icon="trash_can_kd" id="Insert_DeleteCatalog_RightMenu" idKey="PDFDeleteCatalog" idType="blank" text="@DeleteCatalog"/>
+			<KxPdfAutoTocListCommand customTip="ImportCatalog" icon="catalog_generate_kd" id="Page_PdfImportCatalog" idKey="PDFImportCatalog" layout_lineCount="1" text="@ImportCatalog">
+				<command idQ="Pdf_GenerateCatalog_Ribbon"/>
+				<command idQ="Insert_UpdateCatalog_Menu"/>
+				<command idQ="Insert_DeleteCatalog_RightMenu"/>
+			</KxPdfAutoTocListCommand>
+			<KListCommand id="TaskpaneCommandPackage" idKey="PDFTaskpaneCommandPackage">
+				<KxPdfSearchPaneCommand alias="TpSearchpane" defaultVisible="true" id="TpSearchpane" shortHint="@Search Pane" text="@Search and repace pane" tpIcon="magnifier_kd"/>
+				<KxTranslationTaskPanePluginCommand alias="TpTranslation" autoLoad="false" defaultVisible="true" id="TpTranslation" idKey="PDFSentenceTranslation" pluginName="ktranslation" shortHint="@Translation" targetCmd="KxTpTranslationCommand" taskpaneType="8707" text="@Translation" tpIcon="translation_ai_kd"/>
+				<KxPdfPropertyPaneCommand alias="TpPropertyPane" defaultVisible="true" id="TpPropertyPane" idKey="PDFPropertyPane" shortHint="@property" text="@property" tpIcon="admin_kd"/>
+				<KxPdfReadingHighLightCommand customTip="HighlightBorder" defaultVisible="false" icon="form_highlight_kd" id="Reading_Highlight" idMso="Highlight" shortcutHint="Ctrl+F2" text="@Highlight"/>
+				<KxPdfReadingUnderLineCommand customTip="UnderlineBorder" defaultVisible="false" icon="underscore_wps_kd" id="Reading_Underline" idMso="Underline" shortcutHint="Ctrl+5" text="@Underline"/>
+				<KxPdfReadingStrikeoutCommand customTip="StrikeoutBorder" defaultVisible="false" icon="strikethrough_kd" id="Reading_Strikeout" idMso="Strikeout" shortcutHint="Ctrl+D" text="@Strikeout"/>
+				<KxPdfReadingAreaHighLightCommand customTip="AreaHighlight" defaultVisible="false" icon="region_highlight_kd" id="Reading_AreaHighlight" idMso="AreaHighlight" shortcutHint="Ctrl+4" text="@Area Highlight"/>
+				<KxPdfReadingCommentCommand customTip="NoteBorder" defaultVisible="false" icon="bubble_add_kd" id="Reading_Note" idMso="Note" shortcutHint="Ctrl+3" text="@Note"/>
+				<KxPdfReadingFreeTextCommand customTip="FreeText" defaultVisible="false" icon="bubble_text_kd" id="Reading_FreeText" idMso="FreeText" shortcutHint="Ctrl+F3" text="@TextPrinter"/>
+				<KxPdfReadingShapeCommand customTip="Shape" defaultVisible="false" icon="comment_shape_kd" id="Reading_Shape" idMso="Line" text="@Shape"/>
+				<KxPdfReadingGraffitiDrawCommand customTip="AnnotGraffiti" defaultVisible="false" icon="pen_strokes_kd" id="Reading_GraffitiDraw" idMso="GraffitiAnnot" text="@AnnotGraffiti"/>
+				<KxPdfReadingGraffitiEraserCommand defaultVisible="false" icon="eraser_kd" id="Reading_GraffitiEraser" text="@GraffitiEraser"/>
+				<KxTaskPanePluginCommand alias="TpDocFinalizedMgr" icon="doc_finalized_kd" id="TpDocFinalizedMgr" pluginName="kdocfinalizedmgr" shortHint="@Finalized" targetCmd="KDocFinalizedMgrCommand" text="@Document Finalized"/>
+				<KxTaskPanePluginCommand alias="TpContractMgr" filter="lang=zh_CN" icon="contract_assistant_kd" id="TpContractMgr" pluginName="kcontractpanel" shortHint="@Contract" targetCmd="KContractMgrCommand" text="@ContractPanel"/>
+				<KxPdfSplitPageTaskPaneCommand alias="TpSplitPage" icon="split_page_kd" id="TpSplitPage" idKey="PDFTPSplitPage" shortHint="@SplitPageHint" text="@SplitPage"/>
+				<KxPdfClipPageTaskPaneCommand alias="TpClipPage" icon="crop_kd" id="TpClipPage" idKey="PDFTPClipPage" shortHint="@ClipPageHint" text="@ClipPage"/>
+				<KxPdfMergePageTaskPaneCommand alias="TpMergePage" icon="shape_three_kd" id="TpMergePage" idKey="PDFTaskPanePageTask" shortHint="@MergePageHint" text="@MergePage"/>
+				<KxPdfSplitPdfTaskPaneCommand alias="TpSplitPdf" defaultVisible="false" icon="doc_split_kd" id="TpSplitPdf" idKey="PDFTaskPanePageTask" shortHint="@SplitPdfHint" text="@SplitPdf"/>
+				<KxPostCheckTaskPanelCopilotProxyCommand alias="TpCopilot" autoLoad="false" csource="pc_pdf_ai_docqa_qa" defaultVisible="true" id="TpCopilot" idKey="PDFTPCopilot" intentionCode="wps_pdf_historical" pluginName="ktaskpanelcopilot" shortHint="@Copilot AI" targetCmd="KTaskPanelCopilotCommand" text="@PDF Copilot AI" tpIcon="ai_kd"/>
+				<KxTaskPaneAIProxyCommand aiControlName="chat_pdf" alias="TpPdfAssist" autoLoad="true" defaultVisible="true" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="book_star_kd" id="TpPdfAssist" idKey="CustomAssistPdf" targetId="TpPdfAssist" targetModule="kassistpdf" text="@Assist"/>
+			</KListCommand>
+			<KxTaskPaneListCommand delayloadPath="commands/pdf/TaskPane.kuip" from="pdf_taskpane" id="ClassicalTaskpane" idKey="PDFTaskPaneKuip" text="@Task Window" tpDisableDrag="false" tpDisableTitlebar="false" tpHideroShowHitPolygon="true" tpShowDragTip="false"/>
+			<KxTaskPaneListCommand id="ClassicalTaskpane" idKey="PDFTaskPaneWindow" text="@Task Window" tpDisableDrag="false" tpDisableTitlebar="false" tpHideroShowHitPolygon="true" tpShowDragTip="false">
+				<KxTaskPaneProxyCommand alias="TpQuickAssistant" autoLoad="false" defaultVisible="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="TpQuickAssistant" idKey="PdfTpQuickAssistant" shortHint="@Quick" targetId="TpQuickAssistant" targetModule="kquickassistant" text="@Quick" tpIcon="iquickassistant"/>
+				<KxPdfSearchPaneCommand alias="TpSearchpane" defaultVisible="true" id="TpSearchpane" shortHint="@Search Pane" text="@Search and repace pane" tpIcon="magnifier_kd"/>
+				<KxTaskPaneProxyCommand alias="TpTranslation" autoLoad="false" defaultVisible="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="TpTranslation" idKey="PDFSentenceTranslation" shortHint="@Select Words Translation" targetId="TpTranslation" targetModule="ktranslation" text="@Select Words Translation" tpIcon="Select Words Translation"/>
+				<KxTaskPaneProxyCommand alias="TpQAndA" autoLoad="false" defaultVisible="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="TpQAndA" idKey="PDFScreenGrabFeedback" screenGrabCmd="screenGrabEx" shortHint="@Help" targetId="TpQAndA" targetModule="kfeedback" text="@Help And QA" tpIcon="question_kd"/>
+				<KxPdfPropertyPaneCommand alias="TpPropertyPane" defaultVisible="true" id="TpPropertyPane" idKey="PDFPropertyPaneClassicalTaskpane" shortHint="@property" text="@property" tpIcon="admin_kd"/>
+				<KxPdfReadingHighLightCommand customTip="HighlightBorder" defaultVisible="false" icon="form_highlight_kd" id="Reading_Highlight" idMso="Highlight" shortcutHint="Ctrl+F2" text="@Highlight"/>
+				<KxPdfReadingUnderLineCommand customTip="UnderlineBorder" defaultVisible="false" icon="underscore_wps_kd" id="Reading_Underline" idMso="Underline" shortcutHint="Ctrl+5" text="@Underline"/>
+				<KxPdfReadingStrikeoutCommand customTip="StrikeoutBorder" defaultVisible="false" icon="strikethrough_kd" id="Reading_Strikeout" idMso="Strikeout" shortcutHint="Ctrl+D" text="@Strikeout"/>
+				<KxPdfReadingAreaHighLightCommand customTip="AreaHighlight" defaultVisible="false" icon="region_highlight_kd" id="Reading_AreaHighlight" idMso="AreaHighlight" shortcutHint="Ctrl+4" text="@Area Highlight"/>
+				<KxPdfReadingCommentCommand customTip="NoteBorder" defaultVisible="false" icon="bubble_add_kd" id="Reading_Note" idMso="Note" shortcutHint="Ctrl+3" text="@Note"/>
+				<KxPdfReadingFreeTextCommand customTip="FreeText" defaultVisible="false" icon="bubble_text_kd" id="Reading_FreeText" idMso="FreeText" shortcutHint="Ctrl+F3" text="@TextPrinter"/>
+				<KxPdfReadingShapeCommand customTip="Shape" defaultVisible="false" icon="comment_shape_kd" id="Reading_Shape" idMso="Line" text="@Shape"/>
+				<KxPdfReadingGraffitiDrawCommand customTip="AnnotGraffiti" defaultVisible="false" icon="pen_strokes_kd" id="Reading_GraffitiDraw" idMso="GraffitiAnnot" text="@AnnotGraffiti"/>
+				<KxPdfReadingGraffitiEraserCommand defaultVisible="false" icon="eraser_kd" id="Reading_GraffitiEraser" text="@GraffitiEraser"/>
+				<KxTaskPaneAIProxyCommand aiControlName="chat_pdf" alias="TpPdfAssist" autoLoad="true" defaultVisible="false" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="book_star_kd" id="TpPdfAssist" idKey="CustomAssistPdf" targetId="TpPdfAssist" targetModule="kassistpdf" text="@Assist"/>
+				<KxPdfSplitPdfTaskPaneCommand alias="TpSplitPdf" defaultVisible="false" icon="doc_split_kd" id="TpSplitPdf" idKey="PDFTaskPanePageTask" shortHint="@SplitPdfHint" text="@SplitPdf"/>
+			</KxTaskPaneListCommand>
+			<KxPdfExtendThumbnailListCommand id="PdfThumbnailExtendBar" idKey="PDFThumbnailExtendBar">
+				<KListCommand icon="shape_four_kd" id="ThumbailMenuTopBar" idKey="PDFThumbailMenuTopBar">
+					<KAutoHideListCommand icon="page_break_kd" id="PdfThumbailMenuInsertPages" text="@Insert Pages">
+						<KAppCommand action="1" appCmdObj="InsertBlankPages" appId="pdfpageoperator" customTip="InsertBlankPages" hotKey="i" icon="doc_add_kd" id="InsertBlankPages" index="10" rbHotKey="I" text="@Blank Pages"/>
+						<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" customTip="InsertPagesFromDoc" hotKey="t" icon="thumbail_import_page_kd" id="InsertPagesFromDoc" idKey="PdfExtendThumbnailInsertDoc" index="11" rbHotKey="T" text="@Import Pages From Doc"/>
+					</KAutoHideListCommand>
+					<KAppCommand appCmdObj="kextractpage" appId="kextractpage" customTip="PDFExtractPage" icon="doc_extract_page_kd" id="PdfThumbailistPageExtract" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage"/>
+					<KAppCommand action="2" appCmdObj="PdfReplacePages" appId="pdfadvancedtool" hotKey="r" icon="page_replace_kd" id="PdfThumbailMenuReplacePages" idKey="PDFReplacePageUseAdvanceTool" index="6" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+					<KxValueCommand hotKey="r" icon="page_replace_kd" id="PdfThumbailMenuReplacePages" idKey="PDFReplacePageUseKxValueCmd" index="6" ksoCmd="PdfReplacePagesNoIcon" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+					<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" hotKey="d" icon="delet_empty_pages_kd" id="PdfThumbailMenuListDeletePages" index="5" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+					<KAppCommand action="3" appCmdObj="PdfDeleteEmptyPages" appId="pdfpageoperator" canHideText="0" customTip="PageDelete" icon="delet_empty_pages_kd" id="PdfThumbailMenuListDeletemptyPages" index="2" text="@Delete Empty Pages" wpsIsEanble="false"/>
+					<separator/>
+					<KxValueCommand customTip="ClipPage" icon="crop_kd" id="PdfThumbailMenuCropPage" index="5" isVipIconEanble="0" ksoCmd="ClipPage" shortcutHint="Ctrl+Alt+C" text="@ClipPage" wpsIsEanble="false"/>
+					<KxValueCommand canHideText="0" customTip="SplitPage" icon="split_page_kd" id="PdfThumbailMenuSplitPage" index="4" isVipIconEanble="0" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+					<KAppCommand action="5" appCmdObj="PdfMergePage" appId="pdfpageoperator" canHideText="0" customTip="MergePage" icon="shape_three_kd" id="PdfThumbailPdfMergePage" idKey="PDFThumbnailPageOperator" index="14" text="@MergePage" wpsIsEanble="false"/>
+					<KAppCommand appCmdObj="Common" appId="pdfpagesize" icon="scale_size_kd" id="app_pdfpagesize_PdfThumbailMenuListPagesize" text="@resizepage"/>
+					<KAppCommand action="4" appCmdObj="PdfReversePage" appId="pdfpageoperator" canHideText="0" customTip="ReversePage" icon="page_replace_kd" id="PdfThumbailPdfReversePage" idKey="PDFThumbnailPageOperator" index="13" text="@Reverse Page" wpsIsEanble="false"/>
+					<separator/>
+					<KxPdfCopyPages aid="4005" descName="PdfCopyPages" icon="copy_kd" id="PdfThumbailMenuPageCopy" shortcutHint="Ctrl+C" spaceHint="singleloose" text="@PdfCopyPages"/>
+					<KxPdfPastePages aid="4006" descName="PdfPastePages" icon="paste_kd" id="PdfThumbailMenuPagePaste" shortcutHint="Ctrl+V" spaceHint="singleloose" text="@PdfPastePages"/>
+					<separator/>
+					<KxPdfThumbnailZoomInCommand icon="magnifier_zoom_in_kd" id="PdfThumbailMenuZoomIn" text="@ZoomInThumbnail"/>
+					<KxPdfThumbnailZoomOutCommand icon="magnifier_zoom_out_kd" id="PdfThumbailMenuZoomOut" text="@ZoomOutThumbnail"/>
+				</KListCommand>
+				<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" hotKey="t" icon="insert_kd" id="PdfThumbailMenuInsertPagesFromDoc" index="10" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Import Pages From Doc"/>
+				<KAppCommand action="2" appCmdObj="PdfDeletePages" appId="pdfpageoperator" canHideText="0" hotKey="d" icon="delet_empty_pages_kd" id="PdfThumbailMenuDeletePages" index="4" rbHotKey="D" shortcutHint="Ctrl+Shift+D" text="@Delete Pages" wpsIsEanble="false"/>
+				<KAppCommand action="2" appCmdObj="PdfReplacePages" appId="pdfadvancedtool" hotKey="r" icon="page_replace_kd" id="PdfThumbailMenuReplacePages" idKey="PDFReplacePageUseAdvanceTool" index="5" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+				<KxValueCommand hotKey="r" icon="page_replace_kd" id="PdfThumbailMenuReplacePages" idKey="PDFReplacePageUseKxValueCmd" index="5" ksoCmd="PdfReplacePagesNoIcon" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+				<KAppCommand appCmdObj="kextractpage" appId="kextractpage" icon="doc_extract_page_kd" id="PdfThumbailMenuPageExtract" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage"/>
+			</KxPdfExtendThumbnailListCommand>
+			<KxPdfNavigationPaneCommand id="Navigationpane" text="@Navigation Pane">
+				<KxPdfCatalogTPCommand icon="article_outline_kd" id="TpAICatalog" shortcutHint="Alt+Shift+0" text="@AI Catalog" tpTabButtonIconSize="16,16"/>
+				<KxPdfOutlineTPCommand icon="bookmark_kd" id="TpOutline" shortcutHint="Alt+Shift+1" text="@Outline" tpTabButtonIconSize="16,16"/>
+				<KxPdfThumbnailCommand icon="cover_kd" id="TpThumbnail" idKey="PDFTpThumbnailEntrace" shortcutHint="Alt+Shift+2" text="@Thumbnail" tpTabButtonIconSize="16,16"/>
+				<KxPdfExtendThumbnailCommand icon="cover_kd" id="TpThumbnail" idKey="PDFExtendThumbnail" shortcutHint="Alt+Shift+2" text="@Thumbnail" tpTabButtonIconSize="16,16"/>
+				<KxPdfAnnotationCommand icon="bubble_shape_kd" id="TpAnnotation" shortcutHint="Alt+Shift+3" text="@Manage Annotation" tpTabButtonIconSize="16,16"/>
+				<KxPdfAttachmentTPCommand icon="paperclip_kd" id="TpAttachment" shortcutHint="Alt+Shift+4" text="@AttachmentList" tpTabButtonIconSize="16,16"/>
+				<KxValueCommand customTip="PDFToWord" docExceptionPos="quickstart_2word" icon="change_to_word_kd" id="QAT_PDFZZ_PDFToWord" index="3" ksoCmd="PDF2Word" shortcutHint="Ctrl+Shift+W" text="@PDFToWord" wpsIsEanble="false"/>
+				<KxPdfLayerCommand icon="stack_kd" id="pdflayereditor" idKey="PDFNavigationPaneLayer" text="@Pdf Layer Editor" tpTabButtonIconSize="16,16"/>
+			</KxPdfNavigationPaneCommand>
+			<KxPdfStatusCommand id="statusbar" text="@Status Bar">
+				<KxPdfTwoStateCommand buttonStyle="3" customTip="HideNavigationPannel" firstAccessibleName="@Hide navigation panel" firstCustomTip="HideNavigationPannel" firstIcon="navigation_pane_down_kd" icon="navigation_pane_down_kd" id="StatusBar_HideNavigationPanel" ksoCmd="HideNavigationPanel" secondAccessibleName="@Show navigation panel" secondCustomTip="ShowNavigationPannel" secondIcon="navigation_pane_up_kd"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfStatusTriggerCommand customTip="FirstPage" icon="arrow_first_small_wps_kd" id="StatusBar_FirstPage" ksoCmd="FirstPage" shellEntryType="bottom" text="@FirstPage"/>
+				<KxPdfStatusTriggerCommand customTip="PreviousPage" icon="arrow_left_small_wps_kd" id="BottomTool_Previous" ksoCmd="Previous" longPressable="true" rbHotKey="a" shellEntryType="bottom" shortcutHint="Ctrl+↑" text="@Previous"/>
+				<KxPdfNewPageNumberCommand controlType="2" customTip="Page Number" id="BottomTool_PageIndexChanged" shellEntryType="bottom" spaceHint="compact"/>
+				<KxPdfStatusTriggerCommand customTip="NextPage" icon="arrow_right_small_wps_kd" id="BottomTool_NextPage" ksoCmd="NextPage" longPressable="true" rbHotKey="d" shellEntryType="bottom" shortcutHint="Ctrl+↓" text="@NextPage"/>
+				<KxPdfStatusTriggerCommand customTip="LastPage" icon="arrow_last_small_wps_kd" id="StatusBar_LastPage" ksoCmd="LastPage" shellEntryType="bottom" text="@LastPage"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfNavigationJumpCommand customTip="" icon="" id="StatusBar_NavigateBack" index="1" ksoCmd="NavigateBack" shortcutHint="Alt+Left" text=""/>
+				<KxPdfNavigationJumpCommand customTip="" icon="" id="StatusBar_NavigateForward" index="1" ksoCmd="NavigateForward" shortcutHint="Alt+Right" text=""/>
+				<separator/>
+				<KxPdfProofreadCommand buttonStyle="3" customTip="CommonProofreadStatusBar" detail="@Click to turn on Proofread" id="StatusBar_PdfProofread" idKey="PdfProofread" text="@Proofread"/>
+				<separator/>
+				<KxPdfAIReferenceCommand buttonStyle="3" id="StatusBar_PdfAIReference" idKey="PdfAIReference" text="@AI quote"/>
+				<KStatusPermissionLabelCommand buttonStyle="3" detail="@Permission Protected" filter="support:DocPermission!=true;support:EnablePDFOperaPermissions=true" icon="successful_kd" id="StatusPermissionLabelCommand" minimumWidth="105" text="@Permission Protected" textColor="#538033"/>
+				<KxStatusMBSignProxyCommand autoLoad="false" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="StatusMBSignCommand" idKey="MBVersionFlag" minimumWidth="105" targetModule="docpermission" visible="false"/>
+				<separator/>
+				<KStatusSecretLevelLabelCommand id="SecretLevelLabelCommand" minimumWidth="75"/>
+				<KStatusBackupCommand detail="@Click to turn on/off AutoBackup" id="BackupStatusCommand" minimumWidth="90" needLight="1"/>
+				<KxPdfDetectPageCommandList id="StatusBar_PdfDetectPage" idKey="PDFStatusBarDetectPage" text="detectpage">
+					<KAppCommand action="3" appCmdObj="PdfDeleteEmptyPages" appId="pdfpageoperator" canHideText="0" customTip="@empty page tips" icon="info_kd" id="PdfStatusDeletemptyPages" index="3" text="@empty Pages: " wpsIsEanble="false"/>
+					<KAppCommand appCmdObj="Common" appId="pdfpagesize" customTip="@page size tips" icon="info_kd" id="app_pdfpagesize_PdfPageBottomPagesize" text="@page size: "/>
+				</KxPdfDetectPageCommandList>
+				<KStatusStrechCommand id="StatusBarStretch_1" text="strech"/>
+				<KStatusStrechCommand text="strech"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="EyeShield" icon="eye_kd" id="BgHuyan" idKey="BackGroundEyeShield" ksoCmd="BackGroundEyeShield" qtspyName="BackGroundEyeShield" shellEntryType="bottom" text="@Bg_Huyan"/>
+				<command idKey="PDFStatusBarChangeBackground" idQ="StatusBar_ChangeBackGround_Normal"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfReadingModeStatusCommand commandType="0" controlType="0" customTip="ContinuousRead" icon="continuous_read_kd" id="ContinuousRead" ksoCmd="ContinuousRead" qtspyName="ContinuousRead" rbHotKey="4" shellEntryType="bottom" text="@Continuous"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfReadingModeStatusCommand commandType="1" controlType="0" customTip="SinglePageContinuous" icon="doc_two_kd" id="SinglePageContinuous" ksoCmd="SinglePageContinuous" qtspyName="SinglePageContinuous" rbHotKey="2" shellEntryType="bottom" text="@Single Page"/>
+				<KxPdfReadingModeStatusCommand commandType="2" controlType="0" customTip="TwoPageContinuous" icon="double_page_kd" id="TwoPagesContinuous" ksoCmd="TwoPagesContinuous" qtspyName="TwoPagesContinuous" rbHotKey="2" shellEntryType="bottom" spaceHint="autocompact" text="@Double Page"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfStatusPlaySlideShowCommand controlType="0" customTip="PlaySlide" icon="pdf_PlaySlide_Status_normal;pdf_PlaySlide_Status_hover;pdf_PlaySlide_Status_click" id="BottomTool_PlaySlide" ksoCmd="PlaySlide" qtspyName="PlaySlide" rbHotKey="h" shellEntryType="bottom" shortcutHint="Ctrl+Return" text="@PlaySlide"/>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfStatusTriggerCommand controlType="0" customTip="ActualSize" icon="screen_actual_size_kd" id="100%" idMso="ZoomCurrent100" ksoCmd="ZoomCurrent100" rbHotKey="j" shellEntryType="bottom" shortcutHint="Ctrl+1" text="@100%"/>
+				<KxPdfStatusTriggerCommand customTip="EbookSelfAdaptionPage" icon="ebook_single_page_kd" id="Ebook_BottomView_SelfAdaptionPage" ksoCmd="EbookSelfAdaptionPage" qtspyName="EbookSelfAdaptionPage" shellEntryType="bottom" text="@EbookSelfAdaptionPage" visible="false"/>
+				<KxPdfStatusTriggerCommand controlType="0" customTip="FitPageSize" icon="screen_fit_kd" id="FitPageSize" ksoCmd="FitPageSize" qtspyName="FitPageSize" rbHotKey="i" shellEntryType="bottom" shortcutHint="Ctrl+0" text="@Fit PageSize"/>
+				<KxPdfStatusTriggerCommand customTip="EbookSinglePage" icon="doc_two_kd" id="Ebook_BottomView_SinglePage" ksoCmd="EbookSinglePage" qtspyName="EbookSinglePage" shellEntryType="bottom" text="@EbookSinglePage" visible="false"/>
+				<KxPdfStatusTriggerCommand controlType="0" customTip="FitWidth" icon="fit_width_kd" id="FitWidth" ksoCmd="FitWidth" qtspyName="FitWidth" rbHotKey="w" shellEntryType="bottom" shortcutHint="Ctrl+2" text="@Fit Width"/>
+				<KxPdfStatusTriggerCommand customTip="EbookDoublePage" icon="double_page_kd" id="Ebook_BottomView_DoublePage" ksoCmd="EbookDoublePage" qtspyName="EbookDoublePage" shellEntryType="bottom" text="@EbookDoublePage" visible="false"/>
+				<KxPdfHasViewCommandList customTip="ChangeBackGround" icon="eye_kd" id="StatusBar_ChangeBackGround" layout_lineCount="1" rbFileMenuEmbed="1" text="@ChangeBackGround" visible="false">
+					<KxValueCommand id="BgNormal" index="0" ksoCmd="ChangeBackGround" rbHotKey="1" text="@Bg_Normal"/>
+					<KxValueCommand id="BgDaylight" index="1" ksoCmd="ChangeBackGround" rbHotKey="2" text="@Bg_Daylight"/>
+					<KxValueCommand id="BgNight" index="2" ksoCmd="ChangeBackGround" rbHotKey="3" text="@Bg_Night"/>
+					<KxValueCommand id="BgHuyan" index="3" ksoCmd="ChangeBackGround" rbHotKey="4" text="@Bg_Huyan"/>
+					<KxValueCommand id="BgYangpizhi" index="4" ksoCmd="ChangeBackGround" rbHotKey="5" text="@Bg_Yangpizhi"/>
+				</KxPdfHasViewCommandList>
+				<KPdfSeparatorCommand id="Separator"/>
+				<KxPdfStatusZoomCommand id="ZoomCommand" text="@Zoom" tooltipAdd="@Zoom Out" tooltipSlide="@StatusBar Slider Zoom" tooltipSub="@Zoom In" tooltipTrigger="@Click to adjust Zoom level" visible="false"/>
+				<KxPdfPageStatusZoomCommand id="PageZoomCommand" text="@Zoom" tooltipAdd="@Zoom Out" tooltipSub="@Zoom In" visible="false"/>
+				<KxValueCommand controlType="0" customTip="FullScreen" icon="screen_full_kd" id="FullScreen_Statusbar" idKey="CommonShowFullScreenBtn" index="28" ksoCmd="FullScreen" qtspyName="FullScreen " shellEntryType="bottom" shortcutHint="F11" text="@FullScreen"/>
+			</KxPdfStatusCommand>
+			<KxLegacyTriggerCommand aid="18" hotKey="n" icon="doc_add_kd" id="TabButtonNewBlankFile" ksoCmd="OpenFile" shortcutHint="Ctrl+O" text="@Open"/>
+			<KxActivatePreviousSubWindowCommand descName="@Switch to previous window" id="ActivatePreviousSubWindow" shortcutHint="Ctrl+Shift+Tab"/>
+			<KxActivateNextSubWindowCommand aid="3962" descName="@Switch to next window" id="ActivateNextSubWindow" shortcutHint="Ctrl+Tab"/>
+			<KxPdfAddNewOutlineCommand aid="3963" descName="@Add new outline" icon="bookmark_kd" id="AddNewOutlineCommand" shellEntryType="rightmenu" shortcutHint="Ctrl+B" text="@addnewoutline"/>
+			<KxPdfAddNewCatalogCommand aid="3969" id="AddNewCatalogCommand" shellEntryType="rightmenu" text="@addnewcatalog"/>
+			<KxLegacyTriggerCommand customTip="Highlight" id="Highlight" ksoCmd="Highlight" text="@Highlight"/>
+			<KxLegacyTriggerCommand customTip="Underline" id="Underline" ksoCmd="Underline" text="@Underline"/>
+			<KxLegacyTriggerCommand customTip="HighlightAndAnnotation" icon="region_highlight_kd" id="HighlightAndAnnotation" ksoCmd="HighlightAndAnnotation" text="@HighlightAndAnnotation"/>
+			<KxLegacyTriggerCommand customTip="UnderlineAndAnnotation" icon="underscore_wps_kd" id="UnderlineAndAnnotation" ksoCmd="UnderlineAndAnnotation" text="@UnderlineAndAnnotation"/>
+			<KxLegacyTriggerCommand customTip="FontColor" id="FontColor" ksoCmd="FontColor" text="@FontColor"/>
+			<KxLegacyTriggerCommand customTip="HighlightColor" id="HighlightColor" ksoCmd="HighlightColor" text="@FontColor"/>
+			<KxLegacyTriggerCommand customTip="Shape" icon="line_shape_kd" id="Line" ksoCmd="Line" qtspyName="Line" shortcutHint="Alt+1" text="@Line"/>
+			<KxLegacyTriggerCommand customTip="Square" icon="shape_square_kd" id="Square" ksoCmd="Square" qtspyName="Square" shortcutHint="Alt+3" text="@Square"/>
+			<KxLegacyTriggerCommand customTip="Circle" icon="ellipse_kd" id="Circle" ksoCmd="Circle" qtspyName="Circle" shortcutHint="Alt+4" text="@Circle"/>
+			<KxLegacyTriggerCommand icon="polygon_shape_kd" id="Polygon" ksoCmd="Polygon" qtspyName="Polygon" text="@Polygon"/>
+			<KxLegacyTriggerCommand icon="custom_shape_kd" id="PolyLine" ksoCmd="PolyLine" qtspyName="PolyLine" text="@PolyLine"/>
+			<KxLegacyTriggerCommand customTip="Arrow" icon="arrow_right_up_kd" id="Arrow" ksoCmd="Arrow" qtspyName="Arrow" shortcutHint="Alt+2" text="@Arrow"/>
+			<KxLegacyTriggerCommand icon="cloud_shape_kd" id="Cloudy" ksoCmd="Cloudy" qtspyName="Cloudy" text="@Cloudy"/>
+			<KxLegacyTriggerCommand customTip="Stamp" icon="stamp_kd" id="Stamp" ksoCmd="Stamp" qtspyName="Stamp" text="@Stamp"/>
+			<KxPdfSelectAll aid="3964" descName="Select All" hotKey="a" icon="select_all_kd" id="SelectAll" shortcutHint="Ctrl+A" text="@Select All"/>
+			<KxPdfCopyText aid="3965" descName="Copy" hotKey="c" icon="copy_kd" id="CopyText" shortcutHint="Ctrl+C" text="@Copy"/>
+			<KxPdfPaste aid="3967" descName="Paste" hotKey="p" icon="paste_kd" iconQat="paste_kd" id="Paste" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+V" text="@Paste"/>
+			<KxPdfPaste aid="3967" descName="OnlyText Paste" hotKey="p" icon="paste_kd" iconQat="paste_kd" id="OnlyTextPaste" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+Shift+V" text="@Paste"/>
+			<KxPdfCut aid="3978" descName="Cut" hotKey="t" icon="cut_kd" id="Cut" popupReadOnlyHint="hotkey" shortcutHint="Ctrl+X" text="@Cut"/>
+			<KxPdfReplyToComment aid="3966" descName="Reply To Comment" hotKey="r" icon="bubble_reply_kd" id="ReplyToComment" text="@Reply To Comment"/>
+			<KxPdfDeleteComment aid="3972" descName="Delete Comment" hotKey="d" icon="trash_can_kd" id="DeleteComment" text="@Delete Comment"/>
+			<KxPdfOpenAllComment aid="3975" descName="Open All Comment" icon="bubble_eye_all_kd" id="OpenAllComment" text="@Open All Comment"/>
+			<KxPdfCloseAllComment aid="3976" descName="Close All Comment" icon="bubble_batch_eye_closed_kd" id="CloseAllComment" text="@Close All Comment"/>
+			<KxPdfSetProperty aid="3977" descName="Property" icon="setup_kd" id="SetProperty" text="@Property"/>
+			<KxPdfDeleteText aid="3978" descName="Delete" hotKey="d" icon="trash_can_kd" id="DeleteText" text="@Delete"/>
+			<KxMakeOutwardDocEntranceCommand icon="export_kd" id="makeOutwardDoc" idKey="MBVersionFlag" rbHotKey="M" text="@Make Outward"/>
+			<KxPdfApplyOtherPage aid="3977" descName="Property" id="ApplyOtherPage" text="@ApplyOtherPage"/>
+			<KxPdfEmbedDocument aid="3977" descName="Property" icon="embed_document_kd" id="EmbedDocument" text="@EmbedDocument"/>
+			<KxPdfDeleteComment aid="3972" descName="Delete Comment" hotKey="d" icon="trash_can_kd" id="DeleteSignComment" text="@Delete"/>
+			<KxPdfCopyText descName="Copy Signature" hotKey="c" icon="copy_kd" id="CopySignature" shortcutHint="Ctrl+C" text="@Copy"/>
+			<KxPdfCut descName="Cut Signature" hotKey="t" icon="cut_kd" id="CutSignature" shortcutHint="Ctrl+X" text="@Cut"/>
+			<KxPdfSelectCommentText aid="3400" descName="Delete Comment" hotKey="t" icon="mouse_kd" id="RMenu_SelectAnnotationText" text="@Select CommentText"/>
+			<KListCommand icon="notabpage_pdf" id="NoTabPage">
+				<KxNoTabPageButtonCommand icon="p-openfile-notab" id="OpenFileOnNoTabPage" ksoCmd="OpenFile" text="@Open"/>
+			</KListCommand>
+			<KxToolbarGroupCommand id="ToolBarGroup" ksoCmd="ToolbarGroup" visible="false"/>
+			<KxHostEventFilterCommand id="mainwindowFirstShowEvent">
+				<KxAuthLuanchCheckCommand idKey="PDFAuthLuanchCheck"/>
+				<KxOfficeSpaceInitCommand id="officeSpaceInit"/>
+				<KxDelayAutoUpdateCommand/>
+				<KxPdfMediaBarCommand id="pdfPlayMeiaBar" idKey="PDFPlayMeiaBar"/>
+				<KxOperationDocStrategyCommand idKey="CommercialCategory"/>
+				<KEduOperationTipCommand idKey="EduOperationTip"/>
+			</KxHostEventFilterCommand>
+			<KListCommand barid="14" delayloadPath="commands/pdf/classics/Full_Screen.kuip" id="Full Screen" text="@Full Screen" visible="false"/>
+			<KPdfFileAssociateCommand id="FileAssociate" idKey="RbFileAssociation"/>
+			<KxPdfNonEditMiniToolBarMultiListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Font Floatbar" idKey="PDFFontFloatbar" multiType="non_edit_status"/>
+			<KxPdfMiniToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Ebook_Floatbar"/>
+			<KxPdfMiniToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Ebook_Floatbar" idKey="PDFMiniFloatbarCustom"/>
+			<KxPdfEditAnnoToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Edit_Anno_Floatbar" idKey="PDFMiniFloatbarCustom"/>
+			<KxPdfEditAnnoToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Edit_Anno_Floatbar_FillShape" idKey="PdfFormFillShape"/>
+			<KxPdfFillShapeColorCommand id="FillShapeColor" idKey="PdfFormFillShape">
+				<KxPdfMoreFontColorCommand icon="color_palette_kd" id="FillShapeMoreColor" text="@More Colors"/>
+				<KxPdfSnapColorCommand icon="cursor_snapper_fill_kd" id="FillShapeSnapColor" text="@Snapper"/>
+			</KxPdfFillShapeColorCommand>
+			<KxPdfAnnoToolBarColorCommand colorCommand="FillShapeColor" icon="stack_kd" id="Anno_FillShapeColor" idKey="PdfFormFillShape" text="@Change color"/>
+			<KxPdfFillShapeDeleteCommand icon="trash_can_kd" id="Edit_Anno_DeleteFileShape" idKey="PdfFormFillShape" text="@Delete Comment"/>
+			<KxPdfFillShapeSizeEnlargeCommand icon="font_size_increase_wps_kd" id="Anno_FileShape_Enlarge" idKey="PdfFormFillShape" text="@Increase font size"/>
+			<KxPdfFillShapeSizeDeflateCommand icon="font_size_reduce_wps_kd" id="Anno_FileShape_Deflate" idKey="PdfFormFillShape" text="@Decrease font size"/>
+			<KxPdfFillShapeChangeCommand icon="symbol_cross_two_kd" id="Edit_Anno_FileShape_Cross" idKey="PdfFormFillShape" shapeIndex="1" text="@Cross"/>
+			<KxPdfFillShapeChangeCommand icon="symbol_tick_kd" id="Edit_Anno_FileShape_Check" idKey="PdfFormFillShape" shapeIndex="2" text="@Check"/>
+			<KxPdfFillShapeChangeCommand icon="circle_kd" id="Edit_Anno_FileShape_Circle" idKey="PdfFormFillShape" shapeIndex="3" text="@Circle"/>
+			<KxPdfFillShapeChangeCommand icon="symbol_horizontal_line_kd" id="Edit_Anno_FileShape_Line" idKey="PdfFormFillShape" shapeIndex="4" text="@Line"/>
+			<KxPdfFillShapeChangeCommand icon="dot_kd" id="Edit_Anno_FileShape_Dot" idKey="PdfFormFillShape" shapeIndex="5" text="@Dot"/>
+			<KxPdfFillShapeMoreCommand icon="more_kd" id="Edit_Anno_MoreFileShape" idKey="PdfFormFillShape" text="@More"/>
+			<KxPdfFillShapeMoreReturnCommand icon="more_kd" id="Edit_Anno_MoreFileShapeReturn" idKey="PdfFormFillShape" text="@Return"/>
+			<KxValueContrlByIdCommand icon="vip_service_kd" id="SelectionToolBarEditText" index="4" ksoCmd="EditText" notshowtooltip="1" shellEntryType="floating_toolbar" text="@EditTextToolBar"/>
+			<KxValueCommand customTip="PDF2TXTConvert" icon="change_to_txt_kd" id="Spac_PDFZZ_PDFToTXT" idKey="PDF2TXTConvert" index="6" ksoCmd="PDF2TXT" text="@PDF2TXT" wpsIsEanble="false"/>
+			<KxValueCommand canHideText="0" customTip="PDF2TXTConvert" icon="change_to_txt_kd" id="SpecialFunc_PDFZZ_PDF2TXT" idKey="PDF2TXTConvert" index="6" ksoCmd="PDF2TXT" shortcutHint="Ctrl+Shift+T" text="@PDF2TXT" wpsIsEanble="false"/>
+			<KHelpDocumentCommand aid="984" controlType="0" hotKey="h" icon="question_kd" id="Help" idMso="Help" ksoCmd="Help" shortcutHint="F1" tc="Help" text="@Kingsoft PDF Help"/>
+			<KxLegacyTriggerCommand customTip="FirstPage" icon="arrow_first_small_wps_kd" id="FirstPage" ksoCmd="FirstPage" shellEntryType="tab_start" text="@FirstPage"/>
+			<KxLegacyTriggerCommand id="Shortcut_Previous" ksoCmd="Previous" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand id="Shortcut_NextPage" ksoCmd="NextPage" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand customTip="LastPage" icon="arrow_last_small_wps_kd" id="LastPage" ksoCmd="LastPage" shellEntryType="tab_start" text="@LastPage"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitWidth" icon="fit_width_kd" id="FitWidth" ksoCmd="FitWidth" qtspyName="FitWidth" rbHotKey="w" shortcutHint="Ctrl+2" text="@Fit Width"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitHeight" icon="page_width_kd" id="FitHeight" ksoCmd="FitHeight" qtspyName="FitHeight" rbHotKey="I" text="@Fit Height"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitPageSize" icon="screen_fit_kd" id="FitPageSize" ksoCmd="FitPageSize" qtspyName="FitPageSize" rbHotKey="i" shortcutHint="Ctrl+0" text="@Fit PageSize"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FitVisible" icon="p-pagevisible-normal;p-pagevisible-active;p-pagevisible-selected;p-pagevisible-disable" id="FitVisible" ksoCmd="FitVisible" qtspyName="FitVisible" rbHotKey="v" shortcutHint="Ctrl+3" text="@Fit Visible"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="ActualSize" icon="screen_actual_size_kd" id="100%" idMso="ZoomCurrent100" ksoCmd="ZoomCurrent100" rbHotKey="j" shortcutHint="Ctrl+1" text="@100%"/>
+			<KxLegacyTriggerCommand id="NavigateBack" ksoCmd="NavigateBack" shellEntryType="shortcut" shortcutHint="Alt+Left"/>
+			<KxLegacyTriggerCommand id="NavigateForward" ksoCmd="NavigateForward" shellEntryType="shortcut" shortcutHint="Alt+Right"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="FullScreen" embedHint="1" icon="screen_full_kd" id="FullScreen" ksoCmd="FullScreen" qtspyName="FullScreen" rbHotKey="i" shortcutHint="Ctrl+Shift+L" text="@FullScreen"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="PlaySlide" icon="play_kd" id="PlaySlide" ksoCmd="PlaySlide" qtspyName="PlaySlide" rbHotKey="h" text="@PlaySlide"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="PlaySlide" icon="play_kd" id="Shortcut_PlaySlide" ksoCmd="PlaySlide" qtspyName="PlaySlide" rbHotKey="h" shellEntryType="shortcut" shortcutHint="Shift+F5" text="@PlaySlide"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatHandTool" icon="gesture_drag_kd" id="FloatHandTool" ksoCmd="HandTool" rbHotKey="1" shortcutHint="Ctrl+K" text="@FloatHandTool"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatSelectionTool" icon="mouse_kd" id="FloatSelectionTool" ksoCmd="SelectionTool" rbHotKey="2" shortcutHint="Ctrl+R" text="@FloatSelectionTool"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatZoomIn" icon="magnifier_zoom_out_kd" id="FloatZoomIn" ksoCmd="ZoomIn" shortcutHint="Ctrl+-" text="@FloatZoomIn"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatZoomOut" icon="magnifier_zoom_in_kd" id="FloatZoomOut" ksoCmd="ZoomOut" shortcutHint="Ctrl++" text="@FloatZoomOut"/>
+			<KxWpsStatusZoomCommand id="ZoomCommand" text="@Zoom" tooltipAdd="@Zoom In" tooltipSlide="@Zoom" tooltipSub="@Zoom Out" tooltipTrigger="@Click to adjust Zoom level"/>
+			<KxValueCommand id="AutoWheelHotkey" index="1" ksoCmd="AutoWheel" shortcutHint="Ctrl+Shift+N" text="@Auto Wheel" wpsIsEanble="false"/>
+			<KPdfSearchCommand controlType="0" customTip="Search" id="Search" ksoCmd="Find" spaceHint="singleloose"/>
+			<KProxyCommand autoLoad="false" customTip="AddBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyAddBackGround_Edit" spaceHint="singleloose" targetId="AddBackGround_Edit" targetModule="pdfbackground" text="@AddBackGround"/>
+			<KProxyCommand autoLoad="false" customTip="UpdateBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyUpdateBackGround_Edit" spaceHint="singleloose" targetId="UpdateBackGround_Edit" targetModule="pdfbackground" text="@UpdateBackGround"/>
+			<KProxyCommand autoLoad="false" customTip="DeleteBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyDeleteBackGround_Edit" spaceHint="singleloose" targetId="DeleteBackGround_Edit" targetModule="pdfbackground" text="@DeleteBackGround"/>
+			<KProxyCommand autoLoad="false" customTip="AddBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyAddBackGround_Insert" spaceHint="singleloose" targetId="AddBackGround_Insert" targetModule="pdfbackground" text="@AddBackGround"/>
+			<KProxyCommand autoLoad="false" customTip="UpdateBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyUpdateBackGround_Insert" spaceHint="singleloose" targetId="UpdateBackGround_Insert" targetModule="pdfbackground" text="@UpdateBackGround"/>
+			<KProxyCommand autoLoad="false" customTip="DeleteBackGroundTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyDeleteBackGround_Insert" spaceHint="singleloose" targetId="DeleteBackGround_Insert" targetModule="pdfbackground" text="@DeleteBackGround"/>
+			<KProxyCommand autoLoad="true" controlType="0" customTip="TranslationSelectPdf" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="ProxyStart_TranslationSelect" idKey="PDFProxyStartTranslationSelect" qtspyName="translationselect" spaceHint="autocompact" targetId="Start_TranslationSelect" targetModule="ktranslation" text="@Translate selected"/>
+			<KProxyCommand autoLoad="true" controlType="0" customTip="TranslationSelectPdf" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="ProxyStart_TranslationSelectFloatMenu" idKey="PDFProxyStartTranslationSelectFloatMenu" qtspyName="translationselect" spaceHint="autocompact" targetId="Start_TranslationSelectFloatMenu" targetModule="ktranslation" text="@Translate selected"/>
+			<KProxyCommand autoLoad="true" controlType="0" customTip="TranslationSelectPdf" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="ProxyStart_TranslationSelectFollow" idKey="PDFProxyStartTranslationSelectFollow" qtspyName="translationselect" spaceHint="autocompact" targetId="Start_TranslationSelectFollow" targetModule="ktranslation" text="@Translate selected follow"/>
+			<KProxyCommand autoLoad="true" controlType="0" customTip="TranslationSelectPdf" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="ProxyStart_TranslationSelectPane" idKey="PDFProxyStartTranslationSelectPane" qtspyName="translationselect" spaceHint="autocompact" targetId="Start_TranslationSelectPane" targetModule="ktranslation" text="@Translate selected pane"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="translation_kd" id="ProxyReadingMode_TranslationSelect" idKey="PDFReadingModeTranslationSelect" targetId="ReadingMode_TranslationSelect" targetModule="ktranslation" text="@Translate selected"/>
+			<KProxyCommand autoLoad="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="Proxyapp_translationselect_ctreview" idKey="PDFProxyAPPTranslationSelectCTReview" referenceDisable="true" relatedKsoCmd="RXFAdocKsoCmd" spaceHint="singleloose" targetId="app_translationselect_ctreview" targetModule="ktranslation" text="@Translate selected text"/>
+			<KProxyCommand customTip="PDF2Photo" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="change_to_pic_two_kd" id="ThumbnailMenuPDF2Photo" idKey="ThumbnailMenuPDF2Photo" shortcutHint="Ctrl+Shift+I" targetModule="kweibo" text="@Convert2Photo"/>
+			<KProxyCommand autoLoad="true" customTip="ImageExtractTip" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="pic_extract_kd" id="pdfImageExtract_EditPicRMenu" targetId="pdfImageExtract_EditPicRMenu" targetModule="kpdfimageextract" text="@BatchImageExtract" visible="false"/>
+			<KProxyCommand autoLoad="true" customTip="ImageExtractTip" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="pic_extract_kd" id="pdfImageExtract_PicEdit" targetId="pdfImageExtract_PicEdit" targetModule="kpdfimageextract" text="@Extract Images" visible="false"/>
+			<KAppCommand appCmdObj="KPdfImageExtract" appId="pdfphotobatchexport" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_batchimageextract_rmenu" idKey="BatchImageExtract" text="@Extract Images"/>
+			<KAppCommand appCmdObj="KPdfImageExtract" appId="pdfphotobatchexport" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_batchimageextract_tab_picedit" idKey="BatchImageExtract" text="@Extract Images"/>
+			<KAppCommand appCmdObj="KPdfImageExtract" appId="kpdfimageextract" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_imageextract_rmenu" idKey="PdfImageExtractMenu" text="@Extract Images"/>
+			<KAppCommand appCmdObj="KPdfImageExtract" appId="kpdfimageextract" customTip="ImageExtractTip" icon="pic_extract_kd" id="app_imageextract_tab_picedit" idKey="PdfImageExtractMenu" text="@Extract Images"/>
+			<KxFileMenuProxyCommand autoLoad="false" bHotKey="G" controlType="0" customTip="ExportWeiboImageCmd" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="G" icon="change_to_pic_two_kd" id="RbFileMenuExportWeiboImage" idKey="WeiboPlugin" idMso="FileSaveAsPicture" ksoCmd="ExportWeiboImageCmd" relatedKsoCmd="PrintToPDF" targetId="RbFileMenuExportWeiboImage" targetModule="kweibo" text="@Photo"/>
+			<KxLegacyTriggerCommand controlType="0" id="Start_Translation" ksoCmd="StartTranslation" shellEntryType="tab_start" text="@Translate selected"/>
+			<KAppCommand action="singlepic" appCmdObj="ImportCurrentPic" appId="kocrtool" hotKey="Q" icon="change_pic_to_wps_kd" id="kocrtoolPhotoRightMenuOcrExtractPage" ocrExtractTextEntry="4" rbHotKey="Q" text="@RMunuOcrExtractImage"/>
+			<KxPdfOcrExtractTextCommand hotKey="Q" icon="change_pic_to_wps_kd" id="PhotoEditRightMenuOcrExtractPage" ocrExtractTextEntry="5" rbHotKey="Q" text="@RMunuOcrExtractImage"/>
+			<KxPdfOcrExtractTextCommand id="TaskPaneImageOcrExtract" ocrExtractTextEntry="9"/>
+			<KxPdfSelectToolMenuCommand customTip="FloatHandTool" hotKey="A" icon="mouse_kd" id="RightMenuSelectTool" ksoCmd="" rbHotKey="A" text="@RightMenuSelectionTool"/>
+			<KxPdfHandToolMenuCommand customTip="FloatHandTool" hotKey="H" icon="gesture_drag_kd" id="RightMenuHandTool" ksoCmd="" rbHotKey="H" text="@RightMenuHandTool"/>
+			<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" customTip="TableRegonize" hotKey="" icon="sheet_extract_kd" id="Menu_PDFTableRecognize" idType="currentpage" rbHotKey="" tabId="rmenu" text="@RMenuTableRegonize"/>
+			<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" customTip="TableRegonize" hotKey="" icon="sheet_extract_kd" id="OcrFloat_PDFTableRecognize" idType="currentpage" rbHotKey="" tabId="pdf_box_select_float" text="@RMenuTableRegonize"/>
+			<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" customTip="TableRegonize" hotKey="" icon="sheet_extract_kd" id="OcrFloatMenu_PDFTableRecognize" idType="currentpage" rbHotKey="" tabId="pdf_box_select_float_rightmenu" text="@RMenuTableRegonize"/>
+			<KAppCommand action="8" appCmdObj="PdfExtractFormula" appId="pdfadvancedtool" customTip="FormulaRegonize" defaultVisible="false" hotKey="" icon="scan_ocr_formulas_kd" id="Menu_PDFFormulaRecognize" idKey="PDFExtractFormula" idType="currentpage" rbHotKey="" tabId="rmenu" text="@RMenuFormulaRegonize"/>
+			<KxLegacyTriggerCommand aid="4" customTip="Print" hotKey="p" icon="print_kd" id="ThumbnailRightMenuPrint" idMso="ThumbnailRightMenuPrint" ksoCmd="Print" oleCmdExecOpt="2" rbHotKey="p" shellEntryType="thumbnail_rightmenu" shortcutHint="Ctrl+P" text="@Print"/>
+			<KxLegacyTriggerCommand aid="4" customTip="PDF2Photo" icon="change_to_pic_two_kd" id="RightMenuPDF2Photo" idKey="RightMenuPDF2PhotoEntrance" ksoCmd="PDF2Photo" oleCmdExecOpt="2" shortcutHint="Ctrl+Shift+I" text="@Convert2Photo"/>
+			<KAppCommand aid="4" appCmdObj="kexportimage" appId="kexportimage" customTip="PDF2Photo" detail="rightmenu" icon="change_to_pic_two_kd" id="RightMenuPDF2Photo" idKey="PDFRightMenuExportImage" idMso="FileSaveAsPicture" oleCmdExecOpt="2" shortcutHint="Ctrl+Shift+I" text="@Convert2Photo"/>
+			<KAppCommand aid="4" appCmdObj="kexportimage" appId="kexportimage" customTip="PDF2Photo" detail="thumbnail_rightmenu" icon="change_to_pic_two_kd" id="ThumbnailMenuPDF2Photo" idKey="PDFThumbnailMenuExportImage" idMso="FileSaveAsPicture" oleCmdExecOpt="2" shortcutHint="Ctrl+Shift+I" text="@Convert2Photo"/>
+			<KxPdfEditTextMenuCommand icon="edit_text_kd" id="Edittext" idType="select" ksoCmd="" text="@EditTextRightMenu"/>
+			<KxPdfFontColorCommand id="FontColorPopup" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor"/>
+			<KxPdfTextHighlightColorCommand id="FontColorPopup" ksoCmd="HighlightColor" ksoTriggerCmd="RecentFontColor"/>
+			<KxLegacyTriggerCommand accessibleName="@MagnifyFontSize" customTip="MagnifyFontSize" icon="font_size_increase_wps_kd" id="MagnifyFontSize" ksoCmd="GrowFontRainbow" shortcutHint="Ctrl+]" text="@MagnifyFontSize" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand accessibleName="@ReduceFontSize" customTip="ReduceFontSize" icon="font_size_reduce_wps_kd" id="ReduceFontSize" ksoCmd="ShrinkFontRainbow" shortcutHint="Ctrl+[" text="@ReduceFontSize" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@Tilt" customTip="TextItalic" fontProperty="1" icon="italic_wps_kd" id="Tilt" ksoCmd="TextItalic" shortcutHint="Ctrl+I" text="@Tilt" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@EditText_Underline" customTip="TextUnderline" fontProperty="2" icon="underscore_wps_kd" id="EditText_Underline" ksoCmd="TextUnderline" shortcutHint="Ctrl+U" text="@EditText_Underline" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@AlignLeft" customTip="AlignLeft" fontProperty="4" icon="align_left_kd" id="AlignLeft" ksoCmd="FormatAlignLeft" shortcutHint="Ctrl+L" text="@AlignLeft" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@AlignCenter" customTip="AlignCenter" fontProperty="5" icon="align_center_kd" id="AlignCenter" ksoCmd="FormatAlignCenter" shortcutHint="Ctrl+E" text="@AlignCenter" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@AlignRight" customTip="AlignRight" fontProperty="6" icon="align_right_kd" id="AlignRight" ksoCmd="FormatAlignRight" shortcutHint="Ctrl+M" text="@AlignRight" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@AlignJustify" customTip="AlignJustify" fontProperty="7" icon="align_both_side_kd" id="AlignJustify" ksoCmd="FormatAlignJustify" shortcutHint="Ctrl+N" text="@AlignJustify" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand accessibleName="@ReduceIndentation" customTip="ReduceIndentation" icon="indent_decrease_kd" id="ReduceIndentation" ksoCmd="DecreaseIndent" shortcutHint="Shift+Alt+," text="@ReduceIndentation" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand accessibleName="@MagnifyIndentation" customTip="MagnifyIndentation" icon="indent_increase_kd" id="MagnifyIndentation" ksoCmd="IncreaseIndent" shortcutHint="Shift+Alt+." text="@MagnifyIndentation" wpsIsEanble="false"/>
+			<KxPdfFontComboboxCommand customTip="FontName" id="FontForEditTextPopup" spaceHint="autocompact" text="@FontName"/>
+			<KxPdfFontSizeComboxCommand customTip="FontSize" id="FontSizeForEditTextPopup" spaceHint="autocompact" text="@FontSize"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="HighlightMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="Highlight" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="FontColorMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="AreaHighlightMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="AreaHighlight" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="NoteMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="Note" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="UnderlineMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="Underline" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="StrikeoutMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="Strikeout" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="InsertMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="InsertText" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="ReplaceMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="Replace" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="CorrectionFluidMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="CorrectionFluid" text="@More Colors"/>
+			<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="FontColorMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="CorrectionFluid" text="@More Colors"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="FontColorSnapFontColors" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="HighlightSnapFontColors" ksoCmd="Highlight" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="AreaHighlightSnapFontColors" ksoCmd="AreaHighlight" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="NoteSnapFontColors" ksoCmd="Note" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="UnderlineSnapFontColors" ksoCmd="Underline" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="StrikeoutSnapFontColors" ksoCmd="Strikeout" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="InsertSnapFontColors" ksoCmd="InsertText" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="ReplaceSnapFontColors" ksoCmd="Replace" rbHotKey="E" text="@Snapper"/>
+			<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="CorrectionFluidSnapFontColors" ksoCmd="CorrectionFluid" rbHotKey="E" text="@Snapper"/>
+			<KxLegacyTriggerCommand customTip="InterceptSelectedArea" icon="screenshot_area_kd" iconQat="cut_kd" id="Tools_ScreenShot_Area" ksoCmd="InterceptSelectedArea" shortcutHint="Ctrl+Alt+X" text="@InterceptSelectedArea" wpsIsEanble="false"/>
+			<KProxyCommand autoLoadLib="true" customTip="InterceptSelectedArea" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="screenshot_area_kd" iconQat="cut_kd" id="Start_Tools_ScreenShot_Area" ksoCmd="InterceptSelectedArea" shortcutHint="Ctrl+Alt+X" targetModule="kscreengrab" text="@InterceptSelectedArea" wpsIsEanble="false"/>
+			<KProxyCommand canStack="0" customShortcutEnabled="false" customTip="TextSpeech" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="doc_voice_reading_kd" id="ProxyOldTextToSpeechOption" relatedKsoCmd="RXFAdocKsoCmd" speakingTip="TextSpeech2" targetId="OldTextToSpeechOption" targetModule="wpsspeaker" text="@Text Speech"/>
+			<KxLegacyTriggerCommand id="AiOcr" ksoCmd="AiOcr"/>
+			<KxLegacyTriggerCommand customTip="InterceptSelectedArea" icon="screenshot_area_kd" id="Tools_ScreenShot_Area" ksoCmd="InterceptSelectedArea" shortcutHint="Ctrl+Alt+X" spaceHint="singleloose" text="@InterceptSelectedArea" wpsIsEanble="false"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatHandTool" icon="gesture_drag_kd" id="FloatHandTool" ksoCmd="HandTool" rbHotKey="1" shortcutHint="Ctrl+K" text="@FloatHandTool"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatFitWidth" icon="fit_width_kd" id="FloatFitWidth" ksoCmd="FitWidth" shortcutHint="Ctrl+2" text="@FloatFitWidth"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip="FloatFitSize" icon="screen_fit_kd" id="FloatFitSize" ksoCmd="FitPageSize" shortcutHint="Ctrl+0" text="@FloatFitSize"/>
+			<KxPdfFloatToolBarCommandItem controlType="0" customTip2="FloatNavigationBar2" customTip="FloatNavigationBar" icon="insert_content_kd" id="FloatNavigationBar" ksoCmd="NavigationBarVisible" text="@FloatNavigationBar"/>
+			<KxPdfCorrectionFluidColorCommand customTip="CorrectionFluid" entrance="pc_pdf_white&amp;module=pdf&amp;sub_module=tab_edit&amp;new_position=pc_pdf_white" icon="eraser_kd" id="Edit_Eraser" idKey="PDFEditEraser" ksoCmd="CorrectionFluid" ksoTriggerCmd="CorrectionFluid" referenceCommand="CorrectionFluid" shellEntryType="tab_edit" shortcutHint="Alt+D" text="@CorrectionFluid">
+				<command idQ="CorrectionFluidMoreFontColors"/>
+				<command idQ="CorrectionFluidSnapFontColors"/>
+				<KxPdfLinearEraserCommand column="1" controlType="4" forceIconHidden="true" id="Annot_CorrectionFluid_PenChoice" idMso="CorrectionFluidPenChoice" ksoCmd="CorrectionFluidPenChoice" text="@LineCorrection">
+					<KxLegacyTriggerCommand controlType="0" icon="p-correctionfluid-roundcap-normal;p-correctionfluid-roundcap-hover;p-correctionfluid-roundcap-click;p-correctionfluid-roundcap-disable" id="Annot_CorrectionFluid_RoundCap" ksoCmd="CorrectionFluidRoundCap" text="@CorrectionFluidRoundCap"/>
+					<KxLegacyTriggerCommand controlType="0" icon="p-correctionfluid-flatcap-normal;p-correctionfluid-flatcap-hover;p-correctionfluid-flatcap-click;p-correctionfluid-flatcap-disable" id="Annot_CorrectionFluid_FlatCap" ksoCmd="CorrectionFluidFlatCap" text="@CorrectionFluidFlatCap"/>
+					<KxStaticGalleryCommand column="1" controlType="4" icon="p-correctionfluid-linestylemenu" id="Annot_CorrectionFluid_LineStyle" idMso="CorrectionFluidLineStyle" ksoCmd="CorrectionFluidLineStyle" text="@CorrectionFluidLineStyle">
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@1 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@2 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@4 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@6 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@8 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@10 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="24" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@12 pt"/>
+					</KxStaticGalleryCommand>
+				</KxPdfLinearEraserCommand>
+				<KxLegacyTriggerCommand id="Annot_CorrectionFluid_Marquee" ksoCmd="CorrectionFluidMarquee" text="@RectangleMdification"/>
+				<KxLegacyTriggerCommand id="Annot_CorrectionFluid_AIErasePic" ksoCmd="CorrectionFluidAIErasePic" text="@AIErasePic"/>
+			</KxPdfCorrectionFluidColorCommand>
+			<KxPdfCorrectionFluidColorCommand customTip="CorrectionFluidNoVip" icon="eraser_kd" id="Edit_Eraser" idKey="WPSPDFEnhanceVersion" ksoCmd="CorrectionFluid" ksoTriggerCmd="CorrectionFluid" referenceCommand="CorrectionFluid" shellEntryType="tab_edit" shortcutHint="Alt+D" text="@CorrectionFluid">
+				<command idQ="CorrectionFluidMoreFontColors"/>
+				<command idQ="CorrectionFluidSnapFontColors"/>
+				<KxPdfLinearEraserCommand column="1" controlType="4" forceIconHidden="true" id="Annot_CorrectionFluid_PenChoice" idMso="CorrectionFluidPenChoice" ksoCmd="CorrectionFluidPenChoice" text="@LineCorrection">
+					<KxLegacyTriggerCommand controlType="0" icon="p-correctionfluid-roundcap-normal;p-correctionfluid-roundcap-hover;p-correctionfluid-roundcap-click;p-correctionfluid-roundcap-disable" id="Annot_CorrectionFluid_RoundCap" ksoCmd="CorrectionFluidRoundCap" text="@CorrectionFluidRoundCap"/>
+					<KxLegacyTriggerCommand controlType="0" icon="p-correctionfluid-flatcap-normal;p-correctionfluid-flatcap-hover;p-correctionfluid-flatcap-click;p-correctionfluid-flatcap-disable" id="Annot_CorrectionFluid_FlatCap" ksoCmd="CorrectionFluidFlatCap" text="@CorrectionFluidFlatCap"/>
+					<KxStaticGalleryCommand column="1" controlType="4" icon="p-correctionfluid-linestylemenu" id="Annot_CorrectionFluid_LineStyle" idMso="CorrectionFluidLineStyle" ksoCmd="CorrectionFluidLineStyle" text="@CorrectionFluidLineStyle">
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_1" index="0" qtspyName="LineStyle_pdf_1" text="@1 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_2" index="1" qtspyName="LineStyle_pdf_2" text="@2 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_4" index="2" qtspyName="LineStyle_pdf_4" text="@4 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_6" index="3" qtspyName="LineStyle_pdf_6" text="@6 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_8" index="4" qtspyName="LineStyle_pdf_8" text="@8 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_10" index="5" qtspyName="LineStyle_pdf_10" text="@10 pt"/>
+						<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="LineStyle_pdf_12" index="6" qtspyName="LineStyle_pdf_12" text="@12 pt"/>
+					</KxStaticGalleryCommand>
+				</KxPdfLinearEraserCommand>
+				<KxLegacyTriggerCommand id="Annot_CorrectionFluid_Marquee" ksoCmd="CorrectionFluidMarquee" text="@RectangleMdification"/>
+			</KxPdfCorrectionFluidColorCommand>
+			<KxLegacyTriggerCommand customTip="CorrectionFluid" icon="eraser_kd" id="CorrectionFluid" idKey="PDFStandardEnhance" ksoCmd="CorrectionFluid" shortcutHint="Alt+D" text="@CorrectionFluid"/>
+			<KxLegacyTriggerCommand customTip="CorrectionFluidNoVip" icon="eraser_kd" id="CorrectionFluid" idKey="WPSPDFEnhanceVersion" ksoCmd="CorrectionFluid" shortcutHint="Alt+D" text="@CorrectionFluid"/>
+			<KxPdfFontColorCommand customTip="TextColor" icon="color_font_wps_kd" id="FontColorSetting" ksoCmd="FontColor" ksoTriggerCmd="FontColor" referenceCommand="FontColor" text="@TextColor">
+				<command idQ="FontColorMoreFontColors"/>
+				<command idQ="FontColorSnapFontColors"/>
+			</KxPdfFontColorCommand>
+			<KxPdfHighlightColorModelCommand id="Shortcut_HighlightBorder" ksoCmd="Highlight" ksoTriggerCmd="Highlight" referenceCommand="Highlight" shellEntryType="shortcut">
+				<command idQ="HighlightMoreFontColors"/>
+				<command idQ="HighlightSnapFontColors"/>
+			</KxPdfHighlightColorModelCommand>
+			<KxPdfNoteColorCommand id="Shortcut_NoteBorder" ksoCmd="Note" ksoTriggerCmd="Note" referenceCommand="Note" shellEntryType="shortcut">
+				<command idQ="NoteMoreFontColors"/>
+				<command idQ="NoteSnapFontColors"/>
+			</KxPdfNoteColorCommand>
+			<KxStaticGalleryCommand column="1" controlType="4" customTip2="Underline2" customTip="Underline" hotKey="u" icon="underscore_wps_kd" iconQat="underscore_wps_kd" id="UnderlineShape" idMso="UnderlineShape" ksoCmd="UnderlineShape" rbHotKey="3" text="@Underline Shape">
+				<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_1_display_kd" iconDark="Underline_0_dark" index="0" qtspyName="Underline_0"/>
+				<KxStaticGalleryItemCommand galleryItemHeight="18" galleryItemWidth="113" icon="line_style_18_display_kd" iconDark="Underline_7_dark" index="7" qtspyName="Underline_7"/>
+			</KxStaticGalleryCommand>
+			<KxPdfUnderlineColorCommand id="Shortcut_UnderlineBorder" ksoCmd="Underline" ksoTriggerCmd="Underline" referenceCommand="Underline" shellEntryType="shortcut">
+				<command idQ="UnderlineMoreFontColors"/>
+				<command idQ="UnderlineSnapFontColors"/>
+				<command idQ="UnderlineShape"/>
+			</KxPdfUnderlineColorCommand>
+			<KxPdfStrikeOutIconUpdateColorCommand customTip="StrikeoutBorder" icon="strikethrough_kd" id="Reviews_StrikeoutIconUpdate" ksoCmd="Strikeout" ksoTriggerCmd="Strikeout" referenceCommand="Strikeout" shellEntryType="pdf_TextSelectBar" shortcutHint="Ctrl+D" text="@Strikeout">
+				<command idQ="StrikeoutMoreFontColors"/>
+				<command idQ="StrikeoutSnapFontColors"/>
+			</KxPdfStrikeOutIconUpdateColorCommand>
+			<KxPdfStrikeoutColorCommand id="Shortcut_StrikeoutBorder" ksoCmd="Strikeout" ksoTriggerCmd="Strikeout" referenceCommand="Strikeout" shellEntryType="shortcut">
+				<command idQ="StrikeoutMoreFontColors"/>
+				<command idQ="StrikeoutSnapFontColors"/>
+			</KxPdfStrikeoutColorCommand>
+			<KxPdfInsertColorCommand id="Shortcut_InsertBorder" ksoCmd="InsertText" ksoTriggerCmd="InsertText" referenceCommand="InsertText" shellEntryType="shortcut">
+				<command idQ="InsertMoreFontColors"/>
+				<command idQ="InsertSnapFontColors"/>
+			</KxPdfInsertColorCommand>
+			<KpdfBeautifyTabCommand action="ConvertType_Deskew" appId="kpdfscannededitpro" canHideText="0" icon="batch_pic_correction_kd" id="kpdfscannededitpro_Deskew" idKey="PDFScannedEditpro" text="@convertTypeDeskew"/>
+			<KpdfBeautifyTabCommand action="ConvertType_Clear" appId="kpdfscannededitpro" canHideText="0" icon="intelligent_optimization_kd" id="kpdfscannededitpro_Clear" idKey="PDFScannedEditpro" text="@ConvertTypeClear"/>
+			<KpdfBeautifyTabCommand action="ConvertType_HighDefinition" appId="kpdfscannededitpro" canHideText="0" icon="scan_photo_identification_kd" id="kpdfscannededitpro_HighDefinition" idKey="PDFScannedEditpro" text="@ConvertTypeHighDefinition"/>
+			<KpdfBeautifyTabCommand action="ConvertType_More" appId="kpdfscannededitpro" canHideText="0" icon="more_kd" id="kpdfscannededitpro_More" idKey="PDFScannedEditpro" text="@ConvertTypeMore"/>
+			<KxPdfReplaceColorCommand id="Shortcut_ReplaceBorder" ksoCmd="ReplaceText" ksoTriggerCmd="ReplaceText" referenceCommand="ReplaceText" shellEntryType="shortcut">
+				<command idQ="ReplaceMoreFontColors"/>
+				<command idQ="ReplaceSnapFontColors"/>
+			</KxPdfReplaceColorCommand>
+			<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="FreeText" icon="bubble_text_kd" id="Reviews_TextComment" ksoCmd="FreeText" rbHotKey="i" shellEntryType="tab_comments" shortcutHint="Ctrl+F3" text="@TextPrinter"/>
+			<KxLegacyTriggerCommand id="Shortcut_TextComment" ksoCmd="FreeText" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="TextCommentBox" descName="Reviews_TextCommentBox" icon="text_frame_kd" id="Reviews_TextCommentBox" ksoCmd="TextCommentBox" shellEntryType="tab_comments" text="@TextCommentBox"/>
+			<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="InstructBox" descName="Reviews_InstructBox" icon="indicated_comment_kd" id="Reviews_InstructBox" ksoCmd="InstructBox" shellEntryType="tab_comments" text="@InstructBox"/>
+			<KxPdfAreaHighlightColorCommand canHideText="0" customTip="AreaHighlight" icon="region_highlight_kd" id="Reviews_AreaHighlight" ksoCmd="Highlight" ksoTriggerCmd="Highlight" referenceCommand="Highlight" shellEntryType="tab_comments" shortcutHint="Ctrl+4" text="@Area Highlight">
+				<command idQ="AreaHighlightMoreFontColors"/>
+				<command idQ="AreaHighlightSnapFontColors"/>
+			</KxPdfAreaHighlightColorCommand>
+			<KxPdfAreaHighlightColorCommand id="Shortcut_AreaHighlight" ksoCmd="Highlight" ksoTriggerCmd="Highlight" referenceCommand="Highlight" shellEntryType="shortcut">
+				<command idQ="AreaHighlightMoreFontColors"/>
+				<command idQ="AreaHighlightSnapFontColors"/>
+			</KxPdfAreaHighlightColorCommand>
+			<KxLegacyTriggerCommand id="Shortcut_HandTool" ksoCmd="HandTool" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand id="Shortcut_SelectionTool" ksoCmd="SelectionTool" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand icon="line_shape_kd" id="AnnotShape" ksoCmd="AnnotShape" rbHotKey="2" text="@Shape"/>
+			<KxPdfQuickMenuCommandEx icon="line_shape_kd" id="Insert_ShapeComment" isSendRibbonClose="true" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="AnnotShape" shellEntryType="tab_insert" text="@Shape">
+				<command idQ="Line"/>
+				<command idQ="Arrow"/>
+				<command idQ="Square"/>
+				<command idQ="Circle"/>
+				<command idQ="Polygon"/>
+				<command idQ="Cloudy"/>
+				<command idQ="PolyLine"/>
+			</KxPdfQuickMenuCommandEx>
+			<KxLegacyTriggerCommand customTip="FloatHandTool" icon="p-floathandtool-normal;p-floathandtool-hover;p-floathandtool-hover;p-floathandtool-normal" id="HandTool" ksoCmd="HandTool"/>
+			<KxLegacyTriggerCommand customTip="FloatSelectionTool" icon="p-floatselectiontool-normal;p-floatselectiontool-hover;p-floatselectiontool-hover;p-floatselectiontool-normal" id="SelectionTool" ksoCmd="SelectionTool"/>
+			<KAutoHideListCommand icon="page_break_kd" id="PdfInsertPagesNoIcon" text="@Insert Pages">
+				<KxValueCommand customTip="InsertBlankPages" hotKey="i" icon="doc_kd" id="InsertBlankPages" idKey="PDFInsertBlankPages" index="2" ksoCmd="InsertBlankPages" rbHotKey="I" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+				<KAppCommand action="1" appCmdObj="InsertBlankPages" appId="pdfpageoperator" customTip="InsertBlankPages" hotKey="i" icon="doc_add_kd" id="InsertBlankPages" idKey="PDFInsertPageUsePageOperator" index="2" rbHotKey="I" shortcutHint="Ctrl+Alt+I" text="@Blank Pages"/>
+				<KxValueCommand customTip="InsertPagesFromDoc" hotKey="t" icon="open_file_kd" id="InsertPagesFromDoc" idKey="PDFInsertPagesFromDoc" index="2" ksoCmd="InsertPagesFromDoc" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Pages From Doc"/>
+				<KAppCommand action="1" appCmdObj="InsertPagesFromDoc" appId="pdfadvancedtool" customTip="InsertPagesFromDoc" hotKey="t" icon="thumbail_import_page_kd" id="InsertPagesFromDoc" idKey="PDFInsertDocUseAdvancedTool" index="2" rbHotKey="T" shortcutHint="Ctrl+Alt+T" text="@Import Pages From Doc"/>
+				<KxValueCommand customTip="InsertPagesFromPic" hotKey="p" id="InsertPagesFromPic" idKey="PDFInsertPagesFromPic" index="2" ksoCmd="InsertPagesFromPic" rbHotKey="P" text="@Pages From Pic"/>
+				<KxValueCommand customTip="InsertPagesFromScan" hotKey="s" id="InsertPagesFromScan" idKey="PDFInsertPagesFromScan" index="2" ksoCmd="InsertPagesFromScan" rbHotKey="S" text="@Pages From Scan"/>
+				<KxValueCommand customTip="InsertPagesFromClipboard" hotKey="b" id="InsertPagesFromClipboardNoIcon" idKey="PDFInsertPagesFromClipboardNoIcon" index="2" ksoCmd="InsertPagesFromClipboard" rbHotKey="B" shortcutHint="Ctrl+Shift+B" text="@Pages From Clipboard"/>
+			</KAutoHideListCommand>
+			<KxValueCommand hotKey="r" icon="page_replace_kd" id="PdfReplacePagesNoIcon" idKey="PDFReplacePageUseKxValueCmd" index="1" ksoCmd="PdfReplacePagesNoIcon" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+			<KAppCommand action="2" appCmdObj="PdfReplacePages" appId="pdfadvancedtool" hotKey="r" icon="page_replace_kd" id="PdfReplacePagesNoIcon" idKey="PDFReplacePageUseAdvanceTool" index="1" rbHotKey="R" spaceHint="singleloose" text="@PdfReplacePages"/>
+			<KxValueCommand customTip="Clockwise" icon="rotate_right_kd" id="ClockwiseNoIcon" index="1" ksoCmd="RotatePages" shellEntryType="thumbnail_rightmenu" shortcutHint="Ctrl+Shift++" text="@clockwise rotation"/>
+			<KxValueCommand customTip="Counterclockwise" icon="rotate_left_kd" id="CounterclockwiseNoIcon" index="2" ksoCmd="RotatePages" shellEntryType="thumbnail_rightmenu" shortcutHint="Ctrl+Shift+-" text="@anticlockwise rotation"/>
+			<KxValueCommand customTip="Clockwise" icon="rotate_right_kd" id="RightMenuClockwise" index="9" ksoCmd="RotatePages" shellEntryType="rightmenu" shortcutHint="Ctrl+Shift++" text="@RightMenu clockwise rotation"/>
+			<KxValueCommand customTip="Counterclockwise" icon="rotate_left_kd" id="RightMenuCounterclockwise" index="10" ksoCmd="RotatePages" shellEntryType="rightmenu" shortcutHint="Ctrl+Shift+-" text="@RightMenu anticlockwise rotation"/>
+			<KxValueCommand id="Shortcut_RotatePages_Clockwise" index="13" ksoCmd="RotatePages" shellEntryType="shortcut"/>
+			<KxValueCommand id="Shortcut_RotatePages_Counterclockwise" index="14" ksoCmd="RotatePages" shellEntryType="shortcut"/>
+			<KxLegacyTriggerCommand canStack="0" customTip="ClockwiseDoc" icon="direction_rotate_doc_kd" id="ClockwiseDoc" ksoCmd="RotateDoc" shortcutHint="Ctrl+Alt+R" text="@clockwise doc"/>
+			<KxLegacyTriggerCommand canStack="0" customTip="ClockwiseDoc" icon="direction_rotate_doc_kd" id="Normal_ClockwiseDoc" idKey="UseNormalRotate" ksoCmd="RotateDoc" shortcutHint="Ctrl+Alt+R" text="@clockwise doc"/>
+			<KxLegacyTriggerCommand customTip="ClockwiseDoc" icon="direction_rotate_doc_kd" id="Start_ClockwiseDoc" ksoCmd="RotateDoc" shellEntryType="tab_start" text="@clockwise doc"/>
+			<KxLegacyTriggerCommand customTip="ClockwiseDoc" icon="batch_rotation_kd" id="Start_RotateDoc" ksoCmd="RotateDoc" shellEntryType="tab_start" shortcutHint="Ctrl+Alt+R" text="@Right rotation of doc"/>
+			<KxLegacyTriggerCommand customTip="ClockwiseDoc" icon="batch_rotation_kd" id="Start_RotateDoc_ReadMode" ksoCmd="RotateDoc" shellEntryType="readmode" shortcutHint="Ctrl+Alt+R" text="@Right rotation of doc"/>
+			<KxPdfAiRotatePageCommand appFlags="ailimitfree" icon="ai_rotate_kd" id="Start_Ai_Rotate" idKey="EnableAiRotate" shellEntryType="tab_start" text="@AI Auto Rotate"/>
+			<KxPdfLeftRotateDocCommand icon="batch_rotation_left_kd" id="Start_RotateDoc_Left" shellEntryType="tab_start" shortcutHint="Ctrl+Alt+L" text="@Left rotation of doc"/>
+			<KxPdfAiRotateListCommand controlType="0" customTip="ClockwiseDoc" icon="direction_rotate_doc_kd" id="DocRotate_Menu" idKey="PDFDocRotateMenu" ksoCmd="RotateDoc" layout_lineCount="1" rbFileMenuEmbed="1" text="@clockwise doc">
+				<command idQ="Start_RotateDoc_Left"/>
+				<command idQ="Start_RotateDoc"/>
+				<command idQ="Start_Ai_Rotate"/>
+			</KxPdfAiRotateListCommand>
+			<KPdfSeparatorCommand id="Separator"/>
+			<KxLegacyTriggerCommand customTip="Encrypt" icon="doc_encryption_kd" id="EncryptDoc" ksoCmd="EncryptDoc" text="@Encrypt"/>
+			<KxLegacyTriggerCommand customTip="Encrypt" icon="doc_encryption_kd" id="Protect_Encryptdoc" ksoCmd="EncryptDoc" shellEntryType="tab_protect" text="@Encrypt"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="VerificationSignature" icon="pen_signature_verification_kd" id="VerificationSignature" ksoCmd="VerificationSignature" text="@VerificationSignature"/>
+			<KxLegacyTriggerCommand controlType="0" customTip2="VerificationSignature2" customTip="VerificationSignature" icon="pen_signature_verification_kd" id="Protect_VerifyAllSign" ksoCmd="VerificationSignature" text="@VerificationSignature"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Digital Sign" icon="certificate_signature_kd" id="DigitalSignDoc" idKey="PDFDigSignDoc" ksoCmd="DigitalSignDoc" text="@Document Signature"/>
+			<KxPdfSignatureEmbedCommand customTip="PdfSignatureEmbed" dialogHint="1" icon="pushpin_kd" id="PdfSignatureEmbed" text="@EmbedDocument"/>
+			<KxPdfSignatureDeleteCommand customTip="PdfSignatureDelete" dialogHint="1" icon="trash_can_kd" id="PdfSignatureDelete" text="@Delete"/>
+			<KListCommand icon="stack_kd" id="task_pane_editImageLayer" notshowtooltip="1" text="@Hierarchy">
+				<KxPdfImageFloatLayerCommand icon="level_top_kd" id="Image2top" shellEntryType="task_pane" text="@Image2top"/>
+				<KxPdfImageForwardLayerCommand icon="level_bring_forward_kd" id="ImageForwardLayer" shellEntryType="task_pane" text="@ImageForwardLayer"/>
+				<KxPdfImageBackLayerCommand icon="level_send_backward_kd" id="ImageBackLayer" shellEntryType="task_pane" text="@ImageBackLayer"/>
+				<KxPdfImageSinkLayerCommand icon="level_bottom_kd" id="Image2Bottom" shellEntryType="task_pane" text="@Image2Bottom"/>
+			</KListCommand>
+			<KxPdfImageEnterEditCommand customTip="PdfImageEnterEdit" dialogHint="1" icon="pic_edit_kd" id="PdfImageEnterEdit" text="@ImageEnterEdit"/>
+			<KxPdfImagePreviewCommand customTip="ImagePreview" hideMiniToolBar="1" icon="magnifier_zoom_in_kd" id="EditPicNewTool_Preview" text="@ImagePreview"/>
+			<KxPdfImagePreviewCommand customTip="PicturePreview" hideMiniToolBar="1" icon="magnifier_zoom_in_kd" id="EditPicQuickbar_Preview" text="@PicturePreview"/>
+			<KxPdfImagePreviewCommand action="Pic2Txt" icon="scan_ocr_kd" id="PDF_Ai_Hover_ExtractImageWord" text="@ExtractToWord"/>
+			<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" hotKey="" icon="sheet_extract_kd" id="PDF_Ai_Hover_TableRecognize" idType="currentpage" rbHotKey="" tabId="view_table_toolbar" text="@Table Extraction"/>
+			<KxAiHoverTextCommand icon="scan_ocr_kd" id="PDF_Ai_Hover_Text" text="@ExtractToWord"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFImage" icon="pic_kd" id="Insert_AddImage" idKey="PDFStandardEnhance" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@addimage2" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="AddImage" icon="pic_kd" id="PdfEditAddImage" idKey="PDFStandardEnhance" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@insertimage" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="AddImageNoVip" icon="pic_kd" id="Insert_AddImage" idKey="WPSPDFEnhanceVersion" idMso="Insert_AddImage" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@addimage" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="AddImageNoVip" icon="pic_kd" id="PdfEditAddImage" idKey="WPSPDFEnhanceVersion" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@insertimage" wpsIsEanble="false"/>
+			<KxPdfImageDeleteCommand hotKey="d" icon="trash_can_kd" id="DeleteImageMenu" rbHotKey="D" text="@Delete"/>
+			<KxPdfImageDeleteCommand hotKey="d" id="DeleteImageKeyboard" rbHotKey="D" text="@DeleteImage"/>
+			<KxPdfImageCopyCommand hotKey="c" icon="Copy" id="CopyImageMenu" rbHotKey="C" shortcutHint="Ctrl+C" text="@CopyImage"/>
+			<KAppCommand action="singlepic" appCmdObj="ImportCurrentPic" appId="pdfphotobatchexport" hotKey="c" icon="Copy" id="app_kpdfbatchimageextract_copyimagemenu" idKey="PdfAppPdfphotobatchexportPdfImageMenuCopy" index="3" rbHotKey="C" shortcutHint="Ctrl+C" text="@CopyImage"/>
+			<KxPdfImageCutCommand hotKey="t" icon="Cut" id="CutImageMenu" rbHotKey="T" shortcutHint="Ctrl+X" text="@CutImage"/>
+			<KxPdfImagePasteTextCommand hotKey="s" icon="form_text_paste_kd" id="PasteImageTextMenu" rbHotKey="S" text="@PasteImageText"/>
+			<KxPdfImageSelectAllCommand hotKey="a" icon="select_all_kd" id="SelectAllImageMenu" rbHotKey="A" shortcutHint="Ctrl+A" text="@SelectAllImage"/>
+			<KxPdfSelectAllPathCommand hotKey="a" icon="select_all_kd" id="SelectAllPathMenu" rbHotKey="A" shortcutHint="Ctrl+A" text="@Select All"/>
+			<KxPdfSelectAllShadingCommand hotKey="a" icon="select_all_kd" id="SelectAllShadingMenu" rbHotKey="A" shortcutHint="Ctrl+A" text="@Select All"/>
+			<KxPdfMixdEditSelectAllCommand hotKey="a" icon="select_all_kd" id="MixdEditSelectAllMenu" rbHotKey="A" shortcutHint="Ctrl+A" text="@Select All"/>
+			<KAppCommand action="3" appCmdObj="PdfImageRecognize" appId="pdfadvancedtool" customTip="ScanEdit" icon="scan_edit_kd" id="ScanEdit_scantips" idKey="PDFScanEditScanTips" idType="pdf_co_scantips" index="2" text="@ScanEdit"/>
+			<KAppCommand action="3" appCmdObj="PdfImageRecognize" appId="pdfadvancedtool" customTip="ScanEdit" icon="pic_edit_kd" id="ScanEdit_pictaskpane" idKey="PDFScanEditPicTaskpane" idType="pdf_co_pictaskpane" index="2" text="@ScanEdit"/>
+			<KxPdfImageSaveAsCommand hotKey="w" icon="save_kd" id="SaveAsImageMenu" rbHotKey="W" text="@SaveToLocal"/>
+			<KAppCommand action="singlepic" appCmdObj="ImportCurrentPic" appId="pdfphotobatchexport" hotKey="w" icon="pdf_save_rightmenu" id="app_kpdfbatchimageextract_saveimagemenu" idKey="PdfAppPdfphotobatchexportPdfImageMenuSave" index="4" rbHotKey="W" text="@SaveToLocal"/>
+			<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="PictureEdit_HandTool" ksoCmd="HandTool" shellEntryType="tab_picedit" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+			<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="PictureEdit_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_picedit" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+			<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_PictureEdit" rbFileMenuEmbed="1" text="@Tool">
+				<command idQ="PictureEdit_HandTool"/>
+				<command idQ="PictureEdit_SelectionTool"/>
+			</KListCommand>
+			<KxDataRecoverCommand customTip="DataRecover" hotKey="r" icon="data_recover_kd" id="dataRecover" idKey="DataRecoveryMaster" infoId="r" ksourl="L10N:DATA_RECOVER_URL" processName="@WPS Data Recovery Master" text="@Data Recovery"/>
+			<KDocumentTranslateRBCommand customTip="DocTranslate" icon="translation_kd" id="Doctranslate_WorkSpace" text="@Document Translate"/>
+			<KDocumentTranslateCommand customTip="DocTranslate" icon="translation_kd" id="Doctranslate_Common" text="@Document Translate"/>
+			<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Postil_HandTool" ksoCmd="HandTool" shellEntryType="tab_comments" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+			<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Postil_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_comments" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+			<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Postil" rbFileMenuEmbed="1" text="@Tool">
+				<command idQ="Postil_HandTool"/>
+				<command idQ="Postil_SelectTool"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="SpecialFunc_HandTool" ksoCmd="HandTool" shellEntryType="tab_convert" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+			<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="SpecialFunc_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_convert" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+			<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_SpecialFunc" rbFileMenuEmbed="1" text="@Tool">
+				<command idQ="SpecialFunc_HandTool"/>
+				<command idQ="SpecialFunc_SelectTool"/>
+			</KListCommand>
+			<KxLegacyTriggerCommand id="Shortcut_CorrectionFluid" ksoCmd="CorrectionFluid" shellEntryType="shortcut"/>
+			<KxValueContrlByIdCommand id="Edit_Text_RightMenuBlank" index="2" ksoCmd="EditText"/>
+			<KxValueContrlByIdCommand id="Edit_Text_RightMenuSelect" index="3" ksoCmd="EditText"/>
+			<KxValueContrlByIdCommand id="Edit_Text_OperatePopupBox" index="5" ksoCmd="EditText"/>
+			<KxLegacyTriggerCommand customTip="PDFEditText" icon="edit_text_kd" id="Edit_Text" idKey="PDFStandardEnhance" ksoCmd="EditText" text="@EditText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFEditText" icon="edit_text_kd" id="Edit_Text_ForRightSide" idKey="PDFStandardEnhance" isVipIconEanble="1" ksoCmd="EditText" shellEntryType="rightsidetoolbar" text="@EditText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFEditTextNoVip" icon="edit_text_kd" id="Edit_Text" idKey="WPSPDFEnhanceVersion" ksoCmd="EditText" text="@EditText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFEditTextNoVip" icon="edit_text_kd" id="Edit_Text_ForRightSide" idKey="WPSPDFEnhanceVersion" isVipIconEanble="1" ksoCmd="EditText" shellEntryType="rightsidetoolbar" text="@EditText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFEditImage" icon="pic_kd" id="Edit_Image" idKey="PDFStandardEnhance" ksoCmd="EditImage" text="@EditImage" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFEditImageNoVip" icon="pic_kd" id="Edit_Image" idKey="WPSPDFEnhanceVersion" ksoCmd="EditImage" text="@EditImage" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFAddText" icon="edit_text_kd" id="Edit_InsertText" idKey="PDFStandardEnhance" ksoCmd="EditInsertText" shortcutHint="Ctrl+T" text="@AddText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFAddTextNoVip" icon="edit_text_kd" id="Edit_InsertText" idKey="WPSPDFEnhanceVersion" ksoCmd="EditInsertText" shortcutHint="Ctrl+T" text="@AddText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFAITextReflow" icon="Pdf_AiReflow" id="AITextReflow" ksoCmd="AITextReflow" text="@AI Fix" wpsIsEanble="false"/>
+			<KxValueCommand customTip="PDFEditTextExit" icon="close_window_kd" id="Edit_Exit" index="2" ksoCmd="EditExit" singlerowpriority="100" text="@EditExit" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFAddText" icon="edit_text_kd" id="Insert_AddText" idKey="PDFInsertAddText" ksoCmd="EditInsertText" shortcutHint="Ctrl+T" text="@InsertText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFText" icon="edit_text_kd" id="Insert_AddText" idKey="PDFInsertAddTextEntry" ksoCmd="EditInsertText" shortcutHint="Ctrl+T" text="@InsertText2" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="PDFAddTextNoVip" icon="edit_text_kd" id="Insert_AddText" idKey="WPSPDFEnhanceVersion" ksoCmd="EditInsertText" shortcutHint="Ctrl+T" text="@InsertText" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand id="PDFReplace_EditContentInsertText" ksoCmd="EditContentInsertText"/>
+			<KxLegacyTriggerCommand icon="insert_text_kd" id="Edit_Content_Insert_Text" ksoCmd="EditContentInsertText" shortcutHint="Ctrl+T" text="@InsertText"/>
+			<KxLegacyTriggerCommand icon="pic_add_kd" id="Edit_Content_Insert_Image" ksoCmd="EditContentInsertImage" shortcutHint="Ctrl+J" text="@addimage"/>
+			<KxLegacyTriggerCommand id="Show_Content_Frame" ksoCmd="ShowContentFrame" text="@ShowContentFrame"/>
+			<KxLegacyTriggerCommand id="Edit_Content_Recognize_Table" ksoCmd="EditRecognizeTable" text="@RecognizeTable"/>
+			<KNewEditSceneCommand_KeyboardInputTriggerEdit id="Keyboard_Input_Trigger_Edit" text="@KeyboardInputTriggerEdit"/>
+			<KxLegacyTriggerCommand canStack="0" controlType="0" customTip="PDFEditContent" icon="pen_kd" id="Edit_Content_WithoutList" ksoCmd="EditContent" shortcutHint="Alt+W" text="@EditContent"/>
+			<KxListCommand controlType="0" customTip="PDFEditContent" icon="pen_kd" id="EditContent" ksoCmd="EditContent" layout_lineCount="1" rbFileMenuEmbed="1" shortcutHint="Alt+W" text="@EditContent">
+				<command idQ="Edit_Content_Insert_Text"/>
+				<command idQ="Edit_Content_Insert_Image"/>
+				<command idQ="Separator"/>
+				<command idQ="Show_Content_Frame"/>
+				<command idQ="Keyboard_Input_Trigger_Edit"/>
+			</KxListCommand>
+			<KxListCommand controlType="0" customTip="PDFEditContent" icon="pen_kd" id="Edit_Content" ksoCmd="EditContent" layout_lineCount="1" rbFileMenuEmbed="1" shortcutHint="Alt+W" text="@EditContent">
+				<command idQ="Separator"/>
+				<command idQ="Edit_Content_Recognize_Table"/>
+				<command idQ="Edit_Content_Recognize_Text"/>
+			</KxListCommand>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShare" idKey="PDFNewShare" targetId="newShare" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineEntryFilter" targetId="newShareForRClickTab" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="PDFBaseNewShare" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="CloudDocOnlineEntryFilter" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineXa" targetId="newShareForRClickTab" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="PDFNewShareForRecentFilePanel" targetId="newShareForRecentFilePanel" targetModule="officespace" text="@File Share"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" filter="support:FileMenuDocumentHistory=true" hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" targetId="RbFileMenuDocumentHistory" targetModule="officespace" text="@Document History"/>
+			<KProxyCommand autoLoad="true" customTip="DocPermission" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInWorkSpaceTab" idKey="DocSecurityPermission" targetId="AccountEncryptionInWorkSpaceTab" targetModule="DocPermission" text="@Document Encryption"/>
+			<KProxyCommand autoLoad="true" defaultVisible="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="cmdShare" idKey="ShareXa" targetId="cmdShare" targetModule="officespace"/>
+			<KxPdfImageReplaceCommand customTip="ImageEditReplace" icon="replace_pic_kd" id="PdfEditImageReplace" idKey="PdfEditImageReplace" index="2" spaceHint="loose" text="@ImageReplace" wpsIsEanble="false"/>
+			<KxDocPermissionCommand_AccountEncyptionAdvanced aid="80005" enterpriseWebPageUrl="/pdf_webdlg/rightlist.html" hotKey="p" icon="doc_encryption_kd" id="AccountEncyptionAdvanced" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyptionAdvanced" text="@Document Encryption"/>
+			<KxPdfTwoStateCommand canHideText="0" firstCustomTip="HideAnnotations" firstIcon="bubble_eye_closed_kd" firstText="@HideAnnotations" id="HideAnnotations" ksoCmd="HideAnnotations" secondCustomTip="ShowAnnotations" secondIcon="bubble_eye_kd" secondText="@ShowAnnotations" text="@Annotations"/>
+			<KxLegacyTriggerCommand customTip="EnterSuperNoteMode" icon="comment_mode_kd" id="Reviews_Supernote" ksoCmd="SuperNoteMode" shellEntryType="tab_comments" text="@SuperNoteMode"/>
+			<KxPdfAnnotationManagementCommand canHideText="0" customTip="AnnotManagement" icon="bubble_setup_kd" id="Reviews_AnnotManagement" shellEntryType="tab_comments" shortcutHint="Alt+Shift+3" text="@AnnotManagement"/>
+			<KxLegacyTriggerCommand customTip="ClipPage" icon="crop_kd" id="Edit_CropPage" isVipIconEanble="0" ksoCmd="ClipPage" shortcutHint="Ctrl+Alt+C" text="@ClipPage" wpsIsEanble="false"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ClipPage QuickBar" idKey="PdfPageQuickHelpBar"/>
+			<KxPdfBoxSelectAIListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="OcrExtractText QuickBar" idKey="MiniToolbar"/>
+			<KxPdfTableRecognizeListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Form MinitoolBar" idKey="PDFFormMiniToolBar"/>
+			<KxPdfOcrExtractTextCopyPicCommand icon="copy_as_pic_kd" id="OcrExtractTextCopyPic" qtspyName="PdfOcrExtractTextCopyPicCommand" text="@OcrExtractTextCopyPic"/>
+			<KxPdfOcrExtractTextCommand customTip="OCRExtractText" hotKey="w" icon="scan_ocr_kd" id="OcrExtractText" idKey="PDFOcrExtractText" ocrExtractTextEntry="8" rbHotKey="W" text="@OCRExtractText" wpsIsEanble="false"/>
+			<KxPdfOcrExportFileCommand customTip="OcrExtractText2Excel" hotKey="o" icon="Pdf_copysheet" id="OcrExtractText2Excel" idKey="PDFOcrExtractText2Excel" ocrExportPosition="1" ocrExportType="1" rbHotKey="O" spaceHint="singleloose" text="@OcrExtractText2Excel"/>
+			<KxValueCommand icon="doc_extract_page_kd" id="MenuPDFExtractPage" index="1" ksoCmd="PDFExtractPage" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage" wpsIsEanble="false"/>
+			<KxPdfScanDocOcrRecognizeListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="OcrDetectBox MinitoolBar" idKey="PDFOcrDetectBoxMiniToolBar"/>
+			<KProxyCommand autoLoad="false" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyPDFZZ_file2PDF" idKey="PDFStandardEnhance" targetId="PDFZZ_file2PDF" targetModule="markdown2pdf"/>
+			<KProxyCommand autoLoad="false" customTip="Markdown2PDFTips" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="change_to_pdf_two_kd" id="ProxyPDFZZ_MD2PDF" idKey="PDFStandardEnhance" targetId="PDFZZ_MD2PDF" targetModule="markdown2pdf" text="@Markdown2PDF"/>
+			<KProxyCommand autoLoad="false" customTip="Markdown2PDFTips" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="change_to_pdf_two_kd" id="ProxySpecialFunc_PDFZZ_MD2PDF" idKey="PDFStandardEnhance" targetId="SpecialFunc_PDFZZ_MD2PDF" targetModule="markdown2pdf" text="@Markdown2PDF"/>
+			<KProxyCommand autoLoad="false" customTip="NewFromMDTips" delayLoadLib="true" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="p_md2pdf-filemenu" id="ProxyRbFileMenuPdf2MD_PDFZZ" idKey="PDFStandardEnhance" targetId="RbFileMenuPdf2MD_PDFZZ" targetModule="markdown2pdf" text="@NewFromMD"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="ProxyPDFZZ_file2PDF" idKey="WPSPDFEnhanceVersion" targetId="PDFZZ_file2PDF" targetModule="markdown2pdf"/>
+			<KProxyCommand autoLoad="true" customTip="Markdown2PDFTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="change_to_pdf_two_kd" id="ProxyPDFZZ_MD2PDF" idKey="WPSPDFEnhanceVersion" targetId="PDFZZ_MD2PDF" targetModule="markdown2pdf" text="@Markdown2PDF"/>
+			<KProxyCommand autoLoad="true" customTip="Markdown2PDFTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="change_to_pdf_two_kd" id="ProxySpecialFunc_PDFZZ_MD2PDF" idKey="WPSPDFEnhanceVersion" targetId="SpecialFunc_PDFZZ_MD2PDF" targetModule="markdown2pdf" text="@Markdown2PDF"/>
+			<KProxyCommand autoLoad="true" customTip="NewFromMDTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="p_md2pdf-filemenu" id="ProxyRbFileMenuPdf2MD_PDFZZ" idKey="WPSPDFEnhanceVersion" targetId="RbFileMenuPdf2MD_PDFZZ" targetModule="markdown2pdf" text="@NewFromMD"/>
+			<KProxyCommand autoload="true" customTip="ScreenRecorder" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="start_making_kd" id="ScreenRecorder" rbHotKey="" targetId="ScreenRecorder" targetModule="screenrecorder" text="@Screen Recorder"/>
+			<KxLegacyTriggerCommand customTip="AIOCR_SearchableTextImage" icon="scan_ocr_kd" id="SpecialFunc_AIOCR_SearchableTextImage" index="1" ksoCmd="AIOCR2PDF" text="@AIOCR_SearchableTextImage" wpsIsEanble="false"/>
+			<KxPdfOcrExtractTextCommand customTip="OCRExtractPageText" icon="scan_ocr_kd" id="MenuBar_AIOCR_ExtractPageText" ocrExtractTextEntry="3" text="@OCRExtractPageText" wpsIsEanble="false"/>
+			<KxValueCommand id="Shortcut_Annot_GraffitiDraw" index="16" ksoCmd="GraffitiDraw" shellEntryType="shortcut"/>
+			<KxValueCommand id="Shortcut_Annot_GraffitiSline" index="16" ksoCmd="GraffitiSline" shellEntryType="shortcut"/>
+			<KxInkDrawGeneralPenCommand id="Shortcut_InkDrawLineShapePen" penIndex="3"/>
+			<KxInkDrawGeneralPenCommand id="Shortcut_InkDrawSquareShapePen" penIndex="7"/>
+			<KxStaticGalleryCommand column="1" controlType="4" icon="color_normal_kd" id="Annot_Graffiti_LineColor" idMso="GraffitiLineColor" ksoCmd="GraffitiLineColor" text="@GraffitiLineColor">
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorRed" index="0" qtspyName="p-ink-color-red"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorDeepRed" index="1" qtspyName="p-ink-color-deepred"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorDeepBlue" index="2" qtspyName="p-ink-color-deepblue"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorGreen" index="3" qtspyName="p-ink-color-green"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorBlue" index="4" qtspyName="p-ink-color-blue"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="25" galleryItemWidth="25" icon="Pdf_inkColorPurple" index="5" qtspyName="p-ink-color-purple"/>
+			</KxStaticGalleryCommand>
+			<KxStaticGalleryCommand column="1" controlType="4" icon="transparency_kd" id="Annot_Graffiti_LineOpacity" idMso="GraffitiLineOpacity" ksoCmd="GraffitiLineOpacity" text="@GraffitiLineOpacity">
+				<KxStaticGalleryLabItemCommand galleryItemHeight="26" galleryItemWidth="50" index="0" text="@100.0%"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="26" galleryItemWidth="50" index="1" text="@70%"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="26" galleryItemWidth="50" index="2" text="@50%"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="26" galleryItemWidth="50" index="3" text="@30%"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="26" galleryItemWidth="50" index="4" text="@10%"/>
+			</KxStaticGalleryCommand>
+			<KxStaticGalleryCommand column="1" controlType="4" icon="p-ink-line-widthmenu" id="Annot_Graffiti_LineWidth" idMso="GraffitiLineWidth" ksoCmd="GraffitiLineWidth" text="@GraffitiLineWidth">
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_1" index="0" qtspyName="LineStyle_pdf_1" text="@1 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_2" index="1" qtspyName="LineStyle_pdf_2" text="@2 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_4" index="2" qtspyName="LineStyle_pdf_4" text="@4 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_6" index="3" qtspyName="LineStyle_pdf_6" text="@6 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_8" index="4" qtspyName="LineStyle_pdf_8" text="@8 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_10" index="5" qtspyName="LineStyle_pdf_10" text="@10 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_12" index="6" qtspyName="LineStyle_pdf_12" text="@12 pt"/>
+				<KxStaticGalleryLabItemCommand galleryItemHeight="20" galleryItemWidth="135" icon="LineStyle_pdf_14" index="7" qtspyName="LineStyle_pdf_14" text="@14 pt"/>
+			</KxStaticGalleryCommand>
+			<KxPdfNewSignatureCommand icon="pen_signature_create_kd" id="PdfNewSignature" text="@NewSignature"/>
+			<KxPdfNewSignatureCommand icon="pen_signature_create_kd" id="Protect_PdfNewSignature" text="@NewSignature"/>
+			<KxPdfNewSignatureCommand id="OperatePopup_AddSignature"/>
+			<KxPdfSignShortCutCommand id="PdfSignShortCut" shortcutHint="Alt+U"/>
+			<KxPdfUpdateWaterMarkCommand commandMark="0" dialogHint="1" hotKey="u" icon="watermark_update_kd" id="TabEdit_RenewWatermark" rbHotKey="U" text="@Update Watermark"/>
+			<KxPdfDeleteWaterMarkCommand commandMark="0" dialogHint="1" hotKey="d" icon="watermark_delete_kd" id="TabEdit_DeleteWatermark" rbHotKey="D" text="@Delete Watermark"/>
+			<KxPdfAIRemoveWaterMarkCommand icon="ai_watermark_delete_kd" id="TabEdit_AIRemoveWatermark" idKey="PDFAIRemoveWatermark" text="@AI Remove Watermark"/>
+			<KAppCommand appCmdObj="BatchWaterMark" appFlags="wpsmember" appFlags_xa="wpsmember" appId="kbatchwatermark" customTip="BatchWaterMark" icon="watermark_batch_delete_kd" id="app_kbatchwatermark_edit" idKey="PDFBatchWaterMarkEntry" text="@BatchWaterMark"/>
+			<KxPdfUpdateWaterMarkCommand commandMark="0" dialogHint="1" hotKey="u" icon="watermark_update_kd" id="TabPage_RenewWatermark" rbHotKey="U" text="@Update Watermark"/>
+			<KxPdfDeleteWaterMarkCommand commandMark="0" dialogHint="1" hotKey="d" icon="watermark_delete_kd" id="TabPage_DeleteWatermark" rbHotKey="D" text="@Delete Watermark"/>
+			<KxPdfWaterMarkGalleryCommand controlType="4" customTip="WaterMarkTips" icon="watermark_kd" id="Edit_Watermark" idMso="WatermarkGallery" text="@Watermark">
+				<command idQ="TabEdit_RenewWatermark"/>
+				<command idQ="TabEdit_DeleteWatermark"/>
+				<command idQ="app_kbatchwatermark_edit"/>
+				<command idQ="TabEdit_AIRemoveWatermark"/>
+			</KxPdfWaterMarkGalleryCommand>
+			<KAppCommand appCmdObj="PdfSplit" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="app_kpdf2wordv3_toolmenu_pdfsplit" rbHotKey="PW" text="@SplitPDFPage"/>
+			<KAppCommand appCmdObj="PdfSplit" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="app_kpdf2wordv3_popupmenu_pdfsplit" rbHotKey="PW" text="@SplitPDFPage"/>
+			<KAppCommand appCmdObj="PdfMerge" appId="kpdf2wordv2" customTip="MergePDF" icon="doc_merge_kd" id="app_kpdf2wordv3_toolmenu_pdfmerge" rbHotKey="PW" text="@MergePDFPage"/>
+			<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_PagePopup_MergePdf" rbHotKey="PW" text="@MergePDFPage" wpsIsEanble="false"/>
+			<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" canHideText="0" customTip="SplitPDF" icon="doc_split_kd" id="app_pdfadvancedtool_PagePopup_SplitPdf" text="@SplitPDFPage" wpsIsEanble="false"/>
+			<KxPdfFindWaterMarkCommand id="FindWaterMark"/>
+			<KxLegacyTriggerCommand id="InsertPagesFromDragFile" ksoCmd="InsertPagesFromDragFile" shortcutHint="Ctrl+I"/>
+			<KPdfFromScannerCommand id="TabNewPDF_ScanPDF"/>
+			<KPdfFromScannerCommand id="RbFileMenuScan2PDF"/>
+			<KPdfHtml2PdfCommand id="RbFileMenuNewHtml2PdfFile"/>
+			<KxDocPermissionCommand_AccountEncyptionAdvanced aid="80005" enterpriseWebPageUrl="/pdf_webdlg/rightlist.html" hotKey="p" icon="doc_encryption_kd" id="AccountEncyptionAdvanced" idKey="DocSecurityPermission" qtspyName="CommonAccountEncyptionAdvanced" text="@Document Encryption"/>
+			<KxLegacyTriggerCommand id="TabNewPDF_BlankPDF" ksoCmd="NewBlankPage"/>
+			<KxLegacyTriggerCommand id="TabNewPDF_Open" ksoCmd="OpenFile"/>
+			<KPdfExportPdfCommand id="RbFileMenuFile2PDF"/>
+			<KAppCommand appCmdObj="BatchCompress" appId="batchcompress" customTip="CompressTips" icon="file_compression_kd" id="SpecialFunc_PDFZZ_Compress" idKey="PDFBatchCompressCustom" index="0" text="@Compress"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="EbookIncreaseFont" icon="font_size_increase_wps_kd" id="Shortcut_Ebook_FontSize_Zoom" ksoCmd="GrowFontRainbow" shellEntryType="shortcut" shortcutHint="Ctrl+]" text="@EbookIncreaseFont"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="EbookDecreaseFont" icon="font_size_reduce_wps_kd" id="Shortcut_Ebook_FontSize_Narrow" ksoCmd="ShrinkFontRainbow" shellEntryType="shortcut" shortcutHint="Ctrl+[" text="@EbookDecreaseFont"/>
+			<KxPdfAddPageNumberCommand autoLoad="false" customTip="AddPageNumberTips" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="Insert_AddPageNumber" targetModule="pdfaddpagenumber" text="@PageNumber"/>
+			<KxValueCommand id="Shortcut_Insert_AddPageNumber" ksoCmd="RightMenu_AddPageNumberBridge"/>
+			<KxValueCommand customTip="TranslationAll" icon="translation_kd" id="RightMenuTranslationAll" ksoCmd="ReadingModeTranslationAll" shellEntryType="rightmenu" shortcutHint="Ctrl+F6" text="@TranslationAll"/>
+			<KxLegacyTriggerCommand customTip="PdfInvoiceAssist" icon="invoice_assist_kd" id="SpecialFunc_InvoiceAssist" ksoCmd="PdfInvoiceAssist" text="@PdfInvoiceAssist"/>
+			<KPdfOpenUnsignedCopyCommand id="openUnsignedCopy"/>
+			<KxValueCommand id="OperatePopup_CorrectionFluid" index="1" ksoCmd="CorrectionFluid"/>
+			<KxLegacyTriggerCommand id="OperatePopup_PhotoToPDF" ksoCmd="Photo2PDF"/>
+			<KxLegacyTriggerCommand id="OperatePopup_PDFToPhoto" ksoCmd="PDF2Photo"/>
+			<KxLegacyTriggerCommand docExceptionPos="float_2word" id="OperatePopup_PDFToWord" ksoCmd="PDF2Word"/>
+			<KxLegacyTriggerCommand docExceptionPos="float_2excel" id="OperatePopup_PDFToExcel" ksoCmd="PDF2Excel"/>
+			<KxLegacyTriggerCommand docExceptionPos="float_2ppt" id="OperatePopup_PDFToPPT" ksoCmd="PDF2PPT"/>
+			<KxValueCommand id="OperatePopup_MergePDF" index="3" ksoCmd="MergePDF"/>
+			<KxValueCommand id="OperatePopup_SplitPDF" index="3" ksoCmd="SplitPDF"/>
+			<KxValueCommand id="OperatePopup_PDFToTXT" index="15" ksoCmd="PDF2TXT"/>
+			<KxValueCommand id="OperatePopup_ExtractPage" index="4" ksoCmd="PDFExtractPage"/>
+			<KxValueCommand id="OperatePopup_InsertBlankPages" index="7" ksoCmd="InsertBlankPages"/>
+			<KxValueCommand id="OperatePopup_InsertPageFromDoc" index="7" ksoCmd="InsertPagesFromDoc"/>
+			<KxPdfSignatureCommand canHideText="0" customTip="PdfSignature" icon="pen_signature_kd" id="Insert_Signature" idKey="CommonSignature" ksoCmd="PdfSignature" text="@Signature">
+				<command idQ="PdfNewSignature"/>
+				<command idQ="Insert_CloudSignature"/>
+			</KxPdfSignatureCommand>
+			<KAppCommand action="request" appCmdObj="KWpsEsignWithCurrentFile" appId="kwpsesign" customTip="KWpsEsignRequest" icon="send_file_kd" id="KWpsEsign_Request" idKey="KWpsEsign" needLogin="true" qtspyName="wpsesign_request_pdfcommon" text="@Request Signatures"/>
+			<KAppCommand action="status" appCmdObj="KWpsEsignWithCurrentFile" appId="kwpsesign" icon="cloud_file_history_kd" id="KWpsEsign_Status" idKey="KWpsEsign" needLogin="true" qtspyName="wpsesign_status_pdfcommon" text="@Signature Status"/>
+			<KAutoHideListCommand canHideText="0" customTip="PdfCompSignature" icon="pen_signature_kd" id="Common_Signature" idKey="KWpsEsign" qtspyName="common_signature_pdfcommon" text="@Signature">
+				<KxPdfSignatureCommand canHideText="0" customTip="PdfSignature" icon="pen_signature_kd" id="Insert_Signature" idKey="KWpsEsign" ksoCmd="PdfSignature" text="@Sign Document">
+					<command idQ="PdfNewSignature"/>
+					<command idQ="Insert_CloudSignature"/>
+				</KxPdfSignatureCommand>
+				<command idQ="KWpsEsign_Request"/>
+				<command idQ="KWpsEsign_Status"/>
+			</KAutoHideListCommand>
+			<KxPdfSignatureCommand customTip="PdfSignature" icon="pen_signature_kd" id="Protect_Signature" ksoCmd="PdfSignature" text="@Signature">
+				<command idQ="Protect_PdfNewSignature"/>
+			</KxPdfSignatureCommand>
+			<KListCommand id="Insert_Signature_Web_Phone">
+				<command idQ="Insert_CloudSignature"/>
+			</KListCommand>
+			<KProxyCommand canHideText="0" customTip="PdfSignature" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="pen_signature_kd" id="Insert_Signature_Web" targetModule="addsignature" text="@Signature"/>
+			<KProxyCommand canHideText="0" customTip="PdfSignature" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="pen_signature_kd" id="Insert_Signature_Dialog" targetModule="addsignature" text="@Signature"/>
+			<KProxyCommand delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="Insert_Web_NewSign" targetModule="addsignature"/>
+			<KxValueCommand id="OperatePopup_PdfAddImage" index="1" ksoCmd="AddImage"/>
+			<KxValueCommand id="OperatePopup_CropPage" index="1" ksoCmd="ClipPage"/>
+			<KxPdfImagePreviewCommand customTip="ImagePreview" hideMiniToolBar="1" icon="magnifier_zoom_in_kd" id="EditPicNewTool_Preview" text="@ImagePreview"/>
+			<KxPdfImageEditCommand appCmdObj="ImportCurrentPic" appId="photoeditapp" customTip="PdfPhotoedit2" icon="pic_sharpness_kd" id="photoeditapp_rmenu_clarify" text="@Restore"/>
+			<KxPdfImageEditCommand appCmdObj="ImportCurrentPic" appId="photoeditapp" customTip="Image Quality" icon="pic_sharpness_kd" id="photoeditapp_pictool_clarify" text="@Restore"/>
+			<KProxyCommand canHideText="0" customTip="Compare" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="appcmd_AK20220415DGHHFM_ribbonTab_383d839" id="PDF_DOC_COMPARE" targetModule="docdiffcompare" text="@Compare"/>
+			<KxMiniToolBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="Picture Floatbar" idKey="MiniToolbar"/>
+			<KxPdfImageReplaceCommand id="PicQuickButton_Replace"/>
+			<KxPdfClipObjFloatBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ClipObj_FloatBar" idKey="MiniToolbar"/>
+			<KPdfAppCommand appCmdObj="PdfImportCurrentPic" appId="photo2pdf" id="app_photo2pdf_shortcutkey"/>
+			<KPdfAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="shortcutkey_2word" id="app_kpdf2wordv2_shortcutkey"/>
+			<KPdfAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="shortcutkey_2excel" id="app_kpdf2wordv2_shortcutkey_pdf2excel"/>
+			<KPdfAppCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appId="kpdf2wordv2" docExceptionPos="shortcutkey_2ppt" id="app_kpdf2wordv2_shortcutkey_pdf2ppt"/>
+			<KAppCommand action="Merge" appCmdObj="Pdf2Word" appId="kpdf2wordv2" id="app_kpdf2wordv2_shortcutkey_merge"/>
+			<KAppCommand action="Split" appCmdObj="Pdf2Word" appId="kpdf2wordv2" id="app_kpdf2wordv2_shortcutkey_split"/>
+			<KPdfAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" appPersistEntry="true" customTip="PDF2Excel" docExceptionPos="tabstart_2excel" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoexcel" icon="change_to_sheet_kd" id="app_kpdf2wordv2_tabstartPDF2Excel" text="@PDF2Excel"/>
+			<KPdfAppCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appId="kpdf2wordv2" appPersistEntry="true" customTip="PDF2PPT" docExceptionPos="tabstart_2ppt" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoppt" icon="change_to_ppt_kd" id="app_kpdf2wordv2_tabstartPDF2PPT" text="@PDF2PPT"/>
+			<KPdfAppCommand action="CAD" appCmdObj="Pdf2Word" appId="kpdf2wordv2" canHideText="0" customTip="PDF2CAD" docExceptionPos="tabstart_2cad" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoppt" icon="change_to_cad_kd" id="app_kpdf2wordv2_tabstartPDF2CAD" idKey="PDFTabStartPDF2CAD" text="@PDF2CAD"/>
+			<KAppCommand appCmdObj="AIOCR2PDF" appId="aiocr2pdf" customTip="AIOCR2PDF" icon="scan_ocr_kd" id="SpecialFunc_AIOCR_SearchableTextImage" shortcutHint="Ctrl+Shift+C" text="@AIOCR2PDF"/>
+			<KAppCommand appCmdObj="AIOCR2PDF" appId="aiocr2pdf" customTip="AIOCR2PDF" icon="scan_photo_identification_kd" id="app_aiocr2pdf_rightmenu" shortcutHint="Ctrl+Shift+C" text="@AIOCR2PDF"/>
+			<KAppCommand appCmdObj="AIOCR2PDF" appId="aiocr2pdf" id="app_aiocr2pdf_shortcutkey" shortcutHint="Ctrl+Shift+C" text="@AIOCR2PDF"/>
+			<KAppCommand appCmdObj="AIOCR2PDF" appId="aiocr2pdf" id="app_aiocr2pdf_searchpanel" text="@AIOCR2PDF"/>
+			<KAppCommand appCmdObj="BatchCompress" appId="batchcompress" appPersistEntry="true" customTip="CompressTips" icon="file_compression_kd" id="Start_Compress" idKey="PDFStartCompress" text="@Compress"/>
+			<KProxyCommand autoLoad="true" customTip="OnlineFonts" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="font_replace_kd" id="MoreOnlineFonts" idKey="CloudFonts" targetId="OnlineFonts" targetModule="konlinefonts" text="@Online Fonts"/>
+			<KxValueCommand id="ShortCut_ReadingMode" index="16" ksoCmd="ReadingMode"/>
+			<KListCommand customTip="ReadingMode_View" icon="doc_two_kd" id="ReadingMode_View" text="@ReadingMode_View">
+				<KxLegacyTriggerCommand customTip="SinglePageContinuous" icon="doc_two_kd" id="ReadingMode_SinglePage" ksoCmd="SinglePageContinuous" text="@Single Page"/>
+				<KxLegacyTriggerCommand customTip="TwoPageContinuous" icon="double_page_kd" id="ReadingMode_DoublePage" ksoCmd="TwoPagesContinuous" text="@Double Page"/>
+				<KxLegacyTriggerCommand customTip="ContinuousRead" icon="continuous_read_kd" id="ReadingMode_ContinuousRead" ksoCmd="ContinuousRead" text="@Continuous"/>
+				<separator/>
+				<KxLegacyTriggerCommand customTip="ContinuousRead" icon="cover_kd" id="ReadingMode_DoublePageContinuous_cover" ksoCmd="SeparateCover" text="@SeparateCover"/>
+			</KListCommand>
+			<KxPdfAiRotateListCommand customTip="ReadingMode_Rotate" icon="direction_rotate_doc_kd" id="ReadingMode_Rotate" text="@ReadingMode_Rotate">
+				<KxValueCommand icon="rotate_left_kd" id="ReadingMode_Counterclockwise" index="12" ksoCmd="RotatePages" shellEntryType="readmode" shortcutHint="Ctrl+Shift+-" text="@anticlockwise rotation"/>
+				<KxValueCommand icon="rotate_right_kd" id="ReadingMode_Clockwise" index="11" ksoCmd="RotatePages" shellEntryType="readmode" shortcutHint="Ctrl+Shift++" text="@clockwise rotation"/>
+				<separator/>
+				<command idQ="Start_RotateDoc_Left"/>
+				<command idQ="Start_RotateDoc_ReadMode"/>
+				<command idQ="Start_Ai_Rotate"/>
+			</KxPdfAiRotateListCommand>
+			<KxPdfTranslateListCommand customTip="ReadingMode_Translate" icon="translation_kd" id="ReadingMode_Translate" idKey="PDFStandardEnhance" text="@ReadingMode_Tanslate">
+				<command idQ="ReadingMode_TranslationSelect" proxyCmdId="ProxyReadingMode_TranslationSelect"/>
+				<KxLegacyTriggerCommand icon="translation_kd" id="ReadingMode_FullTranslation" idKey="PDFDocTranslateUseKxCmd" ksoCmd="TranslationAll" shellEntryType="tab_readingmode" text="@TranslationAll"/>
+			</KxPdfTranslateListCommand>
+			<KListCommand id="ReadingViewTabbar">
+				<KxLegacyTriggerCommand icon="bookmark_kd" id="ReadingView_BookMark" ksoCmd="ReadingModeBookMark" spaceHint="suitable" text="@BookMark"/>
+				<command idQ="ReadingMode_View"/>
+				<command idQ="ReadingMode_Rotate"/>
+				<separator/>
+				<command idQ="ReadingMode_Translate"/>
+				<KxLegacyTriggerCommand icon="book_kd" id="ReadingMode_Supernote" ksoCmd="SuperNoteMode" text="@SuperNoteMode"/>
+				<KxPdfAnnotationManagementCommand customTip="AnnotManagement" icon="bubble_shape_kd" id="ReadingMode_AnnotManagement" shellEntryType="readingmode" shortcutHint="Alt+Shift+3" text="@AnnotManagement"/>
+				<KxLegacyTriggerCommand icon="bubble_setup_kd" id="ReadingMode_AnnoToolBox" ksoCmd="AnnoToolBox" spaceHint="suitable" text="@annotation toolbox"/>
+				<KxPdfWaterMarkGalleryCommand controlType="4" customTip="WaterMarkTips" icon="watermark_kd" id="ReadingMode_Watermark" idKey="PdfWaterMarkGalleryEntry" idMso="WatermarkGallery" text="@Watermark">
+					<KxPdfUpdateWaterMarkCommand commandMark="0" dialogHint="1" hotKey="u" icon="watermark_update_kd" id="ReadingMode_RenewWatermark" rbHotKey="U" text="@Update Watermark"/>
+					<KxPdfDeleteWaterMarkCommand commandMark="0" dialogHint="1" hotKey="d" icon="watermark_delete_kd" id="ReadingMode_DeleteWatermark" rbHotKey="D" text="@Delete Watermark"/>
+				</KxPdfWaterMarkGalleryCommand>
+				<KControlListCommand icon="scan_photo_identification_kd" id="ReadingMode_ExtractionAndIdentification" idKey="PDFReadingModeExtractionAndIdentification" text="@ReadingMode_ExtractionAndIdentification">
+					<KAppCommand action="readingmodetab" appCmdObj="ImportCurrentPic" appId="kocrtool" customTip="kocrtoolOCRExtractPageText" icon="scan_ocr_kd" id="kocrtoolReadingmodetab" ocrExtractTextEntry="3" text="@OCRExtractPageText" wpsIsEanble="false"/>
+					<KAppCommand appCmdObj="KPdfImageExtract" appId="pdfphotobatchexport" icon="pic_extract_kd" id="app_batchimageextract_readingmode" idKey="BatchImageExtract" text="@Image Extract"/>
+					<KAppCommand appCmdObj="KPdfImageExtract" appId="kpdfimageextract" icon="pic_extract_kd" id="app_imageextract_readingmode" idKey="PdfImageExtractMenu" text="@Image Extract"/>
+					<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" icon="sheet_extract_kd" id="ReadingMode_PDFTableRecognize" idType="currentpage" tabId="readingmode" text="@Table Extraction"/>
+					<KAppCommand action="8" appCmdObj="PdfExtractFormula" appId="pdfadvancedtool" icon="scan_ocr_formulas_kd" id="ReadingMode_PDFFormulaRecognize" idKey="PDFExtractFormula" idType="currentpage" tabId="readingmode" text="@Formula Extraction"/>
+					<separator/>
+					<KPdfImageRecognizeCommand icon="scan_photo_identification_kd" id="ImageRecognize_readingmode" text="@AIOCR2PDF"/>
+				</KControlListCommand>
+				<separator/>
+				<KPdfSearchCommand controlType="0" customTip="Search" id="ReadingView_Search" ksoCmd="Find" spaceHint="suitable"/>
+				<separator/>
+				<KxValueCommand icon="close_window_kd" id="ExitReadingMode" index="35" ksoCmd="ExitReadingMode" spaceHint="suitable" text="@ExitReadingMode"/>
+			</KListCommand>
+			<KListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ReadingMode_TextMenu" name="ReadingMode_TextMenu"/>
+			<KxPdfReadingModeMiniToolBarMultiListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ReadingMode_Font Floatbar" idKey="MiniToolbar" multiType="read_mode"/>
+			<KxPdfReadingModeSelectAnnotListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="ReadingMode_AnnoSelectMenu" idKey="MiniToolbar"/>
+			<KxPdfCopyText hotKey="c" icon="copy_kd" id="Anno_CopyText" shortcutHint="Ctrl+C" text="@Copy"/>
+			<KxValueCommand icon="page_properties_kd" id="PageProperty_RBMenu" index="1" ksoCmd="PageProperty" text="@Page Property" wpsIsEanble="false"/>
+			<KxValueCommand icon="page_properties_kd" id="PagePropertyNoIcon" index="2" ksoCmd="PageProperty" text="@Page Property" wpsIsEanble="false"/>
+			<KxValueCommand icon="page_properties_kd" id="RightmenuPageProperty" index="1" ksoCmd="CurPageProperty" text="@Page Property" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PDFMeasureTool" dynamicSpaceHint="loose;suitable" icon="ruler_kd" id="SpecialFunc_MeasureTool" ksoCmd="MeasureTool" text="@Measure Tool"/>
+			<KPdfAppCommand appCmdObj="kexportimage" appId="kexportimage" detail="shortcut" id="ShortCut_PDFZZ_PDFToPhoto" idMso="FileSaveAsPicture"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Tick" id="FormFilling_Check_Tick" ksoCmd="FormTick"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Cross" id="FormFilling_Check_Cross" ksoCmd="FormCross"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Circle" id="FormFilling_Check_Circle" ksoCmd="FormCircle"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Rectangle" id="FormFilling_Check_Rectangle" ksoCmd="FormRectangle"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Rhombus" id="FormFilling_Check_Rhombus" ksoCmd="FormRhombus"/>
+			<KxLegacyTriggerCommand icon="Pdf_FormFilling_Star" id="FormFilling_Check_Star" ksoCmd="FormStar"/>
+			<KxLegacyTriggerCommand customTip="FormFillingCheck" icon="tick_box_kd" id="Form_Check" ksoCmd="FormCheck" text="@FormFilling Check"/>
+			<KQuickMenuCommandFix icon="tick_box_kd" id="FormFilling_Check" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="Form_Check" text="@FormFilling Check">
+				<command idQ="FormFilling_Check_Tick"/>
+				<command idQ="FormFilling_Check_Cross"/>
+				<command idQ="FormFilling_Check_Circle"/>
+				<command idQ="FormFilling_Check_Rectangle"/>
+				<command idQ="FormFilling_Check_Rhombus"/>
+				<command idQ="FormFilling_Check_Star"/>
+			</KQuickMenuCommandFix>
+			<KxLegacyTriggerCommand customTip="FillSignCross" icon="symbol_cross_two_kd" id="FillSign_Cross" ksoCmd="FillSignCross" text="@Cross"/>
+			<KxLegacyTriggerCommand customTip="FillSignCheck" icon="symbol_tick_kd" id="FillSign_Check" ksoCmd="FillSignCheck" text="@Check"/>
+			<KxLegacyTriggerCommand customTip="FillSignCircle" icon="circle_kd" id="FillSign_Circle" ksoCmd="FillSignCircle" text="@Circle"/>
+			<KxLegacyTriggerCommand customTip="FillSignLine" icon="symbol_horizontal_line_kd" id="FillSign_Line" ksoCmd="FillSignLine" text="@Line"/>
+			<KxLegacyTriggerCommand customTip="FillSignDot" icon="dot_kd" id="FillSign_Dot" ksoCmd="FillSignDot" text="@Dot"/>
+			<KxLegacyTriggerCommand customTip="FormFillingDate" id="Form_Date" ksoCmd="FormDate" text="@FormFilling Date"/>
+			<KxLegacyTriggerCommand customTip="AddFormField" icon="text_frame_kd" id="FormTextBox" ksoCmd="FormTextBox" text="@FormTextBox"/>
+			<KxLegacyTriggerCommand customTip="FormCheckBox" icon="tick_box_kd" id="FormCheckBox" ksoCmd="FormCheckBox" text="@FormCheckBox"/>
+			<KxLegacyTriggerCommand customTip="FormRadioButton" icon="circle_dot_kd" id="FormRadioButton" ksoCmd="FormRadioButton" text="@FormRadioButton"/>
+			<KxLegacyTriggerCommand customTip="FormComboBox" icon="flod_off_kd" id="FormComboBox" ksoCmd="FormComboBox" text="@FormComboBox"/>
+			<KxLegacyTriggerCommand customTip="FormListBox" icon="drop_down_list_kd" id="FormListBox" ksoCmd="FormListBox" text="@FormListBox"/>
+			<KxLegacyTriggerCommand customTip="FormButton" icon="command_button_kd" id="FormButton" ksoCmd="FormButton" text="@FormButton"/>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" id="SplitPage QuickBar" idKey="PdfPageQuickHelpBar"/>
+			<KxPdfCustomCommand id="Deprecated_AddNewOutlineCommand"/>
+			<KxPdfCustomCommand aid="3963" descName="@Add new outline" id="Shortcut_AddNewOutlineOrBold" shortcutHint="Ctrl+B" text="@newoutline"/>
+			<KxLegacyTriggerCommand id="Shortcut_CloseWindow" ksoCmd="CloseWindow"/>
+			<KxLegacyTriggerCommand customTip="GraffitiEraserPartType" icon="erase_part_kd" id="GraffitiEraserPartType" ksoCmd="GraffitiEraserPartType" shellEntryType="randomdraw_tab" text="@GraffitiEraserPartType"/>
+			<KxLegacyTriggerCommand customTip="GraffitiEraserWholeType" icon="erase_all_kd" id="GraffitiEraserWholeType" ksoCmd="GraffitiEraserWholeType" shellEntryType="randomdraw_tab" text="@GraffitiEraserWholeType"/>
+			<KxLegacyTriggerCommand customTip="GraffitiDeleteAll" icon="graffiti_kd" id="GraffitiDeleteAll" ksoCmd="GraffitiDeleteAll" shellEntryType="randomdraw_tab" text="@GraffitiDeleteAll"/>
+			<KxLegacyTriggerCommand customTip="GraffitiEraserPartType" icon="erase_part_kd" id="ReadingGraffitiEraserPartType" ksoCmd="GraffitiEraserPartType" shellEntryType="readingmode" text="@GraffitiEraserPartType"/>
+			<KxLegacyTriggerCommand customTip="GraffitiEraserWholeType" icon="erase_all_kd" id="ReadingGraffitiEraserWholeType" ksoCmd="GraffitiEraserWholeType" shellEntryType="readingmode" text="@GraffitiEraserWholeType"/>
+			<KxLegacyTriggerCommand customTip="GraffitiDeleteAll" icon="graffiti_kd" id="ReadingGraffitiDeleteAll" ksoCmd="GraffitiDeleteAll" shellEntryType="readingmode" text="@GraffitiDeleteAll"/>
+			<KxPdfGraffitiEraserCommand customTip="GraffitiEraser" icon="eraser_kd" id="GraffitiEraser" text="@GraffitiEraser"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillmgr" id="app_kbillmgr_pdf_floattool"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillprint" id="app_kbillprint_pdf_floattool"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillmgr" id="app_kbillmgr_pdf_trcp"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillmgr" id="app_kbillmgr_pdf_filemenu"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillmgr" id="app_kbillmgr_pdf_filemenu_noupload"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="kbillprint" id="app_kbillprint_pdf_trcp"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="invoicecheck" id="app_invoicecheck_float_export"/>
+			<KAppCommand appCmdObj="ImportActivePdfFile" appId="invoicecheck" id="app_invoicecheck_float_check"/>
+			<KxPdfSplitMergeCommand autoLoad="false" defaultVisible="false" delayLoadLib="true" id="TpSplitMerge" idKey="PdfCombine" shortHint="@Combine PDF" targetModule="ksplitmerge" text="@Combine PDF"/>
+			<KxPdfMediaPropertyCommand hotKey="p" icon="setup_kd" id="MediaProperty" text="@MediaProperty"/>
+			<KxPdfMediaSaveToFileCommand hotKey="a" icon="save_kd" id="MediaSaveToFile" text="@SaveToFile"/>
+			<KAppCommand appCmdObj="kextractpage" appId="kextractpage" icon="doc_extract_page_kd" id="app_kextractpage_search" text="@pdfextractpage"/>
+			<KAppCommand appCmdObj="OnlinePrint" appId="printohome" id="printohome_filemenu"/>
+			<KxLegacyTriggerCommand icon="line_shape_kd" id="Edit_PathShape" ksoCmd="PathShape" rbHotKey="2" text="@Path"/>
+			<KxLegacyTriggerCommand icon="line_shape_kd" id="Edit_PathShape_Insert" ksoCmd="PathShape" rbHotKey="2" text="@Path"/>
+			<KxPdfAIGCProxyCommand delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="summarize_all_kd" id="WPSAI_PDFARTICLE_WEBCLOUD_SUMMARY" targetId="WPSAI_PDFARTICLE_WEBCLOUD_SUMMARY" targetModule="karticlewebcloudsummary" text="@AI Article Summarize"/>
+			<KxPdfAIGCProxyCommand delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="pdfAiReading" targetId="pdfAiReading" targetModule="kpdfcopilot"/>
+			<KProxyCommand delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="summarize_all_kd" id="CorporateGlossary" targetId="CorporateGlossary" targetModule="kpdfcorporateglossary" text="@AI Article Summarize"/>
+			<KxPdfAIGCProxyCommand delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="RbFileMenuJumpToPPTAI" targetId="RbFileMenuJumpToPPTAI" targetModule="kpdfcopilot"/>
+			<KxPdfShapeStartCommand customTip="Start Arrow" id="RB_LineStart" spaceHint="autocompact" text="@Start Arrow"/>
+			<KxPdfShapeEndCommand customTip="End Arrow" id="RB_LineEnd" ksoCmd="LineEnd" spaceHint="autocompact" text="@End Arrow"/>
+			<KxPdfShapeLineStyleCommand customTip="Line Style" id="RB_LineStyle" spaceHint="autocompact" text="@Line Style"/>
+			<KxPdfShapeLineWidthCommand customTip="Line Width" id="RB_LineWidth" spaceHint="autocompact" text="@Line Width"/>
+			<KPdfManualAdjustCommand customTip="PageCorrectManualAdjust" icon="p-handcorrect-normal;p-handcorrect-hover;p-handcorrect-active;p-handcorrect--disable" id="PageCorrectManualAdjust" text="@PageCorrectManualAdjust" wpsIsEanble="false"/>
+			<KPdfCorrectFinishedCommand customTip="PageCorrectFinished" icon="p-correctdone-normal;p-correctdone-hover;p-correctdone-active;p-correctdone-disable" id="PageCorrectFinished" text="@PageCorrectFinished" wpsIsEanble="false"/>
+			<KxPdfUpdateWaterMarkCommand commandMark="0" dialogHint="1" hotKey="u" icon="watermark_update_kd" id="TabInsert_RenewWatermark" rbHotKey="U" text="@Update Watermark"/>
+			<KxPdfDeleteWaterMarkCommand commandMark="0" dialogHint="1" hotKey="d" icon="watermark_delete_kd" id="TabInsert_DeleteWatermark" rbHotKey="D" text="@Delete Watermark"/>
+			<KxPdfAIRemoveWaterMarkCommand icon="ai_watermark_delete_kd" id="TabInsert_AIRemoveWatermark" idKey="PDFAIRemoveWatermark" text="@AI Remove Watermark"/>
+			<KxPdfWaterMarkGalleryCommand canHideText="0" controlType="4" customTip="WaterMarkTips" icon="watermark_kd" id="Insert_Watermark" idMso="WatermarkGallery" text="@Watermark">
+				<command idQ="TabInsert_RenewWatermark"/>
+				<command idQ="TabInsert_DeleteWatermark"/>
+				<command idQ="app_kbatchwatermark_edit"/>
+				<command idQ="TabInsert_AIRemoveWatermark"/>
+			</KxPdfWaterMarkGalleryCommand>
+			<KxValueCommand canHideText="0" customTip="ClipPage" icon="crop_kd" id="Page_CropPage" idKey="PDFStandardEnhance" index="3" isVipIconEanble="0" ksoCmd="ClipPage" shortcutHint="Ctrl+Alt+C" text="@ClipPage" wpsIsEanble="false"/>
+			<KxValueCommand customTip="ClipPageNoVip" icon="crop_kd" id="Page_CropPage" idKey="PDFClipPage" index="3" isVipIconEanble="0" ksoCmd="ClipPage" shortcutHint="Ctrl+Alt+C" text="@ClipPage" wpsIsEanble="false"/>
+			<KxPdfImageInverseRotateCommand customTip="RotateToTheLeft" icon="rotate_left_kd" id="PdfEditImageInverseRotate" index="2" spaceHint="autocompact" text="@Image Rotate Left" wpsIsEanble="false"/>
+			<KxPdfImageRotate90Command customTip="RotateToTheRight" icon="rotate_right_kd" id="PdfEditImageRotate90" index="2" spaceHint="autocompact" text="@Image Rotate Right" wpsIsEanble="false"/>
+			<KxPdfImageReverseCommand canStack="0" customTip="ImageEditFlip" icon="flip_horizontal_kd" id="PdfEditImageReverse" index="2" text="@ImageReverse" wpsIsEanble="false"/>
+			<KxPdfEditImageOpacityCommand canHideText="0" customTip="ImageEditTransparency" icon="transparency_kd" id="PdfEditImageOpacity" index="2" text="@ImageOpacity" wpsIsEanble="false"/>
+			<KxPdfImageClipCommand canHideText="0" customTip="ImageClip" icon="crop_kd" id="PdfEditPicClip" text="@ImageClip" wpsIsEanble="false"/>
+			<KxAnnotGraffitiCommand canHideText="0" customTip="AnnotGraffiti" icon="pen_strokes_kd" id="AnnotGraffiti" ksoCmd="GraffitiAnnot" shellEntryType="tab_comments" shortcutHint="Alt+R" text="@AnnotGraffiti"/>
+			<KxPdfFontComboboxCommand customTip="FontName" id="FontForEditText%" spaceHint="autocompact" text="@FontName"/>
+			<KxPdfFontSizeComboxCommand customTip="FontSize" id="FontSizeForEditText%" spaceHint="autocompact" text="@FontSize"/>
+			<KxPdfFontPropertyCommand accessibleName="@Bold" customTip="TextBold" fontProperty="0" icon="bold_wps_kd" id="Bold" ksoCmd="TextBold" shortcutHint="Ctrl+B" text="@Bold" wpsIsEanble="false"/>
+			<KxPdfFontPropertyCommand accessibleName="@DeleteLine" customTip="TextStrikethought" fontProperty="3" icon="strikethrough_kd" id="DeleteLine" ksoCmd="TextStrikethought" text="@DeleteLine" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand accessibleName="@Superscript" customTip="Superscript" icon="math_superscript_kd" id="SuperScript" ksoCmd="Superscript" text="@Superscript" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand accessibleName="@Subscript" customTip="Subscript" icon="math_subscript_kd" id="Subscript" ksoCmd="Subscript" text="@Subscript" wpsIsEanble="false"/>
+			<KxPdfEditTextTypesettingCommand component="0" customTip="LineSpace" fixedSpinBoxHeight="24" fixedSpinBoxWidth="80" id="LineSpace" ksoCmd="PageSetup" qtspyName="PageSetupLeft" spaceHint="suitable" text="@LineSpace"/>
+			<KxPdfEditTextTypesettingCommand component="1" customTip="LetterSpace" fixedSpinBoxHeight="24" fixedSpinBoxWidth="80" id="LetterSpace" ksoCmd="PageSetup" qtspyName="PageSetupTop" spaceHint="suitable" text="@LetterSpace"/>
+			<KxLegacyTriggerCommand customTip="EbookSelfAdaptionPage" icon="ebook_self_adaptionpage_kd" id="Ebook_SelfAdaptionPage" ksoCmd="EbookSelfAdaptionPage" qtspyName="EbookSelfAdaptionPage" text="@EbookSelfAdaptionPage"/>
+			<KxLegacyTriggerCommand customTip="EbookSinglePage" icon="doc_file_kd" id="Ebook_SinglePage" ksoCmd="EbookSinglePage" qtspyName="EbookSinglePage" text="@EbookSinglePage"/>
+			<KxLegacyTriggerCommand customTip="EbookDoublePage" icon="double_page_kd" id="Ebook_DoublePage" ksoCmd="EbookDoublePage" qtspyName="EbookDoublePage" text="@EbookDoublePage"/>
+			<KxPdfQuickMenuCommandEx icon="ebook_self_adaptionpage_kd" id="Ebook_tab_view" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="EbookSelfAdaptionPage" shellEntryType="tab_read" text="@EbookReadType">
+				<command idQ="Ebook_SelfAdaptionPage"/>
+				<command idQ="Ebook_SinglePage"/>
+				<command idQ="Ebook_DoublePage"/>
+			</KxPdfQuickMenuCommandEx>
+			<KxLegacyTriggerCommand customTip="TranslationAll" icon="translation_kd" id="Tool_TranslationAll" idKey="PDFToolTranslationAll" ksoCmd="TranslationAll" shellEntryType="tab_tool" text="@TranslationAll"/>
+			<KxLegacyTriggerCommand customTip="TranslationAll" icon="translation_kd" id="Tool_TranslationAll" ksoCmd="TranslationAll" shellEntryType="tab_tool" spaceHint="singleloose" text="@TranslationAll" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="PdfReplacePages" icon="page_replace_kd" id="PdfReplacePages_edit" index="0" ksoCmd="PdfReplacePages_page" text="@PdfReplacePages" wpsIsEanble="false"/>
+			<KxValueCommand customTip="PDFExtractPage" icon="doc_extract_page_kd" id="PageExtract_TabEdit" index="5" ksoCmd="PDFExtractPage" shortcutHint="Ctrl+Alt+E" text="@pdfextractpage" wpsIsEanble="false"/>
+			<KAppCommand action="Pdf2Cad" appCmdObj="PdfCadMutualConverter" appId="pdfcadmutualconverter" customTip="PDF2CAD" icon="change_to_cad_kd" id="SpecialFunc_PDFZZ_PDF2CAD" text="@PDF2CAD"/>
+			<KAppCommand appCmdObj="Common" appId="pdfpagesize" customTip="setpagesizeTip" icon="scale_size_kd" id="OrgPage_SetPageSize" text="@setpagesize"/>
+			<KxLegacyTriggerCommand customTip="FormEdit" icon="record_list_kd" id="Edit_FormEdit" idKey="PDFFormEditEnter" ksoCmd="FormEditEnter" text="@Form Edit"/>
+			<KxValueCommand customTip="PDFEditTextExit" icon="close_window_kd" id="FormEdit_Exit" ksoCmd="FormEditExit" text="@EditExit" wpsIsEanble="false"/>
+			<KxLegacyTriggerCommand customTip="AddImage" icon="pic_kd" id="FormFilling_AddImage" idKey="PDFFormFillAddImage" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@addimage" wpsIsEanble="false"/>
+			<KxPdfMorePostilCommand canHideText="0" customTip="MorePostil" icon="edit_comment_kd" id="MorePostil" text="@MorePostil"/>
+			<KxLegacyTriggerCommand controlType="0" customTip2="CAEncrypt" customTip="CAEncrypt" icon="certificate_encryption_kd" id="Protect_CAEncrypt" idKey="PDFCAEncryptInProtect" ksoCmd="CAEncrypt" text="@CA Encrypt"/>
+			<KxCheckBoxCommand id="TextEdit_Show_Content_Frame" ksoCmd="ShowContentFrame" text="@ContentFrame"/>
+			<KxPdfTemplatePrintCommand customTip="TemplatesPrint" icon="print_template_kd" id="ToolsTemplatesPrint" idKey="PDFToolsTemplatesPrint" idMso="ToolsTemplatesPrint" ksoCmd="TemplatesPrint" text="@TemplatesPrint"/>
+			<KAppCommand appCmdObj="PdfImportCurrentPic" appId="photo2pdf" canHideText="0" canStack="0" customTip="Photo2PDF" icon="change_pic_to_pdf_kd" id="app_photo2pdf_tab_convert" shortcutHint="Ctrl+Shift+L" text="@Photo2PDF"/>
+			<KxPdfHasViewCommandList customTip="ChangeBackGround" icon="eye_kd" id="Ebook_bookmark_Bg" idKey="PdfBookmarkBackGround" layout_lineCount="1" rbFileMenuEmbed="1" text="@ChangeBackGround">
+				<KxValueCommand id="Ebook_BgNormal" index="0" ksoCmd="ChangeBackGround" rbHotKey="1" text="@Bg_Normal"/>
+				<KxValueCommand id="Ebook_BgDaylight" index="1" ksoCmd="ChangeBackGround" rbHotKey="2" text="@Bg_Daylight"/>
+				<KxValueCommand id="Ebook_BgNight" index="2" ksoCmd="ChangeBackGround" rbHotKey="3" text="@Bg_Night"/>
+				<KxValueCommand id="Ebook_BgHuyan" index="3" ksoCmd="ChangeBackGround" rbHotKey="4" text="@Bg_Huyan"/>
+				<KxValueCommand id="Ebook_BgYangpizhi" index="4" ksoCmd="ChangeBackGround" rbHotKey="5" text="@Bg_Yangpizhi"/>
+			</KxPdfHasViewCommandList>
+			<KxPdfNoteColorCommand customTip="NoteBorder" icon="bubble_add_kd" id="Insert_NoteBorder" ksoCmd="Note" ksoTriggerCmd="Note" referenceCommand="Note" shellEntryType="tab_insert" shortcutHint="Ctrl+3" text="@Note">
+				<command idQ="NoteMoreFontColors"/>
+				<command idQ="NoteSnapFontColors"/>
+			</KxPdfNoteColorCommand>
+			<KxQuickHelpBarListCommand delayloadPath="commands/pdf/PopupMenu.kuip" dynCount="1" dynFold="true" fixCount="4" id="Picture QuickBar" idKey="PictContextMenuQuickHelpBar"/>
+			<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" entrance="pdf_translate_panel&amp;module=pdf&amp;sub_module=translate_panel&amp;new_position=translate_panel" icon="appcmd_immersivetranslate" id="app_immersive_translate_translate_panel" idKey="CommonFullTextTranslate" needLogin="false" text="@Sync Translate"/>
+			<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" entrance="wps_top_banner&amp;module=pdf&amp;sub_module=top_banner&amp;new_position=banner_tips" icon="appcmd_immersivetranslate" id="app_immersive_translate_filetip" idKey="CommonFullTextTranslate" needLogin="false" text="@Sync Translate"/>
+			<KxLegacyTriggerCommand icon="sheet_kd" id="InsertTablePopup" ksoCmd="InsertTable" text="@Insert Table"/>
+			<KxGalleryTableCommand controlType="4" customTip="InsertTable" detail="@Table" icon="sheet_kd" id="Edit_AddTable" ksoCmd="InsertTablePalette" text="@Insert Table">
+				<command idQ="InsertTablePopup"/>
+			</KxGalleryTableCommand>
+			<KxGalleryTableCommand controlType="4" customTip="InsertTable" detail="@Table" icon="sheet_kd" id="Insert_AddTable" ksoCmd="InsertTablePalette" text="@Table">
+				<command idQ="InsertTablePopup"/>
+			</KxGalleryTableCommand>
+			<KxPdfTableCellVAlignmentCommand customTip="ObjectAlignTop" icon="align_top_two_kd" id="CellAlignTop" nIndex="0" text="@AlignTop" wpsIsEanble="false"/>
+			<KxPdfTableCellVAlignmentCommand customTip="ObjectAlignVCenter" icon="align_vertical_two_kd" id="CellAlignVCenter" nIndex="1" text="@AlignVCenter" wpsIsEanble="false"/>
+			<KxPdfTableCellVAlignmentCommand customTip="ObjectAlignBottom" icon="align_bottom_two_kd" id="CellAlignBottom" nIndex="2" text="@AlignBottom" wpsIsEanble="false"/>
+			<KxPdfTableCellHAlignmentCommand customTip="ObjectAlignLeft" icon="align_left_kd" id="CellAlignLeft" nIndex="0" text="@AlignLeft" wpsIsEanble="false"/>
+			<KxPdfTableCellHAlignmentCommand customTip="ObjectAlignHCenter" icon="align_center_kd" id="CellAlignHCenter" nIndex="1" text="@AlignHCenter" wpsIsEanble="false"/>
+			<KxPdfTableCellHAlignmentCommand customTip="ObjectAlignRight" icon="align_right_kd" id="CellAlignRight" nIndex="2" text="@AlignRight" wpsIsEanble="false"/>
+			<KxPdfObjectAlignListCommand customTip="AlignObjects" icon="align_draw_left_kd" id="TextEdit_ObjectAlign" idKey="PDFObjectAlign" layout_lineCount="1" text="@Align">
+				<KAlignControlListCommand icon="align_normal_control_kd" id="TextEdit_AlignReference" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="TextEdit_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+					<KxLegacyTriggerCommand icon="position_relative_kd" id="TextEdit_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="TextEdit_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+				</KAlignControlListCommand>
+				<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="TextEdit_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+				<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="TextEdit_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+				<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="TextEdit_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+				<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="TextEdit_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+				<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="TextEdit_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+				<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="TextEdit_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+				<KxValueCommand hotKey="a" icon="target_kd" id="TextEdit_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+				<separator/>
+				<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="TextEdit_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+				<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="TextEdit_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			</KxPdfObjectAlignListCommand>
+			<KxPdfObjectAlignListCommand customTip="AlignObjects" icon="align_draw_left_kd" id="PictureEdit_ObjectAlign" idKey="PDFObjectAlign" text="@Align">
+				<KAlignControlListCommand icon="align_normal_control_kd" id="PictureEdit_AlignReference" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="PictureEdit_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+					<KxLegacyTriggerCommand icon="position_relative_kd" id="PictureEdit_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="PictureEdit_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+				</KAlignControlListCommand>
+				<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="PictureEdit_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+				<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="PictureEdit_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+				<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="PictureEdit_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+				<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="PictureEdit_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+				<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="PictureEdit_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+				<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="PictureEdit_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+				<KxValueCommand hotKey="a" icon="target_kd" id="PictureEdit_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+				<separator/>
+				<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="PictureEdit_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+				<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="PictureEdit_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			</KxPdfObjectAlignListCommand>
+			<KxPdfObjectAlignListCommand customTip="AlignObjects" icon="align_draw_left_kd" id="PathEdit_ObjectAlign" idKey="PDFObjectAlign" text="@Align">
+				<KAlignControlListCommand icon="align_normal_control_kd" id="PathEdit_AlignReference" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="PathEdit_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+					<KxLegacyTriggerCommand icon="position_relative_kd" id="PathEdit_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="PathEdit_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+				</KAlignControlListCommand>
+				<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="PathEdit_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+				<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="PathEdit_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+				<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="PathEdit_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+				<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="PathEdit_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+				<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="PathEdit_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+				<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="PathEdit_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+				<KxValueCommand hotKey="a" icon="target_kd" id="PathEdit_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+				<separator/>
+				<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="PathEdit_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+				<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="PathEdit_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			</KxPdfObjectAlignListCommand>
+			<KxPdfObjectAlignListCommand customTip="AlignObjects" icon="align_draw_left_kd" id="TableEdit_ObjectAlign" text="@Align">
+				<KAlignControlListCommand icon="align_normal_control_kd" id="TableEdit_AlignReference" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="TableEdit_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+					<KxLegacyTriggerCommand icon="position_relative_kd" id="TableEdit_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="TableEdit_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+				</KAlignControlListCommand>
+				<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="TableEdit_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+				<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="TableEdit_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+				<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="TableEdit_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+				<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="TableEdit_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+				<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="TableEdit_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+				<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="TableEdit_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+				<KxValueCommand hotKey="a" icon="target_kd" id="TableEdit_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+				<separator/>
+				<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="TableEdit_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+				<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="TableEdit_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			</KxPdfObjectAlignListCommand>
+			<KxPdfObjectAlignListCommand icon="align_draw_left_kd" id="RightMenu_ObjectAlign" idKey="PDFObjectAlign" text="@Align">
+				<KAlignControlListCommand icon="align_normal_control_kd" id="RightMenu_AlignReference" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="RightMenu_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+					<KxLegacyTriggerCommand icon="position_relative_kd" id="RightMenu_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+					<KxLegacyTriggerCommand icon="align_normal_control_kd" id="RightMenu_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+				</KAlignControlListCommand>
+				<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="RightMenu_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+				<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="RightMenu_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+				<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="RightMenu_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+				<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="RightMenu_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+				<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="RightMenu_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+				<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="RightMenu_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+				<KxValueCommand hotKey="a" icon="target_kd" id="RightMenu_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+				<separator/>
+				<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="RightMenu_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+				<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="RightMenu_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			</KxPdfObjectAlignListCommand>
+			<KAlignControlListCommand icon="align_normal_control_kd" id="QuickBar_AlignReference" idKey="PDFObjectAlign" ksoCmd="AlignControlTypes" text="@Relative to selected objects">
+				<KxLegacyTriggerCommand icon="align_normal_control_kd" id="QuickBar_AlignToGroup" ksoCmd="ObjectAlignToGroup" text="@Relative to selected objects"/>
+				<KxLegacyTriggerCommand icon="position_relative_kd" id="QuickBar_AlignToPage" ksoCmd="ObjectAlignToPage" text="@Relative to Page"/>
+				<KxLegacyTriggerCommand icon="align_normal_control_kd" id="QuickBar_AlignToLastObject" ksoCmd="ObjectAlignToLastObject" text="@Relative to the last selected object"/>
+			</KAlignControlListCommand>
+			<KxValueCommand hotKey="l" icon="align_draw_left_kd" id="QuickBar_AlignLeft" index="3" ksoCmd="ObjectAlignment" rbHotKey="L" text="@AlignLeft"/>
+			<KxValueCommand hotKey="c" icon="align_draw_center_kd" id="QuickBar_AlignHCenter" index="4" ksoCmd="ObjectAlignment" rbHotKey="C" text="@AlignHCenter"/>
+			<KxValueCommand hotKey="r" icon="align_draw_right_kd" id="QuickBar_AlignRight" index="5" ksoCmd="ObjectAlignment" rbHotKey="R" text="@AlignRight"/>
+			<KxValueCommand hotKey="t" icon="align_draw_top_kd" id="QuickBar_AlignTop" index="0" ksoCmd="ObjectAlignment" rbHotKey="T" text="@AlignTop"/>
+			<KxValueCommand hotKey="m" icon="align_draw_vertical_kd" id="QuickBar_AlignVCenter" index="1" ksoCmd="ObjectAlignment" rbHotKey="M" text="@AlignVCenter"/>
+			<KxValueCommand hotKey="b" icon="align_draw_bottom_kd" id="QuickBar_AlignBottom" index="2" ksoCmd="ObjectAlignment" rbHotKey="B" text="@AlignBottom"/>
+			<KxValueCommand hotKey="a" icon="target_kd" id="QuickBar_AlignHVCenter" index="6" ksoCmd="ObjectAlignment" rbHotKey="A" text="@Align Middle and Center"/>
+			<KxValueCommand hotKey="h" icon="align_distribute_horizontal_kd" id="QuickBar_DistHorizontally" index="7" ksoCmd="ObjectDistribute" rbHotKey="H" text="@Distribute Horizontally"/>
+			<KxValueCommand hotKey="v" icon="align_distribute_vertical_kd" id="QuickBar_DistVertically" index="8" ksoCmd="ObjectDistribute" rbHotKey="V" text="@Distribute Vertically"/>
+			<KxPdfTriggerAigcCommand id="Shortcut_PDFAIGC_Explain" idKey="PDFAICCShortCut" targetCmdId="Floatbar_PDFAIGC_Explain"/>
+			<KxPdfTriggerAigcCommand id="Shortcut_PDFAIGC_Translate" idKey="PDFAICCShortCut" targetCmdId="Floatbar_PDFAIGC_Translate"/>
+			<KxPdfTriggerAigcCommand id="Shortcut_PDFAIGC_Summarize" idKey="PDFAICCShortCut" targetCmdId="Floatbar_PDFAIGC_Summarize"/>
+			<KProxyCommand autoLoad="false" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="PdfAICatalog" idKey="PdfAICatalog" targetId="PdfAICatalog" targetModule="kmultcatalog"/>
+			<KProxyCommand autoLoad="false" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="PdfAISearch" targetId="PdfAISearch" targetModule="kpdfaisearch"/>
+			<KProxyCommand autoLoad="false" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" id="PDF_DOC_COMPARE" idKey="PDF_DOC_COMPARE" targetId="PDF_DOC_COMPARE" targetModule="docdiffcompare"/>
+			<KxLegacyTriggerCommand customTip="RedactMark" icon="redact_mark_kd" id="Protect_MarkRedact" idKey="PdfRedact" ksoCmd="MarkRedact" shellEntryType="tab_protect" text="@Redact Content"/>
+			<KxLegacyTriggerCommand icon="redact_mark_page_kd" id="Protect_MarkPageRedact" idKey="PdfRedact" ksoCmd="MarkPageRedact" shellEntryType="tab_protect" text="@Redact Page"/>
+			<KxLegacyTriggerCommand icon="color_palette_kd" id="Protect_RedactProperty" idKey="PdfRedact" ksoCmd="RedactProperty" shellEntryType="tab_protect" text="@Redact Property"/>
+			<KxPdfApplyRedactToolbarCommand customTip="RedactApply" icon="redact_apply_kd" id="Protect_PdfApplyRedact" idKey="PdfRedact" ksoCmd="ApplyRedact" shellEntryType="tab_protect" text="@ApplyRedact"/>
+			<KListCommand id="RB_Redact" idKey="PdfRedact" layout_lineCount="1" shellEntryType="tab_protect">
+				<KxPdfMarkRedactQuickMenuFix id="Protect_MarkRedactFix" idKey="PdfRedact" referenceCommand="Protect_MarkRedact" shellEntryType="tab_protect" text="@Redact Content">
+					<command idQ="Protect_MarkPageRedact"/>
+					<command idQ="Protect_RedactProperty"/>
+				</KxPdfMarkRedactQuickMenuFix>
+				<command idQ="Protect_PdfApplyRedact"/>
+			</KListCommand>
+			<KxPdfRedactRightMenu icon="redact_cross_page_kd" id="CrossPageRedact" idKey="PdfRedact" text="@CrossPageRedact"/>
+			<KxPdfRedactRightMenu icon="redact_apply_kd" id="ApplyCurRedact" idKey="PdfRedact" text="@ApplyCurRedact"/>
+			<KxPdfRedactRightMenu icon="redact_apply_all_kd" id="ApplyAllRedact" idKey="PdfRedact" text="@ApplyAllRedact"/>
+			<KxPdfRedactRightMenu icon="color_palette_kd" id="SetRedactProperty" idKey="PdfRedact" text="@Property"/>
+			<KxLegacyTriggerCommand customTip="RemoveHiddenData" icon="clear_database_kd" id="Protect_RemoveHiddenData" ksoCmd="RemoveHiddenData" shellEntryType="tab_protect" text="@Remove Hidden Data"/>
+			<KListCommand id="RB_RemoveHiddenData" idKey="PdfRemoveHiddenData" rbFileMenuEmbed="1" text="@Remove Hidden Data">
+				<command idQ="Protect_RemoveHiddenData"/>
+			</KListCommand>
+		</commands>
+		<popupmenu cmd="TabMenu Popup Menu"/>
+		<popupmenu cmd="ViewportNone"/>
+		<popupmenu cmd="CopyMenu"/>
+		<popupmenu cmd="Full Screen"/>
+		<popupmenu cmd="CommentMenu"/>
+		<popupmenu cmd="CommentMenuClose"/>
+		<popupmenu cmd="FreeTextMenu"/>
+		<popupmenu cmd="FreeTextSelectionMenu"/>
+		<popupmenu cmd="ThumbailMenu"/>
+		<popupmenu cmd="PdfImageMenu"/>
+		<popupmenu cmd="PdfImageEditMenu"/>
+		<popupmenu cmd="CrossPageStampMenu"/>
+		<popupmenu cmd="CommentSignMenu"/>
+		<popupmenu cmd="CommentSignMenuBatch"/>
+		<popupmenu cmd="CommentSignMenuClose"/>
+		<popupmenu cmd="PdfEraserMenu"/>
+		<popupmenu cmd="DigitalSignature"/>
+		<popupmenu cmd="PdfImageEditSelectMultipleMenu"/>
+		<popupmenu cmd="OrganizePage RB Menu"/>
+		<popupmenu cmd="OrganizePage LB Menu"/>
+		<popupmenu cmd="EditTextRightMenu"/>
+		<popupmenu cmd="EditLink RB Menu"/>
+		<popupmenu cmd="PdfOcrExtractMenu"/>
+		<popupmenu cmd="SuperNoteRightMenu"/>
+		<popupmenu cmd="TextCommentBoxTextRightMenu"/>
+		<popupmenu cmd="TextCommentBoxRightMenu"/>
+		<popupmenu cmd="MeasureToolRBmenu"/>
+		<popupmenu cmd="AttachmentRightMenu"/>
+		<popupmenu cmd="MixedEditRightMenu"/>
+		<popupmenu cmd="VectorDiagramEditRightMenu"/>
+		<popupmenu cmd="MultipleVectorDiagramEditMenu"/>
+		<popupmenu cmd="PathEditRightMenu"/>
+		<popupmenu cmd="MultiplePathEditMenu"/>
+		<popupmenu cmd="MixedEditMultipleSelectMenu"/>
+		<popupmenu cmd="MixedEditTextRightMenu"/>
+		<popupmenu cmd="InstructBoxTextRightMenu"/>
+		<popupmenu cmd="InstructBoxRightMenu"/>
+		<popupmenu cmd="TableEditRightMenu"/>
+		<popupmenu cmd="PdfMediaDefaultMenu"/>
+		<popupmenu cmd="PdfMediaEditMenu"/>
+		<popupmenu cmd="CommentSignFieldMenu"/>
+		<popupmenu cmd="CommentFormFiledMenu"/>
+		<popupmenu cmd="FormEditRightMenu"/>
+		<popupmenu cmd="PdfCLipPathEditVertex"/>
+		<popupmenu cmd="CatalogSelectMenu"/>
+		<minitoolbar cmd="Font Floatbar"/>
+		<minitoolbar cmd="Ebook_Floatbar"/>
+		<minitoolbar cmd="ReadingMode_Font Floatbar"/>
+		<minitoolbar cmd="Picture Floatbar"/>
+		<minitoolbar cmd="TextEdit_FloatBar"/>
+		<minitoolbar cmd="TableEdit_FloatBar"/>
+		<minitoolbar cmd="FormFill_FloatBar"/>
+		<minitoolbar cmd="AnnotClick_FloatBar"/>
+		<minitoolbar cmd="Edit_Anno_Floatbar"/>
+		<minitoolbar cmd="Edit_Anno_Floatbar_FillShape"/>
+		<minitoolbar cmd="OcrExtractText QuickBar"/>
+		<minitoolbar cmd="ReplaceMissingFont"/>
+		<minitoolbar cmd="ClipObj_FloatBar"/>
+		<minitoolbar cmd="Form MinitoolBar"/>
+		<minitoolbar cmd="Feedback MinitoolBar"/>
+		<minitoolbar cmd="OcrDetectBox MinitoolBar"/>
+		<statusbar cmd="statusbar"/>
+		<quickhelpbar cmd="ClipPage QuickBar"/>
+		<quickhelpbar cmd="OrganizePage QuickBar Hover"/>
+		<quickhelpbar cmd="Signature QuickBar"/>
+		<quickhelpbar cmd="Signature QuickBar Batch"/>
+		<quickhelpbar cmd="CrossPageStamp QuickBar"/>
+		<quickhelpbar cmd="Picture QuickBar"/>
+		<quickhelpbar cmd="Picture QuickBar Read"/>
+		<quickhelpbar cmd="SplitPage QuickBar"/>
+		<quickhelpbar cmd="TableRecognize QuickBar"/>
+		<quickhelpbar cmd="ObjectAlignQuickBar"/>
+		<KRbTabBarNewButton cmd="TabButtonNewBlankFile"/>
+		<kreadingviewtabbar cmd="ReadingViewTabbar"/>
+		<shortcuts>
+			<shortcut cmd="TurnOrTransPageBottom" key="PgDown"/>
+			<shortcut cmd="TurnOrTransPageTop" key="PgUp"/>
+			<shortcut cmd="Shortcut_Previous" key="Ctrl+Up"/>
+			<shortcut cmd="Shortcut_NextPage" key="Ctrl+Down"/>
+			<shortcut cmd="Shortcut_Previous" key="Ctrl+PgUp"/>
+			<shortcut cmd="Shortcut_NextPage" key="Ctrl+PgDown"/>
+			<shortcut cmd="NavigateBack" key="Alt+Left"/>
+			<shortcut cmd="NavigateForward" key="Alt+Right"/>
+			<shortcut cmd="FitWidthShortcut" key="Ctrl+2"/>
+			<shortcut cmd="Zoom100Shortcut" key="Ctrl+1"/>
+			<shortcut cmd="FitPageSizeShortcut" key="Ctrl+0"/>
+			<shortcut cmd="Exit" key="Ctrl+Q"/>
+			<shortcut cmd="CopyText" key="Ctrl+C"/>
+			<shortcut cmd="Paste" key="Ctrl+V"/>
+			<shortcut cmd="OnlyTextPaste" key="Ctrl+Shift+V"/>
+			<shortcut cmd="Cut" key="Ctrl+X"/>
+			<shortcut cmd="SelectAll" key="Ctrl+A"/>
+			<shortcut cmd="OpenFile_shortcut" key="Ctrl+O"/>
+			<shortcut cmd="Shortcut_Print" key="Ctrl+P"/>
+			<shortcut cmd="SaveFile_shortcut" idKey="NotPDFReadOnlyMode" key="Ctrl+S"/>
+			<shortcut cmd="SaveAsFile_shortcut" idKey="NotPDFReadOnlyMode" key="F12"/>
+			<shortcut cmd="SaveAsFile_shortcut" idKey="NotPDFReadOnlyMode" key="Ctrl+Shift+S"/>
+			<shortcut cmd="Ebook_SaveAsFile" idKey="NotPDFReadOnlyMode" key="F12"/>
+			<shortcut cmd="Ebook_SaveAsFile" idKey="NotPDFReadOnlyMode" key="Ctrl+Shift+S"/>
+			<shortcut cmd="Deprecated_AddNewOutlineCommand" idKey="NotPDFReadOnlyMode" key="Ctrl+Shift+F5"/>
+			<shortcut autoRepeat="false" cmd="Help" key="F1"/>
+			<shortcut cmd="FullScreen" key="F11"/>
+			<shortcut cmd="FullScreen" key="Ctrl+Alt+F"/>
+			<shortcut cmd="Undo_Shortcut" key="Ctrl+Z"/>
+			<shortcut cmd="Redo_Shortcut" key="Ctrl+Y"/>
+			<shortcut cmd="Redo_Shortcut2" key="Ctrl+Shift+Z"/>
+			<shortcut cmd="DeletePages" idKey="NotPDFReadOnlyMode" key="Ctrl+Shift+D"/>
+			<shortcut cmd="InsertBlankPages" idKey="NotPDFReadOnlyMode" key="Ctrl+Alt+I"/>
+			<shortcut cmd="InsertPagesFromDoc" idKey="NotPDFReadOnlyMode" key="Ctrl+Alt+T"/>
+			<shortcut cmd="InsertPagesFromClipboardNoIcon" idKey="NotPDFReadOnlyMode" key="Ctrl+Shift+B"/>
+			<shortcut cmd="Shortcut_HandTool" key="Ctrl+K"/>
+			<shortcut cmd="Shortcut_SelectionTool" key="Ctrl+R"/>
+			<shortcut cmd="Shortcut_PlaySlide" key="Shift+F5"/>
+			<shortcut cmd="Insert_AddText" key="Ctrl+T"/>
+			<shortcut cmd="Insert_AddImage" key="Ctrl+J"/>
+			<shortcut cmd="Edit_InsertText" key="Ctrl+T"/>
+			<shortcut cmd="PdfEditAddImage" key="Ctrl+J"/>
+			<shortcut cmd="Shortcut_Insert_AddPageNumber" key="Ctrl+Alt+P"/>
+			<shortcut cmd="PdfSignShortCut" key="Alt+U"/>
+			<shortcut cmd="Shortcut_CorrectionFluid" key="Alt+D"/>
+			<shortcut cmd="FloatZoomIn" key="Ctrl+-"/>
+			<shortcut cmd="FloatZoomOut" key="Ctrl+="/>
+			<shortcut cmd="TaskPane" key="Ctrl+F1"/>
+			<shortcut cmd="TaskPane" key="Meta+F1"/>
+			<shortcut cmd="Shortcut_HighlightBorder" key="Ctrl+F2"/>
+			<shortcut cmd="Shortcut_TextComment" key="Ctrl+F3"/>
+			<shortcut cmd="Shortcut_TextMark" key="Ctrl+F5"/>
+			<shortcut cmd="Line" key="Alt+1"/>
+			<shortcut cmd="Arrow" key="Alt+2"/>
+			<shortcut cmd="Square" key="Alt+3"/>
+			<shortcut cmd="Circle" key="Alt+4"/>
+			<shortcut cmd="Shortcut_NoteBorder" key="Ctrl+3"/>
+			<shortcut cmd="Shortcut_AreaHighlight" key="Ctrl+4"/>
+			<shortcut cmd="Shortcut_UnderlineBorder" key="Ctrl+5"/>
+			<shortcut cmd="Shortcut_StrikeoutBorder" key="Ctrl+D"/>
+			<shortcut cmd="Shortcut_InsertBorder" key="Ctrl+6"/>
+			<shortcut cmd="Shortcut_ReplaceBorder" key="Ctrl+G"/>
+			<shortcut cmd="Shortcut_Annot_GraffitiDraw" key="Alt+R"/>
+			<shortcut cmd="Shortcut_Annot_GraffitiSline" key="Alt+H"/>
+			<shortcut cmd="Shortcut_InkDrawSquareShapePen" key="Alt+R"/>
+			<shortcut cmd="Shortcut_InkDrawLineShapePen" key="Alt+H"/>
+			<shortcut cmd="Edit_Content" key="Alt+W"/>
+			<shortcut cmd="EditContent" key="Alt+W"/>
+			<shortcut cmd="HighlightAndAnnotation" key="Ctrl+Shift+H"/>
+			<shortcut cmd="UnderlineAndAnnotation" key="Ctrl+Shift+5"/>
+			<shortcut cmd="Shortcut_RotatePages_Clockwise" key="Ctrl+Shift+="/>
+			<shortcut cmd="Shortcut_RotatePages_Clockwise" key="Ctrl+Shift++"/>
+			<shortcut cmd="Shortcut_RotatePages_Counterclockwise" key="Ctrl+Shift+-"/>
+			<shortcut cmd="app_kpdf2wordv2_shortcutkey_merge" key="Ctrl+Alt+D"/>
+			<shortcut cmd="app_kpdf2wordv2_shortcutkey_split" key="Ctrl+Alt+S"/>
+			<shortcut cmd="app_kextractpage_search" key="Ctrl+Alt+E"/>
+			<shortcut cmd="Edit_CropPage" key="Ctrl+Alt+C"/>
+			<shortcut cmd="app_kpdf2wordv2_shortcutkey" key="Ctrl+Shift+W"/>
+			<shortcut cmd="app_kpdf2wordv2_shortcutkey_pdf2excel" key="Ctrl+Shift+X"/>
+			<shortcut cmd="app_kpdf2wordv2_shortcutkey_pdf2ppt" key="Ctrl+Shift+P"/>
+			<shortcut cmd="SpecialFunc_PDFZZ_PDF2TXT" key="Ctrl+Shift+T"/>
+			<shortcut cmd="FullScreen" key="Ctrl+Shift+L"/>
+			<shortcut cmd="ShortCut_PDFZZ_PDFToPhoto" key="Ctrl+Shift+I"/>
+			<shortcut cmd="ThumbnailMenuPDF2Photo" key="Ctrl+Shift+I"/>
+			<shortcut cmd="Start_Compress" idKey="PDFStartCompress" key="Shift+F10"/>
+			<shortcut cmd="app_aiocr2pdf_shortcutkey" key="Ctrl+Shift+C"/>
+			<shortcut cmd="Start_Tools_ScreenShot_Area" key="Ctrl+Alt+X"/>
+			<shortcut cmd="ShortCut_FullTranslation" idKey="PDFShortCutFullTranslate" key="Ctrl+F6"/>
+			<shortcut cmd="TpAICatalog" idKey="PdfAICatalog" key="Alt+Shift+0"/>
+			<shortcut cmd="TpOutline" key="Alt+Shift+1"/>
+			<shortcut cmd="TpThumbnail" key="Alt+Shift+2"/>
+			<shortcut cmd="Reviews_AnnotManagement" key="Alt+Shift+3"/>
+			<shortcut cmd="TpAttachment" key="Alt+Shift+4"/>
+			<shortcut cmd="TpDiSignature" key="Alt+Shift+5"/>
+			<shortcut cmd="ShortCut_ReadingMode" key="Ctrl+Shift+R"/>
+			<shortcut cmd="AlignLeft" key="Ctrl+L"/>
+			<shortcut cmd="AlignCenter" key="Ctrl+E"/>
+			<shortcut cmd="AlignRight" key="Ctrl+M"/>
+			<shortcut cmd="AlignJustify" key="Ctrl+N"/>
+			<shortcut cmd="ReduceIndentation" key="Shift+Alt+,"/>
+			<shortcut cmd="MagnifyIndentation" key="Shift+Alt+."/>
+			<shortcut cmd="MagnifyFontSize" key="Ctrl+]"/>
+			<shortcut cmd="ReduceFontSize" key="Ctrl+["/>
+			<shortcut cmd="Tilt" key="Ctrl+I"/>
+			<shortcut cmd="EditText_Underline" key="Ctrl+U"/>
+			<shortcut cmd="Shortcut_Ebook_FontSize_Zoom" key="Ctrl+]"/>
+			<shortcut cmd="Shortcut_Ebook_FontSize_Narrow" key="Ctrl+["/>
+			<shortcut cmd="AutoWheelHotkey" key="Ctrl+Shift+N"/>
+			<shortcut cmd="Shortcut_Start_TextQuery" key="Ctrl+F"/>
+			<shortcut cmd="Shortcut_Start_TextReplace" key="Ctrl+Alt+H"/>
+			<shortcut cmd="Shortcut_AddNewOutlineOrBold" key="Ctrl+B"/>
+			<shortcut cmd="Shortcut_CloseWindow" key="Ctrl+W"/>
+			<shortcut cmd="PrevTabPageCommand" key="Shift+Ctrl+["/>
+			<shortcut cmd="PrevTabPageCommand" key="Shift+Meta+Tab"/>
+			<shortcut cmd="NextTabPageCommand" key="Shift+Ctrl+]"/>
+			<shortcut cmd="NextTabPageCommand" key="Meta+Tab"/>
+			<shortcut cmd="OpenTabManagerPanel" key="Ctrl+Alt+A"/>
+			<shortcut cmd="OpenTabManagerPanel" key="Meta+Alt+A"/>
+			<shortcut cmd="Shortcut_PDFAIGC_Explain" idKey="PDFAICCShortCut" key="Alt+5" noHint="true"/>
+			<shortcut cmd="Shortcut_PDFAIGC_Translate" idKey="PDFAICCShortCut" key="Alt+6" noHint="true"/>
+			<shortcut cmd="Shortcut_PDFAIGC_Summarize" idKey="PDFAICCShortCut" key="Alt+7" noHint="true"/>
+		</shortcuts>
+	</mainwindow>
+</shell>

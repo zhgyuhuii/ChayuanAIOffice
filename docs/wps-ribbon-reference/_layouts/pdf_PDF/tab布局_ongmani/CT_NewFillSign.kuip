@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_newfillsign" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand action="PdfTemplate" appCmdObj="PdfFormTemplate" appId="kaiformfillops" customTip="PdfFormTemplate" hotKey="pf" icon="template_kd" id="PdfFormTemplateApp" idKey="AISmartForm" rbHotKey="PF" text="@PDF Form Template"/>
+		<KAppCommand action="AiFill" appCmdObj="KAiformFillops" appId="kaiformfillops" customTip="AiSmartFormFill" hotKey="af" icon="AiSmartFormFill" id="AiSmartFormFillApp" idKey="AISmartForm" pocketWidgetNotify="true" rbHotKey="AF" text="@AI Smart Fill"/>
+		<KProxyCommand autoLoad="false" customTip="AiSmartFormFill" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="AiSmartFormFill" id="ProxyAiSmartFormFillTaskpane" idKey="AISmartForm" spaceHint="loose" targetId="AiSmartFormFillTaskpane" targetModule="kaiformfillops" text="@AI Smart Fill"/>
+		<KProxyCommand autoLoad="false" customTip="AiFormAskAI" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="AIFormAskAI" id="ProxyAiFormAskAI" idKey="AISmartForm" spaceHint="loose" targetId="AiFormAskAI" targetModule="kaiformfillops" text="@Ask AI"/>
+		<KxLegacyTriggerCommand customTip="FormFilling" icon="form_filling_kd" id="FillSign_FormFilling" ksoCmd="FormFilling" qtspyName="FormFilling" text="@Form Filling"/>
+		<KxLegacyTriggerCommand customTip="FormHighlight" icon="form_highlight_kd" id="FillSign_FormHighlight" ksoCmd="FormHighlight" text="@Form Highlight"/>
+		<KControlListCommand groupTip="EditFormGroup" icon="form_filling_kd" id="FillSign_Form" layout_lineCount="2" rbFileMenuEmbed="1" text="@Form">
+			<command idQ="PdfFormTemplateApp"/>
+			<command idQ="AiSmartFormFillApp"/>
+			<command idQ="AiSmartFormCheckApp"/>
+			<command idQ="FillSign_FormFilling"/>
+			<command idQ="Edit_FormEdit"/>
+			<command idQ="FillSign_FormHighlight"/>
+		</KControlListCommand>
+		<KxPdfSignatureCommand canCollapse="true" canStack="false" customTip="PdfSignature" icon="pen_signature_kd" id="Insert_Signature_FormFill" idKey="PdfSignatureInFormFill" isVipIconEanble="1" ksoCmd="PdfSignature" text="@Signature" useGallery="1">
+			<KxPdfNewSignatureCommand icon="pen_signature_create_kd" id="PdfNewSignature_FormFill" shortcutHint="Alt+U" text="@NewSignature" useGallery="1"/>
+			<KxPdfNewSignatureCommand icon="initial_create_kd" id="PdfNewSignatureInitial" text="@NewSignatureInitial" useGallery="1"/>
+		</KxPdfSignatureCommand>
+		<KAppCommand action="newRequest" appCmdObj="KRequestSignPage" appId="krequestsignpage" availableForReadOnlyMode="1" entrance="pdf_fillsign&amp;module=pdf&amp;sub_module=fillsign_tab&amp;new_position=newRequest" id="FillSign_RequestSign_NewRequest" text="@Create new contract"/>
+		<KQuickMenuCommandEx customTip="RequestSignTip" icon="pen_signature_kd" id="FillSign_RequestSign" referenceCommand="FillSign_RequestSign_NewRequest" text="@Request Signature">
+			<command idQ="FillSign_RequestSign_NewRequest"/>
+			<KAppCommand action="manageRequest" appCmdObj="KRequestSignPage" appId="krequestsignpage" availableForReadOnlyMode="1" entrance="pdf_fillsign&amp;module=pdf&amp;sub_module=fillsign_tab&amp;new_position=manageRequest" id="FillSign_RequestSign_ManageRequest" referenceDisable="true" text="@My history contract"/>
+		</KQuickMenuCommandEx>
+		<KxLegacyTriggerCommand controlType="0" customTip="Digital Sign" icon="pen_signature_create_kd" id="DigitalSignDoc_Sub" ksoCmd="DigitalSignDoc" text="@Add Signature"/>
+		<KxPdfQuickSignatureCommand icon="certificate_signature_kd" id="Protect_DigiSignDoc" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="DigitalSignDoc" shellEntryType="tab_protect" text="@Document Signature">
+			<command idQ="DigitalSignDoc_Sub"/>
+		</KxPdfQuickSignatureCommand>
+		<KListCommand groupTip="EditSignGroup" icon="form_filling_kd" id="FillSign_Sign" layout_lineCount="2" rbFileMenuEmbed="1" text="@Sign">
+			<command idQ="Insert_Signature_FormFill"/>
+			<command idQ="Protect_DigiSignDoc"/>
+			<command idQ="KWpsEsign_Request"/>
+			<command idQ="KWpsEsign_Status"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_NewFillSign">
+			<command idQ="FillSign_Form"/>
+			<command idQ="Separator"/>
+			<command idQ="FillSign_Sign"/>
+		</subcommand>
+	</subcommands>
+</shell>

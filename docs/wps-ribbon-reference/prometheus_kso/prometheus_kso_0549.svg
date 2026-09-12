@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>OLEDBConnection</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line" d="M27.5 15V4.16667C27.5 3.79848 27.2015 3.5 26.8333 3.5H5.16667C4.79848 3.5 4.5 3.79848 4.5 4.16667V27.8333C4.5 28.2015 4.79848 28.5 5.16667 28.5H15" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_2" d="M9.5 8.5H22.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_3" d="M9.5 12.5H22.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_4" d="M9.5 16.5H14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+<g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line_5" d="M29 17.5H18C17.7239 17.5 17.5 17.7239 17.5 18V29C17.5 29.2761 17.7239 29.5 18 29.5H29C29.2761 29.5 29.5 29.2761 29.5 29V18C29.5 17.7239 29.2761 17.5 29 17.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_6" d="M17.5 21.5H29.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_7" d="M17.5 25.5H29.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_8" d="M21.5 17.5V29.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_9" d="M25.5 17.5V29.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

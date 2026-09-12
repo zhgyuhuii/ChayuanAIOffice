@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="mirror" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-mirror-scheme"><desc>交叉引用16_使用相对引用_CrossReference_RelativeRefrence</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Ellipse 288" d="M5.5 3C5.5 3.27614 5.27614 3.5 5 3.5C4.72386 3.5 4.5 3.27614 4.5 3C4.5 2.72386 4.72386 2.5 5 2.5C5.27614 2.5 5.5 2.72386 5.5 3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1589" d="M4.5 3L5 1" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Ellipse 289" d="M2.5 3C2.5 3.27614 2.27614 3.5 2 3.5C1.72386 3.5 1.5 3.27614 1.5 3C1.5 2.72386 1.72386 2.5 2 2.5C2.27614 2.5 2.5 2.72386 2.5 3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1590" d="M1.5 3L2 1" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Ellipse 290" d="M14.5 13C14.5 13.2761 14.2761 13.5 14 13.5C13.7239 13.5 13.5 13.2761 13.5 13C13.5 12.7239 13.7239 12.5 14 12.5C14.2761 12.5 14.5 12.7239 14.5 13Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1591" d="M14 15L14.5 13" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Ellipse 291" d="M11.5 13C11.5 13.2761 11.2761 13.5 11 13.5C10.7239 13.5 10.5 13.2761 10.5 13C10.5 12.7239 10.7239 12.5 11 12.5C11.2761 12.5 11.5 12.7239 11.5 13Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 1592" d="M11 15L11.5 13" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Rectangle 41358" d="M7.5 2.5H14C14.2761 2.5 14.5 2.72386 14.5 3V10.5M1.5 5.5V13C1.5 13.2761 1.72386 13.5 2 13.5H8.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

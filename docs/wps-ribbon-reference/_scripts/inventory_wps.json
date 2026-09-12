@@ -1,0 +1,4136 @@
+{
+ "component": "wps",
+ "dir": "wps_文字",
+ "tabs": [
+  {
+   "tab": "CT_AddOns",
+   "file": "CT_AddOns.kuip",
+   "groups": [
+    {
+     "id": "RB_AddonsMenuBarCommands",
+     "text": "Menu Command",
+     "class": "KAddonsListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AddonsToolBarCommands",
+     "text": "Toolbar Commands",
+     "class": "KAddonsListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AddonsCustomToolbar",
+     "text": "Custom Toolbar",
+     "class": "KAddonsListCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_ChartTools",
+   "file": "CT_ChartTools.kuip",
+   "groups": [
+    {
+     "id": "RB_CC_AddChartElements",
+     "text": "layoutSection",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxChartAddElementsCommand": 1,
+      "KxSpeedLayoutCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CC_ChartStyle",
+     "text": "ChartStyle",
+     "class": "KListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KLayoutWidgetCommand": 3,
+      "KxChartStyleCommand": 1,
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxChangeChartTypeCommand": 1,
+      "KRbLayoutListCommand": 2
+     },
+     "spaceHints": [
+      "autocompact",
+      "autocompact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CC_EditDataSource",
+     "text": "DataSection",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CC_ChartSelect",
+     "text": "Property Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Design",
+   "file": "CT_Design.kuip",
+   "groups": [
+    {
+     "id": "RB_TableStyleOption",
+     "text": "Table Style Options",
+     "class": "KxWpsKsoTableStyleOptionListCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TableStyle",
+     "text": "Table Styles",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxWpsAITableStyleProxyCommand": 1,
+      "KLayoutWidgetCommand": 2,
+      "KxWpsKsoTableStyleCommand": 1,
+      "KxWpsTableFillColorCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DrawTable",
+     "text": "Draw Border",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KListCommand": 1,
+      "KLayoutWidgetCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ClearTableStyleGroup",
+     "text": "Clear Style",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsClearTableStyleCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_DevelopTools",
+   "file": "CT_DevelopTools.kuip",
+   "groups": [
+    {
+     "id": "sp_Macros_Develop",
+     "text": "Macros",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxRunMacroCommand": 1,
+      "KxRecordMacroCommand": 1,
+      "KxLegacyTriggerCommand": 1,
+      "KxDevelopEditorCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ComAddins",
+     "text": "Add-Ins",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ControlToolbox",
+     "text": "Control Toolbox",
+     "class": "KListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KRbDesignModeCommand": 1,
+      "KxLegacyTriggerCommand": 2,
+      "KxJdeOrVbaListCommand": 1,
+      "KLayoutWidgetCommand": 2,
+      "KRbLayoutListCommand": 2
+     },
+     "spaceHints": [
+      "topsuitable",
+      "topsuitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_JDE_ControlToolbox",
+     "text": "JS Control Toolbox",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxJdeControlListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_XMLAddIns",
+     "text": "XML",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_XmlMapping",
+     "text": "XmlMapping",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_SwitchIDE",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_IDEExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxDevelopExitCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_DrawingTools",
+   "file": "CT_DrawingTools.kuip",
+   "groups": [
+    {
+     "id": "RB_FormatPainter",
+     "text": "Format Painter",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_InsertShape",
+     "text": "Insert Shapes",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxListCommand": 2,
+      "KxGalleryShapesCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_ShapeStyles",
+     "text": "Shape Styles",
+     "class": "KxListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxWpsShapeStylesCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsLineColorCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Draw_RB_DC_Arrange",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Drawing_RB_Size",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DrawingTools_WordArtStyles",
+     "text": "WordArt Styles",
+     "class": "KxListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsWordArtStylesCommand": 1,
+      "KxWpsFontColorCommand": 1,
+      "KxWpsFontOutlineCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_DrawingTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_DrawingTools_Vml",
+   "file": "CT_DrawingTools_Vml.kuip",
+   "groups": [
+    {
+     "id": "RB_FormatPainter_DrawingTools_Vml",
+     "text": "Format Painter",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_InsertShape_Vml",
+     "text": "Insert Shape",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxListCommand": 3,
+      "KxGalleryShapesCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_ShapeStyles_Vml",
+     "text": "Shape Styles",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsLineColorCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Draw_Font_Vml",
+     "text": "Font",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_TextBox_Vml",
+     "text": "Text Box",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_ObjectSelect_Vml",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Drawing_RB_Size_Vml",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_DrawingTools_Vml",
+     "text": "Detailed Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_EquationTools",
+   "file": "CT_EquationTools.kuip",
+   "groups": [
+    {
+     "id": "RB_EquationInsert",
+     "text": "Insert",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxWpsEquationToolsListCommand": 1,
+      "KxWpsAIWriteFormulaProxyCommand": 1,
+      "KxWpsEquationRecognitionProxyCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EquationTransfer",
+     "text": "Equation Transfer",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsOMathEquationTransferCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EquationFormat",
+     "text": "Formula Format",
+     "class": "KxWpsEquationFormatSettingListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsEquationFormatListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EquationSymbols",
+     "text": "Symbols",
+     "class": "KxWpsHoverListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxWpsSymbolGalleryCommand": 8
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EquationStructures",
+     "text": "Structures",
+     "class": "KxWpsHoverListCommand",
+     "childControls": 11,
+     "childClasses": {
+      "KxWpsFunctionGalleryCommand": 11
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_EquationTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_File",
+   "file": "CT_File.kuip",
+   "groups": [
+    {
+     "id": "RbFileMenuNewFileMenu",
+     "text": "New",
+     "class": "KxPromeRbFileMenuPopupPaneCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxPromeFileMenuLegacyTriggerCommand": 1,
+      "KxFileMenuLegacyTriggerCommand": 3,
+      "KxFileMenuNewOfficialDocumentCommand": 1,
+      "KxFileMenuDocerResourceShopCommand": 1,
+      "KAppFileMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuOpenFileMenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuReloadTxtFile",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuSaveFileMenu_kos",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuSaveFileMenu",
+     "text": "Save",
+     "class": "KxFileMenuLegacyTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSaveAsMenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuImportMenu",
+     "text": "Import",
+     "class": "KxRbFileMenuImportPopupPaneCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxFileMenuImportFromCloudCommand": 4
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuShareUnifiedMenu",
+     "text": "",
+     "class": "KxKOSFileMenuShareUnifiedCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuTurnToOnlineDocument",
+     "text": "Turn to online document",
+     "class": "kxKOSFileMenuTurnToOnlineDocumentCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuExportToPDF",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuOfdPrintMenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuExportWeiboImage",
+     "text": "Export as Image",
+     "class": "KxFileMenuProxyCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileExportToImageMenu",
+     "text": "Export as Image",
+     "class": "KxExportImageMenuCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuExportToPptMenu",
+     "text": "ExportToPpt",
+     "class": "KxExportToPptRbFileMenuPopupPaneCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuSplitMerge",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuPrintMenu",
+     "text": "Print",
+     "class": "KxWpsRbFileMenuPrintPopupPaneCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxWpsPrintFileMenuLegacyTriggerCommand": 1,
+      "KAppFileMenuCommand": 1,
+      "KxFileMenuLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuShareMenuList",
+     "text": "",
+     "class": "kxKOSFileMenuNewShareListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuNewShare_kos",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuSendMail",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuDocInfoMenu",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuClassifyLabel",
+     "text": "Set Classify Label",
+     "class": "KxClassifyLabelCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuDocSecureMenu",
+     "text": "Document Encryption",
+     "class": "KxRbFileMenuPopupPaneCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxFileMenuProxyCommand": 2,
+      "KxFileMenuBatchDocumentDecryptionCommand": 1,
+      "KxFileMenuPermissionCommand": 1,
+      "KxFileMenuLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbFileMenuBackupManagement",
+     "text": "Backup and Recover",
+     "class": "KxRbFileMenuFileForceLoadOfficespaceCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KAppFileMenuCommand": 1,
+      "KxFileMenuLegacyTriggerCommand": 1,
+      "KxFileMenuDocumentHistoryCommand": 1,
+      "KxWpsExportSyCodingLibCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "KDocFinalizedMgrCommand",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RbFileMenuHelpMenu",
+     "text": "Help",
+     "class": "KxRbFileMenuPopupPaneCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KWpsFileMenuHelpDocumentCommand": 1,
+      "KxFileMenuOpenUrlCommand": 4,
+      "KxFileMenuFeedbackCommand": 1,
+      "KxFileMenuTrialToolCommand": 1,
+      "KxWpsFileMenuAboutCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RbOptions",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_GraphicTool",
+   "file": "CT_GraphicTool.kuip",
+   "groups": [
+    {
+     "id": "RB_FormatPainter",
+     "text": "Format Painter",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_Change_Picture",
+     "text": "Change",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_GraphicStyles",
+     "text": "Graphic Styles",
+     "class": "KxListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxWpsGraphicStylesCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsLineColorCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Draw_RB_DC_ArrangeInGraphicTool",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "GraphicTool_Drawing_RB_Size",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxTabGalleryListCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "GraphicTool_DetailedSettings_DrawingTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_HeaderFooter",
+   "file": "CT_HeaderFooter.kuip",
+   "groups": [
+    {
+     "id": "RB_HeaderFooterTool",
+     "text": "Header and Footer",
+     "class": "KxPropComposeListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxWpsShowHeaderLineCommand": 1
+     },
+     "spaceHints": [
+      "loose"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InsertHeaderFooter",
+     "text": "Insert",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Navigate",
+     "text": "Navigation",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_HeaderFooterOption",
+     "text": "Option",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsBookFormatDlgTriggerCommand": 1,
+      "KxLegacyTriggerCommand": 1,
+      "KxWpsPageDifferCommand": 2,
+      "KxWpsHFLinkToPreviousCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "HeaderFooterDistance",
+     "text": "Position",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_HFTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CloseHeaderFooter",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Home",
+   "file": "CT_Home.kuip",
+   "groups": [
+    {
+     "id": "RB_OfficialTemplates",
+     "text": "Official Templates",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsOfficialTemplateGalleryCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Material",
+     "text": "Official Material",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KScreenGrabOcrMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ClipboardWrapper",
+     "text": "Clipboard",
+     "class": "KxClipboardGroupCommandWrapper",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Font",
+     "text": "Font",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfficialFont",
+     "text": "Official Font",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxWpsFontNameAndSizeCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Paragraph",
+     "text": "Paragraph",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfficialParagraph",
+     "text": "Official Paragraph",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Style",
+     "text": "Styles",
+     "class": "KxListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxOnlineWpsStyleSetGalleryCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Editing",
+     "text": "Find",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ParagraphTools",
+     "text": "Typography",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ProfessionalMode",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "DetailedSettings_Home",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfficialSettings",
+     "text": "Document Settings",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KWpsOfficialSettingsCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Official",
+     "text": "Smart Official",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AIAssistant",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_OfficialModeEntry",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_InkDraw",
+   "file": "CT_InkDraw.kuip",
+   "groups": [
+    {
+     "id": "RB_InkDrawSelectMode",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_InkDrawPenTool",
+     "text": "Pens and tool",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxInkDrawSelectModeCommand": 1,
+      "KxInkDrawPenToolCommand": 3,
+      "KxInkDrawPenGalleryCommand": 1,
+      "KxInkDrawEraserCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawFunc",
+     "text": "Touch to draw",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxInkDrawTouchToDrawCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawColorGallery",
+     "text": "Color",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KRbLayoutListCommand": 2
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawExit",
+     "text": "Exit",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxInkDrawExitCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_InkTools",
+   "file": "CT_InkTools.kuip",
+   "groups": [
+    {
+     "id": "RB_Pen",
+     "text": "Ink Pen",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Shape",
+     "text": "Ink Shape",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Eraser",
+     "text": "Ink Eraser",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkStyle",
+     "text": "Ink Style",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxWpsInkColorCommand": 1,
+      "KxWpsInkLineStyleStaticGalleryCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Operation",
+     "text": "Ink Operation",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsInkSelectObjectsCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Close",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsCloseInkToolsContextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Insert",
+   "file": "CT_Insert.kuip",
+   "groups": [
+    {
+     "id": "RB_Pages",
+     "text": "Pages",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxCoverSectionGalleryCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [
+      "loose",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Illustrations",
+     "text": "Common Object",
+     "class": "KListCommand",
+     "childControls": 21,
+     "childClasses": {
+      "KxLegacyTrigCtlByIdCommand": 1,
+      "KDependsProxyCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "autocompact",
+      "autocompact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Symbol",
+     "text": "Symbol",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxWpsEquationListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InsertComments",
+     "text": "Comment",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Links",
+     "text": "Links",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Text",
+     "text": "Component",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ComplexObj",
+     "text": "More Object",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KDocerAppQuickMenuCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Media",
+     "text": "Media",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Insert_Vml",
+   "file": "CT_Insert_Vml.kuip",
+   "groups": [
+    {
+     "id": "RB_Pages_Vml",
+     "text": "Pages",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxCoverSectionGalleryCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Illustrations_Vml",
+     "text": "Common Object",
+     "class": "KListCommand",
+     "childControls": 18,
+     "childClasses": {
+      "KDependsProxyCommand": 2
+     },
+     "spaceHints": [
+      "autocompact",
+      "autocompact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Symbol_Vml",
+     "text": "Symbol",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxWpsEquationListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InsertComments_Vml",
+     "text": "Comment",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Links_Vml",
+     "text": "Links",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Text_Vml",
+     "text": "Component",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1,
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 3
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Media_Vml",
+     "text": "Media",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ComplexObj_Vml",
+     "text": "More Object",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KDocerAppQuickMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Mailings",
+   "file": "CT_Mailings.kuip",
+   "groups": [
+    {
+     "id": "RB_Start_Mail_Margin",
+     "text": "Start Mail Merge",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Write_Insert_Fields",
+     "text": "Write & Insert Fields",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 4
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Preview_Result",
+     "text": "Preview Results",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Finish",
+     "text": "Finish",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_MailConfig",
+     "text": "MailConfig",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsMailConfigCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CloseMailingsContext",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsCloseMailingsContextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_OfdPreview",
+   "file": "CT_OfdPreview.kuip",
+   "groups": [
+    {
+     "id": "RB_OPP_Main",
+     "text": "OfdPreview",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OPP_Settings",
+     "text": "OfdPrintPreviewSettings",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 3,
+      "KRbLayoutListCommand": 1,
+      "KxWpsOfdPreviewZoomCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OPP_Show",
+     "text": "Show",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OPP_Close",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_OfficialMode",
+   "file": "CT_OfficialMode.kuip",
+   "groups": [
+    {
+     "id": "OfficialIntelligentApplicationGroup",
+     "text": "Intelligent Application",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialFormatPainterGroup",
+     "text": "",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialFontArea",
+     "text": "Official Format Setting",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialInsert",
+     "text": "Official Insert",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialTemplateMaterial",
+     "text": "OfficialTemplateMaterial",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialTypeSetting",
+     "text": "Official TypeSetting",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxWpsCompoundListCommand": 1,
+      "KRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialAI",
+     "text": "Official Writing",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialReading",
+     "text": "",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialProofRead",
+     "text": "Proofread",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialCheck",
+     "text": "Official Duplicate Check",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialModeMediaParts",
+     "text": "Media Parts",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KRbDualVLayoutListCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialDocMaterialWriting",
+     "text": "Material Writing",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxMaterialToolGalleryCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialModeOthers",
+     "text": "Others",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KOfficialRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialModeClose",
+     "text": "Close",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsOfficialModeStandardDocumentCloseCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_OfficialPrinting",
+   "file": "CT_OfficialPrinting.kuip",
+   "groups": [
+    {
+     "id": "OfficialPrintingDoc",
+     "text": "Official Printing Doc",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingAI",
+     "text": "Official Printing AI",
+     "class": "KxWpsOfficialLogicGroupCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingElements",
+     "text": "Official Printing Elements",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KRbDualVLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingFontArea",
+     "text": "Official Format Setting",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingTypeSetting",
+     "text": "Official TypeSetting",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxWpsCompoundListCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingProofRead",
+     "text": "Proofread",
+     "class": "KxWpsOfficialAIListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialPrintingMediaParts",
+     "text": "Media Parts",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialDocMaterialWriting",
+     "text": "Material Writing",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxMaterialToolGalleryCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficalPrintingOthers",
+     "text": "Others",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Official_Assist",
+   "file": "CT_Official_Assist.kuip",
+   "groups": [
+    {
+     "id": "RB_Officialdoc_Assist_NewPage_Template",
+     "text": "RB_NewPage_Template",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Assist_Doc_Template",
+     "text": "RB_Doc_Template",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Assist_Outline",
+     "text": "RB_Outline",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Assist_Search",
+     "text": "RB_Assist_Search",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Assist_Proofing",
+     "text": "Official Proofing",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Assist_Setting",
+     "text": "RB_Assist_Setting",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Assist_OfficialDocMode",
+     "text": "RB_Assist_OfficialDocMode",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Official_Elements",
+   "file": "CT_Official_Elements.kuip",
+   "groups": [
+    {
+     "id": "OfficialPages",
+     "text": "Pages",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DocumentParts",
+     "text": "Document Parts",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialIllustrations",
+     "text": "Illustrations",
+     "class": "KListCommand",
+     "childControls": 9,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialOtherAttributes",
+     "text": "Elements Tools",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Official_Material",
+   "file": "CT_Official_Material.kuip",
+   "groups": [
+    {
+     "id": "RB_Officialdoc_Material_Doc_Template",
+     "text": "RB_Doc_Template",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Material_Outline",
+     "text": "RB_Outline",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Material_Search",
+     "text": "RB_Assist_Search",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Material_Characteristic",
+     "text": "RB_Characteristic",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Material_Proofing",
+     "text": "Official Proofing",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Officialdoc_Material_Setting",
+     "text": "RB_Assist_Setting",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Official_Print",
+   "file": "CT_Official_Print.kuip",
+   "groups": [
+    {
+     "id": "OfficialFinalize",
+     "text": "Finalize",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialExport",
+     "text": "Export",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Outline",
+   "file": "CT_Outline.kuip",
+   "groups": [
+    {
+     "id": "RB_Outline",
+     "text": "Outlining Tools",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Outline_Part",
+     "text": "Show",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OutliningClose",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PageLayout",
+   "file": "CT_PageLayout.kuip",
+   "groups": [
+    {
+     "id": "RB_Page_Setup",
+     "text": "Page Setup",
+     "class": "KxListCommand",
+     "childControls": 10,
+     "childClasses": {
+      "KLayoutWidgetCommand": 1,
+      "KxWpsPageMarginSingleSpinCommand": 4
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EditTheme",
+     "text": "Effects",
+     "class": "KListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxListCommand": 1,
+      "KxCoverSectionGalleryCommand": 1
+     },
+     "spaceHints": [
+      "autocompact",
+      "autocompact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Genko_Setting",
+     "text": "Structure",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_PageLayoutHeaderAndFooter",
+     "text": "Header And Footer",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_PageLayout",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Paragraph",
+   "file": "CT_Paragraph.kuip",
+   "groups": [
+    {
+     "id": "RB_StyleOnParagraph",
+     "text": "Style",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Paragraph_RB_Font",
+     "text": "Field Properties",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KListCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ParagraphOnParagraph",
+     "text": "Line Spacing",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OutlineOnParagraph",
+     "text": "TOC Level",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsComboBoxCommand": 1,
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_GridlinesOnParagraph",
+     "text": "Document Gridlines",
+     "class": "KxListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxCheckBoxCommand": 1,
+      "KxWpsDisableLineHeightGridCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_Paragraph",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ExitParagraphOnParagraph",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PictureTools",
+   "file": "CT_PictureTools.kuip",
+   "groups": [
+    {
+     "id": "RB_AdjustPicture_Settings",
+     "text": "Adjust",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "AutoLoadEntry",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Picture_RB_Size",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxTabGalleryListCommand": 1,
+      "KLayoutWidgetCommand": 2,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1,
+      "KxLockAspectRatioCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Picture_RB_Arrange",
+     "text": "Arrange",
+     "class": "KxListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1,
+      "KListCommand": 3,
+      "KxObjectSelectCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Picture_All_Settings",
+     "text": "Picture Styles",
+     "class": "KxListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KListCommand": 2,
+      "KxListCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_PictureTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AdvancedPictureTool",
+     "text": "Advanced Picture Tool",
+     "class": "KAutoHideListCommand",
+     "childControls": 18,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AdjustPicture_Settings",
+     "text": "Adjust",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "AutoLoadEntry",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "Picture_RB_Size",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxTabGalleryListCommand": 1,
+      "KLayoutWidgetCommand": 2,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1,
+      "KxLockAspectRatioCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Picture_All_Settings",
+     "text": "Picture Styles",
+     "class": "KxListCommand",
+     "childControls": 9,
+     "childClasses": {
+      "KListCommand": 2,
+      "KxListCommand": 1,
+      "KxPropComposeCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Picture_RB_Arrange",
+     "text": "Arrange",
+     "class": "KxListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1,
+      "KListCommand": 3,
+      "KxObjectSelectCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_PictureTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AdvancedPictureTool",
+     "text": "Advanced Picture Tool",
+     "class": "KAutoHideListCommand",
+     "childControls": 18,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "app_photofilter",
+     "text": "Picture Filter",
+     "class": "KxBridgeTriggerCommand",
+     "childControls": 0,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PictureTools_Vml",
+   "file": "CT_PictureTools_Vml.kuip",
+   "groups": [
+    {
+     "id": "RB_Illustrations_PictureTool_Vml",
+     "text": "Adjust",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2,
+      "KGalleryLibraryCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_PictureSize_Vml",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ObjectSelect_Vml",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Pic_RB_ShadowSettings_Vml",
+     "text": "Shadow Setting",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxShadowStaticGalleryCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_PictureStyles_Vml",
+     "text": "Picture Styles",
+     "class": "KxListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KListCommand": 2,
+      "KxWpsLineColorCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_PictureTools_Vml",
+     "text": "Detailed Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AdvancedPictureTool_Vml",
+     "text": "Advanced Features",
+     "class": "KListCommand",
+     "childControls": 18,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Illustrations_PictureTool_Vml",
+     "text": "Adjust",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2,
+      "KGalleryLibraryCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_PictureSize_Vml",
+     "text": "Size",
+     "class": "KxListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsHeightSpinboxCommand": 1,
+      "KxWpsWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_PictureStyles_Vml",
+     "text": "Picture Styles",
+     "class": "KxListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KListCommand": 2,
+      "KxWpsLineColorCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Pic_RB_ShadowSettings_Vml",
+     "text": "Shadow Setting",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxShadowStaticGalleryCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ObjectSelect_Vml",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_PictureTools_Vml",
+     "text": "Detailed Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_AdvancedPictureTool_Vml",
+     "text": "Advanced Features",
+     "class": "KListCommand",
+     "childControls": 18,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_PremiumServices",
+   "file": "CT_PremiumServices.kuip",
+   "groups": [
+    {
+     "id": "RB_PremiumServices_OutputConversion",
+     "text": "OutputConversion",
+     "class": "KListCommand",
+     "childControls": 12,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_PremiumServices_Writer_Modulefeature",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PremiumServices_DocerResource",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_PremiumServices_ConvenientTool",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_MoreApp",
+     "text": "",
+     "external": true
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Print2022",
+   "file": "CT_Print2022.kuip",
+   "groups": [
+    {
+     "id": "Print2022HeaderBar",
+     "text": "",
+     "class": "KxPrint2022HeaderBarCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Print2022ControlPane",
+     "text": "",
+     "class": "KxPrint2022ControlPaneCommand",
+     "childControls": 17,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Print2022StatusBar",
+     "text": "",
+     "class": "KxPrint2022StatusBarCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_References",
+   "file": "CT_References.kuip",
+   "groups": [
+    {
+     "id": "RB_Table_Of_Contents",
+     "text": "Table of Contents",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Footnotes",
+     "text": "Footnotes and Endnotes",
+     "class": "KxListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 6,
+      "KxWpsShowFootnoteSeparatorCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Citation",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_Captions",
+     "text": "Caption",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Index",
+     "text": "Index",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ShowMailingsContext",
+     "text": "Mailings",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxWpsShowMailingsContextCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_References",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Review",
+   "file": "CT_Review.kuip",
+   "groups": [
+    {
+     "id": "RB_Proofing",
+     "text": "Proofing",
+     "class": "KWpsNormalListCommand",
+     "childControls": 12,
+     "childClasses": {
+      "KProofreadAppQuickMenuCommand": 1,
+      "KxProofreadAppCommand": 1,
+      "KQuickMenuAutoHideCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfficialProofing",
+     "text": "Official Proofing",
+     "class": "KWpsOfficialListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Comments",
+     "text": "Comments",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Review",
+     "text": "Track Changes",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KLayoutWidgetCommand": 1,
+      "KRbLayoutListCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Changes",
+     "text": "Change",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_InkDrawEnter",
+     "text": "InkDrawEnter",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Language",
+     "text": "Language",
+     "class": "KxWpsNormalListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KAppSyncTranslateCommand": 1,
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "OfficialDocumentview",
+     "text": "Document view",
+     "class": "KxWpsOfficialListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxCheckBoxCommand": 3,
+      "KxTaskPaneCheckBoxCommand": 1,
+      "KxValueCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Security",
+     "text": "Document Security",
+     "class": "KWpsNormalListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KProxyCommand": 3,
+      "KxCurUserPermissionCommand": 1,
+      "KxCheckPermissionsCommand": 1,
+      "KAppQuickMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Security",
+   "file": "CT_Security.kuip",
+   "groups": [
+    {
+     "id": "RB_Permissions",
+     "text": "Permissions",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxDocPermissionCommand": 3
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_BatchOperation",
+     "text": "Batch Operation",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxBatchDocumentDecryptionCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_MB",
+     "text": "SecurityMB Management",
+     "class": "KListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KxSetMBCommand": 1,
+      "KxConfirmMBCommand": 1,
+      "KxSignedMBCommand": 1,
+      "KxWithdrawSignedMBCommand": 1,
+      "KxCheckMBCommand": 1,
+      "KxChangeMBCommand": 1,
+      "KxDecryptMBCommand": 1,
+      "KxLiftMBCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Wukuang",
+     "text": "File Format",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CustomFormatSecurityDoc",
+     "text": "Encryption/Decryption",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Apply",
+     "text": "",
+     "external": true
+    },
+    {
+     "id": "RB_ApplyForward",
+     "text": "Forward",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfflineManagement",
+     "text": "Offline Management",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxOfflineManagementCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ConfidentialityLevelKeyWord",
+     "text": "Confidentiality Level KeyWord",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsConfidentialityLevelKeyWordCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CloudEncryption",
+     "text": "document security",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxDocPermissionCommand": 1,
+      "KxWechatPermissionCommand": 1,
+      "KxDocAuthenticationCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OfflineManagement",
+     "text": "Offline Management",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxOfflineManagementCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_FileToolCenter",
+     "text": "File backup",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxKOSHomepageRoamingFileCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_FileMenuDataCommands",
+     "text": "File tools",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxFileMenuDataRecoverCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EditDocumentHistory",
+     "text": "document set",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DocumentSecurityCenter",
+     "text": "Document security information",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxDocumentSecurityCenterCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_SmartArtDesign",
+   "file": "CT_SmartArtDesign.kuip",
+   "groups": [],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_SmartArtFormatTool",
+   "file": "CT_SmartArtFormatTool.kuip",
+   "groups": [
+    {
+     "id": "RB_SmartArtTextFont",
+     "text": "Font",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_SmartArtTextParagraph",
+     "text": "Paragraph",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_SmartArtShapeStyles",
+     "text": "Shape Styles",
+     "class": "KxListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxWpsSmartArtShapeStylesCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsSmartArtLineColorCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_StudentTools",
+   "file": "CT_StudentTools.kuip",
+   "groups": [
+    {
+     "id": "RB_Reading",
+     "text": "Reading",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Writing",
+     "text": "Writing",
+     "class": "KListCommand",
+     "childControls": 9,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Math",
+     "text": "Math",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Collaborate",
+     "text": "Collaborate",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxWpsAnnoteAsPdfCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Feedback",
+     "text": "Feedback",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CloseStudentToolsContext",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxStudentToolsCloseCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_TableTools",
+   "file": "CT_TableTools.kuip",
+   "groups": [
+    {
+     "id": "RB_Table",
+     "text": "Properties",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxLegacyTriggerCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_RowsAndColumns",
+     "text": "Rows and Columns",
+     "class": "KxListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Merge",
+     "text": "Merge And Split",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Adjust",
+     "text": "Cell Size",
+     "class": "KxListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxWpsAITableStyleProxyCommand": 1,
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1,
+      "KLayoutWidgetCommand": 1,
+      "KxWpsCellHeightSpinboxCommand": 1,
+      "KxWpsCellWidthSpinboxCommand": 1
+     },
+     "spaceHints": [
+      "compact",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Table_Font",
+     "text": "Font",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Alignment",
+     "text": "Alignment",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KRbLayoutListCommand": 2
+     },
+     "spaceHints": [
+      "compact",
+      "compact"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Data",
+     "text": "Data",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxLegacyTriggerCommand": 3,
+      "KListCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "TableSelectMenu",
+     "text": "Select",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_TableTool",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_TextTool",
+   "file": "CT_TextTool.kuip",
+   "groups": [
+    {
+     "id": "RB_FormatPainter",
+     "text": "Format Painter",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TextFont",
+     "text": "Font",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KListCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_TextParagraph",
+     "text": "Paragraph",
+     "class": "KxListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_WordArtStyles",
+     "text": "WordArt Styles",
+     "class": "KxListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsWordArtStylesCommand": 1,
+      "KLayoutWidgetCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_ShapeStyles_TextTool",
+     "text": "Shape Styles",
+     "class": "KxListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsShapeStylesCommand": 1,
+      "KxWpsLineColorCommand": 1,
+      "KxListCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_TextBox_TextTool",
+     "text": "Text Box",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_TextTools",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_Tools",
+   "file": "CT_Tools.kuip",
+   "groups": [
+    {
+     "id": "RB_DevelopTools",
+     "text": "DevelopTools",
+     "class": "KxDevelopToolsListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxRunMacroCommand": 1,
+      "KxLegacyTriggerCommand": 3,
+      "KxDevelopToolsContextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "app_ktablefetch_sheettoollist",
+     "text": "Efficiency Tools",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KAppCommand": 2,
+      "KAutoHideListCommand": 1,
+      "KProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_View",
+   "file": "CT_View.kuip",
+   "groups": [
+    {
+     "id": "RB_Document_View",
+     "text": "Views",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxWpsFullScreenCommand": 1,
+      "KxWpsComposeViewCommand": 1,
+      "KxWpsPrintLayoutViewCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Show",
+     "text": "Show",
+     "class": "KListCommand",
+     "childControls": 8,
+     "childClasses": {
+      "KLayoutWidgetCommand": 1,
+      "KxCheckBoxCommand": 4,
+      "KxTaskPaneCheckBoxCommand": 1
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Zoom",
+     "text": "Ratio",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KxValueCommand": 3
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_EyeProtection",
+     "text": "Protect Eyes",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxWpsProtectEyesCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_NewWindow",
+     "text": "Window",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxSingleRowMergeGroupCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_View_Compare",
+     "text": "Compare",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_WAshadowDrawingTools",
+   "file": "CT_WAshadowDrawingTools.kuip",
+   "groups": [
+    {
+     "id": "RB_WAShadowSettings",
+     "text": "Shadow \nEffects",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxShadowStaticGalleryCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_WA3DSettings",
+     "text": "3-D Settings",
+     "class": "KListCommand",
+     "childControls": 14,
+     "childClasses": {
+      "KLayoutWidgetCommand": 4,
+      "KxStaticGalleryCommand": 2,
+      "KListCommand": 3
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_WPSProofread",
+   "file": "CT_WPSProofread.kuip",
+   "groups": [
+    {
+     "id": "Proofread",
+     "text": "Proofread",
+     "class": "KListCommand",
+     "childControls": 5,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 4
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "WordDictManagement",
+     "text": "WordDictManagement",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 3
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "Assistant",
+     "text": "Assistant",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "ProofreadClose",
+     "text": "Close",
+     "class": "KListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxAIProofreadProxyCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_WordArt",
+   "file": "CT_WordArt.kuip",
+   "groups": [
+    {
+     "id": "RB_DC_InsertWordArt",
+     "text": "Insert WordArt",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_WordArt",
+     "text": "WordArt",
+     "class": "KListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxLegacyTriggerCommand": 3,
+      "KListCommand": 2
+     },
+     "spaceHints": [
+      "suitable",
+      "suitable"
+     ],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DC_WordArtStyles",
+     "text": "WordArt Styles",
+     "class": "KxListCommand",
+     "childControls": 2,
+     "childClasses": {
+      "KxWpsLineColorCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "WA_RB_DC_Arrange",
+     "text": "Arrange",
+     "class": "KListCommand",
+     "childControls": 7,
+     "childClasses": {
+      "KxWpsWrapTextCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "DetailedSettings_WordArt",
+     "text": "Settings",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_WorkSpace",
+   "file": "CT_WorkSpace.kuip",
+   "groups": [
+    {
+     "id": "RB_Output",
+     "text": "Output",
+     "class": "KListCommand",
+     "childControls": 12,
+     "childClasses": {
+      "KAutoHideListCommand": 2,
+      "KScreenGrabMenuCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_SpecialApps",
+     "text": "Text Features",
+     "class": "KListCommand",
+     "childControls": 11,
+     "childClasses": {
+      "KAccountRelatedAppCommand": 1,
+      "KAppCommand": 5,
+      "KAppRbTabTriggerCommand": 1,
+      "KxAIProofreadProxyCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_WPSAI",
+     "text": "RB_WPSAI_text",
+     "class": "KAutoHideListCommand",
+     "childControls": 6,
+     "childClasses": {
+      "KxSpellCheckChooseCommand": 2,
+      "KxProofreadAppCommand": 1,
+      "KAppSyncTranslateCommand": 1,
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_Tools",
+     "text": "Tools",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxCloudClipboardCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_MoreApp",
+     "text": "More App",
+     "class": "KAutoHideListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_CommonCmd_sign",
+     "text": "Sign",
+     "class": "KAutoHideListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KAutoHideListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_UserCloud",
+     "text": "Online Documents",
+     "class": "KOSUserCloud",
+     "childControls": 3,
+     "childClasses": {
+      "KxDocumentHistoryCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_ProfessionalPlugins_Group1",
+     "text": "",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_SpecialTool",
+     "text": "Special Features",
+     "class": "KListCommand",
+     "childControls": 10,
+     "childClasses": {},
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_DocerMall",
+     "text": "",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KxDocerMallLegacyTriggerCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_OnlineCooperation",
+     "text": "",
+     "class": "KListCommand",
+     "childControls": 1,
+     "childClasses": {
+      "KOnlineCooperationCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_FileTools",
+     "text": "File Tools",
+     "class": "KListCommand",
+     "childControls": 3,
+     "childClasses": {
+      "KAppCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  },
+  {
+   "tab": "CT_shadowDrawingTools",
+   "file": "CT_shadowDrawingTools.kuip",
+   "groups": [
+    {
+     "id": "RB_ShadowSettings",
+     "text": "Shadow \nEffects",
+     "class": "KListCommand",
+     "childControls": 4,
+     "childClasses": {
+      "KxShadowStaticGalleryCommand": 1,
+      "KListCommand": 1
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    },
+    {
+     "id": "RB_3DSettings",
+     "text": "3-D \nEffects",
+     "class": "KListCommand",
+     "childControls": 11,
+     "childClasses": {
+      "KxStaticGalleryCommand": 2,
+      "KListCommand": 3,
+      "KLayoutWidgetCommand": 2
+     },
+     "spaceHints": [],
+     "canHideText": 0,
+     "mergeGroup": null
+    }
+   ],
+   "mergeGroups": []
+  }
+ ]
+}

@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_home" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KAppCommand action="7" appId="pdfadvancedtool" appPersistEntry="true" icon="doc_merge_kd" id="app_kpdf2wordv2_tabstart_merge" shortcutHint="Ctrl+Alt+D" text="@MergePDFPage"/>
+		<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" appPersistEntry="true" icon="doc_split_kd" id="app_kpdf2wordv2_tabstart_split" shortcutHint="Ctrl+Alt+S" text="@SplitPDFPage"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Start_HandTool" ksoCmd="HandTool" shellEntryType="tab_start" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Start_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_start" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KPdfAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" appPersistEntry="true" customTip="PDFToWord" docExceptionPos="tabstart_2word" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoword" icon="change_to_word_kd" id="app_kpdf2wordv2_tabstartPDF2Word" text="@PDFToWord_L"/>
+		<KPdfAppCommand action="ConvertToImgPDF" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="ImgPDF" docExceptionPos="convert_2img" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoimgpdf" icon="change_pdf_to_imgpdf_kd" id="app_kpdf2wordv2_tabstartPDF2IMGPDF" text="@ImgPDF"/>
+		<KAppCommand appCmdObj="Pdf2Word" appId="kpdf2wordv3" customTip="PDFToWord" icon="change_to_word_kd" id="app_kpdf2wordv3_home_workspace" text="@PDF to Word"/>
+		<KAppCommand appCmdObj="Pdf2Excel" appId="kpdf2wordv3" customTip="PDF2Excel" icon="change_to_et_kd" id="app_kpdf2wordv3_home_workspace_pdf2excel" text="@PDF to Excel"/>
+		<KAppCommand appCmdObj="Pdf2PPT" appId="kpdf2wordv3" customTip="PDF2PPT" icon="change_to_ppt_kd" id="app_kpdf2wordv3_home_workspace_pdf2ppt" text="@PDF to PPT"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="TextQueryAndReplace" icon="magnifier_kd" id="Start_TextQueryAndReplace" idKey="PdfTextQueryAndReplace" ksoCmd="TextQuery" rbHotKey="F" shellEntryType="tab_start" text="@TextQueryAndReplace"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="TextQuery" icon="magnifier_kd" id="Start_TextQueryAndReplace" idKey="PdfOnlyTextQuery" ksoCmd="TextQuery" rbHotKey="F" shellEntryType="tab_start" text="@TextQuery"/>
+		<KxValueCommand customTip="PDFToWord" icon="change_to_word_kd" id="Home_PDFZZ_PDFToWord" index="4" ksoCmd="PDF2Word" text="@PDFToWord_L" wpsIsEanble="false"/>
+		<KPdfAppCommand appCmdObj="kexportimage" appId="kexportimage" customTip="PDF2Photo" icon="change_to_pic_two_kd" id="Pdf2Photo" idKey="PDFHomePDF2Pic" idMso="FileSaveAsPicture" shortcutHint="Ctrl+Shift+I" text="@PDF2Photo" wpsIsEanble="false"/>
+		<KxLegacyTriggerCommand customTip="PreviousPage" hotKey="a" icon="arrow_left_small_wps_kd" id="Start_Previous" ksoCmd="Previous" rbHotKey="a" shellEntryType="tab_start" shortcutHint="Ctrl+↑" spaceHint="autocompact" text="@Previous"/>
+		<KxLegacyTriggerCommand customTip="NextPage" hotKey="d" icon="arrow_right_small_wps_kd" id="Start_NextPage" ksoCmd="NextPage" rbHotKey="d" shellEntryType="tab_start" shortcutHint="Ctrl+↓" spaceHint="autocompact" text="@NextPage"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="PlaySlide" icon="play_kd" id="Start_PlaySlide" ksoCmd="PlaySlide" qtspyName="PlaySlide" rbHotKey="h" shellEntryType="tab_start" shortcutHint="Shift+F5" text="@PlaySlide"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="SinglePageContinuous" icon="doc_two_kd" id="Start_SinglePageContinuous" ksoCmd="SinglePageContinuous" qtspyName="SinglePageContinuous" rbHotKey="2" shellEntryType="tab_start" spaceHint="autocompact" text="@Single Page"/>
+		<KxListCommand customTip="TwoPageContinuous" icon="double_page_kd" id="Start_DoublePageContinuous" ksoCmd="TwoPagesContinuous" ksoTriggerCmd="TwoPagesContinuous" shellEntryType="tab_start" spaceHint="autocompact" text="@Double Page">
+			<KxLegacyTriggerCommand id="Start_DoublePageContinuous_cover" ksoCmd="SeparateCover" referenceDisable="true" shellEntryType="tab_start" text="@SeparateCover"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="ContinuousRead" icon="continuous_read_kd" id="Start_ContinuousRead" ksoCmd="ContinuousRead" qtspyName="ContinuousRead" rbHotKey="4" shellEntryType="tab_start" spaceHint="autocompact" text="@Continuous"/>
+		<KxPdfNewPageNumberCommand controlType="2" customTip="Page Number" icon="page_width_kd" id="Start_PageIndexChanged" shellEntryType="tab_start" spaceHint="autocompact"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ZoomIn" icon="magnifier_zoom_out_kd" id="Start_ZoomOut" ksoCmd="ZoomIn" rbHotKey="S" shellEntryType="tab_start" shortcutHint="Ctrl+-" spaceHint="autocompact" text="@ZoomIn"/>
+		<KxPdfZoomPageCommand controlType="2" customTip="ZoomPage" id="Start_Zoom%" shellEntryType="tab_start" spaceHint="autocompact"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ZoomOut" icon="magnifier_zoom_in_kd" id="Start_ZoomIn" ksoCmd="ZoomOut" rbHotKey="Z" shellEntryType="tab_start" shortcutHint="Ctrl++" spaceHint="autocompact" text="@ZoomOut"/>
+		<KxLegacyTriggerCommand customTip="ActualSize" icon="screen_actual_size_kd" id="Start_100%" ksoCmd="ZoomCurrent100" shortcutHint="Ctrl+1" spaceHint="autocompact" text="@PageActualSize"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="FitWidth" icon="fit_width_kd" id="Start_FitWidth" ksoCmd="FitWidth" shortcutHint="Ctrl+2" spaceHint="autocompact" text="@PageFitWidth"/>
+		<KxLegacyTriggerCommand customTip="FitPageSize" icon="screen_fit_kd" id="Start_FitPageSize" ksoCmd="FitPageSize" shortcutHint="Ctrl+0" spaceHint="autocompact" text="@PageFitSize"/>
+		<KQuickMenuCommand customTip="Translate selected" icon="translation_ai_kd" iconQat="PdfTranslationQat" id="TranslationMenu_ctreview" referenceCommand="Start_Translation" spaceHint="autocompact" text="@Translate selected">
+			<command idQ="app_translationselect_ctreview" proxyCmdId="Proxyapp_translationselect_ctreview"/>
+		</KQuickMenuCommand>
+		<KScreenGrabCommand aid="100053" filter="feature_16777325!=0" hotKey="S" id="ScreenGrab" idKey="PDFScreenGrabEntrace" rbHotKey="S" shortcutHint="Ctrl+Alt+X" text="@Screen Grab"/>
+		<KxValueCommand controlType="6" customTip="Clockwise" hotKey="o" icon="rotate_right_kd" id="Start_Clockwise" index="3" ksoCmd="RotatePages" rbHotKey="U" shellEntryType="tab_start" shortcutHint="Ctrl+Shift++" text="@clockwise rotation"/>
+		<KxValueCommand controlType="6" customTip="Counterclockwise" hotKey="w" icon="rotate_left_kd" id="Start_Counterclockwise" index="4" ksoCmd="RotatePages" rbHotKey="W" shellEntryType="tab_start" shortcutHint="Ctrl+Shift+-" text="@anticlockwise rotation"/>
+		<KxLegacyTriggerCommand customTip="ActualSize" icon="screen_actual_size_kd" id="Start_100%" ksoCmd="ZoomCurrent100" shellEntryType="tab_start" shortcutHint="Ctrl+1" text="@PageActualSize"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="FitWidth" icon="fit_width_kd" id="Start_FitWidth" ksoCmd="FitWidth" shellEntryType="tab_start" shortcutHint="Ctrl+2" spaceHint="autocompact" text="@PageFitWidth"/>
+		<KxLegacyTriggerCommand customTip="FitPageSize" icon="screen_fit_kd" id="Start_FitPageSize" ksoCmd="FitPageSize" shellEntryType="tab_start" shortcutHint="Ctrl+0" spaceHint="autocompact" text="@PageFitSize"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Start" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Start_HandTool"/>
+			<command idQ="Start_SelectTool"/>
+		</KListCommand>
+		<KAppCommand appCmdObj="BatchCompress" appId="batchcompress" customTip="CompressTips" icon="file_compression_kd" id="StartFunc_PDFZZ_Compress" idKey="PdfStartFuncCompress" index="0" text="@Compress"/>
+		<KAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" appPersistEntry="true" customTip="PDF2Office" docExceptionPos="tabstart_2word" entrance="pdf_home_tab&amp;module=pdf&amp;sub_module=home_tab&amp;new_position=pdftoword" icon="change_to_word_kd" id="app_kpdf2wordv2_tabstartPDF2Office" text="@PDF2Office"/>
+		<KAppQuickMenuCommand icon="change_to_word_kd" id="TabStart_PDF2Office" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="app_kpdf2wordv2_tabstartPDF2Office" text="@PDF2Office">
+			<command idQ="app_kpdf2wordv2_tabstartPDF2Word"/>
+			<command idQ="app_kpdf2wordv2_tabstartPDF2Excel"/>
+			<command idQ="app_kpdf2wordv2_tabstartPDF2PPT"/>
+			<command idQ="app_kpdf2wordv2_tabstartPDF2IMGPDF"/>
+			<command idQ="Spac_PDFZZ_PDFToTXT"/>
+			<command idQ="app_kpdf2wordv2_tabstartPDF2CAD"/>
+			<KxHoneycombControlProxyCommand WPSAIEntryID="pdf_convertmenu_AIEntry_visible" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="ppt_star_kd" id="WPSAI_PDF2PPTX" shellEntryType="tab_start_PDFconvert" targetId="WPSAI_PDF2PPTX" targetModule="kall2ppt" text="@ai create ppt"/>
+		</KAppQuickMenuCommand>
+		<KPdfAppCommand action="7" appId="pdfadvancedtool" appPersistEntry="true" customTip="SplitAndMergePage" docExceptionPos="tabstart_merge" icon="doc_merge_kd" id="app_kpdf2wordv2_tabstart_MergePage" text="@SplitAndMergePage"/>
+		<KAppCommand action="6" appId="pdfadvancedtool" canHideText="0" icon="doc_split_kd" id="app_pdfadvancedtool_StartTab_SplitPdf" index="1" rbHotKey="PW" text="@SplitPDF" wpsIsEanble="false"/>
+		<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_StartTab_MergePdf" index="1" rbHotKey="PW" text="@MergePDFPage" wpsIsEanble="false"/>
+		<KAppQuickMenuCommand customTip="SplitAndMergePageToolTip" icon="doc_merge_kd" id="TabStart_MergeOrSplitPage" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="app_pdfadvancedtool_StartTab_MergePdf" text="@SplitAndMergePage">
+			<command idQ="app_pdfadvancedtool_StartTab_MergePdf"/>
+			<command idQ="app_pdfadvancedtool_StartTab_SplitPdf"/>
+		</KAppQuickMenuCommand>
+		<KAppQuickMenuCommand customTip="PDF2Photo" icon="change_to_pic_two_kd" id="app_CT_Home_kexportimage" idKey="AIPhotolongchart" referenceCommand="Start_PDFZZ_PDFToPhoto" text="@PDF2Photo">
+			<KAppCommand appCmdObj="kexportimage" appId="kexportimage" icon="change_to_pic_two_kd" id="KExportImage" idMso="FileSaveAsPicture" text="@Original text output image"/>
+			<command idQ="app_photoailongchart"/>
+		</KAppQuickMenuCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="ReadingMode" icon="book_kd" id="Start_ReadingMode" ksoCmd="ReadingMode" shortcutHint="Ctrl+Shift+R" text="@ReadingMode"/>
+		<KListCommand groupTip="HomeConvertGroup" icon="change_to_word_kd" id="RB_Document" rbFileMenuEmbed="1" text="@Convert" visibleDependsOnSubCmds="1">
+			<command idKey="PDFConvertFuncs" idQ="TabStart_PDF2Office"/>
+			<command idKey="PDFZZPDFToPhotoEntrace" idQ="Start_PDFZZ_PDFToPhoto"/>
+			<command idQ="app_CT_Home_kexportimage"/>
+			<command idKey="PDFZZPDFToPhotoProxy" idQ="Start_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+			<command idKey="PDFConvertFuncs" idQ="TabStart_MergeOrSplitPage"/>
+		</KListCommand>
+		<KxListCommand forceVisible="1" groupTip="HomeViewGroup" icon="view_kd" id="RB_Pages" needsinglerowmorebutton="true" rbFileMenuEmbed="1" refIdForCollapsed="Start_ClockwiseDoc" text="@View">
+			<command idQ="Start_PlaySlide"/>
+			<KListCommand embedHint="1" vertspace="2">
+				<KRbLayoutListCommand layoutOnly="1" leftSpace="5">
+					<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="Start_Zoom%" singlerowfold="1"/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="6" layoutOnly="1" leftSpace="3" rightSpace="0" topSpace="0">
+						<command idQ="Start_ZoomOut" singlerowfold="1"/>
+						<command idQ="Start_ZoomIn" singlerowfold="1"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" horizontalSpacing="6" layoutOnly="1" leftSpace="8" rightSpace="0" topSpace="1">
+					<command idQ="Start_100%" singlerowfold="1"/>
+					<command idQ="Start_FitPageSize" singlerowfold="1"/>
+					<command idQ="Start_FitWidth" singlerowfold="1"/>
+					<command idQ="Start_Counterclockwise"/>
+					<command idQ="Start_Clockwise"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<command idQ="Start_ClockwiseDoc"/>
+			<KListCommand embedHint="1">
+				<KxSingleRowMergeGroupCommand icon="jump_kd" id="SingleRow_Page" showIconAndText="true" singlerowfold="1" text="@Go to Page"/>
+				<KRbLayoutListCommand isAddLastStrech="false" layoutOnly="1">
+					<command idQ="FirstPage" singlerowmergegroup="SingleRow_Page"/>
+					<command idQ="Start_Previous" singlerowmergegroup="SingleRow_Page"/>
+					<command idQ="Start_PageIndexChanged" singlerowmergegroup="SingleRow_Page"/>
+					<command idQ="Start_NextPage" singlerowmergegroup="SingleRow_Page"/>
+					<command idQ="LastPage" singlerowmergegroup="SingleRow_Page"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Start_SinglePageContinuous" singlerowfold="1"/>
+					<command idQ="Start_DoublePageContinuous" singlerowfold="1"/>
+					<command idQ="Start_ContinuousRead"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<command idQ="Start_ReadingMode"/>
+		</KxListCommand>
+		<KScreenGrabMenuCommand customTip="ScreenGrabPdf" icon="cut_screen_kd" id="RB_Scrngrab" idKey="NotPDFReadOnlyMode" referenceCommand="KxScrngrabOcrCommand" text="@Screen Grab">
+			<command idQ="ScreenGrabRect"/>
+			<command idQ="ScreenGrabEllipse"/>
+			<command idQ="ScreenGrabRoundedRect"/>
+			<command idQ="ScreenGrabPolygon"/>
+			<separator/>
+			<command idQ="ScreenGrab"/>
+			<command idQ="ScreenGrabHide"/>
+			<separator/>
+			<command idQ="ScreenGrabWindow"/>
+		</KScreenGrabMenuCommand>
+		<KPdfTranslateAppCommand appId="kpdfwebtranslate" icon="translation_kd" id="kpdfwebtranslate_home_button_cmd" idKey="PdfCTHomeKpdfwebtranslateHomeButtonCmd" open_position="tab_start" spaceHint="autocompact" text="@kpdfwebtranslate_home_button_cmd_text" tipContent="@kpdfwebtranslate_home_button_cmd_tipContent" tipTitle="@kpdfwebtranslate_home_button_cmd_tipTitle"/>
+		<KxListCommand forceVisible="1" groupTip="HomeReadingEditingGroup" icon="pen_kd" id="RB_ToolBox" rbFileMenuEmbed="1" refIdForCollapsed="Start_TextQuery" text="@Reading and Editing">
+			<command idKey="StartTextQueryAndReplace" idQ="Start_TextQueryAndReplace"/>
+			<command idKey="EditContentWithoutList" idQ="Edit_Content_WithoutList"/>
+			<command idKey="PDFTableRecognize" idQ="Table_Recognize"/>
+			<command idQ="Start_Tools_ScreenShot_Area"/>
+			<KxPdfAIReadingCommand icon="WpsCopilotEntry" id="WpsCopilot_Reading" idKey="PDFAiRead" text="@WPS AI Reading"/>
+			<command idQ="kpdfwebtranslate_home_button_cmd"/>
+			<command embedHint="1" idKey="PdfSelectWordTranslation" idQ="TranslationMenu_ctreview" isShowText="true" vertspace="4"/>
+			<command idQ="RB_Scrngrab"/>
+			<command idQ="StartFunc_PDFZZ_Compress"/>
+		</KxListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Home">
+			<command idQ="RB_MouseTool_Start"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Document"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Pages"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_ToolBox"/>
+		</subcommand>
+	</subcommands>
+</shell>

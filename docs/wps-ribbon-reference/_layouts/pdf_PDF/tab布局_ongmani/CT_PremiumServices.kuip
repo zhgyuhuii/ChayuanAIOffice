@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_premiumservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KPdfSplitPdfAppCommand action="6" appCmdObj="Split" appId="pdfadvancedtool" canHideText="0" customTip="Split" icon="doc_split_kd" id="app_pdfadvancedtool_WorkSpaceTab_SplitPdf" idKey="CommonSplitDocument" text="@Split"/>
+		<KAppCommand action="7" appCmdObj="Merge" appId="pdfadvancedtool" canHideText="0" customTip="Merge" icon="doc_merge_kd" id="app_pdfadvancedtool_WorkSpaceTab_MergePdf" idKey="CommonMergeDocument" rbHotKey="PW" text="@Merge"/>
+		<KxFileSaveAsPictureCommand appCmdObj="kexportimage" appId="kexportimage" icon="change_to_pic_two_kd" id="RbFileMenuExportWeiboImage" idKey="PDFRbFileMenuWeiboPluginExportAsImage" idMso="FileSaveAsPicture" text="@Export as Image"/>
+		<KListCommand id="RB_PremiumServices_OutputConversion" rbFileMenuEmbed="1" text="@OutputConversion" visibleDependsOnSubCmds="1">
+			<command idQ="convert_pdf2word"/>
+			<command idQ="convert_pdf2excel"/>
+			<command idQ="convert_pdf2ppt"/>
+			<command idQ="convert_ofd2word"/>
+			<command idQ="convert_ofd2excel"/>
+			<command idQ="convert_ofd2ppt"/>
+			<command idQ="convert_pdf2word_v7"/>
+			<command idQ="app_splitDocument"/>
+			<command idQ="app_mergeDocument"/>
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_SplitPdf"/>
+			<command idQ="app_pdfadvancedtool_WorkSpaceTab_MergePdf"/>
+			<command idQ="RbFileMenuExportWeiboImage"/>
+		</KListCommand>
+		<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="TextSpeech" id="AISpeaker" idKey="AISpeaker_TextSpeech" rbHotKey="A" text="@Text Speech"/>
+		<KAutoHideListCommand groupTip="PostilCheckApproveGroup" icon="appcmd_kpromedocdiff_review_compare" id="RB_Review" rbFileMenuEmbed="1" text="@Check and Approve">
+			<KQuickMenuCommandFix hotKey="RL" icon="TextSpeech" id="TextToSpeechOption" idKey="AISpeaker_TextSpeech" rbHotKey="RL" referenceCommand="AISpeaker" text="@Text Speech">
+				<command idQ="AISpeaker"/>
+			</KQuickMenuCommandFix>
+		</KAutoHideListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PremiumServices">
+			<command idQ="RB_PremiumServices_OutputConversion"/>
+			<command idQ="RB_Review"/>
+			<command idQ="RB_MoreApp"/>
+		</subcommand>
+	</subcommands>
+</shell>

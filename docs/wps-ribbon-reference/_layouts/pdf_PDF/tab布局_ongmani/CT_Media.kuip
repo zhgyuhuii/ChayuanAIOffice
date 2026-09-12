@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_mediaedit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Media_HandTool" ksoCmd="HandTool" shellEntryType="tab_instruct" shortcutHint="Ctrl+H" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Media_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_instruct" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand customTip="ClickPlay" id="Media_ClickPlay" ksoCmd="ClickPlay" text="@ClickPlay"/>
+		<KxLegacyTriggerCommand customTip="AutoPlay" id="Media_AutoPlay" ksoCmd="AutoPlay" text="@AutoPlay"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Media" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Media_HandTool"/>
+			<command idQ="Media_SelectionTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand icon="video_two_kd" id="InsertVideo" ksoCmd="InsertVideo" text="@InsertVideo"/>
+		<KxLegacyTriggerCommand icon="volume_broadcasting_kd" id="InsertAudio" ksoCmd="InsertAudio" text="@InsertAudio"/>
+		<KxLegacyTriggerCommand customTip="AddPoster" icon="pic_kd" id="Media_AddPoster" ksoCmd="AddPoster" text="@AddPoster"/>
+		<KxLegacyTriggerCommand customTip="ExitMediaEdit" icon="close_window_kd" id="Media_ExitEdit" ksoCmd="ExitMediaEdit" text="@EditExit"/>
+		<KListCommand controlType="0" customTip="EditContent" icon="play_kd" id="Media_PlayCondition" ksoCmd="PlayCondition" layout_lineCount="1" rbFileMenuEmbed="1" text="@PlayCondition">
+			<command idQ="Media_ClickPlay"/>
+			<command idQ="Media_AutoPlay"/>
+		</KListCommand>
+		<KListCommand groupTip="MediaSettingGroup" icon="setup_kd" id="RB_MediaTool" layout_lineCount="1" rbFileMenuEmbed="1" text="@Setting">
+			<command idQ="InsertVideo"/>
+			<command idQ="InsertAudio"/>
+			<command idQ="Media_PlayCondition"/>
+			<command idQ="Media_AddPoster"/>
+		</KListCommand>
+		<KListCommand groupTip="MediaExitGroup" id="RB_ExitEdit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Media_ExitEdit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_MediaEdit">
+			<command idQ="RB_MouseTool_Media"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_MediaTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_ExitEdit"/>
+		</subcommand>
+	</subcommands>
+</shell>

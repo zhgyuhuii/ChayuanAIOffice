@@ -1,0 +1,20 @@
+<svg lang="zh_CN" xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52" fill="none" km_stroke-width="1" km_darkmode="true" requiredCustomFeatures="data-kd-color-scheme"><desc>多级编号4展台_多级_有序列表</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-quaternary {
+       fill: var(--kd-color-icon-quaternary, #E6E6E6);
+       stroke: var(--kd-color-icon-quaternary, #E6E6E6);
+       km_fill: #E6E6E6;
+       km_stroke: #E6E6E6;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-5" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector" d="M9.75 8.75H18.25" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_2" d="M8.45759 5C8.45759 5 6.75 6.07141 6.75 8.74995C6.75 11.4285 8.45759 12.4999 8.45759 12.4999M19.5393 5C19.5393 5 21.2469 6.07141 21.2469 8.74995C21.2469 11.4285 19.5393 12.4999 19.5393 12.4999" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-4" class="kd-color-icon-quaternary kd-stroke-width-icon-regular"><path id="Rectangle 41989 (Stroke)" d="M50 50V51H2V50H50ZM50 2H2V51L1.89746 50.9951C1.42703 50.9472 1.05278 50.573 1.00488 50.1025L1 50V2C1 1.44772 1.44772 1 2 1L50 1C50.5523 1 51 1.44772 51 2V50C51 50.5177 50.6067 50.9438 50.1025 50.9951L50 51V2Z" stroke="none"/></g><g id="group-3" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Ellipse 266" d="M15 27.2441C15 27.7964 14.5523 28.2441 14 28.2441C13.4477 28.2441 13 27.7964 13 27.2441C13 26.6919 13.4477 26.2441 14 26.2441C14.5523 26.2441 15 26.6919 15 27.2441Z" stroke="none"/></g><g id="group-2" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector_3" d="M6.75 21.3279L9.04433 20.0011C9.05047 19.9976 9.05769 20.0028 9.05769 20.0107V28" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Vector_4" d="M8.45759 35.0001C8.45759 35.0001 6.75 36.0715 6.75 38.7501C6.75 41.4286 8.45759 42.5 8.45759 42.5M19.5393 35.0001C19.5393 35.0001 21.2469 36.0715 21.2469 38.7501C21.2469 41.4286 19.5393 42.5 19.5393 42.5M12.5 35.8279L14.4884 34.5011C14.4937 34.4976 14.5 34.5028 14.5 34.5107V42.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g><g id="group-0" class="kd-color-icon-quaternary kd-stroke-width-icon-regular"><path id="Vector_5" d="M28 39.75L45.25 39.75" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_6" d="M27.75 9.75L45.25 9.75" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_7" d="M6.75 16.25L45.25 16.25" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_8" d="M6.75 31.25L45.25 31.25" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_9" d="M6.75 46.25H45.25" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="Vector_10" d="M28 25L45.25 25" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

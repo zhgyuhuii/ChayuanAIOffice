@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>整理_Collated</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="Rectangle 34624880" d="M15.5 5C15.5 4.72386 15.7239 4.5 16 4.5H21C21.2761 4.5 21.5 4.72386 21.5 5V21C21.5 21.2761 21.2761 21.5 21 21.5H16C15.7239 21.5 15.5 21.2761 15.5 21V5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3823" d="M21.5 2.5H14C13.7239 2.5 13.5 2.72386 13.5 3V20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3824" d="M17.5 18.5H19.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3825" d="M17.5 15.5H19.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Rectangle 34624881" d="M4.5 5C4.5 4.72386 4.72386 4.5 5 4.5H10C10.2761 4.5 10.5 4.72386 10.5 5V21C10.5 21.2761 10.2761 21.5 10 21.5H5C4.72386 21.5 4.5 21.2761 4.5 21V5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3826" d="M10.5 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3827" d="M6.5 18.5H8.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3828" d="M6.5 15.5H8.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

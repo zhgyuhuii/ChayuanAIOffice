@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>形状24_Shapes</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-quaternary {
+       fill: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       stroke: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       km_fill: #FDE0CE;
+       km_stroke: #FDE0CE;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-2" class="kd-color-icon-orange-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M15 8C11.134 8 8 11.134 8 15C8 15.1681 8.00593 15.3348 8.01758 15.5H15.5V8.01758C15.3348 8.00593 15.1681 8 15 8Z" stroke="none"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M8 15.5H3C2.72386 15.5 2.5 15.2761 2.5 15V3C2.5 2.72386 2.72386 2.5 3 2.5H15C15.2761 2.5 15.5 2.72386 15.5 3V8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M8.01758 15.5C8.27395 19.1326 11.3021 22 15 22C18.866 22 22 18.866 22 15C22 11.3021 19.1326 8.27395 15.5 8.01758" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line_3" d="M15 8C11.134 8 8 11.134 8 15C8 15.1681 8.00593 15.3348 8.01758 15.5H15.5V8.01758C15.3348 8.00593 15.1681 8 15 8Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

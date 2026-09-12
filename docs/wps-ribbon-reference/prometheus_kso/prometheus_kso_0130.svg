@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>总行表_TotalRow_Table</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular">
+<path id="Vector 3683" d="M9.5 6V5C9.5 4.72386 9.27614 4.5 9 4.5H5.62419C5.37264 4.5 5.23278 4.79098 5.38993 4.98741L6.75012 6.68765C6.89621 6.87026 6.89621 7.12974 6.75012 7.31235L5.38993 9.01259C5.23278 9.20902 5.37264 9.5 5.62419 9.5H9C9.27614 9.5 9.5 9.27614 9.5 9V8" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="Vector 3682" d="M13 14.5H2C1.72386 14.5 1.5 14.2761 1.5 14V2C1.5 1.72386 1.72386 1.5 2 1.5H13C13.2761 1.5 13.5 1.72386 13.5 2V14C13.5 14.2761 13.2761 14.5 13 14.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3684" d="M2 12.5H13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3685" d="M2 5.5H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3686" d="M2 8.5H4" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3687" d="M11 5.5H13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3688" d="M11 8.5H13" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3689" d="M5.5 12V11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3690" d="M9.5 12V11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3691" d="M5.5 3V2" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3692" d="M9.5 3V2" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

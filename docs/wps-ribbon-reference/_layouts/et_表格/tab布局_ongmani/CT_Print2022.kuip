@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_print2022" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPrint2022PaperSourceCommand controlType="2" id="Print2022PaperSource" ksoCmd="Print2022PaperSource" notshowtooltip="1"/>
+		<KxPrint2022HeaderBarCommand id="Print2022HeaderBar">
+			<KxPrint2022ExitPreviewTriggerCommand hotKey="T" icon="exit_two_kd" id="Print2022ControlTitleExit" idMso="ExitPreview" ksoCmd="ExitPreview" notshowtooltip="1" rbHotKey="C" text="@Exit PrintPreview"/>
+		</KxPrint2022HeaderBarCommand>
+		<KxPrint2022ControlPaneCommand id="Print2022ControlPane">
+			<KxPrint2022ControlPaneTitleContainer id="Print2022ControlPaneTitleContainer" spacing="12">
+				<KxPrint2022ControlPaneTitleCommand id="Print2022ControlPaneTitle" spacing="8">
+					<KxEtUserConfigCommand id="ParameterSetting" ksoCmd="ConfigurePrintSetting"/>
+					<KxPrint2022OpenUrlCommand detail="@Click here for more printing help" icon="question_kd" id="PrintHelpCenter" idKey="CommonPrintCollegeBootScreen" ksourl="PrintHelpCenter" needLogin="false"/>
+					<KxPrint2022PanePositionChangeCommand hotKey="C" id="Print2022PanePositionChange" needLogin="false"/>
+					<KxPrint2022OpenUrlCommand detail="@Feedback" forceExternalBrowser="0" hotKey="F" icon="customer_service_kd" id="Print2022ControlTitleFeedback" idKey="CommonPrint2022ControlTitleFeedback" ksourl="ControlTitleFeedback" needLogin="false" notshowtooltip="1"/>
+				</KxPrint2022ControlPaneTitleCommand>
+			</KxPrint2022ControlPaneTitleContainer>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPrinterNameItem" spacing="6" text="@Printer Name">
+				<KxEtPrint2022PrinterNameCommand controlType="2" icon="Printer2022;Printer2022-normal;Printer2022-disable" id="Print2022PrinterName" ksoCmd="PrinterName" notshowtooltip="1" relatedCmd="Print2022PaperSource"/>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPrinterCopiesItem" spacing="21" text="@Paper Copies">
+				<KxLiteSpinBoxCommand id="Print2022PrinterCopies" ksoCmd="PrinterCopies" needLabel="0" notshowtooltip="1"/>
+			</KxPrint2022CPItemGroupCommand>
+			<separator/>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPrinterPaperSizeItem" spacing="4" text="@Paper Info">
+				<KxEtPrinterPaperSizeCommand controlType="2" id="Print2022PrinterPaperSize" ksoCmd="PrinterPaperSize" notshowtooltip="1"/>
+				<KxPrint2022LayoutCommand buttonStyle="3" iconSize="16" id="Print2022OrientationLayout" spacing="4">
+					<KxLegacyTriggerCommand aid="935" faceid="90" hotKey="V" icon="print_vertical_kd" id="Print2022RB_PrevPortrait" ksoCmd="PrevPortrait" needLogin="false" notshowtooltip="1" text="@Portrait"/>
+					<KxLegacyTriggerCommand aid="934" faceid="89" hotKey="L" icon="print_horizontal_kd" id="Print2022RB_PrevLandscape" ksoCmd="PrevLandscape" needLogin="false" notshowtooltip="1" text="@Landscape"/>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<KxEtPrint2022PrintModeItemGroupCommand id="Print2022CPPrintModeItem" text="@Print Mode">
+				<KxPrint2022ComboBoxListCommand extendedBottomMargins="4" extendedLeftMargins="4" extendedRightMargins="4" extendedSpacing="4" extendedTopMargins="4" id="Print2022CPPrintMode" ksoCmd="Print2022PrintWay">
+					<KxPrint2022LayoutCommand id="Print2022PrintModeItemLayout" layoutName="vbox" spacing="12">
+						<KxPrint2022RichTextButtonCommand icon="template_kd" id="PrintSingleButton" index="0" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Print on one side of the paper only" text="@Single side print"/>
+						<KxPrint2022RichTextButtonCommand icon="book_flip_kd" id="PrintDuplexLongSideButton" index="2" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Flip page from the long side" text="@Duplex Print-Long Side Flip"/>
+						<KxPrint2022RichTextButtonCommand icon="page_single_continuous_kd" id="PrintDuplexShortSideButton" index="3" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Flip page from the short side" text="@Duplex Print-short Side Flip"/>
+						<KxPrint2022RichTextButtonCommand icon="book_page_turning_kd" id="PrintDuplexManualButton" index="1" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Manually print the other side according to the prompts" text="@Manual duplex print"/>
+					</KxPrint2022LayoutCommand>
+					<KxPrint2022LayoutCommand id="Print2022PrintModeCheckLayout" layoutName="vbox" spacing="4">
+						<separator/>
+						<KxPrint2022LayoutCommand id="Print2022PrintModeChildLayout" layoutName="vbox" spacing="4">
+							<KxPrint2022CheckButtonCommand bottomMargin="4" icon="print_inverse_kd" id="PrintInverse" ksoCmd="Print2022Inverse" leftMargin="15" notshowtooltip="1" spacing="12" text="@Inverse output" topMargin="8"/>
+							<KxPrint2022CheckButtonCommand bottomMargin="4" icon="doc_import_kd" id="PrintToFile" ksoCmd="Print2022ToFile" leftMargin="15" notshowtooltip="1" spacing="12" text="@Print to file" topMargin="4"/>
+							<KxPrint2022CheckButtonCommand bottomMargin="4" icon="Print2022ToFile" id="PrintGaryMode" idKey="CommonUseGrayMode" ksoCmd="Print2022GaryMode" leftMargin="15" notshowtooltip="1" spacing="12" text="@Print GaryMode" topMargin="4"/>
+						</KxPrint2022LayoutCommand>
+					</KxPrint2022LayoutCommand>
+				</KxPrint2022ComboBoxListCommand>
+			</KxEtPrint2022PrintModeItemGroupCommand>
+			<KxEtPrint2022PrintModeItemGroupCommand id="Print2022CPPrintModeItemNew" text="@Print Mode">
+				<KxEtPrint2022ModeComboBoxListCommand extendedBottomMargins="4" extendedLeftMargins="4" extendedRightMargins="4" extendedSpacing="4" extendedTopMargins="4" id="Print2022CPPrintModeNew" ksoCmd="Print2022PrintWay">
+					<KxEtPrint2022ModeLayoutCommand id="Print2022PrintModeItemLayoutNew" layoutName="vbox" spacing="12">
+						<KxEtPrint2022DuplexItemCommand icon="template_kd" id="PrintSingleButtonNew" index="0" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Print on one side of the paper only" text="@Single side print"/>
+						<KxEtPrint2022DuplexItemCommand icon="book_flip_kd" id="PrintDuplexLongSideButtonNew" index="2" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Flip page from the long side" text="@Duplex Print-Long Side Flip"/>
+						<KxEtPrint2022DuplexItemCommand icon="page_single_continuous_kd" id="PrintDuplexShortSideButtonNew" index="3" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Flip page from the short side" text="@Duplex Print-short Side Flip"/>
+						<KxEtPrint2022DuplexItemCommand icon="book_page_turning_kd" id="PrintDuplexManualButtonNew" index="1" ksoCmd="Print2022SingleDuplex" notshowtooltip="1" subText="@Manually print the other side according to the prompts" text="@Manual duplex print"/>
+					</KxEtPrint2022ModeLayoutCommand>
+					<KxEtPrint2022ModeLayoutCommand id="Print2022PrintOutPagesLayout" layoutName="vbox" spacing="4">
+						<separator/>
+						<KxEtPrint2022PrintOutPagesItemCommand id="PrintAllPagesButton" index="0" ksoCmd="Print2022PrintOutPages" notshowtooltip="1" text="@All pages"/>
+						<KxEtPrint2022PrintOutPagesItemCommand id="PrintOddPagesButton" index="1" ksoCmd="Print2022PrintOutPages" notshowtooltip="1" text="@Odd pages only"/>
+						<KxEtPrint2022PrintOutPagesItemCommand id="PrintEvenPagesButton" index="2" ksoCmd="Print2022PrintOutPages" notshowtooltip="1" text="@Even pages only"/>
+					</KxEtPrint2022ModeLayoutCommand>
+					<KxEtPrint2022ModeLayoutCommand id="Print2022PrintModeCheckLayoutNew" layoutName="vbox" spacing="4">
+						<separator/>
+						<KxEtPrint2022ModeLayoutCommand id="Print2022PrintModeChildLayoutNew" layoutName="vbox" spacing="8">
+							<KxEtPrint2022ModeToggleCommand bottomMargin="4" id="PrintReverseOrder" ksoCmd="Print2022ReversePrintOrder" leftMargin="15" notshowtooltip="1" spacing="12" text="@Reverse page order" topMargin="8"/>
+							<KxEtPrint2022ModeToggleCommand bottomMargin="4" id="PrintInverseNew" ksoCmd="Print2022Inverse" leftMargin="15" notshowtooltip="1" spacing="12" text="@Inverse output" topMargin="4"/>
+							<KxEtPrint2022ModeToggleCommand bottomMargin="4" id="PrintToFileNew" ksoCmd="Print2022ToFile" leftMargin="15" notshowtooltip="1" spacing="12" text="@Print to file" topMargin="4"/>
+							<command idQ="PrintGaryMode"/>
+						</KxEtPrint2022ModeLayoutCommand>
+					</KxEtPrint2022ModeLayoutCommand>
+				</KxEtPrint2022ModeComboBoxListCommand>
+			</KxEtPrint2022PrintModeItemGroupCommand>
+			<separator/>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPPrintRangeItem" spacing="16" text="@Print Range">
+				<KxEtPrint2022RangeComboBoxListCommand id="Print2022EtPrintRangeList" isCommitData="1" ksoCmd="Print2022PrintContentRange" usePopupWidgetMargin="false"/>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPPrintPageRangeItem" spacing="16" text="@Page Range">
+				<KxEtPrinterPageRangeCommand id="Print2022PrinterPageRange" ksoCmd="Print2022PageRange" needLabel="0" notshowtooltip="1"/>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand displayCtrl="true" id="PrintColorItem" spacing="4" text="@Print Color">
+				<KxPrint2022LayoutCommand align="left" iconSize="16" id="PrintColorLayout" spacing="8">
+					<KxValueCommand buttonStyle="3" icon="black_white_kd" id="Print2022BlackAndWhite" index="1" ksoCmd="PrintColor" needLogin="false" notshowtooltip="1" text="@Black And White"/>
+					<KxValueCommand buttonStyle="3" icon="filter_photo_kd" id="Print2022Colorful" index="0" ksoCmd="PrintColor" needLogin="false" notshowtooltip="1" text="@Colorful"/>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand descriptionTextSubCommandIDs="PagesPerSheet_1;PagesPerSheet_2;PagesPerSheet_4;PagesPerSheet_6;PagesPerSheet_more" id="Print2022CPPagesPerSheetItem" spacing="0" text="@Pages per sheet">
+				<KxPrint2022LayoutCommand buttonStyle="19" iconSize="24" id="Print2022CPPagesPerSheetLayout" spacing="2">
+					<KxValueCommand hotKey="1" icon="one_slide_kd" id="PagesPerSheet_1" index="1" isRibbonLargeButton="false" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@1 Page"/>
+					<KxValueCommand hotKey="2" icon="shape_two_kd" id="PagesPerSheet_2" index="2" isRibbonLargeButton="false" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@2 Pages"/>
+					<KxValueCommand hotKey="4" icon="shape_four_kd" id="PagesPerSheet_4" index="4" isRibbonLargeButton="false" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@4 Pages"/>
+					<KxValueCommand hotKey="6" icon="six_square_kd" id="PagesPerSheet_6" index="6" isRibbonLargeButton="false" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@6 Pages"/>
+					<KxPrint2022MoreListCommand hotKey="M" icon="more_kd" id="PagesPerSheet_more" needLogin="false" notshowtooltip="1" text="@More">
+						<KxValueCommand id="PagesPerSheet_8" index="8" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@8 Pages"/>
+						<KxValueCommand id="PagesPerSheet_9" index="9" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@9 Pages"/>
+						<KxValueCommand id="PagesPerSheet_16" index="16" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@16 Pages"/>
+						<KxValueCommand id="PagesPerSheet_32" index="32" ksoCmd="Print2022PagesPerSheet" needLogin="false" notshowtooltip="1" text="@32 Pages"/>
+						<KxPrint2022Scale2PaperSizeCommand disableTrigger="true" icon="page_zoom_kd" id="Scale2PaperSize" ksoCmd="Print2022Scale2PaperSize" notshowtooltip="1" text="@Scale to paper size"/>
+					</KxPrint2022MoreListCommand>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<KxEtPrint2022PageOrderCPItemGroupCommand displayCtrl="true" id="Print2022CPPaperOrderItem" spacing="6" text="@Paper Order">
+				<KxPrint2022LayoutCommand buttonStyle="4194305" iconSize="24" id="Print2022CPPaperOrderLayout" spacing="8">
+					<KxEtPrint2022PaperOrderValueCommand customTheme="kxPrint2022PageOrderToolButton" detail="@From left to right" icon="paper_order_horizontal_kd" id="PaperOrder_l2r" index="0" ksoCmd="Print2022PaperOrder" needLogin="false"/>
+					<KxValueCommand customTheme="kxPrint2022PageOrderToolButton" detail="@From top to bottom" icon="paper_order_vertical_kd" id="PaperOrder_t2b" index="1" ksoCmd="Print2022PaperOrder" needLogin="false"/>
+					<KxValueCommand customTheme="kxPrint2022PageOrderToolButton" detail="@repeat" icon="paper_order_repeat_kd" id="PaperOrder_repeat" index="2" ksoCmd="Print2022PaperOrder" needLogin="false"/>
+				</KxPrint2022LayoutCommand>
+				<separator/>
+				<KxLegacyTriggerCommand buttonStyle="3" icon="draw_grid_kd" id="PrintCutterLine" ksoCmd="Print2022CutterLine" needLogin="false" notshowtooltip="1" text="@Draw line between pages"/>
+			</KxEtPrint2022PageOrderCPItemGroupCommand>
+			<separator/>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPZoomItem" spacing="6" text="@Print Zoom">
+				<KxEtPrint2022PreviewZoomMode controlType="2" id="Print2022PreviewZoomMode" ksoCmd="Print2022PageZoomComboBox" notshowtooltip="1"/>
+				<KxEtPrint2022ZoomCommand aid="908" controlType="2" id="Print2022PreviewZoomSize" ksoCmd="PrintPreviewZoomCombo" notshowtooltip="1"/>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand id="Print2022CPPageMarginsItem" spacing="6" text="@Page Margins">
+				<KxEtPrint2022PageMarginCommand id="Print2022PageMargins" ksoCmd="PageSetup" notshowtooltip="1" rbHotKey="M" text="@Page Margins">
+					<command idQ="MoreMargins"/>
+					<separator/>
+					<KxPrint2022LabelCommand id="Print2022PageMarginsCenterModeLabel" isBold="true" ksoCmd="PrintPreviewCenterPrint" needLogin="false" notshowtooltip="1" qtspyName="Print2022PageMarginsCenterModeLabel" text="@Center Mode"/>
+					<KxEtLayoutCommand align="left" extensible="true" iconSize="24" id="Print2022PageMarginsCenterModeList" spacing="8">
+						<KxCheckBoxCommand id="Print2022PageMarginsCenterModeVertical" ksoCmd="PrintPreviewCenterVertically" needLogin="false" notshowtooltip="1" text="@Vertical"/>
+						<KxCheckBoxCommand id="Print2022PageMarginsCenterModeHorizontal" ksoCmd="PrintPreviewCenterHorizontally" needLogin="false" notshowtooltip="1" text="@Horizontal"/>
+					</KxEtLayoutCommand>
+				</KxEtPrint2022PageMarginCommand>
+				<KxLegacyTriggerCommand buttonStyle="3" hotKey="J" icon="doc_margins_custom_kd" id="Print2022AdjustMargins" ksoCmd="PrintPreviewMargins" needLogin="false" notshowtooltip="1" text="@Manual adjustment"/>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand id="PrintPreviewPrintView" spacing="0" text="@View">
+				<KxPrint2022LayoutCommand align="left" iconSize="16" id="PrintPreviewPrintPageLayout" spacing="7">
+					<KxPrint2022LiteButtonCommand bottomMargin="7" id="PrintPreviewNormal" ksoCmd="Normal" leftMargin="10" notshowtooltip="1" qtspyName="PrintPreViewNormal" radius="6" rightMargin="10" text="@Normal" topMargin="7"/>
+					<KxPrint2022LiteButtonCommand bottomMargin="7" id="PrintPreviewPageBreakPreview" ksoCmd="PageBreakPreview" leftMargin="10" notshowtooltip="1" qtspyName="PrintPreViewPageBreakPreview" radius="6" rightMargin="10" text="@Page Break Preview" topMargin="7"/>
+					<KxLegacyTriggerCommand buttonStyle="3" icon="nine_grids_kd" id="PrintPreviewGridlines" ksoCmd="PrintGridlines" needLogin="false" notshowtooltip="1" text="@PrintGridlines"/>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<KxPrint2022CPItemGroupCommand id="PrintPreviewPrintPage" spacing="0" text="@Page">
+				<KxPrint2022LayoutCommand align="left" iconSize="16" id="PrintPreviewPrintPageLayout" spacing="7">
+					<KxPrint2022HeaderFooterCommand bottomMargin="7" hotKey="O" id="PrintPreviewHeaderFooter" ksoCmd="PageSetup" leftMargin="10" notshowtooltip="1" qtspyName="PrintPreviewHeaderFooter" radius="6" rightMargin="10" tabIndex="2" text="@PrintHeaderFooter" topMargin="7"/>
+					<KxPrint2022MenuButtonCommand enableDependsOnSubCommands="true" id="PrintPreviewPrintTitle" minimumWidth="68" needLogin="false" notshowtooltip="1" text="@Print Title" visibleDependsOnSubCmds="true">
+						<KxLegacyTriggerCommand id="Print2022SetTopTitleRows" ksoCmd="PrintPreviewSetTopTitleRows" needLogin="false" notshowtooltip="1" text="@Set Top Title Rows"/>
+						<KxLegacyTriggerCommand id="Print2022SetBottomTitleRows" ksoCmd="PrintPreviewSetBottomTitleRows" needLogin="false" notshowtooltip="1" text="@Set Bottom Title Rows"/>
+						<KxLegacyTriggerCommand id="Print2022SetLeftTitleColumns" ksoCmd="PrintPreviewSetLeftTitleColumns" needLogin="false" notshowtooltip="1" text="@Set Left Title Columns"/>
+					</KxPrint2022MenuButtonCommand>
+					<KxPrint2022MenuButtonCommand enableDependsOnSubCommands="true" id="PrintPreviewPrintArea" needLogin="false" notshowtooltip="1" text="@Print Area" visibleDependsOnSubCmds="true">
+						<KxLegacyTriggerCommand id="PrintPreviewSetPrintArea" ksoCmd="PrintPreviewSetPrintArea" needLogin="false" notshowtooltip="1" text="@Set Print Area"/>
+						<KxLegacyTriggerCommand id="PrintPreviewClearPrintArea" ksoCmd="PrintPreviewClearPrintArea" needLogin="false" notshowtooltip="1" text="@Clear Print Area"/>
+					</KxPrint2022MenuButtonCommand>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<KxEtPrintSmartTypesetCommand bottomMargin="7" id="Print2022SmartTypeSetting" idKey="EtPrintPreviewTypeset" ksoCmd="Print2022SmartTypeSetting" text="@Automatically optimize print layout" topMargin="7"/>
+			<separator/>
+			<KxPrint2022CPItemGroupCommand id="PrintPreviewSyncPrintPagesetup" spacing="0" text="@Sync Pagesetup">
+				<KxPrint2022LayoutCommand align="left" iconSize="16" id="PrintPreviewPrintPageLayout" spacing="7">
+					<KxPrint2022LiteButtonCommand bottomMargin="7" id="Print2022ApplyPagesetup" ksoCmd="Print2022ApplyPageSetup" leftMargin="10" qtspyName="Print2022ApplyPagesetup" radius="6" rightMargin="10" text="@Apply to other worksheets" topMargin="7"/>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022CPItemGroupCommand>
+			<separator/>
+			<KxPrint2022LayoutCommand align="left" id="PrintPreviewMoreLayout" spacing="6">
+				<KxPrint2022LiteButtonCommand bottomMargin="7" customTip="PageSetup" hotKey="U" id="Print2022PageSetup" ksoCmd="PageSetup" leftMargin="10" radius="6" rightMargin="10" text="@Page Setup" topMargin="7"/>
+				<KxPrint2022OptTipCommand icon="PrintOptionTip" id="PrintOptTip" idKey="CommonPrintCollegeBootScreen" ksourl="PrintCollegeBootScreenET" needLogin="false" notshowtooltip="1" text="@Option Tips"/>
+				<KxEtPrintDiagEntryCommand id="Print2022DiagEntry" needLogin="false" notshowtooltip="1"/>
+			</KxPrint2022LayoutCommand>
+			<KxEtPrintAIOptimizeCommand id="PrintAIOptimizeCommand" idKey="ETPrintAIOptimizeCommand" ksoCmd="PrintAIOptimize"/>
+			<KxPrint2022ControlPaneBottomContainer id="Print2022ControlPaneBottomContainer" spacing="12">
+				<KxPrint2022LayoutCommand id="Print2022ControlPaneTitleContent" spacing="8">
+					<KxPrint2022PrintButtonCommand customTip="Print" hotKey="P" id="Print2022" idMso="PrintDirect" ksoCmd="PrintDirect"/>
+				</KxPrint2022LayoutCommand>
+			</KxPrint2022ControlPaneBottomContainer>
+		</KxPrint2022ControlPaneCommand>
+		<KxPrint2022StatusBarCommand id="Print2022StatusBar">
+			<KxPrint2022LayoutCommand align="left" id="LeftLayout" spacing="12"/>
+			<KxPrint2022LayoutCommand align="center" id="CenterLayout">
+				<KxLegacyTriggerCommand icon="PrintPreviewPrePage;;;PrintPreviewPrePage-disabled" id="Print2022PrevPreviousPageInPrintPreviewTab" ksoCmd="PrevPreviousPage" needLogin="false" notshowtooltip="1" qtspyName="PrevPreviousPage" rbHotKey="B" spaceHint="suitable" text="@Previous&#10;Page"/>
+				<KxPrint2022GotoPageCommand id="Print2022PreviewPageSkip" ksoCmd="PrevPageSkip" needLogin="false" qtspyName="PrintPreviewPageSkip"/>
+				<KxLegacyTriggerCommand icon="PrintPreviewNextPage;;;PrintPreviewNextPage-disabled" id="Print2022PrevNextPageInPrintPreviewTab" ksoCmd="PrevNextPage" needLogin="false" notshowtooltip="1" qtspyName="PrevNextPage" rbHotKey="N" spaceHint="suitable" text="@Next&#10;Page"/>
+			</KxPrint2022LayoutCommand>
+			<KxPrint2022LayoutCommand align="right" id="RightLayout">
+				<command idQ="NormalCommand"/>
+				<command idQ="NormalCommandProBedding"/>
+				<command idQ="PageLayoutViewCommand"/>
+				<command idQ="PageBreakPreviewCommand"/>
+				<command idQ="PageBreakPreviewCommandProBedding"/>
+				<KStatusSpaceCommand space="6"/>
+				<separator/>
+				<KStatusSpaceCommand space="6"/>
+				<command idQ="ZoomCommand"/>
+			</KxPrint2022LayoutCommand>
+		</KxPrint2022StatusBarCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="Print2022Context">
+			<command idQ="Print2022HeaderBar"/>
+			<command idQ="Print2022ControlPane"/>
+			<command idQ="Print2022StatusBar"/>
+		</subcommand>
+	</subcommands>
+</shell>

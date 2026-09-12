@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_tabletool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="TableToolPropertyGroup" horizontalSpacing="4" icon="resize_table_kd" id="RB_Properties" text="@Properties">
+			<KLabelCommand fixedHeight="24" spaceHint="suitable" text="@Table Name:"/>
+			<KxLineEditCommand customTip="TableName" fixedHeight="24" fixedWidth="100" ksoCmd="TableName" qtspyName="TableName" rbHotKey="A" spaceHint="suitable" text="@Table Name:"/>
+			<KxLegacyTriggerCommand aid="7765" customTip="ResizeTable" icon="resize_table_kd" ksoCmd="ResizeTable" qtspyName="ResizeTable" rbHotKey="I" text="@Resize Table"/>
+		</KListCommand>
+		<KListCommand groupTip="TableToolToolGroup" icon="detailed_settings_kd" id="RB_Tools" text="@Tools">
+			<KxLegacyTriggerCommand customTip="RemoveDuplicates" icon="repeat_items_delete_kd" ksoCmd="RepeatWordDelete" qtspyName="RepeatWordDelete" rbHotKey="M" spaceHint="suitable" text="@Remove Duplicates"/>
+			<KxLegacyTriggerCommand aid="7375" customTip="ConvertToRange" icon="change_to_range_kd" ksoCmd="ConvertToRange" qtspyName="ConvertToRange" rbHotKey="G" spaceHint="suitable" text="@Convert to Range"/>
+			<KxLegacyTriggerCommand customTip="Slicer" hotKey="e" icon="slicer_insert_kd" id="InsertSlicer" ksoCmd="InsertSlicer" qtspyName="InsertSlicer" rbHotKey="E" text="@Insert Slicer"/>
+			<KxEtAIRecommendPivotTableCommand customTip="AIRecommendPivotTable" icon="sheet_ai_extract_kd" id="AIRecommendPivotTableTab" idKey="EtAIRecommendPivotTable" qtspyName="AIRecommendPivotTable" text="@One-Click PivotTable Generation"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="459" comtomTip="TableMenuRefresh" hotKey="r" icon="refresh_two_kd" id="Refresh" ksoCmd="Refresh" rbHotKey="R" text="@Refresh Data"/>
+		<KxLegacyTriggerCommand aid="1952" comtomTip="RefreshAll" hotKey="a" icon="refresh_two_kd" id="RefreshAll" ksoCmd="RefreshAll" rbHotKey="A" text="@Refresh All"/>
+		<KxLegacyTriggerCommand aid="3000076" comtomTip="PublishToSharePoint" dialogHint="1" hotKey="e" icon="export_kd" id="PublishToSharePoint" ksoCmd="PublishToSharePoint" rbHotKey="E" text="@Export Table to SharePoint List"/>
+		<KxLegacyTriggerCommand aid="1950" customTip="EditConnectionProperties" dialogHint="1" hotKey="I" icon="setup_kd" id="EditConnectionProperties" ksoCmd="EditConnectionProperties" rbHotKey="I" showiconAndText="1" spaceHint="suitable" text2="@Edit&#10;OLE DB Query" text="@Edit Connection Properties"/>
+		<KxLegacyTriggerCommand aid="1950" customTip="EditTextImport" dialogHint="1" hotKey="e" icon="setup_kd" id="EditTextImport" ksoCmd="EditTextImport" rbHotKey="I" showiconAndText="1" spaceHint="suitable" text="@Edit Text Import"/>
+		<KxLegacyTriggerCommand aid="1951" customTip="EDRProperties" dialogHint="1" hotKey="P" icon="setup_kd" id="EDRProperties" ksoCmd="EDRProperties" rbHotKey="P" showiconAndText="1" spaceHint="suitable" text="@Data Range Properties"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_TableTool">
+			<command idQ="RB_Properties"/>
+			<separator/>
+			<command idQ="RB_Tools"/>
+			<separator/>
+			<command idQ="RB_Table_Extra_Data"/>
+			<separator/>
+			<command idKey="TableStyleOption" idQ="TableStyleOptions"/>
+			<separator idKey="TableStyleOption"/>
+			<command idQ="TableStyles"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

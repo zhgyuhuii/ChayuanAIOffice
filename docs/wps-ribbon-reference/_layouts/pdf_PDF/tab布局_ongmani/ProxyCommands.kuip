@@ -1,0 +1,314 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.proxycommands" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modules>
+		<module name="wpsspeaker">
+			<KxPdfBridgeSpeakListCommand customTip="TextSpeech" hotKey="t" icon="doc_voice_reading_kd" id="OldTextToSpeechOption" rbHotKey="T" speakingTip="TextSpeech2" text="@Text Speech">
+				<KxPdfBridgeSpeakAllCommand hotKey="a" icon="TextSpeechAll" id="TextToSpeechAll" rbHotKey="A" text="@Full-Text Speech"/>
+				<KxPdfBridgeSpeakSelectionCommand hotKey="s" icon="TextSpeechSelect" id="TextToSpeechSelect" rbHotKey="S" text="@Selection Speech"/>
+				<KxPdfSpeakOutputCommand hotKey="o" icon="TextSpeechOutput" id="TextToSpeechOutput" rbHotKey="O" text="@Output Voice"/>
+				<separator/>
+				<KxPdfSpeakToolBarCommand hotKey="d" id="TextToSpeechToolBar" rbHotKey="D" text="@Show Toolbar"/>
+			</KxPdfBridgeSpeakListCommand>
+		</module>
+		<module name="aiocr2pdf">
+			<AIOCR2PdfCommand customTip="AIOCR2Pdf" from="PdfReader" icon="AIOCR2Pdf" id="AIOCR2Pdf" qtspyName="AIOCR2Pdf" text="@AIOCR2Pdf"/>
+		</module>
+		<module name="ktranslation">
+			<command idQ="Translation"/>
+			<KTranslationListCommand customTip="Translation" hotKey="PR" icon="translation_kd" id="TranslationMenu" rbHotKey="PR" referenceCommand="Translation" text="@Translation">
+				<command idQ="Translation"/>
+				<KTranslationOptionCommand hotKey="d" icon="translation_option_kd" qtspyName="translationoption"/>
+				<KxTranslationSelectCommand hotKey="h" icon="select_translate_kd" place="0" qtspyName="translationselect" text="@Translate selected text"/>
+			</KTranslationListCommand>
+			<KxListCommand customTip="Translation" icon="translation_kd" iconQat="translation_kd" id="Start_app_translationselect_ctreview" ksoCmd="StartTranslation" referenceCommand="start_translation" text="@Translation">
+				<KxTranslationSelectCommand id="app_translationselect_ctreview" place="0" qtspyName="translationselect" text="@TranslateSelectedFollow"/>
+				<KTranslationCommand customTip="Translation" iconQat="translation_kd" id="app_translation_ctreview" text="@TranslateSelectedPane"/>
+			</KxListCommand>
+			<KTranslationCommand customTip="Translation" hotKey="t" icon="translation_kd" iconQat="PdfTranslationQat" id="app_translation_ctreview" idKey="OnlineFeatures" rbHotKey="T" shortcutHint="F6" text="@Sentence Translation"/>
+			<KxTranslationSelectCommand controlType="1" hotKey="h" id="app_translationselect_ctreview" place="0" qtspyName="translationselect" text="@Translate selected text"/>
+			<KTranslationCommand customTip="Translation" hotKey="t" id="app_translation_selectfloat" rbHotKey="T" shortcutHint="F6" text="@Translate"/>
+			<KxTranslationSelectCommand hotKey="h" id="app_selecttranslate_selectfloat" place="0" qtspyName="translationselect" rbHotKey="H" text="@Translate selected text"/>
+			<KxTranslationSelectCommand customTip="TranslationSelectPdf" icon="translation_kd" id="Start_TranslationSelect" place="1" qtspyName="translationselect" spaceHint="autocompact" text="@Translate selected text2"/>
+			<KxTranslationSelectCommand customTip="TranslationSelectPdf" icon="translation_kd" id="Start_TranslationSelectFloatMenu" place="4" qtspyName="translationselect" text="@Translate selected text"/>
+			<KxTranslationSelectCommand icon="translation_ai_kd" id="ReadingMode_TranslationSelect" place="3" text="@Translate selected text2"/>
+			<KxPdfMinitoolBarTranslateCommand icon="translation_kd" id="FloatBarTranslation" place="3" text="@Translate selected text2"/>
+			<KxTranslationInitCommand id="TranslationInit"/>
+			<KxTpTranslationCommand alias="TpTranslation" id="TpTranslation" idKey="OnlineFeatures" tpIcon="translation_kd"/>
+		</module>
+		<module name="kdocumentfix">
+			<KDocumentFixCommand customTip="DocumentFix" icon="doc_modification_kd" id="DocumentFix" text="@Document Fix"/>
+		</module>
+		<module name="kweibo">
+			<KxPdf2PhotoCommand customTip="Pdf2PhotoCmd" detail="cloudsvr" hotKey="OD" icon="change_to_pic_two_kd" id="Pdf2Photo" rbHotKey="OD" text2="@PDF Export as Photo" text="@PDF Export as Photo"/>
+			<KxExportWeiboImageCommand controlType="0" customTip="ExportWeiboImageCmd" detail="CloudSvr" dialogHint="1" hotKey="OP" icon="change_to_pic_two_kd" id="ExportWeiboImageCmd" idMso="SaveAsPicture" ksoCmd="ExportWeiboImageCmd" rbHotKey="OP" text2="@Export as Image" text="@Export as Image"/>
+			<KxFileMenuExportWeiboImageCommand hotKey="G" icon="change_to_pic_two_kd" id="RbFileMenuExportWeiboImage" ksoCmd="ExportWeiboImageCmd" rbHotKey="G" text2="@Export as Image" text="@Photo"/>
+			<KxPdf2PhotoCommand customTip="PDF2Photo" id="ThumbnailMenuPDF2Photo" shortcutHint="Ctrl+Shift+I" text="@Convert2Photo"/>
+		</module>
+		<module name="kassistpdf">
+			<KxTpAssistPdfCommand alias="TpPdfAssist" hideTpTitle="true" icon="Pdf_Assist" id="TpPdfAssist" shortHint="@Assist" text="@Assist"/>
+		</module>
+		<module name="officespace">
+			<KPdfHPRoamingFileCommand detail="cloudsvr" id="PdfHPRoamingFileCommand"/>
+			<KxNewShareForCTHomeCommand customTip="LinkShareTip" icon="share_to_kd" id="WSLinkPreview" idKey="PDFLinkShare" text="@File Share"/>
+			<kxKOSFileMenuNewShareCommand controlType="0" hotKey="d" icon="share_to_kd" id="RbFileMenuNewShare_kos" infoId="s" text="@File Share"/>
+			<KxNewShareForMenuCommand hotKey="d" icon="share_to_kd" id="newShare" infoId="s" text="@File Share"/>
+			<KxNewShareForRClickTabCommand hotKey="d" icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineCn" infoId="s" text="@File Share"/>
+			<KxNewShareForRecentFilePanelCommand hotKey="d" icon="share_to_kd" id="newShareForRecentFilePanel" idKey="ShareUnified" infoId="s" text="@File Share"/>
+			<KxNewShareForRightTopCommand detail="@Share documents." hotKey="d" icon="share_to_kd" id="newShareForRightTop" infoId="s" text="@File Share"/>
+			<KxKOSShareDocCommandXa icon="share_to_kd" id="newShareForRecentFilePanel" idKey="ShareXa" shellEntry="recentFilePanel;pdf|menulist|menu_open_recent_share" text="@Share"/>
+			<KxKOSShareDocCommandXa icon="share_to_kd" id="newShareForRClickTab" idKey="CloudDocOnlineXa" shellEntry="doctab_rbclick;pdf|topbar|workspace_file_rightclick_share" text="@Share"/>
+			<KxKOSShareDocCommandXa icon="share_to_kd" id="KOSShareDocCommandXaHome" idKey="ShareXa" shellEntry="ct_Home" text="@Share"/>
+			<KxKOSShareDocCommandXa id="cmdShare" idKey="ShareXa" shellEntry="cmd_share"/>
+			<KxDocumentHistoryCommand filter="support:FileMenuDocumentHistory=true" hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" text="@Document History"/>
+			<KxNewShareForTraditionMenuCommand hotKey="d" icon="share_to_kd" id="newShareForTraditionMenu" infoId="s" text="@File Share"/>
+		</module>
+		<module name="docpermission">
+			<KxDocPermissionCommand customTip="DocPermission" defaultPage="Account" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInWorkSpaceTab" idKey="DocSecurityPermission" infoNum="15" qtspyName="DocumentsPremissions" rbHotKey="PE" text="@Document Encryption"/>
+			<KxDocPermissionCommand enterpriseWebPageUrl="/pdf_webdlg/myright.html" icon="people_key_kd" id="CurUserPermissionInSecurytyTab" qtspyName="CurUserPermission" rbHotKey="V" text="@Check Mine Permission"/>
+			<KxDocPermissionCommand enterpriseWebPageUrl="/pdf_webdlg/rightlist.html" icon="magnifier_lock_kd" id="CheckPermissionsInSecurytyTab" qtspyName="CheckPermissions" rbHotKey="R" text="@Check Users Permissions"/>
+			<KxDocPermissionCommand defaultPage="Account" icon="doc_encryption_kd" id="DocPermissionsInSecurytyTab" qtspyName="DocPermissionProtection" rbHotKey="R" text="@Document Permission"/>
+			<KxStatusMBSignCommand id="StatusMBSignCommand" idKey="MBVersionFlag" minimumWidth="105"/>
+		</module>
+		<module name="kfeedback">
+			<KxTabbarQAndACommand id="TabbarQAndA" shortcutHint="Alt+Q"/>
+		</module>
+		<module name="pdfaddpagenumber">
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" id="Insert_AddNewPageNumber" text="@AddNewPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" icon="doc_page_number_kd" id="Insert_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" icon="doc_page_number_kd" id="OrgPage_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" icon="doc_page_number_kd" id="ToolMenu_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" icon="doc_page_number_kd" id="AddPageNumber" text="@PageNumber"/>
+			<KxPdfUpdatePageNumberCommand id="Edit_UpdatePageNumber"/>
+			<KxPdfDeletePageNumberCommand customTip="DeleteNumberTips" id="Edit_DeletePageNumber" text="@DeleteNumber"/>
+			<KxPdfUpdatePageNumberCommand id="Insert_UpdatePageNumber"/>
+			<KxPdfDeletePageNumberCommand id="Insert_DeletePageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" id="RightMenu_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" id="Print_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" id="PrePrint_AddPageNumber" text="@AddPageNumber"/>
+			<KxPdfAddPageNumberCommand id="OperatePopup_AddPageNumber"/>
+			<KxPdfAddPageNumberCommand customTip="AddPageNumberTips" icon="doc_page_number_kd" id="ToolMenu_AddPageNumber" idKey="PdfPageNumber" text="@PageNumber"/>
+			<KxPdfUpdatePageNumberCommand id="ToolMenu_UpdatePageNumber" idKey="PdfPageNumber"/>
+			<KxPdfDeletePageNumberCommand customTip="DeleteNumberTips" id="ToolMenu_DeletePageNumber" idKey="PdfPageNumber" text="@DeleteNumber"/>
+		</module>
+		<module name="addsignature">
+			<KxSignaturePopMenuCommand customTip="PdfSignature" id="Insert_Signature_Web" text="@Signature"/>
+			<KxSignatureTriggerCommand customTip="PdfSignature" id="Insert_Signature_Dialog" text="@Signature"/>
+			<KxSignShortCutCommand id="Insert_Web_NewSign"/>
+		</module>
+		<module name="docdiffcompare">
+			<KxDocCompareCommand customTip="Compare" id="PDF_DOC_COMPARE"/>
+		</module>
+		<module name="screenrecorder">
+			<KxScreenRecorderCommand customTip="ScreenRecorder" icon="start_making_kd" id="ScreenRecorder" rbHotKey="" text="@Screen Recorder"/>
+		</module>
+		<module name="opencv">
+			<KOpencvToolCommand id="LoadOpencv"/>
+		</module>
+		<module name="pdfbatchcompression">
+			<PdfBatchCompressionCommand customTip="PDFCompress" id="MoreApp_Compress" text="@PDFCompress"/>
+			<PdfBatchCompressionCommand id="SaveAs_Compress"/>
+			<PdfBatchCompressionCommand id="Read_Compress"/>
+			<PdfBatchCompressionCommand id="Upload_Compress"/>
+			<PdfBatchCompressionCommand id="FileIconKListCommand_Compress"/>
+			<PdfBatchCompressionCommand id="SpecialFunc_PDFZZCompress"/>
+			<PdfBatchCompressionCommand id="OperatePopup_Compress"/>
+			<PdfBatchCompressionCommand id="RB_Compress"/>
+			<PdfBatchCompressionCommand id="TpCompress"/>
+			<PdfBatchCompressionCommand id="StartFunc_PDFZZCompress"/>
+		</module>
+		<module name="aiocr2pdf">
+			<AIOCR2PdfCommand customTip="AIOCR2Pdf" from="PdfReader" icon="AIOCR2Pdf" id="AIOCR2Pdf" qtspyName="AIOCR2Pdf" text="@AIOCR2Pdf"/>
+		</module>
+		<module name="pdfpageheaderfooter">
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" icon="doc_header_footer_kd" id="AddHeaderFooter_Page" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" id="AddHeaderFooter_Page_RightMenu" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" icon="doc_header_footer_kd" id="AddHeaderFooter_NewPage" text="@AddNewHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="UpdateHeaderFooterTips" icon="update_header_footer_kd" id="UpdateHeaderFooter_Page" text="@UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" id="AddHeaderFooter_OrgPage" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="UpdateHeaderFooterTips" id="UpdateHeaderFooter_OrgPage" text="@UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="DeleteHeaderFooterTips" id="DeleteHeaderFooter_OrgPage" text="@DeleteHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="DeleteHeaderFooterTips" icon="delete_header_footer_kd" id="DeleteHeaderFooter_Page" text="@DeleteHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="AddHeaderFooter_ToolMenu" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="UpdateHeaderFooter_ToolMenu" text="@UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="DeleteHeaderFooter_ToolMenu" text="@DeleteHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" icon="doc_header_footer_kd" id="AddHeaderFooter_Edit" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="UpdateHeaderFooterTips" icon="update_header_footer_kd" id="UpdateHeaderFooter_Edit" text="@UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="DeleteHeaderFooterTips" icon="delete_header_footer_kd" id="DeleteHeaderFooter_Edit" text="@DeleteHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" icon="doc_header_footer_kd" id="AddHeaderFooter_Protect" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="UpdateHeaderFooterTips" icon="update_header_footer_kd" id="UpdateHeaderFooter_Protect" text="@UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="DeleteHeaderFooterTips" icon="delete_header_footer_kd" id="DeleteHeaderFooter_Protect" text="@DeleteHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" id="Print_AddHeaderFooter" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand customTip="AddHeaderFooterTips" id="PrePrint_AddHeaderFooter" text="@AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="OperatePopup_AddHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="OperatePopup_UpdateHeaderFooter"/>
+			<KxPdfPageHeaderFooterCommand id="OperatePopup_DeleteHeaderFooter"/>
+		</module>
+		<module name="pdfbackground">
+			<KxPdfBackGroundCommand customTip="AddBackGroundTips" icon="background_add_kd" id="AddBackGround_Edit" text="@AddBackGround"/>
+			<KxPdfBackGroundCommand customTip="UpdateBackGroundTips" icon="background_update_kd" id="UpdateBackGround_Edit" text="@UpdateBackGround"/>
+			<KxPdfBackGroundCommand customTip="DeleteBackGroundTips" icon="background_delete_kd" id="DeleteBackGround_Edit" text="@DeleteBackGround"/>
+			<KxPdfBackGroundCommand customTip="AddBackGroundTips" icon="background_add_kd" id="AddBackGround_Insert" text="@AddBackGround"/>
+			<KxPdfBackGroundCommand customTip="UpdateBackGroundTips" icon="background_update_kd" id="UpdateBackGround_Insert" text="@UpdateBackGround"/>
+			<KxPdfBackGroundCommand customTip="DeleteBackGroundTips" icon="background_delete_kd" id="DeleteBackGround_Insert" text="@DeleteBackGround"/>
+		</module>
+		<module name="pdfcadmutualconverter">
+			<PdfCadMutualConverterCommand customTip="CADTOPdf" from="PdfReader" id="PdfCadMutualConverter" qtspyName="CADTOPdf" text="@CADTOPdf"/>
+			<PdfAppCenterPdf2CadCommand customTip="PDFTOCad" from="PdfReader" id="PdfAppCenterPdf2Cad" qtspyName="PDFTOCad" text="@PDFTOCad"/>
+		</module>
+		<module name="kscreengrab">
+			<KxLegacyTriggerCommand customTip="InterceptSelectedArea" icon="screenshot_area_kd" iconQat="cut_kd" id="Start_Tools_ScreenShot_Area" ksoCmd="InterceptSelectedArea" shortcutHint="Ctrl+Alt+X" text="@InterceptSelectedArea" wpsIsEanble="false"/>
+		</module>
+		<module name="kscreengrabocr">
+			<KxScrngrabCommand id="KxScrngrabCommand" targetModule="kscreengrabocr" text="@Screen Grab"/>
+			<KxScrngrabHideCommand id="KxScrngrabHideCommand" targetModule="kscreengrabocr" text="@Hide current window when taking screenshots"/>
+			<KxScrngrabOcrCommand id="KxScrngrabOcrCommand" targetModule="kscreengrabocr" text="@Screen Grab Ocr"/>
+			<KxScrngrabOcrHideCommand id="KxScrngrabOcrHideCommand" targetModule="kscreengrabocr" text="@Hide Current Window when Grabbing Screen"/>
+		</module>
+		<module name="kpdfelectronicinvoiceprint">
+			<KPdfElectronicInvoicePrintCommand customTip="PdfElectronicInvoicePrint" id="PdfElectronicInvoicePrint" text="@ElectronicInvoicePrint"/>
+		</module>
+		<module name="kpdfinvoiceassist">
+			<KPdfInvoiceAssistCommand id="PdfInvoiceAssist"/>
+			<KPdfInvoiceAssistCommand customTip="AppCenterPdfInvoiceAssist" from="PdfReader" id="AppCenterPdfInvoiceAssist" text="@PdfInvoiceAssist"/>
+		</module>
+		<module name="pdffloattool">
+			<KxPdfFloatToolCommand customTip="PdfFloatTool" from="PdfReader" id="PdfFloatTool" qtspyName="PdfFloatTool" text="@PdfFloatTool"/>
+		</module>
+		<module name="konlinefonts">
+			<KxMoreOnlineFontsCommand customTip="OnlineFonts" icon="font_replace_kd" id="MoreOnlineFonts" ksoCmd="FontName" text="@Online Fonts"/>
+		</module>
+		<module name="kdocerwpsscene">
+			<KResumeMatchCmd customTip="PdfResumeMatch" from="PdfReader" id="PdfResumeMatch" qtspyName="PdfResumeMatch" text="@PdfResumeMatch"/>
+		</module>
+		<module name="kstamptool">
+			<KStampToolGalleryCommand canHideText="0" customTip="StampTool" icon="stamp_kd" id="Insert_PdfStampTool" shellEntryType="tab_insert" text="@StampTool"/>
+			<KStampToolGalleryCommand customTip="StampTool" icon="stamp_kd" id="Edit_PdfStampTool" shellEntryType="tab_edit" text="@StampTool"/>
+			<KStampToolGalleryCommand customTip="StampTool" icon="stamp_kd" id="Protect_PdfStampTool" shellEntryType="tab_protect" text="@StampTool"/>
+		</module>
+		<module name="kaiformfillops">
+			<KxAiFormFillTaskPanelCommand id="AiSmartFormFillTaskpane"/>
+			<KxAiFormAskAICommand id="AiFormAskAI"/>
+		</module>
+		<module name="pdfcloudsignature">
+			<KxPdfCloudSignatureCommand id="Insert_CloudSignature"/>
+		</module>
+		<module name="ktaskpanelcopilot">
+			<KTaskPanelCopilotCommand alias="TpCopilot" icon="ai_kd" id="TpCopilot" shortHint="@Copilot AI" text="@WPS Copilot AI"/>
+		</module>
+		<module name="kdocfinalizedmgr">
+			<KDocFinalizedMgrCommand alias="TpDocFinalizedMgr" icon="doc_finalized_kd" id="TpDocFinalizedMgr" shortHint="@Document Finalized" text="@Document Finalized"/>
+		</module>
+		<module name="kdocerlibrary">
+			<KDocerLibraryCommand alias="TpDocerLibrary" icon="book_magnifier_kd" id="TpDocerLibrary" shortHint="@TpDocerLibrary" text="@Docer Library"/>
+		</module>
+		<module name="kpdfaigcbox">
+			<KxPdfAIGCCommand id="Floatbar_PDFAIGC_Summarize" qtspyName="Floatbar_AIGC_Summarize" text="@Summarize"/>
+			<KxPdfAIGCCommand id="Floatbar_PDFAIGC_Explain" qtspyName="Floatbar_AIGC_Explain" text="@Explain"/>
+			<KxPdfAIGCCommand id="Floatbar_PDFAIGC_Translate" qtspyName="Floatbar_AIGC_Translate" text="@Translate"/>
+			<KxPdfAIGCCommand id="Floatbar_PDFAIGC_Answer" qtspyName="Floatbar_PDFAIGC_Answer" text="@Answer"/>
+			<KxPdfAIGCCommand id="Floatbar_PDFAIGC_History" qtspyName="Floatbar_AIGC_History" text="@History"/>
+			<KxPdfAIGCCommand id="Floatbar_PDF_BOX_AIGC_Explain" qtspyName="Floatbar_PDFAIGC_BOX_Explain" selectType="box" text="@Explain"/>
+			<KxPdfAIGCCommand id="Floatbar_PDF_BOX_AIGC_Translate" qtspyName="Floatbar_PDFAIGC_BOX_Translate" selectType="box" text="@Translate"/>
+			<KxPdfAIGCCommand id="Floatbar_PDF_BOX_AIGC_Answer" qtspyName="Floatbar_PDFAIGC_BOX_Solving" selectType="box" text="@Solving"/>
+			<KxPdfAIGCCommand id="Floatbar_PDF_BOX_AIGC_Summarize" qtspyName="Floatbar_PDFAIGC_BOX_Summarize" selectType="box" text="@Summarize"/>
+			<KxPdfAIGCSelectWordsCommand customTip="WPS AI" hideMiniToolBar="1" icon="aigclogo" id="pdfaigc" text="@WPS AI" visible="false"/>
+			<KxPdfAIGCCommand id="FloatbarEntry_PDFAIGC_Translate" qtspyName="FloatbarEntry_PDFAIGC_Translate" text="@Translate"/>
+		</module>
+		<module name="kall2ppt">
+			<KxPdfAiCreatePPtxCommand id="WPSAI_PDF2PPTX"/>
+		</module>
+		<module name="karticlewebcloudsummary">
+			<KxArticleWebCloudSummaryCommand id="WPSAI_PDFARTICLE_WEBCLOUD_SUMMARY"/>
+		</module>
+		<module name="kpdfcopilot">
+			<KxPdfCopilotCommand id="pdfAiReading"/>
+			<KxPdfAISCBoxLingxiEntryCommand id="LingxiEntry_PDF_BOX" selectType="box"/>
+			<KJump2WebAiPPTCommand id="RbFileMenuJumpToPPTAI"/>
+			<KJump2WebAiPPTCommand entrance="RbFileMenuPdfFileToAiPpt" id="RbFileMenuPdfFileToAiPpt"/>
+		</module>
+		<module name="kpubaigcbox">
+			<KxAISCLingxiEntryCommand id="LingxiEntry"/>
+		</module>
+		<module name="kpdfdocrepair">
+			<KxPdfDocRepairCommand id="PDF_DOC_REPAIR"/>
+		</module>
+		<module name="kproofread">
+			<KProofreadCommand customTip="Proofread" icon="doc_tick_kd" id="PdfProofreadCmd" text="@WPS Proofread"/>
+			<KxProofreadTirggerCommand customTip="CommonProofread" icon="doc_tick_two_kd" id="ProofreadGeneralCmd" text="@General Proofread"/>
+			<KxProofreadAITriggerCommand customTip="AIProofread" icon="doc_tick_two_kd" id="ProofreadAICmd" text="@AI Proofread"/>
+			<KxProofreadAddRightWordCommand customTip="Add Right Word" icon="doc_add_kd" id="ProofreadAddRightWordCmd" text="@Add Right Word"/>
+			<KxProofreadAddErrorWordCommand customTip="Add Error Word" icon="doc_word_bank_wrong_kd" id="ProofreadAddErrorWordCmd" text="@Add Error Word"/>
+			<KxProofreadWordDictManagementCommand customTip="WordDictManagement" icon="doc_vocabulary_kd" id="ProofreadWordDictManagementCmd" text="@WordDictManagement"/>
+			<KxProofreadFeedbackCommand customTip="Feedback" icon="customer_service_kd" id="ProofreadFeedbackCmd" text="@Feedback"/>
+			<KxProofreadSettingCommand customTip="Setting" icon="setup_kd" id="ProofreadSettingCmd" text="@Setting"/>
+			<KxProofreadLoginCommand cutomTip="Login" icon="KLoginMenu_AccountInfo" id="ProofreadLoginCmd" text="@Login"/>
+			<KxProofreadCloseCommand cutomTip="Exit Proofread" icon="close_window_kd" id="CloseProofreadCmd" text="@Exit Proofread"/>
+		</module>
+		<module name="kmultcatalog">
+			<KxMultCatalogCommand id="PdfAICatalog"/>
+		</module>
+		<module name="kpdfaisearch">
+			<KxPdfAiSearchCommand id="PdfAISearch"/>
+		</module>
+		<module name="kpdfcorporateglossary">
+			<KxPdfCorporateGlossaryCommand id="CorporateGlossary"/>
+		</module>
+	</modules>
+	<proxycommands>
+		<proxycommand id="ProxyOldTextToSpeechOption" targetId="OldTextToSpeechOption"/>
+		<proxycommand id="ProxyPDFZZ_file2PDF" targetId="PDFZZ_file2PDF"/>
+		<proxycommand id="ProxyRbFileMenuPdf2MD_PDFZZ" targetId="RbFileMenuPdf2MD_PDFZZ"/>
+		<proxycommand id="ProxyAIOCR2Pdf" targetId="AIOCR2Pdf"/>
+		<proxycommand id="ProxyTranslationMenu" targetId="TranslationMenu"/>
+		<proxycommand id="ProxyStart_TranslationSelect" targetId="Start_TranslationSelect"/>
+		<proxycommand id="ProxyStart_TranslationSelectFloatMenu" targetId="Start_TranslationSelectFloatMenu"/>
+		<proxycommand id="ProxyStart_TranslationSelectFollow" targetId="Start_TranslationSelectFollow"/>
+		<proxycommand id="ProxyStart_TranslationSelectPane" targetId="Start_TranslationSelectPane"/>
+		<proxycommand id="ProxyStart_app_translationselect_ctreview" targetId="Start_app_translationselect_ctreview"/>
+		<proxycommand id="Proxyapp_translationselect_ctreview" targetId="app_translationselect_ctreview"/>
+		<proxycommand id="ProxyReadingMode_TranslationSelect" targetId="ReadingMode_TranslationSelect"/>
+		<proxycommand id="ProxyFloatBarTranslation" targetId="FloatBarTranslation"/>
+		<proxycommand id="ProxyFloatbarEntry_PDFAIGC_Translate" targetId="FloatbarEntry_PDFAIGC_Translate"/>
+		<proxycommand id="ProxyTranslationInit" targetId="TranslationInit"/>
+		<proxycommand id="ProxyDocumentFix" targetId="DocumentFix"/>
+		<proxycommand id="ProxyPdf2Photo" targetId="Pdf2Photo"/>
+		<proxycommand id="ProxyEdit_AddPageNumber" targetId="ProxyOrgPage_AddPageNumber"/>
+		<proxycommand id="ProxyEdit_UpdatePageNumber" targetId="Edit_UpdatePageNumber"/>
+		<proxycommand id="ProxyEdit_DeletePageNumber" targetId="Edit_DeletePageNumber"/>
+		<proxycommand id="ProxyInsert_AddPageNumber" targetId="Insert_AddPageNumber"/>
+		<proxycommand id="ProxyInsert_UpdatePageNumber" targetId="Insert_UpdatePageNumber"/>
+		<proxycommand id="ProxyInsert_DeletePageNumber" targetId="Insert_DeletePageNumber"/>
+		<proxycommand id="ProxyAddPageNumber" targetId="AddPageNumber"/>
+		<proxycommand id="ProxyRightMenu_AddPageNumber" targetId="RightMenu_AddPageNumber"/>
+		<proxycommand id="ProxyPrint_AddPageNumber" targetId="Print_AddPageNumber"/>
+		<proxycommand id="ProxyPrePrint_AddPageNumber" targetId="PrePrint_AddPageNumber"/>
+		<proxycommand id="ProxyPdfHPRoamingFileCommand" targetId="PdfHPRoamingFileCommand"/>
+		<proxycommand id="ProxyPrint_AddHeaderFooter" targetId="Print_AddHeaderFooter"/>
+		<proxycommand id="ProxyPrePrint_AddHeaderFooter" targetId="PrePrint_AddHeaderFooter"/>
+		<proxycommand id="ProxyLoadOpencv" targetId="LoadOpencv"/>
+		<proxycommand id="ProxySaveAs_Compress" targetId="SaveAs_Compress"/>
+		<proxycommand id="ProxyUpload_Compress" targetId="Upload_Compress"/>
+		<proxycommand id="ProxyFileIconKListCommand_Compress" targetId="FileIconKListCommand_Compress"/>
+		<proxycommand id="ProxySpecialFunc_PDFZZCompress" targetId="SpecialFunc_PDFZZCompress"/>
+		<proxycommand id="ProxyStartFunc_PDFZZCompress" targetId="StartFunc_PDFZZCompress"/>
+		<proxycommand id="ProxyPdfCadMutualConverter" targetId="PdfCadMutualConverter"/>
+		<proxycommand id="ProxyOperatePopup_Compress" targetId="OperatePopup_Compress"/>
+		<proxycommand id="ProxyOperatePopup_AddPageNumber" targetId="OperatePopup_AddPageNumber"/>
+		<proxycommand id="ProxyPdfElectronicInvoicePrint" targetId="PdfElectronicInvoicePrint"/>
+		<proxycommand id="ProxyPdfFloatTool" targetId="PdfFloatTool"/>
+		<proxycommand id="ProxyPdfResumeMatch" targetId="PdfResumeMatch"/>
+		<proxycommand id="ProxyAppCenterPdfInvoiceAssist" targetId="AppCenterPdfInvoiceAssist"/>
+		<proxycommand id="ProxyAddBackGround_Edit" targetId="AddBackGround_Edit"/>
+		<proxycommand id="ProxyUpdateBackGround_Edit" targetId="UpdateBackGround_Edit"/>
+		<proxycommand id="ProxyDeleteBackGround_Edit" targetId="DeleteBackGround_Edit"/>
+		<proxycommand id="ProxyAddBackGround_Insert" targetId="AddBackGround_Insert"/>
+		<proxycommand id="ProxyUpdateBackGround_Insert" targetId="UpdateBackGround_Insert"/>
+		<proxycommand id="ProxyDeleteBackGround_Insert" targetId="DeleteBackGround_Insert"/>
+		<proxycommand id="ProxyInsert_PdfStampTool" targetId="Insert_PdfStampTool"/>
+		<proxycommand id="ProxyEdit_PdfStampTool" targetId="Edit_PdfStampTool"/>
+		<proxycommand id="ProxyThumbnailMenuPDF2Photo" targetId="ThumbnailMenuPDF2Photo"/>
+		<proxycommand id="ProxyTpSplitMerge" targetId="TpSplitMerge"/>
+		<proxycommand id="ProxyAISummary" targetId="AISummary"/>
+		<proxycommand id="ProxyAITranslation" targetId="AITranslation"/>
+	</proxycommands>
+</shell>

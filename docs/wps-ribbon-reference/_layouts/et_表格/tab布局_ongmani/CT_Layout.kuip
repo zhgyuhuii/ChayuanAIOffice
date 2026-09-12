@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_layout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="480" id="DocumentTheme" targetModule="kdocumenttheme" text="@Document theme" width="100"/>
+		<KProxyCommand delayloadPath="commands/et/ongmani/ProxyCommands.kuip" height="480" id="DocumentThemeEffect" targetModule="kdocumenttheme" text="@Document theme effect" width="100"/>
+		<KxListOnlineAndLocalCommand customTip="Themes" disableTrigger="1" hotKey="t" icon="theme_kd" id="OnlineDocumentTheme" isCefPopup="false" isOnlyOnline="true" ksoCmd="Themes" qtspyName="Themes" rbHotKey="TT" text="@Themes" tpOnlineCmd="DocumentTheme">
+			<KxThemesGalleryCommand bForceScrollToIndex="1" customTip="Themes" galleryWidth="315" icon="theme_kd" id="Themes" ksoCmd="Themes" rbHotKey="TT" text="@Themes"/>
+		</KxListOnlineAndLocalCommand>
+		<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="Theme Colors" galleryWidth="250" hotKey="c" icon="color_palette_kd" id="ThemeColors" ksoCmd="ThemeColors" onlineCmd="OnlineThemeColor" rbHotKey="TC" spaceHint="autocompact" text="@Colors">
+			<command idQ="CustomThemeColors"/>
+		</KxThemeColorsGalleryCommand>
+		<KxThemeFontsGalleryCommand bForceScrollToIndex="1" customTip="Theme Fonts" hotKey="f" icon="font_style_kd" id="ThemeFonts" ksoCmd="ThemeFonts" rbHotKey="TF" spaceHint="autocompact" text="@Fonts">
+			<command idQ="CustomThemeFonts"/>
+		</KxThemeFontsGalleryCommand>
+		<KxListOnlineAndLocalCommand customTip="Theme Effects" disableTrigger="1" hotKey="e" icon="theme_effect_kd" id="OnlineDocumentThemeEffect" isCefPopup="false" isOnlyOnline="true" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects" tpOnlineCmd="DocumentThemeEffect">
+			<KxThemeEffectsGalleryCommand bForceScrollToIndex="1" customTip="Theme Effects" galleryWidth="350" icon="theme_effect_kd" id="ThemeEffects" ksoCmd="ThemeEffects" rbHotKey="TE" text="@Effects"/>
+		</KxListOnlineAndLocalCommand>
+		<KxLegacyTriggerCommand aid="952" controlType="0" customTip="SheetBackground" hotKey="B" icon="pic_background_kd" id="SheetBackground" idMso="SheetBackground" ksoCmd="Background" rbHotKey="G" text="@Background"/>
+		<KxEtPageMarginCommand customTip="Margins" icon="doc_margins_kd" id="Margins" ksoCmd="PageSetup" rbHotKey="M" text="@Margins">
+			<command idQ="MoreMargins"/>
+		</KxEtPageMarginCommand>
+		<KxPropComposeCommand customTip="Margins" icon="doc_margins_kd" id="Margins" ksoCmd="PageSetup" rbHotKey="M" tabIndex="1" text="@Margins"/>
+		<KxEtPageOrientationCommand column="1" controlType="4" customTip="PageOrientation" forceVisible="1" icon="direction_rotate_doc_kd" id="PageOrientation" idMso="PageOrientationGallery" ksoCmd="PageSetup" rbHotKey="o" text="@Orientation"/>
+		<KxLegacyTriggerCommand aid="364" hotKey="s" icon="print_area_setup_kd" id="rSetPrintArea" ksoCmd="SetPrintArea" qtspyName="SetPrintArea" rbHotKey="S" text="@Set Print Area"/>
+		<KxLegacyTriggerCommand aid="1584" hotKey="c" icon="ClearPrintArea" id="rClearPrintArea" ksoCmd="ClearPrintArea" qtspyName="ClearPrintArea" rbHotKey="C" text="@Clear Print Area"/>
+		<KxLegacyTriggerCommand hotKey="a" id="rAddPrintArea" ksoCmd="AddPrintArea" qtspyName="AddPrintArea" rbHotKey="A" text="@Add Print Area"/>
+		<KxLegacyTriggerCommand controlType="4" customTip="PageSize" icon="scale_size_kd" id="PageSize" idMso="PageSizeGallery" ksoCmd="PageSetup" rbHotKey="SZ" text="@Size"/>
+		<KxListCommand controlType="15" customTip="PrintArea" icon="print_area_kd" id="m_SetPrintArea" idMso="PrintAreaMenu" ksoCmd="SetPrintArea" rbHotKey="R" text="@Print&#10;Area">
+			<command idQ="rSetPrintArea"/>
+			<command idQ="rClearPrintArea"/>
+			<command idQ="rAddPrintArea"/>
+		</KxListCommand>
+		<KxPropComposeCommand controlType="0" customTip="PrintTitle" icon="print_title_kd" id="PrintTitle" idMso="PrintTitles" ksoCmd="PageSetup" rbHotKey="PT" spaceHint="suitable" tabIndex="3" text="@Print Titles"/>
+		<KxPropComposeCommand controlType="0" customTip="PrintHeaderFooter" icon="doc_header_footer_kd" id="PrintHeaderFooter" idMso="HeaderFooterInsert" ksoCmd="PageSetup" qtspyName="HeaderFooter" rbHotKey="PH" spaceHint="suitable" tabIndex="2" text="@Print Header Or Footer"/>
+		<KxLegacyTriggerCommand customTip="PrintPreview" icon="print_preview_kd" id="PrintPreview" idKey="CommonPrintPreview" ksoCmd="PrintPreview" qtspyName="PrintPreview" rbHotKey="PV" text="@Print Preview"/>
+		<KxViewPageBreakCheckBoxCommand customTip="ViewPageBreak" id="ViewPageBreak" ksoCmd="ViewPageBreak" qtspyName="ViewPageBreak" rbHotKey="D" spaceHint="suitable" text="@View Page Break"/>
+		<KxSwitchCommand canHideText="0" customTip="PagePreviewSwitch" icon="page_break_preview_kd" id="PagePreviewSwitch" ksoCmd="PagePreviewSwitch" qtspyName="PagePreviewSwitch" rbHotKey="I" text="@Page Break Preview"/>
+		<KxInsertPageBreakCommand controlType="0" customTip="InsertPageBreakHelper" forceVisible="1" hotKey="I" icon="page_break_kd" id="rPageBreak" idMso="PageBreakInsertExcel" ksoCmd="InsertPageBreak" text="@Insert Page Break"/>
+		<KxPropComposeCommand controlType="0" forceVisible="1" hotKey="R" icon="delete_page_break_kd" id="rRemovePageBreak" idMso="PageBreakRemove" ksoCmd="DeletePageBreak" text="@Delete Page Break"/>
+		<KxPropComposeCommand controlType="0" forceVisible="1" hotKey="a" icon="reset_all_page_break_kd" id="rResetAllPageBreak" idMso="PageBreaksResetAll" ksoCmd="ResetAllPageBreak" rbHotKey="BA" text="@Reset All Page Breaks"/>
+		<KListCommand controlType="0" customTip="InsertPageBreak" icon="page_break_kd" id="m_Breaks" idMso="PageBreakMenu" rbHotKey="B" spaceHint="suitable" text="@InsertPageBreak">
+			<command idQ="rPageBreak"/>
+			<command idQ="rRemovePageBreak"/>
+			<command idQ="rResetAllPageBreak"/>
+		</KListCommand>
+		<KListCommand customTip="PageZoom" icon="page_zoom_kd" id="m_PageZoom" rbHotKey="X" text="@Page Zoom">
+			<KxLegacyTriggerCommand hotKey="n" id="NOZoomInLayoutTab" ksoCmd="NOZoom" qtspyName="NOZoom" text="@No Zoom"/>
+			<KxLegacyTriggerCommand hotKey="a" id="FitSheetToPageInLayoutTab" ksoCmd="FitSheetToPage" qtspyName="FitSheetToPage" text="@Fit Sheet on One Page"/>
+			<KxLegacyTriggerCommand hotKey="c" id="FitColsToPageInLayoutTab" ksoCmd="FitColsToPage" qtspyName="FitColsToPage" text="@Fit All Columns on One Page"/>
+			<KxLegacyTriggerCommand hotKey="r" id="FitRowsToPageInLayoutTab" ksoCmd="FitRowsToPage" qtspyName="FitRowsToPage" text="@Fit All Rows on One Page"/>
+			<KxEtFitZoomCommand hotKey="z" id="FitZoomInLayoutTab" ksoCmd="FitZoom" qtspyName="FitZoom" text="@Zoom:"/>
+			<separator/>
+			<command idQ="PageSetupInLayoutTab"/>
+		</KListCommand>
+		<KxCheckBoxCommand customTip="PrintGridlines" id="PrintGridlines" ksoCmd="PrintGridlines" qtspyName="PrintGridlines" rbHotKey="PG" spaceHint="suitable" text="@Print Gridlines"/>
+		<KxCheckBoxCommand customTip="PrintHeadings" id="PrintHeadings" ksoCmd="PrintHeadings" qtspyName="PrintHeadings" rbHotKey="PH" spaceHint="suitable" text="@Print Headings"/>
+		<KxListCommand customTip="PageSetup" groupTip="PrintingSettingsGroup" icon="setup_kd" id="RB_Page_Print_Setup" ksoCmd="PageSetup" needsinglerowmorebutton="true" text="@Printing Settings">
+			<command idQ="PrintPreview"/>
+			<command idQ="Margins"/>
+			<command idQ="PageOrientation"/>
+			<command idQ="PageSize"/>
+			<command idQ="m_SetPrintArea"/>
+			<command idQ="m_PageZoom"/>
+			<command idQ="PrintTitle"/>
+			<command idQ="PrintHeaderFooter"/>
+			<command idQ="PrintGridlines"/>
+			<command idQ="PrintHeadings"/>
+		</KxListCommand>
+		<KxListCommand groupTip="PaginationSettingsGroup" icon="doc_paper_format_kd" id="RB_Separate_Page_View" text="@Pagination Settings">
+			<command idQ="PagePreviewSwitch"/>
+			<command idQ="ViewPageBreak"/>
+			<command idQ="m_Breaks"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="688" controlType="0" hotKey="t" icon="rotate_angle_kd" id="FreeRotate" idMso="ObjectRotateFree" ksoCmd="FreeRotate" rbHotKey="T" text="@Free Rotate"/>
+		<KListCommand customTip="Themes" enableDependsOnSubCommands="1" icon="theme_kd" id="ThemesTotal" text="@Themes">
+			<command idQ="OnlineDocumentTheme"/>
+			<command idQ="ThemeColors"/>
+			<command idQ="ThemeFonts"/>
+			<command idQ="OnlineDocumentThemeEffect"/>
+		</KListCommand>
+		<KListCommand groupTip="ThemesGroup" icon="theme_kd" id="RB_EditTheme" rbFileMenuEmbed="1" text="@Themes">
+			<KxSingleRowMergeGroupCommand customTip="ThemesGroup" icon="theme_kd" id="SingleRow_EditTheme" text="@Themes"/>
+			<command idQ="ThemesTotal" singlerowmergegroup="SingleRow_EditTheme"/>
+			<command idQ="SheetBackground" singlerowmergegroup="SingleRow_EditTheme"/>
+			<command idQ="EtWaterMarkMenu" singlerowmergegroup="SingleRow_EditTheme"/>
+		</KListCommand>
+		<KListCommand id="DetailedSettings_Layout" text="@Settings">
+			<KListCommand customTip="DetailedSettings_Layout" icon="detailed_settings_kd" id="DetailedSettingsList_Layout" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="PageSetup"/>
+			</KListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Layout">
+			<command idQ="RB_Page_Print_Setup"/>
+			<separator/>
+			<command idQ="RB_Separate_Page_View"/>
+			<separator/>
+			<command idQ="RB_EditTheme"/>
+			<separator/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_Layout"/>
+			<separator/>
+			<command afterIdQ="RB_Arrange_ObjectSelect_Layout" idQ="SmartOrganize_Layout" isShow="showLayoutAiSmartOrganize" pluginName="konlinetablestyle" textContent="aiSmartOrganize"/>
+		</subcommand>
+	</subcommands>
+</shell>

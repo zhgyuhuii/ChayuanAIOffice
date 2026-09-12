@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxAIProofreadProxyCommand autoLoad="false" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyPdfProofreadCmd" targetId="PdfProofreadCmd" targetModule="kproofread" text="@Pdf Proofread"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Tool_HandTool" ksoCmd="HandTool" shellEntryType="tab_convert" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Tool_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_convert" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KAppCommand appCmdObj="PdfBatchPrint" appId="pdfnewbatchprintapp" customTip="BatchPrintTips" icon="batch_printing_kd" id="ToolsBatchPrint" idMso="ToolsBatchPrint" text="@BatchPrint"/>
+		<KxFileMenuLegacyTriggerCommand customTip="TemplatesPrint" icon="print_template_kd" id="ToolsTemplatesPrint" idKey="ToolsTemplatesPrint" idMso="ToolsTemplatesPrint" ksoCmd="TemplatesPrint" text="@TemplatesPrint"/>
+		<KListCommand groupTip="ToolGroup" id="RB_MouseTool_Tool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Tool_HandTool"/>
+			<command idQ="Tool_SelectTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="PdfElectronicInvoicePrint" icon="invoice_printing_kd" id="SpecialFunc_PDFZZ_ElectronicInvoicePrint" idKey="SpecialFuncPDFElectronicInvoicePrint" idMso="InvoicePrint" ksoCmd="PdfElectronicInvoicePrint" markIconRect="30,0,26,12" text="@PdfElectronicInvoicePrint"/>
+		<KAppCommand appCmdObj="ImportFileAndGoToTab" appId="kbillmgr" checkIsInvoice="true" icon="invoice_filing_kd" id="kbillmgr_convertab_new" tabId="CT_Invoice" text="@billfile" tipContent="@billfile content" tipTitle="@billfile title"/>
+		<KAppCommand appCmdObj="ImportFileAndGoToTab" appId="invoicecheck" checkIsInvoice="true" icon="invoice_inspection_kd" id="app_invoicecheck_tooltab" tabId="CT_Invoice" text="@invoicecheck" tipContent="@invoicecheck content" tipTitle="@invoicecheck title"/>
+		<KAppCommand appCmdObj="ImportActiveInvoiceFile" appId="kbillprintv2" checkIsInvoice="true" icon="invoice_printing_kd" id="kbillprintv2_invoicetab" tabId="CT_Invoice" text="@kbillprintv2" tipContent="@kbillprintv2 content" tipTitle="@kbillprintv2 title"/>
+		<KListCommand groupTip="ToolPrintingToolGroup" icon="batch_printing_kd" id="RB_Print" rbFileMenuEmbed="1" text="@Printing Tools">
+			<command idQ="SpecialFunc_PDFZZ_Compress"/>
+			<command idQ="ToolsBatchPrint"/>
+			<KAppCommand appCmdObj="BatchOperationWithCurrentFile" appId="batchprint" customTip="PDFBatchPrintTips" icon="batch_printing_kd" id="batchprint_invoicetab" text="@batchprint" vipMode="2"/>
+			<KAppCommand appCmdObj="OnlinePrint" appId="printohome" customTip="PrintToHomeTips" icon="print_kd" id="app_printohome_tooltab" idKey="PdfToolsPrintHome" text="@PrintToHome" vipMode="4"/>
+			<KAppCommand appCmdObj="BatchRename_AppCommandObj" appId="pdfbatchrename" customTip="BatchRename" entrance="module=pdf&amp;sub_module=tools_tab" icon="batch_rename_kd" id="ToolBatchRename" idKey="PDFBatchRenameInTools" needLogin="false" text="@BatchRename"/>
+			<KAppCommand appId="kapower" customTip="ScreenRecording" icon="player_capture_kd" id="ScreenRecording" idKey="CommonRbScreenRecording" needLogin="false" text="@Screen Recording"/>
+		</KListCommand>
+		<KListCommand groupTip="ToolReceiptAssistantGroup" icon="invoice_filing_kd" id="End_Box" text="@Receipt Assistant" visibleDependsOnSubCmds="1">
+			<command idKey="PdfCTToolsKbillmgr" idQ="kbillmgr_convertab_new"/>
+			<command idQ="app_invoicecheck_tooltab"/>
+			<command idKey="PdfCTToolsKbillPrintv2" idQ="kbillprintv2_invoicetab"/>
+			<command idQ="SpecialFunc_PDFZZ_ElectronicInvoicePrint"/>
+		</KListCommand>
+		<KListCommand id="RB_Proofread" text="@Proofread" visibleDependsOnSubCmds="1">
+			<KProofreadAppQuickMenuCommand customTip="Proofread" disableCustomRibbon="true" icon="doc_tick_kd" id="PDFProofreadQuickMenuCmd" idKey="PublicProofread" idMso="PDFProofreadQuickMenuCmd" referenceCommand="PdfProofreadCmd" text="@Pdf Proofread">
+				<KxProofreadAppCommand action="CommonProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="CommonProofread" icon="doc_tick_two_kd" id="PDFProofreadCommonInQuickMenu" text="@General Proofread"/>
+				<KxProofreadAppCommand action="AIProofread" appId="kproofread" args="ai_open_position:tab_tool_proofread;AutoSwitchTab:true" customTip="AIProofread" icon="doc_tick_two_kd" id="PDFProofreadAIInQuickMenu" text="@AI Proofread"/>
+				<KxProofreadAppCommand action="EnglishProofread" appId="kproofread" args="AutoSwitchTab:true" customTip="EnglishProofread" icon="proofread_english_kd" id="app_CT_Tools_EnglishProofread" idKey="ProofreadEnglish" text="@English Proofread"/>
+			</KProofreadAppQuickMenuCommand>
+			<KxProofreadAppCommand action="AIProofread" appId="kproofread" args="ai_open_position:pdf_co_CT_Tool_Proofread" customTip="AIProofing" icon="doc_tick_kd" id="pdf_tools_aiproofread" idKey="PDFAIProofread" qtspyName="pdf_tools_aiproofread" text="@AI Proofing"/>
+		</KListCommand>
+		<KListCommand id="RB_DevelopTool" text="@Develop Tool" visibleDependsOnSubCmds="1">
+			<command idQ="RB_COMAddIns_ToolTab"/>
+			<command idQ="RB_JSAddIns_ToolTab"/>
+		</KListCommand>
+		<KAutoHideListCommand id="RB_KContract" text="@KContract">
+			<KAppCommand appId="kcontractpanel" customTip="kcontractpanel" filter="lang=zh_CN" icon="contract_assistant_kd" id="app_kcontract_tab" idKey="KcontractPanelCommand" text="@app contract"/>
+		</KAutoHideListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Tools">
+			<command idQ="RB_MouseTool_Tool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_DevelopTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Print"/>
+			<command idQ="Separator"/>
+			<command idQ="End_Box"/>
+			<command idKey="PDFProofreadInToolTab" idQ="Separator"/>
+			<command idKey="PDFProofreadInToolTab" idQ="RB_Proofread"/>
+			<command filter="lang=zh_CN" idQ="Separator"/>
+			<command filter="lang=zh_CN" idQ="RB_KContract"/>
+		</subcommand>
+	</subcommands>
+</shell>

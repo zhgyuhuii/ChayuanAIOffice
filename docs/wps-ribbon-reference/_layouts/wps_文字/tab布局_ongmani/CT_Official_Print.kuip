@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_official_print" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxWpsShowMailingsContextCommand customTip="Mail" hotKey="M" icon="start_mail_merge_kd" id="OfficialShowMailingsContext" rbHotKey="M" text="@Mail Merge"/>
+		<KxPdfCommpressCommand customTip="OfficialPDFCompress" filter="support:ExportToPDF=true" icon="compression_kd" id="OfficialPDFCompress" ksoCmd="PrintToPDF" text="@PDF Compress"/>
+		<KxLegacyTriggerCommand customTip="OfficialDocumentBarcode" dialogHint="1" hotKey="C" icon="doc_bar_code_kd" id="OfficialInsertDocBarcode" idKey="DocBarcode" ksoCmd="DocumentBarcode" text="@Document Barcode"/>
+		<KxSplitMergeOfficialCommand customTip="SplitMerge" hotKey="M" icon="doc_split_kd" id="SplitMergeOfficial" text="@SplitMerge"/>
+		<KxSplitMergeOfficialCommand hotKey="S" icon="doc_split_kd" id="SplitDocumentOfficial" text="@Split"/>
+		<KxSplitMergeOfficialCommand hotKey="M" icon="doc_merge_kd" id="MergeDocumentOfficial" text="@Merge"/>
+		<KQuickMenuCommandFix customTip2="SplitMerge" icon="doc_split_kd" id="sp_SplitMerge" referenceCommand="SplitMergeOfficial" text="@Split and Merge">
+			<command idQ="SplitDocumentOfficial"/>
+			<command idQ="MergeDocumentOfficial"/>
+		</KQuickMenuCommandFix>
+		<KListCommand id="OfficialFinalize" rbFileMenuEmbed="1" text="@Finalize">
+			<command idQ="OfficialInsertDocBarcode"/>
+			<command idQ="OfficialShowMailingsContext"/>
+			<command idQ="OfficialPDFCompress"/>
+			<command idQ="sp_SplitMerge"/>
+		</KListCommand>
+		<KxExportPdfLegacyTriggerCommand customTip="ExportToPDF" filter="support:ExportToPDF=true" icon="change_to_pdf_two_kd" id="OfficialExportPDF" ksoCmd="PrintToPDF" text="@Export to PDF"/>
+		<KxLegacyTriggerCommand customTip="OfficialExportOFD" icon="export_to_ofd_kd" id="ExportToOFD" idKey="ExportToOFD" ksoCmd="PrintToOFD" text="@Export to OFD"/>
+		<KxOleLegacyTriggerCommand controlType="0" customTip="Print" defaultCmd="PrintDirect" dialogHint="1" hotKey="p" icon="print_kd" id="OfficialPrint" ksoCmd="Print" oleCmdExecOpt="2" silentCmd="PrintDirect" text="@Print" wpsIsEanble="true"/>
+		<KWpsOfficialToNormalCommand customTip="Official2Ordinary" icon="official_to_ordinary_kd" id="OfficialToNormal" text="@Official to Ordinary"/>
+		<KListCommand id="OfficialExport" rbFileMenuEmbed="1" text="@Export">
+			<command idQ="OfficialExportPDF"/>
+			<command idQ="ExportToOFD"/>
+			<command idQ="OfficialPrint"/>
+			<command idQ="OfficialToNormal"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Official_Print">
+			<command idQ="OfficialFinalize"/>
+			<separator/>
+			<command idQ="OfficialExport"/>
+		</subcommand>
+	</subcommands>
+</shell>

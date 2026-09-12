@@ -1,0 +1,571 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>WPS快速设置</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script>
+
+			//允许被选择的控件列表
+			var allowedControls = {
+				'INPUT': 1
+			};
+
+			function DisableSelect(){
+				document.body.oncontextmenu = function(){//屏蔽右键菜单
+					allowSelected = 1 == allowedControls[event.srcElement.tagName] ? true : false;
+					event.returnValue = allowSelected;
+				}
+				document.body.ondragstart =  ReturnFalse;
+				document.body.onselectstart = function(){//屏蔽控件选中
+					//允许被选择的控件列表        
+					allowSelected = 1 == allowedControls[event.srcElement.tagName] ? true : false;
+					event.returnValue = allowSelected;
+				}
+			}
+
+			function ReturnFalse(){
+				window.event.returnValue = false;	
+			}
+		</script>
+		<style type="text/css">
+			body,div,dl,dt,dd,ul,ol,li,menu,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;outline:none; }table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}input,textarea,select{*font-size:100%}legend{color:#000}a{text-decoration: none;}
+				a:hover{ text-decoration: underline; }
+				a{ color:#486f97; cursor: pointer; }
+				div:focus, input:focus, a:focus, button:focus{ outline:none; }
+
+			html, button{
+				font: 12px/1.45 "Microsoft YaHei", "微软雅黑", Helvetica, Tahoma, Arial, SimSun, "宋体", sans-serif;
+				color:#565656;outline:none; 
+			}
+
+			.clearfix:after { 
+				visibility: hidden; display: block; font-size: 0;
+				content: " "; clear: both; height: 0;
+			}
+			.hide, .dpn{ display: none; }
+
+			.icon{ background: url(quicksetting_icon.png) no-repeat 0 0; }
+
+			
+			.step{ 
+				border:1px solid #ccc; 
+			}
+			.step, .step_top, .step_bottom, .step_top_banner{
+				width: 312px; overflow: hidden; position: relative;
+				margin:0 auto; 
+			}
+			.step_top_banner{
+				height: 164px; 
+			}
+			.step_bottom{ height: 250px; }
+
+			.step_top_bar{ 
+				width: 100%; height: 36px; line-height: 36px;
+				font-size: 13px; font-weight: bold; color:#666; 
+				z-index: 2; background-color: #fff;
+			}
+			.step_top_bar h3{ 
+				text-align: center; position: relative; font-weight: bold;
+			}
+			.closeBtn{
+				display: block; width: 14px; height: 13px; overflow: hidden;
+				text-indent: -9999px; position: absolute; top:10px; 
+				right: 10px; background-position: 0 -325px;
+			}
+			.closeBtn:hover{ background-position: 0 -350px; }
+			.closeBtn:active{ background-position: 0 -375px; }
+			.returnBtn{
+				display: block; height: 24px; line-height: 24px; 
+				overflow: hidden; padding-left: 15px; color:#666;
+				position: absolute; top:5px; left: 15px;
+				text-decoration: none; background-position: 0 -25px;
+				font-size: 12px;
+			}
+			.returnBtn:hover{
+				text-decoration: none;
+			}
+
+			.step_bottom ul{ 
+				width: 280px; height: 190px; margin:0 auto;  
+			}
+			.step_bottom li{
+				border-bottom:1px solid #bebebe;
+				padding: 12px 0; 
+			}
+			.step_bottom li:last-child{
+				border-bottom:none; 
+			}
+
+			.step_select_box{ 
+				-webkit-transition: background-color 0.1s;
+				transition: background-color 0.1s; position: relative;
+			}
+			.step_select_box:hover{
+				background-color: #f3f3f3;
+			}
+			.step_select_box label{
+				display: block; cursor: pointer; position: relative;
+				padding:3px 0 5px 11px; overflow: hidden;
+			}
+			.step_select_box .input{ 
+				display: block; position: absolute; left: 11px;
+				top:0px; top:50%; margin-top:-7px;
+				width: 14px; height: 14px; line-height: 1;
+
+				-webkit-appearance:none;
+		        background-position: 0 -50px;
+			}
+			.step_select_box input[type=radio]{
+				background-position: 0 -50px;
+			}
+		    .step_select_box input[type=radio]:checked{
+		        background-position: 0 -100px;
+		    }
+		    .step_select_box input[type=checkbox]{
+				background-position: 0 -150px;
+			}
+		    .step_select_box input[type=checkbox]:checked{
+		        background-position: 0 -200px;
+		    }
+			.step_select_box .text{
+				display: inline; float: left; width: 220px;
+				margin-left:32px;
+			}
+			.step_select_box h4{ 
+				color:#101010; font-size: 14px; margin-bottom: 2px; 
+			}
+
+			.step_select_disable:hover{ background:none; }
+			.step_select_disable label{ cursor: default; }
+			.step_select_disable input[type=checkbox]{
+				background-position: 0 -250px;
+			}
+		    .step_select_disable input[type=checkbox]:checked{
+		        background-position: 0 -250px;
+		    }
+
+			a.stepBtn{
+				display: block; width: 100%; height: 44px; line-height: 44px;
+				width: 280px; margin:0 auto;
+				-webkit-border-radius:2px; border-radius: 2px;
+				text-align: center; color:#565656; text-decoration: none;
+				font-size: 16px; font-weight: bold;
+				background-color: #ecedef;
+
+				-webkit-transition: background-color 0.1s;
+				transition: background-color 0.1s;
+			}
+			a:hover.stepBtn{
+				background-color: #e0e1e5;
+			}
+			a:active.stepBtn{
+				background-color: #ccced3;
+			}
+
+			.helpBtn{
+				display: block; width: 12px; height: 12px; overflow: hidden;
+				text-indent: -9999px; background-position: 0 -300px;
+				position: absolute; top:7px; right: 0px;
+			}
+
+			/*弹框*/
+			.mask{
+				position: absolute; top:0; left:0; bottom:0; right: 0;
+				background-color: #000; opacity: 0.4; width: 100%; height: 100%;
+			}
+
+			.dialog{
+				width:323px; border:1px solid #999; 
+				background-color: #fff; position: relative; z-index: 2;
+				color:#333;
+			}
+			.closeDialog{
+				position: absolute; left: 50%; margin-left: -140px; width:280px;
+				top:115px;
+			}
+			.dialogTitle{
+				width: 100%; height: 36px; line-height: 36px;
+				font-size: 13px; font-weight: bold; 
+				position: relative; background-color: #f6f7f9;
+			}
+			.dialogTitle h3{
+				font-weight: bold; padding-left: 10px;
+			}
+			.dialogContent .text{
+				padding:18px 30px; font-size: 14px; line-height: 1.8;
+			}
+			.dialogContent .btn{ text-align: center; padding-bottom: 20px; }
+			.dialogContent .btn a{
+				display: inline-block; margin:0 5px; height: 30px; line-height: 30px;
+				width: 100px; text-align: center; text-decoration: none;
+				font-size: 14px;
+			}
+			.dialogContent .btn a:hover{
+				text-decoration: none;
+			}
+			.dialogContent .btn a.ok{
+				color:#fff; background-color: #3893f0;
+			}
+			.dialogContent .btn a:hover.ok{
+				background-color: #3b9dff;
+			}
+			.dialogContent .btn a.no{
+				color:#333; background-color: #ecedef;
+			}
+			.dialogContent .btn a:hover.no{
+				background-color: #ebeff5;
+			}
+
+			.dialog .closeBtn{ background-position: 0 -350px; }
+
+			.closeRoamingTip{
+				margin:0 auto; height: 178px;
+			}
+			.closeRoamingTip .btn{
+				padding-bottom: 0px; padding-top: 5px;
+			}
+
+		</style>
+	</head>
+	<body onload="DisableSelect()">
+
+		<!-- 设置登录设备 -->
+		<div class="step step_1 hide" id="step_1">
+			<div class="step_top">
+				<div class="step_top_bar">
+					<h3>WPS快速设置</h3>
+					<a href="javascript:;" title="关闭" class="icon closeBtn JScloseDialogBtn">
+						关闭
+					</a>
+				</div>
+				<div class="step_top_banner">
+					<img src="quicksetting_1.jpg" />
+				</div>
+			</div>
+			<div class="step_bottom">
+				<ul>
+					<li>
+						<div class="step_select_box">
+							<label class="clearfix">
+								<input type="radio" name="device" class="icon input" value="public" checked />
+								<div class="text">
+									<h4>公用电脑</h4>
+									<p>退出账号后，自动清理您的缓存数据不再自动登录，保证您的账号安全</p>
+								</div>
+							</label>
+						</div>
+					</li>
+					<li>
+						<div class="step_select_box">
+							<label class="clearfix">
+								<input type="radio" name="device" class="icon input" value="private"/>
+								<div class="text">
+									<h4>私人电脑</h4>
+									<p>设置为为受信任的设备，可提供更便捷的服务</p>
+								</div>
+							</label>
+						</div>
+					</li>
+				</ul>
+
+
+				<a href="javascript:;" class="stepBtn JSnextStep">
+					下一步
+				</a>
+
+				<!--只设置设备时候显示-->
+				<a href="javascript:;" class="stepBtn hide" id="submitBtn_device">
+					设置完成
+				</a>
+
+			</div>
+		</div>
+
+		<!-- 设置使用服务 -->
+		<div class="step step_2 hide" id="step_2">
+			<div class="step_top">
+				<div class="step_top_bar">
+					<h3>WPS快速设置</h3>
+					<a href="javascript:;" title=
+					"返回" class="icon returnBtn JSprevStep" id="returnBtn">
+						返回
+					</a>
+					<a href="javascript:;" title="关闭" class="icon closeBtn JScloseDialogBtn">
+						关闭
+					</a>
+				</div>
+				<div class="step_top_banner">
+					<img src="quicksetting_2.jpg" />
+				</div>
+			</div>
+			<div class="step_bottom">
+				<ul>
+					<li>
+						<div class="step_select_box">
+							<label class="clearfix">
+								<input type="checkbox" name="service" class="icon input" value="fileRoaming" checked />
+								<div class="text">
+									<h4>文档漫游</h4>
+									<p>您打开的文档自动漫游，换个设备，依然可用</p>
+								</div>
+							</label>
+							<a href="javascript:;" class="icon helpBtn JShelpBtn" title="帮助">帮助</a>
+						</div>
+					</li>
+					<li>
+						<div class="step_select_box step_select_disable">
+							<label class="clearfix">
+								<input type="checkbox" name="service" class="icon input" value="WPSCloud" checked/>
+								<div class="text">
+									<h4>WPS云文档</h4>
+									<p>私人空间、圈子、轻地址，为您提供更方便的协作方式</p>
+								</div>
+							</label>
+						</div>
+					</li>
+				</ul>
+				<a href="javascript:;" class="stepBtn" id="submitBtn">
+					设置完成
+				</a>
+			</div>
+		</div>
+
+		<!--漫游总开关关闭提示弹框-->
+		<div class="dialog hide closeRoamingTip" id="closeRoamingTip">
+			<div class="dialogTitle">
+				<h3>提示</h3>
+				<a href="javascript:;" title="关闭" class="icon closeBtn JScloseBtn">
+					关闭
+				</a>
+			</div>
+			<div class="dialogContent">
+				<div class="text">
+					<h4>文档漫游已设置接入本设备，但您还需前往云服务设置页开启文档漫游，才可使用</h4>
+				</div>
+				<div class="btn">
+					<a href="javascript:;" class="ok closeRoamingTipToOpen">前往开启</a>
+					<a href="javascript:;" class="no JScloseBtn">取消</a>
+				</div>
+			</div>
+		</div>
+
+		<!--遮罩层-->
+		<div class="mask hide" id="mask"></div>
+
+		<!--关闭 公私电脑设置的弹窗-->
+		<div class="dialog hide closeDialog" id="closeDevice">
+			<div class="dialogTitle">
+				<h3>提示</h3>
+				<a href="javascript:;" title="关闭" class="icon closeBtn">
+					关闭
+				</a>
+			</div>
+			<div class="dialogContent">
+				<div class="text">
+					<h4>关闭窗口，将会默认设置为公用电脑。您确定此选择吗？</h4>
+				</div>
+				<div class="btn">
+					<a href="javascript:;" class="ok jscloseDeviceOK">确定</a>
+					<a href="javascript:;" class="no">取消</a>
+				</div>
+			</div>
+		</div>
+
+		<!--关闭 公私电脑设置和文档漫游的弹窗-->
+		<div class="dialog hide closeDialog" id="closeDeviceAndServer">
+			<div class="dialogTitle">
+				<h3>提示</h3>
+				<a href="javascript:;" title="关闭" class="icon closeBtn">
+					关闭
+				</a>
+			</div>
+			<div class="dialogContent">
+				<div class="text">
+					<h4>关闭窗口，将会默认设置为公用电脑和不接入文档漫游。您确定此选择吗？</h4>
+				</div>
+				<div class="btn">
+					<a href="javascript:;" class="ok jscloseDeviceAndServerOK">确定</a>
+					<a href="javascript:;" class="no">取消</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="hide">
+			<script type="text/javascript" src="jquery.min.js"></script>
+			<script type="text/javascript">
+
+				/*
+				 * 客户端调用，用于显示哪种设置或提示
+				 * 参数：deviceAndServer，device，closeRoamingTip
+				 */
+				function showSettingType(type){
+					var type = type + '';
+
+						settingType = type;
+
+					switch(type){
+						case 'deviceAndServer':
+							wpsCloudSetting.jsSetViewSize(314, 452);
+							$('#submitBtn_device').remove();
+
+							$('#step_1').removeClass('hide');
+							break;
+						case 'device':
+							wpsCloudSetting.jsSetViewSize(314, 452);
+
+							$('.JSnextStep').remove();
+							$('#step_2').remove();
+
+							$('#submitBtn_device').removeClass('hide');
+							$('#step_1').removeClass('hide');
+							break;
+						case 'closeRoamingTip':
+							wpsCloudSetting.jsSetViewSize(325, 180);
+
+							$('#setp_1').remove();
+							$('#setp_2').remove();
+
+							$('#closeRoamingTip').removeClass('hide');
+							break;
+					}
+				}
+
+				$(function(){
+
+					//显示第几步
+					function showStep(i){
+						var stepI = +i || 1,
+							stepLen = $('.step').length;
+
+						if(stepI < 1){
+							stepI = 1;
+						}else if(stepI > stepLen){
+							stepI = stepLen;
+						}
+
+						$('.step').addClass('hide');
+						$('#step_' + stepI).removeClass('hide');
+					}
+
+					//获取当前选择的设备类型
+					function getDevice(){
+						var $device_radio = $('#step_1 .input'),
+							selectDevice = '';
+
+						for(var i = 0, len = $device_radio.length; i < len; i++){
+							if($device_radio.eq(i).attr('checked') === 'checked'){
+								selectDevice = $device_radio.eq(i).val();
+								break;
+							}
+						}
+						return selectDevice;
+					}
+
+					/*
+					 * 获取选择的服务
+					 * 服务代号（二进制） 
+					 * 00000001：1：文档漫游：fileRoaming
+					 * 00000010：2：wps云文档：WPSCloud
+					 */
+					function getService(){
+						var $server_checkBox = $('#step_2 .input'),
+							severTotal = 0,
+							selectServer = [];
+
+						for(var i = 0, len = $server_checkBox.length; i < len; i++){
+							if($server_checkBox.eq(i).attr('checked') === 'checked'){
+								
+								if($server_checkBox.eq(i).val() === 'fileRoaming'){
+									severTotal = severTotal + 1;
+								}else if($server_checkBox.eq(i).val() === 'WPSCloud'){
+									severTotal = severTotal + 2;
+								}
+							}
+						}
+
+						return severTotal;
+					}
+
+					var nowStep = 1; //当前第几步
+
+					//默认勾选，不可更改
+					$('.step_select_disable').click(function(){
+						return false;
+					})
+
+					//下一步
+					$('.JSnextStep').click(function(){
+						nowStep++;
+						showStep(nowStep);
+					})
+
+					//上一步
+					$('.JSprevStep').click(function(){
+						nowStep--;
+						showStep(nowStep);
+					})
+
+					//帮助
+					$('.JShelpBtn').click(function(){
+						wpsCloudSetting.jsGotoUrl('%qingurl%/help/roaming.html');
+					})
+
+					//关闭
+					$('.JScloseBtn').click(function(){
+						wpsCloudSetting.jsCloseWpsCloud();
+					})
+
+					//设置完成device and server
+					$('#submitBtn').click(function(){
+						var qucikSetting = {
+								'device': getDevice(),
+								'server': getService()
+							}
+
+						wpsCloudSetting.jsSetWpsCloud(qucikSetting.device, qucikSetting.server);
+					})
+
+					$('.jscloseDeviceAndServerOK').click(function(){
+						wpsCloudSetting.jsSetWpsCloud('public', 2);
+					})
+
+					//设置完成，只有设备
+					$('#submitBtn_device').click(function(){
+						wpsCloudSetting.jsSetWpsCloud(getDevice(), '');
+					})
+
+					$('.jscloseDeviceOK').click(function(){
+						wpsCloudSetting.jsSetWpsCloud('public', '');
+					})
+
+					//关闭设备设置，提示弹框
+					$('.JScloseDialogBtn').click(function(){
+						$('#mask').removeClass('hide');
+
+						switch(settingType){
+							case 'deviceAndServer':
+								$('#closeDeviceAndServer').removeClass('hide');
+								break;
+							case 'device':
+								$('#closeDevice').removeClass('hide');
+								break;
+						}
+					})
+
+					//取消关闭设备设置弹框提示弹框
+					$('.closeDialog .closeBtn, .closeDialog .no').click(function(){
+						$('#mask').addClass('hide');
+						$('.closeDialog').addClass('hide');
+					})
+
+					//漫游总开关关闭提示弹框 前往开启
+					$('.closeRoamingTipToOpen').click(function(){
+						wpsCloudSetting.jsGotoUrl('%vipurl%/');
+						wpsCloudSetting.jsCloseWpsCloud();
+					})
+
+				})
+			</script>
+		</div>
+	</body>
+</html>

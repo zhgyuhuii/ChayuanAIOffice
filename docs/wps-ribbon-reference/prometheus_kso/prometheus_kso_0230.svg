@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>字符底纹16_CharacterShading</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-stroke-width-icon-bold { 
+       stroke-width: var(--kd-stroke-width-icon-bold, 1.2px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-quaternary {
+       fill: var(--kd-color-icon-quaternary, #E6E6E6);
+       stroke: var(--kd-color-icon-quaternary, #E6E6E6);
+       km_fill: #E6E6E6;
+       km_stroke: #E6E6E6;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-2" class="kd-color-icon-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M0.5 1.00012C0.5 0.72398 0.723858 0.500122 1 0.500122H15C15.2761 0.500122 15.5 0.72398 15.5 1.00012V15.0001C15.5 15.2763 15.2761 15.5001 15 15.5001H1C0.723858 15.5001 0.5 15.2763 0.5 15.0001V1.00012Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="fill_2" opacity="0.2" d="M0.5 1.00012C0.5 0.72398 0.723858 0.500122 1 0.500122H15C15.2761 0.500122 15.5 0.72398 15.5 1.00012V15.0001C15.5 15.2763 15.2761 15.5001 15 15.5001H1C0.723858 15.5001 0.5 15.2763 0.5 15.0001V1.00012Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-bold"><path id="line" d="M5.5 9.59998H10.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M4 12.5L8 3.5L12 12.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

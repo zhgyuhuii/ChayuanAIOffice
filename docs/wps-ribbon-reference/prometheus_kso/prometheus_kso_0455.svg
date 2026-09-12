@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>有序列表_数字24_编号_项目编号_Numbering_显示行号</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-1" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M3 3L4.5 1.5V6.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M5.5 13.5001H2.5C3.02566 12.369 4.16579 11.8986 4.9027 11.1854C5.97479 10.1477 5.41149 8.6775 4.15171 8.60317C3.38344 8.55784 2.87293 9.02396 2.6715 9.6094" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><g id="Group 8"><path id="line_3" d="M2.57617 16.4284C2.83026 15.8606 3.25112 15.5 3.97473 15.5C4.87683 15.5 5.44628 16.349 5.11348 17.3016C4.93639 17.8085 4.37526 18.0256 3.83832 18.0256" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4" d="M2.5 19.7156C2.70185 20.2884 3.21584 20.7002 3.9833 20.7002C4.98321 20.7002 5.65639 19.6796 5.27177 18.7351C5.05314 18.1983 4.41828 18.026 3.83862 18.026" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_5" d="M8.5 4.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M8.5 11.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7" d="M8.5 18.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g transform="translate(24,0) scale(-1,1)"><g id="group-1-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,8.0,0)"><path id="line-rtl" d="M3 3L4.5 1.5V6.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2-rtl" d="M5.5 13.5001H2.5C3.02566 12.369 4.16579 11.8986 4.9027 11.1854C5.97479 10.1477 5.41149 8.6775 4.15171 8.60317C3.38344 8.55784 2.87293 9.02396 2.6715 9.6094" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><g id="Group 8-rtl"><path id="line_3-rtl" d="M2.57617 16.4284C2.83026 15.8606 3.25112 15.5 3.97473 15.5C4.87683 15.5 5.44628 16.349 5.11348 17.3016C4.93639 17.8085 4.37526 18.0256 3.83832 18.0256" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4-rtl" d="M2.5 19.7156C2.70185 20.2884 3.21584 20.7002 3.9833 20.7002C4.98321 20.7002 5.65639 19.6796 5.27177 18.7351C5.05314 18.1983 4.41828 18.026 3.83862 18.026" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_5-rtl" d="M8.5 4.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6-rtl" d="M8.5 11.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_7-rtl" d="M8.5 18.5H21.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></svg>

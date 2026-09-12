@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>表格样式24_套用表格样式_FormatAsTable_NewTableStyle</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-primary {
+       fill: var(--kd-color-icon-orange-primary, #BF5513);
+       stroke: var(--kd-color-icon-orange-primary, #BF5513);
+       km_fill: #BF5513;
+       km_stroke: #BF5513;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-orange-quaternary {
+       fill: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       stroke: var(--kd-color-icon-orange-quaternary, #FDE0CE);
+       km_fill: #FDE0CE;
+       km_stroke: #FDE0CE;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M20.5 7V3C20.5 2.72386 20.2761 2.5 20 2.5H3C2.72386 2.5 2.5 2.72386 2.5 3V20C2.5 20.2761 2.72386 20.5 3 20.5H8.5V8.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M2.5 8.5H19" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M2.5 14.5H11.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M22 10L15.5 16.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M22 14L17.5 18.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-2" class="kd-color-icon-orange-quaternary kd-stroke-width-icon-regular"><path id="fill" d="M11.5 21.5H15C16.3807 21.5 17.5 20.3807 17.5 19C17.5 17.6193 16.3807 16.5 15 16.5C13.6193 16.5 12.5 17.6193 12.5 19V19.1866C12.5 19.717 12.343 20.2355 12.0488 20.6768L11.5 21.5Z" stroke="none"/></g><g id="group-1" class="kd-color-icon-orange-primary kd-stroke-width-icon-regular"><path id="line_6" d="M11.5 21.5H15C16.3807 21.5 17.5 20.3807 17.5 19C17.5 17.6193 16.3807 16.5 15 16.5C13.6193 16.5 12.5 17.6193 12.5 19V19.1866C12.5 19.717 12.343 20.2355 12.0488 20.6768L11.5 21.5Z" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

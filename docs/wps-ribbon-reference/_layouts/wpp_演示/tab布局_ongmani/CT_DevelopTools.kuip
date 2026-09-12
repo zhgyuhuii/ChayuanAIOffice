@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_developtools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand icon="macros_kd" id="RB_Macros_Develop" idKey="VBADevelopDisableJSIDE" ksoCmd="RunMacro" rbFileMenuEmbed="1" text="@Macros">
+			<KxRunMacroCommand customTip="RunJSMacro" hotKey="m" icon="js_macro_kd" id="MacrosInDevelopToolTab" idKey="CommonRunMacro" ksoCmd="RunMacro" qtspyName="RunMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@Run Macros"/>
+			<KxLegacyTriggerCommand customTip="Security" dialogHint="1" hotKey="s" icon="security_kd" id="MacrosSecurityInDevelopToolTab" idKey="CommonMacroSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@Security"/>
+			<KxDevelopEditorCommand controlType="0" customTip="JavaScriptEditor" hotKey="d" icon="edit_code_kd" id="DevelopEditorInDevelopToolsTab" idKey="CommonMacroEditor" idMso="VisualBasic" ksoCmd="DevelopEditor" qtspyName="VisualBasicEditor" rbHotKey="DE" shortcutHint="Alt+F11" text="@WPS Macro Editor"/>
+		</KListCommand>
+		<KListCommand id="RB_Addins" rbFileMenuEmbed="1" text="@Add-Ins">
+			<KxLegacyTriggerCommand controlType="0" customTip="AddIns" filter="support:MacAddin=true" icon="cube_two_kd" id="RB_AddIns" idMso="AddInsDialog" ksoCmd="AddIns" rbHotKey="A" text="@Add-Ins"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="JSAddIns" icon="js_addin_kd" id="RB_JSAddIns" idKey="CommonSafeJsAddins" idMso="JsAddInsDialog" ksoCmd="JSAddIns" rbHotKey="JS" text="@WPS&#10;Add-Ins"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand icon="command_button_kd" id="JDE_CommandButton" ksoCmd="JDE_CommandButton" spaceHint="compact" text="@Command Button"/>
+		<KxLegacyTriggerCommand icon="tick_box_kd" id="JDE_CheckBox" ksoCmd="JDE_CheckBox" spaceHint="compact" text="@Check Box"/>
+		<KxLegacyTriggerCommand icon="list_box_kd" id="JDE_ListBox" ksoCmd="JDE_ListBox" spaceHint="compact" text="@List Box"/>
+		<KxLegacyTriggerCommand icon="control_combine_kd" id="JDE_ComboBox" ksoCmd="JDE_ComboBox" spaceHint="compact" text="@Combo Box"/>
+		<KxLegacyTriggerCommand icon="circle_dot_kd" id="JDE_OptionButton" ksoCmd="JDE_OptionButton" spaceHint="compact" text="@Option Button"/>
+		<KxLegacyTriggerCommand icon="text_form_field_kd" id="JDE_TextBox" ksoCmd="JDE_TextBox" spaceHint="compact" text="@Text Box"/>
+		<KxLegacyTriggerCommand icon="label_kd" id="JDE_Label" ksoCmd="JDE_Label" spaceHint="compact" text="@Label"/>
+		<KxLegacyTriggerCommand icon="toggle_button_kd" id="JDE_ToggleButton" ksoCmd="JDE_ToggleButton" spaceHint="compact" text="@Toggle Button"/>
+		<KxLegacyTriggerCommand icon="scroll_bar_kd" id="JDE_ScrollBar" ksoCmd="JDE_ScrollBar" spaceHint="compact" text="@Scroll Bar"/>
+		<KxLegacyTriggerCommand icon="spin_button_kd" id="JDE_SpinButton" ksoCmd="JDE_SpinButton" spaceHint="compact" text="@Spin Button"/>
+		<KListCommand icon="control_property_kd" id="RB_Control" idKey="VBADevelopDisableJSIDE" text="@Control">
+			<KxLegacyTriggerCommand controlType="0" customTip="CTB_Property" hotKey="i" icon="control_property_kd" id="ControlProperties" idMso="ControlProperties" ksoCmd="CTB_Property" qtspyName="CTB_Property" rbHotKey="L" showIconAndText="1" text="@Control &#10;Properties"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="CTB_ViewCode" hotKey="v" icon="magnifier_code_kd" id="ViewCode" idMso="ViewCode" ksoCmd="CTB_ViewCode" qtspyName="CTB_ViewCode" rbHotKey="W" showIconAndText="1" text="@View Code"/>
+		</KListCommand>
+		<KListCommand icon="toolbox_list_kd" id="RB_ControlToolbox" idKey="VBADevelopDisableJSIDE" text="@Control Toolbox">
+			<KxJdeControlListCommand embedHint="1" visibleDependsOnSubCmds="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="JDE_CommandButton"/>
+					<command idQ="JDE_CheckBox"/>
+					<command idQ="JDE_ListBox"/>
+					<command idQ="JDE_ComboBox"/>
+					<command idQ="JDE_OptionButton"/>
+				</KRbLayoutListCommand>
+				<separator/>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<command idQ="JDE_TextBox"/>
+					<command idQ="JDE_Label"/>
+					<command idQ="JDE_ToggleButton"/>
+					<command idQ="JDE_ScrollBar"/>
+					<command idQ="JDE_SpinButton"/>
+				</KRbLayoutListCommand>
+			</KxJdeControlListCommand>
+		</KListCommand>
+		<KListCommand id="RB_IDEExit" text="@Exit">
+			<KxDevelopExitCommand customTip="IDEExit" icon="close_window_kd" id="IDEExit" rbHotKey="C" text="@Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_DevelopTools">
+			<command idQ="RB_Macros_Develop"/>
+			<separator/>
+			<command idQ="RB_Addins"/>
+			<separator/>
+			<command idQ="RB_Control"/>
+			<separator/>
+			<command idQ="RB_ControlToolbox"/>
+			<separator/>
+			<command idQ="RB_SwitchIDE"/>
+			<separator/>
+			<command idQ="RB_IDEExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_tool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" customTip="PythonEditor" icon="code_edit_py_kd" id="PyEditor_ToolTab" idKey="EtPyEditorToolTab" ksoCmd="PythonEditor" qtspyName="PythonEditor" text="@Python Editor"/>
+		<KxRunMacroCommand controlType="0" customTip="RunJSMacro" hotKey="m" icon="js_macro_kd" id="RunMacro_ToolTab" idMso="MacroPlay" ksoCmd="RunMacro" qtspyName="RunMacro" rbHotKey="PM" text="@Run Macros"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Security" dialogHint="1" hotKey="s" icon="security_kd" id="MacroSecurity_ToolTab" idMso="MacroSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@Security"/>
+		<KxLegacyTriggerCommand customTip="LoadMacro" hotKey="l" icon="cube_two_kd" id="LoadMacro_ToolTab" idKey="VBADevelopLoadMacro" ksoCmd="LoadMacro" qtspyName="LoadMacro" rbHotKey="PN" text="@Add-Ins"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="JSAddIns" icon="js_addin_kd" id="RB_JSAddIns_ToolTab" idKey="CommonSafeJsAddins" idMso="JsAddInsDialog" ksoCmd="JSAddIns" rbHotKey="JS" text="@WPS &#10;Add-Ins"/>
+		<KxLegacyTriggerCommand aid="860" customTip="RecordList" dialogHint="1" hotKey="o" icon="record_list_kd" id="rRecordList" ksoCmd="RecordForm" rbHotKey="O" text="@Form"/>
+		<KxDevelopEditorCommand controlType="0" customTip="JavaScriptEditor" hotKey="d" icon="edit_code_kd" id="DevelopEditorInDevelopToolsTab" idKey="CommonMacroEditor" idMso="VisualBasic" ksoCmd="DevelopEditor" qtspyName="VisualBasicEditor" rbHotKey="DE" shortcutHint="Alt+F11" text="@WPS Macro Editor"/>
+		<KxDevelopToolsContextCommand customTip="DevelopmentTools" icon="code_edit_kd" id="rDevelopTool_ToolTab" text="@Develop Tool"/>
+		<KxExportPdfRBLegacyTriggerCommand aid="80004" customTip="ExportToPDF" dialogHint="1" hotKey="OF" icon="change_to_pdf_two_kd" id="RbToolExportPDF" ksoCmd="ExportPDF" qtspyName="ExportPDF" rbHotKey="OF" text="@Export to PDF"/>
+		<KAppCommand appCmdObj="kexportimage" appId="kexportimage" customTip="ExportWeiboImageCmd" dialogHint="1" hotKey="X" icon="replace_pic_kd" id="RbToolExportWeiboImageCmd" rbHotKey="X" text="@Export as Image"/>
+		<KxNewShareForMenuCommand controlType="0" hotKey="d" icon="share_to_kd" id="newShare" idMso="FileShare" infoId="s" text="@File Share"/>
+		<KxEtInvoiceAssistantCommand autoLoad="false" delayLoadLib="true" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" icon="invoice_assist_kd" id="BillassistantCommands" idKey="ETToolsInvoiceAssistant" targetId="BillassistantCommands" targetModule="kbillassistant" text="@Invoice Maker"/>
+		<KListCommand groupTip="DevelopToolGroup" icon="code_edit_kd" id="RB_V_Macros" rbFileMenuEmbed="1" text="@Develop Tool">
+			<command idQ="RunMacro_ToolTab"/>
+			<command idQ="MacroSecurity_ToolTab"/>
+			<command idQ="DevelopEditorInDevelopToolsTab"/>
+			<command idQ="PyEditor_ToolTab"/>
+			<command idQ="LoadMacro_ToolTab"/>
+			<command idQ="RB_COMAddIns_ToolTab"/>
+			<command idQ="RB_JSAddIns_ToolTab"/>
+			<command idQ="rDevelopTool_ToolTab"/>
+		</KListCommand>
+		<KAppCommand appCmdObj="SnapSheet" appId="ksnapsheet" customTip="SnapToSheet" entrance="et_tools" icon="et_snapsheet_kd" id="SnapToSheet_ToolEntry" idKey="EtSnapSheet" text="@Snap to Sheet"/>
+		<KListCommand groupTip="InputGroup" icon="record_list_kd" id="RB_rRecordList" text="@Input">
+			<command idKey="EtSnapSheet" idQ="SnapToSheet_ToolEntry"/>
+		</KListCommand>
+		<KListCommand groupTip="ApplicationGroup" id="RB_ApplicationTool" text="@Application" visibleDependsOnSubCmds="1">
+			<KxEtQuickSearchCommand controlType="0" customTip="QuickSearch" icon="doc_magnifier_kd" id="QuickSearch" idKey="EtDataQuery" ksoCmd="QuickSearch" qtspyName="QuickSearch" text="@Data Query"/>
+			<command idQ="BillassistantCommands"/>
+		</KListCommand>
+		<KControlListCommand groupTip="DataProcessGroup" icon="data_processing_kd" id="RB_SpecialAbility" text="@Data Process">
+			<command idQ="SplitSheet_ettool"/>
+			<command idQ="MergeSheet_ettool"/>
+			<command idQ="AiSmartOrganizeTool"/>
+			<command idQ="app_kformulaassistant_tool"/>
+		</KControlListCommand>
+		<KxEtDbViewCommand controlType="0" filterFlag="1" id="ExportAllSheetsToDb" idKey="EtExportAllSheetsToDb" ksoCmd="ExportAllSheetsToDb" qtspyName="ExportAllSheetsToDb" text="@All Sheets"/>
+		<KxEtDbViewCommand controlType="0" filterFlag="1" id="ExportActiveSheetToDb" idKey="EtExportActiveSheetToDb" ksoCmd="ExportActiveSheetToDb" qtspyName="ExportActiveSheetToDb" text="@Active Sheet"/>
+		<KxEtExportToDbSheetListCommand canHideText="0" customTip="ExportToDbSheet" disableTrigger="true" icon="change_to_db_kd" id="ExportToDbSheet" ksoCmd="ExportToDbSheet" linkName="DBSheetHelp" linkText="@Feature Introduction" text="@Export to DbSheet">
+			<command idQ="ExportAllSheetsToDb"/>
+			<command idQ="ExportActiveSheetToDb"/>
+		</KxEtExportToDbSheetListCommand>
+		<KxEtCustomTipsListCommand id="RB_DataBase_Sheet" text="@DataBase Sheet">
+			<command idQ="ExportToDbSheet"/>
+		</KxEtCustomTipsListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Tools">
+			<command idQ="RB_V_Macros"/>
+			<separator/>
+			<command idQ="RB_rRecordList"/>
+			<separator/>
+			<command idQ="RB_ApplicationTool"/>
+			<separator/>
+			<command idKey="EtToolsSpecialAbility" idQ="RB_SpecialAbility"/>
+			<separator/>
+			<command idKey="EtToolDataBase" idQ="RB_DataBase_Sheet"/>
+		</subcommand>
+	</subcommands>
+</shell>

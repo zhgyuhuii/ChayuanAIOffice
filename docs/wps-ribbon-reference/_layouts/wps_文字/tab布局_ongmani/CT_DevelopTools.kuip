@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_developtools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand controlType="16" icon="macros_kd" id="sp_Macros_Develop" idKey="VBADevelopDisableJSIDE" idMso="GroupMacroPlay" ksoCmd="RunMacro" rbHotKey="M" text="@Macros">
+			<KxRunMacroCommand controlType="0" customTip="RunJSMacro" hotKey="V" icon="js_macro_kd" id="MacrosInDevelopToolsTab" idKey="CommonRunMacro" idMso="MacroPlay" ksoCmd="RunMacro" qtspyName="RunMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@Run Macros"/>
+			<KxRecordMacroCommand controlType="0" customTip="RecordMacro" forceVisible="1" hotKey="R" id="RecordNewMacro" idKey="CommonMacroRecord" idMso="MacroRecordOrStop" ksoCmd="RecordMacro" rbHotKey="M" text="@Record Macro"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Security" dialogHint="1" hotKey="s" icon="security_kd" id="MacroSecurityInDevelopToolsTab" idKey="CommonMacroSecurity" idMso="MacroSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@Security"/>
+			<KxDevelopEditorCommand controlType="0" customTip="JavaScriptEditor" hotKey="d" icon="edit_code_kd" id="DevelopEditorInDevelopToolsTab" idKey="CommonMacroEditor" idMso="VisualBasic" ksoCmd="DevelopEditor" qtspyName="VisualBasicEditor" rbHotKey="V" shortcutHint="Alt+F11" text="@WPS Macro Editor"/>
+		</KListCommand>
+		<KListCommand controlType="16" id="RB_ComAddins" idMso="GroupAddins" rbFileMenuEmbed="1" text="@Add-Ins">
+			<KxLegacyTriggerCommand controlType="0" customTip="TemplateAddIns" filter="support:MacAddin=true" icon="cube_two_kd" id="RB_TemplateAddIns" idMso="AddInManager" ksoCmd="TemplateAddIns" rbHotKey="AI" text="@Add-Ins"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="JSAddIns" icon="js_addin_kd" id="RB_JSAddIns" idKey="CommonSafeJsAddins" idMso="JsAddInsDialog" ksoCmd="JSAddIns" rbHotKey="JS" text="@WPS Add-Ins"/>
+		</KListCommand>
+		<KListCommand controlType="16" icon="toolbox_list_kd" id="RB_ControlToolbox" idMso="GroupControls" text="@Control Toolbox">
+			<KRbDesignModeCommand controlType="6" customTip="CTB_DesignMode" enterText="@Design Mode" exitText="@Exit&#10;Design Mode" icon="design_mode_kd" id="DesignMode" idMso="DesignMode" ksoCmd="CTB_DesignMode" qtspyName="CTB_DesignMode" rbHotKey="CD" text="@Design Mode"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="CTB_Property" hotKey="i" icon="control_property_kd" id="ControlProperties" idMso="ControlProperties" ksoCmd="CTB_Property" qtspyName="CTB_Property" rbHotKey="L" showIconAndText="1" text="@Control &#10;Properties"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="CTB_ViewCode" hotKey="v" icon="magnifier_code_kd" id="ViewVisualBasicCode" idMso="ViewVisualBasicCode" ksoCmd="CTB_ViewCode" qtspyName="CTB_ViewCode" rbHotKey="W" showIconAndText="1" spaceHint="topsuitable" text="@View Code"/>
+			<KxJdeOrVbaListCommand controlType="15" customTip="ContentControlsGroupMenu" icon="group_kd" id="ContentControlsGroupMenu" idMso="ContentControlsGroupMenu" rbFileMenuEmbed="1" rbHotKey="G" spaceHint="topsuitable" text="@ContentControlsGroupMenu">
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlsGroup" hotKey="g" icon="group_kd" id="ContentControlsGroup" idMso="ContentControlsGroup" ksoCmd="ContentControlsGroup" rbHotKey="G" text="@ContentControlsGroup"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlsUngroup" hotKey="u" icon="group_cancel_kd" id="ContentControlsUngroup" idMso="ContentControlsUngroup" ksoCmd="ContentControlsUngroup" rbHotKey="U" text="@ContentControlsUngroup"/>
+			</KxJdeOrVbaListCommand>
+			<KLayoutWidgetCommand fixedWidth="3" idKey="VBAScriptAccess"/>
+			<separator idKey="VBAScriptAccess"/>
+			<KLayoutWidgetCommand fixedWidth="4" idKey="VBAScriptAccess"/>
+			<KRbLayoutListCommand layoutOnly="1" spaceHint="suitable">
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlRichText" descName="@Rich Text Content Control" icon="control_rich_text_kd" id="ContentControlRichText" idMso="ContentControlRichText" ksoCmd="ContentControlRichText" qtspyName="ContentControlRichText" rbHotKey="Q" spaceHint="compact" text="@Rich Text Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlText" descName="@Plain Text Content Control" icon="control_text_kd" id="ContentControlText" idMso="ContentControlText" ksoCmd="ContentControlText" qtspyName="ContentControlText" rbHotKey="E" spaceHint="compact" text="@Plain Text Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlPicture" descName="@Picture Content Control" icon="control_picture_kd" id="ContentControlPicture" idMso="ContentControlPicture" ksoCmd="ContentControlPicture" qtspyName="ContentControlPicture" rbHotKey="I" spaceHint="compact" text="@Picture Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlBuildingBlockGallery" descName="@Building Block Gallery Content Control" icon="control_base_block_kd" id="ContentControlBuildingBlockGallery" idMso="ContentControlBuildingBlockGallery" ksoCmd="ContentControlBuildingBlockGallery" qtspyName="ContentControlBuildingBlockGallery" rbHotKey="B" spaceHint="compact" text="@Building Block Gallery Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlCheckBox" descName="@Check Box Content Control" icon="control_checkbox_kd" id="ContentControlCheckBox" idMso="ContentControlCheckBox" ksoCmd="ContentControlCheckBox" qtspyName="ContentControlCheckBox" rbHotKey="F" spaceHint="compact" text="@Check Box Content Control"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand layoutOnly="1" spaceHint="suitable">
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlComboBox" descName="@Combo Box Content Control" icon="control_combobox_kd" id="ContentControlComboBox" idMso="ContentControlComboBox" ksoCmd="ContentControlComboBox" qtspyName="ContentControlComboBox" rbHotKey="CO" spaceHint="compact" text="@Combo Box Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlDropDownList" descName="@Drop-Down List Content Control" icon="control_select_kd" id="ContentControlDropDownList" idMso="ContentControlDropDownList" ksoCmd="ContentControlDropDownList" qtspyName="ContentControlDropDownList" rbHotKey="O" spaceHint="compact" text="@Drop-Down List Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlData" descName="@Date Picker Content Control" icon="control_calendar_kd" id="ContentControlData" idMso="ContentControlData" ksoCmd="ContentControlData" qtspyName="ContentControlData" rbHotKey="K" spaceHint="compact" text="@Date Picker Content Control"/>
+				<KxLegacyTriggerCommand controlType="0" customTip="ContentControlRepeating" descName="@Repeating Section Content Control" icon="control_repeating_section_kd" id="ContentControlRepeating" idMso="ContentControlRepeating" ksoCmd="ContentControlRepeating" qtspyName="ContentControlRepeating" rbHotKey="R" spaceHint="compact" text="@Repeating Section Content Control"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand icon="js_control_toolbox_kd" id="RB_JDE_ControlToolbox" idKey="WPSJDEControlToolbox" text="@JS Control Toolbox" visibleDependsOnSubCmds="1">
+			<KxJdeControlListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<KxLegacyTriggerCommand icon="command_button_kd" id="JDE_CommandButton" ksoCmd="JDE_CommandButton" spaceHint="compact" text="@Command Button"/>
+					<KxLegacyTriggerCommand icon="tick_box_kd" id="JDE_CheckBox" ksoCmd="JDE_CheckBox" spaceHint="compact" text="@Check Box"/>
+					<KxLegacyTriggerCommand icon="list_box_kd" id="JDE_ListBox" ksoCmd="JDE_ListBox" spaceHint="compact" text="@List Box"/>
+					<KxLegacyTriggerCommand icon="control_combine_kd" id="JDE_ComboBox" ksoCmd="JDE_ComboBox" spaceHint="compact" text="@Combo Box"/>
+					<KxLegacyTriggerCommand icon="circle_dot_kd" id="JDE_OptionButton" ksoCmd="JDE_OptionButton" spaceHint="compact" text="@Option Button"/>
+				</KRbLayoutListCommand>
+				<separator/>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+					<KxLegacyTriggerCommand icon="text_form_field_kd" id="JDE_TextBox" ksoCmd="JDE_TextBox" spaceHint="compact" text="@Text Box"/>
+					<KxLegacyTriggerCommand icon="label_kd" id="JDE_Label" ksoCmd="JDE_Label" spaceHint="compact" text="@Label"/>
+					<KxLegacyTriggerCommand icon="toggle_button_kd" id="JDE_ToggleButton" ksoCmd="JDE_ToggleButton" spaceHint="compact" text="@Toggle Button"/>
+					<KxLegacyTriggerCommand icon="scroll_bar_kd" id="JDE_ScrollBar" ksoCmd="JDE_ScrollBar" spaceHint="compact" text="@Scroll Bar"/>
+					<KxLegacyTriggerCommand icon="spin_button_kd" id="JDE_SpinButton" ksoCmd="JDE_SpinButton" spaceHint="compact" text="@Spin Button"/>
+				</KRbLayoutListCommand>
+			</KxJdeControlListCommand>
+		</KListCommand>
+		<KxListCommand icon="code_xml_structure_kd" id="RB_XMLAddIns" text="@XML">
+			<KxLegacyTriggerCommand controlType="0" customTip="XmlStructure" icon="code_xml_structure_kd" id="XmlStructure" idMso="XmlStructure" ksoCmd="XmlStructure" qtspyName="XmlStructure" rbHotKey="T" text="@XmlStructure"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="XmlSchema" icon="cascade_option_kd" id="XmlSchema" idMso="XmlSchema" ksoCmd="XmlSchema" qtspyName="XmlSchema" rbHotKey="H" text="@XmlSchema"/>
+		</KxListCommand>
+		<KListCommand controlType="16" id="RB_XmlMapping" idKey="GroupXmlMappingCommand" idMso="GroupXmlMappingPane" text="@XmlMapping">
+			<KxLegacyTriggerCommand controlType="0" customTip="XmlMapping" icon="child_level_kd" id="ToggleXmlMappingPane" idMso="ToggleXmlMappingPane" ksoCmd="XmlMapping" qtspyName="XmlMapping" rbHotKey="Y" text="@XML Mapping Pane"/>
+		</KListCommand>
+		<KListCommand id="RB_IDEExit" text="@Exit">
+			<KxDevelopExitCommand customTip="IDEExit" icon="close_window_kd" id="IDEExit" rbHotKey="CL" text="@Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_DevelopTools">
+			<command idQ="sp_Macros_Develop"/>
+			<separator/>
+			<command idQ="RB_ComAddins"/>
+			<separator/>
+			<command idQ="RB_ControlToolbox"/>
+			<separator/>
+			<command idQ="RB_JDE_ControlToolbox"/>
+			<separator/>
+			<command idQ="RB_XMLAddIns"/>
+			<separator/>
+			<command idQ="RB_XmlMapping"/>
+			<separator/>
+			<command idQ="RB_SwitchIDE"/>
+			<separator/>
+			<command idQ="RB_IDEExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

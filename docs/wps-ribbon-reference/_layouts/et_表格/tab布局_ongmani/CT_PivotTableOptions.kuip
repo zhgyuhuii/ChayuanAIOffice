@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_pivottableoptions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="PivotTableGroup" horizontalSpacing="6" icon="sheet_pivot_kd" id="RB_PT_Table" text="@Pivot Table">
+			<KxEtLabelCommand fixedHeight="24" ksoCmd="PivotTableNameSuffex" qtspyName="PivotTableNameSuffex" spaceHint="suitable" text="@PivotTable Name:"/>
+			<KxEtLineEditCommand customTip="PivotTableName" fixedHeight="24" fixedWidth="90" hotKey="n" ksoCmd="PivotTableName" qtspyName="PivotTableName" rbHotKey="N" spaceHint="suitable" text=""/>
+			<KxListCommand customTip="PTTableOptions" icon="table_options_kd" id="PTPivotTableOptions" ksoCmd="PTTableOptions" qtspyName="PTPivotTableOptions" rbHotKey="T" text="@Options">
+				<KxLegacyTriggerCommand aid="1604" customTip="PTTableOptions" hotKey="t" icon="table_options_kd" id="PTTableOptions" ksoCmd="PTTableOptions" qtspyName="PTTableOptions" rbHotKey="T" text="@Options" triggerAble="0"/>
+				<KxLegacyTriggerCommand customTip="PTTableShowReportFilterPages" dialogHint="1" hotKey="p" icon="pages_show_kd" id="PTTableShowReportFilterPages" ksoCmd="PTTableShowReportFilterPages" qtspyName="PTTableShowReportFilterPages" rbHotKey="P" text="@Show Report Filter Pages"/>
+				<KxLegacyTriggerCommand customTip="PTTableGenerateGetPivotData" hotKey="g" id="PTTableGenerateGetPivotData" ksoCmd="PTTableGenerateGetPivotData" qtspyName="PTTableGenerateGetPivotData" rbHotKey="G" text="@Generate GetPivotData"/>
+			</KxListCommand>
+		</KListCommand>
+		<KListCommand groupTip="ActiveFieldGroup" icon="doc_two_kd" id="RB_PT_Field" text="@Active Field">
+			<KxSingleRowMergeGroupCommand customTip="ActiveFieldGroup" icon="doc_two_kd" id="SingleRow_PT_Field" text="@Active Field"/>
+			<KLabelCommand fixedHeight="24" singlerowmergegroup="SingleRow_PT_Field" spaceHint="suitable" text="@Active Field:"/>
+			<KxEtLineEditCommand customTip="PTActiveField" fixedHeight="24" fixedWidth="108" hotKey="m" ksoCmd="PTActiveField" qtspyName="PTActiveField" rbHotKey="M" singlerowmergegroup="SingleRow_PT_Field" spaceHint="suitable" text=""/>
+			<KLayoutWidgetCommand fixedWidth="2"/>
+			<KxLegacyTriggerCommand aid="460" customTip="PTFieldSettings" dialogHint="1" icon="doc_setup_kd" id="PTFieldSettings" ksoCmd="PTFieldSettings" qtspyName="PivotTableName" rbHotKey="G" singlerowmergegroup="SingleRow_PT_Field" text="@Field Settings"/>
+			<KxLegacyTriggerCommand aid="92034" hotKey="o" icon="table_hide_kd" id="RBPTHide" ksoCmd="PTHide" rbHotKey="O" singlerowmergegroup="SingleRow_PT_Field" text="@Hide"/>
+			<KxLegacyTriggerCommand aid="462" customTip="PTExpandField" icon="show_detail_kd" id="PTExpandField" ksoCmd="PTExpandField" qtspyName="PTExpandField" rbHotKey="X" singlerowmergegroup="SingleRow_PT_Field" spaceHint="suitable" text="@Expand"/>
+			<KxLegacyTriggerCommand aid="464" customTip="PTCollapseField" icon="hide_detail_kd" id="PTCollapseField" ksoCmd="PTCollapseField" qtspyName="PTCollapseField" rbHotKey="P" singlerowmergegroup="SingleRow_PT_Field" spaceHint="suitable" text="@Collapse"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionCombineGroup" icon="combination_kd" id="RB_PT_Group" text="@Group">
+			<KxSingleRowMergeGroupCommand customTip="PivotTableOptionCombineGroup" icon="combination_kd" id="SingleRow_PT_Group" text="@Group"/>
+			<KxLegacyTriggerCommand icon="select_group_kd" id="PTGroup" ksoCmd="PTGroup" qtspyName="PTGroup" rbHotKey="K" singlerowmergegroup="SingleRow_PT_Group" spaceHint="suitable" text="@Group Selection"/>
+			<KxLegacyTriggerCommand icon="table_ungroup_kd" id="PTUngroup" ksoCmd="PTUnGroup" qtspyName="PTUngroup" rbHotKey="U" singlerowmergegroup="SingleRow_PT_Group" spaceHint="suitable" text="@Ungroup"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionDataGroup" icon="database_kd" id="RB_PT_Data" text="@Data">
+			<KxListCommand canHideText="0" customTip="Refresh" icon="table_refresh_kd" id="PTRefresh" ksoCmd="PTRefresh" qtspyName="PTRefresh" rbHotKey="F" shortcutHint="Alt+F5" text="@Refresh">
+				<command idQ="Refresh"/>
+				<command idQ="RefreshAll"/>
+			</KxListCommand>
+			<KxListCommand canHideText="0" customTip="PTChangeSource" hotKey="i" icon="create_form_pivot_chart_kd" id="PTChangeDataSource" ksoCmd="PTChangeSource" qtspyName="PTChangeDataSource" rbHotKey="I" text="@Change Data &#10;Source">
+				<KxLegacyTriggerCommand customTip="PTChangeSource" dialogHint="1" hotKey="d" icon="create_form_pivot_chart_kd" id="PTChangeSource" ksoCmd="PTChangeSource" qtspyName="PTChangeSource" rbHotKey="D" text="@Change Data Source"/>
+			</KxListCommand>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionOperationGroup" icon="select_group_kd" id="RB_PT_Operation" text="@Operation">
+			<KxSingleRowMergeGroupCommand customTip="PivotTableOptionOperationGroup" icon="select_group_kd" id="SingleRow_PT_Operation" text="@Operation"/>
+			<KListCommand icon="clear_format_kd" id="PTClear" rbHotKey="E" singlerowmergegroup="SingleRow_PT_Operation" text="@Clear">
+				<KxLegacyTriggerCommand hotKey="c" icon="batch_clear_kd" id="PTClearTable" ksoCmd="PTClearTable" rbHotKey="C" text="@Clear All"/>
+				<KxLegacyTriggerCommand hotKey="f" icon="filter_clear_kd" id="PTClearFilters" ksoCmd="PTClearFilters" rbHotKey="F" text="@Clear Filters"/>
+			</KListCommand>
+			<KxListCommand disableTrigger="1" icon="select_group_kd" id="PTSelect" ksoCmd="PTSelect" rbHotKey="W" singlerowmergegroup="SingleRow_PT_Operation" text="@Select">
+				<KxLegacyTriggerCommand hotKey="a" icon="sheet_two_kd" id="PTSelectLabelAndData" ksoCmd="PTSelectLabelAndData" rbHotKey="A" text="@Labels And Values"/>
+				<KxLegacyTriggerCommand hotKey="v" icon="sheet_two_kd" id="PTSelectData" ksoCmd="PTSelectData" rbHotKey="V" text="@Values"/>
+				<KxLegacyTriggerCommand hotKey="l" icon="sheet_two_kd" id="PTSelectLabel" ksoCmd="PTSelectLabel" rbHotKey="L" text="@Labels"/>
+				<KxLegacyTriggerCommand hotKey="t" icon="sheet_kd" id="PTSelectEntireTable" ksoCmd="PTSelectEntireTable" rbHotKey="T" text="@Entire PivotTable"/>
+				<separator/>
+				<KxLegacyTriggerCommand hotKey="e" icon="ranks_enable_selection_kd" id="PTEnableSelection" ksoCmd="PTEnableSelection" rbHotKey="E" text="@Enable Selection"/>
+			</KxListCommand>
+			<KxLegacyTriggerCommand customTip="MoveChart" icon="sheet_move_kd" id="PTMoveChart" ksoCmd="MoveChart" rbHotKey="V" singlerowmergegroup="SingleRow_PT_Operation" text="@MoveChart"/>
+			<KxLegacyTriggerCommand icon="slicer_move_kd" id="PTMoveTable" ksoCmd="PTMoveTable" rbHotKey="V" singlerowmergegroup="SingleRow_PT_Operation" spaceHint="suitable" text="@Move &#10;PivotTable"/>
+			<KxLegacyTriggerCommand icon="table_delete_kd" id="RBPTDeleteTable" ksoCmd="PTDeleteTable" rbHotKey="D" singlerowmergegroup="SingleRow_PT_Operation" spaceHint="suitable" text="@Delete PivotTable"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionCalculationGroup" id="RB_PT_Calculation" text="@Calculation">
+			<KListCommand customTip="PTFieldItem" icon="pivot_field_item_kd" id="PivotTableFieldItem" qtspyName="PTFieldItem" rbHotKey="J" text="@Fields,Items">
+				<KxLegacyTriggerCommand customTip="PTCalculatedFields" dialogHint="1" hotKey="f" icon="math_options_fields_kd" id="PivotTableCalculatedFields" ksoCmd="PTCalculatedFields" qtspyName="PTCalculatedFields" rbHotKey="F" text="@Calculated Fields"/>
+				<KxLegacyTriggerCommand customTip="PTCalculatedItem" dialogHint="1" hotKey="i" icon="math_options_kd" id="PivotTableCalculatedItem" ksoCmd="PTCalculatedItem" qtspyName="PTCalculatedItem" rbHotKey="I" text="@Calculated Items"/>
+				<separator/>
+				<KxLegacyTriggerCommand customTip="PTSolveOrder" dialogHint="1" hotKey="s" icon="solve_order_kd" id="PivotTableSolveOrder" ksoCmd="PTSolveOrder" qtspyName="PTSolveOrder" rbHotKey="S" text="@Solve Order"/>
+				<KxLegacyTriggerCommand customTip="PTListFormulas" hotKey="l" icon="edit_list_formula_kd" id="PivotTableListFormulas" ksoCmd="PTListFormulas" qtspyName="PTListFormulas" rbHotKey="L" text="@List Formulas"/>
+			</KListCommand>
+		</KListCommand>
+		<KxListCommand customTip="PTFilterButton" icon="pivot_field_buttons_kd" id="PTFilterButton" ksoCmd="PTShowAllFieldButtons" qtspyName="PTFilterButton" rbHotKey="D" text="@Field Buttons">
+			<KxLegacyTriggerCommand hotKey="r" id="PTShowReportFilterFieldButtons" ksoCmd="PTShowReportFilterFieldButtons" qtspyName="PTShowReportFilterFieldButtons" rbHotKey="R" text="@Show Report Filter Field Buttons"/>
+			<KxLegacyTriggerCommand hotKey="l" id="PTShowLegendFieldButtons" ksoCmd="PTShowLegendFieldButtons" qtspyName="PTShowLegendFieldButtons" rbHotKey="L" text="@Show Legend Field Buttons"/>
+			<KxLegacyTriggerCommand hotKey="x" id="PTShowAxisFieldButtons" ksoCmd="PTShowAxisFieldButtons" qtspyName="PTShowAxisFieldButtons" rbHotKey="X" text="@Show Axis Field Buttons"/>
+			<KxLegacyTriggerCommand hotKey="v" id="PTShowValueFieldButtons" ksoCmd="PTShowValueFieldButtons" qtspyName="PTShowValueFieldButtons" rbHotKey="V" text="@Show Value Field Buttons"/>
+			<separator/>
+			<KxLegacyTriggerCommand hotKey="h" id="PTHideAllFieldButtons" ksoCmd="PTHideAllFieldButtons" qtspyName="PTHideAllFieldButtons" rbHotKey="H" text="@Hide All"/>
+		</KxListCommand>
+		<KListCommand groupTip="PivotTableOptionToolGroup" id="RB_PT_Tools" text="@Tools">
+			<KxLegacyTriggerCommand customTip="PivotChart" forceVisible="1" icon="pivot_chart_wizard_kd" id="PT_PivotChartWizardInInsertTab" ksoCmd="InsertPivotChart" qtspyName="PT_PivotChartWizardInInsertTab" rbHotKey="C" text="@PivotChart"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionShowGroup" icon="eye_kd" id="RB_PT_Show" text="@Show">
+			<KxLegacyTriggerCommand customTip="PTShowFieldList" hotKey="l" icon="show_hide_field_list_kd" id="PivotTableShowFieldList" ksoCmd="PTShowFieldList" qtspyName="PTShowFieldList" rbHotKey="L" text="@Field &#10;List"/>
+			<KxLegacyTriggerCommand customTip="PTShowCollapseButtons" hotKey="b" icon="pivot_expand_collaspe_btns_kd" id="PivotTableShowCollapseButtons" ksoCmd="PTShowCollapseButtons" qtspyName="PTShowCollapseButtons" rbHotKey="B" text="@+/- &#10;Buttons"/>
+			<KxLegacyTriggerCommand customTip="PTShowFieldCaptions" hotKey="h" icon="pivot_field_caption_kd" id="PivotTableShowFieldCaptions" ksoCmd="PTShowFieldCaptions" qtspyName="PTShowFieldCaptions" rbHotKey="H" text="@Field &#10;Headers"/>
+			<command idQ="PTFilterButton"/>
+		</KListCommand>
+		<KListCommand groupTip="PivotTableOptionFilterGroup" icon="filter_kd" id="RB_PT_Filter" text="@Filter">
+			<KxLegacyTriggerCommand aid="25206" customTip="InsertSlicer" hotKey="sf" icon="slicer_insert_kd" id="pt_InsertSlicer" ksoCmd="InsertSlicer" qtspyName="pt_InsertSlicer" rbHotKey="SF" text="@Insert Slicer"/>
+			<KxLegacyTriggerCommand aid="25212" customTip="PTFilterConnections" hotKey="sc" icon="sheet_filter_kd" id="pt_FilterConnection" ksoCmd="PTFilterConnections" qtspyName="pt_FilterConnection" rbHotKey="SC" text="@Filter Connections"/>
+		</KListCommand>
+		<KxEtAIPivotListCommand groupTip="PivotTableOptionAIGroup" icon="sheet_pivot_kd" id="RB_PT_AI" text="@AI Data Assistant">
+			<KxEtAIPivotAnalysisCommand customTip="AIAnalysisPivotData" icon="analysis_assistant_kd" id="PT_AIDataAnalysis" ksoCmd="AIAnalysisPivotData" qtspyName="PT_AIAnalysisPivotData" text="@AI Analysis Copilot"/>
+		</KxEtAIPivotListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PivotTableOptions">
+			<command idQ="RB_PT_Table"/>
+			<separator/>
+			<command idQ="RB_PT_AI"/>
+			<separator/>
+			<command idQ="RB_PT_Field"/>
+			<separator/>
+			<command idQ="RB_PT_Group"/>
+			<separator/>
+			<command idQ="RB_PT_Filter"/>
+			<separator/>
+			<command idQ="RB_PT_Data"/>
+			<separator/>
+			<command idQ="RB_PT_Operation"/>
+			<separator/>
+			<command idQ="RB_PT_Calculation"/>
+			<separator/>
+			<command idQ="RB_PT_Tools"/>
+			<separator/>
+			<command idQ="RB_PT_Show"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_references" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertIndexTables" hotKey="c" icon="insert_content_kd" id="InsertIndexTablesToolBar" idMso="TableOfContentsDialog" ksoCmd="InsertIndexTables" rbHotKey="C" text="@Insert TOC"/>
+		<KListCommand controlType="5" customTip="m_tocLevel" icon="text_frame_kd" id="m_tocLevel" idMso="TOCLevelGallery" rbHotKey="A" text="@TOC Level">
+			<KxIndexCommand controlType="0" hotKey="1" id="TOCLevel1" idMso="TOCLevel1" index="0" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level1" text="@Level 1"/>
+			<KxIndexCommand controlType="0" hotKey="2" id="TOCLevel2" idMso="TOCLevel2" index="1" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level2" text="@Level 2"/>
+			<KxIndexCommand controlType="0" hotKey="3" id="TOCLevel3" idMso="TOCLevel3" index="2" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level3" text="@Level 3"/>
+			<KxIndexCommand controlType="0" hotKey="4" id="TOCLevel4" idMso="TOCLevel4" index="3" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level4" text="@Level 4"/>
+			<KxIndexCommand controlType="0" hotKey="5" id="TOCLevel5" idMso="TOCLevel5" index="4" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level5" text="@Level 5"/>
+			<KxIndexCommand controlType="0" hotKey="6" id="TOCLevel6" idMso="TOCLevel6" index="5" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level6" text="@Level 6"/>
+			<KxIndexCommand controlType="0" hotKey="7" id="TOCLevel7" idMso="TOCLevel7" index="6" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level7" text="@Level 7"/>
+			<KxIndexCommand controlType="0" hotKey="8" id="TOCLevel8" idMso="TOCLevel8" index="7" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level8" text="@Level 8"/>
+			<KxIndexCommand controlType="0" hotKey="9" id="TOCLevel9" idMso="TOCLevel9" index="8" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="Level9" text="@Level 9"/>
+			<KxIndexCommand controlType="0" hotKey="B" id="TOCNormal" idMso="TOCBodyText" index="9" ksoCmd="OutLineLevelComboOnOutlining" qtspyName="BodyText" text="@Body Text"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" entrance="references_toc_panel" hotKey="C" icon="custom_table_of_contents_kd" id="CustomTableOfContents" idMso="TableOfContentsCustom" ksoCmd="CustomTableOfContents" qtspyName="CustomTableOfContents" text="@Insert Table Of Contents"/>
+		<KxLegacyTriggerCommand controlType="0" hotKey="R" icon="remove_table_of_contents_kd" id="RemoveTableOfContents" idMso="TableOfContentsRemove" ksoCmd="RemoveTableOfContents" qtspyName="RemoveTableOfContents" text="@Remove Table Of Contents"/>
+		<KxWpsTableOfContentsGalleryCommand controlType="4" customTip="InsertIndexTables4ZhCn" galleryWidth="250" icon="insert_content_kd" id="InsertTableOfContents" idKey="WpsInsertTableOfContents" idMso="TableOfContentsGallery" isInsertBreak="false" ksoCmd="InsertTableOfContents" openPosition="tab_reference" text="@TableOfContents">
+			<command idQ="CustomTableOfContents"/>
+			<command idQ="RemoveTableOfContents"/>
+		</KxWpsTableOfContentsGalleryCommand>
+		<KxWpsAITableOfContentsCommand controlType="0" customTip="AIInsertIndexTables" icon="ai_catalog_kd" id="AITableOfContents" idKey="WPSAITableOfContents" isInsertBreak="false" ksoCmd="AIInsertTableOfContents" openPosition="tab_reference" text="@Insert AI TableOfContents"/>
+		<KListCommand controlType="16" groupTip="ContentsGroup" icon="insert_content_kd" id="RB_Table_Of_Contents" idMso="GroupTableOfContents" rbFileMenuEmbed="1" text="@Table of Contents">
+			<command idKey="InsertIndexTablesToolBar" idQ="InsertIndexTablesToolBar"/>
+			<command idQ="InsertTableOfContents"/>
+			<command idQ="AITableOfContents"/>
+			<command idQ="UpdateTocRainbow"/>
+			<command idQ="m_tocLevel"/>
+		</KListCommand>
+		<KxListCommand controlType="16" customTip="InsertFootnote" groupTip="FootnoteEndnoteGroup" icon="fe_footnote_separator_kd" id="RB_Footnotes" idMso="GroupFootnotesAndEndnotes" ksoCmd="InsertFootnote" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="Q" text="@Footnotes and Endnotes">
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertTheFootnote" icon="fe_insert_footnote_kd" id="FootnoteInsert" idMso="FootnoteInsert" ksoCmd="InsertTheFootnote" qtspyName="InsertTheFootnote" rbHotKey="F" text2="@Insert Footnote" text="@Insert Footnote"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="GotoPrevFootnote" icon="fe_last_footnote_kd" id="FootnotePreviousWord" idMso="FootnotePreviousWord" ksoCmd="GotoPrevFootnote" qtspyName="GotoPrevFootnote" rbHotKey="OP" singlerowfold="1" spaceHint="suitable" text2="@Previous Footnote" text="@Previous Footnote"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="GotoNextFootnote" icon="fe_next_footnote_kd" id="FootnoteNextWord" idMso="FootnoteNextWord" ksoCmd="GotoNextFootnote" qtspyName="GotoNextFootnote" rbHotKey="ON" singlerowfold="1" spaceHint="suitable" text2="@Next Footnote" text="@Next Footnote"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertTheEndnote" icon="fe_insert_endnote_kd" id="EndnoteInsertWord" idMso="EndnoteInsertWord" ksoCmd="InsertTheEndnote" qtspyName="InsertTheEndnote" rbHotKey="E" text2="@Insert Endnote" text="@Insert Endnote"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="GotoPrevEndnote" icon="fe_last_endnote_kd" id="EndnotePreviousWord" idMso="EndnotePreviousWord" ksoCmd="GotoPrevEndnote" qtspyName="GotoPrevEndnote" rbHotKey="OV" singlerowfold="1" spaceHint="suitable" text2="@Previous Endnote" text="@Previous Endnote"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="GotoNextEndnote" icon="fe_next_endnote_kd" id="EndnoteNextWord" idMso="EndnoteNextWord" ksoCmd="GotoNextEndnote" qtspyName="GotoNextEndnote" rbHotKey="OX" singlerowfold="1" spaceHint="suitable" text2="@Next Endnote" text="@Next Endnote"/>
+			<KxWpsShowFootnoteSeparatorCommand controlType="6" customTip="Separator" detail="@Show Or Hide Footnote/Endnote Separator" icon="fe_footnote_separator_kd" id="ShowOrHideNoteSeparatorInReferenceTab" idMso="FootnoteEndnote Separator" qtspyName="FootnoteSeparator" rbHotKey="S" singlerowfold="1" text="@Footnote/Endnote Separator"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertCaption" icon="insert_caption_kd" id="InsertCaptionToolBar" idMso="CaptionInsert" ksoCmd="InsertCaption" rbHotKey="P" text="@Caption"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="TableofFigures" icon="insert_table_figures_kd" id="InsertTableofFiguresToolBar" idMso="TableOfFiguresInsert" ksoCmd="InsertTableofFigures" rbHotKey="TF" spaceHint="suitable" text="@Insert Table of Figures"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="CrossReference" icon="cross_reference_kd" id="R_CrossReferenceRainbow" idMso="CrossReferenceInsert" ksoCmd="CrossReference" rbHotKey="RF" spaceHint="suitable" text="@Cross-reference"/>
+		<KListCommand controlType="16" groupTip="CaptionGroup" icon="insert_caption_kd" id="RB_Captions" idMso="GroupCaptions" rbFileMenuEmbed="1" text="@Caption">
+			<command idQ="InsertCaptionToolBar"/>
+			<command idQ="InsertTableofFiguresToolBar"/>
+			<command idQ="R_CrossReferenceRainbow"/>
+		</KListCommand>
+		<KListCommand controlType="16" groupTip="MailMergeGroup" icon="mail_kd" id="RB_ShowMailingsContext" idKey="WpsMailMerge" idMso="GroupMailMerge" text="@Mailings">
+			<KxWpsShowMailingsContextCommand canHideText="0" canStack="0" controlType="6" customTip="Mail" hotKey="M" icon="mail_kd" id="ShowMailingsContext" idKey="ReferencesMailMerge" idMso="ShowMailingsContext" rbHotKey="M" text="@Mail Merge"/>
+			<command idQ="WpsAIBulkDocCreation"/>
+			<KxWpsShowMailingsContextCommand controlType="6" customTip="Mail" hotKey="M" icon="mail_kd" id="ShowMailingsContext" idKey="ReferencesMailings" idMso="ShowMailingsContext" rbHotKey="M" text="@Mailings"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="N" icon="fe_insert_footnote_kd" id="InsertFootnoteInRefTab" ksoCmd="InsertFootnote" qtspyName="InsertFootnote" text="@Footnote/Endnote"/>
+		<KListCommand id="DetailedSettings_References" text="@Settings">
+			<KListCommand customTip="DetailedSettings_References" icon="detailed_settings_kd" id="DetailedSettingsList_References" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="InsertFootnoteInRefTab"/>
+			</KListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="IndexMarkEntry" icon="doc_mark_entry_kd" id="IndexMarkEntry" idMso="IndexMarkEntry" ksoCmd="IndexMarkEntry" rbHotKey="N" text="@Mark Entry"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertIndex" hotKey="x" icon="insert_index_kd" id="InsertIndex" idMso="IndexInsert" ksoCmd="InsertIndex" rbHotKey="X" spaceHint="suitable" text="@Insert Index"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="UpdateIndex" icon="UpdateIndex" id="UpdateIndex" idMso="IndexUpdate" ksoCmd="UpdateIndex" rbHotKey="D" spaceHint="suitable" text="@Update Index"/>
+		<KListCommand controlType="16" groupTip="IndexGroup" icon="doc_mark_entry_kd" id="RB_Index" idMso="GroupIndex" text="@Index">
+			<KxSingleRowMergeGroupCommand customTip="IndexGroup" icon="doc_mark_entry_kd" id="SingleRow_Index" text="@Index"/>
+			<command idQ="IndexMarkEntry" singlerowmergegroup="SingleRow_Index"/>
+			<command idQ="InsertIndex" singlerowmergegroup="SingleRow_Index"/>
+			<command idQ="UpdateIndex" singlerowmergegroup="SingleRow_Index"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_References">
+			<command idQ="RB_Table_Of_Contents"/>
+			<separator/>
+			<command idQ="RB_Footnotes"/>
+			<separator/>
+			<command idQ="RB_Citation"/>
+			<separator/>
+			<command idQ="RB_Captions"/>
+			<separator/>
+			<command idQ="RB_Index"/>
+			<separator/>
+			<command idQ="RB_ShowMailingsContext"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_References"/>
+		</subcommand>
+	</subcommands>
+</shell>

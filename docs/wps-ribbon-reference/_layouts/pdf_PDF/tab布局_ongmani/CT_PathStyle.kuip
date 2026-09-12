@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_pathstyle" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="PathLine" icon="line_shape_kd" id="Path_Line_Insert" idMso="PathLine" ksoCmd="PathLine" qtspyName="PathLine" text="@PathLine"/>
+		<KxLegacyTriggerCommand customTip="PathSquare" icon="shape_square_kd" id="Path_Rectangle_Insert" idMso="PathSquare" ksoCmd="PathRectangle" qtspyName="PathSquare" text="@PathSquare"/>
+		<KxLegacyTriggerCommand customTip="PathRoundSquare" icon="shape_rounded_rectangle_kd" id="Path_RoundRect_Insert" idMso="PathRoundSquare" ksoCmd="PathRoundRect" qtspyName="PathRoundSquare" text="@PathRoundSquare"/>
+		<KxLegacyTriggerCommand customTip="PathCircle" icon="ellipse_kd" id="Path_Ellipse_Insert" idMso="PathCircle" ksoCmd="PathEllipse" qtspyName="PathCircle" text="@PathCircle"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="Path_FillMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="PathFillColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="Path_FillSnapFontColors" ksoCmd="PathFillColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="Path_BorderMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="PathBorderColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="Path_BorderSnapFontColors" ksoCmd="PathBorderColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="PathStyle_HandTool" ksoCmd="HandTool" shellEntryType="tab_pathstyle" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="PathStyle_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_pathstyle" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfPathLineStyleCommand customTip="Line Style" id="PathLineStyle" spaceHint="autocompact" text="@Line Style"/>
+		<KxPdfPathLineWidthCommand customTip="Line Width" id="PathLineWidth" spaceHint="autocompact" text="@Line Width"/>
+		<KxPdfPathFillColorCommand customTip="ShapeFillColor" icon="color_paint_wps_kd" id="Path_FillColorSetting" ksoCmd="PathFillColor" text="@FillColor">
+			<command idQ="Path_FillMoreFontColors"/>
+			<command idQ="Path_FillSnapFontColors"/>
+		</KxPdfPathFillColorCommand>
+		<KxPdfPathBorderColorCommand customTip="ShapeBorderColor" icon="color_marker_wps_kd" id="Path_BorderColorSetting" ksoCmd="PathBorderColor" text="@BorderColor">
+			<command idQ="Path_BorderMoreFontColors"/>
+			<command idQ="Path_BorderSnapFontColors"/>
+		</KxPdfPathBorderColorCommand>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_PathStyle" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="PathStyle_HandTool"/>
+			<command idQ="PathStyle_SelectTool"/>
+		</KListCommand>
+		<KxPdfPathInsertMenuCommandEx icon="line_shape_kd" id="InsertPath" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="Edit_PathShape_Insert" shellEntryType="tab_pathstyle" text="@InsertPath">
+			<command idQ="Path_Line_Insert"/>
+			<command idQ="Path_Rectangle_Insert"/>
+			<command idQ="Path_RoundRect_Insert"/>
+			<command idQ="Path_Ellipse_Insert"/>
+		</KxPdfPathInsertMenuCommandEx>
+		<KxPdfPathAlphaCommand customTip="PathTansparent" id="PathAlphaSetting" spaceHint="autocompact" text="@PathTansparent"/>
+		<KxLegacyTriggerCommand customTip="HorizontalFlip" hotKey="h" icon="flip_horizontal_kd" id="PathFlipHorizontal" ksoCmd="PathHorizontalFlip" rbHotKey="H" shellEntryType="tab_pathstyle" text="@HorizontalFlip"/>
+		<KxLegacyTriggerCommand customTip="VerticalFlip" hotKey="v" icon="flip_vertical_kd" id="PathFlipVertical" ksoCmd="PathVerticalFlip" rbHotKey="V" shellEntryType="tab_pathstyle" text="@VerticalFlip"/>
+		<KListCommand groupTip="PathStyleAddGroup" id="PathEdit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Add">
+			<command idQ="InsertPath"/>
+		</KListCommand>
+		<KxPdfPathTerminalStyleCommand columnNumber="3" controlType="4" embedHint="1" id="TerminalStyleGallery" inlineRowHeightMultiple="1" qtspyName="TerminalStyle" spaceHint="autocompact" text="@Terminal Style"/>
+		<KxPdfPathCornerStyleCommand columnNumber="3" controlType="4" embedHint="1" id="CornerStyleGallery" inlineRowHeightMultiple="1" qtspyName="CornerStyle" spaceHint="autocompact" text="@Corner Style"/>
+		<KxPdfPathSizeCommand controlType="4" embedHint="1" id="PathSize" qtspyName="PathSize" text="@Appearance settings"/>
+		<KListCommand groupTip="PathStyleAppearanceSettingGroup" icon="setup_kd" id="RB_PathTool" layout_lineCount="2" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Appearance settings">
+			<command idQ="Path_FillColorSetting"/>
+			<command idQ="Path_BorderColorSetting"/>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="7" topSpace="0">
+				<command idQ="PathAlphaSetting" singlerowfold="1"/>
+			</KRbLayoutListCommand>
+			<command idQ="PathLineStyle" singlerowfoldgroup="line_style_pair" spaceHint="suitable"/>
+			<command idQ="PathLineWidth" singlerowfoldgroup="line_style_pair" spaceHint="suitable"/>
+			<command idQ="TerminalStyleGallery" singlerowfold="1"/>
+			<command idQ="CornerStyleGallery" singlerowfold="1"/>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="7" rightSpace="0" topSpace="0">
+				<command idQ="PathSize" singlerowfold="1"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand forceVisible="1" groupTip="ArrangeGroup" horizontalSpacing="6" id="RB_PathEdit_Arrange" rbFileMenuEmbed="1" text="@Arrange">
+			<KxSingleRowMergeGroupCommand customTip="ArrangeGroup" icon="rotate_angle_kd" id="SingleRow_PathEdit_Rotation" text="@Path Rotation"/>
+			<KListCommand embedHint="1" id="PathEdit_Rotation">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<KxPdfPathRotationCommand controlType="4" embedHint="1" id="PathRotation" qtspyName="PathRotation" singlerowmergegroup="SingleRow_PathEdit_Rotation" text="@Path Rotation"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="PathFlipHorizontal" singlerowmergegroup="SingleRow_PathEdit_Rotation"/>
+					<command idQ="PathFlipVertical" singlerowmergegroup="SingleRow_PathEdit_Rotation"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<command idQ="PathEdit_ObjectAlign"/>
+		</KListCommand>
+		<KListCommand groupTip="PathStyleExitGroup" id="PathEditExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_PathStyle">
+			<command idQ="RB_MouseTool_PathStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="PathEdit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PathTool"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PathEdit_Arrange"/>
+			<command idQ="Separator"/>
+			<command idQ="PathEditExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_edit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Edit_HandTool" ksoCmd="HandTool" shellEntryType="tab_edit" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Edit_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_edit" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxLegacyTriggerCommand customTip="PathLine" icon="line_shape_kd" id="Path_Line" idMso="PathLine" ksoCmd="PathLine" qtspyName="PathLine" text="@PathLine"/>
+		<KxLegacyTriggerCommand customTip="PathSquare" icon="shape_square_kd" id="Path_Rectangle" idMso="PathSquare" ksoCmd="PathRectangle" qtspyName="PathSquare" text="@PathSquare"/>
+		<KxLegacyTriggerCommand customTip="PathRoundSquare" icon="shape_rounded_rectangle_kd" id="Path_RoundRect" idMso="PathRoundSquare" ksoCmd="PathRoundRect" qtspyName="PathRoundSquare" text="@PathRoundSquare"/>
+		<KxLegacyTriggerCommand customTip="PathCircle" icon="ellipse_kd" id="Path_Ellipse" idMso="PathCircle" ksoCmd="PathEllipse" qtspyName="PathCircle" text="@PathCircle"/>
+		<KxPdfAddNewOutlineCommand aid="3963" customTip="AddBookMark" descName="@Add new outline" icon="bookmark_add_kd" id="AddBookMark_Edit" idKey="PDFBookMarkInEdit" shellEntryType="rightmenu" shortcutHint="Ctrl+Shift+F5" text="@addnewoutline"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Edit" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Edit_HandTool"/>
+			<command idQ="Edit_SelectTool"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand canHideText="0" customTip="AddVideo" icon="video_two_kd" id="Media_Video_Edit" ksoCmd="Video" text="@Video"/>
+		<KxLegacyTriggerCommand canHideText="0" customTip="AddAudio" icon="volume_broadcasting_kd" id="Media_Audio_Edit" ksoCmd="Audio" text="@Audio"/>
+		<KListCommand embedHint="1" id="RB_InsertMedia_Edit" idKey="PDFMediaInEdit">
+			<KRbLayoutListCommand bottomSpace="0" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="Media_Audio_Edit"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" isShowText="true" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="Media_Video_Edit"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="FormFilling" icon="form_filling_kd" id="Edit_FormFilling" ksoCmd="FormFilling" qtspyName="FormFilling" text="@Form Filling"/>
+		<KxLegacyTriggerCommand customTip="FormHighlight" icon="form_highlight_kd" id="Edit_FormHighlight" idKey="PdfFormHighlight" ksoCmd="FormHighlight" text="@Form Highlight"/>
+		<KxLegacyTriggerCommand canHideText="0" customTip="SplitPage" icon="split_page_kd" id="Edit_SplitPage" idKey="PDFStandardEnhance" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+		<KxLegacyTriggerCommand customTip="SplitPageNoVip" icon="split_page_kd" id="Edit_SplitPage" idKey="WPSPDFEnhanceVersion" ksoCmd="SplitPage" text="@SplitPage" wpsIsEanble="false"/>
+		<KxPdfPathInsertMenuCommandEx icon="line_shape_kd" id="Edit_InsertShapeEx" layout_lineCount="1" rbFileMenuEmbed="1" referenceCommand="Edit_PathShape" shellEntryType="tab_edit" text="@Path">
+			<command idQ="Path_Line"/>
+			<command idQ="Path_Rectangle"/>
+			<command idQ="Path_RoundRect"/>
+			<command idQ="Path_Ellipse"/>
+		</KxPdfPathInsertMenuCommandEx>
+		<KxPdfHeaderFooterCommandList customTip="EditPageHeaderFooter" icon="doc_header_footer_kd" id="Edit_Headerfooter" idKey="PDFEditHeaderfooter" layout_lineCount="1" text="@PageHeaderFooter">
+			<command idQ="AddHeaderFooter_Edit" proxyCmdId="ProxyAddHeaderFooter_Edit"/>
+			<command idQ="UpdateHeaderFooter_Edit" proxyCmdId="ProxyUpdateHeaderFooter_Edit"/>
+			<command idQ="DeleteHeaderFooter_Edit" proxyCmdId="ProxyDeleteHeaderFooter_Edit"/>
+		</KxPdfHeaderFooterCommandList>
+		<KxPdfPageNumberCommandList customTip="AddPageNumberTips" enableDependsOnSubCommands="1" icon="doc_page_number_kd" id="Edit_pageNumber" idKey="PDFEditPageNumber" layout_lineCount="1" shortcutHint="Ctrl+Alt+P" text="@PageNumber">
+			<command idQ="OrgPage_AddPageNumber" proxyCmdId="ProxyOrgPage_AddPageNumber"/>
+			<command idQ="Edit_UpdatePageNumber" proxyCmdId="ProxyEdit_UpdatePageNumber"/>
+			<command idQ="Edit_DeletePageNumber" proxyCmdId="ProxyEdit_DeletePageNumber"/>
+		</KxPdfPageNumberCommandList>
+		<KxPdfHasViewCommandList customTip="EditBackGround" enableDependsOnSubCommands="1" icon="background_kd" id="PdfBackGround_Edit" idKey="PDFEditBackGround" layout_lineCount="1" text="@PDFBackGround">
+			<command idQ="AddBackGround_Edit" proxyCmdId="ProxyAddBackGround_Edit"/>
+			<command idQ="UpdateBackGround_Edit" proxyCmdId="ProxyUpdateBackGround_Edit"/>
+			<command idQ="DeleteBackGround_Edit" proxyCmdId="ProxyDeleteBackGround_Edit"/>
+		</KxPdfHasViewCommandList>
+		<KProxyCommand autoLoad="false" customTip="StampTool" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="stamp_kd" id="ProxyInsert_PdfStampTool" spaceHint="loose" targetId="Insert_PdfStampTool" targetModule="kstamptool" text="@StampTool"/>
+		<KQuickMenuCommandFix id="HyperLink" idKey="PDFHyperLinkEntry" qtspyName="Edit_HyperLinkEx" referenceCommand="LinkMode" spaceHint="loose" text="@HyperLink">
+			<command idQ="Edit_EnterLinkMode"/>
+			<command idQ="Edit_DeleteAllHyperLink"/>
+		</KQuickMenuCommandFix>
+		<KQuickMenuCommandFix id="HyperLink" idKey="PdfEditHyperLink" qtspyName="Edit_HyperLinkEx" referenceCommand="LinkMode" text="@HyperLink">
+			<command idQ="Edit_EnterLinkMode"/>
+			<command idQ="Edit_DeleteAllHyperLink"/>
+		</KQuickMenuCommandFix>
+		<KAutoHideListCommand canHideText="0" customTip="AddImage" icon="pic_kd" id="PdfEditInsertImages" layout_lineCount="1" shortcutHint="Ctrl+J" text="@insertimage" wpsIsEanble="false">
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="title_insert_images_edit_tab" text="@Insert Image"/>
+			<KxLegacyTriggerCommand canHideText="0" customTip="AddImage" icon="pic_kd" id="PdfEditAddImage" idKey="PDFStandardEnhance" ksoCmd="AddImage" shortcutHint="Ctrl+J" text="@insert local image" wpsIsEanble="false"/>
+			<KxTitleLabelCommand bold="1" fontSize="kd-font-size-sub-base" id="title_quick_template_edit_tab" text="@Quick Templates"/>
+			<KPanelListCommand icon="smart_layout_kd" id="app_pdfsmartlayout_edit_tab_panel" panelColumns="2" text="@SmartLayout Pages">
+				<KAppCommand action="double_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@2 Pages on One Page" entrance="edit_tab" icon="book_double_flip_kd" id="app_pdfsmartlayout_edit_tab_double" qtspyname="pdfsmartlayout_edit_tab_double" text="@Two-Page Layout"/>
+				<KAppCommand action="four_page_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Four pages on one page" entrance="edit_tab" icon="four_page_spread_kd" id="app_pdfsmartlayout_edit_tab_four" qtspyname="pdfsmartlayout_edit_tab_four" text="@Four-Page Layout"/>
+				<KAppCommand action="id_card_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Front and Back Standard Layout" entrance="edit_tab" icon="id_card_kd" id="app_pdfsmartlayout_edit_tab_id_card" qtspyname="pdfsmartlayout_edit_tab_id_card" text="@ID Card Layout"/>
+				<KAppCommand action="invoice_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Invoices on One Page" entrance="edit_tab" icon="bill_kd" id="app_pdfsmartlayout_edit_tab_invoice" qtspyname="pdfsmartlayout_edit_tab_invoice" text="@Invoice Layout"/>
+				<KAppCommand action="exam_paper_layout" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@Multiple Exam Papers Auto-Paginated" entrance="edit_tab" icon="testpaper_assembly_kd" id="app_pdfsmartlayout_edit_tab_exam_paper" qtspyname="pdfsmartlayout_edit_tab_exam_paper" text="@Exam Paper Layout"/>
+				<KAppCommand action="more_template" appCmdObj="pdfsmartlayout" appId="pdfsmartlayout" detail="@View All Layout Templates" entrance="edit_tab" icon="shape_three_kd" id="app_pdfsmartlayout_edit_tab_more_template" qtspyname="pdfsmartlayout_edit_tab_more_template" text="@More Templates"/>
+			</KPanelListCommand>
+		</KAutoHideListCommand>
+		<KControlListCommand groupTip="EditContentEditGroup" icon="pen_kd" id="RB_Edit" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Edit Content">
+			<command idQ="Edit_Content"/>
+			<command id="Edit_InsertText_Edit" idQ="Edit_InsertText"/>
+			<command id="PdfEditAddImage_Edit" idKey="PdfSmartLayoutPhotoEntry" idQ="PdfEditAddImage"/>
+			<command idKey="PdfSmartLayout" idQ="PdfEditInsertImages"/>
+			<command idQ="Edit_AddTable" singlerowfold="1"/>
+			<KAppCommand action="3" appCmdObj="PdfImageRecognize" appId="pdfadvancedtool" canHideText="0" customTip="ScanEdit" icon="scan_edit_kd" id="Edit_EditTextInImage_CurPage" idKey="PdfEditTextInImageCurPage" idType="pdf_co_edittab_main" index="2" needLogin="false" text="@ScanEdit"/>
+			<KpdfBeautifyTabCommand action="ConvertType_Clear" appId="kpdfscannededitpro" canHideText="0" icon="intelligent_optimization_kd" id="scannedbeautify_clear" idKey="PDFScannedEditpro" text="@IntelliOptimization"/>
+			<command idQ="Edit_Eraser"/>
+			<command idQ="Edit_InsertShapeEx"/>
+			<command idQ="Insert_PdfStampTool"/>
+			<command idQ="HyperLink"/>
+			<command idQ="RB_InsertMedia_Edit"/>
+			<command idQ="AddBookMark_Edit"/>
+		</KControlListCommand>
+		<KControlListCommand groupTip="EditFormGroup" icon="form_filling_kd" id="RB_Form" layout_lineCount="2" rbFileMenuEmbed="1" text="@Form">
+			<KxSingleRowMergeGroupCommand customTip="EditFormGroup" icon="form_filling_kd" id="SingleRow_Form" text="@Form"/>
+			<command idQ="Edit_FormFilling" singlerowmergegroup="SingleRow_Form"/>
+			<command idQ="Edit_FormEdit" singlerowmergegroup="SingleRow_Form"/>
+			<command idQ="Edit_FormHighlight" singlerowmergegroup="SingleRow_Form"/>
+		</KControlListCommand>
+		<KControlListCommand groupTip="EditPageGroup" icon="insert_kd" id="RB_EditPage" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Edit Page">
+			<command idQ="Edit_CropPage"/>
+			<command idQ="Edit_SplitPage"/>
+			<command idQ="Edit_Watermark"/>
+			<command idQ="PdfBackGround_Edit" singlerowfold="1"/>
+			<command embedHint="1" idQ="Edit_pageNumber" isShowText="true" singlerowfold="1"/>
+			<command embedHint="1" idQ="Edit_Headerfooter" isShowText="true"/>
+		</KControlListCommand>
+		<KControlListCommand id="OrgPageToolEdit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Document Processing" visibleDependsOnSubCmds="1">
+			<KAppCommand action="7" appId="pdfadvancedtool" canHideText="0" customTip="MergePDF" icon="doc_merge_kd" id="app_pdfadvancedtool_EditTab_MergePdf" rbHotKey="PW" text="@MergePDF" wpsIsEanble="false"/>
+			<KPdfSplitPdfAppCommand action="6" appId="pdfadvancedtool" canHideText="0" customTip="SplitPDF" icon="doc_split_kd" id="app_pdfadvancedtool_EditTab_SplitPdf" text="@SplitPDF" wpsIsEanble="false"/>
+		</KControlListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Edit">
+			<command idQ="RB_MouseTool_Edit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Edit"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_EditPage"/>
+			<command idKey="PdfFormInEdit" idQ="Separator"/>
+			<command idKey="PdfFormInEdit" idQ="RB_Form"/>
+			<command idQ="Separator"/>
+			<command idQ="OrgPageToolEdit"/>
+		</subcommand>
+	</subcommands>
+</shell>

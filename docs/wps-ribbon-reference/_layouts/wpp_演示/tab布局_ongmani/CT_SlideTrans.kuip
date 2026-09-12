@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_slidetrans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="TransitionPreviewGroup" icon="play_current_slide_kd" id="RB_Preview" rbFileMenuEmbed="1" text="@Preview">
+			<KxWppSlidePreviewListCommand customTip="SlidePreview" icon="preview_effect_kd" id="PreviewSection" ksoCmd="SlidePreview" text="@Preview Effect">
+				<KxSlidePreviewCommand customTip="SlidePreview" hotKey="P" id="SlidePreview" ksoCmd="SlidePreview" text="@Preview Effect"/>
+				<KxLegacyTriggerCommand hotKey="A" id="SlideAutoPreview" ksoCmd="SlideAutoPreview" text="@Auto Preview"/>
+			</KxWppSlidePreviewListCommand>
+		</KListCommand>
+		<KListCommand groupTip="TransitionGroup" horizontalSpacing="6" icon="EffectSwitch" id="RB_Transform" rbFileMenuEmbed="1" refIdForCollapsed="TransitionEffects" text="@Transition">
+			<KxWppTransCommand controlType="4" embedHint="1" galleryHeight="100" geometryWidth="700" iconQat="transition_mode_kd" id="TransformGallery" idMso="AnimationTransitionGallery" maxVisibleNumber="14" needCompress="1" qtspyName="WppTrans" rbHotKey="S" text="@Transition"/>
+			<KxGallerySlideTransEffectCommand controlType="16" customTip="EffectOptions" icon="Trans_1" id="TransitionEffects" idMso="GroupTransitionStyles" ksoCmd="SlideTransitionEffect" qtspyName="SlideTransition" rbHotKey="C" spaceHint="selfadaption" text="@EffectOptions"/>
+		</KListCommand>
+		<KListCommand groupTip="ApplyRangeGroup" icon="apply_to_all_kd" id="RB_SlideTransApplyToAll" rbFileMenuEmbed="1" text="@Apply range">
+			<KxLegacyTriggerCommand customTip="SlideTransApplyToAll" icon="apply_to_all_kd" id="SlideTransApplyToAll" ksoCmd="SlideTransApplyToAll" text="@Apply to All"/>
+		</KListCommand>
+		<KListCommand enableSmartLayout="1" groupTip="SpeedSoundGroup" icon="speed_sound_kd" id="RB_SlideTransDurationAndSounds" rbFileMenuEmbed="1" text="@Speed and sound">
+			<KxSingleRowMergeGroupCommand customTip="SpeedSoundGroup" icon="speed_sound_kd" id="SingleRow_SlideTransDurationAndSounds" text="@Speed and sound"/>
+			<KxWppDurationEditCommand customTip="SlideTransDuration" id="SlideTransDuration" lineEditWidth="125" singlerowmergegroup="SingleRow_SlideTransDurationAndSounds" spaceHint="compact" text="@Speed:"/>
+			<KxWppSlideTransSoundCommand customTip="SlideTransSound" id="SlideTransSound" lineEditWidth="125" qtspyName="Sound" singlerowmergegroup="SingleRow_SlideTransDurationAndSounds" spaceHint="compact" text="@Sound:"/>
+		</KListCommand>
+		<KListCommand groupTip="TransitionModeGroup" icon="batch_transition_mode_kd" id="RB_SlideTransOnClickOrOnTime" rbFileMenuEmbed="1" text="@Transition control">
+			<KRbLayoutListCommand isForceAngularBorder="1" layoutName="vbox" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0" verticalSpacing="4">
+				<KxWppOnClickCheckBoxCommand customTip="SlideTransOnClick" id="SlideTransOnClick" spaceHint="suitable" text="@Click to change slides"/>
+				<KxWppSecondEditCommand customTip="SlideTransOnTime" id="SlideTransOnTime" lineEditWidth="100" spaceHint="suitable" text="@Auto, interval:"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_SlideTranstion">
+			<command idQ="RB_Preview"/>
+			<separator/>
+			<command idQ="RB_Transform"/>
+			<separator/>
+			<command idQ="RB_SlideTransDurationAndSounds"/>
+			<separator/>
+			<command idQ="RB_SlideTransOnClickOrOnTime"/>
+			<separator/>
+			<command idQ="RB_SlideTransApplyToAll"/>
+		</subcommand>
+	</subcommands>
+</shell>

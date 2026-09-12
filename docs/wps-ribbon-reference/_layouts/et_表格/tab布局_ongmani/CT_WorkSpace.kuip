@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KAppCommand appCmdObj="kexportimage" appId="kexportimage" customTip="ExportWeiboImageCmd" detail="CloudSvr" dialogHint="1" hotKey="X" icon="replace_pic_kd" id="ExportWeiboImageCmd" idKey="CommonExportWeiboImageCmd" idMso="FileSaveAsPicture" needLogin="false" rbHotKey="X" text2="@Export as Image" text="@Export as Image" vipMode="2" vipModeUrlId="output_long_img"/>
+		<KxFileMenuDataRecoverCommand customTip="DataRecover" hotKey="r" icon="data_recover_kd" id="RbFileMenuDataRecover" idKey="DataRecoveryMaster" infoId="r" ksourl="L10N:DATA_RECOVER_URL" needLogin="false" processName="@WPS Data Recovery Master" text="@Data Recovery" vipMode="2" vipModeUrlId="data_recover"/>
+		<KAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" entrance="et_tools&amp;module=et&amp;sub_module=tools_tab&amp;new_position=pdftoexcel" icon="change_to_sheet_kd" id="Pdf2excelv2_xa_toolbar" idKey="PdfConvertExcelV2ForEt" needLogin="false" text="@PDF to Excel"/>
+		<kxKOSOpenCloudFileCommand customTip="KOSOpenCloudFileTip" dialogHint="1" hotKey="O" icon="folder_cloud_kd" id="KOSOpenCloudFileCmd" idKey="CloudDocOnlineEntryFilterNoPersion" ksoCmd="KOSOpenCloudFileCmd" rbHotKey="O" text="@Open from Cloud Docs"/>
+		<kxKOSSaveToCloudCommand customTip="KOSSaveFileTocloudTip" dialogHint="1" hotKey="Y" icon="transmit_upload_kd" id="KOSSaveToCloudCmd" idKey="CloudDocOnlineEntryFilterNoPersion" ksoCmd="KOSSaveToCloudCmd" rbHotKey="Y" text="@Save to Cloud Docs"/>
+		<KxKsoHomepageTriggerCommand channelId="0" customTip="KOSHomepageTip" dialogHint="1" hotKey="R" icon="OS_Homepage" id="KOSRoamingfileCmd" ksoCmd="HomepagePlugin" rbHotKey="R" text="@My WPS"/>
+		<KxKsoHomepageTriggerCommand currentChannel="" customTip="KOSHomepageTip" dialogHint="1" hotKey="R" icon="OS_Homepage" id="KOSRoamingfileCmd" ksoCmd="HomepagePlugin" rbHotKey="R" text="@My WPS"/>
+		<kxKOSRoamingfileCommand customTip="KOSRoamingfileTip" dialogHint="1" hotKey="R" icon="OS_RoamingfilePro" id="KOSRoamingfileCmd" ksoCmd="KOSRoamingfileCmd" rbHotKey="R" text="@File Roaming"/>
+		<KOSUserCloud customTip="@Online Documents" id="RB_UserCloud" text="@Online Documents">
+			<command idKey="OpenCloudFileCmd" idQ="KOSOpenCloudFileCmd"/>
+			<command idKey="SaveToCloudCmd" idQ="KOSSaveToCloudCmd"/>
+			<KxDocumentHistoryCommand hotKey="h" icon="cloud_file_history_kd" id="RbFileMenuDocumentHistory" idKey="CloudFileHistoryCommand" text="@Document History"/>
+		</KOSUserCloud>
+		<KxAutoVersionCommand customTip="AutoVersion" dialogHint="1" hotKey="A" icon="WS_AutoVersiong" id="AutoVersionCmd" ksoCmd="AutoVersionCmd" rbHotKey="A" text2="@Enable AutoBackup" text="@Enable AutoBackup"/>
+		<KxStopAutoVersionCommand customTip="StopAutoVersion" dialogHint="1" hotKey="S" icon="WS_AutoVersiong" id="StopAutoVersionCmd" ksoCmd="StopAutoVersionCmd" rbHotKey="S" text2="@Disable AutoBackup" text="@Disable AutoBackup"/>
+		<KxMarkVersionCommand customTip="MarkVersion" dialogHint="1" hotKey="M" icon="WS_MarkVersiong" id="MarkVersionCmd" ksoCmd="MarkVersionCmd" rbHotKey="M" text2="@Manual Backup" text="@Manual Backup"/>
+		<KxExplorVersionCommand customTip="ExplorVersion" dialogHint="1" hotKey="E" icon="WS_ExplorVersiong" id="ExplorVersionCmd" ksoCmd="ExplorVersionCmd" rbHotKey="E" text2="@View Historical Backup" text="@View Historical Backup"/>
+		<KxExplorBackupDirCommand customTip="ExplorBackupDir" dialogHint="1" hotKey="S" icon="WS_ExplorBackupdir" id="ExplorBackupDirCmd" ksoCmd="ExplorBackupDirCmd" rbHotKey="S" text2="@View File Safe" text="@View File Safe"/>
+		<kxAutobackupList customTip="Autobackup" id="RB_Autobackup" text="@View File Safe">
+			<KListCommand customTip="WorkSpace_Backup" hotKey="B" icon="WS_AutoVersiong" id="BackupMenuInWorkSpaceTab" qtspyName="BackupMenuInWorkSpaceTab" rbHotKey="B" text="@File Backup">
+				<command idQ="AutoVersionCmd"/>
+				<command idQ="StopAutoVersionCmd"/>
+				<command idQ="MarkVersionCmd"/>
+				<command idQ="ExplorVersionCmd"/>
+			</KListCommand>
+			<command idQ="ExplorBackupDirCmd"/>
+		</kxAutobackupList>
+		<KListCommand customTip="@Help us to improve WPS Office" id="RB_CloudGuid" text="@Help">
+			<KxOpenUrlCommand customTip="DocerURLEntranceTip" hotKey="d" icon="docer_kd" idKey="DocerEntrance" qtspyName="DocerURLEntrance" referenceDisable="1" text="@Docer Entrance" url="http://www.docer.com/?from=wps_func_etsp"/>
+		</KListCommand>
+		<KxExportPdfRBLegacyTriggerCommand aid="80004" customTip="ExportToPDF" dialogHint="1" entrance="et_tools&amp;module=writer&amp;sub_module=tools_tab&amp;new_position=exportpdf" filter="support:ExportToPDF=true" hotKey="OF" icon="change_to_pdf_two_kd" id="ExportPDFInWorkSpaceTab" ksoCmd="ExportPDF" needLogin="false" qtspyName="ExportPDF" rbHotKey="OF" text="@Export to PDF" vipMode="0" vipModeUrlId="batch_output_pdf"/>
+		<KProxyCommand customTip="ExportWeiboImageCmd" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="X" icon="replace_pic_kd" id="ExportWeiboImageCmd" idKey="ETToolsExportToPic" ksoCmd="ExportWeiboImageCmd" rbHotKey="X" relatedKsoCmd="ExportPDF" targetId="ExportWeiboImageCmd" targetModule="kweibo" text2="@Export as Image" text="@Export as Image"/>
+		<KListCommand id="RB_FileTools" text="@File Tools">
+			<command idQ="ExportPDFInWorkSpaceTab"/>
+			<command idQ="ExportWeiboImageCmd"/>
+			<KAppCommand appId="kdocumentfix" icon="doc_modification_kd" id="documentFixCmd" needLogin="false" text="@Document Fix"/>
+			<command idKey="ETToolsBackupCenter" idQ="BackupCenter"/>
+			<command idQ="RbFileMenuDocumentHistory"/>
+			<command idQ="ScreenGrabOcrMenu"/>
+		</KListCommand>
+		<KListCommand id="RB_ExportPdf" text="@Export to PDF">
+			<command idQ="ExportPDFInWorkSpaceTab"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" rbHotKey="A" text="@AISpeaker"/>
+			<KAppCommand appId="kdocumentfix" filter="support:DocumentFix=true | support:IntranetPluginsVersion=true" icon="doc_modification_kd" id="documentFixCmd" needLogin="false" text="@Document Fix"/>
+		</KListCommand>
+		<KListCommand icon="tool_box_kd" id="RB_SpecialTools" idKey="ETToolsSpecialTools" text="@Special Tools" visibleDependsOnSubCmds="1">
+			<KAppCommand appCmdObj="PdfImportCurrentPic" appId="photo2pdf" entrance="et_tools&amp;module=et&amp;sub_module=tools_tab&amp;new_position=picture_to_pdf" icon="change_pic_to_pdf_kd" id="Photo2pdf_ws" needLogin="false" text="@Photo2PDF"/>
+			<command idQ="Pdf2excelv2_xa_toolbar"/>
+			<command idQ="SplitMerge"/>
+			<command idQ="DocumentSlimmingTab"/>
+			<command idQ="Doctranslate_WorkSpace"/>
+		</KListCommand>
+		<KxEtReadingLayoutColorCommand aid="80012" customTip2="ReadingLayout2" customTip="ReadingLayout" hotKey="r" icon="reading_mode_kd" id="ReadingLayoutAndColorInWorkSpaceTab" ksoCmd="ReadingLayout" ksoTriggerCmd="RecentReadingLayout" text="@Reading Layout">
+			<KxEtMoreColorCommand aid="2000030" dialogHint="1" hotKey="m" id="ReadingLayoutMoreColorInWorkSpaceTab" ksoCmd="ReadingLayoutMoreColor" qtspyName="ReadingLayoutMoreColor" text="@More Colors"/>
+		</KxEtReadingLayoutColorCommand>
+		<KListCommand id="RB_DataTools" text="@Special Features">
+			<command idQ="rDuplicates"/>
+			<command idQ="ReadingLayoutAndColorInWorkSpaceTab"/>
+			<command idQ="ProtectEyes"/>
+			<command idQ="NightMode"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" rbHotKey="A" text="@AISpeaker"/>
+		</KListCommand>
+		<KListCommand id="RB_SendFile" text="@Send File">
+			<KxSendFileCommand customTip="SendFileTip" icon="send_file_kd" id="WSSendFile" idKey="WSSendFileEntry" needLogin="false" text="@Send File"/>
+		</KListCommand>
+		<KListCommand id="RB_OneStepSave" text="@OneStep Save">
+			<KxCloudOneStepSaveCommand customTip="OneStepSaveTip" icon="OS_OneStepSave" id="OneStepSave" idKey="CloudOneStepSave" text="@OneStep Save"/>
+		</KListCommand>
+		<KListCommand id="RB_DocumentSlimming" text="@RB_Document Slimming">
+			<command idQ="DocumentSlimmingTab"/>
+		</KListCommand>
+		<KListCommand id="RB_AccountEncryption" text="@Document security">
+			<KProxyCommand customTip="DocPermission" defaultPage="Account" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInWorkSpaceTab" idKey="DocSecurityPermission" infoNum="15" qtspyName="DocumentsPremissions" rbHotKey="PE" targetModule="docpermission" text="@Document Encryption"/>
+		</KListCommand>
+		<KListCommand id="RB_ProfessionalPlugins_Group1" text="@Document Slimming">
+			<command idQ="DocumentSlimmingTab"/>
+		</KListCommand>
+		<KListCommand id="RB_ProfessionalPlugins_Group2">
+			<command idQ="PDF2WordV2" proxyCmdId="ProxyPDF2WordV2"/>
+			<command idQ="Photo2Pdf" proxyCmdId="ProxyPhoto2Pdf"/>
+		</KListCommand>
+		<KListCommand id="RB_DocerMall">
+			<KxDocerMallLegacyTriggerCommand customTip="DocerMall" dialogHint="1" icon="docer_kd" id="DocerMall" idKey="RbDocerMall" ksoCmd="DocerMall" qtspyName="DocerMallCmd" text="@Docer Mall"/>
+		</KListCommand>
+		<KListCommand id="RB_OnlineCooperation" text="@Online Co-edit">
+			<KOnlineCooperationCommand customTip="OnlineCooperation" icon="people_add_kd" id="OnlineCooperation" needLogin="false" text="@Online Co-edit"/>
+		</KListCommand>
+		<KListCommand id="RB_GroupSendingAssist">
+			<command idQ="KxGroupSendingAssistCommand" proxyCmdId="ProxyKxGroupSendingAssistCommand"/>
+		</KListCommand>
+		<KAppCommand action="ConvertToWord" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="PDFToWord" hotKey="PW" icon="change_to_word_kd" id="app_kpdf2wordv3_workspace" rbHotKey="PW" text="@PDF to Word"/>
+		<KAppCommand appCmdObj="Pdf2Excel" appId="kpdf2wordv2" customTip="PDFToExcel" hotKey="PW" icon="change_to_sheet_kd" id="app_kpdf2wordv3_workspace_pdf2excel" rbHotKey="PW" text="@PDF to Excel"/>
+		<KAppCommand appCmdObj="Pdf2PPT" appId="kpdf2wordv2" customTip="PDFToPPT" hotKey="PW" icon="change_to_ppt_kd" id="app_kpdf2wordv3_workspace_pdf2ppt" rbHotKey="PW" text="@PDF to PPT"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appId="kocrtool" customTip="PictureToText" hotKey="PT" icon="change_pic_to_wps_kd" id="app_kocrtool_workspace" rbHotKey="PT" text="@Picture to Text"/>
+		<KAppCommand appCmdObj="ImportCurrentPic" appId="photo2pdf" hotKey="d" icon="change_pic_to_pdf_kd" id="app_photo2pdf_workspace" rbHotKey="D" text="@Photo to PDF"/>
+		<KAppCommand appCmdObj="Split" appId="ksplitmerge" icon="doc_split_kd" id="app_ksplitmerge_workspace_split" text="@Doc Split"/>
+		<KAppCommand appCmdObj="Merge" appId="ksplitmerge" icon="doc_merge_kd" id="app_ksplitmerge_workspace_merge" text="@Doc Merge"/>
+		<KAppCommand appCmdObj="Split" appId="ksplitmerge" icon="doc_split_kd" id="app_ksplitmerge_workspace_splitmerge" idKey="CommonDocumentSplitMerge" text="@Split and Merge"/>
+		<KAppCommand appId="kgroupsendingassist" icon="group_send_mail_kd" id="app_kgroupsendingassist_workspace" idKey="ETToolsGroupSendingAssist" text="@Group Sending"/>
+		<KAppCommand action="Pic2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="scan_ocr_kd" id="app_kocrtool_menu_2text" idKey="EtPic2Txt" text="@Extract pure text"/>
+		<KAppCommand action="Pic2Word" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_wps_kd" id="app_kocrtool_menu_2txt" idKey="EtPic2Word" text="@Convert to doc"/>
+		<KAppCommand action="Pic2Xls" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_et_kd" id="app_kocrtool_menu_2xlsl" idKey="EtPic2Xls" text="@Convert to excel"/>
+		<KAppCommand action="Pic2Pptx" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="change_pic_to_ppt_kd" id="app_kocrtool_menu_2ppt" idKey="EtPic2Pptx" text="@Convert to ppt"/>
+		<KAppCommand action="Card2Txt" appCmdObj="ImportCurrentPic" appFlags="wpsmember" appId="kocrtool" icon="id_card_kd" id="app_kocrtool_menu_card2txt" idKey="EtCard2Txt" text="@Extract card"/>
+		<KAppQuickMenuCommand icon="change_pic_to_wps_kd" id="app_kocrtool_workspace_mac" idKey="ImageOcrEntry" referenceCommand="app_kocrtool_picturetool_2txt" text="@Picture to Text">
+			<command idQ="app_kocrtool_menu_2text"/>
+			<command idQ="app_kocrtool_menu_2txt"/>
+			<command idQ="app_kocrtool_menu_2xlsl"/>
+			<command idQ="app_kocrtool_menu_2ppt"/>
+			<command idQ="app_kocrtool_menu_card2txt"/>
+		</KAppQuickMenuCommand>
+		<KListCommand id="RB_ShowEtToolbox" text="@Et Toolbox">
+			<command idQ="ettoolbox_trigger"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfOpt" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDF2Word">
+			<command idQ="app_kpdf2wordv3_workspace"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2excel"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2ppt"/>
+		</KListCommand>
+		<KListCommand id="RB_Export" rbFileMenuEmbed="1" text="@RB_Export">
+			<command idQ="PrintToPDF"/>
+			<command idQ="ExportWeiboImageCmd" proxyCmdId="ProxyExportWeiboImageCmd"/>
+		</KListCommand>
+		<KListCommand id="RB_Photo2Pdf">
+			<command idQ="app_photo2pdf_workspace"/>
+		</KListCommand>
+		<KSplitMergeListCommand id="RB_DocSplitMerge" text="@Split and Merge">
+			<KListCommand icon="doc_split_kd" id="split_merge" text="@Split and Merge">
+				<command idQ="app_ksplitmerge_workspace_split"/>
+				<command idQ="app_ksplitmerge_workspace_merge"/>
+			</KListCommand>
+		</KSplitMergeListCommand>
+		<KListCommand id="RB_Photo2Text">
+			<command idQ="app_kocrtool_workspace"/>
+		</KListCommand>
+		<KListCommand id="RB_ScreenRecorder" rbFileMenuEmbed="1" text="@Screen Recorder">
+			<command idQ="ScreenRecorder"/>
+		</KListCommand>
+		<KAppCommand appId="kbatchprocess" icon="batch_export_kd" id="app_photonewbatchapp_specialtab_export" idKey="ETToolsPhotoNewBatchApp" text="@Batch Export Images"/>
+		<KAppCommand action="photobatchcompress" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_compression_kd" id="app_photonewbatchapp_specialtab_compress" idKey="ETToolsPhotoNewBatchApp" text="@Batch Compress"/>
+		<KAppCommand action="photobatchcrop" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_crop_kd" id="app_photonewbatchapp_specialtab_clipping" idKey="ETToolsPhotoNewBatchApp" text="@Batch Crop"/>
+		<KAppCommand action="photobatchresize" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="batch_pic_resize_kd" id="app_photonewbatchapp_specialtab_dimension" idKey="ETToolsPhotoNewBatchApp" text="@Batch Resize"/>
+		<KAppCommand action="photobatchtext" appCmdObj="PictureBatchProcess" appId="photonewbatchapp" icon="watermark_batch_kd" id="app_photonewbatchapp_specialtab_text_watermark" idKey="ETToolsPhotoNewBatchApp" text="@Batch Add Watermark"/>
+		<KListCommand filter="category=common" icon="merge_sheet_kd" id="RB_Get_Extra_Data" rbFileMenuEmbed="1" text="@Sheet">
+			<command idQ="MergeSheet_ettool"/>
+			<command idQ="SplitSheet_ettool"/>
+		</KListCommand>
+		<KListCommand icon="batch_change_type_kd" id="RB_Output" rbFileMenuEmbed="1" text="@Output">
+			<command idQ="app_kpdf2wordv3_workspace"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2excel"/>
+			<command idQ="app_kpdf2wordv3_workspace_pdf2ppt"/>
+			<KAutoHideListCommand icon="doc_split_kd" id="split_merge" text="@Split and Merge">
+				<command idQ="app_ksplitmerge_workspace_split"/>
+				<command idQ="app_ksplitmerge_workspace_merge"/>
+			</KAutoHideListCommand>
+			<command idQ="PrintToPDF"/>
+			<command idQ="ExportWeiboImageCmd" proxyCmdId="ProxyExportWeiboImageCmd"/>
+			<command idQ="app_photo2pdf_workspace"/>
+			<command idQ="app_kocrtool_workspace_mac"/>
+			<command idKey="MacOldImageOcrEntry" idQ="app_kocrtool_workspace"/>
+			<KScreenGrabOcrMenuCommand customTip="ScreenGrabOcr" icon="scan_ocr_kd" id="ScrngrabOcr" referenceCommand="KxScrngrabOcrCommand" text="@ScreenGrabOcr">
+				<command idQ="KScreenGrabOcrCommand"/>
+				<command idQ="KScreenGrabOcrCommandHide"/>
+			</KScreenGrabOcrMenuCommand>
+			<command idQ="DocumentSlimmingTab"/>
+			<KAutoHideListCommand icon="batch_toolbox_kd" id="batch_toolbox" idKey="CommonBatchToolbox" text="@Batch Toolbox">
+				<command idQ="app_photonewbatchapp_specialtab_export"/>
+				<command idQ="app_photonewbatchapp_specialtab_dimension"/>
+				<command idQ="app_photonewbatchapp_specialtab_compress"/>
+				<command idQ="app_photonewbatchapp_specialtab_clipping"/>
+				<command idQ="app_photonewbatchapp_specialtab_text_watermark"/>
+			</KAutoHideListCommand>
+		</KListCommand>
+		<KListCommand id="RB_ETFeatures" idKey="ETToolsGroupSendingAssist" layout_lineCount="1" rbFileMenuEmbed="1" text="@ET Features">
+			<KAutoHideListCommand icon="group_sending_tool_kd" id="app_groupsend_list" text="@SendGroupTools">
+				<command idQ="app_kgroupsendingassist_workspace"/>
+			</KAutoHideListCommand>
+		</KListCommand>
+		<KListCommand icon="handy_tool_kd" id="RB_Toolbox" rbFileMenuEmbed="1" text="@Tools">
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" rbHotKey="A" text="@AISpeaker"/>
+			<KxCloudClipboardCommand icon="form_cloud_kd" idKey="CommonCloudClipboard" text="@Cloud Clipboard"/>
+			<command idQ="ScreenRecorder"/>
+		</KListCommand>
+		<KAppQuickMenuCommand icon="change_pic_to_wps_kd" id="Picture_OCR_Tool_WorkSpace" idKey="CommonPictureToText" needLogin="false" referenceCommand="app_kocrtool_picturetool_2txt" text="@Picture to Text">
+			<command idQ="app_kocrtool_menu_2text"/>
+			<command idQ="app_kocrtool_menu_2txt"/>
+			<command idQ="app_kocrtool_menu_2xlsl"/>
+			<command idQ="app_kocrtool_menu_2ppt"/>
+			<command idQ="app_kocrtool_menu_card2txt"/>
+		</KAppQuickMenuCommand>
+		<KListCommand id="AiSmartOrganizeTabList" idKey="ETAiSmartOrganizeTabList">
+			<command idQ="AiSmartOrganizeTab"/>
+		</KListCommand>
+		<KListCommand id="AiFunctionTab" idKey="EtAiFunctionTab">
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="MacVipTabFormula" ksoCmd="AIGenerateFormula" text="@AI Generate Formula"/>
+			<KxAIConditionalFormatCommand disableCustomRibbon="true" hotKey="A" icon="ai_conditional_format_kd" id="MacVipAIConditionalFormat" ksoCmd="AIConditionalFormat" qtspyName="AIConditionalFormat" text="@AI Conditions"/>
+		</KListCommand>
+		<KAutoHideListCommand icon="batch_change_type_kd" id="RB_CommonCmd_Trans" text="@RB_CommonCmd_Trans_text" tipContent="@RB_CommonCmd_Trans_tipContent" tipTitle="@RB_CommonCmd_Trans_tipTitle">
+			<command idKey="EtCTWorkSpaceExportWeiboImageCmd" idQ="ExportWeiboImageCmd"/>
+			<command idKey="EtCTWorkSpaceExportPDFInWorkSpaceTab" idQ="ExportPDFInWorkSpaceTab"/>
+			<command idKey="EtCTWorkSpaceScreenGrabOcrMenu" idQ="ScreenGrabOcrMenu"/>
+			<KAppCommand appId="kapower" customTip="ScreenRecording" icon="player_capture_kd" id="ScreenRecording" idKey="CommonRbScreenRecording" needLogin="false" text="@Screen Recording"/>
+		</KAutoHideListCommand>
+		<KAutoHideListCommand icon="ai_kd" id="RB_WPSAI" text="@RB_WPSAI_text"/>
+		<KAutoHideListCommand icon="font_feature_kd" id="RB_CommonCmd_Sceenservice" text="@RB_CommonCmd_Sceenservice_text" tipContent="@RB_CommonCmd_Sceenservice_tipContent" tipTitle="@RB_CommonCmd_Sceenservice_tipTitle"/>
+		<KAutoHideListCommand icon="handy_tool_kd" id="RB_CommonCmd_ConvenienceTools" text="@RB_CommonCmd_ConvenienceTools_text" tipContent="@RB_CommonCmd_ConvenienceTools_tipContent" tipTitle="@RB_CommonCmd_ConvenienceTools_tipTitle">
+			<command idKey="EtCTWorkSpaceDocumentSlimmingTab" idQ="DocumentSlimmingTab"/>
+		</KAutoHideListCommand>
+		<KAutoHideListCommand id="RB_MoreApp" text="@More App">
+			<KAppCommand appCmdObj="AppStore" appId="kappstore" icon="more_two_kd" id="more_app" needLogin="false" text="@More App"/>
+		</KAutoHideListCommand>
+		<KAppRbTabTriggerCommand appId="kfinancetoolbox" id="app_financetoolbox" text="@app_financetoolbox"/>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_WorkSpace">
+			<command idQ="RB_ShowEtToolbox"/>
+			<command idQ="AiSmartOrganizeTabList"/>
+			<separator/>
+			<command idQ="AiFunctionTab"/>
+			<separator/>
+			<command idQ="RB_Output"/>
+			<separator/>
+			<command idKey="ETToolsGroupSendingAssist" idQ="RB_ETFeatures"/>
+			<separator idKey="ETToolsGroupSendingAssist"/>
+			<command idQ="RB_Toolbox"/>
+			<separator/>
+			<command idQ="RB_MoreApp"/>
+		</subcommand>
+		<subcommand id="CT_WorkSpace" idKey="EtCTWorkSpace1">
+			<command idQ="RB_UserCloud"/>
+			<separator/>
+			<command idKey="MenuBarPluginsGroup1Entry" idQ="RB_ProfessionalPlugins_Group1"/>
+			<separator idKey="MenuBarPluginsGroup1Entry"/>
+			<command idKey="DocerShop" idQ="RB_DocerMall"/>
+			<command idKey="OnlineCooperationUse" idQ="RB_OnlineCooperation"/>
+		</subcommand>
+	</subcommands>
+</shell>

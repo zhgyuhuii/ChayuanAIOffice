@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>解决批注24_DoneComment</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><path id="line" d="M10 17.0002L13.2879 20.2881C13.405 20.4052 13.595 20.4052 13.7121 20.2881L20.5 13.5002" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_2" d="M8 17.5002H5.65139C5.55268 17.5002 5.45617 17.5295 5.37404 17.5842L2.51555 19.4899C2.5089 19.4943 2.5 19.4895 2.5 19.4816V3.00024C2.5 2.7241 2.72386 2.50024 3 2.50024H21C21.2761 2.50024 21.5 2.7241 21.5 3.00024V12.0002" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g><g class="kd-dir-rtl"><g transform="translate(24,0) scale(-1,1)"><g id="group-1-rtl" class="kd-color-icon-green-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,30.5,0)"><path id="line-rtl" d="M10 17.0002L13.2879 20.2881C13.405 20.4052 13.595 20.4052 13.7121 20.2881L20.5 13.5002" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line_2-rtl" d="M8 17.5002H5.65139C5.55268 17.5002 5.45617 17.5295 5.37404 17.5842L2.51555 19.4899C2.5089 19.4943 2.5 19.4895 2.5 19.4816V3.00024C2.5 2.7241 2.72386 2.50024 3 2.50024H21C21.2761 2.50024 21.5 2.7241 21.5 3.00024V12.0002" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g></g></svg>

@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_tableedit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMoreFontColorCommand controlType="0" dialogHint="1" icon="color_palette_kd" id="TableCellFillMoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="TableCellFillColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" icon="cursor_snapper_fill_kd" id="TableCellFillSnapFontColors" ksoCmd="TableCellFillColor" text="@Snapper"/>
+		<KxPdfTableCellFillColorCommand customTip="FillTableCell" icon="color_paint_wps_kd" id="TableCellFillColorSetting" ksoCmd="TableCellFillColor" ksoTriggerCmd="TableCellFillColor" referenceCommand="TableCellFillColor" text="@FillColor">
+			<command idQ="TableCellFillMoreFontColors"/>
+			<command idQ="TableCellFillSnapFontColors"/>
+		</KxPdfTableCellFillColorCommand>
+		<KxPdfTableEditDeleteCommand icon="ranks_delete_rows_kd" id="TableEditDeleteRowMenu" nIndex="1" text="@Delete Rows"/>
+		<KxPdfTableEditDeleteCommand icon="ranks_delete_columns_kd" id="TableEditDeleteColMenu" nIndex="2" text="@Delete Columns"/>
+		<KxPdfTableEditDeleteCommand icon="table_delete_kd" id="TableEditDeleteTable" nIndex="3" text="@Delete Table"/>
+		<KxPdfTableEditSplitCellCommand customTip="TableEditSplitCells" icon="split_kd" id="TableEditSplitCellMenu" text="@Split Cells"/>
+		<KxPdfTableEditMergeCellCommand customTip="TableEditMergeCells" icon="merge_kd" id="TableEditMergeCellMenu" text="@Merge Cells"/>
+		<KxPdfTableEditInsertCommand icon="ranks_add_left_kd" id="TableEditInsertColLeft" nIndex="1" spaceHint="suitable" text="@Insert Col Left"/>
+		<KxPdfTableEditInsertCommand icon="ranks_add_right_kd" id="TableEditInsertColRight" nIndex="2" spaceHint="suitable" text="@Insert Col Right"/>
+		<KxPdfTableEditInsertCommand icon="ranks_add_up_kd" id="TableEditInsertRowAbove" nIndex="3" spaceHint="suitable" text="@Insert Row Above"/>
+		<KxPdfTableEditInsertCommand icon="ranks_add_down_kd" id="TableEditInsertRowBelow" nIndex="4" spaceHint="suitable" text="@Insert Row Below"/>
+		<KxPdfTableEditSelectCommand icon="select_all_kd" id="TableEditSelectAllMenu" nIndex="5" text="@Select Table"/>
+		<KxPdfTableEditClearCommand icon="clear_rules_kd" id="TableEditClearContent" nIndex="1" text="@Clear Content"/>
+		<KxPdfTableEditClearCommand icon="clear_format_kd" id="TableEditClearFormat" nIndex="2" text="@Clear Format"/>
+		<KxPdfTableEditClearCommand customTip="TableEditClearFormat" icon="eraser_kd" id="Table_EditClearFormat" nIndex="2" text="@Clear Format"/>
+		<KAppCommand action="4" appCmdObj="PdfExtractTable" appId="pdfadvancedtool" customTip="TableRegonize" hotKey="" icon="sheet_extract_kd" id="TableEdit_PDFTableRecognize" idKey="PdfPopupMenuOcrPDFTableRecognizeEntry" idType="currentpage" rbHotKey="" tabId="edit_table_tab" text="@RMenuTableRegonize"/>
+		<KxPdfTableEditListCommand icon="sheet_kd" id="TableEditInsertRightMenu" text="@Insert">
+			<command idQ="TableEditInsertColLeft"/>
+			<command idQ="TableEditInsertColRight"/>
+			<command idQ="TableEditInsertRowAbove"/>
+			<command idQ="TableEditInsertRowBelow"/>
+		</KxPdfTableEditListCommand>
+		<KxPdfTableEditListCommand customTip="TableDeleteMenu" icon="sheet_delete_kd" id="DeleteMenuInTableToolTab" qtspyName="Delete" text="@Delete">
+			<command idQ="TableEditDeleteColMenu"/>
+			<command idQ="TableEditDeleteRowMenu"/>
+			<command idQ="TableEditDeleteTable"/>
+		</KxPdfTableEditListCommand>
+		<KxPdfTableEditListCommand customTip="TableInsertRowColMenu" icon="table_tools_insert_kd" id="InsertMenuInTableToolTab" qtspyName="Insert" text="@Insert">
+			<command idQ="TableEditInsertRowAbove"/>
+			<command idQ="TableEditInsertRowBelow"/>
+			<command idQ="TableEditInsertColLeft"/>
+			<command idQ="TableEditInsertColRight"/>
+		</KxPdfTableEditListCommand>
+		<KxGalleryTableCommand controlType="4" customTip="InsertTable" detail="@Table" icon="sheet_kd" id="TableTab_AddTable" ksoCmd="InsertTablePalette" text="@Insert Table">
+			<command idQ="InsertTablePopup"/>
+		</KxGalleryTableCommand>
+		<KxStaticGalleryCommand column="3" hasDynamicIcon="1" icon="align_left_top_kd" id="TableCellAlignment" ksoCmd="TableCellAlignmentPalette" text="@Cell Alignment">
+			<KxStaticGalleryItemCommand icon="align_left_top_kd" index="0" qtspyName="CellAlignment_0"/>
+			<KxStaticGalleryItemCommand icon="align_center_top_kd" index="1" qtspyName="CellAlignment_1"/>
+			<KxStaticGalleryItemCommand icon="align_right_top_kd" index="2" qtspyName="CellAlignment_2"/>
+			<KxStaticGalleryItemCommand icon="align_left_middle_kd" index="3" qtspyName="CellAlignment_3"/>
+			<KxStaticGalleryItemCommand icon="align_center_middle_kd" index="4" qtspyName="CellAlignment_4"/>
+			<KxStaticGalleryItemCommand icon="align_right_middle_kd" index="5" qtspyName="CellAlignment_5"/>
+			<KxStaticGalleryItemCommand icon="align_left_bottom_kd" index="6" qtspyName="CellAlignment_6"/>
+			<KxStaticGalleryItemCommand icon="align_center_bottom_kd" index="7" qtspyName="CellAlignment_7"/>
+			<KxStaticGalleryItemCommand icon="align_right_bottom_kd" index="8" qtspyName="CellAlignment_8"/>
+		</KxStaticGalleryCommand>
+		<KxPdfEditTextTypesettingCommand component="0" customTip="LineSpace" fixedSpinBoxHeight="24" fixedSpinBoxWidth="60" id="LineSpaceInTable" spaceHint="suitable" text="@LineSpace"/>
+		<KxPdfEditTextTypesettingCommand component="1" customTip="LetterSpace" fixedSpinBoxHeight="24" fixedSpinBoxWidth="60" id="LetterSpaceInTable" spaceHint="suitable" text="@LetterSpace"/>
+		<KListCommand id="RB_TableEditRowAndColumn" rbFileMenuEmbed="1" text="@Rows and Columns">
+			<KxSingleRowMergeGroupCommand icon="InsertTable" id="SingleRow_TableEditRowAndColumn" text="@Rows and Columns"/>
+			<command idQ="TableTab_AddTable" singlerowmergegroup="SingleRow_TableEditRowAndColumn"/>
+			<command idQ="InsertMenuInTableToolTab" singlerowmergegroup="SingleRow_TableEditRowAndColumn"/>
+			<command idQ="DeleteMenuInTableToolTab" singlerowmergegroup="SingleRow_TableEditRowAndColumn"/>
+		</KListCommand>
+		<KxPdfSuperscriptCommandList customTip="Superscript" icon="math_superscript_kd" id="Text_SuperScript" text="@Text_SuperScript" wpsIsEanble="false">
+			<command idQ="SuperScript"/>
+			<command idQ="Subscript"/>
+		</KxPdfSuperscriptCommandList>
+		<KxListCommand customTip="RB_Font" forceVisible="1" horizontalSpacing="4" icon="symbol_a_kd" id="RB_TableEditText" ksoCmd="Font" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Font">
+			<KListCommand embedHint="1" vertspace="2">
+				<KRbLayoutListCommand horizontalSpacing="3" layoutOnly="1">
+					<KRbLayoutListCommand horizontalSpacing="1" isDrawInnerBorder="1">
+						<command fixedWidth="98" horizontalPolicy="Expanding" idQ="FontForEditText%" layoutOnLeft="true" singlerowfoldgroup="font_pair" verticalPolicy="Preferred"/>
+						<command fixedWidth="65" horizontalPolicy="Expanding" idQ="FontSizeForEditText%" layoutOnRight="true" singlerowfoldgroup="font_pair" verticalPolicy="Preferred"/>
+					</KRbLayoutListCommand>
+					<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+						<command idQ="MagnifyFontSize" singlerowfoldgroup="font_size_pair"/>
+						<command idQ="ReduceFontSize" singlerowfoldgroup="font_size_pair"/>
+					</KRbLayoutListCommand>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="Bold" singlerowfoldgroup="font_style_pair"/>
+					<command idQ="Tilt" singlerowfoldgroup="font_style_pair"/>
+					<command idQ="EditText_Underline" singlerowfoldgroup="font_style_pair"/>
+					<command idQ="DeleteLine" singlerowfold="1"/>
+					<command idQ="Text_SuperScript" singlerowfold="1"/>
+					<command idQ="TableCellFillColorSetting" singlerowfold="1"/>
+					<command idQ="EditText_FontColorPopup"/>
+					<command idQ="Table_EditClearFormat" singlerowfold="1"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KxListCommand forceVisible="1" horizontalSpacing="4" icon="align_draw_left_kd" id="RB_TableEditAlignment" ksoCmd="Font" rbFileMenuEmbed="1" text="@Alignment">
+			<KxSingleRowMergeGroupCommand icon="align_left_kd" id="SingleRow_TableEditAlignment" text="@Alignment"/>
+			<KListCommand embedHint="1" vertspace="2">
+				<KRbLayoutListCommand alignment="1" bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="CellAlignTop" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+					<command idQ="CellAlignVCenter" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+					<command idQ="CellAlignBottom" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand alignment="1" bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="CellAlignLeft" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+					<command idQ="CellAlignHCenter" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+					<command idQ="CellAlignRight" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+			<command idQ="TableEdit_ObjectAlign" singlerowmergegroup="SingleRow_TableEditAlignment"/>
+		</KxListCommand>
+		<KxListCommand icon="paragraph_properties_kd" id="RB_TableEditParagraph" rbFileMenuEmbed="1" text="@Paragraph Attributes">
+			<KxSingleRowMergeGroupCommand icon="paragraph_properties_kd" id="SingleRow_TableEditParagraph" text="@Paragraph Attributes"/>
+			<KListCommand embedHint="1">
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="LineSpaceInTable" singlerowmergegroup="SingleRow_TableEditParagraph"/>
+				</KRbLayoutListCommand>
+				<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+					<command idQ="LetterSpaceInTable" singlerowmergegroup="SingleRow_TableEditParagraph"/>
+				</KRbLayoutListCommand>
+			</KListCommand>
+		</KxListCommand>
+		<KListCommand icon="close_window_kd" id="RB_TableEditExit" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="TableEditRecognize"/>
+			<command idQ="TableEdit_PDFTableRecognize"/>
+			<command idQ="Edit_Exit"/>
+		</KListCommand>
+		<KListCommand id="RB_TableMergeSplit" rbFileMenuEmbed="1" text="@MergeSplit">
+			<command idQ="TableEditMergeCellMenu"/>
+			<command idQ="TableEditSplitCellMenu"/>
+		</KListCommand>
+		<KxLegacyTriggerCommandEx customTip="FormatBrush" icon="brush_kd" id="FormatPainter" ksoCmd="FormatBrush" text="@FormatBrush" wpsIsEanble="false"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="TableEdit_HandTool" ksoCmd="HandTool" shellEntryType="tab_tableedit" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="TableEdit_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_tableedit" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_TableEdit" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="TableEdit_HandTool"/>
+			<command idQ="TableEdit_SelectionTool"/>
+			<command idQ="FormatPainter"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_TableEdit">
+			<command idQ="RB_MouseTool_TableEdit"/>
+			<separator/>
+			<command idQ="RB_TableEditRowAndColumn"/>
+			<separator/>
+			<command idQ="RB_TableMergeSplit"/>
+			<separator/>
+			<command idQ="RB_TableEditText"/>
+			<separator/>
+			<command idQ="RB_TableEditAlignment"/>
+			<separator/>
+			<command idQ="RB_TableEditParagraph"/>
+			<separator/>
+			<command idQ="RB_TableEditExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

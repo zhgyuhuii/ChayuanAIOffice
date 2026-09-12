@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_instructbox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="InstructBoxBkMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="InstructBoxBkColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="InstructBoxBorderMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="InstructBoxBorderColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="InstructBoxBkSnapColor" ksoCmd="InstructBoxBkColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="InstructBoxBorderSnapColor" ksoCmd="InstructBoxBorderColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Instruct_HandTool" ksoCmd="HandTool" shellEntryType="tab_instruct" shortcutHint="Ctrl+H" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Instruct_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_instruct" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfFontCommand customTip="FontName" id="FontForMarkText%" shellEntryType="comment_box" spaceHint="autocompact" text="@FontName"/>
+		<KxPdfFontSizeCommand customTip="FontSize" id="FontSizeForMarkText%" spaceHint="autocompact" text="@FontSize"/>
+		<KxPdfTextBoxBorderStyleCommand customTip="TBLineStyle" id="TMBoxBorderStyle%" spaceHint="autocompact" text="@Line Style"/>
+		<KxPdfTextBoxBorderSizeCommand customTip="TBLineWidth" id="TMBoxBorderSize%" spaceHint="autocompact" text="@Line Width"/>
+		<KxPdfEditArrowStyleCommand customTip="End Arrow" id="TMArrowEndStyle%" spaceHint="autocompact" text="@End Arrow"/>
+		<KxPdfInstructFillColorCommand customTip="TextBoxBkColor" icon="color_paint_wps_kd" id="TMBoxBkColorSetting" ksoCmd="InstructBoxBkColor" ksoTriggerCmd="InstructBoxBkColor" referenceCommand="InstructBoxBkColor" text="@TextBoxBkColor">
+			<command idQ="InstructBoxBkMoreColors"/>
+			<command idQ="InstructBoxBkSnapColor"/>
+		</KxPdfInstructFillColorCommand>
+		<KxPdfInstructBorderColorCommand customTip="TextBoxBorderColor" icon="color_border_wps_kd" id="TMBoxBorderColorSetting" ksoCmd="InstructBoxBorderColor" ksoTriggerCmd="InstructBoxBorderColor" referenceCommand="InstructBoxBorderColor" text="@TextBoxBorderColor">
+			<command idQ="InstructBoxBorderMoreColors"/>
+			<command idQ="InstructBoxBorderSnapColor"/>
+		</KxPdfInstructBorderColorCommand>
+		<KxPdfTextBoxOpacityCommand customTip="TextBoxAlpha" icon="transparency_kd" id="TMBoxAlphaSetting" ksoCmd="TextBoxAlpha" ksoTriggerCmd="TextBoxAlpha" referenceCommand="TextBoxAlpha" text="@TextBoxAlpha"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="InstructBox" descName="Ct_InstructBox" icon="indicated_comment_kd" id="Ct_InstructBox" ksoCmd="InstructBox" shellEntryType="tab_Instruct" text="@InstructBox"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_Instruct" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Instruct_HandTool"/>
+			<command idQ="Instruct_SelectionTool"/>
+		</KListCommand>
+		<KxValueCommand customTip="PDFEditTextExit" icon="close_window_kd" id="TMEdit_Exit" index="2" ksoCmd="EditExit" text="@EditExit" wpsIsEanble="false"/>
+		<KListCommand groupTip="InstructBoxAddGroup" id="InstructBox" rbFileMenuEmbed="1" text="@Add">
+			<command idQ="Ct_InstructBox"/>
+		</KListCommand>
+		<KListCommand embedHint="1" id="TM_FontEdit">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="FontForMarkText%"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="FontSizeForMarkText%"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KxPdfInstructFontColorCommand customTip="TextColor" icon="color_font_wps_kd" id="InstructFontColorSetting" ksoCmd="FontColor" ksoTriggerCmd="FontColor" referenceCommand="FontColor" text="@TextColor">
+			<command idQ="FontColorMoreFontColors"/>
+			<command idQ="FontColorSnapFontColors"/>
+		</KxPdfInstructFontColorCommand>
+		<KListCommand id="TMFontTool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="InstructFontColorSetting"/>
+		</KListCommand>
+		<KListCommand embedHint="1" id="TMTextBoxBorderStyleSetting">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="TMBoxBorderStyle%" singlerowfold="1" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="TMBoxBorderSize%" singlerowfold="1" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand groupTip="InstructBoxAppearanceSettingGroup" icon="setup_kd" id="TMBoxStyle" layout_lineCount="2" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Appearance settings">
+			<command idQ="TMBoxBkColorSetting"/>
+			<command idQ="TMBoxBorderColorSetting"/>
+			<command idQ="TMBoxAlphaSetting"/>
+			<command idQ="TMTextBoxBorderStyleSetting"/>
+			<KRbLayoutListCommand alignment="1" bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="TMArrowEndStyle%" singlerowfold="1" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand groupTip="InstructBoxExitGroup" id="TMFontEditeExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="TMEdit_Exit" singlerowpriority="100"/>
+		</KListCommand>
+		<KListCommand groupTip="InstructBoxFontStyleGroup" horizontalSpacing="6" icon="font_style_kd" id="RB_TMFont" rbFileMenuEmbed="1" text="@Font Style">
+			<command idQ="TM_FontEdit"/>
+			<command idQ="InstructFontColorSetting"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_InstructBox">
+			<command idQ="RB_MouseTool_Instruct"/>
+			<command idQ="Separator"/>
+			<command idQ="InstructBox"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_TMFont"/>
+			<command idQ="Separator"/>
+			<command idQ="TMBoxStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="TMFontEditeExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

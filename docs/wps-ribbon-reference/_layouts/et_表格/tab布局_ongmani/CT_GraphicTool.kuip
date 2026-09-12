@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="et_ongmani.ct_graphictool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxListCommand customTip="FormatPainter" groupTip="GraphicToolFormatPainterGroup" icon="brush_kd" id="RB_FormatPicture" text="@Format Painter">
+			<KxLegacyDblTriggerCommandEx customTip="FormatPainter" icon="brush_kd" id="FormatPicture" ksoCmd="FormatPainter" rbHotKey="FP" text="@Format Painter"/>
+		</KxListCommand>
+		<KxListCommand customTip="ChangePicture" groupTip="GraphicToolChangeGroup" icon="replace_pic_kd" id="RB_DC_Change_Picture" text="@Change">
+			<KxLegacyTriggerCommand customTip="ChangePicture" hotKey="f" icon="replace_pic_kd" id="FormatPicture" ksoCmd="ChangePicture" qtspyName="ChangePictureFromFile" rbHotKey="P" text="@Replace Picture"/>
+		</KxListCommand>
+		<KxPropComposeCommand controlType="0" hotKey="p" icon="pic_kd" id="PictureFill" idMso="ObjectPictureFill" ksoCmd="FillEffects" rbHotKey="P" tabIndex="3" text="@Picture"/>
+		<KxLegacyTriggerCommand aid="1053" controlType="0" dialogHint="1" hotKey="p" id="PatternedLines" idMso="OutlineLinePatternFill" ksoCmd="PatternedLines" text="@Patterned Lines"/>
+		<KxLineStyleStaticGalleryCommand aid="6050" column="1" hotKey="w" icon="frame_line_type_kd" id="LineStylePalette" ksoCmd="LineStylePalette" rbHotKey="W" text="@Line Weight">
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="0" qtspyName="LineStyle_0" text="@0.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_1_display_kd" index="1" qtspyName="LineStyle_1" text="@0.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_25_display_kd" index="2" qtspyName="LineStyle_2" text="@0.75 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="3" qtspyName="LineStyle_3" text="@1 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_30_display_kd" index="4" qtspyName="LineStyle_4" text="@1.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_38_display_kd" index="5" qtspyName="LineStyle_5" text="@2.25 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_39_display_kd" index="6" qtspyName="LineStyle_6" text="@3 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_40_display_kd" index="7" qtspyName="LineStyle_7" text="@4.5 pt"/>
+			<KxStaticGalleryLabItemCommand galleryItemHeight="16" galleryItemWidth="165" icon="line_style_41_display_kd" index="8" qtspyName="LineStyle_8" text="@6 pt"/>
+			<KxPropComposeCommand aid="1054" controlType="0" dialogHint="1" hotKey="m" id="MoreLines" idMso="LineStylesDialog" ksoCmd="MoreLines" tabIndex="2" text="@More Lines"/>
+		</KxLineStyleStaticGalleryCommand>
+		<KxStaticGalleryCommand column="1" hotKey="s" icon="dash_style_menu_kd" id="DashStylePalette" ksoCmd="DashStylePalette" rbHotKey="S" text="@Dash Style">
+			<KxStaticGalleryItemCommand detail="@Solid" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_30_display_kd" index="0" qtspyName="DashStyle_0"/>
+			<KxStaticGalleryItemCommand detail="@Round Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_31_display_kd" index="1" qtspyName="DashStyle_1"/>
+			<KxStaticGalleryItemCommand detail="@Square Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_32_display_kd" index="2" qtspyName="DashStyle_2"/>
+			<KxStaticGalleryItemCommand detail="@Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_33_display_kd" index="3" qtspyName="DashStyle_3"/>
+			<KxStaticGalleryItemCommand detail="@Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_34_display_kd" index="4" qtspyName="DashStyle_4"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_35_display_kd" index="5" qtspyName="DashStyle_5"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_36_display_kd" index="6" qtspyName="DashStyle_6"/>
+			<KxStaticGalleryItemCommand detail="@Long Dash Dot Dot" galleryItemHeight="14" galleryItemWidth="98" icon="line_style_37_display_kd" index="7" qtspyName="DashStyle_7"/>
+		</KxStaticGalleryCommand>
+		<KxIndexListCommand controlType="4" customTip="FormatObject" groupTip="GraphicToolShapeStyleGroup" icon="graphic_style_kd" id="RB_DC_GraphicStyles" idMso="ShapeStylesGallery" index="2" ksoCmd="MoreEffects" needsinglerowmorebutton="true" rbFileMenuEmbed="1" rbHotKey="O" spaceHint="suitable" text="@Styles">
+			<KxGraphicStylesCommand columnNumber="6" completeColumnNumber="4" embedHint="1" iconQat="graphic_style_kd" id="GraphicStylesInDrawingToolTab" ksoCmd="ShapeStyles" maxVisibleNumber="4" qtspyName="GraphicStyles" singlerowfold="1" text="@Graphic Styles" triggerAble="1">
+				<command idQ="MoreEffects"/>
+			</KxGraphicStylesCommand>
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<KxEtShapeFillThemeCommand controlType="4" customTip2="GraphicFillColor2" customTip="GraphicFillColor" icon="color_paint_wps_kd" id="GraphicFillColor" idMso="ShapeFillColorPicker" ksoCmd="FillColor" ksoTriggerCmd="RecentFillColor" rbHotKey="SF" text="@Graphic Fill">
+				<KxEtMoreColorThemeCommand aid="100129" colorUsage="FillColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFillColors" rbHotKey="M" text="@More Fill Colors"/>
+				<KxEtSnapColorCommand colorUsage="FillColor" forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperFill" rbHotKey="E" text="@Snapper"/>
+				<command idKey="EtGradiantFill" idQ="GradiantFill"/>
+				<separator/>
+				<command idQ="MoreFill"/>
+			</KxEtShapeFillThemeCommand>
+			<KxEtShapeLineThemeCommand canHideText="0" controlType="4" customTip2="GraphicLineColor2" customTip="GraphicLineColor" icon="color_border_wps_kd" id="GraphicLineColor" idMso="ShapeOutlineColorPicker" ksoCmd="LineColor" ksoTriggerCmd="RecentLineColor" rbHotKey="SO" text="@Graphic Outline">
+				<KxEtMoreColorThemeCommand aid="100131" colorUsage="LineColor" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreLineColors" text="@More Line Colors"/>
+				<KxEtSnapColorCommand colorUsage="LineColor" forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapperLine" rbHotKey="E" text="@Snapper"/>
+				<command idQ="LineStylePalette"/>
+				<command idQ="DashStylePalette"/>
+				<separator/>
+				<command idQ="MoreOutline"/>
+			</KxEtShapeLineThemeCommand>
+			<KxListCommand canHideText="0" customTip="GraphicEffects" disableTrigger="1" icon="shape_effect_one_kd" id="GraphicEffectsInDrawingToolTab" ksoCmd="ShapeEffects" qtspyName="GraphicEffects" rbHotKey="SE" singlerowfold="1" text="@Graphic Effects">
+				<KShapeShadowCommand columnNumber="3" hotKey="s" icon="shadow_style_kd" qtspyName="Graphic_shadow_ongmani" rbHotKey="S" text="@Shadow"/>
+				<KShapeReflectionCommand columnNumber="3" hotKey="r" icon="shape_reflection_ongmani_kd" qtspyName="Graphic_reflection_ongmani" rbHotKey="R" text="@Reflection"/>
+				<KShapeGlowCommand columnNumber="6" hotKey="g" icon="shape_glow_ongmani_kd" qtspyName="Graphic_glow_ongmani" rbHotKey="G" text="@Glow"/>
+				<KShapeSoftEdgesCommand columnNumber="1" hotKey="e" icon="shape_softedges_ongmani_kd" qtspyName="Graphic_softedges_ongmani" rbHotKey="E" text="@Soft Edges"/>
+				<KShapeThreeDRotationCommand columnNumber="4" hotKey="d" icon="three_d_rotation_kd" qtspyName="graphic_3d_rotation_ongmani" rbHotKey="D" text="@ThreeDRotation"/>
+				<separator/>
+				<command idQ="MoreEffects"/>
+			</KxListCommand>
+		</KxIndexListCommand>
+		<KxLegacyTriggerCommand aid="170" controlType="0" hotKey="f" icon="level_bring_forward_kd" id="BringForward" idMso="ObjectBringForward" ksoCmd="BringForward" rbHotKey="F" text="@Bring Forward"/>
+		<KxLegacyTriggerCommand aid="166" controlType="0" hotKey="R" icon="level_top_kd" id="RbBringToFront" idMso="ObjectBringToFront" ksoCmd="BringToFront" text="@Bring to Front"/>
+		<KxListCommand customTip2="BringForward2" customTip="BringForward" hotKey="f" icon="level_bring_forward_kd" id="Drawing_sp_BringForwardInGraphicTool" ksoCmd="BringForward" rbHotKey="AF" spaceHint="suitable" text="@Move Up">
+			<command idQ="BringForward"/>
+			<command idQ="RbBringToFront"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="171" controlType="0" hotKey="b" icon="level_send_backward_kd" id="SendBackward" idMso="ObjectSendBackward" ksoCmd="SendBackward" rbHotKey="B" text="@Send Backward"/>
+		<KxLegacyTriggerCommand aid="167" controlType="0" hotKey="k" icon="level_bottom_kd" id="SendToBack" idMso="ObjectSendToBack" ksoCmd="SendToBack" rbHotKey="K" text="@Send to Back"/>
+		<KxListCommand customTip2="SendBackward2" customTip="SendBackward" hotKey="b" icon="level_send_backward_kd" id="Drawing_sp_SendBackwardInGraphicTool" ksoCmd="SendBackward" rbHotKey="AE" spaceHint="suitable" text="@Move Down">
+			<command idQ="SendBackward"/>
+			<command idQ="SendToBack"/>
+		</KxListCommand>
+		<KxValueCommand aid="664" controlType="0" hotKey="l" icon="align_draw_left_kd" id="DrawAlignLeft" idMso="ObjectsAlignLeft" index="0" ksoCmd="DrawAlign" rbHotKey="L" text="@Align Left"/>
+		<KxValueCommand aid="668" controlType="0" hotKey="c" icon="align_draw_center_kd" id="DrawAlignCenter" idMso="ObjectsAlignCenterHorizontal" index="1" ksoCmd="DrawAlign" rbHotKey="C" text="@Align Center"/>
+		<KxValueCommand aid="665" controlType="0" hotKey="r" icon="align_draw_right_kd" id="DrawAlignRight" idMso="ObjectsAlignRight" index="2" ksoCmd="DrawAlign" rbHotKey="R" text="@Align Right"/>
+		<KxValueCommand aid="666" controlType="0" hotKey="t" icon="align_draw_top_kd" id="DrawAlignTop" idMso="ObjectsAlignTop" index="3" ksoCmd="DrawAlign" rbHotKey="T" text="@Align Top"/>
+		<KxValueCommand aid="669" controlType="0" hotKey="m" icon="align_draw_vertical_kd" id="DrawAlignMiddle" idMso="ObjectsAlignMiddleVertical" index="4" ksoCmd="DrawAlign" rbHotKey="M" text="@Align Middle"/>
+		<KxValueCommand aid="667" controlType="0" hotKey="b" icon="align_draw_bottom_kd" id="DrawAlignBottom" idMso="ObjectsAlignBottom" index="5" ksoCmd="DrawAlign" rbHotKey="B" text="@Align Bottom"/>
+		<KxLegacyTriggerCommand aid="408" controlType="0" hotKey="h" icon="align_distribute_horizontal_kd" id="AlignDistributeHori" idMso="AlignDistributeHorizontally" ksoCmd="AlignDistributeHori" rbHotKey="H" text="@Distribute Horizontally"/>
+		<KxLegacyTriggerCommand aid="465" controlType="0" hotKey="v" icon="align_distribute_vertical_kd" id="AlignDistributeVert" idMso="AlignDistributeVertically" ksoCmd="AlignDistributeVert" rbHotKey="V" text="@Distribute Vertically"/>
+		<KxLegacyTriggerCommand aid="80050" hotKey="e" icon="ranks_distribute_rows_kd" id="EqualHeight" ksoCmd="EqualHeight" rbHotKey="EH" text="@Equal Height"/>
+		<KxLegacyTriggerCommand aid="80051" hotKey="w" icon="ranks_distribute_columns_kd" id="EqualWidth" ksoCmd="EqualWidth" rbHotKey="EW" text="@Equal Width"/>
+		<KxLegacyTriggerCommand aid="80052" hotKey="s" icon="equal_size_kd" id="EqualSize" ksoCmd="EqualSize" rbHotKey="ES" text="@Equal Size"/>
+		<KxLegacyTriggerCommand aid="549" controlType="6" hotKey="P" icon="snap_to_grid_kd" id="RbSnaptoGrid" idMso="SnapToGrid" ksoCmd="SnaptoGrid" text="@Snap to Grid"/>
+		<KxLegacyTriggerCommand hotKey="G" icon="grid_switch_kd" id="rShowGrid" ksoCmd="FTB_GridSwitch" text="@Show Grid"/>
+		<KListCommand customTip="Align" icon="align_draw_left_kd" id="drawing_m_AlignInGraphicTool" rbHotKey="AA" text="@Align">
+			<command idQ="AlignmentControl"/>
+			<command idQ="DrawAlignLeft"/>
+			<command idQ="DrawAlignCenter"/>
+			<command idQ="DrawAlignRight"/>
+			<command idQ="DrawAlignTop"/>
+			<command idQ="DrawAlignMiddle"/>
+			<command idQ="DrawAlignBottom"/>
+			<separator/>
+			<command idQ="AlignDistributeHori"/>
+			<command idQ="AlignDistributeVert"/>
+			<separator/>
+			<command idQ="EqualHeight"/>
+			<command idQ="EqualWidth"/>
+			<command idQ="EqualSize"/>
+			<separator/>
+			<command idQ="RbSnaptoGrid"/>
+			<command idQ="rShowGrid"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="164" controlType="0" hotKey="g" icon="group_kd" id="Group" idMso="ObjectsGroup" ksoCmd="Group" rbHotKey="G" text="@Group"/>
+		<KxLegacyTriggerCommand aid="165" controlType="0" hotKey="u" icon="group_cancel_kd" id="UnGroup" idMso="ObjectsUngroup" ksoCmd="UnGroup" rbHotKey="U" text="@Ungroup"/>
+		<KListCommand customTip="Group" icon="group_kd" id="drawing_m_GroupInGraphicTool" rbHotKey="AG" spaceHint="suitable" text="@Group">
+			<command idQ="Group"/>
+			<command idQ="UnGroup"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="688" controlType="0" hotKey="t" icon="rotate_angle_kd" id="FreeRotate" idMso="ObjectRotateFree" ksoCmd="FreeRotate" rbHotKey="T" text="@Free Rotate"/>
+		<KxLegacyTriggerCommand aid="199" controlType="0" hotKey="l" icon="rotate_left_kd" id="RotateLeft" idMso="ObjectRotateLeft90" ksoCmd="RotateLeft" rbHotKey="L" text="@Rotate Left 90°"/>
+		<KxLegacyTriggerCommand aid="198" controlType="0" hotKey="r" icon="rotate_right_kd" id="RotateRight" idMso="ObjectRotateRight90" ksoCmd="RotateRight" rbHotKey="R" text="@Rotate Right 90°"/>
+		<KxLegacyTriggerCommand aid="196" controlType="0" hotKey="h" icon="flip_horizontal_kd" id="FlipHorizontal" idMso="ObjectFlipHorizontal" ksoCmd="FlipHorizontal" rbHotKey="H" text="@Flip Horizontal"/>
+		<KxLegacyTriggerCommand aid="197" controlType="0" hotKey="v" icon="flip_vertical_kd" id="FlipVertical" idMso="ObjectFlipVertical" ksoCmd="FlipVertical" rbHotKey="V" text="@Flip Vertical"/>
+		<KListCommand customTip="RotateRight" icon="rotate_right_kd" id="drawing_m_RotateInGraphicTool" rbHotKey="AY" spaceHint="suitable" text="@Rotate">
+			<command idQ="RotateLeft"/>
+			<command idQ="RotateRight"/>
+			<separator/>
+			<command idQ="FlipHorizontal"/>
+			<command idQ="FlipVertical"/>
+		</KListCommand>
+		<KListCommand groupTip="GraphicToolArrangeGroup" icon="align_draw_left_kd" id="GraphicTool_Drawing_RB_Arrange" rbFileMenuEmbed="1" text="@Arrange">
+			<command idQ="drawing_m_AlignInGraphicTool"/>
+			<command idQ="drawing_m_GroupInGraphicTool"/>
+			<command idQ="drawing_m_RotateInGraphicTool"/>
+			<command idQ="Drawing_sp_BringForwardInGraphicTool" singlerowfoldgroup="bringsend_pair"/>
+			<command idQ="Drawing_sp_SendBackwardInGraphicTool" singlerowfoldgroup="bringsend_pair"/>
+			<KxObjectSelectCommand controlType="6" customTip="ObjectSelect" icon="object_select_kd" id="ObjectSelect_drawingtoolInGraphicTool" idMso="SelectionPane" ksoCmd="ObjectSelect" rbHotKey="AB" text="@Selection Pane"/>
+		</KListCommand>
+		<KxListCommand customTip="FormatObjectSize" groupTip="GraphicToolSizeGroup" icon="slide_orientation_kd" id="GraphicTool_Drawing_RB_Size" ksoCmd="FormatObjectSize" rbFileMenuEmbed="1" singlerowmergesetting="SingleRow_GraphicTool_Drawing_RB_Size" text="@Size">
+			<KxSingleRowMergeGroupCommand customTip="FormatObjectSize" icon="slide_orientation_kd" id="SingleRow_GraphicTool_Drawing_RB_Size" text="@Size"/>
+			<KxTabGalleryListCommand aid="551" customTip="PictureCrop" faceid="229" hotKey="p" icon="crop_kd" id="PictureCrop" ksoCmd="PictureCrop" rbHotKey="V" singlerowmergegroup="SingleRow_GraphicTool_Drawing_RB_Size" text="@Crop">
+				<KxGalleryCroppingShapesCommand customTip="PictureCropByShape" ksoCmd="PictureShapeCrop" qtspyName="PictureShapeCrop" text="@Crop By Shape"/>
+				<KxGalleryCroppingScalesCommand customTip="PictureCropByScale" ksoCmd="PictureScaleCrop" qtspyName="PictureScaleCrop" text="@Crop By Scale"/>
+			</KxTabGalleryListCommand>
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<KxEtHeightSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeHeight" embedHint="1" icon="ranks_rows_height_kd" id="ShapeHeight" ksoCmd="ShapeHeight" singlerowmergegroup="SingleRow_GraphicTool_Drawing_RB_Size" spaceHint="suitable"/>
+			<KxEtWidthSpinboxCommand buttonSymbols="UpDownArrows" controlType="7" customTip="ShapeWidth" embedHint="1" icon="ranks_column_width_kd" id="ShapeWidth" ksoCmd="ShapeWidth" singlerowmergegroup="SingleRow_GraphicTool_Drawing_RB_Size" spaceHint="suitable"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="962" controlType="0" dialogHint="1" hotKey="o" icon="chart_objects_kd" id="FormatObject2" idMso="ObjectFormatDialog" ksoCmd="FormatObject" text="@Format Object"/>
+		<KListCommand id="GraphicTool_DetailedSettings_DrawingTools" text="@Settings">
+			<KListCommand customTip="DetailedSettings_DrawingTools" icon="detailed_settings_kd" id="DetailedSettingsList_DrawingTools" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="FormatObject2"/>
+			</KListCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_GraphicTool">
+			<command idQ="RB_FormatPicture"/>
+			<separator/>
+			<command idQ="RB_DC_Change_Picture"/>
+			<separator/>
+			<command idQ="RB_DC_GraphicStyles"/>
+			<separator/>
+			<command idQ="GraphicTool_Drawing_RB_Arrange"/>
+			<separator/>
+			<command idQ="GraphicTool_Drawing_RB_Size"/>
+			<separator/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="GraphicTool_DetailedSettings_DrawingTools"/>
+		</subcommand>
+	</subcommands>
+</shell>

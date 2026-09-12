@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>看法_View</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="Vector 4497" d="M2.5 11.5H20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Vector 4498" d="M11.5 2.5V20.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="Rectangle 34624979" d="M2.5 3C2.5 2.72386 2.72386 2.5 3 2.5H8C8.27614 2.5 8.5 2.72386 8.5 3V8C8.5 8.27614 8.27614 8.5 8 8.5H3C2.72386 8.5 2.5 8.27614 2.5 8V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624980" d="M14.5 3C14.5 2.72386 14.7239 2.5 15 2.5H20C20.2761 2.5 20.5 2.72386 20.5 3V8C20.5 8.27614 20.2761 8.5 20 8.5H15C14.7239 8.5 14.5 8.27614 14.5 8V3Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624981" d="M14.5 15C14.5 14.7239 14.7239 14.5 15 14.5H20C20.2761 14.5 20.5 14.7239 20.5 15V20C20.5 20.2761 20.2761 20.5 20 20.5H15C14.7239 20.5 14.5 20.2761 14.5 20V15Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="Rectangle 34624982" d="M2.5 15C2.5 14.7239 2.72386 14.5 3 14.5H8C8.27614 14.5 8.5 14.7239 8.5 15V20C8.5 20.2761 8.27614 20.5 8 20.5H3C2.72386 20.5 2.5 20.2761 2.5 20V15Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

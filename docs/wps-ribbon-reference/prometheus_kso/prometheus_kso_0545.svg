@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>注释切换_linecomment</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular">
+<path id="line" d="M17 19.5019H10.5384M11.9999 17.3096L9.81795 19.4914C9.81224 19.4971 9.81224 19.5063 9.81795 19.512L11.9999 21.6942" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_2" d="M20.7693 15.5017H14.5M19.3078 13.3096L21.4897 15.4914C21.4954 15.4971 21.4954 15.5063 21.4897 15.512L19.3078 17.6942" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line_3" d="M8 18.5H3.23077C2.82718 18.5 2.5 18.1728 2.5 17.7692V3.23077C2.5 2.82718 2.82718 2.5 3.23077 2.5H20.7692C21.1728 2.5 21.5 2.82718 21.5 3.23077V10" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3204" d="M9.5 6.5H17.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3206" d="M5.5 6.5H6.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3207" d="M9.5 9.5H17.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3208" d="M5.5 9.5H6.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3209" d="M9.5 12.5H17.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="Vector 3210" d="M5.5 12.5H6.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+
+</svg>

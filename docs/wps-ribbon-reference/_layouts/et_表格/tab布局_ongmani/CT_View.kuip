@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="et_ongmani.ct_view" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="723" controlType="6" customTip="NormalViewEt" filterFlag="1" hotKey="n" icon="sheet_normal_kd" id="Normal" idMso="ViewNormalViewExcel" ksoCmd="Normal" rbHotKey="L" text="@Normal"/>
+		<KxLegacyTriggerCommand aid="724" controlType="6" customTip="PageBreakPreview" filterFlag="1" hotKey="p" icon="page_break_preview_kd" id="PageBreakPreview" idMso="ViewPageBreakPreviewView" ksoCmd="PageBreakPreview" rbHotKey="I" text="@Page Break &#10;Preview"/>
+		<KxLegacyTriggerCommand aid="11441" controlType="6" customTip="PageLayoutView" filterFlag="1" hotKey="g" icon="columns_view_two_kd" id="PageLayoutView" idMso="ViewPageLayoutView" ksoCmd="PageLayoutView" rbHotKey="G" text="@Page Layout"/>
+		<KxLegacyTriggerCommand aid="950" controlType="0" customTip="CustomViews" filterFlag="1" hotKey="c" icon="custom_views_kd" id="CustomViews" idMso="ViewCustomViews" ksoCmd="CustomViews" rbHotKey="C" spaceHint="autocompact" text="@Custom Views"/>
+		<KxLegacyTriggerCommand aid="178" controlType="6" customTip="FullScreenMode" filterFlag="1" hotKey="u" icon="screen_full_kd" id="FullScreenModeOnMenu" idKey="CommonShowFullScreenBtn" idMso="ViewFullScreenView" ksoCmd="FullScreenModeOnMenu" text="@Full &#10;Screen"/>
+		<KxEtReadingLayoutColorCommand aid="80012" customTip2="ReadingLayout2" customTip="ReadingLayout" dynamicSpaceHint="loose;suitable" filterFlag="1" hotKey="r" icon="reading_mode_kd" id="ReadingLayoutAndColor" ksoCmd="ReadingLayout" ksoTriggerCmd="RecentReadingLayout" needLogin="false" text="@Reading&#10;Layout">
+			<KxEtMoreColorCommand aid="2000030" dialogHint="1" filterFlag="1" hotKey="m" id="ReadingLayoutMoreColorInViewTab" ksoCmd="ReadingLayoutMoreColor" qtspyName="ReadingLayoutMoreColor" text="@More Colors"/>
+		</KxEtReadingLayoutColorCommand>
+		<KxEtProtectEyesCommand aid="100034" customTip="Protect_Eyes" dynamicSpaceHint="loose;suitable" filterFlag="1" hotKey="b" icon="eye_kd" id="ProtectEyesInViewTab" needLogin="false" qtspyName="ProtectEyes" rbHotKey="PE" text="@Eye Protection"/>
+		<KxEtProtectEyesCommand aid="100034" customTip="Protect_Eyes" dynamicSpaceHint="loose;suitable" filterFlag="1" hotKey="b" icon="eye_kd" id="ProtectEyesInViewTab" qtspyName="ProtectEyes" rbHotKey="PE" text="@Eye Protection"/>
+		<KListCommand groupTip="WorkbookViewGroup" icon="sheet_normal_kd" id="RB_Workbook_View" rbFileMenuEmbed="1" text="@Workbook Views">
+			<command idQ="Normal"/>
+			<KxLegacyTriggerCommand aid="724" customTip="PageBreakPreview" filterFlag="1" hotKey="p" icon="page_break_preview_kd" id="PageBreakPreviewInViewTab" ksoCmd="PageBreakPreview" qtspyName="PageBreakPreview" rbHotKey="I" text="@Page Break &#10;Preview"/>
+			<command idQ="ProtectEyesInViewTab"/>
+			<command idQ="ReadingLayoutAndColor"/>
+			<KxLegacyTriggerCommand aid="178" controlType="6" customTip="FullScreenMode" filterFlag="1" hotKey="u" icon="screen_full_kd" id="RB_FullScreenModeOnMenu" idMso="ViewFullScreenView" ksoCmd="FullScreenModeOnMenu" spaceHint="autoconsize" text="@Full &#10;Screen"/>
+		</KListCommand>
+		<KListCommand groupTip="ShowGroup" icon="window_vert_review_left_kd" id="RB_WorksheetOptions" rbFileMenuEmbed="1" text="@Show">
+			<KxLegacyTriggerCommand canHideText="0" controlType="6" customTip="DisplayRightToLeft" filter="lang=ar_SA" filterFlag="1" icon="worksheet_left_right_kd" id="ViewSheetRightToLeft" idMso="SheetRightToLeft" ksoCmd="DisplayRightToLeft" qtspyName="DisplayRightToLeft" rbHotKey="SR" text="@Sheet Right-to-Left"/>
+			<KxSingleRowMergeGroupCommand customTip="ShowGroup" icon="window_vert_review_left_kd" id="SingleRow_WorksheetOptions" text="@Show"/>
+			<KxCheckBoxCommand controlType="1" customTip="EditCloumns" filterFlag="1" hotKey="k" id="ViewFormulaBar" idMso="ViewFormulaBar" ksoCmd="FormulaBar" qtspyName="FormulaBar" rbHotKey="K" singlerowmergegroup="SingleRow_WorksheetOptions" spaceHint="suitable" text="@Formula Bar"/>
+			<KxCheckBoxCommand controlType="1" customTip="DisplayGridlines" filterFlag="1" id="GridlinesExcel" idMso="GridlinesExcel" ksoCmd="FTB_GridSwitch" qtspyName="FTB_GridSwitch" rbHotKey="SG" singlerowmergegroup="SingleRow_WorksheetOptions" spaceHint="suitable" text="@Gridlines"/>
+			<KxCheckBoxCommand controlType="1" customTip="DisplayHeadings" filterFlag="1" id="ViewHeadings" idMso="ViewHeadings" ksoCmd="DisplayHeadings" qtspyName="DisplayHeadings" rbHotKey="DH" singlerowmergegroup="SingleRow_WorksheetOptions" spaceHint="suitable" text="@Headings"/>
+			<KxTaskPaneCheckBoxCommand customTip="TaskWindow" hotKey="k" id="ShowOrHideTaskPane" ksoCmd="TaskPane" qtspyName="TaskPane" rbHotKey="K" singlerowmergegroup="SingleRow_WorksheetOptions" spaceHint="suitable" text="@Task Window"/>
+		</KListCommand>
+		<KListCommand groupTip="ScaleGroup" icon="screen_zoom_kd" id="RB_Zoom" rbFileMenuEmbed="1" text="@Scale">
+			<KxSingleRowMergeGroupCommand customTip="ScaleGroup" icon="screen_zoom_kd" id="SingleRow_Zoom" text="@Scale"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Zoom" filterFlag="1" hotKey="z" icon="screen_zoom_kd" id="ZoomDialog" idMso="ZoomDialog" ksoCmd="Zoom" needLogin="false" qtspyName="Zoom" rbHotKey="Q" singlerowmergegroup="SingleRow_Zoom" text="@Zoom"/>
+			<KxEtFixedValueZoomCommand customTip="Zoom" filterFlag="1" hotKey="r" icon="screen_actual_size_kd" id="ZoomFixed100" needLogin="false" qtspyName="ZoomFixed100" rbHotKey="R" singlerowmergegroup="SingleRow_Zoom" text="100%"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="NewWindow" hotKey="n" icon="window_add_kd" id="rNewWindow" idMso="WindowNew" ksoCmd="NewWindow" rbHotKey="N" spaceHint="autocompact" text="@New&#10;Window"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="HideWindow" hotKey="h" icon="window_hide_kd" id="rHideWindow" idMso="WindowHide" ksoCmd="HideWindow" rbHotKey="H" spaceHint="suitable" text="@Hide"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="UnhideWindow" hotKey="u" icon="window_unhide_kd" id="rUnhideWindow" idMso="WindowUnhide" ksoCmd="UnhideWindow" rbHotKey="U" spaceHint="suitable" text="@Unhide"/>
+		<KListCommand canHideText="0" customTip="WindowReset" icon="window_reset_kd" id="rWindowReset" idKey="CommonWindowArrangeAllAndCompare" rbHotKey="A" text="@Arrange&#10;All">
+			<KxHorzTileCommand hotKey="o" icon="horizontal_tile_kd" id="HorizontalTileInViewTab" qtspyName="HorizontalTile" text="@Horizontal"/>
+			<KxVertTileCommand hotKey="v" icon="window_vert_tile_kd" id="VerticalTileInViewTab" qtspyName="VerticalTile" text="@Vertical"/>
+			<KxCascadeCommand hotKey="c" icon="cascade_kd" id="CascadeInViewTab" qtspyName="Cascade" text="@Cascade"/>
+		</KListCommand>
+		<KxEtSplitPanesCommand controlType="6" customTip="SplitPanes" icon="horizontal_splitwindow_kd" id="rSplitPanes" idMso="WindowSplitToggle" ksoCmd="SplitPanes" rbHotKey="S" spaceHint="autocompact" tc="window" text="@Split"/>
+		<KxCurrentFileMRUCommand aid="92012" autoShortCut="1" id="CurrentFileListInView" text="Current File List"/>
+		<KComposeListCommand controlType="0" customTip="SwitchWindow" icon="window_switch_kd" id="rSwitchWindow" idMso="WindowSwitchWindowsMenuExcel" rbHotKey="W" spaceHint="suitable" text="@Switch Windows">
+			<compose idQ="CurrentFileListInView"/>
+			<KxShowMoreWindowCommand dialogHint="1" hotKey="M" qtspyName="MoreWindows" text="@More Windows"/>
+		</KComposeListCommand>
+		<KxCloseOtherCommand aid="85005" customTip="CloseOtherWindow" hotKey="o" icon="CloseOtherWindow" id="rCloseOtherWindow" rbHotKey="O" spaceHint="suitable" text2="@Close&#10;Other Window" text="@Close Other Windows"/>
+		<KxCloseWindowCommand customTip="CloseWindow" hotKey="c" icon="close_window_kd" id="rCloseWindow" ksoCmd="CloseWindow" rbHotKey="C" spaceHint="suitable" tc="window" text="@Close Window"/>
+		<KxEtCmpSideBySideCommand customTip="CmpSideBySide" icon="ne_abreast_display_kd" id="rCmpSideBySide" idKey="CommonWindowArrangeAllAndCompare" rbHotKey="B" text="@View&#10;Side by Side"/>
+		<KxEtSyncScrollSideBySideCommand customTip="LockSideBySide" icon="rolling_sync_kd" id="rSyncScrollSideBySide" idKey="CommonWindowArrangeAllAndCompare" rbHotKey="VS" spaceHint="suitable" text="@Synchronous Scrolling"/>
+		<KxEtResetPositionSideBySideCommand customTip="VerbSideBySide" icon="reset_position_kd" id="rResetPositionSideBySide" idKey="CommonWindowArrangeAllAndCompare" rbHotKey="T" spaceHint="suitable" text="@Reset Window Position"/>
+		<KxEtDbViewCommand controlType="0" customTip="DbFormView" filterFlag="1" icon="form_tick_kd" id="DbFormView" ksoCmd="DbFormView" linkName="DBSheetHelp" linkText="@Feature Introduction" text="@DB Form View"/>
+		<KxEtDbViewCommand controlType="0" customTip="DbGanttView" filterFlag="1" icon="sheet_gantt_kd" id="DbGantView" ksoCmd="DbGanttView" linkName="DBSheetHelp" linkText="@Feature Introduction" text="@DB Gantt View"/>
+		<KListCommand canHideText="0" customTip="FreezePanes" filterFlag="1" icon="cell_freeze_kd" id="rFreezeOptionsInView" rbHotKey="F" text="@Freeze Panes">
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="a" icon="unfreeze_panes_kd" id="rUnfreeze" ksoCmd="UnFreezePanes" text="@Unfreeze Panes"/>
+			<separator/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="f" icon="cell_freeze_kd" id="rFreeze" ksoCmd="FreezePanes" text="@Freeze Panes"/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="f" icon="cell_freeze_kd" id="rFreezePlus" ksoCmd="FreezePanesPlus" text="@Freeze Panes"/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="o" icon="cell_freeze_row_kd" id="rFreezeRow" ksoCmd="FreezeRow" text="@Freeze Row"/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="l" icon="cell_freeze_column_kd" id="rFreezeColumn" ksoCmd="FreezeColumn" text="@Freeze Column"/>
+			<KxEtFreezeTableHeadCommand align="1" controlType="0" filterFlag="1" hotKey="h" icon="cell_freeze_leader_kd" id="rFreezeHead" idKey="ETFreezeTableHeadEntrance" imageTip="FreezeTableHeadTip" imageTipHeight="112" imageTipText="@Intelligent recognition and freezing of table title rows and columns based on selection criteria" imageTipWidth="214" ksoCmd="FreezeTopRow" openPosition="restab_view_freeze" showTip="true" text="@Freeze Table Head"/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="r" icon="cell_freeze_top_row_kd" id="rFreezeTopRow" ksoCmd="FreezeTopRow" text="@Freeze Top Row"/>
+			<KxEtFreezeTipCommand controlType="0" filterFlag="1" hotKey="c" icon="cell_freeze_top_arrange_kd" id="rFreezeFirstColumn" ksoCmd="FreezeFirstColumn" text="@Freeze First Column"/>
+		</KListCommand>
+		<KListCommand groupTip="WindowGroup" icon="window_unhide_kd" id="RB_Window" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Window">
+			<command idQ="rFreezeOptionsInView"/>
+			<command filter="support:ShieldMode=false" idQ="rWindowReset"/>
+			<command idQ="rSplitPanes"/>
+			<command filter="support:ShieldMode=false" idQ="rNewWindow" singlerowfold="1"/>
+			<command idQ="rUnhideWindow" singlerowfold="1"/>
+			<command idQ="rCmpSideBySide"/>
+			<command idQ="rSyncScrollSideBySide" singlerowfold="1"/>
+			<command idQ="rResetPositionSideBySide" singlerowfold="1"/>
+		</KListCommand>
+		<KListCommand id="RB_DataBaseSheet_View" text="@DataBase Sheet Views">
+			<command idQ="DbFormView"/>
+			<command idQ="DbGantView"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_View">
+			<command idQ="RB_Workbook_View"/>
+			<separator/>
+			<command idQ="RB_WorksheetOptions"/>
+			<separator/>
+			<command idQ="RB_Zoom"/>
+			<separator/>
+			<command idQ="RB_Window"/>
+			<separator/>
+			<command idQ="RB_DataBaseSheet_View"/>
+		</subcommand>
+	</subcommands>
+</shell>

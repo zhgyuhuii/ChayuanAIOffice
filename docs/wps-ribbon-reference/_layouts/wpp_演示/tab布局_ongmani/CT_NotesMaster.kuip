@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_notesmaster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand icon="doc_setup_kd" id="RB_NotesMasterPageSetup" rbFileMenuEmbed="1" text="@Page Setup">
+			<KListCommand customTip="NotesOrientation" icon="notes_orientation_kd" qtspyName="NotesOrientation" rbHotKey="0" text="@Notes Orientation">
+				<KxValueCommand icon="doc_direction_horizontal_kd" index="1" ksoCmd="NotesOrientation" qtspyName="LandscapeHandout" text="@Landscape"/>
+				<KxValueCommand icon="doc_kd" index="2" ksoCmd="NotesOrientation" qtspyName="PortraitHandout" text="@Portrait"/>
+			</KListCommand>
+			<KxWppListCommand customTip="SlideSize" icon="slide_orientation_kd" qtspyName="SlideOrientation" text="@Slide Size">
+				<KxValueCommand icon="standard_screen_kd" index="1" ksoCmd="ChangeSlideAspectRatio" qtspyName="StandScreen" text="@Stand Screen(4:3)"/>
+				<KxValueCommand icon="screen_sixteen_to_nine_kd" index="2" ksoCmd="ChangeSlideAspectRatio" qtspyName="WideScreen" text="@Wide Screen(16:9)"/>
+				<KxValueCommand filter="lang=th_TH" icon="equipment_cell_phone_kd" index="3" ksoCmd="ChangeSlideAspectRatio" qtspyName="PhoneScreen" text="@Phone Screen(9:16)"/>
+				<separator/>
+				<KxValueCommand dialogHint="1" index="4" ksoCmd="PageSetup" qtspyName="PageSetup" text="@Custom Size"/>
+			</KxWppListCommand>
+		</KListCommand>
+		<KListCommand horizontalSpacing="0" icon="slide_layout_kd" id="RB_NotesMasterPlaceHolder" rbFileMenuEmbed="1" text="@Master Layout">
+			<KxCheckBoxCommand customTip="HeaderPlaceHolder" ksoCmd="AddHeaderPhOnMaster" qtspyName="AddHeaderPhOnMaster" spaceHint="suitable" text="@Header Placeholder"/>
+			<KxCheckBoxCommand customTip="DataPlaceHolder" ksoCmd="AddDatePhOnMaster" qtspyName="AddDatePhOnMaster" spaceHint="suitable" text="@data Placeholder"/>
+			<KxCheckBoxCommand customTip="SlideImage" ksoCmd="AddSlideImagePhOnNotesMst" qtspyName="AddSlideImagePhOnNotesMst" spaceHint="suitable" text="@Slide Image Placeholder"/>
+			<KxCheckBoxCommand customTip="BodyContent" ksoCmd="AddBodyPhOnNotesMst" qtspyName="AddBodyPhOnNotesMst" spaceHint="suitable" text="@Body Placeholder"/>
+			<KxCheckBoxCommand customTip="FooterPlaceHolder" ksoCmd="AddFooterPhOnMaster" qtspyName="AddFooterPhOnMaster" spaceHint="suitable" text="@footer Placeholder"/>
+			<KxCheckBoxCommand customTip="PageNumber" ksoCmd="AddSlideNumberPhOnMaster" qtspyName="AddSlideNumberPhOnMaster" spaceHint="suitable" text="@Slide Number Placeholder"/>
+		</KListCommand>
+		<KListCommand filter="lang!=th_TH" icon="background_kd" id="RB_NotesBackGround" rbFileMenuEmbed="1" text="@BackGround">
+			<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="Theme Colors" galleryWidth="250" icon="color_palette_kd" id="ThemeColorsInNotesMasterTab" ksoCmd="ThemeColors" onlineCmd="OnlineThemeColor" qtspyName="ThemeColors" rbHotKey="TC" text="@Colors">
+				<command idQ="CustomThemeColorsInNotesMasterTab"/>
+			</KxThemeColorsGalleryCommand>
+			<KListCommand id="CusThemeColors" visible="false"/>
+			<KxThemeFontsGalleryCommand customTip="Theme Fonts" icon="font_style_kd" ksoCmd="ThemeFonts" qtspyName="ThemeFonts" rbHotKey="TF" text="@Fonts">
+				<command idQ="NoteMasterCustomThemeFonts"/>
+			</KxThemeFontsGalleryCommand>
+			<KxListOnlineAndLocalCommand customTip="Theme Effects" disableTrigger="1" icon="theme_effect_kd" isCefPopup="false" isOnlyOnline="true" isPreferred="true" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects" tpOnlineCmd="DocumentThemeEffect">
+				<KxThemeEffectsGalleryCommand customTip="Theme Effects" galleryWidth="350" icon="theme_effect_kd" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" text="@Effects"/>
+			</KxListOnlineAndLocalCommand>
+		</KListCommand>
+		<KListCommand icon="close_window_kd" id="RB_NotesMasterClose" rbFileMenuEmbed="1" text="@Close">
+			<KxLegacyTriggerCommand customTip="NotesMasterClose" hotKey="c" icon="close_window_kd" ksoCmd="NotesMasterClose" qtspyName="NotesMasterClose" rbHotKey="C" singlerowpriority="100" text="@Close"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_NotesMaster">
+			<command idQ="RB_NotesMasterPageSetup"/>
+			<separator/>
+			<command idQ="RB_NotesMasterPlaceHolder"/>
+			<separator/>
+			<command idQ="RB_NotesBackGround"/>
+			<separator/>
+			<command idQ="RB_NotesMasterClose"/>
+		</subcommand>
+	</subcommands>
+</shell>

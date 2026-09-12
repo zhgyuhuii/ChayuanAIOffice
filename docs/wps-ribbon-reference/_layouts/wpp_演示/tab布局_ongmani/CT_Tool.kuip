@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_tool" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KxRunMacroCommand controlType="0" customTip="RunJSMacro" hotKey="m" icon="js_macro_kd" id="RunMacro_ToolTab" idMso="MacroPlay" ksoCmd="RunMacro" qtspyName="RunMacro" rbHotKey="PM" text="@Run Macros"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="Security" dialogHint="1" hotKey="s" icon="security_kd" id="MacroSecurity_ToolTab" idMso="MacroSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@Security"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="JSAddIns" icon="js_addin_kd" id="RB_JSAddIns_ToolTab" idKey="CommonSafeJsAddins" idMso="JsAddInsDialog" ksoCmd="JSAddIns" rbHotKey="JS" text="@WPS &#10;Add-Ins"/>
+		<KxDevelopToolsContextCommand aid="860" customTip="RecordList" dialogHint="1" hotKey="o" icon="code_edit_kd" id="rDevelopTool_ToolTab" ksoCmd="RecordForm" rbHotKey="O" text="@Develop Tool"/>
+		<KListCommand groupTip="DevelopToolGroup" icon="code_edit_kd" id="RB_DevelopTool" rbFileMenuEmbed="1" text="@Develop Tool">
+			<command idQ="RunMacro_ToolTab"/>
+			<command idQ="MacroSecurity_ToolTab"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="AddIns" filter="support:MacAddin=true" icon="cube_two_kd" id="RB_AddIns" idMso="AddInsDialog" ksoCmd="AddIns" rbHotKey="A" text="@Add-Ins"/>
+			<command idQ="RB_COMAddIns_ToolTab"/>
+			<command idQ="RB_JSAddIns_ToolTab"/>
+			<command idQ="rDevelopTool_ToolTab"/>
+		</KListCommand>
+		<KListCommand groupTip="ToolGroupGroup" id="RB_ToolsGroup" rbFileMenuEmbed="1" rbGroupContentMargins="5,6,0,0" text="@toolsGroup" visibleDependsOnSubCmds="1">
+			<command idQ="JumpEducationTools"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Tools">
+			<command idQ="RB_DevelopTool"/>
+			<separator/>
+			<command idQ="RB_ToolsGroup"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>公文语义树16_DocumentSemanticTree_document_field_tree</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M13.5 6V2C13.5 1.72386 13.2761 1.5 13 1.5H3C2.72386 1.5 2.5 1.72386 2.5 2V14C2.5 14.2761 2.72386 14.5 3 14.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2" d="M11 3.5H5C4.72386 3.5 4.5 3.72386 4.5 4V5C4.5 5.27614 4.72386 5.5 5 5.5H11C11.2761 5.5 11.5 5.27614 11.5 5V4C11.5 3.72386 11.2761 3.5 11 3.5Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_3" d="M8 7.5H11C11.2761 7.5 11.5 7.72386 11.5 8C11.5 8.27614 11.2761 8.5 11 8.5H8C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M12 10.5H14C14.2761 10.5 14.5 10.7239 14.5 11C14.5 11.2761 14.2761 11.5 14 11.5H12C11.7239 11.5 11.5 11.2761 11.5 11C11.5 10.7239 11.7239 10.5 12 10.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M12 13.5H14C14.2761 13.5 14.5 13.7239 14.5 14C14.5 14.2761 14.2761 14.5 14 14.5H12C11.7239 14.5 11.5 14.2761 11.5 14C11.5 13.7239 11.7239 13.5 12 13.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M9.5 8.5V13.5C9.5 13.7761 9.72386 14 10 14H11.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M9.5 11H11.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g><g class="kd-dir-rtl"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M13.5 6V2C13.5 1.72386 13.2761 1.5 13 1.5H3C2.72386 1.5 2.5 1.72386 2.5 2V14C2.5 14.2761 2.72386 14.5 3 14.5H6" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_2-rtl" d="M11 3.5H5C4.72386 3.5 4.5 3.72386 4.5 4V5C4.5 5.27614 4.72386 5.5 5 5.5H11C11.2761 5.5 11.5 5.27614 11.5 5V4C11.5 3.72386 11.2761 3.5 11 3.5Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1-rtl" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,22.0,0)"><path id="line_3-rtl" d="M8 7.5H11C11.2761 7.5 11.5 7.72386 11.5 8C11.5 8.27614 11.2761 8.5 11 8.5H8C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4-rtl" d="M12 10.5H14C14.2761 10.5 14.5 10.7239 14.5 11C14.5 11.2761 14.2761 11.5 14 11.5H12C11.7239 11.5 11.5 11.2761 11.5 11C11.5 10.7239 11.7239 10.5 12 10.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5-rtl" d="M12 13.5H14C14.2761 13.5 14.5 13.7239 14.5 14C14.5 14.2761 14.2761 14.5 14 14.5H12C11.7239 14.5 11.5 14.2761 11.5 14C11.5 13.7239 11.7239 13.5 12 13.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6-rtl" d="M9.5 8.5V13.5C9.5 13.7761 9.72386 14 10 14H11.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7-rtl" d="M9.5 11H11.5" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></g></g></svg>

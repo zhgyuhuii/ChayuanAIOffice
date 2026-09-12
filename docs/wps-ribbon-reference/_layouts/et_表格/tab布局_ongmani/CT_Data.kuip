@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="et" tc="ongmani.ct_data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" customTip="ClearFilter" icon="filter_show_all_kd" id="rShowAll" idMso="PivotClearFilters" ksoCmd="ShowAll" rbHotKey="C" spaceHint="suitable" text="@Show All"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ClearFilter" icon="filter_show_all_kd" id="rShowAll_Filter" idMso="SortClear" ksoCmd="ShowAll" rbHotKey="C" spaceHint="suitable" text="@Show All"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ReapplyFilter" icon="filter_again_kd" id="rAutoFilterAgain" idMso="FilterReapply" ksoCmd="AutoFilterAgain" rbHotKey="Y2" spaceHint="suitable" text="@Reapply"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="AdvancedFilter" icon="filter_sort_kd" id="rAdvancedFilter" idMso="AdvancedFilterDialog" ksoCmd="AdvancedFilter" rbHotKey="Q" spaceHint="suitable" text="@Advanced"/>
+		<KxListCommand customTip="SortAndFilter" icon="sort_kd" id="m_Sort_Filter_Data" ksoCmd="SortAscending" qtspyName="m_Sort_Filter" rbHotKey="S" text="@Sort">
+			<command idQ="SortAscending"/>
+			<command idQ="SortDescending"/>
+			<command idQ="CustomDataSort"/>
+		</KxListCommand>
+		<KxListCommand customTip="AdvancedFilter" groupTip="FilterSortGroup" icon="filter_kd" id="RB_Sort_Filter" rbFileMenuEmbed="1" text="@Filter Sort">
+			<KxListCommand controlType="0" customTip="AutoFilter" icon="filter_kd" id="AutoFilterClassic" idMso="AutoFilterClassic" ksoCmd="AutoFilter" qtspyName="AutoFilter" rbHotKey="T" shortcutHint="Ctrl+Shift+L" text="@Filter">
+				<command idQ="AutoFilter"/>
+				<command idQ="AdvancedFilter"/>
+				<command idKey="EtAdvancedFilterEffect" idQ="AdvancedFilterEffect"/>
+				<separator/>
+				<command idQ="DBFilterView"/>
+			</KxListCommand>
+			<command idQ="rShowAll"/>
+			<command idQ="rAutoFilterAgain"/>
+			<command idQ="m_Sort_Filter_Data"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="100064" dialogHint="1" hotKey="s" icon="repeat_items_kd" id="data_setHilightRepeatItems" ksoCmd="RepeatWordRemind" text="@Set Highlight Duplicates"/>
+		<KxLegacyTriggerCommand aid="100063" hotKey="c" icon="highlight_repeat_clear_items_kd" id="data_clearHilightRepeatItems" ksoCmd="ClearRepeatWordRemind" text="@Clear Highlight Duplicates"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="n" icon="form_highlight_kd" id="data_countDuplicatesNumbers" ksoCmd="ExportDuplicatesChart" text="@Count Duplicates Numbers"/>
+		<KxLegacyTriggerCommand aid="92010" hotKey="d" icon="repeat_items_delete_kd" id="data_DeleteRepeatItems" ksoCmd="RepeatWordDelete" spaceHint="suitable" text="@Remove Duplicates"/>
+		<KxEtAnalyzeListCommand aid="92008" barid="40060" customTip="HighlighDuplicates" hotKey="r" icon="repeat_items_kd" id="data_HilightRepeatItems" text="@Highlight Duplicates">
+			<command idQ="data_setHilightRepeatItems"/>
+			<command idQ="data_clearHilightRepeatItems"/>
+			<command idQ="data_countDuplicatesNumbers"/>
+			<separator/>
+			<command idQ="setRejectInsertRepeatItems"/>
+			<command idQ="clearRejectInsertRepeatItems"/>
+			<separator/>
+			<command idQ="data_DeleteRepeatItems"/>
+		</KxEtAnalyzeListCommand>
+		<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="d" icon="duplicate_mgr_remind_repeat_display_kd" id="app_remindrepeat_datatab" imageTip="RemindRepeatItemsImageTip" imageTipHeight="46" imageTipWidth="141" ksoCmd="RemindRepeatItems" text="@Highlight duplicates"/>
+		<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="v" icon="duplicate_mgr_remind_unique_display_kd" id="app_remindunique_datatab" imageTip="RemindUniqueItemsImageTip" imageTipHeight="46" imageTipWidth="141" ksoCmd="RemindUniqueItems" text="@Highlight unique values"/>
+		<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="i" icon="duplicate_mgr_export_repeat_display_kd" id="app_exportrepeat_datatab" imageTip="ExportRepeatItemsImageTip" imageTipHeight="122" imageTipWidth="141" ksoCmd="ExportRepeatItems" text="@Fetch duplicates"/>
+		<KxImageTooltipCommand appFlags="wpsmember_right" hotKey="u" icon="duplicate_mgr_export_unique_display_kd" id="app_exportunique_datatab" imageTip="ExportUniqueItemsImageTip" imageTipHeight="122" imageTipWidth="141" ksoCmd="ExportUniqueItems" text="@Fetch unique values"/>
+		<KxEtIconSizeListCommand appFlags="wpsmember_right" customTip="DuplicateItemsManager" hotKey="r" icon="data_comparison_kd" id="data_DuplicateMgrItems" text="@Manage Duplicates">
+			<command customTip="InsertDropDownList" idQ="app_remindrepeat_datatab"/>
+			<command customTip="InsertDropDownList" idQ="app_exportrepeat_datatab"/>
+			<separator/>
+			<command customTip="InsertDropDownList" idQ="app_remindunique_datatab"/>
+			<command customTip="InsertDropDownList" idQ="app_exportunique_datatab"/>
+		</KxEtIconSizeListCommand>
+		<KProxyCommand customTip="What-If Analysis" delayLoadLib="1" delayloadPath="commands/et/ongmani/ProxyCommands.kuip" hasIdMso="1" icon="goal_seek_kd" id="ProxyrWhat-If Analysis" relatedKsoCmd="InsertPictureFromFile" spaceHint="loose" targetId="rWhat-If Analysis" targetModule="etsolver" text="@What-If Analysis"/>
+		<KxLegacyTriggerCommand aid="798" controlType="0" faceid="30" hotKey="u" icon="fill_up_kd" id="FillUp" idMso="FillUp" ksoCmd="FillUp" rbHotKey="U" text="@Up"/>
+		<KxLegacyTriggerCommand aid="799" controlType="0" hotKey="l" icon="fill_left_kd" id="FillLeft" idMso="FillLeft" ksoCmd="FillLeft" rbHotKey="L" text="@Left"/>
+		<KxLegacyTriggerCommand aid="801" dialogHint="1" hotKey="a" id="AcrossSheets" ksoCmd="AcrossSheets" rbHotKey="A" text="@Across Sheets"/>
+		<KxLegacyTriggerCommand aid="870" controlType="0" dialogHint="1" hotKey="s" id="FillSeries" idMso="FillSeries" ksoCmd="FillSeries" rbHotKey="S" text="@Series@Fill"/>
+		<KxEtAiFillListCommand customAttribute="IF(category=common){spaceHint=}" customTip="Fill" hotKey="f" hoverTips="Fill" icon="copy_fill_kd" id="m_Fill_data" openPosition="tab_data" rbHotKey="FI" spaceHint="autocompact" text="@Fill">
+			<command idQ="FillDown"/>
+			<command idQ="FillRight"/>
+			<command idQ="FillUp"/>
+			<command idQ="FillLeft"/>
+			<command idQ="RB_EtToolbox_InputNumericSequence"/>
+			<command idKey="EtCTHomeAppKformulaassistantFillCalculateRank" idQ="app_kformulaassistant_fill_calculateRank"/>
+			<command idQ="RB_EtToolbox_FillBlankCells"/>
+			<command idQ="RB_EtToolbox_InsertText"/>
+			<KxEtToolsInsertDateListCommand icon="calendar_check_in_kd" id="EtTools_InsertDate_data" text="@InsertDate"/>
+			<separator/>
+			<command idQ="AcrossSheets"/>
+			<command idQ="FillSeries"/>
+			<command idQ="FlashFill"/>
+			<KxAIFillCommand customTip="AIFill" icon="ai_smart_filling_kd" id="AIFill" idKey="AIFill" openPosition="tab_data" shortcutHint="Ctrl+Alt+E" showiconAndText="1" text="@AI Fill"/>
+		</KxEtAiFillListCommand>
+		<KListCommand groupTip="DataToolGroup" icon="data_tools_kd" id="RB_Data_Tools" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Data Tools">
+			<command idQ="data_HilightRepeatItems"/>
+			<command idQ="data_DuplicateMgrItems"/>
+			<command idQ="DuplicateMgrItems"/>
+			<KxListCommand customTip="TextToColumns" hotKey="e" icon="ranks_text_to_columns_kd" id="RbSplitColumns" ksoCmd="TextToColumns" qtspyName="rTextToColumns" rbHotKey="E" showiconAndText="1" text="@Text to&#10;Columns">
+				<KxLegacyTriggerCommand hotKey="e" icon="ranks_text_to_columns_kd" id="rTextToColumns" ksoCmd="TextToColumns" rbHotKey="E" text="@Text to&#10;Columns"/>
+				<KxAiFuncLegacyCommand entrance="tab_et_data" hotKey="a" icon="intelligent_classification_kd" id="rSmartSplitColumns" idKey="EtSmartSplitColumns" ksoCmd="SplitColumns" open_position="tab_et_data" rbHotKey="A" subfunction_name="normal" text="@Smart Split Columns"/>
+				<KAppMenuTriggerCommand action="AdvanceSplit" appId="kettoolbox" dialogHint="1" hotKey="s" icon="advance_split_kd" id="app_kettoolbox_datatool_AdvanceSplit" idKey="ETDataToolTextAdvanceSplit" text="@Advance Split"/>
+			</KxListCommand>
+			<KxEtAnalyzeSplitListCommand aid="2034" controlType="5" customTip="Validation" hotKey="v" icon="data_validity_kd" id="RbValidation" idMso="DataValidation" ksoCmd="Validation" rbHotKey="V" singlerowfold="1" text="@Validation">
+				<KxLegacyTriggerCommandEx controlType="6" hotKey="v" icon="data_validity_kd" id="rValidation" idMso="DataValidation" ksoCmd="Validation" rbHotKey="V" text="@Validation"/>
+				<KxLegacyTriggerCommandEx controlType="6" hotKey="i" icon="validation_circle_kd" id="rValidationCircle" idMso="DataValidationCircle" ksoCmd="ValidationCircle" rbHotKey="I" text="@Circle Valid Data"/>
+				<KxLegacyTriggerCommandEx controlType="6" hotKey="r" icon="validation_circle_clear_kd" id="rValidationCircleClear" idMso="DataValidationCircleClear" ksoCmd="ValidationCircleClear" rbHotKey="R" text="@Clear Validation Circles"/>
+			</KxEtAnalyzeSplitListCommand>
+			<KAppCommand appCmdObj="EtEdit" appId="ketlookup" customTip="ketlookup" icon="lookup_kd" id="app_ketlookup_datatab" idKey="EtLookupDatatab" spaceHint="autocompact" text="@ketlookup"/>
+			<command idQ="m_Fill_data" singlerowfold="1"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="Consolidate" dynamicSpaceHint="loose;suitable" hotKey="n" icon="consolidate_kd" id="rConsolidate" idMso="Consolidate" ksoCmd="Consolidate" rbHotKey="N" showiconAndText="1" text="@Consolidate"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="InsertDropDownList" dialogHint="1" dynamicSpaceHint="loose;suitable" entrance="tab_data" icon="drop_down_list_kd" id="rInsertDropDownList" ksoCmd="InsertDropDownList" rbHotKey="L" text="@InsertDropDownList"/>
+			<command idKey="EtDataToolAnalysis" idQ="rWhat-If Analysis" proxyCmdId="ProxyrWhat-If Analysis" singlerowfold="1"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="905" hotKey="c" icon="clear_rules_kd" id="ClearOutline" ksoCmd="ClearOutline" rbHotKey="C" text="@Clear Outline"/>
+		<KxLegacyTriggerCommand aid="907" forceVisible="1" hotKey="u" icon="data_ungroup_kd" id="rDataUngroupItem" ksoCmd="DataUngroupItem" rbHotKey="U" shortcutHint="Shift+Alt+Left" text="@Ungroup"/>
+		<KxListCommand controlType="5" customTip2="DataUngroup2" customTip="DataUngroup" dynamicSpaceHint="loose;suitable" forceVisible="1" hotKey="u" icon="data_ungroup_kd" id="sp_UnGroup" idMso="OutlineUngroupMenu" ksoCmd="DataUngroupItem" rbHotKey="U" shortcutHint="Shift+Alt+Left" text="@Ungroup">
+			<command idQ="DataUngroup"/>
+			<command idQ="ClearOutline"/>
+			<command idQ="More"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="Subtotals" hotKey="u" icon="classification_summary_kd" id="rSubtotals" idMso="OutlineSubtotals" ksoCmd="Subtotals" rbHotKey="B" text="@Subtotal"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ShowDetail" hotKey="s" icon="show_detail_kd" id="rShowDetail" idMso="OutlineShowDetail" ksoCmd="ShowDetail" rbHotKey="J" spaceHint="suitable" text="@Show Detail"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="HideDetail" hotKey="h" icon="hide_detail_kd" id="rHideDetail" idMso="OutlineHideDetail" ksoCmd="HideDetail" rbHotKey="H" spaceHint="suitable" text="@Hide Detail"/>
+		<KxListCommand customTip="OutlineSettings" groupTip="OutlineGroup" icon="classification_summary_kd" id="RB_Outline" ksoCmd="Settings" rbFileMenuEmbed="1" rbHotKey="L" singlerowmergesetting="SingleRow_Outline" text="@Outline">
+			<KxSingleRowMergeGroupCommand customTip="OutlineGroup" icon="classification_summary_kd" id="SingleRow_Outline" text="@Outline"/>
+			<command idQ="rSubtotals" singlerowmergegroup="SingleRow_Outline"/>
+			<command idQ="DataGroup" singlerowmergegroup="SingleRow_Outline"/>
+			<command idQ="sp_UnGroup" singlerowmergegroup="SingleRow_Outline"/>
+			<command idQ="rShowDetail" singlerowmergegroup="SingleRow_Outline"/>
+			<command idQ="rHideDetail" singlerowmergegroup="SingleRow_Outline"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand aid="1950" customTip="EditTextImport" dialogHint="1" hotKey="e" icon="setup_kd" id="EditTextImport" ksoCmd="EditTextImport" rbHotKey="I" showiconAndText="1" spaceHint="suitable" text="@Edit Text Import"/>
+		<KxLegacyTriggerCommand aid="1951" customTip="EDRProperties" dialogHint="1" hotKey="A" icon="setup_kd" id="EDRProperties" ksoCmd="EDRProperties" rbHotKey="P" showiconAndText="1" spaceHint="suitable" text="@Data Range Properties"/>
+		<KxLegacyTriggerCommand aid="1950" customTip="EditConnectionProperties" dialogHint="1" hotKey="e" icon="setup_kd" id="EditConnectionProperties" ksoCmd="EditConnectionProperties" rbHotKey="I" showiconAndText="1" spaceHint="suitable" text="@Edit Connection Properties"/>
+		<KxLegacyTriggerCommand customTip="Connections" dialogHint="1" hotKey="o" icon="existing_connections_kd" id="rConnections" ksoCmd="Connections" msoCmd="Connections" rbHotKey="O" text="@Connections"/>
+		<KxLegacyTriggerCommand customTip="ExistingConnections" dialogHint="1" hotKey="l" icon="existing_connections_kd" id="rExistingConnections" ksoCmd="ExistingConnections" msoCmd="ExistingConnections" rbHotKey="L" text="@Existing Connections"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="i" icon="import_data_kd" id="ImportData" ksoCmd="ImportData" rbHotKey="D" text="@Import Data"/>
+		<KxLegacyTriggerCommand customTip="ImportData" dialogHint="1" hotKey="w" icon="import_data_from_web_kd" id="ImportDataFromWeb" ksoCmd="ImportDataFromWeb" msoCmd="ImportDataFromWeb" rbHotKey="W" text="@ImportDataFromWeb"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromFolder" dialogHint="1" disableCustomRibbon="true" hotKey="j" icon="folder_kd" id="OpenEtPQFromFolder" ksoCmd="OpenEtPQFromFolder" rbHotKey="J" text="@From Folder"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromFile" dialogHint="1" disableCustomRibbon="true" hotKey="f" icon="doc_kd" id="OpenEtPQFromFile" ksoCmd="OpenEtPQFromFile" rbHotKey="F" text="@From File"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromTableOrRange" dialogHint="1" disableCustomRibbon="true" hotKey="t" icon="sheet_kd" id="OpenEtPQFromTableOrRange" ksoCmd="OpenEtPQFromTableOrRange" rbHotKey="T" text="@From Table/Range"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPowerQuery" dialogHint="1" disableCustomRibbon="true" hotKey="y" icon="database_query_kd" id="OpenEtPowerQuery" ksoCmd="OpenEtPowerQuery" msoCmd="OpenEtPowerQuery" rbHotKey="Y" text="@WPS Query Editor"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromMySQL" dialogHint="1" disableCustomRibbon="true" hotKey="m" icon="etpqfrommysql" id="OpenEtPQFromMySQL" ksoCmd="OpenEtPQFromMySQL" rbHotKey="M" text="@MySQL"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromSQLServer" dialogHint="1" disableCustomRibbon="true" hotKey="s" icon="sqlserver_third_kd" id="OpenEtPQFromSQLServer" ksoCmd="OpenEtPQFromSQLServer" rbHotKey="S" text="@SQL Server"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromPostgreSQL" dialogHint="1" disableCustomRibbon="true" hotKey="p" icon="etpqfrompostgresql" id="OpenEtPQFromPostgreSQL" ksoCmd="OpenEtPQFromPostgreSQL" rbHotKey="P" text="@PostgreSQL"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromOracle" dialogHint="1" disableCustomRibbon="true" hotKey="o" icon="etpqfromoracle" id="OpenEtPQFromOracle" ksoCmd="OpenEtPQFromOracle" rbHotKey="O" text="@Oracle"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromDM" dialogHint="1" disableCustomRibbon="true" hotKey="d" icon="etpqfromdm" id="OpenEtPQFromDM" ksoCmd="OpenEtPQFromDM" rbHotKey="A" text="@DM8"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromSQLite" dialogHint="1" disableCustomRibbon="true" hotKey="l" icon="etpqfromsqlite" id="OpenEtPQFromSQLite" ksoCmd="OpenEtPQFromSQLite" rbHotKey="L" text="@SQLite"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromOceanBase" dialogHint="1" disableCustomRibbon="true" hotKey="b" icon="etpqfromoceanbase" id="OpenEtPQFromOceanBase" ksoCmd="OpenEtPQFromOceanBase" rbHotKey="B" text="@OceanBase"/>
+		<KxLegacyTriggerCommand customTip="OpenEtPQFromODBC" dialogHint="1" disableCustomRibbon="true" hotKey="q" icon="etpqfromodbc" id="OpenEtPQFromODBC" ksoCmd="OpenEtPQFromODBC" rbHotKey="Q" text="@Other Database"/>
+		<KxTaskPanePluginCommand customTip="SnapToSheet" hideTpTitle="true" icon="et_snapsheet_kd" id="SnapToSheet" pluginName="ksnapsheet" targetCmd="KSnapPanelCommand" text="@Snap to Sheet"/>
+		<KAppCommand appCmdObj="SnapSheet" appId="ksnapsheet" customTip="SnapToSheet" entrance="et_importdata" icon="et_snapsheet_kd" id="SnapToSheet_DataEntry" idKey="EtSnapSheet" text="@Snap to Sheet"/>
+		<KxEtAnalyzeAppCommand action="Pic2Xls" appId="kocrtool" entrance="tab_et_data" icon="import_pic_kd" id="app_ocrtool_data_2xlsl" idKey="ETDataImportDataFromImg" text="@Import Image Data"/>
+		<KxEtPQListCommand customTip="ImportData" icon="import_data_kd" id="rImportData" isNew="0" text="@Import &#10;Data">
+			<command idQ="ImportData"/>
+			<command idKey="ETDataImportDataFromImg" idQ="app_ocrtool_data_2xlsl"/>
+			<command idKey="EtSnapSheet" idQ="SnapToSheet_DataEntry"/>
+			<separator/>
+			<command idQ="rExistingConnections"/>
+			<command idQ="rConnections"/>
+			<separator/>
+			<command idQ="EditConnectionProperties"/>
+			<command idQ="EditTextImport"/>
+			<command idQ="EDRProperties"/>
+		</KxEtPQListCommand>
+		<KxEtPQListCommand customTip="ImportData" icon="import_data_kd" id="rImportDataNew" isNew="1" text="@Import &#10;Data">
+			<command idQ="OpenEtPQFromFile"/>
+			<command idQ="OpenEtPQFromTableOrRange"/>
+			<command idQ="OpenEtPQFromFolder"/>
+			<command idKey="EtSnapSheet" idQ="SnapToSheet_DataEntry"/>
+			<KAutoHideListCommand disableCustomRibbon="true" hotKey="d" icon="database_kd" id="ImportData_FromDatabase" rbHotKey="D" text="@From Database">
+				<command idQ="OpenEtPQFromMySQL"/>
+				<command idQ="OpenEtPQFromSQLServer"/>
+				<command idQ="OpenEtPQFromPostgreSQL"/>
+				<command idQ="OpenEtPQFromOracle"/>
+				<command idQ="OpenEtPQFromDM"/>
+				<command idQ="OpenEtPQFromSQLite"/>
+				<command idQ="OpenEtPQFromOceanBase"/>
+				<separator/>
+				<command idQ="OpenEtPQFromODBC"/>
+			</KAutoHideListCommand>
+			<KAutoHideListCommand hotKey="m" icon="archive_kd" id="ImportData_FromOtherSources" rbHotKey="M" text="@From Other Sources">
+				<command idQ="ImportData"/>
+				<command idKey="ETDataImportDataFromImg" idQ="app_ocrtool_data_2xlsl"/>
+			</KAutoHideListCommand>
+			<separator/>
+			<command idQ="OpenEtPowerQuery"/>
+			<separator/>
+			<command idQ="rExistingConnections"/>
+			<command idQ="rConnections"/>
+			<separator/>
+			<command idQ="EditConnectionProperties"/>
+			<command idQ="EditTextImport"/>
+			<command idQ="EDRProperties"/>
+		</KxEtPQListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="EditCrossBookLinks" hotKey="hk" icon="chain_kd" id="rEditCrossBookLinks" idMso="EditLinks" ksoCmd="EditCrossBookLinks" rbHotKey="HK" spaceHint="autocompact" text="@Edit Links"/>
+		<KxLegacyTriggerCommand aid="1952" controlType="0" customTip="RefreshAll" hotKey="a" icon="refresh_two_kd" id="RefreshAll" idMso="RefreshAll" ksoCmd="RefreshAll" rbHotKey="A" showiconAndText="1" spaceHint="suitable" text="@Refresh All"/>
+		<KxEtPQListCommand groupTip="GetExternalDataGroup" icon="import_data_kd" id="RB_rImportData" idKey="CommonFilterPadFileSystem" isNew="0" rbFileMenuEmbed="1" text="@Data Management">
+			<KxSingleRowMergeGroupCommand customTip="GetExternalDataGroup" icon="import_data_kd" id="SingleRow_ImportData" text="@Data Management"/>
+			<command idQ="rImportData" singlerowmergegroup="SingleRow_ImportData"/>
+			<command idQ="rEditCrossBookLinks" singlerowmergegroup="SingleRow_ImportData"/>
+			<KxListCommand controlType="5" customTip="RefreshAll" icon="refresh_two_kd" id="RefreshAndAll" idMso="RefreshAllMenu" ksoCmd="RefreshAll" rbHotKey="R" singlerowmergegroup="SingleRow_ImportData" spaceHint="autocompact" text="@Refresh &#10;All">
+				<command idQ="Refresh"/>
+				<command idQ="RefreshAll"/>
+			</KxListCommand>
+		</KxEtPQListCommand>
+		<KxEtPQListCommand groupTip="GetExternalDataGroup" icon="import_data_kd" id="RB_rImportDataNew" idKey="CommonFilterPadFileSystem" isNew="1" rbFileMenuEmbed="1" text="@Data Management">
+			<command idQ="rImportDataNew"/>
+			<KxEtPQDataManageButtonCommand disableCustomRibbon="true" icon="doc_manager_kd" id="DataManageButton" qtspyName="DataManageButton" spaceHint="suitable" targetId="TpPowerQuery" targetModule="kwebetpowerquerysidepanel" text="@Data Management"/>
+			<KxListCommand controlType="5" customTip="RefreshAll" icon="refresh_two_kd" id="RefreshAndAll" idMso="RefreshAllMenu" ksoCmd="RefreshAll" rbHotKey="R" spaceHint="autocompact" text="@Refresh &#10;All">
+				<command idQ="Refresh"/>
+				<command idQ="RefreshAll"/>
+			</KxListCommand>
+		</KxEtPQListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="EditCrossBookLinks" dynamicSpaceHint="loose;suitable" hotKey="hk" icon="chain_kd" id="rEditCrossBookLinksNew" idMso="EditLinks" ksoCmd="EditCrossBookLinks" rbHotKey="HK" text="@Edit Links"/>
+		<KxEtPQListCommand groupTip="EditCrossBookLinks" icon="chain_kd" id="RB_rEditCrossBookLinks" isNew="1" text="@Formula Links">
+			<command idQ="rEditCrossBookLinksNew"/>
+		</KxEtPQListCommand>
+		<KListCommand groupTip="DataAnalysisGroup" icon="ai_quick_analysis_kd" id="RB_Ai_Organize" idKey="ShowEtAIDataAnalysis" rbFileMenuEmbed="1" text="@Data Analysis" visibleDependsOnSubCmds="1">
+			<command idQ="AiSmartChart"/>
+			<command idQ="rWhat-If Analysis" proxyCmdId="ProxyrWhat-If Analysis"/>
+			<command idQ="AiSmartProofing"/>
+			<KxAIDaAysCommand customTip="AIAnalysisCopilot" icon="analysis_assistant_kd" id="AIDaAys" idKey="ETAIAnalysisCopilot" openPosition="data_dataanalysis" qtspyName="AIDaAys" text="@AI Analysis Copilot"/>
+		</KListCommand>
+		<KListCommand icon="ai_quick_analysis_kd" id="RB_Ai_Organize" idKey="ETDataAnalytics" rbFileMenuEmbed="1" text="@Data Analysis">
+			<command idQ="rWhat-If Analysis" proxyCmdId="ProxyrWhat-If Analysis"/>
+			<KxAIDaAysCommand customTip="AIAnalysisCopilot" icon="analysis_assistant_kd" id="AIDaAys" idKey="ETAIAnalysisCopilot" openPosition="data_dataanalysis" qtspyName="AIDaAys" text="@AI Analysis Copilot"/>
+		</KListCommand>
+		<KListCommand icon="ai_quick_analysis_kd" id="RB_Ai_Organize" idKey="EtAiDataAnaEntrance" rbFileMenuEmbed="1" text="@Data Analysis" visibleDependsOnSubCmds="1">
+			<KxAIDaAysCommand customTip="AIAnalysisCopilot" icon="analysis_assistant_kd" id="AIDaAys" idKey="ETAIAnalysisCopilot" openPosition="data_dataanalysis" qtspyName="AIDaAys" text="@AI Analysis Copilot"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="906" dialogHint="1" hotKey="e" id="Settings" ksoCmd="Settings" text="@Summary Direction"/>
+		<KListCommand id="DetailedSettings_Data" text="@Settings">
+			<KListCommand customTip="DetailedSettings_Data" icon="detailed_settings_kd" id="DetailedSettingsList_Data" qtspyName="DetailedSettings" text="@Settings">
+				<command idQ="Settings"/>
+			</KListCommand>
+		</KListCommand>
+		<KListCommand groupTip="PivotTbGroup" icon="sheet_pivot_kd" id="RB_Table" rbFileMenuEmbed="1" text="@PivotTb">
+			<KxLegacyTriggerCommand customTip="PivotTable" hotKey="p" icon="sheet_pivot_kd" id="PivotTableWizardInDataTab" ksoCmd="PivotTableWizard" qtspyName="PivotTableWizard" rbHotKey="W" text="@PivotTable"/>
+		</KListCommand>
+		<KListCommand groupTip="DataTypeGroup" icon="chart_stock_kd" id="RB_DataType" idKey="EtLinkeddatatype" text="@DataType" visible="false"/>
+		<KListCommand groupTip="ApplicationGroup" id="RB_Application" text="@Application" visibleDependsOnSubCmds="1">
+			<KxEtQuickSearchCommand controlType="0" customTip="QuickSearch" icon="doc_magnifier_kd" id="QuickSearch" idKey="EtDataQuery" ksoCmd="QuickSearch" qtspyName="QuickSearch" text="@Data Query"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Data">
+			<command idQ="RB_Table"/>
+			<separator/>
+			<command idQ="RB_Sort_Filter"/>
+			<separator/>
+			<command idQ="RB_Data_Tools"/>
+			<separator/>
+			<command idQ="RB_Outline"/>
+			<separator/>
+			<command idQ="RB_rImportData"/>
+			<command idQ="RB_rImportDataNew"/>
+			<separator/>
+			<command idQ="RB_rEditCrossBookLinks"/>
+			<separator/>
+			<command idQ="RB_DataType"/>
+			<separator/>
+			<command idQ="RB_Ai_Organize"/>
+			<separator idKey="LogicGroupShowExtensionButton"/>
+			<command idKey="LogicGroupShowExtensionButton" idQ="DetailedSettings_Data"/>
+			<separator/>
+			<command idKey="EtDataQuery" idQ="RB_Application"/>
+		</subcommand>
+	</subcommands>
+</shell>

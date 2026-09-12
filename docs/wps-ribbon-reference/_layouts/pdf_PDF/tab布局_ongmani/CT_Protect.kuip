@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_protect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" customTip="Digital Sign" icon="pen_signature_create_kd" id="DigitalSignDoc_Sub" ksoCmd="DigitalSignDoc" text="@Add Signature"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="Protect_HandTool" ksoCmd="HandTool" shellEntryType="tab_protect" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="Protect_SelectTool" ksoCmd="SelectionTool" shellEntryType="tab_protect" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfUpdateWaterMarkCommand commandMark="0" dialogHint="1" hotKey="u" icon="watermark_update_kd" id="TabProtect_RenewWatermark" rbHotKey="U" text="@Update Watermark"/>
+		<KxPdfDeleteWaterMarkCommand commandMark="0" dialogHint="1" hotKey="d" icon="watermark_delete_kd" id="TabProtect_DeleteWatermark" rbHotKey="D" text="@Delete Watermark"/>
+		<KListCommand groupTip="ToolGroup" id="RB_MouseTool_Protect" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="Protect_HandTool"/>
+			<command idQ="Protect_SelectTool"/>
+		</KListCommand>
+		<KxPdfWaterMarkGalleryCommand controlType="4" customTip="WaterMarkTips" icon="watermark_kd" id="Protect_Watermark" idMso="WatermarkGallery" text="@Watermark">
+			<command idQ="TabProtect_RenewWatermark"/>
+			<command idQ="TabProtect_DeleteWatermark"/>
+		</KxPdfWaterMarkGalleryCommand>
+		<KxMakeOutwardDocEntranceCommand icon="export_kd" id="RB_MakeOutwardDoc" rbHotKey="M" text="@Make Outward"/>
+		<KListCommand id="RB_ApplyForward" idKey="PDFMakeOutwardDoc" rbFileMenuEmbed="1" text="@Forward">
+			<command idQ="RB_MakeOutwardDoc"/>
+		</KListCommand>
+		<KListCommand filter="feature_16777344!=0" id="RB_OfflineManagement" rbFileMenuEmbed="1" text="@Offline Management">
+			<KxOfflineManagementCommand customTip="OfflineManagement" icon="wifi_offline_kd" id="OfflineManagementInSecurytyTab" rbHotKey="O" text="@Offline Secret Key"/>
+		</KListCommand>
+		<KListCommand id="RB_BatchOperation" idKey="PdfBatchDocDecrypt" rbFileMenuEmbed="1" text="@Batch Operation">
+			<KxBatchDocumentDecryptionCommand customTip="BatchDocDecrypt" icon="BatchDocDecrypt" id="BatchDocDecryption" rbHotKey="J" text="@Batch Document Decryption"/>
+		</KListCommand>
+		<KListCommand id="RB_Permissions" idKey="PdfPermissionsInSecurytyTab" rbFileMenuEmbed="1" text="@Permissions">
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" enterpriseWebPageUrl="/pdf_webdlg/myright.html" icon="people_key_kd" id="CurUserPermissionInSecurytyTab" idKey="SecDocMyRight" qtspyName="CurUserPermission" rbHotKey="V" targetModule="docpermission" text="@Check Mine Permission"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" icon="doc_encryption_kd" id="DocPermissionsInSecurytyTab" idKey="PdfDocPermissionsInSecurytyTab" qtspyName="DocPermissionProtection" rbHotKey="R" targetModule="docpermission" text="@Document Permission"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/pdf/ongmani/ProxyCommands.kuip" enterpriseWebPageUrl="/pdf_webdlg/rightlist.html" icon="magnifier_lock_kd" id="CheckPermissionsInSecurytyTab" idKey="PdfSecurytyTabCheckPermissions" qtspyName="CheckPermissions" rbHotKey="R" targetModule="docpermission" text="@Check Users Permissions"/>
+		</KListCommand>
+		<KListCommand id="RB_MB" idKey="MBVersionFlag" rbFileMenuEmbed="1" text="@SecurityMB Management">
+			<KxSetMBCommand icon="pushpin_kd" id="setMBInSecurytyTab" idKey="SetMB" rbHotKey="L" text="@setting MB"/>
+			<KxConfirmMBCommand icon="successful_kd" id="confirmMBInSecurytyTab" idKey="ConfirmMB" rbHotKey="S" text="@confirm MB"/>
+			<KxSignedMBCommand icon="pen_kd" id="signedMBInSecurytyTab" idKey="SignedMB" rbHotKey="I" text="@signed MB"/>
+			<KxWithdrawSignedMBCommand icon="doc_extract_page_kd" id="withdrawSignedMBInSecurytyTab" idKey="SignedMB" rbHotKey="R" text="@withdraw signed MB"/>
+			<KxCheckMBCommand icon="magnifier_kd" id="checkMBInSecurytyTab" idKey="CheckMB" rbHotKey="C" text="@check MB"/>
+			<KxChangeMBCommand icon="change_kd" id="changeMBInSecurytyTab" idKey="ChangeMB" rbHotKey="M" text="@change MB"/>
+			<KxDecryptMBCommand icon="cancel_kd" id="decryptMBInSecurytyTab" idKey="DecryptMB" rbHotKey="F" text="@decrypt MB"/>
+			<KxLiftMBCommand icon="lock_open_kd" id="liftMBInSecurytyTab" idKey="DocLiftMB" rbHotKey="D" text="@lift MB"/>
+		</KListCommand>
+		<KListCommand groupTip="ProtectEncryptionProtectionGroup" icon="doc_encryption_kd" id="RB_Protect" rbFileMenuEmbed="1" text="@Encryption Protection">
+			<command idQ="Protect_Encryptdoc"/>
+			<command idQ="Protect_DigiSignDoc"/>
+			<command idQ="Protect_SignFiled"/>
+			<command idQ="Protect_TSSManage"/>
+			<command idKey="PDFProtectWatermark" idQ="Protect_Watermark"/>
+			<KAppQuickMenuCommand appId="kdocfinalizedmgr" canHideText="0" customTip="kdocfinalized" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_list_tab" idKey="PdfCTProtectAppKdocfinalizedmgrListTab" text="@app doc kdocfinalized">
+				<KAppCommand appId="kdocfinalizedmgr" customTip="kdocfinalized" hotKey="f" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_tab" idKey="PdfCTProtectAppKdocfinalizedmgrTab" rbHotKey="F" text="@app doc kdocfinalized"/>
+				<KAppCommand appId="kdocfinalizedlist" customTip="kdocfinalizedlist" hotKey="l" icon="finalized_document_list_kd" id="app_kdocfinalizedlist_tab" idKey="PdfCTProtectAppKdocfinalizedlistTab" rbHotKey="L" text="@app doc kdocfinalized list"/>
+			</KAppQuickMenuCommand>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Protect">
+			<command idQ="RB_MouseTool_Protect"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Protect"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_Redact"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_RemoveHiddenData"/>
+		</subcommand>
+	</subcommands>
+</shell>

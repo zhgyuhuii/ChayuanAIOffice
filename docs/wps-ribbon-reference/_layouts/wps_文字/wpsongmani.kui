@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" name="ongmani" tc="wpsongmani" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<style name="2013"/>
+	<theme path="themes/ongmaniwps.kuip"/>
+	<attributes path="attributes.kuip"/>
+	<import path="common.kuip"/>
+	<import path="wpscommon.kuip"/>
+	<tips/>
+	<libraries>
+		<library idKey="OfficialDocMaterialLibrary" name="kofficialdocumentassist" path="./addons/kofficialdocumentassist"/>
+	</libraries>
+	<mainwindow caption="@%1 Writer" captionOem="Product:CustomMainwindowCaption" customAttribute="IF(officialindepentcomponent=true){caption=@Official Document}" frameless="1" tc="mainwindow">
+		<commands tc="commands">
+			<KWindowTitleBarButtonCommand id="Menu Bar" visible="0">
+				<command idQ="FileMenu"/>
+				<command idQ="EditMenu"/>
+				<command idQ="ViewMenu"/>
+				<command idQ="InsertMenu"/>
+				<command idQ="FormatMenu"/>
+				<command idQ="ToolsMenu"/>
+				<command idQ="TableMenu"/>
+				<command idQ="WorkspaceMenu"/>
+				<command idQ="WindowMenu"/>
+				<command idQ="HelpMenuForMac"/>
+				<command idQ="AppMenu"/>
+			</KWindowTitleBarButtonCommand>
+			<KWindowTitleButtonGroupCommand filter="support:promeembedding=false" id="sysbuttongroup">
+				<KTitleGroupSeperatorCommand name="toggleSep" space="7"/>
+				<KRbLogicGroupVisibleToggleCommand bOnTitleGroup="1" icon="iconHide;iconHide-hover;iconHide-down;iconHide-disable" iconExtent="iconExtent;iconExtent-hover;iconExtent-down;iconExtent-disable" iconHide="iconHide;iconHide-hover;iconHide-down;iconHide-disable" iconStick="iconStick;iconStick-hover;iconStick-down" qtspyName="iconHide;iconHide-hover;iconHide-down;iconHide-disable" textExtent="@Show the Toolbar" textHide="@Hide the Toolbar" textStick="@Stick the Toolbar"/>
+				<KTitleGroupSeperatorCommand space="7"/>
+				<KMinButtonCommand icon="TitleMinButton;TitleMinButton-hover;TitleMinButton-down;TitleMinButton-disable" qtspyName="TitleMinButton;TitleMinButton-hover;TitleMinButton-down;TitleMinButton-disable" text="@Minimize Window"/>
+				<KTitleGroupSpaceCommand space="-1"/>
+				<KMaxButtonCommand customTip2="@Restore Window" customTip="@Maximize Window" icon="TitleMaxButton;TitleMaxButton-hover;TitleMaxButton-down;TitleMaxButton-disable" iconMax="TitleMaxButton;TitleMaxButton-hover;TitleMaxButton-down;TitleMaxButton-disable" iconRestore="TitleRestoreButton;TitleRestoreButton-hover;TitleRestoreButton-down;TitleRestoreButton-disable" qtspyName="TitleMaxButton;TitleMaxButton-hover;TitleMaxButton-down;TitleMaxButton-disable" text="@Maximize Window"/>
+				<KTitleGroupSpaceCommand space="-1"/>
+				<kxKOSCloseButtonCommand icon="TitleCloseButton;TitleCloseButton-hover;TitleCloseButton-down;TitleCloseButton-disable" qtspyName="TitleCloseButton;TitleCloseButton-hover;TitleCloseButton-down;TitleCloseButton-disable" text="@Close Window"/>
+			</KWindowTitleButtonGroupCommand>
+			<KListCommand id="KOSUserLoginTipRights">
+				<KLoginTipRightCommand icon="LR_FileRoaming" id="LoginRight_Roaming" text="@File Roaming"/>
+				<KLoginTipRightCommand icon="LR_CloudSpace" id="LoginRight_Cloud" text="@Cloud Space"/>
+				<KLoginTipRightCommand icon="LR_ConvSharing" id="LoginRight_Sharing" text="@Convenient Sharing"/>
+				<KLoginTipRightCommand icon="LR_OnlineEditing" id="LoginRight_EditOnline" text="@Online Editing"/>
+				<KLoginTipRightCommand icon="LR_QuickRetrieve" id="LoginRight_Retrieve" text="@Quick Retrieve"/>
+				<KLoginTipRightCommand icon="LR_AccountUpgrade" id="LoginRight_Upgrade" text="@Account Upgrade"/>
+			</KListCommand>
+			<kxKOSUserGiftMenuCommand id="kxKOSUserGiftMenuCmd"/>
+			<kxKOSRechargeCommand hotKey="R" icon="OS_Recharge" id="KOSRechargeCmd" ksoCmd="KOSRechargeCmd" rbHotKey="R" text="@Recharge"/>
+			<kxKOSLogoutCommand customTip="KOSLogoutTip" hotKey="O" icon="os_userquit" id="KOSLogoutCommand" ksoCmd="KOSLogoutCommand" rbHotKey="O" text="@Sign Out"/>
+			<KLayoutWidgetCommand fixedWidth="1"/>
+			<KxSwitchSkinCommand filter="oem_SwitchFace!=0;lang!=th_TH" hotKey="q" icon="switchUI;switchUI-hover;switchUI-down" id="switchFaceDlgOnFileMenu" idKey="WPSSpcialSwitchFaceFileMenu" newSkinIcon="switchUI" normalIcon="switchUI" rbHotKey="Q" serverNewSkinFound="false" tc="KSwitchFaceDlgCommand" text="@Switch UI@Professional Version" visible="@true"/>
+			<KListCommand id="QAndABar" text="@Quick Access Toolbar">
+				<KSearchSeparatorCommand filter="lang!=zh_HK;lang!=en_US;lang!=ja_JP"/>
+				<command idKey="CommonTabbarQAndA" idQ="TabbarQAndA"/>
+			</KListCommand>
+			<KHideOrShowTaskPaneCheckCommand iconChecked="check" id="KHideOrShowTaskPaneCheckCmd" text="@Show Taskpane"/>
+			<KRbShowRibbonCheckCommand iconChecked="check" id="KRbShowRibbonCheckCmd" text="@Show Toolbar"/>
+			<KRbShowRibbonGroupNamesCheckCommand iconChecked="check" id="KRbShowRibbonGroupNamesCheckCmd" text="@Show Ribbon Group Names"/>
+			<KRbCategoryAlignCheckCommand iconChecked="check" id="KRbCategoryAlignCheckCmd" text="@Ribbon Function Center Alignment"/>
+			<KRbAutoCollapseRibbonCommand iconChecked="check" id="KRbAutoCollapseRibbonCmd" idKey="GeneralAutoCollapseRibbon" text="@Ribbon Function Auto Collapse"/>
+			<KHideOrShowTaskPaneCheckCommand iconChecked="check" id="KHideOrShowTaskPaneCheckCmd" text="@Show Taskpane"/>
+			<KListCommand id="RightCorner" text="@Quick Access Toolbar"/>
+			<KxKOSShareDocRightCornerCommandXa icon="share_rightcorner" id="rightcorner_share" idKey="CommonRightCornerShareBtn" needLogin="false" shellEntry="RightCorner;writer|borderbar|righttop_share" text="@Share"/>
+			<KProxyCommand autoLoad="true" customTip="AI Proof" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="spell_check_kd" id="TpAiSpellcheck_toolbar" idKey="AiSpellcheckEntry" targetId="TpAiSpellcheck" targetModule="kwpsaiwritingsuggest" text="@AI Proof"/>
+			<KListCommand id="RightCorner" idKey="CommonRightCornerShareBtn" text="@Quick Access Toolbar">
+				<separator/>
+				<KProxyListCommand hideArrowHint="1" icon="icon_logicctrl" id="InterfaceSettings" qtspyName="InterfaceSettings" text="@Interface Settings">
+					<command idKey="UserFeedbackCommand" idQ="UserFeedback"/>
+					<command idQ="KHideOrShowTaskPaneCheckCmd"/>
+				</KProxyListCommand>
+				<KRbLogicGroupVisibleToggleCommand bOnTitleGroup="0" icon="iconHide;iconHide-hover;iconHide-down;iconHide-disable" iconExtent="iconExtent;iconExtent-hover;iconExtent-down;iconExtent-disable" iconHide="iconHide;iconHide-hover;iconHide-down;iconHide-disable" iconStick="iconStick;iconStick-hover;iconStick-down" id="KRbLogicGroupVisibleToggleCmd" qtspyName="iconHide;iconHide-hover;iconHide-down;iconHide-disable" textExtent="@Show the Toolbar" textHide="@Hide the Toolbar" textStick="@Stick the Toolbar"/>
+			</KListCommand>
+			<KProxyCommand entryUrl="entry.html#/index" id="KOnlineTaskPaneManager" idKey="WPSOnlineTaskPaneManager" targetId="KOnlineTaskPaneManager" targetModule="kwebonlinetaskpane" text="@Manager Taskpane"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="t" icon="setup_kd" id="m_rbOptions" ksoCmd="Options" rbHotKey="T" text="@Options"/>
+			<KxRecentFilePageCommand hotKey="R" id="RecentFilePageCMD" ksoCmd="RecentFileList" rbFileMenuEmbed="1" rbHotKey="R" text="@Recent Documents"/>
+			<KWpsRbFileMenuCommand accountMenuCommand="accountMenuCommand" classicCommand="Menu Bar" curentProject="wps" customCommand="m_rbOptions" delayloadPath="commands/wps/ongmani/CT_File.kuip" hotKey="F" icon="TabFileButtonIcon-W" id="CT_File" idMso="FileMenu" newSkinFlash="false" quitCommand="Exit" rbHotKey="F" recentFileCommand="RecentFilePageCMD" skinSwitchCommand="switchFaceDlgOnFileMenu" text=""/>
+			<KxWpsReviewAssistantProxyCommand autoLoad="false" customTip="ReviewAssistant" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="ai_bubble_suggestion_kd" iconQat="ai_bubble_suggestion_kd" id="ProxyReviewAssistant" targetId="ReviewAssistant" targetModule="kwpsagentedit" visible="false"/>
+			<KxWpsReviewAssistantEntryCommand customTip="ReviewAssistant" icon="ai_bubble_suggestion_kd" iconQat="ai_bubble_suggestion_kd" id="ReviewAssistantEntry" openPosition="reviewtab_track" refCommand="ReviewAssistant" visible="false"/>
+			<KxWpsReviewAssistantEntryCommand customTip="ReviewAssistant" icon="ai_bubble_suggestion_kd" iconQat="ai_bubble_suggestion_kd" id="AIGenReview" openPosition="reviewtab_insertcomment" refCommand="ReviewAssistant" visible="false"/>
+			<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentInToolBar" idMso="ReviewNewComment" ksoCmd="InsertComment" rbHotKey="C" text="@New&#10;Comment"/>
+			<KxWpsInsertCommentListCommand canHideText="0" controlType="5" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentList" idMso="ReviewNewComment" ksoCmd="InsertComment" rbHotKey="C" text="@New&#10;Comment" visible="false">
+				<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentOnDropdown" idMso="ReviewNewComment" ksoCmd="InsertComment" rbHotKey="C" text="@New&#10;Comment"/>
+				<command idQ="AIGenReview"/>
+			</KxWpsInsertCommentListCommand>
+			<KxWpsRevisionTriggerCommand controlType="6" hotKey="G" icon="doc_pen_kd" id="RbTrackChangesToolBar" idMso="ReviewTrackChanges" ksoCmd="TrackChanges" shortcutHint="Ctrl+Shift+E" text="@Track&#10;Changes"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="M" icon="accumulation_kd" id="CombineCharactersRainbow" ksoCmd="CombineCharacters" text="@Combine Characters"/>
+			<KxLegacyTriggerCommand aid="3964" controlType="0" dialogHint="1" hotKey="w" icon="two_lines_in_one_kd" id="TwoLinesInOne" idMso="AsianLayoutTwoLinesInOne" ksoCmd="TwoLinesInOne" rbHotKey="W" text="@Two Lines in One"/>
+			<KxValueCommand id="CharacterScaling200" index="200" ksoCmd="CharacterScalingNumber" text="@200%"/>
+			<KxValueCommand id="CharacterScaling150" index="150" ksoCmd="CharacterScalingNumber" text="@150%"/>
+			<KxValueCommand id="CharacterScaling100" index="100" ksoCmd="CharacterScalingNumber" text="@100%"/>
+			<KxValueCommand id="CharacterScaling90" index="90" ksoCmd="CharacterScalingNumber" text="@90%"/>
+			<KxValueCommand id="CharacterScaling80" index="80" ksoCmd="CharacterScalingNumber" text="@80%"/>
+			<KxValueCommand id="CharacterScaling66" index="66" ksoCmd="CharacterScalingNumber" text="@66%"/>
+			<KxValueCommand id="CharacterScaling50" index="50" ksoCmd="CharacterScalingNumber" text="@50%"/>
+			<KxValueCommand id="CharacterScaling33" index="33" ksoCmd="CharacterScalingNumber" text="@33%"/>
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="m" id="CharacterScalingMore" ksoCmd="CharacterScalingMore" text="@More"/>
+			<KListCommand customTip="m_CharacterScaling" icon="font_scaling_kd" id="m_CharacterScaling" rbHotKey="AA" text="@Asian Layout">
+				<command idQ="CombineCharactersRainbow"/>
+				<command idQ="TwoLinesInOne"/>
+				<command idQ="FitText"/>
+				<KListCommand hotKey="C" icon="font_scaling_kd" id="CharacterScalingNumber" rbFileMenuEmbed="1" text="@Character Scaling">
+					<command idQ="CharacterScaling200"/>
+					<command idQ="CharacterScaling150"/>
+					<command idQ="CharacterScaling100"/>
+					<command idQ="CharacterScaling90"/>
+					<command idQ="CharacterScaling80"/>
+					<command idQ="CharacterScaling66"/>
+					<command idQ="CharacterScaling50"/>
+					<command idQ="CharacterScaling33"/>
+					<command idQ="CharacterScalingMore"/>
+				</KListCommand>
+			</KListCommand>
+			<KxLegacyTriggerCommand canHideText="0" controlType="0" customTip="InsertComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentInToolBar" idMso="ReviewNewComment" ksoCmd="InsertComment" rbHotKey="C" text="@New&#10;Comment"/>
+			<KxLegacyTriggerCommand controlType="6" hotKey="G" icon="doc_pen_kd" id="RbTrackChangesToolBar" idMso="ReviewTrackChanges" ksoCmd="TrackChanges" shortcutHint="Ctrl+Shift+E" text="@Track&#10;Changes"/>
+			<KRbTabWidgetCommand fileCommand="CT_File" id="tabwidget" idKey="CommonLogicGroupShowArrow" returnCommand="ClosePreview" rightCornerCommand="sysbuttongroup" rightCornerExtentCommand="RightCorner" tabbarSearchCommand="QAndABar" text="@testRbTabWidget" titleVisible="1">
+				<KxWpsHomeContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Home.kuip" hotKey="H" id="CT_Home" idMso="TabHome" rbHotKey="H" text="@Home"/>
+				<KxWpsInsertContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Insert.kuip" hotKey="N" id="CT_Insert" idMso="TabInsert" rbHotKey="N" text="@Insert"/>
+				<KxWpsInsertVmlContext customRibbonRemark="@Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_Insert_Vml.kuip" descName="@Insert - Compatibility Mode" hotKey="N" id="CT_Insert_Vml" rbHotKey="N" text="@Insert"/>
+				<KxWpsOfficialTabContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Official_Elements.kuip" id="CT_Official_Elements" idKey="OfficialViewEnable" text="@Elements"/>
+				<KxWpsOfficialdocAssistContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Official_Material.kuip" id="CT_Official_Material" idKey="OfficialDocMaterialLibrary" text="@Material"/>
+				<KxWpsNormalTabContext controlType="12" delayloadPath="commands/wps/ongmani/CT_PageLayout.kuip" hotKey="P" id="CT_PageLayout" idMso="TabPageLayoutWord" rbHotKey="P" text="@Page Layout"/>
+				<KxWpsNormalTabContext controlType="12" delayloadPath="commands/wps/ongmani/CT_References.kuip" hotKey="S" id="CT_References" idMso="TabReferences" rbHotKey="S" text="@References"/>
+				<KRbTabCommand controlType="12" delayloadPath="commands/wps/ongmani/CT_Review.kuip" hotKey="R" id="CT_Review" idKey="WPSImmersiveTranslate" idMso="TabReviewWord" rbHotKey="R" text="@Review"/>
+				<KxWpsNormalTabContext controlType="12" delayloadPath="commands/wps/ongmani/CT_View.kuip" hotKey="W" id="CT_View" idMso="TabView" rbHotKey="W" text="@View"/>
+				<KxWpsOfficialTabContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Official_Print.kuip" id="CT_Official_Print" idKey="OfficialViewEnable" text="@Printing"/>
+				<KxWpsOfdPrintPreviewContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_OfdPreview.kuip" hotKey="R" id="CT_OfdPrintPreview" idMso="TabOfdPrintPreview" rbContextTableButton="0xb457fc" rbHotKey="R" text="@Ofd Print Preview" visibleAlone="1"/>
+				<KxAddOnsContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_AddOns.kuip" hotKey="X" id="CT_AddOns" idMso="TabAddIns" rbHotKey="X" text="@Add-Ins"/>
+				<KxWpsSecurityContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Security.kuip" hotKey="Y" id="CT_Security" idKey="WpsOngmaniTabSecurityEntry" idMso="TabSecurity" rbHotKey="Y" text="@Security"/>
+				<KxWpsSecurityContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Security.kuip" disableCustomRibbon="true" forcevisible="false" hotKey="Y" id="CT_Security" idKey="CommonSecurityCommandPer" idMso="TabSecurity" rbHotKey="Y" text="@Security"/>
+				<KxWpsToolsContext controlType="12" delayloadPath="commands/wps/ongmani/CT_Tools.kuip" hotKey="L" id="CT_Tools" idKey="CommonDevelopTools" idMso="TabDeveloper" rbHotKey="L" text="@WpsTools"/>
+				<KRbControlCommand controlType="12" delayloadPath="commands/wps/ongmani/CT_WorkSpace.kuip" disableCustomRibbon="true" filter="support:ShieldMode=false" hotKey="K" id="CT_WorkSpace" idKey="CommonVipTab" idMso="TabWorkSpace" rbHotKey="K" text="@Special Apps"/>
+				<KRbTabCommand controlType="12" delayloadPath="commands/wps/ongmani/CT_WorkSpace.kuip" filter="support:ShieldMode=false" forcevisible="true" hotKey="K" id="CT_WorkSpace" idKey="WpsWorkSpaceVipMac" idMso="TabWorkSpace" rbHotKey="K" text="@Special Features"/>
+				<KxWpsOfficialModeTabContext contextName="OfficialMode" controlType="12" delayloadPath="commands/wps/ongmani/CT_OfficialMode.kuip" disableCustomRibbon="true" hotKey="G" id="CT_OfficialMode" idKey="OfficialModeTabEntry" idMso="TabOfficialMode" rbContextTableButton="0x05e234" rbHotKey="G" text="@Official Mode"/>
+				<KxWpsOfficialPrintingTabContext contextName="OfficialPrinting" controlType="12" delayloadPath="commands/wps/ongmani/CT_OfficialPrinting.kuip" disableCustomRibbon="true" hotKey="G" id="CT_OfficialPrinting" idKey="OfficialPrintingTabShow" idMso="TabOfficialPrinting" rbContextTableButton="0x05e234" rbHotKey="G" text="@Official Printing Mode"/>
+				<KxProofreadTabContext contextName="AIProofread" controlType="12" delayloadPath="commands/wps/ongmani/CT_WPSProofread.kuip" disableCustomRibbon="true" hotKey="C" id="CT_Proofread" idMso="TabProofread" rbHotKey="C" text="@WPS Proofread"/>
+				<KxWpsParagraphContext controlType="16" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_Paragraph.kuip" hotKey="P" id="CT_Paragraph" idMso="GroupParagraph" rbContextTableButton="0xb457fc" rbHotKey="A" text="@Paragraph Layout" visibleRaise="1"/>
+				<KxWpsTableToolContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_TableTools.kuip" hotKey="W" id="CT_TableTools" idMso="TabTableToolsLayout" rbContextTableButton="0x05e234" rbHotKey="JL" text="@Table Tools"/>
+				<KxWpsTableStyleContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_Design.kuip" hotKey="A" id="CT_Design" idMso="TabTableToolsDesign" rbContextTableButton="0x05e234" rbHotKey="JT" text="@Table Style"/>
+				<KxWpsStudentToolContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_StudentTools.kuip" id="CT_StudentTools" idKey="WpsStudentTools" idMso="TabStudentToolsLayout" rbContextTableButton="0x05cbe2" text="@Student Tools"/>
+				<KxWpsMailingsContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_Mailings.kuip" hotKey="M" id="CT_Mailings" idMso="TabMailings" rbContextTableButton="0xb457fc" rbHotKey="M" text="@Mailings" visibleRaise="1"/>
+				<KxWpsOutlineViewContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_Outline.kuip" hotKey="U" id="CT_Outline" idMso="TabOutlining" rbContextTableButton="0xff61f6" rbHotKey="U" text="@Outline" visibleRaise="1"/>
+				<KxWpsHeaderAndFooterContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_HeaderFooter.kuip" hotKey="JH" id="CT_HeaderFooter" idMso="TabHeaderAndFooterToolsDesign" rbContextTableButton="0x6372ff" rbHotKey="JH" text="@Header and Footer" visibleRaise="1"/>
+				<KxShapeToolContext customRibbonRemark="@Shape" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_DrawingTools.kuip" hotKey="JD" id="CT_DrawingTools" rbContextTableButton="0x05cbe2" rbHotKey="JD" text="@Drawing Tools"/>
+				<KxWpsTextToolContext customRibbonRemark="@Shape" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_TextTool.kuip" id="CT_TextTool" rbContextTableButton="0x05cbe2" rbHotKey="JE" text="@Text Tool"/>
+				<KxChartToolContext customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_ChartTools.kuip" hotKey="JC" id="CT_ChartTools" rbContextTableButton="0x05cbe2" rbHotKey="JC" text="@Chart Tools"/>
+				<KxShapeToolContext_Vml customRibbonRemark="@Shape Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_DrawingTools_Vml.kuip" descName="@Drawing Tools - Compatibility Mode" hotKey="JD" id="CT_DrawingTools_Vml" rbContextTableButton="0x05cbe2" rbHotKey="JD" text="@Drawing Tools"/>
+				<KxShadowToolContext_Vml customRibbonRemark="@Shape Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_shadowDrawingTools.kuip" descName="@Formats - Compatibility Mode" hotKey="JS" id="CT_shadowDrawingTools" rbContextTableButton="0x05cbe2" rbHotKey="JS" text="@Formats"/>
+				<KxPictureToolContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_PictureTools.kuip" hotKey="JP" id="CT_PictureTools" idMso="TabPictureToolsFormat" rbContextTableButton="0xdf57fc" rbHotKey="JP" text="@Picture Tools"/>
+				<KxPictureToolContext_Vml customRibbonRemark="@Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_PictureTools_Vml.kuip" descName="@Picture Tools - Compatibility Mode" hotKey="JP" id="CT_PictureTools_Vml" idMso="TabPictureToolsVmlFormat" rbContextTableButton="0xdf57fc" rbHotKey="JP" text="@Picture Tools"/>
+				<KxWordArtContext controlType="12" customRibbonRemark="@WordArt Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_WordArt.kuip" hotKey="JW" id="CT_WordArt" idMso="TabWordArtToolsFormat" rbContextTableButton="0xffd800" rbHotKey="JW" text="@WordArt"/>
+				<KxWordArtContext customRibbonRemark="@WordArt Compatibility Mode" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_WAshadowDrawingTools.kuip" hotKey="JA" id="CT_WAshadowDrawingTools" rbContextTableButton="0xffd800" rbHotKey="JA" text="@Formats"/>
+				<KxSmartArtToolContext customRibbonRemark="@Organization Chart" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_SmartArtDesign.kuip" disableCustomRibbon="true" hotKey="JS" id="CT_SmartArtDesign" rbContextTableButton="0x05cbe2" rbHotKey="JS" text="@SmartArt Design"/>
+				<KxSmartArtFormatToolContext customRibbonRemark="@Organization Chart" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_SmartArtFormatTool.kuip" disableCustomRibbon="true" id="CT_SmartArtFormatTool" rbContextTableButton="0x05cbe2" rbHotKey="JM" text="@SmartArt Format"/>
+				<KxWpsInkToolsContext controlType="12" customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_InkTools.kuip" filter="feature_33554469!=0" id="CT_InkTools" rbContextTableButton="0xb457fc" text="@Ink Tools" visibleRaise="1"/>
+				<KxInkDrawContext customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_InkDraw.kuip" filter="reg:DisableInkDraw!=true" id="CT_InkDraw" rbContextTableButton="0xb457fc" rbHotKey="V" text="@InkDraw" visibleRaise="0"/>
+				<KxWpsInkToolsContext controlType="12" customShortcutEnabled="false" id="CT_InkTools" rbContextTableButton="0xb457fc" text="@Ink Tools" visibleRaise="1"/>
+				<KxGraphicToolContext customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_GraphicTool.kuip" hotKey="JG" id="CT_GraphicTool" rbContextTableButton="0xdf57fc" rbHotKey="JG" text="@Graphic Tool"/>
+				<KxWpsEquationToolsContext customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_EquationTools.kuip" hotKey="JX" id="CT_EquationTools" rbContextTableButton="0x05cbe2" rbHotKey="JX" text="@Equation Tool"/>
+				<KxPremiumServicesRbTabCommand delayloadPath="commands/wps/ongmani/CT_PremiumServices.kuip" hotKey="K" id="CT_PremiumServices" idKey="WpsPremiumServices" rbHotKey="K" text="@Tab_PremiumServices"/>
+				<KxKsoDevelopToolsContext customShortcutEnabled="false" delayloadPath="commands/wps/ongmani/CT_DevelopTools.kuip" id="CT_DevelopTools" rbContextTableButton="0xb457fc" rbHotKey="T" text="@DevelopTools" visibleRaise="0"/>
+				<KxMedicalAssistantContext delayloadPath="commands/wps/ongmani/CT_MedicalAssistantTools.kuip" id="CT_MedicalAssistant" idKey="MedicalAssistantWpsEntry" rbContextTableButton="0x05cbe2" text="@Medical Assistant"/>
+				<KAlwaysShowSeparatorCommand idKey="WpsCopilotAI"/>
+				<KRbTabProxyCommand controlType="12" disableCustomRibbon="true" icon="WpsCopilotEntry" id="CT_Copilot" idKey="WpsCopilotAI" notDefaultSelected="1" targetCommand="KWpsCopilotCommand" targetId="CT_Copilot" targetModule="kcopilotentry" text="@WPS Copilot AI"/>
+			</KRbTabWidgetCommand>
+			<KListCommand id="NoTabPage">
+				<KxNoTabPageButtonCommand icon="NewFileOnNoTabPage" id="NewFileOnNoTabPage" ksoCmd="NewBlankFile" text="@New Blank Document"/>
+				<separator/>
+				<separator/>
+				<KxNoTabPageButtonCommand icon="OpenFileOnNoTabPage" id="OpenFileOnNoTabPage" ksoCmd="OpenFile" text="@Open"/>
+			</KListCommand>
+			<KListCommand id="DocMapViewToolBar">
+				<KxWpsExpandingContentEntryCommand icon="arrow_down_small_wps_kd" qtspyName="ExpandContents" text="@Expanding Contents Entry"/>
+				<KxWpsCollapseContentEntryCommand icon="arrow_up_small_wps_kd" qtspyName="CollapseContents" text="@Collapse Contents Entry"/>
+				<KxWpsInsertContentEntry icon="symbol_cross_kd" qtspyName="AddSameContentEntry" text="@Add Contents Entry"/>
+				<KxWpsDelContentEntry detail="@Delete Contents Entry" icon="symbol_horizontal_line_kd" qtspyName="DeleteContentEntry"/>
+				<separator/>
+				<KProxyAutoFindContentsButtonCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="robot_two_kd" id="ProxyKAutoFindContentsCmd" targetId="KAutoFindContentsCmd" targetModule="kautofindcontents" text="@AutoFindContents" visible="0"/>
+				<KxWpsAIIdentifyTableOfContentsCommand icon="ai_kd" id="AIIdentifyTableOfContentsCmd" qtspyName="AIIdentifyTableOfContents" text="@AI recognize table" visible="0"/>
+			</KListCommand>
+			<KxWpsAIAutoSeparatePageChapterPaneProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="aiautoseparatepage" id="WpsAIAutoSeparatePageChapterPane" idKey="WpsAiBaseTypo" openPosition="AIAutoSeparatePageChapterPane" targetId="WpsAIAutoSeparatePageChapterPane" targetModule="kwpsaibasetypo" text="@AI Automatic Paging"/>
+			<KListCommand id="SectionViewToolBar">
+				<KxWpsExPandingSectionCommand icon="arrow_down_small_wps_kd" qtspyName="ExpandContents" text="@Expanding Section Entry"/>
+				<KxWpsCollapseSectionEntryCommand icon="arrow_up_small_wps_kd" qtspyName="CollapseContents" text="@Collapse Section Entry"/>
+				<KxWpsInsertPageBreakCommand icon="symbol_cross_kd" qtspyName="AddSameContentEntry" text="@Insert Next PageBreak"/>
+				<KxWpsDeleteHoverSectionCommand icon="symbol_horizontal_line_kd" qtspyName="DeleteContentEntry" text="@Delete Hover Section"/>
+				<separator/>
+				<command idQ="WpsAIAutoSeparatePageChapterPane"/>
+			</KListCommand>
+			<KxWpsNavigationPaneCommand id="Navigationpane" text="@Navigation Pane">
+				<KxWpsDocMapViewCommand icon="doc_map_kd" id="DocMapViewNavigation" qtspyName="DocMapViewNavigation" text="@tableContents Navigation" toolbarId="DocMapViewToolBar"/>
+				<KxWpsSectionToolboxCommand caretMarkIcon="CaretMark" foldIcon="Fold" icon="section_navigation_kd" id="SectionNavigation" qtspyName="SectionNavigation" text="@Section Navigation" toolbarId="SectionViewToolBar" unfoldIcon="Unfold"/>
+				<KxWpsNavBookmarkCommand icon="bookmark_kd" id="BookmarkNavigation" qtspyName="BookmarkNavigation" text="@Bookmark"/>
+				<KxWpsFindReplaceCommand icon="magnifier_kd" id="FindReplace" qtspyName="FindReplace" text="@Find And Replace"/>
+				<KxWpsDocFieldViewCommand icon="DocumentFieldTreeLeftSide" id="DocFieldViewNavigation" text="@OfficialMode SemanticsTree"/>
+			</KxWpsNavigationPaneCommand>
+			<KxExportPdfLegacyTriggerCommand aid="80004" controlType="0" customTip="ExportToPDF" dialogHint="1" hotKey="f" icon="change_to_pdf_two_kd" iconQat="pdf_kd" id="PrintToPDF" idKey="WpsExportToPDF" idMso="FileSaveAsPdfOrXps" ksoCmd="PrintToPDF" needLogin="false" text="@Export to PDF" vipMode="0" vipModeUrlId="batch_output_pdf"/>
+			<KxLegacyTriggerCommand aid="80004" controlType="0" customTip="ExportToPDF" dialogHint="1" hotKey="f" icon="change_to_pdf_two_kd" iconQat="pdf_kd" id="PrintToPDF" idKey="WpsExportToPDFByOldDialog" idMso="FileSaveAsPdfOrXps" ksoCmd="PrintToPDF" text="@Export to PDF"/>
+			<KxTouchUiModeCommand customTip="TouchUiMode" icon="TouchUiMode" id="TouchUiMode" idKey="TouchUiMode" text="@Touch Mode"/>
+			<KListCommand id="QAT_Menu" idMso="QAT_Menu" qtspyName="qmenu" text="@Quick Access Toolbar">
+				<command idQ="NewBlankFile"/>
+				<command idQ="OpenFile"/>
+				<command idQ="AutoSaveFile"/>
+				<command idQ="SaveFile"/>
+				<command idQ="PrintToPDF"/>
+				<command idQ="Print2022Dialog"/>
+				<command idQ="Print"/>
+				<command idQ="PrintDirect"/>
+				<command idQ="PrintManualDuplex"/>
+				<command idQ="TouchUiMode"/>
+				<command idQ="Undo"/>
+				<command idQ="Redo"/>
+				<KxOptionsDlgTabCommand id="QAT_MoreCommands" tabName="opeQat"/>
+			</KListCommand>
+			<KListCommand id="QAT" qtspyName="QT_Menu">
+				<command idQ="AutoSaveFile"/>
+				<command idQ="SaveFile"/>
+				<command idQ="PrintToPDF"/>
+				<command idQ="Print2022Dialog"/>
+				<command idQ="Print"/>
+				<command filter="screenType=touch" idQ="TouchUiMode"/>
+				<command idQ="Undo"/>
+				<command idQ="Redo"/>
+			</KListCommand>
+			<KxAddTabCommand defualtHide="TpWpsTableStyle" id="customTaskpane" idKey="CommonCustomTaskWindow" shortHint="@Settings" text="@Customize Task Window" tpIcon="icustSel;icustSel-mos;icustSel-down" visible="1"/>
+			<KProxyCommand customTip="PDFToWord" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="PW" icon="change_to_word_kd" id="ProxyPDF2WordV2" idKey="WPSPDF2WordV2DelayLoadLib" rbHotKey="PW" targetId="PDF2WordV2" targetModule="kpdf2wordv2" text="@PDF to Word"/>
+			<KProxyCommand customTip="PDFToWord" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="PW" icon="change_to_word_kd" id="ProxyPDF2WordV2" idKey="WPSPDF2WordV2" rbHotKey="PW" targetId="PDF2WordV2" targetModule="kpdf2wordv2" text="@PDF to Word"/>
+			<KProxyCommand customTip="PDFToExcel" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="change_to_sheet_kd" id="ProxyPDF2ExcelV2" idKey="WPSPDF2ExcelV2" targetId="PDF2ExcelV2" targetModule="kpdf2wordv2" text="@PDF to Excel"/>
+			<KProxyCommand customTip="PDFToPPT" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="change_to_ppt_kd" id="ProxyPDF2PPTV2" idKey="WPSPDF2PPTV2" targetId="PDF2PPTV2" targetModule="kpdf2wordv2" text="@PDF to PPT"/>
+			<KProxyCommand customTip="PDFSplit" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="PDFSplit" id="ProxyPDFSplitV2" idKey="WPSPDFSplit" targetId="PDFSplitV2" targetModule="kpdf2wordv2" text="@PDF Split"/>
+			<KProxyCommand customTip="PDFMerge" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="PDFMerge" id="ProxyPDFMergeV2" idKey="WPSPDFMerge" targetId="PDFMergeV2" targetModule="kpdf2wordv2" text="@PDF Merge"/>
+			<KxOnlineAddTabCommand defualtHide="TpWpsTableStyle" id="onlineCustomTaskpane" idKey="WPSOnlineCustomTaskpane" shortHint="@Settings" text="@Manager Taskpane" tpIcon="ionlinecustsel" visible="1"/>
+			<KxFileMenuBackupCenterCommand dialogHint="1" hotKey="k" icon="folder_cloud_kd" id="BackupCenterFileMenu" infoId="9" text="@Backup Center"/>
+			<KProxyCommand canStack="0" customTip="TextSpeech" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="RL" icon="doc_voice_reading_kd" id="ProxyOldTextToSpeechOption" rbHotKey="RL" relatedKsoCmd="InsertPictureFromFile" speakingTip="TextSpeech2" targetId="OldTextToSpeechOption" targetModule="wpsspeaker" text="@Text Speech"/>
+			<KProxyCommand customTip="PictureToText" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="PT" icon="scan_ocr_kd" id="ProxyOCRToolCmd" rbHotKey="PT" targetId="OCRToolCmd" targetModule="kocrtool" text="@Picture to Text"/>
+			<KProxyCommand customTip="DocumentFix" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="RF" icon="doc_modification_kd" id="ProxyDocumentFix" needLogin="false" rbHotKey="RF" targetId="DocumentFix" targetModule="kdocumentfix" text="@Document Fix" vipMode="2" vipModeUrlId="document_recover"/>
+			<KScreenGrabOcrCommand id="KScreenGrabOcrCommand" text="@Screen Grab Ocr"/>
+			<KScreenGrabOcrCommandHide id="KScreenGrabOcrCommandHide" text="@Hide Current Window when Grabbing Screen"/>
+			<KScreenGrabRectCommand icon="screen_grab_square_kd" id="ScreenGrabRect" text="@Grab Rect"/>
+			<KScreenGrabRoundedRectCommand appFlags="wpsmember" icon="screen_grab_rounded_kd" id="ScreenGrabRoundedRect" text="@Grab Roundedrect"/>
+			<KScreenGrabEllipseCommand icon="screen_grab_ellipse_kd" id="ScreenGrabEllipse" text="@Grab Ellipse"/>
+			<KScreenGrabPolygonCommand appFlags="wpsmember" icon="screen_grab_polygon_kd" id="ScreenGrabPolygon" text="@Grab Polygon"/>
+			<KScreenGrabCommandWindow icon="screen_grab_window_kd" id="ScreenGrabWindow" text="@Screenshots Tools"/>
+			<KScreenGrabCommand hotKey="S" id="ScreenGrab" rbHotKey="S" shortcutHint="Command+Control+X" text="@Screenshots"/>
+			<KScreenGrabCommandHide hotKey="H" id="ScreenGrabHide" rbHotKey="H" shortcutHint="Command+Control+C" text="@Hide current window when taking screenshots"/>
+			<KxWpsFormatPainterCommand controlType="6" customTip="FormatPainter" hotKey="FP" icon="brush_kd" iconQat="brush_kd" id="FormatPainter" idMso="FormatPainter" ksoCmd="FormatPainter" rbHotKey="FP" shortcutHint="Ctrl+Shift+C" text2="@Format&#10;Painter" text="@Format &#10;Painter"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="GrowFont" hotKey="FG" icon="font_size_increase_wps_kd" iconQat="font_size_increase_wps_kd" id="GrowFontRainbow" idMso="FontSizeIncreaseWord" ksoCmd="GrowFont" rbHotKey="FG" shortcutHint="Ctrl+]" text="@Grow Font"/>
+			<KxWpsMoreFontColorCommand controlType="0" dialogHint="1" hotKey="m" icon="color_palette_kd" id="MoreFontColors" idMso="FontColorMoreColorsDialogExcel" ksoCmd="FontColor" text="@More Font Colors"/>
+			<KxWpsOfficialVersionSpotColorCommand controlType="0" hotKey="s" icon="filter_photo_kd" id="OfficialVersionSpotColor" idKey="WideOfficialEntrance" idMso="OfficialVersionSpotColor" ksoCmd="OfficialVersionSpotColor" text="@Spot Colors"/>
+			<KxWpsSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="SnapFontColors" ksoCmd="FontColor" rbHotKey="E" text="@Snapper"/>
+			<KxWpsFontColorImpCommand controlType="4" customTip2="FontColor2" customTip="FontColor" hotKey="FT" icon="color_font_wps_kd" id="FontColor" idMso="FontColorPicker" ksoCmd="FontColor" ksoTriggerCmd="RecentFontColor" rbHotKey="FC" text="@Text Color">
+				<command idQ="OfficialVersionSpotColor"/>
+				<command idQ="MoreFontColors"/>
+				<command idQ="SnapFontColors"/>
+			</KxWpsFontColorImpCommand>
+			<KxWpsFontSizeComboBoxCommand controlType="2" customTip="FontSize" fixedWidth="61" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" hotKey="FS" icon="vertical_font_size_kd" iconQat="vertical_font_size_kd" id="FontSize" idMso="FontSize" ksoCmd="FontSize" layoutOnRight="true" openOnLeft="true" rbHotKey="FS" text="@Font Size" verticalPolicy="Preferred"/>
+			<KxListCommand delayloadPath="commands/wps/PopupMenu.kuip" id="Small Plus Sing Popup Menu"/>
+			<KxWpsOfficialHVFontSizeCommand controlType="2" customTip="OfficialHFont" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" icon="OfficialHFont" id="HFontSize" ksoCmd="HFontSize" layoutOnRight="true" text="@HFont Size" verticalPolicy="Preferred"/>
+			<KxWpsOfficialHVFontSizeCommand controlType="2" customTip="OfficialVFont" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" icon="OfficialVFont" id="VFontSize" ksoCmd="VFontSize" layoutOnRight="true" text="@VFont Size" verticalPolicy="Preferred"/>
+			<KxWpsOfficialPrintingHVFontSizeCommand controlType="2" customTip="OfficialHFont" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" icon="horizontal_font_size_kd" id="OfficialPrintingHFontSize" idKey="OfficialPrintingHVFontEntrance" ksoCmd="OfficialPrintingHFontSize" layoutOnRight="true" text="@HFont Size" verticalPolicy="Preferred"/>
+			<KxWpsOfficialPrintingHVFontSizeCommand controlType="2" customTip="OfficialVFont" fontSizeList="@5;5.5;6.5;7.5;8;9;10;10.5;11;12;14;16;18;20;22;26;28;36;48;56;72" horizontalPolicy="Preferred" icon="vertical_font_size_kd" id="OfficialPrintingVFontSize" idKey="OfficialPrintingHVFontEntrance" ksoCmd="OfficialPrintingVFontSize" layoutOnRight="true" text="@VFont Size" verticalPolicy="Preferred"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="ShrinkFont" hotKey="FK" icon="font_size_reduce_wps_kd" iconQat="font_size_reduce_wps_kd" id="ShrinkFontRainbow" idMso="FontSizeDecreaseWord" ksoCmd="ShrinkFont" rbHotKey="FK" shortcutHint="Ctrl+[" text="@Shrink Font"/>
+			<KxWpsHighlightColorCommand aid="80068" barid="44551" controlType="4" customTip2="HighlightColor2" customTip="HighlightColor" hotKey="h" icon="color_marker_wps_kd" id="HighlightColor" idMso="TextHighlightColorPicker" ksoCmd="HighlightColor" ksoTriggerCmd="RecentHighlightColor" rbHotKey="i" text="@Highlight"/>
+			<KPapercheckProxyCommand customTip="PaperCheck" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="magnifier_plagiarism_check_kd" id="ProxyKxPaperCheckCommand" idKey="PromePaperCheckEntry" needLogin="false" relatedKsoCmd="InsertPictureFromFile" targetId="KxPaperCheckCommand" targetModule="kpapercheck" text="@PaperCheck" vipMode="4"/>
+			<KProxyCommand customTip="PaperFormat" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_paper_format_kd" id="ProxyKxPaperFormatCommand" idKey="PromePaperFormat" relatedKsoCmd="InsertPictureFromFile" targetId="KxPaperFormatCommand" targetModule="kpaperformat" text="@PaperFormat"/>
+			<KProxyCommand customTip="ProofOfficial" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyKfProofreadCmdOfficial" idKey="OfficialViewEnable" targetId="KfProofreadCmdOfficial" targetModule="kfproofread" text="@Official Proofing"/>
+			<KProxyCommand autoLoad="true" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyKfProofreadCmd" idKey="WPSKfProofreadCmd" targetId="KfProofreadCmd" targetModule="kfproofread" text="@Proofread"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="proof_read_leader_kd" id="ProxyKfProofreadLeaderCmd" idKey="KsoProofreadOnline" targetId="KfProofreadLeaderCmd" targetModule="kfproofread" text="@Proofread Leader"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="validation_circle_kd" id="ProxyKfProofreadSensCmd" idKey="KfProofreadSensEntry" targetId="KfProofreadSensCmd" targetModule="kfproofread" text="@Proofread Sens"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="quote_kd" id="ProxyKfProofreadPuncCmd" idKey="KfProofreadPuncEntry" targetId="KfProofreadPuncCmd" targetModule="kfproofread" text="@Proofread Punc"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="batch_tick_kd" id="ProxyKfProofreadRepeateCmd" idKey="KfProofreadRepeateEntry" targetId="KfProofreadRepeateCmd" targetModule="kfproofread" text="@Proofread Repeate"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="cancel_kd" id="ProxyKfProofreadWrongCmd" idKey="KfProofreadWrongEntry" targetId="KfProofreadWrongCmd" targetModule="kfproofread" text="@Proofread Wrong"/>
+			<KProxyCommand customTip="" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="GroupSending" id="ProxyKxGroupSendingAssistCommand" idKey="GroupSendingAssist" targetId="KxGroupSendingAssistCommand" targetModule="kgroupsendingassist" text="@GroupSending"/>
+			<KProxyCommand autoLoad="false" customTip="AIOCR2Pdf" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="AIOCR2Pdf" id="ProxyAIOCR2Pdf" targetId="AIOCR2Pdf" targetModule="aiocr2pdf" text="@AIOCR2Pdf"/>
+			<KProxyCommand autoLoad="false" customTip="PDFCompress" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyMoreApp_Compress" targetId="MoreApp_Compress" targetModule="pdfbatchcompression" text="@PDFCompress"/>
+			<KProxyCommand autoLoad="false" customTip="CADTOPdf" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyPdfCadMutualConverter" targetId="PdfCadMutualConverter" targetModule="pdfcadmutualconverter" text="@CADTOPdf"/>
+			<KProxyCommand autoLoad="false" customTip="PDFTOCad" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyPdfAppCenterPdf2Cad" targetId="PdfAppCenterPdf2Cad" targetModule="pdfcadmutualconverter" text="@PDFTOCad"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKxScrngrabCommand" targetId="KxScrngrabCommand" targetModule="kscreengrabocr" text="@Screen Grab"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKxScrngrabCommand" targetId="KxScrngrabCommand" targetModule="kscreengrabocr" text="@Screen Grab"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKxScrngrabHideCommand" targetId="KxScrngrabHideCommand" targetModule="kscreengrabocr" text="@Hide Current Window when Grabbing Screen"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKxScrngrabOcrCommand" relatedKsoCmd="InsertPictureFromFile" targetId="KxScrngrabOcrCommand" targetModule="kscreengrabocr" text="@Screen Grab Ocr"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKxScrngrabOcrHideCommand" targetId="KxScrngrabOcrHideCommand" targetModule="kscreengrabocr" text="@Hide Current Window when Grabbing Screen"/>
+			<KAppCommand appId="kcomposekit" customTip="ComposeKit" icon="ComposeKit_ToolBar" id="app_kcomposekit_assist" text="@ComposeKit"/>
+			<KxInsertChartShowTriggerCommand customTip="InteractiveChart" hotKey="l" icon="chart_interactive_kd" id="InsertWebExtension" idKey="WPSInteractiveChart" ksoCmd="InsertWebExtension" needLogin="false" qtspyName="InteractiveChart" rbHotKey="L" text="@InteractiveChart" vipMode="3"/>
+			<KProxyCommand customTip="DocumentAuthente" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="C" icon="document_authentication_kd" id="DocumentAuthentication" rbHotKey="Q" targetModule="docpermission" text="@document authentication"/>
+			<KProxyCommand autoLoad="true" customTip="FormatProof" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="format_proof_kd" id="ProxyKsoFormatProofCmd" targetId="KsoFormatProofCmd" targetModule="ksoformatproof" text="@FormatProof"/>
+			<KxInkDrawEnterCommand customTip="InkDrawEnter" filter="reg:DisableInkDraw!=true" icon="pen_strokes_kd" id="InkDrawEnter" idKey="WspInkDrawEnter" rbHotKey="L" text="@InkDrawEnter"/>
+			<KxWpsOfficialVersionLockAreaListCommand customTip="OfficialVersionLockArea" hotKey="L" icon="official_version_lock_area_kd" id="OfficialVersionLockArea" idKey="WideOfficialEntrance" ksoCmd="OfficialVersionLockArea" rbHotKey="L" text="@Official Version LockArea">
+				<KxWpsOfficialVersionLockAreaReadOnlyGalleryCommand customTip="OfficialVersionLockAreaReadOnly" hotKey="R" id="OfficialVersionLockAreaReadOnly" rbHotKey="R" text="@OfficialVersion LockSelectedField"/>
+				<KxWpsOfficialVersionDocumentFieldExceptionGalleryCommand customTip="OfficialVersionDocumentFieldException" hotKey="O" id="OfficialVersionDocumentFieldException" rbHotKey="O" text="@OfficialVersion LockDocumentFieldException"/>
+			</KxWpsOfficialVersionLockAreaListCommand>
+			<KxWpsPrint2022Context controlPaneCmd="Print2022ControlPane" delayloadPath="commands/wps/ongmani/CT_Print2022.kuip" headerBarCmd="Print2022HeaderBar" id="Print2022Context" statusBarCmd="Print2022StatusBar"/>
+			<KAiBeautifyProxyCommand autoLoad="true" customTip="OfficialSearchComputer" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="folder_search_kd" id="ProxyAILocalsearchView" idKey="OfficialDocMaterialLibrary" targetId="AILocalsearchView" targetModule="kailocalsearchview" text="@Local search"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistOfficialDocMode" targetId="OfficialdocAssistOfficialDocMode" targetModule="kofficialdocumentassist" text="@Document Model"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="KOfficialdocAssistNewPage" targetId="KOfficialdocAssistNewPage" targetModule="kofficialdocumentassist" text="@New docucment page"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistSyllabus" targetId="OfficialdocAssistSyllabus" targetModule="kofficialdocumentassist" text="@Syllabus recommend"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistTemplateDoc" targetId="OfficialdocAssistTemplateDoc" targetModule="kofficialdocumentassist" text="@Template document"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistQuote" targetId="OfficialdocAssistQuote" targetModule="kofficialdocumentassist" text="@Document Setting"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistExtranetReference" targetId="OfficialdocAssistExtranetReference" targetModule="kofficialdocumentassist" text="@Extranet reference"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistPoetryArchaism" targetId="OfficialdocAssistPoetryArchaism" targetModule="kofficialdocumentassist" text="@Poetry archaism"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialIdiomRecommend" targetId="OfficialIdiomRecommend" targetModule="kofficialdocumentassist" text="@Idiom recommend"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistLeaderQuotations" targetId="LeaderQuotations" targetModule="kofficialdocumentassist" text="@Leader quotations"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyKOfficialdocAssistAutoFill" targetId="KOfficialdocAssistAutoFill" targetModule="kofficialdocumentassist" text="@Auto Fill"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="folder_official_materials_kd" id="ProxyKOfficialManageMaterialCenter" targetId="KOfficialManageMaterialCenter" targetModule="kofficialdocumentassist" text="@Manage Material Center"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocPoliciesRegulations" targetId="OfficialdocPoliciesRegulations" targetModule="kofficialdocumentassist" text="@Policies regulations"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocIntelligentRewriting" targetId="OfficialdocIntelligentRewriting" targetModule="kofficialdocumentassist" text="@Intelligent rewriting"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="OfficialdocAssistSyllabusLocal" targetId="OfficialdocAssistSyllabusLocal" targetModule="kofficialdocumentassist" text="@Syllabus recommend"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistTemplateDocLocal" targetId="OfficialdocAssistTemplateDocLocal" targetModule="kofficialdocumentassist" text="@Template document"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistMaterialRepertoryLocal" targetId="OfficialdocAssistMaterialRepertoryLocal" targetModule="kofficialdocumentassist" text="@Material repertory"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistPoetryArchaismLocal" targetId="OfficialdocAssistPoetryArchaismLocal" targetModule="kofficialdocumentassist" text="@Poetry archaism"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocAssistLeaderQuotationsLocal" targetId="LeaderQuotationsLocal" targetModule="kofficialdocumentassist" text="@Leader quotations"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocPoliciesRegulationsLocal" targetId="OfficialdocPoliciesRegulationsLocal" targetModule="kofficialdocumentassist" text="@Policies regulations"/>
+			<KAiBeautifyProxyCommand autoLoad="true" customTip="OfficialSearchComputer" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="folder_search_kd" id="AILocalsearchView" idKey="OfficialDocMaterialLibrary" targetModule="kailocalsearchview" text="@Local search"/>
+			<KAiBeautifyProxyCommand autoLoad="true" customTip="LocalMaterialLibrary" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="folder_search_kd" id="AILocalsearchViewLocal" idKey="OfficialDocMaterialLibrary" targetModule="kailocalsearchview" text="@Local material"/>
+			<KAiBeautifyProxyCommand autoLoad="true" customTip="OfficialSearchComputer" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="folder_search_kd" id="ProxyAILocalsearchViewNormal" idKey="OfficialDocMaterialLibrary" targetId="AILocalsearchViewNormal" targetModule="kailocalsearchview" text="@Local search"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocPolicyInterpretation" targetId="OfficialdocPolicyInterpretation" targetModule="kofficialdocumentassist" text="@Policy Interpretation"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocLeaderSpeech" targetId="OfficialdocLeaderSpeech" targetModule="kofficialdocumentassist" text="@Leader Speech"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="box_two_kd" id="ProxyOfficialDocMaterialCollection" idKey="OfficialDocMaterialLibrary" targetId="OfficialDocMaterialCollection" targetModule="kofficialdocumentassist" text="@Material collection"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialRightMenuDocMaterialCollection" idKey="OfficialDocMaterialLibrary" targetId="OfficialRightMenuDocMaterialCollection" targetModule="kofficialdocumentassist" text="@Material collection"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyOfficialdocMaterialFragment" targetId="OfficialdocMaterialFragment" targetModule="kofficialdocumentassist" text="@Material fragment"/>
+			<KAiBeautifyProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="ProxyMaterialSelectMenu" idKey="OfficialDocMaterialLibrary" targetId="MaterialSelectMenu" targetModule="kofficialdocumentassist" text="@Material collection"/>
+			<KxWpsAIGCProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwpsincparser;kwebwpsinstructioncenter" hideMiniToolBar="1" icon="aigclogo" id="ProxyWpsaigc" idKey="WpsAIGCProxy" openPosition="tab" targetId="Wpsaigc" targetModule="kwpsaigc" text="@WPS AI"/>
+			<KxWpsOfficialVersionProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="doc_official_mode_kd" id="ProxyOfficialUIModeGJBPrinting" idKey="OfficialGJBEntrance" targetId="OfficialUIModeGJBPrinting" targetModule="kwpsofficial"/>
+			<KxWpsAITypesetProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dependPlugins="kwpsincparser;kwebwpsinstructioncenter" hideMiniToolBar="1" icon="aigclogo" id="ProxyWpsaitypeset" idKey="WPSAiTypeset" openPosition="tab" targetId="Wpsaitypeset" targetModule="kwpsaigc" text="@WPS AI"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutGen" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutGenDeepLink" idKey="WPSSmartLayoutGenDeepLink" targetId="SmartLayoutGenDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutBid" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutBidDeepLink" idKey="WPSSmartLayoutBidDeepLink" targetId="SmartLayoutBidDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutContract" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutContractDeepLink" idKey="WPSSmartLayoutContractDeepLink" targetId="SmartLayoutContractDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutSample" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutSampleDeepLink" idKey="WPSSmartLayoutSampleDeepLink" targetId="SmartLayoutSampleDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutThesis" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutThesisDeepLink" idKey="WPSSmartLayoutThesisDeepLink" targetId="SmartLayoutThesisDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxWpsAITypesetProxyCommand categoryId="SmartLayoutOfficial" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="SmartLayoutOfficialDeepLink" idKey="WPSSmartLayoutOfficialDeepLink" targetId="SmartLayoutOfficialDeepLink" targetModule="kwpsaitypeset" visible="false"/>
+			<KxAIDoc2PptFileMenuProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hotKey="" icon="ai_ppt_kd" id="RbFileMenuExportToPPTAI" idKey="WpsAiToPPT" targetId="RbFileMenuExportToPPTAI" targetModule="kwpsaidoc2ppt" text="@AIExportToPpt" visible="false"/>
+			<KProxyCommand delayLoadLib="true" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" id="Doc2PptCopilot" targetId="Doc2PptCopilot" targetModule="kdoc2ppt" visible="false"/>
+			<KProxyCommand autoLoad="true" delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" icon="font_style_kd" id="ProxyWpsStyleSet" targetId="WpsStyleSet" targetModule="kwpsstyleset" text="@Style Set"/>
+			<KxAISCLingxiEntryProxyCommand delayLoadLib="false" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" hideMiniToolBar="1" icon="coworklogo" id="ProxyLingxiEntry" idKey="LingxiSelectionToolbox" targetId="LingxiEntry" targetModule="kpubaigcbox" text="@WPS AI"/>
+		</commands>
+		<dock cmd="ClassicalTaskpane"/>
+		<dock cmd="Navigationpane" dockArea="dockArea_left"/>
+		<dock cmd="Clipboardpane" dockArea="dockArea_left"/>
+		<krbtabwidget cmd="tabwidget"/>
+		<KRbQuicktoolCommand cmd="QAT" menu="QAT_Menu"/>
+		<menubar cmd="Menu Bar" delay="1" sysMenuBtn="0"/>
+		<KNoTabPageCommand cmd="NoTabPage"/>
+		<print2022context cmd="Print2022Context"/>
+		<shortcuts>
+			<shortcut cmd="Help" key="F1"/>
+			<shortcut cmd="sp_TrackChanges" key="Ctrl+Shift+E"/>
+			<shortcut cmd="sp_Find" key="Ctrl+F"/>
+			<shortcut cmd="sp_Paste" key="Ctrl+V"/>
+			<shortcut cmd="GrowFontRainbow" key="Ctrl+]"/>
+			<shortcut cmd="ShrinkFontRainbow" key="Ctrl+["/>
+			<shortcut cmd="m_rbHyperlink" key="Ctrl+K"/>
+			<shortcut cmd="SeleCTIctAll" key="Ctrl+A"/>
+			<shortcut cmd="m_rbInsertBookmark" key="Shift+Ctrl+F5"/>
+			<shortcut cmd="FormatPainter" key="Meta+Shift+C"/>
+			<shortcut cmd="FormatPainter" key="Ctrl+Shift+C"/>
+		</shortcuts>
+	</mainwindow>
+</shell>

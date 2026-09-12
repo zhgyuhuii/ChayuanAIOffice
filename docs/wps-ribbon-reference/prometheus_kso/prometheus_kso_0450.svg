@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>团队流程_group_process</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-green-primary {
+       fill: var(--kd-color-icon-green-primary, #20804E);
+       stroke: var(--kd-color-icon-green-primary, #20804E);
+       km_fill: #20804E;
+       km_stroke: #20804E;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-1" class="kd-color-icon-green-primary kd-stroke-width-icon-regular">
+<path id="Vector 3087" d="M15.3019 17.8L17.5019 20L23.0019 14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="Vector 3086" d="M12.8765 20.5H3.5C3.22386 20.5 3 20.2761 3 20V2C3 1.72386 3.22386 1.5 3.5 1.5H21.5C21.7761 1.5 22 1.72386 22 2L22 12" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3088" d="M5.00116 4.5V5.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3089" d="M5.00116 7.5V8.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3090" d="M5.00116 10.5V11.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3091" d="M5.00116 13.5V14.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3092" d="M5.00116 16.5V17.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3093" d="M8.00018 13.5H13.0002" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3094" d="M8.00018 11.5H17.0002" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3095" d="M8.00018 8.5V6.5H17.0002V8.5H8.00018Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3096" d="M20 4.5V5.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3097" d="M20 7.5V8.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="Vector 3098" d="M20 10.5V11.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+
+</svg>

@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="wpp_ongmani.ct_view" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand aid="876" customTip="Normal" faceid="28" hotKey="n" icon="view_normal_view_kd" id="Normal" ksoCmd="Normal" needLogin="false" rbHotKey="L" text="@Normal"/>
+		<KxLegacyTriggerCommand aid="968" customTip="SlideSorter" faceid="29" hotKey="s" icon="slide_show_kd" id="SlideSorter" ksoCmd="SlideSorter" needLogin="false" rbHotKey="I" text="@Slide &#10;Sorter"/>
+		<KxLegacyTriggerCommand customTip="ReadingView" icon="book_kd" id="SlideShowReading" ksoCmd="SlideShowReading" needLogin="false" text="@Reading View"/>
+		<KxLegacyTriggerCommand customTip="NotesPageView" icon="notes_page_kd" id="NotesPage" ksoCmd="NotesPage" needLogin="false" text="@Notes Page"/>
+		<KListCommand groupTip="PresentationViewGroup" icon="view_normal_view_kd" id="RB_PresView" rbFileMenuEmbed="1" text="@Presentation View">
+			<command idQ="Normal"/>
+			<command idQ="SlideSorter"/>
+			<command idQ="NotesPage"/>
+			<command idQ="SlideShowReading"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="971" customTip="SlideMaster" faceid="30" hotKey="s" icon="view_master_layout_kd" id="SlideMaster" ksoCmd="SlideMaster" rbHotKey="M" text="@Slide &#10;Master"/>
+		<KxLegacyTriggerCommand customTip="NotesMaster" icon="notes_master_kd" id="NotesMaster" ksoCmd="NotesMaster" spaceHint="suitable" text="@Notes Master"/>
+		<KxLegacyTriggerCommand customTip="HandoutMaster" icon="handout_master_kd" id="HandoutMaster" ksoCmd="HandoutMaster" spaceHint="suitable" text="@Handout Master"/>
+		<KListCommand groupTip="MasterViewGroup" icon="view_master_layout_kd" id="RB_MasterView" rbFileMenuEmbed="1" text="@Master View">
+			<KxLegacyTriggerCommand aid="971" customTip="SlideMaster" faceid="30" hotKey="s" icon="view_master_layout_kd" id="SlideMasterInViewTab" ksoCmd="SlideMaster" qtspyName="SlideMaster" rbHotKey="M" text="@Slide &#10;Master"/>
+			<command idQ="HandoutMaster"/>
+			<command idQ="NotesMaster"/>
+		</KListCommand>
+		<KListCommand groupTip="ShowGroup" horizontalSpacing="0" icon="line_reference_kd" id="RB_Show" rbFileMenuEmbed="1" text="@Show">
+			<KxSingleRowMergeGroupCommand customTip="ShowGroup" icon="line_reference_kd" id="SingleRow_Show" text="@Show"/>
+			<KxLegacyTriggerCommand customTip="GridGuides" hotKey="i" icon="line_reference_kd" id="GridGuidesInViewTab" ksoCmd="GridGuides" qtspyName="GridGuides" rbHotKey="X" singlerowmergegroup="SingleRow_Show" text="@Grid and&#10;Guides"/>
+			<KxCheckBoxCommand customTip="ShowHideGrid" id="ShowOrHideGrid" ksoCmd="ShowHideGrid" qtspyName="ShowHideGrid" rbHotKey="G" singlerowmergegroup="SingleRow_Show" spaceHint="suitable" text="@View Gridlines"/>
+			<KxTaskPaneCheckBoxCommand customTip="TaskPane" hotKey="k" id="ShowOrHideTaskPane" ksoCmd="TaskPane" qtspyName="TaskPane" rbHotKey="K" singlerowmergegroup="SingleRow_Show" spaceHint="suitable" text="@Task Window"/>
+			<KxCheckBoxCommand customTip="Ruler" hotKey="r" id="ShowOrHideRuler" ksoCmd="Ruler" qtspyName="Ruler" rbHotKey="R" singlerowmergegroup="SingleRow_Show" spaceHint="suitable" text="@Ruler"/>
+			<KxCheckBoxCommand id="ShowOrHideGuides" ksoCmd="DisplayGuides" qtspyName="ShowOrHideGuides" singlerowmergegroup="SingleRow_Show" spaceHint="suitable" text="@Display Drawing Guides On Screen"/>
+		</KListCommand>
+		<KListCommand groupTip="ZoomGroup" icon="screen_zoom_kd" id="RB_Zoom" rbFileMenuEmbed="1" text="@Zoom">
+			<KxLegacyTriggerCommand customTip="Zoom" hotKey="z" icon="screen_zoom_kd" id="ZoomInViewTab" ksoCmd="Zoom" needLogin="false" qtspyName="Zoom" rbHotKey="Q" text="@Zoom Shown"/>
+			<KxWppZoomFitCommand customTip="ZoomFit" icon="screen_fit_kd" id="ZoomFitInViewTab" needLogin="false" qtspyName="ZoomFit" rbHotKey="F" text="@Fit to&#10;Window"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="620" controlType="0" customTip="NewWindow" hotKey="n" icon="window_add_kd" id="rNewWindow" idMso="WindowNew" ksoCmd="NewWindow" rbHotKey="N" text="@New&#10;Window"/>
+		<KxCurrentFileMRUCommand autoShortCut="1" id="CurrentFileList" text="Current File List"/>
+		<KxCurrentFileMRUCommand autoShortCut="1" id="CurrentFileList" text="Current File List"/>
+		<KListCommand groupTip="WindowGroup" icon="window_unhide_kd" id="RB_Window" rbFileMenuEmbed="1" text="@Window">
+			<KxSingleRowMergeGroupCommand customTip="WindowGroup" icon="window_unhide_kd" id="SingleRow_Window" text="@Window"/>
+			<KListCommand customTip="ArrangeAll" icon="window_reset_kd" id="ArrangeAll" idKey="WindowsArrangeAll" qtspyName="WindowReset" rbHotKey="A" singlerowmergegroup="SingleRow_Window" text="@Arrange&#10;All">
+				<KxHorzTileCommand hotKey="O" icon="horizontal_tile_kd" id="HorizontalTileInViewTab" qtspyName="HorizontalTile" text="@Tile Horizontal"/>
+				<KxVertTileCommand hotKey="V" icon="window_vert_tile_kd" id="VerticalTileInViewTab" qtspyName="VerticalTile" text="@Vertical"/>
+				<KxCascadeCommand hotKey="C" icon="cascade_kd" id="CascadeInViewTab" qtspyName="Cascade" text="@Cascade"/>
+			</KListCommand>
+			<command filter="support:ShieldMode=false" idQ="rNewWindow" singlerowmergegroup="SingleRow_Window"/>
+		</KListCommand>
+		<KxMacroListCommand controlType="16" customTip2="sp_Macros2" customTip="RunJSMacro" icon="js_macro_kd" id="sp_Macros" idMso="GroupMacros" ksoCmd="RunMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@JS Macros">
+			<KxRunMacroCommand customTip="RunJSMacro" hotKey="m" icon="js_macro_kd" id="MacrosInViewTab" ksoCmd="RunMacro" qtspyName="RunJSMacro" rbHotKey="PM" shortcutHint="Alt+F8" text="@JS Macros"/>
+			<KxMacroCommand dialogHint="1" hotKey="s" icon="security_kd" id="MacrosSecurity" ksoCmd="Security" qtspyName="Security" rbHotKey="AS" text="@Security"/>
+			<KxDevelopEditorCommand controlType="0" customTip="JavaScriptEditor" hotKey="d" icon="edit_code_kd" id="DevelopEditorInViewTab" idMso="VisualBasic" ksoCmd="DevelopEditor" qtspyName="DevelopEditor" rbHotKey="DE" shortcutHint="Alt+F11" text="@WPS Macro Editor"/>
+		</KxMacroListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_View">
+			<command idQ="RB_PresView"/>
+			<separator/>
+			<command idQ="RB_MasterView"/>
+			<separator/>
+			<command idQ="RB_Show"/>
+			<separator/>
+			<command idQ="RB_Zoom"/>
+			<separator/>
+			<command idQ="RB_Window"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_review" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxListCommand customTip="CheckSpelling" forceVisible="1" icon="spell_check_kd" id="CheckSpellingToolBar" idKey="SpellCheck" ksoCmd="CheckSpelling" rbHotKey="S" shortcutHint="F7" text="@Spell Check">
+			<command idQ="CheckSpelling"/>
+			<command idQ="SetSpellcheckLanguageCommand"/>
+		</KxListCommand>
+		<KAppCommand appCmdObj="OpenappWithDocPath" appId="AK20220415DGHHFM" customTip="appcmd_kpromedocdiff_review_compare" icon="doc_comparison_kd" id="app_kpromedocdiff_review_compare" text="@app_kpromedocdiff" vipMode="2"/>
+		<KListCommand groupTip="ProofingGroup" icon="doc_tick_kd" id="RB_Proofing" rbFileMenuEmbed="1" text="@Proofing">
+			<KxAIProofreadProxyCommand autoLoad="false" customTip="Proofread" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="doc_tick_kd" id="ProxyWppProofreadCmd" idKey="CommonSupportProofread" idMso="ProxyWppProofreadCmd" targetId="WppProofreadCmd" targetModule="kproofread" text="@Proofread"/>
+			<command idQ="OpenThesaurus"/>
+			<command idQ="CheckSpellingToolBar"/>
+			<command idKey="WpsCompareWithOtherDoc" idQ="app_kpromedocdiff_review_compare"/>
+			<command idKey="OldSpeaker" idQ="OldTextToSpeechOption"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="doc_voice_reading_kd" id="AISpeaker" idKey="WppCTReviewTextToSpeechOption" rbHotKey="A" text="@AISpeaker"/>
+			<KAppCommand appId="kwpsai_speaker" hotKey="a" icon="TextSpeech" id="AISpeaker" idKey="AISpeaker_TextSpeech" rbHotKey="A" text="@Text Speech"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand aid="1154" hotKey="e" id="EraseMarkupsOnSlide" ksoCmd="EraseMarkupsOnSlide" rbHotKey="E" text="@Erase Markups on Slide"/>
+		<KxLegacyTriggerCommand aid="1155" hotKey="a" id="EraseAllMarkups" ksoCmd="EraseAllMarkups" rbHotKey="A" text="@Erase All Markups"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="PreComment" icon="previous_comment_kd" id="PreComment" idMso="ReviewPreviousComment" ksoCmd="PreComment" rbHotKey="v" spaceHint="autocompact" text="@Previous"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="NextComment" icon="previous_next_comment_kd" id="NextComment" idMso="ReviewNextComment" ksoCmd="NextComment" rbHotKey="n" spaceHint="autocompact" text="@Next"/>
+		<KxLegacyTriggerCommand hotKey="t" icon="bubble_delete_kd" id="DelSlideComment" ksoCmd="DelSlideComment" rbHotKey="t" text="@Delete Comment"/>
+		<KxLegacyTriggerCommand hotKey="k" icon="delete_slide_mark_kd" id="DelSlideMark" ksoCmd="DelSlideMark" rbHotKey="k" text="@Delete All Mark on The Current Slide"/>
+		<KxLegacyTriggerCommand hotKey="n" icon="delete_slide_mark_kd" id="DelPresentationMark" ksoCmd="DelPresentationMark" rbHotKey="n" text="@Delete All Mark in This Presentation"/>
+		<KListCommand groupTip="ReviewCommentGroup" icon="bubble_add_kd" id="RB_Markup" rbFileMenuEmbed="1" text="@Markup">
+			<KxLegacyTriggerCommand customTip="NewComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentInReviewTab" ksoCmd="NewComment" qtspyName="NewComment" rbHotKey="m" text="@New Comment"/>
+			<KListCommand customTip="DeleteComment" icon="bubble_delete_kd" id="DeleteCommentInReviewTab" qtspyName="RejectComment" rbHotKey="d" text="@Delete Comment">
+				<command idQ="DelSlideComment"/>
+				<command idQ="DelSlideMark"/>
+				<command idQ="DelPresentationMark"/>
+			</KListCommand>
+			<command idQ="PreComment" singlerowfoldgroup="comment_pair"/>
+			<command idQ="NextComment" singlerowfoldgroup="comment_pair"/>
+			<separator/>
+			<KxListCommand icon="bubble_eye_kd" id="CommentsGroup" ksoCmd="CommentsPane" rbHotKey="C" text="@Show/Hide Mark">
+				<KxLegacyTriggerCommand hotKey="p" id="Comments Pane" ksoCmd="CommentsPane" rbHotKey="P" text="@Comments Pane"/>
+				<KxLegacyTriggerCommand hotKey="m" id="Show Tags" ksoCmd="ShowHideMark" rbHotKey="M" text="@Show Markup"/>
+				<KxLegacyTriggerCommand hotKey="a" id="Show Advanced Tags" ksoCmd="ShowAdvancedTags" rbHotKey="A" text="@Show Advanced Markup"/>
+			</KxListCommand>
+		</KListCommand>
+		<KxListCommand filter="reg:DisableInkDraw!=true" groupTip="InkDrawGroup" icon="pen_strokes_kd" id="RB_InkDrawEnter" text="@InkDrawEnter">
+			<command idQ="InkDrawEnter"/>
+		</KxListCommand>
+		<KxListCommand customTip="ChineseTranslation" groupTip="LanguageGroup" icon="translation_kd" id="RB_TransToTradChinese" idKey="ChineseTranslation" ksoCmd="ChineseTranslation" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Language">
+			<command idQ="Doctranslate_Review"/>
+			<KxLegacyTriggerCommand controlType="0" customTip="SimplifiedChinese" hotKey="s" icon="translate_to_simplified_chinese_kd" id="TranslateToSimplifiedChineseInReviewTab" idMso="TranslateToSimplifiedChinese" ksoCmd="TranslateToSimplifiedChinese" qtspyName="TranslateToSimplifiedChinese" rbHotKey="OS" spaceHint="suitable" text="@Convert to Simplified Chinese"/>
+			<KxLegacyTriggerCommand customTip="TraditionalChinese" hotKey="t" icon="translate_to_traditional_chinese_kd" id="TranslateToTraditionalChinese" ksoCmd="TranslateToTraditionalChinese" rbHotKey="OT" spaceHint="suitable" text="@Convert to Traditional Chinese"/>
+			<KxLegacyTriggerCommand customTip="ChineseTranslation" hotKey="h" icon="traditional_simplified_kd" id="SwitchSimplifiedAndTraditionalChinese" idKey="LogicGroupShowExtensionButton" ksoCmd="ChineseTranslation" qtspyName="ChineseTranslation" rbHotKey="OC" text="@Conversion"/>
+		</KxListCommand>
+		<KListCommand groupTip="DocumentSecurityGroup" icon="document_authentication_kd" id="RB_Security" rbFileMenuEmbed="1" text="@Document Security" visibleDependsOnSubCmds="1">
+			<KxCurUserPermissionCommand filter="support:OnlineSecurityDocument=true" icon="merge_cell_kd" id="CheckMinePermission" qtspyName="MergeCenter" text="@Check Mine Permission"/>
+			<KxCheckPermissionsCommand filter="support:OnlineSecurityDocument=true" icon="brush_kd" id="CheckUsersPermissions" qtspyName="FormatPainter" text="@Check Users Permissions"/>
+			<KProxyCommand defaultPage="Account" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" enterpriseWebPageUrl="/webdlg/myright.html" hotKey="i" icon="people_key_kd" id="CheckMyPermissionInReviewTab" idKey="CheckMinePermissionInRerview" idMso="ReviewCheckMinePermission" qtspyName="CheckMinePermission" rbHotKey="I" targetModule="docpermission" text="@Check Mine Permission"/>
+			<KxSingleRowMergeGroupCommand customTip="DocumentSecurityGroup" icon="document_authentication_kd" id="SingleRow_Security" text="@Document Security"/>
+			<KProxyCommand canHideText="0" customTip="DocPermissionProtection" defaultPage="Account" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" hotKey="p" icon="doc_encryption_kd" id="AccountEncryptionInReviewTab" idKey="DocSecurityPermission" idMso="ReviewDocumentsEncryption" infoNum="4" qtspyName="DocumentsPremissions" rbHotKey="PE" singlerowmergegroup="SingleRow_Security" targetModule="docpermission" text="@Document Permission"/>
+			<KAppQuickMenuCommand appId="kdocfinalizedmgr" canHideText="0" customTip="kdocfinalized" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_list_tab" idKey="EtOrWppAppQuickMenu" idMso="ReviewDocumentsFinalized" singlerowmergegroup="SingleRow_Security" text="@app doc kdocfinalized">
+				<KAppCommand appId="kdocfinalizedmgr" customTip="kdocfinalized" hotKey="f" icon="doc_finalized_kd" id="app_kdocfinalizedmgr_tab" rbHotKey="F" text="@app doc kdocfinalized"/>
+				<KAppCommand appId="kdocfinalizedlist" customTip="kdocfinalizedlist" hotKey="l" icon="finalized_document_list_kd" id="app_kdocfinalizedlist_tab" rbHotKey="L" text="@app doc kdocfinalized list"/>
+			</KAppQuickMenuCommand>
+		</KListCommand>
+		<KListCommand id="RB_Translation" idKey="WPPRBTranslation">
+			<KAppSyncTranslateCommand aiControlName="ai_parallel_translate" appId="kimmersivetranslate" customTip="SyncTranslate" entrance="wps_review_tab&amp;module=wps&amp;sub_module=review_tab&amp;new_position=top_bar_review_tab" icon="appcmd_immersivetranslate" id="app_immersive_translate_review" idKey="CommonFullTextTranslate" text="@Sync Translate"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Review">
+			<command idQ="RB_Proofing"/>
+			<separator idKey="CTPreviewCustomStyle"/>
+			<command idQ="RB_Markup"/>
+			<separator/>
+			<command idQ="RB_InkDrawEnter"/>
+			<separator idKey="CTPreviewCustomStyle"/>
+			<command idQ="RB_Translation"/>
+			<command idKey="CTPreviewCustomStyle" idQ="RB_TransToTradChinese"/>
+			<separator/>
+			<command idQ="RB_Security"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_studenttools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<import path="CT_View.kuip"/>
+	<import path="wppcommon.kuip"/>
+	<import path="CT_DrawingTools.kuip"/>
+	<import path="PopupMenu.kuip"/>
+	<import path="CT_Insert.kuip"/>
+	<import path="CT_PictureTool.kuip"/>
+	<import path="CT_Review.kuip"/>
+	<commands>
+		<KxLegacyTriggerCommand aid="876" customTip="Normal" faceid="28" hotKey="n" icon="view_normal_view_kd" id="Normal" ksoCmd="Normal" rbHotKey="L" text="@Normal"/>
+		<KxLegacyTriggerCommand aid="968" customTip="SlideSorter" faceid="29" hotKey="s" icon="slide_show_kd" id="SlideSorter" ksoCmd="SlideSorter" rbHotKey="I" text="@Slide &#10;Sorter"/>
+		<KxLegacyTriggerCommand customTip="NotesPageView" icon="notes_page_kd" id="NotesPage" ksoCmd="NotesPage" text="@Notes Page"/>
+		<KListCommand icon="view_normal_view_kd" id="RB_SPresView" rbFileMenuEmbed="1" text="@Presentation View">
+			<command idQ="Normal"/>
+			<command idQ="NotesPage"/>
+			<command idQ="SlideSorter"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="NotesMaster" icon="notes_master_kd" id="NotesMaster" ksoCmd="NotesMaster" spaceHint="suitable" text="@Notes Master"/>
+		<KxLegacyTriggerCommand customTip="HandoutMaster" icon="handout_master_kd" id="HandoutMaster" ksoCmd="HandoutMaster" spaceHint="suitable" text="@Handout Master"/>
+		<KListCommand icon="handout_master_kd" id="RB_SMasterView" rbFileMenuEmbed="1" text="@Master View">
+			<command idQ="HandoutMaster"/>
+			<command idQ="NotesMaster"/>
+		</KListCommand>
+		<KxLegacyTriggerCommandEx aid="493" faceid="214" hotKey="h" icon="text_frame_kd" id="InsertTextboxHorizontal" ksoCmd="InsertTextboxHorizontal" rbHotKey="H" text="@Horizontal"/>
+		<KxLegacyTriggerCommandEx aid="494" faceid="215" hotKey="v" icon="text_frame_vertical_kd" id="InsertTextboxVertical" ksoCmd="InsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+		<KxListTextBoxCommand customTip2="TextBox2" customTip="TextBox" hLayout="false" headerText="@Local Text Box" hotKey="h" icon="text_frame_kd" id="SInsertTextbox" isCefPopup="true" ksoCmd="InsertTextboxHorizontal" qtspyName="InsertTextboxHorizontal" rbHotKey="X" text="@Text Box">
+			<command idQ="InsertTextboxHorizontal"/>
+			<command idQ="InsertTextboxVertical"/>
+		</KxListTextBoxCommand>
+		<KOCRToolCommand customTip="PictureToText" hotKey="PT" icon="scan_ocr_kd" id="OCRToolCmd_inserttool" rbHotKey="PT" text="@Picture to Text"/>
+		<KxListPicturesCommand customTip2="InsertOnlinePicture" customTip="InsertPictureFromFile" detail="@Insert Picture" hotKey="p" icon="pic_kd" id="SInsert_InsertPictureFromFile" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<KxLegacyTriggerCommand customTip="InsertPictureFromFile" detail="@Insert Picture" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="InsertPictureInInsertTab" idMso="PictureInsertFromFilePowerPoint" ksoCmd="InsertPictureFromFile" qtspyName="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+			<KxInsertPicturesToMultiSlide hotKey="S" icon="pic_insert_to_multi_slide_kd" id="InsertPicturesToMultiSlide" idKey="InsertPicturesIntoMultiSlides" qtspyName="InsertPicturesToMultiSlide" text="@Insert Picture To Multiple Slides"/>
+			<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" hotKey="m" icon="camera_kd" id="InsertPictureFromPhonePicture" idKey="WppInsertPhonePicture" rbHotKey="M" relatedKsoCmd="InsertPictureFromFile" targetId="InsertPictureFromPhonePicture" targetModule="kphonepicture" text="@From Phone"/>
+			<command filter="support:OCRTool=true" idKey="OCRToolCmd_inserttool" idQ="OCRToolCmd_inserttool"/>
+			<command idQ="InsertOnlinePictureFromFileInInsertTab"/>
+		</KxListPicturesCommand>
+		<KxGalleryShapesCommand customTip="DynamicShape" galleryWidth="416" icon="shape_kd" id="SShape" idMso="ShapesInsertGallery" ksoCmd="DynamicShape" rbHotKey="SH" text="@Shapes" triggerAble="0">
+			<command idQ="ProcessOnEntry"/>
+		</KxGalleryShapesCommand>
+		<KListCommand icon="pic_kd" id="RB_SImages" rbFileMenuEmbed="1" text="@Images">
+			<command idQ="SInsertTextbox"/>
+			<command idQ="SInsert_InsertPictureFromFile"/>
+			<command idQ="SShape"/>
+			<command idQ="InsertScreenGrab"/>
+		</KListCommand>
+		<KListCommand icon="math_latex_kd" id="RB_SSymbol" rbFileMenuEmbed="1" text="@Math">
+			<command idQ="EquationInsertGallery"/>
+			<command idQ="DocerSymbol"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="NewComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="NewComment" idMso="ReviewNewComment" ksoCmd="NewComment" rbHotKey="m" text="@New &#10;Comment"/>
+		<KxAnimaPreviewCommand customTip="SlidePreview" icon="play_current_slide_kd" id="AnimaPreview" ksoCmd="AnimaPreview" rbHotKey="P" text="@Preview"/>
+		<KListCommand icon="bubble_add_kd" id="RB_SMarkup" rbFileMenuEmbed="1" text="@Markup">
+			<command idQ="InkDrawEnter"/>
+			<KxLegacyTriggerCommand customTip="NewComment" hotKey="m" icon="bubble_add_kd" iconQat="bubble_add_kd" id="InsertCommentInReviewTab" ksoCmd="NewComment" qtspyName="NewComment" rbHotKey="m" text="@New &#10;Comment"/>
+			<command idQ="AnimaPreview"/>
+			<KxWppAnnoteAsPdfCommand customTip="AnnoteAsPdf" hotKey="G" icon="bubble_kd" id="AnnoteAsPdf" qtspyName="AnnoteAsPdf" rbHotKey="G" text="@Annote As Pdf"/>
+			<KFileCollectCommand customTip="FileCollect" icon="box_two_kd" id="FileCollect" text="@File Collect"/>
+		</KListCommand>
+		<KListCommand id="RB_CloseStudentToolsContext" text="@Close">
+			<KxWppStudentToolCloseCommand customTip="CloseStudentTools" hotKey="G" icon="close_window_kd" id="CloseStudentToolsTab" qtspyName="CloseWindow" rbHotKey="G" text="@Close"/>
+		</KListCommand>
+		<KListCommand customTip="Student_FeedBack" hotKey="b" icon="emojis_kd" id="StudentFeedBack" rbFileMenuEmbed="1" rbHotKey="B" text="@Feedback">
+			<KxFeedbackMenuItemCommand customTip="Feed Back" feedbackOpt="1" from="wpp_studentTool" hotKey="c" icon="student_like" id="FeedbackLike" rbHotKey="C" text="@I like the Student Tools, because..."/>
+			<KxFeedbackMenuItemCommand customTip="Feed Back" from="wpp_studentTool" hotKey="d" icon="student_dislike" id="FeedbackDislike" rbHotKey="D" text="@I don't like the Student Tools, because..."/>
+			<KxFeedbackMenuItemCommand customTip="Feed Back" feedbackOpt="3" from="wpp_studentTool" hotKey="e" icon="student_suggestion" id="FeedbackSuggestion" rbHotKey="E" text="@I have a suggestion"/>
+			<KxRecommendWpsCommand customTip="Feed Back" hotKey="f" icon="student_recommend" id="recommendWps" rbHotKey="F" text="@Recommend to friends"/>
+		</KListCommand>
+		<KListCommand id="RB_Feedback" rbFileMenuEmbed="1" text="@Feedback">
+			<command idQ="StudentFeedBack"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_StudentTools">
+			<command idQ="RB_SPresView"/>
+			<command idQ="RB_SMasterView"/>
+			<separator/>
+			<command idQ="RB_SImages"/>
+			<separator/>
+			<command idQ="RB_SSymbol"/>
+			<separator/>
+			<command idQ="RB_SMarkup"/>
+			<separator/>
+			<command idQ="RB_Feedback"/>
+			<command idQ="RB_CloseStudentToolsContext"/>
+		</subcommand>
+	</subcommands>
+</shell>

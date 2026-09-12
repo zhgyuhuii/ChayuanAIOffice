@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_formulas" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand controlType="0" customTip="AutoSum" hotKey="s" icon="math_formula_kd" id="rSum" idMso="AutoSum" ksoCmd="Sum" rbHotKey="S" text="@Sum"/>
+		<KxLegacyTriggerCommand aid="842" controlType="0" customTip="Average" hotKey="a" icon="math_average_kd" id="Average" idMso="AutoSumAverage" ksoCmd="Average" rbHotKey="A" text="@Average"/>
+		<KxLegacyTriggerCommand aid="843" controlType="0" customTip="Count" hotKey="c" icon="math_count_kd" id="Count" idMso="AutoSumCount" ksoCmd="Count" rbHotKey="C" text="@Count"/>
+		<KxLegacyTriggerCommand aid="844" controlType="0" customTip="Max" hotKey="m" icon="math_maximum_kd" id="Max" idMso="AutoSumMax" ksoCmd="Max" rbHotKey="M" text="@Max"/>
+		<KxLegacyTriggerCommand aid="845" controlType="0" customTip="Min" hotKey="i" icon="math_minimum_kd" id="Min" idMso="AutoSumMin" ksoCmd="Min" rbHotKey="I" text="@Min"/>
+		<KxLegacyTriggerCommand aid="846" controlType="0" customTip="Morefunctions" dialogHint="1" hotKey="f" icon="math_more_functions_kd" id="Morefunctions" idMso="AutoSumMoreFunctions" ksoCmd="Morefunctions" rbHotKey="F" text="@More&#10;Functions"/>
+		<KxListCommand controlType="15" customTip2="sp_AutoSum2" customTip="sp_AutoSum" icon="math_formula_kd" id="sp_AutoSum_01" idMso="AutoSumMenu" isSendRibbonClose="true" ksoCmd="AutoSum" rbHotKey="U" text="@Sum">
+			<command idQ="rSum"/>
+			<command idQ="Average"/>
+			<command idQ="Count"/>
+			<command idQ="Max"/>
+			<command idQ="Min"/>
+			<separator/>
+			<command idQ="Morefunctions"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_sp_AutoSum_01" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxListCommand>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" hotKey="f" icon="math_function_kd" id="FuncLibInsertFunction" idMso="FunctionWizard" ksoCmd="Function" rbHotKey="F" text="@Insert&#10;Function"/>
+		<KxEtFuncCatListCommand customTip="RecenttlyUsed" icon="star_kd" id="FuncCatRecenttlyUsed" ksoCmd="FormulaMenuInsertFunction" rbHotKey="R" text="@Recently &#10;Used">
+			<KxEtFunctionLibraryCommand catIdx="0" disableCustomRibbon="true" id="FuncCatRecenttlyUsed2" ksoCmd="FormulaMenuInsertFunction" text="@Recently &#10;Used"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatRecenttlyUsed" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="AllFunction" icon="math_more_functions_kd" id="FuncCatAllFunction" ksoCmd="FormulaMenuInsertFunction" rbHotKey="W" text="@All">
+			<KxEtFunctionLibraryCommand catIdx="1" disableCustomRibbon="true" id="FuncCatAllFunction2" ksoCmd="FormulaMenuInsertFunction" text="@All"/>
+			<command idQ="FuncLibInsertFunction"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="Financial" dynamicSpaceHint="loose;suitable" icon="financial_kd" id="FuncCatFinancial" ksoCmd="FormulaMenuInsertFunction" rbHotKey="I" text="@Financial">
+			<KxEtFunctionLibraryCommand catIdx="2" disableCustomRibbon="true" id="FuncCatFinancial2" ksoCmd="FormulaMenuInsertFunction" text="@Financial"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatAllFunction" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="Logical" dynamicSpaceHint="loose;suitable" icon="logic_kd" id="FuncCatLogical" ksoCmd="FormulaMenuInsertFunction" rbHotKey="L" text="@Logical">
+			<KxEtFunctionLibraryCommand catIdx="9" disableCustomRibbon="true" id="FuncCatLogical2" ksoCmd="FormulaMenuInsertFunction" text="@Logical"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatLogical" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="FuncCatText" dynamicSpaceHint="loose;suitable" icon="text_kd" id="FuncCatText" ksoCmd="FormulaMenuInsertFunction" rbHotKey="T" text="@Text">
+			<KxEtFunctionLibraryCommand catIdx="8" disableCustomRibbon="true" id="FuncCatText2" ksoCmd="FormulaMenuInsertFunction" text="@Text"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatText" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="FuncCatDateAndTime" dynamicSpaceHint="loose;suitable" icon="date_and_time_kd" id="FuncCatDateAndTime" ksoCmd="FormulaMenuInsertFunction" rbHotKey="E" text="@Date and&#10;Time">
+			<KxEtFunctionLibraryCommand catIdx="3" disableCustomRibbon="true" id="FuncCatDateAndTime2" ksoCmd="FormulaMenuInsertFunction" text="@Date and&#10;Time"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatDateAndTime" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="LookupAndReference" dynamicSpaceHint="loose;suitable" icon="find_references_kd" id="FuncCatLookupAndReference" ksoCmd="FormulaMenuInsertFunction" rbHotKey="O" text="@Lookup and&#10;Reference">
+			<KxEtFunctionLibraryCommand catIdx="6" disableCustomRibbon="true" id="FuncCatLookupAndReference2" ksoCmd="FormulaMenuInsertFunction" text="@Lookup and&#10;Reference"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatLookupAndReference" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand customTip="MathAndTrig" dynamicSpaceHint="loose;suitable" icon="math_trigonometric_kd" id="FuncCatMathAndTrig" ksoCmd="FormulaMenuInsertFunction" rbHotKey="G" text="@Math and&#10;Trig">
+			<KxEtFunctionLibraryCommand catIdx="4" disableCustomRibbon="true" id="FuncCatMathAndTrig2" ksoCmd="FormulaMenuInsertFunction" text="@Math and&#10;Trig"/>
+			<command idQ="FuncLibInsertFunction"/>
+			<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatMathAndTrig" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+		</KxEtFuncCatListCommand>
+		<KxEtFuncCatListCommand controlType="15" customTip="FuncCatMoreFunctions" icon="math_more_functions_kd" id="FuncCatMoreFunctions" idMso="FormulaMoreFunctionsMenu" ksoCmd="FormulaMenuInsertFunction" rbHotKey="Q" text="@More&#10;Functions">
+			<KxEtFuncCatListCommand hotKey="S" icon="statistics_kd" id="FuncCatStatistical" ksoCmd="FormulaMenuInsertFunction" text="@Statistical">
+				<KxEtFunctionLibraryCommand catIdx="5" disableCustomRibbon="true" id="FuncCatStatistical2" ksoCmd="FormulaMenuInsertFunction" text="@Statistical"/>
+				<command idQ="FuncLibInsertFunction"/>
+				<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatStatistical" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+			</KxEtFuncCatListCommand>
+			<KxEtFuncCatListCommand hotKey="E" icon="engineering_kd" id="FuncCatEngineering" ksoCmd="FormulaMenuInsertFunction" text="@Engineering">
+				<KxEtFunctionLibraryCommand catIdx="16" disableCustomRibbon="true" id="FuncCatEngineering2" ksoCmd="FormulaMenuInsertFunction" text="@Engineering"/>
+				<command idQ="FuncLibInsertFunction"/>
+				<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatEngineering" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+			</KxEtFuncCatListCommand>
+			<KxEtFuncCatListCommand hotKey="I" icon="math_info_kd" id="FuncCatInformation" ksoCmd="FormulaMenuInsertFunction" text="@Information">
+				<KxEtFunctionLibraryCommand catIdx="10" disableCustomRibbon="true" id="FuncCatInformation2" ksoCmd="FormulaMenuInsertFunction" text="@Information"/>
+				<command idQ="FuncLibInsertFunction"/>
+				<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteFormula_FuncCatInformation" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+			</KxEtFuncCatListCommand>
+		</KxEtFuncCatListCommand>
+		<KListCommand groupTip="FunctionLibraryGroup" icon="math_more_functions_kd" id="RB_Function_library" rbFileMenuEmbed="1" text="@Function Library">
+			<KxSingleRowMergeGroupCommand customTip="FunctionLibraryGroup" icon="math_more_functions_kd" id="SingleRow_FuncCatFinancial" text="@Function Library"/>
+			<command idQ="FuncCatFinancial" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatLogical" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatText" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatDateAndTime" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatLookupAndReference" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatMathAndTrig" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+			<command idQ="FuncCatMoreFunctions" singlerowmergegroup="SingleRow_FuncCatFinancial"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="NameManager" icon="name_management_kd" id="Name_Manager" idMso="NameManager" ksoCmd="NameManager" rbHotKey="N" shortcutHint="Ctrl+F3" text="@Name&#10;Manager"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="NameDefine" id="Name_New" idMso="NameDefine" ksoCmd="NewName" rbHotKey="M" text="@New Name"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="NamePaste" hotKey="s" icon="form_name_paste_kd" id="rNamePaste" idMso="NamePasteName" ksoCmd="NamePaste" rbHotKey="S" spaceHint="suitable" text="@Paste"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="NameCreate" hotKey="c" icon="specify_kd" id="rNameCreate" idMso="NameCreateFromSelection" ksoCmd="NameCreate" rbHotKey="C" spaceHint="suitable" text="@Create"/>
+		<KListCommand controlType="15" groupTip="DefinedNameGroup" icon="name_management_kd" id="RB_Define_Names" idMso="NameDefineMenu" rbFileMenuEmbed="1" text="@Defined Names">
+			<KxSingleRowMergeGroupCommand customTip="DefinedNameGroup" icon="name_management_kd" id="SingleRow_Define_Names" text="@Defined Names"/>
+			<command idQ="Name_Manager" singlerowmergegroup="SingleRow_Define_Names"/>
+			<command idQ="rNameCreate" singlerowmergegroup="SingleRow_Define_Names"/>
+			<command idQ="rNamePaste" singlerowmergegroup="SingleRow_Define_Names"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="EvaluateFormula" icon="evaluate_formula_kd" id="rEvaluateFormula" idMso="FormulaEvaluate" ksoCmd="EvaluateFormula" rbHotKey="v" spaceHint="suitable" text="@Evaluate Formula"/>
+		<KxLegacyTriggerCommand customTip="CircularReferences" hotKey="y" icon="circular_references_kd" id="rCircularReferences" ksoCmd="CircularReferences" spaceHint="suitable" text="@Circular References"/>
+		<KxLegacyTriggerCommand customTip="FormulaErrorCheck" hotKey="k" icon="error_checking_kd" id="rFormulaErrorCheck" ksoCmd="FormulaErrorCheck" spaceHint="suitable" text="@Error Checking"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ShowPrecedents" icon="cell_positioning_kd" id="rShowPrecedents" idMso="TracePrecedents" ksoCmd="ShowPrecedents" rbHotKey="p" spaceHint="suitable" text="@Show Precedents"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ShowDependents" icon="positioning_dependents_kd" id="rShowDependents" idMso="TraceDependents" ksoCmd="ShowDependents" rbHotKey="d" spaceHint="suitable" text="@Show Dependents"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="ClearArrows" hotKey="a" icon="arrow_clear_kd" id="rClearArrows" idMso="TraceRemoveAllArrows" ksoCmd="ClearArrows" spaceHint="suitable" text="@Clear Arrows"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="RemovePrecedents" hotKey="p" icon="remove_precedents_kd" id="RemovePrecedents" ksoCmd="RemovePrecedents" spaceHint="suitable" text="@Remove Precedents"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="RemoveDependents" hotKey="d" icon="remove_dependents_kd" id="RemoveDependents" ksoCmd="RemoveDependents" spaceHint="suitable" text="@Remove Dependents"/>
+		<KxListCommand controlType="5" customTip="ClearArrows" icon="arrow_clear_kd" id="ClearArrow" ksoCmd="ClearArrows" rbHotKey="a" spaceHint="suitable" text="@Clear Arrows">
+			<command idQ="ClearArrows"/>
+			<command idQ="rClearArrows"/>
+			<command idQ="RemovePrecedents"/>
+			<command idQ="RemoveDependents"/>
+		</KxListCommand>
+		<KQuickMenuCommand aid="793" controlType="5" id="TabBarErrorCheck" idMso="ErrorCheckingMenu" rbHotKey="k" referenceCommand="rFormulaErrorCheck" spaceHint="suitable">
+			<command idQ="rFormulaErrorCheck"/>
+			<command idQ="rCircularReferences"/>
+		</KQuickMenuCommand>
+		<KListCommand groupTip="FormulaAuditingGroup" icon="formula_review_kd" id="RB_Formula_Auditing" needsinglerowmorebutton="true" rbFileMenuEmbed="1" text="@Formula Auditing">
+			<command idQ="rShowPrecedents" singlerowfold="1"/>
+			<command idQ="rShowDependents" singlerowfold="1"/>
+			<command idQ="ShowFormulas"/>
+			<command idQ="ClearArrow" singlerowfold="1"/>
+			<command idQ="rEvaluateFormula"/>
+			<command idQ="TabBarErrorCheck" singlerowfold="1"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="RecalculateBook" hotKey="e" icon="recalculate_book_kd" iconQat="recalculate_book_kd" id="rRecalculateBook" ksoCmd="RecalculateBook" rbHotKey="B" spaceHint="suitable" text="@Recalculate&#10;Workbook"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="CalculateSheet" hotKey="j" icon="worksheet_calculate_kd" id="rCalculateSheet" idMso="CalculateSheet" ksoCmd="CalculateSheet" rbHotKey="J" spaceHint="suitable" text="@Calculate Sheet"/>
+		<KxCalcOptionsListCommand customTip="CalaulateOption" icon="math_options_kd" id="Calculate_Options" text="@Calaulate Option">
+			<KxLegacyTriggerCommand id="Auto_Calculate" ksoCmd="CalculateOptionAuto" notshowtooltip="1" qtspyName="CalculateOptionAuto" text="@AutoCalculate"/>
+			<KxLegacyTriggerCommand id="Manual_Calculate" ksoCmd="CalculateOptionManual" notshowtooltip="1" qtspyName="CalculateOptionManual" text="@ManualCalculate"/>
+			<KxLegacyTriggerCommand id="Partial_Calculate" ksoCmd="CalculateOptionPartial" notshowtooltip="1" qtspyName="CalculateOptionPartial" text="@Automatic Except for Data Tables"/>
+			<separator/>
+			<KxEtFormulaPerfDiagCommand icon="math_completed_kd" id="FormulaPerfDiag" ksoCmd="FormulaPerfDiag" notshowtooltip="1" qtspyName="FormulaPerfDiag" text="@Formula Calculation Diagnosis"/>
+		</KxCalcOptionsListCommand>
+		<KListCommand groupTip="CalculationGroup" icon="math_options_kd" id="RB_Calculation" rbFileMenuEmbed="1" text="@Calculation">
+			<command idQ="Calculate_Options"/>
+			<command idQ="rRecalculateBook"/>
+			<command idQ="rCalculateSheet"/>
+		</KListCommand>
+		<KListCommand groupTip="FastFunctionGroup" icon="math_function_kd" id="RB_Fast_Function" text="@Fast Function">
+			<KxLegacyTriggerCommand customTip="InsertFunction" hotKey="f" icon="math_function_kd" id="FunctionInFormulasTab" ksoCmd="Function" qtspyName="Function" rbHotKey="F" text="@Insert&#10;Function"/>
+			<command idQ="sp_AutoSum_01"/>
+			<command idQ="FuncCatRecenttlyUsed"/>
+		</KListCommand>
+		<KListCommand icon="math_formula_kd" id="RB_Convenient_Formula" text="@Convenient Function" visibleDependsOnSubCmds="1">
+			<KLayoutWidgetCommand fixedWidth="3"/>
+			<KAIWriteFormulaAppQuickMenuCommand customTip="AIWriteFormula" icon="ai_math_formula_kd" id="RB_AI_Formula" idKey="EtAIWriteFormula" showCustomTipInMenu="true" text="@AI Generate Formula" visibleDependsOnSubCmds="1">
+				<KxAIGenerateFormulaSubCommand icon="ai_math_formula_kd" id="AIWriteTabFormula" idKey="EtAIWriteFormula" ksoCmd="AIGenerateFormula" qtspyName="AIGenerateFormulaSub" text="@AI Generate Formula"/>
+				<separator/>
+				<KxAISettingCommand icon="setup_kd" id="Formula_AISetting" idKey="EtAIWriteFormula" qtspyName="AISettingEntry" text="@AI Formula Setting"/>
+			</KAIWriteFormulaAppQuickMenuCommand>
+			<command idQ="app_kformulaassistant_tool"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Formulas">
+			<command idQ="RB_Fast_Function"/>
+			<separator/>
+			<command idQ="RB_Function_library"/>
+			<separator/>
+			<command idQ="RB_Convenient_Formula"/>
+			<separator/>
+			<command idQ="RB_Define_Names"/>
+			<separator/>
+			<command idQ="RB_Formula_Auditing"/>
+			<separator/>
+			<command idQ="RB_Calculation"/>
+			<separator/>
+		</subcommand>
+	</subcommands>
+</shell>

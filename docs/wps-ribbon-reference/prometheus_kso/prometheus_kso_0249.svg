@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>6张幻灯片16_SixSlide</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M1.5 4.2V1.8C1.5 1.63431 1.63431 1.5 1.8 1.5H6.2C6.36569 1.5 6.5 1.63431 6.5 1.8V4.2C6.5 4.36569 6.36568 4.5 6.2 4.5H1.8C1.63431 4.5 1.5 4.36569 1.5 4.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M1.5 9.2V6.8C1.5 6.63431 1.63431 6.5 1.8 6.5H6.2C6.36569 6.5 6.5 6.63431 6.5 6.8V9.2C6.5 9.36569 6.36568 9.5 6.2 9.5H1.8C1.63431 9.5 1.5 9.36569 1.5 9.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M9.5 9.2V6.8C9.5 6.63431 9.63431 6.5 9.8 6.5H14.2C14.3657 6.5 14.5 6.63431 14.5 6.8V9.2C14.5 9.36569 14.3657 9.5 14.2 9.5H9.8C9.63431 9.5 9.5 9.36569 9.5 9.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_4" d="M1.5 14.2V11.8C1.5 11.6343 1.63431 11.5 1.8 11.5H6.2C6.36569 11.5 6.5 11.6343 6.5 11.8V14.2C6.5 14.3657 6.36568 14.5 6.2 14.5H1.8C1.63431 14.5 1.5 14.3657 1.5 14.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_5" d="M9.5 14.2V11.8C9.5 11.6343 9.63431 11.5 9.8 11.5H14.2C14.3657 11.5 14.5 11.6343 14.5 11.8V14.2C14.5 14.3657 14.3657 14.5 14.2 14.5H9.8C9.63431 14.5 9.5 14.3657 9.5 14.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_6" d="M9.5 4.2V1.8C9.5 1.63431 9.63431 1.5 9.8 1.5H14.2C14.3657 1.5 14.5 1.63431 14.5 1.8V4.2C14.5 4.36569 14.3657 4.5 14.2 4.5H9.8C9.63431 4.5 9.5 4.36569 9.5 4.2Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></svg>

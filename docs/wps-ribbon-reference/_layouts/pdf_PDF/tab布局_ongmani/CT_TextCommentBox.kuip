@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="ongmani.ct_textcommentbox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="TextBoxBkMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="TextBoxBkColor" text="@More Colors"/>
+		<KxPdfMoreFontColorCommand controlType="1" dialogHint="1" hotKey="m" icon="color_palette_kd" id="TextBoxBorderMoreColors" idMso="FontColorMoreColorsDialogExcel6" ksoCmd="TextBoxBorderColor" text="@More Colors"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="TextBoxBkSnapColor" ksoCmd="TextBoxBkColor" rbHotKey="E" text="@Snapper"/>
+		<KxPdfSnapColorCommand forceEnabled="1" hotKey="e" icon="cursor_snapper_fill_kd" id="TextBoxBorderSnapColor" ksoCmd="TextBoxBorderColor" rbHotKey="E" text="@Snapper"/>
+		<KxLegacyTriggerCommand customTip="MenuHandTool" icon="gesture_drag_kd" id="TextTool_HandTool" ksoCmd="HandTool" shellEntryType="tab_texttool" shortcutHint="Ctrl+K" spaceHint="autocompact" text="@MenuHandTool"/>
+		<KxLegacyTriggerCommand customTip="MenuSelectionTool" icon="mouse_kd" id="TextTool_SelectionTool" ksoCmd="SelectionTool" shellEntryType="tab_texttool" shortcutHint="Ctrl+R" spaceHint="autocompact" text="@MenuSelectionTool"/>
+		<KxPdfFontCommand customTip="FontName" id="FontForCommentText%" shellEntryType="text_box" spaceHint="autocompact" text="@FontName"/>
+		<KxPdfFontSizeCommand customTip="FontSize" id="FontSizeForCommentText%" spaceHint="autocompact" text="@FontSize"/>
+		<KxPdfTextBoxBorderStyleCommand customTip="TBLineStyle" id="TextBoxBorderStyle%" spaceHint="autocompact" text="@Line Style"/>
+		<KxPdfTextBoxBorderSizeCommand customTip="TBLineWidth" id="TextBoxBorderSize%" spaceHint="autocompact" text="@Line Width"/>
+		<KxPdfTextBoxFillColorCommand customTip="TextBoxBkColor" icon="color_paint_wps_kd" id="TextBoxBkColorSetting" ksoCmd="TextBoxBkColor" ksoTriggerCmd="TextBoxBkColor" referenceCommand="TextBoxBkColor" text="@TextBoxBkColor">
+			<command idQ="TextBoxBkMoreColors"/>
+			<command idQ="TextBoxBkSnapColor"/>
+		</KxPdfTextBoxFillColorCommand>
+		<KxPdfTextBoxBorderColorCommand customTip="TextBoxBorderColor" icon="color_border_wps_kd" id="TextBoxBorderColorSetting" ksoCmd="TextBoxBorderColor" ksoTriggerCmd="TextBoxBorderColor" referenceCommand="TextBoxBorderColor" text="@TextBoxBorderColor">
+			<command idQ="TextBoxBorderMoreColors"/>
+			<command idQ="TextBoxBorderSnapColor"/>
+		</KxPdfTextBoxBorderColorCommand>
+		<KxPdfTextBoxOpacityCommand customTip="TextBoxAlpha" icon="transparency_kd" id="TextBoxAlphaSetting" ksoCmd="TextBoxAlpha" ksoTriggerCmd="TextBoxAlpha" referenceCommand="TextBoxAlpha" text="@TextBoxAlpha"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="TextCommentBox" descName="Ct_TextCommentBox" icon="text_frame_kd" id="Ct_TextCommentBox" ksoCmd="TextCommentBox" shellEntryType="tab_TextCommentBox" text="@TextCommentBox"/>
+		<KListCommand groupTip="ToolGroup" icon="mouse_kd" id="RB_MouseTool_TextTool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="TextTool_HandTool"/>
+			<command idQ="TextTool_SelectionTool"/>
+		</KListCommand>
+		<KxValueCommand customTip="PDFEditTextExit" icon="close_window_kd" id="TCEdit_Exit" index="2" ksoCmd="EditExit" text="@EditExit" wpsIsEanble="false"/>
+		<KListCommand groupTip="TextCommentBoxAddGroup" id="TextCommentBox" rbFileMenuEmbed="1" text="@Add">
+			<command idQ="Ct_TextCommentBox"/>
+		</KListCommand>
+		<KListCommand embedHint="1" id="RBTC_FontEdit">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="FontForCommentText%" singlerowfoldgroup="font_pair"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" topSpace="0">
+				<command idQ="FontSizeForCommentText%" singlerowfoldgroup="font_pair"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand id="TCFontTool" rbFileMenuEmbed="1" text="@Tool">
+			<command idQ="FontColorSetting"/>
+		</KListCommand>
+		<KListCommand embedHint="1" id="TextBoxBorderStyleSetting">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="TextBoxBorderStyle%" singlerowfoldgroup="line_style_pair" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="5" rightSpace="0" topSpace="0">
+				<command idQ="TextBoxBorderSize%" singlerowfoldgroup="line_style_pair" spaceHint="suitable"/>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand groupTip="TextCommentBoxAppearanceSettingGroup" icon="setup_kd" id="TextBoxStyle" layout_lineCount="2" rbFileMenuEmbed="1" text="@Appearance settings">
+			<command idQ="TextBoxBkColorSetting"/>
+			<command idQ="TextBoxBorderColorSetting"/>
+			<command idQ="TextBoxAlphaSetting"/>
+			<command idQ="TextBoxBorderStyleSetting"/>
+		</KListCommand>
+		<KListCommand groupTip="TextCommentBoxExitGroup" id="TCFontEditeExit" layout_lineCount="1" rbFileMenuEmbed="1" text="@Exit">
+			<command idQ="TCEdit_Exit" singlerowpriority="100"/>
+		</KListCommand>
+		<KListCommand groupTip="TextCommentBoxFontStyleGroup" horizontalSpacing="6" icon="font_style_kd" id="RB_TCFont" rbFileMenuEmbed="1" text="@Font Style">
+			<command idQ="RBTC_FontEdit"/>
+			<command idQ="FontColorSetting"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_TextCommentBox">
+			<command idQ="RB_MouseTool_TextTool"/>
+			<command idQ="Separator"/>
+			<command idQ="TextCommentBox"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_TCFont"/>
+			<command idQ="Separator"/>
+			<command idQ="TextBoxStyle"/>
+			<command idQ="Separator"/>
+			<command idQ="TCFontEditeExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_official_material" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand id="RB_Officialdoc_Material_Doc_Template" text="@RB_Doc_Template">
+			<command idKey="localmaterial" idQ="AILocalsearchView" proxyCmdId="ProxyAILocalsearchView"/>
+			<command idKey="localmaterial" idQ="AILocalsearchViewLocal" proxyCmdId="ProxyAILocalsearchViewLocal"/>
+			<command idQ="OfficialdocAssistTemplateDoc" proxyCmdId="ProxyOfficialdocAssistTemplateDoc"/>
+			<command filter="support:WebInfoHidden=false" idQ="OfficialdocAssistExtranetReference" proxyCmdId="ProxyOfficialdocAssistExtranetReference"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Material_Outline" text="@RB_Outline">
+			<command idQ="OfficialdocAssistSyllabus" proxyCmdId="ProxyOfficialdocAssistSyllabus"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Material_Search" text="@RB_Assist_Search">
+			<command idQ="OfficialdocMaterialFragment" proxyCmdId="ProxyOfficialdocMaterialFragment"/>
+			<command idQ="OfficialdocAssistPoetryArchaism" proxyCmdId="ProxyOfficialdocAssistPoetryArchaism"/>
+			<command idQ="OfficialIdiomRecommend" proxyCmdId="ProxyOfficialIdiomRecommend"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Material_Characteristic" text="@RB_Characteristic">
+			<command idQ="OfficialdocPolicyInterpretation" proxyCmdId="ProxyOfficialdocPolicyInterpretation"/>
+			<command idQ="OfficialdocLeaderSpeech" proxyCmdId="ProxyOfficialdocLeaderSpeech"/>
+			<command idQ="OfficialdocAssistLeaderQuotations" proxyCmdId="ProxyOfficialdocAssistLeaderQuotations"/>
+			<command idKey="MIITHidden" idQ="OfficialdocPoliciesRegulations" proxyCmdId="ProxyOfficialdocPoliciesRegulations"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Material_Proofing" text="@Official Proofing">
+			<command idQ="KOfficialdocAssistAutoFill" proxyCmdId="ProxyKOfficialdocAssistAutoFill"/>
+			<command idQ="OfficialdocIntelligentRewriting" proxyCmdId="ProxyOfficialdocIntelligentRewriting"/>
+		</KListCommand>
+		<KListCommand id="RB_Officialdoc_Material_Setting" text="@RB_Assist_Setting">
+			<command idQ="OfficialdocAssistQuote" proxyCmdId="ProxyOfficialdocAssistQuote"/>
+			<command idKey="localmaterial" idQ="MaterialSelectMenu"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Official_Material">
+			<command idQ="RB_Officialdoc_Material_Doc_Template"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Material_Outline"/>
+			<separator idKey="localmaterial"/>
+			<command idQ="RB_Officialdoc_Material_Search"/>
+			<separator/>
+			<command idQ="RB_Officialdoc_Material_Characteristic"/>
+			<separator/>
+			<command idKey="localmaterial" idQ="RB_Officialdoc_Material_Proofing"/>
+			<separator idKey="localmaterial"/>
+			<command idKey="localmaterial" idQ="RB_Officialdoc_Material_Setting"/>
+		</subcommand>
+	</subcommands>
+</shell>

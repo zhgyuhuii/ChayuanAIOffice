@@ -1,0 +1,905 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="pdf" tc="entries" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<entries>
+		<entry idPath="CT_Convert.RB_MouseTool_SpecialFunc" name="MouseTool"/>
+		<entry idPath="CT_Convert.RB_MouseTool_SpecialFunc.SpecialFunc_HandTool" name="ConvertHandTool"/>
+		<entry idPath="CT_Convert.RB_MouseTool_SpecialFunc.SpecialFunc_SelectTool" name="ConvertSelectTool"/>
+		<entry idPath="CT_Convert.RB_Pdf2OtherFile" name="Pdf2OtherFile"/>
+		<entry idPath="CT_Convert.RB_Pdf2OtherFile.SpecialFunc_PDFZZ_PDF2TXT" name="ConvertPDF2TXT"/>
+		<entry idPath="CT_Convert.RB_Pdf2Photo" name="Pdf2Photo"/>
+		<entry idPath="CT_Convert.RB_Pdf2Photo.SpecialFunc_PDFZZ_PDFToPhoto" name="ConvertPDFToPhoto"/>
+		<entry idPath="CT_Convert.RB_PdfCadMutualConvert" name="PdfCadMutualConvert"/>
+		<entry idPath="CT_Convert.RB_PdfCadMutualConvert.SpecialFunc_PDFZZ_CAD2PDF" name="ConvertCAD2PDF"/>
+		<entry idPath="CT_Convert.RB_PdfCadMutualConvert.SpecialFunc_PDFZZ_PDF2CAD" name="ConvertPDF2CAD"/>
+		<entry idPath="CT_Convert.RB_Pdf_OtherSpecialFeatures" name="GroupOtherSpecialFeatures"/>
+		<entry idPath="CT_Convert.RB_Pdf_OtherSpecialFeatures.MenuBar_PDFTableRecognize" name="PDFTableRecognize"/>
+		<entry idPath="CT_Convert.RB_Pdf_OtherSpecialFeatures.SpecialFunc_AIOCR_SearchableTextImage" name="SearchableTextImage"/>
+		<entry idPath="CT_Convert.RB_Pdf_OtherSpecialFeatures.SpecialFunc_PDFZZ_ElectronicInvoicePrint" name="ElectronicInvoicePrint"/>
+		<entry idPath="CT_Convert.RB_Pdf_OtherSpecialFeatures.kocrtoolPhotoEditRightMenuOcrExtractPage" name="OcrExtractPage"/>
+		<entry idPath="CT_EbookRead.EbookReadFontSize" name="EbookReadFontSize"/>
+		<entry idPath="CT_EbookRead.EbookReadFontSize.Ebook_FontSize_Narrow" name="EbookFontSizeNarrow"/>
+		<entry idPath="CT_EbookRead.EbookReadFontSize.Ebook_FontSize_Zoom" name="EbookFontSizeZoom"/>
+		<entry idPath="CT_EbookRead.EbookReadFontStyle" name="EbookReadFontStyle"/>
+		<entry idPath="CT_EbookRead.EbookReadFontStyle.Ebook_tab_FontStyle" name="EbookFontStyle"/>
+		<entry idPath="CT_EbookRead.EbookReadView" name="EbookReadView"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg" name="EbookBookmarkBg"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg.Ebook_BgDaylight" name="EbookBgDaylight"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg.Ebook_BgHuyan" name="EbookBgHuyan"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg.Ebook_BgNight" name="EbookBgNight"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg.Ebook_BgNormal" name="EbookBgNormal"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_bookmark_Bg.Ebook_BgYangpizhi" name="EbookBgYangpizhi"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_tab_view" name="EbookView"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_tab_view.Ebook_DoublePage" name="EbookDoublePage"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_tab_view.Ebook_SelfAdaptionPage" name="EbookSelfAdaptionPage"/>
+		<entry idPath="CT_EbookRead.EbookReadView.Ebook_tab_view.Ebook_SinglePage" name="EbookSinglePage"/>
+		<entry idPath="CT_EbookRead.RB_EbookReadSearch" name="EbookReadSearch"/>
+		<entry idPath="CT_EbookRead.RB_EbookReadSearch.Start_TextQuery" name="EbookStartTextQuery"/>
+		<entry idPath="CT_Edit.Edit" name="Edit"/>
+		<entry idPath="CT_Edit.Edit.Edit_Content" name="EditContent"/>
+		<entry idPath="CT_Edit.Edit.Edit_Content.Edit_Content_Insert_Image" name="EditContentInsertImage"/>
+		<entry idPath="CT_Edit.Edit.Edit_Content.Edit_Content_Insert_Text" name="EditContentInsertText"/>
+		<entry idPath="CT_Edit.Edit.Edit_Content.Show_Content_Frame" name="ShowContentFrame"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser" name="EditEraser"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.Annot_CorrectionFluid_Marquee" name="AnnotCorrectionFluidMarquee"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.Annot_CorrectionFluid_PenChoice" name="AnnotCorrectionFluidPenChoice"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.Annot_CorrectionFluid_PenChoice.Annot_CorrectionFluid_FlatCap" name="AnnotCorrectionFluidFlatCap"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.Annot_CorrectionFluid_PenChoice.Annot_CorrectionFluid_LineStyle" name="AnnotCorrectionFluidLineStyle"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.Annot_CorrectionFluid_PenChoice.Annot_CorrectionFluid_RoundCap" name="AnnotCorrectionFluidRoundCap"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.CorrectionFluidMoreFontColors" name="CorrectionFluidMoreFontColors"/>
+		<entry idPath="CT_Edit.Edit.Edit_Eraser.CorrectionFluidSnapFontColors" name="CorrectionFluidSnapFontColors"/>
+		<entry idPath="CT_Edit.Edit.Edit_Headerfooter" name="EditHeaderfooter"/>
+		<entry idPath="CT_Edit.Edit.Edit_Headerfooter.AddHeaderFooter_Edit" name="AddHeaderFooterEdit"/>
+		<entry idPath="CT_Edit.Edit.Edit_Headerfooter.DeleteHeaderFooter_Edit" name="DeleteHeaderFooterEdit"/>
+		<entry idPath="CT_Edit.Edit.Edit_Headerfooter.UpdateHeaderFooter_Edit" name="UpdateHeaderFooterEdit"/>
+		<entry idPath="CT_Edit.Edit.Edit_PdfStampTool" name="EditPdfStampTool"/>
+		<entry idPath="CT_Edit.Edit.Edit_ScanEdit" name="EditScanEdit"/>
+		<entry idPath="CT_Edit.Edit.Edit_ScanEdit.Edit_EditTextInImage_AllPage" name="EditEditTextInImageAllPage"/>
+		<entry idPath="CT_Edit.Edit.Edit_ScanEdit.Edit_EditTextInImage_CurPage1" name="EditEditTextInImageCurPage1"/>
+		<entry idPath="CT_Edit.Edit.Edit_ScanEdit.Edit_EditTextInImage_CustomPage" name="EditEditTextInImageCustomPage"/>
+		<entry idPath="CT_Edit.Edit.Edit_Watermark" name="EditWatermark"/>
+		<entry idPath="CT_Edit.Edit.Edit_Watermark.TabEdit_DeleteWatermark" name="TabEditDeleteWatermark"/>
+		<entry idPath="CT_Edit.Edit.Edit_Watermark.TabEdit_RenewWatermark" name="TabEditRenewWatermark"/>
+		<entry idPath="CT_Edit.Edit.Edit_pageNumber" name="EditPageNumber"/>
+		<entry idPath="CT_Edit.Edit.Edit_pageNumber.Edit_DeletePageNumber" name="EditDeletePageNumber"/>
+		<entry idPath="CT_Edit.Edit.Edit_pageNumber.Edit_UpdatePageNumber" name="EditUpdatePageNumber"/>
+		<entry idPath="CT_Edit.Edit.Edit_pageNumber.OrgPage_AddPageNumber" name="OrgPageAddPageNumber"/>
+		<entry idPath="CT_Edit.Edit.PdfBackGround_Edit" name="PdfBackGroundEdit"/>
+		<entry idPath="CT_Edit.Edit.PdfBackGround_Edit.AddBackGround_Edit" name="AddBackGroundEdit"/>
+		<entry idPath="CT_Edit.Edit.PdfBackGround_Edit.DeleteBackGround_Edit" name="DeleteBackGroundEdit"/>
+		<entry idPath="CT_Edit.Edit.PdfBackGround_Edit.UpdateBackGround_Edit" name="UpdateBackGroundEdit"/>
+		<entry idPath="CT_Edit.EditPage" name="EditPage"/>
+		<entry idPath="CT_Edit.EditPage.Edit_CropPage" name="EditCropPage"/>
+		<entry idPath="CT_Edit.EditPage.Edit_SplitPage" name="EditSplitPage"/>
+		<entry idPath="CT_Edit.Edit_HyperLink" name="EditHyperLink"/>
+		<entry idPath="CT_Edit.Edit_HyperLink.*.Edit_DeleteAllHyperLink" name="EditDeleteAllHyperLink"/>
+		<entry idPath="CT_Edit.Edit_HyperLink.*.Edit_EnterLinkMode" name="EditEnterLinkMode"/>
+		<entry idPath="CT_Edit.RB_Form" name="Form"/>
+		<entry idPath="CT_Edit.RB_Form.Edit_FormFilling" name="EditFormFilling"/>
+		<entry idPath="CT_Edit.RB_MouseTool_Edit" name="MouseToolEdit"/>
+		<entry idPath="CT_Edit.RB_MouseTool_Edit.Edit_HandTool" name="EditHandTool"/>
+		<entry idPath="CT_Edit.RB_MouseTool_Edit.Edit_SelectTool" name="EditSelectTool"/>
+		<entry idPath="CT_File" name="FileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.Ebook_File_Quit" name="EbookFileQuit" tag="fileMenu"/>
+		<entry idPath="CT_File.Ebook_File_Reserve" name="EbookFileReserve" tag="fileMenu"/>
+		<entry idPath="CT_File.Ebook_File_SaveAs" name="EbookFileSaveAs" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuBatchPrint" name="FileMenuBatchPrint" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuCreatFileMenu" name="FileMenuCreatFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuCreatFileMenu.RbFileMenuFile2PdfMenu" name="FileMenuFile2PdfMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuCreatFileMenu.RbFileMenuNewBlankFileMenu" name="FileMenuNewBlankFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuCreatFileMenu.RbFileMenuNewHtml2PdfFileMenu" name="FileMenuNewHtml2PdfFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuCreatFileMenu.RbFileMenuScan2PdfMenu" name="FileMenuScan2PdfMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuExit" name="FileMenuExit" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuExportMenu" name="FileMenuExportMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuExportMenu.RbFileMenuPdf2PicMenu" name="FileMenuPdf2PicMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuExportMenu.RbFileMenuPdf2TxtMenu" name="FileMenuPdf2TxtMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu" name="FileMenuHelpMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu.RbFileMenuAbout" name="FileMenuAbout" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu.RbFileMenuFeedback" name="FileMenuFeedback" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu.RbFileMenuKingsoftPDFHomepage" name="FileMenuKingsoftPDFHomepage" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu.RbFileMenuReport" name="FileMenuReport" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuHelpMenu.RbFileMenuUpdateOnline" name="FileMenuUpdateOnline" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuNewBatchPrint" name="FileMenuNewBatchPrint" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuNewShare_kos" name="FileMenuNewSharekos" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuOpenFileMenu" name="FileMenuOpenFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuPrintAndTemplatesPrintMenu" name="FileMenuPrintAndTemplatesPrintMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuPrintAndTemplatesPrintMenu.RbFileMenuOnlinePrint" name="FileMenuOnlinePrint" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuPrintAndTemplatesPrintMenu.RbFileMenuPrintMenu" name="FileMenuPrintMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuPrintAndTemplatesPrintMenu.RbFileMenuTemplatesPrintMenu" name="FileMenuTemplatesPrintMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuProperties" name="FileProperties" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuSaveAsFileMenu" name="FileMenuSaveAsFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuSaveFileMenu" name="FileMenuSaveFileMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuSettings" name="FileMenuSettings" tag="fileMenu"/>
+		<entry idPath="CT_File.RbFileMenuSplitMergePersonal" name="FileMenuSplitMergePersonal" tag="fileMenu"/>
+		<entry idPath="CT_File.RbNewFileMenuPrintAndTemplatesPrintMenu" name="NewFileMenuPrintAndTemplatesPrintMenu" tag="fileMenu"/>
+		<entry idPath="CT_File.SaveAs_CompressBridge" name="SaveAsCompressBridge" tag="fileMenu"/>
+		<entry idPath="CT_Font.FontEditeExit" name="FontEditeExit"/>
+		<entry idPath="CT_Font.FontEditeExit.Edit_Exit" name="EditExit"/>
+		<entry idPath="CT_Font.FontTool" name="FontTool"/>
+		<entry idPath="CT_Font.FontTool.FontColorSetting" name="FontColorSetting"/>
+		<entry idPath="CT_Font.FontTool.FontColorSetting.FontColorMoreFontColors" name="FontColorMoreFontColors"/>
+		<entry idPath="CT_Font.FontTool.FontColorSetting.FontColorSnapFontColors" name="FontColorSnapFontColors"/>
+		<entry idPath="CT_Font.RB_FontEdit" name="FontEdit"/>
+		<entry idPath="CT_Font.RB_FontEdit.FontForEdit%" name="FontForEdit%"/>
+		<entry idPath="CT_Font.RB_FontEdit.FontSizeForEdit%" name="FontSizeForEdit%"/>
+		<entry idPath="CT_Font.RB_MouseTool_Font" name="MouseToolFont"/>
+		<entry idPath="CT_Font.RB_MouseTool_Font.Font_HandTool" name="FontHandTool"/>
+		<entry idPath="CT_Font.RB_MouseTool_Font.Font_SelectTool" name="FontSelectTool"/>
+		<entry idPath="CT_Font.TextComment" name="TextCommentMenu"/>
+		<entry idPath="CT_Font.TextComment.Ct_TextComment" name="TextComment"/>
+		<entry idPath="CT_FormFilling.FormFillingExit" name="FormFillingExitMenu"/>
+		<entry idPath="CT_FormFilling.FormFillingExit.FormFilling_Exit" name="FormFillingExit"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling" name="FormFilling"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.FormFilling_Date" name="FormFillingDate"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.FormFilling_Date.FormFilling_Date_Backslash" name="FormFillingDateBackslash"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.FormFilling_Date.FormFilling_Date_Ch" name="FormFillingDateCh"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.FormFilling_Date.FormFilling_Date_Point" name="FormFillingDatePoint"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.FormFilling_Date.FormFilling_Date_Transverse" name="FormFillingDateTransverse"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.Insert_AddImage" name="FormInsertAddImage"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.Insert_Signature" name="FormInsertSignature"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.Insert_Signature.Insert_CloudSignature" name="FormInsertCloudSignature"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.Insert_Signature.PdfNewSignature" name="FormPdfNewSignature"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling.Reviews_TextComment" name="FormReviewsTextComment"/>
+		<entry idPath="CT_FormFilling.RB_FormFilling_xa" name="FormFillingxa"/>
+		<entry idPath="CT_FormFilling.RB_MouseTool_FormFilling" name="MouseToolFormFilling"/>
+		<entry idPath="CT_FormFilling.RB_MouseTool_FormFilling.FormFilling_HandTool" name="FormFillingHandTool"/>
+		<entry idPath="CT_FormFilling.RB_MouseTool_FormFilling.FormFilling_SelectTool" name="FormFillingSelectTool"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty" name="GraffitiLineProperty"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty.*.GraffitiOpacity" name="GraffitiOpacity"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty.*.GraffitiWidth" name="GraffitiWidth"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty.Graffiti_Color" name="GraffitiColor"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty.Graffiti_Color.GraffitiLineColorMoreFontColors" name="GraffitiLineColorMoreFontColors"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineProperty.Graffiti_Color.GraffitiLineColorSnapColor" name="GraffitiLineColorSnapColor"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineType" name="GraffitiLineType"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineType.Annot_GraffitiDraw" name="AnnotGraffitiDraw"/>
+		<entry idPath="CT_Graffiti.RB_GraffitiLineType.Annot_GraffitiSline" name="AnnotGraffitiSline"/>
+		<entry idPath="CT_Graffiti.RB_Graffiti_Eraser" name="GraffitiEraserMenu"/>
+		<entry idPath="CT_Graffiti.RB_Graffiti_Eraser.GraffitiEraser" name="GraffitiEraser"/>
+		<entry idPath="CT_Graffiti.RB_Graffiti_Exit" name="GraffitiExitMenu"/>
+		<entry idPath="CT_Graffiti.RB_Graffiti_Exit.Graffiti_Exit" name="GraffitiExit"/>
+		<entry idPath="CT_Graffiti.RB_MouseTool_Graffiti" name="MouseToolGraffiti"/>
+		<entry idPath="CT_Graffiti.RB_MouseTool_Graffiti.Graffiti_HandTool" name="GraffitiHandTool"/>
+		<entry idPath="CT_Graffiti.RB_MouseTool_Graffiti.Graffiti_SelectionTool" name="GraffitiSelectionTool"/>
+		<entry idPath="CT_Home.RB_Document" name="Document"/>
+		<entry idPath="CT_Home.RB_Document.Start_PDFZZ_PDFToPhoto" name="StartPDFZZPDFToPhoto"/>
+		<entry idPath="CT_Home.RB_Document.TabStart_MergeOrSplitPage" name="TabStartMergeOrSplitPage"/>
+		<entry idPath="CT_Home.RB_Document.TabStart_PDF2Office" name="TabStartPDF2Office"/>
+		<entry idPath="CT_Home.RB_MouseTool_Start" name="MouseToolStart"/>
+		<entry idPath="CT_Home.RB_MouseTool_Start.Start_HandTool" name="StartHandTool"/>
+		<entry idPath="CT_Home.RB_MouseTool_Start.Start_SelectTool" name="StartSelectTool"/>
+		<entry idPath="CT_Home.RB_PageView" name="PageView"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_ContinuousRead" name="StartContinuousRead"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_DoublePageContinuous" name="StartDoublePageContinuous"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_DoublePageContinuous.Start_DoublePageContinuous_cover" name="StartDoublePageContinuouscover"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_NextPage" name="StartNextPage"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_PageIndexChanged" name="StartPageIndexChanged"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_Previous" name="StartPrevious"/>
+		<entry idPath="CT_Home.RB_PageView.*.Start_SinglePageContinuous" name="StartSinglePageContinuous"/>
+		<entry idPath="CT_Home.RB_PageView.AutoWheel" name="AutoWheel"/>
+		<entry idPath="CT_Home.RB_PageView.AutoWheel.NegativeOneTimesSpeed" name="NegativeOneTimesSpeed"/>
+		<entry idPath="CT_Home.RB_PageView.AutoWheel.NegativeTwoTimesSpeed" name="NegativeTwoTimesSpeed"/>
+		<entry idPath="CT_Home.RB_PageView.AutoWheel.OneTimesSpeed" name="OneTimesSpeed"/>
+		<entry idPath="CT_Home.RB_PageView.AutoWheel.TwoTimesSpeed" name="TwoTimesSpeed"/>
+		<entry idPath="CT_Home.RB_Pages" name="Pages"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_100%" name="Start100%"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_Clockwise" name="StartClockwise"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_Counterclockwise" name="StartCounterclockwise"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_FitPageSize" name="StartFitPageSize"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_FitWidth" name="StartFitWidth"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_Zoom%" name="StartZoom%"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_ZoomIn" name="StartZoomIn"/>
+		<entry idPath="CT_Home.RB_Pages.*.Start_ZoomOut" name="StartZoomOut"/>
+		<entry idPath="CT_Home.RB_Pages.Start_ClockwiseDoc" name="StartClockwiseDoc"/>
+		<entry idPath="CT_Home.RB_PlaySlide" name="PlaySlide"/>
+		<entry idPath="CT_Home.RB_PlaySlide.Start_PlaySlide" name="StartPlaySlide"/>
+		<entry idPath="CT_Home.RB_PlaySlide.Start_ReadingMode" name="StartReadingMode"/>
+		<entry idPath="CT_Home.RB_ToolBox" name="ToolBox"/>
+		<entry idPath="CT_Home.RB_ToolBox.*.Start_FullTranslation" name="StartFullTranslation"/>
+		<entry idPath="CT_Home.RB_ToolBox.*.TranslationMenu_ctreview" name="TranslationMenuctreview"/>
+		<entry idPath="CT_Home.RB_ToolBox.Start_Compress" name="StartCompress"/>
+		<entry idPath="CT_Home.RB_ToolBox.Start_TextQueryAndReplace" name="StartTextQueryAndReplace"/>
+		<entry idPath="CT_Home.RB_ToolBox.Start_Tools_ScreenShot_Area" name="StartToolsScreenShotArea"/>
+		<entry idPath="CT_Home.RB_ToolBox.TextToSpeechOption" name="TextToSpeechOption"/>
+		<entry idPath="CT_Insertion.Insertion_Attachment" name="InsertionAttachment"/>
+		<entry idPath="CT_Insertion.Insertion_Attachment.Insert_Attachment" name="InsertAttachment"/>
+		<entry idPath="CT_Insertion.RB_InsertGraphic" name="InsertGraphic"/>
+		<entry idPath="CT_Insertion.RB_InsertGraphic.Insert_AddImage" name="InsertAddImage"/>
+		<entry idPath="CT_Insertion.RB_InsertGraphic.Insert_AddText" name="InsertAddText"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark" name="InsertPageNumAndWaterMark"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Headerfooter" name="InsertHeaderfooter"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Headerfooter.AddHeaderFooter_Page" name="AddHeaderFooterPage"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Headerfooter.DeleteHeaderFooter_Page" name="DeleteHeaderFooterPage"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Headerfooter.UpdateHeaderFooter_Page" name="UpdateHeaderFooterPage"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Watermark" name="InsertWatermark"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Watermark.TabInsert_DeleteWatermark" name="TabInsertDeleteWatermark"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_Watermark.TabInsert_RenewWatermark" name="TabInsertRenewWatermark"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_pageNumber" name="InsertpageNumber"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_pageNumber.Insert_AddPageNumber" name="InsertAddPageNumber"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_pageNumber.Insert_DeletePageNumber" name="InsertDeletePageNumber"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.Insert_pageNumber.Insert_UpdatePageNumber" name="InsertUpdatePageNumber"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.PdfBackGround_Insert" name="PdfBackGroundInsert"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.PdfBackGround_Insert.AddBackGround_Insert" name="AddBackGroundInsert"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.PdfBackGround_Insert.DeleteBackGround_Insert" name="DeleteBackGroundInsert"/>
+		<entry idPath="CT_Insertion.RB_InsertPageNumAndWaterMark.PdfBackGround_Insert.UpdateBackGround_Insert" name="UpdateBackGroundInsert"/>
+		<entry idPath="CT_Insertion.RB_InsertPages" name="InsertPages"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages" name="InsertPdfInsertPages"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromDoc" name="ImportPagesFromDoc"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromExcel" name="ImportPagesFromExcel"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromImage" name="ImportPagesFromImage"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromPDF" name="ImportPagesFromPDF"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromPPT" name="ImportPagesFromPPT"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromTXT" name="ImportPagesFromTXT"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importPagesFromWord" name="ImportPagesFromWord"/>
+		<entry idPath="CT_Insertion.RB_InsertPages.Insert_PdfInsertPages.importblankpages" name="ImportBlankPages"/>
+		<entry idPath="CT_Insertion.RB_MouseTool_Insert" name="MouseToolInsert"/>
+		<entry idPath="CT_Insertion.RB_MouseTool_Insert.Insert_HandTool" name="InsertHandTool"/>
+		<entry idPath="CT_Insertion.RB_MouseTool_Insert.Insert_SelectTool" name="InsertSelectTool"/>
+		<entry idPath="CT_Insertion.RB_PdfOher" name="PdfOher"/>
+		<entry idPath="CT_Insertion.RB_PdfOher.Insert_PdfStampTool" name="InsertPdfStampTool"/>
+		<entry idPath="CT_Insertion.RB_PdfOher.Insert_Signature" name="InsertSignature"/>
+		<entry idPath="CT_Insertion.RB_PdfOher.Insert_Signature.Insert_CloudSignature" name="InsertCloudSignature"/>
+		<entry idPath="CT_Insertion.RB_PdfOher.Insert_Signature.PdfNewSignature" name="PdfNewSignature"/>
+		<entry idPath="CT_Insertion.RB_TMp" name="TextMarks"/>
+		<entry idPath="CT_Insertion.RB_TMp.AnnotGraffiti_Insert" name="AnnotGraffitiInsert"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_AreaHighlight" name="InsertAreaHighlight"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_AreaHighlight.AreaHighlightMoreFontColors" name="AreaHighlightMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_AreaHighlight.AreaHighlightSnapFontColors" name="AreaHighlightSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_HighlightBorder" name="InsertHighlightBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_HighlightBorder.HighlightMoreFontColors" name="HighlightMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_HighlightBorder.HighlightSnapFontColors" name="HighlightSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_InsertBorder" name="InsertInsertBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_InsertBorder.InsertMoreFontColors" name="InsertMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_InsertBorder.InsertSnapFontColors" name="InsertSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_InstructBox" name="InsertInstructBox"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_NoteBorder" name="InsertNoteBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_NoteBorder.NoteMoreFontColors" name="NoteMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_NoteBorder.NoteSnapFontColors" name="NoteSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ReplaceBorder" name="InsertReplaceBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ReplaceBorder.ReplaceMoreFontColors" name="ReplaceMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ReplaceBorder.ReplaceSnapFontColors" name="ReplaceSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment" name="InsertShapeComment"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Arrow" name="Arrow"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Circle" name="Circle"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Cloudy" name="Cloudy"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Line" name="Line"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.PolyLine" name="PolyLine"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Polygon" name="Polygon"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_ShapeComment.Square" name="Square"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_StrikeoutBorder" name="InsertStrikeoutBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_StrikeoutBorder.StrikeoutMoreFontColors" name="StrikeoutMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_StrikeoutBorder.StrikeoutSnapFontColors" name="StrikeoutSnapFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_TextComment" name="InsertTextComment"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_TextCommentBox" name="InsertTextCommentBox"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_UnderlineBorder" name="InsertUnderlineBorder"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_UnderlineBorder.UnderlineMoreFontColors" name="UnderlineMoreFontColors"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_UnderlineBorder.UnderlineShape" name="UnderlineShape"/>
+		<entry idPath="CT_Insertion.RB_TMp.Insert_UnderlineBorder.UnderlineSnapFontColors" name="UnderlineSnapFontColors"/>
+		<entry idPath="CT_InstructBox.InstructBox" name="InstructBoxMenu"/>
+		<entry idPath="CT_InstructBox.InstructBox.Ct_InstructBox" name="InstructBox"/>
+		<entry idPath="CT_InstructBox.RB_MouseTool_Instruct" name="MouseToolInstruct"/>
+		<entry idPath="CT_InstructBox.RB_MouseTool_Instruct.Instruct_HandTool" name="InstructHandTool"/>
+		<entry idPath="CT_InstructBox.RB_MouseTool_Instruct.Instruct_SelectionTool" name="InstructSelectionTool"/>
+		<entry idPath="CT_InstructBox.TMArrowStyle" name="TMArrowStyle"/>
+		<entry idPath="CT_InstructBox.TMArrowStyle.TMArrowEndStyle%" name="TMArrowEndStyle%"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle" name="TMBoxStyle"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxAlphaSetting" name="TMBoxAlphaSetting"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBkColorSetting" name="TMBoxBkColorSetting"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBkColorSetting.InstructBoxBkMoreColors" name="InstructBoxBkMoreColors"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBkColorSetting.InstructBoxBkSnapColor" name="InstructBoxBkSnapColor"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBorderColorSetting" name="TMBoxBorderColorSetting"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBorderColorSetting.InstructBoxBorderMoreColors" name="InstructBoxBorderMoreColors"/>
+		<entry idPath="CT_InstructBox.TMBoxStyle.TMBoxBorderColorSetting.InstructBoxBorderSnapColor" name="InstructBoxBorderSnapColor"/>
+		<entry idPath="CT_InstructBox.TMFontEditeExit" name="TMFontEditeExit"/>
+		<entry idPath="CT_InstructBox.TMFontEditeExit.TMEdit_Exit" name="TMEditExit"/>
+		<entry idPath="CT_InstructBox.TMFontTool" name="TMFontTool"/>
+		<entry idPath="CT_InstructBox.TMFontTool.InstructFontColorSetting" name="InstructFontColorSetting"/>
+		<entry idPath="CT_InstructBox.TMFontTool.InstructFontColorSetting.FontColorMoreFontColors" name="InstructFontColorMoreFontColors"/>
+		<entry idPath="CT_InstructBox.TMFontTool.InstructFontColorSetting.FontColorSnapFontColors" name="InstructFontColorSnapFontColors"/>
+		<entry idPath="CT_InstructBox.TMLineSize" name="TMLineSize"/>
+		<entry idPath="CT_InstructBox.TMLineSize.TMBoxBorderSize%" name="TMBoxBorderSize%"/>
+		<entry idPath="CT_InstructBox.TMLineSize.TMBoxBorderStyle%" name="TMBoxBorderStyle%"/>
+		<entry idPath="CT_InstructBox.TM_FontEdit" name="TMFontEdit"/>
+		<entry idPath="CT_InstructBox.TM_FontEdit.FontForMarkText%" name="FontForMarkText%"/>
+		<entry idPath="CT_InstructBox.TM_FontEdit.FontSizeForMarkText%" name="FontSizeForMarkText%"/>
+		<entry idPath="CT_MeasureTool.MeasureToolExit" name="MeasureToolExitMenu"/>
+		<entry idPath="CT_MeasureTool.MeasureToolExit.MeasureTool_Exit" name="MeasureToolExit"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement" name="MeasureManagement"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.AdsorptionEndpoint" name="AdsorptionEndpoint"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.AdsorptionIntersection" name="AdsorptionIntersection"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.AdsorptionMidpoint" name="AdsorptionMidpoint"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.AdsorptionPath" name="AdsorptionPath"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.Measure_ResultPanel" name="MeasureResultPanel"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureManagement.Measure_Scale" name="MeasureScale"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureTool" name="MeasureTool"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureTool.Measure_Area" name="MeasureArea"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureTool.Measure_Distance" name="MeasureDistance"/>
+		<entry idPath="CT_MeasureTool.RB_MeasureTool.Measure_Perimeter" name="MeasurePerimeter"/>
+		<entry idPath="CT_MeasureTool.RB_MouseTool_MessaureTool" name="MouseToolMessaureTool"/>
+		<entry idPath="CT_MeasureTool.RB_MouseTool_MessaureTool.MessaureTool_HandTool" name="MessaureToolHandTool"/>
+		<entry idPath="CT_MeasureTool.RB_MouseTool_MessaureTool.MessaureTool_SelectTool" name="MessaureToolSelectTool"/>
+		<entry idPath="CT_Merge.RB_MergeState" name="MergeState"/>
+		<entry idPath="CT_Merge.RB_PdfMergeSetting" name="MergeSetting"/>
+		<entry idPath="CT_Page.OrgPageEdit" name="OrgPageEdit"/>
+		<entry idPath="CT_Page.OrgPageEdit.PageDelete_Tab" name="PageDeleteTab"/>
+		<entry idPath="CT_Page.OrgPageEdit.PageExtract_Tab" name="PageExtractTab"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_CropPage" name="PageCropPage"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile" name="PageImportPagesFromFile"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromDoc" name="PageImportPagesFromDoc"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromExcel" name="PageImportPagesFromExcel"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromImage" name="PageImportPagesFromImage"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromPDF" name="PageImportPagesFromPDF"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromPPT" name="PageImportPagesFromPPT"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromTXT" name="PageImportPagesFromTXT"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfImportPagesFromFile.importPagesFromWord" name="PageImportPagesFromWord"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_PdfInsertBlankPages" name="PagePdfInsertBlankPages"/>
+		<entry idPath="CT_Page.OrgPageEdit.Page_SplitPage" name="PageSplitPage"/>
+		<entry idPath="CT_Page.OrgPageEdit.PdfReplacePages_page" name="PdfReplacePagespage"/>
+		<entry idPath="CT_Page.OrgPageRotation" name="OrgPageRotation"/>
+		<entry idPath="CT_Page.OrgPageRotation.ClockwiseDoc" name="ClockwiseDoc"/>
+		<entry idPath="CT_Page.OrgPageRotation.PageReverse90_Tab" name="PageReverse90Tab"/>
+		<entry idPath="CT_Page.OrgPageRotation.PageRotate90_Tab" name="PageRotate90Tab"/>
+		<entry idPath="CT_Page.OrgPageRotation.PageSelect" name="PageSelect"/>
+		<entry idPath="CT_Page.OrgPageTool" name="OrgPageTool"/>
+		<entry idPath="CT_PictureEdit.PictureEdit" name="PictureEdit"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.ImageEditRotate" name="ImageEditRotate"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.ImageEditRotate.PdfEditImageInverseRotate" name="PdfEditImageInverseRotate"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.ImageEditRotate.PdfEditImageRotate90" name="PdfEditImageRotate90"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.PdfEditDeleteImageMenu" name="PdfEditDeleteImageMenu"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.PdfEditImageOpacity" name="PdfEditImageOpacity"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.PdfEditImageReplace" name="PdfEditImageReplace"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.PdfEditImageReverse" name="PdfEditImageReverse"/>
+		<entry idPath="CT_PictureEdit.PictureEdit.PdfEditPicClip" name="PdfEditPicClip"/>
+		<entry idPath="CT_PictureEdit.PictureExit" name="PictureExit"/>
+		<entry idPath="CT_PictureEdit.PictureExit.Edit_Exit" name="PictureEditExit"/>
+		<entry idPath="CT_PictureEdit.RB_EditImageTool" name="EditImageTool"/>
+		<entry idPath="CT_PictureEdit.RB_EditImageTool.PdfEditAddImage" name="PdfEditAddImage"/>
+		<entry idPath="CT_PictureEdit.RB_EditImageTool.PdfEditImgTabTranslate" name="PdfEditImgTabTranslate"/>
+		<entry idPath="CT_PictureEdit.RB_EditImageTool.PictureEdit_EditTextInPicture" name="PictureEditEditTextInPicture"/>
+		<entry idPath="CT_PictureEdit.RB_MouseTool_PictureEdit" name="MouseToolPictureEdit"/>
+		<entry idPath="CT_PictureEdit.RB_MouseTool_PictureEdit.PictureEdit_HandTool" name="PictureEditHandTool"/>
+		<entry idPath="CT_PictureEdit.RB_MouseTool_PictureEdit.PictureEdit_SelectionTool" name="PictureEditSelectionTool"/>
+		<entry idPath="CT_Postil.Postil_Attachment" name="PostilAttachment"/>
+		<entry idPath="CT_Postil.Postil_Attachment.Comments_Attachment" name="CommentsAttachment"/>
+		<entry idPath="CT_Postil.RB_MouseTool_Postil" name="MouseToolPostil"/>
+		<entry idPath="CT_Postil.RB_MouseTool_Postil.Postil_HandTool" name="PostilHandTool"/>
+		<entry idPath="CT_Postil.RB_MouseTool_Postil.Postil_SelectTool" name="PostilSelectTool"/>
+		<entry idPath="CT_Postil.SuperNote" name="SuperNote"/>
+		<entry idPath="CT_Postil.SuperNote.HideAnnotations" name="HideAnnotations"/>
+		<entry idPath="CT_Postil.SuperNote.Reviews_AnnotManagement" name="ReviewsAnnotManagement"/>
+		<entry idPath="CT_Postil.SuperNote.Reviews_Supernote" name="ReviewsSupernote"/>
+		<entry idPath="CT_Postil.TMp" name="TextMarkup"/>
+		<entry idPath="CT_Postil.TMp.AnnotGraffiti" name="AnnotGraffiti"/>
+		<entry idPath="CT_Postil.TMp.Reviews_AreaHighlight" name="ReviewsAreaHighlight"/>
+		<entry idPath="CT_Postil.TMp.Reviews_AreaHighlight.AreaHighlightMoreFontColors" name="PostilAreaHighlightMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_AreaHighlight.AreaHighlightSnapFontColors" name="PostilAreaHighlightSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_HighlightBorder" name="ReviewsHighlightBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_HighlightBorder.HighlightMoreFontColors" name="PostilHighlightMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_HighlightBorder.HighlightSnapFontColors" name="PostilHighlightSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_InsertBorder" name="ReviewsInsertBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_InsertBorder.InsertMoreFontColors" name="PostilInsertMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_InsertBorder.InsertSnapFontColors" name="PostilInsertSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_InstructBox" name="ReviewsInstructBox"/>
+		<entry idPath="CT_Postil.TMp.Reviews_NoteBorder" name="ReviewsNoteBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_NoteBorder.NoteMoreFontColors" name="PostilNoteMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_NoteBorder.NoteSnapFontColors" name="PostilNoteSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ReplaceBorder" name="ReviewsReplaceBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ReplaceBorder.ReplaceMoreFontColors" name="PostilReplaceMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ReplaceBorder.ReplaceSnapFontColors" name="PostilReplaceSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment" name="ReviewsShapeComment"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Arrow" name="PostilArrow"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Circle" name="PostilCircle"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Cloudy" name="PostilCloudy"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Line" name="PostilLine"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.PolyLine" name="PostilPolyLine"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Polygon" name="PostilPolygon"/>
+		<entry idPath="CT_Postil.TMp.Reviews_ShapeComment.Square" name="PostilSquare"/>
+		<entry idPath="CT_Postil.TMp.Reviews_StrikeoutBorder" name="ReviewsStrikeoutBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_StrikeoutBorder.StrikeoutMoreFontColors" name="PostilStrikeoutMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_StrikeoutBorder.StrikeoutSnapFontColors" name="PostilStrikeoutSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_TextComment" name="ReviewsTextComment"/>
+		<entry idPath="CT_Postil.TMp.Reviews_TextCommentBox" name="ReviewsTextCommentBox"/>
+		<entry idPath="CT_Postil.TMp.Reviews_UnderlineBorder" name="ReviewsUnderlineBorder"/>
+		<entry idPath="CT_Postil.TMp.Reviews_UnderlineBorder.UnderlineMoreFontColors" name="PostilUnderlineMoreFontColors"/>
+		<entry idPath="CT_Postil.TMp.Reviews_UnderlineBorder.UnderlineShape" name="PostilUnderlineShape"/>
+		<entry idPath="CT_Postil.TMp.Reviews_UnderlineBorder.UnderlineSnapFontColors" name="PostilUnderlineSnapFontColors"/>
+		<entry idPath="CT_Postil.TMp.SpecialFunc_MeasureTool" name="SpecialFuncMeasureTool"/>
+		<entry idPath="CT_Protect.RB_MouseTool_Protect" name="MouseToolProtect"/>
+		<entry idPath="CT_Protect.RB_MouseTool_Protect.Protect_HandTool" name="ProtectHandTool"/>
+		<entry idPath="CT_Protect.RB_MouseTool_Protect.Protect_SelectTool" name="ProtectSelectTool"/>
+		<entry idPath="CT_Protect.RB_Protect" name="Protect"/>
+		<entry idPath="CT_Protect.RB_Protect.Protect_Encryptdoc" name="ProtectEncryptdoc"/>
+		<entry idPath="CT_Protect.RB_Protect.Protect_VerifyAllSign" name="ProtectVerifyAllSign"/>
+		<entry idPath="CT_ShapeStyle.LineSize" name="LineSize"/>
+		<entry idPath="CT_ShapeStyle.LineSize.RB_LineStyle" name="LineStyle"/>
+		<entry idPath="CT_ShapeStyle.LineSize.RB_LineWidth" name="LineWidth"/>
+		<entry idPath="CT_ShapeStyle.LineStyle" name="LineStyleMenu"/>
+		<entry idPath="CT_ShapeStyle.LineStyle.RB_LineEnd" name="LineEnd"/>
+		<entry idPath="CT_ShapeStyle.LineStyle.RB_LineStart" name="LineStart"/>
+		<entry idPath="CT_ShapeStyle.RB_MouseTool_ShapeStyle" name="MouseToolShapeStyle"/>
+		<entry idPath="CT_ShapeStyle.RB_MouseTool_ShapeStyle.ShapeStyle_HandTool" name="ShapeStyleHandTool"/>
+		<entry idPath="CT_ShapeStyle.RB_MouseTool_ShapeStyle.ShapeStyle_SelectTool" name="ShapeStyleSelectTool"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor" name="ShapeColor"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeBorderColorSetting" name="ShapeBorderColorSetting"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeBorderColorSetting.ShapeBorderMoreFontColors" name="ShapeBorderMoreFontColors"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeBorderColorSetting.ShapeBorderSnapFontColors" name="ShapeBorderSnapFontColors"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeFillColorSetting" name="ShapeFillColorSetting"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeFillColorSetting.ShapeFillMoreFontColors" name="ShapeFillMoreFontColors"/>
+		<entry idPath="CT_ShapeStyle.ShapeColor.ShapeFillColorSetting.ShapeFillSnapFontColors" name="ShapeFillSnapFontColors"/>
+		<entry idPath="CT_ShapeStyle.ShapeStyleExit" name="ShapeStyleExit"/>
+		<entry idPath="CT_ShapeStyle.ShapeStyleExit.Edit_Exit" name="ShapeEditExit"/>
+		<entry idPath="CT_TextCommentBox.CTBLineSize" name="BLineSize"/>
+		<entry idPath="CT_TextCommentBox.CTBLineSize.TextBoxBorderSize%" name="TextBoxBorderSize%"/>
+		<entry idPath="CT_TextCommentBox.CTBLineSize.TextBoxBorderStyle%" name="TextBoxBorderStyle%"/>
+		<entry idPath="CT_TextCommentBox.RBTC_FontEdit" name="TCFontEdit"/>
+		<entry idPath="CT_TextCommentBox.RBTC_FontEdit.FontForCommentText%" name="FontForCommentText%"/>
+		<entry idPath="CT_TextCommentBox.RBTC_FontEdit.FontSizeForCommentText%" name="FontSizeForCommentText%"/>
+		<entry idPath="CT_TextCommentBox.RB_MouseTool_TextTool" name="MouseToolTextTool"/>
+		<entry idPath="CT_TextCommentBox.RB_MouseTool_TextTool.TextTool_HandTool" name="TextToolHandTool"/>
+		<entry idPath="CT_TextCommentBox.RB_MouseTool_TextTool.TextTool_SelectionTool" name="TextToolSelectionTool"/>
+		<entry idPath="CT_TextCommentBox.TCFontEditeExit" name="TCFontEditeExit"/>
+		<entry idPath="CT_TextCommentBox.TCFontEditeExit.TCEdit_Exit" name="TCEditExit"/>
+		<entry idPath="CT_TextCommentBox.TCFontTool" name="TCFontTool"/>
+		<entry idPath="CT_TextCommentBox.TCFontTool.FontColorSetting" name="CommentFontColorSetting"/>
+		<entry idPath="CT_TextCommentBox.TCFontTool.FontColorSetting.FontColorMoreFontColors" name="CommentFontColorMoreFontColors"/>
+		<entry idPath="CT_TextCommentBox.TCFontTool.FontColorSetting.FontColorSnapFontColors" name="CommentFontColorSnapFontColors"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle" name="TextBoxStyle"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxAlphaSetting" name="TextBoxAlphaSetting"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBkColorSetting" name="TextBoxBkColorSetting"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBkColorSetting.TextBoxBkMoreColors" name="TextBoxBkMoreColors"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBkColorSetting.TextBoxBkSnapColor" name="TextBoxBkSnapColor"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBorderColorSetting" name="TextBoxBorderColorSetting"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBorderColorSetting.TextBoxBorderMoreColors" name="TextBoxBorderMoreColors"/>
+		<entry idPath="CT_TextCommentBox.TextBoxStyle.TextBoxBorderColorSetting.TextBoxBorderSnapColor" name="TextBoxBorderSnapColor"/>
+		<entry idPath="CT_TextCommentBox.TextCommentBox" name="TextCommentBoxMenu"/>
+		<entry idPath="CT_TextCommentBox.TextCommentBox.Ct_TextCommentBox" name="TextCommentBox"/>
+		<entry idPath="CT_TextEdit.FontEditExit" name="FontEditExit"/>
+		<entry idPath="CT_TextEdit.FontEditExit.Edit_Exit" name="TextEditExit"/>
+		<entry idPath="CT_TextEdit.RB_EditFont" name="EditFont"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.Bold" name="Bold"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.ClearFormat" name="ClearFormat"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.DeleteLine" name="DeleteLine"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_FontColor" name="EditTextFontColor"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_FontColor.EditText_FontColorMoreFontColors" name="EditTextFontColorMoreFontColors"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_FontColor.EditText_FontColorSnapFontColors" name="EditTextFontColorSnapFontColors"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_HighLight" name="EditTextHighLight"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_HighLight.EditText_HighlightMoreColors" name="EditTextHighlightMoreColors"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_HighLight.EditText_HighlightSnapColors" name="EditTextHighlightSnapColors"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.EditText_Underline" name="EditTextUnderline"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.FontForEditText%" name="FontForEditText%"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.FontSizeForEditText%" name="FontSizeForEditText%"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.FormatPainter" name="FormatPainter"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.MagnifyFontSize" name="MagnifyFontSize"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.ReduceFontSize" name="ReduceFontSize"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.Subscript" name="Subscript"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.SuperScript" name="SuperScript"/>
+		<entry idPath="CT_TextEdit.RB_EditFont.*.Tilt" name="Tilt"/>
+		<entry idPath="CT_TextEdit.RB_EditPage_Setup" name="EditPageSetup"/>
+		<entry idPath="CT_TextEdit.RB_EditPage_Setup.*.IndentFisrtLine" name="IndentFisrtLine"/>
+		<entry idPath="CT_TextEdit.RB_EditPage_Setup.*.LetterSpace" name="LetterSpace"/>
+		<entry idPath="CT_TextEdit.RB_EditPage_Setup.*.LineSpace" name="LineSpace"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph" name="EditParagraph"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph.*.AlignCenter" name="AlignCenter"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph.*.AlignLeft" name="AlignLeft"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph.*.AlignRight" name="AlignRight"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph.*.MagnifyIndentation" name="MagnifyIndentation"/>
+		<entry idPath="CT_TextEdit.RB_EditParagraph.*.ReduceIndentation" name="ReduceIndentation"/>
+		<entry idPath="CT_TextEdit.RB_EditTextTool" name="EditTextTool"/>
+		<entry idPath="CT_TextEdit.RB_EditTextTool.Edit_InsertText" name="EditInsertText"/>
+		<entry idPath="CT_TextEdit.RB_MouseTool_TextEdit" name="MouseToolTextEdit"/>
+		<entry idPath="CT_TextEdit.RB_MouseTool_TextEdit.TextEdit_HandTool" name="TextEditHandTool"/>
+		<entry idPath="CT_TextEdit.RB_MouseTool_TextEdit.TextEdit_SelectionTool" name="TextEditSelectionTool"/>
+		<entry idPath="ClipImage QuickBar" name="QuickClipImage"/>
+		<entry idPath="ClipImage QuickBar.PdfEditPicClipShow_Cancel" name="ClipImageQuickEditPicClipShowCancel"/>
+		<entry idPath="ClipImage QuickBar.PdfEditPicClipShow_Sure" name="ClipImageQuickEditPicClipShowSure"/>
+		<entry idPath="ClipPage QuickBar" name="QuickClipPage"/>
+		<entry idPath="ClipPage QuickBar.AutoClipPage" name="ClipPageQuickAuto"/>
+		<entry idPath="ClipPage QuickBar.ClipPageRange" name="ClipPageQuickRange"/>
+		<entry idPath="ClipPage QuickBar.CompleteClipPage" name="ClipPageQuickComplete"/>
+		<entry idPath="ClipPage QuickBar.CustomClipPage" name="ClipPageQuickCustom"/>
+		<entry idPath="CommentMenu" name="PopupComment"/>
+		<entry idPath="CommentMenu.Anno_CopyText" name="CommentPopupAnnoCopyText"/>
+		<entry idPath="CommentMenu.CloseAllComment" name="CommentPopupCloseAllComment"/>
+		<entry idPath="CommentMenu.DeleteComment" name="CommentPopupDeleteComment"/>
+		<entry idPath="CommentMenu.OpenAllComment" name="CommentPopupOpenAllComment"/>
+		<entry idPath="CommentMenu.OpenComment" name="CommentPopupOpenComment"/>
+		<entry idPath="CommentMenu.RMenu_SelectAnnotationText" name="CommentPopupSelectAnnotationText"/>
+		<entry idPath="CommentMenu.ReplyToComment" name="CommentPopupReplyToComment"/>
+		<entry idPath="CommentMenu.SetProperty" name="CommentPopupSetProperty"/>
+		<entry idPath="CommentMenu.SetState" name="CommentPopupSetState"/>
+		<entry idPath="CommentMenuClose" name="PopupCommentClose"/>
+		<entry idPath="CommentMenuClose.Anno_CopyText" name="CommentClosePopupAnnoCopyText"/>
+		<entry idPath="CommentMenuClose.CloseAllComment" name="CommentClosePopupCloseAllComment"/>
+		<entry idPath="CommentMenuClose.CloseComment" name="CommentClosePopupCloseComment"/>
+		<entry idPath="CommentMenuClose.DeleteComment" name="CommentClosePopupDeleteComment"/>
+		<entry idPath="CommentMenuClose.OpenAllComment" name="CommentClosePopupOpenAllComment"/>
+		<entry idPath="CommentMenuClose.RMenu_SelectAnnotationText" name="CommentClosePopupSelectAnnotationText"/>
+		<entry idPath="CommentMenuClose.ReplyToComment" name="CommentClosePopupReplyToComment"/>
+		<entry idPath="CommentMenuClose.SetProperty" name="CommentClosePopupSetProperty"/>
+		<entry idPath="CommentMenuClose.SetState" name="CommentClosePopupSetState"/>
+		<entry idPath="Ebook_Floatbar" name="FloatEbook"/>
+		<entry idPath="Ebook_Floatbar.SelectionToolBarCopyText" name="EbookFloatCopyText"/>
+		<entry idPath="EditLink RB Menu" name="EbookFloatEditLinkMenu"/>
+		<entry idPath="EditLink RB Menu.CopyLink" name="EbookFloatCopyLink"/>
+		<entry idPath="EditLink RB Menu.Cut" name="EbookFloatCut"/>
+		<entry idPath="EditLink RB Menu.DeleteHyperLink" name="EbookFloatDeleteHyperLink"/>
+		<entry idPath="EditLink RB Menu.EditLink" name="EbookFloatEditLink"/>
+		<entry idPath="EditLink RB Menu.Paste" name="EbookFloatPaste"/>
+		<entry idPath="EditLink RB Menu.SelectAllLink" name="EbookFloatSelectAllLink"/>
+		<entry idPath="FileMenu.Exit" name="FileMenuExitMenu"/>
+		<entry idPath="FileMenu.FileMenu_Properties" name="FileMenuProperties"/>
+		<entry idPath="FileMenu.OpenFile" name="FileMenuOpenFile"/>
+		<entry idPath="FileMenu.Print" name="FileMenuPrint"/>
+		<entry idPath="FileMenu.newShareForTraditionMenu" name="FileMenuNewShare"/>
+		<entry idPath="Font Floatbar" name="FloatFont"/>
+		<entry idPath="Font Floatbar.SelectionToolBarCopyText" name="FontFloatCopyText"/>
+		<entry idPath="Font Floatbar.SelectionToolBarEditEraser" name="FontFloatEditEraser"/>
+		<entry idPath="Font Floatbar.SelectionToolBarEditText" name="FontFloatEditText"/>
+		<entry idPath="Font Floatbar.SelectionToolBarHighlight" name="FontFloatHighlight"/>
+		<entry idPath="Font Floatbar.SelectionToolBarUnderline" name="FontFloatUnderline"/>
+		<entry idPath="Font Floatbar.translate_Float" name="FontFloatTranslateFloat"/>
+		<entry idPath="FreeTextMenu" name="PopupFreeText"/>
+		<entry idPath="FreeTextMenu.CopyText" name="FreeTextPopupCopyText"/>
+		<entry idPath="FreeTextMenu.Cut" name="FreeTextPopupCut"/>
+		<entry idPath="FreeTextMenu.DeleteComment" name="FreeTextPopupDeleteComment"/>
+		<entry idPath="FreeTextMenu.Paste" name="FreeTextPopupPaste"/>
+		<entry idPath="FreeTextSelectionMenu" name="PopupFreeTextSelection"/>
+		<entry idPath="FreeTextSelectionMenu.CopyText" name="FreeTextSelectionPopupCopyText"/>
+		<entry idPath="FreeTextSelectionMenu.Cut" name="FreeTextSelectionPopupCut"/>
+		<entry idPath="FreeTextSelectionMenu.DeleteText" name="FreeTextSelectionPopupDeleteText"/>
+		<entry idPath="FreeTextSelectionMenu.Paste" name="FreeTextSelectionPopupPaste"/>
+		<entry idPath="FreeTextSelectionMenu.RedoBoard" name="FreeTextSelectionPopupRedoBoard"/>
+		<entry idPath="FreeTextSelectionMenu.SelectAll" name="FreeTextSelectionPopupSelectAll"/>
+		<entry idPath="FreeTextSelectionMenu.UndoBoard" name="FreeTextSelectionPopupUndoBoard"/>
+		<entry idPath="MeasureToolRBmenu" name="PopupMeasureTool"/>
+		<entry idPath="MeasureToolRBmenu.MeasureCancle" name="MeasureToolPopupMeasureCancle"/>
+		<entry idPath="MeasureToolRBmenu.MeasureFinished" name="MeasureToolPopupMeasureFinished"/>
+		<entry idPath="Menu Bar" name="MenuBar"/>
+		<entry idPath="Menu Bar.FileMenu" name="MenuBarFile"/>
+		<entry idPath="Menu Bar.ViewMenu" name="MenuBarView"/>
+		<entry idPath="MixedEditMultipleSelectMenu" name="PopupMixedEditMultipleSelect"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditCopyMenu" name="MixedEditMultipleSelectPopupCopyMenu"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditCutMenu" name="MixedEditMultipleSelectPopupCutMenu"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditDeleteMenu" name="MixedEditMultipleSelectPopupDeleteMenu"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditPasteMenu" name="MixedEditMultipleSelectPopupPasteMenu"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditPasteTextOnlyMenu" name="MixedEditMultipleSelectPopupPasteTextOnlyMenu"/>
+		<entry idPath="MixedEditMultipleSelectMenu.MixdEditSelectAllMenu" name="MixedEditMultipleSelectPopupSelectAllMenu"/>
+		<entry idPath="MixedEditRightMenu" name="PopupMixedEdit"/>
+		<entry idPath="MixedEditRightMenu.Edit_Right_Menu_Insert_Image" name="MixedEditPopupInsertImage"/>
+		<entry idPath="MixedEditRightMenu.Edit_Right_Menu_Insert_Text" name="MixedEditPopupInsertText"/>
+		<entry idPath="MixedEditRightMenu.MixdEditCopyMenu" name="MixedEditPopupCopy"/>
+		<entry idPath="MixedEditRightMenu.MixdEditCutMenu" name="MixedEditPopupCut"/>
+		<entry idPath="MixedEditRightMenu.MixdEditDeleteMenu" name="MixedEditPopupDelete"/>
+		<entry idPath="MixedEditRightMenu.MixdEditPasteMenu" name="MixedEditPopupPaste"/>
+		<entry idPath="MixedEditRightMenu.MixdEditPasteTextOnlyMenu" name="MixedEditPopupPasteTextOnly"/>
+		<entry idPath="MixedEditRightMenu.MixdEditSelectAllMenu" name="MixedEditPopupSelectAll"/>
+		<entry idPath="MultiplePathEditMenu" name="MixedEditPopupMultiplePathEdit"/>
+		<entry idPath="MultiplePathEditMenu.MixdEditCopyMenu" name="PopupMultiplePathEdit"/>
+		<entry idPath="MultiplePathEditMenu.MixdEditCutMenu" name="MultiplePathEditPopupCut"/>
+		<entry idPath="MultiplePathEditMenu.MixdEditDeleteMenu" name="MultiplePathEditPopupDelete"/>
+		<entry idPath="MultiplePathEditMenu.MixdEditPasteMenu" name="MultiplePathEditPopupPaste"/>
+		<entry idPath="MultiplePathEditMenu.MixdEditPasteTextOnlyMenu" name="MultiplePathEditPopupPasteTextOnly"/>
+		<entry idPath="MultiplePathEditMenu.SelectAllPathMenu" name="MultiplePathEditPopupSelectAllPath"/>
+		<entry idPath="MultipleVectorDiagramEditMenu" name="PopupMultipleVectorDiagramEdit"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.MixdEditCopyMenu" name="MultipleVectorDiagramEditPopupCopy"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.MixdEditCutMenu" name="MultipleVectorDiagramEditPopupCut"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.MixdEditDeleteMenu" name="MultipleVectorDiagramEditPopupDelete"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.MixdEditPasteMenu" name="MultipleVectorDiagramEditPopupPaste"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.MixdEditPasteTextOnlyMenu" name="MultipleVectorDiagramEditPopupPasteTextOnly"/>
+		<entry idPath="MultipleVectorDiagramEditMenu.SelectAllShadingMenu" name="MultipleVectorDiagramEditPopupSelectAllShading"/>
+		<entry idPath="OcrExtractText QuickBar" name="QuickOcrExtractText"/>
+		<entry idPath="OcrExtractText QuickBar.OcrExtractScrawl" name="OcrExtractTextQuickScrawl"/>
+		<entry idPath="OcrExtractText QuickBar.OcrExtractTextCopyPic" name="OcrExtractTextQuickTextCopyPic"/>
+		<entry idPath="OcrExtractText QuickBar.OcrPDFTableRecognize" name="OcrExtractTextQuickTableRecognize"/>
+		<entry idPath="OcrExtractText QuickBar.OcrPDFFormulaRecognize" name="OcrExtractTextQuickFormulaRecognize"/>
+		<entry idPath="OcrExtractText QuickBar.PdfImgTransBoxSelQuick" name="OcrExtractTextQuickImgTransBoxSelQuick"/>
+		<entry idPath="OcrExtractText QuickBar.kocrtoolOcrExtractText" name="OcrExtractTextQuickOcrExtractText"/>
+		<entry idPath="OrganizePage QuickBar Hover" name="QuickOrganizePageHover"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageDelete_Quick" name="OrganizePageHoverQuickDeleteQuick"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageInsert_Quick" name="OrganizePageHoverQuickInsertQuick"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageInsert_Quick.PageInsertBlankPages" name="OrganizePageHoverQuickInsertBlankPages"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageInsert_Quick.PageInsertPagesFromDoc" name="OrganizePageHoverQuickInsertPagesFromDoc"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageReverse90_Quick" name="OrganizePageHoverQuickReverse90Quick"/>
+		<entry idPath="OrganizePage QuickBar Hover.PageRotate90_Quick" name="OrganizePageHoverQuickRotate90Quick"/>
+		<entry idPath="OrganizePage RB Menu" name="PopupOrganizePage"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup" name="OrganizePagePopupBaseFuncGroup"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PageCopy_OPMenu" name="OrganizePagePopupCopy"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PagePaste_OPMenu" name="OrganizePagePopupPaste"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PageReverse90_RBMenu" name="OrganizePagePopupReverse90"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PageRotate90_RBMenu" name="OrganizePagePopupRotate90"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PageZoomIn" name="OrganizePagePopupZoomIn"/>
+		<entry idPath="OrganizePage RB Menu.OrganizePageRightMenuBaseFuncGroup.PageZoomOut" name="OrganizePagePopupZoomOut"/>
+		<entry idPath="OrganizePage RB Menu.PageDelete_RBMenu" name="OrganizePagePopupDelete"/>
+		<entry idPath="OrganizePage RB Menu.PageExtract_RBMenu" name="OrganizePagePopupExtract"/>
+		<entry idPath="OrganizePage RB Menu.PageInsert_RBMenu" name="OrganizePagePopupInsert"/>
+		<entry idPath="OrganizePage RB Menu.PageInsert_RBMenu.PageInsertBlankPages" name="OrganizePagePopupInsertBlankPages"/>
+		<entry idPath="OrganizePage RB Menu.PageInsert_RBMenu.PageInsertPagesFromDoc" name="OrganizePagePopupInsertPagesFromDoc"/>
+		<entry idPath="OrganizePage RB Menu.PageProperty_RBMenu" name="OrganizePagePopupProperty"/>
+		<entry idPath="OrganizePage RB Menu.PageReplace_RBMenu" name="OrganizePagePopupReplace"/>
+		<entry idPath="OrganizePage RB Menu.PageRightMenuPrint" name="OrganizePagePopupPrint"/>
+		<entry idPath="PathEditRightMenu" name="PopupPathEdit"/>
+		<entry idPath="PathEditRightMenu.EditLayer" name="PathEditPopupEditLayer"/>
+		<entry idPath="PathEditRightMenu.EditLayer.MoveToBottom" name="PathEditPopupMoveToBottom"/>
+		<entry idPath="PathEditRightMenu.EditLayer.MoveToNext" name="PathEditPopupMoveToNext"/>
+		<entry idPath="PathEditRightMenu.EditLayer.MoveToPrev" name="PathEditPopupMoveToPrev"/>
+		<entry idPath="PathEditRightMenu.EditLayer.MoveTotop" name="PathEditPopupMoveTotop"/>
+		<entry idPath="PathEditRightMenu.MixdEditCopyMenu" name="PathEditPopupCopy"/>
+		<entry idPath="PathEditRightMenu.MixdEditCutMenu" name="PathEditPopupCut"/>
+		<entry idPath="PathEditRightMenu.MixdEditDeleteMenu" name="PathEditPopupDelete"/>
+		<entry idPath="PathEditRightMenu.MixdEditPasteMenu" name="PathEditPopupPaste"/>
+		<entry idPath="PathEditRightMenu.MixdEditPasteTextOnlyMenu" name="PathEditPopupPasteTextOnly"/>
+		<entry idPath="PathEditRightMenu.SelectAllPathMenu" name="PathEditPopupSelectAllPath"/>
+		<entry idPath="PdfImageEditMenu" name="PopupImageEdit"/>
+		<entry idPath="PdfImageEditMenu.CopyImageMenu" name="ImageEditPopupCopy"/>
+		<entry idPath="PdfImageEditMenu.CutImageMenu" name="ImageEditPopupCut"/>
+		<entry idPath="PdfImageEditMenu.DeleteImageMenu" name="ImageEditPopupDelete"/>
+		<entry idPath="PdfImageEditMenu.EditImageLayer" name="ImageEditPopupEditLayer"/>
+		<entry idPath="PdfImageEditMenu.EditImageLayer.Image2Bottom" name="ImageEditPopupImage2Bottom"/>
+		<entry idPath="PdfImageEditMenu.EditImageLayer.Image2top" name="ImageEditPopupImage2top"/>
+		<entry idPath="PdfImageEditMenu.EditImageLayer.ImageBackLayer" name="ImageEditPopupImageBackLayer"/>
+		<entry idPath="PdfImageEditMenu.EditImageLayer.ImageForwardLayer" name="ImageEditPopupImageForwardLayer"/>
+		<entry idPath="PdfImageEditMenu.PasteImageMenu" name="ImageEditPopupPaste"/>
+		<entry idPath="PdfImageEditMenu.PasteImageTextMenu" name="ImageEditPopupPasteText"/>
+		<entry idPath="PdfImageEditMenu.PdfImageEditMenu_EditTextInPicture" name="ImageEditPopupEditText"/>
+		<entry idPath="PdfImageEditMenu.PdfImgTransImgEditEdMenu" name="ImageEditPopupTranslateImage"/>
+		<entry idPath="PdfImageEditMenu.SaveAsImageMenu" name="ImageEditPopupSaveAs"/>
+		<entry idPath="PdfImageEditMenu.SelectAllImageMenu" name="ImageEditPopupSelectAll"/>
+		<entry idPath="PdfImageEditMenu.kocrtoolPhotoEditRightMenuOcrExtractPage" name="ImageEditPopupOcrExtractPage"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu" name="PopupImageEditSelectMultiple"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.CopyImageMenu" name="ImageEditSelectMultiplePopupCopy"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.CutImageMenu" name="ImageEditSelectMultiplePopupCut"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.DeleteImageMenu" name="ImageEditSelectMultiplePopupDelete"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.PasteImageMenu" name="ImageEditSelectMultiplePopupPaste"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.PasteImageTextMenu" name="ImageEditSelectMultiplePopupPasteText"/>
+		<entry idPath="PdfImageEditSelectMultipleMenu.SelectAllImageMenu" name="ImageEditSelectMultiplePopupSelectAll"/>
+		<entry idPath="PdfImageMenu" name="PopupImage"/>
+		<entry idPath="PdfImageMenu.CopyImageMenu" name="ImpagePopupCopy"/>
+		<entry idPath="PdfImageMenu.DeleteImageMenu" name="ImpagePopupDelete"/>
+		<entry idPath="PdfImageMenu.EditImageLayer" name="ImpagePopupEditImageLayer"/>
+		<entry idPath="PdfImageMenu.EditImageLayer.Image2Bottom" name="ImpagePopupImage2Bottom"/>
+		<entry idPath="PdfImageMenu.EditImageLayer.Image2top" name="ImpagePopupImage2top"/>
+		<entry idPath="PdfImageMenu.EditImageLayer.ImageBackLayer" name="ImpagePopupImageBackLayer"/>
+		<entry idPath="PdfImageMenu.EditImageLayer.ImageForwardLayer" name="ImpagePopupImageForwardLayer"/>
+		<entry idPath="PdfImageMenu.ImageEnterEditMenu" name="ImpagePopupImageEnter"/>
+		<entry idPath="PdfImageMenu.PdfImageMenu_CreateLink" name="ImpagePopupCreateLink"/>
+		<entry idPath="PdfImageMenu.PdfImageMenu_EditTextInPicture" name="ImpagePopupEditText"/>
+		<entry idPath="PdfImageMenu.PdfImgTransImgEditMenu" name="ImpagePopupTranslateImage"/>
+		<entry idPath="PdfImageMenu.RightImageMenuHandTool" name="ImpagePopupHandTool"/>
+		<entry idPath="PdfImageMenu.SaveAsImageMenu" name="ImpagePopupSaveAs"/>
+		<entry idPath="PdfImageMenu.kocrtoolPhotoRightMenuOcrExtractPage" name="ImpagePopupOcrExtractPage"/>
+		<entry idPath="PdfOcrExtractMenu" name="PopupOcrExtract"/>
+		<entry idPath="PdfOcrExtractMenu.OcrExtractScrawlMenu" name="OcrExtractPopupScrawl"/>
+		<entry idPath="PdfOcrExtractMenu.OcrExtractTextCopyPicMenu" name="OcrExtractPopupTextCopyPicture"/>
+		<entry idPath="PdfOcrExtractMenu.OcrPDFTableRecognizeMenu" name="OcrExtractPopupOcrTableRecognize"/>
+		<entry idPath="PdfOcrExtractMenu.OcrPDFFormulaRecognizeMenu" name="OcrExtractPopupOcrFormulaRecognize"/>
+		<entry idPath="PdfOcrExtractMenu.PdfImgTransBoxSelMenu" name="OcrExtractPopupTransBox"/>
+		<entry idPath="PdfOcrExtractMenu.kocrtool2ExcelMenu" name="OcrExtractPopup2Excel"/>
+		<entry idPath="PdfOcrExtractMenu.kocrtool2WordMenu" name="OcrExtractPopupWord"/>
+		<entry idPath="PdfOcrExtractMenu.kocrtoolOcrExtractTextMenu" name="OcrExtractPopupOcrExtractText"/>
+		<entry idPath="Picture Floatbar" name="FloatPicture"/>
+		<entry idPath="Picture Floatbar.EditPicNewTool_Clip" name="PictureFloatClip"/>
+		<entry idPath="Picture Floatbar.EditPicNewTool_Preview" name="PictureFloatPreview"/>
+		<entry idPath="Picture Floatbar.EditPicNewTool_Rotate" name="PictureFloatRotate"/>
+		<entry idPath="Picture Floatbar.EditPicNewTool_Rotate.EditPicNewTool_Rotate_Left" name="PictureFloatRotateLeft"/>
+		<entry idPath="Picture Floatbar.EditPicNewTool_Rotate.EditPicNewTool_Rotate_Right" name="PictureFloatRotateRight"/>
+		<entry idPath="Picture QuickBar" name="QuickPicture"/>
+		<entry idPath="Picture QuickBar Read" name="QuickPictureRead"/>
+		<entry idPath="Picture QuickBar Read.EditPicNewTool_Preview" name="PictureReadQuickPreview"/>
+		<entry idPath="Picture QuickBar Read.PdfImageEnterEdit" name="PictureReadQuickEnterEdit"/>
+		<entry idPath="Picture QuickBar.PdfImageExitEdit" name="PictureReadQuickExitEdit"/>
+		<entry idPath="Picture QuickBar.PdfImageOpacity" name="PictureReadQuickImageOpacity"/>
+		<entry idPath="Picture QuickBar.PdfImageReplace" name="PictureReadQuickImageReplace"/>
+		<entry idPath="Picture QuickBar.PdfImageReverse" name="PictureReadQuickImageReverse"/>
+		<entry idPath="Picture QuickBar.PdfImageRotate90" name="PictureReadQuickImageRotate90"/>
+		<entry idPath="Picture QuickBar.PdfImgTransImgEditQuick" name="PictureReadQuickImgTransImgEditQuick"/>
+		<entry idPath="Picture QuickBar.PdfPicClip" name="PictureReadQuickPicClip"/>
+		<entry idPath="Picture QuickBar.PictureQuickBarToggler" name="PictureReadQuickToggler"/>
+		<entry idPath="Picture QuickBar.PictureQuickBar_EditTextInPicture" name="PictureReadQuickEditText"/>
+		<entry idPath="Picture QuickBar.kocrtoolPdfImageOcrExtract" name="PictureReadQuickImageOcrExtract"/>
+		<entry idPath="QAT" name="Qat" tag="qat"/>
+		<entry idPath="QAT.OpenFile" name="QatOpenFile" tag="qat"/>
+		<entry idPath="QAT.Print" name="QatPrint" tag="qat"/>
+		<entry idPath="QAT.QtSave" name="QatQtSave" tag="qat"/>
+		<entry idPath="QAT.Redo" name="QatRedo" tag="qat"/>
+		<entry idPath="QAT.Undo" name="QatUndo" tag="qat"/>
+		<entry idPath="ReadingMode_Font Floatbar" name="FloatReadingModeFont"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_CopyText" name="ReadingModeFontFloatCopyText"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_EditText" name="ReadingModeFontFloatEditText"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_EraserMenu" name="ReadingModeFontFloatEraser"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_Highlight" name="ReadingModeFontFloatHighlight"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_HighlightAndAnnotation" name="ReadingModeFontFloatHighlightAndAnnotation"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_SquigglyUnderline" name="ReadingModeFontFloatSquigglyUnderline"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_Strikeout" name="ReadingModeFontFloatStrikeout"/>
+		<entry idPath="ReadingMode_Font Floatbar.ReadingMode_TextSelectBar_Underline" name="ReadingModeFontFloatUnderline"/>
+		<entry idPath="ReadingViewTabbar" name="TabbarReadingView"/>
+		<entry idPath="ReadingViewTabbar.ExitReadingMode" name="ExitReadingMode"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_AnnoToolBox" name="ReadingModeAnno"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_AnnotManagement" name="ReadingModeAnnotManagement"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_ExtractionAndIdentification" name="ReadingModeExtractionAndIdentification"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_ExtractionAndIdentification.ReadingMode_PDFTableRecognize" name="ReadingModePDFTableRecognize"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_ExtractionAndIdentification.ReadingMode_PDFFormulaRecognize" name="ReadingModePDFFormulaRecognize"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_ExtractionAndIdentification.kocrtoolReadingmodetab" name="ReadingModeOcrTool"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Rotate" name="ReadingModeRotate"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Rotate.ReadingMode_Clockwise" name="ReadingModeClockwise"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Rotate.ReadingMode_ClockwiseDoc" name="ReadingModeClockwiseDoc"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Rotate.ReadingMode_Counterclockwise" name="ReadingModeCounterclockwise"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Supernote" name="ReadingModeSupernote"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Translate" name="ReadingModeTranslate"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Translate.ReadingMode_FullTranslation" name="ReadingModeFullTranslation"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Translate.ReadingMode_TranslationSelect" name="ReadingModeTranslationSelect"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_View" name="ReadingModeView"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_View.ReadingMode_ContinuousRead" name="ReadingModeContinuousRead"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_View.ReadingMode_DoublePage" name="ReadingModeDoublePage"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_View.ReadingMode_DoublePageContinuous_cover" name="ReadingModeDoublePageContinuouscover"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_View.ReadingMode_SinglePage" name="ReadingModeSinglePage"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Watermark" name="ReadingModeWatermark"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Watermark.ReadingMode_DeleteWatermark" name="ReadingModeDeleteWatermark"/>
+		<entry idPath="ReadingViewTabbar.ReadingMode_Watermark.ReadingMode_RenewWatermark" name="ReadingModeRenewWatermark"/>
+		<entry idPath="ReadingViewTabbar.ReadingView_BookMark" name="ReadingViewBookMark"/>
+		<entry idPath="ReadingViewTabbar.ReadingView_Search" name="ReadingViewSearch"/>
+		<entry idPath="Signature QuickBar" name="QuickSignature"/>
+		<entry idPath="Signature QuickBar Batch" name="QuickSignatureBatch"/>
+		<entry idPath="Signature QuickBar Batch.PdfSignatureDelete" name="SignatureBatchQuickDelete"/>
+		<entry idPath="Signature QuickBar Batch.PdfSignatureDeleteBatch" name="SignatureBatchQuickDeleteBatch"/>
+		<entry idPath="Signature QuickBar Batch.PdfSignatureEmbed" name="SignatureBatchQuickEmbed"/>
+		<entry idPath="Signature QuickBar Batch.PdfSignatureEmbedBatch" name="SignatureBatchQuickEmbedBatch"/>
+		<entry idPath="Signature QuickBar.PdfSignatureApplyMultiPage" name="SignatureQuickApplyMultiPage"/>
+		<entry idPath="Signature QuickBar.PdfSignatureDelete" name="SignatureQuickDelete"/>
+		<entry idPath="Signature QuickBar.PdfSignatureEmbed" name="SignatureQuickEmbed"/>
+		<entry idPath="SplitPage QuickBar" name="QuickSplitPage"/>
+		<entry idPath="SplitPage QuickBar.AddSplitLine" name="SplitPageQuickAddSplitLine"/>
+		<entry idPath="SplitPage QuickBar.DelteSplitLine" name="SplitPageQuickDelteSplitLine"/>
+		<entry idPath="SplitPage QuickBar.ExitSplitPage" name="SplitPageQuickExitSplitPage"/>
+		<entry idPath="SplitPage QuickBar.ImmediatelySplit" name="SplitPageQuickImmediatelySplit"/>
+		<entry idPath="SplitPage QuickBar.SplitSetPage" name="SplitPageQuickSplitSetPage"/>
+		<entry idPath="TabButtonNewBlankFile" name="TabButtonNewBlankFile"/>
+		<entry idPath="TabMenu Popup Menu" name="PopupTabMenu"/>
+		<entry idPath="TabMenu Popup Menu.CloseAllFiles" name="TabMenuPopupCloseAllFiles"/>
+		<entry idPath="TabMenu Popup Menu.CloseOtherWindows" name="TabMenuPopupCloseOtherWindows"/>
+		<entry idPath="TabMenu Popup Menu.FileMenu_Properties" name="TabMenuPopupProperties"/>
+		<entry idPath="TabMenu Popup Menu.OpenFileFolder" name="TabMenuPopupOpenFileFolder"/>
+		<entry idPath="TabMenu Popup Menu.SaveAllFiles" name="TabMenuPopupSaveAllFiles"/>
+		<entry idPath="TabMenu Popup Menu.SaveAsFile" name="TabMenuPopupSaveAsFile"/>
+		<entry idPath="TabMenu Popup Menu.SaveFile" name="TabMenuPopupSaveFile"/>
+		<entry idPath="TabMenu Popup Menu.TabMenuCloseWindow" name="TabMenuPopupCloseWindow"/>
+		<entry idPath="TableRecognize QuickBar" name="QuickTableRecognize"/>
+		<entry idPath="TaskpaneCommandPackage" name="TaskPane" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_AreaHighlight" name="TaskPaneReadingAreaHighlight" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_FreeText" name="TaskPaneReadingFreeText" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_GraffitiDraw" name="TaskPaneReadingGraffitiDraw" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_GraffitiEraser" name="TaskPaneReadingGraffitiEraser" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_Highlight" name="TaskPaneReadingHighlight" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_Note" name="TaskPaneReadingNote" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_Shape" name="TaskPaneReadingShape" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_Strikeout" name="TaskPaneReadingStrikeout" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.Reading_Underline" name="TaskPaneReadingUnderline" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.TpDocFinalizedMgr" name="TaskPaneDocFinalizedManager" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.TpPropertyPane" name="TaskPanePropertyPane" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.TpQAndA" name="TpQAndA" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.TpSearchpane" name="TaskPaneSearchpane" tag="taskPane"/>
+		<entry idPath="TaskpaneCommandPackage.TpTranslation" name="TaskPaneTranslation" tag="taskPane"/>
+		<entry idPath="TextEdit_FloatBar" name="FloatTextEdit"/>
+		<entry idPath="TextEdit_FloatBar.*.BoldPopup" name="TextEditFloatBold"/>
+		<entry idPath="TextEdit_FloatBar.*.ClearFormatPopup" name="TextEditFloatClearFormat"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_FontColorPopup" name="TextEditFloatFontColor"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_FontColorPopup.EditText_FontColorMoreFontColorsPopup" name="TextEditFloatMoreFontColors"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_FontColorPopup.EditText_FontColorSnapFontColorsPopup" name="TextEditFloatSnapFontColors"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_HighLightPopup" name="TextEditFloatHighLight"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_HighLightPopup.EditText_HighlightMoreColorsPopup" name="TextEditFloatHighlightMoreColors"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_HighLightPopup.EditText_HighlightSnapColorsPopup" name="TextEditFloatHighlightSnapColors"/>
+		<entry idPath="TextEdit_FloatBar.*.EditText_UnderlinePopup" name="TextEditFloatUnderline"/>
+		<entry idPath="TextEdit_FloatBar.*.FontForEditTextPopup" name="TextEditFloatFont"/>
+		<entry idPath="TextEdit_FloatBar.*.FontSizeForEditTextPopup" name="TextEditFloatFontSize"/>
+		<entry idPath="TextEdit_FloatBar.*.Fontsel_FormatAlignPopup" name="TextEditFloatAlign"/>
+		<entry idPath="TextEdit_FloatBar.*.Fontsel_FormatAlignPopup.AlignCenterPopup" name="TextEditFloatAlignCenter"/>
+		<entry idPath="TextEdit_FloatBar.*.Fontsel_FormatAlignPopup.AlignLeftPopup" name="TextEditFloatAlignLeft"/>
+		<entry idPath="TextEdit_FloatBar.*.Fontsel_FormatAlignPopup.AlignRightPopup" name="TextEditFloatAlignRight"/>
+		<entry idPath="TextEdit_FloatBar.*.FormatPainterPopup" name="TextEditFloatFormatPainter"/>
+		<entry idPath="TextEdit_FloatBar.*.MagnifyFontSizePopup" name="TextEditFloatMagnifyFontSize"/>
+		<entry idPath="TextEdit_FloatBar.*.PopMenu_LineSpace" name="TextEditFloatLineSpace"/>
+		<entry idPath="TextEdit_FloatBar.*.ReduceFontSizePopup" name="TextEditFloatReduceFontSize"/>
+		<entry idPath="TextEdit_FloatBar.*.TiltPopup" name="TextEditFloatTilt"/>
+		<entry idPath="VectorDiagramEditRightMenu" name="PopupVectorDiagramEdit"/>
+		<entry idPath="VectorDiagramEditRightMenu.EditLayer" name="VectorDiagramEditPopupEditLayer"/>
+		<entry idPath="VectorDiagramEditRightMenu.EditLayer.MoveToBottom" name="VectorDiagramEditPopupMoveToBottom"/>
+		<entry idPath="VectorDiagramEditRightMenu.EditLayer.MoveToNext" name="VectorDiagramEditPopupMoveToNext"/>
+		<entry idPath="VectorDiagramEditRightMenu.EditLayer.MoveToPrev" name="VectorDiagramEditPopupMoveToPrev"/>
+		<entry idPath="VectorDiagramEditRightMenu.EditLayer.MoveTotop" name="VectorDiagramEditPopupMoveToTop"/>
+		<entry idPath="VectorDiagramEditRightMenu.MixdEditCopyMenu" name="VectorDiagramEditPopupCopy"/>
+		<entry idPath="VectorDiagramEditRightMenu.MixdEditCutMenu" name="VectorDiagramEditPopupCut"/>
+		<entry idPath="VectorDiagramEditRightMenu.MixdEditDeleteMenu" name="VectorDiagramEditPopupDelete"/>
+		<entry idPath="VectorDiagramEditRightMenu.MixdEditPasteMenu" name="VectorDiagramEditPopupPaste"/>
+		<entry idPath="VectorDiagramEditRightMenu.MixdEditPasteTextOnlyMenu" name="VectorDiagramEditPopupPasteTextOnly"/>
+		<entry idPath="VectorDiagramEditRightMenu.SelectAllShadingMenu" name="VectorDiagramEditPopupSelectAllShading"/>
+		<entry idPath="ViewMenu.Zoom" name="ViewMenuZoom"/>
+		<entry idPath="ViewportNone" name="PopupViewportNone"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand" name="ViewportNonePopupAddNewInsert"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.AddHeaderFooter_NewPage" name="ViewportNonePopupAddHeaderFooterNewPage"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.InsertRB_Watermark" name="ViewportNonePopupInsertWatermark"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.Insert_AddImage_RightMenu" name="ViewportNonePopupInsertAddImage"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.Insert_AddNewPageNumber" name="ViewportNonePopupInsertAddNewPageNumber"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.Insert_AddText_RightMenu" name="ViewportNonePopupInsertAddText"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.PageInsertBlankPages_RightMenu" name="ViewportNonePopupPageInsertBlankPages"/>
+		<entry idPath="ViewportNone.AddNewInsertRBCommand.PageInsertPagesFromDoc_RightMenu" name="PageInsertPagesFromDocRightMenu"/>
+		<entry idPath="ViewportNone.AddNewOutlineRBCommand" name="ViewportNonePopupAddNewOutline"/>
+		<entry idPath="ViewportNone.Menu_PDFZZ_PdfConvert_Office" name="ViewportNonePopupConvertOffice"/>
+		<entry idPath="ViewportNone.PDFPrint_RightMenu" name="ViewportNonePopupPrint"/>
+		<entry idPath="ViewportNone.PDFPrint_RightMenu.RightMenuNewPDFPrint" name="ViewportNonePopupNewPDFPrint"/>
+		<entry idPath="ViewportNone.PDFPrint_RightMenu.RightMenuPDFPrintList" name="ViewportNonePopupPrintList"/>
+		<entry idPath="ViewportNone.PDFPrint_RightMenu.RightMenuPDFPrintList.BatchPrintRightMenu" name="ViewportNonePopupBatchPrint"/>
+		<entry idPath="ViewportNone.PDFPrint_RightMenu.RightMenuPDFPrintList.OnlinePrintRightMenu" name="ViewportNonePopupOnlinePrint"/>
+		<entry idPath="ViewportNone.RightMenuEditText" name="ViewportNonePopupEditText"/>
+		<entry idPath="ViewportNone.RightMenuNavigationBar" name="ViewportNonePopupNavigationBar"/>
+		<entry idPath="ViewportNone.RightMenuPDF2Photo" name="ViewportNonePopupPDF2Photo"/>
+		<entry idPath="ViewportNone.RightMenuTranslationAll" name="ViewportNonePopupTranslationAll"/>
+		<entry idPath="ViewportNone.RightMenu_ExitReadingMode" name="ViewportNonePopupExitReadingMode"/>
+		<entry idPath="ViewportNone.RightMenu_SelectBar" name="ViewportNonePopupSelectBar"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List" name="ViewportNonePopupOcrExtractList"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List.MenuPDFExtractPage" name="ViewportNonePopupExtractPage"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List.Menu_PDFTableRecognize" name="ViewportNonePopupTableRecognize"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List.Menu_PDFFormulaRecognize" name="ViewportNonePopupFormulaRecognize"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List.imageExtractRightmenu" name="ViewportNonePopupImageExtract"/>
+		<entry idPath="ViewportNone.Right_Menu_Ocr_Extract_List.kocrtoolRightMenuOcrExtractPage" name="ViewportNonePopupOcrExtractPage"/>
+		<entry idPath="ViewportNone.RightmenuPageProperty" name="ViewportNonePopupPageProperty"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup" name="ViewportNonePopupBaseFuncGroup"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuClockwise" name="ViewportNonePopupClockwise"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuCounterclockwise" name="ViewportNonePopupCounterclockwise"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuHandTool" name="ViewportNonePopupHandTool"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuNavigateBack" name="ViewportNonePopupNavigateBack"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuNavigateForward" name="ViewportNonePopupNavigateForward"/>
+		<entry idPath="ViewportNone.ViewRightMenuBaseFuncGroup.RightMenuSelectTool" name="ViewportNonePopupSelectTool"/>
+		<entry idPath="statusbar" name="StatusBar"/>
+		<entry idPath="statusbar.100%" name="StatusPercent"/>
+		<entry idPath="statusbar.BottomTool_NextPage" name="StatusBottomToolNextPage"/>
+		<entry idPath="statusbar.BottomTool_PageIndexChanged" name="StatusBottomToolPageIndexChanged"/>
+		<entry idPath="statusbar.BottomTool_PlaySlide" name="StatusBottomToolPlaySlide"/>
+		<entry idPath="statusbar.BottomTool_Previous" name="StatusBottomToolPrevious"/>
+		<entry idPath="statusbar.ContinuousRead" name="StatusContinuousRead"/>
+		<entry idPath="statusbar.Ebook_BottomView_DoublePage" name="StatusEbookBottomViewDoublePage"/>
+		<entry idPath="statusbar.Ebook_BottomView_SelfAdaptionPage" name="StatusEbookBottomViewSelfAdaptionPage"/>
+		<entry idPath="statusbar.Ebook_BottomView_SinglePage" name="StatusEbookBottomViewSinglePage"/>
+		<entry idPath="statusbar.FitPageSize" name="StatusFitPageSize"/>
+		<entry idPath="statusbar.FitWidth" name="StatusFitWidth"/>
+		<entry idPath="statusbar.FullScreen_Statusbar" name="StatusFullScreen"/>
+		<entry idPath="statusbar.PageZoomCommand" name="StatusPageZoom"/>
+		<entry idPath="statusbar.SinglePageContinuous" name="StatusSinglePageContinuous"/>
+		<entry idPath="statusbar.StatusBarStretch_1" name="StatusStretch1"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround" name="StatusChange"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround.BgDaylight" name="StatusBgDaylight"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround.BgHuyan" name="StatusBgHuyan"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround.BgNight" name="StatusBgNight"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround.BgNormal" name="StatusBgNormal"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround.BgYangpizhi" name="StatusBgYangpizhi"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal" name="StatusNormalChangeBack"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal.BgDaylight" name="StatusNormalBgDaylight"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal.BgHuyan" name="StatusNormalBgHuyan"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal.BgNight" name="StatusNormalBgNight"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal.BgNormal" name="StatusNormalBgNormal"/>
+		<entry idPath="statusbar.StatusBar_ChangeBackGround_Normal.BgYangpizhi" name="StatusNormalBgYangpizhi"/>
+		<entry idPath="statusbar.StatusBar_FirstPage" name="StatusFirstPage"/>
+		<entry idPath="statusbar.StatusBar_HideNavigationPanel" name="StatusHideNavigationPanel"/>
+		<entry idPath="statusbar.StatusBar_LastPage" name="StatusLastPage"/>
+		<entry idPath="statusbar.StatusBar_NavigateBack" name="StatusNavigateBack"/>
+		<entry idPath="statusbar.StatusBar_NavigateForward" name="StatusNavigateForward"/>
+		<entry idPath="statusbar.StatusMBSignCommand" name="StatusMBSign"/>
+		<entry idPath="statusbar.TwoPagesContinuous" name="StatusTwoPagesContinuous"/>
+		<entry idPath="statusbar.ZoomCommand" name="StatusZoom"/>
+		<entry idPath="tabwidget" name="TabSet"/>
+		<entry idPath="tabwidget.CT_Convert" name="TabConvert"/>
+		<entry idPath="tabwidget.CT_EbookRead" name="TabEbookRead"/>
+		<entry idPath="tabwidget.CT_Edit" name="TabEdit"/>
+		<entry idPath="tabwidget.CT_Font" name="TabFont"/>
+		<entry idPath="tabwidget.CT_FormFilling" name="TabFormFilling"/>
+		<entry idPath="tabwidget.CT_Graffiti" name="TabGraffiti"/>
+		<entry idPath="tabwidget.CT_Home" name="TabHome"/>
+		<entry idPath="tabwidget.CT_Insertion" name="TabInsertion"/>
+		<entry idPath="tabwidget.CT_InstructBox" name="TabInstructBox"/>
+		<entry idPath="tabwidget.CT_MeasureTool" name="TabMeasureTool"/>
+		<entry idPath="tabwidget.CT_Merge" name="TabMerge"/>
+		<entry idPath="tabwidget.CT_Page" name="TabPage"/>
+		<entry idPath="tabwidget.CT_PictureEdit" name="TabPictureEdit"/>
+		<entry idPath="tabwidget.CT_Postil" name="TabPostil"/>
+		<entry idPath="tabwidget.CT_Protect" name="TabProtect"/>
+		<entry idPath="tabwidget.CT_ShapeStyle" name="TabShapeStyle"/>
+		<entry idPath="tabwidget.CT_TextCommentBox" name="TabTextCommentBox"/>
+		<entry idPath="tabwidget.CT_TextEdit" name="TabTextEdit"/>
+	</entries>
+</shell>

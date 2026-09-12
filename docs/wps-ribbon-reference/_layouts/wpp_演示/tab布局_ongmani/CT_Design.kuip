@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wpp" tc="ongmani.ct_design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KListCommand groupTip="CustomizeGroup" icon="slide_orientation_kd" id="RB_PageSetup" rbFileMenuEmbed="1" text="@Customize">
+			<KxLegacyTriggerCommand controlType="0" customTip="PageSetup" hotKey="u" icon="doc_setup_kd" id="PageSetupInDesignTab" idKey="PPTPageStartup" idMso="PowerPointPageSetup" ksoCmd="PageSetup" qtspyName="PageSetup" rbHotKey="S" text="@Page Setup"/>
+			<KxWppListCommand canHideText="0" canStack="0" controlType="16" customTip="SlideSize" icon="slide_orientation_kd" id="SlideSize" idMso="GroupPageSetup" qtspyName="SlideOrientation" text="@Slide Size">
+				<KxValueCommand icon="standard_screen_kd" id="StandScreen4:3" index="1" ksoCmd="ChangeSlideAspectRatio" qtspyName="StandScreen" text="@Stand Screen(4:3)"/>
+				<KxValueCommand icon="screen_sixteen_to_nine_kd" id="WideScreen16:9" index="2" ksoCmd="ChangeSlideAspectRatio" qtspyName="WideScreen" text="@Wide Screen(16:9)"/>
+				<KxValueCommand filter="lang=th_TH" icon="equipment_cell_phone_kd" index="3" ksoCmd="ChangeSlideAspectRatio" qtspyName="PhoneScreen" text="@Phone Screen(9:16)"/>
+				<separator/>
+				<KxValueCommand dialogHint="1" id="CustomSize" index="4" ksoCmd="PageSetup" qtspyName="PageSetup" text="@Custom Size"/>
+			</KxWppListCommand>
+		</KListCommand>
+		<KxLegacyTriggerCommand customTip="ColorScheme" icon="color_palette_kd" id="ColorScheme" ksoCmd="ColorScheme" rbHotKey="TC" text="@Color&#10;Schemes"/>
+		<KProxyCommand autoLoad="false" canStack="0" customTip="BeautifyAssistant" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" embedHint="1" icon="stick_kd" id="beautifyAssistant" idKey="WppBeautifyAssistant" targetModule="kaiwpp" text="@Beautify assistant"/>
+		<KAiBeautifySwitchProxyCommand autoLoad="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" embedHint="1" galleryHeight="100" galleryWidth="542" icon="clothing_kd" id="KxWppChangeThemeInline" idKey="WppDesignTemplates" targetModule="kaiwpp" text="@Design Templates"/>
+		<KAiBeautifySwitchProxyCommand autoLoad="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" embedHint="1" galleryHeight="100" galleryWidth="542" icon="clothing_kd" id="KxOnlinetemplateInline" idKey="WppDesignTemplates" maxVisibleNumber="7" targetModule="kaiwpp" text="@Design Templates"/>
+		<KAiBeautifySwitchProxyCommand autoLoad="false" canStack="0" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="writing_brush_kd" id="moredesign" idKey="WppDesignMoreDesign" targetModule="kaiwpp" text="@More design"/>
+		<KAiBeautifySwitchProxyCommand autoLoad="false" canStack="0" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="clothing_kd" id="moretheme" idKey="WppDesignMoreTheme" targetModule="kaiwpp" text="@More Theme"/>
+		<KProxyCommand autoLoad="false" canStack="0" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" id="styleClone" idKey="WppDesignStyleClone" targetModule="kaiwpp" text="@Style Clone"/>
+		<KImportTemplatesCommand controlType="0" customTip="importtemplates" hotKey="i" icon="import_template_kd" id="ImportTemplatesInDesignTab" idMso="ImportTemplates" qtspyName="wppimporttemplates" rbHotKey="I" spaceHint="autocompact" text="@Import Templates"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="InvolvedTemplate" hotKey="k" icon="template_this_article_kd" id="InvolvedTemplate" idMso="InvolvedTemplate" ksoCmd="InvolvedTemplate" rbHotKey="K" spaceHint="autocompact" text="@Involved&#10;Template"/>
+		<KxLegacyTriggerCommand aid="971" controlType="0" customTip="SlideMaster" faceid="30" hotKey="s" icon="view_master_layout_kd" id="Design_SlideMaster" idMso="DesignSlideMaster" ksoCmd="SlideMaster" rbHotKey="M" text="@Edit&#10;Slide Master"/>
+		<KProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" hotKey="f" icon="custom_text_format_kd" id="CustomTextFormat" targetId="CustomTextFormat" targetModule="wpppresentationtool" text="@Custom Text Format" visible="true"/>
+		<KListCommand canStack="0" icon="font_united_kd" id="BatchSetFontStandaloneList" text="@United Font">
+			<KProxyCommand canStack="0" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="batch_set_font_kd" id="BatchSetFontStandalone" isTriggerable="true" needLogin="false" targetId="BatchSetFontStandalone" targetModule="wpppresentationtool" text="@Bulk Font Setting" visible="true"/>
+		</KListCommand>
+		<KQuickMenuCommandFix id="Design_SlideMasterQuickMenu" qtspyName="Design_SlideMaster" referenceCommand="Design_SlideMaster">
+			<command idQ="ImportTemplatesInDesignTab"/>
+			<command idQ="InvolvedTemplate"/>
+			<separator/>
+			<KxLegacyTriggerCommand controlType="0" customTip="ResetSlide" hotKey="r" icon="resetting_two_kd" id="ResetSlide" idMso="ResetSlide" ksoCmd="ResetSlide" rbHotKey="R" spaceHint="suitable" text="@Reset Slide"/>
+			<separator/>
+			<command idQ="CustomTextFormat"/>
+		</KQuickMenuCommandFix>
+		<KxWppThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="ThemeColors" galleryWidth="250" icon="color_palette_kd" id="ThemeColors" idKey="WPPThemeColorsScheme" ksoCmd="ThemeColors" needLogin="false" qtspyName="ThemeColors" rbHotKey="TC" text="@Color&#10;Schemes">
+			<command idQ="CustomThemeColorsInDesignTab"/>
+		</KxWppThemeColorsGalleryCommand>
+		<KAutoHideListCommand groupTip="MoreThemeGroup" icon="clothing_kd" id="RB_DesignTemplates_Gallary" idKey="WppRBDesignTemplatesGallery" rbFileMenuEmbed="1" text="@Theme">
+			<command idQ="beautifyAssistant"/>
+			<command idQ="KxOnlinetemplateInline"/>
+			<command idQ="moredesign"/>
+			<command idQ="KxWppChangeThemeInline"/>
+			<command idQ="moretheme"/>
+			<command idQ="styleClone"/>
+		</KAutoHideListCommand>
+		<KAutoHideListCommand groupTip="SmartBeautifyGroup" icon="import_template_kd" id="RB_DesignTemplates" idKey="WppRBDesignTemplates" rbFileMenuEmbed="1" text="@SmartBeautify">
+			<KxWppDesignCommand columnNumber="7" controlType="4" embedHint="1" galleryHeight="100" id="DesignTemplatesGallery" idKey="DesignTemplatesGallery" idMso="SlideThemesGallery" rbHotKey="H" text="@Design Templates"/>
+			<KWppCommonProxyCommand controlType="0" customTip="WpsAssistOnlineTemplate" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" hotKey="c" icon="template_kd" id="ProxyWpsAssistOnlineTemplate" idKey="ProxyWpsAssistOnlineTemplate" idMso="OnlineTemplate" rbHotKey="C" targetId="WpsAssistOnlineTemplate" targetModule="kaiwpp" text="@More Templates"/>
+			<KxWppDesignCommand columnNumber="7" controlType="4" embedHint="1" galleryHeight="100" icon="clothing_kd" id="DesignGallery" idKey="DesignGallery" idMso="SlideThemesGallery" rbHotKey="H" text="@Design Templates"/>
+			<command idKey="WppSmartBeautify" idQ="ThemeColors"/>
+			<KAiBeautifySwitchProxyCommand autoLoad="false" customTip="Full Text Beautify Slide" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="slide_beautify_single_kd" id="FullTextBeautifySlide" idKey="WPPKAIBeautifyFullTextBeautifySlide" targetModule="kaiwpp" text="@Full Text Beautify Slide"/>
+			<KProxyCommandUnitedFontCommand controlType="15" customTip="UnitedFont" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="font_united_kd" id="ProxyPresentationTool" idKey="WppUnitedFont" idMso="PresentationTool" isTriggerable="false" needLogin="false" rbHotKey="PT" targetId="PresentationTool" targetModule="wpppresentationtool" text="@United Font" visible="true"/>
+		</KAutoHideListCommand>
+		<KListCommand filter="lang!=th_TH" id="RB_EditTheme" rbFileMenuEmbed="1" text="@Edit Theme">
+			<KxThemesGalleryCommand bForceScrollToIndex="1" customTip="Themes" galleryWidth="330" icon="theme_kd" ksoCmd="Themes" qtspyName="Themes" rbHotKey="TT" text="@Themes"/>
+			<KxThemeColorsGalleryCommand bForceScrollToIndex="1" customTip="Theme Colors" galleryWidth="250" icon="color_palette_kd" ksoCmd="ThemeColors" qtspyName="ThemeColors" rbHotKey="TC" spaceHint="autocompact" text="@Colors"/>
+			<KxThemeFontsGalleryCommand bForceScrollToIndex="1" customTip="Theme Fonts" galleryWidth="250" icon="font_style_kd" ksoCmd="ThemeFonts" qtspyName="ThemeFonts" rbHotKey="TF" spaceHint="autocompact" text="@Fonts"/>
+			<KxThemeEffectsGalleryCommand bForceScrollToIndex="1" customTip="Theme Effects" galleryWidth="350" icon="theme_effect_kd" ksoCmd="ThemeEffects" qtspyName="ThemeEffects" rbHotKey="TE" spaceHint="autocompact" text="@Effects"/>
+		</KListCommand>
+		<KxSaveBackgroundPictureCommand dialogHint="1" entrance="CT_Design_Background" hotKey="p" icon="save_background_as_pic_kd" id="SaveBackgroundPicture" ksoCmd="SaveBackgroundPicture" text="@Save Background Picture"/>
+		<KDocerPictureProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" height="210" id="OnlineGradientPopup" idKey="OnlineGradientPopup" needIcon="0" targetId="OnlineGradientPopup" targetModule="konlinegradient" text="@Online Gradient" waitingType="bg" width="444"/>
+		<KDocerPictureProxyCommand delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" height="358" id="OnlineBackgroundPopup" idKey="WPPOnlineBackgroundSelector" skeletonAlias="kdocerpicture_background" targetId="OnlineBackgroundPopup" targetModule="kdocercore" text="@Online Background" waitingType="wpp_design" width="444"/>
+		<KListCommand groupTip="StyleGroup" icon="color_palette_kd" id="RB_BackDrop" rbFileMenuEmbed="1" text="@BackDropLayout">
+			<KxThemeColorsGalleryCommand bForceScrollToIndex="0" customTip="SmartColorScheme" galleryWidth="250" hasOnlinepage="true" icon="color_palette_kd" id="ThemeColorsBeautify" ksoCmd="ThemeColors" qtspyName="ThemeColors" rbHotKey="TC" text="@Color Scheme"/>
+			<KxWppBackgroundColorCommand customTip="Backdrop" hotKey="k" icon="background_kd" id="BackgroundMenu" ksoCmd="Background" ksoTriggerCmd="Background" qtspyName="Background" rbHotKey="B" text="@Background">
+				<command idQ="OnlineGradientPopup"/>
+				<command idQ="OnlineBackgroundPopup"/>
+				<separator/>
+				<KxSetBackgroundCommand aid="1706" dialogHint="1" entrance="CT_Design_Background" hotKey="k" icon="background_kd" iconQat="background_kd" id="CT_Design_BackDrop" ksoCmd="Background" qtspyName="BackDrop" rbHotKey="B" text="@Fill Background"/>
+				<command idQ="SaveBackgroundPicture"/>
+				<command idQ="AiGeneratePictureDesignBackground"/>
+			</KxWppBackgroundColorCommand>
+			<command idQ="Design_SlideMasterQuickMenu"/>
+			<command idQ="BatchSetFontStandaloneList"/>
+			<KxGallerySlideLayoutCommand customTip="SlideLayouts" icon="slide_layout_kd" id="LayoutInDesignTab" idKey="LayoutInDesignTab" text="@Layout"/>
+			<KxGallerySlideLayoutNewReplaceProxyCommand customTip="SlideLayouts" delayLoadLib="false" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" honeyMask="isNewReplaceLayout" icon="slide_layout_kd" id="NewSlideReplaceLayoutInDesignTab" idKey="WPPNewSlideReplaceLayoutInDesignTab" targetModule="kwppcopilotentry" text="@Layout"/>
+			<command idKey="WPPSlideLayoutReplacement" idQ="SlideLayoutDesignTab"/>
+			<KxGallerySlideLayoutCommand customTip="SlideLayouts" icon="slide_layout_kd" id="SlideLayoutGallery" idKey="GallerySlideLayoutInBackDrop" text="@Layout"/>
+		</KListCommand>
+		<KListCommand id="RB_Design_PresentationTool" idKey="WppPresentationTool" text="@Presentation Tool">
+			<KProxyCommand controlType="15" customTip="UnitedFont" delayloadPath="commands/wpp/ongmani/ProxyCommands.kuip" icon="font_united_kd" id="ProxyPresentationTool" idKey="WppToolUnitedFont" idMso="PresentationTool" isMenuButton="true" rbHotKey="PT" targetId="PresentationTool" targetModule="wpppresentationtool" text="@United Font" visible="true"/>
+		</KListCommand>
+		<KListCommand groupTip="FormatGroup" icon="notes_master_kd" id="RB_Master" text="@Format">
+			<KxGallerySlideLayoutCommand customTip="SlideLayouts" icon="slide_layout_kd" id="SlideLayoutGallery" idKey="GallerySlideLayoutInFormat" text="@Layout"/>
+			<command idKey="WPPSlideLayoutSelection" idQ="SlideLayoutDesignTab"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Design">
+			<separator idKey="WPPCTDesign"/>
+			<command idQ="RB_DesignTemplates_Gallary"/>
+			<separator/>
+			<command idQ="RB_DesignTemplates"/>
+			<separator/>
+			<command idKey="WppPresentationTool" idQ="RB_Design_PresentationTool"/>
+			<command idQ="RB_BackDrop"/>
+			<separator/>
+			<command idQ="RB_Master"/>
+			<separator/>
+			<command idQ="RB_PageSetup"/>
+		</subcommand>
+	</subcommands>
+</shell>

@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="pdf" tc="ongmani.ct_featuredapp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<libraries/>
+	<commands>
+		<KAppCommand action="Cad2Pdf" appCmdObj="PdfCadMutualConverter" appId="pdfcadmutualconverter" customTip="CAD2PDF" icon="change_cad_to_pdf_kd" id="SpecialFunc_PDFZZ_CAD2PDF" text="@CAD2PDF"/>
+		<KPdfAppCommand appCmdObj="kexportimage" appId="kexportimage" customTip="PDF2Photo" detail="tab_convert" entrance="pdf_tools&amp;module=pdf&amp;sub_module=tools_tab&amp;new_position=exporttopicture" icon="change_to_pic_two_kd" id="SpecialFunc_PDFZZ_PDFToPhoto_xa" idMso="FileSaveAsPicture" shortcutHint="Ctrl+Shift+I" text="@PDF to Picture" wpsIsEanble="false"/>
+		<KAppCommand appCmdObj="PdfImportCurrentPic" appId="photo2pdf" customTip="Photo2PDF" icon="change_pic_to_pdf_kd" id="app_photo2pdf_workspace" shortcutHint="Ctrl+Shift+L" text="@Photo2PDF"/>
+		<KAppCommand appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="PDFToWord" icon="change_to_word_kd" id="app_kpdf2wordv2_workspace" shortcutHint="Ctrl+Shift+W" text="@PDFToWord_L"/>
+		<KAppCommand action="ConvertToExcel" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="PDF2Excel" icon="change_to_et_kd" id="app_kpdf2wordv2_workspace_pdf2excel" shortcutHint="Ctrl+Shift+X" text="@PDF2Excel"/>
+		<KAppCommand action="ConvertToPowerPoint" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="PDF2PPT" icon="change_to_ppt_kd" id="app_kpdf2wordv2_workspace_pdf2ppt" shortcutHint="Ctrl+Shift+P" text="@PDF2PPT"/>
+		<KAppCommand action="Merge" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="MergePDF" icon="doc_split_kd" id="app_kpdf2wordv2_workspace_merge" shortcutHint="Ctrl+Alt+D" text="@MergePDF"/>
+		<KAppCommand action="Split" appCmdObj="Pdf2Word" appId="kpdf2wordv2" customTip="SplitPDF" icon="doc_split_kd" id="app_kpdf2wordv2_workspace_split" shortcutHint="Ctrl+Alt+S" text="@SplitPDF"/>
+		<KListCommand id="RB_ScreenGrabOcr" layout_lineCount="1" rbFileMenuEmbed="1" text="@OCR">
+			<command idQ="Doctranslate_WorkSpace"/>
+		</KListCommand>
+		<KListCommand id="RB_Pdf2Photo" layout_lineCount="1" rbFileMenuEmbed="1" text="@Photo2PDF">
+			<command idQ="SpecialFunc_PDFZZ_PDFToPhoto" proxyCmdId="ProxyPdf2Photo"/>
+			<command idQ="Doctranslate_WorkSpace"/>
+		</KListCommand>
+		<KListCommand id="RB_POper" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="Spac_PDFZZ_MergePDF"/>
+			<command idQ="Spac_PDFZZ_SplitPDF"/>
+			<command idQ="Spac_PDFZZ_PDFToExcel" proxyCmdId="ProxyPDF2WordV2"/>
+			<command idQ="Spac_PDFZZ_PDFToPPT" proxyCmdId="ProxyPDF2WordV2"/>
+			<command idQ="Spac_PDFZZ_TranslationAll" proxyCmdId="ProxyTranslationAll"/>
+			<command idQ="Spac_PDFZZ_TranslationAll"/>
+		</KListCommand>
+		<KListCommand id="RB_POper" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="DeletePages"/>
+			<command idQ="PdfInsertPages"/>
+		</KListCommand>
+		<KListCommand id="RB_Pdf_OtherSpecialFeatures" layout_lineCount="1" rbFileMenuEmbed="1" text="@OtherSpecialFeatures">
+			<command idQ="Insert_Signature"/>
+			<command idQ="Spac_PDFZZ_MergePDF"/>
+			<command idQ="Spac_PDFZZ_SplitPDF"/>
+			<command idQ="Start_Tools_ScreenShot_Area"/>
+			<command idQ="ShortCut_FullTranslation"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfConvertMD" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="SpecialFunc_PDFZZ_MD2PDF" proxyCmdId="ProxySpecialFunc_PDFZZ_MD2PDF"/>
+		</KListCommand>
+		<KListCommand id="RB_TemplatesPrint" layout_lineCount="1" rbFileMenuEmbed="1" text="@PDFPagesOper">
+			<command idQ="SpecialFunc_TemplatesPrint"/>
+		</KListCommand>
+		<KListCommand id="RB_PdfCadMutualConvert" layout_lineCount="1" rbFileMenuEmbed="1" text="@PdfCadMutualConverter">
+			<command idQ="SpecialFunc_PDFZZ_PDF2CAD"/>
+			<command idQ="SpecialFunc_PDFZZ_CAD2PDF"/>
+		</KListCommand>
+		<KListCommand id="RB_FileCollect" refIdForCollapsed="FileCollect">
+			<KFileCollectCommand customTip="FileCollect" icon="box_two_kd" id="FileCollect" text="@File Collect"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_FeaturedApp">
+			<command idQ="RB_MouseTool_SpecialFunc"/>
+			<command idQ="Separator"/>
+			<command idQ="RB_PdfConvertMD"/>
+			<command idQ="Separator"/>
+			<separator/>
+			<command idQ="RB_Pdf_OtherSpecialFeatures"/>
+			<command idQ="Separator"/>
+			<command idKey="WpsEnableCloudDocs" idQ="RB_FileCollect"/>
+		</subcommand>
+	</subcommands>
+</shell>

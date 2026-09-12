@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="wps" tc="ongmani.ct_inkdraw" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KListCommand groupTip="InkDrawPenToolGroup" icon="pen_kd" id="RB_InkDrawPenTool" text="@Pens and tool">
+			<KxInkDrawSelectModeCommand customTip="InkDrawSelectMode" id="InkDrawSelectMode" rbHotKey="S" text="@Select mode"/>
+			<KxInkDrawPenToolCommand customTip="InkDrawBallPen" id="InkDrawBallPen" penIndex="0" rbHotKey="B" text="@Ball pen"/>
+			<KxInkDrawPenToolCommand customTip="InkDrawWaterColorPen" id="InkDrawWaterColorPen" penIndex="1" rbHotKey="W" text="@Water color pen"/>
+			<KxInkDrawPenToolCommand customTip="InkDrawNiteWriterPen" id="InkDrawNiteWriterPen" penIndex="2" rbHotKey="H" text="@Nite writer pen"/>
+			<KxInkDrawPenGalleryCommand customTip="InkDrawPenGallery" id="InkDrawPenGallery" penIndexList="3,4,5" rbHotKey="L" text="@Pen gallery"/>
+			<KxInkDrawEraserCommand customTip="InkDrawEraser" eraserType="1" id="InkDrawEraser" rbHotKey="E" text="@Eraser"/>
+		</KListCommand>
+		<KListCommand id="RB_InkDrawFunc" text="@Touch to draw" visibleDependsOnSubCmds="1">
+			<KxInkDrawTouchToDrawCommand customTip="InkDrawTouchToDraw" icon="gesture_kd" id="InkDrawTouchToDraw" rbHotKey="T" text="@Touch to draw"/>
+		</KListCommand>
+		<KListCommand embedHint="1" groupTip="InkDrawColorGroup" icon="filter_photo_kd" id="RB_InkDrawColorGallery" text="@Color">
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+				<KxInkDrawColorItemCommand id="InkDrawColorItemYellow" inkColor="#FFF700" rbHotKey="1" text="@Yellow"/>
+				<KxInkDrawColorItemCommand id="InkDrawColorItemRed" inkColor="#F80600" rbHotKey="2" text="@Red"/>
+				<KxInkDrawColorItemCommand id="InkDrawColorItemGreen" inkColor="#2DAF49" rbHotKey="3" text="@Green"/>
+			</KRbLayoutListCommand>
+			<KRbLayoutListCommand bottomSpace="0" layoutOnly="1" leftSpace="0" rightSpace="0" spaceHint="compact" topSpace="0">
+				<KxInkDrawColorItemCommand id="InkDrawColorItemBlue" inkColor="#1B7CCB" rbHotKey="4" text="@Blue"/>
+				<KxInkDrawColorItemCommand id="InkDrawColorItemBlack" inkColor="#000000" rbHotKey="5" text="@Black"/>
+				<KxInkDrawCustomColorGalleryCommand customTip2="InkDrawColorGallery2" customTip="InkDrawColorGallery" id="InkDrawColorGallery" ksoTriggerCmd="InkDrawColorItem" presetInkColors="#FFF700,#F80600,#2DAF49,#1B7CCB,#000000" rbHotKey="6" text="@Custom color">
+					<KxInkDrawMoreColorCommand icon="color_palette_kd" id="InkDrawMoreColor" text="@More color"/>
+					<KxInkDrawSnapColorCommand icon="cursor_snapper_fill_kd" id="InkDrawSnapColor" text="@Snap color"/>
+				</KxInkDrawCustomColorGalleryCommand>
+			</KRbLayoutListCommand>
+		</KListCommand>
+		<KListCommand groupTip="InkDrawExitGroup" id="RB_InkDrawExit" text="@Exit">
+			<KxInkDrawExitCommand customTip="InkDrawExit" icon="close_window_kd" id="InkDrawExit" rbHotKey="C" singlerowpriority="100" text="@Exit"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_InkDraw">
+			<command idQ="RB_InkDrawSelectMode"/>
+			<separator/>
+			<command idQ="RB_InkDrawPenTool"/>
+			<separator/>
+			<command idQ="RB_InkDrawFunc"/>
+			<separator/>
+			<command idQ="RB_InkDrawColorGallery"/>
+			<separator/>
+			<command idQ="RB_InkDrawExit"/>
+		</subcommand>
+	</subcommands>
+</shell>

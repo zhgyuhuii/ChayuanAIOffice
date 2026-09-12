@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='utf-8'?>
+<shell component="wps" tc="ongmani.ct_official_elements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="InsertPageBreak" hotKey="p" icon="page_break_kd" id="OfficialInsertPageBreak" ksoCmd="InsertPageBreak" text="@Page &#10;Break"/>
+		<KxLegacyTriggerCommand hotKey="T" icon="line_break_wrap_kd" id="OfficialInsertTextWrappingBreak" ksoCmd="InsertTextWrappingBreak" text="@Text Wrapping Break"/>
+		<KxLegacyTriggerCommand hotKey="n" icon="page_break_next_section_kd" id="OfficialInsertNextPageSectionBreak" ksoCmd="InsertNextPageSectionBreak" text="@Next Page Section Break"/>
+		<KxLegacyTriggerCommand hotKey="t" icon="page_break_continuous_section_kd" id="OfficialInsertContinuousSectionBreak" ksoCmd="InsertContinuousSectionBreak" text="@Continuous Section Break"/>
+		<KxLegacyTriggerCommand hotKey="e" icon="page_break_even_section_kd" id="OfficialInsertEvenPageSectionBreak" ksoCmd="InsertEvenPageSectionBreak" text="@Even Page Section Break"/>
+		<KxLegacyTriggerCommand hotKey="o" icon="page_break_odd_section_kd" id="OfficialInsertOddPageSectionBreak" ksoCmd="InsertOddPageSectionBreak" text="@Odd Page Section Break"/>
+		<KxLegacyTriggerCommand hotKey="c" icon="page_break_column_kd" id="InsertColumnBreakInOfficialTab" ksoCmd="InsertColumnBreak" text="@Column Break"/>
+		<KxWpsBreaksListCommand customTip="InsertPageBreak" icon="page_break_kd" id="OfficialInsertBreaks" ksoCmd="InsertPageBreak" rbHotKey="B" text="@Breaks">
+			<command idQ="OfficialInsertPageBreak"/>
+			<command id="InsertColumnBreakInOfficialTab"/>
+			<command idQ="OfficialInsertTextWrappingBreak"/>
+			<separator/>
+			<command idQ="OfficialInsertNextPageSectionBreak"/>
+			<command idQ="OfficialInsertContinuousSectionBreak"/>
+			<command idQ="OfficialInsertEvenPageSectionBreak"/>
+			<command idQ="OfficialInsertOddPageSectionBreak"/>
+		</KxWpsBreaksListCommand>
+		<KxLegacyTriggerCommand customTip="OfficialInsertVerticalBlankPage" icon="doc_direction_vertical_kd" id="OfficialInsertVerticalBlankPage" ksoCmd="InsertVerticalBlankPage" spaceHint="suitable" text="@Insert Vertical"/>
+		<KxLegacyTriggerCommand customTip="OfficialInsertHorizonBlankPage" icon="doc_direction_horizontal_kd" id="OfficialInsertHorizonBlankPage" ksoCmd="InsertHorizonBlankPage" spaceHint="suitable" text="@Insert Horizontal"/>
+		<KxWpsHeaderFooterPageNumCommandOfficial controlType="0" customTip="PageNumber" galleryHeight="415" galleryWidth="518" icon="doc_page_number_kd" id="OfficialInsertPageNumbers" isIncludeInsideOutside="true" rbHotKey="NU" text="@Page&#10;Number">
+			<KxSmartPageNumSettingsMenuItemCommand dialogHint="1" hotKey="N" icon="doc_page_number_kd" id="InsertPageNumInOfficialTab" rbHotKey="N" text="@Insert Page Number"/>
+			<KxSmartPageNumDeleteAllInOfficial hotKey="R" icon="DeleteAllPageNumberOfficial" id="SmartPageNumDeleteAllInOfficial" rbHotKey="R" text="@Delete All Page Number"/>
+		</KxWpsHeaderFooterPageNumCommandOfficial>
+		<KxWpsWaterMarkGalleryCommand additionTitleIndex="1" additionalCmd="HardwareEncryption" controlType="4" customTip="WaterMark" galleryHeight="465" galleryWidth="318" icon="watermark_kd" id="WaterMarkMenuInOfficialTab" rbHotKey="G" text="@Watermark">
+			<KxWpsInsertWaterMarkCommand commandMark="0" dialogHint="1" hotKey="w" icon="watermark_kd" id="InsertWaterMarkInOfficialTab" rbHotKey="W" text="@Insert Watermark"/>
+			<KxWpsDeleteWaterMarkCommand commandMark="0" hotKey="r" icon="watermark_delete_kd" id="DeleteWaterMarkInOfficialTab" rbHotKey="R" text="@Remove Watermark"/>
+		</KxWpsWaterMarkGalleryCommand>
+		<KxLegacyTriggerCommand customTip="OfficialNormalPageSetup" icon="PageSetupInOfficial" id="OfficialNormalPageSetup" ksoCmd="PageSetup" text="@Page Setup"/>
+		<KListCommand id="OfficialPages" rbFileMenuEmbed="1" text="@Pages">
+			<command idQ="OfficialInsertBreaks"/>
+			<command idQ="OfficialInsertVerticalBlankPage"/>
+			<command idQ="OfficialInsertHorizonBlankPage"/>
+			<command idQ="OfficialInsertPageNumbers"/>
+			<command idQ="WaterMarkMenuInOfficialTab"/>
+			<command idQ="OfficialNormalPageSetup"/>
+		</KListCommand>
+		<KxWpsOfficialTipTopLineScriptSingleAngencyCommand id="OfficialTipTopLineScriptSingleAngency"/>
+		<KxWpsOfficialTipTopLineScriptMultiAngencyCommand id="OfficialTipTopLineScriptMultiAngency"/>
+		<KxWpsOfficialTipBottomLineScriptSingleAngencyCommand id="OfficialTipBottomLineScriptSingleAngency"/>
+		<KxWpsOfficialTipBottomLineScriptMultiAngencyCommand id="OfficialTipBottomLineScriptMultiAngency"/>
+		<KxWpsOfficialTipLetterCommand id="OfficialTipLetter"/>
+		<KxWpsOfficialTipSummaryCommand id="OfficialTipSummary"/>
+		<KxWpsOfficialTipOrderCommand id="OfficialTipOrder"/>
+		<KxWpsOfficialTipNormalLineCommand id="OfficialTipNormalLine"/>
+		<KxWpsOfficialTipTopLineCommand id="OfficialTipTopLine"/>
+		<KxWpsOfficialTipBottomLineCommand id="OfficialTipBottomLine"/>
+		<KxWpsOfficialTip5pointsStarLineCommand id="OfficialTip5pointsStarLine"/>
+		<KOfficialListCommand customTip="OfficialHead" icon="doc_official_template_kd" id="Head" text="@Head">
+			<KxInsertOfficialGlossaryCommand icon="TopLineScriptSingleAngency" id="TopLineScriptSingleAngency" previewIcon="OfficialTipTopLineScriptSingleAngency" text="@Top Line Script(Single Angency)"/>
+			<KxInsertOfficialGlossaryCommand icon="TopLineScriptMultiAngency" id="TopLineScriptMultiAngency" previewIcon="OfficialTipTopLineScriptMultiAngency" text="@Top Line Script(Multi Angency)"/>
+			<KxInsertOfficialGlossaryCommand icon="BottomLineScriptSingleAngency" id="BottomLineScriptSingleAngency" previewIcon="OfficialTipBottomLineScriptSingleAngency" text="@Bottom Line Script(Single Angency)"/>
+			<KxInsertOfficialGlossaryCommand icon="BottomLineScriptMultiAngency" id="BottomLineScriptMultiAngency" previewIcon="OfficialTipBottomLineScriptMultiAngency" text="@Bottom Line Script(Multi Angency)"/>
+			<KxInsertOfficialGlossaryCommand icon="Letter" id="Letter" previewIcon="OfficialTipLetter" text="@Letter"/>
+			<KxInsertOfficialGlossaryCommand icon="Summary" id="Summary" previewIcon="OfficialTipSummary" text="@Summary"/>
+			<KxInsertOfficialGlossaryCommand icon="Order" id="Order" previewIcon="OfficialTipOrder" text="@Order"/>
+		</KOfficialListCommand>
+		<KOfficialListCommand customTip="OfficialSeparatingLine" icon="line_dividing_kd" id="SeparatingLine" text="@Separating Line">
+			<KxInsertOfficialGlossaryCommand icon="NormalLine" id="NormalLine" ksoCmd="InsertPageBreak" previewIcon="OfficialTipNormalLine" text="@Normal Line"/>
+			<KxInsertOfficialGlossaryCommand icon="TopLine" id="TopLine" ksoCmd="InsertPageBreak" previewIcon="OfficialTipTopLine" text="@Top Line"/>
+			<KxInsertOfficialGlossaryCommand icon="BottomLine" id="BottomLine" ksoCmd="InsertPageBreak" previewIcon="OfficialTipBottomLine" text="@Bottom Line"/>
+			<KxInsertOfficialGlossaryCommand icon="5pointsStarLine" id="5pointsStarLine" ksoCmd="InsertPageBreak" previewIcon="OfficialTip5pointsStarLine" text="@5 points Star Line"/>
+		</KOfficialListCommand>
+		<KxInsertOfficialGlossaryCommand customTip="OfficialSingleAgency" icon="flag_personal_agency_mode_kd" id="SingleAgency" spaceHint="suitable" text="@Single Agency"/>
+		<KxInsertOfficialGlossaryCommand customTip="OfficialUnionAgencies" icon="flag_union_agency_mode_kd" id="UnionAgencies" spaceHint="suitable" text="@Union Agencies"/>
+		<KxInsertOfficialGlossaryCommand customTip="OfficialSingleRowEdition" icon="single_row_edition_personal_mode_kd" id="SingleRowEdition" spaceHint="suitable" text="@Single Row Edition"/>
+		<KxInsertOfficialGlossaryCommand customTip="Official2RowsEditions" icon="doc_two_rows_edition_kd" id="2RowsEditions" spaceHint="suitable" text="@2 Rows Editions"/>
+		<KListCommand id="DocumentParts" rbFileMenuEmbed="1" text="@Document Parts">
+			<command idQ="Head"/>
+			<command idQ="SeparatingLine"/>
+			<command idQ="SingleAgency"/>
+			<command idQ="UnionAgencies"/>
+			<command idQ="SingleRowEdition"/>
+			<command idQ="2RowsEditions"/>
+		</KListCommand>
+		<KxLegacyTriggerCommand hotKey="i" icon="sheet_kd" id="InsertTableInOfficialbar" ksoCmd="InsertTable" rbHotKey="I" text="@Insert Table"/>
+		<KxLegacyTriggerCommand controlType="6" customTip="DrawTable" faceid="120" hotKey="w" icon="sheet_style_kd" id="DrawTableInOfficialbar" ksoCmd="DrawTable" rbHotKey="DR" spaceHint="suitable" text="@Draw Table"/>
+		<KxLegacyTriggerCommand controlType="0" dialogHint="1" icon="change_text_to_et_kd" id="OfficialConvertTexttoTableRainbow" ksoCmd="ConvertTexttoTable" rbHotKey="V" text="@Convert Text to Table"/>
+		<KxLegacyTriggerCommand dialogHint="1" icon="change_table_to_text_kd" id="OfficialConvertTabletoTextRainbow" ksoCmd="ConvertTabletoText" text="@Convert Table to Text"/>
+		<KxGalleryTableCommand controlType="4" customTip="Table" detail="@Table" icon="sheet_kd" id="OfficialTable" ksoCmd="InsertTablePalette" rbHotKey="T" text="@Table">
+			<command idQ="InsertTableInOfficialbar"/>
+			<command idQ="DrawTableInOfficialbar"/>
+			<command idQ="OfficialConvertTexttoTableRainbow"/>
+			<command idQ="OfficialConvertTabletoTextRainbow"/>
+		</KxGalleryTableCommand>
+		<KProxyCommand autoLoad="true" customShortcutEnabled="false" customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" detail="@Insert Online Pictures" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInOfficialbar" idKey="WpsInsertOnlinePictureFromFileInOfficialbar" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetModule="kwpsassistlegacy" text="@Online Pictures"/>
+		<KDocerPictureProxyCommand autoLoad="true" customTip="InsertOnlinePictureFromFile" delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" hotKey="I" icon="pic_online_kd" id="InsertOnlinePictureFromFileInInsertTab" idKey="WpsInsertOnlinePictureFromFileInInsertTab" rbHotKey="SI" relatedKsoCmd="InsertPictureFromFile" targetId="InsertOnlinePictureFromFileInInsertTab" targetModule="kdocerjsapi20" text="@My Picture" visible="false"/>
+		<KxLegacyTriggerCommand controlType="0" detail="@Insert Picture" dialogHint="1" hotKey="p" icon="pic_kd" iconQat="pic_kd" id="OfficialInsertPictureFromFile" idMso="PictureInsertFromFile" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@From File"/>
+		<KxListPicturesCommand customTip2="InsertPictureFromFile2" customTip="InsertPictureFromFile" detail="@Insert Picture" icon="pic_kd" iconQat="pic_kd" id="OfficialInsertPicture" ksoCmd="InsertPictureFromFile" rbHotKey="P" text="@Picture">
+			<command idQ="OfficialInsertPictureFromFile"/>
+			<command idQ="InsertPictureFromScanInOfficialTab"/>
+			<KProxyCommand delayloadPath="commands/wps/ongmani/ProxyCommands.kuip" dialogHint="1" filter="support:OCRTool=true" hotKey="o" icon="scan_ocr_kd" id="OfficialOCRToolCmd" rbHotKey="O" relatedKsoCmd="InsertPictureFromFile" targetId="OCRToolCmd" targetModule="kocrtool" text="@Picture to Text" visible="false"/>
+			<command idQ="InsertOnlinePictureFromFileInInsertTab"/>
+		</KxListPicturesCommand>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="M" icon="math_other_symbol_kd" id="OfficialOtherSymbol" ksoCmd="InsertSymbol" rbHotKey="M" text="@More Symbols"/>
+		<KxWpsGallerySymbolCommand controlType="4" customTip="InsertSymbol" icon="math_omega_kd" id="OfficialSymbols" idKey="WpsGallerySymbolEmoji" ksoCmd="InsertSymbol" rbHotKey="U" text2="@Symbol" text="@Symbol">
+			<command idQ="OfficialOtherSymbol"/>
+		</KxWpsGallerySymbolCommand>
+		<KxWpsGallerySymbolCommand controlType="4" customTip="InsertSymbol_Pro" icon="math_omega_kd" id="OfficialSymbols_Pro" idKey="WpsGallerySymbolCopyright" ksoCmd="InsertSymbol" rbHotKey="U" text2="@Symbol" text="@Symbol">
+			<command idQ="OfficialOtherSymbol"/>
+		</KxWpsGallerySymbolCommand>
+		<KxWpsOMathGalleryCommand customTip="EquationInsertGallery" equationGalleryType="common" galleryHeight="758" galleryWidth="379" hotKey="E" icon="math_latex_kd" id="OfficialEquationInsertGallery" ksoCmd="EquationInsertEquation" ksoTriggerCmd="EquationInsertNew" rbHotKey="E" text="@Equation">
+			<KxLegacyTriggerCommand hotKey="I" icon="math_latex_kd" id="OfficialEquationInsertNew" ksoCmd="EquationInsertNew" text="@Insert Equation"/>
+		</KxWpsOMathGalleryCommand>
+		<KxLegacyTriggerCommand customTip="InsertSmartArt" hotKey="m" icon="smart_diagram_kd" id="OfficialInsertOrgSmartArt" ksoCmd="InsertOrgSmartArt" rbHotKey="m" spaceHint="suitable" text="@SmartArt"/>
+		<KxChangeChartTypeCommand controlType="0" customTip="InsertChart" entrance="officialTab_Layout" icon="chart_column_kd" id="OfficialInsertChartRainbow" ksoCmd="InsertChart" rbHotKey="C" spaceHint="suitable" text="@Chart"/>
+		<KxListCommand controlType="15" customTip2="TextBox2" customTip="TextBox" icon="text_frame_kd" id="OfficialTextBox" ksoCmd="WpsInsertTextboxHorizontal" rbHotKey="X" spaceHint="suitable" text="@Text Box">
+			<KxLegacyTriggerCommand hotKey="h" icon="text_frame_kd" id="OfficialInsertTextboxHorizontal" ksoCmd="WpsInsertTextboxHorizontal" rbHotKey="D" text="@Horizontal"/>
+			<KxLegacyTriggerCommand hotKey="v" icon="text_frame_vertical_kd" id="OfficialInsertTextboxVertical" ksoCmd="WpsInsertTextboxVertical" rbHotKey="V" text="@Vertical"/>
+			<KxLegacyTriggerCommand hotKey="M" icon="text_frame_horizontal_kd" id="OfficialInsertTextboxMultiLine" ksoCmd="InsertTextboxMultiLine" text="@Multi-line Text"/>
+		</KxListCommand>
+		<KxGalleryShapesCommand controlType="4" customTip="Shapes" detail="@AutoShape" icon="shape_kd" id="OfficialShape" ksoCmd="DynamicShape" rbHotKey="SH" spaceHint="suitable" text="@Shapes" triggerAble="0">
+			<command idQ="ProcessOnEntry"/>
+			<KxLegacyTriggerCommand controlType="0" hotKey="n" icon="slide_add_kd" id="OfficialInsertCanvas" ksoCmd="InsertCanvas" rbHotKey="N" text="@New Drawing Canvas"/>
+		</KxGalleryShapesCommand>
+		<KListCommand id="OfficialIllustrations" rbFileMenuEmbed="1" text="@Illustrations">
+			<command idQ="OfficialTable"/>
+			<command idQ="OfficialInsertPicture"/>
+			<command idQ="OfficialSymbols"/>
+			<command idQ="OfficialSymbols_Pro"/>
+			<command idQ="OfficialEquationInsertGallery"/>
+			<command idQ="OfficialInsertOrgSmartArt"/>
+			<command idQ="OfficialInsertChartRainbow"/>
+			<command idQ="OfficialTextBox"/>
+			<command idQ="OfficialShape"/>
+		</KListCommand>
+		<KxWpsTableOfContentsGalleryCommand customTip="InsertIndexTables4ZhCn" galleryWidth="250" icon="insert_content_kd" id="OfficialInsertTableOfContents" ksoCmd="InsertTableOfContents" text="@TableOfContents">
+			<KxLegacyTriggerCommand dialogHint="1" hotKey="C" icon="custom_table_of_contents_kd" id="OfficialCustomTableOfContents" ksoCmd="CustomTableOfContents" text="@Insert Table Of Contents"/>
+			<KxLegacyTriggerCommand hotKey="R" icon="remove_table_of_contents_kd" id="OfficialRemoveTableOfContents" ksoCmd="RemoveTableOfContents" text="@Remove Table Of Contents"/>
+		</KxWpsTableOfContentsGalleryCommand>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertDocumentField" hotKey="C" icon="doc_field_kd" id="OfficialInsertDocumentField" ksoCmd="InsertDocumentField" rbHotKey="F" text="@DocumentField"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertHyperlink" forceVisible="1" icon="chain_kd" id="OfficialHyperlink" ksoCmd="InsertHyperlink" rbHotKey="I" spaceHint="suitable" text="@Hyperlink"/>
+		<KxLegacyTriggerCommand controlType="0" customTip="InsertBookmark" icon="bookmark_kd" id="OfficialInsertBookmark" ksoCmd="InsertBookmark" rbHotKey="K" spaceHint="suitable" text="@Bookmark"/>
+		<KListCommand id="OfficialOtherAttributes" rbFileMenuEmbed="1" text="@Elements Tools">
+			<command idQ="OfficialInsertDocumentField"/>
+			<command idQ="OfficialInsertTableOfContents"/>
+			<command idQ="OfficialInsertBookmark"/>
+			<command idQ="OfficialHyperlink"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_Official_Elements">
+			<command idQ="OfficialPages"/>
+			<separator/>
+			<command idQ="DocumentParts"/>
+			<separator/>
+			<command idQ="OfficialIllustrations"/>
+			<separator/>
+			<command idQ="OfficialOtherAttributes"/>
+		</subcommand>
+	</subcommands>
+</shell>

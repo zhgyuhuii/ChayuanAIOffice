@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" requiredCustomFeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>备注母版24_NotesMaster</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M20 2.5H4C3.72386 2.5 3.5 2.72386 3.5 3V20C3.5 20.2761 3.72386 20.5 4 20.5H20C20.2761 20.5 20.5 20.2761 20.5 20V3C20.5 2.72386 20.2761 2.5 20 2.5Z" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_2" d="M6.5 15V13.51C6.5 13.5045 6.50448 13.5 6.51 13.5H8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_3" d="M17.5 15V13.51C17.5 13.5045 17.4955 13.5 17.49 13.5H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_4" d="M12 13.5H14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_5" d="M6.5 16V17.49C6.5 17.4955 6.50448 17.5 6.51 17.5H8" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_6" d="M17.5 16V17.49C17.5 17.4955 17.4955 17.5 17.49 17.5H15" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_7" d="M9 17.5H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_8" d="M12 17.5H14" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_9" d="M9 13.5H11" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path id="line_10" d="M17.49 5.5H6.51C6.50448 5.5 6.5 5.50448 6.5 5.51V9.49C6.5 9.49552 6.50448 9.5 6.51 9.5H17.49C17.4955 9.5 17.5 9.49552 17.5 9.49V5.51C17.5 5.50448 17.4955 5.5 17.49 5.5Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g></svg>

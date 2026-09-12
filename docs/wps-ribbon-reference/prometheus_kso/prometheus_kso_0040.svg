@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 64">
+  <g fill="none" fill-rule="evenodd">
+    <g fill="#000" transform="translate(57 15)">
+      <rect width="2" height="2"/>
+      <rect width="2" height="2" x="4"/>
+      <rect width="2" height="2" x="8"/>
+    </g>
+    <g fill="#000" transform="translate(57 51)">
+      <rect width="2" height="2"/>
+      <rect width="2" height="2" x="4"/>
+      <rect width="2" height="2" x="8"/>
+    </g>
+    <g fill="#000" transform="translate(87 28)">
+      <rect width="2" height="2" y="8" transform="rotate(-90 1 9)"/>
+      <rect width="2" height="2" y="4" transform="rotate(-90 1 5)"/>
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+    </g>
+    <g fill="#000" transform="translate(34 28)">
+      <rect width="2" height="2" y="8" transform="rotate(-90 1 9)"/>
+      <rect width="2" height="2" y="4" transform="rotate(-90 1 5)"/>
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+    </g>
+    <g fill="#000" transform="translate(58 29)">
+      <rect width="2" height="2" transform="rotate(-90 1 1)"/>
+      <rect width="2" height="2" x="3" y="3" transform="rotate(-90 4 4)"/>
+      <rect width="2" height="2" x="6" y="6" transform="rotate(-90 7 7)"/>
+    </g>
+    <path fill="#000" fill-rule="nonzero" d="M35,20 L35,19 L36,19 L36,20 L35,20 Z M31,13 L32,13 L32,14 L31,14 L31,13 Z M39,13 L40,13 L40,14 L39,14 L39,13 Z M33,20 L33,19 L34,19 L34,20 L33,20 Z M31,11 L32,11 L32,12 L31,12 L31,11 Z M39,11 L40,11 L40,12 L39,12 L39,11 Z M33,11 L34,11 L34,12 L33,12 L33,11 Z M35,11 L36,11 L36,12 L35,12 L35,11 Z M37,11 L38,11 L38,12 L37,12 L37,11 Z M31,20 L31,19 L32,19 L32,20 L31,20 Z M37,20 L37,19 L38,19 L38,20 L37,20 Z M31,15 L32,15 L32,16 L31,16 L31,15 Z M39,15 L40,15 L40,16 L39,16 L39,15 Z M39,20 L39,19 L40,19 L40,20 L39,20 Z M31,17 L32,17 L32,18 L31,18 L31,17 Z M39,17 L40,17 L40,18 L39,18 L39,17 Z" transform="matrix(1 0 0 -1 0 31)"/>
+    <path fill="#000" fill-rule="nonzero" d="M35,56 L35,55 L36,55 L36,56 L35,56 Z M31,49 L32,49 L32,50 L31,50 L31,49 Z M39,49 L40,49 L40,50 L39,50 L39,49 Z M33,56 L33,55 L34,55 L34,56 L33,56 Z M31,47 L32,47 L32,48 L31,48 L31,47 Z M39,47 L40,47 L40,48 L39,48 L39,47 Z M33,47 L34,47 L34,48 L33,48 L33,47 Z M35,47 L36,47 L36,48 L35,48 L35,47 Z M37,47 L38,47 L38,48 L37,48 L37,47 Z M31,56 L31,55 L32,55 L32,56 L31,56 Z M37,56 L37,55 L38,55 L38,56 L37,56 Z M31,51 L32,51 L32,52 L31,52 L31,51 Z M39,51 L40,51 L40,52 L39,52 L39,51 Z M39,56 L39,55 L40,55 L40,56 L39,56 Z M31,53 L32,53 L32,54 L31,54 L31,53 Z M39,53 L40,53 L40,54 L39,54 L39,53 Z" transform="matrix(1 0 0 -1 0 103)"/>
+    <path fill="#000" fill-rule="nonzero" d="M88,20 L88,19 L89,19 L89,20 L88,20 Z M84,13 L85,13 L85,14 L84,14 L84,13 Z M92,13 L93,13 L93,14 L92,14 L92,13 Z M86,20 L86,19 L87,19 L87,20 L86,20 Z M84,11 L85,11 L85,12 L84,12 L84,11 Z M92,11 L93,11 L93,12 L92,12 L92,11 Z M86,11 L87,11 L87,12 L86,12 L86,11 Z M88,11 L89,11 L89,12 L88,12 L88,11 Z M90,11 L91,11 L91,12 L90,12 L90,11 Z M84,20 L84,19 L85,19 L85,20 L84,20 Z M90,20 L90,19 L91,19 L91,20 L90,20 Z M84,15 L85,15 L85,16 L84,16 L84,15 Z M92,15 L93,15 L93,16 L92,16 L92,15 Z M92,20 L92,19 L93,19 L93,20 L92,20 Z M84,17 L85,17 L85,18 L84,18 L84,17 Z M92,17 L93,17 L93,18 L92,18 L92,17 Z" transform="matrix(1 0 0 -1 0 31)"/>
+    <path fill="#000" fill-rule="nonzero" d="M88,56 L88,55 L89,55 L89,56 L88,56 Z M84,49 L85,49 L85,50 L84,50 L84,49 Z M92,49 L93,49 L93,50 L92,50 L92,49 Z M86,56 L86,55 L87,55 L87,56 L86,56 Z M84,47 L85,47 L85,48 L84,48 L84,47 Z M92,47 L93,47 L93,48 L92,48 L92,47 Z M86,47 L87,47 L87,48 L86,48 L86,47 Z M88,47 L89,47 L89,48 L88,48 L88,47 Z M90,47 L91,47 L91,48 L90,48 L90,47 Z M84,56 L84,55 L85,55 L85,56 L84,56 Z M90,56 L90,55 L91,55 L91,56 L90,56 Z M84,51 L85,51 L85,52 L84,52 L84,51 Z M92,51 L93,51 L93,52 L92,52 L92,51 Z M92,56 L92,55 L93,55 L93,56 L92,56 Z M84,53 L85,53 L85,54 L84,54 L84,53 Z M92,53 L93,53 L93,54 L92,54 L92,53 Z" transform="matrix(1 0 0 -1 0 103)"/>
+    <path fill="#000" fill-rule="nonzero" d="M29,56 C24.7969543,49.3745059 22,42.7598814 22,34 C22,25.284585 24.7969543,17.6254941 29,11 L30,11 C26.071066,17.3142292 23,26.3962451 23,34 C23,41.6037549 26.071066,49.6857708 30,56 L29,56 Z"/>
+    <path fill="#000" fill-rule="nonzero" d="M101,56 C96.7969543,49.3745059 94,42.7598814 94,34 C94,25.284585 96.7969543,17.6254941 101,11 L102,11 C98.071066,17.3142292 95,26.3962451 95,34 C95,41.6037549 98.071066,49.6857708 102,56 L101,56 Z" transform="matrix(-1 0 0 1 196 0)"/>
+  </g>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" km_stroke-width="1" km_darkmode="true" kd_rtl="variant" requiredCustomFeatures="data-kd-color-scheme,data-kd-rtl-variant-scheme"><desc>重置批注16_重置_重置当前批注_ResetCommentAnchor_ReplyComment_p_navigatepane_annot_export_p_navigatepane_annot_import</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-blue-primary {
+       fill: var(--kd-color-icon-blue-primary, #2661BF);
+       stroke: var(--kd-color-icon-blue-primary, #2661BF);
+       km_fill: #2661BF;
+       km_stroke: #2661BF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+
+    .kd-dir-ltr { 
+       visibility: var(--kd-visibility-dir-ltr, visible)
+    }
+    .kd-dir-rtl { 
+       visibility: var(--kd-visibility-dir-rtl, hidden)
+    }
+</style><g class="kd-dir-ltr"><g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line" d="M14.5 7V2C14.5 1.72386 14.2761 1.5 14 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V13.4793C1.5 13.4877 1.5097 13.4924 1.51625 13.4871L4 11.5001H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><path id="line_2" d="M8.5 12.5L10.4929 14.4929C10.4968 14.4968 10.5032 14.4968 10.5071 14.4929L12.5 12.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3" d="M10.5 14V10.5C10.5 9.39543 11.3954 8.5 12.5 8.5C13.6046 8.5 14.5 9.39543 14.5 10.5V12.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g><g class="kd-dir-rtl"><g transform="translate(16,0) scale(-1,1)"><g id="group-0-rtl" class="kd-color-icon-primary kd-stroke-width-icon-regular"><path id="line-rtl" d="M14.5 7V2C14.5 1.72386 14.2761 1.5 14 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V13.4793C1.5 13.4877 1.5097 13.4924 1.51625 13.4871L4 11.5001H7" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></g><g id="group-1-rtl" class="kd-color-icon-blue-primary kd-stroke-width-icon-regular"><g transform="matrix(-1,0,0,1,23.0,0)"><path id="line_2-rtl" d="M8.5 12.5L10.4929 14.4929C10.4968 14.4968 10.5032 14.4968 10.5071 14.4929L12.5 12.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/><path id="line_3-rtl" d="M10.5 14V10.5C10.5 9.39543 11.3954 8.5 12.5 8.5C13.6046 8.5 14.5 9.39543 14.5 10.5V12.5" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/></g></g></g></g></svg>

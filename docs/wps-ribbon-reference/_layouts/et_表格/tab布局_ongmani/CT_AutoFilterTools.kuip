@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<shell component="et" tc="ongmani.ct_autofiltertools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<commands>
+		<KxLegacyTriggerCommand customTip="AutoFilterFavorite" hotKey="f" icon="et_aft_fav" id="AutoFilterFavorite" ksoCmd="AfFavorite" qtspyName="AutoFilterFavorite" rbHotKey="F" text="@Favorite"/>
+		<KxLegacyTriggerCommand customTip="AddFavorite" hotKey="a" icon="et_aft_add_to_fav" id="AddFavorite" ksoCmd="AfAddFavorite" qtspyName="AddFavorite" rbHotKey="A" text="@Add Favorite"/>
+		<KxLegacyTriggerCommand hotKey="s" icon="et_aft_export_to_sheet" id="ExportFilterResultToSheet" ksoCmd="AfExportFilterResultToSheet" qtspyName="ExportFilterResultToSheet" rbHotKey="S" text="@Export to Sheet"/>
+		<KxLegacyTriggerCommand hotKey="b" icon="et_aft_export_to_book" id="ExportFilterResultToBook" ksoCmd="AfExportFilterResultToBook" qtspyName="ExportFilterResultToBook" rbHotKey="B" text="@Export to Book"/>
+		<KxLegacyTriggerCommand customTip="SplitSheet" hotKey="p" icon="et_aft_split_sheet" id="SplitSheet" ksoCmd="AfSplitSheet" qtspyName="SplitSheet" rbHotKey="P" text="@Split Sheet"/>
+		<KxLegacyTriggerCommand customTip="PivotTableAnalysis" hotKey="t" icon="et_aft_pivot_table" id="PivotTableAnalysis" ksoCmd="AfPivotTableAnalysis" qtspyName="PivotTableAnalysis" rbHotKey="T" text="@Pivot Table"/>
+		<KxLegacyTriggerCommand customTip="PivotChartAnalysis" hotKey="c" icon="et_aft_pivot_chart" id="PivotChartAnalysis" ksoCmd="AfPivotChartAnalysis" qtspyName="PivotChartAnalysis" rbHotKey="C" text="@Pivot Chart"/>
+		<KxLegacyTriggerCommand customTip="AutoFilterAnalysis" hotKey="n" icon="et_aft_analysis" id="AutoFilterAnalysis" ksoCmd="AfAutoFilterAnalysis" qtspyName="AutoFilterAnalysis" rbHotKey="N" text="@Filter Analysis"/>
+		<KxLegacyTriggerCommand customTip="LockTitleRows" disableCustomRibbon="true" hotKey="l" icon="et_aft_lock_title" id="LockTitleRows" ksoCmd="AfLockTitleRows" qtspyName="LockTitleRows" rbHotKey="L" text="@Lock Title"/>
+		<KxLegacyTriggerCommand hotKey="d" icon="et_aft_highlight" id="ReadingMode" ksoCmd="AfReadingMode" qtspyName="ReadingMode" rbHotKey="D" text="@Reading Mode"/>
+		<KxLegacyTriggerCommand dialogHint="1" hotKey="h" icon="et_aft_highlight_same" id="HighlightSameRecords" ksoCmd="AfHighlightSameRecords" qtspyName="HighlightSameRecords" rbHotKey="H" text="@Highlight Same Records"/>
+		<KxLegacyTriggerCommand hotKey="i" icon="et_aft_cancel_highlight" id="CancelHighlightSameRecords" ksoCmd="AfCancelHighlightSameRecords" qtspyName="CancelHighlightSameRecords" rbHotKey="I" text="@Cancel Highlight"/>
+		<KxEtReadingLayoutColorCommand aid="100038" barid="40070" filter="cpuarch!=mips;cpuarch!=sw" hotKey="o" id="ReadingModeColor" ksoCmd="AfReadingModeColor" qtspyName="ReadingModeColor" text="@Color Settings">
+			<KxEtMoreColorCommand aid="2000030" dialogHint="1" filter="cpuarch!=mips;cpuarch!=sw" hotKey="m" id="ReadingModeMoreColor" ksoCmd="AfReadingModeMoreColor" qtspyName="ReadingModeMoreColor" text="@More Colors"/>
+		</KxEtReadingLayoutColorCommand>
+		<KListCommand customTip="ExportFilterResult" hotKey="e" icon="et_aft_export_filter_result" id="ExportFilterResult" qtspyName="ExportFilterResult" rbHotKey="E" text="@Export Filter &#10;Result">
+			<command idQ="ExportFilterResultToSheet"/>
+			<command idQ="ExportFilterResultToBook"/>
+		</KListCommand>
+		<KListCommand customTip="HighlightDisplay" hotKey="g" icon="et_aft_reading_mode" id="HighlightDisplay" qtspyName="HighlightDisplay" rbHotKey="G" text="@Highlight">
+			<command idQ="HighlightSameRecords"/>
+			<command idQ="CancelHighlightSameRecords"/>
+		</KListCommand>
+		<KListCommand id="RB_AutoFilterFavorite" rbFileMenuEmbed="1" text="@Collect Filter Condition">
+			<command idQ="AddFavorite"/>
+			<command idQ="AutoFilterFavorite"/>
+		</KListCommand>
+		<KListCommand id="RB_ExportSplit" rbFileMenuEmbed="1" text="@Export Data">
+			<command idQ="ExportFilterResult"/>
+			<command idQ="SplitSheet"/>
+		</KListCommand>
+		<KListCommand id="RB_Analysis" rbFileMenuEmbed="1" text="@Statistical Analysis">
+			<command idQ="PivotTableAnalysis"/>
+			<command idQ="PivotChartAnalysis"/>
+			<command idQ="AutoFilterAnalysis"/>
+		</KListCommand>
+		<KListCommand id="RB_Reading" rbFileMenuEmbed="1" text="@AutoFilter View">
+			<command idQ="LockTitleRows"/>
+			<command idQ="HighlightDisplay"/>
+		</KListCommand>
+	</commands>
+	<subcommands>
+		<subcommand id="CT_AutoFilterTools">
+			<command idQ="RB_ExportSplit"/>
+			<separator/>
+			<command idQ="RB_AutoFilterFavorite"/>
+			<separator/>
+			<command idQ="RB_Analysis"/>
+			<separator/>
+			<command idQ="RB_Reading"/>
+		</subcommand>
+	</subcommands>
+</shell>

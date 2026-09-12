@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" requiredcustomfeatures="data-kd-color-scheme" km_stroke-width="1" km_darkmode="true"><desc>验证签名16_Pdf_VerificationSignature</desc><style>
+    .kd-stroke-width-icon-regular { 
+       stroke-width: var(--kd-stroke-width-icon-regular, 1px)
+    }
+    .kd-color-icon-primary {
+       fill: var(--kd-color-icon-primary, #333333);
+       stroke: var(--kd-color-icon-primary, #333333);
+       km_fill: #333333;
+       km_stroke: #333333;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-white {
+       fill: var(--kd-color-icon-white, #FFFFFF);
+       stroke: var(--kd-color-icon-white, #FFFFFF);
+       km_fill: #FFFFFF;
+       km_stroke: #FFFFFF;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }
+    .kd-color-icon-red-primary {
+       fill: var(--kd-color-icon-red-primary, #BF3942);
+       stroke: var(--kd-color-icon-red-primary, #BF3942);
+       km_fill: #BF3942;
+       km_stroke: #BF3942;
+       km_darkmode_fill: #C7C7C7;
+       km_darkmode_stroke: #C7C7C7; 
+    }</style>
+
+<g id="group-0" class="kd-color-icon-primary kd-stroke-width-icon-regular">
+<path id="line" d="M9.00012 3.50049L4.00363 5.99873C4.00138 5.99986 3.99968 6.00183 3.99888 6.00421L1.50612 13.4825C1.50365 13.4899 1.51069 13.497 1.5181 13.4945L8.9964 11.0017C8.99878 11.0009 9.00075 10.9992 9.00188 10.997L11.5001 6.00049" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_2" d="M1.5 13.5005L4.5 10.5005" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_3" d="M7.50024 8.5C7.50024 9.05228 7.05253 9.5 6.50024 9.5C5.94796 9.5 5.50024 9.05228 5.50024 8.5C5.50024 7.94772 5.94796 7.5 6.50024 7.5C7.05253 7.5 7.50024 7.94772 7.50024 8.5Z" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_4" d="M8.33531 2.83507C8.15026 2.65002 8.15026 2.34998 8.33531 2.16493L9.16523 1.33501C9.35026 1.14999 9.65023 1.14999 9.83526 1.33501L13.6652 5.16493C13.8502 5.34998 13.8502 5.65002 13.6652 5.83507L12.8353 6.66499C12.6502 6.85001 12.3503 6.85001 12.1652 6.66499L8.33531 2.83507Z" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+<path id="line_5" d="M1.5 14.5H7.5" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+</g>
+<g id="group-2" class="kd-color-icon-red-primary kd-stroke-width-icon-regular">
+<path id="line_6" d="M15.5 11.5C15.5 13.7091 13.7091 15.5 11.5 15.5C9.29086 15.5 7.5 13.7091 7.5 11.5C7.5 9.29086 9.29086 7.5 11.5 7.5C13.7091 7.5 15.5 9.29086 15.5 11.5Z" stroke="none"/>
+</g>
+<g id="group-1" class="kd-color-icon-white kd-stroke-width-icon-regular">
+<path id="line_7" d="M10 13L13 10" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+<path id="line_8" d="M10 10L13 13" stroke-linecap="round" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"/>
+</g>
+
+</svg>
