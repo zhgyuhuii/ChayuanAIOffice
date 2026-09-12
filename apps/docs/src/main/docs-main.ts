@@ -4346,9 +4346,15 @@ interface DocsShellHooks {
   /** Shell-mode AI-created Markdown opens as an untitled tab carrying the content. */
   openUntitledMarkdown?(content: string, suggestedName: string): boolean
   /** P1 停靠契约: home-chat create_document docks instead of opening a full
-   *  tab; saveDir anchors the document's first save in its project root */
-  openAiDockTab?(content: AiDocContent, saveDir?: string): boolean
-  openMarkdownDockTab?(content: string, suggestedName: string, saveDir?: string): boolean
+   *  tab; saveDir anchors the document's first save in its project root;
+   *  projectId registers the saved file into the conversation's project */
+  openAiDockTab?(content: AiDocContent, saveDir?: string, projectId?: string): boolean
+  openMarkdownDockTab?(
+    content: string,
+    suggestedName: string,
+    saveDir?: string,
+    projectId?: string,
+  ): boolean
   /** P2-7②: 发起 createDocument 的渲染器是否是停靠 tab(停靠者建的新文档落同一右栏) */
   isDockedWebContents?(wcId: number): boolean
 }
@@ -4390,6 +4396,20 @@ export function sanitizeAiDocFileBase(title: string): string {
  * still writes into the default save folder directly, there being no tab host.
  * Also called by other apps' mains via shell-wired hooks.
  */
+/** 会话产物落项目: direct-written files join the conversation's project
+ *  immediately (folder projects already cover this via their root scan;
+ *  non-folder projects need the explicit files[] registration). */
+function registerAiFileToProject(filePath: string, projectId?: string): void {
+  if (!projectId) return
+  try {
+    const store = getProjectStore()
+    store.resolveProjectForFile(filePath) // assign to default first (idempotent)
+    store.moveFileToProject(filePath, projectId)
+  } catch (err) {
+    console.warn('[docs] registerAiFileToProject failed:', err)
+  }
+}
+
 export async function createAiDocument(
   request: CreateDocumentRequest,
 ): Promise<CreateDocumentResult> {
@@ -4411,7 +4431,10 @@ export async function createAiDocument(
   try {
     if (type === 'docx') {
       const payload: AiDocContent = { title, html: content }
-      if (request.dock && shellHooks?.openAiDockTab?.(payload, projectDir ?? undefined))
+      if (
+        request.dock &&
+        shellHooks?.openAiDockTab?.(payload, projectDir ?? undefined, request.projectId)
+      )
         return { ok: true }
       if (shellHooks?.openAiDocTab) shellHooks.openAiDocTab(payload)
       else {
@@ -4430,18 +4453,25 @@ export async function createAiDocument(
       if (shellHooks?.openUntitledPdf?.(bytes, title, projectDir ?? undefined)) return { ok: true }
       const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.pdf`)
       await writeFile(filePath, bytes)
+      registerAiFileToProject(filePath, request.projectId)
       openGeneratedFile(filePath)
       return { ok: true, path: filePath }
     }
     if (type === 'md') {
       if (
         request.dock &&
-        shellHooks?.openMarkdownDockTab?.(content, title, projectDir ?? undefined)
+        shellHooks?.openMarkdownDockTab?.(
+          content,
+          title,
+          projectDir ?? undefined,
+          request.projectId,
+        )
       )
         return { ok: true }
       if (shellHooks?.openUntitledMarkdown?.(content, title)) return { ok: true }
       const filePath = uniquePathIn(projectDir ?? defaultSaveDir(), `${title}.md`)
       await writeFile(filePath, content, 'utf8')
+      registerAiFileToProject(filePath, request.projectId)
       openGeneratedFile(filePath)
       return { ok: true, path: filePath }
     }

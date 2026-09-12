@@ -254,6 +254,9 @@ export interface DesktopApi {
   /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void
+  /** dock lifecycle (P1 契约): the shell pushes false when a docked editor
+   *  pops out to a full tab — restore the editor's own panel preference */
+  onDockedState(handler: (docked: boolean) => void): () => void
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void
@@ -518,5 +521,10 @@ export interface DesktopApi {
   /** P2 中继: subscribe to RelayCommands from the shell; returns unsubscribe */
   onRelayCommand(handler: (command: unknown) => void): () => void
   /** P2-5 回流薄钩: a completed panel turn (Home mainline mirror) */
-  panelTurnCompleted(turn: { filePath: string | null; userText: string; assistantText: string; cancelled: boolean }): void
+  panelTurnCompleted(turn: {
+    filePath: string | null
+    userText: string
+    assistantText: string
+    cancelled: boolean
+  }): void
 }

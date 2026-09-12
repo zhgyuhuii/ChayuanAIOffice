@@ -244,6 +244,13 @@ const api: DesktopApi = {
   relaySend: (event: unknown) => ipcRenderer.send('docs:relay-event', event),
   // P2-5 回流薄钩: panel turns report to the shell (project mainline mirror)
   panelTurnCompleted: (turn: unknown) => ipcRenderer.send('docs:panel-turn-completed', turn),
+  // dock lifecycle: the shell pushes false when a docked editor pops out to a
+  // full tab — the renderer restores its own AI panel preference then
+  onDockedState: (handler: (docked: boolean) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, docked: boolean): void => handler(docked)
+    ipcRenderer.on('app:docked-state', listener)
+    return () => ipcRenderer.removeListener('app:docked-state', listener)
+  },
   onRelayCommand: (handler: (command: unknown) => void) => {
     relayCommandHandler = handler
     for (const queued of relayCommandQueue.splice(0)) handler(queued)

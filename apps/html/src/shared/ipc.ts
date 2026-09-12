@@ -254,6 +254,9 @@ export interface HtmlApi {
   /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void
+  /** dock lifecycle (P1 契约): the shell pushes false when a docked editor
+   *  pops out to a full tab — restore the editor's own panel preference */
+  onDockedState(handler: (docked: boolean) => void): () => void
   /** press on the shell chrome (tab strip is a sibling WebContentsView whose
    *  clicks produce no DOM event here) — dismiss open popovers */
   onChromePressed(handler: () => void): () => void
@@ -265,10 +268,7 @@ export interface HtmlApi {
   aiChatOfficeLogin(): Promise<void>
   /** 本地与自建：探测 / 一键安装 / 启动（模型设置页状态卡） */
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
-  aiLocalToolInstall(
-    vendorId: string,
-    onLine?: (line: string) => void,
-  ): Promise<LocalToolOpResult>
+  aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
   aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
   /** the stream request carries only the model selection; the shared main-process handler resolves profile + secret */
   aiStream(request: {

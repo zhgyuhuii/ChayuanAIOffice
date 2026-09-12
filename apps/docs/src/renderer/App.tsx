@@ -542,9 +542,35 @@ export function App() {
    *  persistence effect on mount (it flips back to false before later effects
    *  run), which used to keep the relay server from ever starting. */
   const dockedBootRef = useRef(panelBootHiddenRef.current)
+  /** live dock state (boot value + shell pushes on pop-out): while docked the
+   *  editor carries no internal chat — the Home conversation is the surface —
+   *  so the AI panel toggle hides and panel-opening actions are ignored */
+  const [dockedEditor, setDockedEditor] = useState(dockedBootRef.current)
   const [showAi, setShowAi] = useState(
     () => !panelBootHiddenRef.current && localStorage.getItem('aidocs.showAi') !== '0',
   )
+  /** while docked the Home conversation is the chat surface: panel-opening
+   *  actions (the View menu toggle) must not raise the internal panel —
+   *  reads the ref so closures never go stale */
+  const setShowAiIfUndocked = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
+    setShowAi((prev) => {
+      const next = typeof value === 'function' ? value(prev) : value
+      return next && dockedBootRef.current ? prev : next
+    })
+  }, [])
+  useEffect(() => {
+    const off = (
+      window.desktop as unknown as {
+        onDockedState?: (handler: (docked: boolean) => void) => () => void
+      }
+    ).onDockedState?.((docked) => {
+      dockedBootRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setShowAi(localStorage.getItem('aidocs.showAi') !== '0')
+    })
+    return () => off?.()
+  }, [])
   const [spellcheck, setSpellcheck] = useState(spellcheckEnabled)
   /** Increments on every open/new document: AiPanel remounts by key to reset the conversation and history (save path changes don't bump it, so the session continues) */
   const [aiPanelKey, setAiPanelKey] = useState(0)
@@ -3881,6 +3907,7 @@ export function App() {
     )
       return
     localStorage.setItem(AI_REWRITE_ACK_KEY, '1')
+    if (dockedBootRef.current) return
     setShowAi(true)
     setAiPreset({ text: t('ribbonEditorPrompt'), nonce: Date.now(), autoRun: true })
   }, [])
@@ -4502,6 +4529,7 @@ export function App() {
     editor.view.focus()
   }
   const askSendNow = (text: string): void => {
+    if (dockedBootRef.current) return
     setShowAi(true)
     setAiPreset({ text, nonce: Date.now(), autoRun: true })
   }
@@ -4755,9 +4783,10 @@ export function App() {
     },
   })
   const aiServices = useStableCallbacks({
-    toggle: () => setShowAi((v) => !v),
+    toggle: () => setShowAiIfUndocked((v) => !v),
     preset: (text: string) => {
       // Word's Editor / Translate start working as soon as they're clicked
+      if (dockedBootRef.current) return
       setShowAi(true)
       setAiPreset({ text, nonce: Date.now(), autoRun: true })
     },
@@ -5190,11 +5219,13 @@ export function App() {
             actionsRef={ribbonActionsRef}
             quickActions={quickActions}
             trailingActions={
-              <AiPanelToggle
-                open={showAi}
-                onToggle={() => setShowAi((v) => !v)}
-                label={t('aiOpenAssistant')}
-              />
+              dockedEditor ? null : (
+                <AiPanelToggle
+                  open={showAi}
+                  onToggle={() => setShowAi((v) => !v)}
+                  label={t('aiOpenAssistant')}
+                />
+              )
             }
             editor={editor}
             tabRequest={ribbonTabRequest}
@@ -5214,11 +5245,13 @@ export function App() {
               activeTab={mobileTab}
               onTabChange={onMobileTabChange}
               trailingActions={
-                <AiPanelToggle
-                  open={showAi}
-                  onToggle={() => setShowAi((v) => !v)}
-                  label={t('aiOpenAssistant')}
-                />
+                dockedEditor ? null : (
+                  <AiPanelToggle
+                    open={showAi}
+                    onToggle={() => setShowAi((v) => !v)}
+                    label={t('aiOpenAssistant')}
+                  />
+                )
               }
             />
           )}
@@ -5612,6 +5645,7 @@ export function App() {
           onLink={() => setShowLinkModal(true)}
           onNewComment={startNewComment}
           onAiPreset={(text) => {
+            if (dockedBootRef.current) return
             setShowAi(true)
             setAiPreset({ text, nonce: Date.now(), autoRun: true })
           }}

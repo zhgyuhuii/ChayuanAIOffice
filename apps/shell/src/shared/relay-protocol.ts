@@ -96,6 +96,8 @@ export type RelayCommand =
   | { type: 'confirm'; confirmId: string; approved: boolean; feedback?: string }
   /** 停靠文档清单同步:tab 开/关/切换/改名时推送,供跨文档工具参考 */
   | { type: 'sync-docs'; docs: RelayDockDocInfo[] }
+  /** 项目文件清单同步(P4 项目引用):文档 loop 跨文档引用的眼与手 */
+  | { type: 'sync-project'; files: string[]; name?: string }
 
 export const RELAY_PREVIEW_LIMIT = 2000
 
@@ -179,6 +181,12 @@ export function isRelayCommand(value: unknown): value is RelayCommand {
             typeof (d as RelayDockDocInfo).kind === 'string' &&
             typeof (d as RelayDockDocInfo).active === 'boolean',
         )
+      )
+    case 'sync-project':
+      return (
+        Array.isArray(v.files) &&
+        v.files.every((f) => typeof f === 'string') &&
+        (typeof v.name === 'undefined' || typeof v.name === 'string')
       )
     default:
       return false

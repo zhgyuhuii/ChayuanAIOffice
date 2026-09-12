@@ -456,7 +456,24 @@ export function App() {
     localStorage.setItem('ai-slides-auto-save', autoSave ? '1' : '0')
     window.slidesApi?.setAutoSavePref?.(autoSave)
   }, [autoSave])
-  const [showAi, setShowAi] = useState(() => localStorage.getItem('ai-slides-show-ai') !== '0')
+  // panel=0 (docked boot, P1 契约): this editor renders beside the Home
+  // conversation, which is the chat surface — the internal AI panel stays
+  // closed (and its toggle hidden) until the tab pops out to a full tab
+  const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
+  const dockedRef = useRef(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
+  useEffect(() => {
+    const off = window.slidesApi?.onDockedState?.((docked) => {
+      dockedRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setShowAi(localStorage.getItem('ai-slides-show-ai') !== '0')
+    })
+    return () => off?.()
+  }, [])
+  const [showAi, setShowAi] = useState(
+    () => !DOCKED_BOOT && localStorage.getItem('ai-slides-show-ai') !== '0',
+  )
   const [showFormat, setShowFormat] = useState(false)
   const [showBgFormat, setShowBgFormat] = useState(false)
   const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
@@ -1203,6 +1220,7 @@ export function App() {
   }, [slides.length])
 
   const toggleAi = useCallback(() => {
+    if (dockedRef.current) return
     setShowAi((v) => {
       localStorage.setItem('ai-slides-show-ai', v ? '0' : '1')
       return !v
@@ -1211,6 +1229,7 @@ export function App() {
 
   /** DockShell open/close sink (rail expand, collapse button) — persists like toggleAi */
   const setAiOpen = useCallback((open: boolean) => {
+    if (dockedRef.current && open) return
     localStorage.setItem('ai-slides-show-ai', open ? '1' : '0')
     setShowAi(open)
   }, [])
@@ -1224,10 +1243,12 @@ export function App() {
       slideShot?: boolean,
       scope?: AiScopeQuoteData,
     ) => {
-      setShowAi(() => {
-        localStorage.setItem('ai-slides-show-ai', '1')
-        return true
-      })
+      if (!dockedRef.current) {
+        setShowAi(() => {
+          localStorage.setItem('ai-slides-show-ai', '1')
+          return true
+        })
+      }
       setAiPreset({
         text,
         nonce: Date.now(),
@@ -1364,10 +1385,12 @@ export function App() {
         return [...prev, item]
       })
       // The queue lives in the panel; annotating with it collapsed would look like nothing happened
-      setShowAi(() => {
-        localStorage.setItem('ai-slides-show-ai', '1')
-        return true
-      })
+      if (!dockedRef.current) {
+        setShowAi(() => {
+          localStorage.setItem('ai-slides-show-ai', '1')
+          return true
+        })
+      }
     },
     [askState, askTargets, current],
   )
@@ -3464,7 +3487,9 @@ export function App() {
             onZoom={previewZoom}
             showThumbs={showThumbs}
             onToggleThumbs={() => setShowThumbs((v) => !v)}
-            aiPanelAvailable={!!slide && viewMode !== 'reading' && viewMode !== 'sorter'}
+            aiPanelAvailable={
+              !dockedEditor && !!slide && viewMode !== 'reading' && viewMode !== 'sorter'
+            }
             aiPanelOpen={showAi}
             onToggleAiPanel={toggleAi}
             onAiPreset={(text, opts) =>

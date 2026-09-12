@@ -8,7 +8,7 @@ import { createDocsSkill } from './docs-skill'
 import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
 import { RelayConfirmGate } from './relay-confirm'
-import { createRelayExtrasSkill } from './relay-extras'
+import { createRelayExtrasSkill, type RelayProjectListing } from './relay-extras'
 import {
   isRelayCommand,
   RELAY_PREVIEW_LIMIT,
@@ -59,6 +59,8 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   const confirmGate = new RelayConfirmGate()
   /** P2-6 残项:Home 经 sync-docs 推送的停靠文档清单(activate_document 的依据) */
   let dockedDocs: RelayDockDocInfo[] = []
+  /** P4 项目引用:Home 经 sync-project 推送的项目文件清单(null=无项目) */
+  let projectListing: RelayProjectListing | null = null
 
   const loop = new AgentLoop<PmNode>({
     transport: createElectronTransport(() => deps.getSettings().currentModel!),
@@ -78,6 +80,10 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
         emit: emit,
         turnId: () => currentTurnId,
         docsListing: () => dockedDocs,
+        projectListing: () => projectListing,
+        // files:read — 与首页 agent 同一抽取管线(ATTACHMENT 白名单内)
+        readDocumentFile: (path, offset, maxChars) =>
+          window.desktop.readAttachment(path, offset, maxChars),
       }),
     ]),
     events: {
@@ -156,6 +162,7 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
       command.type,
       command.type === 'seed' ? `n=${command.messages.length}` : '',
       command.type === 'sync-docs' ? `docs=${command.docs.length}` : '',
+      command.type === 'sync-project' ? `files=${command.files.length}` : '',
     )
     switch (command.type) {
       case 'seed': {
@@ -201,6 +208,12 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
       }
       case 'sync-docs': {
         dockedDocs = command.docs
+        break
+      }
+      case 'sync-project': {
+        projectListing = command.files.length
+          ? { files: command.files, ...(command.name ? { name: command.name } : {}) }
+          : null
         break
       }
     }

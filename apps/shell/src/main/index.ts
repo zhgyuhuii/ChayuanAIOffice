@@ -2538,7 +2538,12 @@ const pendingNewFileProject = new Map<string, string>()
  * "create from project view", move the new file into that project automatically.
  * Called from createShellWindow's opened/saved hooks.
  */
-function applyPendingProject(filePath: string): void {
+/** 会话停靠文档的所属项目(按 webContents 记):文件首存时经
+ *  applyPendingProject 落进项目 files[]——非文件夹项目(惰性建出的会话
+ *  项目)没有目录可扫,必须显式登记 */
+const pendingDockProjectByWc = new Map<number, string>()
+
+function applyPendingProject(filePath: string, wcId?: number): void {
   const ext = extname(filePath).slice(1).toLowerCase()
   let key: string | undefined
   if (ext === 'docx') key = 'doc'
@@ -2547,10 +2552,15 @@ function applyPendingProject(filePath: string): void {
   else if (ext === 'md' || ext === 'markdown') key = 'markdown'
   else if (ext === 'html' || ext === 'htm') key = 'html'
   else if (ext === 'pdf') key = 'pdf'
-  if (!key) return
-  const projectId = pendingNewFileProject.get(key)
-  if (!projectId) return
-  pendingNewFileProject.delete(key)
+  // a conversation-docked editor's pending project wins over the tree flow's
+  let projectId = wcId !== undefined ? pendingDockProjectByWc.get(wcId) : undefined
+  if (wcId !== undefined && projectId) pendingDockProjectByWc.delete(wcId)
+  if (!projectId) {
+    if (!key) return
+    projectId = pendingNewFileProject.get(key)
+    if (!projectId) return
+    pendingNewFileProject.delete(key)
+  }
   try {
     const store = new ProjectStore(app.getPath('userData'))
     store.ensureDefaultProject()
@@ -2683,16 +2693,18 @@ function createShellWindow(): void {
       manager.openDocsTab(undefined, { newBlank: true, aiContent: content }),
     // P1 停靠契约: home-chat create_document lands in the Home right pane —
     // untitled blank docs tab seeded with the AI content, panel hidden
-    openAiDockTab: (content, saveDir) => {
+    openAiDockTab: (content, saveDir, projectId) => {
       try {
         const id = manager.dockEditorTab('docs', {
           newBlank: true,
           aiContent: content,
           hidePanel: true,
         })
-        if (id && saveDir) {
+        if (id) {
           const wcId = manager.webContentsIdOf(id)
-          if (wcId) queueDocsSaveDir(wcId, saveDir)
+          if (wcId && saveDir) queueDocsSaveDir(wcId, saveDir)
+          // 会话产物:文件首存时登记进会话项目(非文件夹项目无目录可扫)
+          if (wcId && projectId) pendingDockProjectByWc.set(wcId, projectId)
         }
         return id !== null
       } catch (err) {
@@ -2700,12 +2712,13 @@ function createShellWindow(): void {
         return false
       }
     },
-    openMarkdownDockTab: (content, suggestedName, saveDir) => {
+    openMarkdownDockTab: (content, suggestedName, saveDir, projectId) => {
       try {
         const id = manager.dockMarkdownWithContent(content, suggestedName)
-        if (id && saveDir) {
+        if (id) {
           const wcId = manager.webContentsIdOf(id)
-          if (wcId) queueDocsSaveDir(wcId, saveDir)
+          if (wcId && saveDir) queueDocsSaveDir(wcId, saveDir)
+          if (wcId && projectId) pendingDockProjectByWc.set(wcId, projectId)
         }
         return true
       } catch (err) {
@@ -2789,7 +2802,7 @@ function createShellWindow(): void {
   setDocsFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
-    applyPendingProject(path)
+    applyPendingProject(path, wc.id)
   })
   // ⌘O / open-path inside a docs tab: sync the tab title immediately, same
   // contract as the sheets/slides opened hooks (a plain save to the original
@@ -2803,12 +2816,12 @@ function createShellWindow(): void {
   setMarkdownFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
-    applyPendingProject(path)
+    applyPendingProject(path, wc.id)
   })
   setHtmlFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
-    applyPendingProject(path)
+    applyPendingProject(path, wc.id)
   })
   setHtmlProvisionalTitleHook((wc, title) => manager.setTabTitleFor(wc.id, title))
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
@@ -3449,7 +3462,10 @@ function registerHomeIpc(): void {
       ],
       properties: ['openFile', 'multiSelections'],
     })
-    if (!result.canceled) for (const path of result.filePaths) openDocumentPath(path)
+    // P4 停靠优先: files opened from Home dock beside the conversation (the
+    // editor's own AI panel stays hidden while docked); argv/drag-drop opens
+    // from the OS still take over the window as full tabs
+    if (!result.canceled) for (const path of result.filePaths) routeDocumentPath(path, true)
   })
 
   ipcMain.handle(HOME_CHANNELS.newDoc, (_event, opts?: { projectId?: string }) => {

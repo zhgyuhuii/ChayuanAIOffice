@@ -8,7 +8,7 @@ import type { RelayConfirmGate } from './relay-confirm'
 
 /**
  * P2 中继附加技能(新增文件,不碰 docs-skill——上游红线):仅停靠态的
- * relay-server 会挂载。两件事:
+ * relay-server 会挂载。三件事:
  *
  * 1. 确认门(Q7 生成体验):propose_outline / propose_plan 在动手前把
  *    大纲/计划发给用户,loop 挂起等首页的批准/驳回;驳回带反馈时模型
@@ -16,7 +16,15 @@ import type { RelayConfirmGate } from './relay-confirm'
  * 2. dock 切换(Q4'' 第③条):activate_document 让模型把对话焦点切到
  *    另一份停靠文档;清单由 Home 经 sync-docs 推送,buildContext 里
  *    始终可见(模型的眼),activate 是手。
+ * 3. 项目引用(P4):search_project_files / read_document 让文档 loop
+ *    能读同项目其他文档的内容(用户指定目录的项目同样生效)——清单由
+ *    Home 经 sync-project 推送。
  */
+
+export interface RelayProjectListing {
+  name?: string
+  files: string[]
+}
 
 export interface RelayExtrasDeps {
   gate: RelayConfirmGate
@@ -25,12 +33,28 @@ export interface RelayExtrasDeps {
   turnId: () => string | null
   /** Home 同步来的停靠文档清单 */
   docsListing: () => RelayDockDocInfo[]
+  /** Home 同步来的项目文件清单(null=会话不属于任何项目) */
+  projectListing: () => RelayProjectListing | null
+  /** 读任意本地文档的抽取文本(files:read,与首页 agent 同一管线) */
+  readDocumentFile: (
+    path: string,
+    offset: number,
+    maxChars: number,
+  ) => Promise<{
+    ok: boolean
+    name?: string
+    totalChars?: number
+    offset?: number
+    text?: string
+    error?: string
+  }>
 }
 
 const GATE_SYSTEM_PROMPT = `## Relay extensions (docked-home conversation only)
 - Before authoring a NEW document from scratch (report/letter/long article), call propose_outline with a short markdown outline first and WAIT for the user's decision. If they reject it, revise the outline per their feedback and propose again — never start writing after a rejection. Only after approval write the document.
 - Before a multi-step restructuring of the CURRENT document (reorder chapters, merge/split sections, restyle globally), call propose_plan with the numbered steps and wait for approval; apply only after approval.
-- Several documents may be docked beside this one. Their list appears in the context. Use activate_document to shift the conversation's focus to another docked document before editing it; after activating, continue the user's request against that document.`
+- Several documents may be docked beside this one. Their list appears in the context. Use activate_document to shift the conversation's focus to another docked document before editing it; after activating, continue the user's request against that document.
+- This conversation belongs to a project. Other files of the project appear in the context ("Project files"). Use search_project_files to locate one by name and read_document to read its content when the task needs to reference or incorporate other documents (quotations, data lookups, cross-references). Never claim you cannot access other project files before trying.`
 
 function fail(name: string, message: string): ToolExecution {
   return { output: message, isError: true, summary: name }
@@ -97,6 +121,50 @@ function activateDocument(deps: RelayExtrasDeps, call: AgentToolCall): ToolExecu
   }
 }
 
+function searchProjectFiles(deps: RelayExtrasDeps, call: AgentToolCall): ToolExecution {
+  const query = String(call.input.query ?? '')
+    .trim()
+    .toLowerCase()
+  const ext = typeof call.input.ext === 'string' ? call.input.ext.toLowerCase() : ''
+  const listing = deps.projectListing()
+  if (!listing || listing.files.length === 0)
+    return fail(call.name, 'this conversation has no project file list (no project scope)')
+  const hits = listing.files
+    .map((path) => {
+      const name = path.split(/[\\/]/).pop() ?? path
+      return { name, path, ext: name.split('.').pop()?.toLowerCase() ?? '' }
+    })
+    .filter((f) => (!ext || f.ext === ext) && (!query || f.name.toLowerCase().includes(query)))
+    .slice(0, 20)
+  return {
+    output: hits.length
+      ? JSON.stringify(hits)
+      : JSON.stringify({ results: [], hint: 'no project file matches; try a shorter query' }),
+    summary: `search_project_files${query ? ` "${query}"` : ''}`,
+  }
+}
+
+async function readProjectDocument(
+  deps: RelayExtrasDeps,
+  call: AgentToolCall,
+): Promise<ToolExecution> {
+  const path = String(call.input.path ?? '')
+  if (!path) return fail(call.name, 'path must not be empty')
+  const offset = Number(call.input.offset) || 0
+  const maxChars = Math.min(Number(call.input.maxChars) || 12_000, 48_000)
+  const result = await deps.readDocumentFile(path, offset, maxChars)
+  if (!result.ok) return fail(call.name, result.error ?? 'read failed')
+  return {
+    output: JSON.stringify({
+      name: result.name,
+      totalChars: result.totalChars,
+      offset: result.offset,
+      text: result.text,
+    }),
+    summary: `read ${result.name ?? path}`,
+  }
+}
+
 export function createRelayExtrasSkill(deps: RelayExtrasDeps): AgentSkill {
   return {
     id: 'relay-extras',
@@ -141,15 +209,57 @@ export function createRelayExtrasSkill(deps: RelayExtrasDeps): AgentSkill {
           required: ['document'],
         },
       },
+      {
+        name: 'search_project_files',
+        description:
+          "Search the conversation's project files by name (all files of the project this conversation belongs to, including a user-bound folder). Returns a JSON list of {name, path, ext}.",
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: {
+              type: 'string',
+              description: 'case-insensitive substring matched against file names',
+            },
+            ext: { type: 'string', description: "optional extension filter, e.g. 'docx'" },
+          },
+          required: ['query'],
+        },
+      },
+      {
+        name: 'read_document',
+        description:
+          'Read the extracted text of another project file (path from search_project_files or the project-files context). Long documents are paged: use offset (characters) to continue.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            path: { type: 'string', description: 'absolute file path from search_project_files' },
+            offset: { type: 'number', description: 'character offset to start from (default 0)' },
+            maxChars: { type: 'number', description: 'slice length, max 48000 (default 12000)' },
+          },
+          required: ['path'],
+        },
+      },
     ],
     buildContext: () => {
+      const sections: string[] = []
       const docs = deps.docsListing()
-      if (docs.length === 0) return ''
-      const lines = docs.map(
-        (d) =>
-          `- ${d.title}${d.active ? ' (active)' : ''}${d.filePath ? ` | ${d.filePath}` : ''} | ${d.kind}`,
-      )
-      return `Docked documents in this workspace:\n${lines.join('\n')}`
+      if (docs.length > 0) {
+        const lines = docs.map(
+          (d) =>
+            `- ${d.title}${d.active ? ' (active)' : ''}${d.filePath ? ` | ${d.filePath}` : ''} | ${d.kind}`,
+        )
+        sections.push(`Docked documents in this workspace:\n${lines.join('\n')}`)
+      }
+      const listing = deps.projectListing()
+      if (listing && listing.files.length > 0) {
+        // cap the listing: paths repeat the project dir, names carry the signal
+        const names = listing.files.slice(0, 80).map((p) => p.split(/[\\/]/).pop() ?? p)
+        const more = listing.files.length - names.length
+        sections.push(
+          `Project${listing.name ? ` "${listing.name}"` : ''} files (${listing.files.length}) — reference them with search_project_files + read_document:\n- ${names.join('\n- ')}${more > 0 ? `\n- …and ${more} more (search by name)` : ''}`,
+        )
+      }
+      return sections.join('\n\n')
     },
     executeTool: async (call, signal) => {
       switch (call.name) {
@@ -159,6 +269,10 @@ export function createRelayExtrasSkill(deps: RelayExtrasDeps): AgentSkill {
           return outlineGate(deps, call, 'plan', signal)
         case 'activate_document':
           return activateDocument(deps, call)
+        case 'search_project_files':
+          return searchProjectFiles(deps, call)
+        case 'read_document':
+          return readProjectDocument(deps, call)
         default:
           return fail(call.name, `unknown tool: ${call.name}`)
       }

@@ -2064,7 +2064,9 @@ export async function createSheetsWindow(
 }
 
 /** tab-mode equivalent of createSheetsWindow: same runtime/IPC wiring, no BrowserWindow of its own. */
-export function createSheetsView(options: { includeAiHandlers?: boolean } = {}): WebContentsView {
+export function createSheetsView(
+  options: { includeAiHandlers?: boolean; hidePanel?: boolean } = {},
+): WebContentsView {
   const client = sidecar ?? new XlsxSidecarClient(resolveSidecarPath())
   sidecar = client
   client.start()
@@ -2088,14 +2090,18 @@ export function createSheetsView(options: { includeAiHandlers?: boolean } = {}):
     })
   }
   // mode=tab: the shell's tab strip owns the traffic lights / caption buttons,
-  // so the ribbon must not reserve space for them
+  // so the ribbon must not reserve space for them.
+  // panel=0: a docked editor boots with its own AI panel hidden (P1 契约) —
+  // the Home conversation is the chat surface for docked editors.
+  const query: Record<string, string> = { mode: 'tab' }
+  if (options.hidePanel) query.panel = '0'
   if (runtime.rendererUrl) {
     // append via URL so a dev URL that already carries query params stays valid
     const devUrl = new URL(runtime.rendererUrl)
-    devUrl.searchParams.set('mode', 'tab')
+    for (const [key, value] of Object.entries(query)) devUrl.searchParams.set(key, value)
     void view.webContents.loadURL(devUrl.toString())
   } else {
-    void view.webContents.loadFile(runtime.rendererFile, { query: { mode: 'tab' } })
+    void view.webContents.loadFile(runtime.rendererFile, { query })
   }
   return view
 }
@@ -3338,14 +3344,22 @@ export function registerSheetsAiIpc(): void {
   // (same source as slides/docs)
   ipcMain.handle('ai:web-search', async (_event, query: unknown, maxResults?: unknown) => {
     try {
-      return await webSearch(z.string().parse(query), typeof maxResults === 'number' ? maxResults : 6, chatofficeCloudToolsOn())
+      return await webSearch(
+        z.string().parse(query),
+        typeof maxResults === 'number' ? maxResults : 6,
+        chatofficeCloudToolsOn(),
+      )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
     }
   })
   ipcMain.handle('ai:image-search', async (_event, query: unknown, maxResults?: unknown) => {
     try {
-      return await imageSearch(z.string().parse(query), typeof maxResults === 'number' ? maxResults : 8, chatofficeCloudToolsOn())
+      return await imageSearch(
+        z.string().parse(query),
+        typeof maxResults === 'number' ? maxResults : 8,
+        chatofficeCloudToolsOn(),
+      )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
     }

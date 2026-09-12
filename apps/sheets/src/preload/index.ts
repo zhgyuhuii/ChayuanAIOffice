@@ -83,6 +83,13 @@ const desktopApi: DesktopApi = {
     ipcRenderer.on('app:ai-panel-prefs-changed', listener)
     return () => ipcRenderer.removeListener('app:ai-panel-prefs-changed', listener)
   },
+  // dock lifecycle (P1 契约): the shell pushes false when a docked editor pops
+  // out to a full tab — the renderer restores its own AI panel preference then
+  onDockedState: (handler: (docked: boolean) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, docked: boolean): void => handler(docked)
+    ipcRenderer.on('app:docked-state', listener)
+    return () => ipcRenderer.removeListener('app:docked-state', listener)
+  },
   onChromePressed(handler) {
     const listener = () => handler()
     ipcRenderer.on('app:chrome-pressed', listener)

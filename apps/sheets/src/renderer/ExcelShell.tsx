@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import {
@@ -175,6 +175,10 @@ const CHART_TEXT_LABELS: Record<ChartTextTarget, { heading: StringKey; command: 
 /// mode=tab: embedded in the shell's tab strip, which owns the traffic
 /// lights / caption buttons — the ribbon must not reserve space for them.
 const IN_TAB = new URLSearchParams(window.location.search).get('mode') === 'tab'
+/// panel=0 (docked boot, P1 契约): this editor renders beside the Home
+/// conversation, which is the chat surface — the internal AI panel stays
+/// closed (and its toggle hidden) until the tab pops out to a full tab
+const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')
 
 /// Excel's grow/shrink font walks its size ladder, not ±1.
@@ -536,9 +540,27 @@ export function ExcelShell({
   })
   // Persisted so a closed AI panel stays closed on next launch (docs/slides parity)
   const [isCopilotOpen, setIsCopilotOpen] = useState(
-    () => localStorage.getItem('ai-sheets-show-ai') !== '0',
+    () => !DOCKED_BOOT && localStorage.getItem('ai-sheets-show-ai') !== '0',
   )
+  const dockedRef = useRef(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
   useEffect(() => {
+    const off = window.desktopApi.onDockedState?.((docked) => {
+      dockedRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setIsCopilotOpen(localStorage.getItem('ai-sheets-show-ai') !== '0')
+    })
+    return () => off?.()
+  }, [])
+  /** while docked the Home conversation is the chat surface: panel-opening
+   *  actions must not raise the internal panel */
+  const openCopilotIfUndocked = useCallback(() => {
+    if (!dockedRef.current) setIsCopilotOpen(true)
+  }, [])
+  useEffect(() => {
+    // a docked boot must not clobber the user's persisted preference
+    if (dockedRef.current) return
     localStorage.setItem('ai-sheets-show-ai', isCopilotOpen ? '1' : '0')
   }, [isCopilotOpen])
   const [showFormatCells, setShowFormatCells] = useState(false)
@@ -931,11 +953,13 @@ export function ExcelShell({
               <span className="workbook-status" role="status" aria-live="polite">
                 {statusMessage}
               </span>
-              <AiPanelToggle
-                open={isCopilotOpen}
-                onToggle={() => setIsCopilotOpen((open) => !open)}
-                label={t('aiOpenAssistant')}
-              />
+              {!dockedEditor && (
+                <AiPanelToggle
+                  open={isCopilotOpen}
+                  onToggle={() => setIsCopilotOpen((open) => !open)}
+                  label={t('aiOpenAssistant')}
+                />
+              )}
             </nav>
 
             {/* WPS 功能区右下角展开/折叠图标 */}
@@ -1056,13 +1080,13 @@ export function ExcelShell({
                     setSelectionPaneItems(onGetVisualObjects())
                     setShowSelectionPane(true)
                   } else if (command === 'ai-fill') {
-                    setIsCopilotOpen(true)
+                    openCopilotIfUndocked()
                     onSend(t('appAiFillPrompt'))
                   } else if (command === 'ai-cf') {
-                    setIsCopilotOpen(true)
+                    openCopilotIfUndocked()
                     onSend(t('appCfAiPrompt'))
                   } else if (command === 'ai-write-formula') {
-                    setIsCopilotOpen(true)
+                    openCopilotIfUndocked()
                     onSend(t('appWriteFormulaPrompt'))
                   } else if (command === 'paste-special-dialog') setShowPasteSpecial(true)
                   else if (command === 'row-height-open') setAxisSizeTarget('row')
@@ -1087,16 +1111,17 @@ export function ExcelShell({
                   else if (command === 'goto-open') setShowGoTo(true)
                   else if (command === 'header-footer-open') setShowHeaderFooter(true)
                   else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
-                  else if (command === 'ai-open-panel') setIsCopilotOpen(true)
-                  else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
-                  else if (command === 'picture-crop-open') setShowPictureCrop(true)
+                  else if (command === 'ai-open-panel') openCopilotIfUndocked()
+                  else if (command === 'ai-toggle-panel') {
+                    if (!dockedRef.current) setIsCopilotOpen((v) => !v)
+                  } else if (command === 'picture-crop-open') setShowPictureCrop(true)
                   else if (command === 'chart-element-title') setChartTextTarget('title')
                   else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
                   else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
                   else onCommand(command)
                 }}
                 onAiRun={(nextPrompt) => {
-                  setIsCopilotOpen(true)
+                  openCopilotIfUndocked()
                   onSend(nextPrompt)
                 }}
               />
@@ -1125,7 +1150,7 @@ export function ExcelShell({
                 range={aiScopeRange}
                 onDismiss={onAiSelectionAskDismiss}
                 onSend={(instruction) => {
-                  setIsCopilotOpen(true)
+                  openCopilotIfUndocked()
                   onSend(instruction)
                 }}
               />

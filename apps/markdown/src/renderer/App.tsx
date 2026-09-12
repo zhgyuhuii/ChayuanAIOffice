@@ -127,7 +127,22 @@ export default function App() {
   const [fmOpen, setFmOpen] = useState(false)
   const [fmText, setFmText] = useState('')
   // Persisted so a closed AI panel stays closed on next launch (docs/slides parity)
-  const [aiOpen, setAiOpen] = useState(() => localStorage.getItem('mdapp.showAi') !== '0')
+  // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface
+  const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
+  const dockedRef = useRef(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
+  useEffect(() => {
+    const off = window.markdownApi?.onDockedState?.((docked) => {
+      dockedRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setAiOpen(localStorage.getItem('mdapp.showAi') !== '0')
+    })
+    return () => off?.()
+  }, [])
+  const [aiOpen, setAiOpen] = useState(
+    () => !DOCKED_BOOT && localStorage.getItem('mdapp.showAi') !== '0',
+  )
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const editQueueRef = useRef(editQueue)
@@ -514,6 +529,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // a docked boot must not clobber the user's persisted preference
+    if (dockedRef.current) return
     localStorage.setItem('mdapp.showAi', aiOpen ? '1' : '0')
   }, [aiOpen])
 
@@ -581,6 +598,7 @@ export default function App() {
     current.view.focus()
   }, [])
   const askSendNow = useCallback((text: string): void => {
+    if (dockedRef.current) return
     setAiOpen(true)
     setAiPreset((prev) => ({ text, nonce: (prev?.nonce ?? 0) + 1 }))
   }, [])
@@ -703,7 +721,7 @@ export default function App() {
             onInsertImage={insertImage}
             frontmatterOpen={fmOpen}
             onToggleFrontmatter={() => setFmOpen((v) => !v)}
-            aiPanelAvailable={status === 'ready'}
+            aiPanelAvailable={!dockedEditor && status === 'ready'}
             aiPanelOpen={aiOpen}
             onToggleAiPanel={() => setAiOpen((v) => !v)}
           />

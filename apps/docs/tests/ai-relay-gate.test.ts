@@ -48,6 +48,7 @@ describe('createRelayExtrasSkill', () => {
   function harness(
     turnId: string | null,
     docs = [{ title: '报告.docx', kind: 'docs', active: true }],
+    project: { name?: string; files: string[] } | null = null,
   ) {
     const gate = new RelayConfirmGate()
     const emitted: RelayEvent[] = []
@@ -56,6 +57,14 @@ describe('createRelayExtrasSkill', () => {
       emit: (e) => emitted.push(e),
       turnId: () => turnId,
       docsListing: () => docs,
+      projectListing: () => project,
+      readDocumentFile: async (path, offset, maxChars) => ({
+        ok: true,
+        name: path.split(/[\\/]/).pop(),
+        totalChars: 100,
+        offset,
+        text: `x`.repeat(Math.min(maxChars, 100 - offset)),
+      }),
     })
     return { gate, emitted, skill }
   }
@@ -121,6 +130,44 @@ describe('createRelayExtrasSkill', () => {
       undefined,
     )
     expect(miss.isError).toBe(true)
+  })
+
+  it('search_project_files filters by query/ext; no project errors clearly', async () => {
+    const h = harness('t1', undefined, {
+      name: 'Q3',
+      files: ['/p/季度报告.docx', '/p/数据表.xlsx', '/p/notes.md'],
+    })
+    const hits = await h.skill.executeTool(
+      { id: 'c1', name: 'search_project_files', input: { query: '报告' } },
+      undefined,
+    )
+    expect(hits.isError).toBeUndefined()
+    expect(JSON.parse(hits.output)).toEqual([
+      { name: '季度报告.docx', path: '/p/季度报告.docx', ext: 'docx' },
+    ])
+    const byExt = await h.skill.executeTool(
+      { id: 'c2', name: 'search_project_files', input: { query: '', ext: 'xlsx' } },
+      undefined,
+    )
+    expect(JSON.parse(byExt.output)).toHaveLength(1)
+    const none = harness('t1', undefined, null)
+    const out = await none.skill.executeTool(
+      { id: 'c3', name: 'search_project_files', input: { query: 'x' } },
+      undefined,
+    )
+    expect(out.isError).toBe(true)
+  })
+
+  it('read_document pages project file text through readDocumentFile', async () => {
+    const h = harness('t1', undefined, { files: ['/p/a.docx'] })
+    const out = await h.skill.executeTool(
+      { id: 'c1', name: 'read_document', input: { path: '/p/a.docx', maxChars: 10 } },
+      undefined,
+    )
+    expect(out.isError).toBeUndefined()
+    const parsed = JSON.parse(out.output)
+    expect(parsed.name).toBe('a.docx')
+    expect(parsed.text).toHaveLength(10)
   })
 
   it('buildContext lists the docked documents for the model', () => {

@@ -123,7 +123,22 @@ export default function App() {
   const [previewNonce, setPreviewNonce] = useState(0)
   const [draftHtml, setDraftHtml] = useState<string | null>(null)
   const [historyState, setHistoryState] = useState({ undo: false, redo: false })
-  const [aiOpen, setAiOpen] = useState(() => localStorage.getItem('htmlapp.showAi') !== '0')
+  // panel=0 (docked boot, P1 契约): the Home conversation is the chat surface
+  const DOCKED_BOOT = new URLSearchParams(window.location.search).get('panel') === '0'
+  const dockedRef = useRef(DOCKED_BOOT)
+  const [dockedEditor, setDockedEditor] = useState(DOCKED_BOOT)
+  useEffect(() => {
+    const off = window.htmlApi?.onDockedState?.((docked) => {
+      dockedRef.current = docked
+      setDockedEditor(docked)
+      // popped out to a full tab: the editor's own panel preference returns
+      if (!docked) setAiOpen(localStorage.getItem('htmlapp.showAi') !== '0')
+    })
+    return () => off?.()
+  }, [])
+  const [aiOpen, setAiOpen] = useState(
+    () => !DOCKED_BOOT && localStorage.getItem('htmlapp.showAi') !== '0',
+  )
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const [askMode, setAskMode] = useState<AskMode | null>(null)
@@ -278,6 +293,8 @@ export default function App() {
   }, [canvasMode])
 
   useEffect(() => {
+    // a docked boot must not clobber the user's persisted preference
+    if (dockedRef.current) return
     localStorage.setItem('htmlapp.showAi', aiOpen ? '1' : '0')
   }, [aiOpen])
 
@@ -766,7 +783,7 @@ export default function App() {
       ...prev,
       { qid, sid: askTarget.sid, tag: askTarget.tag, capturedText: askTarget.excerpt, instruction },
     ])
-    setAiOpen(true)
+    if (!dockedRef.current) setAiOpen(true)
   }
   const queueUpdate = (qid: string, instruction: string) => {
     setAskMode(null)
@@ -787,6 +804,7 @@ export default function App() {
     setAskMode(null)
     if (!askTarget) return
     flushPending()
+    if (dockedRef.current) return
     setAiOpen(true)
     const scope: AiScopeQuoteData = {
       label: t('aiScopeElement', { tag: askTarget.tag }),
@@ -1282,11 +1300,12 @@ export default function App() {
             onToggleAutoSave={setAutoSave}
             view={view}
             onView={setView}
-            aiPanelAvailable={status === 'ready'}
+            aiPanelAvailable={!dockedEditor && status === 'ready'}
             aiPanelOpen={aiOpen}
             onToggleAiPanel={() => setAiOpen((v) => !v)}
             onAiPreset={(text) => {
               flushPending()
+              if (dockedRef.current) return
               setAiOpen(true)
               setAiPreset({ text, nonce: Date.now() })
             }}

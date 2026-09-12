@@ -1477,6 +1477,9 @@ export function Home() {
   //    right-pane editor tabs belong to it; switching back re-docks them ──
   const chatStoreRef = useRef(chatStore)
   chatStoreRef.current = chatStore
+  /** project names for the sync-project push (handleDockTabs runs with []) */
+  const projectsRef = useRef(projects)
+  projectsRef.current = projects
   const relayLink = useRef(new RelaySessionLink())
   const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
   /** P2-6 圈选标注:激活 dock 报来的选区(中栏「针对所选」提示) */
@@ -1530,6 +1533,27 @@ export function Home() {
     }))
     for (const t of tabs) {
       void window.chatOfficeDock?.relayCommand(t.id, { type: 'sync-docs', docs: docsSync })
+    }
+    // P4 项目引用:会话所属项目的文件清单同步给每个文档 loop——文档 loop
+    // 的 search_project_files / read_document 由此取数(跨文档引用的眼)
+    const scope = store.sessions?.find((x) => x.id === session.id)?.scope
+    if (scope?.kind === 'project') {
+      const pid = scope.id
+      void (async () => {
+        try {
+          const files = await window.chatOfficeProject!.listFiles(pid)
+          const name = projectsRef.current.find((p) => p.id === pid)?.name
+          for (const t of tabs) {
+            void window.chatOfficeDock?.relayCommand(t.id, {
+              type: 'sync-project',
+              files,
+              ...(name ? { name } : {}),
+            })
+          }
+        } catch {
+          // project store unavailable (web shim): the doc loop simply has no list
+        }
+      })()
     }
   }, [])
   const dockRestoreSessionId = chatStore.activeId
@@ -2270,13 +2294,13 @@ export function Home() {
           onClick={() => {
             if (!isRenaming) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path)
+              else void window.chatOffice.openPath(entry.path, { dock: true })
             }
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path)
+              else void window.chatOffice.openPath(entry.path, { dock: true })
             }
           }}
         >
@@ -2357,7 +2381,7 @@ export function Home() {
               title={t('open')}
               onClick={(event) => {
                 event.stopPropagation()
-                void window.chatOffice.openPath(entry.path)
+                void window.chatOffice.openPath(entry.path, { dock: true })
               }}
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -2414,7 +2438,7 @@ export function Home() {
                 role="menuitem"
                 onClick={() => {
                   setRowMenu(null)
-                  void window.chatOffice.openPath(entry.path)
+                  void window.chatOffice.openPath(entry.path, { dock: true })
                 }}
               >
                 {t('open')}

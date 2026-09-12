@@ -2929,6 +2929,9 @@ export interface DesktopApi {
   /** AI panel text size + chat-input spellcheck (Settings → General in the shell) */
   getAiPanelPrefs(): Promise<AiPanelPrefs>
   onAiPanelPrefsChanged(handler: (prefs: AiPanelPrefs) => void): () => void
+  /** dock lifecycle (P1 契约): the shell pushes false when a docked editor
+   *  pops out to a full tab — restore the editor's own panel preference */
+  onDockedState(handler: (docked: boolean) => void): () => void
   /**
    * the user pressed the shell chrome (tab strip) or started dragging the
    * window — no DOM event or blur reaches this view, so the shell relays the

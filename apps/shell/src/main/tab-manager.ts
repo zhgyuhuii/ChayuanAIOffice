@@ -379,13 +379,14 @@ export class TabManager {
         break
       }
       case 'sheets': {
-        view = createSheetsView({ includeAiHandlers: false })
+        // docked = internal AI panel hidden (P1 契约, docs parity)
+        view = createSheetsView({ includeAiHandlers: false, hidePanel: true })
         if (options?.file) queueWorkbookForView(view.webContents, options.file)
         title = options?.file ? basename(options.file) : this.untitled('sheets', 'AI Sheets')
         break
       }
       case 'slides': {
-        view = createSlidesView(options?.file)
+        view = createSlidesView(options?.file, { hidePanel: true })
         title = options?.file ? basename(options.file) : this.untitled('slides', 'AI Slides')
         break
       }
@@ -396,12 +397,12 @@ export class TabManager {
         break
       }
       case 'markdown': {
-        view = createMarkdownView(options?.file)
+        view = createMarkdownView(options?.file, { hidePanel: true })
         title = options?.file ? basename(options.file) : this.untitled('markdown', 'AI Markdown')
         break
       }
       case 'html': {
-        view = createHtmlView(options?.file)
+        view = createHtmlView(options?.file, { hidePanel: true })
         title = options?.file ? basename(options.file) : this.untitled('html', 'AI HTML')
         break
       }
@@ -615,6 +616,10 @@ export class TabManager {
     if (target.docked) {
       target.docked = false
       if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
+      // the editor rendered without its internal AI panel while docked (the
+      // Home conversation was the chat surface) — tell it it's a full tab
+      // now so it restores its own panel preference
+      target.view?.webContents.send?.('app:docked-state', false)
     }
     // while a shell modal owns the window, newly activated views stay hidden
     // too — the dialog must remain the topmost interactive surface; docked

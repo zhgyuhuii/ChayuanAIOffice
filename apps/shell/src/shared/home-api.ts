@@ -318,6 +318,10 @@ export interface HomeChatSession {
   modelId?: AiModelSelection | undefined
   /** composer mode: 'plan' constrains the agent to advice-only replies */
   mode?: 'default' | 'plan' | undefined
+  /** active assistant persona picked in the composer's assistant picker:
+   *  identity for re-hydration (label/icon for the chip) — the persona text
+   *  itself is re-loaded from the assistant library by id on session switch */
+  assistant?: { id: string; icon: string; label: string } | undefined
   /** docked-editor tab group this conversation works with (P1 契约):
    *  remembered across session switches — the views live in the main process,
    *  only the arrangement is persisted here and re-docked on switch-back */

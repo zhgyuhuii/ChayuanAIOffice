@@ -918,7 +918,10 @@ function grantAndTrack(wc: WebContents, openPath?: string | null): void {
   })
 }
 
-export function createMarkdownView(openPath?: string | null): WebContentsView {
+export function createMarkdownView(
+  openPath?: string | null,
+  opts?: { hidePanel?: boolean },
+): WebContentsView {
   registerMarkdownIpc()
   const view = new WebContentsView({
     webPreferences: {
@@ -929,8 +932,14 @@ export function createMarkdownView(openPath?: string | null): WebContentsView {
     },
   })
   grantAndTrack(view.webContents, openPath)
-  if (runtime.rendererUrl) void view.webContents.loadURL(runtime.rendererUrl)
-  else if (runtime.rendererFile) void view.webContents.loadFile(runtime.rendererFile)
+  // panel=0: a docked editor boots with its own AI panel hidden (P1 契约) —
+  // the Home conversation is the chat surface for docked editors
+  const query = opts?.hidePanel ? { panel: '0' } : undefined
+  if (runtime.rendererUrl) {
+    const devUrl = new URL(runtime.rendererUrl)
+    if (opts?.hidePanel) devUrl.searchParams.set('panel', '0')
+    void view.webContents.loadURL(devUrl.toString())
+  } else if (runtime.rendererFile) void view.webContents.loadFile(runtime.rendererFile, { query })
   return view
 }
 

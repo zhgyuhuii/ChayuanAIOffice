@@ -19,6 +19,9 @@ export interface HomeChatSendOptions {
   model?: AiModelSelection | undefined
   /** plan mode: advice-only turn (plan suffix appended to the system prompt) */
   mode?: 'default' | 'plan' | undefined
+  /** active assistant persona: first-turn task template ({{input}} =
+   *  the user's text); the persona itself is set via setAssistantPersona */
+  assistant?: { template?: string } | undefined
 }
 
 interface RunWatch {
@@ -38,6 +41,9 @@ export class HomeChatController {
   private readonly sessionModels = new Map<string, () => AiModelSelection>()
   /** per-session composer mode; the plan suffix is appended while 'plan' */
   private readonly sessionModes = new Map<string, 'default' | 'plan'>()
+  /** per-session assistant persona (assistant picker); appended to the
+   *  system prompt on every run while set — survives session switches */
+  private readonly sessionPersonas = new Map<string, string>()
 
   constructor(
     private readonly bridge: HomeAgentBridge,
@@ -105,10 +111,19 @@ export class HomeChatController {
         },
       },
       this.texts,
-      // evaluated per run by AgentLoop, so a mid-session mode switch applies
-      // to the very next turn without recreating the agent
+      // evaluated per run by AgentLoop, so a mid-session mode/persona switch
+      // applies to the very next turn without recreating the agent
       () => {
         const parts = [this.systemSuffix?.() ?? '']
+        const persona = this.sessionPersonas.get(sessionId)
+        if (persona) {
+          parts.push(
+            '## Active assistant persona\n' +
+              'The user picked an assistant for this conversation. Stay in this role in every reply, ' +
+              'while keeping all your tools and document capabilities available.\n\n' +
+              persona,
+          )
+        }
         if (this.sessionModes.get(sessionId) === 'plan') parts.push(PLAN_MODE_SUFFIX)
         return parts.filter(Boolean).join('\n')
       },
@@ -121,6 +136,12 @@ export class HomeChatController {
     )
     this.agents.set(sessionId, agent)
     return agent
+  }
+
+  /** assistant persona for the session's system prompt (null = cleared) */
+  setAssistantPersona(sessionId: string, persona: string | null): void {
+    if (persona === null) this.sessionPersonas.delete(sessionId)
+    else this.sessionPersonas.set(sessionId, persona)
   }
 
   isBusy(sessionId: string): boolean {
@@ -155,6 +176,16 @@ export class HomeChatController {
     }))
     if (options?.model) this.sessionModels.set(sessionId, () => options.model!)
     if (options?.mode) this.sessionModes.set(sessionId, options.mode)
+    // the assistant's task template frames only the conversation's first
+    // message ({{input}} = what the user typed); later turns are free chat
+    // under the persona
+    let instruction = text
+    if (options?.assistant?.template && history.length === 0) {
+      const template = options.assistant.template
+      instruction = template.includes('{{input}}')
+        ? template.replaceAll('{{input}}', text)
+        : `${template}\n\n${text}`
+    }
     let model: ReturnType<HomeAgentBridge['getCurrentModel']>
     try {
       model = options?.model ?? this.bridge.getCurrentModel()
@@ -172,7 +203,7 @@ export class HomeChatController {
       })
       return
     }
-    void this.agentFor(sessionId, history).send(text, attachments)
+    void this.agentFor(sessionId, history).send(instruction, attachments)
   }
 
   stop(sessionId: string): void {

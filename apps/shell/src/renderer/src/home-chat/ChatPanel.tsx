@@ -12,6 +12,12 @@ import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
 import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
 import { groupSessionsByTree, groupNameOf } from './tree-groups'
+import { AssistantChip, AssistantPicker } from './AssistantPicker'
+import {
+  findById,
+  getDomainAssistants,
+  type DocAssistant,
+} from '../../../../../docs/src/renderer/ai/assistants'
 import { createHomeChatBridge, refreshHomeModelCache } from './bridge'
 import type {
   HomeChatAttachment,
@@ -443,6 +449,7 @@ export function ChatPanel({
   // stored values are adopted on switch and every change is written back
   const [draftMode, setDraftMode] = useState<'default' | 'plan'>('default')
   const [draftModel, setDraftModel] = useState<AiModelSelection | null>(null)
+  const [draftAssistant, setDraftAssistant] = useState<HomeChatSession['assistant'] | null>(null)
   const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
   const [modeOpen, setModeOpen] = useState(false)
   const modeWrapRef = useRef<HTMLSpanElement>(null)
@@ -455,7 +462,70 @@ export function ChatPanel({
     const session = activeId ? storeRef.current?.sessions?.find((s) => s.id === activeId) : null
     setDraftMode(session?.mode ?? 'default')
     setDraftModel(session?.modelId ?? null)
+    setDraftAssistant(session?.assistant ?? null)
   }, [activeId])
+
+  // ── assistant persona (session-scoped, from the 4.6k library) ──
+  // full metadata (persona text + task template) per session; picked
+  // assistants carry it immediately, restored sessions re-load it by id
+  const personasRef = useRef<Map<string, { persona: string; template: string }>>(new Map())
+  /** persona picked while sessionless (landing): carried into the session
+   *  the next send creates */
+  const draftPersonaRef = useRef<{ persona: string; template: string } | null>(null)
+  const applyAssistant = (a: DocAssistant | null) => {
+    setDraftAssistant(a ? { id: a.id, icon: a.icon, label: a.label } : null)
+    const sid = storeRef.current?.activeId
+    if (!sid) {
+      draftPersonaRef.current = a
+        ? { persona: a.systemPrompt, template: a.userPromptTemplate }
+        : null
+      return
+    }
+    storeRef.current?.updateSession(sid, (s) => {
+      if (!a) {
+        const { assistant: _drop, ...rest } = s
+        return rest
+      }
+      return { ...s, assistant: { id: a.id, icon: a.icon, label: a.label } }
+    })
+    if (a) {
+      personasRef.current.set(sid, { persona: a.systemPrompt, template: a.userPromptTemplate })
+      controller.setAssistantPersona(sid, a.systemPrompt)
+    } else {
+      personasRef.current.delete(sid)
+      controller.setAssistantPersona(sid, null)
+    }
+  }
+  // re-hydrate a restored session's persona: the pack (one small chunk per
+  // domain) loads on demand; until it arrives the chip shows from the
+  // persisted identity, and sends fall back to no persona
+  const draftAssistantId = draftAssistant?.id
+  useEffect(() => {
+    if (!activeId || !draftAssistantId) return
+    if (personasRef.current.has(activeId)) return
+    let alive = true
+    const domain = draftAssistantId.split('.')[0] ?? ''
+    void getDomainAssistants(domain)
+      .then((list) => {
+        if (!alive) return
+        const full = findById(list, draftAssistantId)
+        if (full) {
+          personasRef.current.set(activeId, {
+            persona: full.systemPrompt,
+            template: full.userPromptTemplate,
+          })
+          controller.setAssistantPersona(activeId, full.systemPrompt)
+        } else {
+          // the assistant vanished from the library (packs regenerated):
+          // drop the stale persona rather than silently running without it
+          controller.setAssistantPersona(activeId, null)
+        }
+      })
+      .catch(() => undefined)
+    return () => {
+      alive = false
+    }
+  }, [activeId, draftAssistantId, controller])
 
   const applyMode = (mode: 'default' | 'plan') => {
     setModeOpen(false)
@@ -559,22 +629,33 @@ export function ChatPanel({
     if (!session) {
       session = store.createSession(activeScope)
       // a fresh session inherits the composer's pending choices
-      if (draftModel || draftMode !== 'default') {
+      if (draftModel || draftMode !== 'default' || draftAssistant) {
         const modelId = draftModel
         const mode = draftMode
+        const assistant = draftAssistant
         store.updateSession(session.id, (s) => ({
           ...s,
           ...(modelId ? { modelId } : {}),
           ...(mode === 'plan' ? { mode: 'plan' as const } : {}),
+          ...(assistant ? { assistant } : {}),
         }))
+      }
+      if (draftAssistant && draftPersonaRef.current) {
+        // the picked persona carries into the new session immediately
+        personasRef.current.set(session.id, draftPersonaRef.current)
+        controller.setAssistantPersona(session.id, draftPersonaRef.current.persona)
       }
     }
     const atts = attachments
     setInput('')
     setAttachments([])
+    const personaInfo = personasRef.current.get(session.id)
     controller.send(session.id, session.messages, text, atts, {
       ...(draftModel ? { model: draftModel } : {}),
       ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
+      ...(draftAssistant && personaInfo?.template
+        ? { assistant: { template: personaInfo.template } }
+        : {}),
     })
   }
 
@@ -678,6 +759,15 @@ export function ChatPanel({
           </button>
         </div>
       )}
+      {draftAssistant && (
+        <div className="chat-assistant-active">
+          <AssistantChip
+            icon={draftAssistant.icon}
+            label={draftAssistant.label}
+            onClear={() => applyAssistant(null)}
+          />
+        </div>
+      )}
       <AiComposer
         value={input}
         busy={busy}
@@ -769,6 +859,11 @@ export function ChatPanel({
                 </div>
               )}
             </span>
+            <AssistantPicker
+              activeId={draftAssistant?.id ?? null}
+              onPick={applyAssistant}
+              onClear={() => applyAssistant(null)}
+            />
           </>
         }
       />

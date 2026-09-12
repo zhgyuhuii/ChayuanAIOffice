@@ -4744,7 +4744,10 @@ function armVibrancy(view: WebContentsView): void {
 }
 
 /** Tab version of createSlidesWindow: same runtime/IPC, hosted in the shell's WebContentsView */
-export function createSlidesView(openPath?: string | null): WebContentsView {
+export function createSlidesView(
+  openPath?: string | null,
+  opts?: { hidePanel?: boolean },
+): WebContentsView {
   const view = new WebContentsView({
     webPreferences: {
       preload: runtime.preloadPath,
@@ -4759,14 +4762,18 @@ export function createSlidesView(openPath?: string | null): WebContentsView {
   // The renderer calls consumePendingOpen on mount; use that to avoid a did-finish-load timing race
   if (openPath && existsSync(openPath)) pendingByWc.set(view.webContents.id, openPath)
   // mode=tab: the shell's tab strip owns the traffic lights / caption buttons,
-  // so the ribbon must not reserve space for them
+  // so the ribbon must not reserve space for them.
+  // panel=0: a docked editor boots with its own AI panel hidden (P1 契约) —
+  // the Home conversation is the chat surface for docked editors.
+  const query: Record<string, string> = { mode: 'tab' }
+  if (opts?.hidePanel) query.panel = '0'
   if (runtime.rendererDevUrl) {
     // append via URL so a dev URL that already carries query params stays valid
     const devUrl = new URL(runtime.rendererDevUrl)
-    devUrl.searchParams.set('mode', 'tab')
+    for (const [key, value] of Object.entries(query)) devUrl.searchParams.set(key, value)
     void view.webContents.loadURL(devUrl.toString())
   } else if (runtime.rendererFilePath)
-    void view.webContents.loadFile(runtime.rendererFilePath, { query: { mode: 'tab' } })
+    void view.webContents.loadFile(runtime.rendererFilePath, { query })
   return view
 }
 
