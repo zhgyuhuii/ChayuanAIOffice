@@ -112,6 +112,27 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
     },
   })
 
+  // P2-6 圈选标注:选区变化(防抖)经 context 事件上报首页,中栏显示
+  // 「针对所选」提示;空选区清提示。选区监听挂在本服务的 loop 依赖的
+  // editor 实例上,与面板互不干扰。
+  let selectionTimer: ReturnType<typeof setTimeout> | undefined
+  const onSelectionUpdate = (): void => {
+    clearTimeout(selectionTimer)
+    selectionTimer = setTimeout(() => {
+      const editor = deps.getEditor()
+      if (!editor) return
+      const { from, to, empty } = editor.state.selection
+      if (empty) return
+      const text = editor.state.doc.textBetween(from, to, '\n')
+      if (text.trim())
+        emit({
+          type: 'context',
+          context: { text: text.slice(0, RELAY_PREVIEW_LIMIT), kind: 'selection' },
+        })
+    }, 300)
+  }
+  deps.getEditor()?.on('selectionUpdate', onSelectionUpdate)
+
   const handle = (command: RelayCommand): void => {
     switch (command.type) {
       case 'seed': {
@@ -156,6 +177,8 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   return {
     dispose() {
       offCommand?.()
+      clearTimeout(selectionTimer)
+      deps.getEditor()?.off('selectionUpdate', onSelectionUpdate)
       loop.cancel()
     },
   }

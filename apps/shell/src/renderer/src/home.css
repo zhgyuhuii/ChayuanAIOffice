@@ -229,6 +229,47 @@ body.dock-resizing {
   color: var(--text);
 }
 
+/* 圈选标注提示(P2-6):激活 dock 报来的选区,发送时随消息附给文档 loop */
+.chat-selection-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--accent);
+  border-radius: 7px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.chat-selection-label {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.chat-selection-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-selection-clear {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--text-muted, inherit);
+  cursor: pointer;
+}
+
+.chat-selection-clear:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+}
+
 /* the editor view itself is a main-process WebContentsView painting over
    this rect; the element only reserves/measures the geometry */
 .dock-area {

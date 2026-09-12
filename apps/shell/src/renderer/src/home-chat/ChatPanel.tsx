@@ -228,6 +228,8 @@ export function ChatPanel({
         trySend(sessionId: string, text: string): boolean
         stop(sessionId: string): void
         busySessions: Set<string>
+        selectionHint?: string | undefined
+        consumeSelection(): void
       }
     | undefined
   projectId: string | null
@@ -407,6 +409,8 @@ export function ChatPanel({
   const relayBusy = !!(active && dockRelay?.busySessions.has(active.id))
   const busy = busyState || relayBusy
   const hasMessages = (active?.messages.length ?? 0) > 0
+  /** P2-6 圈选标注:当前会话激活 dock 报来的选区 */
+  const selectionHint = active && dockRelay?.selectionHint ? dockRelay.selectionHint : null
 
   // the tree opened a session (task or file chat): sync busy and focus
   const openSignalNonce = openSignal?.nonce ?? 0
@@ -442,6 +446,7 @@ export function ChatPanel({
     // P2-3 所见即所驱: an active dock takes the message (its loop replies
     // via the relay event stream; the assistant mirror arrives by event)
     if (store.active && text && dockRelay?.trySend(store.active.id, text)) {
+      dockRelay.consumeSelection()
       const relaySession = store.active
       store.updateSession(relaySession.id, (s) => ({
         ...s,
@@ -562,6 +567,19 @@ export function ChatPanel({
 
   const renderComposer = () => (
     <div className="chat-composer">
+      {selectionHint && (
+        <div className="chat-selection-hint">
+          <span className="chat-selection-label">{t('chatSelectionContext')}</span>
+          <span className="chat-selection-text">{selectionHint.slice(0, 80)}</span>
+          <button
+            className="chat-selection-clear"
+            aria-label={t('cancel')}
+            onClick={() => dockRelay?.consumeSelection()}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <AiComposer
         value={input}
         busy={busy}

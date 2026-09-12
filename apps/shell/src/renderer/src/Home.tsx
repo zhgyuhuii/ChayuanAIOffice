@@ -1487,6 +1487,8 @@ export function Home() {
   chatStoreRef.current = chatStore
   const relayLink = useRef(new RelaySessionLink())
   const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
+  /** P2-6 圈选标注:激活 dock 报来的选区(中栏「针对所选」提示) */
+  const [selectionHint, setSelectionHint] = useState<string | null>(null)
   const handleDockTabs = useCallback((tabs: DockTabSummary[]) => {
     const store = chatStoreRef.current
     const session = store.active
@@ -1539,9 +1541,15 @@ export function Home() {
         })
         return
       }
+      if (event.type === 'context') {
+        // 圈选标注:仅当前激活会话显示提示(事件本就只来自其绑定的 dock)
+        if (relayLink.current.activeDockOf(sessionId) === dockTabId) {
+          setSelectionHint(event.context.text)
+        }
+        return
+      }
       if (
         event.type === 'turn-finished' ||
-        event.type === 'context' ||
         event.type === 'confirm-request' ||
         event.type === 'snapshot'
       )
@@ -1593,7 +1601,8 @@ export function Home() {
       trySend: (sessionId: string, text: string): boolean => {
         const dockTabId = relayLink.current.activeDockOf(sessionId)
         if (!dockTabId) return false
-        dock.relayCommand(dockTabId, relaySendCommand(text))
+        const full = selectionHint ? `${text}\n\n[针对文档所选片段]\n${selectionHint}` : text
+        dock.relayCommand(dockTabId, relaySendCommand(full))
         return true
       },
       stop: (sessionId: string): void => {
@@ -1601,8 +1610,10 @@ export function Home() {
         if (dockTabId) dock.relayCommand(dockTabId, relayStopCommand())
       },
       busySessions: relayBusy,
+      selectionHint: selectionHint ?? undefined,
+      consumeSelection: () => setSelectionHint(null),
     }
-  }, [relayBusy])
+  }, [relayBusy, selectionHint])
 
   const openChatSession = useCallback((sessionId: string) => {
     setChatOpenSignal((prev) => ({ sessionId, nonce: (prev?.nonce ?? 0) + 1 }))
