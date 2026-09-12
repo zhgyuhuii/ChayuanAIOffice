@@ -105,6 +105,7 @@ describe('parseCsv', () => {
     expect(sniffDelimiter('a,"; ""; ""; ""; """,d')).toBe(',')
     // adapted: upstream 5a60243's expectation kept the doubled quotes literally, but its own
     // parseCsv (RFC4180) unescapes each "" pair to a single quote - assert that.
+    // (upstream 0dfb10e later repaired the same expectation to this value.)
     expect(parseCsv('a,"; ""; ""; ""; """,d')).toEqual([['a', '; "; "; "; "', 'd']])
   })
 
