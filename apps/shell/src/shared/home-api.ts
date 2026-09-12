@@ -268,6 +268,19 @@ export interface HomeChatMessage {
   /** model/IPC failure — the text holds the error description */
   error?: boolean | undefined
   ts: number
+  /** P2 中继轮次: this assistant message is the mirror of one relayed turn
+   *  into a docked editor's loop (tool activity rides along) */
+  relayTurnId?: string | undefined
+  relayTools?:
+    | Array<{
+        callId: string
+        name: string
+        summary?: string
+        running?: boolean
+        ok?: boolean
+        outputPreview?: string
+      }>
+    | undefined
 }
 
 /** where a home-chat session lives in the left tree (P2): a project's own

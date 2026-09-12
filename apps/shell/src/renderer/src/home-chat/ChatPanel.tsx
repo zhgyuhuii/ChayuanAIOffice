@@ -7,7 +7,7 @@ import { useI18n } from '../locale'
 import type { StringKey } from '../locale'
 import { HomeChatController } from './controller'
 import type { HomeChatControllerTexts } from './controller'
-import { useHomeChatStore } from './store'
+import { deriveTitle, useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
 import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
@@ -210,6 +210,7 @@ function ChatMessageView({
 
 export function ChatPanel({
   store,
+  dockRelay,
   projectId,
   accountName,
   onOpenSettings,
@@ -220,6 +221,15 @@ export function ChatPanel({
 }: {
   /** owned by Home so the left tree can read/drive the same sessions */
   store: ReturnType<typeof useHomeChatStore>
+  /** P2-3 中继路由: present when this window has docked editors; trySend
+   *  returns true when the message was relayed to the active dock's loop */
+  dockRelay?:
+    | {
+        trySend(sessionId: string, text: string): boolean
+        stop(sessionId: string): void
+        busySessions: Set<string>
+      }
+    | undefined
   projectId: string | null
   accountName: string
   onOpenSettings: () => void
@@ -241,7 +251,7 @@ export function ChatPanel({
 
   const activeIdRef = useRef<string | null>(null)
   activeIdRef.current = store.activeId
-  const [busy, setBusy] = useState(false)
+  const [busyState, setBusy] = useState(false)
   const projectIdRef = useRef(projectId)
   projectIdRef.current = projectId
 
@@ -394,6 +404,8 @@ export function ChatPanel({
   }, [menuOpen])
 
   const active = store.active
+  const relayBusy = !!(active && dockRelay?.busySessions.has(active.id))
+  const busy = busyState || relayBusy
   const hasMessages = (active?.messages.length ?? 0) > 0
 
   // the tree opened a session (task or file chat): sync busy and focus
@@ -427,6 +439,19 @@ export function ChatPanel({
   const send = () => {
     const text = input.trim()
     if (!text && attachments.length === 0) return
+    // P2-3 所见即所驱: an active dock takes the message (its loop replies
+    // via the relay event stream; the assistant mirror arrives by event)
+    if (store.active && text && dockRelay?.trySend(store.active.id, text)) {
+      const relaySession = store.active
+      store.updateSession(relaySession.id, (s) => ({
+        ...s,
+        title: s.title || deriveTitle(text),
+        messages: [...s.messages, { id: crypto.randomUUID(), role: 'user', text, ts: Date.now() }],
+      }))
+      setInput('')
+      setAttachments([])
+      return
+    }
     let session = store.active
     if (!session) {
       session = store.createSession(activeScope)
@@ -451,7 +476,9 @@ export function ChatPanel({
   }
 
   const stop = () => {
-    if (active) controller.stop(active.id)
+    if (!active) return
+    if (relayBusy) dockRelay?.stop(active.id)
+    else controller.stop(active.id)
   }
 
   const pickAttachments = async () => {

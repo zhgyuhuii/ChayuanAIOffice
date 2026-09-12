@@ -37,6 +37,13 @@ import {
 } from './home-layout'
 import { DockPane } from './DockPane'
 import { restoreDockTabs, snapshotFromTabs } from './dock-session'
+import {
+  applyRelayEvent,
+  RelaySessionLink,
+  relaySeedCommand,
+  relaySendCommand,
+  relayStopCommand,
+} from './home-chat/relay-client'
 import type { DockTabSummary } from '../../shared/dock-api'
 
 declare global {
@@ -1478,15 +1485,29 @@ export function Home() {
   //    right-pane editor tabs belong to it; switching back re-docks them ──
   const chatStoreRef = useRef(chatStore)
   chatStoreRef.current = chatStore
+  const relayLink = useRef(new RelaySessionLink())
+  const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
   const handleDockTabs = useCallback((tabs: DockTabSummary[]) => {
     const store = chatStoreRef.current
     const session = store.active
     if (!session) return
     if (tabs.length === 0) {
       if (session.dock) store.updateSession(session.id, (s) => ({ ...s, dock: undefined }))
+      relayLink.current.forgetSession(session.id)
       return
     }
     store.updateSession(session.id, (s) => ({ ...s, dock: snapshotFromTabs(tabs) }))
+    // 新绑定的 dock:种子化(Q4'' 铁律入口)——主线转录一次种进文档 loop
+    const added = relayLink.current.setSessionDocks(
+      session.id,
+      tabs.map((t) => t.id),
+    )
+    for (const dockTabId of added) {
+      void window.chatOfficeDock?.relayCommand(
+        dockTabId,
+        relaySeedCommand(store.sessions?.find((x) => x.id === session.id)?.messages ?? []),
+      )
+    }
   }, [])
   const dockRestoreSessionId = chatStore.activeId
   useEffect(() => {
@@ -1497,6 +1518,55 @@ export function Home() {
     // dock.open dedupes by file, so already-docked tabs are reused, not reopened
     void restoreDockTabs(dock, session.dock).catch(() => undefined)
   }, [dockRestoreSessionId])
+
+  // P2-3 中继事件回流:RelayEvent 镜像为所属会话的 assistant 消息(工具卡随行)
+  useEffect(() => {
+    const dock = window.chatOfficeDock
+    if (!dock) return
+    return dock.onRelayEvent((dockTabId, event) => {
+      const sessionId = relayLink.current.sessionOfDock(dockTabId)
+      if (!sessionId) return
+      if (event.type === 'busy') {
+        setRelayBusy((prev) => {
+          const next = new Set(prev)
+          if (event.busy) next.add(sessionId)
+          else next.delete(sessionId)
+          return next
+        })
+        return
+      }
+      if (
+        event.type === 'turn-finished' ||
+        event.type === 'context' ||
+        event.type === 'confirm-request' ||
+        event.type === 'snapshot'
+      )
+        return
+      chatStoreRef.current.updateSession(sessionId, (s) => ({
+        ...s,
+        messages: applyRelayEvent(s.messages, event, Date.now()),
+      }))
+    })
+  }, [])
+
+  // P2-3 所见即所驱:有激活 dock 的会话,消息经中继转发给文档 loop
+  const dockRelay = useMemo(() => {
+    const dock = window.chatOfficeDock
+    if (!dock) return undefined
+    return {
+      trySend: (sessionId: string, text: string): boolean => {
+        const dockTabId = relayLink.current.activeDockOf(sessionId)
+        if (!dockTabId) return false
+        dock.relayCommand(dockTabId, relaySendCommand(text))
+        return true
+      },
+      stop: (sessionId: string): void => {
+        const dockTabId = relayLink.current.activeDockOf(sessionId)
+        if (dockTabId) dock.relayCommand(dockTabId, relayStopCommand())
+      },
+      busySessions: relayBusy,
+    }
+  }, [relayBusy])
 
   const openChatSession = useCallback((sessionId: string) => {
     setChatOpenSignal((prev) => ({ sessionId, nonce: (prev?.nonce ?? 0) + 1 }))
@@ -2887,6 +2957,7 @@ export function Home() {
         <>
           <ChatPanel
             store={chatStore}
+            dockRelay={dockRelay}
             projectId={selectedProjectId}
             accountName={accountName}
             onOpenSettings={() => handleSettingsOpenChange(true)}
