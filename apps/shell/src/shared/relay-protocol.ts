@@ -53,10 +53,26 @@ export interface RelaySnapshot {
 
 /** 编辑器 → 首页的反向上报(选区圈选标注等) */
 export interface RelayContextReport {
-  /** 选中文本(截断由发送方负责,上限 2000) */
+  /** 选中文本(截断由发送方负责,上限 2000);空串=选区收起,首页清提示 */
   text: string
   /** 编辑器自述的上下文种类(自由标记,首页只透传展示) */
   kind?: string
+}
+
+/** dock 切换工具(P2-6 残项):文档 loop 请求首页激活/停靠另一份文档 */
+export interface RelaySwitchRequest {
+  /** 目标文件绝对路径(sync-docs 清单里给出的 filePath) */
+  filePath?: string
+  /** 目标文档名(sync-docs 清单里的 title;无 filePath 时的匹配键) */
+  title?: string
+}
+
+/** Home → 编辑器的停靠文档清单同步(模型跨文档操作的眼与手) */
+export interface RelayDockDocInfo {
+  title: string
+  filePath?: string
+  kind: string
+  active: boolean
 }
 
 export type RelayEvent =
@@ -66,6 +82,7 @@ export type RelayEvent =
   | { type: 'confirm-request'; turnId: string; request: RelayConfirmRequest }
   | { type: 'snapshot'; turnId: string; snapshot: RelaySnapshot }
   | { type: 'context'; context: RelayContextReport }
+  | { type: 'switch-request'; turnId: string; switch: RelaySwitchRequest }
   | { type: 'error'; turnId: string | null; message: string }
   | { type: 'busy'; busy: boolean }
   | { type: 'turn-finished'; turnId: string }
@@ -77,6 +94,8 @@ export type RelayCommand =
   | { type: 'seed'; messages: RelaySeedMessage[] }
   /** 用户对确认请求的决议(批准/驳回+反馈) */
   | { type: 'confirm'; confirmId: string; approved: boolean; feedback?: string }
+  /** 停靠文档清单同步:tab 开/关/切换/改名时推送,供跨文档工具参考 */
+  | { type: 'sync-docs'; docs: RelayDockDocInfo[] }
 
 export const RELAY_PREVIEW_LIMIT = 2000
 
@@ -112,6 +131,15 @@ export function isRelayEvent(value: unknown): value is RelayEvent {
       )
     case 'context':
       return typeof (v.context as RelayContextReport | undefined)?.text === 'string'
+    case 'switch-request':
+      return (
+        typeof v.turnId === 'string' &&
+        !!v.switch &&
+        (typeof (v.switch as RelaySwitchRequest).filePath === 'undefined' ||
+          typeof (v.switch as RelaySwitchRequest).filePath === 'string') &&
+        (typeof (v.switch as RelaySwitchRequest).title === 'undefined' ||
+          typeof (v.switch as RelaySwitchRequest).title === 'string')
+      )
     case 'error':
       return typeof v.message === 'string'
     case 'busy':
@@ -141,6 +169,17 @@ export function isRelayCommand(value: unknown): value is RelayCommand {
       )
     case 'confirm':
       return typeof v.confirmId === 'string' && typeof v.approved === 'boolean'
+    case 'sync-docs':
+      return (
+        Array.isArray(v.docs) &&
+        v.docs.every(
+          (d) =>
+            !!d &&
+            typeof (d as RelayDockDocInfo).title === 'string' &&
+            typeof (d as RelayDockDocInfo).kind === 'string' &&
+            typeof (d as RelayDockDocInfo).active === 'boolean',
+        )
+      )
     default:
       return false
   }

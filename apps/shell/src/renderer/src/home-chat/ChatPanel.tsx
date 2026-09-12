@@ -144,14 +144,79 @@ function ChatCard({
   )
 }
 
+/** P2-7 确认门卡片:挂起中的大纲/计划请用户裁决;决议后原地留痕 */
+function RelayConfirmCard({
+  m,
+  onConfirm,
+}: {
+  m: HomeChatMessage
+  onConfirm?: (m: HomeChatMessage, approved: boolean, feedback?: string) => void
+}): ReactElement | null {
+  const { t } = useI18n()
+  const c = m.relayConfirm
+  const [feedback, setFeedback] = useState('')
+  if (!c) return null
+  const titleKey =
+    c.kind === 'outline'
+      ? 'chatConfirmOutline'
+      : c.kind === 'plan'
+        ? 'chatConfirmPlan'
+        : 'chatConfirmOps'
+  const decide = (approved: boolean) => {
+    onConfirm?.(m, approved, feedback.trim() || undefined)
+    setFeedback('')
+  }
+  return (
+    <div className={`chat-confirm-card ${c.state}`}>
+      <div className="chat-confirm-title">{t(titleKey)}</div>
+      <div
+        className="chat-confirm-payload"
+        // payload is model-authored markdown; mini-markdown escapes raw HTML
+        dangerouslySetInnerHTML={{ __html: markdownToHtml(c.payload) }}
+      />
+      {c.state === 'pending' ? (
+        <>
+          <input
+            className="chat-confirm-feedback"
+            placeholder={t('chatConfirmFeedback')}
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            onKeyDown={(e) => e.stopPropagation()}
+          />
+          <div className="chat-confirm-actions">
+            <button className="btn btn-secondary" onClick={() => decide(false)}>
+              {t('chatConfirmReject')}
+            </button>
+            <button className="btn chat-confirm-approve" onClick={() => decide(true)}>
+              {t('chatConfirmApprove')}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className={`chat-confirm-result ${c.state}`}>
+          {c.state === 'approved'
+            ? t('chatConfirmApproved')
+            : c.state === 'rejected'
+              ? t('chatConfirmRejected')
+              : t('chatConfirmExpired')}
+          {c.feedback ? <span className="chat-confirm-feedback echo">{c.feedback}</span> : null}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function ChatMessageView({
   m,
   typing,
   onOpenSettings,
+  onRelayConfirm,
 }: {
   m: HomeChatMessage
   typing: boolean
   onOpenSettings: () => void
+  /** P2-7 确认门:批准/驳回回调(无 dockRelay 的宿主不传) */
+  onRelayConfirm?: (m: HomeChatMessage, approved: boolean, feedback?: string) => void
 }): ReactElement {
   const { t, dateLocale } = useI18n()
   if (m.role === 'user') {
@@ -184,6 +249,23 @@ function ChatMessageView({
         </svg>
       </span>
       <div className="chat-bubble assistant">
+        {m.relayTools && m.relayTools.length > 0 && (
+          <div className="chat-relay-tools" role="list" aria-label={t('chatRelayTools')}>
+            {m.relayTools.map((tool) => (
+              <span
+                key={tool.callId}
+                className={`chat-tool-chip${tool.running ? ' running' : ''}${
+                  tool.ok === false ? ' fail' : ''
+                }`}
+                role="listitem"
+                title={tool.outputPreview || tool.name}
+              >
+                <span className="chat-tool-dot" aria-hidden="true" />
+                <span className="chat-tool-name">{tool.name.replace(/_/g, ' ')}</span>
+              </span>
+            ))}
+          </div>
+        )}
         {typing && !m.text ? (
           <span className="chat-typing" role="status" aria-label={t('chatThinking')}>
             <span />
@@ -201,6 +283,7 @@ function ChatMessageView({
           />
         ) : null}
         {m.error && <div className="chat-err">{m.text}</div>}
+        {m.relayConfirm && <RelayConfirmCard m={m} onConfirm={onRelayConfirm} />}
         {m.card && <ChatCard card={m.card} onOpenSettings={onOpenSettings} />}
         <div className="chat-msg-time">{chatTime(m.ts, dateLocale)}</div>
       </div>
@@ -222,11 +305,14 @@ export function ChatPanel({
   /** owned by Home so the left tree can read/drive the same sessions */
   store: ReturnType<typeof useHomeChatStore>
   /** P2-3 中继路由: present when this window has docked editors; trySend
-   *  returns true when the message was relayed to the active dock's loop */
+   *  returns true when the message was relayed (or queued) to the active dock */
   dockRelay?:
     | {
         trySend(sessionId: string, text: string): boolean
         stop(sessionId: string): void
+        /** true when the session has an active dock: busy sends become queued */
+        canQueue(sessionId: string): boolean
+        confirm(sessionId: string, confirmId: string, approved: boolean, feedback?: string): void
         busySessions: Set<string>
         selectionHint?: string | undefined
         consumeSelection(): void
@@ -408,9 +494,21 @@ export function ChatPanel({
   const active = store.active
   const relayBusy = !!(active && dockRelay?.busySessions.has(active.id))
   const busy = busyState || relayBusy
+  /** 追加排队:停靠会话忙时 Enter 仍可发送(入队,忙→闲逐条投出) */
+  const relayQueueable = !!(active && dockRelay?.canQueue(active.id))
   const hasMessages = (active?.messages.length ?? 0) > 0
   /** P2-6 圈选标注:当前会话激活 dock 报来的选区 */
   const selectionHint = active && dockRelay?.selectionHint ? dockRelay.selectionHint : null
+
+  /** P2-7 确认门:决议经 dockRelay 发给文档 loop,卡片在 store 里原地留痕 */
+  const handleRelayConfirm = useCallback(
+    (m: HomeChatMessage, approved: boolean, feedback?: string) => {
+      const sid = storeRef.current?.activeId
+      if (!sid || !m.relayConfirm) return
+      dockRelay?.confirm(sid, m.relayConfirm.confirmId, approved, feedback)
+    },
+    [dockRelay],
+  )
 
   // the tree opened a session (task or file chat): sync busy and focus
   const openSignalNonce = openSignal?.nonce ?? 0
@@ -600,7 +698,7 @@ export function ChatPanel({
         placeholder={t('chatPlaceholder')}
         sendLabel={t('chatSend')}
         stopLabel={t('chatStop')}
-        canSend={(input.trim().length > 0 || attachments.length > 0) && !busy}
+        canSend={(input.trim().length > 0 || attachments.length > 0) && (!busy || relayQueueable)}
         iconOnly
         textareaRef={inputRef}
         onChange={setInput}
@@ -894,6 +992,7 @@ export function ChatPanel({
                 m={m}
                 typing={busy && i === active!.messages.length - 1 && m.role === 'assistant'}
                 onOpenSettings={onOpenSettings}
+                onRelayConfirm={handleRelayConfirm}
               />
             ))}
           </div>

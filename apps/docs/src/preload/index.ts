@@ -16,6 +16,15 @@ import type {
 import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 
+/** P2 relay command pump: main → renderer. Buffers commands that race the
+ *  renderer boot (the dock's first seed) until onRelayCommand subscribes. */
+let relayCommandHandler: ((command: unknown) => void) | null = null
+const relayCommandQueue: unknown[] = []
+ipcRenderer.on('docs:relay-command', (_event, command: unknown) => {
+  if (relayCommandHandler) relayCommandHandler(command)
+  else if (relayCommandQueue.length < 50) relayCommandQueue.push(command)
+})
+
 const api: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
   onLanguageChanged: (handler) => {
@@ -227,14 +236,20 @@ const api: DesktopApi = {
     return () => ipcRenderer.removeListener('docs:close-save-request', listener)
   },
   reportCloseSaveResult: (ok: boolean) => ipcRenderer.send('docs:close-save-result', ok === true),
-  // P2 中继服务: docked editor's conversation relay (RelayEvent out / RelayCommand in)
+  // P2 中继服务: docked editor's conversation relay (RelayEvent out / RelayCommand in).
+  // Commands can arrive while the renderer is still booting (Home seeds the
+  // loop the moment the dock tab opens) — the module-level pump below buffers
+  // them until a handler subscribes, then replays, so the first seed is
+  // never lost.
   relaySend: (event: unknown) => ipcRenderer.send('docs:relay-event', event),
   // P2-5 回流薄钩: panel turns report to the shell (project mainline mirror)
   panelTurnCompleted: (turn: unknown) => ipcRenderer.send('docs:panel-turn-completed', turn),
   onRelayCommand: (handler: (command: unknown) => void) => {
-    const listener = (_event: IpcRendererEvent, command: unknown) => handler(command)
-    ipcRenderer.on('docs:relay-command', listener)
-    return () => ipcRenderer.removeListener('docs:relay-command', listener)
+    relayCommandHandler = handler
+    for (const queued of relayCommandQueue.splice(0)) handler(queued)
+    return () => {
+      relayCommandHandler = null
+    }
   },
 }
 

@@ -2707,11 +2707,16 @@ function createShellWindow(): void {
           const wcId = manager.webContentsIdOf(id)
           if (wcId) queueDocsSaveDir(wcId, saveDir)
         }
-        return id !== null
+        return true
       } catch (err) {
         console.error('[shell] markdown dock tab failed:', err)
         return false
       }
+    },
+    // P2-7② 停靠者建的新文档落同一右栏(docs-main createDocument 据此补 dock)
+    isDockedWebContents: (wcId) => {
+      const tabId = manager.tabIdForWebContents(wcId)
+      return !!tabId && !!manager.list().find((t) => t.id === tabId)?.docked
     },
     listTabs: () =>
       manager

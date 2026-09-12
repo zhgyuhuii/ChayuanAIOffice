@@ -7,10 +7,13 @@ import type { AiCommentsAccess, AiHeaderFooterAccess } from './tools'
 import { createDocsSkill } from './docs-skill'
 import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
+import { RelayConfirmGate } from './relay-confirm'
+import { createRelayExtrasSkill } from './relay-extras'
 import {
   isRelayCommand,
   RELAY_PREVIEW_LIMIT,
   type RelayCommand,
+  type RelayDockDocInfo,
   type RelayEvent,
   type RelaySeedMessage,
 } from '../../../../shell/src/shared/relay-protocol'
@@ -52,11 +55,15 @@ const preview = (text: string | undefined): string | undefined =>
 
 export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   let currentTurnId: string | null = null
+  /** P2-7 确认门(propose_outline/plan 挂起处) */
+  const confirmGate = new RelayConfirmGate()
+  /** P2-6 残项:Home 经 sync-docs 推送的停靠文档清单(activate_document 的依据) */
+  let dockedDocs: RelayDockDocInfo[] = []
 
   const loop = new AgentLoop<PmNode>({
     transport: createElectronTransport(() => deps.getSettings().currentModel!),
     systemSuffix: () => deps.systemSuffix,
-    skill: composeSkills('docs+files', '', [
+    skill: composeSkills('docs+files+relay', '', [
       createDocsSkill(
         () => deps.getEditor()!,
         deps.getNumIds,
@@ -66,6 +73,12 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
         deps.getImageSource,
       ),
       createFilesSkill(() => []),
+      createRelayExtrasSkill({
+        gate: confirmGate,
+        emit: emit,
+        turnId: () => currentTurnId,
+        docsListing: () => dockedDocs,
+      }),
     ]),
     events: {
       onText: (text) => {
@@ -113,8 +126,8 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   })
 
   // P2-6 圈选标注:选区变化(防抖)经 context 事件上报首页,中栏显示
-  // 「针对所选」提示;空选区清提示。选区监听挂在本服务的 loop 依赖的
-  // editor 实例上,与面板互不干扰。
+  // 「针对所选」提示;空选区发空 text 清提示。选区监听挂在本服务的 loop
+  // 依赖的 editor 实例上,与面板互不干扰。
   let selectionTimer: ReturnType<typeof setTimeout> | undefined
   const onSelectionUpdate = (): void => {
     clearTimeout(selectionTimer)
@@ -122,7 +135,10 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
       const editor = deps.getEditor()
       if (!editor) return
       const { from, to, empty } = editor.state.selection
-      if (empty) return
+      if (empty) {
+        emit({ type: 'context', context: { text: '', kind: 'selection' } })
+        return
+      }
       const text = editor.state.doc.textBetween(from, to, '\n')
       if (text.trim())
         emit({
@@ -134,11 +150,25 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   deps.getEditor()?.on('selectionUpdate', onSelectionUpdate)
 
   const handle = (command: RelayCommand): void => {
+    // 诊断口径:命令到达与载荷规模(端到端验收经 CDP console 捕获)
+    console.debug(
+      '[docs-relay] command:',
+      command.type,
+      command.type === 'seed' ? `n=${command.messages.length}` : '',
+      command.type === 'sync-docs' ? `docs=${command.docs.length}` : '',
+    )
     switch (command.type) {
       case 'seed': {
         // 铁律(Q4''):文档 loop 上下文=主线转录的确定性函数——每次种子
         // 都是 reset+重放(主线镜像含历史中继轮次,重放无损);这让切文档
-        // /杀视图重开的重种子与首次种子同一条路径。
+        // /杀视图重开的重种子与首次种子同一条路径。reset 硬杀在飞轮次
+        // (generation 守卫丢弃其迟到事件),确认门先落地防 await 吊死。
+        confirmGate.rejectAll('the conversation was re-seeded')
+        if (currentTurnId) {
+          emit({ type: 'turn-finished', turnId: currentTurnId })
+          currentTurnId = null
+          emit({ type: 'busy', busy: false })
+        }
         const messages: AgentMessage[] = command.messages.map((m: RelaySeedMessage) => ({
           role: m.role,
           text: m.text,
@@ -148,6 +178,8 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
         break
       }
       case 'send': {
+        // 首页在忙时会排队(dockRelay 队列),这里收到 send 即非忙;竞态
+        // 双发时丢弃后者(主线镜像以事件流为准,不重复入镜像)。
         if (loop.busy) return
         currentTurnId = `t-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
         emit({ type: 'turn-started', turnId: currentTurnId })
@@ -156,11 +188,19 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
         break
       }
       case 'stop': {
+        confirmGate.rejectAll('stopped by the user')
         loop.cancel()
         break
       }
       case 'confirm': {
-        // docs 工具集当前无确认门(P2-7 接入大纲确认门时落地);决议暂记
+        confirmGate.resolve(command.confirmId, {
+          approved: command.approved,
+          feedback: command.feedback,
+        })
+        break
+      }
+      case 'sync-docs': {
+        dockedDocs = command.docs
         break
       }
     }
@@ -179,6 +219,7 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
       offCommand?.()
       clearTimeout(selectionTimer)
       deps.getEditor()?.off('selectionUpdate', onSelectionUpdate)
+      confirmGate.rejectAll('the relay server is disposed')
       loop.cancel()
     },
   }

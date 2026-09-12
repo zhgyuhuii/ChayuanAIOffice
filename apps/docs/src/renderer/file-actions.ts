@@ -57,6 +57,7 @@ import { TRACK_IGNORE } from './editor/revisions'
 import {
   cancelPhasedContent,
   isPhasedContentPending,
+  PHASED_MIN_BLOCKS,
   setContentPhased,
   waitForFullContent,
   type PhasedContentHost,
@@ -814,7 +815,12 @@ export async function applyAiDocContent(
   const { editor, doc } = ctx
   if (!editor || !doc) return
   const nodes = aiDocContentNodes(content.html)
-  if (nodes.length > 0) {
+  if (nodes.length > PHASED_MIN_BLOCKS) {
+    // P2-7② 占位分块流式:大文档先挂首屏(打开即刻可见),尾部按帧
+    // 分块流入——AI 产物以「边写边长出来」的观感落纸,而非长时间
+    // 空白后整篇砸下;save 内部 waitForFullContent 保证不写截断盘。
+    setContentPhased(phasedHostFor(ctx), { type: 'doc', content: nodes })
+  } else if (nodes.length > 0) {
     replaceBlockRange(editor, 0, editor.state.doc.childCount - 1, nodes)
     // the document is born with this content: undo must not reach back to empty
     resetEditorHistory(editor)

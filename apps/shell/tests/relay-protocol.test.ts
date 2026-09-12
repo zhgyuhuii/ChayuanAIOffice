@@ -36,6 +36,9 @@ describe('isRelayEvent', () => {
       },
       { type: 'snapshot', turnId: 't1', snapshot: { turnId: 't1', snapshotId: 's1' } },
       { type: 'context', context: { text: '被选中的段落', kind: 'selection' } },
+      { type: 'context', context: { text: '', kind: 'selection' } },
+      { type: 'switch-request', turnId: 't1', switch: { filePath: '/p/a.docx', title: 'a' } },
+      { type: 'switch-request', turnId: 't1', switch: { title: '季度表' } },
       { type: 'error', turnId: null, message: 'boom' },
       { type: 'busy', busy: true },
       { type: 'turn-finished', turnId: 't1' },
@@ -52,6 +55,9 @@ describe('isRelayEvent', () => {
       false,
     )
     expect(isRelayEvent({ type: 'busy', busy: 'yes' })).toBe(false)
+    expect(isRelayEvent({ type: 'switch-request', turnId: 't', switch: { filePath: 7 } })).toBe(
+      false,
+    )
     expect(isRelayEvent({ type: 'teleport' })).toBe(false)
   })
 })
@@ -69,6 +75,13 @@ describe('isRelayCommand', () => {
         ],
       },
       { type: 'confirm', confirmId: 'cf1', approved: false, feedback: '大纲第二节砍掉' },
+      {
+        type: 'sync-docs',
+        docs: [
+          { title: '报告.docx', filePath: '/p/报告.docx', kind: 'docs', active: true },
+          { title: '空白表格', kind: 'sheets', active: false },
+        ],
+      },
     ]
     for (const c of commands) expect(isRelayCommand(c)).toBe(true)
   })
@@ -78,6 +91,8 @@ describe('isRelayCommand', () => {
     expect(isRelayCommand({ type: 'seed', messages: 'history' })).toBe(false)
     expect(isRelayCommand({ type: 'confirm', confirmId: 'c' })).toBe(false)
     expect(isRelayCommand({ type: 'send' })).toBe(false)
+    expect(isRelayCommand({ type: 'sync-docs', docs: [{ title: 'x', kind: 'docs' }] })).toBe(false)
+    expect(isRelayCommand({ type: 'sync-docs', docs: 'list' })).toBe(false)
     expect(isRelayCommand('send')).toBe(false)
   })
 })

@@ -13,6 +13,10 @@ export class RelaySessionLink {
   private readonly sessionByDock = new Map<string, string>()
   /** 会话当前中继目标(激活 dock);dock tab 关闭时摘除 */
   private readonly activeDockBySession = new Map<string, string>()
+  /** P2 追加排队:忙时入队的待投递消息(dock 级,先到先投) */
+  private readonly queueByDock = new Map<string, string[]>()
+  /** dock 级忙标记:busy 事件+trySend 乐观置位共同维护 */
+  private readonly busyDocks = new Set<string>()
 
   /** DockPane onTabs:登记/对账当前会话的 dock 组;返回新绑定的 dock(需种子) */
   setSessionDocks(sessionId: string, dockTabIds: string[]): string[] {
@@ -22,6 +26,9 @@ export class RelaySessionLink {
       if (!dockTabIds.includes(id)) {
         known.delete(id)
         if (this.sessionByDock.get(id) === sessionId) this.sessionByDock.delete(id)
+        // 关掉的 dock:排队消息作废(主线镜像已含,重开走种子重放)
+        this.queueByDock.delete(id)
+        this.busyDocks.delete(id)
       }
     }
     const added: string[] = []
@@ -38,10 +45,13 @@ export class RelaySessionLink {
     return added
   }
 
-  /** dock 激活切换:更新该 dock 所属会话的中继目标 */
+  /** dock 激活切换:更新该 dock 所属会话的中继目标;目标切换=清旧队列 */
   setActiveDock(dockTabId: string): void {
     const sessionId = this.sessionByDock.get(dockTabId)
-    if (sessionId) this.activeDockBySession.set(sessionId, dockTabId)
+    if (!sessionId) return
+    const prev = this.activeDockBySession.get(sessionId)
+    this.activeDockBySession.set(sessionId, dockTabId)
+    if (prev && prev !== dockTabId) this.queueByDock.delete(prev)
   }
 
   activeDockOf(sessionId: string): string | undefined {
@@ -52,12 +62,53 @@ export class RelaySessionLink {
     return this.sessionByDock.get(dockTabId)
   }
 
+  /** 该 dock 的会话里,还有哪些别的 dock(激活态排除)——切换目标清队用 */
+  siblingDocks(dockTabId: string): string[] {
+    const sessionId = this.sessionByDock.get(dockTabId)
+    if (!sessionId) return []
+    return [...(this.docksBySession.get(sessionId) ?? [])].filter((id) => id !== dockTabId)
+  }
+
   forgetSession(sessionId: string): void {
     for (const id of this.docksBySession.get(sessionId) ?? []) {
       if (this.sessionByDock.get(id) === sessionId) this.sessionByDock.delete(id)
+      this.queueByDock.delete(id)
+      this.busyDocks.delete(id)
     }
     this.docksBySession.delete(sessionId)
     this.activeDockBySession.delete(sessionId)
+  }
+
+  // ── 忙跟踪 + 追加排队(Q7 四通道之一) ──
+
+  isBusy(dockTabId: string): boolean {
+    return this.busyDocks.has(dockTabId)
+  }
+
+  /** busy 事件落账;忙→闲的翻转取出队头一条(先到先投,逐轮放行) */
+  markBusy(dockTabId: string, busy: boolean): string | undefined {
+    if (busy) {
+      this.busyDocks.add(dockTabId)
+      return undefined
+    }
+    this.busyDocks.delete(dockTabId)
+    const queue = this.queueByDock.get(dockTabId)
+    const next = queue?.shift()
+    if (queue && queue.length === 0) this.queueByDock.delete(dockTabId)
+    return next
+  }
+
+  /** 忙时排队;返回 true=已排队(消息照常镜像进主线,投递延迟到闲) */
+  enqueue(dockTabId: string, text: string): boolean {
+    if (!this.isBusy(dockTabId)) return false
+    const queue = this.queueByDock.get(dockTabId) ?? []
+    queue.push(text)
+    this.queueByDock.set(dockTabId, queue)
+    return true
+  }
+
+  clearQueue(dockTabId: string): void {
+    this.queueByDock.delete(dockTabId)
   }
 }
 
@@ -125,6 +176,22 @@ export function applyRelayEvent(
         return { ...m, relayTools: tools }
       })
     }
+    case 'confirm-request': {
+      // P2-7 确认门:确认卡挂在流式中的镜像消息上(该 turn 的占位已存在)
+      const r = event.request
+      return patchByTurn(messages, event.turnId, (m) => ({
+        ...m,
+        relayConfirm: { confirmId: r.confirmId, kind: r.kind, payload: r.payload, state: 'pending' },
+      }))
+    }
+    case 'turn-finished': {
+      // 轮次收尾:仍未决议的确认卡过期(停靠 tab 关闭/停止/重种子等场景)
+      return patchByTurn(messages, event.turnId, (m) =>
+        m.relayConfirm?.state === 'pending'
+          ? { ...m, relayConfirm: { ...m.relayConfirm, state: 'expired' } }
+          : m,
+      )
+    }
     case 'error': {
       return patchLastByTurn(messages, event.turnId, (m) => ({
         ...m,
@@ -134,11 +201,42 @@ export function applyRelayEvent(
     }
     case 'busy':
     case 'context':
-    case 'confirm-request':
+    case 'switch-request':
     case 'snapshot':
-    case 'turn-finished':
       return messages
   }
+}
+
+/** 用户点了批准/驳回:确认卡原地留痕(反馈一并入档) */
+export function resolveRelayConfirm(
+  messages: HomeChatMessage[],
+  confirmId: string,
+  approved: boolean,
+  feedback?: string,
+): HomeChatMessage[] {
+  return messages.map((m) =>
+    m.relayConfirm?.confirmId === confirmId && m.relayConfirm.state === 'pending'
+      ? {
+          ...m,
+          relayConfirm: {
+            ...m.relayConfirm,
+            state: approved ? 'approved' : 'rejected',
+            feedback: feedback || undefined,
+          },
+        }
+      : m,
+  )
+}
+
+/** 会话里所有 dock 都不在了:未决议的确认卡一并过期 */
+export function expirePendingConfirms(messages: HomeChatMessage[]): HomeChatMessage[] {
+  return messages.some((m) => m.relayConfirm?.state === 'pending')
+    ? messages.map((m) =>
+        m.relayConfirm?.state === 'pending'
+          ? { ...m, relayConfirm: { ...m.relayConfirm, state: 'expired' } }
+          : m,
+      )
+    : messages
 }
 
 function patchByTurn(

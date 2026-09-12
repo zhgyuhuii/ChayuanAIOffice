@@ -4005,8 +4005,14 @@ export function registerDocsIpc(): void {
 
   ipcMain.handle(
     'docs:create-document',
-    (_event, request: CreateDocumentRequest): Promise<CreateDocumentResult> =>
-      createAiDocument(request),
+    (event, request: CreateDocumentRequest): Promise<CreateDocumentResult> =>
+      // 停靠文档的 relay loop 建新文档:产物落同一右栏(会话的 dock 组),
+      // 而不是弹全幅 tab——发送者是否停靠由壳的主进程裁定
+      createAiDocument({
+        ...request,
+        dock:
+          request.dock ?? (shellHooks?.isDockedWebContents?.(event.sender.id) ? true : undefined),
+      }),
   )
 
   ipcMain.handle('docs:recent', () =>
@@ -4343,6 +4349,8 @@ interface DocsShellHooks {
    *  tab; saveDir anchors the document's first save in its project root */
   openAiDockTab?(content: AiDocContent, saveDir?: string): boolean
   openMarkdownDockTab?(content: string, suggestedName: string, saveDir?: string): boolean
+  /** P2-7②: 发起 createDocument 的渲染器是否是停靠 tab(停靠者建的新文档落同一右栏) */
+  isDockedWebContents?(wcId: number): boolean
 }
 let shellHooks: DocsShellHooks | null = null
 export function setDocsShellHooks(hooks: DocsShellHooks | null): void {

@@ -39,10 +39,12 @@ import { DockPane } from './DockPane'
 import { restoreDockTabs, snapshotFromTabs } from './dock-session'
 import {
   applyRelayEvent,
+  expirePendingConfirms,
   RelaySessionLink,
   relaySeedCommand,
   relaySendCommand,
   relayStopCommand,
+  resolveRelayConfirm,
 } from './home-chat/relay-client'
 import type { DockTabSummary } from '../../shared/dock-api'
 
@@ -488,16 +490,6 @@ function ProjectPanel({
                     />
                   </svg>
                 </button>
-                <span className="proj-item-icon" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
                 {isRenaming ? (
                   <input
                     className="proj-rename-input inline"
@@ -1496,6 +1488,18 @@ export function Home() {
     if (tabs.length === 0) {
       if (session.dock) store.updateSession(session.id, (s) => ({ ...s, dock: undefined }))
       relayLink.current.forgetSession(session.id)
+      // dock 全关:忙态与未决议确认卡一并收敛(编辑器事件流已断)
+      setRelayBusy((prev) => {
+        if (!prev.has(session.id)) return prev
+        const next = new Set(prev)
+        next.delete(session.id)
+        return next
+      })
+      store.updateSession(session.id, (s) => ({
+        ...s,
+        messages: expirePendingConfirms(s.messages),
+      }))
+      setSelectionHint(null)
       return
     }
     store.updateSession(session.id, (s) => ({ ...s, dock: snapshotFromTabs(tabs) }))
@@ -1510,9 +1514,22 @@ export function Home() {
     if (nowActive && relayLink.current.activeDockOf(session.id) !== nowActive) {
       relayLink.current.setActiveDock(nowActive)
       added.push(nowActive)
+      // 旧目标的选区提示不属于新文档
+      setSelectionHint(null)
     }
     for (const dockTabId of added) {
+      relayLink.current.clearQueue(dockTabId)
       void window.chatOfficeDock?.relayCommand(dockTabId, relaySeedCommand(sessionMessages))
+    }
+    // P2-6 残项:停靠清单同步给每个文档 loop(activate_document 的依据)
+    const docsSync = tabs.map((t) => ({
+      title: t.title,
+      ...(t.filePath ? { filePath: t.filePath } : {}),
+      kind: t.kind,
+      active: t.id === nowActive,
+    }))
+    for (const t of tabs) {
+      void window.chatOfficeDock?.relayCommand(t.id, { type: 'sync-docs', docs: docsSync })
     }
   }, [])
   const dockRestoreSessionId = chatStore.activeId
@@ -1539,21 +1556,46 @@ export function Home() {
           else next.delete(sessionId)
           return next
         })
-        return
-      }
-      if (event.type === 'context') {
-        // 圈选标注:仅当前激活会话显示提示(事件本就只来自其绑定的 dock)
-        if (relayLink.current.activeDockOf(sessionId) === dockTabId) {
-          setSelectionHint(event.context.text)
+        // P2 追加排队:忙→闲翻转时投出队头一条(FIFO,逐轮放行);投出即
+        // 乐观置忙,堵住与用户回车之间的竞态窗
+        const flushed = relayLink.current.markBusy(dockTabId, event.busy)
+        if (flushed !== undefined) {
+          relayLink.current.markBusy(dockTabId, true)
+          dock.relayCommand(dockTabId, relaySendCommand(flushed))
         }
         return
       }
-      if (
-        event.type === 'turn-finished' ||
-        event.type === 'confirm-request' ||
-        event.type === 'snapshot'
-      )
+      if (event.type === 'context') {
+        // 圈选标注:仅当前激活会话显示提示;空 text=选区收起,清提示
+        if (relayLink.current.activeDockOf(sessionId) === dockTabId) {
+          setSelectionHint(event.context.text ? event.context.text : null)
+        }
         return
+      }
+      if (event.type === 'switch-request') {
+        // P2-6 残项 dock 切换:先找已停靠 tab(live 列表才有 id),找不到
+        // 但目标文件在盘上则停靠打开;切换会经 onTabs 触发目标重种子
+        const target = event.switch
+        void dock
+          .list()
+          .then((live) => {
+            // filePath 匹配必须显式有值:undefined===undefined 会误中第一个空白 tab
+            const hit =
+              (target.filePath ? live.find((t) => t.filePath === target.filePath) : undefined) ??
+              (target.title ? live.find((t) => t.title === target.title) : undefined) ??
+              (target.title
+                ? live.find((t) => t.title.toLowerCase().includes(target.title!.toLowerCase()))
+                : undefined)
+            if (hit) {
+              void dock.activate(hit.id)
+            } else if (target.filePath) {
+              void window.chatOffice.openPath(target.filePath, { dock: true })
+            }
+          })
+          .catch(() => undefined)
+        return
+      }
+      if (event.type === 'snapshot') return
       chatStoreRef.current.updateSession(sessionId, (s) => ({
         ...s,
         messages: applyRelayEvent(s.messages, event, Date.now()),
@@ -1602,12 +1644,33 @@ export function Home() {
         const dockTabId = relayLink.current.activeDockOf(sessionId)
         if (!dockTabId) return false
         const full = selectionHint ? `${text}\n\n[针对文档所选片段]\n${selectionHint}` : text
+        // 追加排队:忙时入队(消息照常进主线,忙→闲逐条投出)。enqueue 依据
+        // 既有忙态判定,乐观置忙随后——顺序反了会把首条消息也锁进队列。
+        const queued = relayLink.current.enqueue(dockTabId, full)
+        relayLink.current.markBusy(dockTabId, true)
+        if (queued) return true
         dock.relayCommand(dockTabId, relaySendCommand(full))
         return true
       },
       stop: (sessionId: string): void => {
         const dockTabId = relayLink.current.activeDockOf(sessionId)
-        if (dockTabId) dock.relayCommand(dockTabId, relayStopCommand())
+        if (!dockTabId) return
+        relayLink.current.clearQueue(dockTabId)
+        relayLink.current.markBusy(dockTabId, false)
+        dock.relayCommand(dockTabId, relayStopCommand())
+      },
+      /** 该会话是否有激活 dock(有=忙时发送转为排队,而非禁用) */
+      canQueue: (sessionId: string): boolean => !!relayLink.current.activeDockOf(sessionId),
+      /** P2-7 确认门决议:命令发给文档 loop,确认卡原地留痕 */
+      confirm: (sessionId: string, confirmId: string, approved: boolean, feedback?: string) => {
+        const dockTabId = relayLink.current.activeDockOf(sessionId)
+        if (dockTabId) {
+          dock.relayCommand(dockTabId, { type: 'confirm', confirmId, approved, feedback })
+        }
+        chatStoreRef.current.updateSession(sessionId, (s) => ({
+          ...s,
+          messages: resolveRelayConfirm(s.messages, confirmId, approved, feedback),
+        }))
       },
       busySessions: relayBusy,
       selectionHint: selectionHint ?? undefined,

@@ -537,6 +537,11 @@ export function App() {
   const panelBootHiddenRef = useRef(
     new URLSearchParams(window.location.search).get('panel') === '0',
   )
+  /** P2 relay server lifetime: booted as a docked (?panel=0) view. Distinct
+   *  from panelBootHiddenRef — that one is a one-shot consumed by the showAi
+   *  persistence effect on mount (it flips back to false before later effects
+   *  run), which used to keep the relay server from ever starting. */
+  const dockedBootRef = useRef(panelBootHiddenRef.current)
   const [showAi, setShowAi] = useState(
     () => !panelBootHiddenRef.current && localStorage.getItem('aidocs.showAi') !== '0',
   )
@@ -4635,7 +4640,7 @@ export function App() {
   }, [doc?.isBlank])
 
   useEffect(() => {
-    if (!panelBootHiddenRef.current) return
+    if (!dockedBootRef.current) return
     const server = startDocsRelayServer({
       getEditor: () => editor,
       getNumIds: () => relayNumIds.current,
@@ -5159,9 +5164,11 @@ export function App() {
               commentsAccess={aiCommentsAccess}
               hfAccess={aiHfAccess}
               onTurnCompleted={({ userText, assistantText, cancelled }) => {
-                void (window.desktop as unknown as {
-                  panelTurnCompleted?: (t: unknown) => void
-                }).panelTurnCompleted?.({
+                void (
+                  window.desktop as unknown as {
+                    panelTurnCompleted?: (t: unknown) => void
+                  }
+                ).panelTurnCompleted?.({
                   filePath: doc?.filePath ?? null,
                   userText,
                   assistantText,

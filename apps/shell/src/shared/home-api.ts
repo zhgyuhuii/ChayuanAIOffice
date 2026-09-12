@@ -281,6 +281,16 @@ export interface HomeChatMessage {
         outputPreview?: string
       }>
     | undefined
+  /** P2-7 确认门:该轮挂起的大纲/计划确认卡(决议后原地留痕) */
+  relayConfirm?:
+    | {
+        confirmId: string
+        kind: 'ops' | 'plan' | 'outline'
+        payload: string
+        state: 'pending' | 'approved' | 'rejected' | 'expired'
+        feedback?: string
+      }
+    | undefined
 }
 
 /** where a home-chat session lives in the left tree (P2): a project's own

@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest'
 import type { HomeChatMessage } from '../src/shared/home-api'
 import {
   applyRelayEvent,
+  expirePendingConfirms,
   RelaySessionLink,
   relaySeedCommand,
+  resolveRelayConfirm,
 } from '../src/renderer/src/home-chat/relay-client'
 
 function user(text: string): HomeChatMessage {
@@ -90,6 +92,88 @@ describe('applyRelayEvent', () => {
       ),
     ).toBe(msgs)
   })
+
+  it('confirm-request attaches a pending confirmation card to the streaming mirror', () => {
+    let msgs = applyRelayEvent([], { type: 'turn-started', turnId: 't1' }, 1)
+    msgs = applyRelayEvent(
+      msgs,
+      {
+        type: 'confirm-request',
+        turnId: 't1',
+        request: { confirmId: 'cf-1', kind: 'outline', payload: '# 大纲\n- 引言' },
+      },
+      2,
+    )
+    expect(msgs[0]?.relayConfirm).toEqual({
+      confirmId: 'cf-1',
+      kind: 'outline',
+      payload: '# 大纲\n- 引言',
+      state: 'pending',
+    })
+  })
+
+  it('turn-finished expires an unresolved confirmation; resolved cards keep their state', () => {
+    let msgs = applyRelayEvent([], { type: 'turn-started', turnId: 't1' }, 1)
+    msgs = applyRelayEvent(
+      msgs,
+      {
+        type: 'confirm-request',
+        turnId: 't1',
+        request: { confirmId: 'cf-1', kind: 'plan', payload: '1. 步骤一' },
+      },
+      2,
+    )
+    msgs = applyRelayEvent(msgs, { type: 'turn-finished', turnId: 't1' }, 3)
+    expect(msgs[0]?.relayConfirm?.state).toBe('expired')
+
+    let msgs2 = applyRelayEvent([], { type: 'turn-started', turnId: 't2' }, 1)
+    msgs2 = applyRelayEvent(
+      msgs2,
+      {
+        type: 'confirm-request',
+        turnId: 't2',
+        request: { confirmId: 'cf-2', kind: 'outline', payload: 'x' },
+      },
+      2,
+    )
+    msgs2 = resolveRelayConfirm(msgs2, 'cf-2', true)
+    msgs2 = applyRelayEvent(msgs2, { type: 'turn-finished', turnId: 't2' }, 3)
+    expect(msgs2[0]?.relayConfirm?.state).toBe('approved')
+  })
+
+  it('resolveRelayConfirm marks the decision in place with feedback; unknown ids untouched', () => {
+    let msgs = applyRelayEvent([], { type: 'turn-started', turnId: 't1' }, 1)
+    msgs = applyRelayEvent(
+      msgs,
+      {
+        type: 'confirm-request',
+        turnId: 't1',
+        request: { confirmId: 'cf-1', kind: 'outline', payload: 'x' },
+      },
+      2,
+    )
+    msgs = resolveRelayConfirm(msgs, 'cf-9', false, 'nope')
+    expect(msgs[0]?.relayConfirm?.state).toBe('pending')
+    msgs = resolveRelayConfirm(msgs, 'cf-1', false, '第三点展开')
+    expect(msgs[0]?.relayConfirm).toMatchObject({ state: 'rejected', feedback: '第三点展开' })
+  })
+
+  it('expirePendingConfirms closes every pending card in one pass', () => {
+    let msgs = applyRelayEvent([], { type: 'turn-started', turnId: 't1' }, 1)
+    msgs = applyRelayEvent(
+      msgs,
+      {
+        type: 'confirm-request',
+        turnId: 't1',
+        request: { confirmId: 'cf-1', kind: 'outline', payload: 'x' },
+      },
+      2,
+    )
+    const expired = expirePendingConfirms([...msgs, user('q')])
+    expect(expired[0]?.relayConfirm?.state).toBe('expired')
+    // no pending cards → same reference (cheap path)
+    expect(expirePendingConfirms([user('q')])).toHaveLength(1)
+  })
 })
 
 describe('RelaySessionLink', () => {
@@ -115,6 +199,42 @@ describe('RelaySessionLink', () => {
     link.setSessionDocks('s1', ['d1'])
     link.setSessionDocks('s2', ['d1']) // same dock id under another session → ignored
     expect(link.sessionOfDock('d1')).toBe('s1')
+  })
+
+  it('busy-flag + append queue: FIFO one-per-idle, cleared on stop/switch/close', () => {
+    const link = new RelaySessionLink()
+    link.setSessionDocks('s1', ['d1'])
+
+    // idle → enqueue refuses, markBusy(true) arms the busy flag
+    expect(link.enqueue('d1', 'first')).toBe(false)
+    link.markBusy('d1', true)
+    expect(link.enqueue('d1', '排队A')).toBe(true)
+    expect(link.enqueue('d1', '排队B')).toBe(true)
+
+    // busy→idle hands back exactly the queue head, one at a time
+    expect(link.markBusy('d1', false)).toBe('排队A')
+    link.markBusy('d1', true)
+    expect(link.markBusy('d1', false)).toBe('排队B')
+    expect(link.markBusy('d1', false)).toBeUndefined()
+
+    // switching the active target drops the old target's pending queue
+    link.setSessionDocks('s1', ['d1', 'd2'])
+    link.markBusy('d1', true)
+    link.enqueue('d1', 'stale')
+    link.setActiveDock('d2')
+    expect(link.markBusy('d1', false)).toBeUndefined()
+
+    // closing the dock tab drops its queue too
+    link.markBusy('d2', true)
+    link.enqueue('d2', 'gone')
+    link.setSessionDocks('s1', ['d1'])
+    expect(link.isBusy('d2')).toBe(false)
+
+    // stop: queue discarded, busy flag cleared
+    link.markBusy('d1', true)
+    link.enqueue('d1', 'cancelled')
+    link.clearQueue('d1')
+    expect(link.markBusy('d1', false)).toBeUndefined()
   })
 })
 
