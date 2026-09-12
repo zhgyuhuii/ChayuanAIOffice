@@ -115,11 +115,14 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   const handle = (command: RelayCommand): void => {
     switch (command.type) {
       case 'seed': {
-        // 铁律入口:项目主线转录一次种进本 loop(Q4'')
+        // 铁律(Q4''):文档 loop 上下文=主线转录的确定性函数——每次种子
+        // 都是 reset+重放(主线镜像含历史中继轮次,重放无损);这让切文档
+        // /杀视图重开的重种子与首次种子同一条路径。
         const messages: AgentMessage[] = command.messages.map((m: RelaySeedMessage) => ({
           role: m.role,
           text: m.text,
         }))
+        loop.reset()
         loop.restore(messages)
         break
       }

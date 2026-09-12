@@ -1502,10 +1502,18 @@ export function Home() {
       session.id,
       tabs.map((t) => t.id),
     )
+    const sessionMessages =
+      store.sessions?.find((x) => x.id === session.id)?.messages ?? []
+    // 切换激活 dock = 换中继目标:目标 loop 重种子(确定性重放)
+    const nowActive = tabs.find((t) => t.active)?.id
+    if (nowActive && relayLink.current.activeDockOf(session.id) !== nowActive) {
+      relayLink.current.setActiveDock(nowActive)
+      added.push(nowActive)
+    }
     for (const dockTabId of added) {
       void window.chatOfficeDock?.relayCommand(
         dockTabId,
-        relaySeedCommand(store.sessions?.find((x) => x.id === session.id)?.messages ?? []),
+        relaySeedCommand(sessionMessages),
       )
     }
   }, [])
