@@ -4840,6 +4840,18 @@ ipcMain.on('docs:relay-event', (event, payload: unknown) => {
   relayEventForwarder?.(event.sender.id, payload)
 })
 
+// ── P2-5 回流薄钩: panel turn → shell (project mainline mirror) ──
+let panelTurnForwarder: ((turn: unknown) => void) | null = null
+
+/** shell main injects its sink for panel-turn reports */
+export function setPanelTurnForwarder(fn: ((turn: unknown) => void) | null): void {
+  panelTurnForwarder = fn
+}
+
+ipcMain.on('docs:panel-turn-completed', (_event, turn: unknown) => {
+  panelTurnForwarder?.(turn)
+})
+
 ipcMain.on('docs:close-check-result', (event, state: unknown) => {
   const waiter = closeCheckWaiters.get(event.sender.id)
   if (!waiter) return

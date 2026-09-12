@@ -517,4 +517,6 @@ export interface DesktopApi {
   relaySend(event: unknown): void
   /** P2 中继: subscribe to RelayCommands from the shell; returns unsubscribe */
   onRelayCommand(handler: (command: unknown) => void): () => void
+  /** P2-5 回流薄钩: a completed panel turn (Home mainline mirror) */
+  panelTurnCompleted(turn: { filePath: string | null; userText: string; assistantText: string; cancelled: boolean }): void
 }

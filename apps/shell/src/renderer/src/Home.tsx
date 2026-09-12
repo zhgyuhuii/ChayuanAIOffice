@@ -1502,8 +1502,7 @@ export function Home() {
       session.id,
       tabs.map((t) => t.id),
     )
-    const sessionMessages =
-      store.sessions?.find((x) => x.id === session.id)?.messages ?? []
+    const sessionMessages = store.sessions?.find((x) => x.id === session.id)?.messages ?? []
     // 切换激活 dock = 换中继目标:目标 loop 重种子(确定性重放)
     const nowActive = tabs.find((t) => t.active)?.id
     if (nowActive && relayLink.current.activeDockOf(session.id) !== nowActive) {
@@ -1511,10 +1510,7 @@ export function Home() {
       added.push(nowActive)
     }
     for (const dockTabId of added) {
-      void window.chatOfficeDock?.relayCommand(
-        dockTabId,
-        relaySeedCommand(sessionMessages),
-      )
+      void window.chatOfficeDock?.relayCommand(dockTabId, relaySeedCommand(sessionMessages))
     }
   }, [])
   const dockRestoreSessionId = chatStore.activeId
@@ -1553,6 +1549,38 @@ export function Home() {
       chatStoreRef.current.updateSession(sessionId, (s) => ({
         ...s,
         messages: applyRelayEvent(s.messages, event, Date.now()),
+      }))
+    })
+  }, [])
+
+  // P2-5 回流镜像:全 tab 面板完成的轮次镜像进项目主线(Q5'a:主线=唯一完整真相)
+  useEffect(() => {
+    const dock = window.chatOfficeDock
+    if (!dock) return
+    return dock.onPanelTurn((turn) => {
+      if (turn.cancelled || !turn.filePath) return
+      const store = chatStoreRef.current
+      const sessionId = store.sessions?.find((s) =>
+        s.dock?.tabs.some((t) => t.file === turn.filePath),
+      )?.id
+      if (!sessionId) return
+      store.updateSession(sessionId, (s) => ({
+        ...s,
+        messages: [
+          ...s.messages,
+          {
+            id: crypto.randomUUID(),
+            role: 'user',
+            text: turn.userText,
+            ts: Date.now(),
+          },
+          {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            text: turn.assistantText,
+            ts: Date.now() + 1,
+          },
+        ],
       }))
     })
   }, [])

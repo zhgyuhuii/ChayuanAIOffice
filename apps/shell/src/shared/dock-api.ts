@@ -81,6 +81,8 @@ export interface DockApi {
   relayCommand(dockTabId: string, command: RelayCommand): void
   /** P2 中继: subscribe to RelayEvents from all docked editors; returns unsubscribe */
   onRelayEvent(handler: (dockTabId: string, event: RelayEvent) => void): () => void
+  /** P2-5: subscribe to completed panel turns (full-tab mirrors into mainline) */
+  onPanelTurn(handler: (turn: PanelTurnReport) => void): () => void
 }
 
 export const DOCK_CHANNELS = {
@@ -93,7 +95,16 @@ export const DOCK_CHANNELS = {
   changed: 'dock:changed',
   relayCommand: 'dock:relay-command',
   relayEvent: 'dock:relay-event',
+  panelTurn: 'dock:panel-turn',
 } as const
+
+/** P2-5 回流薄钩载荷: a completed editor-panel turn (full-tab mode) */
+export interface PanelTurnReport {
+  filePath: string | null
+  userText: string
+  assistantText: string
+  cancelled: boolean
+}
 
 declare global {
   interface Window {

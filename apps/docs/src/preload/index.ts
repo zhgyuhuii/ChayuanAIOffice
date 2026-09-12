@@ -229,6 +229,8 @@ const api: DesktopApi = {
   reportCloseSaveResult: (ok: boolean) => ipcRenderer.send('docs:close-save-result', ok === true),
   // P2 中继服务: docked editor's conversation relay (RelayEvent out / RelayCommand in)
   relaySend: (event: unknown) => ipcRenderer.send('docs:relay-event', event),
+  // P2-5 回流薄钩: panel turns report to the shell (project mainline mirror)
+  panelTurnCompleted: (turn: unknown) => ipcRenderer.send('docs:panel-turn-completed', turn),
   onRelayCommand: (handler: (command: unknown) => void) => {
     const listener = (_event: IpcRendererEvent, command: unknown) => handler(command)
     ipcRenderer.on('docs:relay-command', listener)

@@ -275,6 +275,10 @@ interface AiPanelProps {
   commentsAccess?: AiCommentsAccess
   /** header/footer state for the set_header_footer tool and per-turn context */
   hfAccess?: AiHeaderFooterAccess
+  /** P2-5 回流薄钩(Q5'a): a completed panel turn is reported to the host so
+   *  the Home project mainline stays the single complete transcript. Thin:
+   *  the panel's own state/persistence is untouched. */
+  onTurnCompleted?: (turn: { userText: string; assistantText: string; cancelled: boolean }) => void
 }
 
 export function AiPanel({
@@ -295,6 +299,7 @@ export function AiPanel({
   onQueueConsume,
   commentsAccess,
   hfAccess,
+  onTurnCompleted,
 }: AiPanelProps) {
   const { lang, t } = useI18n()
   const aiTabs = [
@@ -455,6 +460,8 @@ export function AiPanel({
   /** document state before the run's first edit — attached to the turn's final
       segment at run end (mid-turn segments never show the action toolbar) */
   const runSnapshotRef = useRef<PmNode | null>(null)
+  /** raw user instruction of the in-flight turn (P2-5 回流薄钩 payload) */
+  const runUserTextRef = useRef('')
   /** last sent instruction, for one-click retry */
   const lastInstructionRef = useRef('')
   /** Tool activity of the whole run (with args/output, accumulated across turns) — for full
@@ -675,6 +682,7 @@ export function AiPanel({
           if (!cancelled && (finalText || runToolsRef.current.length > 0)) {
             persistMessage('assistant', finalText, runToolsRef.current)
           }
+          onTurnCompleted?.({ userText: runUserTextRef.current, assistantText: finalText, cancelled })
         },
         onError: (error) => {
           setChat((prev) => {
@@ -902,6 +910,7 @@ export function AiPanel({
           setBusy(false)
           return
         }
+        runUserTextRef.current = instruction
         return loop.run(instruction, images)
       })
   }

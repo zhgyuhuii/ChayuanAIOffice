@@ -119,6 +119,7 @@ import {
   toggleStarredFile,
   forwardRelayCommand,
   queueDocsSaveDir,
+  setPanelTurnForwarder,
   registerDocsIpc,
   setRelayEventForwarder,
   setDocsExtraFileMenuItems,
@@ -4282,6 +4283,12 @@ function installRelayEventForwarder(): void {
     const tabId = tabManager.tabIdForWebContents(wcId)
     if (tabId && tabManager.list().find((t) => t.id === tabId)?.docked) {
       shellWindow.webContents.send(DOCK_CHANNELS.relayEvent, tabId, event)
+    }
+  })
+  // P2-5 回流薄钩: full-tab panel turns mirror into the Home mainline
+  setPanelTurnForwarder((turn) => {
+    if (shellWindow && !shellWindow.isDestroyed()) {
+      shellWindow.webContents.send(DOCK_CHANNELS.panelTurn, turn)
     }
   })
 }

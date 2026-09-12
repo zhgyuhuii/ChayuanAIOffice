@@ -22,7 +22,7 @@ import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
-import type { DockApi, DockTabSummary } from '../shared/dock-api'
+import type { DockApi, DockTabSummary, PanelTurnReport } from '../shared/dock-api'
 import type { RelayEvent } from '../shared/relay-protocol'
 import { DOCK_CHANNELS } from '../shared/dock-api'
 
@@ -520,6 +520,11 @@ const dockApi: DockApi = {
       handler(dockTabId, event)
     ipcRenderer.on(DOCK_CHANNELS.relayEvent, listener)
     return () => ipcRenderer.removeListener(DOCK_CHANNELS.relayEvent, listener)
+  },
+  onPanelTurn(handler) {
+    const listener = (_event: IpcRendererEvent, turn: PanelTurnReport) => handler(turn)
+    ipcRenderer.on(DOCK_CHANNELS.panelTurn, listener)
+    return () => ipcRenderer.removeListener(DOCK_CHANNELS.panelTurn, listener)
   },
 }
 contextBridge.exposeInMainWorld('chatOfficeDock', dockApi)

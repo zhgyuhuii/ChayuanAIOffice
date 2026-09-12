@@ -5158,6 +5158,16 @@ export function App() {
               onQueueConsume={queueConsume}
               commentsAccess={aiCommentsAccess}
               hfAccess={aiHfAccess}
+              onTurnCompleted={({ userText, assistantText, cancelled }) => {
+                void (window.desktop as unknown as {
+                  panelTurnCompleted?: (t: unknown) => void
+                }).panelTurnCompleted?.({
+                  filePath: doc?.filePath ?? null,
+                  userText,
+                  assistantText,
+                  cancelled,
+                })
+              }}
               dockChrome={dockChrome}
             />
           ) : null
