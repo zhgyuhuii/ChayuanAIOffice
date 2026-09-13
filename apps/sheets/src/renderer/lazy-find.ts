@@ -41,6 +41,10 @@ export interface LazyCellMatch extends IFindMatch {
   /// by Univer's composite model.
   range: { subUnitId: string; range: IRange }
   matchedText?: string | null
+  /// Pre-replacement scalar for out-of-window hits (ScanCell.value): lets the
+  /// replace path write numbers/booleans back with their type instead of the
+  /// stringified display text. Absent for formula hits and inner-model hits.
+  rawValue?: string | number | boolean | null
 }
 
 export interface LazyCellTexts {
@@ -201,6 +205,7 @@ function makeCellMatch(
     // built-in model); plain cells behave exactly like in-memory ones.
     replaceable: isFormula ? findByFormula : cell.value !== null && cell.value !== undefined,
     matchedText: (findByFormula && isFormula ? cell.formula : scalarToText(cell.value)) ?? null,
+    rawValue: isFormula ? undefined : cell.value,
     range: {
       subUnitId: sheetId,
       range: {
@@ -749,9 +754,8 @@ export class LazyExtendedFindModel extends FindModel {
           [{ f: replaceAllOccurrences(match.matchedText ?? '', this.query, replaceString) }],
         ])
       } else {
-        target.setValues([
-          [{ v: replaceAllOccurrences(match.matchedText ?? '', this.query, replaceString) }],
-        ])
+        const replaced = replaceAllOccurrences(match.matchedText ?? '', this.query, replaceString)
+        target.setValues([[{ v: coerceReplaceValue(match.rawValue, replaced) }]])
       }
       return true
     } catch {
@@ -868,6 +872,29 @@ export class LazyExtendedFindModel extends FindModel {
       .sort(comparator)
       .map((cell) => makeCellMatch(unitId, cell.sheetId, cell, findByFormula))
   }
+}
+
+/// Restores the replaced text to the cell's pre-replacement scalar type so
+/// out-of-window Replace All matches the in-window model: numeric cells stay
+/// numeric (SUM keeps counting them), booleans stay boolean, and anything
+/// that no longer parses as the original type falls back to text — the same
+/// outcome as typing the replacement by hand.
+export function coerceReplaceValue(
+  raw: string | number | boolean | null | undefined,
+  replaced: string,
+): string | number | boolean {
+  if (typeof raw === 'number') {
+    if (replaced.trim() === '') return replaced
+    const n = Number(replaced)
+    return Number.isFinite(n) ? n : replaced
+  }
+  if (typeof raw === 'boolean') {
+    const t = replaced.trim().toLowerCase()
+    if (t === '1' || t === 'true') return true
+    if (t === '0' || t === 'false') return false
+    return replaced
+  }
+  return replaced
 }
 
 /// Substring replacement honoring the query's case sensitivity, replacing
