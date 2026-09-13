@@ -61,6 +61,12 @@ import { PAGE_MARK, TOTAL_PAGES_MARK } from './types'
 import { patchParagraphTexts } from './text-patch'
 import { WATERMARK_NS, watermarkParagraphXml } from './watermark'
 import { escapeXmlAttr, escapeXmlText } from './xml-utils'
+import {
+  CUSTOM_PROPERTIES_CONTENT_TYPE,
+  CUSTOM_PROPERTIES_PATH,
+  CUSTOM_PROPERTIES_REL_TYPE,
+  patchZoteroDocumentDataXml,
+} from './zotero-doc-props'
 
 export type ParsedDocFull = ParsedDoc & { extras: ParseExtras }
 
@@ -93,6 +99,8 @@ export type SaveBlock = (
 export interface SaveOptions {
   /** save timestamp (ISO), written to docProps/core.xml dcterms:modified; default = now */
   savedAt?: string
+  /** Zotero document preferences; written as Word-compatible 255-character custom-property chunks */
+  zoteroDocumentData?: string
   /** rewrite page size / margins in the trailing w:sectPr */
   section?: SectionSettings
   /** last-section start type (w:type); rewrites the trailing sectPr when inserting a continuous section break; undefined = keep */
@@ -399,6 +407,7 @@ export async function saveDocx(
         fb.revision === undefined,
     ) &&
     options.section === undefined &&
+    options.zoteroDocumentData === undefined &&
     options.sectionStartType === undefined &&
     options.pgNumType === undefined &&
     options.pageColor === undefined &&
@@ -431,6 +440,33 @@ export async function saveDocx(
   const zip = await loadDocxZip(originalBytes)
   assertZipWithinLimits(zip)
   const docPath = (await resolveMainDocumentPath(zip)) ?? 'word/document.xml'
+
+  const customPropertiesEntry = zip.file(CUSTOM_PROPERTIES_PATH)
+  const shouldWriteZoteroData =
+    options.zoteroDocumentData !== undefined &&
+    (options.zoteroDocumentData !== '' || customPropertiesEntry !== null)
+  const customPropertiesXml = shouldWriteZoteroData
+    ? patchZoteroDocumentDataXml(
+        customPropertiesEntry ? await customPropertiesEntry.async('string') : null,
+        options.zoteroDocumentData!,
+      )
+    : null
+  const customPropertiesIsNew = customPropertiesXml !== null && customPropertiesEntry === null
+  const rootRelsPath = '_rels/.rels'
+  let rootRelsXml: string | null = null
+  if (customPropertiesIsNew) {
+    const rootRelsEntry = zip.file(rootRelsPath)
+    if (rootRelsEntry) {
+      rootRelsXml = await rootRelsEntry.async('string')
+      if (!rootRelsXml.includes(CUSTOM_PROPERTIES_REL_TYPE)) {
+        const rId = `rId${maxRelId(rootRelsXml) + 1}`
+        rootRelsXml = rootRelsXml.replace(
+          '</Relationships>',
+          `<Relationship Id="${rId}" Type="${CUSTOM_PROPERTIES_REL_TYPE}" Target="${CUSTOM_PROPERTIES_PATH}"/></Relationships>`,
+        )
+      }
+    }
+  }
 
   // Relationship allocation for newly created hyperlinks and images.
   const relsPath = docPath.replace(/([^/]+)$/, '_rels/$1.rels')
@@ -1189,7 +1225,8 @@ export async function saveDocx(
     numberingIsNew ||
     notesParts.some((p) => p.isNew) ||
     sourcesPart?.isNew ||
-    themePart?.isNew
+    themePart?.isNew ||
+    customPropertiesIsNew
   if (hasNewParts) {
     const file = zip.file(contentTypesPath)
     if (file) {
@@ -1260,6 +1297,9 @@ export async function saveDocx(
         )
       }
       if (themePart?.isNew) addOverride(`/${THEME_PART_PATH}`, THEME_CONTENT_TYPE)
+      if (customPropertiesIsNew) {
+        addOverride(`/${CUSTOM_PROPERTIES_PATH}`, CUSTOM_PROPERTIES_CONTENT_TYPE)
+      }
     }
   }
 
@@ -1283,6 +1323,8 @@ export async function saveDocx(
       out.file(name, relsXml, { date: entry.date })
     } else if (name === contentTypesPath && contentTypesXml !== null) {
       out.file(name, contentTypesXml, { date: entry.date })
+    } else if (name === rootRelsPath && rootRelsXml !== null) {
+      out.file(name, rootRelsXml, { date: entry.date })
     } else if (name === settingsPath && settingsXml !== null) {
       out.file(name, settingsXml, { date: entry.date })
     } else if (name === commentsPath && commentsXml !== null) {
@@ -1299,6 +1341,8 @@ export async function saveDocx(
       out.file(name, sourcesPart.xml, { date: entry.date })
     } else if (themePart && name === THEME_PART_PATH) {
       out.file(name, themePart.xml, { date: entry.date })
+    } else if (name === CUSTOM_PROPERTIES_PATH && customPropertiesXml !== null) {
+      out.file(name, customPropertiesXml, { date: entry.date })
     } else if (name === CORE_PROPS_PATH && coreXmlOut !== null) {
       out.file(name, coreXmlOut, { date: entry.date })
     } else if (options.partXml && options.partXml[name] !== undefined) {
@@ -1362,6 +1406,9 @@ export async function saveDocx(
   }
   if (themePart?.isNew) {
     out.file(THEME_PART_PATH, themePart.xml)
+  }
+  if (customPropertiesIsNew && customPropertiesXml !== null) {
+    out.file(CUSTOM_PROPERTIES_PATH, customPropertiesXml)
   }
   await cleanupDocxOwnedResources(out, docPath)
   if (scrubPersonalInfo) await scrubPersonalMetadata(out)

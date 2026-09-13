@@ -12,6 +12,7 @@ import { NOTE_PART_PATH, parseNotesXml } from './notes'
 import { scanBody, type BodyElement } from './scan'
 import { sectionSettingsFromXml, xmlFlagOn } from './section'
 import { findSourcesPart, parseSourcesXml } from './sources'
+import { readZoteroDocumentData } from './zotero-doc-props'
 import { decodeSymbolChar, decodeSymbolText } from './symbol-fonts'
 import { computeListMarkerInfos, type ListItemRef } from './list-markers'
 import { FONT_TABLE_PART_PATH, parseFontTable, readEmbeddedFonts } from './font-table'
@@ -117,6 +118,7 @@ import {
   IMAGE_RUN_CHILDREN,
   JC_ALIGN,
   SIMPLE_INLINE_FIELD_RE,
+  ZOTERO_INLINE_FIELD_RE,
   activeCharIndents,
   autoSpaceOf,
   bookmarkNamesOf,
@@ -294,6 +296,7 @@ export async function parseDocx(bytes: Uint8Array): Promise<ParsedDoc & { extras
   const footnotes = await parseNotesPart(zip, 'footnote')
   const endnotes = await parseNotesPart(zip, 'endnote')
   const sources = await parseSources(zip)
+  const zoteroDocumentData = await readZoteroDocumentData(zip)
   const fontTableFile = zip.file(FONT_TABLE_PART_PATH)
   const fontTable = fontTableFile ? parseFontTable(await fontTableFile.async('string')) : []
   const embeddedFonts = await readEmbeddedFonts(zip, fontTable)
@@ -329,6 +332,7 @@ export async function parseDocx(bytes: Uint8Array): Promise<ParsedDoc & { extras
   }
   const elements: BodyElement[] = []
   const blocks: Block[] = []
+  const zoteroFieldParagraphs = crossParagraphZoteroFields(scan.elements, documentXml)
   const chartParts: Record<string, string> = {}
   const buildCtx: BuildContext = {
     zip,
@@ -347,6 +351,8 @@ export async function parseDocx(bytes: Uint8Array): Promise<ParsedDoc & { extras
     docDefaults,
     defaultParaStyle: [...styles.values()].find((s) => s.type === 'paragraph' && s.isDefault),
     xmlSpacePreserve: partXmlSpacePreserve(documentXml, 'w:document'),
+    nextZoteroFieldId:
+      Math.max(0, ...[...zoteroFieldParagraphs.values()].map((field) => field.id)) + 1,
     // explicit breaks in any attribute order, plus Word's rendered-page hint
     // (catches natural pages in single-section docs); a false positive only
     // turns page-pinning off, which is the conservative direction
@@ -392,7 +398,7 @@ export async function parseDocx(bytes: Uint8Array): Promise<ParsedDoc & { extras
     }
     const i = elements.length
     elements.push(el)
-    const block = await buildBlock(el, i, xml, buildCtx)
+    const block = await buildBlock(el, i, xml, buildCtx, zoteroFieldParagraphs.get(el.start))
     blocks.push(block)
     buildCtx.floatTableAhead = floatTableColumnSpan(block, sectionAt(el.start))
   }
@@ -468,6 +474,7 @@ export async function parseDocx(bytes: Uint8Array): Promise<ParsedDoc & { extras
 
   return {
     blocks,
+    zoteroDocumentData,
     comments,
     protection,
     writeProtection,
@@ -549,6 +556,8 @@ interface BuildContext {
   /** part root declares xml:space="preserve" (inherited XML scope; PDF converters
    *  rely on it instead of per-w:t attributes) */
   xmlSpacePreserve?: boolean
+  /** Per-document identity source for editable Zotero fields. */
+  nextZoteroFieldId?: number
 }
 
 /** numbering reference of a paragraph: direct w:numPr, falling back to the pStyle's
@@ -602,6 +611,7 @@ async function buildBlock(
   index: number,
   xml: string,
   ctx: BuildContext,
+  zoteroField?: ZoteroFieldParagraph,
 ): Promise<Block> {
   const base = { id: `b${index}`, docxIndex: index, originalXml: xml }
 
@@ -769,7 +779,7 @@ async function buildBlock(
       return { ...base, type: 'image', label: 'Image', imageDataUrl: image, ...imageMeta(detect) }
     }
   }
-  if (hasFields) {
+  if (hasFields && !zoteroField) {
     // Legacy field-form OLE ({ EMBED ... } / { LINK ... } around a w:object):
     // take the OLE display path so the packaged preview picture and its
     // declared size survive instead of a bare "Field (EMBED)" chip.
@@ -1301,7 +1311,66 @@ async function buildBlock(
     }
   }
 
-  return buildTextParagraph(base, xml, ctx, false, el.start)
+  return buildTextParagraph(base, xml, ctx, false, el.start, zoteroField)
+}
+
+type ZoteroFieldPart = NonNullable<Run['zoteroFieldPart']>
+
+interface ZoteroFieldParagraph {
+  id: number
+  instruction: string
+  part: ZoteroFieldPart
+}
+
+/** Find complex Zotero fields whose cached result crosses top-level paragraphs. */
+function crossParagraphZoteroFields(
+  bodyElements: BodyElement[],
+  documentXml: string,
+): Map<number, ZoteroFieldParagraph> {
+  const result = new Map<number, ZoteroFieldParagraph>()
+  let nextId = 1
+  let active: { depth: number; instruction: string; paragraphStarts: number[] } | undefined
+  const tokenRe = /<w:fldChar\b[^>]*>|<w:instrText\b[^>]*>[\s\S]*?<\/w:instrText>/g
+
+  for (const el of bodyElements) {
+    if (el.name !== 'w:p') {
+      active = undefined
+      continue
+    }
+    const xml = documentXml.slice(el.start, el.end)
+    if (active) active.paragraphStarts.push(el.start)
+
+    for (const match of xml.matchAll(tokenRe)) {
+      const token = match[0]
+      if (token.startsWith('<w:instrText')) {
+        if (active?.depth === 1) {
+          active.instruction += decodeEntities(token.replace(/<[^>]+>/g, ''))
+        }
+        continue
+      }
+      const fieldType = /\bw:fldCharType\s*=\s*["'](begin|separate|end)["']/.exec(token)?.[1]
+      if (fieldType === 'begin') {
+        if (active) active.depth++
+        else active = { depth: 1, instruction: '', paragraphStarts: [el.start] }
+      } else if (fieldType === 'end' && active) {
+        active.depth--
+        if (active.depth === 0) {
+          const paragraphs = [...new Set(active.paragraphStarts)]
+          const instruction = active.instruction.trim()
+          if (paragraphs.length > 1 && ZOTERO_INLINE_FIELD_RE.test(instruction)) {
+            const id = nextId++
+            paragraphs.forEach((start, index) => {
+              const part: ZoteroFieldPart =
+                index === 0 ? 'begin' : index === paragraphs.length - 1 ? 'end' : 'inside'
+              result.set(start, { id, instruction, part })
+            })
+          }
+          active = undefined
+        }
+      }
+    }
+  }
+  return result
 }
 
 /**
@@ -1489,6 +1558,7 @@ function buildTextParagraph(
   ctx: BuildContext,
   withImages = false,
   docOffset?: number,
+  zoteroField?: ZoteroFieldParagraph,
 ): Block {
   let parsed: XNode[]
   try {
@@ -1545,6 +1615,7 @@ function buildTextParagraph(
     ommlFragmentsOf(mathXml),
     rubyFragmentsOf(mathXml),
     withImages,
+    zoteroField,
   )
   if (runs.length === 0) {
     const emptySz = emptyParaSizeHalfPoints(pNode, pPr)
@@ -3021,6 +3092,7 @@ function extractRuns(
   mathFragments: string[] = [],
   rubyFragments: string[] = [],
   withImages = false,
+  zoteroField?: ZoteroFieldParagraph,
 ): Run[] {
   const runs: Run[] = []
   let mathIndex = 0
@@ -3054,9 +3126,9 @@ function extractRuns(
   const activeComments = new Set<string>()
   type RevCtx = { ins?: RevisionInfo; del?: RevisionInfo }
   // inline field state: XE folds into Run.xeTerm, REF (cross-reference) into Run.refField
-  let fieldDepth = 0
-  let fieldInstr = ''
-  let fieldSeparated = false
+  let fieldDepth = zoteroField && zoteroField.part !== 'begin' ? 1 : 0
+  let fieldInstr = zoteroField?.instruction ?? ''
+  let fieldSeparated = zoteroField !== undefined && zoteroField.part !== 'begin'
   let fieldCached = ''
   let fieldCachedRuns: Run[] = []
   let fieldBeginRun: XNode | null = null
@@ -3075,6 +3147,27 @@ function extractRuns(
     if (rev?.ins) run.ins = rev.ins
     if (rev?.del) run.del = rev.del
     runs.push(run)
+  }
+  const pushZoteroCachedRuns = (part: ZoteroFieldPart, rev?: RevCtx) => {
+    const cachedRuns = fieldCachedRuns.length > 0 ? fieldCachedRuns : [{ text: fieldCached || ' ' }]
+    const id = zoteroField?.id ?? ctx.nextZoteroFieldId ?? 1
+    if (!zoteroField) ctx.nextZoteroFieldId = id + 1
+    cachedRuns.forEach((cached, index) => {
+      let runPart: ZoteroFieldPart = part
+      if (part === 'single' && cachedRuns.length > 1) {
+        runPart = index === 0 ? 'begin' : index === cachedRuns.length - 1 ? 'end' : 'inside'
+      } else if (part === 'begin' && index > 0) runPart = 'inside'
+      else if (part === 'end' && index < cachedRuns.length - 1) runPart = 'inside'
+      pushRun(
+        {
+          ...cached,
+          instrField: (zoteroField?.instruction ?? fieldInstr).trim(),
+          zoteroFieldId: id,
+          zoteroFieldPart: runPart,
+        },
+        rev,
+      )
+    })
   }
   const handleRun = (node: XNode, link: Run['link'] | undefined, rev?: RevCtx) => {
     const fldChar = findChild(node, 'w:fldChar')
@@ -3140,6 +3233,9 @@ function extractRuns(
                 rev,
               )
             }
+          } else if (ZOTERO_INLINE_FIELD_RE.test(fieldInstr)) {
+            if (zoteroField) pushZoteroCachedRuns(zoteroField.part, rev)
+            else pushZoteroCachedRuns('single', rev)
           } else if (SIMPLE_INLINE_FIELD_RE.test(fieldInstr)) {
             pushRun({ text: fieldCached || ' ', instrField: fieldInstr.trim() }, rev)
           } else if (fieldCachedRuns.length > 0) {
@@ -3291,6 +3387,9 @@ function extractRuns(
     }
   }
   walk(childrenOf(pNode))
+  if (zoteroField && fieldDepth > 0 && zoteroField.part !== 'end') {
+    pushZoteroCachedRuns(zoteroField.part)
+  }
   return mergeRuns(runs)
 }
 

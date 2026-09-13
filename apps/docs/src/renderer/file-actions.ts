@@ -180,6 +180,10 @@ export interface FileActionContext {
   sourcesDirty: boolean
   setSources: (value: SourceInfo[]) => void
   setSourcesDirty: (dirty: boolean) => void
+  zoteroDocumentData: string
+  zoteroDocumentDataDirty: boolean
+  setZoteroDocumentData: (value: string) => void
+  setZoteroDocumentDataDirty: (dirty: boolean) => void
   themeFonts: ThemeFonts | null
   themeFontsDirty: boolean
   themeColors: ThemeColors | null
@@ -399,6 +403,8 @@ export async function loadFile(
     ctx.setNotesDirty(false)
     ctx.setSources(parsed.sources)
     ctx.setSourcesDirty(false)
+    ctx.setZoteroDocumentData(parsed.zoteroDocumentData)
+    ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(parsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(parsed.themeColors ?? null)
@@ -489,6 +495,8 @@ export async function newFile(ctx: FileActionContext): Promise<boolean | undefin
     ctx.setNotesDirty(false)
     ctx.setSources([])
     ctx.setSourcesDirty(false)
+    ctx.setZoteroDocumentData(parsed.zoteroDocumentData)
+    ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(parsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(parsed.themeColors ?? null)
@@ -668,6 +676,7 @@ export async function buildDocBytes(ctx: FileActionContext): Promise<Uint8Array 
     footnotes: ctx.notesDirty ? ctx.footnotes : undefined,
     endnotes: ctx.notesDirty ? ctx.endnotes : undefined,
     sources: ctx.sourcesDirty ? ctx.sources : undefined,
+    zoteroDocumentData: ctx.zoteroDocumentDataDirty ? ctx.zoteroDocumentData : undefined,
     themeFonts: ctx.themeFontsDirty && ctx.themeFonts ? ctx.themeFonts : undefined,
     themeColors: ctx.themeColorsDirty && ctx.themeColors ? ctx.themeColors : undefined,
   })
@@ -1082,6 +1091,8 @@ async function saveOnce(
     ctx.setNotesDirty(false)
     ctx.setSources(reparsed.sources)
     ctx.setSourcesDirty(false)
+    ctx.setZoteroDocumentData(reparsed.zoteroDocumentData)
+    ctx.setZoteroDocumentDataDirty(false)
     ctx.setThemeFonts(reparsed.themeFonts ?? null)
     ctx.setThemeFontsDirty(false)
     ctx.setThemeColors(reparsed.themeColors ?? null)
