@@ -63,6 +63,21 @@ describe('provider model catalog', () => {
       expect(model).not.toContain('/')
     }
   })
+
+  it('seeds Agnes AI with its self-owned tiers (checked 2026-09-13, wiki.agnes-ai.cn)', () => {
+    const agnes = AI_PROVIDERS.find((provider) => provider.id === 'agnes')!
+    expect(agnes.label).toBe('Agnes AI（爱思）')
+    expect(agnes.models).toEqual([
+      'agnes-2.5-flash',
+      'agnes-3.0-flash',
+      'agnes-2.5-pro-beta',
+      'agnes-2.5-pro',
+    ])
+    expect(agnes.defaultModel).toBe('agnes-2.5-flash')
+    expect(agnes.models).toContain(agnes.defaultModel)
+    expect(agnes.needsBaseUrl).toBeUndefined()
+    expect(agnes.keyPlaceholder).toContain('agnes-ai.cn')
+  })
 })
 
 describe('resolveAiSettings', () => {

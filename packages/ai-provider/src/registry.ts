@@ -5,11 +5,7 @@ import type { AiProviderConfig, AiProviderId, AiProviderMeta } from './types'
 
 /** Wire protocols every provider maps onto, including the official Codex app-server bridge. */
 export type AiProtocol =
-  | 'anthropic'
-  | 'gemini'
-  | 'openai-compatible'
-  | 'openai-responses'
-  | 'codex-app-server'
+  'anthropic' | 'gemini' | 'openai-compatible' | 'openai-responses' | 'codex-app-server'
 
 export interface ProviderCapabilities {
   /**
@@ -242,6 +238,11 @@ export const AI_PROVIDER_ADAPTERS: Record<AiProviderId, ProviderAdapter> = {
     capabilities: { auth: 'api-key', vision: true },
     // a stored base URL selects a regional router (https://router.eu.requesty.ai/v1 for the EU)
     resolveEndpoint: fixedEndpoint('openai-compatible', 'https://router.requesty.ai/v1'),
+  },
+  agnes: {
+    meta: metaOf('agnes'),
+    capabilities: { auth: 'api-key', vision: true },
+    resolveEndpoint: fixedEndpoint('openai-compatible', 'https://api.agnes-ai.cn/v1'),
   },
   'opencode-zen': {
     meta: metaOf('opencode-zen'),

@@ -7,7 +7,7 @@ import type { AiProviderId } from '@chatoffice/ai-provider'
 // hand-traced ChatOffice mark and a generic icon for the "custom" endpoint.
 // Brand-colored logos keep their official colors in both themes (brand
 // assets, not chrome — see CLAUDE.md theming rules); monochrome marks
-// (OpenAI, Kimi, Grok, OpenRouter, Requesty, ChatOffice, Custom) use
+// (OpenAI, Kimi, Grok, OpenRouter, Requesty, Agnes, ChatOffice, Custom) use
 // currentColor so they stay legible in dark mode.
 //
 // Gradient-filled marks (Gemini, Qwen, MiniMax) are components so useId can
@@ -222,6 +222,19 @@ const LOGOS: Record<AiProviderId, ReactNode> = {
       <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.8" />
       <path
         d="M8.5 17.5v-11h4.25a3.25 3.25 0 010 6.5H8.5m4 0 3.5 4.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
+  // plain "A" wordmark in a rounded square (same family as the Requesty R)
+  agnes: (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M7.5 17.5 12 6.5l4.5 11M9.2 13.8h5.6"
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"

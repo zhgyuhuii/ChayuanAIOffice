@@ -103,6 +103,7 @@ describe('provider registry', () => {
       ['mistral', 'mistral-large-latest', 'https://api.mistral.ai/v1'],
       ['openrouter', 'openrouter/auto', 'https://openrouter.ai/api/v1'],
       ['requesty', 'claude-sonnet-5', 'https://router.requesty.ai/v1'],
+      ['agnes', 'agnes-2.5-flash', 'https://api.agnes-ai.cn/v1'],
     ]
     for (const [id, model, baseUrl] of cases) {
       expect(AI_PROVIDER_ADAPTERS[id].resolveEndpoint(config(model))).toEqual({
@@ -217,11 +218,7 @@ describe('provider registry', () => {
   it('only chatoffice authenticates through the chatoffice login', () => {
     for (const [id, adapter] of Object.entries(AI_PROVIDER_ADAPTERS)) {
       expect(adapter.capabilities.auth).toBe(
-        id === 'chatoffice'
-          ? 'chatoffice-login'
-          : id === 'codex'
-            ? 'codex-chatgpt'
-            : 'api-key',
+        id === 'chatoffice' ? 'chatoffice-login' : id === 'codex' ? 'codex-chatgpt' : 'api-key',
       )
     }
   })

@@ -194,6 +194,16 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     keyPlaceholder: 'sk-...',
   },
   {
+    id: 'agnes',
+    label: 'Agnes AI（爱思）',
+    // Agnes 爱思 self-owned tiers as the platform model page lists them
+    // (verified 2026-09-13, wiki.agnes-ai.cn): two flash generations, the
+    // 2.5 pro beta and its GA snapshot
+    models: ['agnes-2.5-flash', 'agnes-3.0-flash', 'agnes-2.5-pro-beta', 'agnes-2.5-pro'],
+    defaultModel: 'agnes-2.5-flash',
+    keyPlaceholder: 'agnes-ai.cn 控制台生成的 API Key',
+  },
+  {
     id: 'opencode-zen',
     label: 'OpenCode Zen',
     // Pay-as-you-go gateway (opencode.ai/docs/zen); ids exactly as GET
