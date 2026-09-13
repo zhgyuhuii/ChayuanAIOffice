@@ -36,7 +36,6 @@ const toggleStyle = (editor: Editor | null, style: StylableMark) =>
 const toggleList = (editor: Editor | null, list: ListKind) =>
   editor && uiOp(editor, { op: 'toggleList', target: 'selection', list })
 
-
 interface Props {
   editor: Editor | null
   disabled: boolean
@@ -248,9 +247,14 @@ export function Ribbon({
           />
         </label>
         {aiPanelAvailable && (
-          <AiPanelToggle open={aiPanelOpen} onToggle={onToggleAiPanel} label={t('aiOpenAssistant')} />
+          <AiPanelToggle
+            open={aiPanelOpen}
+            onToggle={onToggleAiPanel}
+            label={t('aiOpenAssistant')}
+          />
         )}
-        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />      </div>
+        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />{' '}
+      </div>
 
       <div className="ribbon-body" data-ribbon-body="">
         <div className="ribbon-group">
@@ -420,4 +424,3 @@ export function Ribbon({
     </div>
   )
 }
-
