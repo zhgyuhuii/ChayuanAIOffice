@@ -128,7 +128,7 @@ test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
       await page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' }).click()
       const projectsTab = page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' })
       await expect(projectsTab).toHaveAttribute('aria-selected', 'true')
-      await expect(page.locator('.side-sec-projects .proj-item')).toBeVisible()
+      await expect(page.locator('.side-sec-projects .proj-item').first()).toBeVisible()
       await expect(page.locator('.side-sec-chats')).toHaveCount(0)
       await page.locator('.sidebar-tabs [role="tab"]', { hasText: '对话' }).click()
       await expect(page.locator('.side-sec-chats')).toBeVisible()
