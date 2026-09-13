@@ -4430,7 +4430,13 @@ export async function createAiDocument(
   }
   try {
     if (type === 'docx') {
-      const payload: AiDocContent = { title, html: content }
+      // T3 排版接力: the docked route carries the user's original instruction
+      // so the docs renderer runs one local formatting pass after the fill
+      const payload: AiDocContent = {
+        title,
+        html: content,
+        ...(request.instruction ? { formattingInstruction: request.instruction } : {}),
+      }
       if (
         request.dock &&
         shellHooks?.openAiDockTab?.(payload, projectDir ?? undefined, request.projectId)

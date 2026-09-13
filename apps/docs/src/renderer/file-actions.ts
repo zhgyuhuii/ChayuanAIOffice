@@ -15,6 +15,7 @@ import {
   BLANK_ORDERED_NUM_ID,
   buildBlankDocx,
   findChartWorkbookPath,
+  generateTocFieldXml,
   parseChartPartXml,
   parseDocx,
   patchChartPartXml,
@@ -52,6 +53,7 @@ import {
 import { docStyleCss } from './doc-style-css'
 import type { CompareEntry } from './editor/compare'
 import { blocksToPmDoc, pmDocToSavePlan, type PmNode } from './editor/convert'
+import { collectHeadings } from './editor/headings'
 import { TABLE_TRAILING_SKIP } from './editor/extensions'
 import { TRACK_IGNORE } from './editor/revisions'
 import {
@@ -777,28 +779,103 @@ function stripAiChanged(node: PmNode): PmNode {
  * Parse queued create_document content into blocks. The docs chat validates
  * the fragment before queueing, but the pdf chat cannot (the parser lives
  * here), so unparseable HTML falls back to plain-text paragraphs instead of
- * silently dropping the content.
+ * silently dropping the content. `<toc></toc>` markers (T3 TOC 直通) become
+ * sentinel paragraphs that applyTocPlaceholders later swaps for real TOC
+ * fields.
  */
 export function aiDocContentNodes(html: string): PmNode[] {
+  const markup = withTocPlaceholders(html)
   const numIds = { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID }
   try {
-    const nodes = parseHtmlFragment(html, numIds)
+    const nodes = parseHtmlFragment(markup, numIds)
     if (nodes.length > 0) return nodes.map(stripAiChanged)
   } catch {
     /* fall through to the plain-text salvage */
   }
+  // plain-text salvage: textContent glues adjacent blocks in minified markup —
+  // reinsert the block structure as blank lines (and cell gaps as spaces)
+  let text = ''
   try {
-    // textContent glues adjacent blocks in minified markup — reinsert the
-    // block structure as blank lines (and cell gaps as spaces) before parsing
-    const spaced = html
+    const spaced = markup
       .replace(/<\/(?:td|th)>/gi, ' $&')
       .replace(/<\/(?:p|h[1-6]|li|div|pre|blockquote|tr)>/gi, '$&\n\n')
-    const text = new DOMParser().parseFromString(spaced, 'text/html').body.textContent ?? ''
-    if (!text.trim()) return []
-    return parseHtmlFragment(text, numIds).map(stripAiChanged)
+    text = (new DOMParser().parseFromString(spaced, 'text/html').body.textContent ?? '').trim()
   } catch {
-    return []
+    /* no DOMParser (or parse blew up): fall through to the empty document */
   }
+  if (!text) return []
+  try {
+    const nodes = parseHtmlFragment(text, numIds)
+    if (nodes.length > 0) return nodes.map(stripAiChanged)
+  } catch {
+    /* fall through to the whole-text paragraphs */
+  }
+  // last resort (空内容洞修复): the salvage text goes in as one paragraph per
+  // blank-line chunk — never open an EMPTY document when the model sent content
+  return text
+    .split(/\n{2,}/)
+    .map((para) => para.replace(/[ \t]*\n[ \t]*/g, ' ').trim())
+    .filter(Boolean)
+    .map((para) =>
+      stripAiChanged({
+        type: 'docParagraph',
+        attrs: { docxIndex: null, styleId: null, aiChanged: true },
+        content: [{ type: 'text', text: para }],
+      }),
+    )
+}
+
+/** sentinel paragraph text the &lt;toc&gt; marker becomes after parsing */
+export const AI_TOC_PLACEHOLDER = '[[CHATOFFICE-TOC]]'
+
+/** &lt;toc&gt;&lt;/toc&gt; / &lt;toc/&gt; (case-insensitive, whitespace-tolerant) → sentinel paragraph */
+export function withTocPlaceholders(html: string): string {
+  return html.replace(
+    /<toc\b[^>]*\/\s*>|<toc\b[^>]*>\s*<\/toc\s*>/gi,
+    `<p>${AI_TOC_PLACEHOLDER}</p>`,
+  )
+}
+
+/**
+ * Swap every TOC sentinel paragraph for a real Word TOC field generated from
+ * the document's current headings (T3 TOC 直通): the field lines are clickable
+ * and Word recomputes page numbers on open. A marker in a document without
+ * headings is simply deleted. Returns true when the document changed.
+ */
+export function applyTocPlaceholders(editor: Editor): boolean {
+  const targets: { pos: number; size: number }[] = []
+  editor.state.doc.forEach((node, offset) => {
+    if (node.type.name === 'docParagraph' && node.textContent.trim() === AI_TOC_PLACEHOLDER) {
+      targets.push({ pos: offset, size: node.nodeSize })
+    }
+  })
+  if (targets.length === 0) return false
+  const entries = collectHeadings(editor.state.doc).map(({ level, text }) => ({ level, text }))
+  const tr = editor.state.tr
+  // replace back-to-front so earlier positions stay valid
+  for (const target of [...targets].reverse()) {
+    if (entries.length === 0) {
+      tr.delete(target.pos, target.pos + target.size)
+      continue
+    }
+    const nodes = generateTocFieldXml(entries).map((xml, i) =>
+      editor.schema.nodes.docProtected.create({
+        docxIndex: null,
+        blockType: 'passthrough',
+        label: 'TOC field',
+        genXml: xml,
+        fieldDisplay: {
+          kind: 'tocLine',
+          left: entries[i].text,
+          right: '',
+          level: entries[i].level,
+        },
+      }),
+    )
+    tr.replaceWith(target.pos, target.pos + target.size, nodes)
+  }
+  editor.view.dispatch(tr)
+  return true
 }
 
 /**
@@ -820,11 +897,16 @@ export async function applyAiDocContent(
     // 分块流入——AI 产物以「边写边长出来」的观感落纸,而非长时间
     // 空白后整篇砸下;save 内部 waitForFullContent 保证不写截断盘。
     setContentPhased(phasedHostFor(ctx), { type: 'doc', content: nodes })
+    // the streamed tail carries headings the TOC field is built from — wait
+    // for the full document before resolving the <toc> markers
+    await waitForFullContent()
   } else if (nodes.length > 0) {
     replaceBlockRange(editor, 0, editor.state.doc.childCount - 1, nodes)
     // the document is born with this content: undo must not reach back to empty
     resetEditorHistory(editor)
   }
+  // T3 TOC 直通: <toc> 标记位 → 可点击跳转的 Word TOC 域（打开时更新页码）
+  applyTocPlaceholders(editor)
   await save(ctx, false, true, `${content.title}.docx`)
 }
 

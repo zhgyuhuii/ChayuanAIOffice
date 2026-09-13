@@ -41,7 +41,30 @@ export interface DocsRelayDeps {
 }
 
 export interface DocsRelayServer {
+  /**
+   * T3 排版接力: run one LOCAL turn on the doc loop (the boot-time formatting
+   * pass seeded by create_document). Emits the same turn events as a relayed
+   * 'send' (the Home conversation mirrors them). Returns false while a turn is
+   * in flight — callers degrade silently, the document content stands.
+   */
+  runLocal(text: string): boolean
   dispose(): void
+}
+
+/**
+ * The one-shot formatting prompt for the boot relay (T3): the document body is
+ * already written; this turn only applies the layout the user asked for.
+ * Self-contained — it does not assume the mainline seed has landed.
+ */
+export function formattingRelayPrompt(instruction: string): string {
+  return (
+    'Apply the formatting the user asked for to the CURRENT document (read it from the ' +
+    'editor): fonts, font sizes, table of contents, page numbers, clickable navigation ' +
+    'and any other layout asks in the request below. Do NOT rewrite, expand or ' +
+    're-translate the content — only apply formatting. If the request asks for nothing ' +
+    'formatting-related, reply with a single short sentence and touch nothing.\n\n' +
+    `The user's original request:\n${instruction}`
+  )
 }
 
 function emit(event: RelayEvent): void {
@@ -155,6 +178,18 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   }
   deps.getEditor()?.on('selectionUpdate', onSelectionUpdate)
 
+  /** one relayed turn on the doc loop (shared by 'send' and runLocal) */
+  const startTurn = (text: string): boolean => {
+    // 首页在忙时会排队(dockRelay 队列),这里收到 send 即非忙;竞态
+    // 双发时丢弃后者(主线镜像以事件流为准,不重复入镜像)。
+    if (loop.busy) return false
+    currentTurnId = `t-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    emit({ type: 'turn-started', turnId: currentTurnId })
+    emit({ type: 'busy', busy: true })
+    void loop.run(text)
+    return true
+  }
+
   const handle = (command: RelayCommand): void => {
     // 诊断口径:命令到达与载荷规模(端到端验收经 CDP console 捕获)
     console.debug(
@@ -185,13 +220,7 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
         break
       }
       case 'send': {
-        // 首页在忙时会排队(dockRelay 队列),这里收到 send 即非忙;竞态
-        // 双发时丢弃后者(主线镜像以事件流为准,不重复入镜像)。
-        if (loop.busy) return
-        currentTurnId = `t-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-        emit({ type: 'turn-started', turnId: currentTurnId })
-        emit({ type: 'busy', busy: true })
-        void loop.run(command.text)
+        startTurn(command.text)
         break
       }
       case 'stop': {
@@ -228,6 +257,7 @@ export function startDocsRelayServer(deps: DocsRelayDeps): DocsRelayServer {
   })
 
   return {
+    runLocal: startTurn,
     dispose() {
       offCommand?.()
       clearTimeout(selectionTimer)

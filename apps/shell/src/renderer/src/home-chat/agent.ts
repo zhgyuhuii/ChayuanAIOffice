@@ -120,6 +120,8 @@ When the user asks to create/write a document (report, plan, letter, summary, no
 2. Then, in the SAME turn, call create_document with just the title and type. Never pass the body as a tool argument — your reply text becomes the file content verbatim.
 3. After the tool succeeds the document opens in a new tab automatically and the conversation continues there. Do not repeat the body afterwards; a single short closing sentence is enough.
 
+Table of contents: when the user asks for a TOC / 目录 / clickable outline with jumps, place an empty <toc></toc> tag (allowed in addition to the tags above) exactly where the TOC should appear — usually right after the opening <h1>. Keep a clean <h1>-<h3> hierarchy in the body: the app turns the tag into a real Word TOC field whose entries come from those headings (clickable, page numbers refresh on open). One <toc> per document.
+
 Never stall by asking for details: when something is unspecified, make a reasonable choice and proceed. Infer a concise file-name-style title from the request when none is given. Default to docx unless the user says Markdown.
 
 ## Working with existing files
@@ -150,6 +152,8 @@ function homeSkill(
   bridge: HomeAgentBridge,
   state: {
     turnText: () => string
+    /** T3 排版接力: the user's original instruction for the in-flight turn */
+    turnInstruction: () => string
     transcript: () => AgentMessage[]
     onCreatedDoc(info: { title: string; docType: 'docx' | 'md' }): void
     onOpenedDoc(info: { title: string; filePath: string }): void
@@ -186,6 +190,11 @@ function homeSkill(
             title,
             content: body,
             ...(projectId ? { projectId } : {}),
+            // T3 排版接力: the docked docx carries the raw instruction so the
+            // docs renderer runs one formatting pass after the content lands
+            ...(docType === 'docx' && state.turnInstruction()
+              ? { instruction: state.turnInstruction() }
+              : {}),
           })
           if (!result.ok) {
             return {
@@ -312,6 +321,7 @@ const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp'])
 export class HomeAgent {
   private readonly loop: AgentLoop
   private turnTextValue = ''
+  private turnInstructionValue = ''
   private createdDoc: { title: string; docType: 'docx' | 'md' } | null = null
   private openedDoc: { title: string; filePath: string } | null = null
   private queued: { text: string; attachments: HomeChatAttachment[] } | null = null
@@ -327,6 +337,7 @@ export class HomeAgent {
       bridge,
       {
         turnText: () => this.turnTextValue,
+        turnInstruction: () => this.turnInstructionValue,
         transcript: () =>
           this.loop.messages
             .filter(
@@ -414,6 +425,7 @@ export class HomeAgent {
 
   private async start(text: string, attachments: HomeChatAttachment[]): Promise<void> {
     this.turnTextValue = ''
+    this.turnInstructionValue = text
     this.createdDoc = null
     this.openedDoc = null
     this.events.onBusy(true)

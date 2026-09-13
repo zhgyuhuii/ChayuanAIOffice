@@ -220,6 +220,10 @@ export interface CreateDocumentRequest {
   /** project the document belongs to (项目中心模型): its root becomes the
    *  first-save / direct-write directory instead of the global default */
   projectId?: string
+  /** T3 排版接力: the user's original instruction for this turn — docked docx
+   *  routes carry it into AiDocContent so the docs renderer runs one local
+   *  AgentLoop formatting pass (fonts / TOC / page numbers) after the fill */
+  instruction?: string
 }
 
 export interface CreateDocumentResult {
@@ -233,6 +237,9 @@ export interface CreateDocumentResult {
 export interface AiDocContent {
   title: string
   html: string
+  /** T3 排版接力: after the boot fill, the docked editor runs one local
+   *  formatting turn over this raw user instruction (absent = no pass) */
+  formattingInstruction?: string
 }
 
 export interface DesktopApi {

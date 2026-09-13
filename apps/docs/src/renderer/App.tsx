@@ -51,7 +51,8 @@ import {
 import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
-import { startDocsRelayServer } from './ai/relay-server'
+import { formattingRelayPrompt, startDocsRelayServer } from './ai/relay-server'
+import type { DocsRelayServer } from './ai/relay-server'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
 import { applyHfText, hfEditText } from './editor/hf-text'
 import { textColorValue } from './editor/text-color'
@@ -1534,6 +1535,10 @@ export function App() {
     [],
   )
 
+  // live relay server handle: the boot-time formatting pass (T3) calls into it
+  // right after the AI content lands (null = not docked / not booted yet)
+  const docsRelayRef = useRef<DocsRelayServer | null>(null)
+
   useEffect(() => {
     if (!editor) return
     const unsubscribe = window.desktop.onOpenDocx((result) => {
@@ -1559,12 +1564,22 @@ export function App() {
         // 'password': the prompt is up; its cancel path lands on blank instead.
         const outcome = pending ? await loadFile(pending) : 'canceled'
         if (outcome === 'canceled') await newFile()
-        if (aiContent && !pending) {
+        // T3 空内容洞修复: a pending open and queued AI content arriving on the
+        // same tab no longer drop the content — consumption order is pending
+        // first, AI content after (both apply to the mounted document)
+        if (aiContent) {
           // fileCtxRef refreshes per render: wait until newFile's setDoc landed
           for (let i = 0; i < 100 && !fileCtxRef.current.doc; i++) {
             await new Promise((resolve) => setTimeout(resolve, 20))
           }
           await applyAiDocContentImpl(fileCtxRef.current, aiContent)
+          // T3 排版接力: with the body on paper, hand the user's original
+          // instruction to the docked doc loop for one local formatting turn
+          // (setFont/insertToc/…). Rides the one-shot aiContent queue, so it
+          // fires once per create_document; relay missing/busy → silent skip.
+          if (aiContent.formattingInstruction) {
+            docsRelayRef.current?.runLocal(formattingRelayPrompt(aiContent.formattingInstruction))
+          }
         }
       })
       // Open failures also land on a blank document, or the tab stays at "Opening…" forever
@@ -4678,7 +4693,11 @@ export function App() {
       getSettings: () => settings,
       systemSuffix: aiLangDirective(),
     })
-    return () => server.dispose()
+    docsRelayRef.current = server
+    return () => {
+      docsRelayRef.current = null
+      server.dispose()
+    }
     // re-created when the core skill inputs change (new doc / settings swap)
   }, [editor, doc?.isBlank, aiCommentsAccess, aiHfAccess, settings])
   const insertServices = useStableCallbacks({

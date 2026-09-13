@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Editor } from '@tiptap/core'
 import { editorExtensions } from '../src/renderer/editor/extensions'
 import { executeTool } from '../src/renderer/ai/tools'
-import { aiDocContentNodes } from '../src/renderer/file-actions'
+import {
+  AI_TOC_PLACEHOLDER,
+  aiDocContentNodes,
+  applyTocPlaceholders,
+  withTocPlaceholders,
+} from '../src/renderer/file-actions'
 
 const editors = new Set<Editor>()
 afterEach(() => {
@@ -140,5 +145,114 @@ describe('aiDocContentNodes (boot-time fill of the new docx tab)', () => {
 
   it('returns nothing for markup with no text at all', () => {
     expect(aiDocContentNodes('<p></p>')).toEqual([])
+  })
+
+  it('never returns an empty document while salvage text exists (空内容洞)', () => {
+    // every input carrying text must yield at least one node — the old code
+    // could bottom out at [] when both parse passes failed
+    for (const html of [
+      '<p>A</p><formula>\\frac{</formula>',
+      '<div>仅文字</div>',
+      '<table><tr><td>单元格</td></tr></table>',
+      '<section><p>奇怪标签</p></section>',
+    ]) {
+      expect(aiDocContentNodes(html).length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('withTocPlaceholders (<toc> 直通标记, T3)', () => {
+  it('rewrites the paired and self-closing forms into sentinel paragraphs', () => {
+    const p = `<p>${AI_TOC_PLACEHOLDER}</p>`
+    expect(withTocPlaceholders('<h1>T</h1><toc></toc><p>x</p>')).toBe(`<h1>T</h1>${p}<p>x</p>`)
+    expect(withTocPlaceholders('<h1>T</h1><toc/><p>x</p>')).toBe(`<h1>T</h1>${p}<p>x</p>`)
+    expect(withTocPlaceholders('<h1>T</h1><TOC>  </TOC><p>x</p>')).toBe(`<h1>T</h1>${p}<p>x</p>`)
+    expect(withTocPlaceholders('<h1>T</h1><toc ></toc ><p>x</p>')).toContain(p)
+  })
+
+  it('leaves markup without markers untouched', () => {
+    expect(withTocPlaceholders('<h1>T</h1>')).toBe('<h1>T</h1>')
+  })
+
+  it('aiDocContentNodes keeps the sentinel paragraph in place', () => {
+    const nodes = aiDocContentNodes('<h1>标题</h1><toc></toc><p>正文</p>')
+    expect(nodes.map((n) => n.type)).toEqual(['docHeading', 'docParagraph', 'docParagraph'])
+    expect(JSON.stringify(nodes[1])).toContain(AI_TOC_PLACEHOLDER)
+  })
+})
+
+describe('applyTocPlaceholders (sentinel → Word TOC field, T3)', () => {
+  function topBlocks(
+    editor: Editor,
+  ): { name: string; text: string; attrs: Record<string, unknown> }[] {
+    const out: { name: string; text: string; attrs: Record<string, unknown> }[] = []
+    editor.state.doc.forEach((node) => {
+      out.push({ name: node.type.name, text: node.textContent, attrs: node.attrs })
+    })
+    return out
+  }
+
+  it('swaps the sentinel for clickable TOC field lines built from the headings', () => {
+    const editor = createEditor()
+    editor.commands.setContent({
+      type: 'doc',
+      content: [
+        {
+          type: 'docHeading',
+          attrs: { docxIndex: null, level: 1 },
+          content: [{ type: 'text', text: '章一' }],
+        },
+        {
+          type: 'docParagraph',
+          attrs: { docxIndex: null },
+          content: [{ type: 'text', text: AI_TOC_PLACEHOLDER }],
+        },
+        {
+          type: 'docHeading',
+          attrs: { docxIndex: null, level: 2 },
+          content: [{ type: 'text', text: '节一' }],
+        },
+      ],
+    } as never)
+    expect(applyTocPlaceholders(editor)).toBe(true)
+    const blocks = topBlocks(editor)
+    expect(blocks.map((b) => b.name)).toEqual([
+      'docHeading',
+      'docProtected',
+      'docProtected',
+      'docHeading',
+    ])
+    const lines = blocks.filter((b) => b.name === 'docProtected')
+    expect(lines.map((l) => (l.attrs.fieldDisplay as { left: string }).left)).toEqual([
+      '章一',
+      '节一',
+    ])
+    expect(lines.every((l) => String(l.attrs.genXml).includes('TOC'))).toBe(true)
+  })
+
+  it('deletes the sentinel when the document has no headings (TOC would be empty)', () => {
+    const editor = createEditor()
+    editor.commands.setContent({
+      type: 'doc',
+      content: [
+        {
+          type: 'docParagraph',
+          attrs: { docxIndex: null },
+          content: [{ type: 'text', text: AI_TOC_PLACEHOLDER }],
+        },
+        {
+          type: 'docParagraph',
+          attrs: { docxIndex: null },
+          content: [{ type: 'text', text: '正文' }],
+        },
+      ],
+    } as never)
+    expect(applyTocPlaceholders(editor)).toBe(true)
+    expect(topBlocks(editor).map((b) => b.text)).toEqual(['正文'])
+  })
+
+  it('is a no-op without a sentinel', () => {
+    const editor = createEditor()
+    expect(applyTocPlaceholders(editor)).toBe(false)
   })
 })
