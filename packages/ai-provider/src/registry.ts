@@ -52,7 +52,7 @@ function metaOf(id: AiProviderId): AiProviderMeta {
  * must not be sent there either.
  */
 export function modelHasFixedSampling(model: string): boolean {
-  return /(^|\/)(kimi-k3|gpt-5|gemini-3|o1(-mini|-preview)?|o3(-mini)?|o4-mini)/.test(model)
+  return /(^|\/)(kimi-k3|gpt-5|gemini-3|o1(-mini|-preview)?|o3(-mini)?|o4-mini)/i.test(model)
 }
 
 /**
@@ -105,9 +105,11 @@ function opencodeEndpoint(
   return (config) => {
     // a stored base URL replaces the gateway root; the documented `/v1` API base is tolerated
     const base = (config.baseUrl || root).replace(/\/+$/, '').replace(/\/v1$/, '')
-    if (routes.anthropic.test(config.model)) return { protocol: 'anthropic', baseUrl: base }
-    const omit = modelHasFixedSampling(config.model) || config.model.startsWith('kimi-')
-    const sampling = omit ? { omitTemperature: true } : {}
+    const omit =
+      modelHasFixedSampling(config.model) || config.model.toLowerCase().startsWith('kimi-')
+    const sampling = omit ? { omitTemperature: true as const } : {}
+    if (routes.anthropic.test(config.model))
+      return { protocol: 'anthropic', baseUrl: base, ...sampling }
     if (routes.gemini?.test(config.model)) {
       return { protocol: 'gemini', baseUrl: `${base}/v1`, ...sampling }
     }

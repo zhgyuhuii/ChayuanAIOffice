@@ -3,6 +3,7 @@ import {
   AI_PROVIDER_ADAPTERS,
   getProviderAdapter,
   modelEchoesReasoning,
+  modelHasFixedSampling,
   modelLacksVision,
 } from '../src/registry'
 import { AI_PROVIDERS, CHATOFFICE_LLM_BASE_URLS } from '../src/providers'
@@ -322,5 +323,62 @@ describe('modelEchoesReasoning', () => {
     expect(modelEchoesReasoning('deepseek-v4-pro')).toBe(true)
     expect(modelEchoesReasoning('gpt-5.6-luna')).toBe(false)
     expect(modelEchoesReasoning('kimi-k3')).toBe(false)
+  })
+})
+
+describe('modelHasFixedSampling case handling', () => {
+  it('matches fixed-sampling families case-insensitively like modelEchoesReasoning does', () => {
+    expect(modelHasFixedSampling('GPT-5.6-sol')).toBe(true)
+    expect(modelHasFixedSampling('KIMI-K3')).toBe(true)
+    expect(modelHasFixedSampling('Gemini-3.7-flash')).toBe(true)
+    expect(modelHasFixedSampling('O1-mini')).toBe(true)
+    expect(modelHasFixedSampling('gpt-4o-mini')).toBe(false)
+  })
+
+  it('omits temperature for upper-case fixed-sampling ids on mirror routes', () => {
+    expect(
+      AI_PROVIDER_ADAPTERS.custom.resolveEndpoint(config('GPT-5.6-terra', 'https://mirror/v1')),
+    ).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://mirror/v1',
+      omitTemperature: true,
+    })
+    expect(AI_PROVIDER_ADAPTERS.openrouter.resolveEndpoint(config('MOONSHOTAI/KIMI-K3'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://openrouter.ai/api/v1',
+      omitTemperature: true,
+    })
+  })
+
+  it('carries omitTemperature onto every opencode route, including upper-case mirrors', () => {
+    // minimax rides Messages on Go; it is not fixed-sampling, so no flag
+    expect(AI_PROVIDER_ADAPTERS['opencode-go'].resolveEndpoint(config('minimax-m2'))).toEqual({
+      protocol: 'anthropic',
+      baseUrl: 'https://opencode.ai/zen/go',
+    })
+    // upper-case fixed-sampling ids via the Zen openai-compatible route must omit
+    expect(AI_PROVIDER_ADAPTERS['opencode-zen'].resolveEndpoint(config('GPT-5.6-sol'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://opencode.ai/zen/v1',
+      omitTemperature: true,
+    })
+    expect(AI_PROVIDER_ADAPTERS['opencode-zen'].resolveEndpoint(config('KIMI-K3'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://opencode.ai/zen/v1',
+      omitTemperature: true,
+    })
+    // KIMI prefix check is case-insensitive on opencode routes (all Kimi ids omit there)
+    expect(AI_PROVIDER_ADAPTERS['opencode-go'].resolveEndpoint(config('KIMI-K2.7-code'))).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://opencode.ai/zen/go/v1',
+      omitTemperature: true,
+    })
+    expect(
+      AI_PROVIDER_ADAPTERS.custom.resolveEndpoint(config('KIMI-K3', 'https://mirror/v1')),
+    ).toEqual({
+      protocol: 'openai-compatible',
+      baseUrl: 'https://mirror/v1',
+      omitTemperature: true,
+    })
   })
 })
