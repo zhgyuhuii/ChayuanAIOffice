@@ -95,6 +95,26 @@ describe('shiftFormulaRefs: column shifts', () => {
   })
 })
 
+describe('shiftFormulaRefs: whole-row spans', () => {
+  it('shifts whole-row spans like ordinary ranges', () => {
+    expect(shift('=SUM(2:4)', insertRows(2)).formula).toBe('=SUM(3:5)')
+    expect(shift('=SUM(2:4)', insertRows(3)).formula).toBe('=SUM(2:5)')
+    // structural edits ignore $ anchors, like ordinary refs do
+    expect(shift('=SUM($2:4)', insertRows(3)).formula).toBe('=SUM($2:5)')
+    expect(shift('=SUM(2:4)', deleteRows(1)).formula).toBe('=SUM(1:3)')
+  })
+
+  it('errors and shrinks whole-row spans on deletes like ranges do', () => {
+    expect(shift('=SUM(3:4)', deleteRows(3, 2)).formula).toBe('=SUM(#REF!)')
+    expect(shift('=SUM(3:4)', deleteRows(3, 2)).hasRefError).toBe(true)
+    expect(shift('=SUM(2:5)', deleteRows(3, 2)).formula).toBe('=SUM(2:3)')
+  })
+
+  it('does not mangle A1 ranges when scanning for row spans', () => {
+    expect(shift('=SUM(B2:D4)', insertRows(2)).formula).toBe('=SUM(B3:D5)')
+  })
+})
+
 describe('shiftFormulaRefs: what must NOT be rewritten', () => {
   it('does not mangle function names containing digits', () => {
     const result = shift('=LOG10(A1)', insertRows(5))

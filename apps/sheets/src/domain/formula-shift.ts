@@ -108,6 +108,15 @@ function offsetRefPart(part: RefPart, rowDelta: number, columnDelta: number): Re
 const COLUMN_SPAN_RE =
   /(?<![A-Za-z0-9_.$!:])(?:(?:'([^']+)'|([A-Za-z0-9_.]+))!)?(\$?)([A-Z]{1,3}):(\$?)([A-Z]{1,3})(?![A-Za-z0-9($!:])/g
 
+const ROW_SPAN_RE =
+  /(?<![A-Za-z0-9_.$!:])(?:(?:'([^']+)'|([A-Za-z0-9_.]+))!)?(\$?)([0-9]{1,7}):(\$?)([0-9]{1,7})(?![A-Za-z0-9($!:])/g
+
+// Whole-row spans (2:4) — the row-axis mirror of COLUMN_SPAN_RE. REF_RE only
+// matches refs with a column component, so live structural row edits would
+// otherwise leave =SUM(2:4) pointing at stale rows while the save path
+// (xlsx-structure wholeRow) moves them. The lookbehind blocks matches inside
+// A1 refs (B2:D4) the same way the column pass does.
+
 /**
  * Rewrites A1-style references for COPY/FILL semantics (Excel's fill handle):
  * relative axes shift by the cell's offset from its source cell, `$`-anchored
@@ -265,6 +274,40 @@ export function shiftFormulaRefs(
         if (!shiftedSecond)
           shiftedSecond = clampRefPart(part(bAbs as string, bCol as string), spec, 'end')
         const next = `${prefix}${formatCol(shiftedFirst)}:${formatCol(shiftedSecond)}`
+        if (next !== match) changed = true
+        return next
+      })
+    }
+    // Whole-row spans (2:4): the row-axis mirror. REF_RE needs a column
+    // component, so without this pass live inserts/deletes leave whole-row
+    // refs stale while the save path moves them.
+    if (spec.axis === 'row') {
+      out = out.replace(ROW_SPAN_RE, (match, quoted, bare, aAbs, aRow, bAbs, bRow) => {
+        const prefixSheet = (quoted ?? bare) as string | undefined
+        const applies =
+          prefixSheet === undefined ? formulaSheetMatchesOp : prefixSheet === opSheetName
+        if (!applies) return match
+        const prefix =
+          prefixSheet === undefined ? '' : `${quoted !== undefined ? `'${quoted}'` : bare}!`
+        const part = (abs: string, rowText: string): RefPart => ({
+          colAbs: '',
+          col: 0,
+          rowAbs: abs,
+          row: Number(rowText) - 1,
+        })
+        const formatRow = (p: RefPart): string => `${p.rowAbs}${p.row + 1}`
+        let shiftedFirst = shiftRefPart(part(aAbs as string, aRow as string), spec)
+        let shiftedSecond = shiftRefPart(part(bAbs as string, bRow as string), spec)
+        if (!shiftedFirst && !shiftedSecond) {
+          changed = true
+          hasRefError = true
+          return `${prefix}#REF!`
+        }
+        if (!shiftedFirst)
+          shiftedFirst = clampRefPart(part(aAbs as string, aRow as string), spec, 'start')
+        if (!shiftedSecond)
+          shiftedSecond = clampRefPart(part(bAbs as string, bRow as string), spec, 'end')
+        const next = `${prefix}${formatRow(shiftedFirst)}:${formatRow(shiftedSecond)}`
         if (next !== match) changed = true
         return next
       })
