@@ -7,7 +7,8 @@
  * right-aligned dot-leader tab and a TOC pStyle.
  *
  * Only unambiguous lines convert: a non-empty title, at least four leader
- * dots, and a trailing arabic/roman page number.
+ * dots (or underscores, as some producers emit), and a trailing
+ * arabic/roman page number.
  */
 import type { Line, PdfChar, Span, TextBlock } from '../ir'
 import { analyzeChars } from './chars'
@@ -15,15 +16,17 @@ import { firstStrongDir } from './rtl'
 import type { LineUnit } from './units'
 import { clusterUnitRows } from './units'
 
-/** title ... leader dots ... page number */
-const TOC_LINE_RE = /^(.*?[^\s.])\s*([.·]\s*){4,}\s*([0-9]+|[ivxlcdm]+)\s*$/i
+/** title ... leader dots/underscores ... page number */
+const TOC_LINE_RE = /^(.*?[^\s._])\s*([.·_]\s*){4,}\s*([0-9]+|[ivxlcdm]+)\s*$/i
 /** each this many points of extra indent nests the entry one level deeper */
 const LEVEL_INDENT_PT = 14
 const MAX_TOC_LEVEL = 9
 
 // ── leaderless entries ("ACKNOWLEDGEMENTS        iv") — unit-row based ──
-/** a page number unit: bare arabic (≤3 digits) or roman page number */
-const PAGENUM_UNIT_RE = /^(?:[0-9]{1,3}|[ivxlcdm]{1,6})$/i
+/** a page number unit: bare arabic (≤4 digits, so 1000+ page manuals convert)
+    or roman page number. Five digits and up stay rejected (years, zip codes);
+    the run-level ascending + right-align checks further screen collisions. */
+const PAGENUM_UNIT_RE = /^(?:[0-9]{1,4}|[ivxlcdm]{1,6})$/i
 /** at least this many consecutive rows make a leaderless TOC run */
 const TOC_RUN_MIN_ROWS = 3
 /** page-number right edges must line up within this many ems */

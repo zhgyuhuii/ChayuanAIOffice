@@ -38,6 +38,23 @@ describe('detectTocBlocks (dot leaders)', () => {
     )
     expect(detectTocBlocks(blocks)).toBe(blocks)
   })
+
+  it('converts underscore-leader lines some producers emit', () => {
+    const chars = [
+      ...mkText('Appendix A', 72, { y: 700 }).chars,
+      ...mkText('____', 300, { y: 700 }).chars,
+      ...mkText('1024', 500, { y: 700 }).chars,
+    ]
+    const blocks = detectTocBlocks(groupIntoBlocks(analyzeChars(chars)))
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0]!.tocEntry).toEqual({ level: 1, pageNumber: '1024' })
+    expect(blocks[0]!.lines[0]!.spans.map((s) => s.text).join('')).toBe('Appendix A')
+  })
+
+  it('still rejects fill-in lines with no page number', () => {
+    const blocks = groupIntoBlocks(analyzeChars(mkText('Name: ____', 72, { y: 700 }).chars))
+    expect(detectTocBlocks(blocks)).toBe(blocks)
+  })
 })
 
 describe('hasDotLeaderRun', () => {
@@ -91,6 +108,27 @@ describe('detectTocRows (leaderless entries)', () => {
       ...mkText('Beta', 72, { y: 686 }).chars,
       ...mkText('5', 300, { y: 686 }).chars,
       ...entryRow('Gamma', '7', 672),
+    ]
+    expect(detectTocRows(unitsOf(chars)).blocks).toHaveLength(0)
+  })
+
+  it('detects leaderless rows with 4-digit page numbers (1000+ page manuals)', () => {
+    const chars = [
+      ...entryRow('CHAPTER 30. APPENDIX', '1001', 700),
+      ...entryRow('CHAPTER 31. TABLES', '1009', 686),
+      ...entryRow('CHAPTER 32. INDEX', '1024', 672),
+    ]
+    const { blocks } = detectTocRows(unitsOf(chars))
+    expect(blocks).toHaveLength(3)
+    expect(blocks[0]!.tocEntry).toEqual({ level: 1, pageNumber: '1001' })
+    expect(blocks[2]!.tocEntry?.pageNumber).toBe('1024')
+  })
+
+  it('still rejects 5-digit trailing numbers (years, zips)', () => {
+    const chars = [
+      ...entryRow('Alpha', '20240', 700),
+      ...entryRow('Beta', '20250', 686),
+      ...entryRow('Gamma', '20260', 672),
     ]
     expect(detectTocRows(unitsOf(chars)).blocks).toHaveLength(0)
   })
