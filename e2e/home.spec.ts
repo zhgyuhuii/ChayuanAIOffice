@@ -13,9 +13,12 @@ test.describe('home screen', () => {
       await page.click('.side-launcher .launch-btn.primary')
       await expect(page.locator('.launch-item')).toHaveCount(6)
       await page.keyboard.press('Escape')
-      // ZCode 式左树：对话 / 项目 两分组 + 最近
-      await expect(page.locator('.side-sec-chats .side-files-title')).toHaveText('Chats')
-      await expect(page.locator('.side-sec-projects .side-files-title')).toHaveText('Projects')
+      // ZCode 式左树：对话 | 项目 双 Tab + 最近
+      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: 'Chats' })).toBeVisible()
+      await expect(
+        page.locator('.sidebar-tabs [role="tab"]', { hasText: 'Projects' }),
+      ).toBeVisible()
+      await expect(page.locator('.side-sec-chats')).toBeVisible()
       await expect(page.locator('.side-sec-recent .side-files-title')).toBeVisible()
       await expect(page.locator('.tab-bar .tab-item.tab-home')).toBeVisible()
       await page.screenshot({ path: screenshotPath('home-overview') })
@@ -32,9 +35,9 @@ test.describe('home screen', () => {
     })
     const { page } = launched
     try {
-      // 左树两分组与最近分组的中文标题
-      await expect(page.locator('.side-sec-chats .side-files-title')).toHaveText('对话')
-      await expect(page.locator('.side-sec-projects .side-files-title')).toHaveText('项目')
+      // 左树双 Tab 与最近分组的中文标题
+      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: '对话' })).toBeVisible()
+      await expect(page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' })).toBeVisible()
       await expect(page.locator('.side-sec-recent .side-files-title')).toHaveText('最近使用')
       await page.screenshot({ path: screenshotPath('home-zh-cn') })
     } finally {

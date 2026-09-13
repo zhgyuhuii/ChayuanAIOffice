@@ -4,16 +4,19 @@
  * in localStorage so the arrangement survives restarts; the middle chat pane
  * is always on and never persisted.
  *
- * Section collapse (对话 / 项目 / 最近使用 group headers) lives here too — one
- * storage slot for every home-tree arrangement the user fiddles with.
+ * Section collapse (最近使用 group header) and the tree's dual-tab pick
+ * (对话 | 项目) live here too — one storage slot for every home-tree
+ * arrangement the user fiddles with.
  */
+
+/** which of the two left-tree tabs (对话 / 项目) is shown */
+export type HomeTreeTab = 'chats' | 'projects'
 
 export interface HomeLayoutState {
   leftCollapsed: boolean
   rightCollapsed: boolean
-  /** ZCode 式左树两分组（对话 / 项目）的折叠态 */
-  chatsCollapsed: boolean
-  projectsCollapsed: boolean
+  /** ZCode 式左树双 Tab（对话 | 项目）：当前显示的面（默认对话） */
+  activeTab: HomeTreeTab
   recentCollapsed: boolean
   /** sidebar width in px (tree strip); the main process insets document views
    *  by the same amount, mirrored over setTreeWidth IPC */
@@ -45,11 +48,22 @@ export function clampDockWidth(w: number): number {
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
-  chatsCollapsed: false,
-  projectsCollapsed: false,
+  activeTab: 'chats',
   recentCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
   dockWidth: null,
+}
+
+/**
+ * Read the tree tab from a stored payload, migrating the pre-tab collapse
+ * flags: with both groups expanded the chats tab wins (default); a folded
+ * 对话 group with the projects group open means the user last looked at
+ * projects.
+ */
+export function treeTabFromStored(obj: Record<string, unknown>): HomeTreeTab {
+  if (obj.activeTab === 'projects' || obj.activeTab === 'chats') return obj.activeTab
+  if (obj.chatsCollapsed === true && obj.projectsCollapsed === false) return 'projects'
+  return 'chats'
 }
 
 function load(): HomeLayoutState {
@@ -62,8 +76,7 @@ function load(): HomeLayoutState {
       return {
         leftCollapsed: obj.leftCollapsed === true,
         rightCollapsed: obj.rightCollapsed === true,
-        chatsCollapsed: obj.chatsCollapsed === true,
-        projectsCollapsed: obj.projectsCollapsed === true,
+        activeTab: treeTabFromStored(obj),
         recentCollapsed: obj.recentCollapsed === true,
         sidebarWidth:
           typeof obj.sidebarWidth === 'number' && Number.isFinite(obj.sidebarWidth)
@@ -93,8 +106,7 @@ export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
   if (
     next.leftCollapsed === state.leftCollapsed &&
     next.rightCollapsed === state.rightCollapsed &&
-    next.chatsCollapsed === state.chatsCollapsed &&
-    next.projectsCollapsed === state.projectsCollapsed &&
+    next.activeTab === state.activeTab &&
     next.recentCollapsed === state.recentCollapsed &&
     next.sidebarWidth === state.sidebarWidth &&
     next.dockWidth === state.dockWidth

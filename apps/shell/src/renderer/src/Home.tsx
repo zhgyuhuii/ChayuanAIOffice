@@ -34,6 +34,7 @@ import {
   getHomeLayout,
   onHomeLayoutChange,
   setHomeLayout,
+  type HomeTreeTab,
 } from './home-layout'
 import { DockPane } from './DockPane'
 import { restoreDockTabs, snapshotFromTabs } from './dock-session'
@@ -1092,6 +1093,9 @@ export function Home() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
   const projectMode = hasProjectApi()
+
+  /** 左树当前显示的面（「项目」tab 仅项目模式存在，web shim 回落「对话」） */
+  const treeTab: HomeTreeTab = layout.activeTab === 'projects' && projectMode ? 'projects' : 'chats'
 
   // ── Home chat store (owned here so the left tree reads the same sessions;
   //    ChatPanel becomes a controlled view over it) ──
@@ -2560,64 +2564,60 @@ export function Home() {
     )
   }
 
-  /** 对话分组：点击头部展开对话清单；清单项点击进入会话；行尾过滤/归档 */
+  /** 「对话」tab 面板：平铺对话清单（置顶在前）；面板头部行尾 过滤+归档 两钮 */
   function renderChatsSection(): ReactElement {
     const q = chatsQuery.trim().toLowerCase()
     const visible = q ? liveSessions.filter((s) => sessionMatchesQuery(s, q)) : liveSessions
     return (
-      <div className={`side-group side-sec-chats${layout.chatsCollapsed ? ' collapsed' : ''}`}>
-        {renderGroupHead(
-          t('secChats'),
-          visible.length,
-          layout.chatsCollapsed,
-          () => setHomeLayout({ chatsCollapsed: !layout.chatsCollapsed }),
-          undefined,
-          undefined,
-          <>
-            <TreeHeadBtn
-              label={t('chatFilter')}
-              active={chatsFilterOpen || chatsQuery !== ''}
-              onClick={() => {
-                setChatsFilterOpen((v) => !v)
-                if (layout.chatsCollapsed) setHomeLayout({ chatsCollapsed: false })
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </TreeHeadBtn>
-            <TreeHeadBtn
-              label={t('chatArchive')}
-              active={archiveOpen}
-              onClick={() => setArchiveOpen(true)}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect
-                  x="2.5"
-                  y="3.2"
-                  width="11"
-                  height="2.4"
-                  rx="0.9"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                />
-                <path
-                  d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </TreeHeadBtn>
-          </>,
-          chatCountKey(visible.length),
-        )}
+      <div
+        className="side-group side-sec-chats"
+        role="tabpanel"
+        id="home-tree-panel-chats"
+        aria-labelledby="home-tree-tab-chats"
+      >
+        <div className="tree-tab-head">
+          <span className="tree-tab-count">
+            {t(chatCountKey(visible.length), { n: visible.length })}
+          </span>
+          <TreeHeadBtn
+            label={t('chatFilter')}
+            active={chatsFilterOpen || chatsQuery !== ''}
+            onClick={() => setChatsFilterOpen((v) => !v)}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </TreeHeadBtn>
+          <TreeHeadBtn
+            label={t('chatArchive')}
+            active={archiveOpen}
+            onClick={() => setArchiveOpen(true)}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect
+                x="2.5"
+                y="3.2"
+                width="11"
+                height="2.4"
+                rx="0.9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </TreeHeadBtn>
+        </div>
         {chatsFilterOpen && (
           <TreeFilterBar
             value={chatsQuery}
@@ -2639,8 +2639,8 @@ export function Home() {
     )
   }
 
-  /** 项目分组：一级项目列表；项目行点击展开其对话清单；
-   *  行尾 查看文件 / 新建任务 / 更多；头部 新建项目＝选择本地文件夹 */
+  /** 「项目」tab 面板：一级项目列表；项目行点击展开其对话清单；
+   *  行尾 查看文件 / 新建任务 / 更多；面板头部 新建项目＝选择本地文件夹 */
   function renderProjectsSection(): ReactElement {
     const q = projQuery.trim().toLowerCase()
     const sessionsOf = (pid: string) =>
@@ -2654,70 +2654,64 @@ export function Home() {
       : projects
     return (
       <div
-        className={`side-group side-sec-projects${layout.projectsCollapsed ? ' collapsed' : ''}`}
+        className="side-group side-sec-projects"
+        role="tabpanel"
+        id="home-tree-panel-projects"
+        aria-labelledby="home-tree-tab-projects"
       >
-        {renderGroupHead(
-          t('projects'),
-          visible.length,
-          layout.projectsCollapsed,
-          () => setHomeLayout({ projectsCollapsed: !layout.projectsCollapsed }),
-          undefined,
-          undefined,
-          <>
-            <TreeHeadBtn label={t('newProject')} onClick={() => void startNewProject()}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path
-                  d="M7 1v12M1 7h12"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </TreeHeadBtn>
-            <TreeHeadBtn
-              label={t('chatFilter')}
-              active={projFilterOpen || projQuery !== ''}
-              onClick={() => {
-                setProjFilterOpen((v) => !v)
-                if (layout.projectsCollapsed) setHomeLayout({ projectsCollapsed: false })
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </TreeHeadBtn>
-            <TreeHeadBtn
-              label={t('chatArchive')}
-              active={archiveOpen}
-              onClick={() => setArchiveOpen(true)}
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect
-                  x="2.5"
-                  y="3.2"
-                  width="11"
-                  height="2.4"
-                  rx="0.9"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                />
-                <path
-                  d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </TreeHeadBtn>
-          </>,
-          visible.length === 1 ? 'projCountOne' : 'projCount',
-        )}
+        <div className="tree-tab-head">
+          <span className="tree-tab-count">
+            {t(visible.length === 1 ? 'projCountOne' : 'projCount', { n: visible.length })}
+          </span>
+          <TreeHeadBtn label={t('newProject')} onClick={() => void startNewProject()}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M7 1v12M1 7h12"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+              />
+            </svg>
+          </TreeHeadBtn>
+          <TreeHeadBtn
+            label={t('chatFilter')}
+            active={projFilterOpen || projQuery !== ''}
+            onClick={() => setProjFilterOpen((v) => !v)}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </TreeHeadBtn>
+          <TreeHeadBtn
+            label={t('chatArchive')}
+            active={archiveOpen}
+            onClick={() => setArchiveOpen(true)}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect
+                x="2.5"
+                y="3.2"
+                width="11"
+                height="2.4"
+                rx="0.9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </TreeHeadBtn>
+        </div>
         {projFilterOpen && (
           <TreeFilterBar
             value={projQuery}
@@ -3203,15 +3197,38 @@ export function Home() {
           </nav>
         )}
 
-        {/* ZCode 式左树：对话 / 项目 两分组 + 最近；整体单滚动。
-            归档视图打开时取代前两分组（收藏文档与归档会话集中于此） */}
+        {/* ZCode 式左树：对话 | 项目 双 Tab + 最近；整体单滚动。
+            归档视图打开时取代 Tab 区（收藏文档与归档会话集中于此） */}
         <div className="sidebar-scroll">
           {archiveOpen ? (
             renderArchiveView()
           ) : (
             <>
-              {renderChatsSection()}
-              {projectMode && renderProjectsSection()}
+              <div className="sidebar-tabs" role="tablist" aria-label={t('sidebarTabList')}>
+                <button
+                  role="tab"
+                  id="home-tree-tab-chats"
+                  aria-selected={treeTab === 'chats'}
+                  aria-controls="home-tree-panel-chats"
+                  className={`sidebar-tab${treeTab === 'chats' ? ' active' : ''}`}
+                  onClick={() => setHomeLayout({ activeTab: 'chats' })}
+                >
+                  {t('secChats')}
+                </button>
+                {projectMode && (
+                  <button
+                    role="tab"
+                    id="home-tree-tab-projects"
+                    aria-selected={treeTab === 'projects'}
+                    aria-controls="home-tree-panel-projects"
+                    className={`sidebar-tab${treeTab === 'projects' ? ' active' : ''}`}
+                    onClick={() => setHomeLayout({ activeTab: 'projects' })}
+                  >
+                    {t('projects')}
+                  </button>
+                )}
+              </div>
+              {treeTab === 'projects' ? renderProjectsSection() : renderChatsSection()}
             </>
           )}
           {renderRecentSection()}

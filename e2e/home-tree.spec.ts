@@ -3,9 +3,9 @@ import { launchShell, closeAndSaveVideo, screenshotPath } from './helpers'
 import type { HomeChatSession } from '../apps/shell/src/shared/home-api'
 
 /**
- * ZCode 式左树（对话 / 项目 两分组）：
- * 头部过滤+归档、会话行归档/置顶/重命名/删除、项目行三钮与右键菜单、
- * 归档视图（收藏文档并入、归档会话可还原）。
+ * ZCode 式左树（对话 | 项目 双 Tab）：
+ * Tab 切换语义、面板头部过滤+归档、会话行归档/置顶/重命名/删除、
+ * 项目行三钮与右键菜单、归档视图（收藏文档并入、归档会话可还原）。
  */
 
 const seededSessions: HomeChatSession[] = [
@@ -36,8 +36,8 @@ const seededSessions: HomeChatSession[] = [
   },
 ]
 
-test.describe('ZCode 式左树（对话/项目两分组）', () => {
-  test('对话分组：清单/进入会话/右键菜单/置顶/重命名/行尾归档/过滤', async () => {
+test.describe('ZCode 式左树（对话|项目双 Tab）', () => {
+  test('对话 Tab：清单/进入会话/右键菜单/置顶/重命名/行尾归档/过滤', async () => {
     const launched = await launchShell({ onboardingSeen: true, lang: 'zh', videoDir: 'home-tree' })
     const { page } = launched
     try {
@@ -46,11 +46,13 @@ test.describe('ZCode 式左树（对话/项目两分组）', () => {
         await window.chatOffice.chatSessionsSave(sessions)
       }, seededSessions)
       await page.reload()
-      await expect(page.locator('.side-sec-chats .side-files-title')).toHaveText('对话')
+      // 双 Tab：默认落在「对话」，「项目」tab 待切换
+      const chatsTab = page.locator('.sidebar-tabs [role="tab"]', { hasText: '对话' })
+      await expect(chatsTab).toHaveAttribute('aria-selected', 'true')
 
-      // 清单只列未归档会话；头部行尾有 过滤+归档 两钮
+      // 清单只列未归档会话；面板头部行尾有 过滤+归档 两钮
       await expect(page.locator('.side-sec-chats .tree-chat')).toHaveCount(2)
-      await expect(page.locator('.side-sec-chats .side-group-head .side-head-btn')).toHaveCount(2)
+      await expect(page.locator('.side-sec-chats .tree-tab-head .side-head-btn')).toHaveCount(2)
 
       // 点击清单项进入会话（中栏出现该会话的消息）
       await page.locator('.side-sec-chats .tree-chat', { hasText: '待归档的会话' }).click()
@@ -90,7 +92,7 @@ test.describe('ZCode 式左树（对话/项目两分组）', () => {
       await expect(page.locator('.side-sec-chats .tree-chat')).toHaveCount(1)
 
       // 过滤按钮：搜索条过滤清单，Escape/× 收起
-      await page.locator('.side-sec-chats .side-group-head .side-head-btn').first().click()
+      await page.locator('.side-sec-chats .tree-tab-head .side-head-btn').first().click()
       await page.fill('.side-sec-chats .tree-filter input', '表格')
       await expect(page.locator('.side-sec-chats .tree-chat')).toHaveCount(1)
       await page.fill('.side-sec-chats .tree-filter input', '不存在的东西')
@@ -107,7 +109,7 @@ test.describe('ZCode 式左树（对话/项目两分组）', () => {
     }
   })
 
-  test('项目分组：一级列表/展开对话清单/行尾新建任务/右键重命名', async () => {
+  test('项目 Tab：切换语义/一级列表/展开对话清单/行尾新建任务/右键重命名', async () => {
     const launched = await launchShell({
       onboardingSeen: true,
       lang: 'zh',
@@ -121,7 +123,16 @@ test.describe('ZCode 式左树（对话/项目两分组）', () => {
         window.dispatchEvent(new Event('focus'))
       }, seededSessions)
       await page.reload()
-      await expect(page.locator('.side-sec-projects .side-files-title')).toHaveText('项目')
+
+      // Tab 切换语义：点「项目」tab → 项目面板出现、对话面板让位
+      await page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' }).click()
+      const projectsTab = page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' })
+      await expect(projectsTab).toHaveAttribute('aria-selected', 'true')
+      await expect(page.locator('.side-sec-projects .proj-item')).toBeVisible()
+      await expect(page.locator('.side-sec-chats')).toHaveCount(0)
+      await page.locator('.sidebar-tabs [role="tab"]', { hasText: '对话' }).click()
+      await expect(page.locator('.side-sec-chats')).toBeVisible()
+      await page.locator('.sidebar-tabs [role="tab"]', { hasText: '项目' }).click()
 
       // 一级是项目列表（默认项目 + 新建的一个）
       const projectRows = await page.locator('.side-sec-projects .proj-item').count()
@@ -173,8 +184,8 @@ test.describe('ZCode 式左树（对话/项目两分组）', () => {
       }, seededSessions)
       await page.reload()
 
-      // 头部归档按钮进入视图：归档的文档（原收藏）+ 归档的会话 两个子分组
-      await page.locator('.side-sec-chats .side-group-head .side-head-btn').nth(1).click()
+      // 面板头部归档按钮进入视图：归档的文档（原收藏）+ 归档的会话 两个子分组
+      await page.locator('.side-sec-chats .tree-tab-head .side-head-btn').nth(1).click()
       await expect(page.locator('.archive-view')).toBeVisible()
       await expect(page.locator('.archive-sub', { hasText: '归档的文档' })).toHaveCount(1)
       await expect(page.locator('.archive-sub', { hasText: '归档的会话' })).toHaveCount(1)
