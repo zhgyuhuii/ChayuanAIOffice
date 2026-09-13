@@ -42,15 +42,40 @@ export function encodeStyle(s: CharStyle): string {
   return key === '||||' ? '' : key
 }
 
+/**
+ * Font ids are EDIT_FONTS entries (see apps/pdf/src/shared/ipc.ts: arial,
+ * times, courier) but the check stays charset-based rather than a closed
+ * allowlist so a future id degrades to inherit instead of needing a lockstep
+ * update here. The charset excludes '|' so a crafted id can never inject an
+ * extra field and shift size/bold/italic on the next decode.
+ */
+export function isStyleFontId(font: string): boolean {
+  return /^[A-Za-z0-9_-]{1,32}$/.test(font)
+}
+
+/** Largest font size the layout path can handle (pt); larger values blow up
+    Math.round(size * 100) to Infinity and break sz attributes. */
+export const MAX_STYLE_FONT_SIZE = 1000
+
+/** Decimal point sizes only: rejects hex (0x10), exponents (1e2), whitespace
+    padding and anything Number() would coerce but Word would never emit. */
+export function parseStyleFontSize(raw: string): number | undefined {
+  const text = raw.trim()
+  if (!/^\d+(\.\d+)?$/.test(text)) return undefined
+  const n = Number(text)
+  if (!Number.isFinite(n) || n <= 0 || n > MAX_STYLE_FONT_SIZE) return undefined
+  return n
+}
+
 export function decodeStyle(key: string): CharStyle {
   if (!key) return {}
   const [color = '', font = '', size = '', bold = '', italic = ''] = key.split('|')
   const out: CharStyle = {}
   if (/^#[0-9a-f]{6}$/i.test(color)) out.color = color
-  if (font) out.font = font
+  if (font && isStyleFontId(font)) out.font = font
   if (size) {
-    const n = Number(size)
-    if (Number.isFinite(n) && n > 0) out.size = n
+    const n = parseStyleFontSize(size)
+    if (n !== undefined) out.size = n
   }
   if (bold === '1') out.bold = true
   else if (bold === '0') out.bold = false
@@ -60,7 +85,9 @@ export function decodeStyle(key: string): CharStyle {
 }
 
 /** Merge a partial style into an encoded key: undefined fields keep their value,
-    null clears the field back to inherit. */
+    null clears the field back to inherit. Invalid values (non-hex color,
+    off-charset font, out-of-range size, non-boolean toggle) are ignored so a
+    crafted patch can never inject field separators or Infinity sizes. */
 export function patchStyle(
   key: string,
   patch: { [K in keyof CharStyle]?: CharStyle[K] | null },
@@ -69,8 +96,24 @@ export function patchStyle(
   for (const k of ['color', 'font', 'size', 'bold', 'italic'] as const) {
     const v = patch[k]
     if (v === undefined) continue
-    if (v === null) delete s[k]
-    else (s as Record<string, unknown>)[k] = v
+    if (v === null) {
+      delete s[k]
+      continue
+    }
+    if (k === 'color') {
+      if (typeof v !== 'string' || !/^#[0-9a-f]{6}$/i.test(v)) continue
+      s.color = v
+    } else if (k === 'font') {
+      if (typeof v !== 'string' || !isStyleFontId(v)) continue
+      s.font = v
+    } else if (k === 'size') {
+      if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0 || v > MAX_STYLE_FONT_SIZE)
+        continue
+      s.size = v
+    } else if (k === 'bold' || k === 'italic') {
+      if (typeof v !== 'boolean') continue
+      s[k] = v
+    }
   }
   return encodeStyle(s)
 }
