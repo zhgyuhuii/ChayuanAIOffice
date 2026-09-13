@@ -9,6 +9,7 @@ import {
   decodeCsvBuffer,
   isNumericCell,
   parseCsv,
+  resolveImportDelimiter,
   sniffDelimiter,
 } from '../src/gateway/csv-import'
 
@@ -125,6 +126,30 @@ describe('parseCsv', () => {
       ['a', 'b'],
       ['1', '2'],
     ])
+  })
+})
+
+describe('resolveImportDelimiter', () => {
+  it('keeps single-column prose with stray semicolons in one column', () => {
+    const notes = 'Notes\nhello; world\nfoo; bar; baz\n'
+    expect(sniffDelimiter(notes)).toBe(';')
+    expect(resolveImportDelimiter(notes)).toBe(',')
+    expect(parseCsv(notes, resolveImportDelimiter(notes))).toEqual([
+      ['Notes'],
+      ['hello; world'],
+      ['foo; bar; baz'],
+    ])
+  })
+
+  it('keeps genuine semicolon tables split', () => {
+    expect(resolveImportDelimiter('a;b;c\n1;2;3')).toBe(';')
+    expect(resolveImportDelimiter('a;b\nc')).toBe(';')
+  })
+
+  it('keeps the sniffed delimiter when comma is equally ragged', () => {
+    // header opens single-field under ';' but commas appear irregularly too:
+    // forcing comma would trade one mis-split for another, so stay put
+    expect(resolveImportDelimiter('Notes\nhello; world; x, y\nfoo;bar')).toBe(';')
   })
 })
 

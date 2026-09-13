@@ -213,9 +213,28 @@ export function buildWorksheetXml(rows: readonly (readonly string[])[]): string 
 }
 
 export async function csvToXlsxBuffer(csvText: string, sheetName = 'Sheet1'): Promise<Buffer> {
-  const rows = parseCsv(csvText)
+  const rows = parseCsv(csvText, resolveImportDelimiter(csvText))
   if (rows.length === 0) throw new Error('The CSV file has no data rows.')
   return xlsxBufferFromRows(rows, sheetName)
+}
+
+/**
+ * Delimiter for the open-file path. The sniffer counts raw occurrences, so a
+ * single-column prose file whose notes hold more semicolons/tabs than commas
+ * ("hello; world") mis-sniffs and shatters into phantom columns — the same
+ * trap sheetCsvToXlsxBuffer avoids by pinning comma for the AI grid path.
+ * Guard: when the sniffed delimiter opens a single-field header row but a
+ * comma parse stays single-column throughout, the file is prose, not
+ * delimited data — keep it one column. A genuine ;-delimited table keeps its
+ * delimiter (multi-field header, or comma equally ragged).
+ */
+export function resolveImportDelimiter(csvText: string): string {
+  const sniffed = sniffDelimiter(csvText)
+  if (sniffed === ',') return sniffed
+  const sniffedRows = parseCsv(csvText, sniffed)
+  if (sniffedRows.length === 0 || sniffedRows[0]!.length !== 1) return sniffed
+  if (parseCsv(csvText, ',').every((row) => row.length === 1)) return ','
+  return sniffed
 }
 
 /**
