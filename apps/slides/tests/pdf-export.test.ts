@@ -5,7 +5,7 @@ import { basename, dirname, join } from 'node:path'
 import { PNG } from 'pngjs'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { exportSlidesPdf, type PdfExportWindow } from '../src/main/pdf-export'
+import { exportPageWidthIn, exportSlidesPdf, type PdfExportWindow } from '../src/main/pdf-export'
 
 const roots: string[] = []
 
@@ -157,5 +157,36 @@ describe('slides PDF export', () => {
     expect(win.loadedPath).not.toBeNull()
     expect(existsSync(dirname(win.loadedPath!))).toBe(false)
     expect(win.destroyed).toBe(true)
+  })
+
+  it('keeps real capture dimensions exact and falls back for degenerate ones', async () => {
+    expect(exportPageWidthIn(1600, 900)).toBe(13.333)
+    expect(exportPageWidthIn(4, 3)).toBe(10)
+    // zeroed/negative/non-finite captures fall back to 16:9 instead of 0/NaN/Infinity pages
+    for (const [w, h] of [
+      [0, 900],
+      [1600, 0],
+      [-1600, 900],
+      [Number.NaN, 900],
+      [1600, Number.POSITIVE_INFINITY],
+    ] as const) {
+      expect(exportPageWidthIn(w, h)).toBe(13.333)
+    }
+    // absurd ratios clamp instead of emitting poster-sized pages
+    expect(exportPageWidthIn(100000, 10)).toBe(37.5)
+    expect(exportPageWidthIn(10, 100000)).toBe(1.5)
+
+    const win = new TestPdfWindow()
+    const result = await exportSlidesPdf({
+      pngsBase64: ['png'],
+      widthPx: 0,
+      heightPx: 0,
+      filePath: await outputPath(),
+      createWindow: () => win,
+      openExportedPdf: () => {},
+    })
+    expect(result.ok).toBe(true)
+    expect(win.loadedHtml).toContain('@page { size: 13.333in 7.5in; margin: 0; }')
+    expect(win.printOptions).toMatchObject({ pageSize: { width: 13.333, height: 7.5 } })
   })
 })
