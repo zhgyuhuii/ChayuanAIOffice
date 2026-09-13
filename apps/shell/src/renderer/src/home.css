@@ -117,12 +117,52 @@ body.vib .home {
   background: var(--bg, #fff);
 }
 
+/* ── middle chat pane (T2): auto-hides while a docs editor fills the dock ── */
+
+/* the wrapper keeps ChatPanel MOUNTED at width 0 (drafts, relay mirrors and
+   scroll positions survive the hide/show cycle); the flex-basis transition
+   animates the collapse */
+.chat-pane {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: flex-basis 0.18s ease;
+}
+
+.chat-pane.chat-pane-hidden {
+  flex: 0 0 0px;
+  min-width: 0;
+}
+
+/* floating handle at the pane boundary: restores the conversation */
+.chat-pane-handle {
+  flex: none;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-right: 1px solid var(--border-subtle);
+  background: var(--bg-content);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.chat-pane-handle:hover {
+  color: var(--accent);
+  background: var(--surface-subtle);
+}
+
 /* ── dock pane (P1): right-pane editor docking ── */
 
 /* splitter between the conversation and the dock pane — mirrors the sidebar
    resizer's contract (7px strip, accent line on the pane edge, window-level
-   pointerup ends drags); hidden with the pane itself */
-.home.pane-right-collapsed > .dock-resizer {
+   pointerup ends drags); hidden with the pane itself, and while the chat
+   pane is auto-hidden (the handle replaces it as the boundary) */
+.home.pane-right-collapsed > .dock-resizer,
+.dock-resizer.chat-hidden {
   display: none;
 }
 

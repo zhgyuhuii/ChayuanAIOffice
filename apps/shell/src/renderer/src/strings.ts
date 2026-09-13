@@ -2,6 +2,7 @@ export const strings = {
   zh: {
     secChats: '对话',
     sidebarTabList: '左树分组',
+    chatPaneShow: '显示对话',
     chatCount: '{n} 个对话',
     chatCountOne: '{n} 个对话',
     projCount: '{n} 个项目',
@@ -362,6 +363,7 @@ export const strings = {
   en: {
     secChats: 'Chats',
     sidebarTabList: 'Sidebar sections',
+    chatPaneShow: 'Show conversation',
     chatCount: '{n} chats',
     chatCountOne: '{n} chat',
     projCount: '{n} projects',
@@ -736,6 +738,7 @@ export const strings = {
   ja: {
     secChats: 'チャット',
     sidebarTabList: 'サイドバー項目',
+    chatPaneShow: 'チャットを表示',
     chatCount: '{n} 件のチャット',
     chatCountOne: '{n} 件のチャット',
     projCount: '{n} 件のプロジェクト',
@@ -1114,6 +1117,7 @@ export const strings = {
   ko: {
     secChats: '대화',
     sidebarTabList: '사이드바 섹션',
+    chatPaneShow: '대화 표시',
     chatCount: '대화 {n}개',
     chatCountOne: '대화 {n}개',
     projCount: '프로젝트 {n}개',
@@ -1484,6 +1488,7 @@ export const strings = {
   fr: {
     secChats: 'Conversations',
     sidebarTabList: 'Sections de la barre latérale',
+    chatPaneShow: 'Afficher la conversation',
     chatCount: '{n} conversations',
     chatCountOne: '{n} conversation',
     projCount: '{n} projets',
@@ -1872,6 +1877,7 @@ export const strings = {
   de: {
     secChats: 'Chats',
     sidebarTabList: 'Seitenleisten-Bereiche',
+    chatPaneShow: 'Unterhaltung anzeigen',
     chatCount: '{n} Chats',
     chatCountOne: '{n} Chat',
     projCount: '{n} Projekte',
@@ -2258,6 +2264,7 @@ export const strings = {
   es: {
     secChats: 'Conversaciones',
     sidebarTabList: 'Secciones de la barra lateral',
+    chatPaneShow: 'Mostrar conversación',
     chatCount: '{n} conversaciones',
     chatCountOne: '{n} conversación',
     projCount: '{n} proyectos',
@@ -2643,6 +2650,7 @@ export const strings = {
   th: {
     secChats: 'บทสนทนา',
     sidebarTabList: 'ส่วนของแถบข้าง',
+    chatPaneShow: 'แสดงบทสนทนา',
     chatCount: '{n} บทสนทนา',
     chatCountOne: '{n} บทสนทนา',
     projCount: '{n} โปรเจกต์',
@@ -3014,6 +3022,7 @@ export const strings = {
   id: {
     secChats: 'Obrolan',
     sidebarTabList: 'Bagian bilah sisi',
+    chatPaneShow: 'Tampilkan obrolan',
     chatCount: '{n} obrolan',
     chatCountOne: '{n} obrolan',
     projCount: '{n} proyek',
@@ -3393,6 +3402,7 @@ export const strings = {
   ru: {
     secChats: 'Чаты',
     sidebarTabList: 'Разделы боковой панели',
+    chatPaneShow: 'Показать чат',
     chatCount: 'Чатов: {n}',
     chatCountOne: 'Чат: {n}',
     projCount: 'Проектов: {n}',
@@ -3770,6 +3780,7 @@ export const strings = {
   ar: {
     secChats: 'المحادثات',
     sidebarTabList: 'أقسام الشريط الجانبي',
+    chatPaneShow: 'إظهار المحادثة',
     chatCount: '{n} محادثة',
     chatCountOne: 'محادثة واحدة',
     projCount: '{n} مشروع',
@@ -4142,6 +4153,7 @@ export const strings = {
   pt: {
     secChats: 'Conversas',
     sidebarTabList: 'Seções da barra lateral',
+    chatPaneShow: 'Mostrar conversa',
     chatCount: '{n} conversas',
     chatCountOne: '{n} conversa',
     projCount: '{n} projetos',
@@ -4527,6 +4539,7 @@ export const strings = {
   it: {
     secChats: 'Conversazioni',
     sidebarTabList: 'Sezioni della barra laterale',
+    chatPaneShow: 'Mostra conversazione',
     chatCount: '{n} conversazioni',
     chatCountOne: '{n} conversazione',
     projCount: '{n} progetti',
@@ -4910,6 +4923,7 @@ export const strings = {
   pl: {
     secChats: 'Czaty',
     sidebarTabList: 'Sekcje panelu bocznego',
+    chatPaneShow: 'Pokaż rozmowę',
     chatCount: 'Czaty: {n}',
     chatCountOne: 'Czat: {n}',
     projCount: 'Projekty: {n}',
@@ -5290,6 +5304,7 @@ export const strings = {
   cs: {
     secChats: 'Chaty',
     sidebarTabList: 'Sekce postranního panelu',
+    chatPaneShow: 'Zobrazit konverzaci',
     chatCount: 'Chatů: {n}',
     chatCountOne: 'Chat: {n}',
     projCount: 'Projektů: {n}',
@@ -5666,6 +5681,7 @@ export const strings = {
   nl: {
     secChats: 'Chats',
     sidebarTabList: 'Zijbalksecties',
+    chatPaneShow: 'Gesprek tonen',
     chatCount: '{n} chats',
     chatCountOne: '{n} chat',
     projCount: '{n} projecten',
@@ -6050,6 +6066,7 @@ export const strings = {
   ms: {
     secChats: 'Sembang',
     sidebarTabList: 'Seksi bar sisi',
+    chatPaneShow: 'Tunjuk sembang',
     chatCount: '{n} sembang',
     chatCountOne: '{n} sembang',
     projCount: '{n} projek',
@@ -6433,6 +6450,7 @@ export const strings = {
   he: {
     secChats: 'שיחות',
     sidebarTabList: 'מקטעי סרגל הצד',
+    chatPaneShow: 'הצג שיחה',
     chatCount: '{n} שיחות',
     chatCountOne: 'שיחה אחת',
     projCount: '{n} פרויקטים',
@@ -6799,6 +6817,7 @@ export const strings = {
   hi: {
     secChats: 'चैट',
     sidebarTabList: 'साइडबार अनुभाग',
+    chatPaneShow: 'बातचीत दिखाएँ',
     chatCount: '{n} चैट',
     chatCountOne: '{n} चैट',
     projCount: '{n} प्रोजेक्ट',
@@ -7177,6 +7196,7 @@ export const strings = {
   'zh-TW': {
     secChats: '對話',
     sidebarTabList: '左樹分組',
+    chatPaneShow: '顯示對話',
     chatCount: '{n} 個對話',
     chatCountOne: '{n} 個對話',
     projCount: '{n} 個專案',

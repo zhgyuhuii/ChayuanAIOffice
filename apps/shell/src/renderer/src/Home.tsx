@@ -37,6 +37,11 @@ import {
   type HomeTreeTab,
 } from './home-layout'
 import { DockPane } from './DockPane'
+import {
+  CHAT_PANE_VISIBLE_DEFAULT,
+  isChatPaneHidden,
+  nextChatPaneVisibility,
+} from './chat-pane-visibility'
 import { restoreDockTabs, snapshotFromTabs } from './dock-session'
 import {
   applyRelayEvent,
@@ -1126,7 +1131,16 @@ export function Home() {
   const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
   /** P2-6 圈选标注:激活 dock 报来的选区(中栏「针对所选」提示) */
   const [selectionHint, setSelectionHint] = useState<string | null>(null)
+  /** T2 中栏对话栏对 dock 的自动收纳(docs 激活→收起,把手恢复→本次停靠不再收) */
+  const [chatPaneVisibility, setChatPaneVisibility] = useState(CHAT_PANE_VISIBLE_DEFAULT)
+  const chatPaneHidden = isChatPaneHidden(chatPaneVisibility)
   const handleDockTabs = useCallback((tabs: DockTabSummary[]) => {
+    // T2: a docs editor taking the dock pane collapses the middle chat pane
+    // (recorded before the session guard — the pane hides with no session too)
+    const docsActive = tabs.some((t) => t.active && t.kind === 'docs')
+    setChatPaneVisibility((prev) =>
+      nextChatPaneVisibility(prev, { type: 'docs-active', active: docsActive }),
+    )
     const store = chatStoreRef.current
     const session = store.active
     if (!session) return
@@ -3276,23 +3290,56 @@ export function Home() {
         <CloudProjectsView />
       ) : (
         <>
-          <ChatPanel
-            store={chatStore}
-            dockRelay={dockRelay}
-            projectId={selectedProjectId}
-            accountName={accountName}
-            onOpenSettings={() => handleSettingsOpenChange(true)}
-            activeScope={selectedProjectId ? { kind: 'project', id: selectedProjectId } : undefined}
-            openSignal={chatOpenSignal}
-            settingsRefreshNonce={settingsNonce}
-            projects={projects}
-          />
+          {/* T2 中栏对话栏:docs 编辑器停靠激活时自动收起(宽度 0 保挂载,
+              草稿/中继不丢);分界处的悬浮把手恢复,本次停靠不再自动收起 */}
+          <div className={`chat-pane${chatPaneHidden ? ' chat-pane-hidden' : ''}`}>
+            <ChatPanel
+              store={chatStore}
+              dockRelay={dockRelay}
+              projectId={selectedProjectId}
+              accountName={accountName}
+              onOpenSettings={() => handleSettingsOpenChange(true)}
+              activeScope={
+                selectedProjectId ? { kind: 'project', id: selectedProjectId } : undefined
+              }
+              openSignal={chatOpenSignal}
+              settingsRefreshNonce={settingsNonce}
+              projects={projects}
+            />
+          </div>
+          {chatPaneHidden && (
+            <button
+              className="chat-pane-handle"
+              aria-label={t('chatPaneShow')}
+              title={t('chatPaneShow')}
+              onClick={() =>
+                setChatPaneVisibility((prev) =>
+                  nextChatPaneVisibility(prev, { type: 'user-expand' }),
+                )
+              }
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.5 4.2A1.7 1.7 0 0 1 4.2 2.5h7.6a1.7 1.7 0 0 1 1.7 1.7v5.1a1.7 1.7 0 0 1-1.7 1.7H7.6l-3 2.2a.5.5 0 0 1-.8-.4v-1.8h-.8A1.7 1.7 0 0 1 1.2 9.3z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M4.4 5.6h7.2M4.4 8h4.6"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          )}
           {/* drag handle between the conversation and the dock pane; hidden
               with the pane itself (pane-right-collapsed) via the sibling
-              selector in CSS */}
+              selector in CSS, and while the chat pane is auto-hidden */}
           <div
             ref={dockResizerRef}
-            className="dock-resizer"
+            className={`dock-resizer${chatPaneHidden ? ' chat-hidden' : ''}`}
             role="separator"
             aria-orientation="vertical"
             onPointerDown={(event) => {
