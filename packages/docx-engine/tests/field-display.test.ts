@@ -58,6 +58,20 @@ describe('field paragraph display model', () => {
     })
   })
 
+  it('TOC entry splits on spaced and paired tab variants (LO/Google converters)', async () => {
+    for (const tab of ['<w:tab />', '<w:tab></w:tab>']) {
+      const body =
+        '<w:p><w:pPr><w:pStyle w:val="TOC1"/></w:pPr>' +
+        `<w:r><w:t>Chapter One</w:t></w:r><w:r>${tab}</w:r><w:r><w:t>12</w:t></w:r></w:p>`
+      const doc = await parseDocx(await buildDocx({ bodyXml: body }))
+      expect(doc.blocks[0].fieldDisplay).toMatchObject({
+        kind: 'tocLine',
+        left: 'Chapter One',
+        right: '12',
+      })
+    }
+  })
+
   it('a TOC entry carries the leading result run face and weight (Word draws the entry with its runs)', async () => {
     const entry = (rPr: string) =>
       '<w:p><w:pPr><w:pStyle w:val="TOC2"/><w:tabs><w:tab w:val="right" w:pos="8786"/></w:tabs>' +

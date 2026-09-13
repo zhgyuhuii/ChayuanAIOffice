@@ -52,10 +52,14 @@ export function fieldDisplayOf(
     const live = xml.replace(DEL_WRAPPER_RE, '')
     const deleted = !/<w:t(?:\s|>)/.test(live) && /<w:delText(?:\s|>)/.test(xml)
     const segs: string[] = ['']
-    const re = /<w:(?:t|delText)(?:\s[^>]*)?>([\s\S]*?)<\/w:(?:t|delText)>|<w:tab\/>/g
+    // run-level tab is attribute-less CT_Empty, but LO/Google converters emit
+    // it spaced (<w:tab />) or paired (<w:tab></w:tab>): match those too, while
+    // still excluding tab-stop definitions (<w:tab w:val=…/> in w:tabs).
+    const re =
+      /<w:(?:t|delText)(?:\s[^>]*)?>([\s\S]*?)<[/]w:(?:t|delText)>|<w:tab\s*[/]>|<w:tab>\s*<[/]w:tab>/g
     let m: RegExpExecArray | null
     while ((m = re.exec(deleted ? xml : live)) !== null) {
-      if (m[0] === '<w:tab/>') segs.push('')
+      if (m[1] === undefined) segs.push('')
       else segs[segs.length - 1] += m[1]
     }
     const right = segs.length > 1 ? segs.pop()! : ''

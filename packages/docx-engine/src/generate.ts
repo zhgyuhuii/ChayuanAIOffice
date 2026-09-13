@@ -445,7 +445,9 @@ export function patchFieldParagraphXml(xml: string, patch: FieldTextPatch): stri
   // space-free first segment before ≥2 tabs is the outline-number cell (not
   // part of the editable title).
   const tabStarts: number[] = []
-  const tabRe = /<w:tab\/>/g
+  // attribute-less run tab only: spaced (<w:tab />) and paired
+  // (<w:tab></w:tab>) variants from non-Word producers count as well.
+  const tabRe = /<w:tab\s*\/>|<w:tab>\s*<\/w:tab>/g
   let tabMatch: RegExpExecArray | null
   while ((tabMatch = tabRe.exec(xml)) !== null) tabStarts.push(tabMatch.index)
   const lastTab = tabStarts.length > 0 ? tabStarts[tabStarts.length - 1] : -1
@@ -737,10 +739,11 @@ export interface TextboxParaPatch {
 /** plain text of one w:p fragment (w:t + tabs/breaks), for change detection */
 function paraPlainText(pXml: string): string {
   let out = ''
-  const re = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\/>|<w:br\/>|<w:cr\/>/g
+  const re =
+    /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\s*\/>|<w:tab>\s*<\/w:tab>|<w:br\/>|<w:cr\/>/g
   let m: RegExpExecArray | null
   while ((m = re.exec(pXml)) !== null) {
-    if (m[0] === '<w:tab/>') out += '\t'
+    if (m[0].startsWith('<w:tab')) out += '\t'
     else if (m[0] === '<w:br/>' || m[0] === '<w:cr/>') out += '\n'
     else {
       out += m[1]
