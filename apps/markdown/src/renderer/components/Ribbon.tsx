@@ -19,6 +19,7 @@ import {
   IconInlineCode,
   IconLink,
   IconNumbered,
+  IconOutlineView,
   IconPicture,
   IconProperties,
   IconRedo,
@@ -35,7 +36,6 @@ const toggleStyle = (editor: Editor | null, style: StylableMark) =>
 const toggleList = (editor: Editor | null, list: ListKind) =>
   editor && uiOp(editor, { op: 'toggleList', target: 'selection', list })
 
-
 interface Props {
   editor: Editor | null
   disabled: boolean
@@ -48,6 +48,9 @@ interface Props {
   onInsertImage: () => void
   frontmatterOpen: boolean
   onToggleFrontmatter: () => void
+  outlineOpen: boolean
+  onToggleOutline: () => void
+  hasOutline: boolean
   aiPanelAvailable: boolean
   aiPanelOpen: boolean
   onToggleAiPanel: () => void
@@ -118,6 +121,9 @@ export function Ribbon({
   onInsertImage,
   frontmatterOpen,
   onToggleFrontmatter,
+  outlineOpen,
+  onToggleOutline,
+  hasOutline,
   aiPanelAvailable,
   aiPanelOpen,
   onToggleAiPanel,
@@ -241,9 +247,14 @@ export function Ribbon({
           />
         </label>
         {aiPanelAvailable && (
-          <AiPanelToggle open={aiPanelOpen} onToggle={onToggleAiPanel} label={t('aiOpenAssistant')} />
+          <AiPanelToggle
+            open={aiPanelOpen}
+            onToggle={onToggleAiPanel}
+            label={t('aiOpenAssistant')}
+          />
         )}
-        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />      </div>
+        <RibbonExpandButton state={collapse} label={t('ribbonExpand')} />{' '}
+      </div>
 
       <div className="ribbon-body" data-ribbon-body="">
         <div className="ribbon-group">
@@ -395,6 +406,14 @@ export function Ribbon({
             >
               <IconProperties size={ICON} />
             </IconBtn>
+            <IconBtn
+              title={t('outline')}
+              active={outlineOpen}
+              disabled={disabled || !hasOutline}
+              onClick={onToggleOutline}
+            >
+              <IconOutlineView size={ICON} />
+            </IconBtn>
           </div>
         </div>
       </div>
@@ -405,4 +424,3 @@ export function Ribbon({
     </div>
   )
 }
-

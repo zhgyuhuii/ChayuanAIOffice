@@ -49,3 +49,28 @@ system mode).
   launch.
 - `useI18n()`'s `t` is not referentially stable; never put it in a hook
   dependency array. Store the key and translate at render time.
+
+## Upstream sync iron rule (mandatory)
+
+本地修改绝不允许被上游更新破坏——这是铁律,不是偏好。This repo carries heavy
+local re-architecture on top of the `genoffice` upstream; every upstream sync
+must preserve all local work:
+
+- **Upstream clone** (`/Users/zyh/work/genoffice`): before pulling, protect
+  uncommitted local work — `git stash` → `git pull --ff-only` →
+  `git stash pop`. Never run `checkout --`/`reset --hard` over a dirty tree.
+  (Known standing local mod: the `window.aiOffice`→`window.chatOffice` bridge
+  rename in `apps/shell/src/renderer/src/SettingsModal.tsx`.)
+- **This repo**: upstream commits are cherry-picked and resolved per the
+  three-tier policy in `docs/upstream-sync.md` §3-Q3 — local functional zones
+  (shell Home / self-drawn window chrome, AI-panel/DockShell architecture,
+  generate_deck, `apps/server`, `apps/web`, branding) always win; upstream
+  intent is re-implemented into the local architecture; upstream never
+  bulk-overwrites a locally modified file. Local-only areas (`apps/server`,
+  `apps/web`, brand mapping) must stay untouched by syncs.
+- **Brand mapping** (`GenOffice`→`ChatOffice`, bridge `aiOffice`→`chatOffice`)
+  is replayed on every pick; exemptions: `GENOFFICE_*` env vars and
+  `genspark.ai` URL/host strings (changing them breaks features).
+- **`docs/upstream-sync.md` is the single ledger**: read it before syncing,
+  write the new endpoint sha back after. Gates before merge: full test +
+  typecheck + lint + brand grep must all be green.
