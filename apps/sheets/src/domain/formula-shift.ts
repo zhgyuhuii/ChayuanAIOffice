@@ -76,8 +76,14 @@ function clampRefPart(part: RefPart, spec: ShiftSpec, side: 'start' | 'end'): Re
 // sheet prefix (optional) + first ref + optional ":second ref". Boundaries:
 // not preceded by [A-Za-z0-9_.$] (protects LOG10, names) and the ref itself
 // must not be followed by a letter/digit/( (protects ABC1DEF, functions).
+// Quoted sheet names use Excel '' escaping (Bob''s for Bob's), mirroring the
+// save-path FORMULA_REFERENCE_PATTERN in gateway/xlsx-structure.ts.
 const REF_RE =
-  /(?<![A-Za-z0-9_.$!])(?:(?:'([^']+)'|([A-Za-z0-9_.]+))!)?(\$?)([A-Z]{1,3})(\$?)([0-9]{1,7})(?::(\$?)([A-Z]{1,3})(\$?)([0-9]{1,7}))?(?![A-Za-z0-9(])/g
+  /(?<![A-Za-z0-9_.$!])(?:(?:'((?:[^']|'')+)'|([A-Za-z0-9_.]+))!)?(\$?)([A-Z]{1,3})(\$?)([0-9]{1,7})(?::(\$?)([A-Z]{1,3})(\$?)([0-9]{1,7}))?(?![A-Za-z0-9(])/g
+
+function decodeQuotedSheetName(quoted: string): string {
+  return quoted.replaceAll("''", "'")
+}
 
 export interface FormulaShiftResult {
   readonly formula: string
@@ -104,9 +110,20 @@ function offsetRefPart(part: RefPart, rowDelta: number, columnDelta: number): Re
 // Whole-column spans (B:D) — REF_RE only matches refs with a row component,
 // so these need their own pass (fill-right must shift =SUM(B:B) to =SUM(C:C)).
 // The `:` in the lookbehind stops the second column of one span (or the end
-// cell of B2:D4) from starting a new match.
+// cell of B2:D4) from starting a new match. Quoted names use '' escaping like REF_RE.
 const COLUMN_SPAN_RE =
-  /(?<![A-Za-z0-9_.$!:])(?:(?:'([^']+)'|([A-Za-z0-9_.]+))!)?(\$?)([A-Z]{1,3}):(\$?)([A-Z]{1,3})(?![A-Za-z0-9($!:])/g
+  /(?<![A-Za-z0-9_.$!:])(?:(?:'((?:[^']|'')+)'|([A-Za-z0-9_.]+))!)?(\$?)([A-Z]{1,3}):(\$?)([A-Z]{1,3})(?![A-Za-z0-9($!:])/g
+
+function sheetPrefixApplies(
+  quoted: string | undefined,
+  bare: string | undefined,
+  formulaSheetMatchesOp: boolean,
+  opSheetName: string,
+): boolean {
+  if (quoted === undefined && bare === undefined) return formulaSheetMatchesOp
+  const prefixSheet = quoted !== undefined ? decodeQuotedSheetName(quoted) : bare
+  return prefixSheet === opSheetName
+}
 
 const ROW_SPAN_RE =
   /(?<![A-Za-z0-9_.$!:])(?:(?:'([^']+)'|([A-Za-z0-9_.]+))!)?(\$?)([0-9]{1,7}):(\$?)([0-9]{1,7})(?![A-Za-z0-9($!:])/g
@@ -199,13 +216,18 @@ export function shiftFormulaRefs(
     let out = segment.replace(
       REF_RE,
       (match, quoted, bare, aAbsC, aCol, aAbsR, aRow, bAbsC, bCol, bAbsR, bRow) => {
-        const prefixSheet = (quoted ?? bare) as string | undefined
-        const applies =
-          prefixSheet === undefined ? formulaSheetMatchesOp : prefixSheet === opSheetName
+        const applies = sheetPrefixApplies(
+          quoted as string | undefined,
+          bare as string | undefined,
+          formulaSheetMatchesOp,
+          opSheetName,
+        )
         if (!applies) return match
 
         const prefix =
-          prefixSheet === undefined ? '' : `${quoted !== undefined ? `'${quoted}'` : bare}!`
+          quoted === undefined && bare === undefined
+            ? ''
+            : `${quoted !== undefined ? `'${quoted}'` : bare}!`
         const first: RefPart = {
           colAbs: aAbsC as string,
           col: columnIndex(aCol as string),
@@ -249,12 +271,17 @@ export function shiftFormulaRefs(
     // deleted endpoints become #REF!, partial overlap shrinks).
     if (spec.axis === 'column') {
       out = out.replace(COLUMN_SPAN_RE, (match, quoted, bare, aAbs, aCol, bAbs, bCol) => {
-        const prefixSheet = (quoted ?? bare) as string | undefined
-        const applies =
-          prefixSheet === undefined ? formulaSheetMatchesOp : prefixSheet === opSheetName
+        const applies = sheetPrefixApplies(
+          quoted as string | undefined,
+          bare as string | undefined,
+          formulaSheetMatchesOp,
+          opSheetName,
+        )
         if (!applies) return match
         const prefix =
-          prefixSheet === undefined ? '' : `${quoted !== undefined ? `'${quoted}'` : bare}!`
+          quoted === undefined && bare === undefined
+            ? ''
+            : `${quoted !== undefined ? `'${quoted}'` : bare}!`
         const part = (abs: string, letters: string): RefPart => ({
           colAbs: abs,
           col: columnIndex(letters),

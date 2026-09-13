@@ -144,6 +144,13 @@ describe('shiftFormulaRefs: sheet prefixes', () => {
   it('handles quoted sheet names with spaces', () => {
     expect(shift("='My Data'!B5", insertRows(3), false, 'My Data').formula).toBe("='My Data'!B6")
   })
+
+  it("handles quoted sheet names with apostrophes ('' escaping)", () => {
+    expect(shift("='Bob''s'!B5", insertRows(3), false, "Bob's").formula).toBe("='Bob''s'!B6")
+    expect(shift("='Bob''s'!B:B", insertCols('A'), false, "Bob's").formula).toBe("='Bob''s'!C:C")
+    // wrong sheet must not rewrite
+    expect(shift("='Bob''s'!B5", insertRows(3), false, 'Other').formula).toBe("='Bob''s'!B5")
+  })
 })
 
 describe('shiftFormulaRefs: add_sheet is a no-op', () => {
