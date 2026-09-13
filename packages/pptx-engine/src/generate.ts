@@ -595,12 +595,21 @@ function patchRunColor(runXml: string, color: string): string {
       `<a:solidFill><a:srgbClr val="${hex}"/></a:solidFill>`,
     )
   }
+  // Any non-solid fill kind (gradFill/blipFill/pattFill/noFill/grpFill): remove
+  // it so the injected solidFill below is the run's only fill child.
+  // CT_TextCharacterProperties allows a single fill choice — a leftover
+  // gradFill next to the new solidFill fails strict validation and triggers
+  // PowerPoint repair, the same defect #326 fixed for solidFill flavors.
+  const withoutOtherFills = runXml.replace(
+    /<a:(gradFill|blipFill|pattFill|noFill|grpFill)\b[^>]*?(?:\/>|>[\s\S]*?<\/a:\1>)/g,
+    '',
+  )
   // No solidFill: expand a self-closing rPr to a pair first, then inject at the start
   const fill = `<a:solidFill><a:srgbClr val="${hex}"/></a:solidFill>`
-  if (/<a:rPr\b[^>]*\/>/.test(runXml)) {
-    return runXml.replace(/<a:rPr\b([^>]*?)\/>/, `<a:rPr$1>${fill}</a:rPr>`)
+  if (/<a:rPr\b[^>]*\/>/.test(withoutOtherFills)) {
+    return withoutOtherFills.replace(/<a:rPr\b([^>]*?)\/>/, `<a:rPr$1>${fill}</a:rPr>`)
   }
-  return runXml.replace(/(<a:rPr\b[^>]*>)/, `$1${fill}`)
+  return withoutOtherFills.replace(/(<a:rPr\b[^>]*>)/, `$1${fill}`)
 }
 
 function buildRPrAttrs(run: TextRun): string {
