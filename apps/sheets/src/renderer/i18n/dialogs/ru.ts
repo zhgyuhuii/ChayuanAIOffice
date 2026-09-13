@@ -1,4 +1,5 @@
 /** dialogs strings, ru (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const ru = {
   dlgAllowEditRangesTitle: 'Разрешить изменение диапазонов',
   dlgAllowEditRangesHint: 'Эти диапазоны остаются доступными для изменения при защищённом листе. Записываются при сохранении; пароли не поддерживаются.',
@@ -366,4 +367,12 @@ export const ru = {
   dlgFnDescNpv: 'Возвращает чистую приведённую стоимость потока платежей при заданной ставке.',
   dlgFnDescIrr: 'Возвращает внутреннюю норму доходности потока платежей.',
   dlgFnCatFinancial: 'Финансовые',
-}
+  dlgFnCatDatabase: 'База данных',
+  dlgFnCatInformation: 'Информационные',
+  dlgFnCatEngineering: 'Инженерные',
+  dlgFnCatCube: 'Куб',
+  dlgFnCatCompatibility: 'Совместимость',
+  dlgFnCatWeb: 'Интернет',
+  dlgFnCatArray: 'Массив',
+  dlgFnCatOther: 'Другие',
+} satisfies Record<keyof typeof zh, string>

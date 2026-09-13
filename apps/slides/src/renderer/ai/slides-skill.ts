@@ -9,11 +9,11 @@ import type {
 } from '@chatoffice/pptx-render'
 import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
 import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '../../shared/ipc'
-import { auditDeckConsistency, auditSlideLayout, formatAudit } from './layout-audit'
+import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '@chatoffice/pptx-ops/op-docs'
+import { auditDeckConsistency, auditSlideLayout, formatAudit } from '@chatoffice/pipelines/slides/layout-audit'
 import { runLayoutScript, type LayoutScriptElement } from './layout-script'
 import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
-import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '../../shared/op-docs'
 import { t } from '../i18n/locale'
 import _systemPrompt from './prompts/system.md?raw'
 

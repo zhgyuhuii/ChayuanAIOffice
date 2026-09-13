@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import type { Page } from '@playwright/test'
 import { launchShell, closeAndSaveVideo, waitForPageWithUrl } from './helpers'
 
-// the preload exposes window.__genofficeDebug only under this env var
+// the preload exposes window.__chatofficeDebug only under this env var
 process.env.GENOFFICE_DEBUG_HOOKS = '1'
 
 /**
@@ -38,7 +38,7 @@ function facade(sheets: Page): Promise<void> {
 
 test.describe('sheets: paste repeats into an anchor-shaped target', () => {
   test('a copied 1×3 row tiles down a 4×1 selection', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'genoffice-anchor-tile-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'chatoffice-anchor-tile-'))
     const launched = await launchShell({
       onboardingSeen: true,
       videoDir: 'sheets-paste-anchor-tile',
@@ -52,7 +52,7 @@ test.describe('sheets: paste repeats into an anchor-shaped target', () => {
       await expect(page.locator('.quick-card').nth(1)).toContainText('AI Sheets')
       await page.locator('.quick-card').nth(1).click()
 
-      const sheets = await waitForPageWithUrl(app, 'sheets/out')
+      const sheets = await waitForPageWithUrl(app, '://sheets/')
       await sheets.waitForFunction(() => document.body.textContent?.includes('Sheet1'), null, {
         timeout: 30_000,
       })
@@ -71,8 +71,8 @@ test.describe('sheets: paste repeats into an anchor-shaped target', () => {
 
       // source row A1:C1, copy it
       await sheets.evaluate(async () => {
-        const debug = (window as unknown as { __genofficeDebug: { univerAPI: SheetFacade } })
-          .__genofficeDebug
+        const debug = (window as unknown as { __chatofficeDebug: { univerAPI: SheetFacade } })
+          .__chatofficeDebug
         const sheet = debug.univerAPI.getActiveWorkbook().getActiveSheet()
         await sheet.getRange(0, 0, 1, 3).setValues([['a', 'b', 'c']])
         sheet.getRange(0, 0, 1, 3).activate()
@@ -82,16 +82,16 @@ test.describe('sheets: paste repeats into an anchor-shaped target', () => {
 
       // paste into the 4×1 anchor selection A2:A5
       await sheets.evaluate(() => {
-        const debug = (window as unknown as { __genofficeDebug: { univerAPI: SheetFacade } })
-          .__genofficeDebug
+        const debug = (window as unknown as { __chatofficeDebug: { univerAPI: SheetFacade } })
+          .__chatofficeDebug
         debug.univerAPI.getActiveWorkbook().getActiveSheet().getRange(1, 0, 4, 1).activate()
       })
       await sheets.keyboard.press('Control+v')
 
       await expect(async () => {
         const values = await sheets.evaluate(() => {
-          const debug = (window as unknown as { __genofficeDebug: { univerAPI: SheetFacade } })
-            .__genofficeDebug
+          const debug = (window as unknown as { __chatofficeDebug: { univerAPI: SheetFacade } })
+            .__chatofficeDebug
           return debug.univerAPI
             .getActiveWorkbook()
             .getActiveSheet()

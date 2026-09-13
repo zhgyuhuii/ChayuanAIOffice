@@ -4904,9 +4904,11 @@ export default function App() {
     void cropPagesOnDisk(pages, crop)
   }
 
+  // currentPage only tracks scroll, so it can outlive a page deletion
+  const printCurrentPage = Math.max(1, Math.min(currentPage, pageCount))
   const openPrintDlg = () => {
     setPrintMode('all')
-    setPrintInput(String(currentPage))
+    setPrintInput(String(printCurrentPage))
     setPrintInvalid(false)
     setPrintDlg(true)
   }
@@ -4951,7 +4953,7 @@ export default function App() {
     }
     if (printMode === 'current') {
       setPrintDlg(false)
-      void printDoc([currentPage])
+      void printDoc([printCurrentPage])
       return
     }
     const pages = parsePageRanges(printInput, pageCount)
@@ -5410,7 +5412,7 @@ export default function App() {
           openSearch()
         } else if (k === 'p' && !e.shiftKey) {
           e.preventDefault()
-          void printDoc()
+          openPrintDlg()
         } else if (e.key === '=' || e.key === '+') {
           e.preventDefault()
           zoomIn()

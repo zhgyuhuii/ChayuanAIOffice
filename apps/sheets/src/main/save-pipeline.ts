@@ -6,9 +6,9 @@
 import type { XlsxSidecarClient } from './xlsx-sidecar-client'
 import type { SessionInfo } from './session-info'
 import type { WorkbookSaveRequest } from '../shared/desktop-api'
-import { saveWorkbookViaSidecar } from '../gateway/xlsx-package-io'
-import type { CellEdit, SheetStructuralOps } from '../gateway/xlsx-gateway'
-import type { SheetEditPlan } from '../gateway/xlsx-sheets'
+import { saveWorkbookViaSidecar } from '@chatoffice/xlsx-gateway/gateway/xlsx-package-io'
+import type { CellEdit, SheetStructuralOps } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+import type { SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
 
 export async function saveWorkbookPlan(
   client: XlsxSidecarClient,

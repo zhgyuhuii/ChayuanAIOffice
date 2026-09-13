@@ -6,7 +6,7 @@ import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui
 import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
-import type { ChangePlan } from '../../domain/workbook.types'
+import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { ATTACHMENT_IMAGE_EXTS, type AttachmentMeta } from '../../shared/desktop-api'
 import { useI18n, type TFunc } from '../i18n/locale'
 import { SHEET_NAV_SCHEME } from './sheet-nav'

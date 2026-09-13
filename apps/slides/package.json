@@ -24,6 +24,8 @@
     "@chatoffice/file-parse": "*",
     "@chatoffice/i18n": "*",
     "@chatoffice/pptx-engine": "*",
+    "@chatoffice/pptx-ops": "*",
+    "@chatoffice/pipelines": "*",
     "@chatoffice/pptx-render": "*",
     "@chatoffice/project-store": "*",
     "@chatoffice/ui": "*",

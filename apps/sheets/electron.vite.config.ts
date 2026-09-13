@@ -17,6 +17,8 @@ export default defineConfig({
           '@chatoffice/file-parse',
           '@chatoffice/electron-utils',
           '@chatoffice/i18n',
+          '@chatoffice/pptx-render',
+          '@chatoffice/xlsx-gateway',
         ],
       }),
     ],

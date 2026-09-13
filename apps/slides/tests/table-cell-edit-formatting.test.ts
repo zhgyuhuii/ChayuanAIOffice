@@ -15,7 +15,7 @@ import {
   type OpenedPptx,
   type TableElement,
 } from '@chatoffice/pptx-engine'
-import { runTxn } from '../src/main/ops'
+import { runTxn } from '@chatoffice/pptx-ops'
 
 let opened: OpenedPptx
 let tableId: string

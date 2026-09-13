@@ -104,22 +104,22 @@ describe('Codex app-server bridge', () => {
 
   it('confines Codex tool reads to the temp dir through a permission profile', () => {
     const config = { apiKey: '', model: 'gpt-5.6-terra' }
-    const params = codexThreadStartParams(config, '/tmp/genoffice-codex-x', 'profile')
+    const params = codexThreadStartParams(config, '/tmp/chatoffice-codex-x', 'profile')
     expect(params).not.toHaveProperty('sandbox')
     expect(params.approvalPolicy).toBe('never')
     expect(params.config).toEqual({
-      default_permissions: 'genoffice',
+      default_permissions: 'chatoffice',
       permissions: {
-        genoffice: {
-          filesystem: { ':minimal': 'read', '/tmp/genoffice-codex-x': 'read' },
+        chatoffice: {
+          filesystem: { ':minimal': 'read', '/tmp/chatoffice-codex-x': 'read' },
         },
       },
     })
-    expect(codexThreadStartParams(config, '/tmp/genoffice-codex-x', 'read-only')).toMatchObject({
+    expect(codexThreadStartParams(config, '/tmp/chatoffice-codex-x', 'read-only')).toMatchObject({
       sandbox: 'read-only',
     })
-    expect(activePermissionProfileId({ activePermissionProfile: { id: 'genoffice' } })).toBe(
-      'genoffice',
+    expect(activePermissionProfileId({ activePermissionProfile: { id: 'chatoffice' } })).toBe(
+      'chatoffice',
     )
     expect(activePermissionProfileId({ activePermissionProfile: null })).toBeUndefined()
   })

@@ -1,7 +1,7 @@
 import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { chatofficeAttributionHeaders } from '../providers'
+import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
 import type { AiChatResponse, AiProviderConfig } from '../types'
 import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
@@ -146,6 +146,7 @@ async function anthropicTurn(
         // allowed". This header is the official opt-in for browser/Electron environments.
         'anthropic-dangerous-direct-browser-access': 'true',
         ...chatofficeAttributionHeaders(baseUrl),
+        ...opencodeSessionHeaders(baseUrl, cb.sessionId),
       },
       body: JSON.stringify({
         model: config.model,
@@ -275,6 +276,7 @@ export async function chatAnthropic(
       // Fetch in the Electron main process goes through Chromium's network stack; this header avoids 403.
       'anthropic-dangerous-direct-browser-access': 'true',
       ...chatofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,

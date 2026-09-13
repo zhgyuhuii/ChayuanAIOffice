@@ -46,11 +46,15 @@ import {
   fetchRemoteImage,
   installContextMenu,
   installNavigationGuard,
+  isHeadlessMode,
   safeExternalUrl,
   saveAsSuggestion,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
   toggleDevToolsItem,
+  installRendererProtocol,
+  registerRendererScheme,
+  rendererUrl,
 } from '@chatoffice/electron-utils'
 import {
   resolveGroupChildId,
@@ -59,10 +63,10 @@ import {
   type OpRecord,
   type TxnRequest,
   type TxnResult,
-} from './ops'
-import { mapScriptOps } from './ops/script-map'
+  mapScriptOps,
+} from '@chatoffice/pptx-ops'
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
-import { buildPagePptx, parsePageSpec } from './page-spec'
+import { buildPagePptx, parsePageSpec } from '@chatoffice/pipelines/slides'
 import { sniffImageMime } from './media-mime'
 import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
@@ -454,6 +458,8 @@ async function readRecent(): Promise<string[]> {
 }
 
 async function pushRecent(path: string): Promise<void> {
+  // A headless export is not a document the user opened.
+  if (isHeadlessMode()) return
   const cur = await readRecent()
   const next = [path, ...cur.filter((p) => p !== path)].slice(0, 10)
   try {
@@ -1048,6 +1054,8 @@ function chartColorSchemes(
  * or reveal it in the folder (standalone). Tab-opening failure must not
  * report the export itself as failed — the file is already persisted. */
 function openExportedPdf(path: string): void {
+  // Headless export must stay silent: no tab, no Finder window.
+  if (isHeadlessMode()) return
   try {
     if (runtime.openGeneratedPath?.(path)) return
   } catch (err) {
@@ -1356,6 +1364,10 @@ export function registerSlidesIpc(): void {
     const format = {
       bullet: op.bullet,
       bulletChar: op.bulletChar,
+      bulletFont: op.bulletFont,
+      numType: op.numType,
+      startAt: op.startAt,
+      bulletImage: op.bulletImage,
       bulletHangEmu: op.bulletHangEmu,
       bulletSizePct: op.bulletSizePct,
       bulletColor: op.bulletColor,
@@ -2032,7 +2044,7 @@ export function registerSlidesIpc(): void {
     return rebuilt ? { slide: rebuilt, sourceId: r.records![0]!.created![0]! } : null
   })
 
-  // Shim over the canonical op (see main/ops): the op owns validation/mutation/journal;
+  // Shim over the canonical op (see @chatoffice/pptx-ops): the op owns validation/mutation/journal;
   // the shim keeps session lookup, undo bookkeeping, and RenderSlide rebuilding.
   ipcMain.handle('slides:delete-element', (e, op: DeleteElementOp) => {
     const session = sessions.get(e.sender.id)
@@ -4492,6 +4504,25 @@ export function registerSlidesIpc(): void {
 
   ipcMain.handle('slides:recent', () => readRecent())
 
+  // ---- headless export mode (--headless-export) ----
+
+  ipcMain.handle('slides:consume-headless-export', (e): string | null => {
+    const target = headlessExportTargets.get(e.sender.id) ?? null
+    headlessExportTargets.delete(e.sender.id)
+    return target
+  })
+
+  ipcMain.on('slides:headless-export-done', (e, result: unknown) => {
+    const settle = headlessExportWaiters.get(e.sender.id)
+    if (!settle) return
+    headlessExportWaiters.delete(e.sender.id)
+    const state = result as { ok?: unknown; error?: unknown } | null
+    settle({
+      ok: state?.ok === true,
+      ...(typeof state?.error === 'string' ? { error: state.error } : {}),
+    })
+  })
+
   // ── Show fullscreen: macOS native fullscreen is an animated Space transition, so
   // the slideshow would render windowed for ~1s mid-flight. Instead one call covers
   // everything while the show's black root hides the relayout: the tab view bleeds
@@ -4668,6 +4699,67 @@ export function registerProjectIpc(): void {
   )
 }
 
+/** hidden export windows: webContents id -> the PDF path the renderer must write */
+const headlessExportTargets = new Map<number, string>()
+/** settled by 'slides:headless-export-done' (or by the renderer dying) */
+const headlessExportWaiters = new Map<number, (result: HeadlessSlidesReport) => void>()
+
+interface HeadlessSlidesReport {
+  ok: boolean
+  error?: string
+}
+
+/**
+ * Render `input` to `outPath` with no visible window: a hidden slides
+ * renderer opens the deck through the normal pending-open queue, rasterizes
+ * every visible page offscreen exactly as the File menu export does, and
+ * hands the PNGs to the same hidden print window (main/pdf-export.ts).
+ */
+export async function exportSlidesPdfHeadless(
+  input: string,
+  outPath: string,
+  timeoutMs = 300_000,
+): Promise<void> {
+  registerSlidesIpc()
+  const win = new BrowserWindow({
+    show: false,
+    width: 1280,
+    height: 840,
+    webPreferences: {
+      preload: runtime.preloadPath,
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      backgroundThrottling: false,
+    },
+  })
+  const wcId = win.webContents.id
+  trackSlidesWebContents(win.webContents)
+  pendingByWc.set(wcId, input)
+  headlessExportTargets.set(wcId, outPath)
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    const report = await new Promise<HeadlessSlidesReport>((resolve) => {
+      headlessExportWaiters.set(wcId, resolve)
+      win.webContents.on('render-process-gone', (_event, details) =>
+        resolve({ ok: false, error: `slides renderer stopped (${details.reason})` }),
+      )
+      timer = setTimeout(
+        () => resolve({ ok: false, error: `slides export timed out after ${timeoutMs}ms` }),
+        timeoutMs,
+      )
+      void win.webContents.loadURL(rendererUrl(runtime.rendererDevUrl, 'slides'))
+    })
+    if (!report.ok) throw new Error(report.error ?? 'slides export failed')
+  } finally {
+    if (timer) clearTimeout(timer)
+    headlessExportWaiters.delete(wcId)
+    headlessExportTargets.delete(wcId)
+    pendingByWc.delete(wcId)
+    if (!win.isDestroyed()) win.destroy()
+  }
+}
+
 export function createSlidesWindow(openPath?: string | null): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
@@ -4710,8 +4802,7 @@ export function createSlidesWindow(openPath?: string | null): BrowserWindow {
     })
   })
 
-  if (runtime.rendererDevUrl) win.loadURL(runtime.rendererDevUrl)
-  else if (runtime.rendererFilePath) win.loadFile(runtime.rendererFilePath)
+  void win.loadURL(rendererUrl(runtime.rendererDevUrl, 'slides'))
 
   if (openPath) {
     win.setTitle(basename(openPath))
@@ -4767,13 +4858,7 @@ export function createSlidesView(
   // the Home conversation is the chat surface for docked editors.
   const query: Record<string, string> = { mode: 'tab' }
   if (opts?.hidePanel) query.panel = '0'
-  if (runtime.rendererDevUrl) {
-    // append via URL so a dev URL that already carries query params stays valid
-    const devUrl = new URL(runtime.rendererDevUrl)
-    for (const [key, value] of Object.entries(query)) devUrl.searchParams.set(key, value)
-    void view.webContents.loadURL(devUrl.toString())
-  } else if (runtime.rendererFilePath)
-    void view.webContents.loadFile(runtime.rendererFilePath, { query })
+  void view.webContents.loadURL(rendererUrl(runtime.rendererDevUrl, 'slides', query))
   return view
 }
 
@@ -4922,6 +5007,7 @@ async function applyMainProcessProxy(): Promise<void> {
 }
 
 export function startSlidesStandalone(): void {
+  registerRendererScheme()
   installNavigationGuard(app)
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
   // Optional debug switch: enable CDP only in dev with SLIDES_CDP_PORT explicitly set (for
@@ -4966,6 +5052,7 @@ export function startSlidesStandalone(): void {
   if (argPath && existsSync(argPath)) pendingOpenPath = argPath
 
   app.whenReady().then(async () => {
+    installRendererProtocol({ slides: join(__dirname, '../renderer') })
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
     // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
     if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)

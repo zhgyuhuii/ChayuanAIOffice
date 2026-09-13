@@ -19,6 +19,8 @@ export const MARKDOWN_CHANNELS = {
   exportRequest: 'markdown:export-request',
   exportDocx: 'markdown:export-docx',
   exportPdf: 'markdown:export-pdf',
+  consumeHeadlessExport: 'markdown:consume-headless-export',
+  headlessExportDone: 'markdown:headless-export-done',
   printRequest: 'markdown:print-request',
   aiGenerateImage: 'markdown:ai-generate-image',
   getLanguage: 'app:get-language',
@@ -121,6 +123,8 @@ export interface ExportPdfRequest {
   /** self-contained print HTML */
   html: string
   suggestedName: string
+  /** headless export mode only: write here instead of opening the save dialog */
+  outPath?: string
 }
 
 export type ExportResult =
@@ -137,6 +141,10 @@ export interface MarkdownApi {
   consumePending(): Promise<string | null>
   /** Take AI-authored content queued for this untitled view (create_document); null = none */
   consumeAiContent(): Promise<MarkdownAiContent | null>
+  /** Headless export mode: the PDF path this hidden renderer must export to, null in normal use */
+  consumeHeadlessExport(): Promise<string | null>
+  /** Headless export mode: report the export outcome so the main process can quit */
+  headlessExportDone(result: { ok: boolean; error?: string }): void
   /** Read the file as UTF-8 text. Only paths granted to this view are allowed */
   readFile(path: string): Promise<string>
   /**

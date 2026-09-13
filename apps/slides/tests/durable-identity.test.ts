@@ -14,7 +14,7 @@ import {
   type OpenedPptx,
   type TextElement,
 } from '@chatoffice/pptx-engine'
-import { runTxn, elementDurableId, slideDurableId } from '../src/main/ops'
+import { runTxn, elementDurableId, slideDurableId } from '@chatoffice/pptx-ops'
 import { elementCNvPrId, groupChildDurableId, patchSlideXml } from '@chatoffice/pptx-engine'
 
 let opened: OpenedPptx

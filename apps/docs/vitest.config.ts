@@ -22,6 +22,10 @@ export default defineConfig({
         replacement: local('../../packages/font-metrics/src/index.ts'),
       },
       {
+        find: '@chatoffice/electron-utils/headless-export',
+        replacement: local('../../packages/electron-utils/src/headless-export.ts'),
+      },
+      {
         find: '@chatoffice/electron-utils',
         replacement: local('../../packages/electron-utils/src/index.ts'),
       },

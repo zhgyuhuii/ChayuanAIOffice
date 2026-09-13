@@ -29,6 +29,9 @@ import {
   printHtmlToPdf,
   safeExternalUrl,
   showOpenDialogWithMemory,
+  installRendererProtocol,
+  registerRendererScheme,
+  rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
@@ -1558,13 +1561,13 @@ export function createPdfView(openPath?: string | null): WebContentsView {
     },
   })
   grantAndTrack(view.webContents, openPath)
-  if (runtime.rendererUrl) void view.webContents.loadURL(runtime.rendererUrl)
-  else if (runtime.rendererFile) void view.webContents.loadFile(runtime.rendererFile)
+  void view.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'pdf'))
   return view
 }
 
 /** Standalone window mode: `npm run dev -w @chatoffice/pdf`, pdf path passed via argv */
 export function startPdfStandalone(): void {
+  registerRendererScheme()
   installNavigationGuard(app)
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
   configurePdfRuntime({
@@ -1576,6 +1579,7 @@ export function startPdfStandalone(): void {
   void app.whenReady().then(() => {
     // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
     if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)
+    installRendererProtocol({ pdf: join(__dirname, '../renderer') })
     registerPdfIpc()
     const win = new BrowserWindow({
       width: 1200,
@@ -1590,8 +1594,7 @@ export function startPdfStandalone(): void {
     })
     const argPath = process.argv.slice(1).find((a) => /\.pdf$/i.test(a) && existsSync(a))
     grantAndTrack(win.webContents, argPath)
-    if (runtime.rendererUrl) void win.loadURL(runtime.rendererUrl)
-    else if (runtime.rendererFile) void win.loadFile(runtime.rendererFile)
+    void win.loadURL(rendererUrl(runtime.rendererUrl, 'pdf'))
   })
   app.on('window-all-closed', () => app.quit())
 }

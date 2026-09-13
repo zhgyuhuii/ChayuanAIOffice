@@ -26,6 +26,7 @@ import {
   webContents,
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
+import { tabStripOverlay } from './title-bar-overlay'
 import menuDocxIcon1x from './assets/menu-docx.png?asset'
 import menuDocxIcon2x from './assets/menu-docx@2x.png?asset'
 import menuXlsxIcon1x from './assets/menu-xlsx.png?asset'
@@ -57,11 +58,21 @@ import {
   installContextMenu,
   installNavigationGuard,
   isUsableSaveDir,
+  HEADLESS_EXIT,
+  formatHeadlessEnvelope,
+  headlessExitCode,
+  parseHeadlessExportArgv,
+  setHeadlessMode,
+  type HeadlessArgvParse,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
   windowMenuTemplate,
+  installRendererProtocol,
 } from '@chatoffice/electron-utils'
 import { readAppSettings, writeAppSetting, writeAppSettings } from './app-settings'
+import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
+import { installCliLinkBestEffort } from './cli-link'
+import { registerIntegrationsIpc } from './integrations-ipc'
 import {
   ANALYTICS_ENABLED_KEY,
   analyticsEnabledFrom,
@@ -124,6 +135,7 @@ import {
   setPanelTurnForwarder,
   registerDocsIpc,
   setRelayEventForwarder,
+  exportDocsHeadless,
   setDocsExtraFileMenuItems,
   setDocsMenuGate,
   setDocsShellHooks,
@@ -143,6 +155,7 @@ import {
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
 import {
   configureSheetsRuntime,
+  exportSheetsPdfHeadless,
   hasActiveQueuedWorkbook,
   installSheetsMenu,
   markSheetsShuttingDown,
@@ -161,6 +174,7 @@ import {
 } from '../../../sheets/src/main/sheets-main'
 import {
   configureSlidesRuntime,
+  exportSlidesPdfHeadless,
   installSlidesMenu,
   replaceSlidesRecentFile,
   requestSlidesClose,
@@ -192,6 +206,7 @@ import { convertPdfFileToXlsxLocalWithPrompt } from './pdf2xlsx-local'
 import { closePdfPasswordDialog, promptPdfPassword } from './pdf-password-dialog'
 import {
   configureMarkdownRuntime,
+  exportMarkdownPdfHeadless,
   markdownFileRenamed,
   requestMarkdownClose,
   requestMarkdownSave,
@@ -202,8 +217,9 @@ import {
 } from '../../../markdown/src/main/markdown-main'
 import {
   configureHtmlRuntime,
+  exportHtmlHeadless,
   htmlFileRenamed,
-  registerHtmlSchemes,
+  registerPrivilegedSchemes,
   requestHtmlClose,
   requestHtmlSave,
   sendHtmlExportRequest,
@@ -236,6 +252,7 @@ import { DOCK_CHANNELS } from '../shared/dock-api'
 import { showErrorDialog } from './error-dialog'
 import { normalizeRecentQuery, pageRecentPaths, statPathEntries } from './recent-files'
 import { isSameFile, isValidRenameName } from './rename-validation'
+import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager } from './tab-manager'
 import { applyUpdateChannel, initAutoUpdater } from './updater'
 import { isUpdateChannel, type UpdateChannel } from '../shared/update-api'
@@ -260,8 +277,19 @@ if (!app.isPackaged)
     process.env.CHATOFFICE_USER_DATA ?? join(app.getPath('appData'), 'ChatOffice Dev'),
   )
 
-// Product renames changed the userData path ("AI Office" → "ChatOffice" →
-// "ChatOffice"); migrate old user data once on each rename hop.
+/**
+ * `--headless-export <file> --to <format> --out <path> [--json]`: one document, no
+ * window, one stdout line, then exit. Parsed at module scope so the dock icon
+ * is gone before the app can bounce it and so every editor module sees the
+ * headless flag before it registers anything.
+ */
+const headlessArgv = parseHeadlessExportArgv(process.argv)
+if (headlessArgv.kind !== 'none') {
+  setHeadlessMode(true)
+  app.dock?.hide()
+}
+
+// Product renames changed the userData path ("AI Office" → "ChatOffice"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
   const newDir = app.getPath('userData')
   const newEmpty = !existsSync(newDir) || readdirSync(newDir).length === 0
@@ -345,13 +373,19 @@ configureHtmlRuntime({
   openGeneratedPath: (path) => openGeneratedDocument(path),
 })
 // privileged-scheme registration is only legal before app ready
-registerHtmlSchemes()
+registerPrivilegedSchemes()
 
 // ---- UI language ----
 // Persisted in userData/app-settings.json so the editor modules can read the
 // same file when they pick up i18n later. CHATOFFICE_LANG overrides for tests.
 
 const APP_SETTINGS_PATH = () => join(app.getPath('userData'), 'app-settings.json')
+const OPEN_DOCUMENTS_PATH = () => join(app.getPath('userData'), OPEN_DOCUMENTS_FILE)
+/** only the instance holding the single-instance lock may write or remove the registry */
+let ownsOpenDocumentsRegistry = false
+const publishOpenDocumentsIfOwner = (paths: readonly string[]) => {
+  if (ownsOpenDocumentsRegistry) publishOpenDocuments(OPEN_DOCUMENTS_PATH(), paths)
+}
 
 let uiLang: Lang | null = null
 
@@ -563,6 +597,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF文档',
     menuNewHtml: 'HTML文档',
     menuExportPdf: '导出为 PDF…',
+    menuExportHtml: '导出为单文件 HTML…',
     menuOpenInDocs: '转换为 Docs 文档并打开',
     menuPrint: '打印…',
     menuOpen: '打开…',
@@ -652,6 +687,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF Doc',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Export as PDF…',
+    menuExportHtml: 'Export as Single-File HTML…',
     menuOpenInDocs: 'Convert and Open in Docs',
     menuPrint: 'Print…',
     menuOpen: 'Open…',
@@ -752,6 +788,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF文書',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'PDF として書き出す…',
+    menuExportHtml: '単一ファイル HTML として書き出す…',
     menuOpenInDocs: 'Docs 文書に変換して開く',
     menuPrint: '印刷…',
     menuOpen: '開く…',
@@ -852,6 +889,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF 문서',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'PDF로 내보내기…',
+    menuExportHtml: '단일 파일 HTML로 내보내기…',
     menuOpenInDocs: 'Docs 문서로 변환하여 열기',
     menuPrint: '인쇄…',
     menuOpen: '열기…',
@@ -951,6 +989,7 @@ const tMain = createI18n({
     menuNewPdf: 'Doc PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Exporter en PDF…',
+    menuExportHtml: 'Exporter en HTML (fichier unique)…',
     menuOpenInDocs: 'Convertir et ouvrir dans Docs',
     menuPrint: 'Imprimer…',
     menuOpen: 'Ouvrir…',
@@ -1052,6 +1091,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF-Dok',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Als PDF exportieren…',
+    menuExportHtml: 'Als Einzeldatei-HTML exportieren…',
     menuOpenInDocs: 'In Docs umwandeln und öffnen',
     menuPrint: 'Drucken…',
     menuOpen: 'Öffnen…',
@@ -1153,6 +1193,7 @@ const tMain = createI18n({
     menuNewPdf: 'Doc PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Exportar como PDF…',
+    menuExportHtml: 'Exportar como HTML de archivo único…',
     menuOpenInDocs: 'Convertir y abrir en Docs',
     menuPrint: 'Imprimir…',
     menuOpen: 'Abrir…',
@@ -1254,6 +1295,7 @@ const tMain = createI18n({
     menuNewPdf: 'เอกสาร PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'ส่งออกเป็น PDF…',
+    menuExportHtml: 'ส่งออกเป็น HTML ไฟล์เดียว…',
     menuOpenInDocs: 'แปลงและเปิดใน Docs',
     menuPrint: 'พิมพ์…',
     menuOpen: 'เปิด…',
@@ -1350,6 +1392,7 @@ const tMain = createI18n({
     menuNewPdf: 'Dok PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Ekspor sebagai PDF…',
+    menuExportHtml: 'Ekspor sebagai HTML satu file…',
     menuOpenInDocs: 'Konversi dan buka di Docs',
     menuPrint: 'Cetak…',
     menuOpen: 'Buka…',
@@ -1451,6 +1494,7 @@ const tMain = createI18n({
     menuNewPdf: 'Док PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Экспортировать в PDF…',
+    menuExportHtml: 'Экспортировать в один файл HTML…',
     menuOpenInDocs: 'Преобразовать и открыть в Docs',
     menuPrint: 'Печать…',
     menuOpen: 'Открыть…',
@@ -1552,6 +1596,7 @@ const tMain = createI18n({
     menuNewPdf: 'مستند PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'تصدير بتنسيق PDF…',
+    menuExportHtml: 'تصدير كملف HTML واحد…',
     menuOpenInDocs: 'التحويل والفتح في Docs',
     menuPrint: 'طباعة…',
     menuOpen: 'فتح…',
@@ -1648,6 +1693,7 @@ const tMain = createI18n({
     menuNewPdf: 'Doc PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Exportar como PDF…',
+    menuExportHtml: 'Exportar como HTML de arquivo único…',
     menuOpenInDocs: 'Converter e abrir no Docs',
     menuPrint: 'Imprimir…',
     menuOpen: 'Abrir…',
@@ -1749,6 +1795,7 @@ const tMain = createI18n({
     menuNewPdf: 'Doc PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Esporta come PDF…',
+    menuExportHtml: 'Esporta come HTML a file singolo…',
     menuOpenInDocs: 'Converti e apri in Docs',
     menuPrint: 'Stampa…',
     menuOpen: 'Apri…',
@@ -1850,6 +1897,7 @@ const tMain = createI18n({
     menuNewPdf: 'Dok PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Eksportuj jako PDF…',
+    menuExportHtml: 'Eksportuj jako pojedynczy plik HTML…',
     menuOpenInDocs: 'Konwertuj i otwórz w Docs',
     menuPrint: 'Drukuj…',
     menuOpen: 'Otwórz…',
@@ -1951,6 +1999,7 @@ const tMain = createI18n({
     menuNewHtml: 'AI HTML',
     menuNewPdf: 'AI PDF',
     menuExportPdf: 'Exportovat jako PDF…',
+    menuExportHtml: 'Exportovat jako samostatné HTML…',
     menuOpenInDocs: 'Převést a otevřít v Docs',
     menuPrint: 'Tisk…',
     menuOpen: 'Otevřít…',
@@ -2047,6 +2096,7 @@ const tMain = createI18n({
     menuNewPdf: 'Doc PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Exporteren als PDF…',
+    menuExportHtml: 'Exporteren als één HTML-bestand…',
     menuOpenInDocs: 'Converteren en openen in Docs',
     menuPrint: 'Afdrukken…',
     menuOpen: 'Openen…',
@@ -2148,6 +2198,7 @@ const tMain = createI18n({
     menuNewPdf: 'Dok PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'Eksport sebagai PDF…',
+    menuExportHtml: 'Eksport sebagai HTML fail tunggal…',
     menuOpenInDocs: 'Tukar dan buka dalam Docs',
     menuPrint: 'Cetak…',
     menuOpen: 'Buka…',
@@ -2248,6 +2299,7 @@ const tMain = createI18n({
     menuNewPdf: 'מסמך PDF',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'ייצוא כ-PDF…',
+    menuExportHtml: 'ייצוא כ-HTML בקובץ יחיד…',
     menuOpenInDocs: 'המרה ופתיחה ב-Docs',
     menuPrint: 'הדפסה…',
     menuOpen: 'פתיחה…',
@@ -2344,6 +2396,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF दस्तावेज़',
     menuNewHtml: 'AI HTML',
     menuExportPdf: 'PDF के रूप में निर्यात…',
+    menuExportHtml: 'एकल-फ़ाइल HTML के रूप में निर्यात…',
     menuOpenInDocs: 'Docs में बदलें और खोलें',
     menuPrint: 'प्रिंट करें…',
     menuOpen: 'खोलें…',
@@ -2445,6 +2498,7 @@ const tMain = createI18n({
     menuNewPdf: 'PDF文件',
     menuNewHtml: 'AI HTML',
     menuExportPdf: '匯出為 PDF…',
+    menuExportHtml: '匯出為單檔 HTML…',
     menuOpenInDocs: '轉換為 Docs 文件並開啟',
     menuPrint: '列印…',
     menuOpen: '開啟…',
@@ -2618,6 +2672,18 @@ function applyMenuFor(kind: TabKind): void {
   }
 }
 
+function refreshTitleBarOverlay(): void {
+  // adapted（上游 e42da7c7）:本地窗口方案=全平台 titleBarStyle hidden+TabBar 自绘三键
+  // （WINDOW_CHANNELS），不启用 titleBarOverlay;在未启用 overlay 的窗口上调用
+  // setTitleBarOverlay 会抛错,所以这里保持 no-op
+  if (!shellWindow || shellWindow.isDestroyed()) return
+  try {
+    shellWindow.setTitleBarOverlay(tabStripOverlay(nativeTheme.shouldUseDarkColors))
+  } catch {
+    /* no overlay on this window — the local tab strip draws its own controls */
+  }
+}
+
 function createShellWindow(): void {
   const win = new BrowserWindow({
     width: 1360,
@@ -2640,6 +2706,8 @@ function createShellWindow(): void {
     },
   })
   shellWindow = win
+  nativeTheme.on('updated', refreshTitleBarOverlay)
+  win.once('closed', () => nativeTheme.off('updated', refreshTitleBarOverlay))
   // dragging the window by the tab strip's blank (draggable) area produces no
   // DOM event anywhere — will-move is the only signal to dismiss popovers
   win.on('will-move', () => broadcastChromePressed())
@@ -2652,6 +2720,7 @@ function createShellWindow(): void {
     () => {
       win.webContents.send(TABS_CHANNELS.changed, manager.list())
       win.webContents.send(DOCK_CHANNELS.changed, manager.dockedTabs())
+      publishOpenDocumentsIfOwner(manager.openFilePaths())
     },
     applyMenuFor,
     // no extension: these tabs have no file on disk yet; the title becomes the
@@ -2909,7 +2978,10 @@ function createShellWindow(): void {
 
   win.on('closed', () => {
     if (shellWindow === win) shellWindow = null
-    if (tabManager === manager) tabManager = null
+    if (tabManager === manager) {
+      tabManager = null
+      publishOpenDocumentsIfOwner([])
+    }
   })
 
   if (process.env.ELECTRON_RENDERER_URL) {
@@ -3746,6 +3818,7 @@ function registerHomeIpc(): void {
     cachedTheme = theme
     writeAppSetting(APP_SETTINGS_PATH(), 'theme', theme)
     nativeTheme.themeSource = theme
+    refreshTitleBarOverlay()
     for (const wc of webContents.getAllWebContents()) wc.send('app:theme-changed', theme)
   })
 
@@ -4250,6 +4323,15 @@ function registerTabsIpc(): void {
   })
   // "all tabs" overflow menu — native popup because the editors' WebContentsView
   // would cover any DOM dropdown the shell renderer draws below the tab strip
+  ipcMain.handle(TABS_CHANNELS.showAppMenu, (_event, x: unknown, y: unknown) => {
+    if (!shellWindow) return
+    Menu.getApplicationMenu()?.popup({
+      window: shellWindow,
+      ...(typeof x === 'number' && typeof y === 'number'
+        ? { x: Math.round(x), y: Math.round(y) }
+        : {}),
+    })
+  })
   ipcMain.handle(TABS_CHANNELS.showMenu, (_event, x: unknown, y: unknown) => {
     if (!tabManager || !shellWindow) return
     const menu = Menu.buildFromTemplate(
@@ -4658,6 +4740,13 @@ function buildHtmlMenu(): void {
           click: () => {
             const tab = tabManager?.activeHtmlTab()
             if (tab) sendHtmlExportRequest(tab.webContents, 'pdf')
+          },
+        },
+        {
+          label: tm('menuExportHtml'),
+          click: () => {
+            const tab = tabManager?.activeHtmlTab()
+            if (tab) sendHtmlExportRequest(tab.webContents, 'html')
           },
         },
         { type: 'separator' },
@@ -5328,6 +5417,19 @@ registerAiIpc()
 registerProjectIpc()
 registerDocsIpc()
 registerHomeIpc()
+registerIntegrationsIpc({
+  settingsPath: APP_SETTINGS_PATH,
+  window: () => shellWindow,
+  cliDir: app.isPackaged
+    ? join(process.resourcesPath, 'cli')
+    : join(APPS_ROOT, '..', 'packages', 'cli', 'bin'),
+  skillPath: app.isPackaged
+    ? join(process.resourcesPath, 'cli', 'skills', 'chatoffice', 'SKILL.md')
+    : join(APPS_ROOT, '..', 'skills', 'chatoffice', 'SKILL.md'),
+  cliPackageJson: app.isPackaged
+    ? join(process.resourcesPath, 'cli', 'package.json')
+    : join(APPS_ROOT, '..', 'packages', 'cli', 'package.json'),
+})
 registerTabsIpc()
 registerDockIpc()
 installRelayEventForwarder()
@@ -5341,7 +5443,58 @@ setSessionPathResolver(resolveSheetsSessionPath)
 /** Dev-only pid marker for the takeover below; scoped to userData like the lock itself. */
 const devPidFile = () => join(app.getPath('userData'), 'dev-instance.pid')
 
+/** Hidden-window exporters, one per editor module (HEADLESS_TARGETS says which formats each takes). */
+const headlessExporters: HeadlessExporters = {
+  docs: exportDocsHeadless,
+  sheets: (input, outPath) => exportSheetsPdfHeadless(input, outPath),
+  slides: (input, outPath) => exportSlidesPdfHeadless(input, outPath),
+  markdown: (input, outPath) => exportMarkdownPdfHeadless(input, outPath),
+  html: exportHtmlHeadless,
+}
+
+/**
+ * The whole `--headless-export` run: no shell window, no menus, no updater,
+ * no single-instance lock (a GUI instance may well be running). Prints
+ * exactly one line and exits with the chatoffice convention (0/1/2/3).
+ */
+async function runHeadlessExportEntry(
+  parsed: Exclude<HeadlessArgvParse, { kind: 'none' }>,
+): Promise<void> {
+  const outcome =
+    parsed.kind === 'error'
+      ? ({ ok: false, code: HEADLESS_EXIT.badArgs, message: parsed.message } as const)
+      : await runHeadlessExport(parsed.request, headlessExporters)
+  const json = parsed.kind === 'error' ? parsed.json : parsed.request.json
+  stopSheetsSidecar()
+  for (const win of BrowserWindow.getAllWindows()) if (!win.isDestroyed()) win.destroy()
+  // Writing to a pipe can finish asynchronously, and app.exit() would cut the
+  // envelope off mid-line; wait for the flush (but never longer than 2s).
+  const line = formatHeadlessEnvelope(outcome, json) + '\n'
+  await new Promise<void>((resolve) => {
+    const bail = setTimeout(resolve, 2000)
+    process.stdout.write(line, () => {
+      clearTimeout(bail)
+      resolve()
+    })
+  })
+  // app.quit() always exits 0; the chatoffice envelope needs the real code, and
+  // every teardown this run owns has already happened.
+  app.exit(headlessExitCode(outcome))
+}
+
 app.whenReady().then(async () => {
+  installRendererProtocol({
+    docs: join(DOCS_OUT, 'renderer'),
+    sheets: join(SHEETS_OUT, 'renderer'),
+    slides: join(SLIDES_OUT, 'renderer'),
+    pdf: join(PDF_OUT, 'renderer'),
+    markdown: join(MARKDOWN_OUT, 'renderer'),
+    html: join(HTML_OUT, 'renderer'),
+  })
+  if (headlessArgv.kind !== 'none') {
+    await runHeadlessExportEntry(headlessArgv)
+    return
+  }
   const lockData = () => (pendingLaunchPath ? { launchPath: pendingLaunchPath } : {})
   let hasLock = app.requestSingleInstanceLock(lockData())
   if (!hasLock && !app.isPackaged) {
@@ -5371,6 +5524,9 @@ app.whenReady().then(async () => {
     app.quit()
     return
   }
+  // a registry left by a crashed instance must not block chatoffice writes
+  ownsOpenDocumentsRegistry = true
+  publishOpenDocuments(OPEN_DOCUMENTS_PATH(), [])
   if (!app.isPackaged) {
     try {
       writeFileSync(devPidFile(), String(process.pid))
@@ -5411,6 +5567,8 @@ app.whenReady().then(async () => {
   } catch {
     // settings write failures must never block startup
   }
+  // off the startup path: a symlink / registry write nobody is waiting for
+  setTimeout(() => installCliLinkBestEffort(APP_SETTINGS_PATH()), 3000)
   initAnalytics()
   analytics.track('app_launch')
   startSheetsCaptureServer()
@@ -5429,6 +5587,9 @@ app.whenReady().then(async () => {
 })
 
 app.on('window-all-closed', () => {
+  // A headless export destroys its hidden window between documents; only
+  // runHeadlessExportEntry decides when that run is over.
+  if (headlessArgv.kind !== 'none') return
   if (process.platform !== 'darwin') app.quit()
 })
 
@@ -5436,4 +5597,10 @@ app.on('before-quit', () => {
   // No close prompt may fall through to "Save" during shutdown
   markSheetsShuttingDown()
   stopSheetsSidecar()
+})
+
+// after every window has closed, so the shell window's own 'closed' republish cannot revive the file
+app.on('will-quit', () => {
+  // a second instance that lost the lock quits too; it must not delete the running editor's list
+  if (ownsOpenDocumentsRegistry) clearOpenDocuments(OPEN_DOCUMENTS_PATH())
 })

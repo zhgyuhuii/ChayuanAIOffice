@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
+import type { IFunctionInfo } from '@univerjs/engine-formula'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import {
@@ -57,7 +58,7 @@ import { fontFamilyGroups, useSystemFontFamilies } from './system-fonts'
 import { isGridKeyTarget, shouldInterceptClearSelection } from './clear-selection-keyboard'
 import { COLOR_SCALE_PRESETS, DATA_BAR_PRESETS, iconSetOf } from './cf-gallery'
 import { listCustomCellStyles, listCustomTableStyles } from './custom-styles'
-import { columnLabel, parseAddress } from '../domain/cell-address'
+import { columnLabel, parseAddress } from '@chatoffice/xlsx-gateway/domain/cell-address'
 import {
   CfRuleDialog,
   CondStatsDialog,
@@ -74,8 +75,8 @@ import {
 } from './data-process-dialogs'
 import type { SheetVisualRef } from './ribbon-actions'
 
-import type { ChartSeriesVisualState } from '../domain/chart-visual'
-import type { ChangePlan } from '../domain/workbook.types'
+import type { ChartSeriesVisualState } from '@chatoffice/xlsx-gateway/domain/chart-visual'
+import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import type { AttachmentMeta } from '../shared/desktop-api'
 import { AiChatPanel, type AiChatMessage } from './ai/AiChatPanel'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
@@ -389,6 +390,8 @@ interface ExcelShellProps {
   readonly onGoToReference: (ref: string) => string | null
   readonly onListDefinedNames: () => readonly { name: string; ref: string }[]
   readonly onApplyFormula: (formula: string) => string | null
+  /// Function descriptions from the running formula engine (Insert Function).
+  readonly onListFunctions: () => readonly IFunctionInfo[]
   readonly onCreateSubtotal: (config: SubtotalConfig) => string | null
   readonly onCreateConsolidate: (config: ConsolidateConfig) => string | null
   /// Prefill for the Consolidate reference input (current multi-cell selection).
@@ -463,6 +466,7 @@ export function ExcelShell({
   onGoToReference,
   onListDefinedNames,
   onApplyFormula,
+  onListFunctions,
   onCreateSubtotal,
   onCreateConsolidate,
   onGetConsolidateDefault,
@@ -602,6 +606,10 @@ export function ExcelShell({
   const [pivotEditSeed, setPivotEditSeed] = useState<PivotEditSeed | null>(null)
   /** null = closed; string = open on that catalog category ('All' for the plain button) */
   const [insertFunctionCat, setInsertFunctionCat] = useState<string | null>(null)
+  const liveFunctions = useMemo(
+    () => (insertFunctionCat === null ? [] : onListFunctions()),
+    [insertFunctionCat],
+  )
   const [showSubtotalDialog, setShowSubtotalDialog] = useState(false)
   const [showGoalSeek, setShowGoalSeek] = useState(false)
   const [showConsolidateDialog, setShowConsolidateDialog] = useState(false)
@@ -1446,6 +1454,7 @@ export function ExcelShell({
       {insertFunctionCat !== null && (
         <InsertFunctionDialog
           targetLabel={onGetActiveCell()}
+          functions={liveFunctions}
           onApply={onApplyFormula}
           initialCategory={insertFunctionCat}
           onClose={() => setInsertFunctionCat(null)}

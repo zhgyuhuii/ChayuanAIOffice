@@ -103,7 +103,10 @@ export function ensureDefaultContentType(opened: OpenedPptx, ext: string, mime: 
     const dflt = `<Default Extension="${ext}" ContentType="${mime}"/>`
     opened.archive.entries.set(
       ctPath,
-      Buffer.from(ct.replace('</Types>', `${dflt}</Types>`), 'utf8'),
+      Buffer.from(
+        ct.replace('</Types>', () => `${dflt}</Types>`),
+        'utf8',
+      ),
     )
   }
 }

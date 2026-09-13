@@ -21,6 +21,7 @@ import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
 import { StoragePane } from './StoragePane'
+import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import './settings.css'
 
 // ── Settings modal (opened from the account menu) ─────────
@@ -79,13 +80,74 @@ function formatStars(n: number): string {
   return `${k >= 100 ? Math.round(k) : (Math.round(k * 10) / 10).toString().replace(/\.0$/, '')}k`
 }
 
-type SectionId = 'modelSettings' | 'defaultModels' | 'remoteStorage' | 'general' | 'about'
+type SectionId =
+  | 'modelSettings'
+  | 'defaultModels'
+  | 'remoteStorage'
+  | 'general'
+  | 'integrations'
+  | 'account'
+  | 'aiModel'
+  | 'aiMedia'
+  | 'about'
+/** px stepper for the custom AI panel text size; in-range values apply live,
+ * out-of-range or partial input is clamped on blur */
+function CustomFontSizeInput({
+  value,
+  label,
+  onCommit,
+}: {
+  value: number
+  label: string
+  onCommit: (px: number) => void
+}) {
+  const [draft, setDraft] = useState(String(value))
+  const [editing, setEditing] = useState(false)
+  const shown = editing ? draft : String(value)
+  const commit = (raw: string) => {
+    const px = clampAiCustomFontSize(raw)
+    if (px !== null && px !== value) onCommit(px)
+  }
+  return (
+    <label className="set-num">
+      <input
+        type="number"
+        className="set-input set-num-input"
+        aria-label={label}
+        min={AI_CUSTOM_FONT_MIN_PX}
+        max={AI_CUSTOM_FONT_MAX_PX}
+        step={1}
+        value={shown}
+        onFocus={() => {
+          setDraft(String(value))
+          setEditing(true)
+        }}
+        onChange={(e) => {
+          setDraft(e.target.value)
+          const n = Number(e.target.value)
+          if (Number.isInteger(n) && n >= AI_CUSTOM_FONT_MIN_PX && n <= AI_CUSTOM_FONT_MAX_PX) {
+            onCommit(n)
+          }
+        }}
+        onBlur={() => {
+          commit(draft)
+          setEditing(false)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.currentTarget.blur()
+        }}
+      />
+      <span className="set-num-unit">px</span>
+    </label>
+  )
+}
 
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
   { id: 'remoteStorage', labelKey: 'setSecRemoteStorage' },
   { id: 'general', labelKey: 'setSecGeneral' },
+  { id: 'integrations', labelKey: 'setSecIntegrations' },
   { id: 'about', labelKey: 'setSecAbout' },
 ]
 
@@ -133,6 +195,47 @@ function SectionIcon({ id }: { id: SectionId }) {
           stroke="currentColor"
           strokeWidth="1.3"
           strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+  if (id === 'aiMedia') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+        <path
+          d="M2.5 11.5 6 8l2.5 2.5L10.5 9l3 2.8"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="10.5" cy="6" r="1.1" fill="currentColor" />
+      </svg>
+    )
+  }
+  if (id === 'account') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="5.2" r="2.9" stroke="currentColor" strokeWidth="1.3" />
+        <path
+          d="M2.7 13.6a5.5 5.5 0 0 1 10.6 0"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+  if (id === 'integrations') {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M5.5 2v3M10.5 2v3M4 5h8v2.5a4 4 0 0 1-8 0V5ZM8 11.5V14"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     )
@@ -270,6 +373,9 @@ export interface SettingsModalProps {
   /** closes the modal and launches the ChatOffice login flow (progress shows on the account entry) */
   onLogin: () => void
   onLogout: () => void
+  /** an installed skill is older than the bundled one: dot on the Integrations entry */
+  skillUpdateDue?: boolean
+  onSkillUpdateDue?: (due: boolean) => void
 }
 
 export function SettingsModal({
@@ -283,6 +389,8 @@ export function SettingsModal({
   onClose,
   onLogin,
   onLogout,
+  skillUpdateDue: updateDue = false,
+  onSkillUpdateDue,
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
   const [section, setSection] = useState<SectionId>('modelSettings')
@@ -382,6 +490,9 @@ export function SettingsModal({
               >
                 <SectionIcon id={s.id} />
                 {t(s.labelKey)}
+                {s.id === 'integrations' && updateDue && (
+                  <span className="set-nav-dot" role="img" aria-label={t('intgUpdateDue')} />
+                )}
               </button>
             ))}
           </nav>
@@ -521,6 +632,9 @@ export function SettingsModal({
                 </div>
               </>
             )}
+            {section === 'integrations' && (
+              <IntegrationsPane t={t} onStatus={(st) => onSkillUpdateDue?.(skillUpdateDue(st))} />
+            )}
             {section === 'about' && (
               <>
                 <h3 className="set-pane-title">{t('setSecAbout')}</h3>
@@ -600,54 +714,3 @@ export function SettingsModal({
   )
 }
 
-/** px stepper for the custom AI panel text size; in-range values apply live,
- * out-of-range or partial input is clamped on blur */
-function CustomFontSizeInput({
-  value,
-  label,
-  onCommit,
-}: {
-  value: number
-  label: string
-  onCommit: (px: number) => void
-}) {
-  const [draft, setDraft] = useState(String(value))
-  const [editing, setEditing] = useState(false)
-  const shown = editing ? draft : String(value)
-  const commit = (raw: string) => {
-    const px = clampAiCustomFontSize(raw)
-    if (px !== null && px !== value) onCommit(px)
-  }
-  return (
-    <label className="set-num">
-      <input
-        type="number"
-        className="set-input set-num-input"
-        aria-label={label}
-        min={AI_CUSTOM_FONT_MIN_PX}
-        max={AI_CUSTOM_FONT_MAX_PX}
-        step={1}
-        value={shown}
-        onFocus={() => {
-          setDraft(String(value))
-          setEditing(true)
-        }}
-        onChange={(e) => {
-          setDraft(e.target.value)
-          const n = Number(e.target.value)
-          if (Number.isInteger(n) && n >= AI_CUSTOM_FONT_MIN_PX && n <= AI_CUSTOM_FONT_MAX_PX) {
-            onCommit(n)
-          }
-        }}
-        onBlur={() => {
-          commit(draft)
-          setEditing(false)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') e.currentTarget.blur()
-        }}
-      />
-      <span className="set-num-unit">px</span>
-    </label>
-  )
-}

@@ -83,6 +83,7 @@ describe('visual object schema', () => {
         grouping: 'stacked',
         axisTitles: { category: 'Month' },
         categoryAxisFormat: 'd-mmm',
+        dataLabelStyle: { size: 12, bold: true, color: '#FFFFFF' },
         series: [
           {
             name: 'S1',
@@ -97,6 +98,7 @@ describe('visual object schema', () => {
     expect(parsed.chart?.legend).toBe('bottom')
     expect(parsed.chart?.grouping).toBe('stacked')
     expect(parsed.chart?.categoryAxisFormat).toBe('d-mmm')
+    expect(parsed.chart?.dataLabelStyle).toEqual({ size: 12, bold: true, color: '#FFFFFF' })
     expect(parsed.chart?.series[0]?.categoryFormat).toBe('mmm\\-yy')
     expect(parsed.chart?.series[0]?.pointColors?.[0]).toEqual({ index: 1, color: '#00AA00' })
   })

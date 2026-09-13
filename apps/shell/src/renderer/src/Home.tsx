@@ -25,6 +25,7 @@ import { MonoFileIcon } from './file-icons'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
 import { SettingsModal } from './SettingsModal'
+import { skillUpdateDue } from './IntegrationsPane'
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
@@ -42,10 +43,13 @@ import {
   resolveRelayConfirm,
 } from './home-chat/relay-client'
 
+import type { IntegrationsApi } from '../../shared/integrations-api'
+
 declare global {
   interface Window {
     chatOffice: HomeApi
     chatOfficeProject?: ProjectHomeApi
+    chatOfficeIntegrations?: IntegrationsApi
   }
 }
 
@@ -323,6 +327,7 @@ function AccountEntry({
   const [authUrl, setAuthUrl] = useState<string | null>(null)
   const [urlCopied, setUrlCopied] = useState(false)
   const loginDeadline = useRef(0)
+  const [skillUpdate, setSkillUpdate] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   // bumped on logout so an in-flight status refresh (which can still
   // report logged-in) is discarded instead of resurrecting the UI
@@ -340,6 +345,20 @@ function AccountEntry({
   }, [])
 
   // login progress pushed from main (chatoffice login CLI output)
+  // the skill state is a few file reads; re-probe after the modal closes so an
+  // update done inside it clears the dot
+  useEffect(() => {
+    if (settingsOpen) return
+    let alive = true
+    void window.chatOfficeIntegrations?.status().then((st) => {
+      if (alive) setSkillUpdate(skillUpdateDue(st))
+    })
+    return () => {
+      alive = false
+    }
+  }, [settingsOpen])
+
+  // login progress pushed from main (gsk login CLI output)
   useEffect(() => {
     const off = window.chatOffice.onAccountLogin?.((ev) => {
       if (ev.phase === 'url') {
@@ -440,6 +459,8 @@ function AccountEntry({
             startLogin()
           }}
           onLogout={doLogout}
+          skillUpdateDue={skillUpdate}
+          onSkillUpdateDue={setSkillUpdate}
         />
       )}
       {!settingsOpen && waiting && authUrl && (
@@ -528,6 +549,9 @@ function AccountEntry({
                 strokeLinecap="round"
               />
             </svg>
+          )}
+          {skillUpdate && (
+            <span className="account-badge" role="img" aria-label={t('intgUpdateDue')} />
           )}
         </span>
         <span className="account-text">

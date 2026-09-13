@@ -409,7 +409,7 @@ export function Ribbon({
             <IconBtn
               title={t('outline')}
               active={outlineOpen}
-              disabled={disabled || !hasOutline}
+              disabled={disabled || (!hasOutline && !outlineOpen)}
               onClick={onToggleOutline}
             >
               <IconOutlineView size={ICON} />

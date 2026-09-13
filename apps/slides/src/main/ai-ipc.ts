@@ -47,7 +47,7 @@ import {
 } from '@chatoffice/ai-search'
 import { addPicture, editPictureSrcRect, replacePictureBytes } from '@chatoffice/pptx-engine'
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
-import { coverCropFractions } from '../shared/cover-crop'
+import { coverCropFractions } from '@chatoffice/pipelines/slides/cover-crop'
 import type { AiRunFailure } from '../shared/ipc'
 import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
 import { tm } from './i18n-main'

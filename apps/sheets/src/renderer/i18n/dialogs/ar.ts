@@ -1,4 +1,5 @@
 /** dialogs strings, ar (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const ar = {
   dlgAllowEditRangesTitle: 'السماح بتحرير النطاقات',
   dlgAllowEditRangesHint: 'تظل هذه النطاقات قابلة للتحرير أثناء حماية الورقة. تُكتب عند الحفظ؛ كلمات المرور غير مدعومة.',
@@ -366,4 +367,12 @@ export const ar = {
   dlgFnDescNpv: 'يُرجع القيمة الحالية الصافية لتدفق نقدي عند معدل خصم.',
   dlgFnDescIrr: 'يُرجع معدل العائد الداخلي لسلسلة تدفقات نقدية.',
   dlgFnCatFinancial: 'مالية',
-}
+  dlgFnCatDatabase: 'قاعدة بيانات',
+  dlgFnCatInformation: 'معلومات',
+  dlgFnCatEngineering: 'هندسية',
+  dlgFnCatCube: 'مكعب',
+  dlgFnCatCompatibility: 'التوافق',
+  dlgFnCatWeb: 'ويب',
+  dlgFnCatArray: 'صفيف',
+  dlgFnCatOther: 'أخرى',
+} satisfies Record<keyof typeof zh, string>

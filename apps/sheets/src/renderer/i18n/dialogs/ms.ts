@@ -1,4 +1,5 @@
 /** dialogs strings, ms (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const ms = {
   dlgAllowEditRangesTitle: 'Benarkan Edit Julat',
   dlgAllowEditRangesHint: 'Julat ini kekal boleh diedit semasa helaian dilindungi. Ditulis semasa menyimpan; kata laluan tidak disokong.',
@@ -366,4 +367,12 @@ export const ms = {
   dlgFnDescNpv: 'Mengembalikan nilai kini bersih aliran tunai pada kadar diskaun.',
   dlgFnDescIrr: 'Mengembalikan kadar pulangan dalaman satu siri aliran tunai.',
   dlgFnCatFinancial: 'Kewangan',
-}
+  dlgFnCatDatabase: 'Pangkalan data',
+  dlgFnCatInformation: 'Maklumat',
+  dlgFnCatEngineering: 'Kejuruteraan',
+  dlgFnCatCube: 'Kubus',
+  dlgFnCatCompatibility: 'Keserasian',
+  dlgFnCatWeb: 'Web',
+  dlgFnCatArray: 'Tatasusunan',
+  dlgFnCatOther: 'Lain-lain',
+} satisfies Record<keyof typeof zh, string>

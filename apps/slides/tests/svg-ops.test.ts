@@ -5,8 +5,8 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest'
 import { createBlankPptx, openPptx, savePptx, type OpenedPptx } from '@chatoffice/pptx-engine'
-import { runTxn, opNames } from '../src/main/ops'
-import { OP_DOCS, opVocabulary } from '../src/shared/op-docs'
+import { runTxn, opNames } from '@chatoffice/pptx-ops'
+import { OP_DOCS, opVocabulary } from '@chatoffice/pptx-ops'
 
 const PNG_1PX_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='

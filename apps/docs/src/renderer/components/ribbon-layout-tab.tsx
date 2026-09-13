@@ -113,12 +113,15 @@ export function LayoutTab({
 
   const applyMargins = (m: PageMargins) => {
     if (!section || !marginsFitPage(m, section.pageWidth, section.pageHeight)) return
+    // a user-set value is an ordinary margin, not the file's header-proof fixed one
     onSection({
       ...section,
       marginTop: m.top,
       marginRight: m.right,
       marginBottom: m.bottom,
       marginLeft: m.left,
+      marginTopFixed: undefined,
+      marginBottomFixed: undefined,
     })
   }
 
@@ -477,7 +480,12 @@ export function LayoutTab({
               data-tip={t('ribbonLineNumberTip')}
               onClick={() => {
                 if (!section) return
-                onSection({ ...section, lineNumbers: !section.lineNumbers })
+                onSection({
+                  ...section,
+                  lineNumbers: section.lineNumbers
+                    ? undefined
+                    : { countBy: 1, start: 1, restart: 'newPage' },
+                })
                 setDropdown(() => null)
               }}
             >

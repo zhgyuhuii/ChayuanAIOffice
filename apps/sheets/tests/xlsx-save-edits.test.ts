@@ -7,8 +7,8 @@ import {
   assertOnlyTouchedEntriesChanged,
   toA1Address,
   type CellEdit,
-} from '../src/gateway/xlsx-gateway'
-import { blankXlsxBuffer } from '../src/gateway/csv-import'
+} from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { blankXlsxBuffer } from '@chatoffice/xlsx-gateway/gateway/csv-import'
 import { createEditJournal, recordSetRangeValues, toSaveEdits } from '../src/renderer/edit-journal'
 import { buildEditFixture } from './fixture-builder'
 

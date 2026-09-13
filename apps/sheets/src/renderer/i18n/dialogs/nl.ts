@@ -1,4 +1,5 @@
 /** dialogs strings, nl (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const nl = {
   dlgAllowEditRangesTitle: 'Bewerken van bereiken toestaan',
   dlgAllowEditRangesHint: 'Deze bereiken blijven bewerkbaar terwijl het blad is beveiligd. Wordt bij het opslaan geschreven; wachtwoorden worden niet ondersteund.',
@@ -366,4 +367,12 @@ export const nl = {
   dlgFnDescNpv: 'Geeft de netto huidige waarde van een kasstroom bij een discontovoet.',
   dlgFnDescIrr: 'Geeft het interne rendement van een reeks kasstromen.',
   dlgFnCatFinancial: 'Financieel',
-}
+  dlgFnCatDatabase: 'Database',
+  dlgFnCatInformation: 'Informatie',
+  dlgFnCatEngineering: 'Technisch',
+  dlgFnCatCube: 'Kubus',
+  dlgFnCatCompatibility: 'Compatibiliteit',
+  dlgFnCatWeb: 'Web',
+  dlgFnCatArray: 'Matrix',
+  dlgFnCatOther: 'Overig',
+} satisfies Record<keyof typeof zh, string>

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { applyVisualEdits } from '../src/gateway/xlsx-drawing-edit'
-import { applyPictureFormat } from '../src/gateway/xlsx-picture-xml'
-import type { MutablePackage } from '../src/gateway/xlsx-drawing-add'
+import { applyVisualEdits } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-edit'
+import { applyPictureFormat } from '@chatoffice/xlsx-gateway/gateway/xlsx-picture-xml'
+import type { MutablePackage } from '@chatoffice/xlsx-gateway/gateway/xlsx-drawing-add'
 
 const BASE_PIC =
   '<xdr:pic>' +

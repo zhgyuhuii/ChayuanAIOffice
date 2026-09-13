@@ -26,11 +26,19 @@ export default defineConfig({
         '../../packages/pptx-engine/src/custgeom.ts',
       ),
       '@chatoffice/pptx-engine': resolve(here, '../../packages/pptx-engine/src/index.ts'),
+      '@chatoffice/pptx-ops/op-docs': resolve(here, '../../packages/pptx-ops/src/op-docs.ts'),
+      '@chatoffice/pptx-ops/font-size': resolve(here, '../../packages/pptx-ops/src/font-size.ts'),
+      '@chatoffice/pptx-ops': resolve(here, '../../packages/pptx-ops/src/index.ts'),
       '@chatoffice/pptx-render/preset-geometry': resolve(
         here,
         '../../packages/pptx-render/src/preset-geometry.ts',
       ),
       '@chatoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
+      '@chatoffice/pipelines/slides/layout-audit': resolve(
+        here,
+        '../../packages/pipelines/src/slides/layout-audit.ts',
+      ),
+      '@chatoffice/pipelines/slides': resolve(here, '../../packages/pipelines/src/slides/index.ts'),
       '@chatoffice/docx-engine/metafile': resolve(
         here,
         '../../packages/docx-engine/src/metafile.ts',

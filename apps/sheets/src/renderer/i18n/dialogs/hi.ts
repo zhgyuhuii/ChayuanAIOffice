@@ -1,4 +1,5 @@
 /** dialogs strings, hi (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const hi = {
   dlgAllowEditRangesTitle: 'रेंज संपादन की अनुमति दें',
   dlgAllowEditRangesHint: 'शीट सुरक्षित होने पर भी ये रेंज संपादन योग्य रहती हैं। सहेजते समय लिखी जाती हैं; पासवर्ड समर्थित नहीं हैं।',
@@ -366,4 +367,12 @@ export const hi = {
   dlgFnDescNpv: 'किसी छूट दर पर नकदी प्रवाह का शुद्ध वर्तमान मूल्य देता है।',
   dlgFnDescIrr: 'नकदी प्रवाहों की श्रृंखला की आंतरिक प्रतिफल दर देता है।',
   dlgFnCatFinancial: 'वित्तीय',
-}
+  dlgFnCatDatabase: 'डेटाबेस',
+  dlgFnCatInformation: 'जानकारी',
+  dlgFnCatEngineering: 'इंजीनियरिंग',
+  dlgFnCatCube: 'क्यूब',
+  dlgFnCatCompatibility: 'संगतता',
+  dlgFnCatWeb: 'वेब',
+  dlgFnCatArray: 'सरणी',
+  dlgFnCatOther: 'अन्य',
+} satisfies Record<keyof typeof zh, string>

@@ -1,7 +1,7 @@
 import type { AgentMessage, AgentToolCall, AgentToolDef } from '@chatoffice/agent-core'
 import { aiFetch } from '../fetch'
 import { httpBodyDetail } from '../http-error'
-import { chatofficeAttributionHeaders } from '../providers'
+import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../providers'
 import { modelEchoesReasoning } from '../registry'
 import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
@@ -199,6 +199,7 @@ async function openAiCompatibleTurn(
       'Content-Type': 'application/json',
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
       ...chatofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl, cb.sessionId),
     },
     body: imageModel
       ? JSON.stringify({
@@ -369,6 +370,7 @@ export async function chatOpenAiCompatible(
       'Content-Type': 'application/json',
       ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
       ...chatofficeAttributionHeaders(baseUrl),
+      ...opencodeSessionHeaders(baseUrl),
     },
     body: JSON.stringify({
       model: config.model,

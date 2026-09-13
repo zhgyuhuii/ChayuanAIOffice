@@ -17,7 +17,7 @@ test.describe('markdown editor', () => {
       await expect(editorTab).toHaveCount(1)
       await expect(editorTab).toHaveClass(/active/)
 
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       await expect(editorPage.locator('.doc-editor')).toBeVisible()
       await editorPage.screenshot({ path: screenshotPath('new-markdown-editor') })
     } finally {
@@ -37,7 +37,7 @@ test.describe('markdown editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       const editor = editorPage.locator('.doc-editor')
       await expect(editor.locator('h1')).toHaveText('Doc')
       // the legacy callout fences are stripped on open; the body text survives
@@ -84,7 +84,7 @@ test.describe('markdown editor', () => {
       await expect(editorTab).toHaveCount(1)
       await expect(editorTab).toContainText('note.md')
 
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       const editor = editorPage.locator('.doc-editor')
       await expect(editor.locator('h1')).toHaveText('Hello')
       await expect(editor.locator('strong')).toHaveText('bold')
@@ -121,7 +121,7 @@ test.describe('markdown editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       await expect(editorPage.locator('.doc-editor h1')).toHaveText('Topic')
 
       const summarizeBtn = editorPage.locator('.rb-big.ai-entry', {
@@ -151,7 +151,7 @@ test.describe('markdown editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       const editor = editorPage.locator('.doc-editor')
       await expect(editor).toContainText('Hello style')
 
@@ -194,7 +194,7 @@ test.describe('markdown editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       const img = editorPage.locator('.doc-editor img[alt="a pic"]')
       await expect(img).toBeVisible()
       await expect(img).toHaveAttribute('src', /^md-asset:\/\//)
@@ -209,7 +209,7 @@ test.describe('markdown editor', () => {
   })
 
   test('Ctrl+F finds across the document and Replace All rewrites the saved file', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-md-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-md-'))
     const mdPath = join(dir, 'find.md')
     await writeFile(mdPath, '# Alpha\n\nalpha beta **alpha**\n')
 
@@ -220,7 +220,7 @@ test.describe('markdown editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'markdown/out')
+      const editorPage = await waitForPageWithUrl(app, '://markdown/')
       const editor = editorPage.locator('.doc-editor')
       await expect(editor.locator('h1')).toHaveText('Alpha')
 

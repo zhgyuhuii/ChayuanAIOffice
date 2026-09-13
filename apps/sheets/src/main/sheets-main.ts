@@ -57,6 +57,9 @@ import {
   showSaveDialogWithMemory,
   viewMenuTemplate,
   windowMenuTemplate,
+  installRendererProtocol,
+  registerRendererScheme,
+  rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
@@ -77,7 +80,7 @@ import {
   csvToXlsxBuffer,
   decodeCsvBuffer,
   sheetCsvToXlsxBuffer,
-} from '../gateway/csv-import'
+} from '@chatoffice/xlsx-gateway/gateway/csv-import'
 import {
   ensureChatofficeLogin,
   chatofficeApiKey,
@@ -89,10 +92,10 @@ import {
   chatofficeGenerateImage,
 } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse'
-import type { CellEdit, SheetStructuralOps } from '../gateway/xlsx-gateway'
-import { readArchiveEntryText, saveWorkbookViaSidecar } from '../gateway/xlsx-package-io'
-import { parsePivotDefinition } from '../gateway/xlsx-pivot'
-import type { SheetEditPlan } from '../gateway/xlsx-sheets'
+import type { CellEdit, SheetStructuralOps } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { readArchiveEntryText, saveWorkbookViaSidecar } from '@chatoffice/xlsx-gateway/gateway/xlsx-package-io'
+import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
+import type { SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
 import type {
   AttachmentAddResult,
   AttachmentImageResult,
@@ -134,9 +137,12 @@ import { IPC_CHANNELS } from '../shared/ipc-channels'
 import { atomicWriteFile } from './atomic-write'
 import { closeGuardDecision } from './close-guard'
 import { SaveEditsTransferStore } from './save-edits-transfer'
-import { exportPdf } from './pdf-export'
+import { exportPdf, printWorkbook } from './pdf-export'
 import { allowsAutomaticWorkbookRecovery } from './recovery-policy'
-import { setSystemShortDate, shortDatePatternForSystemLocale } from '../shared/short-date'
+import {
+  setSystemShortDate,
+  shortDatePatternForSystemLocale,
+} from '@chatoffice/xlsx-gateway/shared/short-date'
 import {
   cleanupExpiredPastedFiles,
   cleanupImportTempDirectory,
@@ -191,6 +197,7 @@ const tMain = createI18n({
     menuSave: '保存',
     menuSaveAs: '另存为…',
     menuExportPdf: '导出 PDF…',
+    menuPrint: '打印…',
     menuClose: '关闭',
     menuQuit: '退出',
     menuEdit: '编辑',
@@ -252,6 +259,7 @@ const tMain = createI18n({
     menuSave: 'Save',
     menuSaveAs: 'Save As…',
     menuExportPdf: 'Export PDF…',
+    menuPrint: 'Print…',
     menuClose: 'Close',
     menuQuit: 'Quit',
     menuEdit: 'Edit',
@@ -317,6 +325,7 @@ const tMain = createI18n({
     menuSave: '保存',
     menuSaveAs: '名前を付けて保存…',
     menuExportPdf: 'PDF をエクスポート…',
+    menuPrint: '印刷…',
     menuClose: '閉じる',
     menuQuit: '終了',
     menuEdit: '編集',
@@ -383,6 +392,7 @@ const tMain = createI18n({
     menuSave: '저장',
     menuSaveAs: '다른 이름으로 저장…',
     menuExportPdf: 'PDF 내보내기…',
+    menuPrint: '인쇄…',
     menuClose: '닫기',
     menuQuit: '끝내기',
     menuEdit: '편집',
@@ -449,6 +459,7 @@ const tMain = createI18n({
     menuSave: 'Enregistrer',
     menuSaveAs: 'Enregistrer sous…',
     menuExportPdf: 'Exporter en PDF…',
+    menuPrint: 'Imprimer…',
     menuClose: 'Fermer',
     menuQuit: 'Quitter',
     menuEdit: 'Édition',
@@ -516,6 +527,7 @@ const tMain = createI18n({
     menuSave: 'Speichern',
     menuSaveAs: 'Speichern unter…',
     menuExportPdf: 'PDF exportieren…',
+    menuPrint: 'Drucken…',
     menuClose: 'Schließen',
     menuQuit: 'Beenden',
     menuEdit: 'Bearbeiten',
@@ -582,6 +594,7 @@ const tMain = createI18n({
     menuSave: 'Guardar',
     menuSaveAs: 'Guardar como…',
     menuExportPdf: 'Exportar a PDF…',
+    menuPrint: 'Imprimir…',
     menuClose: 'Cerrar',
     menuQuit: 'Salir',
     menuEdit: 'Edición',
@@ -647,6 +660,7 @@ const tMain = createI18n({
     menuSave: 'บันทึก',
     menuSaveAs: 'บันทึกเป็น…',
     menuExportPdf: 'ส่งออก PDF…',
+    menuPrint: 'พิมพ์…',
     menuClose: 'ปิด',
     menuQuit: 'ออก',
     menuEdit: 'แก้ไข',
@@ -710,6 +724,7 @@ const tMain = createI18n({
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
     menuExportPdf: 'Ekspor PDF…',
+    menuPrint: 'Cetak…',
     menuClose: 'Tutup',
     menuQuit: 'Keluar',
     menuEdit: 'Edit',
@@ -775,6 +790,7 @@ const tMain = createI18n({
     menuSave: 'Сохранить',
     menuSaveAs: 'Сохранить как…',
     menuExportPdf: 'Экспорт в PDF…',
+    menuPrint: 'Печать…',
     menuClose: 'Закрыть',
     menuQuit: 'Выход',
     menuEdit: 'Правка',
@@ -839,6 +855,7 @@ const tMain = createI18n({
     menuSave: 'حفظ',
     menuSaveAs: 'حفظ باسم…',
     menuExportPdf: 'تصدير PDF…',
+    menuPrint: 'طباعة…',
     menuClose: 'إغلاق',
     menuQuit: 'إنهاء',
     menuEdit: 'تحرير',
@@ -902,6 +919,7 @@ const tMain = createI18n({
     menuSave: 'Salvar',
     menuSaveAs: 'Salvar Como…',
     menuExportPdf: 'Exportar PDF…',
+    menuPrint: 'Imprimir…',
     menuClose: 'Fechar',
     menuQuit: 'Sair',
     menuEdit: 'Editar',
@@ -968,6 +986,7 @@ const tMain = createI18n({
     menuSave: 'Salva',
     menuSaveAs: 'Salva con nome…',
     menuExportPdf: 'Esporta PDF…',
+    menuPrint: 'Stampa…',
     menuClose: 'Chiudi',
     menuQuit: 'Esci',
     menuEdit: 'Modifica',
@@ -1033,6 +1052,7 @@ const tMain = createI18n({
     menuSave: 'Zapisz',
     menuSaveAs: 'Zapisz jako…',
     menuExportPdf: 'Eksportuj PDF…',
+    menuPrint: 'Drukuj…',
     menuClose: 'Zamknij',
     menuQuit: 'Zakończ',
     menuEdit: 'Edycja',
@@ -1094,6 +1114,7 @@ const tMain = createI18n({
     menuSave: 'Uložit',
     menuSaveAs: 'Uložit jako…',
     menuExportPdf: 'Exportovat PDF…',
+    menuPrint: 'Tisk…',
     menuClose: 'Zavřít',
     menuQuit: 'Ukončit',
     menuEdit: 'Úpravy',
@@ -1164,6 +1185,7 @@ const tMain = createI18n({
     menuSave: 'Opslaan',
     menuSaveAs: 'Opslaan als…',
     menuExportPdf: 'PDF exporteren…',
+    menuPrint: 'Afdrukken…',
     menuClose: 'Sluiten',
     menuQuit: 'Stoppen',
     menuEdit: 'Bewerken',
@@ -1228,6 +1250,7 @@ const tMain = createI18n({
     menuSave: 'Simpan',
     menuSaveAs: 'Simpan Sebagai…',
     menuExportPdf: 'Eksport PDF…',
+    menuPrint: 'Cetak…',
     menuClose: 'Tutup',
     menuQuit: 'Keluar',
     menuEdit: 'Edit',
@@ -1292,6 +1315,7 @@ const tMain = createI18n({
     menuSave: 'שמירה',
     menuSaveAs: 'שמירה בשם…',
     menuExportPdf: 'ייצוא PDF…',
+    menuPrint: 'הדפסה…',
     menuClose: 'סגירה',
     menuQuit: 'יציאה',
     menuEdit: 'עריכה',
@@ -1355,6 +1379,7 @@ const tMain = createI18n({
     menuSave: 'सहेजें',
     menuSaveAs: 'इस रूप में सहेजें…',
     menuExportPdf: 'PDF निर्यात करें…',
+    menuPrint: 'प्रिंट करें…',
     menuClose: 'बंद करें',
     menuQuit: 'बाहर निकलें',
     menuEdit: 'संपादन',
@@ -1416,6 +1441,7 @@ const tMain = createI18n({
     menuSave: '儲存',
     menuSaveAs: '另存新檔…',
     menuExportPdf: '匯出 PDF…',
+    menuPrint: '列印…',
     menuClose: '關閉',
     menuQuit: '結束',
     menuEdit: '編輯',
@@ -1730,9 +1756,14 @@ export function setSheetsWorkbookOpenedHook(
 
 /** forward an application-menu File command into the sheets renderer */
 export function sendSheetsMenuAction(
-  action: 'open' | 'save' | 'save-as' | 'export-pdf' | 'export-csv' | 'undo' | 'redo',
+  action: 'open' | 'save' | 'save-as' | 'print' | 'export-pdf' | 'export-csv' | 'undo' | 'redo',
 ): void {
   activeSheetsWebContents?.send(IPC_CHANNELS.menuAction, action)
+}
+
+/** An already-mounted renderer polled for its queued workbook before one existed. */
+export function nudgeQueuedWorkbook(contents: WebContents): void {
+  contents.send(IPC_CHANNELS.menuAction, 'open')
 }
 
 // ---- AI settings persistence (main process avoids renderer CORS for the chat/stream proxy) ----
@@ -1966,6 +1997,7 @@ function startCaptureServer(): void {
         action === 'open' ||
         action === 'save' ||
         action === 'save-as' ||
+        action === 'print' ||
         action === 'export-pdf' ||
         action === 'export-csv' ||
         action === 'undo' ||
@@ -2055,12 +2087,81 @@ export async function createSheetsWindow(
     mainWindow = null
   })
 
-  if (runtime.rendererUrl) {
-    await window.loadURL(runtime.rendererUrl)
-  } else {
-    await window.loadFile(runtime.rendererFile)
-  }
+  await window.loadURL(rendererUrl(runtime.rendererUrl, 'sheets'))
   return window
+}
+
+/** hidden export windows: webContents id -> the PDF path the renderer must write */
+const headlessExportTargets = new Map<number, string>()
+/** settled by 'sheets:headless-export-done' (or by the renderer dying) */
+const headlessExportWaiters = new Map<number, (result: HeadlessSheetsReport) => void>()
+
+interface HeadlessSheetsReport {
+  ok: boolean
+  error?: string
+}
+
+/** End a headless run early (a failure the renderer can never observe). */
+function failHeadlessExport(wcId: number, message: string): void {
+  const settle = headlessExportWaiters.get(wcId)
+  if (!settle) return
+  headlessExportWaiters.delete(wcId)
+  settle({ ok: false, error: message })
+}
+
+/**
+ * Render `input` to `outPath` with no visible window: a hidden sheets
+ * renderer opens the workbook through the normal queued-open path, lays the
+ * active sheet out with its Page Layout settings and prints via the existing
+ * hidden print window (main/pdf-export.ts).
+ */
+export async function exportSheetsPdfHeadless(
+  input: string,
+  outPath: string,
+  timeoutMs = 600_000,
+): Promise<void> {
+  const client = sidecar ?? new XlsxSidecarClient(resolveSidecarPath())
+  sidecar = client
+  client.start()
+  const win = new BrowserWindow({
+    show: false,
+    width: 1440,
+    height: 900,
+    webPreferences: {
+      preload: runtime.preloadPath,
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      backgroundThrottling: false,
+    },
+  })
+  registerSheetsIpc()
+  registerSheetsSession(win.webContents, client)
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  win.webContents.on('will-navigate', (event) => event.preventDefault())
+  const wcId = win.webContents.id
+  queueWorkbookForView(win.webContents, input)
+  headlessExportTargets.set(wcId, outPath)
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    const report = await new Promise<HeadlessSheetsReport>((resolve) => {
+      headlessExportWaiters.set(wcId, resolve)
+      win.webContents.on('render-process-gone', (_event, details) =>
+        resolve({ ok: false, error: `sheets renderer stopped (${details.reason})` }),
+      )
+      timer = setTimeout(
+        () => resolve({ ok: false, error: `sheets export timed out after ${timeoutMs}ms` }),
+        timeoutMs,
+      )
+      void win.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'sheets'))
+    })
+    if (!report.ok) throw new Error(report.error ?? 'sheets export failed')
+  } finally {
+    if (timer) clearTimeout(timer)
+    headlessExportWaiters.delete(wcId)
+    headlessExportTargets.delete(wcId)
+    if (!win.isDestroyed()) win.destroy()
+  }
 }
 
 /** tab-mode equivalent of createSheetsWindow: same runtime/IPC wiring, no BrowserWindow of its own. */
@@ -2095,14 +2196,7 @@ export function createSheetsView(
   // the Home conversation is the chat surface for docked editors.
   const query: Record<string, string> = { mode: 'tab' }
   if (options.hidePanel) query.panel = '0'
-  if (runtime.rendererUrl) {
-    // append via URL so a dev URL that already carries query params stays valid
-    const devUrl = new URL(runtime.rendererUrl)
-    for (const [key, value] of Object.entries(query)) devUrl.searchParams.set(key, value)
-    void view.webContents.loadURL(devUrl.toString())
-  } else {
-    void view.webContents.loadFile(runtime.rendererFile, { query })
-  }
+  void view.webContents.loadURL(rendererUrl(runtime.rendererUrl, 'sheets', query))
   return view
 }
 
@@ -2396,7 +2490,26 @@ export function registerSheetsIpc(): void {
    */
   ipcMain.handle('sheets:has-queued-workbook', (event) => queuedWorkbookPaths.has(event.sender.id))
 
-  ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
+  // ---- headless export mode (--headless-export) ----
+
+  ipcMain.handle('sheets:consume-headless-export', (event): string | null => {
+    const target = headlessExportTargets.get(event.sender.id) ?? null
+    headlessExportTargets.delete(event.sender.id)
+    return target
+  })
+
+  ipcMain.on('sheets:headless-export-done', (event, result: unknown) => {
+    const settle = headlessExportWaiters.get(event.sender.id)
+    if (!settle) return
+    headlessExportWaiters.delete(event.sender.id)
+    const state = result as { ok?: unknown; error?: unknown } | null
+    settle({
+      ok: state?.ok === true,
+      ...(typeof state?.error === 'string' ? { error: state.error } : {}),
+    })
+  })
+
+  const openSelectedWorkbook = async (event: IpcMainInvokeEvent) => {
     const entry = sessionFor(event)
     let path = queuedWorkbookPaths.get(event.sender.id) ?? forcedWorkbookPath
     // consume immediately (before the slow session open) so the shell's
@@ -2486,6 +2599,18 @@ export function registerSheetsIpc(): void {
     if (blankDraft) blankDraftHook?.(event.sender, path, saveDir ?? configuredDefaultSaveDir(app))
     else workbookOpenedHook?.(event.sender, path)
     return result
+  }
+
+  ipcMain.handle(IPC_CHANNELS.selectWorkbook, async (event) => {
+    try {
+      return await openSelectedWorkbook(event)
+    } catch (err) {
+      // A headless export has no dialog to report a failed open through, and
+      // its renderer would poll to the deadline waiting for a workbook that
+      // will never arrive — settle the run with the real reason instead.
+      failHeadlessExport(event.sender.id, `the input workbook did not open (${String(err)})`)
+      throw err
+    }
   })
 
   // Merge sources: same open pipeline as selectWorkbook, but multi-select,
@@ -2792,6 +2917,11 @@ export function registerSheetsIpc(): void {
     const result = await exportPdf(event, request)
     if (!result.canceled && result.path) openGeneratedFile(result.path)
     return result
+  })
+
+  ipcMain.handle(IPC_CHANNELS.printWorkbook, async (event, input: unknown) => {
+    sessionFor(event)
+    return printWorkbook(event, workbookExportPdfRequestSchema.parse(input))
   })
 
   ipcMain.handle(IPC_CHANNELS.exportCsv, async (event, input: unknown) => {
@@ -3996,6 +4126,13 @@ function installApplicationMenu(): void {
             accelerator: 'Shift+CmdOrCtrl+S',
             click: () => sendMenuAction('save-as'),
           },
+          { type: 'separator' },
+          {
+            label: tm('menuPrint'),
+            accelerator: 'CmdOrCtrl+P',
+            click: () => sendMenuAction('print'),
+          },
+          { type: 'separator' },
           {
             label: tm('menuExportPdf'),
             click: () => sendMenuAction('export-pdf'),
@@ -4106,6 +4243,7 @@ async function applyMainProcessProxy(): Promise<void> {
 }
 
 export function startSheetsStandalone(): void {
+  registerRendererScheme()
   installNavigationGuard(app)
   installContextMenu(app, () => contextMenuLabels(getUiLang()))
   // CHATOFFICE_USER_DATA: test drivers point this at a scratch dir so automated
@@ -4117,6 +4255,7 @@ export function startSheetsStandalone(): void {
   }
   void applyMainProcessProxy()
   app.whenReady().then(() => {
+    installRendererProtocol({ sheets: join(__dirname, '../renderer') })
     setUiLang(normalizeLang(process.env.CHATOFFICE_LANG ?? app.getLocale()))
     // Dev runs from the stock Electron.app; packaged mac takes the icon from icon.icns
     if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(APP_ICON)

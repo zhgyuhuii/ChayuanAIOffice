@@ -1,4 +1,5 @@
 /** dialogs strings, es (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const es = {
   dlgAllowEditRangesTitle: 'Permitir editar rangos',
   dlgAllowEditRangesHint: 'Estos rangos se pueden seguir editando mientras la hoja está protegida. Se escriben al guardar; no se admiten contraseñas.',
@@ -366,4 +367,12 @@ export const es = {
   dlgFnDescNpv: 'Devuelve el valor actual neto de un flujo de caja a una tasa de descuento.',
   dlgFnDescIrr: 'Devuelve la tasa interna de retorno de una serie de flujos.',
   dlgFnCatFinancial: 'Financieras',
-}
+  dlgFnCatDatabase: 'Base de datos',
+  dlgFnCatInformation: 'Información',
+  dlgFnCatEngineering: 'Ingeniería',
+  dlgFnCatCube: 'Cubo',
+  dlgFnCatCompatibility: 'Compatibilidad',
+  dlgFnCatWeb: 'Web',
+  dlgFnCatArray: 'Matriz',
+  dlgFnCatOther: 'Otras',
+} satisfies Record<keyof typeof zh, string>

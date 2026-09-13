@@ -32,6 +32,7 @@ import {
 } from '../../../pdf/src/main/pdf-main'
 import {
   createSheetsView,
+  nudgeQueuedWorkbook,
   queueWorkbookForView,
   requestSheetsClose,
   setActiveSheetsWebContents,
@@ -102,6 +103,11 @@ export class TabManager {
    *  the active tab */
   private dockRect: DockRect | null = null
   private activeDockId: string | null = null
+  /** Sheets renderer mounted ahead of the next open: parsing its bundle and
+   *  booting Univer is the bulk of a workbook's open time, and the shell hands
+   *  the path over after mount anyway. */
+  private spareSheetsView: WebContentsView | null = null
+  private spareSheetsTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(
     private readonly shellWindow: BrowserWindow,
@@ -120,6 +126,36 @@ export class TabManager {
       this.layout()
       setImmediate(() => this.layout())
     })
+    shellWindow.webContents.once('did-finish-load', () => this.scheduleSpareSheetsView(1500))
+  }
+
+  private scheduleSpareSheetsView(delayMs: number): void {
+    if (process.env.GENOFFICE_NO_SPARE_VIEW || this.spareSheetsTimer) return
+    this.spareSheetsTimer = setTimeout(() => {
+      this.spareSheetsTimer = null
+      if (this.spareSheetsView || this.shellWindow.isDestroyed()) return
+      const view = createSheetsView({ includeAiHandlers: false })
+      // registering the session made the spare the menu-action target
+      const active = this.tabs.find((t) => t.id === this.activeId)
+      setActiveSheetsWebContents(
+        active?.kind === 'sheets' && active.view ? active.view.webContents : null,
+      )
+      this.shellWindow.contentView.addChildView(view)
+      view.setVisible(false)
+      view.setBounds(this.contentBounds())
+      view.webContents.once('render-process-gone', () => {
+        if (this.spareSheetsView !== view) return
+        this.spareSheetsView = null
+        view.webContents.close()
+      })
+      this.spareSheetsView = view
+    }, delayMs)
+  }
+
+  private takeSpareSheetsView(): WebContentsView | null {
+    const view = this.spareSheetsView
+    this.spareSheetsView = null
+    return view && !view.webContents.isDestroyed() ? view : null
   }
 
   private untitled(kind: TabKind, fallback: string): string {
@@ -276,6 +312,11 @@ export class TabManager {
         if (!tab) child.setVisible(false)
       }
     }
+  }
+
+  /** files open in any tab, for the open-documents registry */
+  openFilePaths(): string[] {
+    return this.tabs.flatMap((t) => (t.filePath ? [t.filePath] : []))
   }
 
   list(): TabSummary[] {
@@ -469,16 +510,23 @@ export class TabManager {
   ): string {
     if (options?.newBlank)
       setSheetsNewBlank(options?.newBlankSaveDir, options?.restoreFrom, options?.newBlankName)
-    const view = createSheetsView({ includeAiHandlers: false })
+    const spare = this.takeSpareSheetsView()
+    const view = spare ?? createSheetsView({ includeAiHandlers: false })
     // bind the path to this tab's webContents: a multi-select Open creates
     // several sheets tabs in one loop, so a single global path would be
     // overwritten before the earlier tabs consume it
-    if (openPath) queueWorkbookForView(view.webContents, openPath)
+    if (openPath) {
+      queueWorkbookForView(view.webContents, openPath)
+      if (spare) nudgeQueuedWorkbook(view.webContents)
+    }
     const id = `t${this.nextId++}`
-    this.shellWindow.contentView.addChildView(view)
-    view.setVisible(false)
+    if (!spare) {
+      this.shellWindow.contentView.addChildView(view)
+      view.setVisible(false)
+    }
     this.trackHtmlFullScreen(id, view)
     this.watchViewLifetime(id, view)
+    this.scheduleSpareSheetsView(3000)
     this.tabs.push({
       id,
       kind: 'sheets',

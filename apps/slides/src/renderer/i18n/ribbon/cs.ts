@@ -1,3 +1,5 @@
+import type { zh } from './zh'
+
 export const cs = {
   ribbonAiCreditNote: "Používá AI a spotřebovává kredity",
   ribbonTabFile: "Soubor",
@@ -137,6 +139,12 @@ export const cs = {
   ribbonBulletHangCustomTip: "Vlastní odsazení odrážky (px, potvrďte klávesou Enter)",
   ribbonBulletSize: "Velikost odrážky",
   ribbonBulletColor: "Barva odrážky",
+  ribbonNumberStyle: 'Styl číslování',
+  ribbonNumberStartAt: 'Začít od',
+  ribbonNumberStartAtTip: 'Počáteční číslo (Enter pro použití)',
+  ribbonBulletCustom: 'Vlastní symbol',
+  ribbonBulletCustomTip: 'Zadejte libovolný znak, Enter pro použití',
+  ribbonBulletPicture: 'Obrázek…',
   ribbonIndentDec: "Zmenšit odsazení",
   ribbonIndentInc: "Zvětšit odsazení",
   ribbonAnimByPara: "Po odstavcích",
@@ -166,6 +174,9 @@ export const cs = {
   ribbonInsertTableTip: "Vložit tabulku (výchozí styl; zvolte počet řádků a sloupců)",
   ribbonTablePickerHint: "Zvolte počet řádků a sloupců",
   ribbonTableSize: "Tabulka {r} × {c}",
+  ribbonTableInsertDialog: 'Vložit tabulku…',
+  ribbonTableColsLabel: 'Počet sloupců',
+  ribbonTableRowsLabel: 'Počet řádků',
   ribbonGroupImages: "Obrázky",
   ribbonPicture: "Obrázky",
   ribbonPictureTip: "Vložit obrázek z místního souboru",
@@ -834,4 +845,4 @@ export const cs = {
   ribbonViewMasterTip: "编辑幻灯片母版与版式（改动影响所有引用页）",
   ribbonSwitchRowColTip: "类目与系列互换（同 PowerPoint 切换行/列）",
   ribbonDlgEquationLabel: "公式文本（Unicode 数学符号，插入为数学字体文本框）",
-}
+} satisfies Record<keyof typeof zh, string>

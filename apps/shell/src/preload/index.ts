@@ -19,6 +19,12 @@ import type {
   UiLanguage,
 } from '../shared/home-api'
 import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
+import { INTEGRATIONS_CHANNELS } from '../shared/integrations-api'
+import type {
+  IntegrationsApi,
+  IntegrationsStatus,
+  SkillInstallState,
+} from '../shared/integrations-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
@@ -429,6 +435,36 @@ const projectApi: ProjectHomeApi = {
 
 contextBridge.exposeInMainWorld('chatOfficeProject', projectApi)
 
+const integrationsApi: IntegrationsApi = {
+  async status() {
+    return (await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.status)) as IntegrationsStatus
+  },
+  async installSkill(target) {
+    return (await ipcRenderer.invoke(
+      INTEGRATIONS_CHANNELS.installSkill,
+      target,
+    )) as SkillInstallState
+  },
+  async uninstallSkill(agentId) {
+    return (await ipcRenderer.invoke(
+      INTEGRATIONS_CHANNELS.uninstallSkill,
+      agentId,
+    )) as SkillInstallState
+  },
+  async pickSkillDir(title) {
+    const r: unknown = await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.pickSkillDir, title)
+    return typeof r === 'string' ? r : null
+  },
+  async saveSkillZip(title) {
+    const r: unknown = await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.saveSkillZip, title)
+    return typeof r === 'string' ? r : null
+  },
+  async copyText(text) {
+    await ipcRenderer.invoke(INTEGRATIONS_CHANNELS.copyText, text)
+  },
+}
+contextBridge.exposeInMainWorld('chatOfficeIntegrations', integrationsApi)
+
 const tabsApi: TabsApi = {
   async list() {
     const result: unknown = await ipcRenderer.invoke(TABS_CHANNELS.list)
@@ -445,6 +481,9 @@ const tabsApi: TabsApi = {
   },
   async showNewMenu(x, y) {
     await ipcRenderer.invoke(TABS_CHANNELS.showNewMenu, x, y)
+  },
+  async showAppMenu(x, y) {
+    await ipcRenderer.invoke(TABS_CHANNELS.showAppMenu, x, y)
   },
   async reorder(id, toIndex) {
     await ipcRenderer.invoke(TABS_CHANNELS.reorder, id, toIndex)

@@ -17,7 +17,7 @@ test.describe('html editor', () => {
       await expect(editorTab).toHaveCount(1)
       await expect(editorTab).toHaveClass(/active/)
 
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       await expect(editorPage.locator('.preview-frame')).toBeVisible()
       // blank document: the AI panel offers the design / write intent cards and swaps its starters
@@ -40,7 +40,7 @@ test.describe('html editor', () => {
   })
 
   test('opens an .html file from argv, renders it in the preview, edits and saves it back', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'page.html')
     const source =
       '<!doctype html>\n<html>\n<body>\n<h1 class="hero" style="color: rgb(200, 0, 0)">Hello</h1>\n</body>\n</html>\n'
@@ -58,7 +58,7 @@ test.describe('html editor', () => {
       await expect(editorTab).toHaveCount(1)
       await expect(editorTab).toContainText('page.html')
 
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       // preview is the default view; the source pane is shown on demand
       await expect(editorPage.locator('.pane-source')).toBeHidden()
@@ -96,7 +96,7 @@ test.describe('html editor', () => {
   })
 
   test('relative stylesheets and images next to the file load in the preview', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     await writeFile(join(dir, 'site.css'), 'h1 { color: rgb(0, 0, 200); }\n')
     // 1x1 PNG
     const png = Buffer.from(
@@ -117,7 +117,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       const frame = editorPage.frameLocator('.preview-frame')
       await expect(frame.locator('h1')).toHaveCSS('color', 'rgb(0, 0, 200)')
       await expect
@@ -160,7 +160,7 @@ test.describe('html editor', () => {
   })
 
   test('saving without edits keeps BOM, CRLF and the missing trailing newline byte-identical', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'legacy.htm')
     const source = '﻿<html>\r\n<body>\r\n<p>café &amp; <b>bold</p>\r\n</body>\r\n</html>'
     await writeFile(htmlPath, source, 'utf8')
@@ -172,7 +172,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       await editorPage.locator('.rb-view', { hasText: /Source/ }).click()
       await editorPage.locator('.source-editor .cm-content').click()
@@ -185,7 +185,7 @@ test.describe('html editor', () => {
   })
 
   test('AI panel toggles from the toolbar and accepts an instruction', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'ai.html')
     await writeFile(htmlPath, '<html><body><h1>Topic</h1><p>Body.</p></body></html>\n')
 
@@ -196,7 +196,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       const toggle = editorPage.locator('.ribbon .ai-entry').first()
       // the panel state is remembered; normalize to closed first
@@ -270,7 +270,7 @@ test.describe('html editor', () => {
   })
 
   test('preview inspector: click selects, double-click edits text, toolbar deletes, Ask AI drafts', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'inspect.html')
     const source =
       '<!doctype html>\n<html>\n<body>\n<section class="hero">\n  <h1 id="title">Hello</h1>\n  <p class="lead">First line.</p>\n  <p class="note">Second line.</p>\n</section>\n</body>\n</html>\n'
@@ -283,7 +283,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       const frame = editorPage.frameLocator('.preview-frame')
       // the breadcrumb is a source-side affordance: it only renders in the split and source views
@@ -442,7 +442,7 @@ test.describe('html editor', () => {
   })
 
   test('Ctrl+Z inside the preview undoes the last edit; pinch over the frame zooms the stage', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'undo.html')
     await writeFile(
       htmlPath,
@@ -455,7 +455,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.locator('.ribbon-body')).toBeVisible()
       const frame = editorPage.frameLocator('.preview-frame')
       const undoBtn = editorPage.locator('.ribbon').getByRole('button', { name: /^Undo$/ })
@@ -496,7 +496,7 @@ test.describe('html editor', () => {
   })
 
   test('Ctrl+F searches the source pane and Replace All saves the rewritten markup', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'genoffice-html-'))
+    const dir = await mkdtemp(join(tmpdir(), 'chatoffice-html-'))
     const htmlPath = join(dir, 'find.html')
     const source =
       '<!doctype html>\n<html>\n<body>\n<h1>Alpha</h1>\n<p>alpha and alpha</p>\n</body>\n</html>\n'
@@ -509,7 +509,7 @@ test.describe('html editor', () => {
     })
     const { app } = launched
     try {
-      const editorPage = await waitForPageWithUrl(app, 'html/out')
+      const editorPage = await waitForPageWithUrl(app, '://html/')
       await expect(editorPage.frameLocator('.preview-frame').locator('h1')).toHaveText('Alpha')
       // preview-only by default: opening find switches to split so the hits are on screen
       await expect(editorPage.locator('.pane-source')).toBeHidden()

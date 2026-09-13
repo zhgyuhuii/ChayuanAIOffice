@@ -1,4 +1,5 @@
 /** dialogs strings, zh-TW (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const zhTW = {
   dlgAllowEditRangesTitle: '允許編輯範圍',
   dlgAllowEditRangesHint: '工作表受保護時這些範圍仍可編輯。儲存時寫入；不支援密碼。',
@@ -366,4 +367,12 @@ export const zhTW = {
   dlgFnDescNpv: '按貼現率計算現金流的淨現值。',
   dlgFnDescIrr: '計算一系列現金流的內部報酬率。',
   dlgFnCatFinancial: '財務',
-}
+  dlgFnCatDatabase: '資料庫',
+  dlgFnCatInformation: '資訊',
+  dlgFnCatEngineering: '工程',
+  dlgFnCatCube: 'Cube',
+  dlgFnCatCompatibility: '相容性',
+  dlgFnCatWeb: 'Web',
+  dlgFnCatArray: '陣列',
+  dlgFnCatOther: '其他',
+} satisfies Record<keyof typeof zh, string>

@@ -5,24 +5,28 @@
  * AI proposes; every function receives its App-scope context explicitly.
  */
 import { IUndoRedoService } from '@univerjs/core'
-import type { CellBounds } from '../domain/chart-visual'
+import type { CellBounds } from '@chatoffice/xlsx-gateway/domain/chart-visual'
 import {
   columnIndex,
   columnLabel,
   formatAddress,
   parseAddress,
   parseRange,
-} from '../domain/cell-address'
-import { offsetFormulaRefs } from '../domain/formula-shift'
-import { computeSortedRowOrder } from '../domain/sort-range'
+} from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { offsetFormulaRefs } from '@chatoffice/xlsx-gateway/domain/formula-shift'
+import { computeSortedRowOrder } from '@chatoffice/xlsx-gateway/domain/sort-range'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
   matchableCellText,
   replaceOccurrences,
   type WorkbookOperation,
-} from '../domain/workbook-dsl'
-import type { ApplyOutcome, ChangePlan, StructuralChange } from '../domain/workbook.types'
+} from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
+import type {
+  ApplyOutcome,
+  ChangePlan,
+  StructuralChange,
+} from '@chatoffice/xlsx-gateway/domain/workbook.types'
 import { pushBulkFillUndo } from './bulk-fill-undo'
 import {
   journalCellContentAt,

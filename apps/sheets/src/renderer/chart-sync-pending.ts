@@ -1,4 +1,4 @@
-import type { CellBounds } from '../domain/chart-visual'
+import type { CellBounds } from '@chatoffice/xlsx-gateway/domain/chart-visual'
 
 export interface FormulaCellLike {
   readonly f?: string | null | undefined | void

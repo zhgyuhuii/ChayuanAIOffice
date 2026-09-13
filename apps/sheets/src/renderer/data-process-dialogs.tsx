@@ -6,7 +6,7 @@ import { ColorPicker } from '@chatoffice/ui'
 
 import { useI18n, type StringKey } from './i18n/locale'
 import { formatFillDate } from './fill-tools'
-import type { CellFormatPatch } from '../domain/workbook-dsl'
+import type { CellFormatPatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
 import { saveCustomCellStyle, saveCustomTableStyle } from './custom-styles'
 import type { SheetVisualRef } from './ribbon-actions'
 

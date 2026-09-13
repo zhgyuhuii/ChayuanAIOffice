@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { RenderSlide, RenderNode, ShapeRenderNode, PlacedBox } from '@chatoffice/pptx-render'
 import { runLayoutScript, type LayoutScriptElement } from '../src/renderer/ai/layout-script'
-import { auditSlideLayout } from '../src/renderer/ai/layout-audit'
+import { auditSlideLayout } from '@chatoffice/pipelines/slides/layout-audit'
 import { createSlidesSkill, type DeckAccess } from '../src/renderer/ai/slides-skill'
 
 const box = (x: number, y: number, w: number, h: number, rot = 0): PlacedBox => ({

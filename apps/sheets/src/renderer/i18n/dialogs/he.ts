@@ -1,4 +1,5 @@
 /** dialogs strings, he (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const he = {
   dlgAllowEditRangesTitle: 'אפשר עריכת טווחים',
   dlgAllowEditRangesHint: 'טווחים אלה נשארים ניתנים לעריכה כשהגיליון מוגן. נכתבים בעת השמירה; סיסמאות אינן נתמכות.',
@@ -366,4 +367,12 @@ export const he = {
   dlgFnDescNpv: 'מחזיר את הערך הנוכחי הנקי של תזרים מזומנים בשיעור היוון.',
   dlgFnDescIrr: 'מחזיר את שיעור התשואה הפנימי של סדרת תזרימים.',
   dlgFnCatFinancial: 'פיננסי',
-}
+  dlgFnCatDatabase: 'מסד נתונים',
+  dlgFnCatInformation: 'מידע',
+  dlgFnCatEngineering: 'הנדסה',
+  dlgFnCatCube: 'קוביה',
+  dlgFnCatCompatibility: 'תאימות',
+  dlgFnCatWeb: 'אינטרנט',
+  dlgFnCatArray: 'מערך',
+  dlgFnCatOther: 'אחר',
+} satisfies Record<keyof typeof zh, string>

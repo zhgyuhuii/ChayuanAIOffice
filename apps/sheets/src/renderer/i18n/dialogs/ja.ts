@@ -1,4 +1,5 @@
 /** dialogs strings, ja (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const ja = {
   dlgAllowEditRangesTitle: '範囲の編集の許可',
   dlgAllowEditRangesHint: 'シート保護中もこれらの範囲は編集できます。保存時に書き込まれます。パスワードには対応していません。',
@@ -366,4 +367,12 @@ export const ja = {
   dlgFnDescNpv: '割引率に基づくキャッシュフローの正味現在価値を返します。',
   dlgFnDescIrr: '一連のキャッシュフローの内部収益率を返します。',
   dlgFnCatFinancial: '財務',
-}
+  dlgFnCatDatabase: 'データベース',
+  dlgFnCatInformation: '情報',
+  dlgFnCatEngineering: 'エンジニアリング',
+  dlgFnCatCube: 'キューブ',
+  dlgFnCatCompatibility: '互換性',
+  dlgFnCatWeb: 'Web',
+  dlgFnCatArray: '配列',
+  dlgFnCatOther: 'その他',
+} satisfies Record<keyof typeof zh, string>

@@ -68,6 +68,7 @@ export async function launchShell(options: LaunchOptions): Promise<LaunchedApp> 
     env: {
       ...hostEnv,
       CHATOFFICE_USER_DATA: userDataDir,
+      GENOFFICE_NO_SPARE_VIEW: '1',
       CHATOFFICE_LANG: options.lang ?? 'en',
       ...(process.platform === 'linux' ? { ELECTRON_DISABLE_SANDBOX: '1' } : {}),
     },

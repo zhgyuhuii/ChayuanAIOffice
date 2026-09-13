@@ -215,6 +215,8 @@ function assertModuleTreesPresent() {
     '../pdf/out',
     '../markdown/out',
     '../html/out',
+    '../../packages/cli/dist/chatoffice.cjs',
+    '../../packages/cli/dist/node_modules/jsdom',
   ]) {
     if (!existsSync(join(__dirname, rel))) {
       throw new Error(
@@ -289,6 +291,42 @@ const config = {
     {
       from: '../../packages/pdf2docx/ocr-helper/win-ocr.exe',
       to: 'ocr/win-ocr.exe',
+    },
+    // chatoffice 命令行: runs on the app binary with ELECTRON_RUN_AS_NODE (as
+    // the gsk CLI above already does), so the RunAsNode fuse must stay enabled.
+    // Layout (Resources/cli next to wasm/, native/, ocr/) is what
+    // packages/cli/src/resources.ts expects.
+    {
+      from: '../../packages/cli/dist/chatoffice.cjs',
+      to: 'cli/chatoffice.cjs',
+    },
+    {
+      from: '../../packages/cli/bin/chatoffice',
+      to: 'cli/chatoffice',
+    },
+    {
+      from: '../../packages/cli/bin/chatoffice.cmd',
+      to: 'cli/chatoffice.cmd',
+    },
+    // the CLI's version (Settings → Integrations shows it) and the agent skill
+    // the same pane installs into Claude Code / Codex / …; bytes identical to the repo file
+    {
+      from: '../../packages/cli/package.json',
+      to: 'cli/package.json',
+    },
+    {
+      from: '../../skills/chatoffice/SKILL.md',
+      to: 'cli/skills/chatoffice/SKILL.md',
+    },
+    // runtime deps the chatoffice bundle leaves external (jsdom for the Word/Markdown
+    // paths); collected by packages/cli/collect-deps.mjs during its build
+    {
+      from: '../../packages/cli/dist/node_modules',
+      to: 'cli/node_modules',
+    },
+    {
+      from: '../../node_modules/ws',
+      to: 'gsk/node_modules/ws',
     },
   ],
   // `mimeType` is read only by the Linux target, where it becomes the
@@ -484,6 +522,9 @@ const config = {
   deb: {
     artifactName: 'chatoffice_${version}_${arch}.deb',
     packageName: 'chatoffice',
+    // expose the chatoffice command line shipped inside the app
+    afterInstall: 'build/linux-after-install.sh',
+    afterRemove: 'build/linux-after-remove.sh',
   },
   // Same "@chatoffice/shell" naming problem as deb: spell the artifact name
   // out (${arch} expands to the rpm arch string, x86_64) and pin the rpm
@@ -500,6 +541,8 @@ const config = {
     artifactName: 'chatoffice-${version}.${arch}.rpm',
     packageName: 'chatoffice',
     publish: null,
+    afterInstall: 'build/linux-after-install.sh',
+    afterRemove: 'build/linux-after-remove.sh',
   },
   nsis: {
     oneClick: false,

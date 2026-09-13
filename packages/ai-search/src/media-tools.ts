@@ -20,12 +20,10 @@ import {
   type LegacyAiSettings,
   type MediaBlob,
 } from '@chatoffice/ai-provider'
-import {
-  fetchRemoteImage,
-  fetchWithSsrfGuard,
-  readGeneratedImage,
-  storeGeneratedImage,
-} from '@chatoffice/electron-utils'
+// deep imports: the package root re-exports Electron-bound modules, and this file also runs in the chatoffice CLI
+import { readGeneratedImage, storeGeneratedImage } from '@chatoffice/electron-utils/generated-images'
+import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
+import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
 import { chatofficeAnalyzeMedia, chatofficeGenerateImage, hasChatOfficeAuth, type ChatOfficeGenerateImageOptions } from './chatoffice'
 
 export const CHATOFFICE_NOT_LOGGED_IN_ERROR =

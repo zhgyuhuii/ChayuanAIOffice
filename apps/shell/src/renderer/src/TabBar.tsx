@@ -118,6 +118,8 @@ function PdfIcon() {
   return <img src={tabIconPdf} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
+const IS_MAC = navigator.platform.toLowerCase().includes('mac')
+
 function HomeIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -301,6 +303,26 @@ export function TabBar() {
     <div className="tab-bar">
       {controlSide === 'left' && <WindowControls side="left" />}
       <div className="tab-bar-drag-spacer" />
+      {!IS_MAC && (
+        <button
+          className="tab-app-menu-btn"
+          title={t('appMenu')}
+          aria-label={t('appMenu')}
+          onClick={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect()
+            void window.chatOfficeTabs.showAppMenu(Math.round(rect.left), Math.round(rect.bottom))
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 7h16M4 12h16M4 17h16"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      )}
       {/* Home three-pane toggles: always visible, they only affect the home
           layout (the middle chat pane can never be collapsed) */}
       <button

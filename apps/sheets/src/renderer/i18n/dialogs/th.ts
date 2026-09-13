@@ -1,4 +1,5 @@
 /** dialogs strings, th (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
 export const th = {
   dlgAllowEditRangesTitle: 'อนุญาตให้แก้ไขช่วง',
   dlgAllowEditRangesHint: 'ช่วงเหล่านี้ยังแก้ไขได้ขณะที่แผ่นงานได้รับการป้องกัน จะเขียนเมื่อบันทึก และไม่รองรับรหัสผ่าน',
@@ -366,4 +367,12 @@ export const th = {
   dlgFnDescNpv: 'คืนค่ามูลค่าปัจจุบันสุทธิของกระแสเงินสดตามอัตราคิดลด',
   dlgFnDescIrr: 'คืนค่าอัตราผลตอบแทนภายในของกระแสเงินสด',
   dlgFnCatFinancial: 'การเงิน',
-}
+  dlgFnCatDatabase: 'ฐานข้อมูล',
+  dlgFnCatInformation: 'ข้อมูล',
+  dlgFnCatEngineering: 'วิศวกรรม',
+  dlgFnCatCube: 'คิวบ์',
+  dlgFnCatCompatibility: 'ความเข้ากันได้',
+  dlgFnCatWeb: 'เว็บ',
+  dlgFnCatArray: 'อาร์เรย์',
+  dlgFnCatOther: 'อื่นๆ',
+} satisfies Record<keyof typeof zh, string>

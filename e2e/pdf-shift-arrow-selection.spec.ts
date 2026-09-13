@@ -36,7 +36,7 @@ function twoRunTextPdf(): Buffer {
  * non-collapsed selection present, Shift+navigation must reach the browser.
  */
 test('Shift+ArrowRight extends the text selection instead of flipping the page', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'genoffice-pdf-select-'))
+  const dir = await mkdtemp(join(tmpdir(), 'chatoffice-pdf-select-'))
   const pdfPath = join(dir, 'tworuns.pdf')
   await writeFile(pdfPath, twoRunTextPdf())
 
@@ -46,7 +46,7 @@ test('Shift+ArrowRight extends the text selection instead of flipping the page',
     openFile: pdfPath,
   })
   try {
-    const editorPage = await waitForPageWithUrl(launched.app, 'pdf/out')
+    const editorPage = await waitForPageWithUrl(launched.app, '://pdf/')
     await expect(editorPage.locator('.textLayer span').first()).toBeVisible({ timeout: 30_000 })
 
     // select up to "...000003", like a finished mouse drag that stopped short

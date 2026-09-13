@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./preset-geometry": "./src/preset-geometry.ts",
     "./svg-sanitize": "./src/svg-sanitize.ts",
-    "./svg-raster": "./src/svg-raster.ts"
+    "./svg-raster": "./src/svg-raster.ts",
+    "./auto-num": "./src/auto-num.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -23,9 +23,7 @@ import {
   type OpenedPptx,
   type SlideElement,
 } from '@chatoffice/pptx-engine'
-import { runTxn } from '../src/main/ops'
-import { OP_DOCS, LOCAL_OP_DOCS,
-} from '../src/shared/op-docs'
+import { runTxn, OP_DOCS, LOCAL_OP_DOCS } from '@chatoffice/pptx-ops'
 
 const PNG_B64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
