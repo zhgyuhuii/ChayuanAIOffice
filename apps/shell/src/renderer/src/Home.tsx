@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import iconDocx from './assets/file-docx.png'
 import iconXlsx from './assets/file-xlsx.png'
 import iconPptx from './assets/file-pptx.png'
@@ -20,7 +20,7 @@ import type {
   RecentEntry,
 } from '../../shared/home-api'
 import { useDismissablePopover, USER_LOGIN_READY } from '@chatoffice/ui'
-import { fileCountKey } from './counts'
+import { fileCountKey, chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
@@ -189,496 +189,114 @@ function SortCheck({ visible }: { visible: boolean }): ReactElement {
   )
 }
 
-// ── Project sidebar component ────────────────────────────
+// ── ZCode 式左树（对话 / 项目 两分组） ──────────────────────
 
-interface ProjectPanelProps {
-  projects: ProjectSummaryEntry[]
-  selectedId: string | null
-  onSelect: (id: string | null) => void
-  onRefresh: () => void
-  /** 新建任务: a project-owned chat session (P2 tree level 1→chat) */
-  onCreateTask?: (id: string) => void
-  /**
-   * tree body of the selected project (its tasks + files, already indented by
-   * .proj-children) — rendered inside the project's row so the project name
-   * reads as the parent node of everything below it
-   */
-  renderChildren?: (id: string) => ReactElement | null
-  /** 展开中的项目（各自独立，互不影响；展开状态由用户手动维护） */
-  expandedIds: string[]
-  onToggleExpand: (id: string) => void
-  /** 多选：项目行级联勾选状态（半选由 indeterminate 表达） */
-  projectSelect?: (id: string) => { checked: boolean; indeterminate: boolean }
-  onToggleProjectSelect?: (id: string) => void
-  /** 项目区批量操作条（跨项目共一条，由父级聚合渲染在标题行下） */
-  toolbar?: React.ReactNode
+/** 会话在树中的顺序：置顶在前，其余按最近更新 */
+function byPinnedRecent(a: HomeChatSession, b: HomeChatSession): number {
+  const pin = (b.pinned === true ? 1 : 0) - (a.pinned === true ? 1 : 0)
+  return pin !== 0 ? pin : b.updatedAt - a.updatedAt
 }
 
-function ProjectPanel({
-  projects,
-  selectedId,
-  onSelect,
-  onRefresh,
-  onCreateTask,
-  renderChildren,
-  expandedIds,
-  onToggleExpand,
-  projectSelect,
-  onToggleProjectSelect,
-  toolbar,
-}: ProjectPanelProps) {
-  const { t } = useI18n()
-  const [creating, setCreating] = useState(false)
-  const [newName, setNewName] = useState('')
-  /** P4 folder binding awaiting the name input (null = name-only project) */
-  const [pendingRootPath, setPendingRootPath] = useState<string | null>(null)
-  // open menu id + fixed-position anchor (viewport coords), so the popup can
-  // escape the scrollable project list without the list losing overflow-y
-  const [projMenu, setProjMenu] = useState<{ id: string; top: number; right: number } | null>(null)
-  const [renaming, setRenaming] = useState<{ id: string; value: string } | null>(null)
-  const newInputRef = useRef<HTMLInputElement>(null)
-  // wrap (… button + popup) of the row whose menu is open — the dismissal guard root
-  const projMenuWrapRef = useRef<HTMLDivElement>(null)
+/** 右键 / … 菜单的一个条目（divider=true 画分组线） */
+interface TreeMenuItem {
+  key: string
+  label: string
+  danger?: boolean
+  disabled?: boolean
+  action: () => void
+}
+type TreeMenuEntry = TreeMenuItem | { divider: true; key: string }
+/** 一个已定位的菜单（x/y 为视口坐标，渲染时做边界钳制） */
+interface TreeMenuSpec {
+  x: number
+  y: number
+  title?: string
+  items: TreeMenuEntry[]
+}
 
-  useEffect(() => {
-    if (creating && newInputRef.current) newInputRef.current.focus()
-  }, [creating])
-
-  // unified dismissal: outside press, window blur, chrome press (tab strip / window drag)
-  useDismissablePopover(projMenu !== null, () => setProjMenu(null), {
-    inside: () => [projMenuWrapRef.current],
-  })
-
-  // also close on any scroll (the fixed-position popup would otherwise detach
-  // from its row while the list scrolls)
-  useEffect(() => {
-    if (!projMenu) return
-    const close = () => setProjMenu(null)
-    window.addEventListener('scroll', close, true)
-    return () => window.removeEventListener('scroll', close, true)
-  }, [projMenu])
-
-  const startCreating = async () => {
-    // P4: binding to a real folder comes first. The OS directory picker is
-    // desktop-only; when unavailable (web shim) the flow degrades to the old
-    // name-only project.
-    let rootPath: string | undefined
-    let suggested = ''
-    if (typeof window.chatOfficeProject?.pickFolder === 'function') {
-      try {
-        const picked = await window.chatOfficeProject.pickFolder()
-        if (picked === null) return // cancelled — do not enter creating mode
-        rootPath = picked
-        suggested = picked.split(/[\\/]/).filter(Boolean).pop() ?? ''
-      } catch {
-        // picker failure falls through to the name-only flow
-      }
-    }
-    setNewName(suggested)
-    setPendingRootPath(rootPath ?? null)
-    setCreating(true)
-  }
-
-  const commitCreate = async () => {
-    const name = newName.trim()
-    const rootPath = pendingRootPath
-    setCreating(false)
-    setNewName('')
-    setPendingRootPath(null)
-    if (!name) return
-    try {
-      await window.chatOfficeProject?.createProject(name, rootPath ?? undefined)
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : String(error))
-      return
-    }
-    onRefresh()
-  }
-
-  const commitRename = async () => {
-    if (!renaming) return
-    const name = renaming.value.trim()
-    const id = renaming.id
-    setRenaming(null)
-    if (!name) return
-    try {
-      await window.chatOfficeProject?.renameProject(id, name)
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : String(error))
-      return
-    }
-    onRefresh()
-  }
-
-  // in-app confirm dialog (same style as the delete-files modal), not window.confirm
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  // 项目节点折叠：与 收藏/最近 同级的可展开树节点（各自独立，互不影响）
-  const [collapsed, setCollapsed] = useState(false)
-
-  const doDelete = (id: string) => {
-    setProjMenu(null)
-    setConfirmDeleteId(id)
-  }
-
-  const confirmDeleteNow = async () => {
-    const id = confirmDeleteId
-    setConfirmDeleteId(null)
-    if (!id) return
-    try {
-      await window.chatOfficeProject?.deleteProject(id)
-    } catch (error) {
-      window.alert(error instanceof Error ? error.message : String(error))
-      return
-    }
-    if (selectedId === id) onSelect(null)
-    onRefresh()
-  }
-
-  useEffect(() => {
-    if (!confirmDeleteId) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setConfirmDeleteId(null)
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [confirmDeleteId])
-
-  // 删除项目确认弹窗同权：弹窗期隐藏激活编辑器视图（见 useShellModalSurface）
-  useShellModalSurface(confirmDeleteId !== null)
-
+/** 分组头部行尾的图标按钮（过滤 / 归档 / 新建项目），悬浮显现 */
+function TreeHeadBtn({
+  label,
+  active = false,
+  onClick,
+  children,
+}: {
+  label: string
+  active?: boolean
+  onClick: () => void
+  children: ReactNode
+}) {
   return (
-    <div className="proj-panel">
-      <div
-        className="proj-panel-head"
-        role="button"
-        tabIndex={0}
-        aria-expanded={!collapsed}
-        onClick={() => setCollapsed((v) => !v)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' && event.target === event.currentTarget) {
-            setCollapsed((v) => !v)
-          }
-        }}
-      >
-        <svg
-          className={`proj-panel-arrow${collapsed ? ' folded' : ''}`}
-          width="12"
-          height="12"
-          viewBox="0 0 16 16"
-          aria-hidden="true"
-        >
-          <path
-            d="M6 3.5L10.5 8L6 12.5"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
-        <span className="proj-panel-title">{t('projects')}</span>
-        <button
-          className="proj-add-btn"
-          data-tip={t('newProject')}
-          aria-label={t('newProject')}
-          onClick={(event) => {
-            event.stopPropagation()
-            setCollapsed(false)
-            void startCreating()
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path
-              d="M7 1v12M1 7h12"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {toolbar}
-
-      {!collapsed && creating && (
-        <div className="proj-new-row">
-          <input
-            ref={newInputRef}
-            className="proj-rename-input"
-            placeholder={t('projectName')}
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onBlur={() => void commitCreate()}
-            onKeyDown={(e) => {
-              // IME (e.g. pinyin): Enter/Escape during composition only affects
-              // the composition, it must not commit or cancel the field
-              if (e.nativeEvent.isComposing) return
-              if (e.key === 'Enter') void commitCreate()
-              if (e.key === 'Escape') {
-                setCreating(false)
-                setNewName('')
-                setPendingRootPath(null)
-              }
-            }}
-          />
-          {pendingRootPath && (
-            <p className="proj-new-root" title={pendingRootPath}>
-              {pendingRootPath}
-            </p>
-          )}
-        </div>
-      )}
-
-      <ul className="proj-list" style={collapsed ? { display: 'none' } : undefined}>
-        {projects.map((proj) => {
-          const isActive = selectedId === proj.id
-          const isExpanded = expandedIds.includes(proj.id)
-          const isRenaming = renaming?.id === proj.id
-          return (
-            <li key={proj.id} className={`proj-item${isActive ? ' active' : ''}`}>
-              <div
-                className="proj-item-main"
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  onSelect(proj.id)
-                  onToggleExpand(proj.id)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onSelect(proj.id)
-                    onToggleExpand(proj.id)
-                  }
-                }}
-              >
-                {projectSelect &&
-                  (() => {
-                    const info = projectSelect(proj.id)
-                    return (
-                      <input
-                        ref={(el) => {
-                          if (el) el.indeterminate = info.indeterminate
-                        }}
-                        type="checkbox"
-                        className="proj-check"
-                        checked={info.checked}
-                        onChange={() => onToggleProjectSelect?.(proj.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={t('selectFile', {
-                          name: proj.isDefault ? t('defaultProject') : proj.name,
-                        })}
-                      />
-                    )
-                  })()}
-                <button
-                  className={`proj-expand-btn${isExpanded ? ' expanded' : ''}`}
-                  aria-label={isExpanded ? t('collapse') : t('expand')}
-                  aria-expanded={isExpanded}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleExpand(proj.id)
-                  }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
-                    <path
-                      d="M6 3.5L10.5 8L6 12.5"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                    />
-                  </svg>
-                </button>
-                {isRenaming ? (
-                  <input
-                    className="proj-rename-input inline"
-                    value={renaming.value}
-                    autoFocus
-                    onFocus={(e) => e.target.select()}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => setRenaming({ id: proj.id, value: e.target.value })}
-                    onBlur={() => void commitRename()}
-                    onKeyDown={(e) => {
-                      e.stopPropagation()
-                      if (e.nativeEvent.isComposing) return
-                      if (e.key === 'Enter') void commitRename()
-                      if (e.key === 'Escape') setRenaming(null)
-                    }}
-                  />
-                ) : (
-                  <span
-                    className="proj-item-name"
-                    title={proj.isDefault ? t('defaultProject') : proj.name}
-                  >
-                    {proj.isDefault ? t('defaultProject') : proj.name}
-                  </span>
-                )}
-                <span className="proj-item-meta">
-                  <span className="proj-item-count">{proj.fileCount}</span>
-                  {onCreateTask && (
-                    <button
-                      className="proj-task-btn"
-                      data-tip={t('newTask')}
-                      aria-label={t('newTask')}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onCreateTask(proj.id)
-                      }}
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M3 4.2A1.2 1.2 0 0 1 4.2 3h7.6A1.2 1.2 0 0 1 13 4.2v4.9a1.2 1.2 0 0 1-1.2 1.2H7.9L5.6 12.4a.55.55 0 0 1-.9-.43v-1.67h-.5A1.2 1.2 0 0 1 3 9.1V4.2z"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M8 5.4v2.6M6.7 6.7h2.6"
-                          stroke="currentColor"
-                          strokeWidth="1.2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </span>
-                {/* 直接可见的删除入口（共识：默认项目不可删，无图标无菜单） */}
-                {!proj.isDefault && (
-                  <button
-                    className="proj-delete-btn"
-                    data-tip={t('deleteProject')}
-                    aria-label={t('deleteProject')}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      doDelete(proj.id)
-                    }}
-                  >
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path
-                        d="M2.5 4h11M6 4V2.8c0-.44.36-.8.8-.8h2.4c.44 0 .8.36.8.8V4M4 4l.7 8.5c.04.55.5 1 1.05 1h4.5c.55 0 1.01-.45 1.05-1L12 4M6.6 7v4M9.4 7v4"
-                        stroke="currentColor"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                )}
-                {/* lives INSIDE the row (not the li) so its absolute strip only
-                    covers the row itself — over the expanded children it would
-                    swallow clicks meant for their trailing icons */}
-                {!proj.isDefault && (
-                  <div
-                    className="proj-menu-wrap"
-                    ref={projMenu?.id === proj.id ? projMenuWrapRef : undefined}
-                  >
-                    <button
-                      className="proj-more-btn"
-                      aria-label={t('projMoreActions', { name: proj.name })}
-                      aria-expanded={projMenu?.id === proj.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (projMenu?.id === proj.id) {
-                          setProjMenu(null)
-                          return
-                        }
-                        const rect = e.currentTarget.getBoundingClientRect()
-                        setProjMenu({
-                          id: proj.id,
-                          top: rect.bottom + 4,
-                          right: window.innerWidth - rect.right,
-                        })
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                        <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
-                        <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-                        <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
-                      </svg>
-                    </button>
-                    {projMenu?.id === proj.id && (
-                      <div
-                        className="proj-menu"
-                        role="menu"
-                        style={{ top: projMenu.top, right: projMenu.right }}
-                      >
-                        <button
-                          role="menuitem"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setProjMenu(null)
-                            setRenaming({ id: proj.id, value: proj.name })
-                          }}
-                        >
-                          {t('rename')}
-                        </button>
-                        <div className="row-menu-divider" />
-                        <button
-                          role="menuitem"
-                          className="danger"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            doDelete(proj.id)
-                          }}
-                        >
-                          {t('deleteProject')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {isExpanded && renderChildren && (
-                <div className="proj-children">{renderChildren(proj.id)}</div>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-
-      {confirmDeleteId &&
-        (() => {
-          // locale string is "title?\nbody" — split it across the dialog
-          const [confirmTitle, ...confirmBody] = t('deleteProjectConfirm').split('\n')
-          return (
-            <div className="modal-overlay" onClick={() => setConfirmDeleteId(null)}>
-              <div
-                className="modal"
-                role="dialog"
-                aria-modal="true"
-                aria-label={confirmTitle}
-                onClick={(event) => event.stopPropagation()}
-              >
-                <h3>{confirmTitle}</h3>
-                <p>{confirmBody.join('\n')}</p>
-                <div className="modal-buttons">
-                  <button
-                    className="btn btn-secondary"
-                    autoFocus
-                    onClick={() => setConfirmDeleteId(null)}
-                  >
-                    {t('cancel')}
-                  </button>
-                  <button className="btn btn-danger" onClick={() => void confirmDeleteNow()}>
-                    {t('delete')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )
-        })()}
-    </div>
+    <button
+      className={`side-head-btn${active ? ' active' : ''}`}
+      aria-label={label}
+      title={label}
+      onClick={(event) => {
+        event.stopPropagation()
+        onClick()
+      }}
+    >
+      {children}
+    </button>
   )
 }
 
+/** 过滤按钮展开的搜索条：输入即过滤所属分组的清单（Escape 先清空再收起） */
+function TreeFilterBar({
+  value,
+  placeholder,
+  clearLabel,
+  closeLabel,
+  onChange,
+  onClose,
+}: {
+  value: string
+  placeholder: string
+  clearLabel: string
+  closeLabel: string
+  onChange: (next: string) => void
+  onClose: () => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+  return (
+    <div className="tree-filter">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.4" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M10.4 10.4L14 14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+      <input
+        ref={inputRef}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.nativeEvent.isComposing) return
+          if (e.key === 'Escape') {
+            if (value) onChange('')
+            else onClose()
+          }
+        }}
+      />
+      <button
+        className="tree-filter-clear"
+        aria-label={value ? clearLabel : closeLabel}
+        onClick={() => (value ? onChange('') : onClose())}
+      >
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M3 3l6 6M9 3l-6 6"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+  )
+}
 // ── Account entry (bottom-left) ──────────────────────────
 // Currently the ChatOffice (chatoffice) login entry; to be upgraded to a signup/account system later.
 // Clicking it opens the settings modal directly (SettingsModal.tsx), which hosts
@@ -1373,6 +991,26 @@ export function Home() {
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
   const rowMenuWrapRef = useRef<HTMLSpanElement>(null)
   const [renaming, setRenaming] = useState<{ path: string; value: string } | null>(null)
+  // ── ZCode 式左树状态（对话/项目两分组 + 过滤/归档 + 右键菜单） ──
+  /** 归档视图开着时取代两分组（收藏文档与归档会话都在里面） */
+  const [archiveOpen, setArchiveOpen] = useState(false)
+  const [chatsFilterOpen, setChatsFilterOpen] = useState(false)
+  const [chatsQuery, setChatsQuery] = useState('')
+  const [projFilterOpen, setProjFilterOpen] = useState(false)
+  /** 会话行内重命名（id + 草稿值） */
+  const [renamingSession, setRenamingSession] = useState<{ id: string; value: string } | null>(null)
+  /** 项目行内重命名 */
+  const [renamingProject, setRenamingProject] = useState<{ id: string; value: string } | null>(null)
+  /** 右键 / … 菜单（视口坐标定位，全树单实例） */
+  const [ctxMenu, setCtxMenu] = useState<TreeMenuSpec | null>(null)
+  const ctxMenuWrapRef = useRef<HTMLDivElement>(null)
+  /** 删除确认：会话 / 项目（弹窗风格同文件删除） */
+  const [confirmDeleteSession, setConfirmDeleteSession] = useState<HomeChatSession | null>(null)
+  const [confirmDeleteProject, setConfirmDeleteProject] = useState<ProjectSummaryEntry | null>(null)
+  /** 新建项目的退回流程（目录选择器不可用的 web shim 才走名输入） */
+  const [creatingProject, setCreatingProject] = useState(false)
+  const [newProjectName, setNewProjectName] = useState('')
+  const newProjectInputRef = useRef<HTMLInputElement>(null)
   /** 待确认的磁盘删除：paths=文件，sessionIds=显式勾选的会话（执行时还会并入被删文件下的对话） */
   const [confirmDelete, setConfirmDelete] = useState<{
     paths: string[]
@@ -1713,14 +1351,14 @@ export function Home() {
     },
     [chatStore, openChatSession],
   )
-  /** a conversation attached to a file (tree level 3) */
-  const createFileChat = useCallback(
-    (filePath: string) => {
-      const session = chatStore.createSession({ kind: 'file', id: filePath })
-      openChatSession(session.id)
-    },
-    [chatStore, openChatSession],
-  )
+
+  /** 左树可见会话：未归档、未移交、有内容或正是当前会话（置顶在前） */
+  const liveSessions = useMemo(() => {
+    const list = (chatStore.sessions ?? []).filter(
+      (s) => !s.archived && !s.handedOff && (s.messages.length > 0 || s.id === chatStore.activeId),
+    )
+    return list.sort(byPinnedRecent)
+  }, [chatStore.sessions, chatStore.activeId])
 
   // ── Paged loading ──
   // stale responses are dropped via a request sequence number (when views/filters switch quickly)
@@ -1750,12 +1388,8 @@ export function Home() {
   const reloadRef = useRef(reload)
   reloadRef.current = reload
 
-  // refresh signal for project-view data (re-pull file stats after file changes)
-  const [projectTick, setProjectTick] = useState(0)
-
   const refresh = () => {
     reloadRef.current(true)
-    setProjectTick((n) => n + 1)
   }
 
   useEffect(() => {
@@ -1765,7 +1399,6 @@ export function Home() {
   useEffect(() => {
     const onFocus = () => {
       reloadRef.current(true)
-      setProjectTick((n) => n + 1)
     }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
@@ -1818,26 +1451,51 @@ export function Home() {
     inside: () => [filterMenuWrapRef.current],
   })
 
-  // Escape closes the row menu and the delete-confirm dialog
+  // Escape closes the row menu, the context menu and the delete-confirm dialogs
   useEffect(() => {
-    if (rowMenu === null && confirmDelete === null && confirmMissing === null) return
+    if (
+      rowMenu === null &&
+      confirmDelete === null &&
+      confirmMissing === null &&
+      ctxMenu === null &&
+      confirmDeleteSession === null &&
+      confirmDeleteProject === null
+    )
+      return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setRowMenu(null)
         setConfirmDelete(null)
         setConfirmMissing(null)
+        setCtxMenu(null)
+        setRenamingSession(null)
+        setRenamingProject(null)
+        setConfirmDeleteSession(null)
+        setConfirmDeleteProject(null)
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [rowMenu, confirmDelete, confirmMissing])
+  }, [rowMenu, confirmDelete, confirmMissing, ctxMenu, confirmDeleteSession, confirmDeleteProject])
+
+  // 右键 / … 菜单：统一关 dismissal + 滚动即关（固定定位弹层不能脱锚）
+  useDismissablePopover(ctxMenu !== null, () => setCtxMenu(null), {
+    inside: () => [ctxMenuWrapRef.current],
+  })
+  useEffect(() => {
+    if (!ctxMenu) return
+    const close = () => setCtxMenu(null)
+    window.addEventListener('scroll', close, true)
+    return () => window.removeEventListener('scroll', close, true)
+  }, [ctxMenu])
 
   // 删除确认弹窗与设置弹窗同权：弹窗期隐藏激活编辑器视图（见 useShellModalSurface）
-  useShellModalSurface(confirmDelete !== null)
+  useShellModalSurface(
+    confirmDelete !== null || confirmDeleteSession !== null || confirmDeleteProject !== null,
+  )
 
   // ── Project files state ────────────────────────────────
 
-  const [projectFilesMap, setProjectFilesMap] = useState<Record<string, RecentEntry[]>>({})
   const [moveFileMenu, setMoveFileMenu] = useState<string | null>(null)
   // submenu opens rightward by default; flips left when the window edge is too close
   const [moveMenuFlip, setMoveMenuFlip] = useState(false)
@@ -1923,34 +1581,6 @@ export function Home() {
     return s.messages.some((m) => m.role === 'user' && m.text?.toLowerCase().includes(q))
   }
 
-  // 搜索时跨全部项目检索 → 需要加载所有项目的文件列表；否则只加载展开的
-  const projectLoadIds = useMemo(
-    () => (projQuery.trim() ? projects.map((p) => p.id) : expandedProjects),
-    [projQuery, projects, expandedProjects],
-  )
-
-  useEffect(() => {
-    if (!projectMode || projectLoadIds.length === 0) {
-      if (projectMode && !projQuery.trim()) setProjectFilesMap({})
-      return
-    }
-    let active = true
-    const api = window.chatOfficeProject!
-    for (const id of projectLoadIds) {
-      void api.listFiles(id).then(async (paths) => {
-        const stats = await window.chatOffice.statPaths(paths)
-        if (!active) return
-        setProjectFilesMap((prev) => ({
-          ...prev,
-          [id]: stats.sort((a, b) => b.mtimeMs - a.mtimeMs),
-        }))
-      })
-    }
-    return () => {
-      active = false
-    }
-  }, [projectMode, projectLoadIds, projectTick, projQuery])
-
   // the submenu lives inside the row menu: when that closes, drop the stale
   // submenu state and any pending hover timers so it doesn't reopen expanded
   useEffect(() => {
@@ -1990,35 +1620,7 @@ export function Home() {
       .then((page) => removeRecent(page.entries.map((e) => e.path)))
   }
 
-  // ── 批量操作（分区操作条）──
-
-  /** 项目区勾选统计（跨项目聚合，文件/会话分开计数） */
-  const projSelectionStats = () => {
-    let files = 0
-    let chats = 0
-    for (const [zone, set] of Object.entries(selection)) {
-      if (!zone.startsWith('proj:')) continue
-      for (const k of set) {
-        if (k.startsWith('chat:')) chats++
-        else files++
-      }
-    }
-    return { files, chats }
-  }
-  const hasProjSelection = Object.keys(selection).some((k) => k.startsWith('proj:'))
-
-  const batchDeleteProjectSelection = () => {
-    const paths: string[] = []
-    const sessionIds: string[] = []
-    for (const [zone, set] of Object.entries(selection)) {
-      if (!zone.startsWith('proj:')) continue
-      for (const k of set) {
-        if (k.startsWith('chat:')) sessionIds.push(k.slice(5))
-        else paths.push(k)
-      }
-    }
-    requestDeleteSelection(paths, sessionIds)
-  }
+  // ── 批量操作（最近分区操作条；对话/项目两分组是 ZCode 式单行操作树）──
 
   const batchRemoveRecent = () => {
     const paths = [...(selection['recent'] ?? [])]
@@ -2031,43 +1633,6 @@ export function Home() {
     const paths = [...(selection['recent'] ?? [])]
     requestDeleteSelection(paths, [])
   }
-
-  const batchUnstar = () => {
-    const paths = [...(selection['starred'] ?? [])]
-    if (paths.length === 0) return
-    void Promise.all(paths.map((p) => window.chatOffice.toggleStar(p))).then(refresh)
-    pruneSelection(paths)
-  }
-
-  // ── 项目行级联勾选：勾项目 = 勾中它下面全部文件 + 任务会话 + 文件下对话 ──
-  const projectCascadeKeys = (projectId: string): string[] => {
-    const sessions = chatStore.sessions ?? []
-    const files = (projectFilesMap[projectId] ?? []).map((e) => e.path)
-    const taskKeys = sessions
-      .filter((s) => s.scope?.kind === 'project' && s.scope?.id === projectId && !s.handedOff)
-      .map((s) => chatKey(s.id))
-    const chatKeys = sessions
-      .filter((s) => s.scope?.kind === 'file' && files.includes(s.scope.id) && !s.handedOff)
-      .map((s) => chatKey(s.id))
-    return [...files, ...taskKeys, ...chatKeys]
-  }
-  const projectSelectInfo = (projectId: string) => {
-    const set = selection[`proj:${projectId}`]
-    const keys = projectCascadeKeys(projectId)
-    const sel = keys.filter((k) => set?.has(k)).length
-    return {
-      checked: keys.length > 0 && sel === keys.length,
-      indeterminate: sel > 0 && sel < keys.length,
-    }
-  }
-  const toggleProjectSelect = (projectId: string) => {
-    const info = projectSelectInfo(projectId)
-    setZoneSelection(`proj:${projectId}`, info.checked ? null : projectCascadeKeys(projectId))
-  }
-  const clearProjSelection = () =>
-    setSelection((prev) =>
-      Object.fromEntries(Object.entries(prev).filter(([k]) => !k.startsWith('proj:'))),
-    )
   const clearZone = (zone: string) => setZoneSelection(zone, null)
 
   /** 挂在待删文件下的对话会话 id（连带清理，共识：文件没了对话无意义） */
@@ -2127,13 +1692,6 @@ export function Home() {
       return
     }
     refresh()
-    if (selectedProjectId) {
-      setProjectFilesMap((prev) => {
-        const list = prev[selectedProjectId]
-        if (!list) return prev
-        return { ...prev, [selectedProjectId]: list.filter((e) => e.path !== filePath) }
-      })
-    }
   }
 
   // ── New file (passes projectId when a project is selected) ──
@@ -2540,14 +2098,6 @@ export function Home() {
               <button role="menuitem" onClick={() => duplicateFile(entry.path)}>
                 {t('duplicate')}
               </button>
-              {context === 'project' && (
-                <>
-                  <div className="row-menu-divider" />
-                  <button role="menuitem" onClick={() => createFileChat(entry.path)}>
-                    {t('newFileChat')}
-                  </button>
-                </>
-              )}
               {context === 'global' && (
                 <>
                   <div className="row-menu-divider" />
@@ -2582,29 +2132,287 @@ export function Home() {
     )
   }
 
-  /** one chat-session node in the tree (a task under a project, or a chat under a file) */
-  function renderTreeChat(
-    session: HomeChatSession,
-    depth: 'task' | 'chat',
-    zone?: string,
-  ): ReactElement {
-    const activeCls = session.id === chatStore.activeId ? ' active' : ''
+  // ── 会话树操作：归档 / 置顶 / 重命名 / 导出 / 删除 ──
+
+  const archiveSession = (id: string) => {
+    chatStore.updateSession(id, (s) => ({ ...s, archived: true }))
+  }
+  const unarchiveSession = (id: string) => {
+    chatStore.updateSession(id, (s) => ({ ...s, archived: undefined }))
+  }
+  const togglePinSession = (id: string) => {
+    chatStore.updateSession(id, (s) => ({ ...s, pinned: s.pinned ? undefined : true }))
+  }
+  const commitSessionRename = (session: HomeChatSession) => {
+    const value = renamingSession?.value.trim() ?? ''
+    setRenamingSession(null)
+    if (!value || value === (session.title || '')) return
+    chatStore.renameSession(session.id, value)
+  }
+  const sessionCopyText = (session: HomeChatSession): string => {
+    if (session.title) return session.title
+    return session.messages.find((m) => m.role === 'user')?.text ?? ''
+  }
+  /** assistant 文档体可能是受限 HTML：导出/复制前取纯文本 */
+  const messagePlainText = (text: string): string => {
+    if (!/<[a-z][\s\S]*>/i.test(text)) return text
+    try {
+      return new DOMParser().parseFromString(text, 'text/html').body.textContent ?? ''
+    } catch {
+      return text.replace(/<[^>]*>/g, '')
+    }
+  }
+  /** 导出会话记录：整段对话转 Markdown 下载（标题做文件名） */
+  const exportSessionMarkdown = (session: HomeChatSession) => {
+    const lines = [`# ${session.title || t('chatUntitled')}`, '']
+    for (const m of session.messages) {
+      lines.push(`## ${m.role === 'user' ? t('chatExportUser') : t('chatExportAssistant')}`, '')
+      lines.push((m.text ? messagePlainText(m.text) : '').trim())
+      lines.push('')
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    const safe = (session.title || 'chat').replace(/[\\/:*?"<>|]/g, '_').slice(0, 60)
+    anchor.href = url
+    anchor.download = `${safe}.md`
+    anchor.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+  const deleteSessionNow = () => {
+    const session = confirmDeleteSession
+    setConfirmDeleteSession(null)
+    if (!session) return
+    chatStore.removeSession(session.id)
+  }
+
+  // ── 项目树操作：新建（选本地文件夹）/ 重命名 / 删除 ──
+
+  /** 新建项目＝选择本地文件夹（ZCode 式）：选完即以文件夹名建项目；
+   *  目录选择器不可用（web shim）或选择失败时退回名输入流程 */
+  const startNewProject = async () => {
+    if (typeof window.chatOfficeProject?.pickFolder === 'function') {
+      try {
+        const picked = await window.chatOfficeProject.pickFolder()
+        if (!picked) return // cancelled — nothing happens
+        const name = picked.split(/[\\/]/).filter(Boolean).pop() || picked
+        await window.chatOfficeProject!.createProject(name, picked)
+        refresh()
+        return
+      } catch {
+        // picker failure falls through to the name-only flow
+      }
+    }
+    setNewProjectName('')
+    setCreatingProject(true)
+  }
+  useEffect(() => {
+    if (creatingProject) newProjectInputRef.current?.focus()
+  }, [creatingProject])
+  const commitNewProject = async () => {
+    const name = newProjectName.trim()
+    setCreatingProject(false)
+    setNewProjectName('')
+    if (!name) return
+    try {
+      await window.chatOfficeProject?.createProject(name)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
+    refresh()
+  }
+  const commitProjectRename = async () => {
+    if (!renamingProject) return
+    const { id, value } = renamingProject
+    const name = value.trim()
+    setRenamingProject(null)
+    if (!name) return
+    try {
+      await window.chatOfficeProject?.renameProject(id, name)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
+    refresh()
+  }
+  const deleteProjectNow = async () => {
+    const proj = confirmDeleteProject
+    setConfirmDeleteProject(null)
+    if (!proj) return
+    try {
+      await window.chatOfficeProject?.deleteProject(proj.id)
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : String(error))
+      return
+    }
+    if (selectedProjectId === proj.id) setSelectedProjectId(null)
+    refresh()
+  }
+
+  // ── 右键 / … 菜单 ──
+
+  /** 打开菜单（视口坐标），底部/右缘越界时上提/左移，避免被窗口裁掉 */
+  const openTreeMenu = (spec: { title?: string; items: TreeMenuEntry[] }, x: number, y: number) => {
+    const rows = spec.items.filter((i) => !('divider' in i)).length
+    const dividers = spec.items.length - rows
+    const estHeight = (spec.title ? 30 : 0) + rows * 28 + dividers * 9 + 12
+    const estWidth = 224
+    const clampedY =
+      y + estHeight > window.innerHeight ? Math.max(8, window.innerHeight - estHeight - 8) : y
+    const clampedX =
+      x + estWidth > window.innerWidth ? Math.max(8, window.innerWidth - estWidth - 8) : x
+    setCtxMenu({ ...spec, x: clampedX, y: clampedY })
+  }
+
+  /** 会话菜单：打开 / 重命名 / 置顶 / 复制标题 / 导出 / 归档 / 删除 */
+  function sessionMenuOf(session: HomeChatSession): { title: string; items: TreeMenuEntry[] } {
+    const label = session.title || t('chatUntitled')
+    return {
+      title: label,
+      items: [
+        {
+          key: 'open',
+          label: t('chatOpen'),
+          action: () => openChatSession(session.id),
+        },
+        {
+          key: 'rename',
+          label: t('rename'),
+          action: () => setRenamingSession({ id: session.id, value: session.title || '' }),
+        },
+        {
+          key: 'pin',
+          label: session.pinned ? t('chatUnpin') : t('chatPin'),
+          action: () => togglePinSession(session.id),
+        },
+        { divider: true, key: 'd1' },
+        {
+          key: 'copy',
+          label: t('chatCopyTitle'),
+          action: () => void navigator.clipboard.writeText(sessionCopyText(session)),
+        },
+        {
+          key: 'export',
+          label: t('chatExport'),
+          action: () => exportSessionMarkdown(session),
+        },
+        {
+          key: 'archive',
+          label: session.archived ? t('chatUnarchive') : t('chatArchive'),
+          action: () => (session.archived ? unarchiveSession : archiveSession)(session.id),
+        },
+        { divider: true, key: 'd2' },
+        {
+          key: 'delete',
+          label: t('chatDelete'),
+          danger: true,
+          action: () => setConfirmDeleteSession(session),
+        },
+      ],
+    }
+  }
+
+  /** 项目菜单：新建任务 / 查看文件 / 复制路径 / 重命名 / 删除（默认项目不可删） */
+  function projectMenuOf(proj: ProjectSummaryEntry): { title: string; items: TreeMenuEntry[] } {
+    const items: TreeMenuEntry[] = [
+      { key: 'task', label: t('newTask'), action: () => createTask(proj.id) },
+    ]
+    const root = proj.rootPath
+    if (root) {
+      items.push({
+        key: 'files',
+        label: t('viewFiles'),
+        action: () => void window.chatOffice.revealPath(root),
+      })
+      items.push({
+        key: 'copypath',
+        label: t('copyProjectPath'),
+        action: () => void navigator.clipboard.writeText(root),
+      })
+    }
+    items.push({ divider: true, key: 'd1' })
+    items.push({
+      key: 'rename',
+      label: t('rename'),
+      action: () => setRenamingProject({ id: proj.id, value: proj.name }),
+    })
+    if (!proj.isDefault) {
+      items.push({ divider: true, key: 'd2' })
+      items.push({
+        key: 'delete',
+        label: t('deleteProject'),
+        danger: true,
+        action: () => setConfirmDeleteProject(proj),
+      })
+    }
+    return { title: proj.isDefault ? t('defaultProject') : proj.name, items }
+  }
+
+  /** 归档文档菜单：打开 / 取消归档 / 打开所在文件夹 / 复制路径 / 删除 */
+  function archiveDocMenuOf(entry: RecentEntry): { title: string; items: TreeMenuEntry[] } {
+    return {
+      title: entry.name,
+      items: [
+        {
+          key: 'open',
+          label: t('open'),
+          disabled: entry.missing,
+          action: () => void window.chatOffice.openPath(entry.path, { dock: true }),
+        },
+        { key: 'unarchive', label: t('chatUnarchive'), action: () => toggleStar(entry.path) },
+        { divider: true, key: 'd1' },
+        {
+          key: 'reveal',
+          label: t('revealInFolder'),
+          action: () => void window.chatOffice.revealPath(entry.path),
+        },
+        {
+          key: 'copy',
+          label: t('copyPath'),
+          action: () => void navigator.clipboard.writeText(entry.path),
+        },
+        { divider: true, key: 'd2' },
+        {
+          key: 'delete',
+          label: t('deleteFiles'),
+          danger: true,
+          action: () => deleteFiles([entry.path]),
+        },
+      ],
+    }
+  }
+
+  /** 会话行：点击进入会话；行尾归档按钮（悬浮）；右键菜单；行内重命名 */
+  function renderSessionRow(session: HomeChatSession, indent: 'chat' | 'task'): ReactElement {
+    const isActive = session.id === chatStore.activeId
+    const isRenaming = renamingSession?.id === session.id
+    const label = session.title || t('chatUntitled')
+    const owner =
+      session.scope?.kind === 'project'
+        ? projects.find((p) => p.id === session.scope?.id)
+        : undefined
     return (
-      <li key={session.id} className={`tree-chat-row${depth === 'task' ? ' task' : ''}`}>
-        {zone && (
-          <label className="row-check" onClick={(event) => event.stopPropagation()}>
-            <input
-              type="checkbox"
-              checked={zoneSelected(zone, chatKey(session.id))}
-              onChange={() => toggleSelect(zone, chatKey(session.id))}
-              aria-label={t('selectFile', { name: session.title || t('chatUntitled') })}
-            />
-          </label>
-        )}
-        <button
-          className={`tree-chat${activeCls}`}
-          title={session.title || t('chatUntitled')}
-          onClick={() => openChatSession(session.id)}
+      <li key={session.id} className={`tree-chat-row${indent === 'task' ? ' task' : ''}`}>
+        <div
+          className={`tree-chat${isActive ? ' active' : ''}`}
+          role="button"
+          tabIndex={0}
+          title={`${label}\n${formatModified(session.updatedAt, i18n)}${
+            owner ? `\n${owner.isDefault ? t('defaultProject') : owner.name}` : ''
+          }`}
+          onClick={() => {
+            if (!isRenaming) openChatSession(session.id)
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && event.target === event.currentTarget && !isRenaming) {
+              openChatSession(session.id)
+            }
+          }}
+          onContextMenu={(event) => {
+            event.preventDefault()
+            openTreeMenu(sessionMenuOf(session), event.clientX, event.clientY)
+          }}
         >
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
@@ -2615,87 +2423,78 @@ export function Home() {
               transform="translate(0.5 0)"
             />
           </svg>
-          <span className="tree-chat-title">{session.title || t('chatUntitled')}</span>
-        </button>
+          {isRenaming ? (
+            <input
+              className="tree-chat-rename"
+              value={renamingSession!.value}
+              autoFocus
+              onFocus={(event) => event.target.select()}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) =>
+                setRenamingSession({ id: session.id, value: event.target.value })
+              }
+              onBlur={() => commitSessionRename(session)}
+              onKeyDown={(event) => {
+                event.stopPropagation()
+                if (event.nativeEvent.isComposing) return
+                if (event.key === 'Enter') commitSessionRename(session)
+                if (event.key === 'Escape') setRenamingSession(null)
+              }}
+            />
+          ) : (
+            <>
+              <span className="tree-chat-title">{label}</span>
+              {session.pinned && (
+                <span className="tree-chat-pin" aria-label={t('chatPin')}>
+                  <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M4.2 11.8l1.2-3.2L11 3l2 2-5.6 5.6-3.2 1.2z"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinejoin="round"
+                    />
+                    <path d="M9.8 4.2l2 2" stroke="currentColor" strokeWidth="1.3" />
+                  </svg>
+                </span>
+              )}
+              <button
+                className="tree-chat-archive"
+                aria-label={session.archived ? t('chatUnarchive') : t('chatArchive')}
+                title={session.archived ? t('chatUnarchive') : t('chatArchive')}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  if (session.archived) unarchiveSession(session.id)
+                  else archiveSession(session.id)
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect
+                    x="2.5"
+                    y="3.2"
+                    width="11"
+                    height="2.4"
+                    rx="0.9"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  />
+                  <path
+                    d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </>
+          )}
+        </div>
       </li>
     )
   }
 
-  /** files of an expanded project: tasks (project chats) first, then files
-   *  each with its attached chats — the 项目→文件→对话 three levels. Rendered
-   *  INSIDE the project's row (ProjectPanel renderChildren) so the
-   *  children sit directly under the project name — no separate section head.
-   *  `query` filters by session title / user question text / file name. */
-  function renderProjectFiles(projectId: string, query = '') {
-    if (!projectMode || !projectId) return null
-    const q = query.trim().toLowerCase()
-    const projectPool = (chatStore.sessions ?? []).filter(
-      (s) => s.scope?.kind === 'project' && s.scope?.id === projectId && !s.handedOff,
-    )
-    const tasks = q
-      ? projectPool.filter((s) => sessionMatchesQuery(s, q))
-      : projectPool.filter((s) => s.messages.length > 0 || s.id === chatStore.activeId)
-    const allFiles = projectFilesMap[projectId] ?? []
-    const fileEntries = q ? allFiles.filter((e) => e.name.toLowerCase().includes(q)) : allFiles
-    /** chats attached to a file node; searching looks at titles + user questions */
-    const chatsFor = (path: string) => {
-      const pool = (chatStore.sessions ?? []).filter(
-        (s) => s.scope?.kind === 'file' && s.scope?.id === path && !s.handedOff,
-      )
-      if (q) return pool.filter((s) => sessionMatchesQuery(s, q))
-      return pool.filter((s) => s.messages.length > 0 || s.id === chatStore.activeId)
-    }
-    const zone = `proj:${projectId}`
-    return (
-      <>
-        {tasks.length > 0 && (
-          <ul className="tree-chat-list">{tasks.map((s) => renderTreeChat(s, 'task', zone))}</ul>
-        )}
-        {fileEntries.length === 0 ? (
-          tasks.length === 0 ? (
-            q ? null : (
-              <p className="side-files-empty">{t('projEmptyHint')}</p>
-            )
-          ) : null
-        ) : (
-          <ul className="side-file-list">
-            {fileEntries.map((entry) => (
-              <li key={entry.path} className="side-file-group">
-                {renderSideFileRow(entry, 'project', true, 'recent', zone)}
-                {(() => {
-                  const chats = chatsFor(entry.path)
-                  return chats.length > 0 ? (
-                    <ul className="tree-chat-list nested">
-                      {chats.map((s) => renderTreeChat(s, 'chat', zone))}
-                    </ul>
-                  ) : null
-                })()}
-              </li>
-            ))}
-          </ul>
-        )}
-      </>
-    )
-  }
-
-  /** does the project hold anything matching the search (files, tasks, file chats)? */
-  function projectHasMatch(projectId: string, q: string) {
-    if (!q) return false
-    const files = projectFilesMap[projectId] ?? []
-    if (files.some((e) => e.name.toLowerCase().includes(q))) return true
-    const sessions = chatStore.sessions ?? []
-    return sessions.some(
-      (s) =>
-        !s.handedOff &&
-        sessionMatchesQuery(s, q) &&
-        (s.scope?.kind === 'project'
-          ? s.scope.id === projectId
-          : s.scope?.kind === 'file' && files.some((e) => e.path === s.scope?.id)),
-    )
-  }
-
   /** collapsible group header: arrow + title + count, click toggles;
-   *  optional trailing 清理 button (hover-revealed) for bulk removal */
+   *  optional trailing controls (hover-revealed) — ZCode 式分组头 */
   function renderGroupHead(
     title: string,
     count: number,
@@ -2704,6 +2503,7 @@ export function Home() {
     onClear?: () => void,
     clearLabel?: string,
     headExtra?: ReactElement,
+    countKey: StringKey = fileCountKey(count),
   ): ReactElement {
     return (
       <div
@@ -2733,7 +2533,7 @@ export function Home() {
           />
         </svg>
         <span className="side-files-title">{title}</span>
-        <span className="side-files-count">{t(fileCountKey(count), { n: count })}</span>
+        <span className="side-files-count">{t(countKey, { n: count })}</span>
         {headExtra}
         {onClear && (
           <button
@@ -2760,35 +2560,370 @@ export function Home() {
     )
   }
 
-  /** always-on 收藏 section (collapsible group) */
-  function renderStarredSection() {
-    const selCount = selection['starred']?.size ?? 0
+  /** 对话分组：点击头部展开对话清单；清单项点击进入会话；行尾过滤/归档 */
+  function renderChatsSection(): ReactElement {
+    const q = chatsQuery.trim().toLowerCase()
+    const visible = q ? liveSessions.filter((s) => sessionMatchesQuery(s, q)) : liveSessions
     return (
-      <div
-        className={`side-files side-sec-starred side-group${
-          layout.starredCollapsed ? ' collapsed' : ''
-        }${selCount > 0 ? ' selecting' : ''}`}
-      >
-        {renderGroupHead(t('secStarred'), starredEntries.length, layout.starredCollapsed, () =>
-          setHomeLayout({ starredCollapsed: !layout.starredCollapsed }),
+      <div className={`side-group side-sec-chats${layout.chatsCollapsed ? ' collapsed' : ''}`}>
+        {renderGroupHead(
+          t('secChats'),
+          visible.length,
+          layout.chatsCollapsed,
+          () => setHomeLayout({ chatsCollapsed: !layout.chatsCollapsed }),
+          undefined,
+          undefined,
+          <>
+            <TreeHeadBtn
+              label={t('chatFilter')}
+              active={chatsFilterOpen || chatsQuery !== ''}
+              onClick={() => {
+                setChatsFilterOpen((v) => !v)
+                if (layout.chatsCollapsed) setHomeLayout({ chatsCollapsed: false })
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </TreeHeadBtn>
+            <TreeHeadBtn
+              label={t('chatArchive')}
+              active={archiveOpen}
+              onClick={() => setArchiveOpen(true)}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect
+                  x="2.5"
+                  y="3.2"
+                  width="11"
+                  height="2.4"
+                  rx="0.9"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+                <path
+                  d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </TreeHeadBtn>
+          </>,
+          chatCountKey(visible.length),
+        )}
+        {chatsFilterOpen && (
+          <TreeFilterBar
+            value={chatsQuery}
+            placeholder={t('searchChats')}
+            clearLabel={t('chatFilterClear')}
+            closeLabel={t('chatFilterClose')}
+            onChange={setChatsQuery}
+            onClose={() => setChatsFilterOpen(false)}
+          />
         )}
         <div className="side-group-body">
-          {selCount > 0 && (
-            <div className="zone-toolbar">
-              <span className="zone-toolbar-label">{t('selectedCount', { n: selCount })}</span>
-              <button className="zone-toolbar-btn" onClick={batchUnstar}>
-                {t('unstar')}
-              </button>
-              <button className="zone-toolbar-btn" onClick={() => clearZone('starred')}>
-                {t('cancel')}
-              </button>
-            </div>
-          )}
-          {starredEntries.length === 0 ? (
-            <p className="side-files-empty">{t('emptyStarred')}</p>
+          {visible.length === 0 ? (
+            <p className="side-files-empty">{q ? t('emptyChatsFiltered') : t('emptyChats')}</p>
           ) : (
-            <ul className="side-file-list">
-              {starredEntries.map((entry) => renderSideFileRow(entry, 'global', false, 'starred'))}
+            <ul className="tree-chat-list">{visible.map((s) => renderSessionRow(s, 'chat'))}</ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  /** 项目分组：一级项目列表；项目行点击展开其对话清单；
+   *  行尾 查看文件 / 新建任务 / 更多；头部 新建项目＝选择本地文件夹 */
+  function renderProjectsSection(): ReactElement {
+    const q = projQuery.trim().toLowerCase()
+    const sessionsOf = (pid: string) =>
+      liveSessions.filter((s) => s.scope?.kind === 'project' && s.scope?.id === pid)
+    const visible = q
+      ? projects.filter(
+          (p) =>
+            (p.isDefault ? t('defaultProject') : p.name).toLowerCase().includes(q) ||
+            sessionsOf(p.id).some((s) => sessionMatchesQuery(s, q)),
+        )
+      : projects
+    return (
+      <div
+        className={`side-group side-sec-projects${layout.projectsCollapsed ? ' collapsed' : ''}`}
+      >
+        {renderGroupHead(
+          t('projects'),
+          visible.length,
+          layout.projectsCollapsed,
+          () => setHomeLayout({ projectsCollapsed: !layout.projectsCollapsed }),
+          undefined,
+          undefined,
+          <>
+            <TreeHeadBtn label={t('newProject')} onClick={() => void startNewProject()}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path
+                  d="M7 1v12M1 7h12"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </TreeHeadBtn>
+            <TreeHeadBtn
+              label={t('chatFilter')}
+              active={projFilterOpen || projQuery !== ''}
+              onClick={() => {
+                setProjFilterOpen((v) => !v)
+                if (layout.projectsCollapsed) setHomeLayout({ projectsCollapsed: false })
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M2.2 3h11.6l-4.5 5.2v4l-2.6 1.4V8.2z"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </TreeHeadBtn>
+            <TreeHeadBtn
+              label={t('chatArchive')}
+              active={archiveOpen}
+              onClick={() => setArchiveOpen(true)}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect
+                  x="2.5"
+                  y="3.2"
+                  width="11"
+                  height="2.4"
+                  rx="0.9"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                />
+                <path
+                  d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M6.5 8.4h3"
+                  stroke="currentColor"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </TreeHeadBtn>
+          </>,
+          visible.length === 1 ? 'projCountOne' : 'projCount',
+        )}
+        {projFilterOpen && (
+          <TreeFilterBar
+            value={projQuery}
+            placeholder={t('searchProjects')}
+            clearLabel={t('chatFilterClear')}
+            closeLabel={t('chatFilterClose')}
+            onChange={setProjQuery}
+            onClose={() => setProjFilterOpen(false)}
+          />
+        )}
+        {creatingProject && (
+          <div className="proj-new-row">
+            <input
+              ref={newProjectInputRef}
+              className="proj-rename-input"
+              placeholder={t('projectName')}
+              value={newProjectName}
+              onChange={(event) => setNewProjectName(event.target.value)}
+              onBlur={() => void commitNewProject()}
+              onKeyDown={(event) => {
+                if (event.nativeEvent.isComposing) return
+                if (event.key === 'Enter') void commitNewProject()
+                if (event.key === 'Escape') {
+                  setCreatingProject(false)
+                  setNewProjectName('')
+                }
+              }}
+            />
+          </div>
+        )}
+        <div className="side-group-body">
+          {visible.length === 0 ? (
+            <p className="side-files-empty">{q ? t('emptyFiltered') : t('emptyProjects')}</p>
+          ) : (
+            <ul className="proj-list">
+              {visible.map((proj) => {
+                const projectSessions = q
+                  ? sessionsOf(proj.id).filter((s) => sessionMatchesQuery(s, q))
+                  : sessionsOf(proj.id)
+                // 过滤命中也展开：搜索时跨项目检索，折叠的项目照样出结果
+                const isExpanded =
+                  expandedProjects.includes(proj.id) || (q !== '' && projectSessions.length > 0)
+                const isRenaming = renamingProject?.id === proj.id
+                const displayName = proj.isDefault ? t('defaultProject') : proj.name
+                return (
+                  <li
+                    key={proj.id}
+                    className={`proj-item${selectedProjectId === proj.id ? ' active' : ''}`}
+                  >
+                    <div
+                      className="proj-item-main"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        setSelectedProjectId(proj.id)
+                        toggleProjectExpand(proj.id)
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' && event.target === event.currentTarget) {
+                          setSelectedProjectId(proj.id)
+                          toggleProjectExpand(proj.id)
+                        }
+                      }}
+                      onContextMenu={(event) => {
+                        event.preventDefault()
+                        openTreeMenu(projectMenuOf(proj), event.clientX, event.clientY)
+                      }}
+                    >
+                      <button
+                        className={`proj-expand-btn${isExpanded ? ' expanded' : ''}`}
+                        aria-label={isExpanded ? t('collapse') : t('expand')}
+                        aria-expanded={isExpanded}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          toggleProjectExpand(proj.id)
+                        }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
+                          <path
+                            d="M6 3.5L10.5 8L6 12.5"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            fill="none"
+                          />
+                        </svg>
+                      </button>
+                      {isRenaming ? (
+                        <input
+                          className="proj-rename-input inline"
+                          value={renamingProject.value}
+                          autoFocus
+                          onFocus={(event) => event.target.select()}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={(event) =>
+                            setRenamingProject({ id: proj.id, value: event.target.value })
+                          }
+                          onBlur={() => void commitProjectRename()}
+                          onKeyDown={(event) => {
+                            event.stopPropagation()
+                            if (event.nativeEvent.isComposing) return
+                            if (event.key === 'Enter') void commitProjectRename()
+                            if (event.key === 'Escape') setRenamingProject(null)
+                          }}
+                        />
+                      ) : (
+                        <span className="proj-item-name" title={displayName}>
+                          {displayName}
+                        </span>
+                      )}
+                      <span className="proj-item-meta">
+                        <span className="proj-item-count">{sessionsOf(proj.id).length}</span>
+                      </span>
+                      {/* 行尾三钮：查看文件（绑定了文件夹才有）/ 新建任务 / 更多（右键同款菜单） */}
+                      <div className="proj-menu-wrap">
+                        {proj.rootPath && (
+                          <button
+                            className="proj-row-btn"
+                            data-tip={t('viewFiles')}
+                            aria-label={t('viewFiles')}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              void window.chatOffice.revealPath(proj.rootPath!)
+                            }}
+                          >
+                            <svg
+                              width="13"
+                              height="13"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
+                                stroke="currentColor"
+                                strokeWidth="1.3"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        <button
+                          className="proj-row-btn"
+                          data-tip={t('newTask')}
+                          aria-label={t('newTask')}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            createTask(proj.id)
+                          }}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M3 4.2A1.2 1.2 0 0 1 4.2 3h7.6A1.2 1.2 0 0 1 13 4.2v4.9a1.2 1.2 0 0 1-1.2 1.2H7.9L5.6 12.4a.55.55 0 0 1-.9-.43v-1.67h-.5A1.2 1.2 0 0 1 3 9.1V4.2z"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M8 5.4v2.6M6.7 6.7h2.6"
+                              stroke="currentColor"
+                              strokeWidth="1.2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          className="proj-more-btn"
+                          aria-label={t('projMoreActions', { name: displayName })}
+                          aria-haspopup="menu"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            const rect = event.currentTarget.getBoundingClientRect()
+                            openTreeMenu(projectMenuOf(proj), rect.left, rect.bottom + 4)
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                            <circle cx="3.2" cy="8" r="1.35" fill="currentColor" />
+                            <circle cx="8" cy="8" r="1.35" fill="currentColor" />
+                            <circle cx="12.8" cy="8" r="1.35" fill="currentColor" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="proj-children">
+                        {projectSessions.length === 0 ? (
+                          <p className="side-files-empty">
+                            {q ? t('emptyChatsFiltered') : t('projChatsEmpty')}
+                          </p>
+                        ) : (
+                          <ul className="tree-chat-list">
+                            {projectSessions.map((s) => renderSessionRow(s, 'task'))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>
@@ -2796,6 +2931,111 @@ export function Home() {
     )
   }
 
+  /** 归档视图（头部归档按钮进入）：归档的文档（原收藏）+ 归档的会话 */
+  function renderArchiveView(): ReactElement {
+    const archivedSessions = (chatStore.sessions ?? [])
+      .filter((s) => s.archived)
+      .sort(byPinnedRecent)
+    return (
+      <div className="archive-view">
+        <div className="archive-head">
+          <button
+            className="archive-back"
+            aria-label={t('archiveBack')}
+            onClick={() => setArchiveOpen(false)}
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M10 3.5L5.5 8l4.5 4.5"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <span className="archive-title">{t('archiveViewTitle')}</span>
+        </div>
+        <div className="archive-group">
+          <div className="archive-sub">{t('archivedDocs')}</div>
+          {starredEntries.length === 0 ? (
+            <p className="side-files-empty">{t('archiveDocsEmpty')}</p>
+          ) : (
+            <ul className="side-file-list">
+              {starredEntries.map((entry) => renderArchiveDocRow(entry))}
+            </ul>
+          )}
+        </div>
+        <div className="archive-group">
+          <div className="archive-sub">{t('archivedChats')}</div>
+          {archivedSessions.length === 0 ? (
+            <p className="side-files-empty">{t('archiveChatsEmpty')}</p>
+          ) : (
+            <ul className="tree-chat-list">
+              {archivedSessions.map((s) => renderSessionRow(s, 'chat'))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  /** 归档文档行：点击打开（停靠右栏），行尾取消归档，右键菜单 */
+  function renderArchiveDocRow(entry: RecentEntry): ReactElement {
+    return (
+      <li key={entry.path} className="archive-doc-row">
+        <div
+          className={`archive-doc-main${entry.missing ? ' missing' : ''}`}
+          role="button"
+          tabIndex={0}
+          title={`${formatModified(entry.mtimeMs, i18n)} · ${formatSize(entry.sizeBytes)} · ${entry.path}`}
+          onClick={() => {
+            if (!entry.missing) void window.chatOffice.openPath(entry.path, { dock: true })
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && event.target === event.currentTarget && !entry.missing) {
+              void window.chatOffice.openPath(entry.path, { dock: true })
+            }
+          }}
+          onContextMenu={(event) => {
+            event.preventDefault()
+            openTreeMenu(archiveDocMenuOf(entry), event.clientX, event.clientY)
+          }}
+        >
+          <MonoFileIcon ext={entry.ext} size={16} />
+          <span className="archive-doc-name">{entry.name}</span>
+          <button
+            className="tree-chat-archive"
+            aria-label={t('chatUnarchive')}
+            title={t('chatUnarchive')}
+            onClick={(event) => {
+              event.stopPropagation()
+              toggleStar(entry.path)
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect
+                x="2.5"
+                y="3.2"
+                width="11"
+                height="2.4"
+                rx="0.9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M3.7 5.6v5.6a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V5.6M8 9.6V7.2M6.9 8.3L8 7.2l1.1 1.1"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </li>
+    )
+  }
   /** always-on 最近使用 section (collapsible group; extension-style filter chips) */
   function renderRecentSection() {
     const selCount = selection['recent']?.size ?? 0
@@ -2963,87 +3203,17 @@ export function Home() {
           </nav>
         )}
 
-        {/* four stacked sections; the whole stack scrolls as one so the tree
-            can grow in later phases without nested scrollbars */}
+        {/* ZCode 式左树：对话 / 项目 两分组 + 最近；整体单滚动。
+            归档视图打开时取代前两分组（收藏文档与归档会话集中于此） */}
         <div className="sidebar-scroll">
-          {projectMode && (
-            <div className={`side-sec${hasProjSelection ? ' selecting' : ''}`}>
-              <div className="proj-search">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <circle cx="7" cy="7" r="4.4" stroke="currentColor" strokeWidth="1.3" />
-                  <path
-                    d="M10.4 10.4L14 14"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <input
-                  className="proj-search-input"
-                  placeholder={t('projSearchPlaceholder')}
-                  value={projQuery}
-                  onChange={(e) => setProjQuery(e.target.value)}
-                />
-                {projQuery && (
-                  <button
-                    className="proj-search-clear"
-                    aria-label={t('cancel')}
-                    onClick={() => setProjQuery('')}
-                  >
-                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                      <path
-                        d="M3 3l6 6M9 3l-6 6"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-                )}
-              </div>
-              <ProjectPanel
-                projects={projects}
-                selectedId={selectedProjectId}
-                onSelect={(id) => {
-                  setSelectedProjectId(id)
-                  setRowMenu(null)
-                }}
-                onRefresh={refresh}
-                onCreateTask={createTask}
-                expandedIds={expandedProjects}
-                onToggleExpand={toggleProjectExpand}
-                projectSelect={projectSelectInfo}
-                onToggleProjectSelect={toggleProjectSelect}
-                toolbar={
-                  hasProjSelection ? (
-                    <div className="zone-toolbar">
-                      <span className="zone-toolbar-label">
-                        {(() => {
-                          const s = projSelectionStats()
-                          return t('selectedFilesChats', { n: s.files, m: s.chats })
-                        })()}
-                      </span>
-                      <button
-                        className="zone-toolbar-btn danger"
-                        onClick={batchDeleteProjectSelection}
-                      >
-                        {t('deleteFiles')}
-                      </button>
-                      <button className="zone-toolbar-btn" onClick={clearProjSelection}>
-                        {t('cancel')}
-                      </button>
-                    </div>
-                  ) : undefined
-                }
-                renderChildren={(id) => {
-                  const q = projQuery.trim().toLowerCase()
-                  const show = expandedProjects.includes(id) || (q !== '' && projectHasMatch(id, q))
-                  return show ? renderProjectFiles(id, q) : null
-                }}
-              />
-            </div>
+          {archiveOpen ? (
+            renderArchiveView()
+          ) : (
+            <>
+              {renderChatsSection()}
+              {projectMode && renderProjectsSection()}
+            </>
           )}
-          {renderStarredSection()}
           {renderRecentSection()}
         </div>
 
@@ -3221,6 +3391,102 @@ export function Home() {
           </div>
         </div>
       )}
+
+      {/* 右键 / … 菜单（全树单实例，固定定位 + 边界钳制） */}
+      {ctxMenu && (
+        <div
+          className="tree-ctx-menu"
+          role="menu"
+          ref={ctxMenuWrapRef}
+          style={{ left: ctxMenu.x, top: ctxMenu.y }}
+        >
+          {ctxMenu.title && <div className="tree-ctx-title">{ctxMenu.title}</div>}
+          {ctxMenu.items.map((item) =>
+            'divider' in item ? (
+              <div key={item.key} className="row-menu-divider" />
+            ) : (
+              <button
+                key={item.key}
+                role="menuitem"
+                className={item.danger ? 'danger' : undefined}
+                disabled={item.disabled}
+                onClick={() => {
+                  setCtxMenu(null)
+                  item.action()
+                }}
+              >
+                {item.label}
+              </button>
+            ),
+          )}
+        </div>
+      )}
+
+      {/* 删除会话确认（locale 串 "title?\nbody" 跨标题/正文拆开） */}
+      {confirmDeleteSession &&
+        (() => {
+          const [sessionTitle, ...sessionBody] = t('chatDeleteConfirm', {
+            name: confirmDeleteSession.title || t('chatUntitled'),
+          }).split('\n')
+          return (
+            <div className="modal-overlay" onClick={() => setConfirmDeleteSession(null)}>
+              <div
+                className="modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label={sessionTitle}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <h3>{sessionTitle}</h3>
+                <p>{sessionBody.join('\n')}</p>
+                <div className="modal-buttons">
+                  <button
+                    className="btn btn-secondary"
+                    autoFocus
+                    onClick={() => setConfirmDeleteSession(null)}
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button className="btn btn-danger" onClick={deleteSessionNow}>
+                    {t('delete')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
+      {/* 删除项目确认 */}
+      {confirmDeleteProject &&
+        (() => {
+          const [projTitle, ...projBody] = t('deleteProjectConfirm').split('\n')
+          return (
+            <div className="modal-overlay" onClick={() => setConfirmDeleteProject(null)}>
+              <div
+                className="modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label={projTitle}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <h3>{projTitle}</h3>
+                <p>{projBody.join('\n')}</p>
+                <div className="modal-buttons">
+                  <button
+                    className="btn btn-secondary"
+                    autoFocus
+                    onClick={() => setConfirmDeleteProject(null)}
+                  >
+                    {t('cancel')}
+                  </button>
+                  <button className="btn btn-danger" onClick={() => void deleteProjectNow()}>
+                    {t('delete')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
       <DropToOpenOverlay />
     </div>

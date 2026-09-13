@@ -4,14 +4,16 @@
  * in localStorage so the arrangement survives restarts; the middle chat pane
  * is always on and never persisted.
  *
- * Section collapse (收藏 / 最近使用 group headers) lives here too — one
+ * Section collapse (对话 / 项目 / 最近使用 group headers) lives here too — one
  * storage slot for every home-tree arrangement the user fiddles with.
  */
 
 export interface HomeLayoutState {
   leftCollapsed: boolean
   rightCollapsed: boolean
-  starredCollapsed: boolean
+  /** ZCode 式左树两分组（对话 / 项目）的折叠态 */
+  chatsCollapsed: boolean
+  projectsCollapsed: boolean
   recentCollapsed: boolean
   /** sidebar width in px (tree strip); the main process insets document views
    *  by the same amount, mirrored over setTreeWidth IPC */
@@ -43,7 +45,8 @@ export function clampDockWidth(w: number): number {
 const DEFAULT_STATE: HomeLayoutState = {
   leftCollapsed: false,
   rightCollapsed: true,
-  starredCollapsed: false,
+  chatsCollapsed: false,
+  projectsCollapsed: false,
   recentCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
   dockWidth: null,
@@ -59,7 +62,8 @@ function load(): HomeLayoutState {
       return {
         leftCollapsed: obj.leftCollapsed === true,
         rightCollapsed: obj.rightCollapsed === true,
-        starredCollapsed: obj.starredCollapsed === true,
+        chatsCollapsed: obj.chatsCollapsed === true,
+        projectsCollapsed: obj.projectsCollapsed === true,
         recentCollapsed: obj.recentCollapsed === true,
         sidebarWidth:
           typeof obj.sidebarWidth === 'number' && Number.isFinite(obj.sidebarWidth)
@@ -89,7 +93,8 @@ export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
   if (
     next.leftCollapsed === state.leftCollapsed &&
     next.rightCollapsed === state.rightCollapsed &&
-    next.starredCollapsed === state.starredCollapsed &&
+    next.chatsCollapsed === state.chatsCollapsed &&
+    next.projectsCollapsed === state.projectsCollapsed &&
     next.recentCollapsed === state.recentCollapsed &&
     next.sidebarWidth === state.sidebarWidth &&
     next.dockWidth === state.dockWidth

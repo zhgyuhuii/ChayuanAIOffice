@@ -310,6 +310,11 @@ export interface HomeChatSession {
   messages: HomeChatMessage[]
   /** tree ownership; absent on legacy sessions = unattached (未归属) */
   scope?: HomeChatSessionScope | undefined
+  /** archived out of the tree's conversation lists (ZCode 式归档):
+   *  lives only in the archive view until unarchived */
+  archived?: boolean | undefined
+  /** pinned to the top of its list (对话 group / its project's list) */
+  pinned?: boolean | undefined
   /** set when the conversation moved into a document tab's AI panel: the home
    * copy becomes read-only and offers "open that tab" instead of continuing */
   handedOff?: { docTitle: string; filePath?: string | undefined } | undefined

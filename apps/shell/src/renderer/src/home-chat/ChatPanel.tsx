@@ -716,7 +716,8 @@ export function ChatPanel({
     if (el && stickRef.current) el.scrollTop = el.scrollHeight
   }, [active?.messages, busy])
 
-  const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0)
+  // archived sessions live only in the left tree's archive view
+  const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0 && !s.archived)
 
   // history dropdown tree: project → file → unattached, groups collapsible
   const sessionGroups = useMemo(() => groupSessionsByTree(sessions), [sessions])

@@ -304,22 +304,12 @@ body.dock-resizing {
 
 /* sections size to their widest row: long names extend the shared horizontal
    scroll width instead of being clipped by ellipsis */
-.sidebar-scroll > .side-sec,
 .sidebar-scroll > .side-files {
   min-width: max-content;
 }
 
-.side-sec + .side-sec,
-.side-files + .side-files,
-.side-sec + .side-files {
-  margin-top: 2px;
-}
-
 /* sections inside the unified scroll column no longer scroll individually */
-.side-sec .side-files,
-.side-sec-starred .side-files-scroll,
 .side-sec-recent .side-files-scroll,
-.proj-files,
 .proj-list {
   overflow: visible;
   flex: none;
@@ -1269,16 +1259,17 @@ body.sidebar-resizing {
   background: var(--border-subtle);
 }
 
-.proj-panel {
+/* ── ZCode 式左树两分组（对话 / 项目） ── */
+.side-group.side-sec-chats,
+.side-group.side-sec-projects {
+  flex: none;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  /* 菜单式下推：项目区按内容撑开，由外层 sidebar-scroll 统一滚动 */
-  flex: none;
+  margin-top: 4px;
 }
 
-/* 项目区搜索框：搜会话 / 问题 / 文件 */
-.proj-search {
+/* 过滤按钮展开的搜索条（分组头正下方，输入即过滤清单） */
+.tree-filter {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1289,12 +1280,12 @@ body.sidebar-resizing {
   color: var(--text-muted);
 }
 
-.proj-search:focus-within {
+.tree-filter:focus-within {
   outline: 1.5px solid var(--accent);
   color: var(--text-secondary);
 }
 
-.proj-search-input {
+.tree-filter input {
   flex: 1;
   min-width: 0;
   border: none;
@@ -1305,11 +1296,11 @@ body.sidebar-resizing {
   outline: none;
 }
 
-.proj-search-input::placeholder {
+.tree-filter input::placeholder {
   color: var(--text-muted);
 }
 
-.proj-search-clear {
+.tree-filter-clear {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1324,72 +1315,33 @@ body.sidebar-resizing {
   cursor: pointer;
 }
 
-.proj-search-clear:hover {
+.tree-filter-clear:hover {
   color: var(--text);
   background: var(--bg-hover);
 }
 
-.proj-panel-head {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  margin-bottom: 1px;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.proj-panel-head:hover {
-  background: var(--bg-hover);
-}
-
-.proj-panel-head .proj-panel-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-}
-
-.proj-panel-arrow {
-  flex-shrink: 0;
-  color: var(--text-muted);
-  transform: rotate(90deg); /* expanded: pointing down */
-  transition: transform 0.15s ease;
-}
-
-.proj-panel-arrow.folded {
-  transform: rotate(0deg); /* collapsed: pointing right */
-}
-
-.proj-panel-title {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-}
-
-.proj-add-btn {
-  display: flex;
+/* 项目行尾动作钮（查看文件 / 新建任务）：悬浮显现，节奏同 … 钮 */
+.proj-row-btn {
+  display: none;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   background: none;
   color: var(--text-muted);
   cursor: pointer;
-  transition:
-    background 0.1s,
-    color 0.1s;
 }
 
-.proj-add-btn:hover {
-  background: var(--surface-subtle);
-  color: var(--text);
+.proj-item:hover .proj-row-btn,
+.proj-row-btn:focus-visible {
+  display: flex;
+}
+
+.proj-row-btn:hover {
+  background: var(--bg-hover-strong);
+  color: var(--accent);
 }
 
 .proj-new-row {
@@ -1442,17 +1394,6 @@ body.sidebar-resizing {
   padding-left: 9px;
   border-left: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   padding-bottom: 2px;
-}
-
-/* file rows inside the project tree hug their chat/task siblings: no extra
-   vertical padding, smaller badge — same rhythm as the tree-chat rows */
-.proj-children .side-file-main {
-  padding: 1px 0;
-  gap: 7px;
-}
-
-.proj-children .side-file-name {
-  font-size: 12.5px;
 }
 
 .proj-item-main {
@@ -1619,12 +1560,12 @@ body.sidebar-resizing {
   color: var(--text);
 }
 
-/* fixed-position popup anchored via inline top/right (set at open time) so it
-   escapes the scrollable project list without the list losing overflow-y */
-.proj-menu {
+/* 右键 / … 菜单：固定定位（内联 left/top，打开时边界钳制），滚动即关 */
+.tree-ctx-menu {
   position: fixed;
-  z-index: 30;
-  min-width: 140px;
+  z-index: 80;
+  min-width: 180px;
+  max-width: 260px;
   padding: 5px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1633,7 +1574,17 @@ body.sidebar-resizing {
   animation: menu-in 0.1s ease;
 }
 
-.proj-menu button {
+.tree-ctx-title {
+  padding: 5px 9px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-ctx-menu button {
   display: block;
   width: 100%;
   padding: 6px 9px;
@@ -1641,21 +1592,28 @@ body.sidebar-resizing {
   border-radius: 6px;
   background: none;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   text-align: left;
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.proj-menu button:hover {
+.tree-ctx-menu button:hover:not(:disabled) {
   background: var(--surface-subtle);
 }
 
-.proj-menu button.danger {
+.tree-ctx-menu button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tree-ctx-menu button.danger {
   color: var(--danger);
 }
 
-.proj-menu button.danger:hover {
+.tree-ctx-menu button.danger:hover {
   background: var(--danger-bg);
 }
 
@@ -2420,21 +2378,10 @@ body.sidebar-resizing {
    Compact tree rhythm: rows hug each other (no vertical gaps), indent steps
    are uniform so 项目→文件→对话 reads as one nested list. */
 
-.side-file-group {
-  list-style: none;
-}
-
 .tree-chat-list {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.tree-chat-list.nested {
-  /* 文件下的对话节点：第三级继续缩进+参考线，层级一眼可读 */
-  margin-left: 15px;
-  padding-left: 9px;
-  border-left: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
 }
 
 .tree-chat-row {
@@ -2481,19 +2428,88 @@ body.sidebar-resizing {
 }
 
 .tree-chat-title {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* per-project 新建任务 button in the project row (hover reveal) */
-.proj-task-btn {
+/* ── 会话行尾控件：置顶标 + 归档钮（悬浮显现）+ 行内重命名 ── */
+.tree-chat-pin {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.tree-chat.active .tree-chat-pin {
+  color: var(--accent);
+}
+
+.tree-chat-archive {
+  flex-shrink: 0;
   display: none;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  margin-left: 4px;
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tree-chat:hover .tree-chat-archive,
+.archive-doc-main:hover .tree-chat-archive,
+.tree-chat-archive:focus-visible {
+  display: flex;
+}
+
+.tree-chat-archive:hover {
+  background: var(--bg-hover-strong);
+  color: var(--accent);
+}
+
+.tree-chat-rename {
+  flex: 1;
+  min-width: 0;
+  padding: 1px 6px;
+  border: 1.5px solid var(--accent);
+  border-radius: 5px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text);
+  outline: none;
+  background: var(--surface);
+}
+
+/* ── 归档视图（头部归档按钮进入）：归档的文档 + 归档的会话 ── */
+.archive-view {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+}
+
+.archive-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.archive-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
   border: none;
   border-radius: 5px;
   background: none;
@@ -2501,14 +2517,64 @@ body.sidebar-resizing {
   cursor: pointer;
 }
 
-.proj-item:hover .proj-task-btn,
-.proj-task-btn:focus-visible {
-  display: flex;
+.archive-back:hover {
+  background: var(--bg-hover);
+  color: var(--text);
 }
 
-.proj-task-btn:hover {
-  background: var(--bg-hover-strong);
-  color: var(--accent);
+.archive-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.archive-group {
+  margin-top: 2px;
+}
+
+.archive-sub {
+  padding: 6px 8px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.archive-doc-row {
+  list-style: none;
+}
+
+.archive-doc-main {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  margin: 0 2px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.archive-doc-main:hover {
+  background: var(--bg-hover);
+}
+
+.archive-doc-main.missing {
+  opacity: 0.55;
+}
+
+.archive-doc-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .side-files-head {
@@ -2569,11 +2635,6 @@ body.sidebar-resizing {
   font-size: 12px;
   line-height: 18px;
   color: var(--text-muted);
-}
-
-/* inside the project subtree the guide already indents; no double inset */
-.proj-children .side-files-empty {
-  padding-left: 10px;
 }
 
 .side-files-scroll {
@@ -4153,13 +4214,11 @@ body.sidebar-resizing {
 
 /* ── 分区头统一规格：11px 灰字 · count 右对齐 · hover 显操作 ── */
 .side-group-head,
-.proj-panel-head,
 .side-sec-head-row.cloud-head {
   align-items: center;
   min-height: 26px;
 }
 .side-group-head .side-files-title,
-.proj-panel-head .proj-panel-title,
 .cloud-head .side-files-title {
   font-size: 11px;
   font-weight: 600;
@@ -4184,14 +4243,6 @@ body.sidebar-resizing {
 .side-files-head:hover .group-clear {
   opacity: 1;
 }
-.proj-add-btn {
-  opacity: 0;
-  transition: opacity 0.12s;
-}
-.proj-panel-head:hover .proj-add-btn {
-  opacity: 1;
-}
-
 /* 云端分区头（由孤立 nav 行降为分区头） */
 .side-sec-head-row.cloud-head {
   display: flex;
