@@ -75,4 +75,51 @@ describe('protected visible-text patching', () => {
   it('refuses a formula patch when token count changes', () => {
     expect(patchMathTokens(FORMULA, ['only-one'])).toBe(FORMULA)
   })
+
+  it('handles numeric char refs so distribution stays aligned', async () => {
+    const entry =
+      '<w:p><w:pPr><w:pStyle w:val="TOC1"/></w:pPr>' +
+      '<w:r><w:t>Foo &#8211; Bar</w:t></w:r><w:r><w:tab/></w:r>' +
+      '<w:r><w:t>12</w:t></w:r></w:p>'
+    const patched = patchFieldParagraphXml(entry, { left: 'Foo – Baz', right: '13' })
+    const parsed = await parseDocx(await buildDocx({ bodyXml: patched }))
+    expect(parsed.blocks[0].fieldDisplay?.left).toBe('Foo – Baz')
+    expect(parsed.blocks[0].fieldDisplay?.right).toBe('13')
+  })
+
+  it('pins preserve for NBSP and other whitespace at edges (not just tab/space)', () => {
+    const entry =
+      '<w:p><w:pPr><w:pStyle w:val="TOC1"/></w:pPr>' +
+      '<w:r><w:t>Title</w:t></w:r><w:r><w:tab/></w:r>' +
+      '<w:r><w:t>7</w:t></w:r></w:p>'
+    const nbsp = '\u00A0Title\u00A0'
+    const patched = patchFieldParagraphXml(entry, { left: nbsp, right: '7' })
+    expect(patched).toContain('xml:space="preserve"')
+    expect(patched).toContain(`<w:t xml:space="preserve">${nbsp}</w:t>`)
+    expect(patched).toContain('\u00A0Title\u00A0')
+  })
+
+  it('patches a self-closing empty run (<w:t/>) instead of no-oping', async () => {
+    const entry =
+      '<w:p><w:pPr><w:pStyle w:val="TOC1"/></w:pPr>' +
+      '<w:r><w:t/></w:r><w:r><w:tab/></w:r>' +
+      '<w:r><w:t>7</w:t></w:r></w:p>'
+    const patched = patchFieldParagraphXml(entry, { left: 'Hello', right: '7' })
+    expect(patched).toContain('<w:t>Hello</w:t>')
+    const parsed = await parseDocx(await buildDocx({ bodyXml: patched }))
+    expect(parsed.blocks[0].fieldDisplay?.left).toBe('Hello')
+  })
+
+  it('leaves out-of-range and surrogate char refs untouched instead of throwing', () => {
+    const base =
+      '<w:p><w:pPr><w:pStyle w:val="TOC1"/></w:pPr>' +
+      '<w:r><w:t>REFTEXT</w:t></w:r><w:r><w:tab/></w:r>' +
+      '<w:r><w:t>12</w:t></w:r></w:p>'
+    for (const ref of ['&#99999999;', '&#xFFFFFFFF;', '&#55296;', '&#xD800;']) {
+      const entry = base.replace('REFTEXT', `A ${ref} B`)
+      expect(() => patchFieldParagraphXml(entry, { left: 'A X B', right: '13' })).not.toThrow()
+      const patched = patchFieldParagraphXml(entry, { left: 'A X B', right: '13' })
+      expect(patched).toContain('A X B')
+    }
+  })
 })

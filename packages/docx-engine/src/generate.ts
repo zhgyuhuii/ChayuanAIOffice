@@ -373,11 +373,24 @@ function decodeXmlText(text: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_m, dec: string) => {
+      const cp = Number(dec)
+      if (!Number.isFinite(cp) || cp < 0 || cp > 0x10ffff || (cp >= 0xd800 && cp <= 0xdfff))
+        return _m
+      return String.fromCodePoint(cp)
+    })
+    .replace(/&#x([0-9a-fA-F]+);/g, (_m, hex: string) => {
+      const cp = parseInt(hex, 16)
+      if (!Number.isFinite(cp) || cp < 0 || cp > 0x10ffff || (cp >= 0xd800 && cp <= 0xdfff))
+        return _m
+      return String.fromCodePoint(cp)
+    })
     .replace(/&amp;/g, '&')
 }
 
 function textNodes(xml: string, tag: 'w:t' | 'm:t'): XmlTextNode[] {
   const nodes: XmlTextNode[] = []
+  // Paired text nodes: <w:t>text</w:t> (may carry xml:space)
   const re = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'g')
   let match: RegExpExecArray | null
   while ((match = re.exec(xml)) !== null) {
@@ -391,6 +404,20 @@ function textNodes(xml: string, tag: 'w:t' | 'm:t'): XmlTextNode[] {
       text: decodeXmlText(match[1]),
     })
   }
+  // Self-closing empty text nodes: <w:t/> (Word sometimes emits these for empty runs)
+  const selfRe = new RegExp(`<${tag}(?:\\s[^>]*)?/>`, 'g')
+  while ((match = selfRe.exec(xml)) !== null) {
+    // Avoid double-counting when the paired regex already consumed it (it doesn't, but be safe)
+    if (nodes.some((n) => n.start === match!.index)) continue
+    nodes.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      open: match[0],
+      close: '',
+      text: '',
+    })
+  }
+  nodes.sort((a, b) => a.start - b.start)
   return nodes
 }
 
@@ -417,12 +444,19 @@ function replaceTextNodes(
   let out = xml
   for (const { node, text } of [...replacements].sort((a, b) => b.node.start - a.node.start)) {
     // wtText drops edge whitespace without xml:space="preserve": pin it when
-    // the replacement introduces a leading/trailing space or tab.
+    // the replacement introduces leading/trailing whitespace. Word trims more
+    // than just tab/space (NBSP, zero-width, line breaks, CJK spaces).
+    const hasEdgeWs =
+      text.length > 0 &&
+      (/^\s|\s$/.test(text) || text.startsWith('\u200B') || text.endsWith('\u200B'))
     const open =
-      /xml:space\s*=/.test(node.open) || !/(^[\t ]|[\t ]$)/.test(text)
+      /xml:space\s*=/.test(node.open) || !hasEdgeWs
         ? node.open
         : node.open.replace(/<w:t(?=\s|>)/, '<w:t xml:space="preserve"')
-    const replacement = open + escapeXmlText(text) + node.close
+    // Self-closing empty run: expand to paired form so the replacement lands
+    const close = node.close || `</w:t>`
+    const openPaired = node.close ? open : open.replace(/\/>$/, '>')
+    const replacement = openPaired + escapeXmlText(text) + close
     out = out.slice(0, node.start) + replacement + out.slice(node.end)
   }
   return out
