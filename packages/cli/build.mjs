@@ -50,6 +50,9 @@ await build({
     '.woff2': 'empty',
     '.svg': 'empty',
     '.png': 'empty',
+    '.webp': 'empty',
+    '.jpg': 'empty',
+    '.html': 'text',
   },
   plugins: [rawText],
 })

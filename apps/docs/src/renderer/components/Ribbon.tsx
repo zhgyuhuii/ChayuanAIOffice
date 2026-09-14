@@ -33,14 +33,10 @@ import type {
   ThemeColors,
   ThemeFonts,
 } from '@chatoffice/docx-engine'
-import {
-  Dropdown,
-  compressImageForDisplay,
-  InsertImageDialog,
-  useDismissablePopover,
-  type InsertImageBridge,
-  type WebImageItem,
-} from '@chatoffice/ui'
+import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { Dropdown, compressImageForDisplay, useDismissablePopover } from '@chatoffice/ui'
 import { applyCase, type CaseMode } from '../editor/case-transform'
 import { setSelectionAlign } from '../editor/direction'
 import { stepParagraphIndent } from '../editor/indent'

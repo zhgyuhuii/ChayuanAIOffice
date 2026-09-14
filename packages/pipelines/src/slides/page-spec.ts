@@ -223,7 +223,7 @@ export function parsePageSpec(
   raw: string,
   canvasW = SPEC_CANVAS_W,
   canvasH = SPEC_CANVAS_H,
-  _opts: ParseSpecOptions = {},
+  opts: ParseSpecOptions = {},
 ): { ok: true; spec: PageSpec; warnings: string[] } | { ok: false; error: string } {
   const text = String(raw ?? '')
   const start = text.indexOf('{')
@@ -235,7 +235,7 @@ export function parsePageSpec(
   } catch (e) {
     return { ok: false, error: `invalid JSON: ${e instanceof Error ? e.message : String(e)}` }
   }
-  return parsePageSpecObject(parsed, canvasW, canvasH, _opts)
+  return parsePageSpecObject(parsed, canvasW, canvasH, opts)
 }
 
 /** Same validation as parsePageSpec for an already-parsed JSON value (one page of a deck spec). */
@@ -243,7 +243,7 @@ export function parsePageSpecObject(
   parsed: unknown,
   canvasW = SPEC_CANVAS_W,
   canvasH = SPEC_CANVAS_H,
-  _opts: ParseSpecOptions = {},
+  opts: ParseSpecOptions = {},
 ): { ok: true; spec: PageSpec; warnings: string[] } | { ok: false; error: string } {
   const root = asRecord(parsed)
   const rawEls = Array.isArray(root.elements) ? root.elements : []
@@ -373,8 +373,8 @@ export function parsePageSpecObject(
         elements.push({ type: 'image', dataUri, ...base })
         continue
       }
-      if (!/^https?:\/\//.test(url)) {
-        warnings.push(`element ${i}: image needs an http(s) url, a dataUri or inline svg, dropped`)
+      if (!/^https?:\/\//.test(url) && !(opts.localImages && url)) {
+        warnings.push(`element ${i}: image url must be http(s), dropped`)
         continue
       }
       if (images >= MAX_IMAGES) {

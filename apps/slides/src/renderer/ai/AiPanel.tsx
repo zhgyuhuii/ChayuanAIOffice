@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react'
 import {
   AgentLoop,
   composeSkills,
@@ -50,19 +50,7 @@ import {
   settingsSupportVision,
 } from './slide-qc'
 import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
-import {
-  IconSend,
-  IconStop,
-  Markdown,
-  ModelPickerButton,
-  ModelSettingsPage,
-  PanelTabs,
-  USER_LOGIN_READY,
-  usePanelTab,
-  AiScopeQuote,
-  useAiPanelPrefs,
-  type AiScopeQuoteData,
-} from '@chatoffice/ui'
+import { IconSend, IconStop, Markdown, ModelPickerButton, PanelTabs, USER_LOGIN_READY, usePanelTab, AiScopeQuote, useAiPanelPrefs, type AiScopeQuoteData } from '@chatoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -94,6 +82,11 @@ import {
   IconAiImage,
 } from './AssistantTab'
 import type { DockChrome } from '@chatoffice/ui'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 interface ToolActivity {
   name: string
@@ -2672,14 +2665,16 @@ export function AiPanel({
         </div>
       )}
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={slidesModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void refreshSettings()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={slidesModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshSettings()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )

@@ -2,16 +2,8 @@ import { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } 
 import type { IFunctionInfo } from '@univerjs/engine-formula'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
-import {
-  AiPanelToggle,
-  ColorPicker,
-  Dropdown,
-  DockShell,
-  SHAPE_GALLERY_GROUPS,
-  ShapePreview,
-  useDismissablePopover,
-  isMacStandaloneWindow,
-} from '@chatoffice/ui'
+import { SHAPE_GALLERY_GROUPS, ShapePreview } from '@chatoffice/ui/shape-gallery'
+import { AiPanelToggle, ColorPicker, Dropdown, DockShell, useDismissablePopover, isMacStandaloneWindow } from '@chatoffice/ui'
 
 import {
   CaretIcon,
@@ -34,12 +26,10 @@ import {
 } from './ribbon-menu'
 import { ConvertMenuSelect } from './ConvertMenuSelect'
 
-import {
-  compressImageForDisplay,
-  InsertImageDialog,
-  type InsertImageBridge,
-  type WebImageItem,
-} from '@chatoffice/ui'
+import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { compressImageForDisplay } from '@chatoffice/ui'
 import { ColorDropdown } from './ColorDropdown'
 import { FormatCellsDialog } from './FormatCellsDialog'
 import { PasteSpecialDialog, type PasteSpecialVariant } from './PasteSpecialDialog'

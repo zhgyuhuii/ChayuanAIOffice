@@ -1,4 +1,7 @@
-import { ChartDesignerModal } from '@chatoffice/chart-kit/designer'
+// 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进表格启动图
+const ChartDesignerModal = lazy(() =>
+  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
+)
 import { pushBulkFillUndo } from './bulk-fill-undo'
 import {
   activateFormulaClosure,
@@ -84,7 +87,7 @@ import {
 } from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useAutoSavePref, type AiScopeQuoteData } from '@chatoffice/ui'
 
 import {
@@ -6073,7 +6076,8 @@ export function App(): React.JSX.Element {
         />
       )}
       {chartDesignerOpen && (
-        <ChartDesignerModal
+        <Suspense fallback={null}>
+          <ChartDesignerModal
           lang="zh-CN"
           initial={chartDesignerEdit ?? null}
           onClose={() => {
@@ -6129,6 +6133,7 @@ export function App(): React.JSX.Element {
             })()
           }}
         />
+        </Suspense>
       )}
       {recommendedCharts !== null && (
         <RecommendedChartsDialog

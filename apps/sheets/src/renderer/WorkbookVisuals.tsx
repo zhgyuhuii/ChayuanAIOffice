@@ -3,7 +3,8 @@ import { shapeRunFontSize, shapeTextOverflowClass, shapeTextScaleStyle } from '.
 import { createPortal } from 'react-dom'
 import { BooleanNumber, numfmt } from '@univerjs/core'
 import { isMetafileMime, metafileToDataUrl } from '@chatoffice/docx-engine/metafile'
-import { Dropdown, shapePreviewPath, useDismissablePopover } from '@chatoffice/ui'
+import { shapePreviewPath } from '@chatoffice/ui/shape-gallery'
+import { Dropdown, useDismissablePopover } from '@chatoffice/ui'
 
 import type { createUniver } from './create-univer'
 

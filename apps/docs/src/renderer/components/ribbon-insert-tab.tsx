@@ -1,10 +1,15 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { getMarkRange } from '@tiptap/core'
 import type { Editor } from '@tiptap/core'
-import { ShapePreview, WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
+import { ShapePreview } from '@chatoffice/ui/shape-gallery'
+import { WORDART_PRESETS, wordArtStrokePx } from '@chatoffice/ui'
 import type { ChartDisplay, HeaderFooter, NewChart } from '@chatoffice/docx-engine'
-import { ChartDesignerModal, type ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+import type { ChartDesignerInsert } from '@chatoffice/chart-kit/designer'
+// 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进编辑器启动图
+const ChartDesignerModal = lazy(() =>
+  import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
+)
 
 /** 旧 3 种基础图表入口开关:用户 2026-09-04 指示暂时隐藏(组件保留可随时恢复) */
 const CHART_LEGACY_VISIBLE = false
@@ -1583,7 +1588,8 @@ export function InsertTab({
       {crossRefOpen && <CrossRefModal editor={editor} onClose={() => setCrossRefOpen(false)} />}
       {chartOpen && <ChartInsertModal editor={editor} onClose={() => setChartOpen(false)} />}
       {chartKitOpen && (
-        <ChartDesignerModal
+        <Suspense fallback={null}>
+          <ChartDesignerModal
           lang={lang === 'en' ? 'en' : 'zh-CN'}
           initial={
             chartKitEdit
@@ -1603,6 +1609,7 @@ export function InsertTab({
           onClose={closeChartKit}
           onInsert={insertFromDesigner}
         />
+        </Suspense>
       )}
     </>
   )

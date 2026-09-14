@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { Editor } from '@tiptap/core'
 import type { Block } from '@chatoffice/docx-engine'
 import { AgentLoop, composeSkills, streamText, type AgentImage } from '@chatoffice/agent-core'
@@ -36,15 +36,7 @@ import { createElectronTransport } from './transport'
 import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
 import { Markdown, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
-import {
-  AiComposer,
-  AiTypingIndicator,
-  ModelPickerButton,
-  ModelSettingsPage,
-  PanelTabs,
-  USER_LOGIN_READY,
-  usePanelTab,
-} from '@chatoffice/ui'
+import { AiComposer, AiTypingIndicator, ModelPickerButton, PanelTabs, USER_LOGIN_READY, usePanelTab } from '@chatoffice/ui'
 import { enabledChatModels } from '@chatoffice/ai-provider/browser'
 import type { DockChrome } from '@chatoffice/ui'
 import { IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
@@ -60,6 +52,11 @@ import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
 import { IconNewChat } from '../components/icons'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 interface ToolActivity {
   name: string
@@ -1640,14 +1637,16 @@ export function AiPanel({
         />
       </div>
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={docsModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void refreshSettings()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={docsModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshSettings()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )

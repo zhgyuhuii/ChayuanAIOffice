@@ -39,7 +39,8 @@ import {
   type CanvasMode,
   type ViewMode,
 } from './components/Ribbon'
-import { CropDialog, CutoutDialog, type ImageDialogLabels } from '@chatoffice/ui'
+import { CropDialog, CutoutDialog } from '@chatoffice/ui/image-dialogs'
+import type { ImageDialogLabels } from '@chatoffice/ui/image-dialogs'
 import { FloatToolbar } from './components/FloatToolbar'
 import {
   insertOp,

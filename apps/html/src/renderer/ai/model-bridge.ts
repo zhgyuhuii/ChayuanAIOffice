@@ -1,4 +1,4 @@
-import type { ModelSettingsBridge } from '@chatoffice/ui'
+import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
 
 /** the html preload bridge over the app-wide ai:* channels */
 export const htmlModelBridge: ModelSettingsBridge = {

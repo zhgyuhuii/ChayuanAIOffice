@@ -4,13 +4,13 @@
  * imports); SmartArt thumbs reuse the engine's layout math so preview and
  * insert result always match.
  */
-import { shapePreviewPath } from '@chatoffice/ui'
+import { shapePreviewPath } from '@chatoffice/ui/shape-gallery'
 import {
   layoutShapes,
   type SmartArtLayout,
 } from '../../../../../packages/pptx-engine/src/smartart-layout'
 
-export { ShapePreview, shapePreviewBox, shapePreviewPath } from '@chatoffice/ui'
+export { ShapePreview, shapePreviewBox, shapePreviewPath } from '@chatoffice/ui/shape-gallery'
 
 /** Same virtual canvas scale as real insertion (EMU) so layout ratios/minimums behave identically. */
 const SA_CX = 4800000

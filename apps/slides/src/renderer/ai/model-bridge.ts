@@ -1,4 +1,4 @@
-import type { ModelSettingsBridge } from '@chatoffice/ui'
+import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
 
 /** the slides preload bridge over the app-wide ai:* channels */
 export const slidesModelBridge: ModelSettingsBridge = {

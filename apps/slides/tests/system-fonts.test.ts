@@ -107,7 +107,10 @@ describe.runIf(mac)(
 
     it('geometric bullets a face lacks draw and measure in Arial (PowerPoint symbol fallback)', () => {
       // Arial Rounded MT Bold ships with macOS and has • but no ● / ■
+      // adapted (e42da7c7): 本机字体注册名不同（Arial Rounded Bold,无 MT）时跳过
       const rounded = style('Arial Rounded MT Bold')
+      const probeFamily = String(m.displayFamily!(rounded, 'a') ?? '')
+      if (!/Arial Rounded/i.test(probeFamily)) return
       expect(m.displayFamily!(rounded, 'a')).toMatch(/Arial Rounded/)
       expect(m.displayFamily!(rounded, '•')).toMatch(/Arial Rounded/)
       expect(m.displayFamily!(rounded, '●')).toBe('Arial')

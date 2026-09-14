@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import iconDocx from './assets/file-docx.png'
 import iconXlsx from './assets/file-xlsx.png'
@@ -24,8 +24,11 @@ import { fileCountKey, chatCountKey } from './counts'
 import { MonoFileIcon } from './file-icons'
 import { useI18n } from './locale'
 import type { I18n, StringKey } from './locale'
-import { SettingsModal } from './SettingsModal'
 import { skillUpdateDue } from './IntegrationsPane'
+// Lazy loading: settings modal (model settings/storage/integration panels) is only fetched when opened, avoiding dragging the heavy component chain into startup
+const SettingsModal = lazy(() =>
+  import('./SettingsModal').then((m) => ({ default: m.SettingsModal })),
+)
 import { ChatPanel } from './home-chat/ChatPanel'
 import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
@@ -445,7 +448,8 @@ function AccountEntry({
   return (
     <div className="account-entry">
       {settingsOpen && (
-        <SettingsModal
+        <Suspense fallback={null}>
+          <SettingsModal
           status={status}
           loggingOut={loggingOut}
           loginWaiting={waiting}
@@ -462,6 +466,7 @@ function AccountEntry({
           skillUpdateDue={skillUpdate}
           onSkillUpdateDue={setSkillUpdate}
         />
+        </Suspense>
       )}
       {!settingsOpen && waiting && authUrl && (
         <div className="login-hint" role="status">

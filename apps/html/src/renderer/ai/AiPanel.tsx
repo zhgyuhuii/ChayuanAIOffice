@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
 import type { AgentImage } from '@chatoffice/agent-core'
@@ -6,18 +6,7 @@ import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
-import {
-  AiComposer,
-  AiScopeQuote,
-  AiTypingIndicator,
-  Markdown,
-  ModelPickerButton,
-  ModelSettingsPage,
-  PanelTabs,
-  usePanelTab,
-  type AiScopeQuoteData,
-  type DockChrome,
-} from '@chatoffice/ui'
+import { AiComposer, AiScopeQuote, AiTypingIndicator, Markdown, ModelPickerButton, PanelTabs, usePanelTab, type AiScopeQuoteData, type DockChrome } from '@chatoffice/ui'
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
@@ -62,6 +51,11 @@ import {
   resolveQueue,
   type EditQueueItem,
 } from './edit-queue'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 /** [chip label, composer prefill]: blank page → design something new; page with content → rework it */
 const GENERATE_STARTERS = [
@@ -1519,14 +1513,16 @@ export function AiPanel({
         />
       </div>
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={htmlModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void refreshPanelSettings()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={htmlModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshPanelSettings()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )

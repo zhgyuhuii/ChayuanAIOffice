@@ -10,13 +10,10 @@ import {
 import { discoverModels, setAiUserAgent } from '@chatoffice/ai-provider'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import {
-  Dropdown,
-  ModelDefaultsPage,
-  ModelSettingsPage,
-  USER_LOGIN_READY,
-  type ModelSettingsBridge,
-} from '@chatoffice/ui'
+import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
+import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
+import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
+import { Dropdown, USER_LOGIN_READY } from '@chatoffice/ui'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'

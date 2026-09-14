@@ -309,7 +309,11 @@ const COLLAPSED_STORAGE_KEY = 'aidocs.gapCollapsed'
 
 /** document-wide "hide whitespace" mode: one double-click collapses/expands ALL
  *  page gaps at once (Word/WPS behavior), not just the clicked junction */
-let allGapsCollapsed = localStorage.getItem(COLLAPSED_STORAGE_KEY) === '1'
+// headless CLI 环境无 localStorage:顶层裸读会在 import 时抛 ReferenceError
+let allGapsCollapsed =
+  typeof localStorage === 'undefined'
+    ? false
+    : localStorage.getItem(COLLAPSED_STORAGE_KEY) === '1'
 
 function persistCollapsed(): void {
   try {

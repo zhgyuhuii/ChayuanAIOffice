@@ -35,6 +35,7 @@ describe('chatoffice docx (docs editor under jsdom)', () => {
     )
     const fromHtml = join(dir, 'brief.docx')
     const h = await run(['create', '--type', 'docx', '--from', html, '--out', fromHtml, '--json'])
+    if (h.code !== 0) console.log('DBG-STDERR:', h.stderr, 'DBG-STDOUT:', h.stdout)
     expect(h.code).toBe(0)
     expect(h.json().detail).toMatchObject({ source: 'html', blocks: 4 })
     const hx = await documentXml(fromHtml)

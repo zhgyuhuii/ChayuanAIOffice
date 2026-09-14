@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab,
   type AiScopeQuoteData,
   AiScopeQuote, } from '@chatoffice/ui'
-import { DockChrome, ModelPickerButton, ModelSettingsPage } from '@chatoffice/ui'
+import { DockChrome, ModelPickerButton } from '@chatoffice/ui'
 import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
@@ -20,6 +20,11 @@ import fileVideoIcon from '../assets/file-video.png'
 import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 /** Clipboard bitmap MIME → attachment extension (matches the main process's
  * ATTACHMENT_IMAGE_EXTS) */
@@ -788,17 +793,19 @@ export function AiChatPanel({
         />
       </div>
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={sheetsModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void (async () => {
-              await onRefreshSettings?.()
-              await refreshPanelSettings()
-            })()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={sheetsModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void (async () => {
+                await onRefreshSettings?.()
+                await refreshPanelSettings()
+              })()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )

@@ -15,15 +15,18 @@
     "./dock.css": "./src/dock.css",
     "./dropdown.css": "./src/dropdown.css",
     "./model-settings.css": "./src/model-settings.css",
-    "./screentip.css": "./src/screentip.css",
-    "./tokens.css": "./src/tokens.css",
     "./find-panel.css": "./src/find-panel.css",
     "./ribbon-collapse.css": "./src/ribbon-collapse.css",
     "./markdown.css": "./src/markdown.css",
     "./ai-panel-prefs.css": "./src/ai-panel-prefs.css",
     "./ai-scope-quote.css": "./src/ai-scope-quote.css",
     "./image-dialogs.css": "./src/image-dialogs.css",
-    "./fonts/*": "./src/fonts/*"
+    "./fonts/*": "./src/fonts/*",
+    "./shape-gallery": "./src/shape-gallery.tsx",
+    "./InsertImageDialog": "./src/InsertImageDialog.tsx",
+    "./image-dialogs": "./src/image-dialogs.tsx",
+    "./ModelSettingsPage": "./src/ModelSettingsPage.tsx",
+    "./ModelDefaultsPage": "./src/ModelDefaultsPage.tsx"
   },
   "scripts": {
     "test": "vitest run",

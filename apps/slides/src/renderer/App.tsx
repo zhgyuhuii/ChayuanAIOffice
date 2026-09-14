@@ -104,12 +104,10 @@ import {
   type AiScopeQuoteData,
 } from '@chatoffice/ui'
 import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
-import {
-  compressImageForDisplay,
-  InsertImageDialog,
-  type InsertImageBridge,
-  type WebImageItem,
-} from '@chatoffice/ui'
+import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
+import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
+import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
+import { compressImageForDisplay } from '@chatoffice/ui'
 import { ToastHost } from './components/toast'
 import { showToast } from './components/toast-bus'
 import { t, useI18n } from './i18n/locale'

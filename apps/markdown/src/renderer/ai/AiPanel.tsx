@@ -1,17 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills, streamText } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import {
-  AiComposer,
-  AiTypingIndicator,
-  Markdown,
-  ModelPickerButton,
-  ModelSettingsPage,
-  PanelTabs,
-  usePanelTab,
-  AiScopeQuote,
-  type AiScopeQuoteData, } from '@chatoffice/ui'
+import { AiComposer, AiTypingIndicator, Markdown, ModelPickerButton, PanelTabs, usePanelTab, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
 import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
@@ -40,6 +31,11 @@ import {
 } from './edit-queue'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
 import { AiFeatureIcon, AssistantTab } from './AssistantTab'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 // Word-parity count (docs word-count.ts): Asian chars one by one + non-Asian words
 const ASIAN_RE =
@@ -1033,14 +1029,16 @@ export function AiPanel({
         />
       </div>
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={markdownModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void refreshPanelSettings()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={markdownModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshPanelSettings()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )

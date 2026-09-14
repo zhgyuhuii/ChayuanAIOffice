@@ -143,7 +143,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
     const error =
       err instanceof CliError
         ? err
-        : new CliError(EXIT.conversion, err instanceof Error ? err.message : String(err))
+        : new CliError(EXIT.conversion, (err instanceof Error ? err.message  : String(err)))
     audit('error', error.code)
     return fail(error)
   }

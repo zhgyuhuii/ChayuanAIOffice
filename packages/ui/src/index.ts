@@ -25,7 +25,6 @@ export {
 } from './color-picker'
 export { installScreenTips } from './screentip'
 export { COMPRESS_PRESETS, compressImageForDisplay, type CompressPresetId } from './image-compress'
-export { InsertImageDialog, type InsertImageBridge, type WebImageItem } from './InsertImageDialog'
 export { insertImageStrings } from './insert-image-strings'
 export { installAnchorPanelFallback } from './anchor-fallback'
 export {
@@ -75,24 +74,8 @@ export {
   wordArtStrokePx,
   type WordArtPreset,
 } from './wordart-presets'
-export {
-  SHAPE_GALLERY_GROUPS,
-  ShapePreview,
-  shapeClipCss,
-  shapePreviewBox,
-  shapePreviewPath,
-  type ShapeGalleryGroup,
-  type ShapeGalleryShape,
-} from './shape-gallery'
-
-export {
-  ModelSettingsPage,
-  type ModelSettingsBridge,
-  type ModelSettingsPageProps,
-} from './ModelSettingsPage'
 export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
 export { MediaModelPicker, type MediaModelPickerProps } from './MediaModelPicker'
-export { ModelDefaultsPage, type ModelDefaultsPageProps } from './ModelDefaultsPage'
 export { VendorLogo, type VendorLogoProps } from './VendorLogo'
 export { USER_LOGIN_READY } from './feature-flags'
 export {

@@ -2,7 +2,7 @@
  * Preset data for the Insert tab: shape gallery / icon gallery / WordArt / SmartArt / chart samples / equation templates.
  * Display names go through i18n (lazy getters, follow language switches); prst/id/geometry data stay unchanged.
  */
-import { SHAPE_GALLERY_GROUPS } from '@chatoffice/ui'
+import { SHAPE_GALLERY_GROUPS } from '@chatoffice/ui/shape-gallery'
 import { t, type StringKey } from './i18n/locale'
 import type { SmartArtLayout } from '../../../../packages/pptx-engine/src/smartart-layout'
 

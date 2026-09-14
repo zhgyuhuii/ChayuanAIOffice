@@ -1,16 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement } from 'react'
 import { AgentLoop } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import {
-  AiComposer,
-  AiTypingIndicator,
-  ModelPickerButton,
-  ModelSettingsPage,
-  PanelTabs,
-  usePanelTab,
-  AiScopeQuote,
-  type AiScopeQuoteData, } from '@chatoffice/ui'
+import { AiComposer, AiTypingIndicator, ModelPickerButton, PanelTabs, usePanelTab, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
@@ -21,6 +13,11 @@ import { createPdfSkill } from './pdf-skill'
 import { createElectronTransport } from './transport'
 import { PDF_NAV_SCHEME, parsePdfNavHref } from './pdf-nav'
 import type { FileOpConfirm, PdfAiDeps, PdfAppDeps } from './tools'
+
+// 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
+const ModelSettingsPage = lazy(() =>
+  import('@chatoffice/ui/ModelSettingsPage').then((m) => ({ default: m.ModelSettingsPage })),
+)
 
 // Word-parity count (same as docs/markdown): Asian chars one by one + non-Asian words
 const ASIAN_RE =
@@ -770,14 +767,16 @@ export function AiPanel({
         />
       </div>
       {modelSettingsOpen && (
-        <ModelSettingsPage
-          bridge={pdfModelBridge}
-          lang={lang}
-          onClose={() => {
-            setModelSettingsOpen(false)
-            void refreshPanelSettings()
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModelSettingsPage
+            bridge={pdfModelBridge}
+            lang={lang}
+            onClose={() => {
+              setModelSettingsOpen(false)
+              void refreshPanelSettings()
+            }}
+          />
+        </Suspense>
       )}
     </aside>
   )
