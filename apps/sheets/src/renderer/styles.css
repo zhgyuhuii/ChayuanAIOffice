@@ -197,7 +197,6 @@
   src:
     local('Aptos'), local('Calibri'), local('Carlito'),
     url('@chatoffice/ui/fonts/Carlito-Regular.ttf'), local('Helvetica Neue'), local('Arial');
-    url('@chatoffice/ui/fonts/Carlito-Regular.ttf'), local('Helvetica Neue'), local('Arial');
   font-display: block;
 }
 
@@ -206,7 +205,6 @@
   font-weight: bold;
   src:
     local('Aptos Bold'), local('Calibri Bold'), local('Carlito Bold'),
-    url('@chatoffice/ui/fonts/Carlito-Bold.ttf'), local('Helvetica Neue Bold'), local('Arial Bold');
     url('@chatoffice/ui/fonts/Carlito-Bold.ttf'), local('Helvetica Neue Bold'), local('Arial Bold');
   font-display: block;
 }

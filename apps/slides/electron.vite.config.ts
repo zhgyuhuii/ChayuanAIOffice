@@ -28,6 +28,10 @@ const workspaceAlias = {
     '../../packages/pptx-render/src/preset-geometry.ts',
   ),
   '@chatoffice/pptx-render': resolve(here, '../../packages/pptx-render/src/index.ts'),
+  '@chatoffice/pipelines/slides/cover-crop': resolve(
+    here,
+    '../../packages/pipelines/src/slides/cover-crop.ts',
+  ),
   '@chatoffice/pipelines/slides/layout-audit': resolve(
     here,
     '../../packages/pipelines/src/slides/layout-audit.ts',
