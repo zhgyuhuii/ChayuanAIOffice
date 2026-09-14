@@ -70,6 +70,22 @@ export interface RecentEntry {
   missing?: boolean
 }
 
+/** a single file from system-wide search */
+export interface SystemSearchEntry {
+  name: string
+  path: string
+  ext: string
+  mtimeMs: number
+  sizeBytes: number
+}
+
+/** result of systemFileSearch */
+export interface SystemSearchResult {
+  entries: SystemSearchEntry[]
+  /** whether the search hit the result limit (more matches may exist) */
+  truncated: boolean
+}
+
 /** paged query for the home file lists */
 /** an untitled temp-backed document the app can restore after a crash */
 export interface PendingUntitledDocEntry {
@@ -234,6 +250,8 @@ export interface HomeApi {
   readAttachment(path: string, offset?: number, maxChars?: number): Promise<AttachmentReadResult>
   /** read an image attachment's raw bytes as base64 (multimodal input) */
   readAttachmentImage(path: string): Promise<AttachmentImageResult>
+  /** system-wide file search across common user directories (Documents, Desktop, Downloads); returns matching document files sorted by mtime */
+  systemFileSearch(query: string, ext?: string): Promise<SystemSearchResult>
   /** load persisted home chat sessions (userData/home-chat-sessions.json) */
   chatSessionsLoad(): Promise<HomeChatSession[]>
   /** persist home chat sessions */
@@ -251,7 +269,7 @@ export type HomeChatAttachment = AttachmentMeta
 /** side card rendered under an assistant message */
 export type HomeChatCard =
   /** the streamed body became a document that opened in a new tab */
-  | { kind: 'doc-created'; title: string; docType: 'docx' | 'md'; filePath?: string | undefined }
+  | { kind: 'doc-created'; title: string; docType: 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'; filePath?: string | undefined }
   /** an existing document was opened (with the conversation handed off to its panel) */
   | { kind: 'doc-opened'; title: string; filePath: string }
   /** no usable model is configured; offers a jump to AI settings */
@@ -491,6 +509,7 @@ export const HOME_CHANNELS = {
   openCloudProject: 'home:open-cloud-project',
   chatSessionsLoad: 'home:chat-sessions-load',
   chatSessionsSave: 'home:chat-sessions-save',
+  systemFileSearch: 'home:system-file-search',
 } as const
 
 export const PROJECT_CHANNELS = {

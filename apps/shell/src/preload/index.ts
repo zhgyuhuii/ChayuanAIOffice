@@ -361,6 +361,13 @@ const homeApi: HomeApi = {
       ReturnType<HomeApi['readAttachmentImage']>
     >
   },
+  async systemFileSearch(query, ext) {
+    return (await ipcRenderer.invoke(
+      HOME_CHANNELS.systemFileSearch,
+      query,
+      ext,
+    )) as Awaited<ReturnType<HomeApi['systemFileSearch']>>
+  },
   async chatSessionsLoad() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsLoad)
     return Array.isArray(result) ? (result as HomeChatSession[]) : []

@@ -8,9 +8,11 @@ import {
   readdirSync,
   renameSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs'
 import { basename, dirname, extname, join } from 'node:path'
+import os from 'node:os'
 import {
   BrowserWindow,
   Menu,
@@ -221,7 +223,7 @@ import type {
   StarPromptShow,
   UiTheme,
 } from '../shared/home-api'
-import { HOME_CHANNELS } from '../shared/home-api'
+import { HOME_CHANNELS, type SystemSearchEntry, type SystemSearchResult } from '../shared/home-api'
 import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
@@ -3900,6 +3902,75 @@ function registerHomeIpc(): void {
     writeFileSync(tmp, JSON.stringify(sessions))
     renameSync(tmp, target)
   })
+
+  ipcMain.handle(
+    HOME_CHANNELS.systemFileSearch,
+    (_event, query: unknown, ext: unknown): SystemSearchResult => {
+      const q = typeof query === 'string' ? query.trim().toLowerCase() : ''
+      const extFilter = typeof ext === 'string' ? ext.toLowerCase().replace(/^\./, '') : ''
+      const allowedExts = new Set(['docx', 'xlsx', 'pptx', 'md', 'html', 'pdf'])
+      if (extFilter && !allowedExts.has(extFilter)) return { entries: [], truncated: false }
+
+      const home = os.homedir()
+      const searchDirs = ['Documents', 'Desktop', 'Downloads']
+        .map((d) => join(home, d))
+        .filter((d) => existsSync(d))
+
+      const results: SystemSearchEntry[] = []
+      const limit = 50
+
+      for (const dir of searchDirs) {
+        if (results.length >= limit) break
+        walkDir(dir, q, extFilter, allowedExts, results, limit)
+      }
+
+      results.sort((a, b) => b.mtimeMs - a.mtimeMs)
+      return { entries: results.slice(0, 20), truncated: results.length > 20 }
+    },
+  )
+}
+
+function walkDir(
+  dir: string,
+  query: string,
+  extFilter: string,
+  allowedExts: Set<string>,
+  results: SystemSearchEntry[],
+  limit: number,
+): void {
+  if (results.length >= limit) return
+  let entries: import('node:fs').Dirent[]
+  try {
+    entries = readdirSync(dir, { withFileTypes: true }) as import('node:fs').Dirent[]
+  } catch {
+    return
+  }
+  for (const entry of entries) {
+    if (results.length >= limit) return
+    const name = entry.name
+    if (name.startsWith('.')) continue
+    const fullPath = join(dir, name)
+    if (entry.isDirectory()) {
+      walkDir(fullPath, query, extFilter, allowedExts, results, limit)
+    } else if (entry.isFile()) {
+      const ext = extname(name).slice(1).toLowerCase()
+      if (!allowedExts.has(ext)) continue
+      if (extFilter && ext !== extFilter) continue
+      if (query && !name.toLowerCase().includes(query)) continue
+      try {
+        const stat = statSync(fullPath)
+        results.push({
+          name,
+          path: fullPath,
+          ext,
+          mtimeMs: stat.mtimeMs,
+          sizeBytes: stat.size,
+        })
+      } catch {
+        // skip inaccessible files
+      }
+    }
+  }
 }
 
 function stringPaths(value: unknown): string[] {

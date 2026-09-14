@@ -487,15 +487,6 @@ export function TabBar() {
           />
         </svg>
       </button>
-      <button
-        className={`tab-pane-toggle pane-right${layout.rightCollapsed ? ' collapsed' : ''}`}
-        title={t('toggleContentPane')}
-        aria-label={t('toggleContentPane')}
-        aria-pressed={!layout.rightCollapsed}
-        onClick={() => setHomeLayout({ rightCollapsed: !layout.rightCollapsed })}
-      >
-        <PaneToggleIcon side="right" />
-      </button>
       {controlSide === 'right' && <WindowControls side="right" />}
     </div>
   )

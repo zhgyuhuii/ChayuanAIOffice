@@ -64,5 +64,6 @@ export function createHomeChatBridge(
       if (!cachedModel) throw new Error('no usable model configured')
       return cachedModel
     },
+    systemFileSearch: (query, ext) => window.chatOffice.systemFileSearch(query, ext),
   }
 }

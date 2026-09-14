@@ -24,6 +24,27 @@ export function setRescueFetch(fn: FetchLike | null): void {
  */
 export const AI_DEFAULT_USER_AGENT = 'ChatOffice'
 
+/**
+ * The rescue fetch runs on Chromium's network stack (Electron net.fetch), so
+ * its TLS fingerprint already looks like a browser. But the init still carries
+ * the app's User-Agent ("ChatOffice/x.y"), which Cloudflare flags as a
+ * bot — a Chromium TLS fingerprint paired with a non-browser UA is a
+ * tell-tale mismatch. Override with a stock Chrome UA so the two signals
+ * agree.
+ */
+const BROWSER_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+
+function withBrowserUserAgent(init: RequestInit): RequestInit {
+  const headers: Record<string, string> = {}
+  const given = init.headers
+  if (given instanceof Headers) given.forEach((v, k) => (headers[k] = v))
+  else if (Array.isArray(given)) for (const [k, v] of given) headers[k] = v
+  else Object.assign(headers, given)
+  headers['User-Agent'] = BROWSER_USER_AGENT
+  return { ...init, headers }
+}
+
 let userAgent = AI_DEFAULT_USER_AGENT
 
 export function setAiUserAgent(ua: string): void {
@@ -64,7 +85,7 @@ export async function aiFetch(url: string, rawInit: RequestInit): Promise<Respon
     if (!rescueFetch || signal?.aborted) throw primaryError
     console.warn('[ai-provider] fetch failed, retrying via rescue fetch:', String(primaryError))
     try {
-      return await rescueFetch(url, init)
+      return await rescueFetch(url, withBrowserUserAgent(init))
     } catch {
       throw primaryError
     }
@@ -77,7 +98,7 @@ export async function aiFetch(url: string, rawInit: RequestInit): Promise<Respon
       '- retrying via rescue fetch',
     )
     try {
-      const rescued = await rescueFetch(url, init)
+      const rescued = await rescueFetch(url, withBrowserUserAgent(init))
       if (!isBlockPage(rescued)) return rescued
     } catch {
       // fall through to the primary response

@@ -34,12 +34,14 @@ describe('aiFetch', () => {
     expect(sentHeaders(fetchMock).get('user-agent')).toBe('custom/9')
   })
 
-  it('passes the same identified request to the rescue fetch', async () => {
+  it('overrides the rescue fetch User-Agent to a stock browser UA', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('fetch failed')))
     const rescue = vi.fn().mockResolvedValue(new Response('rescued'))
     setRescueFetch(rescue)
     await aiFetch('https://x/', {})
-    expect(sentHeaders(rescue).get('user-agent')).toBe('ChatOffice')
+    const ua = sentHeaders(rescue).get('user-agent')
+    expect(ua).not.toBe('ChatOffice')
+    expect(ua).toContain('Chrome')
   })
 
   it('returns the primary response without touching the rescue path', async () => {

@@ -30,29 +30,17 @@ import { refreshHomeModelCache } from './home-chat/bridge'
 import { useHomeChatStore } from './home-chat/store'
 import {
   clampSidebarWidth,
-  clampDockWidth,
   getHomeLayout,
   onHomeLayoutChange,
   setHomeLayout,
-  type HomeTreeTab,
 } from './home-layout'
-import { DockPane } from './DockPane'
-import {
-  CHAT_PANE_VISIBLE_DEFAULT,
-  isChatPaneHidden,
-  nextChatPaneVisibility,
-} from './chat-pane-visibility'
-import { restoreDockTabs, snapshotFromTabs } from './dock-session'
 import {
   applyRelayEvent,
-  expirePendingConfirms,
   RelaySessionLink,
-  relaySeedCommand,
   relaySendCommand,
   relayStopCommand,
   resolveRelayConfirm,
 } from './home-chat/relay-client'
-import type { DockTabSummary } from '../../shared/dock-api'
 
 declare global {
   interface Window {
@@ -990,8 +978,6 @@ export function Home() {
       .catch(() => setPendingUntitled([]))
   }, [])
   const [rowMenu, setRowMenu] = useState<string | null>(null)
-  const [newMenuOpen, setNewMenuOpen] = useState(false)
-  const newMenuWrapRef = useRef<HTMLSpanElement>(null)
   const [filterMenuOpen, setFilterMenuOpen] = useState(false)
   const filterMenuWrapRef = useRef<HTMLSpanElement>(null)
   // actions cell (… button + menu) of the row whose menu is open — the dismissal guard root
@@ -1081,26 +1067,11 @@ export function Home() {
     return () => window.removeEventListener('pointerup', endSidebarDrag)
   }, [endSidebarDrag])
 
-  // dock pane splitter: same contract as the sidebar's (active state rides on
-  // the element class; a window-level pointerup ends drags that leave the strip)
-  const dockResizerRef = useRef<HTMLDivElement>(null)
-  const endDockDrag = useCallback(() => {
-    if (dockResizerRef.current) delete dockResizerRef.current.dataset.dragging
-    document.body.classList.remove('dock-resizing')
-  }, [])
-  useEffect(() => {
-    window.addEventListener('pointerup', endDockDrag)
-    return () => window.removeEventListener('pointerup', endDockDrag)
-  }, [endDockDrag])
-
   // ── Project state ──
   const [projects, setProjects] = useState<ProjectSummaryEntry[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
 
   const projectMode = hasProjectApi()
-
-  /** 左树当前显示的面（「项目」tab 仅项目模式存在，web shim 回落「对话」） */
-  const treeTab: HomeTreeTab = layout.activeTab === 'projects' && projectMode ? 'projects' : 'chats'
 
   // ── Home chat store (owned here so the left tree reads the same sessions;
   //    ChatPanel becomes a controlled view over it) ──
@@ -1124,103 +1095,29 @@ export function Home() {
   //    right-pane editor tabs belong to it; switching back re-docks them ──
   const chatStoreRef = useRef(chatStore)
   chatStoreRef.current = chatStore
-  /** project names for the sync-project push (handleDockTabs runs with []) */
-  const projectsRef = useRef(projects)
-  projectsRef.current = projects
   const relayLink = useRef(new RelaySessionLink())
   const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
   /** P2-6 圈选标注:激活 dock 报来的选区(中栏「针对所选」提示) */
   const [selectionHint, setSelectionHint] = useState<string | null>(null)
-  /** T2 中栏对话栏对 dock 的自动收纳(docs 激活→收起,把手恢复→本次停靠不再收) */
-  const [chatPaneVisibility, setChatPaneVisibility] = useState(CHAT_PANE_VISIBLE_DEFAULT)
-  const chatPaneHidden = isChatPaneHidden(chatPaneVisibility)
-  const handleDockTabs = useCallback((tabs: DockTabSummary[]) => {
-    // T2: a docs editor taking the dock pane collapses the middle chat pane
-    // (recorded before the session guard — the pane hides with no session too)
-    const docsActive = tabs.some((t) => t.active && t.kind === 'docs')
-    setChatPaneVisibility((prev) =>
-      nextChatPaneVisibility(prev, { type: 'docs-active', active: docsActive }),
-    )
-    const store = chatStoreRef.current
-    const session = store.active
-    if (!session) return
-    if (tabs.length === 0) {
-      if (session.dock) store.updateSession(session.id, (s) => ({ ...s, dock: undefined }))
-      relayLink.current.forgetSession(session.id)
-      // dock 全关:忙态与未决议确认卡一并收敛(编辑器事件流已断)
-      setRelayBusy((prev) => {
-        if (!prev.has(session.id)) return prev
-        const next = new Set(prev)
-        next.delete(session.id)
-        return next
-      })
-      store.updateSession(session.id, (s) => ({
-        ...s,
-        messages: expirePendingConfirms(s.messages),
-      }))
-      setSelectionHint(null)
-      return
-    }
-    store.updateSession(session.id, (s) => ({ ...s, dock: snapshotFromTabs(tabs) }))
-    // 新绑定的 dock:种子化(Q4'' 铁律入口)——主线转录一次种进文档 loop
-    const added = relayLink.current.setSessionDocks(
-      session.id,
-      tabs.map((t) => t.id),
-    )
-    const sessionMessages = store.sessions?.find((x) => x.id === session.id)?.messages ?? []
-    // 切换激活 dock = 换中继目标:目标 loop 重种子(确定性重放)
-    const nowActive = tabs.find((t) => t.active)?.id
-    if (nowActive && relayLink.current.activeDockOf(session.id) !== nowActive) {
-      relayLink.current.setActiveDock(nowActive)
-      added.push(nowActive)
-      // 旧目标的选区提示不属于新文档
-      setSelectionHint(null)
-    }
-    for (const dockTabId of added) {
-      relayLink.current.clearQueue(dockTabId)
-      void window.chatOfficeDock?.relayCommand(dockTabId, relaySeedCommand(sessionMessages))
-    }
-    // P2-6 残项:停靠清单同步给每个文档 loop(activate_document 的依据)
-    const docsSync = tabs.map((t) => ({
-      title: t.title,
-      ...(t.filePath ? { filePath: t.filePath } : {}),
-      kind: t.kind,
-      active: t.id === nowActive,
-    }))
-    for (const t of tabs) {
-      void window.chatOfficeDock?.relayCommand(t.id, { type: 'sync-docs', docs: docsSync })
-    }
-    // P4 项目引用:会话所属项目的文件清单同步给每个文档 loop——文档 loop
-    // 的 search_project_files / read_document 由此取数(跨文档引用的眼)
-    const scope = store.sessions?.find((x) => x.id === session.id)?.scope
-    if (scope?.kind === 'project') {
-      const pid = scope.id
-      void (async () => {
-        try {
-          const files = await window.chatOfficeProject!.listFiles(pid)
-          const name = projectsRef.current.find((p) => p.id === pid)?.name
-          for (const t of tabs) {
-            void window.chatOfficeDock?.relayCommand(t.id, {
-              type: 'sync-project',
-              files,
-              ...(name ? { name } : {}),
-            })
-          }
-        } catch {
-          // project store unavailable (web shim): the doc loop simply has no list
-        }
-      })()
-    }
-  }, [])
-  const dockRestoreSessionId = chatStore.activeId
+  /** Chat pane auto-hide: hidden when a document tab is active */
+  const [docTabActive, setDocTabActive] = useState(false)
+  /** user re-opened the pane during the current doc-tab stint */
+  const [userPinnedOpen, setUserPinnedOpen] = useState(false)
+  const chatPaneHidden = docTabActive && !userPinnedOpen
+
   useEffect(() => {
-    const dock = window.chatOfficeDock
-    if (!dock || !dockRestoreSessionId) return
-    const session = chatStoreRef.current.sessions?.find((s) => s.id === dockRestoreSessionId)
-    if (!session?.dock) return
-    // dock.open dedupes by file, so already-docked tabs are reused, not reopened
-    void restoreDockTabs(dock, session.dock).catch(() => undefined)
-  }, [dockRestoreSessionId])
+    if (!window.chatOfficeTabs) return
+    const check = (tabs: { id: string; kind: string; active: boolean }[]) => {
+      setDocTabActive(tabs.some((t) => t.active && t.kind !== 'home'))
+    }
+    void window.chatOfficeTabs.list().then(check)
+    return window.chatOfficeTabs.onChanged(check)
+  }, [])
+  // doc stepping away restores the pane AND ends the pin — the next
+  // docked document starts a fresh auto-hide cycle
+  useEffect(() => {
+    if (!docTabActive) setUserPinnedOpen(false)
+  }, [docTabActive])
 
   // P2-3 中继事件回流:RelayEvent 镜像为所属会话的 assistant 消息(工具卡随行)
   useEffect(() => {
@@ -1461,9 +1358,6 @@ export function Home() {
   // unified dismissal: outside press, window blur, chrome press (tab strip / window drag)
   useDismissablePopover(rowMenu !== null, () => setRowMenu(null), {
     inside: () => [rowMenuWrapRef.current],
-  })
-  useDismissablePopover(newMenuOpen, () => setNewMenuOpen(false), {
-    inside: () => [newMenuWrapRef.current],
   })
   useDismissablePopover(filterMenuOpen, () => setFilterMenuOpen(false), {
     inside: () => [filterMenuWrapRef.current],
@@ -1752,80 +1646,40 @@ export function Home() {
     { ext: 'pdf', title: t('newPdf'), sub: '.pdf', action: handleNewPdf },
   ]
 
-  // ── Sidebar quick actions (top-left launcher: new/open) ──
+  // ── Sidebar quick actions: 7 icon buttons (6 new + open) in 2-col grid ──
 
   function renderSideActions() {
     return (
-      <div className="side-launcher">
-        <span className="launch-anchor" ref={newMenuWrapRef}>
+      <div className="side-action-grid">
+        {NEW_ITEMS.map((item) => (
           <button
-            className={`launch-btn primary${newMenuOpen ? ' open' : ''}`}
-            aria-expanded={newMenuOpen}
-            onClick={() => setNewMenuOpen((v) => !v)}
+            key={item.ext}
+            className="side-action-btn"
+            title={`${item.title} (${item.sub})`}
+            onClick={() => void item.action()}
           >
-            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path
-                d="M7 1v12M1 7h12"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="launch-label">{t('new')}</span>
-            <svg
-              className="launch-chevron"
-              width="10"
-              height="10"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M4 6l4 4 4-4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <FileBadge ext={item.ext} size={22} />
           </button>
-          {newMenuOpen && (
-            <div className="launch-menu" role="menu">
-              <div className="launch-grid">
-                {NEW_ITEMS.map((item) => (
-                  <button
-                    key={item.ext}
-                    className="launch-item"
-                    role="menuitem"
-                    title={item.sub}
-                    onClick={() => {
-                      setNewMenuOpen(false)
-                      void item.action()
-                    }}
-                  >
-                    <FileBadge ext={item.ext} size={30} />
-                    <span className="launch-item-label">{item.title}</span>
-                    <span className="launch-item-sub">{item.sub}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </span>
+        ))}
         <button
-          className="launch-btn secondary"
-          title={OPEN_LOCAL_EXTENSIONS}
+          className="side-action-btn"
+          title={t('openLocal')}
           onClick={() => void window.chatOffice.browse()}
         >
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
-              d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3.1c.44 0 .85.19 1.13.52L8.4 4.4H13A1.5 1.5 0 0 1 14.5 5.9v5.6A1.5 1.5 0 0 1 13 13H3a1.5 1.5 0 0 1-1.5-1.5V4z"
+              d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
               stroke="currentColor"
-              strokeWidth="1.3"
+              strokeWidth="1.5"
               strokeLinejoin="round"
             />
+            <path
+              d="M9 13h6M12 10v6"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
-          <span className="launch-label">{t('openLocal')}</span>
         </button>
       </div>
     )
@@ -3138,9 +2992,7 @@ export function Home() {
 
   return (
     <div
-      className={`home${layout.leftCollapsed ? ' pane-left-collapsed' : ''}${
-        layout.rightCollapsed ? ' pane-right-collapsed' : ''
-      }`}
+      className={`home${layout.leftCollapsed ? ' pane-left-collapsed' : ''}`}
     >
       {pendingUntitled.length > 0 && (
         <div className="pending-untitled-banner" role="status">
@@ -3214,38 +3066,7 @@ export function Home() {
         {/* ZCode 式左树：对话 | 项目 双 Tab + 最近；整体单滚动。
             归档视图打开时取代 Tab 区（收藏文档与归档会话集中于此） */}
         <div className="sidebar-scroll">
-          {archiveOpen ? (
-            renderArchiveView()
-          ) : (
-            <>
-              <div className="sidebar-tabs" role="tablist" aria-label={t('sidebarTabList')}>
-                <button
-                  role="tab"
-                  id="home-tree-tab-chats"
-                  aria-selected={treeTab === 'chats'}
-                  aria-controls="home-tree-panel-chats"
-                  className={`sidebar-tab${treeTab === 'chats' ? ' active' : ''}`}
-                  onClick={() => setHomeLayout({ activeTab: 'chats' })}
-                >
-                  {t('secChats')}
-                </button>
-                {projectMode && (
-                  <button
-                    role="tab"
-                    id="home-tree-tab-projects"
-                    aria-selected={treeTab === 'projects'}
-                    aria-controls="home-tree-panel-projects"
-                    className={`sidebar-tab${treeTab === 'projects' ? ' active' : ''}`}
-                    onClick={() => setHomeLayout({ activeTab: 'projects' })}
-                  >
-                    {t('projects')}
-                  </button>
-                )}
-              </div>
-              {treeTab === 'projects' ? renderProjectsSection() : renderChatsSection()}
-            </>
-          )}
-          {renderRecentSection()}
+          {archiveOpen ? renderArchiveView() : renderRecentSection()}
         </div>
 
         <AccountEntry
@@ -3312,11 +3133,7 @@ export function Home() {
               className="chat-pane-handle"
               aria-label={t('chatPaneShow')}
               title={t('chatPaneShow')}
-              onClick={() =>
-                setChatPaneVisibility((prev) =>
-                  nextChatPaneVisibility(prev, { type: 'user-expand' }),
-                )
-              }
+              onClick={() => setUserPinnedOpen(true)}
             >
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path
@@ -3334,43 +3151,6 @@ export function Home() {
               </svg>
             </button>
           )}
-          {/* drag handle between the conversation and the dock pane; hidden
-              with the pane itself (pane-right-collapsed) via the sibling
-              selector in CSS, and while the chat pane is auto-hidden */}
-          <div
-            ref={dockResizerRef}
-            className={`dock-resizer${chatPaneHidden ? ' chat-hidden' : ''}`}
-            role="separator"
-            aria-orientation="vertical"
-            onPointerDown={(event) => {
-              if (event.button !== 0) return
-              try {
-                event.currentTarget.setPointerCapture(event.pointerId)
-              } catch {
-                /* synthetic events have no active pointer — the window-level
-                   pointerup below ends the drag regardless */
-              }
-              event.currentTarget.dataset.dragging = '1'
-              document.body.classList.add('dock-resizing')
-            }}
-            onPointerMove={(event) => {
-              if (!event.currentTarget.dataset.dragging) return
-              // the pane's left edge: width = window right minus pointer x
-              setHomeLayout({ dockWidth: clampDockWidth(window.innerWidth - event.clientX) })
-            }}
-            onPointerUp={endDockDrag}
-            onLostPointerCapture={endDockDrag}
-          />
-
-          {/* right content pane: docked editor views (P1) borrow this rect —
-              the editors are main-process WebContentsViews painting over the
-              .dock-area element's mirrored rectangle */}
-          <section
-            className="content-pane"
-            style={layout.dockWidth ? { width: layout.dockWidth, flex: 'none' } : undefined}
-          >
-            <DockPane onTabs={handleDockTabs} />
-          </section>
         </>
       )}
 

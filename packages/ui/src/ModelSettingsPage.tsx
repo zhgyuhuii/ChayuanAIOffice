@@ -304,7 +304,7 @@ export function ModelSettingsPage({
     setKeyFieldValues({})
     setKeyConfigured(!!selectedProfile.apiKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
-  }, [selected, settings])
+  }, [selected])
 
   // 本地工具探测：切到本地厂商（或点「重新检测」）时查安装/运行状态
   useEffect(() => {
@@ -599,6 +599,7 @@ export function ModelSettingsPage({
           type="button"
           className={`msp-vendor${selected === id ? ' is-selected' : ''}`}
           data-vendor-row={id}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => setSelected(id)}
         >
           <VendorLogo vendorId={VENDOR_BY_ID.has(id) ? id : undefined} size={18} fallback={name} />
@@ -668,6 +669,7 @@ export function ModelSettingsPage({
           type="button"
           className="msp-group-head"
           aria-expanded={!collapsedGroups.has(id)}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() =>
             setCollapsedGroups((prev) => {
               const next = new Set(prev)

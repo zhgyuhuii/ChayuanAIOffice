@@ -7,7 +7,8 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chatoffice/ui/ai-panel-prefs'
-import { useEffect, useState } from 'react'
+import { discoverModels, setAiUserAgent } from '@chatoffice/ai-provider'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   Dropdown,
@@ -188,7 +189,7 @@ function Field({
 function AiModelPane({ lang }: { lang: string }) {
   // the model settings live inline in this pane (no second window, no extra
   // heading — the section nav names it); the page's own panes handle scrolling
-  const bridge: ModelSettingsBridge = windowChatOfficeBridge()
+  const bridge = useMemo(() => windowChatOfficeBridge(), [])
   return (
     <div className="set-model-settings">
       <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
@@ -198,7 +199,7 @@ function AiModelPane({ lang }: { lang: string }) {
 
 function DefaultModelsPane({ lang }: { lang: string }) {
   const { t } = useI18n()
-  const bridge: ModelSettingsBridge = windowChatOfficeBridge()
+  const bridge = useMemo(() => windowChatOfficeBridge(), [])
   return (
     <>
       <h3 className="set-pane-title">{t('setSecDefaultModels')}</h3>
@@ -213,7 +214,40 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     getSettings: () => window.chatOffice.getAiSettings(),
     saveSettings: (view) => window.chatOffice.setAiSettings(view),
     setCurrentModel: (selection) => window.chatOffice.setAiCurrentModel(selection),
-    discoverModels: (target) => window.chatOffice.aiDiscoverModels(target),
+    discoverModels: async (target) => {
+      // Run discovery in the renderer — the renderer's fetch is Chromium's
+      // native fetch with a proper browser TLS fingerprint, so Cloudflare
+      // won't block it (unlike main-process fetches via Node undici or
+      // Electron net.fetch).
+      //
+      // Two cases still need the main process:
+      //  • Codex — requires Node.js child_process to find/run the CLI
+      //  • profileId without apiKey — the renderer holds KEEP_KEY sentinels;
+      //    the real key lives in the settings file (main-process filesystem)
+      if (target.codexLike) {
+        return window.chatOffice.aiDiscoverModels(target)
+      }
+      if (!target.apiKey && target.profileId) {
+        // The renderer holds KEEP_KEY sentinels; the real API key lives in the
+        // settings file. Delegate to the main process which resolves the stored
+        // key internally via runtime.discover.
+        return window.chatOffice.aiDiscoverModels(target)
+      }
+      try {
+        // In the renderer, fetch is Chromium's native fetch (proper TLS
+        // fingerprint), but aiFetch overrides the User-Agent to 'ChatOffice'
+        // by default. Cloudflare flags the mismatch between a browser TLS
+        // fingerprint and a non-browser UA. Set a stock Chrome UA so the two
+        // signals agree.
+        setAiUserAgent(
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        )
+        const models = await discoverModels(target)
+        return { models }
+      } catch (err) {
+        return { models: [], error: err instanceof Error ? err.message : String(err) }
+      }
+    },
     chatofficeStatus: (withEmail) => window.chatOffice.chatofficeStatus(withEmail),
     chatofficeLogin: () => void window.chatOffice.chatofficeLogin(),
     localToolStatus: (vendorId) => window.chatOffice.aiLocalToolStatus(vendorId),

@@ -139,6 +139,11 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     }
   })
 
+  // preload-side discovery needs the stored key (the renderer only holds KEEP_KEY sentinels)
+  ipcMain.handle('ai:resolve-profile-key', (_event, profileId: string) =>
+    runtime.resolveProfileApiKey(String(profileId)),
+  )
+
   // ── 本地与自建：一键安装/探测/启动（spec 表见 local-tools.ts） ──────────
   ipcMain.handle('ai:local-tool-status', (_event, vendorId: string) =>
     localToolStatus(String(vendorId)),

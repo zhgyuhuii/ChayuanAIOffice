@@ -104,19 +104,6 @@ body.vib .home {
   display: none;
 }
 
-.home.pane-right-collapsed > .content-pane {
-  display: none;
-}
-
-.content-pane {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--border);
-  background: var(--bg, #fff);
-}
-
 /* ── middle chat pane (T2): auto-hides while a docs editor fills the dock ── */
 
 /* the wrapper keeps ChatPanel MOUNTED at width 0 (drafts, relay mirrors and
@@ -153,120 +140,6 @@ body.vib .home {
 .chat-pane-handle:hover {
   color: var(--accent);
   background: var(--surface-subtle);
-}
-
-/* ── dock pane (P1): right-pane editor docking ── */
-
-/* splitter between the conversation and the dock pane — mirrors the sidebar
-   resizer's contract (7px strip, accent line on the pane edge, window-level
-   pointerup ends drags); hidden with the pane itself, and while the chat
-   pane is auto-hidden (the handle replaces it as the boundary) */
-.home.pane-right-collapsed > .dock-resizer,
-.dock-resizer.chat-hidden {
-  display: none;
-}
-
-.dock-resizer {
-  position: relative;
-  flex-shrink: 0;
-  width: 7px;
-  margin: 0 -7px 0 0;
-  cursor: col-resize;
-  z-index: 5;
-  touch-action: none;
-}
-
-/* the accent line wakes on the strip's LEFT edge (the pane's border is the
-   divider); double-negative margin above keeps the layout width unchanged */
-.dock-resizer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 2px;
-  background: transparent;
-}
-
-.dock-resizer:hover::after,
-body.dock-resizing .dock-resizer::after {
-  background: var(--accent);
-}
-
-body.dock-resizing {
-  cursor: col-resize;
-  user-select: none;
-}
-
-/* dock tab strip: which docked document fills the pane (single strip above
-   the editor area; the conversation relays to the active one) */
-.dock-strip {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.dock-strip::-webkit-scrollbar {
-  display: none;
-}
-
-.dock-tab {
-  flex-shrink: 0;
-  max-width: 190px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px 4px 9px;
-  border-radius: 7px;
-  font: inherit;
-  font-size: 12px;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.dock-tab:hover {
-  background: var(--bg-hover, rgba(0, 0, 0, 0.05));
-}
-
-.dock-tab.active {
-  background: var(--bg-hover, rgba(0, 0, 0, 0.07));
-  color: var(--text);
-}
-
-.dock-tab-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.dock-tab-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dock-tab-pop,
-.dock-tab-close {
-  border: none;
-  background: none;
-  padding: 2px;
-  border-radius: 4px;
-  color: var(--text-muted, inherit);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-}
-
-.dock-tab-pop:hover,
-.dock-tab-close:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--text);
 }
 
 /* 圈选标注提示(P2-6):激活 dock 报来的选区,发送时随消息附给文档 loop */
@@ -308,26 +181,6 @@ body.dock-resizing {
 .chat-selection-clear:hover {
   background: rgba(0, 0, 0, 0.1);
   color: var(--text);
-}
-
-/* the editor view itself is a main-process WebContentsView painting over
-   this rect; the element only reserves/measures the geometry */
-.dock-area {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-}
-
-.content-pane-empty {
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-muted);
-  font-size: 13px;
-  text-align: center;
-  padding: 24px;
 }
 
 /* the four stacked sections (projects / starred / recent) scroll as one
@@ -4223,98 +4076,31 @@ body.sidebar-resizing {
   background: var(--bg-hover);
 }
 
-/* ═══ 侧栏重构（37 家族期）：发射器双钮 / 分区头统一 / 单色行 / 省略号 ═══ */
+/* ═══ 侧栏重构（37 家族期）：发射器图标网格 / 分区头统一 / 单色行 / 省略号 ═══ */
 
-/* ── 发射器：＋新建（唯一饱和元素）+ 打开 ── */
-.side-launcher {
-  display: flex;
-  gap: 6px;
+/* ── 发射器：6 新建 + 打开 = 7 图标,2 列网格 ── */
+.side-action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
   padding: 4px 8px 10px;
-  position: relative;
 }
-.launch-anchor {
-  position: relative;
-  flex: 1.35;
-  display: flex;
-  min-width: 0;
-}
-.launch-btn {
+.side-action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 32px;
-  width: 100%;
-  border-radius: 8px;
-  font-size: 12.5px;
-  font-family: inherit;
-  cursor: pointer;
-  border: 1px solid transparent;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.launch-btn.primary {
-  background: linear-gradient(135deg, #e3342f, #f4542c);
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(227, 52, 47, 0.28);
-}
-.launch-btn.primary:hover,
-.launch-btn.primary.open {
-  background: linear-gradient(135deg, #d02b26, #e84a22);
-}
-.launch-btn.secondary {
-  flex: 1;
-  border-color: var(--border);
-  color: var(--text-secondary);
-  background: transparent;
-}
-.launch-btn.secondary:hover {
-  background: var(--surface-subtle);
-  color: var(--text);
-}
-.launch-chevron {
-  margin-left: auto;
-  opacity: 0.75;
-}
-.launch-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 70;
-  width: 268px;
-  padding: 8px;
-  background: var(--surface, #fff);
+  height: 38px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(15, 20, 40, 0.16);
-}
-.launch-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-}
-.launch-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 10px 4px 8px;
-  border: none;
   border-radius: 8px;
   background: transparent;
+  color: var(--text-secondary);
   cursor: pointer;
-  font-family: inherit;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
-.launch-item:hover {
+.side-action-btn:hover {
   background: var(--surface-subtle);
-}
-.launch-item-label {
-  font-size: 12px;
   color: var(--text);
-}
-.launch-item-sub {
-  font-size: 10px;
-  color: var(--text-tertiary);
+  border-color: var(--border-hover, #ccc);
 }
 
 /* ── 分区头统一规格：11px 灰字 · count 右对齐 · hover 显操作 ── */
@@ -4464,19 +4250,6 @@ body.sidebar-resizing {
 .funnel-check {
   width: 12px;
   flex-shrink: 0;
-}
-
-/* ── 极窄侧栏（180-210px）：双钮收纯图标 ── */
-.sidebar.narrow .launch-label,
-.sidebar.narrow .launch-chevron {
-  display: none;
-}
-.sidebar.narrow .launch-btn.secondary {
-  flex: 0 0 32px;
-  width: 32px;
-}
-.sidebar.narrow .launch-btn .launch-label + * {
-  display: none;
 }
 
 /* ── assistant picker (4.6k library popover, home composer) ── */

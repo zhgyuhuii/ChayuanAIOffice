@@ -293,6 +293,13 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return { models }
   }
 
+  /** Look up the stored API key for a profile (the renderer only holds KEEP_KEY sentinels). */
+  const resolveProfileApiKey = async (profileId: string): Promise<string | null> => {
+    const settings = await readRaw()
+    const profile = findProfile(settings, profileId)
+    return profile?.apiKey ?? null
+  }
+
   /** BYOK image model first; chatoffice backend as fallback; error when neither exists.
    * If the user configured an image model, its failure is the answer — silent
    * fallbacks would hide broken keys. An explicit `model` selection (insert-media
@@ -460,6 +467,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     runStream,
     runChat,
     discover,
+    resolveProfileApiKey,
     generateImage,
     runVideoJob,
     listMediaModels,
