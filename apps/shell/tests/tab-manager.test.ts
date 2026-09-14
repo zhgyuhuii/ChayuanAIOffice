@@ -36,10 +36,6 @@ function makeFakeView(): FakeView {
       listeners,
       on: vi.fn(remember),
       once: vi.fn(remember),
-      on: vi.fn((event: string, handler: () => void) => {
-        listeners.set(event, handler)
-      }),
-      once: vi.fn(),
       close: vi.fn(),
       reload: vi.fn(),
       isDestroyed: vi.fn(() => false),

@@ -74,7 +74,8 @@ describe('pictureFilterCss', () => {
       ),
     )
     const img = editor.view.dom.querySelector('img.doc-protected-img') as HTMLElement
-    expect(img.style.filter).toMatch(/^contrast\([\d.]+\) brightness\([\d.]+\)$/)
+    // adapted (e42da7c7): a:lum 走本地 imageLum 通道(千分比→brightness() contrast() 顺序)
+    expect(img.style.filter).toMatch(/^brightness\([\d.]+\) contrast\([\d.]+\)$/)
     editor.destroy()
   })
 })

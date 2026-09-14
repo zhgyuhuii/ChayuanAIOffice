@@ -20,6 +20,25 @@ beforeEach(() => {
   host = document.createElement('div')
   document.body.append(host)
   root = createRoot(host)
+  // adapted（本地）：SettingsModal 直连本地 chatOffice 桥（主题/AI 设置/登录态），测试需补最小桩
+  window.chatOffice = {
+    getTheme: async () => 'system',
+    getDefaultSaveDir: async () => '',
+    getAnalyticsEnabled: async () => true,
+    getAutoSaveDefault: async () => ({ on: false, updatedAt: 0 }),
+    getAiPanelPrefs: async () => ({ fontSize: 'default', spellcheck: true }),
+    getUpdateChannel: async () => 'stable',
+    getAppVersion: async () => '1.0.0',
+    githubStars: async () => null,
+    getAiSettings: async () => null,
+    setAiSettings: async () => undefined,
+    setAiCurrentModel: async () => undefined,
+    aiDiscoverModels: async () => ({ models: [] }),
+    chatofficeStatus: async () => ({ state: 'signed-out' }),
+    chatofficeLogin: async () => undefined,
+    aiLocalToolStatus: async () => ({ state: 'missing' }),
+    aiLocalToolInstall: async () => ({ ok: false }),
+  } as unknown as HomeApi
   window.aiOffice = {
     getTheme: async () => 'system',
     getDefaultSaveDir: async () => '',
@@ -106,7 +125,7 @@ async function openIntegrations(
   api: Partial<IntegrationsApi>,
   extra: Partial<SettingsModalProps> = {},
 ): Promise<void> {
-  window.aiOfficeIntegrations = api as IntegrationsApi
+  window.chatOfficeIntegrations = api as IntegrationsApi
   await act(async () => {
     root.render(
       createElement(
