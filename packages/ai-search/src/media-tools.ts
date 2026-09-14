@@ -99,7 +99,8 @@ export async function loadMediaReference(ref: string): Promise<MediaBlob> {
     if (bytes.byteLength > MAX_MEDIA_BYTES) {
       throw new MediaTooLargeError(`${ref} is too large to analyze`)
     }
-    const ct = resp.headers.get('content-type')?.split(';')[0]?.trim()
+    const rawCt = resp.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
+    const ct = rawCt && rawCt !== 'application/octet-stream' ? rawCt : undefined
     const name = basename(new URL(ref).pathname) || undefined
     const mime =
       ct && ct !== 'application/octet-stream' ? ct : MIME_BY_EXT[extname(name ?? '').toLowerCase()]
