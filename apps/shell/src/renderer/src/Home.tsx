@@ -1128,25 +1128,6 @@ export function Home() {
   const [relayBusy, setRelayBusy] = useState<Set<string>>(() => new Set())
   /** P2-6 圈选标注:激活 dock 报来的选区(中栏「针对所选」提示) */
   const [selectionHint, setSelectionHint] = useState<string | null>(null)
-  /** Chat pane auto-hide: hidden when a document tab is active */
-  const [docTabActive, setDocTabActive] = useState(false)
-  /** user re-opened the pane during the current doc-tab stint */
-  const [userPinnedOpen, setUserPinnedOpen] = useState(false)
-  const chatPaneHidden = docTabActive && !userPinnedOpen
-
-  useEffect(() => {
-    if (!window.chatOfficeTabs) return
-    const check = (tabs: { id: string; kind: string; active: boolean }[]) => {
-      setDocTabActive(tabs.some((t) => t.active && t.kind !== 'home'))
-    }
-    void window.chatOfficeTabs.list().then(check)
-    return window.chatOfficeTabs.onChanged(check)
-  }, [])
-  // doc stepping away restores the pane AND ends the pin — the next
-  // docked document starts a fresh auto-hide cycle
-  useEffect(() => {
-    if (!docTabActive) setUserPinnedOpen(false)
-  }, [docTabActive])
 
   // P2-3 中继事件回流:RelayEvent 镜像为所属会话的 assistant 消息(工具卡随行)
   useEffect(() => {
@@ -1195,7 +1176,7 @@ export function Home() {
             if (hit) {
               void dock.activate(hit.id)
             } else if (target.filePath) {
-              void window.chatOffice.openPath(target.filePath, { dock: true })
+              void window.chatOffice.openPath(target.filePath, { dock: false })
             }
           })
           .catch(() => undefined)
@@ -1753,13 +1734,13 @@ export function Home() {
           onClick={() => {
             if (!isRenaming) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path, { dock: true })
+              else void window.chatOffice.openPath(entry.path, { dock: false })
             }
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget) {
               if (entry.missing) setConfirmMissing(entry)
-              else void window.chatOffice.openPath(entry.path, { dock: true })
+              else void window.chatOffice.openPath(entry.path, { dock: false })
             }
           }}
         >
@@ -1840,7 +1821,7 @@ export function Home() {
               title={t('open')}
               onClick={(event) => {
                 event.stopPropagation()
-                void window.chatOffice.openPath(entry.path, { dock: true })
+                void window.chatOffice.openPath(entry.path, { dock: false })
               }}
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -1897,7 +1878,7 @@ export function Home() {
                 role="menuitem"
                 onClick={() => {
                   setRowMenu(null)
-                  void window.chatOffice.openPath(entry.path, { dock: true })
+                  void window.chatOffice.openPath(entry.path, { dock: false })
                 }}
               >
                 {t('open')}
@@ -2259,7 +2240,7 @@ export function Home() {
           key: 'open',
           label: t('open'),
           disabled: entry.missing,
-          action: () => void window.chatOffice.openPath(entry.path, { dock: true }),
+          action: () => void window.chatOffice.openPath(entry.path, { dock: false }),
         },
         { key: 'unarchive', label: t('chatUnarchive'), action: () => toggleStar(entry.path) },
         { divider: true, key: 'd1' },
@@ -2881,11 +2862,11 @@ export function Home() {
           tabIndex={0}
           title={`${formatModified(entry.mtimeMs, i18n)} · ${formatSize(entry.sizeBytes)} · ${entry.path}`}
           onClick={() => {
-            if (!entry.missing) void window.chatOffice.openPath(entry.path, { dock: true })
+            if (!entry.missing) void window.chatOffice.openPath(entry.path, { dock: false })
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' && event.target === event.currentTarget && !entry.missing) {
-              void window.chatOffice.openPath(entry.path, { dock: true })
+              void window.chatOffice.openPath(entry.path, { dock: false })
             }
           }}
           onContextMenu={(event) => {
@@ -3140,9 +3121,7 @@ export function Home() {
         <CloudProjectsView />
       ) : (
         <>
-          {/* T2 中栏对话栏:docs 编辑器停靠激活时自动收起(宽度 0 保挂载,
-              草稿/中继不丢);分界处的悬浮把手恢复,本次停靠不再自动收起 */}
-          <div className={`chat-pane${chatPaneHidden ? ' chat-pane-hidden' : ''}`}>
+          <div className="chat-pane">
             <ChatPanel
               store={chatStore}
               dockRelay={dockRelay}
@@ -3157,29 +3136,6 @@ export function Home() {
               projects={projects}
             />
           </div>
-          {chatPaneHidden && (
-            <button
-              className="chat-pane-handle"
-              aria-label={t('chatPaneShow')}
-              title={t('chatPaneShow')}
-              onClick={() => setUserPinnedOpen(true)}
-            >
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M2.5 4.2A1.7 1.7 0 0 1 4.2 2.5h7.6a1.7 1.7 0 0 1 1.7 1.7v5.1a1.7 1.7 0 0 1-1.7 1.7H7.6l-3 2.2a.5.5 0 0 1-.8-.4v-1.8h-.8A1.7 1.7 0 0 1 1.2 9.3z"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M4.4 5.6h7.2M4.4 8h4.6"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          )}
         </>
       )}
 
