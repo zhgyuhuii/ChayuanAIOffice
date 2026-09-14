@@ -3,7 +3,7 @@
  * tick and the crash-recovery push. Only persisted state counts — transient UI
  * state (AI highlights, selection, view modes) must never appear here.
  */
-import type { HeaderFooter, SectionInfo, StyleUpsert } from '@genoffice/docx-engine'
+import type { HeaderFooter, SectionInfo, StyleUpsert } from '@chatoffice/docx-engine'
 
 import type { PendingNumbering } from './doc-state'
 export interface DocDirtyState {

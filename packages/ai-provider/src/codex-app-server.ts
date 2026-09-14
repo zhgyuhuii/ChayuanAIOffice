@@ -695,7 +695,7 @@ function finalMessageFromTurn(params: unknown): string {
   return ''
 }
 
-const CODEX_PERMISSION_PROFILE = 'genoffice'
+const CODEX_PERMISSION_PROFILE = 'chatoffice'
 
 /**
  * Codex keeps its own shell tool even when told not to use it, and the plain
@@ -712,7 +712,7 @@ export function codexThreadStartParams(
     ...(config.model.trim() ? { model: config.model.trim() } : {}),
     cwd: tempDir,
     approvalPolicy: 'never',
-    serviceName: 'genoffice',
+    serviceName: 'chatoffice',
     baseInstructions: CODEX_BASE_INSTRUCTIONS,
     ephemeral: true,
   }
