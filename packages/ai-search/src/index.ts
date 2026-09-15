@@ -352,7 +352,7 @@ export async function readUrlContent(
     throw new Error(`Only http(s) URLs are supported, got ${url.protocol}`)
   }
   const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ChatOfficeBot/1.0)' },
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ChaAIBot/1.0)' },
     redirect: 'follow',
   })
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`)

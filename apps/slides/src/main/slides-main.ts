@@ -4764,7 +4764,7 @@ export function createSlidesWindow(openPath?: string | null): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
     height: 840,
-    title: 'ChatOffice Slides',
+    title: 'ChaAI Office Slides',
     icon: APP_ICON,
     ...(process.platform === 'darwin'
       ? { titleBarStyle: 'hiddenInset' as const }

@@ -7,7 +7,7 @@ export const de = {
   aiStarterPolishAll: 'Das ganze Dokument für einen professionelleren Ton überarbeiten',
   aiStarterContinue: 'Dort weiterschreiben, wo das Dokument aufhört',
   aiStarterFillTemplate: 'Platzhalter im Dokument finden und ausfüllen',
-  aiGskLoginBtn: 'Bei ChatOffice anmelden',
+  aiGskLoginBtn: 'Bei ChaAI Office anmelden',
   aiPanelTitle: 'KI-Assistent',
   aiOpenAssistant: 'KI-Assistenten öffnen',
   aiSummarizeBtn: 'KI-Zusammenfassung',
@@ -168,7 +168,7 @@ export const de = {
   aiChatOfficeLoginBtn: 'Anmelden',
   aiNoModelErrorTitle: 'Noch kein Modell verfügbar',
   aiNoModelErrorBody:
-    'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChatOffice für die Standardmodelle an. Kein Konto nötig.',
+    'Konfiguriere einen eigenen Anbieter (dein Schlüssel, sofort einsatzbereit) oder melde dich bei ChaAI Office für die Standardmodelle an. Kein Konto nötig.',
   aiOpenModelSettings: 'Modelleinstellungen öffnen',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

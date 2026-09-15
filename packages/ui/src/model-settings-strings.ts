@@ -13,7 +13,7 @@ const zh = {
   filterHint: '可按「免费」筛选厂商',
   enabledGroup: '已启用',
   noModelsGuide:
-    '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 ChatOffice 直接使用内置模型。',
+    '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启；或登录 察元AIOffice 直接使用内置模型。',
   noModelsGuideNoLogin: '尚未启用任何模型：在左侧选择厂商，填写 API 密钥并开启。',
   // 说明页（初次进入的落地）
   guideCnTitle: '国内常用模型',
@@ -85,7 +85,7 @@ const zh = {
     'video-understanding': '视频理解',
   } as Record<string, string>,
   // chatoffice special card
-  chatofficeLoginTitle: 'ChatOffice 登录',
+  chatofficeLoginTitle: '察元AIOffice 登录',
   chatofficeLoginDesc:
     '登录后可使用默认模型与云端工具（网页/图片搜索、兜底生图）。不登录也能使用自己配置的任何模型。',
   chatofficeLoggedIn: '已登录：{email}',
@@ -102,7 +102,7 @@ const zh = {
   presetModelsHint: '该供应商暂不支持自动获取模型列表，以下为预设清单',
   pickerSettings: '模型设置',
   pickerEmptyTitle: '还没有可用的模型',
-  pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用内置模型。',
+  pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用内置模型。',
   statusEnabled: '已启用，模型出现在选择器中',
   statusNotEnabled: '未启用',
   selectAll: '全选',
@@ -166,7 +166,7 @@ const en = {
   filterHint: 'Tip: filter vendors by free plans',
   enabledGroup: 'Enabled',
   noModelsGuide:
-    'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChatOffice to use its built-in models.',
+    'No models enabled yet: pick a vendor on the left, add your API key and enable it — or sign in to ChaAI Office to use its built-in models.',
   noModelsGuideNoLogin:
     'No models enabled yet: pick a vendor on the left, add your API key and enable it.',
   // guide landing (first entry)
@@ -236,7 +236,7 @@ const en = {
     'audio-understanding': 'Audio',
     'video-understanding': 'Video',
   } as Record<string, string>,
-  chatofficeLoginTitle: 'ChatOffice sign-in',
+  chatofficeLoginTitle: 'ChaAI Office sign-in',
   chatofficeLoginDesc:
     'Sign in for the default models and cloud tools (web/image search, fallback image gen). Everything you configure yourself works without signing in.',
   chatofficeLoggedIn: 'Signed in: {email}',
@@ -253,7 +253,7 @@ const en = {
   pickerSettings: 'Model settings',
   pickerEmptyTitle: 'No model available yet',
   pickerEmptyBody:
-    'Configure your own provider (your key, ready to use), or sign in to ChatOffice for its built-in models.',
+    'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for its built-in models.',
   statusEnabled: 'Enabled — models appear in the picker',
   statusNotEnabled: 'Not enabled',
   selectAll: 'Select all',

@@ -7,7 +7,7 @@ export const zh = {
   aiStarterPolishAll: '润色全文,使语气更专业',
   aiStarterContinue: '接着现有内容往下写',
   aiStarterFillTemplate: '找出并填写文档里的占位符',
-  aiGskLoginBtn: '登录 ChatOffice',
+  aiGskLoginBtn: '登录 察元AIOffice',
   aiPanelTitle: 'AI 助手',
   aiOpenAssistant: '打开 AI 助手',
   aiSummarizeBtn: 'AI 总结',
@@ -156,7 +156,7 @@ export const zh = {
   aiChatOfficeLoginBtn: '登录',
   aiNoModelErrorTitle: '还没有可用的模型',
   aiNoModelErrorBody:
-    '配置一个自己的供应商（密钥即用），或登录 ChatOffice 使用默认模型。全程无需账号。',
+    '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用默认模型。全程无需账号。',
   aiOpenModelSettings: '打开模型设置',
   aiTabChat: '对话',
   aiTabAssistant: '助手',

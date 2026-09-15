@@ -67,7 +67,7 @@ export const CHATOFFICE_PRESET_MODELS = [
 export const VENDORS: VendorCatalogEntry[] = [
   {
     id: 'chatoffice',
-    name: 'ChatOffice',
+    name: 'ChaAI Office',
     group: 'agg',
     defaultUrl: '',
     api: 'openai-completions',

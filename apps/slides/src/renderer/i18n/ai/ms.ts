@@ -17,8 +17,8 @@ export const ms = {
   aiQcPageSkipped: 'Halaman {n}: semakan susun atur automatik dilangkau',
   aiQcStopped: 'Semakan susun atur dihentikan',
   aiQcCapped: '{count} halaman lagi tidak disemak (had setiap larian)',
-  aiGskLoginBtn: 'Log masuk ke ChatOffice',
-  aiPanelTitle: 'ChatOffice',
+  aiGskLoginBtn: 'Log masuk ke ChaAI Office',
+  aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Buka pembantu AI',
   aiFactCheckBtn: 'Semak Fakta AI',
   aiFactCheckPrompt:
@@ -114,7 +114,7 @@ export const ms = {
   aiErrNetwork:
     'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
   aiCreditsExhausted:
-    'Kredit ChatOffice anda telah habis. Tambah nilai di genspark.ai/pricing dan cuba lagi',
+    'Kredit ChaAI Office anda telah habis. Tambah nilai di genspark.ai/pricing dan cuba lagi',
   aiErrRequestFailed: 'Gagal menghantar permintaan: {msg}',
   aiErrGenerateFailed: 'Penjanaan gagal',
   aiErrRegenFailed: 'Gagal membuat semula slaid',

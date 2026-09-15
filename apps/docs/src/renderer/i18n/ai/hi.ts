@@ -7,7 +7,7 @@ export const hi = {
   aiStarterPolishAll: 'पूरे दस्तावेज़ को अधिक पेशेवर लहजे में निखारें',
   aiStarterContinue: 'दस्तावेज़ जहाँ रुका है वहाँ से आगे लिखें',
   aiStarterFillTemplate: 'दस्तावेज़ के प्लेसहोल्डर ढूँढ़कर भरें',
-  aiGskLoginBtn: 'ChatOffice में साइन इन करें',
+  aiGskLoginBtn: 'ChaAI Office में साइन इन करें',
   aiPanelTitle: 'AI सहायक',
   aiOpenAssistant: 'AI सहायक खोलें',
   aiSummarizeBtn: 'AI सारांश',
@@ -163,7 +163,7 @@ export const hi = {
   aiChatOfficeLoginBtn: 'साइन इन करें',
   aiNoModelErrorTitle: 'अभी कोई मॉडल उपलब्ध नहीं है',
   aiNoModelErrorBody:
-    'अपना प्रोवाइडर कॉन्फ़िगर करें (आपकी कुंजी, तुरंत उपयोग के लिए तैयार), या डिफ़ॉल्ट मॉडलों के लिए ChatOffice में साइन इन करें। खाते की आवश्यकता नहीं है।',
+    'अपना प्रोवाइडर कॉन्फ़िगर करें (आपकी कुंजी, तुरंत उपयोग के लिए तैयार), या डिफ़ॉल्ट मॉडलों के लिए ChaAI Office में साइन इन करें। खाते की आवश्यकता नहीं है।',
   aiOpenModelSettings: 'मॉडल सेटिंग्स खोलें',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

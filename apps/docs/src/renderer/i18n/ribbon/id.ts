@@ -137,7 +137,7 @@ export const id = {
   ribbonStylePaneTip: 'Panel Gaya: telusuri semua gaya, buat atau perbarui gaya dari pilihan',
   ribbonMoreStyles: 'Gaya lainnya',
   ribbonGroupStyles: 'Gaya',
-  ribbonAiAssistant: 'ChatOffice',
+  ribbonAiAssistant: 'ChaAI Office',
   ribbonAiAssistantTip: 'Buka asisten AI',
   ribbonRemoveTableStyleTip: 'Hapus gaya tabel',
   ribbonNoStyle: 'Tanpa Gaya',

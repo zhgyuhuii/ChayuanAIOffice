@@ -206,7 +206,7 @@ beforeEach(() => {
 describe('initial state', () => {
   it('starts with only the non-closable, active Home tab', () => {
     expect(manager.list()).toEqual([
-      { id: 'home', kind: 'home', title: 'ChatOffice', closable: false, active: true },
+      { id: 'home', kind: 'home', title: 'ChaAI Office', closable: false, active: true },
     ])
   })
 })
@@ -219,7 +219,7 @@ describe('opening tabs', () => {
     expect(tabs[1]).toMatchObject({
       id,
       kind: 'docs',
-      title: 'ChatOffice Docs',
+      title: 'ChaAI Office Docs',
       closable: true,
       active: true,
     })

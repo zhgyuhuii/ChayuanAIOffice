@@ -7,7 +7,7 @@ export const zhTW = {
   aiStarterPolishAll: '潤飾全文,使語氣更專業',
   aiStarterContinue: '接著現有內容往下寫',
   aiStarterFillTemplate: '找出並填寫文件裡的佔位符',
-  aiGskLoginBtn: '登入 ChatOffice',
+  aiGskLoginBtn: '登入 察元AIOffice',
   aiPanelTitle: 'AI 助手',
   aiOpenAssistant: '開啟 AI 助手',
   aiSummarizeBtn: 'AI 總結',
@@ -157,7 +157,7 @@ export const zhTW = {
   aiChatOfficeLoginBtn: '登入',
   aiNoModelErrorTitle: '還沒有可用的模型',
   aiNoModelErrorBody:
-    '設定一個自己的供應商（密鑰即用），或登入 ChatOffice 使用預設模型。全程無需帳號。',
+    '設定一個自己的供應商（密鑰即用），或登入 察元AIOffice 使用預設模型。全程無需帳號。',
   aiOpenModelSettings: '開啟模型設定',
   aiTabChat: 'चैट',
   aiTabAssistant: 'सहायक',

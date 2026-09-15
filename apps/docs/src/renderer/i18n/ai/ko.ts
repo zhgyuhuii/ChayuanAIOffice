@@ -7,7 +7,7 @@ export const ko = {
   aiStarterPolishAll: '전체 문서를 더 전문적인 어조로 다듬어 줘',
   aiStarterContinue: '지금 내용에 이어서 계속 써 줘',
   aiStarterFillTemplate: '문서의 자리 표시자를 찾아 채워 줘',
-  aiGskLoginBtn: 'ChatOffice 로그인',
+  aiGskLoginBtn: 'ChaAI Office 로그인',
   aiPanelTitle: 'AI 어시스턴트',
   aiOpenAssistant: 'AI 도우미 열기',
   aiSummarizeBtn: 'AI 요약',
@@ -161,7 +161,7 @@ export const ko = {
   aiChatOfficeLoginBtn: '로그인',
   aiNoModelErrorTitle: '아직 사용할 수 있는 모델이 없습니다',
   aiNoModelErrorBody:
-    '자체 공급자를 구성하거나(키만 있으면 바로 사용) ChatOffice에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.',
+    '자체 공급자를 구성하거나(키만 있으면 바로 사용) ChaAI Office에 로그인하여 기본 모델을 사용하세요. 계정이 필요 없습니다.',
   aiOpenModelSettings: '모델 설정 열기',
   aiTabChat: '채팅',
   aiTabAssistant: '어시스턴트',

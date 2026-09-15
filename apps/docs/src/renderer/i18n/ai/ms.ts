@@ -7,7 +7,7 @@ export const ms = {
   aiStarterPolishAll: 'Perhalusi keseluruhan dokumen dengan nada lebih profesional',
   aiStarterContinue: 'Teruskan menulis dari bahagian akhir dokumen',
   aiStarterFillTemplate: 'Cari dan isi ruang letak dalam dokumen ini',
-  aiGskLoginBtn: 'Log masuk ke ChatOffice',
+  aiGskLoginBtn: 'Log masuk ke ChaAI Office',
   aiPanelTitle: 'Pembantu AI',
   aiOpenAssistant: 'Buka pembantu AI',
   aiSummarizeBtn: 'Ringkasan AI',
@@ -164,7 +164,7 @@ export const ms = {
   aiChatOfficeLoginBtn: 'Log masuk',
   aiNoModelErrorTitle: 'Belum ada model tersedia',
   aiNoModelErrorBody:
-    'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChatOffice untuk model lalai. Tiada akaun diperlukan.',
+    'Konfigurasi penyedia anda sendiri (kunci anda, sedia digunakan), atau log masuk ke ChaAI Office untuk model lalai. Tiada akaun diperlukan.',
   aiOpenModelSettings: 'Buka Tetapan Model',
   aiTabChat: 'Sembang',
   aiTabAssistant: 'Pembantu',

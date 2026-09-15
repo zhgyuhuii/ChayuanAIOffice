@@ -245,13 +245,13 @@ export const zh = {
   appTabClear: '清除',
   // AI settings
   appAiSettings: 'AI 设置',
-  appGensparkAccount: 'ChatOffice 账号',
+  appGensparkAccount: '察元AIOffice 账号',
   appChecking: '检测中…',
   appLoggedIn: '已登录',
   appLoggedInEmail: '已登录：{email}',
-  appNotLoggedIn: '未登录（AI 功能需要登录 ChatOffice 账号）',
+  appNotLoggedIn: '未登录（AI 功能需要登录 察元AIOffice 账号）',
   appWaitingBrowserLogin: '等待浏览器登录…',
-  appLoginGenspark: '登录 ChatOffice',
+  appLoginGenspark: '登录 察元AIOffice',
   appModel: '模型',
   // Context menu
   appCut: '剪切',
@@ -375,6 +375,6 @@ export const zh = {
   appUpdateStyleTip: '用当前选区的格式更新此样式(写回 styles.xml)',
   appNewStyleFromSelection: '从当前选区新建样式',
   appStyleNamePlaceholder: '样式名称',
-  appChatOfficeAccount: "ChatOffice 账号",
-  appLoginChatOffice: "登录 ChatOffice",
+  appChatOfficeAccount: "察元AIOffice 账号",
+  appLoginChatOffice: "登录 察元AIOffice",
 }

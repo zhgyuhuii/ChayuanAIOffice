@@ -7,7 +7,7 @@ export const pl = {
   aiStarterPolishAll: 'Dopracuj cały dokument, nadając mu bardziej profesjonalny ton',
   aiStarterContinue: 'Kontynuuj pisanie od miejsca, w którym kończy się dokument',
   aiStarterFillTemplate: 'Znajdź i uzupełnij symbole zastępcze w dokumencie',
-  aiGskLoginBtn: 'Zaloguj się do ChatOffice',
+  aiGskLoginBtn: 'Zaloguj się do ChaAI Office',
   aiPanelTitle: 'Asystent AI',
   aiOpenAssistant: 'Otwórz asystenta AI',
   aiSummarizeBtn: 'Podsumowanie AI',
@@ -165,7 +165,7 @@ export const pl = {
   aiChatOfficeLoginBtn: 'Zaloguj się',
   aiNoModelErrorTitle: 'Brak dostępnych modeli',
   aiNoModelErrorBody:
-    'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChatOffice, aby korzystać z domyślnych modeli. Bez konta.',
+    'Skonfiguruj własnego dostawcę (twój klucz, gotowy do użycia) lub zaloguj się do ChaAI Office, aby korzystać z domyślnych modeli. Bez konta.',
   aiOpenModelSettings: 'Otwórz ustawienia modeli',
   aiTabChat: 'Czat',
   aiTabAssistant: 'Asystent',

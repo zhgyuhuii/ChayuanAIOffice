@@ -161,7 +161,7 @@ function addMarkup(pdfDoc: PDFDocument, page: PDFPage, m: MarkupInput): void {
     QuadPoints: m.quads.flat(),
     C: m.color,
     F: 4, // print
-    T: 'ChatOffice',
+    T: 'ChaAI Office',
     P: page.ref,
     AP: { N: apRef },
   })

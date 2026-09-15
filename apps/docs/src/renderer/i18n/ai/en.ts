@@ -7,7 +7,7 @@ export const en = {
   aiStarterPolishAll: 'Polish the whole document for a more professional tone',
   aiStarterContinue: 'Continue writing from where the document leaves off',
   aiStarterFillTemplate: 'Find and fill in the placeholders in this document',
-  aiGskLoginBtn: 'Sign in to ChatOffice',
+  aiGskLoginBtn: 'Sign in to ChaAI Office',
   aiPanelTitle: 'AI Assistant',
   aiOpenAssistant: 'Open AI assistant',
   aiSummarizeBtn: 'AI Summarize',
@@ -163,7 +163,7 @@ export const en = {
   aiChatOfficeLoginBtn: 'Sign in',
   aiNoModelErrorTitle: 'No model available yet',
   aiNoModelErrorBody:
-    'Configure your own provider (your key, ready to use), or sign in to ChatOffice for the default models. No account required.',
+    'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for the default models. No account required.',
   aiOpenModelSettings: 'Open Model Settings',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistant',

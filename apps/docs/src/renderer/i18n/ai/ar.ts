@@ -7,7 +7,7 @@ export const ar = {
   aiStarterPolishAll: 'حسّن صياغة المستند كاملًا بنبرة أكثر احترافية',
   aiStarterContinue: 'تابع الكتابة من حيث انتهى المستند',
   aiStarterFillTemplate: 'اعثر على العناصر النائبة في المستند واملأها',
-  aiGskLoginBtn: 'تسجيل الدخول إلى ChatOffice',
+  aiGskLoginBtn: 'تسجيل الدخول إلى ChaAI Office',
   aiPanelTitle: 'مساعد الذكاء الاصطناعي',
   aiOpenAssistant: 'فتح مساعد الذكاء الاصطناعي',
   aiSummarizeBtn: 'تلخيص AI',
@@ -161,7 +161,7 @@ export const ar = {
   aiChatOfficeLoginBtn: 'تسجيل الدخول',
   aiNoModelErrorTitle: 'لا يوجد نموذج متاح بعد',
   aiNoModelErrorBody:
-    'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) أو سجّل الدخول إلى ChatOffice للنماذج الافتراضية. لا حاجة إلى حساب.',
+    'هيّئ مزوّدك الخاص (مفتاحك، جاهز للاستخدام) أو سجّل الدخول إلى ChaAI Office للنماذج الافتراضية. لا حاجة إلى حساب.',
   aiOpenModelSettings: 'فتح إعدادات النماذج',
   aiTabChat: 'الدردشة',
   aiTabAssistant: 'المساعد',

@@ -309,7 +309,7 @@ if (headlessArgv.kind !== 'none') {
   app.dock?.hide()
 }
 
-// Product renames changed the userData path ("AI Office" → "ChatOffice"); migrate old user data once on each rename hop.
+// Product renames changed the userData path ("AI Office" → "ChatOffice" → "ChaAI Office"); migrate old user data once on each rename hop.
 if (app.isPackaged) {
   const newDir = app.getPath('userData')
   const newEmpty = !existsSync(newDir) || readdirSync(newDir).length === 0
@@ -662,16 +662,16 @@ const tMain = createI18n({
     thirdPartyNotices: '第三方软件声明',
     menuExportDocx: '导出为 Word…',
     menuExportDocxLocal: '导出为 Word（本地）…',
-    pdfDocxLoginMsg: '导出为 Word 需要登录 ChatOffice 账号。',
+    pdfDocxLoginMsg: '导出为 Word 需要登录 察元AIOffice 账号。',
     pdfDocxLoginDetail: '点击“登录”将打开浏览器完成授权，完成后请重新点击导出。',
     pdfDocxBtnLogin: '登录',
-    pdfDocxConfirmMsg: '将此 PDF 上传到 ChatOffice 云端转换为 Word？',
+    pdfDocxConfirmMsg: '将此 PDF 上传到 察元AIOffice 云端转换为 Word？',
     pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
     pdfDocxConfirmBalance: '当前余额 {balance} credits。',
     pdfDocxBtnConvert: '继续',
     btnCancel: '取消',
     pdfDocxFailedMsg: '导出为 Word 失败',
-    pdfDocxNoCliMsg: '无法登录 ChatOffice：缺少必需组件（chatoffice），请重新安装应用。',
+    pdfDocxNoCliMsg: '无法登录 察元AIOffice：缺少必需组件（chatoffice），请重新安装应用。',
     pdfDocxBusyMsg: '正在转换中，请等待当前导出完成。',
     menuExportPptx: '导出为 PPT…',
     pdfPptxFailedMsg: '导出为 PPT 失败',
@@ -752,11 +752,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Third-Party Notices',
     menuExportDocx: 'Export as Word…',
     menuExportDocxLocal: 'Export as Word（本地）…',
-    pdfDocxLoginMsg: 'Exporting as Word requires signing in to ChatOffice.',
+    pdfDocxLoginMsg: 'Exporting as Word requires signing in to ChaAI Office.',
     pdfDocxLoginDetail:
       'Clicking “Sign In” opens your browser to authorize; once done, click Export again.',
     pdfDocxBtnLogin: 'Sign In',
-    pdfDocxConfirmMsg: 'Upload this PDF to ChatOffice cloud and convert it to Word?',
+    pdfDocxConfirmMsg: 'Upload this PDF to ChaAI Office cloud and convert it to Word?',
     pdfDocxConfirmDetail:
       'The conversion costs 5 credits. The file will be uploaded for cloud processing.',
     pdfDocxConfirmBalance: 'Current balance: {balance} credits.',
@@ -764,7 +764,7 @@ const tMain = createI18n({
     btnCancel: 'Cancel',
     pdfDocxFailedMsg: 'Export as Word failed',
     pdfDocxNoCliMsg:
-      'Cannot sign in to ChatOffice: a required component (chatoffice) is missing. Please reinstall the app.',
+      'Cannot sign in to ChaAI Office: a required component (chatoffice) is missing. Please reinstall the app.',
     pdfDocxBusyMsg: 'A Word export is already in progress. Please wait for it to finish.',
     menuExportPptx: 'Export as PowerPoint…',
     pdfPptxFailedMsg: 'Export as PowerPoint failed',
@@ -853,11 +853,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'サードパーティソフトウェアに関する通知',
     menuExportDocx: 'Word として書き出す…',
     menuExportDocxLocal: 'Word として書き出す（本地）…',
-    pdfDocxLoginMsg: 'Word への書き出しには ChatOffice へのログインが必要です。',
+    pdfDocxLoginMsg: 'Word への書き出しには ChaAI Office へのログインが必要です。',
     pdfDocxLoginDetail:
       '「ログイン」をクリックするとブラウザで認証します。完了後、もう一度書き出しを実行してください。',
     pdfDocxBtnLogin: 'ログイン',
-    pdfDocxConfirmMsg: 'この PDF を ChatOffice クラウドにアップロードして Word に変換しますか？',
+    pdfDocxConfirmMsg: 'この PDF を ChaAI Office クラウドにアップロードして Word に変換しますか？',
     pdfDocxConfirmDetail:
       '変換には 5 クレジットを消費します。ファイルはクラウドにアップロードされ処理されます。',
     pdfDocxConfirmBalance: '現在の残高：{balance} クレジット。',
@@ -865,7 +865,7 @@ const tMain = createI18n({
     btnCancel: 'キャンセル',
     pdfDocxFailedMsg: 'Word への書き出しに失敗しました',
     pdfDocxNoCliMsg:
-      'ChatOffice にサインインできません：必要なコンポーネント（chatoffice）が見つかりません。アプリを再インストールしてください。',
+      'ChaAI Office にサインインできません：必要なコンポーネント（chatoffice）が見つかりません。アプリを再インストールしてください。',
     pdfDocxBusyMsg: 'Word への書き出しが進行中です。完了までお待ちください。',
     menuExportPptx: 'PowerPoint として書き出す…',
     pdfPptxFailedMsg: 'PowerPoint への書き出しに失敗しました',
@@ -954,11 +954,11 @@ const tMain = createI18n({
     thirdPartyNotices: '타사 소프트웨어 고지',
     menuExportDocx: 'Word로 내보내기…',
     menuExportDocxLocal: 'Word로 내보내기（本地）…',
-    pdfDocxLoginMsg: 'Word로 내보내려면 ChatOffice 로그인이 필요합니다.',
+    pdfDocxLoginMsg: 'Word로 내보내려면 ChaAI Office 로그인이 필요합니다.',
     pdfDocxLoginDetail:
       '“로그인”을 클릭하면 브라우저에서 인증합니다. 완료 후 내보내기를 다시 클릭하세요.',
     pdfDocxBtnLogin: '로그인',
-    pdfDocxConfirmMsg: '이 PDF를 ChatOffice 클라우드에 업로드하여 Word로 변환할까요?',
+    pdfDocxConfirmMsg: '이 PDF를 ChaAI Office 클라우드에 업로드하여 Word로 변환할까요?',
     pdfDocxConfirmDetail:
       '변환에는 5 크레딧이 소모됩니다. 파일은 클라우드로 업로드되어 처리됩니다.',
     pdfDocxConfirmBalance: '현재 잔액: {balance} 크레딧.',
@@ -966,7 +966,7 @@ const tMain = createI18n({
     btnCancel: '취소',
     pdfDocxFailedMsg: 'Word로 내보내기 실패',
     pdfDocxNoCliMsg:
-      'ChatOffice에 로그인할 수 없습니다. 필수 구성 요소(chatoffice)가 없습니다. 앱을 다시 설치해 주세요.',
+      'ChaAI Office에 로그인할 수 없습니다. 필수 구성 요소(chatoffice)가 없습니다. 앱을 다시 설치해 주세요.',
     pdfDocxBusyMsg: 'Word 내보내기가 이미 진행 중입니다. 완료될 때까지 기다려 주세요.',
     menuExportPptx: 'PowerPoint로 내보내기…',
     pdfPptxFailedMsg: 'PowerPoint 내보내기 실패',
@@ -1054,11 +1054,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Mentions relatives aux logiciels tiers',
     menuExportDocx: 'Exporter en Word…',
     menuExportDocxLocal: 'Exporter en Word（本地）…',
-    pdfDocxLoginMsg: "L'export en Word nécessite une connexion à ChatOffice.",
+    pdfDocxLoginMsg: "L'export en Word nécessite une connexion à ChaAI Office.",
     pdfDocxLoginDetail:
       "Cliquez sur « Se connecter » pour autoriser dans le navigateur, puis relancez l'export.",
     pdfDocxBtnLogin: 'Se connecter',
-    pdfDocxConfirmMsg: 'Téléverser ce PDF vers le cloud ChatOffice pour le convertir en Word ?',
+    pdfDocxConfirmMsg: 'Téléverser ce PDF vers le cloud ChaAI Office pour le convertir en Word ?',
     pdfDocxConfirmDetail:
       'La conversion coûte 5 crédits. Le fichier sera téléversé pour traitement dans le cloud.',
     pdfDocxConfirmBalance: 'Solde actuel : {balance} crédits.',
@@ -1066,7 +1066,7 @@ const tMain = createI18n({
     btnCancel: 'Annuler',
     pdfDocxFailedMsg: "Échec de l'export en Word",
     pdfDocxNoCliMsg:
-      "Connexion à ChatOffice impossible : un composant requis (chatoffice) est manquant. Veuillez réinstaller l'application.",
+      "Connexion à ChaAI Office impossible : un composant requis (chatoffice) est manquant. Veuillez réinstaller l'application.",
     pdfDocxBusyMsg: "Un export en Word est déjà en cours. Veuillez attendre qu'il se termine.",
     menuExportPptx: 'Exporter en PowerPoint…',
     pdfPptxFailedMsg: "Échec de l'exportation en PowerPoint",
@@ -1156,11 +1156,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Hinweise zu Drittanbietersoftware',
     menuExportDocx: 'Als Word exportieren…',
     menuExportDocxLocal: 'Als Word exportieren（本地）…',
-    pdfDocxLoginMsg: 'Für den Word-Export ist eine Anmeldung bei ChatOffice erforderlich.',
+    pdfDocxLoginMsg: 'Für den Word-Export ist eine Anmeldung bei ChaAI Office erforderlich.',
     pdfDocxLoginDetail:
       'Klicken Sie auf „Anmelden“, um die Autorisierung im Browser abzuschließen, und starten Sie den Export danach erneut.',
     pdfDocxBtnLogin: 'Anmelden',
-    pdfDocxConfirmMsg: 'Dieses PDF in die ChatOffice-Cloud hochladen und in Word konvertieren?',
+    pdfDocxConfirmMsg: 'Dieses PDF in die ChaAI Office-Cloud hochladen und in Word konvertieren?',
     pdfDocxConfirmDetail:
       'Die Konvertierung kostet 5 Credits. Die Datei wird zur Verarbeitung in die Cloud hochgeladen.',
     pdfDocxConfirmBalance: 'Aktuelles Guthaben: {balance} Credits.',
@@ -1168,7 +1168,7 @@ const tMain = createI18n({
     btnCancel: 'Abbrechen',
     pdfDocxFailedMsg: 'Word-Export fehlgeschlagen',
     pdfDocxNoCliMsg:
-      'Anmeldung bei ChatOffice nicht möglich: Eine erforderliche Komponente (chatoffice) fehlt. Bitte installieren Sie die App neu.',
+      'Anmeldung bei ChaAI Office nicht möglich: Eine erforderliche Komponente (chatoffice) fehlt. Bitte installieren Sie die App neu.',
     pdfDocxBusyMsg: 'Ein Word-Export läuft bereits. Bitte warten Sie, bis er abgeschlossen ist.',
     menuExportPptx: 'Als PowerPoint exportieren…',
     pdfPptxFailedMsg: 'Export als PowerPoint fehlgeschlagen',
@@ -1258,11 +1258,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Avisos de software de terceros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
-    pdfDocxLoginMsg: 'Para exportar como Word es necesario iniciar sesión en ChatOffice.',
+    pdfDocxLoginMsg: 'Para exportar como Word es necesario iniciar sesión en ChaAI Office.',
     pdfDocxLoginDetail:
       'Al hacer clic en «Iniciar sesión» se abrirá el navegador para autorizar; después, vuelve a hacer clic en Exportar.',
     pdfDocxBtnLogin: 'Iniciar sesión',
-    pdfDocxConfirmMsg: '¿Subir este PDF a la nube de ChatOffice para convertirlo a Word?',
+    pdfDocxConfirmMsg: '¿Subir este PDF a la nube de ChaAI Office para convertirlo a Word?',
     pdfDocxConfirmDetail:
       'La conversión cuesta 5 créditos. El archivo se subirá para procesarse en la nube.',
     pdfDocxConfirmBalance: 'Saldo actual: {balance} créditos.',
@@ -1270,7 +1270,7 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     pdfDocxFailedMsg: 'Error al exportar como Word',
     pdfDocxNoCliMsg:
-      'No se puede iniciar sesión en ChatOffice: falta un componente necesario (chatoffice). Reinstale la aplicación.',
+      'No se puede iniciar sesión en ChaAI Office: falta un componente necesario (chatoffice). Reinstale la aplicación.',
     pdfDocxBusyMsg: 'Ya hay una exportación a Word en curso. Espera a que termine.',
     menuExportPptx: 'Exportar como PowerPoint…',
     pdfPptxFailedMsg: 'Error al exportar como PowerPoint',
@@ -1360,18 +1360,18 @@ const tMain = createI18n({
     thirdPartyNotices: 'ประกาศเกี่ยวกับซอฟต์แวร์ของบุคคลที่สาม',
     menuExportDocx: 'ส่งออกเป็น Word…',
     menuExportDocxLocal: 'ส่งออกเป็น Word（本地）…',
-    pdfDocxLoginMsg: 'การส่งออกเป็น Word ต้องเข้าสู่ระบบ ChatOffice',
+    pdfDocxLoginMsg: 'การส่งออกเป็น Word ต้องเข้าสู่ระบบ ChaAI Office',
     pdfDocxLoginDetail:
       'คลิก “เข้าสู่ระบบ” เพื่อเปิดเบราว์เซอร์ยืนยันตัวตน เสร็จแล้วให้คลิกส่งออกอีกครั้ง',
     pdfDocxBtnLogin: 'เข้าสู่ระบบ',
-    pdfDocxConfirmMsg: 'อัปโหลด PDF นี้ไปยังคลาวด์ ChatOffice เพื่อแปลงเป็น Word หรือไม่?',
+    pdfDocxConfirmMsg: 'อัปโหลด PDF นี้ไปยังคลาวด์ ChaAI Office เพื่อแปลงเป็น Word หรือไม่?',
     pdfDocxConfirmDetail: 'การแปลงใช้ 5 เครดิต ไฟล์จะถูกอัปโหลดเพื่อประมวลผลบนคลาวด์',
     pdfDocxConfirmBalance: 'ยอดคงเหลือปัจจุบัน: {balance} เครดิต',
     pdfDocxBtnConvert: 'ดำเนินการต่อ',
     btnCancel: 'ยกเลิก',
     pdfDocxFailedMsg: 'ส่งออกเป็น Word ไม่สำเร็จ',
     pdfDocxNoCliMsg:
-      'ไม่สามารถลงชื่อเข้าใช้ ChatOffice ได้: ไม่พบคอมโพเนนต์ที่จำเป็น (chatoffice) โปรดติดตั้งแอปใหม่',
+      'ไม่สามารถลงชื่อเข้าใช้ ChaAI Office ได้: ไม่พบคอมโพเนนต์ที่จำเป็น (chatoffice) โปรดติดตั้งแอปใหม่',
     pdfDocxBusyMsg: 'กำลังส่งออกเป็น Word อยู่ โปรดรอให้เสร็จสิ้นก่อน',
     menuExportPptx: 'ส่งออกเป็น PowerPoint…',
     pdfPptxFailedMsg: 'การส่งออกเป็น PowerPoint ล้มเหลว',
@@ -1457,11 +1457,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Pemberitahuan Perangkat Lunak Pihak Ketiga',
     menuExportDocx: 'Ekspor sebagai Word…',
     menuExportDocxLocal: 'Ekspor sebagai Word（本地）…',
-    pdfDocxLoginMsg: 'Ekspor sebagai Word memerlukan login ke ChatOffice.',
+    pdfDocxLoginMsg: 'Ekspor sebagai Word memerlukan login ke ChaAI Office.',
     pdfDocxLoginDetail:
       'Klik “Masuk” untuk membuka browser dan memberi otorisasi; setelah selesai, klik Ekspor lagi.',
     pdfDocxBtnLogin: 'Masuk',
-    pdfDocxConfirmMsg: 'Unggah PDF ini ke cloud ChatOffice untuk dikonversi ke Word?',
+    pdfDocxConfirmMsg: 'Unggah PDF ini ke cloud ChaAI Office untuk dikonversi ke Word?',
     pdfDocxConfirmDetail:
       'Konversi ini menggunakan 5 kredit. File akan diunggah untuk diproses di cloud.',
     pdfDocxConfirmBalance: 'Saldo saat ini: {balance} kredit.',
@@ -1469,7 +1469,7 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     pdfDocxFailedMsg: 'Gagal mengekspor sebagai Word',
     pdfDocxNoCliMsg:
-      'Tidak dapat masuk ke ChatOffice: komponen yang diperlukan (chatoffice) tidak ditemukan. Silakan instal ulang aplikasi.',
+      'Tidak dapat masuk ke ChaAI Office: komponen yang diperlukan (chatoffice) tidak ditemukan. Silakan instal ulang aplikasi.',
     pdfDocxBusyMsg: 'Ekspor ke Word sedang berlangsung. Harap tunggu hingga selesai.',
     menuExportPptx: 'Ekspor sebagai PowerPoint…',
     pdfPptxFailedMsg: 'Gagal mengekspor sebagai PowerPoint',
@@ -1559,11 +1559,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Уведомления о стороннем ПО',
     menuExportDocx: 'Экспортировать в Word…',
     menuExportDocxLocal: 'Экспортировать в Word（本地）…',
-    pdfDocxLoginMsg: 'Для экспорта в Word требуется вход в ChatOffice.',
+    pdfDocxLoginMsg: 'Для экспорта в Word требуется вход в ChaAI Office.',
     pdfDocxLoginDetail:
       'Нажмите «Войти», чтобы авторизоваться в браузере, затем снова запустите экспорт.',
     pdfDocxBtnLogin: 'Войти',
-    pdfDocxConfirmMsg: 'Загрузить этот PDF в облако ChatOffice и конвертировать в Word?',
+    pdfDocxConfirmMsg: 'Загрузить этот PDF в облако ChaAI Office и конвертировать в Word?',
     pdfDocxConfirmDetail:
       'Конвертация стоит 5 кредитов. Файл будет загружен для обработки в облаке.',
     pdfDocxConfirmBalance: 'Текущий баланс: {balance} кредитов.',
@@ -1571,7 +1571,7 @@ const tMain = createI18n({
     btnCancel: 'Отмена',
     pdfDocxFailedMsg: 'Не удалось экспортировать в Word',
     pdfDocxNoCliMsg:
-      'Не удаётся войти в ChatOffice: отсутствует необходимый компонент (chatoffice). Переустановите приложение.',
+      'Не удаётся войти в ChaAI Office: отсутствует необходимый компонент (chatoffice). Переустановите приложение.',
     pdfDocxBusyMsg: 'Экспорт в Word уже выполняется. Дождитесь его завершения.',
     menuExportPptx: 'Экспортировать в PowerPoint…',
     pdfPptxFailedMsg: 'Не удалось экспортировать в PowerPoint',
@@ -1661,18 +1661,18 @@ const tMain = createI18n({
     thirdPartyNotices: 'إشعارات برامج الجهات الخارجية',
     menuExportDocx: 'تصدير كملف Word…',
     menuExportDocxLocal: 'تصدير كملف Word（本地）…',
-    pdfDocxLoginMsg: 'يتطلب التصدير كملف Word تسجيل الدخول إلى ChatOffice.',
+    pdfDocxLoginMsg: 'يتطلب التصدير كملف Word تسجيل الدخول إلى ChaAI Office.',
     pdfDocxLoginDetail:
       'انقر على «تسجيل الدخول» لفتح المتصفح وإتمام التفويض، ثم انقر على التصدير مرة أخرى.',
     pdfDocxBtnLogin: 'تسجيل الدخول',
-    pdfDocxConfirmMsg: 'رفع هذا الـ PDF إلى سحابة ChatOffice وتحويله إلى Word؟',
+    pdfDocxConfirmMsg: 'رفع هذا الـ PDF إلى سحابة ChaAI Office وتحويله إلى Word؟',
     pdfDocxConfirmDetail: 'يكلف التحويل 5 أرصدة. سيتم رفع الملف للمعالجة في السحابة.',
     pdfDocxConfirmBalance: 'الرصيد الحالي: {balance} من الأرصدة.',
     pdfDocxBtnConvert: 'متابعة',
     btnCancel: 'إلغاء',
     pdfDocxFailedMsg: 'فشل التصدير كملف Word',
     pdfDocxNoCliMsg:
-      'تعذّر تسجيل الدخول إلى ChatOffice: المكوّن المطلوب (chatoffice) مفقود. يُرجى إعادة تثبيت التطبيق.',
+      'تعذّر تسجيل الدخول إلى ChaAI Office: المكوّن المطلوب (chatoffice) مفقود. يُرجى إعادة تثبيت التطبيق.',
     pdfDocxBusyMsg: 'يجري حاليًا تصدير إلى Word. يُرجى الانتظار حتى يكتمل.',
     menuExportPptx: 'تصدير كملف PowerPoint…',
     pdfPptxFailedMsg: 'فشل التصدير كملف PowerPoint',
@@ -1758,11 +1758,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Avisos de software de terceiros',
     menuExportDocx: 'Exportar como Word…',
     menuExportDocxLocal: 'Exportar como Word（本地）…',
-    pdfDocxLoginMsg: 'Exportar como Word requer login no ChatOffice.',
+    pdfDocxLoginMsg: 'Exportar como Word requer login no ChaAI Office.',
     pdfDocxLoginDetail:
       'Clique em “Entrar” para autorizar no navegador; depois, clique em Exportar novamente.',
     pdfDocxBtnLogin: 'Entrar',
-    pdfDocxConfirmMsg: 'Enviar este PDF para a nuvem do ChatOffice e convertê-lo em Word?',
+    pdfDocxConfirmMsg: 'Enviar este PDF para a nuvem do ChaAI Office e convertê-lo em Word?',
     pdfDocxConfirmDetail:
       'A conversão custa 5 créditos. O arquivo será enviado para processamento na nuvem.',
     pdfDocxConfirmBalance: 'Saldo atual: {balance} créditos.',
@@ -1770,7 +1770,7 @@ const tMain = createI18n({
     btnCancel: 'Cancelar',
     pdfDocxFailedMsg: 'Falha ao exportar como Word',
     pdfDocxNoCliMsg:
-      'Não é possível iniciar sessão no ChatOffice: falta um componente necessário (chatoffice). Reinstale o aplicativo.',
+      'Não é possível iniciar sessão no ChaAI Office: falta um componente necessário (chatoffice). Reinstale o aplicativo.',
     pdfDocxBusyMsg: 'Já há uma exportação para Word em andamento. Aguarde a conclusão.',
     menuExportPptx: 'Exportar como PowerPoint…',
     pdfPptxFailedMsg: 'Falha ao exportar como PowerPoint',
@@ -1860,11 +1860,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Note sul software di terze parti',
     menuExportDocx: 'Esporta come Word…',
     menuExportDocxLocal: 'Esporta come Word（本地）…',
-    pdfDocxLoginMsg: 'Per esportare come Word è necessario accedere a ChatOffice.',
+    pdfDocxLoginMsg: 'Per esportare come Word è necessario accedere a ChaAI Office.',
     pdfDocxLoginDetail:
       'Fai clic su “Accedi” per autorizzare nel browser; al termine, fai di nuovo clic su Esporta.',
     pdfDocxBtnLogin: 'Accedi',
-    pdfDocxConfirmMsg: 'Caricare questo PDF sul cloud ChatOffice e convertirlo in Word?',
+    pdfDocxConfirmMsg: 'Caricare questo PDF sul cloud ChaAI Office e convertirlo in Word?',
     pdfDocxConfirmDetail:
       "La conversione costa 5 crediti. Il file verrà caricato per l'elaborazione nel cloud.",
     pdfDocxConfirmBalance: 'Saldo attuale: {balance} crediti.',
@@ -1872,7 +1872,7 @@ const tMain = createI18n({
     btnCancel: 'Annulla',
     pdfDocxFailedMsg: 'Esportazione in Word non riuscita',
     pdfDocxNoCliMsg:
-      "Impossibile accedere a ChatOffice: manca un componente necessario (chatoffice). Reinstallare l'app.",
+      "Impossibile accedere a ChaAI Office: manca un componente necessario (chatoffice). Reinstallare l'app.",
     pdfDocxBusyMsg: "Un'esportazione in Word è già in corso. Attendi il completamento.",
     menuExportPptx: 'Esporta come PowerPoint…',
     pdfPptxFailedMsg: 'Esportazione come PowerPoint non riuscita',
@@ -1962,11 +1962,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Informacje o oprogramowaniu innych firm',
     menuExportDocx: 'Eksportuj jako Word…',
     menuExportDocxLocal: 'Eksportuj jako Word（本地）…',
-    pdfDocxLoginMsg: 'Eksport do formatu Word wymaga zalogowania do ChatOffice.',
+    pdfDocxLoginMsg: 'Eksport do formatu Word wymaga zalogowania do ChaAI Office.',
     pdfDocxLoginDetail:
       'Kliknij „Zaloguj się”, aby autoryzować w przeglądarce; po zakończeniu kliknij Eksportuj ponownie.',
     pdfDocxBtnLogin: 'Zaloguj się',
-    pdfDocxConfirmMsg: 'Przesłać ten PDF do chmury ChatOffice i przekonwertować na Word?',
+    pdfDocxConfirmMsg: 'Przesłać ten PDF do chmury ChaAI Office i przekonwertować na Word?',
     pdfDocxConfirmDetail:
       'Konwersja kosztuje 5 kredytów. Plik zostanie przesłany do przetworzenia w chmurze.',
     pdfDocxConfirmBalance: 'Aktualne saldo: {balance} kredytów.',
@@ -1974,7 +1974,7 @@ const tMain = createI18n({
     btnCancel: 'Anuluj',
     pdfDocxFailedMsg: 'Eksport do formatu Word nie powiódł się',
     pdfDocxNoCliMsg:
-      'Nie można zalogować się do ChatOffice: brakuje wymaganego komponentu (chatoffice). Zainstaluj aplikację ponownie.',
+      'Nie można zalogować się do ChaAI Office: brakuje wymaganego komponentu (chatoffice). Zainstaluj aplikację ponownie.',
     pdfDocxBusyMsg: 'Eksport do formatu Word już trwa. Poczekaj na jego zakończenie.',
     menuExportPptx: 'Eksportuj jako PowerPoint…',
     pdfPptxFailedMsg: 'Eksport jako PowerPoint nie powiódł się',
@@ -2105,14 +2105,14 @@ const tMain = createI18n({
     errSaveDirUnusable:
       'Do vybrané složky nelze zapisovat a nelze ji použít jako výchozí umístění pro ukládání',
     menuExportDocxLocal: '导出为 Word（本地）…',
-    pdfDocxLoginMsg: '导出为 Word 需要登录 ChatOffice 账号。',
+    pdfDocxLoginMsg: '导出为 Word 需要登录 ChaAI Office 账号。',
     pdfDocxLoginDetail: '点击“登录”将打开浏览器完成授权，完成后请重新点击导出。',
     pdfDocxBtnLogin: '登录',
-    pdfDocxConfirmMsg: '将此 PDF 上传到 ChatOffice 云端转换为 Word？',
+    pdfDocxConfirmMsg: '将此 PDF 上传到 ChaAI Office 云端转换为 Word？',
     pdfDocxConfirmDetail: '本次转换将消耗 5 credits，文件将上传至云端处理。',
     pdfDocxConfirmBalance: '当前余额 {balance} credits。',
     pdfDocxBtnConvert: '继续',
-    pdfDocxNoCliMsg: '无法登录 ChatOffice：缺少必需组件（chatoffice），请重新安装应用。',
+    pdfDocxNoCliMsg: '无法登录 ChaAI Office：缺少必需组件（chatoffice），请重新安装应用。',
   },
   nl: {
     menuFile: 'Bestand',
@@ -2161,11 +2161,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Kennisgevingen over software van derden',
     menuExportDocx: 'Exporteren als Word…',
     menuExportDocxLocal: 'Exporteren als Word（本地）…',
-    pdfDocxLoginMsg: 'Exporteren als Word vereist inloggen bij ChatOffice.',
+    pdfDocxLoginMsg: 'Exporteren als Word vereist inloggen bij ChaAI Office.',
     pdfDocxLoginDetail:
       'Klik op “Inloggen” om in de browser te autoriseren; klik daarna opnieuw op Exporteren.',
     pdfDocxBtnLogin: 'Inloggen',
-    pdfDocxConfirmMsg: 'Deze PDF uploaden naar de ChatOffice-cloud en converteren naar Word?',
+    pdfDocxConfirmMsg: 'Deze PDF uploaden naar de ChaAI Office-cloud en converteren naar Word?',
     pdfDocxConfirmDetail:
       'De conversie kost 5 credits. Het bestand wordt geüpload voor verwerking in de cloud.',
     pdfDocxConfirmBalance: 'Huidig saldo: {balance} credits.',
@@ -2173,7 +2173,7 @@ const tMain = createI18n({
     btnCancel: 'Annuleren',
     pdfDocxFailedMsg: 'Exporteren als Word mislukt',
     pdfDocxNoCliMsg:
-      'Kan niet inloggen bij ChatOffice: een vereist onderdeel (chatoffice) ontbreekt. Installeer de app opnieuw.',
+      'Kan niet inloggen bij ChaAI Office: een vereist onderdeel (chatoffice) ontbreekt. Installeer de app opnieuw.',
     pdfDocxBusyMsg: 'Er is al een Word-export bezig. Wacht tot deze is voltooid.',
     menuExportPptx: 'Exporteren als PowerPoint…',
     pdfPptxFailedMsg: 'Exporteren als PowerPoint mislukt',
@@ -2263,11 +2263,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'Notis Perisian Pihak Ketiga',
     menuExportDocx: 'Eksport sebagai Word…',
     menuExportDocxLocal: 'Eksport sebagai Word（本地）…',
-    pdfDocxLoginMsg: 'Eksport sebagai Word memerlukan log masuk ke ChatOffice.',
+    pdfDocxLoginMsg: 'Eksport sebagai Word memerlukan log masuk ke ChaAI Office.',
     pdfDocxLoginDetail:
       'Klik “Log Masuk” untuk membuka pelayar dan memberi kebenaran; selepas selesai, klik Eksport sekali lagi.',
     pdfDocxBtnLogin: 'Log Masuk',
-    pdfDocxConfirmMsg: 'Muat naik PDF ini ke awan ChatOffice untuk ditukar kepada Word?',
+    pdfDocxConfirmMsg: 'Muat naik PDF ini ke awan ChaAI Office untuk ditukar kepada Word?',
     pdfDocxConfirmDetail:
       'Penukaran ini menggunakan 5 kredit. Fail akan dimuat naik untuk diproses di awan.',
     pdfDocxConfirmBalance: 'Baki semasa: {balance} kredit.',
@@ -2275,7 +2275,7 @@ const tMain = createI18n({
     btnCancel: 'Batal',
     pdfDocxFailedMsg: 'Gagal mengeksport sebagai Word',
     pdfDocxNoCliMsg:
-      'Tidak dapat log masuk ke ChatOffice: komponen yang diperlukan (chatoffice) tiada. Sila pasang semula aplikasi.',
+      'Tidak dapat log masuk ke ChaAI Office: komponen yang diperlukan (chatoffice) tiada. Sila pasang semula aplikasi.',
     pdfDocxBusyMsg: 'Eksport ke Word sedang dijalankan. Sila tunggu sehingga selesai.',
     menuExportPptx: 'Eksport sebagai PowerPoint…',
     pdfPptxFailedMsg: 'Eksport sebagai PowerPoint gagal',
@@ -2364,17 +2364,17 @@ const tMain = createI18n({
     thirdPartyNotices: 'הודעות על תוכנות צד שלישי',
     menuExportDocx: 'ייצוא כ-Word…',
     menuExportDocxLocal: 'ייצוא כ-Word（本地）…',
-    pdfDocxLoginMsg: 'ייצוא כ-Word דורש התחברות ל-ChatOffice.',
+    pdfDocxLoginMsg: 'ייצוא כ-Word דורש התחברות ל-ChaAI Office.',
     pdfDocxLoginDetail: 'לחיצה על ”התחברות” תפתח את הדפדפן לאישור; בסיום, לחצו שוב על ייצוא.',
     pdfDocxBtnLogin: 'התחברות',
-    pdfDocxConfirmMsg: 'להעלות את ה-PDF לענן של ChatOffice ולהמיר אותו ל-Word?',
+    pdfDocxConfirmMsg: 'להעלות את ה-PDF לענן של ChaAI Office ולהמיר אותו ל-Word?',
     pdfDocxConfirmDetail: 'ההמרה עולה 5 קרדיטים. הקובץ יועלה לעיבוד בענן.',
     pdfDocxConfirmBalance: 'יתרה נוכחית: {balance} קרדיטים.',
     pdfDocxBtnConvert: 'המשך',
     btnCancel: 'ביטול',
     pdfDocxFailedMsg: 'הייצוא כ-Word נכשל',
     pdfDocxNoCliMsg:
-      'לא ניתן להתחבר ל-ChatOffice: רכיב נדרש (chatoffice) חסר. נא להתקין מחדש את האפליקציה.',
+      'לא ניתן להתחבר ל-ChaAI Office: רכיב נדרש (chatoffice) חסר. נא להתקין מחדש את האפליקציה.',
     pdfDocxBusyMsg: 'ייצוא ל-Word כבר מתבצע. נא להמתין לסיומו.',
     menuExportPptx: 'ייצוא כ-PowerPoint…',
     pdfPptxFailedMsg: 'הייצוא כ-PowerPoint נכשל',
@@ -2461,11 +2461,11 @@ const tMain = createI18n({
     thirdPartyNotices: 'तृतीय-पक्ष सॉफ़्टवेयर सूचनाएँ',
     menuExportDocx: 'Word के रूप में निर्यात करें…',
     menuExportDocxLocal: 'Word के रूप में निर्यात करें（本地）…',
-    pdfDocxLoginMsg: 'Word के रूप में निर्यात करने के लिए ChatOffice में लॉगिन आवश्यक है।',
+    pdfDocxLoginMsg: 'Word के रूप में निर्यात करने के लिए ChaAI Office में लॉगिन आवश्यक है।',
     pdfDocxLoginDetail:
       '“लॉगिन” पर क्लिक करने से ब्राउज़र में प्राधिकरण खुलेगा; पूरा होने पर फिर से निर्यात पर क्लिक करें।',
     pdfDocxBtnLogin: 'लॉगिन',
-    pdfDocxConfirmMsg: 'इस PDF को ChatOffice क्लाउड पर अपलोड करके Word में बदलें?',
+    pdfDocxConfirmMsg: 'इस PDF को ChaAI Office क्लाउड पर अपलोड करके Word में बदलें?',
     pdfDocxConfirmDetail:
       'रूपांतरण में 5 क्रेडिट लगते हैं। फ़ाइल क्लाउड में प्रोसेसिंग के लिए अपलोड की जाएगी।',
     pdfDocxConfirmBalance: 'वर्तमान शेष: {balance} क्रेडिट।',
@@ -2473,7 +2473,7 @@ const tMain = createI18n({
     btnCancel: 'रद्द करें',
     pdfDocxFailedMsg: 'Word के रूप में निर्यात विफल रहा',
     pdfDocxNoCliMsg:
-      'ChatOffice में साइन इन नहीं किया जा सकता: आवश्यक घटक (chatoffice) मौजूद नहीं है। कृपया ऐप को फिर से इंस्टॉल करें।',
+      'ChaAI Office में साइन इन नहीं किया जा सकता: आवश्यक घटक (chatoffice) मौजूद नहीं है। कृपया ऐप को फिर से इंस्टॉल करें।',
     pdfDocxBusyMsg: 'Word के रूप में निर्यात पहले से चल रहा है। कृपया पूरा होने तक प्रतीक्षा करें।',
     menuExportPptx: 'PowerPoint के रूप में निर्यात करें…',
     pdfPptxFailedMsg: 'PowerPoint के रूप में निर्यात विफल रहा',
@@ -2563,16 +2563,16 @@ const tMain = createI18n({
     thirdPartyNotices: '第三方軟體聲明',
     menuExportDocx: '匯出為 Word…',
     menuExportDocxLocal: '匯出為 Word（本地）…',
-    pdfDocxLoginMsg: '匯出為 Word 需要登入 ChatOffice 帳號。',
+    pdfDocxLoginMsg: '匯出為 Word 需要登入 察元AIOffice 帳號。',
     pdfDocxLoginDetail: '點擊「登入」將開啟瀏覽器完成授權，完成後請重新點擊匯出。',
     pdfDocxBtnLogin: '登入',
-    pdfDocxConfirmMsg: '將此 PDF 上傳到 ChatOffice 雲端轉換為 Word？',
+    pdfDocxConfirmMsg: '將此 PDF 上傳到 察元AIOffice 雲端轉換為 Word？',
     pdfDocxConfirmDetail: '本次轉換將消耗 5 credits，檔案將上傳至雲端處理。',
     pdfDocxConfirmBalance: '目前餘額 {balance} credits。',
     pdfDocxBtnConvert: '繼續',
     btnCancel: '取消',
     pdfDocxFailedMsg: '匯出為 Word 失敗',
-    pdfDocxNoCliMsg: '無法登入 ChatOffice：缺少必要元件（chatoffice），請重新安裝應用程式。',
+    pdfDocxNoCliMsg: '無法登入 察元AIOffice：缺少必要元件（chatoffice），請重新安裝應用程式。',
     pdfDocxBusyMsg: '正在轉換中，請等待目前的匯出完成。',
     menuExportPptx: '匯出為 PPT…',
     pdfPptxFailedMsg: '匯出為 PPT 失敗',
@@ -2724,7 +2724,7 @@ function createShellWindow(): void {
     height: 900,
     minWidth: 980,
     minHeight: 600,
-    title: 'ChatOffice',
+    title: '察元AIOffice',
     icon: APP_ICON,
     // 全平台隐藏系统标题栏（自绘最小化/最大化/关闭：mac 左侧、win 右侧，位于 tab 条内）
     titleBarStyle: 'hidden' as const,
@@ -3352,7 +3352,7 @@ function newDocTab(): void {
 
 /** MCP: open a blank docs tab and return its webContents id, for the visible-editor bridge */
 function openBlankDocsTabForMcp(): number {
-  if (!tabManager) throw new Error('ChaAI Office is not ready')
+  if (!tabManager) throw new Error('察元AIOffice is not ready')
   const tabId = tabManager.openDocsTab(undefined, { newBlank: true })
   const view = tabManager.docsTabs().find((t) => t.id === tabId)
   if (!view) throw new Error('the new document tab could not be opened')

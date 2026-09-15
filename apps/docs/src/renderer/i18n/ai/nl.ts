@@ -7,7 +7,7 @@ export const nl = {
   aiStarterPolishAll: 'Werk het hele document bij naar een professionelere toon',
   aiStarterContinue: 'Schrijf verder waar het document ophoudt',
   aiStarterFillTemplate: 'Zoek en vul de tijdelijke aanduidingen in het document in',
-  aiGskLoginBtn: 'Aanmelden bij ChatOffice',
+  aiGskLoginBtn: 'Aanmelden bij ChaAI Office',
   aiPanelTitle: 'AI-assistent',
   aiOpenAssistant: 'AI-assistent openen',
   aiSummarizeBtn: 'AI-samenvatting',
@@ -166,7 +166,7 @@ export const nl = {
   aiChatOfficeLoginBtn: 'Aanmelden',
   aiNoModelErrorTitle: 'Nog geen model beschikbaar',
   aiNoModelErrorBody:
-    'Stel je eigen provider in (jouw sleutel, direct bruikbaar) of log in bij ChatOffice voor de standaardmodellen. Geen account nodig.',
+    'Stel je eigen provider in (jouw sleutel, direct bruikbaar) of log in bij ChaAI Office voor de standaardmodellen. Geen account nodig.',
   aiOpenModelSettings: 'Modelinstellingen openen',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistent',

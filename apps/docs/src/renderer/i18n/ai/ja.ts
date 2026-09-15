@@ -7,7 +7,7 @@ export const ja = {
   aiStarterPolishAll: '全文を推敲してよりプロフェッショナルな文体に',
   aiStarterContinue: '今の内容の続きを書いて',
   aiStarterFillTemplate: '文書内のプレースホルダーを見つけて埋めて',
-  aiGskLoginBtn: 'ChatOffice にサインイン',
+  aiGskLoginBtn: 'ChaAI Office にサインイン',
   aiPanelTitle: 'AI アシスタント',
   aiOpenAssistant: 'AI アシスタントを開く',
   aiSummarizeBtn: 'AI 要約',
@@ -164,7 +164,7 @@ export const ja = {
   aiChatOfficeLoginBtn: 'サインイン',
   aiNoModelErrorTitle: '利用可能なモデルがまだありません',
   aiNoModelErrorBody:
-    '独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChatOffice にサインインして既定のモデルを使ってください。アカウントは不要です。',
+    '独自のプロバイダーを設定する（キーがあればすぐ利用可）、または ChaAI Office にサインインして既定のモデルを使ってください。アカウントは不要です。',
   aiOpenModelSettings: 'モデル設定を開く',
   aiTabChat: 'チャット',
   aiTabAssistant: 'アシスタント',

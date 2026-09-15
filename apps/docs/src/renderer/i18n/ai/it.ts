@@ -8,7 +8,7 @@ export const it = {
   aiStarterPolishAll: "Rifinisci l\\'intero documento con un tono più professionale",
   aiStarterContinue: 'Continua a scrivere da dove il documento si interrompe',
   aiStarterFillTemplate: 'Trova e compila i segnaposto nel documento',
-  aiGskLoginBtn: 'Accedi a ChatOffice',
+  aiGskLoginBtn: 'Accedi a ChaAI Office',
   aiPanelTitle: 'Assistente IA',
   aiOpenAssistant: "Apri l\\'assistente IA",
   aiSummarizeBtn: 'Riassunto IA',
@@ -168,7 +168,7 @@ export const it = {
   aiChatOfficeLoginBtn: 'Accedi',
   aiNoModelErrorTitle: 'Nessun modello disponibile',
   aiNoModelErrorBody:
-    "Configura il tuo provider (la tua chiave, pronto all'uso) oppure accedi a ChatOffice per i modelli predefiniti. Nessun account richiesto.",
+    "Configura il tuo provider (la tua chiave, pronto all'uso) oppure accedi a ChaAI Office per i modelli predefiniti. Nessun account richiesto.",
   aiOpenModelSettings: 'Apri impostazioni modelli',
   aiTabChat: 'Chat',
   aiTabAssistant: 'Assistente',
