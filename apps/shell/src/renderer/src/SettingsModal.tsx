@@ -7,7 +7,7 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chatoffice/ui/ai-panel-prefs'
-import { discoverModels, setAiUserAgent } from '@chatoffice/ai-provider'
+import { discoverModels, setAiUserAgent } from '@chatoffice/ai-provider/browser'
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
