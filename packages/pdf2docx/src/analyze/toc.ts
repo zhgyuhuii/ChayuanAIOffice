@@ -53,7 +53,7 @@ export function hasDotLeaderRun(chars: readonly PdfChar[]): boolean {
   let i = 0
   while (i < chars.length) {
     const c = chars[i]!
-    if (c.text === '.' || c.text === '·') {
+    if (c.text === '.' || c.text === '·' || c.text === '_') {
       run++
       if (run >= LEADER_RUN_MIN_DOTS) armed = true
       i++

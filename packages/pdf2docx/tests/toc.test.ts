@@ -64,6 +64,15 @@ describe('hasDotLeaderRun', () => {
     expect(hasDotLeaderRun(dotLeaderChars('Intro', 'XII', 700))).toBe(true)
   })
 
+  it('accepts underscore leaders some producers emit', () => {
+    const chars = [
+      ...mkText('Intro', 72, { y: 700 }).chars,
+      ...mkText('____', 200, { y: 700 }).chars,
+      ...mkText('28', 500, { y: 700 }).chars,
+    ]
+    expect(hasDotLeaderRun(chars)).toBe(true)
+  })
+
   it('rejects dotted fill-in lines with no page number', () => {
     expect(hasDotLeaderRun(mkText('Name: ......', 72).chars)).toBe(false)
   })
