@@ -53,6 +53,23 @@ export interface AutoSaveDefault {
   updatedAt: number
 }
 
+/** local MCP server state (persisted in userData/app-settings.json) */
+export interface McpStatus {
+  running: boolean
+  enabled: boolean
+  port: number
+  /** headless generation (create_docx without opening the UI) is allowed */
+  background: boolean
+  /** server/tool activity is recorded to the local log file */
+  logging: boolean
+  /** base URL when running, else null */
+  url: string | null
+  /** capability families the running build exposes, e.g. ['docs', 'slides'] */
+  capabilities: string[]
+  /** present when the last start attempt failed (e.g. port in use) */
+  error?: string
+}
+
 /** a recent file entry shown on the home screen; type derives from the extension */
 export interface RecentEntry {
   path: string
@@ -189,6 +206,21 @@ export interface HomeApi {
   getAutoSaveDefault(): Promise<AutoSaveDefault>
   /** persist the AutoSave default; broadcasts 'app:auto-save-default-changed' to all web contents */
   setAutoSaveDefault(on: boolean): Promise<void>
+  /** current local MCP server state (running/enabled/port/url) */
+  getMcpStatus(): Promise<McpStatus>
+  /** enable/disable the MCP server and/or change its port/background/logging; applies and persists, returns the new state */
+  setMcpSettings(patch: {
+    enabled?: boolean
+    port?: number
+    background?: boolean
+    logging?: boolean
+  }): Promise<McpStatus>
+  /** last MCP log lines (empty when logging has never been on) */
+  getMcpLogs(): Promise<string[]>
+  /** truncate the MCP log file */
+  clearMcpLogs(): Promise<void>
+  /** reveal the MCP log file in the file manager (created empty when missing) */
+  openMcpLogFile(): Promise<void>
   /** whether anonymous usage statistics are enabled (default true in official builds) */
   getAnalyticsEnabled(): Promise<boolean>
   /** persist an explicit analytics opt-in or opt-out */
@@ -492,6 +524,11 @@ export const HOME_CHANNELS = {
   setTheme: 'home:set-theme',
   getAutoSaveDefault: 'home:get-auto-save-default',
   setAutoSaveDefault: 'home:set-auto-save-default',
+  getMcpStatus: 'home:get-mcp-status',
+  setMcpSettings: 'home:set-mcp-settings',
+  getMcpLogs: 'home:get-mcp-logs',
+  clearMcpLogs: 'home:clear-mcp-logs',
+  openMcpLogFile: 'home:open-mcp-log-file',
   getAnalyticsEnabled: 'home:get-analytics-enabled',
   setAnalyticsEnabled: 'home:set-analytics-enabled',
   getAiPanelPrefs: 'home:get-ai-panel-prefs',

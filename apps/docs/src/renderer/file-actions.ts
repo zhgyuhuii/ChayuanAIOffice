@@ -770,6 +770,7 @@ export function save(
   saveAs: boolean,
   auto = false,
   newDocName?: string,
+  explicitTarget?: ExplicitSaveTarget,
 ): Promise<boolean> {
   // A save arriving mid-flight waits for the current one instead of failing.
   // Reuse the finished pass only when it left nothing behind — judged by the
@@ -778,9 +779,16 @@ export function save(
   // saveOnce resolves a stale pathless snapshot via pathlessDocSavedPath, so
   // the retry can no longer create a duplicate file.
   return runSerializedSave(
-    () => saveOnce(ctx, saveAs, auto, newDocName),
-    () => !saveAs && !ctx.saveIncompleteRef.current && !isDocDirty(ctx),
+    () => saveOnce(ctx, saveAs, auto, newDocName, explicitTarget),
+    // an explicit MCP target must always write, never reuse an earlier pass
+    () => !saveAs && !explicitTarget && !ctx.saveIncompleteRef.current && !isDocDirty(ctx),
   )
+}
+
+/** an MCP-driven explicit output target: write to this absolute path, no dialog */
+export interface ExplicitSaveTarget {
+  path: string
+  overwrite: boolean
 }
 
 /** the parsed fragment flags every node aiChanged (yellow highlight); a boot-time fill is not a reviewable AI edit */
@@ -931,6 +939,7 @@ async function saveOnce(
   saveAs: boolean,
   auto: boolean,
   newDocName?: string,
+  explicitTarget?: ExplicitSaveTarget,
 ): Promise<boolean> {
   const { doc, editor } = ctx
   if (!doc || !editor) return false
@@ -957,7 +966,21 @@ async function saveOnce(
     // already landed on disk — overwrite that file instead of creating another
     let savedPath = doc.filePath ?? pathlessDocSavedPath
     let passwordIntentPending = false
-    if (saveAs || !savedPath) {
+    if (explicitTarget) {
+      // MCP-driven explicit output: no dialog, no derived name — always write to
+      // the caller's path (overwrite policy is enforced in the main process).
+      const result = await window.desktop.saveDocxTo(
+        explicitTarget.path,
+        buffer,
+        explicitTarget.overwrite,
+      )
+      if (!result.ok) {
+        ctx.setStatus(t('appSaveFailed', { error: result.error ?? '' }))
+        showToast(t('appSaveFailed', { error: result.error ?? '' }), 'error')
+        return false
+      }
+      savedPath = result.path!
+    } else if (saveAs || !savedPath) {
       // A never-saved document still called "Untitled" gets a name derived from its first heading
       const autoName =
         !doc.filePath && doc.fileName === t('appUntitledDocx') ? deriveAutoFileName(editor) : null

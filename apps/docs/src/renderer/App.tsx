@@ -301,6 +301,7 @@ import {
   type PendingPdfExport,
 } from './file-actions'
 import { runHeadlessDocumentExport } from './headless-export'
+import { installMcpBridge } from './mcp-bridge'
 import {
   allocateListNumId as allocateListNumIdImpl,
   continueNumbering as continueNumberingImpl,
@@ -1551,6 +1552,13 @@ export function App() {
     }, 30_000)
     return () => window.clearInterval(timer)
   }, [tornDown])
+
+  // MCP bridge: let an external agent drive this visible editor. Commands arrive
+  // from the shell main process and run against the live ctx (refs refresh per render).
+  useEffect(() => {
+    if (tornDown || !editor) return
+    return installMcpBridge({ getCtx: () => fileCtxRef.current })
+  }, [tornDown, editor])
 
   // Recompute the document-level line-height factor while editing:
   // docStyleCss decides it once at parse time, so typing CJK into a blank document

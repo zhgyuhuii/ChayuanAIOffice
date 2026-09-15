@@ -114,6 +114,16 @@ const api: DesktopApi = {
     ipcRenderer.invoke('docs:save-as', defaultName, data, sourcePath ?? null),
   saveDocxNew: (defaultName: string, data: ArrayBuffer) =>
     ipcRenderer.invoke('docs:save-new', defaultName, data),
+  saveDocxTo: (path: string, data: ArrayBuffer, overwrite: boolean) =>
+    ipcRenderer.invoke('docs:save-to', path, data, overwrite === true),
+  onMcpCommand: (handler) => {
+    const listener = (_event: IpcRendererEvent, message: Parameters<typeof handler>[0]) =>
+      handler(message)
+    ipcRenderer.on('docs:mcp-command', listener)
+    return () => ipcRenderer.removeListener('docs:mcp-command', listener)
+  },
+  reportMcpResult: (result) => ipcRenderer.send('docs:mcp-result', result),
+  signalMcpReady: () => ipcRenderer.send('docs:mcp-ready'),
   getRecentFiles: () => ipcRenderer.invoke('docs:recent'),
   pickImage: () => ipcRenderer.invoke('docs:pick-image'),
   fontMetrics: (family: string) => ipcRenderer.invoke('docs:font-metrics', family),

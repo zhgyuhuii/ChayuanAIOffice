@@ -211,6 +211,71 @@ const homeApi: HomeApi = {
     if (typeof on !== 'boolean') throw new Error('Invalid AutoSave default.')
     await ipcRenderer.invoke(HOME_CHANNELS.setAutoSaveDefault, on)
   },
+  async getMcpStatus() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getMcpStatus)
+    const r = result as {
+      running?: unknown
+      enabled?: unknown
+      port?: unknown
+      background?: unknown
+      logging?: unknown
+      url?: unknown
+      capabilities?: unknown
+      error?: unknown
+    } | null
+    return {
+      running: r?.running === true,
+      enabled: r?.enabled === true,
+      port: typeof r?.port === 'number' ? r.port : 3093,
+      background: r?.background === true,
+      logging: r?.logging === true,
+      url: typeof r?.url === 'string' ? r.url : null,
+      capabilities: Array.isArray(r?.capabilities)
+        ? r.capabilities.filter((c): c is string => typeof c === 'string')
+        : ['docs'],
+      ...(typeof r?.error === 'string' ? { error: r.error } : {}),
+    }
+  },
+  async setMcpSettings(patch: {
+    enabled?: boolean
+    port?: number
+    background?: boolean
+    logging?: boolean
+  }) {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.setMcpSettings, patch)
+    const r = result as {
+      running?: unknown
+      enabled?: unknown
+      port?: unknown
+      background?: unknown
+      logging?: unknown
+      url?: unknown
+      capabilities?: unknown
+      error?: unknown
+    } | null
+    return {
+      running: r?.running === true,
+      enabled: r?.enabled === true,
+      port: typeof r?.port === 'number' ? r.port : 3093,
+      background: r?.background === true,
+      logging: r?.logging === true,
+      url: typeof r?.url === 'string' ? r.url : null,
+      capabilities: Array.isArray(r?.capabilities)
+        ? r.capabilities.filter((c): c is string => typeof c === 'string')
+        : ['docs'],
+      ...(typeof r?.error === 'string' ? { error: r.error } : {}),
+    }
+  },
+  async getMcpLogs() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getMcpLogs)
+    return Array.isArray(result) ? result.filter((l): l is string => typeof l === 'string') : []
+  },
+  async clearMcpLogs() {
+    await ipcRenderer.invoke(HOME_CHANNELS.clearMcpLogs)
+  },
+  async openMcpLogFile() {
+    await ipcRenderer.invoke(HOME_CHANNELS.openMcpLogFile)
+  },
   async getAnalyticsEnabled() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAnalyticsEnabled)
     return result !== false
