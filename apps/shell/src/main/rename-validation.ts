@@ -16,7 +16,7 @@ export function isValidRenameName(name: string): boolean {
   if (RENAME_ILLEGAL_NAME_CHARS.test(name)) return false
   // Windows strips trailing dots/spaces: renaming to "file." lands elsewhere,
   // so reject with the localized gate instead of a surprising rename.
-  if (name.endsWith('.')) return false
+  if (name.endsWith('.') || name.endsWith(' ')) return false
   if (RENAME_RESERVED_BASE.test(name)) return false
   return true
 }
