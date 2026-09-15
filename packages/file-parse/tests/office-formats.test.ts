@@ -1,6 +1,8 @@
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import JSZip from 'jszip'
 import { parseFileToText } from '../src/index'
+import { pptxToText } from '../src/pptx'
 import {
   buildDocxFixture,
   buildPptxFixture,
@@ -83,6 +85,21 @@ describe('parseFileToText: pptx', () => {
     expect(result.text).not.toMatch(/Before\n[^\S\n]/)
     // and the comment the slide carries is markup, not text
     expect(result.text).not.toContain('authoring note')
+  })
+
+  it('keeps a:tab as a tab between runs', async () => {
+    const zip = new JSZip()
+    zip.file(
+      'ppt/slides/slide1.xml',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" ' +
+        'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">' +
+        '<p:cSld><p:spTree><p:sp><p:txBody><a:p>' +
+        '<a:r><a:t>Col1</a:t></a:r><a:tab/><a:r><a:t>Col2</a:t></a:r>' +
+        '</a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>',
+    )
+    const bytes = await zip.generateAsync({ type: 'uint8array' })
+    expect(await pptxToText(bytes)).toContain('Col1\tCol2')
   })
 })
 
