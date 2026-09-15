@@ -329,6 +329,12 @@ describe('modelLacksVision', () => {
     expect(modelLacksVision('deep-seek-v4-flash-vision-exp-openrouter')).toBe(false)
     expect(modelLacksVision('claude-opus-4-7')).toBe(false)
   })
+
+  it('matches case-insensitively like its sibling matchers', () => {
+    expect(modelLacksVision('DeepSeek-V4-Pro')).toBe(true)
+    expect(modelLacksVision('DEEPSEEK-V4-FLASH')).toBe(true)
+    expect(modelLacksVision('DeepSeek-V4-Flash-Vision-Exp')).toBe(false)
+  })
 })
 
 describe('modelEchoesReasoning', () => {

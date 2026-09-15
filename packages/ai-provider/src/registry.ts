@@ -63,7 +63,7 @@ export function modelHasFixedSampling(model: string): boolean {
  * excluded so the direct Vision Exp model can receive screenshots.
  */
 export function modelLacksVision(model: string): boolean {
-  return /(^|\/)deep-?seek-v4-(?:pro(?:$|-)|flash(?!-vision))/.test(model)
+  return /(^|\/)deep-?seek-v4-(?:pro(?:$|-)|flash(?!-vision))/i.test(model)
 }
 
 /**
@@ -108,7 +108,8 @@ function opencodeEndpoint(
     // a stored base URL replaces the gateway root; the documented `/v1` API base is tolerated
     const base = (config.baseUrl || root).replace(/\/+$/, '').replace(/\/v1$/, '')
     const model = config.model ?? ''
-    const omit = model !== '' && (modelHasFixedSampling(model) || model.toLowerCase().startsWith('kimi-'))
+    const omit =
+      model !== '' && (modelHasFixedSampling(model) || model.toLowerCase().startsWith('kimi-'))
     const sampling = omit ? { omitTemperature: true as const } : {}
     if (routes.anthropic.test(model)) return { protocol: 'anthropic', baseUrl: base, ...sampling }
     if (routes.gemini?.test(model)) {
