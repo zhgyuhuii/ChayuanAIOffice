@@ -28,9 +28,9 @@ export interface IntegrationsDeps {
   settingsPath: () => string
   /** the shell window dialogs attach to */
   window: () => BrowserWindow | null
-  /** directory holding chatoffice / chatoffice.cmd and, packaged, skills/chatoffice/SKILL.md */
+  /** directory holding chaoffice / chaoffice.cmd and, packaged, skills/chaoffice/SKILL.md */
   cliDir: string
-  /** skills/chatoffice/SKILL.md (repo file in dev, Resources/cli/skills/... packaged) */
+  /** skills/chaoffice/SKILL.md (repo file in dev, Resources/cli/skills/... packaged) */
   skillPath: string
   /** packages/cli/package.json (its version is the CLI version) */
   cliPackageJson: string
@@ -50,7 +50,7 @@ export function registerIntegrationsIpc(deps: IntegrationsDeps): void {
   ipcMain.handle(INTEGRATIONS_CHANNELS.status, (): IntegrationsStatus => {
     const skill = bundled()
     const l = ledger()
-    const launcher = join(deps.cliDir, process.platform === 'win32' ? 'chatoffice.cmd' : 'chatoffice')
+    const launcher = join(deps.cliDir, process.platform === 'win32' ? 'chaoffice.cmd' : 'chaoffice')
     return {
       cli: {
         ...inspectCliLink({ launcher }),
@@ -107,7 +107,7 @@ export function registerIntegrationsIpc(deps: IntegrationsDeps): void {
       const skill = bundled()
       const opts: Electron.SaveDialogOptions = {
         title: String(title ?? ''),
-        defaultPath: join(app.getPath('downloads'), `chatoffice-skill-${skill.version}.zip`),
+        defaultPath: join(app.getPath('downloads'), `chaoffice-skill-${skill.version}.zip`),
         filters: [{ name: 'ZIP', extensions: ['zip'] }],
       }
       const win = deps.window()

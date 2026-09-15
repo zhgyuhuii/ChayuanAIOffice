@@ -9,20 +9,20 @@ describe('installCliLink', () => {
     const dir = tempDir()
     const bin = join(dir, 'bin')
     mkdirSync(bin)
-    const launcher = join(dir, 'app', 'chatoffice')
+    const launcher = join(dir, 'app', 'chaoffice')
     mkdirSync(join(dir, 'app'))
     writeFileSync(launcher, '#!/bin/sh\n')
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [bin] }).status).toBe(
       'missing',
     )
     const first = installCliLink({ launcher, platform: 'linux', candidateDirs: [bin] })
-    expect(first).toEqual({ status: 'linked', location: join(bin, 'chatoffice') })
-    expect(readlinkSync(join(bin, 'chatoffice'))).toBe(launcher)
+    expect(first).toEqual({ status: 'linked', location: join(bin, 'chaoffice') })
+    expect(readlinkSync(join(bin, 'chaoffice'))).toBe(launcher)
     const again = installCliLink({ launcher, platform: 'linux', candidateDirs: [bin] })
     expect(again.status).toBe('present')
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [bin] })).toEqual({
       status: 'present',
-      location: join(bin, 'chatoffice'),
+      location: join(bin, 'chaoffice'),
     })
   })
 
@@ -30,26 +30,26 @@ describe('installCliLink', () => {
     const dir = tempDir()
     const bin = join(dir, 'bin')
     mkdirSync(bin)
-    const launcher = join(dir, 'new-app', 'cli', 'chatoffice')
+    const launcher = join(dir, 'new-app', 'cli', 'chaoffice')
     mkdirSync(join(dir, 'new-app', 'cli'), { recursive: true })
     writeFileSync(launcher, '')
-    symlinkSync(join(dir, 'old-app', 'cli', 'chatoffice'), join(bin, 'chatoffice'))
+    symlinkSync(join(dir, 'old-app', 'cli', 'chaoffice'), join(bin, 'chaoffice'))
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [bin] }).status).toBe(
       'missing',
     )
     expect(installCliLink({ launcher, platform: 'linux', candidateDirs: [bin] }).status).toBe(
       'linked',
     )
-    expect(readlinkSync(join(bin, 'chatoffice'))).toBe(launcher)
+    expect(readlinkSync(join(bin, 'chaoffice'))).toBe(launcher)
 
     const npm = join(dir, 'npm-bin')
     mkdirSync(npm)
-    const npmTarget = join(dir, 'lib', 'node_modules', 'chatoffice', 'bin', 'chatoffice.js')
-    symlinkSync(npmTarget, join(npm, 'chatoffice'))
+    const npmTarget = join(dir, 'lib', 'node_modules', 'chaoffice', 'bin', 'chaoffice.js')
+    symlinkSync(npmTarget, join(npm, 'chaoffice'))
     expect(installCliLink({ launcher, platform: 'linux', candidateDirs: [npm] }).status).toBe(
       'occupied',
     )
-    expect(readlinkSync(join(npm, 'chatoffice'))).toBe(npmTarget)
+    expect(readlinkSync(join(npm, 'chaoffice'))).toBe(npmTarget)
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [npm] }).status).toBe(
       'occupied',
     )
@@ -57,22 +57,22 @@ describe('installCliLink', () => {
     mkdirSync(spare)
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [npm, spare] })).toEqual({
       status: 'missing',
-      location: join(spare, 'chatoffice'),
+      location: join(spare, 'chaoffice'),
       manual: expect.any(String),
     })
     expect(installCliLink({ launcher, platform: 'linux', candidateDirs: [npm, spare] })).toEqual({
       status: 'linked',
-      location: join(spare, 'chatoffice'),
+      location: join(spare, 'chaoffice'),
     })
 
     const taken = join(dir, 'taken')
     mkdirSync(taken)
-    writeFileSync(join(taken, 'chatoffice'), 'someone else')
+    writeFileSync(join(taken, 'chaoffice'), 'someone else')
     const occupied = installCliLink({ launcher, platform: 'linux', candidateDirs: [taken] })
     expect(occupied.status).toBe('occupied')
     expect(occupied.manual).toContain('sudo')
     expect(occupied.manual).toContain('ln -sf')
-    expect(lstatSync(join(taken, 'chatoffice')).isSymbolicLink()).toBe(false)
+    expect(lstatSync(join(taken, 'chaoffice')).isSymbolicLink()).toBe(false)
     expect(inspectCliLink({ launcher, platform: 'linux', candidateDirs: [taken] }).status).toBe(
       'occupied',
     )
@@ -97,7 +97,7 @@ describe('installCliLink', () => {
     const absent = join(dir, 'no-such-bin')
     const r = installCliLink({ launcher, platform: 'linux', candidateDirs: [absent] })
     expect(r.status).toBe('unwritable')
-    expect(r.location).toBe(join(absent, 'chatoffice'))
+    expect(r.location).toBe(join(absent, 'chaoffice'))
     expect(r.manual).toContain('mkdir -p /usr/local/bin')
     expect(defaultCandidateDirs('darwin')[0]).toBe('/usr/local/bin')
 
@@ -107,7 +107,7 @@ describe('installCliLink', () => {
     expect(inspectCliLink({ launcher, platform: 'darwin', candidateDirs: [absent, brew] })).toEqual(
       {
         status: 'missing',
-        location: join(brew, 'chatoffice'),
+        location: join(brew, 'chaoffice'),
         manual: expect.stringContaining('ln -sf'),
       },
     )

@@ -97,7 +97,7 @@ export function createCliRunner(paths: CliRunnerPaths): CliRunner {
         }
         const timer = setTimeout(() => {
           child.kill()
-          finish({ ok: false, code: -1, stdout, stderr: `${stderr}\nchatoffice timed out` })
+          finish({ ok: false, code: -1, stdout, stderr: `${stderr}\nchaoffice timed out` })
         }, timeoutMs)
         child.stdout?.on('data', (chunk: Buffer) => (stdout += chunk.toString()))
         child.stderr?.on('data', (chunk: Buffer) => (stderr += chunk.toString()))
@@ -125,5 +125,5 @@ export function createCliRunner(paths: CliRunnerPaths): CliRunner {
 export function cliErrorMessage(outcome: CliRunOutcome): string {
   if (outcome.json && outcome.json.status === 'error') return outcome.json.message
   const detail = outcome.stderr.trim() || outcome.stdout.trim()
-  return detail ? `chatoffice failed: ${detail}` : `chatoffice exited with code ${outcome.code}`
+  return detail ? `chaoffice failed: ${detail}` : `chaoffice exited with code ${outcome.code}`
 }

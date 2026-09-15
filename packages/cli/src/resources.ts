@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Two layouts: packaged (Resources/cli/chatoffice.cjs next to Resources/wasm,
+ * Two layouts: packaged (Resources/cli/chaoffice.cjs next to Resources/wasm,
  * Resources/native, Resources/ocr — see apps/shell/electron-builder.cjs) and
  * the dev checkout (packages/cli/{src,dist} inside the monorepo).
  */
@@ -106,6 +106,9 @@ function installedAppBinaries(env: NodeJS.ProcessEnv): string[] {
   switch (process.platform) {
     case 'darwin':
       return [
+        '/Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office',
+        join(homedir(), 'Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office'),
+        // pre-rename installs keep the old bundle name
         '/Applications/ChatOffice.app/Contents/MacOS/ChatOffice',
         join(homedir(), 'Applications/ChatOffice.app/Contents/MacOS/ChatOffice'),
       ]

@@ -16,8 +16,8 @@ import {
   type SkillLedger,
 } from '../src/main/agent-skills'
 
-const skillText = (version: string, body = 'Run `chatoffice --version` first.') =>
-  `---\nname: chatoffice\ndescription: test\nmetadata:\n  version: ${version}\n  cli: '>=0.4.0'\n---\n\n${body}\n`
+const skillText = (version: string, body = 'Run `chaoffice --version` first.') =>
+  `---\nname: chaoffice\ndescription: test\nmetadata:\n  version: ${version}\n  cli: '>=0.4.0'\n---\n\n${body}\n`
 
 const bundled = (version = '1.2.0') => bundledSkillFrom(Buffer.from(skillText(version)))
 
@@ -46,7 +46,7 @@ describe('detectAgents', () => {
 describe('parseSkillFrontmatter / compareVersions', () => {
   it('reads name and metadata.version', () => {
     expect(parseSkillFrontmatter(skillText('2.1.0'))).toEqual({
-      name: 'chatoffice',
+      name: 'chaoffice',
       version: '2.1.0',
     })
     expect(parseSkillFrontmatter('---\nname: other\n---\nx')).toEqual({
@@ -73,7 +73,7 @@ describe('readInstallState', () => {
 
     // our install, current
     const path = installSkill(dir, b, ledger)
-    expect(path).toBe(join(dir, 'chatoffice', 'SKILL.md'))
+    expect(path).toBe(join(dir, 'chaoffice', 'SKILL.md'))
     expect(readFileSync(path, 'utf-8')).toBe(b.text)
     expect(ledger[path]).toMatchObject({ version: '1.2.0', sha256: b.sha256, channel: 'app' })
     expect(readInstallState(dir, b, ledger)).toMatchObject({
@@ -112,7 +112,7 @@ describe('readInstallState', () => {
     // the folder holds something else
     writeFileSync(path, '---\nname: other-skill\n---\n')
     expect(readInstallState(dir, b, ledger).status).toBe('occupied')
-    mkdirSync(join(dir, 'chatoffice', 'nested'))
+    mkdirSync(join(dir, 'chaoffice', 'nested'))
     writeFileSync(path, 'not a skill at all')
     expect(readInstallState(dir, b, ledger).status).toBe('occupied')
   })
@@ -124,16 +124,16 @@ describe('uninstallSkill', () => {
     const b = bundled()
     const ledger: SkillLedger = {}
     // foreign file: never touched
-    mkdirSync(join(dir, 'chatoffice'), { recursive: true })
-    writeFileSync(join(dir, 'chatoffice', 'SKILL.md'), skillText('1.0.0'))
+    mkdirSync(join(dir, 'chaoffice'), { recursive: true })
+    writeFileSync(join(dir, 'chaoffice', 'SKILL.md'), skillText('1.0.0'))
     expect(uninstallSkill(dir, ledger)).toBe(false)
-    expect(existsSync(join(dir, 'chatoffice', 'SKILL.md'))).toBe(true)
+    expect(existsSync(join(dir, 'chaoffice', 'SKILL.md'))).toBe(true)
 
     const path = installSkill(dir, b, ledger)
-    writeFileSync(join(dir, 'chatoffice', 'notes.txt'), 'mine')
+    writeFileSync(join(dir, 'chaoffice', 'notes.txt'), 'mine')
     expect(uninstallSkill(dir, ledger)).toBe(true)
     expect(existsSync(path)).toBe(false)
-    expect(existsSync(join(dir, 'chatoffice', 'notes.txt'))).toBe(true)
+    expect(existsSync(join(dir, 'chaoffice', 'notes.txt'))).toBe(true)
     expect(ledger[path]).toBeUndefined()
 
     installSkill(dir, b, ledger)
@@ -147,10 +147,10 @@ describe('uninstallSkill', () => {
 })
 
 describe('buildSkillZip', () => {
-  it('holds chatoffice/SKILL.md with the exact bundled bytes', async () => {
+  it('holds chaoffice/SKILL.md with the exact bundled bytes', async () => {
     const b = bundled('1.2.0')
     const zip = await JSZip.loadAsync(await buildSkillZip(b))
-    expect(Object.keys(zip.files).filter((f) => !zip.files[f]!.dir)).toEqual(['chatoffice/SKILL.md'])
-    expect(await zip.file('chatoffice/SKILL.md')!.async('string')).toBe(b.text)
+    expect(Object.keys(zip.files).filter((f) => !zip.files[f]!.dir)).toEqual(['chaoffice/SKILL.md'])
+    expect(await zip.file('chaoffice/SKILL.md')!.async('string')).toBe(b.text)
   })
 })

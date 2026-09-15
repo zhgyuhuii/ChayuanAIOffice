@@ -80,9 +80,9 @@ function baseStatus(): IntegrationsStatus {
   return {
     cli: {
       status: 'missing',
-      location: '/usr/local/bin/chatoffice',
+      location: '/usr/local/bin/chaoffice',
       manual:
-        'sudo ln -sf /Applications/ChaAI Office.app/Contents/Resources/cli/chatoffice /usr/local/bin/chatoffice',
+        'sudo ln -sf /Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice /usr/local/bin/chaoffice',
       launcherDir: '/Applications/ChaAI Office.app/Contents/Resources/cli',
       ephemeral: false,
       version: '0.4.0',
@@ -94,7 +94,7 @@ function baseStatus(): IntegrationsStatus {
         id: 'claude-code',
         label: 'Claude Code',
         skillsDir: '/home/u/.claude/skills',
-        state: { status: 'missing', path: '/home/u/.claude/skills/chatoffice/SKILL.md' },
+        state: { status: 'missing', path: '/home/u/.claude/skills/chaoffice/SKILL.md' },
       },
       {
         id: 'codex',
@@ -102,7 +102,7 @@ function baseStatus(): IntegrationsStatus {
         skillsDir: '/home/u/.codex/skills',
         state: {
           status: 'outdated',
-          path: '/home/u/.codex/skills/chatoffice/SKILL.md',
+          path: '/home/u/.codex/skills/chaoffice/SKILL.md',
           installedVersion: '2.0.0',
           older: true,
         },
@@ -113,7 +113,7 @@ function baseStatus(): IntegrationsStatus {
         skillsDir: '/home/u/.cursor/skills',
         state: {
           status: 'foreign',
-          path: '/home/u/.cursor/skills/chatoffice/SKILL.md',
+          path: '/home/u/.cursor/skills/chaoffice/SKILL.md',
           installedVersion: '2.1.0',
         },
       },
@@ -177,7 +177,7 @@ describe('Settings → Integrations', () => {
     expect(host.querySelectorAll('.set-intg-hero-steps li')).toHaveLength(3)
     expect(host.textContent).toContain('Pick any one of these three ways')
     expect(host.querySelectorAll('.set-intg-example')).toHaveLength(3)
-    expect(host.textContent).toContain('npx skills add genspark-ai/chatoffice')
+    expect(host.textContent).toContain('npx skills add zhgyuhuii/chayuan-office')
   })
 
   it('writes only after the path was shown and confirmed, then refreshes the row', async () => {
@@ -194,7 +194,7 @@ describe('Settings → Integrations', () => {
     const row = host.querySelector('[data-agent="claude-code"]')!
     await click(buttonWithText('Install', row))
     expect(install).not.toHaveBeenCalled()
-    expect(row.textContent).toContain('Will write: /home/u/.claude/skills/chatoffice/SKILL.md')
+    expect(row.textContent).toContain('Will write: /home/u/.claude/skills/chaoffice/SKILL.md')
 
     await click(buttonWithText('Cancel', row))
     expect(row.querySelector('.set-intg-confirm')).toBeNull()
@@ -212,10 +212,10 @@ describe('Settings → Integrations', () => {
   it('installs into a picked folder and saves the zip through the main process', async () => {
     const install = vi.fn(async () => ({
       status: 'installed' as const,
-      path: '/x/chatoffice/SKILL.md',
+      path: '/x/chaoffice/SKILL.md',
       installedVersion: '2.1.0',
     }))
-    const saveZip = vi.fn(async () => '/Users/u/Downloads/chatoffice-skill-2.1.0.zip')
+    const saveZip = vi.fn(async () => '/Users/u/Downloads/chaoffice-skill-2.1.0.zip')
     await openIntegrations({
       status: async () => baseStatus(),
       pickSkillDir: async () => '/x',
@@ -223,13 +223,13 @@ describe('Settings → Integrations', () => {
       saveSkillZip: saveZip,
     })
     await click(buttonWithText('Install into another folder…'))
-    expect(host.textContent).toContain('Will write: /x/chatoffice/SKILL.md')
+    expect(host.textContent).toContain('Will write: /x/chaoffice/SKILL.md')
     await click(buttonWithText('Confirm'))
     expect(install).toHaveBeenCalledWith({ dir: '/x' })
 
     await click(buttonWithText('Download skill (zip)'))
     expect(saveZip).toHaveBeenCalledWith('Save skill')
-    expect(host.textContent).toContain('Saved to /Users/u/Downloads/chatoffice-skill-2.1.0.zip')
+    expect(host.textContent).toContain('Saved to /Users/u/Downloads/chaoffice-skill-2.1.0.zip')
   })
 
   it('marks the Integrations entry while a detected assistant holds an older skill', async () => {

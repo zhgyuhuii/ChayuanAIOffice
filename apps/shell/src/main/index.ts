@@ -5517,8 +5517,8 @@ registerIntegrationsIpc({
     ? join(process.resourcesPath, 'cli')
     : join(APPS_ROOT, '..', 'packages', 'cli', 'bin'),
   skillPath: app.isPackaged
-    ? join(process.resourcesPath, 'cli', 'skills', 'chatoffice', 'SKILL.md')
-    : join(APPS_ROOT, '..', 'skills', 'chatoffice', 'SKILL.md'),
+    ? join(process.resourcesPath, 'cli', 'skills', 'chaoffice', 'SKILL.md')
+    : join(APPS_ROOT, '..', 'skills', 'chaoffice', 'SKILL.md'),
   cliPackageJson: app.isPackaged
     ? join(process.resourcesPath, 'cli', 'package.json')
     : join(APPS_ROOT, '..', 'packages', 'cli', 'package.json'),

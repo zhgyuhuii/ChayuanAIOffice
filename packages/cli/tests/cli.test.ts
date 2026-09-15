@@ -18,7 +18,7 @@ describe('chatoffice cli', () => {
     const unknown = await run(['frobnicate', '--json'])
     expect(unknown.code).toBe(1)
     expect(unknown.json()).toMatchObject({ status: 'error', code: 1, command: 'frobnicate' })
-    expect((await run(['--version'])).stdout).toMatch(/^chatoffice \d/)
+    expect((await run(['--version'])).stdout).toMatch(/^chaoffice \d/)
   })
 
   it('reports a missing file as exit code 2', async () => {

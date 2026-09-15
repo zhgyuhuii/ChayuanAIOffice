@@ -26,7 +26,7 @@ interface Pending {
   agentId?: AgentId
 }
 
-export const NPX_INSTALL_COMMAND = 'npx skills add genspark-ai/chatoffice'
+export const NPX_INSTALL_COMMAND = 'npx skills add zhgyuhuii/chayuan-office'
 
 /** some detected assistant holds an older copy of the skill than the bundled one */
 export const skillUpdateDue = (s: IntegrationsStatus): boolean =>
@@ -111,7 +111,7 @@ export function IntegrationsPane({
     const sep = dir.includes('\\') && !dir.includes('/') ? '\\' : '/'
     setPending({
       kind: 'install',
-      path: `${dir}${sep}chatoffice${sep}SKILL.md`,
+      path: `${dir}${sep}chaoffice${sep}SKILL.md`,
       target: { dir },
     })
   }

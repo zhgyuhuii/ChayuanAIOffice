@@ -292,13 +292,22 @@ const config = {
       from: '../../packages/pdf2docx/ocr-helper/win-ocr.exe',
       to: 'ocr/win-ocr.exe',
     },
-    // chatoffice 命令行: runs on the app binary with ELECTRON_RUN_AS_NODE (as
-    // the gsk CLI above already does), so the RunAsNode fuse must stay enabled.
-    // Layout (Resources/cli next to wasm/, native/, ocr/) is what
-    // packages/cli/src/resources.ts expects.
+    // chaoffice 命令行 (headless ChaAI Office CLI): runs on the app binary
+    // with ELECTRON_RUN_AS_NODE (as the gsk CLI above already does), so the
+    // RunAsNode fuse must stay enabled. Layout (Resources/cli next to wasm/,
+    // native/, ocr/) is what packages/cli/src/resources.ts expects. The
+    // chatoffice files are the pre-rename compatibility shims.
     {
       from: '../../packages/cli/dist/chatoffice.cjs',
-      to: 'cli/chatoffice.cjs',
+      to: 'cli/chaoffice.cjs',
+    },
+    {
+      from: '../../packages/cli/bin/chaoffice',
+      to: 'cli/chaoffice',
+    },
+    {
+      from: '../../packages/cli/bin/chaoffice.cmd',
+      to: 'cli/chaoffice.cmd',
     },
     {
       from: '../../packages/cli/bin/chatoffice',
@@ -315,8 +324,8 @@ const config = {
       to: 'cli/package.json',
     },
     {
-      from: '../../skills/chatoffice/SKILL.md',
-      to: 'cli/skills/chatoffice/SKILL.md',
+      from: '../../skills/chaoffice/SKILL.md',
+      to: 'cli/skills/chaoffice/SKILL.md',
     },
     // runtime deps the chatoffice bundle leaves external (jsdom for the Word/Markdown
     // paths); collected by packages/cli/collect-deps.mjs during its build

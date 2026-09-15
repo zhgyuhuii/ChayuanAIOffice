@@ -14,8 +14,8 @@ interface CliLinkRecord {
 }
 
 /**
- * Every launch: record where the chatoffice launcher lives so agents can find it
- * without a PATH (the `chatoffice` skill reads `~/.chatoffice/launcher`), then
+ * Every launch: record where the chaoffice launcher lives so agents can find it
+ * without a PATH (the `chaoffice` skill reads `~/.chatoffice/launcher`), then
  * try to expose it on the PATH. The dmg has no installer step to do that, so
  * macOS retries on each start until a writable directory turns up; Windows
  * gets its PATH entry from the installer and only re-checks once per version
@@ -27,7 +27,7 @@ export function installCliLinkBestEffort(settingsPath: string): void {
     if (isEphemeralInstall(process.resourcesPath, process.env)) {
       // a DMG under /Volumes or an AppImage FUSE mount vanishes on exit; linking
       // to it would leave a dead command, so wait for a real install
-      console.log('[chatoffice] cli link skipped: app runs from a temporary mount')
+      console.log('[chaoffice] cli link skipped: app runs from a temporary mount')
       return
     }
     const dir = join(process.resourcesPath, 'cli')
@@ -35,16 +35,16 @@ export function installCliLinkBestEffort(settingsPath: string): void {
     const version = app.getVersion()
     const previous = readAppSettings(settingsPath)[SETTING_KEY] as CliLinkRecord | undefined
     if (process.platform === 'win32' && previous?.version === version) return
-    const launcher = join(dir, process.platform === 'win32' ? 'chatoffice.cmd' : 'chatoffice')
+    const launcher = join(dir, process.platform === 'win32' ? 'chaoffice.cmd' : 'chaoffice')
     const outcome = installCliLink({ launcher })
     console.log(
-      `[chatoffice] cli link: ${outcome.status}${outcome.location ? ` (${outcome.location})` : ''}`,
+      `[chaoffice] cli link: ${outcome.status}${outcome.location ? ` (${outcome.location})` : ''}`,
     )
     const record: CliLinkRecord = { version, status: outcome.status }
     if (outcome.location) record.location = outcome.location
     writeAppSetting(settingsPath, SETTING_KEY, record)
   } catch (err) {
-    console.warn('[chatoffice] cli link failed:', err instanceof Error ? err.message : err)
+    console.warn('[chaoffice] cli link failed:', err instanceof Error ? err.message : err)
   }
 }
 
@@ -53,12 +53,12 @@ export function isEphemeralInstall(resourcesPath: string, env: NodeJS.ProcessEnv
   return /^\/Volumes\//.test(resourcesPath) || /\/\.mount_[^/]+\//.test(resourcesPath)
 }
 
-/** Same directory the chatoffice CLI uses for auth.json and its audit log. */
+/** Same directory the chaoffice CLI uses for auth.json and its audit log. */
 export function launcherFilePath(env: NodeJS.ProcessEnv): string {
   return join(env.GENOFFICE_AUTH_DIR || join(homedir(), '.chatoffice'), 'launcher')
 }
 
-/** One line, the directory holding chatoffice / chatoffice.cmd; rewritten only when it changed. */
+/** One line, the directory holding chaoffice / chaoffice.cmd; rewritten only when it changed. */
 export function writeLauncherFile(file: string, launcherDir: string): boolean {
   const content = `${launcherDir}\n`
   try {
