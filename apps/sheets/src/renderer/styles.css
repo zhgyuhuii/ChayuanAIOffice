@@ -290,8 +290,6 @@
     local('Calibri Italic'), local('Carlito Italic'),
     url('@chatoffice/ui/fonts/Carlito-Italic.ttf'), local('Helvetica Neue Italic'),
     local('Arial Italic');
-    local('Calibri Italic'), local('Carlito Italic'), url('@chatoffice/ui/fonts/Carlito-Italic.ttf'),
-    local('Helvetica Neue Italic'), local('Arial Italic');
   font-display: block;
 }
 

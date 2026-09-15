@@ -42,7 +42,7 @@ export function opencodeSessionHeaders(
 export const AI_PROVIDERS: AiProviderMeta[] = [
   {
     id: 'chatoffice',
-    label: 'ChatOffice',
+    label: 'ChaAI Office',
     // must stay within the proxy's served set (GET /api/llm_proxy/v1/models);
     // bare gpt-5.6 and the gemini family dropped off it (verified 2026-08-31)
     models: [
@@ -53,7 +53,7 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
       'gpt-5.6-luna',
     ],
     defaultModel: 'claude-opus-4-7',
-    keyPlaceholder: 'Not required - sign in to ChatOffice',
+    keyPlaceholder: 'Not required - sign in to ChaAI Office',
   },
   {
     id: 'codex',

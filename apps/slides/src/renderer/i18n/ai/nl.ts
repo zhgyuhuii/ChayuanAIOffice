@@ -17,8 +17,8 @@ export const nl = {
   aiQcPageSkipped: 'Pagina {n}: automatische lay-outcontrole overgeslagen',
   aiQcStopped: 'Lay-outcontrole gestopt',
   aiQcCapped: 'Nog {count} pagina(’s) niet gecontroleerd (limiet per run)',
-  aiGskLoginBtn: 'Aanmelden bij ChatOffice',
-  aiPanelTitle: 'ChatOffice',
+  aiGskLoginBtn: 'Aanmelden bij ChaAI Office',
+  aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'AI-assistent openen',
   aiFactCheckBtn: 'AI-factcheck',
   aiFactCheckPrompt:
@@ -116,7 +116,7 @@ export const nl = {
   aiErrNetwork:
     'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
   aiCreditsExhausted:
-    'Je ChatOffice-credits zijn op. Waardeer op via genspark.ai/pricing en probeer het opnieuw',
+    'Je ChaAI Office-credits zijn op. Waardeer op via genspark.ai/pricing en probeer het opnieuw',
   aiErrRequestFailed: 'Verzenden van verzoek mislukt: {msg}',
   aiErrGenerateFailed: 'Genereren mislukt',
   aiErrRegenFailed: 'Dia opnieuw genereren mislukt',

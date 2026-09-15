@@ -266,7 +266,7 @@ export function eqFieldToOmml(instr: string): EqField | null {
   return { omml: `<m:oMath>${body.omml}</m:oMath>`, text: body.text }
 }
 
-const FLD_CHAR_RE = /<w:fldChar[^>]*w:fldCharType="(begin|separate|end)"/g
+const FLD_CHAR_RE = /<w:fldChar[^>]*w:fldCharType=(?:"(begin|separate|end)"|'(begin|separate|end)')/g
 
 /**
  * Paragraph XML with every renderable EQ field replaced by a plain run of its
@@ -282,10 +282,11 @@ export function inlineEqFieldResults(xml: string): string {
   let m: RegExpExecArray | null
   FLD_CHAR_RE.lastIndex = 0
   while ((m = FLD_CHAR_RE.exec(xml)) !== null) {
-    if (m[1] === 'begin') {
+    const kind = m[1] ?? m[2]
+    if (kind === 'begin') {
       if (depth === 0) spanStart = runStartBefore(xml, m.index)
       depth++
-    } else if (m[1] === 'end') {
+    } else if (kind === 'end') {
       depth = Math.max(0, depth - 1)
       if (depth !== 0 || spanStart < 0) continue
       const spanEnd = xml.indexOf('</w:r>', m.index) + '</w:r>'.length

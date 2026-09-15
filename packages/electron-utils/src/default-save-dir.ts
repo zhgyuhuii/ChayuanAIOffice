@@ -4,7 +4,7 @@
 /// in userData/app-settings.json (set from the home screen's account menu).
 /// Every editor main module resolves through here so they all honor the same
 /// setting.
-import { accessSync, constants, mkdirSync, readFileSync } from 'node:fs'
+import { accessSync, constants, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { isAbsolute, join } from 'node:path'
 
 /** the subset of Electron's `app` needed here (kept structural: this package has no Electron dependency) */
@@ -52,6 +52,10 @@ export function resolveDefaultSaveDir(configured: string | null, fallbackDir: st
 /** convenience for the Electron mains: settings lookup + fallback in one call */
 export function configuredDefaultSaveDir(app: PathProvider): string {
   const settingsPath = join(app.getPath('userData'), 'app-settings.json')
-  const fallback = join(app.getPath('documents'), 'ChatOffice')
+  const documents = app.getPath('documents')
+  // brand rename (ChatOffice → ChaAI Office): keep landing files in an existing
+  // legacy folder instead of silently switching to a fresh empty one
+  const legacy = join(documents, 'ChatOffice')
+  const fallback = existsSync(legacy) ? legacy : join(documents, 'ChaAI Office')
   return resolveDefaultSaveDir(readDefaultSaveDirSetting(settingsPath), fallback)
 }

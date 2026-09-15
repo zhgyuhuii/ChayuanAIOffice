@@ -127,7 +127,7 @@ export const cs = {
   ribbonStylePreview: 'AaBb',
   ribbonMoreStyles: 'Další styly',
   ribbonGroupStyles: 'Styly',
-  ribbonAiAssistant: 'ChatOffice',
+  ribbonAiAssistant: 'ChaAI Office',
   ribbonAiAssistantTip: 'Otevřít asistenta AI',
   ribbonRemoveTableStyleTip: 'Odebrat styl tabulky',
   ribbonNoStyle: 'Bez stylu',

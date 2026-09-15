@@ -228,8 +228,8 @@ function assertModuleTreesPresent() {
 
 /** @type {import('electron-builder').Configuration} */
 const config = {
-  appId: 'com.chatoffice.app',
-  productName: 'ChatOffice',
+  appId: 'com.chaoffice.app',
+  productName: 'ChaAI Office',
   // Resolved from the installed electron package so dependency bumps can
   // never leave a stale hard-coded pin behind (packaging would silently ship
   // the old runtime).
@@ -496,11 +496,11 @@ const config = {
     // generated chatoffice.desktop match the WM_CLASS Electron reports (it
     // takes that from the executable basename), so the running window links
     // back to its launcher entry.
-    executableName: 'chatoffice',
+    executableName: 'chaoffice',
     // Electron takes its X11 app_id from package.json "desktopName"
     // (chatoffice.desktop); syncDesktopName makes electron-builder name the
     // .desktop file and its StartupWMClass from the same value. Without it
-    // StartupWMClass falls back to productName ("ChatOffice"), which does not
+    // StartupWMClass falls back to productName ("ChaAI Office"), which does not
     // match the "chatoffice" WM_CLASS the window actually reports — and X11
     // compares case-sensitively, so the taskbar shows an unlinked window.
     syncDesktopName: true,
@@ -520,8 +520,8 @@ const config = {
   // install, breaking upgrades. Without it, fpm receives productName
   // "ChatOffice" and only happens to downcase it to the right value.
   deb: {
-    artifactName: 'chatoffice_${version}_${arch}.deb',
-    packageName: 'chatoffice',
+    artifactName: 'chaoffice_${version}_${arch}.deb',
+    packageName: 'chaoffice',
     // expose the chatoffice command line shipped inside the app
     afterInstall: 'build/linux-after-install.sh',
     afterRemove: 'build/linux-after-remove.sh',
@@ -538,8 +538,8 @@ const config = {
   // latest-linux.yml keeps listing exactly what the CDN pipeline uploads
   // (AppImage + deb) and the promote workflow needs no rpm alias.
   rpm: {
-    artifactName: 'chatoffice-${version}.${arch}.rpm',
-    packageName: 'chatoffice',
+    artifactName: 'chaoffice-${version}.${arch}.rpm',
+    packageName: 'chaoffice',
     publish: null,
     afterInstall: 'build/linux-after-install.sh',
     afterRemove: 'build/linux-after-remove.sh',

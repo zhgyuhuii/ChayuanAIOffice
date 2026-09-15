@@ -8,8 +8,8 @@ import type {
 export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
   {
     id: 'chatoffice',
-    label: 'ChatOffice',
-    keyPlaceholder: 'Not required - sign in to ChatOffice',
+    label: 'ChaAI Office',
+    keyPlaceholder: 'Not required - sign in to ChaAI Office',
     imageSearch: true,
   },
   { id: 'serper', label: 'Serper', keyPlaceholder: 'Serper API key', imageSearch: true },

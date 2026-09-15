@@ -1,4 +1,4 @@
-# ChatOffice
+# ChaAI Office
 
 **The world's first full-featured open-source AI Office suite.**
 
@@ -8,7 +8,7 @@
 
 [Website](https://chatoffice.ai/) · [Download](https://github.com/genspark-ai/chatoffice/releases/latest) · [Privacy](PRIVACY.md) · [Demo](https://www.youtube.com/watch?v=B2pLdMX95v4)
 
-ChatOffice is a free, open-source alternative to Microsoft Office for macOS,
+ChaAI Office is a free, open-source alternative to Microsoft Office for macOS,
 Windows, and Linux, built around AI editing as a first-class workflow rather
 than a bolted-on chat box. It opens and saves the real Microsoft Office
 formats — Word (`.docx`), Excel (`.xlsx`), PowerPoint (`.pptx`) — and edits
@@ -16,7 +16,7 @@ PDF and Markdown too: a word processor, spreadsheet, presentation editor,
 PDF editor, and Markdown editor as six Electron apps sharing one engine
 layer.
 
-[![Meet ChatOffice — the world's first full-featured open-source AI Office (video)](https://img.youtube.com/vi/B2pLdMX95v4/maxresdefault.jpg)](https://www.youtube.com/watch?v=B2pLdMX95v4)
+[![Meet ChaAI Office — the world's first full-featured open-source AI Office (video)](https://img.youtube.com/vi/B2pLdMX95v4/maxresdefault.jpg)](https://www.youtube.com/watch?v=B2pLdMX95v4)
 
 [Watch the demo video on YouTube](https://www.youtube.com/watch?v=B2pLdMX95v4)
 
@@ -53,7 +53,7 @@ Older versions are on the [Releases](https://github.com/genspark-ai/chatoffice/r
 
 ### Installing on Linux
 
-The deb installs with apt — it pulls in the dependencies and adds ChatOffice
+The deb installs with apt — it pulls in the dependencies and adds ChaAI Office
 to the applications menu:
 
 ```bash
@@ -72,20 +72,20 @@ The AppImage instead runs in place: install the FUSE 2 runtime
 make the file executable, then run it:
 
 ```bash
-chmod +x ChatOffice-<version>.AppImage
-./ChatOffice-<version>.AppImage
+chmod +x ChaAI Office-<version>.AppImage
+./ChaAI Office-<version>.AppImage
 ```
 
 ## Apps
 
 | App             | Product                | What it is                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | --------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/docs`     | **ChatOffice Docs**     | `.docx` word processor. Byte-preserving round trip: only dirty paragraphs are regenerated (paragraph patch), everything else in the original file is kept byte-for-byte, so opening and saving never breaks layout in Word. Paginated view whose line metrics reproduce the original document's layout, tracked changes, comments, styles, equations, ink.                                                                                                                                                                                                                                                                                                                                                                               |
-| `apps/sheets`   | **ChatOffice Sheets**   | `.xlsx` spreadsheet. UI built on the open-source [Univer](https://github.com/dream-num/univer) core (Apache-2.0) with a large layer of in-house extensions; `.xlsx` import/export runs through an in-house Rust sidecar (calamine + IronCalc), charts are rendered in-house (Konva), plus pivot tables, slicers, conditional formatting, and formula tracing.                                                                                                                                                                                                                                                                                                                                                                            |
-| `apps/slides`   | **ChatOffice Slides**   | `.pptx` presentations. In-house `.pptx` parse/render/edit engine with masters, charts, cropping, ink, and text shaping (HarfBuzz metrics).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `apps/pdf`      | **ChatOffice PDF**      | `.pdf` viewer/editor on [pdf.js](https://github.com/mozilla/pdf.js) (Apache-2.0) + [pdf-lib](https://github.com/Hopding/pdf-lib) (MIT): annotations, forms, outlines, stamps, signatures, page operations, and printing support. True text editing — paragraph selection with in-block reflow, alignment restoration, original-font preservation — and content-stream image insert/edit, all rewriting page content streams through [PDFium](https://pdfium.googlesource.com/pdfium/) wasm (BSD-3-Clause) with subset-embedded fonts — no cover-up annotations. Converts PDFs into editable Word, PowerPoint, and Excel files fully locally (`packages/pdf2docx`), with OCR support for scanned pages (system OCR on macOS and Windows). |
-| `apps/markdown` | **ChatOffice Markdown** | `.md` / `.markdown` editor: Tiptap block editor over plain Markdown files — headings, lists, tables, images, code blocks — saved back as plain Markdown, hosted in shell tabs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `apps/shell`    | **ChatOffice**          | The suite shell: home screen, tabbed hosting of the five editors, light/dark/system theme, auto-update.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `apps/docs`     | **ChaAI Office Docs**     | `.docx` word processor. Byte-preserving round trip: only dirty paragraphs are regenerated (paragraph patch), everything else in the original file is kept byte-for-byte, so opening and saving never breaks layout in Word. Paginated view whose line metrics reproduce the original document's layout, tracked changes, comments, styles, equations, ink.                                                                                                                                                                                                                                                                                                                                                                               |
+| `apps/sheets`   | **ChaAI Office Sheets**   | `.xlsx` spreadsheet. UI built on the open-source [Univer](https://github.com/dream-num/univer) core (Apache-2.0) with a large layer of in-house extensions; `.xlsx` import/export runs through an in-house Rust sidecar (calamine + IronCalc), charts are rendered in-house (Konva), plus pivot tables, slicers, conditional formatting, and formula tracing.                                                                                                                                                                                                                                                                                                                                                                            |
+| `apps/slides`   | **ChaAI Office Slides**   | `.pptx` presentations. In-house `.pptx` parse/render/edit engine with masters, charts, cropping, ink, and text shaping (HarfBuzz metrics).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `apps/pdf`      | **ChaAI Office PDF**      | `.pdf` viewer/editor on [pdf.js](https://github.com/mozilla/pdf.js) (Apache-2.0) + [pdf-lib](https://github.com/Hopding/pdf-lib) (MIT): annotations, forms, outlines, stamps, signatures, page operations, and printing support. True text editing — paragraph selection with in-block reflow, alignment restoration, original-font preservation — and content-stream image insert/edit, all rewriting page content streams through [PDFium](https://pdfium.googlesource.com/pdfium/) wasm (BSD-3-Clause) with subset-embedded fonts — no cover-up annotations. Converts PDFs into editable Word, PowerPoint, and Excel files fully locally (`packages/pdf2docx`), with OCR support for scanned pages (system OCR on macOS and Windows). |
+| `apps/markdown` | **ChaAI Office Markdown** | `.md` / `.markdown` editor: Tiptap block editor over plain Markdown files — headings, lists, tables, images, code blocks — saved back as plain Markdown, hosted in shell tabs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `apps/shell`    | **ChaAI Office**          | The suite shell: home screen, tabbed hosting of the five editors, light/dark/system theme, auto-update.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 Every app embeds the same AI panel: block-granular AI editing with version
 snapshots and diffs in docs, a tool-calling agent over workbook/slide/PDF
@@ -169,43 +169,43 @@ editor didn't touch survives the round trip untouched.
 
 ## FAQ
 
-**Is ChatOffice free?**
-Yes. ChatOffice is free and open-source under the Apache-2.0 license — no
+**Is ChaAI Office free?**
+Yes. ChaAI Office is free and open-source under the Apache-2.0 license — no
 trial, no paid tier for the apps themselves.
 
-**Can ChatOffice open Microsoft Word, Excel, and PowerPoint files?**
-Yes. ChatOffice opens and saves native `.docx`, `.xlsx`, and `.pptx` files.
+**Can ChaAI Office open Microsoft Word, Excel, and PowerPoint files?**
+Yes. ChaAI Office opens and saves native `.docx`, `.xlsx`, and `.pptx` files.
 Saving is byte-preserving: parts of the file you didn't touch are written
 back byte-for-byte, so documents keep working in Microsoft Office.
 
-**Does ChatOffice work offline?**
+**Does ChaAI Office work offline?**
 Document editing is fully local — files never leave your machine to be
 opened, edited, or saved. The AI features (agents, search, image tools) need
 a network connection, with either a Genspark sign-in or your own model API
 key (BYOK).
 
-**Can ChatOffice edit PDF files?**
+**Can ChaAI Office edit PDF files?**
 Yes — real PDF text and image editing that rewrites the page content stream
 with the original fonts preserved, not cover-up annotations.
 
-**Can ChatOffice convert PDF to Word, Excel, or PowerPoint?**
-Yes — ChatOffice converts PDFs into editable `.docx`, `.xlsx`, and `.pptx`
+**Can ChaAI Office convert PDF to Word, Excel, or PowerPoint?**
+Yes — ChaAI Office converts PDFs into editable `.docx`, `.xlsx`, and `.pptx`
 files entirely on-device: PDFium character-level extraction plus
 geometry-based layout analysis, no cloud service, no upload. Scanned pages are
 covered too — on macOS and Windows the system OCR reads them, so they convert
 to editable text rather than a page image.
 
 **Can I use my own AI model or API key?**
-Yes. Besides the keyless Genspark sign-in, ChatOffice supports bring your own
+Yes. Besides the keyless Genspark sign-in, ChaAI Office supports bring your own
 key (BYOK) for Claude, OpenAI, Gemini, DeepSeek, Kimi, GLM, Qwen, Doubao,
 MiniMax, Grok, Mistral, and OpenRouter, plus any OpenAI-compatible endpoint
 — including local model servers.
 
-**Does ChatOffice collect any data?**
+**Does ChaAI Office collect any data?**
 Official packaged builds send limited usage analytics by default, and you can
 disable reporting at any time under Settings → General. Analytics never sends
 document content, file names, file paths, account identity, or email addresses.
-See [ChatOffice Privacy](PRIVACY.md) for the complete event and data disclosures.
+See [ChaAI Office Privacy](PRIVACY.md) for the complete event and data disclosures.
 
 ## Security
 
@@ -215,7 +215,7 @@ AI-generated content.
 
 ## Acknowledgements
 
-ChatOffice would not be possible without these open-source projects:
+ChaAI Office would not be possible without these open-source projects:
 
 - [Electron](https://www.electronjs.org/) — the desktop runtime for every app.
 - [Univer](https://github.com/dream-num/univer) (Apache-2.0) — the spreadsheet
@@ -247,10 +247,10 @@ Caladea, Noto CJK subsets) are OFL/Apache.
 
 ## License
 
-ChatOffice is licensed under the [Apache License 2.0](LICENSE), with one
+ChaAI Office is licensed under the [Apache License 2.0](LICENSE), with one
 exception: the `ee/` directory is reserved for future enterprise modules and
-is covered by the [ChatOffice Enterprise License](ee/LICENSE).
+is covered by the [ChaAI Office Enterprise License](ee/LICENSE).
 
-The ChatOffice and Genspark names and logos are trademarks of Mainfunc, Inc.
+The ChaAI Office and Genspark names and logos are trademarks of Mainfunc, Inc.
 The Apache-2.0 license does not grant permission to use them (see section 6);
 forks should use their own branding.

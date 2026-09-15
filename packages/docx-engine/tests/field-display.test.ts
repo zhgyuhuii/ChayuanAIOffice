@@ -1,6 +1,7 @@
 import JSZip from 'jszip'
 import { describe, expect, it } from 'vitest'
 import { generateParagraphXml, generateTocFieldXml, parseDocx, saveDocx } from '../src/index'
+import { sdtCheckboxGlyphs } from '../src/checkbox-control'
 import type { Block, GenerateContext, GeneratedBlock } from '../src/index'
 import { buildDocx } from './helpers/build-docx'
 
@@ -863,10 +864,17 @@ describe('w14:checkbox content controls', () => {
   })
 
   it('drops the control when the glyph was typed over', async () => {
-    const doc = await parseDocx(await buildDocx({ bodyXml: sdtCheckboxParagraph('1', '\u2612') }))
+    const doc = await parseDocx(await buildDocx({ bodyXml: sdtCheckboxParagraph('1', '☒') }))
     const runs = doc.blocks[0].runs!.map((r) => (r.sdtCheckboxXml ? { ...r, text: 'yes' } : r))
     const xml = generateParagraphXml({ type: 'paragraph', runs }, ctx)
     expect(xml).not.toContain('<w:sdt>')
     expect(xml).toContain('yes')
+  })
+
+  it('reads single-quoted checkbox glyph values', () => {
+    const glyphs = sdtCheckboxGlyphs(
+      "<w:sdtPr><w14:checkbox><w14:checkedState w14:val='2611'/><w14:uncheckedState w14:val='2610'/></w14:checkbox></w:sdtPr>",
+    )
+    expect(glyphs).toEqual({ checked: '☑', unchecked: '☐' })
   })
 })

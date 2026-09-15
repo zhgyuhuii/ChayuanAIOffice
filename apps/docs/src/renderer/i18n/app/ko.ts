@@ -256,13 +256,13 @@ export const ko = {
   appTabClear: '지우기',
   // AI settings
   appAiSettings: 'AI 설정',
-  appGensparkAccount: 'ChatOffice 계정',
+  appGensparkAccount: 'ChaAI Office 계정',
   appChecking: '확인 중…',
   appLoggedIn: '로그인됨',
   appLoggedInEmail: '로그인됨: {email}',
-  appNotLoggedIn: '로그인되지 않음(AI 기능을 사용하려면 ChatOffice 계정 로그인이 필요합니다)',
+  appNotLoggedIn: '로그인되지 않음(AI 기능을 사용하려면 ChaAI Office 계정 로그인이 필요합니다)',
   appWaitingBrowserLogin: '브라우저 로그인 대기 중…',
-  appLoginGenspark: 'ChatOffice 로그인',
+  appLoginGenspark: 'ChaAI Office 로그인',
   appModel: '모델',
   // Context menu
   appCut: '잘라내기',
@@ -387,6 +387,6 @@ export const ko = {
   appUpdateStyleTip: '현재 선택 영역의 서식으로 이 스타일을 업데이트합니다(styles.xml에 기록)',
   appNewStyleFromSelection: '선택 영역에서 새 스타일 만들기',
   appStyleNamePlaceholder: '스타일 이름',
-  appChatOfficeAccount: "ChatOffice 계정",
-  appLoginChatOffice: "ChatOffice 로그인",
+  appChatOfficeAccount: "ChaAI Office 계정",
+  appLoginChatOffice: "ChaAI Office 로그인",
 } satisfies Record<keyof typeof zh, string>

@@ -1,6 +1,6 @@
 # Designing a deck from a spec
 
-The same workflow the ChatOffice app runs when it generates a presentation, written for an agent that does the thinking itself and lets the engine do the building. In the app every stage is a separate model call; here every stage is a separate file, and the CLI checks each file before the next stage may start. Work top-down; never start by placing elements.
+The same workflow the ChaAI Office app runs when it generates a presentation, written for an agent that does the thinking itself and lets the engine do the building. In the app every stage is a separate model call; here every stage is a separate file, and the CLI checks each file before the next stage may start. Work top-down; never start by placing elements.
 
 Files of one deck, in a folder of their own (`deck/`):
 

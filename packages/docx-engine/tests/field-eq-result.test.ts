@@ -92,6 +92,14 @@ describe('EQ field instructions', () => {
       `<w:p><w:r>${SZ36}<w:t xml:space="preserve">1/2</w:t></w:r></w:p>`,
     )
   })
+
+  it('inlineEqFieldResults handles single-quoted fldCharType', () => {
+    const xml =
+      `<w:p><w:r><w:fldChar w:fldCharType='begin'/></w:r>` +
+      `<w:r><w:instrText xml:space="preserve"> EQ \\f(a,b) </w:instrText></w:r>` +
+      `<w:r><w:fldChar w:fldCharType='end'/></w:r></w:p>`
+    expect(inlineEqFieldResults(xml)).toContain('a/b')
+  })
 })
 
 describe('EQ field paragraphs', () => {

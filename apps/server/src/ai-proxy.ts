@@ -59,7 +59,7 @@ export interface AiProxyOptions {
 
 /** server-side error copy for the four runtime keys (zh, matching the default UI locale) */
 const ERR = {
-  errChatOfficeNotLoggedIn: 'Web 端不支持 ChatOffice 登录，请使用自己配置的模型',
+  errChatOfficeNotLoggedIn: 'Web 端不支持 察元AIOffice 登录，请使用自己配置的模型',
   errNoApiKey: '未配置 {provider} 的 API Key',
   errNoModel: '未配置模型',
   errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',

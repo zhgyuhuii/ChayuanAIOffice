@@ -41,6 +41,7 @@ describe('home rename validation', () => {
       expect(isValidRenameName(bad)).toBe(false)
     }
     expect(isValidRenameName('report.')).toBe(false)
+    expect(isValidRenameName('report ')).toBe(false)
     expect(isValidRenameName('.')).toBe(false)
     expect(isValidRenameName('a'.repeat(256))).toBe(false)
     expect(isValidRenameName('com10.pdf')).toBe(true)

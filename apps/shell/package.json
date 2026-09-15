@@ -1,13 +1,13 @@
 {
   "name": "@chatoffice/shell",
-  "productName": "ChatOffice",
+  "productName": "ChaAI Office",
   "version": "0.10.0",
   "license": "Apache-2.0",
   "homepage": "https://github.com/chatoffice-ai/chatoffice",
   "private": true,
   "description": "Unified ChatOffice shell: one app hosting the docs and sheets modules behind a home/launcher window",
   "main": "out/main/index.js",
-  "desktopName": "chatoffice.desktop",
+  "desktopName": "chaoffice.desktop",
   "scripts": {
     "dev": "electron-vite dev --watch",
     "build": "electron-vite build",
@@ -35,6 +35,7 @@
     "@chatoffice/storage-adapter": "*",
     "@chatoffice/ui": "*",
     "@chatoffice/xlsx-gateway": "*",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.4",

@@ -129,14 +129,26 @@ export function printBorderWidthPt(style: number | undefined): number {
 }
 
 /// OOXML paper-size code → Electron pageSize (custom sizes in inches).
+/// ECMA-376 §18.3.1.70: unmapped codes previously fell back to A4 and
+/// mis-scaled B4/B5/Folio/Statement output.
 const PAPER_SIZES: Record<number, WorkbookExportPdfRequest['pageSize']> = {
   1: 'Letter',
+  2: 'Letter',
   3: 'Tabloid',
+  4: 'Tabloid',
   5: 'Legal',
+  6: { width: 5.5, height: 8.5 },
   7: { width: 7.25, height: 10.5 },
   8: 'A3',
   9: 'A4',
+  10: 'A4',
   11: 'A5',
+  12: { width: 9.84, height: 13.9 },
+  13: { width: 6.93, height: 9.84 },
+  14: { width: 8.5, height: 13 },
+  15: { width: 8.46, height: 10.83 },
+  16: { width: 10, height: 14 },
+  18: 'Letter',
 }
 
 const PAPER_WIDTH_INCHES: Record<string, number> = {

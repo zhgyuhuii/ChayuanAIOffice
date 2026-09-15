@@ -20,9 +20,9 @@ export const MINIMAX_BASE_URL = 'https://api.minimax.io/v1'
 export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
   {
     id: 'chatoffice',
-    label: 'ChatOffice',
-    description: 'Image generation, media analysis and search through your ChatOffice sign-in',
-    keyPlaceholder: 'Not required - sign in to ChatOffice',
+    label: 'ChaAI Office',
+    description: 'Image generation, media analysis and search through your ChaAI Office sign-in',
+    keyPlaceholder: 'Not required - sign in to ChaAI Office',
     defaultBaseUrl: '',
     imageProtocol: 'openai-images',
     imageModels: [],

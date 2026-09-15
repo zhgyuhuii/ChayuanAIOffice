@@ -7,7 +7,7 @@ export const id = {
   aiStarterPolishAll: 'Perhalus seluruh dokumen agar nadanya lebih profesional',
   aiStarterContinue: 'Lanjutkan menulis dari bagian akhir dokumen',
   aiStarterFillTemplate: 'Temukan dan isi placeholder di dokumen ini',
-  aiGskLoginBtn: 'Masuk ke ChatOffice',
+  aiGskLoginBtn: 'Masuk ke ChaAI Office',
   aiPanelTitle: 'Asisten AI',
   aiOpenAssistant: 'Buka asisten AI',
   aiSummarizeBtn: 'Ringkasan AI',
@@ -163,7 +163,7 @@ export const id = {
   aiChatOfficeLoginBtn: 'Masuk',
   aiNoModelErrorTitle: 'Belum ada model yang tersedia',
   aiNoModelErrorBody:
-    'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChatOffice untuk model bawaan. Tanpa perlu akun.',
+    'Konfigurasi penyedia Anda sendiri (kunci Anda, langsung pakai), atau masuk ke ChaAI Office untuk model bawaan. Tanpa perlu akun.',
   aiOpenModelSettings: 'Buka Pengaturan Model',
   aiTabChat: 'Obrolan',
   aiTabAssistant: 'Asisten',

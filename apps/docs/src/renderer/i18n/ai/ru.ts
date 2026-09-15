@@ -7,7 +7,7 @@ export const ru = {
   aiStarterPolishAll: 'Отшлифуй весь документ, сделав тон более профессиональным',
   aiStarterContinue: 'Продолжи текст с того места, где он обрывается',
   aiStarterFillTemplate: 'Найди и заполни местозаполнители в документе',
-  aiGskLoginBtn: 'Войти в ChatOffice',
+  aiGskLoginBtn: 'Войти в ChaAI Office',
   aiPanelTitle: 'ИИ-помощник',
   aiOpenAssistant: 'Открыть ИИ-помощника',
   aiSummarizeBtn: 'ИИ-резюме',
@@ -165,7 +165,7 @@ export const ru = {
   aiChatOfficeLoginBtn: 'Войти',
   aiNoModelErrorTitle: 'Пока нет доступных моделей',
   aiNoModelErrorBody:
-    'Настройте собственного провайдера (ваш ключ — и всё готово) или войдите в ChatOffice для моделей по умолчанию. Учётная запись не нужна.',
+    'Настройте собственного провайдера (ваш ключ — и всё готово) или войдите в ChaAI Office для моделей по умолчанию. Учётная запись не нужна.',
   aiOpenModelSettings: 'Открыть настройки моделей',
   aiTabChat: 'Чат',
   aiTabAssistant: 'Помощник',

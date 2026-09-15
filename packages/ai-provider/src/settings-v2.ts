@@ -63,7 +63,7 @@ export function chatofficeProfile(): AiProviderProfile {
   return {
     id: 'chatoffice',
     vendorId: 'chatoffice',
-    displayName: 'ChatOffice',
+    displayName: 'ChaAI Office',
     protocol: 'openai-completions', // placeholder; the resolver routes per model
     baseUrl: '',
     auth: 'chatoffice-login',

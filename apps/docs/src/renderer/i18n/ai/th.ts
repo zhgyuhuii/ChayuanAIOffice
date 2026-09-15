@@ -7,7 +7,7 @@ export const th = {
   aiStarterPolishAll: 'ขัดเกลาทั้งเอกสารให้น้ำเสียงเป็นมืออาชีพยิ่งขึ้น',
   aiStarterContinue: 'เขียนต่อจากเนื้อหาที่มีอยู่',
   aiStarterFillTemplate: 'ค้นหาและกรอกตัวยึดตำแหน่งในเอกสาร',
-  aiGskLoginBtn: 'ลงชื่อเข้าใช้ ChatOffice',
+  aiGskLoginBtn: 'ลงชื่อเข้าใช้ ChaAI Office',
   aiPanelTitle: 'ผู้ช่วย AI',
   aiOpenAssistant: 'เปิดผู้ช่วย AI',
   aiSummarizeBtn: 'สรุปด้วย AI',
@@ -161,7 +161,7 @@ export const th = {
   aiChatOfficeLoginBtn: 'ลงชื่อเข้าใช้',
   aiNoModelErrorTitle: 'ยังไม่มีโมเดลที่ใช้ได้',
   aiNoModelErrorBody:
-    'กำหนดค่าผู้ให้บริการของคุณเอง (ใช้คีย์ของคุณได้ทันที) หรือลงชื่อเข้าใช้ ChatOffice เพื่อใช้โมเดลเริ่มต้น ไม่ต้องมีบัญชี',
+    'กำหนดค่าผู้ให้บริการของคุณเอง (ใช้คีย์ของคุณได้ทันที) หรือลงชื่อเข้าใช้ ChaAI Office เพื่อใช้โมเดลเริ่มต้น ไม่ต้องมีบัญชี',
   aiOpenModelSettings: 'เปิดการตั้งค่าโมเดล',
   aiTabChat: 'แชท',
   aiTabAssistant: 'ผู้ช่วย',

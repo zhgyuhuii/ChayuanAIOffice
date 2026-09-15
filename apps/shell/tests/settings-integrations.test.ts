@@ -82,8 +82,8 @@ function baseStatus(): IntegrationsStatus {
       status: 'missing',
       location: '/usr/local/bin/chatoffice',
       manual:
-        'sudo ln -sf /Applications/ChatOffice.app/Contents/Resources/cli/chatoffice /usr/local/bin/chatoffice',
-      launcherDir: '/Applications/ChatOffice.app/Contents/Resources/cli',
+        'sudo ln -sf /Applications/ChaAI Office.app/Contents/Resources/cli/chatoffice /usr/local/bin/chatoffice',
+      launcherDir: '/Applications/ChaAI Office.app/Contents/Resources/cli',
       ephemeral: false,
       version: '0.4.0',
     },
@@ -169,7 +169,7 @@ describe('Settings → Integrations', () => {
     expect(rows[2]!.textContent).toContain('Installed 2.1.0 (not by this app)')
     expect(rows[2]!.querySelectorAll('button')).toHaveLength(0)
     // CLI block: launcher path, PATH state in plain words, the manual command as copyable code
-    expect(host.textContent).toContain('/Applications/ChatOffice.app/Contents/Resources/cli')
+    expect(host.textContent).toContain('/Applications/ChaAI Office.app/Contents/Resources/cli')
     expect(host.textContent).toContain("not on your terminal's PATH")
     expect(host.querySelector('.set-intg-cli code')?.textContent).toContain('sudo ln -sf')
     expect(host.textContent).toContain('skill 2.1.0')

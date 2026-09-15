@@ -7,7 +7,7 @@ export const he = {
   aiStarterPolishAll: 'לטש את כל המסמך לטון מקצועי יותר',
   aiStarterContinue: 'המשך לכתוב מהנקודה שבה המסמך נעצר',
   aiStarterFillTemplate: 'מצא ומלא את מצייני המיקום במסמך',
-  aiGskLoginBtn: 'התחבר ל-ChatOffice',
+  aiGskLoginBtn: 'התחבר ל-ChaAI Office',
   aiPanelTitle: 'עוזר AI',
   aiOpenAssistant: 'פתיחת עוזר ה-AI',
   aiSummarizeBtn: 'סיכום AI',
@@ -159,7 +159,7 @@ export const he = {
   aiChatOfficeLoginBtn: 'התחבר',
   aiNoModelErrorTitle: 'אין עדיין מודל זמין',
   aiNoModelErrorBody:
-    'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) או התחבר ל-ChatOffice למודלים ברירת המחדל. לא נדרש חשבון.',
+    'הגדר ספק משלך (המפתח שלך, מוכן לשימוש) או התחבר ל-ChaAI Office למודלים ברירת המחדל. לא נדרש חשבון.',
   aiOpenModelSettings: 'פתח את הגדרות המודלים',
   aiTabChat: 'צ׳אט',
   aiTabAssistant: 'עוזר',

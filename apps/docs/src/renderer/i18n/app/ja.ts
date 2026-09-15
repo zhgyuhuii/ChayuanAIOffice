@@ -256,13 +256,13 @@ export const ja = {
   appTabClear: 'クリア',
   // AI settings
   appAiSettings: 'AI 設定',
-  appGensparkAccount: 'ChatOffice アカウント',
+  appGensparkAccount: 'ChaAI Office アカウント',
   appChecking: '確認中…',
   appLoggedIn: 'サインイン済み',
   appLoggedInEmail: 'サインイン済み:{email}',
-  appNotLoggedIn: '未サインイン(AI 機能には ChatOffice アカウントが必要です)',
+  appNotLoggedIn: '未サインイン(AI 機能には ChaAI Office アカウントが必要です)',
   appWaitingBrowserLogin: 'ブラウザーでのサインインを待っています…',
-  appLoginGenspark: 'ChatOffice にサインイン',
+  appLoginGenspark: 'ChaAI Office にサインイン',
   appModel: 'モデル',
   // Context menu
   appCut: '切り取り',
@@ -387,6 +387,6 @@ export const ja = {
   appUpdateStyleTip: '現在の選択範囲の書式でこのスタイルを更新します(styles.xml に書き戻し)',
   appNewStyleFromSelection: '選択範囲から新しいスタイルを作成',
   appStyleNamePlaceholder: 'スタイル名',
-  appChatOfficeAccount: "ChatOffice アカウント",
-  appLoginChatOffice: "ChatOffice にサインイン",
+  appChatOfficeAccount: "ChaAI Office アカウント",
+  appLoginChatOffice: "ChaAI Office にサインイン",
 } satisfies Record<keyof typeof zh, string>

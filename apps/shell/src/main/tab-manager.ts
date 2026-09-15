@@ -78,7 +78,7 @@ const HOME_ID = 'home'
  */
 export class TabManager {
   private readonly tabs: TabRecord[] = [
-    { id: HOME_ID, kind: 'home', view: null, title: 'ChatOffice' },
+    { id: HOME_ID, kind: 'home', view: null, title: 'ChaAI Office' },
   ]
   private activeId: string = HOME_ID
   private nextId = 1
@@ -416,7 +416,7 @@ export class TabManager {
         })
         if (options?.newBlank) markDocsNewBlank(view.webContents.id)
         if (options?.aiContent) queueDocsAiContent(view.webContents.id, options.aiContent)
-        title = options?.file ? basename(options.file) : this.untitled('docs', 'ChatOffice Docs')
+        title = options?.file ? basename(options.file) : this.untitled('docs', 'ChaAI Office Docs')
         break
       }
       case 'sheets': {
@@ -492,7 +492,7 @@ export class TabManager {
       id,
       kind: 'docs',
       view,
-      title: openPath ? basename(openPath) : this.untitled('docs', 'ChatOffice Docs'),
+      title: openPath ? basename(openPath) : this.untitled('docs', 'ChaAI Office Docs'),
       filePath: openPath,
     })
     this.activateTab(id)

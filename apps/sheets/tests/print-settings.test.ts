@@ -408,6 +408,37 @@ function tallWorksheet(rows: number): PrintWorksheet {
 }
 
 describe('buildSheetPrintPayload', () => {
+  it('maps common OOXML paper sizes instead of falling back to A4', () => {
+    const b4 = buildSheetPrintPayload(
+      fakeWorksheet(),
+      payloadSetup({ paperSize: 12 }),
+      'Book.pdf',
+      'S1',
+    )
+    expect(b4.pageSize).toEqual({ width: 9.84, height: 13.9 })
+    const b5 = buildSheetPrintPayload(
+      fakeWorksheet(),
+      payloadSetup({ paperSize: 13 }),
+      'Book.pdf',
+      'S1',
+    )
+    expect(b5.pageSize).toEqual({ width: 6.93, height: 9.84 })
+    const folio = buildSheetPrintPayload(
+      fakeWorksheet(),
+      payloadSetup({ paperSize: 14 }),
+      'Book.pdf',
+      'S1',
+    )
+    expect(folio.pageSize).toEqual({ width: 8.5, height: 13 })
+    const statement = buildSheetPrintPayload(
+      fakeWorksheet(),
+      payloadSetup({ paperSize: 6 }),
+      'Book.pdf',
+      'S1',
+    )
+    expect(statement.pageSize).toEqual({ width: 5.5, height: 8.5 })
+  })
+
   it('crops the layout to the print area', () => {
     const payload = buildSheetPrintPayload(
       fakeWorksheet(),

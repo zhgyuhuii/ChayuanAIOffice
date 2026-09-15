@@ -7,7 +7,7 @@ export const fr = {
   aiStarterPolishAll: 'Peaufiner tout le document pour un ton plus professionnel',
   aiStarterContinue: 'Continuer la rédaction là où le document s’arrête',
   aiStarterFillTemplate: 'Trouver et remplir les espaces réservés du document',
-  aiGskLoginBtn: 'Se connecter à ChatOffice',
+  aiGskLoginBtn: 'Se connecter à ChaAI Office',
   aiPanelTitle: 'Assistant IA',
   aiOpenAssistant: "Ouvrir l\\'assistant IA",
   aiSummarizeBtn: 'Résumé IA',
@@ -167,7 +167,7 @@ export const fr = {
   aiChatOfficeLoginBtn: 'Se connecter',
   aiNoModelErrorTitle: 'Aucun modèle disponible pour le moment',
   aiNoModelErrorBody:
-    "Configurez votre propre fournisseur (votre clé, prêt à l'emploi), ou connectez-vous à ChatOffice pour les modèles par défaut. Aucun compte requis.",
+    "Configurez votre propre fournisseur (votre clé, prêt à l'emploi), ou connectez-vous à ChaAI Office pour les modèles par défaut. Aucun compte requis.",
   aiOpenModelSettings: 'Ouvrir les paramètres des modèles',
   aiTabChat: 'Discussion',
   aiTabAssistant: 'Assistant',

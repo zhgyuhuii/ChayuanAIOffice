@@ -17,8 +17,8 @@ export const pt = {
   aiQcPageSkipped: 'Página {n}: verificação automática de layout ignorada',
   aiQcStopped: 'Verificação de layout interrompida',
   aiQcCapped: 'Mais {count} página(s) não verificada(s) (limite por execução)',
-  aiGskLoginBtn: 'Entrar no ChatOffice',
-  aiPanelTitle: 'ChatOffice',
+  aiGskLoginBtn: 'Entrar no ChaAI Office',
+  aiPanelTitle: 'ChaAI Office',
   aiOpenAssistant: 'Abrir assistente de IA',
   aiFactCheckBtn: 'Checagem IA',
   aiFactCheckPrompt:
@@ -115,7 +115,7 @@ export const pt = {
   aiErrNetwork:
     'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
   aiCreditsExhausted:
-    'Seus créditos ChatOffice acabaram. Recarregue em genspark.ai/pricing e tente novamente',
+    'Seus créditos ChaAI Office acabaram. Recarregue em genspark.ai/pricing e tente novamente',
   aiErrRequestFailed: 'Falha ao enviar a solicitação: {msg}',
   aiErrGenerateFailed: 'Falha na geração',
   aiErrRegenFailed: 'Falha ao refazer o slide',

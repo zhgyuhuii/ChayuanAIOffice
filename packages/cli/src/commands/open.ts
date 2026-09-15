@@ -7,7 +7,7 @@ import { CliError, EXIT } from '../result'
 /** The shell's second-instance handler forwards the path when the app is already running. */
 export const openCommand: CommandDef = {
   name: 'open',
-  summary: 'Open a document in the ChatOffice app (starts the app if needed).',
+  summary: 'Open a document in the ChaAI Office app (starts the app if needed).',
   usage: 'open <file>',
   async run(args, ctx) {
     const path = resolveInput(args.positionals[0], ctx)

@@ -5,7 +5,7 @@ export const cs = {
   aiEmptyBuildTitle: 'Nechte AI sestavit tento sešit za vás',
   aiEmptyBuildBody:
     'Popište tabulku, data nebo graf, které potřebujete — AI je vytvoří přímo na místě.',
-  aiGskLoginBtn: 'Přihlásit se ke ChatOffice',
+  aiGskLoginBtn: 'Přihlásit se ke ChaAI Office',
   aiUndelivered: 'Neodesláno',
   aiRetry: 'Zkusit znovu',
   aiOpenAssistant: 'Otevřít asistenta AI',
@@ -49,13 +49,13 @@ export const cs = {
   aiFileTooltip:
     'SHA-256 {sha}\nPři uložení se přepíší jen upravené položky; všechno ostatní zůstane zachováno.',
   aiFileMeta: 'Listy: {sheets} · položky: {entries}',
-  aiChatOfficeAccount: 'Účet ChatOffice',
+  aiChatOfficeAccount: 'Účet ChaAI Office',
   aiAccountChecking: 'Ověřuje se…',
   aiLoggedIn: 'Přihlášeno',
   aiLoggedInAs: 'Přihlášeno: {email}',
-  aiNotLoggedIn: 'Nepřihlášeno (funkce AI vyžadují účet ChatOffice)',
+  aiNotLoggedIn: 'Nepřihlášeno (funkce AI vyžadují účet ChaAI Office)',
   aiWaitingBrowserLogin: 'Čeká se na přihlášení v prohlížeči…',
-  aiLoginChatOffice: 'Přihlásit se ke ChatOffice',
+  aiLoginChatOffice: 'Přihlásit se ke ChaAI Office',
   aiModel: 'Model',
   aiCancel: 'Zrušit',
   aiSave: 'Uložit',
@@ -66,7 +66,7 @@ export const cs = {
   aiNetworkError:
     'Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu',
   aiCreditsExhausted:
-    'Vaše kredity ChatOffice jsou vyčerpány. Dobijte je na genspark.ai/pricing a zkuste to znovu',
+    'Vaše kredity ChaAI Office jsou vyčerpány. Dobijte je na genspark.ai/pricing a zkuste to znovu',
   aiToolWorkbookContext: 'Načtení informací o sešitu',
   aiToolReadRange: 'Načtení oblasti',
   aiToolReadRangeOf: 'Načtení oblasti {range}',

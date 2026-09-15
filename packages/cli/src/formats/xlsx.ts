@@ -152,7 +152,7 @@ async function withSidecar<T>(fn: (client: XlsxSidecarClient) => Promise<T>): Pr
   const binary = xlsxSidecarPath()
   if (!binary) {
     throw new CliError(EXIT.conversion, 'xlsx engine (xlsx-sidecar) not found', {
-      hint: 'set XLSX_SIDECAR_PATH or run a packaged ChatOffice',
+      hint: 'set XLSX_SIDECAR_PATH or run a packaged ChaAI Office',
     })
   }
   const client = new XlsxSidecarClient(binary)

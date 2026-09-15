@@ -93,7 +93,16 @@
 | 8 | ✅ 2026-09-07 | 九件 pick 全落地（bc6bff6=6d16796 终点）+adapted 提交 | 收尾九连。**`959df83` keyless 自定义端点（中间地带#2④）重实现落地**：activeProvider 键可选化（needsBaseUrl 分支 base+model 即可，注释保留 Ollama/LM Studio 情报）+openai-compatible Authorization 条件化（两处 keep-both 曾双写头，stream.test 驱动修复）+两测试 keep-both 收新用例（chat/providers 各一空壳从 HEAD 时代即存，删壳保体）；**`eda6baa` shell 保留名拒绝干净**；`47999fd` recents 过滤 adapted（theirs+品牌，normalizeRecentQuery 新导出）；**`83f2fa0` 空白模型名 remap（中间地带#2⑤）落地**：trim→migrate 顺序修正（padded " deepseek " 也命中 remap）+chatofficeToolsEnabled 保本地键；`f59f931` sheets 空针干净；**`a612503` pdf Windows 保留名后缀 adapted**：加固并入本地 sanitizePdfBaseName（本地 Untitled 回退语义保留），**随附上游 auto-rename.test 删除**——该测试断言的 pdf:auto-rename 通道已被本地 4327d4d「新建延迟落盘」共识架构替换（untitledPdfMetas+首存另存为转正），Q6 结构差异裁定：测试删、加固留；`4e1c633` sheets New chat 干净；`bd46b03` electron-utils drop 容错干净；**`6d16796` docs 保留名拒绝干净（上游终点到达）**。门禁：全链 exit 0 零 FAIL/typecheck 0/lint 0/品牌零新增（chat/providers 测试名改写，genspark.ai URL 豁免保留） |
 | 9 | ✅ 2026-09-07 | 终检（本轮） | 40 sha 对账/一致率统计/字体字节裁定/终态门禁/品牌终检全过（详见 §5b 验收报告）；台账定稿 |
 
-**上次同步终点（下次续 pick 的起点）**：`ed2bb865`（2026-09-14 第五轮增量完成；下次 `git fetch upstream` 后从 `ed2bb865..upstream/main` 增量续 pick，重放 §9 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`70e5149`（2026-09-15 第六轮增量完成；下次 `git fetch upstream` 后从 `70e5149..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第六轮增量（2026-09-15，ed2bb865..70e5149：26 提交 / 84 文件，施工于独立 worktree 分支 sync/upstream-20260915——主树当日有并行会话未提交工作，全程零接触）
+
+| 内容 | 结果 |
+|---|---|
+| 24 个引擎层小修（docx 单引号域系列×6/pdf2docx TOC 导符线×2/file-parse×2/pdf 打印流式+搜索折叠/pptx schema 空格路径/slides 主题令牌+查找替换+最近颜色/sheets 纸张映射+透视源/ai-provider×2/i18n/electron-utils/html/shell 重命名尾空格） | 全部干净 pick，零冲突 |
+| e064f3a Windows dev 修复 | **空 pick 对账**：本地 scripts/dev-shell.mjs（Node 内注入 env+*_DEV_PORT）+ build-stale-preloads npm.cmd 方案已实现上游意图且更完整；cross-env 依赖不需要（Q5 清单记空收） |
+| 70e5149 本地 MCP 服务器（37 文件 +7053：shell main mcp/ 模块×10+docs mcp-bridge+SettingsModal MCP 面板+11 测试+stdio 桥脚本+e2e） | **adapted 重冲突×4**：docs-main 导入并集；SettingsModal 三处（react 导入扩 hooks/SectionId 并 'mcp'/effect 体新调用全部改挂 window.chatOffice 桥，自动合并区 4 处 aiOffice 同步改名）；shell package.json 保本地域+手工加 @modelcontextprotocol/sdk ^1.30.0（lock 重生成）；品牌 pass 70 处（@genoffice→@chatoffice、genoffice.cjs→chatoffice.cjs 对齐本地打包路径 cli/chatoffice.cjs、open_in_genoffice→open_in_chaoffice、genoffice-app://→chatoffice-app://、显示名 GenOffice→ChaAI Office、mcpServers 键→chaoffice；GENOFFICE_MCP_* env 豁免保留）；settings-mcp.test 补本地桥最小桩（adapted） |
+| **随轮品牌切换（用户 2026-09-15 指令）** | 显示品牌 ChatOffice→**察元AIOffice（zh/zh-TW）/ChaAI Office（其他 18 语言）**：六 app i18n shard（138 文件）+内联语言表×7（含 shell strings.ts 703 处/zh-TW 引号键段修正 53 处双轮补漏）+README；产品标识→**chaoffice**：productName ChaAI Office/appId com.chaoffice.app/desktopName+executableName+deb/rpm 包名；userData 迁移链注释更新（AI Office→ChatOffice→ChaAI Office，ChatOffice hop 已在列表）；默认保存目录改回落 Documents/ChaAI Office 且**优先沿用既有 Documents/ChatOffice**（测试改编+新增用例）；云供应商显示名/PDF 注释作者 T/CLI 提示/搜索 UA ChaAIBot/标签页标题同批；**保留**：@chatoffice/* 包作用域、window.chatOffice 桥名、字体族名（ChatOfficePoppins/Grid Strut 等）、GENOFFICE_* env、genspark.ai URL、CLI bin 名 chatoffice（防破坏脚本自动化）；坑：t('errChatOfficeToolsOff') 引号键引用被值替换正则误伤×2 已回退（typecheck 揪出） |
 
 ### 第五轮增量（2026-09-14，de139a0..ed2bb865：39 提交 / 1037 文件 +79k-5.6k）
 
@@ -210,9 +219,11 @@
 |---|---|---|
 | `GenOfficePoppins-*`（字体文件名+family 表+引用） | `ChatOfficePoppins-*` | 含 `apps/docs/src/renderer/fonts/`、`embedded-fonts.ts`、`tools/build-poppins-font.py` |
 | `GenOfficeUIKanaJP-*` | `ChatOfficeUIKanaJP-*` | 同上，`tools/build-meiryo-ui-kana-font.py` |
-| 用户可见字符串 `GenOffice` | `ChatOffice` | i18n prompts、UI 文案 |
+| 用户可见字符串 `GenOffice` | zh/zh-TW 文件→`察元AIOffice`；其他语言→`ChaAI Office`（2026-09-15 起第六轮后新映射，此前已落库的 `ChatOffice` 显示串同规则切换） | i18n prompts、UI 文案 |
+| 标识符 `genoffice` CLI/slug | `chatoffice`（CLI bin/产物名）/`chaoffice`（MCP 服务器名、外部客户端 mcpServers 键、appId/executableName/deb/rpm 包名） | CLI bin 名保留 chatoffice 防破坏脚本 |
 | 豁免：`GENOFFICE_*` 环境变量 | 不改 | 既有约定 |
 | 豁免：`genspark.ai` URL 值与 host 匹配串 | 不改 | 改=断功能 |
+| 豁免：`ChatOfficePoppins-*`/`ChatOfficeUIKanaJP-*`/`ChatOffice Grid Strut` 等字体族名、`@chatoffice/*` 包作用域、`window.chatOffice` 桥名、i18n 键名（`*ChatOffice*` 驼峰键） | 不改 | 内部标识符/二进制绑定，非用户可见 |
 
 ## 10. 裁定记录（施工中追加）
 

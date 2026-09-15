@@ -514,7 +514,7 @@ async function createStandaloneDocument(
   if (request.type === 'docx') {
     return {
       ok: false,
-      error: 'Creating DOCX files requires the ChatOffice shell or Docs app.',
+      error: 'Creating DOCX files requires the ChaAI Office shell or Docs app.',
     }
   }
   const title = sanitizeGeneratedDocumentTitle(request.title)

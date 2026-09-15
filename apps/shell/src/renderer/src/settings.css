@@ -128,6 +128,13 @@
   overflow-y: auto;
 }
 
+/* the pane scrolls, so rows must keep their natural height: .set-field's
+   explicit min-height would otherwise let flex shrink collapse tall rows
+   (multi-line stacks) below their content and overlap the next row */
+.set-pane > * {
+  flex-shrink: 0;
+}
+
 .set-pane-title {
   margin: 0 0 18px;
   font-size: 18px;
@@ -185,6 +192,100 @@
   font-size: 12px;
   line-height: 1.45;
   color: var(--text-secondary);
+}
+
+/* MCP pane: sub-section heading inside a pane (Connection, Available capabilities) */
+.set-group-title {
+  margin: 20px 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+}
+
+/* MCP service row: the label + description + status stack reads better with the
+   switch aligned to the label line instead of centered against three lines */
+.set-field-top {
+  align-items: flex-start;
+}
+
+.set-field-top .set-switch {
+  margin-top: 2px;
+}
+
+/* MCP pane: running/stopped line with a status dot */
+.set-mcp-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.set-status-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
+.set-status-dot.running {
+  background: var(--success);
+}
+
+.set-status-dot.error {
+  background: var(--danger);
+}
+
+/* MCP pane: client config example — heading row with the copy button, then the
+   snippet on its own full-width row (a side-by-side flex row squeezes the
+   tall snippet against the button) */
+.set-config-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.set-config-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* MCP pane: compact action group in a config/log head row */
+.set-btn-row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+/* MCP pane: copyable config snippet */
+.set-code {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  overflow-x: auto;
+  white-space: pre;
+  user-select: text;
+}
+
+/* MCP pane: in-pane log viewer — fixed height, scrolls, follows the tail */
+.set-log {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.set-log-empty {
+  color: var(--text-tertiary);
 }
 
 /* on/off switch (analytics toggle) */

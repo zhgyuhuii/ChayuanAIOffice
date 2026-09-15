@@ -94,6 +94,13 @@ describe('provider registry', () => {
     })
   })
 
+  it('does not over-match fixed-sampling prefixes (o10, o30, o4-minix)', () => {
+    expect(modelHasFixedSampling('o10')).toBe(false)
+    expect(modelHasFixedSampling('o30')).toBe(false)
+    expect(modelHasFixedSampling('o4-minix')).toBe(false)
+    expect(modelHasFixedSampling('gpt-50')).toBe(false)
+  })
+
   it('resolves the catalog additions to their OpenAI-compatible endpoints', () => {
     const cases: Array<[AiProviderId, string, string]> = [
       ['glm', 'glm-5.3', 'https://open.bigmodel.cn/api/paas/v4'],
@@ -207,6 +214,15 @@ describe('provider registry', () => {
     expect(resolve('gemini-3.7-flash').protocol).toBe('openai-compatible')
   })
 
+  it('does not crash the opencode route on a missing model id', () => {
+    const zen = AI_PROVIDER_ADAPTERS['opencode-zen'].resolveEndpoint({
+      apiKey: 'k',
+      model: undefined as unknown as string,
+    })
+    expect(zen.protocol).toBe('openai-compatible')
+    expect(zen.omitTemperature).toBeUndefined()
+  })
+
   it('uses the configured base URL for custom and rejects a missing one', () => {
     expect(
       AI_PROVIDER_ADAPTERS.custom.resolveEndpoint(config('m', 'http://localhost:1234/v1')),
@@ -312,6 +328,12 @@ describe('modelLacksVision', () => {
     expect(modelLacksVision('deepseek-v4-flash-vision-exp')).toBe(false)
     expect(modelLacksVision('deep-seek-v4-flash-vision-exp-openrouter')).toBe(false)
     expect(modelLacksVision('claude-opus-4-7')).toBe(false)
+  })
+
+  it('matches case-insensitively like its sibling matchers', () => {
+    expect(modelLacksVision('DeepSeek-V4-Pro')).toBe(true)
+    expect(modelLacksVision('DEEPSEEK-V4-FLASH')).toBe(true)
+    expect(modelLacksVision('DeepSeek-V4-Flash-Vision-Exp')).toBe(false)
   })
 })
 

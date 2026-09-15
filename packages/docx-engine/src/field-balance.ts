@@ -7,7 +7,8 @@
  * written: stray separate/end runs go, and a begin left open is closed at the
  * end of its own paragraph so the field keeps its code and first result line.
  */
-const TOKEN_RE = /<w:fldChar\b[^>]*\bw:fldCharType="(begin|separate|end)"|<w:p\b[^>]*>|<\/w:p>/g
+const TOKEN_RE =
+  /<w:fldChar\b[^>]*\bw:fldCharType=(?:"(begin|separate|end)"|'(begin|separate|end)')|<w:p\b[^>]*>|<\/w:p>/g
 
 interface Edit {
   start: number
@@ -45,7 +46,7 @@ export function balanceFieldChars(bodyXml: string): string {
       if (!token.endsWith('/>')) depth++
       continue
     }
-    const type = m[1]
+    const type = m[1] ?? m[2]
     if (type === 'begin') {
       open.push({ depth, paraEnd: null })
     } else if (type === 'end' && open.length > 0) {

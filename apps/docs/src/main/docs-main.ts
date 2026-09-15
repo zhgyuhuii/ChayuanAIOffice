@@ -23,7 +23,7 @@ import {
   writeFile,
 } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { basename, dirname, join } from 'node:path'
+import { basename, dirname, extname, isAbsolute, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
   BrowserWindow,
@@ -197,7 +197,7 @@ const tMain = createI18n({
     errParseFailed: '文件解析失败',
     errImageNoText: '图片附件不提供文本,已作为图像随用户消息发送,直接看图即可',
     errNotImage: '不是支持的图片类型',
-    errChatOfficeNotLoggedIn: '未登录 ChatOffice:请点击下方「登录」完成登录后重试',
+    errChatOfficeNotLoggedIn: '未登录 察元AIOffice:请点击下方「登录」完成登录后重试',
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
@@ -258,7 +258,7 @@ const tMain = createI18n({
     menuWindow: '窗口',
     menuHelp: '帮助',
     menuShortcuts: '键盘快捷键',
-    menuDocsHelp: 'ChatOffice Docs 帮助',
+    menuDocsHelp: '察元AIOffice Docs 帮助',
   },
   en: {
     dlgOpenDoc: 'Open Document',
@@ -301,14 +301,14 @@ const tMain = createI18n({
     errImageNoText: 'Image attachments have no text; the image is sent along with the user message',
     errNotImage: 'not a supported image type',
     errChatOfficeNotLoggedIn:
-      'Not signed in to ChatOffice: click “Sign in” below, sign in, then retry',
+      'Not signed in to ChaAI Office: click “Sign in” below, sign in, then retry',
     errNoApiKey: 'No API key configured for {provider}',
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChatOffice',
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChaAI Office',
     errChatOfficeToolsOff:
-      'ChatOffice cloud tools are turned off in Model Settings; enable them to use this tool',
+      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
     menuFile: 'File',
     menuNewDoc: 'New Document',
     menuNewWindow: 'New Window',
@@ -364,7 +364,7 @@ const tMain = createI18n({
     menuWindow: 'Window',
     menuHelp: 'Help',
     menuShortcuts: 'Keyboard Shortcuts',
-    menuDocsHelp: 'ChatOffice Docs Help',
+    menuDocsHelp: 'ChaAI Office Docs Help',
   },
   ja: {
     dlgOpenDoc: '文書を開く',
@@ -406,14 +406,14 @@ const tMain = createI18n({
       '画像の添付ファイルはテキストを提供しません。画像としてユーザーメッセージと一緒に送信されるため、そのまま画像をご確認ください',
     errNotImage: 'サポートされていない画像形式です',
     errChatOfficeNotLoggedIn:
-      'ChatOffice にサインインしていません。下の「サインイン」からサインインして再試行してください',
+      'ChaAI Office にサインインしていません。下の「サインイン」からサインインして再試行してください',
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
     errNoImageModel:
-      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、ChatOffice にサインインしてください',
+      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、ChaAI Office にサインインしてください',
     errChatOfficeToolsOff:
-      'ChatOffice クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
+      'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     menuFile: 'ファイル',
     menuNewDoc: '新規文書',
     menuNewWindow: '新規ウィンドウ',
@@ -469,7 +469,7 @@ const tMain = createI18n({
     menuWindow: 'ウィンドウ',
     menuHelp: 'ヘルプ',
     menuShortcuts: 'キーボードショートカット',
-    menuDocsHelp: 'ChatOffice Docs ヘルプ',
+    menuDocsHelp: 'ChaAI Office Docs ヘルプ',
   },
   ko: {
     dlgOpenDoc: '문서 열기',
@@ -512,14 +512,14 @@ const tMain = createI18n({
       '이미지 첨부 파일은 텍스트를 제공하지 않으며, 이미지 형태로 사용자 메시지와 함께 전송되므로 이미지를 직접 확인하면 됩니다',
     errNotImage: '지원되지 않는 이미지 형식입니다',
     errChatOfficeNotLoggedIn:
-      'ChatOffice에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
+      'ChaAI Office에 로그인되어 있지 않습니다. 아래 "로그인"을 눌러 로그인한 뒤 다시 시도하세요',
     errNoApiKey: '{provider}의 API 키가 설정되지 않았습니다',
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 ChatOffice에 로그인하세요',
+      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 ChaAI Office에 로그인하세요',
     errChatOfficeToolsOff:
-      'ChatOffice 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
+      'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     menuFile: '파일',
     menuNewDoc: '새 문서',
     menuNewWindow: '새 창',
@@ -575,7 +575,7 @@ const tMain = createI18n({
     menuWindow: '창',
     menuHelp: '도움말',
     menuShortcuts: '키보드 바로 가기',
-    menuDocsHelp: 'ChatOffice Docs 도움말',
+    menuDocsHelp: 'ChaAI Office Docs 도움말',
   },
   fr: {
     dlgOpenDoc: 'Ouvrir un document',
@@ -619,14 +619,14 @@ const tMain = createI18n({
       "Les pièces jointes image ne fournissent pas de texte ; l'image est envoyée avec le message de l'utilisateur, consultez-la directement",
     errNotImage: "type d'image non pris en charge",
     errChatOfficeNotLoggedIn:
-      'Non connecté à ChatOffice : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
+      'Non connecté à ChaAI Office : cliquez sur « Se connecter » ci-dessous, connectez-vous puis réessayez',
     errNoApiKey: 'Aucune clé API configurée pour {provider}',
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
     errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à ChatOffice",
+      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à ChaAI Office",
     errChatOfficeToolsOff:
-      'Les outils cloud ChatOffice sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
+      'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     menuFile: 'Fichier',
     menuNewDoc: 'Nouveau document',
     menuNewWindow: 'Nouvelle fenêtre',
@@ -682,7 +682,7 @@ const tMain = createI18n({
     menuWindow: 'Fenêtre',
     menuHelp: 'Aide',
     menuShortcuts: 'Raccourcis clavier',
-    menuDocsHelp: 'Aide ChatOffice Docs',
+    menuDocsHelp: 'Aide ChaAI Office Docs',
   },
   de: {
     dlgOpenDoc: 'Dokument öffnen',
@@ -726,14 +726,14 @@ const tMain = createI18n({
       'Bildanlagen liefern keinen Text; das Bild wird mit der Benutzernachricht gesendet und kann direkt betrachtet werden',
     errNotImage: 'kein unterstütztes Bildformat',
     errChatOfficeNotLoggedIn:
-      'Nicht bei ChatOffice angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
+      'Nicht bei ChaAI Office angemeldet: Klicken Sie unten auf „Anmelden“, melden Sie sich an und versuchen Sie es erneut',
     errNoApiKey: 'Kein API-Schlüssel für {provider} konfiguriert',
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
     errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei ChatOffice an',
+      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei ChaAI Office an',
     errChatOfficeToolsOff:
-      'ChatOffice-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
+      'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     menuFile: 'Datei',
     menuNewDoc: 'Neues Dokument',
     menuNewWindow: 'Neues Fenster',
@@ -789,7 +789,7 @@ const tMain = createI18n({
     menuWindow: 'Fenster',
     menuHelp: 'Hilfe',
     menuShortcuts: 'Tastenkombinationen',
-    menuDocsHelp: 'ChatOffice Docs-Hilfe',
+    menuDocsHelp: 'ChaAI Office Docs-Hilfe',
   },
   es: {
     dlgOpenDoc: 'Abrir documento',
@@ -832,15 +832,15 @@ const tMain = createI18n({
       'Las imágenes adjuntas no proporcionan texto; la imagen se envía junto con el mensaje del usuario, puedes verla directamente',
     errNotImage: 'no es un tipo de imagen compatible',
     errChatOfficeNotLoggedIn:
-      'No has iniciado sesión en ChatOffice: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
+      'No has iniciado sesión en ChaAI Office: pulsa «Iniciar sesión» abajo, inicia sesión y vuelve a intentarlo',
     errNoApiKey: 'No hay clave de API configurada para {provider}',
     errAiBusy:
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No se ha configurado el nombre del modelo',
     errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en ChatOffice',
+      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en ChaAI Office',
     errChatOfficeToolsOff:
-      'Las herramientas en la nube de ChatOffice están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
+      'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     menuFile: 'Archivo',
     menuNewDoc: 'Nuevo documento',
     menuNewWindow: 'Nueva ventana',
@@ -896,7 +896,7 @@ const tMain = createI18n({
     menuWindow: 'Ventana',
     menuHelp: 'Ayuda',
     menuShortcuts: 'Atajos de teclado',
-    menuDocsHelp: 'Ayuda de ChatOffice Docs',
+    menuDocsHelp: 'Ayuda de ChaAI Office Docs',
   },
   th: {
     dlgOpenDoc: 'เปิดเอกสาร',
@@ -938,14 +938,14 @@ const tMain = createI18n({
       'สิ่งที่แนบเป็นรูปภาพไม่มีข้อความ รูปจะถูกส่งไปพร้อมข้อความของผู้ใช้ ดูรูปได้โดยตรง',
     errNotImage: 'ไม่ใช่ชนิดรูปภาพที่รองรับ',
     errChatOfficeNotLoggedIn:
-      'ยังไม่ได้ลงชื่อเข้าใช้ ChatOffice: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
+      'ยังไม่ได้ลงชื่อเข้าใช้ ChaAI Office: แตะ “ลงชื่อเข้าใช้” ด้านล่าง แล้วลองอีกครั้ง',
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
     errNoImageModel:
-      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ ChatOffice',
+      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ ChaAI Office',
     errChatOfficeToolsOff:
-      'เครื่องมือคลาวด์ของ ChatOffice ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
+      'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     menuFile: 'ไฟล์',
     menuNewDoc: 'เอกสารใหม่',
     menuNewWindow: 'หน้าต่างใหม่',
@@ -1001,7 +1001,7 @@ const tMain = createI18n({
     menuWindow: 'หน้าต่าง',
     menuHelp: 'วิธีใช้',
     menuShortcuts: 'แป้นพิมพ์ลัด',
-    menuDocsHelp: 'วิธีใช้ ChatOffice Docs',
+    menuDocsHelp: 'วิธีใช้ ChaAI Office Docs',
   },
   id: {
     dlgOpenDoc: 'Buka Dokumen',
@@ -1044,14 +1044,14 @@ const tMain = createI18n({
     errImageNoText:
       'Lampiran gambar tidak menyediakan teks; gambar dikirim bersama pesan pengguna dan dapat dilihat langsung',
     errNotImage: 'bukan jenis gambar yang didukung',
-    errChatOfficeNotLoggedIn: 'Belum masuk ke ChatOffice: klik “Masuk” di bawah, lalu coba lagi',
+    errChatOfficeNotLoggedIn: 'Belum masuk ke ChaAI Office: klik “Masuk” di bawah, lalu coba lagi',
     errNoApiKey: 'API Key untuk {provider} belum dikonfigurasi',
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke ChatOffice',
+      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke ChaAI Office',
     errChatOfficeToolsOff:
-      'Alat cloud ChatOffice dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
+      'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'File',
     menuNewDoc: 'Dokumen Baru',
     menuNewWindow: 'Jendela Baru',
@@ -1107,7 +1107,7 @@ const tMain = createI18n({
     menuWindow: 'Jendela',
     menuHelp: 'Bantuan',
     menuShortcuts: 'Pintasan Papan Ketik',
-    menuDocsHelp: 'Bantuan ChatOffice Docs',
+    menuDocsHelp: 'Bantuan ChaAI Office Docs',
   },
   ru: {
     dlgOpenDoc: 'Открыть документ',
@@ -1150,14 +1150,14 @@ const tMain = createI18n({
       'Вложенные изображения не содержат текста; изображение отправляется вместе с сообщением пользователя, смотрите его напрямую',
     errNotImage: 'неподдерживаемый тип изображения',
     errChatOfficeNotLoggedIn:
-      'Вы не вошли в ChatOffice: нажмите «Войти» ниже, войдите и повторите попытку',
+      'Вы не вошли в ChaAI Office: нажмите «Войти» ниже, войдите и повторите попытку',
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Не указано имя модели',
     errNoImageModel:
-      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в ChatOffice',
+      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в ChaAI Office',
     errChatOfficeToolsOff:
-      'Облачные инструменты ChatOffice отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
+      'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     menuFile: 'Файл',
     menuNewDoc: 'Создать документ',
     menuNewWindow: 'Новое окно',
@@ -1213,7 +1213,7 @@ const tMain = createI18n({
     menuWindow: 'Окно',
     menuHelp: 'Справка',
     menuShortcuts: 'Сочетания клавиш',
-    menuDocsHelp: 'Справка ChatOffice Docs',
+    menuDocsHelp: 'Справка ChaAI Office Docs',
   },
   ar: {
     dlgOpenDoc: 'فتح مستند',
@@ -1256,14 +1256,14 @@ const tMain = createI18n({
       'مرفقات الصور لا توفر نصًا؛ تُرسل الصورة مع رسالة المستخدم ويمكن الاطلاع عليها مباشرة',
     errNotImage: 'ليس نوع صورة مدعومًا',
     errChatOfficeNotLoggedIn:
-      'لم تسجّل الدخول إلى ChatOffice: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
+      'لم تسجّل الدخول إلى ChaAI Office: انقر على «تسجيل الدخول» أدناه ثم أعد المحاولة',
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errNoImageModel:
-      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى ChatOffice',
+      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى ChaAI Office',
     errChatOfficeToolsOff:
-      'أدوات ChatOffice السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
+      'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     menuFile: 'ملف',
     menuNewDoc: 'مستند جديد',
     menuNewWindow: 'نافذة جديدة',
@@ -1319,7 +1319,7 @@ const tMain = createI18n({
     menuWindow: 'نافذة',
     menuHelp: 'تعليمات',
     menuShortcuts: 'اختصارات لوحة المفاتيح',
-    menuDocsHelp: 'تعليمات ChatOffice Docs',
+    menuDocsHelp: 'تعليمات ChaAI Office Docs',
   },
   pt: {
     dlgOpenDoc: 'Abrir Documento',
@@ -1362,14 +1362,14 @@ const tMain = createI18n({
       'Anexos de imagem não fornecem texto; a imagem é enviada junto com a mensagem do usuário, basta vê-la diretamente',
     errNotImage: 'não é um tipo de imagem suportado',
     errChatOfficeNotLoggedIn:
-      'Não conectado ao ChatOffice: clique em “Entrar” abaixo, entre e tente novamente',
+      'Não conectado ao ChaAI Office: clique em “Entrar” abaixo, entre e tente novamente',
     errNoApiKey: 'Nenhuma chave de API configurada para {provider}',
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
     errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no ChatOffice',
+      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no ChaAI Office',
     errChatOfficeToolsOff:
-      'As ferramentas de nuvem do ChatOffice estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
+      'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     menuFile: 'Arquivo',
     menuNewDoc: 'Novo Documento',
     menuNewWindow: 'Nova Janela',
@@ -1425,7 +1425,7 @@ const tMain = createI18n({
     menuWindow: 'Janela',
     menuHelp: 'Ajuda',
     menuShortcuts: 'Atalhos de Teclado',
-    menuDocsHelp: 'Ajuda do ChatOffice Docs',
+    menuDocsHelp: 'Ajuda do ChaAI Office Docs',
   },
   it: {
     dlgOpenDoc: 'Apri documento',
@@ -1469,14 +1469,14 @@ const tMain = createI18n({
       "Gli allegati immagine non forniscono testo; l'immagine viene inviata insieme al messaggio dell'utente, basta guardarla direttamente",
     errNotImage: 'tipo di immagine non supportato',
     errChatOfficeNotLoggedIn:
-      'Accesso a ChatOffice non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
+      'Accesso a ChaAI Office non effettuato: fai clic su “Accedi” qui sotto, accedi e riprova',
     errNoApiKey: 'Nessuna chiave API configurata per {provider}',
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
     errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a ChatOffice',
+      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a ChaAI Office',
     errChatOfficeToolsOff:
-      'Gli strumenti cloud ChatOffice sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
+      'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     menuFile: 'File',
     menuNewDoc: 'Nuovo documento',
     menuNewWindow: 'Nuova finestra',
@@ -1532,7 +1532,7 @@ const tMain = createI18n({
     menuWindow: 'Finestra',
     menuHelp: 'Aiuto',
     menuShortcuts: 'Scelte rapide da tastiera',
-    menuDocsHelp: 'Guida di ChatOffice Docs',
+    menuDocsHelp: 'Guida di ChaAI Office Docs',
   },
   pl: {
     dlgOpenDoc: 'Otwórz dokument',
@@ -1575,14 +1575,14 @@ const tMain = createI18n({
       'Załączniki graficzne nie zawierają tekstu; obraz jest wysyłany razem z wiadomością użytkownika, wystarczy na niego spojrzeć',
     errNotImage: 'nieobsługiwany typ obrazu',
     errChatOfficeNotLoggedIn:
-      'Nie zalogowano do ChatOffice: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
+      'Nie zalogowano do ChaAI Office: kliknij „Zaloguj się” poniżej, zaloguj się i spróbuj ponownie',
     errNoApiKey: 'Nie skonfigurowano klucza API dla {provider}',
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do ChatOffice',
+      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do ChaAI Office',
     errChatOfficeToolsOff:
-      'Narzędzia chmurowe ChatOffice są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
+      'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     menuFile: 'Plik',
     menuNewDoc: 'Nowy dokument',
     menuNewWindow: 'Nowe okno',
@@ -1638,7 +1638,7 @@ const tMain = createI18n({
     menuWindow: 'Okno',
     menuHelp: 'Pomoc',
     menuShortcuts: 'Skróty klawiaturowe',
-    menuDocsHelp: 'Pomoc ChatOffice Docs',
+    menuDocsHelp: 'Pomoc ChaAI Office Docs',
   },
   cs: {
     dlgOpenDoc: 'Otevřít dokument',
@@ -1677,7 +1677,7 @@ const tMain = createI18n({
       'Obrázkové přílohy neobsahují text; obrázek se odesílá spolu se zprávou uživatele',
     errNotImage: 'nepodporovaný typ obrázku',
     errChatOfficeNotLoggedIn:
-      'Nejste přihlášeni do ChatOffice: klikněte níže na „Přihlásit se do ChatOffice“, přihlaste se a zkuste to znovu',
+      'Nejste přihlášeni do ChaAI Office: klikněte níže na „Přihlásit se do ChaAI Office“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errAiBusy: 'Služba AI je právě zaneprázdněna — zkuste to prosím za chvíli znovu',
     errNoModel: 'Není nakonfigurován název modelu',
@@ -1736,16 +1736,16 @@ const tMain = createI18n({
     menuWindow: 'Okno',
     menuHelp: 'Nápověda',
     menuShortcuts: 'Klávesové zkratky',
-    menuDocsHelp: 'Nápověda ChatOffice Docs',
+    menuDocsHelp: 'Nápověda ChaAI Office Docs',
     rsConflictMsg: 'The remote file was changed on another device.',
     rsConflictOverwrite: 'Overwrite with my version',
     rsConflictCopy: 'Save my version as a copy',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChatOffice',
+      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChaAI Office',
     rsConflictDetail:
       'Your version differs from the one currently in remote storage. Choose how to proceed:',
     errChatOfficeToolsOff:
-      'ChatOffice cloud tools are turned off in Model Settings; enable them to use this tool',
+      'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
   },
   nl: {
     dlgOpenDoc: 'Document openen',
@@ -1788,14 +1788,14 @@ const tMain = createI18n({
       'Afbeeldingsbijlagen bevatten geen tekst; de afbeelding wordt samen met het gebruikersbericht verzonden en kan direct worden bekeken',
     errNotImage: 'geen ondersteund afbeeldingstype',
     errChatOfficeNotLoggedIn:
-      'Niet aangemeld bij ChatOffice: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
+      'Niet aangemeld bij ChaAI Office: klik hieronder op “Aanmelden”, meld u aan en probeer het opnieuw',
     errNoApiKey: 'Geen API-sleutel geconfigureerd voor {provider}',
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
     errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij ChatOffice',
+      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij ChaAI Office',
     errChatOfficeToolsOff:
-      'ChatOffice-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
+      'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     menuFile: 'Bestand',
     menuNewDoc: 'Nieuw document',
     menuNewWindow: 'Nieuw venster',
@@ -1851,7 +1851,7 @@ const tMain = createI18n({
     menuWindow: 'Venster',
     menuHelp: 'Help',
     menuShortcuts: 'Sneltoetsen',
-    menuDocsHelp: 'ChatOffice Docs Help',
+    menuDocsHelp: 'ChaAI Office Docs Help',
   },
   ms: {
     dlgOpenDoc: 'Buka Dokumen',
@@ -1894,14 +1894,14 @@ const tMain = createI18n({
       'Lampiran imej tidak menyediakan teks; imej dihantar bersama mesej pengguna dan boleh dilihat terus',
     errNotImage: 'bukan jenis imej yang disokong',
     errChatOfficeNotLoggedIn:
-      'Belum log masuk ke ChatOffice: klik “Log masuk” di bawah, kemudian cuba lagi',
+      'Belum log masuk ke ChaAI Office: klik “Log masuk” di bawah, kemudian cuba lagi',
     errNoApiKey: 'Kunci API untuk {provider} belum dikonfigurasikan',
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
     errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke ChatOffice',
+      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke ChaAI Office',
     errChatOfficeToolsOff:
-      'Alat awan ChatOffice dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
+      'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     menuFile: 'Fail',
     menuNewDoc: 'Dokumen Baharu',
     menuNewWindow: 'Tetingkap Baharu',
@@ -1957,7 +1957,7 @@ const tMain = createI18n({
     menuWindow: 'Tetingkap',
     menuHelp: 'Bantuan',
     menuShortcuts: 'Pintasan Papan Kekunci',
-    menuDocsHelp: 'Bantuan ChatOffice Docs',
+    menuDocsHelp: 'Bantuan ChaAI Office Docs',
   },
   he: {
     dlgOpenDoc: 'פתיחת מסמך',
@@ -1998,14 +1998,14 @@ const tMain = createI18n({
     errImageNoText:
       'קבצים מצורפים מסוג תמונה אינם מספקים טקסט; התמונה נשלחת יחד עם הודעת המשתמש וניתן לצפות בה ישירות',
     errNotImage: 'סוג תמונה שאינו נתמך',
-    errChatOfficeNotLoggedIn: 'לא מחובר ל-ChatOffice: לחץ על "התחבר" למטה, התחבר ונסה שוב',
+    errChatOfficeNotLoggedIn: 'לא מחובר ל-ChaAI Office: לחץ על "התחבר" למטה, התחבר ונסה שוב',
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
     errNoImageModel:
-      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-ChatOffice',
+      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-ChaAI Office',
     errChatOfficeToolsOff:
-      'כלי הענן של ChatOffice כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
+      'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     menuFile: 'קובץ',
     menuNewDoc: 'מסמך חדש',
     menuNewWindow: 'חלון חדש',
@@ -2061,7 +2061,7 @@ const tMain = createI18n({
     menuWindow: 'חלון',
     menuHelp: 'עזרה',
     menuShortcuts: 'קיצורי מקלדת',
-    menuDocsHelp: 'עזרה של ChatOffice Docs',
+    menuDocsHelp: 'עזרה של ChaAI Office Docs',
   },
   hi: {
     dlgOpenDoc: 'दस्तावेज़ खोलें',
@@ -2104,14 +2104,14 @@ const tMain = createI18n({
       'छवि अनुलग्नक टेक्स्ट प्रदान नहीं करते; छवि उपयोगकर्ता संदेश के साथ भेजी जाती है, उसे सीधे देखें',
     errNotImage: 'समर्थित छवि प्रकार नहीं है',
     errChatOfficeNotLoggedIn:
-      'ChatOffice में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
+      'ChaAI Office में साइन इन नहीं है: नीचे “साइन इन करें” पर क्लिक करें, साइन इन करें और फिर से कोशिश करें',
     errNoApiKey: '{provider} के लिए कोई API कुंजी कॉन्फ़िगर नहीं है',
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या ChatOffice में साइन इन करें',
+      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या ChaAI Office में साइन इन करें',
     errChatOfficeToolsOff:
-      'ChatOffice क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
+      'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     menuFile: 'फ़ाइल',
     menuNewDoc: 'नया दस्तावेज़',
     menuNewWindow: 'नई विंडो',
@@ -2167,7 +2167,7 @@ const tMain = createI18n({
     menuWindow: 'विंडो',
     menuHelp: 'सहायता',
     menuShortcuts: 'कीबोर्ड शॉर्टकट',
-    menuDocsHelp: 'ChatOffice Docs सहायता',
+    menuDocsHelp: 'ChaAI Office Docs सहायता',
   },
   'zh-TW': {
     dlgOpenDoc: '開啟文件',
@@ -2207,7 +2207,7 @@ const tMain = createI18n({
     errParseFailed: '檔案解析失敗',
     errImageNoText: '圖片附件不提供文字,已作為影像隨使用者訊息傳送,直接看圖即可',
     errNotImage: '不是支援的圖片類型',
-    errChatOfficeNotLoggedIn: '未登入 ChatOffice:請點擊下方「登入」完成登入後重試',
+    errChatOfficeNotLoggedIn: '未登入 察元AIOffice:請點擊下方「登入」完成登入後重試',
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
@@ -2268,7 +2268,7 @@ const tMain = createI18n({
     menuWindow: '視窗',
     menuHelp: '說明',
     menuShortcuts: '鍵盤快速鍵',
-    menuDocsHelp: 'ChatOffice Docs 說明',
+    menuDocsHelp: '察元AIOffice Docs 說明',
   },
 })
 const tm = (key: Parameters<typeof tMain>[1], params?: Parameters<typeof tMain>[2]) =>
@@ -4087,6 +4087,59 @@ export function registerDocsIpc(): void {
       }),
   )
 
+  // MCP-driven output: write the live document to an explicit absolute path with
+  // no dialog. Mirrors docs:save-new's bookkeeping (write allowlist, disk state,
+  // recents, tab-title sync) but targets a caller-chosen path and refuses to
+  // clobber an existing file unless the caller asked for overwrite.
+  ipcMain.handle(
+    'docs:save-to',
+    async (event, filePath: string, data: ArrayBuffer, overwrite: boolean) => {
+      try {
+        if (tornDownWcIds.has(event.sender.id)) return { ok: false }
+        if (typeof filePath !== 'string' || !isAbsolute(filePath)) {
+          return { ok: false, error: 'path must be absolute' }
+        }
+        if (extname(filePath).toLowerCase() !== '.docx') {
+          return { ok: false, error: 'path must point to a .docx file' }
+        }
+        if (!overwrite && existsSync(filePath)) {
+          return {
+            ok: false,
+            error: `file already exists: ${filePath} (pass overwrite:true to replace it)`,
+          }
+        }
+        await mkdir(dirname(filePath), { recursive: true })
+        const passwordState = snapshotDocPassword(event.sender.id, null)
+        const bytes = passwordState.password
+          ? encryptDocx(Buffer.from(data), passwordState.password)
+          : Buffer.from(data)
+        await atomicWriteFile(filePath, bytes)
+        // teardown may have happened while the write was in flight — a file this
+        // handler just wrote is safe to roll back (mirrors docs:save-new)
+        if (tornDownWcIds.has(event.sender.id)) {
+          await unlink(filePath).catch(() => {})
+          return { ok: false }
+        }
+        allowDocWrite(event.sender.id, filePath)
+        await rememberDiskState(event.sender.id, filePath, bytes)
+        if (tornDownWcIds.has(event.sender.id)) {
+          await unlink(filePath).catch(() => {})
+          return { ok: false }
+        }
+        const passwordIntentPending = commitDocPasswordSave(
+          event.sender.id,
+          passwordState,
+          filePath,
+        )
+        pushRecent(filePath)
+        notifyFileSaved(event.sender, filePath)
+        return { ok: true, path: filePath, passwordIntentPending }
+      } catch (err) {
+        return { ok: false, error: String(err) }
+      }
+    },
+  )
+
   ipcMain.handle('docs:recent', () =>
     readJson<string[]>(RECENT_PATH(), []).filter((p) => isRemoteUri(p) || existsSync(p)),
   )
@@ -4906,7 +4959,7 @@ export function createDocsWindow(openPath?: string): BrowserWindow {
     height: 900,
     minWidth: 720,
     minHeight: 550,
-    title: 'ChatOffice Docs',
+    title: '察元AIOffice Docs',
     icon: APP_ICON,
     // Word-like custom title bar (document name centered, quick-access buttons)
     ...(process.platform === 'darwin'
@@ -5229,7 +5282,7 @@ export function startDocsStandalone(): void {
   // AI_OFFICE_USER_DATA: E2E/screenshot runs isolate userData (and the
   // single-instance lock) so parallel automation sessions don't evict each other
   if (process.env.AI_OFFICE_USER_DATA) app.setPath('userData', process.env.AI_OFFICE_USER_DATA)
-  else if (isDev) app.setPath('userData', join(app.getPath('appData'), 'ChatOffice Docs Dev'))
+  else if (isDev) app.setPath('userData', join(app.getPath('appData'), '察元AIOffice Docs Dev'))
 
   const hasSingleInstanceLock = app.requestSingleInstanceLock()
   if (!hasSingleInstanceLock) {
