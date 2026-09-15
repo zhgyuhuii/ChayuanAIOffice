@@ -3,6 +3,8 @@
 // placeholders. This is the drift alarm for the migration pipeline.
 import { describe, expect, it } from 'vitest'
 import {
+  ALL_ASSISTANT_DOMAINS,
+  ALL_ASSISTANTS_TOTAL,
   DOC_ASSISTANT_DOMAINS,
   DOC_ASSISTANT_TOTAL,
   flattenByManifest,
@@ -21,7 +23,8 @@ describe('generated assistant packs', () => {
   it('every assistant satisfies the unified schema', async () => {
     const byDomain = await loadAllAssistants()
     const all = flattenByManifest(byDomain)
-    expect(all.length).toBe(DOC_ASSISTANT_TOTAL)
+    // the generated packs plus the pinned core pack (常用助手)
+    expect(all.length).toBe(ALL_ASSISTANTS_TOTAL)
 
     const ids = new Set<string>()
     for (const doc of all) {
@@ -43,8 +46,10 @@ describe('generated assistant packs', () => {
 
   it('every domain in the packs is listed in the manifest and vice versa', async () => {
     const byDomain = await loadAllAssistants()
-    expect([...byDomain.keys()].sort()).toEqual(DOC_ASSISTANT_DOMAINS.map((d) => d.key).sort())
-    for (const d of DOC_ASSISTANT_DOMAINS) {
+    expect([...byDomain.keys()].sort()).toEqual(
+      ALL_ASSISTANT_DOMAINS.map((d) => d.key).sort(),
+    )
+    for (const d of ALL_ASSISTANT_DOMAINS) {
       expect(byDomain.get(d.key)?.length).toBe(d.count)
     }
   })
@@ -64,7 +69,7 @@ describe('generated assistant packs', () => {
   it('search matches labels, tags and domain labels', async () => {
     const byDomain = await loadAllAssistants()
     const all = flattenByManifest(byDomain)
-    const labelOf = new Map(DOC_ASSISTANT_DOMAINS.map((d) => [d.key, d.label]))
+    const labelOf = new Map(ALL_ASSISTANT_DOMAINS.map((d) => [d.key, d.label]))
     const search = (query: string) =>
       all.filter((d) => matchAssistant(d, labelOf.get(d.domain) ?? d.domain, query))
     // every report preset is reachable via its 报告-generating purpose

@@ -10,8 +10,8 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  DOC_ASSISTANT_DOMAINS,
-  DOC_ASSISTANT_TOTAL,
+  ALL_ASSISTANT_DOMAINS,
+  ALL_ASSISTANTS_TOTAL,
   buildAssistantInstruction,
   flattenByManifest,
   getDomainAssistants,
@@ -109,7 +109,7 @@ export function AssistantBrowser({
     }
   }, [domainKey, all])
 
-  const domainLabel = useMemo(() => new Map(DOC_ASSISTANT_DOMAINS.map((d) => [d.key, d.label])), [])
+  const domainLabel = useMemo(() => new Map(ALL_ASSISTANT_DOMAINS.map((d) => [d.key, d.label])), [])
 
   const showNotice = (key: StringKey) => {
     window.clearTimeout(noticeTimer.current)
@@ -155,7 +155,7 @@ export function AssistantBrowser({
     return recents.map((id) => byId.get(id)).filter((d): d is DocAssistant => d !== undefined)
   }, [all, recents])
 
-  const activeDomain = domainKey ? DOC_ASSISTANT_DOMAINS.find((d) => d.key === domainKey) : null
+  const activeDomain = domainKey ? ALL_ASSISTANT_DOMAINS.find((d) => d.key === domainKey) : null
 
   const assistantRow = (doc: DocAssistant) => (
     <button
@@ -255,8 +255,8 @@ export function AssistantBrowser({
             ))}
           </div>
           <div className="ai-assist-list">
-            <SectionHeader label={`${t('aiAssistantAll')} · ${DOC_ASSISTANT_TOTAL}`} />
-            {DOC_ASSISTANT_DOMAINS.map((d) => (
+            <SectionHeader label={`${t('aiAssistantAll')} · ${ALL_ASSISTANTS_TOTAL}`} />
+            {ALL_ASSISTANT_DOMAINS.map((d) => (
               <button
                 key={d.key}
                 type="button"

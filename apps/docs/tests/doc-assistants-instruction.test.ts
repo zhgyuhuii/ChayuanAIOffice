@@ -80,7 +80,7 @@ describe('buildAssistantInstruction', () => {
     expect(plan.instruction).toContain('改写进文档对应位置')
   })
 
-  it('comment actions produce a review-style directive, not a rewrite', () => {
+  it('comment actions anchor real comments via the add_comment tool', () => {
     const plan = buildAssistantInstruction(
       makeDoc({ defaultAction: 'comment', actions: ['comment', 'none'] }),
       '',
@@ -88,7 +88,26 @@ describe('buildAssistantInstruction', () => {
     expect(plan.ok).toBe(true)
     if (!plan.ok) return
     expect(plan.instruction).toContain('不要直接改写原文')
-    expect(plan.instruction).toContain('批注式的修改建议')
+    expect(plan.instruction).toContain('add_comment')
+    expect(plan.instruction).toContain('anchorText')
+  })
+
+  it('media assistants route to the image channel / storyboard fallback', () => {
+    const image = buildAssistantInstruction(
+      makeDoc({ defaultAction: 'insert', actions: ['insert', 'none'], mediaKind: 'image' }),
+      '',
+    )
+    expect(image.ok).toBe(true)
+    if (image.ok) expect(image.instruction).toContain('generate_image')
+    const video = buildAssistantInstruction(
+      makeDoc({ defaultAction: 'none', actions: ['none'], mediaKind: 'video' }),
+      '',
+    )
+    expect(video.ok).toBe(true)
+    if (video.ok) {
+      expect(video.instruction).toContain('分镜脚本')
+      expect(video.instruction).toContain('generate_image')
+    }
   })
 
   it('report assistants render the type label into the template and carry the emphasis prompt', () => {

@@ -8,8 +8,9 @@
 // - input: the loop already injects a document skeleton + the user's selection
 //   as context each turn. Selection text is embedded verbatim; whole-document
 //   input stays tool-based (read_blocks) instead of duplicating the full text.
-// - comment / link-comment: the agent cannot create anchored comments yet, so
-//   the result is a quote-by-quote review list in the conversation.
+// - comment / link-comment: the agent's add_comment tool anchors批注 to verbatim
+//   text (table cells included), so these actions write real document comments
+//   — closer to the wps behaviour than the old conversation-only fallback.
 import type { AssistantAction, DocAssistant } from './types'
 
 export type AssistantRunError = 'need-selection'
@@ -27,12 +28,20 @@ const ACTION_DIRECTIVES: Record<AssistantAction, string> = {
   prepend: '完成后把生成内容添加到文档开头。',
   'insert-after': '完成后把生成内容插入到所处理内容的后面。',
   comment:
-    '不要直接改写原文：逐条引用原文片段（用反引号定位），给出批注式的修改建议，在对话中输出。',
+    '不要直接改写原文：逐条把意见用 add_comment 工具写成文档批注（anchorText 必须逐字引用原文中可定位的连续片段，含表格内命中时用 blockIndex+row+col 定位），全部批注写完后在对话中汇总条数与要点。',
   'link-comment':
-    '不要直接改写原文：逐条引用原文片段（用反引号定位），给出批注式的修改建议，在对话中输出。',
+    '不要直接改写原文：逐条把意见用 add_comment 工具写成文档批注（anchorText 必须逐字引用原文中可定位的连续片段，含表格内命中时用 blockIndex+row+col 定位），全部批注写完后在对话中汇总条数与要点。',
   copy: '仅在对话中输出结果，不要修改文档。',
   preview: '仅在对话中输出结果，不要修改文档。',
   none: '仅在对话中输出结果，不要修改文档。',
+}
+
+/** media assistants (core pack) — the docs agent's image channel */
+const MEDIA_DIRECTIVES: Record<NonNullable<DocAssistant['mediaKind']>, string> = {
+  image:
+    '执行时优先用 generate_image 工具生成图片（把需求转成详细的英文提示词，并按要求的比例传 aspectRatio），生成成功后图片会插入文档；不要只输出文字建议。',
+  video:
+    '当前环境没有视频生成工具：不要伪造视频文件。请输出一份可直接交给视频模型或拍摄团队使用的分镜脚本（镜头号/画面描述/时长/文案），并用 generate_image 为最重要的 2-3 个镜头生成关键帧插图插入文档，同时在对话中说明本环境暂不能直接产出视频文件。',
 }
 
 const OUTPUT_FORMAT_DIRECTIVES: Partial<Record<DocAssistant['outputFormat'], string>> = {
@@ -90,6 +99,7 @@ export function buildAssistantInstruction(
 
   const outputDirective = OUTPUT_FORMAT_DIRECTIVES[doc.outputFormat]
   if (outputDirective) parts.push(outputDirective)
+  if (doc.mediaKind) parts.push(MEDIA_DIRECTIVES[doc.mediaKind])
 
   const scopeLabel = scope === 'selection' ? '选区' : '全文'
   return {
