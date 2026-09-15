@@ -52,7 +52,9 @@ function metaOf(id: AiProviderId): AiProviderMeta {
  * must not be sent there either.
  */
 export function modelHasFixedSampling(model: string): boolean {
-  return /(^|\/)(kimi-k3|gpt-5|gemini-3|o1(-mini|-preview)?|o3(-mini)?|o4-mini)/i.test(model)
+  return /(^|\/)(kimi-k3([^\w]|$)|gpt-5([^\w]|$)|gemini-3([^\w]|$)|o1(-mini|-preview)?([^\w]|$)|o3(-mini)?([^\w]|$)|o4-mini([^\w]|$))/i.test(
+    model,
+  )
 }
 
 /**
@@ -105,12 +107,11 @@ function opencodeEndpoint(
   return (config) => {
     // a stored base URL replaces the gateway root; the documented `/v1` API base is tolerated
     const base = (config.baseUrl || root).replace(/\/+$/, '').replace(/\/v1$/, '')
-    const omit =
-      modelHasFixedSampling(config.model) || config.model.toLowerCase().startsWith('kimi-')
+    const model = config.model ?? ''
+    const omit = model !== '' && (modelHasFixedSampling(model) || model.toLowerCase().startsWith('kimi-'))
     const sampling = omit ? { omitTemperature: true as const } : {}
-    if (routes.anthropic.test(config.model))
-      return { protocol: 'anthropic', baseUrl: base, ...sampling }
-    if (routes.gemini?.test(config.model)) {
+    if (routes.anthropic.test(model)) return { protocol: 'anthropic', baseUrl: base, ...sampling }
+    if (routes.gemini?.test(model)) {
       return { protocol: 'gemini', baseUrl: `${base}/v1`, ...sampling }
     }
     return { protocol: 'openai-compatible', baseUrl: `${base}/v1`, ...sampling }

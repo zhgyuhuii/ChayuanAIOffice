@@ -94,6 +94,13 @@ describe('provider registry', () => {
     })
   })
 
+  it('does not over-match fixed-sampling prefixes (o10, o30, o4-minix)', () => {
+    expect(modelHasFixedSampling('o10')).toBe(false)
+    expect(modelHasFixedSampling('o30')).toBe(false)
+    expect(modelHasFixedSampling('o4-minix')).toBe(false)
+    expect(modelHasFixedSampling('gpt-50')).toBe(false)
+  })
+
   it('resolves the catalog additions to their OpenAI-compatible endpoints', () => {
     const cases: Array<[AiProviderId, string, string]> = [
       ['glm', 'glm-5.3', 'https://open.bigmodel.cn/api/paas/v4'],
@@ -205,6 +212,15 @@ describe('provider registry', () => {
     })
     // Go has no Gemini route
     expect(resolve('gemini-3.7-flash').protocol).toBe('openai-compatible')
+  })
+
+  it('does not crash the opencode route on a missing model id', () => {
+    const zen = AI_PROVIDER_ADAPTERS['opencode-zen'].resolveEndpoint({
+      apiKey: 'k',
+      model: undefined as unknown as string,
+    })
+    expect(zen.protocol).toBe('openai-compatible')
+    expect(zen.omitTemperature).toBeUndefined()
   })
 
   it('uses the configured base URL for custom and rejects a missing one', () => {
