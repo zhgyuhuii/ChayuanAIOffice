@@ -132,7 +132,10 @@ function noteRichParas(entryXml: string): NoteRun[][] {
   const pRe = /<w:p[\s>][\s\S]*?<\/w:p>|<w:p\/>/g
   let p: RegExpExecArray | null
   const flag = (rPr: string, tag: string) =>
-    new RegExp(`<w:${tag}(?:\\s*/>|\\s(?![^>]*w:val="(?:0|false|none)")[^>]*/>)`).test(rPr)
+    new RegExp(
+      `<w:${tag}(?:\\s*/>|\\s(?![^>]*w:val=(?:"(?:0|false|none|off)"|'(?:0|false|none|off)'))[^>]*/>)`,
+      'i',
+    ).test(rPr)
   while ((p = pRe.exec(entryXml)) !== null) {
     const runs: NoteRun[] = []
     const rRe = /<w:r(?:\s[^>]*)?>([\s\S]*?)<\/w:r>/g
