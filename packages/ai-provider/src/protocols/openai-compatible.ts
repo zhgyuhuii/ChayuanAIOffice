@@ -54,7 +54,12 @@ function openAiMessages(
           image_url: { url: `data:${img.mime};base64,${img.base64}` },
         })
       }
-      if (parts.length === 1 && m.text) {
+      // Strict gateways (Agnes's upstream) reject an empty content-parts array
+      // ("message content parts cannot be empty"); an empty turn still has to
+      // serialize, so it goes out as an empty string instead.
+      if (parts.length === 0) {
+        out.push({ role: 'user', content: '' })
+      } else if (parts.length === 1 && m.text) {
         out.push({ role: 'user', content: m.text })
       } else {
         out.push({ role: 'user', content: parts })

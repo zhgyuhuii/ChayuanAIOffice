@@ -7,16 +7,18 @@ import {
   partitionDropPayload,
 } from '../src/drop-open'
 
-// ---- electron mock (module under test imports ipcRenderer/webUtils eagerly) ----
+// ---- electron mock (the binding is required lazily via ./electron-binding) ----
 
 const electronMocks = vi.hoisted(() => ({
   send: vi.fn(),
   getPathForFile: vi.fn(),
 }))
 
-vi.mock('electron', () => ({
-  ipcRenderer: { send: electronMocks.send },
-  webUtils: { getPathForFile: electronMocks.getPathForFile },
+vi.mock('../src/electron-binding', () => ({
+  electronBinding: () => ({
+    ipcRenderer: { send: electronMocks.send },
+    webUtils: { getPathForFile: electronMocks.getPathForFile },
+  }),
 }))
 
 // ---- tiny DOM fakes ----

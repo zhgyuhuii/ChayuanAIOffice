@@ -10,7 +10,11 @@
 /// file drops (AI attachment panels, slides image insert) cancels the event
 /// before it bubbles here (`defaultPrevented`), and this bridge stays out of
 /// the way. Text/media drags without OS files are untouched.
-import { ipcRenderer, webUtils } from 'electron'
+// The electron binding is required lazily (see electron-binding.ts): node-only
+// hosts (the BFF server and the dsh sidecar) reach this module through
+// package-root re-exports, where a top-level `import 'electron'` crashes plain
+// Node. Only installDropOpenBridge, a preload-world call, touches the binding.
+import { electronBinding } from './electron-binding'
 
 export const DROP_OPEN_CHANNEL = 'app:open-dropped-files'
 
@@ -105,6 +109,7 @@ export function installDropOpenBridge(): void {
   const holder = globalThis as Record<symbol, boolean | undefined>
   if (typeof window === 'undefined' || holder[INSTALLED]) return
   holder[INSTALLED] = true
+  const { ipcRenderer, webUtils } = electronBinding()
 
   // Without a canceled dragover Chromium never fires `drop`; canceling here is
   // what lets a document-drag land anywhere that isn't already a drop zone.

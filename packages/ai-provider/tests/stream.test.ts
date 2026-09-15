@@ -528,6 +528,38 @@ describe('streamForProvider: gemini', () => {
 })
 
 describe('streamForProvider: openai-compatible', () => {
+  it('serializes a textless attachment-free user turn as an empty string, not an empty parts array', async () => {
+    // Agnes's gateway 400s on content:[] ("message content parts cannot be
+    // empty"); an empty user turn must still serialize as a plain string.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        okResponse(
+          sseStream([
+            'data: {"choices":[{"delta":{"content":"ok"}}]}',
+            'data: {"choices":[{"delta":{},"finish_reason":"stop"}]}',
+            'data: [DONE]',
+          ]),
+        ),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    const { cb } = collector()
+    await streamForProvider(
+      'openai',
+      { apiKey: 'k', model: 'm' },
+      'sys',
+      [{ role: 'user', text: '' }],
+      [],
+      100,
+      cb,
+    )
+    const body = JSON.parse(fetchMock.mock.calls[0]![1].body as string) as {
+      messages: Array<{ role: string; content: unknown }>
+    }
+    const user = body.messages.find((m) => m.role === 'user')!
+    expect(user.content).toBe('')
+  })
+
   it('reassembles fragmented tool call arguments and flushes on finish_reason', async () => {
     const body = sseStream([
       'data: {"choices":[{"delta":{"content":"partial "}}]}',

@@ -19,8 +19,20 @@ COPY tsconfig.base.json vitest.config.ts ./
 # Only the renderers are built here; Electron binaries are never needed, so
 # package scripts are skipped (electron's installer would download a runtime)
 # and the ones the build actually needs are run by hand.
+#
+# rollup/esbuild ship their native binaries as os/cpu-gated optionalDependencies
+# and npm ci installs strictly from the lock. The repo lock was grown on
+# mac/win hosts and carries no linux platform entries, so the builder installs
+# the linux-x64 natives explicitly at the versions the resolved rollup/esbuild
+# expect (esbuild's install.js also self-heals from the registry, but rollup
+# has no fallback and vite dies with MODULE_NOT_FOUND in rollup/dist/native.js).
 RUN npm ci --no-audit --no-fund --ignore-scripts \
- && node node_modules/esbuild/install.js
+ && node node_modules/esbuild/install.js \
+ && ROLLUP_NATIVE=$(node -p "require('./node_modules/rollup/package.json').optionalDependencies['@rollup/rollup-linux-x64-gnu']") \
+ && ESBUILD_NATIVE=$(node -p "require('./node_modules/esbuild/package.json').optionalDependencies['@esbuild/linux-x64']") \
+ && npm install --no-save --no-audit --no-fund \
+      @rollup/rollup-linux-x64-gnu@$ROLLUP_NATIVE \
+      @esbuild/linux-x64@$ESBUILD_NATIVE
 
 # build:web = 5 editor renderer builds + web host + config.js
 RUN node scripts/build-web.mjs

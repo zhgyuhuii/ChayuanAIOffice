@@ -813,12 +813,25 @@ export const VENDORS: VendorCatalogEntry[] = [
     free: 'freekey',
   },
   {
+    // 爱思 Agnes AI（T6）：Flash 系文本免费、Pro/高清视频收费。GET /v1/models
+    // works live, but the free tier rate-limits bursts — the curated preset list
+    // doubles as the fetch-fallback so the vendor stays configurable at 429.
     id: 'agnes-ai',
     name: 'Agnes AI',
+    nameZh: '爱思 Agnes AI',
     group: 'agg',
-    defaultUrl: '',
+    defaultUrl: 'https://api.agnes-ai.cn/v1',
     api: 'openai-completions',
+    keyUrl: 'https://www.agnes-ai.cn',
+    docsUrl: 'https://wiki.agnes-ai.cn/zh-Hans/docs/overview',
     free: 'freekey',
+    freeNote: '注册即得免费Key：文本 Flash 与图像生成免费，Pro/高清视频收费',
+    presets: [
+      { id: 'agnes-2.5-flash', name: 'Agnes 2.5 Flash（免费）' },
+      { id: 'agnes-3.0-flash', name: 'Agnes 3.0 Flash（免费）' },
+      { id: 'agnes-2.5-pro-beta', name: 'Agnes 2.5 Pro Beta' },
+      { id: 'agnes-2.5-pro', name: 'Agnes 2.5 Pro' },
+    ],
   },
   {
     id: 'routeway',

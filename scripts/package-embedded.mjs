@@ -42,7 +42,7 @@ const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedd
 const PACKAGES = [
   'agent-core', 'ai-host', 'ai-provider', 'ai-search', 'chart-kit', 'docx-engine',
   'electron-utils', 'file-parse', 'i18n', 'pptx-engine', 'pptx-render',
-  'project-store', 'service-core', 'storage-adapter',
+  'project-store', 'service-core', 'storage-adapter', 'ui',
 ]
 
 function copyIfExists(from, to) {
@@ -130,11 +130,27 @@ copyIfExists(join(root, 'apps', 'sheets', 'src'), join(out, 'apps', 'sheets', 's
 // marker tsx compiles them as ESM, and the `?asset` wasm/font imports would go
 // through the ESM loader (which parses the wasm as a module and fails) instead
 // of CJS require, where tsx-assets.cjs handles them.
+//
+// The synthetic manifest also declares the node-side deps the shipped sources
+// import at runtime (tiff-decode → pngjs/utif2, fonts → harfbuzzjs): the real
+// app manifests are not installed here, so without these the server's pptx
+// render pipeline dies on `Cannot find module 'pngjs'` at first import.
+const slidesPkg = JSON.parse(readFileSync(join(root, 'apps', 'slides', 'package.json'), 'utf8'))
+const slidesNodeDeps = {}
+for (const name of ['pngjs', 'utif2', 'harfbuzzjs']) {
+  if (slidesPkg.dependencies?.[name]) slidesNodeDeps[name] = slidesPkg.dependencies[name]
+}
 for (const app of ['slides', 'sheets']) {
   writeFileSync(
     join(out, 'apps', app, 'package.json'),
     JSON.stringify(
-      { name: `@chatoffice/${app}-src`, version: rootPkg.version, private: true, type: 'commonjs' },
+      {
+        name: `@chatoffice/${app}-src`,
+        version: rootPkg.version,
+        private: true,
+        type: 'commonjs',
+        ...(app === 'slides' ? { dependencies: slidesNodeDeps } : {}),
+      },
       null,
       2,
     ),

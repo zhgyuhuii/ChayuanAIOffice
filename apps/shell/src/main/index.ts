@@ -4,6 +4,7 @@ import {
   copyFileSync,
   cpSync,
   existsSync,
+  mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
@@ -316,8 +317,17 @@ if (app.isPackaged) {
   if (newEmpty) {
     for (const oldName of ['ChatOffice', 'AI Office']) {
       const oldDir = join(app.getPath('appData'), oldName)
+      // The current name sits in the hop list from an earlier rename; copying
+      // it onto itself throws "src and dest cannot be the same" as an uncaught
+      // exception and kills the packaged app's very first launch.
+      if (oldDir === newDir) continue
       if (existsSync(oldDir)) {
-        cpSync(oldDir, newDir, { recursive: true })
+        // cpSync nests src under an existing dest dir — copy entry-by-entry so
+        // the old profile's contents land at the root of the new one.
+        mkdirSync(newDir, { recursive: true })
+        for (const entry of readdirSync(oldDir)) {
+          cpSync(join(oldDir, entry), join(newDir, entry), { recursive: true })
+        }
         break
       }
     }
