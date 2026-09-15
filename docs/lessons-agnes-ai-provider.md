@@ -73,6 +73,16 @@ chatoffice 有**两套**供应商定义，新接供应商时极易加错位置�
 6. **小内存服务器构建 Docker 镜像**：1.8G RAM 的 aidooo.com 跑 builder 阶段 vite 渲染
    （峰值 >1.1G）触发内核 OOM 连坐生产容器。加 4G swap 后通过。经验：上云构建先看
    `free` 与 `dmesg -T | grep -i oom`，OOM 的表象是「日志停在 rendering chunks、进程消失」。
+   最终落地方案（弱机分工）：**web 包在有工具链的机器上产出，服务器只做轻量运行时组装**
+   （Dockerfile.light：npm ci --omit=dev + 预置 dist/web，无 builder 阶段），镜像语义与官方
+   Dockerfile 运行时阶段一致。
+6b. **嵌套 esbuild 的版本错配**（上面 5 的深层变体）：lock 里 vite/tsx 嵌套的 esbuild
+   （0.28.1）只有 darwin/win32 平台条目；且这些嵌套平台包被标 `dev: true`，`npm ci
+   --omit=dev` / `npm prune --omit=dev` 都会跳过 → 运行时 tsx 报「Host version 0.28.1
+   does not match binary version 0.25.12」。修复：lock 补嵌套 linux 条目 + 镜像内显式
+   就位对应版本二进制（slim 镜像无 curl，用 `npm pack --registry npmmirror` + tar）。
+   排障口诀：esbuild 版本错配先 `find node_modules -path "*esbuild/package.json"` 列
+   全部副本，再对每个宿主包查它的平台 optional 是否在位。
 7. **同一机器双实例**：chatop 桌面的受管 dsh 硬绑 3080 端口，dev 实例与打包实例并存时
    互相抢端口 → 双方 dsh web 各自 ~24s 崩溃重启循环。排障时表现为 sidecar 反复 ready 换
    端口；先 `pgrep -af dsh` 查共存实例再看 chatoffice 本身。
