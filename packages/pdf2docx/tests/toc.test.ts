@@ -51,6 +51,17 @@ describe('detectTocBlocks (dot leaders)', () => {
     expect(blocks[0]!.lines[0]!.spans.map((s) => s.text).join('')).toBe('Appendix A')
   })
 
+  it('converts hyphen-leader lines monospaced producers emit', () => {
+    const chars = [
+      ...mkText('Chapter 1', 72, { y: 700 }).chars,
+      ...mkText('----', 300, { y: 700 }).chars,
+      ...mkText('12', 500, { y: 700 }).chars,
+    ]
+    const blocks = detectTocBlocks(groupIntoBlocks(analyzeChars(chars)))
+    expect(blocks).toHaveLength(1)
+    expect(blocks[0]!.tocEntry).toEqual({ level: 1, pageNumber: '12' })
+  })
+
   it('still rejects fill-in lines with no page number', () => {
     const blocks = groupIntoBlocks(analyzeChars(mkText('Name: ____', 72, { y: 700 }).chars))
     expect(detectTocBlocks(blocks)).toBe(blocks)

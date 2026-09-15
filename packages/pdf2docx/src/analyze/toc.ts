@@ -16,8 +16,8 @@ import { firstStrongDir } from './rtl'
 import type { LineUnit } from './units'
 import { clusterUnitRows } from './units'
 
-/** title ... leader dots/underscores ... page number */
-const TOC_LINE_RE = /^(.*?[^\s._])\s*([.·_]\s*){4,}\s*([0-9]+|[ivxlcdm]+)\s*$/i
+/** title ... leader dots/underscores/dashes ... page number */
+const TOC_LINE_RE = /^(.*?[^\s._\-–—])\s*([.·_\-–—]\s*){4,}\s*([0-9]+|[ivxlcdm]+)\s*$/i
 /** each this many points of extra indent nests the entry one level deeper */
 const LEVEL_INDENT_PT = 14
 const MAX_TOC_LEVEL = 9
@@ -53,7 +53,7 @@ export function hasDotLeaderRun(chars: readonly PdfChar[]): boolean {
   let i = 0
   while (i < chars.length) {
     const c = chars[i]!
-    if (c.text === '.' || c.text === '·' || c.text === '_') {
+    if (c.text === '.' || c.text === '·' || c.text === '_' || c.text === '-' || c.text === '–' || c.text === '—') {
       run++
       if (run >= LEADER_RUN_MIN_DOTS) armed = true
       i++
