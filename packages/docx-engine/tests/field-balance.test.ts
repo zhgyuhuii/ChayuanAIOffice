@@ -59,4 +59,14 @@ describe('balanceFieldChars', () => {
     const body = '<w:p/>' + p(begin + instr + sep + t('Alpha'))
     expect(balanceFieldChars(body)).toBe('<w:p/>' + p(begin + instr + sep + t('Alpha') + end))
   })
+
+  it('balances single-quoted fldCharType runs', () => {
+    const qbegin = "<w:r><w:fldChar w:fldCharType='begin'/></w:r>"
+    const qen = "<w:r><w:fldChar w:fldCharType='end'/></w:r>"
+    const body = p(qbegin + instr + sep + t('Alpha')) + p(t('Beta'))
+    const out = balanceFieldChars(body)
+    expect(out).toContain('Alpha')
+    expect(out).toContain('w:fldCharType="end"')
+    expect(balanceFieldChars(p(t('x')) + p(qen))).toBe(p(t('x')) + p(''))
+  })
 })
