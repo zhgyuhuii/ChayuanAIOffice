@@ -110,6 +110,27 @@ const api: DesktopApi = {
     return () => ipcRenderer.removeListener('docs:teardown', listener)
   },
   respellKick: () => ipcRenderer.invoke('docs:respell-kick'),
+  exportFiles: (
+    suggestedName: string,
+    files: Array<{ fileName: string; base64: string }>,
+  ) =>
+    ipcRenderer.invoke('docs:export-files', suggestedName, files) as Promise<{
+      ok: boolean
+      canceled?: boolean
+      error?: string
+      paths?: string[]
+    }>,
+  declassifyStore: (
+    action: 'save' | 'load' | 'clear',
+    docPath: string,
+    sidecar?: unknown,
+  ) =>
+    ipcRenderer.invoke('docs:declassify-store', action, docPath, sidecar) as Promise<{
+      ok: boolean
+      error?: string
+      path?: string
+      sidecar?: unknown
+    }>,
   saveDocxAs: (defaultName: string, data: ArrayBuffer, sourcePath?: string | null) =>
     ipcRenderer.invoke('docs:save-as', defaultName, data, sourcePath ?? null),
   saveDocxNew: (defaultName: string, data: ArrayBuffer) =>

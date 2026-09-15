@@ -77,6 +77,26 @@ import type { AiDocContent, AiSettingsV2, OpenDocxResult } from '../shared/ipc'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { ZoteroDocumentController } from './zotero/controller'
 import { AiPanel, AI_REVISION_AUTHOR } from './ai/AiPanel'
+import { DocOpsDialogHost, type DocOpsDialogKind } from './docops/dialogs'
+import { makeCompleter } from './docops/model-complete'
+import {
+  autoFitByContent,
+  autoFitByWindow,
+  addFirstColumnNumbers,
+  deleteAllTables,
+  deleteTableCaptions,
+  refreshStylesFromFirstTable,
+  collectTableMatrices,
+} from './docops/table-ops'
+import {
+  deleteAllImages,
+  clearImageFormat,
+  collectImageFiles,
+  deleteImageCaptions,
+} from './docops/image-ops'
+import { deleteBlankParagraphs } from './docops/text-ops'
+import { isFormModeActive, setFormMode } from './docops/form-mode'
+import { tablesToXlsxBase64, dataUrlToBase64File } from './docops/table-export'
 import { formattingRelayPrompt, startDocsRelayServer } from './ai/relay-server'
 import type { DocsRelayServer } from './ai/relay-server'
 import type { AiCommentsAccess, AiHeaderFooterAccess } from './ai/tools'
@@ -860,6 +880,8 @@ export function App() {
   const [showComments, setShowComments] = useState(false)
   /** Style definitions pending write-back (key = styleId), saved via SaveOptions.styleUpserts */
   const [styleUpserts, setStyleUpserts] = useState<Record<string, StyleUpsert>>({})
+  /** styleIds pending removal from styles.xml (清理未使用的样式) */
+  const [styleDeletes, setStyleDeletes] = useState<string[]>([])
   const [comments, setCommentsState] = useState<CommentInfo[]>([])
   // Synchronous mirror of the comments state: an agent turn can run several
   // reply_comment calls with no render in between, and each id allocation
@@ -943,6 +965,14 @@ export function App() {
     nonce: number
     autoRun?: boolean
   } | null>(null)
+  /** core-pack assistant run pushed from the context menu / 察元 AI ribbon tab */
+  const [aiAssistantReq, setAiAssistantReq] = useState<{ id: string; nonce: number } | null>(null)
+  /** active 察元 AI docops dialog (one at a time; null = closed) */
+  const [docOpsDialog, setDocOpsDialog] = useState<DocOpsDialogKind | null>(null)
+  /** transient result notice for immediate docops ops (auto-dismiss) */
+  const [docopsToast, setDocopsToast] = useState<string | null>(null)
+  /** 表单模式 React mirror (module state is the truth; this drives the toggle look) */
+  const [formModeOn, setFormModeOn] = useState(false)
   // selection-scoped AI edit queue (anchors live as editor decorations)
   const [editQueue, setEditQueue] = useState<DocsEditQueueItem[]>([])
   const editQueueRef = useRef(editQueue)
@@ -1685,6 +1715,8 @@ export function App() {
     setPendingNumbering,
     styleUpserts,
     setStyleUpserts,
+    styleDeletes,
+    setStyleDeletes,
     comments,
     commentsDirty,
     setComments,
@@ -5316,6 +5348,133 @@ export function App() {
   const painterService = useMemo(() => new PainterService(), [])
   const fontStepper = useMemo(() => new FontStepper(), [])
   useEffect(() => () => fontStepper.dispose(), [fontStepper])
+  // 察元 AI docops: transient toast + the service group the ribbon commands call
+  const showDocopsToast = useCallback((text: string) => {
+    setDocopsToast(text)
+    window.setTimeout(() => setDocopsToast((cur) => (cur === text ? null : cur)), 4000)
+  }, [])
+  const chayuanCompleter = useMemo(
+    () => makeCompleter(() => settings.currentModel ?? null),
+    [settings],
+  )
+  const runChayuanOp = useCallback(
+    (op: string) => {
+      if (!editor) return
+      switch (op) {
+        case 'tables.deleteAll': {
+          const r = deleteAllTables(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.autoFitContent': {
+          const r = autoFitByContent(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.autoFitWindow': {
+          const r = autoFitByWindow(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.refreshStyle': {
+          const r = refreshStylesFromFirstTable(editor)
+          showDocopsToast(t('docopsTablesDone', { count: r.count }))
+          break
+        }
+        case 'tables.firstColNumbers': {
+          const r = addFirstColumnNumbers(editor)
+          showDocopsToast(t('docopsTableRowsDone', { count: r.count }))
+          break
+        }
+        case 'tables.deleteCaptions': {
+          const r = deleteTableCaptions(editor)
+          showDocopsToast(t('docopsCaptionsDeleted', { count: r.count }))
+          break
+        }
+        case 'images.deleteAll': {
+          const r = deleteAllImages(editor)
+          showDocopsToast(t('docopsImagesDeleted', { count: r.count }))
+          break
+        }
+        case 'images.clearFormat': {
+          const r = clearImageFormat(editor)
+          showDocopsToast(t('docopsImagesDone', { count: r.count }))
+          break
+        }
+        case 'images.deleteCaptions': {
+          const r = deleteImageCaptions(editor)
+          showDocopsToast(t('docopsCaptionsDeleted', { count: r.count }))
+          break
+        }
+        case 'text.deleteBlankRows': {
+          const r = deleteBlankParagraphs(editor)
+          showDocopsToast(t('docopsBlankRowsDeleted', { count: r.count }))
+          break
+        }
+        case 'form.toggle': {
+          const on = setFormMode(editor, !isFormModeActive())
+          setFormModeOn(on)
+          showDocopsToast(t(on ? 'docopsFormModeOn' : 'docopsFormModeOff'))
+          break
+        }
+        default:
+          break
+      }
+    },
+    [editor, showDocopsToast],
+  )
+  const runChayuanExport = useCallback(
+    (what: 'tables' | 'images') => {
+      if (!editor) return
+      void (async () => {
+        if (what === 'tables') {
+          const matrices = collectTableMatrices(editor.state.doc)
+          if (matrices.length === 0) {
+            showDocopsToast(t('docopsNoTables'))
+            return
+          }
+          const baseName = doc?.filePath
+            ? doc.filePath.split(/[\\/]/).pop()!.replace(/\.docx?$/i, '')
+            : '文档'
+          const base64 = await tablesToXlsxBase64(matrices)
+          const result = await window.desktop.exportFiles(`${baseName}_表格导出.xlsx`, [
+            { fileName: `${baseName}_表格导出.xlsx`, base64 },
+          ])
+          showDocopsToast(
+            result.ok
+              ? t('docopsExportDone', { count: matrices.length })
+              : t('docopsExportCanceled'),
+          )
+        } else {
+          const imageFiles = collectImageFiles(editor)
+            .map((f) => dataUrlToBase64File(f.fileName, f.dataUrl))
+            .filter((f): f is { fileName: string; base64: string } => f !== null)
+          if (imageFiles.length === 0) {
+            showDocopsToast(t('docopsNoImages'))
+            return
+          }
+          const result = await window.desktop.exportFiles('图片', imageFiles)
+          showDocopsToast(
+            result.ok
+              ? t('docopsExportDone', { count: imageFiles.length })
+              : t('docopsExportCanceled'),
+          )
+        }
+      })()
+    },
+    [editor, doc, showDocopsToast],
+  )
+  const chayuanServices = useStableCallbacks({
+    runAssistant: (id: string) => {
+      if (dockedBootRef.current) return
+      setShowAi(true)
+      setAiAssistantReq({ id, nonce: Date.now() })
+    },
+    openDialog: (kind: DocOpsDialogKind) => setDocOpsDialog(kind),
+    runOp: runChayuanOp,
+    exportAll: runChayuanExport,
+    formModeActive: () => isFormModeActive(),
+  })
   const docsServices = useMemo<DocsCommandServices>(
     () => ({
       editor: editorServices,
@@ -5333,6 +5492,7 @@ export function App() {
       hf: hfServices,
       ai: aiServices,
       dialogs: dialogsServices,
+      chayuan: chayuanServices,
     }),
     [
       editorServices,
@@ -5350,6 +5510,7 @@ export function App() {
       hfServices,
       aiServices,
       dialogsServices,
+      chayuanServices,
     ],
   )
 
@@ -5428,6 +5589,7 @@ export function App() {
     draw: docsDrawState,
     ai: docsAiState,
     sources,
+    chayuan: useShallowStable({ formMode: formModeOn }),
   })
   // command registry: the one dispatch point shared by the legacy ribbon
   // facade, the schema renderers and the mobile quick bar
@@ -5700,6 +5862,7 @@ export function App() {
                 doc.isBlank ? { bullet: BLANK_BULLET_NUM_ID, ordered: BLANK_ORDERED_NUM_ID } : null
               }
               preset={aiPreset}
+              assistantRequest={aiAssistantReq}
               open={showAi}
               filePath={doc?.filePath ?? null}
               editQueue={editQueue}
@@ -6188,6 +6351,20 @@ export function App() {
         />
       )}
 
+      {doc && editor && (
+        <DocOpsDialogHost
+          kind={docOpsDialog}
+          editor={editor}
+          styles={ribbonStyles ?? new Map()}
+          docPath={doc?.filePath ?? null}
+          complete={chayuanCompleter}
+          onStyleRemove={(ids) => setStyleDeletes((prev) => [...new Set([...prev, ...ids])])}
+          onDeclassified={() => undefined}
+          onDeclassifyRestored={() => undefined}
+          onClearKind={() => setDocOpsDialog(null)}
+        />
+      )}
+      {docopsToast && <div className="docops-toast">{docopsToast}</div>}
       {doc && ctxMenu && (
         <EditorContextMenu
           editor={editor}

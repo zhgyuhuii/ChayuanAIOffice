@@ -47,6 +47,8 @@ interface EditorContextMenuProps {
   onLink: () => void
   onNewComment: () => void
   onAiPreset: (instruction: string) => void
+  /** run a core-pack assistant against the current selection (AI 文本助手 submenu) */
+  onAiAssistant?: (id: string) => void
   /** List items: restart numbering / continue numbering (shown when the cursor is on a docListItem) */
   onRestartNumbering?: () => void
   onContinueNumbering?: () => void
@@ -65,6 +67,27 @@ const TRANSLATE_TARGETS: Array<{ labelKey: StringKey }> = [
   { labelKey: 'appLangSpanish' },
 ]
 
+/**
+ * The AI 文本助手 submenu — the chayuan-wps context "察元AI文本分析" family,
+ * harvested into the core assistant pack. Order mirrors the wps primary list,
+ * the review-style explainers trail behind.
+ */
+const AI_TEXT_ASSIST_ITEMS: Array<{ id: string; labelKey: StringKey }> = [
+  { id: 'core.rewrite', labelKey: 'appAiRewrite' },
+  { id: 'core.polish', labelKey: 'appAiPolishMenu' },
+  { id: 'core.formalize', labelKey: 'appAiFormalize' },
+  { id: 'core.simplify', labelKey: 'appAiSimplify' },
+  { id: 'core.expand', labelKey: 'appAiExpand' },
+  { id: 'core.abbreviate', labelKey: 'appAiAbbreviate' },
+  { id: 'core.extract-keywords', labelKey: 'appAiExtractKeywords' },
+  { id: 'core.action-items', labelKey: 'appAiActionItems' },
+  { id: 'core.term-unify', labelKey: 'appAiTermUnify' },
+  { id: 'core.title', labelKey: 'appAiGenTitle' },
+  { id: 'core.ai-trace-check', labelKey: 'appAiTraceCheck' },
+  { id: 'core.comment-explain', labelKey: 'appAiCommentExplain' },
+  { id: 'core.hyperlink-explain', labelKey: 'appAiHyperlinkExplain' },
+]
+
 const MENU_WIDTH = 240
 
 export function EditorContextMenu({
@@ -76,6 +99,7 @@ export function EditorContextMenu({
   onLink,
   onNewComment,
   onAiPreset,
+  onAiAssistant,
   onRestartNumbering,
   onContinueNumbering,
   onUpdateFields,
@@ -457,6 +481,28 @@ export function EditorContextMenu({
           </div>
         )}
       </div>
+      {onAiAssistant && (
+        <div className="ctx-item-wrap" onMouseLeave={() => setSubmenu(null)}>
+          {item(t('appAiTextAssist'), {
+            disabled: !hasSelection,
+            submenuKey: 'aiTextAssist',
+            ai: true,
+          })}
+          {submenu === 'aiTextAssist' && hasSelection && (
+            <div className="ctx-submenu">
+              {AI_TEXT_ASSIST_ITEMS.map((entry) => (
+                <button
+                  key={entry.id}
+                  className="ctx-item"
+                  onClick={run(() => onAiAssistant(entry.id))}
+                >
+                  <span className="ctx-label">{t(entry.labelKey)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       {isFloating && (
         <>
           <div className="ctx-sep" />

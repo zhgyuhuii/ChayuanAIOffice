@@ -156,6 +156,9 @@ export interface FileActionContext {
   setPendingNumbering: (value: PendingNumbering) => void
   styleUpserts: Record<string, StyleUpsert>
   setStyleUpserts: (value: Record<string, StyleUpsert>) => void
+  /** styleIds pending removal from styles.xml on the next save (清理未使用的样式) */
+  styleDeletes: string[]
+  setStyleDeletes: (value: string[]) => void
   comments: CommentInfo[]
   commentsDirty: boolean
   setComments: (value: CommentInfo[]) => void
@@ -651,6 +654,7 @@ export async function buildDocBytes(ctx: FileActionContext): Promise<Uint8Array 
     numbering: ctx.numberingDirty ? ctx.pendingNumbering : undefined,
     styleUpserts:
       Object.keys(ctx.styleUpserts).length > 0 ? Object.values(ctx.styleUpserts) : undefined,
+    styleDeletes: ctx.styleDeletes.length > 0 ? ctx.styleDeletes : undefined,
     pageColor: ctx.pageColorDirty ? ctx.pageColor : undefined,
     header: ctx.headerDirty && ctx.header ? ctx.header : undefined,
     footer: ctx.footerDirty && ctx.footer ? ctx.footer : undefined,

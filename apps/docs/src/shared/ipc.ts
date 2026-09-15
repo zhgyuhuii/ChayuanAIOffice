@@ -372,6 +372,17 @@ export interface DesktopApi {
   }>
   /** crash-recovery copy of a dirty document, stored under userData */
   writeRecoveryCopy(path: string, data: ArrayBuffer): Promise<{ ok: boolean }>
+  /** 察元 AI docops: export one file (save dialog) or many (folder pick) */
+  exportFiles(
+    suggestedName: string,
+    files: Array<{ fileName: string; base64: string }>,
+  ): Promise<{ ok: boolean; canceled?: boolean; error?: string; paths?: string[] }>
+  /** 察元 AI docops: declassify backup sidecar next to the document */
+  declassifyStore(
+    action: 'save' | 'load' | 'clear',
+    docPath: string,
+    sidecar?: unknown,
+  ): Promise<{ ok: boolean; error?: string; path?: string; sidecar?: unknown }>
   /** tab closed but webContents kept alive (shell freeze workaround) — stop background timers */
   onTeardown(handler: () => void): () => void
   /** one trusted space keystroke into this webContents — the only thing that

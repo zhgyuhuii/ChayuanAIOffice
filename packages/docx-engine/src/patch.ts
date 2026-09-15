@@ -160,6 +160,8 @@ export interface SaveOptions {
   }
   /** create/modify styles: surgical upsert of word/styles.xml by styleId (replace when present, else append) */
   styleUpserts?: StyleUpsert[]
+  /** remove styles: surgical delete of word/styles.xml <w:style> blocks by styleId (清理未使用的样式) */
+  styleDeletes?: string[]
   /**
    * Replace whole zip parts by path (e.g. patched chart parts from
    * patchChartPartXml). Only paths that already exist in the package are
@@ -422,6 +424,7 @@ export async function saveDocx(
     (options.sectionHf === undefined || options.sectionHf.length === 0) &&
     options.numbering === undefined &&
     (options.styleUpserts === undefined || options.styleUpserts.length === 0) &&
+    (options.styleDeletes === undefined || options.styleDeletes.length === 0) &&
     options.evenAndOddHeaders === undefined &&
     options.comments === undefined &&
     options.protection === undefined &&
@@ -890,12 +893,20 @@ export async function saveDocx(
   // ---- styles: surgical upsert of word/styles.xml (create/modify styles) ----
   const stylesPath = 'word/styles.xml'
   let stylesXmlOut: string | null = null
-  if ((options.styleUpserts?.length ?? 0) > 0) {
+  if ((options.styleUpserts?.length ?? 0) > 0 || (options.styleDeletes?.length ?? 0) > 0) {
     const file = zip.file(stylesPath)
     let xml = file
       ? await file.async('string')
       : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n' +
         '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"></w:styles>'
+    for (const styleId of options.styleDeletes ?? []) {
+      const escaped = styleId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const block = new RegExp(
+        `<w:style [^>]*w:styleId="${escaped}"[\\s\\S]*?</w:style>\\s*`,
+        'g',
+      )
+      xml = xml.replace(block, '')
+    }
     for (const up of options.styleUpserts ?? []) {
       const styleXml = buildStyleXml(up)
       const existing = new RegExp(

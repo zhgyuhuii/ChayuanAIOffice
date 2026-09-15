@@ -3972,6 +3972,86 @@ export function registerDocsIpc(): void {
     await new Promise((r) => setTimeout(r, 120))
   })
 
+  // ── 察元 AI docops: batch file export + declassify sidecar storage ──────────
+
+  /** export one file via save dialog, or many into a picked folder (unique names) */
+  ipcMain.handle(
+    'docs:export-files',
+    async (
+      event,
+      suggestedName: string,
+      files: Array<{ fileName: string; base64: string }>,
+    ) => {
+      if (tornDownWcIds.has(event.sender.id)) return { ok: false, canceled: true }
+      const list = Array.isArray(files) ? files.filter((f) => f && f.fileName && f.base64) : []
+      if (list.length === 0) return { ok: false, canceled: true, error: 'no-files' }
+      if (list.length === 1) {
+        const result = await saveDialog(event, {
+          title: tm('dlgSaveAs'),
+          defaultPath: list[0]!.fileName || suggestedName,
+        })
+        if (result.canceled || !result.filePath) return { ok: false, canceled: true }
+        writeFileSync(result.filePath, Buffer.from(list[0]!.base64, 'base64'))
+        return { ok: true, paths: [result.filePath] }
+      }
+      const folder = await dialog.showOpenDialog(dialogParent(event)!, {
+        properties: ['openDirectory', 'createDirectory'],
+      })
+      if (folder.canceled || folder.filePaths.length === 0) return { ok: false, canceled: true }
+      const dir = folder.filePaths[0]!
+      const used = new Set<string>()
+      const paths: string[] = []
+      for (const f of list) {
+        let name = f.fileName
+        if (used.has(name)) {
+          const dot = name.lastIndexOf('.')
+          const base = dot > 0 ? name.slice(0, dot) : name
+          const ext = dot > 0 ? name.slice(dot) : ''
+          let n = 2
+          while (used.has(`${base}-${n}${ext}`)) n++
+          name = `${base}-${n}${ext}`
+        }
+        used.add(name)
+        const target = join(dir, name)
+        writeFileSync(target, Buffer.from(f.base64, 'base64'))
+        paths.push(target)
+      }
+      return { ok: true, paths }
+    },
+  )
+
+  /** declassify backup sidecar: <doc>.cydeclass.json next to the document */
+  ipcMain.handle(
+    'docs:declassify-store',
+    async (
+      event,
+      action: 'save' | 'load' | 'clear',
+      docPath: string,
+      sidecar?: unknown,
+    ) => {
+      if (tornDownWcIds.has(event.sender.id)) return { ok: false }
+      if (typeof docPath !== 'string' || !isAbsolute(docPath)) return { ok: false, error: 'bad-path' }
+      const sidecarPath = join(
+        dirname(docPath),
+        `${basename(docPath, extname(docPath))}.cydeclass.json`,
+      )
+      try {
+        if (action === 'save') {
+          writeFileSync(sidecarPath, JSON.stringify(sidecar ?? null, null, 2), 'utf-8')
+          return { ok: true, path: sidecarPath }
+        }
+        if (action === 'load') {
+          if (!existsSync(sidecarPath)) return { ok: true, sidecar: null }
+          return { ok: true, sidecar: JSON.parse(readFileSync(sidecarPath, 'utf-8')) }
+        }
+        if (existsSync(sidecarPath)) unlinkSync(sidecarPath)
+        return { ok: true }
+      } catch (err) {
+        return { ok: false, error: String(err) }
+      }
+    },
+  )
+
   ipcMain.handle(
     'docs:save-as',
     async (event, defaultName: string, data: ArrayBuffer, sourcePath?: string | null) => {

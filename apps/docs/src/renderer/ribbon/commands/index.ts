@@ -8,6 +8,7 @@ import type { DocsCommandServices } from '../host-services'
 import { FILE_COMMANDS } from './file'
 import { HOME_COMMANDS } from './home'
 import { VIEW_COMMANDS } from './view'
+import { CHAYUAN_COMMANDS } from './chayuan'
 
 export const DOCS_COMMANDS: readonly AnyCommandDefinition<DocsCommandState, DocsCommandServices>[] =
-  [...FILE_COMMANDS, ...HOME_COMMANDS, ...VIEW_COMMANDS]
+  [...FILE_COMMANDS, ...HOME_COMMANDS, ...VIEW_COMMANDS, ...CHAYUAN_COMMANDS]

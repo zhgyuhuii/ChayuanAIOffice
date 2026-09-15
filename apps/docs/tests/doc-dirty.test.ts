@@ -22,6 +22,7 @@ function cleanState(): DocDirtyState {
     pgNumDirtySections: [],
     numberingDirty: false,
     styleUpserts: {},
+    styleDeletes: [],
     titlePgDirty: false,
     evenOddHfDirty: false,
     watermarkDirty: false,
@@ -131,6 +132,7 @@ describe('resetCrossDocEditState', () => {
       pgNumEdit: null,
       pgNumDirtySections: [],
       styleUpserts: {},
+    styleDeletes: [],
     }
     // numberingDirty is the live flag; pendingNumbering itself is not polled,
     // but buildDocBytes applies its indices — hence the reset

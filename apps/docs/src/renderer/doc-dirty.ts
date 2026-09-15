@@ -20,6 +20,7 @@ export interface DocDirtyState {
   pgNumDirtySections: readonly number[]
   numberingDirty: boolean
   styleUpserts: Record<string, unknown>
+  styleDeletes: readonly string[]
   titlePgDirty: boolean
   evenOddHfDirty: boolean
   watermarkDirty: boolean
@@ -50,6 +51,7 @@ export function isDocDirty(s: DocDirtyState): boolean {
     s.pgNumDirtySections.length > 0 ||
     s.numberingDirty ||
     Object.keys(s.styleUpserts).length > 0 ||
+    s.styleDeletes.length > 0 ||
     s.titlePgDirty ||
     s.evenOddHfDirty ||
     s.watermarkDirty ||

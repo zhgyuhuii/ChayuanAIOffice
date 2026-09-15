@@ -52,6 +52,13 @@ function services(): DocsCommandServices {
     hf: { setHeader: fn(), setFooter: fn(), setTitlePg: fn(), setEvenOddHf: fn() },
     ai: { toggle: fn(), preset: fn() },
     dialogs: { paragraph: fn(), pageNumFormat: fn(), protectDoc: fn() },
+    chayuan: {
+          runAssistant: fn(),
+          openDialog: fn(),
+          runOp: fn(),
+          exportAll: fn(),
+          formModeActive: () => false,
+        },
   }
 }
 
@@ -110,6 +117,7 @@ function state(hasDoc: boolean): DocsCommandState {
     },
     ai: { showAi: false },
     sources: [],
+    chayuan: { formMode: false },
   }
 }
 
@@ -148,6 +156,7 @@ describe('file commands', () => {
       'docs.file.save',
       'docs.file.saveAs',
     ])
-    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 60)
+    // 60 legacy commands + the 5 察元 AI commands
+    expect(all.list('docs').length).toBe(FILE_COMMANDS.length + 65)
   })
 })

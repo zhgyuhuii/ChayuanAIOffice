@@ -14,6 +14,7 @@ import { commandId, type RibbonSchema, type RibbonTab } from '@chatoffice/ribbon
 import type { DocsCommandState } from '../command-state'
 import type { DocsCommandServices } from '../host-services'
 import { FILE_TAB, HOSTED_TABS } from './host-tabs'
+import { CHAYUAN_TAB } from './chayuan-tab'
 
 type S = DocsCommandState
 type Sv = DocsCommandServices
@@ -186,5 +187,5 @@ export const VIEW_TAB: RibbonTab<S, Sv> = {
 export const DOCS_SCHEMA: RibbonSchema<S, Sv> = {
   id: 'docs',
   version: 2,
-  tabs: [FILE_TAB, ...HOSTED_TABS, VIEW_TAB],
+  tabs: [FILE_TAB, ...HOSTED_TABS, VIEW_TAB, CHAYUAN_TAB],
 }

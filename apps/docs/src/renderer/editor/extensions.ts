@@ -49,6 +49,7 @@ import {
   cssSimsunGapLineExpr,
   WORD_AUTO_SPACING_PT,
 } from '../line-metrics'
+import { FormModeExtension } from '../docops/form-mode'
 import { textAlignDecl } from './text-effects'
 import { noteMarkText } from '../note-format'
 import { t } from '../i18n/locale'
@@ -5877,6 +5878,7 @@ export const AutoLinkOnDelimiter = Extension.create({
 
 export const editorExtensions = [
   DocDocument,
+  FormModeExtension,
   DocText,
   DocHardBreak,
   DocNoteRef,

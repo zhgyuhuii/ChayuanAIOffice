@@ -9,6 +9,7 @@ import { TABLE_TRAILING_SKIP } from '../editor/extensions'
 import { countWords, findNumId, type NumIds } from './protocol'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
 import { markDocSeen, type AiCommentsAccess, type AiHeaderFooterAccess } from './tools'
+import { buildAssistantInstruction, findCoreAssistant } from './assistants'
 import { createDocsSkill } from './docs-skill'
 import {
   buildDocWriterRequest,
@@ -265,6 +266,8 @@ interface AiPanelProps {
   numIdFallback?: NumIds | null
   /** preset instruction pushed from the ribbon or start screen; autoRun sends it immediately */
   preset?: { text: string; nonce: number; autoRun?: boolean } | null
+  /** run a core-pack assistant (context menu / ribbon entry): resolved against the live selection */
+  assistantRequest?: { id: string; nonce: number } | null
   /** kept in sync with DockShell's open state; effects use it to catch up after re-expand */
   open?: boolean
   /** chrome injected by the DockShell: header buttons + header drag behavior */
@@ -297,6 +300,7 @@ export function AiPanel({
   docEmpty,
   numIdFallback,
   preset,
+  assistantRequest,
   open = true,
   dockChrome,
   filePath,
@@ -1200,6 +1204,17 @@ export function AiPanel({
     runWith(instruction, display)
     selectTab('chat')
   }
+
+  // a core-pack assistant run pushed from the context menu / ribbon: build the
+  // instruction against the live selection and send it like a typed message
+  useEffect(() => {
+    if (!assistantRequest) return
+    const doc = findCoreAssistant(assistantRequest.id)
+    if (!doc) return
+    const plan = buildAssistantInstruction(doc, getSelectionText())
+    if (plan.ok) runWith(plan.instruction, plan.display)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assistantRequest?.nonce])
 
   return (
     <aside

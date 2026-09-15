@@ -112,4 +112,6 @@ export interface DocsCommandState {
   readonly draw: DocsDrawState
   readonly ai: { readonly showAi: boolean }
   readonly sources: readonly SourceInfo[]
+  /** 察元 AI tab: 表单模式 pressed look (module state mirrored into React) */
+  readonly chayuan: { readonly formMode: boolean }
 }

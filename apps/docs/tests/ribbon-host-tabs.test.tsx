@@ -76,6 +76,7 @@ function makeState(overrides: Partial<DocsCommandState> = {}): DocsCommandState 
     },
     ai: { showAi: false },
     sources: [],
+    chayuan: { formMode: false },
     ...overrides,
   }
 }
@@ -141,6 +142,13 @@ function makeServices(): DocsCommandServices {
     hf: { setHeader: fn(), setFooter: fn(), setTitlePg: fn(), setEvenOddHf: fn() },
     ai: { toggle: fn(), preset: fn() },
     dialogs: { paragraph: fn(), pageNumFormat: fn(), protectDoc: fn() },
+    chayuan: {
+          runAssistant: fn(),
+          openDialog: fn(),
+          runOp: fn(),
+          exportAll: fn(),
+          formModeActive: () => false,
+        },
   }
 }
 

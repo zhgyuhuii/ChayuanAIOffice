@@ -1,4 +1,5 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ChayuanTab } from './ribbon-chayuan-tab'
 import type { CSSProperties, ReactNode } from 'react'
 import type { Editor } from '@tiptap/core'
 import type { Command } from '@tiptap/pm/state'
@@ -86,6 +87,8 @@ export interface RibbonProps {
   /** Right side of the tab row (file name, etc.) */
   trailingActions?: React.ReactNode
   editor: Editor
+  /** 察元 AI host-services group (the harvested chayuan-wps tab actions) */
+  chayuan?: import('../ribbon/host-services').DocsCommandServices['chayuan']
   /** shallow-stable snapshot of every editor-state read shown in the ribbon (memo invalidation key) */
   formatState: RibbonFormatState
   hasDoc: boolean
@@ -266,8 +269,8 @@ const IN_TAB = new URLSearchParams(window.location.search).get('mode') === 'tab'
 // WPS word 对齐:设计+布局合并为「页面」tab(开始 插入 页面 绘制 引用 审阅 视图)
 const TABS = (
   IS_MAC
-    ? ['home', 'insert', 'page', 'draw', 'references', 'review', 'view']
-    : ['file', 'home', 'insert', 'page', 'draw', 'references', 'review', 'view']
+    ? ['home', 'insert', 'page', 'draw', 'references', 'review', 'chayuan', 'view']
+    : ['file', 'home', 'insert', 'page', 'draw', 'references', 'review', 'chayuan', 'view']
 ) as readonly string[]
 const TABLE_TABS = ['tableDesign', 'tableLayout'] as const
 const IMAGE_TABS = ['pictureFormat'] as const
@@ -294,6 +297,7 @@ const TAB_LABEL_KEYS: Record<string, StringKey> = {
   references: 'ribbonTabReferences',
   review: 'ribbonTabReview',
   view: 'ribbonTabView',
+  chayuan: 'ribbonTabChayuanAI',
   tableDesign: 'ribbonTabTableDesign',
   tableLayout: 'ribbonTabTableLayout',
   pictureFormat: 'ribbonTabPictureFormat',
@@ -364,6 +368,7 @@ function findNumIdOfKind(blocks: Block[], kind: 'bullet' | 'ordered'): string | 
 function RibbonInner({
   actionsRef,
   quickActions,
+  chayuan,
   trailingActions,
   editor,
   formatState: fs,
@@ -2268,6 +2273,13 @@ function RibbonInner({
             protectActive={protectActive}
             onProtectDoc={onProtectDoc}
             onCompare={onCompare}
+          />
+        ) : tab === 'chayuan' && chayuan ? (
+          <ChayuanTab
+            hasDoc={hasDoc}
+            dropdown={dropdown}
+            setDropdown={setDropdown}
+            chayuan={chayuan}
           />
         ) : (
           <ViewTab

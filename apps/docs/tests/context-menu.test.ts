@@ -245,3 +245,39 @@ describe('ParagraphDialog', () => {
     editor.destroy()
   })
 })
+
+describe('EditorContextMenu AI 文本助手 submenu', () => {
+  it('lists the harvested core assistants and forwards their ids on click', () => {
+    const editor = createEditor()
+    select(editor, 1, 6)
+    const onAiAssistant = vi.fn()
+    const { container, unmount } = render(
+      createElement(EditorContextMenu, menuProps(editor, { onAiAssistant })),
+    )
+    const trigger = [...container.querySelectorAll<HTMLButtonElement>('.ctx-item')].find(
+      (b) => b.querySelector('.ctx-label')?.textContent === 'AI Text Assistant',
+    )!
+    expect(trigger.disabled).toBe(false)
+    act(() => trigger.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })))
+    const items = [...container.querySelectorAll('.ctx-submenu .ctx-item')]
+    expect(items.length).toBe(13)
+    const rewrite = items.find((b) => b.textContent === 'Rewrite')! as HTMLButtonElement
+    act(() => rewrite.click())
+    expect(onAiAssistant).toHaveBeenCalledWith('core.rewrite')
+    unmount()
+    editor.destroy()
+  })
+
+  it('stays disabled without a selection', () => {
+    const editor = createEditor()
+    const { container, unmount } = render(
+      createElement(EditorContextMenu, menuProps(editor, { onAiAssistant: noop })),
+    )
+    const trigger = [...container.querySelectorAll<HTMLButtonElement>('.ctx-item')].find(
+      (b) => b.querySelector('.ctx-label')?.textContent === 'AI Text Assistant',
+    )!
+    expect(trigger.disabled).toBe(true)
+    unmount()
+    editor.destroy()
+  })
+})

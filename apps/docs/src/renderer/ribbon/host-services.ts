@@ -121,6 +121,19 @@ export interface DocsCommandServices {
     readonly pageNumFormat: () => void
     readonly protectDoc: () => void
   }
+  /** 察元 AI tab (harvested chayuan-wps surface): assistants, docops dialogs and batch ops */
+  readonly chayuan: {
+    /** run a core-pack assistant (常用助手) against the current selection */
+    readonly runAssistant: (id: string) => void
+    /** open a docops dialog (题注/样式/脱密/表单内容…) */
+    readonly openDialog: (kind: import('../docops/dialogs').DocOpsDialogKind) => void
+    /** immediate batch op: tables.* / images.* / text.* / form.toggle */
+    readonly runOp: (op: string) => void
+    /** export every table as one xlsx / every image as files */
+    readonly exportAll: (what: 'tables' | 'images') => void
+    /** 表单模式 current state (ribbon toggle pressed look) */
+    readonly formModeActive: () => boolean
+  }
 }
 
 /**
@@ -227,5 +240,6 @@ export function ribbonPropsFromHost(
     onFooter: services.hf.setFooter,
     onTitlePg: services.hf.setTitlePg,
     onEvenOddHf: services.hf.setEvenOddHf,
+    chayuan: services.chayuan,
   }
 }
