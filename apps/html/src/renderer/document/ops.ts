@@ -353,7 +353,10 @@ export function compileOps(text: string, map: ParseMap, ops: readonly HtmlOp[]):
           patches.push({
             from: e.startTag[0] + found.valueFrom,
             to: e.startTag[0] + found.valueTo,
-            text: found.quote === '"' ? escapeAttr(value) : value.replace(/'/g, '&#39;'),
+            text:
+              found.quote === '"'
+                ? escapeAttr(value)
+                : value.replace(/&/g, '&amp;').replace(/'/g, '&#39;'),
             index,
           })
         } else if (found) {
