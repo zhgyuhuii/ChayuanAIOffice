@@ -38,7 +38,8 @@ import { resolveThemeColor } from './theme'
 /** No run un-hides itself and nothing anchors here (bookmarks, comments, sectPr,
  *  drawings, numbering): safe to collapse a style-vanished paragraph entirely */
 export function staysVanished(xml: string): boolean {
-  if (/<w:vanish\s[^>]*w:val="(?:0|false|off)"/.test(xml)) return false
+  if (/<w:vanish\s[^>]*w:val=(?:"(?:0|false|none|off)"|'(?:0|false|none|off)')/i.test(xml))
+    return false
   return !/<w:(?:drawing|pict|object|sectPr|bookmarkStart|commentRangeStart|commentRangeEnd|numPr)[\s/>]/.test(
     xml,
   )
