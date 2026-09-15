@@ -27,8 +27,10 @@ const isOn = (val: string | undefined): boolean =>
 
 /** The checkbox glyph pair a w:sdtPr declares (defaults are Word's own). */
 export function sdtCheckboxGlyphs(sdtPrXml: string): CheckboxGlyphs {
-  const state = (name: string): string | undefined =>
-    new RegExp(`<w14:${name}\\b[^>]*\\bw14:val="([^"]*)"`).exec(sdtPrXml)?.[1]
+  const state = (name: string): string | undefined => {
+    const m = new RegExp(`<w14:${name}\\b[^>]*\\bw14:val=(?:"([^"]*)"|'([^']*)')`).exec(sdtPrXml)
+    return m?.[1] ?? m?.[2]
+  }
   return {
     checked: glyphOf(state('checkedState'), DEFAULT_GLYPHS.checked),
     unchecked: glyphOf(state('uncheckedState'), DEFAULT_GLYPHS.unchecked),
