@@ -3006,7 +3006,7 @@ export function registerAiIpc(): void {
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
       },
       generateImage: async (req) => {
-        if (!chatofficeCloudToolsOn()) throw new Error(tm('err察元AIOfficeToolsOff'))
+        if (!chatofficeCloudToolsOn()) throw new Error(tm('errChatOfficeToolsOff'))
         const r = await chatofficeGenerateImage({
           prompt: req.prompt,
           ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
