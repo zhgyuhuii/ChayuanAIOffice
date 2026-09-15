@@ -13,10 +13,10 @@
 ملفات Word و Excel و PowerPoint و PDF، يحرّرها أنت والذكاء الاصطناعي الخاص بك، وتُحفظ بالصيغ الأصلية نفسها.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chatoffice" alt="الترخيص: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chatoffice" alt="أحدث إصدار"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chatoffice/total" alt="عدد التنزيلات"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chatoffice?style=flat" alt="نجوم GitHub"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="الترخيص: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="أحدث إصدار"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="عدد التنزيلات"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="نجوم GitHub"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <b>العربية</b> · <a href="README.ru.md">Русский</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -55,9 +55,9 @@ ChatOffice بديل مجاني ومفتوح المصدر لـ Microsoft Office �
   وWindsurf، ليتمكّن وكيل البرمجة من إنشاء ملفات Office حقيقية وتحويلها
   وقراءتها وتحريرها على جهازك دون فتح أي نافذة.
 
-**الحصول عليه:** [macOS](https://github.com/genspark-ai/chatoffice/releases/latest) (Apple Silicon و Intel) ·
-[Windows](https://github.com/genspark-ai/chatoffice/releases/latest) (x64 و Arm) ·
-[Linux](https://github.com/genspark-ai/chatoffice/releases/latest) (deb، rpm، AppImage) —
+**الحصول عليه:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon و Intel) ·
+[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 و Arm) ·
+[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb، rpm، AppImage) —
 التفاصيل والمتطلبات في [التنزيل](#download).
 
 ## العرض التوضيحي
@@ -179,7 +179,7 @@ Windsurf من إنشاء ملفات Office حقيقية وتحويلها وقر�
 </tr>
 <tr>
 <td dir="rtl"><b>توجيه واحد إلى وكيلك</b> — "أنشئ عرضًا تقديميًا من ثماني شرائح عن المجموعة الشمسية." يقرأ الوكيل المهارة، ويكتب ورقة أنماط ومخططًا ومواصفة صفحة واحدة لكل شريحة، ويولّد الصورتين بواسطة <code>chatoffice image</code>، ويترك <code>chatoffice slides check</code> يرفض أي عنصر يتجاوز الحدود أو يتداخل قبل أن يجمّع <code>chatoffice create</code> ملف <code>.pptx</code> ويُعيد <code>slides render</code> صورة PNG لكل شريحة لمعاينتها.</td>
-<td dir="rtl"><b>ثبّت مرة واحدة، من الإعدادات → التكاملات</b> — يسرد ChatOffice وكلاء البرمجة الذين يجدهم على هذا الجهاز ويكتب المهارة في كل وكيل تختاره. أو نزّل المهارة كملف zip، أو شغّل <code>npx skills add genspark-ai/chatoffice</code>. الأوامر وسير العمل الكامل في <a href="#command-line-and-agent-skill">سطر الأوامر ومهارة الوكيل</a>.</td>
+<td dir="rtl"><b>ثبّت مرة واحدة، من الإعدادات → التكاملات</b> — يسرد ChatOffice وكلاء البرمجة الذين يجدهم على هذا الجهاز ويكتب المهارة في كل وكيل تختاره. أو نزّل المهارة كملف zip، أو شغّل <code>npx skills add zhgyuhuii/chayuan-office</code>. الأوامر وسير العمل الكامل في <a href="#command-line-and-agent-skill">سطر الأوامر ومهارة الوكيل</a>.</td>
 </tr>
 </table>
 
@@ -242,7 +242,7 @@ ChatOffice، ولا يحتاج إلى بيئة تشغيل خاصة به، ولا
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **الإعدادات → التكاملات** في التطبيق   | يسرد الوكلاء الموجودين على هذا الجهاز؛ وبنقرة واحدة يكتب المهارة في كل وكيل تختاره. ويظهر زر **Update** عندما يصدر إصدار من ChatOffice بمهارة أحدث. |
 | **التنزيل كملف zip** من الصفحة نفسها   | التنسيق الذي يقبله claude.ai وتطبيقات Claude لسطح المكتب والمساعدون الآخرون كمهارة مرفوعة.                                                         |
-| `npx skills add genspark-ai/chatoffice` | يثبّت من هذا المستودع في أي وكيل متوافق مع المهارات.                                                                                               |
+| `npx skills add zhgyuhuii/chayuan-office` | يثبّت من هذا المستودع في أي وكيل متوافق مع المهارات.                                                                                               |
 
 ثم ابدأ محادثة جديدة واطلب مستندًا. تعلّم المهارة الوكيل متى يلجأ إلى
 `chatoffice`، وكيف يقرأ الملف قبل تحريره، وكيف يتحقّق من عمله بنفسه.
@@ -294,16 +294,16 @@ chatoffice open deck/solar-system.pptx
 
 | المنصة                               | المتطلبات                                             | التنزيل                                                                              |
 | ------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **macOS** — شريحة Apple (arm64)      | macOS 11+                                             | [أحدث نسخة `.dmg` (arm64)](https://github.com/genspark-ai/chatoffice/releases/latest) |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [أحدث نسخة `.dmg` (x64)](https://github.com/genspark-ai/chatoffice/releases/latest)   |
-| **Windows** (x64، لمعظم الأجهزة)     | Windows 10+، معالجات Intel/AMD                        | [أحدث مثبِّت `-x64.exe`](https://github.com/genspark-ai/chatoffice/releases/latest)   |
-| **Windows** على Arm (ARM64)          | Windows 11 على Arm (معالج Snapdragon X وما شابهه)     | [أحدث مثبِّت `-arm64.exe`](https://github.com/genspark-ai/chatoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64، glibc 2.34+ (Ubuntu 22.04 أو أحدث)            | [أحدث نسخة `.deb`](https://github.com/genspark-ai/chatoffice/releases/latest)         |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64، glibc 2.34+ (Fedora 35+، RHEL 9+، Leap 15.6+) | [أحدث نسخة `.rpm`](https://github.com/genspark-ai/chatoffice/releases/latest)         |
-| **Linux** — توزيعات أخرى             | x86_64، glibc 2.34+، وFUSE 2                          | [أحدث نسخة `.AppImage`](https://github.com/genspark-ai/chatoffice/releases/latest)    |
+| **macOS** — شريحة Apple (arm64)      | macOS 11+                                             | [أحدث نسخة `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [أحدث نسخة `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
+| **Windows** (x64، لمعظم الأجهزة)     | Windows 10+، معالجات Intel/AMD                        | [أحدث مثبِّت `-x64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
+| **Windows** على Arm (ARM64)          | Windows 11 على Arm (معالج Snapdragon X وما شابهه)     | [أحدث مثبِّت `-arm64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64، glibc 2.34+ (Ubuntu 22.04 أو أحدث)            | [أحدث نسخة `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)         |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64، glibc 2.34+ (Fedora 35+، RHEL 9+، Leap 15.6+) | [أحدث نسخة `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)         |
+| **Linux** — توزيعات أخرى             | x86_64، glibc 2.34+، وFUSE 2                          | [أحدث نسخة `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)    |
 
 جميع الإصدارات مبنية من الفرع `main`؛ ومثبِّتات macOS و Windows موقَّعة رقميًا.
-الإصدارات الأقدم متوفرة في صفحة [Releases](https://github.com/genspark-ai/chatoffice/releases).
+الإصدارات الأقدم متوفرة في صفحة [Releases](https://github.com/zhgyuhuii/chayuan-office/releases).
 
 <details>
 <summary><b>التثبيت على Linux</b></summary>
@@ -378,7 +378,7 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ChatOffice قيد تطوير نشط، وملاحظاتك هي ما يشكِّل مستقبله.
 
 - **أبلغ عن خطأ أو اطلب ميزة جديدة** عبر
-  [GitHub Issues](https://github.com/genspark-ai/chatoffice/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues).
 - **انضم إلى محادثة مجموعة ChatOffice** على
   [GenTeam](https://chatoffice.ai/join) للتواصل مع الفريق والمستخدمين الآخرين.
 - **أضِف نجمة (Star) للمستودع** إذا كان ChatOffice مفيدًا لك — فهذه أفضل طريقة

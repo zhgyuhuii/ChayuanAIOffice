@@ -13,10 +13,10 @@
 Файлы Word, Excel, PowerPoint и PDF, редактируемые вами и вашим AI, сохраняются обратно в реальных форматах.</p>
 
 <p align="center">
-  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/genspark-ai/chatoffice" alt="Лицензия: Apache-2.0"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases/latest"><img src="https://img.shields.io/github/v/release/genspark-ai/chatoffice" alt="Последний релиз"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/releases"><img src="https://img.shields.io/github/downloads/genspark-ai/chatoffice/total" alt="Загрузки"></a>
-  <a href="https://github.com/genspark-ai/chatoffice/stargazers"><img src="https://img.shields.io/github/stars/genspark-ai/chatoffice?style=flat" alt="Звёзды на GitHub"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/github/license/zhgyuhuii/chayuan-office" alt="Лицензия: Apache-2.0"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/releases/latest"><img src="https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office" alt="Последний релиз"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/releases"><img src="https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total" alt="Загрузки"></a>
+  <a href="https://github.com/zhgyuhuii/chayuan-office/stargazers"><img src="https://img.shields.io/github/stars/zhgyuhuii/chayuan-office?style=flat" alt="Звёзды на GitHub"></a>
 </p>
 
 <p align="center"><a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.pt-BR.md">Português (Brasil)</a> · <a href="README.de.md">Deutsch</a> · <a href="README.fr.md">Français</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.ar.md">العربية</a> · <b>Русский</b> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.pl.md">Polski</a> · <a href="README.cs.md">Čeština</a> · <a href="README.id.md">Bahasa Indonesia</a> · <a href="README.ms.md">Bahasa Melayu</a> · <a href="README.th.md">ไทย</a> · <a href="README.hi.md">हिन्दी</a> · <a href="README.he.md">עברית</a></p>
@@ -58,9 +58,9 @@ AI-агента рядом с каждым документом — не чат-
   создавать, конвертировать, читать и редактировать настоящие файлы Office на
   вашем компьютере, не открывая ни одного окна.
 
-**Скачать:** [macOS](https://github.com/genspark-ai/chatoffice/releases/latest) (Apple Silicon и Intel) ·
-[Windows](https://github.com/genspark-ai/chatoffice/releases/latest) (x64 и Arm) ·
-[Linux](https://github.com/genspark-ai/chatoffice/releases/latest) (deb, rpm, AppImage) —
+**Скачать:** [macOS](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (Apple Silicon и Intel) ·
+[Windows](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (x64 и Arm) ·
+[Linux](https://github.com/zhgyuhuii/chayuan-office/releases/latest) (deb, rpm, AppImage) —
 подробности и системные требования в разделе [Скачать](#download).
 
 ## Демонстрация
@@ -181,7 +181,7 @@ Windsurf смогут создавать, конвертировать, чита
 </tr>
 <tr>
 <td><b>Один промпт вашему агенту</b> — «Сделай презентацию о Солнечной системе из восьми слайдов». Агент читает скилл, пишет таблицу стилей, план и по одной спецификации страницы на слайд, генерирует две фотографии через <code>chatoffice image</code> и даёт <code>chatoffice slides check</code> отклонить всё, что выходит за границы или перекрывается, прежде чем <code>chatoffice create</code> соберёт <code>.pptx</code>, а <code>slides render</code> вернёт по одному PNG на слайд для просмотра.</td>
-<td><b>Установите один раз, через Настройки → Интеграции</b> — ChatOffice перечисляет кодинг-агентов, найденных на этом компьютере, и записывает скилл в каждый выбранный вами. Либо скачайте скилл в виде zip или выполните <code>npx skills add genspark-ai/chatoffice</code>. Команды и полный рабочий процесс — в разделе <a href="#command-line-and-agent-skill">Командная строка и агентный скилл</a>.</td>
+<td><b>Установите один раз, через Настройки → Интеграции</b> — ChatOffice перечисляет кодинг-агентов, найденных на этом компьютере, и записывает скилл в каждый выбранный вами. Либо скачайте скилл в виде zip или выполните <code>npx skills add zhgyuhuii/chayuan-office</code>. Команды и полный рабочий процесс — в разделе <a href="#command-line-and-agent-skill">Командная строка и агентный скилл</a>.</td>
 </tr>
 </table>
 
@@ -253,7 +253,7 @@ OpenCode и Windsurf сразу из коробки, а также с любым
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Настройки → Интеграции** в приложении | Показывает агентов, найденных на этом компьютере; один клик записывает скилл в каждый выбранный. Когда релиз ChatOffice приносит более новый скилл, появляется кнопка **Update**. |
 | **Скачать как zip** на той же странице  | Формат, который claude.ai, десктопные приложения Claude и другие ассистенты принимают как загружаемый скилл.                                                                     |
-| `npx skills add genspark-ai/chatoffice`  | Устанавливает скилл из этого репозитория в любой агент, поддерживающий скиллы.                                                                                                   |
+| `npx skills add zhgyuhuii/chayuan-office`  | Устанавливает скилл из этого репозитория в любой агент, поддерживающий скиллы.                                                                                                   |
 
 Затем начните новый чат и попросите документ. Скилл учит агента, когда
 обращаться к `chatoffice`, как прочитать файл перед редактированием и как
@@ -307,17 +307,17 @@ chatoffice open deck/solar-system.pptx
 
 | Платформа                            | Требования                                            | Скачать                                                                                       |
 | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Последний `.dmg` (arm64)](https://github.com/genspark-ai/chatoffice/releases/latest)          |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Последний `.dmg` (x64)](https://github.com/genspark-ai/chatoffice/releases/latest)            |
-| **Windows** (x64, большинство ПК)    | Windows 10+, Intel/AMD                                | [Последний установщик `-x64.exe`](https://github.com/genspark-ai/chatoffice/releases/latest)   |
-| **Windows** на Arm (ARM64)           | Windows 11 на Arm (Snapdragon X и аналогичные)        | [Последний установщик `-arm64.exe`](https://github.com/genspark-ai/chatoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 или новее)          | [Последний `.deb`](https://github.com/genspark-ai/chatoffice/releases/latest)                  |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Последний `.rpm`](https://github.com/genspark-ai/chatoffice/releases/latest)                  |
-| **Linux** — другие дистрибутивы      | x86_64, glibc 2.34+, FUSE 2                           | [Последний `.AppImage`](https://github.com/genspark-ai/chatoffice/releases/latest)             |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Последний `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)          |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Последний `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)            |
+| **Windows** (x64, большинство ПК)    | Windows 10+, Intel/AMD                                | [Последний установщик `-x64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
+| **Windows** на Arm (ARM64)           | Windows 11 на Arm (Snapdragon X и аналогичные)        | [Последний установщик `-arm64.exe`](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 или новее)          | [Последний `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Последний `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)                  |
+| **Linux** — другие дистрибутивы      | x86_64, glibc 2.34+, FUSE 2                           | [Последний `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)             |
 
 Все сборки собираются из ветки `main`; установщики для macOS и Windows
 подписаны. Более старые версии доступны на странице
-[Releases](https://github.com/genspark-ai/chatoffice/releases).
+[Releases](https://github.com/zhgyuhuii/chayuan-office/releases).
 
 <details>
 <summary><b>Установка на Linux</b></summary>
@@ -392,7 +392,7 @@ npm run dist:linux   # package Linux AppImage + deb + rpm
 ChatOffice активно развивается, и ваши отзывы влияют на его развитие.
 
 - **Сообщите об ошибке или предложите функцию** в
-  [GitHub Issues](https://github.com/genspark-ai/chatoffice/issues).
+  [GitHub Issues](https://github.com/zhgyuhuii/chayuan-office/issues).
 - **Присоединяйтесь к групповому чату ChatOffice** в
   [GenTeam](https://chatoffice.ai/join), чтобы общаться с командой и другими
   пользователями.

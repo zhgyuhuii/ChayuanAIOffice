@@ -2,11 +2,11 @@
 
 **The world's first full-featured open-source AI Office suite.**
 
-[![License: Apache-2.0](https://img.shields.io/github/license/genspark-ai/chatoffice)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/genspark-ai/chatoffice)](https://github.com/genspark-ai/chatoffice/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/genspark-ai/chatoffice/total)](https://github.com/genspark-ai/chatoffice/releases)
+[![License: Apache-2.0](https://img.shields.io/github/license/zhgyuhuii/chayuan-office)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/zhgyuhuii/chayuan-office)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/zhgyuhuii/chayuan-office/total)](https://github.com/zhgyuhuii/chayuan-office/releases)
 
-[Website](https://chatoffice.ai/) · [Download](https://github.com/genspark-ai/chatoffice/releases/latest) · [Privacy](PRIVACY.md) · [Demo](https://www.youtube.com/watch?v=B2pLdMX95v4)
+[Website](https://chatoffice.ai/) · [Download](https://github.com/zhgyuhuii/chayuan-office/releases/latest) · [Privacy](PRIVACY.md) · [Demo](https://www.youtube.com/watch?v=B2pLdMX95v4)
 
 ChaAI Office is a free, open-source alternative to Microsoft Office for macOS,
 Windows, and Linux, built around AI editing as a first-class workflow rather
@@ -41,15 +41,15 @@ layer.
 
 | Platform                             | Requirements                                          | Download                                                                            |
 | ------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Latest `.dmg` (arm64)](https://github.com/genspark-ai/chatoffice/releases/latest)   |
-| **macOS** — Intel (x64)              | macOS 11+                                             | [Latest `.dmg` (x64)](https://github.com/genspark-ai/chatoffice/releases/latest)     |
-| **Windows** (x64)                    | Windows 10+                                           | [Latest `.exe` installer](https://github.com/genspark-ai/chatoffice/releases/latest) |
-| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 or newer)           | [Latest `.deb`](https://github.com/genspark-ai/chatoffice/releases/latest)           |
-| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Latest `.rpm`](https://github.com/genspark-ai/chatoffice/releases/latest)           |
-| **Linux** — other distributions      | x86_64, glibc 2.34+, FUSE 2                           | [Latest `.AppImage`](https://github.com/genspark-ai/chatoffice/releases/latest)      |
+| **macOS** — Apple Silicon (arm64)    | macOS 11+                                             | [Latest `.dmg` (arm64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)   |
+| **macOS** — Intel (x64)              | macOS 11+                                             | [Latest `.dmg` (x64)](https://github.com/zhgyuhuii/chayuan-office/releases/latest)     |
+| **Windows** (x64)                    | Windows 10+                                           | [Latest `.exe` installer](https://github.com/zhgyuhuii/chayuan-office/releases/latest) |
+| **Linux** — Debian / Ubuntu          | x86_64, glibc 2.34+ (Ubuntu 22.04 or newer)           | [Latest `.deb`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)           |
+| **Linux** — Fedora / RHEL / openSUSE | x86_64, glibc 2.34+ (Fedora 35+, RHEL 9+, Leap 15.6+) | [Latest `.rpm`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)           |
+| **Linux** — other distributions      | x86_64, glibc 2.34+, FUSE 2                           | [Latest `.AppImage`](https://github.com/zhgyuhuii/chayuan-office/releases/latest)      |
 
 All builds come from `main`; the macOS and Windows installers are signed.
-Older versions are on the [Releases](https://github.com/genspark-ai/chatoffice/releases) page.
+Older versions are on the [Releases](https://github.com/zhgyuhuii/chayuan-office/releases) page.
 
 ### Installing on Linux
 

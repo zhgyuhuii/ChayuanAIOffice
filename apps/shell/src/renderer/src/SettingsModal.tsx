@@ -965,8 +965,8 @@ export function SettingsModal({
                   label={t('setGithub')}
                   value={
                     githubStars === null
-                      ? 'github.com/chatoffice-ai/chatoffice'
-                      : `github.com/chatoffice-ai/chatoffice · ★ ${formatStars(githubStars)}`
+                      ? 'github.com/zhgyuhuii/chayuan-office'
+                      : `github.com/zhgyuhuii/chayuan-office · ★ ${formatStars(githubStars)}`
                   }
                   action={
                     <button
