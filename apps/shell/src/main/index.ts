@@ -117,6 +117,7 @@ import {
   setChatOfficeProxyUrl,
   startChatofficeLogin,
 } from '@chatoffice/ai-search'
+import { setRescueFetch } from '@chatoffice/ai-provider'
 
 import {
   buildDocsMenu,
@@ -171,6 +172,7 @@ import {
 import { createCliRunner } from './mcp/cli-runner'
 import { DEFAULT_MCP_PORT } from './mcp/mcp-server'
 import { createDocsControl, installDocsBridge } from './mcp/docs-bridge'
+import { initAiFetchProxy, cleanupAiFetchProxy } from './ai-fetch-proxy'
 import {
   configureSheetsRuntime,
   exportSheetsPdfHeadless,
@@ -5707,6 +5709,11 @@ const externalMcp = createExternalMcpManager({
   log: (message) => console.log(`[mcp-client] ${message}`),
 })
 registerMcpClientIpc(externalMcp)
+// Override the net.fetch rescue path with a hidden BrowserWindow proxy.
+// Cloudflare blocks both Node fetch and net.fetch (different TLS fingerprints);
+// only a genuine Chromium renderer fetch passes. The proxy creates the window lazily.
+const aiProxyFetch = initAiFetchProxy()
+setRescueFetch(aiProxyFetch)
 registerHomeIpc()
 registerIntegrationsIpc({
   settingsPath: APP_SETTINGS_PATH,
@@ -5917,6 +5924,7 @@ app.on('before-quit', () => {
   stopMcpSync()
   // best-effort: close outbound MCP client connections (kills spawned stdio servers)
   void externalMcp.shutdown()
+  cleanupAiFetchProxy()
 })
 
 // after every window has closed, so the shell window's own 'closed' republish cannot revive the file
