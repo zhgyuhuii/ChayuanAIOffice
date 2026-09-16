@@ -2,7 +2,16 @@ import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills, streamText } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import { AiComposer, AiTypingIndicator, Markdown, ModelPickerButton, PanelTabs, usePanelTab, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  Markdown,
+  ModelPickerButton,
+  PanelTabs,
+  usePanelTab,
+  AiScopeQuote,
+  type AiScopeQuoteData,
+} from '@chatoffice/ui'
 import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
@@ -740,8 +749,7 @@ export function AiPanel({
   }
 
   return (
-    <aside className="copilot">
-      dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
+    <aside className="copilot" dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}>
       <PanelTabs
         tabs={aiTabs}
         activeId={tab}

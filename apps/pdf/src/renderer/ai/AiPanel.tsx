@@ -2,7 +2,15 @@ import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import type { ReactElement } from 'react'
 import { AgentLoop } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import { AiComposer, AiTypingIndicator, ModelPickerButton, PanelTabs, usePanelTab, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  ModelPickerButton,
+  PanelTabs,
+  usePanelTab,
+  AiScopeQuote,
+  type AiScopeQuoteData,
+} from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
@@ -584,8 +592,11 @@ export function AiPanel({
   ]
 
   return (
-    <aside className="copilot" style={{ width: '100%' }}>
+    <aside
+      className="copilot"
+      style={{ width: '100%' }}
       dir={lang === 'ar' || lang === 'he' ? 'rtl' : undefined}
+    >
       <PanelTabs
         tabs={aiTabs}
         activeId={tab}
