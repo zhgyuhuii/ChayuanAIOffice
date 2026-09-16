@@ -7,11 +7,16 @@
  *
  * Isolated in its own module so tests can `vi.mock('./electron-binding')`
  * without touching the real require pipeline.
+ *
+ * The resolve must stay inside the function: a module-scope
+ * `createRequire` from 'node:module' gets bundled into the sandboxed shell
+ * preload (drop-open is part of its graph), and node:module is NOT on the
+ * sandbox whitelist — the preload then fails to load and the shell window
+ * comes up blank. Plain require('electron') from within a preload bundle is
+ * whitelisted; real ESM hosts never call this function.
  */
-import { createRequire } from 'node:module'
-
-const requireElectron = createRequire(import.meta.url)
+declare const require: (id: string) => unknown
 
 export function electronBinding(): typeof import('electron') {
-  return requireElectron('electron') as typeof import('electron')
+  return require('electron') as typeof import('electron')
 }
