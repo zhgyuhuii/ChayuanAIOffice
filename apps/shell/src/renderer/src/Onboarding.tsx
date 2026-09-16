@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import appIcon from './assets/logo.png'
+import qrCodeIcon from './assets/qrcode.png'
 import { useI18n } from './locale'
 import type { StringKey } from './locale'
 import './onboarding.css'
@@ -17,18 +18,18 @@ interface Slide {
   bodyKey?: StringKey
   /** render the body in the dimmer footnote gray (slide 3's credits disclaimer) */
   bodyDim?: boolean
-  /** community slide shows the credits offer panel with the "Join GenTeam" call-to-action */
+  /** community slide shows the WeChat-account QR panel (feedback channel) */
   showOffer?: boolean
   /** closing slide shows the "star us on GitHub" hint */
   showStar?: boolean
   /** closing slide explains default-on analytics and how to disable it */
   showAnalyticsNotice?: boolean
-  art: 'logo' | 'gift' | 'check'
+  art: 'logo' | 'chat' | 'check'
 }
 
 const SLIDES: readonly Slide[] = [
   { titleKey: 'onbTitle1', subtitleKey: 'onbSubtitle1', bodyKey: 'onbBody1', art: 'logo' },
-  { titleKey: 'onbTitle2', subtitleKey: 'onbBody2', showOffer: true, art: 'gift' },
+  { titleKey: 'onbTitle2', subtitleKey: 'onbBody2', showOffer: true, art: 'chat' },
   {
     titleKey: 'onbTitle3',
     subtitleKey: 'onbBody3',
@@ -53,24 +54,21 @@ function SlideArt({ kind }: { kind: Slide['art'] }) {
   if (kind === 'logo') {
     return <img className="onb-art onb-art-logo" src={appIcon} alt="" />
   }
-  if (kind === 'gift') {
-    // hand-drawn gift kept over the spec vector deliberately; 48 canvas at
-    // strokeWidth 3.2 renders the same 4px strokes at 60px as the check icon
+  if (kind === 'chat') {
+    // speech bubble: the community slide is now the feedback channel (WeChat
+    // account QR below); 60 canvas at strokeWidth 4 matches the check icon
     return (
-      <span className="onb-art onb-art-badge onb-art-gift" aria-hidden="true">
+      <span className="onb-art onb-art-badge onb-art-chat" aria-hidden="true">
         <svg
-          viewBox="0 0 48 48"
+          viewBox="0 0 60 60"
           fill="none"
           stroke="currentColor"
-          strokeWidth="3.2"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <rect x="6" y="14" width="36" height="9" rx="2" />
-          <path d="M9.5 23v15a4 4 0 0 0 4 4h21a4 4 0 0 0 4-4V23" />
-          <path d="M24 14v28" />
-          <path d="M24 14c-7 0-10.5-2.6-10.5-6 0-2.5 2-4.5 4.5-4.5 4.2 0 6 5.3 6 10.5Z" />
-          <path d="M24 14c7 0 10.5-2.6 10.5-6 0-2.5-2-4.5-4.5-4.5-4.2 0-6 5.3-6 10.5Z" />
+          <path d="M30 8.5C43.5 8.5 53.5 16.6 53.5 27.5S43.5 46.5 30 46.5c-2.4 0-4.7-.3-6.9-.9L13 49.5l2.6-8.3C10.8 37.8 6.5 33 6.5 27.5 6.5 16.6 16.5 8.5 30 8.5Z" />
+          <path d="M20 27.5h.1M30 27.5h.1M40 27.5h.1" strokeWidth="5" />
         </svg>
       </span>
     )
@@ -222,19 +220,11 @@ export function Onboarding({ onDone }: OnboardingProps) {
               )}
               {s.showOffer && (
                 <div className="onb-offer">
-                  <p className="onb-credits">{renderEmphasis(t('onbCredits'))}</p>
-                  <button className="onb-join" onClick={() => void window.chatOffice.openGenTeam()}>
-                    {t('onbJoinGenTeam')}
-                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                      <path
-                        d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
+                  <img className="onb-qr" src={qrCodeIcon} alt={t('scanQrFollow')} />
+                  <div className="onb-qr-copy">
+                    <p className="onb-qr-line">{renderEmphasis(t('onbQrFollow'))}</p>
+                    <p className="onb-qr-sub">{t('onbQrSub')}</p>
+                  </div>
                 </div>
               )}
             </div>
