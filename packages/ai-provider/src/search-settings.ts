@@ -102,7 +102,9 @@ export function activeSearchProvider(settings: Pick<AiSettings, 'search'>): AiSe
   const meta = AI_SEARCH_PROVIDERS.find((m) => m.id === search.provider)!
   if (meta.needsKey) {
     const providers = search.providers as Record<string, { apiKey?: string }> | undefined
-    return providers?.[search.provider]?.apiKey ? search.provider : DEFAULT_WEB_SEARCH_PROVIDER
+    // Trim-aware: a whitespace-only key from in-memory settings falls back
+    // instead of sending `Bearer    ` to the search backend.
+    return providers?.[search.provider]?.apiKey?.trim() ? search.provider : DEFAULT_WEB_SEARCH_PROVIDER
   }
   return search.provider
 }

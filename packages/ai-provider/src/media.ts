@@ -259,9 +259,11 @@ export function mediaConfigUsable(
   config: AiMediaProviderConfig | undefined,
 ): boolean {
   if (!config) return false
-  if (meta.needsBaseUrl) return !!config.baseUrl
+  // Trim-aware like activeProvider: whitespace-only survivors of in-memory
+  // settings are not usable configs.
+  if (meta.needsBaseUrl) return !!config.baseUrl?.trim()
   if (meta.needsKey === false) return true
-  return !!config.apiKey
+  return !!config.apiKey?.trim()
 }
 
 /**

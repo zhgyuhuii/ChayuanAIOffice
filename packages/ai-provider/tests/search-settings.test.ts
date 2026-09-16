@@ -47,6 +47,15 @@ describe('search settings', () => {
         },
       }),
     ).toBe('serper')
+    // adapted（本地）：空白 key 视为未配置，回落到免钥默认引擎 duckduckgo（上游无免钥引擎故回落 genspark）
+    expect(
+      activeSearchProvider({
+        search: {
+          provider: 'serper',
+          providers: { serper: { apiKey: '   ' }, tavily: { apiKey: '' } },
+        },
+      }),
+    ).toBe('duckduckgo')
   })
 
   it('activates a free provider without a key', () => {

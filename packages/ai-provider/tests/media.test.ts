@@ -96,6 +96,11 @@ describe('media settings', () => {
     expect(activeMediaProvider(openaiSettings(), 'image')).toBe('openai')
     expect(activeMediaProvider(openaiSettings(), 'analysis')).toBe('openai')
     expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('')
+    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('')
+
+    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('genspark')
+    expect(activeMediaProvider(openaiSettings('   '), 'image')).toBe('genspark')
+>>>>>>> 093ecfb9 (fix(ai-provider): treat whitespace-only keys, URLs, and models as unconfigured (#415))
     const custom = defaultAiMediaSettings()
     custom.imageProvider = 'custom'
     expect(activeMediaProvider(withMedia(custom), 'image')).toBe('')

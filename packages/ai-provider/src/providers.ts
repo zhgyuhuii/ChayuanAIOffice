@@ -317,14 +317,16 @@ export function activeProvider(settings: AiSettings): AiProviderId {
   const config = settings.providers?.[provider]
   if (!meta || !config) return 'chatoffice'
   if (meta.needsCliPath) return provider
-  if (!config.model) return 'chatoffice'
+  // Trim-aware: in-memory settings bypass the trimConfigs applied to
+  // persisted files, and a whitespace-only key/URL/model is a 401, not a config.
+  if (!config.model?.trim()) return 'chatoffice'
   if (meta.needsBaseUrl) {
     // Custom OpenAI-compatible endpoints (Ollama, LM Studio, vLLM) accept
     // anonymous requests: base URL + model suffice, the key stays optional.
-    if (!config.baseUrl) return 'chatoffice'
+    if (!config.baseUrl?.trim()) return 'chatoffice'
     return provider
   }
-  if (!config.apiKey) return 'chatoffice'
+  if (!config.apiKey?.trim()) return 'chatoffice'
   return provider
 }
 
