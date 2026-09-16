@@ -3,7 +3,7 @@ import type { AgentToolCall, AgentToolDef, ToolExecution } from '@chatoffice/age
 import type { OutlineNode } from '../OutlinePanel'
 import type { PageEntry, SearchIndex } from '../search'
 import { searchInIndex } from '../search'
-import { foldCase } from '@genoffice/ui'
+import { foldCase } from '@chatoffice/ui'
 import { geomDispSize, pdfRectToCss, pdfToView, quadToRect, viewToPdf } from '../annotations'
 import type { PageGeom } from '../annotations'
 import { EDIT_FONTS } from '../../shared/ipc'
