@@ -129,7 +129,62 @@ export function relaySeedCommand(messages: HomeChatMessage[]): RelayCommand {
 }
 
 /**
- * 事件 → 消息数组纯映射。返回新数组(不可变更新,store 兼容);
+ * 把一条工具活动 upsert 进最后一条 assistant 消息（按 callId 合并，start
+ * →running 脉动，end→落成败）。中继镜像与首页本地 agent 共用同一时间线 UI。
+ */
+export function upsertToolActivity(
+  messages: HomeChatMessage[],
+  activity: {
+    callId: string
+    name: string
+    summary?: string
+    phase: 'start' | 'end'
+    ok?: boolean
+    outputPreview?: string
+  },
+): HomeChatMessage[] {
+  const last = messages[messages.length - 1]
+  if (!last || last.role !== 'assistant') return messages
+  const tools = [...(last.relayTools ?? [])]
+  const idx = tools.findIndex((t) => t.callId === activity.callId)
+  if (idx >= 0) {
+    tools[idx] = {
+      ...tools[idx]!,
+      running: activity.phase === 'start',
+      ok: activity.ok ?? tools[idx]!.ok,
+      outputPreview: activity.outputPreview ?? tools[idx]!.outputPreview,
+    }
+  } else {
+    tools.push({
+      callId: activity.callId,
+      name: activity.name,
+      summary: activity.summary,
+      running: activity.phase === 'start',
+      ok: activity.ok,
+      outputPreview: activity.outputPreview,
+    })
+  }
+  const next = [...messages]
+  next[messages.length - 1] = { ...last, relayTools: tools }
+  return next
+}
+
+/** 运行收尾：still-running 的 chip 落定（stop/重置打断时 onToolExecuted 不会来）。
+ *  始终返回外层数组副本——调用方会继续原地改最后一条消息。 */
+export function settleRunningTools(messages: HomeChatMessage[]): HomeChatMessage[] {
+  const last = messages[messages.length - 1]
+  const next = [...messages]
+  if (last?.role === 'assistant' && last.relayTools?.some((t) => t.running)) {
+    next[next.length - 1] = {
+      ...last,
+      relayTools: last.relayTools.map((t) => (t.running ? { ...t, running: false } : t)),
+    }
+  }
+  return next
+}
+
+/**
+ * 事件 → 消息数组纯映射。返回新数组(不可变更新,store 兼容)；
  * 无处可落的事件(如 turn-started 后消息已被并发修补)原样返回。
  */
 export function applyRelayEvent(
@@ -159,36 +214,23 @@ export function applyRelayEvent(
       return patchByTurn(messages, event.turnId, (m) => ({ ...m, text: event.text }))
     }
     case 'tool': {
-      const a = event.activity
-      return patchByTurn(messages, event.turnId, (m) => {
-        const tools = [...(m.relayTools ?? [])]
-        const idx = tools.findIndex((t) => t.callId === a.callId)
-        if (idx >= 0) {
-          tools[idx] = {
-            ...tools[idx]!,
-            running: a.phase === 'start',
-            ok: a.ok ?? tools[idx]!.ok,
-            outputPreview: a.outputPreview ?? tools[idx]!.outputPreview,
-          }
-        } else {
-          tools.push({
-            callId: a.callId,
-            name: a.name,
-            summary: a.summary,
-            running: a.phase === 'start',
-            ok: a.ok,
-            outputPreview: a.outputPreview,
-          })
-        }
-        return { ...m, relayTools: tools }
-      })
+      return patchByTurn(
+        messages,
+        event.turnId,
+        (m) => upsertToolActivity([m], event.activity)[0] ?? m,
+      )
     }
     case 'confirm-request': {
       // P2-7 确认门:确认卡挂在流式中的镜像消息上(该 turn 的占位已存在)
       const r = event.request
       return patchByTurn(messages, event.turnId, (m) => ({
         ...m,
-        relayConfirm: { confirmId: r.confirmId, kind: r.kind, payload: r.payload, state: 'pending' },
+        relayConfirm: {
+          confirmId: r.confirmId,
+          kind: r.kind,
+          payload: r.payload,
+          state: 'pending',
+        },
       }))
     }
     case 'turn-finished': {

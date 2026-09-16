@@ -7,6 +7,7 @@ import type {
   HomeChatSession,
 } from '../../../shared/home-api'
 import { HomeAgent, PLAN_MODE_SUFFIX, type HomeAgentBridge, type HomeAgentTexts } from './agent'
+import { settleRunningTools, upsertToolActivity } from './relay-client'
 
 export interface HomeChatControllerTexts extends HomeAgentTexts {
   /** closing card line: document opened in a new tab */
@@ -19,8 +20,9 @@ export interface HomeChatSendOptions {
   model?: AiModelSelection | undefined
   /** plan mode: advice-only turn (plan suffix appended to the system prompt) */
   mode?: 'default' | 'plan' | undefined
-  /** active assistant persona: first-turn task template ({{input}} =
-   *  the user's text); the persona itself is set via setAssistantPersona */
+  /** assistant persona riding THIS message (one-shot, Q: 点击发送后助手即消失):
+   *  the persona is appended to the system prompt for the run this send starts
+   *  and dropped when it finishes; {{input}} = the user's text */
   assistant?: { template?: string } | undefined
 }
 
@@ -44,6 +46,9 @@ export class HomeChatController {
   /** per-session assistant persona (assistant picker); appended to the
    *  system prompt on every run while set — survives session switches */
   private readonly sessionPersonas = new Map<string, string>()
+  /** one-shot personas: send with `assistant` options clears the persona when
+   *  the run it started finishes (the chip already vanished at send time) */
+  private readonly oneShotPersonas = new Set<string>()
 
   constructor(
     private readonly bridge: HomeAgentBridge,
@@ -78,10 +83,17 @@ export class HomeChatController {
             return { ...s, messages }
           })
         },
+        onToolActivity: (activity) => {
+          this.updateSession(sessionId, (s) => ({
+            ...s,
+            messages: upsertToolActivity(s.messages, activity),
+          }))
+        },
         onBusy: (busy) => this.onBusyChange?.(sessionId, busy),
         onDone: ({ createdDoc, openedDoc }) => {
+          this.finishOneShotPersona(sessionId)
           this.updateSession(sessionId, (s) => {
-            const messages = [...s.messages]
+            const messages = settleRunningTools(s.messages)
             const last = messages[messages.length - 1]
             if (last?.role === 'assistant') {
               let card: HomeChatCard | undefined
@@ -101,11 +113,13 @@ export class HomeChatController {
           watch.pendingDocTitle = null
         },
         onError: (error) => {
+          this.finishOneShotPersona(sessionId)
           this.updateSession(sessionId, (s) => {
-            const messages = [...s.messages]
+            const messages = settleRunningTools(s.messages)
             const last = messages[messages.length - 1]
-            if (!last || last.role !== 'assistant') return s
-            messages[messages.length - 1] = { ...last, text: last.text || error, error: true }
+            if (last?.role === 'assistant') {
+              messages[messages.length - 1] = { ...last, text: last.text || error, error: true }
+            }
             return { ...s, messages }
           })
         },
@@ -119,7 +133,7 @@ export class HomeChatController {
         if (persona) {
           parts.push(
             '## Active assistant persona\n' +
-              'The user picked an assistant for this conversation. Stay in this role in every reply, ' +
+              'The user attached an assistant persona to this request. Stay in this role for this reply, ' +
               'while keeping all your tools and document capabilities available.\n\n' +
               persona,
           )
@@ -142,6 +156,12 @@ export class HomeChatController {
   setAssistantPersona(sessionId: string, persona: string | null): void {
     if (persona === null) this.sessionPersonas.delete(sessionId)
     else this.sessionPersonas.set(sessionId, persona)
+  }
+
+  /** one-shot persona lifecycle: dropped when the run it rode on finishes */
+  private finishOneShotPersona(sessionId: string): void {
+    if (!this.oneShotPersonas.delete(sessionId)) return
+    this.sessionPersonas.delete(sessionId)
   }
 
   isBusy(sessionId: string): boolean {
@@ -176,11 +196,12 @@ export class HomeChatController {
     }))
     if (options?.model) this.sessionModels.set(sessionId, () => options.model!)
     if (options?.mode) this.sessionModes.set(sessionId, options.mode)
-    // the assistant's task template frames only the conversation's first
-    // message ({{input}} = what the user typed); later turns are free chat
-    // under the persona
+    // one-shot assistant: the persona rides this send only — the task template
+    // frames the user's text ({{input}} = what they typed) and the persona is
+    // dropped when the run finishes (finishOneShotPersona)
+    if (options?.assistant) this.oneShotPersonas.add(sessionId)
     let instruction = text
-    if (options?.assistant?.template && history.length === 0) {
+    if (options?.assistant?.template) {
       const template = options.assistant.template
       instruction = template.includes('{{input}}')
         ? template.replaceAll('{{input}}', text)
@@ -193,6 +214,7 @@ export class HomeChatController {
       model = null as never
     }
     if (!model) {
+      this.finishOneShotPersona(sessionId)
       this.updateSession(sessionId, (s) => {
         const messages = [...s.messages]
         const last = messages[messages.length - 1]

@@ -634,6 +634,20 @@ export function ChatPanel({
     inputRef.current?.focus()
   }
 
+  /** 一次性助手(用户裁定):发送即收起 chip——会话字段与草稿一并清掉;
+   *  persona 由 controller 保管到本轮运行结束(中途清会让工具多轮掉出人设),
+   *  结束时 finishOneShotPersona 落删。 */
+  const clearAssistantAfterSend = (sessionId: string) => {
+    setDraftAssistant(null)
+    draftPersonaRef.current = null
+    personasRef.current.delete(sessionId)
+    storeRef.current?.updateSession(sessionId, (s) => {
+      if (!s.assistant) return s
+      const { assistant: _drop, ...rest } = s
+      return rest
+    })
+  }
+
   const send = () => {
     const text = input.trim()
     if (!text && attachments.length === 0) return
@@ -652,6 +666,7 @@ export function ChatPanel({
           { id: crypto.randomUUID(), role: 'assistant', text: '', ts: now },
         ],
       }))
+      if (draftAssistant) clearAssistantAfterSend(relaySession.id)
       setInput('')
       setAttachments([])
       return
@@ -684,10 +699,14 @@ export function ChatPanel({
     controller.send(session.id, session.messages, text, atts, {
       ...(draftModel ? { model: draftModel } : {}),
       ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
-      ...(draftAssistant && personaInfo?.template
-        ? { assistant: { template: personaInfo.template } }
-        : {}),
+      // presence (even without a hydrated template) marks the persona one-shot
+      ...(draftAssistant ? { assistant: { template: personaInfo?.template } } : {}),
     })
+    // 新会话首条发送:controller 的 busy=true 回调跑在 setActiveId 重渲染
+    // 之前,activeIdRef 还是旧值会被守卫吞掉——就地同步一次忙态,否则整轮
+    // 无思考指示器、无停止按钮(输出区"毫无反应"的根因)
+    setBusy(controller.isBusy(session.id))
+    if (draftAssistant) clearAssistantAfterSend(session.id)
   }
 
   const stop = () => {

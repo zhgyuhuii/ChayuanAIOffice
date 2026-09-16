@@ -322,8 +322,10 @@ export interface HomeChatMessage {
   error?: boolean | undefined
   ts: number
   /** P2 中继轮次: this assistant message is the mirror of one relayed turn
-   *  into a docked editor's loop (tool activity rides along) */
+   *  into a docked editor's loop; local agent runs feed the same timeline */
   relayTurnId?: string | undefined
+  /** tool activity timeline of this assistant message (running pulse → 成败),
+   *  fed by BOTH the relay mirror and the home agent's own tool executions */
   relayTools?:
     | Array<{
         callId: string

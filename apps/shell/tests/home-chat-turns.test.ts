@@ -213,6 +213,137 @@ describe('controller session-scoped model + mode', () => {
   })
 })
 
+describe('agent activity feedback (thinking + tool timeline)', () => {
+  it('isBusy is true synchronously right after send (first-turn typing indicator)', () => {
+    const { bridge } = makeBridge()
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.send('s1', [], '问', [], { model: { profileId: 'p', modelId: 'm' } })
+    // the busy=true callback can fire before the caller re-renders (fresh
+    // session id not yet in the ref) — isBusy must be true immediately
+    expect(controller.isBusy('s1')).toBe(true)
+    expect(session.messages.at(-1)!.role).toBe('assistant')
+    expect(session.messages.at(-1)!.text).toBe('')
+  })
+
+  it('records tool activity chips on the assistant message and settles them on done', async () => {
+    // request 1: the model calls search_files; request 2 (with the tool
+    // result in history): the model answers in text
+    let wireCount = 0
+    let listener: ((chunk: { requestId: string; type: string; text?: string }) => void) | null =
+      null
+    const wireRequests: unknown[] = []
+    const bridge: HomeAgentBridge = {
+      aiStream: async (request) => {
+        wireRequests.push(request)
+        wireCount += 1
+        if (wireCount === 1) {
+          listener?.({
+            requestId: request.requestId,
+            type: 'tool-call',
+            toolCall: { id: 'call-1', name: 'search_files', input: { query: '纪要' } },
+          } as never)
+        } else {
+          listener?.({ requestId: request.requestId, type: 'delta', text: '完成了' })
+        }
+        listener?.({ requestId: request.requestId, type: 'done' })
+      },
+      aiStreamCancel: async () => {},
+      onAiStream: (l) => {
+        listener = l as typeof listener
+        return () => {
+          listener = null
+        }
+      },
+      createDocument: async () => ({ ok: true, path: '/tmp/x.docx' }) as never,
+      readAttachment: async () => ({ ok: true, name: '', totalChars: 0, text: '' }) as never,
+      readAttachmentImage: async () => ({ ok: false }),
+      recents: async () => ({ entries: [] }) as never,
+      starred: async () => ({ entries: [] }) as never,
+      listProjectFiles: async () => [],
+      openWithHandoff: async () => {},
+      getCurrentModel: () => ({ profileId: 'p', modelId: 'm' }) as never,
+    }
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.send('s1', [], '找文件', [])
+    await until(() => session.messages.at(-1)?.text === '完成了')
+    const tools = session.messages.at(-1)!.relayTools
+    expect(tools).toHaveLength(1)
+    expect(tools![0]).toMatchObject({
+      callId: 'call-1',
+      name: 'search_files',
+      running: false,
+      ok: true,
+    })
+    expect(controller.isBusy('s1')).toBe(false)
+  })
+})
+
+describe('one-shot assistant persona', () => {
+  it('rides the send (template wraps the text, persona in the system prompt) and is dropped after the run', async () => {
+    const { bridge, wireRequests } = makeBridge()
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.setAssistantPersona('s1', '你是专业翻译')
+    controller.send('s1', [], 'hello world', [], {
+      model: { profileId: 'p', modelId: 'm' },
+      assistant: { template: '把以下内容翻译成中文：{{input}}' },
+    })
+    await until(() => session.messages.at(-1)?.text === '好的')
+    const first = wireRequests[0] as {
+      system: string
+      messages: Array<{ role: string; text: string }>
+    }
+    expect(first.system).toContain('你是专业翻译')
+    expect(first.messages.at(-1)!.text).toBe('把以下内容翻译成中文：hello world')
+    // display copy stays the raw user text — the template only frames the wire
+    expect(session.messages.filter((m) => m.role === 'user').at(-1)!.text).toBe('hello world')
+    // the next plain send runs WITHOUT the persona (one-shot)
+    controller.send(
+      's1',
+      session.messages.filter((m) => m.text),
+      '再聊一句',
+      [],
+      {
+        model: { profileId: 'p', modelId: 'm' },
+      },
+    )
+    await until(() => wireRequests.length === 2, 'second wire request')
+    const second = wireRequests[1] as { system: string }
+    expect(second.system).not.toContain('你是专业翻译')
+  })
+
+  it('drops the persona immediately when no model resolves (setup card path)', async () => {
+    const { bridge, wireRequests } = makeBridge()
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.setAssistantPersona('s1', '你是专业翻译')
+    controller.send('s1', [], 'hello', [], { assistant: { template: '翻译：{{input}}' } })
+    expect(session.messages.at(-1)!.card).toEqual({ kind: 'setup-required' })
+    expect(wireRequests).toHaveLength(0)
+    // a later send (model now present) must not carry the stale persona
+    ;(bridge as { getCurrentModel: () => never }).getCurrentModel = () =>
+      ({ profileId: 'p', modelId: 'm' }) as never
+    controller.send(
+      's1',
+      session.messages.filter((m) => m.text),
+      'again',
+      [],
+    )
+    await until(() => wireRequests.length === 1, 'wire request after model appears')
+    expect((wireRequests[0] as { system: string }).system).not.toContain('你是专业翻译')
+  })
+})
+
 describe('session mode/model write-back', () => {
   it('plan stores the mode key, default drops it (clean persisted JSON)', () => {
     const bridge = {

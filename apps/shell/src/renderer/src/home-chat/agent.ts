@@ -28,7 +28,13 @@ export interface HomeAgentBridge {
   newHtml?(opts?: { projectId?: string }): Promise<void>
   newPdf?(opts?: { projectId?: string }): Promise<void>
   /** system-wide file search across user directories */
-  systemFileSearch(query: string, ext?: string): Promise<{ entries: { name: string; path: string; ext: string; mtimeMs: number; sizeBytes: number }[]; truncated: boolean }>
+  systemFileSearch(
+    query: string,
+    ext?: string,
+  ): Promise<{
+    entries: { name: string; path: string; ext: string; mtimeMs: number; sizeBytes: number }[]
+    truncated: boolean
+  }>
 }
 
 export type DocType = 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'
@@ -36,6 +42,15 @@ export type DocType = 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'
 export interface HomeAgentEvents {
   /** cumulative assistant text of the in-flight turn */
   onText(text: string): void
+  /** tool execution phases of the in-flight turn (drives the tool timeline) */
+  onToolActivity?(activity: {
+    callId: string
+    name: string
+    summary?: string
+    phase: 'start' | 'end'
+    ok?: boolean
+    outputPreview?: string
+  }): void
   onBusy(busy: boolean): void
   onDone(result: {
     text: string
@@ -57,9 +72,9 @@ export interface HomeAgentTexts {
 const CREATE_DOC_TOOL = {
   name: 'create_document',
   description:
-    "Create a new document and open it in a new tab. " +
-    "For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content verbatim. " +
-    "For xlsx/pptx: these create blank files (no body needed); just call the tool with title and type.",
+    'Create a new document and open it in a new tab. ' +
+    'For docx/md/html/pdf: write the FULL body as your reply text FIRST, then call this tool — your reply text becomes the file content verbatim. ' +
+    'For xlsx/pptx: these create blank files (no body needed); just call the tool with title and type.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -104,7 +119,7 @@ const SYSTEM_SEARCH_TOOL = {
       },
       ext: {
         type: 'string',
-        description: "optional extension filter (docx, xlsx, pptx, md, html, pdf)",
+        description: 'optional extension filter (docx, xlsx, pptx, md, html, pdf)',
       },
     },
     required: ['query'],
@@ -198,7 +213,13 @@ function homeSkill(
   return {
     id: 'home',
     systemPrompt: SYSTEM_PROMPT,
-    tools: [CREATE_DOC_TOOL, SEARCH_FILES_TOOL, SYSTEM_SEARCH_TOOL, READ_DOCUMENT_TOOL, OPEN_DOCUMENT_TOOL],
+    tools: [
+      CREATE_DOC_TOOL,
+      SEARCH_FILES_TOOL,
+      SYSTEM_SEARCH_TOOL,
+      READ_DOCUMENT_TOOL,
+      OPEN_DOCUMENT_TOOL,
+    ],
     async executeTool(call) {
       switch (call.name) {
         case 'create_document': {
@@ -447,6 +468,19 @@ export class HomeAgent {
         onText: (text) => {
           this.turnTextValue = text
           this.events.onText(text)
+        },
+        onToolStart: (call) => {
+          this.events.onToolActivity?.({ callId: call.id, name: call.name, phase: 'start' })
+        },
+        onToolExecuted: ({ call, execution }) => {
+          this.events.onToolActivity?.({
+            callId: call.id,
+            name: call.name,
+            summary: execution.summary,
+            phase: 'end',
+            ok: !execution.isError,
+            outputPreview: execution.output.slice(0, 120),
+          })
         },
         onDone: () => {
           this.events.onBusy(false)
