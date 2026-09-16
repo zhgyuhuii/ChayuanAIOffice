@@ -19,7 +19,6 @@ import {
   type HfPartInfo,
   type NoteInfo,
   type SaveOptions,
-} from '@chatoffice/docx-engine'
   type StyleUpsert,
   type PictureWatermarkSpec,
   type WatermarkSpec,

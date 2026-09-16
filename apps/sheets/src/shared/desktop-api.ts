@@ -2623,7 +2623,6 @@ export interface RecoveryPromptPayload {
   savedAtMs: number
 }
 
-<<<<<<< HEAD
 /// Renderer view of one main-process video task (ai-host video-tasks)
 export interface VideoTaskInfo {
   id: string
@@ -2642,7 +2641,8 @@ export interface VideoTaskInfo {
     url?: string
     posterDataUrl?: string
   }
-=======
+}
+
 /** MCP visible-grid bridge message (shell → renderer, correlated by requestId). */
 export interface McpCommandMessage {
   requestId: string
@@ -2656,7 +2656,6 @@ export interface McpCommandResult {
   ok: boolean
   result?: unknown
   error?: string
->>>>>>> a4d8e1a0 (let MCP agents drive the visible Sheets grid (#432))
 }
 
 export interface DesktopApi {

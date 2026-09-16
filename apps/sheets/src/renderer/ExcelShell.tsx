@@ -11,10 +11,6 @@ import {
   useDismissablePopover,
   isMacStandaloneWindow,
 } from '@chatoffice/ui'
-  useRibbonCollapse,
-  FilesEdgeTab,
-  FilesPane,
-  filesPaneTitle,
 
 import {
   CaretIcon,
@@ -299,8 +295,6 @@ interface ExcelShellProps {
   /// Save As remains available for a clean workbook, but requires a real
   /// file-backed session (the in-memory demo workbook has nowhere to copy).
   readonly canSaveAs: boolean
-  /** absolute path of the open workbook (null while untitled), highlighted in the Files pane */
-  readonly workbookPath: string | null
   readonly onSaveAs: () => void
   /** 文件菜单「打开工作簿」(selectWorkbook → openLazyWorkbook; web 下可缺省隐藏入口) */
   readonly onOpen?: () => void
@@ -499,7 +493,6 @@ export function ExcelShell({
   onExportPdf,
   onExportCsv,
   canSaveAs,
-  workbookPath,
   onSaveAs,
   onRedo,
   canUndo,
@@ -521,7 +514,7 @@ export function ExcelShell({
   calcManual,
   onGoalSeek,
 }: ExcelShellProps): React.JSX.Element {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
   const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
@@ -571,12 +564,6 @@ export function ExcelShell({
     if (dockedRef.current) return
     localStorage.setItem('ai-sheets-show-ai', isCopilotOpen ? '1' : '0')
   }, [isCopilotOpen])
-  const [filesOpen, setFilesOpen] = useState(
-    () => localStorage.getItem('ai-sheets-show-files') === '1',
-  )
-  useEffect(() => {
-    localStorage.setItem('ai-sheets-show-files', filesOpen ? '1' : '0')
-  }, [filesOpen])
   const [showFormatCells, setShowFormatCells] = useState(false)
   // 设置单元格格式对话框的初始 tab（字体/对齐/数字组的角落启动箭头定位）
   const [formatCellsTab, setFormatCellsTab] = useState<
@@ -777,256 +764,6 @@ export function ExcelShell({
       : ribbonTabs
   const saveAsTitle = `${t('appFileSaveAs')} (${platformShortcuts('⇧⌘S')})`
 
-  // Univer's formula-bar Name Box (the defined-name selector) is the only
-  // cell-reference box; the Go To ▾ arrow rides inside the bar next to it.
-  // The bar is Univer-owned DOM that can remount with the workbench, so the
-  // button is (re)inserted on mutation rather than rendered by React.
-  const gotoTip = t('appGoToButtonTitle')
-  const gotoTipRef = useRef(gotoTip)
-  gotoTipRef.current = gotoTip
-  useEffect(() => {
-    const button = document.querySelector<HTMLButtonElement>('.goto-in-bar')
-    if (button) button.dataset['tip'] = gotoTip
-  }, [gotoTip])
-  useEffect(() => {
-    const ensure = (): void => {
-      // The Name Box sits in a fixed-width block wrapper; the flex row is the
-      // bar itself, so the button must ride as the wrapper's sibling.
-      const wrapper = document.querySelector('[data-u-comp="defined-name"]')?.parentElement
-      const bar = wrapper?.parentElement
-      if (!wrapper || !bar) return
-      let button = bar.querySelector<HTMLButtonElement>('.goto-in-bar')
-      if (!button) {
-        button = document.createElement('button')
-        button.type = 'button'
-        button.className = 'goto-in-bar'
-        button.textContent = '▾'
-        button.setAttribute('aria-label', 'Go To')
-        button.addEventListener('click', () => setShowGoTo(true))
-        wrapper.after(button)
-      }
-      if (button.dataset['tip'] !== gotoTipRef.current) button.dataset['tip'] = gotoTipRef.current
-    }
-    ensure()
-    const container = document.getElementById('univer-container')
-    if (!container) return undefined
-    const observer = new MutationObserver(ensure)
-    observer.observe(container, { childList: true, subtree: true })
-    return () => {
-      observer.disconnect()
-      document.querySelector('.goto-in-bar')?.remove()
-    }
-  }, [])
-  const visibleTabs: readonly RibbonTab[] = selectedChart
-    ? [...ribbonTabs, 'Chart Design']
-    : ribbonTabs
-  const saveAsTitle = `${t('appSaveAs')} (${platformShortcuts('⇧⌘S')})`
-
-  return (
-    <main
-      className={`app-shell ${isCopilotOpen ? '' : 'copilot-collapsed'}${filesOpen ? ' files-open' : ''}`}
-    >
-      <header className={`excel-header ${collapse.rootClass}`} ref={collapse.rootRef}>
-        <nav
-          className={`ribbon-tabs ${IN_TAB ? '' : IS_MAC ? 'ribbon-tabs-mac' : 'ribbon-tabs-win'}`}
-          aria-label="Workbook commands"
-          onDoubleClick={collapse.onTabsDoubleClick}
-        >
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appSaveTitle')}
-            aria-label={t('appSaveTitle')}
-            disabled={!canSave}
-            onClick={onSave}
-          >
-            <SaveIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={saveAsTitle}
-            aria-label={saveAsTitle}
-            disabled={!canSaveAs}
-            onClick={onSaveAs}
-          >
-            <SaveAsIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appUndo')}
-            aria-label={t('appUndo')}
-            disabled={!canUndo}
-            onClick={() => onUndo()}
-          >
-            <UndoIcon />
-          </button>
-          <button
-            type="button"
-            className="qa-btn"
-            data-tip={t('appRedo')}
-            aria-label={t('appRedo')}
-            disabled={!canRedo}
-            onClick={onRedo}
-          >
-            <RedoIcon />
-          </button>
-          <label
-            className={`autosave-toggle ${autoSave ? 'on' : ''}`}
-            data-tip={t('appAutoSaveTip')}
-          >
-            <span className="autosave-knob" />
-            <span className="autosave-text">{t('appAutoSave')}</span>
-            <input
-              type="checkbox"
-              checked={autoSave}
-              onChange={(e) => onAutoSaveChange(e.target.checked)}
-            />
-          </label>
-          <span className="qa-sep" aria-hidden="true" />
-          {visibleTabs.map((tab) => (
-            <button
-              className={`${tab === activeTab ? 'active' : ''} ${tab === 'Chart Design' ? 'contextual' : ''}`}
-              key={tab}
-              onClick={() => {
-                collapse.onTabPress(tab === activeTab)
-                setActiveTab(tab)
-              }}
-            >
-              {t(TAB_LABEL[tab])}
-            </button>
-          ))}
-          <span className="ribbon-tabs-spacer" />
-          <span className="workbook-status" role="status" aria-live="polite">
-            {statusMessage}
-          </span>
-        </nav>
-
-        <Ribbon
-          activeTab={activeTab}
-          selectionFormat={selectionFormat}
-          sheetHasContent={sheetHasContent}
-          sheetProtected={onGetSheetProtection()}
-          workbookProtected={onGetWorkbookProtection()}
-          formulaBarVisible={formulaBarVisible}
-          crossHighlightVisible={crossHighlightVisible}
-          filesOpen={filesOpen}
-          onToggleFiles={() => setFilesOpen((v) => !v)}
-          pageLayout={pageLayout}
-          selectedChart={selectedChart}
-          onListNames={() => {
-            // Names scoped to another sheet resolve to #NAME? here; only
-            // workbook-scoped and active-sheet names are usable in a formula.
-            const data = onGetDefinedNames()
-            return data.names
-              .filter(
-                (entry) => entry.scopeSheetId === null || entry.scopeSheetId === data.activeSheetId,
-              )
-              .map((entry) => entry.name)
-          }}
-          calcManual={calcManual}
-          onRefreshPivot={onRefreshPivot}
-          onIsSelectionInPivot={onIsSelectionInPivot}
-          onCommand={(command) => {
-            if (command === 'format-cells') setShowFormatCells(true)
-            else if (command === 'row-height-open') setAxisSizeTarget('row')
-            else if (command === 'col-width-open') setAxisSizeTarget('col')
-            else if (command === 'link-open') setShowLinkDialog(true)
-            else if (command === 'sort-custom-open') setShowSortDialog(true)
-            else if (command === 'remove-duplicates-open') setShowDedupeDialog(true)
-            else if (command === 'name-manager-open') setShowNameManager(true)
-            else if (command === 'pivot-open') setShowPivotDialog(true)
-            else if (command === 'pivot-edit') setPivotEditSeed(onGetPivotEditSeed())
-            else if (command === 'insert-function-open') setInsertFunctionCat('All')
-            else if (command.startsWith('insert-function-open:'))
-              setInsertFunctionCat(command.slice('insert-function-open:'.length))
-            else if (command === 'goal-seek-open') setShowGoalSeek(true)
-            else if (command === 'subtotal-open') setShowSubtotalDialog(true)
-            else if (command === 'consolidate-open') setShowConsolidateDialog(true)
-            else if (command === 'goto-open') setShowGoTo(true)
-            else if (command === 'header-footer-open') setShowHeaderFooter(true)
-            else if (command === 'allow-edit-ranges-open') setShowAllowEditRanges(true)
-            else if (command === 'ai-open-panel') setIsCopilotOpen(true)
-            else if (command === 'ai-toggle-panel') setIsCopilotOpen((v) => !v)
-            else if (command === 'chart-element-title') setChartTextTarget('title')
-            else if (command === 'chart-element-axis-cat') setChartTextTarget('axis-category')
-            else if (command === 'chart-element-axis-val') setChartTextTarget('axis-value')
-            else onCommand(command)
-          }}
-          onAiRun={(nextPrompt) => {
-            setIsCopilotOpen(true)
-            onSend(nextPrompt)
-          }}
-          aiOpen={isCopilotOpen}
-          onAiToggle={() => setIsCopilotOpen((open) => !open)}
-        />
-        <RibbonCollapseButton
-          state={collapse}
-          labels={{ collapse: t('appRibbonCollapse'), pin: t('appRibbonPin') }}
-        />
-      </header>
-
-      {/* AI panel docks on the left, full height under the ribbon (unified with docs) */}
-      <div className="sheet-body">
-        <AiChatPanel
-          isOpen={isCopilotOpen}
-          hasContent={sheetHasContent}
-          chat={chat}
-          {...(historicChat !== undefined ? { historicChat } : {})}
-          attachments={attachments}
-          attachNotice={attachNotice}
-          onPickAttachments={onPickAttachments}
-          onAddAttachmentPaths={onAddAttachmentPaths}
-          onAddPastedImage={onAddPastedImage}
-          onRemoveAttachment={onRemoveAttachment}
-          prompt={prompt}
-          preview={preview}
-          aiBusy={aiBusy}
-          onPromptChange={onPromptChange}
-          onSend={onSend}
-          onStop={onStop}
-          onNewChat={onNewChat}
-          onUndo={onUndo}
-          scopeRange={aiScopeRange}
-          scopeColumns={aiScopeColumns}
-          scopeLocked={aiScopeLocked}
-          onScopeDismiss={onAiScopeDismiss}
-          onCitation={onAiCitation}
-          onExpand={() => setIsCopilotOpen(true)}
-          onCollapse={() => setIsCopilotOpen(false)}
-        />
-        {filesOpen && (
-          <FilesPane
-            api={window.filesPaneApi}
-            lang={lang}
-            currentPath={workbookPath}
-            onClose={() => setFilesOpen(false)}
-          />
-        )}
-        <div className="sheet-main">
-          {!filesOpen && <FilesEdgeTab lang={lang} onOpen={() => setFilesOpen(true)} />}
-          <section className="workbook-area">
-            <div id="univer-container" className="spreadsheet" />
-          </section>
-          {aiSelectionAskAnchor && aiScopeRange && !aiBusy && (
-            <AiSelectionAsk
-              anchor={aiSelectionAskAnchor}
-              range={aiScopeRange}
-              onDismiss={onAiSelectionAskDismiss}
-              onSend={(instruction) => {
-                setIsCopilotOpen(true)
-                onSend(instruction)
-              }}
-            />
-          )}
-
-          {/* Status bar spans the sheet column only — the AI dock keeps the full window height (unified with docs/slides). */}
-          <footer className="status-bar">
-            <div className="status-left">
-              <span className="status-msg">{statusMessage}</span>
-            </div>
-            <div className="status-right">
   return (
     <main className="app-shell">
       {/* AI panel docks around the whole editor column (ribbon included) in any
@@ -1772,6 +1509,58 @@ export function ExcelShell({
   )
 }
 
+/// Excel's Name Box: echoes the active cell while idle; focusing it starts a
+/// draft, Enter jumps to the typed address or defined name (an invalid one
+/// keeps the draft and flags the input), Esc or blur cancels back to the
+/// echo. The echo prop updates via the SelectionChanged refresh in App.
+function NameBox({
+  activeCellA1,
+  onGoTo,
+}: {
+  readonly activeCellA1: string
+  readonly onGoTo: (ref: string) => string | null
+}): React.JSX.Element {
+  const { t } = useI18n()
+  const [draft, setDraft] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  return (
+    <input
+      className={`name-box${error === null ? '' : ' invalid'}`}
+      aria-label="Name Box"
+      data-tip={error ?? t('appNameBoxTitle')}
+      placeholder="A1"
+      spellCheck={false}
+      value={draft ?? activeCellA1}
+      onFocus={(event) => {
+        setDraft(activeCellA1)
+        event.target.select()
+      }}
+      onChange={(event) => {
+        setDraft(event.target.value)
+        setError(null)
+      }}
+      onBlur={() => {
+        setDraft(null)
+        setError(null)
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          const failure = onGoTo(draft ?? activeCellA1)
+          setError(failure)
+          if (failure === null) {
+            setDraft(null)
+            event.currentTarget.blur()
+          }
+        } else if (event.key === 'Escape') {
+          setDraft(null)
+          setError(null)
+          event.currentTarget.blur()
+        }
+      }}
+    />
+  )
+}
+
 const NO_SORT_LEVEL = -1
 
 function SortDialog({
@@ -2251,8 +2040,6 @@ function Ribbon({
   workbookProtected,
   formulaBarVisible,
   crossHighlightVisible,
-  filesOpen,
-  onToggleFiles,
   pageLayout,
   selectedChart,
   selectedImage,
@@ -2281,8 +2068,6 @@ function Ribbon({
   /// View > Show echo for the formula bar toggle (app-level, not per sheet).
   readonly formulaBarVisible: boolean
   readonly crossHighlightVisible: boolean
-  readonly filesOpen: boolean
-  readonly onToggleFiles: () => void
   readonly pageLayout: PageLayoutEcho
   readonly selectedChart: SelectedChartRibbon | null
   readonly selectedImage: SelectedPictureRibbon | null
@@ -2321,7 +2106,7 @@ function Ribbon({
   /// 当前活动格（0 基行列），冻结⌄ 的动态标签（冻结至第 N 行 M 列）取自它
   readonly activeCell: { readonly row: number; readonly column: number }
 }): React.JSX.Element {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
   // WPS 全带降级：一个带级 stage 驱动全部组（0 平铺→1 一列两行→2 一列三行
   // →3 分组名钮平铺→4 单个分组钮），RibbonGroup 消费上下文各按档渲染
   const ribbonRef = useRef<HTMLDivElement>(null)
@@ -3972,15 +3757,6 @@ function Ribbon({
             >
               <i className="check-box">{crossHighlightVisible ? '✓' : ''}</i>
               {t('appCrossHighlight')}
-            </button>
-            <button
-              className="check-item"
-              data-tip={filesPaneTitle(lang)}
-              aria-pressed={filesOpen}
-              onClick={onToggleFiles}
-            >
-              <i className="check-box">{filesOpen ? '✓' : ''}</i>
-              {filesPaneTitle(lang)}
             </button>
           </div>
         </RibbonGroup>
