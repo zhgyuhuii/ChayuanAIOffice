@@ -90,6 +90,7 @@ import { GoalSeekDialog } from './GoalSeekDialog'
 import { InsertFunctionDialog } from './InsertFunctionDialog'
 import { SubtotalDialog, type SubtotalConfig } from './SubtotalDialog'
 import { ConsolidateDialog } from './ConsolidateDialog'
+import type { RangePickHandler } from './range-pick'
 import type { ConsolidateConfig } from './consolidate'
 import { HeaderFooterDialog, type HeaderFooterResult } from './HeaderFooterDialog'
 import type { HeaderFooterParts } from './edit-journal'
@@ -386,9 +387,14 @@ interface ExcelShellProps {
   /// Name Box / Go To jump; returns an error message, or null on success.
   readonly onGoToReference: (ref: string) => string | null
   readonly onListDefinedNames: () => readonly { name: string; ref: string }[]
-  readonly onApplyFormula: (formula: string) => string | null
+  readonly onApplyFormula: (formula: string, targetA1?: string) => string | null
   /// Function descriptions from the running formula engine (Insert Function).
   readonly onListFunctions: () => readonly IFunctionInfo[]
+  /// Collapsed grid picking shared by Insert Function / Consolidate / Goal
+  /// Seek / Cond Stats / Allow Edit Ranges reference fields.
+  readonly onPickRange?: RangePickHandler | undefined
+  /// One-shot evaluation of the assembled formula (Insert Function preview).
+  readonly onPreviewFormula?: ((formula: string) => Promise<string | null>) | undefined
   readonly onCreateSubtotal: (config: SubtotalConfig) => string | null
   readonly onCreateConsolidate: (config: ConsolidateConfig) => string | null
   /// Prefill for the Consolidate reference input (current multi-cell selection).
@@ -464,6 +470,8 @@ export function ExcelShell({
   onListDefinedNames,
   onApplyFormula,
   onListFunctions,
+  onPickRange,
+  onPreviewFormula,
   onCreateSubtotal,
   onCreateConsolidate,
   onGetConsolidateDefault,
@@ -1235,6 +1243,7 @@ export function ExcelShell({
             )
           }
           onClose={() => setShowCondStats(false)}
+          onPickRange={onPickRange}
         />
       )}
       {cfRuleMode && (
@@ -1451,6 +1460,7 @@ export function ExcelShell({
         <GoalSeekDialog
           initialSetCell={onGetActiveCell()}
           onSolve={onGoalSeek}
+          onPickRange={onPickRange}
           onClose={() => setShowGoalSeek(false)}
         />
       )}
@@ -1460,6 +1470,8 @@ export function ExcelShell({
           functions={liveFunctions}
           onApply={onApplyFormula}
           initialCategory={insertFunctionCat}
+          onPickRange={onPickRange}
+          onPreviewFormula={onPreviewFormula}
           onClose={() => setInsertFunctionCat(null)}
         />
       )}
@@ -1475,6 +1487,7 @@ export function ExcelShell({
           defaultReference={onGetConsolidateDefault()}
           targetLabel={onGetActiveCell()}
           onCreate={onCreateConsolidate}
+          onPickRange={onPickRange}
           onClose={() => setShowConsolidateDialog(false)}
         />
       )}
@@ -1493,6 +1506,7 @@ export function ExcelShell({
               ranges={snapshot.error === null ? snapshot.ranges : []}
               defaultRef={activeCellA1}
               onApply={(ranges) => snapshot.error ?? onApplyProtectedRanges(ranges)}
+              onPickRange={onPickRange}
               onClose={() => setShowAllowEditRanges(false)}
             />
           )

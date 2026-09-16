@@ -8,6 +8,7 @@ import { useI18n, type StringKey } from './i18n/locale'
 import { formatFillDate } from './fill-tools'
 import type { CellFormatPatch } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
 import { saveCustomCellStyle, saveCustomTableStyle } from './custom-styles'
+import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 import type { SheetVisualRef } from './ribbon-actions'
 
 /**
@@ -48,7 +49,13 @@ function DialogShell({
   )
 }
 
-function ActionButton({ label, onClick }: { readonly label: string; readonly onClick: () => void }): React.JSX.Element {
+function ActionButton({
+  label,
+  onClick,
+}: {
+  readonly label: string
+  readonly onClick: () => void
+}): React.JSX.Element {
   return (
     <button className="primary-action" onClick={onClick}>
       {label}
@@ -106,7 +113,12 @@ export function SeriesDialog({
   onApply,
   onClose,
 }: {
-  readonly onApply: (dir: 'down' | 'right', type: 'linear' | 'growth', step: number, stop: number | null) => void
+  readonly onApply: (
+    dir: 'down' | 'right',
+    type: 'linear' | 'growth',
+    step: number,
+    stop: number | null,
+  ) => void
   readonly onClose: () => void
 }): React.JSX.Element {
   const { t } = useI18n()
@@ -119,7 +131,12 @@ export function SeriesDialog({
   const apply = (): void => {
     if (!valid) return
     const parsedStop = stop.trim() === '' ? null : Number(stop.trim().replace(',', '.'))
-    onApply(dir, type, parsedStep, parsedStop !== null && Number.isFinite(parsedStop) ? parsedStop : null)
+    onApply(
+      dir,
+      type,
+      parsedStep,
+      parsedStop !== null && Number.isFinite(parsedStop) ? parsedStop : null,
+    )
     onClose()
   }
   return (
@@ -181,21 +198,35 @@ export function SeriesDialog({
 export function CondStatsDialog({
   onApply,
   onClose,
+  onPickRange,
 }: {
-  readonly onApply: (fn: 'sum' | 'average' | 'count', criteriaRange: string, criteria: string, sumRange: string) => void
+  readonly onApply: (
+    fn: 'sum' | 'average' | 'count',
+    criteriaRange: string,
+    criteria: string,
+    sumRange: string,
+  ) => void
   readonly onClose: () => void
+  /// Collapsed grid picking for the two range fields.
+  readonly onPickRange?: RangePickHandler | undefined
 }): React.JSX.Element {
   const { t } = useI18n()
+  const { picking, begin } = useRangePickSession(onPickRange)
   const [fn, setFn] = useState<'sum' | 'average' | 'count'>('sum')
   const [criteriaRange, setCriteriaRange] = useState('')
   const [criteria, setCriteria] = useState('')
   const [sumRange, setSumRange] = useState('')
-  const valid = criteriaRange.trim() !== '' && criteria.trim() !== '' && (fn === 'count' || sumRange.trim() !== '')
+  const valid =
+    criteriaRange.trim() !== '' &&
+    criteria.trim() !== '' &&
+    (fn === 'count' || sumRange.trim() !== '')
   const apply = (): void => {
     if (!valid) return
     onApply(fn, criteriaRange.trim(), criteria.trim(), sumRange.trim())
     onClose()
   }
+  // The dialog folds away while a range is picked on the grid.
+  if (picking) return <></>
   return (
     <DialogShell title={t('appCondStatsDlgTitle')} onClose={onClose}>
       <label>
@@ -213,17 +244,29 @@ export function CondStatsDialog({
       </label>
       <label>
         {t('appCondStatsCritRange')}
-        <input
-          autoFocus
-          type="text"
-          value={criteriaRange}
-          placeholder="A2:A100"
-          onChange={(event) => setCriteriaRange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') apply()
-            if (event.key === 'Escape') onClose()
-          }}
-        />
+        <span className="input-row">
+          <input
+            autoFocus
+            type="text"
+            value={criteriaRange}
+            placeholder="A2:A100"
+            onChange={(event) => setCriteriaRange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') apply()
+              if (event.key === 'Escape') onClose()
+            }}
+          />
+          {onPickRange && (
+            <RangePickButton
+              title={t('dlgFnPickRange')}
+              onPick={() =>
+                begin(t('appCondStatsCritRange'), { formula: true }, (value) =>
+                  setCriteriaRange(value),
+                )
+              }
+            />
+          )}
+        </span>
       </label>
       <label>
         {t('appCondStatsCriteria')}
@@ -237,12 +280,22 @@ export function CondStatsDialog({
       {fn !== 'count' && (
         <label>
           {t('appCondStatsSumRange')}
-          <input
-            type="text"
-            value={sumRange}
-            placeholder="B2:B100"
-            onChange={(event) => setSumRange(event.target.value)}
-          />
+          <span className="input-row">
+            <input
+              type="text"
+              value={sumRange}
+              placeholder="B2:B100"
+              onChange={(event) => setSumRange(event.target.value)}
+            />
+            {onPickRange && (
+              <RangePickButton
+                title={t('dlgFnPickRange')}
+                onPick={() =>
+                  begin(t('appCondStatsSumRange'), { formula: true }, (value) => setSumRange(value))
+                }
+              />
+            )}
+          </span>
         </label>
       )}
       <ActionButton label={t('dlgOk')} onClick={apply} />
@@ -357,11 +410,7 @@ export function CfRuleDialog({
       {mode === 'between' && (
         <label>
           {t('appCfDlgValueMax')}
-          <input
-            type="text"
-            value={value2}
-            onChange={(event) => setValue2(event.target.value)}
-          />
+          <input type="text" value={value2} onChange={(event) => setValue2(event.target.value)} />
         </label>
       )}
       {!rankMode && mode !== 'dup' && (
@@ -391,7 +440,9 @@ export function NewTableStyleDialog({
   readonly onClose: () => void
 }): React.JSX.Element {
   const { t } = useI18n()
-  const [name, setName] = useState(kind === 'pivot' ? t('appPivotStyleDefaultName') : t('appTableStyleDefaultName'))
+  const [name, setName] = useState(
+    kind === 'pivot' ? t('appPivotStyleDefaultName') : t('appTableStyleDefaultName'),
+  )
   const [headerFill, setHeaderFill] = useState('#4472C4')
   const [bandFill, setBandFill] = useState<string | null>('#D9E1F2')
   const [bandOn, setBandOn] = useState(true)
@@ -402,7 +453,10 @@ export function NewTableStyleDialog({
     onClose()
   }
   return (
-    <DialogShell title={t(kind === 'pivot' ? 'appPivotStyleNew' : 'appTableStyleNew')} onClose={onClose}>
+    <DialogShell
+      title={t(kind === 'pivot' ? 'appPivotStyleNew' : 'appTableStyleNew')}
+      onClose={onClose}
+    >
       <label>
         {t('appTableStyleDlgName')}
         <input
@@ -426,7 +480,11 @@ export function NewTableStyleDialog({
         {t('appTableStyleDlgBand')}
       </label>
       {bandOn && (
-        <ColorField label={t('appTableStyleDlgBandColor')} value={bandFill ?? '#D9E1F2'} onChange={setBandFill} />
+        <ColorField
+          label={t('appTableStyleDlgBandColor')}
+          value={bandFill ?? '#D9E1F2'}
+          onChange={setBandFill}
+        />
       )}
       <MiniTablePreview headerFill={headerFill} bandFill={bandOn ? bandFill : null} />
       <ActionButton label={t('dlgOk')} onClick={apply} />
@@ -478,7 +536,11 @@ function MiniTablePreview({
         <i />
       </span>
       {[0, 1, 2].map((row) => (
-        <span key={row} className="dp-row" style={{ background: row % 2 === 1 ? (bandFill ?? '#FFFFFF') : '#FFFFFF' }}>
+        <span
+          key={row}
+          className="dp-row"
+          style={{ background: row % 2 === 1 ? (bandFill ?? '#FFFFFF') : '#FFFFFF' }}
+        >
           <i />
           <i />
           <i />
@@ -623,7 +685,10 @@ export function SelectionPaneDialog({
 }
 
 /** 录入当前日期子菜单：以今天为样例渲染每种格式的实时文案。 */
-export const FILL_DATE_PATTERNS: ReadonlyArray<{ readonly pattern: string; readonly wide: boolean }> = [
+export const FILL_DATE_PATTERNS: ReadonlyArray<{
+  readonly pattern: string
+  readonly wide: boolean
+}> = [
   { pattern: 'yyyy年m月d日', wide: false },
   { pattern: 'yyyy-m-d', wide: false },
   { pattern: 'yyyy.m.d', wide: false },

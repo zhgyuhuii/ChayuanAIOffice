@@ -6,6 +6,7 @@
 import { useState } from 'react'
 
 import { useI18n } from './i18n/locale'
+import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 
 export interface AllowEditRange {
   readonly name: string
@@ -19,6 +20,7 @@ export function AllowEditRangesDialog({
   defaultRef,
   onApply,
   onClose,
+  onPickRange,
 }: {
   readonly ranges: readonly AllowEditRange[]
   /// Seed for the range input (the active cell), '' when unknown.
@@ -26,8 +28,11 @@ export function AllowEditRangesDialog({
   /// Returns an error message, or null on success.
   readonly onApply: (ranges: readonly AllowEditRange[]) => string | null
   readonly onClose: () => void
+  /// Collapsed grid picking for the range reference.
+  readonly onPickRange?: RangePickHandler | undefined
 }): React.JSX.Element {
   const { t } = useI18n()
+  const { picking, begin } = useRangePickSession(onPickRange)
   const [working, setWorking] = useState<readonly AllowEditRange[]>(ranges)
   const [name, setName] = useState(() => {
     for (let index = ranges.length + 1; ; index += 1) {
@@ -65,6 +70,9 @@ export function AllowEditRangesDialog({
     onClose()
   }
 
+  // The dialog folds away while the range is picked on the grid.
+  if (picking) return <></>
+
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
@@ -99,15 +107,25 @@ export function AllowEditRangesDialog({
             </label>
             <label>
               {t('dlgRangeRef')}
-              <input
-                autoFocus
-                placeholder="A1:B4"
-                value={reference}
-                onChange={(event) => setReference(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') add()
-                }}
-              />
+              <span className="input-row">
+                <input
+                  autoFocus
+                  placeholder="A1:B4"
+                  value={reference}
+                  onChange={(event) => setReference(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') add()
+                  }}
+                />
+                {onPickRange && (
+                  <RangePickButton
+                    title={t('dlgFnPickRange')}
+                    onPick={() =>
+                      begin(t('dlgRangeRef'), { formula: false }, (value) => setReference(value))
+                    }
+                  />
+                )}
+              </span>
             </label>
           </div>
           <div className="dialog-actions-inline">

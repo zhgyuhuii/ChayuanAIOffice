@@ -2,7 +2,8 @@
 import type { zh } from './zh'
 export const ms = {
   dlgAllowEditRangesTitle: 'Benarkan Edit Julat',
-  dlgAllowEditRangesHint: 'Julat ini kekal boleh diedit semasa helaian dilindungi. Ditulis semasa menyimpan; kata laluan tidak disokong.',
+  dlgAllowEditRangesHint:
+    'Julat ini kekal boleh diedit semasa helaian dilindungi. Ditulis semasa menyimpan; kata laluan tidak disokong.',
   dlgRangeName: 'Tajuk',
   dlgRangeRef: 'Julat',
   dlgRangeAdd: 'Tambah',
@@ -16,7 +17,8 @@ export const ms = {
   dlgGoalSeekSetCell: 'Tetapkan sel',
   dlgGoalSeekToValue: 'Kepada nilai',
   dlgGoalSeekByCell: 'Dengan mengubah sel',
-  dlgGoalSeekNote: 'Penyelesaian menulis semula sel berulang kali; setiap langkah boleh dibuat asal.',
+  dlgGoalSeekNote:
+    'Penyelesaian menulis semula sel berulang kali; setiap langkah boleh dibuat asal.',
   dlgGoalSeekNeedNumber: 'Nilai mesti nombor.',
   dlgGoalSeekFound: 'Penyelesaian ditemui: sel = {value} (capai {reached}).',
   dlgGoalSeekNotFound: 'Tiada penyelesaian; nilai asal dipulihkan (terakhir {reached}).',
@@ -25,14 +27,16 @@ export const ms = {
   dlgApply: 'Guna',
   dlgCreate: 'Cipta',
   dlgAdvFilterTitle: 'Penapis Lanjutan',
-  dlgAdvFilterNoColumns: 'Tiada lajur tersedia dalam julat penapis — pilih data dan hidupkan AutoPenapis dahulu sebelum membuka Penapis Lanjutan.',
+  dlgAdvFilterNoColumns:
+    'Tiada lajur tersedia dalam julat penapis — pilih data dan hidupkan AutoPenapis dahulu sebelum membuka Penapis Lanjutan.',
   dlgAdvFilterColumn: 'Lajur',
   dlgAdvFilterCondition1: 'Syarat 1',
   dlgAdvFilterCondition2: 'Syarat 2 (pilihan)',
   dlgAdvFilterValue: 'Nilai',
   dlgAdvFilterAnd: 'Dan',
   dlgAdvFilterOr: 'Atau',
-  dlgAdvFilterNote: 'Menggunakan kriteria tersuai pada lajur yang dipilih; hanya baris yang sepadan kekal kelihatan. Biarkan syarat kedua kosong untuk menggunakan syarat pertama sahaja.',
+  dlgAdvFilterNote:
+    'Menggunakan kriteria tersuai pada lajur yang dipilih; hanya baris yang sepadan kekal kelihatan. Biarkan syarat kedua kosong untuk menggunakan syarat pertama sahaja.',
   dlgAdvFilterNeedValue1: 'Masukkan nilai untuk syarat 1.',
   dlgAdvFilterOpEqual: 'sama dengan',
   dlgAdvFilterOpNotEqual: 'tidak sama dengan',
@@ -44,7 +48,8 @@ export const ms = {
   dlgGoToRef: 'Rujukan',
   dlgGoToRefPlaceholder: 'cth. A1, B2:D5 atau nama yang ditakrifkan',
   dlgGoToNameHint: 'Dwiklik untuk pergi ke {ref}',
-  dlgGoToNote: 'Taipkan rujukan sel atau pilih julat bernama; Pergi melompat ke sasaran dan memilihnya. Klik nama untuk mengisinya, dwiklik untuk pergi terus.',
+  dlgGoToNote:
+    'Taipkan rujukan sel atau pilih julat bernama; Pergi melompat ke sasaran dan memilihnya. Klik nama untuk mengisinya, dwiklik untuk pergi terus.',
   dlgGoToGo: 'Pergi',
   dlgHfTitle: 'Pengepala dan Pengaki',
   dlgHfHeaderLeft: 'Pengepala · Kiri',
@@ -60,10 +65,12 @@ export const ms = {
   dlgHfFileName: 'Nama fail',
   dlgHfSheetName: 'Nama helaian',
   dlgHfInsertCode: 'Selitkan {code}',
-  dlgHfNote: 'Dipaparkan di bahagian atas dan bawah setiap halaman cetakan/PDF. Kod medan: &P nombor halaman, &N jumlah halaman, &D tarikh, &T masa, &F nama fail, &A nama helaian; taip && untuk aksara & literal. Biarkan keenam-enam bahagian kosong untuk mengosongkan pengepala dan pengaki.',
+  dlgHfNote:
+    'Dipaparkan di bahagian atas dan bawah setiap halaman cetakan/PDF. Kod medan: &P nombor halaman, &N jumlah halaman, &D tarikh, &T masa, &F nama fail, &A nama helaian; taip && untuk aksara & literal. Biarkan keenam-enam bahagian kosong untuk mengosongkan pengepala dan pengaki.',
   dlgPivotCreateTitle: 'Cipta Jadual Pangsi',
   dlgPivotEditTitle: 'Edit Jadual Pangsi',
-  dlgPivotNoFields: 'Pilih julat data sumber (dengan baris pengepala, sekurang-kurangnya 2 baris) sebelum membuka Jadual Pangsi.',
+  dlgPivotNoFields:
+    'Pilih julat data sumber (dengan baris pengepala, sekurang-kurangnya 2 baris) sebelum membuka Jadual Pangsi.',
   dlgPivotSourceRange: 'Julat sumber',
   dlgPivotRowFields: 'Baris (paling luar dahulu, boleh disusun semula)',
   dlgPivotColFields: 'Lajur (pilihan, paling luar dahulu, boleh disusun semula)',
@@ -113,7 +120,8 @@ export const ms = {
   dlgPivotTargetCell: 'Sel destinasi',
   dlgPivotTargetPlaceholder: 'cth. F1',
   dlgPivotTargetLocked: 'Semasa mengedit, julat output mengekalkan sel kiri atasnya',
-  dlgPivotNote: 'Mencipta Jadual Pangsi OOXML sebenar yang boleh dikenali dan disegarkan oleh Excel/WPS selepas disimpan.',
+  dlgPivotNote:
+    'Mencipta Jadual Pangsi OOXML sebenar yang boleh dikenali dan disegarkan oleh Excel/WPS selepas disimpan.',
   dlgPivotErrDupRowField: 'Medan baris tidak boleh memasukkan medan yang sama dua kali.',
   dlgPivotErrDupColField: 'Medan lajur tidak boleh memasukkan medan yang sama dua kali.',
   dlgPivotErrRowColOverlap: 'Satu medan tidak boleh menjadi medan baris dan medan lajur serentak.',
@@ -121,15 +129,19 @@ export const ms = {
   dlgPivotErrCalcFieldIncomplete: 'Medan terhitung memerlukan nama dan formula.',
   dlgPivotErrRangeStep: 'Langkah pengumpulan julat mestilah nombor positif.',
   dlgPivotErrLabelFilterText: 'Penapis label memerlukan teks penapis.',
-  dlgPivotErrOneValueFilter: 'Paling banyak satu penapis nilai boleh ditetapkan (digunakan pada medan baris tahap 1).',
-  dlgPivotErrFilterConflict: 'Penapis label dan penapis nilai tidak boleh ditetapkan serentak pada medan baris tahap 1.',
+  dlgPivotErrOneValueFilter:
+    'Paling banyak satu penapis nilai boleh ditetapkan (digunakan pada medan baris tahap 1).',
+  dlgPivotErrFilterConflict:
+    'Penapis label dan penapis nilai tidak boleh ditetapkan serentak pada medan baris tahap 1.',
   dlgSlicerInsertTitle: 'Selitkan Penghiris',
-  dlgSlicerPickNote: 'Pilih medan untuk penghiris; klik ahli dalam penghiris untuk menapis Jadual Pangsi.',
+  dlgSlicerPickNote:
+    'Pilih medan untuk penghiris; klik ahli dalam penghiris untuk menapis Jadual Pangsi.',
   dlgSlicerAria: 'Penghiris {name}',
   dlgSlicerClear: 'Kosongkan penapis (pilih semua)',
   dlgSlicerRemove: 'Alih keluar penghiris (pulihkan semua ahli)',
   dlgTimelineInsertTitle: 'Selitkan Garis Masa',
-  dlgTimelinePickNote: 'Pilih medan tarikh; klik bulan (Shift+klik untuk meluaskan julat) untuk menapis Jadual Pangsi mengikut julat tarikh.',
+  dlgTimelinePickNote:
+    'Pilih medan tarikh; klik bulan (Shift+klik untuk meluaskan julat) untuk menapis Jadual Pangsi mengikut julat tarikh.',
   dlgTimelineAria: 'Garis masa {name}',
   dlgTimelineClear: 'Kosongkan penapis (tunjukkan semua)',
   dlgTimelineRemove: 'Alih keluar garis masa (pulihkan semua ahli)',
@@ -163,7 +175,8 @@ export const ms = {
   dlgScreenshotWindows: 'Tetingkap tersedia',
   dlgScreenshotLoading: 'Mencari tetingkap yang boleh ditangkap…',
   dlgScreenshotEmpty: 'Tiada tetingkap untuk ditangkap.',
-  dlgScreenshotDenied: 'Kebenaran rakaman skrin diperlukan. Benarkan aplikasi ini dalam Tetapan Sistem → Privasi & Keselamatan → Rakaman Skrin, kemudian klik Segar Semula.',
+  dlgScreenshotDenied:
+    'Kebenaran rakaman skrin diperlukan. Benarkan aplikasi ini dalam Tetapan Sistem → Privasi & Keselamatan → Rakaman Skrin, kemudian klik Segar Semula.',
   dlgScreenshotRefresh: 'Segar Semula',
   dlgScreenshotFailed: 'Tangkapan gagal. Sila cuba lagi.',
   dlgSymbolTitle: 'Simbol',
@@ -173,7 +186,8 @@ export const ms = {
   dlgSymbolCatGreek: 'Yunani',
   dlgSymbolCatMisc: 'Bentuk & lain-lain',
   dlgSymbolInsertHint: 'Selitkan {symbol}',
-  dlgSymbolNote: 'Klik simbol untuk menambahkannya pada sel aktif — boleh selitkan beberapa berturut-turut, kemudian tutup.',
+  dlgSymbolNote:
+    'Klik simbol untuk menambahkannya pada sel aktif — boleh selitkan beberapa berturut-turut, kemudian tutup.',
   dlgFcTitle: 'Format Sel',
   dlgFcTabNumber: 'Nombor',
   dlgFcTabAlignment: 'Penjajaran',
@@ -261,7 +275,8 @@ export const ms = {
   dlgFcNoFill: 'Tiada isian',
   dlgFcLocked: 'Dikunci',
   dlgFcHidden: 'Tersembunyi (formula)',
-  dlgFcProtectionNote: 'Penguncian dan penyembunyian hanya berkesan apabila lembaran kerja dilindungi dalam Excel. Bendera ini disimpan ke dalam fail; editor sendiri tidak menguatkuasakannya.',
+  dlgFcProtectionNote:
+    'Penguncian dan penyembunyian hanya berkesan apabila lembaran kerja dilindungi dalam Excel. Bendera ini disimpan ke dalam fail; editor sendiri tidak menguatkuasakannya.',
   dlgAdvFilterNeedCondition: 'Penapis lanjutan memerlukan sekurang-kurangnya satu syarat.',
   dlgAdvFilterMaxTwo: 'Penapis lanjutan menyokong paling banyak dua syarat.',
   dlgConsTitle: 'Satukan',
@@ -272,16 +287,20 @@ export const ms = {
   dlgConsDelete: 'Padam',
   dlgConsDeleteRef: 'Padam {ref}',
   dlgConsLeftLabels: 'Guna label dalam lajur kiri',
-  dlgConsNoteLabels: 'Baris dipadankan mengikut lajur pertama setiap kawasan; hasil bermula di {target} sebagai formula langsung ke atas sumber.',
-  dlgConsNotePosition: 'Kawasan digabungkan kedudukan demi kedudukan; hasil bermula di {target} sebagai formula langsung ke atas sumber.',
+  dlgConsNoteLabels:
+    'Baris dipadankan mengikut lajur pertama setiap kawasan; hasil bermula di {target} sebagai formula langsung ke atas sumber.',
+  dlgConsNotePosition:
+    'Kawasan digabungkan kedudukan demi kedudukan; hasil bermula di {target} sebagai formula langsung ke atas sumber.',
   dlgConsBadRef: 'Rujukan tidak sah: {ref} — gunakan format A1:C5 atau Sheet2!A1:C5.',
   dlgConsNeedOneRef: 'Tambah sekurang-kurangnya satu rujukan sumber.',
   dlgSubtotalTitle: 'Subjumlah',
-  dlgSubtotalNoFields: 'Pilih data sumber dahulu — julat dengan baris pengepala dan sekurang-kurangnya satu baris data (diisih mengikut lajur kumpulan) — kemudian buka semula Subjumlah.',
+  dlgSubtotalNoFields:
+    'Pilih data sumber dahulu — julat dengan baris pengepala dan sekurang-kurangnya satu baris data (diisih mengikut lajur kumpulan) — kemudian buka semula Subjumlah.',
   dlgSubtotalGroupBy: 'Pada setiap perubahan dalam',
   dlgSubtotalFunction: 'Guna fungsi',
   dlgSubtotalAddTo: 'Tambah subjumlah pada',
-  dlgSubtotalNote: 'Menyelitkan baris SUBTOTAL selepas setiap jujukan nilai yang sama (isih data mengikut lajur kumpulan dahulu) dan jumlah keseluruhan di hujung.',
+  dlgSubtotalNote:
+    'Menyelitkan baris SUBTOTAL selepas setiap jujukan nilai yang sama (isih data mengikut lajur kumpulan dahulu) dan jumlah keseluruhan di hujung.',
   dlgNmTitle: 'Pengurus Nama',
   dlgNmName: 'Nama',
   dlgNmRefersTo: 'Merujuk kepada',
@@ -298,6 +317,15 @@ export const ms = {
   dlgFnFormula: 'Formula',
   dlgFnFormulaPlaceholder: 'Pilih fungsi, kemudian lengkapkan argumen',
   dlgFnInsert: 'Selitkan',
+  dlgFnParams: 'Argumen fungsi',
+  dlgFnPickRange: 'Pilih julat daripada helaian',
+  dlgFnPickCell: 'Pilih sel daripada helaian',
+  dlgFnAddParam: 'Tambah argumen',
+  dlgFnRemoveParam: 'Buang argumen ini',
+  dlgFnResult: 'Keputusan pengiraan: ',
+  dlgFnNeedRequired: 'Argumen wajib "{name}" kosong.',
+  dlgRangePickTitle: 'Pilih julat',
+  dlgRangePickHint: 'Seret pada sel, baris atau lajur pada helaian kemudian sahkan',
   dlgFnCatAll: 'Semua',
   dlgFnCatMath: 'Matematik',
   dlgFnCatStatistical: 'Statistik',

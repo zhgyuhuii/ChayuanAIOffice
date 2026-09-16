@@ -8,6 +8,7 @@ import {
   type ConsolidateFn,
 } from './consolidate'
 import { useI18n } from './i18n/locale'
+import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 
 /// Excel's Data → Consolidate: a function, a list of source references, and
 /// an optional "use labels in left column" mode. Output lands at the active
@@ -18,6 +19,7 @@ export function ConsolidateDialog({
   targetLabel,
   onCreate,
   onClose,
+  onPickRange,
 }: {
   /// Prefill for the reference input, usually the current selection.
   readonly defaultReference: string
@@ -25,8 +27,11 @@ export function ConsolidateDialog({
   /// Returns an error message, or null on success.
   readonly onCreate: (config: ConsolidateConfig) => string | null
   readonly onClose: () => void
+  /// Collapsed grid picking for the source reference.
+  readonly onPickRange?: RangePickHandler | undefined
 }): React.JSX.Element {
   const { t } = useI18n()
+  const { picking, begin } = useRangePickSession(onPickRange)
   const [fn, setFn] = useState<ConsolidateFn>('sum')
   const [references, setReferences] = useState<string[]>([])
   const [input, setInput] = useState(defaultReference)
@@ -47,6 +52,9 @@ export function ConsolidateDialog({
     setInput('')
     return null
   }
+
+  // The dialog folds away while the source reference is picked on the grid.
+  if (picking) return <></>
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
@@ -93,6 +101,14 @@ export function ConsolidateDialog({
                   }
                 }}
               />
+              {onPickRange && (
+                <RangePickButton
+                  title={t('dlgFnPickRange')}
+                  onPick={() =>
+                    begin(t('dlgConsReference'), { formula: false }, (value) => setInput(value))
+                  }
+                />
+              )}
               <button className="secondary" onClick={() => setError(addReference())}>
                 {t('dlgConsAdd')}
               </button>

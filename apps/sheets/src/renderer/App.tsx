@@ -343,6 +343,9 @@ import {
 } from './formula-view'
 import { installCachedValueFallbackInterceptor } from './formula-cached-fallback'
 import { readLiveFunctionInfos } from './function-catalog'
+import { previewFormulaValue } from './formula-preview'
+import { RangePickBar, type RangePickRequest } from './range-pick'
+import { selectionRefText } from './range-pick-ref'
 import { installSupportedFunctionProbe } from './function-registry-probe'
 import { installCellFilenameFunction } from './cell-function'
 import { installFormulaLexerFix } from './formula-lexer-fix'
@@ -699,6 +702,79 @@ export function App(): React.JSX.Element {
   const [advancedFilterColumns, setAdvancedFilterColumns] = useState<
     readonly AdvancedFilterColumn[] | null
   >(null)
+  /// Active collapsed range-pick session (Insert Function arguments and the
+  /// reference fields of Consolidate / Goal Seek / Cond Stats / Allow Edit
+  /// Ranges). The owning dialog hides itself; this bar mirrors the grid
+  /// selection as reference text until confirmed or cancelled.
+  const [rangePick, setRangePick] = useState<{
+    key: number
+    label: string
+    formula: boolean
+    singleCell: boolean
+    startSheetName: string
+    value: string
+    resolve: (value: string | null) => void
+  } | null>(null)
+  const rangePickSeqRef = useRef(0)
+  const pickRange = useCallback((request: RangePickRequest): Promise<string | null> => {
+    const worksheet = univerRef.current?.univerAPI.getActiveWorkbook()?.getActiveSheet()
+    const key = (rangePickSeqRef.current += 1)
+    const initial = request.initial ?? ''
+    return new Promise((resolve) => {
+      setRangePick({
+        key,
+        label: request.label,
+        formula: request.formula ?? false,
+        singleCell: request.singleCell ?? false,
+        startSheetName: worksheet?.getSheetName() ?? '',
+        value: initial,
+        resolve,
+      })
+    })
+  }, [])
+  const finishRangePick = (value: string | null): void => {
+    const session = rangePick
+    if (!session) return
+    const trimmed = value === null ? null : value.trim()
+    session.resolve(trimmed !== null && trimmed !== '' ? trimmed : null)
+    setRangePick(null)
+  }
+  useEffect(() => {
+    if (!rangePick) return
+    const runtime = univerRef.current
+    if (!runtime) return
+    // Live mirror: every grid selection change (drag, header click, ctrl-add,
+    // sheet tab switch) rewrites the bar's reference text. A `lastDerived`
+    // guard keeps manual edits in the bar's input: a new selection overwrites
+    // them, an unchanged selection never does.
+    let lastDerived: string | null = null
+    const mirrorSelection = (): void => {
+      const worksheet = runtime.univerAPI.getActiveWorkbook()?.getActiveSheet() ?? null
+      const text = selectionRefText(worksheet, {
+        formula: rangePick.formula,
+        singleCell: rangePick.singleCell,
+        startSheetName: rangePick.startSheetName,
+      })
+      if (text !== null && text !== lastDerived) {
+        lastDerived = text
+        setRangePick((session) => (session === null ? session : { ...session, value: text }))
+      }
+    }
+    const disposable = runtime.univerAPI.addEvent(
+      runtime.univerAPI.Event.SelectionChanged,
+      mirrorSelection,
+    )
+    // Belt and braces: an earlier subscriber on the same rxjs subject can
+    // throw and starve later listeners of the event, so a slow poll keeps the
+    // bar truthful even when the event path goes silent.
+    const poll = window.setInterval(mirrorSelection, 300)
+    return () => {
+      disposable.dispose()
+      window.clearInterval(poll)
+    }
+    // One subscription per session — value updates must not resubscribe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rangePick?.key])
   /// True while the Insert → Symbol dialog is open.
   const [symbolDialogOpen, setSymbolDialogOpen] = useState(false)
   const [screenshotDialogOpen, setScreenshotDialogOpen] = useState(false)
@@ -5847,6 +5923,17 @@ export function App(): React.JSX.Element {
   return (
     <>
       <ToastHost />
+      {rangePick && (
+        <RangePickBar
+          label={rangePick.label}
+          value={rangePick.value}
+          onChange={(value) =>
+            setRangePick((session) => (session === null ? session : { ...session, value }))
+          }
+          onConfirm={() => finishRangePick(rangePick.value)}
+          onCancel={() => finishRangePick(null)}
+        />
+      )}
       {recoveryPrompt && (
         <RecoveryDialog
           prompt={recoveryPrompt}
@@ -6036,11 +6123,15 @@ export function App(): React.JSX.Element {
         activeCellA1={activeCellA1}
         onGoToReference={(ref) => goToReferenceImpl(dataToolsContext(), ref)}
         onListDefinedNames={() => listDefinedNamesImpl(dataToolsContext())}
-        onApplyFormula={(formula) => handleApplyFormulaImpl(dataToolsContext(), formula)}
+        onApplyFormula={(formula, target) =>
+          handleApplyFormulaImpl(dataToolsContext(), formula, target)
+        }
         onListFunctions={() => {
           const runtime = univerRef.current
           return runtime ? readLiveFunctionInfos(runtime) : []
         }}
+        onPickRange={pickRange}
+        onPreviewFormula={(formula) => previewFormulaValue(univerRef.current, formula)}
         onCreateSubtotal={(config) => handleCreateSubtotalImpl(dataToolsContext(), config)}
         onCreateConsolidate={(config) => handleCreateConsolidateImpl(dataToolsContext(), config)}
         onGetConsolidateDefault={() => consolidateDefaultReferenceImpl(dataToolsContext())}

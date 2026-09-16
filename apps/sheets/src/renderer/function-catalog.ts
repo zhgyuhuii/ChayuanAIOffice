@@ -3,6 +3,15 @@ import { IDescriptionService } from '@univerjs/sheets-formula'
 
 import type { UniverRuntime } from './univer-state'
 
+/// One Insert Function argument row, from the engine's parameter metadata
+/// (or parsed out of a fallback syntax line).
+export interface FunctionParamSpec {
+  readonly name: string
+  readonly detail: string
+  readonly require: boolean
+  readonly repeat: boolean
+}
+
 /// One Insert Function row. `category` is a stable English id, displayed
 /// through the dialog's label table; `abstract` is the one-line list text,
 /// `description` the longer text shown once a function is picked.
@@ -12,6 +21,7 @@ export interface FunctionSpec {
   readonly syntax: string
   readonly abstract: string
   readonly description: string
+  readonly params: readonly FunctionParamSpec[]
 }
 
 /// Excel's Insert Function category order.
@@ -65,6 +75,39 @@ export function functionSyntax(
   return `${info.functionName}(${parts.join(', ')})`
 }
 
+/// The same metadata for fallback entries, parsed back out of the syntax
+/// line they ship: `SUM(number1, [number2], …)`.
+export function parseSyntaxParams(syntax: string): FunctionParamSpec[] {
+  const open = syntax.indexOf('(')
+  if (open === -1) return []
+  const close = syntax.lastIndexOf(')')
+  const inner = syntax.slice(open + 1, close === -1 ? undefined : close)
+  const params: FunctionParamSpec[] = []
+  for (const segment of inner.split(',')) {
+    const token = segment.trim()
+    if (token === '…' || token === '...') {
+      if (params.length > 0) {
+        params[params.length - 1] = { ...params[params.length - 1]!, repeat: true }
+      }
+      continue
+    }
+    const optional = token.startsWith('[') && token.endsWith(']')
+    const name = (optional ? token.slice(1, -1) : token).trim()
+    if (name === '') continue
+    params.push({ name, detail: '', require: !optional, repeat: false })
+  }
+  return params
+}
+
+/// The wizard's live formula line: values are raw fragments (numbers, refs,
+/// quoted text), trailing empties drop off, a blank middle box stays blank
+/// the way Excel's argument editor leaves a hole between commas.
+export function assembleFormula(name: string, values: readonly string[]): string {
+  const parts = values.map((value) => value.trim())
+  while (parts.length > 0 && parts[parts.length - 1] === '') parts.pop()
+  return `=${name}(${parts.join(', ')})`
+}
+
 /// Descriptions for the active Univer locale. The description service is
 /// what resolves the locale keys into the function registry (lazily, on first
 /// resolve), so it is asked rather than the registry directly.
@@ -92,6 +135,12 @@ export function buildFunctionCatalog(
       syntax: functionSyntax({ ...info, functionName: name }),
       abstract: info.abstract,
       description: info.description,
+      params: info.functionParameter.map((param) => ({
+        name: param.name,
+        detail: param.detail ?? '',
+        require: param.require === 1,
+        repeat: param.repeat === 1,
+      })),
     })
   }
   for (const spec of fallback) {

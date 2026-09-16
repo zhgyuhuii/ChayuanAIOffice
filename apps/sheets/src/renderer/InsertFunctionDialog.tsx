@@ -1,18 +1,23 @@
 import type { IFunctionInfo } from '@univerjs/engine-formula'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Dropdown } from '@chatoffice/ui'
 
 import {
+  assembleFormula,
   buildFunctionCatalog,
   FUNCTION_CATEGORIES,
+  parseSyntaxParams,
   type FunctionCategory,
   type FunctionSpec,
 } from './function-catalog'
 import { useI18n, type StringKey } from './i18n/locale'
+import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 
 /// Excel's Insert Function: browse/search the engine's function catalog,
-/// read the syntax, finish the formula in the dialog, apply to the active cell.
+/// then fill each argument in its own row — typed, or picked by collapsing
+/// onto the grid (cells / rows / columns) WPS-style — with the assembled
+/// formula and its live result preview shown before it lands in the cell.
 
 interface FallbackSpec {
   readonly name: string
@@ -317,25 +322,42 @@ export function InsertFunctionDialog({
   onApply,
   onClose,
   initialCategory,
+  onPickRange,
+  onPreviewFormula,
 }: {
   /// A1 label of the destination cell, for the dialog header.
   readonly targetLabel: string
   /// Descriptions from the running formula engine (already localized).
   readonly functions: readonly IFunctionInfo[]
-  /// Returns an error message, or null on success.
-  readonly onApply: (formula: string) => string | null
+  /// Returns an error message, or null on success. The target A1 pins the
+  /// destination cell against the pick's selection moves.
+  readonly onApply: (formula: string, targetA1: string) => string | null
   readonly onClose: () => void
   /// Category to open on (the Formulas tab's category buttons pass their own).
   readonly initialCategory?: string
+  /// Collapsed grid picking for argument rows (cells / rows / columns).
+  readonly onPickRange?: RangePickHandler | undefined
+  /// One-shot evaluation of the assembled formula, for the result line.
+  readonly onPreviewFormula?: ((formula: string) => Promise<string | null>) | undefined
 }): React.JSX.Element {
   const { t, lang } = useI18n()
+  const { picking, begin } = useRangePickSession(onPickRange)
+  // Destination pinned at mount: picking ranges on the grid moves the active
+  // selection, but the formula still belongs in the cell the dialog opened on
+  // (the one its header advertises).
+  const destinationRef = useRef(targetLabel)
   const catalog = useMemo(
     () =>
       buildFunctionCatalog(
         functions,
         FALLBACK_CATALOG.map((spec) => {
           const description = t(spec.descKey)
-          return { ...spec, abstract: description, description }
+          return {
+            ...spec,
+            abstract: description,
+            description,
+            params: parseSyntaxParams(spec.syntax),
+          }
         }),
       ),
     [functions, lang],
@@ -349,7 +371,9 @@ export function InsertFunctionDialog({
     initialCategory && categories.includes(initialCategory) ? initialCategory : 'All',
   )
   const [picked, setPicked] = useState<FunctionSpec | null>(null)
-  const [formula, setFormula] = useState('')
+  const [paramValues, setParamValues] = useState<string[]>([])
+  const [preview, setPreview] = useState<string | null>(null)
+  const [previewPending, setPreviewPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const matches = useMemo(() => {
@@ -363,21 +387,75 @@ export function InsertFunctionDialog({
     )
   }, [catalog, query, category])
 
+  const formula = useMemo(
+    () => (picked ? assembleFormula(picked.name, paramValues) : ''),
+    [picked, paramValues],
+  )
+
+  // Live result line: debounced so typing a long literal doesn't spam the
+  // engine; a stale answer must never outlive its formula.
+  useEffect(() => {
+    if (!picked || !onPreviewFormula || formula === '') {
+      setPreview(null)
+      setPreviewPending(false)
+      return
+    }
+    let alive = true
+    setPreviewPending(true)
+    const timer = window.setTimeout(() => {
+      void onPreviewFormula(formula).then((value) => {
+        if (!alive) return
+        setPreview(value)
+        setPreviewPending(false)
+      })
+    }, 250)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
+  }, [picked, formula, onPreviewFormula])
+
   const pick = (spec: FunctionSpec): void => {
     setPicked(spec)
-    setFormula(`=${spec.name}(${spec.syntax.endsWith('()') ? ')' : ''}`)
+    setParamValues(spec.params.map(() => ''))
     setError(null)
   }
+
+  const setParam = (index: number, value: string): void => {
+    setParamValues((values) => values.map((entry, i) => (i === index ? value : entry)))
+  }
+
+  /// Rows beyond the declared params repeat the last declared one (its
+  /// metadata carries the repeat flag; extra rows are removable).
+  const lastParam = picked?.params[picked.params.length - 1] ?? null
+  const canAddParam = lastParam !== null && lastParam.repeat
+
+  const confirm = (): void => {
+    if (!picked) return
+    const missing = picked.params.findIndex(
+      (param, index) => param.require && index < paramValues.length && paramValues[index] === '',
+    )
+    if (missing !== -1) {
+      setError(t('dlgFnNeedRequired', { name: picked.params[missing]!.name }))
+      return
+    }
+    const failure = onApply(formula, destinationRef.current)
+    setError(failure)
+    if (failure === null) onClose()
+  }
+
+  // The dialog folds away while an argument is being picked on the grid.
+  if (picking) return <></>
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
       <div
-        className="format-cells-dialog insert-function-dialog"
+        className={`format-cells-dialog insert-function-dialog${picked ? ' has-picked' : ''}`}
         role="dialog"
         aria-label="Insert Function"
         onClick={(event) => event.stopPropagation()}
       >
-        <header>{t('dlgFnTitle', { target: targetLabel })}</header>
+        <header>{t('dlgFnTitle', { target: destinationRef.current })}</header>
         <div className="fn-filter-row">
           <input
             autoFocus
@@ -410,27 +488,76 @@ export function InsertFunctionDialog({
           {matches.length === 0 && <p className="dialog-note">{t('dlgFnNoMatch')}</p>}
         </div>
         {picked && (
-          <p className="dialog-note fn-syntax">
-            <code>{picked.syntax}</code>
-            {picked.description !== picked.abstract && <span>{picked.description}</span>}
-          </p>
+          <>
+            <p className="dialog-note fn-syntax">
+              <code>{picked.syntax}</code>
+              {picked.description !== picked.abstract && <span>{picked.description}</span>}
+            </p>
+            <div className="fn-params" aria-label={t('dlgFnParams')}>
+              {paramValues.map((value, index) => {
+                const isExtra = index >= picked.params.length
+                const meta = isExtra ? lastParam! : picked.params[index]!
+                return (
+                  <div className="fn-param-row" key={index}>
+                    <label className="fn-param-name" title={meta.detail || undefined}>
+                      {meta.name}
+                      {meta.require && !isExtra ? ' *' : ''}
+                    </label>
+                    <input
+                      value={value}
+                      title={meta.detail || undefined}
+                      onChange={(event) => setParam(index, event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault()
+                          confirm()
+                        }
+                      }}
+                    />
+                    {onPickRange && (
+                      <RangePickButton
+                        title={t('dlgFnPickRange')}
+                        onPick={() =>
+                          begin(meta.name, { formula: true }, (pickedValue) =>
+                            setParam(index, pickedValue),
+                          )
+                        }
+                      />
+                    )}
+                    {isExtra && (
+                      <button
+                        type="button"
+                        className="fn-param-remove"
+                        aria-label={t('dlgFnRemoveParam')}
+                        onClick={() =>
+                          setParamValues((values) => values.filter((_, i) => i !== index))
+                        }
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+              {canAddParam && (
+                <button
+                  type="button"
+                  className="fn-param-add"
+                  onClick={() => setParamValues((values) => [...values, ''])}
+                >
+                  + {t('dlgFnAddParam')}
+                </button>
+              )}
+            </div>
+            <p className="fn-assembled" aria-label={t('dlgFnFormula')}>
+              <code>{formula}</code>
+            </p>
+            <p className="dialog-note fn-result">
+              {t('dlgFnResult')}
+              <code>{previewPending ? '…' : (preview ?? '—')}</code>
+            </p>
+          </>
         )}
-        <label className="fn-formula">
-          {t('dlgFnFormula')}
-          <input
-            value={formula}
-            placeholder={t('dlgFnFormulaPlaceholder')}
-            onChange={(event) => setFormula(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault()
-                const failure = onApply(formula)
-                setError(failure)
-                if (failure === null) onClose()
-              }
-            }}
-          />
-        </label>
         {error && (
           <p className="dialog-note" role="alert">
             {error}
@@ -440,15 +567,7 @@ export function InsertFunctionDialog({
           <button className="secondary" onClick={onClose}>
             {t('dlgCancel')}
           </button>
-          <button
-            className="primary-action"
-            disabled={formula.trim() === ''}
-            onClick={() => {
-              const failure = onApply(formula)
-              setError(failure)
-              if (failure === null) onClose()
-            }}
-          >
+          <button className="primary-action" disabled={!picked} onClick={confirm}>
             {t('dlgFnInsert')}
           </button>
         </div>

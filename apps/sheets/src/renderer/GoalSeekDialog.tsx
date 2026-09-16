@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import type { GoalSeekResult } from './goal-seek'
 import { useI18n } from './i18n/locale'
+import { RangePickButton, useRangePickSession, type RangePickHandler } from './range-pick'
 
 /// Excel's Goal Seek: three fields, then an async solve whose guesses are
 /// journaled edits (undo restores everything). The dialog stays open to show
@@ -10,13 +11,17 @@ export function GoalSeekDialog({
   initialSetCell,
   onSolve,
   onClose,
+  onPickRange,
 }: {
   readonly initialSetCell: string
   /// Rejects with an Error whose message is user-facing.
   readonly onSolve: (setCell: string, toValue: number, byCell: string) => Promise<GoalSeekResult>
   readonly onClose: () => void
+  /// Collapsed grid picking for the two cell fields.
+  readonly onPickRange?: RangePickHandler | undefined
 }): React.JSX.Element {
   const { t } = useI18n()
+  const { picking, begin } = useRangePickSession(onPickRange)
   const [setCell, setSetCell] = useState(initialSetCell)
   const [toValue, setToValue] = useState('')
   const [byCell, setByCell] = useState('')
@@ -55,6 +60,9 @@ export function GoalSeekDialog({
     }
   }
 
+  // The dialog folds away while a target cell is picked on the grid.
+  if (picking) return <></>
+
   return (
     <div className="dialog-backdrop" onClick={busy ? undefined : onClose}>
       <div
@@ -68,13 +76,25 @@ export function GoalSeekDialog({
           <div className="dialog-grid">
             <label>
               {t('dlgGoalSeekSetCell')}
-              <input
-                autoFocus
-                value={setCell}
-                placeholder="B5"
-                disabled={busy}
-                onChange={(event) => setSetCell(event.target.value)}
-              />
+              <span className="input-row">
+                <input
+                  autoFocus
+                  value={setCell}
+                  placeholder="B5"
+                  disabled={busy}
+                  onChange={(event) => setSetCell(event.target.value)}
+                />
+                {onPickRange && (
+                  <RangePickButton
+                    title={t('dlgFnPickCell')}
+                    onPick={() =>
+                      begin(t('dlgGoalSeekSetCell'), { singleCell: true }, (value) =>
+                        setSetCell(value),
+                      )
+                    }
+                  />
+                )}
+              </span>
             </label>
             <label>
               {t('dlgGoalSeekToValue')}
@@ -87,12 +107,24 @@ export function GoalSeekDialog({
             </label>
             <label>
               {t('dlgGoalSeekByCell')}
-              <input
-                value={byCell}
-                placeholder="B2"
-                disabled={busy}
-                onChange={(event) => setByCell(event.target.value)}
-              />
+              <span className="input-row">
+                <input
+                  value={byCell}
+                  placeholder="B2"
+                  disabled={busy}
+                  onChange={(event) => setByCell(event.target.value)}
+                />
+                {onPickRange && (
+                  <RangePickButton
+                    title={t('dlgFnPickCell')}
+                    onPick={() =>
+                      begin(t('dlgGoalSeekByCell'), { singleCell: true }, (value) =>
+                        setByCell(value),
+                      )
+                    }
+                  />
+                )}
+              </span>
             </label>
           </div>
           <p className="dialog-note">{t('dlgGoalSeekNote')}</p>

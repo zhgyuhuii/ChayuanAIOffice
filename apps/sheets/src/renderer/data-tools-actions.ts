@@ -6,7 +6,11 @@
  */
 import { ILayoutService } from '@univerjs/preset-sheets-core'
 
-import { columnLabel } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import {
+  columnLabel,
+  parseAddress,
+  type CellCoordinates,
+} from '@chatoffice/xlsx-gateway/domain/cell-address'
 import {
   decodeCsvBuffer,
   isNumericCell,
@@ -194,7 +198,11 @@ export function listDefinedNames(ctx: DataToolsContext): GoToNameEntry[] {
   }))
 }
 
-export function handleApplyFormula(ctx: DataToolsContext, formula: string): string | null {
+export function handleApplyFormula(
+  ctx: DataToolsContext,
+  formula: string,
+  targetA1?: string,
+): string | null {
   const runtime = ctx.univerRef.current
   if (!runtime) return t('appWorkbookNotReady')
   const workbook = runtime.univerAPI.getActiveWorkbook()
@@ -206,12 +214,27 @@ export function handleApplyFormula(ctx: DataToolsContext, formula: string): stri
   const opens = (trimmed.match(/\(/g) ?? []).length
   const closes = (trimmed.match(/\)/g) ?? []).length
   if (opens !== closes) return t('appUnbalancedParens')
+  // The Insert Function wizard pins its destination cell (shown in the
+  // header): a collapsed range pick moves the active selection onto the
+  // picked range, so the formula must land at the captured target, not at
+  // whatever the pick left active.
+  let target: CellCoordinates | undefined
+  if (targetA1 !== undefined) {
+    try {
+      target = parseAddress(targetA1)
+    } catch {
+      target = undefined
+    }
+  }
+  if (target === undefined) target = { row: range.getRow(), column: range.getColumn() }
   try {
-    worksheet.getRange(range.getRow(), range.getColumn(), 1, 1).setValue({ f: trimmed })
+    worksheet.getRange(target.row, target.column, 1, 1).setValue({ f: trimmed })
   } catch (error: unknown) {
     return error instanceof Error ? error.message : t('appSetFormulaFailed')
   }
-  ctx.setMessage(t('appFormulaSet', { cell: activeCellLabel(ctx) }))
+  ctx.setMessage(
+    t('appFormulaSet', { cell: targetA1 !== undefined ? targetA1 : activeCellLabel(ctx) }),
+  )
   return null
 }
 

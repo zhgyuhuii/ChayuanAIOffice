@@ -2,7 +2,8 @@
 import type { zh } from './zh'
 export const ar = {
   dlgAllowEditRangesTitle: 'السماح بتحرير النطاقات',
-  dlgAllowEditRangesHint: 'تظل هذه النطاقات قابلة للتحرير أثناء حماية الورقة. تُكتب عند الحفظ؛ كلمات المرور غير مدعومة.',
+  dlgAllowEditRangesHint:
+    'تظل هذه النطاقات قابلة للتحرير أثناء حماية الورقة. تُكتب عند الحفظ؛ كلمات المرور غير مدعومة.',
   dlgRangeName: 'العنوان',
   dlgRangeRef: 'النطاق',
   dlgRangeAdd: 'إضافة',
@@ -25,14 +26,16 @@ export const ar = {
   dlgApply: 'تطبيق',
   dlgCreate: 'إنشاء',
   dlgAdvFilterTitle: 'تصفية متقدمة',
-  dlgAdvFilterNoColumns: 'لا توجد أعمدة متاحة في نطاق التصفية — حدد البيانات وشغّل التصفية التلقائية قبل فتح التصفية المتقدمة.',
+  dlgAdvFilterNoColumns:
+    'لا توجد أعمدة متاحة في نطاق التصفية — حدد البيانات وشغّل التصفية التلقائية قبل فتح التصفية المتقدمة.',
   dlgAdvFilterColumn: 'العمود',
   dlgAdvFilterCondition1: 'الشرط 1',
   dlgAdvFilterCondition2: 'الشرط 2 (اختياري)',
   dlgAdvFilterValue: 'القيمة',
   dlgAdvFilterAnd: 'و (AND)',
   dlgAdvFilterOr: 'أو (OR)',
-  dlgAdvFilterNote: 'يطبّق معايير مخصصة على العمود المحدد؛ تبقى الصفوف المطابقة فقط ظاهرة. اترك الشرط الثاني فارغًا لاستخدام الشرط الأول فقط.',
+  dlgAdvFilterNote:
+    'يطبّق معايير مخصصة على العمود المحدد؛ تبقى الصفوف المطابقة فقط ظاهرة. اترك الشرط الثاني فارغًا لاستخدام الشرط الأول فقط.',
   dlgAdvFilterNeedValue1: 'أدخل قيمة للشرط 1.',
   dlgAdvFilterOpEqual: 'يساوي',
   dlgAdvFilterOpNotEqual: 'لا يساوي',
@@ -44,7 +47,8 @@ export const ar = {
   dlgGoToRef: 'المرجع',
   dlgGoToRefPlaceholder: 'مثل A1 أو B2:D5 أو اسم معرَّف',
   dlgGoToNameHint: 'انقر نقرًا مزدوجًا للانتقال إلى {ref}',
-  dlgGoToNote: 'اكتب مرجع خلية أو اختر نطاقًا مسمى؛ يقفز زر الانتقال إلى الهدف ويحدده. انقر على اسم لتعبئته في الحقل، وانقر نقرًا مزدوجًا للانتقال مباشرة.',
+  dlgGoToNote:
+    'اكتب مرجع خلية أو اختر نطاقًا مسمى؛ يقفز زر الانتقال إلى الهدف ويحدده. انقر على اسم لتعبئته في الحقل، وانقر نقرًا مزدوجًا للانتقال مباشرة.',
   dlgGoToGo: 'انتقال',
   dlgHfTitle: 'رأس وتذييل الصفحة',
   dlgHfHeaderLeft: 'الرأس · يسار',
@@ -60,10 +64,12 @@ export const ar = {
   dlgHfFileName: 'اسم الملف',
   dlgHfSheetName: 'اسم الورقة',
   dlgHfInsertCode: 'إدراج {code}',
-  dlgHfNote: 'يظهر أعلى كل صفحة مطبوعة/PDF وأسفلها. رموز الحقول: &P رقم الصفحة، &N عدد الصفحات، &D التاريخ، &T الوقت، &F اسم الملف، &A اسم الورقة؛ اكتب && لإدراج الحرف & نفسه. اترك الأقسام الستة كلها فارغة لمسح الرأس والتذييل.',
+  dlgHfNote:
+    'يظهر أعلى كل صفحة مطبوعة/PDF وأسفلها. رموز الحقول: &P رقم الصفحة، &N عدد الصفحات، &D التاريخ، &T الوقت، &F اسم الملف، &A اسم الورقة؛ اكتب && لإدراج الحرف & نفسه. اترك الأقسام الستة كلها فارغة لمسح الرأس والتذييل.',
   dlgPivotCreateTitle: 'إنشاء PivotTable',
   dlgPivotEditTitle: 'تحرير PivotTable',
-  dlgPivotNoFields: 'حدد أولاً نطاق البيانات المصدر (مع صف رؤوس، وصفَّين على الأقل) قبل فتح PivotTable.',
+  dlgPivotNoFields:
+    'حدد أولاً نطاق البيانات المصدر (مع صف رؤوس، وصفَّين على الأقل) قبل فتح PivotTable.',
   dlgPivotSourceRange: 'النطاق المصدر',
   dlgPivotRowFields: 'الصفوف (الخارجي أولاً، قابلة لإعادة الترتيب)',
   dlgPivotColFields: 'الأعمدة (اختيارية، الخارجي أولاً، قابلة لإعادة الترتيب)',
@@ -113,7 +119,8 @@ export const ar = {
   dlgPivotTargetCell: 'خلية البداية الوجهة',
   dlgPivotTargetPlaceholder: 'مثل F1',
   dlgPivotTargetLocked: 'تبقى الخلية العلوية اليسرى لمنطقة الإخراج ثابتة أثناء التحرير',
-  dlgPivotNote: 'ينشئ PivotTable حقيقيًا بتنسيق OOXML يمكن لـ Excel/WPS التعرف عليه وتحديثه بعد الحفظ.',
+  dlgPivotNote:
+    'ينشئ PivotTable حقيقيًا بتنسيق OOXML يمكن لـ Excel/WPS التعرف عليه وتحديثه بعد الحفظ.',
   dlgPivotErrDupRowField: 'لا يمكن أن تتضمن حقول الصفوف الحقل نفسه مرتين.',
   dlgPivotErrDupColField: 'لا يمكن أن تتضمن حقول الأعمدة الحقل نفسه مرتين.',
   dlgPivotErrRowColOverlap: 'لا يمكن أن يكون الحقل حقل صف وحقل عمود في آن واحد.',
@@ -121,15 +128,19 @@ export const ar = {
   dlgPivotErrCalcFieldIncomplete: 'تتطلب الحقول المحسوبة اسمًا وصيغة معًا.',
   dlgPivotErrRangeStep: 'يجب أن تكون خطوة التجميع حسب الفاصل رقمًا موجبًا.',
   dlgPivotErrLabelFilterText: 'تتطلب عوامل تصفية التسمية نص تصفية.',
-  dlgPivotErrOneValueFilter: 'يمكن تعيين عامل تصفية قيمة واحد على الأكثر (يُطبق على حقل الصف من المستوى 1).',
-  dlgPivotErrFilterConflict: 'لا يمكن تعيين عامل تصفية تسمية وعامل تصفية قيمة معًا على حقل الصف من المستوى 1.',
+  dlgPivotErrOneValueFilter:
+    'يمكن تعيين عامل تصفية قيمة واحد على الأكثر (يُطبق على حقل الصف من المستوى 1).',
+  dlgPivotErrFilterConflict:
+    'لا يمكن تعيين عامل تصفية تسمية وعامل تصفية قيمة معًا على حقل الصف من المستوى 1.',
   dlgSlicerInsertTitle: 'إدراج مقسم طريقة عرض',
-  dlgSlicerPickNote: 'اختر الحقل الخاص بمقسم طريقة العرض؛ يؤدي النقر على عناصره إلى تصفية PivotTable.',
+  dlgSlicerPickNote:
+    'اختر الحقل الخاص بمقسم طريقة العرض؛ يؤدي النقر على عناصره إلى تصفية PivotTable.',
   dlgSlicerAria: 'مقسم طريقة العرض {name}',
   dlgSlicerClear: 'مسح التصفية (تحديد الكل)',
   dlgSlicerRemove: 'إزالة مقسم طريقة العرض (استعادة كل العناصر)',
   dlgTimelineInsertTitle: 'إدراج مخطط زمني',
-  dlgTimelinePickNote: 'اختر حقل تاريخ؛ يؤدي النقر على الأشهر (Shift+نقر لتوسيع النطاق) إلى تصفية PivotTable حسب نطاق التاريخ.',
+  dlgTimelinePickNote:
+    'اختر حقل تاريخ؛ يؤدي النقر على الأشهر (Shift+نقر لتوسيع النطاق) إلى تصفية PivotTable حسب نطاق التاريخ.',
   dlgTimelineAria: 'المخطط الزمني {name}',
   dlgTimelineClear: 'مسح التصفية (إظهار الكل)',
   dlgTimelineRemove: 'إزالة المخطط الزمني (استعادة كل العناصر)',
@@ -163,7 +174,8 @@ export const ar = {
   dlgScreenshotWindows: 'النوافذ المتاحة',
   dlgScreenshotLoading: 'جارٍ البحث عن النوافذ القابلة للالتقاط…',
   dlgScreenshotEmpty: 'لا توجد نوافذ متاحة للالتقاط.',
-  dlgScreenshotDenied: 'مطلوب إذن تسجيل الشاشة. اسمح لهذا التطبيق في إعدادات النظام ← الخصوصية والأمان ← تسجيل الشاشة، ثم انقر على تحديث.',
+  dlgScreenshotDenied:
+    'مطلوب إذن تسجيل الشاشة. اسمح لهذا التطبيق في إعدادات النظام ← الخصوصية والأمان ← تسجيل الشاشة، ثم انقر على تحديث.',
   dlgScreenshotRefresh: 'تحديث',
   dlgScreenshotFailed: 'فشل الالتقاط. حاول مرة أخرى.',
   dlgSymbolTitle: 'إدراج رمز',
@@ -261,7 +273,8 @@ export const ar = {
   dlgFcNoFill: 'بلا تعبئة',
   dlgFcLocked: 'مؤمَّنة',
   dlgFcHidden: 'مخفية (الصيغة)',
-  dlgFcProtectionNote: 'لا يسري التأمين والإخفاء إلا عندما تكون ورقة العمل محمية في Excel. تُحفظ هذه العلامات في الملف؛ ولا يفرضها المحرر نفسه.',
+  dlgFcProtectionNote:
+    'لا يسري التأمين والإخفاء إلا عندما تكون ورقة العمل محمية في Excel. تُحفظ هذه العلامات في الملف؛ ولا يفرضها المحرر نفسه.',
   dlgAdvFilterNeedCondition: 'تتطلب التصفية المتقدمة شرطًا واحدًا على الأقل.',
   dlgAdvFilterMaxTwo: 'تدعم التصفية المتقدمة شرطين على الأكثر.',
   dlgConsTitle: 'دمج',
@@ -272,16 +285,20 @@ export const ar = {
   dlgConsDelete: 'حذف',
   dlgConsDeleteRef: 'حذف {ref}',
   dlgConsLeftLabels: 'استخدام التسميات في: العمود الأيسر',
-  dlgConsNoteLabels: 'تُطابَق الصفوف حسب العمود الأول في كل منطقة؛ تبدأ النتائج من {target} كصيغ حية تشير إلى المصادر.',
-  dlgConsNotePosition: 'تُدمج المناطق موضعًا بموضع؛ تبدأ النتائج من {target} كصيغ حية تشير إلى المصادر.',
+  dlgConsNoteLabels:
+    'تُطابَق الصفوف حسب العمود الأول في كل منطقة؛ تبدأ النتائج من {target} كصيغ حية تشير إلى المصادر.',
+  dlgConsNotePosition:
+    'تُدمج المناطق موضعًا بموضع؛ تبدأ النتائج من {target} كصيغ حية تشير إلى المصادر.',
   dlgConsBadRef: 'مرجع غير صالح: {ref} — استخدم الصيغة A1:C5 أو Sheet2!A1:C5.',
   dlgConsNeedOneRef: 'أضف مرجع مصدر واحدًا على الأقل.',
   dlgSubtotalTitle: 'المجموع الفرعي',
-  dlgSubtotalNoFields: 'حدد أولاً البيانات المصدر — نطاقًا يضم صف رؤوس وصف بيانات واحدًا على الأقل (مرتبًا حسب عمود التجميع) — ثم أعد فتح المجموع الفرعي.',
+  dlgSubtotalNoFields:
+    'حدد أولاً البيانات المصدر — نطاقًا يضم صف رؤوس وصف بيانات واحدًا على الأقل (مرتبًا حسب عمود التجميع) — ثم أعد فتح المجموع الفرعي.',
   dlgSubtotalGroupBy: 'عند كل تغيير في',
   dlgSubtotalFunction: 'استخدام الدالة',
   dlgSubtotalAddTo: 'إضافة مجموع فرعي إلى',
-  dlgSubtotalNote: 'يُدرج صف SUBTOTAL بعد كل سلسلة من القيم المتساوية (رتّب البيانات أولاً حسب عمود التجميع) ويضيف إجماليًا كليًا في النهاية.',
+  dlgSubtotalNote:
+    'يُدرج صف SUBTOTAL بعد كل سلسلة من القيم المتساوية (رتّب البيانات أولاً حسب عمود التجميع) ويضيف إجماليًا كليًا في النهاية.',
   dlgNmTitle: 'إدارة الأسماء',
   dlgNmName: 'الاسم',
   dlgNmRefersTo: 'يشير إلى',
@@ -298,6 +315,15 @@ export const ar = {
   dlgFnFormula: 'الصيغة',
   dlgFnFormulaPlaceholder: 'اختر دالة ثم أكمل الوسيطات',
   dlgFnInsert: 'إدراج',
+  dlgFnParams: 'وسائط الدالة',
+  dlgFnPickRange: 'تحديد نطاق من الورقة',
+  dlgFnPickCell: 'تحديد خلية من الورقة',
+  dlgFnAddParam: 'إضافة وسيطة',
+  dlgFnRemoveParam: 'إزالة هذه الوسيطة',
+  dlgFnResult: 'نتيجة الحساب: ',
+  dlgFnNeedRequired: 'الوسيطة المطلوبة "{name}" فارغة.',
+  dlgRangePickTitle: 'تحديد النطاق',
+  dlgRangePickHint: 'اسحب فوق الخلايا أو الصفوف أو الأعمدة في الورقة ثم أكّد',
   dlgFnCatAll: 'الكل',
   dlgFnCatMath: 'رياضيات',
   dlgFnCatStatistical: 'إحصاء',

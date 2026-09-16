@@ -2,7 +2,8 @@
 import type { zh } from './zh'
 export const ja = {
   dlgAllowEditRangesTitle: '範囲の編集の許可',
-  dlgAllowEditRangesHint: 'シート保護中もこれらの範囲は編集できます。保存時に書き込まれます。パスワードには対応していません。',
+  dlgAllowEditRangesHint:
+    'シート保護中もこれらの範囲は編集できます。保存時に書き込まれます。パスワードには対応していません。',
   dlgRangeName: 'タイトル',
   dlgRangeRef: '範囲',
   dlgRangeAdd: '追加',
@@ -25,14 +26,16 @@ export const ja = {
   dlgApply: '適用',
   dlgCreate: '作成',
   dlgAdvFilterTitle: 'フィルターの詳細設定',
-  dlgAdvFilterNoColumns: 'フィルター範囲に使用できる列がありません。先にデータを選択してオートフィルターを有効にしてから、フィルターの詳細設定を開いてください。',
+  dlgAdvFilterNoColumns:
+    'フィルター範囲に使用できる列がありません。先にデータを選択してオートフィルターを有効にしてから、フィルターの詳細設定を開いてください。',
   dlgAdvFilterColumn: '列',
   dlgAdvFilterCondition1: '条件 1',
   dlgAdvFilterCondition2: '条件 2（省略可）',
   dlgAdvFilterValue: '値',
   dlgAdvFilterAnd: 'AND',
   dlgAdvFilterOr: 'OR',
-  dlgAdvFilterNote: '選択した列にユーザー設定の条件を適用し、条件を満たす行のみ表示します。条件 2 を空欄にすると条件 1 だけを使用します。',
+  dlgAdvFilterNote:
+    '選択した列にユーザー設定の条件を適用し、条件を満たす行のみ表示します。条件 2 を空欄にすると条件 1 だけを使用します。',
   dlgAdvFilterNeedValue1: '条件 1 の値を入力してください。',
   dlgAdvFilterOpEqual: 'と等しい',
   dlgAdvFilterOpNotEqual: 'と等しくない',
@@ -44,7 +47,8 @@ export const ja = {
   dlgGoToRef: '参照先',
   dlgGoToRefPlaceholder: '例: A1、B2:D5、定義された名前',
   dlgGoToNameHint: 'ダブルクリックで {ref} へ移動',
-  dlgGoToNote: 'セル参照を入力するか名前付き範囲を選択すると、ジャンプで対象へ移動して選択します。名前をクリックすると入力欄に反映、ダブルクリックで直接移動します。',
+  dlgGoToNote:
+    'セル参照を入力するか名前付き範囲を選択すると、ジャンプで対象へ移動して選択します。名前をクリックすると入力欄に反映、ダブルクリックで直接移動します。',
   dlgGoToGo: 'ジャンプ',
   dlgHfTitle: 'ヘッダーとフッター',
   dlgHfHeaderLeft: 'ヘッダー · 左',
@@ -60,10 +64,12 @@ export const ja = {
   dlgHfFileName: 'ファイル名',
   dlgHfSheetName: 'シート名',
   dlgHfInsertCode: '{code} を挿入',
-  dlgHfNote: '印刷/PDF エクスポート時に各ページの上下に表示されます。フィールド コード: &P ページ番号、&N 総ページ数、&D 日付、&T 時刻、&F ファイル名、&A シート名。&& と入力すると & そのものになります。6 つの欄をすべて空にするとヘッダーとフッターを消去します。',
+  dlgHfNote:
+    '印刷/PDF エクスポート時に各ページの上下に表示されます。フィールド コード: &P ページ番号、&N 総ページ数、&D 日付、&T 時刻、&F ファイル名、&A シート名。&& と入力すると & そのものになります。6 つの欄をすべて空にするとヘッダーとフッターを消去します。',
   dlgPivotCreateTitle: 'ピボットテーブルの作成',
   dlgPivotEditTitle: 'ピボットテーブルの編集',
-  dlgPivotNoFields: '先にソース データ範囲（見出し行を含む 2 行以上）を選択してから、ピボットテーブルを開いてください。',
+  dlgPivotNoFields:
+    '先にソース データ範囲（見出し行を含む 2 行以上）を選択してから、ピボットテーブルを開いてください。',
   dlgPivotSourceRange: 'ソース範囲',
   dlgPivotRowFields: '行（外側が先、並べ替え可）',
   dlgPivotColFields: '列（省略可、外側が先、並べ替え可）',
@@ -100,7 +106,8 @@ export const ja = {
   dlgPivotShowAsPctTotal: '総計に対する比率',
   dlgPivotShowAsPctRow: '行集計に対する比率',
   dlgPivotShowAsPctCol: '列集計に対する比率',
-  dlgPivotValueFilter: '値フィルター（この値フィールドでレベル 1 の行フィールドのメンバーを絞り込み）',
+  dlgPivotValueFilter:
+    '値フィルター（この値フィールドでレベル 1 の行フィールドのメンバーを絞り込み）',
   dlgPivotFilterTopN: '上位 N 項目',
   dlgPivotFilterGreaterThan: 'より大きい',
   dlgPivotFilterBetween: '指定の範囲内',
@@ -113,7 +120,8 @@ export const ja = {
   dlgPivotTargetCell: '出力先の開始セル',
   dlgPivotTargetPlaceholder: '例: F1',
   dlgPivotTargetLocked: '編集時は出力範囲の左上セルは変わりません',
-  dlgPivotNote: 'ピボットテーブルは実際の OOXML PivotTable として生成され、保存後は Excel/WPS でそのまま認識・更新できます。',
+  dlgPivotNote:
+    'ピボットテーブルは実際の OOXML PivotTable として生成され、保存後は Excel/WPS でそのまま認識・更新できます。',
   dlgPivotErrDupRowField: '行フィールドに同じフィールドを重複して選択することはできません。',
   dlgPivotErrDupColField: '列フィールドに同じフィールドを重複して選択することはできません。',
   dlgPivotErrRowColOverlap: '同じフィールドを行と列の両方に指定することはできません。',
@@ -121,15 +129,19 @@ export const ja = {
   dlgPivotErrCalcFieldIncomplete: '集計フィールドには名前と数式の両方が必要です。',
   dlgPivotErrRangeStep: '範囲グループ化の間隔は正の数にしてください。',
   dlgPivotErrLabelFilterText: 'ラベル フィルターにはフィルター文字列が必要です。',
-  dlgPivotErrOneValueFilter: '値フィルターは 1 件まで設定できます（レベル 1 の行フィールドに適用）。',
-  dlgPivotErrFilterConflict: 'レベル 1 の行フィールドにラベル フィルターと値フィルターを同時に設定することはできません。',
+  dlgPivotErrOneValueFilter:
+    '値フィルターは 1 件まで設定できます（レベル 1 の行フィールドに適用）。',
+  dlgPivotErrFilterConflict:
+    'レベル 1 の行フィールドにラベル フィルターと値フィルターを同時に設定することはできません。',
   dlgSlicerInsertTitle: 'スライサーの挿入',
-  dlgSlicerPickNote: 'スライサーにするフィールドを選択します。スライサー内のメンバーをクリックするとピボットテーブルを絞り込めます。',
+  dlgSlicerPickNote:
+    'スライサーにするフィールドを選択します。スライサー内のメンバーをクリックするとピボットテーブルを絞り込めます。',
   dlgSlicerAria: 'スライサー {name}',
   dlgSlicerClear: 'フィルターのクリア（すべて選択）',
   dlgSlicerRemove: 'スライサーの削除（全メンバーを復元）',
   dlgTimelineInsertTitle: 'タイムラインの挿入',
-  dlgTimelinePickNote: '日付フィールドを選択します。月をクリック（Shift+クリックで範囲を拡張）すると、日付範囲でピボットテーブルを絞り込めます。',
+  dlgTimelinePickNote:
+    '日付フィールドを選択します。月をクリック（Shift+クリックで範囲を拡張）すると、日付範囲でピボットテーブルを絞り込めます。',
   dlgTimelineAria: 'タイムライン {name}',
   dlgTimelineClear: 'フィルターのクリア（すべて表示）',
   dlgTimelineRemove: 'タイムラインの削除（全メンバーを復元）',
@@ -163,7 +175,8 @@ export const ja = {
   dlgScreenshotWindows: '使用可能なウィンドウ',
   dlgScreenshotLoading: 'キャプチャ可能なウィンドウを取得中…',
   dlgScreenshotEmpty: 'キャプチャできるウィンドウがありません。',
-  dlgScreenshotDenied: '画面収録の権限が必要です。システム設定 → プライバシーとセキュリティ → 画面収録 でこのアプリを許可し、「更新」をクリックしてください。',
+  dlgScreenshotDenied:
+    '画面収録の権限が必要です。システム設定 → プライバシーとセキュリティ → 画面収録 でこのアプリを許可し、「更新」をクリックしてください。',
   dlgScreenshotRefresh: '更新',
   dlgScreenshotFailed: 'キャプチャに失敗しました。もう一度お試しください。',
   dlgSymbolTitle: '記号と特殊文字',
@@ -173,7 +186,8 @@ export const ja = {
   dlgSymbolCatGreek: 'ギリシャ文字',
   dlgSymbolCatMisc: '図形/その他',
   dlgSymbolInsertHint: '{symbol} を挿入',
-  dlgSymbolNote: '記号をクリックするとアクティブ セルに追加されます。続けて挿入し、終わったら閉じてください。',
+  dlgSymbolNote:
+    '記号をクリックするとアクティブ セルに追加されます。続けて挿入し、終わったら閉じてください。',
   dlgFcTitle: 'セルの書式設定',
   dlgFcTabNumber: '表示形式',
   dlgFcTabAlignment: '配置',
@@ -261,7 +275,8 @@ export const ja = {
   dlgFcNoFill: '塗りつぶしなし',
   dlgFcLocked: 'ロック',
   dlgFcHidden: '表示しない（数式）',
-  dlgFcProtectionNote: 'ロックと表示しないは、Excel でワークシートを保護した場合にのみ有効になります。これらのフラグはファイルに保存されますが、このエディター自体では強制されません。',
+  dlgFcProtectionNote:
+    'ロックと表示しないは、Excel でワークシートを保護した場合にのみ有効になります。これらのフラグはファイルに保存されますが、このエディター自体では強制されません。',
   dlgAdvFilterNeedCondition: 'フィルターの詳細設定には少なくとも 1 つの条件が必要です。',
   dlgAdvFilterMaxTwo: 'フィルターの詳細設定で指定できる条件は 2 つまでです。',
   dlgConsTitle: '統合',
@@ -272,16 +287,20 @@ export const ja = {
   dlgConsDelete: '削除',
   dlgConsDeleteRef: '{ref} を削除',
   dlgConsLeftLabels: '統合の基準: 左端列',
-  dlgConsNoteLabels: '各範囲は先頭列のラベルで行を照合します。結果は {target} から出力され、統合元を参照するライブ数式になります。',
-  dlgConsNotePosition: '各範囲は位置ごとに統合します。結果は {target} から出力され、統合元を参照するライブ数式になります。',
+  dlgConsNoteLabels:
+    '各範囲は先頭列のラベルで行を照合します。結果は {target} から出力され、統合元を参照するライブ数式になります。',
+  dlgConsNotePosition:
+    '各範囲は位置ごとに統合します。結果は {target} から出力され、統合元を参照するライブ数式になります。',
   dlgConsBadRef: '無効な参照です: {ref} — A1:C5 または Sheet2!A1:C5 の形式で指定してください。',
   dlgConsNeedOneRef: '統合元範囲を少なくとも 1 つ追加してください。',
   dlgSubtotalTitle: '小計',
-  dlgSubtotalNoFields: '先にソース データ（見出し行と 1 行以上のデータを含む範囲、グループの基準列で並べ替え済み）を選択してから、小計を開いてください。',
+  dlgSubtotalNoFields:
+    '先にソース データ（見出し行と 1 行以上のデータを含む範囲、グループの基準列で並べ替え済み）を選択してから、小計を開いてください。',
   dlgSubtotalGroupBy: 'グループの基準',
   dlgSubtotalFunction: '集計の方法',
   dlgSubtotalAddTo: '集計するフィールド',
-  dlgSubtotalNote: '同じ値が続く区切りごとに SUBTOTAL 行を挿入し（先にグループの基準列で並べ替えてください）、末尾に総計行を追加します。',
+  dlgSubtotalNote:
+    '同じ値が続く区切りごとに SUBTOTAL 行を挿入し（先にグループの基準列で並べ替えてください）、末尾に総計行を追加します。',
   dlgNmTitle: '名前の管理',
   dlgNmName: '名前',
   dlgNmRefersTo: '参照範囲',
@@ -298,6 +317,15 @@ export const ja = {
   dlgFnFormula: '数式',
   dlgFnFormulaPlaceholder: '関数を選択してから引数を入力',
   dlgFnInsert: '挿入',
+  dlgFnParams: '関数の引数',
+  dlgFnPickRange: 'シートから範囲を選択',
+  dlgFnPickCell: 'シートからセルを選択',
+  dlgFnAddParam: '引数を追加',
+  dlgFnRemoveParam: 'この引数を削除',
+  dlgFnResult: '計算結果：',
+  dlgFnNeedRequired: '必須の引数「{name}」が空です。',
+  dlgRangePickTitle: '範囲を選択',
+  dlgRangePickHint: 'シート上でセル・行・列をドラッグして選び、確定してください',
   dlgFnCatAll: 'すべて',
   dlgFnCatMath: '数学',
   dlgFnCatStatistical: '統計',

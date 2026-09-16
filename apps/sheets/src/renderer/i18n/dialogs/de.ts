@@ -2,7 +2,8 @@
 import type { zh } from './zh'
 export const de = {
   dlgAllowEditRangesTitle: 'Bearbeitungsbereiche zulassen',
-  dlgAllowEditRangesHint: 'Diese Bereiche bleiben bei geschütztem Blatt bearbeitbar. Wird beim Speichern geschrieben; Kennwörter werden nicht unterstützt.',
+  dlgAllowEditRangesHint:
+    'Diese Bereiche bleiben bei geschütztem Blatt bearbeitbar. Wird beim Speichern geschrieben; Kennwörter werden nicht unterstützt.',
   dlgRangeName: 'Titel',
   dlgRangeRef: 'Bereich',
   dlgRangeAdd: 'Hinzufügen',
@@ -16,7 +17,8 @@ export const de = {
   dlgGoalSeekSetCell: 'Zielzelle',
   dlgGoalSeekToValue: 'Zielwert',
   dlgGoalSeekByCell: 'Veränderbare Zelle',
-  dlgGoalSeekNote: 'Beim Lösen wird die Zelle mehrfach überschrieben; jeder Schritt ist rückgängig machbar.',
+  dlgGoalSeekNote:
+    'Beim Lösen wird die Zelle mehrfach überschrieben; jeder Schritt ist rückgängig machbar.',
   dlgGoalSeekNeedNumber: 'Der Zielwert muss eine Zahl sein.',
   dlgGoalSeekFound: 'Lösung gefunden: Zelle = {value} (erreicht {reached}).',
   dlgGoalSeekNotFound: 'Keine Lösung; ursprünglicher Wert wiederhergestellt (zuletzt {reached}).',
@@ -25,14 +27,16 @@ export const de = {
   dlgApply: 'Anwenden',
   dlgCreate: 'Erstellen',
   dlgAdvFilterTitle: 'Spezialfilter',
-  dlgAdvFilterNoColumns: 'Im Filterbereich sind keine Spalten verfügbar — markieren Sie die Daten und aktivieren Sie den AutoFilter, bevor Sie den Spezialfilter öffnen.',
+  dlgAdvFilterNoColumns:
+    'Im Filterbereich sind keine Spalten verfügbar — markieren Sie die Daten und aktivieren Sie den AutoFilter, bevor Sie den Spezialfilter öffnen.',
   dlgAdvFilterColumn: 'Spalte',
   dlgAdvFilterCondition1: 'Bedingung 1',
   dlgAdvFilterCondition2: 'Bedingung 2 (optional)',
   dlgAdvFilterValue: 'Wert',
   dlgAdvFilterAnd: 'Und',
   dlgAdvFilterOr: 'Oder',
-  dlgAdvFilterNote: 'Wendet benutzerdefinierte Kriterien auf die ausgewählte Spalte an; nur übereinstimmende Zeilen bleiben sichtbar. Lassen Sie die zweite Bedingung leer, um nur die erste zu verwenden.',
+  dlgAdvFilterNote:
+    'Wendet benutzerdefinierte Kriterien auf die ausgewählte Spalte an; nur übereinstimmende Zeilen bleiben sichtbar. Lassen Sie die zweite Bedingung leer, um nur die erste zu verwenden.',
   dlgAdvFilterNeedValue1: 'Geben Sie einen Wert für Bedingung 1 ein.',
   dlgAdvFilterOpEqual: 'ist gleich',
   dlgAdvFilterOpNotEqual: 'ist nicht gleich',
@@ -44,7 +48,8 @@ export const de = {
   dlgGoToRef: 'Verweis',
   dlgGoToRefPlaceholder: 'z. B. A1, B2:D5 oder ein definierter Name',
   dlgGoToNameHint: 'Doppelklicken, um zu {ref} zu wechseln',
-  dlgGoToNote: 'Geben Sie einen Zellbezug ein oder wählen Sie einen benannten Bereich; „Gehe zu“ springt zum Ziel und markiert es. Klicken Sie auf einen Namen, um ihn einzutragen; Doppelklick springt direkt.',
+  dlgGoToNote:
+    'Geben Sie einen Zellbezug ein oder wählen Sie einen benannten Bereich; „Gehe zu“ springt zum Ziel und markiert es. Klicken Sie auf einen Namen, um ihn einzutragen; Doppelklick springt direkt.',
   dlgGoToGo: 'Gehe zu',
   dlgHfTitle: 'Kopf- und Fußzeile',
   dlgHfHeaderLeft: 'Kopfzeile · Links',
@@ -60,10 +65,12 @@ export const de = {
   dlgHfFileName: 'Dateiname',
   dlgHfSheetName: 'Blattname',
   dlgHfInsertCode: '{code} einfügen',
-  dlgHfNote: 'Wird oben und unten auf jeder gedruckten/PDF-Seite angezeigt. Feldcodes: &P Seitenzahl, &N Seitenanzahl, &D Datum, &T Uhrzeit, &F Dateiname, &A Blattname; geben Sie && für ein &-Zeichen ein. Lassen Sie alle sechs Abschnitte leer, um Kopf- und Fußzeile zu löschen.',
+  dlgHfNote:
+    'Wird oben und unten auf jeder gedruckten/PDF-Seite angezeigt. Feldcodes: &P Seitenzahl, &N Seitenanzahl, &D Datum, &T Uhrzeit, &F Dateiname, &A Blattname; geben Sie && für ein &-Zeichen ein. Lassen Sie alle sechs Abschnitte leer, um Kopf- und Fußzeile zu löschen.',
   dlgPivotCreateTitle: 'PivotTable erstellen',
   dlgPivotEditTitle: 'PivotTable bearbeiten',
-  dlgPivotNoFields: 'Markieren Sie zuerst den Quelldatenbereich (mit Überschriftenzeile, mindestens 2 Zeilen), bevor Sie den PivotTable-Dialog öffnen.',
+  dlgPivotNoFields:
+    'Markieren Sie zuerst den Quelldatenbereich (mit Überschriftenzeile, mindestens 2 Zeilen), bevor Sie den PivotTable-Dialog öffnen.',
   dlgPivotSourceRange: 'Quellbereich',
   dlgPivotRowFields: 'Zeilen (äußerste zuerst, sortierbar)',
   dlgPivotColFields: 'Spalten (optional, äußerste zuerst, sortierbar)',
@@ -100,7 +107,8 @@ export const de = {
   dlgPivotShowAsPctTotal: '% des Gesamtergebnisses',
   dlgPivotShowAsPctRow: '% des Zeilenergebnisses',
   dlgPivotShowAsPctCol: '% des Spaltenergebnisses',
-  dlgPivotValueFilter: 'Wertefilter (filtert die Elemente des Zeilenfelds der Ebene 1 nach diesem Wertefeld)',
+  dlgPivotValueFilter:
+    'Wertefilter (filtert die Elemente des Zeilenfelds der Ebene 1 nach diesem Wertefeld)',
   dlgPivotFilterTopN: 'Top N',
   dlgPivotFilterGreaterThan: 'Größer als',
   dlgPivotFilterBetween: 'Zwischen',
@@ -112,24 +120,32 @@ export const de = {
   dlgPivotAddCalc: '+ Berechnetes Feld hinzufügen',
   dlgPivotTargetCell: 'Zielzelle',
   dlgPivotTargetPlaceholder: 'z. B. F1',
-  dlgPivotTargetLocked: 'Die obere linke Zelle des Ausgabebereichs bleibt beim Bearbeiten unverändert',
-  dlgPivotNote: 'Erstellt eine echte OOXML-PivotTable, die Excel/WPS nach dem Speichern erkennen und aktualisieren kann.',
+  dlgPivotTargetLocked:
+    'Die obere linke Zelle des Ausgabebereichs bleibt beim Bearbeiten unverändert',
+  dlgPivotNote:
+    'Erstellt eine echte OOXML-PivotTable, die Excel/WPS nach dem Speichern erkennen und aktualisieren kann.',
   dlgPivotErrDupRowField: 'Zeilenfelder dürfen dasselbe Feld nicht zweimal enthalten.',
   dlgPivotErrDupColField: 'Spaltenfelder dürfen dasselbe Feld nicht zweimal enthalten.',
   dlgPivotErrRowColOverlap: 'Ein Feld kann nicht gleichzeitig Zeilen- und Spaltenfeld sein.',
-  dlgPivotErrColNeedsSingleValue: 'Bei vorhandenen Spaltenfeldern wird nur ein Wertefeld unterstützt.',
-  dlgPivotErrCalcFieldIncomplete: 'Berechnete Felder benötigen sowohl einen Namen als auch eine Formel.',
+  dlgPivotErrColNeedsSingleValue:
+    'Bei vorhandenen Spaltenfeldern wird nur ein Wertefeld unterstützt.',
+  dlgPivotErrCalcFieldIncomplete:
+    'Berechnete Felder benötigen sowohl einen Namen als auch eine Formel.',
   dlgPivotErrRangeStep: 'Die Schrittweite der Intervallgruppierung muss eine positive Zahl sein.',
   dlgPivotErrLabelFilterText: 'Beschriftungsfilter benötigen einen Filtertext.',
-  dlgPivotErrOneValueFilter: 'Es kann höchstens ein Wertefilter festgelegt werden (gilt für das Zeilenfeld der Ebene 1).',
-  dlgPivotErrFilterConflict: 'Beschriftungs- und Wertefilter können nicht gleichzeitig für das Zeilenfeld der Ebene 1 festgelegt werden.',
+  dlgPivotErrOneValueFilter:
+    'Es kann höchstens ein Wertefilter festgelegt werden (gilt für das Zeilenfeld der Ebene 1).',
+  dlgPivotErrFilterConflict:
+    'Beschriftungs- und Wertefilter können nicht gleichzeitig für das Zeilenfeld der Ebene 1 festgelegt werden.',
   dlgSlicerInsertTitle: 'Datenschnitt einfügen',
-  dlgSlicerPickNote: 'Wählen Sie das Feld für den Datenschnitt; das Klicken auf Elemente im Datenschnitt filtert die PivotTable.',
+  dlgSlicerPickNote:
+    'Wählen Sie das Feld für den Datenschnitt; das Klicken auf Elemente im Datenschnitt filtert die PivotTable.',
   dlgSlicerAria: 'Datenschnitt {name}',
   dlgSlicerClear: 'Filter löschen (alles auswählen)',
   dlgSlicerRemove: 'Datenschnitt entfernen (alle Elemente wiederherstellen)',
   dlgTimelineInsertTitle: 'Zeitachse einfügen',
-  dlgTimelinePickNote: 'Wählen Sie ein Datumsfeld; das Klicken auf Monate (Umschalt+Klick erweitert den Bereich) filtert die PivotTable nach Datumsbereich.',
+  dlgTimelinePickNote:
+    'Wählen Sie ein Datumsfeld; das Klicken auf Monate (Umschalt+Klick erweitert den Bereich) filtert die PivotTable nach Datumsbereich.',
   dlgTimelineAria: 'Zeitachse {name}',
   dlgTimelineClear: 'Filter löschen (alles anzeigen)',
   dlgTimelineRemove: 'Zeitachse entfernen (alle Elemente wiederherstellen)',
@@ -163,7 +179,8 @@ export const de = {
   dlgScreenshotWindows: 'Verfügbare Fenster',
   dlgScreenshotLoading: 'Aufnehmbare Fenster werden ermittelt…',
   dlgScreenshotEmpty: 'Keine aufnehmbaren Fenster vorhanden.',
-  dlgScreenshotDenied: 'Die Berechtigung zur Bildschirmaufnahme ist erforderlich. Erlauben Sie diese App unter Systemeinstellungen → Datenschutz & Sicherheit → Bildschirmaufnahme und klicken Sie dann auf Aktualisieren.',
+  dlgScreenshotDenied:
+    'Die Berechtigung zur Bildschirmaufnahme ist erforderlich. Erlauben Sie diese App unter Systemeinstellungen → Datenschutz & Sicherheit → Bildschirmaufnahme und klicken Sie dann auf Aktualisieren.',
   dlgScreenshotRefresh: 'Aktualisieren',
   dlgScreenshotFailed: 'Aufnahme fehlgeschlagen. Bitte erneut versuchen.',
   dlgSymbolTitle: 'Symbol',
@@ -173,7 +190,8 @@ export const de = {
   dlgSymbolCatGreek: 'Griechisch',
   dlgSymbolCatMisc: 'Formen und Sonstiges',
   dlgSymbolInsertHint: '{symbol} einfügen',
-  dlgSymbolNote: 'Klicken Sie auf ein Symbol, um es an die aktive Zelle anzuhängen — fügen Sie mehrere nacheinander ein und schließen Sie dann.',
+  dlgSymbolNote:
+    'Klicken Sie auf ein Symbol, um es an die aktive Zelle anzuhängen — fügen Sie mehrere nacheinander ein und schließen Sie dann.',
   dlgFcTitle: 'Zellen formatieren',
   dlgFcTabNumber: 'Zahlen',
   dlgFcTabAlignment: 'Ausrichtung',
@@ -261,7 +279,8 @@ export const de = {
   dlgFcNoFill: 'Keine Füllung',
   dlgFcLocked: 'Gesperrt',
   dlgFcHidden: 'Ausgeblendet (Formel)',
-  dlgFcProtectionNote: 'Sperren und Ausblenden wirken nur, wenn das Arbeitsblatt in Excel geschützt ist. Diese Kennzeichnungen werden in der Datei gespeichert; der Editor selbst erzwingt sie nicht.',
+  dlgFcProtectionNote:
+    'Sperren und Ausblenden wirken nur, wenn das Arbeitsblatt in Excel geschützt ist. Diese Kennzeichnungen werden in der Datei gespeichert; der Editor selbst erzwingt sie nicht.',
   dlgAdvFilterNeedCondition: 'Der Spezialfilter benötigt mindestens eine Bedingung.',
   dlgAdvFilterMaxTwo: 'Der Spezialfilter unterstützt höchstens zwei Bedingungen.',
   dlgConsTitle: 'Konsolidieren',
@@ -272,16 +291,20 @@ export const de = {
   dlgConsDelete: 'Löschen',
   dlgConsDeleteRef: '{ref} löschen',
   dlgConsLeftLabels: 'Beschriftung aus: linker Spalte',
-  dlgConsNoteLabels: 'Zeilen werden über die erste Spalte jedes Bereichs zugeordnet; die Ergebnisse beginnen bei {target} als dynamische Formeln über den Quellen.',
-  dlgConsNotePosition: 'Die Bereiche werden Position für Position kombiniert; die Ergebnisse beginnen bei {target} als dynamische Formeln über den Quellen.',
+  dlgConsNoteLabels:
+    'Zeilen werden über die erste Spalte jedes Bereichs zugeordnet; die Ergebnisse beginnen bei {target} als dynamische Formeln über den Quellen.',
+  dlgConsNotePosition:
+    'Die Bereiche werden Position für Position kombiniert; die Ergebnisse beginnen bei {target} als dynamische Formeln über den Quellen.',
   dlgConsBadRef: 'Kein gültiger Verweis: {ref} — verwenden Sie A1:C5 oder Sheet2!A1:C5.',
   dlgConsNeedOneRef: 'Fügen Sie mindestens einen Quellverweis hinzu.',
   dlgSubtotalTitle: 'Teilergebnis',
-  dlgSubtotalNoFields: 'Markieren Sie zuerst die Quelldaten — einen Bereich mit Überschriftenzeile und mindestens einer Datenzeile (nach der Gruppierungsspalte sortiert) — und öffnen Sie dann Teilergebnis erneut.',
+  dlgSubtotalNoFields:
+    'Markieren Sie zuerst die Quelldaten — einen Bereich mit Überschriftenzeile und mindestens einer Datenzeile (nach der Gruppierungsspalte sortiert) — und öffnen Sie dann Teilergebnis erneut.',
   dlgSubtotalGroupBy: 'Gruppieren nach',
   dlgSubtotalFunction: 'Unter Verwendung von',
   dlgSubtotalAddTo: 'Teilergebnis addieren zu',
-  dlgSubtotalNote: 'Fügt nach jeder Folge gleicher Werte eine SUBTOTAL-Zeile ein (sortieren Sie die Daten zuerst nach der Gruppierungsspalte) sowie ein Gesamtergebnis am Ende.',
+  dlgSubtotalNote:
+    'Fügt nach jeder Folge gleicher Werte eine SUBTOTAL-Zeile ein (sortieren Sie die Daten zuerst nach der Gruppierungsspalte) sowie ein Gesamtergebnis am Ende.',
   dlgNmTitle: 'Namens-Manager',
   dlgNmName: 'Name',
   dlgNmRefersTo: 'Bezieht sich auf',
@@ -298,6 +321,15 @@ export const de = {
   dlgFnFormula: 'Formel',
   dlgFnFormulaPlaceholder: 'Wählen Sie eine Funktion und vervollständigen Sie dann die Argumente',
   dlgFnInsert: 'Einfügen',
+  dlgFnParams: 'Funktionsargumente',
+  dlgFnPickRange: 'Bereich aus dem Blatt auswählen',
+  dlgFnPickCell: 'Zelle aus dem Blatt auswählen',
+  dlgFnAddParam: 'Argument hinzufügen',
+  dlgFnRemoveParam: 'Dieses Argument entfernen',
+  dlgFnResult: 'Formelergebnis: ',
+  dlgFnNeedRequired: 'Das erforderliche Argument "{name}" ist leer.',
+  dlgRangePickTitle: 'Bereich auswählen',
+  dlgRangePickHint: 'Ziehen Sie Zellen, Zeilen oder Spalten auf dem Blatt auf und bestätigen Sie',
   dlgFnCatAll: 'Alle',
   dlgFnCatMath: 'Mathematik',
   dlgFnCatStatistical: 'Statistik',
@@ -337,7 +369,8 @@ export const de = {
   dlgFnDescAnd: 'WAHR, wenn alle Argumente WAHR sind.',
   dlgFnDescOr: 'WAHR, wenn ein beliebiges Argument WAHR ist.',
   dlgFnDescNot: 'Kehrt die Logik des Arguments um.',
-  dlgFnDescVlookup: 'Sucht einen Wert in der ersten Spalte und gibt einen Wert aus einer anderen Spalte zurück.',
+  dlgFnDescVlookup:
+    'Sucht einen Wert in der ersten Spalte und gibt einen Wert aus einer anderen Spalte zurück.',
   dlgFnDescHlookup: 'Zeilenweise Variante von VLOOKUP.',
   dlgFnDescIndex: 'Wert an einer angegebenen Position in einem Bereich.',
   dlgFnDescMatch: 'Position eines Wertes in einem Bereich.',
