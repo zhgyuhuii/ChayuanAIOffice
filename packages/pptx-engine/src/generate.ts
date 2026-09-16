@@ -1433,7 +1433,7 @@ export function removeSlideBackgroundXml(bodyPrefix: string): string {
 export function patchSlideShowMasterSpXml(bodyPrefix: string, hidden: boolean): string {
   const open = /<p:sld((?:\s(?:"[^"]*"|'[^']*'|[^"'>])*?)?)>/.exec(bodyPrefix)
   if (!open) return bodyPrefix
-  let attrs = (open[1] ?? '').replace(/\s+showMasterSp="[^"]*"/, '')
+  let attrs = (open[1] ?? '').replace(/\s+showMasterSp=(?:"[^"]*"|'[^']*')/, '')
   if (hidden) attrs += ' showMasterSp="0"'
   return (
     bodyPrefix.slice(0, open.index) +

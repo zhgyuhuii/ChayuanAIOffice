@@ -205,7 +205,9 @@ export function parseSlide(input: SlideParseInput): Slide {
       ? { type: 'solid' as const, color: defaultBg1 }
       : undefined)
   // Only real slides carry showMasterSp (<p:sldLayout> has "sldLayout" so \b won't match)
-  const masterSpHidden = /<p:sld\b[^>]*\bshowMasterSp="(?:0|false)"/.test(slideXml)
+  const masterSpHidden = /<p:sld\b[^>]*\bshowMasterSp=(?:"(?:0|false)"|'(?:0|false)')/.test(
+    slideXml,
+  )
 
   return {
     path,
