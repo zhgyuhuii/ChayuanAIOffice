@@ -6,7 +6,24 @@ export default defineConfig({
   // Bundle everything into the shell main (same policy as apps/docs): the
   // imported docs/sheets main modules are TS source with no build artifacts,
   // so externalizing them would break Node ESM resolution at runtime.
-  main: {},
+  main: {
+    resolve: {
+      alias: {
+        '@modelcontextprotocol/sdk/server/mcp.js': resolve(
+          __dirname,
+          '../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js',
+        ),
+        '@modelcontextprotocol/sdk/server/sse.js': resolve(
+          __dirname,
+          '../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/sse.js',
+        ),
+        '@modelcontextprotocol/sdk/server/streamableHttp.js': resolve(
+          __dirname,
+          '../../node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.js',
+        ),
+      },
+    },
+  },
   preload: {
     build: {
       rollupOptions: {
