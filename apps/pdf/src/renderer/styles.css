@@ -3173,7 +3173,14 @@ button {
 }
 
 @media print {
-  .app {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Hide the full-height editor root so it cannot reserve a blank sheet. */
+  #root {
     display: none !important;
   }
 
@@ -3184,7 +3191,13 @@ button {
   .pdf-print-root img {
     display: block;
     width: 100%;
-    page-break-after: always;
+    /* Print viewport units use the printable area, including chosen margins. */
+    max-height: 100vh;
+    object-fit: contain;
+  }
+
+  .pdf-print-root img + img {
+    break-before: page;
   }
 }
 
