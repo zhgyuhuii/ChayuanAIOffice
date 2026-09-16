@@ -156,35 +156,39 @@ export function WelcomeLanding({
   const cjk = lang === 'zh' || lang === 'zh-TW' || lang === 'ja'
   const greeting = `${t(greetKey)}${accountName ? (cjk ? '，' : ', ') + accountName : ''}${cjk ? '。' : '. '}`
 
-  // combo sub-greeting + first-run-only typewriter. t is a fresh closure per
-  // render, so the memo keys on lang: one pick per landing, re-picked on
-  // language switch (the already-typed line then snaps to the new language)
+  // combo sub-greeting + first-run-only streaming reveal. t is a fresh closure
+  // per render, so the memo keys on lang: one pick per landing, re-picked on
+  // language switch (the already-streamed line then snaps to the new language)
   const prompt = useMemo(
     () => pickWelcomePrompt(t),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [lang],
   )
   const [typed, setTyped] = useState(() => (typedOnce ? prompt : ''))
-  const [typing, setTyping] = useState(() => !typedOnce)
   useEffect(() => {
     if (typedOnce) setTyped(prompt)
   }, [prompt])
   useEffect(() => {
     if (typedOnce || exiting) return
-    typedOnce = true
-    let timer: number | undefined
-    let length = 0
-    const step = () => {
-      length = Math.min(prompt.length, length + 3)
-      setTyped(prompt.slice(0, length))
-      if (length >= prompt.length) {
-        setTyping(false)
+    // AI-reply-style streaming: characters flow out linearly over ~1.6s
+    // (no caret — the motion itself signals the line is live). The once-flag
+    // is set only when the line fully streamed: StrictMode's double mount
+    // cancels (not completes) the first run, so the remount restarts the
+    // stream instead of skipping it and dumping the full text at once.
+    let raf = 0
+    const start = performance.now()
+    const perChar = Math.max(16, Math.round(1600 / Math.max(1, prompt.length)))
+    const step = (now: number) => {
+      const count = Math.min(prompt.length, Math.floor((now - start) / perChar))
+      setTyped(prompt.slice(0, count))
+      if (count < prompt.length) {
+        raf = requestAnimationFrame(step)
         return
       }
-      timer = window.setTimeout(step, 28)
+      typedOnce = true
     }
-    timer = window.setTimeout(step, 140)
-    return () => window.clearTimeout(timer)
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
   }, [prompt, exiting])
 
   // "coming soon" toast for the unbuilt platform card
@@ -212,14 +216,7 @@ export function WelcomeLanding({
     <div className={`chat-landing welcome${exiting ? ' exiting' : ''}`}>
       <h1 className="chat-greet">
         {greeting}
-        <span className="welcome-sub">
-          {typed}
-          {typing && (
-            <span className="welcome-caret" aria-hidden="true">
-              ▊
-            </span>
-          )}
-        </span>
+        <span className="welcome-sub">{typed}</span>
       </h1>
 
       <div className="welcome-cards">

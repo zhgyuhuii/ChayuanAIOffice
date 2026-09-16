@@ -3869,18 +3869,6 @@ body.sidebar-resizing {
   color: var(--text-tertiary);
 }
 
-.welcome-caret {
-  margin-left: 1px;
-  color: var(--accent);
-  animation: welcome-caret-blink 0.9s steps(1) infinite;
-}
-
-@keyframes welcome-caret-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
 .welcome-cards {
   display: flex;
   gap: 12px;
@@ -4304,8 +4292,7 @@ body.sidebar-resizing {
   .chat-landing.welcome.exiting .welcome-plaza,
   .chat-landing-footer.exiting,
   .chat-footer-star.pulse,
-  .chat-footer-star.pulse:hover,
-  .welcome-caret {
+  .chat-footer-star.pulse:hover {
     animation: none;
   }
 }
