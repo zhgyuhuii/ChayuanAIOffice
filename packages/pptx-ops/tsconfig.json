@@ -7,6 +7,11 @@
       "@chatoffice/pptx-engine/table-grid": ["../pptx-engine/src/table-grid.ts"],
       "@chatoffice/pptx-engine/identity": ["../pptx-engine/src/identity.ts"],
       "@chatoffice/pptx-engine/background-promote": ["../pptx-engine/src/background-promote.ts"]
+      "@chatoffice/pptx-engine": ["../pptx-engine/src/index.ts"],
+      "@chatoffice/pptx-engine/table-grid": ["../pptx-engine/src/table-grid.ts"],
+      "@chatoffice/pptx-engine/identity": ["../pptx-engine/src/identity.ts"],
+      "@chatoffice/pptx-engine/background-promote": ["../pptx-engine/src/background-promote.ts"],
+      "@chatoffice/docx-engine/math": ["../docx-engine/src/math.ts"]
     }
   },
   "include": ["src"]

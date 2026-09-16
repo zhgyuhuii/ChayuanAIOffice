@@ -3,9 +3,12 @@
 import type { DesktopApi } from '../shared/ipc'
 import type { ProjectApi } from '@chatoffice/project-store'
 
+import type { FilesPaneApi } from '@genoffice/ui'
+
 declare global {
   interface Window {
     desktop: DesktopApi
+    filesPaneApi: FilesPaneApi
     projectApi: ProjectApi
   }
 }

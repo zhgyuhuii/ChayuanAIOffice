@@ -6,9 +6,12 @@ declare module '*.md?raw' {
 import type { DesktopApi } from '../shared/desktop-api'
 import type { ProjectApi } from '@chatoffice/project-store'
 
+import type { FilesPaneApi } from '@genoffice/ui'
+
 declare global {
   interface Window {
     readonly desktopApi: DesktopApi
+    readonly filesPaneApi: FilesPaneApi
     readonly projectApi: ProjectApi
   }
 }

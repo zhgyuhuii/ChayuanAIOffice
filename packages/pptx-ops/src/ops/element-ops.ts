@@ -41,6 +41,7 @@ import {
   matchesElementRef,
   register,
   requireFinite,
+  requireLinkTarget,
   resolveElement,
   resolveGroup,
   resolveGroupChildId,
@@ -584,6 +585,7 @@ register({
 register({
   name: 'setLink',
   validate(op, ctx) {
+    requireLinkTarget('setLink', op.link)
     resolveElement(ctx, op)
   },
   apply(op, ctx): OpRecord {

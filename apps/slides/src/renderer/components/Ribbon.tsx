@@ -3507,6 +3507,12 @@ export function Ribbon({
                   title={t('ribbonThumbnailPaneTip')}
                   onClick={onToggleThumbs}
                 />
+                <RbCheck
+                  label={filesPaneTitle(lang)}
+                  on={filesOpen}
+                  title={filesPaneTitle(lang)}
+                  onClick={onToggleFiles}
+                />
               </div>
             </Group>
             <div className="ribbon-sep" />

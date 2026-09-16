@@ -4,6 +4,7 @@ import type { Lang } from '@chatoffice/i18n'
 import type { AiStreamChunk } from '@chatoffice/ai-provider'
 import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, HTML_CHANNELS } from '../shared/ipc'
 import type { AutoSaveDefault, ExportFormat, HtmlApi, SaveMode, UiTheme } from '../shared/ipc'
 
@@ -140,3 +141,5 @@ contextBridge.exposeInMainWorld('projectApi', projectApi)
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+// folder tree over the default save folder (Files pane)
+installFilesPaneBridge()

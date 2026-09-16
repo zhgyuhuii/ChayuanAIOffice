@@ -318,6 +318,25 @@ export interface DeckAccess {
   getComments?(slideIndex: number): Promise<SlideComment[]>
   /** Add a comment to a slide; returns the updated comment list or null on failure */
   addComment?(slideIndex: number, text: string): Promise<SlideComment[] | null>
+  /**
+   * Resolve a user image attachment by file name (an `attachment://` reference in
+   * insert_web_image / replace_image) to its raw bytes, so the original file is
+   * embedded as-is — the model must never recreate an attached image (r182 family).
+   */
+  resolveAttachmentImage?(
+    name: string,
+  ): Promise<{ ok: true; base64: string; ext: string } | { ok: false; error: string }>
+}
+
+/** `attachment://<file name>` → decoded file name, or null when not an attachment reference. */
+export function attachmentRefName(url: string): string | null {
+  if (!url.toLowerCase().startsWith('attachment://')) return null
+  const raw = url.slice('attachment://'.length).trim()
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
 }
 
 /** Single survey question structure (with options). */
@@ -579,6 +598,11 @@ const TOOLS: AgentToolDef[] = [
           type: 'string',
           description: 'Aspect ratio: 1:1|4:3|16:9|9:16|3:4|2:3|3:2|auto',
         },
+        transparentBackground: {
+          type: 'boolean',
+          description:
+            'Set true when the result must have a real transparent background (icons, logos, cutouts placed over slide content). The app strips the background automatically after generation; never rely on the prompt for transparency.',
+        },
       },
       required: ['prompt'],
     },
@@ -607,12 +631,17 @@ const TOOLS: AgentToolDef[] = [
   {
     name: 'insert_web_image',
     description:
-      'Download an image URL obtained from image_search or generate_image and insert it into a page (pixel coordinates). w×h is a layout frame, not a stretch target: the image keeps its aspect ratio, fills the frame, and the overflow is center-cropped (object-fit: cover) — pick the frame for the layout freely.',
+      'Download an image URL obtained from image_search or generate_image and insert it into a page (pixel coordinates). w×h is a layout frame, not a stretch target: the image keeps its aspect ratio, fills the frame, and the overflow is center-cropped (object-fit: cover) — pick the frame for the layout freely. ' +
+      'To place an image the USER ATTACHED (logo, photo, screenshot), pass url=attachment://<file name> (the exact name from the attachment list) — the app embeds the original file bytes as-is. Never recreate an attached image with generate_image and never ask for base64.',
     inputSchema: {
       type: 'object',
       properties: {
         slideIndex: { type: 'integer' },
-        url: { type: 'string', description: 'Direct image link (imageUrl from image_search)' },
+        url: {
+          type: 'string',
+          description:
+            'Direct image link (imageUrl from image_search), or attachment://<file name> to embed a user-attached image as-is',
+        },
         x: { type: 'number' },
         y: { type: 'number' },
         w: { type: 'number' },
@@ -2164,6 +2193,7 @@ ${r.text}`,
         model: call.input.model ? String(call.input.model) : undefined,
         referenceImageUrls: refs,
         aspectRatio: call.input.aspectRatio ? String(call.input.aspectRatio) : undefined,
+        transparentBackground: call.input.transparentBackground === true,
       })
       if (!r.url) return fail(t('aiFailGenImage'), r.error ?? 'Generation failed')
       const display: ToolDisplay = {
@@ -2206,11 +2236,22 @@ ${r.text}`,
       if (!slides[idx])
         return fail(t('aiFailInsertImage'), `slideIndex out of range (0-${slides.length - 1})`)
       const url = String(call.input.url ?? '')
-      // file:// = a BYOK-generated image in the local store (the main process only resolves its own files)
-      if (!/^(https?|file):\/\//.test(url)) return fail(t('aiFailInsertImage'), 'Invalid url')
+      const attachmentName = attachmentRefName(url)
+      let payload: { url: string } | { base64: string; ext: string }
+      if (attachmentName != null) {
+        if (!access.resolveAttachmentImage)
+          return fail(t('aiFailInsertImage'), 'Attachment embedding is unavailable here')
+        const resolved = await access.resolveAttachmentImage(attachmentName)
+        if (!resolved.ok) return fail(t('aiFailInsertImage'), resolved.error)
+        payload = { base64: resolved.base64, ext: resolved.ext }
+      } else {
+        // file:// = a BYOK-generated image in the local store (the main process only resolves its own files)
+        if (!/^(https?|file):\/\//.test(url)) return fail(t('aiFailInsertImage'), 'Invalid url')
+        payload = { url }
+      }
       const r = await window.slidesApi.insertImageUrl({
         slideIndex: idx,
-        url,
+        ...payload,
         xPx: Number(call.input.x),
         yPx: Number(call.input.y),
         wPx: Number(call.input.w),
@@ -2248,11 +2289,22 @@ ${r.text}`,
         )
 
       const url = String(call.input.url ?? '')
-      if (!/^(https?|file):\/\//.test(url)) return fail(t(failKey), 'Invalid url')
+      const attachmentName = attachmentRefName(url)
+      let payload: { url: string } | { base64: string; ext: string }
+      if (attachmentName != null) {
+        if (!access.resolveAttachmentImage)
+          return fail(t(failKey), 'Attachment embedding is unavailable here')
+        const resolved = await access.resolveAttachmentImage(attachmentName)
+        if (!resolved.ok) return fail(t(failKey), resolved.error)
+        payload = { base64: resolved.base64, ext: resolved.ext }
+      } else {
+        if (!/^(https?|file):\/\//.test(url)) return fail(t(failKey), 'Invalid url')
+        payload = { url }
+      }
       const updated = await window.slidesApi.replacePictureUrl({
         slideIndex: idx,
         sourceId,
-        url,
+        ...payload,
         ...(call.input.keepCrop ? { keepSrcRect: true } : {}),
       })
       if (!updated)

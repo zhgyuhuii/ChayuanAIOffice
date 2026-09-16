@@ -12,7 +12,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs'
-import { basename, dirname, extname, join } from 'node:path'
+import { basename, dirname, extname, join, resolve } from 'node:path'
 import os from 'node:os'
 import {
   BrowserWindow,
@@ -68,10 +68,13 @@ import {
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
   windowMenuTemplate,
+  aboutMenuItem,
   installRendererProtocol,
 } from '@chatoffice/electron-utils'
 import { readAppSettings, writeAppSetting, writeAppSettings } from './app-settings'
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
+import { startControlServer, type ControlServer } from './control-server'
+import { controlHandler } from './control-handlers'
 import { installCliLinkBestEffort } from './cli-link'
 import { registerIntegrationsIpc } from './integrations-ipc'
 import { createExternalMcpManager } from './mcp/external-client'
@@ -155,6 +158,7 @@ import {
   openRemoteDocument,
   deleteRemoteDocument,
   renameRemoteDocument,
+  authorizeMcpDocWrite,
 } from '../../../docs/src/main/docs-main'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
 import {
@@ -211,6 +215,7 @@ import {
   finalizePdfUntitled,
   flushPdfSave,
   markPdfUntitledPath,
+  pdfFileRenamed,
   pdfIsDirty,
   pdfUntitledDialogDefault,
   requestPdfClose,
@@ -254,6 +259,11 @@ import {
 import type {
   AccountLoginEvent,
   AutoSaveDefault,
+  FolderListing,
+  FolderRoot,
+  MoveConflictPolicy,
+  MoveResult,
+  NewFileOpts,
   RecentEntry,
   RecentPage,
   RenameResult,
@@ -278,6 +288,19 @@ import {
   statPathEntries,
 } from './recent-files'
 import { isSameFile, isValidRawRenameName } from './rename-validation'
+import {
+  FolderWatcher,
+  collectTreeFiles,
+  createFolder,
+  describeRoot,
+  isInsideRoot,
+  listFolder,
+  movePathsInto,
+  rebasePath,
+  renameFolder,
+  uniqueNameIn,
+  type FolderErrors,
+} from './folder-tree'
 import { runHeadlessExport, type HeadlessExporters } from './headless-export'
 import { TabManager } from './tab-manager'
 import { applyUpdateChannel, initAutoUpdater } from './updater'
@@ -2732,16 +2755,55 @@ let shellWindow: BrowserWindow | null = null
 let tabManager: TabManager | null = null
 
 /**
- * When the user creates a file from a specific project view, remember which
- * project the next save should belong to. key: 'doc' | 'sheet' | 'slide', value: projectId.
- * Consumed by each app's saveHook once the file first hits disk (P1 item 3).
+ * New file from a folder view: the click remembers the folder per kind, the
+ * new-tab code consumes it right away. Sheets / PDF write their blank file
+ * straight into that folder; the editors that save untitled files themselves
+ * (docs, slides, markdown, html) get the folder bound to the tab that was just
+ * created, and the tab's first save moves the fresh file there.
+ * key: 'doc' | 'sheet' | 'slide' | 'markdown' | 'html' | 'pdf'
  */
-const pendingNewFileProject = new Map<string, string>()
+const pendingNewFileDir = new Map<string, { dir: string; setAt: number }>()
+/** folder bound to a freshly created editor tab, keyed by its webContents id; consumed by the first save */
+const pendingDirByWc = new Map<number, { dir: string; setAt: number }>()
+/** a pending folder only applies to a file created within this window after the click */
+const PENDING_DIR_TTL_MS = 30 * 60 * 1000
+
+function rememberPendingDir(kind: string, opts?: NewFileOpts): void {
+  const dir = opts?.dir
+  const root = defaultSaveDir()
+  if (!dir || resolve(dir) === resolve(root) || !isInsideRoot(root, dir)) {
+    pendingNewFileDir.delete(kind)
+    return
+  }
+  pendingNewFileDir.set(kind, { dir, setAt: Date.now() })
+}
+
+/** the folder remembered for this kind, consumed; null when none, expired or gone */
+function takePendingDir(kind: string): { dir: string; setAt: number } | null {
+  const pending = pendingNewFileDir.get(kind)
+  pendingNewFileDir.delete(kind)
+  if (!pending) return null
+  if (Date.now() - pending.setAt > PENDING_DIR_TTL_MS) return null
+  return existsSync(pending.dir) ? pending : null
+}
+
+/** where a shell-created blank file (sheet, pdf) lands: the remembered folder, else the root */
+function newFileDir(kind: string): string {
+  return takePendingDir(kind)?.dir ?? defaultSaveDir()
+}
+
+/** hand the remembered folder to the tab that was just opened for it */
+function bindPendingDir(kind: string, tabId: string | undefined): void {
+  const pending = takePendingDir(kind)
+  const wc = tabId ? tabManager?.webContentsForTab(tabId) : undefined
+  if (pending && wc) pendingDirByWc.set(wc.id, pending)
+}
 
 /**
- * P1: after a file first hits disk, if a pending project was set earlier via
- * "create from project view", move the new file into that project automatically.
- * Called from createShellWindow's opened/saved hooks.
+ * A tab's file first hit disk (silent first save, Save As, or an open): if a
+ * folder is bound to that tab and the file is a fresh one in the root, move
+ * it there. A pre-existing file opened in the tab never qualifies: its birth
+ * time (or, where the filesystem reports none, its mtime) predates the click.
  */
 /** 会话停靠文档的所属项目(按 webContents 记):文件首存时经
  *  applyPendingProject 落进项目 files[]——非文件夹项目(惰性建出的会话
@@ -2774,6 +2836,77 @@ function applyPendingProject(filePath: string, wcId?: number): void {
   } catch (err) {
     console.warn('[shell] applyPendingProject failed:', err)
   }
+}
+
+function applyPendingDir(wcId: number, filePath: string): string {
+  const pending = pendingDirByWc.get(wcId)
+  if (!pending) return filePath
+  if (Date.now() - pending.setAt > PENDING_DIR_TTL_MS) {
+    pendingDirByWc.delete(wcId)
+    return filePath
+  }
+  if (resolve(dirname(filePath)) !== resolve(defaultSaveDir())) return filePath
+  try {
+    const stat = statSync(filePath)
+    const born = stat.birthtimeMs || stat.mtimeMs
+    if (born < pending.setAt - 2000) return filePath
+  } catch {
+    return filePath
+  }
+  pendingDirByWc.delete(wcId)
+  if (!existsSync(pending.dir)) return filePath
+  // a clash with an existing name takes the "(2)" suffix rather than staying in the root
+  const target = join(pending.dir, uniqueNameIn(pending.dir, basename(filePath)))
+  try {
+    renameSync(filePath, target)
+  } catch (err) {
+    console.warn('[shell] move new file into folder failed:', err)
+    return filePath
+  }
+  afterFileMoved(filePath, target)
+  return target
+}
+
+/**
+ * Everything that keys on a file path follows a rename/move: recents, stars,
+ * the AI chat history (project-store), the slides start-screen list and any
+ * open tab (which re-grants the new path and refreshes its title).
+ */
+function afterFileMoved(oldPath: string, newPath: string): void {
+  replaceRecentFile(oldPath, newPath)
+  projectFileRenamed(oldPath, newPath)
+  if (/\.pptx$/i.test(newPath)) void replaceSlidesRecentFile(oldPath, newPath)
+  const affected = tabManager?.renameTabFile(oldPath, newPath) ?? []
+  for (const t of affected) {
+    if (t.kind === 'slides') slidesFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'docs') docsFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'sheets') sheetsFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'markdown') markdownFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'html') htmlFileRenamed(t.webContents, oldPath, newPath)
+    else if (t.kind === 'pdf') pdfFileRenamed(t.webContents, oldPath, newPath)
+  }
+}
+
+/** a folder moved/renamed: re-key every file that lived under it */
+function afterFolderMoved(oldDir: string, newDir: string, filesBefore: readonly string[]): void {
+  for (const file of filesBefore) afterFileMoved(file, rebasePath(file, oldDir, newDir))
+}
+
+let folderWatcher: FolderWatcher | null = null
+let folderWatcherRoot = ''
+
+/** (re)start the root watcher; the tree root follows the default save folder setting */
+function ensureFolderWatcher(): void {
+  const root = defaultSaveDir()
+  if (folderWatcher?.active && folderWatcherRoot === root) return
+  folderWatcher?.close()
+  folderWatcherRoot = root
+  // the home screen and every editor's Files pane listen
+  folderWatcher = new FolderWatcher(root, (dirs) => {
+    for (const wc of webContents.getAllWebContents()) {
+      if (!wc.isDestroyed()) wc.send(HOME_CHANNELS.folderChanged, dirs)
+    }
+  })
 }
 
 /**
@@ -3007,7 +3140,6 @@ function createShellWindow(): void {
     if (fromBlankDraft) removePendingUntitled(fromBlankDraft)
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
-    applyPendingProject(path)
   })
   // Hidden temp-backed blank workbook materialized: track it so a crash before
   // the first save can offer the content back on the next launch.
@@ -3017,13 +3149,15 @@ function createShellWindow(): void {
   setSlidesOpenedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
-    applyPendingProject(path)
+    applyPendingDir(wc.id, path)
   })
   // docs' save-as / silent first save lands on a new path → sync the tab title too
   setDocsFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
+    applyPendingDir(wc.id, path)
+
   })
   // ⌘O / open-path inside a docs tab: sync the tab title immediately, same
   // contract as the sheets/slides opened hooks (a plain save to the original
@@ -3031,18 +3165,22 @@ function createShellWindow(): void {
   setDocsFileOpenedHook((wcId, path) => {
     manager.setTabFileFor(wcId, path)
     recordRecentFile(path)
-    applyPendingProject(path)
+    applyPendingDir(wcId, path)
   })
   // markdown untitled first save / Save As lands on a new path
   setMarkdownFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
+    applyPendingDir(wc.id, path)
+
   })
   setHtmlFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
+    applyPendingDir(wc.id, path)
+
   })
   setHtmlProvisionalTitleHook((wc, title) => manager.setTabTitleFor(wc.id, title))
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
@@ -3457,7 +3595,7 @@ function surfaceNewTabError(err: unknown): void {
 
 function newDocTab(): void {
   try {
-    tabManager?.openDocsTab(undefined, { newBlank: true })
+    bindPendingDir('doc', tabManager?.openDocsTab(undefined, { newBlank: true }))
     // creating a document is as much a value moment as opening one
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'docx' })
@@ -3490,7 +3628,7 @@ function openBlankSlidesTabForMcp(): number {
 
 function newSlideTab(): void {
   try {
-    tabManager?.openSlidesTab()
+    bindPendingDir('slide', tabManager?.openSlidesTab())
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'pptx' })
   } catch (err) {
@@ -3500,7 +3638,7 @@ function newSlideTab(): void {
 
 function newMarkdownTab(): void {
   try {
-    tabManager?.openMarkdownTab()
+    bindPendingDir('markdown', tabManager?.openMarkdownTab())
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'md' })
   } catch (err) {
@@ -3510,7 +3648,7 @@ function newMarkdownTab(): void {
 
 function newHtmlTab(): void {
   try {
-    tabManager?.openHtmlTab()
+    bindPendingDir('html', tabManager?.openHtmlTab())
     recordStarPromptDocOpen()
     analytics.track('file_new', { kind: 'html' })
   } catch (err) {
@@ -3712,17 +3850,13 @@ function registerHomeIpc(): void {
     if (!result.canceled) for (const path of result.filePaths) routeDocumentPath(path)
   })
 
-  ipcMain.handle(HOME_CHANNELS.newDoc, (_event, opts?: { projectId?: string }) => {
-    if (opts?.projectId && opts.projectId !== 'default') {
-      pendingNewFileProject.set('doc', opts.projectId)
-    }
+  ipcMain.handle(HOME_CHANNELS.newDoc, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('doc', opts)
     newDocTab()
   })
 
-  ipcMain.handle(HOME_CHANNELS.newSheet, (_event, opts?: { projectId?: string }) => {
-    if (opts?.projectId && opts.projectId !== 'default') {
-      pendingNewFileProject.set('sheet', opts.projectId)
-    }
+  ipcMain.handle(HOME_CHANNELS.newSheet, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('sheet', opts)
     void newSheetTab()
   })
 
@@ -3802,31 +3936,26 @@ function registerHomeIpc(): void {
     return true
   })
 
-  ipcMain.handle(HOME_CHANNELS.newSlide, (_event, opts?: { projectId?: string }) => {
+  ipcMain.handle(HOME_CHANNELS.newSlide, (_event, opts?: { projectId?: string } & NewFileOpts) => {
     if (opts?.projectId && opts.projectId !== 'default') {
       pendingNewFileProject.set('slide', opts.projectId)
     }
+    rememberPendingDir('slide', opts)
     newSlideTab()
   })
 
-  ipcMain.handle(HOME_CHANNELS.newMarkdown, (_event, opts?: { projectId?: string }) => {
-    if (opts?.projectId && opts.projectId !== 'default') {
-      pendingNewFileProject.set('markdown', opts.projectId)
-    }
+  ipcMain.handle(HOME_CHANNELS.newMarkdown, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('markdown', opts)
     newMarkdownTab()
   })
 
-  ipcMain.handle(HOME_CHANNELS.newHtml, (_event, opts?: { projectId?: string }) => {
-    if (opts?.projectId && opts.projectId !== 'default') {
-      pendingNewFileProject.set('html', opts.projectId)
-    }
+  ipcMain.handle(HOME_CHANNELS.newHtml, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('html', opts)
     newHtmlTab()
   })
 
-  ipcMain.handle(HOME_CHANNELS.newPdf, (_event, opts?: { projectId?: string }) => {
-    if (opts?.projectId && opts.projectId !== 'default') {
-      pendingNewFileProject.set('pdf', opts.projectId)
-    }
+  ipcMain.handle(HOME_CHANNELS.newPdf, (_event, opts?: NewFileOpts) => {
+    rememberPendingDir('pdf', opts)
     void newPdfTab()
   })
 
@@ -3881,20 +4010,7 @@ function registerHomeIpc(): void {
       } catch (err) {
         return { ok: false, error: err instanceof Error ? err.message : tm('errRenameFailed') }
       }
-      replaceRecentFile(path, target)
-      // project-store's fileMap/chatIdByPath re-key too, so AI chat history follows the file
-      projectFileRenamed(path, target)
-      // the slides module's own recent list switches to the new path as well (used by the start screen)
-      if (/\.pptx$/i.test(target)) void replaceSlidesRecentFile(path, target)
-      // open tabs sync their title/path; each editor then syncs its internal save path and title bar
-      const affected = tabManager?.renameTabFile(path, target) ?? []
-      for (const t of affected) {
-        if (t.kind === 'slides') slidesFileRenamed(t.webContents, path, target)
-        else if (t.kind === 'docs') docsFileRenamed(t.webContents, path, target)
-        else if (t.kind === 'sheets') sheetsFileRenamed(t.webContents, path, target)
-        else if (t.kind === 'markdown') markdownFileRenamed(t.webContents, path, target)
-        else if (t.kind === 'html') htmlFileRenamed(t.webContents, path, target)
-      }
+      afterFileMoved(path, target)
       return { ok: true, path: target }
     },
   )
@@ -4095,6 +4211,121 @@ function registerHomeIpc(): void {
 
   // effective folder where new/untitled files land; the editor mains resolve
   // the same setting themselves (configuredDefaultSaveDir via docs' defaultSaveDir)
+  // ── folder tree over the default save folder ──
+  const folderErrors = (): FolderErrors => ({
+    badArgs: tm('errBadArgs'),
+    badName: tm('errBadName'),
+    missing: tm('errMissing'),
+    exists: tm('errExists'),
+    failed: tm('errRenameFailed'),
+  })
+  const insideRoot = (path: unknown): path is string =>
+    typeof path === 'string' && isInsideRoot(defaultSaveDir(), path)
+  const isRoot = (path: string) => resolve(path) === resolve(defaultSaveDir())
+
+  ipcMain.handle(HOME_CHANNELS.folderRoot, (): FolderRoot => {
+    // describeRoot creates a missing root, so the watcher has something to attach to
+    const root = describeRoot(defaultSaveDir())
+    if (root.usable) ensureFolderWatcher()
+    return root
+  })
+
+  ipcMain.handle(HOME_CHANNELS.listFolder, (_event, dir: unknown): FolderListing => {
+    if (!insideRoot(dir)) return { dir: String(dir), folders: [], files: [] }
+    return listFolder(dir, new Set(readStarredFiles()))
+  })
+
+  ipcMain.handle(
+    HOME_CHANNELS.createFolder,
+    (_event, parent: unknown, name: unknown): RenameResult => {
+      if (!insideRoot(parent) || typeof name !== 'string')
+        return { ok: false, error: tm('errBadArgs') }
+      return createFolder(parent, name, folderErrors())
+    },
+  )
+
+  ipcMain.handle(
+    HOME_CHANNELS.renameFolder,
+    (_event, dir: unknown, newName: unknown): RenameResult => {
+      if (!insideRoot(dir) || isRoot(dir) || typeof newName !== 'string')
+        return { ok: false, error: tm('errBadArgs') }
+      const filesBefore = collectTreeFiles(dir)
+      const result = renameFolder(dir, newName, folderErrors())
+      if (result.ok && result.path && result.path !== dir) {
+        afterFolderMoved(dir, result.path, filesBefore)
+      }
+      return result
+    },
+  )
+
+  ipcMain.handle(
+    HOME_CHANNELS.movePaths,
+    async (_event, paths: unknown, targetDir: unknown, policy: unknown): Promise<MoveResult> => {
+      const list = stringPaths(paths)
+      if (!insideRoot(targetDir)) {
+        const error = tm('errBadArgs')
+        return { moved: [], conflicts: [], failed: list.map((path) => ({ path, error })) }
+      }
+      const conflictPolicy: MoveConflictPolicy =
+        policy === 'replace' || policy === 'keepBoth' || policy === 'skip' ? policy : 'ask'
+      const isDir = (p: string) => {
+        try {
+          return statSync(p).isDirectory()
+        } catch {
+          return false
+        }
+      }
+      // files may come from anywhere (the Recent list); folders only from inside the tree
+      const sources = list.filter((p) => !isDir(p) || isInsideRoot(defaultSaveDir(), p))
+      const dirFiles = new Map(sources.filter(isDir).map((p) => [p, collectTreeFiles(p)]))
+      // 'replace' must not destroy data: the displaced target goes to the trash,
+      // and everything keyed on its path (recents, stars, chat history) leaves
+      // with it so the incoming file does not inherit another document's record
+      const displaced: string[] = []
+      const result = movePathsInto(sources, targetDir, conflictPolicy, folderErrors(), {
+        replaceExisting: (path) => {
+          const parked = join(dirname(path), `.genoffice-replaced-${Date.now()}-${basename(path)}`)
+          const files = isDir(path) ? collectTreeFiles(path) : [path]
+          renameSync(path, parked)
+          return {
+            commit: () => {
+              displaced.push(parked)
+              removeRecentFiles(files)
+              removeStarredFiles(files)
+              for (const file of files) projectFileRenamed(file, rebasePath(file, path, parked))
+            },
+            rollback: () => renameSync(parked, path),
+          }
+        },
+      })
+      for (const parked of displaced) {
+        try {
+          await shell.trashItem(parked)
+        } catch {
+          rmSync(parked, { recursive: true, force: true })
+        }
+      }
+      for (const { from, to } of result.moved) {
+        const files = dirFiles.get(from)
+        if (files) afterFolderMoved(from, to, files)
+        else afterFileMoved(from, to)
+      }
+      return result
+    },
+  )
+
+  ipcMain.handle(HOME_CHANNELS.deleteFolder, async (_event, dir: unknown) => {
+    if (!insideRoot(dir) || isRoot(dir)) return
+    const files = collectTreeFiles(dir)
+    try {
+      await shell.trashItem(dir)
+    } catch {
+      return
+    }
+    removeRecentFiles(files)
+    removeStarredFiles(files)
+  })
+
   ipcMain.handle(HOME_CHANNELS.getDefaultSaveDir, (): string => defaultSaveDir())
 
   ipcMain.handle(HOME_CHANNELS.pickDefaultSaveDir, async (): Promise<string | null> => {
@@ -4110,6 +4341,7 @@ function registerHomeIpc(): void {
       return null
     }
     writeAppSetting(APP_SETTINGS_PATH(), DEFAULT_SAVE_DIR_KEY, picked)
+    ensureFolderWatcher()
     return picked
   })
 
@@ -4813,7 +5045,11 @@ function buildHomeMenu(): void {
     {
       role: 'help',
       label: tm('menuHelp'),
-      submenu: [{ label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() }],
+      submenu: [
+        { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
+        { type: 'separator' },
+        aboutMenuItem(appMenuLabels(currentLang())),
+      ],
     },
   ]
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
@@ -4895,7 +5131,11 @@ function buildPdfMenu(): void {
     {
       role: 'help',
       label: tm('menuHelp'),
-      submenu: [{ label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() }],
+      submenu: [
+        { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
+        { type: 'separator' },
+        aboutMenuItem(appMenuLabels(currentLang())),
+      ],
     },
   ]
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
@@ -4982,7 +5222,11 @@ function buildMarkdownMenu(): void {
     {
       role: 'help',
       label: tm('menuHelp'),
-      submenu: [{ label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() }],
+      submenu: [
+        { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
+        { type: 'separator' },
+        aboutMenuItem(appMenuLabels(currentLang())),
+      ],
     },
   ]
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
@@ -5069,7 +5313,11 @@ function buildHtmlMenu(): void {
     {
       role: 'help',
       label: tm('menuHelp'),
-      submenu: [{ label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() }],
+      submenu: [
+        { label: tm('thirdPartyNotices'), click: () => void openThirdPartyNotices() },
+        { type: 'separator' },
+        aboutMenuItem(appMenuLabels(currentLang())),
+      ],
     },
   ]
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
@@ -5676,6 +5924,7 @@ async function installMainProcessProxy(): Promise<void> {
 // ---- lifecycle (the shell is the only owner) ----
 
 let pendingLaunchPath = supportedFileIn(process.argv) ?? unsupportedFileIn(process.argv)
+let controlServer: ControlServer | null = null
 
 // show() does not un-minimize, and on macOS ⌘W destroys the shell window while the
 // app keeps running — either way a file opened from Finder would land out of sight.
@@ -5891,7 +6140,10 @@ app.whenReady().then(async () => {
     version: app.getVersion(),
     defaultSaveDir: () => defaultSaveDir(),
     openPath: (filePath) => routeDocumentPath(filePath),
-    docsControl: createDocsControl({ openBlankTab: () => openBlankDocsTabForMcp() }),
+    docsControl: createDocsControl({
+      openBlankTab: () => openBlankDocsTabForMcp(),
+      authorizeSave: authorizeMcpDocWrite,
+    }),
     slidesControl: createSlidesControl({ openBlankTab: () => openBlankSlidesTabForMcp() }),
     // the headless create_*/read_* tools delegate to the bundled chatoffice CLI
     // (the same engines, no second implementation); it runs on the app's own
@@ -5915,6 +6167,21 @@ app.whenReady().then(async () => {
 
   if (!pendingLaunchPath || !openDocumentPath(pendingLaunchPath)) tabManager?.openHomeTab()
   pendingLaunchPath = null
+
+  startControlServer(
+    app.getPath('userData'),
+    controlHandler({
+      reveal: revealShellWindow,
+      openDocument: openDocumentPath,
+      activateTab: (id) => tabManager?.activateTab(id),
+      findTab: (path) => tabManager?.findTabByPath(path),
+    }),
+  ).then(
+    (server) => {
+      controlServer = server
+    },
+    (err: unknown) => console.warn('[control] not listening:', err),
+  )
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createShellWindow()
@@ -5942,6 +6209,8 @@ app.on('before-quit', () => {
 
 // after every window has closed, so the shell window's own 'closed' republish cannot revive the file
 app.on('will-quit', () => {
+  folderWatcher?.close()
+  controlServer?.close()
   // a second instance that lost the lock quits too; it must not delete the running editor's list
   if (ownsOpenDocumentsRegistry) clearOpenDocuments(OPEN_DOCUMENTS_PATH())
 })

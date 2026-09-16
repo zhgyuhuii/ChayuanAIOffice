@@ -17,6 +17,10 @@ export default defineConfig({
         here,
         '../../packages/pptx-engine/src/identity.ts',
       ),
+'@chatoffice/pptx-engine/named-action': resolve(
+        here,
+        '../../packages/pptx-engine/src/named-action.ts',
+      ),
       '@chatoffice/pptx-engine/background-promote': resolve(
         here,
         '../../packages/pptx-engine/src/background-promote.ts',

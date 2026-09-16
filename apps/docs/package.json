@@ -103,6 +103,8 @@
     "jszip": "^3.10.1",
     "opencc-js": "^1.4.2",
     "pdf-lib": "^1.17.1",
-    "pinyin-pro": "^3.29.3"
+    "pdfjs-dist": "^6.2.108",
+    "pinyin-pro": "^3.29.3",
+    "@chatoffice/pptx-render": "*"
   }
 }

@@ -19,6 +19,8 @@
       "@chatoffice/ui": ["../../packages/ui/src/index.ts"],
       "@chatoffice/pptx-engine": ["../../packages/pptx-engine/src/index.ts"],
       "@chatoffice/cli/install": ["../../packages/cli/src/install.ts"]
+      "@chatoffice/cli/agent-skills": ["../../packages/cli/src/agent-skills.ts"],
+      "@chatoffice/cli/control-protocol": ["../../packages/cli/src/control-protocol.ts"]
     }
   },
   "include": [

@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@chatoffice/docx-engine": "*",
     "@chatoffice/pptx-engine": "*"
   },
   "devDependencies": {

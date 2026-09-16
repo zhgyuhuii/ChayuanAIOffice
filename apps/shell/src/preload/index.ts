@@ -8,17 +8,17 @@ import type {
   AccountLoginEvent,
   AccountStatus,
   CloudProjectsSnapshot,
+  FolderListing,
+  FolderRoot,
+  MoveResult,
   HomeApi,
   HomeChatSession,
   RecentEntry,
   RecentPage,
   RenameResult,
-  ProjectHomeApi,
-  ProjectSummaryEntry,
-  TimelineEntryItem,
   UiLanguage,
 } from '../shared/home-api'
-import { HOME_CHANNELS, PROJECT_CHANNELS } from '../shared/home-api'
+import { HOME_CHANNELS } from '../shared/home-api'
 import { INTEGRATIONS_CHANNELS } from '../shared/integrations-api'
 import type {
   IntegrationsApi,
@@ -143,6 +143,36 @@ const homeApi: HomeApi = {
   },
   async deleteFiles(paths) {
     await ipcRenderer.invoke(HOME_CHANNELS.deleteFiles, paths)
+  },
+  async folderRoot() {
+    return (await ipcRenderer.invoke(HOME_CHANNELS.folderRoot)) as FolderRoot
+  },
+  async listFolder(dir) {
+    return (await ipcRenderer.invoke(HOME_CHANNELS.listFolder, dir)) as FolderListing
+  },
+  async createFolder(parent, name) {
+    return (await ipcRenderer.invoke(HOME_CHANNELS.createFolder, parent, name)) as RenameResult
+  },
+  async renameFolder(dir, newName) {
+    return (await ipcRenderer.invoke(HOME_CHANNELS.renameFolder, dir, newName)) as RenameResult
+  },
+  async movePaths(paths, targetDir, onConflict) {
+    return (await ipcRenderer.invoke(
+      HOME_CHANNELS.movePaths,
+      paths,
+      targetDir,
+      onConflict,
+    )) as MoveResult
+  },
+  async deleteFolder(dir) {
+    await ipcRenderer.invoke(HOME_CHANNELS.deleteFolder, dir)
+  },
+  onFolderChanged(handler) {
+    const listener = (_event: IpcRendererEvent, dirs: unknown) => {
+      if (Array.isArray(dirs)) handler(dirs.filter((d): d is string => typeof d === 'string'))
+    }
+    ipcRenderer.on(HOME_CHANNELS.folderChanged, listener)
+    return () => ipcRenderer.removeListener(HOME_CHANNELS.folderChanged, listener)
   },
   async openTrash() {
     await ipcRenderer.invoke(HOME_CHANNELS.openTrash)

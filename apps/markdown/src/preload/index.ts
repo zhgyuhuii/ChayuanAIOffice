@@ -4,6 +4,7 @@ import type { Lang } from '@chatoffice/i18n'
 import type { AiStreamChunk } from '@chatoffice/ai-provider'
 import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, MARKDOWN_CHANNELS } from '../shared/ipc'
 import type { AutoSaveDefault, ExportFormat, MarkdownApi, SaveMode, UiTheme } from '../shared/ipc'
 
@@ -36,6 +37,12 @@ const api: MarkdownApi = {
   pickImage: () => ipcRenderer.invoke(MARKDOWN_CHANNELS.pickImage),
   saveImage: (data) => ipcRenderer.invoke(MARKDOWN_CHANNELS.saveImage, data),
   readImage: (src) => ipcRenderer.invoke(MARKDOWN_CHANNELS.readImage, src),
+  saveImageAs: (src) => ipcRenderer.invoke(MARKDOWN_CHANNELS.saveImageAs, src),
+  onViewImage: (handler) => {
+    const listener = (_e: Electron.IpcRendererEvent, src: string) => handler(src)
+    ipcRenderer.on(MARKDOWN_CHANNELS.viewImage, listener)
+    return () => ipcRenderer.removeListener(MARKDOWN_CHANNELS.viewImage, listener)
+  },
   onExportRequest: (handler) => {
     const listener = (_e: Electron.IpcRendererEvent, format: ExportFormat) => handler(format)
     ipcRenderer.on(MARKDOWN_CHANNELS.exportRequest, listener)
@@ -129,3 +136,5 @@ contextBridge.exposeInMainWorld('projectApi', projectApi)
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+// folder tree over the default save folder (Files pane)
+installFilesPaneBridge()
