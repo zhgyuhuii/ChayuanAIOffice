@@ -6696,12 +6696,16 @@ textarea:focus {
   cursor: pointer;
 }
 
-/* 名钮平铺态占满整条带：均布展开而不是挤在左侧留大片空白 */
+/* 名钮平铺态占满整条带：均布展开而不是挤在左侧留大片空白。
+   min-width 用 max-content 而非 0：混合档位下（前方固定组吃完宽度后）
+   均分剩余会把名钮压到 34px，比 nowrap 文字还窄——文字被按钮框盖住
+   （「行和列」三字放不下）。以内容为下限后，真放不下走横向滚动/
+   继续降级到单分组钮，而不是互相遮挡 */
 .ribbon-group-named {
   flex: 1 1 0;
   display: flex;
   justify-content: center;
-  min-width: 0;
+  min-width: max-content;
 }
 
 .ribbon-group-named .menu-btn-name {
