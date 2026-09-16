@@ -655,6 +655,21 @@ export function finalizePdfUntitled(wc: WebContents, oldPath: string, newPath: s
   }
 }
 
+/**
+ * The shell renamed or moved the file this view shows (home Folders / Files
+ * pane): re-key every per-view record and tell the renderer, so the next save
+ * writes to the new location instead of recreating the old one.
+ */
+export function pdfFileRenamed(contents: WebContents, oldPath: string, newPath: string): void {
+  const wcId = contents.id
+  if (openPathByWc.get(wcId) === oldPath) openPathByWc.set(wcId, newPath)
+  const allowed = allowedByWc.get(wcId)
+  if (allowed?.has(oldPath)) allowed.add(newPath)
+  if (saveAsTargetByWc.get(wcId) === oldPath) saveAsTargetByWc.set(wcId, newPath)
+  if (untitledPdfPaths.delete(oldPath)) untitledPdfPaths.add(newPath)
+  if (!contents.isDestroyed()) contents.send(PDF_CHANNELS.fileRenamed, newPath)
+}
+
 export function setPdfRenamedHook(
   hook: (wc: WebContents, oldPath: string, newPath: string) => void,
 ): void {

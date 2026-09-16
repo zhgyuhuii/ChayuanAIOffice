@@ -22,6 +22,7 @@ import {
   duplicateSlide,
   insertBlankSlide,
   insertSlideWithLayout,
+  listSlideLayouts,
   mergeSlideFromSource,
   moveSection,
   moveSlide,
@@ -43,21 +44,15 @@ import {
   setSlideNotes,
   setSlideSize,
   setSlideTransition,
-  setSlideTransitionSound,
-  setSlideTransitionCustomSound,
-  getSlideTransitionSound,
   elementSpid,
   matchesElementRef,
   ANIM_EFFECTS,
   ANIM_TRIGGERS,
   TRANSITION_KINDS,
-  TRANSITION_SOUND_KEYS,
   type SectionInfo,
   type ThemeSpec,
   type SlideAnimation,
-  type SlideTransitionDir,
   type SlideTransitionKind,
-  type SlideTransitionOpts,
   type TextElement,
 } from '@chatoffice/pptx-engine'
 import {
@@ -70,11 +65,9 @@ import {
   resolveSlide,
   slideDurableId,
   type Op,
+  type OpContext,
   type OpRecord,
 } from './registry'
-
-/** Q5 guard (roadmap v3 §8): ceiling for AI-driven animation items on one slide */
-const ANIMATION_PAGE_GUARD = 24
 
 // ── slide lifecycle ─────────────────────────────────────────────────────
 
@@ -122,22 +115,60 @@ register({
   },
 })
 
+/** `layout` (gallery name, 0-based index or part path) or the legacy `layoutPath` → layout part path. */
+function resolveLayoutPath(op: Op, ctx: OpContext): string {
+  const layouts = listSlideLayouts(ctx.opened.archive)
+  const ref = op.layout ?? op.layoutPath
+  const available = () => layouts.map((l, i) => `${i}: "${l.name}"`).join(', ')
+  if (typeof ref === 'number') {
+    const hit = layouts[ref]
+    if (!hit) {
+      throw new GuidedError(
+        `op "${op.op}": layout index ${ref} is out of range (0-${layouts.length - 1}). Layouts: [${available()}].`,
+      )
+    }
+    return hit.path
+  }
+  if (typeof ref !== 'string' || !ref.trim()) {
+    throw new GuidedError(
+      `op "${op.op}" needs "layout": a layout name or 0-based index. Layouts: [${available()}].`,
+    )
+  }
+  const byPath = layouts.find((l) => l.path === ref)
+  if (byPath) return byPath.path
+  const norm = ref.trim().toLowerCase()
+  const byName = layouts.filter((l) => l.name.toLowerCase() === norm)
+  if (byName.length === 1) return byName[0]!.path
+  if (byName.length > 1) {
+    throw new GuidedError(
+      `op "${op.op}": ${byName.length} layouts are named "${ref}" — pass the index instead. Layouts: [${available()}].`,
+    )
+  }
+  throw new GuidedError(`op "${op.op}": no layout "${ref}". Layouts: [${available()}].`)
+}
+
+// The new slide goes after target.slide (default: the last slide).
 register({
   name: 'addSlideWithLayout',
   validate(op, ctx) {
-    resolveSlide(ctx, op)
-    if (typeof op.layoutPath !== 'string' || !op.layoutPath) {
-      throw new GuidedError(
-        'op "addSlideWithLayout" needs "layoutPath" (a resolved layout part path).',
-      )
-    }
+    if (op.target?.slide !== undefined) resolveSlide(ctx, op)
+    resolveLayoutPath(op, ctx)
   },
   apply(op, ctx): OpRecord {
-    const { index } = resolveSlide(ctx, op)
-    if (!insertSlideWithLayout(ctx.opened, index, String(op.layoutPath))) {
-      throw new GuidedError(`op "addSlideWithLayout": layout "${op.layoutPath}" was not found.`)
+    const index =
+      op.target?.slide !== undefined
+        ? resolveSlide(ctx, op).index
+        : ctx.opened.deck.slides.length - 1
+    const layoutPath = resolveLayoutPath(op, ctx)
+    const slide = insertSlideWithLayout(ctx.opened, index, layoutPath)
+    if (!slide) {
+      throw new GuidedError(`op "addSlideWithLayout": layout "${layoutPath}" could not be applied.`)
     }
-    return { op, after: { index: index + 1 } }
+    return {
+      op,
+      created: [slideDurableId(slide)],
+      after: { index: index + 1, layout: layoutPath },
+    }
   },
 })
 
@@ -265,19 +296,21 @@ register({
   name: 'setSlideLayout',
   validate(op, ctx) {
     resolveSlide(ctx, op)
+    if (op.layout != null || op.layoutPath != null) resolveLayoutPath(op, ctx)
   },
   apply(op, ctx): OpRecord {
     const { index } = resolveSlide(ctx, op)
-    const ok =
-      typeof op.layoutPath === 'string' && op.layoutPath
-        ? setSlideLayout(ctx.opened, index, op.layoutPath)
-        : resetSlideLayout(ctx.opened, index)
+    const layoutPath =
+      op.layout != null || op.layoutPath != null ? resolveLayoutPath(op, ctx) : null
+    const ok = layoutPath
+      ? setSlideLayout(ctx.opened, index, layoutPath)
+      : resetSlideLayout(ctx.opened, index)
     if (!ok) {
       throw new GuidedError(
-        `op "setSlideLayout": layout ${op.layoutPath ? `"${op.layoutPath}"` : '(reset)'} could not be applied to slide ${index}.`,
+        `op "setSlideLayout": layout ${layoutPath ? `"${layoutPath}"` : '(reset)'} could not be applied to slide ${index}.`,
       )
     }
-    return { op, after: op.layoutPath ?? null }
+    return { op, after: layoutPath }
   },
 })
 
@@ -436,9 +469,6 @@ register({
   },
 })
 
-const TRANSITION_DIR_ALL = ['l', 'r', 'u', 'd', 'lu', 'ld', 'ru', 'rd'] as const
-const TRANSITION_SPLITS = ['horzIn', 'horzOut', 'vertIn', 'vertOut'] as const
-
 register({
   name: 'setTransition',
   validate(op, ctx) {
@@ -449,101 +479,11 @@ register({
         `op "setTransition" needs "kind": one of [${TRANSITION_KINDS.join(', ')}].`,
       )
     }
-    if (
-      op.durationMs !== undefined &&
-      (typeof op.durationMs !== 'number' || !Number.isFinite(op.durationMs) || op.durationMs < 1)
-    ) {
-      throw new GuidedError('op "setTransition" needs "durationMs": positive milliseconds.')
-    }
-    if (op.dir !== undefined && !TRANSITION_DIR_ALL.includes(op.dir as 'l')) {
-      throw new GuidedError(
-        `op "setTransition" needs "dir": one of [${TRANSITION_DIR_ALL.join(', ')}].`,
-      )
-    }
-    if (op.split !== undefined && !TRANSITION_SPLITS.includes(op.split as 'horzIn')) {
-      throw new GuidedError(
-        `op "setTransition" needs "split": one of [${TRANSITION_SPLITS.join(', ')}].`,
-      )
-    }
-    if (op.zoom !== undefined && !['in', 'out'].includes(op.zoom as 'in')) {
-      throw new GuidedError('op "setTransition" needs "zoom": one of [in, out].')
-    }
-    if (op.sound !== undefined && op.sound !== null) {
-      if (typeof op.sound !== 'object' || !('name' in op.sound)) {
-        throw new GuidedError('op "setTransition" needs "sound": { name, loop? } or null.')
-      }
-      const snd = op.sound as { name: unknown; bytes?: unknown; ext?: unknown }
-      if (snd.name !== null && snd.name !== 'custom') {
-        if (!TRANSITION_SOUND_KEYS.includes(snd.name as 'chime')) {
-          throw new GuidedError(
-            `op "setTransition" needs "sound.name": one of [${TRANSITION_SOUND_KEYS.join(', ')}], 'custom' or null.`,
-          )
-        }
-      }
-      if (snd.name === 'custom') {
-        if (!(snd.bytes instanceof Uint8Array) || typeof snd.ext !== 'string') {
-          throw new GuidedError(
-            'op "setTransition" custom sound needs "bytes" (Uint8Array) and "ext".',
-          )
-        }
-      }
-    }
   },
   apply(op, ctx): OpRecord {
     const { slide } = resolveSlide(ctx, op)
-    const opts: SlideTransitionOpts = {
-      ...(op.durationMs !== undefined ? { durationMs: Math.round(op.durationMs as number) } : {}),
-      ...(op.dir !== undefined ? { dir: op.dir as SlideTransitionDir } : {}),
-      ...(op.split !== undefined ? { split: op.split as SlideTransitionOpts['split'] } : {}),
-      ...(op.zoom !== undefined ? { zoom: op.zoom as 'in' | 'out' } : {}),
-      ...(op.fadeBlack !== undefined ? { fadeBlack: op.fadeBlack === true } : {}),
-    }
-    setSlideTransition(slide, op.kind as SlideTransitionKind, opts)
-    if (op.sound !== undefined && op.sound !== null) {
-      const snd = op.sound as {
-        name: string | null
-        loop?: boolean
-        fileName?: string
-        bytes?: Uint8Array
-        ext?: string
-      }
-      if (snd.name === 'custom') {
-        if (
-          !setSlideTransitionCustomSound(
-            ctx.opened,
-            slide,
-            {
-              name: String(snd.fileName ?? 'sound'),
-              bytes: snd.bytes!,
-              ext: String(snd.ext ?? 'mp3'),
-            },
-            snd.loop === true,
-          )
-        ) {
-          throw new GuidedError(
-            `op "setTransition": unsupported custom sound type ".${String(snd.ext)}".`,
-          )
-        }
-      } else {
-        // Idempotent fast path: same preset+loop keeps the embedded part (undo/redo replays)
-        const cur = getSlideTransitionSound(slide)
-        if (cur?.name !== snd.name || cur?.loop !== (snd.loop === true)) {
-          if (
-            !setSlideTransitionSound(
-              ctx.opened,
-              slide,
-              snd.name as (typeof TRANSITION_SOUND_KEYS)[number] | null,
-              snd.loop === true,
-            )
-          ) {
-            throw new GuidedError(
-              `op "setTransition": unknown sound preset "${String(snd.name)}" (no changes made).`,
-            )
-          }
-        }
-      }
-    }
-    return { op, after: { kind: op.kind, ...opts, ...(op.sound ? { sound: op.sound } : {}) } }
+    setSlideTransition(slide, op.kind as SlideTransitionKind)
+    return { op, after: op.kind }
   },
 })
 
@@ -572,13 +512,6 @@ register({
   validate(op, ctx) {
     resolveSlide(ctx, op)
     if (!Array.isArray(op.items)) throw new GuidedError('op "setAnimations" needs "items".')
-    // Q5 guard (roadmap v3 §8): animations are now AI-callable with a hard
-    // per-page ceiling — a full-replace op must not balloon a slide's timing tree
-    if ((op.items as unknown[]).length > ANIMATION_PAGE_GUARD) {
-      throw new GuidedError(
-        `op "setAnimations": at most ${ANIMATION_PAGE_GUARD} animation items per slide (got ${ (op.items as unknown[]).length }). Trim the list or split emphasis between slides.`,
-      )
-    }
     for (const [i, raw] of (op.items as Array<Record<string, unknown>>).entries()) {
       if (typeof raw?.sourceId !== 'string' || !raw.sourceId) {
         throw new GuidedError(`op "setAnimations": items[${i}] needs "sourceId": an element id.`)
@@ -628,7 +561,10 @@ register({
           ? { motionPath: raw.motionPath as SlideAnimation['motionPath'] }
           : {}),
         ...(raw.paragraph != null ? { paragraph: raw.paragraph as number } : {}),
-        ...(raw.rewind === true ? { rewind: true } : {}),
+        ...(typeof raw.direction === 'string'
+          ? { direction: raw.direction as SlideAnimation['direction'] }
+          : {}),
+        ...(typeof raw.presetXml === 'string' ? { presetXml: raw.presetXml } : {}),
       })
     }
     if (unresolved.length) {

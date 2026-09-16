@@ -15,6 +15,7 @@ import type {
   AttachmentMeta,
   AttachmentReadResult,
   DesktopApi,
+  McpCommandMessage,
   RecoveryPromptPayload,
   ScreenCaptureResult,
   ScreenSourcesResult,
@@ -54,6 +55,7 @@ import {
   SAVE_EDITS_CHUNK_JSON_MAX,
 } from '../shared/ipc-channels'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 
 const desktopApi: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -609,6 +611,26 @@ const desktopApi: DesktopApi = {
     const result: unknown = await ipcRenderer.invoke('sheets:consume-new-blank')
     return result === true
   },
+  onMcpCommand(callback) {
+    const listener = (_event: unknown, message: unknown): void => {
+      if (
+        isRecord(message) &&
+        typeof message.requestId === 'string' &&
+        typeof message.command === 'string'
+      ) {
+        callback(message as unknown as McpCommandMessage)
+      }
+    }
+    ipcRenderer.on(IPC_CHANNELS.mcpCommand, listener)
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.mcpCommand, listener)
+  },
+  reportMcpResult(result) {
+    if (!isRecord(result) || typeof result.requestId !== 'string') return
+    ipcRenderer.send(IPC_CHANNELS.mcpResult, result)
+  },
+  signalMcpReady() {
+    ipcRenderer.send(IPC_CHANNELS.mcpReady)
+  },
   async hasQueuedWorkbook() {
     const result: unknown = await ipcRenderer.invoke('sheets:has-queued-workbook')
     return result === true
@@ -737,13 +759,6 @@ const projectApi: ProjectApi = {
   appendChat: (args) => ipcRenderer.invoke('project:appendChat', args),
   loadChat: (args) => ipcRenderer.invoke('project:loadChat', args),
   rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
-  // P1 extensions
-  listProjects: () => ipcRenderer.invoke('project:list'),
-  createProject: (args) => ipcRenderer.invoke('project:create', args),
-  renameProject: (args) => ipcRenderer.invoke('project:rename', args),
-  deleteProject: (args) => ipcRenderer.invoke('project:delete', args),
-  moveFile: (args) => ipcRenderer.invoke('project:moveFile', args),
-  getTimeline: (args) => ipcRenderer.invoke('project:timeline', args),
 }
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 
@@ -756,6 +771,8 @@ if (process.env.GENOFFICE_DEBUG_HOOKS === '1') {
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+// folder tree over the default save folder (Files pane)
+installFilesPaneBridge()
 
 function parseWorkbookFile(input: unknown): WorkbookFile {
   if (!isRecord(input)) throw new Error('Invalid workbook response.')
@@ -1248,6 +1265,7 @@ function parseRecalcResult(input: unknown): WorkbookRecalcResult {
       typeof cell.formatted !== 'string' ||
       (cell.number !== undefined &&
         (typeof cell.number !== 'number' || !Number.isFinite(cell.number))) ||
+      (cell.isError !== undefined && typeof cell.isError !== 'boolean') ||
       typeof cell.isFormula !== 'boolean'
     ) {
       throw new Error('Invalid workbook recalc response.')
@@ -1258,6 +1276,7 @@ function parseRecalcResult(input: unknown): WorkbookRecalcResult {
       column: cell.column,
       formatted: cell.formatted,
       ...(cell.number === undefined ? {} : { number: cell.number }),
+      ...(cell.isError ? { isError: true } : {}),
       isFormula: cell.isFormula,
     }
   })
@@ -1767,7 +1786,7 @@ function isOptionalBarLength(value: unknown): value is number | undefined {
 function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
   // Every rejection names the failing part: this one message ends up in the
   // save-failure toast, and "Invalid workbook save request." alone gave user
-  // reports nothing to go on (alpha ledger r110).
+  // reports nothing to go on.
   const invalid = (detail: string): never => {
     throw new Error(`Invalid workbook save request. (${detail})`)
   }
@@ -1783,6 +1802,15 @@ function parseSaveRequest(input: WorkbookSaveRequest): WorkbookSaveRequest {
   if (input.mode !== 'save' && input.mode !== 'save-as') invalid('mode')
   if (input.restoreWriteBack !== undefined && typeof input.restoreWriteBack !== 'boolean')
     invalid('restore flag')
+  if (
+    input.targetPath !== undefined &&
+    (typeof input.targetPath !== 'string' ||
+      input.targetPath.length === 0 ||
+      input.targetPath.length > 1024)
+  )
+    invalid('target path')
+  if (input.overwrite !== undefined && typeof input.overwrite !== 'boolean')
+    invalid('overwrite flag')
   if (
     input.csvContent !== undefined &&
     (typeof input.csvContent !== 'string' || input.csvContent.length > MAX_CSV_EXPORT_CHARS)

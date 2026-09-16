@@ -55,6 +55,7 @@ import {
   safeExternalUrl,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
+  helpMenuTemplate,
   viewMenuTemplate,
   windowMenuTemplate,
   installRendererProtocol,
@@ -1718,6 +1719,13 @@ export function setActiveSheetsWebContents(wc: WebContents | null): void {
  *  Home list) — sync the matching session's path in that tab (later saves write
  *  the new file) and push the renderer to update the title-bar file name. */
 export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: string): void {
+  // A user-chosen name always wins: the file no longer qualifies for auto-rename.
+  // A move that keeps the untitled name (folder tree), including the "(2)"
+  // suffix a keep-both move adds, does not count as choosing one.
+  const stem = (p: string) => basename(p).replace(/ \(\d+\)(?=\.[^.]+$)/, '')
+  if (untitledWorkbookPaths.delete(oldPath) && stem(newPath) === stem(oldPath)) {
+    untitledWorkbookPaths.add(newPath)
+  }
   const entry = sheetsTabs.get(wc.id)
   if (!entry) return
   let matched = false
@@ -2706,6 +2714,7 @@ export function registerSheetsIpc(): void {
             column: z.number().int().nonnegative(),
             formatted: z.string(),
             number: z.number().optional(),
+            isError: z.boolean().optional(),
             isFormula: z.boolean(),
           })
           .strict(),
@@ -2753,6 +2762,7 @@ export function registerSheetsIpc(): void {
             column: cell.column,
             formatted: cell.formatted,
             ...(cell.number === undefined ? {} : { number: cell.number }),
+            ...(cell.isError ? { isError: true } : {}),
             isFormula: cell.isFormula,
           },
         ]
@@ -3041,9 +3051,18 @@ export function registerSheetsIpc(): void {
     // original .csv afterwards.
     const csvInPlace = request.mode === 'save' && session.csvSourcePath !== undefined
     let targetPath = session.path
-    // Converted .xls imports never save silently over the temp copy — the
-    // first save always asks where the .xlsx should live.
-    if (request.mode === 'save-as' || session.suggestSaveAs !== undefined) {
+    // MCP explicit-path save (planning/mcp-server.md): dialog-free Save As to
+    // an exact path with a clobber guard — docs:save-to parity. Only the xlsx
+    // pipeline is reachable this way (.xlsm/.csv need their interactive flows).
+    if (request.targetPath !== undefined) {
+      if (!isAbsolute(request.targetPath)) throw new Error('Save path must be absolute.')
+      targetPath = /\.xlsx$/i.test(request.targetPath)
+        ? request.targetPath
+        : `${request.targetPath}.xlsx`
+      if (existsSync(targetPath) && request.overwrite !== true) {
+        throw new Error(`file already exists: ${targetPath}`)
+      }
+    } else if (request.mode === 'save-as' || session.suggestSaveAs !== undefined) {
       // .xlsm keeps its extension: untouched archive entries (vbaProject.bin,
       // the macro-enabled content type) round-trip verbatim through the save.
       const macroEnabled = /\.xlsm$/i.test(
@@ -3834,7 +3853,7 @@ async function writeWorkbookTo(
   // resolution the cell edits use.
   const formulaValuesBySheet = new Map<
     string,
-    { row: number; column: number; value: string | number | boolean | null }[]
+    { row: number; column: number; value: string | number | boolean | null | { error: string } }[]
   >()
   for (const cell of request.formulaValues) {
     const sheetName = resolveSheetName(cell.sheetId)
@@ -4159,6 +4178,7 @@ function installApplicationMenu(): void {
       },
       viewMenuTemplate(labels),
       windowMenuTemplate(process.platform, labels),
+      helpMenuTemplate(labels),
     ]),
   )
 }

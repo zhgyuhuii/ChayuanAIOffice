@@ -1143,6 +1143,7 @@ export const workbookRecalcResultSchema = z
             column: z.number().int().nonnegative(),
             formatted: z.string(),
             number: z.number().optional(),
+            isError: z.boolean().optional(),
             isFormula: z.boolean(),
           })
           .strict(),
@@ -1241,7 +1242,7 @@ export const workbookStructuralOpSchema = z.union([
       start: z.number().int().nonnegative().max(1_048_575),
       end: z.number().int().nonnegative().max(1_048_575),
       /// Column default format (Excel select-all/full-column semantics): new
-      /// cells in the span inherit it, at any row, forever (alpha ledger r124).
+      /// cells in the span inherit it, at any row, forever.
       style: workbookStyleEditSchema,
     })
     .strict()
@@ -1345,7 +1346,7 @@ export const workbookPageSetupStateSchema = z
     printGridlines: z.boolean().optional(),
     printHeadings: z.boolean().optional(),
     showGridlines: z.boolean().optional(),
-    /// sheetView/@zoomScale, normal-view zoom percent (alpha r165).
+    /// sheetView/@zoomScale, normal-view zoom percent.
     zoomScale: z.number().int().min(10).max(400).optional(),
     showFormulas: z.boolean().optional(),
     showHeadings: z.boolean().optional(),
@@ -1814,6 +1815,11 @@ export const workbookSaveRequestSchema = z
   .object({
     sessionId: z.string().uuid(),
     mode: z.enum(['save', 'save-as']),
+    /// MCP explicit-path save (planning/mcp-server.md): write to this absolute
+    /// path with no dialog. Skips the Save-As dialog entirely; overwrite policy
+    /// is enforced here, not in the renderer.
+    targetPath: z.string().min(1).max(1024).optional(),
+    overwrite: z.boolean().optional(),
     /// Restored crash-recovery session writing back to the original file: the
     /// change is the workbook bytes themselves, so the request is valid with
     /// an otherwise empty payload (like an explicit Save As).
@@ -1852,7 +1858,13 @@ export const workbookSaveRequestSchema = z
             sheetId: z.string().min(1),
             row: z.number().int().min(0),
             column: z.number().int().min(0),
-            value: z.union([z.string().max(10_000), z.number(), z.boolean(), z.null()]),
+            value: z.union([
+              z.string().max(10_000),
+              z.number(),
+              z.boolean(),
+              z.null(),
+              z.object({ error: z.string().max(32) }).strict(),
+            ]),
           })
           .strict(),
       )
@@ -2631,6 +2643,21 @@ export interface VideoTaskInfo {
   }
 }
 
+/** MCP visible-grid bridge message (shell → renderer, correlated by requestId). */
+export interface McpCommandMessage {
+  requestId: string
+  command: 'apply_ops' | 'read_sheet' | 'save_sheet'
+  payload: unknown
+}
+
+/** MCP visible-grid bridge reply (renderer → shell). */
+export interface McpCommandResult {
+  requestId: string
+  ok: boolean
+  result?: unknown
+  error?: string
+}
+
 export interface DesktopApi {
   /** current UI language (persisted by the shell in app-settings.json) */
   getLanguage(): Promise<'zh' | 'en' | 'ja' | 'ko' | 'fr' | 'de' | 'es' | 'th' | 'id' | 'ru' | 'ar'>
@@ -2717,6 +2744,12 @@ export interface DesktopApi {
   /// Returns true once when this tab was opened via "New Spreadsheet" from the
   /// shell home.
   consumeNewBlankWorkbook(): Promise<boolean>
+  /// MCP visible-grid bridge (see renderer/mcp-bridge.ts): the shell pushes one
+  /// command at a time; the renderer executes it and reports the correlated
+  /// result. onMcpCommand returns unsubscribe.
+  onMcpCommand(callback: (message: McpCommandMessage) => void): () => void
+  reportMcpResult(result: McpCommandResult): void
+  signalMcpReady(): void
   /// Is a shell-queued workbook path still waiting to be opened? (The shell's
   /// 'open' nudge loop can time out on slow cold starts; the renderer pulls.)
   hasQueuedWorkbook(): Promise<boolean>

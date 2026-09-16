@@ -80,6 +80,16 @@ export function ocrHelperPath(): string | null {
   return candidates.find((p) => existsSync(p)) ?? null
 }
 
+/** skills/chatoffice/SKILL.md as shipped beside this bundle (Resources/cli/skills) or in the checkout. */
+export function bundledSkillPath(): string | null {
+  const packaged = packagedResourcesDir()
+  const candidates = [
+    ...(packaged ? [join(packaged, 'cli', 'skills', 'chatoffice', 'SKILL.md')] : []),
+    ...(repoRoot() ? [join(repoRoot()!, 'skills', 'chatoffice', 'SKILL.md')] : []),
+  ]
+  return candidates.find((p) => existsSync(p)) ?? null
+}
+
 export interface AppLaunch {
   command: string
   args: string[]

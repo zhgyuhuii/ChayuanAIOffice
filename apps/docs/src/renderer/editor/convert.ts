@@ -1393,7 +1393,11 @@ function runMarks(run: Run): PmMark[] {
       type: 'link',
       attrs: { href: run.link.href, rId: run.link.rId ?? null, tooltip: run.link.tooltip ?? null },
     })
-  if (run.refField !== undefined) marks.push({ type: 'refField', attrs: { name: run.refField } })
+  if (run.refField !== undefined)
+    marks.push({
+      type: 'refField',
+      attrs: { name: run.refField, instr: run.refInstr ?? null, dirty: run.fldDirty === true },
+    })
   if (run.sym) marks.push({ type: 'docSym', attrs: { font: run.sym.font, char: run.sym.char } })
   if (run.instrField !== undefined) {
     const isZotero = /^\s*(?:ADDIN\s+)?(?:ZOTERO_|CSL_)/i.test(run.instrField)
@@ -1411,6 +1415,7 @@ function runMarks(run: Run): PmMark[] {
       attrs: {
         instr: run.instrField,
         beginXml: run.fldBeginXml ?? null,
+        dirty: run.fldDirty === true,
         fieldId,
         fieldPart: run.zoteroFieldPart ?? null,
       },
@@ -3006,6 +3011,8 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
       }
     } else if (mark.type === 'refField') {
       run.refField = String(mark.attrs?.name ?? '')
+      if (mark.attrs?.instr) run.refInstr = String(mark.attrs.instr)
+      if (mark.attrs?.dirty === true) run.fldDirty = true
     } else if (mark.type === 'docSym') {
       run.sym = { font: String(mark.attrs?.font ?? ''), char: String(mark.attrs?.char ?? '') }
       if (run.text === symbolPuaChar(run.sym.char))
@@ -3013,6 +3020,7 @@ function runFromMarks(text: string, marks: PmMark[]): Run {
     } else if (mark.type === 'instrField') {
       run.instrField = String(mark.attrs?.instr ?? '')
       if (mark.attrs?.beginXml) run.fldBeginXml = String(mark.attrs.beginXml)
+      if (mark.attrs?.dirty === true) run.fldDirty = true
       if (/^\s*(?:ADDIN\s+)?(?:ZOTERO_|CSL_)/i.test(run.instrField)) {
         const fieldId = Number(mark.attrs?.fieldId)
         if (Number.isSafeInteger(fieldId) && fieldId > 0) run.zoteroFieldId = fieldId
@@ -3147,6 +3155,7 @@ function runStyleKey(run: Run): string {
     run.refField ?? null,
     run.instrField ?? null,
     run.fldBeginXml ?? null,
+    run.fldDirty ?? null,
     run.sdtCheckboxXml ?? null,
     run.math?.omml ?? null,
     run.sym ? [run.sym.font, run.sym.char] : null,
@@ -3197,6 +3206,7 @@ function normalizedRuns(runs: Run[]): unknown[] {
           r.instrField ?? null,
           r.zoteroFieldPart ?? null,
           r.fldBeginXml ?? null,
+          r.fldDirty ?? null,
           r.sdtCheckboxXml ?? null,
           r.math?.omml ?? null,
           r.sym ? [r.sym.font, r.sym.char] : null,

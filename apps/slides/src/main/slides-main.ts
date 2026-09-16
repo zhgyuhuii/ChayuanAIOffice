@@ -51,6 +51,7 @@ import {
   saveAsSuggestion,
   showOpenDialogWithMemory,
   showSaveDialogWithMemory,
+  helpMenuTemplate,
   toggleDevToolsItem,
   installRendererProtocol,
   registerRendererScheme,
@@ -68,6 +69,15 @@ import {
 import { matchesElementRef } from '@chatoffice/pptx-engine/identity'
 import { buildPagePptx, parsePageSpec } from '@chatoffice/pipelines/slides'
 import { sniffImageMime } from './media-mime'
+import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
+import { ProjectStore } from '@chatoffice/project-store'
+import {
+  newPasteCascade,
+  pageKey,
+  pasteShiftPx,
+  recordPaste,
+  type PasteCascade,
+} from './paste-cascade'
 import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
 import { ProjectStore } from '@chatoffice/project-store'
 import {
@@ -405,8 +415,8 @@ function trackSlidesWebContents(wc: WebContents): void {
   })
 }
 
-// ── In-app element clipboard (app-wide, so elements copied in one deck paste into any other open deck; pasteCount drives cascading offset) ─
-let elementClipboard: { items: ElementClipboardItem[]; pasteCount: number } | null = null
+// ── In-app element clipboard (app-wide, so elements copied in one deck paste into any other open deck; the cascade decides the paste offset) ─
+let elementClipboard: { items: ElementClipboardItem[]; cascade: PasteCascade } | null = null
 
 /** Shell hook: a view opened a file (including ⌘O inside a tab) — used to update tab titles and de-duplicate paths */
 let slidesOpenedHook: ((wc: WebContents, path: string) => void) | null = null
@@ -435,6 +445,27 @@ function syncAttachedPaths(session: Session, path: string): void {
     const win = standaloneWindows.get(id)
     if (win && !win.isDestroyed()) win.setTitle(basename(path))
   }
+}
+
+/**
+ * MCP save: write a visible session's deck to an explicit path with no dialogs
+ * — the slides:save-as pipeline minus the dialog. Overwrite policy is the
+ * caller's (the MCP tool layer guards clobbering); this commits the save side
+ * effects: session path, recents, attached-surface titles, dirty-flag reset.
+ */
+export async function saveSessionDeckTo(session: Session, filePath: string): Promise<void> {
+  // the caller supplies an arbitrary absolute path, so its parent may not exist
+  // yet (the dialog-driven paths always land in an existing folder)
+  await mkdir(dirname(filePath), { recursive: true })
+  await savePptxToFile(session.opened, filePath)
+  session.path = filePath
+  autosaveBackoff.delete(filePath)
+  // mirror slides:save-as: a saved deck is no longer an unsaved untitled draft
+  for (const id of attachedIds(session)) dropUntitledRecovery(id)
+  await pushRecent(filePath)
+  syncAttachedPaths(session, filePath)
+  commitSaved(session.opened)
+  session.metaDirty = false
 }
 
 const RECENT_PATH = () => join(app.getPath('userData'), 'slides-recent.json')
@@ -905,6 +936,119 @@ function findEl(slide: Slide, sourceId: string): TextElement | undefined {
   return undefined
 }
 
+// The single funnel for non-dry transactions in this module: every applied
+// batch lands in the session's op journal (collab groundwork).
+function journaledTxn(
+  session: Session,
+  source: Exclude<OpLogEntry['source'], 'reset'>,
+  req: TxnRequest,
+): TxnResult {
+  const r = runTxn(session.opened, req)
+  if (r.applied) {
+    journalOps(session, source, r.records ?? [])
+    scheduleDeckBroadcast(session)
+  }
+  return r
+}
+
+/**
+ * AI batch surface core, shared by the `slides:apply-txn` IPC handler and the
+ * shell's MCP slides bridge (one implementation so both stay behaviorally
+ * identical): raw ops arrive as one transaction. The registry validates (guided
+ * errors), the executor owns atomicity/rollback/journal; dry-run rehearses the
+ * plan without touching the deck or its history.
+ */
+export function applySessionTxn(session: Session, req: ApplyTxnOp): ApplyTxnResult | null {
+  const ops = Array.isArray(req?.ops) ? (req.ops as Parameters<typeof runTxn>[1]['ops']) : []
+  if (ops.length === 0 || ops.length > 50) {
+    return {
+      applied: false,
+      failures: [
+        { index: 0, error: 'ops must be a non-empty array (at most 50 per transaction).' },
+      ],
+    }
+  }
+  const isolation = req.isolation === 'per_op' ? ('per_op' as const) : ('atomic' as const)
+  const compact = (fails?: Array<{ index: number; error: string }>) =>
+    fails?.map((f) => ({ index: f.index, error: f.error }))
+  if (req.dryRun) {
+    const r = runTxn(session.opened, { ops, isolation, dryRun: true })
+    return {
+      applied: false,
+      dryRun: true,
+      plan: r.plan ?? [],
+      ...(r.failures?.length ? { failures: compact(r.failures) } : {}),
+    }
+  }
+  // Plan before pushing history (a no-op request must not clear the redo stack)
+  const plan = runTxn(session.opened, { ops, isolation, dryRun: true })
+  const invalid = plan.failures?.length ?? 0
+  if (isolation === 'atomic' ? invalid > 0 : invalid >= ops.length) {
+    return { applied: false, failures: compact(plan.failures) }
+  }
+  pushHistory(session)
+  const r = journaledTxn(session, 'batch', { ops, isolation })
+  if (!r.applied) {
+    session.undoStack.pop()
+    return { applied: false, failures: compact(r.failures) }
+  }
+  // Some ops change only package state (setNotes, a theme commit) and leave no
+  // element dirty, so without this the session would still look clean and a
+  // close could discard the edit. Element-level ops set their own flags; this
+  // covers the archive-only ones.
+  session.metaDirty = true
+  // Post-pass mirroring the dedicated shims (autofit/reparse are render concerns and live
+  // outside the executor): text ops get autofit resize + fontScale write-back, level changes
+  // materialize, and XML-patching ops reparse the page so the final render reflects them.
+  // Slides are re-found by the executor-stamped durable id: a numeric target.slide drifts
+  // when a later structural op (deleteSlide/moveSlide/duplicateSlide) shifts pages.
+  const slideIdxOf = (rec: OpRecord): number => {
+    if (rec.slideId)
+      return session.opened.deck.slides.findIndex((s) => slideDurableId(s) === rec.slideId)
+    return -1
+  }
+  const renderedByIdx = new Map<number, ReturnType<typeof rebuildSlide>>()
+  for (const rec of r.records ?? []) {
+    const o = rec.op
+    const idx = slideIdxOf(rec)
+    if (idx < 0) continue
+    if (o.op === 'setTableStyle' || o.op === 'setChart') {
+      rebuildSlideWithReparse(session, idx)
+      renderedByIdx.delete(idx)
+      continue
+    }
+    const id = o.target?.el
+    if (!id || o.group) continue
+    if (o.op !== 'setText' && o.op !== 'setFont' && o.op !== 'setParagraphFormat') continue
+    if (o.op === 'setText' && (rec.after as { levelDirty?: boolean } | undefined)?.levelDirty)
+      continue
+    if (
+      o.op === 'setParagraphFormat' &&
+      (o.format as { indentDelta?: number } | undefined)?.indentDelta
+    ) {
+      materializeSlide(session.opened, idx)
+      renderedByIdx.delete(idx)
+      continue
+    }
+    let rendered = renderedByIdx.has(idx) ? renderedByIdx.get(idx)! : rebuildSlide(session, idx)
+    rendered = applyAutofitResize(session, idx, id, rendered)
+    rendered = syncAutofitScale(session, idx, id, rendered)
+    renderedByIdx.set(idx, rendered)
+  }
+  return {
+    applied: true,
+    records: (r.records ?? []).map((rec) => ({
+      op: rec.op.op,
+      ...(rec.op.target
+        ? { target: `${rec.op.target.slide}${rec.op.target.el ? `/${rec.op.target.el}` : ''}` }
+        : {}),
+      ...(rec.created ? { created: rec.created } : {}),
+    })),
+    ...(r.failures?.length ? { failures: compact(r.failures) } : {}),
+    slides: buildAllRenderSlides(session.opened, session.fitWidthPx),
+  }
+}
+
 /**
  * spAutoFit (autofit='resize', "resize shape to fit text"): after a text change, the box height
  * grows/shrinks with the content and is written back to cy. rendered = the
@@ -1200,20 +1344,6 @@ export function registerSlidesIpc(): void {
   // Plan first: pushHistory clears the redo stack (and can evict the oldest undo
   // entry at the cap), so an invalid request must not touch history at all —
   // legacy handlers validated existence before their history push.
-  // The single funnel for non-dry transactions in this module: every applied
-  // batch lands in the session's op journal (collab groundwork).
-  const journaledTxn = (
-    session: Session,
-    source: Exclude<OpLogEntry['source'], 'reset'>,
-    req: TxnRequest,
-  ): TxnResult => {
-    const r = runTxn(session.opened, req)
-    if (r.applied) {
-      journalOps(session, source, r.records ?? [])
-      scheduleDeckBroadcast(session)
-    }
-    return r
-  }
 
   const sessionTxn = (
     session: Session,
@@ -1532,95 +1662,13 @@ export function registerSlidesIpc(): void {
     return r ? rebuildSlide(session, op.slideIndex) : null
   })
 
-  // AI batch surface: raw ops arrive as one transaction. The registry validates
-  // (guided errors), the executor owns atomicity/rollback/journal; dry-run
-  // rehearses the plan without touching the deck or its history.
+  // AI batch surface: raw ops arrive as one transaction — the shared core in
+  // applySessionTxn (validation, atomicity/rollback/journal, autofit render pass)
+  // is the same code the shell's MCP slides bridge drives.
   ipcMain.handle('slides:apply-txn', (e, req: ApplyTxnOp): ApplyTxnResult | null => {
     const session = sessions.get(e.sender.id)
     if (!session) return null
-    const ops = Array.isArray(req?.ops) ? (req.ops as Parameters<typeof runTxn>[1]['ops']) : []
-    if (ops.length === 0 || ops.length > 50) {
-      return {
-        applied: false,
-        failures: [
-          { index: 0, error: 'ops must be a non-empty array (at most 50 per transaction).' },
-        ],
-      }
-    }
-    const isolation = req.isolation === 'per_op' ? ('per_op' as const) : ('atomic' as const)
-    const compact = (fails?: Array<{ index: number; error: string }>) =>
-      fails?.map((f) => ({ index: f.index, error: f.error }))
-    if (req.dryRun) {
-      const r = runTxn(session.opened, { ops, isolation, dryRun: true })
-      return {
-        applied: false,
-        dryRun: true,
-        plan: r.plan ?? [],
-        ...(r.failures?.length ? { failures: compact(r.failures) } : {}),
-      }
-    }
-    // Plan before pushing history (a no-op request must not clear the redo stack)
-    const plan = runTxn(session.opened, { ops, isolation, dryRun: true })
-    const invalid = plan.failures?.length ?? 0
-    if (isolation === 'atomic' ? invalid > 0 : invalid >= ops.length) {
-      return { applied: false, failures: compact(plan.failures) }
-    }
-    pushHistory(session)
-    const r = journaledTxn(session, 'batch', { ops, isolation })
-    if (!r.applied) {
-      session.undoStack.pop()
-      return { applied: false, failures: compact(r.failures) }
-    }
-    // Post-pass mirroring the dedicated shims (autofit/reparse are render concerns and live
-    // outside the executor): text ops get autofit resize + fontScale write-back, level changes
-    // materialize, and XML-patching ops reparse the page so the final render reflects them.
-    // Slides are re-found by the executor-stamped durable id: a numeric target.slide drifts
-    // when a later structural op (deleteSlide/moveSlide/duplicateSlide) shifts pages.
-    const slideIdxOf = (rec: OpRecord): number => {
-      if (rec.slideId)
-        return session.opened.deck.slides.findIndex((s) => slideDurableId(s) === rec.slideId)
-      return -1
-    }
-    const renderedByIdx = new Map<number, ReturnType<typeof rebuildSlide>>()
-    for (const rec of r.records ?? []) {
-      const o = rec.op
-      const idx = slideIdxOf(rec)
-      if (idx < 0) continue
-      if (o.op === 'setTableStyle' || o.op === 'setChart') {
-        rebuildSlideWithReparse(session, idx)
-        renderedByIdx.delete(idx)
-        continue
-      }
-      const id = o.target?.el
-      if (!id || o.group) continue
-      if (o.op !== 'setText' && o.op !== 'setFont' && o.op !== 'setParagraphFormat') continue
-      if (o.op === 'setText' && (rec.after as { levelDirty?: boolean } | undefined)?.levelDirty)
-        continue
-      if (
-        o.op === 'setParagraphFormat' &&
-        (o.format as { indentDelta?: number } | undefined)?.indentDelta
-      ) {
-        materializeSlide(session.opened, idx)
-        renderedByIdx.delete(idx)
-        continue
-      }
-      let rendered = renderedByIdx.has(idx) ? renderedByIdx.get(idx)! : rebuildSlide(session, idx)
-      rendered = applyAutofitResize(session, idx, id, rendered)
-      rendered = syncAutofitScale(session, idx, id, rendered)
-      renderedByIdx.set(idx, rendered)
-    }
-    return {
-      applied: true,
-      records: (r.records ?? []).map((rec) => ({
-        op: rec.op.op,
-        ...(rec.op.target
-          ? { target: `${rec.op.target.slide}${rec.op.target.el ? `/${rec.op.target.el}` : ''}` }
-          : {}),
-        ...(rec.created ? { created: rec.created } : {}),
-      })),
-      ...(r.failures?.length ? { failures: compact(r.failures) } : {}),
-      slides: buildAllRenderSlides(session.opened, session.fitWidthPx),
-    }
+    return applySessionTxn(session, req)
   })
 
   // The whole edit script as ONE transaction: the collected primitives arrive in a
@@ -3272,7 +3320,10 @@ export function registerSlidesIpc(): void {
       .filter((el): el is NonNullable<typeof el> => !!el)
       .map((el) => copyElementData(session.opened, slide, el))
     if (items.length) {
-      elementClipboard = { items, pasteCount: 0 }
+      elementClipboard = {
+        items,
+        cascade: newPasteCascade(op.cut ? null : pageKey(e.sender.id, op.slideIndex)),
+      }
       // Write our marker to the OS clipboard: an external copy overwrites it, so at paste time it tells whether internal or external is newer
       clipboard.writeBuffer('io.chatoffice.slides.elements', Buffer.from('1'))
     }
@@ -3286,8 +3337,12 @@ export function registerSlidesIpc(): void {
     if (!session.opened.deck.slides[op.slideIndex]) return null
     const baseWidthPx = session.opened.deck.size.cx / EMU_PER_PX_96
     const scale = op.fitWidthPx / baseWidthPx
-    // Cascading offset: each paste shifts another 16px relative to the original
-    const shift = Math.round(((16 * (clip.pasteCount + 1)) / scale) * EMU_PER_PX_96)
+    // Cascade only past occupied spots: the first paste onto another page lands
+    // at the source coordinates exactly; the copy page and repeat
+    // pastes keep shifting 16px per landing relative to the original.
+    const target = pageKey(e.sender.id, op.slideIndex)
+    const shiftPx = pasteShiftPx(clip.cascade, target)
+    const shift = Math.round((shiftPx / scale) * EMU_PER_PX_96)
     const r = sessionTxn(session, {
       ops: [
         {
@@ -3300,7 +3355,7 @@ export function registerSlidesIpc(): void {
       ],
     })
     if (!r) return null
-    clip.pasteCount++
+    recordPaste(clip.cascade, target)
     session.fitWidthPx = op.fitWidthPx
     const rebuilt = rebuildSlide(session, op.slideIndex)
     return rebuilt ? { slide: rebuilt, sourceIds: r.records![0]!.created! } : null
@@ -4950,6 +5005,7 @@ export function buildSlidesMenu(): Menu {
         toggleDevToolsItem(labels),
       ],
     },
+    helpMenuTemplate(labels),
   ]
   return Menu.buildFromTemplate(template)
 }

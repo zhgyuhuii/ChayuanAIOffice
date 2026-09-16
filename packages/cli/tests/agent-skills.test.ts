@@ -14,7 +14,7 @@ import {
   readInstallState,
   uninstallSkill,
   type SkillLedger,
-} from '../src/main/agent-skills'
+} from '../src/agent-skills'
 
 const skillText = (version: string, body = 'Run `chaoffice --version` first.') =>
   `---\nname: chaoffice\ndescription: test\nmetadata:\n  version: ${version}\n  cli: '>=0.4.0'\n---\n\n${body}\n`

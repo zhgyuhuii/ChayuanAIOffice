@@ -115,8 +115,27 @@ export {
   isEditableVisual,
 } from './visual-editable'
 
-/// 安装序号（见 installWorkbookVisuals 内注释）
-let installCounter = 0
+/// Pictures pasted or inserted this session move/resize/delete the same way
+/// (no text editing).
+export function isEditableAddedImage(visual: WorkbookVisualObject): boolean {
+  return visual.kind === 'image' && visual.id.startsWith('added-image-')
+}
+
+/// Images and shapes already in the file move/delete through a surgical
+/// anchor edit, located by the sidecar's (drawingPath, drawingIndex) pair.
+/// Charts keep their own editor; deletion routes through the same edit.
+export function isEditableFileVisual(visual: WorkbookVisualObject): boolean {
+  return (
+    (visual.kind === 'image' || visual.kind === 'shape') &&
+    !visual.id.startsWith('added-') &&
+    visual.drawingPath !== undefined &&
+    visual.drawingIndex !== undefined
+  )
+}
+
+/// Charts move through the same anchor edit as images/shapes and delete
+/// through a cascading one (the save also drops the chart part, rel, and
+/// content-type override); session-added and demo charts live in memory.
 /// Inline style of one run; the bullet marker borrows its paragraph's first
 /// run without the underline. Caps are display-only so the stored text keeps
 /// its casing on save.
@@ -194,8 +213,12 @@ export function installWorkbookVisuals(
   for (const visual of file.visuals.filter((candidate) => candidate.sheetId === sheetId)) {
     const worksheet = workbook.getSheetBySheetId(visual.sheetId)
     if (!worksheet) continue
-    const componentKey = `xlsx-${file.sessionId}-${visual.id}-r${installSeq}`
-    const editable = isEditableVisual(visual)
+    const componentKey = `xlsx-${file.sessionId}-${visual.id}`
+    const editable =
+      isEditableShape(visual) ||
+      isEditableAddedImage(visual) ||
+      isEditableFileVisual(visual) ||
+      isEditableChart(visual)
     // Lazy grids are sized to the data, but session-added visuals anchor
     // beyond it (default: two columns right of the data) — grow the grid so
     // the float keeps its frame instead of being clamped into a sliver.

@@ -195,6 +195,7 @@ export type MenuCommand =
   | 'print'
   | 'export-pdf'
   | 'export-html'
+  | 'export-images'
   | 'word-count'
   | 'ai-proofread'
   | 'shortcuts'
@@ -296,6 +297,7 @@ export interface McpSaveResult {
   ok: boolean
   path?: string
   error?: string
+  passwordIntentPending?: boolean
 }
 
 export interface DesktopApi {
@@ -390,6 +392,10 @@ export interface DesktopApi {
    *  back on (r168); the caller pauses the PM DOM observer and removes the
    *  space again by script */
   respellKick(): Promise<void>
+  /** append one line to userData/spell-diag.log (size-capped) — field
+   *  spellcheck failures are intermittent and platform-bound, so the
+   *  toggle/kick lifecycle keeps a trace support can ask users for */
+  spellDiag(line: string): void
   /** sourcePath: the document's current path — Save As uses its desired next-save
    *  password and commits that state to the chosen path only after success */
   saveDocxAs(
@@ -461,6 +467,17 @@ export interface DesktopApi {
   /** start a streaming AI call; deltas arrive via onAiStream with the same requestId.
    *  The `settings` slot carries the model selection (agent-core's generic transport shape). */
   aiStream(request: AiStreamWireRequest): Promise<void>
+  pickExportImagesTarget(): Promise<{ dir: string; pdfPath: string } | null>
+  takeExportPdf(pdfPath: string): Promise<{ ok: boolean; base64?: string; error?: string }>
+  /** Write one page PNG into the folder chosen by pickExportImagesTarget */
+  writeExportImage(
+    dir: string,
+    fileName: string,
+    pngBase64: string,
+  ): Promise<{ ok: boolean; path?: string; error?: string }>
+  /** Save a picture the renderer displays (data URL) through a Save dialog */
+  saveImageAs(src: string): Promise<{ ok: boolean; path?: string; error?: string }>
+  onViewImage(handler: (src: string) => void): () => void
   aiStreamCancel(requestId: string): Promise<void>
   /** ChatOffice account status (chatoffice login state); withEmail also returns the email (needs a network request, slower) */
   aiChatOfficeStatus(withEmail?: boolean): Promise<ChatOfficeAccountStatus>
@@ -629,3 +646,6 @@ export interface DesktopApi {
     cancelled: boolean
   }): void
 }
+
+/** mirrors VIEW_IMAGE_CHANNEL in @chatoffice/electron-utils (kept literal so the preload stays free of main-only deps) */
+export const VIEW_IMAGE_CHANNEL = 'chatoffice:view-image'

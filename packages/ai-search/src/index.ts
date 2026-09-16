@@ -167,9 +167,18 @@ export async function webSearch(
         return null
       },
     },
+    {
+      id: 'duckduckgo',
+      run: async () => {
+        try {
+          return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
+        } catch (err) {
+          duckError = err
+        }
+        return null
+      },
+    },
   ]
-  // (DuckDuckGo is not a tier object: it is the terminal fallback below and
-  // never "fails over" to anything else)
   // the preferred provider (settings default) gets the first shot; the rest
   // keep their order as the fallback chain
   const ordered = prefer

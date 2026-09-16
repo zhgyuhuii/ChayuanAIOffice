@@ -23,6 +23,7 @@ import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 const APP_ICON = nativeImage.createFromPath(appIconPath)
 import {
   configuredDefaultSaveDir,
+  saveImageFromUrl,
   contextMenuLabels,
   installContextMenu,
   installNavigationGuard,
@@ -70,6 +71,7 @@ const tDlg = createI18n({
     dlgSaveTitle: '保存 Markdown 文档',
     filterMarkdown: 'Markdown 文档',
     dlgPickImage: '选择图片',
+    dlgSaveImage: '保存图片',
     filterImages: '图片',
     untitledFile: '未命名文档',
     closeUnsavedMsg: '此文档有未保存的更改。',
@@ -82,6 +84,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Save Markdown Document',
     filterMarkdown: 'Markdown Documents',
     dlgPickImage: 'Choose an Image',
+    dlgSaveImage: 'Save Image',
     filterImages: 'Images',
     untitledFile: 'Untitled',
     closeUnsavedMsg: 'This document has unsaved changes.',
@@ -94,6 +97,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Markdown ドキュメントを保存',
     filterMarkdown: 'Markdown ドキュメント',
     dlgPickImage: '画像を選択',
+    dlgSaveImage: '画像を保存',
     filterImages: '画像',
     untitledFile: '無題',
     closeUnsavedMsg: 'このドキュメントに未保存の変更があります。',
@@ -106,6 +110,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Markdown 문서 저장',
     filterMarkdown: 'Markdown 문서',
     dlgPickImage: '이미지 선택',
+    dlgSaveImage: '이미지 저장',
     filterImages: '이미지',
     untitledFile: '제목 없음',
     closeUnsavedMsg: '이 문서에 저장하지 않은 변경 사항이 있습니다.',
@@ -118,6 +123,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Enregistrer le document Markdown',
     filterMarkdown: 'Documents Markdown',
     dlgPickImage: 'Choisir une image',
+    dlgSaveImage: "Enregistrer l'image",
     filterImages: 'Images',
     untitledFile: 'Sans titre',
     closeUnsavedMsg: 'Ce document contient des modifications non enregistrées.',
@@ -130,6 +136,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Markdown-Dokument speichern',
     filterMarkdown: 'Markdown-Dokumente',
     dlgPickImage: 'Bild auswählen',
+    dlgSaveImage: 'Bild speichern',
     filterImages: 'Bilder',
     untitledFile: 'Unbenannt',
     closeUnsavedMsg: 'Dieses Dokument enthält ungespeicherte Änderungen.',
@@ -142,6 +149,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Guardar documento Markdown',
     filterMarkdown: 'Documentos Markdown',
     dlgPickImage: 'Elegir imagen',
+    dlgSaveImage: 'Guardar imagen',
     filterImages: 'Imágenes',
     untitledFile: 'Sin título',
     closeUnsavedMsg: 'Este documento tiene cambios sin guardar.',
@@ -154,6 +162,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'บันทึกเอกสาร Markdown',
     filterMarkdown: 'เอกสาร Markdown',
     dlgPickImage: 'เลือกรูปภาพ',
+    dlgSaveImage: 'บันทึกรูปภาพ',
     filterImages: 'รูปภาพ',
     untitledFile: 'ไม่มีชื่อ',
     closeUnsavedMsg: 'เอกสารนี้มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก',
@@ -166,6 +175,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Simpan dokumen Markdown',
     filterMarkdown: 'Dokumen Markdown',
     dlgPickImage: 'Pilih gambar',
+    dlgSaveImage: 'Simpan Gambar',
     filterImages: 'Gambar',
     untitledFile: 'Tanpa judul',
     closeUnsavedMsg: 'Dokumen ini memiliki perubahan yang belum disimpan.',
@@ -178,6 +188,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Сохранить документ Markdown',
     filterMarkdown: 'Документы Markdown',
     dlgPickImage: 'Выберите изображение',
+    dlgSaveImage: 'Сохранить изображение',
     filterImages: 'Изображения',
     untitledFile: 'Без названия',
     closeUnsavedMsg: 'В этом документе есть несохранённые изменения.',
@@ -190,6 +201,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'حفظ مستند Markdown',
     filterMarkdown: 'مستندات Markdown',
     dlgPickImage: 'اختر صورة',
+    dlgSaveImage: 'حفظ الصورة',
     filterImages: 'صور',
     untitledFile: 'بدون عنوان',
     closeUnsavedMsg: 'يحتوي هذا المستند على تغييرات غير محفوظة.',
@@ -202,6 +214,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Salvar documento Markdown',
     filterMarkdown: 'Documentos Markdown',
     dlgPickImage: 'Escolher imagem',
+    dlgSaveImage: 'Salvar imagem',
     filterImages: 'Imagens',
     untitledFile: 'Sem título',
     closeUnsavedMsg: 'Este documento tem alterações não salvas.',
@@ -214,6 +227,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Salva documento Markdown',
     filterMarkdown: 'Documenti Markdown',
     dlgPickImage: 'Scegli immagine',
+    dlgSaveImage: 'Salva immagine',
     filterImages: 'Immagini',
     untitledFile: 'Senza titolo',
     closeUnsavedMsg: 'Questo documento contiene modifiche non salvate.',
@@ -226,6 +240,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Zapisz dokument Markdown',
     filterMarkdown: 'Dokumenty Markdown',
     dlgPickImage: 'Wybierz obraz',
+    dlgSaveImage: 'Zapisz obraz',
     filterImages: 'Obrazy',
     untitledFile: 'Bez tytułu',
     closeUnsavedMsg: 'Ten dokument ma niezapisane zmiany.',
@@ -238,6 +253,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Uložit dokument Markdown',
     filterMarkdown: 'Dokumenty Markdown',
     dlgPickImage: 'Vyberte obrázek',
+    dlgSaveImage: 'Uložit obrázek',
     filterImages: 'Obrázky',
     untitledFile: 'Bez názvu',
     closeUnsavedMsg: 'Tento dokument má neuložené změny.',
@@ -250,6 +266,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Markdown-document opslaan',
     filterMarkdown: 'Markdown-documenten',
     dlgPickImage: 'Kies een afbeelding',
+    dlgSaveImage: 'Afbeelding opslaan',
     filterImages: 'Afbeeldingen',
     untitledFile: 'Naamloos',
     closeUnsavedMsg: 'Dit document bevat niet-opgeslagen wijzigingen.',
@@ -262,6 +279,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Simpan dokumen Markdown',
     filterMarkdown: 'Dokumen Markdown',
     dlgPickImage: 'Pilih imej',
+    dlgSaveImage: 'Simpan Imej',
     filterImages: 'Imej',
     untitledFile: 'Tanpa tajuk',
     closeUnsavedMsg: 'Dokumen ini mempunyai perubahan yang belum disimpan.',
@@ -274,6 +292,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'שמירת מסמך Markdown',
     filterMarkdown: 'מסמכי Markdown',
     dlgPickImage: 'בחרו תמונה',
+    dlgSaveImage: 'שמור תמונה',
     filterImages: 'תמונות',
     untitledFile: 'ללא שם',
     closeUnsavedMsg: 'במסמך הזה יש שינויים שלא נשמרו.',
@@ -286,6 +305,7 @@ const tDlg = createI18n({
     dlgSaveTitle: 'Markdown दस्तावेज़ सहेजें',
     filterMarkdown: 'Markdown दस्तावेज़',
     dlgPickImage: 'छवि चुनें',
+    dlgSaveImage: 'छवि सहेजें',
     filterImages: 'छवियाँ',
     untitledFile: 'शीर्षकहीन',
     closeUnsavedMsg: 'इस दस्तावेज़ में सहेजे नहीं गए परिवर्तन हैं।',
@@ -298,6 +318,7 @@ const tDlg = createI18n({
     dlgSaveTitle: '儲存 Markdown 文件',
     filterMarkdown: 'Markdown 文件',
     dlgPickImage: '選擇圖片',
+    dlgSaveImage: '儲存圖片',
     filterImages: '圖片',
     untitledFile: '未命名文件',
     closeUnsavedMsg: '此文件有未儲存的變更。',
@@ -311,6 +332,7 @@ type DlgKey =
   | 'dlgSaveTitle'
   | 'filterMarkdown'
   | 'dlgPickImage'
+  | 'dlgSaveImage'
   | 'filterImages'
   | 'untitledFile'
   | 'closeUnsavedMsg'
@@ -360,6 +382,8 @@ const dirtyByWc = new Set<number>()
 const closeSaveWaiters = new Map<number, (ok: boolean) => void>()
 /** Resolvers for menu-triggered saves, resolved when the renderer's save invoke completes */
 const saveWaiters = new Map<number, (ok: boolean) => void>()
+/** Resolvers for MCP reads of the live document text, resolved by the renderer's reply */
+const readTextWaiters = new Map<number, (result: { text: string } | { error: string }) => void>()
 
 /** AI-authored content queued for an untitled markdown tab (create_document):
  * consumed by the renderer on boot; nothing is written to disk until the
@@ -481,6 +505,20 @@ export async function requestMarkdownClose(
   })
 }
 
+/**
+ * Drop assets staged next to the document but never written into it — the MCP
+ * "discard unsaved changes" path, same cleanup the interactive close prompt
+ * runs when the user picks "Don't Save".
+ */
+export async function markdownDiscardPendingAssets(contents: WebContents): Promise<void> {
+  const documentPath = savePathByWc.get(contents.id)
+  if (!documentPath) return
+  const discarded = await discardPendingOwnedAssets(documentPath)
+  if (discarded.errors.length > 0) {
+    console.warn('[markdown] pending asset discard incomplete:', discarded.errors)
+  }
+}
+
 /** Menu Save / Save As: ask the renderer to serialize and save; clean views resolve true immediately on plain save */
 export function requestMarkdownSave(contents: WebContents, mode: SaveMode): Promise<boolean> {
   if (contents.isDestroyed()) return Promise.resolve(false)
@@ -497,6 +535,89 @@ export function requestMarkdownSave(contents: WebContents, mode: SaveMode): Prom
       resolve(ok)
     })
     contents.send(MARKDOWN_CHANNELS.saveRequest, mode)
+  })
+}
+
+/**
+ * Read the live document text for an MCP `open_documents` read. Unlike reading
+ * the file from disk this includes unsaved edits, which is the whole point of
+ * reading an *open* document.
+ */
+export function markdownReadText(contents: WebContents): Promise<string> {
+  if (contents.isDestroyed()) return Promise.reject(new Error('the document is no longer open'))
+  const wcId = contents.id
+  return new Promise<string>((resolve, reject) => {
+    // The renderer registers its listener while mounting, which can land after
+    // the tab appears; a request sent before that is dropped silently. Re-send
+    // on an interval until the renderer answers, the way the shell's own
+    // control channel polls for a not-yet-ready editor.
+    let settled = false
+    const settle = (finish: () => void): void => {
+      if (settled) return
+      settled = true
+      clearInterval(retry)
+      clearTimeout(timer)
+      readTextWaiters.delete(wcId)
+      finish()
+    }
+    const retry = setInterval(() => {
+      if (contents.isDestroyed()) {
+        settle(() => reject(new Error('the document is no longer open')))
+        return
+      }
+      contents.send(MARKDOWN_CHANNELS.readTextRequest)
+    }, 250)
+    const timer = setTimeout(
+      () => settle(() => reject(new Error('timed out reading the document'))),
+      30_000,
+    )
+    readTextWaiters.set(wcId, (result) => {
+      settle(() => {
+        if ('text' in result) resolve(result.text)
+        else reject(new Error(result.error))
+      })
+    })
+    contents.send(MARKDOWN_CHANNELS.readTextRequest)
+  })
+}
+
+/**
+ * Save the live document to `filePath` with no dialog — the MCP close path
+ * ("save before closing") and any agent that needs a silent write. Pointing the
+ * view's save target at `filePath` first keeps `resolveSaveTarget` from ever
+ * opening the save dialog, so the renderer's normal save (assets, manifest and
+ * rewrite handling included) runs unattended.
+ */
+export function markdownSaveToPath(contents: WebContents, filePath: string): Promise<void> {
+  if (contents.isDestroyed()) return Promise.reject(new Error('the document is no longer open'))
+  const wcId = contents.id
+  const previousPath = savePathByWc.get(wcId)
+  const previousOpenPath = openPathByWc.get(wcId)
+  savePathByWc.set(wcId, filePath)
+  const allowed = allowedByWc.get(wcId) ?? new Set<string>()
+  allowed.add(filePath)
+  allowedByWc.set(wcId, allowed)
+  return new Promise<void>((resolve, reject) => {
+    const restore = (): void => {
+      if (previousPath === undefined) savePathByWc.delete(wcId)
+      else savePathByWc.set(wcId, previousPath)
+      if (previousOpenPath === undefined) openPathByWc.delete(wcId)
+      else openPathByWc.set(wcId, previousOpenPath)
+    }
+    const timer = setTimeout(() => {
+      saveWaiters.delete(wcId)
+      restore()
+      reject(new Error('timed out saving the document'))
+    }, 120_000)
+    saveWaiters.set(wcId, (ok) => {
+      clearTimeout(timer)
+      if (ok) resolve()
+      else {
+        restore()
+        reject(new Error('could not save the document'))
+      }
+    })
+    contents.send(MARKDOWN_CHANNELS.saveRequest, 'save')
   })
 }
 
@@ -815,6 +936,15 @@ function registerMarkdownIpc(): void {
     '.gif': 'image/gif',
   }
 
+  ipcMain.handle(MARKDOWN_CHANNELS.saveImageAs, async (e, src: unknown) => {
+    if (typeof src !== 'string') return { ok: false }
+    const win = BrowserWindow.fromWebContents(e.sender)
+    return saveImageFromUrl(win, src, {
+      title: tm('dlgSaveImage'),
+      fallbackDir: configuredDefaultSaveDir(app),
+    })
+  })
+
   ipcMain.handle(
     MARKDOWN_CHANNELS.readImage,
     async (e, src: unknown): Promise<ImageData | null> => {
@@ -940,6 +1070,17 @@ function registerMarkdownIpc(): void {
     const waiter = closeSaveWaiters.get(e.sender.id)
     closeSaveWaiters.delete(e.sender.id)
     waiter?.(ok === true)
+  })
+
+  ipcMain.on(MARKDOWN_CHANNELS.readTextResult, (e, result: unknown) => {
+    const waiter = readTextWaiters.get(e.sender.id)
+    readTextWaiters.delete(e.sender.id)
+    if (!waiter) return
+    if (result && typeof result === 'object' && 'text' in result) {
+      waiter({ text: String((result as { text: unknown }).text) })
+    } else {
+      waiter({ error: 'the document could not be read' })
+    }
   })
 
   // safety net for menu saves the renderer declined without invoking save()

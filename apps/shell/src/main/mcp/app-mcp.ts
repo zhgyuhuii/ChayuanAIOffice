@@ -2,7 +2,11 @@ import { McpServerService, DEFAULT_MCP_PORT, type McpToolDefinition } from './mc
 import { McpLogger } from './mcp-logger'
 import type { CliRunner } from './cli-runner'
 import { createDocumentTools, documentDriver, type DocsControl } from './tools/document-tools'
+import { createPdfTools } from './tools/pdf-tools'
+import { createSlidesTools, slidesDriver, type SlidesControl } from './tools/slides-tools'
+import { createSheetsTools, sheetsDriver, type SheetsControl } from './tools/sheets-tools'
 import { createSessionHost, createSessionTools, type FamilyDriver } from './tools/session-tools'
+import { createOpenDocumentTools, type OpenDocumentsControl } from './tools/open-documents-tools'
 
 /**
  * Main-process wiring for the MCP server.
@@ -22,8 +26,17 @@ export interface McpRuntimeDeps {
   openPath: (filePath: string) => boolean
   /** drive a visible docs editor (live document session); absent in headless runs */
   docsControl?: DocsControl
+  /** drive a visible slides deck (main-process session); absent in headless runs */
+  slidesControl?: SlidesControl
+  /** drive a visible sheets grid (renderer workbook session); absent in headless runs */
+  sheetsControl?: SheetsControl
   /** the bundled chatoffice CLI, backing the headless create/read tools; absent when unavailable */
   cliRunner?: CliRunner
+  /**
+   * documents the user has open (list/read/close); absent in headless runs,
+   * where there is no tab manager to ask
+   */
+  openDocumentsControl?: OpenDocumentsControl
   /** where the MCP log file lives (userData); logging is unavailable without it */
   logFilePath?: string
 }
@@ -90,12 +103,21 @@ export function revealMcpLogFile(): void {
 
 function buildTools(): McpToolDefinition[] {
   if (!deps) throw new Error('MCP runtime not configured')
+  // get_app_info advertises what the registered tool families can generate
+  const extraFormats = [
+    ...(deps.slidesControl ? ['pptx'] : []),
+    ...(deps.sheetsControl ? ['xlsx'] : []),
+  ]
   // one session host per tool set: create_session / save_session drive whichever
   // family is active, and each family's content tools address that same tab.
   // buildTools runs once per client session (see the server's toolsFactory), so
   // each connected client gets its own active session rather than sharing one.
   const host = createSessionHost()
-  const drivers: FamilyDriver[] = [...(deps.docsControl ? [documentDriver(deps.docsControl)] : [])]
+  const drivers: FamilyDriver[] = [
+    ...(deps.docsControl ? [documentDriver(deps.docsControl)] : []),
+    ...(deps.slidesControl ? [slidesDriver(deps.slidesControl)] : []),
+    ...(deps.sheetsControl ? [sheetsDriver(deps.sheetsControl)] : []),
+  ]
   const cli = deps.cliRunner
   return [
     // the session entry point first: an agent picking a tool sees create_session
@@ -114,10 +136,34 @@ function buildTools(): McpToolDefinition[] {
           if (!opened) throw new Error(`could not open ${filePath} in ChaAI Office`)
         },
         docs: deps.docsControl,
+        extraFormats,
         ...(cli ? { cli } : {}),
       },
       host,
     ),
+    ...createSlidesTools(
+      {
+        defaultSaveDir: deps.defaultSaveDir,
+        background: currentSettings.background,
+        slides: deps.slidesControl,
+        ...(cli ? { cli } : {}),
+      },
+      host,
+    ),
+    ...createSheetsTools(
+      {
+        defaultSaveDir: deps.defaultSaveDir,
+        background: currentSettings.background,
+        sheets: deps.sheetsControl,
+        ...(cli ? { cli } : {}),
+      },
+      host,
+    ),
+    // documents the user has open, independent of the session above
+    ...createOpenDocumentTools({
+      defaultSaveDir: deps.defaultSaveDir,
+      ...(deps.openDocumentsControl ? { control: deps.openDocumentsControl } : {}),
+    }),
   ]
 }
 
@@ -130,6 +176,7 @@ function ensureService(): McpServerService {
       // active editing session; the factory re-reads settings at connect time
       toolsFactory: buildTools,
       logger: mcpLogger,
+      version: deps.version,
     })
   }
   return service
@@ -188,7 +235,14 @@ export function mcpStatus(): McpStatus {
     background: currentSettings.background,
     logging: currentSettings.logging,
     url: running ? service!.getUrl() : null,
-    capabilities: ['docs'],
+    capabilities: [
+      'docs',
+      ...(deps?.slidesControl ? ['slides'] : []),
+      ...(deps?.sheetsControl ? ['sheets'] : []),
+      // read_pdf is headless and always registered, so the family is always
+      // visible (read-only until the pdf editor is driven)
+      'pdf',
+    ],
   }
 }
 
