@@ -48,7 +48,7 @@ describe('chatoffice create/slides (pptx ops)', () => {
     expect(deck.slides).toBe(2)
     expect(deck.pages[0].id).toMatch(/^s_/)
     const styled = deck.pages[0].elements.find(
-      (e: { text?: string }) => e.text === 'Hello genoffice',
+      (e: { text?: string }) => e.text === 'Hello chatoffice',
     )
     expect(styled.effective).toMatchObject({ fontSizePt: 32, bold: true, italic: false })
     expect(styled.effective.src.fontSize).toBe('run')
@@ -348,7 +348,7 @@ describe('slides apply runs ops in order', () => {
   })
 })
 
-describe('genoffice slides (arrangement, table styles, layouts)', () => {
+describe('chatoffice slides (arrangement, table styles, layouts)', () => {
   it('lists layouts, adds a slide by layout name, styles a table and glues a connector', async () => {
     const dir = tempDir()
     const out = join(dir, 'arrange.pptx')

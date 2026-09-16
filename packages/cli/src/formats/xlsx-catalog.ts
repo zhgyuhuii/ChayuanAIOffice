@@ -1,4 +1,4 @@
-import { workbookOperationSchema } from '@genoffice/xlsx-gateway/domain/workbook-dsl'
+import { workbookOperationSchema } from '@chatoffice/xlsx-gateway/domain/workbook-dsl'
 import { z } from 'zod'
 import {
   renderGroups,
@@ -107,7 +107,7 @@ const NOTES: Record<string, string> = {
   add_chart:
     'header row and a leading category column are detected; the chart lands two columns right of the data unless anchorCell',
   edit_chart:
-    '`genoffice sheet read` lists chart paths under features.charts; repointing a series at other cells needs the app',
+    '`chatoffice sheet read` lists chart paths under features.charts; repointing a series at other cells needs the app',
   add_image: 'path is a local file (absolute or relative) or an https URL',
   add_shape: 'shapeType "textbox" for a text box',
   sort_range: 'hasHeader keeps the first row in place',
@@ -115,8 +115,8 @@ const NOTES: Record<string, string> = {
 }
 
 const HEADER = [
-  'Excel ops (genoffice sheet apply --ops): a JSON array; every entry has "op". Address a worksheet with',
-  '"sheet": "<name>" (omitted = the active sheet; `genoffice sheet read` lists names). Ranges are A1:D9,',
+  'Excel ops (chatoffice sheet apply --ops): a JSON array; every entry has "op". Address a worksheet with',
+  '"sheet": "<name>" (omitted = the active sheet; `chatoffice sheet read` lists names). Ranges are A1:D9,',
   'rows are 1-based, columns are letters. Strings starting with "=" are formulas.',
   'Field notation: bare = string, n = number, bool = boolean, ? = optional, a|b = one of.',
 ]

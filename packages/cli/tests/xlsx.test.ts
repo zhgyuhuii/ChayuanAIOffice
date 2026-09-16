@@ -461,7 +461,7 @@ describe('chaoffice sheet read: --cols, --max-rows, --where, --stats', () => {
   })
 })
 
-describe('genoffice convert xlsx → csv', () => {
+describe('chatoffice convert xlsx → csv', () => {
   it.skipIf(!sidecar)('writes the active sheet as displayed text with a BOM', async () => {
     const dir = tempDir()
     const table = join(dir, 'table.json')

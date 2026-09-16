@@ -73,7 +73,7 @@ export function mcpConfigJson(launch: McpLaunch): string {
   return json.replace(/"args": \[[^\]]*\]/, `"args": ${JSON.stringify(launch.args)}`)
 }
 
-const api = () => window.aiOfficeIntegrations
+const api = () => window.chatOfficeIntegrations
 
 const api = () => window.chatOfficeIntegrations
 

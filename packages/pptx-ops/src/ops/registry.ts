@@ -19,7 +19,7 @@
  * parts back once per transaction (the flush also re-materializes every deck
  * slide, because slides resolve inherited styles against the chrome).
  */
-import { NAMED_ACTIONS } from '@genoffice/pptx-engine'
+import { NAMED_ACTIONS } from '@chatoffice/pptx-engine'
 import {
   elementDurableId,
   groupChildDurableId,

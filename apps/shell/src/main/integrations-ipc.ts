@@ -14,8 +14,8 @@ import {
   uninstallSkill,
   type BundledSkill,
   type SkillLedger,
-} from '@genoffice/cli/agent-skills'
-import { inspectCliLink } from '@genoffice/cli/install'
+} from '@chatoffice/cli/agent-skills'
+import { inspectCliLink } from '@chatoffice/cli/install'
 import { readAppSettings, writeAppSetting } from './app-settings'
 import { isEphemeralInstall } from './cli-link'
 import {

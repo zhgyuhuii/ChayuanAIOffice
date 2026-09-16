@@ -48,7 +48,7 @@ import { computedValues } from './xlsx'
 
 const OP_REJECTED: ErrorHints = {
   reason: 'op_rejected',
-  suggestion: 'fix the op against `genoffice guide sheets`, then resend the whole batch',
+  suggestion: 'fix the op against `chatoffice guide sheets`, then resend the whole batch',
 }
 /** Pins a rejection to one op so a non-atomic `sheet apply` can drop that op and rerun the rest. */
 function pinned(
@@ -65,8 +65,8 @@ function pinned(
 function unknownOpSuggestion(op: string): string {
   const guess = didYouMean(op, SUPPORTED_DSL_OPS)
   return guess
-    ? `did you mean "${guess}"? (\`genoffice guide sheets\` lists every op), then resend the whole batch`
-    : 'run `genoffice guide sheets` for the op list, then resend the whole batch'
+    ? `did you mean "${guess}"? (\`chatoffice guide sheets\` lists every op), then resend the whole batch`
+    : 'run `chatoffice guide sheets` for the op list, then resend the whole batch'
 }
 const TWO_BATCHES: ErrorHints = {
   reason: 'op_rejected',
@@ -277,9 +277,9 @@ export async function runWorkbookDsl(
       try {
         plan = adapter.plan({
           dslVersion: 1,
-          transactionId: `genoffice-${Date.now()}-${position}`,
+          transactionId: `chatoffice-${Date.now()}-${position}`,
           baseRevision: adapter.getSnapshot().revision,
-          summary: 'genoffice sheet apply',
+          summary: 'chatoffice sheet apply',
           operations: [op],
         })
       } catch (err) {

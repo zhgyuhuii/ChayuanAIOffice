@@ -6,7 +6,7 @@ import type { App, ContextMenuParams, MenuItemConstructorOptions, WebContents } 
 import { saveImageFromUrl } from './save-image'
 
 /** Native "View Image" hands the src to the renderer, which owns the viewer overlay */
-export const VIEW_IMAGE_CHANNEL = 'genoffice:view-image'
+export const VIEW_IMAGE_CHANNEL = 'chatoffice:view-image'
 
 export interface ContextMenuLabels {
   cut: string

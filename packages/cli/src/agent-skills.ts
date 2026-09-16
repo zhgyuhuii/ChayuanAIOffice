@@ -26,7 +26,7 @@ export const SKILL_NAME = 'chaoffice'
 /** the pre-rename skill name; its dirs are removed when the new one installs */
 export const LEGACY_SKILL_NAME = 'chatoffice'
 
-/** app-settings.json key under which every install this machine's GenOffice wrote is remembered */
+/** app-settings.json key under which every install this machine's ChaAI Office wrote is remembered */
 export const LEDGER_KEY = 'agentSkillInstalls'
 
 export type AgentId =
@@ -41,7 +41,7 @@ export interface AgentTarget {
 }
 
 export type SkillInstallStatus =
-  /** no genoffice/ folder in the skills directory */
+  /** no chatoffice/ folder in the skills directory */
   | 'missing'
   /** written by this app, same version and bytes as the bundled skill */
   | 'installed'
@@ -53,12 +53,12 @@ export type SkillInstallStatus =
   | 'foreign'
   /** a newer skill version than the one bundled, whoever wrote it */
   | 'newer'
-  /** genoffice/ exists but does not hold our skill */
+  /** chatoffice/ exists but does not hold our skill */
   | 'occupied'
 
 export interface SkillInstallState {
   status: SkillInstallStatus
-  /** `<skillsDir>/genoffice/SKILL.md` */
+  /** `<skillsDir>/chatoffice/SKILL.md` */
   path: string
   installedVersion?: string
   /** installed version is older than the bundled one (foreign rows offer an update then) */

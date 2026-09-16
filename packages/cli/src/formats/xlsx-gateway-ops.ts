@@ -242,7 +242,7 @@ export async function buildGatewayPayloads(input: GatewayBuildInput): Promise<Ga
       { failures: [classifyOpError(index, op, message)] },
       {
         reason: 'op_rejected',
-        suggestion: 'fix the op against `genoffice guide sheets`, then resend the whole batch',
+        suggestion: 'fix the op against `chatoffice guide sheets`, then resend the whole batch',
       },
     )
   }

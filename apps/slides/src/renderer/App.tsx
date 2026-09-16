@@ -3397,9 +3397,9 @@ export function App() {
 
   const _fileName = slide ? path?.split('/').pop() || t('appUntitledPresentation') : undefined
 
-  // genoffice CLI (`open --slide/--el`, `selection`): the shell evaluates this hook
+  // chatoffice CLI (`open --slide/--el`, `selection`): the shell evaluates this hook
   useEffect(() => {
-    ;(window as unknown as Record<string, unknown>).__genofficeControl = (req: ControlRequest) =>
+    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
       handleSlidesControl(req, {
         slides,
         path,

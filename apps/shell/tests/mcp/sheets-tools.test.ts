@@ -38,7 +38,7 @@ async function freePort(): Promise<number> {
 }
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'genoffice-mcp-xlsx-'))
+  dir = await mkdtemp(join(tmpdir(), 'chaoffice-mcp-xlsx-'))
 })
 
 afterEach(async () => {

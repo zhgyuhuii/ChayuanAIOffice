@@ -10,11 +10,11 @@ import type { TFunc } from './locale'
 
 /**
  * mcp.json snippet a client needs to reach the local server. Named apart from
- * the stdio `genoffice` entry (part A) so both can live in one config file.
+ * the stdio `chatoffice` entry (part A) so both can live in one config file.
  */
 export function mcpConfigExample(port: string): string {
   return JSON.stringify(
-    { mcpServers: { 'genoffice-editor': { url: `http://127.0.0.1:${port}/mcp` } } },
+    { mcpServers: { 'chatoffice-editor': { url: `http://127.0.0.1:${port}/mcp` } } },
     null,
     2,
   )
@@ -87,7 +87,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
 
   useEffect(() => {
     let alive = true
-    void window.aiOffice.getMcpStatus?.().then((s) => {
+    void window.chatOffice.getMcpStatus?.().then((s) => {
       if (alive) takeStatus(s)
     })
     return () => {
@@ -107,7 +107,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
     logging?: boolean
   }) => {
     setSaving(true)
-    void window.aiOffice
+    void window.chatOffice
       .setMcpSettings({
         enabled: patch.enabled ?? enabled,
         port: patch.port ?? (Number(port) || 3093),
@@ -120,7 +120,7 @@ export function McpServerSection({ t }: { t: TFunc }) {
   }
 
   const fetchLogs = useCallback(() => {
-    void window.aiOffice
+    void window.chatOffice
       .getMcpLogs?.()
       .then((lines) => setLogs(Array.isArray(lines) ? lines : []))
       .catch(() => {})
@@ -267,13 +267,13 @@ export function McpServerSection({ t }: { t: TFunc }) {
                 <button className="set-btn" onClick={fetchLogs}>
                   {t('setMcpLogRefresh')}
                 </button>
-                <button className="set-btn" onClick={() => void window.aiOffice.openMcpLogFile?.()}>
+                <button className="set-btn" onClick={() => void window.chatOffice.openMcpLogFile?.()}>
                   {t('setMcpLogOpen')}
                 </button>
                 <button
                   className="set-btn"
                   onClick={() => {
-                    void window.aiOffice.clearMcpLogs?.().then(fetchLogs)
+                    void window.chatOffice.clearMcpLogs?.().then(fetchLogs)
                   }}
                 >
                   {t('setMcpLogClear')}

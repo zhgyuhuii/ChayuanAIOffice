@@ -1,4 +1,4 @@
-import { createI18n } from '@genoffice/i18n'
+import { createI18n } from '@chatoffice/i18n'
 
 const zh = {
   title: '文件',

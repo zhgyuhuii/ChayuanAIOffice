@@ -497,7 +497,7 @@ describe('chatoffice sheet read: features and --formats', () => {
   )
 })
 
-describe('genoffice sheet apply --ops: pivots, sparklines, print setup', () => {
+describe('chatoffice sheet apply --ops: pivots, sparklines, print setup', () => {
   const SALES = [
     ['region', 'product', 'amount'],
     ['North', 'A', 10],

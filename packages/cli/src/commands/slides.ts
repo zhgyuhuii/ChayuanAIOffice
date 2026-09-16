@@ -112,7 +112,7 @@ export const slidesCommand: CommandDef = {
           undefined,
           {
             reason: verb === undefined ? 'missing_argument' : 'invalid_argument',
-            suggestion: 'run `genoffice help slides`',
+            suggestion: 'run `chatoffice help slides`',
           },
         )
     }

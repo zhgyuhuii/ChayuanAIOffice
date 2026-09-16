@@ -163,7 +163,7 @@ async function run(
         ctx.warn({
           code: 'images_dropped',
           message: `${exported.skipped.images} image(s) have no Markdown form and were dropped`,
-          suggestion: 'use `genoffice docs read --html` when the images matter',
+          suggestion: 'use `chatoffice docs read --html` when the images matter',
         })
       }
       return {

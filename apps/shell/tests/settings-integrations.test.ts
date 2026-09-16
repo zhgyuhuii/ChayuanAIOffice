@@ -40,7 +40,7 @@ beforeEach(() => {
     aiLocalToolStatus: async () => ({ state: 'missing' }),
     aiLocalToolInstall: async () => ({ ok: false }),
   } as unknown as HomeApi
-  window.aiOffice = {
+  window.chatOffice = {
     getTheme: async () => 'system',
     getDefaultSaveDir: async () => '',
     getAnalyticsEnabled: async () => true,

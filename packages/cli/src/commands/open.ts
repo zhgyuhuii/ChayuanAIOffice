@@ -74,7 +74,7 @@ export const openCommand: CommandDef = {
 async function spawnApp(path: string, ctx: CommandContext): Promise<string> {
   const launch = appLaunch(ctx.env)
   if (!launch) {
-    throw new CliError(EXIT.app, 'GenOffice app not found', { hint: 'set GENOFFICE_APP_BIN' })
+    throw new CliError(EXIT.app, 'ChaAI Office app not found', { hint: 'set GENOFFICE_APP_BIN' })
   }
   const env = { ...ctx.env }
   delete env.ELECTRON_RUN_AS_NODE
@@ -85,7 +85,7 @@ async function spawnApp(path: string, ctx: CommandContext): Promise<string> {
       env,
     })
     child.once('error', (err) =>
-      reject(new CliError(EXIT.app, `failed to start GenOffice: ${err.message}`)),
+      reject(new CliError(EXIT.app, `failed to start ChaAI Office: ${err.message}`)),
     )
     child.once('spawn', () => {
       child.unref()
@@ -163,7 +163,7 @@ export function parseTarget(args: ParsedArgs, path: string): ControlTarget | und
     EXIT.usage,
     `targets are supported for pptx, docx, xlsx and pdf files, not ${ext || 'this file'}`,
     { supported: ['.pptx', '.docx', '.xlsx', '.pdf'] },
-    { reason: 'unsupported', suggestion: 'run `genoffice open <file>` without a target' },
+    { reason: 'unsupported', suggestion: 'run `chatoffice open <file>` without a target' },
   )
 }
 

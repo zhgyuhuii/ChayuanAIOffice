@@ -114,7 +114,7 @@ export const docsCommand: CommandDef = {
           undefined,
           {
             reason: verb === undefined ? 'missing_argument' : 'invalid_argument',
-            suggestion: 'run `genoffice help docs`',
+            suggestion: 'run `chatoffice help docs`',
           },
         )
     }

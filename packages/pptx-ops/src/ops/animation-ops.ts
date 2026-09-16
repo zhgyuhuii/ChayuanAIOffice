@@ -20,7 +20,7 @@ import {
   type Slide,
   type SlideAnimation,
   type SlideElement,
-} from '@genoffice/pptx-engine'
+} from '@chatoffice/pptx-engine'
 import {
   GuidedError,
   register,

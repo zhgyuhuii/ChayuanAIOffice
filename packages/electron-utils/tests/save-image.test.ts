@@ -10,7 +10,7 @@ describe('isSavableImageUrl', () => {
   })
   it('refuses local files, renderer blobs and non-URLs', () => {
     expect(isSavableImageUrl('file:///etc/passwd')).toBe(false)
-    expect(isSavableImageUrl('blob:genoffice-app://docs/1234')).toBe(false)
+    expect(isSavableImageUrl('blob:chatoffice-app://docs/1234')).toBe(false)
     expect(isSavableImageUrl('assets/image.png')).toBe(false)
   })
 })

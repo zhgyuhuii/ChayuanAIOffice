@@ -96,7 +96,7 @@ export const sheetCommand: CommandDef = {
           undefined,
           {
             reason: verb === undefined ? 'missing_argument' : 'invalid_argument',
-            suggestion: 'run `genoffice help sheet`',
+            suggestion: 'run `chatoffice help sheet`',
           },
         )
     }

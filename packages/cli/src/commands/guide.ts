@@ -77,7 +77,7 @@ export const guideCommand: CommandDef = {
           reason: 'invalid_argument',
           suggestion: guess
             ? `did you mean ${guess}?`
-            : `run \`genoffice guide ${domain}\` for the groups and ops`,
+            : `run \`chatoffice guide ${domain}\` for the groups and ops`,
         },
       )
     }
@@ -104,7 +104,7 @@ async function load(
     const { catalog, htmlRules } = await docsCatalog()
     return { catalog, text: (group) => docsGuideText(catalog, htmlRules, group) }
   }
-  const docs = await import('@genoffice/pptx-ops/op-docs')
+  const docs = await import('@chatoffice/pptx-ops/op-docs')
   const catalog = slidesCatalog(docs)
   return {
     catalog,
@@ -142,7 +142,7 @@ function slidesCatalog(docs: SlidesOpDocs): OpCatalog {
 
 function docsGuideText(catalog: OpCatalog, htmlRules: string, group?: string): string {
   const lines = [
-    'Word ops (genoffice docs apply --ops): a JSON array; every entry has "op".',
+    'Word ops (chatoffice docs apply --ops): a JSON array; every entry has "op".',
     'Targets: { "blockIndexes": [..] } or { "nodeType": "docHeading"|"docParagraph"|"docListItem"|"image", "headingLevel"? }; get indexes from `chaoffice docs read`.',
     'Field notation: bare = string, n = number, bool = boolean, ? = optional, a|b = one of.',
     '',

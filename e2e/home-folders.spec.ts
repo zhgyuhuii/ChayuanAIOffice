@@ -20,7 +20,7 @@ test.describe('home folders panel', () => {
   let root: string
 
   test.beforeEach(() => {
-    root = realpathSync(mkdtempSync(join(tmpdir(), 'genoffice-e2e-root-')))
+    root = realpathSync(mkdtempSync(join(tmpdir(), 'chatoffice-e2e-root-')))
     mkdirSync(join(root, 'Clients', 'A Corp'), { recursive: true })
     mkdirSync(join(root, 'Clients', 'Contracts'), { recursive: true })
     mkdirSync(join(root, 'Personal'))

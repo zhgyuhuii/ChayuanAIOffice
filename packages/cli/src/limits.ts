@@ -1,7 +1,7 @@
 import { closeSync, fstatSync, openSync, readSync } from 'node:fs'
-import { DOCX_ZIP_LIMITS } from '@genoffice/docx-engine'
-import { PPTX_ZIP_LIMITS } from '@genoffice/pptx-engine'
-import { XLSX_ZIP_LIMITS } from '@genoffice/xlsx-gateway/gateway/xlsx-gateway'
+import { DOCX_ZIP_LIMITS } from '@chatoffice/docx-engine'
+import { PPTX_ZIP_LIMITS } from '@chatoffice/pptx-engine'
+import { XLSX_ZIP_LIMITS } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { CliError, EXIT } from './result'
 
 export interface ZipDirectoryEntry {
@@ -197,7 +197,7 @@ export function assertPackageWithinLimits(path: string, ext: string): void {
     throw refuse(
       `${path}: zip entry "${escaping.name}" escapes the package`,
       { entry: escaping.name },
-      'repair the file in Office or re-save it; genoffice does not open packages with unsafe entry paths',
+      'repair the file in Office or re-save it; chatoffice does not open packages with unsafe entry paths',
     )
   }
   let total = 0
@@ -207,7 +207,7 @@ export function assertPackageWithinLimits(path: string, ext: string): void {
       throw refuse(
         `${path}: part ${e.name} declares ${e.uncompressed} uncompressed bytes (limit ${limits.maxPartBytes})`,
         { entry: e.name, bytes: e.uncompressed, limit: limits.maxPartBytes },
-        'remove or shrink the oversized part; genoffice refuses packages over detail.limit bytes',
+        'remove or shrink the oversized part; chatoffice refuses packages over detail.limit bytes',
       )
     }
     if (
@@ -232,7 +232,7 @@ export function assertPackageWithinLimits(path: string, ext: string): void {
     throw refuse(
       `${path}: total uncompressed size ${total} exceeds the ${limits.maxTotalBytes} limit`,
       { bytes: total, limit: limits.maxTotalBytes },
-      'split the document or remove embedded media; genoffice refuses packages over detail.limit bytes',
+      'split the document or remove embedded media; chatoffice refuses packages over detail.limit bytes',
     )
   }
   if (total > RATIO_FLOOR_BYTES && total / Math.max(1, totalCompressed) > MAX_COMPRESSION_RATIO) {
