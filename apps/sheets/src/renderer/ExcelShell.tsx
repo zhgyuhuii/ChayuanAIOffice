@@ -3,7 +3,14 @@ import type { IFunctionInfo } from '@univerjs/engine-formula'
 import { platformShortcuts } from '@chatoffice/i18n'
 import { TabStripArrows, useTabStripOverflow } from '@chatoffice/ribbon'
 import { SHAPE_GALLERY_GROUPS, ShapePreview } from '@chatoffice/ui/shape-gallery'
-import { AiPanelToggle, ColorPicker, Dropdown, DockShell, useDismissablePopover, isMacStandaloneWindow } from '@chatoffice/ui'
+import {
+  AiPanelToggle,
+  ColorPicker,
+  Dropdown,
+  DockShell,
+  useDismissablePopover,
+  isMacStandaloneWindow,
+} from '@chatoffice/ui'
 
 import {
   CaretIcon,
@@ -7182,11 +7189,19 @@ function RibbonGroup({
   const collector = useContext(BandCollectorContext)
   const sectionKey = useId()
   const sectionNode = <div className="band-section-body">{children}</div>
+  // 无 deps 刷新 effect 不能带 unregister 清理：清理每次重跑前删条目并 bump，
+  // register 紧接着以 !prev 再 bump——停靠窄视图任一组降到 level 3 即无限
+  // 乒乓（Maximum update depth 洪水）。真正的注销只发生在两种时机：
+  // 离开 level 3（下方幂等删，删不中不再 bump）与组件卸载（独立 cleanup）。
   useEffect(() => {
-    if (level !== 3 || !collector) return
+    if (!collector) return
+    if (level !== 3) {
+      collector.unregister(sectionKey)
+      return
+    }
     collector.register({ id: sectionKey, label, node: sectionNode })
-    return () => collector.unregister(sectionKey)
   })
+  useEffect(() => () => collector?.unregister(sectionKey), [collector, sectionKey])
   if (level === 3) {
     return (
       <section className="ribbon-group ribbon-group-named" aria-label={label}>
