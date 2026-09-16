@@ -282,6 +282,116 @@ describe('agent activity feedback (thinking + tool timeline)', () => {
     })
     expect(controller.isBusy('s1')).toBe(false)
   })
+
+  it('search hits land as a clickable file list on the tool entry', async () => {
+    let wireCount = 0
+    let listener: ((chunk: { requestId: string; type: string }) => void) | null = null
+    const bridge: HomeAgentBridge = {
+      aiStream: async (request) => {
+        wireCount += 1
+        if (wireCount === 1) {
+          listener?.({
+            requestId: request.requestId,
+            type: 'tool-call',
+            toolCall: { id: 'call-1', name: 'search_files', input: { query: '纪要' } },
+          } as never)
+        } else {
+          listener?.({ requestId: request.requestId, type: 'delta', text: '找到了' } as never)
+        }
+        listener?.({ requestId: request.requestId, type: 'done' })
+      },
+      aiStreamCancel: async () => {},
+      onAiStream: (l) => {
+        listener = l as typeof listener
+        return () => {
+          listener = null
+        }
+      },
+      createDocument: async () => ({ ok: true, path: '/tmp/x.docx' }) as never,
+      readAttachment: async () => ({ ok: true, name: '', totalChars: 0, text: '' }) as never,
+      readAttachmentImage: async () => ({ ok: false }),
+      recents: async () =>
+        ({
+          entries: [
+            { name: '会议纪要.docx', path: '/tmp/会议纪要.docx', ext: 'docx', mtimeMs: 2 },
+            { name: '会议纪要.xlsx', path: '/tmp/会议纪要.xlsx', ext: 'xlsx', mtimeMs: 1 },
+          ],
+        }) as never,
+      starred: async () => ({ entries: [] }) as never,
+      listProjectFiles: async () => [],
+      openWithHandoff: async () => {},
+      getCurrentModel: () => ({ profileId: 'p', modelId: 'm' }) as never,
+    }
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.send('s1', [], '找会议纪要', [])
+    await until(() => session.messages.at(-1)?.text === '找到了')
+    expect(session.messages.at(-1)!.relayTools![0]!.files).toEqual([
+      { name: '会议纪要.docx', path: '/tmp/会议纪要.docx' },
+      { name: '会议纪要.xlsx', path: '/tmp/会议纪要.xlsx' },
+    ])
+  })
+
+  it('update_task_list snapshots ride the message (no chip in the timeline)', async () => {
+    let wireCount = 0
+    let listener: ((chunk: { requestId: string; type: string }) => void) | null = null
+    const bridge: HomeAgentBridge = {
+      aiStream: async (request) => {
+        wireCount += 1
+        if (wireCount === 1) {
+          listener?.({
+            requestId: request.requestId,
+            type: 'tool-call',
+            toolCall: {
+              id: 'call-1',
+              name: 'update_task_list',
+              input: {
+                tasks: [
+                  { title: '检索资料', status: 'done' },
+                  { title: '起草正文', status: 'in_progress' },
+                  { title: '核验数字', status: 'pending' },
+                ],
+              },
+            },
+          } as never)
+        } else {
+          listener?.({ requestId: request.requestId, type: 'delta', text: '开工' } as never)
+        }
+        listener?.({ requestId: request.requestId, type: 'done' })
+      },
+      aiStreamCancel: async () => {},
+      onAiStream: (l) => {
+        listener = l as typeof listener
+        return () => {
+          listener = null
+        }
+      },
+      createDocument: async () => ({ ok: true, path: '/tmp/x.docx' }) as never,
+      readAttachment: async () => ({ ok: true, name: '', totalChars: 0, text: '' }) as never,
+      readAttachmentImage: async () => ({ ok: false }),
+      recents: async () => ({ entries: [] }) as never,
+      starred: async () => ({ entries: [] }) as never,
+      listProjectFiles: async () => [],
+      openWithHandoff: async () => {},
+      getCurrentModel: () => ({ profileId: 'p', modelId: 'm' }) as never,
+    }
+    let session: HomeChatSession = { id: 's1', title: '', createdAt: 0, updatedAt: 0, messages: [] }
+    const controller = new HomeChatController(bridge, texts, (_id, mutate) => {
+      session = mutate(session)
+    })
+    controller.send('s1', [], '做一份复杂报告', [])
+    await until(() => session.messages.at(-1)?.text === '开工')
+    const last = session.messages.at(-1)!
+    expect(last.tasks).toEqual([
+      { title: '检索资料', status: 'done' },
+      { title: '起草正文', status: 'in_progress' },
+      { title: '核验数字', status: 'pending' },
+    ])
+    // the checklist is its own UI — it must not pollute the tool timeline
+    expect(last.relayTools ?? []).toHaveLength(0)
+  })
 })
 
 describe('one-shot assistant persona', () => {

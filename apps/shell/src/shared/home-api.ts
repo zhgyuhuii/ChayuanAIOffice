@@ -334,8 +334,12 @@ export interface HomeChatMessage {
         running?: boolean
         ok?: boolean
         outputPreview?: string
+        /** search_files/system_search 的命中文件(可点击打开) */
+        files?: Array<{ name: string; path: string }>
       }>
     | undefined
+  /** ZCode 式任务清单:update_task_list 工具维护的全量快照(最新一次覆盖) */
+  tasks?: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }> | undefined
   /** P2-7 确认门:该轮挂起的大纲/计划确认卡(决议后原地留痕) */
   relayConfirm?:
     | {

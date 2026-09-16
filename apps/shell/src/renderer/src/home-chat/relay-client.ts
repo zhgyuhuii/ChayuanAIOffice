@@ -141,6 +141,7 @@ export function upsertToolActivity(
     phase: 'start' | 'end'
     ok?: boolean
     outputPreview?: string
+    files?: Array<{ name: string; path: string }>
   },
 ): HomeChatMessage[] {
   const last = messages[messages.length - 1]
@@ -153,6 +154,7 @@ export function upsertToolActivity(
       running: activity.phase === 'start',
       ok: activity.ok ?? tools[idx]!.ok,
       outputPreview: activity.outputPreview ?? tools[idx]!.outputPreview,
+      files: activity.files ?? tools[idx]!.files,
     }
   } else {
     tools.push({
@@ -162,6 +164,7 @@ export function upsertToolActivity(
       running: activity.phase === 'start',
       ok: activity.ok,
       outputPreview: activity.outputPreview,
+      ...(activity.files ? { files: activity.files } : {}),
     })
   }
   const next = [...messages]

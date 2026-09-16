@@ -84,10 +84,19 @@ export class HomeChatController {
           })
         },
         onToolActivity: (activity) => {
-          this.updateSession(sessionId, (s) => ({
-            ...s,
-            messages: upsertToolActivity(s.messages, activity),
-          }))
+          this.updateSession(sessionId, (s) => {
+            // 任务清单不进时间线:全量快照直接挂消息(右上角折叠框 UI)
+            if (activity.name === 'update_task_list' && activity.tasks) {
+              const messages = [...s.messages]
+              const last = messages[messages.length - 1]
+              if (last?.role === 'assistant') {
+                messages[messages.length - 1] = { ...last, tasks: activity.tasks }
+                return { ...s, messages }
+              }
+              return s
+            }
+            return { ...s, messages: upsertToolActivity(s.messages, activity) }
+          })
         },
         onBusy: (busy) => this.onBusyChange?.(sessionId, busy),
         onDone: ({ createdDoc, openedDoc }) => {

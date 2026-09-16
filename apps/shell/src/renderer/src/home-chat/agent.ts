@@ -50,6 +50,10 @@ export interface HomeAgentEvents {
     phase: 'start' | 'end'
     ok?: boolean
     outputPreview?: string
+    /** search 命中文件(点击可打开);phase=end 时携带 */
+    files?: Array<{ name: string; path: string }>
+    /** update_task_list 的任务快照(全量覆盖);phase=end 时携带 */
+    tasks?: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }>
   }): void
   onBusy(busy: boolean): void
   onDone(result: {
@@ -155,6 +159,30 @@ const OPEN_DOCUMENT_TOOL = {
   },
 }
 
+const UPDATE_TASKS_TOOL = {
+  name: 'update_task_list',
+  description:
+    'Maintain the visible task checklist for a complex multi-step request. Call it once with the full breakdown BEFORE starting work, then again each time a step completes (send the FULL updated list every time — it replaces the previous one). Use short titles. Skip it for simple one-step requests.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      tasks: {
+        type: 'array',
+        description: 'full snapshot of the checklist; replaces the previous list',
+        items: {
+          type: 'object',
+          properties: {
+            title: { type: 'string', description: 'short step title (≤ 24 chars)' },
+            status: { type: 'string', enum: ['pending', 'in_progress', 'done'] },
+          },
+          required: ['title', 'status'],
+        },
+      },
+    },
+    required: ['tasks'],
+  },
+}
+
 const SYSTEM_PROMPT = `You are the ChatOffice home assistant. You create documents, answer questions, and work with the user's existing files.
 
 ## Creating documents
@@ -178,6 +206,9 @@ Never stall by asking for details: when something is unspecified, make a reasona
 - read_document reads a file's text (page long files with offset); open_document opens a file in its editor tab.
 - To EDIT an existing document: open_document it, then the editing continues in that tab's AI panel (the conversation moves with it). For files open_document cannot carry the conversation to (xlsx/pptx/pdf), tell the user the file was opened and they can continue with the AI panel there.
 - Never claim you cannot access files before trying search_files and system_search.
+
+## Task checklist
+When the request involves 3 or more distinct steps (e.g. research files → draft a document → verify numbers, or multi-part deliverables), call update_task_list FIRST with the breakdown, then keep it current as you work: mark finished steps done and exactly one step in_progress. Simple requests skip the checklist.
 
 ## Answering questions
 Reply directly in concise Markdown.`
@@ -219,6 +250,7 @@ function homeSkill(
       SYSTEM_SEARCH_TOOL,
       READ_DOCUMENT_TOOL,
       OPEN_DOCUMENT_TOOL,
+      UPDATE_TASKS_TOOL,
     ],
     async executeTool(call) {
       switch (call.name) {
@@ -389,6 +421,20 @@ function homeSkill(
             summary: 'open_document',
           }
         }
+        case 'update_task_list': {
+          const tasks = normalizeTasks(call.input.tasks)
+          if (tasks.length === 0) {
+            return {
+              output: 'tasks must be a non-empty array of {title, status}',
+              isError: true,
+              summary: 'update_task_list',
+            }
+          }
+          return {
+            output: `task list updated: ${tasks.length} items`,
+            summary: 'update_task_list',
+          }
+        }
         default:
           return { output: `Unknown tool: ${call.name}`, isError: true, summary: call.name }
       }
@@ -410,6 +456,52 @@ function homeSkill(
 }
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp'])
+
+/** update_task_list 入参 → 干净快照(空数组 = 非法/空清单) */
+function normalizeTasks(
+  raw: unknown,
+): Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }> {
+  if (!Array.isArray(raw)) return []
+  const out: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }> = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const { title, status } = item as { title?: unknown; status?: unknown }
+    if (typeof title !== 'string' || !title.trim()) continue
+    if (status !== 'pending' && status !== 'in_progress' && status !== 'done') continue
+    out.push({ title: title.trim().slice(0, 80), status })
+    if (out.length >= 20) break
+  }
+  return out
+}
+
+/** search_files/system_search 的 JSON 输出 → 命中文件(封顶 10,点击可打开) */
+function parseFoundFiles(output: string): Array<{ name: string; path: string }> {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(output)
+  } catch {
+    return []
+  }
+  const list = Array.isArray(parsed)
+    ? parsed
+    : parsed &&
+        typeof parsed === 'object' &&
+        Array.isArray((parsed as { entries?: unknown }).entries)
+      ? (parsed as { entries: unknown[] }).entries
+      : []
+  const out: Array<{ name: string; path: string }> = []
+  const seen = new Set<string>()
+  for (const item of list) {
+    if (!item || typeof item !== 'object') continue
+    const { name, path } = item as { name?: unknown; path?: unknown }
+    if (typeof path !== 'string' || !path || typeof name !== 'string' || !name) continue
+    if (seen.has(path)) continue
+    seen.add(path)
+    out.push({ name, path })
+    if (out.length >= 10) break
+  }
+  return out
+}
 
 /**
  * The home chat agent: one AgentLoop per session, with send queueing
@@ -470,9 +562,18 @@ export class HomeAgent {
           this.events.onText(text)
         },
         onToolStart: (call) => {
+          // 任务清单不是时间线工具:start 不出 chip,只在 end 携带快照
+          if (call.name === 'update_task_list') return
           this.events.onToolActivity?.({ callId: call.id, name: call.name, phase: 'start' })
         },
         onToolExecuted: ({ call, execution }) => {
+          // 结构化补充:搜索命中文件(可点击打开)与任务清单快照(时间线之外的单列 UI)
+          const files =
+            call.name === 'search_files' || call.name === 'system_search'
+              ? parseFoundFiles(execution.output)
+              : undefined
+          const tasks =
+            call.name === 'update_task_list' ? normalizeTasks(call.input.tasks) : undefined
           this.events.onToolActivity?.({
             callId: call.id,
             name: call.name,
@@ -480,6 +581,8 @@ export class HomeAgent {
             phase: 'end',
             ok: !execution.isError,
             outputPreview: execution.output.slice(0, 120),
+            ...(files && files.length > 0 ? { files } : {}),
+            ...(tasks && tasks.length > 0 ? { tasks } : {}),
           })
         },
         onDone: () => {

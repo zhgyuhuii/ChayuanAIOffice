@@ -12,11 +12,13 @@ import wxpayIcon from '../assets/wxpay.png'
 import alipayIcon from '../assets/alipay.png'
 import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
+import { MonoFileIcon } from '../file-icons'
 import { HomeChatController } from './controller'
 import type { HomeChatControllerTexts } from './controller'
 import { deriveTitle, useHomeChatStore } from './store'
 import { markdownToHtml } from './mini-markdown'
 import { sanitizeDocHtml } from './sanitize-html'
+import { splitDocumentBody } from './doc-body'
 import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
 import { groupSessionsByTree, groupNameOf } from './tree-groups'
 import { AssistantChip, AssistantPicker } from './AssistantPicker'
@@ -214,6 +216,166 @@ function RelayConfirmCard({
   )
 }
 
+/** ZCode 式任务清单:助手气泡右上角折叠框(update_task_list 全量快照) */
+function TaskListPanel({ tasks }: { tasks: NonNullable<HomeChatMessage['tasks']> }): ReactElement {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const done = tasks.filter((x) => x.status === 'done').length
+  return (
+    <div className={`chat-tasks${open ? ' open' : ''}${done === tasks.length ? ' all-done' : ''}`}>
+      <button
+        className="chat-tasks-head"
+        aria-expanded={open}
+        aria-label={t('chatTasks')}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M2.5 4h7M2.5 8h7M2.5 12h4M11.5 2.5v6M11.5 8.5l2 2 3-3"
+            stroke="currentColor"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            transform="scale(0.95) translate(0.5,0)"
+          />
+        </svg>
+        <span className="chat-tasks-label">{t('chatTasks')}</span>
+        <span className="chat-tasks-progress">{`${done}/${tasks.length}`}</span>
+        <span className="chat-tasks-chevron" aria-hidden>
+          ▾
+        </span>
+      </button>
+      {open && (
+        <ul className="chat-tasks-list">
+          {tasks.map((task, i) => (
+            <li key={i} className={`chat-task ${task.status}`}>
+              <span className="chat-task-mark" aria-hidden>
+                {task.status === 'done' ? (
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="11"
+                      height="11"
+                      rx="3"
+                      fill="currentColor"
+                      opacity="0.9"
+                    />
+                    <path
+                      d="M4.4 7.2l1.8 1.8 3.6-3.9"
+                      stroke="var(--surface)"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : task.status === 'in_progress' ? (
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="11"
+                      height="11"
+                      rx="3"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                    />
+                    <circle cx="7" cy="7" r="2.2" fill="currentColor" className="chat-task-pulse" />
+                  </svg>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="11"
+                      height="11"
+                      rx="3"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span className="chat-task-title">{task.title}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+/** 文档正文折叠块:默认收起一行(字数随流式增长),展开渲染 sanitize 富文本预览 */
+function DocBodyBlock({ html, streaming }: { html: string; streaming?: boolean }): ReactElement {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  return (
+    <div className={`chat-doc-body${open ? ' open' : ''}${streaming ? ' streaming' : ''}`}>
+      <button
+        className="chat-doc-body-head"
+        aria-expanded={open}
+        aria-label={t('chatDocBody')}
+        data-tip={t('chatDocPreview')}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M9.5 1.5H4A1.5 1.5 0 0 0 2.5 3v10A1.5 1.5 0 0 0 4 14.5h8A1.5 1.5 0 0 0 13.5 13V5.5z"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <path d="M9.5 1.5V5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+          <path
+            d="M5.5 8.5h5M5.5 11h3.5"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="chat-doc-body-title">{t('chatDocBody')}</span>
+        <span className="chat-doc-body-meta">{t('chatDocBodyCount', { n: html.length })}</span>
+        <span className="chat-doc-body-chevron" aria-hidden>
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div
+          className="chat-doc-body-preview chat-md"
+          // display-only render: sanitizeDocHtml whitelists the doc-body subset;
+          // the source here is the split-out restricted-HTML fragment itself
+          dangerouslySetInnerHTML={{ __html: sanitizeDocHtml(html) }}
+        />
+      )}
+    </div>
+  )
+}
+
+/** 搜索命中的文件列表:一行一文件,点击经 openPath 在新标签页打开 */
+function FoundFilesList({ files }: { files: Array<{ name: string; path: string }> }): ReactElement {
+  const { t } = useI18n()
+  return (
+    <div className="chat-files" role="list" aria-label={t('chatFoundFiles')}>
+      <div className="chat-files-title">
+        {t('chatFoundFiles')} · {files.length}
+      </div>
+      {files.map((f) => (
+        <button
+          key={f.path}
+          className="chat-file-row"
+          role="listitem"
+          title={f.path}
+          aria-label={t('chatOpenFile')}
+          onClick={() => void window.chatOffice.openPath(f.path, { dock: false })}
+        >
+          <MonoFileIcon ext={f.name.split('.').pop()?.toLowerCase() ?? ''} />
+          <span className="chat-file-name">{f.name}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function ChatMessageView({
   m,
   typing,
@@ -243,7 +405,18 @@ function ChatMessageView({
       </div>
     )
   }
-  const isHtml = m.text.trimStart().startsWith('<')
+  // 文档正文(create_document 的受限 HTML)不进 markdown 渲染:拆出后折叠成
+  // 一行,避免裸标签当文本显示成「乱码」;prose 部分照常 markdown
+  const { prose, body } = m.error ? { prose: m.text, body: null } : splitDocumentBody(m.text)
+  const foundFiles: Array<{ name: string; path: string }> = []
+  const seenPaths = new Set<string>()
+  for (const tool of m.relayTools ?? []) {
+    for (const f of tool.files ?? []) {
+      if (seenPaths.has(f.path)) continue
+      seenPaths.add(f.path)
+      foundFiles.push(f)
+    }
+  }
   return (
     <div className="chat-msg assistant" data-mid={m.id}>
       <span className="chat-avatar" aria-hidden="true">
@@ -257,6 +430,7 @@ function ChatMessageView({
         </svg>
       </span>
       <div className="chat-bubble assistant">
+        {m.tasks && m.tasks.length > 0 && <TaskListPanel tasks={m.tasks} />}
         {m.relayTools && m.relayTools.length > 0 && (
           <div className="chat-relay-tools" role="list" aria-label={t('chatRelayTools')}>
             {m.relayTools.map((tool) => (
@@ -274,18 +448,17 @@ function ChatMessageView({
             ))}
           </div>
         )}
-        {typing && !m.text ? (
+        {foundFiles.length > 0 && <FoundFilesList files={foundFiles} />}
+        {typing && !prose && !body ? (
           <AiTypingIndicator label={t('chatThinking')} />
-        ) : m.text && !m.error ? (
+        ) : prose && !m.error ? (
           <div
             className="chat-md"
-            // display-only render: markdownToHtml escapes raw HTML and
-            // sanitizeDocHtml whitelists the doc-body subset
-            dangerouslySetInnerHTML={{
-              __html: isHtml ? sanitizeDocHtml(m.text) : markdownToHtml(m.text),
-            }}
+            // display-only render: markdownToHtml escapes raw HTML
+            dangerouslySetInnerHTML={{ __html: markdownToHtml(prose) }}
           />
         ) : null}
+        {body && !m.error && <DocBodyBlock html={body} streaming={typing} />}
         {m.error && <div className="chat-err">{m.text}</div>}
         {m.relayConfirm && <RelayConfirmCard m={m} onConfirm={onRelayConfirm} />}
         {m.card && <ChatCard card={m.card} onOpenSettings={onOpenSettings} />}
@@ -769,6 +942,15 @@ export function ChatPanel({
     const el = listRef.current
     if (el && stickRef.current) el.scrollTop = el.scrollHeight
   }, [active?.messages, busy])
+  // 窗口/分栏尺寸变化时,原本贴底的会话继续贴底(视口缩小不把新内容藏起来)
+  useEffect(() => {
+    if (!listEl) return
+    const onResize = () => {
+      if (stickRef.current) listEl.scrollTop = listEl.scrollHeight
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [listEl])
 
   // archived sessions live only in the left tree's archive view
   const sessions = (store.sessions ?? []).filter((s) => s.messages.length > 0 && !s.archived)
