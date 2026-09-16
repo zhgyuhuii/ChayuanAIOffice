@@ -444,6 +444,12 @@ html.chatoffice-popover-open .ribbon-tabs {
   color: var(--text-primary);
 }
 
+.qa-save-as {
+  width: auto;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
 .qa-btn svg {
   display: block;
   margin: 0 auto;
