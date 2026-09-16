@@ -6,8 +6,8 @@
  */
 
 import {
-  COPYRIGHT_HOSTS,
   asRecord,
+  isCopyrightHost,
   safeHost,
   type ImageSearchResult,
   type SearchAttempt,
@@ -191,7 +191,7 @@ export async function imageSearch(
           const img = asRecord(item)
           const imageUrl = String(img.imageUrl ?? img.original ?? '')
           if (!imageUrl) continue
-          if (COPYRIGHT_HOSTS.some((d) => imageUrl.toLowerCase().includes(d))) continue
+          if (isCopyrightHost(imageUrl)) continue
           const entry: ImageSearchResult = {
             title: String(img.title ?? ''),
             imageUrl,

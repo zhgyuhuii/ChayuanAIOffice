@@ -17,7 +17,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
 import {
-  COPYRIGHT_HOSTS,
+  isCopyrightHost,
   asRecord,
   firstItem,
   chatofficeProxyUrl,
@@ -249,7 +249,7 @@ export function parseChatOfficeImageSearch(raw: unknown, maxResults: number): Im
     const img = asRecord(item)
     const imageUrl = String(img.image_url ?? img.imageUrl ?? '')
     if (!imageUrl) continue
-    if (COPYRIGHT_HOSTS.some((d) => imageUrl.toLowerCase().includes(d))) continue
+    if (isCopyrightHost(imageUrl)) continue
     const width = Number(img.width)
     const height = Number(img.height)
     const entry: ImageSearchResult = {

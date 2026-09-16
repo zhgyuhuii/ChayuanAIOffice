@@ -5,7 +5,7 @@
  * Openverse instead of surfacing an empty gallery.
  */
 
-import { COPYRIGHT_HOSTS, safeHost, type ImageSearchResult } from './shared'
+import { isCopyrightHost, safeHost, type ImageSearchResult } from './shared'
 
 const BROWSER_HEADERS = {
   'User-Agent':
@@ -40,7 +40,7 @@ export function parseBingImagesHtml(html: string, maxResults: number): ImageSear
       continue
     }
     const imageUrl = typeof meta.murl === 'string' ? meta.murl : ''
-    if (!imageUrl || COPYRIGHT_HOSTS.some((d) => imageUrl.toLowerCase().includes(d))) continue
+    if (!imageUrl || isCopyrightHost(imageUrl)) continue
     const title = typeof meta.t === 'string' ? meta.t : ''
     const entry: ImageSearchResult = {
       title,
