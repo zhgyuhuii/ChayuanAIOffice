@@ -38,7 +38,6 @@ export const HTML_CHANNELS = {
   consumeHeadlessExport: 'html:consume-headless-export',
   headlessExportDone: 'html:headless-export-done',
   printRequest: 'html:print-request',
-  aiGenerateImage: 'html:ai-generate-image',
   filesPick: 'html:files-pick',
   filesAdd: 'html:files-add',
   filesAddPastedImage: 'html:files-add-pasted-image',
@@ -309,9 +308,4 @@ export interface HtmlApi {
   imageSearch(query: string, maxResults?: number): Promise<ImageSearchResult>
   /** Download an image URL in the main process (CORS-free, scheme/target validated) */
   fetchImage(url: string): Promise<ImageData | null>
-  /** Genspark cloud image generation (html-owned channel, gsk login required) */
-  aiGenerateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
-    url?: string
-    error?: string
-  }>
 }

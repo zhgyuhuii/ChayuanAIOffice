@@ -168,6 +168,8 @@ export interface PdfAiDeps {
   searchImages(query: string, maxResults: number): Promise<ImageSearchResponse>
   /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image */
   chatofficeTools?(): boolean
+  /** live predicate: a default image-gen model resolves from ai-settings (生图、媒体与搜索) */
+  hasImageModel?(): boolean
   generateImage(op: { prompt: string; aspectRatio?: string }): Promise<{
     url?: string
     error?: string

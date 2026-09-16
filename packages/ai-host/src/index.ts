@@ -34,6 +34,39 @@ export {
 } from './local-tools'
 
 /**
+ * BYOK-first image generation for mains that host no shared ai:* registrar
+ * (markdown / pdf): the per-app *:ai-generate-image channel wraps this instead
+ * of going straight to the ChatOffice cloud. Resolution order matches the
+ * registrar-backed editors (docs/sheets/slides): the settings default image
+ * model (设置 → 生图、媒体与搜索), then the injected chatoffice backend whose
+ * login/cloud gates live in its generateImage.
+ */
+export function createByokImageHandler(deps: {
+  settingsPath: () => string
+  fs: FileSourceFs
+  chatoffice: AiRuntimeChatOffice
+}): (req: {
+  prompt: string
+  aspectRatio?: string
+}) => Promise<{ url?: string; urls?: string[]; error?: string }> {
+  const RUNTIME_ERRORS: Record<string, string> = {
+    errNoModel: 'No usable model configured',
+    errNoApiKey: 'Missing API key',
+    errChatOfficeNotLoggedIn: 'Not signed in to ChatOffice',
+    errNoImageModel: 'No image model configured and not signed in to ChatOffice',
+  }
+  const runtime = createAiRuntime({
+    source: createFileSource(deps.settingsPath(), deps.fs),
+    chatoffice: deps.chatoffice,
+    translate: (key, params) => {
+      const base = RUNTIME_ERRORS[key] ?? key
+      return params && typeof params.provider === 'string' ? `${base}: ${params.provider}` : base
+    },
+  })
+  return (req) => runtime.generateImage(req)
+}
+
+/**
  * Shared registration of the generic ai:* IPC channels — identical channel
  * names in every editor main process (docs registers them for the shell
  * aggregate; sheets/slides register them standalone). Electron's ipcMain is

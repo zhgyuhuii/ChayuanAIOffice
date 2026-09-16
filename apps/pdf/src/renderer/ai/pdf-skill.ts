@@ -50,17 +50,17 @@ const CHATOFFICE_TOOLS_OFF_NOTE =
 export function createPdfSkill(deps: PdfAiDeps): AgentSkill {
   return {
     id: 'pdf',
-    // live like tools: the off-note overrides the prose that still mentions generate_image
+    // live like tools: the off-note overrides the prose that still mentions
+    // generate_image. The tool stays when EITHER the ChatOffice cloud is live
+    // OR a default image model resolves from settings (BYOK-first handler).
     get systemPrompt() {
-      return deps.chatofficeTools?.() === false
-        ? SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
-        : SYSTEM_PROMPT
+      const imageGenLive = deps.chatofficeTools?.() !== false || !!deps.hasImageModel?.()
+      return imageGenLive ? SYSTEM_PROMPT : SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
     },
-    // live view: chatofficeTools (login && cloud-tools toggle) is re-read before every model request
+    // live view: re-read before every model request
     get tools() {
-      return deps.chatofficeTools?.() === false
-        ? AGENT_TOOLS.filter((t) => t.name !== 'generate_image')
-        : AGENT_TOOLS
+      const imageGenLive = deps.chatofficeTools?.() !== false || !!deps.hasImageModel?.()
+      return imageGenLive ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => t.name !== 'generate_image')
     },
     buildContext: () => {
       const parts = [

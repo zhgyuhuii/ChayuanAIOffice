@@ -39,7 +39,6 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { generateImageTool } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { atomicWriteFile } from './atomic-write'
@@ -1410,17 +1409,6 @@ function registerHtmlIpc(): void {
       if (!['png', 'jpg', 'jpeg', 'gif'].includes(ext)) return null
       return writeImageIntoOwnedAssets(docPath, `image.${ext}`, Buffer.from(data.base64, 'base64'))
     },
-  )
-
-  // html-owned (like docs:ai-generate-image): the shared ai:* handlers are
-  // shell-registered, but image generation is gated per app
-  ipcMain.handle(
-    HTML_CHANNELS.aiGenerateImage,
-    (_e, op: { prompt?: unknown; aspectRatio?: unknown }) =>
-      generateImageTool(join(app.getPath('userData'), 'ai-settings.json'), {
-        prompt: String(op?.prompt ?? ''),
-        aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
-      }),
   )
 
   const MIME_BY_EXT: Record<string, ImageData['mime']> = {

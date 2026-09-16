@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, watch } from 'node:fs'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join, relative, resolve } from 'node:path'
@@ -36,6 +36,7 @@ import {
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
+import { createByokImageHandler } from '@chatoffice/ai-host'
 import { atomicWriteFile } from './atomic-write'
 import {
   copyImageIntoOwnedAssets,
@@ -744,32 +745,66 @@ function registerMarkdownIpc(): void {
     return false
   }
 
+  // BYOK-first image generation over ai-settings.json (read-mostly; the
+  // runtime may rewrite it when the parked current model falls back)
+  let byokImageSingleton: ReturnType<typeof createByokImageHandler> | null = null
+  const byokGenerateImage = (req: { prompt: string; aspectRatio?: string }) => {
+    byokImageSingleton ??= createByokImageHandler({
+      settingsPath: () => join(app.getPath('userData'), 'ai-settings.json'),
+      fs: {
+        readFile: (path) => readFile(path, 'utf8'),
+        writeFile: async (path, contents) => {
+          await atomicWriteFile(path, Buffer.from(contents, 'utf8'))
+        },
+        watch: (path, cb) => {
+          try {
+            const w = watch(path, () => cb())
+            return () => w.close()
+          } catch {
+            return () => {}
+          }
+        },
+      },
+      chatoffice: {
+        apiKey: () => '',
+        hasAuth: () => hasChatOfficeAuth(),
+        status: async (withEmail) => {
+          if (!hasChatOfficeAuth()) return { loggedIn: false }
+          return withEmail ? { loggedIn: true } : { loggedIn: true }
+        },
+        generateImage: async (req2) => {
+          if (!hasChatOfficeAuth())
+            throw new Error(
+              'ChatOffice account is not logged in on this machine; ask the user to log in first',
+            )
+          if (!chatofficeCloudToolsOn())
+            throw new Error(
+              'ChatOffice cloud tools are turned off in Settings (AI Model); enable them to use this tool',
+            )
+          const r = await chatofficeGenerateImage({
+            prompt: req2.prompt,
+            ...(req2.aspectRatio ? { aspectRatio: req2.aspectRatio } : {}),
+          })
+          return { url: r.url }
+        },
+      },
+    })
+    return byokImageSingleton(req)
+  }
+
   // markdown-owned (like docs:ai-generate-image): the shared ai:* handlers are
-  // shell-registered, but image generation is gated per app
+  // shell-registered, but image generation is gated per app. BYOK default
+  // image model first (设置 → 生图、媒体与搜索) — same order as docs/sheets —
+  // with the ChatOffice cloud (login + cloud-tools gated) as the fallback.
   ipcMain.handle(
     MARKDOWN_CHANNELS.aiGenerateImage,
     async (_e, op: { prompt?: unknown; aspectRatio?: unknown }) => {
-      if (!hasChatOfficeAuth())
-        return {
-          error:
-            'ChatOffice account is not logged in on this machine; ask the user to log in first',
-        }
-      if (!chatofficeCloudToolsOn())
-        return {
-          error:
-            'ChatOffice cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-        }
       const prompt = String(op?.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      try {
-        const r = await chatofficeGenerateImage({
-          prompt,
-          aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
-        })
-        return { url: r.url }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
-      }
+      return byokGenerateImage({
+        prompt,
+        aspectRatio: op?.aspectRatio ? String(op.aspectRatio) : undefined,
+      })
     },
   )
 

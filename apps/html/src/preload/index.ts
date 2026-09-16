@@ -125,7 +125,6 @@ const api: HtmlApi = {
   imageSearch: (query, maxResults) =>
     ipcRenderer.invoke(AI_CHANNELS.imageSearch, query, maxResults),
   fetchImage: (url) => ipcRenderer.invoke(HTML_CHANNELS.fetchImage, url),
-  aiGenerateImage: (op) => ipcRenderer.invoke(HTML_CHANNELS.aiGenerateImage, op),
 }
 
 /** Chat persistence: the shared project:* handlers are registered once by the shell (docs-main registerProjectIpc) */

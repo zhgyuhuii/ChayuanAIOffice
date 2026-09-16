@@ -13,7 +13,7 @@ import {
 } from '@chatoffice/ui'
 import type { DockChrome } from '@chatoffice/ui'
 import { AssistantTab, IconAiKeyPoints, IconAiSummarize } from './AssistantTab'
-import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
+import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
 import { pdfModelBridge } from './model-bridge'
 import { aiLangDirective, t as tGlobal, useI18n } from '../i18n/locale'
 import { Markdown } from '@chatoffice/ui'
@@ -375,6 +375,8 @@ export function AiPanel({
       searchImages: (query, max) => apiRef.current.searchImages(query, max),
       generateImage: (op) => apiRef.current.generateImage(op),
       chatofficeTools: () => false,
+      // 生图门槛跟全局默认:ai-settings 里能解析出生图模型即启用(BYOK-first 主进程处理器)
+      hasImageModel: () => !!pickImageModel(settingsRef.current ?? defaultSettingsV2()),
       fetchImage: (url) => apiRef.current.fetchImage(url),
     }
     loopRef.current = new AgentLoop({
