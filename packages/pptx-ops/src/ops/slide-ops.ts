@@ -22,7 +22,6 @@ import {
   duplicateSlide,
   insertBlankSlide,
   insertSlideWithLayout,
-  listSlideLayouts,
   mergeSlideFromSource,
   moveSection,
   moveSlide,
@@ -71,7 +70,6 @@ import {
   resolveSlide,
   slideDurableId,
   type Op,
-  type OpContext,
   type OpRecord,
 } from './registry'
 
@@ -124,60 +122,22 @@ register({
   },
 })
 
-/** `layout` (gallery name, 0-based index or part path) or the legacy `layoutPath` → layout part path. */
-function resolveLayoutPath(op: Op, ctx: OpContext): string {
-  const layouts = listSlideLayouts(ctx.opened.archive)
-  const ref = op.layout ?? op.layoutPath
-  const available = () => layouts.map((l, i) => `${i}: "${l.name}"`).join(', ')
-  if (typeof ref === 'number') {
-    const hit = layouts[ref]
-    if (!hit) {
-      throw new GuidedError(
-        `op "${op.op}": layout index ${ref} is out of range (0-${layouts.length - 1}). Layouts: [${available()}].`,
-      )
-    }
-    return hit.path
-  }
-  if (typeof ref !== 'string' || !ref.trim()) {
-    throw new GuidedError(
-      `op "${op.op}" needs "layout": a layout name or 0-based index. Layouts: [${available()}].`,
-    )
-  }
-  const byPath = layouts.find((l) => l.path === ref)
-  if (byPath) return byPath.path
-  const norm = ref.trim().toLowerCase()
-  const byName = layouts.filter((l) => l.name.toLowerCase() === norm)
-  if (byName.length === 1) return byName[0]!.path
-  if (byName.length > 1) {
-    throw new GuidedError(
-      `op "${op.op}": ${byName.length} layouts are named "${ref}" — pass the index instead. Layouts: [${available()}].`,
-    )
-  }
-  throw new GuidedError(`op "${op.op}": no layout "${ref}". Layouts: [${available()}].`)
-}
-
-// The new slide goes after target.slide (default: the last slide).
 register({
   name: 'addSlideWithLayout',
   validate(op, ctx) {
-    if (op.target?.slide !== undefined) resolveSlide(ctx, op)
-    resolveLayoutPath(op, ctx)
+    resolveSlide(ctx, op)
+    if (typeof op.layoutPath !== 'string' || !op.layoutPath) {
+      throw new GuidedError(
+        'op "addSlideWithLayout" needs "layoutPath" (a resolved layout part path).',
+      )
+    }
   },
   apply(op, ctx): OpRecord {
-    const index =
-      op.target?.slide !== undefined
-        ? resolveSlide(ctx, op).index
-        : ctx.opened.deck.slides.length - 1
-    const layoutPath = resolveLayoutPath(op, ctx)
-    const slide = insertSlideWithLayout(ctx.opened, index, layoutPath)
-    if (!slide) {
-      throw new GuidedError(`op "addSlideWithLayout": layout "${layoutPath}" could not be applied.`)
+    const { index } = resolveSlide(ctx, op)
+    if (!insertSlideWithLayout(ctx.opened, index, String(op.layoutPath))) {
+      throw new GuidedError(`op "addSlideWithLayout": layout "${op.layoutPath}" was not found.`)
     }
-    return {
-      op,
-      created: [slideDurableId(slide)],
-      after: { index: index + 1, layout: layoutPath },
-    }
+    return { op, after: { index: index + 1 } }
   },
 })
 
@@ -305,21 +265,19 @@ register({
   name: 'setSlideLayout',
   validate(op, ctx) {
     resolveSlide(ctx, op)
-    if (op.layout != null || op.layoutPath != null) resolveLayoutPath(op, ctx)
   },
   apply(op, ctx): OpRecord {
     const { index } = resolveSlide(ctx, op)
-    const layoutPath =
-      op.layout != null || op.layoutPath != null ? resolveLayoutPath(op, ctx) : null
-    const ok = layoutPath
-      ? setSlideLayout(ctx.opened, index, layoutPath)
-      : resetSlideLayout(ctx.opened, index)
+    const ok =
+      typeof op.layoutPath === 'string' && op.layoutPath
+        ? setSlideLayout(ctx.opened, index, op.layoutPath)
+        : resetSlideLayout(ctx.opened, index)
     if (!ok) {
       throw new GuidedError(
-        `op "setSlideLayout": layout ${layoutPath ? `"${layoutPath}"` : '(reset)'} could not be applied to slide ${index}.`,
+        `op "setSlideLayout": layout ${op.layoutPath ? `"${op.layoutPath}"` : '(reset)'} could not be applied to slide ${index}.`,
       )
     }
-    return { op, after: layoutPath }
+    return { op, after: op.layoutPath ?? null }
   },
 })
 
@@ -671,10 +629,6 @@ register({
           : {}),
         ...(raw.paragraph != null ? { paragraph: raw.paragraph as number } : {}),
         ...(raw.rewind === true ? { rewind: true } : {}),
-        ...(typeof raw.direction === 'string'
-          ? { direction: raw.direction as SlideAnimation['direction'] }
-          : {}),
-        ...(typeof raw.presetXml === 'string' ? { presetXml: raw.presetXml } : {}),
       })
     }
     if (unresolved.length) {

@@ -5,7 +5,14 @@
  * path (proving fidelity). Element-level patch regeneration is left for Phase 3.
  */
 import JSZip from 'jszip'
-import { PackageArchive, relsPathFor, resolveTarget, type Relationship } from './zip'
+import {
+  assertZipWithinLimits,
+  PackageArchive,
+  PPTX_ZIP_LIMITS,
+  relsPathFor,
+  resolveTarget,
+  type Relationship,
+} from './zip'
 import { parseClrMap, parseTheme, type Theme } from './theme'
 import {
   parseSlide,
@@ -78,6 +85,7 @@ import type {
   TextElement,
   ChartElement,
   GroupElement,
+  Transform,
   Stroke,
   ShadowEffect,
   GlowEffect,
@@ -116,14 +124,12 @@ export {
   ANIM_EFFECTS,
   ANIM_TRIGGERS,
   ANIM_VARIANTS,
-  ANIM_DIRECTIONS,
-  type AnimDirection,
   type AnimClass,
   type AnimEffectKind,
   type AnimTrigger,
   type SlideAnimation,
 } from './animation'
-export { PackageArchive, PPTX_ZIP_LIMITS, assertZipWithinLimits } from './zip'
+export { assertZipWithinLimits, PackageArchive, PPTX_ZIP_LIMITS } from './zip'
 export {
   listEmbeddedFonts,
   eotToSfnt,
@@ -217,12 +223,6 @@ export {
 } from './align'
 export { createBlankPptx } from './blank'
 export {
-  BUILTIN_TABLE_STYLES,
-  builtinTableStyleName,
-  resolveBuiltinTableStyleId,
-  type BuiltinTableStyle,
-} from './table-style'
-export {
   elementCNvPrId,
   elementDurableId,
   ensureCreationId,
@@ -299,7 +299,6 @@ export {
   decodeRunLink,
   type LinkTarget,
 } from './hyperlink'
-export { NAMED_ACTIONS, namedActionOf, type NamedAction } from './named-action'
 export {
   addChart,
   buildChartSpaceXml,
@@ -619,14 +618,10 @@ function buildDecorations(
   // Slide-level showMasterSp="0" ("hide background graphics") hides both master and layout
   // decoration shapes; layout-level only stops the master's from showing through. Footer
   // placeholders are not background graphics and keep following the <p:hf> toggles.
-  const slideHidesInherited = /<p:sld\b[^>]*showMasterSp=(?:"(?:0|false)"|'(?:0|false)')/.test(
-    slideXml,
-  )
+  const slideHidesInherited = /<p:sld\b[^>]*showMasterSp="(?:0|false)"/.test(slideXml)
   const masterShown =
     !slideHidesInherited &&
-    !(
-      layoutXml && /<p:sldLayout\b[^>]*showMasterSp=(?:"(?:0|false)"|'(?:0|false)')/.test(layoutXml)
-    )
+    !(layoutXml && /<p:sldLayout\b[^>]*showMasterSp="(?:0|false)"/.test(layoutXml))
 
   if (masterXml && parts.masterPath) {
     const hfTypes = new Set([...enabled].filter((k) => !slidePh.has(k) && !hasPh(layoutXml, k)))
@@ -2322,40 +2317,21 @@ export function materializeSlide(opened: OpenedPptx, slideIndex: number): Slide 
 
 // ── Connector move-following ────────────────────────────────────────────
 
-export type ConnectionSide = 'top' | 'left' | 'bottom' | 'right'
-
-// presetShapeDefinitions cxnLst order: most presets list the four edge
-// midpoints as top/left/bottom/right; the ellipse interleaves four diagonal
-// sites, so its edge midpoints sit at even indexes
-const ELLIPSE_SIDES: Record<ConnectionSide, number> = { top: 0, left: 2, bottom: 4, right: 6 }
-const RECT_SIDES: Record<ConnectionSide, number> = { top: 0, left: 1, bottom: 2, right: 3 }
-
-/** Connection-site index of a shape edge midpoint for the element's preset geometry. */
-export function connectionSiteForSide(el: SlideElement, side: ConnectionSide): number {
-  const prst = el.type === 'shape' || el.type === 'picture' ? el.presetGeometry : undefined
-  return (prst === 'ellipse' ? ELLIPSE_SIDES : RECT_SIDES)[side]
-}
-
-/** Connection point index → shape edge midpoint (edge sites of the preset geometry, else center). */
-function connectionPoint(el: SlideElement, idx: number): { x: number; y: number } {
-  const o = el.transform.offset
-  const prst = el.type === 'shape' || el.type === 'picture' ? el.presetGeometry : undefined
-  const sides = prst === 'ellipse' ? ELLIPSE_SIDES : RECT_SIDES
-  if (idx === sides.top) return { x: o.x + o.cx / 2, y: o.y }
-  if (idx === sides.left) return { x: o.x, y: o.y + o.cy / 2 }
-  if (idx === sides.bottom) return { x: o.x + o.cx / 2, y: o.y + o.cy }
-  if (idx === sides.right) return { x: o.x + o.cx, y: o.y + o.cy / 2 }
-  if (prst === 'ellipse' && idx >= 1 && idx <= 7) {
-    // odd ellipse sites are the 45-degree points: inset (1 - 1/sqrt2)/2 of each extent
-    const k = 0.1464
-    const left = idx === 1 || idx === 3
-    const top = idx === 1 || idx === 7
-    return {
-      x: o.x + (left ? o.cx * k : o.cx * (1 - k)),
-      y: o.y + (top ? o.cy * k : o.cy * (1 - k)),
-    }
+/** Connection point index → shape edge midpoint (rectangle approximation: 0 top 1 left 2 bottom 3 right, else center). */
+function connectionPoint(t: Transform, idx: number): { x: number; y: number } {
+  const o = t.offset
+  switch (idx) {
+    case 0:
+      return { x: o.x + o.cx / 2, y: o.y }
+    case 1:
+      return { x: o.x, y: o.y + o.cy / 2 }
+    case 2:
+      return { x: o.x + o.cx / 2, y: o.y + o.cy }
+    case 3:
+      return { x: o.x + o.cx, y: o.y + o.cy / 2 }
+    default:
+      return { x: o.x + o.cx / 2, y: o.y + o.cy / 2 }
   }
-  return { x: o.x + o.cx / 2, y: o.y + o.cy / 2 }
 }
 
 /**
@@ -2390,8 +2366,8 @@ export function updateConnectorsForMoved(slide: Slide, movedIds: string[]): numb
     const curEnd = { x: t.flipH ? o.x : o.x + o.cx, y: t.flipV ? o.y : o.y + o.cy }
     const stTarget = cxn.start ? bySpid.get(cxn.start.id) : undefined
     const endTarget = cxn.end ? bySpid.get(cxn.end.id) : undefined
-    const p1 = stTarget ? connectionPoint(stTarget, cxn.start!.idx) : curStart
-    const p2 = endTarget ? connectionPoint(endTarget, cxn.end!.idx) : curEnd
+    const p1 = stTarget ? connectionPoint(stTarget.transform, cxn.start!.idx) : curStart
+    const p2 = endTarget ? connectionPoint(endTarget.transform, cxn.end!.idx) : curEnd
     t.offset = {
       x: Math.round(Math.min(p1.x, p2.x)),
       y: Math.round(Math.min(p1.y, p2.y)),

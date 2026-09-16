@@ -86,6 +86,7 @@ export class PackageArchive {
     return this.entries.has(path)
   }
 
+  /** Read a part as a UTF-8 string (for XML parts). */
   /** Write/replace a part as UTF-8 (package-level surgery, e.g. presProps). */
   writeText(path: string, data: string): void {
     this.entries.set(path, Buffer.from(data, 'utf8'))
