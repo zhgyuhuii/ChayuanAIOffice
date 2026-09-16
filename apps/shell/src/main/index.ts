@@ -162,6 +162,7 @@ import {
   authorizeMcpDocWrite,
 } from '../../../docs/src/main/docs-main'
 import { blankPdfBuffer } from '../../../pdf/src/main/blank-pdf'
+import { blankXlsxBuffer } from '@chatoffice/xlsx-gateway/gateway/csv-import'
 import {
   applyMcpSettings,
   clearMcpLogs,
@@ -2819,6 +2820,7 @@ function bindPendingDir(kind: string, tabId: string | undefined): void {
  *  applyPendingProject 落进项目 files[]——非文件夹项目(惰性建出的会话
  *  项目)没有目录可扫,必须显式登记 */
 const pendingDockProjectByWc = new Map<number, string>()
+const pendingNewFileProject = new Map<string, string>()
 
 function applyPendingProject(filePath: string, wcId?: number): void {
   const ext = extname(filePath).slice(1).toLowerCase()
@@ -6249,8 +6251,6 @@ app.whenReady().then(async () => {
         discard: htmlDiscardPendingAssets,
       },
     }),
-    slidesControl: createSlidesControl({ openBlankTab: () => openBlankSlidesTabForMcp() }),
-    sheetsControl: createSheetsControl({ openBlankTab: () => openBlankSheetsTabForMcp() }),
     // the headless create_*/read_* tools delegate to the bundled chatoffice CLI
     // (the same engines, no second implementation); it runs on the app's own
     // Node runtime via ELECTRON_RUN_AS_NODE

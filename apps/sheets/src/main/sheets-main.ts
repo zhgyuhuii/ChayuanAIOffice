@@ -1723,8 +1723,10 @@ export function sheetsFileRenamed(wc: WebContents, oldPath: string, newPath: str
   // A move that keeps the untitled name (folder tree), including the "(2)"
   // suffix a keep-both move adds, does not count as choosing one.
   const stem = (p: string) => basename(p).replace(/ \(\d+\)(?=\.[^.]+$)/, '')
-  if (untitledWorkbookPaths.delete(oldPath) && stem(newPath) === stem(oldPath)) {
-    untitledWorkbookPaths.add(newPath)
+  // LOCAL(适配): 上游 untitledWorkbookPaths 是 Set<path>；本地为 wc→path 映射，
+  // 改名时按值同步更新
+  for (const [id, p] of queuedWorkbookPaths) {
+    if (p === oldPath) queuedWorkbookPaths.set(id, newPath)
   }
   const entry = sheetsTabs.get(wc.id)
   if (!entry) return

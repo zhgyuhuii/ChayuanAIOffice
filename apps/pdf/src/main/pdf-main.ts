@@ -666,7 +666,11 @@ export function pdfFileRenamed(contents: WebContents, oldPath: string, newPath: 
   const allowed = allowedByWc.get(wcId)
   if (allowed?.has(oldPath)) allowed.add(newPath)
   if (saveAsTargetByWc.get(wcId) === oldPath) saveAsTargetByWc.set(wcId, newPath)
-  if (untitledPdfPaths.delete(oldPath)) untitledPdfPaths.add(newPath)
+  const movedMeta = untitledPdfMetas.get(oldPath)
+  if (movedMeta !== undefined) {
+    untitledPdfMetas.delete(oldPath)
+    untitledPdfMetas.set(newPath, movedMeta)
+  }
   if (!contents.isDestroyed()) contents.send(PDF_CHANNELS.fileRenamed, newPath)
 }
 

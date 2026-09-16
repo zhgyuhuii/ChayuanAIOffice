@@ -78,8 +78,6 @@ import {
   recordPaste,
   type PasteCascade,
 } from './paste-cascade'
-import { getUiLang, normalizeLang, setUiLang } from '@chatoffice/i18n'
-import { ProjectStore } from '@chatoffice/project-store'
 import {
   copyElementData,
   findGroupChild,

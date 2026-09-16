@@ -45,7 +45,6 @@ import {
   setActiveSlidesWebContents,
   slidesIsDirty,
 } from '../../../slides/src/main/slides-main'
-import type { TabKind, TabSummary } from '../shared/tabs-api'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
 import type { OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 
@@ -341,6 +340,18 @@ export class TabManager {
    * families answer synchronously in the main process, docs has to ask its
    * renderer. Hence the async signature.
    */
+  webContentsForTab(id: string): WebContents | undefined {
+    return this.tabs.find((t) => t.id === id)?.view?.webContents
+  }
+
+  findTabByPath(
+    path: string,
+  ): { id: string; kind: TabKind; webContents: WebContents } | undefined {
+    const wanted = path
+    const tab = this.tabs.find((t) => t.view && t.filePath && !t.present && t.filePath === wanted)
+    return tab?.view ? { id: tab.id, kind: tab.kind, webContents: tab.view.webContents } : undefined
+  }
+
   async openDocuments(): Promise<OpenDocumentTab[]> {
     const documents: OpenDocumentTab[] = []
     for (const tab of this.tabs) {

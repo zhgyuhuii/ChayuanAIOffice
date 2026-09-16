@@ -75,7 +75,6 @@ export function mcpConfigJson(launch: McpLaunch): string {
 
 const api = () => window.chatOfficeIntegrations
 
-const api = () => window.chatOfficeIntegrations
 
 export function IntegrationsPane({
   t,

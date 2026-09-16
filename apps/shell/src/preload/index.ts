@@ -21,6 +21,9 @@ import type {
   RenameResult,
   UiLanguage,
 } from '../shared/home-api'
+
+import { PROJECT_CHANNELS } from '../shared/home-api'
+import type { ProjectHomeApi, ProjectSummaryEntry, TimelineEntryItem } from '../shared/home-api'
 import { HOME_CHANNELS } from '../shared/home-api'
 import { INTEGRATIONS_CHANNELS } from '../shared/integrations-api'
 import type {

@@ -12736,4 +12736,4 @@ export const strings = {
     chatModePlan: '計劃',
     chatModePlanHint: '只給方案：不改檔案，產出可執行的計劃',
   },
-} as const
+}
