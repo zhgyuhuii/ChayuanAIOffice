@@ -1,3 +1,14 @@
+// vite dev 把 CJS 依赖的 import 变成就地解构,react 的具名导出必须先于
+// 下面这行 lazy() 出现,否则启动即 TDZ(Cannot access 'lazy' before initialization)
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 // 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进表格启动图
 const ChartDesignerModal = lazy(() =>
   import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
@@ -87,7 +98,6 @@ import {
 } from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { Suspense, lazy, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useAutoSavePref, type AiScopeQuoteData } from '@chatoffice/ui'
 
 import {
@@ -6076,61 +6086,61 @@ export function App(): React.JSX.Element {
       {chartDesignerOpen && (
         <Suspense fallback={null}>
           <ChartDesignerModal
-          lang="zh-CN"
-          initial={chartDesignerEdit ?? null}
-          onClose={() => {
-            setChartDesignerEdit(null)
-            setChartDesignerOpen(false)
-          }}
-          onInsert={(payload) => {
-            void (async () => {
-              const ctx = visualContext()
-              // 双击回显的编辑提交:mediaReplace 换海报 + echart 原位重写 sidecar
-              if (chartDesignerEdit && payload.snapshotPng) {
-                const m = /^data:[^;]+;base64,([\s\S]*)$/.exec(payload.snapshotPng)
-                if (m && m[1]) {
-                  applyShapeEditImpl(visualSyncContext(), chartDesignerEdit.visualId, {
-                    mediaReplace: {
-                      mediaType: 'image/png',
-                      base64: m[1],
-                      echart: {
-                        optionJson: payload.optionJson,
-                        code: payload.code ?? null,
-                        groupId: payload.groupId,
-                        data: payload.data ?? null,
+            lang="zh-CN"
+            initial={chartDesignerEdit ?? null}
+            onClose={() => {
+              setChartDesignerEdit(null)
+              setChartDesignerOpen(false)
+            }}
+            onInsert={(payload) => {
+              void (async () => {
+                const ctx = visualContext()
+                // 双击回显的编辑提交:mediaReplace 换海报 + echart 原位重写 sidecar
+                if (chartDesignerEdit && payload.snapshotPng) {
+                  const m = /^data:[^;]+;base64,([\s\S]*)$/.exec(payload.snapshotPng)
+                  if (m && m[1]) {
+                    applyShapeEditImpl(visualSyncContext(), chartDesignerEdit.visualId, {
+                      mediaReplace: {
+                        mediaType: 'image/png',
+                        base64: m[1],
+                        echart: {
+                          optionJson: payload.optionJson,
+                          code: payload.code ?? null,
+                          groupId: payload.groupId,
+                          data: payload.data ?? null,
+                        },
                       },
-                    },
+                    })
+                  }
+                  setChartDesignerEdit(null)
+                  setChartDesignerOpen(false)
+                  return
+                }
+                if (payload.engine === 'ooxml' && payload.spec) {
+                  const KIND: Record<string, string> = {
+                    bar: 'column',
+                    line: 'line',
+                    pie: 'pie',
+                  }
+                  const kind = KIND[payload.spec.type]
+                  if (kind) await handleInsertChartImpl(ctx, kind)
+                } else if (payload.snapshotPng) {
+                  // 扩展组:echart visual(快照图 + option/code/数据表随 journal;
+                  // sidecar 落盘与双击编辑由 gateway 二期合成)
+                  insertEchartVisualImpl(ctx, {
+                    dataUrl: payload.snapshotPng,
+                    optionJson: payload.optionJson,
+                    code: payload.code,
+                    groupId: payload.groupId,
+                    title: payload.title,
+                    ...(payload.data ? { data: payload.data } : {}),
                   })
                 }
                 setChartDesignerEdit(null)
                 setChartDesignerOpen(false)
-                return
-              }
-              if (payload.engine === 'ooxml' && payload.spec) {
-                const KIND: Record<string, string> = {
-                  bar: 'column',
-                  line: 'line',
-                  pie: 'pie',
-                }
-                const kind = KIND[payload.spec.type]
-                if (kind) await handleInsertChartImpl(ctx, kind)
-              } else if (payload.snapshotPng) {
-                // 扩展组:echart visual(快照图 + option/code/数据表随 journal;
-                // sidecar 落盘与双击编辑由 gateway 二期合成)
-                insertEchartVisualImpl(ctx, {
-                  dataUrl: payload.snapshotPng,
-                  optionJson: payload.optionJson,
-                  code: payload.code,
-                  groupId: payload.groupId,
-                  title: payload.title,
-                  ...(payload.data ? { data: payload.data } : {}),
-                })
-              }
-              setChartDesignerEdit(null)
-              setChartDesignerOpen(false)
-            })()
-          }}
-        />
+              })()
+            }}
+          />
         </Suspense>
       )}
       {recommendedCharts !== null && (
