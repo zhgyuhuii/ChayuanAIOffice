@@ -28,6 +28,7 @@ import {
 } from 'electron'
 import type { MenuItemConstructorOptions, NativeImage, WebContents } from 'electron'
 import { tabStripOverlay } from './title-bar-overlay'
+import { createFeedbackClient } from './feedback'
 import menuDocxIcon1x from './assets/menu-docx.png?asset'
 import menuDocxIcon2x from './assets/menu-docx@2x.png?asset'
 import menuXlsxIcon1x from './assets/menu-xlsx.png?asset'
@@ -253,6 +254,7 @@ import {
 import type {
   AccountLoginEvent,
   AutoSaveDefault,
+  FeedbackAttachmentMeta,
   RecentEntry,
   RecentPage,
   RenameResult,
@@ -3635,6 +3637,46 @@ function registerHomeIpc(): void {
   })
 
   ipcMain.handle(HOME_CHANNELS.getAppVersion, (): string => app.getVersion())
+
+  // ── Feedback channel (aidooo.com): renderer CSP blocks cross-origin fetch,
+  //    so probe/upload/submit are proxied here. Signing secret + app identity
+  //    stay in main (src/main/feedback.ts, same endpoint as chayuan-wps).
+  const feedbackClient = createFeedbackClient()
+  ipcMain.handle(HOME_CHANNELS.feedbackProbe, (): Promise<boolean> => feedbackClient.probe())
+  ipcMain.handle(HOME_CHANNELS.feedbackUpload, (_event, name: unknown, mime: unknown, data: unknown) => {
+    if (typeof name !== 'string' || typeof mime !== 'string' || !(data instanceof Uint8Array)) {
+      return Promise.resolve({ ok: false, error: 'bad_args' })
+    }
+    return feedbackClient.upload(name, mime, data)
+  })
+  ipcMain.handle(HOME_CHANNELS.feedbackSubmit, (_event, payload: unknown) => {
+    if (typeof payload !== 'object' || payload === null) {
+      return Promise.resolve({ ok: false, error: 'bad_args' })
+    }
+    const p = payload as {
+      mid?: unknown; type?: unknown; content?: unknown; attachments?: unknown; logJson?: unknown
+      appVersion?: unknown; os?: unknown; osVer?: unknown; arch?: unknown
+    }
+    if (typeof p.mid !== 'string' || typeof p.content !== 'string' || !p.content.trim()) {
+      return Promise.resolve({ ok: false, error: 'bad_args' })
+    }
+    return feedbackClient.submit({
+      mid: p.mid,
+      type: typeof p.type === 'string' ? p.type : 'suggestion',
+      content: p.content,
+      attachments: Array.isArray(p.attachments)
+        ? p.attachments.filter(
+            (a): a is FeedbackAttachmentMeta =>
+              typeof a === 'object' && a !== null && typeof a.name === 'string' && typeof a.url === 'string',
+          )
+        : [],
+      logJson: typeof p.logJson === 'string' ? p.logJson : '',
+      appVersion: typeof p.appVersion === 'string' ? p.appVersion : undefined,
+      os: typeof p.os === 'string' ? p.os : undefined,
+      osVer: typeof p.osVer === 'string' ? p.osVer : undefined,
+      arch: typeof p.arch === 'string' ? p.arch : undefined,
+    })
+  })
 
   ipcMain.handle(HOME_CHANNELS.recents, (_event, query: unknown): RecentPage =>
     pageRecentPaths(readRecentFiles(), query, new Set(readStarredFiles())),

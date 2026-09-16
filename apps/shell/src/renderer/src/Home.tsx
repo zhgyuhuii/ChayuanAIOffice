@@ -46,6 +46,7 @@ import type { IntegrationsApi } from '../../shared/integrations-api'
 import type { McpClientApi } from '../../shared/mcp-client-api'
 
 import { SettingsModal } from './SettingsModal'
+import { FeedbackModal, FeedbackQrCard } from './FeedbackModal'
 
 declare global {
   interface Window {
@@ -332,6 +333,12 @@ function AccountEntry({
   const loginDeadline = useRef(0)
   const [skillUpdate, setSkillUpdate] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
+  // feedback dialog (aidooo.com): probe first — online opens the form,
+  // offline falls back to the follow-us QR card
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [feedbackQrOpen, setFeedbackQrOpen] = useState(false)
+  const [feedbackProbing, setFeedbackProbing] = useState(false)
+  useShellModalSurface(feedbackOpen || feedbackQrOpen)
   // bumped on logout so an in-flight status refresh (which can still
   // report logged-in) is discarded instead of resurrecting the UI
   const statusSeq = useRef(0)
@@ -442,6 +449,19 @@ function AccountEntry({
     onSettingsOpenChange(true)
   }
 
+  const handleFeedbackClick = () => {
+    if (feedbackProbing || feedbackOpen || feedbackQrOpen) return
+    setFeedbackProbing(true)
+    // main-process probe (renderer CSP blocks cross-origin fetch)
+    void Promise.resolve(window.chatOffice.feedbackProbe?.() ?? false)
+      .then((online) => {
+        if (online) setFeedbackOpen(true)
+        else setFeedbackQrOpen(true)
+      })
+      .catch(() => setFeedbackQrOpen(true))
+      .finally(() => setFeedbackProbing(false))
+  }
+
   return (
     <div className="account-entry">
       {settingsOpen && (
@@ -463,14 +483,17 @@ function AccountEntry({
           onSkillUpdateDue={setSkillUpdate}
         />
       )}
-      <button
-        className="account-btn"
-        onClick={handleClick}
-        aria-haspopup="dialog"
-        aria-expanded={settingsOpen}
-        data-tip={t('settings')}
-        aria-label={t('settings')}
-      >
+      {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
+      {feedbackQrOpen && <FeedbackQrCard onClose={() => setFeedbackQrOpen(false)} />}
+      <div className="account-row">
+        <button
+          className="account-btn"
+          onClick={handleClick}
+          aria-haspopup="dialog"
+          aria-expanded={settingsOpen}
+          data-tip={t('settings')}
+          aria-label={t('settings')}
+        >
         <span className={`account-avatar${waiting ? ' waiting' : ''}`}>
           {waiting ? (
             <svg
@@ -527,7 +550,43 @@ function AccountEntry({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+        </button>
+        <button
+          className="account-feedback-btn"
+          onClick={handleFeedbackClick}
+          data-tip={t('feedback')}
+          aria-label={t('feedback')}
+          aria-haspopup="dialog"
+          aria-expanded={feedbackOpen || feedbackQrOpen}
+          data-feedback-entry
+        >
+          {feedbackProbing ? (
+            <svg className="account-spinner" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+              <circle
+                cx="8"
+                cy="8"
+                r="6"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                fill="none"
+                strokeDasharray="26"
+                strokeDashoffset="18"
+                strokeLinecap="round"
+              />
+            </svg>
+          ) : (
+            /* message bubble: opens the feedback dialog / offline QR card */
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 3h11a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H8.2L4.8 14v-3H2.5a.5.5 0 0 1-.5-.5v-7A.5.5 0 0 1 2.5 3z"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
     </div>
   )
 }

@@ -353,6 +353,39 @@ body.sidebar-resizing {
   background: var(--surface-subtle);
 }
 
+/* bottom row: settings button grows, feedback button hugs the right edge */
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.account-row .account-btn {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.account-feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.account-feedback-btn:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+
 .account-avatar {
   position: relative;
   display: flex;

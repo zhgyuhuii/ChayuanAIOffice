@@ -8,6 +8,9 @@ import type {
   AccountLoginEvent,
   AccountStatus,
   CloudProjectsSnapshot,
+  FeedbackSubmitPayload,
+  FeedbackSubmitResult,
+  FeedbackUploadResult,
   HomeApi,
   HomeChatSession,
   RecentEntry,
@@ -192,6 +195,18 @@ const homeApi: HomeApi = {
   async getAppVersion() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.getAppVersion)
     return typeof result === 'string' ? result : ''
+  },
+  async feedbackProbe() {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.feedbackProbe)
+    return result === true
+  },
+  async feedbackUpload(name, mime, data) {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.feedbackUpload, name, mime, data)
+    return result as FeedbackUploadResult
+  },
+  async feedbackSubmit(payload) {
+    const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.feedbackSubmit, payload)
+    return result as FeedbackSubmitResult
   },
   async onboardingSeen() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.onboardingSeen)

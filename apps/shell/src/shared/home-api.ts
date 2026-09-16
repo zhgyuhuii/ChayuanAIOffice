@@ -197,6 +197,12 @@ export interface HomeApi {
   accountLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
   getAppVersion(): Promise<string>
+  /** feedback channel (aidooo.com): cheap connectivity probe — true when the dialog can be opened */
+  feedbackProbe(): Promise<boolean>
+  /** upload one feedback attachment (binary); main proxies to aidooo.com (renderer CSP blocks cross-origin) */
+  feedbackUpload(name: string, mime: string, data: Uint8Array): Promise<FeedbackUploadResult>
+  /** submit the feedback form; main holds the signing secret and app identity */
+  feedbackSubmit(payload: FeedbackSubmitPayload): Promise<FeedbackSubmitResult>
   /** whether the first-run onboarding has been completed or skipped (persisted in userData/app-settings.json) */
   onboardingSeen(): Promise<boolean>
   /** mark onboarding done; analytics remains enabled unless separately opted out */
@@ -487,6 +493,51 @@ export interface RenameResult {
   error?: string
 }
 
+// ── Feedback channel (aidooo.com) ───────────────────────────
+
+/** uploaded attachment metadata, referenced by the submit payload */
+export interface FeedbackAttachmentMeta {
+  name: string
+  /** relative URL on aidooo.com (/feedback-uploads/...) */
+  url: string
+  kind: 'image' | 'file'
+  size: number
+}
+
+/** renderer→main submit payload: device id + diagnostics + the form itself */
+export interface FeedbackSubmitPayload {
+  /** 16-hex device id (renderer-owned, localStorage-anchored) */
+  mid: string
+  /** 'bug' | 'suggestion' | 'other' */
+  type: string
+  content: string
+  attachments: FeedbackAttachmentMeta[]
+  /** diagnostics JSON string (version/ua/log tail) */
+  logJson: string
+  appVersion?: string
+  os?: string
+  osVer?: string
+  arch?: string
+}
+
+export interface FeedbackSubmitResult {
+  ok: boolean
+  id?: string
+  status?: string
+  /** true when the failure looks like "no network" (renderer offers a draft) */
+  offline?: boolean
+  error?: string
+}
+
+export interface FeedbackUploadResult {
+  ok: boolean
+  name?: string
+  url?: string
+  kind?: 'image' | 'file'
+  size?: number
+  error?: string
+}
+
 // ── Project-related APIs (P1) ────────────────────────────────
 
 export interface ProjectSummaryEntry {
@@ -563,6 +614,9 @@ export const HOME_CHANNELS = {
   openExternal: 'home:open-external',
   accountLogout: 'home:account-logout',
   getAppVersion: 'home:get-app-version',
+  feedbackProbe: 'home:feedback-probe',
+  feedbackUpload: 'home:feedback-upload',
+  feedbackSubmit: 'home:feedback-submit',
   onboardingSeen: 'home:onboarding-seen',
   setOnboardingSeen: 'home:set-onboarding-seen',
   getTheme: 'home:get-theme',
