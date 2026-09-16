@@ -19,10 +19,11 @@
         alt=""
       />
       <div class="boot-text">
-        <div class="boot-title">察元Office</div>
-        <div class="boot-subtitle">ChaOffice</div>
+        <div class="boot-title">察元AIOffice</div>
       </div>
     </div>
+    <!-- 按系统语言把名称切换为 察元AIOffice / ChaAI Office 二选一 -->
+    <script src="./boot-locale.js"></script>
     <style>
       #boot {
         position: fixed;
@@ -52,13 +53,6 @@
         font-weight: 600;
         color: #333;
         letter-spacing: 0.5px;
-      }
-      .boot-subtitle {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        font-size: 12px;
-        font-weight: 400;
-        color: #999;
-        letter-spacing: 1px;
       }
       @keyframes boot-pulse {
         0%,

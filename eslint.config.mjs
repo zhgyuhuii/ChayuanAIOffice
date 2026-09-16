@@ -89,4 +89,12 @@ export default tseslint.config(
       globals: { ...globals.node, ...globals.worker },
     },
   },
+  {
+    // Renderer boot-layer snippets in public/ are served verbatim and run in
+    // the page before any bundler code exists.
+    files: ['apps/*/src/renderer/public/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+  },
 )
