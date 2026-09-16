@@ -3479,7 +3479,7 @@ function openBlankDocsTabForMcp(): number {
 
 /** MCP: open a blank slides tab and return its webContents id, for the visible-deck bridge */
 function openBlankSlidesTabForMcp(): number {
-  if (!tabManager) throw new Error('GenOffice is not ready')
+  if (!tabManager) throw new Error('ChaAI Office is not ready')
   const tabId = tabManager.openSlidesTab()
   const view = tabManager.slidesTabs().find((t) => t.id === tabId)
   if (!view) throw new Error('the new presentation tab could not be opened')
