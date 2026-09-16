@@ -1,7 +1,12 @@
 import { FunctionType, type IFunctionInfo } from '@univerjs/engine-formula'
 import { describe, expect, it } from 'vitest'
 
-import { buildFunctionCatalog, functionSyntax } from '../src/renderer/function-catalog'
+import {
+  assembleFormula,
+  buildFunctionCatalog,
+  functionSyntax,
+  parseSyntaxParams,
+} from '../src/renderer/function-catalog'
 
 function info(
   name: string,
@@ -78,6 +83,7 @@ describe('buildFunctionCatalog', () => {
         syntax: 'CELL(info_type, [reference])',
         abstract: 'c',
         description: 'c',
+        params: [],
       },
       {
         name: 'XLOOKUP',
@@ -85,6 +91,7 @@ describe('buildFunctionCatalog', () => {
         syntax: 'stale',
         abstract: 'stale',
         description: 'stale',
+        params: [],
       },
     ]
     const catalog = buildFunctionCatalog(live, fallback)
@@ -92,5 +99,63 @@ describe('buildFunctionCatalog', () => {
       'CELL(info_type, [reference])',
     )
     expect(catalog.find((spec) => spec.name === 'XLOOKUP')?.syntax).toBe('XLOOKUP(v)')
+  })
+})
+
+describe('parseSyntaxParams', () => {
+  it('recovers metadata from fallback syntax lines', () => {
+    expect(parseSyntaxParams('SUM(number1, [number2], …)')).toEqual([
+      { name: 'number1', detail: '', require: true, repeat: false },
+      { name: 'number2', detail: '', require: false, repeat: true },
+    ])
+    expect(parseSyntaxParams('IFERROR(value, value_if_error)').map((p) => p.require)).toEqual([
+      true,
+      true,
+    ])
+    expect(parseSyntaxParams('NOW()')).toEqual([])
+  })
+})
+
+describe('assembleFormula', () => {
+  it('trims trailing empties and keeps mid-argument holes Excel-style', () => {
+    expect(assembleFormula('SUM', ['A1:A3', '', ''])).toBe('=SUM(A1:A3)')
+    expect(assembleFormula('SUM', ['1', '', '3'])).toBe('=SUM(1, , 3)')
+    expect(assembleFormula('NOW', [])).toBe('=NOW()')
+  })
+
+  it('trims user-typed whitespace around values', () => {
+    expect(assembleFormula('ROUND', [' 3.14159 ', ' 2 '])).toBe('=ROUND(3.14159, 2)')
+  })
+})
+
+describe('buildFunctionCatalog params', () => {
+  it('carries engine parameter metadata', () => {
+    const catalog = buildFunctionCatalog([
+      info('SUM', FunctionType.Math, [
+        { name: 'number1' },
+        { name: 'number2', require: false, repeat: true },
+      ]),
+    ])
+    expect(catalog[0]!.params).toEqual([
+      { name: 'number1', detail: '', require: true, repeat: false },
+      { name: 'number2', detail: '', require: false, repeat: true },
+    ])
+  })
+
+  it('carries params on fallback entries when provided', () => {
+    const catalog = buildFunctionCatalog(
+      [],
+      [
+        {
+          name: 'CELL',
+          category: 'Information',
+          syntax: 'CELL(info_type, [reference])',
+          abstract: 'c',
+          description: 'c',
+          params: parseSyntaxParams('CELL(info_type, [reference])'),
+        },
+      ],
+    )
+    expect(catalog[0]!.params.map((p) => p.name)).toEqual(['info_type', 'reference'])
   })
 })
