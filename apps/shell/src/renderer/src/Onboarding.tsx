@@ -14,10 +14,8 @@ interface Slide {
   titleKey: StringKey
   /** 18px dark line right under the title */
   subtitleKey: StringKey
-  /** 16px muted paragraph below the title block */
+  /** 16px muted paragraph below the title block (slide 1's capability line) */
   bodyKey?: StringKey
-  /** render the body in the dimmer footnote gray (slide 3's credits disclaimer) */
-  bodyDim?: boolean
   /** community slide shows the WeChat-account QR panel (feedback channel) */
   showOffer?: boolean
   /** closing slide shows the "star us on GitHub" hint */
@@ -31,8 +29,6 @@ const SLIDES: readonly Slide[] = [
   {
     titleKey: 'onbTitle3',
     subtitleKey: 'onbBody3',
-    bodyKey: 'onbNote3',
-    bodyDim: true,
     showStar: true,
     art: 'check',
   },
@@ -184,9 +180,7 @@ export function Onboarding({ onDone }: OnboardingProps) {
               <SlideArt kind={s.art} />
               <h2 className="onb-title">{t(s.titleKey)}</h2>
               <p className="onb-subtitle">{t(s.subtitleKey)}</p>
-              {s.bodyKey && (
-                <p className={`onb-body${s.bodyDim ? ' onb-body-dim' : ''}`}>{t(s.bodyKey)}</p>
-              )}
+              {s.bodyKey && <p className="onb-body">{t(s.bodyKey)}</p>}
               {s.showStar && (
                 <div className="onb-star">
                   <p className="onb-star-hint">{t('onbStarHint')}</p>

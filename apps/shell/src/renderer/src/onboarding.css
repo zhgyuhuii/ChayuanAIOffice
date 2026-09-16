@@ -157,11 +157,6 @@
   color: var(--onb-text-secondary);
 }
 
-/* slide 3's credits disclaimer reads as a footnote */
-.onb-body-dim {
-  color: var(--onb-text-tertiary);
-}
-
 /* slide 3's star ask: same panel treatment as the offer, but low-key — a
  * one-line hint plus an outline CTA that opens the GitHub repo */
 .onb-star {
