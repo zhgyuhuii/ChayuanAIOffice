@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { AiComposer, AiTypingIndicator, ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  ModelPickerButton,
+  useDismissablePopover,
+} from '@chatoffice/ui'
 import attachIcon from '../assets/attach-icon.png'
 import qrCodeIcon from '../assets/qrcode.png'
+import wxpayIcon from '../assets/wxpay.png'
+import alipayIcon from '../assets/alipay.png'
 import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
-import type { StringKey } from '../locale'
 import { HomeChatController } from './controller'
 import type { HomeChatControllerTexts } from './controller'
 import { deriveTitle, useHomeChatStore } from './store'
@@ -14,6 +20,7 @@ import { sanitizeDocHtml } from './sanitize-html'
 import { TurnNavigator, deriveTurnNavEntries, toPlainText } from './TurnNavigator'
 import { groupSessionsByTree, groupNameOf } from './tree-groups'
 import { AssistantChip, AssistantPicker } from './AssistantPicker'
+import { WelcomeLanding } from './WelcomeLanding'
 import {
   findById,
   getDomainAssistants,
@@ -29,16 +36,6 @@ import type {
   ProjectSummaryEntry,
 } from '../../../shared/home-api'
 
-/** greeting sublines on the landing screen: one is picked at random on mount */
-const GREET_ASK_KEYS = [
-  'greetAsk1',
-  'greetAsk2',
-  'greetAsk3',
-  'greetAsk4',
-  'greetAsk5',
-  'greetAsk6',
-] as const satisfies readonly StringKey[]
-
 /** the chat needs stream + session IPC; the web shim degrades both for now */
 function chatSupported(): boolean {
   return (
@@ -46,6 +43,10 @@ function chatSupported(): boolean {
     typeof window.chatOffice.chatSessionsSave === 'function'
   )
 }
+
+/** domino exit budget: last keyframe (greeting fade) lands at ~720ms; the
+ * landing and footer unmount at this mark */
+const EXIT_MS = 760
 
 function chatTime(ts: number, dateLocale: string): string {
   const date = new Date(ts)
@@ -545,16 +546,34 @@ export function ChatPanel({
 
   // ── sessions dropdown ──
   const [menuOpen, setMenuOpen] = useState(false)
-  /** 页脚二维码点击放大（对话栏内 absolute 遮罩，点任意处/Escape 关闭） */
-  const [qrZoom, setQrZoom] = useState(false)
+  /** 页脚二维码点击放大（对话栏内 absolute 遮罩，点任意处/Escape 关闭）：
+   *  follow = 公众号单图；support = 微信/支付宝双图并排 */
+  const [qrZoom, setQrZoom] = useState<'follow' | 'support' | null>(null)
   useEffect(() => {
     if (!qrZoom) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setQrZoom(false)
+      if (e.key === 'Escape') setQrZoom(null)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [qrZoom])
+  /** 页脚星标脉动记忆：点过一次后只保留静态按钮（可再点） */
+  const [starDone, setStarDone] = useState(() => {
+    try {
+      return localStorage.getItem('chatoffice.welcomeStarDone') === '1'
+    } catch {
+      return false
+    }
+  })
+  const goStar = () => {
+    setStarDone(true)
+    try {
+      localStorage.setItem('chatoffice.welcomeStarDone', '1')
+    } catch {
+      // storage unavailable (private mode shim): the pulse simply stops for this run
+    }
+    void window.chatOffice.openGitHubRepo?.().catch(() => {})
+  }
   const menuWrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(menuOpen, () => setMenuOpen(false), {
     inside: () => [menuWrapRef.current],
@@ -693,21 +712,25 @@ export function ChatPanel({
     }
   }
 
-  // ── greeting (landing screen) ──
-  const [greetAskKey] = useState(
-    () => GREET_ASK_KEYS[Math.floor(Math.random() * GREET_ASK_KEYS.length)]!,
-  )
-  const hour = new Date().getHours()
-  const greetKey =
-    hour < 6
-      ? 'greetEvening'
-      : hour < 12
-        ? 'greetMorning'
-        : hour < 18
-          ? 'greetAfternoon'
-          : 'greetEvening'
-  const cjk = lang === 'zh' || lang === 'zh-TW' || lang === 'ja'
-  const greeting = `${t(greetKey)}${accountName ? (cjk ? '，' : ', ') + accountName : ''}${cjk ? '。' : '. '}`
+  // ── landing lifecycle (domino exit) ──
+  // the first send flips hasMessages: the message list appears immediately
+  // while the landing (and footer) play the exit choreography on top of it,
+  // unmounting when it finishes — the animation never blocks the messages
+  const [landingPhase, setLandingPhase] = useState<'steady' | 'out' | null>('steady')
+  const prevHadMessages = useRef(hasMessages)
+  useEffect(() => {
+    if (hasMessages && !prevHadMessages.current) {
+      prevHadMessages.current = true
+      setLandingPhase('out')
+      const timer = window.setTimeout(() => setLandingPhase(null), EXIT_MS)
+      return () => window.clearTimeout(timer)
+    }
+    if (!hasMessages && prevHadMessages.current) {
+      prevHadMessages.current = false
+      setLandingPhase('steady')
+    }
+  }, [hasMessages])
+  const showLanding = !hasMessages || landingPhase === 'out'
 
   // ── stick-to-bottom auto scroll ──
   const listRef = useRef<HTMLDivElement>(null)
@@ -1091,7 +1114,7 @@ export function ChatPanel({
         </div>
       </header>
 
-      {hasMessages ? (
+      {hasMessages && (
         <div className="chat-msgs-wrap">
           <div className="chat-msgs" ref={listRefCb} onScroll={onListScroll}>
             {active!.messages.map((m, i) => (
@@ -1106,21 +1129,23 @@ export function ChatPanel({
           </div>
           <TurnNavigator entries={navEntries} listEl={listEl} />
         </div>
-      ) : (
-        <div className="chat-landing">
-          <h1 className="chat-greet">
-            {greeting}
-            <span className="hero-ask">{t(greetAskKey)}</span>
-          </h1>
-        </div>
+      )}
+      {/* key on the active session: a fresh landing (new chat, switched-back
+          empty session) remounts and replays the reverse-domino entrance */}
+      {showLanding && (
+        <WelcomeLanding
+          key={active?.id ?? 'landing'}
+          accountName={accountName}
+          exiting={landingPhase === 'out'}
+        />
       )}
 
       <div className={`chat-dock${hasMessages ? '' : ' landing'}`}>{renderComposer()}</div>
 
       {/* 企业信息页脚：仅欢迎屏（空会话）显示，开聊即隐。官网链接走
           openExternal IPC（https-only 校验在主进程） */}
-      {!hasMessages && (
-        <footer className="chat-landing-footer">
+      {showLanding && (
+        <footer className={`chat-landing-footer${landingPhase === 'out' ? ' exiting' : ''}`}>
           <span className="chat-footer-text">
             {t('companyName')} © {new Date().getFullYear()}
             <span className="chat-footer-dot" aria-hidden="true">
@@ -1135,11 +1160,30 @@ export function ChatPanel({
           </span>
           <button
             className="chat-footer-qr"
-            aria-label={t('scanQrFollow')}
-            data-tip={t('scanQrFollow')}
-            onClick={() => setQrZoom(true)}
+            aria-label={t('followUs')}
+            data-tip={t('followUs')}
+            onClick={() => setQrZoom('follow')}
           >
             <img src={qrCodeIcon} alt="" aria-hidden="true" />
+          </button>
+          <button
+            className="chat-footer-qr"
+            aria-label={t('supportUs')}
+            data-tip={t('supportUs')}
+            onClick={() => setQrZoom('support')}
+          >
+            <img src={wxpayIcon} alt="" aria-hidden="true" />
+          </button>
+          <button
+            className={`chat-footer-star${starDone ? '' : ' pulse'}`}
+            aria-label={t('likeAria')}
+            data-tip={t('goLike')}
+            onClick={goStar}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z" />
+            </svg>
+            <span className="chat-footer-star-label">{t('goLike')}</span>
           </button>
         </footer>
       )}
@@ -1150,10 +1194,23 @@ export function ChatPanel({
         <div
           className="chat-qr-zoom"
           role="dialog"
-          aria-label={t('scanQrFollow')}
-          onClick={() => setQrZoom(false)}
+          aria-label={qrZoom === 'follow' ? t('followUs') : t('supportUs')}
+          onClick={() => setQrZoom(null)}
         >
-          <img src={qrCodeIcon} alt={t('scanQrFollow')} />
+          {qrZoom === 'follow' ? (
+            <img src={qrCodeIcon} alt={t('followUs')} />
+          ) : (
+            <div className="chat-qr-zoom-pair">
+              <figure className="chat-qr-zoom-item">
+                <img src={wxpayIcon} alt={t('wechatPayLabel')} />
+                <figcaption>{t('wechatPayLabel')}</figcaption>
+              </figure>
+              <figure className="chat-qr-zoom-item">
+                <img src={alipayIcon} alt={t('alipayPayLabel')} />
+                <figcaption>{t('alipayPayLabel')}</figcaption>
+              </figure>
+            </div>
+          )}
         </div>
       )}
     </main>

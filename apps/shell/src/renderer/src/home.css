@@ -3670,12 +3670,7 @@ body.sidebar-resizing {
   color: var(--icon-muted);
   -webkit-text-fill-color: transparent;
   background: var(--icon-muted)
-    linear-gradient(
-      to left,
-      var(--icon-muted),
-      var(--text-secondary) 50%,
-      var(--icon-muted)
-    );
+    linear-gradient(to left, var(--icon-muted), var(--text-secondary) 50%, var(--icon-muted));
   background-clip: text;
   -webkit-background-clip: text;
   background-repeat: no-repeat;
@@ -3852,6 +3847,530 @@ body.sidebar-resizing {
   border-radius: 12px;
   background: var(--surface);
   padding: 10px;
+}
+
+/* ── Welcome landing: product family showcase ───────────────────────────
+ * Four zones per consensus: greeting, five product cards, plaza badge
+ * strip, upgraded footer (dual QR + star). Entrance/exit are staggered
+ * keyframes (reverse-domino in, domino out); the strip reflows to a single
+ * column under 920px of *container* width (the chat pane collapses). */
+
+.chat-landing.welcome {
+  gap: 4px;
+  container-type: inline-size;
+}
+
+.chat-greet .welcome-sub {
+  display: block;
+  margin-top: 10px;
+  min-height: 22px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.welcome-caret {
+  margin-left: 1px;
+  color: var(--accent);
+  animation: welcome-caret-blink 0.9s steps(1) infinite;
+}
+
+@keyframes welcome-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.welcome-cards {
+  display: flex;
+  gap: 12px;
+  width: min(880px, 100%);
+  margin: 26px 0 14px;
+}
+
+.welcome-card {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 16px 12px 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.welcome-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgb(15 127 255 / 12%);
+}
+
+.welcome-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.welcome-card-name {
+  font-size: 13.5px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.welcome-card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.welcome-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 7px;
+}
+
+.welcome-chip {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.welcome-card-soon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 1.5px 8px;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.welcome-card.soon {
+  cursor: default;
+}
+
+.welcome-card.soon:hover {
+  transform: none;
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* plaza badge strip: wider than the cards, one row (icon | title/desc | badges | cta) */
+.welcome-plaza {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(880px, 100%);
+  padding: 13px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.welcome-plaza:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgb(15 127 255 / 10%);
+}
+
+.welcome-plaza-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.welcome-plaza-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.welcome-plaza-name {
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.welcome-plaza-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.welcome-plaza-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.welcome-plaza-badge {
+  padding: 2.5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* one muted hue per resource kind — tinted, not loud, to stay behind the cards */
+.welcome-plaza-badge.b0 {
+  background: rgb(22 119 255 / 12%);
+  color: #1667ff;
+}
+
+.welcome-plaza-badge.b1 {
+  background: rgb(82 196 26 / 14%);
+  color: #3da10f;
+}
+
+.welcome-plaza-badge.b2 {
+  background: rgb(250 140 22 / 14%);
+  color: #d97a06;
+}
+
+.welcome-plaza-badge.b3 {
+  background: rgb(114 46 209 / 12%);
+  color: #7a2ed1;
+}
+
+.welcome-plaza-cta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* "coming soon" toast for the unbuilt platform card */
+.welcome-toast {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgb(30 32 38 / 88%);
+  color: #fff;
+  font-size: 13px;
+  pointer-events: none;
+  animation: welcome-toast-in 0.22s ease;
+}
+
+@keyframes welcome-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+}
+
+/* footer star: gold pulse ×3 after the entrance settles, re-arms on hover;
+ * after the first click it renders without .pulse ever again */
+.chat-footer-star {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 8px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: #f0a020;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chat-footer-star:hover {
+  background: rgb(240 160 32 / 14%);
+}
+
+.chat-footer-star.pulse {
+  animation: chat-star-pulse 0.9s ease-in-out 3;
+  animation-delay: 0.6s;
+}
+
+.chat-footer-star.pulse:hover {
+  animation: chat-star-pulse 0.9s ease-in-out 1;
+}
+
+@keyframes chat-star-pulse {
+  50% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 5px rgb(255 176 32 / 0.95));
+  }
+}
+
+/* support lightbox: wechat + alipay side by side */
+.chat-qr-zoom-pair {
+  display: flex;
+  gap: 22px;
+}
+
+.chat-qr-zoom-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+}
+
+.chat-qr-zoom-item img {
+  width: 220px;
+  height: 220px;
+}
+
+/* ── entrance (reverse domino, ~570ms total) ── */
+
+.chat-landing.welcome .chat-greet {
+  animation: welcome-fade-in 0.24s ease both;
+}
+
+.chat-landing.welcome .welcome-plaza {
+  animation: welcome-rise-in 0.22s ease both;
+  animation-delay: 0.1s;
+}
+
+.chat-landing.welcome .welcome-card {
+  animation: welcome-card-in 0.22s ease both;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(1) {
+  animation-delay: 0.18s;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(2) {
+  animation-delay: 0.235s;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(3) {
+  animation-delay: 0.29s;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(4) {
+  animation-delay: 0.345s;
+}
+
+.chat-landing.welcome .welcome-card:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+.chat-landing-footer:not(.exiting) {
+  animation: welcome-fade-in 0.24s ease both;
+  animation-delay: 0.24s;
+}
+
+@keyframes welcome-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes welcome-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes welcome-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+}
+
+/* ── exit (domino, ~720ms total) ──
+ * the message list is already rendered underneath; the landing lifts out
+ * of the flow so the composer/footer geometry doesn't jump */
+
+.chat-landing.welcome.exiting {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--bg-content);
+  pointer-events: none;
+}
+
+.chat-landing.welcome.exiting .chat-greet {
+  animation: welcome-fade-out 0.2s ease both;
+  animation-delay: 0.52s;
+}
+
+.chat-landing.welcome.exiting .welcome-card {
+  animation: welcome-card-out 0.26s ease-in both;
+}
+
+.chat-landing.welcome.exiting .welcome-card:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.chat-landing.welcome.exiting .welcome-card:nth-child(2) {
+  animation-delay: 0.07s;
+}
+
+.chat-landing.welcome.exiting .welcome-card:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.chat-landing.welcome.exiting .welcome-card:nth-child(4) {
+  animation-delay: 0.21s;
+}
+
+.chat-landing.welcome.exiting .welcome-card:nth-child(5) {
+  animation-delay: 0.28s;
+}
+
+.chat-landing.welcome.exiting .welcome-plaza {
+  animation: welcome-plaza-out 0.2s ease-in both;
+  animation-delay: 0.38s;
+}
+
+.chat-landing-footer.exiting {
+  animation: welcome-fade-out 0.3s ease both;
+  pointer-events: none;
+}
+
+@keyframes welcome-card-out {
+  to {
+    opacity: 0;
+    transform: translateY(26px) scale(0.9);
+  }
+}
+
+@keyframes welcome-plaza-out {
+  to {
+    opacity: 0;
+    transform: scaleX(0.96) scaleY(0.05);
+  }
+}
+
+@keyframes welcome-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ── reduced motion: everything static, instant swaps ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-landing.welcome .chat-greet,
+  .chat-landing.welcome .welcome-card,
+  .chat-landing.welcome .welcome-plaza,
+  .chat-landing-footer:not(.exiting),
+  .chat-landing.welcome.exiting .chat-greet,
+  .chat-landing.welcome.exiting .welcome-card,
+  .chat-landing.welcome.exiting .welcome-plaza,
+  .chat-landing-footer.exiting,
+  .chat-footer-star.pulse,
+  .chat-footer-star.pulse:hover,
+  .welcome-caret {
+    animation: none;
+  }
+}
+
+/* ── narrow chat pane: cards stack (icon left, copy right), plaza wraps ── */
+
+@container (max-width: 919px) {
+  .welcome-cards {
+    flex-direction: column;
+    width: min(430px, 100%);
+    gap: 9px;
+  }
+
+  .welcome-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      'icon name'
+      'icon desc'
+      'icon chips';
+    column-gap: 12px;
+    align-items: center;
+    padding: 11px 14px;
+    text-align: left;
+  }
+
+  .welcome-card-icon {
+    grid-area: icon;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 0;
+  }
+
+  .welcome-card-name {
+    grid-area: name;
+  }
+
+  .welcome-card-desc {
+    grid-area: desc;
+  }
+
+  .welcome-card-chips {
+    grid-area: chips;
+    justify-content: flex-start;
+    margin-top: 2px;
+  }
+
+  .welcome-card-soon {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .welcome-plaza {
+    flex-wrap: wrap;
+    gap: 9px 12px;
+  }
+
+  .welcome-plaza-badges {
+    margin-left: 54px;
+  }
+
+  .welcome-plaza-cta {
+    margin-left: auto;
+  }
 }
 
 /* composer */
@@ -4289,7 +4808,9 @@ body.sidebar-resizing {
   color: var(--text-secondary);
   cursor: pointer;
   text-align: left;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 }
 .side-new-row:hover {
   background: var(--bg-hover);
