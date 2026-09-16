@@ -826,3 +826,194 @@
 .set-intg-path {
   text-align: left;
 }
+
+/* ── MCP 管理 (external MCP client) ─────────────────────────── */
+
+/* divider between the integrations skill content and the local MCP server settings */
+.set-intg-divider {
+  height: 1px;
+  margin: 20px 0 4px;
+  background: var(--border-subtle);
+}
+
+.set-mcpm-lead {
+  padding: 4px 0 10px;
+}
+
+.set-mcpm-addrow {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 0 10px;
+}
+
+.set-mcpm-empty {
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* the add / edit form */
+.set-mcpm-form {
+  margin: 6px 0 12px;
+  padding: 12px 12px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface-subtle);
+}
+
+.set-mcpm-form .set-field {
+  border-bottom: none;
+}
+
+.set-mcpm-tp {
+  display: flex;
+  gap: 6px;
+}
+
+.set-mcpm-tp-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.set-mcpm-tp-btn:hover {
+  background: var(--bg-hover);
+}
+
+.set-mcpm-tp-btn.active {
+  border-color: var(--color-btn-primary);
+  color: var(--color-btn-primary);
+  font-weight: 600;
+}
+
+.set-mcpm-textarea {
+  min-height: 44px;
+  padding: 7px 10px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.set-mcpm-verify {
+  margin: 4px 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.set-mcpm-verify.ok {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+
+.set-mcpm-verify.err {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.set-mcpm-error {
+  padding: 0 0 8px;
+  color: var(--danger);
+  word-break: break-word;
+}
+
+.set-mcpm-actions {
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+/* one registered server: a collapsible group header + its tools */
+.set-mcpm-server {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.set-mcpm-server .set-field {
+  border-bottom: none;
+}
+
+.set-mcpm-head {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.set-mcpm-chevron {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: transform 0.15s ease;
+}
+
+.set-mcpm-server[data-open] .set-mcpm-chevron {
+  transform: rotate(90deg);
+}
+
+.set-mcpm-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.set-mcpm-server:not([data-open]) .set-mcpm-name {
+  /* keep the collapsed row quiet; the switch/actions carry the state */
+  font-weight: 500;
+}
+
+.set-mcpm-meta {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.set-mcpm-body {
+  padding: 2px 0 12px 20px;
+}
+
+.set-mcpm-tools,
+.set-mcpm-tool-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.set-mcpm-tool {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg-hover);
+}
+
+.set-mcpm-tool code {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-primary);
+  user-select: text;
+  word-break: break-all;
+}
+
+.set-mcpm-tool span {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

@@ -106,8 +106,9 @@ async function renderModal(
     await Promise.resolve()
   })
 
+  // the local MCP server settings moved into the Integrations section
   const mcp = Array.from(host.querySelectorAll<HTMLButtonElement>('.set-nav-item')).find((button) =>
-    button.textContent?.includes('MCP Settings'),
+    button.textContent?.includes('Integrations'),
   )
   expect(mcp).toBeDefined()
   await click(mcp!)

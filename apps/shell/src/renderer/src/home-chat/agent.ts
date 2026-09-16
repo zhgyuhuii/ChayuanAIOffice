@@ -1,7 +1,10 @@
 import { AgentLoop, createIpcTransport } from '@chatoffice/agent-core'
-import type { AgentMessage, AgentSkill, AgentTransport } from '@chatoffice/agent-core'
+import type { AgentMessage, AgentSkill, AgentTransport, AgentToolDef } from '@chatoffice/agent-core'
 import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type { HomeApi, HomeChatAttachment } from '../../../shared/home-api'
+import type { ExternalMcpServerTools } from '../../../shared/mcp-client-api'
+import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
+import type { McpToolBinding } from './mcp-tools'
 
 /** everything the home agent needs from the host (window.chatOffice on desktop, shims on web) */
 export interface HomeAgentBridge {
@@ -35,6 +38,15 @@ export interface HomeAgentBridge {
     entries: { name: string; path: string; ext: string; mtimeMs: number; sizeBytes: number }[]
     truncated: boolean
   }>
+  /** 外部 MCP (MCP 管理): live tools of every enabled server; absent on shims
+   *  without the chatOfficeMcp bridge → the agent runs with built-ins only */
+  listMcpTools?(): Promise<ExternalMcpServerTools[]>
+  /** relay one tool call to an external MCP server (serverId from listMcpTools) */
+  callMcpTool?(
+    serverId: string,
+    toolName: string,
+    args: Record<string, unknown>,
+  ): Promise<{ ok: boolean; output: string }>
 }
 
 export type DocType = 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'
@@ -229,6 +241,26 @@ The user switched this conversation to plan mode. Produce plans, advice and anal
 - search_files and read_document stay available for research; only open_document when the user explicitly asks to see the file.
 - End with a concrete, step-by-step proposal the user can approve, then wait — do not execute anything.`
 
+const HOME_TOOLS: AgentToolDef[] = [
+  CREATE_DOC_TOOL,
+  SEARCH_FILES_TOOL,
+  SYSTEM_SEARCH_TOOL,
+  READ_DOCUMENT_TOOL,
+  OPEN_DOCUMENT_TOOL,
+  UPDATE_TASKS_TOOL,
+]
+
+/** external MCP tools surfaced to the skill (built-in list + namespaced extras) */
+interface McpSkillState {
+  tools(): AgentToolDef[]
+  section(): string
+  /** null when the wire name is not an MCP tool */
+  call(
+    wireName: string,
+    input: Record<string, unknown>,
+  ): Promise<{ output: string; isError?: boolean } | null>
+}
+
 function homeSkill(
   bridge: HomeAgentBridge,
   state: {
@@ -238,21 +270,27 @@ function homeSkill(
     transcript: () => AgentMessage[]
     onCreatedDoc(info: { title: string; docType: DocType }): void
     onOpenedDoc(info: { title: string; filePath: string }): void
+    mcp: McpSkillState
   },
   texts: HomeAgentTexts,
 ): AgentSkill {
   return {
     id: 'home',
-    systemPrompt: SYSTEM_PROMPT,
-    tools: [
-      CREATE_DOC_TOOL,
-      SEARCH_FILES_TOOL,
-      SYSTEM_SEARCH_TOOL,
-      READ_DOCUMENT_TOOL,
-      OPEN_DOCUMENT_TOOL,
-      UPDATE_TASKS_TOOL,
-    ],
+    // getters: the loop re-reads these before every model request, so tools
+    // added by an MCP refresh (or a mid-session server toggle) apply to the
+    // next turn without recreating the agent
+    get systemPrompt() {
+      const section = state.mcp.section()
+      return section ? `${SYSTEM_PROMPT}\n\n${section}` : SYSTEM_PROMPT
+    },
+    get tools() {
+      return [...HOME_TOOLS, ...state.mcp.tools()]
+    },
     async executeTool(call) {
+      const mcpResult = await state.mcp.call(call.name, call.input)
+      if (mcpResult) {
+        return { ...mcpResult, summary: call.name }
+      }
       switch (call.name) {
         case 'create_document': {
           const title = String(call.input.title ?? '').trim()
@@ -515,6 +553,14 @@ export class HomeAgent {
   private createdDoc: { title: string; docType: DocType } | null = null
   private openedDoc: { title: string; filePath: string } | null = null
   private queued: { text: string; attachments: HomeChatAttachment[] } | null = null
+  /** 外部 MCP: namespaced tool cache refreshed before every run (single-flight) */
+  private mcpToolDefs: AgentToolDef[] = []
+  private mcpBindings = new Map<string, McpToolBinding>()
+  private mcpRefresh: Promise<void> | null = null
+  /** busy from send() until the run settles; loop.busy alone lags behind the
+   *  pre-run awaits (attachment reads, MCP refresh) and would leave a gap
+   *  where isBusy() reads false mid-start */
+  private busyFlag = false
 
   constructor(
     private readonly bridge: HomeAgentBridge,
@@ -540,6 +586,11 @@ export class HomeAgent {
         },
         onOpenedDoc: (info) => {
           this.openedDoc = info
+        },
+        mcp: {
+          tools: () => this.mcpToolDefs,
+          section: () => mcpSystemSection(this.mcpBindings),
+          call: (wireName, input) => this.callMcpTool(wireName, input),
         },
       },
       texts,
@@ -586,6 +637,7 @@ export class HomeAgent {
           })
         },
         onDone: () => {
+          this.busyFlag = false
           this.events.onBusy(false)
           this.events.onDone({
             text: this.turnTextValue,
@@ -595,16 +647,20 @@ export class HomeAgent {
           this.flushQueue()
         },
         onError: (error) => {
+          this.busyFlag = false
           this.events.onBusy(false)
           this.events.onError(error)
           this.flushQueue()
         },
       },
     })
+    // warm the MCP tool list in the background so the first send already sees
+    // the enabled servers' tools (start() re-refreshes before every run)
+    if (this.bridge.listMcpTools) void this.ensureMcpTools()
   }
 
   get busy(): boolean {
-    return this.loop.busy
+    return this.busyFlag || this.loop.busy
   }
 
   /** restore a persisted session's transcript into model context */
@@ -637,31 +693,81 @@ export class HomeAgent {
     if (next) void this.start(next.text, next.attachments)
   }
 
+  /** fetch the enabled MCP servers' live tools (single-flight, failure = empty) */
+  private ensureMcpTools(): Promise<void> {
+    this.mcpRefresh ??= (async () => {
+      if (!this.bridge.listMcpTools) return
+      try {
+        const built = buildMcpToolDefs(await this.bridge.listMcpTools())
+        this.mcpToolDefs = built.tools
+        this.mcpBindings = built.bindings
+      } catch {
+        this.mcpToolDefs = []
+        this.mcpBindings = new Map()
+      } finally {
+        this.mcpRefresh = null
+      }
+    })()
+    return this.mcpRefresh
+  }
+
+  /** relay a namespaced mcp__ call to its server; null when not an MCP tool */
+  private async callMcpTool(
+    wireName: string,
+    input: Record<string, unknown>,
+  ): Promise<{ output: string; isError?: boolean } | null> {
+    const binding = this.mcpBindings.get(wireName)
+    if (!binding) return null
+    if (!this.bridge.callMcpTool) {
+      return { output: 'MCP bridge unavailable', isError: true }
+    }
+    try {
+      const result = await this.bridge.callMcpTool(binding.serverId, binding.toolName, input)
+      return { output: result.output, isError: !result.ok }
+    } catch (e) {
+      return { output: `MCP call failed: ${e instanceof Error ? e.message : String(e)}`, isError: true }
+    }
+  }
+
   private async start(text: string, attachments: HomeChatAttachment[]): Promise<void> {
     this.turnTextValue = ''
     this.turnInstructionValue = text
     this.createdDoc = null
     this.openedDoc = null
+    this.busyFlag = true
     this.events.onBusy(true)
     this.events.onText('')
     const images: { base64: string; mime: string }[] = []
     const textBlocks: string[] = []
-    for (const a of attachments) {
-      if (IMAGE_EXTS.has(a.ext)) {
-        const img = await this.bridge.readAttachmentImage(a.path)
-        if (img.ok && img.base64 && img.mime) images.push({ base64: img.base64, mime: img.mime })
-      } else {
-        const r = await this.bridge.readAttachment(a.path, 0, 12_000)
-        if (r.ok && r.text) {
-          const more =
-            (r.totalChars ?? 0) > r.text.length
-              ? '\n[…truncated; read more with read_document]'
-              : ''
-          textBlocks.push(`[Attached file: ${a.name}]\n${r.text}${more}`)
+    try {
+      for (const a of attachments) {
+        if (IMAGE_EXTS.has(a.ext)) {
+          const img = await this.bridge.readAttachmentImage(a.path)
+          if (img.ok && img.base64 && img.mime) images.push({ base64: img.base64, mime: img.mime })
+        } else {
+          const r = await this.bridge.readAttachment(a.path, 0, 12_000)
+          if (r.ok && r.text) {
+            const more =
+              (r.totalChars ?? 0) > r.text.length
+                ? '\n[…truncated; read more with read_document]'
+                : ''
+            textBlocks.push(`[Attached file: ${a.name}]\n${r.text}${more}`)
+          }
         }
       }
+      const instruction = textBlocks.length ? `${text}\n\n${textBlocks.join('\n\n')}` : text
+      // pick up MCP server changes (added/toggled in settings) for this run; a
+      // cold stdio connect can take a while, so never block the send on it
+      await Promise.race([
+        this.ensureMcpTools().catch(() => {}),
+        new Promise<void>((resolve) => window.setTimeout(resolve, 12_000)),
+      ])
+      this.loop.run(instruction, images)
+    } catch (e) {
+      this.busyFlag = false
+      this.events.onBusy(false)
+      this.events.onError(e instanceof Error ? e.message : String(e))
+      this.flushQueue()
     }
-    const instruction = textBlocks.length ? `${text}\n\n${textBlocks.join('\n\n')}` : text
-    this.loop.run(instruction, images)
   }
 }

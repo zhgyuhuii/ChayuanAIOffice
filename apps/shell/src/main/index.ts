@@ -74,6 +74,8 @@ import { readAppSettings, writeAppSetting, writeAppSettings } from './app-settin
 import { OPEN_DOCUMENTS_FILE, clearOpenDocuments, publishOpenDocuments } from './open-documents'
 import { installCliLinkBestEffort } from './cli-link'
 import { registerIntegrationsIpc } from './integrations-ipc'
+import { createExternalMcpManager } from './mcp/external-client'
+import { registerMcpClientIpc } from './mcp/external-client-ipc'
 import {
   ANALYTICS_ENABLED_KEY,
   analyticsEnabledFrom,
@@ -5698,6 +5700,13 @@ installContextMenu(app, () => contextMenuLabels(currentLang()))
 registerAiIpc()
 registerProjectIpc()
 registerDocsIpc()
+// External MCP client (Settings → MCP 管理): the app dials OUT to user-registered
+// servers; live connections are cached per id and dropped when the config changes.
+const externalMcp = createExternalMcpManager({
+  settingsPath: APP_SETTINGS_PATH,
+  log: (message) => console.log(`[mcp-client] ${message}`),
+})
+registerMcpClientIpc(externalMcp)
 registerHomeIpc()
 registerIntegrationsIpc({
   settingsPath: APP_SETTINGS_PATH,
@@ -5906,6 +5915,8 @@ app.on('before-quit', () => {
   // release the MCP port synchronously (macOS keeps the process alive after
   // the last window closes, so window-all-closed is not enough)
   stopMcpSync()
+  // best-effort: close outbound MCP client connections (kills spawned stdio servers)
+  void externalMcp.shutdown()
 })
 
 // after every window has closed, so the shell window's own 'closed' republish cannot revive the file

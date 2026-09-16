@@ -25,6 +25,14 @@ import type {
   IntegrationsStatus,
   SkillInstallState,
 } from '../shared/integrations-api'
+import type {
+  ExternalMcpCallResult,
+  ExternalMcpServerConfig,
+  ExternalMcpServerTools,
+  ExternalMcpVerifyResult,
+  McpClientApi,
+} from '../shared/mcp-client-api'
+import { MCP_CLIENT_CHANNELS } from '../shared/mcp-client-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
@@ -532,6 +540,56 @@ const integrationsApi: IntegrationsApi = {
   },
 }
 contextBridge.exposeInMainWorld('chatOfficeIntegrations', integrationsApi)
+
+// External MCP client (Settings → MCP 管理): add/verify/delete outbound servers,
+// and relay their tools to the home chat agent
+const mcpClientApi: McpClientApi = {
+  async listServers() {
+    const result: unknown = await ipcRenderer.invoke(MCP_CLIENT_CHANNELS.listServers)
+    return Array.isArray(result) ? (result as ExternalMcpServerConfig[]) : []
+  },
+  async saveServer(config) {
+    const result: unknown = await ipcRenderer.invoke(MCP_CLIENT_CHANNELS.saveServer, config)
+    return Array.isArray(result) ? (result as ExternalMcpServerConfig[]) : []
+  },
+  async deleteServer(id) {
+    const result: unknown = await ipcRenderer.invoke(MCP_CLIENT_CHANNELS.deleteServer, id)
+    return Array.isArray(result) ? (result as ExternalMcpServerConfig[]) : []
+  },
+  async setServerEnabled(id, enabled) {
+    const result: unknown = await ipcRenderer.invoke(
+      MCP_CLIENT_CHANNELS.setServerEnabled,
+      id,
+      enabled,
+    )
+    return Array.isArray(result) ? (result as ExternalMcpServerConfig[]) : []
+  },
+  async verifyServer(id) {
+    return (await ipcRenderer.invoke(
+      MCP_CLIENT_CHANNELS.verifyServer,
+      id,
+    )) as ExternalMcpVerifyResult
+  },
+  async verifyDraft(draft) {
+    return (await ipcRenderer.invoke(
+      MCP_CLIENT_CHANNELS.verifyDraft,
+      draft,
+    )) as ExternalMcpVerifyResult
+  },
+  async listAgentTools() {
+    const result: unknown = await ipcRenderer.invoke(MCP_CLIENT_CHANNELS.listAgentTools)
+    return Array.isArray(result) ? (result as ExternalMcpServerTools[]) : []
+  },
+  async callTool(serverId, toolName, args) {
+    return (await ipcRenderer.invoke(
+      MCP_CLIENT_CHANNELS.callTool,
+      serverId,
+      toolName,
+      args,
+    )) as ExternalMcpCallResult
+  },
+}
+contextBridge.exposeInMainWorld('chatOfficeMcp', mcpClientApi)
 
 const tabsApi: TabsApi = {
   async list() {

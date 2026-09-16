@@ -65,5 +65,18 @@ export function createHomeChatBridge(
       return cachedModel
     },
     systemFileSearch: (query, ext) => window.chatOffice.systemFileSearch(query, ext),
+    // 外部 MCP (MCP 管理): enabled servers' tools enter the agent; calls relay
+    // back through the main process's cached connections
+    listMcpTools: async () => {
+      try {
+        return (await window.chatOfficeMcp?.listAgentTools()) ?? []
+      } catch {
+        return []
+      }
+    },
+    callMcpTool: (serverId, toolName, args) => {
+      if (!window.chatOfficeMcp) return Promise.resolve({ ok: false, output: 'MCP unavailable' })
+      return window.chatOfficeMcp.callTool(serverId, toolName, args)
+    },
   }
 }

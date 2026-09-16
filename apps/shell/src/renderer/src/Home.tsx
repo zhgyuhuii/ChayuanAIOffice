@@ -43,6 +43,7 @@ import {
 } from './home-chat/relay-client'
 
 import type { IntegrationsApi } from '../../shared/integrations-api'
+import type { McpClientApi } from '../../shared/mcp-client-api'
 
 import { SettingsModal } from './SettingsModal'
 
@@ -51,6 +52,7 @@ declare global {
     chatOffice: HomeApi
     chatOfficeProject?: ProjectHomeApi
     chatOfficeIntegrations?: IntegrationsApi
+    chatOfficeMcp?: McpClientApi
   }
 }
 
