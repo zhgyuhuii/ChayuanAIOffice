@@ -2,12 +2,12 @@ import { useRef, useState } from 'react'
 import type { Editor, JSONContent } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
 import {
-  SHAPE_GALLERY_GROUPS,
   useDismissablePopover,
   wordArtSolidColor,
   filesPaneTitle,
   type WordArtPreset,
 } from '@chatoffice/ui'
+import { SHAPE_GALLERY_GROUPS } from '@chatoffice/ui/shape-gallery'
 import {
   buildLineParagraphXml,
   buildShapeParagraphXml,

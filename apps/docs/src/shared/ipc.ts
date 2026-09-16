@@ -471,6 +471,11 @@ export interface DesktopApi {
   takeExportPdf(pdfPath: string): Promise<{ ok: boolean; base64?: string; error?: string }>
   /** Write one page PNG into the folder chosen by pickExportImagesTarget */
   writeExportImage(
+    dir: string,
+    fileName: string,
+    pngBase64: string,
+  ): Promise<{ ok: boolean; path?: string; error?: string }>
+  /** Save a picture the renderer displays (data URL) through a Save dialog */
   saveImageAs(src: string): Promise<{ ok: boolean; path?: string; error?: string }>
   onViewImage(handler: (src: string) => void): () => void
   aiStreamCancel(requestId: string): Promise<void>

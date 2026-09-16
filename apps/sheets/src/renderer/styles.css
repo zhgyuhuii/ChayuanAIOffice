@@ -397,6 +397,8 @@ textarea:disabled {
   border-left: 0;
   border-radius: 0 var(--radius-small) var(--radius-small) 0;
   background: var(--surface);
+}
+
 /* Go To arrow injected beside Univer's formula-bar Name Box (the
    defined-name selector) — see the ensure() effect in ExcelShell. */
 .goto-in-bar {

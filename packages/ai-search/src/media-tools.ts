@@ -125,7 +125,7 @@ export interface MediaToolOptions {
 /** Genspark background-removal model — chained after generation for transparentBackground */
 export const GSK_RMBG_MODEL = 'fal-bria-rmbg'
 
-export type GenerateImageToolOp = GskGenerateImageOptions & {
+export type GenerateImageToolOp = ChatOfficeGenerateImageOptions & {
   /** The result must have real PNG alpha (icons/logos/cutouts). Generation models cannot
    * produce transparency from the prompt alone — they paint a fake gray checkerboard into
    * the pixels — so the tool strips the background in a second pass instead. */
@@ -134,7 +134,7 @@ export type GenerateImageToolOp = GskGenerateImageOptions & {
 
 export async function generateImageTool(
   settingsPath: string,
-  op: ChatOfficeGenerateImageOptions,
+  op: GenerateImageToolOp,
   options: MediaToolOptions = {},
 ): Promise<{ url?: string; error?: string }> {
   const prompt = String(op.prompt ?? '').trim()

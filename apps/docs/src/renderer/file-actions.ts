@@ -174,11 +174,11 @@ export interface FileActionContext {
   setWatermark: (value: string | null) => void
   setWatermarkDirty: (dirty: boolean) => void
   /** face/color/layout of an AI-set watermark (null = Word's default look); text lives in `watermark` */
-  watermarkStyle: Omit<WatermarkSpec, 'text'> | null
-  setWatermarkStyle: (value: Omit<WatermarkSpec, 'text'> | null) => void
+  watermarkStyle?: Omit<WatermarkSpec, 'text'> | null
+  setWatermarkStyle?: (value: Omit<WatermarkSpec, 'text'> | null) => void
   /** pending picture watermark (AI-set); replaces any text watermark on save */
-  watermarkPicture: PictureWatermarkSpec | null
-  setWatermarkPicture: (value: PictureWatermarkSpec | null) => void
+  watermarkPicture?: PictureWatermarkSpec | null
+  setWatermarkPicture?: (value: PictureWatermarkSpec | null) => void
   inkAnnotations: InkAnnotation[]
   inksDirty: boolean
   setInkAnnotations: (value: InkAnnotation[]) => void
@@ -414,8 +414,8 @@ export async function loadFile(
     ctx.setCommentsDirty(false)
     ctx.setWatermark(parsed.watermarkText ?? null)
     ctx.setWatermarkDirty(false)
-    ctx.setWatermarkStyle(null)
-    ctx.setWatermarkPicture(null)
+    ctx.setWatermarkStyle?.(null)
+    ctx.setWatermarkPicture?.(null)
     ctx.setInkAnnotations(annotationsFromParsed(parsed.inks))
     ctx.setInksDirty(false)
     ctx.setInkTool('select')
@@ -509,7 +509,7 @@ export async function newFile(ctx: FileActionContext): Promise<boolean | undefin
     ctx.setCommentsDirty(false)
     ctx.setWatermark(null)
     ctx.setWatermarkDirty(false)
-    ctx.setWatermarkPicture(null)
+    ctx.setWatermarkPicture?.(null)
     ctx.setInkAnnotations([])
     ctx.setInksDirty(false)
     ctx.setInkTool('select')
@@ -1134,8 +1134,8 @@ async function saveOnce(
     ctx.setCommentsDirty(false)
     ctx.setWatermark(reparsed.watermarkText ?? null)
     ctx.setWatermarkDirty(false)
-    ctx.setWatermarkStyle(null)
-    ctx.setWatermarkPicture(null)
+    ctx.setWatermarkStyle?.(null)
+    ctx.setWatermarkPicture?.(null)
     ctx.setInkAnnotations(annotationsFromParsed(reparsed.inks))
     ctx.setInksDirty(false)
     ctx.setFootnotes(reparsed.footnotes)

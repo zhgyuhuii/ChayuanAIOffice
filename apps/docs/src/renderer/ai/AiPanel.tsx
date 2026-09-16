@@ -8,8 +8,15 @@ import type { PmNode } from '../editor/convert'
 import { TABLE_TRAILING_SKIP } from '../editor/extensions'
 import { countWords, findNumId, type NumIds } from './protocol'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
-import { markDocSeen, type AiCommentsAccess, type AiHeaderFooterAccess } from './tools'
+import {
+  markDocSeen,
+  type AiCommentsAccess,
+  type AiDocExtras,
+  type AiHeaderFooterAccess,
+} from './tools'
 import { buildAssistantInstruction, findCoreAssistant } from './assistants'
+import type { AiPageSetupAccess } from './page-setup'
+import type { AiNotesAccess } from './note-ops'
 import { createDocsSkill } from './docs-skill'
 import {
   buildDocWriterRequest,
@@ -292,11 +299,11 @@ interface AiPanelProps {
    *  the panel's own state/persistence is untouched. */
   onTurnCompleted?: (turn: { userText: string; assistantText: string; cancelled: boolean }) => void
   /** section store for set_page_setup / insert_section_break (upstream; unwired locally) */
-  pageSetupAccess?: unknown
+  pageSetupAccess?: AiPageSetupAccess
   /** style catalog and watermark stores (upstream; unwired locally) */
-  docExtras?: unknown
+  docExtras?: AiDocExtras
   /** footnote / endnote lists (upstream; unwired locally) */
-  notesAccess?: unknown
+  notesAccess?: AiNotesAccess
 }
 
 export function AiPanel({

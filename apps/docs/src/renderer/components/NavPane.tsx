@@ -13,7 +13,7 @@ export const NavPane = memo(function NavPane({
 }: {
   editor: Editor
   doc: PmNode
-  onClose: () => void
+  onClose?: () => void
 }) {
   const { t } = useI18n()
   const headings = collectHeadings(doc)

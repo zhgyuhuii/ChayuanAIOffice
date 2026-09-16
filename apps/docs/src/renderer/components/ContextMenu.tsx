@@ -48,8 +48,8 @@ interface EditorContextMenuProps {
   onParagraphDialog: () => void
   onLink: () => void
   onNewComment: () => void
-  onViewImage: (src: string) => void
-  onSaveImageAs: (src: string) => void
+  onViewImage?: (src: string) => void
+  onSaveImageAs?: (src: string) => void
   onAiPreset: (instruction: string) => void
   /** run a core-pack assistant against the current selection (AI 文本助手 submenu) */
   onAiAssistant?: (id: string) => void
@@ -343,8 +343,8 @@ export function EditorContextMenu({
     >
       {menu.imageSrc && (
         <>
-          {item(t('appViewImage'), { onClick: run(() => onViewImage(menu.imageSrc!)) })}
-          {item(t('appSaveImageAs'), { onClick: run(() => onSaveImageAs(menu.imageSrc!)) })}
+          {item(t('appViewImage'), { onClick: run(() => onViewImage?.(menu.imageSrc!)) })}
+          {item(t('appSaveImageAs'), { onClick: run(() => onSaveImageAs?.(menu.imageSrc!)) })}
           <div className="ctx-sep" />
         </>
       )}

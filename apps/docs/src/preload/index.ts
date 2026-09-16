@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type { IpcRendererEvent } from 'electron'
+import { VIEW_IMAGE_CHANNEL } from '../shared/ipc'
 import type { AiPanelPrefs } from '@chatoffice/ui'
 import type {
   AiModelSelection,

@@ -281,6 +281,9 @@ describe('EditorContextMenu AI 文本助手 submenu', () => {
     expect(trigger.disabled).toBe(true)
     unmount()
     editor.destroy()
+  })
+})
+
 describe('EditorContextMenu picture items', () => {
   const labels = (container: HTMLElement) =>
     [...container.querySelectorAll('.ctx-label')].map((el) => el.textContent)

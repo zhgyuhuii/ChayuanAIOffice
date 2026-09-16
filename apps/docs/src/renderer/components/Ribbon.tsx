@@ -179,8 +179,8 @@ export interface RibbonProps {
   onShowRuler: (v: boolean) => void
   showNav: boolean
   onShowNav: (v: boolean) => void
-  showFiles: boolean
-  onShowFiles: (v: boolean) => void
+  showFiles?: boolean
+  onShowFiles?: (v: boolean) => void
   commentCount: number
   /** unresolved root comments (drives the AI resolve-comments action) */
   openCommentCount: number
@@ -2302,8 +2302,8 @@ function RibbonInner({
             onShowRuler={onShowRuler}
             showNav={showNav}
             onShowNav={onShowNav}
-            showFiles={showFiles}
-            onShowFiles={onShowFiles}
+            showFiles={showFiles ?? false}
+            onShowFiles={onShowFiles ?? (() => {})}
             viewMode={viewMode}
             onViewMode={onViewMode}
             readMode={readMode}

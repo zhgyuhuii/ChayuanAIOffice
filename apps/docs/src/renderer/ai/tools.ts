@@ -498,6 +498,9 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         },
       },
       required: ['text'],
+    },
+  },
+  {
     name: 'insert_footnote',
     description:
       'Add a footnote: a superscript reference mark goes into the block (right after afterText, else at its end) and the note text prints at the bottom of that page. Use for sources, asides and clarifications the user asks to footnote.',
