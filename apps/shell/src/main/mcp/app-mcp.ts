@@ -6,6 +6,7 @@ import { createPdfTools } from './tools/pdf-tools'
 import { createSlidesTools, slidesDriver, type SlidesControl } from './tools/slides-tools'
 import { createSheetsTools, sheetsDriver, type SheetsControl } from './tools/sheets-tools'
 import { createSessionHost, createSessionTools, type FamilyDriver } from './tools/session-tools'
+import { createOpenDocumentTools, type OpenDocumentsControl } from './tools/open-documents-tools'
 
 /**
  * Main-process wiring for the MCP server.
@@ -31,6 +32,11 @@ export interface McpRuntimeDeps {
   sheetsControl?: SheetsControl
   /** the bundled chatoffice CLI, backing the headless create/read tools; absent when unavailable */
   cliRunner?: CliRunner
+  /**
+   * documents the user has open (list/read/close); absent in headless runs,
+   * where there is no tab manager to ask
+   */
+  openDocumentsControl?: OpenDocumentsControl
   /** where the MCP log file lives (userData); logging is unavailable without it */
   logFilePath?: string
 }
@@ -153,9 +159,11 @@ function buildTools(): McpToolDefinition[] {
       },
       host,
     ),
-    // headless, session-free read access (read_pdf); registered whenever the
-    // pdf workspace is bundled in, which the shell always does
-    ...createPdfTools(),
+    // documents the user has open, independent of the session above
+    ...createOpenDocumentTools({
+      defaultSaveDir: deps.defaultSaveDir,
+      ...(deps.openDocumentsControl ? { control: deps.openDocumentsControl } : {}),
+    }),
   ]
 }
 

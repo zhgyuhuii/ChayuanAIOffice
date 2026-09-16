@@ -179,6 +179,7 @@ import { createDocsControl, installDocsBridge } from './mcp/docs-bridge'
 import { initAiFetchProxy, cleanupAiFetchProxy } from './ai-fetch-proxy'
 import { createSlidesControl } from './mcp/slides-bridge'
 import { createSheetsControl, installSheetsBridge } from './mcp/sheets-bridge'
+import { createOpenDocumentsControl } from './mcp/open-documents-bridge'
 import {
   configureSheetsRuntime,
   exportSheetsPdfHeadless,
@@ -234,7 +235,10 @@ import { closePdfPasswordDialog, promptPdfPassword } from './pdf-password-dialog
 import {
   configureMarkdownRuntime,
   exportMarkdownPdfHeadless,
+  markdownDiscardPendingAssets,
   markdownFileRenamed,
+  markdownReadText,
+  markdownSaveToPath,
   requestMarkdownClose,
   requestMarkdownSave,
   sendMarkdownExportRequest,
@@ -245,7 +249,10 @@ import {
 import {
   configureHtmlRuntime,
   exportHtmlHeadless,
+  htmlDiscardPendingAssets,
   htmlFileRenamed,
+  htmlReadText,
+  htmlSaveToPath,
   registerPrivilegedSchemes,
   requestHtmlClose,
   requestHtmlSave,
@@ -6157,13 +6164,48 @@ app.whenReady().then(async () => {
   installSheetsBridge()
   // MCP server: localhost-only, docx generation for external agents. Deps are
   // injected so the mcp module never imports this file back.
+  // family controls are referenced twice (their own tools + the open-documents
+  // tool), so create them once here
+  const mcpDocsControl = createDocsControl({
+    openBlankTab: () => openBlankDocsTabForMcp(),
+    authorizeSave: authorizeMcpDocWrite,
+  })
+  const mcpSlidesControl = createSlidesControl({
+    openBlankTab: () => openBlankSlidesTabForMcp(),
+  })
+  const mcpSheetsControl = createSheetsControl({
+    openBlankTab: () => openBlankSheetsTabForMcp(),
+  })
   configureMcpRuntime({
     version: app.getVersion(),
     defaultSaveDir: () => defaultSaveDir(),
     openPath: (filePath) => routeDocumentPath(filePath),
-    docsControl: createDocsControl({
-      openBlankTab: () => openBlankDocsTabForMcp(),
-      authorizeSave: authorizeMcpDocWrite,
+    docsControl: mcpDocsControl,
+    slidesControl: mcpSlidesControl,
+    sheetsControl: mcpSheetsControl,
+    // documents the user has open: the tab list plus each family's own bridge,
+    // so an agent reaches a tab nobody but the user opened
+    openDocumentsControl: createOpenDocumentsControl({
+      list: () => {
+        if (!tabManager) throw new Error('the tab manager is not ready')
+        return tabManager.openDocuments()
+      },
+      webContentsFor: (tabId) => tabManager?.webContentsForTab(tabId),
+      closeTab: (tabId) => tabManager?.closeTabWithoutPrompt(tabId) ?? false,
+      defaultSaveDir: () => defaultSaveDir(),
+      docs: mcpDocsControl,
+      sheets: mcpSheetsControl,
+      slides: mcpSlidesControl,
+      markdown: {
+        read: markdownReadText,
+        save: markdownSaveToPath,
+        discard: markdownDiscardPendingAssets,
+      },
+      html: {
+        read: htmlReadText,
+        save: htmlSaveToPath,
+        discard: htmlDiscardPendingAssets,
+      },
     }),
     slidesControl: createSlidesControl({ openBlankTab: () => openBlankSlidesTabForMcp() }),
     sheetsControl: createSheetsControl({ openBlankTab: () => openBlankSheetsTabForMcp() }),
