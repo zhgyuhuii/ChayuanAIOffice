@@ -26,6 +26,24 @@ function newestMtime(dir) {
   return newest
 }
 
+// Workspace package sources feed every app preload's bundle graph
+// (electron-utils, storage-adapter, …). A preload-only fix landing in
+// packages/ never touches apps/<app>/src, so without this term the artifact
+// stays "fresh" and dev keeps serving a preload that no longer matches the
+// source — 0def8031 shipped exactly such a fix and docs kept a broken
+// preload until a manual rebuild.
+function newestPackageSourceMtime() {
+  const root = join('packages')
+  if (!existsSync(root)) return 0
+  let newest = 0
+  for (const pkg of readdirSync(root, { withFileTypes: true })) {
+    if (!pkg.isDirectory()) continue
+    newest = Math.max(newest, newestMtime(join(root, pkg.name, 'src')))
+  }
+  return newest
+}
+const packageSources = newestPackageSourceMtime()
+
 const stale = APPS.filter((app) => {
   const artifact = join('apps', app, 'out', 'preload', 'index.js')
   const built = existsSync(artifact) ? statSync(artifact).mtimeMs : 0
@@ -33,6 +51,7 @@ const stale = APPS.filter((app) => {
   const src = Math.max(
     newestMtime(join('apps', app, 'src', 'preload')),
     newestMtime(join('apps', app, 'src', 'shared')),
+    packageSources,
   )
   return src > built
 })
