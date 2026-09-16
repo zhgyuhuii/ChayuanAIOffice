@@ -12,7 +12,7 @@ import type {
 } from '../../shared/ipc'
 import { t } from '../i18n/locale'
 import { executeOps, opNames } from './ops'
-import { clipExcerpt, repliesOf, resolveCommentAnchor } from './comment-ops'
+import { repliesOf } from './comment-ops'
 import {
   PAGE_SETUP_TOOL,
   SECTION_BREAK_TOOL,
@@ -50,14 +50,7 @@ import {
   listRevisionEntries,
   validateSelector,
 } from './revision-ops'
-import {
-  buildNotesContext,
-  insertNoteRef,
-  noteInsertPos,
-  removeNoteRefs,
-  type AiNotesAccess,
-  type NoteKind,
-} from './note-ops'
+import { type AiNotesAccess, type NoteKind } from './note-ops'
 import {
   DraftLanding,
   type AiDocWriter,
