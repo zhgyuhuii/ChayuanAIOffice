@@ -45,11 +45,13 @@ async function click(selector: string): Promise<void> {
 }
 
 describe('analytics consent in onboarding', () => {
-  it('explains default-on analytics without an onboarding control', () => {
+  it('no longer surfaces the analytics notice in onboarding', () => {
     renderOnboarding(vi.fn(async () => true))
     expect(host.querySelector('[role="switch"]')).toBeNull()
-    expect(host.textContent).toContain('Enabled by default')
-    expect(host.textContent).toContain('Settings → General')
+    // the default-on notice moved out of onboarding (settings-only copy)
+    expect(host.textContent).not.toContain('Enabled by default')
+    expect(host.textContent).not.toContain('Settings → General')
+    expect(host.querySelector('.onb-consent')).toBeNull()
   })
 
   it('lets Skip and Escape finish without changing analytics', async () => {
