@@ -404,6 +404,40 @@ const homeApi: HomeApi = {
       vendorId,
     )) as import('@chatoffice/ai-provider').LocalToolOpResult
   },
+  // 生图、媒体与搜索：搜索平台连通性探测（主进程执行，未保存的 key 也可测）
+  async aiTestSearchPlatform(req: { platform: string; key?: string }) {
+    return (await ipcRenderer.invoke('ai:test-search-platform', req)) as {
+      ok: boolean
+      detail?: string
+    }
+  },
+  // 首页对话能力工具：网页搜索 / 生图 / SVG 插画（主进程按全局默认路由）
+  async webSearch(query: string, maxResults?: number) {
+    return (await ipcRenderer.invoke('ai:web-search', query, maxResults)) as {
+      results: { title: string; url: string; snippet: string }[]
+      answer?: string
+      method: string
+      error?: string
+    }
+  },
+  async mediaGenerate(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }) {
+    return (await ipcRenderer.invoke('ai:media-generate', req)) as {
+      images?: { dataUrl: string }[]
+      error?: string
+    }
+  },
+  async generateSvg(req: { profileId?: string; modelId?: string; prompt: string }) {
+    return (await ipcRenderer.invoke('ai:generate-svg', req)) as {
+      svg?: string
+      modelId?: string
+      error?: string
+    }
+  },
   // ai:stream / files:* / docs:create-document channels are registered process-wide
   // by the aggregated editor mains the shell loads (ai-host / docs-main)
   async aiStream(request) {
@@ -444,11 +478,9 @@ const homeApi: HomeApi = {
     >
   },
   async systemFileSearch(query, ext) {
-    return (await ipcRenderer.invoke(
-      HOME_CHANNELS.systemFileSearch,
-      query,
-      ext,
-    )) as Awaited<ReturnType<HomeApi['systemFileSearch']>>
+    return (await ipcRenderer.invoke(HOME_CHANNELS.systemFileSearch, query, ext)) as Awaited<
+      ReturnType<HomeApi['systemFileSearch']>
+    >
   },
   async chatSessionsLoad() {
     const result: unknown = await ipcRenderer.invoke(HOME_CHANNELS.chatSessionsLoad)

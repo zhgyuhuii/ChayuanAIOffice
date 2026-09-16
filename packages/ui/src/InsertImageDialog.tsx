@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
+import {
+  SEARCH_PLATFORMS,
+  enabledChatModels,
+  findProfile,
+  resolveCapabilityDefault,
+  type AiSettingsV2,
+} from '@chatoffice/ai-provider/browser'
 import { insertImageStrings } from './insert-image-strings'
 import { MediaModelPicker } from './MediaModelPicker'
 import './insert-image.css'
@@ -36,12 +43,14 @@ export interface MediaParamField {
 }
 
 export interface MediaModelOption {
-  kind: 'image' | 'video'
+  kind: 'image' | 'video' | 'svg'
   profileId: string
   modelId: string
   label: string
   vendorId: string
   spec: { fields: MediaParamField[] }
+  /** matches the global capability default (设置 → 生图、媒体与搜索) — preselected */
+  isDefault?: boolean
 }
 
 /** renderer view of one main-process video task (ai-host video-tasks) */
@@ -80,19 +89,28 @@ export interface InsertMeta {
 
 /** App-injected transport: each editor wires these to its own IPC channels. */
 export interface InsertImageBridge {
-  /** page: 1-based result page for the "next batch" append (omitted/1 = fresh search) */
+  /** page: 1-based result page for the "next batch" append (omitted/1 = fresh search);
+   *  source: a specific platform id from the 生图、媒体与搜索 settings (serper /
+   *  bing / openverse) — the main process runs that tier only */
   searchWeb(
     query: string,
     page?: number,
+    source?: string,
   ): Promise<{ images: WebImageItem[]; error?: string; attempts?: SearchAttempt[] }>
   searchStock(
-    source: 'pexels' | 'pixabay',
+    source: 'pexels' | 'pixabay' | 'unsplash',
     query: string,
     page?: number,
   ): Promise<{ images: WebImageItem[]; error?: string; code?: string }>
   fetchImage(url: string): Promise<{ mediaType: string; base64: string } | null>
-  getStockKeys(): Promise<{ pexels: string; pixabay: string }>
-  setStockKeys(keys: { pexels?: string; pixabay?: string }): Promise<void>
+  getStockKeys(): Promise<{
+    pexels: string
+    pixabay: string
+    unsplash?: string
+  }>
+  setStockKeys(keys: { pexels?: string; pixabay?: string; unsplash?: string }): Promise<void>
+  /** AI settings view — powers the platform chip list and the SVG model rows */
+  getAiSettings?(): Promise<AiSettingsV2 | null>
   /** enabled image/video-generation models with their param specs (model picker) */
   listMediaModels?(): Promise<{ models: MediaModelOption[]; error?: string }>
   /** app's image-generation channel; results come back as data URLs */
@@ -105,6 +123,12 @@ export interface InsertImageBridge {
     images?: { dataUrl: string }[]
     error?: string
   }>
+  /** one-shot SVG illustration on a chat model (SVG kind; renderer rasterizes) */
+  generateSvg?(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+  }): Promise<{ svg?: string; modelId?: string; error?: string }>
   /** video task channels (ai-host video-tasks); absent = video generation off */
   videoSubmit?(req: {
     profileId: string
@@ -124,9 +148,152 @@ export interface InsertImageBridge {
 }
 
 const MAX_BYTES = 20 * 1024 * 1024
-const KEY_APPLY_URLS: Record<'pexels' | 'pixabay', string> = {
+type StockVendor = 'pexels' | 'pixabay' | 'unsplash'
+const KEY_APPLY_URLS: Record<StockVendor, string> = {
   pexels: 'https://www.pexels.com/api/',
   pixabay: 'https://pixabay.com/api/docs/',
+  unsplash: 'https://unsplash.com/developers',
+}
+
+/** one selectable platform chip in the web tab (settings-driven) */
+interface WebSourceOption {
+  id: string
+  label: string
+  kind: 'web' | 'stock'
+  /** can serve the image gallery (text-only search platforms cannot) */
+  imageSearch: boolean
+  needsKey: boolean
+  hasKey: boolean
+}
+
+/** settings-driven platform list: every 生图、媒体与搜索 platform, keyed chips */
+function webSourceOptions(
+  settings: AiSettingsV2 | null,
+  t: ReturnType<typeof insertImageStrings>,
+): WebSourceOption[] {
+  if (!settings) {
+    // degraded (no settings transport): the legacy three chips
+    return [
+      {
+        id: 'web',
+        label: t.sourceWeb,
+        kind: 'web',
+        imageSearch: true,
+        needsKey: false,
+        hasKey: true,
+      },
+      {
+        id: 'pexels',
+        label: t.sourcePexels,
+        kind: 'stock',
+        imageSearch: true,
+        needsKey: true,
+        hasKey: false,
+      },
+      {
+        id: 'pixabay',
+        label: t.sourcePixabay,
+        kind: 'stock',
+        imageSearch: true,
+        needsKey: true,
+        hasKey: false,
+      },
+    ]
+  }
+  const searchProviders = (settings.search?.providers ?? {}) as Record<
+    string,
+    { apiKey?: string } | undefined
+  >
+  const out: WebSourceOption[] = [
+    {
+      id: 'web',
+      label: t.sourceWeb,
+      kind: 'web',
+      imageSearch: true,
+      needsKey: false,
+      hasKey: true,
+    },
+  ]
+  const labels: Record<string, string> = {
+    serper: t.sourceSerper,
+    tavily: t.sourceTavily,
+    linkup: t.sourceLinkup,
+    searxng: t.sourceSearxng,
+    duckduckgo: t.sourceDuckDuckGo,
+    bing: t.sourceBing,
+    pexels: t.sourcePexels,
+    pixabay: t.sourcePixabay,
+    unsplash: t.sourceUnsplash,
+  }
+  for (const p of SEARCH_PLATFORMS) {
+    const hasKey =
+      p.kind === 'stock'
+        ? !!settings.stockApiKeys?.[p.id as StockVendor]
+        : !!(searchProviders[p.id]?.apiKey ?? '').trim() ||
+          (p.id === 'serper' && !!settings.searchApiKeys?.serper)
+    out.push({
+      id: p.id,
+      label: labels[p.id] ?? p.label,
+      kind: p.kind,
+      imageSearch: p.imageSearch,
+      needsKey: p.needsKey,
+      hasKey: !p.needsKey || hasKey,
+    })
+  }
+  return out
+}
+
+/** light SVG sanitize before rasterize: strip scripts/handlers/foreign objects */
+function sanitizeSvgMarkup(svg: string): string {
+  return svg
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '')
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/(href|xlink:href)\s*=\s*"(?!#)[^"]*"/gi, '')
+}
+
+/** rasterize an SVG string to a PNG data URL via an offscreen canvas */
+function rasterizeSvgMarkup(svg: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const vb =
+      /viewBox\s*=\s*["'][\d.eE+-]+[\s,]+[\d.eE+-]+[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)/i.exec(svg)
+    const w = Math.min(2048, Math.max(64, vb ? Math.round(Number(vb[1])) : 1024))
+    const h = Math.min(2048, Math.max(64, vb ? Math.round(Number(vb[2])) : 768))
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) throw new Error('no 2d context')
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/png'))
+      } catch (err) {
+        reject(err instanceof Error ? err : new Error(String(err)))
+      }
+    }
+    img.onerror = () => reject(new Error('SVG image load failed'))
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+  })
+}
+
+/** per-stock-vendor strings for the key modal (pexels / pixabay / unsplash) */
+function stockKeyLabels(t: ReturnType<typeof insertImageStrings>): {
+  title: Record<StockVendor, string>
+  hint: Record<StockVendor, string>
+  keyLabel: Record<StockVendor, string>
+} {
+  return {
+    title: {
+      pexels: t.keysTitlePexels,
+      pixabay: t.keysTitlePixabay,
+      unsplash: t.keysTitleUnsplash,
+    },
+    hint: { pexels: t.keysHintPexels, pixabay: t.keysHintPixabay, unsplash: t.keysHintUnsplash },
+    keyLabel: { pexels: t.pexelsKey, pixabay: t.pixabayKey, unsplash: t.unsplashKey },
+  }
 }
 
 /** session-level model memory: survives closing the dialog, dies with the app */
@@ -178,7 +345,9 @@ export function InsertImageDialog({
   }
 
   // ── web ──
-  const [source, setSource] = useState<'web' | 'pexels' | 'pixabay'>('web')
+  const [aiSettings, setAiSettings] = useState<AiSettingsV2 | null>(null)
+  const sourceOptions = webSourceOptions(aiSettings, t)
+  const [source, setSource] = useState<string>('web')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<WebImageItem[] | null>(null)
   const [searching, setSearching] = useState(false)
@@ -191,8 +360,8 @@ export function InsertImageDialog({
   // the query that produced the displayed results — next batches must use it,
   // not the (possibly re-edited) input value
   const [searched, setSearched] = useState('')
-  // one vendor per modal — Pexels and Pixabay never share a panel
-  const [keyModal, setKeyModal] = useState<'pexels' | 'pixabay' | null>(null)
+  // one vendor per modal — Pexels / Pixabay / Unsplash never share a panel
+  const [keyModal, setKeyModal] = useState<StockVendor | null>(null)
   const [KeyValue, setKeyValue] = useState('')
   const [keysSaved, setKeysSaved] = useState(false)
   const [keyTesting, setKeyTesting] = useState(false)
@@ -202,9 +371,40 @@ export function InsertImageDialog({
   // shared request token: any newer search/next-batch/source-switch invalidates in-flight ones
   const seqRef = useRef(0)
 
+  // settings power the platform chips (absent bridge → legacy static list)
+  useEffect(() => {
+    if (!bridge.getAiSettings) return
+    let alive = true
+    void bridge
+      .getAiSettings()
+      .then((s) => {
+        if (alive && s) setAiSettings(s)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [bridge])
+
+  const currentSource = sourceOptions.find((s) => s.id === source)
+
+  const runSearchOn = async (
+    src: string,
+    q: string,
+    nextPage: number,
+  ): Promise<{ images: WebImageItem[]; error?: string; attempts?: SearchAttempt[] }> => {
+    const opt = sourceOptions.find((s) => s.id === src)
+    const stock = opt?.kind === 'stock' ? (src as StockVendor) : null
+    const r = stock
+      ? await bridge.searchStock(stock, q, nextPage)
+      : await bridge.searchWeb(q, nextPage, src === 'web' ? undefined : src)
+    return r
+  }
+
   const runSearch = async (): Promise<void> => {
     const q = query.trim()
     if (!q || searching) return
+    if (currentSource && !currentSource.imageSearch) return
     const seq = ++seqRef.current
     setSearching(true)
     setWebError('')
@@ -215,8 +415,7 @@ export function InsertImageDialog({
     setLoadingMore(false)
     setSearched(q)
     try {
-      const r =
-        source === 'web' ? await bridge.searchWeb(q) : await bridge.searchStock(source, q)
+      const r = await runSearchOn(source, q, 1)
       if (seq !== seqRef.current) return
       setResults(r.images ?? [])
       setAttempts('attempts' in r ? (r.attempts ?? null) : null)
@@ -238,15 +437,14 @@ export function InsertImageDialog({
     setLoadingMore(true)
     setWebError('')
     try {
-      const r =
-        source === 'web'
-          ? await bridge.searchWeb(q, nextPage)
-          : await bridge.searchStock(source, q, nextPage)
+      const r = await runSearchOn(source, q, nextPage)
       if (seq !== seqRef.current) return
       const seen = new Set(results.map((it) => it.full || it.thumbnail))
       const added = (r.images ?? []).filter((it) => !seen.has(it.full || it.thumbnail))
-      if (r.error) setWebError(r.error) // transient failure: gallery stays, retry allowed
-      else if (added.length === 0) setExhausted(true) // drained (dupes count as drained)
+      if (r.error)
+        setWebError(r.error) // transient failure: gallery stays, retry allowed
+      else if (added.length === 0)
+        setExhausted(true) // drained (dupes count as drained)
       else {
         setResults([...results, ...added])
         setPage(nextPage)
@@ -264,30 +462,39 @@ export function InsertImageDialog({
     if (el.scrollHeight - el.scrollTop - el.clientHeight > 240) return
     void loadMore()
   }
-  const openKeyModal = async (which: 'pexels' | 'pixabay'): Promise<void> => {
+  const openKeyModal = async (which: StockVendor): Promise<void> => {
     setKeyModal(which)
     setKeysSaved(false)
     setKeyTesting(false)
     setKeyTestResult(null)
     try {
       const keys = await bridge.getStockKeys()
-      setKeyValue(which === 'pexels' ? (keys.pexels ?? '') : (keys.pixabay ?? ''))
+      setKeyValue(keys[which] ?? '')
     } catch {
       setKeyValue('') // degraded: leave blank
     }
   }
   /** switching to a stock source only nags when its key is unconfigured */
-  const guideKeyModal = (which: 'pexels' | 'pixabay'): void => {
+  const guideKeyModal = (which: StockVendor): void => {
     void bridge
       .getStockKeys()
       .then((keys) => {
-        const v = which === 'pexels' ? keys.pexels : keys.pixabay
-        if (!v) void openKeyModal(which)
+        if (!keys[which]) void openKeyModal(which)
       })
       .catch(() => {})
   }
+  const stockKeyPatch = (
+    which: StockVendor,
+    value: string,
+  ): Partial<Record<StockVendor, string>> =>
+    which === 'pexels'
+      ? { pexels: value }
+      : which === 'pixabay'
+        ? { pixabay: value }
+        : { unsplash: value }
   const saveKeys = async (): Promise<void> => {
-    await bridge.setStockKeys(keyModal === 'pexels' ? { pexels: KeyValue } : { pixabay: KeyValue })
+    if (!keyModal) return
+    await bridge.setStockKeys(stockKeyPatch(keyModal, KeyValue))
     setKeysSaved(true)
   }
   const testKey = async (): Promise<void> => {
@@ -295,9 +502,7 @@ export function InsertImageDialog({
     setKeyTesting(true)
     setKeyTestResult(null)
     try {
-      await bridge.setStockKeys(
-        keyModal === 'pexels' ? { pexels: KeyValue } : { pixabay: KeyValue },
-      )
+      await bridge.setStockKeys(stockKeyPatch(keyModal, KeyValue))
       const r = await bridge.searchStock(keyModal, 'nature')
       setKeyTestResult(!r.error && (r.images?.length ?? 0) > 0 ? 'ok' : 'fail')
     } catch {
@@ -332,6 +537,8 @@ export function InsertImageDialog({
 
   // ── ai ──
   const [prompt, setPrompt] = useState('')
+  /** AI 生图 / AI 生视频 / SVG 生成 —— the three generation lines */
+  const [aiKind, setAiKind] = useState<'image' | 'video' | 'svg'>('image')
   const [mediaModels, setMediaModels] = useState<MediaModelOption[] | null>(null)
   const [modelsError, setModelsError] = useState('')
   const [modelSel, setModelSel] = useState<{ profileId: string; modelId: string } | null>(null)
@@ -345,7 +552,27 @@ export function InsertImageDialog({
   const [videoPreviews, setVideoPreviews] = useState<Record<string, string>>({})
   const [elapsedTick, setElapsedTick] = useState(0)
 
-  const selectedModel = mediaModels?.find(
+  /** SVG line: chat models from settings + the svgGeneration default flag */
+  const svgModels = (
+    aiSettings
+      ? enabledChatModels(aiSettings).map((m) => ({
+          kind: 'svg' as const,
+          profileId: m.profileId,
+          modelId: m.modelId,
+          label: m.label,
+          vendorId: findProfile(aiSettings, m.profileId)?.vendorId ?? m.profileId,
+          spec: { fields: [] },
+          ...(resolveCapabilityDefault(aiSettings, 'svgGeneration')?.profileId === m.profileId &&
+          resolveCapabilityDefault(aiSettings, 'svgGeneration')?.modelId === m.modelId
+            ? { isDefault: true }
+            : {}),
+        }))
+      : []
+  ) satisfies MediaModelOption[]
+  const kindModels =
+    aiKind === 'svg' ? svgModels : (mediaModels ?? []).filter((m) => m.kind === aiKind)
+
+  const selectedModel = kindModels.find(
     (m) => modelSel && m.profileId === modelSel.profileId && m.modelId === modelSel.modelId,
   )
   const selectedIsVideo = selectedModel?.kind === 'video'
@@ -357,29 +584,45 @@ export function InsertImageDialog({
     for (const f of m.spec.fields) seeded[f.id] = String(f.default)
     setParamValues(seeded)
   }
-  const ensureModels = async (): Promise<void> => {
-    if (mediaModels || !bridge.listMediaModels) return
-    try {
-      const r = await bridge.listMediaModels()
-      setMediaModels(r.models ?? [])
-      setModelsError(r.error ?? '')
-      const remembered =
-        r.models?.find(
-          (m) =>
-            lastMediaSelection &&
-            m.profileId === lastMediaSelection.profileId &&
-            m.modelId === lastMediaSelection.modelId,
-        ) ?? r.models?.[0]
-      if (remembered) {
-        setModelSel({ profileId: remembered.profileId, modelId: remembered.modelId })
-        const seeded: Record<string, string> = {}
-        for (const f of remembered.spec.fields) seeded[f.id] = String(f.default)
-        setParamValues(seeded)
-      }
-    } catch (err) {
-      setModelsError(String(err))
-    }
+  const applyModelChoice = (list: MediaModelOption[]): void => {
+    const remembered =
+      list.find(
+        (m) =>
+          lastMediaSelection &&
+          m.profileId === lastMediaSelection.profileId &&
+          m.modelId === lastMediaSelection.modelId,
+      ) ??
+      list.find((m) => m.isDefault) ??
+      list[0]
+    if (remembered) pickMediaModel(remembered)
+    else setModelSel(null)
   }
+  const ensureModels = async (): Promise<void> => {
+    if (aiKind === 'svg') {
+      applyModelChoice(svgModels)
+      return
+    }
+    if (!bridge.listMediaModels) return
+    if (!mediaModels) {
+      try {
+        const r = await bridge.listMediaModels()
+        setMediaModels(r.models ?? [])
+        setModelsError(r.error ?? '')
+        applyModelChoice((r.models ?? []).filter((m) => m.kind === aiKind))
+      } catch (err) {
+        setModelsError(String(err))
+      }
+      return
+    }
+    // kind switch with a loaded list: re-seed the selection for that line
+    applyModelChoice(mediaModels.filter((m) => m.kind === aiKind))
+  }
+  // switching the AI line re-seeds the picker for that kind
+  useEffect(() => {
+    if (tab !== 'ai') return
+    void ensureModels()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiKind])
   const openAiTab = (): void => {
     setTab('ai')
     void ensureModels()
@@ -444,11 +687,44 @@ export function InsertImageDialog({
       setVideoBusy(false)
     }
   }
+  /** SVG line: chat model writes markup, renderer sanitizes + rasterizes to PNG */
+  const runSvg = async (): Promise<void> => {
+    const p = prompt.trim()
+    if (!p || generating || !bridge.generateSvg) return
+    setGenerating(true)
+    setAiError('')
+    try {
+      const r = await bridge.generateSvg({
+        ...(modelSel ?? {}),
+        prompt: p,
+      })
+      if (!r.svg) {
+        setAiError(r.error ?? t.aiErrorTitle)
+        return
+      }
+      try {
+        const png = await rasterizeSvgMarkup(sanitizeSvgMarkup(r.svg))
+        setGenerated([{ dataUrl: png }])
+      } catch (err) {
+        setAiError(
+          `${t.aiSvgRasterFail.replace('{message}', err instanceof Error ? err.message : String(err))}`,
+        )
+      }
+    } catch (err) {
+      setAiError(String(err))
+    } finally {
+      setGenerating(false)
+    }
+  }
   const runGenerate = async (): Promise<void> => {
     const p = prompt.trim()
     if (!p || generating) return
     if (selectedIsVideo) {
       await submitVideo()
+      return
+    }
+    if (aiKind === 'svg') {
+      await runSvg()
       return
     }
     setGenerating(true)
@@ -510,8 +786,7 @@ export function InsertImageDialog({
             ? t.videoStatusFailed
             : t.videoStatusCancelled
 
-  const paramLabel = (f: MediaParamField): string =>
-    isZh ? (f.labelZh ?? f.label) : f.label
+  const paramLabel = (f: MediaParamField): string => (isZh ? (f.labelZh ?? f.label) : f.label)
 
   const diagText = (a: SearchAttempt): string => {
     const name = a.backend.charAt(0).toUpperCase() + a.backend.slice(1)
@@ -572,41 +847,50 @@ export function InsertImageDialog({
           <section className="insimg-body">
             <div className="insimg-toolbar">
               <div className="insimg-chips">
-                {(
-                  [
-                    ['web', t.sourceWeb],
-                    ['pexels', t.sourcePexels],
-                    ['pixabay', t.sourcePixabay],
-                  ] as const
-                ).map(([id, label]) => (
-                  <button
-                    key={id}
-                    className={`insimg-chip ${source === id ? 'active' : ''}`}
-                    onClick={() => {
-                      setSource(id)
-                      ++seqRef.current // invalidate in-flight search/next-batch, full reset
-                      setResults(null)
-                      setWebError('')
-                      setAttempts(null)
-                      setPage(1)
-                      setExhausted(false)
-                      setLoadingMore(false)
-                      setSearching(false)
-                      setSearched('')
-                      // keyless stock source: guide into its own key modal when unconfigured
-                      if (id !== 'web') guideKeyModal(id)
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-                {source !== 'web' && (
+                {sourceOptions.map((opt) => {
+                  const disabled = !opt.imageSearch || (opt.needsKey && !opt.hasKey)
+                  const title = !opt.imageSearch
+                    ? t.sourceNoImageSearch
+                    : opt.needsKey && !opt.hasKey
+                      ? t.sourceKeyMissing
+                      : opt.label
+                  return (
+                    <button
+                      key={opt.id}
+                      className={`insimg-chip ${source === opt.id ? 'active' : ''}`}
+                      disabled={disabled}
+                      title={title}
+                      data-source-chip={opt.id}
+                      onClick={() => {
+                        setSource(opt.id)
+                        ++seqRef.current // invalidate in-flight search/next-batch, full reset
+                        setResults(null)
+                        setWebError('')
+                        setAttempts(null)
+                        setPage(1)
+                        setExhausted(false)
+                        setLoadingMore(false)
+                        setSearching(false)
+                        setSearched('')
+                        // stock source: guide into its own key modal when unconfigured
+                        if (opt.kind === 'stock') guideKeyModal(opt.id as StockVendor)
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+                {currentSource?.kind === 'stock' && (
                   <button
                     className="insimg-gear"
                     title={
-                      source === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay
+                      currentSource.id === 'pexels'
+                        ? t.keysTitlePexels
+                        : currentSource.id === 'pixabay'
+                          ? t.keysTitlePixabay
+                          : t.keysTitleUnsplash
                     }
-                    onClick={() => void openKeyModal(source as 'pexels' | 'pixabay')}
+                    onClick={() => void openKeyModal(currentSource.id as StockVendor)}
                   >
                     ⚙
                   </button>
@@ -691,18 +975,48 @@ export function InsertImageDialog({
 
         {tab === 'ai' && (
           <section className="insimg-body">
-            {bridge.listMediaModels && (
+            {/* AI 生图 / AI 生视频 / SVG 生成 —— 三条生成线，各带默认模型预选 */}
+            <div className="insimg-aikinds">
+              {(
+                [
+                  ['image', t.aiKindImage],
+                  ['video', t.aiKindVideo],
+                  ['svg', t.aiKindSvg],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  className={`insimg-chip ${aiKind === id ? 'active' : ''}`}
+                  data-ai-kind={id}
+                  onClick={() => setAiKind(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {(aiKind !== 'svg' || svgModels.length > 0 || !bridge.listMediaModels) && (
               <div className="insimg-modelrow">
                 <span>{t.aiModelLabel}</span>
                 <MediaModelPicker
-                  models={mediaModels ?? []}
+                  models={kindModels}
                   selected={modelSel}
-                  emptyText={mediaModels === null ? undefined : modelsError || t.aiNoModels}
+                  emptyText={
+                    aiKind === 'svg'
+                      ? t.aiSvgNoModels
+                      : aiKind === 'video'
+                        ? t.aiNoVideoModels
+                        : kindModels.length === 0
+                          ? modelsError || t.aiNoModels
+                          : undefined
+                  }
                   onOpenSettings={bridge.openModelSettings}
                   onPick={pickMediaModel}
                   lang={lang}
                 />
               </div>
+            )}
+            {aiKind === 'svg' && svgModels.length === 0 && bridge.listMediaModels && (
+              <p className="insimg-hint">{t.aiSvgNoModels}</p>
             )}
             {selectedIsVideo && (
               <div className="insimg-videohint">
@@ -724,9 +1038,7 @@ export function InsertImageDialog({
                       <select
                         className="insimg-select"
                         value={paramValues[f.id] ?? String(f.default)}
-                        onChange={(e) =>
-                          setParamValues({ ...paramValues, [f.id]: e.target.value })
-                        }
+                        onChange={(e) => setParamValues({ ...paramValues, [f.id]: e.target.value })}
                       >
                         {(f.options ?? []).map((o) => (
                           <option key={String(o)} value={String(o)}>
@@ -746,9 +1058,7 @@ export function InsertImageDialog({
                               step: f.step,
                             }
                           : {})}
-                        onChange={(e) =>
-                          setParamValues({ ...paramValues, [f.id]: e.target.value })
-                        }
+                        onChange={(e) => setParamValues({ ...paramValues, [f.id]: e.target.value })}
                       />
                     )}
                   </label>
@@ -757,7 +1067,7 @@ export function InsertImageDialog({
             )}
             <textarea
               className="insimg-prompt"
-              placeholder={t.aiPrompt}
+              placeholder={aiKind === 'svg' ? t.aiSvgPrompt : t.aiPrompt}
               rows={3}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -775,7 +1085,9 @@ export function InsertImageDialog({
                       ? t.videoSubmitting
                       : selectedIsVideo
                         ? t.videoSubmit
-                        : t.aiGenerate}
+                        : aiKind === 'svg'
+                          ? t.aiSvgGen
+                          : t.aiGenerate}
                 </button>
               </div>
             </div>
@@ -791,18 +1103,16 @@ export function InsertImageDialog({
               {generated.length > 0 ? (
                 <div className="insimg-grid">
                   {generated.map((img, i) => (
-                    <button
-                      key={i}
-                      className="insimg-cell"
-                      onClick={() => onInsert(img.dataUrl)}
-                    >
+                    <button key={i} className="insimg-cell" onClick={() => onInsert(img.dataUrl)}>
                       <img src={img.dataUrl} alt="" />
                     </button>
                   ))}
                 </div>
               ) : (
                 !generating &&
-                !aiError && <p className="insimg-hint">{t.aiPrompt}</p>
+                !aiError && (
+                  <p className="insimg-hint">{aiKind === 'svg' ? t.aiSvgPrompt : t.aiPrompt}</p>
+                )
               )}
             </div>
             {bridge.videoTasks && videoTasks.length > 0 && (
@@ -838,10 +1148,7 @@ export function InsertImageDialog({
                             <p className="insimg-hint">{t.videoPreviewLoading}</p>
                           )}
                           <div className="insimg-vtask-actions">
-                            <button
-                              className="insimg-primary"
-                              onClick={() => insertVideo(task)}
-                            >
+                            <button className="insimg-primary" onClick={() => insertVideo(task)}>
                               {t.insert}
                             </button>
                           </div>
@@ -849,7 +1156,9 @@ export function InsertImageDialog({
                       )}
                       <div className="insimg-vtask-actions">
                         {active && (
-                          <button onClick={() => void cancelVideoTask(task.id)}>{t.videoCancel}</button>
+                          <button onClick={() => void cancelVideoTask(task.id)}>
+                            {t.videoCancel}
+                          </button>
                         )}
                         {(task.status === 'failed' || task.status === 'cancelled') &&
                           bridge.videoRetry && (
@@ -871,11 +1180,11 @@ export function InsertImageDialog({
             <div
               className="insimg-modal"
               role="dialog"
-              aria-label={keyModal === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay}
+              aria-label={stockKeyLabels(t).title[keyModal]}
               onClick={(e) => e.stopPropagation()}
             >
               <header className="insimg-modal-header">
-                <span>{keyModal === 'pexels' ? t.keysTitlePexels : t.keysTitlePixabay}</span>
+                <span>{stockKeyLabels(t).title[keyModal]}</span>
                 <button
                   className="insimg-close"
                   aria-label={t.close}
@@ -885,14 +1194,14 @@ export function InsertImageDialog({
                 </button>
               </header>
               <p className="insimg-keys-hint">
-                {keyModal === 'pexels' ? t.keysHintPexels : t.keysHintPixabay}
+                {stockKeyLabels(t).hint[keyModal]}
                 <a href={KEY_APPLY_URLS[keyModal]} target="_blank" rel="noreferrer">
                   {t.keyApplyUrl}
                 </a>
                 {t.keysApply}
               </p>
               <label className="insimg-keyrow">
-                <span>{keyModal === 'pexels' ? t.pexelsKey : t.pixabayKey}</span>
+                <span>{stockKeyLabels(t).keyLabel[keyModal]}</span>
                 <input
                   type="password"
                   placeholder={t.keyPlaceholder}

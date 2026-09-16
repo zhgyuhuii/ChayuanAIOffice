@@ -110,21 +110,14 @@ const api: DesktopApi = {
     return () => ipcRenderer.removeListener('docs:teardown', listener)
   },
   respellKick: () => ipcRenderer.invoke('docs:respell-kick'),
-  exportFiles: (
-    suggestedName: string,
-    files: Array<{ fileName: string; base64: string }>,
-  ) =>
+  exportFiles: (suggestedName: string, files: Array<{ fileName: string; base64: string }>) =>
     ipcRenderer.invoke('docs:export-files', suggestedName, files) as Promise<{
       ok: boolean
       canceled?: boolean
       error?: string
       paths?: string[]
     }>,
-  declassifyStore: (
-    action: 'save' | 'load' | 'clear',
-    docPath: string,
-    sidecar?: unknown,
-  ) =>
+  declassifyStore: (action: 'save' | 'load' | 'clear', docPath: string, sidecar?: unknown) =>
     ipcRenderer.invoke('docs:declassify-store', action, docPath, sidecar) as Promise<{
       ok: boolean
       error?: string
@@ -202,12 +195,14 @@ const api: DesktopApi = {
   stockImageSearch: (source: string, query: string, maxResults?: number, page?: number) =>
     ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults, page }),
   stockKeysGet: () => ipcRenderer.invoke('ai:stock-keys-get'),
-  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) =>
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string; unsplash?: string }) =>
     ipcRenderer.invoke('ai:stock-keys-set', keys),
-  webImageSearch: (query: string, maxResults?: number, page?: number) =>
-    ipcRenderer.invoke('ai:web-image-search', query, maxResults, page),
+  webImageSearch: (query: string, maxResults?: number, page?: number, source?: string) =>
+    ipcRenderer.invoke('ai:web-image-search', query, maxResults, page, source),
   remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
   mediaModels: () => ipcRenderer.invoke('ai:media-models'),
+  generateSvg: (req: { profileId?: string; modelId?: string; prompt: string }) =>
+    ipcRenderer.invoke('ai:generate-svg', req),
   mediaGenerate: (req: {
     profileId?: string
     modelId?: string

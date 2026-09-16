@@ -1,4 +1,4 @@
-import { resolveCurrentModel } from '@chatoffice/ai-provider/browser'
+import { pickImageModel, resolveCurrentModel } from '@chatoffice/ai-provider/browser'
 import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type { AgentMessage } from '@chatoffice/agent-core'
 import type { HomeAgentBridge } from './agent'
@@ -65,6 +65,22 @@ export function createHomeChatBridge(
       return cachedModel
     },
     systemFileSearch: (query, ext) => window.chatOffice.systemFileSearch(query, ext),
+    // 生图、媒体与搜索 capability tools: web search always available (free
+    // DuckDuckGo tier backs it up); image generation rides the default model
+    webSearch: (query, maxResults) => window.chatOffice.webSearch(query, maxResults),
+    generateImage: (op) =>
+      window.chatOffice.mediaGenerate({
+        prompt: op.prompt,
+        ...(op.aspectRatio ? { params: { aspectRatio: op.aspectRatio } } : {}),
+      }),
+    imageGenReady: async () => {
+      try {
+        const settings = await window.chatOffice.getAiSettings()
+        return !!pickImageModel(settings)
+      } catch {
+        return false
+      }
+    },
     // 外部 MCP (MCP 管理): enabled servers' tools enter the agent; calls relay
     // back through the main process's cached connections
     listMcpTools: async () => {

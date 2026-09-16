@@ -38,6 +38,22 @@ export interface HomeAgentBridge {
     entries: { name: string; path: string; ext: string; mtimeMs: number; sizeBytes: number }[]
     truncated: boolean
   }>
+  /** 生图、媒体与搜索 capability tools (web search always; image gen when a default model exists) */
+  webSearch?: (
+    query: string,
+    maxResults?: number,
+  ) => Promise<{
+    results: { title: string; url: string; snippet: string }[]
+    answer?: string
+    method: string
+    error?: string
+  }>
+  generateImage?: (op: {
+    prompt: string
+    aspectRatio?: string
+  }) => Promise<{ images?: { dataUrl: string }[]; error?: string }>
+  /** live probe: a default image-gen model resolves from settings (生图、媒体与搜索) */
+  imageGenReady?(): Promise<boolean>
   /** 外部 MCP (MCP 管理): live tools of every enabled server; absent on shims
    *  without the chatOfficeMcp bridge → the agent runs with built-ins only */
   listMcpTools?(): Promise<ExternalMcpServerTools[]>
@@ -66,6 +82,8 @@ export interface HomeAgentEvents {
     files?: Array<{ name: string; path: string }>
     /** update_task_list 的任务快照(全量覆盖);phase=end 时携带 */
     tasks?: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }>
+    /** generate_image 的生成结果(data: URL);phase=end 时携带 */
+    image?: string
   }): void
   onBusy(busy: boolean): void
   onDone(result: {
@@ -171,6 +189,37 @@ const OPEN_DOCUMENT_TOOL = {
   },
 }
 
+const WEB_SEARCH_TOOL = {
+  name: 'web_search',
+  description:
+    'Search the web for up-to-date information (news, facts, references). Returns {results: [{title, url, snippet}], answer?}. Use it whenever a question needs current or external knowledge instead of guessing.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: 'the search query (keep it short and specific)' },
+      maxResults: { type: 'number', description: 'number of results (default 6, max 10)' },
+    },
+    required: ['query'],
+  },
+}
+
+const GENERATE_IMAGE_TOOL = {
+  name: 'generate_image',
+  description:
+    'Generate an image with the default AI image model (设置 → 生图、媒体与搜索) and show it in the conversation. Prompt in English works best; include subject, style and composition.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'detailed English description of the image' },
+      aspectRatio: {
+        type: 'string',
+        description: "desired aspect ratio: '1:1' | '16:9' | '9:16' | '4:3' | '3:4'",
+      },
+    },
+    required: ['prompt'],
+  },
+}
+
 const UPDATE_TASKS_TOOL = {
   name: 'update_task_list',
   description:
@@ -214,6 +263,8 @@ Never stall by asking for details: when something is unspecified, make a reasona
 
 ## Working with existing files
 - search_files locates files from recent/starred/project lists; if it finds nothing, use system_search to scan the user's entire computer (Documents, Desktop, Downloads).
+- web_search answers questions that need current or external knowledge; cite the source URL when you use its results.
+- generate_image draws an image with the user's default image model and shows it in the conversation; use it whenever the user asks for a picture or illustration (detailed English prompt).
 - system_search searches the whole computer for document files (docx, xlsx, pptx, md, html, pdf). Use it when the user asks to "search the computer" or when search_files returns no results.
 - read_document reads a file's text (page long files with offset); open_document opens a file in its editor tab.
 - To EDIT an existing document: open_document it, then the editing continues in that tab's AI panel (the conversation moves with it). For files open_document cannot carry the conversation to (xlsx/pptx/pdf), tell the user the file was opened and they can continue with the AI panel there.
@@ -248,6 +299,7 @@ const HOME_TOOLS: AgentToolDef[] = [
   READ_DOCUMENT_TOOL,
   OPEN_DOCUMENT_TOOL,
   UPDATE_TASKS_TOOL,
+  WEB_SEARCH_TOOL,
 ]
 
 /** external MCP tools surfaced to the skill (built-in list + namespaced extras) */
@@ -271,6 +323,10 @@ function homeSkill(
     onCreatedDoc(info: { title: string; docType: DocType }): void
     onOpenedDoc(info: { title: string; filePath: string }): void
     mcp: McpSkillState
+    /** live predicate: a default image-gen model is configured (settings-driven) */
+    imageGenReady: () => boolean
+    /** generated image display channel (tool timeline card) */
+    onGeneratedImage(dataUrl: string): void
   },
   texts: HomeAgentTexts,
 ): AgentSkill {
@@ -284,7 +340,8 @@ function homeSkill(
       return section ? `${SYSTEM_PROMPT}\n\n${section}` : SYSTEM_PROMPT
     },
     get tools() {
-      return [...HOME_TOOLS, ...state.mcp.tools()]
+      const imageGen = bridge.generateImage && state.imageGenReady() ? [GENERATE_IMAGE_TOOL] : []
+      return [...HOME_TOOLS, ...imageGen, ...state.mcp.tools()]
     },
     async executeTool(call) {
       const mcpResult = await state.mcp.call(call.name, call.input)
@@ -414,6 +471,64 @@ function homeSkill(
               ? JSON.stringify(result)
               : JSON.stringify({ entries: [], truncated: false, hint: texts.fileNotFound }),
             summary: 'system_search',
+          }
+        }
+        case 'web_search': {
+          const query = String(call.input.query ?? '').trim()
+          if (!query) {
+            return { output: 'query must not be empty', isError: true, summary: 'web_search' }
+          }
+          if (!bridge.webSearch) {
+            return { output: 'web search not available', isError: true, summary: 'web_search' }
+          }
+          const maxResults = Math.min(10, Math.max(1, Number(call.input.maxResults) || 6))
+          const r = await bridge.webSearch(query, maxResults)
+          // a backend failure must not read as "no results" — the model would fabricate conclusions
+          if (r.error) {
+            return {
+              output: `web search failed (service error, not an empty result — you may retry): ${r.error}`,
+              isError: true,
+              summary: 'web_search',
+            }
+          }
+          const lines: string[] = []
+          if (r.answer) lines.push(`Direct answer: ${r.answer}\n`)
+          r.results.forEach((it, i) =>
+            lines.push(`${i + 1}. ${it.title}\n   ${it.url}\n   ${it.snippet}`),
+          )
+          return {
+            output: lines.join('\n') || '(no results)',
+            summary: `web_search · ${query}`,
+          }
+        }
+        case 'generate_image': {
+          const prompt = String(call.input.prompt ?? '').trim()
+          if (!prompt) {
+            return { output: 'prompt must not be empty', isError: true, summary: 'generate_image' }
+          }
+          if (!bridge.generateImage) {
+            return {
+              output: 'image generation not available',
+              isError: true,
+              summary: 'generate_image',
+            }
+          }
+          const aspectRatio = String(call.input.aspectRatio ?? '').trim()
+          const r = await bridge.generateImage({ prompt, ...(aspectRatio ? { aspectRatio } : {}) })
+          const dataUrl = r.images?.[0]?.dataUrl
+          if (!dataUrl) {
+            return {
+              output: `image generation failed: ${r.error ?? 'unknown error'}`,
+              isError: true,
+              summary: 'generate_image',
+            }
+          }
+          // the image rides the tool-timeline event (display-only); the tool
+          // output stays compact so the transcript never duplicates the bytes
+          state.onGeneratedImage(dataUrl)
+          return {
+            output: 'image generated successfully (shown to the user in the tool card)',
+            summary: `generate_image · ${prompt.slice(0, 40)}`,
           }
         }
         case 'read_document': {
@@ -553,10 +668,14 @@ export class HomeAgent {
   private createdDoc: { title: string; docType: DocType } | null = null
   private openedDoc: { title: string; filePath: string } | null = null
   private queued: { text: string; attachments: HomeChatAttachment[] } | null = null
-  /** 外部 MCP: namespaced tool cache refreshed before every run (single-flight) */
+  /** external MCP: namespaced tool cache refreshed before every run (single-flight) */
   private mcpToolDefs: AgentToolDef[] = []
   private mcpBindings = new Map<string, McpToolBinding>()
   private mcpRefresh: Promise<void> | null = null
+  /** the last generate_image result (display-only; drained into the tool card) */
+  private pendingGenImage: string | null = null
+  /** cached capability probe: a default image-gen model resolves from settings */
+  private imageGenReady = false
   /** busy from send() until the run settles; loop.busy alone lags behind the
    *  pre-run awaits (attachment reads, MCP refresh) and would leave a gap
    *  where isBusy() reads false mid-start */
@@ -592,6 +711,10 @@ export class HomeAgent {
           section: () => mcpSystemSection(this.mcpBindings),
           call: (wireName, input) => this.callMcpTool(wireName, input),
         },
+        imageGenReady: () => this.imageGenReady,
+        onGeneratedImage: (dataUrl) => {
+          this.pendingGenImage = dataUrl
+        },
       },
       texts,
     )
@@ -625,6 +748,8 @@ export class HomeAgent {
               : undefined
           const tasks =
             call.name === 'update_task_list' ? normalizeTasks(call.input.tasks) : undefined
+          const image = call.name === 'generate_image' ? this.pendingGenImage : undefined
+          if (call.name === 'generate_image') this.pendingGenImage = null
           this.events.onToolActivity?.({
             callId: call.id,
             name: call.name,
@@ -634,6 +759,7 @@ export class HomeAgent {
             outputPreview: execution.output.slice(0, 120),
             ...(files && files.length > 0 ? { files } : {}),
             ...(tasks && tasks.length > 0 ? { tasks } : {}),
+            ...(image ? { image } : {}),
           })
         },
         onDone: () => {
@@ -657,6 +783,12 @@ export class HomeAgent {
     // warm the MCP tool list in the background so the first send already sees
     // the enabled servers' tools (start() re-refreshes before every run)
     if (this.bridge.listMcpTools) void this.ensureMcpTools()
+    void this.bridge.imageGenReady?.().then(
+      (ready) => {
+        this.imageGenReady = ready
+      },
+      () => {},
+    )
   }
 
   get busy(): boolean {
@@ -725,7 +857,10 @@ export class HomeAgent {
       const result = await this.bridge.callMcpTool(binding.serverId, binding.toolName, input)
       return { output: result.output, isError: !result.ok }
     } catch (e) {
-      return { output: `MCP call failed: ${e instanceof Error ? e.message : String(e)}`, isError: true }
+      return {
+        output: `MCP call failed: ${e instanceof Error ? e.message : String(e)}`,
+        isError: true,
+      }
     }
   }
 
@@ -762,6 +897,15 @@ export class HomeAgent {
         this.ensureMcpTools().catch(() => {}),
         new Promise<void>((resolve) => window.setTimeout(resolve, 12_000)),
       ])
+      // capability probe (生图、媒体与搜索 defaults) — generate_image joins the
+      // toolset only when a default image model resolves
+      if (this.bridge.imageGenReady) {
+        try {
+          this.imageGenReady = await this.bridge.imageGenReady()
+        } catch {
+          this.imageGenReady = false
+        }
+      }
       this.loop.run(instruction, images)
     } catch (e) {
       this.busyFlag = false

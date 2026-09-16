@@ -1,8 +1,8 @@
-/** Stock-photo library search (Pexels / Pixabay) — the desktop-own harvest.
+/** Stock-photo library search (Pexels / Pixabay / Unsplash) — the desktop-own harvest.
  *  Pure fetch callers: the shared ai-host IPC passes the user's API key in
  *  (resolved main-side from ai-settings; never shipped to the renderer). */
 
-export type StockSource = 'pexels' | 'pixabay'
+export type StockSource = 'pexels' | 'pixabay' | 'unsplash'
 
 export interface StockImageResult {
   /** preview thumbnail URL (hotlinked per provider terms) */
@@ -35,6 +35,7 @@ export async function searchStockImages(
 ): Promise<StockImageResult[]> {
   if (!apiKey) throw new StockSearchError(`${source} API key is not configured.`, 'no-key')
   if (source === 'pexels') return searchPexels(apiKey, query, maxResults, page)
+  if (source === 'unsplash') return searchUnsplash(apiKey, query, maxResults, page)
   return searchPixabay(apiKey, query, maxResults, page)
 }
 
@@ -117,6 +118,48 @@ async function searchPixabay(
       height: hit.imageHeight ?? 0,
       attribution: hit.user ? `Pixabay · ${hit.user}` : 'Pixabay',
       source: 'pixabay' as const,
+    }))
+    .filter((item) => item.thumbnail !== '' && item.full !== '')
+}
+
+/** https://unsplash.com/documentation#search-photos (client_id = Access Key) */
+async function searchUnsplash(
+  apiKey: string,
+  query: string,
+  maxResults: number,
+  page = 1,
+): Promise<StockImageResult[]> {
+  const url =
+    `https://api.unsplash.com/search/photos?client_id=${encodeURIComponent(apiKey)}` +
+    `&query=${encodeURIComponent(query)}&per_page=${Math.min(maxResults, 30)}` +
+    (page > 1 ? `&page=${page}` : '')
+  let resp: Response
+  try {
+    resp = await fetch(url)
+  } catch (cause) {
+    throw new StockSearchError(`Unsplash request failed: ${String(cause)}`, 'network')
+  }
+  if (resp.status === 401) throw new StockSearchError('Unsplash rejected the Access Key.', 'no-key')
+  if (resp.status === 403 || resp.status === 429) {
+    throw new StockSearchError('Unsplash quota exceeded.', 'quota')
+  }
+  if (!resp.ok) throw new StockSearchError(`Unsplash HTTP ${resp.status}.`, 'network')
+  const data = (await resp.json()) as {
+    results?: {
+      urls?: { small?: string; regular?: string; full?: string; raw?: string }
+      width?: number
+      height?: number
+      user?: { name?: string }
+    }[]
+  }
+  return (data.results ?? [])
+    .map((photo) => ({
+      thumbnail: photo.urls?.small ?? '',
+      full: photo.urls?.regular ?? photo.urls?.full ?? photo.urls?.raw ?? '',
+      width: photo.width ?? 0,
+      height: photo.height ?? 0,
+      attribution: photo.user?.name ? `Unsplash · ${photo.user.name}` : 'Unsplash',
+      source: 'unsplash' as const,
     }))
     .filter((item) => item.thumbnail !== '' && item.full !== '')
 }

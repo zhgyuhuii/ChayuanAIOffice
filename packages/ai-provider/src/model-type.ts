@@ -32,6 +32,7 @@ const IMAGE_GEN = [
   /(^|[-_])(image|img)([-_]|$)/i,
   /image-generation|text-to-image|txt2img|t2i/i,
   /imagen|kandinsky|qwen-image|wanx.*t2i|ideogram|recraft/i,
+  /cogview|seedream|grok-imagine/i,
 ]
 const VIDEO_GEN = [
   /video-generation|text-to-video|txt2video|t2v/i,

@@ -538,14 +538,17 @@ const desktopApi: DesktopApi = {
   async stockKeysSet(keys) {
     await ipcRenderer.invoke('ai:stock-keys-set', keys)
   },
-  webImageSearch(query, maxResults, page) {
-    return ipcRenderer.invoke('ai:web-image-search', query, maxResults, page)
+  webImageSearch(query, maxResults, page, source) {
+    return ipcRenderer.invoke('ai:web-image-search', query, maxResults, page, source)
   },
   async remoteImage(url) {
     return ipcRenderer.invoke('ai:remote-image', url)
   },
   mediaModels() {
     return ipcRenderer.invoke('ai:media-models')
+  },
+  generateSvg(req: { profileId?: string; modelId?: string; prompt: string }) {
+    return ipcRenderer.invoke('ai:generate-svg', req)
   },
   mediaGenerate(req) {
     return ipcRenderer.invoke('ai:media-generate', req)

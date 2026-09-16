@@ -50,7 +50,18 @@ import {
   settingsSupportVision,
 } from './slide-qc'
 import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
-import { IconSend, IconStop, Markdown, ModelPickerButton, PanelTabs, USER_LOGIN_READY, usePanelTab, AiScopeQuote, useAiPanelPrefs, type AiScopeQuoteData } from '@chatoffice/ui'
+import {
+  IconSend,
+  IconStop,
+  Markdown,
+  ModelPickerButton,
+  PanelTabs,
+  USER_LOGIN_READY,
+  usePanelTab,
+  AiScopeQuote,
+  useAiPanelPrefs,
+  type AiScopeQuoteData,
+} from '@chatoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -62,7 +73,6 @@ import {
 } from '@chatoffice/ai-provider/browser'
 import { slidesModelBridge } from './model-bridge'
 import { hydrateSpecSvg } from './spec-svg-hydrate'
-import { ImageSourcePicker } from './ImageSourcePicker'
 import attachIcon from '../assets/attach-icon.png'
 import filePdfIcon from '../assets/file-pdf.png'
 import fileWordIcon from '../assets/file-word.png'
@@ -2630,20 +2640,6 @@ export function AiPanel({
                   void slidesModelBridge.setCurrentModel(selection).then(refreshSettings)
                 }}
                 onOpenSettings={() => setModelSettingsOpen(true)}
-              />
-              <ImageSourcePicker
-                source={panelSettings?.imageSource ?? 'auto'}
-                poolCount={localPool.length}
-                onSourceChange={(s) => {
-                  const cur = settingsRef.current
-                  if (cur) {
-                    void slidesModelBridge
-                      .saveSettings({ ...cur, imageSource: s })
-                      .then(refreshSettings)
-                      .catch(() => {})
-                  }
-                }}
-                onPoolChange={(items) => setLocalPool(items)}
               />
               <button
                 className="ai-attach-btn"

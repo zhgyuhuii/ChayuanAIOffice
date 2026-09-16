@@ -16,8 +16,12 @@ import { modelSettingsStrings } from './model-settings-strings'
 import type { MediaModelOption } from './InsertImageDialog'
 
 /** dialog kinds map onto the picker's model-type labels */
-const KIND_TYPE = { image: 'image-generation', video: 'video-generation' } as const
-type Kind = 'image' | 'video'
+const KIND_TYPE = {
+  image: 'image-generation',
+  video: 'video-generation',
+  svg: 'chat',
+} as const
+type Kind = 'image' | 'video' | 'svg'
 
 export interface MediaModelPickerProps {
   readonly models: MediaModelOption[]
@@ -49,7 +53,7 @@ export function MediaModelPicker({
 
   const kindsPresent = useMemo(() => {
     const s = new Set(models.map((m) => m.kind))
-    return { image: s.has('image'), video: s.has('video') }
+    return { image: s.has('image'), video: s.has('video'), svg: s.has('svg') }
   }, [models])
 
   // a filter can go stale when the model list changes; fall back to 全部
@@ -71,7 +75,11 @@ export function MediaModelPicker({
       let g = groups.get(m.vendorId)
       if (!g) {
         const v = VENDOR_BY_ID.get(m.vendorId)
-        g = { name: (zh ? v?.nameZh : undefined) ?? v?.name ?? m.vendorId, vendorId: m.vendorId, rows: [] }
+        g = {
+          name: (zh ? v?.nameZh : undefined) ?? v?.name ?? m.vendorId,
+          vendorId: m.vendorId,
+          rows: [],
+        }
         groups.set(m.vendorId, g)
       }
       g.rows.push(m)
@@ -151,9 +159,7 @@ export function MediaModelPicker({
           aria-label={t.pickerSettings}
           ref={popRef}
           style={
-            popPos
-              ? { left: `${popPos.left}px`, top: `${popPos.top}px` }
-              : { visibility: 'hidden' }
+            popPos ? { left: `${popPos.left}px`, top: `${popPos.top}px` } : { visibility: 'hidden' }
           }
         >
           {onOpenSettings && (
@@ -231,7 +237,9 @@ export function MediaModelPicker({
                           <VendorLogo vendorId={m.vendorId} size={14} fallback={group.name} />
                           <span className="ai-picker-row">
                             {m.label}
-                            <span className="ai-picker-kind">{t.type[KIND_TYPE[m.kind]] ?? m.kind}</span>
+                            <span className="ai-picker-kind">
+                              {t.type[KIND_TYPE[m.kind]] ?? m.kind}
+                            </span>
                           </span>
                         </button>
                       )

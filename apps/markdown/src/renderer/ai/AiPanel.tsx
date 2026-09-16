@@ -12,7 +12,7 @@ import {
   AiScopeQuote,
   type AiScopeQuoteData,
 } from '@chatoffice/ui'
-import { defaultSettingsV2, imageGenerationAvailable } from '@chatoffice/ai-provider/browser'
+import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
 import type { DockChrome } from '@chatoffice/ui'
 import type { Editor } from '@tiptap/core'
@@ -365,7 +365,8 @@ export function AiPanel({
             read: () => depsRef.current.getFrontmatter(),
             write: (inner) => depsRef.current.setFrontmatter(inner),
           },
-          () => imageGenerationAvailable(settingsRef.current, chatOfficeLoggedInRef.current),
+          // 生图能力跟全局默认走:设置里能解析出生图模型即启用(登录态无关)
+          () => !!pickImageModel(settingsRef.current ?? defaultSettingsV2()),
           () => ({
             write: (spec, onProgress, signal) => runDocWriterRef.current(spec, onProgress, signal),
           }),

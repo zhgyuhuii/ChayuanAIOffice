@@ -269,6 +269,34 @@ export interface HomeApi {
   aiLocalToolStatus(vendorId: string): Promise<LocalToolStatus>
   aiLocalToolInstall(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
   aiLocalToolStart(vendorId: string): Promise<LocalToolOpResult>
+  /** 生图、媒体与搜索：搜索平台连通性探测（主进程执行） */
+  aiTestSearchPlatform(req: {
+    platform: string
+    key?: string
+  }): Promise<{ ok: boolean; detail?: string }>
+  /** 首页对话能力工具：网页搜索（按全局默认平台路由） */
+  webSearch(
+    query: string,
+    maxResults?: number,
+  ): Promise<{
+    results: { title: string; url: string; snippet: string }[]
+    answer?: string
+    method: string
+    error?: string
+  }>
+  /** 首页对话能力工具：AI 生图（默认生图模型，返回 data: URL） */
+  mediaGenerate(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+    params?: Record<string, unknown>
+  }): Promise<{ images?: { dataUrl: string }[]; error?: string }>
+  /** 首页对话能力工具：SVG 插画（默认 SVG 对话模型） */
+  generateSvg(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+  }): Promise<{ svg?: string; modelId?: string; error?: string }>
   /** start a streaming AI turn for the home chat; chunks arrive via onAiStream (same ai:* channels the editors use) */
   aiStream(request: AiStreamWireRequest): Promise<void>
   /** abort an in-flight home chat turn */
@@ -304,7 +332,12 @@ export type HomeChatAttachment = AttachmentMeta
 /** side card rendered under an assistant message */
 export type HomeChatCard =
   /** the streamed body became a document that opened in a new tab */
-  | { kind: 'doc-created'; title: string; docType: 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'; filePath?: string | undefined }
+  | {
+      kind: 'doc-created'
+      title: string
+      docType: 'docx' | 'xlsx' | 'pptx' | 'md' | 'html' | 'pdf'
+      filePath?: string | undefined
+    }
   /** an existing document was opened (with the conversation handed off to its panel) */
   | { kind: 'doc-opened'; title: string; filePath: string }
   /** no usable model is configured; offers a jump to AI settings */
@@ -336,6 +369,8 @@ export interface HomeChatMessage {
         outputPreview?: string
         /** search_files/system_search 的命中文件(可点击打开) */
         files?: Array<{ name: string; path: string }>
+        /** generate_image 的生成结果(data: URL,工具卡内嵌展示) */
+        image?: string
       }>
     | undefined
   /** ZCode 式任务清单:update_task_list 工具维护的全量快照(最新一次覆盖) */

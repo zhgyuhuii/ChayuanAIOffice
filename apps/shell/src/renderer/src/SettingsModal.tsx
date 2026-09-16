@@ -10,24 +10,13 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
+import { CapabilitySettingsPage } from '@chatoffice/ui/CapabilitySettingsPage'
 import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
 import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
 import { Dropdown } from '@chatoffice/ui'
-import {
-  AI_SEARCH_PROVIDERS,
-  AI_MEDIA_PROVIDERS,
-} from '@chatoffice/ai-provider/browser'
-import type {
-  AiSearchProviderId,
-  AiSettingsV2,
-  AiMediaProviderId,
-  AiMediaSettings,
-  AiSearchSettings,
-} from '@chatoffice/ai-provider/browser'
 import { useI18n } from './locale'
-import type { StringKey, TFunc } from './locale'
+import type { StringKey } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
-import { ProviderLogo } from './provider-logos'
 import { StoragePane } from './StoragePane'
 import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import { McpServerSettings } from './McpServerSettings'
@@ -320,66 +309,19 @@ function Field({
   )
 }
 
-interface AiStatus {
-  kind: 'testing' | 'ok' | 'err'
-  text: string
-}
-
-/** colored feedback pill in the AI pane footer: spinner while testing, then success/error */
-function AiStatusPill({ status }: { status: AiStatus | null }) {
-  if (!status) return null
-  return (
-    <span
-      className={`set-ai-status ${status.kind}`}
-      role="status"
-      title={status.kind === 'err' ? status.text : undefined}
-    >
-      {status.kind === 'testing' ? (
-        <span className="set-ai-spin" aria-hidden="true" />
-      ) : status.kind === 'ok' ? (
-        <svg
-          className="set-ai-status-icon"
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
-          <path
-            d="M4.2 7.3l1.9 1.9 3.7-4.3"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
-      ) : (
-        <svg
-          className="set-ai-status-icon"
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
-          <path d="M7 3.8v3.9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <circle cx="7" cy="10.1" r="1" fill="currentColor" />
-        </svg>
-      )}
-      <span className="set-ai-status-text">{status.text}</span>
-    </span>
-  )
-}
-
 /** AI model pane: provider / model / key / base URL, saved to userData/ai-settings.json */
-function AiModelPane({ lang }: { lang: string }) {
+function AiModelPane({ lang, initialVendor }: { lang: string; initialVendor?: string }) {
   // the model settings live inline in this pane (no second window, no extra
   // heading — the section nav names it); the page's own panes handle scrolling
   const bridge = useMemo(() => windowChatOfficeBridge(), [])
   return (
     <div className="set-model-settings">
-      <ModelSettingsPage bridge={bridge} lang={lang} variant="inline" />
+      <ModelSettingsPage
+        bridge={bridge}
+        lang={lang}
+        variant="inline"
+        initialVendor={initialVendor}
+      />
     </div>
   )
 }
@@ -419,302 +361,31 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     localToolStatus: (vendorId) => window.chatOffice.aiLocalToolStatus(vendorId),
     localToolInstall: (vendorId, onLine) => window.chatOffice.aiLocalToolInstall(vendorId, onLine),
     localToolStart: (vendorId) => window.chatOffice.aiLocalToolStart(vendorId),
+    testSearchPlatform: (req) => window.chatOffice.aiTestSearchPlatform(req),
   }
 }
 
 /**
- * AI media & search pane: per-capability provider selection for web search,
- * image search, stock photos, AI image generation, and SVG generation.
+ * 生图、媒体与搜索 pane: the capability tree (search platforms + model
+ * capability groups) over the same ai:* settings channels. Deep links into
+ * 模型设置 for vendors that are not enabled yet.
  */
-function AiMediaPane({ t }: { t: TFunc }) {
-  const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
-  const [dirty, setDirty] = useState(false)
-  const [saved, setSaved] = useState(false)
-
-  useEffect(() => {
-    let alive = true
-    void window.chatOffice.getAiSettings?.().then((s) => {
-      if (alive && s) setSettings(s)
-    })
-    return () => {
-      alive = false
-    }
-  }, [])
-
-  if (!settings) return null
-
-  const touch = () => {
-    setDirty(true)
-    setSaved(false)
-  }
-
-  const save = () => {
-    window.chatOffice
-      .setAiSettings?.(settings)
-      .then(() => {
-        setDirty(false)
-        setSaved(true)
-      })
-      .catch((error) => {
-        window.alert(error instanceof Error ? error.message : String(error))
-      })
-  }
-
-  const webSearchProviders = AI_SEARCH_PROVIDERS.filter((p) => p.id !== 'openverse')
-  const imageGenProviders = AI_MEDIA_PROVIDERS.filter((m) => !!m.imageProtocol)
-
-  const search = settings.search ?? { provider: 'duckduckgo', providers: {} }
-  const media = settings.media ?? {
-    imageProvider: '',
-    analysisProvider: '',
-    videoAnalysisProvider: '',
-    providers: {} as AiMediaSettings['providers'],
-  }
-
-  const setSearchProvider = (id: AiSearchProviderId) => {
-    setSettings({ ...settings, search: { ...search, provider: id } })
-    touch()
-  }
-
-  const setSearchKey = (id: string, key: string) => {
-    const providers = { ...search.providers } as Record<string, { apiKey: string }>
-    if (key) {
-      providers[id] = { apiKey: key.trim() }
-    } else {
-      delete providers[id]
-    }
-    setSettings({ ...settings, search: { ...search, providers: providers as AiSearchSettings['providers'] } })
-    touch()
-  }
-
-  const setImageGenProvider = (id: AiMediaProviderId) => {
-    setSettings({ ...settings, media: { ...media, imageProvider: id } })
-    touch()
-  }
-
-  const setImageGenKey = (id: string, key: string) => {
-    const providers = { ...media.providers }
-    const existing = providers[id as AiMediaProviderId] ?? {
-      apiKey: '',
-      imageModel: '',
-      analysisModel: '',
-    }
-    providers[id as AiMediaProviderId] = { ...existing, apiKey: key.trim() }
-    setSettings({ ...settings, media: { ...media, providers } })
-    touch()
-  }
-
-  const setStockKey = (vendor: 'pexels' | 'pixabay' | 'unsplash' | 'wikimedia', key: string) => {
-    setSettings({
-      ...settings,
-      stockApiKeys: { ...settings.stockApiKeys, [vendor]: key || undefined },
-    })
-    touch()
-  }
-
-  const currentWebSearchKey = (search.providers as Record<string, { apiKey?: string }>)?.[
-    search.provider
-  ]?.apiKey
-
-  const currentImageGenMeta = imageGenProviders.find((m) => m.id === media.imageProvider)
-  const currentImageGenKey = media.providers[media.imageProvider]?.apiKey ?? ''
-
+function AiMediaPane({
+  lang,
+  onOpenModelSettings,
+}: {
+  lang: string
+  onOpenModelSettings: (vendorId?: string) => void
+}) {
+  const bridge = useMemo(() => windowChatOfficeBridge(), [])
   return (
-    <>
-      <h3 className="set-pane-title">{t('setSecAiMedia')}</h3>
-      <div className="set-field-desc set-ai-note">{t('setAiSharedKeyHint')}</div>
-
-      <section>
-        <h4 className="set-pane-subtitle">{t('setAiCapWebSearch')}</h4>
-        <div className="set-field">
-          <div className="set-field-text">
-            <label className="set-field-label">{t('setAiProvider')}</label>
-          </div>
-          <Dropdown
-            className="set-dd"
-            value={search.provider}
-            ariaLabel={t('setAiCapWebSearch')}
-            options={webSearchProviders.map((c) => ({
-              value: c.id,
-              label: c.label,
-              render: (
-                <>
-                  <ProviderLogo id={c.id} />
-                  {c.label}
-                </>
-              ),
-            }))}
-            onPick={(v) => setSearchProvider(v as AiSearchProviderId)}
-          />
-        </div>
-        <div className="set-field-desc set-ai-note">
-          {webSearchProviders.find((p) => p.id === search.provider)?.needsKey
-            ? t('setAiSearchKeyRequired')
-            : t('setAiSearchFreeProvider')}
-        </div>
-        {webSearchProviders.find((p) => p.id === search.provider)?.needsKey && (
-          <div className="set-field">
-            <div className="set-field-text">
-              <div className="set-field-stack">
-                <label className="set-field-label" htmlFor="set-ai-web-search-key">
-                  {t('setAiApiKey')}
-                </label>
-                <div className="set-field-desc">{t('setAiKeyHint')}</div>
-              </div>
-            </div>
-            <input
-              id="set-ai-web-search-key"
-              className="set-input"
-              type="password"
-              value={currentWebSearchKey ?? ''}
-              placeholder={
-                webSearchProviders.find((p) => p.id === search.provider)?.keyPlaceholder ??
-                'API Key'
-              }
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(e) => setSearchKey(search.provider, e.target.value)}
-            />
-          </div>
-        )}
-      </section>
-
-      <section>
-        <h4 className="set-pane-subtitle">{t('setAiCapImageSearch')}</h4>
-        <div className="set-field-desc set-ai-note">{t('setAiImageSearchHint')}</div>
-      </section>
-
-      <section>
-        <h4 className="set-pane-subtitle">{t('setAiCapStockPhotos')}</h4>
-        <div className="set-field">
-          <div className="set-field-text">
-            <div className="set-field-stack">
-              <label className="set-field-label" htmlFor="set-ai-pexels-key">
-                Pexels API Key
-              </label>
-              <div className="set-field-desc">{t('setAiKeyHint')}</div>
-            </div>
-          </div>
-          <input
-            id="set-ai-pexels-key"
-            className="set-input"
-            type="password"
-            value={settings.stockApiKeys?.pexels ?? ''}
-            placeholder="Pexels API Key"
-            spellCheck={false}
-            autoComplete="off"
-            onChange={(e) => setStockKey('pexels', e.target.value.trim())}
-          />
-        </div>
-        <div className="set-field">
-          <div className="set-field-text">
-            <div className="set-field-stack">
-              <label className="set-field-label" htmlFor="set-ai-pixabay-key">
-                Pixabay API Key
-              </label>
-              <div className="set-field-desc">{t('setAiKeyHint')}</div>
-            </div>
-          </div>
-          <input
-            id="set-ai-pixabay-key"
-            className="set-input"
-            type="password"
-            value={settings.stockApiKeys?.pixabay ?? ''}
-            placeholder="Pixabay API Key"
-            spellCheck={false}
-            autoComplete="off"
-            onChange={(e) => setStockKey('pixabay', e.target.value.trim())}
-          />
-        </div>
-        <div className="set-field">
-          <div className="set-field-text">
-            <div className="set-field-stack">
-              <label className="set-field-label" htmlFor="set-ai-unsplash-key">
-                Unsplash Access Key
-              </label>
-              <div className="set-field-desc">{t('setAiKeyHint')}</div>
-            </div>
-          </div>
-          <input
-            id="set-ai-unsplash-key"
-            className="set-input"
-            type="password"
-            value={settings.stockApiKeys?.unsplash ?? ''}
-            placeholder="Unsplash Access Key"
-            spellCheck={false}
-            autoComplete="off"
-            onChange={(e) => setStockKey('unsplash', e.target.value.trim())}
-          />
-        </div>
-      </section>
-
-      <section>
-        <h4 className="set-pane-subtitle">{t('setAiCapImageGen')}</h4>
-        <div className="set-field">
-          <div className="set-field-text">
-            <label className="set-field-label">{t('setAiProvider')}</label>
-          </div>
-          <Dropdown
-            className="set-dd"
-            value={media.imageProvider || ''}
-            ariaLabel={t('setAiCapImageGen')}
-            options={[
-              { value: '', label: t('setAiNone') },
-              ...imageGenProviders.map((c) => ({
-                value: c.id,
-                label: c.label,
-                render: (
-                  <>
-                    <ProviderLogo id={c.id} />
-                    {c.label}
-                  </>
-                ),
-              })),
-            ]}
-            onPick={(v) => setImageGenProvider(v as AiMediaProviderId)}
-          />
-        </div>
-        {currentImageGenMeta && (
-          <>
-            <div className="set-field-desc set-ai-note">{currentImageGenMeta.description}</div>
-            {currentImageGenMeta.needsKey !== false && (
-              <div className="set-field">
-                <div className="set-field-text">
-                  <div className="set-field-stack">
-                    <label className="set-field-label" htmlFor="set-ai-imagegen-key">
-                      {t('setAiApiKey')}
-                    </label>
-                    <div className="set-field-desc">{t('setAiKeyHint')}</div>
-                  </div>
-                </div>
-                <input
-                  id="set-ai-imagegen-key"
-                  className="set-input"
-                  type="password"
-                  value={currentImageGenKey}
-                  placeholder={currentImageGenMeta.keyPlaceholder}
-                  spellCheck={false}
-                  autoComplete="off"
-                  onChange={(e) => setImageGenKey(media.imageProvider, e.target.value)}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </section>
-
-      <section>
-        <h4 className="set-pane-subtitle">{t('setAiCapSvgGen')}</h4>
-        <div className="set-field-desc set-ai-note">{t('setAiSvgGenHint')}</div>
-      </section>
-
-      <div className="set-pane-footer">
-        <AiStatusPill status={saved ? { kind: 'ok', text: t('setAiSaved') } : null} />
-        <button className="set-btn primary" disabled={!dirty} onClick={save}>
-          {t('setAiSave')}
-        </button>
-      </div>
-    </>
+    <div className="set-capability-settings">
+      <CapabilitySettingsPage
+        bridge={bridge}
+        lang={lang}
+        onOpenModelSettings={onOpenModelSettings}
+      />
+    </div>
   )
 }
 
@@ -744,6 +415,8 @@ export function SettingsModal({
 }: SettingsModalProps) {
   const { lang, setLang, t } = useI18n()
   const [section, setSection] = useState<SectionId>('modelSettings')
+  // 生图、媒体与搜索 → 去模型设置启用：deep link onto that vendor's form
+  const [aiModelVendor, setAiModelVendor] = useState<string | undefined>(undefined)
   const [theme, setTheme] = useState<UiTheme>('system')
   const [saveDir, setSaveDir] = useState('')
   const [analyticsOn, setAnalyticsOn] = useState(true)
@@ -850,9 +523,19 @@ export function SettingsModal({
             ))}
           </nav>
           <div className="set-pane">
-            {section === 'modelSettings' && <AiModelPane lang={lang} />}
+            {section === 'modelSettings' && (
+              <AiModelPane lang={lang} initialVendor={aiModelVendor} />
+            )}
             {section === 'defaultModels' && <DefaultModelsPane lang={lang} />}
-            {section === 'aiMedia' && <AiMediaPane t={t} />}
+            {section === 'aiMedia' && (
+              <AiMediaPane
+                lang={lang}
+                onOpenModelSettings={(vendorId) => {
+                  setAiModelVendor(vendorId)
+                  setSection('modelSettings')
+                }}
+              />
+            )}
             {section === 'remoteStorage' && <StoragePane />}
             {section === 'general' && (
               <>
@@ -1041,4 +724,3 @@ export function SettingsModal({
     </div>
   )
 }
-

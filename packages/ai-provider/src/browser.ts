@@ -53,6 +53,16 @@ export {
 } from './vendor-catalog'
 export { groupByType } from './model-type'
 export { isImageGenModel } from './settings-v2'
+export {
+  SEARCH_PLATFORMS,
+  capabilityDefaultSelection,
+  capabilityVendorRefreshable,
+  capabilityVendorRows,
+  modelHasCapability,
+  profileCapabilityModels,
+  resolveCapabilityDefault,
+} from './capability-tree'
+export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 /** sentinel: untouched key field so the backend keeps the stored secret */
 export const KEEP_KEY = '__keep__'
 export { getProviderAdapter, modelLacksVision } from './registry'

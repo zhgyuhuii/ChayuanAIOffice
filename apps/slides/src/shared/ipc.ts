@@ -1804,12 +1804,13 @@ export interface SlidesApi {
     maxResults?: number,
     page?: number,
   ) => Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
-  stockKeysGet: () => Promise<{ pexels: string; pixabay: string }>
-  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) => Promise<void>
+  stockKeysGet: () => Promise<{ pexels: string; pixabay: string; unsplash?: string }>
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string; unsplash?: string }) => Promise<void>
   webImageSearch: (
     query: string,
     maxResults?: number,
     page?: number,
+    source?: string,
   ) => Promise<{
     images: {
       thumbnail?: string
@@ -1828,6 +1829,12 @@ export interface SlidesApi {
     }[]
   }>
   remoteImage: (url: string) => Promise<{ base64: string; mime: string } | null>
+  /** SVG illustration on the svgGeneration default (or explicit) chat model */
+  generateSvg: (req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+  }) => Promise<{ svg?: string; modelId?: string; error?: string }>
   /** enabled image/video-generation models + param specs (insert-media dialog picker) */
   mediaModels: () => Promise<{
     models: {
@@ -1836,6 +1843,7 @@ export interface SlidesApi {
       modelId: string
       label: string
       vendorId: string
+      isDefault?: boolean
       spec: {
         fields: {
           id: string

@@ -14,6 +14,7 @@ import {
   imageSearch,
   searchStockImages,
   StockSearchError,
+  webSearch,
   type StockSource,
 } from '@chatoffice/ai-search'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
@@ -192,23 +193,33 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   })
 
   // ── picture-source channels (insert-image dialog) ────────────────────
-  // Web image search: chatoffice → Serper → Bing → Openverse, per-tier attempts
-  // attached for the dialog's diagnostics. Serper key: settings first, env fallback.
-  // Results map to the dialog's WebImageItem wire shape here — ai-search speaks
-  // imageUrl/thumbnail; the gallery renders thumbnail||full and inserts full.
-  // (A bare cast previously shipped undefined `full`s: nothing was selectable
-  // and every insert fetched "undefined".)
+  // Web image search: per-platform pick or fallback chain (chatoffice →
+  // Serper → Bing → Openverse), per-tier attempts attached for the dialog's
+  // diagnostics. Keys resolve main-side from ai-settings (search.providers,
+  // legacy searchApiKeys) then env. Results map to the dialog's WebImageItem
+  // wire shape here — ai-search speaks imageUrl/thumbnail; the gallery
+  // renders thumbnail||full and inserts full.
   ipcMain.handle(
     'ai:web-image-search',
-    async (_event, query: string, maxResults?: number, page?: number) => {
+    async (_event, query: string, maxResults?: number, page?: number, source?: string) => {
       try {
         const settings = await runtime.readRawSettings()
+        const searchProviders = settings.search?.providers as
+          Record<string, { apiKey?: string } | undefined> | undefined
+        const serperKey =
+          searchProviders?.serper?.apiKey ||
+          settings.searchApiKeys?.serper ||
+          process.env.SERPER_API_KEY ||
+          undefined
+        const only =
+          source === 'serper' || source === 'bing' || source === 'openverse' ? source : undefined
         const r = await imageSearch(
           String(query),
           typeof maxResults === 'number' ? maxResults : 20,
           true,
-          settings.searchApiKeys?.serper || process.env.SERPER_API_KEY || undefined,
+          serperKey,
           typeof page === 'number' && page > 1 ? Math.floor(page) : 1,
+          only,
         )
         return {
           ...r,
@@ -270,7 +281,7 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       }
     },
   )
-  // Stock libraries (Pexels/Pixabay): keys resolve main-side from ai-settings
+  // Stock libraries (Pexels/Pixabay/Unsplash): keys resolve main-side from ai-settings
   ipcMain.handle(
     'ai:stock-image-search',
     async (
@@ -280,10 +291,13 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
       try {
         const settings = await runtime.readRawSettings()
         const source = String(req.source) as StockSource
+        const stock = settings.stockApiKeys ?? {}
         const key =
           source === 'pexels'
-            ? (settings.stockApiKeys?.pexels ?? '')
-            : (settings.stockApiKeys?.pixabay ?? '')
+            ? (stock.pexels ?? '')
+            : source === 'pixabay'
+              ? (stock.pixabay ?? '')
+              : (stock.unsplash ?? '')
         const images = await searchStockImages(
           source,
           key,
@@ -304,26 +318,20 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
     return {
       pexels: settings.stockApiKeys?.pexels ? '__keep__' : '',
       pixabay: settings.stockApiKeys?.pixabay ? '__keep__' : '',
+      unsplash: settings.stockApiKeys?.unsplash ? '__keep__' : '',
     }
   })
   ipcMain.handle(
     'ai:stock-keys-set',
-    async (_event, keys: { pexels?: string; pixabay?: string }) => {
+    async (_event, keys: { pexels?: string; pixabay?: string; unsplash?: string }) => {
       const settings = await runtime.readRawSettings()
       const stored = settings.stockApiKeys ?? {}
+      const keepOr = (next: string | undefined, prev: string | undefined): string =>
+        next === '__keep__' ? (prev ?? '') : next !== undefined ? next : (prev ?? '')
       const next = {
-        pexels:
-          keys.pexels === '__keep__'
-            ? (stored.pexels ?? '')
-            : keys.pexels !== undefined
-              ? keys.pexels
-              : (stored.pexels ?? ''),
-        pixabay:
-          keys.pixabay === '__keep__'
-            ? (stored.pixabay ?? '')
-            : keys.pixabay !== undefined
-              ? keys.pixabay
-              : (stored.pixabay ?? ''),
+        pexels: keepOr(keys.pexels, stored.pexels),
+        pixabay: keepOr(keys.pixabay, stored.pixabay),
+        unsplash: keepOr(keys.unsplash, stored.unsplash),
       }
       await runtime.writeSettings({ ...settings, stockApiKeys: next })
       return true
@@ -331,6 +339,74 @@ export function registerSharedAiIpc(deps: SharedAiIpcDeps): AiRuntime {
   )
   // Download an image URL → base64 (CORS-free, SSRF-guarded, retried)
   ipcMain.handle('ai:remote-image', (_event, url: string) => downloadAsDataUrl(String(url)))
+
+  // One-shot SVG illustration on the svgGeneration default (or explicit)
+  // chat model — the insert-media dialog's AI → SVG line
+  ipcMain.handle(
+    'ai:generate-svg',
+    (_event, req: { profileId?: string; modelId?: string; prompt: string }) =>
+      runtime.generateSvg(req),
+  )
+
+  // Search-platform connectivity probe for the 生图、媒体与搜索 settings page:
+  // web platforms run a minimal web query on THAT platform only; stock
+  // libraries run a minimal photo query. The passed key wins over the stored
+  // one so a freshly typed key can be tested before saving.
+  ipcMain.handle(
+    'ai:test-search-platform',
+    async (
+      _event,
+      req: { platform: string; key?: string },
+    ): Promise<{ ok: boolean; detail?: string }> => {
+      const id = String(req.platform)
+      try {
+        const settings = await runtime.readRawSettings()
+        if (id === 'pexels' || id === 'pixabay' || id === 'unsplash') {
+          const stored = settings.stockApiKeys?.[id] ?? ''
+          const key = req.key?.trim() || stored
+          const images = await searchStockImages(id, key, 'test', 1)
+          return { ok: images.length > 0 }
+        }
+        const providers = settings.search?.providers as
+          Record<string, { apiKey?: string } | undefined> | undefined
+        const storedKey = (providers?.[id]?.apiKey ?? '').trim()
+        const key = req.key?.trim() || storedKey
+        if (id === 'serper') {
+          const r = await webSearch('test', 1, false, { serper: key }, 'serper')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.method === 'serper' }
+        }
+        if (id === 'tavily') {
+          const r = await webSearch('test', 1, false, { tavily: key }, 'tavily')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.method === 'tavily' }
+        }
+        if (id === 'linkup') {
+          const r = await webSearch('test', 1, false, { linkup: key }, 'linkup')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.method === 'linkup' }
+        }
+        if (id === 'searxng') {
+          const r = await webSearch('test', 1, false, { searxngBaseUrl: key }, 'searxng')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.method === 'searxng' }
+        }
+        if (id === 'duckduckgo') {
+          const r = await webSearch('test', 1, false, {}, 'duckduckgo')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.method === 'duckduckgo' }
+        }
+        if (id === 'bing') {
+          const r = await imageSearch('test', 1, false, undefined, 1, 'bing')
+          if (r.error) return { ok: false, detail: r.error }
+          return { ok: r.images.length > 0 }
+        }
+        return { ok: false, detail: `unknown platform: ${id}` }
+      } catch (err) {
+        return { ok: false, detail: err instanceof Error ? err.message : String(err) }
+      }
+    },
+  )
 
   // ── video task channels (insert-media dialog AI tab, video models) ─────
   // submit returns immediately; the poll loop lives in this process and the

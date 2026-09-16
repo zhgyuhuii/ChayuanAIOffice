@@ -518,8 +518,9 @@ function RibbonInner({
 
   /** 统一插入媒体对话框的传输桥：共享 ai:* 通道 + docs 生图 */
   const insertImageBridge: InsertImageBridge = {
-    searchWeb: async (query, page) => {
-      const r = await window.desktop?.webImageSearch(query, undefined, page)
+    getAiSettings: () => window.desktop?.getAiSettings?.() ?? Promise.resolve(null),
+    searchWeb: async (query, page, source) => {
+      const r = await window.desktop?.webImageSearch(query, undefined, page, source)
       return {
         images: (r?.images as WebImageItem[]) ?? [],
         ...(r?.error ? { error: r.error } : {}),
@@ -541,14 +542,15 @@ function RibbonInner({
     getStockKeys: async () => (await window.desktop?.stockKeysGet()) ?? { pexels: '', pixabay: '' },
     setStockKeys: (keys) => window.desktop?.stockKeysSet(keys) ?? Promise.resolve(),
     listMediaModels: async () => (await window.desktop?.mediaModels()) ?? { models: [] },
+    generateSvg: (req) =>
+      window.desktop?.generateSvg(req) ?? Promise.resolve({ error: 'svg generation unavailable' }),
     generate: async (req) => {
       const r = await window.desktop?.mediaGenerate(req)
       return r ?? { error: 'no image' }
     },
     videoSubmit: async (req) =>
       (await window.desktop?.videoSubmit(req)) ?? { error: 'video tasks unavailable' },
-    videoTasks: async () =>
-      (await window.desktop?.videoTasks()) ?? { tasks: [] },
+    videoTasks: async () => (await window.desktop?.videoTasks()) ?? { tasks: [] },
     videoCancel: async (id) => {
       await window.desktop?.videoCancel(id)
     },

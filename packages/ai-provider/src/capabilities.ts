@@ -95,10 +95,17 @@ function protocolMediaInput(protocol: AiProtocol): { audio: boolean; video: bool
  */
 const OPENAI_VIDEO_INPUT_VENDORS = new Set(['aliyun-bailian', 'zhipu'])
 
-const OPENAI_VIDEO_INPUT_MODELS = /qwen-vl|glm-4v|glm-4(?!\w)/i
+// qwen-vl spans generations (qwen2-vl / qwen3-vl); glm-4v and bare glm-4 cover Zhipu's VL line
+const OPENAI_VIDEO_INPUT_MODELS = /qwen(?:\d+)?-vl|glm-4v|glm-4(?!\w)/i
 
 /** vendors wired to imagegen / MediaJobClient video adapters */
-export const IMAGE_GEN_VENDOR_IDS = new Set(['gemini', 'openai', 'aliyun-bailian', 'recraft', 'chatoffice'])
+export const IMAGE_GEN_VENDOR_IDS = new Set([
+  'gemini',
+  'openai',
+  'aliyun-bailian',
+  'recraft',
+  'chatoffice',
+])
 /** Must stay in sync with the adapters registered in media-jobs.ts — a
  * vendor listed here without a wired adapter would promise what runMediaJob
  * then refuses ("No media-generation adapter"). */
@@ -159,7 +166,10 @@ function visionOk(modelId: string): boolean {
 }
 
 /** Flat "why not" list for the settings UI; empty = fully usable in the role. */
-export function capabilityBlockers(q: ModelCapabilityQuery, role: 'operator' | 'image' | 'video' | 'attachment-audio' | 'attachment-video'): string[] {
+export function capabilityBlockers(
+  q: ModelCapabilityQuery,
+  role: 'operator' | 'image' | 'video' | 'attachment-audio' | 'attachment-video',
+): string[] {
   const caps = resolveModelCapabilities(q)
   const blockers: string[] = []
   switch (role) {

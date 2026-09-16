@@ -47,103 +47,152 @@ export async function webSearch(
   maxResults = 6,
   _useChatOffice?: boolean,
   keys?: SearchKeys,
+  /** preferred provider id (settings default): tried first, chain still backs it up */
+  prefer?: string,
 ): Promise<{
   results: WebSearchResult[]
   answer?: string
   method: string
   error?: string
 }> {
-  const serperKey = keys?.serper ?? SERPER_KEY()
-  if (serperKey) {
-    try {
-      const resp = await fetchWithTimeout('https://google.serper.dev/search', {
-        method: 'POST',
-        headers: { 'X-API-KEY': serperKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: query, num: maxResults, gl: 'us', hl: 'en' }),
-      })
-      if (resp.ok) {
-        const data = asRecord(await resp.json())
-        const organic: unknown[] = Array.isArray(data.organic) ? data.organic : []
-        const results: WebSearchResult[] = organic.slice(0, maxResults).map((item) => {
-          const o = asRecord(item)
-          return {
-            title: String(o.title ?? ''),
-            url: String(o.link ?? ''),
-            snippet: String(o.snippet ?? ''),
+  type Tier = {
+    id: string
+    run: () => Promise<{ results: WebSearchResult[]; answer?: string; method: string } | null>
+  }
+  const tiers: Tier[] = [
+    {
+      id: 'serper',
+      run: async () => {
+        const serperKey = keys?.serper ?? SERPER_KEY()
+        if (!serperKey) return null
+        try {
+          const resp = await fetchWithTimeout('https://google.serper.dev/search', {
+            method: 'POST',
+            headers: { 'X-API-KEY': serperKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ q: query, num: maxResults, gl: 'us', hl: 'en' }),
+          })
+          if (resp.ok) {
+            const data = asRecord(await resp.json())
+            const organic: unknown[] = Array.isArray(data.organic) ? data.organic : []
+            const results: WebSearchResult[] = organic.slice(0, maxResults).map((item) => {
+              const o = asRecord(item)
+              return {
+                title: String(o.title ?? ''),
+                url: String(o.link ?? ''),
+                snippet: String(o.snippet ?? ''),
+              }
+            })
+            const answerBox = asRecord(data.answerBox)
+            const answerRaw =
+              answerBox.answer || answerBox.snippet || asRecord(data.knowledgeGraph).description
+            const answer = typeof answerRaw === 'string' && answerRaw ? answerRaw : undefined
+            if (results.length) {
+              return answer !== undefined
+                ? { results, answer, method: 'serper' }
+                : { results, method: 'serper' }
+            }
           }
-        })
-        const answerBox = asRecord(data.answerBox)
-        const answerRaw =
-          answerBox.answer || answerBox.snippet || asRecord(data.knowledgeGraph).description
-        const answer = typeof answerRaw === 'string' && answerRaw ? answerRaw : undefined
-        if (results.length) {
-          return answer !== undefined
-            ? { results, answer, method: 'serper' }
-            : { results, method: 'serper' }
+        } catch {
+          /* fall through to the next tier */
         }
-      }
-    } catch {
-      /* fall back to Tavily/Linkup/SearxNG/DuckDuckGo */
-    }
-  }
-  const tavilyKey = keys?.tavily ?? TAVILY_KEY()
-  if (tavilyKey) {
-    try {
-      const resp = await fetchWithTimeout('https://api.tavily.com/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: tavilyKey,
-          query,
-          max_results: maxResults,
-          include_answer: true,
-        }),
-      })
-      if (resp.ok) {
-        const data = asRecord(await resp.json())
-        const raw: unknown[] = Array.isArray(data.results) ? data.results : []
-        const results: WebSearchResult[] = raw.slice(0, maxResults).map((item) => {
-          const o = asRecord(item)
-          return {
-            title: String(o.title ?? ''),
-            url: String(o.url ?? ''),
-            snippet: String(o.content ?? ''),
+        return null
+      },
+    },
+    {
+      id: 'tavily',
+      run: async () => {
+        const tavilyKey = keys?.tavily ?? TAVILY_KEY()
+        if (!tavilyKey) return null
+        try {
+          const resp = await fetchWithTimeout('https://api.tavily.com/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              api_key: tavilyKey,
+              query,
+              max_results: maxResults,
+              include_answer: true,
+            }),
+          })
+          if (resp.ok) {
+            const data = asRecord(await resp.json())
+            const raw: unknown[] = Array.isArray(data.results) ? data.results : []
+            const results: WebSearchResult[] = raw.slice(0, maxResults).map((item) => {
+              const o = asRecord(item)
+              return {
+                title: String(o.title ?? ''),
+                url: String(o.url ?? ''),
+                snippet: String(o.content ?? ''),
+              }
+            })
+            const answerRaw = data.answer
+            const answer = typeof answerRaw === 'string' && answerRaw ? answerRaw : undefined
+            if (results.length) {
+              return answer !== undefined
+                ? { results, answer, method: 'tavily' }
+                : { results, method: 'tavily' }
+            }
           }
-        })
-        const answerRaw = data.answer
-        const answer = typeof answerRaw === 'string' && answerRaw ? answerRaw : undefined
-        if (results.length) {
-          return answer !== undefined
-            ? { results, answer, method: 'tavily' }
-            : { results, method: 'tavily' }
+        } catch {
+          /* fall through to the next tier */
         }
+        return null
+      },
+    },
+    {
+      id: 'linkup',
+      run: async () => {
+        const linkupKey = keys?.linkup ?? LINKUP_KEY()
+        if (!linkupKey) return null
+        try {
+          const results = await linkupWebSearch(query, maxResults, linkupKey)
+          if (results.length) return { results, method: 'linkup' }
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+    {
+      id: 'searxng',
+      run: async () => {
+        const searxngBase = keys?.searxngBaseUrl
+        if (!searxngBase) return null
+        try {
+          const results = await searxngWebSearch(query, maxResults, searxngBase)
+          if (results.length) return { results, method: 'searxng' }
+        } catch {
+          /* fall through to the next tier */
+        }
+        return null
+      },
+    },
+  ]
+  // (DuckDuckGo is not a tier object: it is the terminal fallback below and
+  // never "fails over" to anything else)
+  // the preferred provider (settings default) gets the first shot; the rest
+  // keep their order as the fallback chain
+  const ordered = prefer
+    ? [...tiers.filter((t) => t.id === prefer), ...tiers.filter((t) => t.id !== prefer)]
+    : tiers
+  let duckError: unknown = null
+  for (const tier of ordered) {
+    if (tier.id === 'duckduckgo') {
+      // the terminal tier's failure detail rides the error line (historical contract)
+      try {
+        return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
+      } catch (err) {
+        duckError = err
       }
-    } catch {
-      /* fall back to Linkup/SearxNG/DuckDuckGo */
+      continue
     }
+    const r = await tier.run()
+    if (r) return r
   }
-  const linkupKey = keys?.linkup ?? LINKUP_KEY()
-  if (linkupKey) {
-    try {
-      const results = await linkupWebSearch(query, maxResults, linkupKey)
-      if (results.length) return { results, method: 'linkup' }
-    } catch {
-      /* fall back to SearxNG/DuckDuckGo */
-    }
-  }
-  const searxngBase = keys?.searxngBaseUrl
-  if (searxngBase) {
-    try {
-      const results = await searxngWebSearch(query, maxResults, searxngBase)
-      if (results.length) return { results, method: 'searxng' }
-    } catch {
-      /* fall back to DuckDuckGo */
-    }
-  }
-  try {
-    return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
-  } catch (err) {
-    return { results: [], method: 'error', error: `duckduckgo: ${String(err)}` }
+  return {
+    results: [],
+    method: 'error',
+    error: `duckduckgo: ${String(duckError ?? 'all web search backends failed')}`,
   }
 }
 
@@ -161,6 +210,8 @@ export async function imageSearch(
   serperKeyOverride?: string,
   /** 1-based result page; each tier maps it to its own offset (insert-dialog "next batch") */
   page = 1,
+  /** run ONLY this tier ('serper' | 'bing' | 'openverse') — the insert dialog's per-platform pick */
+  only?: 'serper' | 'bing' | 'openverse',
 ): Promise<{
   images: ImageSearchResult[]
   method: string
@@ -169,74 +220,96 @@ export async function imageSearch(
 }> {
   const attempts: SearchAttempt[] = []
 
-  const key = serperKeyOverride ?? SERPER_KEY()
-  if (key) {
-    try {
-      const resp = await fetchWithTimeout('https://google.serper.dev/images', {
-        method: 'POST',
-        headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          q: query,
-          num: Math.min(maxResults, 20),
-          gl: 'us',
-          hl: 'en',
-          ...(page > 1 ? { page } : {}),
-        }),
-      })
-      if (resp.ok) {
-        const data = asRecord(await resp.json())
-        const raw: unknown[] = Array.isArray(data.images) ? data.images : []
-        const images: ImageSearchResult[] = []
-        for (const item of raw) {
-          const img = asRecord(item)
-          const imageUrl = String(img.imageUrl ?? img.original ?? '')
-          if (!imageUrl) continue
-          if (isCopyrightHost(imageUrl)) continue
-          const entry: ImageSearchResult = {
-            title: String(img.title ?? ''),
-            imageUrl,
-            sourceUrl: String(img.link ?? ''),
-            source: String(img.source ?? safeHost(img.link)),
+  const serperTier = async (): Promise<{ images: ImageSearchResult[]; method: string } | null> => {
+    const key = serperKeyOverride ?? SERPER_KEY()
+    if (key) {
+      try {
+        const resp = await fetchWithTimeout('https://google.serper.dev/images', {
+          method: 'POST',
+          headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            q: query,
+            num: Math.min(maxResults, 20),
+            gl: 'us',
+            hl: 'en',
+            ...(page > 1 ? { page } : {}),
+          }),
+        })
+        if (resp.ok) {
+          const data = asRecord(await resp.json())
+          const raw: unknown[] = Array.isArray(data.images) ? data.images : []
+          const images: ImageSearchResult[] = []
+          for (const item of raw) {
+            const img = asRecord(item)
+            const imageUrl = String(img.imageUrl ?? img.original ?? '')
+            if (!imageUrl) continue
+            if (isCopyrightHost(imageUrl)) continue
+            const entry: ImageSearchResult = {
+              title: String(img.title ?? ''),
+              imageUrl,
+              sourceUrl: String(img.link ?? ''),
+              source: String(img.source ?? safeHost(img.link)),
+            }
+            if (typeof img.thumbnailUrl === 'string' && img.thumbnailUrl) {
+              entry.thumbnail = img.thumbnailUrl
+            }
+            if (typeof img.imageWidth === 'number') entry.width = img.imageWidth
+            if (typeof img.imageHeight === 'number') entry.height = img.imageHeight
+            images.push(entry)
+            if (images.length >= maxResults) break
           }
-          if (typeof img.thumbnailUrl === 'string' && img.thumbnailUrl) {
-            entry.thumbnail = img.thumbnailUrl
+          if (images.length) {
+            attempts.push({ backend: 'serper', status: 'ok', count: images.length })
+            return { images, method: 'serper' }
           }
-          if (typeof img.imageWidth === 'number') entry.width = img.imageWidth
-          if (typeof img.imageHeight === 'number') entry.height = img.imageHeight
-          images.push(entry)
-          if (images.length >= maxResults) break
+          attempts.push({ backend: 'serper', status: 'error', detail: '0 results' })
+        } else {
+          attempts.push({ backend: 'serper', status: 'error', detail: `http ${resp.status}` })
         }
-        if (images.length) {
-          attempts.push({ backend: 'serper', status: 'ok', count: images.length })
-          return { images, method: 'serper', attempts }
-        }
-        attempts.push({ backend: 'serper', status: 'error', detail: '0 results' })
-      } else {
-        attempts.push({ backend: 'serper', status: 'error', detail: `http ${resp.status}` })
+      } catch (err) {
+        attempts.push({ backend: 'serper', status: 'error', detail: String(err) })
       }
-    } catch (err) {
-      attempts.push({ backend: 'serper', status: 'error', detail: String(err) })
+    } else {
+      attempts.push({ backend: 'serper', status: 'skipped', detail: 'no API key' })
     }
-  } else {
-    attempts.push({ backend: 'serper', status: 'skipped', detail: 'no API key' })
+    return null
   }
 
-  try {
-    const images = await bingImageSearch(query, maxResults, page)
-    attempts.push({ backend: 'bing', status: 'ok', count: images.length })
-    return { images, method: 'bing', attempts }
-  } catch (err) {
-    attempts.push({ backend: 'bing', status: 'error', detail: String(err) })
+  const bingTier = async (): Promise<{ images: ImageSearchResult[]; method: string } | null> => {
+    try {
+      const images = await bingImageSearch(query, maxResults, page)
+      attempts.push({ backend: 'bing', status: 'ok', count: images.length })
+      return { images, method: 'bing' }
+    } catch (err) {
+      attempts.push({ backend: 'bing', status: 'error', detail: String(err) })
+    }
+    return null
   }
 
-  try {
-    const images = await openverseImageSearch(query, maxResults, page)
-    attempts.push({ backend: 'openverse', status: 'ok', count: images.length })
-    return { images, method: 'openverse', attempts }
-  } catch (err) {
-    attempts.push({ backend: 'openverse', status: 'error', detail: String(err) })
-    return { images: [], method: 'error', error: 'all image backends failed', attempts }
+  const openverseTier = async (): Promise<{
+    images: ImageSearchResult[]
+    method: string
+  } | null> => {
+    try {
+      const images = await openverseImageSearch(query, maxResults, page)
+      attempts.push({ backend: 'openverse', status: 'ok', count: images.length })
+      return { images, method: 'openverse' }
+    } catch (err) {
+      attempts.push({ backend: 'openverse', status: 'error', detail: String(err) })
+    }
+    return null
   }
+
+  if (only === 'serper' || only === 'bing' || only === 'openverse') {
+    const tier = only === 'serper' ? serperTier : only === 'bing' ? bingTier : openverseTier
+    const r = await tier()
+    if (r) return { images: r.images, method: r.method, attempts }
+    return { images: [], method: 'error', error: `${only} image search failed`, attempts }
+  }
+
+  const chained = (await serperTier()) ?? (await bingTier()) ?? (await openverseTier())
+  if (chained) return { images: chained.images, method: chained.method, attempts }
+  return { images: [], method: 'error', error: 'all image backends failed', attempts }
 }
 
 // ── DuckDuckGo fallback (no key / quota exhausted) ──────────────────
@@ -354,7 +427,9 @@ export async function readUrlContent(
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`)
   const contentType = res.headers.get('content-type') ?? ''
   if (contentType && !/text\/html|text\/plain|xhtml/i.test(contentType)) {
-    throw new Error(`Unsupported content type ${contentType.split(';')[0]} — only web pages can be read`)
+    throw new Error(
+      `Unsupported content type ${contentType.split(';')[0]} — only web pages can be read`,
+    )
   }
   const buf = Buffer.from(await res.arrayBuffer())
   const truncatedFetch = buf.length > READ_URL_MAX_BYTES

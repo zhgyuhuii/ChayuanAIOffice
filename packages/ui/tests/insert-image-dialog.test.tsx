@@ -121,12 +121,13 @@ describe('InsertImageDialog web gallery', () => {
   })
 
   it('下一批 appends with URL-dedup, keeps the selection, and flips to 已到底 when drained', async () => {
-    const searchWeb = vi.fn(async (_q: string, page?: number) =>
-      (page ?? 1) === 1
-        ? { images: [item('a'), item('b')] }
-        : (page ?? 0) === 2
-          ? { images: [item('c'), item('a')] } // one fresh, one duplicate
-          : { images: [item('a'), item('b'), item('c')] }, // all duplicates → drained
+    const searchWeb = vi.fn(
+      async (_q: string, page?: number) =>
+        (page ?? 1) === 1
+          ? { images: [item('a'), item('b')] }
+          : (page ?? 0) === 2
+            ? { images: [item('c'), item('a')] } // one fresh, one duplicate
+            : { images: [item('a'), item('b'), item('c')] }, // all duplicates → drained
     )
     const bridge: InsertImageBridge = {
       searchWeb,
@@ -143,7 +144,7 @@ describe('InsertImageDialog web gallery', () => {
     await act(async () => {
       buttonByText('下一批')!.click()
     })
-    expect(searchWeb).toHaveBeenCalledWith('cat', 2)
+    expect(searchWeb).toHaveBeenCalledWith('cat', 2, undefined)
     expect(cells()).toHaveLength(3) // a, b, c — the duplicate "a" collapsed
     expect(host.querySelectorAll('.insimg-cell.selected')).toHaveLength(1)
     expect(host.querySelector('.insimg-cell.selected img')?.getAttribute('src')).toBe(
@@ -153,7 +154,7 @@ describe('InsertImageDialog web gallery', () => {
     await act(async () => {
       buttonByText('下一批')!.click()
     })
-    expect(searchWeb).toHaveBeenCalledWith('cat', 3)
+    expect(searchWeb).toHaveBeenCalledWith('cat', 3, undefined)
     expect(cells()).toHaveLength(3)
     expect(host.querySelector('.insimg-nomore')?.textContent).toBe('已经到底了')
     expect(buttonByText('下一批')).toBeUndefined()
@@ -198,21 +199,32 @@ describe('InsertImageDialog web gallery', () => {
     await act(async () => {
       buttonByText('AI 生成')!.click()
     })
-    // no legacy optgroup select; ensureModels auto-picks the first model
+    // no legacy optgroup select; ensureModels auto-picks the first image model
     expect(host.querySelector('select.insimg-select')).toBeNull()
-    const pickerTrigger = host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement
+    // kind chips split the lines: AI 生图 shows only the image model
+    expect(host.querySelector('[data-ai-kind="image"]')!.className).toContain('active')
+    let pickerTrigger = host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement
     expect(pickerTrigger.textContent).toContain('gpt-image-2')
     await act(async () => {
       pickerTrigger.click()
     })
-    expect(host.querySelectorAll('.ai-picker-vgroup')).toHaveLength(2)
+    expect(host.querySelectorAll('.ai-picker-vgroup')).toHaveLength(1)
     await act(async () => {
+      host.querySelector('[data-ai-kind="video"]')!.click()
+    })
+    pickerTrigger = host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement
+    expect(pickerTrigger.textContent).toContain('kling-v3')
+    await act(async () => {
+      host.querySelector('[data-ai-kind="video"]')!.click() // already active; no-op
+    })
+    await act(async () => {
+      pickerTrigger.click()
       host.querySelector('[data-picker-model="prof-kling::kling-v3"]')!.click()
     })
     // selection flows through: trigger label + the video-capability hint row
-    expect((host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement).textContent).toContain(
-      'kling-v3',
-    )
+    expect(
+      (host.querySelector('.ai-model-picker-trigger') as HTMLButtonElement).textContent,
+    ).toContain('kling-v3')
     expect(host.querySelector('.insimg-videohint')).toBeTruthy()
   })
 })

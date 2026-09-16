@@ -113,6 +113,16 @@ export {
 } from './settings-v2'
 export type { AiModelType } from './model-type'
 export { TYPE_ORDER, groupByType, inferModelType, matchesModelType } from './model-type'
+export {
+  SEARCH_PLATFORMS,
+  capabilityDefaultSelection,
+  capabilityVendorRefreshable,
+  capabilityVendorRows,
+  modelHasCapability,
+  profileCapabilityModels,
+  resolveCapabilityDefault,
+} from './capability-tree'
+export type { AiCapabilityKind, SearchPlatformKind, SearchPlatformMeta } from './capability-tree'
 export type { VendorCatalogEntry } from './vendor-catalog'
 export {
   CHATOFFICE_PRESET_MODELS,

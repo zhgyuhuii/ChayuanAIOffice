@@ -1509,8 +1509,9 @@ export function App() {
   }, [])
   const [insertImageOpen, setInsertImageOpen] = useState(false)
   const insertImageBridge: InsertImageBridge = {
-    searchWeb: async (query, page) => {
-      const r = await window.slidesApi.webImageSearch(query, undefined, page)
+    getAiSettings: () => window.slidesApi.getAiSettings(),
+    searchWeb: async (query, page, source) => {
+      const r = await window.slidesApi.webImageSearch(query, undefined, page, source)
       return {
         images: (r.images as WebImageItem[]) ?? [],
         ...(r.error ? { error: r.error } : {}),
@@ -1532,6 +1533,7 @@ export function App() {
     getStockKeys: () => window.slidesApi.stockKeysGet(),
     setStockKeys: (keys) => window.slidesApi.stockKeysSet(keys),
     listMediaModels: async () => (await window.slidesApi.mediaModels()) ?? { models: [] },
+    generateSvg: (req) => window.slidesApi.generateSvg(req),
     generate: async (req) => {
       const r = await window.slidesApi.mediaGenerate(req)
       return r ?? { error: 'no image' }

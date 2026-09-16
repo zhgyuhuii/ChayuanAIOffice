@@ -581,6 +581,14 @@
   flex-direction: column;
 }
 
+/* 生图、媒体与搜索：能力树两栏各自滚动，撑满面板 */
+.set-capability-settings {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── remote storage pane ── */
 
 .set-radio {

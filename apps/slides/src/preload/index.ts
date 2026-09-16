@@ -440,12 +440,14 @@ const api: SlidesApi = {
   stockImageSearch: (source: string, query: string, maxResults?: number, page?: number) =>
     ipcRenderer.invoke('ai:stock-image-search', { source, query, maxResults, page }),
   stockKeysGet: () => ipcRenderer.invoke('ai:stock-keys-get'),
-  stockKeysSet: (keys: { pexels?: string; pixabay?: string }) =>
+  stockKeysSet: (keys: { pexels?: string; pixabay?: string; unsplash?: string }) =>
     ipcRenderer.invoke('ai:stock-keys-set', keys),
-  webImageSearch: (query: string, maxResults?: number, page?: number) =>
-    ipcRenderer.invoke('ai:web-image-search', query, maxResults, page),
+  webImageSearch: (query: string, maxResults?: number, page?: number, source?: string) =>
+    ipcRenderer.invoke('ai:web-image-search', query, maxResults, page, source),
   remoteImage: (url: string) => ipcRenderer.invoke('ai:remote-image', url),
   mediaModels: () => ipcRenderer.invoke('ai:media-models'),
+  generateSvg: (req: { profileId?: string; modelId?: string; prompt: string }) =>
+    ipcRenderer.invoke('ai:generate-svg', req),
   mediaGenerate: (req: {
     profileId?: string
     modelId?: string

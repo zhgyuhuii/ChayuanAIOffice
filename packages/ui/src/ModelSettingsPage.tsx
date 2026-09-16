@@ -58,6 +58,11 @@ export interface ModelSettingsBridge {
   localToolStatus?(vendorId: string): Promise<LocalToolStatus>
   localToolInstall?(vendorId: string, onLine?: (line: string) => void): Promise<LocalToolOpResult>
   localToolStart?(vendorId: string): Promise<LocalToolOpResult>
+  /** 生图、媒体与搜索：搜索平台连通性探测（主进程执行，key 未保存也可测） */
+  testSearchPlatform?(req: {
+    platform: string
+    key?: string
+  }): Promise<{ ok: boolean; detail?: string }>
 }
 
 export interface ModelSettingsPageProps {
@@ -68,6 +73,9 @@ export interface ModelSettingsPageProps {
   lang?: string
   /** 'overlay' (default) portals a modal onto body; 'inline' renders in place inside a host pane */
   variant?: 'overlay' | 'inline'
+  /** deep link: open this vendor's config form instead of the guide page
+   * (生图、媒体与搜索 → 去模型设置启用). Ignored when the vendor is unknown. */
+  initialVendor?: string
 }
 
 interface DraftModel extends AiModelEntry {
@@ -144,13 +152,16 @@ export function ModelSettingsPage({
   onClose,
   lang,
   variant = 'overlay',
+  initialVendor,
 }: ModelSettingsPageProps): React.JSX.Element {
   const locale = lang ?? (typeof document !== 'undefined' ? document.documentElement.lang : 'zh')
   const t = useMemo(() => modelSettingsStrings(locale), [locale])
   const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
   const [chatofficeAvailable, setChatOfficeAvailable] = useState(true)
   /** '' = 说明页（初次进入的落地）；厂商 id = 该厂商的配置表单 */
-  const [selected, setSelected] = useState<string>('')
+  const [selected, setSelected] = useState<string>(
+    initialVendor && VENDOR_BY_ID.has(initialVendor) ? initialVendor : '',
+  )
   const [search, setSearch] = useState('')
   /** 目录过滤（单选下拉）：全部 / 免费 / 需要 Key / 无需 Key / 免费额度 */
   const [tagFilter, setTagFilter] = useState<TagFilter>('all')

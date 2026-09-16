@@ -444,6 +444,13 @@ function ChatMessageView({
               >
                 <span className="chat-tool-dot" aria-hidden="true" />
                 <span className="chat-tool-name">{tool.name.replace(/_/g, ' ')}</span>
+                {tool.image && (
+                  <img
+                    className="chat-tool-image"
+                    src={tool.image}
+                    alt={tool.summary || tool.name}
+                  />
+                )}
               </span>
             ))}
           </div>

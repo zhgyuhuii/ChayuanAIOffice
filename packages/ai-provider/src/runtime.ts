@@ -15,6 +15,7 @@ import {
   resolveModelCall,
   type ResolvedModelCall,
 } from './settings-v2'
+import { resolveCapabilityDefault } from './capability-tree'
 import type { AiSettingsSource } from './settings-source'
 import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
@@ -66,6 +67,9 @@ function redact(settings: AiSettingsV2): AiSettingsV2 {
           stockApiKeys: {
             pexels: settings.stockApiKeys.pexels ? KEEP_KEY : '',
             pixabay: settings.stockApiKeys.pixabay ? KEEP_KEY : '',
+            ...(settings.stockApiKeys.unsplash !== undefined
+              ? { unsplash: settings.stockApiKeys.unsplash ? KEEP_KEY : '' }
+              : {}),
           },
         }
       : {}),
@@ -96,6 +100,10 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
               view.stockApiKeys.pixabay === KEEP_KEY
                 ? (stored.stockApiKeys?.pixabay ?? '')
                 : (view.stockApiKeys.pixabay ?? ''),
+            unsplash:
+              view.stockApiKeys.unsplash === KEEP_KEY
+                ? (stored.stockApiKeys?.unsplash ?? '')
+                : (view.stockApiKeys.unsplash ?? ''),
           },
         }
       : {}),
@@ -335,7 +343,9 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
    *  so the renderer stays vendor-agnostic). image entries always; video entries
    *  only for vendors with a wired MediaJobClient adapter. chatoffice video is
    *  data-driven: it appears only when the proxy's model list carries
-   *  video-generation entries. */
+   *  video-generation entries. Entries matching the capability defaults
+   *  (settings.imageModel / modelDefaults.videoGeneration, or the first
+   *  qualifying model) carry isDefault so the dialog can preselect them. */
   const listMediaModels = async (): Promise<
     Array<
       | {
@@ -345,6 +355,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           label: string
           vendorId: string
           spec: MediaParamSpec
+          isDefault?: boolean
         }
       | {
           kind: 'video'
@@ -353,6 +364,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           label: string
           vendorId: string
           spec: MediaParamSpec
+          isDefault?: boolean
         }
     >
   > => {
@@ -365,6 +377,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           label: string
           vendorId: string
           spec: MediaParamSpec
+          isDefault?: boolean
         }
       | {
           kind: 'video'
@@ -373,9 +386,22 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           label: string
           vendorId: string
           spec: MediaParamSpec
+          isDefault?: boolean
         }
     > = []
-    const push = (kind: 'image' | 'video', profile: AiProviderProfile, vendorId: string, modelId: string, name: string | undefined, spec: MediaParamSpec): void => {
+    const defaultImage = resolveCapabilityDefault(settings, 'imageGen')
+    const defaultVideo = resolveCapabilityDefault(settings, 'videoGen')
+    const push = (
+      kind: 'image' | 'video',
+      profile: AiProviderProfile,
+      vendorId: string,
+      modelId: string,
+      name: string | undefined,
+      spec: MediaParamSpec,
+    ): void => {
+      const isDefault =
+        (kind === 'image' ? defaultImage : defaultVideo)?.profileId === profile.id &&
+        (kind === 'image' ? defaultImage : defaultVideo)?.modelId === modelId
       out.push({
         kind,
         profileId: profile.id,
@@ -383,6 +409,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
         label: name && name !== modelId ? `${name} (${modelId})` : modelId,
         vendorId,
         spec,
+        ...(isDefault ? { isDefault: true } : {}),
       })
     }
     for (const profile of settings.profiles) {
@@ -402,6 +429,35 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       }
     }
     return out
+  }
+
+  /**
+   * One-shot SVG illustration: the svgGeneration default model (or the
+   * explicit selection) writes complete standalone SVG markup for a prompt.
+   * The caller rasterizes; this only produces and extracts the markup.
+   */
+  const generateSvg = async (req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+  }): Promise<{ svg?: string; modelId?: string; error?: string }> => {
+    const settings = await readRaw()
+    const selection =
+      req.profileId && req.modelId
+        ? { profileId: req.profileId, modelId: req.modelId }
+        : resolveCapabilityDefault(settings, 'svgGeneration')
+    if (!selection) return { error: translate('errNoModel') }
+    const system =
+      'You are an SVG illustration generator. Reply with ONE complete standalone SVG document and nothing else: ' +
+      'start with <svg viewBox="0 0 W H"> (W/H from the prompt, default 1024x768 when unspecified) and end with </svg>. ' +
+      'No markdown fences, no commentary. Rules: no external images/fonts/CSS/scripts; no <text> with webfonts ' +
+      '(convert text to paths or keep font-family generic); solid fills; keep all shapes inside the viewBox; ' +
+      'prefer clean flat shapes with clear silhouettes readable at small sizes.'
+    const r = await runChat(selection, system, String(req.prompt ?? ''))
+    if (!r.ok || !r.content) return { error: r.error ?? 'empty model reply' }
+    const m = /<svg[\s\S]*<\/svg>/i.exec(r.content)
+    if (!m) return { error: 'the model reply carried no <svg> document' }
+    return { svg: m[0], modelId: selection.modelId }
   }
 
   /** one video-generation job through MediaJobClient: resolve the model
@@ -431,7 +487,9 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     const durationSeconds =
       typeof rawDuration === 'number'
         ? rawDuration
-        : typeof rawDuration === 'string' && rawDuration.trim() && Number.isFinite(Number(rawDuration))
+        : typeof rawDuration === 'string' &&
+            rawDuration.trim() &&
+            Number.isFinite(Number(rawDuration))
           ? Number(rawDuration)
           : undefined
     return runMediaJob({
@@ -460,6 +518,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     discover,
     resolveProfileApiKey,
     generateImage,
+    generateSvg,
     runVideoJob,
     listMediaModels,
     /** unredacted settings for main-process features (stock-image keys) */

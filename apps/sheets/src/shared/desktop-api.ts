@@ -2761,12 +2761,13 @@ export interface DesktopApi {
     maxResults?: number,
     page?: number,
   ): Promise<{ images: unknown[]; source: string; error?: string; code?: string }>
-  stockKeysGet(): Promise<{ pexels: string; pixabay: string }>
-  stockKeysSet(keys: { pexels?: string; pixabay?: string }): Promise<void>
+  stockKeysGet(): Promise<{ pexels: string; pixabay: string; unsplash?: string }>
+  stockKeysSet(keys: { pexels?: string; pixabay?: string; unsplash?: string }): Promise<void>
   webImageSearch(
     query: string,
     maxResults?: number,
     page?: number,
+    source?: string,
   ): Promise<{
     images: {
       thumbnail?: string
@@ -2793,6 +2794,7 @@ export interface DesktopApi {
       modelId: string
       label: string
       vendorId: string
+      isDefault?: boolean
       spec: {
         fields: {
           id: string
@@ -2810,6 +2812,12 @@ export interface DesktopApi {
     }[]
     error?: string
   }>
+  /// SVG illustration on the svgGeneration default (or explicit) chat model
+  generateSvg(req: {
+    profileId?: string
+    modelId?: string
+    prompt: string
+  }): Promise<{ svg?: string; modelId?: string; error?: string }>
   /// Media generation with model selection + dynamic params; data URLs come back
   mediaGenerate(req: {
     profileId?: string

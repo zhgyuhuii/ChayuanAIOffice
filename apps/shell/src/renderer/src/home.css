@@ -3426,6 +3426,26 @@ body.sidebar-resizing {
   background: var(--icon-muted);
 }
 
+/* generate_image 结果:工具胶囊内嵌缩略图(点击看大图的简化版=直接内嵌展示) */
+.chat-tool-chip:has(.chat-tool-image) {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  white-space: normal;
+}
+.chat-tool-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(300px, 100%);
+  max-height: 200px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
 .chat-tool-chip.running .chat-tool-dot {
   background: var(--accent);
   animation: chat-tool-pulse 1s ease-in-out infinite;

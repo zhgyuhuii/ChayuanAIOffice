@@ -3026,14 +3026,31 @@ export function registerAiIpc(): void {
     return listCodexModels(typeof cliPath === 'string' ? cliPath : undefined)
   })
 
-  // shared search tools (content + images): Serper with DuckDuckGo fallback (same source as slides/sheets)
+  // shared search tools (content + images): settings-driven provider order with
+  // the DuckDuckGo fallback (same source as slides/sheets)
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)
   ipcMain.handle('ai:web-search', async (_event, query: string, maxResults?: number) => {
     try {
+      // keys/order from 生图、媒体与搜索 settings (search.providers, legacy
+      // searchApiKeys), env vars as the last resort
+      const settings = await getAiRuntime().readRawSettings()
+      const providers = settings.search?.providers as
+        Record<string, { apiKey?: string } | undefined> | undefined
       return await webSearch(
         String(query),
         typeof maxResults === 'number' ? maxResults : 6,
         chatofficeCloudToolsOn(),
+        {
+          serper:
+            providers?.serper?.apiKey ||
+            settings.searchApiKeys?.serper ||
+            process.env.SERPER_API_KEY ||
+            undefined,
+          tavily: providers?.tavily?.apiKey || process.env.TAVILY_API_KEY || undefined,
+          linkup: providers?.linkup?.apiKey || process.env.LINKUP_API_KEY || undefined,
+          searxngBaseUrl: providers?.searxng?.apiKey || undefined,
+        },
+        settings.search?.provider,
       )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
@@ -3967,11 +3984,7 @@ export function registerDocsIpc(): void {
   /** export one file via save dialog, or many into a picked folder (unique names) */
   ipcMain.handle(
     'docs:export-files',
-    async (
-      event,
-      suggestedName: string,
-      files: Array<{ fileName: string; base64: string }>,
-    ) => {
+    async (event, suggestedName: string, files: Array<{ fileName: string; base64: string }>) => {
       if (tornDownWcIds.has(event.sender.id)) return { ok: false, canceled: true }
       const list = Array.isArray(files) ? files.filter((f) => f && f.fileName && f.base64) : []
       if (list.length === 0) return { ok: false, canceled: true, error: 'no-files' }
@@ -4013,14 +4026,10 @@ export function registerDocsIpc(): void {
   /** declassify backup sidecar: <doc>.cydeclass.json next to the document */
   ipcMain.handle(
     'docs:declassify-store',
-    async (
-      event,
-      action: 'save' | 'load' | 'clear',
-      docPath: string,
-      sidecar?: unknown,
-    ) => {
+    async (event, action: 'save' | 'load' | 'clear', docPath: string, sidecar?: unknown) => {
       if (tornDownWcIds.has(event.sender.id)) return { ok: false }
-      if (typeof docPath !== 'string' || !isAbsolute(docPath)) return { ok: false, error: 'bad-path' }
+      if (typeof docPath !== 'string' || !isAbsolute(docPath))
+        return { ok: false, error: 'bad-path' }
       const sidecarPath = join(
         dirname(docPath),
         `${basename(docPath, extname(docPath))}.cydeclass.json`,

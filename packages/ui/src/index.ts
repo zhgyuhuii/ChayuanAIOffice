@@ -76,6 +76,8 @@ export {
 } from './wordart-presets'
 export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
 export { MediaModelPicker, type MediaModelPickerProps } from './MediaModelPicker'
+export { CapabilitySettingsPage, type CapabilitySettingsPageProps } from './CapabilitySettingsPage'
+export { capabilitySettingsStrings } from './capability-settings-strings'
 export { VendorLogo, type VendorLogoProps } from './VendorLogo'
 export { USER_LOGIN_READY } from './feature-flags'
 export {

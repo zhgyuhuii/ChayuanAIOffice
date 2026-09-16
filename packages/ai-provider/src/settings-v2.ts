@@ -449,14 +449,23 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
 }
 
 /** default-model kinds surfaced in the settings window's 默认模型 pane */
-export type AiDefaultKind = 'chat' | 'generation' | 'qc' | 'image' | 'videoGeneration' | 'tts' | 'asr'
+export type AiDefaultKind =
+  | 'chat'
+  | 'generation'
+  | 'qc'
+  | 'image'
+  | 'videoGeneration'
+  | 'tts'
+  | 'asr'
+  // 生图、媒体与搜索 capability defaults (capability-tree resolution)
+  | 'imageUnderstanding'
+  | 'videoUnderstanding'
+  | 'svgGeneration'
 
 const IMAGE_SOURCES: AiImageSource[] = ['auto', 'web', 'model', 'local', 'svg']
 
 /** pass through a valid persisted image source; drop anything else (old blobs, typos) */
-function normalizeImageSource(
-  value: AiImageSource | undefined,
-): Pick<AiSettingsV2, 'imageSource'> {
+function normalizeImageSource(value: AiImageSource | undefined): Pick<AiSettingsV2, 'imageSource'> {
   return value && (IMAGE_SOURCES as string[]).includes(value) ? { imageSource: value } : {}
 }
 
@@ -471,6 +480,11 @@ export const DEFAULT_KIND_TYPES: Record<AiDefaultKind, AiModelType[]> = {
   videoGeneration: ['video-generation'],
   tts: ['tts'],
   asr: ['asr'],
+  // understanding/SVG defaults resolve through capability-tree's vendor-aware
+  // predicates; the type list here only keeps normalizeV2 from dropping them
+  imageUnderstanding: ['chat', 'vision'],
+  videoUnderstanding: ['chat', 'vision'],
+  svgGeneration: ['chat', 'vision'],
 }
 
 function selectionAlive(

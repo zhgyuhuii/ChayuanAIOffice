@@ -621,8 +621,9 @@ export function ExcelShell({
   const [insertImageOpen, setInsertImageOpen] = useState(false)
 
   const insertImageBridge: InsertImageBridge = {
-    searchWeb: async (query, page) => {
-      const r = await window.desktopApi.webImageSearch(query, undefined, page)
+    getAiSettings: () => window.desktopApi.getAiSettings(),
+    searchWeb: async (query, page, source) => {
+      const r = await window.desktopApi.webImageSearch(query, undefined, page, source)
       return {
         images: (r.images as WebImageItem[]) ?? [],
         ...(r.error ? { error: r.error } : {}),
@@ -644,6 +645,7 @@ export function ExcelShell({
     getStockKeys: () => window.desktopApi.stockKeysGet(),
     setStockKeys: (keys) => window.desktopApi.stockKeysSet(keys),
     listMediaModels: async () => (await window.desktopApi.mediaModels()) ?? { models: [] },
+    generateSvg: (req) => window.desktopApi.generateSvg(req),
     generate: async (req) => {
       const r = await window.desktopApi.mediaGenerate(req)
       return r ?? { error: 'no image' }
