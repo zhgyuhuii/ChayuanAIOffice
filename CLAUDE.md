@@ -50,6 +50,34 @@ system mode).
 - `useI18n()`'s `t` is not referentially stable; never put it in a hook
   dependency array. Store the key and translate at render time.
 
+## Upstream coexistence rules (mandatory — read FIRST before any dev or merge)
+
+**Every session that develops features or merges upstream code MUST read
+`docs/upstream-coexistence.md` before touching code, and re-read
+`docs/upstream-sync.md` (the sync ledger) before syncing.** These two docs
+define the four-zone file model, the five development rules that keep local
+work out of conflict-prone files, and the conflict adjudication decision tree.
+
+Quick rules (full detail in the coexistence doc):
+
+1. **New-file-first**: local features live in new files (B-zone, zero
+   conflicts). Shell-level files (`App.tsx`, `Home.tsx`, `ExcelShell.tsx`,
+   `Ribbon.tsx`, `SettingsModal.tsx`, `index.ts`, `strings.ts`, `styles.css`,
+   `home.css`, `home-api.ts`) are C/D-zone — never add implementations there;
+   only one-line mount-point references into local components/modules.
+2. **Local i18n keys go to `i18n/local*` files** (runtime-merged), never into
+   upstream shards/`strings.ts`.
+3. **Local CSS goes to component-level or `local.css` files**, never appended
+   to upstream `styles.css`/`home.css`.
+4. **Unavoidable in-place edits must carry a four-element marker**:
+   `// LOCAL(<date>, <base commit>): <intent> + <upstream movement> + <converge condition>` —
+   and a line in the sync ledger.
+5. **Brand strings** come from `brandName(lang)` (brand module), never
+   hand-written; exemptions per ledger §9 (`GENOFFICE_*`, `genspark.ai`,
+   `@chatoffice/*`, `window.chatOffice`, font family names, CLI bin name).
+6. New local dependencies are appended in the marked `LOCAL deps` section of
+   package.json; lock files are never literal-picked.
+
 ## Upstream sync iron rule (mandatory)
 
 本地修改绝不允许被上游更新破坏——这是铁律,不是偏好。This repo carries heavy
