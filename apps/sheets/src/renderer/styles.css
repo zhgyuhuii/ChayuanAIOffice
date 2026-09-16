@@ -237,14 +237,12 @@
 @font-face {
   font-family: Carlito;
   src: local('Carlito'), url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
-  src: local('Carlito'), url('@chatoffice/ui/fonts/Carlito-Regular.ttf');
   font-display: block;
 }
 
 @font-face {
   font-family: Carlito;
   font-weight: bold;
-  src: local('Carlito Bold'), url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
   src: local('Carlito Bold'), url('@chatoffice/ui/fonts/Carlito-Bold.ttf');
   font-display: block;
 }
@@ -253,7 +251,6 @@
   font-family: Carlito;
   font-style: italic;
   src: local('Carlito Italic'), url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
-  src: local('Carlito Italic'), url('@chatoffice/ui/fonts/Carlito-Italic.ttf');
   font-display: block;
 }
 
@@ -261,7 +258,6 @@
   font-family: Carlito;
   font-weight: bold;
   font-style: italic;
-  src: local('Carlito Bold Italic'), url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
   src: local('Carlito Bold Italic'), url('@chatoffice/ui/fonts/Carlito-BoldItalic.ttf');
   font-display: block;
 }

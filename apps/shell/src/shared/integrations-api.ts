@@ -47,7 +47,7 @@ export interface CliStatus extends InstallOutcome {
 
 export interface IntegrationsStatus {
   cli: CliStatus
-  /** version of the bundled skill (skills/chatoffice/SKILL.md front matter) */
+  /** version of the bundled skill (skills/chaoffice/SKILL.md front matter) */
   skillVersion: string
   /** lowest CLI version that skill describes */
   skillNeedsCli: string

@@ -1,7 +1,6 @@
 import {
   activeMediaProvider,
   activeSearchProvider,
-  cloudToolsEnabled,
   imageGenerationAvailable,
   mediaAnalysisAvailable,
 } from '@chatoffice/ai-provider'
@@ -11,41 +10,36 @@ import type { CommandDef } from '../registry'
 import { appLaunch } from '../resources'
 
 /**
- * What the cloud commands can do on this machine, decided from ChatOffice's
- * own settings without a network call: a Genspark login with cloud tools on,
- * or a BYOK key the user entered in Settings. Unkeyed fallbacks (DuckDuckGo)
- * do not count as configured. Agents check this once before planning work
- * that needs photos or web facts.
+ * What the local commands can do on this machine, decided from settings
+ * without a network call: a BYOK search key or a free provider (DuckDuckGo).
+ * Agents check this once before planning work that needs photos or web facts.
  */
 export const capabilitiesCommand: CommandDef = {
   name: 'capabilities',
   summary:
-    'Report which cloud features (search, image search, image generation, media analysis) are configured in ChatOffice, and whether the app is installed.',
+    'Report which features (search, image search, image generation, media analysis) are configured, and whether the app is installed.',
   usage: 'capabilities',
   async run(_args, ctx) {
     await prepareCloud(ctx.env)
     const settings = readAiSettingsFile(aiSettingsPath(ctx.env))
-    const gsk = hasChatOfficeAuth() && cloudToolsEnabled(settings)
     const searchProvider = activeSearchProvider(settings)
-    const keyedSearch = searchProvider !== 'chatoffice'
-    const search = gsk || keyedSearch
-    const imageSearch = gsk || searchProvider === 'serper'
+    const search = true
+    const imageSearch = searchProvider === 'serper' || searchProvider === 'bing' || searchProvider === 'duckduckgo' || searchProvider === 'openverse'
     const imageGeneration = imageGenerationAvailable(settings, hasChatOfficeAuth())
     const mediaAnalysis = mediaAnalysisAvailable(settings, hasChatOfficeAuth())
-    const via = (byok: string | null | undefined) => (byok ? byok : gsk ? 'chatoffice' : null)
     const detail = {
-      search: { available: search, via: keyedSearch ? searchProvider : gsk ? 'chatoffice' : null },
+      search: { available: search, via: searchProvider },
       image_search: {
         available: imageSearch,
-        via: searchProvider === 'serper' ? 'serper' : gsk ? 'chatoffice' : null,
+        via: imageSearch ? searchProvider : null,
       },
       image_generation: {
         available: imageGeneration,
-        via: imageGeneration ? via(activeMediaProvider(settings, 'image')) : null,
+        via: imageGeneration ? activeMediaProvider(settings, 'image') : null,
       },
       media_analysis: {
         available: mediaAnalysis,
-        via: mediaAnalysis ? via(activeMediaProvider(settings, 'analysis')) : null,
+        via: mediaAnalysis ? activeMediaProvider(settings, 'analysis') : null,
       },
       app: { available: appLaunch(ctx.env) !== null },
       settings_path: aiSettingsPath(ctx.env),
@@ -56,7 +50,7 @@ export const capabilitiesCommand: CommandDef = {
     return {
       summary: on.length
         ? `configured: ${on.join(', ')}`
-        : 'no cloud feature configured; the app is not installed',
+        : 'no feature configuration found; the app is not installed',
       detail,
     }
   },

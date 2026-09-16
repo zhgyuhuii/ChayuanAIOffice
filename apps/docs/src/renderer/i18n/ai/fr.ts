@@ -52,6 +52,7 @@ export const fr = {
   aiSumReadRevisions: 'Lecture des révisions',
   aiSumReplyComment: 'Réponse au commentaire',
   aiSumResolveComment: 'Commentaire résolu',
+  aiSumAddComment: 'Commentaire ajouté',
   aiTidyBtn: 'Mise en forme IA',
   aiTidyPrompt:
     "Mettez en ordre la mise en forme du document — par exemple corrigez les niveaux de titres, uniformisez les listes, supprimez les gras et italiques superflus et harmonisez l\\'indentation des paragraphes. Ne modifiez que la mise en forme, sans changer le texte",

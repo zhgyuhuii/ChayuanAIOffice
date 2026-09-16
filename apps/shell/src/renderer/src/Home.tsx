@@ -399,9 +399,6 @@ function AccountEntry({
     return () => clearInterval(timer)
   }, [waiting, loginNonce])
 
-  const loggedIn = status?.loggedIn ?? false
-  const email = status?.email ?? ''
-
   const doLogout = () => {
     setLoggingOut(true)
     statusSeq.current++
@@ -464,58 +461,12 @@ function AccountEntry({
           onSkillUpdateDue={setSkillUpdate}
         />
       )}
-      {!settingsOpen && waiting && authUrl && (
-        <div className="login-hint" role="status">
-          <button className="login-hint-open" onClick={openLoginUrl}>
-            {t('loginOpenShort')}
-          </button>
-          <button
-            className={`login-hint-copy${urlCopied ? ' copied' : ''}`}
-            onClick={copyLoginUrl}
-            // static tip: screentips are suppressed from pointerdown until the pointer
-            // leaves the control, so a swapped-in "copied" tip would never show — the
-            // check-mark icon is the visible feedback
-            data-tip={t('loginCopyUrl')}
-            aria-label={urlCopied ? t('loginCopied') : t('loginCopyUrl')}
-          >
-            {urlCopied ? (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="m3.5 8.5 3 3 6-7"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect
-                  x="5.5"
-                  y="5.5"
-                  width="7"
-                  height="7"
-                  rx="1.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                />
-                <path
-                  d="M3.5 10.5V5a1.5 1.5 0 0 1 1.5-1.5h5.5"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            )}
-          </button>
-        </div>
-      )}
       <button
         className="account-btn"
         onClick={handleClick}
         aria-haspopup="dialog"
         aria-expanded={settingsOpen}
-        data-tip={loggedIn && email ? email : t('settings')}
+        data-tip={t('settings')}
         aria-label={t('settings')}
       >
         <span className={`account-avatar${waiting ? ' waiting' : ''}`}>
@@ -557,7 +508,6 @@ function AccountEntry({
         </span>
         <span className="account-text">
           <span className="account-name">{t('settings')}</span>
-          {loggedIn && email && <span className="account-sub">{email}</span>}
         </span>
         <svg
           className="account-chevron"
@@ -1231,6 +1181,11 @@ export function Home() {
         // 既有忙态判定,乐观置忙随后——顺序反了会把首条消息也锁进队列。
         const queued = relayLink.current.enqueue(dockTabId, full)
         relayLink.current.markBusy(dockTabId, true)
+        setRelayBusy((prev) => {
+          const next = new Set(prev)
+          next.add(sessionId)
+          return next
+        })
         if (queued) return true
         dock.relayCommand(dockTabId, relaySendCommand(full))
         return true
@@ -1652,41 +1607,82 @@ export function Home() {
     { ext: 'pdf', title: t('newPdf'), sub: '.pdf', action: handleNewPdf },
   ]
 
-  // ── Sidebar quick actions: 7 icon buttons (6 new + open) in 2-col grid ──
+  // ── Sidebar quick actions: 「新建」collapsible group — 6 new-file rows +
+  //    a divider + open-local, icon + text per row (ZCode 式分组头同款折叠) ──
 
   function renderSideActions() {
     return (
-      <div className="side-action-grid">
-        {NEW_ITEMS.map((item) => (
-          <button
-            key={item.ext}
-            className="side-action-btn"
-            title={`${item.title} (${item.sub})`}
-            onClick={() => void item.action()}
-          >
-            <FileBadge ext={item.ext} size={22} />
-          </button>
-        ))}
-        <button
-          className="side-action-btn"
-          title={t('openLocal')}
-          onClick={() => void window.chatOffice.browse()}
+      <div className={`side-group side-sec-new${layout.newCollapsed ? ' collapsed' : ''}`}>
+        <div
+          className="side-group-head"
+          role="button"
+          tabIndex={0}
+          aria-expanded={!layout.newCollapsed}
+          onClick={() => setHomeLayout({ newCollapsed: !layout.newCollapsed })}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && event.target === event.currentTarget) {
+              setHomeLayout({ newCollapsed: !layout.newCollapsed })
+            }
+          }}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg
+            className={`side-group-arrow${layout.newCollapsed ? ' folded' : ''}`}
+            width="12"
+            height="12"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+          >
             <path
-              d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+              d="M6 3.5L10.5 8L6 12.5"
               stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M9 13h6M12 10v6"
-              stroke="currentColor"
-              strokeWidth="1.5"
+              strokeWidth="1.6"
               strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
             />
           </svg>
-        </button>
+          <span className="side-files-title">{t('secNew')}</span>
+        </div>
+        <div className="side-group-body">
+          <ul className="side-new-list">
+            {NEW_ITEMS.map((item) => (
+              <li key={item.ext}>
+                <button
+                  className="side-new-row"
+                  title={`${item.title} (${item.sub})`}
+                  onClick={() => void item.action()}
+                >
+                  <FileBadge ext={item.ext} size={18} />
+                  <span className="side-new-label">{item.title}</span>
+                </button>
+              </li>
+            ))}
+            <li className="side-new-divider" aria-hidden="true" />
+            <li>
+              <button
+                className="side-new-row"
+                title={t('openLocal')}
+                onClick={() => void window.chatOffice.browse()}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 7a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M9 13h6M12 10v6"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="side-new-label">{t('openLocal')}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     )
   }

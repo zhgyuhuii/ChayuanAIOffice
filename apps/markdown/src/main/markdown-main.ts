@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path'
@@ -35,7 +35,6 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { cloudToolsEnabled, type AiSettings } from '@chatoffice/ai-provider'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
 import { atomicWriteFile } from './atomic-write'
 import {
@@ -737,14 +736,9 @@ function registerMarkdownIpc(): void {
     },
   )
 
-  /** live read: the shell settings pane writes the file; every tool call re-checks */
+  /** ChatOffice cloud backend removed — always false */
   const chatofficeCloudToolsOn = (): boolean => {
-    try {
-      const raw = readFileSync(join(app.getPath('userData'), 'ai-settings.json'), 'utf8')
-      return cloudToolsEnabled(JSON.parse(raw) as Partial<AiSettings>)
-    } catch {
-      return false
-    }
+    return false
   }
 
   // markdown-owned (like docs:ai-generate-image): the shared ai:* handlers are

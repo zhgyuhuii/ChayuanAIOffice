@@ -19,20 +19,6 @@ export const MINIMAX_BASE_URL = 'https://api.minimax.io/v1'
 // models in step with the chat catalog in providers.ts.
 export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
   {
-    id: 'chatoffice',
-    label: 'ChaAI Office',
-    description: 'Image generation, media analysis and search through your ChaAI Office sign-in',
-    keyPlaceholder: 'Not required - sign in to ChaAI Office',
-    defaultBaseUrl: '',
-    imageProtocol: 'openai-images',
-    imageModels: [],
-    defaultImageModel: '',
-    analysisProtocol: 'openai-chat',
-    analysisModels: [],
-    defaultAnalysisModel: '',
-    videoAnalysis: true,
-  },
-  {
     id: 'openai',
     label: 'OpenAI',
     description: 'GPT Image for generation and editing; GPT chat models for image analysis',
@@ -141,6 +127,47 @@ export const AI_MEDIA_PROVIDERS: AiMediaProviderMeta[] = [
     videoAnalysis: false,
   },
   {
+    id: 'pollinations',
+    label: 'Pollinations AI',
+    description: 'Free image generation — no API key required',
+    keyPlaceholder: '',
+    needsKey: false,
+    defaultBaseUrl: 'https://image.pollinations.ai',
+    imageProtocol: 'pollinations',
+    imageModels: ['flux', 'flux-realism', 'flux-anime', 'flux-3d', 'turbo'],
+    defaultImageModel: 'flux',
+    analysisModels: [],
+    defaultAnalysisModel: '',
+    videoAnalysis: false,
+  },
+  {
+    id: 'agnes',
+    label: 'Agnes AI',
+    description: 'Free image generation — no API key required',
+    keyPlaceholder: '',
+    needsKey: false,
+    defaultBaseUrl: 'https://agnes.ai',
+    imageProtocol: 'pollinations',
+    imageModels: ['agnes-v1'],
+    defaultImageModel: 'agnes-v1',
+    analysisModels: [],
+    defaultAnalysisModel: '',
+    videoAnalysis: false,
+  },
+  {
+    id: 'huggingface',
+    label: 'Hugging Face',
+    description: 'Free-tier image generation via Inference API',
+    keyPlaceholder: 'hf_...',
+    defaultBaseUrl: 'https://api-inference.huggingface.co',
+    imageProtocol: 'openai-images',
+    imageModels: ['stabilityai/stable-diffusion-xl-base-1.0', 'black-forest-labs/FLUX.1-schnell'],
+    defaultImageModel: 'black-forest-labs/FLUX.1-schnell',
+    analysisModels: [],
+    defaultAnalysisModel: '',
+    videoAnalysis: false,
+  },
+  {
     id: 'custom',
     label: 'Custom',
     description: 'Any OpenAI-compatible endpoint: /images/generations and /chat/completions',
@@ -183,9 +210,9 @@ export function defaultAiMediaSettings(): AiMediaSettings {
     }
   }
   return {
-    imageProvider: 'chatoffice',
-    analysisProvider: 'chatoffice',
-    videoAnalysisProvider: 'chatoffice',
+    imageProvider: '',
+    analysisProvider: '',
+    videoAnalysisProvider: '',
     providers,
   }
 }
@@ -233,40 +260,40 @@ export function mediaConfigUsable(
 ): boolean {
   if (!config) return false
   if (meta.needsBaseUrl) return !!config.baseUrl
+  if (meta.needsKey === false) return true
   return !!config.apiKey
 }
 
 /**
  * The stored provider for one capability, honored only when it exists, has
- * that capability and is usable; anything else falls back to chatoffice so a
- * half-filled setup degrades to the signed-in default.
+ * that capability and is usable; anything else returns '' (no provider).
  */
 export function activeMediaProvider(
   settings: Pick<AiSettings, 'media'>,
   capability: MediaCapability,
 ): AiMediaProviderId {
   const media = settings.media
-  if (!media) return 'chatoffice'
+  if (!media) return ''
   const id =
     capability === 'image'
       ? media.imageProvider
       : capability === 'video'
         ? media.videoAnalysisProvider
         : media.analysisProvider
-  if (!id || id === 'chatoffice') return 'chatoffice'
+  if (!id) return ''
   const meta = getMediaProviderMeta(id)
-  if (!meta || !providerHasCapability(meta, capability)) return 'chatoffice'
-  if (!mediaConfigUsable(meta, media.providers?.[id])) return 'chatoffice'
+  if (!meta || !providerHasCapability(meta, capability)) return ''
+  if (!mediaConfigUsable(meta, media.providers?.[id])) return ''
   return id
 }
 
-/** the active BYOK config for one capability, or null when it runs through ChatOffice */
+/** the active BYOK config for one capability, or null when none is configured */
 export function activeMediaConfig(
   settings: Pick<AiSettings, 'media'>,
   capability: MediaCapability,
-): { provider: Exclude<AiMediaProviderId, 'chatoffice'>; config: AiMediaProviderConfig } | null {
+): { provider: Exclude<AiMediaProviderId, ''>; config: AiMediaProviderConfig } | null {
   const provider = activeMediaProvider(settings, capability)
-  if (provider === 'chatoffice') return null
+  if (!provider) return null
   return { provider, config: settings.media!.providers[provider] }
 }
 
@@ -283,19 +310,18 @@ function byokModel(
 }
 
 function capabilityAvailable(
-  settings: Pick<AiSettings, 'media' | 'chatofficeToolsEnabled'> | null | undefined,
-  gskLoggedIn: boolean,
+  settings: Pick<AiSettings, 'media'> | null | undefined,
+  _gskLoggedIn: boolean,
   capability: MediaCapability,
 ): boolean {
-  if (!settings) return gskLoggedIn
+  if (!settings) return false
   const model = byokModel(settings, capability)
-  if (model !== null) return model !== ''
-  return gskLoggedIn && settings.chatofficeToolsEnabled !== false
+  return model !== null && model !== ''
 }
 
-/** live predicate for the generate_image tool: BYOK image model configured, or gsk login + cloud tools on */
+/** live predicate for the generate_image tool: BYOK image model configured */
 export function imageGenerationAvailable(
-  settings: Pick<AiSettings, 'media' | 'chatofficeToolsEnabled'> | null | undefined,
+  settings: Pick<AiSettings, 'media'> | null | undefined,
   gskLoggedIn: boolean,
 ): boolean {
   return capabilityAvailable(settings, gskLoggedIn, 'image')
@@ -303,7 +329,7 @@ export function imageGenerationAvailable(
 
 /** live predicate for the analyze_media tool: image analysis or video analysis reachable */
 export function mediaAnalysisAvailable(
-  settings: Pick<AiSettings, 'media' | 'chatofficeToolsEnabled'> | null | undefined,
+  settings: Pick<AiSettings, 'media'> | null | undefined,
   gskLoggedIn: boolean,
 ): boolean {
   return (
@@ -313,7 +339,7 @@ export function mediaAnalysisAvailable(
 }
 
 export function videoAnalysisAvailable(
-  settings: Pick<AiSettings, 'media' | 'chatofficeToolsEnabled'> | null | undefined,
+  settings: Pick<AiSettings, 'media'> | null | undefined,
   gskLoggedIn: boolean,
 ): boolean {
   return capabilityAvailable(settings, gskLoggedIn, 'video')

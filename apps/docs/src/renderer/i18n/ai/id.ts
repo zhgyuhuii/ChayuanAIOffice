@@ -50,6 +50,7 @@ export const id = {
   aiSumReadRevisions: 'Membaca revisi',
   aiSumReplyComment: 'Membalas komentar',
   aiSumResolveComment: 'Menyelesaikan komentar',
+  aiSumAddComment: 'Menambahkan komentar',
   aiTidyBtn: 'Format AI',
   aiTidyPrompt:
     'Rapikan format seluruh dokumen, misalnya perbaiki level judul, seragamkan format daftar, hapus cetak tebal/miring yang tidak perlu, dan samakan indentasi paragraf. Ubah format saja, jangan mengubah teks apa pun',

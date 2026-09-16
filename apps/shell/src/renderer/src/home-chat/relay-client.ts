@@ -139,6 +139,13 @@ export function applyRelayEvent(
 ): HomeChatMessage[] {
   switch (event.type) {
     case 'turn-started': {
+      const last = messages[messages.length - 1]
+      if (last?.role === 'assistant' && !last.text && !last.relayTurnId) {
+        return [
+          ...messages.slice(0, -1),
+          { ...last, id: `relay-${event.turnId}`, relayTurnId: event.turnId },
+        ]
+      }
       const placeholder: HomeChatMessage = {
         id: `relay-${event.turnId}`,
         role: 'assistant',

@@ -229,9 +229,6 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
         profiles: next.profiles.filter((p) => p.auth === 'chatoffice-login'),
         ...(next.currentModel ? { currentModel: next.currentModel } : {}),
         ...(next.imageModel ? { imageModel: next.imageModel } : {}),
-        ...(next.chatofficeToolsEnabled !== undefined
-          ? { chatofficeToolsEnabled: next.chatofficeToolsEnabled }
-          : {}),
       }
       const current = await readProfiles().catch(() => [] as AiProviderProfile[])
       const currentByVendor = new Map(current.map((p) => [p.vendorId ?? p.id, p]))

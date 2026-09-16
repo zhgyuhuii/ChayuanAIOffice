@@ -2875,6 +2875,7 @@ body.sidebar-resizing {
 /* ---- chat stage (right pane: the conversational window) ---- */
 
 .chat-stage {
+  position: relative; /* 二维码放大层 absolute 锚点 */
   flex: 1;
   min-width: 0;
   display: flex;
@@ -3651,6 +3652,111 @@ body.sidebar-resizing {
   }
 }
 
+/* AiTypingIndicator (shared with editor chat panels) */
+.ai-typing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.ai-typing-label {
+  display: inline-block;
+  position: relative;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--icon-muted);
+  -webkit-text-fill-color: transparent;
+  background: var(--icon-muted)
+    linear-gradient(
+      to left,
+      var(--icon-muted),
+      var(--text-secondary) 50%,
+      var(--icon-muted)
+    );
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-repeat: no-repeat;
+  background-size: 70% 100%;
+  animation: ai-thinking-shimmer 1.2s infinite alternate linear;
+}
+
+.ai-typing-elapsed {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes ai-thinking-shimmer {
+  0% {
+    background-position: -100% top;
+  }
+  100% {
+    background-position: 250% top;
+  }
+}
+
+.ai-typing-dots {
+  height: 12px;
+  display: flex;
+  gap: 2px;
+}
+
+.ai-typing-dot-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 12px;
+}
+
+.ai-typing-dot-grow,
+.ai-typing-dot-shrink {
+  background: var(--icon-muted);
+  border-radius: 50%;
+}
+
+.ai-typing-dot-grow {
+  animation: ai-dot-grow 2s infinite;
+}
+
+.ai-typing-dot-shrink {
+  animation: ai-dot-shrink 2s infinite;
+}
+
+@keyframes ai-dot-grow {
+  0%,
+  100% {
+    width: 4px;
+    height: 4px;
+    opacity: 0.45;
+  }
+  50% {
+    width: 12px;
+    height: 12px;
+    opacity: 1;
+  }
+}
+
+@keyframes ai-dot-shrink {
+  0%,
+  100% {
+    width: 12px;
+    height: 12px;
+    opacity: 1;
+  }
+  50% {
+    width: 4px;
+    height: 4px;
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-typing-label {
+    animation: none;
+  }
+}
+
 /* landing (fresh chat) */
 
 .chat-landing {
@@ -3679,6 +3785,73 @@ body.sidebar-resizing {
   font-size: 15px;
   font-weight: 500;
   color: var(--text-tertiary);
+}
+
+/* enterprise footer: landing-only, under the composer */
+.chat-landing-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px 14px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.chat-footer-dot {
+  margin: 0 6px;
+}
+
+.chat-footer-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-footer-link:hover {
+  color: var(--text);
+}
+
+.chat-footer-qr {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  flex-shrink: 0;
+}
+
+.chat-footer-qr img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+}
+
+/* QR lightbox: absolute inside .chat-stage (shell DOM paints under editor
+   WebContentsViews, so a fixed overlay would be covered by a docked document) */
+.chat-qr-zoom {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay);
+  cursor: zoom-out;
+}
+
+.chat-qr-zoom img {
+  width: 260px;
+  height: 260px;
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 10px;
 }
 
 /* composer */
@@ -4090,29 +4263,51 @@ body.sidebar-resizing {
 
 /* ═══ 侧栏重构（37 家族期）：发射器图标网格 / 分区头统一 / 单色行 / 省略号 ═══ */
 
-/* ── 发射器：6 新建 + 打开 = 7 图标,2 列网格 ── */
-.side-action-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 4px 8px 10px;
+/* ── 发射器：「新建」可折叠分组——6 新建 + 分隔线 + 打开本地，整行 图标+文字 ── */
+.side-sec-new {
+  flex: none;
+  padding: 4px 0 2px;
 }
-.side-action-btn {
+.side-new-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 8px 6px;
+  display: flex;
+  flex-direction: column;
+}
+.side-new-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 38px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  gap: 9px;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 7px;
   background: transparent;
+  font: inherit;
+  font-size: 12.5px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
 }
-.side-action-btn:hover {
-  background: var(--surface-subtle);
+.side-new-row:hover {
+  background: var(--bg-hover);
   color: var(--text);
-  border-color: var(--border-hover, #ccc);
+}
+.side-new-row img,
+.side-new-row svg {
+  flex-shrink: 0;
+}
+.side-new-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side-new-divider {
+  height: 1px;
+  margin: 4px 10px;
+  background: var(--border);
 }
 
 /* ── 分区头统一规格：11px 灰字 · count 右对齐 · hover 显操作 ── */

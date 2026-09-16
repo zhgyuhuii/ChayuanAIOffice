@@ -6,7 +6,6 @@ import {
   MIN_MAX_OUTPUT_TOKENS,
   activeProvider,
   clampMaxOutputTokens,
-  cloudToolsEnabled,
   defaultAiSettings,
   maxOutputTokensOf,
   resolveAiSettings,
@@ -316,20 +315,5 @@ describe('activeProvider', () => {
     const settings = defaultAiSettings()
     settings.provider = 'chatoffice'
     expect(activeProvider(settings)).toBe('chatoffice')
-  })
-})
-
-describe('chatofficeToolsEnabled', () => {
-  it('defaults on, survives resolveAiSettings, and only an explicit false turns it off', () => {
-    expect(cloudToolsEnabled(defaultAiSettings())).toBe(true)
-    // pre-toggle settings file (field absent) stays on
-    const legacy = resolveAiSettings({ providers: {} as never }, defaultAiSettings())
-    expect(cloudToolsEnabled(legacy)).toBe(true)
-    const off = resolveAiSettings(
-      { providers: {} as never, chatofficeToolsEnabled: false },
-      defaultAiSettings(),
-    )
-    expect(off.chatofficeToolsEnabled).toBe(false)
-    expect(cloudToolsEnabled(off)).toBe(false)
   })
 })

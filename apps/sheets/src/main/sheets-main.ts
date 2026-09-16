@@ -65,13 +65,10 @@ import { createI18n, getUiLang, type Lang, normalizeLang, setUiLang } from '@cha
 import { ProjectStore } from '@chatoffice/project-store'
 
 import {
-  cloudToolsEnabled,
   isAiOverloadedError,
-  migrateSettingsV2,
   setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
-  type StoredAiSettings,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
@@ -1861,27 +1858,11 @@ function pendingRecoveryFor(filePath: string): string | null {
   }
 }
 
-function readJson<T>(path: string, fallback: T): T {
-  try {
-    if (existsSync(path)) return JSON.parse(readFileSync(path, 'utf-8')) as T
-  } catch {
-    /* corrupted state file: fall back to defaults */
-  }
-  return fallback
-}
-
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
-/** live read: the shell settings pane writes the file; every tool call re-checks */
+/** ChatOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
-  try {
-    return cloudToolsEnabled({
-      chatofficeToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
-        .chatofficeToolsEnabled,
-    })
-  } catch {
-    return true
-  }
+  return false
 }
 
 /** v2 AI runtime, created by registerSheetsAiIpc and reused by per-app channels */

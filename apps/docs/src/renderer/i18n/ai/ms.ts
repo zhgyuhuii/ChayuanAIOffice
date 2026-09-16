@@ -50,6 +50,7 @@ export const ms = {
   aiSumReadRevisions: 'Membaca semakan',
   aiSumReplyComment: 'Membalas komen',
   aiSumResolveComment: 'Menyelesaikan komen',
+  aiSumAddComment: 'Menambah komen',
   aiTidyBtn: 'Format AI',
   aiTidyPrompt:
     'Kemaskan format keseluruhan dokumen, contohnya betulkan tahap tajuk, seragamkan format senarai, buang huruf tebal/condong yang tidak perlu, dan selaraskan inden perenggan. Laraskan format sahaja, jangan ubah sebarang teks',

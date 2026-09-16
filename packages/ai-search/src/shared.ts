@@ -21,7 +21,7 @@ export interface ImageSearchResult {
 
 /** one tier of the image-search fallback chain, for the dialog's diagnostics */
 export interface SearchAttempt {
-  backend: 'chatoffice' | 'serper' | 'bing' | 'openverse'
+  backend: 'serper' | 'tavily' | 'linkup' | 'searxng' | 'duckduckgo' | 'bing' | 'openverse'
   status: 'skipped' | 'ok' | 'error'
   /** skip reason (not configured / turned off) or the error message */
   detail?: string

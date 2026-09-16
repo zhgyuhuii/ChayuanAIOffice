@@ -51,6 +51,7 @@ export const nl = {
   aiSumReadRevisions: 'Wijzigingen gelezen',
   aiSumReplyComment: 'Geantwoord op opmerking',
   aiSumResolveComment: 'Opmerking opgelost',
+  aiSumAddComment: 'Opmerking toegevoegd',
   aiTidyBtn: 'AI-opmaak',
   aiTidyPrompt:
     'Ruim de opmaak van het hele document op — bijvoorbeeld kopniveaus corrigeren, lijsten uniform maken, overbodige vet- en cursiefopmaak verwijderen en alinea-inspringingen consistent maken. Pas alleen de opmaak aan, verander de tekst niet',

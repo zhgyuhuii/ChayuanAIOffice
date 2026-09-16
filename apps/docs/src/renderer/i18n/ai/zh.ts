@@ -48,6 +48,7 @@ export const zh = {
   aiSumReadRevisions: '读取修订',
   aiSumReplyComment: '回复批注',
   aiSumResolveComment: '解决批注',
+  aiSumAddComment: '添加批注',
   aiTidyBtn: 'AI 排版',
   aiTidyPrompt:
     '整理全文排版,例如修正标题层级、统一列表格式、去除多余的加粗和斜体、为正文补齐首行缩进等;只调整格式,不要改动任何文字内容',

@@ -60,6 +60,8 @@ export interface DocAssistant {
   temperature?: number
   /** legacy: the wps assistant tolerated an empty input */
   inputOptional?: boolean
+  /** media assistants (core pack): routes build-instruction to generate_image */
+  mediaKind?: 'image' | 'video'
   /** 报告生成 assistants (migrated wps report presets) */
   report?: DocAssistantReport
 }

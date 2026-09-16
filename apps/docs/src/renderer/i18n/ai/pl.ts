@@ -50,6 +50,7 @@ export const pl = {
   aiSumReadRevisions: 'Odczyt zmian',
   aiSumReplyComment: 'Odpowiedź na komentarz',
   aiSumResolveComment: 'Komentarz rozwiązany',
+  aiSumAddComment: 'Komentarz dodany',
   aiTidyBtn: 'Formatowanie AI',
   aiTidyPrompt:
     'Uporządkuj formatowanie całego dokumentu — na przykład popraw poziomy nagłówków, ujednolić listy, usuń zbędne pogrubienia i kursywę, wyrównaj wcięcia akapitów. Zmieniaj tylko formatowanie, nie zmieniając tekstu',

@@ -25,7 +25,7 @@ function settingsFile(dir: string, settings: Record<string, unknown>): string {
 }
 
 describe('chatoffice capabilities', () => {
-  it('reports nothing configured when signed out with default settings', async () => {
+  it('falls back to keyless web search even when signed out with default settings', async () => {
     const dir = tempDir()
     const r = await run(['capabilities', '--json'], {
       env: {
@@ -36,8 +36,8 @@ describe('chatoffice capabilities', () => {
     })
     expect(r.code).toBe(0)
     const d = r.json().detail
-    expect(d.search.available).toBe(false)
-    expect(d.image_search.available).toBe(false)
+    expect(d.search.available).toBe(true)
+    expect(d.image_search.available).toBe(true)
     expect(d.image_generation.available).toBe(false)
     expect(d.media_analysis.available).toBe(false)
   })

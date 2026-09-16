@@ -39,7 +39,7 @@ export interface AnalyzeMediaInput {
   requirements: string
 }
 
-export type ByokMediaProviderId = Exclude<AiMediaProviderId, 'chatoffice'>
+export type ByokMediaProviderId = Exclude<AiMediaProviderId, ''>
 
 /** image generation can take minutes on the large models */
 const GENERATE_TIMEOUT_MS = 600_000
@@ -657,6 +657,8 @@ export async function generateImageWithProvider(
       return generateImageMinimax(config, model, input, guard)
     case 'openai-images':
       return generateImageOpenAi(provider, config, model, input, guard)
+    default:
+      throw new Error(`${meta.label}: image protocol '${meta.imageProtocol}' is not implemented`)
   }
 }
 

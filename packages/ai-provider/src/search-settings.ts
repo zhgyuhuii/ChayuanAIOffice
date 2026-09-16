@@ -7,17 +7,74 @@ import type {
 
 export const AI_SEARCH_PROVIDERS: AiSearchProviderMeta[] = [
   {
-    id: 'chatoffice',
-    label: 'ChaAI Office',
-    keyPlaceholder: 'Not required - sign in to ChaAI Office',
+    id: 'serper',
+    label: 'Serper',
+    keyPlaceholder: 'Serper API key',
     imageSearch: true,
+    needsKey: true,
   },
-  { id: 'serper', label: 'Serper', keyPlaceholder: 'Serper API key', imageSearch: true },
-  { id: 'tavily', label: 'Tavily', keyPlaceholder: 'tvly-...', imageSearch: false },
+  {
+    id: 'tavily',
+    label: 'Tavily',
+    keyPlaceholder: 'tvly-...',
+    imageSearch: false,
+    needsKey: true,
+  },
+  {
+    id: 'linkup',
+    label: 'Linkup',
+    keyPlaceholder: 'Linkup API key',
+    imageSearch: false,
+    needsKey: true,
+  },
+  {
+    id: 'searxng',
+    label: 'SearxNG',
+    keyPlaceholder: 'https://your-searxng.example.com',
+    imageSearch: false,
+    needsKey: true,
+  },
+  {
+    id: 'duckduckgo',
+    label: 'DuckDuckGo',
+    keyPlaceholder: '',
+    imageSearch: true,
+    needsKey: false,
+  },
+  {
+    id: 'bing',
+    label: 'Bing',
+    keyPlaceholder: '',
+    imageSearch: true,
+    needsKey: false,
+  },
+  {
+    id: 'openverse',
+    label: 'Openverse (CC)',
+    keyPlaceholder: '',
+    imageSearch: true,
+    needsKey: false,
+  },
 ]
 
+/** providers usable for web search */
+export const WEB_SEARCH_PROVIDERS = AI_SEARCH_PROVIDERS.filter((p) => p.id !== 'openverse')
+
+/** providers usable for image search */
+export const IMAGE_SEARCH_PROVIDERS = AI_SEARCH_PROVIDERS.filter((p) => p.imageSearch)
+
+/** default web-search provider (first free one) */
+export const DEFAULT_WEB_SEARCH_PROVIDER: AiSearchProviderId = 'duckduckgo'
+
+/** default image-search provider (first free one with image support) */
+export const DEFAULT_IMAGE_SEARCH_PROVIDER: AiSearchProviderId = 'bing'
+
+/** providers that require an API key */
+type KeyedSearchProviderId = 'serper' | 'tavily' | 'linkup' | 'searxng'
+const KEYED_PROVIDERS: KeyedSearchProviderId[] = ['serper', 'tavily', 'linkup', 'searxng']
+
 export function defaultAiSearchSettings(): AiSearchSettings {
-  return { provider: 'chatoffice', providers: { serper: { apiKey: '' }, tavily: { apiKey: '' } } }
+  return { provider: 'duckduckgo', providers: {} }
 }
 
 export function resolveAiSearchSettings(
@@ -26,17 +83,26 @@ export function resolveAiSearchSettings(
   const defaults = defaultAiSearchSettings()
   if (!stored) return defaults
   const providers = { ...defaults.providers }
-  for (const id of ['serper', 'tavily'] as const) {
+  for (const id of KEYED_PROVIDERS) {
     const key = stored.providers?.[id]?.apiKey
-    if (typeof key === 'string') providers[id] = { apiKey: key.trim() }
+    if (typeof key === 'string') {
+      ;(providers as Record<string, { apiKey: string }>)[id] = { apiKey: key.trim() }
+    }
   }
-  return { provider: stored.provider ?? defaults.provider, providers }
+  const provider = stored.provider ?? defaults.provider
+  if (!AI_SEARCH_PROVIDERS.some((m) => m.id === provider)) return defaults
+  return { provider: provider as AiSearchProviderId, providers }
 }
 
-/** the stored search provider, honored only with a key; otherwise chatoffice (gsk + free chain) */
+/** the stored search provider, honored when it exists; otherwise the default free provider */
 export function activeSearchProvider(settings: Pick<AiSettings, 'search'>): AiSearchProviderId {
   const search = settings.search
-  if (!search || search.provider === 'chatoffice') return 'chatoffice'
-  if (!AI_SEARCH_PROVIDERS.some((m) => m.id === search.provider)) return 'chatoffice'
-  return search.providers?.[search.provider]?.apiKey ? search.provider : 'chatoffice'
+  if (!search) return DEFAULT_WEB_SEARCH_PROVIDER
+  if (!AI_SEARCH_PROVIDERS.some((m) => m.id === search.provider)) return DEFAULT_WEB_SEARCH_PROVIDER
+  const meta = AI_SEARCH_PROVIDERS.find((m) => m.id === search.provider)!
+  if (meta.needsKey) {
+    const providers = search.providers as Record<string, { apiKey?: string }> | undefined
+    return providers?.[search.provider]?.apiKey ? search.provider : DEFAULT_WEB_SEARCH_PROVIDER
+  }
+  return search.provider
 }

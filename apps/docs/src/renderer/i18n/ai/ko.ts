@@ -49,6 +49,7 @@ export const ko = {
   aiSumReadRevisions: '변경 내용 읽기',
   aiSumReplyComment: '메모에 회신',
   aiSumResolveComment: '메모 해결',
+  aiSumAddComment: '메모 추가',
   aiTidyBtn: 'AI 서식 정리',
   aiTidyPrompt:
     '문서 전체 서식을 정리해 주세요. 예를 들어 제목 수준 수정, 목록 형식 통일, 불필요한 굵게/기울임 제거, 본문 단락 들여쓰기 정리 등. 서식만 조정하고 본문 텍스트는 절대 변경하지 마세요',

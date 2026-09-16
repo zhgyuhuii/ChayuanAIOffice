@@ -20,16 +20,13 @@ import {
 import { mkdir, readFile, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
-  cloudToolsEnabled,
   inferModelType,
-  migrateSettingsV2,
   modelAcceptsImages,
   resolveDefaultModel,
   runMediaJob,
   setAiUserAgent,
   setRescueFetch,
   type AiRuntime,
-  type StoredAiSettings,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
@@ -57,16 +54,9 @@ import { pushHistory, rebuildSlide, scheduleHistoryNotify, sessions } from './se
 
 const AI_SETTINGS_PATH = () => join(app.getPath('userData'), 'ai-settings.json')
 
-/** live read: the shell settings pane writes the file; every tool call re-checks */
+/** ChatOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
-  try {
-    return cloudToolsEnabled({
-      chatofficeToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(AI_SETTINGS_PATH(), {}))
-        .chatofficeToolsEnabled,
-    })
-  } catch {
-    return true
-  }
+  return false
 }
 
 /** v2 AI runtime, created by registerAiIpc and reused by the slides-only channels */

@@ -17,6 +17,13 @@ export interface TabsApi {
   activate(id: string): Promise<void>
   close(id: string): Promise<void>
   /**
+   * pop up the native tab context menu (close / close others / close left /
+   * close right / close all) at (x, y) in window CSS coordinates for the
+   * given tab. Native because the content area below the strip is a
+   * WebContentsView that would cover any DOM dropdown.
+   */
+  showTabContextMenu(x: number, y: number, tabId: string): Promise<void>
+  /**
    * pop up the native "all tabs" list menu at (x, y) in window CSS coordinates.
    * Native because the content area below the strip is a WebContentsView that
    * would cover any DOM dropdown rendered by the shell.
@@ -71,6 +78,7 @@ export const TABS_CHANNELS = {
   list: 'tabs:list',
   activate: 'tabs:activate',
   close: 'tabs:close',
+  showTabContextMenu: 'tabs:show-tab-context-menu',
   showMenu: 'tabs:show-menu',
   showNewMenu: 'tabs:show-new-menu',
   showAppMenu: 'tabs:show-app-menu',

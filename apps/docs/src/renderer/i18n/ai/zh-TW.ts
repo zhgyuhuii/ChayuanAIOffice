@@ -48,6 +48,7 @@ export const zhTW = {
   aiSumReadRevisions: '讀取修訂',
   aiSumReplyComment: '回覆註解',
   aiSumResolveComment: '解決註解',
+  aiSumAddComment: '新增註解',
   aiTidyBtn: 'AI 排版',
   aiTidyPrompt:
     '整理全文排版,例如修正標題層級、統一列表格式、移除多餘的粗體和斜體、為內文補齊首行縮排等;只調整格式,不要改動任何文字內容',

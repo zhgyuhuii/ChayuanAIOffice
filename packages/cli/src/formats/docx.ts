@@ -429,6 +429,7 @@ function commentsAccess(doc: OpenDocument): {
   list(): CommentInfo[]
   reply(parentId: string, text: string): boolean
   resolve(id: string): boolean
+  create(text: string, from: number, to: number): boolean
 } {
   const { side } = doc
   return {
@@ -446,6 +447,16 @@ function commentsAccess(doc: OpenDocument): {
       side.comments = side.comments.map((c) =>
         c.id === id || c.parentId === id ? { ...c, done: true } : c,
       )
+      side.commentsDirty = true
+      return true
+    },
+    create: (text, from, to) => {
+      if (from >= to) return false
+      const id = doc.mods.comments.nextCommentId(side.comments)
+      doc.editor.commands.setTextSelection({ from, to })
+      if (!doc.mods.comments.addCommentToSelection(doc.editor, id)) return false
+      const date = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+      side.comments.push({ id, author: CLI_COMMENT_AUTHOR, date, text })
       side.commentsDirty = true
       return true
     },

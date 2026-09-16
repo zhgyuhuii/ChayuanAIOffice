@@ -40,9 +40,9 @@ function openaiSettings(apiKey = 'sk-test', imageModel = 'gpt-image-2'): AiSetti
 describe('media settings', () => {
   it('defaults every provider to its default models and chatoffice as the active one', () => {
     const media = defaultAiMediaSettings()
-    expect(media.imageProvider).toBe('chatoffice')
-    expect(media.analysisProvider).toBe('chatoffice')
-    expect(media.videoAnalysisProvider).toBe('chatoffice')
+    expect(media.imageProvider).toBe('')
+    expect(media.analysisProvider).toBe('')
+    expect(media.videoAnalysisProvider).toBe('')
     for (const meta of AI_MEDIA_PROVIDERS) {
       expect(media.providers[meta.id].imageModel).toBe(meta.defaultImageModel)
       expect(media.providers[meta.id].apiKey).toBe('')
@@ -53,7 +53,7 @@ describe('media settings', () => {
 
   it('is carried by defaultAiSettings and healed in from a pre-media settings file', () => {
     const defaults = defaultAiSettings()
-    expect(defaults.media?.imageProvider).toBe('chatoffice')
+    expect(defaults.media?.imageProvider).toBe('')
     const resolved = resolveAiSettings(
       { provider: 'chatoffice', providers: defaults.providers },
       defaultAiSettings(),
@@ -95,42 +95,40 @@ describe('media settings', () => {
   it('activates a BYOK media provider per capability, only when usable and capable', () => {
     expect(activeMediaProvider(openaiSettings(), 'image')).toBe('openai')
     expect(activeMediaProvider(openaiSettings(), 'analysis')).toBe('openai')
-    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('chatoffice')
+    expect(activeMediaProvider(openaiSettings(''), 'image')).toBe('')
     const custom = defaultAiMediaSettings()
     custom.imageProvider = 'custom'
-    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(custom), 'image')).toBe('')
     custom.providers.custom.baseUrl = 'http://localhost:1234/v1'
     expect(activeMediaProvider(withMedia(custom), 'image')).toBe('custom')
-    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(custom), 'analysis')).toBe('')
     expect(activeMediaConfig(withMedia(custom), 'image')?.provider).toBe('custom')
     // MiniMax has no analysis endpoint: picking it for analysis falls back
     const mm = defaultAiMediaSettings()
     mm.analysisProvider = 'minimax'
     mm.providers.minimax.apiKey = 'k'
-    expect(activeMediaProvider(withMedia(mm), 'analysis')).toBe('chatoffice')
+    expect(activeMediaProvider(withMedia(mm), 'analysis')).toBe('')
     // OpenAI reads images but not video: as the video provider it falls back
     const oa = openaiSettings()
     oa.media!.videoAnalysisProvider = 'openai'
-    expect(activeMediaProvider(oa, 'video')).toBe('chatoffice')
+    expect(activeMediaProvider(oa, 'video')).toBe('')
     oa.media!.videoAnalysisProvider = 'gemini'
     oa.media!.providers.gemini.apiKey = 'AIza'
     expect(activeMediaProvider(oa, 'video')).toBe('gemini')
-    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('chatoffice')
+    expect(activeMediaProvider({ media: undefined }, 'image')).toBe('')
     expect(
       activeMediaProvider({ media: { imageProvider: 'nope', providers: {} } as never }, 'image'),
-    ).toBe('chatoffice')
+    ).toBe('')
   })
 
-  it('gates the tools on gsk login + toggle without BYOK, and on the BYOK model with it', () => {
+  it('gates the tools on BYOK model presence (no ChatOffice backend)', () => {
     const chatoffice = defaultAiSettings()
-    expect(imageGenerationAvailable(chatoffice, true)).toBe(true)
+    expect(imageGenerationAvailable(chatoffice, true)).toBe(false)
     expect(imageGenerationAvailable(chatoffice, false)).toBe(false)
-    expect(imageGenerationAvailable({ ...chatoffice, chatofficeToolsEnabled: false }, true)).toBe(false)
-    expect(mediaAnalysisAvailable({ ...chatoffice, chatofficeToolsEnabled: false }, true)).toBe(false)
 
     const byok = openaiSettings()
     expect(imageGenerationAvailable(byok, false)).toBe(true)
-    expect(imageGenerationAvailable({ ...byok, chatofficeToolsEnabled: false }, false)).toBe(true)
+    expect(imageGenerationAvailable(byok, true)).toBe(true)
     expect(mediaAnalysisAvailable(byok, false)).toBe(true)
     // built-in vendors fall back to their default model; a custom endpoint
     // without a model for one capability disables that tool alone
@@ -148,7 +146,7 @@ describe('media settings', () => {
     }
     expect(mediaAnalysisAvailable(withMedia(custom), false)).toBe(false)
     expect(imageGenerationAvailable(withMedia(custom), false)).toBe(true)
-    expect(imageGenerationAvailable(null, true)).toBe(true)
+    expect(imageGenerationAvailable(null, true)).toBe(false)
   })
 })
 

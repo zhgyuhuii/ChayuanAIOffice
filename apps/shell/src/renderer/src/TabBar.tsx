@@ -9,6 +9,7 @@ import tabIconPptx from './assets/file-pptx.png'
 import tabIconMd from './assets/file-md.png'
 import tabIconPdf from './assets/file-pdf.png'
 import tabIconHtml from './assets/file-html.png'
+import tabIconLogo from './assets/logo.png'
 
 declare global {
   interface Window {
@@ -121,24 +122,8 @@ function PdfIcon() {
 const IS_MAC = navigator.platform.toLowerCase().includes('mac')
 
 function HomeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M9.06163 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06163 4.82633Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 16.0011H12.0105"
-        stroke="currentColor"
-        strokeWidth="2.57143"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+  // 首页 tab = 品牌位：产品 logo（名称在 tab 标题处按语言取 brandName）
+  return <img src={tabIconLogo} style={{ height: 16, width: 'auto' }} alt="" aria-hidden="true" />
 }
 
 function SlideIcon() {
@@ -439,11 +424,21 @@ export function TabBar() {
               onPointerUp={(event) => finishDrag(event.pointerId, true)}
               onPointerCancel={(event) => finishDrag(event.pointerId, false)}
               onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
+              onContextMenu={(event) => {
+                event.preventDefault()
+                void window.chatOfficeTabs.showTabContextMenu(
+                  Math.round(event.clientX),
+                  Math.round(event.clientY),
+                  tab.id,
+                )
+              }}
             >
               {/* highlight plate behind the content — hover capsule / active white body */}
               <span className="tab-plate" aria-hidden="true" />
               <span className="tab-icon">{KIND_ICON[tab.kind]}</span>
-              <span className="tab-title">{tab.title}</span>
+              <span className="tab-title">
+                {tab.kind === 'home' ? t('brandName') : tab.title}
+              </span>
               {tab.docked && <span className="tab-docked-dot" aria-hidden="true" />}
               {tab.closable && (
                 <button

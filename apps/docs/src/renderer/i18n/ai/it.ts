@@ -52,6 +52,7 @@ export const it = {
   aiSumReadRevisions: 'Lettura revisioni',
   aiSumReplyComment: 'Risposta al commento',
   aiSumResolveComment: 'Commento risolto',
+  aiSumAddComment: 'Commento aggiunto',
   aiTidyBtn: 'Formattazione IA',
   aiTidyPrompt:
     'Sistema la formattazione di tutto il documento — ad esempio correggi i livelli dei titoli, uniforma gli elenchi, rimuovi grassetti e corsivi superflui e uniforma i rientri dei paragrafi. Modifica solo la formattazione, senza cambiare il testo',

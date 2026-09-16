@@ -77,19 +77,30 @@ export interface AiSettingsV2 {
   imageModel?: AiModelSelection
   /** per-purpose default picks for the non-chat kinds (tts/asr/video/embedding); absent entry = auto */
   modelDefaults?: Record<string, AiModelSelection>
-  /** chatoffice cloud tools toggle (search backends); default on */
-  chatofficeToolsEnabled?: boolean
   /**
    * Per-turn output-token cap across all profiles (upstream f105f36; absent =
    * the per-vendor default). Clamped to [MIN,MAX]_MAX_OUTPUT_TOKENS on read.
    */
   maxOutputTokens?: number
-  /** stock-photo library API keys (Pexels/Pixabay) for the insert-image dialog */
-  stockApiKeys?: { pexels?: string; pixabay?: string }
-  /** web-search service API keys (Serper) — settings-first, env var as fallback */
-  searchApiKeys?: { serper?: string }
+  /** active web-search provider; absent = first keyless or keyed provider */
+  webSearchProvider?: AiSearchProviderId
+  /** active image-search provider; absent = first keyless or keyed provider */
+  imageSearchProvider?: AiSearchProviderId
+  /** API keys for search services (Serper / Tavily / Linkup) and SearxNG base URL */
+  searchApiKeys?: {
+    serper?: string
+    tavily?: string
+    linkup?: string
+    searxngBaseUrl?: string
+  }
+  /** stock-photo library API keys for the insert-image dialog */
+  stockApiKeys?: { pexels?: string; pixabay?: string; unsplash?: string; wikimedia?: string }
   /** deck/document imagery source default; per-run UI overrides write back here (last-use-wins) */
   imageSource?: AiImageSource
+  /** media (generate_image / analyze_media) provider settings; nested v1 shape for tool compatibility */
+  media?: AiMediaSettings
+  /** web/image search backend settings; nested v1 shape for tool compatibility */
+  search?: AiSearchSettings
 }
 
 /** a v2 stream request carries only the selection — the backend owning the settings resolves the secret */
@@ -137,10 +148,21 @@ export interface AiProviderMeta {
 
 /** Image generation / media analysis backends (separate from the chat provider) */
 export type AiMediaProviderId =
-  'chatoffice' | 'openai' | 'gemini' | 'doubao' | 'glm' | 'xai' | 'qwen' | 'minimax' | 'custom'
+  | ''
+  | 'openai'
+  | 'gemini'
+  | 'doubao'
+  | 'glm'
+  | 'xai'
+  | 'qwen'
+  | 'minimax'
+  | 'pollinations'
+  | 'agnes'
+  | 'huggingface'
+  | 'custom'
 
 /** wire shape of the image endpoint */
-export type AiImageProtocol = 'openai-images' | 'gemini' | 'dashscope' | 'minimax'
+export type AiImageProtocol = 'openai-images' | 'gemini' | 'dashscope' | 'minimax' | 'pollinations'
 /** wire shape of the understanding endpoint */
 export type AiAnalysisProtocol = 'openai-chat' | 'gemini'
 
@@ -161,7 +183,9 @@ export interface AiMediaProviderMeta {
   description: string
   keyPlaceholder: string
   needsBaseUrl?: boolean
-  /** '' for chatoffice (CLI login) and custom (user-supplied) */
+  /** the provider requires an API key to be usable; free/keyless providers set this to false */
+  needsKey?: boolean
+  /** '' for custom (user-supplied) and pollinations (keyless) */
   defaultBaseUrl: string
   /** absent = the provider does not generate images */
   imageProtocol?: AiImageProtocol
@@ -187,20 +211,29 @@ export interface AiMediaSettings {
   provider?: AiMediaProviderId | undefined
 }
 
-/** web/image search backends: ChatOffice (gsk) or a user key for Serper / Tavily */
-export type AiSearchProviderId = 'chatoffice' | 'serper' | 'tavily'
+/** web/image search backends — each configurable independently for web vs image search */
+export type AiSearchProviderId =
+  | 'serper'
+  | 'tavily'
+  | 'duckduckgo'
+  | 'bing'
+  | 'openverse'
+  | 'linkup'
+  | 'searxng'
 
 export interface AiSearchProviderMeta {
   id: AiSearchProviderId
   label: string
   keyPlaceholder: string
-  /** the backend also serves image search (otherwise image search falls back to free sources) */
+  /** the backend can serve image search (otherwise it is web-search only) */
   imageSearch: boolean
+  /** an API key / base URL is required to use this backend */
+  needsKey: boolean
 }
 
 export interface AiSearchSettings {
   provider: AiSearchProviderId
-  providers: Record<Exclude<AiSearchProviderId, 'chatoffice'>, { apiKey: string }>
+  providers: Partial<Record<Exclude<AiSearchProviderId, 'duckduckgo' | 'bing' | 'openverse'>, { apiKey: string }>>
 }
 
 export interface AiSettings {
@@ -210,14 +243,6 @@ export interface AiSettings {
   search?: AiSearchSettings | undefined
   provider: AiProviderId
   providers: Record<AiProviderId, AiProviderConfig>
-  /**
-   * ChatOffice cloud tools (web/image search via chatoffice, image generation, media
-   * analysis). Default true; false makes tools skip the chatoffice backend entirely
-   * (search falls back to free sources, chatoffice-only tools are unavailable).
-   * Only meaningful while signed in — signed out, the chatoffice backend is
-   * unavailable regardless.
-   */
-  chatofficeToolsEnabled?: boolean
   /**
    * Output-token cap for ONE model turn of agent runs (default
    * DEFAULT_MAX_OUTPUT_TOKENS). Reasoning models bill their thinking against

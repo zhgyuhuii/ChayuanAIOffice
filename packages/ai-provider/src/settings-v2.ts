@@ -3,9 +3,11 @@ import { CHATOFFICE_LLM_BASE_URLS, clampMaxOutputTokens } from './providers'
 import { modelHasFixedSampling, modelLacksVision, type AiProtocol } from './registry'
 import type {
   AiImageSource,
+  AiMediaSettings,
   AiModelEntry,
   AiModelSelection,
   AiProviderProfile,
+  AiSearchSettings,
   AiSettingsV2,
   AiWireProtocol,
 } from './types'
@@ -78,7 +80,6 @@ export function defaultSettingsV2(): AiSettingsV2 {
   return {
     version: 2,
     profiles: [{ ...chatofficeProfile(), enabled: false }],
-    chatofficeToolsEnabled: true,
   }
 }
 
@@ -275,6 +276,7 @@ export interface StoredAiSettings {
   version?: number
   provider?: string
   providers?: Record<string, { apiKey?: string; model?: string; baseUrl?: string }>
+  /** legacy field — read for migration, no longer written */
   chatofficeToolsEnabled?: boolean
   /** per-turn output-token cap (upstream f105f36; clamped on read) */
   maxOutputTokens?: number
@@ -286,6 +288,15 @@ export interface StoredAiSettings {
   profiles?: AiProviderProfile[]
   currentModel?: AiModelSelection
   imageModel?: AiModelSelection
+  webSearchProvider?: string
+  imageSearchProvider?: string
+  searchApiKeys?: Record<string, string>
+  stockApiKeys?: Record<string, string>
+  imageSource?: string
+  /** media (generate_image / analyze_media) provider settings */
+  media?: AiMediaSettings
+  /** web/image search backend settings */
+  search?: AiSearchSettings
 }
 
 /**
@@ -343,12 +354,11 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     version: 2,
     profiles,
     ...(fallback ? { currentModel: fallback } : {}),
-    ...(stored?.chatofficeToolsEnabled !== undefined
-      ? { chatofficeToolsEnabled: stored.chatofficeToolsEnabled }
-      : {}),
     ...(stored?.maxOutputTokens !== undefined
       ? { maxOutputTokens: clampMaxOutputTokens(stored.maxOutputTokens) }
       : {}),
+    ...(stored?.media ? { media: stored.media } : {}),
+    ...(stored?.search ? { search: stored.search } : {}),
   }
 }
 
@@ -356,7 +366,6 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
 const LEGACY_PROFILE_ID = 'genspark'
 /** legacy auth kind; the type union no longer carries it, hence the string cast */
 const LEGACY_AUTH = 'gsk-login'
-const LEGACY_TOOLS_KEY = 'gskToolsEnabled'
 
 /** remap a legacy profile id (persisted selections point at the old id) */
 function migratedProfileId(id: string | undefined): string | undefined {
@@ -365,10 +374,6 @@ function migratedProfileId(id: string | undefined): string | undefined {
 
 /** trim/dedupe an existing v2 blob and drop selections that no longer resolve */
 function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
-  // pre-rebrand blobs: old tools-toggle key on the blob itself
-  const legacyTools = (settings as unknown as Record<string, unknown>)[LEGACY_TOOLS_KEY]
-  const toolsEnabled =
-    settings.chatofficeToolsEnabled ?? (typeof legacyTools === 'boolean' ? legacyTools : undefined)
   const remapSelection = (sel: AiModelSelection | undefined): AiModelSelection | undefined => {
     if (!sel) return sel
     const profileId = migratedProfileId(sel.profileId) ?? sel.profileId
@@ -399,7 +404,6 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
   const next: AiSettingsV2 = {
     version: 2,
     profiles: profiles.length ? profiles : [{ ...chatofficeProfile(), enabled: false }],
-    ...(toolsEnabled !== undefined ? { chatofficeToolsEnabled: toolsEnabled } : {}),
     ...(settings.maxOutputTokens !== undefined
       ? { maxOutputTokens: clampMaxOutputTokens(settings.maxOutputTokens) }
       : {}),
@@ -407,7 +411,11 @@ function normalizeV2(settings: AiSettingsV2): AiSettingsV2 {
     // through or every save silently wipes them (they never touch the view merge)
     ...(settings.stockApiKeys ? { stockApiKeys: settings.stockApiKeys } : {}),
     ...(settings.searchApiKeys ? { searchApiKeys: settings.searchApiKeys } : {}),
+    ...(settings.webSearchProvider ? { webSearchProvider: settings.webSearchProvider } : {}),
+    ...(settings.imageSearchProvider ? { imageSearchProvider: settings.imageSearchProvider } : {}),
     ...normalizeImageSource(settings.imageSource),
+    ...(settings.media ? { media: settings.media } : {}),
+    ...(settings.search ? { search: settings.search } : {}),
   }
   const current = remapSelection(settings.currentModel)
   const resolvedCurrent = resolveCurrentModel({

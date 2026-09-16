@@ -45,6 +45,154 @@ import {
 
 const READ_MAX_CHARS = 24_000
 
+/**
+ * Locate `anchorText` inside the ProseMirror document and return its absolute
+ * from/to positions. When `blockIndex` is given the search is restricted to
+ * that top-level block (table cells, nested paragraphs — all traversed).
+ * Returns null when the text cannot be found.
+ */
+function findTextRangeInDoc(
+  editor: Editor,
+  anchorText: string,
+  blockIndex?: number,
+): { from: number; to: number } | null {
+  if (!anchorText) return null
+  const doc = editor.state.doc
+
+  let searchFrom = 0
+  let searchTo = doc.content.size
+  if (blockIndex !== undefined) {
+    let idx = 0
+    doc.forEach((node, offset) => {
+      if (idx === blockIndex) {
+        searchFrom = offset
+        searchTo = offset + node.nodeSize
+      }
+      idx++
+    })
+    if (searchFrom === 0 && searchTo === doc.content.size && blockIndex >= doc.childCount) {
+      return null
+    }
+  }
+
+  const segments: { text: string; from: number }[] = []
+  doc.nodesBetween(searchFrom, searchTo, (node, pos) => {
+    if (!node.isText) return
+    const start = Math.max(pos, searchFrom)
+    const end = Math.min(pos + node.nodeSize, searchTo)
+    if (start >= end) return
+    segments.push({ text: node.text!.slice(start - pos, end - pos), from: start })
+  })
+
+  const fullText = segments.map((s) => s.text).join('')
+  const matchIdx = fullText.indexOf(anchorText)
+  if (matchIdx < 0) return null
+
+  let charOff = 0
+  for (const seg of segments) {
+    const segEnd = charOff + seg.text.length
+    const matchStart = Math.max(matchIdx, charOff)
+    const matchEnd = Math.min(matchIdx + anchorText.length, segEnd)
+    if (matchStart < matchEnd) {
+      const from = seg.from + (matchStart - charOff)
+      const to = seg.from + (matchEnd - charOff)
+      return { from, to }
+    }
+    charOff = segEnd
+  }
+  return null
+}
+
+/**
+ * Locate the ProseMirror position range of a table cell at (row, col) within the
+ * table block at `blockIndex`. Returns null if the block is not a table or the
+ * coordinates are out of range.
+ */
+function findTableCellRange(
+  editor: Editor,
+  blockIndex: number,
+  row: number,
+  col: number,
+): { from: number; to: number } | null {
+  const doc = editor.state.doc
+  let tableNode: ReturnType<typeof doc.child> | null = null
+  let tableOffset = 0
+  // plain loop (not doc.forEach): TS can't track assignments made inside the
+  // callback, so tableNode would narrow to never at the guard below
+  let childStart = 0
+  for (let i = 0; i < doc.childCount; i++) {
+    const child = doc.child(i)
+    if (i === blockIndex) {
+      tableNode = child
+      tableOffset = childStart
+    }
+    childStart += child.nodeSize
+  }
+  if (!tableNode || tableNode.type.name !== 'docTable') return null
+
+  const rows = tableNode.content
+  if (row < 0 || row >= rows.childCount) return null
+  const rowNode = rows.child(row)
+  const cells = rowNode.content
+  if (col < 0 || col >= cells.childCount) return null
+
+  const cellNode = cells.child(col)
+  let cellOffset = 0
+  let ci = 0
+  rowNode.forEach((child, offset) => {
+    if (ci === col) cellOffset = offset
+    ci++
+  })
+  const cellAbsStart = tableOffset + cellOffset + 1
+  const cellAbsEnd = cellAbsStart + cellNode.nodeSize
+
+  const segments: { text: string; from: number }[] = []
+  doc.nodesBetween(cellAbsStart, cellAbsEnd, (node, pos) => {
+    if (!node.isText) return
+    const start = Math.max(pos, cellAbsStart)
+    const end = Math.min(pos + node.nodeSize, cellAbsEnd)
+    if (start >= end) return
+    segments.push({ text: node.text!.slice(start - pos, end - pos), from: start })
+  })
+  if (segments.length === 0) return null
+  return { from: segments[0].from, to: segments[segments.length - 1].from + segments[segments.length - 1].text.length }
+}
+
+/**
+ * Like findTextRangeInDoc but restricted to a sub-range (e.g. a table cell).
+ */
+function findTextInRange(
+  editor: Editor,
+  anchorText: string,
+  from: number,
+  to: number,
+): { from: number; to: number } | null {
+  if (!anchorText) return null
+  const doc = editor.state.doc
+  const segments: { text: string; from: number }[] = []
+  doc.nodesBetween(from, to, (node, pos) => {
+    if (!node.isText) return
+    const start = Math.max(pos, from)
+    const end = Math.min(pos + node.nodeSize, to)
+    if (start >= end) return
+    segments.push({ text: node.text!.slice(start - pos, end - pos), from: start })
+  })
+  const fullText = segments.map((s) => s.text).join('')
+  const matchIdx = fullText.indexOf(anchorText)
+  if (matchIdx < 0) return null
+  let charOff = 0
+  for (const seg of segments) {
+    const segEnd = charOff + seg.text.length
+    const matchStart = Math.max(matchIdx, charOff)
+    const matchEnd = Math.min(matchIdx + anchorText.length, segEnd)
+    if (matchStart < matchEnd) {
+      return { from: seg.from + (matchStart - charOff), to: seg.from + (matchEnd - charOff) }
+    }
+    charOff = segEnd
+  }
+  return null
+}
+
 export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'get_document_context',
@@ -206,6 +354,38 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         id: { type: 'string', description: 'id of the comment thread to resolve' },
       },
       required: ['id'],
+    },
+  },
+  {
+    name: 'add_comment',
+    description:
+      'Add a new comment (批注) on specific text in the document, including inside table cells. The comment anchors to the matched text range so it appears at the exact position. ' +
+      'Use when you want to flag, review, or remark on a precise passage. Provide the exact anchor text as it appears in the document; if the text occurs in multiple places, pass blockIndex to disambiguate. ' +
+      'For table cells: pass blockIndex (the table block) + row + col (both 0-based) to target a specific cell; optionally also provide anchorText to narrow within that cell. When only row+col are given (no anchorText), the comment covers the entire cell.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'comment text' },
+        anchorText: {
+          type: 'string',
+          description:
+            'exact text in the document to attach the comment to (must match verbatim); optional when row+col target a table cell',
+        },
+        blockIndex: {
+          type: 'integer',
+          description:
+            'block index to search in (optional; for tables, the table block index — use with row+col for cell-level targeting)',
+        },
+        row: {
+          type: 'integer',
+          description: 'table row index (0-based; requires blockIndex pointing to a table)',
+        },
+        col: {
+          type: 'integer',
+          description: 'table column index (0-based; requires blockIndex pointing to a table)',
+        },
+      },
+      required: ['text'],
     },
   },
   {
@@ -459,6 +639,8 @@ export interface AiCommentsAccess {
   reply(parentId: string, text: string): boolean
   /** false when the thread does not exist */
   resolve(id: string): boolean
+  /** Create a new top-level comment anchored to the given ProseMirror range; false when the range is empty */
+  create(text: string, from: number, to: number): boolean
 }
 
 /**
@@ -1456,6 +1638,69 @@ function executeSyncTool(
         output: `Comment ${rootId} marked as resolved.`,
         mutated: false, // app state only; the document content is untouched
         summary: t('aiSumResolveComment'),
+      }
+    }
+
+    case 'add_comment': {
+      if (!comments) return fail(t('aiSumAddComment'), 'comments are not available here')
+      const text = String(call.input.text ?? '').trim()
+      if (!text) return fail(t('aiSumAddComment'), 'text must not be empty')
+      const anchorText = String(call.input.anchorText ?? '').trim()
+      const blockIndex =
+        typeof call.input.blockIndex === 'number' ? call.input.blockIndex : undefined
+      const row = typeof call.input.row === 'number' ? call.input.row : undefined
+      const col = typeof call.input.col === 'number' ? call.input.col : undefined
+      const hasRow = row !== undefined
+      const hasCol = col !== undefined
+
+      let range: { from: number; to: number } | null
+      let anchorLabel: string
+
+      if (hasRow && hasCol && blockIndex !== undefined) {
+        const cellRange = findTableCellRange(editor, blockIndex, row!, col!)
+        if (!cellRange) {
+          return fail(
+            t('aiSumAddComment'),
+            `could not find table cell at row ${row}, col ${col} in block ${blockIndex}; verify the block is a table and coordinates are in range`,
+          )
+        }
+        if (anchorText) {
+          range = findTextInRange(editor, anchorText, cellRange.from, cellRange.to)
+          if (!range) {
+            return fail(
+              t('aiSumAddComment'),
+              `could not find "${anchorText.slice(0, 60)}" in cell (${row},${col}); check the exact text with read_blocks`,
+            )
+          }
+          anchorLabel = anchorText.slice(0, 80)
+        } else {
+          range = cellRange
+          const cellText = editor.state.doc.textBetween(cellRange.from, cellRange.to, ' ')
+          anchorLabel = cellText.slice(0, 80) || `cell(${row},${col})`
+        }
+      } else if (anchorText) {
+        range = findTextRangeInDoc(editor, anchorText, blockIndex)
+        if (!range) {
+          return fail(
+            t('aiSumAddComment'),
+            `could not find "${anchorText.slice(0, 60)}" in the document${blockIndex !== undefined ? ` at block ${blockIndex}` : ''}; check the exact text with get_document_context or read_blocks`,
+          )
+        }
+        anchorLabel = anchorText.slice(0, 80)
+      } else {
+        return fail(
+          t('aiSumAddComment'),
+          'provide anchorText (to comment on specific text) or blockIndex + row + col (to target a table cell)',
+        )
+      }
+
+      if (!comments.create(text, range.from, range.to)) {
+        return fail(t('aiSumAddComment'), 'failed to create the comment')
+      }
+      return {
+        output: `Added comment on "${anchorLabel}".`,
+        mutated: true,
+        summary: t('aiSumAddComment'),
       }
     }
 

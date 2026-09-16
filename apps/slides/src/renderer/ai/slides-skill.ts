@@ -8,7 +8,7 @@ import type {
   ShapeRenderNode,
 } from '@chatoffice/pptx-render'
 import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
-import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph } from '../../shared/ipc'
+import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph, SlideComment } from '../../shared/ipc'
 import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '@chatoffice/pptx-ops/op-docs'
 import { auditDeckConsistency, auditSlideLayout, formatAudit } from '@chatoffice/pipelines/slides/layout-audit'
 import { runLayoutScript, type LayoutScriptElement } from './layout-script'
@@ -314,6 +314,10 @@ export interface DeckAccess {
    * (decks must be built from attachment content, not generic filler).
    */
   unreadTextAttachments?(): string[]
+  /** Read all comments on a slide */
+  getComments?(slideIndex: number): Promise<SlideComment[]>
+  /** Add a comment to a slide; returns the updated comment list or null on failure */
+  addComment?(slideIndex: number, text: string): Promise<SlideComment[] | null>
 }
 
 /** Single survey question structure (with options). */
@@ -1193,6 +1197,31 @@ const TOOLS: AgentToolDef[] = [
         },
       },
       required: ['groups'],
+    },
+  },
+  {
+    name: 'read_comments',
+    description:
+      'Read all comments (批注/评论) on a slide. Returns author, timestamp, and text for each comment. Use to review existing feedback before making edits.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        slideIndex: { type: 'integer', description: 'Page number (0-based)' },
+      },
+      required: ['slideIndex'],
+    },
+  },
+  {
+    name: 'add_comment',
+    description:
+      'Add a new comment (批注/评论) to a slide. Comments are slide-level (not anchored to specific text). Use to flag issues, suggest improvements, or leave feedback on a page.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        slideIndex: { type: 'integer', description: 'Page number (0-based)' },
+        text: { type: 'string', description: 'Comment text' },
+      },
+      required: ['slideIndex', 'text'],
     },
   },
 ]
@@ -3603,6 +3632,47 @@ ${r.text}`,
         output: `Saved style templates (${templates.length}):\n${lines.join('\n')}\n\nPass style_template:"<template name>" to generate_deck to reuse that style directly.`,
         mutated: false,
         summary: t('aiSumListTemplates', { count: templates.length }),
+      }
+    }
+
+    case 'read_comments': {
+      const idx = Number(call.input.slideIndex)
+      if (idx < 0 || idx >= slides.length)
+        return fail(t('aiFailReadComments'), `slideIndex out of range (0-${slides.length - 1})`)
+      if (!access.getComments)
+        return fail(t('aiFailReadComments'), 'comments are not available here')
+      const comments = await access.getComments(idx)
+      if (comments.length === 0) {
+        return {
+          output: `Slide ${idx + 1} has no comments.`,
+          mutated: false,
+          summary: t('aiSumReadComments', { n: idx + 1 }),
+        }
+      }
+      const lines = comments.map(
+        (c) => `- [${c.dt.slice(0, 16).replace('T', ' ')}] ${c.author}: ${c.text}`,
+      )
+      return {
+        output: `Comments on slide ${idx + 1} (${comments.length}):\n${lines.join('\n')}`,
+        mutated: false,
+        summary: t('aiSumReadComments', { n: idx + 1 }),
+      }
+    }
+
+    case 'add_comment': {
+      const idx = Number(call.input.slideIndex)
+      if (idx < 0 || idx >= slides.length)
+        return fail(t('aiFailAddComment'), `slideIndex out of range (0-${slides.length - 1})`)
+      const text = String(call.input.text ?? '').trim()
+      if (!text) return fail(t('aiFailAddComment'), 'text must not be empty')
+      if (!access.addComment)
+        return fail(t('aiFailAddComment'), 'comments are not available here')
+      const result = await access.addComment(idx, text)
+      if (!result) return fail(t('aiFailAddComment'), 'failed to add comment')
+      return {
+        output: `Added comment to slide ${idx + 1}.`,
+        mutated: true,
+        summary: t('aiSumAddComment', { n: idx + 1 }),
       }
     }
 

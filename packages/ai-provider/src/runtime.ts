@@ -117,15 +117,6 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
 
   const readRaw = async (): Promise<AiSettingsV2> => {
     let settings = await source.read()
-    // v1 healing carried over: the login-backed default with cloud tools opted
-    // out is a pre-lock combination; keep tools on for the chatoffice profile
-    if (
-      settings.chatofficeToolsEnabled === false &&
-      settings.currentModel?.profileId === 'chatoffice'
-    ) {
-      settings = { ...settings, chatofficeToolsEnabled: true }
-      await source.write(settings)
-    }
     // login gates nothing (consensus): a current model parked on the chatoffice
     // profile while signed out falls through to the first usable BYOK chat
     // model, so chat keeps working instead of erroring. The chatoffice error with its

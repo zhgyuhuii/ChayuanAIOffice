@@ -203,6 +203,7 @@ export class HomeChatController {
       })
       return
     }
+    this.onBusyChange?.(sessionId, true)
     void this.agentFor(sessionId, history).send(instruction, attachments)
   }
 

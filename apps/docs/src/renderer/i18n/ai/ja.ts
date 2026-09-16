@@ -49,6 +49,7 @@ export const ja = {
   aiSumReadRevisions: '変更履歴を読む',
   aiSumReplyComment: 'コメントに返信',
   aiSumResolveComment: 'コメントを解決',
+  aiSumAddComment: 'コメントを追加',
   aiTidyBtn: 'AI 書式整理',
   aiTidyPrompt:
     '文書全体の書式を整えてください。例えば見出しレベルの修正、リスト形式の統一、不要な太字・斜体の削除、本文段落の字下げの調整など。書式のみを変更し、本文の文字は一切変更しないでください',

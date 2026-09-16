@@ -867,6 +867,34 @@ export class TabManager {
     }
   }
 
+  /** close every other closable tab except Home and the given tab */
+  async closeOtherTabs(keepId: string): Promise<void> {
+    const ids = this.tabs.filter((t) => t.id !== HOME_ID && t.id !== keepId).map((t) => t.id)
+    for (const id of ids) await this.closeTab(id)
+  }
+
+  /** close every closable tab to the left of the given tab (Home is never closed) */
+  async closeLeftTabs(tabId: string): Promise<void> {
+    const idx = this.tabs.findIndex((t) => t.id === tabId)
+    if (idx <= 0) return
+    const ids = this.tabs.slice(0, idx).filter((t) => t.id !== HOME_ID).map((t) => t.id)
+    for (const id of ids) await this.closeTab(id)
+  }
+
+  /** close every closable tab to the right of the given tab */
+  async closeRightTabs(tabId: string): Promise<void> {
+    const idx = this.tabs.findIndex((t) => t.id === tabId)
+    if (idx < 0) return
+    const ids = this.tabs.slice(idx + 1).filter((t) => t.id !== HOME_ID).map((t) => t.id)
+    for (const id of ids) await this.closeTab(id)
+  }
+
+  /** close every closable tab, leaving only Home (察元AIOffice) */
+  async closeAllTabs(): Promise<void> {
+    const ids = this.tabs.filter((t) => t.id !== HOME_ID).map((t) => t.id)
+    for (const id of ids) await this.closeTab(id)
+  }
+
   findDocsTabByPath(path: string): string | undefined {
     return this.tabs.find((t) => t.kind === 'docs' && t.filePath === path)?.id
   }

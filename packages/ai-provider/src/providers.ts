@@ -296,18 +296,11 @@ export function defaultAiSettings(
   return {
     provider: 'chatoffice',
     providers,
-    chatofficeToolsEnabled: true,
     media: defaultAiMediaSettings(),
     search: defaultAiSearchSettings(),
   }
 }
 
-/** false only on an explicit opt-out; absent (pre-toggle settings files) means on */
-export function cloudToolsEnabled(settings: {
-  chatofficeToolsEnabled?: boolean | undefined
-}): boolean {
-  return settings.chatofficeToolsEnabled !== false
-}
 
 /**
  * The stored provider selection is honored only when its config is usable
@@ -438,8 +431,6 @@ export function resolveAiSettings(
     // Trim before migrating: a pasted " deepseek-reasoner " must still hit
     // the retired-id remap instead of being sent to the API verbatim.
     providers: migrateRetiredModels(trimConfigs({ ...defaults.providers, ...stored.providers })),
-    chatofficeToolsEnabled:
-      stored.chatofficeToolsEnabled ?? defaults.chatofficeToolsEnabled ?? true,
     media: resolveAiMediaSettings(stored.media ?? defaults.media),
     search: resolveAiSearchSettings(stored.search ?? defaults.search),
     // clamped on read: a hand-edited settings file with an absurd cap must not be

@@ -48,6 +48,7 @@ export const he = {
   aiSumReadRevisions: 'קריאת שינויים',
   aiSumReplyComment: 'תשובה להערה',
   aiSumResolveComment: 'הערה נפתרה',
+  aiSumAddComment: 'הערה נוספה',
   aiTidyBtn: 'עיצוב AI',
   aiTidyPrompt:
     'סדר את העיצוב של המסמך כולו — למשל תקן רמות כותרות, אחד את עיצוב הרשימות, הסר הדגשות והטיות מיותרות ויישר את הזחות הפסקאות. שנה רק את העיצוב, בלי לשנות את הטקסט',

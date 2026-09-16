@@ -26,7 +26,7 @@ import {
 import { createCommandRegistry, MobileRibbon } from '@chatoffice/ribbon'
 import '@chatoffice/ui/dock.css'
 import { IconOutlineView, IconPrintLayout, IconReadMode, IconWebLayout } from './components/icons'
-import { wordRangeAtCaret } from './editor/comments'
+import { wordRangeAtCaret, nextCommentId, addCommentToSelection } from './editor/comments'
 import { markdownPasteHtml } from './editor/markdown-paste'
 import { pasteTextSlice, singleCellPasteText } from './editor/paste-text'
 import {
@@ -5087,6 +5087,22 @@ export function App() {
         resolveCommentImpl(ctx, id, true)
         return true
       },
+      create: (text, from, to) => {
+        const ctx = reviewCtxRef.current
+        const editor = ctx.editor
+        if (!editor || from >= to) return false
+        editor.commands.setTextSelection({ from, to })
+        const id = nextCommentId(ctx.comments)
+        if (!addCommentToSelection(editor, id)) return false
+        const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+        ctx.setComments((prev) => [
+          ...prev,
+          { id, author: AI_REVISION_AUTHOR, date: now, text },
+        ])
+        ctx.setCommentsDirty(true)
+        ctx.dirtyRef.current = true
+        return true
+      },
     }),
     [],
   )
@@ -6378,6 +6394,11 @@ export function App() {
             if (dockedBootRef.current) return
             setShowAi(true)
             setAiPreset({ text, nonce: Date.now(), autoRun: true })
+          }}
+          onAiAssistant={(id) => {
+            if (dockedBootRef.current) return
+            setShowAi(true)
+            setAiAssistantReq({ id, nonce: Date.now() })
           }}
           onRestartNumbering={restartNumbering}
           onContinueNumbering={continueNumbering}

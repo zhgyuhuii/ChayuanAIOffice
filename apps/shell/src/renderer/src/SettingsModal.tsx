@@ -7,16 +7,27 @@ import {
   AI_CUSTOM_FONT_MIN_PX,
   AI_CUSTOM_FONT_MAX_PX,
 } from '@chatoffice/ui/ai-panel-prefs'
-import { discoverModels, setAiUserAgent } from '@chatoffice/ai-provider/browser'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ModelSettingsPage } from '@chatoffice/ui/ModelSettingsPage'
 import type { ModelSettingsBridge } from '@chatoffice/ui/ModelSettingsPage'
 import { ModelDefaultsPage } from '@chatoffice/ui/ModelDefaultsPage'
-import { Dropdown, USER_LOGIN_READY } from '@chatoffice/ui'
+import { Dropdown } from '@chatoffice/ui'
+import {
+  AI_SEARCH_PROVIDERS,
+  AI_MEDIA_PROVIDERS,
+} from '@chatoffice/ai-provider/browser'
+import type {
+  AiSearchProviderId,
+  AiSettingsV2,
+  AiMediaProviderId,
+  AiMediaSettings,
+  AiSearchSettings,
+} from '@chatoffice/ai-provider/browser'
 import { useI18n } from './locale'
-import type { StringKey } from './locale'
+import type { StringKey, TFunc } from './locale'
 import type { AccountStatus, UiTheme } from '../../shared/home-api'
+import { ProviderLogo } from './provider-logos'
 import { StoragePane } from './StoragePane'
 import { IntegrationsPane, skillUpdateDue } from './IntegrationsPane'
 import './settings.css'
@@ -143,6 +154,7 @@ function CustomFontSizeInput({
 const SECTIONS: readonly { id: SectionId; labelKey: StringKey }[] = [
   { id: 'modelSettings', labelKey: 'setSecModelSettings' },
   { id: 'defaultModels', labelKey: 'setSecDefaultModels' },
+  { id: 'aiMedia', labelKey: 'setSecAiMedia' },
   { id: 'remoteStorage', labelKey: 'setSecRemoteStorage' },
   { id: 'general', labelKey: 'setSecGeneral' },
   { id: 'integrations', labelKey: 'setSecIntegrations' },
@@ -345,6 +357,58 @@ function mcpConfigExample(port: string): string {
   )
 }
 
+interface AiStatus {
+  kind: 'testing' | 'ok' | 'err'
+  text: string
+}
+
+/** colored feedback pill in the AI pane footer: spinner while testing, then success/error */
+function AiStatusPill({ status }: { status: AiStatus | null }) {
+  if (!status) return null
+  return (
+    <span
+      className={`set-ai-status ${status.kind}`}
+      role="status"
+      title={status.kind === 'err' ? status.text : undefined}
+    >
+      {status.kind === 'testing' ? (
+        <span className="set-ai-spin" aria-hidden="true" />
+      ) : status.kind === 'ok' ? (
+        <svg
+          className="set-ai-status-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
+          <path
+            d="M4.2 7.3l1.9 1.9 3.7-4.3"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+      ) : (
+        <svg
+          className="set-ai-status-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="7" r="6.3" fill="currentColor" opacity="0.16" />
+          <path d="M7 3.8v3.9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="7" cy="10.1" r="1" fill="currentColor" />
+        </svg>
+      )}
+      <span className="set-ai-status-text">{status.text}</span>
+    </span>
+  )
+}
+
 /** AI model pane: provider / model / key / base URL, saved to userData/ai-settings.json */
 function AiModelPane({ lang }: { lang: string }) {
   // the model settings live inline in this pane (no second window, no extra
@@ -375,38 +439,17 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     saveSettings: (view) => window.chatOffice.setAiSettings(view),
     setCurrentModel: (selection) => window.chatOffice.setAiCurrentModel(selection),
     discoverModels: async (target) => {
-      // Run discovery in the renderer — the renderer's fetch is Chromium's
-      // native fetch with a proper browser TLS fingerprint, so Cloudflare
-      // won't block it (unlike main-process fetches via Node undici or
-      // Electron net.fetch).
-      //
-      // Two cases still need the main process:
-      //  • Codex — requires Node.js child_process to find/run the CLI
-      //  • profileId without apiKey — the renderer holds KEEP_KEY sentinels;
-      //    the real key lives in the settings file (main-process filesystem)
-      if (target.codexLike) {
-        return window.chatOffice.aiDiscoverModels(target)
-      }
-      if (!target.apiKey && target.profileId) {
-        // The renderer holds KEEP_KEY sentinels; the real API key lives in the
-        // settings file. Delegate to the main process which resolves the stored
-        // key internally via runtime.discover.
-        return window.chatOffice.aiDiscoverModels(target)
-      }
-      try {
-        // In the renderer, fetch is Chromium's native fetch (proper TLS
-        // fingerprint), but aiFetch overrides the User-Agent to 'ChatOffice'
-        // by default. Cloudflare flags the mismatch between a browser TLS
-        // fingerprint and a non-browser UA. Set a stock Chrome UA so the two
-        // signals agree.
-        setAiUserAgent(
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        )
-        const models = await discoverModels(target)
-        return { models }
-      } catch (err) {
-        return { models: [], error: err instanceof Error ? err.message : String(err) }
-      }
+      // Always run discovery in the main process. The shell renderer's CSP
+      // (index.html: connect-src 'self' ws://localhost:*) blocks EVERY
+      // cross-origin fetch, so the renderer-side attempt that used to live
+      // here was dead on arrival — adding a provider with a fresh key always
+      // failed while saved providers (KEEP_KEY sentinel → main) worked.
+      // Main's runtime.discover goes through aiFetch: Node fetch with the
+      // Electron net.fetch rescue path (Chromium TLS + stock-Chrome UA) for
+      // gateways whose edge blocks non-browser traffic, and it resolves
+      // KEEP_KEY sentinels to the stored key when the renderer doesn't hold
+      // it. Codex needs main regardless (Node child_process for the CLI).
+      return window.chatOffice.aiDiscoverModels(target)
     },
     chatofficeStatus: (withEmail) => window.chatOffice.chatofficeStatus(withEmail),
     chatofficeLogin: () => void window.chatOffice.chatofficeLogin(),
@@ -414,6 +457,302 @@ function windowChatOfficeBridge(): ModelSettingsBridge {
     localToolInstall: (vendorId, onLine) => window.chatOffice.aiLocalToolInstall(vendorId, onLine),
     localToolStart: (vendorId) => window.chatOffice.aiLocalToolStart(vendorId),
   }
+}
+
+/**
+ * AI media & search pane: per-capability provider selection for web search,
+ * image search, stock photos, AI image generation, and SVG generation.
+ */
+function AiMediaPane({ t }: { t: TFunc }) {
+  const [settings, setSettings] = useState<AiSettingsV2 | null>(null)
+  const [dirty, setDirty] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    void window.chatOffice.getAiSettings?.().then((s) => {
+      if (alive && s) setSettings(s)
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  if (!settings) return null
+
+  const touch = () => {
+    setDirty(true)
+    setSaved(false)
+  }
+
+  const save = () => {
+    window.chatOffice
+      .setAiSettings?.(settings)
+      .then(() => {
+        setDirty(false)
+        setSaved(true)
+      })
+      .catch((error) => {
+        window.alert(error instanceof Error ? error.message : String(error))
+      })
+  }
+
+  const webSearchProviders = AI_SEARCH_PROVIDERS.filter((p) => p.id !== 'openverse')
+  const imageGenProviders = AI_MEDIA_PROVIDERS.filter((m) => !!m.imageProtocol)
+
+  const search = settings.search ?? { provider: 'duckduckgo', providers: {} }
+  const media = settings.media ?? {
+    imageProvider: '',
+    analysisProvider: '',
+    videoAnalysisProvider: '',
+    providers: {} as AiMediaSettings['providers'],
+  }
+
+  const setSearchProvider = (id: AiSearchProviderId) => {
+    setSettings({ ...settings, search: { ...search, provider: id } })
+    touch()
+  }
+
+  const setSearchKey = (id: string, key: string) => {
+    const providers = { ...search.providers } as Record<string, { apiKey: string }>
+    if (key) {
+      providers[id] = { apiKey: key.trim() }
+    } else {
+      delete providers[id]
+    }
+    setSettings({ ...settings, search: { ...search, providers: providers as AiSearchSettings['providers'] } })
+    touch()
+  }
+
+  const setImageGenProvider = (id: AiMediaProviderId) => {
+    setSettings({ ...settings, media: { ...media, imageProvider: id } })
+    touch()
+  }
+
+  const setImageGenKey = (id: string, key: string) => {
+    const providers = { ...media.providers }
+    const existing = providers[id as AiMediaProviderId] ?? {
+      apiKey: '',
+      imageModel: '',
+      analysisModel: '',
+    }
+    providers[id as AiMediaProviderId] = { ...existing, apiKey: key.trim() }
+    setSettings({ ...settings, media: { ...media, providers } })
+    touch()
+  }
+
+  const setStockKey = (vendor: 'pexels' | 'pixabay' | 'unsplash' | 'wikimedia', key: string) => {
+    setSettings({
+      ...settings,
+      stockApiKeys: { ...settings.stockApiKeys, [vendor]: key || undefined },
+    })
+    touch()
+  }
+
+  const currentWebSearchKey = (search.providers as Record<string, { apiKey?: string }>)?.[
+    search.provider
+  ]?.apiKey
+
+  const currentImageGenMeta = imageGenProviders.find((m) => m.id === media.imageProvider)
+  const currentImageGenKey = media.providers[media.imageProvider]?.apiKey ?? ''
+
+  return (
+    <>
+      <h3 className="set-pane-title">{t('setSecAiMedia')}</h3>
+      <div className="set-field-desc set-ai-note">{t('setAiSharedKeyHint')}</div>
+
+      <section>
+        <h4 className="set-pane-subtitle">{t('setAiCapWebSearch')}</h4>
+        <div className="set-field">
+          <div className="set-field-text">
+            <label className="set-field-label">{t('setAiProvider')}</label>
+          </div>
+          <Dropdown
+            className="set-dd"
+            value={search.provider}
+            ariaLabel={t('setAiCapWebSearch')}
+            options={webSearchProviders.map((c) => ({
+              value: c.id,
+              label: c.label,
+              render: (
+                <>
+                  <ProviderLogo id={c.id} />
+                  {c.label}
+                </>
+              ),
+            }))}
+            onPick={(v) => setSearchProvider(v as AiSearchProviderId)}
+          />
+        </div>
+        <div className="set-field-desc set-ai-note">
+          {webSearchProviders.find((p) => p.id === search.provider)?.needsKey
+            ? t('setAiSearchKeyRequired')
+            : t('setAiSearchFreeProvider')}
+        </div>
+        {webSearchProviders.find((p) => p.id === search.provider)?.needsKey && (
+          <div className="set-field">
+            <div className="set-field-text">
+              <div className="set-field-stack">
+                <label className="set-field-label" htmlFor="set-ai-web-search-key">
+                  {t('setAiApiKey')}
+                </label>
+                <div className="set-field-desc">{t('setAiKeyHint')}</div>
+              </div>
+            </div>
+            <input
+              id="set-ai-web-search-key"
+              className="set-input"
+              type="password"
+              value={currentWebSearchKey ?? ''}
+              placeholder={
+                webSearchProviders.find((p) => p.id === search.provider)?.keyPlaceholder ??
+                'API Key'
+              }
+              spellCheck={false}
+              autoComplete="off"
+              onChange={(e) => setSearchKey(search.provider, e.target.value)}
+            />
+          </div>
+        )}
+      </section>
+
+      <section>
+        <h4 className="set-pane-subtitle">{t('setAiCapImageSearch')}</h4>
+        <div className="set-field-desc set-ai-note">{t('setAiImageSearchHint')}</div>
+      </section>
+
+      <section>
+        <h4 className="set-pane-subtitle">{t('setAiCapStockPhotos')}</h4>
+        <div className="set-field">
+          <div className="set-field-text">
+            <div className="set-field-stack">
+              <label className="set-field-label" htmlFor="set-ai-pexels-key">
+                Pexels API Key
+              </label>
+              <div className="set-field-desc">{t('setAiKeyHint')}</div>
+            </div>
+          </div>
+          <input
+            id="set-ai-pexels-key"
+            className="set-input"
+            type="password"
+            value={settings.stockApiKeys?.pexels ?? ''}
+            placeholder="Pexels API Key"
+            spellCheck={false}
+            autoComplete="off"
+            onChange={(e) => setStockKey('pexels', e.target.value.trim())}
+          />
+        </div>
+        <div className="set-field">
+          <div className="set-field-text">
+            <div className="set-field-stack">
+              <label className="set-field-label" htmlFor="set-ai-pixabay-key">
+                Pixabay API Key
+              </label>
+              <div className="set-field-desc">{t('setAiKeyHint')}</div>
+            </div>
+          </div>
+          <input
+            id="set-ai-pixabay-key"
+            className="set-input"
+            type="password"
+            value={settings.stockApiKeys?.pixabay ?? ''}
+            placeholder="Pixabay API Key"
+            spellCheck={false}
+            autoComplete="off"
+            onChange={(e) => setStockKey('pixabay', e.target.value.trim())}
+          />
+        </div>
+        <div className="set-field">
+          <div className="set-field-text">
+            <div className="set-field-stack">
+              <label className="set-field-label" htmlFor="set-ai-unsplash-key">
+                Unsplash Access Key
+              </label>
+              <div className="set-field-desc">{t('setAiKeyHint')}</div>
+            </div>
+          </div>
+          <input
+            id="set-ai-unsplash-key"
+            className="set-input"
+            type="password"
+            value={settings.stockApiKeys?.unsplash ?? ''}
+            placeholder="Unsplash Access Key"
+            spellCheck={false}
+            autoComplete="off"
+            onChange={(e) => setStockKey('unsplash', e.target.value.trim())}
+          />
+        </div>
+      </section>
+
+      <section>
+        <h4 className="set-pane-subtitle">{t('setAiCapImageGen')}</h4>
+        <div className="set-field">
+          <div className="set-field-text">
+            <label className="set-field-label">{t('setAiProvider')}</label>
+          </div>
+          <Dropdown
+            className="set-dd"
+            value={media.imageProvider || ''}
+            ariaLabel={t('setAiCapImageGen')}
+            options={[
+              { value: '', label: t('setAiNone') },
+              ...imageGenProviders.map((c) => ({
+                value: c.id,
+                label: c.label,
+                render: (
+                  <>
+                    <ProviderLogo id={c.id} />
+                    {c.label}
+                  </>
+                ),
+              })),
+            ]}
+            onPick={(v) => setImageGenProvider(v as AiMediaProviderId)}
+          />
+        </div>
+        {currentImageGenMeta && (
+          <>
+            <div className="set-field-desc set-ai-note">{currentImageGenMeta.description}</div>
+            {currentImageGenMeta.needsKey !== false && (
+              <div className="set-field">
+                <div className="set-field-text">
+                  <div className="set-field-stack">
+                    <label className="set-field-label" htmlFor="set-ai-imagegen-key">
+                      {t('setAiApiKey')}
+                    </label>
+                    <div className="set-field-desc">{t('setAiKeyHint')}</div>
+                  </div>
+                </div>
+                <input
+                  id="set-ai-imagegen-key"
+                  className="set-input"
+                  type="password"
+                  value={currentImageGenKey}
+                  placeholder={currentImageGenMeta.keyPlaceholder}
+                  spellCheck={false}
+                  autoComplete="off"
+                  onChange={(e) => setImageGenKey(media.imageProvider, e.target.value)}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
+      <section>
+        <h4 className="set-pane-subtitle">{t('setAiCapSvgGen')}</h4>
+        <div className="set-field-desc set-ai-note">{t('setAiSvgGenHint')}</div>
+      </section>
+
+      <div className="set-pane-footer">
+        <AiStatusPill status={saved ? { kind: 'ok', text: t('setAiSaved') } : null} />
+        <button className="set-btn primary" disabled={!dirty} onClick={save}>
+          {t('setAiSave')}
+        </button>
+      </div>
+    </>
+  )
 }
 
 export interface SettingsModalProps {
@@ -436,16 +775,7 @@ export interface SettingsModalProps {
 }
 
 export function SettingsModal({
-  status,
-  loggingOut,
-  loginWaiting,
-  loginUrl,
-  urlCopied,
-  onOpenLoginUrl,
-  onCopyLoginUrl,
   onClose,
-  onLogin,
-  onLogout,
   skillUpdateDue: updateDue = false,
   onSkillUpdateDue,
 }: SettingsModalProps) {
@@ -593,9 +923,6 @@ export function SettingsModal({
     })
   }
 
-  const loggedIn = status?.loggedIn ?? false
-  const email = status?.email ?? ''
-
   return (
     <div
       className="set-overlay"
@@ -637,6 +964,7 @@ export function SettingsModal({
           <div className="set-pane">
             {section === 'modelSettings' && <AiModelPane lang={lang} />}
             {section === 'defaultModels' && <DefaultModelsPane lang={lang} />}
+            {section === 'aiMedia' && <AiMediaPane t={t} />}
             {section === 'remoteStorage' && <StoragePane />}
             {section === 'general' && (
               <>
@@ -981,37 +1309,6 @@ export function SettingsModal({
             )}
           </div>
         </div>
-        {/* 用户登录功能未开放（USER_LOGIN_READY=false）：登录/退出入口整体隐藏 */}
-        {USER_LOGIN_READY && (
-          <footer className="set-footer">
-            {loggedIn ? (
-              <>
-                <span className="set-footer-user" title={email}>
-                  {email}
-                </span>
-                <button className="set-btn" disabled={loggingOut} onClick={onLogout}>
-                  {loggingOut ? t('loggingOut') : t('logout')}
-                </button>
-              </>
-            ) : (
-              <>
-                {loginWaiting && loginUrl && (
-                  <>
-                    <button className="set-btn" onClick={onOpenLoginUrl}>
-                      {t('loginOpenManually')}
-                    </button>
-                    <button className="set-btn" onClick={onCopyLoginUrl}>
-                      {urlCopied ? t('loginCopied') : t('loginCopyUrl')}
-                    </button>
-                  </>
-                )}
-                <button className="set-btn primary" onClick={onLogin}>
-                  {loginWaiting ? t('waitingShort') : t('userLogin')}
-                </button>
-              </>
-            )}
-          </footer>
-        )}
       </div>
     </div>
   )

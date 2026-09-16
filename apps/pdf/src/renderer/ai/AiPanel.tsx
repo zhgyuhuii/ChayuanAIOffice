@@ -366,8 +366,7 @@ export function AiPanel({
       deleteImage: (ref) => apiRef.current.deleteImage(ref),
       searchImages: (query, max) => apiRef.current.searchImages(query, max),
       generateImage: (op) => apiRef.current.generateImage(op),
-      chatofficeTools: () =>
-        chatofficeLoggedInRef.current && settingsRef.current?.chatofficeToolsEnabled !== false,
+      chatofficeTools: () => false,
       fetchImage: (url) => apiRef.current.fetchImage(url),
     }
     loopRef.current = new AgentLoop({

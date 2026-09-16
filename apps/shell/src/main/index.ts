@@ -714,6 +714,11 @@ const tMain = createI18n({
     pdfDocxLocalCorruptDetail: '文件已损坏或不是有效的 PDF，无法转换。',
     dlgPickSaveDir: '选择默认保存位置',
     errSaveDirUnusable: '所选文件夹不可写，无法用作默认保存位置',
+    tabCtxClose: '关闭',
+    tabCtxCloseOthers: '关闭其他',
+    tabCtxCloseLeft: '关闭左侧',
+    tabCtxCloseRight: '关闭右侧',
+    tabCtxCloseAll: '关闭全部',
   },
   en: {
     menuFile: 'File',
@@ -815,6 +820,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Choose Default Save Location',
     errSaveDirUnusable:
       'The selected folder is not writable and cannot be used as the default save location',
+    tabCtxClose: 'Close',
+    tabCtxCloseOthers: 'Close Others',
+    tabCtxCloseLeft: 'Close to the Left',
+    tabCtxCloseRight: 'Close to the Right',
+    tabCtxCloseAll: 'Close All',
   },
   ja: {
     menuFile: 'ファイル',
@@ -916,6 +926,11 @@ const tMain = createI18n({
     dlgPickSaveDir: '既定の保存先を選択',
     errSaveDirUnusable:
       '選択したフォルダーは書き込みできないため、既定の保存先として使用できません',
+    tabCtxClose: '閉じる',
+    tabCtxCloseOthers: '他を閉じる',
+    tabCtxCloseLeft: '左を閉じる',
+    tabCtxCloseRight: '右を閉じる',
+    tabCtxCloseAll: 'すべて閉じる',
   },
   ko: {
     menuFile: '파일',
@@ -1016,6 +1031,11 @@ const tMain = createI18n({
     pdfDocxLocalCorruptDetail: '파일이 손상되었거나 유효한 PDF가 아니어서 변환할 수 없습니다.',
     dlgPickSaveDir: '기본 저장 위치 선택',
     errSaveDirUnusable: '선택한 폴더에 쓸 수 없어 기본 저장 위치로 사용할 수 없습니다',
+    tabCtxClose: '닫기',
+    tabCtxCloseOthers: '다른 탭 닫기',
+    tabCtxCloseLeft: '왼쪽 탭 닫기',
+    tabCtxCloseRight: '오른쪽 탭 닫기',
+    tabCtxCloseAll: '모두 닫기',
   },
   fr: {
     menuFile: 'Fichier',
@@ -1118,6 +1138,11 @@ const tMain = createI18n({
     dlgPickSaveDir: "Choisir l'emplacement d'enregistrement par défaut",
     errSaveDirUnusable:
       "Le dossier sélectionné n'est pas accessible en écriture et ne peut pas servir d'emplacement d'enregistrement par défaut",
+    tabCtxClose: 'Fermer',
+    tabCtxCloseOthers: 'Fermer les autres',
+    tabCtxCloseLeft: 'Fermer à gauche',
+    tabCtxCloseRight: 'Fermer à droite',
+    tabCtxCloseAll: 'Tout fermer',
   },
   de: {
     menuFile: 'Datei',
@@ -1220,6 +1245,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Standard-Speicherort auswählen',
     errSaveDirUnusable:
       'Der ausgewählte Ordner ist nicht beschreibbar und kann nicht als Standard-Speicherort verwendet werden',
+    tabCtxClose: 'Schließen',
+    tabCtxCloseOthers: 'Andere schließen',
+    tabCtxCloseLeft: 'Links schließen',
+    tabCtxCloseRight: 'Rechts schließen',
+    tabCtxCloseAll: 'Alle schließen',
   },
   es: {
     menuFile: 'Archivo',
@@ -1322,6 +1352,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Elegir ubicación de guardado predeterminada',
     errSaveDirUnusable:
       'La carpeta seleccionada no admite escritura y no puede usarse como ubicación de guardado predeterminada',
+    tabCtxClose: 'Cerrar',
+    tabCtxCloseOthers: 'Cerrar otros',
+    tabCtxCloseLeft: 'Cerrar a la izquierda',
+    tabCtxCloseRight: 'Cerrar a la derecha',
+    tabCtxCloseAll: 'Cerrar todos',
   },
   th: {
     menuFile: 'ไฟล์',
@@ -1419,6 +1454,11 @@ const tMain = createI18n({
     pdfDocxLocalCorruptDetail: 'ไฟล์เสียหายหรือไม่ใช่ PDF ที่ถูกต้อง จึงไม่สามารถแปลงได้',
     dlgPickSaveDir: 'เลือกตำแหน่งบันทึกเริ่มต้น',
     errSaveDirUnusable: 'โฟลเดอร์ที่เลือกไม่สามารถเขียนได้ จึงใช้เป็นตำแหน่งบันทึกเริ่มต้นไม่ได้',
+    tabCtxClose: 'ปิด',
+    tabCtxCloseOthers: 'ปิดแท็บอื่น',
+    tabCtxCloseLeft: 'ปิดแท็บซ้าย',
+    tabCtxCloseRight: 'ปิดแท็บขวา',
+    tabCtxCloseAll: 'ปิดทั้งหมด',
   },
   id: {
     menuFile: 'File',
@@ -1521,6 +1561,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Pilih Lokasi Penyimpanan Default',
     errSaveDirUnusable:
       'Folder yang dipilih tidak dapat ditulis dan tidak bisa digunakan sebagai lokasi penyimpanan default',
+    tabCtxClose: 'Tutup',
+    tabCtxCloseOthers: 'Tutup yang lain',
+    tabCtxCloseLeft: 'Tutup di kiri',
+    tabCtxCloseRight: 'Tutup di kanan',
+    tabCtxCloseAll: 'Tutup semua',
   },
   ru: {
     menuFile: 'Файл',
@@ -1623,6 +1668,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Выбрать папку сохранения по умолчанию',
     errSaveDirUnusable:
       'Выбранная папка недоступна для записи и не может использоваться как папка сохранения по умолчанию',
+    tabCtxClose: 'Закрыть',
+    tabCtxCloseOthers: 'Закрыть другие',
+    tabCtxCloseLeft: 'Закрыть слева',
+    tabCtxCloseRight: 'Закрыть справа',
+    tabCtxCloseAll: 'Закрыть все',
   },
   ar: {
     menuFile: 'ملف',
@@ -1720,6 +1770,11 @@ const tMain = createI18n({
     pdfDocxLocalCorruptDetail: 'الملف تالف أو ليس ملف PDF صالحًا ولا يمكن تحويله.',
     dlgPickSaveDir: 'اختيار موقع الحفظ الافتراضي',
     errSaveDirUnusable: 'المجلد المحدد غير قابل للكتابة ولا يمكن استخدامه كموقع حفظ افتراضي',
+    tabCtxClose: 'إغلاق',
+    tabCtxCloseOthers: 'إغلاق الأخرى',
+    tabCtxCloseLeft: 'إغلاق اليسار',
+    tabCtxCloseRight: 'إغلاق اليمين',
+    tabCtxCloseAll: 'إغلاق الكل',
   },
   pt: {
     menuFile: 'Arquivo',
@@ -1822,6 +1877,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Escolher local de salvamento padrão',
     errSaveDirUnusable:
       'A pasta selecionada não permite gravação e não pode ser usada como local de salvamento padrão',
+    tabCtxClose: 'Fechar',
+    tabCtxCloseOthers: 'Fechar outros',
+    tabCtxCloseLeft: 'Fechar à esquerda',
+    tabCtxCloseRight: 'Fechar à direita',
+    tabCtxCloseAll: 'Fechar todos',
   },
   it: {
     menuFile: 'File',
@@ -1924,6 +1984,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Scegli la posizione di salvataggio predefinita',
     errSaveDirUnusable:
       'La cartella selezionata non è scrivibile e non può essere usata come posizione di salvataggio predefinita',
+    tabCtxClose: 'Chiudi',
+    tabCtxCloseOthers: 'Chiudi gli altri',
+    tabCtxCloseLeft: 'Chiudi a sinistra',
+    tabCtxCloseRight: 'Chiudi a destra',
+    tabCtxCloseAll: 'Chiudi tutto',
   },
   pl: {
     menuFile: 'Plik',
@@ -2026,6 +2091,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Wybierz domyślną lokalizację zapisu',
     errSaveDirUnusable:
       'Wybrany folder nie pozwala na zapis i nie może być domyślną lokalizacją zapisu',
+    tabCtxClose: 'Zamknij',
+    tabCtxCloseOthers: 'Zamknij inne',
+    tabCtxCloseLeft: 'Zamknij po lewej',
+    tabCtxCloseRight: 'Zamknij po prawej',
+    tabCtxCloseAll: 'Zamknij wszystkie',
   },
   cs: {
     menuFile: 'Soubor',
@@ -2123,6 +2193,11 @@ const tMain = createI18n({
     pdfDocxConfirmBalance: '当前余额 {balance} credits。',
     pdfDocxBtnConvert: '继续',
     pdfDocxNoCliMsg: '无法登录 ChaAI Office：缺少必需组件（chatoffice），请重新安装应用。',
+    tabCtxClose: 'Zavřít',
+    tabCtxCloseOthers: 'Zavřít ostatní',
+    tabCtxCloseLeft: 'Zavřít vlevo',
+    tabCtxCloseRight: 'Zavřít vpravo',
+    tabCtxCloseAll: 'Zavřít vše',
   },
   nl: {
     menuFile: 'Bestand',
@@ -2225,6 +2300,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Standaard opslaglocatie kiezen',
     errSaveDirUnusable:
       'De geselecteerde map is niet beschrijfbaar en kan niet als standaard opslaglocatie worden gebruikt',
+    tabCtxClose: 'Sluiten',
+    tabCtxCloseOthers: 'Andere sluiten',
+    tabCtxCloseLeft: 'Links sluiten',
+    tabCtxCloseRight: 'Rechts sluiten',
+    tabCtxCloseAll: 'Alles sluiten',
   },
   ms: {
     menuFile: 'Fail',
@@ -2326,6 +2406,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'Pilih Lokasi Simpanan Lalai',
     errSaveDirUnusable:
       'Folder yang dipilih tidak boleh ditulis dan tidak dapat digunakan sebagai lokasi simpanan lalai',
+    tabCtxClose: 'Tutup',
+    tabCtxCloseOthers: 'Tutup yang lain',
+    tabCtxCloseLeft: 'Tutup di kiri',
+    tabCtxCloseRight: 'Tutup di kanan',
+    tabCtxCloseAll: 'Tutup semua',
   },
   he: {
     menuFile: 'קובץ',
@@ -2423,6 +2508,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'בחירת מיקום שמירה כברירת מחדל',
     errSaveDirUnusable:
       'התיקייה שנבחרה אינה ניתנת לכתיבה ולא ניתן להשתמש בה כמיקום שמירה כברירת מחדל',
+    tabCtxClose: 'סגור',
+    tabCtxCloseOthers: 'סגור אחרים',
+    tabCtxCloseLeft: 'סגור משמאל',
+    tabCtxCloseRight: 'סגור מימין',
+    tabCtxCloseAll: 'סגור הכל',
   },
   hi: {
     menuFile: 'फ़ाइल',
@@ -2525,6 +2615,11 @@ const tMain = createI18n({
     dlgPickSaveDir: 'डिफ़ॉल्ट सहेजने का स्थान चुनें',
     errSaveDirUnusable:
       'चयनित फ़ोल्डर में लिखा नहीं जा सकता, इसलिए इसे डिफ़ॉल्ट सहेजने के स्थान के रूप में उपयोग नहीं किया जा सकता',
+    tabCtxClose: 'बंद करें',
+    tabCtxCloseOthers: 'अन्य बंद करें',
+    tabCtxCloseLeft: 'बाएं बंद करें',
+    tabCtxCloseRight: 'दाएं बंद करें',
+    tabCtxCloseAll: 'सभी बंद करें',
   },
   'zh-TW': {
     menuFile: '檔案',
@@ -2615,6 +2710,11 @@ const tMain = createI18n({
     pdfDocxLocalCorruptDetail: '檔案已損壞或不是有效的 PDF，無法轉換。',
     dlgPickSaveDir: '選擇預設儲存位置',
     errSaveDirUnusable: '所選資料夾無法寫入，無法作為預設儲存位置',
+    tabCtxClose: '關閉',
+    tabCtxCloseOthers: '關閉其他',
+    tabCtxCloseLeft: '關閉左側',
+    tabCtxCloseRight: '關閉右側',
+    tabCtxCloseAll: '關閉全部',
   },
 })
 
@@ -2858,6 +2958,7 @@ function createShellWindow(): void {
       // AI-created PDF as a hidden temp-backed untitled document: the AI title
       // only prefills the first save — nothing lands on disk until then.
       try {
+        mkdirSync(blankDraftsDir(), { recursive: true })
         const tempPath = uniquePathIn(blankDraftsDir(), `ai-${randomUUID()}.pdf`)
         writeFileSync(tempPath, bytes)
         const pdfDir = saveDir ?? defaultSaveDir()
@@ -3408,6 +3509,7 @@ function newHtmlTab(): void {
  */
 async function newPdfTab(): Promise<void> {
   try {
+    mkdirSync(blankDraftsDir(), { recursive: true })
     const tempPath = uniquePathIn(blankDraftsDir(), `blank-${randomUUID()}.pdf`)
     writeFileSync(tempPath, await blankPdfBuffer())
     markPdfUntitledPath(tempPath, { defaultDir: pendingProjectSaveDir('pdf') })
@@ -3591,10 +3693,7 @@ function registerHomeIpc(): void {
       ],
       properties: ['openFile', 'multiSelections'],
     })
-    // P4 停靠优先: files opened from Home dock beside the conversation (the
-    // editor's own AI panel stays hidden while docked); argv/drag-drop opens
-    // from the OS still take over the window as full tabs
-    if (!result.canceled) for (const path of result.filePaths) routeDocumentPath(path, true)
+    if (!result.canceled) for (const path of result.filePaths) routeDocumentPath(path)
   })
 
   ipcMain.handle(HOME_CHANNELS.newDoc, (_event, opts?: { projectId?: string }) => {
@@ -3659,6 +3758,7 @@ function registerHomeIpc(): void {
         if (!recovery) return false
         // Fresh temp backing from the recovery copy: the old temp stays the
         // recovery key of the crashed session and is retired below.
+        mkdirSync(blankDraftsDir(), { recursive: true })
         const newTemp = uniquePathIn(blankDraftsDir(), `blank-${randomUUID()}.pdf`)
         copyFileSync(recovery, newTemp)
         const meta = { defaultDir: doc.defaultDir, suggestedName: doc.suggestedName }
@@ -4058,6 +4158,20 @@ function registerHomeIpc(): void {
     if (url) void shell.openExternal(url)
   })
 
+  // generic external-link opener (homepage footer etc.): renderer-supplied URL,
+  // https-only — anything else (file:, javascript:, malformed) is dropped
+  ipcMain.handle(HOME_CHANNELS.openExternal, (_event, raw: unknown) => {
+    if (typeof raw !== 'string') return
+    let parsed: URL
+    try {
+      parsed = new URL(raw)
+    } catch {
+      return
+    }
+    if (parsed.protocol !== 'https:') return
+    void shell.openExternal(parsed.toString())
+  })
+
   // home chat sessions: renderer owns the shape; main persists it atomically
   const chatSessionsPath = () => join(app.getPath('userData'), 'home-chat-sessions.json')
 
@@ -4424,6 +4538,65 @@ function registerTabsIpc(): void {
   ipcMain.handle(TABS_CHANNELS.reorder, (_event, id: string, toIndex: number) => {
     if (typeof id === 'string' && Number.isInteger(toIndex)) tabManager?.reorderTab(id, toIndex)
   })
+  // right-click context menu on a tab — native popup for the same reason as the
+  // overflow menu above (WebContentsView covers DOM dropdowns)
+  ipcMain.handle(
+    TABS_CHANNELS.showTabContextMenu,
+    (_event, x: unknown, y: unknown, tabId: unknown) => {
+      if (!tabManager || !shellWindow || typeof tabId !== 'string') return
+      const tabs = tabManager.list()
+      const idx = tabs.findIndex((t) => t.id === tabId)
+      if (idx < 0) return
+      const isHome = tabs[idx]!.kind === 'home'
+      const hasClosableLeft = tabs.some((t, i) => i < idx && t.id !== 'home')
+      const hasClosableRight = tabs.some((t, i) => i > idx && t.id !== 'home')
+      const hasOtherClosable = tabs.some((t) => t.id !== 'home' && t.id !== tabId)
+      const hasAnyClosable = tabs.some((t) => t.id !== 'home')
+      const items: MenuItemConstructorOptions[] = isHome
+        ? [
+            {
+              label: tm('tabCtxCloseAll'),
+              enabled: hasAnyClosable,
+              click: () => void tabManager?.closeAllTabs(),
+            },
+          ]
+        : [
+            {
+              label: tm('tabCtxClose'),
+              click: () => void tabManager?.closeTab(tabId),
+            },
+            {
+              label: tm('tabCtxCloseOthers'),
+              enabled: hasOtherClosable,
+              click: () => void tabManager?.closeOtherTabs(tabId),
+            },
+            { type: 'separator' },
+            {
+              label: tm('tabCtxCloseLeft'),
+              enabled: hasClosableLeft,
+              click: () => void tabManager?.closeLeftTabs(tabId),
+            },
+            {
+              label: tm('tabCtxCloseRight'),
+              enabled: hasClosableRight,
+              click: () => void tabManager?.closeRightTabs(tabId),
+            },
+            { type: 'separator' },
+            {
+              label: tm('tabCtxCloseAll'),
+              enabled: hasAnyClosable,
+              click: () => void tabManager?.closeAllTabs(),
+            },
+          ]
+      const menu = Menu.buildFromTemplate(items)
+      menu.popup({
+        window: shellWindow,
+        ...(typeof x === 'number' && typeof y === 'number'
+          ? { x: Math.round(x), y: Math.round(y) }
+          : {}),
+      })
+    },
+  )
   // "all tabs" overflow menu — native popup because the editors' WebContentsView
   // would cover any DOM dropdown the shell renderer draws below the tab strip
   ipcMain.handle(TABS_CHANNELS.showAppMenu, (_event, x: unknown, y: unknown) => {

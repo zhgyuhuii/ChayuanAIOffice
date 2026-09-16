@@ -454,7 +454,6 @@ export function ModelSettingsPage({
   const sanitize = (next: AiSettingsV2): AiSettingsV2 => {
     if (next.currentModel === undefined) delete next.currentModel
     if (next.imageModel === undefined) delete next.imageModel
-    if (next.chatofficeToolsEnabled === undefined) delete next.chatofficeToolsEnabled
     return next
   }
 

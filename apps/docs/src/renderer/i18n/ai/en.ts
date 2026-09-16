@@ -49,6 +49,7 @@ export const en = {
   aiSumReadRevisions: 'Read revisions',
   aiSumReplyComment: 'Replied to comment',
   aiSumResolveComment: 'Resolved comment',
+  aiSumAddComment: 'Added comment',
   aiTidyBtn: 'AI Format',
   aiTidyPrompt:
     'Tidy up the document formatting — for example fix heading levels, unify list formatting, remove unnecessary bold and italics, and make paragraph indentation consistent. Adjust formatting only — do not change any text content',

@@ -12,7 +12,6 @@ import { basename, extname } from 'node:path'
 import {
   activeMediaConfig,
   analyzeMediaWithProvider,
-  cloudToolsEnabled,
   defaultAiSettings,
   generateImageWithProvider,
   resolveAiSettings,
@@ -28,8 +27,6 @@ import { chatofficeAnalyzeMedia, chatofficeGenerateImage, hasChatOfficeAuth, typ
 
 export const CHATOFFICE_NOT_LOGGED_IN_ERROR =
   'ChatOffice account is not logged in on this machine; ask the user to log in first'
-export const CHATOFFICE_TOOLS_OFF_ERROR =
-  'ChatOffice cloud tools are turned off in Settings (AI Model); enable them or configure an image provider under Settings (AI Media) to use this tool'
 
 /** 200 MB: enough for a long clip through the Gemini Files API, small enough to hold in memory */
 const MAX_MEDIA_BYTES = 200 * 1024 * 1024
@@ -71,9 +68,8 @@ export function readAiSettingsFile(path: string): AiSettings {
 type Gate = { error: string } | null
 
 /** the ChatOffice route's preconditions; null when it may proceed */
-function gskGate(settings: AiSettings, notLoggedInError: string): Gate {
+function gskGate(_settings: AiSettings, notLoggedInError: string): Gate {
   if (!hasChatOfficeAuth()) return { error: notLoggedInError }
-  if (!cloudToolsEnabled(settings)) return { error: CHATOFFICE_TOOLS_OFF_ERROR }
   return null
 }
 

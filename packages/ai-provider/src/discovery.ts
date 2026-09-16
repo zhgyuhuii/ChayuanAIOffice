@@ -32,19 +32,71 @@ function originOf(baseUrl: string): string {
   }
 }
 
+/** 发现请求全是幂等 GET。网关边缘行为是瞬态的（403 block page / 429 / 5xx /
+ *  连接层抖动），重试两次骑过抖动窗口再报错；401/404 等业务错误立即抛出。 */
+const DISCOVER_ATTEMPTS = 3
+
+/** 403 with an HTML body is an edge block page (WAF/bot management), not an API answer */
+function isEdgeBlock(response: Response): boolean {
+  return (
+    response.status === 403 && (response.headers.get('content-type') || '').includes('text/html')
+  )
+}
+
+/** transient upstream states worth one more attempt on an idempotent GET */
+function isTransientStatus(response: Response): boolean {
+  return (
+    isEdgeBlock(response) ||
+    response.status === 429 ||
+    (response.status >= 500 && response.status <= 599)
+  )
+}
+
+function abortableDelay(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      clearTimeout(timer)
+      reject(new DOMException('Aborted', 'AbortError'))
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort)
+      resolve()
+    }, ms)
+    if (signal?.aborted) {
+      clearTimeout(timer)
+      reject(new DOMException('Aborted', 'AbortError'))
+      return
+    }
+    signal?.addEventListener('abort', onAbort, { once: true })
+  })
+}
+
 async function fetchJson(
   url: string,
   headers: Record<string, string>,
   signal?: AbortSignal,
 ): Promise<unknown> {
-  const response = await aiFetch(url, {
-    headers,
-    ...(signal ? { signal } : {}),
-  })
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${httpBodyDetail(await response.text())}`)
+  let lastError: unknown = new Error('no attempt made')
+  for (let attempt = 0; attempt < DISCOVER_ATTEMPTS; attempt++) {
+    if (signal?.aborted) break
+    let retryable: boolean
+    try {
+      const response = await aiFetch(url, {
+        headers,
+        ...(signal ? { signal } : {}),
+      })
+      if (response.ok) return await response.json()
+      lastError = new Error(`HTTP ${response.status}: ${httpBodyDetail(await response.text())}`)
+      retryable = isTransientStatus(response)
+    } catch (err) {
+      // network layer (connect reset/timeout) or abort — retry unless aborted
+      lastError = err
+      retryable = !signal?.aborted
+    }
+    if (!retryable || attempt === DISCOVER_ATTEMPTS - 1) break
+    await abortableDelay(400 * (attempt + 1), signal)
   }
-  return response.json()
+  throw lastError
 }
 
 async function openAiStyleModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {

@@ -51,6 +51,7 @@ export const es = {
   aiSumReadRevisions: 'Leer revisiones',
   aiSumReplyComment: 'Respuesta al comentario',
   aiSumResolveComment: 'Comentario resuelto',
+  aiSumAddComment: 'Comentario añadido',
   aiTidyBtn: 'Formato IA',
   aiTidyPrompt:
     'Ordena el formato de todo el documento; por ejemplo, corrige los niveles de título, unifica las listas, elimina negritas y cursivas innecesarias y homogeneiza la sangría de los párrafos. Ajusta solo el formato, sin cambiar el texto',

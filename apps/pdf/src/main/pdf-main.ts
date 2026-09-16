@@ -35,7 +35,6 @@ import {
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
-import { cloudToolsEnabled, type AiSettings } from '@chatoffice/ai-provider'
 import { PDF_CHANNELS } from '../shared/ipc'
 import type {
   ExportImagesRequest,
@@ -888,14 +887,9 @@ function withSignatures(
 
 let ipcRegistered = false
 
-/** live read of the shared ai-settings.json (written by the shell settings pane) */
+/** ChatOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
-  try {
-    const raw = readFileSync(join(app.getPath('userData'), 'ai-settings.json'), 'utf8')
-    return cloudToolsEnabled(JSON.parse(raw) as Partial<AiSettings>)
-  } catch {
-    return true // no settings file yet = default on
-  }
+  return false
 }
 
 function registerPdfIpc(): void {

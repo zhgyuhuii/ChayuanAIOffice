@@ -11,6 +11,13 @@ export type {
   AiModelEntry,
   AiProviderProfile,
   AiWireProtocol,
+  AiMediaProviderId,
+  AiMediaProviderMeta,
+  AiMediaProviderConfig,
+  AiMediaSettings,
+  AiSearchProviderId,
+  AiSearchProviderMeta,
+  AiSearchSettings,
 } from './types'
 export type { DiscoveryTarget } from './discovery'
 export type { LocalToolStatus, LocalToolOpResult } from './local-tool'

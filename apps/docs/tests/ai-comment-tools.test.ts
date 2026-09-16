@@ -77,6 +77,14 @@ function makeAccess(editor: Editor, comments: CommentInfo[]): AiCommentsAccess {
       }
       return true
     },
+    create: (text, from, to) => {
+      if (from >= to) return false
+      editor.commands.setTextSelection({ from, to })
+      const id = nextCommentId(comments)
+      if (!addCommentToSelection(editor, id)) return false
+      comments.push({ id, author: 'AI Assistant', date: DATE, text })
+      return true
+    },
   }
 }
 

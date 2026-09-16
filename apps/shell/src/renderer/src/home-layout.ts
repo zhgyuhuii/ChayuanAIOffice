@@ -18,6 +18,8 @@ export interface HomeLayoutState {
   /** ZCode 式左树双 Tab（对话 | 项目）：当前显示的面（默认对话） */
   activeTab: HomeTreeTab
   recentCollapsed: boolean
+  /** 侧栏「新建」分组（6 新建 + 打开本地）的折叠态 */
+  newCollapsed: boolean
   /** sidebar width in px (tree strip); the main process insets document views
    *  by the same amount, mirrored over setTreeWidth IPC */
   sidebarWidth: number
@@ -50,6 +52,7 @@ const DEFAULT_STATE: HomeLayoutState = {
   rightCollapsed: true,
   activeTab: 'chats',
   recentCollapsed: false,
+  newCollapsed: false,
   sidebarWidth: SIDEBAR_DEFAULT,
   dockWidth: null,
 }
@@ -78,6 +81,7 @@ function load(): HomeLayoutState {
         rightCollapsed: obj.rightCollapsed === true,
         activeTab: treeTabFromStored(obj),
         recentCollapsed: obj.recentCollapsed === true,
+        newCollapsed: obj.newCollapsed === true,
         sidebarWidth:
           typeof obj.sidebarWidth === 'number' && Number.isFinite(obj.sidebarWidth)
             ? clampSidebarWidth(obj.sidebarWidth)
@@ -108,6 +112,7 @@ export function setHomeLayout(patch: Partial<HomeLayoutState>): void {
     next.rightCollapsed === state.rightCollapsed &&
     next.activeTab === state.activeTab &&
     next.recentCollapsed === state.recentCollapsed &&
+    next.newCollapsed === state.newCollapsed &&
     next.sidebarWidth === state.sidebarWidth &&
     next.dockWidth === state.dockWidth
   ) {

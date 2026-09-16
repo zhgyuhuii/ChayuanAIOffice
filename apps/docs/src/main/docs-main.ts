@@ -91,13 +91,10 @@ import { parseFileToText } from '@chatoffice/file-parse'
 import { convertHtmlToDocx } from '../../../../packages/html2docx/src'
 import { ElectronBrowserDriver } from '../../../../packages/html2docx/src/drivers/electron'
 import {
-  cloudToolsEnabled,
   isAiOverloadedError,
-  migrateSettingsV2,
   setRescueFetch,
   type AiModelSelection,
   type AiRuntime,
-  type StoredAiSettings,
   setAiUserAgent,
 } from '@chatoffice/ai-provider'
 import { registerSharedAiIpc } from '@chatoffice/ai-host'
@@ -2950,16 +2947,9 @@ const TWIPS_PER_INCH = 1440
 
 const SETTINGS_PATH = () => userDataPath('ai-settings.json')
 
-/** live read: the settings page writes the file; every tool call re-checks */
+/** ChatOffice cloud backend removed — always false */
 function chatofficeCloudToolsOn(): boolean {
-  try {
-    return cloudToolsEnabled({
-      chatofficeToolsEnabled: migrateSettingsV2(readJson<StoredAiSettings>(SETTINGS_PATH(), {}))
-        .chatofficeToolsEnabled,
-    })
-  } catch {
-    return true
-  }
+  return false
 }
 
 /**

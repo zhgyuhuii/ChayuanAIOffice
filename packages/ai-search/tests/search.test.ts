@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach, beforeAll } from 'vitest'
 import { webSearch, imageSearch } from '../src/index'
 
-// These cases only test the Serper/DuckDuckGo paths; a local chatoffice login would take priority, so disable it explicitly
+// These cases test the Serper/DuckDuckGo paths (ChatOffice removed from search chain)
 beforeAll(() => {
   process.env.AI_SEARCH_DISABLE_GSK = '1'
 })
@@ -144,8 +144,6 @@ describe('DuckDuckGo fallback error surfacing', () => {
     expect(r.images).toHaveLength(0)
     expect(r.error).toContain('all image backends failed')
     const byBackend = Object.fromEntries(r.attempts.map((a) => [a.backend, a.status]))
-    // chatoffice unsigned in this harness → skipped; scrape/CC tiers fail on the dead network
-    expect(byBackend.chatoffice).toBe('skipped')
     expect(byBackend.serper).toBe('skipped')
     expect(byBackend.bing).toBe('error')
     expect(byBackend.openverse).toBe('error')
@@ -171,7 +169,6 @@ describe('DuckDuckGo fallback error surfacing', () => {
     const r = await imageSearch('cats', 8)
     expect(r.method).toBe('serper')
     expect(r.images).toHaveLength(1)
-    expect(r.attempts.find((a) => a.backend === 'chatoffice')?.status).toBe('skipped')
     expect(r.attempts.find((a) => a.backend === 'serper')?.status).toBe('ok')
   })
 })
@@ -213,11 +210,9 @@ describe('imageSearch (Serper)', () => {
 })
 
 describe('search-tools', () => {
-  it('maps the settings block onto the ChatOffice-backend gate', async () => {
-    const { useChatOfficeBackend, webSearchTool } = await import('../src/search-tools')
-    const base = (await import('@chatoffice/ai-provider')).defaultAiSettings()
-    expect(useChatOfficeBackend(base)).toBe(true)
-    expect(useChatOfficeBackend({ ...base, chatofficeToolsEnabled: false })).toBe(false)
+  it('exports webSearchTool and imageSearchTool', async () => {
+    const { webSearchTool, imageSearchTool } = await import('../src/search-tools')
     expect(typeof webSearchTool).toBe('function')
+    expect(typeof imageSearchTool).toBe('function')
   })
 })

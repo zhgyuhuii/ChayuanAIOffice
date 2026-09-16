@@ -175,6 +175,9 @@ const homeApi: HomeApi = {
   async openLoginUrl() {
     await ipcRenderer.invoke(HOME_CHANNELS.accountLoginOpenUrl)
   },
+  async openExternal(url: string) {
+    await ipcRenderer.invoke(HOME_CHANNELS.openExternal, url)
+  },
   async accountLogout() {
     await ipcRenderer.invoke(HOME_CHANNELS.accountLogout)
   },
@@ -540,6 +543,9 @@ const tabsApi: TabsApi = {
   },
   async close(id) {
     await ipcRenderer.invoke(TABS_CHANNELS.close, id)
+  },
+  async showTabContextMenu(x, y, tabId) {
+    await ipcRenderer.invoke(TABS_CHANNELS.showTabContextMenu, x, y, tabId)
   },
   async showMenu(x, y) {
     await ipcRenderer.invoke(TABS_CHANNELS.showMenu, x, y)

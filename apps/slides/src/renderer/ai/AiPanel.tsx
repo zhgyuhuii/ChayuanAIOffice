@@ -1418,14 +1418,27 @@ export function AiPanel({
           return { ok: false, error: String('') }
         }
       },
-      chatofficeTools: () =>
-        chatofficeLoggedInRef.current && settingsRef.current?.chatofficeToolsEnabled !== false,
+      chatofficeTools: () => false,
       unreadTextAttachments: () =>
         availableAttachments()
           .filter(
             (a) => !ATTACHMENT_IMAGE_EXTS.has(a.ext) && !readAttachmentPathsRef.current.has(a.path),
           )
           .map((a) => a.name),
+      getComments: async (slideIndex: number) => {
+        try {
+          return await window.slidesApi.getComments(slideIndex)
+        } catch {
+          return []
+        }
+      },
+      addComment: async (slideIndex: number, text: string) => {
+        try {
+          return await window.slidesApi.addComment({ slideIndex, text })
+        } catch {
+          return null
+        }
+      },
     }
     accessRef.current = access
     loopRef.current = new AgentLoop({

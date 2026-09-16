@@ -51,6 +51,7 @@ export const cs = {
   aiSumReadRevisions: 'Přečteny revize',
   aiSumReplyComment: 'Odpovězeno na komentář',
   aiSumResolveComment: 'Komentář vyřešen',
+  aiSumAddComment: 'Komentář přidán',
   aiTidyBtn: 'Formátování AI',
   aiTidyPrompt:
     'Upravte formátování dokumentu – například opravte úrovně nadpisů, sjednoťte formátování seznamů, odeberte nadbytečné tučné písmo a kurzívu a zajistěte jednotné odsazení odstavců. Upravujte pouze formátování – neměňte žádný textový obsah',

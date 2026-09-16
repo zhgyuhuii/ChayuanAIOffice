@@ -1238,9 +1238,7 @@ export function App(): React.JSX.Element {
         }),
         createSearchSkill(),
         createImageSkill(
-          () =>
-            chatofficeLoggedInRef.current &&
-            aiSettingsRef.current?.chatofficeToolsEnabled !== false,
+          () => false,
           () => aiSettingsRef.current?.imageSource ?? 'auto',
         ),
       ]),

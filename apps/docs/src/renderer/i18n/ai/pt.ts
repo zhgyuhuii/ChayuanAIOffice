@@ -51,6 +51,7 @@ export const pt = {
   aiSumReadRevisions: 'Ler revisões',
   aiSumReplyComment: 'Resposta ao comentário',
   aiSumResolveComment: 'Comentário resolvido',
+  aiSumAddComment: 'Comentário adicionado',
   aiTidyBtn: 'Formatação IA',
   aiTidyPrompt:
     'Organize a formatação de todo o documento — por exemplo, corrija os níveis de título, uniformize as listas, remova negritos e itálicos desnecessários e padronize o recuo dos parágrafos. Ajuste apenas a formatação, sem alterar o texto',

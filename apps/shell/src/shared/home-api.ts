@@ -190,6 +190,9 @@ export interface HomeApi {
   onAccountLogin(handler: (ev: AccountLoginEvent) => void): () => void
   /** re-open the pending login auth URL in the default browser (rescue when auto-open failed) */
   openLoginUrl(): Promise<void>
+  /** open an arbitrary https URL in the system browser (homepage footer links);
+   *  main validates the scheme, non-https is dropped. Optional: web shim omits it */
+  openExternal?(url: string): Promise<void>
   /** log out (clears the saved API key; the login state is shared globally with the chatoffice CLI) */
   accountLogout(): Promise<void>
   /** app version (from package.json / electron app.getVersion) */
@@ -516,6 +519,7 @@ export const HOME_CHANNELS = {
   accountLogin: 'home:account-login',
   accountLoginEvent: 'home:account-login-event',
   accountLoginOpenUrl: 'home:account-login-open-url',
+  openExternal: 'home:open-external',
   accountLogout: 'home:account-logout',
   getAppVersion: 'home:get-app-version',
   onboardingSeen: 'home:onboarding-seen',

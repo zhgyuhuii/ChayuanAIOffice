@@ -51,6 +51,7 @@ export const de = {
   aiSumReadRevisions: 'Änderungen gelesen',
   aiSumReplyComment: 'Auf Kommentar geantwortet',
   aiSumResolveComment: 'Kommentar erledigt',
+  aiSumAddComment: 'Kommentar hinzugefügt',
   aiTidyBtn: 'KI-Formatierung',
   aiTidyPrompt:
     'Bringe die Formatierung des gesamten Dokuments in Ordnung – zum Beispiel Überschriftenebenen korrigieren, Listen vereinheitlichen, überflüssige Fett- und Kursivauszeichnungen entfernen, Absatzeinzüge angleichen. Passe nur die Formatierung an, ohne den Text zu verändern',

@@ -7,14 +7,14 @@ import {
 } from '../src/search-settings'
 
 describe('search settings', () => {
-  it('defaults to chatoffice with empty keys and rides along in defaultAiSettings', () => {
+  it('defaults to duckduckgo and rides along in defaultAiSettings', () => {
     expect(defaultAiSearchSettings()).toEqual({
-      provider: 'chatoffice',
-      providers: { serper: { apiKey: '' }, tavily: { apiKey: '' } },
+      provider: 'duckduckgo',
+      providers: {},
     })
-    expect(defaultAiSettings().search?.provider).toBe('chatoffice')
+    expect(defaultAiSettings().search?.provider).toBe('duckduckgo')
     const resolved = resolveAiSettings(
-      { provider: 'chatoffice', providers: {} as never },
+      { search: { provider: 'duckduckgo', providers: {} } } as never,
       defaultAiSettings(),
     )
     expect(resolved.search).toEqual(defaultAiSearchSettings())
@@ -26,30 +26,35 @@ describe('search settings', () => {
       providers: { tavily: { apiKey: ' tvly-1 ' } } as never,
     })
     expect(s.provider).toBe('tavily')
-    expect(s.providers.tavily.apiKey).toBe('tvly-1')
-    expect(s.providers.serper.apiKey).toBe('')
+    expect(s.providers.tavily?.apiKey).toBe('tvly-1')
   })
 
-  it('activates a BYOK search provider only with a key', () => {
-    expect(activeSearchProvider({ search: undefined })).toBe('chatoffice')
+  it('activates a keyed search provider only with a key', () => {
+    expect(activeSearchProvider({ search: undefined })).toBe('duckduckgo')
     expect(
       activeSearchProvider({
         search: {
           provider: 'serper',
-          providers: { serper: { apiKey: '' }, tavily: { apiKey: '' } },
+          providers: { serper: { apiKey: '' } },
         },
       }),
-    ).toBe('chatoffice')
+    ).toBe('duckduckgo')
     expect(
       activeSearchProvider({
         search: {
           provider: 'serper',
-          providers: { serper: { apiKey: 'k' }, tavily: { apiKey: '' } },
+          providers: { serper: { apiKey: 'k' } },
         },
       }),
     ).toBe('serper')
-    expect(activeSearchProvider({ search: { provider: 'bing', providers: {} } as never })).toBe(
-      'chatoffice',
-    )
+  })
+
+  it('activates a free provider without a key', () => {
+    expect(
+      activeSearchProvider({ search: { provider: 'bing', providers: {} } }),
+    ).toBe('bing')
+    expect(
+      activeSearchProvider({ search: { provider: 'duckduckgo', providers: {} } }),
+    ).toBe('duckduckgo')
   })
 })

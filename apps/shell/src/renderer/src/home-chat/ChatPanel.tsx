@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
-import { AiComposer, ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
+import { AiComposer, AiTypingIndicator, ModelPickerButton, useDismissablePopover } from '@chatoffice/ui'
 import attachIcon from '../assets/attach-icon.png'
+import qrCodeIcon from '../assets/qrcode.png'
 import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
 import type { StringKey } from '../locale'
@@ -273,11 +274,7 @@ function ChatMessageView({
           </div>
         )}
         {typing && !m.text ? (
-          <span className="chat-typing" role="status" aria-label={t('chatThinking')}>
-            <span />
-            <span />
-            <span />
-          </span>
+          <AiTypingIndicator label={t('chatThinking')} />
         ) : m.text && !m.error ? (
           <div
             className="chat-md"
@@ -548,6 +545,16 @@ export function ChatPanel({
 
   // ── sessions dropdown ──
   const [menuOpen, setMenuOpen] = useState(false)
+  /** 页脚二维码点击放大（对话栏内 absolute 遮罩，点任意处/Escape 关闭） */
+  const [qrZoom, setQrZoom] = useState(false)
+  useEffect(() => {
+    if (!qrZoom) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setQrZoom(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [qrZoom])
   const menuWrapRef = useRef<HTMLDivElement>(null)
   useDismissablePopover(menuOpen, () => setMenuOpen(false), {
     inside: () => [menuWrapRef.current],
@@ -616,10 +623,15 @@ export function ChatPanel({
     if (store.active && text && dockRelay?.trySend(store.active.id, text)) {
       dockRelay.consumeSelection()
       const relaySession = store.active
+      const now = Date.now()
       store.updateSession(relaySession.id, (s) => ({
         ...s,
         title: s.title || deriveTitle(text),
-        messages: [...s.messages, { id: crypto.randomUUID(), role: 'user', text, ts: Date.now() }],
+        messages: [
+          ...s.messages,
+          { id: crypto.randomUUID(), role: 'user', text, ts: now },
+          { id: crypto.randomUUID(), role: 'assistant', text: '', ts: now },
+        ],
       }))
       setInput('')
       setAttachments([])
@@ -1104,6 +1116,46 @@ export function ChatPanel({
       )}
 
       <div className={`chat-dock${hasMessages ? '' : ' landing'}`}>{renderComposer()}</div>
+
+      {/* 企业信息页脚：仅欢迎屏（空会话）显示，开聊即隐。官网链接走
+          openExternal IPC（https-only 校验在主进程） */}
+      {!hasMessages && (
+        <footer className="chat-landing-footer">
+          <span className="chat-footer-text">
+            {t('companyName')} © {new Date().getFullYear()}
+            <span className="chat-footer-dot" aria-hidden="true">
+              ·
+            </span>
+            <button
+              className="chat-footer-link"
+              onClick={() => void window.chatOffice.openExternal?.('https://aidooo.com')}
+            >
+              aidooo.com
+            </button>
+          </span>
+          <button
+            className="chat-footer-qr"
+            aria-label={t('scanQrFollow')}
+            data-tip={t('scanQrFollow')}
+            onClick={() => setQrZoom(true)}
+          >
+            <img src={qrCodeIcon} alt="" aria-hidden="true" />
+          </button>
+        </footer>
+      )}
+
+      {/* 二维码放大层：absolute 罩在对话栏内（shell DOM 画在编辑器视图之下，
+          不能 fixed 全窗，否则有停靠文档时被盖住），点任意处 / Escape 关闭 */}
+      {qrZoom && (
+        <div
+          className="chat-qr-zoom"
+          role="dialog"
+          aria-label={t('scanQrFollow')}
+          onClick={() => setQrZoom(false)}
+        >
+          <img src={qrCodeIcon} alt={t('scanQrFollow')} />
+        </div>
+      )}
     </main>
   )
 }

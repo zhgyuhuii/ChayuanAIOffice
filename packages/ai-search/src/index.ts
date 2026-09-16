@@ -1,12 +1,8 @@
 /**
- * Search utilities (main process). Web search: chatoffice (ChatOffice CLI)
- * first, then Serper Google API, then Tavily, with DuckDuckGo as the keyless
- * last resort. Image search: chatoffice → Serper → Bing scrape → Openverse, each
- * tier recorded as a SearchAttempt for the dialog's diagnostics. Runs in the main
- * process (Node fetch / child process) to avoid renderer CORS; the Serper key
- * reuses SERPER_API_KEY (settings-first via the caller's override), the Tavily
- * key reuses TAVILY_API_KEY.
- * For chatoffice auth see ./chatoffice.ts (`chatoffice login` or CHATOFFICE_API_KEY).
+ * Search utilities (main process). Web search: Serper → Tavily → Linkup → SearxNG
+ * → DuckDuckGo, with settings-driven provider selection and API keys. Image search:
+ * Serper → Bing scrape → Openverse, each tier recorded as a SearchAttempt for the
+ * dialog's diagnostics. Runs in the main process (Node fetch) to avoid renderer CORS.
  */
 
 import {
@@ -17,9 +13,10 @@ import {
   type SearchAttempt,
   type WebSearchResult,
 } from './shared'
-import { chatofficeImageSearch, chatofficeWebSearch, hasChatOfficeAuth } from './chatoffice'
 import { bingImageSearch } from './bing'
 import { openverseImageSearch } from './openverse'
+import { linkupWebSearch } from './linkup'
+import { searxngWebSearch } from './searxng'
 
 export type { ImageSearchResult, SearchAttempt, WebSearchResult } from './shared'
 export {
@@ -33,34 +30,35 @@ export * from './chatoffice-auth'
 
 const SERPER_KEY = () => process.env.SERPER_API_KEY ?? ''
 const TAVILY_KEY = () => process.env.TAVILY_API_KEY ?? ''
+const LINKUP_KEY = () => process.env.LINKUP_API_KEY ?? ''
+
+/** API keys resolved from settings (preferred) then env vars (fallback) */
+interface SearchKeys {
+  serper?: string
+  tavily?: string
+  linkup?: string
+  searxngBaseUrl?: string
+}
 
 // ── Web search ──────────────────────────────────────────────────────
 
 export async function webSearch(
   query: string,
   maxResults = 6,
-  useChatOffice = true,
+  _useChatOffice?: boolean,
+  keys?: SearchKeys,
 ): Promise<{
   results: WebSearchResult[]
   answer?: string
   method: string
   error?: string
 }> {
-  // useChatOffice=false: the user turned ChatOffice cloud tools off — skip straight to the free backends
-  if (useChatOffice && hasChatOfficeAuth()) {
-    try {
-      const r = await chatofficeWebSearch(query, maxResults)
-      if (r.results.length) return { ...r, method: 'chatoffice' }
-    } catch {
-      /* fall back to Serper/Tavily/DuckDuckGo */
-    }
-  }
-  const key = SERPER_KEY()
-  if (key) {
+  const serperKey = keys?.serper ?? SERPER_KEY()
+  if (serperKey) {
     try {
       const resp = await fetchWithTimeout('https://google.serper.dev/search', {
         method: 'POST',
-        headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+        headers: { 'X-API-KEY': serperKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({ q: query, num: maxResults, gl: 'us', hl: 'en' }),
       })
       if (resp.ok) {
@@ -85,10 +83,10 @@ export async function webSearch(
         }
       }
     } catch {
-      /* fall back to Tavily/DuckDuckGo */
+      /* fall back to Tavily/Linkup/SearxNG/DuckDuckGo */
     }
   }
-  const tavilyKey = TAVILY_KEY()
+  const tavilyKey = keys?.tavily ?? TAVILY_KEY()
   if (tavilyKey) {
     try {
       const resp = await fetchWithTimeout('https://api.tavily.com/search', {
@@ -121,13 +119,30 @@ export async function webSearch(
         }
       }
     } catch {
+      /* fall back to Linkup/SearxNG/DuckDuckGo */
+    }
+  }
+  const linkupKey = keys?.linkup ?? LINKUP_KEY()
+  if (linkupKey) {
+    try {
+      const results = await linkupWebSearch(query, maxResults, linkupKey)
+      if (results.length) return { results, method: 'linkup' }
+    } catch {
+      /* fall back to SearxNG/DuckDuckGo */
+    }
+  }
+  const searxngBase = keys?.searxngBaseUrl
+  if (searxngBase) {
+    try {
+      const results = await searxngWebSearch(query, maxResults, searxngBase)
+      if (results.length) return { results, method: 'searxng' }
+    } catch {
       /* fall back to DuckDuckGo */
     }
   }
   try {
     return { results: await duckWebSearch(query, maxResults), method: 'duckduckgo' }
   } catch (err) {
-    // an unreachable backend must not read as an empty result set
     return { results: [], method: 'error', error: `duckduckgo: ${String(err)}` }
   }
 }
@@ -135,15 +150,14 @@ export async function webSearch(
 // ── Image search ────────────────────────────────────────────────────
 
 /**
- * Image search fallback chain: chatoffice (login) → Serper (key) →
- * Bing scrape (keyless, China-reachable) → Openverse (CC, keyless). Every
- * tier records a SearchAttempt so the caller can diagnose an empty gallery
- * instead of reading it as "no matches".
+ * Image search fallback chain: Serper (key) → Bing scrape (keyless, China-reachable)
+ * → Openverse (CC, keyless). Every tier records a SearchAttempt so the caller can
+ * diagnose an empty gallery instead of reading it as "no matches".
  */
 export async function imageSearch(
   query: string,
   maxResults = 8,
-  useChatOffice = true,
+  _useChatOffice?: boolean,
   serperKeyOverride?: string,
   /** 1-based result page; each tier maps it to its own offset (insert-dialog "next batch") */
   page = 1,
@@ -154,24 +168,6 @@ export async function imageSearch(
   attempts: SearchAttempt[]
 }> {
   const attempts: SearchAttempt[] = []
-  if (useChatOffice && hasChatOfficeAuth()) {
-    try {
-      const images = await chatofficeImageSearch(query, maxResults, page)
-      if (images.length) {
-        attempts.push({ backend: 'chatoffice', status: 'ok', count: images.length })
-        return { images, method: 'chatoffice', attempts }
-      }
-      attempts.push({ backend: 'chatoffice', status: 'error', detail: '0 results' })
-    } catch (err) {
-      attempts.push({ backend: 'chatoffice', status: 'error', detail: String(err) })
-    }
-  } else {
-    attempts.push({
-      backend: 'chatoffice',
-      status: 'skipped',
-      detail: useChatOffice ? 'not signed in' : 'cloud tools off',
-    })
-  }
 
   const key = serperKeyOverride ?? SERPER_KEY()
   if (key) {

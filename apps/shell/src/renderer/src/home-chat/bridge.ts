@@ -34,7 +34,7 @@ export function createHomeChatBridge(
     aiStream: (request) => window.chatOffice.aiStream(request),
     aiStreamCancel: (requestId) => window.chatOffice.aiStreamCancel(requestId),
     onAiStream: (listener) => window.chatOffice.onAiStream(listener),
-    createDocument: (request) => window.chatOffice.createDocument({ ...request, dock: true }),
+    createDocument: (request) => window.chatOffice.createDocument({ ...request, dock: false }),
     readAttachment: (path, offset, maxChars) =>
       window.chatOffice.readAttachment(path, offset, maxChars),
     readAttachmentImage: async (path) => {
