@@ -52,7 +52,7 @@
    export const stringsMerged = deepMergeStrings(strings, localStrings)
    ```
    上游更新 shard → git 干净合并；本地加键 → 只写自己的文件。**两区永不相遇。**
-3. **存量迁移**：`strings.ts`/各 shard 里凡由本地功能引入的键（`feedback*`、`mcpMg*`、`secNew`、`brandName`、`welcome*`、`tabCtx*` 等，清单见台账 §8）分批迁去 local 文件；迁一个删一个。
+3. **存量迁移**：（**shell 已完成试点** 2026-09-16：280 键×20 语言→`i18n-local-strings.ts`，470 测试绿；工具 `tools/extract-local-i18n.mjs`；其余 app 逐个迁移）`strings.ts`/各 shard 里凡由本地功能引入的键（`feedback*`、`mcpMg*`、`secNew`、`brandName`、`welcome*`、`tabCtx*` 等，清单见台账 §8）分批迁去 local 文件；迁一个删一个。
 4. zh/zh-TW 与其他语言的品牌值差异在 local 文件内直接写死正确值（察元AIOffice / ChaAI Office），不再依赖全库替换。
 
 ### 3.2 品牌：显示名收敛到一个模块
