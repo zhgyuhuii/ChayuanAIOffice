@@ -15,7 +15,7 @@ import { join } from 'node:path'
 import JSZip from 'jszip'
 
 /**
- * Installing the bundled `chatoffice` skill into the coding agents found on this
+ * Installing the bundled `chaoffice` skill into the coding agents found on this
  * machine, shared by Settings → Integrations and `chatoffice skill`. Every write
  * is a click in that pane or an explicit command; nothing installs on its own.
  * Pure functions over an injected home / env so the state table is
@@ -23,6 +23,8 @@ import JSZip from 'jszip'
  */
 
 export const SKILL_NAME = 'chaoffice'
+
+export const LEGACY_SKILL_NAME = 'chatoffice'
 
 /** app-settings.json key under which every install this machine's ChaAI Office wrote is remembered */
 export const LEDGER_KEY = 'agentSkillInstalls'
@@ -260,7 +262,24 @@ export function installSkill(
     at: new Date().toISOString(),
     channel,
   }
+  removeLegacySkillDir(skillsDir, ledger)
   return path
+}
+
+/**
+ * Pre-rename installs live at `<skillsDir>/chatoffice`; once the chaoffice
+ * skill is in place they are stale duplicates in the agents' skill lists.
+ * Removed only when the ledger proves we wrote them.
+ */
+function removeLegacySkillDir(skillsDir: string, ledger: SkillLedger): void {
+  const legacyDir = join(skillsDir, LEGACY_SKILL_NAME)
+  const legacyPath = join(legacyDir, 'SKILL.md')
+  if (!ledger[legacyPath]) return
+  try {
+    rmSync(legacyPath, { force: true })
+    if (readdirSync(legacyDir).length === 0) rmSync(legacyDir, { recursive: true })
+  } catch {}
+  delete ledger[legacyPath]
 }
 
 /** Remove only what this app wrote; a folder holding other files keeps them. */
@@ -273,6 +292,7 @@ export function uninstallSkill(skillsDir: string, ledger: SkillLedger): boolean 
     if (readdirSync(dir).length === 0) rmSync(dir, { recursive: true })
   } catch {}
   delete ledger[path]
+  removeLegacySkillDir(skillsDir, ledger)
   return true
 }
 

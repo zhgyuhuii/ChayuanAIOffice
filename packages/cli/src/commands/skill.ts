@@ -232,7 +232,7 @@ function row(target: AgentTarget | null, detected: boolean, state: SkillInstallS
     agent: target?.id ?? null,
     label: target?.label ?? state.path,
     detected,
-    skills_dir: target?.skillsDir ?? state.path.replace(/[\\/]chatoffice[\\/]SKILL\.md$/, ''),
+    skills_dir: target?.skillsDir ?? state.path.replace(/[\\/]chaoffice[\\/]SKILL\.md$/, ''),
     status: state.status,
     installed_version: state.installedVersion ?? null,
     up_to_date: state.status === 'installed' || state.status === 'newer',

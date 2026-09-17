@@ -99,7 +99,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
   }
 
   if (flagBool(args, 'version')) {
-    io.stdout(json ? JSON.stringify({ status: 'ok', version: VERSION }) : `chatoffice ${VERSION}`)
+    io.stdout(json ? JSON.stringify({ status: 'ok', version: VERSION }) : `chaoffice ${VERSION}`)
     return EXIT.ok
   }
   if (name === null || (name === 'help' && args.positionals.length === 0)) {

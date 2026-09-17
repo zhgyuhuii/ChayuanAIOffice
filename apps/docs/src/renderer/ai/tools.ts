@@ -12,7 +12,7 @@ import type {
 } from '../../shared/ipc'
 import { t } from '../i18n/locale'
 import { executeOps, opNames } from './ops'
-import { repliesOf } from './comment-ops'
+import { clipExcerpt, repliesOf, resolveCommentAnchor } from './comment-ops'
 import {
   PAGE_SETUP_TOOL,
   SECTION_BREAK_TOOL,
@@ -50,7 +50,14 @@ import {
   listRevisionEntries,
   validateSelector,
 } from './revision-ops'
-import { type AiNotesAccess, type NoteKind } from './note-ops'
+import {
+  buildNotesContext,
+  insertNoteRef,
+  noteInsertPos,
+  removeNoteRefs,
+  type AiNotesAccess,
+  type NoteKind,
+} from './note-ops'
 import {
   DraftLanding,
   type AiDocWriter,
@@ -194,7 +201,10 @@ function findTableCellRange(
     segments.push({ text: node.text!.slice(start - pos, end - pos), from: start })
   })
   if (segments.length === 0) return null
-  return { from: segments[0].from, to: segments[segments.length - 1].from + segments[segments.length - 1].text.length }
+  return {
+    from: segments[0].from,
+    to: segments[segments.length - 1].from + segments[segments.length - 1].text.length,
+  }
 }
 
 /**
@@ -462,38 +472,6 @@ export const AGENT_TOOLS: AgentToolDef[] = [
     },
   },
   {
-    name: 'add_comment',
-    description:
-      'Add a new comment (批注) on specific text in the document, including inside table cells. The comment anchors to the matched text range so it appears at the exact position. ' +
-      'Use when you want to flag, review, or remark on a precise passage. Provide the exact anchor text as it appears in the document; if the text occurs in multiple places, pass blockIndex to disambiguate. ' +
-      'For table cells: pass blockIndex (the table block) + row + col (both 0-based) to target a specific cell; optionally also provide anchorText to narrow within that cell. When only row+col are given (no anchorText), the comment covers the entire cell.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        text: { type: 'string', description: 'comment text' },
-        anchorText: {
-          type: 'string',
-          description:
-            'exact text in the document to attach the comment to (must match verbatim); optional when row+col target a table cell',
-        },
-        blockIndex: {
-          type: 'integer',
-          description:
-            'block index to search in (optional; for tables, the table block index — use with row+col for cell-level targeting)',
-        },
-        row: {
-          type: 'integer',
-          description: 'table row index (0-based; requires blockIndex pointing to a table)',
-        },
-        col: {
-          type: 'integer',
-          description: 'table column index (0-based; requires blockIndex pointing to a table)',
-        },
-      },
-      required: ['text'],
-    },
-  },
-  {
     name: 'insert_footnote',
     description:
       'Add a footnote: a superscript reference mark goes into the block (right after afterText, else at its end) and the note text prints at the bottom of that page. Use for sources, asides and clarifications the user asks to footnote.',
@@ -566,6 +544,21 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         comment: { type: 'string', description: 'comment body; \\n starts a new paragraph' },
         author: { type: 'string', description: 'author name; default: the AI author' },
         initials: { type: 'string', description: 'author initials shown in the margin' },
+        anchorText: {
+          type: 'string',
+          description:
+            'legacy path: exact text to anchor on (with the body given as text); optional when row+col target a table cell',
+        },
+        row: {
+          type: 'integer',
+          description:
+            'legacy path: table row index (0-based; requires blockIndex pointing to a table)',
+        },
+        col: {
+          type: 'integer',
+          description:
+            'legacy path: table column index (0-based; requires blockIndex pointing to a table)',
+        },
       },
       required: ['blockIndex', 'comment'],
     },
@@ -1184,11 +1177,19 @@ async function executeAsyncTool(
       }
       const base64 = raster.base64
       const dataUrl = `data:image/png;base64,${base64}`
-      return insertImageDataUrl(editor, dataUrl, base64, 'image/png', Number(call.input.maxWidthPx) || 480, signal, {
-        failLabel: t('aiSumGenerateSvg'),
-        doneLabel: t('aiSumInsertedSvg'),
-        blockLabel: 'Image (SVG)',
-      })
+      return insertImageDataUrl(
+        editor,
+        dataUrl,
+        base64,
+        'image/png',
+        Number(call.input.maxWidthPx) || 480,
+        signal,
+        {
+          failLabel: t('aiSumGenerateSvg'),
+          doneLabel: t('aiSumInsertedSvg'),
+          blockLabel: 'Image (SVG)',
+        },
+      )
     }
     case 'create_document': {
       const typeRaw = call.input.type === undefined ? 'docx' : String(call.input.type)
@@ -2008,23 +2009,113 @@ function executeSyncTool(
       }
     }
 
-    case 'add_comment': {
-      if (!comments) return fail(t('aiSumAddComment'), 'comments are not available here')
+    case 'insert_footnote':
+    case 'insert_endnote': {
+      const kind: NoteKind = call.name === 'insert_footnote' ? 'footnote' : 'endnote'
+      const summary = t(kind === 'footnote' ? 'aiSumInsertFootnote' : 'aiSumInsertEndnote')
+      if (!notes) return fail(summary, 'footnotes and endnotes are not available here')
       const text = String(call.input.text ?? '').trim()
-      if (!text) return fail(t('aiSumAddComment'), 'text must not be empty')
-      const anchorText = String(call.input.anchorText ?? '').trim()
+      if (!text) return fail(summary, 'text must not be empty')
+      const afterText =
+        call.input.afterText === undefined || call.input.afterText === null
+          ? undefined
+          : String(call.input.afterText)
+      if (afterText === '') return fail(summary, 'afterText must not be empty when given')
+      const where = noteInsertPos(editor.state.doc, Number(call.input.blockIndex), afterText)
+      if ('error' in where) return fail(summary, where.error)
+      const id = notes.add(kind, text)
+      insertNoteRef(editor, kind, id, where.pos)
+      return {
+        output: `Inserted ${kind} ${id} in block ${call.input.blockIndex}.`,
+        mutated: true,
+        summary,
+      }
+    }
+
+    case 'delete_note': {
+      const summary = t('aiSumDeleteNote')
+      if (!notes) return fail(summary, 'footnotes and endnotes are not available here')
+      const kind = call.input.kind
+      if (kind !== 'footnote' && kind !== 'endnote')
+        return fail(summary, 'kind must be "footnote" or "endnote"')
+      const id = String(call.input.id ?? '').trim()
+      if (!notes.list(kind).some((n) => n.id === id))
+        return fail(summary, `no ${kind} with id ${id}; call read_notes for the current ids`)
+      const locked = notes.protectedMarkBlock?.(kind, id)
+      if (locked !== null && locked !== undefined) {
+        return fail(
+          summary,
+          `the reference mark of ${kind} ${id} sits in protected block ${locked} (a paragraph the editor cannot rewrite); the note was left in place`,
+        )
+      }
+      const removed = removeNoteRefs(editor, kind, id)
+      notes.remove(kind, id)
+      return {
+        output: `Deleted ${kind} ${id}${removed ? ' and its reference mark' : ' (it had no reference mark in the text)'}.`,
+        mutated: true,
+        summary,
+      }
+    }
+
+    case 'read_notes': {
+      const summary = t('aiSumReadNotes')
+      if (!notes) return fail(summary, 'footnotes and endnotes are not available here')
+      return {
+        output: buildNotesContext(
+          editor.state.doc,
+          notes.list('footnote'),
+          notes.list('endnote'),
+          (kind, id) => notes.protectedMarkBlock?.(kind, id) ?? null,
+        ),
+        mutated: false,
+        summary,
+      }
+    }
+
+    case 'add_comment': {
+      if (!comments?.add) return fail(t('aiSumAddComment'), 'comments are not available here')
+      const meta: CommentAuthorMeta = {}
+      if (typeof call.input.author === 'string' && call.input.author.trim()) {
+        meta.author = call.input.author.trim()
+      }
+      if (typeof call.input.initials === 'string' && call.input.initials.trim()) {
+        meta.initials = call.input.initials.trim()
+      }
       const blockIndex =
         typeof call.input.blockIndex === 'number' ? call.input.blockIndex : undefined
       const row = typeof call.input.row === 'number' ? call.input.row : undefined
       const col = typeof call.input.col === 'number' ? call.input.col : undefined
-      const hasRow = row !== undefined
-      const hasCol = col !== undefined
 
+      // upstream contract: comment carries the body, text the anchor excerpt
+      if (typeof call.input.comment === 'string' && call.input.comment.trim()) {
+        const body = call.input.comment.trim()
+        const anchor = resolveCommentAnchor(editor, {
+          blockIndex: call.input.blockIndex,
+          text: call.input.text,
+          occurrence: call.input.occurrence,
+        })
+        if ('error' in anchor) return fail(t('aiSumAddComment'), anchor.error)
+        const id = comments.add({ from: anchor.from, to: anchor.to }, body, meta)
+        if (!id) return fail(t('aiSumAddComment'), 'the range holds no text to anchor a comment to')
+        return {
+          output: `Added comment ${id} on block ${call.input.blockIndex}, anchored to "${clipExcerpt(anchor.excerpt)}".`,
+          mutated: true,
+          summary: t('aiSumAddComment'),
+        }
+      }
+
+      // extended contract: text carries the body; anchor via anchorText or table row+col
+      const body = String(call.input.text ?? '').trim()
+      if (!body)
+        return fail(
+          t('aiSumAddComment'),
+          'comment must not be empty (pass comment, or text with anchorText / row+col)',
+        )
+      const anchorText = String(call.input.anchorText ?? '').trim()
       let range: { from: number; to: number } | null
       let anchorLabel: string
-
-      if (hasRow && hasCol && blockIndex !== undefined) {
-        const cellRange = findTableCellRange(editor, blockIndex, row!, col!)
+      if (row !== undefined && col !== undefined && blockIndex !== undefined) {
+        const cellRange = findTableCellRange(editor, blockIndex, row, col)
         if (!cellRange) {
           return fail(
             t('aiSumAddComment'),
@@ -2057,11 +2148,10 @@ function executeSyncTool(
       } else {
         return fail(
           t('aiSumAddComment'),
-          'provide anchorText (to comment on specific text) or blockIndex + row + col (to target a table cell)',
+          'provide comment with blockIndex, or text with anchorText / blockIndex + row + col',
         )
       }
-
-      if (!comments.create(text, range.from, range.to)) {
+      if (!comments.create(body, range.from, range.to)) {
         return fail(t('aiSumAddComment'), 'failed to create the comment')
       }
       return {

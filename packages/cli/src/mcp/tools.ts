@@ -433,29 +433,33 @@ export const TOOLS: ToolSpec[] = [
 ]
 
 export function resolveTools(registry: CommandRegistry): ResolvedTool[] {
-  return TOOLS.map((tool) => resolveTool(tool, registry))
+  // a tool naming an option the local command lacks is skipped (local/upstream drift), not fatal
+  return TOOLS.flatMap((tool) => {
+    try {
+      return [resolveTool(tool, registry)]
+    } catch {
+      return []
+    }
+  })
 }
 
 export function resolveTool(tool: ToolSpec, registry: CommandRegistry): ResolvedTool {
   const def = registry.get(tool.command)
   if (!def) throw new Error(`mcp tool ${tool.name}: unknown command ${tool.command}`)
   const defs = new Map((def.options ?? []).map((o) => [o.name, o]))
-  // LOCAL(适配): 本地命令缺快照选项时跳过该工具（优雅降级），而非让整个 server 崩溃
-  const params = (tool.options ?? [])
-    .map((entry): ResolvedParam | null => {
-      const spec: ParamSpec = typeof entry === 'string' ? { key: entry } : entry
-      const option = spec.option ?? spec.key
-      const opt = defs.get(option)
-      if (!opt) return null
-      return {
-        key: spec.key.replace(/-/g, '_'),
-        option,
-        kind: spec.kind ?? defaultKind(opt),
-        description: spec.description ?? stripVerbPrefix(opt.description),
-        required: spec.required ?? false,
-      }
-    })
-    .filter((p): p is ResolvedParam => p !== null)
+  const params = (tool.options ?? []).map((entry): ResolvedParam => {
+    const spec: ParamSpec = typeof entry === 'string' ? { key: entry } : entry
+    const option = spec.option ?? spec.key
+    const opt = defs.get(option)
+    if (!opt) throw new Error(`mcp tool ${tool.name}: ${tool.command} has no --${option}`)
+    return {
+      key: spec.key.replace(/-/g, '_'),
+      option,
+      kind: spec.kind ?? defaultKind(opt),
+      description: spec.description ?? stripVerbPrefix(opt.description),
+      required: spec.required ?? false,
+    }
+  })
   return { ...tool, params }
 }
 
