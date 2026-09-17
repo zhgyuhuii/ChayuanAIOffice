@@ -3015,6 +3015,7 @@ function createShellWindow(): void {
   const manager = new TabManager(
     win,
     () => {
+      if (win.webContents.isDestroyed()) return
       win.webContents.send(TABS_CHANNELS.changed, manager.list())
       win.webContents.send(DOCK_CHANNELS.changed, manager.dockedTabs())
       publishOpenDocumentsIfOwner(manager.openFilePaths())

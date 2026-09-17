@@ -253,11 +253,10 @@ export class TabManager {
       if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
       this.bleedWcIds.delete(wcId)
       if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
-      if (!this.shellWindow.isDestroyed()) {
-        const children = this.shellWindow.contentView.children
-        if (children.includes(view)) {
-          this.shellWindow.contentView.removeChildView(view)
-        }
+      if (this.shellWindow.isDestroyed()) return
+      const children = this.shellWindow.contentView.children
+      if (children.includes(view)) {
+        this.shellWindow.contentView.removeChildView(view)
       }
       if (this.activeId === id) {
         const fallback = this.tabs[idx - 1] ?? this.tabs[0]
