@@ -283,6 +283,7 @@ import type {
   UiTheme,
 } from '../shared/home-api'
 import { HOME_CHANNELS, type SystemSearchEntry, type SystemSearchResult } from '../shared/home-api'
+import { registerSharedKbIpc } from '@chatoffice/ai-host'
 import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
@@ -3171,7 +3172,6 @@ function createShellWindow(): void {
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
     applyPendingDir(wc.id, path)
-
   })
   // ⌘O / open-path inside a docs tab: sync the tab title immediately, same
   // contract as the sheets/slides opened hooks (a plain save to the original
@@ -3187,14 +3187,12 @@ function createShellWindow(): void {
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
     applyPendingDir(wc.id, path)
-
   })
   setHtmlFileSavedHook((wc, path) => {
     manager.setTabFileFor(wc.id, path)
     recordRecentFile(path)
     applyPendingProject(path, wc.id)
     applyPendingDir(wc.id, path)
-
   })
   setHtmlProvisionalTitleHook((wc, title) => manager.setTabTitleFor(wc.id, title))
   // pdf content-derived auto-rename: the file moved on disk, follow it everywhere
@@ -3812,6 +3810,9 @@ function registerRemoteFilesIpc(): void {
 }
 
 function registerHomeIpc(): void {
+  // knowledge-base discovery + read surface for the home chat composer and
+  // every embedded editor view (this process answers for them all)
+  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   // signed-in means ChatOffice's own device-code login; the shared chatoffice CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
   ipcMain.handle(HOME_CHANNELS.accountStatus, async () => {
@@ -3868,19 +3869,29 @@ function registerHomeIpc(): void {
   //    stay in main (src/main/feedback.ts, same endpoint as chayuan-wps).
   const feedbackClient = createFeedbackClient()
   ipcMain.handle(HOME_CHANNELS.feedbackProbe, (): Promise<boolean> => feedbackClient.probe())
-  ipcMain.handle(HOME_CHANNELS.feedbackUpload, (_event, name: unknown, mime: unknown, data: unknown) => {
-    if (typeof name !== 'string' || typeof mime !== 'string' || !(data instanceof Uint8Array)) {
-      return Promise.resolve({ ok: false, error: 'bad_args' })
-    }
-    return feedbackClient.upload(name, mime, data)
-  })
+  ipcMain.handle(
+    HOME_CHANNELS.feedbackUpload,
+    (_event, name: unknown, mime: unknown, data: unknown) => {
+      if (typeof name !== 'string' || typeof mime !== 'string' || !(data instanceof Uint8Array)) {
+        return Promise.resolve({ ok: false, error: 'bad_args' })
+      }
+      return feedbackClient.upload(name, mime, data)
+    },
+  )
   ipcMain.handle(HOME_CHANNELS.feedbackSubmit, (_event, payload: unknown) => {
     if (typeof payload !== 'object' || payload === null) {
       return Promise.resolve({ ok: false, error: 'bad_args' })
     }
     const p = payload as {
-      mid?: unknown; type?: unknown; content?: unknown; attachments?: unknown; logJson?: unknown
-      appVersion?: unknown; os?: unknown; osVer?: unknown; arch?: unknown
+      mid?: unknown
+      type?: unknown
+      content?: unknown
+      attachments?: unknown
+      logJson?: unknown
+      appVersion?: unknown
+      os?: unknown
+      osVer?: unknown
+      arch?: unknown
     }
     if (typeof p.mid !== 'string' || typeof p.content !== 'string' || !p.content.trim()) {
       return Promise.resolve({ ok: false, error: 'bad_args' })
@@ -3892,7 +3903,10 @@ function registerHomeIpc(): void {
       attachments: Array.isArray(p.attachments)
         ? p.attachments.filter(
             (a): a is FeedbackAttachmentMeta =>
-              typeof a === 'object' && a !== null && typeof a.name === 'string' && typeof a.url === 'string',
+              typeof a === 'object' &&
+              a !== null &&
+              typeof a.name === 'string' &&
+              typeof a.url === 'string',
           )
         : [],
       logJson: typeof p.logJson === 'string' ? p.logJson : '',

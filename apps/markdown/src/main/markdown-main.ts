@@ -37,7 +37,7 @@ import {
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
-import { createByokImageHandler } from '@chatoffice/ai-host'
+import { createByokImageHandler, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { atomicWriteFile } from './atomic-write'
 import {
   copyImageIntoOwnedAssets,
@@ -719,6 +719,7 @@ function registerMarkdownIpc(): void {
 
   registerImageProtocol()
 
+  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   ipcMain.handle(MARKDOWN_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   ipcMain.handle(MARKDOWN_CHANNELS.consumeAiContent, (e) => {

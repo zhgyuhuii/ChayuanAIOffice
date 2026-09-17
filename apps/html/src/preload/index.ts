@@ -7,6 +7,7 @@ import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 import { AI_CHANNELS, HTML_CHANNELS } from '../shared/ipc'
 import type { AutoSaveDefault, ExportFormat, HtmlApi, SaveMode, UiTheme } from '../shared/ipc'
+import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const api: HtmlApi = {
   consumePending: () => ipcRenderer.invoke(HTML_CHANNELS.consumePending),
@@ -150,3 +151,14 @@ contextBridge.exposeInMainWorld('projectApi', projectApi)
 installDropOpenBridge()
 // folder tree over the default save folder (Files pane)
 installFilesPaneBridge()
+
+// Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
+// global so every app shell / editor window shares the same facade contract.
+contextBridge.exposeInMainWorld('chatOfficeKb', {
+  discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
+  search: (args: { kbIds: string[]; q: string; topK?: number }) =>
+    ipcRenderer.invoke(KB_CHANNELS.search, args),
+  doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
+  setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})

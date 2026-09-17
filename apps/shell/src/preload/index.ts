@@ -45,6 +45,7 @@ import type { WindowControlsApi } from '../shared/tabs-api'
 import type { DockApi, DockTabSummary, PanelTurnReport } from '../shared/dock-api'
 import type { RelayEvent } from '../shared/relay-protocol'
 import { DOCK_CHANNELS } from '../shared/dock-api'
+import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const UI_LANGUAGES: readonly UiLanguage[] = [
   'zh',
@@ -792,3 +793,14 @@ contextBridge.exposeInMainWorld(
 
 // open documents dragged from the OS anywhere over Home or the tab strip
 installDropOpenBridge()
+
+// Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
+// global so every app shell / editor window shares the same facade contract.
+contextBridge.exposeInMainWorld('chatOfficeKb', {
+  discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
+  search: (args: { kbIds: string[]; q: string; topK?: number }) =>
+    ipcRenderer.invoke(KB_CHANNELS.search, args),
+  doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
+  setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})

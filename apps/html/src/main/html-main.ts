@@ -23,6 +23,7 @@ import {
   webContents,
 } from 'electron'
 import type { WebContents } from 'electron'
+import { registerSharedKbIpc } from '@chatoffice/ai-host'
 import {
   configuredDefaultSaveDir,
   contextMenuLabels,
@@ -1231,6 +1232,7 @@ function registerHtmlIpc(): void {
     return { text, baseHref: doc ? assetBaseHref(dirname(doc)) : null }
   })
 
+  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   ipcMain.handle(HTML_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   // ---- headless export mode (--headless-export) ----

@@ -27,6 +27,7 @@ ipcRenderer.on('docs:relay-command', (_event, command: unknown) => {
   else if (relayCommandQueue.length < 50) relayCommandQueue.push(command)
 })
 import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
+import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const api: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -338,3 +339,13 @@ contextBridge.exposeInMainWorld(
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
 
+// Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
+// global so every app shell / editor window shares the same facade contract.
+contextBridge.exposeInMainWorld('chatOfficeKb', {
+  discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
+  search: (args: { kbIds: string[]; q: string; topK?: number }) =>
+    ipcRenderer.invoke(KB_CHANNELS.search, args),
+  doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
+  setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})

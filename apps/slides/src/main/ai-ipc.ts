@@ -28,7 +28,7 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
-import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
@@ -113,6 +113,7 @@ export function registerAiIpc(): void {
   setRescueFetch((url, init) => net.fetch(url, init))
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
+  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: AI_SETTINGS_PATH(),
@@ -175,7 +176,11 @@ export function registerAiIpc(): void {
   // Search tools (content + images), Serper with DuckDuckGo fallback
   ipcMain.handle('ai:web-search', async (_event, query: string, maxResults?: number) => {
     try {
-      return await webSearch(String(query), typeof maxResults === 'number' ? maxResults : 6, chatofficeCloudToolsOn())
+      return await webSearch(
+        String(query),
+        typeof maxResults === 'number' ? maxResults : 6,
+        chatofficeCloudToolsOn(),
+      )
     } catch (err) {
       return { results: [], method: 'error', error: String(err) }
     }
@@ -183,7 +188,11 @@ export function registerAiIpc(): void {
 
   ipcMain.handle('ai:image-search', async (_event, query: string, maxResults?: number) => {
     try {
-      return await imageSearch(String(query), typeof maxResults === 'number' ? maxResults : 8, chatofficeCloudToolsOn())
+      return await imageSearch(
+        String(query),
+        typeof maxResults === 'number' ? maxResults : 8,
+        chatofficeCloudToolsOn(),
+      )
     } catch (err) {
       return { images: [], method: 'error', error: String(err) }
     }
@@ -225,7 +234,8 @@ export function registerSlidesOnlyAiIpc(): void {
         // raw settings (unredacted): the redacted view carries no keys, so the
         // videoGeneration role pick must resolve against the stored file
         const raw = await getAiRuntime().readRawSettings()
-        let pick: { vendorId: string; model: string; apiKey: string; baseUrl?: string } | null = null
+        let pick: { vendorId: string; model: string; apiKey: string; baseUrl?: string } | null =
+          null
         const sel = resolveDefaultModel(raw, 'videoGeneration')
         if (sel) {
           const profile = raw.profiles.find((p) => p.id === sel.profileId)
@@ -254,7 +264,10 @@ export function registerSlidesOnlyAiIpc(): void {
           }
         }
         if (!pick) {
-          return { error: 'No video-generation model with an API key is configured — add one in AI settings' }
+          return {
+            error:
+              'No video-generation model with an API key is configured — add one in AI settings',
+          }
         }
         const wc = event.sender
         const dur = op.durationSeconds ?? 5
@@ -288,9 +301,17 @@ export function registerSlidesOnlyAiIpc(): void {
         if (!dl.ok) return { error: `video download failed: HTTP ${dl.status}` }
         const buf = Buffer.from(await dl.arrayBuffer())
         if (buf.length > 40 * 1024 * 1024) {
-          return { error: `the generated video is too large to embed (${Math.round(buf.length / 1048576)}MB > 40MB)` }
+          return {
+            error: `the generated video is too large to embed (${Math.round(buf.length / 1048576)}MB > 40MB)`,
+          }
         }
-        return { bytes: buf.toString('base64'), ext: 'mp4', url: result.url, model: pick.model, vendorId: pick.vendorId }
+        return {
+          bytes: buf.toString('base64'),
+          ext: 'mp4',
+          url: result.url,
+          model: pick.model,
+          vendorId: pick.vendorId,
+        }
       } catch (e) {
         return { error: e instanceof Error ? e.message : String(e) }
       }

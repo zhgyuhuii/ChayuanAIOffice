@@ -100,7 +100,7 @@ import {
   type AiRuntime,
   setAiUserAgent,
 } from '@chatoffice/ai-provider'
-import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   ensureChatofficeLogin,
@@ -3030,6 +3030,7 @@ function getAiRuntime(): AiRuntime {
  * sheets' standalone AI handlers use the same channel names.
  */
 export function registerAiIpc(): void {
+  registerSharedKbIpc({ ipcMain, statePath: () => userDataPath('kb-source.json') })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: SETTINGS_PATH(),

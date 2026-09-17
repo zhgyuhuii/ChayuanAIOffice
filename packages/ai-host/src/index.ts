@@ -26,6 +26,7 @@ import {
 import { localToolInstall, localToolStart, localToolStatus } from './local-tools'
 
 export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
+export { registerSharedKbIpc, type KbSourceState, type SharedKbIpcDeps } from './kb-ipc'
 export {
   createLocalTools,
   defaultLocalToolDeps,

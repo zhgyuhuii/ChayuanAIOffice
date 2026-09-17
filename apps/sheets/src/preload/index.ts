@@ -55,6 +55,7 @@ import {
   SAVE_EDITS_CHUNK_JSON_MAX,
 } from '../shared/ipc-channels'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 
 const desktopApi: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -3699,3 +3700,14 @@ function isOptionalEnum<T extends string>(
 ): input is T | undefined {
   return input === undefined || (values as readonly unknown[]).includes(input)
 }
+
+// Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
+// global so every app shell / editor window shares the same facade contract.
+contextBridge.exposeInMainWorld('chatOfficeKb', {
+  discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
+  search: (args: { kbIds: string[]; q: string; topK?: number }) =>
+    ipcRenderer.invoke(KB_CHANNELS.search, args),
+  doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
+  setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})

@@ -36,7 +36,7 @@ import {
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
 import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
-import { createByokImageHandler } from '@chatoffice/ai-host'
+import { createByokImageHandler, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { PDF_CHANNELS } from '../shared/ipc'
 import type {
   ExportImagesRequest,
@@ -965,6 +965,7 @@ function registerPdfIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
 
+  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
   ipcMain.handle(PDF_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   ipcMain.handle(PDF_CHANNELS.getUsername, () => {

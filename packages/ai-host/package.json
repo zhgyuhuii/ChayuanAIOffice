@@ -6,7 +6,8 @@
   "type": "module",
   "description": "Shared ai:* IPC registration for the Electron main processes: wires the v2 ai-provider runtime onto an injected ipcMain (identical channel names across docs/sheets/slides/markdown/pdf)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./kb-channels": "./src/kb-channels.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -2,6 +2,7 @@ import type { AiPanelPrefs } from '@chatoffice/ui'
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
 import type { RenderSlide } from '@chatoffice/pptx-render'
+import { KB_CHANNELS } from '@chatoffice/ai-host/kb-channels'
 import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
 import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
@@ -586,3 +587,14 @@ contextBridge.exposeInMainWorld('projectApi', projectApi)
 installDropOpenBridge()
 // folder tree over the default save folder (Files pane)
 installFilesPaneBridge()
+
+// Knowledge-base read surface (docs/kb-integration-plan.md): one dedicated
+// global so every app shell / editor window shares the same facade contract.
+contextBridge.exposeInMainWorld('chatOfficeKb', {
+  discover: () => ipcRenderer.invoke(KB_CHANNELS.discover),
+  search: (args: { kbIds: string[]; q: string; topK?: number }) =>
+    ipcRenderer.invoke(KB_CHANNELS.search, args),
+  doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
+  setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})

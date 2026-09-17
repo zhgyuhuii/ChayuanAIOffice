@@ -70,7 +70,7 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
-import { registerSharedAiIpc } from '@chatoffice/ai-host'
+import { registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   blankXlsxBuffer,
@@ -90,7 +90,10 @@ import {
 } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
-import { readArchiveEntryText, saveWorkbookViaSidecar } from '@chatoffice/xlsx-gateway/gateway/xlsx-package-io'
+import {
+  readArchiveEntryText,
+  saveWorkbookViaSidecar,
+} from '@chatoffice/xlsx-gateway/gateway/xlsx-package-io'
 import { parsePivotDefinition } from '@chatoffice/xlsx-gateway/gateway/xlsx-pivot'
 import type { SheetEditPlan } from '@chatoffice/xlsx-gateway/gateway/xlsx-sheets'
 import type {
@@ -3385,6 +3388,7 @@ export function registerSheetsAiIpc(): void {
   setRescueFetch((url, init) => net.fetch(url, init))
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
+  registerSharedKbIpc({ ipcMain, statePath: () => userDataPath('kb-source.json') })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: SETTINGS_PATH(),
