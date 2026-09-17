@@ -39,10 +39,13 @@ function sharedStringText(si: Record<string, unknown>): string {
 /** "BC12" → zero-based column index 54 (cell refs are case-insensitive per ECMA-376) */
 function columnIndex(cellRef: string): number {
   let index = 0
+  let letters = 0
   for (const ch of cellRef.toUpperCase()) {
     if (ch < 'A' || ch > 'Z') break
+    letters += 1
     index = index * 26 + (ch.charCodeAt(0) - 64)
   }
+  if (letters === 0) return -1
   return index - 1
 }
 
@@ -59,7 +62,16 @@ function cellText(cell: Cell, shared: string[]): string {
   // <v> is ST_Xstring so it reaches the caller verbatim; the two reads that need it as a
   // scalar handle their own whitespace (Number tolerates it, the boolean compare strips it)
   const value = textOf(cell.v)
-  if (type === 's') return shared[Number(value)] ?? ''
+  if (type === 's') {
+    // An empty or missing <v> must stay empty: Number('') is 0 and would
+    // otherwise leak shared[0] into the cell. Out-of-range or non-numeric
+    // indexes also degrade to empty rather than corrupting the row.
+    const trimmed = value.trim()
+    if (trimmed === '') return ''
+    const index = Number(trimmed)
+    if (!Number.isInteger(index) || index < 0 || index >= shared.length) return ''
+    return shared[index] ?? ''
+  }
   if (type === 'b') return value.trim() === '1' ? 'TRUE' : 'FALSE'
   return value
 }
@@ -114,9 +126,13 @@ export async function xlsxToText(bytes: Uint8Array): Promise<string> {
       const cells: string[] = []
       for (const cell of asArray(row.c as Cell | Cell[])) {
         const text = cellText(cell, shared)
-        const col = cell['@_r'] ? columnIndex(cell['@_r']) : cells.length
-        while (cells.length < col) cells.push('')
-        cells[col] = text
+        const ref = cell['@_r']
+        // A malformed ref (no leading column letters) yields -1; append in
+        // document order instead of writing cells[-1] which would drop text.
+        const col = ref ? columnIndex(ref) : cells.length
+        const target = col >= 0 ? col : cells.length
+        while (cells.length < target) cells.push('')
+        cells[target] = text
       }
       lines.push(cells.join(' | '))
     }
