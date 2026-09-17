@@ -530,6 +530,7 @@ function currentAiPanelPrefs(): AiPanelPrefs {
   if (cachedAiPanelPrefs) return cachedAiPanelPrefs
   const saved = readAppSettings(APP_SETTINGS_PATH())
   cachedAiPanelPrefs = normalizeAiPanelPrefs({
+    side: saved.aiPanelSide,
     fontSize: saved.aiPanelFontSize,
     customFontSize: saved.aiPanelCustomFontSize,
     spellcheck: saved.aiPanelSpellcheck,
@@ -4304,12 +4305,13 @@ function registerHomeIpc(): void {
   ipcMain.handle(HOME_CHANNELS.getAiPanelPrefs, (): AiPanelPrefs => currentAiPanelPrefs())
   ipcMain.handle('app:get-ai-panel-prefs', (): AiPanelPrefs => currentAiPanelPrefs())
 
-  ipcMain.handle(HOME_CHANNELS.setAiPanelPrefs, (_event, patch: unknown): AiPanelPrefs => {
+  const setAiPanelPrefs = (patch: unknown): AiPanelPrefs => {
     const prev = currentAiPanelPrefs()
     const raw =
       patch !== null && typeof patch === 'object' ? (patch as Record<string, unknown>) : {}
     // unknown/malformed fields fall back to the previous value, not the default
     const next = normalizeAiPanelPrefs({
+      side: raw.side === 'left' || raw.side === 'right' ? raw.side : prev.side,
       fontSize: 'fontSize' in raw ? raw.fontSize : prev.fontSize,
       customFontSize: 'customFontSize' in raw ? raw.customFontSize : prev.customFontSize,
       spellcheck: 'spellcheck' in raw ? raw.spellcheck : prev.spellcheck,
@@ -4317,13 +4319,16 @@ function registerHomeIpc(): void {
     if (sameAiPanelPrefs(next, prev)) return prev
     cachedAiPanelPrefs = next
     writeAppSettings(APP_SETTINGS_PATH(), {
+      aiPanelSide: next.side,
       aiPanelFontSize: next.fontSize,
       aiPanelCustomFontSize: next.customFontSize,
       aiPanelSpellcheck: next.spellcheck,
     })
     for (const wc of webContents.getAllWebContents()) wc.send('app:ai-panel-prefs-changed', next)
     return next
-  })
+  }
+  ipcMain.handle(HOME_CHANNELS.setAiPanelPrefs, (_event, patch) => setAiPanelPrefs(patch))
+  ipcMain.handle('app:set-ai-panel-prefs', (_event, patch) => setAiPanelPrefs(patch))
 
   // effective folder where new/untitled files land; the editor mains resolve
   // the same setting themselves (configuredDefaultSaveDir via docs' defaultSaveDir)
