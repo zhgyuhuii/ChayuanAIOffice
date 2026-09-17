@@ -18,6 +18,7 @@ export type AiProviderId =
   | 'openrouter'
   | 'requesty'
   | 'agnes'
+  | 'opper'
   | 'opencode-zen'
   | 'opencode-go'
   | 'custom'
