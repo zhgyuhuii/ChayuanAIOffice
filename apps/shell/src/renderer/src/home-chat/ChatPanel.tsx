@@ -3,14 +3,20 @@ import type { ReactElement } from 'react'
 import {
   AiComposer,
   AiTypingIndicator,
+  KbPickerButton,
   ModelPickerButton,
+  kbDoc,
+  kbRetrieve,
+  kbStrings,
+  renderCitationChips,
   useDismissablePopover,
+  useKbSelection,
 } from '@chatoffice/ui'
 import attachIcon from '../assets/attach-icon.png'
 import qrCodeIcon from '../assets/qrcode.png'
 import wxpayIcon from '../assets/wxpay.png'
 import alipayIcon from '../assets/alipay.png'
-import type { AiModelSelection, AiSettingsV2 } from '@chatoffice/ai-provider'
+import type { AiModelSelection, AiSettingsV2, KbCitation } from '@chatoffice/ai-provider'
 import { useI18n } from '../locale'
 import { MonoFileIcon } from '../file-icons'
 import { HomeChatController } from './controller'
@@ -381,12 +387,15 @@ function ChatMessageView({
   typing,
   onOpenSettings,
   onRelayConfirm,
+  onOpenCitation,
 }: {
   m: HomeChatMessage
   typing: boolean
   onOpenSettings: () => void
   /** P2-7 确认门:批准/驳回回调(无 dockRelay 的宿主不传) */
   onRelayConfirm?: (m: HomeChatMessage, approved: boolean, feedback?: string) => void
+  /** KB 引用 chip 点击(无选库的宿主不传) */
+  onOpenCitation?: (citation: KbCitation) => void
 }): ReactElement {
   const { t, dateLocale } = useI18n()
   if (m.role === 'user') {
@@ -461,8 +470,18 @@ function ChatMessageView({
         ) : prose && !m.error ? (
           <div
             className="chat-md"
-            // display-only render: markdownToHtml escapes raw HTML
-            dangerouslySetInnerHTML={{ __html: markdownToHtml(prose) }}
+            // display-only render: markdownToHtml escapes raw HTML; [n] chips
+            // resolve against this turn's KB citations (final html only)
+            dangerouslySetInnerHTML={{
+              __html: renderCitationChips(markdownToHtml(prose), m.kbCitations),
+            }}
+            onClick={(e) => {
+              const el = (e.target as HTMLElement).closest?.('.kb-cite') as HTMLElement | null
+              if (!el) return
+              const n = Number(el.dataset.kbN)
+              const citation = m.kbCitations?.find((x) => x.n === n)
+              if (citation) onOpenCitation?.(citation)
+            }}
           />
         ) : null}
         {body && !m.error && <DocBodyBlock html={body} streaming={typing} />}
@@ -621,6 +640,16 @@ export function ChatPanel({
   const [input, setInput] = useState('')
   const [attachments, setAttachments] = useState<HomeChatAttachment[]>([])
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // ── knowledge-base selection (composer, shared with editor panels) ──
+  const { selected: kbSelected, toggle: kbToggle } = useKbSelection()
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
+  const [kbNotice, setKbNotice] = useState<string | null>(null)
+  useEffect(() => {
+    if (!kbNotice) return
+    const timer = window.setTimeout(() => setKbNotice(null), 5000)
+    return () => window.clearTimeout(timer)
+  }, [kbNotice])
 
   // ── composer mode + session-scoped model (ZCode-style) ──
   // drafts carry the choice before a session exists; an active session's
@@ -876,17 +905,29 @@ export function ChatPanel({
     setInput('')
     setAttachments([])
     const personaInfo = personasRef.current.get(session.id)
-    controller.send(session.id, session.messages, text, atts, {
-      ...(draftModel ? { model: draftModel } : {}),
-      ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
-      // presence (even without a hydrated template) marks the persona one-shot
-      ...(draftAssistant ? { assistant: { template: personaInfo?.template } } : {}),
-    })
-    // 新会话首条发送:controller 的 busy=true 回调跑在 setActiveId 重渲染
-    // 之前,activeIdRef 还是旧值会被守卫吞掉——就地同步一次忙态,否则整轮
-    // 无思考指示器、无停止按钮(输出区"毫无反应"的根因)
-    setBusy(controller.isBusy(session.id))
-    if (draftAssistant) clearAssistantAfterSend(session.id)
+    const dispatch = (kb?: { block: string; citations: KbCitation[] }) => {
+      controller.send(session.id, session.messages, text, atts, {
+        ...(draftModel ? { model: draftModel } : {}),
+        ...(draftMode === 'plan' ? { mode: 'plan' as const } : {}),
+        // presence (even without a hydrated template) marks the persona one-shot
+        ...(draftAssistant ? { assistant: { template: personaInfo?.template } } : {}),
+        ...(kb ? { kb } : {}),
+      })
+      // 新会话首条发送:controller 的 busy=true 回调跑在 setActiveId 重渲染
+      // 之前,activeIdRef 还是旧值会被守卫吞掉——就地同步一次忙态,否则整轮
+      // 无思考指示器、无停止按钮(输出区"毫无反应"的根因)
+      setBusy(controller.isBusy(session.id))
+      if (draftAssistant) clearAssistantAfterSend(session.id)
+    }
+    if (kbSelected.length > 0) {
+      // KB 检索增强:检索失败降级为无知识库直答,一次性的顶部提示
+      void kbRetrieve(kbSelected, text).then((result) => {
+        if (!result) setKbNotice(t('kbUnavailableNotice'))
+        dispatch(result ? { block: result.block, citations: result.citations } : undefined)
+      })
+    } else {
+      dispatch()
+    }
   }
 
   const stop = () => {
@@ -1012,6 +1053,40 @@ export function ChatPanel({
           />
         </div>
       )}
+      {kbSelected.length > 0 && (
+        <div className="chat-kb-row" role="list" aria-label={t('kbPickerLabel')}>
+          {kbSelected.map((id) => (
+            <span key={id} className="chat-kb-chip" role="listitem">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <ellipse
+                  cx="8"
+                  cy="3.6"
+                  rx="5.2"
+                  ry="1.9"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                />
+                <path
+                  d="M2.8 3.6v8.8c0 1.05 2.33 1.9 5.2 1.9s5.2-.85 5.2-1.9V3.6"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className="chat-kb-chip-name">{id}</span>
+              <button
+                type="button"
+                className="chat-kb-chip-x"
+                aria-label={t('kbChipRemove')}
+                onClick={() => kbToggle(id)}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      {kbNotice && <div className="chat-kb-notice">{kbNotice}</div>}
       <AiComposer
         value={input}
         busy={busy}
@@ -1048,6 +1123,7 @@ export function ChatPanel({
             >
               <img src={attachIcon} alt="" aria-hidden />
             </button>
+            <KbPickerButton lang={lang} selected={kbSelected} onToggle={kbToggle} />
             {aiSettings && (
               <span className="chat-model-slot">
                 <ModelPickerButton
@@ -1111,6 +1187,9 @@ export function ChatPanel({
           </>
         }
       />
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
+      )}
     </div>
   )
 
@@ -1332,6 +1411,7 @@ export function ChatPanel({
                 typing={busy && i === active!.messages.length - 1 && m.role === 'assistant'}
                 onOpenSettings={onOpenSettings}
                 onRelayConfirm={handleRelayConfirm}
+                onOpenCitation={setKbCiteView}
               />
             ))}
           </div>
@@ -1422,5 +1502,47 @@ export function ChatPanel({
         </div>
       )}
     </main>
+  )
+}
+
+/** KB citation preview: the retrieved passage behind a [n] chip (P2) */
+function KbCitePreview({
+  citation,
+  lang,
+  onClose,
+}: {
+  citation: KbCitation
+  lang: string
+  onClose: () => void
+}): ReactElement {
+  const { t } = useI18n()
+  const strings = kbStrings(lang)
+  const [docStatus, setDocStatus] = useState<string | null>(null)
+  useEffect(() => {
+    let alive = true
+    void kbDoc(citation.kbId, citation.docId).then((res) => {
+      if (alive && res.ok && res.doc?.status) setDocStatus(res.doc.status)
+    })
+    return () => {
+      alive = false
+    }
+  }, [citation.kbId, citation.docId])
+  return (
+    <div className="kb-preview-backdrop" onClick={onClose}>
+      <div className="kb-preview" onClick={(e) => e.stopPropagation()} role="dialog">
+        <div className="kb-preview-head">
+          <span>{strings.kbCiteTitle.replace('{n}', String(citation.n))}</span>
+          <button type="button" className="kb-preview-close" onClick={onClose}>
+            {t('kbPreviewClose')}
+          </button>
+        </div>
+        <div className="kb-preview-meta">
+          {strings.kbPreviewSource.replace('{name}', citation.docName)}
+          {citation.headingPath ? ` › ${citation.headingPath}` : ''}
+          {docStatus ? ` · ${docStatus}` : ''}
+        </div>
+        <div className="kb-preview-body">{citation.text}</div>
+      </div>
+    </div>
   )
 }

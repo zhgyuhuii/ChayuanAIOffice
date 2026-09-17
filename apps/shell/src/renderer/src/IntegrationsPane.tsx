@@ -1,4 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
+import {
+  kbDiscover,
+  kbGetSource,
+  kbSetOrigin,
+  kbStrings,
+  type KbDiscoverPayload,
+} from '@chatoffice/ui'
 import type { TFunc } from './locale'
 import { McpServerSection } from './McpServerSection'
 import type {
@@ -180,10 +187,13 @@ export function IntegrationsPane({
   )
 
   if (!status) {
+    // the KB source card does not depend on the integrations probe: it must
+    // stay reachable even while the CLI detection never resolves (web form)
     return (
       <>
         <h3 className="set-pane-title">{t('setSecIntegrations')}</h3>
         <div className="set-field-desc">{t('intgLoading')}</div>
+        <KbSourceSection />
       </>
     )
   }
@@ -461,7 +471,73 @@ export function IntegrationsPane({
         {examples}
         <div className="set-field-desc set-intg-lead">{t('intgMcpTryNote')}</div>
       </section>
+
+      <KbSourceSection />
     </>
+  )
+}
+
+/**
+ * Knowledge-base source card (docs/kb-integration-plan.md §5.2): shows the
+ * discovered harness origin and holds the manual override. Auto discovery
+ * needs no configuration; the field exists for fixed deployments and as the
+ * recovery path when probing finds nothing.
+ */
+function KbSourceSection() {
+  const lang = document.documentElement.lang
+  const strings = kbStrings(lang)
+  const [origin, setOrigin] = useState('')
+  const [source, setSource] = useState<{ manualOrigin?: string; cachedOrigin?: string }>({})
+  const [payload, setPayload] = useState<KbDiscoverPayload | null>(null)
+
+  const refresh = (force: boolean) => {
+    void kbGetSource().then(setSource)
+    void kbDiscover(force).then(setPayload)
+  }
+  useEffect(() => {
+    refresh(false)
+  }, [])
+
+  return (
+    <section className="set-intg-part">
+      <h4 className="set-pane-subtitle set-intg-step">
+        <span className="set-intg-step-no">2</span>
+        {strings.kbPickerLabel}
+      </h4>
+      <div className="set-field-desc set-intg-lead">{strings.kbPickerHint}</div>
+      <div className="set-field-desc set-intg-lead">
+        {payload?.ok
+          ? strings.kbSource.replace('{origin}', payload.origin ?? '')
+          : strings.kbPickerUnavailable}
+      </div>
+      <div className="set-intg-actions" style={{ gap: 8 }}>
+        <input
+          className="set-input"
+          style={{ flex: 1, minWidth: 220 }}
+          value={origin}
+          placeholder={strings.kbSource.replace('{origin}', 'http://127.0.0.1:3080')}
+          onChange={(e) => setOrigin(e.target.value)}
+        />
+        <button
+          className="set-btn primary"
+          onClick={() => {
+            void kbSetOrigin(origin.trim() || null).then(() => refresh(true))
+          }}
+        >
+          {strings.kbSave}
+        </button>
+        <button
+          className="set-btn"
+          onClick={() => {
+            setOrigin('')
+            void kbSetOrigin(null).then(() => refresh(true))
+          }}
+        >
+          {strings.kbClear}
+        </button>
+      </div>
+      {source.manualOrigin && <div className="set-field-desc">{strings.kbSourceManual}</div>}
+    </section>
   )
 }
 

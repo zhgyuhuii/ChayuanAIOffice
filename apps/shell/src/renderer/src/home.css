@@ -5516,3 +5516,51 @@ body.sidebar-resizing {
   color: var(--text);
   background: var(--surface-subtle);
 }
+
+/* ── knowledge-base chips row + notice (B 区) ─────────────────────────── */
+.chat-kb-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 4px 6px;
+}
+.chat-kb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 220px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--accent-soft, var(--hover));
+  color: var(--text);
+  font-size: 12px;
+}
+.chat-kb-chip svg {
+  color: var(--accent);
+  flex: none;
+}
+.chat-kb-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-kb-chip-x {
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  line-height: 1;
+  padding: 1px 5px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chat-kb-chip-x:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.chat-kb-notice {
+  padding: 0 4px 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}

@@ -1,5 +1,5 @@
 import type { AgentMessage } from '@chatoffice/agent-core'
-import type { AiModelSelection } from '@chatoffice/ai-provider'
+import type { AiModelSelection, KbCitation } from '@chatoffice/ai-provider'
 import type {
   HomeChatAttachment,
   HomeChatCard,
@@ -24,6 +24,8 @@ export interface HomeChatSendOptions {
    *  the persona is appended to the system prompt for the run this send starts
    *  and dropped when it finishes; {{input}} = the user's text */
   assistant?: { template?: string } | undefined
+  /** KB 检索增强:发送前检索得到的编号上下文块与引用(选库后每轮注入) */
+  kb?: { block: string; citations: KbCitation[] } | undefined
 }
 
 interface RunWatch {
@@ -196,6 +198,7 @@ export class HomeChatController {
       id: crypto.randomUUID(),
       role: 'assistant',
       text: '',
+      ...(options?.kb ? { kbCitations: options.kb.citations } : {}),
       ts: Date.now(),
     }
     this.updateSession(sessionId, (s) => ({
@@ -235,7 +238,7 @@ export class HomeChatController {
       return
     }
     this.onBusyChange?.(sessionId, true)
-    void this.agentFor(sessionId, history).send(instruction, attachments)
+    void this.agentFor(sessionId, history).send(instruction, attachments, options?.kb?.block)
   }
 
   stop(sessionId: string): void {

@@ -3,6 +3,7 @@ import type { AgentMessage, AgentSkill, AgentTransport, AgentToolDef } from '@ch
 import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type { HomeApi, HomeChatAttachment } from '../../../shared/home-api'
 import type { ExternalMcpServerTools } from '../../../shared/mcp-client-api'
+import { kbDoc, kbSelectedIds, kbSearchGroups } from '@chatoffice/ui'
 import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
 
@@ -292,6 +293,34 @@ The user switched this conversation to plan mode. Produce plans, advice and anal
 - search_files and read_document stay available for research; only open_document when the user explicitly asks to see the file.
 - End with a concrete, step-by-step proposal the user can approve, then wait — do not execute anything.`
 
+const KB_SEARCH_TOOL = {
+  name: 'kb_search',
+  description:
+    'Search the selected knowledge bases (察元知识库) for relevant passages. Returns numbered excerpts with their document name and heading path. Use it to dig deeper than the context injected with the message, or when the user asks about the knowledge base.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: 'the search query (short and specific works best)' },
+      topK: { type: 'number', description: 'excerpts per library (default 6, max 20)' },
+    },
+    required: ['query'],
+  },
+}
+
+const KB_READ_DOC_TOOL = {
+  name: 'kb_read_doc',
+  description:
+    'Read a knowledge-base document: metadata (name, type, size, parse status) by document id. Pair it with kb_search results (each hit carries docId).',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      kbId: { type: 'string', description: 'knowledge-base id (from kb_search context header)' },
+      docId: { type: 'string', description: 'document id (from kb_search hits)' },
+    },
+    required: ['kbId', 'docId'],
+  },
+}
+
 const HOME_TOOLS: AgentToolDef[] = [
   CREATE_DOC_TOOL,
   SEARCH_FILES_TOOL,
@@ -341,12 +370,61 @@ function homeSkill(
     },
     get tools() {
       const imageGen = bridge.generateImage && state.imageGenReady() ? [GENERATE_IMAGE_TOOL] : []
-      return [...HOME_TOOLS, ...imageGen, ...state.mcp.tools()]
+      // KB tools join only while libraries are selected in the composer
+      const kb = kbSelectedIds().length > 0 ? [KB_SEARCH_TOOL, KB_READ_DOC_TOOL] : []
+      return [...HOME_TOOLS, ...imageGen, ...kb, ...state.mcp.tools()]
     },
     async executeTool(call) {
       const mcpResult = await state.mcp.call(call.name, call.input)
       if (mcpResult) {
         return { ...mcpResult, summary: call.name }
+      }
+      if (call.name === 'kb_search') {
+        const query = String(call.input.query ?? '').trim()
+        const kbIds = kbSelectedIds()
+        if (!query)
+          return { output: 'query must not be empty', isError: true, summary: 'kb_search' }
+        if (kbIds.length === 0)
+          return {
+            output: 'no knowledge base selected in the composer',
+            isError: true,
+            summary: 'kb_search',
+          }
+        const topK = Math.min(Math.max(Number(call.input.topK ?? 6) || 6, 1), 20)
+        const groups = await kbSearchGroups(kbIds, query, topK)
+        const lines: string[] = []
+        for (const group of groups) {
+          for (const hit of group) {
+            const head = hit.headingPath ? ` › ${hit.headingPath}` : ''
+            lines.push(`[${hit.docId}] ${hit.docName}${head}\n${hit.text.slice(0, 1200)}`)
+          }
+        }
+        return {
+          output: lines.length
+            ? lines.join('\n\n')
+            : 'no matching passages found in the selected knowledge bases',
+          summary: 'kb_search',
+        }
+      }
+      if (call.name === 'kb_read_doc') {
+        const kbId = String(call.input.kbId ?? '')
+        const docId = String(call.input.docId ?? '')
+        if (!kbId || !docId)
+          return { output: 'kbId and docId are required', isError: true, summary: 'kb_read_doc' }
+        const res = await kbDoc(kbId, docId)
+        if (!res.ok || !res.doc)
+          return {
+            output: `document not found: ${res.reason ?? 'unknown error'}`,
+            isError: true,
+            summary: 'kb_read_doc',
+          }
+        const doc = res.doc
+        return {
+          output: `name: ${doc.name}\ntype: ${doc.mime ?? 'unknown'}\nsize: ${
+            doc.size ?? 'unknown'
+          } bytes\nparse status: ${doc.status ?? 'unknown'}\n(chunk text: use kb_search)`,
+          summary: 'kb_read_doc',
+        }
       }
       switch (call.name) {
         case 'create_document': {
@@ -806,12 +884,16 @@ export class HomeAgent {
   }
 
   /** a mid-run send queues and fires when the run finishes (ChatGPT-style) */
-  async send(text: string, attachments: HomeChatAttachment[] = []): Promise<void> {
+  async send(
+    text: string,
+    attachments: HomeChatAttachment[] = [],
+    kbBlock?: string,
+  ): Promise<void> {
     if (this.loop.busy) {
       this.queued = { text, attachments }
       return
     }
-    await this.start(text, attachments)
+    await this.start(text, attachments, kbBlock)
   }
 
   stop(): void {
@@ -824,6 +906,7 @@ export class HomeAgent {
     this.queued = null
     if (next) void this.start(next.text, next.attachments)
   }
+  // queued KB blocks are dropped with their turn (queue holds one send)
 
   /** fetch the enabled MCP servers' live tools (single-flight, failure = empty) */
   private ensureMcpTools(): Promise<void> {
@@ -864,7 +947,11 @@ export class HomeAgent {
     }
   }
 
-  private async start(text: string, attachments: HomeChatAttachment[]): Promise<void> {
+  private async start(
+    text: string,
+    attachments: HomeChatAttachment[],
+    kbBlock?: string,
+  ): Promise<void> {
     this.turnTextValue = ''
     this.turnInstructionValue = text
     this.createdDoc = null
@@ -890,7 +977,8 @@ export class HomeAgent {
           }
         }
       }
-      const instruction = textBlocks.length ? `${text}\n\n${textBlocks.join('\n\n')}` : text
+      const withKb = kbBlock ? `${text}\n\n${kbBlock}` : text
+      const instruction = textBlocks.length ? `${withKb}\n\n${textBlocks.join('\n\n')}` : withKb
       // pick up MCP server changes (added/toggled in settings) for this run; a
       // cold stdio connect can take a while, so never block the send on it
       await Promise.race([

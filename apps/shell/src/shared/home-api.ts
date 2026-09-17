@@ -1,3 +1,4 @@
+import type { KbCitation } from '@chatoffice/ai-provider'
 import type {
   AiModelEntry,
   AiModelSelection,
@@ -415,6 +416,8 @@ export interface HomeChatMessage {
     | undefined
   /** ZCode 式任务清单:update_task_list 工具维护的全量快照(最新一次覆盖) */
   tasks?: Array<{ title: string; status: 'pending' | 'in_progress' | 'done' }> | undefined
+  /** KB 检索引用:本轮发送前注入的知识库片段(编号 [n] ↔ chips 渲染) */
+  kbCitations?: KbCitation[] | undefined
   /** P2-7 确认门:该轮挂起的大纲/计划确认卡(决议后原地留痕) */
   relayConfirm?:
     | {
