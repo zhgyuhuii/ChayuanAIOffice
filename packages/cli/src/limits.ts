@@ -1,8 +1,7 @@
 import { closeSync, fstatSync, openSync, readSync } from 'node:fs'
 import { DOCX_ZIP_LIMITS } from '@chatoffice/docx-engine'
 import { PPTX_ZIP_LIMITS } from '@chatoffice/pptx-engine'
-// LOCAL(适配): 上游 XLSX_ZIP_LIMITS 随快照 gateway 提供；gateway 回退本地版后就地定义
-const XLSX_ZIP_LIMITS = { maxParts: 10000, maxPartBytes: 512 * 1024 * 1024, maxTotalBytes: 1.5 * 1024 * 1024 * 1024 } as const
+import { XLSX_ZIP_LIMITS } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
 import { CliError, EXIT } from './result'
 
 export interface ZipDirectoryEntry {

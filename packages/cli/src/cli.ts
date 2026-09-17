@@ -99,7 +99,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
   }
 
   if (flagBool(args, 'version')) {
-    io.stdout(json ? JSON.stringify({ status: 'ok', version: VERSION }) : `chaoffice ${VERSION}`)
+    io.stdout(json ? JSON.stringify({ status: 'ok', version: VERSION }) : `chatoffice ${VERSION}`)
     return EXIT.ok
   }
   if (name === null || (name === 'help' && args.positionals.length === 0)) {
@@ -181,7 +181,7 @@ export async function runCli(argv: readonly string[], opts: RunOptions = {}): Pr
     const error =
       err instanceof CliError
         ? err
-        : new CliError(EXIT.conversion, (err instanceof Error ? err.message  : String(err)))
+        : new CliError(EXIT.conversion, err instanceof Error ? err.message : String(err))
     audit('error', error.code)
     return fail(error)
   }
@@ -224,7 +224,7 @@ function globalHelp(registry: CommandRegistry): string {
   const defs = registry.list()
   const width = Math.max(...defs.map((d) => d.name.length))
   return [
-    `chatoffice ${VERSION} — ChatOffice command line`,
+    `chatoffice ${VERSION} — ChaAI Office command line`,
     '',
     'Usage: chatoffice <command> [options]',
     '',

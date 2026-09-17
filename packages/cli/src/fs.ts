@@ -148,7 +148,7 @@ export interface OutputOptions {
 
 /**
  * The single place an output path is resolved, policy-checked and its
- * directory created. A file the running ChatOffice shell has open is refused
+ * directory created. A file the running ChaAI Office shell has open is refused
  * without --force, so a CLI edit cannot race the editor's own save.
  */
 export function resolveOutput(

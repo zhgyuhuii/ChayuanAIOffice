@@ -15,16 +15,14 @@ import { join } from 'node:path'
 import JSZip from 'jszip'
 
 /**
- * Installing the bundled `chaoffice` skill into the coding agents found on this
- * machine, shared by Settings → Integrations and `chaoffice skill`. Every write
+ * Installing the bundled `chatoffice` skill into the coding agents found on this
+ * machine, shared by Settings → Integrations and `chatoffice skill`. Every write
  * is a click in that pane or an explicit command; nothing installs on its own.
  * Pure functions over an injected home / env so the state table is
  * unit-testable without touching the real dotfolders.
  */
 
 export const SKILL_NAME = 'chaoffice'
-/** the pre-rename skill name; its dirs are removed when the new one installs */
-export const LEGACY_SKILL_NAME = 'chatoffice'
 
 /** app-settings.json key under which every install this machine's ChaAI Office wrote is remembered */
 export const LEDGER_KEY = 'agentSkillInstalls'
@@ -58,7 +56,7 @@ export type SkillInstallStatus =
 
 export interface SkillInstallState {
   status: SkillInstallStatus
-  /** `<skillsDir>/chatoffice/SKILL.md` */
+  /** `<skillsDir>/chaoffice/SKILL.md` */
   path: string
   installedVersion?: string
   /** installed version is older than the bundled one (foreign rows offer an update then) */
@@ -262,24 +260,7 @@ export function installSkill(
     at: new Date().toISOString(),
     channel,
   }
-  removeLegacySkillDir(skillsDir, ledger)
   return path
-}
-
-/**
- * Pre-rename installs live at `<skillsDir>/chatoffice`; once the chaoffice
- * skill is in place they are stale duplicates in the agents' skill lists.
- * Removed only when the ledger proves we wrote them.
- */
-function removeLegacySkillDir(skillsDir: string, ledger: SkillLedger): void {
-  const legacyDir = join(skillsDir, LEGACY_SKILL_NAME)
-  const legacyPath = join(legacyDir, 'SKILL.md')
-  if (!ledger[legacyPath]) return
-  try {
-    rmSync(legacyPath, { force: true })
-    if (readdirSync(legacyDir).length === 0) rmSync(legacyDir, { recursive: true })
-  } catch {}
-  delete ledger[legacyPath]
 }
 
 /** Remove only what this app wrote; a folder holding other files keeps them. */
@@ -292,7 +273,6 @@ export function uninstallSkill(skillsDir: string, ledger: SkillLedger): boolean 
     if (readdirSync(dir).length === 0) rmSync(dir, { recursive: true })
   } catch {}
   delete ledger[path]
-  removeLegacySkillDir(skillsDir, ledger)
   return true
 }
 

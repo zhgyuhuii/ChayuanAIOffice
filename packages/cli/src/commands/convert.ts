@@ -26,7 +26,7 @@ const NODE_ROUTES: Record<string, readonly string[]> = {
 }
 
 /**
- * Conversions the ChatOffice binary runs for us in its hidden headless-export
+ * Conversions the ChaAI Office binary runs for us in its hidden headless-export
  * mode: anything that needs an app renderer (page layout for pdf, the Word
  * editor's HTML export, html2docx). Mirrors HEADLESS_TARGETS in the shell.
  */

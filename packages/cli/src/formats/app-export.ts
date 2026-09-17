@@ -5,7 +5,7 @@ import { CliError, EXIT } from '../result'
 
 /**
  * Conversions that need an app renderer (Word, Excel and PowerPoint layout,
- * HTML and Markdown print, Word ↔ HTML) run in the ChatOffice binary itself through its
+ * HTML and Markdown print, Word ↔ HTML) run in the ChaAI Office binary itself through its
  * `--headless-export` entry: Dock hidden, no window, one export, exit. chatoffice
  * just spawns it and reads the JSON envelope it prints. The app skips the
  * single-instance lock in that mode, so a running GUI does not interfere.
@@ -39,7 +39,7 @@ export async function exportViaApp(
   const env = opts.env ?? process.env
   const launch = appLaunch(env)
   if (!launch) {
-    throw new CliError(EXIT.app, 'ChatOffice app not found (needed for this conversion)', {
+    throw new CliError(EXIT.app, 'ChaAI Office app not found (needed for this conversion)', {
       hint: 'install ChaAI Office, or set GENOFFICE_APP_BIN to its executable',
     })
   }
@@ -55,7 +55,7 @@ export async function exportViaApp(
   ]
   const childEnv = { ...env }
   delete childEnv.ELECTRON_RUN_AS_NODE
-  opts.log?.(`starting ChatOffice for ${target} export`)
+  opts.log?.(`starting ChaAI Office for ${target} export`)
   const spawn = opts.spawn ?? nodeSpawn
   const child = spawn(launch.command, args, { env: childEnv, stdio: ['ignore', 'pipe', 'pipe'] })
   const { code, stdout, stderr, timedOut } = await waitFor(
@@ -66,13 +66,13 @@ export async function exportViaApp(
   const envelope = parseEnvelope(stdout)
   const exported = envelope?.status === 'ok' && existsSync(outputPath)
   if (exported && (code === 0 || timedOut)) {
-    if (timedOut) opts.log?.('export finished but ChatOffice had to be terminated on quit')
+    if (timedOut) opts.log?.('export finished but ChaAI Office had to be terminated on quit')
     return { outputPath, summary: envelope.summary ?? `exported to ${outputPath}` }
   }
   if (timedOut) {
     throw new CliError(
       EXIT.conversion,
-      `ChatOffice did not finish the export within ${Math.round((opts.timeoutMs ?? DEFAULT_TIMEOUT_MS) / 1000)}s`,
+      `ChaAI Office did not finish the export within ${Math.round((opts.timeoutMs ?? DEFAULT_TIMEOUT_MS) / 1000)}s`,
       {
         app: launch.command,
       },
@@ -84,8 +84,8 @@ export async function exportViaApp(
     envelope?.summary ??
     (tail ||
       (code === 0
-        ? 'ChatOffice exited without writing the file; this ChatOffice version may not support --headless-export'
-        : `ChatOffice exited with code ${code}`))
+        ? 'ChaAI Office exited without writing the file; this ChaAI Office version may not support --headless-export'
+        : `ChaAI Office exited with code ${code}`))
   throw new CliError(exitCodeFor(code), message, {
     app: launch.command,
     exit_code: code,

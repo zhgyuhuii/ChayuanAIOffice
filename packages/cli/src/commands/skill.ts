@@ -247,7 +247,7 @@ function home(env: NodeJS.ProcessEnv): string {
 function skillFile(): string {
   const path = bundledSkillPath()
   if (!path)
-    throw new CliError(EXIT.app, 'the bundled skill (skills/chatoffice/SKILL.md) was not found')
+    throw new CliError(EXIT.app, 'the bundled skill (skills/chaoffice/SKILL.md) was not found')
   return path
 }
 

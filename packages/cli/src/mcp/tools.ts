@@ -440,19 +440,22 @@ export function resolveTool(tool: ToolSpec, registry: CommandRegistry): Resolved
   const def = registry.get(tool.command)
   if (!def) throw new Error(`mcp tool ${tool.name}: unknown command ${tool.command}`)
   const defs = new Map((def.options ?? []).map((o) => [o.name, o]))
-  const params = (tool.options ?? []).map((entry): ResolvedParam => {
-    const spec: ParamSpec = typeof entry === 'string' ? { key: entry } : entry
-    const option = spec.option ?? spec.key
-    const opt = defs.get(option)
-    if (!opt) throw new Error(`mcp tool ${tool.name}: ${tool.command} has no --${option}`)
-    return {
-      key: spec.key.replace(/-/g, '_'),
-      option,
-      kind: spec.kind ?? defaultKind(opt),
-      description: spec.description ?? stripVerbPrefix(opt.description),
-      required: spec.required ?? false,
-    }
-  })
+  // LOCAL(适配): 本地命令缺快照选项时跳过该工具（优雅降级），而非让整个 server 崩溃
+  const params = (tool.options ?? [])
+    .map((entry): ResolvedParam | null => {
+      const spec: ParamSpec = typeof entry === 'string' ? { key: entry } : entry
+      const option = spec.option ?? spec.key
+      const opt = defs.get(option)
+      if (!opt) return null
+      return {
+        key: spec.key.replace(/-/g, '_'),
+        option,
+        kind: spec.kind ?? defaultKind(opt),
+        description: spec.description ?? stripVerbPrefix(opt.description),
+        required: spec.required ?? false,
+      }
+    })
+    .filter((p): p is ResolvedParam => p !== null)
   return { ...tool, params }
 }
 

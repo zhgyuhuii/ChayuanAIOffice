@@ -76,7 +76,7 @@ export const slidesCommand: CommandDef = {
     {
       name: 'force',
       description:
-        'apply: overwrite an existing --out file, or write while ChatOffice has the file open',
+        'apply: overwrite an existing --out file, or write while ChaAI Office has the file open',
     },
     {
       name: 'page',
@@ -449,7 +449,7 @@ async function replace(
   }
 }
 
-/** One PNG per slide, through the app's PDF export (hidden ChatOffice process) and pdfium. */
+/** One PNG per slide, through the app's PDF export (hidden ChaAI Office process) and pdfium. */
 async function render(
   file: string | undefined,
   args: Parameters<CommandDef['run']>[0],

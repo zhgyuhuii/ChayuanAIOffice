@@ -389,6 +389,10 @@ export async function applyDocOps(
       null,
       comments,
       hf,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     )
     // the in-app executor reports a target that matched nothing as a soft result; for a
     // scripted batch that is a wrong index, so the whole batch is refused before saving

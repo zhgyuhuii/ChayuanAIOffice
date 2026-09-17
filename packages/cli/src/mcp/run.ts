@@ -24,7 +24,7 @@ export function createContext(base: {
 }): McpContext {
   const scratchDir = join(
     tmpdir(),
-    `chaoffice-mcp-${process.pid}-${randomBytes(4).toString('hex')}`,
+    `chatoffice-mcp-${process.pid}-${randomBytes(4).toString('hex')}`,
   )
   mkdirSync(scratchDir, { recursive: true })
   return { ...base, env: allowScratch(base.env, scratchDir), scratchDir }

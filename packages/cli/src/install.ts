@@ -3,14 +3,12 @@ import { accessSync, constants, lstatSync, readlinkSync, symlinkSync, unlinkSync
 import { join, win32 } from 'node:path'
 
 /**
- * Making `chaoffice` reachable from a terminal. The launcher ships inside the
- * app (Resources/cli/chaoffice, or chaoffice.cmd on Windows); nothing at
- * install time puts it on PATH for the dmg, so the app tries this on every
- * launch until it succeeds and `chaoffice install-cli` repeats it on demand.
- * Best effort everywhere: no prompts, no elevation, never an error on the
- * app's startup path. `inspectCliLink` reports the same states without writing
- * anything. A `chatoffice` symlink is kept beside the new name so pre-rename
- * terminals keep working.
+ * Making `chatoffice` reachable from a terminal. The launcher ships inside the app
+ * (Resources/cli/chatoffice, or chatoffice.cmd on Windows); nothing at install time puts
+ * it on PATH for the dmg, so the app tries this on every launch until it
+ * succeeds and `chatoffice install-cli` repeats it on demand. Best effort
+ * everywhere: no prompts, no elevation, never an error on the app's startup
+ * path. `inspectCliLink` reports the same states without writing anything.
  */
 export interface InstallOptions {
   /** absolute path of the launcher to expose */
@@ -55,14 +53,13 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
   const manual = manualCommand(opts.launcher)
   let occupied: string | undefined
   for (const dir of dirs) {
-    const link = join(dir, 'chaoffice')
+    const link = join(dir, 'chatoffice')
     const state = linkState(link, opts.launcher)
     if (state === 'ours' && readlinkSync(link) === opts.launcher) {
-      linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
       return { status: 'present', location: link }
     }
     if (state === 'file' || state === 'foreign') {
-      // somebody else's chaoffice (a file, or npm's symlink): never clobber it
+      // somebody else's chatoffice (a file, or npm's symlink): never clobber it
       occupied = link
       continue
     }
@@ -70,25 +67,13 @@ export function installCliLink(opts: InstallOptions): InstallOutcome {
     try {
       if (state !== 'missing') unlinkSync(link)
       symlinkSync(opts.launcher, link)
-      linkLegacyName(join(dir, 'chatoffice'), opts.launcher)
       return { status: 'linked', location: link }
     } catch {
       continue
     }
   }
   if (occupied) return { status: 'occupied', location: occupied, manual }
-  return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chaoffice'), manual }
-}
-
-/** best-effort `chatoffice` alias next to the new name (never clobbers) */
-function linkLegacyName(link: string, launcher: string): void {
-  try {
-    const state = linkState(link, launcher)
-    if (state !== 'missing') return
-    symlinkSync(launcher, link)
-  } catch {
-    /* best effort */
-  }
+  return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chatoffice'), manual }
 }
 
 /** Read-only twin of `installCliLink`: what a fresh terminal would find, without changing anything. */
@@ -101,7 +86,7 @@ export function inspectCliLink(opts: InstallOptions): InstallOutcome {
   let occupied: string | undefined
   // same walk installCliLink does: an occupied name is skipped, the first free writable dir wins
   for (const dir of dirs) {
-    const link = join(dir, 'chaoffice')
+    const link = join(dir, 'chatoffice')
     const state = linkState(link, opts.launcher)
     if (state === 'ours' && readlinkSync(link) === opts.launcher) {
       return { status: 'present', location: link }
@@ -113,11 +98,11 @@ export function inspectCliLink(opts: InstallOptions): InstallOutcome {
     if (writable(dir)) return { status: 'missing', location: link, manual }
   }
   if (occupied) return { status: 'occupied', location: occupied, manual }
-  return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chaoffice'), manual }
+  return { status: 'unwritable', location: join(dirs[0] ?? '/usr/local/bin', 'chatoffice'), manual }
 }
 
 function manualCommand(launcher: string): string {
-  return `sudo mkdir -p /usr/local/bin && sudo ln -sf "${launcher}" /usr/local/bin/chaoffice`
+  return `sudo mkdir -p /usr/local/bin && sudo ln -sf "${launcher}" /usr/local/bin/chatoffice`
 }
 
 function linkState(path: string, launcher: string): 'missing' | 'ours' | 'file' | 'foreign' {
@@ -131,9 +116,9 @@ function linkState(path: string, launcher: string): 'missing' | 'ours' | 'file' 
   }
 }
 
-/** Only launchers we shipped (<app resources>/cli/chaoffice or the legacy chatoffice name, any version or install dir) may be replaced. */
+/** Only launchers we shipped (<app resources>/cli/chatoffice, any version or install dir) may be replaced. */
 function isOurLauncher(target: string): boolean {
-  return /[\\/]cli[\\/](cha|chat)office$/.test(target)
+  return /[\\/]cli[\\/]chatoffice$/.test(target)
 }
 
 function writable(dir: string): boolean {
@@ -160,9 +145,9 @@ const WIN_PATH_READ =
 // best effort: a locked-down PowerShell may refuse Add-Type, the PATH edit still stands
 const WIN_BROADCAST =
   'try { ' +
-  'Add-Type -Namespace ChatOfficePath -Name Native -MemberDefinition \'[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);\'; ' +
+  'Add-Type -Namespace ChaAI OfficePath -Name Native -MemberDefinition \'[DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);\'; ' +
   '$r = [UIntPtr]::Zero; ' +
-  "[void][ChatOfficePath.Native]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 5000, [ref]$r) " +
+  "[void][ChaAI OfficePath.Native]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 5000, [ref]$r) " +
   '} catch {}; '
 
 function psQuote(text: string): string {

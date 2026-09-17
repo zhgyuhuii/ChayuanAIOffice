@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Two layouts: packaged (Resources/cli/chaoffice.cjs next to Resources/wasm,
+ * Two layouts: packaged (Resources/cli/chatoffice.cjs next to Resources/wasm,
  * Resources/native, Resources/ocr — see apps/shell/electron-builder.cjs) and
  * the dev checkout (packages/cli/{src,dist} inside the monorepo).
  */
@@ -80,7 +80,7 @@ export function ocrHelperPath(): string | null {
   return candidates.find((p) => existsSync(p)) ?? null
 }
 
-/** skills/chatoffice/SKILL.md as shipped beside this bundle (Resources/cli/skills) or in the checkout. */
+/** skills/chaoffice/SKILL.md as shipped beside this bundle (Resources/cli/skills) or in the checkout. */
 export function bundledSkillPath(): string | null {
   const packaged = packagedResourcesDir()
   const candidates = [
@@ -95,7 +95,7 @@ export interface AppLaunch {
   args: string[]
 }
 
-/** How to start the ChatOffice GUI: the app binary that hosts this CLI, an installed app, or the dev checkout. */
+/** How to start the ChaAI Office GUI: the app binary that hosts this CLI, an installed app, or the dev checkout. */
 export function appLaunch(env: NodeJS.ProcessEnv = process.env): AppLaunch | null {
   if (env.GENOFFICE_APP_BIN) return { command: env.GENOFFICE_APP_BIN, args: [] }
   if (packagedResourcesDir() && process.versions.electron) {
@@ -118,17 +118,14 @@ function installedAppBinaries(env: NodeJS.ProcessEnv): string[] {
       return [
         '/Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office',
         join(homedir(), 'Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office'),
-        // pre-rename installs keep the old bundle name
-        '/Applications/ChatOffice.app/Contents/MacOS/ChatOffice',
-        join(homedir(), 'Applications/ChatOffice.app/Contents/MacOS/ChatOffice'),
       ]
     case 'win32':
       return [
-        env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'ChatOffice', 'ChatOffice.exe') : '',
-        env.ProgramFiles ? join(env.ProgramFiles, 'ChatOffice', 'ChatOffice.exe') : '',
+        env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'ChaAI Office', 'ChaAI Office.exe') : '',
+        env.ProgramFiles ? join(env.ProgramFiles, 'ChaAI Office', 'ChaAI Office.exe') : '',
       ].filter(Boolean)
     default:
-      return ['/opt/ChatOffice/chatoffice', '/usr/bin/chatoffice']
+      return ['/opt/ChaAI Office/chatoffice', '/usr/bin/chatoffice']
   }
 }
 

@@ -13,7 +13,7 @@ export function chatofficeUserDataDir(env: NodeJS.ProcessEnv): string {
       : process.platform === 'win32'
         ? env.APPDATA || join(homedir(), 'AppData', 'Roaming')
         : env.XDG_CONFIG_HOME || join(homedir(), '.config')
-  return join(base, 'ChatOffice')
+  return join(base, 'ChaAI Office')
 }
 
 export interface GuiOpenDocuments {
@@ -22,7 +22,7 @@ export interface GuiOpenDocuments {
 }
 
 /**
- * Files the running ChatOffice shell has open, from the registry it publishes
+ * Files the running ChaAI Office shell has open, from the registry it publishes
  * on every tab change (apps/shell/src/main/open-documents.ts). Null when no
  * shell is running: a registry whose pid is gone is a crash leftover.
  */
