@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Two layouts: packaged (Resources/cli/chatoffice.cjs next to Resources/wasm,
+ * Two layouts: packaged (Resources/cli/chaoffice.cjs next to Resources/wasm,
  * Resources/native, Resources/ocr — see apps/shell/electron-builder.cjs) and
  * the dev checkout (packages/cli/{src,dist} inside the monorepo).
  */

@@ -40,16 +40,6 @@ beforeEach(() => {
     aiLocalToolStatus: async () => ({ state: 'missing' }),
     aiLocalToolInstall: async () => ({ ok: false }),
   } as unknown as HomeApi
-  window.chatOffice = {
-    getTheme: async () => 'system',
-    getDefaultSaveDir: async () => '',
-    getAnalyticsEnabled: async () => true,
-    getAutoSaveDefault: async () => ({ on: false, updatedAt: 0 }),
-    getAiPanelPrefs: async () => ({ fontSize: 'default', spellcheck: true }),
-    getUpdateChannel: async () => 'stable',
-    getAppVersion: async () => '1.0.0',
-    githubStars: async () => null,
-  } as unknown as HomeApi
 })
 
 afterEach(() => {
@@ -182,8 +172,9 @@ describe('Settings → Integrations', () => {
     expect(host.textContent).toContain('npx skills add zhgyuhuii/chayuan-office')
     // MCP block: the launcher itself while chaoffice is not on the PATH, as a command and as JSON
     const mcp = [...host.querySelectorAll('.set-intg-mcp code')].map((c) => c.textContent)
+    // the brand directory name contains a space, so the launcher must be quoted
     expect(mcp[0]).toBe(
-      'claude mcp add --transport stdio chaoffice -- /Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice mcp',
+      'claude mcp add --transport stdio chaoffice -- "/Applications/ChaAI Office.app/Contents/Resources/cli/chaoffice" mcp',
     )
     expect(JSON.parse(mcp[1]!)).toEqual({
       mcpServers: {

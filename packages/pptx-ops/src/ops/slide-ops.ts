@@ -69,6 +69,9 @@ import {
   type OpRecord,
 } from './registry'
 
+/** Q5 guard (roadmap v3 §8): ceiling for AI-driven animation items on one slide */
+const ANIMATION_PAGE_GUARD = 24
+
 // ── slide lifecycle ─────────────────────────────────────────────────────
 
 register({
@@ -512,6 +515,13 @@ register({
   validate(op, ctx) {
     resolveSlide(ctx, op)
     if (!Array.isArray(op.items)) throw new GuidedError('op "setAnimations" needs "items".')
+    // Q5 guard (roadmap v3 §8): animations are now AI-callable with a hard
+    // per-page ceiling — a full-replace op must not balloon a slide's timing tree
+    if ((op.items as unknown[]).length > ANIMATION_PAGE_GUARD) {
+      throw new GuidedError(
+        `op "setAnimations": at most ${ANIMATION_PAGE_GUARD} animation items per slide (got ${(op.items as unknown[]).length}). Trim the list or split emphasis between slides.`,
+      )
+    }
     for (const [i, raw] of (op.items as Array<Record<string, unknown>>).entries()) {
       if (typeof raw?.sourceId !== 'string' || !raw.sourceId) {
         throw new GuidedError(`op "setAnimations": items[${i}] needs "sourceId": an element id.`)

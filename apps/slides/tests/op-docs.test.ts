@@ -16,6 +16,7 @@ import {
   opSignatureIndex,
   opUsage,
   opVocabulary,
+  LOCAL_OP_DOCS,
 } from '@chatoffice/pptx-ops'
 
 // pending: true entries document ops of an in-flight branch ahead of its
@@ -45,10 +46,13 @@ describe('op docs coverage', () => {
   })
 
   it('every block carries a compact signature and a body', () => {
+    // adapted: 69b4ce0 — ChatOffice-local ops carry sig-only docs (their
+    // prose lives in the local skill prompt, not the upstream ops/*.md)
+    const LOCAL_OPS = new Set(Object.keys(LOCAL_OP_DOCS))
     for (const [name, doc] of Object.entries(OP_DOCS)) {
       expect(doc.sig, name).toMatch(/^\{/)
       expect(doc.sig, name).not.toContain('`')
-      expect(doc.body.length, name).toBeGreaterThan(20)
+      if (!LOCAL_OPS.has(name)) expect(doc.body.length, name).toBeGreaterThan(20)
       expect(OP_GROUPS).toContain(doc.group)
     }
   })

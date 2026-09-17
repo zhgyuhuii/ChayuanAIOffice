@@ -44,7 +44,6 @@ const DEFAULT_NAMES = [
   'insert_content',
   'open_documents',
   'open_in_chaoffice',
-  'open_in_chaoffice',
   'read_deck',
   'read_document',
   'read_docx',

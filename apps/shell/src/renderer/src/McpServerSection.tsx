@@ -14,7 +14,7 @@ import type { TFunc } from './locale'
  */
 export function mcpConfigExample(port: string): string {
   return JSON.stringify(
-    { mcpServers: { 'chatoffice-editor': { url: `http://127.0.0.1:${port}/mcp` } } },
+    { mcpServers: { 'chaoffice-editor': { url: `http://127.0.0.1:${port}/mcp` } } },
     null,
     2,
   )
@@ -267,7 +267,10 @@ export function McpServerSection({ t }: { t: TFunc }) {
                 <button className="set-btn" onClick={fetchLogs}>
                   {t('setMcpLogRefresh')}
                 </button>
-                <button className="set-btn" onClick={() => void window.chatOffice.openMcpLogFile?.()}>
+                <button
+                  className="set-btn"
+                  onClick={() => void window.chatOffice.openMcpLogFile?.()}
+                >
                   {t('setMcpLogOpen')}
                 </button>
                 <button

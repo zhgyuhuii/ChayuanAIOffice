@@ -159,6 +159,9 @@ function buildTools(): McpToolDefinition[] {
       },
       host,
     ),
+    // headless, session-free read access (read_pdf); registered whenever the
+    // pdf workspace is bundled in, which the shell always does
+    ...createPdfTools(),
     // documents the user has open, independent of the session above
     ...createOpenDocumentTools({
       defaultSaveDir: deps.defaultSaveDir,

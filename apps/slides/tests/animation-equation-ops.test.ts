@@ -129,9 +129,10 @@ describe('addAnimation / removeAnimation / reorderAnimation', () => {
     const spid = /<p:cNvPr\s[^>]*\bid="(\d+)"/.exec(
       slide0().elements.find((e) => e.id === cardId)!.anchor.originalXml,
     )![1]
-    // Random Bars (presetID 5) has no modeled writer
+    // presetID 35 has no modeled writer in the merged superset (local WPS variants
+    // model 1-30; a genuinely unmodeled id exercises the verbatim escape hatch)
     const presetXml =
-      '<p:par><p:cTn id="99" presetID="5" presetClass="entr" presetSubtype="10" fill="hold" grpId="0" nodeType="clickEffect">' +
+      '<p:par><p:cTn id="99" presetID="35" presetClass="entr" presetSubtype="10" fill="hold" grpId="0" nodeType="clickEffect">' +
       '<p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>' +
       `<p:set><p:cBhvr><p:cTn id="98" dur="1" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt spid="${spid}"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr><p:to><p:strVal val="visible"/></p:to></p:set>` +
       `<p:animEffect transition="in" filter="randombar(horizontal)"><p:cBhvr><p:cTn id="97" dur="500"/><p:tgtEl><p:spTgt spid="${spid}"/></p:tgtEl></p:cBhvr></p:animEffect>` +
@@ -152,7 +153,7 @@ describe('addAnimation / removeAnimation / reorderAnimation', () => {
     const list = listSlideAnimations(reopened.deck.slides[0]!)
     expect(list).toHaveLength(2)
     expect(list[1]!.custom).toBe(true)
-    expect(list[1]!.preset).toEqual({ id: 5, cls: 'entr', sub: 10 })
+    expect(list[1]!.preset).toEqual({ id: 35, cls: 'entr', sub: 10 })
     expect(list[1]!.trigger).toBe('withPrev')
     const xml = /<p:timing>[\s\S]*<\/p:timing>/.exec(reopened.deck.slides[0]!.bodySuffix)![0]
     expect(xml).toContain('filter="randombar(horizontal)"')

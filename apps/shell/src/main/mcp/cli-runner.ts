@@ -57,7 +57,7 @@ export interface CliRunner {
 export interface CliRunnerPaths {
   /** node/electron executable that runs the CLI entry */
   executable: string
-  /** absolute path to the bundled CLI entry (dist/chatoffice.cjs) */
+  /** absolute path to the bundled CLI entry (dist/chaoffice.cjs) */
   entry: string
   /** extra environment (the runner adds ELECTRON_RUN_AS_NODE when needed) */
   env?: NodeJS.ProcessEnv

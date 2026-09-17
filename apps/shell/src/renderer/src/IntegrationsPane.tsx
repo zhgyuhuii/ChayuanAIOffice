@@ -52,7 +52,7 @@ export function mcpLaunch(cli: { status: string; launcherDir: string }): McpLaun
   if (dir.includes('\\')) {
     return {
       command: `${dir}\\..\\..\\ChaAI Office.exe`,
-      args: [`${dir}\\chatoffice.cjs`, 'mcp'],
+      args: [`${dir}\\chaoffice.cjs`, 'mcp'],
       env: { ELECTRON_RUN_AS_NODE: '1' },
     }
   }
@@ -74,7 +74,6 @@ export function mcpConfigJson(launch: McpLaunch): string {
 }
 
 const api = () => window.chatOfficeIntegrations
-
 
 export function IntegrationsPane({
   t,

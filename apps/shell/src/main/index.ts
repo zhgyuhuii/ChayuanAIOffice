@@ -6257,8 +6257,8 @@ app.whenReady().then(async () => {
     cliRunner: createCliRunner({
       executable: process.execPath,
       entry: app.isPackaged
-        ? join(process.resourcesPath, 'cli', 'chatoffice.cjs')
-        : join(APPS_ROOT, '..', 'packages', 'cli', 'dist', 'chatoffice.cjs'),
+        ? join(process.resourcesPath, 'cli', 'chaoffice.cjs')
+        : join(APPS_ROOT, '..', 'packages', 'cli', 'dist', 'chaoffice.cjs'),
     }),
     logFilePath: join(app.getPath('userData'), 'mcp-log.txt'),
   })

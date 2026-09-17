@@ -157,6 +157,53 @@ function parseGroup(group: OpGroup, md: string): { docs: Record<string, OpDoc>; 
 const parsed = GROUP_ORDER.map((g) => parseGroup(g, SOURCES[g]))
 
 export const OP_DOCS: Record<string, OpDoc> = Object.assign({}, ...parsed.map((p) => p.docs))
+// ChatOffice-local tools (no upstream ops/*.md counterpart)
+// ChatOffice-local ops (no upstream ops/*.md counterpart): sig + true group
+// (+aiCallable:false flags) extracted from the pre-sync OP_DOCS table
+export const LOCAL_OP_DOCS: Record<string, { sig: string; group: OpGroup; aiCallable?: false }> = {
+  setText: { sig: '{paragraphs:[{runs:[{text,bold?,italic?,fontSize?,color?}],align?}]} (group children: add group:"<group id>")', group: 'text' },
+  setFont: { sig: '{font:{fontFamily?,fontSizePt?,bold?,italic?,underline?,strike?,color?}} — merges onto every run of the element', group: 'text' },
+  setParagraphFormat: { sig: '{format:{align?,bullet?,lineSpacingPct?,spaceBeforePt?,spaceAfterPt?}}', group: 'text' },
+  setFill: { sig: '{fill:"#RRGGBB"|"none"|{stops:[{pos,color}],angle?}}', group: 'element' },
+  setStroke: { sig: '{stroke:{color:"#RRGGBB",widthEmu}|null} — null removes the outline', group: 'element' },
+  setTransform: { sig: '{box:{x,y,cx,cy},rotDeg?} (group children: absBox instead of box, plus group:"<group id>")', group: 'element' },
+  setConnectorEndpoints: { sig: '{p1:{x,y},p2:{x,y},start?:{targetId,idx}|null,end?:{targetId,idx}|null}', group: 'element' },
+  setPictureSrcRect: { sig: '{srcRect:{l,t,r,b}|null} — crop fractions 0..1, null removes the crop', group: 'element' },
+  setPictureLum: { sig: '{lum:{bright,contrast}|-1..1|null} — null clears (<a:lum>)', group: 'element' },
+  setShapeAdjust: { sig: '{adjust:{<gdName>:number,…}} — preset-geometry avLst values (group children: add group)', group: 'element' },
+  setTextBodyProps: { sig: '{props:{vert?:"horz"|"eaVert"|"vert"|"vert270"|"wordArtVert",autofit?:"none"|"shrink"|"resize",insets?:{l?,t?,r?,b?} (EMU),wrap?:boolean}}', group: 'element' },
+  setEffects: { sig: '{effects:{shadow?:{color:"#RRGGBB(AA)",blurRad,dist,dirDeg,inner?,sx?,sy?,kxDeg?}|null,glow?:{color,radius}|null,reflection?:{blurRad,startA(0..1),endPos(0..1),dist}|null,softEdge?:EMU|null}} — null clears; EMU distances (12700/pt)', group: 'element' },
+  setLink: { sig: '{link:{kind:"url",url}|{kind:"slide",slideIndex}|null}', group: 'element' },
+  setImageFill: { sig: '{source:{mediaPath}|{bytes:base64|dataURL,ext},tile?} — use the image tools instead', group: 'element', aiCallable: false },
+  addElement: { sig: '{kind:"textbox"|<preset geometry>,offset:{x,y,cx,cy},paragraphs?,fill?,stroke?,adjustments?:{<gd name>:val},bodyPr?:{autoFit?:"shrink"|"resize"}}', group: 'insert' },
+  addPicture: { sig: '{bytes:base64|dataURL,ext?,svgText?,offset} — svgText upgrades to a double-part vector (raster fallback + asvg:svgBlip); use insert_web_image/generate_svg instead', group: 'insert', aiCallable: false },
+  addWordArt: { sig: '{text,offset:{x,y,cx,cy},fontSizePt?,fill?,outline?:{color,widthPt?},bold?,italic?} — display text (big/bold/fill/outline); EMU rect, height ≈ fontSizePt*2.2', group: 'insert' },
+  replacePicture: { sig: '{bytes:base64|dataURL,ext?} — use replace_image instead', group: 'insert', aiCallable: false },
+  addTable: { sig: '{rows,cols,offset:{x,y,cx,cy},colWidthsEmu?,rowHeightsEmu?,cellProps?:[[{gridSpan?,rowSpan?,hMerge?,vMerge?,anchor?}]]}', group: 'insert' },
+  addChart: { sig: '{kind:"bar"|"barStacked"|"line"|"area"|"pie"|"doughnut"|"scatter"|"radar"|"comboBarLine",categories:[…],series:[{name,values:[…]}],offset,title?,colorScheme?:["#RRGGBB"],holeSizePct?}', group: 'insert' },
+  addMedia: { sig: '{kind:"video"|"audio",bytes:base64|dataURL,ext,offset} — bytes ≤40MB; generate via generate_video first', group: 'insert' },
+  addEchart: { sig: '{pngBase64,optionJson,groupId,offset} — ECharts extended-family chart (poster PNG + sidecar)', group: 'insert', aiCallable: false },
+  getEchart: { sig: '{target} — read the echart sidecar of a picture element', group: 'insert', aiCallable: false },
+  updateEchart: { sig: '{target,pngBase64,optionJson} — rewrite sidecar + poster bytes in place', group: 'insert', aiCallable: false },
+  pasteElements: { sig: '{items,dx,dy} — clipboard payload', group: 'insert', aiCallable: false },
+  tableStructure: { sig: '{kind:"insert-row"|"delete-row"|"insert-col"|"delete-col",index,before?}', group: 'table' },
+  setTableStyle: { sig: '{edit:TableStyleEdit} — use the edit_table_style tool instead', group: 'table', aiCallable: false },
+  setChart: { sig: '{patch:ChartEdit} — use the edit_chart tool instead', group: 'table', aiCallable: false },
+  addSlideWithLayout: { sig: '{layoutPath} — layout part path; not discoverable from tool results', group: 'slide', aiCallable: false },
+  pasteSlide: { sig: '{afterIndex,bundle|png,mode?} — clipboard payload', group: 'slide', aiCallable: false },
+  insertSlidePptx: { sig: '{source,at?,replace?} — generated-page landing payload (use generate_deck/regenerate_slide)', group: 'slide', aiCallable: false },
+  setSlideLayout: { sig: '{layoutPath?} — layout part path; not discoverable from tool results', group: 'slide', aiCallable: false },
+  setBackground: { sig: '{kind:"solid"|"gradient"|"reset"|"graphics"|"image",color?,from?,to?,angleDeg?,radial?,hidden?} — image kind needs a bytes source (use set_slide_background)', group: 'slide' },
+  setAnimations: { sig: '{items:[{sourceId,effect,trigger,durationMs?,delayMs?,motionPath?,paragraph?,rewind?}]} — full replace per slide; sourceId resolves like every op; ≤24 items/page', group: 'slide' },
+  findReplace: { sig: '{find,replace,matchCase?,slideIndex?} — whole deck unless slideIndex', group: 'deck' },
+  applyHeaderFooter: { sig: '{settings:{footer?,slideNum?,date?,dateAuto?}} — every slide', group: 'deck' },
+  applyTheme: { sig: '{name,colors:{dk1?,lt1?,dk2?,lt2?,accent1?..accent6?,hlink?,folHlink?},majorFont?,minorFont?} — "#RRGGBB" slots, whole deck', group: 'deck' },
+}
+for (const [name, doc] of Object.entries(LOCAL_OP_DOCS)) {
+  if (!OP_DOCS[name]) OP_DOCS[name] = { ...doc, examples: [], body: '' }
+}
+// local Q5 unlock: setAnimations is AI-callable (upstream ops md gates it)
+if (OP_DOCS.setAnimations) delete OP_DOCS.setAnimations.aiCallable
 
 export const OP_GUIDES: Record<OpGroup, OpGuide> = Object.fromEntries(
   parsed.map((p) => [p.guide.group, p.guide]),
