@@ -22,6 +22,7 @@ import { openLocalArea, RemoteStorageError, type StorageArea } from '@chatoffice
 import { attachAuthHooks, type AuthOptions } from './auth.js'
 import { attachWsGateway } from './ws-gateway.js'
 import { attachAiProxy, type AiProxyOptions } from './ai-proxy.js'
+import { attachKbProxy, type KbProxyOptions } from './kb-proxy.js'
 import { attachStatic } from './static.js'
 import { createPptxService } from './services/pptx.js'
 import { createSheetsSaveService } from './services/sheets-save.js'
@@ -33,6 +34,8 @@ export interface ServerOptions {
   area?: StorageArea
   auth?: AuthOptions
   ai?: AiProxyOptions
+  /** harness block for the knowledge-base proxy (dsh plugin form); see kb-proxy.ts */
+  kbHarness?: KbProxyOptions['harness']
   /** Extra services to host alongside the defaults */
   services?: Record<string, ServiceDefinition<unknown>>
   /** Static web root (build:web output); serves the SPA on the same port */
@@ -157,6 +160,18 @@ export function buildServer(options: ServerOptions = {}): BuiltServer {
           },
         }
       : {}),
+  })
+  // knowledge-base read proxy (dsh plugin form: harness origin; web form: absent → degrades)
+  attachKbProxy(app, {
+    harness:
+      options.kbHarness ??
+      (dshHome && (dshRpc || dshRpcFile)
+        ? {
+            dshHome,
+            rpcOrigin: dshRpc ?? '',
+            ...(dshRpcFile ? { rpcOriginFile: dshRpcFile } : {}),
+          }
+        : undefined),
   })
   if (options.staticDir) attachStatic(app, options.staticDir)
 
