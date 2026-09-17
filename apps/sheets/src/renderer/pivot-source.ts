@@ -32,9 +32,14 @@ export function resolvePivotSource(
       const range = shiftCellArea(table.range, ops)
       if (!range || !contains(range)) continue
       if (table.headerRowCount !== 1) return selection
-      // Drop totals from the shifted bounds: a row inserted at the totals row is table data.
-      const source = { ...range, endRow: range.endRow - (table.totalsRowCount ?? 0) }
-      return source.endRow > source.startRow ? source : selection
+      const source = shiftCellArea(
+        {
+          ...table.range,
+          endRow: table.range.endRow - (table.totalsRowCount ?? 0),
+        },
+        ops,
+      )
+      return source && source.endRow > source.startRow ? source : selection
     } catch (error) {
       if (error instanceof StructuralShiftError) return selection
       throw error

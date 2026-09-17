@@ -13,7 +13,6 @@ import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
 import '@chatoffice/ui/ai-panel-prefs.css'
 import '@chatoffice/ui/ai-scope-quote.css'
-import '@chatoffice/ui/files-pane.css'
 import '@univerjs/preset-sheets-core/lib/index.css'
 
 import { App } from './App'

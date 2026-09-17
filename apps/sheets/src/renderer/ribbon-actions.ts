@@ -2668,7 +2668,7 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
   }
   // Excel's PageUp/PageDown (Alt+ = one screen left/right): move the active
   // cell by one viewport of rows/columns and scroll the view with it, keeping
-  // the cell's on-screen position.
+  // the cell's on-screen position (alpha ledger r126).
   if (command.startsWith('page-row:') || command.startsWith('page-col:')) {
     const horizontal = command.startsWith('page-col:')
     const direction = command.endsWith(':-1') ? -1 : 1
@@ -2753,7 +2753,7 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
     // ⌘Z must also retract the column default, or a save after undo would
     // still write <col style> and new cells would inherit the undone format.
     // Attached to the font command's own undo entry: one press reverts the
-    // whole action, and no extra undo-carry truncation point appears
+    // whole action, and no extra undo-carry truncation point appears (bugbot)
     attachVisualUndoToLastStep(
       runtime,
       {

@@ -392,7 +392,7 @@ export function proposeOperations(
           // sheet-scoped defined names; catching it here keeps the failure
           // out of the apply-ok-save-fail gap. The sidecar flag covers
           // hidden and _xlnm.* built-ins the modeled definedNames omit
-          // entirely; the scan remains as the older-sidecar fallback.
+          // (bugbot); the scan remains as the older-sidecar fallback.
           const fileIndex = state.file.sheets.findIndex((sheet) => sheet.id === operation.sheetId)
           const scopedNames =
             sheetMeta?.hasScopedDefinedNames ??
@@ -995,7 +995,7 @@ export function lazyGateFailure(
   // a save that must fail. Workbook-level ops (rename/move/hide/delete a
   // sheet) only rewrite workbook.xml and stay allowed. add_pivot reads
   // `sheetId` and bakes its output onto `targetSheetId` — gate that one on
-  // the write target.
+  // the write target (bugbot).
   const writeSheetId = operation.op === 'add_pivot' ? (operation.targetSheetId ?? sheetId) : sheetId
   if (
     !state.editJournal.sheets.added.has(writeSheetId) &&
@@ -1213,7 +1213,7 @@ export function collectStreamedFormulaPrecedents(
  * copy's own write rectangle are pinned like any other precedent: the copied
  * cells are plain journal cells otherwise, and viewport eviction would wipe
  * the ones outside the current window, leaving in-block formulas computing
- * against blanks while still looking live.
+ * against blanks while still looking live (bugbot).
  */
 export function carryCopyFormulasPlan(
   state: LazyWorkbookState,
@@ -1361,7 +1361,7 @@ export async function structuralDeleteFormulaError(
       for (const cell of result.cells) {
         if (!cell.formula) continue
         // Only a CONTENT overwrite supersedes the file's formula text — a
-        // style-only journal entry leaves the formula in force.
+        // style-only journal entry leaves the formula in force (bugbot).
         const entry = journalCells?.get(`${cell.row}:${cell.column}`)
         if (entry && (entry.hasValue || entry.formula)) continue
         texts.push(cell.formula)
@@ -1402,7 +1402,7 @@ export function structuralDeleteFormulaErrorSync(
 ): string | null {
   // Session structural ops only invalidate the STREAMED path's texts (the
   // harvested index is in file coordinates); the full-load model already
-  // reflects them, so formulaMode keeps checking.
+  // reflects them, so formulaMode keeps checking (bugbot).
   const structuralShifted = [...state.editJournal.structuralOps.values()].some(
     (ops) => ops.length > 0,
   )
