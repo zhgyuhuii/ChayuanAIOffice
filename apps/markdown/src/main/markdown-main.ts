@@ -837,7 +837,9 @@ function registerMarkdownIpc(): void {
         return done({
           ok: true,
           path: target,
-          ...(prepared?.rewrites.length ? { imageRewrites: prepared.rewrites } : {}),
+          ...(prepared?.rewrites.length
+            ? { imageRewrites: prepared.rewrites, writtenText: textToWrite }
+            : {}),
         })
       } catch (err) {
         return done({ ok: false, error: err instanceof Error ? err.message : String(err) })

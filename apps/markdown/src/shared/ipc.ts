@@ -73,6 +73,8 @@ export type SaveMarkdownResult =
       path: string
       /** Save As may relocate local images into the new document's assets directory. */
       imageRewrites?: Array<{ from: string; to: string }>
+      /** Actual persisted source after Save As image rewrites. */
+      writtenText?: string
     }
   | { ok: true; canceled: true }
   | { ok: false; error: string }

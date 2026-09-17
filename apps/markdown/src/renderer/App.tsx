@@ -1,3 +1,9 @@
+import {
+  captureMarkdownSource,
+  roundTripMarkdownEnabled,
+  serializeMarkdown,
+  type MarkdownSourceSnapshot,
+} from './markdown/roundtripSerializer'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import bootLogo from './assets/boot-logo.png'
 import { useAutoSavePref } from '@chatoffice/ui'
@@ -14,7 +20,6 @@ import {
   buildFrontmatterRaw,
   frontmatterInner,
   parseDocText,
-  serializeDocText,
   stripLegacyFencedDivs,
   type DocEnvelope,
 } from './markdown/docText'
@@ -166,6 +171,8 @@ export default function App() {
   const statusRef = useRef<LoadStatus>('loading')
   const dirtyRef = useRef(false)
   const savingRef = useRef(false)
+  const [roundTripEnabled] = useState(roundTripMarkdownEnabled)
+  const originalSourceRef = useRef<MarkdownSourceSnapshot | undefined>(undefined)
   const envelopeRef = useRef<DocEnvelope>(EMPTY_ENVELOPE)
   const editorRef = useRef<Editor | null>(null)
   const filePathRef = useRef<string | null>(null)
@@ -253,6 +260,9 @@ export default function App() {
             .setMeta('addToHistory', false)
             .setContent(stripLegacyFencedDivs(envelope.body), { contentType: 'markdown' })
             .run()
+          originalSourceRef.current = roundTripEnabled
+            ? captureMarkdownSource(raw, envelope, editor.state.doc)
+            : undefined
           setFilePath(path)
           const inner = frontmatterInner(envelope.frontmatter)
           setFmText(inner)
@@ -296,7 +306,7 @@ export default function App() {
     return () => {
       cancelled = true
     }
-  }, [editor])
+  }, [editor, roundTripEnabled])
 
   const onFrontmatterChange = useCallback(
     (inner: string) => {
@@ -318,8 +328,13 @@ export default function App() {
       // must keep the document dirty — compare doc identity after the await
       const docAtSave = current.state.doc
       const fmAtSave = envelopeRef.current.frontmatter
-      const body = current.getMarkdown()
-      const text = serializeDocText(envelopeRef.current, body)
+      const sourceAtSave = originalSourceRef.current
+      const text = serializeMarkdown(
+        envelopeRef.current,
+        current.state.doc,
+        () => current.getMarkdown(),
+        sourceAtSave,
+      )
       const imageSources = imageSourcesFromEditor(current)
       const result = await window.markdownApi.save({
         text,
@@ -331,8 +346,23 @@ export default function App() {
         aiSuggestedNameRef.current = null
         const unchanged =
           editorRef.current?.state.doc === docAtSave && envelopeRef.current.frontmatter === fmAtSave
+        // Save As can rewrite sources absent from the visual projection (e.g. HTML).
+        // Never reuse a snapshot containing paths from the previous location.
+        if (result.imageRewrites?.length) originalSourceRef.current = undefined
         if (result.imageRewrites?.length && editorRef.current) {
           applyImageRewrites(editorRef.current, result.imageRewrites)
+        }
+        if (
+          unchanged &&
+          sourceAtSave?.source === text &&
+          result.writtenText !== undefined &&
+          editorRef.current
+        ) {
+          originalSourceRef.current = captureMarkdownSource(
+            result.writtenText,
+            envelopeRef.current,
+            editorRef.current.state.doc,
+          )
         }
         setImageBaseDir(dirOf(result.path))
         setFilePath(result.path)
@@ -501,6 +531,27 @@ export default function App() {
     const offSave = window.markdownApi.onSaveRequest(
       (mode) => void doSave(mode).then((ok) => window.markdownApi.sendSaveRequestAck(ok)),
     )
+    // MCP read of this open document: hand back the same serialization a save
+    // would write, so unsaved edits are included. Staying silent while the
+    // editor is still loading keeps the main process retrying its request
+    // instead of failing on a document that is merely not ready yet.
+    const offReadText = window.markdownApi.onReadTextRequest(() => {
+      const current = editorRef.current
+      if (!current || statusRef.current !== 'ready') return
+      try {
+        const text = serializeMarkdown(
+          envelopeRef.current,
+          current.state.doc,
+          () => current.getMarkdown(),
+          originalSourceRef.current,
+        )
+        window.markdownApi.sendReadTextResult({ text })
+      } catch (err) {
+        window.markdownApi.sendReadTextResult({
+          error: err instanceof Error ? err.message : String(err),
+        })
+      }
+    })
     const offClose = window.markdownApi.onCloseSaveRequest(() => {
       void (async () => {
         // A close-save arriving during an in-flight autosave must wait for it
@@ -550,6 +601,7 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown, true)
     return () => {
       offSave()
+      offReadText()
       offClose()
       offRenamed()
       window.removeEventListener('keydown', onKeyDown, true)
