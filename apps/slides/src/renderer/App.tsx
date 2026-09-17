@@ -103,8 +103,7 @@ import {
   isMacStandaloneWindow,
   useAutoSavePref,
   type AiScopeQuoteData,
-} from '@chatoffice/ui'
-import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
+} from '@chatoffice/ui'import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
 import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
@@ -425,12 +424,6 @@ export function App() {
     return () => window.clearTimeout(t)
   }, [status])
   const [showThumbs, setShowThumbs] = useState(true)
-  const [filesOpen, setFilesOpen] = useState(
-    () => localStorage.getItem('ai-slides-show-files') === '1',
-  )
-  useEffect(() => {
-    localStorage.setItem('ai-slides-show-files', filesOpen ? '1' : '0')
-  }, [filesOpen])
   // ── Thumbnail sidebar width (drag the divider to resize; persisted) ─────────
   const [thumbsW, setThumbsW] = useState(loadThumbsW)
   const thumbsListRef = useRef<HTMLDivElement | null>(null)
@@ -3572,8 +3565,7 @@ export function App() {
             showThumbs={showThumbs}
             onToggleThumbs={() => setShowThumbs((v) => !v)}
             aiPanelAvailable={
-              !dockedEditor && !!slide && viewMode !== 'reading' && viewMode !== 'sorter'
-            }
+              !dockedEditor && !!slide && viewMode !== 'reading' && viewMode !== 'sorter'            }
             aiPanelOpen={showAi}
             onToggleAiPanel={toggleAi}
             onAiPreset={(text, opts) =>
@@ -4027,8 +4019,7 @@ export function App() {
                     <div className="reading-view">
                       <div
                         className="reading-slide"
-                        data-tip={t('appReadingSlideTitle')}
-                        onClick={() => setCurrent((c) => Math.min(c + 1, slides.length - 1))}
+                        data-tip={t('appReadingSlideTitle')}                        onClick={() => setCurrent((c) => Math.min(c + 1, slides.length - 1))}
                       >
                         <SlideThumb slide={slide} images={images} width={readW} />
                       </div>

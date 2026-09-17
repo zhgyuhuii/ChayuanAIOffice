@@ -36,7 +36,6 @@ layer.
 - **Light / dark / system themes.**
 - **macOS, Windows, Linux.**
 - **Free & open-source (Apache-2.0).**
-
 ## Download
 
 | Platform                             | Requirements                                          | Download                                                                            |

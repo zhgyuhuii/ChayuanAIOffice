@@ -6,6 +6,14 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 // node_modules is a symlink into the main checkout, so bare specifiers would
 // silently bundle the other checkout's (possibly stale) code.
 const localAlias = {
+  '@chatoffice/docx-engine/lazy-media': resolve(
+    __dirname,
+    '../../packages/docx-engine/src/lazy-media.ts',
+  ),
+  '@chatoffice/docx-engine/zip-splice': resolve(
+    __dirname,
+    '../../packages/docx-engine/src/zip-splice.ts',
+  ),
   '@chatoffice/docx-engine': resolve(__dirname, '../../packages/docx-engine/src/index.ts'),
 }
 
@@ -28,7 +36,11 @@ export default defineConfig({
   // Main and preload use only electron + node builtins; bundle everything so
   // the packaged app doesn't rely on node_modules at runtime.
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: BUNDLED_WORKSPACE_DEPS })],
+    plugins: [
+      externalizeDepsPlugin({
+        exclude: ['@chatoffice/docx-engine', '@chatoffice/electron-utils', '@chatoffice/font-metrics'],
+      }),
+    ],
     resolve: { alias: localAlias },
   },
   preload: {

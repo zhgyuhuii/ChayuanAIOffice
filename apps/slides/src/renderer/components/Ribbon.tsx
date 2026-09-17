@@ -28,8 +28,7 @@ import {
   THEME_COLOR_SHADES,
   STANDARD_COLORS,
   filesPaneTitle,
-} from '@chatoffice/ui'
-import { getRecentColors, pushRecentColor } from '../recent-colors'
+} from '@chatoffice/ui'import { getRecentColors, pushRecentColor } from '../recent-colors'
 import { ICON_COLORS } from '../insert-presets'
 import { THEME_PRESETS, type SlideThemePreset } from '../themes'
 import { restoreEditSelection } from '../TextEditOverlay'
@@ -1656,8 +1655,7 @@ export function Ribbon({
   onToggleThumbs,
   aiPanelAvailable,
   aiPanelOpen,
-  onToggleAiPanel,
-  onAiPreset,
+  onToggleAiPanel,  onAiPreset,
   onInsert,
   onPickShape,
   onInsertImage,
@@ -1823,8 +1821,7 @@ export function Ribbon({
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
   const tabStrip = useTabStripOverflow()
   // Shapes get their own format tab; text-bearing shapes do not auto-activate it
-  // (users are usually after Home's text controls when selecting them).
-  const contextTab = contextTabForElement(contextElementType ?? null)
+  // (users are usually after Home's text controls when selecting them).  const contextTab = contextTabForElement(contextElementType ?? null)
   const autoContextTab = autoContextTabForElement(contextElementType ?? null)
 
   const [tab, setTab] = useState<MainTab | ContextTab>('home')

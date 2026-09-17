@@ -19,6 +19,7 @@ import type {
   CreateDocumentResult,
 } from '../../../docs/src/shared/ipc'
 import type { UpdateChannel } from './update-api'
+import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 
 /** folder the new file's first save should land in (upstream 7036122; Home "Folders" panel) */
 export interface NewFileOpts {
@@ -615,7 +616,56 @@ export interface ProjectHomeApi {
   pickFolder(): Promise<string | null>
   moveFile(filePath: string, projectId: string): Promise<void>
   /** fetch the project timeline */
-  getTimeline(projectId: string, limit?: number): Promise<TimelineEntryItem[]>
+  getTimeline(projectId: string, limit?: number): Promise<TimelineEntryItem[]>// ── Folder tree (home "Folders" panel over the default save folder) ──────
+
+export interface FolderRoot {
+  path: string
+  /** folder name shown on the root row */
+  name: string
+  /** false when the folder does not exist and cannot be created, or is read-only */
+  usable: boolean
+}
+
+export interface FolderEntry {
+  path: string
+  name: string
+  mtimeMs: number
+  /** whether it contains at least one visible sub-folder (drives the expand chevron) */
+  hasSubfolders: boolean
+}
+
+/** a document file listed by the tree (same shape as the home recents rows) */
+export interface FileEntry {
+  path: string
+  name: string
+  /** lowercased extension without the dot */
+  ext: string
+  mtimeMs: number
+  sizeBytes: number
+  starred: boolean
+  /** the path failed to stat */
+  missing?: boolean
+}
+
+export interface FolderListing {
+  dir: string
+  folders: FolderEntry[]
+  /** supported document files directly inside `dir`, newest first */
+  files: FileEntry[]
+  /** the directory could not be read (deleted or moved outside the app) */
+  missing?: boolean
+}
+
+/** what to do when a moved item's name already exists in the target */
+export type MoveConflictPolicy = 'ask' | 'replace' | 'keepBoth' | 'skip'
+
+export interface MoveResult {
+  /** old path → new path for everything that moved */
+  moved: Array<{ from: string; to: string }>
+  /** items skipped because the name exists in the target (policy 'ask'/'skip') */
+  conflicts: string[]
+  /** items that failed for another reason */
+  failed: Array<{ path: string; error: string }>
 }
 
 export const HOME_CHANNELS = {

@@ -1,4 +1,5 @@
 export { AiPanelSideButton } from './AiPanelSideButton'
+export { FilesPane, FilesEdgeTab, type FilesPaneProps } from './files-pane/FilesPane'
 export { AiComposer } from './AiComposer'
 export { AiScopeQuote, type AiScopeQuoteData } from './AiScopeQuote'
 export {
@@ -146,15 +147,3 @@ export {
   type AutoSaveDefault,
   type AutoSaveDefaultApi,
 } from './auto-save-pref'
-export { FilesPane, FilesEdgeTab, type FilesPaneProps } from './files-pane/FilesPane'
-export { filesPaneTitle } from './files-pane/strings'
-export type {
-  FileEntry,
-  FileOpResult,
-  FilesPaneApi,
-  FolderEntry,
-  FolderListing,
-  FolderRoot,
-  MoveConflictPolicy,
-  MoveResult,
-} from './files-pane/types'

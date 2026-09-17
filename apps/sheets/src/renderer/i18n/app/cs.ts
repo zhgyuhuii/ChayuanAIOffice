@@ -213,6 +213,16 @@ export const cs = {
   appFullLoadRunning: 'Načítá se celý sešit — filtrování se odemkne po dokončení…',
   appDialogCancel: 'Zrušit',
   appTableFilterNoEdit: 'Filtr tohoto listu patří tabulce Excelu — jeho úpravu zatím nelze uložit.',
+  appAutofillStreaming:
+    'Automatické vyplnění do oblasti, která se stále načítá, zatím není povoleno.',
+  appDvNeedsIndexed:
+    'Úprava ověření dat vyžaduje nejprve úplné indexování tohoto listu — zkuste to za chvíli znovu.',
+  appPivotSheetNoDuplicate:
+    'Tento list obsahuje kontingenční tabulku — jeho duplikování zatím není podporováno.',
+  appDuplicateScopedNames:
+    'Tento list má definované názvy s oborem listu — jeho duplikování zatím není podporováno.',
+  appMoveRowsColsUnsaved:
+    'Přesouvání celých sloupců zatím nelze v importovaných sešitech uložit — přesouvání celých řádků je podporováno.',
   appNoWorkbookOpen: 'Není otevřen žádný sešit.',
   appDvListOptions: 'Seznam: {items}',
   appDvListFromRange: 'Seznam (z oblasti {range})',
@@ -427,6 +437,9 @@ export const cs = {
   appFullyLoaded: 'Sešit plně načten — vzorce se přepočítávají živě, řádky/sloupce lze upravovat.',
   appRangeMustBeVector: '{range} musí být jediný řádek nebo jediný sloupec buněk.',
   appRangeTooManyCells: '{range} pokrývá více než {max} buněk.',
+  appCopyLoadingRange: 'Načítání {range} pro kopírování…',
+  appCopyValuesOnly:
+    '{range} zkopírováno pouze jako hodnoty ({cells} buněk): styly se zachovávají jen do {max} buněk.',
   appSheetStillIndexing: 'List se stále indexuje — zkuste to za chvíli znovu.',
   appPrintNothing: 'Na listu není co tisknout.',
   appPrintBadArea: 'Neplatná oblast tisku „{area}“.',

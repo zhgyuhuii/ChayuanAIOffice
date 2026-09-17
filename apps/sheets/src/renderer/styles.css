@@ -1788,6 +1788,7 @@ button.check-item:hover {
 .status-left {
   display: flex;
   align-items: center;
+  gap: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1831,6 +1832,14 @@ button.check-item:hover {
 .zoom-value {
   min-width: 38px;
   text-align: right;
+}
+
+.app-shell.copilot-collapsed .sheet-body {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.sheet-main {
+  position: relative;
 }
 
 .spreadsheet {

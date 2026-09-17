@@ -441,8 +441,6 @@ function RibbonInner({
   onShowRuler,
   showNav,
   onShowNav,
-  showFiles,
-  onShowFiles,
   commentCount,
   openCommentCount,
   onShowComments,
@@ -495,7 +493,8 @@ function RibbonInner({
     }
   }, [collapsed])
   const [dropdown, setDropdown] = useState<string | null>(null)
-  const [penColor, setPenColor] = useState('C00000')
+  // null = Automatic: the pen button clears the run colour instead of writing one
+  const [penColor, setPenColor] = useState<string | null>('C00000')
   const [penHighlight, setPenHighlight] = useState('yellow')
   const [painter, setPainter] = useState<PainterState | null>(null)
   const fontStepRef = useRef<{
@@ -2171,8 +2170,7 @@ function RibbonInner({
             toggleVertAlign={toggleVertAlign}
             changeCase={changeCase}
             renderStyleCards={renderStyleCards}
-          />
-        ) : tab === 'draw' ? (
+          />        ) : tab === 'draw' ? (
           <DrawTab
             hasDoc={hasDoc}
             tool={inkTool}
@@ -2303,8 +2301,7 @@ function RibbonInner({
             showNav={showNav}
             onShowNav={onShowNav}
             showFiles={showFiles ?? false}
-            onShowFiles={onShowFiles ?? (() => {})}
-            viewMode={viewMode}
+            onShowFiles={onShowFiles ?? (() => {})}            viewMode={viewMode}
             onViewMode={onViewMode}
             readMode={readMode}
             onReadMode={onReadMode}

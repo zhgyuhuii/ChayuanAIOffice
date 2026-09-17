@@ -157,6 +157,8 @@ import {
   journalSuppression,
   lazySheetScreenExtent,
   loadAutoHeightSuppression,
+  lazyFileSheetId,
+  lazySheetMeta,
   type ActiveWorkbook,
   type LazyWorkbookState,
   type PinnedClosureCell,
@@ -1229,7 +1231,7 @@ export async function loadVisibleRange(
   const state = lazyWorkbookRef.current
   if (!state) return
   const sheetId = worksheet.getSheetId()
-  const sheet = state.file.sheets.find((candidate) => candidate.id === sheetId)
+  const sheet = lazySheetMeta(state, sheetId)
   if (!sheet) return
   // Data bounds are screen-space: structural operations shift the extent.
   const ops = state.editJournal.structuralOps.get(sheetId) ?? []
@@ -1296,7 +1298,7 @@ async function extendWindowPastHiddenRows(
   const state = lazyWorkbookRef.current
   if (!state) return
   const sheetId = worksheet.getSheetId()
-  const sheet = state.file.sheets.find((candidate) => candidate.id === sheetId)
+  const sheet = lazySheetMeta(state, sheetId)
   if (!sheet) return
   // Row properties stream in with indexing: right after open the hidden set
   // can still be empty even though the sheet is full of hidden rows.
@@ -1524,7 +1526,7 @@ export async function readCopySourceDirect(
 ): Promise<RawCopyCell[][] | null> {
   const state = lazyWorkbookRef.current
   if (!state) return null
-  const sheetMeta = state.file.sheets.find((candidate) => candidate.id === sheetId)
+  const sheetMeta = lazySheetMeta(state, sheetId)
   if (!sheetMeta) return null
   const journal = state.editJournal
   const journalCells = journal.cells.get(sheetId)
@@ -1759,6 +1761,7 @@ export async function readSheetRangeMapped(
   sheet: WorkbookFile['sheets'][number],
 ): Promise<MappedRangeRead | null> {
   const ops = state.editJournal.structuralOps.get(sheetId) ?? []
+  const fileSheetId = lazyFileSheetId(state, sheetId)
   if (ops.length === 0) {
     const width = screenRange.endColumn - screenRange.startColumn + 1
     const batchRows = Math.max(1, Math.floor(SIDECAR_READ_BATCH_CELLS / width))
@@ -1775,7 +1778,7 @@ export async function readSheetRangeMapped(
       const endRow = Math.min(startRow + batchRows - 1, screenRange.endRow)
       const batch = await window.desktopApi.readWorkbookRange({
         sessionId: state.file.sessionId,
-        sheetId,
+        sheetId: fileSheetId,
         range: { ...screenRange, startRow, endRow },
       })
       cells.push(...batch.cells)
@@ -1792,7 +1795,7 @@ export async function readSheetRangeMapped(
       // preserving the pre-batching behavior for out-of-contract input.
       raw = await window.desktopApi.readWorkbookRange({
         sessionId: state.file.sessionId,
-        sheetId,
+        sheetId: fileSheetId,
         range: screenRange,
       })
     }
@@ -1828,7 +1831,7 @@ export async function readSheetRangeMapped(
     const endRow = Math.min(startRow + batchRows - 1, fileRange.endRow)
     const batch = await window.desktopApi.readWorkbookRange({
       sessionId: state.file.sessionId,
-      sheetId,
+      sheetId: fileSheetId,
       range: { ...fileRange, startRow, endRow },
     })
     cells.push(...batch.cells)
@@ -2799,7 +2802,7 @@ async function loadRange(
   state.loadingKeys.set(sheetId, requestKey)
 
   try {
-    const sheetMeta = state.file.sheets.find((candidate) => candidate.id === sheetId)
+    const sheetMeta = lazySheetMeta(state, sheetId)
     if (!sheetMeta) return
     const mapped = await readSheetRangeMapped(state, sheetId, range, sheetMeta)
     if (lazyWorkbookRef.current !== state || state.loadingKeys.get(sheetId) !== requestKey) {
@@ -3239,7 +3242,7 @@ export async function applyRangeInLoadedChunks(
 /// Rounded to px like row heights are, so a row at exactly the default
 /// compares equal.
 function defaultRowHeightPx(state: LazyWorkbookState, sheetId: string): number {
-  const sheet = state.file.sheets.find((candidate) => candidate.id === sheetId)
+  const sheet = lazySheetMeta(state, sheetId)
   const points = sheet ? resolveDefaultRowHeightPt(state.file, sheet) : 15
   return Math.round((points * 96) / 72)
 }
@@ -3252,7 +3255,7 @@ export function sheetRowColStyleKeys(state: LazyWorkbookState, sheetId: string):
   let keys = state.rowColStyleKeys.get(sheetId)
   if (!keys) {
     keys = new Set()
-    const sheet = state.file.sheets.find((candidate) => candidate.id === sheetId)
+    const sheet = lazySheetMeta(state, sheetId)
     for (const columnWidth of sheet?.columnWidths ?? []) {
       if (columnWidth.styleIndex === undefined) continue
       const style = state.file.styles[columnWidth.styleIndex]

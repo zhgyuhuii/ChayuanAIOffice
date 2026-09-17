@@ -63,7 +63,6 @@ available.
 `chatoffice install-cli` repeats the attempt and prints the manual command when it cannot finish. jsdom (for Word/Markdown) ships beside the bundle as `Resources/cli/node_modules`, collected by `collect-deps.mjs` at build time.
 
 Independently of the PATH, every launch of the packaged app writes the launcher directory to `~/.chatoffice/launcher` (`GENOFFICE_AUTH_DIR` overrides the directory, as for `auth.json`). The `chatoffice` agent skill (`skills/chatoffice/SKILL.md`) reads it when `chatoffice` is not on the PATH. `chatoffice --version` prints this package's version, inlined by `build.mjs`.
-
 ## Layout
 
 - `src/cli.ts` — argv parsing, dispatch, output; `runCli()` is embeddable.

@@ -1441,6 +1441,10 @@ const JC_TO_ALIGN: Record<string, ParaFormat['align']> = {
   right: 'right',
   end: 'right',
   both: 'justify',
+  lowKashida: 'justify',
+  mediumKashida: 'justify',
+  highKashida: 'justify',
+  thaiDistribute: 'justify',
   distribute: 'distribute',
 }
 

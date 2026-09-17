@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
+const port = Number(process.env.MARKDOWN_DEV_PORT) || 5177
+
 /** Browser-only renderer coverage: it must not boot the Electron shell. */
 export default defineConfig({
   testDir: './tests/browser',
@@ -8,8 +10,8 @@ export default defineConfig({
   timeout: 30_000,
   workers: 1,
   webServer: {
-    command: 'npm run dev:renderer -w @genoffice/markdown',
-    url: 'http://localhost:5177',
+    command: 'npm run dev:renderer -w @chatoffice/markdown',
+    url: `http://localhost:${port}`,
     reuseExistingServer: true,
     timeout: 60_000,
   },

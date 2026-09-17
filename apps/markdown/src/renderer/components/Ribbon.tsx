@@ -23,6 +23,7 @@ import {
   IconPicture,
   IconProperties,
   IconRedo,
+  IconSpellcheck,
   IconSave,
   IconSearch,
   IconTable,
@@ -52,6 +53,8 @@ interface Props {
   outlineOpen: boolean
   onToggleOutline: () => void
   hasOutline: boolean
+  spellcheck: boolean
+  onToggleSpellcheck: () => void
   aiPanelAvailable: boolean
   aiPanelOpen: boolean
   onToggleAiPanel: () => void
@@ -126,6 +129,8 @@ export function Ribbon({
   outlineOpen,
   onToggleOutline,
   hasOutline,
+  spellcheck,
+  onToggleSpellcheck,
   aiPanelAvailable,
   aiPanelOpen,
   onToggleAiPanel,
@@ -426,6 +431,14 @@ export function Ribbon({
               onClick={onToggleOutline}
             >
               <IconOutlineView size={ICON} />
+            </IconBtn>
+            <IconBtn
+              title={t('spellcheck')}
+              active={spellcheck}
+              disabled={disabled}
+              onClick={onToggleSpellcheck}
+            >
+              <IconSpellcheck size={ICON} />
             </IconBtn>
           </div>
         </div>

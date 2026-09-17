@@ -5,8 +5,7 @@ import {
   RibbonExpandButton,
   useDismissablePopover,
   useRibbonCollapse,
-} from '@chatoffice/ui'
-import { useI18n } from '../i18n/locale'
+} from '@chatoffice/ui'import { useI18n } from '../i18n/locale'
 import type { StringKey } from '../i18n/locale'
 import type { InsertKind, InsertOptions } from '../document/insert-presets'
 import {
@@ -75,8 +74,7 @@ interface Props {
   onView: (view: ViewMode) => void
   aiPanelAvailable: boolean
   aiPanelOpen: boolean
-  onToggleAiPanel: () => void
-  canInsert: boolean
+  onToggleAiPanel: () => void  canInsert: boolean
   /** images come from a picked file by default; `url` places a remote image instead; tables take the picker's rows × cols */
   onInsert: (kind: InsertKind, opts?: InsertOptions) => void
   /** page-wide AI actions: send this instruction to the assistant right away */

@@ -119,8 +119,7 @@ describe('vision capability fallback', () => {
         models: [{ id: modelId }],
       },
     ],
-    currentModel: { profileId: 'p', modelId },
-  })
+    currentModel: { profileId: 'p', modelId },  })
 
   it('uses the selected model when a profile mixes text and vision models', () => {
     expect(settingsSupportVision(withModel('deepseek-v4-pro'))).toBe(false)
