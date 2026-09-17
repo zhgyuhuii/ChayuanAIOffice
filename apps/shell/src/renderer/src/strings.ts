@@ -220,18 +220,18 @@ export const strings = {
     intgStep2Note: '助手会自己调用 chaoffice 命令行，你不需要输入任何命令。',
     intgCliPartTitle: 'CLI · 命令行 + skill',
     intgCliPartDesc:
-      '适合能运行终端命令的助手（Claude Code、Codex、Cursor 等）。安装 skill 后，助手会自己调用 genoffice 命令行创建、转换、读取和编辑文件，你不需要输入任何命令。',
+      '适合能运行终端命令的助手（Claude Code、Codex、Cursor 等）。安装 skill 后，助手会自己调用 chaoffice 命令行创建、转换、读取和编辑文件，你不需要输入任何命令。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP 是 AI 助手调用外部工具的通用协议。助手不能运行命令（如 Claude Desktop），或你想让它直接操作 GenOffice 窗口时用这条路。下面两种接法任选一种。',
+      'MCP 是 AI 助手调用外部工具的通用协议。助手不能运行命令（如 Claude Desktop），或你想让它直接操作 察元AIOffice 窗口时用这条路。下面两种接法任选一种。',
     intgMcpStdioTitle: '由助手启动（推荐）',
     intgMcpStdioDesc:
-      '助手自己拉起 genoffice mcp，不需要在这里开任何开关，GenOffice 也不用开着。功能与 CLI 完全相同。',
+      '助手自己拉起 chaoffice mcp，不需要在这里开任何开关，察元AIOffice 也不用开着。功能与 CLI 完全相同。',
     intgMcpHttpTitle: '本地 HTTP 服务',
     intgMcpHttpDesc:
-      '在 GenOffice 内运行，助手通过网址连接，可以看着它在 Word 编辑器里逐步生成。需要 GenOffice 保持打开；目前只支持 Word。',
+      '在 察元AIOffice 内运行，助手通过网址连接，可以看着它在 Word 编辑器里逐步生成。需要 察元AIOffice 保持打开；目前只支持 Word。',
     intgMcpHttpAdvanced: '高级：其他地址与日志',
-    intgMcpTryNote: '助手会通过 MCP 调用 GenOffice，你不需要输入任何命令。',
+    intgMcpTryNote: '助手会通过 MCP 调用 察元AIOffice，你不需要输入任何命令。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '在终端运行一次：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop 或其他支持 MCP 的助手',
@@ -854,18 +854,18 @@ export const strings = {
       'The assistant runs the chaoffice command line itself; you never have to type it.',
     intgCliPartTitle: 'CLI · command line + skill',
     intgCliPartDesc:
-      'For assistants that can run terminal commands (Claude Code, Codex, Cursor and others). Once the skill is installed, the assistant calls the genoffice command line itself to create, convert, read and edit files; you never type a command.',
+      'For assistants that can run terminal commands (Claude Code, Codex, Cursor and others). Once the skill is installed, the assistant calls the chaoffice command line itself to create, convert, read and edit files; you never type a command.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP is the common protocol AI assistants use to call external tools. Use it when your assistant cannot run commands (Claude Desktop, for example) or when you want it to drive the GenOffice window directly. Pick either of the two ways below.',
+      'MCP is the common protocol AI assistants use to call external tools. Use it when your assistant cannot run commands (Claude Desktop, for example) or when you want it to drive the ChaAI Office window directly. Pick either of the two ways below.',
     intgMcpStdioTitle: 'Started by the assistant (recommended)',
     intgMcpStdioDesc:
-      'The assistant launches genoffice mcp itself: nothing to switch on here, and GenOffice does not need to be open. Same features as the CLI.',
+      'The assistant launches chaoffice mcp itself: nothing to switch on here, and ChaAI Office does not need to be open. Same features as the CLI.',
     intgMcpHttpTitle: 'Local HTTP server',
     intgMcpHttpDesc:
-      'Runs inside GenOffice; the assistant connects to a URL and you can watch it build the document step by step in the Word editor. GenOffice must stay open; Word documents only for now.',
+      'Runs inside ChaAI Office; the assistant connects to a URL and you can watch it build the document step by step in the Word editor. ChaAI Office must stay open; Word documents only for now.',
     intgMcpHttpAdvanced: 'Advanced: other endpoints and log',
-    intgMcpTryNote: 'The assistant calls GenOffice through MCP; you never type a command.',
+    intgMcpTryNote: 'The assistant calls ChaAI Office through MCP; you never type a command.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Run this once in a terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop or any other MCP-capable assistant',
@@ -1505,19 +1505,19 @@ export const strings = {
       'chaoffice コマンドラインはアシスタントが自分で実行します。あなたが入力する必要はありません。',
     intgCliPartTitle: 'CLI · コマンドライン + skill',
     intgCliPartDesc:
-      'ターミナルコマンドを実行できるアシスタント（Claude Code、Codex、Cursor など）向け。skill をインストールすると、アシスタントが自分で genoffice コマンドラインを呼び出してファイルを作成・変換・読み取り・編集します。コマンドを入力する必要はありません。',
+      'ターミナルコマンドを実行できるアシスタント（Claude Code、Codex、Cursor など）向け。skill をインストールすると、アシスタントが自分で chaoffice コマンドラインを呼び出してファイルを作成・変換・読み取り・編集します。コマンドを入力する必要はありません。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP は AI アシスタントが外部ツールを呼び出すための共通プロトコルです。アシスタントがコマンドを実行できない場合（Claude Desktop など）や、GenOffice のウィンドウを直接操作させたい場合に使います。下の 2 つの方法からどちらか 1 つを選んでください。',
+      'MCP は AI アシスタントが外部ツールを呼び出すための共通プロトコルです。アシスタントがコマンドを実行できない場合（Claude Desktop など）や、ChaAI Office のウィンドウを直接操作させたい場合に使います。下の 2 つの方法からどちらか 1 つを選んでください。',
     intgMcpStdioTitle: 'アシスタントが起動する（推奨）',
     intgMcpStdioDesc:
-      'アシスタントが genoffice mcp を自分で起動します。ここで何かをオンにする必要はなく、GenOffice を開いておく必要もありません。機能は CLI と同じです。',
+      'アシスタントが chaoffice mcp を自分で起動します。ここで何かをオンにする必要はなく、ChaAI Office を開いておく必要もありません。機能は CLI と同じです。',
     intgMcpHttpTitle: 'ローカル HTTP サーバー',
     intgMcpHttpDesc:
-      'GenOffice 内で動作し、アシスタントは URL で接続します。Word エディター上で文書が段階的に生成される様子を見られます。GenOffice を開いたままにする必要があり、現時点では Word のみ対応です。',
+      'ChaAI Office 内で動作し、アシスタントは URL で接続します。Word エディター上で文書が段階的に生成される様子を見られます。ChaAI Office を開いたままにする必要があり、現時点では Word のみ対応です。',
     intgMcpHttpAdvanced: '詳細：その他のエンドポイントとログ',
     intgMcpTryNote:
-      'アシスタントが MCP 経由で GenOffice を呼び出します。コマンドを入力する必要はありません。',
+      'アシスタントが MCP 経由で ChaAI Office を呼び出します。コマンドを入力する必要はありません。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'ターミナルで一度だけ実行します：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop、その他 MCP 対応のアシスタント',
@@ -2154,19 +2154,19 @@ export const strings = {
       'chaoffice 명령줄은 어시스턴트가 직접 실행하므로 여러분이 입력할 필요가 없습니다.',
     intgCliPartTitle: 'CLI · 명령줄 + skill',
     intgCliPartDesc:
-      '터미널 명령을 실행할 수 있는 어시스턴트(Claude Code, Codex, Cursor 등)용입니다. skill을 설치하면 어시스턴트가 스스로 genoffice 명령줄을 호출해 파일을 만들고 변환하고 읽고 편집합니다. 명령을 직접 입력할 필요가 없습니다.',
+      '터미널 명령을 실행할 수 있는 어시스턴트(Claude Code, Codex, Cursor 등)용입니다. skill을 설치하면 어시스턴트가 스스로 chaoffice 명령줄을 호출해 파일을 만들고 변환하고 읽고 편집합니다. 명령을 직접 입력할 필요가 없습니다.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP는 AI 어시스턴트가 외부 도구를 호출하는 공통 프로토콜입니다. 어시스턴트가 명령을 실행할 수 없거나(예: Claude Desktop) GenOffice 창을 직접 조작하게 하려면 이 방식을 사용하세요. 아래 두 방법 중 하나를 선택하면 됩니다.',
+      'MCP는 AI 어시스턴트가 외부 도구를 호출하는 공통 프로토콜입니다. 어시스턴트가 명령을 실행할 수 없거나(예: Claude Desktop) ChaAI Office 창을 직접 조작하게 하려면 이 방식을 사용하세요. 아래 두 방법 중 하나를 선택하면 됩니다.',
     intgMcpStdioTitle: '어시스턴트가 실행(권장)',
     intgMcpStdioDesc:
-      '어시스턴트가 genoffice mcp를 직접 실행합니다. 여기서 켤 것이 없고 GenOffice가 열려 있을 필요도 없습니다. 기능은 CLI와 같습니다.',
+      '어시스턴트가 chaoffice mcp를 직접 실행합니다. 여기서 켤 것이 없고 ChaAI Office가 열려 있을 필요도 없습니다. 기능은 CLI와 같습니다.',
     intgMcpHttpTitle: '로컬 HTTP 서버',
     intgMcpHttpDesc:
-      'GenOffice 안에서 실행되며 어시스턴트가 URL로 연결합니다. Word 편집기에서 문서가 단계별로 만들어지는 과정을 볼 수 있습니다. GenOffice를 열어 두어야 하며 현재는 Word만 지원합니다.',
+      'ChaAI Office 안에서 실행되며 어시스턴트가 URL로 연결합니다. Word 편집기에서 문서가 단계별로 만들어지는 과정을 볼 수 있습니다. ChaAI Office를 열어 두어야 하며 현재는 Word만 지원합니다.',
     intgMcpHttpAdvanced: '고급: 기타 주소와 로그',
     intgMcpTryNote:
-      '어시스턴트가 MCP를 통해 GenOffice를 호출합니다. 명령을 직접 입력할 필요가 없습니다.',
+      '어시스턴트가 MCP를 통해 ChaAI Office를 호출합니다. 명령을 직접 입력할 필요가 없습니다.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '터미널에서 한 번만 실행하세요:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop 또는 MCP를 지원하는 다른 어시스턴트',
@@ -2806,18 +2806,18 @@ export const strings = {
       "L'assistant lance lui-même la ligne de commande chaoffice ; vous n'avez jamais à la saisir.",
     intgCliPartTitle: 'CLI · ligne de commande + skill',
     intgCliPartDesc:
-      'Pour les assistants capables de lancer des commandes dans le terminal (Claude Code, Codex, Cursor, etc.). Une fois le skill installé, l’assistant appelle lui-même la ligne de commande genoffice pour créer, convertir, lire et modifier les fichiers ; vous ne tapez jamais de commande.',
+      'Pour les assistants capables de lancer des commandes dans le terminal (Claude Code, Codex, Cursor, etc.). Une fois le skill installé, l’assistant appelle lui-même la ligne de commande chaoffice pour créer, convertir, lire et modifier les fichiers ; vous ne tapez jamais de commande.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP est le protocole commun que les assistants IA utilisent pour appeler des outils externes. Utilisez-le si votre assistant ne peut pas lancer de commandes (Claude Desktop, par exemple) ou si vous voulez qu’il pilote directement la fenêtre GenOffice. Choisissez l’une des deux méthodes ci-dessous.',
+      'MCP est le protocole commun que les assistants IA utilisent pour appeler des outils externes. Utilisez-le si votre assistant ne peut pas lancer de commandes (Claude Desktop, par exemple) ou si vous voulez qu’il pilote directement la fenêtre ChaAI Office. Choisissez l’une des deux méthodes ci-dessous.',
     intgMcpStdioTitle: 'Lancé par l’assistant (recommandé)',
     intgMcpStdioDesc:
-      'L’assistant lance lui-même genoffice mcp : rien à activer ici, et GenOffice n’a pas besoin d’être ouvert. Mêmes fonctions que la CLI.',
+      'L’assistant lance lui-même chaoffice mcp : rien à activer ici, et ChaAI Office n’a pas besoin d’être ouvert. Mêmes fonctions que la CLI.',
     intgMcpHttpTitle: 'Serveur HTTP local',
     intgMcpHttpDesc:
-      'Tourne dans GenOffice ; l’assistant se connecte à une URL et vous voyez le document se construire pas à pas dans l’éditeur Word. GenOffice doit rester ouvert ; documents Word uniquement pour l’instant.',
+      'Tourne dans ChaAI Office ; l’assistant se connecte à une URL et vous voyez le document se construire pas à pas dans l’éditeur Word. ChaAI Office doit rester ouvert ; documents Word uniquement pour l’instant.',
     intgMcpHttpAdvanced: 'Avancé : autres adresses et journal',
-    intgMcpTryNote: 'L’assistant appelle GenOffice via MCP ; vous ne tapez jamais de commande.',
+    intgMcpTryNote: 'L’assistant appelle ChaAI Office via MCP ; vous ne tapez jamais de commande.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Exécutez ceci une fois dans un terminal :',
     intgMcpOtherTitle: 'Cursor, Claude Desktop ou tout autre assistant compatible MCP',
@@ -3479,18 +3479,18 @@ export const strings = {
       'Der Assistent ruft die chaoffice-Befehlszeile selbst auf; Sie müssen sie nie eintippen.',
     intgCliPartTitle: 'CLI · Kommandozeile + Skill',
     intgCliPartDesc:
-      'Für Assistenten, die Terminalbefehle ausführen können (Claude Code, Codex, Cursor u. a.). Nach der Installation des Skills ruft der Assistent die genoffice-Kommandozeile selbst auf, um Dateien zu erstellen, zu konvertieren, zu lesen und zu bearbeiten; Sie tippen nie einen Befehl.',
+      'Für Assistenten, die Terminalbefehle ausführen können (Claude Code, Codex, Cursor u. a.). Nach der Installation des Skills ruft der Assistent die chaoffice-Kommandozeile selbst auf, um Dateien zu erstellen, zu konvertieren, zu lesen und zu bearbeiten; Sie tippen nie einen Befehl.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP ist das gemeinsame Protokoll, über das KI-Assistenten externe Werkzeuge aufrufen. Nutzen Sie es, wenn der Assistent keine Befehle ausführen kann (z. B. Claude Desktop) oder wenn er das GenOffice-Fenster direkt steuern soll. Wählen Sie einen der beiden Wege unten.',
+      'MCP ist das gemeinsame Protokoll, über das KI-Assistenten externe Werkzeuge aufrufen. Nutzen Sie es, wenn der Assistent keine Befehle ausführen kann (z. B. Claude Desktop) oder wenn er das ChaAI Office-Fenster direkt steuern soll. Wählen Sie einen der beiden Wege unten.',
     intgMcpStdioTitle: 'Vom Assistenten gestartet (empfohlen)',
     intgMcpStdioDesc:
-      'Der Assistent startet genoffice mcp selbst: hier ist nichts einzuschalten, und GenOffice muss nicht geöffnet sein. Gleicher Funktionsumfang wie die CLI.',
+      'Der Assistent startet chaoffice mcp selbst: hier ist nichts einzuschalten, und ChaAI Office muss nicht geöffnet sein. Gleicher Funktionsumfang wie die CLI.',
     intgMcpHttpTitle: 'Lokaler HTTP-Server',
     intgMcpHttpDesc:
-      'Läuft in GenOffice; der Assistent verbindet sich über eine URL, und Sie sehen im Word-Editor zu, wie das Dokument Schritt für Schritt entsteht. GenOffice muss geöffnet bleiben; derzeit nur Word-Dokumente.',
+      'Läuft in ChaAI Office; der Assistent verbindet sich über eine URL, und Sie sehen im Word-Editor zu, wie das Dokument Schritt für Schritt entsteht. ChaAI Office muss geöffnet bleiben; derzeit nur Word-Dokumente.',
     intgMcpHttpAdvanced: 'Erweitert: weitere Adressen und Protokoll',
-    intgMcpTryNote: 'Der Assistent ruft GenOffice über MCP auf; Sie tippen nie einen Befehl.',
+    intgMcpTryNote: 'Der Assistent ruft ChaAI Office über MCP auf; Sie tippen nie einen Befehl.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Einmal im Terminal ausführen:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop oder ein anderer MCP-fähiger Assistent',
@@ -4143,18 +4143,18 @@ export const strings = {
       'El asistente ejecuta la línea de comandos chaoffice por sí mismo; nunca tienes que escribirla.',
     intgCliPartTitle: 'CLI · línea de comandos + skill',
     intgCliPartDesc:
-      'Para asistentes que pueden ejecutar comandos de terminal (Claude Code, Codex, Cursor y otros). Con el skill instalado, el asistente llama por sí mismo a la línea de comandos genoffice para crear, convertir, leer y editar archivos; nunca escribes un comando.',
+      'Para asistentes que pueden ejecutar comandos de terminal (Claude Code, Codex, Cursor y otros). Con el skill instalado, el asistente llama por sí mismo a la línea de comandos chaoffice para crear, convertir, leer y editar archivos; nunca escribes un comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP es el protocolo común con el que los asistentes de IA llaman a herramientas externas. Úsalo cuando tu asistente no pueda ejecutar comandos (Claude Desktop, por ejemplo) o cuando quieras que controle directamente la ventana de GenOffice. Elige una de las dos formas de abajo.',
+      'MCP es el protocolo común con el que los asistentes de IA llaman a herramientas externas. Úsalo cuando tu asistente no pueda ejecutar comandos (Claude Desktop, por ejemplo) o cuando quieras que controle directamente la ventana de ChaAI Office. Elige una de las dos formas de abajo.',
     intgMcpStdioTitle: 'Iniciado por el asistente (recomendado)',
     intgMcpStdioDesc:
-      'El asistente lanza genoffice mcp por sí mismo: nada que activar aquí, y GenOffice no necesita estar abierto. Mismas funciones que la CLI.',
+      'El asistente lanza chaoffice mcp por sí mismo: nada que activar aquí, y ChaAI Office no necesita estar abierto. Mismas funciones que la CLI.',
     intgMcpHttpTitle: 'Servidor HTTP local',
     intgMcpHttpDesc:
-      'Se ejecuta dentro de GenOffice; el asistente se conecta a una URL y puedes ver cómo construye el documento paso a paso en el editor de Word. GenOffice debe permanecer abierto; por ahora solo documentos Word.',
+      'Se ejecuta dentro de ChaAI Office; el asistente se conecta a una URL y puedes ver cómo construye el documento paso a paso en el editor de Word. ChaAI Office debe permanecer abierto; por ahora solo documentos Word.',
     intgMcpHttpAdvanced: 'Avanzado: otras direcciones y registro',
-    intgMcpTryNote: 'El asistente llama a GenOffice a través de MCP; nunca escribes un comando.',
+    intgMcpTryNote: 'El asistente llama a ChaAI Office a través de MCP; nunca escribes un comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Ejecuta esto una vez en una terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop o cualquier otro asistente compatible con MCP',
@@ -4794,18 +4794,18 @@ export const strings = {
     intgStep2Note: 'ผู้ช่วยจะเรียกใช้บรรทัดคำสั่ง chaoffice เอง คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgCliPartTitle: 'CLI · บรรทัดคำสั่ง + skill',
     intgCliPartDesc:
-      'สำหรับผู้ช่วยที่รันคำสั่งเทอร์มินัลได้ (Claude Code, Codex, Cursor และอื่น ๆ) เมื่อติดตั้ง skill แล้ว ผู้ช่วยจะเรียกบรรทัดคำสั่ง genoffice เองเพื่อสร้าง แปลง อ่าน และแก้ไขไฟล์ คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+      'สำหรับผู้ช่วยที่รันคำสั่งเทอร์มินัลได้ (Claude Code, Codex, Cursor และอื่น ๆ) เมื่อติดตั้ง skill แล้ว ผู้ช่วยจะเรียกบรรทัดคำสั่ง chaoffice เองเพื่อสร้าง แปลง อ่าน และแก้ไขไฟล์ คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP คือโปรโตคอลกลางที่ผู้ช่วย AI ใช้เรียกเครื่องมือภายนอก ใช้เมื่อผู้ช่วยรันคำสั่งไม่ได้ (เช่น Claude Desktop) หรือเมื่อต้องการให้มันควบคุมหน้าต่าง GenOffice โดยตรง เลือกวิธีใดวิธีหนึ่งจากสองวิธีด้านล่าง',
+      'MCP คือโปรโตคอลกลางที่ผู้ช่วย AI ใช้เรียกเครื่องมือภายนอก ใช้เมื่อผู้ช่วยรันคำสั่งไม่ได้ (เช่น Claude Desktop) หรือเมื่อต้องการให้มันควบคุมหน้าต่าง ChaAI Office โดยตรง เลือกวิธีใดวิธีหนึ่งจากสองวิธีด้านล่าง',
     intgMcpStdioTitle: 'ให้ผู้ช่วยเป็นผู้เริ่ม (แนะนำ)',
     intgMcpStdioDesc:
-      'ผู้ช่วยจะเรียก genoffice mcp ขึ้นมาเอง ไม่ต้องเปิดสวิตช์ใดที่นี่ และไม่ต้องเปิด GenOffice ไว้ ความสามารถเหมือน CLI ทุกประการ',
+      'ผู้ช่วยจะเรียก chaoffice mcp ขึ้นมาเอง ไม่ต้องเปิดสวิตช์ใดที่นี่ และไม่ต้องเปิด ChaAI Office ไว้ ความสามารถเหมือน CLI ทุกประการ',
     intgMcpHttpTitle: 'เซิร์ฟเวอร์ HTTP ในเครื่อง',
     intgMcpHttpDesc:
-      'ทำงานอยู่ใน GenOffice ผู้ช่วยเชื่อมต่อผ่าน URL และคุณจะเห็นเอกสารค่อย ๆ ถูกสร้างขึ้นในตัวแก้ไข Word ต้องเปิด GenOffice ไว้ตลอด ปัจจุบันรองรับเฉพาะ Word',
+      'ทำงานอยู่ใน ChaAI Office ผู้ช่วยเชื่อมต่อผ่าน URL และคุณจะเห็นเอกสารค่อย ๆ ถูกสร้างขึ้นในตัวแก้ไข Word ต้องเปิด ChaAI Office ไว้ตลอด ปัจจุบันรองรับเฉพาะ Word',
     intgMcpHttpAdvanced: 'ขั้นสูง: ที่อยู่อื่นและบันทึก',
-    intgMcpTryNote: 'ผู้ช่วยจะเรียก GenOffice ผ่าน MCP คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
+    intgMcpTryNote: 'ผู้ช่วยจะเรียก ChaAI Office ผ่าน MCP คุณไม่ต้องพิมพ์คำสั่งใด ๆ',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'รันคำสั่งนี้ครั้งเดียวในเทอร์มินัล:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop หรือผู้ช่วยอื่นที่รองรับ MCP',
@@ -5441,18 +5441,18 @@ export const strings = {
       'Asisten menjalankan baris perintah chaoffice sendiri; Anda tidak perlu mengetiknya.',
     intgCliPartTitle: 'CLI · baris perintah + skill',
     intgCliPartDesc:
-      'Untuk asisten yang bisa menjalankan perintah terminal (Claude Code, Codex, Cursor, dan lainnya). Setelah skill terpasang, asisten memanggil baris perintah genoffice sendiri untuk membuat, mengonversi, membaca, dan mengedit file; Anda tidak pernah mengetik perintah.',
+      'Untuk asisten yang bisa menjalankan perintah terminal (Claude Code, Codex, Cursor, dan lainnya). Setelah skill terpasang, asisten memanggil baris perintah chaoffice sendiri untuk membuat, mengonversi, membaca, dan mengedit file; Anda tidak pernah mengetik perintah.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP adalah protokol umum yang dipakai asisten AI untuk memanggil alat eksternal. Gunakan saat asisten Anda tidak bisa menjalankan perintah (misalnya Claude Desktop) atau saat Anda ingin ia mengendalikan jendela GenOffice secara langsung. Pilih salah satu dari dua cara di bawah.',
+      'MCP adalah protokol umum yang dipakai asisten AI untuk memanggil alat eksternal. Gunakan saat asisten Anda tidak bisa menjalankan perintah (misalnya Claude Desktop) atau saat Anda ingin ia mengendalikan jendela ChaAI Office secara langsung. Pilih salah satu dari dua cara di bawah.',
     intgMcpStdioTitle: 'Dijalankan oleh asisten (disarankan)',
     intgMcpStdioDesc:
-      'Asisten menjalankan genoffice mcp sendiri: tidak ada yang perlu dinyalakan di sini, dan GenOffice tidak perlu terbuka. Fitur sama dengan CLI.',
+      'Asisten menjalankan chaoffice mcp sendiri: tidak ada yang perlu dinyalakan di sini, dan ChaAI Office tidak perlu terbuka. Fitur sama dengan CLI.',
     intgMcpHttpTitle: 'Server HTTP lokal',
     intgMcpHttpDesc:
-      'Berjalan di dalam GenOffice; asisten terhubung lewat URL dan Anda bisa melihat dokumen dibangun langkah demi langkah di editor Word. GenOffice harus tetap terbuka; untuk saat ini hanya dokumen Word.',
+      'Berjalan di dalam ChaAI Office; asisten terhubung lewat URL dan Anda bisa melihat dokumen dibangun langkah demi langkah di editor Word. ChaAI Office harus tetap terbuka; untuk saat ini hanya dokumen Word.',
     intgMcpHttpAdvanced: 'Lanjutan: alamat lain dan log',
-    intgMcpTryNote: 'Asisten memanggil GenOffice melalui MCP; Anda tidak pernah mengetik perintah.',
+    intgMcpTryNote: 'Asisten memanggil ChaAI Office melalui MCP; Anda tidak pernah mengetik perintah.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Jalankan ini sekali di terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop, atau asisten lain yang mendukung MCP',
@@ -6094,18 +6094,18 @@ export const strings = {
       'Ассистент сам запускает командную строку chaoffice; вводить её вам не придётся.',
     intgCliPartTitle: 'CLI · командная строка + skill',
     intgCliPartDesc:
-      'Для ассистентов, умеющих выполнять команды терминала (Claude Code, Codex, Cursor и другие). После установки skill ассистент сам вызывает командную строку genoffice, чтобы создавать, конвертировать, читать и редактировать файлы; вам не нужно вводить команды.',
+      'Для ассистентов, умеющих выполнять команды терминала (Claude Code, Codex, Cursor и другие). После установки skill ассистент сам вызывает командную строку chaoffice, чтобы создавать, конвертировать, читать и редактировать файлы; вам не нужно вводить команды.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP — общий протокол, через который ИИ-ассистенты вызывают внешние инструменты. Используйте его, если ассистент не умеет выполнять команды (например, Claude Desktop) или если хотите, чтобы он напрямую управлял окном GenOffice. Выберите один из двух способов ниже.',
+      'MCP — общий протокол, через который ИИ-ассистенты вызывают внешние инструменты. Используйте его, если ассистент не умеет выполнять команды (например, Claude Desktop) или если хотите, чтобы он напрямую управлял окном ChaAI Office. Выберите один из двух способов ниже.',
     intgMcpStdioTitle: 'Запускает ассистент (рекомендуется)',
     intgMcpStdioDesc:
-      'Ассистент сам запускает genoffice mcp: здесь ничего включать не нужно, и GenOffice не обязан быть открыт. Те же возможности, что у CLI.',
+      'Ассистент сам запускает chaoffice mcp: здесь ничего включать не нужно, и ChaAI Office не обязан быть открыт. Те же возможности, что у CLI.',
     intgMcpHttpTitle: 'Локальный HTTP-сервер',
     intgMcpHttpDesc:
-      'Работает внутри GenOffice; ассистент подключается по URL, и вы видите, как документ шаг за шагом собирается в редакторе Word. GenOffice должен оставаться открытым; пока только документы Word.',
+      'Работает внутри ChaAI Office; ассистент подключается по URL, и вы видите, как документ шаг за шагом собирается в редакторе Word. ChaAI Office должен оставаться открытым; пока только документы Word.',
     intgMcpHttpAdvanced: 'Дополнительно: другие адреса и журнал',
-    intgMcpTryNote: 'Ассистент обращается к GenOffice через MCP; вам не нужно вводить команды.',
+    intgMcpTryNote: 'Ассистент обращается к ChaAI Office через MCP; вам не нужно вводить команды.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Выполните один раз в терминале:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop или другой ассистент с поддержкой MCP',
@@ -6743,18 +6743,18 @@ export const strings = {
     intgStep2Note: 'المساعد يشغّل سطر أوامر chaoffice بنفسه؛ لن تحتاج إلى كتابته أبداً.',
     intgCliPartTitle: 'CLI · سطر الأوامر + skill',
     intgCliPartDesc:
-      'للمساعدين الذين يستطيعون تنفيذ أوامر الطرفية (Claude Code وCodex وCursor وغيرها). بعد تثبيت skill، يستدعي المساعد سطر أوامر genoffice بنفسه لإنشاء الملفات وتحويلها وقراءتها وتحريرها؛ لن تكتب أي أمر.',
+      'للمساعدين الذين يستطيعون تنفيذ أوامر الطرفية (Claude Code وCodex وCursor وغيرها). بعد تثبيت skill، يستدعي المساعد سطر أوامر chaoffice بنفسه لإنشاء الملفات وتحويلها وقراءتها وتحريرها؛ لن تكتب أي أمر.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP هو البروتوكول المشترك الذي يستخدمه مساعدو الذكاء الاصطناعي لاستدعاء أدوات خارجية. استخدمه إذا كان مساعدك لا يستطيع تنفيذ الأوامر (مثل Claude Desktop) أو إذا أردت أن يتحكم في نافذة GenOffice مباشرة. اختر إحدى الطريقتين أدناه.',
+      'MCP هو البروتوكول المشترك الذي يستخدمه مساعدو الذكاء الاصطناعي لاستدعاء أدوات خارجية. استخدمه إذا كان مساعدك لا يستطيع تنفيذ الأوامر (مثل Claude Desktop) أو إذا أردت أن يتحكم في نافذة ChaAI Office مباشرة. اختر إحدى الطريقتين أدناه.',
     intgMcpStdioTitle: 'يشغّله المساعد (موصى به)',
     intgMcpStdioDesc:
-      'يشغّل المساعد genoffice mcp بنفسه: لا شيء لتفعيله هنا، ولا يلزم أن يكون GenOffice مفتوحًا. نفس إمكانات CLI.',
+      'يشغّل المساعد chaoffice mcp بنفسه: لا شيء لتفعيله هنا، ولا يلزم أن يكون ChaAI Office مفتوحًا. نفس إمكانات CLI.',
     intgMcpHttpTitle: 'خادم HTTP محلي',
     intgMcpHttpDesc:
-      'يعمل داخل GenOffice؛ يتصل المساعد عبر عنوان URL ويمكنك مشاهدة المستند يُبنى خطوة بخطوة في محرر Word. يجب أن يبقى GenOffice مفتوحًا؛ مستندات Word فقط حاليًا.',
+      'يعمل داخل ChaAI Office؛ يتصل المساعد عبر عنوان URL ويمكنك مشاهدة المستند يُبنى خطوة بخطوة في محرر Word. يجب أن يبقى ChaAI Office مفتوحًا؛ مستندات Word فقط حاليًا.',
     intgMcpHttpAdvanced: 'متقدم: عناوين أخرى والسجل',
-    intgMcpTryNote: 'يستدعي المساعد GenOffice عبر MCP؛ لن تكتب أي أمر.',
+    intgMcpTryNote: 'يستدعي المساعد ChaAI Office عبر MCP؛ لن تكتب أي أمر.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'شغّل هذا مرة واحدة في الطرفية:',
     intgMcpOtherTitle: 'Cursor أو Claude Desktop أو أي مساعد آخر يدعم MCP',
@@ -7392,18 +7392,18 @@ export const strings = {
       'O assistente executa a linha de comando chaoffice sozinho; você nunca precisa digitá-la.',
     intgCliPartTitle: 'CLI · linha de comando + skill',
     intgCliPartDesc:
-      'Para assistentes que executam comandos de terminal (Claude Code, Codex, Cursor e outros). Com o skill instalado, o assistente chama a linha de comando genoffice sozinho para criar, converter, ler e editar arquivos; você nunca digita um comando.',
+      'Para assistentes que executam comandos de terminal (Claude Code, Codex, Cursor e outros). Com o skill instalado, o assistente chama a linha de comando chaoffice sozinho para criar, converter, ler e editar arquivos; você nunca digita um comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP é o protocolo comum que assistentes de IA usam para chamar ferramentas externas. Use-o quando o assistente não puder executar comandos (Claude Desktop, por exemplo) ou quando quiser que ele controle a janela do GenOffice diretamente. Escolha uma das duas formas abaixo.',
+      'MCP é o protocolo comum que assistentes de IA usam para chamar ferramentas externas. Use-o quando o assistente não puder executar comandos (Claude Desktop, por exemplo) ou quando quiser que ele controle a janela do ChaAI Office diretamente. Escolha uma das duas formas abaixo.',
     intgMcpStdioTitle: 'Iniciado pelo assistente (recomendado)',
     intgMcpStdioDesc:
-      'O assistente inicia o genoffice mcp sozinho: nada para ligar aqui, e o GenOffice não precisa estar aberto. Mesmos recursos da CLI.',
+      'O assistente inicia o chaoffice mcp sozinho: nada para ligar aqui, e o ChaAI Office não precisa estar aberto. Mesmos recursos da CLI.',
     intgMcpHttpTitle: 'Servidor HTTP local',
     intgMcpHttpDesc:
-      'Roda dentro do GenOffice; o assistente conecta por URL e você acompanha o documento sendo montado passo a passo no editor Word. O GenOffice precisa ficar aberto; por enquanto só documentos Word.',
+      'Roda dentro do ChaAI Office; o assistente conecta por URL e você acompanha o documento sendo montado passo a passo no editor Word. O ChaAI Office precisa ficar aberto; por enquanto só documentos Word.',
     intgMcpHttpAdvanced: 'Avançado: outros endereços e log',
-    intgMcpTryNote: 'O assistente chama o GenOffice via MCP; você nunca digita um comando.',
+    intgMcpTryNote: 'O assistente chama o ChaAI Office via MCP; você nunca digita um comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Execute isto uma vez no terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop ou qualquer outro assistente compatível com MCP',
@@ -8055,18 +8055,18 @@ export const strings = {
       "L'assistente esegue da solo la riga di comando chaoffice; non dovrai mai digitarla.",
     intgCliPartTitle: 'CLI · riga di comando + skill',
     intgCliPartDesc:
-      'Per assistenti che possono eseguire comandi da terminale (Claude Code, Codex, Cursor e altri). Installato lo skill, l’assistente richiama da sé la riga di comando genoffice per creare, convertire, leggere e modificare file; non digiti mai un comando.',
+      'Per assistenti che possono eseguire comandi da terminale (Claude Code, Codex, Cursor e altri). Installato lo skill, l’assistente richiama da sé la riga di comando chaoffice per creare, convertire, leggere e modificare file; non digiti mai un comando.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP è il protocollo comune con cui gli assistenti IA richiamano strumenti esterni. Usalo quando l’assistente non può eseguire comandi (Claude Desktop, ad esempio) o quando vuoi che controlli direttamente la finestra di GenOffice. Scegli uno dei due modi qui sotto.',
+      'MCP è il protocollo comune con cui gli assistenti IA richiamano strumenti esterni. Usalo quando l’assistente non può eseguire comandi (Claude Desktop, ad esempio) o quando vuoi che controlli direttamente la finestra di ChaAI Office. Scegli uno dei due modi qui sotto.',
     intgMcpStdioTitle: 'Avviato dall’assistente (consigliato)',
     intgMcpStdioDesc:
-      'L’assistente avvia genoffice mcp da sé: niente da attivare qui, e GenOffice non deve essere aperto. Stesse funzioni della CLI.',
+      'L’assistente avvia chaoffice mcp da sé: niente da attivare qui, e ChaAI Office non deve essere aperto. Stesse funzioni della CLI.',
     intgMcpHttpTitle: 'Server HTTP locale',
     intgMcpHttpDesc:
-      'Gira dentro GenOffice; l’assistente si collega a un URL e puoi vedere il documento prendere forma passo dopo passo nell’editor Word. GenOffice deve restare aperto; per ora solo documenti Word.',
+      'Gira dentro ChaAI Office; l’assistente si collega a un URL e puoi vedere il documento prendere forma passo dopo passo nell’editor Word. ChaAI Office deve restare aperto; per ora solo documenti Word.',
     intgMcpHttpAdvanced: 'Avanzato: altri indirizzi e registro',
-    intgMcpTryNote: 'L’assistente richiama GenOffice tramite MCP; non digiti mai un comando.',
+    intgMcpTryNote: 'L’assistente richiama ChaAI Office tramite MCP; non digiti mai un comando.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Esegui questo una volta nel terminale:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop o qualsiasi altro assistente compatibile con MCP',
@@ -8712,18 +8712,18 @@ export const strings = {
     intgStep2Note: 'Asystent sam uruchamia wiersz poleceń chaoffice; nigdy nie musisz go wpisywać.',
     intgCliPartTitle: 'CLI · wiersz poleceń + skill',
     intgCliPartDesc:
-      'Dla asystentów, które potrafią uruchamiać polecenia terminala (Claude Code, Codex, Cursor i inne). Po zainstalowaniu skilla asystent sam wywołuje wiersz poleceń genoffice, aby tworzyć, konwertować, czytać i edytować pliki; nigdy nie wpisujesz polecenia.',
+      'Dla asystentów, które potrafią uruchamiać polecenia terminala (Claude Code, Codex, Cursor i inne). Po zainstalowaniu skilla asystent sam wywołuje wiersz poleceń chaoffice, aby tworzyć, konwertować, czytać i edytować pliki; nigdy nie wpisujesz polecenia.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP to wspólny protokół, którym asystenci AI wywołują zewnętrzne narzędzia. Użyj go, gdy asystent nie potrafi uruchamiać poleceń (np. Claude Desktop) lub gdy chcesz, aby bezpośrednio sterował oknem GenOffice. Wybierz jeden z dwóch sposobów poniżej.',
+      'MCP to wspólny protokół, którym asystenci AI wywołują zewnętrzne narzędzia. Użyj go, gdy asystent nie potrafi uruchamiać poleceń (np. Claude Desktop) lub gdy chcesz, aby bezpośrednio sterował oknem ChaAI Office. Wybierz jeden z dwóch sposobów poniżej.',
     intgMcpStdioTitle: 'Uruchamiany przez asystenta (zalecane)',
     intgMcpStdioDesc:
-      'Asystent sam uruchamia genoffice mcp: nic tu nie trzeba włączać, a GenOffice nie musi być otwarty. Te same funkcje co CLI.',
+      'Asystent sam uruchamia chaoffice mcp: nic tu nie trzeba włączać, a ChaAI Office nie musi być otwarty. Te same funkcje co CLI.',
     intgMcpHttpTitle: 'Lokalny serwer HTTP',
     intgMcpHttpDesc:
-      'Działa wewnątrz GenOffice; asystent łączy się przez URL, a Ty widzisz, jak dokument powstaje krok po kroku w edytorze Word. GenOffice musi pozostać otwarty; na razie tylko dokumenty Word.',
+      'Działa wewnątrz ChaAI Office; asystent łączy się przez URL, a Ty widzisz, jak dokument powstaje krok po kroku w edytorze Word. ChaAI Office musi pozostać otwarty; na razie tylko dokumenty Word.',
     intgMcpHttpAdvanced: 'Zaawansowane: inne adresy i dziennik',
-    intgMcpTryNote: 'Asystent wywołuje GenOffice przez MCP; nigdy nie wpisujesz polecenia.',
+    intgMcpTryNote: 'Asystent wywołuje ChaAI Office przez MCP; nigdy nie wpisujesz polecenia.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Uruchom to raz w terminalu:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop lub inny asystent obsługujący MCP',
@@ -9355,18 +9355,18 @@ export const strings = {
     intgStep2Note: 'Asistent spouští příkazový řádek chaoffice sám; nikdy ho nemusíte psát.',
     intgCliPartTitle: 'CLI · příkazový řádek + skill',
     intgCliPartDesc:
-      'Pro asistenty, kteří umí spouštět příkazy terminálu (Claude Code, Codex, Cursor a další). Po instalaci skillu asistent sám volá příkazový řádek genoffice k vytváření, převodu, čtení a úpravám souborů; žádný příkaz nepíšete.',
+      'Pro asistenty, kteří umí spouštět příkazy terminálu (Claude Code, Codex, Cursor a další). Po instalaci skillu asistent sám volá příkazový řádek chaoffice k vytváření, převodu, čtení a úpravám souborů; žádný příkaz nepíšete.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP je společný protokol, kterým AI asistenti volají externí nástroje. Použijte ho, když asistent neumí spouštět příkazy (např. Claude Desktop) nebo když chcete, aby přímo ovládal okno GenOffice. Vyberte jeden ze dvou způsobů níže.',
+      'MCP je společný protokol, kterým AI asistenti volají externí nástroje. Použijte ho, když asistent neumí spouštět příkazy (např. Claude Desktop) nebo když chcete, aby přímo ovládal okno ChaAI Office. Vyberte jeden ze dvou způsobů níže.',
     intgMcpStdioTitle: 'Spouští asistent (doporučeno)',
     intgMcpStdioDesc:
-      'Asistent spustí genoffice mcp sám: tady není co zapínat a GenOffice nemusí být otevřený. Stejné funkce jako CLI.',
+      'Asistent spustí chaoffice mcp sám: tady není co zapínat a ChaAI Office nemusí být otevřený. Stejné funkce jako CLI.',
     intgMcpHttpTitle: 'Místní HTTP server',
     intgMcpHttpDesc:
-      'Běží uvnitř GenOffice; asistent se připojí přes URL a v editoru Word sledujete, jak dokument krok za krokem vzniká. GenOffice musí zůstat otevřený; zatím jen dokumenty Word.',
+      'Běží uvnitř ChaAI Office; asistent se připojí přes URL a v editoru Word sledujete, jak dokument krok za krokem vzniká. ChaAI Office musí zůstat otevřený; zatím jen dokumenty Word.',
     intgMcpHttpAdvanced: 'Pokročilé: další adresy a protokol',
-    intgMcpTryNote: 'Asistent volá GenOffice přes MCP; žádný příkaz nepíšete.',
+    intgMcpTryNote: 'Asistent volá ChaAI Office přes MCP; žádný příkaz nepíšete.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Spusťte jednou v terminálu:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop nebo jiný asistent s podporou MCP',
@@ -10018,18 +10018,18 @@ export const strings = {
       'De assistent voert de chaoffice-opdrachtregel zelf uit; u hoeft die nooit te typen.',
     intgCliPartTitle: 'CLI · opdrachtregel + skill',
     intgCliPartDesc:
-      'Voor assistenten die terminalopdrachten kunnen uitvoeren (Claude Code, Codex, Cursor en andere). Na installatie van de skill roept de assistent zelf de genoffice-opdrachtregel aan om bestanden te maken, converteren, lezen en bewerken; je typt nooit een opdracht.',
+      'Voor assistenten die terminalopdrachten kunnen uitvoeren (Claude Code, Codex, Cursor en andere). Na installatie van de skill roept de assistent zelf de chaoffice-opdrachtregel aan om bestanden te maken, converteren, lezen en bewerken; je typt nooit een opdracht.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP is het gemeenschappelijke protocol waarmee AI-assistenten externe tools aanroepen. Gebruik het als je assistent geen opdrachten kan uitvoeren (bijvoorbeeld Claude Desktop) of als je wilt dat hij het GenOffice-venster rechtstreeks bestuurt. Kies een van de twee manieren hieronder.',
+      'MCP is het gemeenschappelijke protocol waarmee AI-assistenten externe tools aanroepen. Gebruik het als je assistent geen opdrachten kan uitvoeren (bijvoorbeeld Claude Desktop) of als je wilt dat hij het ChaAI Office-venster rechtstreeks bestuurt. Kies een van de twee manieren hieronder.',
     intgMcpStdioTitle: 'Gestart door de assistent (aanbevolen)',
     intgMcpStdioDesc:
-      'De assistent start genoffice mcp zelf: hier hoeft niets aan, en GenOffice hoeft niet open te staan. Dezelfde functies als de CLI.',
+      'De assistent start chaoffice mcp zelf: hier hoeft niets aan, en ChaAI Office hoeft niet open te staan. Dezelfde functies als de CLI.',
     intgMcpHttpTitle: 'Lokale HTTP-server',
     intgMcpHttpDesc:
-      'Draait in GenOffice; de assistent verbindt via een URL en je ziet het document stap voor stap ontstaan in de Word-editor. GenOffice moet open blijven; voorlopig alleen Word-documenten.',
+      'Draait in ChaAI Office; de assistent verbindt via een URL en je ziet het document stap voor stap ontstaan in de Word-editor. ChaAI Office moet open blijven; voorlopig alleen Word-documenten.',
     intgMcpHttpAdvanced: 'Geavanceerd: andere adressen en logboek',
-    intgMcpTryNote: 'De assistent roept GenOffice aan via MCP; je typt nooit een opdracht.',
+    intgMcpTryNote: 'De assistent roept ChaAI Office aan via MCP; je typt nooit een opdracht.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Voer dit één keer uit in een terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop of een andere assistent met MCP-ondersteuning',
@@ -10678,19 +10678,19 @@ export const strings = {
       'Pembantu menjalankan baris arahan chaoffice sendiri; anda tidak perlu menaipnya.',
     intgCliPartTitle: 'CLI · baris arahan + skill',
     intgCliPartDesc:
-      'Untuk pembantu yang boleh menjalankan arahan terminal (Claude Code, Codex, Cursor dan lain-lain). Setelah skill dipasang, pembantu memanggil baris arahan genoffice sendiri untuk mencipta, menukar, membaca dan mengedit fail; anda tidak perlu menaip sebarang arahan.',
+      'Untuk pembantu yang boleh menjalankan arahan terminal (Claude Code, Codex, Cursor dan lain-lain). Setelah skill dipasang, pembantu memanggil baris arahan chaoffice sendiri untuk mencipta, menukar, membaca dan mengedit fail; anda tidak perlu menaip sebarang arahan.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP ialah protokol umum yang digunakan pembantu AI untuk memanggil alat luaran. Gunakannya apabila pembantu anda tidak boleh menjalankan arahan (contohnya Claude Desktop) atau apabila anda mahu ia mengawal tetingkap GenOffice secara langsung. Pilih salah satu daripada dua cara di bawah.',
+      'MCP ialah protokol umum yang digunakan pembantu AI untuk memanggil alat luaran. Gunakannya apabila pembantu anda tidak boleh menjalankan arahan (contohnya Claude Desktop) atau apabila anda mahu ia mengawal tetingkap ChaAI Office secara langsung. Pilih salah satu daripada dua cara di bawah.',
     intgMcpStdioTitle: 'Dimulakan oleh pembantu (disyorkan)',
     intgMcpStdioDesc:
-      'Pembantu melancarkan genoffice mcp sendiri: tiada apa yang perlu dihidupkan di sini, dan GenOffice tidak perlu dibuka. Ciri sama seperti CLI.',
+      'Pembantu melancarkan chaoffice mcp sendiri: tiada apa yang perlu dihidupkan di sini, dan ChaAI Office tidak perlu dibuka. Ciri sama seperti CLI.',
     intgMcpHttpTitle: 'Pelayan HTTP tempatan',
     intgMcpHttpDesc:
-      'Berjalan di dalam GenOffice; pembantu menyambung melalui URL dan anda boleh melihat dokumen dibina langkah demi langkah dalam editor Word. GenOffice mesti kekal dibuka; buat masa ini dokumen Word sahaja.',
+      'Berjalan di dalam ChaAI Office; pembantu menyambung melalui URL dan anda boleh melihat dokumen dibina langkah demi langkah dalam editor Word. ChaAI Office mesti kekal dibuka; buat masa ini dokumen Word sahaja.',
     intgMcpHttpAdvanced: 'Lanjutan: alamat lain dan log',
     intgMcpTryNote:
-      'Pembantu memanggil GenOffice melalui MCP; anda tidak perlu menaip sebarang arahan.',
+      'Pembantu memanggil ChaAI Office melalui MCP; anda tidak perlu menaip sebarang arahan.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'Jalankan ini sekali dalam terminal:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop atau pembantu lain yang menyokong MCP',
@@ -11328,18 +11328,18 @@ export const strings = {
     intgStep2Note: 'העוזר מריץ בעצמו את שורת הפקודה chaoffice; לעולם לא תצטרכו להקליד אותה.',
     intgCliPartTitle: 'CLI · שורת פקודה + skill',
     intgCliPartDesc:
-      'לעוזרים שיכולים להריץ פקודות טרמינל (Claude Code‏, Codex‏, Cursor ואחרים). לאחר התקנת ה‑skill העוזר קורא בעצמו לשורת הפקודה genoffice כדי ליצור, להמיר, לקרוא ולערוך קבצים; אתם לא מקלידים שום פקודה.',
+      'לעוזרים שיכולים להריץ פקודות טרמינל (Claude Code‏, Codex‏, Cursor ואחרים). לאחר התקנת ה‑skill העוזר קורא בעצמו לשורת הפקודה chaoffice כדי ליצור, להמיר, לקרוא ולערוך קבצים; אתם לא מקלידים שום פקודה.',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP הוא הפרוטוקול המשותף שבו עוזרי AI קוראים לכלים חיצוניים. השתמשו בו כשהעוזר אינו יכול להריץ פקודות (למשל Claude Desktop) או כשאתם רוצים שהוא ישלוט ישירות בחלון GenOffice. בחרו אחת משתי הדרכים למטה.',
+      'MCP הוא הפרוטוקול המשותף שבו עוזרי AI קוראים לכלים חיצוניים. השתמשו בו כשהעוזר אינו יכול להריץ פקודות (למשל Claude Desktop) או כשאתם רוצים שהוא ישלוט ישירות בחלון ChaAI Office. בחרו אחת משתי הדרכים למטה.',
     intgMcpStdioTitle: 'מופעל על ידי העוזר (מומלץ)',
     intgMcpStdioDesc:
-      'העוזר מפעיל את genoffice mcp בעצמו: אין מה להפעיל כאן, ו‑GenOffice לא חייב להיות פתוח. אותן יכולות כמו ב‑CLI.',
+      'העוזר מפעיל את chaoffice mcp בעצמו: אין מה להפעיל כאן, ו‑ChaAI Office לא חייב להיות פתוח. אותן יכולות כמו ב‑CLI.',
     intgMcpHttpTitle: 'שרת HTTP מקומי',
     intgMcpHttpDesc:
-      'פועל בתוך GenOffice; העוזר מתחבר דרך כתובת URL ואפשר לראות את המסמך נבנה צעד אחר צעד בעורך Word. GenOffice חייב להישאר פתוח; בשלב זה מסמכי Word בלבד.',
+      'פועל בתוך ChaAI Office; העוזר מתחבר דרך כתובת URL ואפשר לראות את המסמך נבנה צעד אחר צעד בעורך Word. ChaAI Office חייב להישאר פתוח; בשלב זה מסמכי Word בלבד.',
     intgMcpHttpAdvanced: 'מתקדם: כתובות נוספות ויומן',
-    intgMcpTryNote: 'העוזר קורא ל‑GenOffice דרך MCP; אתם לא מקלידים שום פקודה.',
+    intgMcpTryNote: 'העוזר קורא ל‑ChaAI Office דרך MCP; אתם לא מקלידים שום פקודה.',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'הריצו זאת פעם אחת בטרמינל:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop או כל עוזר אחר התומך ב-MCP',
@@ -11968,19 +11968,19 @@ export const strings = {
     intgStep2Note: 'chaoffice कमांड लाइन असिस्टेंट खुद चलाता है; आपको कभी टाइप नहीं करना पड़ता।',
     intgCliPartTitle: 'CLI · कमांड लाइन + skill',
     intgCliPartDesc:
-      'उन सहायकों के लिए जो टर्मिनल कमांड चला सकते हैं (Claude Code, Codex, Cursor आदि)। skill इंस्टॉल होने के बाद सहायक फ़ाइलें बनाने, बदलने, पढ़ने और संपादित करने के लिए खुद genoffice कमांड लाइन चलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
+      'उन सहायकों के लिए जो टर्मिनल कमांड चला सकते हैं (Claude Code, Codex, Cursor आदि)। skill इंस्टॉल होने के बाद सहायक फ़ाइलें बनाने, बदलने, पढ़ने और संपादित करने के लिए खुद chaoffice कमांड लाइन चलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP वह साझा प्रोटोकॉल है जिससे AI सहायक बाहरी टूल बुलाते हैं। इसे तब चुनें जब सहायक कमांड न चला सके (जैसे Claude Desktop) या आप चाहें कि वह GenOffice की विंडो को सीधे चलाए। नीचे दिए दो तरीकों में से कोई एक चुनें।',
+      'MCP वह साझा प्रोटोकॉल है जिससे AI सहायक बाहरी टूल बुलाते हैं। इसे तब चुनें जब सहायक कमांड न चला सके (जैसे Claude Desktop) या आप चाहें कि वह ChaAI Office की विंडो को सीधे चलाए। नीचे दिए दो तरीकों में से कोई एक चुनें।',
     intgMcpStdioTitle: 'सहायक द्वारा शुरू (अनुशंसित)',
     intgMcpStdioDesc:
-      'सहायक खुद genoffice mcp चलाता है: यहाँ कुछ चालू करने की ज़रूरत नहीं, और GenOffice खुला होना भी ज़रूरी नहीं। सुविधाएँ CLI जैसी ही।',
+      'सहायक खुद chaoffice mcp चलाता है: यहाँ कुछ चालू करने की ज़रूरत नहीं, और ChaAI Office खुला होना भी ज़रूरी नहीं। सुविधाएँ CLI जैसी ही।',
     intgMcpHttpTitle: 'स्थानीय HTTP सर्वर',
     intgMcpHttpDesc:
-      'GenOffice के अंदर चलता है; सहायक URL से जुड़ता है और आप Word संपादक में दस्तावेज़ को चरण-दर-चरण बनते देख सकते हैं। GenOffice खुला रहना चाहिए; अभी केवल Word दस्तावेज़।',
+      'ChaAI Office के अंदर चलता है; सहायक URL से जुड़ता है और आप Word संपादक में दस्तावेज़ को चरण-दर-चरण बनते देख सकते हैं। ChaAI Office खुला रहना चाहिए; अभी केवल Word दस्तावेज़।',
     intgMcpHttpAdvanced: 'उन्नत: अन्य पते और लॉग',
     intgMcpTryNote:
-      'सहायक MCP के ज़रिये GenOffice को बुलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
+      'सहायक MCP के ज़रिये ChaAI Office को बुलाता है; आपको कोई कमांड टाइप नहीं करना पड़ता।',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: 'टर्मिनल में इसे एक बार चलाएँ:',
     intgMcpOtherTitle: 'Cursor, Claude Desktop या कोई अन्य MCP-समर्थित असिस्टेंट',
@@ -12611,18 +12611,18 @@ export const strings = {
     intgStep2Note: '助理會自行呼叫 chaoffice 命令列，你不需要輸入任何指令。',
     intgCliPartTitle: 'CLI · 命令列 + skill',
     intgCliPartDesc:
-      '適合能執行終端機指令的助理（Claude Code、Codex、Cursor 等）。安裝 skill 後，助理會自己呼叫 genoffice 命令列建立、轉換、讀取和編輯檔案，你不需要輸入任何指令。',
+      '適合能執行終端機指令的助理（Claude Code、Codex、Cursor 等）。安裝 skill 後，助理會自己呼叫 chaoffice 命令列建立、轉換、讀取和編輯檔案，你不需要輸入任何指令。',
     intgMcpPartTitle: 'MCP',
     intgMcpPartDesc:
-      'MCP 是 AI 助理呼叫外部工具的通用協定。助理不能執行指令（如 Claude Desktop），或你想讓它直接操作 GenOffice 視窗時用這條路。下面兩種接法任選一種。',
+      'MCP 是 AI 助理呼叫外部工具的通用協定。助理不能執行指令（如 Claude Desktop），或你想讓它直接操作 察元AIOffice 視窗時用這條路。下面兩種接法任選一種。',
     intgMcpStdioTitle: '由助理啟動（建議）',
     intgMcpStdioDesc:
-      '助理自己啟動 genoffice mcp，不需要在這裡開任何開關，GenOffice 也不用開著。功能與 CLI 完全相同。',
+      '助理自己啟動 chaoffice mcp，不需要在這裡開任何開關，察元AIOffice 也不用開著。功能與 CLI 完全相同。',
     intgMcpHttpTitle: '本機 HTTP 服務',
     intgMcpHttpDesc:
-      '在 GenOffice 內執行，助理透過網址連線，可以看著它在 Word 編輯器裡逐步產生。需要 GenOffice 保持開啟；目前只支援 Word。',
+      '在 察元AIOffice 內執行，助理透過網址連線，可以看著它在 Word 編輯器裡逐步產生。需要 察元AIOffice 保持開啟；目前只支援 Word。',
     intgMcpHttpAdvanced: '進階：其他位址與記錄',
-    intgMcpTryNote: '助理會透過 MCP 呼叫 GenOffice，你不需要輸入任何指令。',
+    intgMcpTryNote: '助理會透過 MCP 呼叫 察元AIOffice，你不需要輸入任何指令。',
     intgMcpClaudeTitle: 'Claude Code',
     intgMcpClaudeDesc: '在終端機執行一次：',
     intgMcpOtherTitle: 'Cursor、Claude Desktop 或其他支援 MCP 的助理',
