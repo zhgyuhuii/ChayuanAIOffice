@@ -131,4 +131,51 @@ describe('createSessionTools', () => {
     await save!.handler({ path: '/tmp/notes' })
     expect(saved).toEqual(['/tmp/notes.docx'])
   })
+
+  // Drivers disagree on the success shape (docs returns {ok,path}, slides just
+  // {path}). An agent checking `ok` across families would read the slides save
+  // as a failure, so the shared tool normalizes it.
+  it('reports ok:true even when the driver omits it', async () => {
+    const host = createSessionHost()
+    const pptx: FamilyDriver = {
+      ...driver('pptx', 11),
+      save: async (_wcId, path) => ({ path }),
+    }
+    const [create, save] = createSessionTools([pptx], host)
+    await create!.handler({ family: 'pptx' })
+    await expect(save!.handler({ path: '/tmp/deck.pptx' })).resolves.toMatchObject({
+      ok: true,
+      path: '/tmp/deck.pptx',
+    })
+  })
+
+  // A driver may report a failed write as data instead of throwing — sheets
+  // forwards the renderer's SaveOutcome `{ok:false}`. Returning that verbatim
+  // and ending the session told the agent the file was written, then left it
+  // with no session to retry against.
+  it('raises a tool error when the driver reports a failed save, keeping the session', async () => {
+    const host = createSessionHost()
+    const xlsx: FamilyDriver = {
+      ...driver('xlsx', 12),
+      save: async () => ({ ok: false, reason: 'the workbook could not be written' }),
+    }
+    const [create, save] = createSessionTools([xlsx], host)
+    await create!.handler({ family: 'xlsx' })
+
+    await expect(save!.handler({ path: '/tmp/out.xlsx' })).rejects.toThrow(
+      /could not be saved: the workbook could not be written/,
+    )
+    // the edits are still in the tab, so the caller can retry
+    expect(host.current()?.family).toBe('xlsx')
+  })
+
+  it('reports a bare failed save without inventing a reason', async () => {
+    const host = createSessionHost()
+    const xlsx: FamilyDriver = { ...driver('xlsx', 13), save: async () => ({ ok: false }) }
+    const [create, save] = createSessionTools([xlsx], host)
+    await create!.handler({ family: 'xlsx' })
+    await expect(save!.handler({ path: '/tmp/out.xlsx' })).rejects.toThrow(
+      /^the file could not be saved$/,
+    )
+  })
 })

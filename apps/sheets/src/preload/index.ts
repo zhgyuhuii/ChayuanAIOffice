@@ -15,6 +15,7 @@ import type {
   AttachmentMeta,
   AttachmentReadResult,
   DesktopApi,
+  McpCommandMessage,
   RecoveryPromptPayload,
   ScreenCaptureResult,
   ScreenSourcesResult,
@@ -78,6 +79,7 @@ const desktopApi: DesktopApi = {
     return () => ipcRenderer.removeListener('app:auto-save-default-changed', listener)
   },
   getAiPanelPrefs: () => ipcRenderer.invoke('app:get-ai-panel-prefs'),
+  setAiPanelPrefs: (patch) => ipcRenderer.invoke('app:set-ai-panel-prefs', patch),
   onAiPanelPrefsChanged: (handler) => {
     const listener = (_event: Electron.IpcRendererEvent, prefs: AiPanelPrefs) => handler(prefs)
     ipcRenderer.on('app:ai-panel-prefs-changed', listener)
@@ -608,6 +610,26 @@ const desktopApi: DesktopApi = {
   async consumeNewBlankWorkbook() {
     const result: unknown = await ipcRenderer.invoke('sheets:consume-new-blank')
     return result === true
+  },
+  onMcpCommand(callback) {
+    const listener = (_event: unknown, message: unknown): void => {
+      if (
+        isRecord(message) &&
+        typeof message.requestId === 'string' &&
+        typeof message.command === 'string'
+      ) {
+        callback(message as unknown as McpCommandMessage)
+      }
+    }
+    ipcRenderer.on(IPC_CHANNELS.mcpCommand, listener)
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.mcpCommand, listener)
+  },
+  reportMcpResult(result) {
+    if (!isRecord(result) || typeof result.requestId !== 'string') return
+    ipcRenderer.send(IPC_CHANNELS.mcpResult, result)
+  },
+  signalMcpReady() {
+    ipcRenderer.send(IPC_CHANNELS.mcpReady)
   },
   async hasQueuedWorkbook() {
     const result: unknown = await ipcRenderer.invoke('sheets:has-queued-workbook')
@@ -1248,6 +1270,7 @@ function parseRecalcResult(input: unknown): WorkbookRecalcResult {
       typeof cell.formatted !== 'string' ||
       (cell.number !== undefined &&
         (typeof cell.number !== 'number' || !Number.isFinite(cell.number))) ||
+      (cell.isError !== undefined && typeof cell.isError !== 'boolean') ||
       typeof cell.isFormula !== 'boolean'
     ) {
       throw new Error('Invalid workbook recalc response.')
@@ -1258,6 +1281,7 @@ function parseRecalcResult(input: unknown): WorkbookRecalcResult {
       column: cell.column,
       formatted: cell.formatted,
       ...(cell.number === undefined ? {} : { number: cell.number }),
+      ...(cell.isError ? { isError: true } : {}),
       isFormula: cell.isFormula,
     }
   })

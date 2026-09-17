@@ -63,6 +63,20 @@ describe('readPdfText (pdfium extraction)', () => {
     expect(capped.pages[0]!.text).toHaveLength(5)
     expect(capped.truncated).toBe(true)
   })
+
+  // Regression: a budget spent exactly on a page boundary used to keep pushing
+  // empty pages with `truncated:false`, so the result claimed a complete read
+  // while pairing `hasTextLayer:true` with empty text.
+  it('reports truncation when the budget lands exactly on a page boundary', async () => {
+    const { readFileSync } = await import('node:fs')
+    const bytes = new Uint8Array(readFileSync(threePages))
+    const perPage = (await readPdfText(bytes)).pages[0]!.text.length
+    const exact = await readPdfText(bytes, { charBudget: perPage })
+    expect(exact.truncated).toBe(true)
+    expect(exact.pages[0]!.text).toHaveLength(perPage)
+    // no page beyond the budget is reported as an empty-but-readable page
+    expect(exact.pages.filter((p) => p.text.length === 0)).toEqual([])
+  })
 })
 
 describe('parsePageList', () => {

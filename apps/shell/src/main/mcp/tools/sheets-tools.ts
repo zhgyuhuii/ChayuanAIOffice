@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { createFileViaCli } from '../headless-cli'
 import { resolveOutputPath } from './document-tools'
 import { generateExtension } from './formats'
-import type { FamilyDriver, SessionHost } from './session-tools'
+import type { FamilyDriver, SessionHost, TargetResolver } from './session-tools'
+import { contentTarget } from './session-tools'
 import type { McpToolDefinition } from '../mcp-server'
 import type { CliRunner } from '../cli-runner'
 
@@ -32,6 +33,13 @@ export interface SheetsToolDeps {
   sheets?: SheetsControl
   /** the bundled chatoffice CLI, used by the headless tool */
   cli?: CliRunner
+  /**
+   * Resolve a caller-supplied document reference (tab id or path) to the
+   * webContents of that open tab, so the grid tools can edit a workbook the
+   * *user* has open rather than only the session's own blank one. Absent in
+   * headless/unit runs, which drops the `document` argument from the schema.
+   */
+  resolveTarget?: TargetResolver
 }
 
 /**
@@ -151,7 +159,15 @@ function createGridContentTools(deps: SheetsToolDeps, host: SessionHost): McpToo
   const sheets = deps.sheets
   if (!sheets) return []
 
-  const requireActive = (): number => host.require('xlsx')
+  const target = contentTarget(host, deps.resolveTarget, 'xlsx')
+  const documentField = z
+    .string()
+    .optional()
+    .describe(
+      "tab id or path of an open spreadsheet to edit instead of the session's own tab " +
+        '(from open_documents {action:"list"}); the edit lands in that live document, and a ' +
+        'mutating tool switches the UI to that tab first so the user sees it happen',
+    )
 
   return [
     {
@@ -172,9 +188,10 @@ function createGridContentTools(deps: SheetsToolDeps, host: SessionHost): McpToo
           .describe(
             'sheet to read from (id from a previous overview); default is the active sheet',
           ),
+        document: documentField,
       },
       handler: async (args) => {
-        const wc = requireActive()
+        const wc = await target(args.document)
         const payload = {
           ...(Array.isArray(args.addresses) ? { addresses: args.addresses.map(String) } : {}),
           ...(typeof args.sheetId === 'string' ? { sheetId: args.sheetId } : {}),
@@ -197,9 +214,10 @@ function createGridContentTools(deps: SheetsToolDeps, host: SessionHost): McpToo
           .boolean()
           .optional()
           .describe('plan the batch and report what would change, without modifying the grid'),
+        document: documentField,
       },
       handler: async (args) => {
-        const wc = requireActive()
+        const wc = await target(args.document, { focus: true })
         if (!Array.isArray(args.ops)) throw new Error('ops must be an array')
         const result = (await sheets.runCommand(wc, 'apply_ops', {
           ops: args.ops,

@@ -556,6 +556,13 @@ describe('MCP surface over Streamable HTTP (/mcp)', () => {
     )
     expect(badSession.status).toBe(404)
     console.log('[bad session]', badSession.status, badSession.body)
+
+    // a malformed body is the caller's mistake: answer a JSON-RPC parse error,
+    // not a 500 that reads as a server fault
+    const malformed = await rawText(port, 'POST', '/mcp', '{"jsonrpc":"2.0","id":5,"method":')
+    expect(malformed.status).toBe(400)
+    expect(malformed.body).toContain('-32700')
+    console.log('[malformed body]', malformed.status, malformed.body)
   })
 
   it('isolates the active session between two concurrent clients', async () => {
@@ -632,6 +639,38 @@ function raw(
     )
     req.on('error', reject)
     if (data) req.write(data)
+    req.end()
+  })
+}
+
+/** post a raw body verbatim (for malformed-JSON cases the helpers cannot express) */
+function rawText(
+  p: number,
+  method: 'GET' | 'POST',
+  path: string,
+  body: string,
+): Promise<{ status: number; body: string }> {
+  return new Promise((resolve, reject) => {
+    const req = httpRequest(
+      {
+        hostname: '127.0.0.1',
+        port: p,
+        path,
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+          Accept: 'application/json, text/event-stream',
+        },
+      },
+      (res) => {
+        let text = ''
+        res.on('data', (c) => (text += c))
+        res.on('end', () => resolve({ status: res.statusCode ?? 0, body: text }))
+      },
+    )
+    req.on('error', reject)
+    req.write(body)
     req.end()
   })
 }

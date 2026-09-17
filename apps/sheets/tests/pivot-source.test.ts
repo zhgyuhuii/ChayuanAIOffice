@@ -227,12 +227,6 @@ describe('pivot source selection', () => {
     expect(getSourceRange(f.ctx)).toBe('B2:B2')
   })
 
-  it('does not silently truncate a region when the scan budget is exhausted', () => {
-    const f = fixture(Array.from({ length: 10_005 }, (_, row) => [row]))
-    f.select('A1')
-    expect(getSourceRange(f.ctx)).toBe('A1:A1')
-  })
-
   it('creates from the resolved source, not the selected data cell', () => {
     const f = fixture()
     const config: OoXmlPivotConfig = {

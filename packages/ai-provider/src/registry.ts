@@ -248,6 +248,12 @@ export const AI_PROVIDER_ADAPTERS: Record<AiProviderId, ProviderAdapter> = {
     capabilities: { auth: 'api-key', vision: true },
     resolveEndpoint: fixedEndpoint('openai-compatible', 'https://api.agnes-ai.cn/v1'),
   },
+  opper: {
+    meta: metaOf('opper'),
+    capabilities: { auth: 'api-key', vision: true },
+    // one chat-completions endpoint for every pool and vendor route; the model id picks it
+    resolveEndpoint: fixedEndpoint('openai-compatible', 'https://api.opper.ai/v3/compat'),
+  },
   'opencode-zen': {
     meta: metaOf('opencode-zen'),
     capabilities: { auth: 'api-key', vision: true },

@@ -6,6 +6,7 @@ import JSZip from 'jszip'
 
 import { encodeXlsxEscapes } from './xlsx-escapes'
 import { DEFAULT_THEME_XML } from './xlsx-default-theme'
+import { MINIMAL_STYLESHEET_XML } from './xlsx-default-styles'
 
 const DELIMITERS = [',', ';', '\t'] as const
 
@@ -323,6 +324,7 @@ async function xlsxBufferFromRows(
       '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
       '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
       '<Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>' +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
       '</Types>',
   )
   zip.file(
@@ -344,9 +346,11 @@ async function xlsxBufferFromRows(
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
       '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
       '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>' +
+      '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
       '</Relationships>',
   )
   zip.file('xl/theme/theme1.xml', DEFAULT_THEME_XML)
+  zip.file('xl/styles.xml', MINIMAL_STYLESHEET_XML)
   zip.file('xl/worksheets/sheet1.xml', buildWorksheetXml(rows))
   return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' })
 }

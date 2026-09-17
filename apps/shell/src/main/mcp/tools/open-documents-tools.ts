@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 import { z } from 'zod'
 import type { OpenDocumentTab, TabKind } from '../../../shared/tabs-api'
 import type { McpToolDefinition } from '../mcp-server'
-import { familyLabel, generateExtension, type EditorFamily, type SessionFamily } from './formats'
+import { formatFamily, familyLabel, type EditorFamily } from './formats'
 import { sanitizeFileBase, uniquePathIn } from './document-tools'
 
 /**
@@ -57,11 +57,18 @@ export interface OpenDocumentsDeps {
   defaultSaveDir: () => string
 }
 
-/** the extension documents of one family carry on disk */
+/**
+ * The extension a family's document carries on disk (`.docx`, `.md`, `.html`, …).
+ *
+ * Read from the registry's `editorSave` rather than `generateExtension`: the
+ * latter only answers for the three families that have a headless `create_*`
+ * tool, so asking it about html/md/pdf throws. A close-save needs the family's
+ * own save format, which every family has.
+ */
 function extensionFor(family: EditorFamily): string {
-  if (family === 'md') return '.md'
-  if (family === 'pdf') return '.pdf'
-  return `.${generateExtension(family as SessionFamily)}`
+  const primary = formatFamily(family).editorSave[0]
+  if (!primary) throw new Error(`family "${family}" has no save format`)
+  return `.${primary}`
 }
 
 /**
@@ -83,6 +90,28 @@ export function resolveOpenDocument(
 function normalizePath(value: string): string {
   const resolved = resolve(value)
   return process.platform === 'win32' ? resolved.toLowerCase() : resolved
+}
+
+/**
+ * Resolve an open document addressed by tab id or path, requiring it to belong
+ * to `family`. This is the shared lookup behind the content tools' optional
+ * `document` argument, so "point this edit at a tab the user opened" behaves
+ * exactly like `open_documents` — same matching rules, same guided errors.
+ */
+export function resolveOpenDocumentOfFamily(
+  documents: readonly OpenDocumentTab[],
+  target: string,
+  family: EditorFamily,
+): OpenDocumentTab {
+  const doc = resolveOpenDocument(documents, target)
+  if (!doc) throw noMatch(target, documents)
+  const actual = FAMILY_BY_KIND[doc.kind]
+  if (actual !== family) {
+    throw new Error(
+      `"${doc.title}" is a ${familyLabel(actual)}, but this tool edits ${familyLabel(family)} documents`,
+    )
+  }
+  return doc
 }
 
 /** a guided "no such document" error listing what is actually open */
@@ -136,7 +165,12 @@ export function createOpenDocumentTools(deps: OpenDocumentsDeps): McpToolDefinit
         'id, type, path, title, whether it has ever been saved, and whether it has unsaved ' +
         'changes; "read" returns one document\'s live content including unsaved edits; "close" ' +
         'closes one, saving it first by default (pass unsaved:"discard" to drop the changes). ' +
+        'Note that "close" writes over the document\'s own file when it has a path — it does not ' +
+        'stop to ask, so the saved file replaces whatever was on disk. ' +
         'Identify a document by its path, or by the id from "list" when it has never been saved. ' +
+        'To *edit* one of these documents, pass its id (or path) as the `document` argument of the ' +
+        'family content tools (insert_content / apply_ops / apply_sheet_ops / apply_slide_ops): no ' +
+        'session is needed, and the UI switches to that tab so the user sees the change land. ' +
         'PDF tabs are listed but cannot be read or closed here: the pdf app is a viewer, so an ' +
         'open PDF has no readable or savable state through this tool.',
       inputSchema: {

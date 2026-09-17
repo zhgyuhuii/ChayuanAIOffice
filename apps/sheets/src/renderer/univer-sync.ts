@@ -2412,7 +2412,10 @@ async function runFormulaRecalc(
         unsupported += 1
         continue
       }
-      overlay.set(`${cell.row}:${cell.column}`, { v: cell.number ?? cell.formatted })
+      overlay.set(`${cell.row}:${cell.column}`, {
+        v: cell.number ?? cell.formatted,
+        ...(cell.isError ? { isError: true } : {}),
+      })
     }
     state.recalc.overlay.set(sheetId, overlay)
     state.recalc.follow.set(sheetId, { anchorRow: viewportStartRow, complete: windowComplete })
@@ -3885,7 +3888,7 @@ export function applyJournalOverlay(
 /// text still reaches the formula bar via formulaText).
 /// #ERROR! is not Excel's: it is IronCalc's parse/evaluation failure, and a
 /// file that carries it was polluted by an earlier save of that failure.
-const EXCEL_ERROR_LITERALS = new Set([
+export const EXCEL_ERROR_LITERALS = new Set([
   '#NULL!',
   '#DIV/0!',
   '#VALUE!',

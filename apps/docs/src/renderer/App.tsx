@@ -1,5 +1,6 @@
 import bootLogo from './assets/boot-logo.png'
 import { DOC_CSS_COMMITTED_EVENT } from './editor/cjk-punct-shrink'
+import { handleDocsControl, type ControlRequest } from './control'
 import { justifyShrinkPluginKey } from './editor/justify-shrink'
 import {
   useCallback,
@@ -5009,6 +5010,12 @@ export function App() {
     },
     [readMode, isProtected, editor],
   )
+
+  // chatoffice CLI (`open --block`, `selection`): the shell evaluates this hook
+  useEffect(() => {
+    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+      handleDocsControl(req, editor, doc !== null)
+  })
 
   // e2e/automation hook: lets tests drive open/edit/save without native dialogs
   useEffect(() => {

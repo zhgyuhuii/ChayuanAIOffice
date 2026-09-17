@@ -77,6 +77,15 @@ describe('provider model catalog', () => {
     expect(agnes.needsBaseUrl).toBeUndefined()
     expect(agnes.keyPlaceholder).toContain('agnes-ai.cn')
   })
+
+  it('seeds Opper with pool ids (bare names, no vendor prefix)', () => {
+    const opper = AI_PROVIDERS.find((provider) => provider.id === 'opper')!
+    expect(opper.models).toContain(opper.defaultModel)
+    expect(opper.needsBaseUrl).toBeUndefined()
+    for (const model of opper.models) {
+      expect(model).not.toContain('/')
+    }
+  })
 })
 
 describe('resolveAiSettings', () => {

@@ -65,13 +65,17 @@ export function createPdfTools(): McpToolDefinition[] {
         if (!existsSync(filePath)) throw new Error(`file not found: ${filePath}`)
 
         const bytes = new Uint8Array(await readFile(filePath))
+        // Probe with a zero budget: it opens the document (which is also what
+        // surfaces an encrypted or corrupt file as a clean tool error), reports
+        // the page count, and extracts no page text — the old probe read page 1
+        // in full, then the real pass read it again. The span cannot be resolved
+        // before the count is known, so the calls stay separate.
         const open = () =>
-          readPdfText(bytes, { fromPage: 1, toPage: 1 }).catch(() => {
+          readPdfText(bytes, { charBudget: 0 }).catch(() => {
             throw new Error('could not open the PDF — it may be encrypted or corrupt')
           })
 
-        // probe the page count first so a page list can be validated (and the
-        // open error surfaced as a clean tool error) before extracting anything
+        // probe just the page count, then extract the requested span for real
         const pageCount = (await open()).pageCount
 
         let fromPage = 1

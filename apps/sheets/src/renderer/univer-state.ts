@@ -157,6 +157,7 @@ export interface LazyWorkbookState {
 export interface PinnedClosureCell {
   readonly f?: string
   readonly v?: string | number | boolean | null
+  readonly isError?: boolean
 }
 
 /// Data extent in screen coordinates: the file extent shifted by this

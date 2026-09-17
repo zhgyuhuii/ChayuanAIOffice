@@ -1,5 +1,6 @@
 import bootLogo from './assets/boot-logo.png'
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { handleSlidesControl, type ControlRequest } from './control'
 import type {
   GroupRenderNode,
   RenderFill,
@@ -3371,6 +3372,20 @@ export function App() {
   const clearInk = useCallback(() => arrangeActions.clearInk(ctxRef.current), [])
 
   const _fileName = slide ? path?.split('/').pop() || t('appUntitledPresentation') : undefined
+
+  // chatoffice CLI (`open --slide/--el`, `selection`): the shell evaluates this hook
+  useEffect(() => {
+    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+      handleSlidesControl(req, {
+        slides,
+        path,
+        current,
+        selectedIds,
+        setCurrent,
+        setSelectedIds,
+        clearEditing: () => setEditing(null),
+      })
+  })
 
   return (
     <div className="app">

@@ -16,6 +16,7 @@ import type {
   WorkbookVisualObject,
 } from '../shared/desktop-api'
 import { columnLabel, parseRange } from '@chatoffice/xlsx-gateway/domain/cell-address'
+import { fillDisplayColor, resolveStyleColor } from '@chatoffice/xlsx-gateway/domain/style-color'
 import { splitSheetRef } from '@chatoffice/xlsx-gateway/domain/chart-visual'
 import { CHART_CATEGORY_WIRE_MAX, CHART_TEXT_WIRE_MAX } from '../shared/desktop-api'
 import { ADDABLE_SHAPE_TYPES } from '@chatoffice/xlsx-gateway/shared/shape-types'
@@ -2167,13 +2168,22 @@ export function fromNeutralStyle(style: WorkbookStyleEdit): Record<string, unkno
   if (style.fontFamily !== undefined) s.ff = escapeCssLeadingDigit(style.fontFamily)
   if (style.fontSize !== undefined) s.fs = style.fontSize
   if (style.fontColor !== undefined) {
-    s.cl = style.fontColor === null ? null : { rgb: style.fontColor }
+    s.cl = style.fontColor === null ? null : { rgb: resolveStyleColor(style.fontColor) }
   }
-  if (style.fillColor !== undefined) {
+  // Univer paints one rgb per cell: theme slots resolve through the default
+  // palette, patterns and gradients show their foreground / first stop.
+  const fill =
+    style.fill !== undefined
+      ? style.fill === null
+        ? null
+        : fillDisplayColor(style.fill)
+      : style.fillColor
+  if (fill !== undefined) {
     // Same empty-rgb sentinel as toUniverStyle: a bare bg: null is stripped
     // by the mutation's removeNull, after which a <col style=> fill composes
     // straight back through the cell the user just cleared.
-    s.bg = style.fillColor === null ? { ...NO_FILL_STYLE } : { rgb: style.fillColor }
+    s.bg =
+      fill === null || fill === undefined ? { ...NO_FILL_STYLE } : { rgb: resolveStyleColor(fill) }
   }
   if (style.horizontalAlignment !== undefined) {
     s.ht = XLSX_HORIZONTAL_TO_UNIVER[style.horizontalAlignment]
