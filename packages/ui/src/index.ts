@@ -77,6 +77,32 @@ export {
   type WordArtPreset,
 } from './wordart-presets'
 export { ModelPickerButton, type ModelPickerButtonProps } from './ModelPickerButton'
+
+export {
+  KbPickerButton,
+  useKbAugment,
+  useKbSelection,
+  type KbPickerButtonProps,
+} from './kb/KbPickerButton'
+export {
+  kbBridge,
+  kbBudget,
+  kbDiscover,
+  kbDoc,
+  kbGetSource,
+  kbRetrieve,
+  kbSearchGroups,
+  kbSelectedIds,
+  setKbBudget,
+  setKbSelectedIds,
+  kbSetOrigin,
+  type KbBridgeApi,
+  type KbDiscoverPayload,
+  type KbDocPayload,
+  type KbSourceState,
+} from './kb/kb-api'
+export { renderCitationChips } from './kb/kb-cite'
+export { kbStrings, type KbStrings } from './kb/kb-strings'
 export { MediaModelPicker, type MediaModelPickerProps } from './MediaModelPicker'
 export { CapabilitySettingsPage, type CapabilitySettingsPageProps } from './CapabilitySettingsPage'
 export { capabilitySettingsStrings } from './capability-settings-strings'

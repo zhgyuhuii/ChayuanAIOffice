@@ -7,6 +7,7 @@
 
 import { BridgeClient } from './client.js'
 import { createAiHttpBridge } from './ai-bridge.js'
+import { installKbFetchBridge } from './kb-bridge.js'
 import { installDocsShim } from './editors/docs-shim.js'
 import { installPdfShim } from './editors/pdf-shim.js'
 import { installSheetsShim, installSlidesShim } from './editors/generic-shim.js'
@@ -18,11 +19,15 @@ const client = new BridgeClient()
 if (typeof window !== 'undefined') {
   ;(window as unknown as Record<string, unknown>).__goErrs = []
   window.addEventListener('error', function (e) {
-    ;(window as unknown as { __goErrs: string[] }).__goErrs.push('E: ' + String(e.message) + ' @' + String(e.filename).slice(-40) + ':' + e.lineno)
+    ;(window as unknown as { __goErrs: string[] }).__goErrs.push(
+      'E: ' + String(e.message) + ' @' + String(e.filename).slice(-40) + ':' + e.lineno,
+    )
   })
   window.addEventListener('unhandledrejection', function (e) {
     const r = (e as PromiseRejectionEvent).reason
-    ;(window as unknown as { __goErrs: string[] }).__goErrs.push('R: ' + String((r && r.message) || r).slice(0, 200))
+    ;(window as unknown as { __goErrs: string[] }).__goErrs.push(
+      'R: ' + String((r && r.message) || r).slice(0, 200),
+    )
   })
 }
 
@@ -77,9 +82,12 @@ function installMarkdownShim(): void {
         return { ok: true as const, path: `webfs:${currentFile.id}:${currentFile.name}` }
       }
       // save-as / untitled first save
-      const created = (await client.call('file', 'fs.saveAs', bytesToB64(bytes), request.suggestedName ?? '未命名.md')) as
-        | { id: string; name: string }
-        | null
+      const created = (await client.call(
+        'file',
+        'fs.saveAs',
+        bytesToB64(bytes),
+        request.suggestedName ?? '未命名.md',
+      )) as { id: string; name: string } | null
       if (!created) return { ok: true as const, canceled: true }
       currentFile = created
       await client.call('local', 'recent.record', created.id, created.name, 'markdown')
@@ -111,10 +119,17 @@ function installMarkdownShim(): void {
 
 function alreadyElectron(): boolean {
   const w = window as unknown as Record<string, unknown>
-  return w.markdownApi !== undefined || w.desktop !== undefined || w.pdfApi !== undefined || w.desktopApi !== undefined || w.slidesApi !== undefined
+  return (
+    w.markdownApi !== undefined ||
+    w.desktop !== undefined ||
+    w.pdfApi !== undefined ||
+    w.desktopApi !== undefined ||
+    w.slidesApi !== undefined
+  )
 }
 
 export function installEditorShims(): void {
+  installKbFetchBridge()
   if (alreadyElectron()) return
   const path = location.pathname
   if (/\/editors\/markdown\//.test(path)) installMarkdownShim()
