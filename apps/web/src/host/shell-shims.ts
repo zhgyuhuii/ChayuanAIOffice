@@ -242,6 +242,11 @@ export function installShellShims(): void {
       dockHost.setRect(rect),
     onChanged: (handler: (tabs: unknown) => void) =>
       dockHost.onChanged(handler as (t: ReturnType<typeof dockHost.list>) => void),
+    // P2 中继：web 侧没有停靠编辑器的 RelayEvent 源，恒空订阅即可——
+    // Home 的 useEffect 顶层会无条件调用 onRelayEvent，缺方法会让整个
+    // 主包挂载在首次渲染前崩掉（main-tSsXsMIL 顶层 useEffect）。
+    onRelayEvent: (_handler: (dockTabId: string, event: unknown) => void) => () => {},
+    onPanelTurn: (_handler: (turn: unknown) => void) => () => {},
   }
 
   w.chatOffice = {

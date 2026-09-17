@@ -42,7 +42,7 @@ const out = resolve(process.env.EMBEDDED_OUT ?? join(root, 'dsh-plugin', 'embedd
 const PACKAGES = [
   'agent-core', 'ai-host', 'ai-provider', 'ai-search', 'chart-kit', 'docx-engine',
   'electron-utils', 'file-parse', 'i18n', 'pptx-engine', 'pptx-render',
-  'project-store', 'service-core', 'storage-adapter', 'ui',
+  'project-store', 'service-core', 'storage-adapter', 'ui', 'xlsx-gateway',
 ]
 
 function copyIfExists(from, to) {
