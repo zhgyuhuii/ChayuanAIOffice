@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/genoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第四轮增量拉齐完成（2026-09-13，终点 de139a0）**；第三轮（2026-09-10，d35d770）、第二轮（2026-09-09，d24c964，§5c）、首轮（2026-09-07，6d16796，§5b） |
+| 状态 | **第九轮完成（2026-09-17，终点 6f8a892，merge=faeb9483）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -108,7 +108,22 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`09485f8`（2026-09-17 第八轮 Route B full 完成并入 main；下次 `git fetch upstream` 后从 `09485f8..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`6f8a892`（2026-09-17 第九轮完成并入 main；下次 `git fetch upstream` 后从 `6f8a892..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第九轮增量（2026-09-17，09485f8..6f8a892：5 提交，施工于 sync/upstream-20260917 分支，merge=faeb9483）
+
+| 内容 | 结果 |
+|---|---|
+| **前置：第八轮渲染端欠账收编**（3dd41490，先于 pick 落位） | 第八轮 Route B 回退挂账的渲染端全部接通：①sheets 渲染端 MCP 桥=mcp-bridge.ts+control.ts 取 09485f8+品牌重放，desktop-api（McpCommand 三通道/save targetPath·overwrite/recalc isError）+preload+ipc-channels 接线，App.tsx 3-way 织入 installSheetsMcpBridge/handleSheetsControl（全局名 __chatofficeControl 对齐本地壳层 control-handlers 约定——第八轮壳侧已落而渲染端缺位=半接通状态终结）；②docs/slides/pdf 三 App 补 __chatofficeControl 接线（control.ts 第八轮已落但零引用=死代码）；③快照 STUCK 件全量收编（save-actions SaveOutcome/table-actions/lazy-find/menu-input-enter/clipboard-anchor-tile/filter-range-outline/shared-formula-journal/prompts layout.md+10 测试）；④isError 贯通收缝（univer-state PinnedClosureCell/recalc schema/univer-sync overlay/save-pipeline+sheets-main formulaValues 放宽 {error}）；⑤edit-journal fromNeutralStyle 重放上游主题色映射（resolveStyleColor/fillDisplayColor——网关 union+gradient schema 早已在本地，渲染写路径今对齐）；⑥print-html 纸张尺寸对齐（4=17×11、13=7.17×10.12）；⑦markdown OutlinePane 可拖宽+App outlineWidth 持久化 |
+| ea6d638 #451 MCP 按文档定向编辑+审计修复 | **零冲突落位**（前置补欠账后基线对齐）+adapted：**去重 createPdfTools**（本地 3a5ebabc 已恢复注册，上游 #451 再恢复一次=重复注册炸 initialize 500）——「上游自己丢又自己找回来」与本地自补撞车是本轮新坑 |
+| 3ebe073 #437 AI 面板停靠侧设置+快捷切换 | **分域采纳**：packages/ui 全收（prefs side 字段/AiPanelSideButton/ai-panel-prefs.css/index 导出+测试）；shell main 设置存储（aiPanelSide 读写+setAiPanelPrefs 重构）+SettingsModal 侧向下拉（adapted 入本地 V2 版，import 冲突按本地 subpath 风格并集）+strings.ts 60 键（A/B 架构自动并入 upstreamStrings 区，尾 spread 完好）；**各 app AiPanel/preload/ipc/styles 6 套 hunks 保本地**（本地 AiPanel=PanelTabs/DockShell 架构与上游 resize/header 结构完全不同构，左右停靠已由 DockShell position('left'/'right'/'bottom'/'float')+持久化覆盖——记空 pick）；preload/ipc 通道件无害随行；settings-ai-panel.test.ts 维持本地删除裁定（第二轮 V2 设置面）；e2e ai-panel-side.spec.ts 弃（测未采纳 UI）、ai-panel-side-settings.spec.ts 收（测已落地设置面）；ci.yml Q5 还原 |
+| 158e352 #454 Opper BYOK 供应商 | **并集**：types/registry/providers/logos 本地 Agnes 与上游 Opper 双_entry 并存；测试双用例并收；README Q5 保本地 |
+| d1280d1 #457 PPTX 幻灯片按演示顺序提取 | 干净 pick（引擎层，44 测试绿） |
+| 6f8a892 #458 markdown 不变源往返 | adapted：roundtripSerializer 新件全收（env 门控 opt-in）；App.tsx 一处冲突=onReadTextRequest 块取 theirs（serializeMarkdown 化）+**补漏 offReadText() cleanup**；markdown-main writtenText+ipc 类型随行；playwright.config+browser spec 收；ci.yml Q5 还原 |
+| 裁定 | ①project-store ipc.ts **保本地**（上游删 P1 项目 API=listProjects 等，本地 Home/两个 preload 活用在用=铁律本地胜）；②pivot 扫描预算护栏**随上游移除**（09485f8 结构性取消预算概念改 lastRow 界限，护栏+测试上游同删，本地测试同步删）；③FilesPane-in-sheets 继续挂账（ExcelShell 裁定取本地无 filesOpen 件，App 的 workbookPath 传参弃）；④xlsx-theme-fills.test 渲染端断言随 edit-journal 升级全过（无需改编） |
+| 门禁 | typecheck 全工作区 0 错误；全仓测试链 exit 0（docs 2541/sheets 2800/shell 561(含 MCP 159)/slides 878/pdf 747/markdown 391/cli 258/ui 97/ai-provider 299…）；lint 改动文件 6 error 全为 main 存量基线（行号位移实证）零新增；品牌 grep 豁免外零命中；build:web exit 0 |
+
+**本轮新坑**：①重复注册类「上游找回 vs 本地自补」撞车——pick 后必须 grep 新注册点是否双写（症状=initialize 500 internal error）；②python 拼接冲突块时 ours 侧若缺尾（`},`/`})`）必须补全再 typecheck（providers.ts 落过一次 `Property assignment expected`）；③**git diff 用短 sha 手敲补全会造错 sha 静默返回空**——必须 `git rev-parse` 取全 sha；④STUCK_AT_OLD 分类是欠账探测器（本地==f4d8da2 且上游改过=漏 pick），但对「上游删本地在用件」要反着裁（project-store ipc.ts）。
 
 ### 第七轮增量（2026-09-16，70e5149..f4d8da2：21 提交，先提交并行会话残余 WIP 6fc8c4db 后在干净树上直接 main 施工）
 
