@@ -2706,6 +2706,7 @@ export function registerSheetsIpc(): void {
             column: z.number().int().nonnegative(),
             formatted: z.string(),
             number: z.number().optional(),
+            isError: z.boolean().optional(),
             isFormula: z.boolean(),
           })
           .strict(),
@@ -2753,6 +2754,7 @@ export function registerSheetsIpc(): void {
             column: cell.column,
             formatted: cell.formatted,
             ...(cell.number === undefined ? {} : { number: cell.number }),
+            ...(cell.isError ? { isError: true } : {}),
             isFormula: cell.isFormula,
           },
         ]

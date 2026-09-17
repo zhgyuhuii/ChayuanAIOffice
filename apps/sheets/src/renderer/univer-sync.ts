@@ -345,8 +345,13 @@ export function applyFormatPatchToRange(
     if (patch.fontSize === null) range.setValue({ s: { fs: null } } as unknown as ICellData)
     else range.setFontSize(patch.fontSize)
   }
-  if (patch.fontColor !== undefined) range.setFontColor(patch.fontColor)
-  if (patch.fillColor !== undefined) range.setBackground(patch.fillColor as unknown as string)
+  if (patch.fontColor !== undefined) {
+    if (typeof patch.fontColor === 'string') range.setFontColor(patch.fontColor)
+  }
+  if (patch.fillColor !== undefined) {
+    // LOCAL(适配): theme 对象色待第九轮渲染，仅应用字符串色
+    if (typeof patch.fillColor === 'string') range.setBackground(patch.fillColor)
+  }
   if (patch.numberFormat !== undefined) range.setNumberFormat(patch.numberFormat ?? 'General')
   if (patch.horizontalAlign !== undefined) {
     range.setHorizontalAlignment(
@@ -380,7 +385,8 @@ export function applyFormatPatchToRange(
   }
   if (patch.border !== undefined && patch.border !== null) {
     const type = BORDER_COMMAND_TYPES[patch.border.type]
-    if (type) range.setBorder(type, BorderStyleTypes.THIN, patch.border.color ?? '#000000')
+    const borderColor = patch.border.color
+    if (type) range.setBorder(type, BorderStyleTypes.THIN, typeof borderColor === 'string' ? borderColor : '#000000')
   }
 }
 

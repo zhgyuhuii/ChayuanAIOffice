@@ -10,6 +10,7 @@
       "@chatoffice/pptx-engine": ["../../packages/pptx-engine/src/index.ts"],
       "@chatoffice/pptx-engine/table-grid": ["../../packages/pptx-engine/src/table-grid.ts"],
       "@chatoffice/pptx-engine/identity": ["../../packages/pptx-engine/src/identity.ts"],
+      "@chatoffice/pptx-engine/named-action": ["../../packages/pptx-engine/src/named-action.ts"],
       "@chatoffice/pptx-engine/background-promote": [
         "../../packages/pptx-engine/src/background-promote.ts"
       ],

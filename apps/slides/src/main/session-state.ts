@@ -126,6 +126,8 @@ export interface HistorySnapshot {
   slides: Slide[]
   entries: Map<string, Uint8Array>
   size: { cx: number; cy: number }
+  /** archive-only edits (notes, theme) flag the session, so undo must restore that too */
+  metaDirty: boolean
 }
 const MAX_HISTORY = 50
 
@@ -138,6 +140,7 @@ export function takeSnapshot(session: Session): HistorySnapshot {
     slides: structuredClone(session.opened.deck.slides),
     entries: new Map(session.opened.archive.entries),
     size: { ...session.opened.deck.size },
+    metaDirty: !!session.metaDirty,
   }
 }
 
@@ -147,6 +150,7 @@ function cloneSnapshot(snap: HistorySnapshot): HistorySnapshot {
     slides: structuredClone(snap.slides),
     entries: new Map(snap.entries),
     size: { ...snap.size },
+    metaDirty: snap.metaDirty,
   }
 }
 
@@ -298,6 +302,7 @@ export function restoreSnapshot(session: Session, snap: HistorySnapshot): void {
   const fresh = cloneSnapshot(snap)
   session.opened.deck.slides = fresh.slides
   session.opened.deck.size = fresh.size
+  session.metaDirty = fresh.metaDirty
   const entries = session.opened.archive.entries
   entries.clear()
   for (const [k, v] of fresh.entries) entries.set(k, v)

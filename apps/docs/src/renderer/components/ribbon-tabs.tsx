@@ -1,8 +1,13 @@
 import { useRef, useState } from 'react'
 import type { Editor, JSONContent } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
+import {
+  useDismissablePopover,
+  wordArtSolidColor,
+  filesPaneTitle,
+  type WordArtPreset,
+} from '@chatoffice/ui'
 import { SHAPE_GALLERY_GROUPS } from '@chatoffice/ui/shape-gallery'
-import { useDismissablePopover, wordArtSolidColor, type WordArtPreset } from '@chatoffice/ui'
 import {
   buildLineParagraphXml,
   buildShapeParagraphXml,
@@ -36,6 +41,7 @@ import {
   IconLock,
   IconMoon,
   IconNavPane,
+  IconFilesPane,
   IconOutlineView,
   IconPageWidth,
   IconGridlines,
@@ -89,7 +95,7 @@ export function setParaAttrs(
   attrs: Record<string, unknown>,
   /// Explicit target range: blur-committed inputs capture the selection at
   /// focus time — by blur, a click may already have moved the live selection
-  /// to another paragraph (alpha ledger r131 / bugbot).
+  /// to another paragraph.
   range?: { from: number; to: number },
 ): void {
   const size = editor.state.doc.content.size
@@ -355,7 +361,7 @@ export async function insertImageFromDataUrl(
       .run()
     // Pasting into an empty document leaves the image as the ONLY node with a
     // node-selection on it: there is no text position to type at, and the
-    // next keystroke REPLACES the picture (alpha ledger r152). Ensure a
+    // next keystroke REPLACES the picture. Ensure a
     // paragraph follows the image and put a text caret there — also what
     // Word does after inserting a picture.
     // A mid-paragraph insert already leaves the caret in the split-off rest
@@ -1174,6 +1180,8 @@ interface ViewTabProps {
   onShowRuler: (v: boolean) => void
   showNav: boolean
   onShowNav: (v: boolean) => void
+  showFiles: boolean
+  onShowFiles: (v: boolean) => void
   viewMode: ViewMode
   onViewMode: (mode: ViewMode) => void
   readMode: boolean
@@ -1199,6 +1207,8 @@ export function ViewTab({
   onShowRuler,
   showNav,
   onShowNav,
+  showFiles,
+  onShowFiles,
   viewMode,
   onViewMode,
   readMode,
@@ -1209,7 +1219,7 @@ export function ViewTab({
   onSplitView,
   onPagePreview,
 }: ViewTabProps) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [winMenuOpen, setWinMenuOpen] = useState(false)
   const [windows, setWindows] = useState<DocsTabInfo[]>([])
   /** wrap holding both the switch-tabs trigger and its menu */
@@ -1419,6 +1429,17 @@ export function ViewTab({
               <IconNavPane size={BIG} />
             </span>
             <span>{t('ribbonNavPane')}</span>
+          </button>
+          <button
+            className={`rb-big ${showFiles ? 'active' : ''}`}
+            disabled={!hasDoc}
+            data-tip={filesPaneTitle(lang)}
+            onClick={() => onShowFiles(!showFiles)}
+          >
+            <span className="rb-big-icon">
+              <IconFilesPane size={BIG} />
+            </span>
+            <span>{filesPaneTitle(lang)}</span>
           </button>
         </div>
         <div className="ribbon-group-label">{t('ribbonGroupShow')}</div>

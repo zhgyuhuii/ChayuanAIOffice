@@ -8,8 +8,15 @@ import type { PmNode } from '../editor/convert'
 import { TABLE_TRAILING_SKIP } from '../editor/extensions'
 import { countWords, findNumId, type NumIds } from './protocol'
 import { DOC_NAV_SCHEME, navigateToBlock, parseDocNavHref } from './doc-nav'
-import { markDocSeen, type AiCommentsAccess, type AiHeaderFooterAccess } from './tools'
+import {
+  markDocSeen,
+  type AiCommentsAccess,
+  type AiDocExtras,
+  type AiHeaderFooterAccess,
+} from './tools'
 import { buildAssistantInstruction, findCoreAssistant } from './assistants'
+import type { AiPageSetupAccess } from './page-setup'
+import type { AiNotesAccess } from './note-ops'
 import { createDocsSkill } from './docs-skill'
 import {
   buildDocWriterRequest,
@@ -291,6 +298,12 @@ interface AiPanelProps {
    *  the Home project mainline stays the single complete transcript. Thin:
    *  the panel's own state/persistence is untouched. */
   onTurnCompleted?: (turn: { userText: string; assistantText: string; cancelled: boolean }) => void
+  /** section store for set_page_setup / insert_section_break (upstream; unwired locally) */
+  pageSetupAccess?: AiPageSetupAccess
+  /** style catalog and watermark stores (upstream; unwired locally) */
+  docExtras?: AiDocExtras
+  /** footnote / endnote lists (upstream; unwired locally) */
+  notesAccess?: AiNotesAccess
 }
 
 export function AiPanel({
@@ -313,6 +326,10 @@ export function AiPanel({
   commentsAccess,
   hfAccess,
   onTurnCompleted,
+
+  pageSetupAccess,
+  docExtras,
+  notesAccess,
 }: AiPanelProps) {
   const { lang, t } = useI18n()
   const aiTabs = [
@@ -461,6 +478,12 @@ export function AiPanel({
   commentsAccessRef.current = commentsAccess
   const hfAccessRef = useRef(hfAccess)
   hfAccessRef.current = hfAccess
+  const pageSetupAccessRef = useRef(pageSetupAccess)
+  pageSetupAccessRef.current = pageSetupAccess
+  const docExtrasRef = useRef(docExtras)
+  docExtrasRef.current = docExtras
+  const notesAccessRef = useRef(notesAccess)
+  notesAccessRef.current = notesAccess
 
   /** drop every aiChanged flag; silent = skip undo history (auto-accept path) */
   const clearAiHighlights = (silent = false) => {
@@ -707,6 +730,9 @@ export function AiPanel({
           () => ({
             write: (spec, onProgress, signal) => runDocWriterRef.current(spec, onProgress, signal),
           }),
+          () => pageSetupAccessRef.current,
+          () => docExtrasRef.current,
+          () => notesAccessRef.current,
         ),
         createFilesSkill(availableAttachments),
       ]),

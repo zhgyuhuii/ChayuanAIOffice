@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { createRemoteFilesClient } from '@chatoffice/storage-adapter/remote-ipc'
 import type { IpcRendererEvent } from 'electron'
+import { VIEW_IMAGE_CHANNEL } from '../shared/ipc'
 import type { AiPanelPrefs } from '@chatoffice/ui'
 import type {
   AiModelSelection,
@@ -25,6 +26,7 @@ ipcRenderer.on('docs:relay-command', (_event, command: unknown) => {
   if (relayCommandHandler) relayCommandHandler(command)
   else if (relayCommandQueue.length < 50) relayCommandQueue.push(command)
 })
+import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 
 const api: DesktopApi = {
   getLanguage: () => ipcRenderer.invoke('app:get-language'),
@@ -124,6 +126,7 @@ const api: DesktopApi = {
       path?: string
       sidecar?: unknown
     }>,
+  spellDiag: (line: string) => ipcRenderer.send('docs:spell-diag', line),
   saveDocxAs: (defaultName: string, data: ArrayBuffer, sourcePath?: string | null) =>
     ipcRenderer.invoke('docs:save-as', defaultName, data, sourcePath ?? null),
   saveDocxNew: (defaultName: string, data: ArrayBuffer) =>
@@ -163,6 +166,16 @@ const api: DesktopApi = {
     ipcRenderer.invoke('docs:print-pdf-buffer', pageWidthTwips, pageHeightTwips, scale),
   saveMergedPdf: (defaultName: string, base64Parts: string[], outPath?: string) =>
     ipcRenderer.invoke('docs:save-merged-pdf', defaultName, base64Parts, outPath),
+  pickExportImagesTarget: () => ipcRenderer.invoke('docs:pick-export-images-target'),
+  takeExportPdf: (pdfPath: string) => ipcRenderer.invoke('docs:take-export-pdf', pdfPath),
+  writeExportImage: (dir: string, fileName: string, pngBase64: string) =>
+    ipcRenderer.invoke('docs:write-export-image', dir, fileName, pngBase64),
+  saveImageAs: (src: string) => ipcRenderer.invoke('docs:save-image-as', src),
+  onViewImage: (handler) => {
+    const listener = (_event: IpcRendererEvent, src: string) => handler(src)
+    ipcRenderer.on(VIEW_IMAGE_CHANNEL, listener)
+    return () => ipcRenderer.removeListener(VIEW_IMAGE_CHANNEL, listener)
+  },
   getAiSettings: () => ipcRenderer.invoke('ai:get-settings'),
   setAiSettings: (view: AiSettingsV2) => ipcRenderer.invoke('ai:set-settings', view),
   setAiCurrentModel: (selection: AiModelSelection) =>
@@ -323,3 +336,4 @@ contextBridge.exposeInMainWorld(
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+

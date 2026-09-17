@@ -19,6 +19,7 @@ const recalcResultSchema = z
           column: z.number().int().nonnegative(),
           formatted: z.string(),
           number: z.number().optional(),
+          isError: z.boolean().optional(),
           isFormula: z.boolean(),
         })
         .strict(),
@@ -213,6 +214,7 @@ describe('sidecar IronCalc recalculation channel', () => {
         column: 0,
         formatted: '120',
         number: 120,
+        isError: false,
         isFormula: true,
       })
       expect(result.cached).toBe(false)

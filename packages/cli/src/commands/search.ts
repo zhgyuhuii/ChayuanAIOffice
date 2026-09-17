@@ -7,7 +7,7 @@ import { CliError, EXIT } from '../result'
 export const searchCommand: CommandDef = {
   name: 'search',
   summary:
-    'Web or image search through the provider configured in ChatOffice (Genspark, Serper, Tavily).',
+    'Web or image search through the provider configured in ChaAI Office (Genspark, Serper, Tavily).',
   usage: 'search <query> [--images] [--max <n>]',
   options: [
     { name: 'images', description: 'search images instead of web pages' },
@@ -15,7 +15,8 @@ export const searchCommand: CommandDef = {
   ],
   async run(args, ctx) {
     const query = args.positionals.join(' ').trim()
-    if (!query) throw new CliError(EXIT.usage, 'missing <query>')
+    if (!query)
+      throw new CliError(EXIT.usage, 'missing <query>', undefined, { reason: 'missing_argument' })
     const max = resultCount(flagString(args, 'max'))
     await prepareCloud(ctx.env)
     const settings = aiSettingsPath(ctx.env)
@@ -44,6 +45,9 @@ export const searchCommand: CommandDef = {
 export function resultCount(raw: string | undefined): number | undefined {
   if (raw === undefined) return undefined
   const n = Number(raw)
-  if (!Number.isFinite(n)) throw new CliError(EXIT.usage, `--max must be a number, got "${raw}"`)
+  if (!Number.isFinite(n))
+    throw new CliError(EXIT.usage, `--max must be a number, got "${raw}"`, undefined, {
+      reason: 'invalid_argument',
+    })
   return Math.min(20, Math.max(1, Math.floor(n)))
 }

@@ -424,6 +424,12 @@ export function App() {
     return () => window.clearTimeout(t)
   }, [status])
   const [showThumbs, setShowThumbs] = useState(true)
+  const [filesOpen, setFilesOpen] = useState(
+    () => localStorage.getItem('ai-slides-show-files') === '1',
+  )
+  useEffect(() => {
+    localStorage.setItem('ai-slides-show-files', filesOpen ? '1' : '0')
+  }, [filesOpen])
   // ── Thumbnail sidebar width (drag the divider to resize; persisted) ─────────
   const [thumbsW, setThumbsW] = useState(loadThumbsW)
   const thumbsListRef = useRef<HTMLDivElement | null>(null)
@@ -2826,7 +2832,9 @@ export function App() {
         }
         return
       }
-      window.open(target.url, '_blank', 'noreferrer')
+      if (target.kind === 'url') {
+        window.open(target.url, '_blank', 'noreferrer')
+      }
     },
     [slides.length],
   )
@@ -3247,6 +3255,7 @@ export function App() {
     setSlides,
     current,
     setCurrent,
+    viewMode,
     slide,
     path,
     setPath,
@@ -3521,6 +3530,8 @@ export function App() {
           {/* ribbon inside the dock body: a left/right docked AI panel spans the
               full window height, level with the ribbon's top edge */}
           <Ribbon
+        filesOpen={filesOpen}
+        onToggleFiles={() => setFilesOpen((v) => !v)}
             hasDoc={!!slide}
             deckEmpty={deckEmpty}
             canUndo={histState.canUndo}

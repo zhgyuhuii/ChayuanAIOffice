@@ -7,7 +7,9 @@
   "description": "chatoffice: the ChatOffice command line (create, convert, read, edit and render documents) built on the same engines as the app; runs headless on the app's bundled Node runtime",
   "exports": {
     ".": "./src/index.ts",
-    "./install": "./src/install.ts"
+    "./install": "./src/install.ts",
+    "./agent-skills": "./src/agent-skills.ts",
+    "./control-protocol": "./src/control-protocol.ts"
   },
   "bin": {
     "chaoffice": "./bin/chaoffice",
@@ -29,11 +31,14 @@
     "@chatoffice/pptx-ops": "*",
     "@chatoffice/pptx-render": "*",
     "@chatoffice/xlsx-gateway": "*",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@tiptap/core": "3.31.0",
     "jsdom": "^28.0.0",
     "jszip": "^3.10.1",
     "numfmt": "^3.2.6",
-    "undici": "^6.28.0"
+    "pngjs": "^7.0.0",
+    "undici": "^6.28.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

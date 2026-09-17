@@ -179,6 +179,8 @@ export interface RibbonProps {
   onShowRuler: (v: boolean) => void
   showNav: boolean
   onShowNav: (v: boolean) => void
+  showFiles?: boolean
+  onShowFiles?: (v: boolean) => void
   commentCount: number
   /** unresolved root comments (drives the AI resolve-comments action) */
   openCommentCount: number
@@ -439,6 +441,8 @@ function RibbonInner({
   onShowRuler,
   showNav,
   onShowNav,
+  showFiles,
+  onShowFiles,
   commentCount,
   openCommentCount,
   onShowComments,
@@ -1524,13 +1528,13 @@ function RibbonInner({
     // level / list numbering / styleId) — which then applies to whole target
     // paragraphs. A PARTIAL in-paragraph drag copies character formatting
     // only — but a selection covering the paragraph's ENTIRE content counts
-    // as including the ¶ mark, exactly like Word's triple-click (alpha ledger
-    // r134: "select whole paragraph → painter" dropped line spacing/indents
-    // while a caret pickup carried them — backwards to any user).
+    // as including the ¶ mark, exactly like Word's triple-click ("select whole
+    // paragraph → painter" dropped line spacing/indents while a caret pickup
+    // carried them — backwards to any user).
     const { $to } = state.selection
     const coversWholeParagraph =
       !empty &&
-      $from.parent.isTextblock && // AllSelection's parent is the doc (bugbot)
+      $from.parent.isTextblock && // AllSelection's parent is the doc
       $from.sameParent($to) &&
       $from.parentOffset === 0 &&
       $to.parentOffset === $to.parent.content.size
@@ -2298,6 +2302,8 @@ function RibbonInner({
             onShowRuler={onShowRuler}
             showNav={showNav}
             onShowNav={onShowNav}
+            showFiles={showFiles ?? false}
+            onShowFiles={onShowFiles ?? (() => {})}
             viewMode={viewMode}
             onViewMode={onViewMode}
             readMode={readMode}

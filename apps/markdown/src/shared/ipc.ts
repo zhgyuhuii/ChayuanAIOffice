@@ -9,6 +9,8 @@ export const MARKDOWN_CHANNELS = {
   save: 'markdown:save',
   saveRequest: 'markdown:save-request',
   saveRequestAck: 'markdown:save-request-ack',
+  readTextRequest: 'markdown:read-text-request',
+  readTextResult: 'markdown:read-text-result',
   dirtyChanged: 'markdown:dirty-changed',
   closeSaveRequest: 'markdown:close-save-request',
   closeSaveResult: 'markdown:close-save-result',
@@ -16,6 +18,8 @@ export const MARKDOWN_CHANNELS = {
   pickImage: 'markdown:pick-image',
   saveImage: 'markdown:save-image',
   readImage: 'markdown:read-image',
+  saveImageAs: 'markdown:save-image-as',
+  viewImage: 'chatoffice:view-image',
   exportRequest: 'markdown:export-request',
   exportDocx: 'markdown:export-docx',
   exportPdf: 'markdown:export-pdf',
@@ -159,6 +163,12 @@ export interface MarkdownApi {
   onSaveRequest(handler: (mode: SaveMode) => void): () => void
   /** Resolves a menu-save waiter when doSave exits without ever invoking save() (busy/loading) */
   sendSaveRequestAck(ok: boolean): void
+  /**
+   * Main process asks for the live document text — the MCP read of an open
+   * document, unsaved edits included; reply through sendReadTextResult.
+   */
+  onReadTextRequest(handler: () => void): () => void
+  sendReadTextResult(result: { text: string } | { error: string }): void
   /** Main process picked "Save" in the close prompt → renderer saves and replies via sendCloseSaveResult */
   onCloseSaveRequest(handler: () => void): () => void
   sendCloseSaveResult(ok: boolean): void
@@ -180,6 +190,10 @@ export interface MarkdownApi {
    * inside the document's directory are allowed; anything else returns null.
    */
   readImage(src: string): Promise<ImageData | null>
+  /** Save a displayed image (md-asset://, data: or remote URL) through a Save dialog */
+  saveImageAs(src: string): Promise<{ ok: boolean; path?: string; error?: string }>
+  /** Native context menu "View Image" → renderer opens the viewer */
+  onViewImage(handler: (src: string) => void): () => void
   /** Shell menu export → renderer serializes and calls exportDocx/exportPdf */
   onExportRequest(handler: (format: ExportFormat) => void): () => void
   /** Shell menu Print → renderer builds the print HTML and opens the system print dialog */

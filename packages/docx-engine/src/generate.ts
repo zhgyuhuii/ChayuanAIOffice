@@ -282,7 +282,7 @@ export function applyImageZOrder(xml: string, zOrder?: number): string {
 export function applyImageWrap(
   xml: string,
   wrap: ImageWrap | null,
-  posOffset?: { x: number; y: number; relativeTo?: 'page' },
+  posOffset?: { x: number; y: number; relativeTo?: 'page' | 'margin' },
   marginAlign?: { h: 'left' | 'center' | 'right'; v: 'top' | 'center' | 'bottom' },
   zOrder?: number,
 ): string {
@@ -404,20 +404,22 @@ function textNodes(xml: string, tag: 'w:t' | 'm:t'): XmlTextNode[] {
       text: decodeXmlText(match[1]),
     })
   }
-  // Self-closing empty text nodes: <w:t/> (Word sometimes emits these for empty runs)
-  const selfRe = new RegExp(`<${tag}(?:\\s[^>]*)?/>`, 'g')
-  while ((match = selfRe.exec(xml)) !== null) {
-    // Avoid double-counting when the paired regex already consumed it (it doesn't, but be safe)
-    if (nodes.some((n) => n.start === match!.index)) continue
-    nodes.push({
-      start: match.index,
-      end: match.index + match[0].length,
-      open: match[0],
-      close: '',
-      text: '',
-    })
+  // Self-closing empty <w:t/> (Word emits these for empty runs). Only for w:t:
+  // mathTokensOf tokenizes paired <m:t> only, so counting <m:t/> here would
+  // desync patchMathTokens' length check against the tokens it was given.
+  if (tag === 'w:t') {
+    const selfRe = /<w:t(?:\s[^>]*)?\/>/g
+    while ((match = selfRe.exec(xml)) !== null) {
+      nodes.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        open: match[0],
+        close: '',
+        text: '',
+      })
+    }
+    nodes.sort((a, b) => a.start - b.start)
   }
-  nodes.sort((a, b) => a.start - b.start)
   return nodes
 }
 
@@ -452,7 +454,7 @@ function replaceTextNodes(
     const open =
       /xml:space\s*=/.test(node.open) || !hasEdgeWs
         ? node.open
-        : node.open.replace(/<w:t(?=\s|>)/, '<w:t xml:space="preserve"')
+        : node.open.replace(/<w:t(?=[\s>/])/, '<w:t xml:space="preserve"')
     // Self-closing empty run: expand to paired form so the replacement lands
     const close = node.close || `</w:t>`
     const openPaired = node.close ? open : open.replace(/\/>$/, '>')
@@ -1292,7 +1294,8 @@ function formatPPrChildren(format: ParaFormat | undefined): PPrChild[] {
   if (format.borders) {
     const style = format.borderStyle
     const defaultSz = Math.max(2, Math.round(style?.szEighths ?? 4))
-    const space = Math.min(31, Math.max(0, Math.round(style?.spacePt ?? 1)))
+    // ECMA-376 17.3.4: an omitted w:space is 0; the renderer pads an undeclared side by the same 0
+    const space = Math.min(31, Math.max(0, Math.round(style?.spacePt ?? 0)))
     const defaultColor = style?.color ? escapeXmlAttr(style.color) : 'auto'
     const line = (side: string, ch: 't' | 'b' | 'l' | 'r') => {
       const declared = format.borderLines?.[ch]
@@ -1325,7 +1328,7 @@ function formatPPrChildren(format: ParaFormat | undefined): PPrChild[] {
   // w:left/w:right are signed in OOXML — negative indents (text extending
   // into the margin) are valid and must survive a paragraph rebuild; the
   // old > 0 guard silently dropped them, shifting rebuilt paragraphs
-  // rightward on save (alpha ledger r116).
+  // rightward on save.
   // explicit w:left="0" must be written back: it cancels a numbering-level indent
   if (format.indentLeft !== undefined) indAttrs.push(`w:left="${Math.round(format.indentLeft)}"`)
   if (format.indentRight !== undefined) indAttrs.push(`w:right="${Math.round(format.indentRight)}"`)
@@ -2582,10 +2585,10 @@ function runFragmentXml(run: Run, insideLink: boolean): string {
     const name = run.refField.replace(/"/g, '')
     const instr = run.refInstr ?? ` REF ${name} \\h `
     return (
-      '<w:r><w:fldChar w:fldCharType="begin"/></w:r>' +
+      `<w:r><w:fldChar w:fldCharType="begin"${run.fldDirty ? ' w:dirty="true"' : ''}/></w:r>` +
       `<w:r><w:instrText xml:space="preserve">${escapeXmlText(instr)}</w:instrText></w:r>` +
       '<w:r><w:fldChar w:fldCharType="separate"/></w:r>' +
-      generateRunXml({ ...run, refField: undefined }, insideLink) +
+      generateRunXml({ ...run, refField: undefined, fldDirty: undefined }, insideLink) +
       '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
     )
   }
@@ -2658,9 +2661,9 @@ function runFragmentXml(run: Run, insideLink: boolean): string {
       )
     }
     return (
-      '<w:r><w:fldChar w:fldCharType="begin"/></w:r>' +
+      `<w:r><w:fldChar w:fldCharType="begin"${run.fldDirty ? ' w:dirty="true"' : ''}/></w:r>` +
       instrXml +
-      generateRunXml({ ...run, instrField: undefined }, insideLink) +
+      generateRunXml({ ...run, instrField: undefined, fldDirty: undefined }, insideLink) +
       endXml
     )
   }

@@ -347,6 +347,8 @@ export interface Props {
   zoom: number
   onZoom: (z: number | ((current: number) => number)) => void
   showThumbs: boolean
+  filesOpen: boolean
+  onToggleFiles: () => void
   onToggleThumbs: () => void
   /** AI panel availability (edit view only; hidden in reading/sorter) — the bubble icon follows it */
   aiPanelAvailable: boolean

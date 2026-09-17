@@ -14,6 +14,10 @@ const workspaceAlias = {
     '../../packages/pptx-engine/src/table-grid.ts',
   ),
   '@chatoffice/pptx-engine/identity': resolve(here, '../../packages/pptx-engine/src/identity.ts'),
+  '@chatoffice/pptx-engine/named-action': resolve(
+    here,
+    '../../packages/pptx-engine/src/named-action.ts',
+  ),
   '@chatoffice/pptx-engine/custgeom': resolve(here, '../../packages/pptx-engine/src/custgeom.ts'),
   '@chatoffice/pptx-engine/background-promote': resolve(
     here,

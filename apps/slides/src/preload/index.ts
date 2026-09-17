@@ -4,6 +4,7 @@ import type { IpcRendererEvent } from 'electron'
 import type { RenderSlide } from '@chatoffice/pptx-render'
 import type { ProjectApi } from '@chatoffice/project-store'
 import { installDropOpenBridge } from '@chatoffice/electron-utils/drop-open'
+import { installFilesPaneBridge } from '@chatoffice/electron-utils/files-pane-bridge'
 import type {
   AddChartOp,
   AddElementOp,
@@ -473,7 +474,10 @@ const api: SlidesApi = {
   },
   insertImageUrl: (op: {
     slideIndex: number
-    url: string
+    url?: string
+    /** raw base64 of a user attachment (attachment:// reference) — no network fetch */
+    base64?: string
+    ext?: string
     xPx: number
     yPx: number
     wPx: number
@@ -483,7 +487,10 @@ const api: SlidesApi = {
   replacePictureUrl: (op: {
     slideIndex: number
     sourceId: string
-    url: string
+    url?: string
+    /** raw base64 of a user attachment (attachment:// reference) — no network fetch */
+    base64?: string
+    ext?: string
     keepSrcRect?: boolean
   }) => ipcRenderer.invoke('ai:replace-picture-url', op),
   generateImage: (op: {
@@ -492,6 +499,7 @@ const api: SlidesApi = {
     referenceImageUrls?: string[]
     aspectRatio?: string
     imageSize?: string
+    transparentBackground?: boolean
   }) => ipcRenderer.invoke('ai:generate-image', op),
   readUrl: (url: string) => ipcRenderer.invoke('ai:read-url', url),
   generateVideo: (op: {
@@ -575,3 +583,5 @@ contextBridge.exposeInMainWorld('projectApi', projectApi)
 
 // open documents dragged from the OS onto this tab as a new shell tab
 installDropOpenBridge()
+// folder tree over the default save folder (Files pane)
+installFilesPaneBridge()

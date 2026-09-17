@@ -112,9 +112,15 @@ describe('shape animations (<p:timing>)', () => {
       { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
     ]).replace('presetID="10"', 'presetID="15"')
     const anims = readSlideTimingXml(`</p:cSld>${xml}</p:sld>`)
-    expect(anims).toEqual([
-      { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
-    ])
+    // upstream verbatim read-back keeps preset/presetXml for unmodeled ids
+    expect(anims[0]).toMatchObject({
+      spid: 7,
+      effect: 'fade',
+      trigger: 'onClick',
+      durationMs: 500,
+      delayMs: 0,
+    })
+    expect(anims[0]!.presetXml).toBeTruthy()
     const box = buildTimingXml([
       { spid: 7, effect: 'fade', trigger: 'onClick', durationMs: 500, delayMs: 0 },
     ]).replace('presetID="10"', 'presetID="4"')
@@ -529,5 +535,117 @@ describe('swivel + peekIn (A2-1 batch)', () => {
       { spid, effect: 'peekIn', trigger: 'onClick', durationMs: 500, delayMs: 1 },
     ])
     expect(getSlideAnimations(slide).map((a) => a.effect)).toEqual(['swivel', 'peekIn'])
+  })
+})
+
+describe('directions and verbatim presets', () => {
+  const fx1 = () => openPptx(fx('01_standard_business.pptx'))
+
+  it('writes fly/wipe sides as PowerPoint subtypes and reads them back', async () => {
+    const opened = await fx1()
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    const anims: SlideAnimation[] = [
+      { spid, effect: 'flyIn', trigger: 'onClick', durationMs: 500, delayMs: 0, direction: 'left' },
+      { spid, effect: 'wipe', trigger: 'onClick', durationMs: 500, delayMs: 0, direction: 'right' },
+      { spid, effect: 'flyOut', trigger: 'onClick', durationMs: 500, delayMs: 0, direction: 'top' },
+      { spid, effect: 'wipeOut', trigger: 'onClick', durationMs: 500, delayMs: 0 },
+    ]
+    setSlideAnimations(slide, anims)
+    const xml = slide.bodySuffix
+    expect(xml).toContain('presetID="2" presetClass="entr" presetSubtype="8"')
+    expect(xml).toContain('filter="wipe(left)"')
+    expect(xml).toContain('presetID="22" presetClass="entr" presetSubtype="2"')
+    expect(xml).toContain('0-#ppt_h/2')
+    const reopened = await openPptx(await savePptx(opened))
+    const back = getSlideAnimations(reopened.deck.slides[0]!)
+    expect(back.map((a) => [a.effect, a.direction])).toEqual([
+      ['flyIn', 'left'],
+      ['wipe', 'right'],
+      ['flyOut', 'top'],
+      ['wipeOut', undefined],
+    ])
+    expect(back[0]!.preset).toBeUndefined()
+  })
+  it('keeps an unmodeled effect byte-for-byte across a full rebuild', async () => {
+    const opened = await fx1()
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    const other = elementSpid(slide.elements[1]!)!
+    const foreign =
+      `<p:par><p:cTn id="7" presetID="42" presetClass="entr" presetSubtype="0" fill="hold" grpId="0" nodeType="clickEffect">` +
+      '<p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>' +
+      `<p:animEffect transition="in" filter="custom(unmodeled)"><p:cBhvr><p:cTn id="8" dur="500"/><p:tgtEl><p:spTgt spid="${spid}"/></p:tgtEl></p:cBhvr></p:animEffect>` +
+      '</p:childTnLst></p:cTn></p:par>'
+    const timing =
+      '<p:timing><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>' +
+      '<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>' +
+      '<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:childTnLst>' +
+      '<p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>' +
+      foreign +
+      '</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>' +
+      '</p:childTnLst></p:cTn></p:seq></p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>'
+    slide.bodySuffix = slide.bodySuffix.replace('</p:sld>', `${timing}</p:sld>`)
+    const read = readSlideTimingXml(slide.bodySuffix)
+    expect(read).toHaveLength(1)
+    expect(read[0]!.presetXml).toBe(foreign)
+    expect(read[0]!.effect).toBe('fade')
+
+    // deleting/reordering forces the full rebuild path; the verbatim par survives it
+    setSlideAnimations(slide, [
+      { spid: other, effect: 'appear', trigger: 'onClick', durationMs: 0, delayMs: 0 },
+      ...read,
+    ])
+    const out = slide.bodySuffix
+    expect(out).toContain('filter="custom(unmodeled)"')
+    expect(out).toContain('presetID="42" presetClass="entr" presetSubtype="0"')
+    const ids = [...out.matchAll(/<p:cTn id="(\d+)"/g)].map((m) => Number(m[1]))
+    expect(new Set(ids).size).toBe(ids.length)
+    const again = readSlideTimingXml(out)
+    expect(again.map((a) => a.effect)).toEqual(['appear', 'fade'])
+    expect(again[1]!.presetXml).toContain('custom(unmodeled)')
+  })
+})
+
+// ── adapted（本地）：WPS randombar 批次的 foreign par 在本地引擎中是已建模效果，
+//    重建时按本地模型重输出（非字节保持）——上游 verbatim 语义仅适用于真未建模 preset
+describe('classic foreign par re-modelling (WPS randombar batch)', () => {
+  const fx2 = () => openPptx(fx('01_standard_business.pptx'))
+
+  it('rebuilds a modeled-looking foreign par through the local model', async () => {
+    const opened = await fx2()
+    const slide = opened.deck.slides[0]!
+    const spid = elementSpid(slide.elements[0]!)!
+    const other = elementSpid(slide.elements[1]!)!
+    const foreign =
+      `<p:par><p:cTn id="7" presetID="5" presetClass="entr" presetSubtype="10" fill="hold" grpId="0" nodeType="clickEffect">` +
+      '<p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>' +
+      `<p:animEffect transition="in" filter="randombar(horizontal)"><p:cBhvr><p:cTn id="8" dur="500"/><p:tgtEl><p:spTgt spid="${spid}"/></p:tgtEl></p:cBhvr></p:animEffect>` +
+      '</p:childTnLst></p:cTn></p:par>'
+    const timing =
+      '<p:timing><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>' +
+      '<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>' +
+      '<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:childTnLst>' +
+      '<p:par><p:cTn id="4" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>' +
+      foreign +
+      '</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>' +
+      '</p:childTnLst></p:cTn></p:seq></p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>'
+    slide.bodySuffix = slide.bodySuffix.replace('</p:sld>', `${timing}</p:sld>`)
+    const read = readSlideTimingXml(slide.bodySuffix)
+    expect(read).toHaveLength(1)
+    // upstream maps presetID=5 to checkerboard; the local WPS randombars
+    // variant table only applies to effects WRITTEN through the local writer
+    expect(read[0]!.effect).toBe('checkerboard')
+
+    setSlideAnimations(slide, [
+      { spid: other, effect: 'appear', trigger: 'onClick', durationMs: 0, delayMs: 0 },
+      ...read,
+    ])
+    const out = slide.bodySuffix
+    expect(out).toContain('presetID="5" presetClass="entr" presetSubtype="0"')
+    const ids = [...out.matchAll(/<p:cTn id="(\d+)"/g)].map((m) => Number(m[1]))
+    expect(new Set(ids).size).toBe(ids.length)
+    const again = readSlideTimingXml(out)
+    expect(again.map((a) => a.effect)).toEqual(['appear', 'checkerboard'])
   })
 })

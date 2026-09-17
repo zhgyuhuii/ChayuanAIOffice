@@ -80,12 +80,22 @@ export function ocrHelperPath(): string | null {
   return candidates.find((p) => existsSync(p)) ?? null
 }
 
+/** skills/chaoffice/SKILL.md as shipped beside this bundle (Resources/cli/skills) or in the checkout. */
+export function bundledSkillPath(): string | null {
+  const packaged = packagedResourcesDir()
+  const candidates = [
+    ...(packaged ? [join(packaged, 'cli', 'skills', 'chaoffice', 'SKILL.md')] : []),
+    ...(repoRoot() ? [join(repoRoot()!, 'skills', 'chaoffice', 'SKILL.md')] : []),
+  ]
+  return candidates.find((p) => existsSync(p)) ?? null
+}
+
 export interface AppLaunch {
   command: string
   args: string[]
 }
 
-/** How to start the ChatOffice GUI: the app binary that hosts this CLI, an installed app, or the dev checkout. */
+/** How to start the ChaAI Office GUI: the app binary that hosts this CLI, an installed app, or the dev checkout. */
 export function appLaunch(env: NodeJS.ProcessEnv = process.env): AppLaunch | null {
   if (env.GENOFFICE_APP_BIN) return { command: env.GENOFFICE_APP_BIN, args: [] }
   if (packagedResourcesDir() && process.versions.electron) {
@@ -108,17 +118,14 @@ function installedAppBinaries(env: NodeJS.ProcessEnv): string[] {
       return [
         '/Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office',
         join(homedir(), 'Applications/ChaAI Office.app/Contents/MacOS/ChaAI Office'),
-        // pre-rename installs keep the old bundle name
-        '/Applications/ChatOffice.app/Contents/MacOS/ChatOffice',
-        join(homedir(), 'Applications/ChatOffice.app/Contents/MacOS/ChatOffice'),
       ]
     case 'win32':
       return [
-        env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'ChatOffice', 'ChatOffice.exe') : '',
-        env.ProgramFiles ? join(env.ProgramFiles, 'ChatOffice', 'ChatOffice.exe') : '',
+        env.LOCALAPPDATA ? join(env.LOCALAPPDATA, 'Programs', 'ChaAI Office', 'ChaAI Office.exe') : '',
+        env.ProgramFiles ? join(env.ProgramFiles, 'ChaAI Office', 'ChaAI Office.exe') : '',
       ].filter(Boolean)
     default:
-      return ['/opt/ChatOffice/chatoffice', '/usr/bin/chatoffice']
+      return ['/opt/ChaAI Office/chatoffice', '/usr/bin/chatoffice']
   }
 }
 

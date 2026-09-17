@@ -26,7 +26,7 @@ const rawText = {
 
 await build({
   entryPoints: [join(here, 'src/cli.ts')],
-  outfile: join(here, 'dist/chatoffice.cjs'),
+  outfile: join(here, 'dist/chaoffice.cjs'),
   bundle: true,
   platform: 'node',
   target: 'node22',
