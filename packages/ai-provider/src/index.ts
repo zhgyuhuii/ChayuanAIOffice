@@ -163,3 +163,17 @@ export {
 export { KEEP_KEY, createAiRuntime } from './runtime'
 export type { AiRuntime, AiRuntimeDeps, AiRuntimeChatOffice } from './runtime'
 export type { LocalToolStatus, LocalToolOpResult } from './local-tool'
+
+export type {
+  KbChain,
+  KbCitation,
+  KbDocInfo,
+  KbDocRecord,
+  KbHit,
+  KbHttpClient,
+  KbInfo,
+  KbStatus,
+} from './kb-client'
+export { buildKbContext, createKbHttpClient, isKbStatus, KbError, mergeKbHits } from './kb-client'
+export type { KbDiscoveryOptions, KbDiscoveryResult, KbDiscoverySource } from './kb-discovery'
+export { discoverHarnessKb } from './kb-discovery'

@@ -71,3 +71,16 @@ export { AI_MEDIA_PROVIDERS } from './media'
 export { AI_SEARCH_PROVIDERS } from './search-settings'
 export { discoverModels } from './discovery'
 export { setAiUserAgent } from './fetch'
+
+// knowledge-base HTTP client (pure fetch — safe for renderer bundles)
+export type {
+  KbChain,
+  KbCitation,
+  KbDocInfo,
+  KbDocRecord,
+  KbHit,
+  KbHttpClient,
+  KbInfo,
+  KbStatus,
+} from './kb-client'
+export { buildKbContext, createKbHttpClient, isKbStatus, KbError, mergeKbHits } from './kb-client'
