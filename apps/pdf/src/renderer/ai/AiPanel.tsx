@@ -5,7 +5,9 @@ import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import {
   AiComposer,
   AiTypingIndicator,
+  KbPickerButton,
   ModelPickerButton,
+  useKbAugment,
   PanelTabs,
   usePanelTab,
   AiScopeQuote,
@@ -88,6 +90,8 @@ export function AiPanel({
   onClearSelection?: () => void
 }): ReactElement {
   const { lang, t } = useI18n()
+  // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
+  const kb = useKbAugment()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -512,7 +516,7 @@ export function AiPanel({
     void (async () => {
       try {
         settingsRef.current = await window.pdfApi.getAiSettings()
-        await loop.run(instruction)
+        await loop.run(await kb.augment(instruction))
       } catch (err) {
         patchLast({
           streaming: false,
@@ -765,13 +769,16 @@ export function AiPanel({
           stopLabel={t('aiStop')}
           iconOnly
           footerStart={
-            <ModelPickerButton
-              settings={panelSettings}
-              onPick={(selection) => {
-                void pdfModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
-              }}
-              onOpenSettings={() => setModelSettingsOpen(true)}
-            />
+            <>
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
+              <ModelPickerButton
+                settings={panelSettings}
+                onPick={(selection) => {
+                  void pdfModelBridge.setCurrentModel(selection).then(refreshPanelSettings)
+                }}
+                onOpenSettings={() => setModelSettingsOpen(true)}
+              />
+            </>
           }
           onChange={setPrompt}
           onSend={() => send(prompt)}

@@ -6,7 +6,19 @@ import type { AiSettingsV2 } from '@chatoffice/ai-provider'
 import { defaultSettingsV2 } from '@chatoffice/ai-provider/browser'
 import { ATTACHMENT_IMAGE_EXTS } from '../../shared/ipc'
 import type { AttachmentAddResult, AttachmentMeta } from '../../shared/ipc'
-import { AiComposer, AiScopeQuote, AiTypingIndicator, Markdown, ModelPickerButton, PanelTabs, usePanelTab, type AiScopeQuoteData, type DockChrome } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiScopeQuote,
+  AiTypingIndicator,
+  KbPickerButton,
+  Markdown,
+  ModelPickerButton,
+  PanelTabs,
+  useKbAugment,
+  usePanelTab,
+  type AiScopeQuoteData,
+  type DockChrome,
+} from '@chatoffice/ui'
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
 import { AssistantTab } from './AssistantTab'
@@ -269,6 +281,8 @@ export function AiPanel({
   onQueueConsume: (qids: string[]) => void
 }): ReactElement {
   const { lang, t } = useI18n()
+  // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
+  const kb = useKbAugment()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -915,7 +929,7 @@ export function AiPanel({
         settingsRef.current = await window.htmlApi.getAiSettings()
         const images = sentAtts.length > 0 ? await collectImages(sentAtts) : []
         if (!mountedRef.current || seq !== sendSeqRef.current) return
-        await loop.run(instruction, images.length > 0 ? images : undefined)
+        await loop.run(await kb.augment(instruction), images.length > 0 ? images : undefined)
       } catch (err) {
         // a send cancelled during its pre-run reads must not paint its error onto a later turn's bubble
         if (!mountedRef.current || seq !== sendSeqRef.current) return
@@ -1492,6 +1506,7 @@ export function AiPanel({
           onPasteText={onPasteText}
           footerStart={
             <>
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
               <ModelPickerButton
                 settings={panelSettings}
                 onPick={(selection) => {

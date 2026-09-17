@@ -1,9 +1,19 @@
 import React, { useEffect, useRef, useState, lazy, Suspense } from 'react'
-import { AiComposer, AiTypingIndicator, Markdown, PanelTabs, usePanelTab,
+import {
+  AiComposer,
+  AiTypingIndicator,
+  Markdown,
+  PanelTabs,
+  usePanelTab,
   type AiScopeQuoteData,
-  AiScopeQuote, } from '@chatoffice/ui'
-import { DockChrome, ModelPickerButton } from '@chatoffice/ui'
-import { defaultSettingsV2, enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
+  AiScopeQuote,
+} from '@chatoffice/ui'
+import { DockChrome, KbPickerButton, ModelPickerButton, useKbAugment } from '@chatoffice/ui'
+import {
+  defaultSettingsV2,
+  enabledChatModels,
+  type AiSettingsV2,
+} from '@chatoffice/ai-provider/browser'
 import { sheetsModelBridge } from './model-bridge'
 import { AssistantTab, IconAiAnalyze, IconAiCheck } from './AssistantTab'
 import type { ChangePlan } from '@chatoffice/xlsx-gateway/domain/workbook.types'
@@ -272,6 +282,7 @@ export function AiChatPanel({
   readonly onCitation: (href: string) => void
 }): React.JSX.Element {
   const { lang, t } = useI18n()
+  const kb = useKbAugment()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -765,6 +776,7 @@ export function AiChatPanel({
           iconOnly
           footerStart={
             <>
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
               <ModelPickerButton
                 settings={panelSettings}
                 onPick={(selection) => {

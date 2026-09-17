@@ -44,7 +44,16 @@ import { createElectronTransport } from './transport'
 import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
 import { Markdown, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
-import { AiComposer, AiTypingIndicator, ModelPickerButton, PanelTabs, USER_LOGIN_READY, usePanelTab } from '@chatoffice/ui'
+import {
+  AiComposer,
+  AiTypingIndicator,
+  KbPickerButton,
+  ModelPickerButton,
+  PanelTabs,
+  USER_LOGIN_READY,
+  useKbAugment,
+  usePanelTab,
+} from '@chatoffice/ui'
 import { enabledChatModels } from '@chatoffice/ai-provider/browser'
 import type { DockChrome } from '@chatoffice/ui'
 import { IconAiPolish, IconAiSummarize, IconAiTidy } from './AssistantTab'
@@ -332,6 +341,8 @@ export function AiPanel({
   notesAccess,
 }: AiPanelProps) {
   const { lang, t } = useI18n()
+  // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
+  const kb = useKbAugment()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -816,7 +827,11 @@ export function AiPanel({
           if (!cancelled && (finalText || runToolsRef.current.length > 0)) {
             persistMessage('assistant', finalText, runToolsRef.current)
           }
-          onTurnCompleted?.({ userText: runUserTextRef.current, assistantText: finalText, cancelled })
+          onTurnCompleted?.({
+            userText: runUserTextRef.current,
+            assistantText: finalText,
+            cancelled,
+          })
         },
         onError: (error) => {
           setChat((prev) => {
@@ -1045,7 +1060,8 @@ export function AiPanel({
           return
         }
         runUserTextRef.current = instruction
-        return loop.run(instruction, images)
+        const kbInstruction = await kb.augment(instruction)
+        return loop.run(kbInstruction, images)
       })
   }
 
@@ -1650,6 +1666,7 @@ export function AiPanel({
           onPasteFiles={(files) => void onPasteFiles(files)}
           footerStart={
             <>
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
               <ModelPickerButton
                 settings={panelSettings}
                 onPick={(selection) => {

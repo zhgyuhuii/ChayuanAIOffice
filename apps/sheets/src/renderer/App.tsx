@@ -99,7 +99,7 @@ import {
 } from './plan-operations'
 import { isNumericIdentifierText } from './cell-warning'
 import { consumePendingUndoCarry, undoStackDepth } from './undo-carry'
-import { useAutoSavePref, type AiScopeQuoteData } from '@chatoffice/ui'
+import { useAutoSavePref, useKbAugment, type AiScopeQuoteData } from '@chatoffice/ui'
 
 import {
   CellValueType,
@@ -1320,6 +1320,7 @@ export function App(): React.JSX.Element {
   /** true once any tool of the run mutated the workbook */
   const runMutatedRef = useRef(false)
 
+  const kbAugment = useKbAugment()
   const agentLoopRef = useRef<AgentLoop | null>(null)
   if (!agentLoopRef.current) {
     agentLoopRef.current = new AgentLoop({
@@ -1548,13 +1549,13 @@ export function App(): React.JSX.Element {
     setMessage(t('appAiThinking'))
     appendChat({ role: 'assistant', text: '', tools: [], streaming: true })
     void collectImageAttachments(sentAttachments)
-      .then((images) => {
+      .then(async (images) => {
         runStartingRef.current = false
-        loop.run(instruction, images)
+        loop.run(await kbAugment.augment(instruction), images)
       })
-      .catch(() => {
+      .catch(async () => {
         runStartingRef.current = false
-        loop.run(instruction)
+        loop.run(await kbAugment.augment(instruction))
       })
   }
 

@@ -54,7 +54,9 @@ import {
   IconSend,
   IconStop,
   Markdown,
+  KbPickerButton,
   ModelPickerButton,
+  useKbAugment,
   PanelTabs,
   USER_LOGIN_READY,
   usePanelTab,
@@ -433,6 +435,8 @@ export function AiPanel({
   onAskSelection,
 }: AiPanelProps) {
   const { lang, t } = useI18n()
+  // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
+  const kb = useKbAugment()
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -1888,7 +1892,7 @@ export function AiPanel({
         runStartingRef.current = false
         await onBeforeRunRef.current?.()
         if (await window.slidesApi.beginHistoryBatch()) historyBatchActiveRef.current = true
-        loop.run(modelInstruction, images, media)
+        loop.run(await kb.augment(modelInstruction), images, media)
       })
       .catch(() => {
         runStartingRef.current = false
@@ -1924,10 +1928,10 @@ export function AiPanel({
       queueRunResolverRef.current = resolve
       void Promise.resolve(onBeforeRunRef.current?.())
         .then(() => window.slidesApi.beginHistoryBatch())
-        .then((ok) => {
+        .then(async (ok) => {
           if (ok) historyBatchActiveRef.current = true
           runStartingRef.current = false
-          loop.run(instruction)
+          loop.run(await kb.augment(instruction))
         })
         .catch(() => {
           runStartingRef.current = false
@@ -2634,6 +2638,7 @@ export function AiPanel({
               rows={1}
             />
             <div className="ai-input-footer">
+              <KbPickerButton lang={lang} selected={kb.selected} onToggle={kb.toggle} />
               <ModelPickerButton
                 settings={panelSettings}
                 onPick={(selection) => {
