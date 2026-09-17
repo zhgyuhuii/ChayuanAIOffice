@@ -571,6 +571,13 @@ const projectApi: ProjectApi = {
   appendChat: (args) => ipcRenderer.invoke('project:appendChat', args),
   loadChat: (args) => ipcRenderer.invoke('project:loadChat', args),
   rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
+  // P1 extensions
+  listProjects: () => ipcRenderer.invoke('project:list'),
+  createProject: (args) => ipcRenderer.invoke('project:create', args),
+  renameProject: (args) => ipcRenderer.invoke('project:rename', args),
+  deleteProject: (args) => ipcRenderer.invoke('project:delete', args),
+  moveFile: (args) => ipcRenderer.invoke('project:moveFile', args),
+  getTimeline: (args) => ipcRenderer.invoke('project:timeline', args),
 }
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 

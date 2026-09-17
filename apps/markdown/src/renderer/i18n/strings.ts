@@ -177,8 +177,6 @@ export const strings = {
     aiPolishBtn: 'AI 润色',
     aiPolishPrompt: '润色全文，使表达更清晰流畅',
     aiTidyBtn: 'AI 排版',
-    aiTidyPrompt:
-      '整理全文排版：修正标题层级、统一列表格式、去除多余的加粗和斜体、清理多余空行；只调整格式，不要改动任何文字内容',
     aiNewChat: '新对话',
     aiCollapsePanel: '收起面板',
     aiEmptyTitle: '问问这篇文档',
@@ -251,17 +249,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Wrote part of the content',
     aiWritingDocument: 'Writing the document · {blocks} blocks',
     aiPartialTitle: 'Only part of the content was written',
-    aiPartialBody:
-      '{blocks} blocks arrived before the writing stopped. Keep this part or discard it?',
     aiPartialAdopt: 'Keep',
     aiPartialDiscard: 'Discard',
     aiToolSetFm: 'Update document properties',
     aiScopeSelection: 'Selected: {words} words',
-    aiScopeSelectionTip:
-      'Rewrite-style requests apply to the selection by default; click to preview',
     aiScopeClearTitle: 'Clear the selection scope',
-    aiPolishSelectionPrompt:
-      'Polish the selected content to make the writing clearer and more fluent',
     aiAskBtn: 'Ask AI',
     aiAskTitle: 'Ask AI about the selection',
     aiAskEditTitle: 'Edit this queued instruction',
@@ -293,8 +285,6 @@ export const strings = {
     aiToolGenImage: 'Generate image',
     aiToolGenImageDone: 'Inserted AI-generated image',
     aiCancel: 'Cancel',
-    aiTidySelectionPrompt:
-      'Tidy up the formatting of the selected content without changing its meaning',
     aiChipExplainCode: 'Explain this code',
     aiChipFixCode: 'Fix issues in this code',
     aiChipCommentCode: 'Add comments to this code',
@@ -397,8 +387,6 @@ export const strings = {
     aiUnknownError: 'AI request failed, please retry',
     aiTimeoutError: 'AI response timed out',
     aiOverloadedError: 'The AI service is busy right now — please try again in a moment',
-    aiNetworkError:
-      'Network problem: could not reach the AI service. Check your connection and try again',
     aiCreditsExhausted: 'Out of credits — top up at genspark.ai',
     aiOpenAssistant: 'Open AI assistant',
     aiSummarizeBtn: 'AI Summarize',
@@ -406,8 +394,6 @@ export const strings = {
     aiPolishBtn: 'AI Polish',
     aiPolishPrompt: 'Polish the whole document to make the writing clearer and more fluent',
     aiTidyBtn: 'AI Format',
-    aiTidyPrompt:
-      'Tidy up the document formatting — fix heading levels, unify list formatting, remove unnecessary bold and italics, and clean up extra blank lines. Adjust formatting only — do not change any text content',
     aiNewChat: 'New chat',
     aiCollapsePanel: 'Collapse panel',
     aiEmptyTitle: 'Ask about this document',
@@ -415,8 +401,6 @@ export const strings = {
     aiQuickDraft: 'Draft a document for me',
     aiQuickDraftPrompt: 'Please draft a document for me on the topic of: ',
     aiQuickPolish: 'Polish the document',
-    aiQuickPolishPrompt:
-      'Polish the whole document: fix grammar, unify wording, improve readability; keep the meaning and structure unchanged.',
     aiComposerPlaceholder: 'Ask AI to write or edit the document…',
     aiHintIdle: 'Enter to send, Shift+Enter for a new line',
     aiHintBusy: 'Replying…',
@@ -479,8 +463,6 @@ export const strings = {
     aiToolWriteDocPartial: '本文の一部を作成しました',
     aiWritingDocument: '文書を作成中 · {blocks} ブロック',
     aiPartialTitle: '本文の一部しか作成されませんでした',
-    aiPartialBody:
-      '{blocks} ブロックを受信した時点で作成が中断しました。この部分を採用しますか、破棄しますか？',
     aiPartialAdopt: '採用',
     aiPartialDiscard: '破棄',
     aiToolSetFm: 'ドキュメントのプロパティを更新',
@@ -504,8 +486,6 @@ export const strings = {
     aiChipRegenImage: 'AI で再生成',
     aiChipImageCaption: 'キャプションを追加',
     aiQueueTitle: '送信待ちの修正',
-    aiQueueHint:
-      '行をクリックすると本文の該当箇所へ移動します。送信時にすべての修正を 1 回のリクエストにまとめます',
     aiQueueOrphan: '対象のテキストは削除されました',
     aiQueueRowEdit: '編集',
     aiQueueDiscard: 'クリア',
@@ -623,8 +603,6 @@ export const strings = {
     aiUnknownError: 'AI リクエストに失敗しました。再試行してください',
     aiTimeoutError: 'AI の応答がタイムアウトしました',
     aiOverloadedError: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
-    aiNetworkError:
-      'ネットワークに問題があり、AI サービスに接続できません。接続を確認して再試行してください',
     aiCreditsExhausted: 'クレジット不足です。genspark.ai でチャージしてください',
     aiOpenAssistant: 'AI アシスタントを開く',
     aiSummarizeBtn: 'AI 要約',
@@ -632,8 +610,6 @@ export const strings = {
     aiPolishBtn: 'AI 推敲',
     aiPolishPrompt: '文書全体を推敲し、より明確で読みやすい文章にしてください',
     aiTidyBtn: 'AI 書式整理',
-    aiTidyPrompt:
-      '文書全体の書式を整理してください。見出しレベルの修正、リスト形式の統一、不要な太字・斜体の削除、余分な空行の整理など。書式のみを調整し、本文の内容は一切変更しないでください',
     aiNewChat: '新しいチャット',
     aiCollapsePanel: 'パネルを折りたたむ',
     aiEmptyTitle: 'このドキュメントについて質問',
@@ -641,8 +617,6 @@ export const strings = {
     aiQuickDraft: '文書を作成して',
     aiQuickDraftPrompt: '次のテーマで文書を作成してください：',
     aiQuickPolish: '文章全体を推敲',
-    aiQuickPolishPrompt:
-      '文書全体を推敲してください。文法を修正し、表現を統一し、読みやすくしてください。意味と構成は変えないでください。',
     aiComposerPlaceholder: 'AI に執筆・編集を依頼…',
     aiHintIdle: 'Enter で送信、Shift+Enter で改行',
     aiHintBusy: '返信中…',
@@ -706,14 +680,10 @@ export const strings = {
     aiToolWriteDocPartial: '본문 일부를 작성했습니다',
     aiWritingDocument: '문서 작성 중 · {blocks}개 블록',
     aiPartialTitle: '본문이 일부만 작성되었습니다',
-    aiPartialBody:
-      '{blocks}개 블록을 받은 뒤 작성이 중단되었습니다. 이 부분을 사용할까요, 버릴까요?',
     aiPartialAdopt: '사용',
     aiPartialDiscard: '버리기',
     aiToolSetFm: '문서 속성 업데이트',
     aiScopeSelection: '선택됨: {words}자',
-    aiScopeSelectionTip:
-      '다시 쓰기류 지시는 기본적으로 선택 영역에만 적용됩니다. 클릭하여 미리 보기',
     aiScopeClearTitle: '선택 범위 해제',
     aiPolishSelectionPrompt: '선택한 내용을 다듬어 더 명확하고 매끄럽게 만들어 주세요',
     aiAskBtn: 'AI 수정 요청',
@@ -732,8 +702,6 @@ export const strings = {
     aiChipRegenImage: 'AI로 다시 생성',
     aiChipImageCaption: '캡션 추가',
     aiQueueTitle: '보낼 수정 목록',
-    aiQueueHint:
-      '항목을 클릭하면 본문 위치로 이동합니다. 보내면 모든 수정이 한 번의 요청으로 적용됩니다',
     aiQueueOrphan: '대상 텍스트가 삭제되었습니다',
     aiQueueRowEdit: '편집',
     aiQueueDiscard: '비우기',
@@ -851,8 +819,6 @@ export const strings = {
     aiUnknownError: 'AI 요청이 실패했습니다. 다시 시도하세요',
     aiTimeoutError: 'AI 응답 시간 초과',
     aiOverloadedError: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
-    aiNetworkError:
-      '네트워크에 문제가 있어 AI 서비스에 연결할 수 없습니다. 연결을 확인한 후 다시 시도해 주세요',
     aiCreditsExhausted: '크레딧이 부족합니다. genspark.ai에서 충전하세요',
     aiOpenAssistant: 'AI 어시스턴트 열기',
     aiSummarizeBtn: 'AI 요약',
@@ -860,8 +826,6 @@ export const strings = {
     aiPolishBtn: 'AI 다듬기',
     aiPolishPrompt: '문서 전체를 다듬어 더 명확하고 매끄럽게 만들어 주세요',
     aiTidyBtn: 'AI 서식 정리',
-    aiTidyPrompt:
-      '문서 전체 서식을 정리해 주세요. 제목 수준 수정, 목록 형식 통일, 불필요한 굵게/기울임 제거, 불필요한 빈 줄 정리 등. 서식만 조정하고 본문 내용은 절대 변경하지 마세요',
     aiNewChat: '새 대화',
     aiCollapsePanel: '패널 접기',
     aiEmptyTitle: '이 문서에 대해 질문하세요',
@@ -869,8 +833,6 @@ export const strings = {
     aiQuickDraft: '문서 작성해 줘',
     aiQuickDraftPrompt: '다음 주제로 문서를 작성해 주세요: ',
     aiQuickPolish: '문서 다듬기',
-    aiQuickPolishPrompt:
-      '문서 전체를 다듬어 주세요: 문법 수정, 표현 통일, 가독성 향상. 의미와 구조는 유지하세요.',
     aiComposerPlaceholder: 'AI에게 작성·수정을 요청하세요…',
     aiHintIdle: 'Enter 전송, Shift+Enter 줄바꿈',
     aiHintBusy: '답변 중…',
@@ -939,17 +901,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Contenu partiellement rédigé',
     aiWritingDocument: 'Rédaction du document · {blocks} blocs',
     aiPartialTitle: "Le contenu n'a été rédigé qu'en partie",
-    aiPartialBody:
-      "{blocks} blocs sont arrivés avant l'arrêt de la rédaction. Conserver cette partie ou l'abandonner ?",
     aiPartialAdopt: 'Conserver',
     aiPartialDiscard: 'Abandonner',
     aiToolSetFm: 'Mise à jour des propriétés du document',
     aiScopeSelection: 'Sélection : {words} mots',
-    aiScopeSelectionTip:
-      "Les instructions de réécriture s'appliquent par défaut à la sélection ; cliquez pour prévisualiser",
     aiScopeClearTitle: 'Effacer la portée de la sélection',
-    aiPolishSelectionPrompt:
-      'Améliorez le contenu sélectionné pour rendre le texte plus clair et plus fluide',
     aiAskBtn: "Demander à l'IA",
     aiAskTitle: 'Demander une modification de la sélection',
     aiAskEditTitle: 'Modifier cette instruction en attente',
@@ -966,8 +922,6 @@ export const strings = {
     aiChipRegenImage: "Régénérer avec l'IA",
     aiChipImageCaption: 'Ajouter une légende',
     aiQueueTitle: 'Modifications en attente',
-    aiQueueHint:
-      "Cliquez sur une ligne pour localiser le passage ; l'envoi applique toutes les modifications en une seule requête",
     aiQueueOrphan: 'Le texte cible a été supprimé',
     aiQueueRowEdit: 'Modifier',
     aiQueueDiscard: 'Vider',
@@ -982,8 +936,6 @@ export const strings = {
     aiToolGenImage: 'Générer une image',
     aiToolGenImageDone: 'Image générée par IA insérée',
     aiCancel: 'Annuler',
-    aiTidySelectionPrompt:
-      'Réorganise la mise en forme du contenu sélectionné sans en changer le sens',
     aiChipExplainCode: 'Expliquer ce code',
     aiChipFixCode: 'Corriger les problèmes du code',
     aiChipCommentCode: 'Ajouter des commentaires au code',
@@ -1038,8 +990,6 @@ export const strings = {
     ribbonCollapse: 'Réduire le ruban',
     ribbonPin: 'Épingler le ruban',
     ribbonExpand: 'Développer le ruban',
-    autoSaveTip:
-      'Enregistrement automatique (toutes les 30 secondes et lorsque la fenêtre perd le focus)',
     bold: 'Gras',
     italic: 'Italique',
     strike: 'Barré',
@@ -1087,8 +1037,6 @@ export const strings = {
     aiUnknownError: 'La requête IA a échoué, réessayez',
     aiTimeoutError: 'Délai de réponse IA dépassé',
     aiOverloadedError: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
-    aiNetworkError:
-      'Problème réseau : impossible de joindre le service IA. Vérifiez votre connexion et réessayez',
     aiCreditsExhausted: 'Crédits épuisés — rechargez sur genspark.ai',
     aiOpenAssistant: "Ouvrir l'assistant IA",
     aiSummarizeBtn: 'Résumé IA',
@@ -1096,8 +1044,6 @@ export const strings = {
     aiPolishBtn: 'Amélioration IA',
     aiPolishPrompt: 'Améliorez tout le document pour rendre le texte plus clair et plus fluide',
     aiTidyBtn: 'Mise en forme IA',
-    aiTidyPrompt:
-      "Réorganisez la mise en forme du document : corrigez les niveaux de titres, unifiez le format des listes, supprimez le gras et l'italique superflus et nettoyez les lignes vides en trop. Ne modifiez que la mise en forme, sans changer le texte",
     aiNewChat: 'Nouvelle conversation',
     aiCollapsePanel: 'Réduire le panneau',
     aiEmptyTitle: 'Interrogez ce document',
@@ -1105,8 +1051,6 @@ export const strings = {
     aiQuickDraft: 'Rédige un document',
     aiQuickDraftPrompt: 'Rédige un document sur le sujet : ',
     aiQuickPolish: 'Peaufiner le document',
-    aiQuickPolishPrompt:
-      'Peaufine tout le document : corrige la grammaire, unifie la formulation, améliore la lisibilité ; sans changer le sens ni la structure.',
     aiComposerPlaceholder: "Demandez à l'IA d'écrire ou de modifier…",
     aiHintIdle: 'Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne',
     aiHintBusy: 'Réponse en cours…',
@@ -1119,10 +1063,6 @@ export const strings = {
     aiGroupWorking: 'En cours…',
     aiStopped: 'Arrêté',
     aiNoReply: '(aucune réponse)',
-    aiTruncatedNote:
-      '(La réponse a été tronquée par la limite de longueur et peut être incomplète.)',
-    aiTurnLimit:
-      "Limite d'étapes atteinte pour cette exécution — envoyez une autre instruction pour continuer.",
     aiUndelivered: 'Non envoyé',
     aiRetry: 'Réessayer',
     aiCopyReplyTitle: 'Copier la réponse',
@@ -1176,17 +1116,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Inhalt teilweise geschrieben',
     aiWritingDocument: 'Dokument wird geschrieben · {blocks} Blöcke',
     aiPartialTitle: 'Der Inhalt wurde nur teilweise geschrieben',
-    aiPartialBody:
-      '{blocks} Blöcke sind angekommen, bevor das Schreiben abbrach. Diesen Teil behalten oder verwerfen?',
     aiPartialAdopt: 'Behalten',
     aiPartialDiscard: 'Verwerfen',
     aiToolSetFm: 'Dokumenteigenschaften aktualisieren',
     aiScopeSelection: 'Ausgewählt: {words} Wörter',
-    aiScopeSelectionTip:
-      'Umschreib-Anweisungen wirken standardmäßig nur auf die Auswahl; zum Vorschauen klicken',
     aiScopeClearTitle: 'Auswahlbereich aufheben',
-    aiPolishSelectionPrompt:
-      'Überarbeite den ausgewählten Inhalt, damit der Text klarer und flüssiger wird',
     aiAskBtn: 'KI fragen',
     aiAskTitle: 'Änderung an der Auswahl anfragen',
     aiAskEditTitle: 'Diese Anweisung bearbeiten',
@@ -1203,8 +1137,6 @@ export const strings = {
     aiChipRegenImage: 'Mit KI neu generieren',
     aiChipImageCaption: 'Bildunterschrift hinzufügen',
     aiQueueTitle: 'Wartende Änderungen',
-    aiQueueHint:
-      'Klicke auf eine Zeile, um die Stelle zu finden; beim Senden werden alle Änderungen in einer Anfrage angewendet',
     aiQueueOrphan: 'Der Zieltext wurde gelöscht',
     aiQueueRowEdit: 'Bearbeiten',
     aiQueueDiscard: 'Verwerfen',
@@ -1219,8 +1151,6 @@ export const strings = {
     aiToolGenImage: 'Bild generieren',
     aiToolGenImageDone: 'KI-generiertes Bild eingefügt',
     aiCancel: 'Abbrechen',
-    aiTidySelectionPrompt:
-      'Räume die Formatierung des ausgewählten Inhalts auf, ohne die Bedeutung zu ändern',
     aiChipExplainCode: 'Diesen Code erklären',
     aiChipFixCode: 'Probleme im Code beheben',
     aiChipCommentCode: 'Kommentare zum Code hinzufügen',
@@ -1275,8 +1205,6 @@ export const strings = {
     ribbonCollapse: 'Menüband reduzieren',
     ribbonPin: 'Menüband anheften',
     ribbonExpand: 'Menüband erweitern',
-    autoSaveTip:
-      'Automatisches Speichern (alle 30 Sekunden und wenn das Fenster den Fokus verliert)',
     bold: 'Fett',
     italic: 'Kursiv',
     strike: 'Durchgestrichen',
@@ -1324,8 +1252,6 @@ export const strings = {
     aiUnknownError: 'KI-Anfrage fehlgeschlagen, bitte erneut versuchen',
     aiTimeoutError: 'Zeitüberschreitung der KI-Antwort',
     aiOverloadedError: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
-    aiNetworkError:
-      'Netzwerkproblem: Der KI-Dienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut',
     aiCreditsExhausted: 'Guthaben aufgebraucht — bei genspark.ai aufladen',
     aiOpenAssistant: 'KI-Assistent öffnen',
     aiSummarizeBtn: 'KI-Zusammenfassung',
@@ -1333,8 +1259,6 @@ export const strings = {
     aiPolishBtn: 'KI-Feinschliff',
     aiPolishPrompt: 'Überarbeite das gesamte Dokument, damit der Text klarer und flüssiger wird',
     aiTidyBtn: 'KI-Formatierung',
-    aiTidyPrompt:
-      'Bereinige die Formatierung des Dokuments: korrigiere Überschriftenebenen, vereinheitliche Listenformate, entferne überflüssiges Fett und Kursiv und räume überzählige Leerzeilen auf. Ändere nur die Formatierung, nicht den Textinhalt',
     aiNewChat: 'Neuer Chat',
     aiCollapsePanel: 'Panel einklappen',
     aiEmptyTitle: 'Fragen Sie zu diesem Dokument',
@@ -1342,8 +1266,6 @@ export const strings = {
     aiQuickDraft: 'Entwirf ein Dokument',
     aiQuickDraftPrompt: 'Bitte entwirf ein Dokument zum Thema: ',
     aiQuickPolish: 'Dokument überarbeiten',
-    aiQuickPolishPrompt:
-      'Überarbeite das ganze Dokument: Grammatik korrigieren, Formulierungen vereinheitlichen, Lesbarkeit verbessern; Bedeutung und Struktur beibehalten.',
     aiComposerPlaceholder: 'KI schreiben oder bearbeiten lassen…',
     aiHintIdle: 'Enter zum Senden, Umschalt+Enter für neue Zeile',
     aiHintBusy: 'Antwortet…',
@@ -1356,8 +1278,6 @@ export const strings = {
     aiGroupWorking: 'In Arbeit…',
     aiStopped: 'Gestoppt',
     aiNoReply: '(keine Antwort)',
-    aiTruncatedNote:
-      '(Die Antwort wurde durch das Längenlimit abgeschnitten und ist möglicherweise unvollständig.)',
     aiTurnLimit: 'Schrittlimit pro Lauf erreicht — senden Sie eine weitere Anweisung.',
     aiUndelivered: 'Nicht gesendet',
     aiRetry: 'Erneut versuchen',
@@ -1413,17 +1333,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Contenido redactado parcialmente',
     aiWritingDocument: 'Redactando el documento · {blocks} bloques',
     aiPartialTitle: 'Solo se redactó parte del contenido',
-    aiPartialBody:
-      'Llegaron {blocks} bloques antes de que la redacción se detuviera. ¿Conservar esta parte o descartarla?',
     aiPartialAdopt: 'Conservar',
     aiPartialDiscard: 'Descartar',
     aiToolSetFm: 'Actualizar propiedades del documento',
     aiScopeSelection: 'Seleccionado: {words} palabras',
-    aiScopeSelectionTip:
-      'Las instrucciones de reescritura se aplican por defecto a la selección; haz clic para previsualizar',
     aiScopeClearTitle: 'Quitar el ámbito de selección',
-    aiPolishSelectionPrompt:
-      'Pule el contenido seleccionado para que la redacción sea más clara y fluida',
     aiAskBtn: 'Pedir a la IA',
     aiAskTitle: 'Pedir un cambio sobre la selección',
     aiAskEditTitle: 'Editar esta instrucción en cola',
@@ -1440,8 +1354,6 @@ export const strings = {
     aiChipRegenImage: 'Regenerar con IA',
     aiChipImageCaption: 'Añadir un pie de imagen',
     aiQueueTitle: 'Cambios en cola',
-    aiQueueHint:
-      'Haz clic en una fila para localizar el pasaje; al enviar se aplican todos los cambios en una sola solicitud',
     aiQueueOrphan: 'El texto objetivo fue eliminado',
     aiQueueRowEdit: 'Editar',
     aiQueueDiscard: 'Vaciar',
@@ -1456,8 +1368,6 @@ export const strings = {
     aiToolGenImage: 'Generar imagen',
     aiToolGenImageDone: 'Imagen generada por IA insertada',
     aiCancel: 'Cancelar',
-    aiTidySelectionPrompt:
-      'Ordena el formato del contenido seleccionado sin cambiar su significado',
     aiChipExplainCode: 'Explicar este código',
     aiChipFixCode: 'Corregir problemas del código',
     aiChipCommentCode: 'Añadir comentarios al código',
@@ -1559,10 +1469,6 @@ export const strings = {
     blockGripHint: 'Arrastra para mover, clic para el menú',
     aiUnknownError: 'La solicitud de IA falló, reinténtalo',
     aiTimeoutError: 'La respuesta de IA agotó el tiempo',
-    aiOverloadedError:
-      'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
-    aiNetworkError:
-      'Problema de red: no se pudo conectar con el servicio de IA. Comprueba tu conexión e inténtalo de nuevo',
     aiCreditsExhausted: 'Sin créditos — recarga en genspark.ai',
     aiOpenAssistant: 'Abrir asistente de IA',
     aiSummarizeBtn: 'Resumen IA',
@@ -1570,8 +1476,6 @@ export const strings = {
     aiPolishBtn: 'Pulido IA',
     aiPolishPrompt: 'Pule todo el documento para que la redacción sea más clara y fluida',
     aiTidyBtn: 'Formato IA',
-    aiTidyPrompt:
-      'Ordena el formato del documento: corrige los niveles de los títulos, unifica el formato de las listas, elimina negritas y cursivas innecesarias y limpia las líneas en blanco sobrantes. Ajusta solo el formato, sin cambiar el texto',
     aiNewChat: 'Nueva conversación',
     aiCollapsePanel: 'Contraer panel',
     aiEmptyTitle: 'Pregunta sobre este documento',
@@ -1579,8 +1483,6 @@ export const strings = {
     aiQuickDraft: 'Redacta un documento',
     aiQuickDraftPrompt: 'Redacta un documento sobre el tema: ',
     aiQuickPolish: 'Pulir el documento',
-    aiQuickPolishPrompt:
-      'Pule todo el documento: corrige la gramática, unifica la redacción y mejora la legibilidad; mantén el significado y la estructura.',
     aiComposerPlaceholder: 'Pide a la IA escribir o editar…',
     aiHintIdle: 'Enter para enviar, Mayús+Enter para nueva línea',
     aiHintBusy: 'Respondiendo…',
@@ -1593,10 +1495,6 @@ export const strings = {
     aiGroupWorking: 'En curso…',
     aiStopped: 'Detenido',
     aiNoReply: '(sin respuesta)',
-    aiTruncatedNote:
-      '(La respuesta fue cortada por el límite de longitud y puede estar incompleta.)',
-    aiTurnLimit:
-      'Se alcanzó el límite de pasos por ejecución; envía otra instrucción para continuar.',
     aiUndelivered: 'No enviado',
     aiRetry: 'Reintentar',
     aiCopyReplyTitle: 'Copiar respuesta',
@@ -1785,8 +1683,6 @@ export const strings = {
     aiUnknownError: 'คำขอ AI ล้มเหลว โปรดลองอีกครั้ง',
     aiTimeoutError: 'การตอบกลับของ AI หมดเวลา',
     aiOverloadedError: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
-    aiNetworkError:
-      'เครือข่ายมีปัญหา ไม่สามารถเชื่อมต่อบริการ AI ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองใหม่',
     aiCreditsExhausted: 'เครดิตหมด — เติมได้ที่ genspark.ai',
     aiOpenAssistant: 'เปิดผู้ช่วย AI',
     aiSummarizeBtn: 'สรุปด้วย AI',
@@ -1794,8 +1690,6 @@ export const strings = {
     aiPolishBtn: 'ขัดเกลาด้วย AI',
     aiPolishPrompt: 'ขัดเกลาเอกสารทั้งฉบับให้อ่านชัดเจนและลื่นไหลขึ้น',
     aiTidyBtn: 'จัดรูปแบบด้วย AI',
-    aiTidyPrompt:
-      'จัดระเบียบรูปแบบเอกสารทั้งฉบับ เช่น แก้ไขระดับหัวข้อ ปรับรูปแบบรายการให้สอดคล้องกัน ลบตัวหนาและตัวเอียงที่ไม่จำเป็น และลบบรรทัดว่างส่วนเกิน ปรับเฉพาะรูปแบบเท่านั้น ห้ามแก้ไขเนื้อหาข้อความ',
     aiNewChat: 'แชทใหม่',
     aiCollapsePanel: 'ยุบแผง',
     aiEmptyTitle: 'ถามเกี่ยวกับเอกสารนี้',
@@ -1803,8 +1697,6 @@ export const strings = {
     aiQuickDraft: 'ร่างเอกสารให้ฉัน',
     aiQuickDraftPrompt: 'โปรดร่างเอกสารในหัวข้อ: ',
     aiQuickPolish: 'ขัดเกลาเอกสาร',
-    aiQuickPolishPrompt:
-      'ขัดเกลาทั้งเอกสาร: แก้ไวยากรณ์ ปรับคำให้สอดคล้อง เพิ่มความอ่านง่าย โดยคงความหมายและโครงสร้างเดิม',
     aiComposerPlaceholder: 'ให้ AI เขียนหรือแก้ไขเอกสาร…',
     aiHintIdle: 'Enter เพื่อส่ง, Shift+Enter ขึ้นบรรทัดใหม่',
     aiHintBusy: 'กำลังตอบ…',
@@ -1868,14 +1760,10 @@ export const strings = {
     aiToolWriteDocPartial: 'Sebagian konten ditulis',
     aiWritingDocument: 'Menulis dokumen · {blocks} blok',
     aiPartialTitle: 'Hanya sebagian konten yang ditulis',
-    aiPartialBody:
-      '{blocks} blok diterima sebelum penulisan terhenti. Simpan bagian ini atau buang?',
     aiPartialAdopt: 'Simpan',
     aiPartialDiscard: 'Buang',
     aiToolSetFm: 'Perbarui properti dokumen',
     aiScopeSelection: 'Terpilih: {words} kata',
-    aiScopeSelectionTip:
-      'Instruksi penulisan ulang secara default hanya berlaku pada teks terpilih; klik untuk pratinjau',
     aiScopeClearTitle: 'Hapus cakupan pilihan',
     aiPolishSelectionPrompt: 'Poles konten yang dipilih agar tulisan lebih jelas dan mengalir',
     aiAskBtn: 'Tanya AI',
@@ -1894,8 +1782,6 @@ export const strings = {
     aiChipRegenImage: 'Buat ulang dengan AI',
     aiChipImageCaption: 'Tambahkan keterangan gambar',
     aiQueueTitle: 'Perubahan dalam antrean',
-    aiQueueHint:
-      'Klik baris untuk menemukan bagiannya; pengiriman menerapkan semua perubahan dalam satu permintaan',
     aiQueueOrphan: 'Teks target telah dihapus',
     aiQueueRowEdit: 'Edit',
     aiQueueDiscard: 'Kosongkan',
@@ -2013,8 +1899,6 @@ export const strings = {
     aiUnknownError: 'Permintaan AI gagal, coba lagi',
     aiTimeoutError: 'Respons AI kehabisan waktu',
     aiOverloadedError: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
-    aiNetworkError:
-      'Masalah jaringan: tidak dapat terhubung ke layanan AI. Periksa koneksi Anda lalu coba lagi',
     aiCreditsExhausted: 'Kredit habis — isi ulang di genspark.ai',
     aiOpenAssistant: 'Buka asisten AI',
     aiSummarizeBtn: 'Ringkasan AI',
@@ -2022,8 +1906,6 @@ export const strings = {
     aiPolishBtn: 'Poles AI',
     aiPolishPrompt: 'Poles seluruh dokumen agar tulisan lebih jelas dan mengalir',
     aiTidyBtn: 'Format AI',
-    aiTidyPrompt:
-      'Rapikan format dokumen: perbaiki tingkat judul, seragamkan format daftar, hapus cetak tebal dan miring yang tidak perlu, dan bersihkan baris kosong berlebih. Sesuaikan format saja — jangan ubah isi teks apa pun',
     aiNewChat: 'Obrolan baru',
     aiCollapsePanel: 'Ciutkan panel',
     aiEmptyTitle: 'Tanyakan tentang dokumen ini',
@@ -2031,8 +1913,6 @@ export const strings = {
     aiQuickDraft: 'Buatkan dokumen',
     aiQuickDraftPrompt: 'Tolong buat dokumen dengan topik: ',
     aiQuickPolish: 'Perhalus dokumen',
-    aiQuickPolishPrompt:
-      'Perhalus seluruh dokumen: perbaiki tata bahasa, satukan gaya, tingkatkan keterbacaan; pertahankan makna dan struktur.',
     aiComposerPlaceholder: 'Minta AI menulis atau mengedit…',
     aiHintIdle: 'Enter untuk kirim, Shift+Enter baris baru',
     aiHintBusy: 'Membalas…',
@@ -2097,14 +1977,10 @@ export const strings = {
     aiToolWriteDocPartial: 'Текст написан частично',
     aiWritingDocument: 'Пишу документ · {blocks} блоков',
     aiPartialTitle: 'Текст написан лишь частично',
-    aiPartialBody:
-      'Получено {blocks} блоков, после чего написание прервалось. Оставить эту часть или отменить?',
     aiPartialAdopt: 'Оставить',
     aiPartialDiscard: 'Отменить',
     aiToolSetFm: 'Обновление свойств документа',
     aiScopeSelection: 'Выделено: {words} слов',
-    aiScopeSelectionTip:
-      'Инструкции на переписывание по умолчанию применяются к выделению; нажмите для предпросмотра',
     aiScopeClearTitle: 'Снять область выделения',
     aiPolishSelectionPrompt: 'Отредактируйте выделенный текст, чтобы он стал яснее и плавнее',
     aiAskBtn: 'Спросить ИИ',
@@ -2123,8 +1999,6 @@ export const strings = {
     aiChipRegenImage: 'Сгенерировать заново с ИИ',
     aiChipImageCaption: 'Добавить подпись',
     aiQueueTitle: 'Правки в очереди',
-    aiQueueHint:
-      'Нажмите на строку, чтобы найти фрагмент; при отправке все правки применяются одним запросом',
     aiQueueOrphan: 'Целевой текст удалён',
     aiQueueRowEdit: 'Изменить',
     aiQueueDiscard: 'Очистить',
@@ -2139,8 +2013,6 @@ export const strings = {
     aiToolGenImage: 'Сгенерировать изображение',
     aiToolGenImageDone: 'Вставлено сгенерированное ИИ изображение',
     aiCancel: 'Отмена',
-    aiTidySelectionPrompt:
-      'Приведи в порядок форматирование выделенного фрагмента, не меняя его смысла',
     aiChipExplainCode: 'Объяснить этот код',
     aiChipFixCode: 'Исправить проблемы в коде',
     aiChipCommentCode: 'Добавить комментарии к коду',
@@ -2243,8 +2115,6 @@ export const strings = {
     aiUnknownError: 'Сбой запроса ИИ, попробуйте ещё раз',
     aiTimeoutError: 'Тайм-аут ответа ИИ',
     aiOverloadedError: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
-    aiNetworkError:
-      'Проблема с сетью: не удалось подключиться к сервису ИИ. Проверьте подключение и повторите попытку',
     aiCreditsExhausted: 'Кредиты закончились — пополните на genspark.ai',
     aiOpenAssistant: 'Открыть ИИ-ассистента',
     aiSummarizeBtn: 'ИИ-резюме',
@@ -2252,8 +2122,6 @@ export const strings = {
     aiPolishBtn: 'ИИ-редактура',
     aiPolishPrompt: 'Отредактируйте весь документ, чтобы текст стал яснее и плавнее',
     aiTidyBtn: 'ИИ-форматирование',
-    aiTidyPrompt:
-      'Приведите в порядок форматирование документа: исправьте уровни заголовков, унифицируйте оформление списков, уберите лишние жирный шрифт и курсив, удалите лишние пустые строки. Меняйте только форматирование, не изменяя текст',
     aiNewChat: 'Новый чат',
     aiCollapsePanel: 'Свернуть панель',
     aiEmptyTitle: 'Спросите об этом документе',
@@ -2261,8 +2129,6 @@ export const strings = {
     aiQuickDraft: 'Составь документ',
     aiQuickDraftPrompt: 'Составь документ на тему: ',
     aiQuickPolish: 'Отшлифовать документ',
-    aiQuickPolishPrompt:
-      'Отшлифуй весь документ: исправь грамматику, унифицируй формулировки, улучши читабельность; сохрани смысл и структуру.',
     aiComposerPlaceholder: 'Попросите ИИ написать или изменить…',
     aiHintIdle: 'Enter — отправить, Shift+Enter — новая строка',
     aiHintBusy: 'Отвечает…',
@@ -2465,8 +2331,6 @@ export const strings = {
     aiUnknownError: 'فشل طلب الذكاء الاصطناعي، أعد المحاولة',
     aiTimeoutError: 'انتهت مهلة استجابة الذكاء الاصطناعي',
     aiOverloadedError: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
-    aiNetworkError:
-      'مشكلة في الشبكة: تعذّر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من الاتصال وحاول مجددًا',
     aiCreditsExhausted: 'نفدت الأرصدة — أعد الشحن على genspark.ai',
     aiOpenAssistant: 'فتح مساعد الذكاء الاصطناعي',
     aiSummarizeBtn: 'تلخيص AI',
@@ -2474,8 +2338,6 @@ export const strings = {
     aiPolishBtn: 'تحسين AI',
     aiPolishPrompt: 'حسّن المستند بأكمله لجعل الكتابة أوضح وأكثر سلاسة',
     aiTidyBtn: 'تنسيق AI',
-    aiTidyPrompt:
-      'رتّب تنسيق المستند: صحّح مستويات العناوين، ووحّد تنسيق القوائم، وأزل الخط الغامق والمائل غير الضروريين، ونظّف الأسطر الفارغة الزائدة. عدّل التنسيق فقط دون تغيير أي محتوى نصي',
     aiNewChat: 'محادثة جديدة',
     aiCollapsePanel: 'طي اللوحة',
     aiEmptyTitle: 'اسأل عن هذا المستند',
@@ -2483,8 +2345,6 @@ export const strings = {
     aiQuickDraft: 'اكتب لي مستنداً',
     aiQuickDraftPrompt: 'يرجى كتابة مستند حول موضوع: ',
     aiQuickPolish: 'تحسين صياغة المستند',
-    aiQuickPolishPrompt:
-      'حسّن صياغة المستند كاملاً: صحح القواعد ووحّد الأسلوب وحسّن سهولة القراءة مع الحفاظ على المعنى والبنية.',
     aiComposerPlaceholder: 'اطلب من الذكاء الاصطناعي الكتابة أو التعديل…',
     aiHintIdle: 'Enter للإرسال، Shift+Enter لسطر جديد',
     aiHintBusy: 'يرد…',
@@ -2551,17 +2411,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Conteúdo escrito parcialmente',
     aiWritingDocument: 'Escrevendo o documento · {blocks} blocos',
     aiPartialTitle: 'Apenas parte do conteúdo foi escrita',
-    aiPartialBody:
-      '{blocks} blocos chegaram antes de a escrita parar. Manter esta parte ou descartar?',
     aiPartialAdopt: 'Manter',
     aiPartialDiscard: 'Descartar',
     aiToolSetFm: 'Atualizar propriedades do documento',
     aiScopeSelection: 'Selecionado: {words} palavras',
-    aiScopeSelectionTip:
-      'Instruções de reescrita aplicam-se por padrão à seleção; clique para pré-visualizar',
     aiScopeClearTitle: 'Remover o escopo da seleção',
-    aiPolishSelectionPrompt:
-      'Aprimore o conteúdo selecionado para deixar o texto mais claro e fluente',
     aiAskBtn: 'Perguntar à IA',
     aiAskTitle: 'Pedir uma alteração na seleção',
     aiAskEditTitle: 'Editar esta instrução na fila',
@@ -2578,8 +2432,6 @@ export const strings = {
     aiChipRegenImage: 'Gerar novamente com IA',
     aiChipImageCaption: 'Adicionar uma legenda',
     aiQueueTitle: 'Alterações na fila',
-    aiQueueHint:
-      'Clique numa linha para localizar o trecho; o envio aplica todas as alterações numa única solicitação',
     aiQueueOrphan: 'O texto alvo foi excluído',
     aiQueueRowEdit: 'Editar',
     aiQueueDiscard: 'Limpar',
@@ -2594,8 +2446,6 @@ export const strings = {
     aiToolGenImage: 'Gerar imagem',
     aiToolGenImageDone: 'Imagem gerada por IA inserida',
     aiCancel: 'Cancelar',
-    aiTidySelectionPrompt:
-      'Organize a formatação do conteúdo selecionado sem alterar o significado',
     aiChipExplainCode: 'Explicar este código',
     aiChipFixCode: 'Corrigir problemas neste código',
     aiChipCommentCode: 'Adicionar comentários a este código',
@@ -2697,10 +2547,6 @@ export const strings = {
     blockGripHint: 'Arraste para mover, clique para o menu',
     aiUnknownError: 'A solicitação de IA falhou, tente novamente',
     aiTimeoutError: 'A resposta da IA expirou',
-    aiOverloadedError:
-      'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
-    aiNetworkError:
-      'Problema de rede: não foi possível conectar ao serviço de IA. Verifique sua conexão e tente novamente',
     aiCreditsExhausted: 'Créditos esgotados — recarregue em genspark.ai',
     aiOpenAssistant: 'Abrir assistente de IA',
     aiSummarizeBtn: 'Resumo IA',
@@ -2708,8 +2554,6 @@ export const strings = {
     aiPolishBtn: 'Aprimorar IA',
     aiPolishPrompt: 'Aprimore todo o documento para deixar o texto mais claro e fluente',
     aiTidyBtn: 'Formatação IA',
-    aiTidyPrompt:
-      'Organize a formatação do documento: corrija os níveis dos títulos, unifique o formato das listas, remova negrito e itálico desnecessários e limpe linhas em branco excedentes. Ajuste apenas a formatação, sem alterar o texto',
     aiNewChat: 'Nova conversa',
     aiCollapsePanel: 'Recolher painel',
     aiEmptyTitle: 'Pergunte sobre este documento',
@@ -2717,8 +2561,6 @@ export const strings = {
     aiQuickDraft: 'Redija um documento',
     aiQuickDraftPrompt: 'Redija um documento sobre o tema: ',
     aiQuickPolish: 'Aprimorar o documento',
-    aiQuickPolishPrompt:
-      'Aprimore todo o documento: corrija a gramática, unifique a redação, melhore a legibilidade; mantenha o sentido e a estrutura.',
     aiComposerPlaceholder: 'Peça à IA para escrever ou editar…',
     aiHintIdle: 'Enter para enviar, Shift+Enter para nova linha',
     aiHintBusy: 'Respondendo…',
@@ -2785,17 +2627,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Contenuto scritto in parte',
     aiWritingDocument: 'Scrittura del documento · {blocks} blocchi',
     aiPartialTitle: 'È stata scritta solo una parte del contenuto',
-    aiPartialBody:
-      'Sono arrivati {blocks} blocchi prima che la scrittura si interrompesse. Conservare questa parte o scartarla?',
     aiPartialAdopt: 'Conserva',
     aiPartialDiscard: 'Scarta',
     aiToolSetFm: 'Aggiornamento delle proprietà del documento',
     aiScopeSelection: 'Selezionato: {words} parole',
-    aiScopeSelectionTip:
-      "Le istruzioni di riscrittura si applicano per impostazione predefinita alla selezione; fai clic per l'anteprima",
     aiScopeClearTitle: "Rimuovi l'ambito della selezione",
-    aiPolishSelectionPrompt:
-      'Rifinisci il contenuto selezionato per rendere il testo più chiaro e scorrevole',
     aiAskBtn: "Chiedi all'IA",
     aiAskTitle: 'Richiedi una modifica alla selezione',
     aiAskEditTitle: 'Modifica questa istruzione in coda',
@@ -2812,8 +2648,6 @@ export const strings = {
     aiChipRegenImage: "Rigenera con l'IA",
     aiChipImageCaption: 'Aggiungi una didascalia',
     aiQueueTitle: 'Modifiche in coda',
-    aiQueueHint:
-      "Fai clic su una riga per individuare il passaggio; con l'invio tutte le modifiche vengono applicate in un'unica richiesta",
     aiQueueOrphan: 'Il testo di destinazione è stato eliminato',
     aiQueueRowEdit: 'Modifica',
     aiQueueDiscard: 'Svuota',
@@ -2828,8 +2662,6 @@ export const strings = {
     aiToolGenImage: 'Genera immagine',
     aiToolGenImageDone: 'Immagine generata dall’IA inserita',
     aiCancel: 'Annulla',
-    aiTidySelectionPrompt:
-      'Riordina la formattazione del contenuto selezionato senza cambiarne il significato',
     aiChipExplainCode: 'Spiega questo codice',
     aiChipFixCode: 'Correggi i problemi del codice',
     aiChipCommentCode: 'Aggiungi commenti al codice',
@@ -2932,8 +2764,6 @@ export const strings = {
     aiUnknownError: 'Richiesta IA non riuscita, riprova',
     aiTimeoutError: 'Timeout della risposta IA',
     aiOverloadedError: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
-    aiNetworkError:
-      'Problema di rete: impossibile raggiungere il servizio IA. Controlla la connessione e riprova',
     aiCreditsExhausted: 'Crediti esauriti — ricarica su genspark.ai',
     aiOpenAssistant: 'Apri assistente IA',
     aiSummarizeBtn: 'Riassunto IA',
@@ -2941,8 +2771,6 @@ export const strings = {
     aiPolishBtn: 'Rifinitura IA',
     aiPolishPrompt: 'Rifinisci tutto il documento per rendere il testo più chiaro e scorrevole',
     aiTidyBtn: 'Formattazione IA',
-    aiTidyPrompt:
-      'Riordina la formattazione del documento: correggi i livelli dei titoli, uniforma il formato degli elenchi, rimuovi grassetto e corsivo superflui ed elimina le righe vuote in eccesso. Modifica solo la formattazione, senza cambiare il testo',
     aiNewChat: 'Nuova chat',
     aiCollapsePanel: 'Comprimi pannello',
     aiEmptyTitle: 'Chiedi di questo documento',
@@ -2950,8 +2778,6 @@ export const strings = {
     aiQuickDraft: 'Scrivi un documento',
     aiQuickDraftPrompt: 'Scrivi un documento sul tema: ',
     aiQuickPolish: 'Rifinisci il documento',
-    aiQuickPolishPrompt:
-      'Rifinisci tutto il documento: correggi la grammatica, uniforma il lessico, migliora la leggibilità; mantieni senso e struttura.',
     aiComposerPlaceholder: "Chiedi all'IA di scrivere o modificare…",
     aiHintIdle: 'Invio per inviare, Maiusc+Invio per andare a capo',
     aiHintBusy: 'Sta rispondendo…',
@@ -2964,8 +2790,6 @@ export const strings = {
     aiGroupWorking: 'In corso…',
     aiStopped: 'Interrotto',
     aiNoReply: '(nessuna risposta)',
-    aiTruncatedNote:
-      '(La risposta è stata troncata dal limite di lunghezza e potrebbe essere incompleta.)',
     aiTurnLimit: "Raggiunto il limite di passaggi per esecuzione — invia un'altra istruzione.",
     aiUndelivered: 'Non inviato',
     aiRetry: 'Riprova',
@@ -3017,14 +2841,10 @@ export const strings = {
     aiToolWriteDocPartial: 'Napisano część treści',
     aiWritingDocument: 'Pisanie dokumentu · {blocks} bloków',
     aiPartialTitle: 'Napisano tylko część treści',
-    aiPartialBody:
-      'Dotarło {blocks} bloków, zanim pisanie zostało przerwane. Zachować tę część czy odrzucić?',
     aiPartialAdopt: 'Zachowaj',
     aiPartialDiscard: 'Odrzuć',
     aiToolSetFm: 'Aktualizacja właściwości dokumentu',
     aiScopeSelection: 'Zaznaczono: {words} słów',
-    aiScopeSelectionTip:
-      'Polecenia przepisania domyślnie dotyczą tylko zaznaczenia; kliknij, aby zobaczyć podgląd',
     aiScopeClearTitle: 'Usuń zakres zaznaczenia',
     aiPolishSelectionPrompt: 'Dopracuj zaznaczoną treść, aby tekst był jaśniejszy i płynniejszy',
     aiAskBtn: 'Zapytaj AI',
@@ -3043,8 +2863,6 @@ export const strings = {
     aiChipRegenImage: 'Wygeneruj ponownie z AI',
     aiChipImageCaption: 'Dodaj podpis',
     aiQueueTitle: 'Zmiany w kolejce',
-    aiQueueHint:
-      'Kliknij wiersz, aby zlokalizować fragment; wysłanie zastosuje wszystkie zmiany w jednym żądaniu',
     aiQueueOrphan: 'Docelowy tekst został usunięty',
     aiQueueRowEdit: 'Edytuj',
     aiQueueDiscard: 'Wyczyść',
@@ -3059,8 +2877,6 @@ export const strings = {
     aiToolGenImage: 'Generuj obraz',
     aiToolGenImageDone: 'Wstawiono obraz wygenerowany przez AI',
     aiCancel: 'Anuluj',
-    aiTidySelectionPrompt:
-      'Uporządkuj formatowanie zaznaczonej treści, nie zmieniając jej znaczenia',
     aiChipExplainCode: 'Wyjaśnij ten kod',
     aiChipFixCode: 'Napraw problemy w kodzie',
     aiChipCommentCode: 'Dodaj komentarze do kodu',
@@ -3163,8 +2979,6 @@ export const strings = {
     aiUnknownError: 'Żądanie AI nie powiodło się, spróbuj ponownie',
     aiTimeoutError: 'Przekroczono czas odpowiedzi AI',
     aiOverloadedError: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
-    aiNetworkError:
-      'Problem z siecią: nie można połączyć się z usługą AI. Sprawdź połączenie i spróbuj ponownie',
     aiCreditsExhausted: 'Brak kredytów — doładuj na genspark.ai',
     aiOpenAssistant: 'Otwórz asystenta AI',
     aiSummarizeBtn: 'Podsumowanie AI',
@@ -3172,8 +2986,6 @@ export const strings = {
     aiPolishBtn: 'Szlif AI',
     aiPolishPrompt: 'Dopracuj cały dokument, aby tekst był jaśniejszy i płynniejszy',
     aiTidyBtn: 'Formatowanie AI',
-    aiTidyPrompt:
-      'Uporządkuj formatowanie dokumentu: popraw poziomy nagłówków, ujednolić formatowanie list, usuń zbędne pogrubienia i kursywę oraz nadmiarowe puste wiersze. Zmieniaj tylko formatowanie, nie zmieniaj treści tekstu',
     aiNewChat: 'Nowy czat',
     aiCollapsePanel: 'Zwiń panel',
     aiEmptyTitle: 'Zapytaj o ten dokument',
@@ -3181,8 +2993,6 @@ export const strings = {
     aiQuickDraft: 'Napisz dokument',
     aiQuickDraftPrompt: 'Napisz dokument na temat: ',
     aiQuickPolish: 'Dopracuj dokument',
-    aiQuickPolishPrompt:
-      'Dopracuj cały dokument: popraw gramatykę, ujednolić styl, zwiększ czytelność; zachowaj sens i strukturę.',
     aiComposerPlaceholder: 'Poproś AI o napisanie lub edycję…',
     aiHintIdle: 'Enter wysyła, Shift+Enter nowa linia',
     aiHintBusy: 'Odpowiada…',
@@ -3246,14 +3056,10 @@ export const strings = {
     aiToolWriteDocPartial: 'Obsah napsán částečně',
     aiWritingDocument: 'Píšu dokument · {blocks} bloků',
     aiPartialTitle: 'Napsala se jen část obsahu',
-    aiPartialBody:
-      'Dorazilo {blocks} bloků, než se psaní přerušilo. Ponechat tuto část, nebo zahodit?',
     aiPartialAdopt: 'Ponechat',
     aiPartialDiscard: 'Zahodit',
     aiToolSetFm: 'Aktualizovat vlastnosti dokumentu',
     aiScopeSelection: 'Vybráno: {words} slov',
-    aiScopeSelectionTip:
-      'Požadavky na přepsání se ve výchozím nastavení vztahují na výběr; kliknutím zobrazíte náhled',
     aiScopeClearTitle: 'Zrušit rozsah výběru',
     aiPolishSelectionPrompt: 'Vylepši vybraný obsah, aby byl text jasnější a plynulejší',
     aiAskBtn: 'Zeptat se AI',
@@ -3272,8 +3078,6 @@ export const strings = {
     aiChipRegenImage: 'Znovu vygenerovat pomocí AI',
     aiChipImageCaption: 'Přidat popisek',
     aiQueueTitle: 'Úpravy ve frontě',
-    aiQueueHint:
-      'Kliknutím na řádek najdete jeho pasáž; odesláním se všechny úpravy použijí jako jeden požadavek',
     aiQueueOrphan: 'Cílový text byl odstraněn',
     aiQueueRowEdit: 'Upravit',
     aiQueueDiscard: 'Zahodit',
@@ -3378,8 +3182,6 @@ export const strings = {
     aiUnknownError: 'Požadavek na AI se nezdařil, zkuste to znovu',
     aiTimeoutError: 'Odpověď AI vypršela',
     aiOverloadedError: 'Služba AI je právě zaneprázdněna – zkuste to za chvíli znovu',
-    aiNetworkError:
-      'Problém se sítí: službu AI se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu',
     aiCreditsExhausted: 'Došly kredity – dobijte je na genspark.ai',
     aiOpenAssistant: 'Otevřít asistenta AI',
     aiSummarizeBtn: 'Shrnout pomocí AI',
@@ -3387,8 +3189,6 @@ export const strings = {
     aiPolishBtn: 'Vylepšit pomocí AI',
     aiPolishPrompt: 'Vylepši celý dokument, aby byl text jasnější a plynulejší',
     aiTidyBtn: 'Formátovat pomocí AI',
-    aiTidyPrompt:
-      'Uprav formátování dokumentu – oprav úrovně nadpisů, sjednoť formátování seznamů, odstraň nadbytečné tučné písmo a kurzívu a vyčisti přebytečné prázdné řádky. Uprav pouze formátování – neměň žádný textový obsah',
     aiNewChat: 'Nový chat',
     aiCollapsePanel: 'Sbalit panel',
     aiEmptyTitle: 'Zeptejte se na tento dokument',
@@ -3396,8 +3196,6 @@ export const strings = {
     aiQuickDraft: 'Napsat návrh dokumentu',
     aiQuickDraftPrompt: 'Napiš mi prosím návrh dokumentu na téma: ',
     aiQuickPolish: 'Vylepšit dokument',
-    aiQuickPolishPrompt:
-      'Vylepši celý dokument: oprav gramatiku, sjednoť terminologii, zlepši čitelnost; zachovej význam a strukturu.',
     aiComposerPlaceholder: 'Požádejte AI o napsání nebo úpravu dokumentu…',
     aiHintIdle: 'Enter odešle, Shift+Enter vloží nový řádek',
     aiHintBusy: 'Odpovídá…',
@@ -3476,17 +3274,11 @@ export const strings = {
     aiToolWriteDocPartial: 'Inhoud gedeeltelijk geschreven',
     aiWritingDocument: 'Document wordt geschreven · {blocks} blokken',
     aiPartialTitle: 'Slechts een deel van de inhoud is geschreven',
-    aiPartialBody:
-      '{blocks} blokken kwamen aan voordat het schrijven stopte. Dit deel behouden of weggooien?',
     aiPartialAdopt: 'Behouden',
     aiPartialDiscard: 'Weggooien',
     aiToolSetFm: 'Documenteigenschappen bijwerken',
     aiScopeSelection: 'Geselecteerd: {words} woorden',
-    aiScopeSelectionTip:
-      'Herschrijfopdrachten gelden standaard alleen voor de selectie; klik voor een voorbeeld',
     aiScopeClearTitle: 'Selectiebereik wissen',
-    aiPolishSelectionPrompt:
-      'Polijst de geselecteerde inhoud zodat de tekst duidelijker en vloeiender wordt',
     aiAskBtn: 'Vraag AI',
     aiAskTitle: 'Vraag een wijziging van de selectie',
     aiAskEditTitle: 'Bewerk deze instructie in de wachtrij',
@@ -3503,8 +3295,6 @@ export const strings = {
     aiChipRegenImage: 'Opnieuw genereren met AI',
     aiChipImageCaption: 'Bijschrift toevoegen',
     aiQueueTitle: 'Wijzigingen in wachtrij',
-    aiQueueHint:
-      'Klik op een rij om de passage te vinden; verzenden past alle wijzigingen toe in één verzoek',
     aiQueueOrphan: 'De doeltekst is verwijderd',
     aiQueueRowEdit: 'Bewerken',
     aiQueueDiscard: 'Wissen',
@@ -3519,8 +3309,6 @@ export const strings = {
     aiToolGenImage: 'Afbeelding genereren',
     aiToolGenImageDone: 'Door AI gegenereerde afbeelding ingevoegd',
     aiCancel: 'Annuleren',
-    aiTidySelectionPrompt:
-      'Ruim de opmaak van de geselecteerde inhoud op zonder de betekenis te veranderen',
     aiChipExplainCode: 'Leg deze code uit',
     aiChipFixCode: 'Los problemen in deze code op',
     aiChipCommentCode: 'Voeg opmerkingen toe aan deze code',
@@ -3623,8 +3411,6 @@ export const strings = {
     aiUnknownError: 'AI-verzoek mislukt, probeer opnieuw',
     aiTimeoutError: 'AI-antwoord time-out',
     aiOverloadedError: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
-    aiNetworkError:
-      'Netwerkprobleem: kan de AI-service niet bereiken. Controleer je verbinding en probeer het opnieuw',
     aiCreditsExhausted: 'Credits op — waardeer op via genspark.ai',
     aiOpenAssistant: 'AI-assistent openen',
     aiSummarizeBtn: 'AI-samenvatting',
@@ -3632,8 +3418,6 @@ export const strings = {
     aiPolishBtn: 'AI-polijsten',
     aiPolishPrompt: 'Polijst het hele document zodat de tekst duidelijker en vloeiender wordt',
     aiTidyBtn: 'AI-opmaak',
-    aiTidyPrompt:
-      'Ruim de opmaak van het document op: corrigeer kopniveaus, maak lijstopmaak uniform, verwijder onnodige vetgedrukte en cursieve tekst en verwijder overtollige lege regels. Pas alleen de opmaak aan, verander de tekst niet',
     aiNewChat: 'Nieuwe chat',
     aiCollapsePanel: 'Paneel inklappen',
     aiEmptyTitle: 'Vraag over dit document',
@@ -3641,8 +3425,6 @@ export const strings = {
     aiQuickDraft: 'Stel een document op',
     aiQuickDraftPrompt: 'Stel een document op over het onderwerp: ',
     aiQuickPolish: 'Document verfijnen',
-    aiQuickPolishPrompt:
-      'Verfijn het hele document: corrigeer grammatica, maak formuleringen consistent, verbeter leesbaarheid; behoud betekenis en structuur.',
     aiComposerPlaceholder: 'Vraag AI te schrijven of bewerken…',
     aiHintIdle: 'Enter om te verzenden, Shift+Enter nieuwe regel',
     aiHintBusy: 'Antwoordt…',
@@ -3706,14 +3488,10 @@ export const strings = {
     aiToolWriteDocPartial: 'Sebahagian kandungan ditulis',
     aiWritingDocument: 'Menulis dokumen · {blocks} blok',
     aiPartialTitle: 'Hanya sebahagian kandungan ditulis',
-    aiPartialBody:
-      '{blocks} blok diterima sebelum penulisan terhenti. Simpan bahagian ini atau buang?',
     aiPartialAdopt: 'Simpan',
     aiPartialDiscard: 'Buang',
     aiToolSetFm: 'Kemas kini sifat dokumen',
     aiScopeSelection: 'Dipilih: {words} patah perkataan',
-    aiScopeSelectionTip:
-      'Arahan tulis semula secara lalai hanya terpakai pada pilihan; klik untuk pratonton',
     aiScopeClearTitle: 'Buang skop pilihan',
     aiPolishSelectionPrompt: 'Gilap kandungan yang dipilih supaya penulisan lebih jelas dan lancar',
     aiAskBtn: 'Tanya AI',
@@ -3732,8 +3510,6 @@ export const strings = {
     aiChipRegenImage: 'Jana semula dengan AI',
     aiChipImageCaption: 'Tambah kapsyen',
     aiQueueTitle: 'Perubahan dalam baris gilir',
-    aiQueueHint:
-      'Klik baris untuk mencari bahagiannya; penghantaran menggunakan semua perubahan dalam satu permintaan',
     aiQueueOrphan: 'Teks sasaran telah dipadamkan',
     aiQueueRowEdit: 'Edit',
     aiQueueDiscard: 'Kosongkan',
@@ -3851,8 +3627,6 @@ export const strings = {
     aiUnknownError: 'Permintaan AI gagal, cuba lagi',
     aiTimeoutError: 'Respons AI tamat masa',
     aiOverloadedError: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
-    aiNetworkError:
-      'Masalah rangkaian: tidak dapat menghubungi perkhidmatan AI. Semak sambungan anda dan cuba lagi',
     aiCreditsExhausted: 'Kredit habis — tambah nilai di genspark.ai',
     aiOpenAssistant: 'Buka pembantu AI',
     aiSummarizeBtn: 'Ringkasan AI',
@@ -3860,8 +3634,6 @@ export const strings = {
     aiPolishBtn: 'Gilap AI',
     aiPolishPrompt: 'Gilap keseluruhan dokumen supaya penulisan lebih jelas dan lancar',
     aiTidyBtn: 'Format AI',
-    aiTidyPrompt:
-      'Kemaskan format dokumen: betulkan aras tajuk, seragamkan format senarai, buang huruf tebal dan condong yang tidak perlu, dan bersihkan baris kosong berlebihan. Laraskan format sahaja — jangan ubah sebarang kandungan teks',
     aiNewChat: 'Sembang baharu',
     aiCollapsePanel: 'Runtuhkan panel',
     aiEmptyTitle: 'Tanya tentang dokumen ini',
@@ -3869,8 +3641,6 @@ export const strings = {
     aiQuickDraft: 'Draf dokumen untuk saya',
     aiQuickDraftPrompt: 'Sila draf dokumen bertopik: ',
     aiQuickPolish: 'Perhalusi dokumen',
-    aiQuickPolishPrompt:
-      'Perhalusi seluruh dokumen: betulkan tatabahasa, seragamkan gaya, tingkatkan kebolehbacaan; kekalkan makna dan struktur.',
     aiComposerPlaceholder: 'Minta AI menulis atau menyunting…',
     aiHintIdle: 'Enter untuk hantar, Shift+Enter baris baharu',
     aiHintBusy: 'Membalas…',
@@ -4080,8 +3850,6 @@ export const strings = {
     aiPolishBtn: 'ליטוש AI',
     aiPolishPrompt: 'לטש את המסמך כולו כדי שהכתיבה תהיה ברורה וזורמת יותר',
     aiTidyBtn: 'עיצוב AI',
-    aiTidyPrompt:
-      'סדר את עיצוב המסמך: תקן רמות כותרות, אחד את עיצוב הרשימות, הסר הדגשות והטיות מיותרות ונקה שורות ריקות עודפות. שנה עיצוב בלבד — אל תשנה שום תוכן טקסט',
     aiNewChat: 'שיחה חדשה',
     aiCollapsePanel: 'כווצו את החלונית',
     aiEmptyTitle: 'שאלו על המסמך הזה',
@@ -4089,8 +3857,6 @@ export const strings = {
     aiQuickDraft: 'נסחו עבורי מסמך',
     aiQuickDraftPrompt: 'נסחו מסמך בנושא: ',
     aiQuickPolish: 'שפרו את המסמך',
-    aiQuickPolishPrompt:
-      'שפרו את כל המסמך: תקנו דקדוק, אחדו ניסוחים ושפרו קריאות; שמרו על המשמעות והמבנה.',
     aiComposerPlaceholder: 'בקשו מה-AI לכתוב או לערוך…',
     aiHintIdle: 'Enter לשליחה, Shift+Enter לשורה חדשה',
     aiHintBusy: 'משיב…',
@@ -4159,11 +3925,7 @@ export const strings = {
     aiPartialDiscard: 'छोड़ें',
     aiToolSetFm: 'दस्तावेज़ गुण अपडेट करें',
     aiScopeSelection: 'चयनित: {words} शब्द',
-    aiScopeSelectionTip:
-      'फिर से लिखने के निर्देश डिफ़ॉल्ट रूप से केवल चयन पर लागू होते हैं; पूर्वावलोकन के लिए क्लिक करें',
     aiScopeClearTitle: 'चयन दायरा हटाएँ',
-    aiPolishSelectionPrompt:
-      'चयनित सामग्री को परिष्कृत करें ताकि लेखन अधिक स्पष्ट और प्रवाहपूर्ण हो',
     aiAskBtn: 'AI से पूछें',
     aiAskTitle: 'चयन में बदलाव का अनुरोध करें',
     aiAskEditTitle: 'कतार में इस निर्देश को संपादित करें',
@@ -4180,8 +3942,6 @@ export const strings = {
     aiChipRegenImage: 'AI से फिर से बनाएं',
     aiChipImageCaption: 'कैप्शन जोड़ें',
     aiQueueTitle: 'कतार में बदलाव',
-    aiQueueHint:
-      'अंश ढूँढने के लिए पंक्ति पर क्लिक करें; भेजने पर सभी बदलाव एक ही अनुरोध में लागू होते हैं',
     aiQueueOrphan: 'लक्षित पाठ हटा दिया गया है',
     aiQueueRowEdit: 'संपादित करें',
     aiQueueDiscard: 'खाली करें',
@@ -4299,8 +4059,6 @@ export const strings = {
     aiUnknownError: 'AI अनुरोध विफल, पुनः प्रयास करें',
     aiTimeoutError: 'AI प्रतिक्रिया समय समाप्त',
     aiOverloadedError: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
-    aiNetworkError:
-      'नेटवर्क समस्या: AI सेवा से कनेक्ट नहीं हो सका। कनेक्शन जांचें और फिर से प्रयास करें',
     aiCreditsExhausted: 'क्रेडिट समाप्त — genspark.ai पर रिचार्ज करें',
     aiOpenAssistant: 'AI सहायक खोलें',
     aiSummarizeBtn: 'AI सारांश',
@@ -4308,8 +4066,6 @@ export const strings = {
     aiPolishBtn: 'AI परिष्करण',
     aiPolishPrompt: 'पूरे दस्तावेज़ को परिष्कृत करें ताकि लेखन अधिक स्पष्ट और प्रवाहपूर्ण हो',
     aiTidyBtn: 'AI स्वरूपण',
-    aiTidyPrompt:
-      'दस्तावेज़ का स्वरूपण व्यवस्थित करें: शीर्षक स्तर ठीक करें, सूची स्वरूपण एकरूप करें, अनावश्यक बोल्ड और इटैलिक हटाएँ और अतिरिक्त खाली पंक्तियाँ साफ़ करें। केवल स्वरूपण बदलें — किसी भी पाठ सामग्री को न बदलें',
     aiNewChat: 'नई चैट',
     aiCollapsePanel: 'पैनल संक्षिप्त करें',
     aiEmptyTitle: 'इस दस्तावेज़ के बारे में पूछें',
@@ -4317,8 +4073,6 @@ export const strings = {
     aiQuickDraft: 'मेरे लिए दस्तावेज़ लिखें',
     aiQuickDraftPrompt: 'कृपया इस विषय पर दस्तावेज़ लिखें: ',
     aiQuickPolish: 'दस्तावेज़ को निखारें',
-    aiQuickPolishPrompt:
-      'पूरे दस्तावेज़ को निखारें: व्याकरण सुधारें, शब्दावली एकरूप करें, पठनीयता बढ़ाएँ; अर्थ और संरचना न बदलें।',
     aiComposerPlaceholder: 'AI से लिखने या संपादित करने को कहें…',
     aiHintIdle: 'भेजने के लिए Enter, नई पंक्ति के लिए Shift+Enter',
     aiHintBusy: 'उत्तर दिया जा रहा है…',
@@ -4527,8 +4281,6 @@ export const strings = {
     aiPolishBtn: 'AI 潤飾',
     aiPolishPrompt: '潤飾全文，使表達更清晰流暢',
     aiTidyBtn: 'AI 排版',
-    aiTidyPrompt:
-      '整理全文排版：修正標題層級、統一清單格式、去除多餘的粗體和斜體、清理多餘空行；只調整格式，不要改動任何文字內容',
     aiNewChat: '新對話',
     aiCollapsePanel: '收合面板',
     aiEmptyTitle: '詢問這份文件',

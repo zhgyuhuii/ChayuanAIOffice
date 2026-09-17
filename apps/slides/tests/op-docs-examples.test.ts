@@ -23,7 +23,8 @@ import {
   type OpenedPptx,
   type SlideElement,
 } from '@chatoffice/pptx-engine'
-import { runTxn, OP_DOCS, LOCAL_OP_DOCS } from '@chatoffice/pptx-ops'
+import { runTxn } from '@chatoffice/pptx-ops'
+import { OP_DOCS } from '@chatoffice/pptx-ops'
 
 const PNG_B64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
@@ -113,11 +114,7 @@ const callable = Object.entries(OP_DOCS).filter(
 
 describe('op doc examples', () => {
   it('every AI-callable op documents at least one example', () => {
-    // adapted: 69b4ce0 — ChatOffice-local ops carry sig-only docs
-    const LOCAL_OPS = new Set(Object.keys(LOCAL_OP_DOCS))
-    const missing = callable
-      .filter(([n, doc]) => doc.examples.length === 0 && !LOCAL_OPS.has(n))
-      .map(([n]) => n)
+    const missing = callable.filter(([, doc]) => doc.examples.length === 0).map(([n]) => n)
     expect(missing).toEqual([])
   })
 

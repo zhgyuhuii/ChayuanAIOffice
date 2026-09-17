@@ -5,7 +5,7 @@ import { run, tempDir } from './helpers'
 
 const REPO = resolve(__dirname, '../../..')
 const bundledVersion = /^\s+version:\s*(\S+)/m.exec(
-  readFileSync(join(REPO, 'skills/chatoffice/SKILL.md'), 'utf-8'),
+  readFileSync(join(REPO, 'skills/chaoffice/SKILL.md'), 'utf-8'),
 )![1]!
 
 function fakeMachine(agents: string[]) {
@@ -49,7 +49,7 @@ describe('chatoffice skill', () => {
     expect(first.code).toBe(0)
     const path = join(m.home, '.claude', 'skills', 'chatoffice', 'SKILL.md')
     expect(readFileSync(path, 'utf-8')).toBe(
-      readFileSync(join(REPO, 'skills/chatoffice/SKILL.md'), 'utf-8'),
+      readFileSync(join(REPO, 'skills/chaoffice/SKILL.md'), 'utf-8'),
     )
     expect(first.json().detail.agents[0]).toMatchObject({
       agent: 'claude-code',
