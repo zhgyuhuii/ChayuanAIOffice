@@ -73,6 +73,11 @@ export const IPC_CHANNELS = {
   pendingEditsChanged: 'workbook:pending-edits',
   closeSaveRequest: 'workbook:close-save-request',
   closeSaveResult: 'workbook:close-save-result',
+  // MCP visible-grid bridge: shell pushes one command, the renderer that owns
+  // the Univer workbook executes it with the built-in AI's executors
+  mcpCommand: 'sheets:mcp-command',
+  mcpResult: 'sheets:mcp-result',
+  mcpReady: 'sheets:mcp-ready',
   exportPdf: 'workbook:export-pdf',
   printWorkbook: 'workbook:print',
   exportCsv: 'workbook:export-csv',

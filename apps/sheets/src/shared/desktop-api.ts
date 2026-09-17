@@ -1143,6 +1143,7 @@ export const workbookRecalcResultSchema = z
             column: z.number().int().nonnegative(),
             formatted: z.string(),
             number: z.number().optional(),
+            isError: z.boolean().optional(),
             isFormula: z.boolean(),
           })
           .strict(),
@@ -1814,6 +1815,11 @@ export const workbookSaveRequestSchema = z
   .object({
     sessionId: z.string().uuid(),
     mode: z.enum(['save', 'save-as']),
+    /// MCP explicit-path save (planning/mcp-server.md): write to this absolute
+    /// path with no dialog. Skips the Save-As dialog entirely; overwrite policy
+    /// is enforced here, not in the renderer.
+    targetPath: z.string().min(1).max(1024).optional(),
+    overwrite: z.boolean().optional(),
     /// Restored crash-recovery session writing back to the original file: the
     /// change is the workbook bytes themselves, so the request is valid with
     /// an otherwise empty payload (like an explicit Save As).
@@ -1852,7 +1858,13 @@ export const workbookSaveRequestSchema = z
             sheetId: z.string().min(1),
             row: z.number().int().min(0),
             column: z.number().int().min(0),
-            value: z.union([z.string().max(10_000), z.number(), z.boolean(), z.null()]),
+            value: z.union([
+              z.string().max(10_000),
+              z.number(),
+              z.boolean(),
+              z.null(),
+              z.object({ error: z.string().max(32) }).strict(),
+            ]),
           })
           .strict(),
       )
@@ -2599,6 +2611,21 @@ export interface AutoSaveDefault {
   updatedAt: number
 }
 
+/** MCP visible-grid bridge message (shell → renderer, correlated by requestId). */
+export interface McpCommandMessage {
+  requestId: string
+  command: 'apply_ops' | 'read_sheet' | 'save_sheet'
+  payload: unknown
+}
+
+/** MCP visible-grid bridge reply (renderer → shell). */
+export interface McpCommandResult {
+  requestId: string
+  ok: boolean
+  result?: unknown
+  error?: string
+}
+
 /** Autosave-recovery prompt raised by main during workbook open (strings pre-localized). */
 export interface RecoveryPromptPayload {
   title: string
@@ -2714,6 +2741,12 @@ export interface DesktopApi {
   /// Strings arrive pre-localized from the main process.
   onRecoveryPrompt(callback: (prompt: RecoveryPromptPayload) => void): () => void
   replyRecoveryPrompt(restore: boolean): void
+  /// MCP visible-grid bridge (see renderer/mcp-bridge.ts): the shell pushes one
+  /// command at a time; the renderer executes it and reports the correlated
+  /// result. onMcpCommand returns unsubscribe.
+  onMcpCommand(callback: (message: McpCommandMessage) => void): () => void
+  reportMcpResult(result: McpCommandResult): void
+  signalMcpReady(): void
   /// Returns true once when this tab was opened via "New Spreadsheet" from the
   /// shell home.
   consumeNewBlankWorkbook(): Promise<boolean>

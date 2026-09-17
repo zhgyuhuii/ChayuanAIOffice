@@ -145,6 +145,12 @@ export default function App() {
   const [aiOpen, setAiOpen] = useState(
     () => !DOCKED_BOOT && localStorage.getItem('mdapp.showAi') !== '0',
   )
+  const [outlineWidth, setOutlineWidth] = useState(
+    () => Number(localStorage.getItem('mdapp.outlineWidth')) || undefined,
+  )
+  useEffect(() => {
+    if (outlineWidth) localStorage.setItem('mdapp.outlineWidth', String(outlineWidth))
+  }, [outlineWidth])
   const [aiPreset, setAiPreset] = useState<AiPreset | null>(null)
   const [editQueue, setEditQueue] = useState<EditQueueItem[]>([])
   const editQueueRef = useRef(editQueue)
@@ -779,7 +785,14 @@ export default function App() {
             </div>
           )}
           <div className="editor-body-row">
-            {outlineOpen && <OutlinePane items={outlineItems} onJump={jumpToOutline} />}
+            {outlineOpen && (
+              <OutlinePane
+                items={outlineItems}
+                onJump={jumpToOutline}
+                width={outlineWidth}
+                onResize={setOutlineWidth}
+              />
+            )}
             <div className="app-content">
               <div className="editor-scroll" ref={scrollRef}>
                 <div className="doc-page" style={{ zoom: zoom / 100 }}>

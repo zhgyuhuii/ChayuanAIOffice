@@ -14,6 +14,12 @@ export function isEditableShape(visual: WorkbookVisualObject): boolean {
 /// Session-added images (insert-picture, AI inserts, screenshots) carry their
 /// bytes inline in the journal too — the same in-place editability as shapes.
 /// Without this they render as the inert ImageVisual: clickable metal.
+/// Upstream alias (09485f8 added-image-editable.test): strictly session-added
+/// pictures, without the local echart extension isEditableImage carries.
+export function isEditableAddedImage(visual: WorkbookVisualObject): boolean {
+  return visual.kind === 'image' && visual.id.startsWith('added-image-')
+}
+
 export function isEditableImage(visual: WorkbookVisualObject): boolean {
   return (
     visual.kind === 'image' &&

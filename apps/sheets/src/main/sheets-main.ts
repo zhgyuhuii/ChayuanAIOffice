@@ -3836,7 +3836,7 @@ async function writeWorkbookTo(
   // resolution the cell edits use.
   const formulaValuesBySheet = new Map<
     string,
-    { row: number; column: number; value: string | number | boolean | null }[]
+    { row: number; column: number; value: string | number | boolean | null | { error: string } }[]
   >()
   for (const cell of request.formulaValues) {
     const sheetName = resolveSheetName(cell.sheetId)

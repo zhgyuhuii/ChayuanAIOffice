@@ -2412,7 +2412,10 @@ async function runFormulaRecalc(
         unsupported += 1
         continue
       }
-      overlay.set(`${cell.row}:${cell.column}`, { v: cell.number ?? cell.formatted })
+      overlay.set(`${cell.row}:${cell.column}`, {
+        v: cell.number ?? cell.formatted,
+        ...(cell.isError ? { isError: true } : {}),
+      })
     }
     state.recalc.overlay.set(sheetId, overlay)
     state.recalc.follow.set(sheetId, { anchorRow: viewportStartRow, complete: windowComplete })

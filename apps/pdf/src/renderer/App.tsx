@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, use
 import type { CSSProperties, MouseEvent as ReactMouseEvent } from 'react'
 // legacy build: the modern build relies on new APIs like Math.sumPrecise that the current
 // Electron V8 lacks, making embedded font parsing fail and whole pages render as garbled raw char codes
+import { handlePdfControl, type ControlRequest } from './control'
 import bootLogo from './assets/boot-logo.png'
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
@@ -1434,6 +1435,18 @@ export default function App() {
     const target = Math.min(Math.max(1, n), pageCount)
     el.scrollTop = rowTop(rowOfVis(target - 1)) - PAGE_GAP / 2
   }
+
+  // chatoffice CLI (`open --page`, `selection`): the shell evaluates this hook
+  useEffect(() => {
+    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+      handlePdfControl(req, {
+        loaded: doc !== null,
+        pageCount,
+        currentPage,
+        scrollToPage,
+        selectedText: () => window.getSelection()?.toString() ?? '',
+      })
+  })
 
   // A reorder committed by an AI tool has not been laid out yet when the tool wants to
   // scroll, so the target waits for the render that carries the new order

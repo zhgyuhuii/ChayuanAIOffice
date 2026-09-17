@@ -75,6 +75,7 @@ import {
   aiBulkUndoGate,
 } from './univer-state'
 import { applyChangePlan, planFromOps, type OpExecutorContext, richCellText } from './op-executor'
+import { installSheetsMcpBridge, type McpSheetHandlers } from './mcp-bridge'
 import {
   renameChartRefsForSheet,
   applyAiTableRowAdd,
@@ -406,7 +407,7 @@ import {
   type PrintAreaBounds,
 } from './page-break-preview'
 import { mapProtectedRanges } from './protected-ranges'
-import { handleSave as handleSaveImpl, type SaveContext } from './save-actions'
+import { handleSave as handleSaveImpl, type SaveContext, type SaveOutcome } from './save-actions'
 import {
   applyChartEdit as applyChartEditImpl,
   applyShapeEdit as applyShapeEditImpl,
@@ -492,6 +493,7 @@ import {
 } from './WorkbookVisuals'
 import { isEditableFileVisual, isEditableImage } from './visual-editable'
 import { ChartFormatPane, SelectDataDialog } from './ChartPanels'
+import { handleSheetsControl, type ControlRequest } from './control'
 
 // Source sheet id of an in-flight copy-sheet command; the next insert-sheet
 // mutation is that copy and must journal as a duplicate, not a blank add.
@@ -661,7 +663,7 @@ export function App(): React.JSX.Element {
     () => window.desktopApi?.onRecoveryPrompt?.((prompt) => setRecoveryPrompt(prompt)) ?? undefined,
     [],
   )
-  /// Streaming-mode filter gate (alpha r166/r169): the filter panel builds
+  /// Streaming-mode filter gate: the filter panel builds
   /// value counts from whatever happens to be loaded and the apply command is
   /// cancelled, so instead of a silent no-op the user gets an explicit offer
   /// to fully load the workbook first.
@@ -852,8 +854,14 @@ export function App(): React.JSX.Element {
   /// Fresh handleSave for the AutoSave tick (assigned each render, like
   /// menuActionRef, so the interval closure never goes stale).
   const handleSaveRef = useRef<
-    (mode: 'save' | 'save-as' | 'recovery', quiet?: boolean) => Promise<void>
-  >(() => Promise.resolve())
+    (
+      mode: 'save' | 'save-as' | 'recovery',
+      quiet?: boolean,
+      explicitTarget?: { path: string; overwrite: boolean },
+    ) => Promise<SaveOutcome>
+  >(() => Promise.resolve({ ok: false }))
+  /// Latest MCP bridge handlers (assigned each render; see the install below).
+  const mcpSheetHandlersRef = useRef<McpSheetHandlers | null>(null)
   const closeSaveRef = useRef<() => Promise<void>>(() => Promise.resolve())
   const refreshSelectionFormatRef = useRef<() => void>(() => {})
   const chartEditRef = useRef<(chartPath: string, edit: ChartEditData) => void>(() => {})
@@ -2367,7 +2375,7 @@ export function App(): React.JSX.Element {
         if (event.id === SET_ZOOM_OPERATION || event.id === SET_ZOOM_COMMAND) {
           // Excel persists the normal-view zoom in the file; without this the
           // save keeps the stored zoom and the post-save session reload snaps
-          // the view back to it (alpha r165).
+          // the view back to it.
           const zoom = event.params as { subUnitId?: string; zoomRatio?: number } | undefined
           if (
             zoom?.subUnitId &&
@@ -2691,12 +2699,12 @@ export function App(): React.JSX.Element {
           // even without live formulas — after a full preload it unlocks.
           // The panel itself is also gated: opened mid-stream it builds its
           // by-value counts from whatever happens to be loaded and reports
-          // them as the column's content (alpha r169: 24 rows of a value
+          // them as the column's content (24 rows of a value
           // whose real count was 125, 2 008 phantom blanks).
           if (isFilter && !isAddedSheet && !state.flags.preloadComplete) {
             event.cancel = true
-            // A silent footer note read as "filtering is broken" (alpha
-            // r166) — raise an explicit offer to fully load instead.
+            // A silent footer note read as "filtering is broken" — raise an
+            // explicit offer to fully load instead.
             if (fullLoadRunning.current || state.formulaMode) {
               // formula-mode workbooks preload automatically at open — the
               // gate only holds during that brief window
@@ -2806,7 +2814,7 @@ export function App(): React.JSX.Element {
           // sheet-scoped defined names — reject before the copy so the user
           // never sees Duplicate succeed and ⌘S fail. The sidecar flag covers
           // hidden and _xlnm.* built-ins the modeled definedNames omit
-          // (bugbot); the scan remains as the older-sidecar fallback.
+          // entirely; the scan remains as the older-sidecar fallback.
           const sourceIndex = state.file.sheets.findIndex((candidate) => candidate.id === subUnitId)
           const scopedNames =
             sheet?.hasScopedDefinedNames ??
@@ -5570,8 +5578,12 @@ export function App(): React.JSX.Element {
     }
   }
 
-  async function handleSave(mode: 'save' | 'save-as' | 'recovery', quiet = false): Promise<void> {
-    return handleSaveImpl(saveContext(), mode, quiet)
+  async function handleSave(
+    mode: 'save' | 'save-as' | 'recovery',
+    quiet = false,
+    explicitTarget?: { path: string; overwrite: boolean },
+  ): Promise<SaveOutcome> {
+    return handleSaveImpl(saveContext(), mode, quiet, explicitTarget)
   }
   closeSaveRef.current = async () => {
     const state = lazyWorkbookRef.current
@@ -5623,6 +5635,56 @@ export function App(): React.JSX.Element {
     }
   }
   handleSaveRef.current = handleSave
+
+  // MCP visible-grid session (planning/mcp-server.md phase 2): the shell pushes
+  // read/apply/save commands; they run through the same executors the built-in
+  // AI uses. Handlers go through a ref so the bridge never sees stale closures.
+  mcpSheetHandlersRef.current = {
+    hasWorkbook: () =>
+      univerRef.current?.univerAPI.getActiveWorkbook() != null && lazyWorkbookRef.current != null,
+    context: () => getActiveSheetInfo(),
+    readCells: (addresses, sheetId) => readCellsImpl(readContext(), addresses, sheetId),
+    applyOps: async (ops, dryRun) => {
+      const runtime = univerRef.current
+      const state = lazyWorkbookRef.current
+      const workbook = runtime?.univerAPI.getActiveWorkbook()
+      if (!runtime || !state || !workbook) {
+        return { ok: false, reason: t('appNoWorkbookOpen') }
+      }
+      if (dryRun) {
+        try {
+          const plan = planFromOps(ops, workbook, 'mcp')
+          return {
+            ok: true,
+            dryRun: true,
+            structuralChanges: plan.structuralChanges.map((change) => change.label),
+            formatChanges: plan.formatChanges.map((change) => change.label),
+            cellChanges: plan.cellChanges
+              .slice(0, 100)
+              .map((change) => ({ address: change.address, after: change.after.value })),
+            cellChangeCount: plan.cellChanges.length,
+            sheetRenames: plan.sheetRenames.map((rename) => `${rename.before} -> ${rename.after}`),
+          }
+        } catch (error: unknown) {
+          return { ok: false, reason: error instanceof Error ? error.message : String(error) }
+        }
+      }
+      return runUiOps(ops)
+    },
+    saveTo: async (path, overwrite) => handleSave('save-as', true, { path, overwrite }),
+  }
+  useEffect(() => {
+    const handlers = mcpSheetHandlersRef
+    return installSheetsMcpBridge({
+      hasWorkbook: () => handlers.current?.hasWorkbook() ?? false,
+      context: () => handlers.current?.context(),
+      readCells: (addresses, sheetId) => handlers.current?.readCells(addresses, sheetId) ?? {},
+      applyOps: async (ops, dryRun) =>
+        (await handlers.current?.applyOps(ops, dryRun)) ?? { ok: false, reason: 'not ready' },
+      saveTo: async (path, overwrite) =>
+        (await handlers.current?.saveTo(path, overwrite)) ?? { ok: false },
+    })
+  }, [])
   /// Re-renders the floating visuals after a journal mutation (edits and
   /// their undo/redo closures share it).
   function refreshLazyVisuals(state: LazyWorkbookState): void {
@@ -5917,6 +5979,16 @@ export function App(): React.JSX.Element {
       supported: chartSupportsSeriesReplace(live.chart.chartTypes),
     }
   })()
+
+  // genoffice CLI (`open --range`, `selection`): the shell evaluates this hook
+  useEffect(() => {
+    ;(window as unknown as Record<string, unknown>).__chatofficeControl = (req: ControlRequest) =>
+      handleSheetsControl(
+        req,
+        univerRef.current?.univerAPI.getActiveWorkbook(),
+        lazyWorkbookRef.current !== null,
+      )
+  })
 
   const aiScopeChip = resolveScopeChip(aiRunScope, aiScope, aiScopeDismissed)
 

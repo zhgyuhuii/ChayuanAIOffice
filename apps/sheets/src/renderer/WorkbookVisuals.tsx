@@ -110,6 +110,7 @@ export interface ShapeEditing {
 export {
   isEditableShape,
   isEditableImage,
+  isEditableAddedImage,
   isEditableFileVisual,
   isEditableChart,
   isEditableVisual,
