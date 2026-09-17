@@ -806,6 +806,8 @@ const closeSaveWaiters = new Map<number, (ok: boolean) => void>()
 const saveWaiters = new Map<number, (ok: boolean) => void>()
 /** Resolvers for MCP reads of the live document source, resolved by the renderer's reply */
 const readTextWaiters = new Map<number, (result: { text: string } | { error: string }) => void>()
+/** one read per tab at a time: concurrent callers share this promise */
+const readTextInFlight = new Map<number, Promise<string>>()
 
 /** Fired after a save lands on a NEW path (untitled first save / Save As) — the shell syncs tab title, recents, projects */
 let fileSavedHook: ((wc: WebContents, path: string) => void) | null = null
@@ -1042,7 +1044,9 @@ export function requestHtmlSave(contents: WebContents, mode: SaveMode): Promise<
 export function htmlReadText(contents: WebContents): Promise<string> {
   if (contents.isDestroyed()) return Promise.reject(new Error('the document is no longer open'))
   const wcId = contents.id
-  return new Promise<string>((resolve, reject) => {
+  const inFlight = readTextInFlight.get(wcId)
+  if (inFlight) return inFlight
+  const request = new Promise<string>((resolve, reject) => {
     // The renderer registers its listener while mounting, which can land after
     // the tab appears; a request sent before that is dropped silently. Re-send
     // on an interval until the renderer answers, the way the shell's own
@@ -1054,6 +1058,7 @@ export function htmlReadText(contents: WebContents): Promise<string> {
       clearInterval(retry)
       clearTimeout(timer)
       readTextWaiters.delete(wcId)
+      readTextInFlight.delete(wcId)
       finish()
     }
     const retry = setInterval(() => {
@@ -1075,6 +1080,8 @@ export function htmlReadText(contents: WebContents): Promise<string> {
     })
     contents.send(HTML_CHANNELS.readTextRequest)
   })
+  readTextInFlight.set(wcId, request)
+  return request
 }
 
 /**

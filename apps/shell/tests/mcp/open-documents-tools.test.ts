@@ -141,6 +141,24 @@ describe('closeSavePath', () => {
     // a second untitled close must not overwrite the first
     expect(closeSavePath(DOCUMENTS[6]!, () => dir)).not.toBe(first)
   })
+
+  // Regression: the extension used to come from generateExtension(), which only
+  // answers for families that have a headless create_* tool — so closing an
+  // untitled html document threw instead of resolving a target. Every family
+  // must resolve its own save extension here.
+  it.each([
+    ['docs', '.docx'],
+    ['sheets', '.xlsx'],
+    ['slides', '.pptx'],
+    ['markdown', '.md'],
+    ['html', '.html'],
+    ['pdf', '.pdf'],
+  ] as const)('resolves an untitled %s document to a %s target', (kind, ext) => {
+    const untitled = doc({ id: `untitled-${kind}`, kind, title: `untitled ${kind}`, dirty: true })
+    const target = closeSavePath(untitled, () => dir)
+    expect(target.startsWith(resolve(dir))).toBe(true)
+    expect(target.endsWith(ext)).toBe(true)
+  })
 })
 
 describe('open_documents tool', () => {

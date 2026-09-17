@@ -141,7 +141,16 @@ export function readPdfText(
           }
           try {
             const chars = m._FPDFText_CountChars(textPage)
-            let text = spent < budget ? pageText(m, textPage, chars) : ''
+            // The budget is already spent — including when it ran out exactly on
+            // the previous page's boundary. This page was never read, so report
+            // the truncation and stop rather than emitting it as an empty page
+            // (which would pair `hasTextLayer:true` with empty text on a page
+            // that does have a text layer, and claim a complete read).
+            if (spent >= budget) {
+              truncated = true
+              break
+            }
+            let text = pageText(m, textPage, chars)
             if (spent + text.length > budget) {
               text = text.slice(0, Math.max(0, budget - spent))
               truncated = true

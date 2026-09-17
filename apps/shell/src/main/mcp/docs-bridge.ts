@@ -18,8 +18,10 @@ import type { DocsControl, McpEditorCommandName } from './tools/document-tools'
  * are dropped on lookup.
  */
 
-// a fresh docs tab boots its renderer and fonts; measured 0.6-8s, occasionally far longer
-const READY_TIMEOUT_MS = 60_000
+// a fresh docs tab boots its renderer and fonts; measured 0.6-8s, occasionally
+// far longer. Capped under the MCP client's own tool timeout (30s) so the
+// caller gets this reason instead of a bare "timed out" from the client.
+const READY_TIMEOUT_MS = 24_000
 const COMMAND_TIMEOUT_MS = 120_000
 
 interface PendingCommand {

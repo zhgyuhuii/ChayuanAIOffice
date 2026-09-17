@@ -3888,7 +3888,7 @@ export function applyJournalOverlay(
 /// text still reaches the formula bar via formulaText).
 /// #ERROR! is not Excel's: it is IronCalc's parse/evaluation failure, and a
 /// file that carries it was polluted by an earlier save of that failure.
-const EXCEL_ERROR_LITERALS = new Set([
+export const EXCEL_ERROR_LITERALS = new Set([
   '#NULL!',
   '#DIV/0!',
   '#VALUE!',

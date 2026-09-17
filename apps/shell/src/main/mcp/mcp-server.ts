@@ -193,7 +193,24 @@ export class McpServerService {
     }
 
     // POST
-    const body = await readJsonBody(req)
+    // A malformed body is a client error, not a server fault: answering 500
+    // "internal error" hides the actual problem (bad JSON) from the caller and
+    // reads as a ChaAI Office bug. Report it as a JSON-RPC parse error instead.
+    let body: unknown
+    try {
+      body = await readJsonBody(req)
+    } catch (error) {
+      const tooLarge = error instanceof Error && error.message === 'request body too large'
+      this.json(res, tooLarge ? 413 : 400, {
+        jsonrpc: '2.0',
+        error: {
+          code: -32700,
+          message: `Parse error: ${error instanceof Error ? error.message : String(error)}`,
+        },
+        id: null,
+      })
+      return
+    }
     const existing = sessionId ? this.streamableTransports.get(sessionId) : undefined
     if (sessionId && !existing) {
       this.json(res, 404, {

@@ -21,7 +21,10 @@ import {
  * without MCP wiring).
  */
 
-const READY_TIMEOUT_MS = 20_000
+const READY_POLL_MS = 50
+/** after the fast window the poll backs off instead of stopping (see below) */
+const READY_SLOW_POLL_MS = 1_000
+const READY_FAST_WINDOW_MS = 20_000
 
 export interface McpSheetHandlers {
   /** workbook mounted and editable? (drives the ready announce) */
@@ -44,17 +47,26 @@ export function installSheetsMcpBridge(handlers: McpSheetHandlers): () => void {
   let queue: Promise<void> = Promise.resolve()
   let disposed = false
 
-  const readyTimer = setInterval(() => {
-    if (disposed) {
-      clearInterval(readyTimer)
+  // Announce readiness as soon as the workbook is mounted, then stop polling.
+  //
+  // The poll must never give up permanently: a cold dev start (vite serving the
+  // Univer bundle, the sidecar opening the workbook) can take longer than the
+  // fast window, and once the timer has stopped the tab stays unaddressable
+  // over MCP for the rest of its life — the grid looks perfectly normal in the
+  // UI while every sheet command times out in the shell. Back off instead.
+  let readyTimer: ReturnType<typeof setTimeout> | null = null
+  const mountedAt = performance.now()
+  const announceWhenMounted = (): void => {
+    readyTimer = null
+    if (disposed) return
+    if (handlers.hasWorkbook()) {
+      api.signalMcpReady()
       return
     }
-    if (handlers.hasWorkbook()) {
-      clearInterval(readyTimer)
-      api.signalMcpReady()
-    }
-  }, 50)
-  setTimeout(() => clearInterval(readyTimer), READY_TIMEOUT_MS)
+    const slow = performance.now() - mountedAt > READY_FAST_WINDOW_MS
+    readyTimer = setTimeout(announceWhenMounted, slow ? READY_SLOW_POLL_MS : READY_POLL_MS)
+  }
+  readyTimer = setTimeout(announceWhenMounted, READY_POLL_MS)
 
   const off = api.onMcpCommand((message: McpCommandMessage) => {
     queue = queue.then(() => runCommand(message)).catch(() => undefined)
@@ -62,6 +74,7 @@ export function installSheetsMcpBridge(handlers: McpSheetHandlers): () => void {
 
   return () => {
     disposed = true
+    if (readyTimer !== null) clearTimeout(readyTimer)
     off()
   }
 

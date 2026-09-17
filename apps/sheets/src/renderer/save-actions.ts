@@ -22,6 +22,7 @@ import {
   toSaveVisualEdits,
 } from './edit-journal'
 import { activeCsvSheet, handleExportCsv, serializeActiveSheetCsv } from './csv-export'
+import { verifiedFormulaValues } from './formula-values'
 import { t } from './i18n/locale'
 import { abortStagedEditsTransfer, stageEditsForSave, type StagedEdits } from './save-edits-staging'
 import { showToast } from './toast-bus'
@@ -188,7 +189,7 @@ export async function handleSave(
   // separately so the save refreshes each formula cell's cached <v>, keeping its <f>.
   // A journaled formula is excluded: the overlay may still hold the previous
   // formula's result when the user saves immediately after entering a replacement.
-  const formulaValues = [...(state.recalc?.overlay ?? [])].flatMap(([sheetId, cells]) =>
+  const overlayValues = [...(state.recalc?.overlay ?? [])].flatMap(([sheetId, cells]) =>
     isSheetRemoved(state.editJournal, sheetId)
       ? []
       : [...cells].flatMap(([key, cell]) => {
@@ -201,6 +202,15 @@ export async function handleSave(
           return [{ sheetId, row, column, value }]
         }),
   )
+  // Journaled formulas are covered by values an MCP batch read back *after* the
+  // engine settled (see formula-values.ts). They were left out above because the
+  // overlay could be stale; these were observed, and each is dropped unless the
+  // cell still holds the formula that produced it.
+  const journaledValues = verifiedFormulaValues(
+    (sheetId, row, column) =>
+      state.editJournal.cells.get(sheetId)?.get(`${row}:${column}`)?.formula,
+  )
+  const formulaValues = [...overlayValues, ...journaledValues]
   // The gateway fails closed when these additions ride with structural or
   // sheet changes (their coordinates entangle). Instead of bouncing the
   // user, hold them back and save in two sequential phases: structure
