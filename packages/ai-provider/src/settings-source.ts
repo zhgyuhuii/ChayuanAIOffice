@@ -77,8 +77,7 @@ interface HarnessProviderProfile {
 /** minimal YAML scrape: `ns:` → `providers:` → route blocks → fields + model list
  * entries. The dsh settings file is machine-written with a stable 2-space layout
  * (chatop's credential echo relies on the same); a full YAML parser is not worth
- * a dependency here. */
-export function parseHarnessProviders(
+ * a dependency here. */ export function parseHarnessProviders(
   yaml: string,
   ns = 'llm-pi-ai',
 ): Record<string, HarnessProviderProfile> {
@@ -142,11 +141,40 @@ export function parseHarnessCredentials(yaml: string): Record<string, string> {
   return out
 }
 
+/** scrape dsh's own default-model pick (`agent-default-model:` provider/model
+ * block) so a fresh office side can adopt the harness's selection */
+export function parseHarnessDefaultModel(yaml: string): { provider: string; model: string } | null {
+  let inBlock = false
+  let provider = ''
+  let model = ''
+  for (const raw of yaml.split('\n')) {
+    const indent = raw.length - raw.trimStart().length
+    if (indent === 0) {
+      if (inBlock) break
+      inBlock = raw.trim() === 'agent-default-model:'
+      continue
+    }
+    if (!inBlock || indent !== 2) continue
+    const m = /^(provider|model):\s*(\S+)\s*$/.exec(raw.trim())
+    if (m) {
+      if (m[1] === 'provider') provider = m[2]!
+      else model = m[2]!
+    }
+  }
+  return inBlock && provider && model ? { provider, model } : null
+}
+
 function profileFromHarness(route: string, hp: HarnessProviderProfile): AiProviderProfile | null {
-  const rawVendorId = route.startsWith('chatop-') ? route.slice('chatop-'.length) : undefined
+  // office manages only the chatop-<vendorId> routes (what chatop's own model
+  // settings UI writes). dsh's hand-written routes (bare vendor ids) are the
+  // dsh agent's internal config — surfacing them would collide with their
+  // chatop-* twins and the write diff could clobber them, so they stay
+  // dsh-internal.
+  if (!route.startsWith('chatop-')) return null
   // legacy yaml written before the rebrand carried the vendor's old id
-  const vendorId = rawVendorId === 'genspark' ? 'chatoffice' : rawVendorId
-  const vendor = vendorId ? VENDOR_BY_ID.get(vendorId) : undefined
+  const vendorId =
+    route.slice('chatop-'.length) === 'genspark' ? 'chatoffice' : route.slice('chatop-'.length)
+  const vendor = VENDOR_BY_ID.get(vendorId)
   const protocol = (hp.api ?? vendor?.api ?? 'openai-completions') as AiWireProtocol
   const baseUrl = hp.baseURL ?? ''
   if (!baseUrl) return null // half-written route; ignore until it has an endpoint
@@ -154,24 +182,31 @@ function profileFromHarness(route: string, hp: HarnessProviderProfile): AiProvid
     .filter((m) => m?.id)
     .map((m) => ({ id: m.id!, ...(m.name && m.name !== m.id ? { name: m.name } : {}) }))
   return {
-    id: vendorId ?? route,
-    ...(vendorId ? { vendorId } : {}),
+    id: vendorId,
+    vendorId,
     displayName: hp.displayName ?? vendor?.name ?? route,
     protocol,
     baseUrl,
     ...(hp.apiKeyEnv ? { apiKeyRef: hp.apiKeyEnv } : {}),
+    ...(vendor?.ollamaLike ? { ollamaLike: true } : {}),
     auth: 'api-key',
     enabled: true,
     models,
   }
 }
 
-export function profileToHarnessMutation(profile: AiProviderProfile): {
+export function profileToHarnessMutation(
+  profile: AiProviderProfile,
+  prevRef?: string,
+): {
   op: unknown
   keyRef: string
 } {
   const vendorId = profile.vendorId ?? profile.id
-  const keyRef = profile.apiKeyRef ?? harnessKeyRefFor(vendorId)
+  // the renderer round-trips profiles without apiKeyRef (secrets are
+  // server-side); keep the route's existing reference so a mere settings save
+  // never orphans the credential the route points at
+  const keyRef = profile.apiKeyRef ?? prevRef ?? harnessKeyRefFor(vendorId)
   const value: HarnessProviderProfile & { apiKeyEnv: string } = {
     displayName: profile.displayName,
     apiKeyEnv: keyRef,
@@ -215,25 +250,73 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     return profiles
   }
 
+  /** map dsh's agent-default-model pick onto a managed profile + model */
+  const adoptHarnessDefault = (
+    profiles: AiProviderProfile[],
+    pick: { provider: string; model: string },
+  ): AiSettingsV2['currentModel'] | undefined => {
+    const vendorId = pick.provider.startsWith('chatop-')
+      ? pick.provider.slice('chatop-'.length)
+      : pick.provider
+    const profile = profiles.find((p) => (p.vendorId ?? p.id) === vendorId)
+    if (!profile?.models.some((m) => m.id === pick.model)) return undefined
+    return { profileId: profile.id, modelId: pick.model }
+  }
+
   return {
     async read() {
-      const [office, profiles] = await Promise.all([
+      const [office, profiles, defaultPick] = await Promise.all([
         officeStateSource.read(),
         readProfiles().catch(() => [] as AiProviderProfile[]),
+        readDshFile('settings.yaml')
+          .then((yaml) => parseHarnessDefaultModel(yaml))
+          .catch(() => null),
       ])
-      return { ...office, profiles }
+      // first-run adoption: until office records its own selection, follow the
+      // model the harness agent is pinned to so both UIs start on the same model
+      const currentModel =
+        office.currentModel ??
+        (defaultPick ? adoptHarnessDefault(profiles, defaultPick) : undefined)
+      return { ...office, profiles, ...(currentModel ? { currentModel } : {}) }
     },
     async write(next) {
+      // Selection anchors: the office file's normalize pass validates
+      // currentModel/imageModel against the file's own profile set, and the
+      // harness profiles live in dsh, not in that file — without an anchor the
+      // migration silently drops every selection and the harness default
+      // adoption re-fires forever. Anchors are verbatim copies of the backing
+      // harness profile (key stripped); on read the profile set is replaced
+      // from dsh wholesale, so they only ever serve that validation.
+      const anchors = new Map<string, AiProviderProfile>()
+      for (const sel of [
+        next.currentModel,
+        next.imageModel,
+        ...Object.values(next.modelDefaults ?? {}),
+      ]) {
+        if (!sel) continue
+        const backing = next.profiles.find(
+          (p) => p.id === sel.profileId && p.auth === 'api-key' && !!p.vendorId,
+        )
+        if (backing && !anchors.has(backing.id)) anchors.set(backing.id, { ...backing, apiKey: '' })
+      }
       const office: AiSettingsV2 = {
         version: 2,
-        profiles: next.profiles.filter((p) => p.auth === 'chatoffice-login'),
+        profiles: [
+          ...next.profiles.filter((p) => p.auth === 'chatoffice-login'),
+          ...anchors.values(),
+        ],
         ...(next.currentModel ? { currentModel: next.currentModel } : {}),
         ...(next.imageModel ? { imageModel: next.imageModel } : {}),
       }
       const current = await readProfiles().catch(() => [] as AiProviderProfile[])
       const currentByVendor = new Map(current.map((p) => [p.vendorId ?? p.id, p]))
+      // only vendor-backed profiles map to chatop-* routes; anything else in the
+      // view is not office-manageable in harness mode and must be ignored here
+      // (dropping it from the diff, never unsetting its route)
       const wantedByVendor = new Map(
-        next.profiles.filter((p) => p.auth === 'api-key').map((p) => [p.vendorId ?? p.id, p]),
+        next.profiles
+          .filter((p) => p.auth === 'api-key' && p.vendorId)
+          .map((p) => [p.vendorId ?? p.id, p]),
       )
       const ops: unknown[] = []
       // removed profiles → unset their harness routes
@@ -248,7 +331,7 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
       // added/updated profiles → set + credentials.set when the key changed
       for (const [vendorKey, profile] of wantedByVendor) {
         const prev = currentByVendor.get(vendorKey)
-        const { op, keyRef } = profileToHarnessMutation(profile)
+        const { op, keyRef } = profileToHarnessMutation(profile, prev?.apiKeyRef)
         const keyChanged = !prev || (profile.apiKey ?? '') !== '' // fresh profile, or an inline key the user (re)entered
         ops.push(op)
         if (keyChanged && profile.apiKey) {

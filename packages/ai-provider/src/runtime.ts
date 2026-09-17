@@ -54,6 +54,13 @@ export interface AiRuntimeDeps {
   source: AiSettingsSource
   chatoffice: AiRuntimeChatOffice
   translate: (key: string, params?: Record<string, unknown>) => string
+  /**
+   * server-side secret resolution for profiles that only carry a key reference
+   * (harness source: the key lives in dsh's credentials store). Called at run
+   * time so credential rotations take effect on the next request; the resolved
+   * secret never enters settings views.
+   */
+  resolveSecret?: (profile: AiProviderProfile) => Promise<string>
 }
 
 function redact(settings: AiSettingsV2): AiSettingsV2 {
@@ -121,7 +128,15 @@ function mergeKeys(view: AiSettingsV2, stored: AiSettingsV2): AiSettingsV2 {
 }
 
 export function createAiRuntime(deps: AiRuntimeDeps) {
-  const { source, chatoffice, translate } = deps
+  const { source, chatoffice, translate, resolveSecret } = deps
+
+  /** inline key, keyless-local sentinel, or the referenced harness credential */
+  const profileKey = async (profile: AiProviderProfile): Promise<string> => {
+    if (profile.apiKey) return profile.apiKey
+    if (profile.ollamaLike) return 'local'
+    if (resolveSecret) return resolveSecret(profile)
+    return ''
+  }
 
   const readRaw = async (): Promise<AiSettingsV2> => {
     let settings = await source.read()
@@ -134,7 +149,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       const fallback = enabledChatModels(settings).find((m) => {
         if (m.profileId === 'chatoffice') return false
         const profile = findProfile(settings, m.profileId)
-        return !!profile && (!!profile.apiKey || !!profile.ollamaLike)
+        return !!profile && (!!profile.apiKey || !!profile.ollamaLike || !!profile.apiKeyRef)
       })
       if (fallback) {
         settings = {
@@ -183,7 +198,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       // docs/upstream-sync.md round-2 ledger.
       return resolveModelCall(settings, selection, 'codex-cli')
     }
-    const key = profile.apiKey || (profile.ollamaLike ? 'local' : '')
+    const key = await profileKey(profile)
     if (!key) throw new Error(translate('errNoApiKey', { provider: profile.displayName }))
     return resolveModelCall(settings, selection, key)
   }
@@ -286,7 +301,10 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     if (!target.apiKey && target.profileId) {
       const settings = await readRaw()
       const profile = findProfile(settings, target.profileId)
-      if (profile?.apiKey) target = { ...target, apiKey: profile.apiKey }
+      if (profile) {
+        const key = await profileKey(profile)
+        if (key && key !== 'local') target = { ...target, apiKey: key }
+      }
     }
     const models = await discoverModels(target)
     return { models }
@@ -296,7 +314,11 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   const resolveProfileApiKey = async (profileId: string): Promise<string | null> => {
     const settings = await readRaw()
     const profile = findProfile(settings, profileId)
-    return profile?.apiKey ?? null
+    if (!profile) return null
+    // keep the legacy shape for inline/local profiles; only referenced secrets
+    // go through the resolver
+    if (profile.apiKey || profile.ollamaLike || !resolveSecret) return profile.apiKey ?? null
+    return (await resolveSecret(profile)) || null
   }
 
   /** BYOK image model first; chatoffice backend as fallback; error when neither exists.

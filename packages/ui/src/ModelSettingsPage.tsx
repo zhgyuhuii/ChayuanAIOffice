@@ -304,7 +304,7 @@ export function ModelSettingsPage({
       setModelsFromPreset(!!vendor?.presets?.length && !stored?.models.length)
       setApiKeyInput('')
       setKeyFieldValues({})
-      setKeyConfigured(!!stored?.apiKey)
+      setKeyConfigured(!!stored?.apiKey || !!stored?.apiKeyRef)
       return
     }
     setApiUrl(selectedProfile.baseUrl)
@@ -313,7 +313,9 @@ export function ModelSettingsPage({
     setModelsFromPreset(false)
     setApiKeyInput('')
     setKeyFieldValues({})
-    setKeyConfigured(!!selectedProfile.apiKey)
+    // harness-managed profiles carry only a key reference (the secret lives in
+    // the host's credential store) — treat them as configured
+    setKeyConfigured(!!selectedProfile.apiKey || !!selectedProfile.apiKeyRef)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only on vendor switch
   }, [selected])
 

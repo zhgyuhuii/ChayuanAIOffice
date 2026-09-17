@@ -8,6 +8,7 @@
  */
 
 import { degradeInfo } from '@chatoffice/web-bridge'
+import { installKbFetchBridge } from '@chatoffice/web-bridge'
 import { tabManager, type TabKind } from './tab-manager.js'
 import { dockHost } from './dock.js'
 import {
@@ -91,6 +92,11 @@ const langListeners = new Set<(l: string) => void>()
 
 // home chat stream fan-out (see aiStream in installShellShims)
 const CHAT_SESSIONS_KEY = 'chatoffice.home-chat-sessions'
+// AI endpoints are root-relative in the plain web form, but the dsh plugin
+// form serves this host under /chatoffice-app/ — derive the prefix from the
+// document URL so both forms hit the BFF through the same origin.
+const aiUrl = (path: string): string => `${new URL('./', document.baseURI).pathname}${path}`
+
 const aiListeners = new Set<(chunk: unknown) => void>()
 const aiControllers = new Map<string, AbortController>()
 
@@ -188,6 +194,8 @@ const NEW_MENU: Array<{ label: string; kind: TabKind }> = [
 // ── install ─────────────────────────────────────────────────────────────────
 
 export function installShellShims(): void {
+  // same chatOfficeKb contract as the desktop preloads (fetch-backed here)
+  installKbFetchBridge()
   const w = window as unknown as Record<string, unknown>
 
   w.chatOfficeTabs = {
@@ -321,16 +329,16 @@ export function installShellShims(): void {
     cloudProjectsCached: async () => null,
     openCloudProject: async () => degraded('chatOffice.openCloudProject'),
     // AI settings run over the BFF's /ai/* endpoints (keys stay server-side)
-    getAiSettings: async () => (await fetch('/ai/settings')).json() as unknown,
+    getAiSettings: async () => (await fetch(aiUrl('ai/settings'))).json() as unknown,
     setAiSettings: async (view: unknown) => {
-      await fetch('/ai/settings', {
+      await fetch(aiUrl('ai/settings'), {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(view),
       })
     },
     setAiCurrentModel: async (selection: unknown) => {
-      await fetch('/ai/set-current-model', {
+      await fetch(aiUrl('ai/set-current-model'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(selection),
@@ -338,7 +346,7 @@ export function installShellShims(): void {
     },
     aiDiscoverModels: async (target: unknown) =>
       (
-        await fetch('/ai/discover-models', {
+        await fetch(aiUrl('ai/discover-models'), {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(target),
@@ -351,7 +359,7 @@ export function installShellShims(): void {
       const controller = new AbortController()
       aiControllers.set(request.requestId, controller)
       try {
-        const response = await fetch('/ai/stream', {
+        const response = await fetch(aiUrl('ai/stream'), {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(request),
@@ -391,7 +399,7 @@ export function installShellShims(): void {
     },
     aiStreamCancel: async (requestId: string) => {
       aiControllers.get(requestId)?.abort()
-      await fetch('/ai/stream-cancel', {
+      await fetch(aiUrl('ai/stream-cancel'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ requestId }),

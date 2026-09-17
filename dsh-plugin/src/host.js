@@ -13,7 +13,7 @@
  */
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -27,6 +27,47 @@ const PROBE_INTERVAL_MS = 400
 function packageRoot() {
   // dist/host.js → 包根
   return join(dirname(fileURLToPath(import.meta.url)), '..')
+}
+
+/** harness 的代理设置（设置页写进 .npmrc 的 proxy/https-proxy）翻译成 sidecar
+ * 可消费的标准 env。office 自身无持久化代理配置、纯 env 驱动，这是唯一传导点。 */
+function readNpmrcProxy() {
+  const candidates = [join(dshHomeDir(), '.npmrc')]
+  try {
+    const profilesDir = join(dshHomeDir(), 'profiles')
+    for (const name of readdirSync(profilesDir)) {
+      candidates.push(join(profilesDir, name, '.npmrc'))
+    }
+  } catch {
+    /* 没有 profiles 目录 */
+  }
+  for (const file of candidates) {
+    try {
+      const text = readFileSync(file, 'utf8')
+      const pick = (key) => {
+        const m = new RegExp(`^\\s*${key}\\s*=\\s*(\\S+)\\s*$`, 'm').exec(text)
+        return m?.[1]
+      }
+      const proxy = pick('https-proxy') ?? pick('proxy')
+      if (proxy) return proxy
+    } catch {
+      /* 读不到就跳过 */
+    }
+  }
+  return ''
+}
+
+/** 本地端点（ollama 等本地模型服务、sidecar 回环 RPC）永远直连，NO_PROXY 必须盖住。 */
+function withLocalNoProxy(existing) {
+  const parts = new Set(
+    String(existing ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
+  )
+  parts.add('127.0.0.1')
+  parts.add('localhost')
+  return [...parts].join(',')
 }
 
 function dshHomeDir() {
@@ -153,6 +194,16 @@ export function apply(ctx) {
       CHATOFFICE_DSH_HOME: dshHomeDir(),
       CHATOFFICE_DSH_RPC_ORIGIN_FILE: rpcOriginFile,
     }
+    // 代理传导：harness .npmrc 里的代理翻译成标准 env（宿主进程已有代理 env 时
+    // 以宿主为准）；NO_PROXY 盖住回环，保证本地模型服务与 RPC 永远直连
+    const npmrcProxy = readNpmrcProxy()
+    if (npmrcProxy && !env.HTTPS_PROXY && !env.https_proxy) {
+      env.HTTPS_PROXY = npmrcProxy
+      env.https_proxy = npmrcProxy
+      if (!env.HTTP_PROXY && !env.http_proxy) env.HTTP_PROXY = npmrcProxy
+    }
+    env.NO_PROXY = withLocalNoProxy(env.NO_PROXY ?? env.no_proxy)
+    env.no_proxy = env.NO_PROXY
     // dsh web 以 ELECTRON_RUN_AS_NODE 跑在 electron 可执行文件下时，子进程需要同样的标记
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = '1'
 

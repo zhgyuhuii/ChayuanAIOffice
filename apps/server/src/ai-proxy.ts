@@ -20,6 +20,7 @@ import {
   createAiRuntime,
   createFileSource,
   createHarnessSource,
+  resolveHarnessSecret,
   type AiModelSelection,
   type AiRuntime,
   type AiSettingsV2,
@@ -84,6 +85,8 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
     },
   }
   const officeState = createFileSource(settingsFile, fileFs)
+  const readDshFile = async (relativePath: string) =>
+    readFile(resolve(options.harness!.dshHome, relativePath), 'utf8')
   const source = options.harness
     ? createHarnessSource({
         rpc: async (method, payload) => {
@@ -109,13 +112,18 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
           }
           return envelope.result.value
         },
-        readDshFile: async (relativePath) =>
-          readFile(resolve(options.harness!.dshHome, relativePath), 'utf8'),
+        readDshFile,
         officeStateSource: officeState,
       })
     : officeState
   return createAiRuntime({
     source,
+    // harness form: profiles carry apiKeyRef only — resolve the referenced
+    // credential at call time (rotations apply on the next request; the secret
+    // never enters settings views)
+    ...(options.harness
+      ? { resolveSecret: (profile) => resolveHarnessSecret(profile, readDshFile) }
+      : {}),
     // chatoffice login is desktop-only; the web form is pure BYOK
     chatoffice: {
       apiKey: () => '',
