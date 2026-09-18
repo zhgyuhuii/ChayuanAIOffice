@@ -36,7 +36,7 @@ import {
  * replaces the .AppImage file in place, no root needed); deb installs have
  * no updater — users upgrade via `apt install ./<new>.deb`.
  *
- * Dev preview: CHATOFFICE_FAKE_UPDATE=<version> in an unpacked run opens the
+ * Dev preview: GENOFFICE_FAKE_UPDATE=<version> in an unpacked run opens the
  * window with a simulated download so the UI can be exercised end to end.
  */
 
@@ -576,8 +576,8 @@ export function initAutoUpdater(
   started = true
 
   // dev preview of the update window with a simulated download
-  if (!app.isPackaged && process.env.CHATOFFICE_FAKE_UPDATE) {
-    initFakeUpdate(getWindow, process.env.CHATOFFICE_FAKE_UPDATE)
+  if (!app.isPackaged && process.env.GENOFFICE_FAKE_UPDATE) {
+    initFakeUpdate(getWindow, process.env.GENOFFICE_FAKE_UPDATE)
     return
   }
   // Unpacked runs have no app-update.yml and must not hit the CDN with a

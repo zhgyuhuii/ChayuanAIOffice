@@ -189,8 +189,10 @@ describe('source splice', () => {
 
   it('round-trips every markdown file in the repository', () => {
     const root = execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim()
-    const files = execSync('git ls-files -- "*.md"', { cwd: root, encoding: 'utf8' })
-      .split('\n')
+    // -z: NUL-separated, so CJK filenames are not shell-quoted into
+    // unusable `"brand-samples/samples/....md"` entries
+    const files = execSync('git ls-files -z -- "*.md"', { cwd: root, encoding: 'utf8' })
+      .split('\0')
       .filter(Boolean)
     expect(files.length).toBeGreaterThan(20)
     const editor = createEditor()
