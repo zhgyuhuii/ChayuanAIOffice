@@ -179,8 +179,6 @@ export interface RibbonProps {
   onShowRuler: (v: boolean) => void
   showNav: boolean
   onShowNav: (v: boolean) => void
-  showFiles?: boolean
-  onShowFiles?: (v: boolean) => void
   commentCount: number
   /** unresolved root comments (drives the AI resolve-comments action) */
   openCommentCount: number
@@ -494,7 +492,7 @@ function RibbonInner({
   }, [collapsed])
   const [dropdown, setDropdown] = useState<string | null>(null)
   // null = Automatic: the pen button clears the run colour instead of writing one
-  const [penColor, setPenColor] = useState<string | null>('C00000')
+  const [penColor, setPenColor] = useState('C00000')
   const [penHighlight, setPenHighlight] = useState('yellow')
   const [painter, setPainter] = useState<PainterState | null>(null)
   const fontStepRef = useRef<{
@@ -2300,8 +2298,7 @@ function RibbonInner({
             onShowRuler={onShowRuler}
             showNav={showNav}
             onShowNav={onShowNav}
-            showFiles={showFiles ?? false}
-            onShowFiles={onShowFiles ?? (() => {})}            viewMode={viewMode}
+            viewMode={viewMode}
             onViewMode={onViewMode}
             readMode={readMode}
             onReadMode={onReadMode}

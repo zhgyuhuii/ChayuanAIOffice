@@ -27,20 +27,6 @@ export interface NewFileOpts {
   /** route the new file into a Home project (local feature) */
   projectId?: string
 }
-export type {
-  FolderEntry,
-  FolderListing,
-  FolderRoot,
-  MoveConflictPolicy,
-  MoveResult,
-} from '@chatoffice/ui'
-import type { FolderListing, FolderRoot, MoveConflictPolicy, MoveResult } from '@chatoffice/ui'
-
-/** folder the new file's first save should land in (upstream 7036122; Home "Folders" panel) */
-export interface NewFileOpts {
-  dir?: string
-}
-import type { AiPanelPrefs } from '@chatoffice/ui/ai-panel-prefs'
 import type { DockKind } from './dock-api'
 
 /** UI language; kept self-contained here (mirrors Lang in @chatoffice/i18n) */
@@ -616,7 +602,10 @@ export interface ProjectHomeApi {
   pickFolder(): Promise<string | null>
   moveFile(filePath: string, projectId: string): Promise<void>
   /** fetch the project timeline */
-  getTimeline(projectId: string, limit?: number): Promise<TimelineEntryItem[]>// ── Folder tree (home "Folders" panel over the default save folder) ──────
+  getTimeline(projectId: string, limit?: number): Promise<TimelineEntryItem[]>
+}
+
+// ── Folder tree (home "Folders" panel over the default save folder) ──────
 
 export interface FolderRoot {
   path: string

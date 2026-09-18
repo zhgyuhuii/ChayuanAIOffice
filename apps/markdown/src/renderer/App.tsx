@@ -958,6 +958,8 @@ export default function App() {
             zoomOut: t('zoomOut'),
             actualSize: t('imageActualSize'),
             fitToWindow: t('imageFitWindow'),
+            save: t('saveImageAs'),
+            close: t('viewImage'),
           }}
           onClose={() => setViewImage(null)}
         />

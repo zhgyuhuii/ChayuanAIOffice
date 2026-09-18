@@ -46,7 +46,7 @@ import {
   slidesIsDirty,
 } from '../../../slides/src/main/slides-main'
 import type { DockEditorOptions, DockKind, DockRect, DockTabSummary } from '../shared/dock-api'
-import type { OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
+import type { DocumentTabKind, OpenDocumentTab, TabKind, TabSummary } from '../shared/tabs-api'
 interface TabRecord {
   id: string
   kind: TabKind

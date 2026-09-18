@@ -12,7 +12,8 @@ import '@chatoffice/ui/ribbon-collapse.css'
 import '@chatoffice/ui/markdown.css'
 import '@chatoffice/ui/ai-panel-prefs.css'
 import '@chatoffice/ui/ai-scope-quote.css'
-import '@chatoffice/ui/files-pane.css'import './styles.css'
+import '@chatoffice/ui/files-pane.css'
+import './styles.css'
 import { applyAiPanelPrefs, installScreenTips } from '@chatoffice/ui'
 
 installScreenTips()

@@ -3308,7 +3308,7 @@ export function registerSheetsIpc(): void {
       // Only shell-created blank drafts take a proposed name: opened and
       // converted sessions already carry their identity.
       if (!session?.blankDraft || session.suggestSaveAs === undefined) return
-      const base = sanitizeSaveAsBase(z.string().min(1).max(100).parse(baseName))
+      const base = sanitizeAutoRenameBase(z.string().min(1).max(100).parse(baseName))
       if (!base) return
       entry.sessions.set(validatedSessionId, {
         ...session,

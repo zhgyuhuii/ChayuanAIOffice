@@ -523,7 +523,8 @@ export function ExcelShell({
 }: ExcelShellProps): React.JSX.Element {
   const { t } = useI18n()
   // tab row clips instead of wrapping when narrow; wheel + edge arrows page it
-  const tabStrip = useTabStripOverflow()  const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
+  const tabStrip = useTabStripOverflow()
+  const [activeTab, setActiveTab] = useState<RibbonTab>('Home')
   // WPS 双击标签折叠/展开功能区; 右下角图标同; 状态本地持久化
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -2169,7 +2170,8 @@ function Ribbon({
     } finally {
       setAiReplaceBusy(false)
     }
-  }  const [fontColor, setFontColor] = useState('#C00000')
+  }
+  const [fontColor, setFontColor] = useState('#C00000')
   const [fillColor, setFillColor] = useState('#FFF2CC')
   const [borderColor, setBorderColor] = useState('#000000')
   // 边框「笔」的线型（对比清单 8 绘图边框组）：thin/medium/thick/double/hair/dashed/dotted

@@ -2664,7 +2664,8 @@ function dropDocWriter(wcId: number): void {
   imageExportTemps.delete(wcId)
   imageExportDirs.delete(wcId)
   docDiskStates.delete(wcId)
-  for (const binding of remoteDocBindings.values()) binding.wcIds.delete(wcId)  forgetLazyMediaOwner(wcId)
+  for (const binding of remoteDocBindings.values()) binding.wcIds.delete(wcId)
+  forgetLazyMediaOwner(wcId)
   // Destroyed renderers count as torn down too: window-close paths never run
   // teardownDocsRenderer, but an in-flight save handler resuming after the
   // destruction must still fail its re-check (wcIds are never reused, so the
@@ -2797,7 +2798,7 @@ async function maybeRecoverDocBytes(
 const MAX_OPEN_BYTES = 512 * 1024 * 1024
 
 async function showOpenError(wcId: number, detail: string): Promise<void> {
-  const wc = webContents.fromId(wcId)
+  const wc = electronWebContents.fromId(wcId)
   const parent = docsShellWindow ?? (wc && BrowserWindow.fromWebContents(wc)) ?? mainWindow
   const options = { type: 'error' as const, message: tm('dlgOpenDoc'), detail }
   if (parent && !parent.isDestroyed()) await dialog.showMessageBox(parent, options)
@@ -3555,7 +3556,7 @@ async function saveRemoteDocument(
     if (identity.cachePath) {
       // keep the cache byte-identical so ordinary disk-state tracking stays honest
       await atomicWriteFile(identity.cachePath, bytes)
-      await rememberDiskState(senderId, identity.cachePath, bytes)
+      await rememberDiskState(senderId, identity.cachePath, sha256Hex(bytes))
     }
     if (tornDownWcIds.has(senderId))
       return { ok: false, error: 'save target is not an opened document' }
