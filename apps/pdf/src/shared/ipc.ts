@@ -7,6 +7,7 @@ export const PDF_CHANNELS = {
   readFile: 'pdf:read-file',
   save: 'pdf:save',
   writeRecovery: 'pdf:write-recovery',
+  requestRedactionCopy: 'pdf:request-redaction-copy',
   isUntitled: 'pdf:is-untitled',
   validateTextEdits: 'pdf:validate-text-edits',
   listEditFonts: 'pdf:list-edit-fonts',
@@ -416,6 +417,12 @@ export interface StaticFormFillRecord {
   align?: 'left' | 'center' | 'right'
 }
 
+/** A pending area selected for permanent native PDF redaction. PDF user space, y up. */
+export interface RedactionInput {
+  pageIndex: number
+  rect: [number, number, number, number]
+}
+
 /** One OCR line from the system engine: normalized bottom-left boxes relative to
     the submitted image ([x0,y0,x1,y1], 0..1), with optional word-level char boxes. */
 export interface PdfOcrLine {
@@ -484,6 +491,8 @@ export interface SavePdfRequest {
   textInserts?: TextInsertInput[]
   /** Content-stream image operations, applied right after textEdits (same pdfium stage) */
   imageEdits?: ImageEditInput[]
+  /** Permanent redactions are accepted only for an explicitly authorized Save As copy. */
+  redactions?: RedactionInput[]
   /** Complete resulting set; omitted means preserve existing embedded metadata. */
   staticFormFills?: StaticFormFillRecord[]
   /** Page rotation deltas (original page index → multiple of 90 clockwise) */
@@ -695,8 +704,8 @@ export interface PdfApi {
   /** Crash-recovery copy of an untitled document's pending edits, written under
       userData (best-effort; never prompts, never touches the temp backing file). */
   writeRecovery(request: SavePdfRequest): Promise<{ ok: boolean }>
-  /** Whether the path is this view's hidden temp-backed untitled document (gates
-      the autosave split: recovery copy for untitled, in-place save otherwise) */
+  /** Opens a Save As dialog and grants a single target for the confirmed redaction copy. */
+  requestRedactionCopy(path: string): Promise<boolean>
   isUntitled(path: string): Promise<boolean>
   /** Dry-run match of pending text edits against the file: reason null = would apply */
   validateTextEdits(request: ValidateTextEditsRequest): Promise<TextEditValidation[]>

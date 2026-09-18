@@ -31,6 +31,9 @@
   /* annotation ink previews match MARKUP_COLORS in annotations.ts */
   --pdf-ink-underline: #2b66ff;
   --pdf-ink-strike: #db3830;
+  --pdf-redaction-stripe-dark: rgba(0, 0, 0, 0.72);
+  --pdf-redaction-stripe-light: rgba(58, 58, 58, 0.78);
+  --pdf-redaction-border: #d93333;
   --pdf-form-border: rgb(60 120 216 / 55%);
   --pdf-form-bg: rgb(235 243 255 / 55%);
   --pdf-form-text: #222;
@@ -1564,6 +1567,28 @@ button {
   z-index: 4;
   pointer-events: none;
   overflow: visible;
+}
+
+.pdf-redaction-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  overflow: visible;
+}
+
+.pdf-redaction-mark {
+  position: absolute;
+  box-sizing: border-box;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--pdf-redaction-stripe-dark),
+    var(--pdf-redaction-stripe-dark) 7px,
+    var(--pdf-redaction-stripe-light) 7px,
+    var(--pdf-redaction-stripe-light) 14px
+  );
+  border: 2px solid var(--pdf-redaction-border);
+  pointer-events: none;
 }
 
 /* With a tool active, take over the pointer and disable text selection so dragging doesn't select text */

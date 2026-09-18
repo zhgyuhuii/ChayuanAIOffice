@@ -22,7 +22,7 @@
     "@chatoffice/i18n": "*",
     "@chatoffice/ribbon": "*",
     "@chatoffice/ui": "*",
-    "@embedpdf/pdfium": "^2.15.0",
+    "@embedpdf/pdfium": "^2.15.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.4",
