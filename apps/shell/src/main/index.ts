@@ -286,7 +286,6 @@ import type {
   UiTheme,
 } from '../shared/home-api'
 import { HOME_CHANNELS, type SystemSearchEntry, type SystemSearchResult } from '../shared/home-api'
-import { registerSharedKbIpc } from '@chatoffice/ai-host'
 import {
   normalizeAiPanelPrefs,
   sameAiPanelPrefs,
@@ -3828,9 +3827,10 @@ function registerRemoteFilesIpc(): void {
 }
 
 function registerHomeIpc(): void {
-  // knowledge-base discovery + read surface for the home chat composer and
-  // every embedded editor view (this process answers for them all)
-  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
+  // knowledge-base discovery + read surface: registered by docs-main's
+  // registerAiIpc() (called above) exactly once for all window types —
+  // a second registration here crashed the packaged app ("second handler
+  // for 'kb:discover'"); the home composer and embedded editors share it.
   // signed-in means ChatOffice's own device-code login; the shared chatoffice CLI key
   // is only a silent fallback, deliberately not shown here to nudge users onto our key
   ipcMain.handle(HOME_CHANNELS.accountStatus, async () => {
