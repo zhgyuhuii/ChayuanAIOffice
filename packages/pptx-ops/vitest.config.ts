@@ -7,14 +7,14 @@ const here = dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   resolve: {
     alias: {
-      '@genoffice/pptx-engine/table-grid': resolve(here, '../pptx-engine/src/table-grid.ts'),
-      '@genoffice/pptx-engine/identity': resolve(here, '../pptx-engine/src/identity.ts'),
-      '@genoffice/pptx-engine/background-promote': resolve(
+      '@chatoffice/pptx-engine/table-grid': resolve(here, '../pptx-engine/src/table-grid.ts'),
+      '@chatoffice/pptx-engine/identity': resolve(here, '../pptx-engine/src/identity.ts'),
+      '@chatoffice/pptx-engine/background-promote': resolve(
         here,
         '../pptx-engine/src/background-promote.ts',
       ),
-      '@genoffice/pptx-engine': resolve(here, '../pptx-engine/src/index.ts'),
-      '@genoffice/docx-engine/math': resolve(here, '../docx-engine/src/math.ts'),
+      '@chatoffice/pptx-engine': resolve(here, '../pptx-engine/src/index.ts'),
+      '@chatoffice/docx-engine/math': resolve(here, '../docx-engine/src/math.ts'),
     },
   },
   test: {
