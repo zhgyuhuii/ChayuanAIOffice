@@ -6575,6 +6575,30 @@ export default function App() {
             <div className="pdf-body">
               {sidebar === 'outline' && outline && (
                 <div className="pdf-thumbs pdf-outline-pane" style={{ width: sidebarW }}>
+                  <div className="pdf-outline-header">
+                    <span>{t('outline')}</span>
+                    <button
+                      type="button"
+                      className="rb-icon"
+                      aria-label={t('aiCollapsePanel')}
+                      data-tip={t('aiCollapsePanel')}
+                      onClick={() => setSidebar(null)}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m14 6-6 6 6 6" />
+                      </svg>
+                    </button>
+                  </div>
                   <OutlinePanel outline={outline} onGoToDest={(dest) => void goToDest(dest)} />
                 </div>
               )}
@@ -6582,8 +6606,7 @@ export default function App() {
                 <div ref={thumbsRef} className="pdf-thumbs" style={{ width: sidebarW }}>
                   {visList.map((origIdx, v) => {
                     const size = dispSize(origIdx)
-                    return (
-                      <div
+                    return (                      <div
                         key={origIdx}
                         ref={setThumbRef(v)}
                         data-idx={v}
