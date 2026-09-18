@@ -103,7 +103,8 @@ import {
   isMacStandaloneWindow,
   useAutoSavePref,
   type AiScopeQuoteData,
-} from '@chatoffice/ui'import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
+} from '@chatoffice/ui'
+import type { ChartPresetDef, IconDef, SmartArtDef } from './insert-presets'
 import { InsertImageDialog } from '@chatoffice/ui/InsertImageDialog'
 import type { InsertImageBridge } from '@chatoffice/ui/InsertImageDialog'
 import type { WebImageItem } from '@chatoffice/ui/InsertImageDialog'
@@ -3538,8 +3539,6 @@ export function App() {
           {/* ribbon inside the dock body: a left/right docked AI panel spans the
               full window height, level with the ribbon's top edge */}
           <Ribbon
-        filesOpen={filesOpen}
-        onToggleFiles={() => setFilesOpen((v) => !v)}
             hasDoc={!!slide}
             deckEmpty={deckEmpty}
             canUndo={histState.canUndo}

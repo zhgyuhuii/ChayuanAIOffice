@@ -192,7 +192,6 @@ import {
   markSheetsShuttingDown,
   requestSheetsClose,
   resolveSheetsSessionPath,
-  markSheetsUntitledPath,
   authorizeMcpSheetWrite,
   sendSheetsMenuAction,
   setSheetsBlankDraftHook,
