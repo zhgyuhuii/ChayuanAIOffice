@@ -108,7 +108,19 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`6f8a892`（2026-09-17 第九轮完成并入 main；下次 `git fetch upstream` 后从 `6f8a892..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`5b6dfbf`（2026-09-18 第十轮完成并入 main；下次 `git fetch upstream` 后从 `5b6dfbf..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十轮增量（2026-09-18，6f8a892..5b6dfbf：6 提交，施工于 sync/upstream-20260918 分支，merge=58c26c34）
+
+| 内容 | 结果 |
+|---|---|
+| 2289469 #461 pptx 图表 1904 日期系统 | 干净 pick（101 测试绿） |
+| 80d2a46 #463 **9-17 Sync 快照**（259 文件 +10.5k/−3.5k） | 63 冲突分桶全清。**分域采纳**：docx-engine lazy-media/zip-splice 全收（docs CSP 增 chatoffice-docx-media: 协议+electron.vite 别名+parse/patch lazy 链，patch.ts 本地 echart 分支与上游 images 分支链接并存）；docs prosemirror-perf/touched-blocks/top-level-pos/protected-render/pagination 系列引擎件收（App/Ribbon/main.tsx 保本地=DockShell 域；pagination-gaps 融合=上游批量测量结构+本地 per-section secLeftPx 超集，LOCAL 标记）；markdown sourceSplice 保存拼接/diagrams(mermaid+wavedrom)/图片查看器/拼写检查钮全收（App 织入 DockShell 结构内，IconSpellcheck 走 './icons' 非 ui 包）；sheets border-overflow-exclusion/cf-empty-fast-path/context-submenu-reopen-fix/copy-materialize 收（ExcelShell/App/styles 保本地）；cli mcp http/remote/files 三新模块收（run.ts scratchDir 保本地 chatoffice 前缀+base.scratchDir 覆盖）；shell updater 重做收（env 名保 GENOFFICE_FAKE_UPDATE 豁免）；app-menu checkUpdates 收（品牌 ChaAI Office）；ai-provider DeepSeek V4.1 Flash 目录重组收（测试按 chatoffice id 改编，Agnes/Opper 并存）；home-api Folder 类型保本地定义（上游 re-export 指向已删 files-pane 域） |
+| **FilesPane 全家保本地**（铁律） | 上游把 FilesPane 从 ui 包整体删除（-1400 行）；本地 markdown 编辑器在用——ui FilesPane/files-pane.css/types/strings、electron-utils files-pane-bridge、六 app 的 FilesPane 渲染 hunks 全部保本地，UD/DU 冲突按"本地活功能必胜"解，ui index/files-pane.css 导出面回补；记空 pick |
+| 3cfb70f #464 file-parse 空共享串/畸形引用、aa15792 #466 恶形幻灯尺寸、041e11b #469 媒体测试限流呈现、5b6dfbf #470 imageDPI 哈希缓存 | 全部干净 pick |
+| 门禁 | typecheck 全工作区 0；全仓测试链 exit 0（docs 269 件 2729 用例/sheets 258 件 2801/shell 572/slides 883/pdf 747/markdown 392/cli 270+…）；lint 改动文件 6 error 全 main 存量；品牌 grep 豁免外零命中；build:web exit 0 |
+
+**本轮新坑**：①品牌全局 sed 三类误伤（本轮三处回正：GENOFFICE_FAKE_UPDATE env=豁免清单/字体族名 ChatOffice Hiragino Sans=内部标识符/测试期望 URL genspark-ai→本地仓——品牌 pass 后必须跑一遍"豁免词表 grep"：`GENOFFICE_.*env 名/ChatOffice(字体|Poppins|UIKana)/genspark-ai`）；②cherry-pick 自动合并会造**行粘连**（双方同位加行拼成一行 `} from '...'import ...`，tsc 有时漏报但 eslint Parsing error 必现——收敛配方=eslint 扫改动文件抓 Parsing error+python 逐处拆行）；③keep-ours 解法的文件里上游给同函数加的新 prop 会成死线（html Ribbon onSaveAs/typecheck 才暴露——keep-ours 后必须比对上游 hunk 里"加 prop"的部分重放到本地调用点）；④git ls-files 默认对 CJK 文件名 shell 引号转义（测试遍历 .md 时 ENOENT——用 `-z` NUL 分隔）；⑤commit 前 add 列表必须与修复文件核对（本轮 slides 三件漏 add，靠 checkout main 被"Aborting"拦下才发现）。
 
 ### 第九轮增量（2026-09-17，09485f8..6f8a892：5 提交，施工于 sync/upstream-20260917 分支，merge=faeb9483）
 
