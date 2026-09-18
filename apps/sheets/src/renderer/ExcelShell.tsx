@@ -4562,7 +4562,7 @@ function Ribbon({
                     data-tip={t('appCurrency')}
                     display={
                       <>
-                        <ToolSymbol symbol="💰" /> ⌄
+                        <ToolSymbol symbol="💰" />
                       </>
                     }
                     options={[
@@ -6671,8 +6671,14 @@ function CellStyleSelect({
                       className="cell-style-swatch"
                       style={{
                         // LOCAL(适配): 快照 theme 对象色待第九轮 Univer 主题渲染，先取字符串色
-                        background: typeof style.patch.fillColor === 'string' ? style.patch.fillColor : '#FFFFFF',
-                        color: typeof style.patch.fontColor === 'string' ? style.patch.fontColor : '#1F1F1F',
+                        background:
+                          typeof style.patch.fillColor === 'string'
+                            ? style.patch.fillColor
+                            : '#FFFFFF',
+                        color:
+                          typeof style.patch.fontColor === 'string'
+                            ? style.patch.fontColor
+                            : '#1F1F1F',
                       }}
                     >
                       <i>{t('appCellStyleSwatchSample')}</i>

@@ -6813,8 +6813,14 @@ textarea:focus {
   min-width: 0;
 }
 
-/* 行和列/工作表菜单是宽触发块，不参与组合框钳宽（钳了文字被截半） */
-.degrade-grid .rowcol-menu {
+/* 行和列/工作表菜单是宽触发块，不参与组合框钳宽（钳了文字被截半）。
+   特异性须与上方钳宽规则同级（0,3,0，靠文件靠后取胜）——旧写法
+   .degrade-grid .rowcol-menu 只有 (0,2,0)，从未真正赢过钳宽；
+   且 sheet-menu（工作表）当时根本不在豁免之列 */
+.ribbon-group.degrade-1 .rowcol-menu,
+.ribbon-group.degrade-1 .sheet-menu,
+.ribbon-group.degrade-2 .rowcol-menu,
+.ribbon-group.degrade-2 .sheet-menu {
   max-width: none;
 }
 
