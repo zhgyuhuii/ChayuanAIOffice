@@ -108,7 +108,20 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`5b6dfbf`（2026-09-18 第十轮完成并入 main；下次 `git fetch upstream` 后从 `5b6dfbf..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`316ded6`（2026-09-18 第十一轮完成并入 main；下次 `git fetch upstream` 后从 `316ded6..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十一轮增量（2026-09-18 下午，5b6dfbf..316ded6：9 提交，施工于 sync/upstream-20260918b 分支，merge=6adda5db）
+
+| 内容 | 结果 |
+|---|---|
+| c9894a0 #473 PDF 大纲折叠+home 行菜单视口保持 | **adapted**：pdf-outline-header 织入本地 DockShell 布局（上游块在其旧布局内）；home.css CSS anchor(position-anchor/position-try) 自动合入 |
+| 84b1181 #477 sheets 计算数不入文本路径+按名称引用 | **并集**：formula-values(modelCellValue)/mcp-bridge(normalizeSheetRefs) + 新件 mcp-sheet-refs.ts；e2e helpers 保 CHATOFFICE_LANG env 名 |
+| fc236cf/#483、63900c2/#484、1639ef7/#485、717b931/#489 四包测试 | 干净 pick；**pptx-ops op-docs 同步校验加 LOCAL_SIG_ONLY 豁免**（setPictureLum/addWordArt/addEchart/getEchart/updateEchart=本地超集 op 只有 sig 无上游 md 块——第八轮 sig-only 先例的包级重放） |
+| af0fd91 #475 **PDF 永久区域脱敏**（12 文件） | **分域采纳**：RedactionLayer 组件+redaction.ts 引擎件全收；App 特性块十处织入本地布局（redactions state/ordinaryDirty 分流/applyingRedactions 保存分流/结构操作三阻断/redact+清除+应用钮/图层渲染）；pdf-main requestRedactionCopy handler 收；**autoRename/isUntitled 按第八轮裁定拒收**（本地 untitledPdfMetas 延迟落盘架构替代）；strings 8 redact 键×20 语言重建（zh/zh-TW 中文、其余 en 兜底——上游只给 en 主块+zh 从属块加值，本地全语言同键契约需补齐） |
+| fd95053 #488 对话框 role/focus/escape、316ded6 #482 html2docx IR 校验/中止/图片等待 | 干净 pick |
+| 门禁 | typecheck 0；十工作区测试链 exit 0（docs 2621/sheets 2839/shell 572/slides 878/pdf 760/markdown 420/html2docx 79/pptx-ops 32/xlsx-gateway 55/pipelines 57）；lint 改动文件 0 error；品牌 grep 豁免外零命中（#477/#483 新文件 @genoffice 残留补洗含 genoffice.cjs 产物名/open_in_genoffice→open_in_chaoffice/__genofficeDebug/vitest 别名）；build:web exit 0 |
+
+**本轮新坑**：①**package-lock 冲突未解直接 git add 会让全仓 vitest/vite 启动炸**（"Exit prior to config file resolving"=lock JSON 语法错，症状在测试不在 git——lock 冲突必须先 npm install 重生成再 add）；②resolve 冲突块的 python 脚本 endmark 匹配必须吃满到行尾（残留半个 `>>>>>>>` 标记同样炸 vite:esbuild，grep 扫描要在 add 前做）；③pdf strings 双引号语言键 `"zh-TW":` 不进 `'?[\w-]+'?:` 正则——块级脚本必须同时吃单双引号；④pdf strings 上游结构(主 en 块+localized 从属块)与本地(全语言同键)不同构，新键需 8×20 全量补齐而非照抄上游三处。
 
 ### 第十轮增量（2026-09-18，6f8a892..5b6dfbf：6 提交，施工于 sync/upstream-20260918 分支，merge=58c26c34）
 
