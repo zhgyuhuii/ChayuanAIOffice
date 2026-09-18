@@ -62,6 +62,7 @@ import { InMemoryWorkbookAdapter } from '@chatoffice/xlsx-gateway/domain/in-memo
 import { WORST_FIRST_ICON_SETS } from '@chatoffice/xlsx-gateway/gateway/xlsx-cf'
 import type {
   CellFormatState,
+  CellScalar,
   CellState,
   WorkbookSnapshot,
 } from '@chatoffice/xlsx-gateway/domain/workbook.types'
@@ -7374,6 +7375,43 @@ export function clearLazyState(state: LazyWorkbookState | null): void {
   state.retryTimers.clear()
   state.loadingKeys.clear()
   state.loadedRanges.clear()
+}
+
+/**
+ * A cell's stored value, as opposed to the text its number format renders.
+ *
+ * `lazyCellReader` reports both: `value` is the view model's display text and
+ * `rawValue` the model value behind it. Display text is right for the AI's
+ * reading tools (a date shows as a date) but wrong for anything that reports or
+ * re-saves the data: General re-renders a number to fit the column width
+ * (numfmt-fix.ts formatGeneral), so `=1/3` in a narrow column reads back as
+ * "0.333333", and a consumer that treats that text as the value turns a
+ * computed number into a string. Prefer the model value wherever the engine
+ * has one.
+ *
+ * The exception is the cached-value fallback (formula-cached-fallback.ts):
+ * when the engine's result is an error but the file carries a usable cached
+ * value, the display deliberately shows the cache, and that visible value is
+ * the better answer than the error literal behind it.
+ */
+export function modelCellValue(cell: {
+  readonly value: CellScalar
+  readonly rawValue?: CellScalar | undefined
+}): CellScalar {
+  const raw = cell.rawValue
+  if (raw === undefined || raw === null) return cell.value
+  if (typeof raw === 'string' && EXCEL_ERROR_LITERALS.has(raw)) {
+    const display = cell.value
+    // `null` is the engine not having written a result yet, not a fallback.
+    if (
+      display !== null &&
+      display !== undefined &&
+      !(typeof display === 'string' && EXCEL_ERROR_LITERALS.has(display))
+    ) {
+      return display
+    }
+  }
+  return raw
 }
 
 /// Reads a cell's current content for AI previews and drift checks.

@@ -258,6 +258,9 @@ import {
 
 GlobalWorkerOptions.workerSrc = workerUrl
 
+import { RedactionLayer } from './RedactionLayer'
+import type { LocalRedaction } from './RedactionLayer'
+
 const DRAW_TOOLS = [
   { tool: 'ink' as const, icon: IconInk, key: 'drawInk' as const },
   { tool: 'rect' as const, icon: IconRect, key: 'drawRect' as const },
@@ -376,6 +379,9 @@ export default function App() {
   const drawingsRef = useRef(drawings)
   drawingsRef.current = drawings
   const [drawTool, setDrawTool] = useState<DrawTool | null>(null)
+  const [redactions, setRedactions] = useState<LocalRedaction[]>([])
+  const redactionApplyConfirmedRef = useRef(false)
+  const [redactionCopyInFlight, setRedactionCopyInFlight] = useState(false)
   const [textEdits, setTextEdits] = useState<LocalTextEdit[]>([])
   const [textInserts, setTextInserts] = useState<LocalTextInsert[]>([])
   // AI tool calls within one turn read and write inserts through this mirror (see orderRef)
@@ -1035,6 +1041,8 @@ export default function App() {
         setDeleted(new Set())
         setOrder(null)
         setMetadata(null)
+        setRedactions([])
+        redactionApplyConfirmedRef.current = false
       } else {
         // Post-save reload: subtract exactly what the save wrote. Edits made while the
         // write was in flight stay pending, with page indices remapped through the
@@ -1559,7 +1567,7 @@ export default function App() {
     return [...records.values()]
   }, [imageEdits, savedStaticFormFills])
 
-  const dirty =
+  const ordinaryDirty =
     markups.length > 0 ||
     annotDeletes.length > 0 ||
     noteEdits.length > 0 ||
@@ -1573,6 +1581,7 @@ export default function App() {
     deleted.size > 0 ||
     order !== null ||
     metadata !== null
+  const dirty = redactions.length > 0 || ordinaryDirty
 
   // Mirror dirty state to the main process (close-tab/close-window guard)
   useEffect(() => {
@@ -3460,7 +3469,8 @@ export default function App() {
             ]
           })
       : []
-    const edits = flushed
+    const applyingRedactions = redactionApplyConfirmedRef.current && redactions.length > 0
+    const edits = applyingRedactions
       ? {
           markups: [],
           drawings: [],
@@ -3470,8 +3480,20 @@ export default function App() {
           textInserts: [],
           imageEdits: [],
           ...(lateNoteEdits.length > 0 ? { noteEdits: lateNoteEdits } : {}),
+          redactions: redactions.map(({ pageIndex, rect }) => ({ pageIndex, rect })),
         }
-      : editsPayload(draftEdits, noteFlush)
+      : flushed
+        ? {
+            markups: [],
+            drawings: [],
+            formValues: [],
+            stamps: [],
+            textEdits: [],
+            textInserts: [],
+            imageEdits: [],
+            ...(lateNoteEdits.length > 0 ? { noteEdits: lateNoteEdits } : {}),
+          }
+        : editsPayload(draftEdits, noteFlush)
     setSaveState('saving')
     const result = await window.pdfApi.save({ path: filePath, targetPath, ...edits })
     if (!result.ok) {
@@ -3497,7 +3519,30 @@ export default function App() {
     // Back to idle, not 'saved': only the copy was written — this tab's edits are
     // still pending, so a saved-confirmation next to the unsaved badge would lie
     setSaveState('idle')
+    if (applyingRedactions) {
+      redactionApplyConfirmedRef.current = false
+      setRedactions([])
+    }
     return true
+  }
+
+  const requestRedactionSaveAs = () => {
+    if (redactions.length === 0) return
+    const otherPending = ordinaryDirty
+    if (otherPending) {
+      showNotice(t('redactSaveFirst'))
+      return
+    }
+    if (!window.confirm(t('redactConfirm'))) return
+    redactionApplyConfirmedRef.current = true
+    setRedactionCopyInFlight(true)
+    void window.pdfApi
+      .requestRedactionCopy(filePath)
+      .catch(() => undefined)
+      .finally(() => {
+        redactionApplyConfirmedRef.current = false
+        setRedactionCopyInFlight(false)
+      })
   }
 
   // Autosave pauses while the shell's Save As flow is open: the save dialog blurs the
@@ -3517,7 +3562,7 @@ export default function App() {
   // first-save dialog — so its tick writes a crash-recovery copy instead.
   useAutosave(
     () =>
-      dirty &&
+      ordinaryDirty &&
       saveInFlightRef.current === null &&
       filePath !== '' &&
       !readOnly &&
@@ -3537,6 +3582,7 @@ export default function App() {
   // ── Page operations ──
 
   const rotatePages = (origIdxs: number[], dir: RotateDelta): string | null => {
+    if (redactions.length > 0) return t('redactStructureBlocked')
     if (readOnly || origIdxs.length === 0) return null
     return applyEditOps([{ op: 'rotatePages', pages: origIdxs, dir }]).failures[0]?.error ?? null
   }
@@ -3547,6 +3593,10 @@ export default function App() {
 
   /** Reverse the visible page order; deleted pages stay at the tail like movePage */
   const reversePages = () => {
+    if (redactions.length > 0) {
+      showNotice(t('redactStructureBlocked'))
+      return
+    }
     if (pageCount <= 1 || readOnly) return
     commitOrder([...visList].reverse())
   }
@@ -6111,6 +6161,42 @@ export default function App() {
                   </button>
                 ))}
                 <button
+                  className={`rb-big${drawTool === 'redact' ? ' active' : ''}`}
+                  disabled={readOnly}
+                  data-tip={t('redactHint')}
+                  onClick={() => {
+                    setEditTextMode(false)
+                    setTextDraft(null)
+                    setPendingTextInsert(null)
+                    setImagePick(null)
+                    setEditImageMode(false)
+                    setDrawTool((tool) => (tool === 'redact' ? null : 'redact'))
+                  }}
+                >
+                  <span className="rb-big-icon">
+                    <IconRect />
+                  </span>
+                  {t('redact')}
+                </button>
+                {redactions.length > 0 && (
+                  <>
+                    <button
+                      className="rb-big"
+                      data-tip={t('redactClear')}
+                      onClick={() => setRedactions([])}
+                    >
+                      {t('redactClear')}
+                    </button>
+                    <button
+                      className="rb-big"
+                      data-tip={t('redactApply')}
+                      onClick={requestRedactionSaveAs}
+                    >
+                      {t('redactApply')}
+                    </button>
+                  </>
+                )}
+                <button
                   className={`rb-big${pendingSign ? ' active' : ''}`}
                   disabled={readOnly}
                   data-tip={t('signTitle')}
@@ -6575,6 +6661,30 @@ export default function App() {
             <div className="pdf-body">
               {sidebar === 'outline' && outline && (
                 <div className="pdf-thumbs pdf-outline-pane" style={{ width: sidebarW }}>
+                  <div className="pdf-outline-header">
+                    <span>{t('outline')}</span>
+                    <button
+                      type="button"
+                      className="rb-icon"
+                      aria-label={t('aiCollapsePanel')}
+                      data-tip={t('aiCollapsePanel')}
+                      onClick={() => setSidebar(null)}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m14 6-6 6 6 6" />
+                      </svg>
+                    </button>
+                  </div>
                   <OutlinePanel outline={outline} onGoToDest={(dest) => void goToDest(dest)} />
                 </div>
               )}
@@ -6582,8 +6692,7 @@ export default function App() {
                 <div ref={thumbsRef} className="pdf-thumbs" style={{ width: sidebarW }}>
                   {visList.map((origIdx, v) => {
                     const size = dispSize(origIdx)
-                    return (
-                      <div
+                    return (                      <div
                         key={origIdx}
                         ref={setThumbRef(v)}
                         data-idx={v}
@@ -7784,6 +7893,22 @@ export default function App() {
                                   }
                                   onMove={readOnly ? undefined : moveDrawing}
                                   onResize={readOnly ? undefined : resizeDrawing}
+                                />
+                                <RedactionLayer
+                                  active={
+                                    !readOnly && !redactionCopyInFlight && drawTool === 'redact'
+                                  }
+                                  geom={geom}
+                                  scale={scale}
+                                  pageWidth={size.width}
+                                  pageHeight={size.height}
+                                  marks={redactions.filter((mark) => mark.pageIndex === origIdx)}
+                                  onCommit={(rect) =>
+                                    setRedactions((prev) => [
+                                      ...prev,
+                                      { id: newId(), pageIndex: origIdx, rect },
+                                    ])
+                                  }
                                 />
                                 {/* Ghost pin for the note being typed into the margin draft card */}
                                 {noteDraft?.origIdx === origIdx &&

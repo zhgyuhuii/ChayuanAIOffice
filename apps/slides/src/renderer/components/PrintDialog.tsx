@@ -46,6 +46,20 @@ export function PrintDialog({
   const blobUrlsRef = useRef<string[]>([])
   const frameRef = useRef<HTMLIFrameElement | null>(null)
   const paneRef = useRef<HTMLDivElement | null>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const previouslyFocused = useRef<HTMLElement | null>(null)
+
+  // Focus the first field on mount; return focus to the opener on unmount
+  useEffect(() => {
+    previouslyFocused.current = document.activeElement as HTMLElement | null
+    const root = dialogRef.current
+    if (root && !root.contains(document.activeElement)) {
+      root.querySelector<HTMLElement>('input, textarea, select, button')?.focus()
+    }
+    return () => {
+      previouslyFocused.current?.focus?.()
+    }
+  }, [])
 
   // One offscreen render of the whole deck on open (print quality, 2x); the same
   // bitmaps feed the preview (as blob URLs) and the print job (as base64).
@@ -165,7 +179,14 @@ export function PrintDialog({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal print-dialog" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className="modal print-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('appPrintTitle')}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2>{t('appPrintTitle')}</h2>
         <div className="print-dialog-body">
           <div className="print-preview-pane" ref={paneRef}>
