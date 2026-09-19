@@ -5995,6 +5995,19 @@ textarea:focus {
   flex: 0 0 auto;
 }
 
+/* 转换⌄ 触发器（WPS 实测）：无边框透明底、与格式框同行等高，hover 平涂
+   （同行和列/工作表触发钮质感），直向双向箭头 + 「转换」 + ⌄ */
+.num-row1 .convert-trigger {
+  border: none;
+  background: transparent;
+  min-width: 0;
+  padding: 0 6px;
+}
+
+.num-row1 .convert-trigger:hover {
+  background: var(--ribbon-hover);
+}
+
 .num-row1 .numfmt-wrap .select-like {
   min-width: 0;
   width: 100%;

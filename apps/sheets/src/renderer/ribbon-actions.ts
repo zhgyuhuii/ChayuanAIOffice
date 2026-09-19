@@ -1122,6 +1122,97 @@ export function handleRibbonCommand(ctx: RibbonCommandContext, command: string):
             }
             break
           }
+          case 'convert:to-date': {
+            // 转为日期（WPS 转换⌄）：文本日期 → 序列值 + yyyy/m/d 格式；
+            // 已是数字则只补日期格式。1900 日期系统：serial = 天数 since 1899-12-30。
+            const serialFromDate = (y: number, m: number, d: number): number =>
+              Math.round((Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86_400_000)
+            if (typeof v === 'string' && v.trim() !== '') {
+              const md = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(v.trim())
+              const dm = /^(\d{1,2})[-/.](\d{1,2})$/.exec(v.trim())
+              const parsed = md
+                ? serialFromDate(Number(md[1]), Number(md[2]), Number(md[3]))
+                : dm
+                  ? serialFromDate(new Date().getFullYear(), Number(dm[1]), Number(dm[2]))
+                  : null
+              if (parsed !== null && parsed > 0 && Number.isFinite(parsed)) {
+                cell.setValue(parsed)
+                cell.setNumberFormat('yyyy/m/d')
+                changed += 1
+              }
+            } else if (typeof v === 'number' && Number.isFinite(v) && v > 0) {
+              cell.setNumberFormat('yyyy/m/d')
+              changed += 1
+            }
+            break
+          }
+          case 'convert:to-cn-upper': {
+            // 转为中文大写（WPS 转换⌄）：数字 → 壹贰叁…（拾佰仟万亿分组，
+            // 零折叠；小数 → 点X）。仅对有限数值生效。
+            const toCnUpper = (n: number): string => {
+              const D = '零壹贰叁肆伍陆柒捌玖'
+              const U = ['', '拾', '佰', '仟']
+              const G = ['', '万', '亿', '万亿']
+              let out = ''
+              if (n < 0) {
+                out += '负'
+                n = -n
+              }
+              const s = String(n)
+              const [intPart = '0', fracPart = ''] = s.split('.')
+              let int = intPart.replace(/^0+/, '')
+              if (int === '') int = '0'
+              if (int === '0') {
+                out += '零'
+              } else {
+                // 四位一组从高位处理，组内零折叠、组间补零规则与人民币大写一致
+                const groups: number[] = []
+                for (let i = int.length; i > 0; i -= 4) groups.unshift(Number(int.slice(Math.max(0, i - 4), i)))
+                groups.forEach((g, gi) => {
+                  const gs = String(g).padStart(4, '0')
+                  let piece = ''
+                  let zeroPending = false
+                  for (let i = 0; i < 4; i += 1) {
+                    const digit = Number(gs[i] ?? '0')
+                    if (digit === 0) {
+                      zeroPending = piece !== ''
+                    } else {
+                      if (zeroPending) piece += '零'
+                      zeroPending = false
+                      piece += (D[digit] ?? '') + (U[3 - i] ?? '')
+                    }
+                  }
+                  if (piece === '') {
+                    if (out !== '' && out !== '负' && !out.endsWith('零')) out += '零'
+                  } else {
+                    out += piece + G[groups.length - 1 - gi]
+                  }
+                })
+                out = out.replace(/零+$/, '')
+              }
+              if (fracPart && fracPart !== '') {
+                out += '点'
+                for (const ch of fracPart) out += D[Number(ch)]
+              }
+              return out
+            }
+            if (typeof v === 'number' && Number.isFinite(v)) {
+              const next = toCnUpper(v)
+              if (next !== String(v)) {
+                cell.setValue(next)
+                changed += 1
+              }
+            }
+            break
+          }
+          case 'convert:to-fraction': {
+            // 转为分数（WPS 转换⌄）：数值单元格套 # ?/? 分数格式（0.5 → 1/2）
+            if (typeof v === 'number' && Number.isFinite(v)) {
+              cell.setNumberFormat('# ?/?')
+              changed += 1
+            }
+            break
+          }
         }
       }
     }

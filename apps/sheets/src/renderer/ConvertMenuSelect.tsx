@@ -6,9 +6,11 @@ import { MenuRows, OptSample, type MenuRowOption } from './ExcelShell'
 import { CaretIcon } from './ribbon-icons'
 
 /**
- * WPS 数字组·转换⌄（对比清单 1）：触发器 = 图标 + 「转换」 + 右下角下拉箭头
- * （与行和列/工作表菜单同款）；下拉 = 行和列同构 MenuRows 富菜单——无滚动条，
- * 大小写转换 / 中英文符号转换点击向右展开子菜单，未实现项仅禁用。
+ * WPS 数字组·转换⌄，严格对照 WPS 表格实测截图（2026-09-18 本机 WPS 采集）：
+ * 触发器 = 直向双向箭头⇄ + 「转换」 + ⌄，无边框透明底、与格式框同行等高；
+ * 下拉 = 主段六项（转换为数值/转换为文本/转为日期/转为大写/转为中文大写/
+ * 转为分数）+ 分隔线 + 三个子菜单（大小写转换/中英文符号/上下标）+ 分隔线
+ * + 自定义转换…（未实现项仅禁用）。
  */
 export function ConvertMenuSelect({
   'data-tip': tip,
@@ -27,8 +29,11 @@ export function ConvertMenuSelect({
     setOpen(false)
     onCommand(command)
   }
+  // MenuRows dispatches option.value — so the value IS the wire command
+  // (dispatching the key id was a silent no-op the app handler ignores).
+  // Disabled items keep the key as an inert value.
   const item = (key: string, command: string | null, icon: React.ReactNode, label: string): MenuRowOption => ({
-    value: key,
+    value: command ?? key,
     label,
     icon,
     ...(command ? {} : { disabled: true as const }),
@@ -38,14 +43,17 @@ export function ConvertMenuSelect({
     label,
     children,
   })
-  const options: readonly MenuRowOption[] = [
-    item('num2text', 'convert:num2text', <OptSample>12</OptSample>, tt('appCvtNumToText')),
-    item('text2num', 'convert:text2num', <OptSample>📷</OptSample>, tt('appCvtTextToNum')),
-    item('link', null, <OptSample>🔗</OptSample>, tt('appCvtToHyperlink')),
-    item('values-only', 'convert:values-only', <OptSample>123</OptSample>, tt('appCvtValuesOnly')),
-    item('text2formula', 'convert:text2formula', <OptSample>fx</OptSample>, tt('appCvtTextToFormula')),
-    item('formula2text', 'convert:formula2text', <OptSample>ƒx</OptSample>, tt('appCvtFormulaToText')),
-    item('round', null, <OptSample>4⇢</OptSample>, tt('appCvtRound')),
+  /// WPS 主段：数值/文本/日期/大写/中文大写/分数
+  const mainOptions: readonly MenuRowOption[] = [
+    item('to-value', 'convert:text2num', <OptSample>123</OptSample>, tt('appCvtToValue')),
+    item('to-text', 'convert:num2text', <OptSample>A</OptSample>, tt('appCvtToText')),
+    item('to-date', 'convert:to-date', <OptSample>1/5</OptSample>, tt('appCvtToDate')),
+    item('to-upper', 'convert:upper', <OptSample>A</OptSample>, tt('appCvtToUpper')),
+    item('to-cn-upper', 'convert:to-cn-upper', <OptSample>壹</OptSample>, tt('appCvtToCnUpper')),
+    item('to-fraction', 'convert:to-fraction', <OptSample>1/2</OptSample>, tt('appCvtToFraction')),
+  ]
+  /// WPS 子菜单段：大小写 / 中英文符号 / 上下标
+  const groupOptions: readonly MenuRowOption[] = [
     group(
       'case',
       tt('appCvtCase'),
@@ -63,7 +71,17 @@ export function ConvertMenuSelect({
         item('cn', 'convert:to-cn-symbols', <OptSample>，。</OptSample>, tt('appCvtToCn')),
       ],
     ),
-    item('subsup', null, <OptSample>X²</OptSample>, `${tt('appCvtSubSup')}…`),
+    group(
+      'subsup',
+      tt('appCvtSubSupHead'),
+      [
+        item('sup', null, <OptSample>X²</OptSample>, tt('appCvtSup')),
+        item('sub', null, <OptSample>X₂</OptSample>, tt('appCvtSub')),
+      ],
+    ),
+  ]
+  const footerOptions: readonly MenuRowOption[] = [
+    item('custom', null, <OptSample>⚙</OptSample>, `${tt('appCvtCustom')}…`),
   ]
   return (
     <div ref={wrapRef} className="menu-select">
@@ -77,8 +95,7 @@ export function ConvertMenuSelect({
         onClick={() => setOpen((v) => !v)}
       >
         <span className="menu-select-value">
-          {/* WPS 转换图标：上下两条弯曲箭头合成方形——上线右→左行进、左端
-              向下弯出箭头；下线左→右行进、右端向上弯出箭头 */}
+          {/* WPS 转换图标：直向双向箭头 ⇄——上右行/下左行两条细线箭头 */}
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -90,10 +107,10 @@ export function ConvertMenuSelect({
             height={18}
             aria-hidden="true"
           >
-            <path d="M18.5 5.5H7.5v3.5" />
-            <path d="M9.25 7.25 7.5 9.25 5.75 7.25" />
-            <path d="M5.5 18.5h11V15" />
-            <path d="M14.75 16.75 16.5 14.75l1.75 2" />
+            <path d="M4.5 8.75h13.5" />
+            <path d="m15.75 6.5 2.25 2.25-2.25 2.25" />
+            <path d="M19.5 15.25H6" />
+            <path d="M8.25 13 6 15.25 8.25 17.5" />
           </svg>
           {t('appConvertShort')}
         </span>
@@ -101,7 +118,11 @@ export function ConvertMenuSelect({
       </button>
       {open && (
         <div className="menu-select-drop convert-drop" role="menu" aria-label={t('appConvertMenu')}>
-          <MenuRows options={options} value="" onPick={pick} onClose={() => setOpen(false)} />
+          <MenuRows options={mainOptions} value="" onPick={pick} onClose={() => setOpen(false)} />
+          <div className="rb-menu-sep" />
+          <MenuRows options={groupOptions} value="" onPick={pick} onClose={() => setOpen(false)} />
+          <div className="rb-menu-sep" />
+          <MenuRows options={footerOptions} value="" onPick={pick} onClose={() => setOpen(false)} />
         </div>
       )}
     </div>
