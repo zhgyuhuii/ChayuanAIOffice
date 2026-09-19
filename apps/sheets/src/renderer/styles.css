@@ -1106,6 +1106,19 @@ html.chatoffice-popover-open .ribbon-tabs {
   min-width: 44px;
 }
 
+/* icon-only compact trigger (货币): icon + caret sit together. The select's
+   space-between + 44px min-width would otherwise park the caret far right,
+   leaving a blank mid-gap that reads as a lost icon */
+.select-like.icon-only {
+  min-width: 0;
+}
+
+/* (0,3,0) so these win over `.menu-select > .select-like`'s space-between */
+.menu-select > .select-like.icon-only {
+  justify-content: center;
+  gap: 3px;
+}
+
 /* font family / size dropdowns share the slides ribbon's fixed widths
    (.rb-font-name 178px / .rb-font-size 68px) instead of sizing to the
    longest option; height trimmed 28→24px per the WPS comparison sheet
@@ -5971,6 +5984,22 @@ textarea:focus {
   gap: 4px;
 }
 
+/* 数字组行1：格式框弹性、转换⌄ 不缩——钳宽时全部收缩由格式框吸收
+   （WPS 同款：窄带缩格式框），转换的短标签不再被压成一个字 */
+.num-row1 > .numfmt-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.num-row1 > .menu-select {
+  flex: 0 0 auto;
+}
+
+.num-row1 .numfmt-wrap .select-like {
+  min-width: 0;
+  width: 100%;
+}
+
 /* 快捷图标行：与 WPS 一致的贴身排布（无额外间距），图标即按钮 */
 .num-quick {
   gap: 1px;
@@ -6785,7 +6814,8 @@ textarea:focus {
 
 .ribbon-group.degrade-1 .num-row1 {
   min-width: 0;
-  max-width: 96px;
+  /* 58(格式框弹性下限)+4+46(转换)=108：格式框可缩到“常规”仍可读 */
+  max-width: 108px;
 }
 
 .ribbon-group.degrade-2 :is(.menu-select, .menu-select-edit, .rb-drop-wrap) {
@@ -6806,7 +6836,8 @@ textarea:focus {
 
 .ribbon-group.degrade-2 .num-row1 {
   min-width: 0;
-  max-width: 72px;
+  /* 转换 46 保底，格式框收到“常…”省略号 */
+  max-width: 88px;
 }
 
 .degrade-grid :is(.border-menu, .color-split) {

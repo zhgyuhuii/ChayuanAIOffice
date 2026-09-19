@@ -4557,7 +4557,7 @@ function Ribbon({
                 </div>
                 <div className="inline-tools num-quick">
                   <MenuSelect
-                    className="select-like compact"
+                    className="select-like compact icon-only"
                     label="Accounting"
                     data-tip={t('appCurrency')}
                     display={
