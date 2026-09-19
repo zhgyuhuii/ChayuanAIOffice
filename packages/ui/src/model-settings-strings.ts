@@ -103,6 +103,7 @@ const zh = {
   pickerSettings: '模型设置',
   pickerEmptyTitle: '还没有可用的模型',
   pickerEmptyBody: '配置一个自己的供应商（密钥即用），或登录 察元AIOffice 使用内置模型。',
+  pickerRunning: '运行中',
   statusEnabled: '已启用，模型出现在选择器中',
   statusNotEnabled: '未启用',
   selectAll: '全选',
@@ -254,6 +255,7 @@ const en = {
   pickerEmptyTitle: 'No model available yet',
   pickerEmptyBody:
     'Configure your own provider (your key, ready to use), or sign in to ChaAI Office for its built-in models.',
+  pickerRunning: 'running',
   statusEnabled: 'Enabled — models appear in the picker',
   statusNotEnabled: 'Not enabled',
   selectAll: 'Select all',

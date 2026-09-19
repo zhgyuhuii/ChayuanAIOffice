@@ -17,9 +17,12 @@ import { dirname, resolve } from 'node:path'
 import type { FastifyInstance } from 'fastify'
 import {
   KEEP_KEY,
+  CHATOP_LOCAL_AGENT_ID,
+  CHATOP_LOCAL_PROFILE_ID,
   createAiRuntime,
   createFileSource,
   createHarnessSource,
+  parseChatopProxyKey,
   resolveHarnessSecret,
   type AiModelSelection,
   type AiRuntime,
@@ -87,6 +90,38 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
   const officeState = createFileSource(settingsFile, fileFs)
   const readDshFile = async (relativePath: string) =>
     readFile(resolve(options.harness!.dshHome, relativePath), 'utf8')
+  /** Bearer key for the synthetic chatop-local profile: a live virtual key from
+   *  chatop-models' proxy-keys.json when present, else issue one for our fixed
+   *  agentId over the loopback HTTP face (same agentId re-issue revokes the old
+   *  key — the short-lived cache keeps a burst of runs from thrashing keys). */
+  let cachedLocalKey = ''
+  let cachedLocalKeyAt = 0
+  const chatopLocalKey = async (harness: {
+    dshHome: string
+    rpcOrigin: string
+    rpcOriginFile?: string
+  }): Promise<string> => {
+    const live = await readFile(
+      resolve(harness.dshHome, 'storages', 'chatop-models', 'proxy-keys.json'),
+      'utf8',
+    )
+      .then(parseChatopProxyKey)
+      .catch(() => null)
+    if (live) return live
+    if (cachedLocalKey && Date.now() - cachedLocalKeyAt < 10_000) return cachedLocalKey
+    const origin = await resolveRpcOrigin(harness)
+    const response = await fetch(`${origin}/api/chatop-models/proxy/keys/issue`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ agentId: CHATOP_LOCAL_AGENT_ID }),
+    })
+    if (!response.ok) throw new Error(`chatop-models key issue failed: HTTP ${response.status}`)
+    const doc = (await response.json()) as { ok?: boolean; key?: string; error?: unknown }
+    if (!doc?.key) throw new Error('chatop-models key issue returned no key')
+    cachedLocalKey = doc.key
+    cachedLocalKeyAt = Date.now()
+    return cachedLocalKey
+  }
   const source = options.harness
     ? createHarnessSource({
         rpc: async (method, payload) => {
@@ -120,9 +155,15 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
     source,
     // harness form: profiles carry apiKeyRef only — resolve the referenced
     // credential at call time (rotations apply on the next request; the secret
-    // never enters settings views)
+    // never enters settings views). The synthetic chatop-local profile
+    // resolves to a model-proxy virtual key instead of the credentials file.
     ...(options.harness
-      ? { resolveSecret: (profile) => resolveHarnessSecret(profile, readDshFile) }
+      ? {
+          resolveSecret: (profile) =>
+            profile.id === CHATOP_LOCAL_PROFILE_ID
+              ? chatopLocalKey(options.harness!)
+              : resolveHarnessSecret(profile, readDshFile),
+        }
       : {}),
     // chatoffice login is desktop-only; the web form is pure BYOK
     chatoffice: {

@@ -293,3 +293,147 @@ describe('runtime secret resolution', () => {
     expect(call.baseUrl).toBe('https://open.bigmodel.cn/api/paas/v4')
   })
 })
+
+// ── chatop-local fusion（harness 本地模型 → 合成 profile + 默认选中链）──────
+
+const LOCAL_STATE_RUNNING = JSON.stringify({
+  proxyPort: 18100,
+  instances: [
+    { modelId: 'bge-m3', port: 18080, caps: ['embedding'] },
+    { modelId: 'qwen3-4b', port: 18082, caps: ['chat'] },
+  ],
+})
+const LOCAL_STATE_STOPPED = JSON.stringify({ proxyPort: 18100, instances: [] })
+const LOCAL_REGISTRY = JSON.stringify({
+  installed: ['qwen3-4b', 'bge-m3', 'whisper-small-int8'],
+})
+
+/** harness source with injectable dsh-home files (chatop-models state etc.) */
+function makeLocalSource(
+  files: Record<string, string>,
+  office: { currentModel?: AiSettingsV2['currentModel'] } = {},
+  yaml = HARNESS_YAML,
+) {
+  const rpcCalls: Array<{ method: string; payload: unknown }> = []
+  let officeState: AiSettingsV2 = {
+    version: 2,
+    profiles: [],
+    ...(office.currentModel ? { currentModel: office.currentModel } : {}),
+  }
+  const read = (path: string): string => {
+    if (path in files) return files[path] as string
+    if (path === 'settings.yaml') return yaml
+    if (path === '.credentials.yaml') return CREDENTIALS_YAML
+    throw new Error('missing')
+  }
+  const source = createHarnessSource({
+    rpc: async (method, payload) => {
+      rpcCalls.push({ method, payload })
+      return {}
+    },
+    readDshFile: async (path: string) => read(path),
+    officeStateSource: {
+      read: async () => officeState,
+      write: async (next) => {
+        officeState = next
+      },
+    },
+  })
+  return { source, rpcCalls, officeStateGetter: () => officeState }
+}
+
+describe('createHarnessSource × chatop-local', () => {
+  it('injects the local group first; running chat model wins the default over a vendor harness default', async () => {
+    // HARNESS_YAML carries agent-default-model chatop-zhipu/glm-5.2 — the
+    // running local model outranks it per the desktop's intent
+    const { source } = makeLocalSource({
+      'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+      'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+    })
+    const s = await source.read()
+    expect(s.profiles[0]).toMatchObject({
+      id: 'chatop-local',
+      baseUrl: 'http://127.0.0.1:18100/v1',
+      models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
+    })
+    expect(s.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+    // vendor groups still follow
+    expect(s.profiles.map((p) => p.id).slice(1)).toEqual(['zhipu', 'ollama', 'custom-relay'])
+  })
+
+  it('a harness default pointing at chatop-local maps to the lazy-load entry even when stopped', async () => {
+    const yaml = HARNESS_YAML.replace(
+      ['agent-default-model:', '  provider: chatop-zhipu', '  model: glm-5.2'].join('\n'),
+      ['agent-default-model:', '  provider: chatop-local', '  model: qwen3-4b'].join('\n'),
+    )
+    const { source } = makeLocalSource(
+      {
+        'storages/chatop-models/state.json': LOCAL_STATE_STOPPED,
+        'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+      },
+      {},
+      yaml,
+    )
+    const s = await source.read()
+    expect(s.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+  })
+
+  it('stopped local model + vendor harness default → vendor default; office pick beats everything', async () => {
+    const { source } = makeLocalSource({
+      'storages/chatop-models/state.json': LOCAL_STATE_STOPPED,
+      'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+    })
+    const s = await source.read()
+    expect(s.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+    expect(s.profiles[0]!.id).toBe('chatop-local')
+
+    const chosen = makeLocalSource(
+      {
+        'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+        'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+      },
+      { currentModel: { profileId: 'zhipu', modelId: 'glm-5.2' } },
+    )
+    const s2 = await chosen.source.read()
+    expect(s2.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+  })
+
+  it('local selection persists through write (anchor) while the diff never touches chatop-local', async () => {
+    const { source, rpcCalls, officeStateGetter } = makeLocalSource({
+      'storages/chatop-models/state.json': LOCAL_STATE_RUNNING,
+      'storages/chatop-models/registry.json': LOCAL_REGISTRY,
+    })
+    const current = await source.read()
+    // user picks a local model through the picker → save round-trip
+    await source.write({
+      ...current,
+      currentModel: { profileId: 'chatop-local', modelId: 'local/qwen3-4b' },
+    })
+    const mutates = rpcCalls.filter((c) => c.method === 'settings.mutate')
+    const ops = mutates.flatMap((c) => (c.payload as { ops: Array<{ path: string[] }> }).ops)
+    expect(ops.map((o) => o.path?.[1]).sort()).toEqual([
+      'chatop-custom-relay',
+      'chatop-ollama',
+      'chatop-zhipu',
+    ])
+    const office = officeStateGetter()
+    const anchor = office.profiles.find((p) => p.id === 'chatop-local')
+    expect(anchor?.models.map((m) => m.id)).toContain('local/qwen3-4b')
+    // the selection survives the office file's own normalize pass
+    const normalized = migrateSettingsV2(office)
+    expect(normalized.currentModel).toEqual({
+      profileId: 'chatop-local',
+      modelId: 'local/qwen3-4b',
+    })
+    // and the next read keeps it (office pick wins over the running default)
+    const again = await source.read()
+    expect(again.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+  })
+
+  it('no chatop-models files at all → no local group, legacy behavior untouched', async () => {
+    const { source } = makeLocalSource({})
+    const s = await source.read()
+    expect(s.profiles.map((p) => p.id)).toEqual(['zhipu', 'ollama', 'custom-relay'])
+    expect(s.currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.2' })
+  })
+})

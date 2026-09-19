@@ -1,6 +1,11 @@
 import { migrateSettingsV2 } from './settings-v2'
 import type { AiModelEntry, AiProviderProfile, AiSettingsV2, AiWireProtocol } from './types'
 import { harnessKeyRefFor, harnessRouteFor, VENDOR_BY_ID } from './vendor-catalog'
+import {
+  CHATOP_LOCAL_PROFILE_ID,
+  readChatopLocalSource,
+  type ChatopLocalSource,
+} from './chatop-local'
 
 /**
  * Settings sources: the three backends behind one interface.
@@ -250,6 +255,12 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     return profiles
   }
 
+  /** the harness's local model service as a synthetic profile (chatop-local):
+   *  installed local chat models through the model proxy with lazy-load; null
+   *  when the service is absent — the group then simply does not appear */
+  const readLocal = (): Promise<ChatopLocalSource | null> =>
+    readChatopLocalSource(readDshFile).catch(() => null)
+
   /** map dsh's agent-default-model pick onto a managed profile + model */
   const adoptHarnessDefault = (
     profiles: AiProviderProfile[],
@@ -263,20 +274,56 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
     return { profileId: profile.id, modelId: pick.model }
   }
 
+  /** default-model chain when office has no recorded selection:
+   *  1. a harness default that points at the local service (chatop-local) wins
+   *  2. any running local chat model (the harness prewarmed/loaded it — the
+   *     most likely intent for a desktop that just started one)
+   *  3. a vendor-backed harness default (the original adoption rule)
+   *  4. the first model of the merged list */
+  const defaultSelection = (
+    office: AiSettingsV2,
+    local: ChatopLocalSource | null,
+    vendorProfiles: AiProviderProfile[],
+    defaultPick: { provider: string; model: string } | null,
+    profiles: AiProviderProfile[],
+  ): AiSettingsV2['currentModel'] | undefined => {
+    if (office.currentModel) return office.currentModel
+    if (
+      local &&
+      defaultPick &&
+      (defaultPick.provider === CHATOP_LOCAL_PROFILE_ID || defaultPick.provider === 'local')
+    ) {
+      const want = defaultPick.model.startsWith('local/')
+        ? defaultPick.model
+        : `local/${defaultPick.model}`
+      if (local.profile.models.some((m) => m.id === want)) {
+        return { profileId: CHATOP_LOCAL_PROFILE_ID, modelId: want }
+      }
+    }
+    if (local?.runningChatId) {
+      return { profileId: CHATOP_LOCAL_PROFILE_ID, modelId: `local/${local.runningChatId}` }
+    }
+    if (defaultPick) {
+      const adopted = adoptHarnessDefault(vendorProfiles, defaultPick)
+      if (adopted) return adopted
+    }
+    const first = profiles.find((p) => p.models.length > 0)
+    return first ? { profileId: first.id, modelId: first.models[0]!.id } : undefined
+  }
+
   return {
     async read() {
-      const [office, profiles, defaultPick] = await Promise.all([
+      const [office, vendorProfiles, local, defaultPick] = await Promise.all([
         officeStateSource.read(),
         readProfiles().catch(() => [] as AiProviderProfile[]),
+        readLocal(),
         readDshFile('settings.yaml')
           .then((yaml) => parseHarnessDefaultModel(yaml))
           .catch(() => null),
       ])
-      // first-run adoption: until office records its own selection, follow the
-      // model the harness agent is pinned to so both UIs start on the same model
-      const currentModel =
-        office.currentModel ??
-        (defaultPick ? adoptHarnessDefault(profiles, defaultPick) : undefined)
+      // local group first so the picker lists it above the vendor groups
+      const profiles = local ? [local.profile, ...vendorProfiles] : vendorProfiles
+      const currentModel = defaultSelection(office, local, vendorProfiles, defaultPick, profiles)
       return { ...office, profiles, ...(currentModel ? { currentModel } : {}) }
     },
     async write(next) {
@@ -295,7 +342,13 @@ export function createHarnessSource(deps: HarnessSourceDeps): AiSettingsSource {
       ]) {
         if (!sel) continue
         const backing = next.profiles.find(
-          (p) => p.id === sel.profileId && p.auth === 'api-key' && !!p.vendorId,
+          // the synthetic chatop-local profile is synthesized on read just like
+          // the harness routes — it needs the same anchor treatment or the
+          // office file's own validation drops every local selection
+          (p) =>
+            p.id === sel.profileId &&
+            p.auth === 'api-key' &&
+            (!!p.vendorId || p.id === CHATOP_LOCAL_PROFILE_ID),
         )
         if (backing && !anchors.has(backing.id)) anchors.set(backing.id, { ...backing, apiKey: '' })
       }

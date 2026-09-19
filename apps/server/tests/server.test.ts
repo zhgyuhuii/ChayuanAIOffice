@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -275,6 +275,60 @@ describe('AI harness fusion (dsh plugin form)', () => {
       models: [{ id: 'glm-5.3' }],
     })
     expect(view.json().currentModel).toEqual({ profileId: 'zhipu', modelId: 'glm-5.3' })
+  })
+})
+
+describe('AI harness fusion: chatop-models local models', () => {
+  it('surfaces installed local chat models as the chatop-local group and defaults to the running one', async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), 'chatoffice-ai-'))
+    const dshHome = mkdtempSync(join(tmpdir(), 'chatoffice-dsh-'))
+    writeFileSync(
+      join(dshHome, 'settings.yaml'),
+      [
+        'llm-pi-ai:',
+        '  providers:',
+        '    chatop-moonshot:',
+        '      displayName: 月之暗面 Kimi',
+        '      apiKeyEnv: MOONSHOT_API_KEY',
+        '      api: openai-completions',
+        '      baseURL: https://api.moonshot.cn/v1',
+        '      models:',
+        '        - id: kimi-k3',
+        'agent-default-model:',
+        '  provider: chatop-moonshot',
+        '  model: kimi-k3',
+      ].join('\n'),
+    )
+    const modelsDir = join(dshHome, 'storages', 'chatop-models')
+    mkdirSync(modelsDir, { recursive: true })
+    writeFileSync(
+      join(modelsDir, 'state.json'),
+      JSON.stringify({
+        proxyPort: 18100,
+        instances: [
+          { modelId: 'bge-m3', port: 18080, caps: ['embedding'] },
+          { modelId: 'qwen3-4b', port: 18082, caps: ['chat'] },
+        ],
+      }),
+    )
+    writeFileSync(
+      join(modelsDir, 'registry.json'),
+      JSON.stringify({ installed: ['qwen3-4b', 'bge-m3'] }),
+    )
+    const { app } = buildServer({
+      area: tempArea(),
+      ai: { dataDir, harness: { dshHome, rpcOrigin: '' } },
+    })
+    const view = await app.inject({ method: 'GET', url: '/ai/settings' })
+    const body = view.json()
+    expect(body.profiles[0]).toMatchObject({
+      id: 'chatop-local',
+      baseUrl: 'http://127.0.0.1:18100/v1',
+      models: [{ id: 'local/qwen3-4b', type: 'chat', running: true }],
+    })
+    // running local chat model outranks the vendor-backed harness default
+    expect(body.currentModel).toEqual({ profileId: 'chatop-local', modelId: 'local/qwen3-4b' })
+    expect(body.profiles.some((p: { id: string }) => p.id === 'moonshot')).toBe(true)
   })
 })
 

@@ -38,6 +38,9 @@ export interface AiModelEntry {
   name?: string
   /** inferred model type (chat/vision/image-generation/...); absent = infer from id */
   type?: AiModelType
+  /** live marker on the synthetic chatop-local group: a harness instance is
+   * currently running this model (picker renders a running badge) */
+  running?: boolean
 }
 
 /** Which model a run uses: profile id + model id, never a secret. */
@@ -214,13 +217,7 @@ export interface AiMediaSettings {
 
 /** web/image search backends — each configurable independently for web vs image search */
 export type AiSearchProviderId =
-  | 'serper'
-  | 'tavily'
-  | 'duckduckgo'
-  | 'bing'
-  | 'openverse'
-  | 'linkup'
-  | 'searxng'
+  'serper' | 'tavily' | 'duckduckgo' | 'bing' | 'openverse' | 'linkup' | 'searxng'
 
 export interface AiSearchProviderMeta {
   id: AiSearchProviderId
@@ -234,7 +231,9 @@ export interface AiSearchProviderMeta {
 
 export interface AiSearchSettings {
   provider: AiSearchProviderId
-  providers: Partial<Record<Exclude<AiSearchProviderId, 'duckduckgo' | 'bing' | 'openverse'>, { apiKey: string }>>
+  providers: Partial<
+    Record<Exclude<AiSearchProviderId, 'duckduckgo' | 'bing' | 'openverse'>, { apiKey: string }>
+  >
 }
 
 export interface AiSettings {

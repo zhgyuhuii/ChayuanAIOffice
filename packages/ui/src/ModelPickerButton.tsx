@@ -55,6 +55,8 @@ interface PickerModel {
   vendorId?: string | undefined
   profileName: string
   type: AiModelType
+  /** synthetic chatop-local entries carry a live running marker */
+  running?: boolean
 }
 
 export function ModelPickerButton({
@@ -80,13 +82,19 @@ export function ModelPickerButton({
       if (!profile.enabled) continue
       for (const m of profile.models) {
         const type = m.type ?? inferModelType(m.id)
-        if (type === 'embedding' || type === 'audio-understanding' || type === 'video-understanding') continue
+        if (
+          type === 'embedding' ||
+          type === 'audio-understanding' ||
+          type === 'video-understanding'
+        )
+          continue
         out.push({
           profileId: profile.id,
           modelId: m.id,
           vendorId: profile.vendorId ?? (VENDOR_BY_ID.has(profile.id) ? profile.id : undefined),
           profileName: profile.displayName || profile.id,
           type,
+          ...(m.running ? { running: true } : {}),
         })
       }
     }
@@ -115,8 +123,8 @@ export function ModelPickerButton({
 
   const current = settings.currentModel
   const currentLabel =
-    models.find((m) => m.profileId === current?.profileId && m.modelId === current?.modelId)?.modelId ??
-    t.pickerSettings
+    models.find((m) => m.profileId === current?.profileId && m.modelId === current?.modelId)
+      ?.modelId ?? t.pickerSettings
 
   const pick = (m: PickerModel) => {
     setOpen(false)
@@ -124,7 +132,10 @@ export function ModelPickerButton({
   }
 
   const grouped = useMemo(() => {
-    const groups = new Map<string, { name: string; vendorId?: string | undefined; rows: PickerModel[] }>()
+    const groups = new Map<
+      string,
+      { name: string; vendorId?: string | undefined; rows: PickerModel[] }
+    >()
     for (const m of filtered) {
       let g = groups.get(m.profileId)
       if (!g) {
@@ -208,9 +219,7 @@ export function ModelPickerButton({
           aria-label={t.pickerSettings}
           ref={popRef}
           style={
-            popPos
-              ? { left: `${popPos.left}px`, top: `${popPos.top}px` }
-              : { visibility: 'hidden' }
+            popPos ? { left: `${popPos.left}px`, top: `${popPos.top}px` } : { visibility: 'hidden' }
           }
         >
           <button
@@ -271,7 +280,9 @@ export function ModelPickerButton({
                         key={`${m.profileId}::${m.modelId}`}
                         type="button"
                         role="option"
-                        aria-selected={current?.profileId === m.profileId && current?.modelId === m.modelId}
+                        aria-selected={
+                          current?.profileId === m.profileId && current?.modelId === m.modelId
+                        }
                         className={`ai-picker-item${
                           current?.profileId === m.profileId && current?.modelId === m.modelId
                             ? ' is-selected'
@@ -284,6 +295,11 @@ export function ModelPickerButton({
                         <span className="ai-picker-row">
                           {m.modelId}
                           <span className="ai-picker-kind">{t.type[m.type] ?? m.type}</span>
+                          {m.running && (
+                            <span className="ai-picker-kind" style={{ color: '#22c55e' }}>
+                              ● {t.pickerRunning}
+                            </span>
+                          )}
                         </span>
                       </button>
                     ))}

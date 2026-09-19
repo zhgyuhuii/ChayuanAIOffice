@@ -160,6 +160,17 @@ export {
   parseHarnessProviders,
   resolveHarnessSecret,
 } from './settings-source'
+export {
+  CHATOP_LOCAL_AGENT_ID,
+  CHATOP_LOCAL_KEY_REF,
+  CHATOP_LOCAL_PROFILE_ID,
+  chatopCapsHeuristic,
+  chatopLocalModels,
+  parseChatopLocalSource,
+  parseChatopProxyKey,
+  readChatopLocalSource,
+} from './chatop-local'
+export type { ChatopLocalModelInfo, ChatopLocalSource } from './chatop-local'
 export { KEEP_KEY, createAiRuntime } from './runtime'
 export type { AiRuntime, AiRuntimeDeps, AiRuntimeChatOffice } from './runtime'
 export type { LocalToolStatus, LocalToolOpResult } from './local-tool'
