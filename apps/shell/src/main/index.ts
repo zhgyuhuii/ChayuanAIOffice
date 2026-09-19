@@ -1,4 +1,5 @@
 import { execSync, spawn } from 'node:child_process'
+import { startSiteSync } from './site-sync'
 import { randomUUID } from 'node:crypto'
 import {
   copyFileSync,
