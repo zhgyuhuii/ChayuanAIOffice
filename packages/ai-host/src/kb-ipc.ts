@@ -10,8 +10,9 @@
  * the renderer facade simply talks to whichever process hosts it.
  */
 
+import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { basename, dirname, extname, join } from 'node:path'
 import {
   createKbHttpClient,
   discoverHarnessKb,
@@ -37,6 +38,14 @@ export interface SharedKbIpcDeps {
    * first handle time, so bare test harnesses can register the channels too.
    */
   statePath: string | (() => string)
+  /**
+   * download target directory resolver for kb:file (defers the electron
+   * `app.getPath('downloads')` call the same way). Absent = the channel
+   * answers kb-download-unsupported and the renderer hides the affordance.
+   */
+  downloadsDir?: string | (() => string)
+  /** post-save reveal (shell.showItemInFolder in real mains; omitted in tests) */
+  reveal?: (path: string) => void
 }
 
 export interface KbSourceState {
@@ -44,6 +53,28 @@ export interface KbSourceState {
   manualOrigin?: string
   /** last discovered origin, tried before probing on the next start */
   cachedOrigin?: string
+}
+
+export interface KbFileResult {
+  ok: boolean
+  reason?: string
+  /** absolute path of the saved download (desktop form) */
+  savedPath?: string
+}
+
+/** collision-avoiding target path: stem (1).ext / stem (2).ext, … */
+function uniqueDownloadPath(dir: string, name: string): string {
+  const safe =
+    basename(name)
+      .replace(/[\\/]+/g, '_')
+      .trim() || 'document'
+  const stem = safe.replace(/\.[^.]*$/, '') || safe
+  const ext = extname(safe)
+  let candidate = join(dir, safe)
+  for (let i = 1; existsSync(candidate); i++) {
+    candidate = join(dir, `${stem} (${i})${ext}`)
+  }
+  return candidate
 }
 
 interface KbDiscoverPayload {
@@ -130,6 +161,30 @@ export function registerSharedKbIpc(deps: SharedKbIpcDeps): void {
       const kb = await getClient(found.origin!)
       try {
         return { ok: true, doc: await kb.doc(args.kbId, args.docId) }
+      } catch (err) {
+        return { ok: false, reason: err instanceof Error ? err.message : String(err) }
+      }
+    },
+  )
+
+  // download the source document behind a citation: fetch bytes in main (no
+  // CORS, no session download dialog), drop them in the downloads folder and
+  // reveal in the OS file manager
+  ipcMain.handle(
+    KB_CHANNELS.file,
+    async (_event, args: { kbId: string; docId: string }): Promise<KbFileResult> => {
+      const dir = typeof deps.downloadsDir === 'function' ? deps.downloadsDir() : deps.downloadsDir
+      if (!dir) return { ok: false, reason: 'kb-download-unsupported' }
+      const found = await discover()
+      if (!found.ok) return { ok: false, reason: 'kb-unavailable' }
+      const kb = await getClient(found.origin!)
+      try {
+        const file = await kb.file(args.kbId, args.docId)
+        const target = uniqueDownloadPath(dir, file.name)
+        await mkdir(dirname(target), { recursive: true })
+        await writeFile(target, Buffer.from(file.bytes))
+        deps.reveal?.(target)
+        return { ok: true, savedPath: target }
       } catch (err) {
         return { ok: false, reason: err instanceof Error ? err.message : String(err) }
       }

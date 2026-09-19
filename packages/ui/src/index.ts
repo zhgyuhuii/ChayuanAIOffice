@@ -90,6 +90,7 @@ export {
   kbBudget,
   kbDiscover,
   kbDoc,
+  kbFile,
   kbGetSource,
   kbRetrieve,
   kbSearchGroups,
@@ -98,11 +99,14 @@ export {
   setKbSelectedIds,
   kbSetOrigin,
   type KbBridgeApi,
+  type KbCitation,
   type KbDiscoverPayload,
   type KbDocPayload,
+  type KbFilePayload,
   type KbSourceState,
 } from './kb/kb-api'
 export { renderCitationChips } from './kb/kb-cite'
+export { KbCitePreview } from './kb/KbCitePreview'
 export { kbStrings, type KbStrings } from './kb/kb-strings'
 export { MediaModelPicker, type MediaModelPickerProps } from './MediaModelPicker'
 export { CapabilitySettingsPage, type CapabilitySettingsPageProps } from './CapabilitySettingsPage'

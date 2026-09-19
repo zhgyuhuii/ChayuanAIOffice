@@ -5,7 +5,7 @@
  * store so home chat and every editor panel share the same libraries.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { KbInfo } from '@chatoffice/ai-provider/browser'
+import type { KbCitation, KbInfo } from '@chatoffice/ai-provider/browser'
 import { useDismissablePopover } from '../popover-dismiss'
 import './kb.css'
 import { fmt, kbStrings } from './kb-strings'
@@ -188,15 +188,25 @@ export function useKbAugment(): {
   selected: string[]
   toggle: (kbId: string) => void
   augment: (text: string) => Promise<string>
+  /** citations from the most recent augment() call ([] when KB off/unreachable) */
+  lastCitations: React.RefObject<KbCitation[]>
 } {
   const { selected, toggle } = useKbSelection()
+  const lastCitations = useRef<KbCitation[]>([])
   const augment = useCallback(
     async (text: string) => {
-      if (selected.length === 0) return text
-      const result = await kbRetrieve(selected, text)
-      return result ? `${text}\n\n${result.block}` : text
+      lastCitations.current = []
+      // read the shared store fresh: the picker instance that toggles the
+      // selection is often a different component (panel vs host App), so the
+      // hook's React state can be stale — localStorage is the single source
+      const ids = kbSelectedIds()
+      if (ids.length === 0) return text
+      const result = await kbRetrieve(ids, text)
+      if (!result) return text
+      lastCitations.current = result.citations
+      return `${text}\n\n${result.block}`
     },
-    [selected],
+    [],
   )
-  return { selected, toggle, augment }
+  return { selected, toggle, augment, lastCitations }
 }

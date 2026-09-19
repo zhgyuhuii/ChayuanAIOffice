@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from 'react'
+import type { KbCitation } from '@chatoffice/ai-provider/browser'
 
 /**
  * Minimal dependency-free markdown for chat bubbles: paragraphs, ul/ol,
@@ -9,7 +10,13 @@ import { Fragment, type ReactNode } from 'react'
  * Markdown links stay literal text unless the host passes `nav` and the href
  * carries its scheme — then they become in-app navigation links. External
  * URLs never turn into clickable links here.
+ *
+ * With `citations`, valid `[n]` markers in plain text render as clickable
+ * superscript chips (KB answers); inline code and fenced blocks are untouched.
  */
+
+/** citation contract behind [n] chips (verbatim KbCitation) */
+export type MarkdownCitation = KbCitation
 
 export interface MarkdownNav {
   /** href prefix that renders as an in-app navigation link (e.g. 'docnav://') */
@@ -25,14 +32,47 @@ const INLINE_RE = new RegExp(
   'g',
 )
 const LINK_RE = new RegExp(`^\\[([^\\]]+)\\]\\((${HREF})\\)$`)
+const CITE_TEXT_RE = /\[(\d{1,2})\]/g
 
-function renderInline(text: string, nav?: MarkdownNav): ReactNode[] {
+interface CiteContext {
+  citations: readonly KbCitation[]
+  onCitationClick: (citation: KbCitation) => void
+}
+
+function renderInline(text: string, nav?: MarkdownNav, cite?: CiteContext): ReactNode[] {
   const out: ReactNode[] = []
   let last = 0
   let key = 0
+  // plain text segments carry [n] chips when a citation list is attached
+  const pushText = (str: string): void => {
+    if (!cite || cite.citations.length === 0) {
+      out.push(str)
+      return
+    }
+    let tLast = 0
+    for (const m of str.matchAll(CITE_TEXT_RE)) {
+      const citation = cite.citations.find((c) => c.n === Number(m[1]))
+      if (!citation) continue
+      const i = m.index ?? 0
+      if (i > tLast) out.push(str.slice(tLast, i))
+      const head = citation.headingPath ? ` › ${citation.headingPath}` : ''
+      out.push(
+        <sup
+          key={key++}
+          className="kb-cite"
+          title={`${citation.docName}${head}`}
+          onClick={() => cite.onCitationClick(citation)}
+        >
+          {citation.n}
+        </sup>,
+      )
+      tLast = i + m[0].length
+    }
+    out.push(str.slice(tLast))
+  }
   for (const m of text.matchAll(INLINE_RE)) {
     const i = m.index ?? 0
-    if (i > last) out.push(text.slice(last, i))
+    if (i > last) pushText(text.slice(last, i))
     const tok = m[0] ?? ''
     if (tok.startsWith('`')) out.push(<code key={key++}>{tok.slice(1, -1)}</code>)
     else if (tok.startsWith('**')) out.push(<strong key={key++}>{tok.slice(2, -2)}</strong>)
@@ -54,12 +94,12 @@ function renderInline(text: string, nav?: MarkdownNav): ReactNode[] {
           </a>,
         )
       } else {
-        out.push(tok) // non-nav links keep today's literal rendering
+        pushText(tok) // non-nav links keep today's literal rendering
       }
     } else out.push(<em key={key++}>{tok.slice(1, -1)}</em>)
     last = i + tok.length
   }
-  if (last < text.length) out.push(text.slice(last))
+  if (last < text.length) pushText(text.slice(last))
   return out
 }
 
@@ -197,19 +237,33 @@ function parseBlocks(text: string): MdBlock[] {
   return blocks
 }
 
-export function Markdown({ text, nav }: { text: string; nav?: MarkdownNav }): React.JSX.Element {
+export function Markdown({
+  text,
+  nav,
+  citations,
+  onCitationClick,
+}: {
+  text: string
+  nav?: MarkdownNav
+  citations?: readonly KbCitation[] | undefined
+  onCitationClick?: ((citation: KbCitation) => void) | undefined
+}): React.JSX.Element {
+  const cite: CiteContext | undefined =
+    citations && citations.length > 0 && onCitationClick
+      ? { citations, onCitationClick }
+      : undefined
   return (
     <div className="ai-md">
       {parseBlocks(text).map((b, i) => {
         if (b.kind === 'h') {
           return (
             <p key={i} className="ai-md-h">
-              {renderInline(b.text, nav)}
+              {renderInline(b.text, nav, cite)}
             </p>
           )
         }
         if (b.kind === 'ul' || b.kind === 'ol') {
-          const items = b.items.map((it, j) => <li key={j}>{renderInline(it, nav)}</li>)
+          const items = b.items.map((it, j) => <li key={j}>{renderInline(it, nav, cite)}</li>)
           return b.kind === 'ul' ? <ul key={i}>{items}</ul> : <ol key={i}>{items}</ol>
         }
         if (b.kind === 'code') {
@@ -229,7 +283,7 @@ export function Markdown({ text, nav }: { text: string; nav?: MarkdownNav }): Re
                   <tr>
                     {b.head.map((c, j) => (
                       <th key={j} style={cellStyle(j)}>
-                        {renderInline(c, nav)}
+                        {renderInline(c, nav, cite)}
                       </th>
                     ))}
                   </tr>
@@ -239,7 +293,7 @@ export function Markdown({ text, nav }: { text: string; nav?: MarkdownNav }): Re
                     <tr key={r}>
                       {row.map((c, j) => (
                         <td key={j} style={cellStyle(j)}>
-                          {renderInline(c, nav)}
+                          {renderInline(c, nav, cite)}
                         </td>
                       ))}
                     </tr>
@@ -254,7 +308,7 @@ export function Markdown({ text, nav }: { text: string; nav?: MarkdownNav }): Re
             {b.lines.map((ln, j) => (
               <Fragment key={j}>
                 {j > 0 && <br />}
-                {renderInline(ln, nav)}
+                {renderInline(ln, nav, cite)}
               </Fragment>
             ))}
           </p>

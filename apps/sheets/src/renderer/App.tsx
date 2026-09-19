@@ -1553,14 +1553,24 @@ export function App(): React.JSX.Element {
     setAiBusy(true)
     setMessage(t('appAiThinking'))
     appendChat({ role: 'assistant', text: '', tools: [], streaming: true })
+    const attachKbCitations = (): void => {
+      const citations = kbAugment.lastCitations.current
+      if (citations.length > 0) {
+        patchLastAssistant((entry) => ({ ...entry, kbCitations: [...citations] }))
+      }
+    }
     void collectImageAttachments(sentAttachments)
       .then(async (images) => {
         runStartingRef.current = false
-        loop.run(await kbAugment.augment(instruction), images)
+        const kbInstruction = kbAugment.augment(instruction)
+        void kbInstruction.then(attachKbCitations)
+        loop.run(await kbInstruction, images)
       })
       .catch(async () => {
         runStartingRef.current = false
-        loop.run(await kbAugment.augment(instruction))
+        const kbInstruction = kbAugment.augment(instruction)
+        void kbInstruction.then(attachKbCitations)
+        loop.run(await kbInstruction)
       })
   }
 

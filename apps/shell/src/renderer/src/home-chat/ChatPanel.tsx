@@ -3,9 +3,9 @@ import type { ReactElement } from 'react'
 import {
   AiComposer,
   AiTypingIndicator,
+  KbCitePreview,
   KbPickerButton,
   ModelPickerButton,
-  kbDoc,
   kbRetrieve,
   kbStrings,
   renderCitationChips,
@@ -1502,47 +1502,5 @@ export function ChatPanel({
         </div>
       )}
     </main>
-  )
-}
-
-/** KB citation preview: the retrieved passage behind a [n] chip (P2) */
-function KbCitePreview({
-  citation,
-  lang,
-  onClose,
-}: {
-  citation: KbCitation
-  lang: string
-  onClose: () => void
-}): ReactElement {
-  const { t } = useI18n()
-  const strings = kbStrings(lang)
-  const [docStatus, setDocStatus] = useState<string | null>(null)
-  useEffect(() => {
-    let alive = true
-    void kbDoc(citation.kbId, citation.docId).then((res) => {
-      if (alive && res.ok && res.doc?.status) setDocStatus(res.doc.status)
-    })
-    return () => {
-      alive = false
-    }
-  }, [citation.kbId, citation.docId])
-  return (
-    <div className="kb-preview-backdrop" onClick={onClose}>
-      <div className="kb-preview" onClick={(e) => e.stopPropagation()} role="dialog">
-        <div className="kb-preview-head">
-          <span>{strings.kbCiteTitle.replace('{n}', String(citation.n))}</span>
-          <button type="button" className="kb-preview-close" onClick={onClose}>
-            {t('kbPreviewClose')}
-          </button>
-        </div>
-        <div className="kb-preview-meta">
-          {strings.kbPreviewSource.replace('{name}', citation.docName)}
-          {citation.headingPath ? ` › ${citation.headingPath}` : ''}
-          {docStatus ? ` · ${docStatus}` : ''}
-        </div>
-        <div className="kb-preview-body">{citation.text}</div>
-      </div>
-    </div>
   )
 }

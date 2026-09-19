@@ -95,6 +95,29 @@ export interface KbHttpClient {
   status(): Promise<KbStatus>
   search(kbId: string, q: string, topK?: number): Promise<KbHit[]>
   doc(kbId: string, docId: string): Promise<KbDocRecord>
+  file(kbId: string, docId: string): Promise<KbFilePayload>
+}
+
+/** one source document fetched from the harness /file endpoint */
+export interface KbFilePayload {
+  name: string
+  mime: string
+  bytes: ArrayBuffer
+}
+
+/** pull the original filename out of a RFC 5987 content-disposition header */
+export function filenameFromDisposition(header: string | null): string | null {
+  if (!header) return null
+  const star = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(header)
+  if (star) {
+    try {
+      return decodeURIComponent(star[1]!.trim().replace(/^["']|["']$/g, ''))
+    } catch {
+      /* fall through to the plain form */
+    }
+  }
+  const plain = /filename=("?)([^";]+)\1/i.exec(header)
+  return plain ? plain[2]!.trim() : null
 }
 
 export interface KbHttpOptions {
@@ -145,6 +168,30 @@ export function createKbHttpClient(options: KbHttpOptions): KbHttpClient {
     },
     async doc(kbId, docId) {
       return request<{ ok: boolean; doc: KbDocRecord }>('/doc', { kbId, docId }).then((d) => d.doc)
+    },
+    async file(kbId, docId) {
+      const url = new URL(`${baseUrl}/api/chatop-kb/file`)
+      url.searchParams.set('kbId', kbId)
+      url.searchParams.set('docId', docId)
+      const controller = timeoutMs > 0 ? new AbortController() : null
+      const timer =
+        controller && timeoutMs > 0 ? setTimeout(() => controller.abort(), timeoutMs) : null
+      let response: Response
+      try {
+        response = await doFetch(url.toString(), controller ? { signal: controller.signal } : {})
+      } catch (err) {
+        throw new KbError(err instanceof Error ? err.message : String(err), 0)
+      } finally {
+        if (timer) clearTimeout(timer)
+      }
+      if (!response.ok) throw new KbError(`kb /file -> HTTP ${response.status}`, response.status)
+      return {
+        name:
+          filenameFromDisposition(response.headers.get('content-disposition')) ?? docId.slice(0, 8),
+        mime:
+          response.headers.get('content-type')?.split(';')[0]!.trim() || 'application/octet-stream',
+        bytes: await response.arrayBuffer(),
+      }
     },
   }
 }

@@ -10,6 +10,7 @@ import {
   AiComposer,
   AiScopeQuote,
   AiTypingIndicator,
+  KbCitePreview,
   KbPickerButton,
   Markdown,
   ModelPickerButton,
@@ -18,6 +19,7 @@ import {
   usePanelTab,
   type AiScopeQuoteData,
   type DockChrome,
+  type KbCitation,
 } from '@chatoffice/ui'
 import { aiLangDirective, t as tGlobal, useI18n, type StringKey } from '../i18n/locale'
 import { htmlModelBridge } from './model-bridge'
@@ -205,6 +207,8 @@ interface ChatEntry {
   tools?: ToolActivity[]
   /** the element this user message targeted, frozen at send */
   scope?: AiScopeQuoteData
+  /** KB citations behind the [n] chips of this assistant turn */
+  kbCitations?: KbCitation[]
 }
 
 /** the whole source text: one string is the exact rollback unit */
@@ -283,6 +287,7 @@ export function AiPanel({
   const { lang, t } = useI18n()
   // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
   const kb = useKbAugment()
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -929,7 +934,10 @@ export function AiPanel({
         settingsRef.current = await window.htmlApi.getAiSettings()
         const images = sentAtts.length > 0 ? await collectImages(sentAtts) : []
         if (!mountedRef.current || seq !== sendSeqRef.current) return
-        await loop.run(await kb.augment(instruction), images.length > 0 ? images : undefined)
+        const kbInstruction = await kb.augment(instruction)
+        if (kb.lastCitations.current.length > 0)
+          patchLast({ kbCitations: kb.lastCitations.current })
+        await loop.run(kbInstruction, images.length > 0 ? images : undefined)
       } catch (err) {
         // a send cancelled during its pre-run reads must not paint its error onto a later turn's bubble
         if (!mountedRef.current || seq !== sendSeqRef.current) return
@@ -1264,7 +1272,12 @@ export function AiPanel({
               ) : (
                 entry.text && (
                   <div dir="auto">
-                    <Markdown text={entry.text} nav={docNav} />
+                    <Markdown
+                      text={entry.text}
+                      nav={docNav}
+                      citations={entry.kbCitations}
+                      onCitationClick={setKbCiteView}
+                    />
                   </div>
                 )
               )}
@@ -1538,6 +1551,9 @@ export function AiPanel({
             }}
           />
         </Suspense>
+      )}
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
     </aside>
   )

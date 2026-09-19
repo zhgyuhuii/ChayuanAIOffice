@@ -10,6 +10,7 @@ export interface KbFetchBridge {
   discover(): Promise<unknown>
   search(args: { kbIds: string[]; q: string; topK?: number }): Promise<unknown>
   doc(args: { kbId: string; docId: string }): Promise<unknown>
+  file(args: { kbId: string; docId: string }): Promise<unknown>
   getSource(): Promise<unknown>
   setOrigin(origin: string | null): Promise<unknown>
 }
@@ -19,6 +20,14 @@ export function kbApiBase(pathname = window.location.pathname): string {
   const marker = '/chatoffice-app'
   const idx = pathname.indexOf(marker)
   return idx >= 0 ? pathname.slice(0, idx + marker.length) : ''
+}
+
+/** same-origin download URL for a citation's source file (browser handles it) */
+export function kbFileUrl(args: { kbId: string; docId: string }, baseUrl = kbApiBase()): string {
+  const url = new URL(`${baseUrl}/kb/file`, window.location.origin)
+  url.searchParams.set('kbId', args.kbId)
+  url.searchParams.set('docId', args.docId)
+  return url.toString()
 }
 
 export function createKbFetchBridge(baseUrl = kbApiBase()): KbFetchBridge {
@@ -37,6 +46,9 @@ export function createKbFetchBridge(baseUrl = kbApiBase()): KbFetchBridge {
         ...(args.topK ? { topK: String(args.topK) } : {}),
       }),
     doc: (args) => call('doc', { kbId: args.kbId, docId: args.docId }),
+    // the payload is the file itself, not JSON: hand back the download URL and
+    // let the browser's navigation download handle auth-free same-origin I/O
+    file: (args) => Promise.resolve({ ok: true, url: kbFileUrl(args, baseUrl) }),
     getSource: () => call('getSource').catch(() => ({})),
     setOrigin: () => call('setOrigin').catch(() => ({})),
   }

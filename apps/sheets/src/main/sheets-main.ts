@@ -3425,7 +3425,12 @@ export function registerSheetsAiIpc(): void {
   setRescueFetch((url, init) => net.fetch(url, init))
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
-  registerSharedKbIpc({ ipcMain, statePath: () => userDataPath('kb-source.json') })
+  registerSharedKbIpc({
+    ipcMain,
+    statePath: () => userDataPath('kb-source.json'),
+    downloadsDir: () => app.getPath('downloads'),
+    reveal: (p) => shell.showItemInFolder(p),
+  })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: SETTINGS_PATH(),

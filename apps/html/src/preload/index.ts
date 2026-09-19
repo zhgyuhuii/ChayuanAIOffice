@@ -159,6 +159,7 @@ contextBridge.exposeInMainWorld('chatOfficeKb', {
   search: (args: { kbIds: string[]; q: string; topK?: number }) =>
     ipcRenderer.invoke(KB_CHANNELS.search, args),
   doc: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.doc, args),
+  file: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.file, args),
   getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
   setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
 })

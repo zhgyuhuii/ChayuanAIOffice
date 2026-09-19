@@ -37,7 +37,8 @@ import {
   nativeImage,
   net,
   shell,
-  webContents as electronWebContents,} from 'electron'
+  webContents as electronWebContents,
+} from 'electron'
 import appIconPath from '../../../shell/src/main/assets/app-icon.png?asset'
 
 // Brand icon for the window/taskbar and the macOS dock icon in dev builds;
@@ -3061,7 +3062,12 @@ function getAiRuntime(): AiRuntime {
  * sheets' standalone AI handlers use the same channel names.
  */
 export function registerAiIpc(): void {
-  registerSharedKbIpc({ ipcMain, statePath: () => userDataPath('kb-source.json') })
+  registerSharedKbIpc({
+    ipcMain,
+    statePath: () => userDataPath('kb-source.json'),
+    downloadsDir: () => app.getPath('downloads'),
+    reveal: (p) => shell.showItemInFolder(p),
+  })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: SETTINGS_PATH(),

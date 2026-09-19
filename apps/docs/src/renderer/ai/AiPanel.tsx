@@ -43,7 +43,13 @@ import { createFilesSkill } from './files-skill'
 import { createElectronTransport } from './transport'
 import { docsModelBridge } from './model-bridge'
 import { useI18n, t as tModule, aiLangDirective, type StringKey } from '../i18n/locale'
-import { Markdown, AiScopeQuote, type AiScopeQuoteData } from '@chatoffice/ui'
+import {
+  KbCitePreview,
+  Markdown,
+  AiScopeQuote,
+  type AiScopeQuoteData,
+  type KbCitation,
+} from '@chatoffice/ui'
 import {
   AiComposer,
   AiTypingIndicator,
@@ -121,6 +127,8 @@ interface ChatEntry {
   /** model id that produced this assistant turn (display only) */
   model?: string
   scope?: import('@chatoffice/ui').AiScopeQuoteData
+  /** KB citations behind the [n] chips of this assistant turn */
+  kbCitations?: KbCitation[]
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -343,6 +351,7 @@ export function AiPanel({
   const { lang, t } = useI18n()
   // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
   const kb = useKbAugment()
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -1061,6 +1070,16 @@ export function AiPanel({
         }
         runUserTextRef.current = instruction
         const kbInstruction = await kb.augment(instruction)
+        const kbCitations = kb.lastCitations.current
+        if (kbCitations.length > 0) {
+          setChat((prev) =>
+            prev.map((m, i) =>
+              i === prev.length - 1 && m.role === 'assistant' && m.streaming
+                ? { ...m, kbCitations }
+                : m,
+            ),
+          )
+        }
         return loop.run(kbInstruction, images)
       })
   }
@@ -1400,7 +1419,12 @@ export function AiPanel({
                 </span>
               ) : entry.role === 'assistant' ? (
                 <div dir="auto">
-                  <Markdown text={entry.text} nav={docNav} />
+                  <Markdown
+                    text={entry.text}
+                    nav={docNav}
+                    citations={entry.kbCitations}
+                    onCitationClick={setKbCiteView}
+                  />
                 </div>
               ) : (
                 <span dir="auto">{entry.text}</span>
@@ -1705,6 +1729,9 @@ export function AiPanel({
             }}
           />
         </Suspense>
+      )}
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
     </aside>
   )

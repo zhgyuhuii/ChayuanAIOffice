@@ -19,6 +19,8 @@ export interface KbBridgeApi {
   discover(): Promise<KbDiscoverPayload>
   search(args: { kbIds: string[]; q: string; topK?: number }): Promise<KbSearchPayload>
   doc(args: { kbId: string; docId: string }): Promise<KbDocPayload>
+  /** optional: preloads/fetch bridges without it keep the cite preview link hidden */
+  file?(args: { kbId: string; docId: string }): Promise<KbFilePayload>
   getSource(): Promise<KbSourceState>
   setOrigin(origin: string | null): Promise<KbSourceState>
 }
@@ -41,6 +43,18 @@ export interface KbDocPayload {
   ok: boolean
   reason?: string
   doc?: { id: string; name: string; mime?: string; size?: number; status?: string }
+}
+
+/**
+ * Result of a source-file download behind a citation. Exactly one of `url`
+ * (web/dsh form: same-origin download link the renderer navigates to) or
+ * `savedPath` (desktop form: main already wrote the file and revealed it).
+ */
+export interface KbFilePayload {
+  ok: boolean
+  reason?: string
+  url?: string
+  savedPath?: string
 }
 
 export interface KbSourceState {
@@ -115,11 +129,7 @@ export async function kbDiscover(force = false): Promise<KbDiscoverPayload> {
 }
 
 /** per-KB hit groups in selection order (empty group when a library fails) */
-export async function kbSearchGroups(
-  kbIds: string[],
-  q: string,
-  topK = 6,
-): Promise<KbHit[][]> {
+export async function kbSearchGroups(kbIds: string[], q: string, topK = 6): Promise<KbHit[][]> {
   const kb = kbBridge()
   if (!kb || kbIds.length === 0 || !q.trim()) return []
   try {
@@ -158,6 +168,21 @@ export async function kbDoc(kbId: string, docId: string): Promise<KbDocPayload> 
   }
 }
 
+/**
+ * Download the source file behind a citation. Returns kb-unsupported when the
+ * installed bridge predates the file channel (affordance stays hidden), so
+ * the renderer never navigates blindly.
+ */
+export async function kbFile(kbId: string, docId: string): Promise<KbFilePayload> {
+  const kb = kbBridge()
+  if (!kb || typeof kb.file !== 'function') return { ok: false, reason: 'kb-unsupported' }
+  try {
+    return await kb.file({ kbId, docId })
+  } catch {
+    return { ok: false, reason: 'kb-upstream' }
+  }
+}
+
 export async function kbGetSource(): Promise<KbSourceState> {
   const kb = kbBridge()
   if (!kb) return {}
@@ -178,4 +203,3 @@ export async function kbSetOrigin(origin: string | null): Promise<KbSourceState>
     return {}
   }
 }
-

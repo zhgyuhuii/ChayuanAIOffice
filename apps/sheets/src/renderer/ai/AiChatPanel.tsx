@@ -8,7 +8,14 @@ import {
   type AiScopeQuoteData,
   AiScopeQuote,
 } from '@chatoffice/ui'
-import { DockChrome, KbPickerButton, ModelPickerButton, useKbAugment } from '@chatoffice/ui'
+import {
+  DockChrome,
+  KbCitePreview,
+  KbPickerButton,
+  ModelPickerButton,
+  useKbAugment,
+  type KbCitation,
+} from '@chatoffice/ui'
 import {
   defaultSettingsV2,
   enabledChatModels,
@@ -200,6 +207,8 @@ export interface AiChatMessage {
   readonly autoApplied?: { readonly opCount: number; readonly undoSteps: number } | undefined
   /** model id that produced this assistant turn (display only) */
   readonly model?: string | undefined
+  /** KB citations behind the [n] chips of this assistant turn */
+  readonly kbCitations?: readonly KbCitation[] | undefined
   /** attachments consumed from the composer by this user message (read-only echo chips) */
   readonly attachments?: readonly AttachmentMeta[] | undefined
   /** the range this user message targeted, frozen at send */
@@ -291,6 +300,7 @@ export function AiChatPanel({
   const [panelSettings, setPanelSettings] = useState<AiSettingsV2>(
     () => settings ?? defaultSettingsV2(),
   )
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
   useEffect(() => {
     if (settings) setPanelSettings(settings)
   }, [settings])
@@ -559,7 +569,12 @@ export function AiChatPanel({
                 {entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
                 {entry.text ? (
                   <div dir="auto">
-                    <Markdown text={entry.text} nav={citationNav} />
+                    <Markdown
+                      text={entry.text}
+                      nav={citationNav}
+                      citations={entry.kbCitations}
+                      onCitationClick={setKbCiteView}
+                    />
                   </div>
                 ) : (
                   entry.streaming && (
@@ -818,6 +833,9 @@ export function AiChatPanel({
             }}
           />
         </Suspense>
+      )}
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
     </aside>
   )

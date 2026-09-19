@@ -79,4 +79,34 @@ describe('kb proxy', () => {
     expect(res.statusCode).toBe(502)
     expect(res.json().ok).toBe(false)
   })
+
+  it('proxies /kb/file as a binary download with disposition passthrough', async () => {
+    const server = createServer((req, res) => {
+      if (String(req.url).includes('/api/chatop-kb/file')) {
+        res.writeHead(200, {
+          'content-type': 'text/markdown',
+          'content-disposition': `attachment; filename*=UTF-8''${encodeURIComponent('制度.md')}`,
+        })
+        res.end('# 原文')
+        return
+      }
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ok: true, kbs: [{ kbId: 'default', docs: [] }] }))
+    })
+    servers.push(server)
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+    const origin = `http://127.0.0.1:${(server.address() as { port: number }).port}`
+    const { app } = buildServer({
+      area: tempArea(),
+      kbHarness: { dshHome: join(tmpdir(), 'unused'), rpcOrigin: origin },
+    })
+    const res = await app.inject({ method: 'GET', url: '/kb/file?kbId=default&docId=d1' })
+    expect(res.statusCode).toBe(200)
+    expect(res.headers['content-type']).toBe('text/markdown')
+    expect(res.headers['content-disposition']).toContain(encodeURIComponent('制度.md'))
+    expect(res.body).toBe('# 原文')
+
+    const bad = await app.inject({ method: 'GET', url: '/kb/file' })
+    expect(bad.statusCode).toBe(400)
+  })
 })

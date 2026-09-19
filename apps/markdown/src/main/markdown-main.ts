@@ -719,7 +719,12 @@ function registerMarkdownIpc(): void {
 
   registerImageProtocol()
 
-  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
+  registerSharedKbIpc({
+    ipcMain,
+    statePath: () => join(app.getPath('userData'), 'kb-source.json'),
+    downloadsDir: () => app.getPath('downloads'),
+    reveal: (p) => shell.showItemInFolder(p),
+  })
   ipcMain.handle(MARKDOWN_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   ipcMain.handle(MARKDOWN_CHANNELS.consumeAiContent, (e) => {

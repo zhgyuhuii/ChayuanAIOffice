@@ -1232,7 +1232,12 @@ function registerHtmlIpc(): void {
     return { text, baseHref: doc ? assetBaseHref(dirname(doc)) : null }
   })
 
-  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
+  registerSharedKbIpc({
+    ipcMain,
+    statePath: () => join(app.getPath('userData'), 'kb-source.json'),
+    downloadsDir: () => app.getPath('downloads'),
+    reveal: (p) => shell.showItemInFolder(p),
+  })
   ipcMain.handle(HTML_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   // ---- headless export mode (--headless-export) ----

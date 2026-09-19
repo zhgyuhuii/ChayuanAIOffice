@@ -4,6 +4,7 @@ export const KB_CHANNELS = {
   list: 'kb:list',
   search: 'kb:search',
   doc: 'kb:doc',
+  file: 'kb:file',
   getSource: 'kb:get-source',
   setOrigin: 'kb:set-origin',
 } as const

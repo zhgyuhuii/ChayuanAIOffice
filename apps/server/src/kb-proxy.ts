@@ -124,4 +124,26 @@ export function attachKbProxy(app: FastifyInstance, options: KbProxyOptions): vo
       return { ok: true, doc }
     })
   })
+
+  // source-file download behind a citation: buffered passthrough (harness caps
+  // uploads at 48MB) so the browser gets native content-disposition handling
+  app.get('/kb/file', async (request, reply) => {
+    const query = (request.query ?? {}) as { kbId?: string; docId?: string }
+    if (!query.kbId || !query.docId)
+      return reply.code(400).send({ ok: false, reason: 'bad-request' })
+    const resolved = await getClient()
+    if (!resolved) return reply.code(200).send(UNAVAILABLE)
+    try {
+      const file = await resolved.kb.file(query.kbId, query.docId)
+      reply.header('content-type', file.mime || 'application/octet-stream')
+      reply.header(
+        'content-disposition',
+        `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
+      )
+      return reply.send(Buffer.from(file.bytes))
+    } catch (err) {
+      const status = err instanceof KbError && err.status >= 400 ? err.status : 502
+      return reply.code(status).send({ ok: false, reason: 'kb-upstream' })
+    }
+  })
 }

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import {
   buildKbContext,
   createKbHttpClient,
+  filenameFromDisposition,
   isKbStatus,
   KbError,
   mergeKbHits,
@@ -110,6 +111,50 @@ describe('kb-client', () => {
     expect(block).toContain('内容二')
     expect(citations.map((c) => c.n)).toEqual([1, 2])
     expect(citations[0]).toMatchObject({ docId: 'd1', docName: '规格.md', text: '内容一' })
+  })
+
+  it('file fetches bytes and decodes the RFC 5987 filename', async () => {
+    let seenUrl = ''
+    const client = createKbHttpClient({
+      baseUrl: 'http://127.0.0.1:3080',
+      fetchImpl: (async (input: RequestInfo | URL) => {
+        seenUrl = String(input)
+        return new Response(new Uint8Array([1, 2, 3]), {
+          headers: {
+            'content-type': 'text/markdown; charset=utf-8',
+            'content-disposition': `attachment; filename*=UTF-8''${encodeURIComponent('差旅报销制度.md')}`,
+          },
+        })
+      }) as typeof fetch,
+    })
+    const file = await client.file('公司制度库', 'abc-123')
+    expect(seenUrl).toBe(
+      'http://127.0.0.1:3080/api/chatop-kb/file?kbId=' +
+        encodeURIComponent('公司制度库') +
+        '&docId=abc-123',
+    )
+    expect(file.name).toBe('差旅报销制度.md')
+    expect(file.mime).toBe('text/markdown')
+    expect(new Uint8Array(file.bytes)).toEqual(new Uint8Array([1, 2, 3]))
+  })
+
+  it('file surfaces upstream failures as KbError', async () => {
+    const client = createKbHttpClient({
+      baseUrl: 'http://127.0.0.1:3080',
+      fetchImpl: (async () => new Response('nope', { status: 404 })) as typeof fetch,
+    })
+    await expect(client.file('k', 'missing')).rejects.toBeInstanceOf(KbError)
+  })
+})
+
+describe('filenameFromDisposition', () => {
+  it('prefers the extended form and falls back to plain/none', () => {
+    expect(
+      filenameFromDisposition(`attachment; filename*=UTF-8''${encodeURIComponent('会议.txt')}`),
+    ).toBe('会议.txt')
+    expect(filenameFromDisposition('attachment; filename="a b.md"')).toBe('a b.md')
+    expect(filenameFromDisposition('attachment; filename=x.txt')).toBe('x.txt')
+    expect(filenameFromDisposition(null)).toBeNull()
   })
 })
 

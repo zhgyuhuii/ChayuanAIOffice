@@ -989,7 +989,12 @@ function registerPdfIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
 
-  registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
+  registerSharedKbIpc({
+    ipcMain,
+    statePath: () => join(app.getPath('userData'), 'kb-source.json'),
+    downloadsDir: () => app.getPath('downloads'),
+    reveal: (p) => shell.showItemInFolder(p),
+  })
   ipcMain.handle(PDF_CHANNELS.consumePending, (e) => openPathByWc.get(e.sender.id) ?? null)
 
   ipcMain.handle(PDF_CHANNELS.getUsername, () => {
@@ -1135,7 +1140,6 @@ function registerPdfIpc(): void {
       setPdfSaveAsInFlight(e.sender, false)
     }
   })
-
 
   ipcMain.handle(
     PDF_CHANNELS.writeRecovery,

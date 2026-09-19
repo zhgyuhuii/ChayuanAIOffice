@@ -119,4 +119,92 @@ describe('registerSharedKbIpc', () => {
     expect(JSON.parse(raw)).toMatchObject({ manualOrigin: 'http://127.0.0.1:9' })
     void writeFile
   })
+
+  it('file downloads bytes into the downloads dir and reveals the result', async () => {
+    discoverMock.mockResolvedValue({
+      origin: 'http://127.0.0.1:3080',
+      source: 'probe',
+      status: STATUS,
+    })
+    const { handlers, deps } = fakeIpcMain()
+    const downloads = join(dir, 'downloads')
+    const revealed: string[] = []
+    registerSharedKbIpc({
+      ...deps,
+      statePath,
+      downloadsDir: () => downloads,
+      reveal: (p) => revealed.push(p),
+    })
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url.includes('/api/chatop-kb/file')) {
+        return new Response(new Uint8Array([7, 8, 9]), {
+          headers: {
+            'content-type': 'text/markdown',
+            'content-disposition': `attachment; filename*=UTF-8''${encodeURIComponent('差旅报销制度.md')}`,
+          },
+        })
+      }
+      return new Response(JSON.stringify(STATUS), {
+        headers: { 'content-type': 'application/json' },
+      })
+    }) as typeof fetch
+    try {
+      const payload = (await handlers.get(KB_CHANNELS.file)!(
+        null as never,
+        { kbId: '公司制度库', docId: 'd1' } as never,
+      )) as { ok: boolean; savedPath?: string }
+      expect(payload.ok).toBe(true)
+      expect(payload.savedPath).toBe(join(downloads, '差旅报销制度.md'))
+      expect(await readFile(payload.savedPath!)).toEqual(Buffer.from([7, 8, 9]))
+      expect(revealed).toEqual([payload.savedPath])
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
+
+  it('file dedupes collisions and answers unsupported without a dir', async () => {
+    const { handlers, deps } = fakeIpcMain()
+    registerSharedKbIpc({ ...deps, statePath })
+    const missing = (await handlers.get(KB_CHANNELS.file)!(
+      null as never,
+      { kbId: 'k', docId: 'd' } as never,
+    )) as { ok: boolean; reason?: string }
+    expect(missing).toEqual({ ok: false, reason: 'kb-download-unsupported' })
+
+    discoverMock.mockResolvedValue({
+      origin: 'http://127.0.0.1:3080',
+      source: 'probe',
+      status: STATUS,
+    })
+    const downloads = join(dir, 'downloads')
+    const { handlers: h2, deps: d2 } = fakeIpcMain()
+    registerSharedKbIpc({ ...d2, statePath, downloadsDir: () => downloads })
+    const realFetch = globalThis.fetch
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      if (String(input).includes('/api/chatop-kb/file')) {
+        return new Response('x', {
+          headers: { 'content-disposition': 'attachment; filename="dup.txt"' },
+        })
+      }
+      return new Response(JSON.stringify(STATUS), {
+        headers: { 'content-type': 'application/json' },
+      })
+    }) as typeof fetch
+    try {
+      const first = (await h2.get(KB_CHANNELS.file)!(
+        null as never,
+        { kbId: 'k', docId: 'd1' } as never,
+      )) as { savedPath?: string }
+      const second = (await h2.get(KB_CHANNELS.file)!(
+        null as never,
+        { kbId: 'k', docId: 'd1' } as never,
+      )) as { savedPath?: string }
+      expect(first.savedPath).toBe(join(downloads, 'dup.txt'))
+      expect(second.savedPath).toBe(join(downloads, 'dup (1).txt'))
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
 })

@@ -12,7 +12,9 @@ import {
   PanelTabs,
   usePanelTab,
   AiScopeQuote,
+  KbCitePreview,
   type AiScopeQuoteData,
+  type KbCitation,
 } from '@chatoffice/ui'
 import { defaultSettingsV2, pickImageModel } from '@chatoffice/ai-provider/browser'
 import { markdownModelBridge } from './model-bridge'
@@ -83,6 +85,8 @@ interface ChatEntry {
   tools?: ToolActivity[]
   /** the selection this user message targeted, frozen at send */
   scope?: AiScopeQuoteData
+  /** KB citations behind the [n] chips of this assistant turn */
+  kbCitations?: KbCitation[]
 }
 
 /** longest selection excerpt echoed on a user bubble */
@@ -151,6 +155,7 @@ export function AiPanel({
   const { lang, t } = useI18n()
   // 知识库选库与发送前检索增强(共享选中态,与首页对话一致)
   const kb = useKbAugment()
+  const [kbCiteView, setKbCiteView] = useState<KbCitation | null>(null)
   const aiTabs = [
     { id: 'chat', label: t('aiTabChat') },
     { id: 'assistant', label: t('aiTabAssistant') },
@@ -585,7 +590,10 @@ export function AiPanel({
       try {
         settingsRef.current = await window.markdownApi.getAiSettings()
         if (!mountedRef.current) return
-        await loop.run(await kb.augment(instruction))
+        const kbInstruction = await kb.augment(instruction)
+        if (kb.lastCitations.current.length > 0)
+          patchLast({ kbCitations: kb.lastCitations.current })
+        await loop.run(kbInstruction)
       } catch (err) {
         if (!mountedRef.current) return
         patchLast({
@@ -858,7 +866,12 @@ export function AiPanel({
               ) : (
                 entry.text && (
                   <div dir="auto">
-                    <Markdown text={entry.text} nav={docNav} />
+                    <Markdown
+                      text={entry.text}
+                      nav={docNav}
+                      citations={entry.kbCitations}
+                      onCitationClick={setKbCiteView}
+                    />
                   </div>
                 )
               )}
@@ -1055,6 +1068,9 @@ export function AiPanel({
             }}
           />
         </Suspense>
+      )}
+      {kbCiteView && (
+        <KbCitePreview citation={kbCiteView} lang={lang} onClose={() => setKbCiteView(null)} />
       )}
     </aside>
   )

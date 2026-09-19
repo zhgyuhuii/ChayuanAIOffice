@@ -246,6 +246,24 @@
   font-size: 11px;
   color: var(--text-dim);
 }
+.kb-preview-file {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.kb-preview-file:hover {
+  color: var(--accent-dark);
+}
+.kb-preview-file:disabled {
+  cursor: default;
+  color: var(--text-dim);
+}
 .kb-preview-body {
   padding: 8px 14px 14px;
   font-size: 13px;
