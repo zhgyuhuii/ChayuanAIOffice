@@ -6199,6 +6199,7 @@ async function runHeadlessExportEntry(
 }
 
 app.whenReady().then(async () => {
+  startSiteSync('office') // 官网心跳+检查更新（静默）
   installRendererProtocol({
     docs: join(DOCS_OUT, 'renderer'),
     sheets: join(SHEETS_OUT, 'renderer'),
