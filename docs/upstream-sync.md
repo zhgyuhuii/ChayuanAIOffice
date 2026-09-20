@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/genoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第十二轮完成（2026-09-20，终点 229fbb8，分支 sync/upstream-20260920）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第十三轮完成（2026-09-20，终点 ba123b3，分支 sync/upstream-20260920b）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -108,7 +108,20 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`229fbb8`（2026-09-20 第十二轮完成并入 main；下次 `git fetch upstream` 后从 `229fbb8..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`ba123b3`（2026-09-20 第十三轮完成并入 main；下次 `git fetch upstream` 后从 `ba123b3..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十三轮增量（2026-09-20 晚，229fbb8..ba123b3：8 提交，施工于 sync/upstream-20260920b 分支）
+
+| 内容 | 结果 |
+|---|---|
+| #535 markdown roundtrip browser spec 去重/#528 pptx-ops insert 非有限/负矩形拒绝/#530 file-parse xlsx rel 目标规范化/#531 pdf2docx 空帧位图尺寸钳制 | 全部干净 pick |
+| #529 shell tab 查找走 canonical 路径比较 | **adapted**：本地 tab-manager 方法布局分叉——上游 canonical 版 findTabByPath 落在冲突块，解法=保 HEAD closeOtherTabs+把本地 345 行旧版（字符串比较）替换为 canonical 版（realpathSync.native，path 可选）+findTabOfKindByPath 抽取自动合入+文件尾 canonicalPath 函数收上游；66 测试绿 |
+| #532 ai-search gsk 图片版权过滤走共享主机检查 | **空源码 pick**：意图（isCopyrightHost 替代 URL includes）第七轮 8bafc54 已在本地 chatoffice.ts:255 落地；随附测试跟随 gsk→chatoffice 改名进 chatoffice-search.test.ts+parseGskImageSearch→parseChatOfficeImageSearch 符号名跟进；75 测试绿 |
+| #534 slides 陈旧当前页索引重置保存状态 | 干净 pick（file-actions 本地保存串行化架构兼容） |
+| #533 ai-provider 流式工具参数按工具封顶 | 干净 pick（anthropic/openai-compatible/shared 三协议+stream 测试 355 绿） |
+| 门禁 | 对账 8/8；typecheck 全工作区 0；pptx-ops 34/file-parse 60/pdf2docx 760/ai-provider 355/ai-search 75/slides 保存 6/shell 66 全绿；lint 改动文件 0 error；品牌 grep 零新增（genspark.ai URL 豁免基线） |
+
+**本轮新坑**：上游改本地已重命名文件（gsk.ts→chatoffice.ts）时**测试新增用例的函数名也要跟着改名**（parseGskImageSearch→parseChatOfficeImageSearch）——与第十二轮坑②同型，重命名跟随 pick 后必须 grep 上游符号名。
 
 ### 第十二轮增量（2026-09-20，316ded6..229fbb8：38 提交，施工于 sync/upstream-20260920 分支）
 
