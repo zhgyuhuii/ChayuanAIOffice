@@ -5,8 +5,6 @@ import type { StringKey } from '../locale'
  * single keys to keep the 20-block i18n insertion manageable */
 
 const SITE_URL = 'https://aidooo.com'
-/** per-product deep links wait on the website gaining ?tab= support; every
- * card lands on the products page until then */
 const PRODUCTS_URL = `${SITE_URL}/products`
 
 export interface WelcomeProduct {
@@ -26,7 +24,7 @@ export const WELCOME_PRODUCTS: readonly WelcomeProduct[] = [
     nameKey: 'welcomeOsName',
     descKey: 'welcomeOsDesc',
     chipsKey: 'welcomeOsChips',
-    url: PRODUCTS_URL,
+    url: `${PRODUCTS_URL}/os`,
     soon: false,
   },
   {
@@ -34,7 +32,7 @@ export const WELCOME_PRODUCTS: readonly WelcomeProduct[] = [
     nameKey: 'welcomeOfficeName',
     descKey: 'welcomeOfficeDesc',
     chipsKey: 'welcomeOfficeChips',
-    url: PRODUCTS_URL,
+    url: `${PRODUCTS_URL}/office`,
     soon: false,
   },
   {
@@ -42,7 +40,7 @@ export const WELCOME_PRODUCTS: readonly WelcomeProduct[] = [
     nameKey: 'welcomeAssistantName',
     descKey: 'welcomeAssistantDesc',
     chipsKey: 'welcomeAssistantChips',
-    url: PRODUCTS_URL,
+    url: `${PRODUCTS_URL}/chayuan`,
     soon: false,
   },
   {
