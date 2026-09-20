@@ -81,6 +81,28 @@ async function zipText(zip: JSZip, path: string): Promise<string | undefined> {
   return file ? file.async('text') : undefined
 }
 
+/**
+ * Normalize a workbook relationship target to a zip path. Relative targets
+ * resolve under `xl/`; backslashes become slashes; `.` segments drop out;
+ * `..` pops one segment but never escapes the `xl/` root (or the zip root
+ * for absolute targets). Mirrors the pptx target resolution.
+ */
+export function normalizeXlsxRelTarget(target: string): string {
+  const absolute = target.startsWith('/')
+  const stack: string[] = absolute ? [] : ['xl']
+  const floor = absolute ? 0 : 1
+  for (const part of target.replace(/\\/g, '/').split('/')) {
+    if (part === '' || part === '.') continue
+    if (part === '..') {
+      if (stack.length > floor) stack.pop()
+      continue
+    }
+    if (!absolute && stack.length === 1 && stack[0] === 'xl' && part === 'xl') continue
+    stack.push(part)
+  }
+  return stack.join('/') || 'xl'
+}
+
 /** extract sheet text from an xlsx: one "# SheetName" section per sheet, cells joined with " | " */
 export async function xlsxToText(bytes: Uint8Array): Promise<string> {
   const zip = await JSZip.loadAsync(bytes)
@@ -97,10 +119,7 @@ export async function xlsxToText(bytes: Uint8Array): Promise<string> {
     const rels = parser.parse(relsXml) as Record<string, any>
     for (const rel of asArray(rels.Relationships?.Relationship) as Array<Record<string, unknown>>) {
       const target = String(rel['@_Target'] ?? '')
-      relTargets.set(
-        String(rel['@_Id'] ?? ''),
-        target.startsWith('/') ? target.slice(1) : `xl/${target}`,
-      )
+      relTargets.set(String(rel['@_Id'] ?? ''), normalizeXlsxRelTarget(target))
     }
   }
 
