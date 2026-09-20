@@ -18,7 +18,7 @@ function inline(text: string): string {
   // images before links: data:image (generated images streamed by the image
   // models; CSP allows img data:) and plain http(s) only
   out = out.replace(
-    /!\[([^\]]*)\]\((data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+|https?:\/\/[^)\s]+)\)/g,
+    /!\[([^\]]*)\]\((data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]+|https?:\/\/[^)\s]+)\)/g,
     '<img src="$2" alt="$1">',
   )
   out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2">$1</a>')
@@ -46,6 +46,18 @@ export function markdownToHtml(source: string): string {
   }
   const flushCode = () => {
     if (!code) return
+    // generated clips arrive as ```video fences — inline player for safe
+    // sources (data:video base64, https:), anything else stays a code block
+    if (code.lang === 'video' && code.lines.length === 1) {
+      const src = code.lines[0]!.trim()
+      if (/^(data:video\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i.test(src)) {
+        html.push(
+          `<video class="chat-md-video" controls preload="metadata" src="${escapeHtml(src)}"></video>`,
+        )
+        code = null
+        return
+      }
+    }
     html.push(`<pre><code>${escapeHtml(code.lines.join('\n'))}</code></pre>`)
     code = null
   }

@@ -139,32 +139,6 @@ describe('runtime model-kind dispatch', () => {
     expect(chunks.some((c) => c.type === 'done')).toBe(true)
   })
 
-  it('a video-generation current model fails with its type named, not a wire 400', async () => {
-    const fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
-    const runtime = createAiRuntime({
-      source: makeSource([agnesProfile('agnes-video-2.5')], {
-        profileId: 'openai-compatible',
-        modelId: 'agnes-video-2.5',
-      }),
-      chatoffice,
-      translate,
-    })
-    const chunks: AiStreamChunk[] = []
-    await runtime.runStream(
-      {
-        requestId: 'r1',
-        selection: { profileId: 'openai-compatible', modelId: 'agnes-video-2.5' },
-        system: '',
-        messages: [{ role: 'user', text: 'hi' }],
-      },
-      (c) => chunks.push(c),
-    )
-    expect(fetchMock).not.toHaveBeenCalled()
-    const err = chunks.find((c) => c.type === 'error') as { error: string }
-    expect(err.error).toContain('video-generation')
-  })
-
   it('a chat model is untouched by the dispatch', async () => {
     const fetchMock = vi.fn(
       async (_url: string, _init?: RequestInit) =>
@@ -291,5 +265,97 @@ describe('runtime model-kind dispatch', () => {
     const runtime = createAiRuntime({ source, chatoffice, translate })
     const view = await runtime.getSettingsView()
     expect(view.currentModel).toEqual({ profileId: 'agnes-ai', modelId: 'agnes-2.5-pro' })
+  })
+
+  it('a video-generation current model runs the /v1/videos job and streams a video fence', async () => {
+    const calls: Array<{ url: string; body?: string }> = []
+    const mp4 = new Uint8Array([0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32])
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const body = init?.body ? String(init.body) : undefined
+        calls.push({ url, body })
+        if (url.endsWith('/videos')) {
+          // first mode candidate rejected at param validation, second accepted
+          if (body?.includes('"mode":"quality"')) {
+            return new Response(JSON.stringify({ message: 'mode 无效' }), { status: 400 })
+          }
+          return new Response(JSON.stringify({ id: 'job1', status: 'queued' }), {
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+        if (url.endsWith('/videos/job1')) {
+          return new Response(JSON.stringify({ status: 'completed', url: 'https://cdn/x.mp4' }), {
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+        // content / url download
+        return new Response(mp4, { headers: { 'content-type': 'video/mp4' } })
+      }),
+    )
+    const runtime = createAiRuntime({
+      source: makeSource([agnesProfile('agnes-video-2.5-flash')], {
+        profileId: 'openai-compatible',
+        modelId: 'agnes-video-2.5-flash',
+      }),
+      chatoffice,
+      translate,
+    })
+    const chunks: AiStreamChunk[] = []
+    await runtime.runStream(
+      {
+        requestId: 'r1',
+        selection: { profileId: 'openai-compatible', modelId: 'agnes-video-2.5-flash' },
+        system: '',
+        messages: [{ role: 'user', text: '一只猫跳上桌子' }],
+      },
+      (c) => chunks.push(c),
+    )
+    // mode walk: quality rejected, pro accepted
+    expect(calls[0]!.body).toContain('"mode":"quality"')
+    expect(calls[1]!.body).toContain('"mode":"pro"')
+    expect(calls.at(-1)!.url).toBe('https://cdn/x.mp4')
+    const text = chunks
+      .filter((c) => c.type === 'delta')
+      .map((c) => (c as { text: string }).text)
+      .join('')
+    expect(text).toContain('```video')
+    expect(text).toContain('data:video/mp4;base64,')
+    expect(chunks.at(-1)).toMatchObject({ type: 'done' })
+  })
+
+  it('a video job failure surfaces the gateway error, not a generic message', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              error: { message: '您已达到免费用户的 API 速率限制', code: 'rate_limit_exceeded' },
+            }),
+            { status: 429 },
+          ),
+      ),
+    )
+    const runtime = createAiRuntime({
+      source: makeSource([agnesProfile('agnes-video-2.5-flash')], {
+        profileId: 'openai-compatible',
+        modelId: 'agnes-video-2.5-flash',
+      }),
+      chatoffice,
+      translate,
+    })
+    const chunks: AiStreamChunk[] = []
+    await runtime.runStream(
+      {
+        requestId: 'r1',
+        selection: { profileId: 'openai-compatible', modelId: 'agnes-video-2.5-flash' },
+        system: '',
+        messages: [{ role: 'user', text: 'cat' }],
+      },
+      (c) => chunks.push(c),
+    )
+    const err = chunks.find((c) => c.type === 'error') as { error: string }
+    expect(err.error).toContain('速率限制')
   })
 })

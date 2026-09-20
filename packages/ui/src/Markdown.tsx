@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, useEffect, useState, type ReactNode } from 'react'
 import type { KbCitation } from '@chatoffice/ai-provider/browser'
 
 /**
@@ -10,6 +10,10 @@ import type { KbCitation } from '@chatoffice/ai-provider/browser'
  * Markdown links stay literal text unless the host passes `nav` and the href
  * carries its scheme — then they become in-app navigation links. External
  * URLs never turn into clickable links here.
+ *
+ * Images (`![alt](src)`, data:image/https: sources only) render as small
+ * thumbnails — generated images would otherwise fill the panel — and open a
+ * plain lightbox on click (click anywhere / Esc closes; no chrome, no labels).
  *
  * With `citations`, valid `[n]` markers in plain text render as clickable
  * superscript chips (KB answers); inline code and fenced blocks are untouched.
@@ -36,7 +40,7 @@ const IMAGE_RE = new RegExp(`^!\\[([^\\]]*)\\]\\((${HREF})\\)$`)
 /** images render as <img> only for safe sources: editor CSPs allow data:
  * images everywhere, and generated images ride in as data: URLs; remote
  * https: is allowed, everything else stays literal text */
-const IMAGE_SRC_RE = /^(data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i
+const IMAGE_SRC_RE = /^(data:image\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i
 const CITE_TEXT_RE = /\[(\d{1,2})\]/g
 
 interface CiteContext {
@@ -44,7 +48,12 @@ interface CiteContext {
   onCitationClick: (citation: KbCitation) => void
 }
 
-function renderInline(text: string, nav?: MarkdownNav, cite?: CiteContext): ReactNode[] {
+function renderInline(
+  text: string,
+  nav?: MarkdownNav,
+  cite?: CiteContext,
+  onZoomOpen?: (src: string) => void,
+): ReactNode[] {
   const out: ReactNode[] = []
   let last = 0
   let key = 0
@@ -85,7 +94,16 @@ function renderInline(text: string, nav?: MarkdownNav, cite?: CiteContext): Reac
       const img = IMAGE_RE.exec(tok)
       const src = img?.[2] ?? ''
       if (img && IMAGE_SRC_RE.test(src)) {
-        out.push(<img key={key++} className="ai-md-img" src={src} alt={img[1] ?? ''} />)
+        out.push(
+          <img
+            key={key++}
+            className="ai-md-img"
+            src={src}
+            alt={img[1] ?? ''}
+            title={img[1] ?? ''}
+            onClick={() => onZoomOpen?.(src)}
+          />,
+        )
       } else {
         pushText(tok) // unsafe source stays literal
       }
@@ -124,7 +142,7 @@ type MdBlock =
   | { kind: 'ol'; items: string[] }
   | { kind: 'h'; text: string }
   | { kind: 'table'; align: CellAlign[]; head: string[]; rows: string[][] }
-  | { kind: 'code'; lines: string[] }
+  | { kind: 'code'; lang: string; lines: string[] }
 
 const FENCE_RE = /^\s*(`{3,}|~{3,})/
 const DELIM_CELL_RE = /^\s*:?-+:?\s*$/
@@ -191,7 +209,7 @@ function parseBlocks(text: string): MdBlock[] {
     }
     if (FENCE_RE.test(line)) {
       flush()
-      cur = { kind: 'code', lines: [] }
+      cur = { kind: 'code', lang: /^\s*(`{3,}|~{3})\s*(\S*)/.exec(line)?.[2] ?? '', lines: [] }
       continue
     }
     if (cur?.kind === 'table') {
@@ -265,21 +283,43 @@ export function Markdown({
     citations && citations.length > 0 && onCitationClick
       ? { citations, onCitationClick }
       : undefined
+  // lightbox: one zoomed image at a time, no chrome — generated pictures are
+  // data: URLs already in memory, so this stays cheap
+  const [zoom, setZoom] = useState<string | null>(null)
+  const openZoom = (src: string) => setZoom(src)
+  useEffect(() => {
+    if (!zoom) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setZoom(null)
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [zoom])
   return (
     <div className="ai-md">
       {parseBlocks(text).map((b, i) => {
         if (b.kind === 'h') {
           return (
             <p key={i} className="ai-md-h">
-              {renderInline(b.text, nav, cite)}
+              {renderInline(b.text, nav, cite, openZoom)}
             </p>
           )
         }
         if (b.kind === 'ul' || b.kind === 'ol') {
-          const items = b.items.map((it, j) => <li key={j}>{renderInline(it, nav, cite)}</li>)
+          const items = b.items.map((it, j) => (
+            <li key={j}>{renderInline(it, nav, cite, openZoom)}</li>
+          ))
           return b.kind === 'ul' ? <ul key={i}>{items}</ul> : <ol key={i}>{items}</ol>
         }
         if (b.kind === 'code') {
+          // generated clips arrive as ```video fences — render an inline player
+          // for safe sources (data:video base64, https:), anything else as code
+          if (b.lang === 'video' && b.lines.length === 1) {
+            const src = (b.lines[0] ?? '').trim()
+            if (/^(data:video\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i.test(src)) {
+              return <video key={i} className="ai-md-video" controls preload="metadata" src={src} />
+            }
+          }
           return (
             <pre key={i} className="ai-md-pre">
               <code>{b.lines.join('\n')}</code>
@@ -296,7 +336,7 @@ export function Markdown({
                   <tr>
                     {b.head.map((c, j) => (
                       <th key={j} style={cellStyle(j)}>
-                        {renderInline(c, nav, cite)}
+                        {renderInline(c, nav, cite, openZoom)}
                       </th>
                     ))}
                   </tr>
@@ -306,7 +346,7 @@ export function Markdown({
                     <tr key={r}>
                       {row.map((c, j) => (
                         <td key={j} style={cellStyle(j)}>
-                          {renderInline(c, nav, cite)}
+                          {renderInline(c, nav, cite, openZoom)}
                         </td>
                       ))}
                     </tr>
@@ -321,12 +361,24 @@ export function Markdown({
             {b.lines.map((ln, j) => (
               <Fragment key={j}>
                 {j > 0 && <br />}
-                {renderInline(ln, nav, cite)}
+                {renderInline(ln, nav, cite, openZoom)}
               </Fragment>
             ))}
           </p>
         )
       })}
+      {zoom && (
+        <div
+          className="ai-md-zoom"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setZoom(null)
+          }}
+        >
+          <img src={zoom} alt="" />
+        </div>
+      )}
     </div>
   )
 }

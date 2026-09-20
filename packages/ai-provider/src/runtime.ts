@@ -1,6 +1,7 @@
 import { chatResolved } from './chat'
 import { discoverModels, type DiscoveryTarget } from './discovery'
 import { generateImageWithModel, type ImageGenRequest } from './imagegen'
+import { generateVideoWithModel } from './videojob'
 import { isAiNetworkError } from './network-error'
 import { isAiOverloadedError } from './overload-error'
 import { runMediaJob, type MediaJobResult } from './media-jobs'
@@ -263,6 +264,54 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     }
   }
 
+  /** video-generation model picked as the current model: run the OpenAI-style
+   * /v1/videos job channel (create → poll → content) and stream the finished
+   * clip back as a ```video fence (rendered as an inline player by the chat
+   * markdown). Pings keep the renderer's silence watchdog fed during the
+   * multi-minute job. */
+  const runVideoModelChat = async (
+    call: ResolvedModelCall,
+    request: AiStreamRequestV2,
+    send: (chunk: AiStreamChunk) => void,
+  ): Promise<void> => {
+    const { requestId } = request
+    const prompt = lastUserPrompt(request.messages)
+    if (!prompt) {
+      send({
+        requestId,
+        type: 'error',
+        error: `${call.model} is a video-generation model — send a prompt to generate a video`,
+      })
+      return
+    }
+    send({ requestId, type: 'delta', text: `Generating a video with ${call.model}…\n\n` })
+    const pinger = setInterval(() => send({ requestId, type: 'ping' }), 4_000)
+    try {
+      const result = await generateVideoWithModel(call, {
+        prompt,
+        ...(request.signal ? { signal: request.signal } : {}),
+        onPing: () => send({ requestId, type: 'ping' }),
+      })
+      const src = result.dataUrl ?? result.url
+      if (!src) throw new Error('the video API returned no video')
+      const fence = 'video'
+      send({
+        requestId,
+        type: 'delta',
+        text: `\n\n\`\`\`${fence}\n${src}\n\`\`\`\n\n`,
+      })
+      send({ requestId, type: 'done' })
+    } catch (err) {
+      send({
+        requestId,
+        type: 'error',
+        error: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      clearInterval(pinger)
+    }
+  }
+
   /** the full stream loop: resolve, stream, map errors to typed chunks */
   const runStream = async (
     request: AiStreamRequestV2,
@@ -289,6 +338,10 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       await runImageModelChat(call, request, send)
       return
     }
+    if (kind === 'video-generation') {
+      await runVideoModelChat(call, request, send)
+      return
+    }
     if (
       kind !== 'chat' &&
       kind !== 'vision' &&
@@ -298,7 +351,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       send({
         requestId,
         type: 'error',
-        error: `${call.model} is a ${kind} model and cannot answer chat — pick a chat model in the picker (image models generate images right here)`,
+        error: `${call.model} is a ${kind} model and cannot answer chat — pick a chat model in the picker (image/video models generate media right here)`,
       })
       return
     }

@@ -73,4 +73,49 @@ describe('Markdown images', () => {
     expect(host.querySelector('img.ai-md-img')).not.toBeNull()
     expect((host.textContent ?? '').length).toBeLessThan(100)
   })
+
+  it('clicking the thumbnail opens the lightbox; backdrop click and Esc close it', async () => {
+    await render(createElement(Markdown, { text: '![g](data:image/png;base64,aW1n)' }))
+    expect(host.querySelector('.ai-md-zoom')).toBeNull()
+    await act(async () => {
+      ;(host.querySelector('img.ai-md-img') as HTMLElement).click()
+    })
+    const box = host.querySelector('.ai-md-zoom') as HTMLElement
+    expect(box).not.toBeNull()
+    expect((box.querySelector('img') as HTMLImageElement).src).toBe('data:image/png;base64,aW1n')
+    // backdrop click closes
+    await act(async () => {
+      box.click()
+    })
+    expect(host.querySelector('.ai-md-zoom')).toBeNull()
+    // reopen, then Escape closes
+    await act(async () => {
+      ;(host.querySelector('img.ai-md-img') as HTMLElement).click()
+    })
+    expect(host.querySelector('.ai-md-zoom')).not.toBeNull()
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    })
+    expect(host.querySelector('.ai-md-zoom')).toBeNull()
+  })
+
+  it('renders a ```video fence as an inline player for safe sources only', async () => {
+    await render(
+      createElement(Markdown, {
+        text: '生成完成：\n\n```video\ndata:video/mp4;base64,AAAAaGw=\n```',
+      }),
+    )
+    const video = host.querySelector('video.ai-md-video')
+    expect(video?.getAttribute('src')).toBe('data:video/mp4;base64,AAAAaGw=')
+    expect(video?.getAttribute('controls')).not.toBeNull()
+
+    // unsafe / unknown fence content stays a code block
+    await render(
+      createElement(Markdown, {
+        text: '```video\njavascript:alert(1)\n```',
+      }),
+    )
+    expect(host.querySelector('video')).toBeNull()
+    expect(host.querySelector('pre')).not.toBeNull()
+  })
 })

@@ -26,4 +26,14 @@ describe('mini-markdown images', () => {
     expect(html).toContain('<a href="https://a.b">site</a>')
     expect(html).toContain('<em>em</em>')
   })
+
+  it('renders a ```video fence as an inline player for safe sources only', () => {
+    const html = markdownToHtml('生成完成：\n\n```video\ndata:video/mp4;base64,AAAAaGw=\n```')
+    expect(html).toContain('<video class="chat-md-video" controls')
+    expect(html).toContain('src="data:video/mp4;base64,AAAAaGw="')
+
+    const unsafe = markdownToHtml('```video\njavascript:alert(1)\n```')
+    expect(unsafe).not.toContain('<video')
+    expect(unsafe).toContain('<pre><code>')
+  })
 })

@@ -783,6 +783,43 @@ html.chatoffice-popover-open .ribbon-tabs {
   margin-bottom: 0;
 }
 
+/* generated images streamed by image models: small thumbnail … */
+.ai-md-img {
+  max-width: 220px;
+  max-height: 150px;
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+  cursor: zoom-in;
+}
+/* … click opens a plain full-screen lightbox (click backdrop / Esc closes) */
+.ai-md-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay, rgb(0 0 0 / 50%));
+  cursor: zoom-out;
+  -webkit-app-region: no-drag;
+}
+.ai-md-zoom img {
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: 4px;
+  box-shadow: var(--shadow-menu);
+}
+/* generated clips streamed as ```video fences */
+.ai-md-video {
+  max-width: 100%;
+  width: 320px;
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+  background: rgb(0 0 0 / 35%);
+}
+
 /* blank markdown paragraphs would each eat a 16px margin — the stream never renders them */
 .ai-md p:empty {
   display: none;

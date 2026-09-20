@@ -3363,6 +3363,16 @@ body.sidebar-resizing {
   margin: 0.4em 0;
 }
 
+/* generated clips streamed as ```video fences */
+.chat-md video {
+  max-width: 100%;
+  width: 360px;
+  border-radius: 8px;
+  margin: 0.4em 0;
+  display: block;
+  background: rgb(0 0 0 / 35%);
+}
+
 .chat-md > :first-child {
   margin-top: 0;
 }
