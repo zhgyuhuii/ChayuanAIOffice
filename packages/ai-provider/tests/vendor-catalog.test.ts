@@ -8,6 +8,8 @@ import { NO_MODELS_API, VENDORS, VENDOR_BY_ID } from '../src/vendor-catalog'
  * consoles. Everything else must be configurable out of the box.
  */
 const INTENTIONALLY_BLANK = new Set([
+  // the catch-all custom entry: the URL is the user's input by definition
+  'openai-compatible',
   'tencent-cloud-ti',
   'tianyi-xirang',
   'netease-youdao',

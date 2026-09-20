@@ -107,7 +107,11 @@ async function openAiStyleModels(target: DiscoveryTarget): Promise<AiModelEntry[
   let lastError = 'no endpoint tried'
   for (const url of tryUrls) {
     try {
-      const json = (await fetchJson(url, { Authorization: `Bearer ${target.apiKey}` }, target.signal)) as {
+      const json = (await fetchJson(
+        url,
+        { Authorization: `Bearer ${target.apiKey}` },
+        target.signal,
+      )) as {
         data?: Array<{ id?: string }>
       }
       const ids = (json.data ?? []).map((m) => m?.id).filter((id): id is string => !!id)
@@ -166,7 +170,18 @@ async function geminiModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {
 }
 
 export async function discoverModels(target: DiscoveryTarget): Promise<AiModelEntry[]> {
-  if (target.ollamaLike) return ollamaTags(target)
+  if (target.ollamaLike) {
+    // Ollama-style engines answer /api/tags; the remote OpenAI-compatible
+    // gateways lumped into ollama-like vendors (自定义 OpenAI 兼容, One API,
+    // New API…) only serve /v1/models, and their edge (Cloudflare) hard-blocks
+    // unknown paths with a 403 HTML page — a failed tags probe must fall
+    // through to the OpenAI-style list, not surface the block page.
+    try {
+      return await ollamaTags(target)
+    } catch {
+      return openAiStyleModels(target)
+    }
+  }
   switch (target.protocol) {
     case 'anthropic-messages':
       return anthropicModels(target)

@@ -698,7 +698,10 @@ export const VENDORS: VendorCatalogEntry[] = [
     group: 'local',
     defaultUrl: '',
     api: 'openai-completions',
-    ollamaLike: true,
+    // not ollamaLike: this catch-all usually points at a remote OpenAI-compatible
+    // gateway that needs a Bearer key and serves /v1/models only; the nokey
+    // treatment probed /api/tags and dropped the key from discovery requests.
+    // Keyless local engines have dedicated vendors (ollama, lm-studio, …).
     free: 'nokey',
   },
   {
