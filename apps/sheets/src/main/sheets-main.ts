@@ -70,7 +70,10 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
-import { registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
+import {
+  registerMediaIpc,
+  registerSharedAiIpc, registerSharedKbIpc
+} from '@chatoffice/ai-host'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
   blankXlsxBuffer,
@@ -86,7 +89,6 @@ import {
   setChatOfficeProxyUrl,
   webSearch,
   imageSearch,
-  chatofficeGenerateImage,
 } from '@chatoffice/ai-search'
 import { parseFileToText } from '@chatoffice/file-parse'
 import type { CellEdit, SheetStructuralOps } from '@chatoffice/xlsx-gateway/gateway/xlsx-gateway'
@@ -180,7 +182,7 @@ const tMain = createI18n({
     errNoApiKey: '未配置 {provider} 的 API Key',
     errAiBusy: 'AI 服务当前繁忙，请稍后重试',
     errNoModel: '未配置模型名称',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
     errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errImgAbsPath: '图片路径必须是绝对路径。',
     errImgNotFound: '找不到图片文件: {path}',
@@ -241,7 +243,7 @@ const tMain = createI18n({
     errAiBusy: 'The AI service is busy right now — please try again in a moment',
     errNoModel: 'No model name configured',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChaAI Office',
+      'No image model configured: enable an image-generation model in Model Settings',
     errChatOfficeToolsOff:
       'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
     errImgAbsPath: 'Image path must be absolute.',
@@ -305,8 +307,7 @@ const tMain = createI18n({
     errNoApiKey: '{provider} の API キーが設定されていません',
     errAiBusy: 'AI サービスが混み合っています。しばらくしてからもう一度お試しください',
     errNoModel: 'モデル名が設定されていません',
-    errNoImageModel:
-      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、ChaAI Office にサインインしてください',
+    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
     errChatOfficeToolsOff:
       'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errImgAbsPath: '画像パスは絶対パスで指定してください。',
@@ -373,7 +374,7 @@ const tMain = createI18n({
     errAiBusy: 'AI 서비스가 혼잡합니다. 잠시 후 다시 시도해 주세요',
     errNoModel: '모델 이름이 설정되지 않았습니다',
     errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 ChaAI Office에 로그인하세요',
+      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하세요',
     errChatOfficeToolsOff:
       'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errImgAbsPath: '이미지 경로는 절대 경로여야 합니다.',
@@ -440,7 +441,7 @@ const tMain = createI18n({
     errAiBusy: "Le service d'IA est actuellement surchargé — réessayez dans un instant",
     errNoModel: 'Aucun nom de modèle configuré',
     errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à ChaAI Office",
+      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles",
     errChatOfficeToolsOff:
       'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errImgAbsPath: "Le chemin de l'image doit être absolu.",
@@ -508,7 +509,7 @@ const tMain = createI18n({
     errAiBusy: 'Der KI-Dienst ist derzeit überlastet — bitte gleich erneut versuchen',
     errNoModel: 'Kein Modellname konfiguriert',
     errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei ChaAI Office an',
+      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen',
     errChatOfficeToolsOff:
       'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errImgAbsPath: 'Der Bildpfad muss absolut sein.',
@@ -576,7 +577,7 @@ const tMain = createI18n({
       'El servicio de IA está saturado en este momento; inténtalo de nuevo en unos instantes',
     errNoModel: 'No hay nombre de modelo configurado',
     errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en ChaAI Office',
+      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos',
     errChatOfficeToolsOff:
       'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errImgAbsPath: 'La ruta de la imagen debe ser absoluta.',
@@ -641,8 +642,7 @@ const tMain = createI18n({
     errNoApiKey: 'ยังไม่ได้ตั้งค่า API Key ของ {provider}',
     errAiBusy: 'บริการ AI มีผู้ใช้งานจำนวนมากในขณะนี้ โปรดลองอีกครั้งในอีกสักครู่',
     errNoModel: 'ยังไม่ได้กำหนดชื่อโมเดล',
-    errNoImageModel:
-      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ ChaAI Office',
+    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
     errChatOfficeToolsOff:
       'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errImgAbsPath: 'เส้นทางรูปภาพต้องเป็นเส้นทางแบบสัมบูรณ์',
@@ -706,7 +706,7 @@ const tMain = createI18n({
     errAiBusy: 'Layanan AI sedang sibuk — silakan coba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasi',
     errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke ChaAI Office',
+      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model',
     errChatOfficeToolsOff:
       'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Jalur gambar harus berupa jalur absolut.',
@@ -771,8 +771,7 @@ const tMain = createI18n({
     errNoApiKey: 'API-ключ для {provider} не настроен',
     errAiBusy: 'Сервис ИИ сейчас перегружен — повторите попытку чуть позже',
     errNoModel: 'Имя модели не настроено',
-    errNoImageModel:
-      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в ChaAI Office',
+    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
     errChatOfficeToolsOff:
       'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errImgAbsPath: 'Путь к изображению должен быть абсолютным.',
@@ -836,8 +835,7 @@ const tMain = createI18n({
     errNoApiKey: 'لم يتم تكوين مفتاح API لـ {provider}',
     errAiBusy: 'خدمة الذكاء الاصطناعي مشغولة حاليًا — يرجى المحاولة مرة أخرى بعد قليل',
     errNoModel: 'لم يتم تكوين اسم النموذج',
-    errNoImageModel:
-      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى ChaAI Office',
+    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
     errChatOfficeToolsOff:
       'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errImgAbsPath: 'يجب أن يكون مسار الصورة مسارًا مطلقًا.',
@@ -901,7 +899,7 @@ const tMain = createI18n({
     errAiBusy: 'O serviço de IA está sobrecarregado no momento — tente novamente em instantes',
     errNoModel: 'Nenhum nome de modelo configurado',
     errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no ChaAI Office',
+      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos',
     errChatOfficeToolsOff:
       'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errImgAbsPath: 'O caminho da imagem deve ser absoluto.',
@@ -967,7 +965,7 @@ const tMain = createI18n({
     errAiBusy: 'Il servizio IA è momentaneamente sovraccarico — riprova tra poco',
     errNoModel: 'Nessun nome di modello configurato',
     errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a ChaAI Office',
+      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli',
     errChatOfficeToolsOff:
       'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errImgAbsPath: "Il percorso dell'immagine deve essere assoluto.",
@@ -1034,7 +1032,7 @@ const tMain = createI18n({
     errAiBusy: 'Usługa AI jest obecnie przeciążona — spróbuj ponownie za chwilę',
     errNoModel: 'Nie skonfigurowano nazwy modelu',
     errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do ChaAI Office',
+      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli',
     errChatOfficeToolsOff:
       'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby użyć tego narzędzia',
     errImgAbsPath: 'Ścieżka obrazu musi być bezwzględna.',
@@ -1139,7 +1137,7 @@ const tMain = createI18n({
     csvKeepFormatDetail:
       'CSV zachovává pouze hodnoty jednoho listu — vzorce, formátování a další listy se do souboru .csv neuloží.',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChaAI Office',
+      'No image model configured: enable an image-generation model in Model Settings',
     errChatOfficeToolsOff:
       'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
   },
@@ -1166,7 +1164,7 @@ const tMain = createI18n({
     errAiBusy: 'De AI-service is momenteel overbelast — probeer het zo opnieuw',
     errNoModel: 'Geen modelnaam geconfigureerd',
     errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij ChaAI Office',
+      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen',
     errChatOfficeToolsOff:
       'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errImgAbsPath: 'Het afbeeldingspad moet absoluut zijn.',
@@ -1232,7 +1230,7 @@ const tMain = createI18n({
     errAiBusy: 'Perkhidmatan AI sedang sibuk — sila cuba lagi sebentar lagi',
     errNoModel: 'Nama model belum dikonfigurasikan',
     errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke ChaAI Office',
+      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model',
     errChatOfficeToolsOff:
       'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errImgAbsPath: 'Laluan imej mestilah laluan mutlak.',
@@ -1296,8 +1294,7 @@ const tMain = createI18n({
     errNoApiKey: 'לא הוגדר מפתח API עבור {provider}',
     errAiBusy: 'שירות ה-AI עמוס כרגע — נסו שוב בעוד רגע',
     errNoModel: 'לא הוגדר שם מודל',
-    errNoImageModel:
-      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-ChaAI Office',
+    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
     errChatOfficeToolsOff:
       'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errImgAbsPath: 'נתיב התמונה חייב להיות מוחלט.',
@@ -1360,7 +1357,7 @@ const tMain = createI18n({
     errAiBusy: 'AI सेवा अभी व्यस्त है — कृपया थोड़ी देर बाद फिर से प्रयास करें',
     errNoModel: 'कोई मॉडल नाम कॉन्फ़िगर नहीं है',
     errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या ChaAI Office में साइन इन करें',
+      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें',
     errChatOfficeToolsOff:
       'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errImgAbsPath: 'छवि पथ निरपेक्ष होना चाहिए।',
@@ -1424,7 +1421,7 @@ const tMain = createI18n({
     errNoApiKey: '未設定 {provider} 的 API Key',
     errAiBusy: 'AI 服務目前繁忙，請稍後重試',
     errNoModel: '未設定模型名稱',
-    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
     errChatOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errImgAbsPath: '圖片路徑必須是絕對路徑。',
     errImgNotFound: '找不到圖片檔案: {path}',
@@ -3431,6 +3428,12 @@ export function registerSheetsAiIpc(): void {
     downloadsDir: () => app.getPath('downloads'),
     reveal: (p) => shell.showItemInFolder(p),
   })
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  registerMediaIpc({
+    ipcMain,
+    settingsPath: () => SETTINGS_PATH(),
+    mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+  })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: SETTINGS_PATH(),
@@ -3456,14 +3459,6 @@ export function registerSheetsAiIpc(): void {
         if (!withEmail) return { loggedIn: true }
         const info = await chatofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
-      },
-      generateImage: async (req) => {
-        if (!chatofficeCloudToolsOn()) throw new Error(tm('errChatOfficeToolsOff'))
-        const r = await chatofficeGenerateImage({
-          prompt: req.prompt,
-          ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
-        })
-        return { url: r.url }
       },
     },
     chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),

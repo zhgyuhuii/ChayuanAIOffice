@@ -73,7 +73,7 @@ export const tMain = createI18n({
     errNoApiKey: '未配置 {provider} 的 API Key',
     errNoModel: '未配置模型名称',
     errChatOfficeCli: 'chatoffice 未登录:请先运行 chatoffice login 登录 察元AIOffice 账号',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
     errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
     errNoDeckAppend:
       '当前没有可追加的文稿（会话不存在）。请先用 mode:"replace" 生成首页，或改用原生工具新增页面。',
@@ -187,7 +187,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice not signed in: run chatoffice login to sign in to your ChaAI Office account first',
     errNoImageModel:
-      'No image model configured: enable an image-generation model in Model Settings, or sign in to ChaAI Office',
+      'No image model configured: enable an image-generation model in Model Settings',
     errChatOfficeToolsOff:
       'ChaAI Office cloud tools are turned off in Model Settings; enable them to use this tool',
     errNoDeckAppend:
@@ -301,8 +301,7 @@ export const tMain = createI18n({
     errNoModel: 'モデル名が設定されていません',
     errChatOfficeCli:
       'chatoffice が未サインインです。先に chatoffice login を実行して ChaAI Office アカウントにサインインしてください',
-    errNoImageModel:
-      '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にするか、ChaAI Office にサインインしてください',
+    errNoImageModel: '画像生成モデルが未設定です。モデル設定で画像生成モデルを有効にしてください',
     errChatOfficeToolsOff:
       'ChaAI Office クラウドツールがモデル設定でオフになっています。使用するにはオンにしてください',
     errNoDeckAppend:
@@ -421,7 +420,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'gsk가 로그인되어 있지 않습니다. 먼저 chatoffice login을 실행해 ChaAI Office 계정에 로그인하세요',
     errNoImageModel:
-      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하거나 ChaAI Office에 로그인하세요',
+      '이미지 생성 모델이 구성되지 않았습니다. 모델 설정에서 이미지 생성 모델을 활성화하세요',
     errChatOfficeToolsOff:
       'ChaAI Office 클라우드 도구가 모델 설정에서 꺼져 있습니다. 사용하려면 켜세요',
     errNoDeckAppend:
@@ -539,7 +538,7 @@ export const tMain = createI18n({
     errNoDeckAppend:
       'Aucune présentation à compléter (session inexistante). Générez d\'abord la première page avec mode:"replace" ou ajoutez des pages avec les outils natifs.',
     errNoImageModel:
-      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles, ou connectez-vous à ChaAI Office",
+      "Aucun modèle d'image configuré : activez un modèle de génération d'images dans les paramètres des modèles",
     errChatOfficeToolsOff:
       'Les outils cloud ChaAI Office sont désactivés dans les paramètres des modèles ; activez-les pour utiliser cet outil',
     errAppendFailed: "Échec de l'ajout : {reason}",
@@ -658,7 +657,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice nicht angemeldet: Führen Sie zuerst chatoffice login aus, um sich bei Ihrem ChaAI Office-Konto anzumelden',
     errNoImageModel:
-      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen oder melde dich bei ChaAI Office an',
+      'Kein Bildmodell konfiguriert: aktiviere ein Bildgenerierungsmodell in den Modelleinstellungen',
     errChatOfficeToolsOff:
       'ChaAI Office-Cloud-Tools sind in den Modelleinstellungen deaktiviert; aktiviere sie, um dieses Tool zu nutzen',
     errNoDeckAppend:
@@ -778,7 +777,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice sin sesión iniciada: ejecuta primero chatoffice login para iniciar sesión en tu cuenta de ChaAI Office',
     errNoImageModel:
-      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos, o inicia sesión en ChaAI Office',
+      'No hay modelo de imagen configurado: activa un modelo de generación de imágenes en Ajustes de modelos',
     errChatOfficeToolsOff:
       'Las herramientas en la nube de ChaAI Office están desactivadas en Ajustes de modelos; actívalas para usar esta herramienta',
     errNoDeckAppend:
@@ -896,8 +895,7 @@ export const tMain = createI18n({
     errNoModel: 'ยังไม่ได้ตั้งค่าชื่อโมเดล',
     errChatOfficeCli:
       'chatoffice ยังไม่ได้เข้าสู่ระบบ: โปรดรัน chatoffice login เพื่อเข้าสู่ระบบบัญชี ChaAI Office ก่อน',
-    errNoImageModel:
-      'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล หรือลงชื่อเข้าใช้ ChaAI Office',
+    errNoImageModel: 'ยังไม่ได้ตั้งค่าโมเดลสร้างภาพ: เปิดใช้โมเดลสร้างภาพในการตั้งค่าโมเดล',
     errChatOfficeToolsOff:
       'เครื่องมือคลาวด์ของ ChaAI Office ถูกปิดอยู่ในการตั้งค่าโมเดล เปิดใช้เพื่อใช้เครื่องมือนี้',
     errNoDeckAppend:
@@ -1012,7 +1010,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice belum masuk: jalankan chatoffice login dulu untuk masuk ke akun ChaAI Office',
     errNoImageModel:
-      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model, atau masuk ke ChaAI Office',
+      'Belum ada model gambar yang dikonfigurasi: aktifkan model pembuatan gambar di Pengaturan Model',
     errChatOfficeToolsOff:
       'Alat cloud ChaAI Office dimatikan di Pengaturan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
@@ -1131,8 +1129,7 @@ export const tMain = createI18n({
     errNoModel: 'Не указано имя модели',
     errChatOfficeCli:
       'chatoffice не авторизован: сначала выполните chatoffice login, чтобы войти в учётную запись ChaAI Office',
-    errNoImageModel:
-      'Модель генерации изображений не настроена: включите её в настройках моделей или войдите в ChaAI Office',
+    errNoImageModel: 'Модель генерации изображений не настроена: включите её в настройках моделей',
     errChatOfficeToolsOff:
       'Облачные инструменты ChaAI Office отключены в настройках моделей; включите их, чтобы использовать этот инструмент',
     errNoDeckAppend:
@@ -1250,8 +1247,7 @@ export const tMain = createI18n({
     errNoModel: 'لم يتم تكوين اسم النموذج',
     errChatOfficeCli:
       'chatoffice غير مسجَّل الدخول: شغّل chatoffice login أولًا لتسجيل الدخول إلى حساب ChaAI Office',
-    errNoImageModel:
-      'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج أو سجّل الدخول إلى ChaAI Office',
+    errNoImageModel: 'لم يتم تهيئة نموذج توليد الصور: فعّل نموذجًا لتوليد الصور في إعدادات النماذج',
     errChatOfficeToolsOff:
       'أدوات ChaAI Office السحابية معطلة في إعدادات النماذج؛ فعّلها لاستخدام هذه الأداة',
     errNoDeckAppend:
@@ -1367,7 +1363,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice não conectado: execute chatoffice login primeiro para entrar na sua conta ChaAI Office',
     errNoImageModel:
-      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos ou entre no ChaAI Office',
+      'Nenhum modelo de imagem configurado: ative um modelo de geração de imagens nas configurações de modelos',
     errChatOfficeToolsOff:
       'As ferramentas de nuvem do ChaAI Office estão desativadas nas configurações de modelos; ative-as para usar esta ferramenta',
     errNoDeckAppend:
@@ -1489,7 +1485,7 @@ export const tMain = createI18n({
     errNoDeckAppend:
       'Nessuna presentazione a cui aggiungere pagine (sessione mancante). Genera la prima pagina con mode:"replace" o aggiungi pagine con gli strumenti nativi.',
     errNoImageModel:
-      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli, oppure accedi a ChaAI Office',
+      'Nessun modello immagine configurato: attiva un modello di generazione immagini nelle impostazioni modelli',
     errChatOfficeToolsOff:
       'Gli strumenti cloud ChaAI Office sono disattivati nelle impostazioni modelli; attivali per usare questo strumento',
     errAppendFailed: 'Aggiunta non riuscita: {reason}',
@@ -1608,7 +1604,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice nie jest zalogowany: najpierw uruchom chatoffice login, aby zalogować się na konto ChaAI Office',
     errNoImageModel:
-      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli lub zaloguj się do ChaAI Office',
+      'Nie skonfigurowano modelu obrazów: włącz model generowania obrazów w ustawieniach modeli',
     errChatOfficeToolsOff:
       'Narzędzia chmurowe ChaAI Office są wyłączone w ustawieniach modeli; włącz je, aby używać tego narzędzia',
     errNoDeckAppend:
@@ -1724,7 +1720,8 @@ export const tMain = createI18n({
       'Nejste přihlášeni ke Genspark: klikněte níže na „Přihlásit se ke Genspark“, přihlaste se a zkuste to znovu',
     errNoApiKey: 'Pro {provider} není nakonfigurován žádný klíč API',
     errNoModel: 'Není nakonfigurován název modelu',
-    errChatOfficeCli: 'gsk není přihlášen: nejprve spusťte gsk login a přihlaste se k účtu Genspark',
+    errChatOfficeCli:
+      'gsk není přihlášen: nejprve spusťte gsk login a přihlaste se k účtu Genspark',
     errNoDeckAppend:
       'Není k čemu přidávat (chybí relace). Vygenerujte první stránku s mode:"replace" nebo přidejte stránky nativními nástroji.',
     errAppendFailed: 'Přidání se nezdařilo: {reason}',
@@ -1763,7 +1760,7 @@ export const tMain = createI18n({
     menuZoomIn: 'Přiblížit',
     menuZoomOut: 'Oddálit',
     menuActualSize: 'Skutečná velikost',
-    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型，或登录后使用默认生图',
+    errNoImageModel: '未配置生图模型：请在模型设置中启用生图模型',
     errChatOfficeToolsOff: '已在模型设置中关闭云端工具：请开启后使用该功能',
   },
   nl: {
@@ -1842,7 +1839,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice is niet aangemeld: voer eerst chatoffice login uit om u aan te melden bij uw ChaAI Office-account',
     errNoImageModel:
-      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen, of log in bij ChaAI Office',
+      'Geen afbeeldingsmodel geconfigureerd: schakel een model voor afbeeldingsgeneratie in bij de modelinstellingen',
     errChatOfficeToolsOff:
       'ChaAI Office-cloudtools zijn uitgeschakeld in de modelinstellingen; schakel ze in om deze tool te gebruiken',
     errNoDeckAppend:
@@ -1960,7 +1957,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice belum log masuk: jalankan chatoffice login dahulu untuk log masuk ke akaun ChaAI Office anda',
     errNoImageModel:
-      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model, atau log masuk ke ChaAI Office',
+      'Tiada model imej dikonfigurasi: aktifkan model penjanaan imej dalam Tetapan Model',
     errChatOfficeToolsOff:
       'Alat awan ChaAI Office dimatikan dalam Tetapan Model; aktifkan untuk menggunakan alat ini',
     errNoDeckAppend:
@@ -2075,8 +2072,7 @@ export const tMain = createI18n({
     errNoModel: 'לא הוגדר שם מודל',
     errChatOfficeCli:
       'chatoffice אינו מחובר: הרץ תחילה chatoffice login כדי להיכנס לחשבון ChaAI Office שלך',
-    errNoImageModel:
-      'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים או התחבר ל-ChaAI Office',
+    errNoImageModel: 'לא הוגדר מודל ליצירת תמונות: הפעל מודל יצירת תמונות בהגדרות המודלים',
     errChatOfficeToolsOff:
       'כלי הענן של ChaAI Office כבויים בהגדרות המודלים; הפעל אותם כדי להשתמש בכלי זה',
     errNoDeckAppend:
@@ -2191,7 +2187,7 @@ export const tMain = createI18n({
     errChatOfficeCli:
       'chatoffice साइन इन नहीं है: पहले chatoffice login चलाकर अपने ChaAI Office खाते में साइन इन करें',
     errNoImageModel:
-      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें, या ChaAI Office में साइन इन करें',
+      'कोई इमेज मॉडल कॉन्फ़िगर नहीं है: मॉडल सेटिंग्स में इमेज-जनरेशन मॉडल सक्षम करें',
     errChatOfficeToolsOff:
       'ChaAI Office क्लाउड टूल मॉडल सेटिंग्स में बंद हैं; इस टूल का उपयोग करने के लिए उन्हें चालू करें',
     errNoDeckAppend:
@@ -2305,7 +2301,7 @@ export const tMain = createI18n({
     errNoApiKey: '未設定 {provider} 的 API Key',
     errNoModel: '未設定模型名稱',
     errChatOfficeCli: 'chatoffice 未登入:請先執行 chatoffice login 登入 察元AIOffice 帳號',
-    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型，或登入後使用預設生圖',
+    errNoImageModel: '未配置生圖模型：請在模型設定中啟用生圖模型',
     errChatOfficeToolsOff: '已在模型設定中關閉雲端工具：請開啟後使用該功能',
     errNoDeckAppend:
       '目前沒有可附加的簡報（工作階段不存在）。請先用 mode:"replace" 產生首頁，或改用原生工具新增頁面。',

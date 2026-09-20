@@ -318,4 +318,16 @@ export const en = {
   aiNotePoolEmpty: "Local image pool empty (no folder picked); the auto chain applies",
   aiNoteSvgMode: "Imagery: vector graphics (drawn inline by the model, editable elements)",
   aiNoteImgFail: "Page {page}: no image sourced for \"{kw}\"; drawn as vector graphics instead",
+
+  aiToolRunDeck: 'Generating presentation…',
+  aiToolRunRegenSlide: 'Redoing the slide…',
+  aiToolRunPlanDeck: 'Planning the outline…',
+  aiToolRunImage: 'Generating image…',
+  aiToolRunSvg: 'Drawing a vector illustration…',
+  aiToolRunVideo: 'Generating video…',
+  aiToolRunAnalyze: 'Analyzing media…',
+  aiToolRunInsertImage: 'Inserting image…',
+  aiToolRunWebSearch: 'Searching the web…',
+  aiToolRunImageSearch: 'Searching for images…',
+  aiToolRunReadUrl: 'Reading the page…',
 } satisfies Record<keyof typeof zh, string>

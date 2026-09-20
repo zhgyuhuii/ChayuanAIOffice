@@ -320,4 +320,16 @@ export const fr = {
   aiNotePoolEmpty: "Réserve locale vide : chaîne automatique appliquée",
   aiNoteSvgMode: "Imagerie : graphiques vectoriels (dessinés par le modèle, modifiables)",
   aiNoteImgFail: "Page {page} : aucune image trouvée pour « {kw} » ; dessinée en vectoriel",
+
+  aiToolRunDeck: 'Génération de la présentation…',
+  aiToolRunRegenSlide: 'Refonte de la diapositive…',
+  aiToolRunPlanDeck: 'Planification du sommaire…',
+  aiToolRunImage: "Génération de l'image…",
+  aiToolRunSvg: "Dessin de l'illustration vectorielle…",
+  aiToolRunVideo: 'Génération de la vidéo…',
+  aiToolRunAnalyze: 'Analyse du média…',
+  aiToolRunInsertImage: "Insertion de l'image…",
+  aiToolRunWebSearch: 'Recherche sur le web…',
+  aiToolRunImageSearch: "Recherche d'images…",
+  aiToolRunReadUrl: 'Lecture de la page…',
 } satisfies Record<keyof typeof zh, string>

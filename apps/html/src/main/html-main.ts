@@ -23,7 +23,10 @@ import {
   webContents,
 } from 'electron'
 import type { WebContents } from 'electron'
-import { registerSharedKbIpc } from '@chatoffice/ai-host'
+import {
+  registerMediaIpc,
+  registerSharedKbIpc
+} from '@chatoffice/ai-host'
 import {
   configuredDefaultSaveDir,
   contextMenuLabels,
@@ -1223,6 +1226,13 @@ let ipcRegistered = false
 function registerHtmlIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  registerMediaIpc({
+    ipcMain,
+    settingsPath: () => join(app.getPath('userData'), 'ai-settings.json'),
+    mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+  })
 
   registerImageProtocol()
   registerPreviewProtocol((wcId) => {

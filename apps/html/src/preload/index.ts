@@ -144,6 +144,23 @@ const projectApi: Pick<ProjectApi, 'resolveChat' | 'appendChat' | 'loadChat' | '
   rebindChat: (args) => ipcRenderer.invoke('project:rebindChat', args),
 }
 
+
+  // LOCAL(2026-09-20): unified media capability bridge; upstream: additive-only; converge: never (local feature)
+  const mediaApi = {
+    mediaCapabilities: () => ipcRenderer.invoke('ai:media-capabilities'),
+    mediaImage: (op: { prompt: string; aspectRatio?: string }) =>
+      ipcRenderer.invoke('ai:media-image', op),
+    mediaVideo: (op: { prompt: string; aspectRatio?: string; durationSeconds?: number }) =>
+      ipcRenderer.invoke('ai:media-video', op),
+    mediaUnderstand: (op: {
+      kind: 'image' | 'video' | 'auto'
+      sources: string[]
+      requirements: string
+    }) => ipcRenderer.invoke('ai:media-understand', op),
+    mediaAsr: (op: { source: string; language?: string }) => ipcRenderer.invoke('ai:media-asr', op),
+    mediaTts: (op: { text: string; voice?: string }) => ipcRenderer.invoke('ai:media-tts', op),
+  }
+  Object.assign(api, mediaApi)
 contextBridge.exposeInMainWorld('htmlApi', api)
 contextBridge.exposeInMainWorld('projectApi', projectApi)
 

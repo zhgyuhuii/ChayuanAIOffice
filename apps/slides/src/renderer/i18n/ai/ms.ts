@@ -318,4 +318,16 @@ export const ms = {
   aiNotePoolEmpty: "Kolam imej tempatan kosong; rantaian automatik digunakan",
   aiNoteSvgMode: "Imej: grafik vektor (dilukis oleh model, boleh disunting)",
   aiNoteImgFail: "Halaman {page}: tiada imej untuk \"{kw}\"; dilukis sebagai vektor",
+
+  aiToolRunDeck: 'Menjana pembentangan…',
+  aiToolRunRegenSlide: 'Menjana semula slaid…',
+  aiToolRunPlanDeck: 'Merancang rangka…',
+  aiToolRunImage: 'Menjana imej…',
+  aiToolRunSvg: 'Melukis ilustrasi vektor…',
+  aiToolRunVideo: 'Menjana video…',
+  aiToolRunAnalyze: 'Menganalisis media…',
+  aiToolRunInsertImage: 'Menambahkan imej…',
+  aiToolRunWebSearch: 'Mencari di web…',
+  aiToolRunImageSearch: 'Mencari imej…',
+  aiToolRunReadUrl: 'Membaca halaman…',
 } satisfies Record<keyof typeof zh, string>

@@ -27,6 +27,7 @@ import { localToolInstall, localToolStart, localToolStatus } from './local-tools
 
 export type { VideoTaskView, VideoSubmitRequest, VideoFileSink } from './video-tasks'
 export { registerSharedKbIpc, type KbSourceState, type SharedKbIpcDeps } from './kb-ipc'
+export { registerMediaIpc, type MediaIpcDeps } from './media-ipc'
 export {
   createLocalTools,
   defaultLocalToolDeps,
@@ -35,12 +36,11 @@ export {
 } from './local-tools'
 
 /**
- * BYOK-first image generation for mains that host no shared ai:* registrar
+ * BYOK-only image generation for mains that host no shared ai:* registrar
  * (markdown / pdf): the per-app *:ai-generate-image channel wraps this instead
  * of going straight to the ChatOffice cloud. Resolution order matches the
  * registrar-backed editors (docs/sheets/slides): the settings default image
- * model (设置 → 生图、媒体与搜索), then the injected chatoffice backend whose
- * login/cloud gates live in its generateImage.
+ * model (设置 → 生图、媒体与搜索); no cloud fallback exists.
  */
 export function createByokImageHandler(deps: {
   settingsPath: () => string
@@ -54,7 +54,7 @@ export function createByokImageHandler(deps: {
     errNoModel: 'No usable model configured',
     errNoApiKey: 'Missing API key',
     errChatOfficeNotLoggedIn: 'Not signed in to ChatOffice',
-    errNoImageModel: 'No image model configured and not signed in to ChatOffice',
+    errNoImageModel: 'No image model configured (Settings → 生图、媒体与搜索)',
   }
   const runtime = createAiRuntime({
     source: createFileSource(deps.settingsPath(), deps.fs),

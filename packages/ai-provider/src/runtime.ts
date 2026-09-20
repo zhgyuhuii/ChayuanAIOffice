@@ -50,8 +50,6 @@ export interface AiRuntimeChatOffice {
   apiKey(): string
   hasAuth(): boolean
   status(withEmail: boolean): Promise<ChatOfficeAccountStatus>
-  /** returns a downloadable/insertable image URL or throws; the fallback when no BYOK image model exists */
-  generateImage(req: ImageGenRequest): Promise<{ url: string }>
 }
 
 export interface AiRuntimeDeps {
@@ -472,10 +470,12 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return (await resolveSecret(profile)) || null
   }
 
-  /** BYOK image model first; chatoffice backend as fallback; error when neither exists.
-   * If the user configured an image model, its failure is the answer — silent
-   * fallbacks would hide broken keys. An explicit `model` selection (insert-media
-   * dialog) is honored when it still points at an enabled image-gen model. */
+  /** BYOK image model only — the chatoffice cloud fallback is gone (the cloud
+   * backend belongs to the GenOffice upstream, not this build). Error when no
+   * image model exists. If the user configured an image model, its failure is
+   * the answer — silent fallbacks would hide broken keys. An explicit `model`
+   * selection (insert-media dialog) is honored when it still points at an
+   * enabled image-gen model. */
   const generateImage = async (
     req: ImageGenRequest & { model?: AiModelSelection },
   ): Promise<{ url?: string; urls?: string[]; error?: string }> => {
@@ -496,14 +496,6 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
           urls: result.urls,
           ...(result.urls[0] !== undefined ? { url: result.urls[0] } : {}),
         }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
-      }
-    }
-    if (chatoffice.hasAuth()) {
-      try {
-        const r = await chatoffice.generateImage(req)
-        return { urls: [r.url], url: r.url }
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) }
       }

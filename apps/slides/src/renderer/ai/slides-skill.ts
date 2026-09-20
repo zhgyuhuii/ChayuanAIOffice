@@ -198,8 +198,8 @@ export interface DeckAccess {
   deckImageAssets?(): DeckImageAsset[]
   /** Whether cloud single-page generation is available (kill switch + chatoffice login state) */
   isCloudPageGenEnabled?(): Promise<boolean>
-  /** live predicate: chatoffice login && the ChatOffice-cloud-tools toggle; false hides generate_image / analyze_media */
-  chatofficeTools?(): boolean
+  /** live predicate: a local image-generation model is configured (Settings → 生图、媒体与搜索); false hides generate_image */
+  imageModelAvailable?(): boolean
   /**
    * Cloud single-page generation (chatoffice slide_generate), used by generate_deck's self-driven
    * pipeline: given the unified style + this page's brief/layout/images, the cloud service
@@ -421,7 +421,7 @@ Search and images:
 - **Figure provenance is enforced at the tool layer**: apply_ops addChart / edit_chart (with series) and data-dense generate_deck / regenerate_slide briefs refuse to run without a dataSource declaration; 'search' is only accepted after an actual web_search in this conversation. Fabricating precise numbers (¥21.8-style precision) and delivering them as fact is the worst failure mode — when no real data is available, use dataSource:'sample' and tell the user explicitly that the figures are illustrative.
 - image_search for images (English keywords) → get imageUrl. **Two usages**: 1) when redoing a page via regenerate_slide, pass the imageUrl in image_urls; 2) when adding an image to an existing page, use insert_web_image to insert at a position. (generate_deck searches images internally; no advance search needed for a whole new deck.)
 - Travel, product, people, and brand decks get images by default without the user asking; mind whitespace between images and text, no overlap.
-- Editing an EXISTING picture: apply_ops setPictureSrcRect (non-destructive crop, fractions 0..1) and setPictureOpacity, or the replace_image tool (in-place swap keeping frame/z-order/border). For "remove this image's background / upscale / edit this image": run generate_image with referenceImageUrls pointing at a source URL you have (an image_search result or one the user provided — embedded picture bytes are not addressable by URL), then replace_image with the returned URL. Never delete+reinsert a picture to change its content — that loses z-order and effects.
+- Editing an EXISTING picture: apply_ops setPictureSrcRect (non-destructive crop, fractions 0..1) and setPictureOpacity, or the replace_image tool (in-place swap keeping frame/z-order/border). Pixel-level edits of an existing picture (background removal, upscaling) are not available in this build — say so plainly and offer crop/opacity or a newly generated replacement image instead. Never delete+reinsert a picture to change its content — that loses z-order and effects.
 
 Style templates:
 - When the user says "use last time's style"/"use some template": first call list_style_templates() to see what exists, then pass the style_template name to generate_deck (the system skips Step 0 and uses the template's style).
@@ -575,7 +575,7 @@ const TOOLS: AgentToolDef[] = [
     {
       name: 'generate_image',
     description:
-      'AI image generation/editing (ChatOffice). Text-to-image, or pass referenceImageUrls for image editing; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
+      'AI image generation with the configured image model (设置 → 生图、媒体与搜索). Text-to-image; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -584,48 +584,12 @@ const TOOLS: AgentToolDef[] = [
           description:
             'Image description, English works better (keep any text to render in the image verbatim)',
         },
-        model: {
-          type: 'string',
-          description:
-            'Optional, defaults to the configured model. Genspark only — specify for special purposes: fal-bria-rmbg=background removal, fal-ai/recraft-clarity-upscale=upscale, flux-pro/outpaint=outpaint, fal-ai/image-editing/text-removal=remove text watermark',
-        },
-        referenceImageUrls: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'URLs of reference images / images to edit (required for editing tasks)',
-        },
         aspectRatio: {
           type: 'string',
           description: 'Aspect ratio: 1:1|4:3|16:9|9:16|3:4|2:3|3:2|auto',
         },
-        transparentBackground: {
-          type: 'boolean',
-          description:
-            'Set true when the result must have a real transparent background (icons, logos, cutouts placed over slide content). The app strips the background automatically after generation; never rely on the prompt for transparency.',
-        },
       },
       required: ['prompt'],
-    },
-  },
-  {
-    name: 'analyze_media',
-    description:
-      'Analyze media content (ChatOffice): understand images/audio/video. Pass media URLs (or local file paths) and analysis requirements; returns analysis text. Video supports extracting key points, structure, and time ranges — good for turning user material into usable deck content.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        mediaUrls: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'List of media URLs or local file paths',
-        },
-        requirements: {
-          type: 'string',
-          description:
-            'Analysis requirements (English): what to extract and how the result will be used (e.g. extract key points for slides)',
-        },
-      },
-      required: ['mediaUrls', 'requirements'],
     },
   },
   {
@@ -653,7 +617,7 @@ const TOOLS: AgentToolDef[] = [
   {
     name: 'replace_image',
     description:
-      'Swap a picture\'s source image for a URL (from image_search or generate_image) in place — position, size, z-order, border and effects all survive. This is the tool for "change/AI-edit this image" flows: e.g. run generate_image with referenceImageUrls for background removal/upscaling/editing, then replace_image with the returned URL. A new image with a different aspect ratio is never stretched: it fills the frame and is center-cropped (object-fit: cover). keepCrop keeps the existing crop window and is only correct when the new image has the same pixel geometry as the old one (e.g. background removal output).',
+      'Swap a picture\'s source image for a URL (from image_search or generate_image) in place — position, size, z-order, border and effects all survive. This is the tool for "swap this picture for another one" flows. A new image with a different aspect ratio is never stretched: it fills the frame and is center-cropped (object-fit: cover). keepCrop keeps the existing crop window and is only correct when the new image has the same pixel geometry as the old one.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -1545,11 +1509,10 @@ export function formatSlideDump(slide: RenderSlide): string {
   return `Canvas ${slide.widthPx}×${slide.heightPx}px (1 px = ${pxToEmu} EMU)\n${parts.join('\n---\n') || '(no elements on this page)'}${colorNote}`
 }
 
-/** tools only usable through the ChatOffice cloud (gated by login + the cloud-tools toggle) */
-const GSK_ONLY_TOOLS = new Set(['generate_image', 'analyze_media'])
-
-const CHATOFFICE_TOOLS_OFF_NOTE =
-  '\n\nNote: generate_image and analyze_media are currently unavailable (ChatOffice cloud tools are off or the user is signed out). Do not call or promise them; for imagery use image_search + insert_web_image instead.'
+/** shown while no local image-generation model is configured; never blame a
+ * cloud service — generate_image rides the user's own model or does not exist */
+const NO_IMAGE_MODEL_NOTE =
+  '\n\nNote: generate_image is currently unavailable (no image-generation model is configured in Settings → 生图、媒体与搜索). Do not call or promise it; source imagery with image_search + insert_web_image, or draw vectors with generate_svg.'
 
 /** Core tools kept available in degraded (no-FC compatibility) mode — the
  * "generate + edit content + gather material" trunk. Long-tail tools (style,
@@ -1577,18 +1540,21 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
   // The HTML pipeline was already used in this conversation → later calls without an explicit mode default to append.
   // Safety net for when the AI ignores the "pass all pages at once" constraint: separate calls no longer overwrite each other (P0-1).
   const state: SkillState = { htmlGenerated: false }
-  // Live view, same gate as the `tools` getter below
+  // Live view, same gate as the `tools` getter below: generate_image is
+  // advertised only while a local image-generation model is configured
   const liveTools = () =>
-    access.chatofficeTools?.() === false ? TOOLS.filter((t) => !GSK_ONLY_TOOLS.has(t.name)) : TOOLS
+    access.imageModelAvailable?.() === false
+      ? TOOLS.filter((t) => t.name !== 'generate_image')
+      : TOOLS
   return {
     id: 'slides',
-    // live like tools: the off-note overrides the prose that still mentions the hidden tools
+    // live like tools: the off-note overrides the prose that still mentions the hidden tool
     get systemPrompt() {
-      return access.chatofficeTools?.() === false
-        ? AGENT_SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
+      return access.imageModelAvailable?.() === false
+        ? AGENT_SYSTEM_PROMPT + NO_IMAGE_MODEL_NOTE
         : AGENT_SYSTEM_PROMPT
     },
-    // live view: chatofficeTools is re-read before every model request
+    // live view: imageModelAvailable is re-read before every model request
     get tools() {
       return liveTools()
     },
@@ -2185,15 +2151,9 @@ ${r.text}`,
     case 'generate_image': {
       const prompt = String(call.input.prompt ?? '').trim()
       if (!prompt) return fail(t('aiFailGenImage'), 'prompt must not be empty')
-      const refs = Array.isArray(call.input.referenceImageUrls)
-        ? (call.input.referenceImageUrls as unknown[]).map(String).filter(Boolean)
-        : undefined
       const r = await window.slidesApi.generateImage({
         prompt,
-        model: call.input.model ? String(call.input.model) : undefined,
-        referenceImageUrls: refs,
         aspectRatio: call.input.aspectRatio ? String(call.input.aspectRatio) : undefined,
-        transparentBackground: call.input.transparentBackground === true,
       })
       if (!r.url) return fail(t('aiFailGenImage'), r.error ?? 'Generation failed')
       const display: ToolDisplay = {
@@ -2209,25 +2169,6 @@ ${r.text}`,
           prompt: `${prompt.slice(0, 20)}${prompt.length > 20 ? '…' : ''}`,
         }),
         display,
-      }
-    }
-
-    case 'analyze_media': {
-      const mediaUrls = Array.isArray(call.input.mediaUrls)
-        ? (call.input.mediaUrls as unknown[]).map(String).filter(Boolean)
-        : []
-      const requirements = String(call.input.requirements ?? '').trim()
-      if (!mediaUrls.length) return fail(t('aiFailMedia'), 'mediaUrls must not be empty')
-      if (!requirements) return fail(t('aiFailMedia'), 'requirements must not be empty')
-      const r = await window.slidesApi.analyzeMedia({ mediaUrls, requirements })
-      if (!r.text) return fail(t('aiFailMedia'), r.error ?? 'Analysis failed')
-      // Analysis text can be very long; truncate to protect context (first 6000 chars are enough to generate deck content)
-      const MAX_LEN = 6000
-      const text = r.text.length > MAX_LEN ? r.text.slice(0, MAX_LEN) + '\n…(truncated)' : r.text
-      return {
-        output: text,
-        mutated: false,
-        summary: t('aiSumParseMedia', { count: mediaUrls.length }),
       }
     }
 

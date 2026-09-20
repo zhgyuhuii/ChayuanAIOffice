@@ -21,6 +21,7 @@
     "@chatoffice/electron-utils": "*",
     "@chatoffice/i18n": "*",
     "@chatoffice/project-store": "*",
+    "@chatoffice/pptx-render": "*",
     "@chatoffice/ui": "*",
     "@tiptap/core": "3.31.0",
     "@tiptap/extension-bold": "3.31.0",

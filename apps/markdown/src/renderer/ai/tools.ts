@@ -1,6 +1,8 @@
 import type { Editor, JSONContent } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
 import type { AgentToolCall, AgentToolDef, ToolExecution } from '@chatoffice/agent-core'
+import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
+import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
 import { t } from '../i18n/locale'
 import {
   DraftLanding,
@@ -215,7 +217,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'Generate an illustration with AI from a text prompt and insert it into the document after a top-level block. For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires ChatOffice login with cloud tools enabled, and the document must have been saved to disk at least once.',
+      'Generate an illustration with the image model configured in Settings (生图、媒体与搜索) and insert it into the document after a top-level block. For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires an image model to be configured, and the document must have been saved to disk at least once.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -235,6 +237,27 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         alt: { type: 'string', description: 'Alt text describing the image' },
       },
       required: ['prompt'],
+    },
+  },
+  {
+    name: 'generate_svg',
+    description:
+      'Draw a simple illustration yourself as SVG markup — rasterized offline and inserted as a PNG image block (no AI image model needed, works offline). Best for icons, simple diagrams, geometric decoration, flat illustrations. Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; convert text to paths or use generic font-family; solid fills only; keep shapes inside the viewBox. The document must have been saved to disk at least once.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        svg: {
+          type: 'string',
+          description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>',
+        },
+        afterIndex: {
+          type: 'integer',
+          description:
+            '0-based block index to insert after; -1 = document start. Defaults to the end of the document.',
+        },
+        alt: { type: 'string', description: 'Alt text describing the image' },
+      },
+      required: ['svg'],
     },
   },
   {
@@ -434,6 +457,121 @@ async function writeDocument(
   }
 }
 
+/** AI image generation with a web-image fallback tier (docs/image-source-plan.md #9) */
+async function generateImageTool(
+  editor: Editor,
+  call: AgentToolCall,
+  signal: AbortSignal | undefined,
+): Promise<ToolExecution> {
+  if (editedExternally(editor)) return fail(STALE_DOC_ERROR, t('aiToolGenImage'))
+  const prompt = String(call.input.prompt ?? '').trim()
+  if (!prompt) return fail('prompt must not be empty', t('aiToolGenImage'))
+  const aspectRatio = String(call.input.aspectRatio ?? '').trim()
+  const generated = await window.markdownApi
+    .aiGenerateImage({ prompt, ...(aspectRatio ? { aspectRatio } : {}) })
+    .then((r) => (signal?.aborted ? { url: undefined, error: 'aborted' } : r))
+  if (signal?.aborted) {
+    return fail('stopped by the user; the image was not inserted', t('aiToolGenImage'))
+  }
+  if (!generated.url) {
+    // Terminal imagery chain (docs/image-source-plan.md #9): generation
+    // failed (usually no image model configured) → a web image keeps the
+    // request satisfiable; with no web match either, generate_svg is the
+    // last tier — the model draws, we rasterize.
+    let pick: { imageUrl: string } | undefined
+    try {
+      const searched = await window.markdownApi.imageSearch(prompt, 5)
+      pick =
+        searched.method !== 'error'
+          ? searched.images.find((im) => /^https?:\/\//.test(im.imageUrl))
+          : undefined
+    } catch {
+      pick = undefined // channel missing/failed — the slot hands down to generate_svg
+    }
+    if (pick) {
+      const r = await insertImageFromUrl(editor, pick.imageUrl, call.input, signal, {
+        fail: t('aiToolGenImage'),
+        done: t('aiToolGenImageDone'),
+      })
+      return {
+        ...r,
+        output: `AI image generation was unavailable (${generated.error ?? 'error'}); a web image was used instead.\n${r.output}`,
+      }
+    }
+    return fail(
+      `${generated.error ?? 'image generation failed'} — no web image matched either. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
+      t('aiToolGenImage'),
+    )
+  }
+  return insertImageFromUrl(editor, generated.url, call.input, signal, {
+    fail: t('aiToolGenImage'),
+    done: t('aiToolGenImageDone'),
+  })
+}
+
+/** Offline vector tier: the model draws, we sanitize + rasterize + insert */
+async function generateSvgTool(
+  editor: Editor,
+  call: AgentToolCall,
+  signal: AbortSignal | undefined,
+): Promise<ToolExecution> {
+  // Offline vector tier: the model draws, we sanitize + rasterize here and
+  // save the PNG beside the document — no image model needed.
+  if (editedExternally(editor)) return fail(STALE_DOC_ERROR, t('aiToolGenImage'))
+  const raw = String(call.input.svg ?? '').trim()
+  const clean = sanitizeSvg(raw)
+  if (!clean.ok) {
+    return fail(
+      'generate_svg needs "svg": complete standalone markup starting with <svg … viewBox="0 0 W H">.',
+      t('aiToolGenSvg'),
+    )
+  }
+  let raster: Awaited<ReturnType<typeof rasterizeSvg>>
+  try {
+    raster = await rasterizeSvg(clean.svg, { wPx: 480 })
+  } catch (e) {
+    return fail(
+      `SVG render check failed: ${e instanceof Error ? e.message : String(e)} — fix the markup and call generate_svg again.`,
+      t('aiToolGenSvg'),
+    )
+  }
+  if (!raster.ok || !raster.base64 || (raster.paintRatio ?? 1) < 0.005) {
+    return fail(
+      'the SVG rendered blank — check the viewBox, fills and geometry, then call generate_svg again.',
+      t('aiToolGenSvg'),
+    )
+  }
+  const rel = await window.markdownApi.saveImage({ base64: raster.base64, ext: 'png' })
+  if (signal?.aborted) {
+    return fail('stopped by the user; the image was not inserted', t('aiToolGenSvg'))
+  }
+  if (!rel) {
+    return fail(
+      'the document has no saved location yet, so there is nowhere to store the image file — ask the user to save the document first, then retry',
+      t('aiToolGenSvg'),
+    )
+  }
+  const maxIndex = editor.state.doc.childCount - 1
+  const afterRaw = call.input.afterIndex
+  const after =
+    typeof afterRaw === 'number' && Number.isInteger(afterRaw)
+      ? Math.min(Math.max(afterRaw, -1), maxIndex)
+      : maxIndex
+  const r = runOps(
+    editor,
+    [{ op: 'insertImage', after, src: rel, alt: String(call.input.alt ?? '') }],
+    { source: 'ai' },
+  )
+  const res = r.results[0]!
+  if (!res.ok) return fail(res.error, t('aiToolGenSvg'))
+  markDocSeen(editor)
+  return {
+    output: `Inserted the rasterized SVG (saved as ${rel}). ${INDEX_CHANGE_NOTICE}`,
+    mutated: true,
+    summary: t('aiToolGenSvgDone'),
+  }
+}
+
 export function executeTool(
   editor: Editor,
   call: AgentToolCall,
@@ -528,26 +666,11 @@ export function executeTool(
       })
     }
 
-    case 'generate_image': {
-      if (editedExternally(editor)) return fail(STALE_DOC_ERROR, t('aiToolGenImage'))
-      const prompt = String(call.input.prompt ?? '').trim()
-      if (!prompt) return fail('prompt must not be empty', t('aiToolGenImage'))
-      const aspectRatio = String(call.input.aspectRatio ?? '').trim()
-      return window.markdownApi
-        .aiGenerateImage({ prompt, ...(aspectRatio ? { aspectRatio } : {}) })
-        .then((generated): ToolExecution | Promise<ToolExecution> => {
-          if (signal?.aborted) {
-            return fail('stopped by the user; the image was not inserted', t('aiToolGenImage'))
-          }
-          if (!generated.url) {
-            return fail(generated.error ?? 'image generation failed', t('aiToolGenImage'))
-          }
-          return insertImageFromUrl(editor, generated.url, call.input, signal, {
-            fail: t('aiToolGenImage'),
-            done: t('aiToolGenImageDone'),
-          })
-        })
-    }
+    case 'generate_image':
+      return generateImageTool(editor, call, signal)
+
+    case 'generate_svg':
+      return generateSvgTool(editor, call, signal)
 
     default:
       return fail(`Unknown tool: ${call.name}`, call.name)

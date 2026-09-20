@@ -22,7 +22,7 @@ import {
 import type { AiNotesAccess } from './note-ops'
 
 const _IMAGE_GEN_OFF_NOTE =
-  '\n\nNote: generate_image is currently unavailable (no image provider: signed out of ChatOffice or cloud tools off, and no media API key in Settings). Do not call or promise it; use image_search for imagery.'
+  '\n\nNote: generate_image is currently unavailable (no image model configured in Settings → 生图、媒体与搜索). Do not call or promise it; use image_search for imagery.'
 
 /**
  * One-line steering from the global default image source
@@ -36,7 +36,7 @@ const IMAGE_SOURCE_DIRECTIVE: Record<AiImageSource, string> = {
   local: '',
   web: '- Image source preference: web images — pick image_search first for pictures; use generate_image only when the user explicitly asks for AI-generated art.',
   model:
-    '- Image source preference: AI generation — pick generate_image first for illustrations; when it is unavailable (not logged in / failed), fall back to image_search.',
+    '- Image source preference: AI generation — pick generate_image first for illustrations; when it is unavailable (no image model configured / failed), fall back to image_search.',
   svg: '- Image source preference: vector graphics — pick generate_svg first (offline, no login); use image_search only for real photos the user explicitly asks for.',
 }
 

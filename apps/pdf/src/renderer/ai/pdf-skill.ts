@@ -44,23 +44,23 @@ const SYSTEM_PROMPT = `You are ChatOffice's PDF assistant, helping the user read
 /** Selection text cap in the per-message context (the context is resent every run) */
 const SELECTION_CONTEXT_CHARS = 12_000
 
-const CHATOFFICE_TOOLS_OFF_NOTE =
-  '\n\nNote: generate_image is currently unavailable (ChatOffice cloud tools are off or the user is signed out). Do not call or promise it; use image_search for imagery.'
+const NO_IMAGE_MODEL_NOTE =
+  '\n\nNote: generate_image is currently unavailable (no image-generation model is configured in Settings → 生图、媒体与搜索). Do not call or promise it; use image_search for imagery.'
 
 export function createPdfSkill(deps: PdfAiDeps): AgentSkill {
+  // the image tool stays while a default image model resolves from settings
+  // (BYOK-only handler; the old chatoffice cloud tier is gone)
+  const imageGenLive = () => !!deps.hasImageModel?.()
   return {
     id: 'pdf',
     // live like tools: the off-note overrides the prose that still mentions
-    // generate_image. The tool stays when EITHER the ChatOffice cloud is live
-    // OR a default image model resolves from settings (BYOK-first handler).
+    // generate_image.
     get systemPrompt() {
-      const imageGenLive = deps.chatofficeTools?.() !== false || !!deps.hasImageModel?.()
-      return imageGenLive ? SYSTEM_PROMPT : SYSTEM_PROMPT + CHATOFFICE_TOOLS_OFF_NOTE
+      return imageGenLive() ? SYSTEM_PROMPT : SYSTEM_PROMPT + NO_IMAGE_MODEL_NOTE
     },
     // live view: re-read before every model request
     get tools() {
-      const imageGenLive = deps.chatofficeTools?.() !== false || !!deps.hasImageModel?.()
-      return imageGenLive ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => t.name !== 'generate_image')
+      return imageGenLive() ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => t.name !== 'generate_image')
     },
     buildContext: () => {
       const parts = [

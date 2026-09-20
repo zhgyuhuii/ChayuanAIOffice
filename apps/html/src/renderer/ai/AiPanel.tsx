@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { createHtmlMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills } from '@chatoffice/agent-core'
 import type { AgentImage } from '@chatoffice/agent-core'
@@ -651,6 +652,7 @@ export function AiPanel({
     loopRef.current = new AgentLoop<DocSnapshot>({
       transport: transportRef.current,
       skill: composeSkills('html+search', '', [
+        createHtmlMediaSkill(),
         createDocumentSkill({
           getText: () => depsRef.current.access.getText(),
           getVersion: () => depsRef.current.access.getVersion(),

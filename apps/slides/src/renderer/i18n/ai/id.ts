@@ -319,4 +319,16 @@ export const id = {
   aiNotePoolEmpty: "Kumpulan gambar lokal kosong; rantai otomatis digunakan",
   aiNoteSvgMode: "Gambar: grafik vektor (digambar model, dapat disunting)",
   aiNoteImgFail: "Halaman {page}: tidak ada gambar untuk \"{kw}\"; digambar sebagai vektor",
+
+  aiToolRunDeck: 'Membuat presentasi…',
+  aiToolRunRegenSlide: 'Membuat ulang slide…',
+  aiToolRunPlanDeck: 'Menyusun kerangka…',
+  aiToolRunImage: 'Membuat gambar…',
+  aiToolRunSvg: 'Menggambar ilustrasi vektor…',
+  aiToolRunVideo: 'Membuat video…',
+  aiToolRunAnalyze: 'Menganalisis media…',
+  aiToolRunInsertImage: 'Menyisipkan gambar…',
+  aiToolRunWebSearch: 'Mencari di web…',
+  aiToolRunImageSearch: 'Mencari gambar…',
+  aiToolRunReadUrl: 'Membaca halaman…',
 } satisfies Record<keyof typeof zh, string>

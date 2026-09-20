@@ -320,4 +320,16 @@ export const it = {
   aiNotePoolEmpty: "Riserva locale vuota; applicata la catena automatica",
   aiNoteSvgMode: "Immagini: grafica vettoriale (disegnata dal modello, modificabile)",
   aiNoteImgFail: "Pagina {page}: nessuna immagine per «{kw}»; disegnata come grafica vettoriale",
+
+  aiToolRunDeck: 'Generazione della presentazione…',
+  aiToolRunRegenSlide: 'Rifacimento della diapositiva…',
+  aiToolRunPlanDeck: 'Pianificazione della struttura…',
+  aiToolRunImage: "Generazione dell'immagine…",
+  aiToolRunSvg: "Disegno dell'illustrazione vettoriale…",
+  aiToolRunVideo: 'Generazione del video…',
+  aiToolRunAnalyze: 'Analisi del file multimediale…',
+  aiToolRunInsertImage: "Inserimento dell'immagine…",
+  aiToolRunWebSearch: 'Ricerca sul web…',
+  aiToolRunImageSearch: 'Ricerca di immagini…',
+  aiToolRunReadUrl: 'Lettura della pagina…',
 } satisfies Record<keyof typeof zh, string>

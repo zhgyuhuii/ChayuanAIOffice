@@ -4,6 +4,7 @@ import type { AiModelSelection } from '@chatoffice/ai-provider'
 import type { HomeApi, HomeChatAttachment } from '../../../shared/home-api'
 import type { ExternalMcpServerTools } from '../../../shared/mcp-client-api'
 import { kbDoc, kbSelectedIds, kbSearchGroups } from '@chatoffice/ui'
+import type { MediaCapabilityFlags } from '@chatoffice/agent-core'
 import { buildMcpToolDefs, mcpSystemSection } from './mcp-tools'
 import type { McpToolBinding } from './mcp-tools'
 
@@ -55,6 +56,20 @@ export interface HomeAgentBridge {
   }) => Promise<{ images?: { dataUrl: string }[]; error?: string }>
   /** live probe: a default image-gen model resolves from settings (生图、媒体与搜索) */
   imageGenReady?(): Promise<boolean>
+  /** live per-kind media capability flags (unified ai:media-capabilities probe) */
+  mediaCapabilities?(): Promise<MediaCapabilityFlags>
+  mediaVideo?(op: {
+    prompt: string
+    aspectRatio?: string
+    durationSeconds?: number
+  }): Promise<{ url?: string; filePath?: string; model?: string; error?: string }>
+  mediaUnderstand?(op: {
+    kind: 'image' | 'video' | 'auto'
+    sources: string[]
+    requirements: string
+  }): Promise<{ text?: string; error?: string }>
+  mediaAsr?(op: { source: string; language?: string }): Promise<{ text?: string; error?: string }>
+  mediaTts?(op: { text: string; voice?: string }): Promise<{ url?: string; mime?: string; error?: string }>
   /** 外部 MCP (MCP 管理): live tools of every enabled server; absent on shims
    *  without the chatOfficeMcp bridge → the agent runs with built-ins only */
   listMcpTools?(): Promise<ExternalMcpServerTools[]>
@@ -221,6 +236,70 @@ const GENERATE_IMAGE_TOOL = {
   },
 }
 
+const GENERATE_VIDEO_TOOL = {
+  name: 'generate_video',
+  description:
+    'Generate a short AI video clip with the default video-generation model (设置 → 生图、媒体与搜索). Vendor-billed and slow (often minutes); only when the user asks for video/motion. The saved file path is returned.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      prompt: { type: 'string', description: 'Motion description, English works better' },
+      aspectRatio: { type: 'string', description: "e.g. '16:9' | '9:16'" },
+      durationSeconds: { type: 'number', description: 'clip length in seconds (vendor limits apply)' },
+    },
+    required: ['prompt'],
+  },
+}
+
+const ANALYZE_MEDIA_TOOL = {
+  name: 'analyze_media',
+  description:
+    'Analyze images/video/audio with the media-understanding models configured in Settings (生图、媒体与搜索). Pass direct URLs or local file paths; returns analysis text for you to act on.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      sources: {
+        type: 'array',
+        items: { type: 'string' },
+        description: 'Direct http(s) URLs or local file paths of the media files',
+      },
+      requirements: {
+        type: 'string',
+        description: 'What to extract and how the result will be used (English works better)',
+      },
+    },
+    required: ['sources', 'requirements'],
+  },
+}
+
+const TRANSCRIBE_AUDIO_TOOL = {
+  name: 'transcribe_audio',
+  description:
+    'Transcribe an audio file to text with the default ASR model (设置 → 生图、媒体与搜索). Pass a direct URL or a local file path; returns the transcript.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      source: { type: 'string', description: 'Direct http(s) URL or local file path of the audio' },
+      language: { type: 'string', description: 'ISO language hint, e.g. "zh" / "en"; omit for auto' },
+    },
+    required: ['source'],
+  },
+}
+
+const GENERATE_SPEECH_TOOL = {
+  name: 'generate_speech',
+  description:
+    'Synthesize spoken audio from text with the default TTS model (设置 → 生图、媒体与搜索). Returns the saved audio file path.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      text: { type: 'string', description: 'The text to speak' },
+      voice: { type: 'string', description: 'Vendor voice id; omit for the default voice' },
+    },
+    required: ['text'],
+  },
+}
+
 const UPDATE_TASKS_TOOL = {
   name: 'update_task_list',
   description:
@@ -354,6 +433,8 @@ function homeSkill(
     mcp: McpSkillState
     /** live predicate: a default image-gen model is configured (settings-driven) */
     imageGenReady: () => boolean
+    /** live per-kind media capability flags (unified ai:media-capabilities probe) */
+    mediaFlags: () => MediaCapabilityFlags | null
     /** generated image display channel (tool timeline card) */
     onGeneratedImage(dataUrl: string): void
   },
@@ -370,9 +451,15 @@ function homeSkill(
     },
     get tools() {
       const imageGen = bridge.generateImage && state.imageGenReady() ? [GENERATE_IMAGE_TOOL] : []
+      const flags = state.mediaFlags()
+      const media: AgentToolDef[] = []
+      if (flags?.video && bridge.mediaVideo) media.push(GENERATE_VIDEO_TOOL)
+      if (flags?.imageUnderstanding && bridge.mediaUnderstand) media.push(ANALYZE_MEDIA_TOOL)
+      if (flags?.asr && bridge.mediaAsr) media.push(TRANSCRIBE_AUDIO_TOOL)
+      if (flags?.tts && bridge.mediaTts) media.push(GENERATE_SPEECH_TOOL)
       // KB tools join only while libraries are selected in the composer
       const kb = kbSelectedIds().length > 0 ? [KB_SEARCH_TOOL, KB_READ_DOC_TOOL] : []
-      return [...HOME_TOOLS, ...imageGen, ...kb, ...state.mcp.tools()]
+      return [...HOME_TOOLS, ...imageGen, ...media, ...kb, ...state.mcp.tools()]
     },
     async executeTool(call) {
       const mcpResult = await state.mcp.call(call.name, call.input)
@@ -609,6 +696,76 @@ function homeSkill(
             summary: `generate_image · ${prompt.slice(0, 40)}`,
           }
         }
+        case 'generate_video': {
+          const prompt = String(call.input.prompt ?? '').trim()
+          if (!prompt)
+            return { output: 'prompt must not be empty', isError: true, summary: 'generate_video' }
+          if (!bridge.mediaVideo)
+            return { output: 'video generation not available', isError: true, summary: 'generate_video' }
+          const aspectRatio = String(call.input.aspectRatio ?? '').trim()
+          const durationSeconds = Number(call.input.durationSeconds) || undefined
+          const r = await bridge.mediaVideo({
+            prompt,
+            ...(aspectRatio ? { aspectRatio } : {}),
+            ...(durationSeconds ? { durationSeconds } : {}),
+          })
+          if (!r.url && !r.filePath)
+            return { output: `video generation failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'generate_video' }
+          const where = r.filePath ?? r.url
+          return {
+            output: `Video generated (${r.model ?? 'configured model'}): ${where}\nThe file is saved on this machine; report the path to the user (video cannot be shown inline here).`,
+            summary: `generate_video · ${prompt.slice(0, 40)}`,
+          }
+        }
+        case 'analyze_media': {
+          const sources = Array.isArray(call.input.sources)
+            ? (call.input.sources as unknown[]).map(String).filter((s) => s.trim() !== '')
+            : []
+          const requirements = String(call.input.requirements ?? '').trim()
+          if (!sources.length)
+            return { output: 'sources must not be empty', isError: true, summary: 'analyze_media' }
+          if (!requirements)
+            return { output: 'requirements must not be empty', isError: true, summary: 'analyze_media' }
+          if (!bridge.mediaUnderstand)
+            return { output: 'media analysis not available', isError: true, summary: 'analyze_media' }
+          const r = await bridge.mediaUnderstand({ kind: 'auto', sources, requirements })
+          if (!r.text)
+            return { output: `media analysis failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'analyze_media' }
+          return {
+            output: r.text,
+            summary: `analyze_media · ${sources.length} file(s)`,
+          }
+        }
+        case 'transcribe_audio': {
+          const source = String(call.input.source ?? '').trim()
+          if (!source)
+            return { output: 'source must not be empty', isError: true, summary: 'transcribe_audio' }
+          if (!bridge.mediaAsr)
+            return { output: 'transcription not available', isError: true, summary: 'transcribe_audio' }
+          const language = String(call.input.language ?? '').trim()
+          const r = await bridge.mediaAsr({ source, ...(language ? { language } : {}) })
+          if (!r.text)
+            return { output: `transcription failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'transcribe_audio' }
+          return {
+            output: `Transcript:\n${r.text}`,
+            summary: 'transcribe_audio',
+          }
+        }
+        case 'generate_speech': {
+          const text = String(call.input.text ?? '').trim()
+          if (!text)
+            return { output: 'text must not be empty', isError: true, summary: 'generate_speech' }
+          if (!bridge.mediaTts)
+            return { output: 'speech synthesis not available', isError: true, summary: 'generate_speech' }
+          const voice = String(call.input.voice ?? '').trim()
+          const r = await bridge.mediaTts({ text, ...(voice ? { voice } : {}) })
+          if (!r.url)
+            return { output: `speech synthesis failed: ${r.error ?? 'unknown error'}`, isError: true, summary: 'generate_speech' }
+          return {
+            output: `Audio generated: ${r.url}\nThe audio file is saved on this machine; report the path to the user.`,
+            summary: 'generate_speech',
+          }
+        }
         case 'read_document': {
           const path = String(call.input.path ?? '')
           const result = await bridge.readAttachment(
@@ -754,6 +911,7 @@ export class HomeAgent {
   private pendingGenImage: string | null = null
   /** cached capability probe: a default image-gen model resolves from settings */
   private imageGenReady = false
+  private mediaFlags: MediaCapabilityFlags | null = null
   /** busy from send() until the run settles; loop.busy alone lags behind the
    *  pre-run awaits (attachment reads, MCP refresh) and would leave a gap
    *  where isBusy() reads false mid-start */
@@ -790,6 +948,7 @@ export class HomeAgent {
           call: (wireName, input) => this.callMcpTool(wireName, input),
         },
         imageGenReady: () => this.imageGenReady,
+        mediaFlags: () => this.mediaFlags,
         onGeneratedImage: (dataUrl) => {
           this.pendingGenImage = dataUrl
         },
@@ -861,12 +1020,28 @@ export class HomeAgent {
     // warm the MCP tool list in the background so the first send already sees
     // the enabled servers' tools (start() re-refreshes before every run)
     if (this.bridge.listMcpTools) void this.ensureMcpTools()
-    void this.bridge.imageGenReady?.().then(
-      (ready) => {
-        this.imageGenReady = ready
-      },
-      () => {},
-    )
+    void this.probeMediaFlags()
+  }
+
+  /** warm the per-kind capability flags (constructor + refreshed before every run) */
+  private probeMediaFlags(): void {
+    if (!this.bridge.mediaCapabilities) {
+      // fall back to the image-only probe so generate_image still gates correctly
+      void this.bridge.imageGenReady?.().then(
+        (ready) => {
+          this.imageGenReady = ready
+        },
+        () => {},
+      )
+      return
+    }
+    void this.bridge
+      .mediaCapabilities()
+      .then((flags) => {
+        this.mediaFlags = flags
+        this.imageGenReady = flags.image
+      })
+      .catch(() => {})
   }
 
   get busy(): boolean {
@@ -987,7 +1162,14 @@ export class HomeAgent {
       ])
       // capability probe (生图、媒体与搜索 defaults) — generate_image joins the
       // toolset only when a default image model resolves
-      if (this.bridge.imageGenReady) {
+      if (this.bridge.mediaCapabilities) {
+        try {
+          this.mediaFlags = await this.bridge.mediaCapabilities()
+          this.imageGenReady = this.mediaFlags.image
+        } catch {
+          this.mediaFlags = null
+        }
+      } else if (this.bridge.imageGenReady) {
         try {
           this.imageGenReady = await this.bridge.imageGenReady()
         } catch {

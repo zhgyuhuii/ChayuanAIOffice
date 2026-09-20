@@ -318,4 +318,16 @@ export const hi = {
   aiNotePoolEmpty: "स्थानीय चित्र संग्रह खाली; स्वतः श्रृंखला लागू",
   aiNoteSvgMode: "चित्र: वेक्टर ग्राफिक्स (मॉडल द्वारा बनाए गए, संपादन योग्य)",
   aiNoteImgFail: "पृष्ठ {page}: \"{kw}\" के लिए कोई चित्र नहीं मिला; वेक्टर ग्राफिक्स में बनाया गया",
+
+  aiToolRunDeck: 'प्रेजेंटेशन जनरेट हो रहा है…',
+  aiToolRunRegenSlide: 'स्लाइड फिर से बनाई जा रही है…',
+  aiToolRunPlanDeck: 'रूपरेखा की योजना बन रही है…',
+  aiToolRunImage: 'इमेज जनरेट हो रही है…',
+  aiToolRunSvg: 'वेक्टर चित्र बनाया जा रहा है…',
+  aiToolRunVideo: 'वीडियो जनरेट हो रहा है…',
+  aiToolRunAnalyze: 'मीडिया का विश्लेषण हो रहा है…',
+  aiToolRunInsertImage: 'इमेज डाली जा रही है…',
+  aiToolRunWebSearch: 'वेब खोजा जा रहा है…',
+  aiToolRunImageSearch: 'इमेज खोजी जा रही है…',
+  aiToolRunReadUrl: 'पेज पढ़ा जा रहा है…',
 } satisfies Record<keyof typeof zh, string>

@@ -487,6 +487,34 @@ const homeApi: HomeApi = {
       error?: string
     }
   },
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  mediaCapabilities() {
+    return ipcRenderer.invoke('ai:media-capabilities') as Promise<{
+      flags?: Record<string, boolean>
+      models?: Record<string, string>
+    }>
+  },
+  mediaVideo(req: { prompt: string; aspectRatio?: string; durationSeconds?: number }) {
+    return ipcRenderer.invoke('ai:media-video', req) as Promise<{
+      url?: string
+      filePath?: string
+      model?: string
+      error?: string
+    }>
+  },
+  mediaUnderstand(req: {
+    kind: 'image' | 'video' | 'auto'
+    sources: string[]
+    requirements: string
+  }) {
+    return ipcRenderer.invoke('ai:media-understand', req) as Promise<{ text?: string; error?: string }>
+  },
+  mediaAsr(req: { source: string; language?: string }) {
+    return ipcRenderer.invoke('ai:media-asr', req) as Promise<{ text?: string; error?: string }>
+  },
+  mediaTts(req: { text: string; voice?: string }) {
+    return ipcRenderer.invoke('ai:media-tts', req) as Promise<{ url?: string; mime?: string; error?: string }>
+  },
   // ai:stream / files:* / docs:create-document channels are registered process-wide
   // by the aggregated editor mains the shell loads (ai-host / docs-main)
   async aiStream(request) {

@@ -621,7 +621,7 @@ export const AGENT_TOOLS: AgentToolDef[] = [
   {
     name: 'generate_image',
     description:
-      'Generate an illustration with AI from a text prompt and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Requires ChatOffice login with cloud tools enabled; without login the call auto-falls back to web image search.',
+      'Generate an illustration with the image model configured in Settings (生图、媒体与搜索) and insert it into the document (at the cursor / end of document). For illustration/diagram-style art that image_search cannot find, or when the user asks to generate/draw a picture. Without a configured image model the call fails and web image search is used as the fallback.',
     inputSchema: {
       type: 'object',
       properties: {

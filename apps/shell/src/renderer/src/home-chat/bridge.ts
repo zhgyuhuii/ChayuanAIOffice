@@ -81,6 +81,37 @@ export function createHomeChatBridge(
         return false
       }
     },
+    // unified media capability channels (main: registerMediaIpc in docs-main,
+    // process-wide for the shell aggregate)
+    mediaCapabilities: async () => {
+      try {
+        const r = (await window.chatOffice.mediaCapabilities()) as {
+          flags?: Record<string, boolean>
+        }
+        const f = r.flags ?? {}
+        return {
+          image: !!f.image,
+          video: !!f.video,
+          imageUnderstanding: !!f.imageUnderstanding,
+          videoUnderstanding: !!f.videoUnderstanding,
+          tts: !!f.tts,
+          asr: !!f.asr,
+        }
+      } catch {
+        return {
+          image: false,
+          video: false,
+          imageUnderstanding: false,
+          videoUnderstanding: false,
+          tts: false,
+          asr: false,
+        }
+      }
+    },
+    mediaVideo: (op) => window.chatOffice.mediaVideo(op) as Promise<{ url?: string; filePath?: string; model?: string; error?: string }>,
+    mediaUnderstand: (op) => window.chatOffice.mediaUnderstand(op) as Promise<{ text?: string; error?: string }>,
+    mediaAsr: (op) => window.chatOffice.mediaAsr(op) as Promise<{ text?: string; error?: string }>,
+    mediaTts: (op) => window.chatOffice.mediaTts(op) as Promise<{ url?: string; mime?: string; error?: string }>,
     // 外部 MCP (MCP 管理): enabled servers' tools enter the agent; calls relay
     // back through the main process's cached connections
     listMcpTools: async () => {

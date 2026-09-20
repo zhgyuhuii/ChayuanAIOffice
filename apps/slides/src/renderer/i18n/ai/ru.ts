@@ -319,4 +319,16 @@ export const ru = {
   aiNotePoolEmpty: "Локальный набор пуст; применяется автоматическая цепочка",
   aiNoteSvgMode: "Иллюстрации: векторная графика (рисует модель, редактируется)",
   aiNoteImgFail: "Стр. {page}: не найдено изображение для «{kw}»; нарисовано векторной графикой",
+
+  aiToolRunDeck: 'Создание презентации…',
+  aiToolRunRegenSlide: 'Переделка слайда…',
+  aiToolRunPlanDeck: 'Планирование структуры…',
+  aiToolRunImage: 'Создание изображения…',
+  aiToolRunSvg: 'Рисование векторной иллюстрации…',
+  aiToolRunVideo: 'Создание видео…',
+  aiToolRunAnalyze: 'Анализ медиафайла…',
+  aiToolRunInsertImage: 'Вставка изображения…',
+  aiToolRunWebSearch: 'Поиск в интернете…',
+  aiToolRunImageSearch: 'Поиск изображений…',
+  aiToolRunReadUrl: 'Чтение страницы…',
 } satisfies Record<keyof typeof zh, string>

@@ -283,7 +283,6 @@ describe('runtime secret resolution', () => {
         apiKey: () => '',
         hasAuth: () => false,
         status: async () => ({ loggedIn: false }),
-        generateImage: async () => ({ url: '' }),
       },
       translate: (key) => key,
       resolveSecret: async () => 'sk-resolved',

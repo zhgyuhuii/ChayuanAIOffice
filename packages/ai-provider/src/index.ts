@@ -138,6 +138,14 @@ export type { DiscoveryTarget } from './discovery'
 export { discoverModels } from './discovery'
 export type { ImageGenRequest, ImageGenResult } from './imagegen'
 export { generateImageWithModel } from './imagegen'
+export type { MediaModelKind, ResolveMediaCapabilityOptions } from './capability-runtime'
+export { hasMediaCapability, resolveMediaCapability } from './capability-runtime'
+export type { UnderstandMediaInput } from './understand'
+export { understandMediaWithModel } from './understand'
+export type { SpeechSynthesisInput, SpeechSynthesisResult } from './tts'
+export { pcm16ToWav, synthesizeSpeechWithModel } from './tts'
+export type { TranscriptionInput } from './asr'
+export { transcribeWithModel } from './asr'
 export type {
   MediaJobAdapter,
   MediaJobPollResult,

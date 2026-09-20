@@ -319,4 +319,16 @@ export const pt = {
   aiNotePoolEmpty: "Conjunto local vazio; cadeia automática aplicada",
   aiNoteSvgMode: "Imagens: gráficos vetoriais (desenhados pelo modelo, editáveis)",
   aiNoteImgFail: "Página {page}: sem imagem para \"{kw}\"; desenhada como gráfico vetorial",
+
+  aiToolRunDeck: 'Gerando a apresentação…',
+  aiToolRunRegenSlide: 'Refazendo o slide…',
+  aiToolRunPlanDeck: 'Planejando a estrutura…',
+  aiToolRunImage: 'Gerando a imagem…',
+  aiToolRunSvg: 'Desenhando uma ilustração vetorial…',
+  aiToolRunVideo: 'Gerando o vídeo…',
+  aiToolRunAnalyze: 'Analisando a mídia…',
+  aiToolRunInsertImage: 'Inserindo a imagem…',
+  aiToolRunWebSearch: 'Pesquisando na web…',
+  aiToolRunImageSearch: 'Pesquisando imagens…',
+  aiToolRunReadUrl: 'Lendo a página…',
 } satisfies Record<keyof typeof zh, string>

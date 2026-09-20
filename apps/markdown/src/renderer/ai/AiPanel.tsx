@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { createMarkdownMediaSkill } from './media-skill'
 import type { ReactElement, ReactNode } from 'react'
 import { AgentLoop, composeSkills, streamText } from '@chatoffice/agent-core'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
@@ -377,6 +378,7 @@ export function AiPanel({
       // the request carries only the selection; the owning main process resolves profile + secret
       transport: createElectronTransport(() => settingsRef.current!.currentModel!),
       skill: composeSkills('markdown+search', '', [
+        createMarkdownMediaSkill(),
         createMarkdownSkill(
           () => depsRef.current.getEditor(),
           {

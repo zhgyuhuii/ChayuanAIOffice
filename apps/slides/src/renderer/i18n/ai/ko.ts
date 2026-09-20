@@ -318,4 +318,16 @@ export const ko = {
   aiNotePoolEmpty: "로컬 이미지 풀이 비어 자동 체인을 사용합니다",
   aiNoteSvgMode: "이미지: 벡터 그래픽(모델이 인라인으로 그림, 편집 가능)",
   aiNoteImgFail: "{page}페이지: \"{kw}\" 이미지를 가져오지 못해 벡터 그래픽으로 그렸습니다",
+
+  aiToolRunDeck: '프레젠테이션 생성 중…',
+  aiToolRunRegenSlide: '슬라이드 다시 생성 중…',
+  aiToolRunPlanDeck: '개요 계획 중…',
+  aiToolRunImage: '이미지 생성 중…',
+  aiToolRunSvg: '벡터 일러스트 그리는 중…',
+  aiToolRunVideo: '동영상 생성 중…',
+  aiToolRunAnalyze: '미디어 분석 중…',
+  aiToolRunInsertImage: '이미지 삽입 중…',
+  aiToolRunWebSearch: '웹 검색 중…',
+  aiToolRunImageSearch: '이미지 검색 중…',
+  aiToolRunReadUrl: '페이지 읽는 중…',
 } satisfies Record<keyof typeof zh, string>

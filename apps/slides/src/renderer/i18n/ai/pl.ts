@@ -318,4 +318,16 @@ export const pl = {
   aiNotePoolEmpty: "Lokalna pula pusta; zastosowano łańcuch automatyczny",
   aiNoteSvgMode: "Obrazy: grafika wektorowa (rysowana przez model, edytowalna)",
   aiNoteImgFail: "Strona {page}: brak obrazu dla „{kw}”; narysowano jako grafika wektorowa",
+
+  aiToolRunDeck: 'Generowanie prezentacji…',
+  aiToolRunRegenSlide: 'Ponowne tworzenie slajdu…',
+  aiToolRunPlanDeck: 'Planowanie konspektu…',
+  aiToolRunImage: 'Generowanie obrazu…',
+  aiToolRunSvg: 'Rysowanie ilustracji wektorowej…',
+  aiToolRunVideo: 'Generowanie wideo…',
+  aiToolRunAnalyze: 'Analizowanie multimediów…',
+  aiToolRunInsertImage: 'Wstawianie obrazu…',
+  aiToolRunWebSearch: 'Wyszukiwanie w sieci…',
+  aiToolRunImageSearch: 'Wyszukiwanie obrazów…',
+  aiToolRunReadUrl: 'Czytanie strony…',
 } satisfies Record<keyof typeof zh, string>

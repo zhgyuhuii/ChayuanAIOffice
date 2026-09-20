@@ -53,7 +53,6 @@ const noChatOffice = {
   apiKey: () => '',
   hasAuth: () => false,
   status: async () => ({ loggedIn: false }),
-  generateImage: async () => ({ url: '' }),
 }
 
 const translate = (key: string) => key

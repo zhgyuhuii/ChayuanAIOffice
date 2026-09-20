@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { createDocsMediaSkill } from './media-skill'
 import type { Editor } from '@tiptap/core'
 import type { Block } from '@chatoffice/docx-engine'
 import { AgentLoop, composeSkills, streamText, type AgentImage } from '@chatoffice/agent-core'
@@ -741,6 +742,7 @@ export function AiPanel({
       transport: transportRef.current,
       systemSuffix: aiLangDirective,
       skill: composeSkills('docs+files', '', [
+        createDocsMediaSkill(),
         createDocsSkill(
           () => editorRef.current,
           numIds,

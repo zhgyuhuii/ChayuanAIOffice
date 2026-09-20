@@ -325,6 +325,20 @@ export interface HomeApi {
     modelId?: string
     prompt: string
   }): Promise<{ svg?: string; modelId?: string; error?: string }>
+  /** unified media capability probe + generation/understanding/speech channels (main: registerMediaIpc) */
+  mediaCapabilities(): Promise<{ flags?: Record<string, boolean>; models?: Record<string, string> }>
+  mediaVideo(req: {
+    prompt: string
+    aspectRatio?: string
+    durationSeconds?: number
+  }): Promise<{ url?: string; filePath?: string; model?: string; error?: string }>
+  mediaUnderstand(req: {
+    kind: 'image' | 'video' | 'auto'
+    sources: string[]
+    requirements: string
+  }): Promise<{ text?: string; error?: string }>
+  mediaAsr(req: { source: string; language?: string }): Promise<{ text?: string; error?: string }>
+  mediaTts(req: { text: string; voice?: string }): Promise<{ url?: string; mime?: string; error?: string }>
   /** start a streaming AI turn for the home chat; chunks arrive via onAiStream (same ai:* channels the editors use) */
   aiStream(request: AiStreamWireRequest): Promise<void>
   /** abort an in-flight home chat turn */

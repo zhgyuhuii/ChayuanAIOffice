@@ -313,4 +313,16 @@ export const he = {
   aiNotePoolEmpty: "מאגר התמונות המקומי ריק; הופעל שרשרת אוטומטית",
   aiNoteSvgMode: "תמונות: גרפיקה וקטורית (מצוירת על ידי המודל, ניתנת לעריכה)",
   aiNoteImgFail: "עמוד {page}: לא נמצאה תמונה עבור „{kw}”; צוירה כגרפיקה וקטורית",
+
+  aiToolRunDeck: 'המצגת נוצרת…',
+  aiToolRunRegenSlide: 'השקופית נוצרת מחדש…',
+  aiToolRunPlanDeck: 'מתכנן את המתאר…',
+  aiToolRunImage: 'התמונה נוצרת…',
+  aiToolRunSvg: 'מצייר איור וקטורי…',
+  aiToolRunVideo: 'הווידאו נוצר…',
+  aiToolRunAnalyze: 'המדיה מנותחת…',
+  aiToolRunInsertImage: 'התמונה מוכנסת…',
+  aiToolRunWebSearch: 'מחפש באינטרנט…',
+  aiToolRunImageSearch: 'מחפש תמונות…',
+  aiToolRunReadUrl: 'העמוד נקרא…',
 } satisfies Record<keyof typeof zh, string>

@@ -9,6 +9,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
+import { createSheetsMediaSkill } from './ai/media-skill'
 // 惰性加载:设计器拖 1MB 示例库(chart-kit data/examples.json),点开才拉,不进表格启动图
 const ChartDesignerModal = lazy(() =>
   import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
@@ -158,7 +159,11 @@ import {
   composeSkills,
   type AgentImage,
 } from '@chatoffice/agent-core'
-import { enabledChatModels, type AiSettingsV2 } from '@chatoffice/ai-provider/browser'
+import {
+  enabledChatModels,
+  pickImageModel,
+  type AiSettingsV2,
+} from '@chatoffice/ai-provider/browser'
 import {
   copyTargetBounds,
   filteredCopySourceRows,
@@ -1334,6 +1339,7 @@ export function App(): React.JSX.Element {
       transport: createElectronTransport(() => aiSettingsRef.current!.currentModel!),
       systemSuffix: aiLangDirective,
       skill: composeSkills('sheets+files', '', [
+        createSheetsMediaSkill(),
         createWorkbookSkill(sheetsSkillDeps()),
         createFilesSkill(availableAttachments),
         createMergeSkill({
@@ -1346,7 +1352,9 @@ export function App(): React.JSX.Element {
         }),
         createSearchSkill(),
         createImageSkill(
-          () => false,
+          // generate_image rides the locally configured image model — advertise
+          // it exactly while one resolves
+          () => !!pickImageModel(aiSettingsRef.current ?? ({} as AiSettingsV2)),
           () => aiSettingsRef.current?.imageSource ?? 'auto',
         ),
       ]),

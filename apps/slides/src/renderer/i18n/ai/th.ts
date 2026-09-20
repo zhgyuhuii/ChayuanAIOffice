@@ -316,4 +316,16 @@ export const th = {
   aiNotePoolEmpty: "คลังรูปในเครื่องว่าง ใช้ห่วงโซ่อัตโนมัติ",
   aiNoteSvgMode: "รูปภาพ: เวกเตอร์ (โมเดลวาดแบบอินไลน์ แก้ไขได้)",
   aiNoteImgFail: "หน้า {page}: ไม่มีรูปสำหรับ \"{kw}\" วาดเป็นเวกเตอร์แทน",
+
+  aiToolRunDeck: 'กำลังสร้างงานนำเสนอ…',
+  aiToolRunRegenSlide: 'กำลังทำสไลด์ใหม่…',
+  aiToolRunPlanDeck: 'กำลังวางโครงเรื่อง…',
+  aiToolRunImage: 'กำลังสร้างรูปภาพ…',
+  aiToolRunSvg: 'กำลังวาดภาพประกอบเวกเตอร์…',
+  aiToolRunVideo: 'กำลังสร้างวิดีโอ…',
+  aiToolRunAnalyze: 'กำลังวิเคราะห์สื่อ…',
+  aiToolRunInsertImage: 'กำลังแทรกรูปภาพ…',
+  aiToolRunWebSearch: 'กำลังค้นเว็บ…',
+  aiToolRunImageSearch: 'กำลังค้นหารูปภาพ…',
+  aiToolRunReadUrl: 'กำลังอ่านหน้าเว็บ…',
 } satisfies Record<keyof typeof zh, string>

@@ -170,9 +170,6 @@ function buildRuntime(options: AiProxyOptions): AiRuntime {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),
-      generateImage: async () => {
-        throw new Error(ERR.errNoImageModel)
-      },
     },
     translate: (key, params) =>
       (ERR as Record<string, string>)[key]?.replace(/\{(\w+)\}/g, (_, k) =>

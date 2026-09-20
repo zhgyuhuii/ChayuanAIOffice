@@ -35,8 +35,11 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
-import { createByokImageHandler, registerSharedKbIpc } from '@chatoffice/ai-host'
+import { hasChatOfficeAuth } from '@chatoffice/ai-search'
+import {
+  registerMediaIpc,
+  createByokImageHandler, registerSharedKbIpc
+} from '@chatoffice/ai-host'
 import { ImageExportSessions } from './image-export'
 import { printMarkdownPdf } from './print-pdf'
 import { atomicWriteFile } from './atomic-write'
@@ -721,6 +724,13 @@ function registerMarkdownIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
 
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  registerMediaIpc({
+    ipcMain,
+    settingsPath: () => join(app.getPath('userData'), 'ai-settings.json'),
+    mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+  })
+
   registerImageProtocol()
 
   registerSharedKbIpc({
@@ -885,11 +895,6 @@ function registerMarkdownIpc(): void {
     },
   )
 
-  /** ChatOffice cloud backend removed — always false */
-  const chatofficeCloudToolsOn = (): boolean => {
-    return false
-  }
-
   // BYOK-first image generation over ai-settings.json (read-mostly; the
   // runtime may rewrite it when the parked current model falls back)
   let byokImageSingleton: ReturnType<typeof createByokImageHandler> | null = null
@@ -916,21 +921,6 @@ function registerMarkdownIpc(): void {
         status: async (withEmail) => {
           if (!hasChatOfficeAuth()) return { loggedIn: false }
           return withEmail ? { loggedIn: true } : { loggedIn: true }
-        },
-        generateImage: async (req2) => {
-          if (!hasChatOfficeAuth())
-            throw new Error(
-              'ChatOffice account is not logged in on this machine; ask the user to log in first',
-            )
-          if (!chatofficeCloudToolsOn())
-            throw new Error(
-              'ChatOffice cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-            )
-          const r = await chatofficeGenerateImage({
-            prompt: req2.prompt,
-            ...(req2.aspectRatio ? { aspectRatio: req2.aspectRatio } : {}),
-          })
-          return { url: r.url }
         },
       },
     })

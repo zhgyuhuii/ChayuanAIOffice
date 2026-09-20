@@ -320,4 +320,16 @@ export const nl = {
   aiNotePoolEmpty: "Lokale voorraad leeg; automatische keten toegepast",
   aiNoteSvgMode: "Beelden: vectorafbeeldingen (door het model getekend, bewerkbaar)",
   aiNoteImgFail: "Pagina {page}: geen afbeelding voor \"{kw}\"; als vector getekend",
+
+  aiToolRunDeck: 'Presentatie wordt gegenereerd…',
+  aiToolRunRegenSlide: 'Dia wordt opnieuw gemaakt…',
+  aiToolRunPlanDeck: 'Overzicht wordt gepland…',
+  aiToolRunImage: 'Afbeelding wordt gegenereerd…',
+  aiToolRunSvg: 'Vectorillustratie wordt getekend…',
+  aiToolRunVideo: 'Video wordt gegenereerd…',
+  aiToolRunAnalyze: 'Media wordt geanalyseerd…',
+  aiToolRunInsertImage: 'Afbeelding wordt ingevoegd…',
+  aiToolRunWebSearch: 'Zoeken op het web…',
+  aiToolRunImageSearch: 'Afbeeldingen worden gezocht…',
+  aiToolRunReadUrl: 'Pagina wordt gelezen…',
 } satisfies Record<keyof typeof zh, string>

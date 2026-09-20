@@ -1,10 +1,11 @@
 /**
  * generate_image / analyze_media for the five editors' main processes: one
- * place that reads ai-settings.json live, routes to the BYOK media provider
- * when one is configured, and otherwise to the ChatOffice CLI behind the usual
- * login + cloud-tools gate. BYOK providers answer with bytes; those land in
+ * place that reads ai-settings.json live. Image generation is BYOK-only — the
+ * chatoffice cloud fallback was removed (that backend belongs to the GenOffice
+ * upstream, not this build). BYOK providers answer with bytes; those land in
  * the local generated-image store and come back as a file:// URL that the
- * insert pipelines' fetchRemoteImage accepts.
+ * insert pipelines' fetchRemoteImage accepts. Media analysis still carries a
+ * chatoffice tier behind the login gate.
  */
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
@@ -20,10 +21,17 @@ import {
   type MediaBlob,
 } from '@chatoffice/ai-provider'
 // deep imports: the package root re-exports Electron-bound modules, and this file also runs in the chatoffice CLI
-import { readGeneratedImage, storeGeneratedImage } from '@chatoffice/electron-utils/generated-images'
+import {
+  readGeneratedImage,
+  storeGeneratedImage,
+} from '@chatoffice/electron-utils/generated-images'
 import { fetchRemoteImage } from '@chatoffice/electron-utils/remote-image'
 import { fetchWithSsrfGuard } from '@chatoffice/electron-utils/safe-remote-url'
-import { chatofficeAnalyzeMedia, chatofficeGenerateImage, hasChatOfficeAuth, type ChatOfficeGenerateImageOptions } from './chatoffice'
+import {
+  chatofficeAnalyzeMedia,
+  hasChatOfficeAuth,
+  type ChatOfficeGenerateImageOptions,
+} from './chatoffice'
 
 export const CHATOFFICE_NOT_LOGGED_IN_ERROR =
   'ChatOffice account is not logged in on this machine; ask the user to log in first'
@@ -135,18 +143,17 @@ export type GenerateImageToolOp = ChatOfficeGenerateImageOptions & {
 export async function generateImageTool(
   settingsPath: string,
   op: GenerateImageToolOp,
-  options: MediaToolOptions = {},
 ): Promise<{ url?: string; error?: string }> {
   const prompt = String(op.prompt ?? '').trim()
   if (!prompt) return { error: 'prompt must not be empty' }
   const settings = readAiSettingsFile(settingsPath)
   const byok = activeMediaConfig(settings, 'image')
+  if (!byok) {
+    // the chatoffice cloud fallback was removed (the cloud backend belongs to
+    // the GenOffice upstream, not this build) — BYOK media config only
+    return { error: 'no image model configured (Settings → 生图、媒体与搜索)' }
+  }
   try {
-    if (!byok) {
-      const gate = gskGate(settings, options.notLoggedInError ?? CHATOFFICE_NOT_LOGGED_IN_ERROR)
-      if (gate) return gate
-      return { url: (await chatofficeGenerateImage({ ...op, prompt })).url }
-    }
     // `model` names ChatOffice-only special models (fal-*); BYOK uses the configured image model
     const references = await Promise.all((op.referenceImageUrls ?? []).map(loadMediaReference))
     const image = await generateImageWithProvider(byok.provider, byok.config, {

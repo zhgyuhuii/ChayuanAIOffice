@@ -28,7 +28,10 @@ import {
   setRescueFetch,
   type AiRuntime,
 } from '@chatoffice/ai-provider'
-import { registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
+import {
+  registerMediaIpc,
+  registerSharedAiIpc, registerSharedKbIpc
+} from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
@@ -37,7 +40,6 @@ import {
   readUrlContent,
   ensureChatofficeLogin,
   chatofficeApiKey,
-  chatofficeGenerateImage,
   chatofficeAnalyzeMedia,
   chatofficeLoginInfo,
   hasChatOfficeAuth,
@@ -114,6 +116,12 @@ export function registerAiIpc(): void {
   setAiUserAgent(`ChatOffice/${app.getVersion()}`)
 
   registerSharedKbIpc({ ipcMain, statePath: () => join(app.getPath('userData'), 'kb-source.json') })
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  registerMediaIpc({
+    ipcMain,
+    settingsPath: () => AI_SETTINGS_PATH(),
+    mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+  })
   aiRuntime = registerSharedAiIpc({
     ipcMain,
     settingsPath: AI_SETTINGS_PATH(),
@@ -140,15 +148,6 @@ export function registerAiIpc(): void {
         if (!withEmail) return { loggedIn: true }
         const info = await chatofficeLoginInfo()
         return info?.email ? { loggedIn: true, email: info.email } : { loggedIn: true }
-      },
-      generateImage: async (req) => {
-        if (!hasChatOfficeAuth()) throw new Error(tm('errChatOfficeCli'))
-        if (!chatofficeCloudToolsOn()) throw new Error(tm('errChatOfficeToolsOff'))
-        const r = await chatofficeGenerateImage({
-          prompt: req.prompt,
-          ...(req.aspectRatio ? { aspectRatio: req.aspectRatio } : {}),
-        })
-        return { url: r.url }
       },
     },
     chatofficeLogin: () => ensureChatofficeLogin((url) => void shell.openExternal(url)),
@@ -318,46 +317,17 @@ export function registerSlidesOnlyAiIpc(): void {
     },
   )
 
-  // chatoffice (ChatOffice CLI) capabilities: AI image generation / media analysis. Returns an error prompt when not logged in.
+  // BYOK image generation only — the chatoffice cloud fallback was removed
+  // (the cloud backend belongs to the GenOffice upstream, not this build).
   ipcMain.handle(
     'ai:generate-image',
-    async (
-      _event,
-      op: {
-        prompt: string
-        model?: string
-        referenceImageUrls?: string[]
-        aspectRatio?: string
-        imageSize?: string
-        transparentBackground?: boolean
-      },
-    ) => {
+    async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
       const prompt = String(op.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
-      // chatoffice-specific extras (model pick, reference images, size) mean explicit
-      // chatoffice intent; a plain prompt goes BYOK image model first, chatoffice fallback
-      if (!op.model && !op.imageSize && !op.referenceImageUrls?.length) {
-        return getAiRuntime().generateImage({
-          prompt,
-          ...(op.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
-        })
-      }
-      if (!hasChatOfficeAuth()) return { error: tm('errChatOfficeCli') }
-      if (!chatofficeCloudToolsOn()) return { error: tm('errChatOfficeToolsOff') }
-      try {
-        const r = await chatofficeGenerateImage({
-          prompt,
-          model: op.model ? String(op.model) : undefined,
-          referenceImageUrls: Array.isArray(op.referenceImageUrls)
-            ? op.referenceImageUrls.map(String)
-            : undefined,
-          aspectRatio: op.aspectRatio ? String(op.aspectRatio) : undefined,
-          imageSize: op.imageSize ? String(op.imageSize) : undefined,
-        })
-        return { url: r.url }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
-      }
+      return getAiRuntime().generateImage({
+        prompt,
+        ...(op.aspectRatio ? { aspectRatio: String(op.aspectRatio) } : {}),
+      })
     },
   )
 

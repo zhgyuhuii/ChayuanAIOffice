@@ -497,14 +497,8 @@ const api: SlidesApi = {
     ext?: string
     keepSrcRect?: boolean
   }) => ipcRenderer.invoke('ai:replace-picture-url', op),
-  generateImage: (op: {
-    prompt: string
-    model?: string
-    referenceImageUrls?: string[]
-    aspectRatio?: string
-    imageSize?: string
-    transparentBackground?: boolean
-  }) => ipcRenderer.invoke('ai:generate-image', op),
+  generateImage: (op: { prompt: string; aspectRatio?: string }) =>
+    ipcRenderer.invoke('ai:generate-image', op),
   readUrl: (url: string) => ipcRenderer.invoke('ai:read-url', url),
   generateVideo: (op: {
     prompt: string
@@ -553,6 +547,23 @@ const api: SlidesApi = {
   },
 }
 
+
+  // LOCAL(2026-09-20): unified media capability bridge; upstream: additive-only; converge: never (local feature)
+  const mediaApi = {
+    mediaCapabilities: () => ipcRenderer.invoke('ai:media-capabilities'),
+    mediaImage: (op: { prompt: string; aspectRatio?: string }) =>
+      ipcRenderer.invoke('ai:media-image', op),
+    mediaVideo: (op: { prompt: string; aspectRatio?: string; durationSeconds?: number }) =>
+      ipcRenderer.invoke('ai:media-video', op),
+    mediaUnderstand: (op: {
+      kind: 'image' | 'video' | 'auto'
+      sources: string[]
+      requirements: string
+    }) => ipcRenderer.invoke('ai:media-understand', op),
+    mediaAsr: (op: { source: string; language?: string }) => ipcRenderer.invoke('ai:media-asr', op),
+    mediaTts: (op: { text: string; voice?: string }) => ipcRenderer.invoke('ai:media-tts', op),
+  }
+  Object.assign(api, mediaApi)
 contextBridge.exposeInMainWorld('slidesApi', api)
 
 // Chat attachment bridge: method names/signatures match the window.desktop attachment subset in docs, so the renderer's files-skill is copied over wholesale

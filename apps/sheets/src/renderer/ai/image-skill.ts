@@ -7,8 +7,9 @@ import { registerSvgDataUrl } from './svg-bank'
 
 /**
  * Image acquisition AgentSkill: image_search (shared main-process channel, same
- * source as docs/slides), generate_image (sheets-owned ChatOffice channel) and
- * generate_svg (offline vector tier — the model draws, we rasterize). All
+ * source as docs/slides), generate_image (the locally configured image model
+ * via the sheets-owned channel) and generate_svg (offline vector tier — the
+ * model draws, we rasterize). All
  * return a URL/handle; placement happens through the normal propose_operations
  * add_image path, which downloads the URL in the main process on apply.
  */
@@ -17,7 +18,7 @@ const PLACEMENT_PROMPT = `- To place an image on a sheet, pass the URL to propos
 - Only insert images the user asked for; data correctness always outranks decoration.`
 
 const IMAGES_SYSTEM_PROMPT = `## Images
-- image_search finds real web images (returns direct imageUrl entries); generate_image creates an illustration with AI when no suitable real image exists or the user explicitly wants generated art; generate_svg draws simple vector graphics offline (no login/image model needed).
+- image_search finds real web images (returns direct imageUrl entries); generate_image creates an illustration with AI when no suitable real image exists or the user explicitly wants generated art; generate_svg draws simple vector graphics offline (no image model needed).
 ${PLACEMENT_PROMPT}`
 
 const IMAGES_SYSTEM_PROMPT_NO_GEN = `## Images
@@ -36,18 +37,19 @@ const IMAGE_SOURCE_DIRECTIVE: Record<AiImageSource, string> = {
   local: '',
   web: '- Image source preference: web images — pick image_search first for pictures; use generate_image only when the user explicitly asks for AI-generated art.',
   model:
-    '- Image source preference: AI generation — pick generate_image first for illustrations; when it is unavailable (not logged in / failed), fall back to image_search.',
+    '- Image source preference: AI generation — pick generate_image first for illustrations; when it is unavailable (no image model configured / failed), fall back to image_search.',
   svg: '- Image source preference: vector graphics — pick generate_svg first (offline, no login); use image_search only for real photos the user explicitly asks for.',
 }
 
 /**
- * `chatofficeTools` is a live predicate (login state && the ChatOffice-cloud-tools
- * toggle); the loop re-reads tools and systemPrompt before every request,
- * so generate_image appears and disappears without rebuilding the loop.
+ * `imageModelAvailable` is a live predicate: a local image-generation model is
+ * configured in Settings (生图、媒体与搜索). The loop re-reads tools and
+ * systemPrompt before every request, so generate_image appears and disappears
+ * without rebuilding the loop.
  * `getImageSource` reads the persisted global default (AiSettingsV2.imageSource).
  */
 export function createImageSkill(
-  chatofficeTools: () => boolean = () => true,
+  imageModelAvailable: () => boolean = () => true,
   getImageSource: () => AiImageSource = () => 'auto',
 ): AgentSkill {
   const allTools = [
@@ -68,7 +70,7 @@ export function createImageSkill(
     {
       name: 'generate_image',
       description:
-        'Generate an image with AI from a text prompt (ChatOffice account required). Returns a URL to insert ' +
+        'Generate an image with the image model configured in Settings (生图、媒体与搜索) from a text prompt. Returns a URL to insert ' +
         'with propose_operations add_image. Use for illustrations/decorative art; prefer image_search for real-world subjects.',
       inputSchema: {
         type: 'object',
@@ -104,12 +106,12 @@ export function createImageSkill(
   return {
     id: 'images',
     get systemPrompt() {
-      const base = chatofficeTools() ? IMAGES_SYSTEM_PROMPT : IMAGES_SYSTEM_PROMPT_NO_GEN
+      const base = imageModelAvailable() ? IMAGES_SYSTEM_PROMPT : IMAGES_SYSTEM_PROMPT_NO_GEN
       const line = IMAGE_SOURCE_DIRECTIVE[getImageSource()]
       return line ? `${base}\n${line}` : base
     },
     get tools() {
-      return chatofficeTools() ? allTools : allTools.filter((t) => t.name !== 'generate_image')
+      return imageModelAvailable() ? allTools : allTools.filter((t) => t.name !== 'generate_image')
     },
     executeTool: async (call) => {
       if (call.name === 'image_search') {
@@ -155,7 +157,7 @@ export function createImageSkill(
           ...(aspectRatio ? { aspectRatio } : {}),
         })
         if (!result.url) {
-          // Login/cloud failure fallback (docs/image-source-plan.md #9): a web
+          // Generation-failure fallback (docs/image-source-plan.md #9): a web
           // image keeps the request satisfiable without any paid source. An
           // explicit 'svg' default skips the web tier — never silently switch
           // to a source the user turned off — and points at generate_svg.
@@ -196,7 +198,7 @@ export function createImageSkill(
       if (call.name === 'generate_svg') {
         // Offline vector tier (docs/image-source-plan.md #9): the model draws,
         // we sanitize + rasterize here and hand back a short dataref token the
-        // model passes to add_image — no login, no image model, no giant
+        // model passes to add_image — no image model, no giant
         // base64 blob in the model's context.
         const raw = String(call.input.svg ?? '').trim()
         const clean = sanitizeSvg(raw)

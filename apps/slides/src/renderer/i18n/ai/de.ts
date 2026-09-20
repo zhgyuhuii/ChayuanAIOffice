@@ -322,4 +322,16 @@ export const de = {
   aiNotePoolEmpty: "Lokaler Bildbestand leer; automatische Kette aktiv",
   aiNoteSvgMode: "Bildmaterial: Vektorgrafiken (vom Modell gezeichnet, editierbar)",
   aiNoteImgFail: "Seite {page}: kein Bild für „{kw}“ gefunden; als Vektorgrafik gezeichnet",
+
+  aiToolRunDeck: 'Präsentation wird erstellt…',
+  aiToolRunRegenSlide: 'Folie wird neu erstellt…',
+  aiToolRunPlanDeck: 'Gliederung wird geplant…',
+  aiToolRunImage: 'Bild wird erstellt…',
+  aiToolRunSvg: 'Vektorillustration wird gezeichnet…',
+  aiToolRunVideo: 'Video wird erstellt…',
+  aiToolRunAnalyze: 'Medium wird analysiert…',
+  aiToolRunInsertImage: 'Bild wird eingefügt…',
+  aiToolRunWebSearch: 'Websuche läuft…',
+  aiToolRunImageSearch: 'Bildersuche läuft…',
+  aiToolRunReadUrl: 'Seite wird gelesen…',
 } satisfies Record<keyof typeof zh, string>

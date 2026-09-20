@@ -36,8 +36,11 @@ import {
   rendererUrl,
 } from '@chatoffice/electron-utils'
 import { createI18n, getUiLang } from '@chatoffice/i18n'
-import { chatofficeGenerateImage, hasChatOfficeAuth } from '@chatoffice/ai-search'
-import { createByokImageHandler, registerSharedKbIpc } from '@chatoffice/ai-host'
+import { hasChatOfficeAuth } from '@chatoffice/ai-search'
+import {
+  registerMediaIpc,
+  createByokImageHandler, registerSharedKbIpc
+} from '@chatoffice/ai-host'
 import { PDF_CHANNELS } from '../shared/ipc'
 import type {
   ExportImagesRequest,
@@ -932,11 +935,6 @@ function withSignatures(
 
 let ipcRegistered = false
 
-/** ChatOffice cloud backend removed — always false */
-function chatofficeCloudToolsOn(): boolean {
-  return false
-}
-
 /**
  * BYOK-first image generation over ai-settings.json — same resolution order
  * as docs/sheets (设置 → 生图、媒体与搜索 default model, then the gated
@@ -965,21 +963,6 @@ function byokGenerateImage(req: { prompt: string; aspectRatio?: string }) {
       apiKey: () => '',
       hasAuth: () => hasChatOfficeAuth(),
       status: async () => ({ loggedIn: hasChatOfficeAuth() }),
-      generateImage: async (req2) => {
-        if (!hasChatOfficeAuth())
-          throw new Error(
-            'ChatOffice account is not logged in on this machine; ask the user to log in first',
-          )
-        if (!chatofficeCloudToolsOn())
-          throw new Error(
-            'ChatOffice cloud tools are turned off in Settings (AI Model); enable them to use this tool',
-          )
-        const r = await chatofficeGenerateImage({
-          prompt: req2.prompt,
-          ...(req2.aspectRatio ? { aspectRatio: req2.aspectRatio } : {}),
-        })
-        return { url: r.url }
-      },
     },
   })
   return byokImageSingleton(req)
@@ -988,6 +971,13 @@ function byokGenerateImage(req: { prompt: string; aspectRatio?: string }) {
 function registerPdfIpc(): void {
   if (ipcRegistered) return
   ipcRegistered = true
+
+  // LOCAL(2026-09-20): unified media capability channels; upstream: additive-only; converge: never (local feature)
+  registerMediaIpc({
+    ipcMain,
+    settingsPath: () => join(app.getPath('userData'), 'ai-settings.json'),
+    mediaDir: () => join(app.getPath('userData'), 'media', 'files'),
+  })
 
   registerSharedKbIpc({
     ipcMain,

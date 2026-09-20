@@ -317,4 +317,16 @@ export const ja = {
   aiNotePoolEmpty: "ローカル画像プールが空のため自動チェーンを使用",
   aiNoteSvgMode: "画像：ベクターグラフィック（モデルがインライン描画、編集可）",
   aiNoteImgFail: "{page}ページ：「{kw}」の画像を取得できず、ベクターグラフィックで描画しました",
+
+  aiToolRunDeck: 'プレゼンテーションを生成中…',
+  aiToolRunRegenSlide: 'スライドを再生成中…',
+  aiToolRunPlanDeck: 'アウトラインを計画中…',
+  aiToolRunImage: '画像を生成中…',
+  aiToolRunSvg: 'ベクターイラストを描画中…',
+  aiToolRunVideo: '動画を生成中…',
+  aiToolRunAnalyze: 'メディアを分析中…',
+  aiToolRunInsertImage: '画像を挿入中…',
+  aiToolRunWebSearch: 'ウェブを検索中…',
+  aiToolRunImageSearch: '画像を検索中…',
+  aiToolRunReadUrl: 'ページを読み込み中…',
 } satisfies Record<keyof typeof zh, string>

@@ -316,4 +316,16 @@ export const ar = {
   aiNotePoolEmpty: "مجموعة الصور المحلية فارغة؛ تُستخدم السلسلة التلقائية",
   aiNoteSvgMode: "الصور: رسومات متجهية (يرسمها النموذج، قابلة للتعديل)",
   aiNoteImgFail: "الصفحة {page}: لم يتم العثور على صورة لـ «{kw}»؛ رُسمت كرسومات متجهية",
+
+  aiToolRunDeck: 'جارٍ إنشاء العرض التقديمي…',
+  aiToolRunRegenSlide: 'جارٍ إعادة إنشاء الشريحة…',
+  aiToolRunPlanDeck: 'جارٍ تخطيط المخطط…',
+  aiToolRunImage: 'جارٍ إنشاء الصورة…',
+  aiToolRunSvg: 'جارٍ رسم رسم توضيحي متجهي…',
+  aiToolRunVideo: 'جارٍ إنشاء الفيديو…',
+  aiToolRunAnalyze: 'جارٍ تحليل الوسائط…',
+  aiToolRunInsertImage: 'جارٍ إدراج الصورة…',
+  aiToolRunWebSearch: 'جارٍ البحث في الويب…',
+  aiToolRunImageSearch: 'جارٍ البحث عن صور…',
+  aiToolRunReadUrl: 'جارٍ قراءة الصفحة…',
 } satisfies Record<keyof typeof zh, string>

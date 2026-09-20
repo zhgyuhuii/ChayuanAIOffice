@@ -310,4 +310,16 @@ export const zh = {
   aiNotePoolEmpty: "本地图片池为空（未选文件夹），已按自动链处理",
   aiNoteSvgMode: "配图来源：矢量图形（模型内联绘制，元素可编辑）",
   aiNoteImgFail: "第 {page} 页：「{kw}」未能配图，已用矢量图形绘制",
+
+  aiToolRunDeck: '正在生成演示文稿…',
+  aiToolRunRegenSlide: '正在重做页面…',
+  aiToolRunPlanDeck: '正在规划大纲…',
+  aiToolRunImage: '正在生成图片…',
+  aiToolRunSvg: '正在绘制矢量插画…',
+  aiToolRunVideo: '正在生成视频…',
+  aiToolRunAnalyze: '正在分析媒体…',
+  aiToolRunInsertImage: '正在插入图片…',
+  aiToolRunWebSearch: '正在搜索网页…',
+  aiToolRunImageSearch: '正在搜索图片…',
+  aiToolRunReadUrl: '正在读取网页…',
 }

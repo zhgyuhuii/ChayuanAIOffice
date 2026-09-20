@@ -120,9 +120,6 @@ async function makeRuntime(): Promise<ReturnType<typeof createAiRuntime>> {
       apiKey: () => '',
       hasAuth: () => false,
       status: async () => ({ loggedIn: false }),
-      generateImage: async () => {
-        throw new Error('not wired in this test')
-      },
     },
     translate: (key) => key,
   })
@@ -181,7 +178,9 @@ describe('video chain end-to-end against a local fake vendor', () => {
     expect(preview.dataUrl).toBe(`data:video/mp4;base64,${VIDEO_BYTES.toString('base64')}`)
 
     // listMediaModels spec seeding: sora gets 4/8/12s durations
-    expect(videoModel!.spec.fields.find((f) => f.id === 'durationSeconds')?.options).toEqual([4, 8, 12])
+    expect(videoModel!.spec.fields.find((f) => f.id === 'durationSeconds')?.options).toEqual([
+      4, 8, 12,
+    ])
   })
 
   it('rejects a bad key with the vendor error surfaced on the task', async () => {

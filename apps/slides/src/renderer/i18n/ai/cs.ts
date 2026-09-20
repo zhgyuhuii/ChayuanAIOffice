@@ -309,4 +309,16 @@ export const cs = {
   aiErrStreamTimeout: "AI request timed out: no response from the network, so the run was stopped. Check your connection and try again",
   aiErrNetwork: "Network problem: could not reach the AI service. Check your connection and try again",
   aiCreditsExhausted: "Your ChaAI Office credits have run out. Visit genspark.ai/pricing to top up, then try again",
+
+  aiToolRunDeck: 'Generuji prezentaci…',
+  aiToolRunRegenSlide: 'Znovu vytvářím snímek…',
+  aiToolRunPlanDeck: 'Plánuji osnovu…',
+  aiToolRunImage: 'Generuji obrázek…',
+  aiToolRunSvg: 'Kreslím vektorovou ilustraci…',
+  aiToolRunVideo: 'Generuji video…',
+  aiToolRunAnalyze: 'Analyzuji média…',
+  aiToolRunInsertImage: 'Vkládám obrázek…',
+  aiToolRunWebSearch: 'Prohledávám web…',
+  aiToolRunImageSearch: 'Hledám obrázky…',
+  aiToolRunReadUrl: 'Čtu stránku…',
 }

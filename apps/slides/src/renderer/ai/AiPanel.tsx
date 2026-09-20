@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react'
+import { createSlidesMediaSkill } from './media-skill'
 import {
   AgentLoop,
   composeSkills,
@@ -49,7 +50,7 @@ import {
   QC_MAX_PAGES,
   settingsSupportVision,
 } from './slide-qc'
-import { useI18n, t as tGlobal, aiLangDirective, type TFunc } from '../i18n/locale'
+import { useI18n, t as tGlobal, aiLangDirective, type StringKey, type TFunc } from '../i18n/locale'
 import {
   IconSend,
   IconStop,
@@ -373,6 +374,25 @@ interface AiPanelProps {
 /** Some locales already end the label with an ellipsis — normalize to exactly one. */
 function withEllipsis(label: string): string {
   return `${label.replace(/(?:…|\.{3})+$/u, '')}…`
+}
+
+/**
+ * Running-chip labels for the long-running tools. While a tool executes, the
+ * chip would otherwise show the raw name with spaces ("generate deck"), which
+ * reads broken for steps that take minutes; these get a localized "doing X…"
+ * line. Quick ops keep the prettified name.
+ */
+const RUNNING_TOOL_LABELS: Record<string, StringKey> = {
+  generate_deck: 'aiToolRunDeck',
+  regenerate_slide: 'aiToolRunRegenSlide',
+  plan_deck: 'aiToolRunPlanDeck',
+  generate_image: 'aiToolRunImage',
+  generate_svg: 'aiToolRunSvg',
+  generate_video: 'aiToolRunVideo',
+  insert_web_image: 'aiToolRunInsertImage',
+  web_search: 'aiToolRunWebSearch',
+  image_search: 'aiToolRunImageSearch',
+  read_url: 'aiToolRunReadUrl',
 }
 
 /** Two-phase waiting→thinking indicator (mirrors AiTypingIndicator in packages/ui):
@@ -1467,7 +1487,9 @@ export function AiPanel({
           return { ok: false, error: String('') }
         }
       },
-      chatofficeTools: () => false,
+      // generate_image rides the locally configured image model — advertise it
+      // exactly while one resolves (same predicate the deck image sourcing uses)
+      imageModelAvailable: () => !!pickImageModel(settingsRef.current!),
       unreadTextAttachments: () =>
         availableAttachments()
           .filter(
@@ -1494,6 +1516,7 @@ export function AiPanel({
       transport: createElectronTransport(() => settingsRef.current.currentModel!),
       systemSuffix: aiLangDirective,
       skill: composeSkills('slides+files', '', [
+        createSlidesMediaSkill(),
         createSlidesSkill(access),
         createFilesSkill(availableAttachments, (path) => readAttachmentPathsRef.current.add(path)),
       ]),
@@ -1503,10 +1526,13 @@ export function AiPanel({
           patchLastAssistant({ text })
         },
         onToolStart: (call) => {
-          // Live "running" chip: replaced in place by onToolExecuted
+          // Live "running" chip: replaced in place by onToolExecuted; known
+          // long-running tools show a localized "doing X…" label (tGlobal reads
+          // the current lang at call time), the rest keep the prettified name
+          const runKey = RUNNING_TOOL_LABELS[call.name]
           const activity: ToolActivity = {
             name: call.name,
-            summary: call.name.replace(/[_-]+/g, ' '),
+            summary: runKey ? tGlobal(runKey) : call.name.replace(/[_-]+/g, ' '),
             running: true,
           }
           patchLastAssistant((last) => ({ tools: [...(last.tools ?? []), activity] }))
