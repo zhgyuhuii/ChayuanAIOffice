@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/genoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第九轮完成（2026-09-17，终点 6f8a892，merge=faeb9483）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第十二轮完成（2026-09-20，终点 229fbb8，分支 sync/upstream-20260920）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -108,7 +108,34 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`316ded6`（2026-09-18 第十一轮完成并入 main；下次 `git fetch upstream` 后从 `316ded6..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`229fbb8`（2026-09-20 第十二轮完成并入 main；下次 `git fetch upstream` 后从 `229fbb8..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十二轮增量（2026-09-20，316ded6..229fbb8：38 提交，施工于 sync/upstream-20260920 分支）
+
+| 内容 | 结果 |
+|---|---|
+| 引擎小修×8：#521 html2docx shotId 谓词（convert.ts 保上游）/#504 DV 日期/#506 slide id 扫描界/#507 pdf2docx median 非有限/#508 file-parse pptx 反斜杠目标/#509 docx base-26 图表列/#510 html2docx 页背景 hex/#519 style color hex | 全部干净 pick |
+| #505 agent-core streamText 守卫/#515 docx-engine zip 句柄+中央目录校验/#518 ai-provider watchdog 归一/#517 electron-utils 渲染文件解析加固 | 干净 pick；**#517 测试品牌重放**（genoffice-app→chatoffice-app scheme+join(rootDir) 结构） |
+| #511 docs touched-blocks 测试/#512 cli MCP http host 加固/#513 markdown 图表栅格化守卫（diagrams 本地十轮已收）/#514 sheets MCP sheet 寻址（十一轮 mcp-sheet-refs 续改） | 干净 pick；**#512 随附测试 helper tmp 前缀品牌化**（genoffice-mcp-http→chatoffice-mcp-http 对齐本地服务端，全量测试揪出） |
+| #520 pdf toasts/大纲空态 | **adapted**：App.tsx 保本地 DockShell 布局，OutlinePanel 织入 label/emptyLabel props+两处 toast 补 role="status"（本地 i18n 键 searchNoResults 复用） |
+| #522 slides 选中元素复制为剪贴板图片（10 文件） | **adapted**：element-clipboard.ts/selection-image.tsx 新件品牌重放（ELEMENT_CLIPBOARD_FORMAT=data-genoffice-slides-elements→data-chatoffice-slides-elements、io.genoffice→io.chatoffice、@genoffice→@chatoffice、e2e tmpdir 前缀）；slides-main 四冲突=导入去重（i18n/ProjectStore 本地已有）+三处 marker 检查 token 化取上游 |
+| #494/#495/#496 三测试件 | 干净 pick |
+| #497 cli help/registry/README/skill 同步测试 | **重改编**：help-sync.test.ts 按本地架构改编（bin 名 chatoffice 断言/skill 路径 skills/chaoffice/SKILL.md/skill 正文检查用 chaoffice 前缀——skill 教的是 chaoffice 启动器）；**上游"补文档行"意图重放进本地文档**：cli README 补 selection/skill×2/install-cli/mcp 五行+render 网格/create csv 两围栏例（覆盖 --grid/--tile/--pad/--cols/--el/--header/--decimal）；chaoffice SKILL.md 表格行升级选项语法（info --password、xlsx --header/--decimal、slides --layouts/--max-chars、render --el/--pad/--grid/--tile、sheet --cols/--max-rows/--where/--stats、docs --sections/--fields/--notes/--styles/--track/--author、guide --index/--fingerprint、image --model、open --block 等）+selection/skill 两新行+mcp stdio/http prose；版本 2.7.1→2.7.2；skills/genoffice 目录复活即删（DU 解） |
+| #498 a11y 硬编码 aria 标签 i18n 化（13 文件） | **adapted**：五 app AiPanel 保本地 PanelTabs 架构（本地无 Gensmark/Genspark aria 残留，上游改点不存在）；ExcelShell 保本地 DockShell 块+`aria-label="Workbook commands"`→`t('appScopeWorkbook')` 织入；html 四件+slides PrintDialog+sheets 两件自动合入 |
+| #501 project-store 遍历 id 拒绝+chat limit 钳制 | 干净 pick（本地保留的 P1 API 与上游加固正交，80 测试绿） |
+| #502 pptx-render 视口守卫/#468 docx spinCount 钳制/#467 xlsx-gateway 单元格地址加固 | 干净 pick |
+| #487 CI 接线 xlsx-gateway/pptx-ops 测试 | **adapted**：.github/ci.yml 按 Q5-② 保本地；root package.json 保本地 @chatoffice 链+test 链补两个工作区（typecheck 链本地已有）；pptx-ops vitest.config 保本地品牌+收上游注释；两包 package.json 加 test 脚本/vitest devDep 自动合入 |
+| #465 ai-search gsk 输出解析 | **adapted**：gsk.ts→chatoffice.ts 重命名跟随，函数体自动合入+注释块取本地命名语义；**随附测试 parseGskOutput→parseChatOfficeOutput+行粘连修复**（typecheck 揪出） |
+| #523 docs 大纲样式级标题 | 干净 pick+**品牌补漏**（headings.ts @genoffice→@chatoffice import——Pick<StyleInfo> 类型不对称炸出）；dual-font/headings 测试件 import 同修 |
+| #476 markdown 分页 PNG 导出（21 文件） | **分域采纳**：image-export.ts/print-pdf.ts 新件全收（print-pdf tmpdir 品牌化 chatoffice-md-print）；markdown-main 采纳 printMarkdownPdf 模块调用替换本地内联打印窗口（语义等价提取）+自动合并重复行修复；App.tsx 保本地 DockShell+imageExportStatus 织入本地底栏 status-left；strings.ts 20 语言块"本地键保全+4 新键并入"配方；shell 菜单 menuExportImages 自动合入（sendMarkdownExportRequest 'png' 走本地 tabManager）；ci.yml Q5 还原；pdfjs-dist 依赖进 markdown package.json |
+| #492 markdown 公式粘贴保纯文本 | 干净 pick（sheet-focus.ts 新件+sheets App 导入并集） |
+| #491 Windows 资源管理器新建菜单 | 干净 pick+品牌：shell-new.test.ts @genoffice→@chatoffice；installer.nsh GenOffice* NSIS 内部宏名沿文件既有约定保留（内部标识符豁免）；blank 模板三件+生成工具照收 |
+| #472 markdown 行内代码周围格式化 | 干净 pick（@tiptap/extension-code 3.31.0 pin 与本地一致） |
+| #493 updater 提示与安装 opt-in | **干净叠加**（本地 updater.ts 与上游同构——site-sync 为独立模块不碰此文件；本地三处差异 @chatoffice i18n/CHATOFFICE_UPDATE_URL env/本地 releases URL 全保；41 测试绿） |
+| #474 docs 中西文分字体设置（47 文件巨件） | **分域重实现**：docx-engine font-settings.ts/previewFontSettings/DefaultFonts 全收（patch.ts styleDeletes 并集+条件合一）；doc-dirty/styles.css/ribbon-format-state（fontEastAsia/fontLatin）自动合入；App.tsx 五冲突=导入并集/fileCtx 并集（styleDeletes+defaultFonts+settleFontSettings）/onFontSettings 回调全收/**aiDocExtras 块沿"unwired locally"裁定不接线（lint 死代码移除，watermark set 本地文本模型降级注释）**/DockShell 保本地+Ribbon 补 onFontSettings+docDefaults props；Ribbon.tsx 三冲突=导入并集（cssFontFamily 后清）/fontScope+busy state 收/渲染保本地 HomeTab；**home-tab.tsx 手工重实现双槽字体 UI**：单 combobox→['font','fontAscii'] 双槽循环（rb-font-slot-label+data-font-slot+ribbonFontMixed 占位）+作用域选择行（selection/defaults/style:<id> 下拉）+Ribbon 传 fontScope/setFontScope/busy/onFontSettings/styles 六 props；i18n ribbon shard 8 新键×20 语言自动合入 |
+| 门禁 | **typecheck 全工作区 0 错误**（两轮修复：headings 品牌导入/ai-search 测试命名/pdf RedactionLayer 首用点补 props）；npm install lock 重生成一致（3 行字母序+版本对齐）；lint 新增 error 清零（余 3 个 wordRangeAtCaret/findFocusInput/stripGeomSig 为 main 存量基线实证）；品牌 grep 新文件零残留（slides e2e 注释 GenOffice→ChatOffice 补洗；豁免命中=installer.nsh NSIS 内部名基线+LEGACY_PROFILE_ID+genspark.ai）；全量测试见下 |
+
+**本轮新坑**：①**cherry-pick 连发易漏单**——批2 连 pick 时 #516 被跳过，靠"38 sha 对账脚本"（subject 逐字 grep）在门禁前揪出补 pick，**每轮终检必须跑对账脚本**；②上游改已重命名文件（gsk.ts→chatoffice.ts）时 pick 跟随重命名但**新增测试用例仍写上游符号名**——typecheck 是唯一可靠探测器；③Pick<StyleInfo,...> 类型不对称的报错根因可能是**新增文件 import @genoffice 品牌残留**（模块解析失败致类型退化），先查 import 再查类型；④pdf App 有**两处 RedactionLayer 用点**（缩略图+主视图），上游只改一处时另一处靠 tsc required-prop 报错补齐；⑤测试读源文件断言 UI 结构（direction.test.ts 盯 Ribbon.tsx）在组件提取后需改编到新文件。
 
 ### 第十一轮增量（2026-09-18 下午，5b6dfbf..316ded6：9 提交，施工于 sync/upstream-20260918b 分支，merge=6adda5db）
 
