@@ -2,6 +2,9 @@ import type { AgentToolCall } from '@chatoffice/agent-core'
 
 // ---- streaming (SSE line splitting shared by all providers) ----
 
+/** Max buffered SSE line: a gateway sending GB without newline would OOM main. */
+export const MAX_SSE_LINE_BYTES = 4 * 1024 * 1024
+
 export async function* sseLines(
   body: AsyncIterable<Uint8Array> | ReadableStream<Uint8Array>,
   onBytes?: () => void,
@@ -16,6 +19,11 @@ export async function* sseLines(
       if (done) break
       onBytes?.()
       buffer += decoder.decode(value, { stream: true })
+      if (buffer.length > MAX_SSE_LINE_BYTES) {
+        throw new Error(
+          `SSE line exceeded buffer limit (${buffer.length} chars, cap ${MAX_SSE_LINE_BYTES}); the gateway sent a line without newline.`,
+        )
+      }
       const lines = buffer.split('\n')
       buffer = lines.pop() ?? ''
       for (const line of lines) yield line
