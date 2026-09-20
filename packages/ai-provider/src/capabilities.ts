@@ -105,6 +105,14 @@ export const IMAGE_GEN_VENDOR_IDS = new Set([
   'aliyun-bailian',
   'recraft',
   'chatoffice',
+  // any OpenAI-compatible gateway: generateViaOpenAiImages is protocol-level
+  // ({base}/images/generations) and agnes/new-api-style hosts answer it —
+  // gated per profile below, where the host actually speaks the dialect
+  'openai-compatible',
+  'oneapi',
+  'new-api',
+  'gpustack',
+  'lm-studio',
 ])
 /** Must stay in sync with the adapters registered in media-jobs.ts — a
  * vendor listed here without a wired adapter would promise what runMediaJob
