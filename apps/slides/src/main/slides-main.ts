@@ -79,6 +79,13 @@ import {
   type PasteCascade,
 } from './paste-cascade'
 import {
+  ELEMENT_CLIPBOARD_FORMAT,
+  canWriteElementClipboardImage,
+  elementClipboardMarkerMatches,
+  isElementClipboardToken,
+  writeElementClipboardImage,
+} from './element-clipboard'
+import {
   copyElementData,
   findGroupChild,
   patchBodyPrAutofit,
@@ -414,7 +421,12 @@ function trackSlidesWebContents(wc: WebContents): void {
 }
 
 // ── In-app element clipboard (app-wide, so elements copied in one deck paste into any other open deck; the cascade decides the paste offset) ─
-let elementClipboard: { items: ElementClipboardItem[]; cascade: PasteCascade } | null = null
+let elementClipboard: {
+  items: ElementClipboardItem[]
+  cascade: PasteCascade
+  token: string
+  senderId: number
+} | null = null
 
 /** Shell hook: a view opened a file (including ⌘O inside a tab) — used to update tab titles and de-duplicate paths */
 let slidesOpenedHook: ((wc: WebContents, path: string) => void) | null = null
@@ -3304,7 +3316,7 @@ export function registerSlidesIpc(): void {
 
   ipcMain.handle('slides:clipboard-external', () => {
     if (slideClipboard && clipboardMarker('io.chatoffice.slides.slide')) return { kind: 'slide' }
-    if (elementClipboard && clipboardMarker('io.chatoffice.slides.elements'))
+    if (elementClipboard && elementClipboardMarkerMatches(elementClipboard.token))
       return { kind: 'internal' }
     const img = clipboard.readImage()
     if (!img.isEmpty()) return { kind: 'image', base64: img.toPNG().toString('base64'), ext: 'png' }
@@ -3316,7 +3328,7 @@ export function registerSlidesIpc(): void {
   // Menu-enable probe: is there anything a paste would act on? (no image decode)
   ipcMain.handle('slides:clipboard-probe', () => {
     if (slideClipboard && clipboardMarker('io.chatoffice.slides.slide')) return true
-    if (elementClipboard && clipboardMarker('io.chatoffice.slides.elements')) return true
+    if (elementClipboard && elementClipboardMarkerMatches(elementClipboard.token)) return true
     if (clipboard.availableFormats().some((f) => f.startsWith('image/'))) return true
     return clipboard.readText().trim().length > 0
   })
@@ -3331,14 +3343,22 @@ export function registerSlidesIpc(): void {
       .filter((el): el is NonNullable<typeof el> => !!el)
       .map((el) => copyElementData(session.opened, slide, el))
     if (items.length) {
+      const token = isElementClipboardToken(op.clipboardToken) ? op.clipboardToken : randomUUID()
       elementClipboard = {
         items,
         cascade: newPasteCascade(op.cut ? null : pageKey(e.sender.id, op.slideIndex)),
+        token,
+        senderId: e.sender.id,
       }
       // Write our marker to the OS clipboard: an external copy overwrites it, so at paste time it tells whether internal or external is newer
-      clipboard.writeBuffer('io.chatoffice.slides.elements', Buffer.from('1'))
+      clipboard.writeBuffer(ELEMENT_CLIPBOARD_FORMAT, Buffer.from(token))
     }
     return items.length
+  })
+
+  ipcMain.handle('slides:copy-elements-image', (e, clipboardToken: string, pngBase64: string) => {
+    if (!canWriteElementClipboardImage(elementClipboard, e.sender.id, clipboardToken)) return false
+    return writeElementClipboardImage(clipboardToken, pngBase64)
   })
 
   ipcMain.handle('slides:paste-elements', (e, op: PasteElementsOp) => {
