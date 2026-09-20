@@ -4961,8 +4961,14 @@ function registerTabsIpc(): void {
     tabManager?.setShellModalOpen(open === true)
   })
   ipcMain.handle(TABS_CHANNELS.list, () => tabManager?.list() ?? [])
-  ipcMain.handle(TABS_CHANNELS.activate, (_event, id: string) => tabManager?.activateTab(id))
-  ipcMain.handle(TABS_CHANNELS.close, (_event, id: string) => tabManager?.closeTab(id))
+  ipcMain.handle(TABS_CHANNELS.activate, (_event, id: unknown) => {
+    if (typeof id !== 'string' || !id) return
+    tabManager?.activateTab(id)
+  })
+  ipcMain.handle(TABS_CHANNELS.close, (_event, id: unknown) => {
+    if (typeof id !== 'string' || !id) return
+    tabManager?.closeTab(id)
+  })
   ipcMain.handle(TABS_CHANNELS.reorder, (_event, id: string, toIndex: number) => {
     if (typeof id === 'string' && Number.isInteger(toIndex)) tabManager?.reorderTab(id, toIndex)
   })
