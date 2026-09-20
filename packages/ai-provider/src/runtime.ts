@@ -21,6 +21,7 @@ import { streamResolved, AiCreditsError, type StreamCallbacks } from './stream'
 import { AiTimeoutError } from './watchdog'
 import { IMAGE_GEN_VENDOR_IDS, VIDEO_GEN_VENDOR_IDS, maxOutputTokensFor } from './capabilities'
 import { clampMaxOutputTokens } from './providers'
+import { inferModelType } from './model-type'
 import { imageParamSpec, videoParamSpec, type MediaParamSpec } from './media-params'
 import type {
   AiChatResponse,
@@ -31,6 +32,7 @@ import type {
   AiStreamRequestV2,
   ChatOfficeAccountStatus,
 } from './types'
+import type { AgentMessage } from '@chatoffice/agent-core'
 
 /**
  * Backend runtime shared by the Electron mains and the BFF: one place that
@@ -203,6 +205,63 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     return resolveModelCall(settings, selection, key)
   }
 
+  /** the last user message's text — the image prompt when the current model
+   * is an image-generation model (AgentMessage wire shape: role 'user' + text) */
+  function lastUserPrompt(messages: AgentMessage[]): string {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i]
+      if (m.role === 'user' && m.text.trim()) return m.text.trim()
+    }
+    return ''
+  }
+
+  /** image-generation model picked as the current model: generate an image
+   * from the user's message and stream it back as a markdown image (the
+   * picker's 生图 chip promises exactly this). Pings keep the renderer's
+   * silence watchdog fed while the generation runs. */
+  const runImageModelChat = async (
+    call: ResolvedModelCall,
+    request: AiStreamRequestV2,
+    send: (chunk: AiStreamChunk) => void,
+  ): Promise<void> => {
+    const { requestId } = request
+    const prompt = lastUserPrompt(request.messages)
+    if (!prompt) {
+      send({
+        requestId,
+        type: 'error',
+        error: `${call.model} is an image-generation model — send a prompt to generate an image`,
+      })
+      return
+    }
+    send({ requestId, type: 'delta', text: `Generating an image with ${call.model}…\n\n` })
+    const pinger = setInterval(() => send({ requestId, type: 'ping' }), 4_000)
+    try {
+      const { urls } = await generateImageWithModel(call, {
+        prompt,
+        ...(request.signal ? { signal: request.signal } : {}),
+      })
+      const alt = prompt
+        .replace(/[\[\]\n\r]+/g, ' ')
+        .trim()
+        .slice(0, 80)
+      send({
+        requestId,
+        type: 'delta',
+        text: urls.map((u) => `![${alt}](${u})`).join('\n\n'),
+      })
+      send({ requestId, type: 'done' })
+    } catch (err) {
+      send({
+        requestId,
+        type: 'error',
+        error: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      clearInterval(pinger)
+    }
+  }
+
   /** the full stream loop: resolve, stream, map errors to typed chunks */
   const runStream = async (
     request: AiStreamRequestV2,
@@ -217,6 +276,29 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
       call = await resolveForRun(request.selection)
     } catch (err) {
       send({ requestId, type: 'error', error: err instanceof Error ? err.message : String(err) })
+      return
+    }
+    // type dispatch: the composer's model picker offers image/video/voice
+    // models as the current model, but only chat-shaped types speak
+    // /chat/completions — gateways reject the rest (agnes: "是 image 模型，
+    // 请使用 /v1/images/generations"). Image models generate inline; the
+    // other non-chat kinds fail with their type named instead of the wire 400.
+    const kind = inferModelType(call.model)
+    if (kind === 'image-generation') {
+      await runImageModelChat(call, request, send)
+      return
+    }
+    if (
+      kind !== 'chat' &&
+      kind !== 'vision' &&
+      kind !== 'video-understanding' &&
+      kind !== 'audio-understanding'
+    ) {
+      send({
+        requestId,
+        type: 'error',
+        error: `${call.model} is a ${kind} model and cannot answer chat — pick a chat model in the picker (image models generate images right here)`,
+      })
       return
     }
     if (request.maxTokens === undefined) {
@@ -280,6 +362,20 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   ): Promise<AiChatResponse> => {
     try {
       const call = await resolveForRun(selection)
+      // one-shot utilities (titles, summaries) need text out; a non-chat
+      // current model would just bounce off the gateway's chat endpoint
+      const kind = inferModelType(call.model)
+      if (
+        kind !== 'chat' &&
+        kind !== 'vision' &&
+        kind !== 'video-understanding' &&
+        kind !== 'audio-understanding'
+      ) {
+        return {
+          ok: false,
+          error: `${call.model} is a ${kind} model and cannot answer chat — switch the current model to a chat model`,
+        }
+      }
       return await chatResolved(call, system, user)
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }

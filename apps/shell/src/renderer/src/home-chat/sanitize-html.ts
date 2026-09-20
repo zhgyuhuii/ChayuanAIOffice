@@ -36,10 +36,13 @@ const ALLOWED_TAGS = new Set([
   'a',
   'span',
   'div',
+  // generated images streamed as markdown by the image models (data: URLs)
+  'img',
 ])
 
 const ALLOWED_ATTRS: Record<string, Set<string>> = {
   a: new Set(['href']),
+  img: new Set(['src', 'alt']),
   td: new Set(['colspan', 'rowspan']),
   th: new Set(['colspan', 'rowspan']),
 }
@@ -66,6 +69,10 @@ function sanitizeNode(node: Node, doc: Document): Node | null {
       if (tag === 'a' && attr.name.toLowerCase() === 'href') {
         const href = attr.value.trim()
         if (!/^https?:\/\//i.test(href)) continue
+      }
+      if (tag === 'img' && attr.name.toLowerCase() === 'src') {
+        const src = attr.value.trim()
+        if (!/^(data:image\/[a-z+.-]+;base64,|https?:\/\/)/i.test(src)) continue
       }
       out.setAttribute(attr.name, attr.value)
     }

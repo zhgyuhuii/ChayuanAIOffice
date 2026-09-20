@@ -3355,6 +3355,14 @@ body.sidebar-resizing {
   word-break: break-word;
 }
 
+/* generated images streamed by image models (markdown data: URLs) */
+.chat-md img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 0.4em 0;
+}
+
 .chat-md > :first-child {
   margin-top: 0;
 }

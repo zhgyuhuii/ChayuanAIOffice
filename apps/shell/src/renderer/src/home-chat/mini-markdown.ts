@@ -9,12 +9,18 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
-/** inline: `code`, **bold**, *italic*, [text](url) */
+/** inline: `code`, **bold**, *italic*, [text](url), ![alt](image url) */
 function inline(text: string): string {
   let out = escapeHtml(text)
   out = out.replace(/`([^`\n]+)`/g, '<code>$1</code>')
   out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
   out = out.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+  // images before links: data:image (generated images streamed by the image
+  // models; CSP allows img data:) and plain http(s) only
+  out = out.replace(
+    /!\[([^\]]*)\]\((data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+|https?:\/\/[^)\s]+)\)/g,
+    '<img src="$2" alt="$1">',
+  )
   out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2">$1</a>')
   return out
 }
