@@ -39,6 +39,13 @@ chatoffice media photo.jpg --ask "What text is in this picture?" --json
 chatoffice docs read report.docx [--range 0-9] [--html] [--full] [--comments] [--revisions] [--header-footer] --json   # blocks (--full: whole text), comment threads, tracked changes, header/footer text
 chatoffice docs apply report.docx --ops ops.json [--dry-run]           # apply_ops entries + insert_content / replace_blocks / insert_image / insert_chart / edit_chart / set_header_footer / reply_comment / resolve_comment
 chatoffice guide docs                                                   # op signatures + restricted-HTML rules
+chatoffice selection report.docx --json   # what the user has selected in the editor showing the file
+chatoffice skill list   # coding agents found on this machine and the skill version each has
+chatoffice skill install --dir ./skills --force   # copy the bundled skill into a skills directory
+chatoffice install-cli   # put chatoffice on the PATH
+chatoffice mcp --http 3000 [--host 127.0.0.1] [--token secret]   # Streamable HTTP for clients on other machines; omit --http for stdio
+chatoffice render page.pdf --out shots/ --grid 3x2 --tile 900 --pad 12   # contact sheet: a grid of page thumbnails (--cols 3: columns); --el <id>: one element per shot (docx/pptx)
+chatoffice create --type xlsx --from data.csv --header --decimal ,   # row 1 = header (AutoFilter + freeze); --decimal: the decimal separator the csv uses
 ```
 
 Word and Markdown commands run the docs and markdown editors under jsdom (installed once per process, loaded lazily). Those modules are imported from the app renderers by relative path until they move into packages of their own.
