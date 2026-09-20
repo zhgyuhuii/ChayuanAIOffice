@@ -10,6 +10,7 @@ import {
   sseErrorText,
   sseLines,
   throwIfCreditsNotice,
+  throwIfToolJsonOverBudget,
   type StreamCallbacks,
 } from './shared'
 
@@ -220,7 +221,10 @@ async function anthropicTurn(
         cb.onDelta(event.delta.text)
       } else if (event.delta?.type === 'input_json_delta') {
         const pending = pendingTools.get(event.index ?? 0)
-        if (pending) pending.json += event.delta.partial_json ?? ''
+        if (pending) {
+          pending.json += event.delta.partial_json ?? ''
+          throwIfToolJsonOverBudget(pending.json.length, 'anthropic')
+        }
       }
     } else if (event.type === 'content_block_stop') {
       const pending = pendingTools.get(event.index ?? 0)

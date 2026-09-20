@@ -163,6 +163,18 @@ describe('parseChatOfficeImageSearch', () => {
     const images = parseChatOfficeImageSearch(raw, 8)
     expect(images.map((i) => i.title)).toEqual(['ok'])
   })
+
+  it('keeps benign images whose path or query merely mentions a stock host', () => {
+    const raw = {
+      data: [
+        { image_url: 'https://cdn.example.com/shutterstock-review.png', title: 'review' },
+        { image_url: 'https://img.example.com/a.jpg?ref=shutterstock', title: 'query' },
+        { image_url: 'https://media.gettyimages.com/x.jpg', title: 'blocked' },
+      ],
+    }
+    const images = parseChatOfficeImageSearch(raw, 8)
+    expect(images.map((i) => i.title)).toEqual(['review', 'query'])
+  })
 })
 
 describe('parseChatOfficePastProjects', () => {

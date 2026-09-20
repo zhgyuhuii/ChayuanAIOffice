@@ -25,6 +25,37 @@ function collector() {
   }
 }
 
+function streamingToolArguments(
+  fragmentLength: number,
+  maxFragments: number,
+  makeLine: (fragment: string) => string,
+  firstLines: string[] = [],
+) {
+  let fragments = 0
+  const encoder = new TextEncoder()
+  const enqueue = (controller: ReadableStreamDefaultController<Uint8Array>) => {
+    if (fragments >= maxFragments) return
+    const fragment = 'x'.repeat(fragmentLength)
+    controller.enqueue(encoder.encode(`${makeLine(fragment)}\n`))
+    fragments += 1
+  }
+  return {
+    body: new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const line of firstLines) controller.enqueue(encoder.encode(line))
+        enqueue(controller)
+      },
+      pull(controller) {
+        while ((controller.desiredSize ?? 0) > 0 && fragments < maxFragments) enqueue(controller)
+        if (fragments >= maxFragments) controller.close()
+      },
+    }),
+    get fragments() {
+      return fragments
+    },
+  }
+}
+
 describe('sseLines', () => {
   it('splits a stream into lines, including a trailing line with no newline', async () => {
     const encoder = new TextEncoder()
@@ -203,6 +234,44 @@ describe('streamForProvider: anthropic', () => {
     )
     expect(deltas.join('')).toBe('hello world')
     expect(toolCalls).toEqual([{ id: 't1', name: 'do_thing', input: { a: 1 } }])
+  })
+
+  it('aborts when streamed tool arguments exceed the per-tool buffer limit', async () => {
+    const { body, fragments } = streamingToolArguments(
+      1024,
+      10_000,
+      (fragment) =>
+        `data: ${JSON.stringify({
+          type: 'content_block_delta',
+          index: 0,
+          delta: { type: 'input_json_delta', partial_json: fragment },
+        })}`,
+      [
+        `data: ${JSON.stringify({
+          type: 'content_block_start',
+          index: 0,
+          content_block: { type: 'tool_use', id: 't1', name: 'do_thing' },
+        })}\n`,
+      ],
+    )
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(body)))
+    const onDelta = vi.fn()
+    const onToolCall = vi.fn()
+    const { cb } = collector()
+    const run = streamForProvider(
+      'anthropic',
+      { apiKey: 'k', model: 'claude-sonnet-5' },
+      'sys',
+      [],
+      [],
+      100,
+      { ...cb, onDelta, onToolCall },
+    )
+
+    await expect(run).rejects.toThrow(/Tool call arguments exceeded the .* buffer limit/)
+    expect(fragments).toBeLessThan(10_000)
+    expect(onDelta).not.toHaveBeenCalled()
+    expect(onToolCall).not.toHaveBeenCalled()
   })
 
   it('repairs unescaped quotes inside tool input string values', async () => {
@@ -581,6 +650,43 @@ describe('streamForProvider: openai-compatible', () => {
     )
     expect(deltas.join('')).toBe('partial ')
     expect(toolCalls).toEqual([{ id: 'c1', name: 'replace', input: { x: 1 } }])
+  })
+
+  it('aborts when streamed tool arguments exceed the per-tool buffer limit', async () => {
+    const { body, fragments } = streamingToolArguments(
+      1024,
+      10_000,
+      (fragment) =>
+        `data: ${JSON.stringify({
+          choices: [
+            {
+              delta: {
+                tool_calls: [
+                  { index: 0, id: 'c1', function: { name: 'do_thing', arguments: fragment } },
+                ],
+              },
+            },
+          ],
+        })}`,
+    )
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(body)))
+    const onDelta = vi.fn()
+    const onToolCall = vi.fn()
+    const { cb } = collector()
+    const run = streamForProvider(
+      'openai',
+      { apiKey: 'k', model: 'gpt-4.1-mini' },
+      'sys',
+      [],
+      [],
+      100,
+      { ...cb, onDelta, onToolCall },
+    )
+
+    await expect(run).rejects.toThrow(/Tool call arguments exceeded the .* buffer limit/)
+    expect(fragments).toBeLessThan(10_000)
+    expect(onDelta).not.toHaveBeenCalled()
+    expect(onToolCall).not.toHaveBeenCalled()
   })
 
   it('tolerates servers that resend the full tool name on every delta', async () => {

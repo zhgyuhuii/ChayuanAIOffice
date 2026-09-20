@@ -30,6 +30,40 @@ const textOp = (target: unknown) => ({
 })
 
 describe('executor rejections', () => {
+  it('rejects non-finite and negative rect dimensions for insert operations', () => {
+    const invalidOffsets = [
+      { x: 0, y: 0, cx: NaN, cy: 100 },
+      { x: 0, y: 0, cx: Infinity, cy: 100 },
+      { x: 0, y: 0, cx: -1, cy: 100 },
+      { x: 0, y: 0, cx: 100, cy: -1 },
+    ]
+
+    for (const offset of invalidOffsets) {
+      const r = runTxn(opened, {
+        ops: [{ op: 'addElement', target: { slide: 0 }, offset, kind: 'textbox' }],
+      })
+      expect(r.applied).toBe(false)
+      expect(r.failures).toHaveLength(1)
+      expect(r.failures![0]!.error).toMatch(/offset\.(cx|cy)/)
+      expect(r.failures![0]!.error).toMatch(/finite number|>= 0/)
+    }
+  })
+
+  it('accepts finite, non-negative rect dimensions for insert operations', () => {
+    const r = runTxn(opened, {
+      ops: [
+        {
+          op: 'addElement',
+          target: { slide: 0 },
+          offset: { x: 0, y: 0, cx: 100, cy: 100 },
+          kind: 'textbox',
+        },
+      ],
+    })
+    expect(r.applied).toBe(true)
+    expect(r.records).toHaveLength(1)
+  })
+
   it('rejects an unknown op with the supported-ops vocabulary', () => {
     const r = runTxn(opened, { ops: [{ op: 'sparkle' }] })
     expect(r.applied).toBe(false)
