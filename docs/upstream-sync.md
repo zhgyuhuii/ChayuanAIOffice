@@ -17,7 +17,7 @@
 | 上游 | `/Users/zyh/work/genoffice`（origin `git@github.com:genspark-ai/genoffice.git`） |
 | 历史关系 | **无共同祖先**：本仓 `8d108c3` 为整树导入（2026-08-30），禁止一次性 merge（空树基准 → 两千个 add/add 冲突） |
 | 目标 | 全部拉齐到上游 HEAD `6d16796`（2026-09-07），本地全部功能改动保持不变 |
-| 状态 | **第十三轮完成（2026-09-20，终点 ba123b3，分支 sync/upstream-20260920b）**；历史轮次见 §5 进度表与各轮小节 |
+| 状态 | **第十四轮完成（2026-09-20，终点 f5247d3，分支 sync/upstream-20260920c）**；历史轮次见 §5 进度表与各轮小节 |
 
 ## 2. 基准定位（调研结论，已核实）
 
@@ -108,7 +108,16 @@
 
 **⚠️ 第八轮施工中（2026-09-16 深夜，未完成未合并）**：上游 `f4d8da2..09485f8`（15 提交：MCP×4+9-16 快照 525 文件+pptx 系列×5+小修）已全部 pick 到 `sync/upstream-20260916` 分支（已推 origin，含冲突裁决+品牌映射+动画引擎超集收敛，pptx-engine 1018/docs 2541 测试绿）。合并重做于 `merge-r8-wip` 分支（已推 origin）：merge 本体冲突仅 shell index/preload 导入并集×2 已解+pdf-main map 语义修复+pdf/markdown strings 按干净配方重建（pristine+品牌+本地键，锚=节 opener 后）。**剩余**：pdf LangDicts 节键集差×1+sheets workbook-ops(13)/ExcelShell(3)/save-pipeline(1) 等~30 类型错误收敛+slides/markdown 数个测试适配→全量门禁→合 main。**main 保持 310596b0 绿基线**（并行 WIP Home/strings 两文件在工作树）。新知：strings 断裂正解=main 绿版为基底+按节织入 sync 独有键（锚=节 opener 后；捕获须剥尾）；三方 merge-file+「theirs+品牌重放+HEAD 键补回」配方已在分支验证。
 
-**上次同步终点（下次续 pick 的起点）**：`ba123b3`（2026-09-20 第十三轮完成并入 main；下次 `git fetch upstream` 后从 `ba123b3..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+**上次同步终点（下次续 pick 的起点）**：`f5247d3`（2026-09-20 第十四轮完成并入 main；下次 `git fetch upstream` 后从 `f5247d3..upstream/main` 增量续 pick，重放 §9/§9b 品牌映射与 §5 SOP）。
+
+### 第十四轮增量（2026-09-20 深夜，ba123b3..f5247d3：3 提交，施工于 sync/upstream-20260920c 分支；本地并行会话同期已推进 9 提交+85 文件 WIP）
+
+| 内容 | 结果 |
+|---|---|
+| #537 shell tab activate/close IPC id 校验/#538 pptx-ops setTableStyle borderWidthPt 非有限与超界拒绝/#540 ai-provider 共享流解析器 SSE 行缓冲封顶 | **三件全部零冲突干净 pick**（shell index.ts 本地重架构区但 #537 改点独立；随附三测试全收） |
+| 门禁 | 对账 3/3；品牌 grep 零新增；typecheck 三受影响工作区 0 错误（全链 exit 2 系并行会话未跟踪 WIP 文件（六端 media-skill.ts 引用未接线 agent-core 导出）所致，与本轮 pick 无关——本轮未触 docs）；pptx-ops 37/ai-provider 370/shell tabs 3 全绿；lint 零新增（newFileDir 未用为 main 存量同行号实证） |
+
+**本轮新坑**：**全链 typecheck 门禁在并行会话活跃期会误报**——stash 只保护已跟踪文件，未跟踪新文件（如 media-skill.ts 系列）留在树里被 tsc 的 include 捕获；收敛口径=按本轮 pick 触及的工作区逐个 tsc 验证（并记录并行 WIP 状态为豁免依据）。
 
 ### 第十三轮增量（2026-09-20 晚，229fbb8..ba123b3：8 提交，施工于 sync/upstream-20260920b 分支）
 
@@ -339,3 +348,12 @@
 | 日期 | 上游 sha | 争议点 | 用户裁定 |
 |---|---|---|---|
 | — | — | — | — |
+
+## 11. LOCAL 挂载台账（施工中追加）
+
+| 日期 | 基点 commit | 文件 | 挂载内容 |
+|---|---|---|---|
+| 2026-09-20 | 1bf9c1f9 | 六端 main（docs-main/sheets-main/slides ai-ipc/pdf-main/markdown-main/html-main） | `registerMediaIpc` 统一媒体通道注册（3 行块，LOCAL 标记） |
+| 2026-09-20 | 1bf9c1f9 | 七个 preload（六端 + shell homeApi） | 媒体桥 5 方法（mediaCapabilities/Image/Video/Understand/Asr/Tts，追加块，LOCAL 标记） |
+| 2026-09-20 | 1bf9c1f9 | 五个技能组装点（docs/slides/markdown/html AiPanel + sheets App） | `create*MediaSkill()` 一行挂载 |
+| — | — | 说明 | 全部实现位于新文件（packages/ai-provider 4、ai-host 1、agent-core 1、各端 media-skill 6、测试 2）；上游移动=增行，收敛条件：上游若原生引入同能力则本地件退役 |
