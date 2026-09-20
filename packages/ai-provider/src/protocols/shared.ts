@@ -36,6 +36,23 @@ export async function* sseLines(
   }
 }
 
+/**
+ * Per-tool streamed argument buffer cap: a provider streaming argument
+ * fragments forever (never finishing) would otherwise grow the pending
+ * tool-call buffer without bound. Throwing aborts the turn; sseLines
+ * cancels the underlying stream on the way out.
+ */
+export const MAX_TOOL_JSON_CHARS = 512_000
+
+export function throwIfToolJsonOverBudget(jsonLength: number, provider: string): void {
+  if (jsonLength > MAX_TOOL_JSON_CHARS) {
+    throw new Error(
+      `Tool call arguments exceeded the ${provider} buffer limit (${jsonLength} chars, cap ${MAX_TOOL_JSON_CHARS}); ` +
+        'the provider kept streaming argument fragments without finishing. Ask for the output in several smaller parts.',
+    )
+  }
+}
+
 export interface StreamCallbacks {
   onDelta: (text: string) => void
   onToolCall: (call: AgentToolCall) => void
