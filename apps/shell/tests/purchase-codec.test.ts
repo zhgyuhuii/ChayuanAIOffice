@@ -30,23 +30,25 @@ const KEY = '00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff'
 const FP_A = '0123456789abcdef'
 const FP_B = 'deadbeefcafebabe'
 
-// sign({ver:2,kind:0,modules:1<<10,value:365,issueDate:262,nonce:200}, FP_A, Buffer(KEY,'hex'))
-const OS_YEAR_A = '40G00-BD10V-434BC-JX24S-N11E3'
-// sign({ver:2,kind:0,modules:1<<10,value:90,issueDate:262,nonce:201}, FP_A, Buffer(KEY,'hex'))
-const OS_QUARTER_A = '40G00-2T10V-4HDW9-P528F-400V2'
-// sign({ver:2,kind:0,modules:1<<11,value:365,issueDate:262,nonce:202}, FP_B, Buffer(KEY,'hex'))
-const OFFICE_YEAR_B = '41000-BD10V-50PCY-73R10-QZP8$'
+// Production convention: ver=activeKeyId=1; modules>0xff auto-switches to the
+// v2 layout (25 chars). Vectors signed by the store signer.
+// sign({ver:1,kind:0,modules:1<<11,value:365,issueDate:262,nonce:200}, FP_A, Buffer(KEY,'hex'))
+const OS_YEAR_A = '21000-BD10V-43SGS-A1AW2-S64X~'
+// sign({ver:1,kind:0,modules:1<<11,value:90,issueDate:262,nonce:201}, FP_A, Buffer(KEY,'hex'))
+const OS_QUARTER_A = '21000-2T10V-4WQDJ-Q2ZKF-Z5SJ0'
+// sign({ver:1,kind:0,modules:1<<12,value:365,issueDate:262,nonce:202}, FP_B, Buffer(KEY,'hex'))
+const OFFICE_YEAR_B = '22000-BD10V-59HPB-RZ29Y-YK53S'
 // sign({ver:1,kind:0,modules:1<<1,value:30,issueDate:262,nonce:203}, FP_A, Buffer(KEY,'hex'))
 const CHAT_V1_A = '20807-G86SC-J6HRS-RCQFC-EDR1'
 
 describe('verifySerial (store signer vectors)', () => {
-  it('accepts a v2 OS annual serial for the matching machine, fields intact', () => {
+  it('accepts an OS annual serial (v2 layout, ver=1) for the matching machine, fields intact', () => {
     const r = verifySerial(OS_YEAR_A, FP_A, KEY)
     expect(r.valid).toBe(true)
-    expect(r.fields).toMatchObject({ ver: 2, kind: 0, modules: 1 << 10, value: 365, issueDate: 262, nonce: 200 })
+    expect(r.fields).toMatchObject({ ver: 1, kind: 0, modules: 1 << 11, value: 365, issueDate: 262, nonce: 200 })
   })
 
-  it('accepts a v2 OS quarterly serial with value=90', () => {
+  it('accepts an OS quarterly serial (v2 layout, ver=1) with value=90', () => {
     const r = verifySerial(OS_QUARTER_A, FP_A, KEY)
     expect(r.valid).toBe(true)
     expect(r.fields?.value).toBe(90)

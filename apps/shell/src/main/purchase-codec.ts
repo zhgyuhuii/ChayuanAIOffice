@@ -12,10 +12,12 @@ import { createHash, createHmac, timingSafeEqual } from 'node:crypto'
 
 /** Free period length: three months of total silence from first run (Q5). */
 export const FREE_PERIOD_MS = 90 * 86400_000
-/** Serial module bitmap bits continuing the store's module table (v2 header
- * carries 16 bits). Chayuan AI OS = bit 10, Chayuan AI Office = bit 11. */
-export const PRODUCT_BIT_OS = 1 << 10
-export const PRODUCT_BIT_OFFICE = 1 << 11
+/** Serial module bitmap bits — the store's modules table is authoritative:
+ * bit 10 is already taken by skillpack, so Chayuan AI OS = bit 11 and
+ * Chayuan AI Office = bit 12 (v2 header carries 16 bits; production signs
+ * ver=activeKeyId=1 with the v2 layout whenever modules > 0xff). */
+export const PRODUCT_BIT_OS = 1 << 11
+export const PRODUCT_BIT_OFFICE = 1 << 12
 
 const ENC = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
 const CHECK = ENC + '*~$=U'
