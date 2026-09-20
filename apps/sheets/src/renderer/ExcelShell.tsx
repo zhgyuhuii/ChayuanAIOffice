@@ -798,6 +798,7 @@ export function ExcelShell({
             dockChrome={dockChrome}
             settings={aiSettings}
             onRefreshSettings={onAiSettingsRefresh}
+            onInsertImage={onInsertPictureData}
             hasContent={sheetHasContent}
             chat={chat}
             {...(historicChat !== undefined ? { historicChat } : {})}

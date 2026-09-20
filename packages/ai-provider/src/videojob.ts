@@ -117,10 +117,18 @@ async function pollJob(
   }
   const status = (pickString(json, ['status', 'task_status', 'state']) ?? 'unknown').toLowerCase()
   const url = pickString(json, ['url', 'video_url', 'download_url'])
-  const err = json.error
-    ? String((json.error as Record<string, unknown>).message ?? json.error)
-    : undefined
-  return { status, url, error: err }
+  const rawError: unknown = json.error
+  const err =
+    typeof rawError === 'object' && rawError !== null
+      ? String((rawError as Record<string, unknown>).message ?? '')
+      : typeof rawError === 'string'
+        ? rawError
+        : undefined
+  return {
+    status,
+    ...(url !== undefined ? { url } : {}),
+    ...(err !== undefined && err !== '' ? { error: err } : {}),
+  }
 }
 
 async function fetchContentAsDataUrl(

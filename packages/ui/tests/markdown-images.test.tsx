@@ -6,7 +6,7 @@
  * Every editor AI panel (docs/sheets/slides/markdown/pdf/html) shares this
  * component, so generated images never flood the message box as raw base64.
  */
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, createElement } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { Markdown } from '../src/Markdown'
@@ -97,6 +97,27 @@ describe('Markdown images', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     })
     expect(host.querySelector('.ai-md-zoom')).toBeNull()
+  })
+
+  it('renders the insert chip only when the host wires onInsertImage, and calls it with the src', async () => {
+    const onInsertImage = vi.fn()
+    // no host hook → no chip
+    await render(createElement(Markdown, { text: '![g](data:image/png;base64,aW1n)' }))
+    expect(host.querySelector('.ai-md-img-insert')).toBeNull()
+    // host wired → chip fires with the image src
+    await render(
+      createElement(Markdown, {
+        text: '![g](data:image/png;base64,aW1n)',
+        onInsertImage,
+        insertImageLabel: '插入文档',
+      }),
+    )
+    const chip = host.querySelector('.ai-md-img-insert') as HTMLElement
+    expect(chip?.textContent).toBe('插入文档')
+    await act(async () => {
+      chip.click()
+    })
+    expect(onInsertImage).toHaveBeenCalledWith('data:image/png;base64,aW1n')
   })
 
   it('renders a ```video fence as an inline player for safe sources only', async () => {

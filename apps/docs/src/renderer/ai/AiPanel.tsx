@@ -75,6 +75,7 @@ import fileVoiceIcon from '../assets/file-voice.png'
 import fileDocumentIcon from '../assets/file-document.png'
 import fileGeneralIcon from '../assets/file-general.png'
 import { IconNewChat } from '../components/icons'
+import { insertImageFromDataUrl } from '../components/ribbon-tabs'
 
 // 惰性加载:模型设置页(含厂商 logo 组)只在打开时拉取,不进启动图
 const ModelSettingsPage = lazy(() =>
@@ -1337,7 +1338,18 @@ export function AiPanel({
                 )}
                 {entry.text && (
                   <div dir="auto">
-                    <Markdown text={entry.text} nav={docNav} />
+                    <Markdown
+                      text={entry.text}
+                      nav={docNav}
+                      onInsertImage={(src) =>
+                        void insertImageFromDataUrl(
+                          editorRef.current,
+                          src,
+                          lang.startsWith('zh') ? 'AI 生成图片' : 'AI image',
+                        )
+                      }
+                      insertImageLabel={lang.startsWith('zh') ? '插入文档' : 'Insert'}
+                    />
                   </div>
                 )}
               </div>
@@ -1424,6 +1436,14 @@ export function AiPanel({
                     nav={docNav}
                     citations={entry.kbCitations}
                     onCitationClick={setKbCiteView}
+                    onInsertImage={(src) =>
+                      void insertImageFromDataUrl(
+                        editorRef.current,
+                        src,
+                        lang.startsWith('zh') ? 'AI 生成图片' : 'AI image',
+                      )
+                    }
+                    insertImageLabel={lang.startsWith('zh') ? '插入文档' : 'Insert'}
                   />
                 </div>
               ) : (

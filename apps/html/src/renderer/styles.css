@@ -784,6 +784,10 @@ html.chatoffice-popover-open .ribbon-tabs {
 }
 
 /* generated images streamed by image models: small thumbnail … */
+.ai-md-img-wrap {
+  display: inline-block;
+  position: relative;
+}
 .ai-md-img {
   max-width: 220px;
   max-height: 150px;
@@ -791,6 +795,23 @@ html.chatoffice-popover-open .ribbon-tabs {
   margin: 4px 0;
   display: block;
   cursor: zoom-in;
+}
+/* push the picture into the hosting document (editor panels wire the action) */
+.ai-md-img-insert {
+  position: absolute;
+  right: 6px;
+  bottom: 10px;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
+  opacity: 0.85;
+}
+.ai-md-img-insert:hover {
+  opacity: 1;
 }
 /* … click opens a plain full-screen lightbox (click backdrop / Esc closes) */
 .ai-md-zoom {

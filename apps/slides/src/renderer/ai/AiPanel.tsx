@@ -543,6 +543,36 @@ export function AiPanel({
   onBeforeRunRef.current = onBeforeRun
   const onPathChangeRef = useRef(onPathChange)
   onPathChangeRef.current = onPathChange
+
+  /** push a chat-generated picture onto the current slide: centered at 70%
+   * canvas width (natural aspect preserved), via the same IPC the skill's
+   * insert_web_image tool uses (base64 payload, no network fetch) */
+  const insertGeneratedImage = async (src: string): Promise<void> => {
+    const m = /^data:image\/(png|jpeg|jpg|gif);base64,(.+)$/s.exec(src)
+    if (!m) return
+    const ext = m[1] === 'jpg' ? 'jpg' : m[1]
+    const base64 = m[2]
+    const natural = await new Promise<{ w: number; h: number }>((resolve) => {
+      const img = new Image()
+      img.onload = () => resolve({ w: img.naturalWidth || 1, h: img.naturalHeight || 1 })
+      img.onerror = () => resolve({ w: 1, h: 1 })
+      img.src = src
+    })
+    const wPx = Math.round(fitWidthPx * 0.7)
+    const hPx = Math.max(1, Math.round((wPx * natural.h) / natural.w))
+    const r = await window.slidesApi.insertImageUrl({
+      slideIndex: currentRef.current,
+      base64,
+      ext,
+      xPx: Math.max(0, Math.round((fitWidthPx - wPx) / 2)),
+      yPx: Math.round(fitWidthPx * (9 / 16) * 0.15),
+      wPx,
+      hPx,
+      fitWidthPx,
+    })
+    if (r?.slide) applySlideRef.current(currentRef.current, r.slide)
+  }
+
   const onDeckProgressRef = useRef(onDeckProgress)
   onDeckProgressRef.current = onDeckProgress
   // panel-local copy: the picker and the settings page refresh it without App state
@@ -2410,6 +2440,8 @@ export function AiPanel({
                     text={entry.text}
                     citations={entry.kbCitations}
                     onCitationClick={setKbCiteView}
+                    onInsertImage={(src) => void insertGeneratedImage(src)}
+                    insertImageLabel={lang.startsWith('zh') ? '插入幻灯片' : 'Insert'}
                   />
                 </div>
               ) : (

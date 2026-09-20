@@ -212,7 +212,8 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
   function lastUserPrompt(messages: AgentMessage[]): string {
     for (let i = messages.length - 1; i >= 0; i--) {
       const m = messages[i]
-      if (m.role === 'user' && m.text.trim()) return m.text.trim()
+      if (!m || m.role !== 'user') continue
+      if (m.text.trim()) return m.text.trim()
     }
     return ''
   }

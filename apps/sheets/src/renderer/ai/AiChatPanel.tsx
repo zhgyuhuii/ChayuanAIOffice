@@ -219,6 +219,7 @@ export function AiChatPanel({
   dockChrome,
   settings,
   onRefreshSettings,
+  onInsertImage,
   hasContent,
   chat,
   historicChat = [],
@@ -247,6 +248,8 @@ export function AiChatPanel({
   /** v2 settings view for the model picker; refreshed through onRefreshSettings */
   readonly settings?: AiSettingsV2 | null | undefined
   readonly onRefreshSettings?: (() => void | Promise<void>) | undefined
+  /** push a chat-generated picture into the workbook (floating image) */
+  readonly onInsertImage?: ((src: string) => void) | undefined
   /** the workbook has cells with content — empty workbooks get "build me a sheet" copy instead */
   readonly hasContent: boolean
   readonly chat: readonly AiChatMessage[]
@@ -511,7 +514,12 @@ export function AiChatPanel({
                 {entry.tools.length > 0 && <ToolChipList tools={entry.tools} />}
                 {entry.text && (
                   <div dir="auto">
-                    <Markdown text={entry.text} nav={citationNav} />
+                    <Markdown
+                      text={entry.text}
+                      nav={citationNav}
+                      onInsertImage={onInsertImage}
+                      insertImageLabel={lang.startsWith('zh') ? '插入表格' : 'Insert'}
+                    />
                   </div>
                 )}
               </div>
@@ -574,6 +582,8 @@ export function AiChatPanel({
                       nav={citationNav}
                       citations={entry.kbCitations}
                       onCitationClick={setKbCiteView}
+                      onInsertImage={onInsertImage}
+                      insertImageLabel={lang.startsWith('zh') ? '插入表格' : 'Insert'}
                     />
                   </div>
                 ) : (

@@ -880,6 +880,18 @@ export function AiPanel({
                       nav={docNav}
                       citations={entry.kbCitations}
                       onCitationClick={setKbCiteView}
+                      onInsertImage={(src) =>
+                        depsRef.current
+                          .getEditor()
+                          ?.chain()
+                          .focus()
+                          .setImage({
+                            src,
+                            alt: lang.startsWith('zh') ? 'AI 生成图片' : 'AI image',
+                          })
+                          .run()
+                      }
+                      insertImageLabel={lang.startsWith('zh') ? '插入文档' : 'Insert'}
                     />
                   </div>
                 )

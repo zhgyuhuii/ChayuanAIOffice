@@ -53,6 +53,7 @@ function renderInline(
   nav?: MarkdownNav,
   cite?: CiteContext,
   onZoomOpen?: (src: string) => void,
+  insert?: { run: (src: string) => void; label: string },
 ): ReactNode[] {
   const out: ReactNode[] = []
   let last = 0
@@ -94,7 +95,7 @@ function renderInline(
       const img = IMAGE_RE.exec(tok)
       const src = img?.[2] ?? ''
       if (img && IMAGE_SRC_RE.test(src)) {
-        out.push(
+        const node = (
           <img
             key={key++}
             className="ai-md-img"
@@ -102,8 +103,25 @@ function renderInline(
             alt={img[1] ?? ''}
             title={img[1] ?? ''}
             onClick={() => onZoomOpen?.(src)}
-          />,
+          />
         )
+        if (insert) {
+          out.push(
+            <span key={key++} className="ai-md-img-wrap">
+              {node}
+              <button
+                type="button"
+                className="ai-md-img-insert"
+                title={insert.label}
+                onClick={() => insert.run(src)}
+              >
+                {insert.label}
+              </button>
+            </span>,
+          )
+        } else {
+          out.push(node)
+        }
       } else {
         pushText(tok) // unsafe source stays literal
       }
@@ -273,16 +291,25 @@ export function Markdown({
   nav,
   citations,
   onCitationClick,
+  onInsertImage,
+  insertImageLabel,
 }: {
   text: string
   nav?: MarkdownNav
   citations?: readonly KbCitation[] | undefined
   onCitationClick?: ((citation: KbCitation) => void) | undefined
+  /** host hook: rendered as an action chip under each generated image so the
+   * picture can be pushed into the hosting document (editor panels only) */
+  onInsertImage?: ((src: string) => void) | undefined
+  insertImageLabel?: string | undefined
 }): React.JSX.Element {
   const cite: CiteContext | undefined =
     citations && citations.length > 0 && onCitationClick
       ? { citations, onCitationClick }
       : undefined
+  const insert: { run: (src: string) => void; label: string } | undefined = onInsertImage
+    ? { run: onInsertImage, label: insertImageLabel ?? '↧' }
+    : undefined
   // lightbox: one zoomed image at a time, no chrome — generated pictures are
   // data: URLs already in memory, so this stays cheap
   const [zoom, setZoom] = useState<string | null>(null)
@@ -301,13 +328,13 @@ export function Markdown({
         if (b.kind === 'h') {
           return (
             <p key={i} className="ai-md-h">
-              {renderInline(b.text, nav, cite, openZoom)}
+              {renderInline(b.text, nav, cite, openZoom, insert)}
             </p>
           )
         }
         if (b.kind === 'ul' || b.kind === 'ol') {
           const items = b.items.map((it, j) => (
-            <li key={j}>{renderInline(it, nav, cite, openZoom)}</li>
+            <li key={j}>{renderInline(it, nav, cite, openZoom, insert)}</li>
           ))
           return b.kind === 'ul' ? <ul key={i}>{items}</ul> : <ol key={i}>{items}</ol>
         }
@@ -336,7 +363,7 @@ export function Markdown({
                   <tr>
                     {b.head.map((c, j) => (
                       <th key={j} style={cellStyle(j)}>
-                        {renderInline(c, nav, cite, openZoom)}
+                        {renderInline(c, nav, cite, openZoom, insert)}
                       </th>
                     ))}
                   </tr>
@@ -346,7 +373,7 @@ export function Markdown({
                     <tr key={r}>
                       {row.map((c, j) => (
                         <td key={j} style={cellStyle(j)}>
-                          {renderInline(c, nav, cite, openZoom)}
+                          {renderInline(c, nav, cite, openZoom, insert)}
                         </td>
                       ))}
                     </tr>
@@ -361,7 +388,7 @@ export function Markdown({
             {b.lines.map((ln, j) => (
               <Fragment key={j}>
                 {j > 0 && <br />}
-                {renderInline(ln, nav, cite, openZoom)}
+                {renderInline(ln, nav, cite, openZoom, insert)}
               </Fragment>
             ))}
           </p>

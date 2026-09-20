@@ -1277,6 +1277,17 @@ export function AiPanel({
                       nav={docNav}
                       citations={entry.kbCitations}
                       onCitationClick={setKbCiteView}
+                      onInsertImage={(src) => {
+                        // append a standalone figure before </body>; the data URL
+                        // keeps the asset self-contained like the rest of the file
+                        const html = depsRef.current.access.getText()
+                        const figure = `\n<figure><img src="${src}" alt="${lang.startsWith('zh') ? 'AI 生成图片' : 'AI image'}"></figure>\n`
+                        const next = /<\/body\s*>/i.test(html)
+                          ? html.replace(/<\/body\s*>/i, `${figure}</body>`)
+                          : html + figure
+                        depsRef.current.access.replaceAll(next, 'ai-insert-image')
+                      }}
+                      insertImageLabel={lang.startsWith('zh') ? '插入页面' : 'Insert'}
                     />
                   </div>
                 )
