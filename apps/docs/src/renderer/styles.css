@@ -12061,6 +12061,7 @@ tr > .page-gap-cut {
   background: color-mix(in srgb, #2f6fed 12%, transparent);
   border-bottom: 2px solid #2f6fed;
   border-radius: 2px;
+}
 /* Both script slots remain visible while editing mixed-language text. */
 .rb-font-slot-label {
   font-size: 10px;
