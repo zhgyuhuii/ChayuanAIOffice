@@ -5,7 +5,7 @@ import { chatofficeAttributionHeaders, opencodeSessionHeaders } from '../provide
 import { modelEchoesReasoning } from '../registry'
 import { inferModelType } from '../model-type'
 import type { AiChatResponse, AiProviderConfig } from '../types'
-import { createStreamWatchdog, type StreamWatchdog } from '../watchdog'
+import { AI_CONNECT_TIMEOUT_MS, createStreamWatchdog, type StreamWatchdog } from '../watchdog'
 import {
   jsonBodyInsteadOfSse,
   parseToolInput,
@@ -166,7 +166,11 @@ export async function streamOpenAiCompatible(
   cb: StreamCallbacks,
   options: OpenAiRequestOptions = {},
 ): Promise<void> {
-  const wd = createStreamWatchdog(cb.signal)
+  // 本地回环引擎（察元本地模型）首 token 前 CPU prefill 可达数分钟（大
+  // system prompt 实测 >60s 才出响应头）——connect 预算放宽到 5 分钟；
+  // 云端网关响应头秒回，维持默认。
+  const localEngine = /\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/)/.test(baseUrl)
+  const wd = createStreamWatchdog(cb.signal, localEngine ? 300_000 : AI_CONNECT_TIMEOUT_MS)
   return wd.guard(() =>
     openAiCompatibleTurn(baseUrl, config, system, messages, tools, maxTokens, cb, wd, options),
   )
