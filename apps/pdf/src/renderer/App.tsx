@@ -7908,6 +7908,8 @@ export default function App() {
                                   pageWidth={size.width}
                                   pageHeight={size.height}
                                   marks={redactions.filter((mark) => mark.pageIndex === origIdx)}
+                                  markLabel={t('redact')}
+                                  onTooSmall={() => showNotice(t('redactHint'))}
                                   onCommit={(rect) =>
                                     setRedactions((prev) => [
                                       ...prev,
