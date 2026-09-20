@@ -452,7 +452,7 @@ export function InsertFunctionDialog({
       <div
         className={`format-cells-dialog insert-function-dialog${picked ? ' has-picked' : ''}`}
         role="dialog"
-        aria-label="Insert Function"
+        aria-label={t('appInsertFunction')}
         onClick={(event) => event.stopPropagation()}
       >
         <header>{t('dlgFnTitle', { target: destinationRef.current })}</header>
