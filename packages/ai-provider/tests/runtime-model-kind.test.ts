@@ -15,13 +15,19 @@ function makeSource(
   profiles: AiSettingsV2['profiles'],
   currentModel: AiSettingsV2['currentModel'],
 ) {
+  const writes: AiSettingsV2[] = []
+  let latest: AiSettingsV2 | null = null
   return {
     async read() {
-      return { version: 2 as const, profiles, currentModel }
+      return latest ?? { version: 2 as const, profiles, currentModel }
     },
-    async write() {},
+    async write(next: AiSettingsV2) {
+      writes.push(next)
+      latest = next
+    },
     subscribe: undefined,
-  } as AiSettingsSource
+    writes,
+  } as AiSettingsSource & { writes: AiSettingsV2[] }
 }
 
 const chatoffice = {
@@ -45,6 +51,11 @@ function agnesProfile(modelId: string) {
     enabled: true,
     models: [{ id: modelId }],
   }
+}
+
+/** a second agnes profile under a distinct id (resolver fallback targets) */
+function agnesProfile2(modelId: string) {
+  return { ...agnesProfile(modelId), id: 'agnes-ai', vendorId: 'agnes-ai' }
 }
 
 afterEach(() => {
@@ -247,5 +258,38 @@ describe('runtime model-kind dispatch', () => {
     expect(res.ok).toBe(false)
     expect(res.error).toContain('image-generation')
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('a non-chat current model survives the settings view and save (picker stays put)', async () => {
+    const source = makeSource([agnesProfile('agnes-image-2.5-flash')], undefined)
+    const runtime = createAiRuntime({ source, chatoffice, translate })
+    // the editors' pick flow: setCurrentModel then re-read the view — the old
+    // chat-only resolver bounced the pick back to the first chat model
+    await runtime.setCurrentModel({
+      profileId: 'openai-compatible',
+      modelId: 'agnes-image-2.5-flash',
+    })
+    const view = await runtime.getSettingsView()
+    expect(view.currentModel).toEqual({
+      profileId: 'openai-compatible',
+      modelId: 'agnes-image-2.5-flash',
+    })
+    // a full save (normalizeV2 pass) must not strip the non-chat selection
+    await runtime.saveSettings(view)
+    const after = await runtime.getSettingsView()
+    expect(after.currentModel).toEqual({
+      profileId: 'openai-compatible',
+      modelId: 'agnes-image-2.5-flash',
+    })
+  })
+
+  it('a stale selection still falls back to the first chat model', async () => {
+    const source = makeSource(
+      [agnesProfile('agnes-image-2.5-flash'), agnesProfile2('agnes-2.5-pro')],
+      { profileId: 'removed-profile', modelId: 'm1' },
+    )
+    const runtime = createAiRuntime({ source, chatoffice, translate })
+    const view = await runtime.getSettingsView()
+    expect(view.currentModel).toEqual({ profileId: 'agnes-ai', modelId: 'agnes-2.5-pro' })
   })
 })

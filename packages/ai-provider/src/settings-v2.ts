@@ -141,8 +141,25 @@ export function pickImageModel(settings: AiSettingsV2): AiModelSelection | undef
   return undefined
 }
 
-/** validate the stored selection; fall back to the first enabled chat model */
+/** the global current-model selection: ANY enabled model on an enabled profile
+ * counts — the composer pickers expose chat/image/video/voice kinds and the
+ * stream loop dispatches non-chat kinds itself. A stale selection falls back
+ * to the first enabled chat model (a fresh setup defaults to a talker; media
+ * models have their own imageModel/videoModel defaults). */
 export function resolveCurrentModel(settings: AiSettingsV2): AiModelSelection | undefined {
+  if (settings.currentModel) {
+    const profile = findProfile(settings, settings.currentModel.profileId)
+    const entry = profile?.models.find((m) => m.id === settings.currentModel!.modelId)
+    if (profile?.enabled && entry) return settings.currentModel
+  }
+  const first = enabledChatModels(settings)[0]
+  return first ? { profileId: first.profileId, modelId: first.modelId } : undefined
+}
+
+/** chat-only variant for paths that must land on a model able to answer chat
+ * regardless of what the user had picked: the signed-out chatoffice heal and
+ * the legacy-migration default */
+export function resolveChatCurrentModel(settings: AiSettingsV2): AiModelSelection | undefined {
   if (settings.currentModel) {
     const profile = findProfile(settings, settings.currentModel.profileId)
     const entry = profile?.models.find((m) => m.id === settings.currentModel!.modelId)
@@ -349,7 +366,7 @@ export function migrateSettingsV2(stored: StoredAiSettings | null | undefined): 
     if (stored.model) currentModel = { profileId: 'custom', modelId: stored.model }
   }
 
-  const fallback = currentModel ?? resolveCurrentModel({ version: 2, profiles })
+  const fallback = currentModel ?? resolveChatCurrentModel({ version: 2, profiles })
   return {
     version: 2,
     profiles,

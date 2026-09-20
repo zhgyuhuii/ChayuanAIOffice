@@ -11,6 +11,7 @@ import {
   isVideoGenModel,
   migrateSettingsV2,
   pickImageModel,
+  resolveChatCurrentModel,
   resolveCurrentModel,
   resolveModelCall,
   type ResolvedModelCall,
@@ -146,7 +147,7 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     // profile while signed out falls through to the first usable BYOK chat
     // model, so chat keeps working instead of erroring. The chatoffice error with its
     // inline sign-in button stays the guidance only when nothing else exists.
-    const current = resolveCurrentModel(settings)
+    const current = resolveChatCurrentModel(settings)
     if (current?.profileId === 'chatoffice' && !chatoffice.hasAuth()) {
       const fallback = enabledChatModels(settings).find((m) => {
         if (m.profileId === 'chatoffice') return false

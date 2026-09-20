@@ -36,6 +36,7 @@ export {
   defaultSettingsV2,
   enabledChatModels,
   pickImageModel,
+  resolveChatCurrentModel,
   resolveCurrentModel,
   resolveDefaultModel,
 } from './settings-v2'

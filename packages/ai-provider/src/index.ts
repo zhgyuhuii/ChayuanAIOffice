@@ -108,6 +108,7 @@ export {
   migrateSettingsV2,
   modelAcceptsImages,
   pickImageModel,
+  resolveChatCurrentModel,
   resolveCurrentModel,
   resolveModelCall,
 } from './settings-v2'
