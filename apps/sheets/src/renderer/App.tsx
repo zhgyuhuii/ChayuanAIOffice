@@ -14,6 +14,7 @@ const ChartDesignerModal = lazy(() =>
   import('@chatoffice/chart-kit/designer').then((m) => ({ default: m.ChartDesignerModal })),
 )
 import { pushBulkFillUndo } from './bulk-fill-undo'
+import { focusWorksheet } from './sheet-focus'
 import {
   activateFormulaClosure,
   applyDefinedNames,
@@ -5726,9 +5727,11 @@ export function App(): React.JSX.Element {
       const workbook = runtime.univerAPI.getActiveWorkbook()
       const worksheet = workbook?.getSheetBySheetId(sheetId)
       if (!workbook || !worksheet) return
-      if (worksheet.getSheetId() !== workbook.getActiveSheet()?.getSheetId()) {
-        workbook.setActiveSheet(worksheet)
-      }
+      focusWorksheet(worksheet, () => {
+        if (worksheet.getSheetId() !== workbook.getActiveSheet()?.getSheetId()) {
+          workbook.setActiveSheet(worksheet)
+        }
+      })
       if (address === undefined) return
       try {
         const { row, column } = parseAddress(address)
