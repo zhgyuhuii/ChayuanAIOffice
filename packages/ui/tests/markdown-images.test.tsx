@@ -52,7 +52,9 @@ describe('Markdown images', () => {
 
   it('keeps unsafe sources literal — data:text and javascript: never become img', async () => {
     await render(
-      createElement(Markdown, { text: '![x](data:text/html;base64,PGI+) ![y](javascript:alert(1))' }),
+      createElement(Markdown, {
+        text: '![x](data:text/html;base64,PGI+) ![y](javascript:alert(1))',
+      }),
     )
     expect(host.querySelector('img')).toBeNull()
     expect(host.textContent).toContain('data:text/html')
