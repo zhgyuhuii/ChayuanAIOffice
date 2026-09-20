@@ -8,7 +8,13 @@
  */
 import type { ReactNode, RefObject } from 'react'
 import type { Editor } from '@tiptap/core'
-import type { CustomNumberingLevel, DocDefaults, ThemeFonts } from '@chatoffice/docx-engine'
+import type {
+  CustomNumberingLevel,
+  DefaultFonts,
+  DocDefaults,
+  StyleInfo,
+  ThemeFonts,
+} from '@chatoffice/docx-engine'
 import { isSymbolFontFamily } from '@chatoffice/ui'
 import { useI18n } from '../i18n/locale'
 import type { CaseMode } from '../editor/case-transform'
@@ -89,6 +95,8 @@ export interface HomeTabProps {
   readonly styleGalleryRef: RefObject<HTMLDivElement | null>
   readonly docDefaults: DocDefaults | undefined
   readonly themeFonts: ThemeFonts | null
+  /** document styles, from ParsedDoc.styles (scope selector lists paragraph + character) */
+  readonly styles?: Map<string, StyleInfo>
   readonly showMarks: boolean
   readonly onShowMarks: (v: boolean) => void
   readonly onParagraphDialog?: () => void
@@ -104,7 +112,13 @@ export interface HomeTabProps {
   readonly clipboard: (action: 'cut' | 'copy' | 'paste') => Promise<void>
   readonly setParaAttr: (attrs: Record<string, unknown>) => void
   readonly setTextStyle: (patch: Record<string, unknown>) => void
-  readonly setFont: (name: string | null) => void
+  /** slot-aware font write: 'font' = East Asian rFonts slot, 'fontAscii' = Latin */
+  readonly setFont: (slot: 'font' | 'fontAscii', name: string) => void
+  /** target of font writes: 'selection' | 'defaults' | 'style:<styleId>' */
+  readonly fontScope: string
+  readonly setFontScope: (v: string) => void
+  readonly fontSettingsBusy: boolean
+  readonly onFontSettings?: (scope: string, patch: DefaultFonts) => Promise<void>
   readonly toggleList: (kind: 'bullet' | 'ordered') => void
   readonly clearList: () => void
   readonly applyListPreset: (levels: CustomNumberingLevel[]) => void
@@ -125,6 +139,11 @@ export function HomeTab({
   styleGalleryRef,
   docDefaults,
   themeFonts,
+  styles,
+  fontScope,
+  setFontScope,
+  fontSettingsBusy,
+  onFontSettings,
   showMarks,
   onShowMarks,
   onParagraphDialog,
@@ -154,7 +173,6 @@ export function HomeTab({
   const sub = fs.sub
   const ed = sub ?? editor
   const chain = () => (canEdit ? ed.chain().focus() : NOOP_CHAIN)
-  const currentFont = fs.fontFamily
   const currentSize = fs.fontSizePt
   const bodyFontName = docDefaults?.asciiFont?.trim() || themeFonts?.minor?.trim() || 'Calibri'
   const { families: systemFontFamilies, load: loadSystemFonts } = useSystemFontFamilies()
@@ -213,97 +231,125 @@ export function HomeTab({
           <div className="rb-row">
             {/* Editable combobox (free-typed input + full preset dropdown): real
                       documents use fonts and sizes outside any fixed list (GB/T 9704
-                      fonts, half sizes like 13.5pt) */}
-            <div className="rb-split-wrap">
-              <input
-                className="rb-select rb-font-family"
-                disabled={!canEdit}
-                key={`f:${currentFont}:${hasDoc}`}
-                defaultValue={currentFont}
-                placeholder={t('ribbonFontBodyNamed', { font: bodyFontName })}
-                data-tip={t('ribbonFontFamilyTip')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    fontCommitRef.current = true
-                    ;(e.target as HTMLInputElement).blur()
-                  }
-                }}
-                // focusing the input relocates the DOM selection into it,
-                // hiding the document highlight — the decoration keeps the
-                // target text visibly selected, like Word (r119)
-                onFocus={(e) => {
-                  e.currentTarget.select()
-                  setInactiveSelectionShown(ed, true)
-                }}
-                onBlur={(e) => {
-                  const committed = fontCommitRef.current
-                  fontCommitRef.current = false
-                  setInactiveSelectionShown(ed, false)
-                  const v = e.target.value.trim()
-                  // Enter always applies, even an unchanged name: over a
-                  // mixed-font selection the shown value is just the first
-                  // run's font, and committing it must normalize the rest
-                  // (r121). Plain click-away keeps the no-op guard.
-                  if (v !== currentFont) setFont(v || null)
-                  else if (committed && v) setFont(v)
-                }}
-              />
-              <button
-                className="rb-caret rb-combo-caret"
-                disabled={!canEdit}
-                data-tip={t('ribbonFontFamilyTip')}
-                aria-label={t('ribbonFontFamilyTip')}
-                onClick={() => {
-                  if (dropdown !== 'fontFamily') loadSystemFonts()
-                  setDropdown((v) => (v === 'fontFamily' ? null : 'fontFamily'))
-                }}
-              >
-                <IconCaret />
-              </button>
-              {dropdown === 'fontFamily' && (
-                <div data-rb-panel="" className="spacing-menu rb-font-family-menu">
+                      fonts, half sizes like 13.5pt). East Asian and Latin picks target
+                      only their own rFonts slot (Word never flattens the other one). */}
+            {(['font', 'fontAscii'] as const).map((slot) => {
+              const eastAsia = slot === 'font'
+              const fontLabel = t(eastAsia ? 'ribbonFontEastAsia' : 'ribbonFontLatin')
+              const slotBodyFontName = eastAsia
+                ? docDefaults?.eastAsiaFont || 'SimSun'
+                : docDefaults?.asciiFont || themeFonts?.minor || 'Calibri'
+              const style = fontScope.startsWith('style:')
+                ? styles?.get(fontScope.slice(6))?.display
+                : undefined
+              const currentFont =
+                fontScope === 'selection'
+                  ? eastAsia
+                    ? fs.fontEastAsia
+                    : fs.fontLatin
+                  : fontScope === 'defaults'
+                    ? eastAsia
+                      ? (docDefaults?.eastAsiaFont ?? '')
+                      : (docDefaults?.asciiFont ?? '')
+                    : eastAsia
+                      ? (style?.eastAsiaFont ??
+                        (style?.font !== style?.fontAscii ? style?.font : undefined) ??
+                        docDefaults?.eastAsiaFont ??
+                        '')
+                      : (style?.fontAscii ?? docDefaults?.asciiFont ?? '')
+              return (
+                <div className="rb-split-wrap" key={slot}>
+                  <span className="rb-font-slot-label">{fontLabel}</span>
+                  <input
+                    className="rb-select rb-font-family"
+                    disabled={!canEdit || fontSettingsBusy}
+                    key={`f:${fontScope}:${slot}:${currentFont}:${hasDoc}`}
+                    defaultValue={currentFont ?? ''}
+                    data-font-slot={slot}
+                    aria-label={fontLabel}
+                    placeholder={currentFont === null ? t('ribbonFontMixed') : fontLabel}
+                    data-tip={fontLabel}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        fontCommitRef.current = true
+                        ;(e.target as HTMLInputElement).blur()
+                      }
+                    }}
+                    // focusing the input relocates the DOM selection into it,
+                    // hiding the document highlight — the decoration keeps the
+                    // target text visibly selected, like Word (r119)
+                    onFocus={(e) => {
+                      e.currentTarget.select()
+                      setInactiveSelectionShown(ed, true)
+                    }}
+                    onBlur={(e) => {
+                      const committed = fontCommitRef.current
+                      fontCommitRef.current = false
+                      setInactiveSelectionShown(ed, false)
+                      const v = e.target.value.trim()
+                      // Enter applies to every selected run; click-away keeps the no-op guard.
+                      if (v && (v !== currentFont || committed)) setFont(slot, v)
+                      else e.target.value = currentFont ?? ''
+                    }}
+                  />
                   <button
-                    className={!currentFont ? 'active' : ''}
-                    style={{ fontFamily: cssFontFamily(bodyFontName) }}
-                    onClick={() => setFont(null)}
+                    className="rb-caret rb-combo-caret"
+                    disabled={!canEdit || fontSettingsBusy}
+                    data-tip={fontLabel}
+                    aria-label={fontLabel}
+                    onClick={() => {
+                      if (dropdown !== slot) loadSystemFonts()
+                      setDropdown((v) => (v === slot ? null : slot))
+                    }}
                   >
-                    {t('ribbonFontBodyNamed', { font: bodyFontName })}
+                    <IconCaret />
                   </button>
-                  {fontFamilies
-                    .filter((f) => f !== bodyFontName)
-                    .map((f) => (
+                  {dropdown === slot && (
+                    <div data-rb-panel="" className="spacing-menu rb-font-family-menu">
                       <button
-                        key={f}
-                        className={f === currentFont ? 'active' : ''}
-                        style={{ fontFamily: cssFontFamily(f) }}
-                        onClick={() => setFont(f)}
+                        className={!currentFont ? 'active' : ''}
+                        style={{ fontFamily: cssFontFamily(slotBodyFontName) }}
+                        onClick={() => setFont(slot, slotBodyFontName)}
                       >
-                        {f}
+                        {t('ribbonFontBodyNamed', { font: slotBodyFontName })}
                       </button>
-                    ))}
-                  {systemFontFamilies.length > 0 && (
-                    <>
-                      <div className="rb-menu-group-label">{t('ribbonFontsSystem')}</div>
-                      {systemFontFamilies
-                        .filter((f) => f !== bodyFontName)
+                      {fontFamilies
+                        .filter((f) => f !== slotBodyFontName)
                         .map((f) => (
                           <button
                             key={f}
                             className={f === currentFont ? 'active' : ''}
-                            // symbol fonts would render their own name as pictographs
-                            style={{
-                              fontFamily: isSymbolFontFamily(f) ? undefined : cssFontFamily(f),
-                            }}
-                            onClick={() => setFont(f)}
+                            style={{ fontFamily: cssFontFamily(f) }}
+                            onClick={() => setFont(slot, f)}
                           >
                             {f}
                           </button>
                         ))}
-                    </>
+                      {systemFontFamilies.length > 0 && (
+                        <>
+                          <div className="rb-menu-group-label">{t('ribbonFontsSystem')}</div>
+                          {systemFontFamilies
+                            .filter((f) => f !== slotBodyFontName)
+                            .map((f) => (
+                              <button
+                                key={f}
+                                className={f === currentFont ? 'active' : ''}
+                                // symbol fonts would render their own name as pictographs
+                                style={{
+                                  fontFamily: isSymbolFontFamily(f) ? undefined : cssFontFamily(f),
+                                }}
+                                onClick={() => setFont(slot, f)}
+                              >
+                                {f}
+                              </button>
+                            ))}
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
+              )
+            })}
             <div className="rb-split-wrap">
               <input
                 className="rb-select rb-font-size"
@@ -587,7 +633,35 @@ export function HomeTab({
             </div>
           </div>
         </div>
-        <div className="ribbon-group-label">{t('ribbonGroupFont')}</div>
+        <div className="ribbon-group-label rb-font-scope-row">
+          {t('ribbonGroupFont')}
+          {onFontSettings && (
+            <select
+              aria-label={t('ribbonFontScope')}
+              value={fontScope}
+              disabled={!canEdit || fontSettingsBusy}
+              onChange={(e) => {
+                setFontScope(e.target.value)
+                setDropdown(null)
+              }}
+            >
+              <option value="selection">{t('ribbonFontSelection')}</option>
+              <option value="defaults">{t('ribbonFontDefaults')}</option>
+              {[...(styles?.values() ?? [])]
+                .filter((style) => style.type === 'paragraph' || style.type === 'character')
+                .map((style) => (
+                  <option key={style.styleId} value={`style:${style.styleId}`}>
+                    {t(
+                      style.type === 'character'
+                        ? 'ribbonFontCharacterStyle'
+                        : 'ribbonFontParagraphStyle',
+                    )}
+                    : {style.name}
+                  </option>
+                ))}
+            </select>
+          )}
+        </div>
       </div>
 
       <div className="ribbon-sep" />

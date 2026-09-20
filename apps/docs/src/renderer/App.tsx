@@ -1,4 +1,5 @@
 import bootLogo from './assets/boot-logo.png'
+import { scriptFontHtml } from './editor/script-fonts'
 import { DOC_CSS_COMMITTED_EVENT } from './editor/cjk-punct-shrink'
 import { handleDocsControl, type ControlRequest } from './control'
 import { justifyShrinkPluginKey } from './editor/justify-shrink'
@@ -70,7 +71,10 @@ import {
   type SectionInfo,
   type SectionSettings,
   type SourceInfo,
+  pendingHeadingLevel,
   type StyleUpsert,
+  type DefaultFonts,
+  previewFontSettings,
   type ThemeColors,
   type ThemeFonts,
 } from '@chatoffice/docx-engine'
@@ -299,7 +303,7 @@ import { collectRevisions, gotoRevision, type TrackChangesStorage } from './edit
 import { NavPane } from './components/NavPane'
 import { Ruler } from './components/Ruler'
 import { VRuler } from './components/VRuler'
-import { docBodyFont, docLineFactor, docThemeCss } from './doc-style-css'
+import { docBodyFont, docLineFactor, docThemeCss, docStyleCss } from './doc-style-css'
 import { isDocDirty } from './doc-dirty'
 import {
   EMPTY_HF_VARIANTS,
@@ -322,8 +326,11 @@ import {
   writeRecoveryCopy as writeRecoveryCopyImpl,
   type FileActionContext,
   type PendingPdfExport,
+  currentDocGeneration,
 } from './file-actions'
 import { isPhasedContentPending } from './phased-content'
+import type { AiDocExtras } from './ai/tools'
+import type { AiStyleInfo } from './ai/style-ops'
 
 /** min gap between whole-document pagination passes while a phased open streams its tail */
 const STREAMING_PASS_GAP_MS = 1500
@@ -896,6 +903,9 @@ export function App() {
   }>({})
   const [showComments, setShowComments] = useState(false)
   /** Style definitions pending write-back (key = styleId), saved via SaveOptions.styleUpserts */
+  const [defaultFonts, setDefaultFonts] = useState<DefaultFonts>()
+  const fontSettingsVersionRef = useRef(0)
+  const fontSettingsPendingRef = useRef<Promise<void> | null>(null)
   const [styleUpserts, setStyleUpserts] = useState<Record<string, StyleUpsert>>({})
   /** styleIds pending removal from styles.xml (清理未使用的样式) */
   const [styleDeletes, setStyleDeletes] = useState<string[]>([])
@@ -1303,7 +1313,24 @@ export function App() {
 
   useEffect(() => {
     void window.desktop.getRecentFiles().then(setRecent)
-    void window.desktop.getAiSettings().then(setSettings)
+    // AI 设置与 Home 同款重刷：sidecar 冷启动窗口期首拉可能失败，失败不清空
+    let alive = true
+    const refresh = () => {
+      void window.desktop
+        .getAiSettings()
+        .then((s) => {
+          if (alive && s) setSettings(s)
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    const timer = window.setInterval(refresh, 15000)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+      window.clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {
@@ -1639,7 +1666,7 @@ export function App() {
   // Split pane: keep the read-only bottom copy in sync with the editor (debounced)
   useEffect(() => {
     if (!splitView || !editor) return
-    const sync = () => setSplitHtml(editor.getHTML())
+    const sync = () => setSplitHtml(scriptFontHtml(editor.getHTML()))
     sync()
     let timer = 0
     const onUpdate = () => {
@@ -1734,6 +1761,13 @@ export function App() {
     setStyleUpserts,
     styleDeletes,
     setStyleDeletes,
+    defaultFonts,
+    setDefaultFonts,
+    fontSettingsVersionRef,
+    settleFontSettings: async () => {
+      await fontSettingsPendingRef.current?.catch(() => {})
+      return fileCtxRef.current
+    },
     comments,
     commentsDirty,
     setComments,
@@ -5258,6 +5292,133 @@ export function App() {
   }
   const aiHfCtxRef = useRef(aiHfCtx)
   aiHfCtxRef.current = aiHfCtx
+  // AI style / watermark tools read and write the same pending stores the save path drains.
+  // The upserts ref mirrors the state synchronously: an agent turn runs several style tools
+  // between renders, so a define_style followed by applyStyle must see the pending entry.
+  const aiStyleUpsertsRef = useRef(styleUpserts)
+  aiStyleUpsertsRef.current = styleUpserts
+  const onFontSettings = useCallback((scope: string, patch: DefaultFonts): Promise<void> => {
+    const task = (async () => {
+      const ctx = fileCtxRef.current
+      const generation = currentDocGeneration()
+      if (!ctx.doc || !ctx.editor?.isEditable) return
+      const upserts = { ...aiStyleUpsertsRef.current }
+      let defaults = ctx.defaultFonts
+      if (scope === 'defaults') defaults = { ...defaults, ...patch }
+      else {
+        const styleId = scope.slice(6)
+        const style = ctx.doc.parsed.styles.get(styleId)
+        if (!style || (style.type !== 'paragraph' && style.type !== 'character')) return
+        upserts[styleId] = {
+          ...upserts[styleId],
+          styleId,
+          rPr: { ...upserts[styleId]?.rPr, ...patch },
+        }
+      }
+      fontSettingsVersionRef.current++
+      const resolved = await previewFontSettings(ctx.doc.parsed, Object.values(upserts), defaults)
+      // In-flight saves see the version bump; new saves wait for this task.
+      if (currentDocGeneration() !== generation || !fileCtxRef.current.doc) return
+      const latestDoc = fileCtxRef.current.doc
+      const parsed = { ...latestDoc.parsed, ...resolved }
+      aiStyleUpsertsRef.current = upserts
+      setStyleUpserts(upserts)
+      setDefaultFonts(defaults)
+      ctx.editor.storage.listNumbering.styles = resolved.styles
+      ctx.editor.storage.listNumbering.docDefaults = resolved.docDefaults
+      setDocCss(docStyleCss(parsed))
+      const nextDoc = { ...latestDoc, parsed }
+      setDoc((prev) => (prev ? { ...prev, parsed } : prev))
+      // Save/recovery callers resuming before React commits need the same snapshot.
+      fileCtxRef.current = {
+        ...fileCtxRef.current,
+        doc: nextDoc,
+        styleUpserts: upserts,
+        defaultFonts: defaults,
+      }
+      ctx.dirtyRef.current = true
+    })()
+    fontSettingsPendingRef.current = task
+    return task.finally(() => {
+      if (fontSettingsPendingRef.current === task) fontSettingsPendingRef.current = null
+    })
+  }, [])
+
+  const aiDocExtras = useMemo<AiDocExtras>(
+    () => ({
+      styles: {
+        list: () => {
+          const ctx = fileCtxRef.current
+          const out = new Map<string, AiStyleInfo>()
+          for (const s of ctx.doc?.parsed.styles.values() ?? []) {
+            if (s.linkedCharShell) continue
+            out.set(s.styleId, {
+              styleId: s.styleId,
+              name: s.name,
+              type: s.type,
+              ...(s.basedOn ? { basedOn: s.basedOn } : {}),
+              ...(s.headingLevel ? { headingLevel: s.headingLevel } : {}),
+            })
+          }
+          const upserts = aiStyleUpsertsRef.current
+          const parsed = (id: string) => ctx.doc?.parsed.styles.get(id)
+          for (const up of Object.values(upserts)) {
+            const cur = out.get(up.styleId)
+            const headingLevel = pendingHeadingLevel(up.styleId, (id) => upserts[id], parsed)
+            out.set(up.styleId, {
+              styleId: up.styleId,
+              name: up.name ?? cur?.name ?? up.styleId,
+              type: cur?.type ?? up.type ?? 'paragraph',
+              ...(up.basedOn === undefined
+                ? cur?.basedOn
+                  ? { basedOn: cur.basedOn }
+                  : {}
+                : up.basedOn
+                  ? { basedOn: up.basedOn }
+                  : {}),
+              ...(headingLevel ? { headingLevel } : {}),
+              pending: true,
+            })
+          }
+          return [...out.values()]
+        },
+        upsert: (up) => {
+          const ctx = fileCtxRef.current
+          if (!ctx.doc) return 'no document is open'
+          const prev = aiStyleUpsertsRef.current[up.styleId]
+          const next = {
+            ...aiStyleUpsertsRef.current,
+            [up.styleId]: prev
+              ? {
+                  ...prev,
+                  ...up,
+                  pPr: up.pPr || prev.pPr ? { ...prev.pPr, ...up.pPr } : undefined,
+                  rPr: up.rPr || prev.rPr ? { ...prev.rPr, ...up.rPr } : undefined,
+                }
+              : up,
+          }
+          aiStyleUpsertsRef.current = next
+          ctx.setStyleUpserts(next)
+          return null
+        },
+      },
+      watermark: {
+        current: () => fileCtxRef.current.watermark,
+        set: (spec) => {
+          // adapted: local App wires only the text-watermark store; picture and
+          // style variants stay on the default look pending a local port
+          const ctx = fileCtxRef.current
+          if (!ctx.doc) return 'no document is open'
+          if (spec && 'image' in spec) return 'picture watermarks are not supported here'
+          ctx.setWatermark(spec ? spec.text : null)
+          ctx.setWatermarkDirty(true)
+          return null
+        },
+      },
+    }),
+    [],
+  )
+
   const aiHfAccess = useMemo<AiHeaderFooterAccess>(
     () => ({
       read: () => {
@@ -6037,6 +6198,8 @@ export function App() {
             bodyOnly={isMobileUI}
             onActiveTabChange={isMobileUI ? onLegacyTabChange : undefined}
             actionsRef={ribbonActionsRef}
+            onFontSettings={onFontSettings}
+            docDefaults={doc?.parsed.docDefaults}
             quickActions={quickActions}
             trailingActions={
               dockedEditor ? null : (
