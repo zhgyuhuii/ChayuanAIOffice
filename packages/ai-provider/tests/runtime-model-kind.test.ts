@@ -183,6 +183,51 @@ describe('runtime model-kind dispatch', () => {
     expect(calledUrl).toContain('/chat/completions')
   })
 
+  it('materializes a url-only image response into a data: URL server-side (CSP/expiry-safe)', async () => {
+    const calls: string[] = []
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        calls.push(url)
+        if (url.includes('/images/generations')) {
+          return new Response(
+            JSON.stringify({ data: [{ url: 'https://cos.example.cn/out.png' }] }),
+            {
+              headers: { 'content-type': 'application/json' },
+            },
+          )
+        }
+        return new Response(png, { headers: { 'content-type': 'image/png' } })
+      }),
+    )
+    const runtime = createAiRuntime({
+      source: makeSource([agnesProfile('agnes-image-2.5-flash')], {
+        profileId: 'openai-compatible',
+        modelId: 'agnes-image-2.5-flash',
+      }),
+      chatoffice,
+      translate,
+    })
+    const chunks: AiStreamChunk[] = []
+    await runtime.runStream(
+      {
+        requestId: 'r1',
+        selection: { profileId: 'openai-compatible', modelId: 'agnes-image-2.5-flash' },
+        system: '',
+        messages: [{ role: 'user', text: '女娲补天' }],
+      },
+      (c) => chunks.push(c),
+    )
+    expect(calls[1]).toBe('https://cos.example.cn/out.png')
+    const text = chunks
+      .filter((c) => c.type === 'delta')
+      .map((c) => (c as { text: string }).text)
+      .join('')
+    expect(text).toContain('](data:image/png;base64,')
+    expect(text).not.toContain('](https://cos.example.cn')
+  })
+
   it('runChat (one-shot utilities) refuses non-chat models with a typed error', async () => {
     const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)

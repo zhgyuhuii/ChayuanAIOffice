@@ -96,11 +96,35 @@ async function generateViaOpenAiImages(
     error?: { message?: string }
   }
   if (json.error) throw new Error(json.error.message || 'image generation failed')
-  const urls = (json.data ?? [])
-    .map((item) => (item.b64_json ? `data:image/png;base64,${item.b64_json}` : (item.url ?? '')))
-    .filter((u) => u !== '')
+  const urls: string[] = []
+  for (const item of json.data ?? []) {
+    if (item.b64_json) {
+      urls.push(`data:image/png;base64,${item.b64_json}`)
+    } else if (item.url) {
+      // gateways answer with a CDN link far more often than inline bytes, and
+      // the consumer side cannot always load it (the chat CSP allows data:
+      // images only; links expire) — materialize server-side and keep the
+      // raw link only when the download itself fails
+      urls.push((await downloadAsDataUrl(item.url, req.signal)) ?? item.url)
+    }
+  }
   if (!urls.length) throw new Error('the image API returned neither an image nor a URL')
   return { urls }
+}
+
+/** fetch an image link through the app's own stack (rescue path included) and
+ * inline it as a data: URL; null when the download fails */
+async function downloadAsDataUrl(url: string, signal?: AbortSignal): Promise<string | null> {
+  try {
+    const resp = await aiFetch(url, { ...(signal ? { signal } : {}) })
+    if (!resp.ok) return null
+    const buf = Buffer.from(await resp.arrayBuffer())
+    if (!buf.byteLength) return null
+    const mime = (resp.headers.get('content-type') || '').split(';')[0]!.trim() || 'image/png'
+    return `data:${mime};base64,${buf.toString('base64')}`
+  } catch {
+    return null
+  }
 }
 
 /** DashScope's image models are task-based: submit with X-DashScope-Async, poll to a result URL.
