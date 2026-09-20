@@ -28,10 +28,15 @@ export interface MarkdownNav {
 // arrive as sheetnav://Data%20(2)!B2), so the href cannot simply stop at ')'.
 const HREF = /(?:[^\s()]|\([^\s()]*\))+/.source
 const INLINE_RE = new RegExp(
-  `(\`[^\`\\n]+\`|\\*\\*[^*\\n]+?\\*\\*|\\*[^*\\n]+?\\*|\\[[^\\]\\n]+\\]\\(${HREF}\\))`,
+  `(\`[^\`\\n]+\`|\\*\\*[^*\\n]+?\\*\\*|\\*[^*\\n]+?\\*|!\\[[^\\]\\n]*\\]\\(${HREF}\\)|\\[[^\\]\\n]+\\]\\(${HREF}\\))`,
   'g',
 )
 const LINK_RE = new RegExp(`^\\[([^\\]]+)\\]\\((${HREF})\\)$`)
+const IMAGE_RE = new RegExp(`^!\\[([^\\]]*)\\]\\((${HREF})\\)$`)
+/** images render as <img> only for safe sources: editor CSPs allow data:
+ * images everywhere, and generated images ride in as data: URLs; remote
+ * https: is allowed, everything else stays literal text */
+const IMAGE_SRC_RE = /^(data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+|https:\/\/\S+)$/i
 const CITE_TEXT_RE = /\[(\d{1,2})\]/g
 
 interface CiteContext {
@@ -76,7 +81,15 @@ function renderInline(text: string, nav?: MarkdownNav, cite?: CiteContext): Reac
     const tok = m[0] ?? ''
     if (tok.startsWith('`')) out.push(<code key={key++}>{tok.slice(1, -1)}</code>)
     else if (tok.startsWith('**')) out.push(<strong key={key++}>{tok.slice(2, -2)}</strong>)
-    else if (tok.startsWith('[')) {
+    else if (tok.startsWith('!')) {
+      const img = IMAGE_RE.exec(tok)
+      const src = img?.[2] ?? ''
+      if (img && IMAGE_SRC_RE.test(src)) {
+        out.push(<img key={key++} className="ai-md-img" src={src} alt={img[1] ?? ''} />)
+      } else {
+        pushText(tok) // unsafe source stays literal
+      }
+    } else if (tok.startsWith('[')) {
       const link = LINK_RE.exec(tok)
       const href = link?.[2] ?? ''
       if (link && nav && href.startsWith(nav.scheme)) {

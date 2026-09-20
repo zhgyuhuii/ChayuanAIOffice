@@ -1,4 +1,12 @@
 /* Block-level markdown in AI chat bubbles (tables, fenced code); inline chips stay per-app */
+/* generated images streamed by image models (markdown data: URLs) */
+.ai-md-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+}
 .ai-md-table-wrap {
   overflow-x: auto;
   margin: 0 0 16px;
