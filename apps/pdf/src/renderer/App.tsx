@@ -6685,7 +6685,12 @@ export default function App() {
                       </svg>
                     </button>
                   </div>
-                  <OutlinePanel outline={outline} onGoToDest={(dest) => void goToDest(dest)} />
+                  <OutlinePanel
+                    outline={outline}
+                    label={t('outline')}
+                    emptyLabel={t('searchNoResults')}
+                    onGoToDest={(dest) => void goToDest(dest)}
+                  />
                 </div>
               )}
               {sidebar === 'thumbs' && (
@@ -7903,6 +7908,8 @@ export default function App() {
                                   pageWidth={size.width}
                                   pageHeight={size.height}
                                   marks={redactions.filter((mark) => mark.pageIndex === origIdx)}
+                                  markLabel={t('redact')}
+                                  onTooSmall={() => showNotice(t('redactHint'))}
                                   onCommit={(rect) =>
                                     setRedactions((prev) => [
                                       ...prev,
@@ -8281,7 +8288,7 @@ export default function App() {
                 </div>
               )}
               {deleteToast && (
-                <div className="pdf-toast">
+                <div className="pdf-toast" role="status">
                   <span>
                     {t(deletedInsertedText ? 'insertedTextDeleted' : 'annotationDeleted')}
                   </span>
@@ -8297,7 +8304,7 @@ export default function App() {
                 </div>
               )}
               {notice && (
-                <div className="pdf-toast pdf-toast-notice">
+                <div className="pdf-toast pdf-toast-notice" role="status">
                   <span>{notice}</span>
                   <button type="button" onClick={() => setNotice(null)}>
                     {t('ok')}

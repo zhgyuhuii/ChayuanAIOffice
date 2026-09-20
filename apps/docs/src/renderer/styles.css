@@ -12061,4 +12061,23 @@ tr > .page-gap-cut {
   background: color-mix(in srgb, #2f6fed 12%, transparent);
   border-bottom: 2px solid #2f6fed;
   border-radius: 2px;
+/* Both script slots remain visible while editing mixed-language text. */
+.rb-font-slot-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.rb-font-scope-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.rb-font-scope-row select {
+  max-width: 190px;
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: transparent;
 }

@@ -1,3 +1,4 @@
+import { showToast } from './toast-bus'
 import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ChayuanTab } from './ribbon-chayuan-tab'
 import type { CSSProperties, ReactNode } from 'react'
@@ -22,6 +23,7 @@ import type {
   Block,
   CustomNumberingLevel,
   DocDefaults,
+  DefaultFonts,
   HeaderFooter,
   Run,
   SectionSettings,
@@ -56,7 +58,7 @@ import { useI18n, type StringKey } from '../i18n/locale'
 import { FONT_SIZES, MULTILEVEL_LIBRARY, NOOP_CHAIN, previewLevelText } from './ribbon-tab-shared'
 import { HomeTab } from './home-tab'
 import { PictureFormatTab, ShapeFormatTab, TableDesignTab, TableLayoutTab } from './contextual-tabs'
-import { fontFamiliesFor, isEastAsianFontName } from '../font-list'
+import { fontFamiliesFor } from '../font-list'
 import {
   DesignTab,
   DrawTab,
@@ -101,6 +103,7 @@ export interface RibbonProps {
   styles?: Map<string, StyleInfo>
   /** document-wide text defaults from styles.xml */
   docDefaults?: DocDefaults
+  onFontSettings?: (scope: string, patch: DefaultFonts) => Promise<void>
   /** Open the paragraph dialog (line-spacing rule / exact value entry lives there) */
   onParagraphDialog?: () => void
   onOpen: () => void
@@ -379,6 +382,7 @@ function RibbonInner({
   onParagraphDialog,
   styles,
   docDefaults,
+  onFontSettings,
   onOpen,
   onNewFile,
   recentFiles,
@@ -1274,6 +1278,8 @@ function RibbonInner({
   }, [tab, charStyleItems.length, lang, styleGalleryOverflow])
 
   const currentSize = fs.fontSizePt
+  const [fontScope, setFontScope] = useState('selection')
+  const [fontSettingsBusy, setFontSettingsBusy] = useState(false)
   // computed unconditionally (not inside the dropdown render): cheap, and the
   // render-isolation test uses fontFamiliesFor calls as its render probe
   fontFamiliesFor(lang)
@@ -1287,11 +1293,19 @@ function RibbonInner({
     setDropdown(null)
   }
 
-  /** font picks target only their script's rFonts slot (Word never flattens the other one) */
-  const setFont = (name: string | null) => {
-    if (!name) setTextStyle({ font: null, fontAscii: null })
-    else if (isEastAsianFontName(name)) setTextStyle({ font: name })
-    else setTextStyle({ fontAscii: name })
+  const setFont = (slot: 'font' | 'fontAscii', name: string) => {
+    if (fontScope === 'selection') {
+      setTextStyle({
+        [slot]: name,
+        ...(slot === 'font' ? { eaSlotEmpty: false, eastAsiaFont: name } : {}),
+      })
+    } else if (onFontSettings) {
+      setDropdown(null)
+      setFontSettingsBusy(true)
+      void onFontSettings(fontScope, { [slot === 'font' ? 'eastAsiaFont' : 'font']: name })
+        .catch((error) => showToast(String(error), 'error'))
+        .finally(() => setFontSettingsBusy(false))
+    }
   }
 
   /** apply paragraph-level attrs to every paragraph in the selection (textbox sub-editor included) */
@@ -2145,6 +2159,11 @@ function RibbonInner({
             styleGalleryRef={styleGalleryRef}
             docDefaults={docDefaults}
             themeFonts={themeFonts}
+            styles={styles}
+            fontScope={fontScope}
+            setFontScope={setFontScope}
+            fontSettingsBusy={fontSettingsBusy}
+            onFontSettings={onFontSettings}
             showMarks={showMarks}
             onShowMarks={onShowMarks}
             onParagraphDialog={onParagraphDialog}

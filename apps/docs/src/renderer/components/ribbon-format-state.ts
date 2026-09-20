@@ -3,7 +3,7 @@ import type { Node as PmNode } from '@tiptap/pm/model'
 import { isInTable, mergeCells, selectedRect, splitCell } from '@tiptap/pm/tables'
 import type { DocDefaults, Run, StyleInfo, TextboxDisplay } from '@chatoffice/docx-engine'
 import { getActiveSubEditor } from '../editor/active-editor'
-import { effectiveSizeHalfPoints } from '../editor/text-style-resolve'
+import { effectiveSizeHalfPoints, selectedFonts } from '../editor/text-style-resolve'
 import { textHasCjk } from '../line-metrics'
 import { cachedByDoc } from '../doc-cache'
 
@@ -80,6 +80,8 @@ export interface RibbonFormatState {
   /** docParagraph 的 w:pStyle 样式 id（Title/Quote 等非标题段落样式；null = 无样式/标题/列表） */
   paraStyleId: string | null
   fontSizePt: number
+  fontEastAsia: string | null
+  fontLatin: string | null
   fontFamily: string
   headingLevel: number | null
   listBullet: boolean
@@ -145,6 +147,8 @@ export const EMPTY_FORMAT_STATE: RibbonFormatState = {
   paraStyleId: null,
   fontSizePt: 11,
   fontFamily: '',
+  fontEastAsia: '',
+  fontLatin: '',
   headingLevel: null,
   listBullet: false,
   listOrdered: false,
@@ -325,6 +329,7 @@ export function computeFormatState(
     charStyleId: str(textAttrs.styleId),
     fontSizePt: (effectiveSizeHalfPoints(ed, styles, docDefaults) ?? 20) / 2,
     fontFamily: displayFont(),
+    ...selectedFonts(ed, styles, docDefaults),
     headingLevel: editor.isActive('docHeading')
       ? Number(editor.getAttributes('docHeading').level ?? 1)
       : null,

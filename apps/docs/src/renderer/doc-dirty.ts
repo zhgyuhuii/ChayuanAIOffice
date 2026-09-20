@@ -3,7 +3,7 @@
  * tick and the crash-recovery push. Only persisted state counts — transient UI
  * state (AI highlights, selection, view modes) must never appear here.
  */
-import type { HeaderFooter, SectionInfo, StyleUpsert } from '@chatoffice/docx-engine'
+import type { DefaultFonts, HeaderFooter, SectionInfo, StyleUpsert } from '@chatoffice/docx-engine'
 
 import type { PendingNumbering } from './doc-state'
 export interface DocDirtyState {
@@ -19,6 +19,7 @@ export interface DocDirtyState {
   pgNumEdit: unknown
   pgNumDirtySections: readonly number[]
   numberingDirty: boolean
+  defaultFonts?: DefaultFonts
   styleUpserts: Record<string, unknown>
   styleDeletes: readonly string[]
   titlePgDirty: boolean
@@ -52,6 +53,7 @@ export function isDocDirty(s: DocDirtyState): boolean {
     s.numberingDirty ||
     Object.keys(s.styleUpserts).length > 0 ||
     s.styleDeletes.length > 0 ||
+    s.defaultFonts !== undefined ||
     s.titlePgDirty ||
     s.evenOddHfDirty ||
     s.watermarkDirty ||
@@ -77,6 +79,7 @@ export interface CrossDocEditStateSink {
   setPgNumEdit: (value: { fmt?: string; start?: number } | null) => void
   setPgNumDirtySections: (value: number[]) => void
   setPendingNumbering: (value: PendingNumbering) => void
+  setDefaultFonts?: (fonts: DefaultFonts | undefined) => void
   setStyleUpserts: (value: Record<string, StyleUpsert>) => void
 }
 
@@ -95,4 +98,5 @@ export function resetCrossDocEditState(sink: CrossDocEditStateSink): void {
   sink.setPgNumDirtySections([])
   sink.setPendingNumbering({ newDefs: [], restartNums: [] })
   sink.setStyleUpserts({})
+  sink.setDefaultFonts?.(undefined)
 }

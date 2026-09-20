@@ -7,6 +7,8 @@ const here = dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   resolve: {
     alias: {
+      // Resolve sibling sources by path (not via node_modules) so a worktree
+      // whose node_modules is linked to another checkout still tests local edits.
       '@chatoffice/pptx-engine/table-grid': resolve(here, '../pptx-engine/src/table-grid.ts'),
       '@chatoffice/pptx-engine/identity': resolve(here, '../pptx-engine/src/identity.ts'),
       '@chatoffice/pptx-engine/background-promote': resolve(

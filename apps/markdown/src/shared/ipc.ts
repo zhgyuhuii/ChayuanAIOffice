@@ -23,6 +23,9 @@ export const MARKDOWN_CHANNELS = {
   exportRequest: 'markdown:export-request',
   exportDocx: 'markdown:export-docx',
   exportPdf: 'markdown:export-pdf',
+  prepareImageExport: 'markdown:prepare-image-export',
+  writeExportImage: 'markdown:write-export-image',
+  finishImageExport: 'markdown:finish-image-export',
   consumeHeadlessExport: 'markdown:consume-headless-export',
   headlessExportDone: 'markdown:headless-export-done',
   printRequest: 'markdown:print-request',
@@ -114,7 +117,7 @@ export interface ImageSearchResult {
   error?: string
 }
 
-export type ExportFormat = 'pdf' | 'docx' | 'docs'
+export type ExportFormat = 'pdf' | 'docx' | 'docs' | 'png'
 
 export interface ExportDocxRequest {
   /** .docx bytes, base64 */
@@ -132,6 +135,11 @@ export interface ExportPdfRequest {
   /** headless export mode only: write here instead of opening the save dialog */
   outPath?: string
 }
+
+export type ImageExportPreparation =
+  | { ok: true; id: string; pdfBase64: string }
+  | { ok: true; canceled: true }
+  | { ok: false; error: string }
 
 export type ExportResult =
   { ok: true; path: string } | { ok: true; canceled: true } | { ok: false; error: string }
@@ -202,6 +210,13 @@ export interface MarkdownApi {
   onPrintRequest(handler: () => void): () => void
   exportDocx(request: ExportDocxRequest): Promise<ExportResult>
   exportPdf(request: ExportPdfRequest): Promise<ExportResult>
+  prepareImageExport(request: Omit<ExportPdfRequest, 'outPath'>): Promise<ImageExportPreparation>
+  writeExportImage(
+    id: string,
+    page: number,
+    pngBase64: string,
+  ): Promise<{ ok: boolean; error?: string }>
+  finishImageExport(id: string, success: boolean): Promise<ExportResult>
   getLanguage(): Promise<Lang>
   onLanguageChanged(handler: (lang: Lang) => void): () => void
   getTheme(): Promise<UiTheme>

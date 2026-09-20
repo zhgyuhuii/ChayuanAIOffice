@@ -1,4 +1,5 @@
 import bootLogo from './assets/boot-logo.png'
+import { scriptFontHtml } from './editor/script-fonts'
 import { DOC_CSS_COMMITTED_EVENT } from './editor/cjk-punct-shrink'
 import { handleDocsControl, type ControlRequest } from './control'
 import { justifyShrinkPluginKey } from './editor/justify-shrink'
@@ -71,6 +72,8 @@ import {
   type SectionSettings,
   type SourceInfo,
   type StyleUpsert,
+  type DefaultFonts,
+  previewFontSettings,
   type ThemeColors,
   type ThemeFonts,
 } from '@chatoffice/docx-engine'
@@ -299,7 +302,7 @@ import { collectRevisions, gotoRevision, type TrackChangesStorage } from './edit
 import { NavPane } from './components/NavPane'
 import { Ruler } from './components/Ruler'
 import { VRuler } from './components/VRuler'
-import { docBodyFont, docLineFactor, docThemeCss } from './doc-style-css'
+import { docBodyFont, docLineFactor, docThemeCss, docStyleCss } from './doc-style-css'
 import { isDocDirty } from './doc-dirty'
 import {
   EMPTY_HF_VARIANTS,
@@ -322,6 +325,7 @@ import {
   writeRecoveryCopy as writeRecoveryCopyImpl,
   type FileActionContext,
   type PendingPdfExport,
+  currentDocGeneration,
 } from './file-actions'
 import { isPhasedContentPending } from './phased-content'
 
@@ -896,6 +900,9 @@ export function App() {
   }>({})
   const [showComments, setShowComments] = useState(false)
   /** Style definitions pending write-back (key = styleId), saved via SaveOptions.styleUpserts */
+  const [defaultFonts, setDefaultFonts] = useState<DefaultFonts>()
+  const fontSettingsVersionRef = useRef(0)
+  const fontSettingsPendingRef = useRef<Promise<void> | null>(null)
   const [styleUpserts, setStyleUpserts] = useState<Record<string, StyleUpsert>>({})
   /** styleIds pending removal from styles.xml (清理未使用的样式) */
   const [styleDeletes, setStyleDeletes] = useState<string[]>([])
@@ -1303,7 +1310,24 @@ export function App() {
 
   useEffect(() => {
     void window.desktop.getRecentFiles().then(setRecent)
-    void window.desktop.getAiSettings().then(setSettings)
+    // AI 设置与 Home 同款重刷：sidecar 冷启动窗口期首拉可能失败，失败不清空
+    let alive = true
+    const refresh = () => {
+      void window.desktop
+        .getAiSettings()
+        .then((s) => {
+          if (alive && s) setSettings(s)
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    const timer = window.setInterval(refresh, 15000)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+      window.clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {
@@ -1639,7 +1663,7 @@ export function App() {
   // Split pane: keep the read-only bottom copy in sync with the editor (debounced)
   useEffect(() => {
     if (!splitView || !editor) return
-    const sync = () => setSplitHtml(editor.getHTML())
+    const sync = () => setSplitHtml(scriptFontHtml(editor.getHTML()))
     sync()
     let timer = 0
     const onUpdate = () => {
@@ -1734,6 +1758,13 @@ export function App() {
     setStyleUpserts,
     styleDeletes,
     setStyleDeletes,
+    defaultFonts,
+    setDefaultFonts,
+    fontSettingsVersionRef,
+    settleFontSettings: async () => {
+      await fontSettingsPendingRef.current?.catch(() => {})
+      return fileCtxRef.current
+    },
     comments,
     commentsDirty,
     setComments,
@@ -3058,7 +3089,7 @@ export function App() {
     const nums = secs.length > 0 ? pageNumbers(slices, secs) : slices.map((_, i) => i + 1)
     const byEl = new Map(mBlocks.filter((b) => b.el).map((b) => [b.el as HTMLElement, b.top]))
     const pages: number[] = []
-    for (const h of collectHeadings(editor.state.doc)) {
+    for (const h of collectHeadings(editor.state.doc, editor.storage.listNumbering?.styles)) {
       const dom = editor.view.nodeDOM(h.pos) as HTMLElement | null
       const top = dom ? byEl.get(dom) : undefined
       const idx = top === undefined ? 1 : pageAt(slices, top + 1)
@@ -3300,7 +3331,7 @@ export function App() {
       if (editor && dirtyRef.current && slices.length > 0) {
         const nums = secList ? pageNumbers(slices, secList) : slices.map((_, n) => n + 1)
         const byEl = new Map(blocks.filter((b) => b.el).map((b) => [b.el as HTMLElement, b.top]))
-        const headings = collectHeadings(editor.state.doc)
+        const headings = collectHeadings(editor.state.doc, editor.storage.listNumbering?.styles)
         // formatted with the owning section's pgNumType, like the header/footer numbers
         const displays = headings.map((h) => {
           const dom = editor.view.nodeDOM(h.pos) as HTMLElement | null
@@ -5258,6 +5289,58 @@ export function App() {
   }
   const aiHfCtxRef = useRef(aiHfCtx)
   aiHfCtxRef.current = aiHfCtx
+  // AI style / watermark tools read and write the same pending stores the save path drains.
+  // The upserts ref mirrors the state synchronously: an agent turn runs several style tools
+  // between renders, so a define_style followed by applyStyle must see the pending entry.
+  const aiStyleUpsertsRef = useRef(styleUpserts)
+  aiStyleUpsertsRef.current = styleUpserts
+  const onFontSettings = useCallback((scope: string, patch: DefaultFonts): Promise<void> => {
+    const task = (async () => {
+      const ctx = fileCtxRef.current
+      const generation = currentDocGeneration()
+      if (!ctx.doc || !ctx.editor?.isEditable) return
+      const upserts = { ...aiStyleUpsertsRef.current }
+      let defaults = ctx.defaultFonts
+      if (scope === 'defaults') defaults = { ...defaults, ...patch }
+      else {
+        const styleId = scope.slice(6)
+        const style = ctx.doc.parsed.styles.get(styleId)
+        if (!style || (style.type !== 'paragraph' && style.type !== 'character')) return
+        upserts[styleId] = {
+          ...upserts[styleId],
+          styleId,
+          rPr: { ...upserts[styleId]?.rPr, ...patch },
+        }
+      }
+      fontSettingsVersionRef.current++
+      const resolved = await previewFontSettings(ctx.doc.parsed, Object.values(upserts), defaults)
+      // In-flight saves see the version bump; new saves wait for this task.
+      if (currentDocGeneration() !== generation || !fileCtxRef.current.doc) return
+      const latestDoc = fileCtxRef.current.doc
+      const parsed = { ...latestDoc.parsed, ...resolved }
+      aiStyleUpsertsRef.current = upserts
+      setStyleUpserts(upserts)
+      setDefaultFonts(defaults)
+      ctx.editor.storage.listNumbering.styles = resolved.styles
+      ctx.editor.storage.listNumbering.docDefaults = resolved.docDefaults
+      setDocCss(docStyleCss(parsed))
+      const nextDoc = { ...latestDoc, parsed }
+      setDoc((prev) => (prev ? { ...prev, parsed } : prev))
+      // Save/recovery callers resuming before React commits need the same snapshot.
+      fileCtxRef.current = {
+        ...fileCtxRef.current,
+        doc: nextDoc,
+        styleUpserts: upserts,
+        defaultFonts: defaults,
+      }
+      ctx.dirtyRef.current = true
+    })()
+    fontSettingsPendingRef.current = task
+    return task.finally(() => {
+      if (fontSettingsPendingRef.current === task) fontSettingsPendingRef.current = null
+    })
+  }, [])
+
   const aiHfAccess = useMemo<AiHeaderFooterAccess>(
     () => ({
       read: () => {
@@ -6037,6 +6120,8 @@ export function App() {
             bodyOnly={isMobileUI}
             onActiveTabChange={isMobileUI ? onLegacyTabChange : undefined}
             actionsRef={ribbonActionsRef}
+            onFontSettings={onFontSettings}
+            docDefaults={doc?.parsed.docDefaults}
             quickActions={quickActions}
             trailingActions={
               dockedEditor ? null : (
