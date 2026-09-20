@@ -58,8 +58,7 @@ import { useI18n, type StringKey } from '../i18n/locale'
 import { FONT_SIZES, MULTILEVEL_LIBRARY, NOOP_CHAIN, previewLevelText } from './ribbon-tab-shared'
 import { HomeTab } from './home-tab'
 import { PictureFormatTab, ShapeFormatTab, TableDesignTab, TableLayoutTab } from './contextual-tabs'
-import { fontFamiliesFor, isEastAsianFontName } from '../font-list'
-import { cssFontFamily } from '../line-metrics'
+import { fontFamiliesFor } from '../font-list'
 import {
   DesignTab,
   DrawTab,

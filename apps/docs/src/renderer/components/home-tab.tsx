@@ -174,7 +174,6 @@ export function HomeTab({
   const ed = sub ?? editor
   const chain = () => (canEdit ? ed.chain().focus() : NOOP_CHAIN)
   const currentSize = fs.fontSizePt
-  const bodyFontName = docDefaults?.asciiFont?.trim() || themeFonts?.minor?.trim() || 'Calibri'
   const { families: systemFontFamilies, load: loadSystemFonts } = useSystemFontFamilies()
   const fontFamilies = fontFamiliesFor(lang)
   const activeAlign = fs.align ?? (fs.bidi ? 'right' : 'left')

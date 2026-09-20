@@ -71,7 +71,6 @@ import {
   type SectionInfo,
   type SectionSettings,
   type SourceInfo,
-  pendingHeadingLevel,
   type StyleUpsert,
   type DefaultFonts,
   previewFontSettings,
@@ -329,8 +328,6 @@ import {
   currentDocGeneration,
 } from './file-actions'
 import { isPhasedContentPending } from './phased-content'
-import type { AiDocExtras } from './ai/tools'
-import type { AiStyleInfo } from './ai/style-ops'
 
 /** min gap between whole-document pagination passes while a phased open streams its tail */
 const STREAMING_PASS_GAP_MS = 1500
@@ -5343,81 +5340,6 @@ export function App() {
       if (fontSettingsPendingRef.current === task) fontSettingsPendingRef.current = null
     })
   }, [])
-
-  const aiDocExtras = useMemo<AiDocExtras>(
-    () => ({
-      styles: {
-        list: () => {
-          const ctx = fileCtxRef.current
-          const out = new Map<string, AiStyleInfo>()
-          for (const s of ctx.doc?.parsed.styles.values() ?? []) {
-            if (s.linkedCharShell) continue
-            out.set(s.styleId, {
-              styleId: s.styleId,
-              name: s.name,
-              type: s.type,
-              ...(s.basedOn ? { basedOn: s.basedOn } : {}),
-              ...(s.headingLevel ? { headingLevel: s.headingLevel } : {}),
-            })
-          }
-          const upserts = aiStyleUpsertsRef.current
-          const parsed = (id: string) => ctx.doc?.parsed.styles.get(id)
-          for (const up of Object.values(upserts)) {
-            const cur = out.get(up.styleId)
-            const headingLevel = pendingHeadingLevel(up.styleId, (id) => upserts[id], parsed)
-            out.set(up.styleId, {
-              styleId: up.styleId,
-              name: up.name ?? cur?.name ?? up.styleId,
-              type: cur?.type ?? up.type ?? 'paragraph',
-              ...(up.basedOn === undefined
-                ? cur?.basedOn
-                  ? { basedOn: cur.basedOn }
-                  : {}
-                : up.basedOn
-                  ? { basedOn: up.basedOn }
-                  : {}),
-              ...(headingLevel ? { headingLevel } : {}),
-              pending: true,
-            })
-          }
-          return [...out.values()]
-        },
-        upsert: (up) => {
-          const ctx = fileCtxRef.current
-          if (!ctx.doc) return 'no document is open'
-          const prev = aiStyleUpsertsRef.current[up.styleId]
-          const next = {
-            ...aiStyleUpsertsRef.current,
-            [up.styleId]: prev
-              ? {
-                  ...prev,
-                  ...up,
-                  pPr: up.pPr || prev.pPr ? { ...prev.pPr, ...up.pPr } : undefined,
-                  rPr: up.rPr || prev.rPr ? { ...prev.rPr, ...up.rPr } : undefined,
-                }
-              : up,
-          }
-          aiStyleUpsertsRef.current = next
-          ctx.setStyleUpserts(next)
-          return null
-        },
-      },
-      watermark: {
-        current: () => fileCtxRef.current.watermark,
-        set: (spec) => {
-          // adapted: local App wires only the text-watermark store; picture and
-          // style variants stay on the default look pending a local port
-          const ctx = fileCtxRef.current
-          if (!ctx.doc) return 'no document is open'
-          if (spec && 'image' in spec) return 'picture watermarks are not supported here'
-          ctx.setWatermark(spec ? spec.text : null)
-          ctx.setWatermarkDirty(true)
-          return null
-        },
-      },
-    }),
-    [],
-  )
 
   const aiHfAccess = useMemo<AiHeaderFooterAccess>(
     () => ({
