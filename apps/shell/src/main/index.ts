@@ -93,6 +93,8 @@ import {
   markAnalyticsFirstLaunchSent,
 } from './analytics'
 import type { Analytics, AnalyticsKeys } from './analytics'
+// LOCAL(purchase): offline purchase / license scheduler + IPC (B-zone module)
+import { registerPurchaseIpc, startPurchaseScheduler } from './purchase'
 import {
   LAST_RUN_VERSION_KEY,
   STAR_PROMPT_KEY,
@@ -6323,6 +6325,14 @@ app.whenReady().then(async () => {
   setTimeout(() => installCliLinkBestEffort(APP_SETTINGS_PATH()), 3000)
   initAnalytics()
   analytics.track('app_launch')
+  // LOCAL(purchase): stamp firstRunAt, register activation IPC, and run the
+  // free-period scheduler (once-per-day page + 30-min gentle toast). Events
+  // only fire while the shell window is visible; the page popup catches up
+  // later the same day after lock screens or hidden windows.
+  registerPurchaseIpc()
+  startPurchaseScheduler(() =>
+    shellWindow !== null && !shellWindow.isDestroyed() && shellWindow.isVisible() ? shellWindow : null,
+  )
   startSheetsCaptureServer()
   // Register the docs renderer bridge listeners before the MCP server can take
   // a visible-editing request.

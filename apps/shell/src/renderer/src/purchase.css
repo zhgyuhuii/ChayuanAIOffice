@@ -1,0 +1,288 @@
+/* Purchase / license dialog (LOCAL feature). All colors via semantic tokens
+ * (light/dark follow the UI theme) — check-theme-colors guards this file. */
+
+.purchase-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-bg-overlay);
+  backdrop-filter: blur(6px);
+}
+
+.purchase-dialog {
+  width: min(520px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-8);
+  box-shadow: var(--shadow-modal-strong);
+  animation: purchase-in 0.12s ease-out;
+}
+
+@keyframes purchase-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.purchase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.purchase-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.purchase-close {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.purchase-close:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.purchase-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 20px 20px;
+}
+
+.purchase-status {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--hover);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.purchase-status-ok {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+
+.purchase-section-title {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.purchase-tiers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.purchase-tier {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: none;
+}
+
+.purchase-tier-hot {
+  border-color: var(--accent);
+}
+
+.purchase-tier-badge {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--color-btn-primary-text);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.purchase-tier-name {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.purchase-tier-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.purchase-qr-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.purchase-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.purchase-qr img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  /* QR payloads carry their own white pad (RGB assets, no alpha), scannable
+   * in both themes without any raw color here */
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+}
+
+.purchase-qr span {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.purchase-fingerprint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--hover);
+}
+
+.purchase-fingerprint-label {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.purchase-fingerprint code {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.purchase-copy {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.purchase-copy:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.purchase-serial-row {
+  display: flex;
+  gap: 8px;
+}
+
+.purchase-serial-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  outline: none;
+}
+
+.purchase-serial-input:focus {
+  border-color: var(--accent);
+}
+
+.purchase-activate {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--color-btn-primary-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.purchase-activate:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.purchase-activate:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.purchase-result {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.purchase-result-ok {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.purchase-guide {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.purchase-guide-toggle {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.purchase-guide-body {
+  padding: 0 12px 10px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: pre-line;
+  color: var(--text-secondary);
+}

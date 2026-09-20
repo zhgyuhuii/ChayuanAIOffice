@@ -27,7 +27,7 @@
  */
 
 const { execFileSync } = require('node:child_process')
-const { existsSync, rmSync } = require('node:fs')
+const { existsSync, rmSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 
 function normalizeHttpsBaseUrl(name, value) {
@@ -189,6 +189,20 @@ function assertUniversalVisionOcr() {
 // `native:build` dev path) would silently ship an arm64 sidecar inside the
 // Intel dmg, where every workbook open fails. Runs from beforePack, dual-arch
 // mac packs only.
+// Offline purchase signing key (LOCAL purchase feature): materialize
+// build/license-key.txt from CHATOP_LICENSE_HMAC_KEY so the extraResources
+// entry above always finds its source (electron-builder silently skips
+// missing sources and still exits 0). No env -> empty file -> the client's
+// activation entry stays disabled while reminders keep their schedule. The
+// key itself never enters git.
+function writeLicenseKeyMaterial() {
+  const key = (process.env.CHATOP_LICENSE_HMAC_KEY || '').trim()
+  if (!/^[0-9a-fA-F]{64}$/.test(key)) {
+    console.log('[builder] CHATOP_LICENSE_HMAC_KEY unset/invalid — shipping empty license-key.txt (activation disabled)')
+  }
+  writeFileSync(join(__dirname, 'build', 'license-key.txt'), key, 'utf8')
+}
+
 function assertUniversalSidecar() {
   const sidecar = join(__dirname, '../sheets/native/xlsx-engine/target/release/xlsx-sidecar')
   if (!existsSync(sidecar)) {
@@ -242,6 +256,14 @@ const config = {
     {
       from: 'build/THIRD-PARTY-NOTICES.txt',
       to: 'THIRD-PARTY-NOTICES.txt',
+    },
+    {
+      // Offline purchase signing key (main/purchase.ts). beforePack materializes
+      // this file from CHATOP_LICENSE_HMAC_KEY; without the env it ships empty
+      // and the client's activation entry stays disabled (reminders unaffected).
+      // The key itself never enters git.
+      from: 'build/license-key.txt',
+      to: 'license-key.txt',
     },
     {
       from: '../../node_modules/electron/dist/LICENSES.chromium.html',
@@ -567,6 +589,7 @@ const config = {
   },
   beforePack: async (context) => {
     assertModuleTreesPresent()
+    writeLicenseKeyMaterial()
     if (context.electronPlatformName === 'darwin' && includeMacX64) {
       assertUniversalSidecar()
       assertUniversalVisionOcr()

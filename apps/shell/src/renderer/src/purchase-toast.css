@@ -1,0 +1,74 @@
+/* Gentle purchase toast (LOCAL feature): bottom-right non-modal card, same
+ * placement contract as star-prompt.css. Semantic tokens only. */
+
+.purchase-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 90;
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-modal-strong);
+  animation: purchase-toast-in 0.25s ease-out;
+}
+
+@keyframes purchase-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.purchase-toast-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.purchase-toast-close:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.purchase-toast-body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 32px 13px 16px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.purchase-toast-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.purchase-toast-text {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}

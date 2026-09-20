@@ -41,6 +41,9 @@ import type {
 import { MCP_CLIENT_CHANNELS } from '../shared/mcp-client-api'
 import type { TabsApi, TabSummary } from '../shared/tabs-api'
 import { TABS_CHANNELS, WINDOW_CHANNELS } from '../shared/tabs-api'
+// LOCAL(purchase): offline purchase / license bridge (B-zone)
+import { PURCHASE_CHANNELS } from '../shared/purchase-api'
+import type { PurchaseActivateResult, PurchaseEventPayload, PurchaseSnapshot } from '../shared/purchase-api'
 import type { WindowControlsApi } from '../shared/tabs-api'
 import type { DockApi, DockTabSummary, PanelTurnReport } from '../shared/dock-api'
 import type { RelayEvent } from '../shared/relay-protocol'
@@ -832,4 +835,18 @@ contextBridge.exposeInMainWorld('chatOfficeKb', {
   file: (args: { kbId: string; docId: string }) => ipcRenderer.invoke(KB_CHANNELS.file, args),
   getSource: () => ipcRenderer.invoke(KB_CHANNELS.getSource),
   setOrigin: (origin: string | null) => ipcRenderer.invoke(KB_CHANNELS.setOrigin, origin),
+})
+
+// LOCAL(purchase): offline purchase / license surface. Its own global (not
+// merged into chatOffice) so the web/dsh iframe forms — which have no Electron
+// preload — simply lack the bridge and the purchase UI stays silent there.
+contextBridge.exposeInMainWorld('chatOfficePurchase', {
+  state: (): Promise<PurchaseSnapshot> => ipcRenderer.invoke(PURCHASE_CHANNELS.state),
+  activate: (serial: string): Promise<PurchaseActivateResult> =>
+    ipcRenderer.invoke(PURCHASE_CHANNELS.activate, serial),
+  onEvent: (listener: (payload: PurchaseEventPayload) => void): (() => void) => {
+    const wrapped = (_event: IpcRendererEvent, payload: PurchaseEventPayload): void => listener(payload)
+    ipcRenderer.on(PURCHASE_CHANNELS.event, wrapped)
+    return () => ipcRenderer.removeListener(PURCHASE_CHANNELS.event, wrapped)
+  },
 })

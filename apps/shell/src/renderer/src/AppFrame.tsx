@@ -3,6 +3,9 @@ import { Home } from './Home'
 import { Onboarding } from './Onboarding'
 import { StarPromptCard } from './StarPromptCard'
 import { TabBar } from './TabBar'
+// LOCAL(purchase): offline purchase toast + dialog; Electron-bridge only.
+import { PurchaseModal } from './PurchaseModal'
+import { PurchaseToast } from './PurchaseToast'
 
 interface AppFrameProps {
   /** resolved before first paint (main.tsx) so home never flashes under the overlay */
@@ -67,6 +70,15 @@ export function AppFrame({ initialOnboardingSeen }: AppFrameProps) {
       {showOnboarding && homeActive && <Onboarding onDone={finishOnboarding} />}
       {starPromptDocOpens !== null && !showOnboarding && homeActive && (
         <StarPromptCard docOpens={starPromptDocOpens} onClose={() => setStarPromptDocOpens(null)} />
+      )}
+      {/* LOCAL(purchase): scheduler-driven toast + dialog. The bridge only
+       * exists in the Electron shell, so the web/dsh-iframe forms never mount
+       * these — they structurally cannot self-remind inside the harness host. */}
+      {typeof window !== 'undefined' && 'chatOfficePurchase' in window && (
+        <>
+          <PurchaseToast />
+          <PurchaseModal />
+        </>
       )}
     </div>
   )
