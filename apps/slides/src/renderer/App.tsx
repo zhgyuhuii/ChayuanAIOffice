@@ -1255,7 +1255,24 @@ export function App() {
   useEffect(() => window.slidesApi.onRenamed((p) => setPath(p)), [])
 
   useEffect(() => {
-    void window.slidesApi.getAiSettings().then(setAiSettings)
+    // AI 设置与 Home 同款重刷：sidecar 冷启动窗口期首拉可能失败，失败不清空
+    let alive = true
+    const refresh = () => {
+      void window.slidesApi
+        .getAiSettings()
+        .then((s) => {
+          if (alive && s) setAiSettings(s)
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    const timer = window.setInterval(refresh, 15000)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+      window.clearInterval(timer)
+    }
   }, [])
 
   // Recent files for the start screen

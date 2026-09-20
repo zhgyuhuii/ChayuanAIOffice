@@ -220,10 +220,27 @@ export function ModelSettingsPage({
   }, [showFilterHint])
 
   useEffect(() => {
-    void bridge
-      .getSettings()
-      .then(setSettings)
-      .catch(() => setSettings(null))
+    // 挂载拉取带小步重试：对话框打开瞬间可能撞上 sidecar 抖动/冷启动，
+    // 一次失败就把视图钉死在「尚未启用任何模型」（目录无本地模型组）
+    let alive = true
+    const fetchSettings = async () => {
+      for (let i = 0; ; i++) {
+        try {
+          const s = await bridge.getSettings()
+          if (alive) setSettings(s)
+          return
+        } catch {
+          if (!alive || i >= 3) {
+            if (alive) setSettings(null)
+            return
+          }
+          await new Promise((r) => setTimeout(r, 1500))
+        }
+      }
+    }
+    void fetchSettings()
+    const onFocus = () => void fetchSettings()
+    window.addEventListener('focus', onFocus)
     if (bridge.chatofficeStatus) {
       void bridge
         .chatofficeStatus(true)
@@ -235,6 +252,10 @@ export function ModelSettingsPage({
         .capabilities()
         .then((c) => setChatOfficeAvailable(c.chatofficeAvailable !== false))
         .catch(() => setChatOfficeAvailable(true))
+    }
+    return () => {
+      alive = false
+      window.removeEventListener('focus', onFocus)
     }
   }, [bridge])
 

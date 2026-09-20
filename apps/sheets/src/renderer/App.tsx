@@ -1685,7 +1685,25 @@ export function App(): React.JSX.Element {
   }
 
   useEffect(() => {
-    void window.desktopApi.getAiSettings().then(setAiSettingsState)
+    // 挂载一次性拉取会撞上 sidecar 冷启动（bridge 重试覆盖后仍可能失败）——
+    // 与 Home 同款：focus + 低频轮询重刷，失败不清空既有设置
+    let alive = true
+    const refresh = () => {
+      void window.desktopApi
+        .getAiSettings()
+        .then((s) => {
+          if (alive && s) setAiSettingsState(s)
+        })
+        .catch(() => {})
+    }
+    refresh()
+    window.addEventListener('focus', refresh)
+    const timer = window.setInterval(refresh, 15000)
+    return () => {
+      alive = false
+      window.removeEventListener('focus', refresh)
+      window.clearInterval(timer)
+    }
   }, [])
 
   useEffect(() => {

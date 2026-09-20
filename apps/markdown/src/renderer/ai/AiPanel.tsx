@@ -210,7 +210,16 @@ export function AiPanel({
     }
   }
   useEffect(() => {
+    // 与 Home 同款重刷：sidecar 冷启动窗口期首拉可能失败（getSettings 拒绝
+    // 时保持既有值），focus + 低频轮询保证服务就绪后自愈
     void refreshPanelSettings()
+    window.addEventListener('focus', refreshPanelSettings)
+    const timer = window.setInterval(() => void refreshPanelSettings(), 15000)
+    return () => {
+      window.removeEventListener('focus', refreshPanelSettings)
+      window.clearInterval(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const langRef = useRef(lang)
   langRef.current = lang

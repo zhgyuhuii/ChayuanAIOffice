@@ -40,7 +40,32 @@ async function jsonPost<T>(url: string, body?: unknown, method = 'POST'): Promis
   return (await response.json()) as T
 }
 
-export function createAiHttpBridge(baseUrl = ''): AiHttpBridge {
+/** settings 读重试：sidecar 冷启动期间（dsh 插件 host 健康轮询窗最长 60s，
+ * 未就绪路由 503）编辑器首屏的一次性拉取会失败，而 App 层拿到拒绝后不再
+ * 重试 → 模型选择器永久空白（真机实录）。这里对读操作做有限退避；写路径
+ * 不重试（避免重复提交）。 */
+async function retryGet<T>(url: string, attempts = 12, delayMs = 1000): Promise<T> {
+  for (let i = 0; ; i++) {
+    try {
+      return await jsonPost<T>(url, undefined, 'GET')
+    } catch (err) {
+      if (i >= attempts - 1) throw err
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+}
+
+/** '' in the plain web form; '/chatoffice-app' behind the dsh plugin proxy
+ *  (same derivation as kbApiBase). Callers used to pass nothing, which sent
+ *  every editor AI request to the origin root → 404 → an empty model picker
+ *  while the Home page (own baseURI-based URL) worked. */
+function defaultAiBase(pathname = window.location.pathname): string {
+  const marker = '/chatoffice-app'
+  const idx = pathname.indexOf(marker)
+  return idx >= 0 ? pathname.slice(0, idx + marker.length) : ''
+}
+
+export function createAiHttpBridge(baseUrl = defaultAiBase()): AiHttpBridge {
   const listeners = new Set<ChunkListener>()
   const controllers = new Map<string, AbortController>()
 
@@ -50,7 +75,7 @@ export function createAiHttpBridge(baseUrl = ''): AiHttpBridge {
 
   return {
     async getAiSettings() {
-      return jsonPost<unknown>(`${baseUrl}/ai/settings`, undefined, 'GET')
+      return retryGet<unknown>(`${baseUrl}/ai/settings`)
     },
     async capabilities() {
       return jsonPost<{ chatofficeAvailable: boolean }>(
