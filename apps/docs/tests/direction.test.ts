@@ -342,10 +342,11 @@ describe('ribbon direction buttons carry translated aria-labels', () => {
   })
 
   it('wires both buttons with data-tip and aria-label (no new keys)', () => {
-    const ribbon = readFileSync(join(__dirname, '../src/renderer/components/Ribbon.tsx'), 'utf8')
+    // adapted: 本地 Home tab 已从 Ribbon.tsx 提取为 home-tab.tsx，方向按钮随迁
+    const home = readFileSync(join(__dirname, '../src/renderer/components/home-tab.tsx'), 'utf8')
     for (const key of ['ribbonDirLtrTip', 'ribbonDirRtlTip']) {
-      expect(ribbon).toContain(`aria-label={t('${key}')}`)
-      expect(ribbon).toContain(`data-tip={t('${key}')}`)
+      expect(home).toContain(`aria-label={t('${key}')}`)
+      expect(home).toContain(`data-tip={t('${key}')}`)
     }
   })
 })
