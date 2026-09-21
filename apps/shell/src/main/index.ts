@@ -6262,9 +6262,13 @@ app.whenReady().then(async () => {
     try {
       const oldPid = Number(readFileSync(devPidFile(), 'utf-8').trim())
       if (Number.isFinite(oldPid) && oldPid > 0 && oldPid !== process.pid) {
-        // pid-recycling guard: only kill if that pid is still an Electron process
+        // pid-recycling guard: only kill if that pid is still our dev electron.
+        // Match the dist directory, not the executable name — dev-identity
+        // (patch-dev-electron-name.mjs) hard-links the binary as 察元AIOffice,
+        // so the command line no longer contains "Electron" and a name check
+        // would leave the zombie holding the single-instance lock forever.
         const cmd = execSync(`ps -o command= -p ${oldPid}`).toString()
-        if (cmd.includes('Electron')) process.kill(oldPid, 'SIGKILL')
+        if (cmd.includes('node_modules/electron/dist')) process.kill(oldPid, 'SIGKILL')
       }
     } catch {
       // no previous instance recorded / already gone (ps exits non-zero)
