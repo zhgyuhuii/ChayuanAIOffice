@@ -103,6 +103,13 @@ export function normalizeXlsxRelTarget(target: string): string {
   return stack.join('/') || 'xl'
 }
 
+/** Bounds for xlsx text extraction: malformed refs (e.g. XXXXXX99) would
+ *  otherwise grow the cells array by millions via the padding loop below. */
+export const MAX_XLSX_SHARED = 200_000
+export const MAX_XLSX_SHEETS = 100
+export const MAX_XLSX_ROWS = 200_000
+export const MAX_XLSX_COLS = 16_384
+
 /** extract sheet text from an xlsx: one "# SheetName" section per sheet, cells joined with " | " */
 export async function xlsxToText(bytes: Uint8Array): Promise<string> {
   const zip = await JSZip.loadAsync(bytes)
@@ -128,28 +135,30 @@ export async function xlsxToText(bytes: Uint8Array): Promise<string> {
   if (sharedXml) {
     const sst = parser.parse(sharedXml) as Record<string, any>
     for (const si of asArray(sst.sst?.si) as Array<Record<string, unknown>>) {
+      if (shared.length >= MAX_XLSX_SHARED) break
       shared.push(sharedStringText(si))
     }
   }
 
   const sections: string[] = []
-  for (const sheet of sheets) {
+  for (const sheet of sheets.slice(0, MAX_XLSX_SHEETS)) {
     const path = relTargets.get(String(sheet['@_r:id'] ?? ''))
     const sheetXml = path ? await zipText(zip, path) : undefined
     if (!sheetXml) continue
     const worksheet = parser.parse(sheetXml) as Record<string, any>
     const lines: string[] = [`# ${String(sheet['@_name'] ?? '')}`]
-    for (const row of asArray(worksheet.worksheet?.sheetData?.row) as Array<
-      Record<string, unknown>
-    >) {
+    const rows = asArray(worksheet.worksheet?.sheetData?.row) as Array<Record<string, unknown>>
+    for (const row of rows.slice(0, MAX_XLSX_ROWS)) {
       const cells: string[] = []
       for (const cell of asArray(row.c as Cell | Cell[])) {
         const text = cellText(cell, shared)
         const ref = cell['@_r']
         // A malformed ref (no leading column letters) yields -1; append in
         // document order instead of writing cells[-1] which would drop text.
+        // Clamp wild columns (e.g. XXXXXX99) to append: padding millions of
+        // empty cells would OOM on a hostile file.
         const col = ref ? columnIndex(ref) : cells.length
-        const target = col >= 0 ? col : cells.length
+        const target = col >= 0 && col <= MAX_XLSX_COLS ? col : cells.length
         while (cells.length < target) cells.push('')
         cells[target] = text
       }
