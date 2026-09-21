@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import { mergeStyleXml } from '../src/style-upsert'
 
+describe('style font size validation', () => {
+  it('rejects non-finite and out-of-range half-point sizes', () => {
+    for (const bad of [NaN, Infinity, -10, 0, 3169, 1e9]) {
+      expect(() =>
+        mergeStyleXml(null, { styleId: 'Normal', rPr: { sizeHalfPoints: bad } }),
+      ).toThrow(/Invalid (font size|numeric value)/)
+    }
+  })
+
+  it('accepts normal sizes', () => {
+    const xml = mergeStyleXml(null, { styleId: 'Normal', rPr: { sizeHalfPoints: 24 } })
+    expect(xml).toContain('w:val="24"')
+  })
+})
+
 describe('style font slot isolation', () => {
   it('editing Latin font keeps complex script and East Asian theme references', () => {
     const xml = mergeStyleXml(

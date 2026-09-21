@@ -206,7 +206,17 @@ class Children {
   }
 }
 
-const num = (n: number) => String(Math.round(n))
+const num = (n: number) => {
+  if (!Number.isFinite(n)) throw new Error(`Invalid numeric value: ${String(n)}`)
+  return String(Math.round(n))
+}
+
+/** Valid style font size in half-points (Word range 1..3168). */
+function assertFontSizeHalfPoints(v: number): void {
+  if (!Number.isFinite(v) || v < 1 || v > 3168) {
+    throw new Error(`Invalid font size: ${String(v)} half-points (expected 1..3168)`)
+  }
+}
 
 function patchRun(children: Children, rp: StyleRunProps): void {
   children.flag('w:b', rp.bold)
@@ -231,6 +241,7 @@ function patchRun(children: Children, rp: StyleRunProps): void {
     )
   }
   if (rp.sizeHalfPoints !== undefined) {
+    if (rp.sizeHalfPoints !== null) assertFontSizeHalfPoints(rp.sizeHalfPoints)
     const sz = rp.sizeHalfPoints === null ? null : num(rp.sizeHalfPoints)
     children.set('w:sz', sz === null ? null : `<w:sz w:val="${sz}"/>`)
     children.set('w:szCs', sz === null ? null : `<w:szCs w:val="${sz}"/>`)
