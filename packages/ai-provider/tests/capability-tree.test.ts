@@ -60,6 +60,45 @@ describe('capability-tree vendor rows', () => {
   })
 })
 
+describe('custom OpenAI-compatible vendors', () => {
+  it('appear in capability groups when their models qualify', () => {
+    const settings = settingsWith(
+      profile({
+        id: 'agnes',
+        displayName: 'Agnes AI',
+        models: [{ id: 'agnes-image-1' }, { id: 'agnes-video-1' }, { id: 'agnes-chat' }],
+      }),
+    )
+    const imageRows = capabilityVendorRows(settings, 'imageGen')
+    expect(imageRows.some((r) => r.vendorId === 'agnes' && r.name === 'Agnes AI')).toBe(true)
+    const videoRows = capabilityVendorRows(settings, 'videoGen')
+    expect(videoRows.some((r) => r.vendorId === 'agnes')).toBe(true)
+    // qualification is per-model: a profile with only chat models joins
+    // svgGeneration but never imageGen
+    const chatOnly = settingsWith(
+      profile({ id: 'c1', displayName: 'C1', models: [{ id: 'gpt-x' }] }),
+    )
+    expect(capabilityVendorRows(chatOnly, 'imageGen').some((r) => r.vendorId === 'c1')).toBe(false)
+    expect(capabilityVendorRows(chatOnly, 'svgGeneration').some((r) => r.vendorId === 'c1')).toBe(
+      true,
+    )
+  })
+
+  it('custom vendors compete for the auto-default', () => {
+    const settings = settingsWith(
+      profile({
+        id: 'agnes',
+        displayName: 'Agnes AI',
+        models: [{ id: 'agnes-image-1' }],
+      }),
+    )
+    expect(resolveCapabilityDefault(settings, 'imageGen')).toEqual({
+      profileId: 'agnes',
+      modelId: 'agnes-image-1',
+    })
+  })
+})
+
 describe('capability model filters', () => {
   it('filters image/video generation by model id', () => {
     const p = profile({ id: 'gemini', vendorId: 'gemini' })

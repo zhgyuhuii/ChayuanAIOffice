@@ -2776,7 +2776,13 @@ async function generateImageTool(
     prompt,
     aspectRatio: input.aspect_ratio === undefined ? undefined : String(input.aspect_ratio),
   })
-  if (!r.url) return err(`image generation failed: ${r.error ?? 'unknown error'}`, summary)
+  // LOCAL(2026-09-20): the runtime already walked every configured image model
+  // (priority chain); steer to web search as the next tier (pdf has no svg tier)
+  if (!r.url)
+    return err(
+      `image generation failed: ${r.error ?? 'unknown error'} — find imagery with image_search instead, or retry generate_image`,
+      summary,
+    )
   return {
     output: `Generated image URL: ${r.url}\nInsert it into the document with insert_image.`,
     summary,

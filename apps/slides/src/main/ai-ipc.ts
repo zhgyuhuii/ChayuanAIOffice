@@ -29,10 +29,7 @@ import {
   type AiRuntime,
 } from '@chatoffice/ai-provider'
 import { persistGeneratedImage } from '@chatoffice/ai-host'
-import {
-  registerMediaIpc,
-  registerSharedAiIpc, registerSharedKbIpc
-} from '@chatoffice/ai-host'
+import { registerMediaIpc, registerSharedAiIpc, registerSharedKbIpc } from '@chatoffice/ai-host'
 import { fetchRemoteImage } from '@chatoffice/electron-utils'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {

@@ -104,7 +104,8 @@ import {
 import {
   persistGeneratedImage,
   registerMediaIpc,
-  registerSharedAiIpc, registerSharedKbIpc
+  registerSharedAiIpc,
+  registerSharedKbIpc,
 } from '@chatoffice/ai-host'
 import { listCodexModels, shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {
@@ -3194,7 +3195,7 @@ export function registerAiIpc(): void {
   ipcMain.handle(
     'docs:ai-generate-image',
     async (_event, op: { prompt?: unknown; aspectRatio?: unknown }) => {
-    // LOCAL(2026-09-20): materialize generated image into the store — data:/https URLs are not fetchable by the insert pipelines; upstream: additive; converge: upstream may adopt
+      // LOCAL(2026-09-20): materialize generated image into the store — data:/https URLs are not fetchable by the insert pipelines; upstream: additive; converge: upstream may adopt
       const prompt = String(op?.prompt ?? '').trim()
       if (!prompt) return { error: 'prompt must not be empty' }
       const result = await getAiRuntime().generateImage({

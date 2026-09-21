@@ -8,9 +8,19 @@ import type {
   ShapeRenderNode,
 } from '@chatoffice/pptx-render'
 import { EMU_PER_PX_96 } from '@chatoffice/pptx-render'
-import type { AddSmartArtOp, AgentToolCall, AgentToolDef, EditParagraph, SlideComment } from '../../shared/ipc'
+import type {
+  AddSmartArtOp,
+  AgentToolCall,
+  AgentToolDef,
+  EditParagraph,
+  SlideComment,
+} from '../../shared/ipc'
 import { OP_GROUPS, opGuide, opGuideCatalog, opSignatureIndex } from '@chatoffice/pptx-ops/op-docs'
-import { auditDeckConsistency, auditSlideLayout, formatAudit } from '@chatoffice/pipelines/slides/layout-audit'
+import {
+  auditDeckConsistency,
+  auditSlideLayout,
+  formatAudit,
+} from '@chatoffice/pipelines/slides/layout-audit'
 import { runLayoutScript, type LayoutScriptElement } from './layout-script'
 import { allocateImagery, resolveDeckImageSource } from './image-source'
 import { rasterizeSvg } from './svg-raster'
@@ -72,7 +82,6 @@ function toEditParagraphs(raw: unknown): EditParagraph[] | null {
     }
   })
 }
-
 
 /**
  * Slides capability as an AgentSkill: deck outline context + three tools (read structure /
@@ -509,71 +518,80 @@ const TOOLS: AgentToolDef[] = [
       required: ['query'],
     },
   },
-    {
-      name: 'read_url',
-      description:
-        'Fetch a public web page and read its title + body text. Use when the user gives a link ("make this page into slides") or cites a specific URL as material; prefer web_search to discover URLs in the first place. One page per call.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          url: { type: 'string', description: 'The http(s) URL to read' },
-        },
-        required: ['url'],
+  {
+    name: 'read_url',
+    description:
+      'Fetch a public web page and read its title + body text. Use when the user gives a link ("make this page into slides") or cites a specific URL as material; prefer web_search to discover URLs in the first place. One page per call.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'The http(s) URL to read' },
       },
+      required: ['url'],
     },
-    {
-      name: 'generate_video',
-      description:
-        '[Cost-gated] Generate a short AI video (text-to-video, or image-to-video with image_url) and insert it onto the current slide. ' +
-        'The user confirms a paid-generation dialog before the task is submitted — the result may take minutes. ' +
-        'Use only when the user explicitly asks for a video/motion clip; never for decorative stills (use generate_image or image_search instead).',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          prompt: {
-            type: 'string',
-            description: 'Detailed motion description: subject, action, camera movement, scene, mood',
-          },
-          image_url: {
-            type: 'string',
-            description: 'Optional public image URL used as the first frame (image-to-video)',
-          },
-          aspect_ratio: {
-            type: 'string',
-            enum: ['16:9', '9:16', '1:1'],
-            description: 'Frame ratio; default 16:9 (slide-fit)',
-          },
-          duration_seconds: {
-            type: 'integer',
-            enum: [5, 10],
-            description: 'Clip length in seconds; default 5',
-          },
+  },
+  {
+    name: 'generate_video',
+    description:
+      '[Cost-gated] Generate a short AI video (text-to-video, or image-to-video with image_url) and insert it onto the current slide. ' +
+      'The user confirms a paid-generation dialog before the task is submitted — the result may take minutes. ' +
+      'Use only when the user explicitly asks for a video/motion clip; never for decorative stills (use generate_image or image_search instead).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        prompt: {
+          type: 'string',
+          description: 'Detailed motion description: subject, action, camera movement, scene, mood',
         },
-        required: ['prompt'],
-      },
-    },
-    {
-      name: 'generate_svg',
-      description:
-        '[Vector] Insert a vector graphic you write yourself as SVG — lands as a standard double part (crisp vector + raster fallback for old PowerPoint/WPS). ' +
-        'Best for icons, logos, diagrams, arrows, decorative geometry: sharp at any zoom, tiny file size, recolorable by regeneration. ' +
-        'Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; no <text> with webfonts (convert text to paths or keep font-family generic); solid fills only; keep shapes inside the viewBox. ' +
-        'The insert is render-checked; if the check fails twice, fall back to generate_image or shapes.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          svg: { type: 'string', description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>' },
-          x: { type: 'number', description: 'left position in canvas px (default centered)' },
-          y: { type: 'number', description: 'top position in canvas px (default centered)' },
-          w: { type: 'number', description: 'width in canvas px (default 320, kept within the slide)' },
-          h: { type: 'number', description: 'height in canvas px (default from the viewBox aspect ratio)' },
-          slideIndex: { type: 'number', description: 'target slide (default: current slide)' },
+        image_url: {
+          type: 'string',
+          description: 'Optional public image URL used as the first frame (image-to-video)',
         },
-        required: ['svg'],
+        aspect_ratio: {
+          type: 'string',
+          enum: ['16:9', '9:16', '1:1'],
+          description: 'Frame ratio; default 16:9 (slide-fit)',
+        },
+        duration_seconds: {
+          type: 'integer',
+          enum: [5, 10],
+          description: 'Clip length in seconds; default 5',
+        },
       },
+      required: ['prompt'],
     },
-    {
-      name: 'generate_image',
+  },
+  {
+    name: 'generate_svg',
+    description:
+      '[Vector] Insert a vector graphic you write yourself as SVG — lands as a standard double part (crisp vector + raster fallback for old PowerPoint/WPS). ' +
+      'Best for icons, logos, diagrams, arrows, decorative geometry: sharp at any zoom, tiny file size, recolorable by regeneration. ' +
+      'Rules: complete self-contained markup starting with <svg viewBox="0 0 W H">; NO external images/fonts/CSS/scripts; no <text> with webfonts (convert text to paths or keep font-family generic); solid fills only; keep shapes inside the viewBox. ' +
+      'The insert is render-checked; if the check fails twice, fall back to generate_image or shapes.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        svg: {
+          type: 'string',
+          description: 'Complete SVG markup, root <svg … viewBox="0 0 W H">…</svg>',
+        },
+        x: { type: 'number', description: 'left position in canvas px (default centered)' },
+        y: { type: 'number', description: 'top position in canvas px (default centered)' },
+        w: {
+          type: 'number',
+          description: 'width in canvas px (default 320, kept within the slide)',
+        },
+        h: {
+          type: 'number',
+          description: 'height in canvas px (default from the viewBox aspect ratio)',
+        },
+        slideIndex: { type: 'number', description: 'target slide (default: current slide)' },
+      },
+      required: ['svg'],
+    },
+  },
+  {
+    name: 'generate_image',
     description:
       'AI image generation with the configured image model (设置 → 生图、媒体与搜索). Text-to-image; returns an image URL. NEW imagery: insert with insert_web_image. Editing an EXISTING slide picture (background removal/upscaling/etc.): swap it in place with replace_image — do not insert a duplicate. Use for custom illustrations/icons/backgrounds, style-consistent imagery; for real photos/screenshots still use image_search.',
     inputSchema: {
@@ -1578,7 +1596,9 @@ export function createSlidesSkill(access: DeckAccess): AgentSkill {
         lines.push(`- ${name}: ${desc.length > 220 ? `${desc.slice(0, 220)}…` : desc}`)
       }
       if (lines.length === 0) return null
-      return { systemSuffix: `${DEGRADED_PROTOCOL_SUFFIX}\n\nAvailable tools:\n${lines.join('\n')}` }
+      return {
+        systemSuffix: `${DEGRADED_PROTOCOL_SUFFIX}\n\nAvailable tools:\n${lines.join('\n')}`,
+      }
     },
   }
 }
@@ -1996,7 +2016,8 @@ async function executeTool(
 
     case 'read_url': {
       const url = String(call.input.url ?? '').trim()
-      if (!/^https?:\/\//i.test(url)) return fail(t('aiFailReadUrl'), 'read_url needs a full http(s) URL')
+      if (!/^https?:\/\//i.test(url))
+        return fail(t('aiFailReadUrl'), 'read_url needs a full http(s) URL')
       const r = await window.slidesApi.readUrl(url)
       if ('error' in r) return fail(t('aiFailReadUrl'), r.error)
       return {
@@ -2010,13 +2031,16 @@ ${r.text}`,
 
     case 'generate_video': {
       const prompt = String(call.input.prompt ?? '').trim()
-      if (!prompt) return fail(t('aiFailGenDeck'), 'generate_video needs a prompt describing the motion')
+      if (!prompt)
+        return fail(t('aiFailGenDeck'), 'generate_video needs a prompt describing the motion')
       const res = await window.slidesApi.generateVideo({
         prompt,
         ...(typeof call.input.image_url === 'string' && call.input.image_url.startsWith('http')
           ? { imageUrl: call.input.image_url }
           : {}),
-        ...(typeof call.input.aspect_ratio === 'string' ? { aspectRatio: call.input.aspect_ratio } : {}),
+        ...(typeof call.input.aspect_ratio === 'string'
+          ? { aspectRatio: call.input.aspect_ratio }
+          : {}),
         ...(typeof call.input.duration_seconds === 'number'
           ? { durationSeconds: call.input.duration_seconds }
           : {}),
@@ -2053,8 +2077,10 @@ ${r.text}`,
           },
         ],
       })
-      if (!r) return fail(t('aiFailGenerateVideo'), 'The addMedia transaction could not be executed')
-      if (r.failures?.length) return fail(t('aiFailGenerateVideo'), r.failures.map((f) => f.error).join('; '))
+      if (!r)
+        return fail(t('aiFailGenerateVideo'), 'The addMedia transaction could not be executed')
+      if (r.failures?.length)
+        return fail(t('aiFailGenerateVideo'), r.failures.map((f) => f.error).join('; '))
       return {
         output: `Video generated with ${res.vendorId}/${res.model} and inserted on slide ${slideIndex + 1}. Tell the user it plays in presentation mode and that generation was billed by the vendor.`,
         mutated: true,
@@ -2080,7 +2106,10 @@ ${r.text}`,
       const pageW = page?.widthPx ?? 1280
       const pageH = page?.heightPx ?? 720
       // size: explicit w/h, else 320 wide with the viewBox aspect ratio, clamped to the page
-      const vb = /viewBox\s*=\s*["'][\d.eE+-]+[\s,]+[\d.eE+-]+[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)/i.exec(svg)
+      const vb =
+        /viewBox\s*=\s*["'][\d.eE+-]+[\s,]+[\d.eE+-]+[\s,]+([\d.eE+-]+)[\s,]+([\d.eE+-]+)/i.exec(
+          svg,
+        )
       const aspect = vb ? Number(vb[1]) / Math.max(1e-6, Number(vb[2])) : 1
       let w = Number(call.input.w) || 320
       let h = Number(call.input.h) || Math.round(w / Math.max(0.05, Math.min(20, aspect)))
@@ -2135,8 +2164,10 @@ ${r.text}`,
           },
         ],
       })
-      if (!r) return fail(t('aiFailGenerateSvg'), 'The addPicture transaction could not be executed')
-      if (r.failures?.length) return fail(t('aiFailGenerateSvg'), r.failures.map((f) => f.error).join('; '))
+      if (!r)
+        return fail(t('aiFailGenerateSvg'), 'The addPicture transaction could not be executed')
+      if (r.failures?.length)
+        return fail(t('aiFailGenerateSvg'), r.failures.map((f) => f.error).join('; '))
       const createdId = r.records?.[0]?.created?.[0]
       return {
         output:
@@ -2155,7 +2186,31 @@ ${r.text}`,
         prompt,
         aspectRatio: call.input.aspectRatio ? String(call.input.aspectRatio) : undefined,
       })
-      if (!r.url) return fail(t('aiFailGenImage'), r.error ?? 'Generation failed')
+      // LOCAL(2026-09-20): three-tier imagery chain (model chain → web search →
+      // generate_svg); upstream: additive; converge: upstream may adopt
+      if (!r.url) {
+        let pick: string | undefined
+        try {
+          const searched = await window.slidesApi.imageSearch(prompt, 5)
+          pick =
+            searched.method === 'error'
+              ? undefined
+              : searched.images.find((im) => /^https?:\/\//.test(im.imageUrl))?.imageUrl
+        } catch {
+          pick = undefined
+        }
+        if (pick) {
+          return {
+            output: `All configured image models failed (${r.error ?? 'error'}); a web image was found instead: ${pick}\nInsert it with insert_web_image.`,
+            mutated: false,
+            summary: t('aiFailGenImage'),
+          }
+        }
+        return fail(
+          t('aiFailGenImage'),
+          `${r.error ?? 'Generation failed'} — no web image matched either. Draw the illustration yourself with generate_svg (write SVG markup), or retry generate_image.`,
+        )
+      }
       const display: ToolDisplay = {
         kind: 'images',
         items: [{ url: r.url, title: prompt.slice(0, 60) }],
@@ -2732,9 +2787,7 @@ ${r.text}`,
           p.image_queries = slot.urls
           p.image_briefs = slot.briefs
           if (slot.briefs.length && source !== 'svg') {
-            imageNotes.push(
-              t('aiNoteImgFail', { page: i + 1, kw: slot.briefs.join('、') }),
-            )
+            imageNotes.push(t('aiNoteImgFail', { page: i + 1, kw: slot.briefs.join('、') }))
           }
         })
       }
@@ -3088,9 +3141,7 @@ ${r.text}`,
             // Deck-level consistency audit (item 13): deterministic cross-page
             // checks; the model sees and can fix drift in a follow-up apply_ops
             const findings = auditDeckConsistency(access.getSlides())
-            return findings.length
-              ? `\n\nDeck consistency check:\n- ${findings.join('\n- ')}`
-              : ''
+            return findings.length ? `\n\nDeck consistency check:\n- ${findings.join('\n- ')}` : ''
           })(),
         mutated: true,
         summary: t('aiSumDeckGenerated', { done: landedPages, total }),
@@ -3658,8 +3709,7 @@ ${r.text}`,
         return fail(t('aiFailAddComment'), `slideIndex out of range (0-${slides.length - 1})`)
       const text = String(call.input.text ?? '').trim()
       if (!text) return fail(t('aiFailAddComment'), 'text must not be empty')
-      if (!access.addComment)
-        return fail(t('aiFailAddComment'), 'comments are not available here')
+      if (!access.addComment) return fail(t('aiFailAddComment'), 'comments are not available here')
       const result = await access.addComment(idx, text)
       if (!result) return fail(t('aiFailAddComment'), 'failed to add comment')
       return {

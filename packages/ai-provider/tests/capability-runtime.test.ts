@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { AiSettingsV2 } from '@chatoffice/ai-provider'
-import { hasMediaCapability, resolveMediaCapability } from '../src/capability-runtime'
+import {
+  hasMediaCapability,
+  resolveMediaCapability,
+  resolveMediaCapabilityChain,
+} from '../src/capability-runtime'
 
 const settings = (models: Array<{ id: string; type?: string }>): AiSettingsV2 =>
   ({
@@ -54,5 +58,24 @@ describe('resolveMediaCapability', () => {
       resolveSecret: async () => 'sk-harness',
     })
     expect(call?.apiKey).toBe('sk-harness')
+  })
+})
+
+describe('resolveMediaCapabilityChain', () => {
+  it('orders the default first, then the remaining capable models', async () => {
+    const s = settings([{ id: 'img-b' }, { id: 'chat-1' }, { id: 'img-a' }]) as Awaited<
+      ReturnType<typeof resolveMediaCapability>
+    > extends never
+      ? never
+      : Parameters<typeof resolveMediaCapabilityChain>[0]
+    const chain = await resolveMediaCapabilityChain(s, 'image')
+    // explicit default unset → auto picks the first image-gen model (img-b);
+    // the chain then appends the rest in profile/model order
+    expect(chain.map((c) => c.model)).toEqual(['img-b', 'img-a'])
+  })
+
+  it('is empty when nothing of the kind is configured', async () => {
+    const s = settings([{ id: 'chat-1' }])
+    expect(await resolveMediaCapabilityChain(s, 'video')).toEqual([])
   })
 })

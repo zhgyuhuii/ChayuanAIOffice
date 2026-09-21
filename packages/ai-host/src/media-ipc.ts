@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   createFileSource,
+  resolveMediaCapabilityChain,
   generateImageWithModel,
   resolveMediaCapability,
   runMediaJob,
@@ -208,19 +209,39 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
       sem.release()
     }
   }
-  const resolve = async (
-    kind: Parameters<typeof resolveMediaCapability>[1],
-  ): Promise<ResolvedModelCall> => {
-    const settings = await readSettings()
-    const call = await resolveMediaCapability(
-      settings,
-      kind,
-      deps.resolveSecret ? { resolveSecret: deps.resolveSecret } : {},
+  /** priority chain: default first, then every other configured model of the kind */
+  const resolveChain = (kind: Parameters<typeof resolveMediaCapability>[1]) =>
+    readSettings().then((settings) =>
+      resolveMediaCapabilityChain(
+        settings,
+        kind,
+        deps.resolveSecret ? { resolveSecret: deps.resolveSecret } : {},
+      ),
     )
-    if (!call) {
-      throw new Error(`no ${kind} model configured (Settings → 生图、媒体与搜索)`)
+  /** walk candidates top-down; first success wins, all-fail returns the last error */
+  const tryChain = async <T>(
+    calls: ResolvedModelCall[],
+    run: (call: ResolvedModelCall) => Promise<T>,
+    kindLabel: string,
+  ): Promise<{ ok: true; result: T; model: string } | { ok: false; error: string }> => {
+    if (!calls.length) {
+      return {
+        ok: false,
+        error: `no ${kindLabel} model configured (Settings → 生图、媒体与搜索)`,
+      }
     }
-    return call
+    let lastError = ''
+    for (const call of calls) {
+      try {
+        return { ok: true, result: await run(call), model: call.model }
+      } catch (e) {
+        lastError = e instanceof Error ? e.message : String(e)
+      }
+    }
+    return {
+      ok: false,
+      error: calls.length > 1 ? `${lastError} (tried ${calls.length} models)` : lastError,
+    }
   }
 
   deps.ipcMain.handle('ai:media-capabilities', async () => {
@@ -258,11 +279,19 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     const aspectRatio = String(op.aspectRatio ?? '').trim()
     return gate('image', async () => {
       try {
-        const call = await resolve('image')
-        const result = await generateImageWithModel(call, {
-          prompt,
-          ...(aspectRatio ? { aspectRatio } : {}),
-        })
+        const chain = await resolveChain('image')
+        const ir = await tryChain(
+          chain,
+          (call) =>
+            generateImageWithModel(call, {
+              prompt,
+              ...(aspectRatio ? { aspectRatio } : {}),
+            }),
+          'image',
+        )
+        if (!ir.ok) return { error: ir.error }
+        const call = { model: ir.model }
+        const result = ir.result
         // imagegen answers data: URLs or remote links; materialize to bytes so
         // the result lands in the generated-image store as a file:// URL
         const first = result.urls[0]
@@ -290,17 +319,25 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     const aspectRatio = String(op.aspectRatio ?? '').trim()
     return gate('video', async () => {
       try {
-        const call = await resolve('video')
-        const result = await runMediaJob({
-          kind: 'video',
-          vendorId: call.vendorId ?? call.baseUrl ?? 'openai',
-          model: call.model,
-          apiKey: call.apiKey,
-          ...(call.baseUrl ? { baseUrl: call.baseUrl } : {}),
-          prompt,
-          ...(aspectRatio ? { aspectRatio } : {}),
-          ...(durationSeconds ? { durationSeconds } : {}),
-        })
+        const chain = await resolveChain('video')
+        const vr = await tryChain(
+          chain,
+          (call) =>
+            runMediaJob({
+              kind: 'video',
+              vendorId: call.vendorId ?? 'openai',
+              model: call.model,
+              apiKey: call.apiKey,
+              ...(call.baseUrl ? { baseUrl: call.baseUrl } : {}),
+              prompt,
+              ...(aspectRatio ? { aspectRatio } : {}),
+              ...(durationSeconds ? { durationSeconds } : {}),
+            }),
+          'video',
+        )
+        if (!vr.ok) return { error: vr.error }
+        const call = { model: vr.model }
+        const result = vr.result
         const dl = await fetch(result.url)
         if (!dl.ok) return { error: `video download failed: HTTP ${dl.status}` }
         const buf = new Uint8Array(await dl.arrayBuffer())
@@ -342,9 +379,15 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
           return { error: err(loadErr) }
         }
         const hasVideo = media.some((m) => m.mime.startsWith('video/'))
-        const call = await resolve(hasVideo ? 'videoUnderstanding' : 'imageUnderstanding')
-        const text = await understandMediaWithModel(call, { media, requirements })
-        return { text, model: call.model }
+        const chain = await resolveChain(hasVideo ? 'videoUnderstanding' : 'imageUnderstanding')
+        const ur = await tryChain(
+          chain,
+          (call) => understandMediaWithModel(call, { media, requirements }),
+          hasVideo ? 'video analysis' : 'image analysis',
+        )
+        if (!ur.ok) return { error: ur.error }
+        const text = ur.result
+        return { text, model: ur.model }
       } catch (e) {
         return { error: err(e) }
       }
@@ -364,16 +407,22 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
         } catch (loadErr) {
           return { error: err(loadErr) }
         }
-        const call = await resolve('asr')
+        const chain = await resolveChain('asr')
         const bytes = new Uint8Array(Buffer.from(media.base64, 'base64'))
-        const text = await transcribeWithModel(call, {
-          bytes,
-          mime: media.mime,
-          // DashScope file transcription (paraformer family) needs the public URL
-          ...(source.startsWith('http') ? { sourceUrl: source } : {}),
-          ...(language ? { language } : {}),
-        })
-        return { text, model: call.model }
+        const ar = await tryChain(
+          chain,
+          (call) =>
+            transcribeWithModel(call, {
+              bytes,
+              mime: media.mime,
+              // DashScope file transcription (paraformer family) needs the public URL
+              ...(source.startsWith('http') ? { sourceUrl: source } : {}),
+              ...(language ? { language } : {}),
+            }),
+          'asr',
+        )
+        if (!ar.ok) return { error: ar.error }
+        return { text: ar.result, model: ar.model }
       } catch (e) {
         return { error: err(e) }
       }
@@ -387,8 +436,15 @@ export function registerMediaIpc(deps: MediaIpcDeps): void {
     const voice = String(op.voice ?? '').trim()
     return gate('tts', async () => {
       try {
-        const call = await resolve('tts')
-        const result = await synthesizeSpeechWithModel(call, { text, ...(voice ? { voice } : {}) })
+        const chain = await resolveChain('tts')
+        const tr = await tryChain(
+          chain,
+          (call) => synthesizeSpeechWithModel(call, { text, ...(voice ? { voice } : {}) }),
+          'tts',
+        )
+        if (!tr.ok) return { error: tr.error }
+        const call = { model: tr.model }
+        const result = tr.result
         const dir = mediaDir()
         await mkdir(dir, { recursive: true })
         const ext = result.mime.includes('wav')

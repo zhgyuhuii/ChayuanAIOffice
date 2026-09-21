@@ -1,9 +1,12 @@
 import {
+  DEFAULT_KIND_TYPES,
   findProfile,
   resolveDefaultModel,
   resolveModelCall,
   type ResolvedModelCall,
 } from './settings-v2'
+import { inferModelType } from './model-type'
+import type { AiModelSelection } from './types'
 import type { AiSettingsV2 } from './types'
 
 /**
@@ -91,4 +94,60 @@ export function dashscopeRoot(baseUrl: string): string {
     /* fall through to the raw value */
   }
   return baseUrl.replace(/\/+$/, '')
+}
+
+/**
+ * Every usable model call for a media kind, in priority order: the explicit
+ * or auto-detected default FIRST, then the remaining enabled models of the
+ * kind across profiles (profile order, then model order). Callers walk the
+ * chain top-down — the default gets the first shot, the rest take over when
+ * it fails, so one broken key never kills a capability.
+ */
+export async function resolveMediaCapabilityChain(
+  settings: AiSettingsV2,
+  kind: MediaModelKind,
+  options: ResolveMediaCapabilityOptions = {},
+): Promise<ResolvedModelCall[]> {
+  const types = DEFAULT_KIND_TYPES[KIND_TO_DEFAULT[kind]]
+  const resolveSelection = async (
+    selection: AiModelSelection,
+  ): Promise<ResolvedModelCall | undefined> => {
+    const profile = findProfile(settings, selection.profileId)
+    if (!profile) return undefined
+    let apiKey = profile.apiKey ?? ''
+    if (!apiKey && options.resolveSecret) {
+      apiKey = (await options.resolveSecret(profile.id)) ?? ''
+    }
+    if (!apiKey) return undefined
+    return resolveModelCall(settings, selection, apiKey)
+  }
+
+  const primary = resolveDefaultModel(settings, KIND_TO_DEFAULT[kind])
+  const order: AiModelSelection[] = []
+  if (primary) order.push(primary)
+  for (const profile of settings.profiles) {
+    if (!profile.enabled) continue
+    for (const entry of profile.models) {
+      if (!types.includes(entry.type ?? inferModelType(entry.id))) continue
+      const selection = { profileId: profile.id, modelId: entry.id }
+      if (
+        primary &&
+        selection.profileId === primary.profileId &&
+        selection.modelId === primary.modelId
+      ) {
+        continue
+      }
+      order.push(selection)
+    }
+  }
+  const chain: ResolvedModelCall[] = []
+  const seen = new Set<string>()
+  for (const selection of order) {
+    const key = `${selection.profileId}/${selection.modelId}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    const call = await resolveSelection(selection)
+    if (call) chain.push(call)
+  }
+  return chain
 }

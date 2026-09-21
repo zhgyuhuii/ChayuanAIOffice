@@ -31,6 +31,8 @@ const zh = {
   currentModel: '当前模型',
   // form
   apiUrl: 'API 地址',
+  displayNameLabel: '显示名',
+  displayNamePlaceholder: '给这个自定义厂商起个名字（保存后各能力分组同步显示）',
   apiUrlPlaceholder: 'https://api.example.com/v1',
   protocol: '协议',
   protocolHint: {
@@ -185,6 +187,8 @@ const en = {
   imageModelNone: 'No image model enabled',
   currentModel: 'Current model',
   apiUrl: 'API URL',
+  displayNameLabel: 'Display name',
+  displayNamePlaceholder: 'Name this custom vendor (all capability groups pick it up on save)',
   apiUrlPlaceholder: 'https://api.example.com/v1',
   protocol: 'Protocol',
   protocolHint: {

@@ -52,6 +52,10 @@ export interface MediaSkillBridge {
     mime?: string
     error?: string
   }>
+  /** web image search for the generation→search→svg fallback chain (optional) */
+  searchImages?(query: string, max: number): Promise<Array<{ imageUrl: string }>>
+  /** the app ships a generate_svg tool the model can fall back to */
+  hasGenerateSvg?: boolean
   /**
    * Per-tool placement guidance appended to outputs — the app's own insertion
    * tools, named exactly as the model sees them.
@@ -246,17 +250,43 @@ export function createMediaSkill(bridge: MediaSkillBridge): AgentSkill {
           const prompt = String(call.input.prompt ?? '').trim()
           if (!prompt) return fail(labels.genImage, 'prompt must not be empty')
           const aspectRatio = String(call.input.aspectRatio ?? '').trim()
+          // Tier 1: every configured image model, server-side priority chain
           const r = await bridge.generateImage({
             prompt,
             ...(aspectRatio ? { aspectRatio } : {}),
           })
           if (signal?.aborted) return aborted()
-          if (!r.url) return fail(labels.genImage, r.error ?? 'image generation failed')
-          return {
-            output: `Image generated (${r.model ?? 'configured model'}): ${r.url}\n${bridge.placement.image}`,
-            mutated: false,
-            summary: labels.genImage,
+          if (r.url) {
+            return {
+              output: `Image generated (${r.model ?? 'configured model'}): ${r.url}\n${bridge.placement.image}`,
+              mutated: false,
+              summary: labels.genImage,
+            }
           }
+          // Tier 2: web image search keeps imagery available without any model
+          if (bridge.searchImages) {
+            try {
+              const images = await bridge.searchImages(prompt, 5)
+              const pick = images.find((im) => /^https?:\/\//.test(im.imageUrl))
+              if (pick) {
+                return {
+                  output: `All configured image models failed (${r.error ?? 'error'}); a web image was found instead: ${pick.imageUrl}\n${bridge.placement.image}`,
+                  mutated: false,
+                  summary: labels.genImage,
+                }
+              }
+            } catch {
+              /* search failed — hand the slot to the svg tier */
+            }
+          }
+          // Tier 3: the model draws it as SVG
+          const svgHint = bridge.hasGenerateSvg
+            ? ' Draw the illustration yourself with generate_svg (write SVG markup).'
+            : ''
+          return fail(
+            labels.genImage,
+            `${r.error ?? 'image generation failed'} — no web image matched either.${svgHint}`,
+          )
         }
         case 'generate_video': {
           const prompt = String(call.input.prompt ?? '').trim()

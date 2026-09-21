@@ -39,7 +39,8 @@ import { hasChatOfficeAuth } from '@chatoffice/ai-search'
 import {
   registerFetchImageIpc,
   registerMediaIpc,
-  createByokImageHandler, registerSharedKbIpc
+  createByokImageHandler,
+  registerSharedKbIpc,
 } from '@chatoffice/ai-host'
 import { ImageExportSessions } from './image-export'
 import { printMarkdownPdf } from './print-pdf'

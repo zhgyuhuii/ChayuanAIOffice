@@ -6,6 +6,8 @@ import { createMediaSkill, type AgentSkill, type MediaSkillBridge } from '@chato
  * tools, wired to its insertion flow). Pure adapter — the shared factory in
  * agent-core owns the tool schemas, gating and execution; the bridge maps to
  * the unified ai:media-* channels registered by the main process.
+ * Every bridge method degrades honestly ({error:'unavailable'}) when the
+ * preload bridge is absent (tests / older shells).
  */
 
 interface MediaWire {
@@ -29,31 +31,62 @@ interface MediaWire {
     text: string
     voice?: string
   }): Promise<{ url?: string; mime?: string; error?: string }>
+  imageSearch?: (
+    query: string,
+    maxResults?: number,
+  ) => Promise<{
+    images: Array<{ imageUrl: string }>
+    method: string
+    error?: string
+  }>
 }
 
-const wireRaw = (window as unknown as { desktopApi?: MediaWire }).desktopApi
-if (!wireRaw) throw new Error('media bridge unavailable')
-const wire: MediaWire = wireRaw
+const wire: MediaWire | undefined = (window as unknown as Record<string, MediaWire | undefined>)
+  .desktopApi
+const unavailable = <T>(what: string): Promise<T> =>
+  Promise.reject(new Error(`${what} is unavailable`))
 
 export function createSheetsMediaSkill(): AgentSkill {
+  const flagsOff = {
+    image: false,
+    video: false,
+    imageUnderstanding: false,
+    videoUnderstanding: false,
+    tts: false,
+    asr: false,
+  }
   const bridge: MediaSkillBridge = {
     capabilities: async () => {
-      const r = await wire.mediaCapabilities()
-      const f = r.flags ?? {}
-      return {
-        image: !!f.image,
-        video: !!f.video,
-        imageUnderstanding: !!f.imageUnderstanding,
-        videoUnderstanding: !!f.videoUnderstanding,
-        tts: !!f.tts,
-        asr: !!f.asr,
+      if (!wire) return flagsOff
+      try {
+        const r = await wire.mediaCapabilities()
+        const f = r.flags ?? {}
+        return {
+          image: !!f.image,
+          video: !!f.video,
+          imageUnderstanding: !!f.imageUnderstanding,
+          videoUnderstanding: !!f.videoUnderstanding,
+          tts: !!f.tts,
+          asr: !!f.asr,
+        }
+      } catch {
+        return flagsOff
       }
     },
-    generateImage: (op) => wire.mediaImage(op),
-    generateVideo: (op) => wire.mediaVideo(op),
-    understandMedia: (op) => wire.mediaUnderstand(op),
-    transcribeAudio: (op) => wire.mediaAsr(op),
-    generateSpeech: (op) => wire.mediaTts(op),
+    generateImage: (op) => (wire ? wire.mediaImage(op) : unavailable('image generation')),
+    generateVideo: (op) => (wire ? wire.mediaVideo(op) : unavailable('video generation')),
+    understandMedia: (op) => (wire ? wire.mediaUnderstand(op) : unavailable('media analysis')),
+    transcribeAudio: (op) => (wire ? wire.mediaAsr(op) : unavailable('transcription')),
+    generateSpeech: (op) => (wire ? wire.mediaTts(op) : unavailable('speech synthesis')),
+    ...(wire?.imageSearch
+      ? {
+          searchImages: async (query: string, max: number) => {
+            const r = await wire.imageSearch!(query, max)
+            return r.method === 'error' ? [] : r.images
+          },
+        }
+      : {}),
+    hasGenerateSvg: false,
     placement: {
       image: 'Place it with propose_operations {op:"add_image", sheetId, path:<url>, anchorCell}.',
       video: 'Spreadsheets cannot embed video files — report the saved file path to the user.',

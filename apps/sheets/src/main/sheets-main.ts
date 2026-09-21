@@ -73,7 +73,8 @@ import {
 import {
   persistGeneratedImage,
   registerMediaIpc,
-  registerSharedAiIpc, registerSharedKbIpc
+  registerSharedAiIpc,
+  registerSharedKbIpc,
 } from '@chatoffice/ai-host'
 import { shutdownCodexAppServers } from '@chatoffice/ai-provider/codex-app-server'
 import {

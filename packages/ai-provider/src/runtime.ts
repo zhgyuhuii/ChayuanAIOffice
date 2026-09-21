@@ -489,15 +489,43 @@ export function createAiRuntime(deps: AiRuntimeDeps) {
     }
     if (!imageSelection) imageSelection = pickImageModel(settings)
     if (imageSelection) {
-      try {
-        const call = await resolveForRun(imageSelection)
-        const result = await generateImageWithModel(call, req)
-        return {
-          urls: result.urls,
-          ...(result.urls[0] !== undefined ? { url: result.urls[0] } : {}),
+      // Priority chain: the explicit/default pick first, then every other
+      // enabled image-gen model — one broken key or down vendor must not kill
+      // the capability when another configured model can serve it.
+      const tried: string[] = []
+      let lastError = ''
+      const attempt = async (selection: { profileId: string; modelId: string }) => {
+        const key = `${selection.profileId}/${selection.modelId}`
+        if (tried.includes(key)) return 'skip' as const
+        const profile = findProfile(settings, selection.profileId)
+        const entry = profile?.models.find((m) => m.id === selection.modelId)
+        if (!profile?.enabled || !entry || !isImageGenModel(entry)) return 'skip' as const
+        tried.push(key)
+        try {
+          const call = await resolveForRun(selection)
+          const result = await generateImageWithModel(call, req)
+          return {
+            urls: result.urls,
+            ...(result.urls[0] !== undefined ? { url: result.urls[0] } : {}),
+            model: call.model,
+          }
+        } catch (err) {
+          lastError = err instanceof Error ? err.message : String(err)
+          return 'skip' as const
         }
-      } catch (err) {
-        return { error: err instanceof Error ? err.message : String(err) }
+      }
+      const primary = await attempt(imageSelection)
+      if (primary !== 'skip') return primary
+      for (const profile of settings.profiles) {
+        if (!profile.enabled) continue
+        for (const entry of profile.models) {
+          if (!isImageGenModel(entry)) continue
+          const r = await attempt({ profileId: profile.id, modelId: entry.id })
+          if (r !== 'skip') return r
+        }
+      }
+      return {
+        error: tried.length > 1 ? `${lastError} (tried ${tried.length} image models)` : lastError,
       }
     }
     return { error: translate('errNoImageModel') }

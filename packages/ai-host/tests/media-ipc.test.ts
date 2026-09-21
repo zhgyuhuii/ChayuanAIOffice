@@ -74,6 +74,12 @@ beforeAll(async () => {
     req.on('end', () => {
       res.setHeader('Content-Type', 'application/json')
       if (req.url?.includes('/images/generations')) {
+        const raw = body.join('')
+        if (raw.includes('broken-image')) {
+          res.statusCode = 500
+          res.end(JSON.stringify({ error: { message: 'broken vendor' } }))
+          return
+        }
         res.end(JSON.stringify({ data: [{ b64_json: PNG_1PX.toString('base64') }] }))
         return
       }
@@ -280,7 +286,9 @@ describe('registerMediaIpc end-to-end', () => {
   })
 
   it('fetch-image channel downloads store-backed file:// URLs with real mime', async () => {
-    const stored = await persistGeneratedImage(`data:image/png;base64,${PNG_1PX.toString('base64')}`)
+    const stored = await persistGeneratedImage(
+      `data:image/png;base64,${PNG_1PX.toString('base64')}`,
+    )
     const r = await call('ai:fetch-image', stored)
     expect(r).not.toBeNull()
     expect(r.mime).toBe('image/png')
@@ -296,11 +304,30 @@ describe('registerMediaIpc end-to-end', () => {
         readFile: (p) => import('node:fs/promises').then((m) => m.readFile(p, 'utf8')),
         writeFile: (p, c) => import('node:fs/promises').then((m) => m.writeFile(p, c, 'utf8')),
       },
-      chatoffice: { apiKey: () => '', hasAuth: () => false, status: async () => ({ loggedIn: false }) },
+      chatoffice: {
+        apiKey: () => '',
+        hasAuth: () => false,
+        status: async () => ({ loggedIn: false }),
+      },
     })
     const r = await handler({ prompt: 'a red square' })
     expect(r.error).toBeUndefined()
     expect(String(r.url)).toMatch(/^file:/)
+  })
+
+  it('image generation walks the priority chain past a broken default', async () => {
+    writeSettings([openaiProfile([{ id: 'broken-image' }, { id: 'fake-image' }])])
+    const r = await call('ai:media-image', { prompt: 'a red square' })
+    expect(r.error).toBeUndefined()
+    expect(String(r.url)).toMatch(/^file:/)
+    // the chain landed on the healthy candidate, not the broken default
+    expect(r.model).toBe('fake-image')
+  })
+
+  it('reports the accumulated error when every model in the chain fails', async () => {
+    writeSettings([openaiProfile([{ id: 'broken-image' }])])
+    const r = await call('ai:media-image', { prompt: 'a red square' })
+    expect(String(r.error)).toContain('broken vendor')
   })
 
   it('drives video generation through a registered job adapter', async () => {

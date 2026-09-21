@@ -125,8 +125,9 @@ export function capabilityVendorRows(
           : {}),
       }))
   }
+  const catalog = CAPABILITY_VENDORS[kind]
   const byId = new Map(settings.profiles.map((p) => [p.vendorId ?? p.id, p]))
-  return CAPABILITY_VENDORS[kind]
+  const rows = catalog
     .map((vendorId) => {
       const vendor = VENDOR_BY_ID.get(vendorId)
       const profile = byId.get(vendorId)
@@ -139,6 +140,24 @@ export function capabilityVendorRows(
       }
     })
     .sort((a, b) => Number(b.enabled) - Number(a.enabled))
+  // Custom/OpenAI-compatible profiles (no catalog vendor, e.g. agnes-ai) join
+  // the group whenever at least one of their models qualifies — qualification
+  // is model-driven (modelHasCapability), never vendor-list membership.
+  for (const profile of settings.profiles) {
+    const vendorId = profile.vendorId ?? profile.id
+    if (catalog.includes(vendorId)) continue
+    if (!profile.enabled) continue
+    if (profileCapabilityModels(settings, kind, profile.id).length === 0) continue
+    rows.push({
+      vendorId,
+      name: profile.displayName || vendorId,
+      enabled: true,
+      ...(VENDOR_BY_ID.get(profile.vendorId ?? '')?.keyUrl
+        ? { keyUrl: VENDOR_BY_ID.get(profile.vendorId ?? '')!.keyUrl }
+        : {}),
+    })
+  }
+  return rows
 }
 
 /** the capability-qualifying models of one enabled profile */
@@ -186,10 +205,11 @@ export function resolveCapabilityDefault(
   const explicit =
     kind === 'imageGen' ? settings.imageModel : capabilityDefaultSelection(settings, kind)
   if (selectionQualifies(settings, kind, explicit)) return explicit
-  const vendorGate = new Set(CAPABILITY_VENDORS[kind])
+  // No vendor-list gate: qualification is model-driven (modelHasCapability —
+  // type checks for generation/svg, the capability matrix for understanding),
+  // so custom OpenAI-compatible profiles compete with catalog vendors.
   for (const profile of settings.profiles) {
     if (!profile.enabled) continue
-    if (vendorGate.size > 0 && !vendorGate.has(profile.vendorId ?? profile.id)) continue
     const entry = profile.models.find((m) => modelHasCapability(kind, profile, m))
     if (entry) return { profileId: profile.id, modelId: entry.id }
   }

@@ -188,6 +188,8 @@ export function ModelSettingsPage({
 
   // ── form state (rebuilt when the selected vendor changes) ──────────────
   const [apiUrl, setApiUrl] = useState('')
+  /** custom-vendor display name (catalog vendors keep their brand name) */
+  const [displayNameInput, setDisplayNameInput] = useState('')
   const [protocol, setProtocol] = useState<AiWireProtocol>('openai-completions')
   const [apiKeyInput, setApiKeyInput] = useState('')
   /** multi-field credentials (vendor.keyFields, e.g. kling accessKey/secretKey):
@@ -316,6 +318,7 @@ export function ModelSettingsPage({
       const stored = profiles.find((p) => (p.vendorId ?? p.id) === selected && !p.enabled)
       setApiUrl(stored?.baseUrl ?? vendor?.defaultUrl ?? '')
       setProtocol(stored?.protocol ?? vendor?.api ?? 'openai-completions')
+      setDisplayNameInput(stored && !VENDOR_BY_ID.has(selected) ? (stored.displayName ?? '') : '')
       setModels(
         (stored?.models ?? ((vendor?.presets ?? []) as AiModelEntry[])).map((m) => ({
           ...m,
@@ -330,6 +333,7 @@ export function ModelSettingsPage({
     }
     setApiUrl(selectedProfile.baseUrl)
     setProtocol(selectedProfile.protocol)
+    setDisplayNameInput(VENDOR_BY_ID.has(selected) ? '' : (selectedProfile.displayName ?? ''))
     setModels(selectedProfile.models.map((m) => ({ ...m, enabled: true })))
     setModelsFromPreset(false)
     setApiKeyInput('')
@@ -516,7 +520,7 @@ export function ModelSettingsPage({
       const profile: AiProviderProfile = {
         id: vendorId,
         vendorId,
-        displayName: vendorName(vendorId),
+        displayName: displayNameInput.trim() || vendorName(vendorId),
         protocol,
         baseUrl: apiUrl.trim(),
         // untouched key → KEEP_KEY so the backend keeps the stored secret
@@ -1161,6 +1165,19 @@ export function ModelSettingsPage({
                 <p className={`msp-msg ${msg.kind}`} data-model-msg>
                   {msg.text}
                 </p>
+              )}
+
+              {selected === 'openai-compatible' && (
+                <label className="msp-field">
+                  <span className="msp-label">{t.displayNameLabel}</span>
+                  <input
+                    className="msp-input"
+                    data-model-display-name=""
+                    value={displayNameInput}
+                    placeholder={t.displayNamePlaceholder}
+                    onChange={(e) => setDisplayNameInput(e.target.value)}
+                  />
+                </label>
               )}
 
               <label className="msp-field">
