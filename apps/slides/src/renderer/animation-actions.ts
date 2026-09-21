@@ -11,6 +11,7 @@ import type {
   TransitionKind,
 } from '../shared/ipc'
 import type { ActionCtx } from './action-context'
+import { animClassOf } from './animation-play'
 import { t } from './i18n/locale'
 
 /** Per-field extras applied on top of the effect kind (速度/效果选项/声音 without re-picking the effect). */
@@ -43,7 +44,7 @@ export async function applyTransition(
 
 /** Default durations for each PowerPoint effect. */
 export function animDefaultDur(effect: AnimEffectKind): number {
-  return effect === 'appear' || effect === 'disappear'
+  return effect === 'appear' || effect === 'disappear' || animClassOf(effect) === 'media'
     ? 0
     : effect === 'spin' ||
         effect === 'grow' ||

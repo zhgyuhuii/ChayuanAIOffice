@@ -175,7 +175,11 @@ import {
   textEditPreviewParts,
   textEditPreviewContent,
   seedDraftColors,
+  paperCss,
+  textEraseKey,
+  textEraseProbe,
 } from './text-edit-preview'
+import { samplePaperColor } from './paper-sample'
 import type { LocalTextEdit, LocalTextInsert, TextDraft } from './text-edit-preview'
 import { planEditOps, reduceBucket } from './edit-ops'
 import type { Bucket, Op, OpContext, PlanResult } from './edit-ops'
@@ -1735,6 +1739,7 @@ export default function App() {
           moveBy: e.moveBy,
           baseInk: e.baseInk,
           baseFont: e.baseFont,
+          paper: e.paper,
         })),
     ]
   }
@@ -2382,6 +2387,13 @@ export default function App() {
   /** Seed the draft with the document's own face: the font id covering the most
       characters inside the draft rect names it. Async like the ink probe; rect
       identity pins the draft. */
+  /** Page color behind a run, read off its rendered canvas (see LocalTextEdit.paper) */
+  const samplePaper = (origIdx: number, rect: readonly [number, number, number, number]) =>
+    samplePaperColor(
+      document.querySelector(`.pdf-page[data-page="${origIdx}"]`),
+      pdfRectToCss(pageGeom(origIdx), rect, scale),
+    ) ?? undefined
+
   const seedDraftFont = (origIdx: number, rect: [number, number, number, number]) => {
     const index = getSearchIndex()
     if (!index) return
@@ -2462,6 +2474,7 @@ export default function App() {
       cover: te.cover,
       seedInk: te.baseInk,
       seedFont: te.baseFont,
+      paper: te.paper,
       block: blk,
       moveBy: te.moveBy,
     }
@@ -2505,6 +2518,7 @@ export default function App() {
       oldText,
       fontSize: block.fontSize,
       value: fold?.value ?? oldText,
+      paper: samplePaper(origIdx, rect),
       charStyles: fold?.charStyles,
       editId: fold?.editId,
       foldedIds: fold && fold.foldedIds.length > 0 ? fold.foldedIds : undefined,
@@ -2719,7 +2733,14 @@ export default function App() {
     setSelected(null)
     draftSelectedRef.current = false
     draftPreselectRef.current = preselect ?? null
-    setTextDraft({ origIdx, rect, oldText, fontSize, value: oldText })
+    setTextDraft({
+      origIdx,
+      rect,
+      oldText,
+      fontSize,
+      value: oldText,
+      paper: samplePaper(origIdx, rect),
+    })
     seedDraftFont(origIdx, rect)
     // The span rect is a font-metric layout box; the run's glyph ink can poke out of it.
     // Fetch the engine's real ink bounds so the editor/preview cover hides the old run fully.
@@ -2993,10 +3014,21 @@ export default function App() {
                 cover: d.cover ?? e.cover,
                 baseInk: d.seedInk ?? e.baseInk,
                 baseFont: d.seedFont ?? e.baseFont,
+                paper: d.paper ?? e.paper,
               }
             : e,
         )
-      : [...edits, { id: newId(), input, cover: d.cover, baseInk: d.seedInk, baseFont: d.seedFont }]
+      : [
+          ...edits,
+          {
+            id: newId(),
+            input,
+            cover: d.cover,
+            baseInk: d.seedInk,
+            baseFont: d.seedFont,
+            paper: d.paper,
+          },
+        ]
   }
 
   /** Background dry-run of a just-committed edit against the file. A span that doesn't
@@ -4450,19 +4482,54 @@ export default function App() {
   )
 
   // ── Live page preview: pdfium re-renders the touched region without the moved/
-  // resized/deleted images and without deleted saved annotations, so the original
-  // vanishes immediately instead of at save ──
+  // resized/deleted images, without deleted saved annotations and without the text
+  // runs being edited, so the original vanishes immediately instead of at save ──
 
-  /** Pages with pending erase ops → image rects to remove + saved annotations to remove */
+  /** The open draft's erase probe; keyed on the run, so typing doesn't re-request */
+  const draftProbe = useMemo(
+    () =>
+      textDraft
+        ? {
+            probe: textEraseProbe(
+              textDraft.origIdx,
+              textDraft.rect,
+              textDraft.oldText,
+              textDraft.fontSize,
+            ),
+            rect: textDraft.cover ? unionCover(textDraft.rect, textDraft.cover) : textDraft.rect,
+          }
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the run, not the draft (typing must not re-request)
+    [
+      textDraft?.origIdx,
+      textDraft?.rect,
+      textDraft?.oldText,
+      textDraft?.fontSize,
+      textDraft?.cover,
+    ],
+  )
+  /** Pending edits the open draft stands in for (reopened / folded): the draft's probe
+      erases their run, so they take the draft's erased state */
+  const draftOwnedIds = useMemo(
+    () => new Set(textDraft ? [textDraft.editId, ...(textDraft.foldedIds ?? [])] : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- same: identity fields only
+    [textDraft?.editId, textDraft?.foldedIds],
+  )
+
+  /** Pages with pending erase ops → image rects, saved annotations and text runs to remove */
   const livePreviewRects = useMemo(() => {
     const map = new Map<
       number,
-      { rects: [number, number, number, number][]; annots: (SavedMarkupAnnot | SavedNoteAnnot)[] }
+      {
+        rects: [number, number, number, number][]
+        annots: (SavedMarkupAnnot | SavedNoteAnnot)[]
+        text: { probe: TextEditInput; rect: [number, number, number, number] }[]
+      }
     >()
     const jobFor = (pageIndex: number) => {
       let job = map.get(pageIndex)
       if (!job) {
-        job = { rects: [], annots: [] }
+        job = { rects: [], annots: [], text: [] }
         map.set(pageIndex, job)
       }
       return job
@@ -4471,12 +4538,40 @@ export default function App() {
       if (e.input.kind !== 'insertImage') jobFor(e.input.pageIndex).rects.push(e.input.oldRect)
     }
     for (const d of annotDeletes) jobFor(d.annot.pageIndex).annots.push(d.annot)
+    // The draft goes first: a reopened edit's run must be claimed by the draft's probe
+    if (draftProbe) jobFor(draftProbe.probe.pageIndex).text.push(draftProbe)
+    for (const te of textEdits) {
+      if (draftOwnedIds.has(te.id)) continue
+      const { pageIndex, rect, oldText, fontSize } = te.input
+      jobFor(pageIndex).text.push({
+        probe: textEraseProbe(pageIndex, rect, oldText, fontSize),
+        rect: te.cover ? unionCover(rect, te.cover) : rect,
+      })
+    }
     return map
-  }, [imageEdits, annotDeletes])
+  }, [imageEdits, annotDeletes, textEdits, draftProbe, draftOwnedIds])
 
   const [livePreview, setLivePreview] = useState<
-    Map<number, { png: string; clip: { x: number; y: number; width: number; height: number } }>
+    Map<
+      number,
+      {
+        png: string
+        clip: { x: number; y: number; width: number; height: number }
+        /** textEraseKey of every run the render erased */
+        erased: Set<string>
+      }
+    >
   >(new Map())
+  /** Whether a pending edit's original run is gone from the page render */
+  const runErased = (te: LocalTextEdit): boolean => {
+    const lp = livePreview.get(te.input.pageIndex)
+    if (!lp) return false
+    const probe = draftOwnedIds.has(te.id) && draftProbe ? draftProbe.probe : te.input
+    return lp.erased.has(textEraseKey(probe))
+  }
+  const draftErased =
+    !!draftProbe &&
+    !!livePreview.get(draftProbe.probe.pageIndex)?.erased.has(textEraseKey(draftProbe.probe))
   /** Last requested render key per page; skips redundant IPC round-trips */
   const livePreviewKeys = useRef(new Map<number, string>())
 
@@ -4499,7 +4594,11 @@ export default function App() {
       let y1 = Infinity
       let x2 = -Infinity
       let y2 = -Infinity
-      for (const r of [...job.rects, ...job.annots.map((a) => a.rect)]) {
+      for (const r of [
+        ...job.rects,
+        ...job.annots.map((a) => a.rect),
+        ...job.text.map((t) => t.rect),
+      ]) {
         const b = pdfRectToCss(geom, r, 1)
         x1 = Math.min(x1, b.left)
         y1 = Math.min(y1, b.top)
@@ -4526,7 +4625,11 @@ export default function App() {
       const annotKey = excludedAnnots
         .map((a) => `${a.objNum}:${a.subtype}:${imageRectKey(a.rect)}`)
         .join(',')
-      const key = `${job.rects.map(imageRectKey).join(';')}|${annotKey}|${pxWidth}|${rotIdx}`
+      const textKey = job.text.map((t) => textEraseKey(t.probe)).join(';')
+      // The clip is part of the key: a run's ink bounds arrive after its draft opens and
+      // widen the region, and the same probes must then render again
+      const clipKey = [clip.x, clip.y, clip.width, clip.height].map(Math.round).join(',')
+      const key = `${job.rects.map(imageRectKey).join(';')}|${annotKey}|${textKey}|${clipKey}|${pxWidth}|${rotIdx}`
       if (livePreviewKeys.current.get(pageIndex) === key) continue
       livePreviewKeys.current.set(pageIndex, key)
       void window.pdfApi
@@ -4535,15 +4638,21 @@ export default function App() {
           pageIndex,
           excludeRects: job.rects,
           ...(excludedAnnots.length > 0 ? { excludeAnnots: excludedAnnots } : {}),
+          ...(job.text.length > 0 ? { excludeText: job.text.map((t) => t.probe) } : {}),
           clip,
           pxWidth,
           rotate: rotIdx,
         })
-        .then((png) => {
+        .then((res) => {
           // Stale guard: a newer request for this page may have superseded this one
           // while the render ran — its result must not be overwritten by ours
           if (livePreviewKeys.current.get(pageIndex) !== key) return
-          if (png) setLivePreview((prev) => new Map(prev).set(pageIndex, { png, clip }))
+          if (!res) return
+          const erased = new Set<string>()
+          job.text.forEach((t, i) => {
+            if (res.textErased[i]) erased.add(textEraseKey(t.probe))
+          })
+          setLivePreview((prev) => new Map(prev).set(pageIndex, { png: res.png, clip, erased }))
         })
         .catch(() => {
           // Only clear the key if it is still ours; deleting a newer in-flight key
@@ -6795,6 +6904,7 @@ export default function App() {
                                   markups={mk}
                                   drawings={dw}
                                   textEdits={tes}
+                                  erasedText={livePreview.get(origIdx)?.erased}
                                   textInserts={tis}
                                   imageEdits={ies}
                                   stamps={sts}
@@ -6898,6 +7008,7 @@ export default function App() {
                         return (
                           <div
                             key={origIdx}
+                            data-page={origIdx}
                             className={`pdf-page${editTextMode && !readOnly ? ' pdf-editing-text' : ''}${
                               pendingTextInsert ? ' pdf-inserting-text' : ''
                             }`}
@@ -7263,6 +7374,7 @@ export default function App() {
                                       te,
                                       geom,
                                       scale,
+                                      runErased(te),
                                     )
                                     // A border-drag of the block this edit addresses moves the
                                     // styled preview live with the pointer (the drag ghost of
@@ -7474,17 +7586,20 @@ export default function App() {
                                         )
                                     return (
                                       <>
-                                        {textDraft.cover && (
+                                        {textDraft.cover && !draftErased && (
                                           <div
                                             className="pdf-textedit-cover"
-                                            style={inflateCss(
-                                              pdfRectToCss(
-                                                geom,
-                                                unionCover(textDraft.rect, textDraft.cover),
-                                                scale,
+                                            style={{
+                                              ...inflateCss(
+                                                pdfRectToCss(
+                                                  geom,
+                                                  unionCover(textDraft.rect, textDraft.cover),
+                                                  scale,
+                                                ),
+                                                1.5,
                                               ),
-                                              1.5,
-                                            )}
+                                              ...paperCss(false, textDraft.paper),
+                                            }}
                                           />
                                         )}
                                         <div
@@ -7603,6 +7718,7 @@ export default function App() {
                                               height: wrapCount * leadPx + (blk ? leadPx : 0) + 6,
                                               fontSize: fs,
                                               lineHeight: `${leadPx}px`,
+                                              ...paperCss(draftErased, textDraft.paper),
                                               ...(blk && blk.align !== 'left'
                                                 ? { textAlign: blk.align }
                                                 : {}),

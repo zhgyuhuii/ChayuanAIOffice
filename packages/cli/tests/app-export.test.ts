@@ -169,8 +169,10 @@ describe('exportViaApp', () => {
     const launch = appLaunch({})
     expect(launch).not.toBeNull()
     expect(launch!.command).not.toContain('.bin')
+    // LOCAL(2026-09-22): dev-identity 补丁(0dca6f02)把 node_modules/electron/dist 的
+    // Electron.app 硬链接为 察元AIOffice.app——「真实 Electron 二进制」在本机以该名出现
     expect(launch!.command).toMatch(
-      process.platform === 'darwin' ? /MacOS\/Electron$/ : /electron/i,
+      process.platform === 'darwin' ? /MacOS\/(Electron|察元AIOffice)$/ : /electron/i,
     )
     expect(launch!.args[0]).toMatch(/apps\/shell$/)
   })

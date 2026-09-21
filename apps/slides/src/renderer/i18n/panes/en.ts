@@ -1,14 +1,17 @@
-/** panes strings, en (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const en = {
   paneCancel: 'Cancel',
   paneOk: 'OK',
   paneMoveUp: 'Move Up',
   paneMoveDown: 'Move Down',
+
   paneAnimTitle: 'Animation Pane · Slide {n}',
   paneAnimPreview: 'Play animation preview for this slide',
   paneAnimCollapse: 'Collapse Animation Pane',
   paneAnimEmpty: 'No animations on this slide',
-  paneAnimEmptySub: 'Select a shape and pick an effect on the Animations tab. Animations are written into the pptx and play in PowerPoint too.',
+  paneAnimEmptySub:
+    'Select a shape and pick an effect on the Animations tab. Animations are written into the pptx and play in PowerPoint too.',
   paneAnimDelete: 'Remove this animation',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'delay {sec} s',
@@ -37,6 +40,10 @@ export const en = {
   paneAnimEffShrink: 'Shrink & Turn',
   paneAnimEffZoomOut: 'Zoom Out',
   paneAnimEffMotionPath: 'Motion Path',
+  paneAnimEffMediaPlay: 'Play',
+  paneAnimEffMediaPause: 'Pause',
+  paneAnimEffMediaStop: 'Stop',
+
   paneChartEditTitle: 'Edit Chart Data',
   paneChartCategoryN: 'Category {n}',
   paneChartSeriesN: 'Series {n}',
@@ -46,13 +53,16 @@ export const en = {
   paneChartDelCategory: 'Remove this category',
   paneChartAddCategory: 'Add category',
   paneChartAddCategoryBtn: '+ Category',
+
   paneCommentsTitle: 'Comments · Slide {n}',
   paneCommentsCollapse: 'Collapse Comments Pane',
   paneCommentsEmpty: 'No comments on this slide',
-  paneCommentsEmptySub: 'Type below — comments are written into the pptx and visible in PowerPoint too.',
+  paneCommentsEmptySub:
+    'Type below — comments are written into the pptx and visible in PowerPoint too.',
   paneCommentsDelete: 'Delete comment',
   paneCommentsPlaceholder: 'New comment… (⌘/Ctrl+Enter to post)',
   paneCommentsPost: 'Post',
+
   paneCsdTitle: 'Custom Shows',
   paneCsdDefaultName: 'Custom Show {n}',
   paneFrTitle: 'Find and Replace',
@@ -87,15 +97,18 @@ export const en = {
   paneCsdCreateHint: 'Click "New" to create a custom show',
   paneCsdClose: 'Close',
   paneCsdPlay: 'Show',
+
   paneCutoutTitle: 'Remove Background',
   paneCutoutDecodeFail: 'Failed to decode image',
   paneCutoutLoadFail: 'Failed to load image',
   paneCutoutApplyFail: 'Background removal failed',
   paneCutoutLoading: 'Loading…',
   paneCutoutTolerance: 'Tolerance',
-  paneCutoutHint: 'Background colors are sampled from the image edges; a higher tolerance removes more similar colors. About {pct}% of pixels removed in this preview.',
+  paneCutoutHint:
+    'Background colors are sampled from the image edges; a higher tolerance removes more similar colors. About {pct}% of pixels removed in this preview.',
   paneCutoutApplying: 'Processing…',
   paneCutoutApply: 'Apply',
+
   paneFormatTitle: 'Format',
   paneFormatTitleTyped: 'Format {type}',
   paneFormatTabShape: 'Shape Options',
@@ -149,7 +162,7 @@ export const en = {
   paneBgTile: 'Tile',
   paneBgHideGraphics: 'Hide Background Graphics',
   paneBgReset: 'Reset Background',
-  paneBgResetTip: 'Remove this slide\'s own background, restoring the layout/master background',
+  paneBgResetTip: "Remove this slide's own background, restoring the layout/master background",
   paneFormatEmpty: 'Select an element on the canvas to edit its position, size, and fill.',
   paneFormatPicture: 'Picture',
   paneFormatGroup: 'Group',
@@ -171,7 +184,8 @@ export const en = {
   panePosFromTL: 'Top-left corner',
   panePosFromCenter: 'Center',
   paneFormatCrop: 'Crop Picture',
-  paneFormatCutoutTip: 'Remove the picture background by color tolerance (replaced with a transparent PNG)',
+  paneFormatCutoutTip:
+    'Remove the picture background by color tolerance (replaced with a transparent PNG)',
   paneFormatCutoutNA: 'Background removal is not available for this picture',
   paneFormatFill: 'Fill',
   paneFormatSolidFill: 'Solid fill',
@@ -230,6 +244,7 @@ export const en = {
   paneInsetT: 'Top margin',
   paneInsetB: 'Bottom margin',
   paneTextWrap: 'Wrap text in shape',
+
   panePresenterEndShow: 'End Show',
   panePresenterEndTip: 'End show (Esc)',
   panePresenterSwap: 'Swap Displays',
@@ -237,7 +252,8 @@ export const en = {
   panePresenterNoSecond: 'No second display detected',
   panePresenterUseShow: 'Use Slide Show',
   panePresenterUseShowTip: 'Switch to a normal slide show on this display',
-  panePresenterSingleHint: 'Single display mode (connect a second display to show full screen automatically)',
+  panePresenterSingleHint:
+    'Single display mode (connect a second display to show full screen automatically)',
   panePresenterElapsed: 'Elapsed time',
   panePresenterPause: 'Pause timer',
   panePresenterResume: 'Resume timer',
@@ -259,9 +275,19 @@ export const en = {
   panePresenterNotesBigger: 'Make notes text larger',
   panePresenterNotesSmaller: 'Make notes text smaller',
   panePresenterFilmSlideN: 'Slide {n}',
+
   paneShowEndedClick: 'End of slide show. Click to exit.',
   paneShowEnded: 'End of slide show.',
   paneShowRehearseTip: 'Rehearse Timings: time on this slide / total time',
   paneShowRehearseTotal: 'Total {time}',
+  paneShowMenuNext: 'Next',
+  paneShowMenuPrev: 'Previous',
+  paneShowMenuLastViewed: 'Last Viewed',
+  paneShowMenuSeeAll: 'See All Slides',
+  paneShowMenuScreen: 'Screen',
+  paneShowMenuBlack: 'Black Screen',
+  paneShowMenuWhite: 'White Screen',
+  paneShowMenuEnd: 'End Show',
+  panePresenterWhiteOn: 'White screen (press W to resume)',
   paneAnimRewind: 'Rewind after effect',
-}
+} satisfies Record<keyof typeof zh, string>

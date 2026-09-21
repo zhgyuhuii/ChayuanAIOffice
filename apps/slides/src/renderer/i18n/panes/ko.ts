@@ -1,14 +1,17 @@
-/** panes strings, ko (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ko = {
   paneCancel: '취소',
   paneOk: '확인',
   paneMoveUp: '위로 이동',
   paneMoveDown: '아래로 이동',
+
   paneAnimTitle: '애니메이션 창 · 슬라이드 {n}',
   paneAnimPreview: '현재 슬라이드 애니메이션 미리 보기 재생',
   paneAnimCollapse: '애니메이션 창 접기',
   paneAnimEmpty: '이 슬라이드에는 아직 애니메이션이 없습니다',
-  paneAnimEmptySub: '도형을 선택한 후 "애니메이션" 탭에서 효과를 선택하세요. 애니메이션은 pptx에 기록되며 PowerPoint 슬라이드 쇼에서도 적용됩니다.',
+  paneAnimEmptySub:
+    '도형을 선택한 후 "애니메이션" 탭에서 효과를 선택하세요. 애니메이션은 pptx에 기록되며 PowerPoint 슬라이드 쇼에서도 적용됩니다.',
   paneAnimDelete: '이 애니메이션 제거',
   paneAnimSeconds: '{sec}초',
   paneAnimDelaySeconds: '지연 {sec}초',
@@ -37,6 +40,10 @@ export const ko = {
   paneAnimEffShrink: '회전하며 축소',
   paneAnimEffZoomOut: '확대/축소(끝내기)',
   paneAnimEffMotionPath: '이동 경로',
+  paneAnimEffMediaPlay: '재생',
+  paneAnimEffMediaPause: '일시 중지',
+  paneAnimEffMediaStop: '중지',
+
   paneChartEditTitle: '차트 데이터 편집',
   paneChartCategoryN: '항목 {n}',
   paneChartSeriesN: '계열 {n}',
@@ -46,13 +53,16 @@ export const ko = {
   paneChartDelCategory: '이 항목 제거',
   paneChartAddCategory: '항목 추가',
   paneChartAddCategoryBtn: '＋항목',
+
   paneCommentsTitle: '메모 · 슬라이드 {n}',
   paneCommentsCollapse: '메모 창 접기',
   paneCommentsEmpty: '이 슬라이드에는 아직 메모가 없습니다',
-  paneCommentsEmptySub: '아래에 입력하세요. 메모는 pptx에 기록되며 PowerPoint에서도 볼 수 있습니다.',
+  paneCommentsEmptySub:
+    '아래에 입력하세요. 메모는 pptx에 기록되며 PowerPoint에서도 볼 수 있습니다.',
   paneCommentsDelete: '메모 삭제',
   paneCommentsPlaceholder: '새 메모… (⌘/Ctrl+Enter로 게시)',
   paneCommentsPost: '게시',
+
   paneCsdTitle: '쇼 재구성',
   paneCsdDefaultName: '쇼 재구성 {n}',
   paneFrTitle: '찾기 및 바꾸기',
@@ -87,15 +97,18 @@ export const ko = {
   paneCsdCreateHint: '"새로 만들기"를 클릭하여 쇼 재구성 만들기',
   paneCsdClose: '닫기',
   paneCsdPlay: '이 쇼 재구성 실행',
+
   paneCutoutTitle: '배경 제거',
   paneCutoutDecodeFail: '이미지 디코딩 실패',
   paneCutoutLoadFail: '이미지 로드 실패',
   paneCutoutApplyFail: '배경 제거 처리 실패',
   paneCutoutLoading: '로드 중…',
   paneCutoutTolerance: '허용치',
-  paneCutoutHint: '이미지 가장자리에서 배경색을 자동으로 샘플링합니다. 허용치가 클수록 비슷한 색이 더 많이 제거됩니다. 현재 미리 보기에서 약 {pct}%의 픽셀이 제거되었습니다.',
+  paneCutoutHint:
+    '이미지 가장자리에서 배경색을 자동으로 샘플링합니다. 허용치가 클수록 비슷한 색이 더 많이 제거됩니다. 현재 미리 보기에서 약 {pct}%의 픽셀이 제거되었습니다.',
   paneCutoutApplying: '처리 중…',
   paneCutoutApply: '적용',
+
   paneFormatTitle: '서식',
   paneFormatTitleTyped: '{type} 서식 지정',
   paneFormatTabShape: '도형 옵션',
@@ -230,6 +243,7 @@ export const ko = {
   paneInsetT: '위쪽 여백',
   paneInsetB: '아래쪽 여백',
   paneTextWrap: '도형의 텍스트 줄 바꿈',
+
   panePresenterEndShow: '쇼 마침',
   panePresenterEndTip: '쇼 마침(Esc)',
   panePresenterSwap: '디스플레이 바꾸기',
@@ -237,7 +251,8 @@ export const ko = {
   panePresenterNoSecond: '두 번째 디스플레이가 감지되지 않았습니다',
   panePresenterUseShow: '슬라이드 쇼로 전환',
   panePresenterUseShowTip: '이 화면에서 일반 슬라이드 쇼로 전환',
-  panePresenterSingleHint: '단일 디스플레이 모드(두 번째 디스플레이를 연결하면 자동으로 전체 화면 쇼 시작)',
+  panePresenterSingleHint:
+    '단일 디스플레이 모드(두 번째 디스플레이를 연결하면 자동으로 전체 화면 쇼 시작)',
   panePresenterElapsed: '경과 시간',
   panePresenterPause: '타이머 일시 중지',
   panePresenterResume: '타이머 계속',
@@ -259,9 +274,19 @@ export const ko = {
   panePresenterNotesBigger: '노트 텍스트 크게',
   panePresenterNotesSmaller: '노트 텍스트 작게',
   panePresenterFilmSlideN: '슬라이드 {n}',
+
   paneShowEndedClick: '슬라이드 쇼가 끝났습니다. 클릭하면 종료됩니다.',
   paneShowEnded: '슬라이드 쇼가 끝났습니다.',
   paneShowRehearseTip: '예행 연습: 현재 슬라이드 시간 / 전체 시간',
   paneShowRehearseTotal: '전체 {time}',
+  paneShowMenuNext: '다음',
+  paneShowMenuPrev: '이전',
+  paneShowMenuLastViewed: '마지막으로 본 슬라이드',
+  paneShowMenuSeeAll: '모든 슬라이드 보기',
+  paneShowMenuScreen: '화면',
+  paneShowMenuBlack: '검은 화면',
+  paneShowMenuWhite: '흰 화면',
+  paneShowMenuEnd: '쇼 마침',
+  panePresenterWhiteOn: '흰 화면 (W 키로 복귀)',
   paneAnimRewind: '효과 후 되감기',
-}
+} satisfies Record<keyof typeof zh, string>

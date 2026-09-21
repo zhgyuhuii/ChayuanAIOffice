@@ -1,7 +1,12 @@
 import type { Mark } from '@tiptap/pm/model'
 import type { Editor } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
-import type { ChartDisplay, CommentInfo, NewChart } from '@chatoffice/docx-engine'
+import type {
+  ChartDisplay,
+  CommentInfo,
+  NewChart,
+  NoteInfo,
+} from '@chatoffice/docx-engine'
 import { sanitizeSvg } from '@chatoffice/pptx-render/svg-sanitize'
 import { rasterizeSvg } from '@chatoffice/pptx-render/svg-raster'
 import type {
@@ -52,6 +57,7 @@ import {
 } from './revision-ops'
 import {
   buildNotesContext,
+  editNoteText,
   insertNoteRef,
   noteInsertPos,
   removeNoteRefs,
@@ -516,6 +522,26 @@ export const AGENT_TOOLS: AgentToolDef[] = [
         id: { type: 'string', description: 'note id from read_notes' },
       },
       required: ['kind', 'id'],
+    },
+  },
+  {
+    name: 'edit_note',
+    description:
+      'Change the text of an existing footnote or endnote in place (findReplace inside the note): the note keeps its id, reference mark and formatting. Use for a typo or a citation fix instead of delete_note + insert_footnote.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        kind: {
+          type: 'string',
+          enum: ['footnote', 'endnote'],
+          description: 'omit when the id is unambiguous across footnotes and endnotes',
+        },
+        id: { type: 'string', description: 'note id from read_notes' },
+        find: { type: 'string', description: 'exact text inside the note to replace' },
+        replace: { type: 'string', description: 'replacement text ("" deletes the match)' },
+        matchCase: { type: 'boolean', description: 'defaults to true' },
+      },
+      required: ['id', 'find', 'replace'],
     },
   },
   {
@@ -1138,8 +1164,17 @@ async function executeAsyncTool(
       }
       // LOCAL(2026-09-22, f5247d3..476e5023): 上游 #544 原走其自有 ai:analyze-media 通道
       // (Genspark/BYOK 提供方);本地并集改走统一媒体通道 media-understand(多厂商能力分组,
-      // 与媒体技能同源)——analyzeMedia 专用通道不再接线
-      const r = await window.desktop.mediaUnderstand({
+      // 与媒体技能同源)——analyzeMedia 专用通道不再接线。mediaUnderstand 桥在 preload 实现,
+      // DesktopApi 尚未声明,按 media-skill 的 MediaWire 模式收窄调用
+      const r = await (
+        window.desktop as unknown as {
+          mediaUnderstand: (op: {
+            kind: 'image' | 'video' | 'auto'
+            sources: string[]
+            requirements: string
+          }) => Promise<{ text?: string; error?: string }>
+        }
+      ).mediaUnderstand({
         kind: 'auto',
         sources: urls,
         requirements,
@@ -1527,6 +1562,7 @@ export function executeTool(
     call.name === 'insert_image' ||
     call.name === 'insert_picture' ||
     call.name === 'generate_image' ||
+    call.name === 'analyze_media' ||
     call.name === 'generate_svg' ||
     call.name === 'create_document'
   ) {
@@ -2134,6 +2170,43 @@ function executeSyncTool(
       notes.remove(kind, id)
       return {
         output: `Deleted ${kind} ${id}${removed ? ' and its reference mark' : ' (it had no reference mark in the text)'}.`,
+        mutated: true,
+        summary,
+      }
+    }
+
+    case 'edit_note': {
+      const summary = t('aiSumEditNote')
+      if (!notes) return fail(summary, 'footnotes and endnotes are not available here')
+      const id = String(call.input.id ?? '').trim()
+      if (!id) return fail(summary, 'id must not be empty')
+      const kinds: NoteKind[] =
+        call.input.kind === undefined || call.input.kind === null
+          ? ['footnote', 'endnote']
+          : call.input.kind === 'footnote' || call.input.kind === 'endnote'
+            ? [call.input.kind]
+            : []
+      if (kinds.length === 0) return fail(summary, 'kind must be "footnote" or "endnote"')
+      const found = kinds
+        .map((kind) => ({ kind, note: notes.list(kind).find((n) => n.id === id) }))
+        .filter((hit): hit is { kind: NoteKind; note: NoteInfo } => hit.note !== undefined)
+      if (found.length === 0)
+        return fail(summary, `no note with id ${id}; call read_notes for the current ids`)
+      if (found.length > 1)
+        return fail(summary, `both a footnote and an endnote have id ${id}; pass kind`)
+      const { kind, note } = found[0]!
+      const find = typeof call.input.find === 'string' ? call.input.find : ''
+      if (!find) return fail(summary, 'find must not be empty')
+      const replace = call.input.replace == null ? '' : String(call.input.replace)
+      const edited = editNoteText(note, find, replace, call.input.matchCase !== false)
+      if (edited.count === 0)
+        return fail(
+          summary,
+          `${kind} ${id} does not contain "${clipExcerpt(find)}"; the note was left as is`,
+        )
+      notes.replace(kind, id, edited.note)
+      return {
+        output: `Edited ${kind} ${id}: ${edited.count} occurrence${edited.count === 1 ? '' : 's'} of "${clipExcerpt(find)}" replaced.`,
         mutated: true,
         summary,
       }

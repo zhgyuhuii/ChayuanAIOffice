@@ -95,9 +95,9 @@ describe('lazy media placeholders', () => {
 
   it('rejects bad hashes and traversal/overlong part paths', () => {
     expect(() => lazyMediaUrl('not-a-hash', 'word/media/image1.png')).toThrow(/sha256/)
-    expect(parseLazyMediaUrl(`genoffice-docx-media://${HASH}/word/media/../evil.png`)).toBeNull()
+    expect(parseLazyMediaUrl(`chatoffice-docx-media://${HASH}/word/media/../evil.png`)).toBeNull()
     expect(
-      parseLazyMediaUrl(`genoffice-docx-media://${HASH}/word/media/${'a'.repeat(600)}.png`),
+      parseLazyMediaUrl(`chatoffice-docx-media://${HASH}/word/media/${'a'.repeat(600)}.png`),
     ).toBeNull()
   })
 })

@@ -1,14 +1,17 @@
-/** panes strings, pl (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const pl = {
   paneCancel: 'Anuluj',
   paneOk: 'OK',
   paneMoveUp: 'Przenieś w górę',
   paneMoveDown: 'Przenieś w dół',
+
   paneAnimTitle: 'Okienko animacji · Slajd {n}',
   paneAnimPreview: 'Odtwórz podgląd animacji tego slajdu',
   paneAnimCollapse: 'Zwiń okienko animacji',
   paneAnimEmpty: 'Brak animacji na tym slajdzie',
-  paneAnimEmptySub: 'Zaznacz kształt i wybierz efekt na karcie „Animacje”. Animacje są zapisywane w pliku pptx i działają również w programie PowerPoint.',
+  paneAnimEmptySub:
+    'Zaznacz kształt i wybierz efekt na karcie „Animacje”. Animacje są zapisywane w pliku pptx i działają również w programie PowerPoint.',
   paneAnimDelete: 'Usuń tę animację',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'opóźnienie {sec} s',
@@ -37,6 +40,10 @@ export const pl = {
   paneAnimEffShrink: 'Zmniejszenie i obrót',
   paneAnimEffZoomOut: 'Powiększenie (wyjście)',
   paneAnimEffMotionPath: 'Ścieżka ruchu',
+  paneAnimEffMediaPlay: 'Odtwórz',
+  paneAnimEffMediaPause: 'Wstrzymaj',
+  paneAnimEffMediaStop: 'Zatrzymaj',
+
   paneChartEditTitle: 'Edytuj dane wykresu',
   paneChartCategoryN: 'Kategoria {n}',
   paneChartSeriesN: 'Seria {n}',
@@ -46,13 +53,16 @@ export const pl = {
   paneChartDelCategory: 'Usuń tę kategorię',
   paneChartAddCategory: 'Dodaj kategorię',
   paneChartAddCategoryBtn: '+ Kategoria',
+
   paneCommentsTitle: 'Komentarze · Slajd {n}',
   paneCommentsCollapse: 'Zwiń okienko komentarzy',
   paneCommentsEmpty: 'Brak komentarzy na tym slajdzie',
-  paneCommentsEmptySub: 'Wpisz poniżej — komentarze są zapisywane w pliku pptx i widoczne również w programie PowerPoint.',
+  paneCommentsEmptySub:
+    'Wpisz poniżej — komentarze są zapisywane w pliku pptx i widoczne również w programie PowerPoint.',
   paneCommentsDelete: 'Usuń komentarz',
   paneCommentsPlaceholder: 'Nowy komentarz… (⌘/Ctrl+Enter, aby opublikować)',
   paneCommentsPost: 'Opublikuj',
+
   paneCsdTitle: 'Pokazy niestandardowe',
   paneCsdDefaultName: 'Pokaz niestandardowy {n}',
   paneFrTitle: 'Znajdowanie i zamienianie',
@@ -87,15 +97,18 @@ export const pl = {
   paneCsdCreateHint: 'Kliknij „Nowy”, aby utworzyć pokaz niestandardowy',
   paneCsdClose: 'Zamknij',
   paneCsdPlay: 'Pokaż',
+
   paneCutoutTitle: 'Usuń tło',
   paneCutoutDecodeFail: 'Nie udało się zdekodować obrazu',
   paneCutoutLoadFail: 'Nie udało się załadować obrazu',
   paneCutoutApplyFail: 'Usuwanie tła nie powiodło się',
   paneCutoutLoading: 'Ładowanie…',
   paneCutoutTolerance: 'Tolerancja',
-  paneCutoutHint: 'Kolory tła są próbkowane z krawędzi obrazu; im większa tolerancja, tym więcej podobnych kolorów jest usuwanych. W tym podglądzie usunięto około {pct}% pikseli.',
+  paneCutoutHint:
+    'Kolory tła są próbkowane z krawędzi obrazu; im większa tolerancja, tym więcej podobnych kolorów jest usuwanych. W tym podglądzie usunięto około {pct}% pikseli.',
   paneCutoutApplying: 'Przetwarzanie…',
   paneCutoutApply: 'Zastosuj',
+
   paneFormatTitle: 'Formatowanie',
   paneFormatTitleTyped: 'Formatowanie: {type}',
   paneFormatTabShape: 'Opcje kształtu',
@@ -171,7 +184,8 @@ export const pl = {
   panePosFromTL: 'Lewy górny róg',
   panePosFromCenter: 'Środek',
   paneFormatCrop: 'Przytnij obraz',
-  paneFormatCutoutTip: 'Usuń tło obrazu na podstawie tolerancji kolorów (zastąpione przezroczystym plikiem PNG)',
+  paneFormatCutoutTip:
+    'Usuń tło obrazu na podstawie tolerancji kolorów (zastąpione przezroczystym plikiem PNG)',
   paneFormatCutoutNA: 'Usuwanie tła nie jest dostępne dla tego obrazu',
   paneFormatFill: 'Wypełnienie',
   paneFormatSolidFill: 'Wypełnienie pełne',
@@ -230,6 +244,7 @@ export const pl = {
   paneInsetT: 'Górny margines',
   paneInsetB: 'Dolny margines',
   paneTextWrap: 'Zawijaj tekst w kształcie',
+
   panePresenterEndShow: 'Zakończ pokaz',
   panePresenterEndTip: 'Zakończ pokaz (Esc)',
   panePresenterSwap: 'Zamień ekrany',
@@ -237,7 +252,8 @@ export const pl = {
   panePresenterNoSecond: 'Nie wykryto drugiego ekranu',
   panePresenterUseShow: 'Użyj pokazu slajdów',
   panePresenterUseShowTip: 'Przełącz na zwykły pokaz slajdów na tym ekranie',
-  panePresenterSingleHint: 'Tryb jednego ekranu (podłącz drugi ekran, aby automatycznie wyświetlić pokaz na pełnym ekranie)',
+  panePresenterSingleHint:
+    'Tryb jednego ekranu (podłącz drugi ekran, aby automatycznie wyświetlić pokaz na pełnym ekranie)',
   panePresenterElapsed: 'Czas, który upłynął',
   panePresenterPause: 'Wstrzymaj czasomierz',
   panePresenterResume: 'Wznów czasomierz',
@@ -259,9 +275,19 @@ export const pl = {
   panePresenterNotesBigger: 'Powiększ tekst notatek',
   panePresenterNotesSmaller: 'Pomniejsz tekst notatek',
   panePresenterFilmSlideN: 'Slajd {n}',
+
   paneShowEndedClick: 'Koniec pokazu slajdów. Kliknij, aby wyjść.',
   paneShowEnded: 'Koniec pokazu slajdów.',
   paneShowRehearseTip: 'Próba tempa: czas na tym slajdzie / czas łączny',
   paneShowRehearseTotal: 'Łącznie {time}',
+  paneShowMenuNext: 'Dalej',
+  paneShowMenuPrev: 'Wstecz',
+  paneShowMenuLastViewed: 'Ostatnio wyświetlany',
+  paneShowMenuSeeAll: 'Zobacz wszystkie slajdy',
+  paneShowMenuScreen: 'Ekran',
+  paneShowMenuBlack: 'Czarny ekran',
+  paneShowMenuWhite: 'Biały ekran',
+  paneShowMenuEnd: 'Zakończ pokaz',
+  panePresenterWhiteOn: 'Biały ekran (W, aby wrócić)',
   paneAnimRewind: 'Przewiń po efekcie',
-}
+} satisfies Record<keyof typeof zh, string>

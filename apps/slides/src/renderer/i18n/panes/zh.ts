@@ -1,14 +1,16 @@
-/** panes strings, zh (merged with ChatOffice-local keys) */
+/** panes strings, zh: defines the key set every other locale shard must match. */
 export const zh = {
   paneCancel: '取消',
   paneOk: '确定',
   paneMoveUp: '上移',
   paneMoveDown: '下移',
+
   paneAnimTitle: '动画窗格 · 第 {n} 页',
   paneAnimPreview: '播放当前页动画预览',
   paneAnimCollapse: '收起动画窗格',
   paneAnimEmpty: '本页还没有动画',
-  paneAnimEmptySub: '选中形状后在「动画」选项卡挑一个效果，动画会写入 pptx，PowerPoint 放映同样生效。',
+  paneAnimEmptySub:
+    '选中形状后在「动画」选项卡挑一个效果，动画会写入 pptx，PowerPoint 放映同样生效。',
   paneAnimDelete: '删除该动画',
   paneAnimSeconds: '{sec} 秒',
   paneAnimDelaySeconds: '延迟 {sec} 秒',
@@ -37,6 +39,10 @@ export const zh = {
   paneAnimEffShrink: '缩小旋转',
   paneAnimEffZoomOut: '缩放退出',
   paneAnimEffMotionPath: '动作路径',
+  paneAnimEffMediaPlay: '播放',
+  paneAnimEffMediaPause: '暂停',
+  paneAnimEffMediaStop: '停止',
+
   paneChartEditTitle: '编辑图表数据',
   paneChartCategoryN: '类目 {n}',
   paneChartSeriesN: '系列 {n}',
@@ -46,6 +52,7 @@ export const zh = {
   paneChartDelCategory: '删除该类目',
   paneChartAddCategory: '添加类目',
   paneChartAddCategoryBtn: '＋类目',
+
   paneCommentsTitle: '批注 · 第 {n} 页',
   paneCommentsCollapse: '收起批注窗格',
   paneCommentsEmpty: '本页还没有批注',
@@ -53,6 +60,7 @@ export const zh = {
   paneCommentsDelete: '删除批注',
   paneCommentsPlaceholder: '新建批注…（⌘/Ctrl+Enter 发布）',
   paneCommentsPost: '发布',
+
   paneCsdTitle: '自定义放映',
   paneCsdDefaultName: '自定义放映 {n}',
   paneFrTitle: '查找和替换',
@@ -87,15 +95,18 @@ export const zh = {
   paneCsdCreateHint: '点击「新建」创建一个自定义放映',
   paneCsdClose: '关闭',
   paneCsdPlay: '放映此自定义放映',
+
   paneCutoutTitle: '去除背景',
   paneCutoutDecodeFail: '图片解码失败',
   paneCutoutLoadFail: '图片加载失败',
   paneCutoutApplyFail: '去背景处理失败',
   paneCutoutLoading: '加载中…',
   paneCutoutTolerance: '容差',
-  paneCutoutHint: '自动从图片边缘采样背景色；容差越大，去除的相近颜色越多。当前预览已移除约 {pct}% 像素。',
+  paneCutoutHint:
+    '自动从图片边缘采样背景色；容差越大，去除的相近颜色越多。当前预览已移除约 {pct}% 像素。',
   paneCutoutApplying: '处理中…',
   paneCutoutApply: '应用',
+
   paneFormatTitle: '格式',
   paneFormatTitleTyped: '设置{type}格式',
   paneFormatTabShape: '形状选项',
@@ -230,6 +241,7 @@ export const zh = {
   paneInsetT: '上边距',
   paneInsetB: '下边距',
   paneTextWrap: '形状中的文字自动换行',
+
   panePresenterEndShow: '结束放映',
   panePresenterEndTip: '结束放映（Esc）',
   panePresenterSwap: '交换显示器',
@@ -259,9 +271,19 @@ export const zh = {
   panePresenterNotesBigger: '放大备注字号',
   panePresenterNotesSmaller: '缩小备注字号',
   panePresenterFilmSlideN: '第 {n} 张',
+
   paneShowEndedClick: '放映结束，单击退出。',
   paneShowEnded: '放映结束。',
   paneShowRehearseTip: '排练计时：当前页停留 / 总时长',
   paneShowRehearseTotal: '总时长 {time}',
+  paneShowMenuNext: '下一页',
+  paneShowMenuPrev: '上一页',
+  paneShowMenuLastViewed: '上次查看的',
+  paneShowMenuSeeAll: '查看所有幻灯片',
+  paneShowMenuScreen: '屏幕',
+  paneShowMenuBlack: '黑屏',
+  paneShowMenuWhite: '白屏',
+  paneShowMenuEnd: '结束放映',
+  panePresenterWhiteOn: '白屏中（W 键恢复）',
   paneAnimRewind: '播完快退',
 }

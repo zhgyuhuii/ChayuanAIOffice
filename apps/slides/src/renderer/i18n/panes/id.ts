@@ -1,14 +1,17 @@
-/** panes strings, id (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const id = {
   paneCancel: 'Batal',
   paneOk: 'OK',
   paneMoveUp: 'Naikkan',
   paneMoveDown: 'Turunkan',
+
   paneAnimTitle: 'Panel Animasi · Slide {n}',
   paneAnimPreview: 'Putar pratinjau animasi slide ini',
   paneAnimCollapse: 'Ciutkan Panel Animasi',
   paneAnimEmpty: 'Belum ada animasi pada slide ini',
-  paneAnimEmptySub: 'Pilih bentuk lalu pilih efek pada tab "Animasi". Animasi ditulis ke dalam pptx dan juga berfungsi di PowerPoint.',
+  paneAnimEmptySub:
+    'Pilih bentuk lalu pilih efek pada tab "Animasi". Animasi ditulis ke dalam pptx dan juga berfungsi di PowerPoint.',
   paneAnimDelete: 'Hapus animasi ini',
   paneAnimSeconds: '{sec} dtk',
   paneAnimDelaySeconds: 'tunda {sec} dtk',
@@ -37,6 +40,10 @@ export const id = {
   paneAnimEffShrink: 'Menyusut & Berputar',
   paneAnimEffZoomOut: 'Zoom Keluar',
   paneAnimEffMotionPath: 'Jalur Gerakan',
+  paneAnimEffMediaPlay: 'Putar',
+  paneAnimEffMediaPause: 'Jeda',
+  paneAnimEffMediaStop: 'Berhenti',
+
   paneChartEditTitle: 'Edit Data Bagan',
   paneChartCategoryN: 'Kategori {n}',
   paneChartSeriesN: 'Seri {n}',
@@ -46,13 +53,16 @@ export const id = {
   paneChartDelCategory: 'Hapus kategori ini',
   paneChartAddCategory: 'Tambahkan kategori',
   paneChartAddCategoryBtn: '+ Kategori',
+
   paneCommentsTitle: 'Komentar · Slide {n}',
   paneCommentsCollapse: 'Ciutkan Panel Komentar',
   paneCommentsEmpty: 'Belum ada komentar pada slide ini',
-  paneCommentsEmptySub: 'Ketik di bawah — komentar ditulis ke dalam pptx dan juga terlihat di PowerPoint.',
+  paneCommentsEmptySub:
+    'Ketik di bawah — komentar ditulis ke dalam pptx dan juga terlihat di PowerPoint.',
   paneCommentsDelete: 'Hapus komentar',
   paneCommentsPlaceholder: 'Komentar baru… (⌘/Ctrl+Enter untuk memposting)',
   paneCommentsPost: 'Posting',
+
   paneCsdTitle: 'Peragaan Kustom',
   paneCsdDefaultName: 'Peragaan Kustom {n}',
   paneFrTitle: 'Temukan dan Ganti',
@@ -87,15 +97,18 @@ export const id = {
   paneCsdCreateHint: 'Klik "Baru" untuk membuat peragaan kustom',
   paneCsdClose: 'Tutup',
   paneCsdPlay: 'Putar peragaan kustom ini',
+
   paneCutoutTitle: 'Hapus Latar Belakang',
   paneCutoutDecodeFail: 'Gagal mendekode gambar',
   paneCutoutLoadFail: 'Gagal memuat gambar',
   paneCutoutApplyFail: 'Gagal memproses penghapusan latar belakang',
   paneCutoutLoading: 'Memuat…',
   paneCutoutTolerance: 'Toleransi',
-  paneCutoutHint: 'Warna latar belakang diambil otomatis dari tepi gambar; makin besar toleransinya, makin banyak warna serupa yang dihapus. Sekitar {pct}% piksel telah dihapus pada pratinjau ini.',
+  paneCutoutHint:
+    'Warna latar belakang diambil otomatis dari tepi gambar; makin besar toleransinya, makin banyak warna serupa yang dihapus. Sekitar {pct}% piksel telah dihapus pada pratinjau ini.',
   paneCutoutApplying: 'Memproses…',
   paneCutoutApply: 'Terapkan',
+
   paneFormatTitle: 'Format',
   paneFormatTitleTyped: 'Format {type}',
   paneFormatTabShape: 'Opsi Bentuk',
@@ -149,7 +162,8 @@ export const id = {
   paneBgTile: 'Ubin',
   paneBgHideGraphics: 'Sembunyikan Grafik Latar Belakang',
   paneBgReset: 'Reset Latar Belakang',
-  paneBgResetTip: 'Menghapus latar belakang slide ini dan mengembalikan latar belakang tata letak/master',
+  paneBgResetTip:
+    'Menghapus latar belakang slide ini dan mengembalikan latar belakang tata letak/master',
   paneFormatEmpty: 'Pilih elemen pada kanvas untuk mengedit posisi, ukuran, dan isiannya.',
   paneFormatPicture: 'Gambar',
   paneFormatGroup: 'Grup',
@@ -171,7 +185,8 @@ export const id = {
   panePosFromTL: 'Sudut kiri atas',
   panePosFromCenter: 'Tengah',
   paneFormatCrop: 'Potong Gambar',
-  paneFormatCutoutTip: 'Hapus latar belakang gambar berdasarkan toleransi warna (diganti dengan PNG transparan)',
+  paneFormatCutoutTip:
+    'Hapus latar belakang gambar berdasarkan toleransi warna (diganti dengan PNG transparan)',
   paneFormatCutoutNA: 'Penghapusan latar belakang tidak tersedia untuk gambar ini',
   paneFormatFill: 'Isian',
   paneFormatSolidFill: 'Isian solid',
@@ -230,6 +245,7 @@ export const id = {
   paneInsetT: 'Margin atas',
   paneInsetB: 'Margin bawah',
   paneTextWrap: 'Bungkus teks dalam bentuk',
+
   panePresenterEndShow: 'Akhiri Peragaan',
   panePresenterEndTip: 'Akhiri peragaan (Esc)',
   panePresenterSwap: 'Tukar Layar',
@@ -237,7 +253,8 @@ export const id = {
   panePresenterNoSecond: 'Layar kedua tidak terdeteksi',
   panePresenterUseShow: 'Gunakan Peragaan Slide',
   panePresenterUseShowTip: 'Beralih ke peragaan slide normal di layar ini',
-  panePresenterSingleHint: 'Mode satu layar (sambungkan layar kedua untuk menampilkan layar penuh secara otomatis)',
+  panePresenterSingleHint:
+    'Mode satu layar (sambungkan layar kedua untuk menampilkan layar penuh secara otomatis)',
   panePresenterElapsed: 'Waktu berlalu',
   panePresenterPause: 'Jeda pengatur waktu',
   panePresenterResume: 'Lanjutkan pengatur waktu',
@@ -259,9 +276,19 @@ export const id = {
   panePresenterNotesBigger: 'Perbesar teks catatan',
   panePresenterNotesSmaller: 'Perkecil teks catatan',
   panePresenterFilmSlideN: 'Slide {n}',
+
   paneShowEndedClick: 'Peragaan slide berakhir. Klik untuk keluar.',
   paneShowEnded: 'Peragaan slide berakhir.',
   paneShowRehearseTip: 'Latih Pengaturan Waktu: waktu pada slide ini / total waktu',
   paneShowRehearseTotal: 'Total {time}',
+  paneShowMenuNext: 'Berikutnya',
+  paneShowMenuPrev: 'Sebelumnya',
+  paneShowMenuLastViewed: 'Terakhir Dilihat',
+  paneShowMenuSeeAll: 'Lihat Semua Slide',
+  paneShowMenuScreen: 'Layar',
+  paneShowMenuBlack: 'Layar Hitam',
+  paneShowMenuWhite: 'Layar Putih',
+  paneShowMenuEnd: 'Akhiri Peragaan',
+  panePresenterWhiteOn: 'Layar putih (tekan W untuk kembali)',
   paneAnimRewind: 'Putar balik setelah efek',
-}
+} satisfies Record<keyof typeof zh, string>

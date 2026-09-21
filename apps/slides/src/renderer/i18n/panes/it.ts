@@ -1,19 +1,22 @@
-/** panes strings, it (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const it = {
   paneCancel: 'Annulla',
   paneOk: 'OK',
   paneMoveUp: 'Sposta su',
   paneMoveDown: 'Sposta giù',
+
   paneAnimTitle: 'Riquadro Animazione · Diapositiva {n}',
-  paneAnimPreview: 'Riproduci l\'anteprima delle animazioni di questa diapositiva',
+  paneAnimPreview: "Riproduci l'anteprima delle animazioni di questa diapositiva",
   paneAnimCollapse: 'Comprimi il riquadro Animazione',
   paneAnimEmpty: 'Nessuna animazione in questa diapositiva',
-  paneAnimEmptySub: 'Seleziona una forma e scegli un effetto nella scheda "Animazioni". Le animazioni vengono scritte nel file pptx e funzionano anche in PowerPoint.',
+  paneAnimEmptySub:
+    'Seleziona una forma e scegli un effetto nella scheda "Animazioni". Le animazioni vengono scritte nel file pptx e funzionano anche in PowerPoint.',
   paneAnimDelete: 'Rimuovi questa animazione',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'ritardo {sec} s',
   paneAnimParaN: 'paragrafo {n}',
-  paneAnimClickToEnd: 'Fai clic per terminare l\'anteprima',
+  paneAnimClickToEnd: "Fai clic per terminare l'anteprima",
   paneAnimTrigOnClick: 'Al clic',
   paneAnimTrigWithPrev: 'Con precedente',
   paneAnimTrigAfterPrev: 'Dopo precedente',
@@ -37,6 +40,10 @@ export const it = {
   paneAnimEffShrink: 'Riduzione e rotazione',
   paneAnimEffZoomOut: 'Zoom in uscita',
   paneAnimEffMotionPath: 'Percorso di movimento',
+  paneAnimEffMediaPlay: 'Riproduci',
+  paneAnimEffMediaPause: 'Pausa',
+  paneAnimEffMediaStop: 'Interrompi',
+
   paneChartEditTitle: 'Modifica dati del grafico',
   paneChartCategoryN: 'Categoria {n}',
   paneChartSeriesN: 'Serie {n}',
@@ -46,13 +53,16 @@ export const it = {
   paneChartDelCategory: 'Rimuovi questa categoria',
   paneChartAddCategory: 'Aggiungi categoria',
   paneChartAddCategoryBtn: '+ Categoria',
+
   paneCommentsTitle: 'Commenti · Diapositiva {n}',
   paneCommentsCollapse: 'Comprimi il riquadro Commenti',
   paneCommentsEmpty: 'Nessun commento in questa diapositiva',
-  paneCommentsEmptySub: 'Scrivi qui sotto: i commenti vengono scritti nel file pptx e sono visibili anche in PowerPoint.',
+  paneCommentsEmptySub:
+    'Scrivi qui sotto: i commenti vengono scritti nel file pptx e sono visibili anche in PowerPoint.',
   paneCommentsDelete: 'Elimina commento',
   paneCommentsPlaceholder: 'Nuovo commento… (⌘/Ctrl+Invio per pubblicare)',
   paneCommentsPost: 'Pubblica',
+
   paneCsdTitle: 'Presentazioni personalizzate',
   paneCsdDefaultName: 'Presentazione personalizzata {n}',
   paneFrTitle: 'Trova e sostituisci',
@@ -87,15 +97,18 @@ export const it = {
   paneCsdCreateHint: 'Fai clic su "Nuova" per creare una presentazione personalizzata',
   paneCsdClose: 'Chiudi',
   paneCsdPlay: 'Presenta',
+
   paneCutoutTitle: 'Rimuovi sfondo',
-  paneCutoutDecodeFail: 'Decodifica dell\'immagine non riuscita',
-  paneCutoutLoadFail: 'Caricamento dell\'immagine non riuscito',
+  paneCutoutDecodeFail: "Decodifica dell'immagine non riuscita",
+  paneCutoutLoadFail: "Caricamento dell'immagine non riuscito",
   paneCutoutApplyFail: 'Rimozione dello sfondo non riuscita',
   paneCutoutLoading: 'Caricamento…',
   paneCutoutTolerance: 'Tolleranza',
-  paneCutoutHint: 'I colori dello sfondo vengono campionati dai bordi dell\'immagine; una tolleranza più alta rimuove più colori simili. In questa anteprima è stato rimosso circa il {pct}% dei pixel.',
+  paneCutoutHint:
+    "I colori dello sfondo vengono campionati dai bordi dell'immagine; una tolleranza più alta rimuove più colori simili. In questa anteprima è stato rimosso circa il {pct}% dei pixel.",
   paneCutoutApplying: 'Elaborazione…',
   paneCutoutApply: 'Applica',
+
   paneFormatTitle: 'Formato',
   paneFormatTitleTyped: 'Formato {type}',
   paneFormatTabShape: 'Opzioni forma',
@@ -149,8 +162,10 @@ export const it = {
   paneBgTile: 'Affianca',
   paneBgHideGraphics: 'Nascondi grafica di sfondo',
   paneBgReset: 'Reimposta sfondo',
-  paneBgResetTip: 'Rimuove lo sfondo proprio di questa diapositiva e ripristina quello del layout/schema',
-  paneFormatEmpty: 'Seleziona un elemento nell\'area di lavoro per modificarne posizione, dimensioni e riempimento.',
+  paneBgResetTip:
+    'Rimuove lo sfondo proprio di questa diapositiva e ripristina quello del layout/schema',
+  paneFormatEmpty:
+    "Seleziona un elemento nell'area di lavoro per modificarne posizione, dimensioni e riempimento.",
   paneFormatPicture: 'Immagine',
   paneFormatGroup: 'Gruppo',
   paneFormatTextBox: 'Casella di testo',
@@ -162,7 +177,7 @@ export const it = {
   paneSizeScaleH: 'Scala altezza',
   paneSizeScaleW: 'Scala larghezza',
   paneSizeLockRatio: 'Blocca proporzioni',
-  paneSizeRelOriginal: 'Rispetto alle dimensioni originali dell\'immagine',
+  paneSizeRelOriginal: "Rispetto alle dimensioni originali dell'immagine",
   paneSizeCm: 'cm',
   panePosSection: 'Posizione',
   panePosH: 'Posizione orizzontale',
@@ -171,7 +186,8 @@ export const it = {
   panePosFromTL: 'Angolo superiore sinistro',
   panePosFromCenter: 'Centro',
   paneFormatCrop: 'Ritaglia immagine',
-  paneFormatCutoutTip: 'Rimuovi lo sfondo dell\'immagine in base alla tolleranza del colore (sostituito con un PNG trasparente)',
+  paneFormatCutoutTip:
+    "Rimuovi lo sfondo dell'immagine in base alla tolleranza del colore (sostituito con un PNG trasparente)",
   paneFormatCutoutNA: 'La rimozione dello sfondo non è disponibile per questa immagine',
   paneFormatFill: 'Riempimento',
   paneFormatSolidFill: 'Riempimento a tinta unita',
@@ -230,14 +246,17 @@ export const it = {
   paneInsetT: 'Margine superiore',
   paneInsetB: 'Margine inferiore',
   paneTextWrap: 'Testo a capo nella forma',
+
   panePresenterEndShow: 'Fine presentazione',
   panePresenterEndTip: 'Termina la presentazione (Esc)',
   panePresenterSwap: 'Scambia schermi',
-  panePresenterSwapTip: 'Scambia gli schermi che mostrano la visualizzazione Relatore e la presentazione',
+  panePresenterSwapTip:
+    'Scambia gli schermi che mostrano la visualizzazione Relatore e la presentazione',
   panePresenterNoSecond: 'Nessun secondo schermo rilevato',
   panePresenterUseShow: 'Usa presentazione',
   panePresenterUseShowTip: 'Passa a una presentazione normale su questo schermo',
-  panePresenterSingleHint: 'Modalità schermo singolo (collega un secondo schermo per la presentazione automatica a schermo intero)',
+  panePresenterSingleHint:
+    'Modalità schermo singolo (collega un secondo schermo per la presentazione automatica a schermo intero)',
   panePresenterElapsed: 'Tempo trascorso',
   panePresenterPause: 'Sospendi il timer',
   panePresenterResume: 'Riprendi il timer',
@@ -247,7 +266,7 @@ export const it = {
   panePresenterBlackOn: 'Schermo nero (premi B per riprendere)',
   panePresenterPen: 'Penna (disegna sulla diapositiva; il pubblico la vede in diretta)',
   panePresenterLaser: 'Puntatore laser (visibile al pubblico)',
-  panePresenterEraseInk: 'Cancella tutto l\'input penna su questa diapositiva',
+  panePresenterEraseInk: "Cancella tutto l'input penna su questa diapositiva",
   panePresenterBlackTip: 'Schermo nero attivato/disattivato (B)',
   panePresenterPrevTip: 'Precedente (←/PgSu)',
   panePresenterNextTip: 'Successiva (→/Spazio/PgGiù)',
@@ -259,9 +278,19 @@ export const it = {
   panePresenterNotesBigger: 'Ingrandisci il testo delle note',
   panePresenterNotesSmaller: 'Riduci il testo delle note',
   panePresenterFilmSlideN: 'Diapositiva {n}',
+
   paneShowEndedClick: 'Fine della presentazione. Fai clic per uscire.',
   paneShowEnded: 'Fine della presentazione.',
   paneShowRehearseTip: 'Prova intervalli: tempo su questa diapositiva / tempo totale',
   paneShowRehearseTotal: 'Totale {time}',
+  paneShowMenuNext: 'Avanti',
+  paneShowMenuPrev: 'Indietro',
+  paneShowMenuLastViewed: 'Ultima visualizzata',
+  paneShowMenuSeeAll: 'Visualizza tutte le diapositive',
+  paneShowMenuScreen: 'Schermo',
+  paneShowMenuBlack: 'Schermo nero',
+  paneShowMenuWhite: 'Schermo bianco',
+  paneShowMenuEnd: 'Fine presentazione',
+  panePresenterWhiteOn: 'Schermo bianco (W per riprendere)',
   paneAnimRewind: 'Riavvolgi dopo effetto',
-}
+} satisfies Record<keyof typeof zh, string>

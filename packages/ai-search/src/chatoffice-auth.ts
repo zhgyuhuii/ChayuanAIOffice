@@ -147,6 +147,11 @@ export function chatofficeApiKey(): string {
   return loadChatofficeAuth()?.apiKey ?? ''
 }
 
+/** Drop the cache so the next read sees a key written by another process. */
+export function reloadChatofficeAuth(): void {
+  cachedAuth = undefined
+}
+
 function saveAuth(auth: ChatofficeAuth): void {
   const path = chatofficeAuthPath()
   mkdirSync(dirname(path), { recursive: true })

@@ -38,10 +38,15 @@ import {
   type RibbonTabCtx,
 } from './ribbon-shared'
 
+const ZOOM_LABEL = {
+  summary: 'ribbonZoomSummary',
+  section: 'ribbonZoomSection',
+  slide: 'ribbonZoomSlide',
+} as const
+
 export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
   const {
     closePanels,
-    currentSlide,
     editing,
     hasDoc,
     hasSelection,
@@ -49,7 +54,6 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     layoutSize,
     onAddSlide,
     onAddSlideWithLayout,
-    onInsert,
     onPickShape,
     onOpenChartDesigner,
     onInsertField,
@@ -60,14 +64,14 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
     onInsertSmartArt,
     onInsertTable,
     onInsertWordArt,
-    onInsertZoom,
+    onOpenZoom,
+    hasSections,
     onNewComment,
     onOpenEquation,
     onOpenHeaderFooter,
     onOpenLink,
     onToggleScreenRecord,
     recording,
-    slideCount,
     dropBig,
     iconColor,
     layoutOpen,
@@ -356,18 +360,17 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
           <IconZoomJump size={BIG} />,
           t('ribbonZoomJump'),
           t('ribbonZoomJumpTip'),
-          <div className="rb-menu rb-menu-scroll">
-            {Array.from({ length: slideCount }, (_, i) => (
+          <div className="rb-menu">
+            {(['summary', 'section', 'slide'] as const).map((mode) => (
               <button
-                key={i}
-                disabled={i === currentSlide}
+                key={mode}
+                disabled={mode === 'section' && !hasSections}
                 onClick={() => {
                   setInsertDrop(null)
-                  onInsertZoom(i)
+                  onOpenZoom(mode)
                 }}
               >
-                {t('ribbonZoomJumpItem', { n: i + 1 })}
-                {i === currentSlide ? t('ribbonCurrentSlideSuffix') : ''}
+                {t(ZOOM_LABEL[mode])}
               </button>
             ))}
           </div>,
@@ -392,7 +395,7 @@ export function RibbonInsertTab({ rb }: { rb: RibbonTabCtx }) {
         <button
           className="rb-big"
           disabled={!hasDoc}
-          onClick={() => onInsert('textbox')}
+          onClick={() => onPickShape('textbox')}
           data-tip={t('ribbonInsertTextBoxTip')}
         >
           <span className="rb-big-icon">

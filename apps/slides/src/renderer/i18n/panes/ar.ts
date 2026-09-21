@@ -1,14 +1,17 @@
-/** panes strings, ar (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ar = {
   paneCancel: 'إلغاء',
   paneOk: 'موافق',
   paneMoveUp: 'نقل لأعلى',
   paneMoveDown: 'نقل لأسفل',
+
   paneAnimTitle: 'جزء الحركة · الشريحة {n}',
   paneAnimPreview: 'تشغيل معاينة حركات هذه الشريحة',
   paneAnimCollapse: 'طي جزء الحركة',
   paneAnimEmpty: 'لا توجد حركات على هذه الشريحة بعد',
-  paneAnimEmptySub: 'حدد شكلاً ثم اختر تأثيرًا من علامة التبويب «حركات». تتم كتابة الحركات في ملف pptx وتعمل أيضًا في PowerPoint.',
+  paneAnimEmptySub:
+    'حدد شكلاً ثم اختر تأثيرًا من علامة التبويب «حركات». تتم كتابة الحركات في ملف pptx وتعمل أيضًا في PowerPoint.',
   paneAnimDelete: 'إزالة هذه الحركة',
   paneAnimSeconds: '{sec} ث',
   paneAnimDelaySeconds: 'تأخير {sec} ث',
@@ -37,6 +40,10 @@ export const ar = {
   paneAnimEffShrink: 'تقليص مع الدوران',
   paneAnimEffZoomOut: 'تكبير/تصغير للخارج',
   paneAnimEffMotionPath: 'مسار الحركة',
+  paneAnimEffMediaPlay: 'تشغيل',
+  paneAnimEffMediaPause: 'إيقاف مؤقت',
+  paneAnimEffMediaStop: 'إيقاف',
+
   paneChartEditTitle: 'تحرير بيانات المخطط',
   paneChartCategoryN: 'الفئة {n}',
   paneChartSeriesN: 'السلسلة {n}',
@@ -46,6 +53,7 @@ export const ar = {
   paneChartDelCategory: 'إزالة هذه الفئة',
   paneChartAddCategory: 'إضافة فئة',
   paneChartAddCategoryBtn: '+ فئة',
+
   paneCommentsTitle: 'التعليقات · الشريحة {n}',
   paneCommentsCollapse: 'طي جزء التعليقات',
   paneCommentsEmpty: 'لا توجد تعليقات على هذه الشريحة بعد',
@@ -53,6 +61,7 @@ export const ar = {
   paneCommentsDelete: 'حذف التعليق',
   paneCommentsPlaceholder: 'تعليق جديد… (⌘/Ctrl+Enter للنشر)',
   paneCommentsPost: 'نشر',
+
   paneCsdTitle: 'عروض مخصصة',
   paneCsdDefaultName: 'عرض مخصص {n}',
   paneFrTitle: 'بحث واستبدال',
@@ -87,15 +96,18 @@ export const ar = {
   paneCsdCreateHint: 'انقر فوق «جديد» لإنشاء عرض مخصص',
   paneCsdClose: 'إغلاق',
   paneCsdPlay: 'تشغيل هذا العرض المخصص',
+
   paneCutoutTitle: 'إزالة الخلفية',
   paneCutoutDecodeFail: 'فشل فك ترميز الصورة',
   paneCutoutLoadFail: 'فشل تحميل الصورة',
   paneCutoutApplyFail: 'فشلت معالجة إزالة الخلفية',
   paneCutoutLoading: 'جارٍ التحميل…',
   paneCutoutTolerance: 'التفاوت',
-  paneCutoutHint: 'يتم أخذ عينة من لون الخلفية تلقائيًا من حواف الصورة؛ كلما زاد التفاوت، زادت الألوان المتشابهة التي تتم إزالتها. تمت إزالة نحو {pct}% من وحدات البكسل في هذه المعاينة.',
+  paneCutoutHint:
+    'يتم أخذ عينة من لون الخلفية تلقائيًا من حواف الصورة؛ كلما زاد التفاوت، زادت الألوان المتشابهة التي تتم إزالتها. تمت إزالة نحو {pct}% من وحدات البكسل في هذه المعاينة.',
   paneCutoutApplying: 'جارٍ المعالجة…',
   paneCutoutApply: 'تطبيق',
+
   paneFormatTitle: 'التنسيق',
   paneFormatTitleTyped: 'تنسيق {type}',
   paneFormatTabShape: 'خيارات الشكل',
@@ -171,7 +183,8 @@ export const ar = {
   panePosFromTL: 'الزاوية العلوية اليسرى',
   panePosFromCenter: 'المركز',
   paneFormatCrop: 'اقتصاص الصورة',
-  paneFormatCutoutTip: 'إزالة خلفية الصورة استنادًا إلى تفاوت الألوان (يتم الاستبدال بصورة PNG شفافة)',
+  paneFormatCutoutTip:
+    'إزالة خلفية الصورة استنادًا إلى تفاوت الألوان (يتم الاستبدال بصورة PNG شفافة)',
   paneFormatCutoutNA: 'إزالة الخلفية غير متوفرة لهذه الصورة',
   paneFormatFill: 'التعبئة',
   paneFormatSolidFill: 'تعبئة خالصة',
@@ -230,6 +243,7 @@ export const ar = {
   paneInsetT: 'الهامش العلوي',
   paneInsetB: 'الهامش السفلي',
   paneTextWrap: 'التفاف النص في الشكل',
+
   panePresenterEndShow: 'إنهاء العرض',
   panePresenterEndTip: 'إنهاء العرض (Esc)',
   panePresenterSwap: 'تبديل الشاشات',
@@ -259,9 +273,19 @@ export const ar = {
   panePresenterNotesBigger: 'تكبير نص الملاحظات',
   panePresenterNotesSmaller: 'تصغير نص الملاحظات',
   panePresenterFilmSlideN: 'الشريحة {n}',
+
   paneShowEndedClick: 'انتهى عرض الشرائح. انقر للخروج.',
   paneShowEnded: 'انتهى عرض الشرائح.',
   paneShowRehearseTip: 'التمرن على التوقيت: الوقت على هذه الشريحة / الوقت الإجمالي',
   paneShowRehearseTotal: 'الإجمالي {time}',
+  paneShowMenuNext: 'التالي',
+  paneShowMenuPrev: 'السابق',
+  paneShowMenuLastViewed: 'آخر شريحة تم عرضها',
+  paneShowMenuSeeAll: 'عرض كل الشرائح',
+  paneShowMenuScreen: 'الشاشة',
+  paneShowMenuBlack: 'شاشة سوداء',
+  paneShowMenuWhite: 'شاشة بيضاء',
+  paneShowMenuEnd: 'إنهاء العرض',
+  panePresenterWhiteOn: 'شاشة بيضاء (اضغط W للعودة)',
   paneAnimRewind: 'التراجع بعد التأثير',
-}
+} satisfies Record<keyof typeof zh, string>

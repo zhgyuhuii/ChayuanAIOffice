@@ -1,14 +1,17 @@
-/** panes strings, zh-TW (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const zhTW = {
   paneCancel: '取消',
   paneOk: '確定',
   paneMoveUp: '上移',
   paneMoveDown: '下移',
+
   paneAnimTitle: '動畫窗格 · 第 {n} 頁',
   paneAnimPreview: '播放目前頁動畫預覽',
   paneAnimCollapse: '收合動畫窗格',
   paneAnimEmpty: '本頁還沒有動畫',
-  paneAnimEmptySub: '選取圖案後在「動畫」索引標籤挑一個效果，動畫會寫入 pptx，PowerPoint 放映同樣生效。',
+  paneAnimEmptySub:
+    '選取圖案後在「動畫」索引標籤挑一個效果，動畫會寫入 pptx，PowerPoint 放映同樣生效。',
   paneAnimDelete: '刪除該動畫',
   paneAnimSeconds: '{sec} 秒',
   paneAnimDelaySeconds: '延遲 {sec} 秒',
@@ -37,6 +40,10 @@ export const zhTW = {
   paneAnimEffShrink: '縮小旋轉',
   paneAnimEffZoomOut: '縮放離開',
   paneAnimEffMotionPath: '移動路徑',
+  paneAnimEffMediaPlay: '播放',
+  paneAnimEffMediaPause: '暫停',
+  paneAnimEffMediaStop: '停止',
+
   paneChartEditTitle: '編輯圖表資料',
   paneChartCategoryN: '類別 {n}',
   paneChartSeriesN: '數列 {n}',
@@ -46,6 +53,7 @@ export const zhTW = {
   paneChartDelCategory: '刪除該類別',
   paneChartAddCategory: '新增類別',
   paneChartAddCategoryBtn: '＋類別',
+
   paneCommentsTitle: '註解 · 第 {n} 頁',
   paneCommentsCollapse: '收合註解窗格',
   paneCommentsEmpty: '本頁還沒有註解',
@@ -53,6 +61,7 @@ export const zhTW = {
   paneCommentsDelete: '刪除註解',
   paneCommentsPlaceholder: '新增註解…（⌘/Ctrl+Enter 發佈）',
   paneCommentsPost: '發佈',
+
   paneCsdTitle: '自訂放映',
   paneCsdDefaultName: '自訂放映 {n}',
   paneFrTitle: '尋找及取代',
@@ -87,15 +96,18 @@ export const zhTW = {
   paneCsdCreateHint: '按一下「新增」建立一個自訂放映',
   paneCsdClose: '關閉',
   paneCsdPlay: '放映此自訂放映',
+
   paneCutoutTitle: '移除背景',
   paneCutoutDecodeFail: '圖片解碼失敗',
   paneCutoutLoadFail: '圖片載入失敗',
   paneCutoutApplyFail: '去背處理失敗',
   paneCutoutLoading: '載入中…',
   paneCutoutTolerance: '容差',
-  paneCutoutHint: '自動從圖片邊緣取樣背景色；容差越大，移除的相近顏色越多。目前預覽已移除約 {pct}% 像素。',
+  paneCutoutHint:
+    '自動從圖片邊緣取樣背景色；容差越大，移除的相近顏色越多。目前預覽已移除約 {pct}% 像素。',
   paneCutoutApplying: '處理中…',
   paneCutoutApply: '套用',
+
   paneFormatTitle: '格式',
   paneFormatTitleTyped: '設定{type}格式',
   paneFormatTabShape: '圖案選項',
@@ -230,6 +242,7 @@ export const zhTW = {
   paneInsetT: '上邊界',
   paneInsetB: '下邊界',
   paneTextWrap: '圖案的文字自動換行',
+
   panePresenterEndShow: '結束放映',
   panePresenterEndTip: '結束放映（Esc）',
   panePresenterSwap: '交換顯示器',
@@ -259,9 +272,19 @@ export const zhTW = {
   panePresenterNotesBigger: '放大備忘稿字級',
   panePresenterNotesSmaller: '縮小備忘稿字級',
   panePresenterFilmSlideN: '第 {n} 張',
+
   paneShowEndedClick: '放映結束，按一下離開。',
   paneShowEnded: '放映結束。',
   paneShowRehearseTip: '排練計時：目前頁停留 / 總時長',
   paneShowRehearseTotal: '總時長 {time}',
+  paneShowMenuNext: '下一頁',
+  paneShowMenuPrev: '上一頁',
+  paneShowMenuLastViewed: '上次檢視的',
+  paneShowMenuSeeAll: '檢視所有投影片',
+  paneShowMenuScreen: '螢幕',
+  paneShowMenuBlack: '黑色畫面',
+  paneShowMenuWhite: '白色畫面',
+  paneShowMenuEnd: '結束放映',
+  panePresenterWhiteOn: '白色畫面中（按 W 鍵恢復）',
   paneAnimRewind: '播完快退',
-}
+} satisfies Record<keyof typeof zh, string>

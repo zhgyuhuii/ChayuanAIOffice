@@ -44,6 +44,10 @@ chatoffice skill list   # coding agents found on this machine and the skill vers
 chatoffice skill install --dir ./skills --force   # copy the bundled skill into a skills directory
 chatoffice install-cli   # put chatoffice on the PATH
 chatoffice mcp --http 3000 [--host 127.0.0.1] [--token secret]   # Streamable HTTP for clients on other machines; omit --http for stdio
+
+Behind a reverse proxy, set `GENOFFICE_TRUST_PROXY_HEADERS=1` so the download
+URLs the server hands out use the forwarded host and scheme; by default the
+`X-Forwarded-*` headers are ignored.
 chatoffice render page.pdf --out shots/ --grid 3x2 --tile 900 --pad 12   # contact sheet: a grid of page thumbnails (--cols 3: columns); --el <id>: one element per shot (docx/pptx)
 chatoffice create --type xlsx --from data.csv --header --decimal ,   # row 1 = header (AutoFilter + freeze); --decimal: the decimal separator the csv uses
 ```

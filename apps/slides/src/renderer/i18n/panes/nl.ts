@@ -1,14 +1,17 @@
-/** panes strings, nl (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const nl = {
   paneCancel: 'Annuleren',
   paneOk: 'OK',
   paneMoveUp: 'Omhoog',
   paneMoveDown: 'Omlaag',
+
   paneAnimTitle: 'Animatiedeelvenster · Dia {n}',
   paneAnimPreview: 'Voorbeeld van animaties van deze dia afspelen',
   paneAnimCollapse: 'Animatiedeelvenster samenvouwen',
   paneAnimEmpty: 'Geen animaties op deze dia',
-  paneAnimEmptySub: 'Selecteer een vorm en kies een effect op het tabblad "Animaties". Animaties worden in het pptx-bestand geschreven en werken ook in PowerPoint.',
+  paneAnimEmptySub:
+    'Selecteer een vorm en kies een effect op het tabblad "Animaties". Animaties worden in het pptx-bestand geschreven en werken ook in PowerPoint.',
   paneAnimDelete: 'Deze animatie verwijderen',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'vertraging {sec} s',
@@ -37,6 +40,10 @@ export const nl = {
   paneAnimEffShrink: 'Verkleinen en draaien',
   paneAnimEffZoomOut: 'Uitzoomen',
   paneAnimEffMotionPath: 'Bewegingspad',
+  paneAnimEffMediaPlay: 'Afspelen',
+  paneAnimEffMediaPause: 'Pauzeren',
+  paneAnimEffMediaStop: 'Stoppen',
+
   paneChartEditTitle: 'Grafiekgegevens bewerken',
   paneChartCategoryN: 'Categorie {n}',
   paneChartSeriesN: 'Reeks {n}',
@@ -46,13 +53,16 @@ export const nl = {
   paneChartDelCategory: 'Deze categorie verwijderen',
   paneChartAddCategory: 'Categorie toevoegen',
   paneChartAddCategoryBtn: '+ Categorie',
+
   paneCommentsTitle: 'Opmerkingen · Dia {n}',
   paneCommentsCollapse: 'Deelvenster Opmerkingen samenvouwen',
   paneCommentsEmpty: 'Geen opmerkingen op deze dia',
-  paneCommentsEmptySub: 'Typ hieronder — opmerkingen worden in het pptx-bestand geschreven en zijn ook zichtbaar in PowerPoint.',
+  paneCommentsEmptySub:
+    'Typ hieronder — opmerkingen worden in het pptx-bestand geschreven en zijn ook zichtbaar in PowerPoint.',
   paneCommentsDelete: 'Opmerking verwijderen',
   paneCommentsPlaceholder: 'Nieuwe opmerking… (⌘/Ctrl+Enter om te plaatsen)',
   paneCommentsPost: 'Plaatsen',
+
   paneCsdTitle: 'Aangepaste voorstellingen',
   paneCsdDefaultName: 'Aangepaste voorstelling {n}',
   paneFrTitle: 'Zoeken en vervangen',
@@ -75,27 +85,30 @@ export const nl = {
   paneFormatAnchorMiddle: 'Midden',
   paneFormatAnchorBottom: 'Onder',
   paneCsdEmpty: 'Nog geen aangepaste voorstellingen',
-  paneCsdPageCount: '{n} dia\'s',
+  paneCsdPageCount: "{n} dia's",
   paneCsdNew: 'Nieuw',
   paneCsdDelete: 'Verwijderen',
   paneCsdName: 'Naam van diavoorstelling',
   paneCsdNamePlaceholder: 'Naam van aangepaste voorstelling',
-  paneCsdAllSlides: 'Dia\'s in presentatie',
+  paneCsdAllSlides: "Dia's in presentatie",
   paneCsdSlideN: 'Dia {n}',
-  paneCsdOrder: 'Dia\'s in aangepaste voorstelling',
-  paneCsdOrderEmpty: 'Vink links de dia\'s aan om ze toe te voegen',
+  paneCsdOrder: "Dia's in aangepaste voorstelling",
+  paneCsdOrderEmpty: "Vink links de dia's aan om ze toe te voegen",
   paneCsdCreateHint: 'Klik op "Nieuw" om een aangepaste voorstelling te maken',
   paneCsdClose: 'Sluiten',
   paneCsdPlay: 'Weergeven',
+
   paneCutoutTitle: 'Achtergrond verwijderen',
   paneCutoutDecodeFail: 'Kan de afbeelding niet decoderen',
   paneCutoutLoadFail: 'Kan de afbeelding niet laden',
   paneCutoutApplyFail: 'Achtergrond verwijderen mislukt',
   paneCutoutLoading: 'Laden…',
   paneCutoutTolerance: 'Tolerantie',
-  paneCutoutHint: 'Achtergrondkleuren worden bemonsterd langs de randen van de afbeelding; een hogere tolerantie verwijdert meer vergelijkbare kleuren. Ongeveer {pct}% van de pixels is verwijderd in dit voorbeeld.',
+  paneCutoutHint:
+    'Achtergrondkleuren worden bemonsterd langs de randen van de afbeelding; een hogere tolerantie verwijdert meer vergelijkbare kleuren. Ongeveer {pct}% van de pixels is verwijderd in dit voorbeeld.',
   paneCutoutApplying: 'Verwerken…',
   paneCutoutApply: 'Toepassen',
+
   paneFormatTitle: 'Opmaak',
   paneFormatTitleTyped: '{type} opmaken',
   paneFormatTabShape: 'Vormopties',
@@ -149,8 +162,10 @@ export const nl = {
   paneBgTile: 'Tegels',
   paneBgHideGraphics: 'Achtergrondafbeeldingen verbergen',
   paneBgReset: 'Achtergrond opnieuw instellen',
-  paneBgResetTip: 'Verwijdert de eigen achtergrond van deze dia en herstelt de achtergrond van de indeling/het model',
-  paneFormatEmpty: 'Selecteer een element op het canvas om de positie, grootte en opvulling te bewerken.',
+  paneBgResetTip:
+    'Verwijdert de eigen achtergrond van deze dia en herstelt de achtergrond van de indeling/het model',
+  paneFormatEmpty:
+    'Selecteer een element op het canvas om de positie, grootte en opvulling te bewerken.',
   paneFormatPicture: 'Afbeelding',
   paneFormatGroup: 'Groep',
   paneFormatTextBox: 'Tekstvak',
@@ -171,7 +186,8 @@ export const nl = {
   panePosFromTL: 'Linkerbovenhoek',
   panePosFromCenter: 'Midden',
   paneFormatCrop: 'Afbeelding bijsnijden',
-  paneFormatCutoutTip: 'De achtergrond van de afbeelding verwijderen op basis van kleurtolerantie (vervangen door een transparante PNG)',
+  paneFormatCutoutTip:
+    'De achtergrond van de afbeelding verwijderen op basis van kleurtolerantie (vervangen door een transparante PNG)',
   paneFormatCutoutNA: 'Achtergrond verwijderen is niet beschikbaar voor deze afbeelding',
   paneFormatFill: 'Opvulling',
   paneFormatSolidFill: 'Effen opvulling',
@@ -230,6 +246,7 @@ export const nl = {
   paneInsetT: 'Bovenmarge',
   paneInsetB: 'Ondermarge',
   paneTextWrap: 'Tekst in vorm laten teruglopen',
+
   panePresenterEndShow: 'Voorstelling beëindigen',
   panePresenterEndTip: 'Voorstelling beëindigen (Esc)',
   panePresenterSwap: 'Schermen wisselen',
@@ -237,13 +254,15 @@ export const nl = {
   panePresenterNoSecond: 'Geen tweede scherm gedetecteerd',
   panePresenterUseShow: 'Diavoorstelling gebruiken',
   panePresenterUseShowTip: 'Overschakelen naar een normale diavoorstelling op dit scherm',
-  panePresenterSingleHint: 'Modus met één scherm (sluit een tweede scherm aan om automatisch op volledig scherm te presenteren)',
+  panePresenterSingleHint:
+    'Modus met één scherm (sluit een tweede scherm aan om automatisch op volledig scherm te presenteren)',
   panePresenterElapsed: 'Verstreken tijd',
   panePresenterPause: 'Timer pauzeren',
   panePresenterResume: 'Timer hervatten',
   panePresenterRestart: 'Timer opnieuw starten',
   panePresenterClock: 'Huidige tijd',
-  panePresenterEnded: 'Einde van de diavoorstelling. Druk op Esc of "Voorstelling beëindigen" om af te sluiten.',
+  panePresenterEnded:
+    'Einde van de diavoorstelling. Druk op Esc of "Voorstelling beëindigen" om af te sluiten.',
   panePresenterBlackOn: 'Zwart scherm (druk op B om te hervatten)',
   panePresenterPen: 'Pen (teken op de dia; het publiek ziet het live)',
   panePresenterLaser: 'Laserpointer (zichtbaar voor het publiek)',
@@ -259,9 +278,19 @@ export const nl = {
   panePresenterNotesBigger: 'Notitietekst vergroten',
   panePresenterNotesSmaller: 'Notitietekst verkleinen',
   panePresenterFilmSlideN: 'Dia {n}',
+
   paneShowEndedClick: 'Einde van de diavoorstelling. Klik om af te sluiten.',
   paneShowEnded: 'Einde van de diavoorstelling.',
   paneShowRehearseTip: 'Try-out: tijd op deze dia / totale tijd',
   paneShowRehearseTotal: 'Totaal {time}',
+  paneShowMenuNext: 'Volgende',
+  paneShowMenuPrev: 'Vorige',
+  paneShowMenuLastViewed: 'Laatst bekeken',
+  paneShowMenuSeeAll: "Alle dia's weergeven",
+  paneShowMenuScreen: 'Scherm',
+  paneShowMenuBlack: 'Zwart scherm',
+  paneShowMenuWhite: 'Wit scherm',
+  paneShowMenuEnd: 'Voorstelling beëindigen',
+  panePresenterWhiteOn: 'Wit scherm (W om terug te keren)',
   paneAnimRewind: 'Terugspoelen na effect',
-}
+} satisfies Record<keyof typeof zh, string>

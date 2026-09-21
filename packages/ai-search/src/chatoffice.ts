@@ -12,7 +12,7 @@
  */
 
 import { execFile } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, unwatchFile, watchFile, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -25,7 +25,8 @@ import {
   type ImageSearchResult,
   type WebSearchResult,
 } from './shared'
-import { chatofficeApiKey as chatofficeAuthApiKey } from './chatoffice-auth'
+// LOCAL(2026-09-22, f5247d3..476e5023): 上游 #657 watch 函数重放为 chatoffice 命名
+import { chatofficeApiKey as chatofficeAuthApiKey, chatofficeAuthPath, reloadChatofficeAuth } from './chatoffice-auth'
 
 const SEARCH_TIMEOUT_MS = 60_000
 const GENERATE_TIMEOUT_MS = 600_000
@@ -98,6 +99,31 @@ export function chatofficeCliApiKey(): string {
 }
 
 /**
+ * Fires when the effective chatoffice key changes on disk — another
+ * ChatOffice-family app re-logging in mints a new key and revokes the one this
+ * process holds. Polls by path (watchFile): auth.json is replaced whole, and
+ * fs.watch misses events for a moment after it is armed.
+ */
+export function watchChatofficeApiKey(
+  onChange: (key: string) => void,
+  intervalMs = 2000,
+): () => void {
+  let last = chatofficeCliApiKey()
+  const check = (): void => {
+    reloadChatofficeAuth()
+    const key = chatofficeCliApiKey()
+    if (key === last) return
+    last = key
+    onChange(key)
+  }
+  const files = [chatofficeAuthPath(), join(homedir(), '.chatoffice-tool-cli', 'config.json')]
+  for (const f of files) watchFile(f, { persistent: false, interval: intervalMs }, check)
+  return () => {
+    for (const f of files) unwatchFile(f, check)
+  }
+}
+
+/**
  * Whether chatoffice is usable (CLI installed and logged in / has a key). Callers use this to decide fallback.
  * Set AI_SEARCH_DISABLE_GSK=1 to force-disable (test isolation / force Serper).
  */
@@ -157,8 +183,10 @@ export function parseChatOfficeOutput(stdout: string): unknown {
   } catch {
     /* fall through to line-by-line scan */
   }
+  // Pretty-printed output puts inner elements on their own `{` lines, so the
+  // scan must start from the earliest candidate and take the longest parse.
   const lines = trimmed.split('\n')
-  for (let i = lines.length - 1; i >= 0; i--) {
+  for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!.trim()
     if (line.startsWith('{') || line.startsWith('[')) {
       for (let j = lines.length; j > i; j--) {
@@ -251,7 +279,7 @@ export function parseChatOfficeWebSearch(
   const answerRaw = typeof data.answer === 'string' && data.answer ? data.answer : undefined
   const answer =
     answerRaw !== undefined && answerRaw.length > MAX_CHATOFFICE_SNIPPET_CHARS
-      ? answerRaw.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS)
+      ? `${answerRaw.slice(0, MAX_CHATOFFICE_SNIPPET_CHARS)}…`
       : answerRaw
   return answer !== undefined ? { results, answer } : { results }
 }

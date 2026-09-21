@@ -1,14 +1,17 @@
-/** panes strings, ru (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const ru = {
   paneCancel: 'Отмена',
   paneOk: 'ОК',
   paneMoveUp: 'Вверх',
   paneMoveDown: 'Вниз',
+
   paneAnimTitle: 'Область анимации · Слайд {n}',
   paneAnimPreview: 'Воспроизвести предварительный просмотр анимации этого слайда',
   paneAnimCollapse: 'Свернуть область анимации',
   paneAnimEmpty: 'На этом слайде пока нет анимации',
-  paneAnimEmptySub: 'Выберите фигуру и эффект на вкладке «Анимация». Анимация записывается в pptx и работает также в PowerPoint.',
+  paneAnimEmptySub:
+    'Выберите фигуру и эффект на вкладке «Анимация». Анимация записывается в pptx и работает также в PowerPoint.',
   paneAnimDelete: 'Удалить эту анимацию',
   paneAnimSeconds: '{sec} с',
   paneAnimDelaySeconds: 'задержка {sec} с',
@@ -37,6 +40,10 @@ export const ru = {
   paneAnimEffShrink: 'Сжатие и поворот',
   paneAnimEffZoomOut: 'Масштабирование (выход)',
   paneAnimEffMotionPath: 'Путь перемещения',
+  paneAnimEffMediaPlay: 'Воспроизвести',
+  paneAnimEffMediaPause: 'Пауза',
+  paneAnimEffMediaStop: 'Остановить',
+
   paneChartEditTitle: 'Изменение данных диаграммы',
   paneChartCategoryN: 'Категория {n}',
   paneChartSeriesN: 'Ряд {n}',
@@ -46,13 +53,16 @@ export const ru = {
   paneChartDelCategory: 'Удалить эту категорию',
   paneChartAddCategory: 'Добавить категорию',
   paneChartAddCategoryBtn: '+ Категория',
+
   paneCommentsTitle: 'Примечания · Слайд {n}',
   paneCommentsCollapse: 'Свернуть область примечаний',
   paneCommentsEmpty: 'На этом слайде пока нет примечаний',
-  paneCommentsEmptySub: 'Введите текст ниже — примечания записываются в pptx и видны также в PowerPoint.',
+  paneCommentsEmptySub:
+    'Введите текст ниже — примечания записываются в pptx и видны также в PowerPoint.',
   paneCommentsDelete: 'Удалить примечание',
   paneCommentsPlaceholder: 'Новое примечание… (⌘/Ctrl+Enter — опубликовать)',
   paneCommentsPost: 'Опубликовать',
+
   paneCsdTitle: 'Произвольные показы',
   paneCsdDefaultName: 'Произвольный показ {n}',
   paneFrTitle: 'Найти и заменить',
@@ -87,15 +97,18 @@ export const ru = {
   paneCsdCreateHint: 'Нажмите «Создать», чтобы создать произвольный показ',
   paneCsdClose: 'Закрыть',
   paneCsdPlay: 'Запустить этот произвольный показ',
+
   paneCutoutTitle: 'Удалить фон',
   paneCutoutDecodeFail: 'Не удалось декодировать изображение',
   paneCutoutLoadFail: 'Не удалось загрузить изображение',
   paneCutoutApplyFail: 'Не удалось удалить фон',
   paneCutoutLoading: 'Загрузка…',
   paneCutoutTolerance: 'Допуск',
-  paneCutoutHint: 'Цвет фона автоматически определяется по краям изображения; чем больше допуск, тем больше похожих цветов удаляется. В этом предварительном просмотре удалено около {pct}% пикселей.',
+  paneCutoutHint:
+    'Цвет фона автоматически определяется по краям изображения; чем больше допуск, тем больше похожих цветов удаляется. В этом предварительном просмотре удалено около {pct}% пикселей.',
   paneCutoutApplying: 'Обработка…',
   paneCutoutApply: 'Применить',
+
   paneFormatTitle: 'Формат',
   paneFormatTitleTyped: 'Формат: {type}',
   paneFormatTabShape: 'Параметры фигуры',
@@ -230,6 +243,7 @@ export const ru = {
   paneInsetT: 'Верхнее поле',
   paneInsetB: 'Нижнее поле',
   paneTextWrap: 'Переносить текст в фигуре',
+
   panePresenterEndShow: 'Завершить показ',
   panePresenterEndTip: 'Завершить показ (Esc)',
   panePresenterSwap: 'Поменять экраны местами',
@@ -237,7 +251,8 @@ export const ru = {
   panePresenterNoSecond: 'Второй экран не обнаружен',
   panePresenterUseShow: 'Обычный показ',
   panePresenterUseShowTip: 'Переключиться на обычное слайд-шоу на этом экране',
-  panePresenterSingleHint: 'Режим одного экрана (подключите второй экран для автоматического показа во весь экран)',
+  panePresenterSingleHint:
+    'Режим одного экрана (подключите второй экран для автоматического показа во весь экран)',
   panePresenterElapsed: 'Прошло времени',
   panePresenterPause: 'Приостановить таймер',
   panePresenterResume: 'Возобновить таймер',
@@ -259,9 +274,19 @@ export const ru = {
   panePresenterNotesBigger: 'Увеличить текст заметок',
   panePresenterNotesSmaller: 'Уменьшить текст заметок',
   panePresenterFilmSlideN: 'Слайд {n}',
+
   paneShowEndedClick: 'Показ завершен. Щелкните, чтобы выйти.',
   paneShowEnded: 'Показ завершен.',
   paneShowRehearseTip: 'Настройка времени: время на этом слайде / общее время',
   paneShowRehearseTotal: 'Всего {time}',
+  paneShowMenuNext: 'Далее',
+  paneShowMenuPrev: 'Назад',
+  paneShowMenuLastViewed: 'Последний просмотренный',
+  paneShowMenuSeeAll: 'Показать все слайды',
+  paneShowMenuScreen: 'Экран',
+  paneShowMenuBlack: 'Чёрный экран',
+  paneShowMenuWhite: 'Белый экран',
+  paneShowMenuEnd: 'Завершить показ',
+  panePresenterWhiteOn: 'Белый экран (W — вернуться)',
   paneAnimRewind: 'Откат после эффекта',
-}
+} satisfies Record<keyof typeof zh, string>

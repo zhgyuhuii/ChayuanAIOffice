@@ -1,14 +1,17 @@
-/** panes strings, th (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const th = {
   paneCancel: 'ยกเลิก',
   paneOk: 'ตกลง',
   paneMoveUp: 'ย้ายขึ้น',
   paneMoveDown: 'ย้ายลง',
+
   paneAnimTitle: 'บานหน้าต่างภาพเคลื่อนไหว · สไลด์ {n}',
   paneAnimPreview: 'เล่นตัวอย่างภาพเคลื่อนไหวของสไลด์นี้',
   paneAnimCollapse: 'ยุบบานหน้าต่างภาพเคลื่อนไหว',
   paneAnimEmpty: 'สไลด์นี้ยังไม่มีภาพเคลื่อนไหว',
-  paneAnimEmptySub: 'เลือกรูปร่างแล้วเลือกเอฟเฟ็กต์ในแท็บ "ภาพเคลื่อนไหว" ภาพเคลื่อนไหวจะถูกเขียนลงใน pptx และมีผลในการนำเสนอของ PowerPoint ด้วย',
+  paneAnimEmptySub:
+    'เลือกรูปร่างแล้วเลือกเอฟเฟ็กต์ในแท็บ "ภาพเคลื่อนไหว" ภาพเคลื่อนไหวจะถูกเขียนลงใน pptx และมีผลในการนำเสนอของ PowerPoint ด้วย',
   paneAnimDelete: 'ลบภาพเคลื่อนไหวนี้',
   paneAnimSeconds: '{sec} วินาที',
   paneAnimDelaySeconds: 'หน่วงเวลา {sec} วินาที',
@@ -37,6 +40,10 @@ export const th = {
   paneAnimEffShrink: 'ย่อและหมุน',
   paneAnimEffZoomOut: 'ซูมออก',
   paneAnimEffMotionPath: 'เส้นทางการเคลื่อนที่',
+  paneAnimEffMediaPlay: 'เล่น',
+  paneAnimEffMediaPause: 'หยุดชั่วคราว',
+  paneAnimEffMediaStop: 'หยุด',
+
   paneChartEditTitle: 'แก้ไขข้อมูลแผนภูมิ',
   paneChartCategoryN: 'ประเภท {n}',
   paneChartSeriesN: 'ชุดข้อมูล {n}',
@@ -46,13 +53,16 @@ export const th = {
   paneChartDelCategory: 'ลบประเภทนี้',
   paneChartAddCategory: 'เพิ่มประเภท',
   paneChartAddCategoryBtn: '+ ประเภท',
+
   paneCommentsTitle: 'ข้อคิดเห็น · สไลด์ {n}',
   paneCommentsCollapse: 'ยุบบานหน้าต่างข้อคิดเห็น',
   paneCommentsEmpty: 'สไลด์นี้ยังไม่มีข้อคิดเห็น',
-  paneCommentsEmptySub: 'พิมพ์ด้านล่าง ข้อคิดเห็นจะถูกเขียนลงใน pptx และมองเห็นได้ใน PowerPoint ด้วย',
+  paneCommentsEmptySub:
+    'พิมพ์ด้านล่าง ข้อคิดเห็นจะถูกเขียนลงใน pptx และมองเห็นได้ใน PowerPoint ด้วย',
   paneCommentsDelete: 'ลบข้อคิดเห็น',
   paneCommentsPlaceholder: 'ข้อคิดเห็นใหม่… (⌘/Ctrl+Enter เพื่อโพสต์)',
   paneCommentsPost: 'โพสต์',
+
   paneCsdTitle: 'การนำเสนอแบบกำหนดเอง',
   paneCsdDefaultName: 'การนำเสนอแบบกำหนดเอง {n}',
   paneFrTitle: 'ค้นหาและแทนที่',
@@ -87,15 +97,18 @@ export const th = {
   paneCsdCreateHint: 'คลิก "สร้างใหม่" เพื่อสร้างการนำเสนอแบบกำหนดเอง',
   paneCsdClose: 'ปิด',
   paneCsdPlay: 'นำเสนอชุดนี้',
+
   paneCutoutTitle: 'เอาพื้นหลังออก',
   paneCutoutDecodeFail: 'ถอดรหัสรูปภาพไม่สำเร็จ',
   paneCutoutLoadFail: 'โหลดรูปภาพไม่สำเร็จ',
   paneCutoutApplyFail: 'ประมวลผลการเอาพื้นหลังออกไม่สำเร็จ',
   paneCutoutLoading: 'กำลังโหลด…',
   paneCutoutTolerance: 'ค่าความคลาดเคลื่อน',
-  paneCutoutHint: 'สุ่มตัวอย่างสีพื้นหลังจากขอบรูปภาพโดยอัตโนมัติ ยิ่งค่าความคลาดเคลื่อนมาก สีที่ใกล้เคียงจะถูกเอาออกมากขึ้น ตัวอย่างปัจจุบันเอาพิกเซลออกแล้วประมาณ {pct}%',
+  paneCutoutHint:
+    'สุ่มตัวอย่างสีพื้นหลังจากขอบรูปภาพโดยอัตโนมัติ ยิ่งค่าความคลาดเคลื่อนมาก สีที่ใกล้เคียงจะถูกเอาออกมากขึ้น ตัวอย่างปัจจุบันเอาพิกเซลออกแล้วประมาณ {pct}%',
   paneCutoutApplying: 'กำลังประมวลผล…',
   paneCutoutApply: 'นำไปใช้',
+
   paneFormatTitle: 'รูปแบบ',
   paneFormatTitleTyped: 'จัดรูปแบบ{type}',
   paneFormatTabShape: 'ตัวเลือกรูปร่าง',
@@ -230,6 +243,7 @@ export const th = {
   paneInsetT: 'ระยะขอบบน',
   paneInsetB: 'ระยะขอบล่าง',
   paneTextWrap: 'ตัดข้อความในรูปร่าง',
+
   panePresenterEndShow: 'จบการนำเสนอ',
   panePresenterEndTip: 'จบการนำเสนอ (Esc)',
   panePresenterSwap: 'สลับจอแสดงผล',
@@ -259,9 +273,19 @@ export const th = {
   panePresenterNotesBigger: 'ขยายขนาดตัวอักษรของบันทึกย่อ',
   panePresenterNotesSmaller: 'ลดขนาดตัวอักษรของบันทึกย่อ',
   panePresenterFilmSlideN: 'สไลด์ {n}',
+
   paneShowEndedClick: 'จบการนำเสนอแล้ว คลิกเพื่อออก',
   paneShowEnded: 'จบการนำเสนอแล้ว',
   paneShowRehearseTip: 'ซ้อมการกำหนดเวลา: เวลาบนสไลด์นี้ / เวลารวม',
   paneShowRehearseTotal: 'รวม {time}',
+  paneShowMenuNext: 'ถัดไป',
+  paneShowMenuPrev: 'ก่อนหน้า',
+  paneShowMenuLastViewed: 'สไลด์ที่ดูล่าสุด',
+  paneShowMenuSeeAll: 'ดูสไลด์ทั้งหมด',
+  paneShowMenuScreen: 'หน้าจอ',
+  paneShowMenuBlack: 'หน้าจอสีดำ',
+  paneShowMenuWhite: 'หน้าจอสีขาว',
+  paneShowMenuEnd: 'จบการนำเสนอ',
+  panePresenterWhiteOn: 'หน้าจอสีขาว (กด W เพื่อกลับ)',
   paneAnimRewind: 'กระชากกลับหลังเอฟเฟกต์',
-}
+} satisfies Record<keyof typeof zh, string>

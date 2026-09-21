@@ -1,14 +1,17 @@
-/** panes strings, de (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const de = {
   paneCancel: 'Abbrechen',
   paneOk: 'OK',
   paneMoveUp: 'Nach oben',
   paneMoveDown: 'Nach unten',
+
   paneAnimTitle: 'Animationsbereich · Folie {n}',
   paneAnimPreview: 'Animationsvorschau für diese Folie abspielen',
   paneAnimCollapse: 'Animationsbereich einklappen',
   paneAnimEmpty: 'Keine Animationen auf dieser Folie',
-  paneAnimEmptySub: 'Wählen Sie eine Form aus und wählen Sie auf der Registerkarte „Animationen“ einen Effekt. Animationen werden in die pptx-Datei geschrieben und funktionieren auch in PowerPoint.',
+  paneAnimEmptySub:
+    'Wählen Sie eine Form aus und wählen Sie auf der Registerkarte „Animationen“ einen Effekt. Animationen werden in die pptx-Datei geschrieben und funktionieren auch in PowerPoint.',
   paneAnimDelete: 'Diese Animation entfernen',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'Verzögerung {sec} s',
@@ -37,6 +40,10 @@ export const de = {
   paneAnimEffShrink: 'Verkleinern und drehen',
   paneAnimEffZoomOut: 'Zoom (Beenden)',
   paneAnimEffMotionPath: 'Animationspfad',
+  paneAnimEffMediaPlay: 'Wiedergabe',
+  paneAnimEffMediaPause: 'Pause',
+  paneAnimEffMediaStop: 'Beenden',
+
   paneChartEditTitle: 'Diagrammdaten bearbeiten',
   paneChartCategoryN: 'Kategorie {n}',
   paneChartSeriesN: 'Reihe {n}',
@@ -46,13 +53,16 @@ export const de = {
   paneChartDelCategory: 'Diese Kategorie entfernen',
   paneChartAddCategory: 'Kategorie hinzufügen',
   paneChartAddCategoryBtn: '+ Kategorie',
+
   paneCommentsTitle: 'Kommentare · Folie {n}',
   paneCommentsCollapse: 'Kommentarbereich einklappen',
   paneCommentsEmpty: 'Keine Kommentare auf dieser Folie',
-  paneCommentsEmptySub: 'Geben Sie unten Text ein — Kommentare werden in die pptx-Datei geschrieben und sind auch in PowerPoint sichtbar.',
+  paneCommentsEmptySub:
+    'Geben Sie unten Text ein — Kommentare werden in die pptx-Datei geschrieben und sind auch in PowerPoint sichtbar.',
   paneCommentsDelete: 'Kommentar löschen',
   paneCommentsPlaceholder: 'Neuer Kommentar… (⌘/Strg+Eingabetaste zum Veröffentlichen)',
   paneCommentsPost: 'Veröffentlichen',
+
   paneCsdTitle: 'Zielgruppenorientierte Präsentationen',
   paneCsdDefaultName: 'Zielgruppenorientierte Präsentation {n}',
   paneFrTitle: 'Suchen und Ersetzen',
@@ -84,18 +94,22 @@ export const de = {
   paneCsdSlideN: 'Folie {n}',
   paneCsdOrder: 'Folien in der zielgruppenorientierten Präsentation',
   paneCsdOrderEmpty: 'Wählen Sie links die Folien für die Präsentation aus',
-  paneCsdCreateHint: 'Klicken Sie auf „Neu“, um eine zielgruppenorientierte Präsentation zu erstellen',
+  paneCsdCreateHint:
+    'Klicken Sie auf „Neu“, um eine zielgruppenorientierte Präsentation zu erstellen',
   paneCsdClose: 'Schließen',
   paneCsdPlay: 'Diese zielgruppenorientierte Präsentation vorführen',
+
   paneCutoutTitle: 'Hintergrund entfernen',
   paneCutoutDecodeFail: 'Bild konnte nicht decodiert werden',
   paneCutoutLoadFail: 'Bild konnte nicht geladen werden',
   paneCutoutApplyFail: 'Entfernen des Hintergrunds fehlgeschlagen',
   paneCutoutLoading: 'Wird geladen…',
   paneCutoutTolerance: 'Toleranz',
-  paneCutoutHint: 'Die Hintergrundfarbe wird automatisch an den Bildrändern ermittelt; je höher die Toleranz, desto mehr ähnliche Farben werden entfernt. In dieser Vorschau wurden etwa {pct} % der Pixel entfernt.',
+  paneCutoutHint:
+    'Die Hintergrundfarbe wird automatisch an den Bildrändern ermittelt; je höher die Toleranz, desto mehr ähnliche Farben werden entfernt. In dieser Vorschau wurden etwa {pct} % der Pixel entfernt.',
   paneCutoutApplying: 'Wird verarbeitet…',
   paneCutoutApply: 'Anwenden',
+
   paneFormatTitle: 'Format',
   paneFormatTitleTyped: '{type} formatieren',
   paneFormatTabShape: 'Formoptionen',
@@ -149,8 +163,10 @@ export const de = {
   paneBgTile: 'Kacheln',
   paneBgHideGraphics: 'Hintergrundgrafiken ausblenden',
   paneBgReset: 'Hintergrund zurücksetzen',
-  paneBgResetTip: 'Entfernt den eigenen Hintergrund dieser Folie und stellt den Layout-/Master-Hintergrund wieder her',
-  paneFormatEmpty: 'Wählen Sie ein Element auf der Zeichenfläche aus, um Position, Größe und Füllung zu bearbeiten.',
+  paneBgResetTip:
+    'Entfernt den eigenen Hintergrund dieser Folie und stellt den Layout-/Master-Hintergrund wieder her',
+  paneFormatEmpty:
+    'Wählen Sie ein Element auf der Zeichenfläche aus, um Position, Größe und Füllung zu bearbeiten.',
   paneFormatPicture: 'Bild',
   paneFormatGroup: 'Gruppe',
   paneFormatTextBox: 'Textfeld',
@@ -171,7 +187,8 @@ export const de = {
   panePosFromTL: 'Obere linke Ecke',
   panePosFromCenter: 'Mitte',
   paneFormatCrop: 'Bild zuschneiden',
-  paneFormatCutoutTip: 'Bildhintergrund anhand der Farbtoleranz entfernen (durch transparentes PNG ersetzt)',
+  paneFormatCutoutTip:
+    'Bildhintergrund anhand der Farbtoleranz entfernen (durch transparentes PNG ersetzt)',
   paneFormatCutoutNA: 'Das Entfernen des Hintergrunds ist für dieses Bild nicht verfügbar',
   paneFormatFill: 'Füllung',
   paneFormatSolidFill: 'Einfarbige Füllung',
@@ -230,6 +247,7 @@ export const de = {
   paneInsetT: 'Oberer Rand',
   paneInsetB: 'Unterer Rand',
   paneTextWrap: 'Text in Form umbrechen',
+
   panePresenterEndShow: 'Präsentation beenden',
   panePresenterEndTip: 'Präsentation beenden (Esc)',
   panePresenterSwap: 'Anzeigen tauschen',
@@ -237,13 +255,15 @@ export const de = {
   panePresenterNoSecond: 'Kein zweiter Bildschirm erkannt',
   panePresenterUseShow: 'Bildschirmpräsentation verwenden',
   panePresenterUseShowTip: 'Auf diesem Bildschirm zur normalen Bildschirmpräsentation wechseln',
-  panePresenterSingleHint: 'Einzelbildschirmmodus (schließen Sie einen zweiten Bildschirm an, um automatisch im Vollbild zu präsentieren)',
+  panePresenterSingleHint:
+    'Einzelbildschirmmodus (schließen Sie einen zweiten Bildschirm an, um automatisch im Vollbild zu präsentieren)',
   panePresenterElapsed: 'Verstrichene Zeit',
   panePresenterPause: 'Timer anhalten',
   panePresenterResume: 'Timer fortsetzen',
   panePresenterRestart: 'Timer neu starten',
   panePresenterClock: 'Aktuelle Uhrzeit',
-  panePresenterEnded: 'Ende der Bildschirmpräsentation. Zum Beenden Esc oder „Präsentation beenden“ drücken.',
+  panePresenterEnded:
+    'Ende der Bildschirmpräsentation. Zum Beenden Esc oder „Präsentation beenden“ drücken.',
   panePresenterBlackOn: 'Schwarzer Bildschirm (B zum Fortsetzen drücken)',
   panePresenterPen: 'Stift (auf der Folie zeichnen; das Publikum sieht es live)',
   panePresenterLaser: 'Laserpointer (für das Publikum sichtbar)',
@@ -259,9 +279,19 @@ export const de = {
   panePresenterNotesBigger: 'Notizentext vergrößern',
   panePresenterNotesSmaller: 'Notizentext verkleinern',
   panePresenterFilmSlideN: 'Folie {n}',
+
   paneShowEndedClick: 'Ende der Bildschirmpräsentation. Klicken Sie zum Beenden.',
   paneShowEnded: 'Ende der Bildschirmpräsentation.',
   paneShowRehearseTip: 'Neue Einblendezeiten testen: Zeit auf dieser Folie / Gesamtzeit',
   paneShowRehearseTotal: 'Gesamt {time}',
+  paneShowMenuNext: 'Weiter',
+  paneShowMenuPrev: 'Zurück',
+  paneShowMenuLastViewed: 'Zuletzt angesehen',
+  paneShowMenuSeeAll: 'Alle Folien anzeigen',
+  paneShowMenuScreen: 'Bildschirm',
+  paneShowMenuBlack: 'Schwarzer Bildschirm',
+  paneShowMenuWhite: 'Weißer Bildschirm',
+  paneShowMenuEnd: 'Präsentation beenden',
+  panePresenterWhiteOn: 'Weißer Bildschirm (W zum Fortsetzen)',
   paneAnimRewind: 'Nach Effekt zurücksetzen',
-}
+} satisfies Record<keyof typeof zh, string>

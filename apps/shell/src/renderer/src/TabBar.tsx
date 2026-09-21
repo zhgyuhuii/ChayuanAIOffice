@@ -426,6 +426,7 @@ export function TabBar() {
               onLostPointerCapture={(event) => finishDrag(event.pointerId, false)}
               onContextMenu={(event) => {
                 event.preventDefault()
+                if (tab.id === 'home') return
                 void window.chatOfficeTabs.showTabContextMenu(
                   Math.round(event.clientX),
                   Math.round(event.clientY),

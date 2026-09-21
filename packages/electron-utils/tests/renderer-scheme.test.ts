@@ -78,6 +78,6 @@ describe('resolveRendererFile', () => {
   })
 
   it('rejects overlong and NUL paths', () => {
-    expect(resolveRendererFile(roots, `genoffice-app://sheets/${'a'.repeat(5000)}.js`)).toBeNull()
+    expect(resolveRendererFile(roots, `chatoffice-app://sheets/${'a'.repeat(5000)}.js`)).toBeNull()
   })
 })

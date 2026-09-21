@@ -137,9 +137,6 @@ export function useAiConversations(
       a completed turn / a run started / restored from history). A conversation
       with no such signal and an empty title is "empty" and never enters history. */
   const spokenRef = useRef<Set<string>>(new Set())
-  const markSpoken = useCallback((chatId: string) => {
-    spokenRef.current.add(chatId)
-  }, [])
 
   /** the last chatId that was active while a fixed tab (assistant/history) was
       selected — kept so conversationsOpenSet doesn't clobber the stored chat */
@@ -197,14 +194,12 @@ export function useAiConversations(
       .catch(() => {
         setReady(true)
       })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [persistKey])
 
   useEffect(() => {
     load()
     // reload only on document-session change (the mount itself reloads; a
     // null→real save transition must NOT reload — state continues)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reloadKey])
 
   // ── persistence ───────────────────────────────────────────

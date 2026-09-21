@@ -104,6 +104,7 @@ describe('isQcEnabled', () => {
 })
 
 describe('vision capability fallback', () => {
+  // LOCAL(2026-09-22, f5247d3..476e5023): vision probe uses the local AiSettingsV2 multi-profile model (upstream's provider-keyed variant predates it)
   /** v2 settings with one api-key profile whose current model is `modelId` */
   const withModel = (modelId: string): AiSettingsV2 => ({
     version: 2,
@@ -119,7 +120,8 @@ describe('vision capability fallback', () => {
         models: [{ id: modelId }],
       },
     ],
-    currentModel: { profileId: 'p', modelId },  })
+    currentModel: { profileId: 'p', modelId },
+  })
 
   it('uses the selected model when a profile mixes text and vision models', () => {
     expect(settingsSupportVision(withModel('deepseek-v4-pro'))).toBe(false)

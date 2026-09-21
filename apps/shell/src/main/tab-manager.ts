@@ -979,6 +979,35 @@ export class TabManager {
     for (const id of ids) await this.closeTab(id)
   }
 
+  /** Remove a tab from the strip WITHOUT destroying its WebContentsView and
+   *  hand it to the caller ("Open in New Window" — the live document, unsaved
+   *  edits included, moves into a detached editor window). Null while a close
+   *  prompt is pending on the tab. */
+  detachTab(
+    id: string,
+  ): { view: WebContentsView; kind: TabKind; title: string; filePath?: string } | null {
+    if (id === HOME_ID) return null
+    const idx = this.tabs.findIndex((t) => t.id === id)
+    const tab = idx >= 0 ? this.tabs[idx] : undefined
+    if (!tab?.view || tab.present || this.closingIds.has(id)) return null
+    this.tabs.splice(idx, 1)
+    if (this.htmlFullScreenId === id) this.htmlFullScreenId = null
+    // LOCAL(2026-09-22, f5247d3..476e5023): dock-aware detach — hand the dock to a
+    // neighbor and re-layout Home's pane, mirroring removeTab.
+    if (this.activeDockId === id) this.activeDockId = this.dockedNeighbor(id)
+    const view = tab.view
+    view.setVisible(false)
+    this.shellWindow.contentView.removeChildView(view)
+    if (this.activeId === id) {
+      const fallback = this.tabs[idx - 1] ?? this.tabs[0]
+      this.activateTab(fallback.id)
+    } else {
+      if (tab.docked) this.layout()
+      this.onChanged()
+    }
+    return { view, kind: tab.kind, title: tab.title, filePath: tab.filePath }
+  }
+
   /** close every closable tab to the left of the given tab (Home is never closed) */
   async closeLeftTabs(tabId: string): Promise<void> {
     const idx = this.tabs.findIndex((t) => t.id === tabId)
@@ -1066,7 +1095,7 @@ export class TabManager {
   }
 }
 
-function canonicalPath(path: string | undefined): string | undefined {
+export function canonicalPath(path: string | undefined): string | undefined {
   if (path === undefined) return undefined
   try {
     return realpathSync.native(path)

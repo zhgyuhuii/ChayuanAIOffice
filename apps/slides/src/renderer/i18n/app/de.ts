@@ -1,4 +1,5 @@
-/** app strings, de (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const de = {
   appPhPromptTitle: 'Titel durch Klicken hinzufügen',
   appPhPromptSubtitle: 'Untertitel durch Klicken hinzufügen',
@@ -25,49 +26,71 @@ export const de = {
   appStatusCut: '{count} Elemente ausgeschnitten',
   appStatusFormatCopied: 'Format kopiert',
   appStatusFormatPasted: 'Format eingefügt',
-  appStatusBrushOnce: 'Klicken Sie auf ein Zielelement, um das Format anzuwenden; Doppelklick auf die Schaltfläche für den Dauermodus',
+  appStatusBrushOnce:
+    'Klicken Sie auf ein Zielelement, um das Format anzuwenden; Doppelklick auf die Schaltfläche für den Dauermodus',
   appStatusBrushContinuous: 'Dauermodus „Format übertragen“; zum Beenden Esc drücken',
   appStatusFormatApplied: 'Format angewendet',
   appStatusTableInserted: 'Tabelle mit {rows} × {cols} eingefügt',
   appStatusIconInserted: 'Symbol „{name}“ eingefügt',
   appStatusIconInsertFailed: 'Symbol konnte nicht eingefügt werden',
   appStatusImageUnsupported: '{ext}-Bilder werden noch nicht unterstützt',
-  appStatusChartInserted: 'Diagramm eingefügt (Beispieldaten; die Daten können in PowerPoint bearbeitet werden)',
-  appStatusSmartArtInserted: 'SmartArt „{name}“ eingefügt (Formengruppe; Doppelklick zum Bearbeiten des Texts)',
+  appStatusChartInserted:
+    'Diagramm eingefügt (Beispieldaten; die Daten können in PowerPoint bearbeitet werden)',
+  appStatusSmartArtInserted:
+    'SmartArt „{name}“ eingefügt (Formengruppe; Doppelklick zum Bearbeiten des Texts)',
   appWordArtPlaceholder: 'Ihr Text hier',
   appStatusWordArtInserted: 'WordArt eingefügt; Doppelklick zum Bearbeiten des Texts',
-  appStatusDateInserted: 'Datum und Uhrzeit eingefügt (wird beim Öffnen in PowerPoint automatisch aktualisiert)',
-  appStatusSlideNumInserted: 'Foliennummer eingefügt (wird bei Bildschirmpräsentation/Export automatisch aktualisiert)',
-  appStatusLinkSet: 'Link festgelegt (wird beim Klicken in einer PowerPoint-Bildschirmpräsentation aktiviert)',
+  appStatusDateInserted:
+    'Datum und Uhrzeit eingefügt (wird beim Öffnen in PowerPoint automatisch aktualisiert)',
+  appStatusSlideNumInserted:
+    'Foliennummer eingefügt (wird bei Bildschirmpräsentation/Export automatisch aktualisiert)',
+  appStatusLinkSet:
+    'Link festgelegt (wird beim Klicken in einer PowerPoint-Bildschirmpräsentation aktiviert)',
   appStatusLinkRemoved: 'Link entfernt',
-  appZoomButtonText: '▸ Folie {page}',
-  appStatusZoomInserted: 'Zoom eingefügt: Klicken Sie während der Bildschirmpräsentation, um zu Folie {page} zu springen',
+  appStatusZoomInserted:
+    'Zoom eingefügt: Klicken Sie während der Bildschirmpräsentation, um zu Folie {page} zu springen',
   appStatusHfApplied: 'Kopf- und Fußzeile auf alle Folien angewendet',
   appStatusHfUnchanged: 'Keine Änderungen an Kopf- und Fußzeile',
   appStatusEquationInserted: 'Formel eingefügt',
-  appStatusVideoInserted: 'Video eingefügt (in die .pptx-Datei eingebettet; abspielbar in PowerPoint)',
+  appStatusVideoInserted:
+    'Video eingefügt (in die .pptx-Datei eingebettet; abspielbar in PowerPoint)',
   appStatusAudioInserted: 'Audio eingefügt (in die .pptx-Datei eingebettet)',
-  appStatusModel3dInserted: '3D-Modell eingebettet (die Zeichenfläche zeigt einen Platzhalter; die Modelldatei ist in der .pptx-Datei gespeichert)',
+  appStatusModel3dInserted:
+    '3D-Modell eingebettet (die Zeichenfläche zeigt einen Platzhalter; die Modelldatei ist in der .pptx-Datei gespeichert)',
   appStatusRecordingEmpty: 'Die Aufzeichnung ist leer; nichts wurde eingefügt',
-  appStatusRecordingInserted: 'Bildschirmaufzeichnung auf der aktuellen Folie eingefügt (eingebettetes WebM)',
-  appStatusRecording: 'Aufzeichnung läuft… Klicken Sie erneut auf „Bildschirmaufzeichnung“, um zu stoppen und einzufügen',
-  appStatusRecordingUnavailable: 'Bildschirmaufzeichnung nicht verfügbar (Berechtigung verweigert oder Auswahl abgebrochen)',
+  appStatusRecordingInserted:
+    'Bildschirmaufzeichnung auf der aktuellen Folie eingefügt (eingebettetes WebM)',
+  appStatusRecording:
+    'Aufzeichnung läuft… Klicken Sie erneut auf „Bildschirmaufzeichnung“, um zu stoppen und einzufügen',
+  appStatusRecordingUnavailable:
+    'Bildschirmaufzeichnung nicht verfügbar (Berechtigung verweigert oder Auswahl abgebrochen)',
   appStatusTransitionAll: 'Übergang auf alle Folien angewendet',
   appStatusTransitionSet: 'Übergang festgelegt (wirksam in PowerPoint-Bildschirmpräsentationen)',
   appStatusAnimRemoved: 'Animationen von den ausgewählten Formen entfernt',
-  appStatusAnimSet: 'Animation festgelegt (wird in der Bildschirmpräsentation schrittweise abgespielt; funktioniert auch in PowerPoint)',
+  appStatusAnimSet:
+    'Animation festgelegt (wird in der Bildschirmpräsentation schrittweise abgespielt; funktioniert auch in PowerPoint)',
   appStatusAnimAdded: 'Animation hinzugefügt',
-  appStatusMotionPathAdded: 'Animationspfad hinzugefügt (bewegt sich während der Bildschirmpräsentation entlang des Pfads; funktioniert auch in PowerPoint)',
-  appStatusCustomShowEmpty: 'Diese zielgruppenorientierte Präsentation enthält keine gültigen Folien',
-  appStatusRehearseSaved: 'Anzeigedauer für {count} Folien gespeichert (die gespeicherte .pptx-Datei wechselt die Folien in PowerPoint automatisch)',
-  appStatusSlideHidden: 'Folie {page} ausgeblendet (wird in der Bildschirmpräsentation übersprungen)',
+  appStatusMotionPathAdded:
+    'Animationspfad hinzugefügt (bewegt sich während der Bildschirmpräsentation entlang des Pfads; funktioniert auch in PowerPoint)',
+  appStatusCustomShowEmpty:
+    'Diese zielgruppenorientierte Präsentation enthält keine gültigen Folien',
+  appStatusRehearseSaved:
+    'Anzeigedauer für {count} Folien gespeichert (die gespeicherte .pptx-Datei wechselt die Folien in PowerPoint automatisch)',
+  appStatusSlideHidden:
+    'Folie {page} ausgeblendet (wird in der Bildschirmpräsentation übersprungen)',
   appStatusSlideUnhidden: 'Folie {page} wieder eingeblendet',
+  appStatusSlidesHidden: '{count} Folien ausgeblendet (in der Bildschirmpräsentation übersprungen)',
+  appStatusSlidesUnhidden: '{count} Folien wieder eingeblendet',
   appStatusCropApplied: 'Zuschneiden angewendet',
   appStatusCropRemoved: 'Zuschneiden entfernt',
-  appStatusCutoutMediaUnsupported: 'Das Entfernen des Hintergrunds wird für Audio-/Video-Vorschaubilder nicht unterstützt',
-  appStatusCutoutNoData: 'Bilddaten konnten nicht gelesen werden; Hintergrund kann nicht entfernt werden',
-  appStatusCutoutEncodeFailed: 'Entfernen des Hintergrunds fehlgeschlagen: Ergebnisbild konnte nicht codiert werden',
-  appStatusCutoutInsertFailed: 'Entfernen des Hintergrunds fehlgeschlagen: Ergebnisbild konnte nicht eingefügt werden',
+  appStatusCutoutMediaUnsupported:
+    'Das Entfernen des Hintergrunds wird für Audio-/Video-Vorschaubilder nicht unterstützt',
+  appStatusCutoutNoData:
+    'Bilddaten konnten nicht gelesen werden; Hintergrund kann nicht entfernt werden',
+  appStatusCutoutEncodeFailed:
+    'Entfernen des Hintergrunds fehlgeschlagen: Ergebnisbild konnte nicht codiert werden',
+  appStatusCutoutInsertFailed:
+    'Entfernen des Hintergrunds fehlgeschlagen: Ergebnisbild konnte nicht eingefügt werden',
   appStatusCutoutDone: 'Hintergrund entfernt (Originalbild durch transparentes PNG ersetzt)',
   appStatusGrouped: 'Gruppiert',
   appStatusUngrouped: 'Gruppierung aufgehoben',
@@ -81,11 +104,15 @@ export const de = {
   appSectionDefault: 'Standardabschnitt',
   appStatusSectionAdded: 'Abschnitt hinzugefügt',
   appStatusSectionRemoved: 'Abschnitt entfernt (Folien beibehalten)',
+  appStatusSectionsRemoved: 'Alle Abschnitte entfernt (Folien beibehalten)',
+  appStatusSectionSlidesRemoved: 'Abschnitt und seine Folien entfernt',
   appStatusSectionMovedUp: 'Abschnitt nach oben verschoben',
   appStatusSectionMovedDown: 'Abschnitt nach unten verschoben',
   appStatusSlideMoved: 'Zu Folie {page} verschoben',
-  appStatusTableDeleteLimit: 'Mindestens eine Zeile und eine Spalte müssen erhalten bleiben (Tabellen mit verbundenen Zellen werden noch nicht unterstützt)',
-  appStatusTableMergedUnsupported: 'Das Einfügen und Löschen von Zeilen/Spalten wird für Tabellen mit verbundenen Zellen noch nicht unterstützt',
+  appStatusTableDeleteLimit:
+    'Mindestens eine Zeile und eine Spalte müssen erhalten bleiben (Tabellen mit verbundenen Zellen werden noch nicht unterstützt)',
+  appStatusTableMergedUnsupported:
+    'Das Einfügen und Löschen von Zeilen/Spalten wird für Tabellen mit verbundenen Zellen noch nicht unterstützt',
   appStatusInkCleared: 'Freihandeingaben auf der aktuellen Folie gelöscht',
   appCtxNewSlide: 'Neue Folie',
   appCtxDuplicateSlide: 'Folie duplizieren',
@@ -103,7 +130,11 @@ export const de = {
   appCtxAddSectionBefore: 'Abschnitt hinzufügen (vor dieser Folie)',
   appCtxDeleteSlide: 'Folie löschen',
   appCtxRenameSection: 'Abschnitt umbenennen',
-  appCtxRemoveSection: 'Abschnitt entfernen (Folien beibehalten)',
+  appCtxRemoveSection: 'Abschnitt entfernen',
+  appCtxRemoveAllSections: 'Alle Abschnitte entfernen',
+  appCtxRemoveSectionSlides: 'Abschnitt und Folien entfernen',
+  appCtxCollapseAll: 'Alle reduzieren',
+  appCtxExpandAll: 'Alle erweitern',
   appCtxMoveSectionUp: 'Abschnitt nach oben verschieben',
   appCtxMoveSectionDown: 'Abschnitt nach unten verschieben',
   appCtxCut: 'Ausschneiden',
@@ -144,7 +175,8 @@ export const de = {
   appPrintPageCount: '{n} Seiten',
   appPrintNoPages: 'Keine Folien zum Drucken',
   appPrintRendering: 'Vorschau wird erstellt…',
-  appGuideDragTip: 'Zum Verschieben ziehen; zum Entfernen doppelklicken oder aus der Zeichenfläche ziehen',
+  appGuideDragTip:
+    'Zum Verschieben ziehen; zum Entfernen doppelklicken oder aus der Zeichenfläche ziehen',
   appPrintFailed: 'Drucken fehlgeschlagen: {error}',
   appCtxBringToFront: 'In den Vordergrund',
   appCtxSendToBack: 'In den Hintergrund',
@@ -156,13 +188,22 @@ export const de = {
   appCtxFlipV: 'Vertikal spiegeln',
   appCtxEditText: 'Text bearbeiten',
   appCtxHyperlink: 'Hyperlink…',
+  appCtxSelectAll: 'Alles auswählen',
   appCtxCropPicture: 'Bild zuschneiden',
   appCtxRemoveBackground: 'Hintergrund entfernen',
   appCtxChangeBgImage: 'Hintergrundbild ändern…',
   appCtxFormatBackground: 'Hintergrund formatieren…',
+  appCtxResetSlide: 'Folie zurücksetzen',
+  appCtxSizePosition: 'Größe und Position…',
+  appCtxSetDefaultShape: 'Als Standardform festlegen',
   appCtxChangeShape: 'Form ändern…',
+  appCtxEditPoints: 'Punkte bearbeiten',
   appCtxGroup: 'Gruppieren',
+  appCtxSaveAsPicture: 'Als Grafik speichern…',
+  appStatusPictureSaved: 'Grafik gespeichert unter {path}',
+  appStatusPictureSaveFailed: 'Als Grafik speichern fehlgeschlagen: {error}',
   appCtxUngroup: 'Gruppierung aufheben',
+  appCtxRegroup: 'Gruppierung wiederherstellen',
   appCtxAlignLeft: 'Linksbündig ausrichten',
   appCtxAlignCenterH: 'Horizontal zentrieren',
   appCtxAlignRight: 'Rechtsbündig ausrichten',
@@ -186,13 +227,16 @@ export const de = {
   appReadingNext: 'Weiter ›',
   appReadingExit: 'Leseansicht beenden',
   appThumbHiddenTitle: 'Ausgeblendete Folie (wird in der Bildschirmpräsentation übersprungen)',
-  appSorterHiddenTitle: 'Ausgeblendete Folie (wird in der Bildschirmpräsentation übersprungen); Doppelklick zum Bearbeiten in der Normalansicht',
+  appSorterHiddenTitle:
+    'Ausgeblendete Folie (wird in der Bildschirmpräsentation übersprungen); Doppelklick zum Bearbeiten in der Normalansicht',
   appSorterItemTitle: 'Doppelklick zum Bearbeiten in der Normalansicht',
   appOutlineNoText: '(Kein Text)',
-  appSectionHeaderTitle: 'Klicken zum Reduzieren/Erweitern; Rechtsklick zum Verwalten des Abschnitts',
+  appSectionHeaderTitle:
+    'Klicken zum Reduzieren/Erweitern; Rechtsklick zum Verwalten des Abschnitts',
   appNotesLabel: 'Notizen',
   appNotesClickToAdd: 'Klicken, um Notizen hinzuzufügen',
-  appNotesPlaceholder: 'Klicken, um Sprechernotizen hinzuzufügen (werden in der .pptx-Datei gespeichert)',
+  appNotesPlaceholder:
+    'Klicken, um Sprechernotizen hinzuzufügen (werden in der .pptx-Datei gespeichert)',
   appNotesShow: 'Notizen anzeigen',
   appNotesHide: 'Notizen ausblenden',
   appAiRailExpand: 'KI-Assistenten erweitern',
@@ -201,7 +245,8 @@ export const de = {
   appStatusBarReady: 'Bereit',
   appMediaCloseTitle: 'Schließen (Esc)',
   appRehearseTitle: 'Neue Einblendezeiten testen',
-  appRehearseSummary: 'Die Gesamtdauer der Bildschirmpräsentation betrug {duration}. Möchten Sie die Anzeigedauer der einzelnen Folien für den automatischen Folienwechsel speichern?',
+  appRehearseSummary:
+    'Die Gesamtdauer der Bildschirmpräsentation betrug {duration}. Möchten Sie die Anzeigedauer der einzelnen Folien für den automatischen Folienwechsel speichern?',
   appRehearseDiscard: 'Nicht speichern',
   appRehearseSave: 'Speichern',
   appSettingsTitle: 'KI-Einstellungen',
@@ -216,9 +261,15 @@ export const de = {
   appSettingsCancel: 'Abbrechen',
   appSettingsSave: 'Speichern',
   appCropHint: 'Eingabetaste zum Bestätigen · Esc zum Abbrechen · Klick außerhalb zum Bestätigen',
+  appStatusZoomsInserted:
+    '{count} Zooms eingefügt: Klick während der Bildschirmpräsentation springt zur Folie',
+  appStatusSummaryZoomInserted: 'Zusammenfassungszoom-Folie mit {count} Kacheln eingefügt',
+  appSectionSummary: 'Zusammenfassungsabschnitt',
+  appSectionN: 'Abschnitt {n}',
+  appZoomButtonText: '▸ Folie {page}',
   appStatusAnimBrushCopied: 'Animation übertragen',
   appStatusAnimBrushEmpty: 'Kopiert — Ziel wählen und erneut klicken',
   appStatusAnimBrushApplied: 'Keine Animation zum Kopieren',
   appCountdownPrompt: 'Countdown-Minuten eingeben',
   appStatusRehearseCleared: 'Probetimings auf allen Folien gelöscht',
-}
+} satisfies Record<keyof typeof zh, string>

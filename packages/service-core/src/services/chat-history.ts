@@ -8,7 +8,7 @@
  * this service.
  */
 
-import { ProjectStore } from '@chatoffice/project-store'
+import { ConversationStore, ProjectStore } from '@chatoffice/project-store'
 import type { ProjectApi } from '@chatoffice/project-store'
 import type { StorageArea } from '@chatoffice/storage-adapter'
 import { openLocalArea } from '@chatoffice/storage-adapter'
@@ -43,7 +43,60 @@ export function chatHistoryService(deps: ChatHistoryDeps = {}) {
     create(context: ServiceContext): ProjectApi {
       // ProjectStore is path-based (appends 'projects' itself), so pass the area root
       const store = new ProjectStore(context.storage.defaultArea().rootDir)
+      // LOCAL(2026-09-22, f5247d3..476e5023 无关,补 P0 接口): 多会话对话索引——
+      // ProjectApi 扩展的 7 个 conversations* 方法在此以 ConversationStore 直实现
+      // (sessionId 反查经 deps.resolveSessionPath,语义与 conversations-ipc 一致)
+      const conversations = new ConversationStore(context.storage.defaultArea().rootDir, store)
+      const convScope = (args: {
+        filePath?: string | null
+        tempChatId?: string
+        sessionId?: string
+      }): { filePath: string | null; tempChatId?: string } => {
+        let filePath = args.filePath ?? null
+        if (filePath === null && args.sessionId) {
+          filePath = deps.resolveSessionPath?.(args.sessionId) ?? null
+        }
+        return {
+          filePath,
+          ...(args.tempChatId !== undefined ? { tempChatId: args.tempChatId } : {}),
+        }
+      }
       return {
+        async conversationsList(args) {
+          const s = convScope(args)
+          return conversations.list(s.filePath, s.tempChatId)
+        },
+        async conversationCreate(args) {
+          const s = convScope(args)
+          return conversations.create(s.filePath, s.tempChatId)
+        },
+        async conversationMeta(args) {
+          const s = convScope(args)
+          conversations.meta(
+            s.filePath,
+            args.chatId,
+            {
+              ...(args.title !== undefined ? { title: args.title } : {}),
+              ...(args.lastActiveAt !== undefined ? { lastActiveAt: args.lastActiveAt } : {}),
+            },
+            s.tempChatId,
+          )
+        },
+        async conversationsOpenSet(args) {
+          const s = convScope(args)
+          conversations.openSet(s.filePath, args.openIds, args.activeId, s.tempChatId)
+        },
+        async conversationDelete(args) {
+          const s = convScope(args)
+          conversations.deleteOne(s.filePath, args.chatId, s.tempChatId)
+        },
+        async conversationsDeleteAll(args) {
+          const s = convScope(args)
+          conversations.deleteAllExceptOpen(s.filePath, args.openIds, s.tempChatId)
+        },
+        async conversationsRebind(args) {
+          conversations.rebind(args.oldPath, args.newPath)
+        },
         async resolveChat(args) {
           let filePath = args.filePath ?? null
           if (filePath === null && args.sessionId) {

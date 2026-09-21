@@ -1,14 +1,17 @@
-/** panes strings, fr (merged with ChatOffice-local keys) */
+import type { zh } from './zh'
+
 export const fr = {
   paneCancel: 'Annuler',
   paneOk: 'OK',
   paneMoveUp: 'Monter',
   paneMoveDown: 'Descendre',
+
   paneAnimTitle: 'Volet Animation · Diapositive {n}',
   paneAnimPreview: 'Lire l’aperçu des animations de cette diapositive',
   paneAnimCollapse: 'Réduire le volet Animation',
   paneAnimEmpty: 'Aucune animation sur cette diapositive',
-  paneAnimEmptySub: 'Sélectionnez une forme, puis choisissez un effet dans l’onglet « Animations ». Les animations sont écrites dans le pptx et fonctionnent aussi dans PowerPoint.',
+  paneAnimEmptySub:
+    'Sélectionnez une forme, puis choisissez un effet dans l’onglet « Animations ». Les animations sont écrites dans le pptx et fonctionnent aussi dans PowerPoint.',
   paneAnimDelete: 'Supprimer cette animation',
   paneAnimSeconds: '{sec} s',
   paneAnimDelaySeconds: 'délai {sec} s',
@@ -37,6 +40,10 @@ export const fr = {
   paneAnimEffShrink: 'Rétrécir et pivoter',
   paneAnimEffZoomOut: 'Zoom sortant',
   paneAnimEffMotionPath: 'Trajectoire',
+  paneAnimEffMediaPlay: 'Lecture',
+  paneAnimEffMediaPause: 'Pause',
+  paneAnimEffMediaStop: 'Arrêter',
+
   paneChartEditTitle: 'Modifier les données du graphique',
   paneChartCategoryN: 'Catégorie {n}',
   paneChartSeriesN: 'Série {n}',
@@ -46,13 +53,16 @@ export const fr = {
   paneChartDelCategory: 'Supprimer cette catégorie',
   paneChartAddCategory: 'Ajouter une catégorie',
   paneChartAddCategoryBtn: '+ Catégorie',
+
   paneCommentsTitle: 'Commentaires · Diapositive {n}',
   paneCommentsCollapse: 'Réduire le volet Commentaires',
   paneCommentsEmpty: 'Aucun commentaire sur cette diapositive',
-  paneCommentsEmptySub: 'Saisissez ci-dessous — les commentaires sont écrits dans le pptx et visibles aussi dans PowerPoint.',
+  paneCommentsEmptySub:
+    'Saisissez ci-dessous — les commentaires sont écrits dans le pptx et visibles aussi dans PowerPoint.',
   paneCommentsDelete: 'Supprimer le commentaire',
   paneCommentsPlaceholder: 'Nouveau commentaire… (⌘/Ctrl+Entrée pour publier)',
   paneCommentsPost: 'Publier',
+
   paneCsdTitle: 'Diaporamas personnalisés',
   paneCsdDefaultName: 'Diaporama personnalisé {n}',
   paneFrTitle: 'Rechercher et remplacer',
@@ -87,15 +97,18 @@ export const fr = {
   paneCsdCreateHint: 'Cliquez sur « Nouveau » pour créer un diaporama personnalisé',
   paneCsdClose: 'Fermer',
   paneCsdPlay: 'Lancer ce diaporama personnalisé',
+
   paneCutoutTitle: 'Supprimer l’arrière-plan',
   paneCutoutDecodeFail: 'Échec du décodage de l’image',
   paneCutoutLoadFail: 'Échec du chargement de l’image',
   paneCutoutApplyFail: 'Échec de la suppression de l’arrière-plan',
   paneCutoutLoading: 'Chargement…',
   paneCutoutTolerance: 'Tolérance',
-  paneCutoutHint: 'La couleur d’arrière-plan est échantillonnée automatiquement sur les bords de l’image ; plus la tolérance est élevée, plus les couleurs proches sont supprimées. Environ {pct} % des pixels ont été supprimés dans cet aperçu.',
+  paneCutoutHint:
+    'La couleur d’arrière-plan est échantillonnée automatiquement sur les bords de l’image ; plus la tolérance est élevée, plus les couleurs proches sont supprimées. Environ {pct} % des pixels ont été supprimés dans cet aperçu.',
   paneCutoutApplying: 'Traitement…',
   paneCutoutApply: 'Appliquer',
+
   paneFormatTitle: 'Format',
   paneFormatTitleTyped: 'Format de {type}',
   paneFormatTabShape: 'Options de forme',
@@ -119,7 +132,7 @@ export const fr = {
   paneLineCompoundThickThin: 'Épais-fin',
   paneLineCompoundThinThick: 'Fin-épais',
   paneLineCompoundTri: 'Triple',
-  paneLineCap: 'Type d\'extrémité',
+  paneLineCap: "Type d'extrémité",
   paneLineCapFlat: 'Plat',
   paneLineCapRound: 'Arrondi',
   paneLineCapSquare: 'Carré',
@@ -149,8 +162,10 @@ export const fr = {
   paneBgTile: 'Mosaïque',
   paneBgHideGraphics: 'Masquer les graphiques d’arrière-plan',
   paneBgReset: 'Réinitialiser l’arrière-plan',
-  paneBgResetTip: 'Supprime l’arrière-plan propre à cette diapositive et rétablit celui de la disposition/du masque',
-  paneFormatEmpty: 'Sélectionnez un élément sur le canevas pour modifier sa position, sa taille et son remplissage.',
+  paneBgResetTip:
+    'Supprime l’arrière-plan propre à cette diapositive et rétablit celui de la disposition/du masque',
+  paneFormatEmpty:
+    'Sélectionnez un élément sur le canevas pour modifier sa position, sa taille et son remplissage.',
   paneFormatPicture: 'Image',
   paneFormatGroup: 'Groupe',
   paneFormatTextBox: 'Zone de texte',
@@ -162,7 +177,7 @@ export const fr = {
   paneSizeScaleH: 'Hauteur (échelle)',
   paneSizeScaleW: 'Largeur (échelle)',
   paneSizeLockRatio: 'Conserver les proportions',
-  paneSizeRelOriginal: 'Par rapport à la taille d\'origine de l\'image',
+  paneSizeRelOriginal: "Par rapport à la taille d'origine de l'image",
   paneSizeCm: 'cm',
   panePosSection: 'Position',
   panePosH: 'Position horizontale',
@@ -171,7 +186,8 @@ export const fr = {
   panePosFromTL: 'Coin supérieur gauche',
   panePosFromCenter: 'Centre',
   paneFormatCrop: 'Rogner l’image',
-  paneFormatCutoutTip: 'Supprimer l’arrière-plan de l’image selon la tolérance de couleur (remplacé par un PNG transparent)',
+  paneFormatCutoutTip:
+    'Supprimer l’arrière-plan de l’image selon la tolérance de couleur (remplacé par un PNG transparent)',
   paneFormatCutoutNA: 'La suppression de l’arrière-plan n’est pas disponible pour cette image',
   paneFormatFill: 'Remplissage',
   paneFormatSolidFill: 'Remplissage uni',
@@ -230,6 +246,7 @@ export const fr = {
   paneInsetT: 'Marge supérieure',
   paneInsetB: 'Marge inférieure',
   paneTextWrap: 'Renvoyer le texte à la ligne dans la forme',
+
   panePresenterEndShow: 'Arrêter le diaporama',
   panePresenterEndTip: 'Arrêter le diaporama (Échap)',
   panePresenterSwap: 'Permuter les écrans',
@@ -237,13 +254,15 @@ export const fr = {
   panePresenterNoSecond: 'Aucun deuxième écran détecté',
   panePresenterUseShow: 'Utiliser le diaporama',
   panePresenterUseShowTip: 'Basculer vers un diaporama normal sur cet écran',
-  panePresenterSingleHint: 'Mode écran unique (connectez un deuxième écran pour un diaporama automatique en plein écran)',
+  panePresenterSingleHint:
+    'Mode écran unique (connectez un deuxième écran pour un diaporama automatique en plein écran)',
   panePresenterElapsed: 'Temps écoulé',
   panePresenterPause: 'Suspendre le minuteur',
   panePresenterResume: 'Reprendre le minuteur',
   panePresenterRestart: 'Redémarrer le minuteur',
   panePresenterClock: 'Heure actuelle',
-  panePresenterEnded: 'Fin du diaporama. Appuyez sur Échap ou « Arrêter le diaporama » pour quitter.',
+  panePresenterEnded:
+    'Fin du diaporama. Appuyez sur Échap ou « Arrêter le diaporama » pour quitter.',
   panePresenterBlackOn: 'Écran noir (appuyez sur B pour reprendre)',
   panePresenterPen: 'Stylet (dessinez sur la diapositive ; le public le voit en direct)',
   panePresenterLaser: 'Pointeur laser (visible par le public)',
@@ -259,9 +278,19 @@ export const fr = {
   panePresenterNotesBigger: 'Agrandir le texte des notes',
   panePresenterNotesSmaller: 'Réduire le texte des notes',
   panePresenterFilmSlideN: 'Diapositive {n}',
+
   paneShowEndedClick: 'Fin du diaporama. Cliquez pour quitter.',
   paneShowEnded: 'Fin du diaporama.',
   paneShowRehearseTip: 'Vérification du minutage : temps sur cette diapositive / temps total',
   paneShowRehearseTotal: 'Total {time}',
+  paneShowMenuNext: 'Suivant',
+  paneShowMenuPrev: 'Précédent',
+  paneShowMenuLastViewed: 'Dernière diapositive affichée',
+  paneShowMenuSeeAll: 'Afficher toutes les diapositives',
+  paneShowMenuScreen: 'Écran',
+  paneShowMenuBlack: 'Écran noir',
+  paneShowMenuWhite: 'Écran blanc',
+  paneShowMenuEnd: 'Arrêter le diaporama',
+  panePresenterWhiteOn: 'Écran blanc (W pour reprendre)',
   paneAnimRewind: 'Rembobiner après',
-}
+} satisfies Record<keyof typeof zh, string>

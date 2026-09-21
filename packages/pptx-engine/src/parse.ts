@@ -550,6 +550,7 @@ function parseSpShape(
     presetGeometry,
     ...(adjust ? { adjust } : {}),
     ...(customGeometry ? { customGeometry } : {}),
+    ...(!presetGeometry && !customGeometry && !ph ? { noGeometry: true as const } : {}),
     fill,
     ...(node['@_useBgFill'] === '1' || node['@_useBgFill'] === 'true' ? { useBgFill: true } : {}),
     ...(fillOverlay && fillOverlay.type !== 'none' ? { fillOverlay } : {}),
@@ -979,6 +980,14 @@ function svgBlipEmbedId(blip: any): string | undefined {
   return undefined
 }
 
+/** Media part behind a blip: the svgBlip vector when present (PowerPoint 2016+ draws it and
+    keeps r:embed only as a legacy raster fallback — a prod deck's fallback PNG is a blank
+    white square), else the r:embed raster. */
+function blipMediaRef(blip: any, embedId: string | undefined, ctx: ParseContext): string {
+  const svgId = svgBlipEmbedId(blip)
+  return (svgId && ctx.mediaRels?.get(svgId)) || (embedId && ctx.mediaRels?.get(embedId)) || ''
+}
+
 function parsePicture(
   node: any,
   anchor: ByteAnchor,
@@ -1001,6 +1010,9 @@ function parsePicture(
   const blipFill = node['p:blipFill']
   const blip = blipFill?.['a:blip']
   const embedId = blipEmbedId(blip)
+  // LOCAL(2026-09-22, f5247d3..476e5023): 双部件矢量图模型保留(上游 #657 以 blipMediaRef
+  // 单字段合并 svg/raster,本地渲染层 build-slide 依赖 mediaRef=raster + svgMediaRef=svg
+  // 双字段分流)——blipMediaRef 辅助删除
   const mediaRef = (embedId && ctx.mediaRels?.get(embedId)) || ''
   // Double-part vector picture: a:blip → raster fallback, asvg:svgBlip → svg part.
   // When the blip is bare (SVG-only), blipEmbedId already resolved mediaRef to the
@@ -1347,7 +1359,16 @@ function parseDiagramDrawing(
   // presentation defaultTextStyle: POI customGeo has defaultTextStyle latin=Arial and
   // PowerPoint still draws the diagram in Calibri
   const ctx: ParseContext = { ...parentCtx, defaultTextStyle: undefined }
-  const xml = drawingXml.replace(/<(\/?)dsp:/g, '<$1p:')
+  // Hard returns inside one a:t are paragraph breaks in SmartArt (PowerPoint regenerates
+  // the text from the data model; prod deck: three sentences → three bullets). Marked
+  // before parsing so they stay apart from the <a:br/> soft-break sentinel.
+  const xml = drawingXml
+    .replace(/<(\/?)dsp:/g, '<$1p:')
+    .replace(
+      /<a:t(\s[^>]*)?>([^<]*\n[^<]*)<\/a:t>/g,
+      (_m, attrs: string | undefined, t: string) =>
+        `<a:t${attrs ?? ''}>${t.replace(/\r?\n/g, DGM_PARA_BREAK)}</a:t>`,
+    )
   let doc: any
   try {
     doc = parser.parse(xml)
@@ -1408,7 +1429,29 @@ function parseDiagramDrawing(
     const el = parseSpShape(sp, anchor, ctx)
     if (el.type !== 'passthrough') out.push(el)
   }
+  for (const el of out) if ('text' in el && el.text) splitDiagramParagraphs(el.text)
   return out
+}
+
+const DGM_PARA_BREAK = '\u2029'
+
+function splitDiagramParagraphs(body: TextBody): void {
+  if (!body.paragraphs.some((p) => p.runs.some((r) => r.text.includes(DGM_PARA_BREAK)))) return
+  const out: Paragraph[] = []
+  for (const p of body.paragraphs) {
+    let cur: Paragraph = { ...p, runs: [] }
+    for (const r of p.runs) {
+      r.text.split(DGM_PARA_BREAK).forEach((part, i) => {
+        if (i > 0) {
+          out.push(cur)
+          cur = { ...p, runs: [] }
+        }
+        if (part) cur.runs.push({ ...r, text: part })
+      })
+    }
+    out.push(cur)
+  }
+  body.paragraphs = out
 }
 
 /** Find the first p:pic in the graphicData subtree (piercing wrappers like mc:AlternateContent). */
@@ -2958,6 +3001,10 @@ function parseTableCell(
             },
           ]
         : []
+    // Cell text without its own size sits on presentation.xml defaultTextStyle like any
+    // non-placeholder shape (Google Slides export: 14pt default, PowerPoint draws 14pt)
+    if (ctx.defaultTextStyle)
+      styleChain.push({ ...ctx.defaultTextStyle, src: 'presentation defaultTextStyle' })
     const text = parseTextBody(tc['a:txBody'], ctx, styleChain)
     // Cell vertical alignment and insets come from tcPr (bodyPr is usually empty in tables)
     const anchorMap: Record<string, TextBody['anchor']> = { t: 'top', ctr: 'middle', b: 'bottom' }
@@ -2977,6 +3024,18 @@ function parseTableCell(
   if (fill) {
     if (fill.type !== 'none') cell.fill = fill
   } else if (part?.fill) cell.fill = part.fill
+
+  const cell3D = tcPr['a:cell3D']
+  if (cell3D && typeof cell3D === 'object') {
+    const bv = cell3D['a:bevel']
+    const preset = bv?.['@_prst']
+    const dir = cell3D['a:lightRig']?.['@_dir']
+    cell.bevel = {
+      widthEmu: intOr(bv?.['@_w'], 76200),
+      ...(preset ? { preset } : {}),
+      ...(dir ? { lightDir: dir } : {}),
+    }
+  }
 
   // Borders on four edges: a:lnL/R/T/B share a:ln's structure, so reuse parseStroke; style inside-borders as fallback
   const borders: TableCellBorders = {}
@@ -3126,7 +3185,7 @@ function parseFill(spPr: any, ctx: ParseContext): Fill | undefined {
   const blip = spPr['a:blipFill']
   if (blip) {
     const embedId = blipEmbedId(blip['a:blip'])
-    const mediaRef = (embedId && ctx.mediaRels?.get(embedId)) || ''
+    const mediaRef = blipMediaRef(blip['a:blip'], embedId, ctx)
     if (mediaRef) {
       const alphaAmt = blip['a:blip']?.['a:alphaModFix']?.['@_amt']
       const alpha =
