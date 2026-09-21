@@ -61,6 +61,22 @@ export function throwIfToolJsonOverBudget(jsonLength: number, provider: string):
   }
 }
 
+/**
+ * Max tool calls started per streamed turn: per-argument bytes are capped
+ * above, but a gateway could still stream 100k near-empty tool_use blocks
+ * and grow the completed-call list without bound.
+ */
+export const MAX_STREAM_TOOL_CALLS = 100
+
+export function throwIfToolCountOverBudget(count: number, provider: string): void {
+  if (count > MAX_STREAM_TOOL_CALLS) {
+    throw new Error(
+      `Too many streamed tool calls (${count}, cap ${MAX_STREAM_TOOL_CALLS}) for ${provider}; ` +
+        'the provider kept starting tool calls without finishing the turn.',
+    )
+  }
+}
+
 export interface StreamCallbacks {
   onDelta: (text: string) => void
   onToolCall: (call: AgentToolCall) => void

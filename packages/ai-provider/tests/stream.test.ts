@@ -274,6 +274,23 @@ describe('streamForProvider: anthropic', () => {
     expect(onToolCall).not.toHaveBeenCalled()
   })
 
+  it('aborts when a turn starts more tool calls than the count cap', async () => {
+    const starts = Array.from(
+      { length: 150 },
+      (_, i) =>
+        `data: ${JSON.stringify({
+          type: 'content_block_start',
+          index: i,
+          content_block: { type: 'tool_use', id: `t${i}`, name: 'do_thing' },
+        })}`,
+    )
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(sseStream(starts))))
+    const { cb } = collector()
+    await expect(
+      streamForProvider('anthropic', { apiKey: 'k', model: 'claude-sonnet-5' }, 'sys', [], [], 100, cb),
+    ).rejects.toThrow(/Too many streamed tool calls/)
+  })
+
   it('repairs unescaped quotes inside tool input string values', async () => {
     const partial = JSON.stringify({
       type: 'content_block_delta',
@@ -687,6 +704,23 @@ describe('streamForProvider: openai-compatible', () => {
     expect(fragments).toBeLessThan(10_000)
     expect(onDelta).not.toHaveBeenCalled()
     expect(onToolCall).not.toHaveBeenCalled()
+  })
+
+  it('aborts when a turn starts more tool calls than the count cap', async () => {
+    const starts = Array.from(
+      { length: 150 },
+      (_, i) =>
+        `data: ${JSON.stringify({
+          choices: [
+            { delta: { tool_calls: [{ index: i, id: `c${i}`, function: { name: 'do_thing' } }] } },
+          ],
+        })}`,
+    )
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(okResponse(sseStream(starts))))
+    const { cb } = collector()
+    await expect(
+      streamForProvider('openai', { apiKey: 'k', model: 'gpt-4.1-mini' }, 'sys', [], [], 100, cb),
+    ).rejects.toThrow(/Too many streamed tool calls/)
   })
 
   it('tolerates servers that resend the full tool name on every delta', async () => {
