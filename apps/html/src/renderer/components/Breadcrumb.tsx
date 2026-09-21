@@ -12,9 +12,13 @@ interface Props {
   onSelect: (sid: number) => void
 }
 
-function label(text: string | undefined, tag: string): string {
+/** Max id chars shown in a crumb (minified pages carry KB-long ids). Exported for tests. */
+export const MAX_CRUMB_ID_CHARS = 48
+
+export function label(text: string | undefined, tag: string): string {
   if (!text) return tag
-  const id = /\sid\s*=\s*["']([^"']+)["']/i.exec(text)?.[1]
+  const rawId = /\sid\s*=\s*["']([^"']+)["']/i.exec(text)?.[1]
+  const id = rawId && rawId.length > MAX_CRUMB_ID_CHARS ? `${rawId.slice(0, MAX_CRUMB_ID_CHARS)}…` : rawId
   const cls = /\sclass\s*=\s*["']([^"']+)["']/i.exec(text)?.[1]
   return (
     tag + (id ? `#${id}` : '') + (cls ? `.${cls.trim().split(/\s+/).slice(0, 2).join('.')}` : '')
