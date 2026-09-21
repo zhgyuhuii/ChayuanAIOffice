@@ -353,6 +353,25 @@
   padding: 6px;
 }
 
+/* group overview: per-vendor blocks listing every model of the capability */
+.csp-vendor-block {
+  margin-top: 14px;
+}
+.csp-vendor-block-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.csp-vendor-block-name {
+  font-weight: 600;
+}
+.csp-vendor-block-count {
+  color: var(--text-secondary, var(--text, #666));
+  opacity: 0.75;
+  font-size: 12px;
+}
+
 .csp-model {
   display: flex;
   align-items: center;

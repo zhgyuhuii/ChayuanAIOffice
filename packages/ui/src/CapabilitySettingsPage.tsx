@@ -611,6 +611,7 @@ export function CapabilitySettingsPage({
           : t.modelOverview
     const autoDefault =
       group !== 'search' && !isExplicitDefault(group) ? defaultModelLabel(group) : undefined
+    const sel = group === 'search' ? undefined : capabilityDefault(group)
     return (
       <div className="csp-pane" data-capability-overview={group}>
         <div className="csp-head">
@@ -627,6 +628,58 @@ export function CapabilitySettingsPage({
               : `${t.defaultHint}。`}
           </p>
         )}
+        {/* 分组全量视图：该能力下全部厂商 × 全部可用模型，均可勾选默认 */}
+        {group !== 'search' &&
+          vendorRows(group).map((row) => {
+            const profile = rowProfile(group, row.vendorId)
+            const models =
+              settings && profile ? profileCapabilityModels(settings, group, profile.id) : []
+            if (!profile || models.length === 0) return null
+            const name = isZh && row.nameZh ? row.nameZh : row.name
+            return (
+              <div
+                key={row.vendorId}
+                className="csp-vendor-block"
+                data-capability-overview-vendor={row.vendorId}
+              >
+                <div className="csp-vendor-block-head">
+                  <VendorLogo
+                    vendorId={group === 'svgGeneration' ? undefined : row.vendorId}
+                    size={18}
+                    fallback={name}
+                  />
+                  <span className="csp-vendor-block-name">{name}</span>
+                  <span className="csp-vendor-block-count">
+                    {t.modelsTitle} · {models.length}
+                  </span>
+                </div>
+                <div className="csp-models" data-capability-models={row.vendorId}>
+                  {models.map((m) => {
+                    const isDefault = sel?.profileId === profile.id && sel?.modelId === m.id
+                    return (
+                      <label
+                        key={m.id}
+                        className={`csp-model${isDefault ? ' is-default' : ''}`}
+                        data-capability-model={m.id}
+                      >
+                        <input
+                          type="radio"
+                          name={`csp-default-${group}`}
+                          checked={isDefault}
+                          onChange={() => void pickDefaultModel(group, profile.id, m.id)}
+                        />
+                        <span className="csp-model-name">
+                          {m.name && m.name !== m.id ? m.name : m.id}
+                        </span>
+                        {isDefault && <span className="csp-default-badge">{t.defaultLabel}</span>}
+                        {m.name && m.name !== m.id && <span className="csp-model-id">{m.id}</span>}
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
       </div>
     )
   }
